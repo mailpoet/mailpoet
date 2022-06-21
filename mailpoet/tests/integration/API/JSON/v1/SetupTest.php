@@ -13,7 +13,8 @@ use MailPoet\Migrator\Migrator;
 use MailPoet\Referrals\ReferralDetector;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\SettingsRepository;
-use MailPoet\Subscription\Captcha;
+use MailPoet\Subscription\Captcha\CaptchaConstants;
+use MailPoet\Subscription\Captcha\CaptchaRenderer;
 use MailPoet\WP\Functions as WPFunctions;
 
 class SetupTest extends \MailPoetTest {
@@ -30,8 +31,8 @@ class SetupTest extends \MailPoetTest {
 
     $settings = SettingsController::getInstance();
     $referralDetector = new ReferralDetector($wpStub, $settings);
-    $subscriptionCaptcha = $this->diContainer->get(Captcha::class);
     $populator = $this->getServiceWithOverrides(Populator::class, ['wp' => $wpStub, 'referralDetector' => $referralDetector]);
+    $captchaRenderer = $this->diContainer->get(CaptchaRenderer::class);
     $migrator = $this->diContainer->get(Migrator::class);
     $cronActionScheduler = $this->diContainer->get(ActionScheduler::class);
     $router = new Setup($wpStub, new Activator($this->connection, $settings, $populator, $wpStub, $migrator, $cronActionScheduler));
@@ -43,7 +44,7 @@ class SetupTest extends \MailPoetTest {
     expect($signupConfirmation)->true();
 
     $captcha = $settings->fetch('captcha');
-    $captchaType = $subscriptionCaptcha->isSupported() ? Captcha::TYPE_BUILTIN : Captcha::TYPE_DISABLED;
+    $captchaType = $captchaRenderer->isSupported() ? CaptchaConstants::TYPE_BUILTIN : CaptchaConstants::TYPE_DISABLED;
     expect($captcha['type'])->equals($captchaType);
     expect($captcha['recaptcha_site_token'])->equals('');
     expect($captcha['recaptcha_secret_token'])->equals('');

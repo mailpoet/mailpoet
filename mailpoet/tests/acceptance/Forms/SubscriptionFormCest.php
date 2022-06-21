@@ -3,7 +3,7 @@
 namespace MailPoet\Test\Acceptance;
 
 use Codeception\Util\Locator;
-use MailPoet\Subscription\Captcha;
+use MailPoet\Subscription\Captcha\CaptchaConstants;
 use MailPoet\Test\DataFactories\Form;
 use MailPoet\Test\DataFactories\Settings;
 
@@ -27,7 +27,7 @@ class SubscriptionFormCest {
       ->withConfirmationEmailSubject()
       ->withConfirmationEmailBody()
       ->withConfirmationEmailEnabled()
-      ->withCaptchaType(Captcha::TYPE_DISABLED);
+      ->withCaptchaType(CaptchaConstants::TYPE_DISABLED);
 
     $formName = 'Subscription Acceptance Test Form';
     $formFactory = new Form();

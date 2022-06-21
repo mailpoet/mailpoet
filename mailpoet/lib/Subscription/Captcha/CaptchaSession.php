@@ -1,6 +1,6 @@
 <?php
 
-namespace MailPoet\Subscription;
+namespace MailPoet\Subscription\Captcha;
 
 use MailPoet\Util\Security;
 use MailPoet\WP\Functions as WPFunctions;
@@ -15,8 +15,8 @@ class CaptchaSession {
   /** @var WPFunctions */
   private $wp;
 
-  /** @var string */
-  private $id;
+  /** @var ?string */
+  private $id = null;
 
   public function __construct(
     WPFunctions $wp
@@ -28,10 +28,7 @@ class CaptchaSession {
     $this->id = $id ?: Security::generateRandomString(self::ID_LENGTH);
   }
 
-  public function getId() {
-    if ($this->id === null) {
-      throw new \Exception("MailPoet captcha session not initialized.");
-    }
+  public function getId(): ?string {
     return $this->id;
   }
 
@@ -57,6 +54,6 @@ class CaptchaSession {
   }
 
   private function getKey($type) {
-    return implode('_', ['MAILPOET', $this->getId(), $type]);
+    return \implode('_', ['MAILPOET', $this->getId(), $type]);
   }
 }

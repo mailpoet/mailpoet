@@ -5,7 +5,7 @@ namespace MailPoet\Form;
 use MailPoet\Config\Env;
 use MailPoet\Config\Renderer as BasicRenderer;
 use MailPoet\Settings\SettingsController;
-use MailPoet\Subscription\Captcha;
+use MailPoet\Subscription\Captcha\CaptchaConstants;
 use MailPoet\WP\Functions as WPFunctions;
 
 class AssetsController {
@@ -37,7 +37,7 @@ class AssetsController {
   public function printScripts() {
     ob_start();
     $captcha = $this->settings->get('captcha');
-    if (!empty($captcha['type']) && Captcha::isReCaptcha($captcha['type'])) {
+    if (!empty($captcha['type']) && CaptchaConstants::isReCaptcha($captcha['type'])) {
       echo '<script src="' . esc_attr(self::RECAPTCHA_API_URL) . '" async defer></script>';
     }
 
@@ -66,7 +66,7 @@ class AssetsController {
 
   public function setupFrontEndDependencies() {
     $captcha = $this->settings->get('captcha');
-    if (!empty($captcha['type']) && Captcha::isRecaptcha($captcha['type'])) {
+    if (!empty($captcha['type']) && CaptchaConstants::isRecaptcha($captcha['type'])) {
       $this->wp->wpEnqueueScript(
         'mailpoet_recaptcha',
         self::RECAPTCHA_API_URL

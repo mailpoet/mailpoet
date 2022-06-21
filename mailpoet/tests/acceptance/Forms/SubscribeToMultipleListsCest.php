@@ -3,7 +3,7 @@
 namespace MailPoet\Test\Acceptance;
 
 use Codeception\Util\Locator;
-use MailPoet\Subscription\Captcha;
+use MailPoet\Subscription\Captcha\CaptchaConstants;
 use MailPoet\Test\DataFactories\Form;
 use MailPoet\Test\DataFactories\Segment;
 use MailPoet\Test\DataFactories\Settings;
@@ -27,7 +27,7 @@ class SubscribeToMultipleListsCest {
       ->withConfirmationEmailEnabled()
       ->withConfirmationEmailBody()
       ->withConfirmationEmailSubject('Subscribe to multiple test subject')
-      ->withCaptchaType(Captcha::TYPE_DISABLED);
+      ->withCaptchaType(CaptchaConstants::TYPE_DISABLED);
 
     $formFactory->withDefaultSuccessMessage();
 

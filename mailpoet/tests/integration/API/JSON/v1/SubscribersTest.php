@@ -5,9 +5,9 @@ namespace MailPoet\Test\API\JSON\v1;
 use Codeception\Util\Fixtures;
 use MailPoet\API\JSON\Error;
 use MailPoet\API\JSON\ErrorResponse;
-use MailPoet\API\JSON\SuccessResponse;
 use MailPoet\API\JSON\Response as APIResponse;
 use MailPoet\API\JSON\ResponseBuilders\SubscribersResponseBuilder;
+use MailPoet\API\JSON\SuccessResponse;
 use MailPoet\API\JSON\v1\Subscribers;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\CustomFieldEntity;
@@ -34,9 +34,9 @@ use MailPoet\Subscribers\SubscriberListingRepository;
 use MailPoet\Subscribers\SubscriberSaveController;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Subscribers\SubscriberSubscribeController;
-use MailPoet\Subscription\Captcha;
-use MailPoet\Subscription\CaptchaSession;
 use MailPoet\Test\DataFactories\CustomField as CustomFieldFactory;
+use MailPoet\Subscription\Captcha\CaptchaConstants;
+use MailPoet\Subscription\Captcha\CaptchaSession;
 use MailPoet\Test\DataFactories\DynamicSegment;
 use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
 use MailPoet\Test\DataFactories\Segment as SegmentFactory;
@@ -718,7 +718,7 @@ class SubscribersTest extends \MailPoetTest {
   }
 
   public function testItCannotSubscribeWithoutReCaptchaWhenEnabled() {
-    $this->settings->set('captcha', ['type' => Captcha::TYPE_RECAPTCHA]);
+    $this->settings->set('captcha', ['type' => CaptchaConstants::TYPE_RECAPTCHA]);
     $response = $this->endpoint->subscribe([
       $this->obfuscatedEmail => 'toto@mailpoet.com',
       'form_id' => $this->form->getId(),
@@ -730,7 +730,7 @@ class SubscribersTest extends \MailPoetTest {
   }
 
   public function testItCannotSubscribeWithoutInvisibleReCaptchaWhenEnabled() {
-    $this->settings->set('captcha', ['type' => Captcha::TYPE_RECAPTCHA_INVISIBLE]);
+    $this->settings->set('captcha', ['type' => CaptchaConstants::TYPE_RECAPTCHA_INVISIBLE]);
     $response = $this->endpoint->subscribe([
       $this->obfuscatedEmail => 'toto@mailpoet.com',
       'form_id' => $this->form->getId(),
@@ -742,7 +742,7 @@ class SubscribersTest extends \MailPoetTest {
   }
 
   public function testItCannotSubscribeWithoutBuiltInCaptchaWhenEnabled() {
-    $this->settings->set('captcha', ['type' => Captcha::TYPE_BUILTIN]);
+    $this->settings->set('captcha', ['type' => CaptchaConstants::TYPE_BUILTIN]);
     $email = 'toto@mailpoet.com';
     (new SubscriberFactory())
       ->withEmail($email)
@@ -759,13 +759,13 @@ class SubscribersTest extends \MailPoetTest {
   }
 
   public function testItCanSubscribeWithBuiltInCaptchaWhenEnabled() {
-    $this->settings->set('captcha', ['type' => Captcha::TYPE_BUILTIN]);
+    $this->settings->set('captcha', ['type' => CaptchaConstants::TYPE_BUILTIN]);
     $email = 'toto@mailpoet.com';
     (new SubscriberFactory())
       ->withEmail($email)
       ->withCountConfirmations(1)
       ->create();
-    $captchaValue = 'ihG5W';
+    $captchaValue = ['phrase' => 'ihG5W'];
     $captchaSessionId = 'abcdfgh';
     $this->captchaSession->init($captchaSessionId);
     $this->captchaSession->setCaptchaHash($captchaValue);
@@ -774,7 +774,7 @@ class SubscribersTest extends \MailPoetTest {
       'form_id' => $this->form->getId(),
       'captcha_session_id' => $captchaSessionId,
       $this->obfuscatedSegments => [$this->segment1->getId(), $this->segment2->getId()],
-      'captcha' => $captchaValue,
+      'captcha' => $captchaValue['phrase'],
     ]);
     expect($response->status)->equals(APIResponse::STATUS_OK);
     $this->settings->set('captcha', []);

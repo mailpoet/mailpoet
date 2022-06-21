@@ -8,7 +8,7 @@ use MailPoet\Form\Renderer;
 use MailPoet\Form\Util\CustomFonts;
 use MailPoet\Form\Util\Styles;
 use MailPoet\Settings\SettingsController;
-use MailPoet\Subscription\Captcha;
+use MailPoet\Subscription\Captcha\CaptchaConstants;
 use PHPUnit\Framework\MockObject\MockObject;
 
 require_once __DIR__ . '/HtmlParser.php';
@@ -50,7 +50,7 @@ class RendererTest extends \MailPoetUnitTest {
     $this->settingsMock
       ->method('get')
       ->with('captcha.type')
-      ->willReturn(Captcha::TYPE_DISABLED);
+      ->willReturn(CaptchaConstants::TYPE_DISABLED);
     $html = $this->renderer->renderBlocks(Fixtures::get('simple_form_body'));
     $blocks = $this->htmlParser->findByXpath($html, "//div[@class='block']");
     expect($blocks->length)->equals(2);
@@ -61,7 +61,7 @@ class RendererTest extends \MailPoetUnitTest {
     $this->settingsMock
       ->method('get')
       ->with('captcha.type')
-      ->willReturn(Captcha::TYPE_DISABLED);
+      ->willReturn(CaptchaConstants::TYPE_DISABLED);
     $html = $this->renderer->renderBlocks(Fixtures::get('simple_form_body'));
     $hpLabel = $this->htmlParser->findByXpath($html, "//label[@class='mailpoet_hp_email_label']");
     expect($hpLabel->length)->equals(1);
@@ -75,7 +75,7 @@ class RendererTest extends \MailPoetUnitTest {
     $this->settingsMock
       ->method('get')
       ->will($this->returnValueMap([
-        ['captcha.type', null, Captcha::TYPE_RECAPTCHA],
+        ['captcha.type', null, CaptchaConstants::TYPE_RECAPTCHA],
         ['captcha.recaptcha_site_token', null, $token],
       ]));
     $html = $this->renderer->renderBlocks(Fixtures::get('simple_form_body'));
@@ -96,7 +96,7 @@ class RendererTest extends \MailPoetUnitTest {
     $this->settingsMock
       ->method('get')
       ->with('captcha.type')
-      ->willReturn(Captcha::TYPE_DISABLED);
+      ->willReturn(CaptchaConstants::TYPE_DISABLED);
     $html = $this->renderer->renderBlocks(Fixtures::get('simple_form_body'), [], null, false);
     $hpLabel = $this->htmlParser->findByXpath($html, "//label[@class='mailpoet_hp_email_label']");
     expect($hpLabel->length)->equals(0);
