@@ -2,7 +2,7 @@
 
 namespace MailPoet\Test\Acceptance;
 
-use MailPoet\Subscription\Captcha;
+use MailPoet\Subscription\Captcha\CaptchaConstants;
 use MailPoet\Test\DataFactories\Form;
 use MailPoet\Test\DataFactories\Settings;
 use MailPoet\Test\DataFactories\Subscriber;
@@ -18,7 +18,7 @@ class BuiltInCaptchaSubscriptionCest {
   public function _before(\AcceptanceTester $i) {
     $this->subscriberEmail = 'test-form@example.com';
     $this->settingsFactory = new Settings();
-    $this->settingsFactory->withCaptchaType(Captcha::TYPE_BUILTIN);
+    $this->settingsFactory->withCaptchaType(CaptchaConstants::TYPE_BUILTIN);
     $this->settingsFactory
       ->withConfirmationEmailSubject()
       ->withConfirmationEmailBody()

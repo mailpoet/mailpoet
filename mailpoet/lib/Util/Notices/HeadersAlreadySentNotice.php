@@ -4,7 +4,7 @@ namespace MailPoet\Util\Notices;
 
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\TrackingConfig;
-use MailPoet\Subscription\Captcha;
+use MailPoet\Subscription\Captcha\CaptchaConstants;
 use MailPoet\Util\Helpers;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoet\WP\Notice;
@@ -37,7 +37,7 @@ class HeadersAlreadySentNotice {
     if (!$shouldDisplay) {
       return null;
     }
-    $captchaEnabled = $this->settings->get('captcha.type') === Captcha::TYPE_BUILTIN;
+    $captchaEnabled = $this->settings->get('captcha.type') === CaptchaConstants::TYPE_BUILTIN;
     $trackingEnabled = $this->trackingConfig->isEmailTrackingEnabled();
     if ($this->areHeadersAlreadySent()) {
       return $this->display($captchaEnabled, $trackingEnabled);

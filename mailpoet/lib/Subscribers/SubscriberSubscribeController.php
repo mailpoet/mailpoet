@@ -11,9 +11,11 @@ use MailPoet\NotFoundException;
 use MailPoet\Segments\SubscribersFinder;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Statistics\StatisticsFormsRepository;
-use MailPoet\Subscription\Captcha;
-use MailPoet\Subscription\CaptchaSession;
-use MailPoet\Subscription\SubscriptionUrlFactory;
+use MailPoet\Subscription\Captcha\CaptchaConstants;
+use MailPoet\Subscription\Captcha\CaptchaSession;
+use MailPoet\Subscription\Captcha\Validator\BuiltInCaptchaValidator;
+use MailPoet\Subscription\Captcha\Validator\RecaptchaValidator;
+use MailPoet\Subscription\Captcha\Validator\ValidationError;
 use MailPoet\Subscription\Throttling as SubscriptionThrottling;
 use MailPoet\Tags\TagRepository;
 use MailPoet\UnexpectedValueException;
@@ -23,14 +25,8 @@ class SubscriberSubscribeController {
   /** @var FormsRepository */
   private $formsRepository;
 
-  /** @var Captcha */
-  private $subscriptionCaptcha;
-
   /** @var CaptchaSession */
   private $captchaSession;
-
-  /** @var SubscriptionUrlFactory */
-  private $subscriptionUrlFactory;
 
   /** @var FieldNameObfuscator */
   private $fieldNameObfuscator;
@@ -61,13 +57,16 @@ class SubscriberSubscribeController {
 
   /** @var SubscriberTagRepository */
   private $subscriberTagRepository;
+  /** @var BuiltInCaptchaValidator  */
+  private $builtInCaptchaValidator;
+
+  /** @var RecaptchaValidator  */
+  private $recaptchaValidator;
 
   public function __construct(
-    Captcha $subscriptionCaptcha,
     CaptchaSession $captchaSession,
     SubscriberActions $subscriberActions,
     SubscribersFinder $subscribersFinder,
-    SubscriptionUrlFactory $subscriptionUrlFactory,
     SubscriptionThrottling $throttling,
     FieldNameObfuscator $fieldNameObfuscator,
     RequiredCustomFieldValidator $requiredCustomFieldValidator,
@@ -76,12 +75,12 @@ class SubscriberSubscribeController {
     StatisticsFormsRepository $statisticsFormsRepository,
     TagRepository $tagRepository,
     SubscriberTagRepository $subscriberTagRepository,
-    WPFunctions $wp
+    WPFunctions $wp,
+    BuiltInCaptchaValidator $builtInCaptchaValidator,
+    RecaptchaValidator $recaptchaValidator
   ) {
     $this->formsRepository = $formsRepository;
-    $this->subscriptionCaptcha = $subscriptionCaptcha;
     $this->captchaSession = $captchaSession;
-    $this->subscriptionUrlFactory = $subscriptionUrlFactory;
     $this->requiredCustomFieldValidator = $requiredCustomFieldValidator;
     $this->fieldNameObfuscator = $fieldNameObfuscator;
     $this->settings = $settings;
@@ -92,6 +91,8 @@ class SubscriberSubscribeController {
     $this->statisticsFormsRepository = $statisticsFormsRepository;
     $this->tagRepository = $tagRepository;
     $this->subscriberTagRepository = $subscriberTagRepository;
+    $this->builtInCaptchaValidator = $builtInCaptchaValidator;
+    $this->recaptchaValidator = $recaptchaValidator;
   }
 
   public function subscribe(array $data): array {
@@ -152,7 +153,7 @@ class SubscriberSubscribeController {
 
     $subscriber = $this->subscriberActions->subscribe($data, $segmentIds);
 
-    if (!empty($captchaSettings['type']) && $captchaSettings['type'] === Captcha::TYPE_BUILTIN) {
+    if (!empty($captchaSettings['type']) && $captchaSettings['type'] === CaptchaConstants::TYPE_BUILTIN) {
       // Captcha has been verified, invalidate the session vars
       $this->captchaSession->reset();
     }
@@ -198,21 +199,22 @@ class SubscriberSubscribeController {
   }
 
   private function initCaptcha(?array $captchaSettings, FormEntity $form, array $data): array {
-    if (!$captchaSettings || !isset($captchaSettings['type'])) {
+    if (
+      !$captchaSettings
+      || !isset($captchaSettings['type'])
+      || $captchaSettings['type'] !== CaptchaConstants::TYPE_BUILTIN
+    ) {
       return $data;
     }
 
-    if ($captchaSettings['type'] === Captcha::TYPE_BUILTIN) {
-      $captchaSessionId = isset($data['captcha_session_id']) ? $data['captcha_session_id'] : null;
-      $this->captchaSession->init($captchaSessionId);
-      if (!isset($data['captcha'])) {
-        // Save form data to session
-        $this->captchaSession->setFormData(array_merge($data, ['form_id' => $form->getId()]));
-      } elseif ($this->captchaSession->getFormData()) {
-        // Restore form data from session
-        $data = array_merge($this->captchaSession->getFormData(), ['captcha' => $data['captcha']]);
-      }
-      // Otherwise use the post data
+    $captchaSessionId = isset($data['captcha_session_id']) ? $data['captcha_session_id'] : null;
+    $this->captchaSession->init($captchaSessionId);
+    if (!isset($data['captcha'])) {
+      // Save form data to session
+      $this->captchaSession->setFormData(array_merge($data, ['form_id' => $form->getId()]));
+    } elseif ($this->captchaSession->getFormData()) {
+      // Restore form data from session
+      $data = array_merge($this->captchaSession->getFormData(), ['captcha' => $data['captcha']]);
     }
     return $data;
   }
@@ -221,56 +223,17 @@ class SubscriberSubscribeController {
     if (empty($captchaSettings['type'])) {
       return [];
     }
-
-    $meta = [];
-    $isBuiltinCaptchaRequired = false;
-    if ($captchaSettings['type'] === Captcha::TYPE_BUILTIN) {
-      $isBuiltinCaptchaRequired = $this->subscriptionCaptcha->isRequired(isset($data['email']) ? $data['email'] : '');
-      if ($isBuiltinCaptchaRequired && empty($data['captcha'])) {
-        $meta['redirect_url'] = $this->subscriptionUrlFactory->getCaptchaUrl($this->captchaSession->getId());
-        $meta['error'] = __('Please fill in the CAPTCHA.', 'mailpoet');
-        return $meta;
+    try {
+      if ($captchaSettings['type'] === CaptchaConstants::TYPE_BUILTIN) {
+        $this->builtInCaptchaValidator->validate($data);
       }
+      if (CaptchaConstants::isReCaptcha($captchaSettings['type'])) {
+        $this->recaptchaValidator->validate($data);
+      }
+    } catch (ValidationError $error) {
+      return $error->getMeta();
     }
-
-    if (Captcha::isReCaptcha($captchaSettings['type']) && empty($data['recaptchaResponseToken'])) {
-      return ['error' => __('Please check the CAPTCHA.', 'mailpoet')];
-    }
-
-    if (Captcha::isReCaptcha($captchaSettings['type'])) {
-      if ($captchaSettings['type'] === Captcha::TYPE_RECAPTCHA_INVISIBLE) {
-        $secretToken = $captchaSettings['recaptcha_invisible_secret_token'];
-      } else {
-        $secretToken = $captchaSettings['recaptcha_secret_token'];
-      }
-
-      $response = empty($data['recaptchaResponseToken']) ? $data['recaptcha-no-js'] : $data['recaptchaResponseToken'];
-      $response = $this->wp->wpRemotePost('https://www.google.com/recaptcha/api/siteverify', [
-        'body' => [
-          'secret' => $secretToken,
-          'response' => $response,
-        ],
-      ]);
-      if (is_wp_error($response)) {
-        return ['error' => __('Error while validating the CAPTCHA.', 'mailpoet')];
-      }
-      $response = json_decode(wp_remote_retrieve_body($response));
-      if (empty($response->success)) {
-        return ['error' => __('Error while validating the CAPTCHA.', 'mailpoet')];
-      }
-
-    } elseif ($captchaSettings['type'] === Captcha::TYPE_BUILTIN && $isBuiltinCaptchaRequired) {
-      $captchaHash = $this->captchaSession->getCaptchaHash();
-      if (empty($captchaHash)) {
-        $meta['error'] = __('Please regenerate the CAPTCHA.', 'mailpoet');
-      } elseif (!hash_equals(strtolower($data['captcha']), strtolower($captchaHash))) {
-        $this->captchaSession->setCaptchaHash(null);
-        $meta['refresh_captcha'] = true;
-        $meta['error'] = __('The characters entered do not match with the previous CAPTCHA.', 'mailpoet');
-      }
-    }
-
-    return $meta;
+    return [];
   }
 
   private function getSegmentIds(FormEntity $form, array $segmentIds): array {

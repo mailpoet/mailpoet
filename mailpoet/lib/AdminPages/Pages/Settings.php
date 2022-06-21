@@ -11,7 +11,7 @@ use MailPoet\Services\Bridge;
 use MailPoet\Settings\Hosts;
 use MailPoet\Settings\Pages;
 use MailPoet\Settings\SettingsController;
-use MailPoet\Subscription\Captcha;
+use MailPoet\Subscription\Captcha\CaptchaRenderer;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoet\WP\Notice as WPNotice;
 
@@ -28,8 +28,8 @@ class Settings {
   /** @var ServicesChecker */
   private $servicesChecker;
 
-  /** @var Captcha */
-  private $captcha;
+  /** @var CaptchaRenderer */
+  private $captchaRenderer;
 
   /** @var SegmentsSimpleListRepository */
   private $segmentsListRepository;
@@ -45,7 +45,7 @@ class Settings {
     SettingsController $settings,
     WPFunctions $wp,
     ServicesChecker $servicesChecker,
-    Captcha $captcha,
+    CaptchaRenderer $captchaRenderer,
     SegmentsSimpleListRepository $segmentsListRepository,
     Bridge $bridge,
     AuthorizedSenderDomainController $senderDomainController
@@ -54,7 +54,7 @@ class Settings {
     $this->settings = $settings;
     $this->wp = $wp;
     $this->servicesChecker = $servicesChecker;
-    $this->captcha = $captcha;
+    $this->captchaRenderer = $captchaRenderer;
     $this->segmentsListRepository = $segmentsListRepository;
     $this->bridge = $bridge;
     $this->senderDomainController = $senderDomainController;
@@ -83,8 +83,8 @@ class Settings {
         'root' => ABSPATH,
         'plugin' => dirname(dirname(dirname(__DIR__))),
       ],
-      'built_in_captcha_supported' => $this->captcha->isSupported(),
       'current_site_title' => $this->wp->getBloginfo('name'),
+      'built_in_captcha_supported' => $this->captchaRenderer->isSupported(),
     ];
 
     $data['authorized_emails'] = [];

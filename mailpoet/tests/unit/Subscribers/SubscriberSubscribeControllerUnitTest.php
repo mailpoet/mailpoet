@@ -12,8 +12,11 @@ use MailPoet\Form\Util\FieldNameObfuscator;
 use MailPoet\Segments\SubscribersFinder;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Statistics\StatisticsFormsRepository;
-use MailPoet\Subscription\Captcha;
-use MailPoet\Subscription\CaptchaSession;
+use MailPoet\Subscription\Captcha\CaptchaConstants;
+use MailPoet\Subscription\Captcha\CaptchaSession;
+use MailPoet\Subscription\Captcha\Validator\BuiltInCaptchaValidator;
+use MailPoet\Subscription\Captcha\Validator\RecaptchaValidator;
+use MailPoet\Subscription\Captcha\Validator\ValidationError;
 use MailPoet\Subscription\SubscriptionUrlFactory;
 use MailPoet\Subscription\Throttling;
 use MailPoet\Subscription\Throttling as SubscriptionThrottling;
@@ -23,7 +26,6 @@ use MailPoet\WP\Functions as WPFunctions;
 
 class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
   public function testErrorGetsThrownWhenEmailFieldIsNotObfuscated() {
-    $subscriptionCaptcha = Stub::makeEmpty(Captcha::class);
     $captchaSession = Stub::makeEmpty(CaptchaSession::class);
     $subscriberActions = Stub::makeEmpty(
       SubscriberActions::class,
@@ -33,7 +35,6 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       $this
     );
     $subscribersFinder = Stub::makeEmpty(SubscribersFinder::class);
-    $subscriptionUrlFactory = Stub::makeEmpty(SubscriptionUrlFactory::class);
     $throttling = Stub::makeEmpty(SubscriptionThrottling::class);
     $fieldNameObfuscator = Stub::makeEmpty(FieldNameObfuscator::class);
     $requiredCustomFieldValidator = Stub::makeEmpty(RequiredCustomFieldValidator::class);
@@ -41,7 +42,8 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
     $form = Stub::makeEmpty(FormEntity::class);
     $tagRepository = Stub::makeEmpty(TagRepository::class);
     $subscriberTagRepository = Stub::makeEmpty(SubscriberTagRepository::class);
-
+    $builtInCaptchaValidator = Stub::makeEmpty(BuiltInCaptchaValidator::class);
+    $recaptchaValidator = Stub::makeEmpty(RecaptchaValidator::class);
 
     $formsRepository = Stub::makeEmpty(
       FormsRepository::class,
@@ -67,11 +69,9 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       $this
     );
     $testee = new SubscriberSubscribeController(
-      $subscriptionCaptcha,
       $captchaSession,
       $subscriberActions,
       $subscribersFinder,
-      $subscriptionUrlFactory,
       $throttling,
       $fieldNameObfuscator,
       $requiredCustomFieldValidator,
@@ -80,7 +80,9 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       $statisticsFormsRepository,
       $tagRepository,
       $subscriberTagRepository,
-      $wp
+      $wp,
+      $builtInCaptchaValidator,
+      $recaptchaValidator
     );
 
     $this->expectException(UnexpectedValueException::class);
@@ -93,7 +95,6 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
   }
 
   public function testNoSubscriptionWhenThrottle() {
-    $subscriptionCaptcha = Stub::makeEmpty(Captcha::class);
     $captchaSession = Stub::makeEmpty(CaptchaSession::class);
     $subscriberActions = Stub::makeEmpty(
       SubscriberActions::class,
@@ -103,7 +104,6 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       $this
     );
     $subscribersFinder = Stub::makeEmpty(SubscribersFinder::class);
-    $subscriptionUrlFactory = Stub::makeEmpty(SubscriptionUrlFactory::class);
     $throttling = Stub::makeEmpty(
       SubscriptionThrottling::class,
       [
@@ -152,13 +152,13 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
     );
     $tagRepository = Stub::makeEmpty(TagRepository::class);
     $subscriberTagRepository = Stub::makeEmpty(SubscriberTagRepository::class);
+    $builtInCaptchaValidator = Stub::makeEmpty(BuiltInCaptchaValidator::class);
+    $recaptchaValidator = Stub::makeEmpty(RecaptchaValidator::class);
 
     $testee = new SubscriberSubscribeController(
-      $subscriptionCaptcha,
       $captchaSession,
       $subscriberActions,
       $subscribersFinder,
-      $subscriptionUrlFactory,
       $throttling,
       $fieldNameObfuscator,
       $requiredCustomFieldValidator,
@@ -167,7 +167,9 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       $statisticsFormsRepository,
       $tagRepository,
       $subscriberTagRepository,
-      $wp
+      $wp,
+      $builtInCaptchaValidator,
+      $recaptchaValidator
     );
 
     $result = $testee->subscribe(array_merge(['form_id' => 1], $submitData));
@@ -178,7 +180,6 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
   }
 
   public function testNoSubscriptionWhenActionHookBeforeSubscriptionThrowsError() {
-    $subscriptionCaptcha = Stub::makeEmpty(Captcha::class);
     $captchaSession = Stub::makeEmpty(CaptchaSession::class);
     $subscriberActions = Stub::makeEmpty(
       SubscriberActions::class,
@@ -188,7 +189,6 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       $this
     );
     $subscribersFinder = Stub::makeEmpty(SubscribersFinder::class);
-    $subscriptionUrlFactory = Stub::makeEmpty(SubscriptionUrlFactory::class);
     $throttling = Stub::makeEmpty(SubscriptionThrottling::class);
     $fieldNameObfuscator = Stub::makeEmpty(FieldNameObfuscator::class,
       [
@@ -235,13 +235,13 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
     );
     $tagRepository = Stub::makeEmpty(TagRepository::class);
     $subscriberTagRepository = Stub::makeEmpty(SubscriberTagRepository::class);
+    $builtInCaptchaValidator = Stub::makeEmpty(BuiltInCaptchaValidator::class);
+    $recaptchaValidator = Stub::makeEmpty(RecaptchaValidator::class);
 
     $testee = new SubscriberSubscribeController(
-      $subscriptionCaptcha,
       $captchaSession,
       $subscriberActions,
       $subscribersFinder,
-      $subscriptionUrlFactory,
       $throttling,
       $fieldNameObfuscator,
       $requiredCustomFieldValidator,
@@ -250,19 +250,18 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       $statisticsFormsRepository,
       $tagRepository,
       $subscriberTagRepository,
-      $wp
+      $wp,
+      $builtInCaptchaValidator,
+      $recaptchaValidator
     );
 
     $this->expectException(UnexpectedValueException::class);
     $testee->subscribe(array_merge(['form_id' => 1], $submitData));
   }
 
-  public function testBuiltinCaptchaNotFilledOut() {
+  public function testBuiltInValidatorFails() {
 
     $captchaSessionId = 'captcha_session_id';
-    $subscriptionCaptcha = Stub::makeEmpty(Captcha::class, [
-      'isRequired' => true,
-    ]);
     $captchaSession = Stub::makeEmpty(CaptchaSession::class,
       [
         'init' => function($receivedSessionId) use ($captchaSessionId) {
@@ -278,12 +277,6 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
     );
     $subscribersFinder = Stub::makeEmpty(SubscribersFinder::class);
     $expectedRedirectLink = 'redirect';
-    $subscriptionUrlFactory = Stub::makeEmpty(
-      SubscriptionUrlFactory::class,
-      [
-        'getCaptchaUrl' => $expectedRedirectLink,
-      ]
-    );
     $throttling = Stub::makeEmpty(
       SubscriptionThrottling::class,
       [
@@ -298,7 +291,7 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       ]);
     $requiredCustomFieldValidator = Stub::makeEmpty(RequiredCustomFieldValidator::class);
     $captchaSettings = [
-      'type' => Captcha::TYPE_BUILTIN,
+      'type' => CaptchaConstants::TYPE_BUILTIN,
     ];
     $settings = Stub::makeEmpty(SettingsController::class,
       [
@@ -344,13 +337,27 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
     );
     $tagRepository = Stub::makeEmpty(TagRepository::class);
     $subscriberTagRepository = Stub::makeEmpty(SubscriberTagRepository::class);
+    $builtInCaptchaValidator = Stub::make(
+      BuiltInCaptchaValidator::class,
+      [
+        'validate' => Expected::once(function() use ($expectedRedirectLink) {
+          throw new ValidationError('Please fill in the CAPTCHA.', ['redirect_url' => $expectedRedirectLink]);
+        }),
+      ],
+      $this
+    );
+    $recaptchaValidator = Stub::make(
+      RecaptchaValidator::class,
+      [
+        'validate' => Expected::never()
+      ],
+      $this
+    );
 
     $testee = new SubscriberSubscribeController(
-      $subscriptionCaptcha,
       $captchaSession,
       $subscriberActions,
       $subscribersFinder,
-      $subscriptionUrlFactory,
       $throttling,
       $fieldNameObfuscator,
       $requiredCustomFieldValidator,
@@ -359,26 +366,25 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       $statisticsFormsRepository,
       $tagRepository,
       $subscriberTagRepository,
-      $wp
+      $wp,
+      $builtInCaptchaValidator,
+      $recaptchaValidator
     );
 
     $result = $testee->subscribe(array_merge(['form_id' => 1], $submitData));
     expect($result)->equals([
-      'redirect_url' => $expectedRedirectLink,
       'error' => 'Please fill in the CAPTCHA.',
+      'redirect_url' => $expectedRedirectLink,
     ]);
   }
 
-  public function testBuiltinCaptchaNotValid() {
+  public function testRecaptchaValidatorFails() {
 
     $captchaSessionId = 'captcha_session_id';
 
-    $subscriptionCaptcha = Stub::makeEmpty(Captcha::class, [
-      'isRequired' => true,
-    ]);
     $captchaSession = Stub::makeEmpty(CaptchaSession::class,
       [
-        'getCaptchaHash' => 'a_string_that_does_not_match',
+        'getCaptchaHash' => ['phrase' => 'a_string_that_does_not_match'],
         'init' => function($receivedSessionId) use ($captchaSessionId) {
           expect($receivedSessionId)->equals($captchaSessionId);
         },
@@ -391,13 +397,6 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       $this
     );
     $subscribersFinder = Stub::makeEmpty(SubscribersFinder::class);
-    $expectedRedirectLink = 'redirect';
-    $subscriptionUrlFactory = Stub::makeEmpty(
-      SubscriptionUrlFactory::class,
-      [
-        'getCaptchaUrl' => $expectedRedirectLink,
-      ]
-    );
     $throttling = Stub::makeEmpty(
       SubscriptionThrottling::class,
       [
@@ -413,7 +412,7 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
     $requiredCustomFieldValidator = Stub::makeEmpty(RequiredCustomFieldValidator::class);
 
     $captchaSettings = [
-      'type' => Captcha::TYPE_BUILTIN,
+      'type' => CaptchaConstants::TYPE_RECAPTCHA,
     ];
     $settings = Stub::makeEmpty(SettingsController::class,
       [
@@ -463,13 +462,31 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
     );
     $tagRepository = Stub::makeEmpty(TagRepository::class);
     $subscriberTagRepository = Stub::makeEmpty(SubscriberTagRepository::class);
-
+    $builtInCaptchaValidator = Stub::make(
+      BuiltInCaptchaValidator::class,
+      [
+        'validate' => Expected::never()
+      ],
+      $this
+    );
+    $recaptchaValidator = Stub::make(
+      RecaptchaValidator::class,
+      [
+        'validate' => function() {
+          throw new ValidationError(
+            "The characters entered do not match with the previous CAPTCHA.",
+            [
+              'refresh_captcha' => true,
+            ]
+          );
+        }
+      ],
+      $this
+    );
     $testee = new SubscriberSubscribeController(
-      $subscriptionCaptcha,
       $captchaSession,
       $subscriberActions,
       $subscribersFinder,
-      $subscriptionUrlFactory,
       $throttling,
       $fieldNameObfuscator,
       $requiredCustomFieldValidator,
@@ -478,7 +495,9 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       $statisticsFormsRepository,
       $tagRepository,
       $subscriberTagRepository,
-      $wp
+      $wp,
+      $builtInCaptchaValidator,
+      $recaptchaValidator
     );
 
     $result = $testee->subscribe(array_merge(['form_id' => 1], $submitData));
@@ -521,11 +540,9 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       ->willReturn([15]);
 
     $testee = new SubscriberSubscribeController(
-      Stub::makeEmpty(Captcha::class),
       Stub::makeEmpty(CaptchaSession::class),
       Stub::makeEmpty(SubscriberActions::class),
       $subscribersFinder,
-      Stub::makeEmpty(SubscriptionUrlFactory::class),
       Stub::makeEmpty(Throttling::class),
       Stub::makeEmpty(FieldNameObfuscator::class),
       Stub::makeEmpty(RequiredCustomFieldValidator::class),
@@ -534,7 +551,9 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       Stub::makeEmpty(StatisticsFormsRepository::class),
       Stub::makeEmpty(TagRepository::class),
       Stub::makeEmpty(SubscriberTagRepository::class),
-      Stub::makeEmpty(WPFunctions::class)
+      Stub::makeEmpty(WPFunctions::class),
+      Stub::makeEmpty(BuiltInCaptchaValidator::class),
+      Stub::makeEmpty(RecaptchaValidator::class)
     );
 
     $result = $testee->isSubscribedToAnyFormSegments($form, $subscriber);
@@ -574,11 +593,9 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       ->willReturn([]);
 
     $testee = new SubscriberSubscribeController(
-      Stub::makeEmpty(Captcha::class),
       Stub::makeEmpty(CaptchaSession::class),
       Stub::makeEmpty(SubscriberActions::class),
       $subscribersFinder,
-      Stub::makeEmpty(SubscriptionUrlFactory::class),
       Stub::makeEmpty(SubscriptionThrottling::class),
       Stub::makeEmpty(FieldNameObfuscator::class),
       Stub::makeEmpty(RequiredCustomFieldValidator::class),
@@ -587,7 +604,9 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       Stub::makeEmpty(StatisticsFormsRepository::class),
       Stub::makeEmpty(TagRepository::class),
       Stub::makeEmpty(SubscriberTagRepository::class),
-      Stub::makeEmpty(WPFunctions::class)
+      Stub::makeEmpty(WPFunctions::class),
+      Stub::makeEmpty(BuiltInCaptchaValidator::class),
+      Stub::makeEmpty(RecaptchaValidator::class)
     );
 
     $result = $testee->isSubscribedToAnyFormSegments($form, $subscriber);
@@ -599,9 +618,6 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
     $captchaSessionId = 'captcha_session_id';
     $captcha = 'captcha';
 
-    $subscriptionCaptcha = Stub::makeEmpty(Captcha::class, [
-      'isRequired' => true,
-    ]);
     $captchaSession = Stub::makeEmpty(CaptchaSession::class,
       [
         'getCaptchaHash' => $captcha,
@@ -651,13 +667,6 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       $this
     );
     $subscribersFinder = Stub::makeEmpty(SubscribersFinder::class);
-    $subscriptionUrlFactory = Stub::makeEmpty(SubscriptionUrlFactory::class,
-      [
-        'subscribe' => function($receivedSubscriber, $receivedForm) use ($subscriber, $form) {
-          expect($receivedSubscriber)->equals($subscriber);
-          expect($receivedForm)->equals($form);
-        },
-      ]);
     $throttling = Stub::makeEmpty(SubscriptionThrottling::class);
     $fieldNameObfuscator = Stub::makeEmpty(FieldNameObfuscator::class,
     [
@@ -671,7 +680,7 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
         'get' => function($value) {
           if ($value === 'captcha') {
             return [
-              'type' => Captcha::TYPE_BUILTIN,
+              'type' => CaptchaConstants::TYPE_BUILTIN,
             ];
           }
         },
@@ -699,13 +708,22 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
     );
     $tagRepository = Stub::makeEmpty(TagRepository::class);
     $subscriberTagRepository = Stub::makeEmpty(SubscriberTagRepository::class);
+    $builtInCaptchaValidator = Stub::make(
+      BuiltInCaptchaValidator::class,
+      [
+        'validate' => function($data) use ($captcha) {
+          expect($data['captcha'])->equals($captcha);
+          return true;
+        }
+      ],
+      $this
+    );
+    $recaptchaValidator = Stub::make(RecaptchaValidator::class);
 
     $testee = new SubscriberSubscribeController(
-      $subscriptionCaptcha,
       $captchaSession,
       $subscriberActions,
       $subscribersFinder,
-      $subscriptionUrlFactory,
       $throttling,
       $fieldNameObfuscator,
       $requiredCustomFieldValidator,
@@ -714,7 +732,9 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       $statisticsFormsRepository,
       $tagRepository,
       $subscriberTagRepository,
-      $wp
+      $wp,
+      $builtInCaptchaValidator,
+      $recaptchaValidator
     );
 
     $result = $testee->subscribe(array_merge(['form_id' => 1], $submitData));

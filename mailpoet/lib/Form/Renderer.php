@@ -7,7 +7,7 @@ use MailPoet\Form\Templates\FormTemplate;
 use MailPoet\Form\Util\CustomFonts;
 use MailPoet\Form\Util\Styles;
 use MailPoet\Settings\SettingsController;
-use MailPoet\Subscription\Captcha;
+use MailPoet\Subscription\Captcha\CaptchaConstants;
 
 class Renderer {
   /** @var Styles */
@@ -69,7 +69,7 @@ class Renderer {
       if (
         $captchaEnabled
         && $block['type'] === FormEntity::SUBMIT_BLOCK_TYPE
-        && Captcha::isRecaptcha($this->settings->get('captcha.type'))
+        && CaptchaConstants::isRecaptcha($this->settings->get('captcha.type'))
       ) {
         $html .= $this->renderReCaptcha();
       }
@@ -88,7 +88,7 @@ class Renderer {
   }
 
   private function renderReCaptcha(): string {
-    if ($this->settings->get('captcha.type') === Captcha::TYPE_RECAPTCHA) {
+    if ($this->settings->get('captcha.type') === CaptchaConstants::TYPE_RECAPTCHA) {
       $siteKey = $this->settings->get('captcha.recaptcha_site_token');
       $size = '';
     } else {

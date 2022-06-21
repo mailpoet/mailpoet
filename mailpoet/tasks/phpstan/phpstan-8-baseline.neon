@@ -856,16 +856,6 @@ parameters:
 			path: ../../lib/Subscribers/SubscribersRepository.php
 
 		-
-			message: "#^Cannot cast mixed to int\\.$#"
-			count: 1
-			path: ../../lib/Subscription/Captcha.php
-
-		-
-			message: "#^Parameter \\#1 \\$array of function array_intersect expects array, mixed given\\.$#"
-			count: 1
-			path: ../../lib/Subscription/Captcha.php
-
-		-
 			message: "#^Parameter \\#1 \\$blocks of method MailPoet\\\\Form\\\\Renderer\\:\\:renderBlocks\\(\\) expects array, mixed given\\.$#"
 			count: 1
 			path: ../../lib/Subscription/ManageSubscriptionFormRenderer.php

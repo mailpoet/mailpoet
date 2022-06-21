@@ -132,7 +132,8 @@ class ConfirmationEmailMailer {
       'meta' => $this->mailerMetaInfo->getConfirmationMetaInfo($subscriber),
     ];
     try {
-      $result = $this->mailerFactory->getDefaultMailer()->send($email, $subscriber, $extraParams);
+      $defaultMailer = $this->mailerFactory->getDefaultMailer();
+      $result = $defaultMailer->send($email, $subscriber, $extraParams);
     } catch (\Exception $e) {
       throw new \Exception(__('Something went wrong with your subscription. Please contact the website owner.', 'mailpoet'));
     }

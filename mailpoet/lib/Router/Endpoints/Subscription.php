@@ -39,8 +39,8 @@ class Subscription {
   /** @var WPFunctions */
   private $wp;
 
-  /** @var UserSubscription\Captcha */
-  private $captcha;
+  /** @var UserSubscription\Captcha\CaptchaRenderer */
+  private $captchaRenderer;
 
   /*** @var Request */
   private $request;
@@ -48,12 +48,12 @@ class Subscription {
   public function __construct(
     UserSubscription\Pages $subscriptionPages,
     WPFunctions $wp,
-    UserSubscription\Captcha $captcha,
+    UserSubscription\Captcha\CaptchaRenderer $captchaRenderer,
     Request $request
   ) {
     $this->subscriptionPages = $subscriptionPages;
     $this->wp = $wp;
-    $this->captcha = $captcha;
+    $this->captchaRenderer = $captchaRenderer;
     $this->request = $request;
   }
 
@@ -65,12 +65,12 @@ class Subscription {
     $width = !empty($data['width']) ? (int)$data['width'] : null;
     $height = !empty($data['height']) ? (int)$data['height'] : null;
     $sessionId = !empty($data['captcha_session_id']) ? $data['captcha_session_id'] : null;
-    return $this->captcha->renderImage($width, $height, $sessionId);
+    return $this->captchaRenderer->renderImage($width, $height, $sessionId);
   }
 
   public function captchaAudio($data) {
     $sessionId = !empty($data['captcha_session_id']) ? $data['captcha_session_id'] : null;
-    return $this->captcha->renderAudio($sessionId);
+    return $this->captchaRenderer->renderAudio($sessionId);
   }
 
   public function confirm($data) {

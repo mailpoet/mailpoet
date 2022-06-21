@@ -5,7 +5,8 @@ namespace MailPoet\Test\Router\Endpoints;
 use Codeception\Stub;
 use Codeception\Stub\Expected;
 use MailPoet\Router\Endpoints\Subscription;
-use MailPoet\Subscription\Captcha;
+use MailPoet\Subscription\Captcha\CaptchaConstants;
+use MailPoet\Subscription\Captcha\CaptchaRenderer;
 use MailPoet\Subscription\Pages;
 use MailPoet\Util\Request;
 use MailPoet\WP\Functions as WPFunctions;
@@ -16,8 +17,8 @@ class SubscriptionTest extends \MailPoetTest {
   /** @var WPFunctions */
   private $wp;
 
-  /** @var Captcha */
-  private $captcha;
+  /** @var CaptchaRenderer */
+  private $captchaRenderer;
 
   /*** @var Request */
   private $request;
@@ -25,8 +26,8 @@ class SubscriptionTest extends \MailPoetTest {
   public function _before() {
     $this->data = [];
     $this->wp = WPFunctions::get();
-    $this->captcha = $this->diContainer->get(Captcha::class);
     $this->request = $this->diContainer->get(Request::class);
+    $this->captchaRenderer = $this->diContainer->get(CaptchaRenderer::class);
   }
 
   public function testItDisplaysConfirmPage() {
@@ -34,7 +35,7 @@ class SubscriptionTest extends \MailPoetTest {
       'wp' => $this->wp,
       'confirm' => Expected::exactly(1),
     ], $this);
-    $subscription = new Subscription($pages, $this->wp, $this->captcha, $this->request);
+    $subscription = new Subscription($pages, $this->wp, $this->captchaRenderer, $this->request);
     $subscription->confirm($this->data);
   }
 
@@ -44,7 +45,7 @@ class SubscriptionTest extends \MailPoetTest {
       'getManageLink' => Expected::exactly(1),
       'getManageContent' => Expected::exactly(1),
     ], $this);
-    $subscription = new Subscription($pages, $this->wp, $this->captcha, $this->request);
+    $subscription = new Subscription($pages, $this->wp, $this->captchaRenderer, $this->request);
     $subscription->manage($this->data);
     do_shortcode('[mailpoet_manage]');
     do_shortcode('[mailpoet_manage_subscription]');
@@ -55,7 +56,7 @@ class SubscriptionTest extends \MailPoetTest {
       'wp' => new WPFunctions,
       'unsubscribe' => Expected::exactly(1),
     ], $this);
-    $subscription = new Subscription($pages, $this->wp, $this->captcha, $this->request);
+    $subscription = new Subscription($pages, $this->wp, $this->captchaRenderer, $this->request);
     $subscription->unsubscribe($this->data);
   }
 }

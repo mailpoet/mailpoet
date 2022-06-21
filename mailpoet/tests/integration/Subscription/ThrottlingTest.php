@@ -18,6 +18,7 @@ class ThrottlingTest extends \MailPoetTest {
     parent::_before();
     $this->throttling = $this->diContainer->get(Throttling::class);
     $this->subscriberIPsRepository = $this->diContainer->get(SubscriberIPsRepository::class);
+    $this->subscriberIPsRepository->deleteCreatedAtBeforeTimeInSeconds(0);
   }
 
   public function testItProgressivelyThrottlesSubscriptions() {
