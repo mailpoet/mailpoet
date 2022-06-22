@@ -201,6 +201,26 @@ class NewsletterSaveControllerTest extends \MailPoetTest {
     expect($segment->getName())->equals('Segment 1');
   }
 
+
+  public function testItDoesNotSaveSegmentsForAutomationEmails() {
+    $segment = new SegmentEntity('Segment 1', SegmentEntity::TYPE_DEFAULT, 'Segment 1 description');
+    $this->entityManager->persist($segment);
+    $this->entityManager->flush();
+    $fakeSegmentId = 1;
+
+    $newsletter = $this->createNewsletter(NewsletterEntity::TYPE_AUTOMATION);
+    $newsletterData = [
+      'id' => $newsletter->getId(),
+      'segments' => [
+        ['id' => $segment->getId()],
+        $fakeSegmentId,
+      ],
+    ];
+
+    $newsletter = $this->saveController->save($newsletterData);
+    expect(count($newsletter->getNewsletterSegments()))->equals(0);
+  }
+
   public function testItDeletesSendingQueueAndSetsNewsletterStatusToDraftWhenItIsUnscheduled() {
     $newsletter = $this->createNewsletter(NewsletterEntity::TYPE_STANDARD, NewsletterEntity::STATUS_SCHEDULED);
 
