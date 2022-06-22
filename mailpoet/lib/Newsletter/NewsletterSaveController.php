@@ -122,6 +122,7 @@ class NewsletterSaveController {
     }
 
     $newsletter = isset($data['id']) ? $this->getNewsletter($data) : $this->createNewsletter($data);
+    $data = $this->sanitizeAutomationEmailData($data, $newsletter);
     $oldSenderAddress = $newsletter->getSenderAddress();
 
     $this->updateNewsletter($newsletter, $data);
@@ -151,6 +152,14 @@ class NewsletterSaveController {
     $this->updateQueue($newsletter, $newsletterModel, $data['options'] ?? []);
     $this->authorizedEmailsController->onNewsletterSenderAddressUpdate($newsletter, $oldSenderAddress);
     return $newsletter;
+  }
+
+  private function sanitizeAutomationEmailData(array $data, NewsletterEntity $newsletter): array {
+    if ($newsletter->getType() !== NewsletterEntity::TYPE_AUTOMATION) {
+      return $data;
+    }
+    $data['segments'] = [];
+    return $data;
   }
 
   public function duplicate(NewsletterEntity $newsletter): NewsletterEntity {

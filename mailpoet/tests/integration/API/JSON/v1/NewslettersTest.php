@@ -406,6 +406,18 @@ class NewslettersTest extends \MailPoetTest {
     expect($response->errors[0]['message'])->equals('Please specify a type.');
   }
 
+  public function testItCanCreateAnAutomationNewsletter() {
+    $data = [
+      'subject' => 'My Automation newsletter',
+      'type' => NewsletterEntity::TYPE_AUTOMATION,
+    ];
+    $response = $this->endpoint->create($data);
+    expect($response->status)->equals(APIResponse::STATUS_OK);
+    $newsletter = $this->newsletterRepository->findOneBy(['subject' => 'My Automation newsletter']);
+    assert($newsletter instanceof NewsletterEntity);
+    expect($response->data)->equals($this->newslettersResponseBuilder->build($newsletter));
+  }
+
   public function testItHasDefaultSenderAfterCreate() {
     $data = [
       'subject' => 'My First Newsletter',

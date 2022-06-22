@@ -43,6 +43,10 @@ class SendingQueueTest extends \MailPoetTest {
     ]);
   }
 
+  public function testItDoesNotScheduleAutomationEmailsWithTheSendingQueue() {
+
+  }
+
   public function testItCreatesNewScheduledSendingQueueTask() {
     $newsletter = $this->newsletter;
     $newsletter->setStatus(NewsletterEntity::STATUS_SCHEDULED);
