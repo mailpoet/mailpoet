@@ -22,11 +22,11 @@ class MailerTest extends \MailPoetTest {
     $this->mailerFactory = $this->diContainer->get(MailerFactory::class);
     $this->sender = [
       'name' => 'Sender',
-      'address' => 'staff@mailinator.com',
+      'address' => 'staff@mailpoet.com',
     ];
     $this->replyTo = [
       'name' => 'Reply To',
-      'address' => 'staff@mailinator.com',
+      'address' => 'staff@mailpoet.com',
     ];
     $this->returnPath = 'bounce@test.com';
     $this->mailer = [

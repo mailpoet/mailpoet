@@ -176,12 +176,12 @@ class MailerFactoryTest extends \MailPoetTest {
   public function testItCanConvertNonASCIIEmailAddressString() {
     $this->settings->set('reply_to', [
       'name' => 'Reply-To Außergewöhnlichen тест системы',
-      'address' => 'staff@mailinator.com',
+      'address' => 'staff@mailpoet.com',
     ]);
 
     $this->settings->set('sender', [
       'name' => 'Sender Außergewöhnlichen тест системы',
-      'address' => 'staff@mailinator.com',
+      'address' => 'staff@mailpoet.com',
     ]);
     $mailer = $this->factory->getDefaultMailer();
     $mailerMethod = $mailer->mailerMethod;
