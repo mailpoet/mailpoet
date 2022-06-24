@@ -3,6 +3,7 @@
 namespace MailPoet\Automation\Engine;
 
 use MailPoet\Automation\Engine\Workflows\Action;
+use MailPoet\Automation\Engine\Workflows\SubjectFactory;
 use MailPoet\Automation\Engine\Workflows\Trigger;
 
 class Registry {
@@ -11,6 +12,9 @@ class Registry {
 
   /** @var array<string, Action> */
   private $actions = [];
+
+  /** @var array<SubjectFactory> */
+  private $subjectFactories = [];
 
   public function addTrigger(Trigger $trigger): void {
     $key = $trigger->getKey();
@@ -44,5 +48,14 @@ class Registry {
   /** @return array<string, Action> */
   public function getActions(): array {
     return $this->actions;
+  }
+
+  public function addSubjectFactory(SubjectFactory $factory): void {
+      $this->subjectFactories[] = $factory;
+  }
+
+  /** @return SubjectFactory[] */
+  public function getSubjectFactories(): array {
+    return $this->subjectFactories;
   }
 }

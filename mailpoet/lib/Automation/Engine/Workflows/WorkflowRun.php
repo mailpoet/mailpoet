@@ -97,7 +97,8 @@ class WorkflowRun {
   }
 
   public static function fromArray(array $data): self {
-    $workflowRun = new WorkflowRun((int)$data['workflow_id'], $data['trigger_key'], Json::decode($data['subjects']));
+
+    $workflowRun = new WorkflowRun((int)$data['workflow_id'], $data['trigger_key'], $data['subjects']);
     $workflowRun->id = (int)$data['id'];
     $workflowRun->status = $data['status'];
     $workflowRun->createdAt = $data['created_at'];
