@@ -33,7 +33,7 @@ export function AutomationListing({
       totalRows={workflows.length}
       hasSearch
       actions={[
-        <ul className="subsubsub" style={{ width: '400px' }}>
+        <ul key="types" className="subsubsub" style={{ width: '400px' }}>
           <li>
             <a href="/">All</a> |
           </li>
