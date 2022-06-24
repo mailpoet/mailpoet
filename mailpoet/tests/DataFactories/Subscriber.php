@@ -6,6 +6,8 @@ use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
+use MailPoet\Entities\SubscriberTagEntity;
+use MailPoet\Entities\TagEntity;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 use DateTimeInterface;
 
@@ -17,12 +19,16 @@ class Subscriber {
   /** @var SegmentEntity[] */
   private $segments;
 
+  /** @var TagEntity[] */
+  private $tags;
+
   public function __construct() {
     $this->data = [
       'email' => bin2hex(random_bytes(7)) . '@example.com', // phpcs:ignore
       'status' => SubscriberEntity::STATUS_SUBSCRIBED,
     ];
     $this->segments = [];
+    $this->tags = [];
   }
 
   /**
@@ -114,6 +120,18 @@ class Subscriber {
   }
 
   /**
+   * @param TagEntity[] $tags
+   * @return $this
+   */
+  public function withTags(array $tags) {
+    $this->tags = [];
+    foreach ($tags as $tag) {
+      $this->tags[$tag->getId()] = $tag;
+    }
+    return $this;
+  }
+
+  /**
    * @param DateTimeInterface $createdAt
    * @return $this
    */
@@ -145,6 +163,12 @@ class Subscriber {
       $subscriberSegment = new SubscriberSegmentEntity($segment, $subscriber, 'subscribed');
       $subscriber->getSubscriberSegments()->add($subscriberSegment);
       $entityManager->persist($subscriberSegment);
+    }
+
+    foreach ($this->tags as $tag) {
+      $subscriberTag = new SubscriberTagEntity($tag, $subscriber);
+      $subscriber->getSubscriberTags()->add($subscriberTag);
+      $entityManager->persist($subscriberTag);
     }
 
     $entityManager->flush();

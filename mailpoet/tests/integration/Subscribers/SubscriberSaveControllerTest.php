@@ -44,6 +44,10 @@ class SubscriberSaveControllerTest extends \MailPoetTest {
       'confirmed_ip' => '192.168.1.32',
       'subscribed_ip' => '192.168.1.16',
       'wp_user_id' => 7,
+      'tags' => [
+        'First',
+        'Second',
+      ]
     ];
 
     $subscriber = $this->saveController->save($data);
@@ -62,6 +66,7 @@ class SubscriberSaveControllerTest extends \MailPoetTest {
     expect($subscriber->getLastSubscribedAt())->notNull();
     expect($subscriber->getSegments())->count(2);
     expect($subscriber->getSubscriberSegments())->count(2);
+    expect($subscriber->getSubscriberTags())->count(2);
   }
 
   public function testItCanUpdateASubscriber(): void {
@@ -75,6 +80,9 @@ class SubscriberSaveControllerTest extends \MailPoetTest {
       'segments' => [
         $segmentOne->getId(),
       ],
+      'tags' => [
+        'First',
+      ],
     ];
 
     $this->entityManager->clear();
@@ -86,6 +94,7 @@ class SubscriberSaveControllerTest extends \MailPoetTest {
     expect($subscriber->getLastSubscribedAt())->notNull();
     expect($subscriber->getSegments())->count(1);
     expect($subscriber->getSubscriberSegments())->count(1);
+    expect($subscriber->getSubscriberTags())->count(1);
   }
 
   public function testItThrowsExceptionWhenUpdatingSubscriberEmailIfNotUnique(): void {
