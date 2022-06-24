@@ -18,8 +18,8 @@ export function AutomationListing({
     { key: 'name', label: __('Name', 'mailpoet') },
     { key: 'subscribers', label: __('Subscribers', 'mailpoet') },
     { key: 'status', label: __('Status', 'mailpoet') },
-    { key: 'edit', label: '' },
-    { key: 'more', label: '' },
+    { key: 'edit', label: __('Edit', 'mailpoet') },
+    { key: 'more', label: __('More', 'mailpoet') },
   ];
 
   return (
