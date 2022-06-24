@@ -3,6 +3,7 @@ $color-placeholder-select2: #999; /* default Select2 placeholder color for singl
 $color-transparent: rgba(#fff, 0);
 $color-white: #fff;
 $color-black: #000;
+$color-wordpress-grey-dark: #787c82;
 $color-wordpress-text: #3c434a;
 $color-wordpress-border: #c3c4c7;
 $color-wordpress-heading: #1d2327;
@@ -37,6 +38,7 @@ $color-text: $color-wordpress-text;
 $color-text-hover: darken($color-text, 10%);
 $color-text-light: #757575;
 $color-text-light-hover: darken($color-text-light, 10%);
+$color-text-dark: #2c3338;
 
 // Form colors
 $color-input-background: #fdfdff;
