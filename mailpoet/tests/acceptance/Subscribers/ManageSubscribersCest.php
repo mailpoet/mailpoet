@@ -2,6 +2,7 @@
 
 namespace MailPoet\Test\Acceptance;
 
+use Codeception\Util\Locator;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Test\DataFactories\Segment;
 use MailPoet\Test\DataFactories\Subscriber;
@@ -192,15 +193,21 @@ class ManageSubscribersCest {
     $i->fillField(['name' => 'first_name'], 'EditedNew');
     $i->fillField(['name' => 'last_name'], 'EditedGlobalUser');
     $i->selectOption('[data-automation-id="subscriber-status"]', 'Unsubscribed');
+    // we cannot use data-automation attribute because this input is based on guttenberg component
+    $i->fillField('.mailpoet-form-field-tags input[type="text"]', 'My tag,'); // the comma separates the tag
     $i->click('Save');
     $i->waitForElementVisible('[data-automation-id="listing_item_1"]');
     $i->clickItemRowActionByItemName($newSubscriberEmail, 'Edit');
     $i->waitForText('Subscriber');
     $i->seeOptionIsSelected('[data-automation-id="subscriber-status"]', 'Unsubscribed');
     $i->see('Unsubscribed at', $unsubscribedMessage);
+    // tag is visible
+    $i->see('My tag');
     $i->selectOptionInSelect2('Cooking');
     $i->selectOptionInSelect2('Camping');
     $i->selectOption('[data-automation-id="subscriber-status"]', 'Subscribed');
+    // remove tag
+    $i->click(Locator::firstElement('.mailpoet-form-field-tags button[aria-label="Remove item"]'));
     $i->click('Save');
     $i->waitForElementVisible('[data-automation-id="listing_item_1"]');
     $i->clickItemRowActionByItemName($newSubscriberEmail, 'Edit');
@@ -208,6 +215,9 @@ class ManageSubscribersCest {
     $i->seeSelectedInSelect2('Cooking');
     $i->seeSelectedInSelect2('Camping');
     $i->seeOptionIsSelected('[data-automation-id="subscriber-status"]', 'Subscribed');
+    // check that tag is removed
+    $i->seeInField('.mailpoet-form-field-tags input[type="text"]', '');
+    $i->dontSee('My tag');
   }
 
   public function inactiveSubscribers(\AcceptanceTester $i) {
