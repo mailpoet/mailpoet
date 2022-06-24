@@ -2,7 +2,7 @@
   "private": true,
   "name": "MailPoet3",
   "engines": {
-    "npm": "^8.1"
+    "npm": "^8.3"
   },
   "browserslist": [
     "extends @wordpress/browserslist-config"
