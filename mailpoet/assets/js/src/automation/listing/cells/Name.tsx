@@ -1,6 +1,10 @@
 import { Edit } from './Edit';
-import { WorkflowProps } from '../workflow';
+import { Workflow } from '../workflow';
 
-export function Name({ workflow }: WorkflowProps): JSX.Element {
+type Props = {
+  workflow: Workflow;
+};
+
+export function Name({ workflow }: Props): JSX.Element {
   return <Edit workflow={workflow} label={workflow.name} />;
 }

@@ -3,15 +3,12 @@ import { __ } from '@wordpress/i18n';
 import { getRow } from './get-row';
 import { Workflow } from './workflow';
 
-interface AutomationListingProps {
+type Props = {
   workflows: Workflow[];
   loading: boolean;
-}
+};
 
-export function AutomationListing({
-  workflows,
-  loading,
-}: AutomationListingProps): JSX.Element {
+export function AutomationListing({ workflows, loading }: Props): JSX.Element {
   const rows = workflows.map((workflow) => getRow(workflow));
 
   const headers = [

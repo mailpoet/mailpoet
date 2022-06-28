@@ -1,8 +1,12 @@
 import { EllipsisMenu, MenuItem } from '@woocommerce/components';
 import { __ } from '@wordpress/i18n';
-import { WorkflowProps } from '../workflow';
+import { Workflow } from '../workflow';
 
-export function More({ workflow }: WorkflowProps): JSX.Element {
+type Props = {
+  workflow: Workflow;
+};
+
+export function More({ workflow }: Props): JSX.Element {
   return (
     <EllipsisMenu
       label={`Actions for ${workflow.name}`}

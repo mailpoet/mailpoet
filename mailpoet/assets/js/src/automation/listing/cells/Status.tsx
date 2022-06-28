@@ -1,8 +1,12 @@
 import { __ } from '@wordpress/i18n';
 import { Toggle } from '../../../common';
-import { WorkflowProps, WorkflowStatus } from '../workflow';
+import { Workflow, WorkflowStatus } from '../workflow';
 
-export function Status({ workflow }: WorkflowProps): JSX.Element {
+type Props = {
+  workflow: Workflow;
+};
+
+export function Status({ workflow }: Props): JSX.Element {
   const toggleStatus = () => {
     // @Todo
   };
