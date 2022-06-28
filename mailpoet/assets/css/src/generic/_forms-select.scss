@@ -134,8 +134,9 @@
   background: $color-tertiary-light !important;
 }
 
-.mailpoet-form-react-select-option > span {
-  vertical-align: middle;
+.mailpoet-form-react-select-option {
+  display: flex;
+  align-items: center;
 }
 
 .mailpoet-form-react-select-tag {
