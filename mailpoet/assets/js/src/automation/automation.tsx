@@ -10,16 +10,17 @@ import {
 import { useMutation, useQuery } from './api';
 
 function Workflows(): JSX.Element {
-  const { data, loading, error } = useQuery('workflows');
+  const { data, loading, error } = useQuery<{ data: Workflow[] }>('workflows');
 
   if (error) {
     return <div>Error: {error}</div>;
   }
 
-  const workflows: Workflow[] = data?.data ?? [];
   if (loading) {
     return <Loading />;
   }
+
+  const workflows = data?.data ?? [];
   return workflows.length === 0 ? (
     Onboarding()
   ) : (
