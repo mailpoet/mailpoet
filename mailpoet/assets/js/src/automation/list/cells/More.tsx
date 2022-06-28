@@ -1,7 +1,6 @@
-import PropTypes from 'prop-types';
 import { EllipsisMenu, MenuItem } from '@woocommerce/components';
 import { __ } from '@wordpress/i18n';
-import { WorkflowProps, WorkflowPropsShape } from '../workflow';
+import { WorkflowProps } from '../workflow';
 
 export function More({ workflow }: WorkflowProps): JSX.Element {
   return (
@@ -26,7 +25,3 @@ export function More({ workflow }: WorkflowProps): JSX.Element {
     />
   );
 }
-
-More.propTypes = {
-  workflow: PropTypes.shape(WorkflowPropsShape).isRequired,
-};

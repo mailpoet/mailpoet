@@ -1,8 +1,7 @@
 import { Search, TableCard } from '@woocommerce/components';
-import PropTypes from 'prop-types';
 import { __ } from '@wordpress/i18n';
 import { Row } from './row';
-import { Workflow, WorkflowPropsShape } from './workflow';
+import { Workflow } from './workflow';
 
 interface AutomationListingProps {
   workflows: Workflow[];
@@ -63,8 +62,3 @@ export function AutomationListing({
     />
   );
 }
-
-AutomationListing.propTypes = {
-  workflows: PropTypes.arrayOf(PropTypes.shape(WorkflowPropsShape)).isRequired,
-  loading: PropTypes.bool.isRequired,
-};
