@@ -5,7 +5,7 @@ interface EditProps extends WorkflowProps {
   label?: string;
 }
 
-export function Edit({ workflow, label = null }: EditProps): JSX.Element {
+export function Edit({ workflow, label }: EditProps): JSX.Element {
   return (
     <a href={`admin.php?page=mailpoet-automation-editor&id=${workflow.id}`}>
       {label ?? __('Edit', 'mailpoet')}
