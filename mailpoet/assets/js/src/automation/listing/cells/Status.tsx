@@ -1,5 +1,6 @@
+import { useState } from 'react';
 import { __ } from '@wordpress/i18n';
-import { Toggle } from '../../../common';
+import { ToggleControl } from '@wordpress/components';
 import { Workflow, WorkflowStatus } from '../workflow';
 
 type Props = {
@@ -7,13 +8,14 @@ type Props = {
 };
 
 export function Status({ workflow }: Props): JSX.Element {
-  const toggleStatus = () => {
-    // @Todo
-  };
+  const [isActive, setIsActive] = useState(false);
 
   return (
     <div>
-      <Toggle onCheck={toggleStatus} />
+      <ToggleControl
+        checked={isActive}
+        onChange={(active) => setIsActive(active)}
+      />
       {workflow.status === WorkflowStatus.ACTIVE
         ? __('Active', 'mailpoet')
         : __('Not active', 'mailpoet')}
