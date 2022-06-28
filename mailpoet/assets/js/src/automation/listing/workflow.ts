@@ -8,7 +8,3 @@ export type Workflow = {
   name: string;
   status: WorkflowStatus;
 };
-
-export interface WorkflowProps {
-  workflow: Workflow;
-}

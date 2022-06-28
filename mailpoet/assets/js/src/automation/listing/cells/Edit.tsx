@@ -1,11 +1,12 @@
 import { __ } from '@wordpress/i18n';
-import { WorkflowProps } from '../workflow';
+import { Workflow } from '../workflow';
 
-interface EditProps extends WorkflowProps {
+type Props = {
+  workflow: Workflow;
   label?: string;
-}
+};
 
-export function Edit({ workflow, label }: EditProps): JSX.Element {
+export function Edit({ workflow, label }: Props): JSX.Element {
   return (
     <a href={`admin.php?page=mailpoet-automation-editor&id=${workflow.id}`}>
       {label ?? __('Edit', 'mailpoet')}

@@ -1,5 +1,9 @@
-import { WorkflowProps } from '../workflow';
+import { Workflow } from '../workflow';
 
-export function Subscribers({ workflow }: WorkflowProps): JSX.Element {
+type Props = {
+  workflow: Workflow;
+};
+
+export function Subscribers({ workflow }: Props): JSX.Element {
   return <p>ToDo {workflow.id}</p>;
 }
