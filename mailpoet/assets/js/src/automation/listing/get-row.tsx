@@ -1,11 +1,7 @@
 import { Workflow } from './workflow';
-import { Subscribers } from './cells/Subscribers';
-import { Status } from './cells/Status';
-import { Name } from './cells/Name';
-import { Edit } from './cells/Edit';
-import { More } from './cells/More';
+import { Edit, More, Name, Status, Subscribers } from './cells';
 
-export function Row(workflow: Workflow): object[] {
+export function getRow(workflow: Workflow): object[] {
   return [
     {
       value: workflow.name,
