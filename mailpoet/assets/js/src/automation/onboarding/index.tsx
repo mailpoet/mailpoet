@@ -1,7 +1,7 @@
 import { __ } from '@wordpress/i18n';
 import { CreateWorkflowFromTemplateButton } from '../testing';
 
-export function Onboarding() {
+export function Onboarding(): JSX.Element {
   return (
     <div className="mailpoet-automation onboarding">
       <img src="" alt="" />
