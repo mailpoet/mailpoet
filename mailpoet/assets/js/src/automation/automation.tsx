@@ -22,7 +22,7 @@ function Workflows(): JSX.Element {
 
   const workflows = data?.data ?? [];
   return workflows.length === 0 ? (
-    Onboarding()
+    <Onboarding />
   ) : (
     <AutomationListing workflows={workflows} loading={loading} />
   );
