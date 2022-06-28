@@ -2,7 +2,6 @@ import ReactDOM from 'react-dom';
 import { Workflow } from './listing/workflow';
 import { AutomationListing } from './listing';
 import { Onboarding } from './onboarding';
-import { Loading } from '../common';
 import {
   CreateTestingWorkflowButton,
   CreateWorkflowFromTemplateButton,
@@ -17,7 +16,7 @@ function Workflows(): JSX.Element {
   }
 
   if (loading) {
-    return <Loading />;
+    return <div>Loading workflows...</div>;
   }
 
   const workflows = data?.data ?? [];
