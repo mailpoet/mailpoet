@@ -1,7 +1,7 @@
 import ReactDOM from 'react-dom';
-import { Workflow } from './list/workflow';
-import { AutomationListing } from './list/automation-listing';
-import { Onboarding } from './onboarding/onboarding';
+import { Workflow } from './listing/workflow';
+import { AutomationListing } from './listing';
+import { Onboarding } from './onboarding';
 import { Loading } from '../common';
 import {
   CreateTestingWorkflowButton,

@@ -1,17 +1,18 @@
 import { Search, TableCard } from '@woocommerce/components';
 import { __ } from '@wordpress/i18n';
-import { Row } from './row';
+import { getRow } from './get-row';
 import { Workflow } from './workflow';
 
 interface AutomationListingProps {
   workflows: Workflow[];
   loading: boolean;
 }
+
 export function AutomationListing({
   workflows,
   loading,
 }: AutomationListingProps): JSX.Element {
-  const rows = workflows.map((workflow) => Row(workflow));
+  const rows = workflows.map((workflow) => getRow(workflow));
 
   const headers = [
     { key: 'name', label: __('Name', 'mailpoet') },
