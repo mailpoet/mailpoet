@@ -1,7 +1,6 @@
-import PropTypes from 'prop-types';
 import { __ } from '@wordpress/i18n';
 import { Toggle } from '../../../common';
-import { WorkflowProps, WorkflowPropsShape, WorkflowStatus } from '../workflow';
+import { WorkflowProps, WorkflowStatus } from '../workflow';
 
 export function Status({ workflow }: WorkflowProps): JSX.Element {
   const toggleStatus = () => {
@@ -17,7 +16,3 @@ export function Status({ workflow }: WorkflowProps): JSX.Element {
     </div>
   );
 }
-
-Status.propTypes = {
-  workflow: PropTypes.shape(WorkflowPropsShape).isRequired,
-};
