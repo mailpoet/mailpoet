@@ -49,6 +49,7 @@ export function CreateTestingWorkflowButton(): JSX.Element {
   return (
     <div>
       <button
+        className="button"
         type="button"
         onClick={() =>
           createSchema({
@@ -57,7 +58,7 @@ export function CreateTestingWorkflowButton(): JSX.Element {
         }
         disabled={loading}
       >
-        Create testing workflow
+        Create testing workflow (premium required)
       </button>
       {error && (
         <div>{error?.data?.message ?? 'An unknown error occurred'}</div>
@@ -77,6 +78,7 @@ export function CreateWorkflowFromTemplateButton(): JSX.Element {
   return (
     <div>
       <button
+        className="button button-primary"
         type="button"
         onClick={() =>
           createWorkflowFromTemplate({
