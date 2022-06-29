@@ -8,7 +8,7 @@ type Props = {
 };
 
 export function Status({ workflow }: Props): JSX.Element {
-  const [isActive, setIsActive] = useState(false);
+  const [isActive, setIsActive] = useState(workflow.status === 'active');
 
   return (
     <div className="mailpoet-automation-listing-cell-status">
