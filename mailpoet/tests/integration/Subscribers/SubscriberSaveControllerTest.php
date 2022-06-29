@@ -6,6 +6,7 @@ use MailPoet\ConflictException;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
+use MailPoet\Entities\SubscriberTagEntity;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoetVendor\Carbon\Carbon;
 
@@ -95,6 +96,23 @@ class SubscriberSaveControllerTest extends \MailPoetTest {
     expect($subscriber->getSegments())->count(1);
     expect($subscriber->getSubscriberSegments())->count(1);
     expect($subscriber->getSubscriberTags())->count(1);
+    // Check exact tag name
+    $tagNames = array_values(array_map(function (SubscriberTagEntity $subscriberTag): string {
+      return ($tag = $subscriberTag->getTag()) ? $tag->getName() : '';
+    }, $subscriber->getSubscriberTags()->toArray()));
+    expect($data['tags'])->equals($tagNames);
+
+    // Test updating tags
+    $data['tags'] = [
+      'Second',
+      'Third',
+    ];
+    $subscriber = $this->saveController->save($data);
+    expect($subscriber->getSubscriberTags())->count(2);
+    $tagNames = array_values(array_map(function (SubscriberTagEntity $subscriberTag): string {
+      return ($tag = $subscriberTag->getTag()) ? $tag->getName() : '';
+    }, $subscriber->getSubscriberTags()->toArray()));
+    expect($data['tags'])->equals($tagNames);
   }
 
   public function testItThrowsExceptionWhenUpdatingSubscriberEmailIfNotUnique(): void {
