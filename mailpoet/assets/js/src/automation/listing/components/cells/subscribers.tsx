@@ -1,4 +1,4 @@
-import { Workflow } from '../workflow';
+import { Workflow } from '../../workflow';
 
 type Props = {
   workflow: Workflow;

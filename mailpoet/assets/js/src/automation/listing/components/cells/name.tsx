@@ -1,5 +1,5 @@
-import { Edit } from './Edit';
-import { Workflow } from '../workflow';
+import { Edit } from './edit';
+import { Workflow } from '../../workflow';
 
 type Props = {
   workflow: Workflow;

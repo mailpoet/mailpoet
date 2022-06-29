@@ -1,5 +1,5 @@
 import { __ } from '@wordpress/i18n';
-import { Workflow } from '../workflow';
+import { Workflow } from '../../workflow';
 
 type Props = {
   workflow: Workflow;
