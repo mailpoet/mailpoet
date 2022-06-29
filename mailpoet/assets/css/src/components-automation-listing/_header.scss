@@ -1,0 +1,15 @@
+.mailpoet-automation-listing .components-card__header {
+  padding-left: 16px;
+}
+
+.mailpoet-automation-listing .woocommerce-table__actions {
+  margin-left: 0;
+}
+
+.mailpoet-automation-listing .woocommerce-table__actions > div {
+  width: auto;
+
+  &:last-child {
+    flex-grow: 1;
+  }
+}

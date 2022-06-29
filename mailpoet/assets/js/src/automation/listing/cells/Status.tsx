@@ -11,7 +11,7 @@ export function Status({ workflow }: Props): JSX.Element {
   const [isActive, setIsActive] = useState(false);
 
   return (
-    <div>
+    <div className="mailpoet-automation-listing-cell-status">
       <ToggleControl
         checked={isActive}
         onChange={(active) => setIsActive(active)}
