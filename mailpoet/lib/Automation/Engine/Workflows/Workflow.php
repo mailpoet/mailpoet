@@ -61,6 +61,10 @@ class Workflow {
     return $this->status;
   }
 
+  public function setStatus(string $status): void {
+    $this->status = $status;
+  }
+
   public function getCreatedAt(): DateTimeImmutable {
     return $this->createdAt;
   }
