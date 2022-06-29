@@ -1,3 +1,4 @@
+import { ReactNode } from 'react';
 import { useMutation } from './api';
 import { id } from './id';
 
@@ -68,7 +69,15 @@ export function CreateTestingWorkflowButton(): JSX.Element {
   );
 }
 
-export function CreateWorkflowFromTemplateButton(): JSX.Element {
+type TemplateButtonProps = {
+  template: string;
+  children?: ReactNode;
+};
+
+export function CreateWorkflowFromTemplateButton({
+  template,
+  children,
+}: TemplateButtonProps): JSX.Element {
   const [createWorkflowFromTemplate, { loading, error }] = useMutation(
     'workflows/create-from-template',
     {
@@ -85,14 +94,14 @@ export function CreateWorkflowFromTemplateButton(): JSX.Element {
           await createWorkflowFromTemplate({
             body: JSON.stringify({
               name: `Test from template ${new Date().toISOString()}`,
-              template: 'delayed-email-after-signup',
+              template,
             }),
           });
           window.location.reload();
         }}
         disabled={loading}
       >
-        Create testing workflow from template
+        {children}
       </button>
       {error && (
         <div>{error?.data?.message ?? 'An unknown error occurred'}</div>

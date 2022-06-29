@@ -48,6 +48,32 @@ class WorkflowBuilder {
     return new Workflow($name, $steps);
   }
 
+  public function welcomeEmailSequence(string $name): Workflow {
+    $triggerStep = $this->segmentSubscribedTriggerStep();
+
+    $firstWaitStep = $this->waitStep(60 * 60);
+    $triggerStep->setNextStepId($firstWaitStep->getId());
+
+    $sendFirstEmailStep = $this->sendEmailActionStep(1);
+    $firstWaitStep->setNextStepId($sendFirstEmailStep->getId());
+
+    $secondWaitStep = $this->waitStep(3 * 60 * 60);
+    $sendFirstEmailStep->setNextStepId($secondWaitStep->getId());
+
+    $sendSecondEmailStep = $this->sendEmailActionStep(2);
+    $secondWaitStep->setNextStepId($sendSecondEmailStep->getId());
+
+    $steps = [
+      $triggerStep,
+      $firstWaitStep,
+      $sendFirstEmailStep,
+      $secondWaitStep,
+      $sendSecondEmailStep,
+    ];
+
+    return new Workflow($name, $steps);
+  }
+
   private function waitStep(int $seconds): Step {
     return new Step($this->uniqueId(), Step::TYPE_ACTION, $this->waitAction->getKey(), null, [
       'seconds' => $seconds,
