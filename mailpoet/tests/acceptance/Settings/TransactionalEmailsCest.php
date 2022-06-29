@@ -13,7 +13,7 @@ class TransactionalEmailsCest {
     $settings->withMisconfiguredSendingMethodSmtp();
     $settings->withTransactionEmailsViaMailPoet();
     $i->wantTo('Create a new WP user and make sure transactional email were received');
-    $i->cli(['user', 'create', 'john_doe', 'john_doe@example.com', '--send-email']);
+    $i->cli(['user', 'create', 'johndoe', 'john_doe@example.com', '--send-email']);
     $i->amOnMailboxAppPage();
     $i->checkEmailWasReceived('New User Registration');
     $i->checkEmailWasReceived('Login Details');
