@@ -51,11 +51,12 @@ export function CreateTestingWorkflowButton(): JSX.Element {
       <button
         className="button"
         type="button"
-        onClick={() =>
-          createSchema({
+        onClick={async () => {
+          await createSchema({
             body: JSON.stringify(createWorkflow()),
-          })
-        }
+          });
+          window.location.reload();
+        }}
         disabled={loading}
       >
         Create testing workflow (premium required)
@@ -80,14 +81,15 @@ export function CreateWorkflowFromTemplateButton(): JSX.Element {
       <button
         className="button button-primary"
         type="button"
-        onClick={() =>
-          createWorkflowFromTemplate({
+        onClick={async () => {
+          await createWorkflowFromTemplate({
             body: JSON.stringify({
               name: `Test from template ${new Date().toISOString()}`,
               template: 'delayed-email-after-signup',
             }),
-          })
-        }
+          });
+          window.location.reload();
+        }}
         disabled={loading}
       >
         Create testing workflow from template
