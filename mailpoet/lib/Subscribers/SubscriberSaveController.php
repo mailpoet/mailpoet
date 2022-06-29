@@ -298,10 +298,7 @@ class SubscriberSaveController {
   private function updateTags(array $data, SubscriberEntity $subscriber): void {
     foreach ($subscriber->getSubscriberTags() as $subscriberTag) {
       $tag = $subscriberTag->getTag();
-      if (!$tag) {
-        continue;
-      }
-      if (!in_array($tag->getName(), $data['tags'], true)) {
+      if (!$tag || !in_array($tag->getName(), $data['tags'], true)) {
         $subscriber->getSubscriberTags()->removeElement($subscriberTag);
       }
     }
