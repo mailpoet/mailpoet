@@ -219,6 +219,7 @@ progress::-moz-progress-bar {
   }
 }
 
+// We need to hide the label because it doesn't fit to our form design, and it's added automatically by Gutenberg component
 .mailpoet-form-field-tags label.components-form-token-field__label {
   display: none;
 }
