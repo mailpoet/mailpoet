@@ -29,6 +29,13 @@ class WorkflowStorage {
     return $this->wpdb->insert_id;
   }
 
+  public function updateWorkflow(Workflow $workflow): void {
+    $result = $this->wpdb->update($this->table, $workflow->toArray(), ['id' => $workflow->getId()]);
+    if ($result === false) {
+      throw Exceptions::databaseError($this->wpdb->last_error);
+    }
+  }
+
   public function getWorkflow(int $id): ?Workflow {
     $table = esc_sql($this->table);
     $query = (string)$this->wpdb->prepare("SELECT * FROM $table WHERE id = %d", $id);
