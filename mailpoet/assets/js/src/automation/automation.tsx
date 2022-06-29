@@ -34,7 +34,12 @@ function RecreateSchemaButton(): JSX.Element {
 
   return (
     <div>
-      <button type="button" onClick={() => createSchema()} disabled={loading}>
+      <button
+        className="button button-link-delete"
+        type="button"
+        onClick={() => createSchema()}
+        disabled={loading}
+      >
         Recreate DB schema (data will be lost)
       </button>
       {error && (
@@ -52,6 +57,7 @@ function DeleteSchemaButton(): JSX.Element {
   return (
     <div>
       <button
+        className="button button-link-delete"
         type="button"
         onClick={async () => {
           await deleteSchema();
@@ -73,10 +79,17 @@ function App(): JSX.Element {
   return (
     <div>
       <Workflows />
-      <CreateTestingWorkflowButton />
-      <CreateWorkflowFromTemplateButton />
-      <RecreateSchemaButton />
-      <DeleteSchemaButton />
+      <div style={{ marginTop: 30, display: 'grid', gridGap: 8 }}>
+        <CreateTestingWorkflowButton />
+        <CreateWorkflowFromTemplateButton template="delayed-email-after-signup">
+          Create testing workflow from template (welcome email)
+        </CreateWorkflowFromTemplateButton>
+        <CreateWorkflowFromTemplateButton template="welcome-email-sequence">
+          Create testing workflow from template (welcome sequence)
+        </CreateWorkflowFromTemplateButton>
+        <RecreateSchemaButton />
+        <DeleteSchemaButton />
+      </div>
     </div>
   );
 }
