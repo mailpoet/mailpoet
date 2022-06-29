@@ -1,3 +1,5 @@
+import { select } from '@wordpress/data';
+import { apiFetch } from '@wordpress/data-controls';
 import { store as interfaceStore } from '@wordpress/interface';
 import { store as preferencesStore } from '@wordpress/preferences';
 import { storeName } from './constants';
@@ -35,5 +37,21 @@ export function selectStep(value) {
   return {
     type: 'SET_SELECTED_STEP',
     value,
+  } as const;
+}
+
+export function* activate() {
+  const workflow = select(storeName).getWorkflowData();
+  const data = yield apiFetch({
+    path: `/workflows/${workflow.id}`,
+    method: 'PUT',
+    data: {
+      status: 'active',
+    },
+  });
+
+  return {
+    type: 'ACTIVATE',
+    workflow: data.data,
   } as const;
 }

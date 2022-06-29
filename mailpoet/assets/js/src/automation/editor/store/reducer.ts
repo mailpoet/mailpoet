@@ -24,6 +24,11 @@ export function reducer(state: State, action: Action): State {
         ...state,
         selectedStep: action.value,
       };
+    case 'ACTIVATE':
+      return {
+        ...state,
+        workflowData: action.workflow,
+      };
     default:
       return state;
   }

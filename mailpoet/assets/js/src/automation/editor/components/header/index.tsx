@@ -1,5 +1,5 @@
 import { Button, Icon, NavigableMenu } from '@wordpress/components';
-import { useSelect } from '@wordpress/data';
+import { useDispatch, useSelect } from '@wordpress/data';
 import { wordpress } from '@wordpress/icons';
 import { PinnedItems } from '@wordpress/interface';
 import { InserterToggle } from './inserter_toggle';
@@ -17,6 +17,8 @@ export function Header(): JSX.Element {
     }),
     [],
   );
+
+  const { activate } = useDispatch(store);
 
   return (
     <div className="edit-post-header">
@@ -41,8 +43,12 @@ export function Header(): JSX.Element {
       </div>
       <div className="edit-post-header__settings">
         <Button isTertiary>Save Draft</Button>
-        <Button isPrimary className="editor-post-publish-button">
-          Publish
+        <Button
+          isPrimary
+          className="editor-post-publish-button"
+          onClick={activate}
+        >
+          Activate
         </Button>
         <PinnedItems.Slot scope={storeName} />
         <MoreMenu />
