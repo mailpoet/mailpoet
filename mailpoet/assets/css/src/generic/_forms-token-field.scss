@@ -7,9 +7,19 @@
   max-width: 100%;
   min-height: $form-control-height;
   min-width: 0;
-  padding: 0;
-  position: relative;
-  text-align: left;
-  vertical-align: top;
   width: $grid-column;
+  // To align the left padding with the other inputs
+  input[type=text].components-form-token-field__input {
+    margin-left: 0;
+    padding-left: 8px;
+  }
+  // For better fit when the last item is active
+  li:last-child {
+    border-radius: 0 0 $form-control-border-radius $form-control-border-radius;
+  }
+  // Resetting is-active because other input doesn't support it
+  &.components-form-token-field__input-container.is-active {
+    box-shadow: none;
+    outline: 0;
+  }
 }
