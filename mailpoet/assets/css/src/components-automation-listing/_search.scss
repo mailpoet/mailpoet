@@ -1,0 +1,10 @@
+.mailpoet-automation-listing-search.woocommerce-search.woocommerce-select-control > div {
+  border-color: $color-wordpress-heading;
+  border-radius: 2px;
+  box-shadow: none;
+  height: 36px;
+
+  svg {
+    transform: translateY(-50%) scaleX(-1);
+  }
+}

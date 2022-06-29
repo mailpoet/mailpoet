@@ -1,4 +1,5 @@
 import { Search, TableCard } from '@woocommerce/components';
+import { Button, Dropdown, MenuGroup, MenuItem } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import { getRow } from './get-row';
 import { Workflow } from './workflow';
@@ -15,12 +16,13 @@ export function AutomationListing({ workflows, loading }: Props): JSX.Element {
     { key: 'name', label: __('Name', 'mailpoet') },
     { key: 'subscribers', label: __('Subscribers', 'mailpoet') },
     { key: 'status', label: __('Status', 'mailpoet') },
-    { key: 'edit', label: __('Edit', 'mailpoet') },
-    { key: 'more', label: __('More', 'mailpoet') },
+    { key: 'edit' },
+    { key: 'more' },
   ];
 
   return (
     <TableCard
+      className="mailpoet-automation-listing"
       title=""
       isLoading={workflows.length === 0 || loading}
       rows={rows}
@@ -29,19 +31,31 @@ export function AutomationListing({ workflows, loading }: Props): JSX.Element {
       rowsPerPage={7}
       totalRows={workflows.length}
       hasSearch
+      showMenu={false}
       actions={[
-        <ul key="types" className="subsubsub" style={{ width: '400px' }}>
-          <li>
-            <a href="/">All</a> |
-          </li>
-          <li>
-            <a href="/">Activated</a> |
-          </li>
-          <li>
-            <a href="/">Drafts</a>
-          </li>
-        </ul>,
+        <div className="mailpoet-automation-listing-actions">
+          <Dropdown
+            renderToggle={({ isOpen, onToggle }) => (
+              <Button
+                className="mailpoet-automation-listing-action-button"
+                variant="secondary"
+                aria-expanded={isOpen}
+                onClick={onToggle}
+                label=""
+                disabled
+              >
+                Actions
+              </Button>
+            )}
+            renderContent={() => (
+              <MenuGroup>
+                <MenuItem icon="trash">Move to trash</MenuItem>
+              </MenuGroup>
+            )}
+          />
+        </div>,
         <Search
+          className="mailpoet-automation-listing-search"
           allowFreeTextSearch
           inlineTags
           key="search"
@@ -51,7 +65,6 @@ export function AutomationListing({ workflows, loading }: Props): JSX.Element {
           //  __( 'Search by item name', 'woocommerce' )
           // }
           // selected={ searchedLabels }
-          showClearButton
           type="custom"
           disabled={loading || workflows.length === 0}
           autocompleter={{}}
