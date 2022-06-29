@@ -41,11 +41,6 @@ const createWorkflow = () => {
   };
 };
 
-const createWorkflowFromTemplate = () => ({
-  name: `Test from template ${new Date().toISOString()}`,
-  template: 'delayed-email-after-signup',
-});
-
 export function CreateTestingWorkflowButton(): JSX.Element {
   const [createSchema, { loading, error }] = useMutation('workflows', {
     method: 'POST',
@@ -72,7 +67,7 @@ export function CreateTestingWorkflowButton(): JSX.Element {
 }
 
 export function CreateWorkflowFromTemplateButton(): JSX.Element {
-  const [createSchema, { loading, error }] = useMutation(
+  const [createWorkflowFromTemplate, { loading, error }] = useMutation(
     'workflows/create-from-template',
     {
       method: 'POST',
@@ -84,8 +79,11 @@ export function CreateWorkflowFromTemplateButton(): JSX.Element {
       <button
         type="button"
         onClick={() =>
-          createSchema({
-            body: JSON.stringify(createWorkflowFromTemplate()),
+          createWorkflowFromTemplate({
+            body: JSON.stringify({
+              name: `Test from template ${new Date().toISOString()}`,
+              template: 'delayed-email-after-signup',
+            }),
           })
         }
         disabled={loading}
