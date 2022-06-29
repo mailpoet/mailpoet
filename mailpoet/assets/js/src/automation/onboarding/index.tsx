@@ -1,5 +1,4 @@
 import { __ } from '@wordpress/i18n';
-import { CreateWorkflowFromTemplateButton } from '../testing';
 
 export function Onboarding(): JSX.Element {
   return (
@@ -12,7 +11,6 @@ export function Onboarding(): JSX.Element {
           'mailpoet',
         )}
       </p>
-      <CreateWorkflowFromTemplateButton />
       <a href="#" className="button secondary">
         {__('Learn more', 'mailpoet')}
       </a>
