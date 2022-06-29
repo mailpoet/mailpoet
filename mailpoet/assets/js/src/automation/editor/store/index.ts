@@ -1,4 +1,5 @@
 import { createReduxStore, register, StoreDescriptor } from '@wordpress/data';
+import { controls } from '@wordpress/data-controls';
 import * as actions from './actions';
 import { initializeApi } from './api';
 import { storeName } from './constants';
@@ -19,6 +20,7 @@ initializeApi();
 export const store = createReduxStore<State>(storeName, {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- the "Action" type is missing thunks with "dispatch"
   actions: actions as any,
+  controls,
   selectors,
   reducer,
   initialState,
