@@ -3,3 +3,8 @@
 
 @import 'components-admin/menu';
 @import 'components-admin/3rd-party-plugins/members';
+
+// Generic
+// 3rd-party styles, can be overwritten.
+
+@import '../../../node_modules/@wordpress/components/build-style/style';

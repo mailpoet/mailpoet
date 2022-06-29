@@ -19,15 +19,17 @@ class AssetsLoader {
 
   public function loadStyles(): void {
     if (isset($_GET['page']) && $_GET['page'] === 'mailpoet-form-editor') {
-      $this->enqueueStyle('mailpoet-form-editor');
+      // Because 3rd styles were moved into admin styles, the dependency guarantees correct overriding
+      $this->enqueueStyle('mailpoet-form-editor', ['mailpoet-admin-global']);
       $this->enqueueStyle('mailpoet-public');
     }
   }
 
-  private function enqueueStyle(string $name): void {
+  private function enqueueStyle(string $name, array $deps = []): void {
     $this->wp->wpEnqueueStyle(
       $name,
-      Env::$assetsUrl . '/dist/css/' . $this->renderer->getCssAsset("{$name}.css")
+      Env::$assetsUrl . '/dist/css/' . $this->renderer->getCssAsset("{$name}.css"),
+      $deps
     );
   }
 }
