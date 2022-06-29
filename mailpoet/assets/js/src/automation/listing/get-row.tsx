@@ -1,5 +1,5 @@
 import { Workflow } from './workflow';
-import { Edit, More, Name, Status, Subscribers } from './cells';
+import { Edit, More, Name, Status, Subscribers } from './components/cells';
 
 export function getRow(workflow: Workflow): object[] {
   return [

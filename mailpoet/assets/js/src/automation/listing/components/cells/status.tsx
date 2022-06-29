@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { __ } from '@wordpress/i18n';
 import { ToggleControl } from '@wordpress/components';
-import { Workflow, WorkflowStatus } from '../workflow';
+import { Workflow, WorkflowStatus } from '../../workflow';
 
 type Props = {
   workflow: Workflow;
