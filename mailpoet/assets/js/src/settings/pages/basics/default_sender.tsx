@@ -4,7 +4,6 @@ import { isEmail, t, onChange, setLowercaseValue } from 'common/functions';
 import { Input } from 'common/form/input/input';
 import { useSetting, useSelector, useAction } from 'settings/store/hooks';
 import { SenderEmailAddressWarning } from 'common/sender_email_address_warning.jsx';
-import ReactStringReplace from 'react-string-replace';
 
 export function DefaultSender() {
   const isMssActive = useSelector('isMssActive')();
@@ -70,23 +69,6 @@ export function DefaultSender() {
           onBlur={onChange(isAuthorizedEmail)}
         />
         <br />
-        {!isAuthorized && (
-          <span className="mailpoet_error_item mailpoet_error">
-            {ReactStringReplace(
-              t('youNeedToAuthorizeTheEmail'),
-              '[email]',
-              () => senderEmail,
-            )}{' '}
-            <a
-              className="mailpoet-link"
-              href={`https://account.mailpoet.com/authorization?email=${senderEmail}`}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              {t('authorizeMyEmail')}
-            </a>
-          </span>
-        )}
         {invalidSenderEmail && (
           <span className="mailpoet_error_item mailpoet_error">
             {t('invalidEmail')}
@@ -96,6 +78,7 @@ export function DefaultSender() {
           <SenderEmailAddressWarning
             emailAddress={senderEmail}
             mssActive={isMssActive}
+            isEmailAuthorized={isAuthorized}
           />
         </div>
         <label className="mailpoet-settings-inputs-row" htmlFor="reply_to-name">
