@@ -3,14 +3,35 @@
 namespace MailPoet\Automation\Engine;
 
 use MailPoet\Automation\Engine\Workflows\Action;
+use MailPoet\Automation\Engine\Workflows\Subject;
 use MailPoet\Automation\Engine\Workflows\Trigger;
 
 class Registry {
+  /** @var array<string, Subject> */
+  private $subjects = [];
+
   /** @var array<string, Trigger> */
   private $triggers = [];
 
   /** @var array<string, Action> */
   private $actions = [];
+
+  public function addSubject(Subject $subject): void {
+    $key = $subject->getKey();
+    if (isset($this->subjects[$key])) {
+      throw new \Exception(); // TODO
+    }
+    $this->subjects[$key] = $subject;
+  }
+
+  public function getSubject(string $key): ?Subject {
+    return $this->subjects[$key] ?? null;
+  }
+
+  /** @return array<string, Subject> */
+  public function getSubjects(): array {
+    return $this->subjects;
+  }
 
   public function addTrigger(Trigger $trigger): void {
     $key = $trigger->getKey();

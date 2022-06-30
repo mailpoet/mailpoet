@@ -5,24 +5,38 @@ namespace MailPoet\Automation\Integrations\MailPoet;
 use MailPoet\Automation\Engine\Integration;
 use MailPoet\Automation\Engine\Registry;
 use MailPoet\Automation\Integrations\MailPoet\Actions\SendWelcomeEmailAction;
+use MailPoet\Automation\Integrations\MailPoet\Subjects\SegmentSubject;
+use MailPoet\Automation\Integrations\MailPoet\Subjects\SubscriberSubject;
 use MailPoet\Automation\Integrations\MailPoet\Triggers\SegmentSubscribedTrigger;
 
 class MailPoetIntegration implements Integration {
+  /** @var SegmentSubject */
+  private $segmentSubject;
+
+  /** @var SubscriberSubject */
+  private $subscriberSubject;
+
   /** @var SegmentSubscribedTrigger */
   private $segmentSubscribedTrigger;
-  
+
   /** @var SendWelcomeEmailAction */
   private $sendWelcomeEmailAction;
-  
+
   public function __construct(
-    SegmentSubscribedTrigger $segmentSubscribedTrigger, 
+    SegmentSubject $segmentSubject,
+    SubscriberSubject $subscriberSubject,
+    SegmentSubscribedTrigger $segmentSubscribedTrigger,
     SendWelcomeEmailAction $sendWelcomeEmailAction
   ) {
+    $this->segmentSubject = $segmentSubject;
+    $this->subscriberSubject = $subscriberSubject;
     $this->segmentSubscribedTrigger = $segmentSubscribedTrigger;
     $this->sendWelcomeEmailAction = $sendWelcomeEmailAction;
   }
 
   public function register(Registry $registry): void {
+    $registry->addSubject($this->segmentSubject);
+    $registry->addSubject($this->subscriberSubject);
     $registry->addTrigger($this->segmentSubscribedTrigger);
     $registry->addAction($this->sendWelcomeEmailAction);
   }
