@@ -52,6 +52,7 @@ declare module '@wordpress/block-editor' {
 }
 
 declare module '@wordpress/components' {
+  export const __experimentalText: any;
   export const __unstableComposite: typeof Composite;
   export const __unstableCompositeGroup: typeof CompositeGroup;
   export const __unstableCompositeItem: typeof CompositeItem;
