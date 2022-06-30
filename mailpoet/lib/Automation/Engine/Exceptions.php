@@ -5,6 +5,7 @@ namespace MailPoet\Automation\Engine;
 use MailPoet\Automation\Engine\Exceptions\InvalidStateException;
 use MailPoet\Automation\Engine\Exceptions\NotFoundException;
 use MailPoet\Automation\Engine\Exceptions\UnexpectedValueException;
+use MailPoet\Automation\Engine\Utils\Json;
 
 class Exceptions {
   private const MIGRATION_FAILED = 'mailpoet_automation_migration_failed';
@@ -17,6 +18,8 @@ class Exceptions {
   private const WORKFLOW_STEP_NOT_FOUND = 'mailpoet_automation_workflow_step_not_found';
   private const WORKFLOW_TRIGGER_NOT_FOUND = 'mailpoet_automation_workflow_trigger_not_found';
   private const WORKFLOW_RUN_NOT_RUNNING = 'mailpoet_automation_workflow_run_not_running';
+  private const SUBJECT_NOT_FOUND = 'mailpoet_automation_subject_not_found';
+  private const SUBJECT_LOAD_FAILED = 'mailpoet_automation_workflow_subject_load_failed';
 
   public function __construct() {
     throw new InvalidStateException(
@@ -83,5 +86,17 @@ class Exceptions {
     return InvalidStateException::create()
       ->withErrorCode(self::WORKFLOW_RUN_NOT_RUNNING)
       ->withMessage(__(sprintf("Workflow run with ID '%s' is not running. Status: %s", $id, $status), 'mailpoet'));
+  }
+
+  public static function subjectNotFound(string $key): NotFoundException {
+    return NotFoundException::create()
+      ->withErrorCode(self::SUBJECT_NOT_FOUND)
+      ->withMessage(__(sprintf("Subject with key '%s' not found.", $key), 'mailpoet'));
+  }
+
+  public static function subjectLoadFailed(string $key, array $args): InvalidStateException {
+    return InvalidStateException::create()
+      ->withErrorCode(self::SUBJECT_LOAD_FAILED)
+      ->withMessage(__(sprintf("Subject with key '%s' and args '%s' failed to load.", $key, Json::encode($args)), 'mailpoet'));
   }
 }
