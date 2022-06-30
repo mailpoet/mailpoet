@@ -49,7 +49,7 @@ class SenderField extends Component {
           field={this.props.field}
           onValueChange={this.onChange}
         />
-        <div className="regular-text">
+        <div className="regular-text" style={{ marginTop: '2.5rem' }}>
           <SenderEmailAddressWarning
             emailAddress={this.state.emailAddress}
             mssActive={window.mailpoet_mss_active}

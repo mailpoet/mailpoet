@@ -13,7 +13,7 @@ function SenderEmailAddressWarning({
   if (mssActive) {
     if (!isEmailAuthorized) {
       return (
-        <span className="mailpoet_error_item mailpoet_error">
+        <p className="sender_email_address_warning">
           {ReactStringReplace(
             MailPoet.I18n.t('youNeedToAuthorizeTheEmail'),
             '[email]',
@@ -27,7 +27,7 @@ function SenderEmailAddressWarning({
           >
             {MailPoet.I18n.t('authorizeMyEmail')}
           </a>
-        </span>
+        </p>
       );
     }
     return null;
