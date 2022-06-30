@@ -72,6 +72,9 @@ class Newsletters {
   /** @var TrackingConfig */
   private $trackingConfig;
 
+  /** @var Bridge */
+  private $bridge;
+
   public function __construct(
     PageRenderer $pageRenderer,
     PageLimit $listingPageLimit,
@@ -87,7 +90,8 @@ class Newsletters {
     WPPostListLoader $wpPostListLoader,
     AutomaticEmails $automaticEmails,
     SegmentsSimpleListRepository $segmentsListRepository,
-    TrackingConfig $trackingConfig
+    TrackingConfig $trackingConfig,
+    Bridge $bridge
   ) {
     $this->pageRenderer = $pageRenderer;
     $this->listingPageLimit = $listingPageLimit;
@@ -104,6 +108,7 @@ class Newsletters {
     $this->wpPostListLoader = $wpPostListLoader;
     $this->segmentsListRepository = $segmentsListRepository;
     $this->trackingConfig = $trackingConfig;
+    $this->bridge = $bridge;
   }
 
   public function render() {
@@ -182,6 +187,8 @@ class Newsletters {
     $data['product_categories'] = $this->wpPostListLoader->getWooCommerceCategories();
 
     $data['products'] = $this->wpPostListLoader->getProducts();
+
+    $data['authorized_emails'] = $this->bridge->getAuthorizedEmailAddresses();
 
     $this->pageRenderer->displayPage('newsletters.html', $data);
   }

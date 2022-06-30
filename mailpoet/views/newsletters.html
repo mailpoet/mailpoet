@@ -66,6 +66,7 @@
       var mailpoet_newsletters_count = <%= newsletters_count %>;
       var mailpoet_send_transactional_emails = <%= json_encode(settings.send_transactional_emails == '1') %>;
       var mailpoet_settings = <%= json_encode(settings) %>;
+      var mailpoet_authorized_emails = <%= json_encode(authorized_emails) %>;
 
       <% if not(premium_plugin_active) %>
         var mailpoet_free_premium_subscribers_limit = <%= free_premium_subscribers_limit %>;
@@ -315,6 +316,8 @@
     'websiteTimeIs': __("Your website’s time is"),
     'noScheduledDateError': __('Please enter the scheduled date.'),
     'schedule': __('Schedule'),
+    'youNeedToAuthorizeTheEmail': __('You need to authorize the email address [email] to be able to send with it.'),
+    'authorizeMyEmail': __('Authorize my email address'),
 
     'next': __('Next'),
     'previous': __('Previous'),
