@@ -10,6 +10,8 @@ use MailPoet\NotFoundException;
 use MailPoet\Subscribers\SubscribersRepository;
 
 class SubscriberSubject implements Subject {
+  const KEY = 'mailpoet:subscriber';
+
   /** @var Field[] */
   private $fields;
 
@@ -62,7 +64,7 @@ class SubscriberSubject implements Subject {
   }
 
   public function getKey(): string {
-    return 'mailpoet:subscriber';
+    return self::KEY;
   }
 
   public function getFields(): array {
