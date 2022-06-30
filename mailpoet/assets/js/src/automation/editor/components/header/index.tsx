@@ -1,6 +1,7 @@
 import { Button, NavigableMenu } from '@wordpress/components';
 import { useDispatch, useSelect } from '@wordpress/data';
 import { PinnedItems } from '@wordpress/interface';
+import { DocumentActions } from './document_actions';
 import { InserterToggle } from './inserter_toggle';
 import { MoreMenu } from './more_menu';
 import { store, storeName } from '../../store';
@@ -48,6 +49,10 @@ export function Header(): JSX.Element {
         >
           <InserterToggle />
         </NavigableMenu>
+      </div>
+
+      <div className="edit-site-header_center">
+        <DocumentActions>{() => <div>TODO: edit name</div>}</DocumentActions>
       </div>
 
       <div className="edit-site-header_end">
