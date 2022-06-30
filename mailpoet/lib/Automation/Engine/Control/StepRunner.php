@@ -116,6 +116,11 @@ class StepRunner {
       return;
     }
 
+    // no need to schedule a new step if the next step is null
+    if (empty($nextStepArgs[0]['step_id'])) {
+      return;
+    }
+
     // enqueue next step
     $this->actionScheduler->enqueue(Hooks::WORKFLOW_STEP, $nextStepArgs);
 
