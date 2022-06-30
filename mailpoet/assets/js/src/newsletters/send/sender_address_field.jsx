@@ -8,12 +8,23 @@ class SenderField extends Component {
     super(props);
     this.state = {
       emailAddress: props.item.sender_address,
+      isEmailAuthorized: this.isEmailAddressAuthorized(
+        props.item.sender_address,
+      ),
     };
     this.onChange = this.onChange.bind(this);
   }
 
   onChange(event) {
-    this.setState({ emailAddress: event.target.value.toLowerCase() });
+    const emailAddressIsAuthorized =
+      event.target.value.length >= 3
+        ? this.isEmailAddressAuthorized(event.target.value.toLowerCase())
+        : true;
+
+    this.setState({
+      emailAddress: event.target.value.toLowerCase(),
+      isEmailAuthorized: emailAddressIsAuthorized,
+    });
     this.props.onValueChange({
       ...event,
       target: {
@@ -23,6 +34,9 @@ class SenderField extends Component {
       },
     });
   }
+
+  isEmailAddressAuthorized = (email) =>
+    window.mailpoet_authorized_emails.includes(email);
 
   render() {
     return (
@@ -39,6 +53,7 @@ class SenderField extends Component {
           <SenderEmailAddressWarning
             emailAddress={this.state.emailAddress}
             mssActive={window.mailpoet_mss_active}
+            isEmailAuthorized={this.state.isEmailAuthorized}
           />
         </div>
       </>
