@@ -22,7 +22,7 @@ export function InserterToggle(): JSX.Element {
   return (
     <ToolbarItem
       as={Button}
-      className="edit-post-header-toolbar__inserter-toggle"
+      className="edit-site-header-toolbar__inserter-toggle"
       variant="primary"
       isPressed={isInserterOpened}
       onMouseDown={(event) => event.preventDefault()}

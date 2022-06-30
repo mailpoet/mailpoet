@@ -50,11 +50,11 @@ export function Sidebar(props: Props): JSX.Element {
       identifier={sidebarKey}
       header={<Header sidebarKey={sidebarKey} />}
       closeLabel={__('Close settings')}
-      headerClassName="edit-post-sidebar__panel-tabs"
+      headerClassName="edit-site-sidebar__panel-tabs"
       title={__('Settings')}
       icon={cog}
-      className="edit-post-sidebar"
-      panelClassName="edit-post-sidebar"
+      className="edit-site-sidebar"
+      panelClassName="edit-site-sidebar"
       smallScreenTitle={workflowName || __('(no title)')}
       scope={storeName}
       toggleShortcut={keyboardShortcut}

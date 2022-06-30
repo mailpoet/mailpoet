@@ -1,7 +1,8 @@
 import classnames from 'classnames';
 import ReactDOM from 'react-dom';
-import { Popover, SlotFillProvider } from '@wordpress/components';
+import { Button, Icon, Popover, SlotFillProvider } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
+import { wordpress } from '@wordpress/icons';
 import {
   ComplementaryArea,
   InterfaceSkeleton,
@@ -33,14 +34,10 @@ function Editor(): JSX.Element {
     [],
   );
 
-  const className = classnames(
-    'edit-post-layout',
-    'interface-interface-skeleton',
-    {
-      'is-sidebar-opened': isSidebarOpened,
-      'show-icon-labels': showIconLabels,
-    },
-  );
+  const className = classnames('interface-interface-skeleton', {
+    'is-sidebar-opened': isSidebarOpened,
+    'show-icon-labels': showIconLabels,
+  });
 
   return (
     <ShortcutProvider>
@@ -50,6 +47,18 @@ function Editor(): JSX.Element {
         <Sidebar />
         <InterfaceSkeleton
           className={className}
+          drawer={
+            isFullscreenActive && (
+              <div className="edit-site-navigation-toggle">
+                <Button
+                  className="edit-site-navigation-toggle__button has-icon"
+                  href="admin.php?page=mailpoet-automation"
+                >
+                  <Icon size={36} icon={wordpress} />
+                </Button>
+              </div>
+            )
+          }
           header={<Header />}
           content={<Workflow />}
           sidebar={<ComplementaryArea.Slot scope={storeName} />}

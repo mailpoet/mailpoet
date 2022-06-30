@@ -12,9 +12,9 @@ import { storeName } from '../../store';
 export function MoreMenu(): JSX.Element {
   return (
     <MoreMenuDropdown
-      className="edit-post-more-menu"
+      className="edit-site-more-menu"
       popoverProps={{
-        className: 'edit-post-more-menu__content',
+        className: 'edit-site-more-menu__content',
       }}
     >
       {() => (
