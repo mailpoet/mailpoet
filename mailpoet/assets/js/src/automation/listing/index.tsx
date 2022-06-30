@@ -25,15 +25,16 @@ export function AutomationListing({ workflows, loading }: Props): JSX.Element {
       className="mailpoet-automation-listing"
       title=""
       isLoading={workflows.length === 0 || loading}
-      rows={rows}
       headers={headers}
+      rows={rows}
+      rowKey={(data, i) => data[i].id}
       query={{ page: 2 }}
       rowsPerPage={7}
       totalRows={workflows.length}
       hasSearch
       showMenu={false}
       actions={[
-        <div className="mailpoet-automation-listing-actions">
+        <div key="actions" className="mailpoet-automation-listing-actions">
           <Dropdown
             renderToggle={({ isOpen, onToggle }) => (
               <Button
