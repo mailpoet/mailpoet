@@ -5,8 +5,33 @@ import ReactStringReplace from 'react-string-replace';
 const userHostDomain = window.location.hostname.replace('www.', '');
 const suggestedEmailAddress = `contact@${userHostDomain}`;
 
-function SenderEmailAddressWarning({ emailAddress, mssActive }) {
-  if (mssActive) return null;
+function SenderEmailAddressWarning({
+  emailAddress,
+  mssActive,
+  isEmailAuthorized,
+}) {
+  if (mssActive) {
+    if (!isEmailAuthorized) {
+      return (
+        <span className="mailpoet_error_item mailpoet_error">
+          {ReactStringReplace(
+            MailPoet.I18n.t('youNeedToAuthorizeTheEmail'),
+            '[email]',
+            () => emailAddress,
+          )}{' '}
+          <a
+            className="mailpoet-link"
+            href={`https://account.mailpoet.com/authorization?email=${emailAddress}`}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {MailPoet.I18n.t('authorizeMyEmail')}
+          </a>
+        </span>
+      );
+    }
+    return null;
+  }
   const emailAddressDomain = emailAddress.split('@').pop().toLowerCase();
   if (window.mailpoet_free_domains.indexOf(emailAddressDomain) > -1) {
     return (
@@ -48,6 +73,11 @@ function SenderEmailAddressWarning({ emailAddress, mssActive }) {
 SenderEmailAddressWarning.propTypes = {
   emailAddress: PropTypes.string.isRequired,
   mssActive: PropTypes.bool.isRequired,
+  isEmailAuthorized: PropTypes.bool,
+};
+
+SenderEmailAddressWarning.defaultProps = {
+  isEmailAuthorized: true, // don't show error message by default
 };
 
 export { SenderEmailAddressWarning };
