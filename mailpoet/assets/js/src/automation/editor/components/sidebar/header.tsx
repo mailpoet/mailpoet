@@ -28,7 +28,7 @@ export function Header({ sidebarKey }: Props): JSX.Element {
       <li>
         <Button
           onClick={openWorkflowSettings}
-          className={`edit-post-sidebar__panel-tab ${workflowActiveClass}`}
+          className={`edit-site-sidebar__panel-tab ${workflowActiveClass}`}
           aria-label={workflowAriaLabel}
           data-label="Workflow"
         >
@@ -38,7 +38,7 @@ export function Header({ sidebarKey }: Props): JSX.Element {
       <li>
         <Button
           onClick={openStepSettings}
-          className={`edit-post-sidebar__panel-tab ${stepActiveClass}`}
+          className={`edit-site-sidebar__panel-tab ${stepActiveClass}`}
           aria-label={stepAriaLabel}
           data-label="Workflow"
         >
