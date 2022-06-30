@@ -51,13 +51,13 @@ class WorkflowBuilder {
   public function welcomeEmailSequence(string $name): Workflow {
     $triggerStep = $this->segmentSubscribedTriggerStep();
 
-    $firstWaitStep = $this->waitStep(60 * 60);
+    $firstWaitStep = $this->waitStep(5 * 60);
     $triggerStep->setNextStepId($firstWaitStep->getId());
 
     $sendFirstEmailStep = $this->sendEmailActionStep(1);
     $firstWaitStep->setNextStepId($sendFirstEmailStep->getId());
 
-    $secondWaitStep = $this->waitStep(3 * 60 * 60);
+    $secondWaitStep = $this->waitStep(3 * 60);
     $sendFirstEmailStep->setNextStepId($secondWaitStep->getId());
 
     $sendSecondEmailStep = $this->sendEmailActionStep(2);
