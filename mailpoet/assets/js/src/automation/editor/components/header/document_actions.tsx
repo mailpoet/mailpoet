@@ -10,6 +10,7 @@ import { useRef } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { chevronDown } from '@wordpress/icons';
 import { store } from '../../store';
+import { WorkflowStatus } from '../../../listing/workflow';
 
 // See: https://github.com/WordPress/gutenberg/blob/eff0cab2b3181c004dbd15398e570ecec28a3726/packages/edit-site/src/components/header/document-actions/index.js
 
@@ -21,9 +22,10 @@ const Dropdown: ComponentType<
 > = WpDropdown;
 
 export function DocumentActions({ children }): JSX.Element {
-  const { workflowName, showIconLabels } = useSelect(
+  const { workflowName, workflowStatus, showIconLabels } = useSelect(
     (select) => ({
       workflowName: select(store).getWorkflowData().name,
+      workflowStatus: select(store).getWorkflowData().status,
       showIconLabels: select(store).isFeatureActive('showIconLabels'),
     }),
     [],
@@ -34,11 +36,18 @@ export function DocumentActions({ children }): JSX.Element {
   const titleRef = useRef();
 
   return (
-    <div className="edit-site-document-actions">
+    <div className="edit-site-document-actions has-secondary-label">
       <div ref={titleRef} className="edit-site-document-actions__title-wrapper">
         <Text size="body" className="edit-site-document-actions__title" as="h1">
           <VisuallyHidden as="span">{__('Editing workflow: ')}</VisuallyHidden>
           {workflowName}
+        </Text>
+
+        <Text
+          size="body"
+          className="edit-site-document-actions__secondary-item"
+        >
+          {workflowStatus === WorkflowStatus.ACTIVE ? 'Active' : 'Not Active'}
         </Text>
 
         {children && (
