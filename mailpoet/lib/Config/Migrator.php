@@ -93,6 +93,7 @@ class Migrator {
     $this->migratePurchasedInCategoryDynamicFilters();
     $this->migrateEmailActionsFilters();
     $this->updateDefaultInactiveSubscriberTimeRange();
+    $this->setDefaultValueForLoadingThirdPartyLibrariesForExistingInstalls();
     $this->disableMailPoetCronTrigger();
     return $output;
   }
@@ -967,6 +968,21 @@ class Migrator {
     if ($currentValue === 180) {
       $this->settings->set('deactivate_subscriber_after_inactive_days', 365);
       $this->settingsChangeHandler->onInactiveSubscribersIntervalChange();
+    }
+
+    return true;
+  }
+
+  private function setDefaultValueForLoadingThirdPartyLibrariesForExistingInstalls(): bool {
+    // skip the migration if the DB version is higher than 3.91.1 or is not set (a new installation)
+    if (version_compare($this->settings->get('db_version', '3.91.2'), '3.91.1', '>')) {
+      return false;
+    }
+
+    $thirdPartyScriptsEnabled = $this->settings->get('3rd_party_libs');
+    if (is_null($thirdPartyScriptsEnabled)) {
+      // keep loading 3rd party libraries for existing users so the functionality is not broken
+      $this->settings->set('3rd_party_libs.enabled', '1');
     }
 
     return true;

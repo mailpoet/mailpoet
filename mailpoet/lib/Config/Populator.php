@@ -314,12 +314,6 @@ class Populator {
     }
     // reset mailer log
     MailerLog::resetMailerLog();
-
-    $thirdPartyScriptsEnabled = $this->settings->get('3rd_party_libs');
-    if (is_null($thirdPartyScriptsEnabled)) {
-      // keep loading 3rd party libraries for existing users so the functionality is not broken
-      $this->settings->set('3rd_party_libs.enabled', '1');
-    }
   }
 
   private function createDefaultUsersFlags() {
