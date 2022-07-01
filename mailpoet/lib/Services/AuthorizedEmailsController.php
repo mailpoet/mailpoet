@@ -13,6 +13,12 @@ use MailPoet\Settings\SettingsController;
 class AuthorizedEmailsController {
   const AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING = 'authorized_emails_addresses_check';
 
+  const AUTHORIZED_EMAIL_ADDRESSES_API_TYPE_AUTHORIZED = 'authorized';
+  const AUTHORIZED_EMAIL_ADDRESSES_API_TYPE_PENDING = 'pending';
+  const AUTHORIZED_EMAIL_ADDRESSES_API_TYPE_ALL = 'all';
+  const AUTHORIZED_EMAIL_ERROR_ALREADY_AUTHORIZED = 'Email address is already authorized';
+  const AUTHORIZED_EMAIL_ERROR_PENDING_CONFIRMATION = 'Email address is pending confirmation';
+
   /** @var Bridge */
   private $bridge;
 
@@ -56,6 +62,37 @@ class AuthorizedEmailsController {
     }
     $this->newslettersRepository->flush();
     $this->settings->set(self::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING, null);
+  }
+
+  public function getAllAuthorizedEmailAddress() {
+    return $this->bridge->getAuthorizedEmailAddresses(self::AUTHORIZED_EMAIL_ADDRESSES_API_TYPE_ALL);
+  }
+
+  public function createAuthorizedEmailAddress(string $email) {
+    $allEmails = $this->getAllAuthorizedEmailAddress();
+
+    $authorizedEmails = array_map('strtolower', $allEmails[self::AUTHORIZED_EMAIL_ADDRESSES_API_TYPE_AUTHORIZED]);
+    $isAuthorized = $this->validateAuthorizedEmail($authorizedEmails, $email);
+
+    if ($isAuthorized) {
+      throw new \InvalidArgumentException(self::AUTHORIZED_EMAIL_ERROR_ALREADY_AUTHORIZED);
+    }
+
+    $pendingEmails = array_map('strtolower', $allEmails[self::AUTHORIZED_EMAIL_ADDRESSES_API_TYPE_PENDING]);
+    $isPending = $this->validateAuthorizedEmail($pendingEmails, $email);
+
+    if ($isPending) {
+      throw new \InvalidArgumentException(self::AUTHORIZED_EMAIL_ERROR_PENDING_CONFIRMATION);
+    }
+
+    $finalData = $this->bridge->createAuthorizedEmailAddress($email);
+
+    return $finalData;
+  }
+
+  public function isEmailAddressAuthorized(string $email): bool {
+    $authorizedEmails = array_map('strtolower', $this->bridge->getAuthorizedEmailAddresses() ?: []);
+    return $this->validateAuthorizedEmail($authorizedEmails, $email);
   }
 
   public function checkAuthorizedEmailAddresses() {
