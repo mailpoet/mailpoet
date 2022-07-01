@@ -16,7 +16,9 @@ import { Sidebar } from './components/sidebar';
 import { Workflow } from './components/workflow';
 import { store, storeName } from './store';
 
-// See: https://github.com/WordPress/gutenberg/blob/9601a33e30ba41bac98579c8d822af63dd961488/packages/edit-post/src/components/layout/index.js
+// See:
+//   https://github.com/WordPress/gutenberg/blob/9601a33e30ba41bac98579c8d822af63dd961488/packages/edit-post/src/components/layout/index.js
+//   https://github.com/WordPress/gutenberg/blob/0ee78b1bbe9c6f3e6df99f3b967132fa12bef77d/packages/edit-site/src/components/editor/index.js
 
 function Editor(): JSX.Element {
   const {
