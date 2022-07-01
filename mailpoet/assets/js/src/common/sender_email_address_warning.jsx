@@ -1,6 +1,8 @@
+import { useState } from 'react';
 import PropTypes from 'prop-types';
 import { MailPoet } from 'mailpoet';
 import ReactStringReplace from 'react-string-replace';
+import { AuthorizeSenderEmailModal } from 'common/authorize_sender_email_modal';
 
 const userHostDomain = window.location.hostname.replace('www.', '');
 const suggestedEmailAddress = `contact@${userHostDomain}`;
@@ -10,24 +12,42 @@ function SenderEmailAddressWarning({
   mssActive,
   isEmailAuthorized,
 }) {
+  const [showAuthorizedEmailModel, setAuthorizedEmailModel] = useState(false);
+
+  const loadModal = (event) => {
+    event.preventDefault();
+    setAuthorizedEmailModel(true);
+  };
+
   if (mssActive) {
     if (!isEmailAuthorized) {
       return (
-        <p className="sender_email_address_warning">
-          {ReactStringReplace(
-            MailPoet.I18n.t('youNeedToAuthorizeTheEmail'),
-            '[email]',
-            () => emailAddress,
-          )}{' '}
-          <a
-            className="mailpoet-link"
-            href={`https://account.mailpoet.com/authorization?email=${emailAddress}`}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            {MailPoet.I18n.t('authorizeMyEmail')}
-          </a>
-        </p>
+        <>
+          {showAuthorizedEmailModel && (
+            <AuthorizeSenderEmailModal
+              senderEmail={emailAddress}
+              onRequestClose={() => {
+                setAuthorizedEmailModel(false);
+              }}
+            />
+          )}
+          <p className="sender_email_address_warning">
+            {ReactStringReplace(
+              MailPoet.I18n.t('youNeedToAuthorizeTheEmail'),
+              '[email]',
+              () => emailAddress,
+            )}{' '}
+            <a
+              className="mailpoet-link"
+              href="#"
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={loadModal}
+            >
+              {MailPoet.I18n.t('authorizeMyEmail')}
+            </a>
+          </p>
+        </>
       );
     }
     return null;
