@@ -15,6 +15,7 @@ class API {
 
   const RESPONSE_CODE_KEY_INVALID = 401;
   const RESPONSE_CODE_STATS_SAVED = 204;
+  const RESPONSE_CODE_CREATED = 201;
   const RESPONSE_CODE_INTERNAL_SERVER_ERROR = 500;
   const RESPONSE_CODE_BAD_GATEWAY = 502;
   const RESPONSE_CODE_TEMPORARY_UNAVAILABLE = 503;
@@ -177,6 +178,27 @@ class API {
     }
     $data = json_decode($this->wp->wpRemoteRetrieveBody($result), true);
     return is_array($data) ? $data : null;
+  }
+
+  public function createAuthorizedEmailAddress(string $emailAdress): bool {
+    $body = ['email' => $emailAdress];
+    $result = $this->request(
+      $this->urlAuthorizedEmailAddresses,
+      $body
+    );
+
+    $code = $this->wp->wpRemoteRetrieveResponseCode($result);
+    $isSuccess = $code === self::RESPONSE_CODE_CREATED;
+
+    if (!$isSuccess) {
+      $logData = [
+        'code' => $code,
+        'error' => is_wp_error($result) ? $result->get_error_message() : null,
+      ];
+      $this->loggerFactory->getLogger(LoggerFactory::TOPIC_BRIDGE)->error('CreateAuthorizedEmailAddress API call failed.', $logData);
+    }
+
+    return $isSuccess;
   }
 
   public function setKey($apiKey) {

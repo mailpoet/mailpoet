@@ -197,6 +197,55 @@ class Settings extends APIEndpoint {
     return $this->successResponse();
   }
 
+  /**
+   * Makes POST request to Bridge endpoint to add email to user email authorization list
+   */
+  public function authorizeSenderEmailAddress($data = []) {
+    $emailAddress = $data['email'] ?? null;
+
+    if (!$emailAddress) {
+      return $this->badRequest([
+        APIError::BAD_REQUEST => WPFunctions::get()->__('No email address specified.', 'mailpoet'),
+      ]);
+    }
+
+    $emailAddress = trim($emailAddress);
+
+    try {
+      $response = $this->authorizedEmailsController->createAuthorizedEmailAddress($emailAddress);
+    } catch (\InvalidArgumentException $e) {
+      if (
+        $e->getMessage() === AuthorizedEmailsController::AUTHORIZED_EMAIL_ERROR_ALREADY_AUTHORIZED ||
+        $e->getMessage() === AuthorizedEmailsController::AUTHORIZED_EMAIL_ERROR_PENDING_CONFIRMATION
+      ) {
+        // return true if the email is already authorized or pending confirmation
+        $response = true;
+      } else {
+        return $this->badRequest([
+          APIError::BAD_REQUEST => WPFunctions::get()->__($e->getMessage(), 'mailpoet'),
+        ]);
+      }
+    }
+
+    return $this->successResponse($response);
+  }
+
+  public function confirmSenderEmailAddressIsAuthorized($data = []) {
+    $emailAddress = $data['email'] ?? null;
+
+    if (!$emailAddress) {
+      return $this->badRequest([
+        APIError::BAD_REQUEST => WPFunctions::get()->__('No email address specified.', 'mailpoet'),
+      ]);
+    }
+
+    $emailAddress = trim($emailAddress);
+
+    $response = ['isAuthorized' => $this->authorizedEmailsController->isEmailAddressAuthorized($emailAddress)];
+
+    return $this->successResponse($response);
+  }
+
   private function onSettingsChange($oldSettings, $newSettings) {
     // Recalculate inactive subscribers
     $oldInactivationInterval = $oldSettings['deactivate_subscriber_after_inactive_days'];
