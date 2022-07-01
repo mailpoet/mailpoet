@@ -7,7 +7,9 @@ import {
 import { __ } from '@wordpress/i18n';
 import { stepSidebarKey, store, workflowSidebarKey } from '../../store';
 
-// See: https://github.com/WordPress/gutenberg/blob/9601a33e30ba41bac98579c8d822af63dd961488/packages/edit-post/src/components/keyboard-shortcuts/index.js
+// See:
+//    https://github.com/WordPress/gutenberg/blob/9601a33e30ba41bac98579c8d822af63dd961488/packages/edit-post/src/components/keyboard-shortcuts/index.js
+//    https://github.com/WordPress/gutenberg/blob/0ee78b1bbe9c6f3e6df99f3b967132fa12bef77d/packages/edit-site/src/components/keyboard-shortcuts/index.js
 
 export function KeyboardShortcuts(): null {
   const { isSidebarOpened, selectedStep } = useSelect((select) => ({
