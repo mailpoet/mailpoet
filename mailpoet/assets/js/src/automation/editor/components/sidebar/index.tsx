@@ -35,7 +35,9 @@ export function Sidebar(props: Props): JSX.Element {
       (select) => ({
         keyboardShortcut: select(
           keyboardShortcutsStore,
-        ).getShortcutRepresentation('core/edit-post/toggle-sidebar'),
+        ).getShortcutRepresentation(
+          'mailpoet/automation-editor/toggle-sidebar',
+        ),
         sidebarKey:
           select(interfaceStore).getActiveComplementaryArea(storeName) ??
           workflowSidebarKey,

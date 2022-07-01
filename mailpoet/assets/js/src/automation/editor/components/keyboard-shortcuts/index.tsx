@@ -21,7 +21,7 @@ export function KeyboardShortcuts(): null {
 
   useEffect(() => {
     registerShortcut({
-      name: 'core/edit-post/toggle-fullscreen',
+      name: 'mailpoet/automation-editor/toggle-fullscreen',
       category: 'global',
       description: __('Toggle fullscreen mode.'),
       keyCombination: {
@@ -31,7 +31,7 @@ export function KeyboardShortcuts(): null {
     });
 
     registerShortcut({
-      name: 'core/edit-post/toggle-sidebar',
+      name: 'mailpoet/automation-editor/toggle-sidebar',
       category: 'global',
       description: __('Show or hide the settings sidebar.'),
       keyCombination: {
@@ -41,11 +41,11 @@ export function KeyboardShortcuts(): null {
     });
   }, [registerShortcut]);
 
-  useShortcut('core/edit-post/toggle-fullscreen', () => {
+  useShortcut('mailpoet/automation-editor/toggle-fullscreen', () => {
     toggleFeature('fullscreenMode');
   });
 
-  useShortcut('core/edit-post/toggle-sidebar', (event) => {
+  useShortcut('mailpoet/automation-editor/toggle-sidebar', (event) => {
     event.preventDefault();
 
     if (isSidebarOpened()) {
