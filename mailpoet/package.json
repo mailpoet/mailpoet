@@ -176,7 +176,6 @@
     "exports-loader": "^3.1.0",
     "expose-loader": "^3.1.0",
     "fork-ts-checker-webpack-plugin": "^7.2.1",
-    "glob-parent": "^6.0.2",
     "grunt-cli": "^1.4.3",
     "husky": "^7.0.4",
     "imports-loader": "^3.1.1",
@@ -185,9 +184,7 @@
     "js-yaml": "^4.1.0",
     "jsdom": "^19.0.0",
     "json-loader": "^0.5.7",
-    "meow": "^9.0.0",
     "mocha": "^9.2.2",
-    "path-browserify": "^1.0.1",
     "phplint": "^2.0.5",
     "postcss-cli": "^9.1.0",
     "postcss-scss": "^4.0.3",
@@ -201,7 +198,6 @@
     "stylelint-order": "^5.0.0",
     "stylelint-scss": "^4.2.0",
     "terser-webpack-plugin": "^5.3.1",
-    "trim": "^1.0.1",
     "ts-loader": "^9.2.8",
     "typescript": "^4.6.3",
     "url": "^0.11.0",
@@ -211,12 +207,8 @@
     "wp-types": "^3.59.1"
   },
   "overrides": {
-    "prismjs": "$prismjs",
     "webpack": "$webpack",
-    "react": "$react",
     "underscore": "$underscore",
-    "trim": "$trim",
-    "glob-parent": "$glob-parent",
-    "meow": "$meow"
+    "react": "$react"
   }
 }
