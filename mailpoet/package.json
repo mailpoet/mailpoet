@@ -161,7 +161,7 @@
     "@types/wordpress__url": "^2.14.0",
     "@wordpress/browserslist-config": "^4.1.2",
     "@wordpress/dependency-extraction-webpack-plugin": "^3.4.1",
-    "@wordpress/scripts": "^23.3.0",
+    "@wordpress/scripts": "^22.3.0",
     "autoprefixer": "^10.4.4",
     "babel-loader": "^8.2.4",
     "babel-plugin-transform-commonjs": "^1.1.6",
