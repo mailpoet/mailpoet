@@ -34,6 +34,10 @@ const columns = [
     label: MailPoet.I18n.t('lists'),
   },
   {
+    name: 'tags',
+    label: MailPoet.I18n.t('tags'),
+  },
+  {
     name: 'statistics',
     label: MailPoet.I18n.t('statisticsColumn'),
     display: mailpoetTrackingEnabled,
@@ -400,6 +404,7 @@ function SubscriberList({ match }) {
     }
 
     const subscribedSegments = [];
+    const subscriberTags = [];
 
     // Subscriptions
     if (subscriber.subscriptions.length > 0) {
@@ -409,6 +414,13 @@ function SubscriberList({ match }) {
         if (subscription.status === 'subscribed') {
           subscribedSegments.push(segment);
         }
+      });
+    }
+
+    // Tags
+    if (subscriber.tags.length > 0) {
+      subscriber.tags.forEach((tag) => {
+        subscriberTags.push(tag.name);
       });
     }
 
@@ -436,6 +448,14 @@ function SubscriberList({ match }) {
         </td>
         <td className="column" data-colname={MailPoet.I18n.t('lists')}>
           <Tags segments={subscribedSegments} dimension="large" />
+        </td>
+        <td className="column" data-colname={MailPoet.I18n.t('tags')}>
+          <Tags
+            strings={subscriberTags}
+            dimension="large"
+            variant="wordpress"
+            isInverted
+          />
         </td>
         {mailpoetTrackingEnabled === true ? (
           <td
