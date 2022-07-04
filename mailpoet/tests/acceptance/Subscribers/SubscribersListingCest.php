@@ -4,19 +4,26 @@ namespace MailPoet\Test\Acceptance;
 
 use MailPoet\Subscribers\ConfirmationEmailMailer;
 use MailPoet\Test\DataFactories\Subscriber;
+use MailPoet\Test\DataFactories\Tag;
 
 class SubscribersListingCest {
   public function subscribersListing(\AcceptanceTester $i) {
     $i->wantTo('Open subscribers listings page');
 
+    $tag = (new Tag())
+      ->withName('My Tag')
+      ->create();
+
     (new Subscriber())
       ->withEmail('wp@example.com')
+      ->withTags([$tag])
       ->create();
 
     $i->login();
     $i->amOnMailpoetPage('Subscribers');
     $i->searchFor('wp@example.com');
     $i->waitForText('wp@example.com');
+    $i->waitForText('My Tag');
   }
 
   public function sendConfirmationEmail(\AcceptanceTester $i) {
