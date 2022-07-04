@@ -198,7 +198,7 @@ class Settings extends APIEndpoint {
   }
 
   /**
-   * Makes POST request to Bridge endpoint to add email to user email authorization list
+   * Create POST request to Bridge endpoint to add email to user email authorization list
    */
   public function authorizeSenderEmailAddress($data = []) {
     $emailAddress = $data['email'] ?? null;
