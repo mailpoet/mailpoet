@@ -66,6 +66,7 @@ class SubscribersResponseBuilder {
       'is_woocommerce_user' => $subscriber->getIsWoocommerceUser(),
       'created_at' => ($createdAt = $subscriber->getCreatedAt()) ? $createdAt->format(self::DATE_FORMAT) : null,
       'engagement_score' => $subscriber->getEngagementScore(),
+      'tags' => $this->buildTags($subscriber),
     ];
   }
 
