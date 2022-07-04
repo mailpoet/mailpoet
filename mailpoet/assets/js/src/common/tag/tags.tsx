@@ -13,9 +13,18 @@ type Props = {
   dimension?: 'large';
   segments?: Segment[];
   strings?: string[];
+  variant?: 'average' | 'good' | 'excellent' | 'list' | 'unknown' | 'wordpress';
+  isInverted?: boolean;
 };
 
-function Tags({ children, dimension, segments, strings }: Props) {
+function Tags({
+  children,
+  dimension,
+  segments,
+  strings,
+  variant,
+  isInverted,
+}: Props) {
   return (
     <div className="mailpoet-tags">
       {children}
@@ -52,7 +61,12 @@ function Tags({ children, dimension, segments, strings }: Props) {
         })}
       {strings &&
         strings.map((string) => (
-          <Tag key={string} dimension={dimension} variant="list">
+          <Tag
+            key={string}
+            dimension={dimension}
+            variant={variant || 'list'} // due to backward compatibility we use `list` as the default value
+            isInverted={isInverted}
+          >
             {string}
           </Tag>
         ))}
