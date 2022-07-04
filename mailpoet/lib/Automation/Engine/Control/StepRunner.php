@@ -126,8 +126,9 @@ class StepRunner {
       return;
     }
 
-    // no need to schedule a new step if the next step is null
+    // no need to schedule a new step if the next step is null, complete the run
     if (empty($nextStepArgs[0]['step_id'])) {
+      $this->workflowRunStorage->updateStatus($workflowRunId, WorkflowRun::STATUS_COMPLETE);
       return;
     }
 
