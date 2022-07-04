@@ -60,6 +60,7 @@ class SubscribersResponseBuilderTest extends \MailPoetTest {
       ->withIsWooCommerceUser()
       ->withWpUserId(2)
       ->withSegments([$this->segment])
+      ->withTags([$this->tag])
       ->create();
   }
 
@@ -90,23 +91,10 @@ class SubscribersResponseBuilderTest extends \MailPoetTest {
     $this->assertCount(0, $response['unsubscribes']);
     $this->checkSubscription($response, $subscriber);
     // check tags
-    $tag = reset($response['tags']);
-    $this->assertCount(1, $response['tags']);
-    $this->assertEquals($subscriber->getId(), $tag['subscriber_id']);
-    $this->assertEquals($this->tag->getId(), $tag['tag_id']);
-    $this->assertEquals($this->tag->getName(), $tag['name']);
-    $this->assertArrayHasKey('created_at', $tag);
-    $this->assertArrayHasKey('updated_at', $tag);
+    $this->checkTag($response, $subscriber);
   }
 
   public function testItBuildsListingResponse(): void {
-//    'email' => $subscriber->getEmail(),
-//    'first_name' => $subscriber->getFirstName(),
-//    'last_name' => $subscriber->getLastName(),
-//    'subscriptions' => $this->buildSubscriptions($subscriber),
-//    'status' => $subscriber->getStatus(),
-//    'wp_user_id' => $subscriber->getWpUserId(),
-//    'is_woocommerce_user' => $subscriber->getIsWoocommerceUser(),
     $subscribers = [
       $this->subscriber1,
       $this->subscriber2,
@@ -128,6 +116,8 @@ class SubscribersResponseBuilderTest extends \MailPoetTest {
       $this->assertArrayHasKey('engagement_score', $item);
       // check subscriptions
       $this->checkSubscription($item, $subscriber);
+      // check tags
+      $this->checkTag($item, $subscriber);
     }
   }
 
@@ -141,6 +131,16 @@ class SubscribersResponseBuilderTest extends \MailPoetTest {
     $this->assertArrayHasKey('updated_at', $subscription);
   }
 
+  private function checkTag(array $responseItem, SubscriberEntity $subscriber): void {
+    $this->assertCount(1, $responseItem['tags']);
+    $tag = reset($responseItem['tags']);
+    $this->assertEquals($subscriber->getId(), $tag['subscriber_id']);
+    $this->assertEquals($this->tag->getId(), $tag['tag_id']);
+    $this->assertEquals($this->tag->getName(), $tag['name']);
+    $this->assertArrayHasKey('created_at', $tag);
+    $this->assertArrayHasKey('updated_at', $tag);
+  }
+
   protected function _after() {
     $this->truncateEntity(SegmentEntity::class);
     $this->truncateEntity(SubscriberEntity::class);
@@ -148,6 +148,4 @@ class SubscribersResponseBuilderTest extends \MailPoetTest {
     $this->truncateEntity(TagEntity::class);
     $this->truncateEntity(SubscriberTagEntity::class);
   }
-
-
 }
