@@ -193,7 +193,7 @@ class API {
     if (!$isSuccess) {
       $logData = [
         'code' => $code,
-        'error' => is_wp_error($result) ? $result->get_error_message() : null,
+        'error' => is_wp_error($result) ? $result->get_error_message() : $this->wp->wpRemoteRetrieveBody($result),
       ];
       $this->loggerFactory->getLogger(LoggerFactory::TOPIC_BRIDGE)->error('CreateAuthorizedEmailAddress API call failed.', $logData);
     }
