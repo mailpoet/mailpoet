@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import ReactStringReplace from 'react-string-replace';
 import PropTypes from 'prop-types';
+import { noop } from 'lodash';
 import moment from 'moment';
 import { MailPoet } from 'mailpoet';
 import { Modal } from 'common/modal/modal';
@@ -10,32 +11,66 @@ const SET_INTERVAL_SECONDS = 15;
 
 const STOP_POLLING_AFTER = 2; // hours
 
-type ApiActionType = 'create' | 'confirm';
+type ApiActionType = 'create' | 'confirm' | 'setup';
 
 /**
  * @param {string} email - Email address
  * @param {ApiActionType} type - action type
  * @returns {Promise}
  */
-const makeApiRequest = (email: string, type: ApiActionType = 'create') =>
-  MailPoet.Ajax.post({
+const makeApiRequest = (email: string, type: ApiActionType = 'create') => {
+  let requestAction = 'authorizeSenderEmailAddress';
+  let requestData: unknown = { email };
+
+  if (type === 'confirm') {
+    requestAction = 'confirmSenderEmailAddressIsAuthorized';
+  } else if (type === 'setup') {
+    requestAction = 'setAuthorizedFromAddress';
+    requestData = {
+      address: email,
+    };
+  }
+
+  return MailPoet.Ajax.post({
     api_version: MailPoet.apiVersion,
     endpoint: 'settings',
-    action:
-      type === 'create'
-        ? 'authorizeSenderEmailAddress'
-        : 'confirmSenderEmailAddressIsAuthorized',
-    data: {
-      email,
-    },
+    action: requestAction,
+    data: requestData,
   });
+};
+
+const removeUnauthorizedEmailNotices = () => {
+  const unauthorizedEmailNotice = document.querySelector(
+    '[data-notice="unauthorized-email-addresses-notice"]',
+  );
+  if (unauthorizedEmailNotice) {
+    unauthorizedEmailNotice.remove();
+  }
+  const unauthorizedEmailInNewsletterNotice = document.querySelector(
+    '[data-notice="unauthorized-email-in-newsletters-addresses-notice"]',
+  );
+  if (unauthorizedEmailInNewsletterNotice) {
+    unauthorizedEmailInNewsletterNotice.remove();
+  }
+  const unauthorizedEmailInNewsletterDynamicNotice = document.querySelector(
+    '[data-id="mailpoet_authorization_error"]',
+  );
+  if (unauthorizedEmailInNewsletterDynamicNotice) {
+    unauthorizedEmailInNewsletterDynamicNotice.remove();
+  }
+};
 
 type Props = {
   senderEmail: string;
   onRequestClose: () => void;
+  setAuthorizedAddress?: (emailAddress: string) => void;
 };
 
-function AuthorizeSenderEmailModal({ senderEmail, onRequestClose }: Props) {
+function AuthorizeSenderEmailModal({
+  senderEmail,
+  onRequestClose,
+  setAuthorizedAddress,
+}: Props) {
   const [createEmailApiResponse, setCreateEmailApiResponse] =
     useState<boolean>(null);
   const [confirmEmailApiResponse, setConfirmEmailApiResponse] =
@@ -71,10 +106,16 @@ function AuthorizeSenderEmailModal({ senderEmail, onRequestClose }: Props) {
 
           if (response) {
             clearCurrentInterval(currentIntervalId);
-            setCreateEmailApiResponse(null);
-            setShowLoader(false);
-            setConfirmEmailApiResponse(true);
+            return makeApiRequest(senderEmailAddress, 'setup');
           }
+          throw new Error('Error: unconfirmed');
+        })
+        .then(() => {
+          setCreateEmailApiResponse(null);
+          setShowLoader(false);
+          setConfirmEmailApiResponse(true);
+          setAuthorizedAddress(senderEmailAddress);
+          removeUnauthorizedEmailNotices();
         })
         .catch(() => {
           //
@@ -105,7 +146,7 @@ function AuthorizeSenderEmailModal({ senderEmail, onRequestClose }: Props) {
     setIntervalId.current = invervalID;
 
     return () => clearCurrentInterval(invervalID);
-  }, [senderEmailAddress]);
+  }, [senderEmailAddress, setAuthorizedAddress]);
 
   return (
     <Modal
@@ -148,6 +189,10 @@ function AuthorizeSenderEmailModal({ senderEmail, onRequestClose }: Props) {
 
 AuthorizeSenderEmailModal.propTypes = {
   senderEmail: PropTypes.string.isRequired,
+};
+
+AuthorizeSenderEmailModal.defaultProps = {
+  setAuthorizedAddress: noop,
 };
 
 export { AuthorizeSenderEmailModal };
