@@ -68,6 +68,17 @@
   }
 }
 
+.mailpoet-tag-wordpress {
+  background: $color-wordpress-button-background;
+  border-color: $color-wordpress-button-border;
+  color: $color-wordpress-button-border;
+
+  &.mailpoet-tag-inverted {
+    background: $color-wordpress-button-border;
+    color: $color-wordpress-button-background;
+  }
+}
+
 .mailpoet-tag-list {
   background: rgba($color-tertiary-light, .7);
   border-color: transparent;

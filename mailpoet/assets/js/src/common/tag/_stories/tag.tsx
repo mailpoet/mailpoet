@@ -61,6 +61,20 @@ export function Tags() {
         Excellent
       </Tag>
       <div className="mailpoet-gap" />
+      <Tag dimension="large" variant="wordpress">
+        WordPress
+      </Tag>
+      &nbsp;
+      <Tag dimension="large" variant="wordpress" isInverted>
+        WordPress
+      </Tag>
+      <br />
+      <Tag variant="wordpress">WordPress</Tag>
+      &nbsp;
+      <Tag variant="wordpress" isInverted>
+        WordPress
+      </Tag>
+      <div className="mailpoet-gap" />
       <Tag dimension="large" variant="list">
         My default list
       </Tag>

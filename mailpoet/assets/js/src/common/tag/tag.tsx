@@ -3,7 +3,7 @@ import classnames from 'classnames';
 
 type Props = {
   children?: ReactNode;
-  variant?: 'average' | 'good' | 'excellent' | 'list' | 'unknown';
+  variant?: 'average' | 'good' | 'excellent' | 'list' | 'unknown' | 'wordpress';
   dimension?: 'large';
   isInverted?: boolean;
   className?: string;
