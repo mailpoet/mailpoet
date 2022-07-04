@@ -13,6 +13,7 @@ function SenderEmailAddressWarning({
   isEmailAuthorized,
 }) {
   const [showAuthorizedEmailModel, setAuthorizedEmailModel] = useState(false);
+  const [authorizedEmailAddress, setAuthorizedEmailAddress] = useState('');
 
   const loadModal = (event) => {
     event.preventDefault();
@@ -29,24 +30,27 @@ function SenderEmailAddressWarning({
               onRequestClose={() => {
                 setAuthorizedEmailModel(false);
               }}
+              setAuthorizedAddress={setAuthorizedEmailAddress}
             />
           )}
-          <p className="sender_email_address_warning">
-            {ReactStringReplace(
-              MailPoet.I18n.t('youNeedToAuthorizeTheEmail'),
-              '[email]',
-              () => emailAddress,
-            )}{' '}
-            <a
-              className="mailpoet-link"
-              href="#"
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={loadModal}
-            >
-              {MailPoet.I18n.t('authorizeMyEmail')}
-            </a>
-          </p>
+          {authorizedEmailAddress ? null : (
+            <p className="sender_email_address_warning">
+              {ReactStringReplace(
+                MailPoet.I18n.t('youNeedToAuthorizeTheEmail'),
+                '[email]',
+                () => emailAddress,
+              )}{' '}
+              <a
+                className="mailpoet-link"
+                href="#"
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={loadModal}
+              >
+                {MailPoet.I18n.t('authorizeMyEmail')}
+              </a>
+            </p>
+          )}
         </>
       );
     }
