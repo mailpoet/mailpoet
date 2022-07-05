@@ -16,3 +16,4 @@ import 'experimental_features/experimental_features.jsx'; // side effect - rende
 import 'logs/logs'; // side effect - renders ReactDOM to document
 import 'sending-paused-notices-fix-button.tsx'; // side effect - renders ReactDOM to document
 import 'sending-paused-notices-resume-button.ts'; // side effect - executes on doc ready, adds events
+import 'sending-paused-notices-authorize-email.tsx'; // side effect - renders ReactDOM to document
