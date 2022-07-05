@@ -9,7 +9,7 @@ use MailPoet\Automation\Engine\Workflows\Step;
 use MailPoet\Automation\Engine\Workflows\Workflow;
 use MailPoet\Automation\Engine\Workflows\WorkflowRun;
 
-class WaitAction implements Action {
+class DelayAction implements Action {
   /** @var ActionScheduler */
   private $actionScheduler;
 
@@ -20,11 +20,11 @@ class WaitAction implements Action {
   }
 
   public function getKey(): string {
-    return 'core:wait';
+    return 'core:delay';
   }
 
   public function getName(): string {
-    return __('Wait', 'mailpoet');
+    return __('Delay', 'mailpoet');
   }
 
   public function run(Workflow $workflow, WorkflowRun $workflowRun, Step $step): void {

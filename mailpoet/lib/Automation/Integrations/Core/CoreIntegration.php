@@ -4,19 +4,19 @@ namespace MailPoet\Automation\Integrations\Core;
 
 use MailPoet\Automation\Engine\Integration;
 use MailPoet\Automation\Engine\Registry;
-use MailPoet\Automation\Integrations\Core\Actions\WaitAction;
+use MailPoet\Automation\Integrations\Core\Actions\DelayAction;
 
 class CoreIntegration implements Integration {
-  /** @var WaitAction */
-  private $waitAction;
+  /** @var DelayAction */
+  private $delayAction;
 
   public function __construct(
-    WaitAction $waitAction
+    DelayAction $delayAction
   ) {
-    $this->waitAction = $waitAction;
+    $this->delayAction = $delayAction;
   }
 
   public function register(Registry $registry): void {
-    $registry->addAction($this->waitAction);
+    $registry->addAction($this->delayAction);
   }
 }

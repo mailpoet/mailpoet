@@ -11,10 +11,10 @@ const createSendWelcomeEmailStep = () => ({
   },
 });
 
-const createWaitStep = (nextStepId: string) => ({
+const createDelayStep = (nextStepId: string) => ({
   id: id(),
   type: 'action',
-  key: 'core:wait',
+  key: 'core:delay',
   next_step_id: nextStepId,
   args: {
     seconds: 60,
@@ -30,13 +30,13 @@ const createTrigger = (nextStepId: string) => ({
 
 const createWorkflow = () => {
   const sendWelcomeEmail = createSendWelcomeEmailStep();
-  const wait = createWaitStep(sendWelcomeEmail.id);
-  const trigger = createTrigger(wait.id);
+  const delay = createDelayStep(sendEmail.id);
+  const trigger = createTrigger(delay.id);
   return {
     name: `Test ${new Date().toISOString()}`,
     steps: {
       [trigger.id]: trigger,
-      [wait.id]: wait,
+      [delay.id]: delay,
       [sendWelcomeEmail.id]: sendWelcomeEmail,
     },
   };
