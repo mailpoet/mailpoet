@@ -5,7 +5,7 @@ namespace MailPoet\Automation\Integrations\MailPoet\Templates;
 use MailPoet\Automation\Engine\Workflows\Step;
 use MailPoet\Automation\Engine\Workflows\Workflow;
 use MailPoet\Automation\Integrations\Core\Actions\DelayAction;
-use MailPoet\Automation\Integrations\MailPoet\Actions\SendWelcomeEmailAction;
+use MailPoet\Automation\Integrations\MailPoet\Actions\SendEmailAction;
 use MailPoet\Automation\Integrations\MailPoet\Triggers\SegmentSubscribedTrigger;
 use MailPoet\Util\Security;
 
@@ -17,17 +17,17 @@ class WorkflowBuilder {
   /** @var SegmentSubscribedTrigger */
   private $segmentSubscribedTrigger;
 
-  /** @var SendWelcomeEmailAction */
-  private $sendWelcomeEmailAction;
+  /** @var SendEmailAction */
+  private $sendEmailAction;
 
   public function __construct(
     SegmentSubscribedTrigger $segmentSubscribedTrigger,
-    SendWelcomeEmailAction $sendWelcomeEmailAction,
+    SendEmailAction $sendEmailAction,
     DelayAction $delayAction
   ) {
     $this->delayAction = $delayAction;
     $this->segmentSubscribedTrigger = $segmentSubscribedTrigger;
-    $this->sendWelcomeEmailAction = $sendWelcomeEmailAction;
+    $this->sendEmailAction = $sendEmailAction;
   }
 
   public function delayedEmailAfterSignupWorkflow(string $name): Workflow {
@@ -87,8 +87,8 @@ class WorkflowBuilder {
   }
 
   private function sendEmailActionStep(?int $newsletterId = null): Step {
-    return new Step($this->uniqueId(), Step::TYPE_ACTION, $this->sendWelcomeEmailAction->getKey(), null, [
-      'welcomeEmailId' => $newsletterId
+    return new Step($this->uniqueId(), Step::TYPE_ACTION, $this->sendEmailAction->getKey(), null, [
+      'email_id' => $newsletterId
     ]);
   }
 

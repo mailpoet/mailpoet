@@ -16,7 +16,7 @@ function getIcon(step: StepType): JSX.Element | null {
     return <DelayIcon />;
   }
 
-  if (step.key === 'mailpoet:send-welcome-email') {
+  if (step.key === 'mailpoet:send-email') {
     return <EmailIcon />;
   }
 
@@ -33,8 +33,8 @@ function getTitle(step: StepType): string {
     return 'Delay';
   }
 
-  if (step.key === 'mailpoet:send-welcome-email') {
-    return 'Send welcome email';
+  if (step.key === 'mailpoet:send-email') {
+    return 'Send email';
   }
 
   return '';
@@ -48,8 +48,8 @@ function getSubtitle(step: StepType): string {
   if (step.key === 'core:delay') {
     return `${step.args.seconds as number} seconds`;
   }
-  if (step.key === 'mailpoet:send-welcome-email') {
-    return `Email ID: ${step.args.welcomeEmailId as number}`;
+  if (step.key === 'mailpoet:send-email') {
+    return `Email ID: ${step.args.email_id as number}`;
   }
   return step.key;
 }

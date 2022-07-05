@@ -2,12 +2,12 @@ import { ReactNode } from 'react';
 import { useMutation } from './api';
 import { id } from './id';
 
-const createSendWelcomeEmailStep = () => ({
+const createSendEmailStep = () => ({
   id: id(),
   type: 'action',
-  key: 'mailpoet:send-welcome-email',
+  key: 'mailpoet:send-email',
   args: {
-    welcomeEmailId: 1,
+    email_id: 1,
   },
 });
 
@@ -29,7 +29,7 @@ const createTrigger = (nextStepId: string) => ({
 });
 
 const createWorkflow = () => {
-  const sendWelcomeEmail = createSendWelcomeEmailStep();
+  const sendEmail = createSendEmailStep();
   const delay = createDelayStep(sendEmail.id);
   const trigger = createTrigger(delay.id);
   return {
@@ -37,7 +37,7 @@ const createWorkflow = () => {
     steps: {
       [trigger.id]: trigger,
       [delay.id]: delay,
-      [sendWelcomeEmail.id]: sendWelcomeEmail,
+      [sendEmail.id]: sendEmail,
     },
   };
 };
