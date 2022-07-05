@@ -30,34 +30,31 @@ class Segment {
   }
 
   /**
-   * @param string $name
    * @return $this
    */
-  public function withName($name) {
-    $this->data['name'] = $name;
-    return $this;
+  public function withName(string $name) {
+    return $this->update('name', $name);
   }
 
   /**
-   * @param string $description
    * @return $this
    */
-  public function withDescription($description) {
-    $this->data['description'] = $description;
-    return $this;
+  public function withDescription(string $description) {
+    return $this->update('description', $description);
   }
 
   /**
    * @return $this
    */
   public function withDeleted() {
-    $this->data['deleted_at'] = Carbon::now();
-    return $this;
+    return $this->update('deleted_at', Carbon::now());
   }
 
-  public function withType($type) {
-    $this->data['type'] = $type;
-    return $this;
+  /**
+   * @return $this
+   */
+  public function withType(string $type) {
+    return $this->update('type', $type);
   }
 
   public function create(): SegmentEntity {
@@ -71,5 +68,16 @@ class Segment {
       $this->entityManager->flush();
     }
     return $segment;
+  }
+
+  /**
+   * @return $this
+   */
+  private function update(string $item, $value) {
+    $data = $this->data;
+    $data[$item] = $value;
+    $new = clone $this;
+    $new->data = $data;
+    return $new;
   }
 }
