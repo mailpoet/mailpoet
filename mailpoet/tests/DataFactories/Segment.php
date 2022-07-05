@@ -4,7 +4,7 @@ namespace MailPoet\Test\DataFactories;
 
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\SegmentEntity;
-use MailPoet\Segments\SegmentSaveController;
+use MailPoet\Segments\SegmentsRepository;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 
@@ -16,14 +16,16 @@ class Segment {
   /** @var EntityManager */
   protected $entityManager;
 
-  /** @var SegmentSaveController */
-  protected $saveController;
+  /** @var SegmentsRepository */
+  protected $segmentsRepository;
 
   public function __construct() {
     $this->entityManager = ContainerWrapper::getInstance()->get(EntityManager::class);
-    $this->saveController = ContainerWrapper::getInstance()->get(SegmentSaveController::class);
+    $this->segmentsRepository = ContainerWrapper::getInstance()->get(SegmentsRepository::class);
     $this->data = [
+      'type' => SegmentEntity::TYPE_DEFAULT,
       'name' => 'List ' . bin2hex(random_bytes(7)), // phpcs:ignore
+      'description' => '',
     ];
   }
 
@@ -59,7 +61,11 @@ class Segment {
   }
 
   public function create(): SegmentEntity {
-    $segment = $this->saveController->save($this->data);
+    $segment = $this->segmentsRepository->createOrUpdate(
+      $this->data['name'],
+      $this->data['description'],
+      $this->data['type']
+    );
     if (($this->data['deleted_at'] ?? null) instanceof \DateTimeInterface) {
       $segment->setDeletedAt($this->data['deleted_at']);
       $this->entityManager->flush();

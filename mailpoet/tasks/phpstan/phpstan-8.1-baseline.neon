@@ -1316,11 +1316,6 @@ parameters:
 			path: ../../lib/WooCommerce/Helper.php
 
 		-
-			message: "#^PHPDoc type MailPoet\\\\Segments\\\\DynamicSegments\\\\SegmentSaveController of property MailPoet\\\\Test\\\\DataFactories\\\\DynamicSegment\\:\\:\\$saveController is not covariant with PHPDoc type MailPoet\\\\Segments\\\\SegmentSaveController of overridden property MailPoet\\\\Test\\\\DataFactories\\\\Segment\\:\\:\\$saveController\\.$#"
-			count: 1
-			path: ../../tests/DataFactories/DynamicSegment.php
-
-		-
 			message: "#^Parameter \\#1 \\$body of method MailPoet\\\\Entities\\\\FormEntity\\:\\:setBody\\(\\) expects array\\|null, mixed given\\.$#"
 			count: 1
 			path: ../../tests/DataFactories/Form.php
