@@ -95,6 +95,12 @@ class Exceptions {
       ->withMessage(__(sprintf("Subject with key '%s' not found.", $key), 'mailpoet'));
   }
 
+  public static function subjectClassNotFound(string $key): NotFoundException {
+    return NotFoundException::create()
+      ->withErrorCode(self::SUBJECT_NOT_FOUND)
+      ->withMessage(__(sprintf("Subject of class '%s' not found.", $key), 'mailpoet'));
+  }
+
   public static function subjectLoadFailed(string $key, array $args): InvalidStateException {
     return InvalidStateException::create()
       ->withErrorCode(self::SUBJECT_LOAD_FAILED)
