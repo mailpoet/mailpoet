@@ -20,6 +20,7 @@ class Exceptions {
   private const WORKFLOW_RUN_NOT_RUNNING = 'mailpoet_automation_workflow_run_not_running';
   private const SUBJECT_NOT_FOUND = 'mailpoet_automation_subject_not_found';
   private const SUBJECT_LOAD_FAILED = 'mailpoet_automation_workflow_subject_load_failed';
+  private const MULTIPLE_SUBJECTS_FOUND = 'mailpoet_automation_multiple_subjects_found';
 
   public function __construct() {
     throw new InvalidStateException(
@@ -98,5 +99,11 @@ class Exceptions {
     return InvalidStateException::create()
       ->withErrorCode(self::SUBJECT_LOAD_FAILED)
       ->withMessage(__(sprintf("Subject with key '%s' and args '%s' failed to load.", $key, Json::encode($args)), 'mailpoet'));
+  }
+
+  public static function multipleSubjectsFound(string $key): InvalidStateException {
+    return InvalidStateException::create()
+      ->withErrorCode(self::MULTIPLE_SUBJECTS_FOUND)
+      ->withMessage(__(sprintf("Multiple subjects with key '%s' found, only one expected.", $key), 'mailpoet'));
   }
 }

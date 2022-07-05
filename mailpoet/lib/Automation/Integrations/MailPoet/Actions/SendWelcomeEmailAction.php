@@ -75,11 +75,8 @@ class SendWelcomeEmailAction implements Action {
 
   public function run(Workflow $workflow, WorkflowRun $workflowRun, Step $step): void {
     $newsletter = $this->getWelcomeEmailForStep($step);
-    $subscriberSubject = $workflowRun->getSubjects('mailpoet:subscriber')[0] ?? null;
-    if (!$subscriberSubject instanceof SubscriberSubject) {
-      throw InvalidStateException::create()->withMessage('A mailpoet:subscriber subject is required.');
-    }
 
+    $subscriberSubject = $workflowRun->requireSubject(SubscriberSubject::KEY);
     $subscriberId = $subscriberSubject->getFields()['id']->getValue();
     $subscriber = $this->subscribersRepository->findOneById($subscriberId);
 
@@ -91,11 +88,7 @@ class SendWelcomeEmailAction implements Action {
       throw InvalidStateException::create()->withMessage(sprintf("Cannot schedule a newsletter for subscriber ID '%s' because their status is '%s'.", $subscriber->getId(), $subscriber->getStatus()));
     }
 
-    $segmentSubject = $workflowRun->getSubjects('mailpoet:segment')[0] ?? null;
-    if (!$segmentSubject instanceof SegmentSubject) {
-      throw InvalidStateException::create()->withMessage('A mailpoet:segment subject is required.');
-    }
-
+    $segmentSubject = $workflowRun->requireSubject(SegmentSubject::KEY);
     $segmentId = $segmentSubject->getFields()['id']->getValue();
     $subscriberSegment = $this->subscriberSegmentRepository->findOneBy([
       'subscriber' => $subscriber,
