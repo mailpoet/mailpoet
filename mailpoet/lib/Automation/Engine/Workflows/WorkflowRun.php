@@ -4,6 +4,7 @@ namespace MailPoet\Automation\Engine\Workflows;
 
 use DateTimeImmutable;
 use MailPoet\Automation\Engine\Exceptions;
+use MailPoet\Automation\Engine\Exceptions\InvalidStateException;
 use MailPoet\Automation\Engine\Utils\Json;
 
 class WorkflowRun {
@@ -33,6 +34,12 @@ class WorkflowRun {
   /** @var Subject[] */
   private $subjects;
 
+  /** @var array<class-string, string> */
+  private $subjectKeyClassMap = [];
+
+  /**
+   * @param Subject[] $subjects
+   */
   public function __construct(
     int $workflowId,
     string $triggerKey,
@@ -42,6 +49,10 @@ class WorkflowRun {
     $this->workflowId = $workflowId;
     $this->triggerKey = $triggerKey;
     $this->subjects = $subjects;
+
+    foreach ($subjects as $subject) {
+      $this->subjectKeyClassMap[get_class($subject)] = $subject->getKey();
+    }
 
     if ($id) {
       $this->id = $id;
@@ -88,7 +99,17 @@ class WorkflowRun {
     return $this->subjects;
   }
 
-  public function requireSubject(string $key): Subject {
+  /**
+   * @template T of Subject
+   * @param class-string<T> $class
+   * @return T
+   */
+  public function requireSubject(string $class): Subject {
+    $key = $this->subjectKeyClassMap[$class] ?? null;
+    if (!$key) {
+      throw Exceptions::subjectClassNotFound($class);
+    }
+
     $subjects = $this->getSubjects($key);
     if (count($subjects) === 0) {
       throw Exceptions::subjectNotFound($key);
@@ -96,7 +117,13 @@ class WorkflowRun {
     if (count($subjects) > 1) {
       throw Exceptions::multipleSubjectsFound($key);
     }
-    return $subjects[0];
+
+    // ensure PHPStan we're indeed returning an instance of $class
+    $subject = $subjects[0];
+    if (!$subject instanceof $class) {
+      throw new InvalidStateException();
+    }
+    return $subject;
   }
 
   public function toArray(): array {
