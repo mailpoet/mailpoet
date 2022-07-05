@@ -17,7 +17,7 @@ class WorkflowStorage {
 
   public function __construct() {
     global $wpdb;
-    $this->table = $wpdb->prefix . 'mailpoet_automation_workflows';
+    $this->table = $wpdb->prefix . 'mailpoet_workflows';
     $this->wpdb = $wpdb;
   }
 
