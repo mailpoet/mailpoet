@@ -42,11 +42,9 @@ class WorkflowRunStorage {
 
     if ($result) {
       $data = (array)$result;
-      $subjects = [];
-      foreach (Json::decode($data['subjects']) as $key => $args) {
-        $subjects[$key] = $this->subjectLoader->loadSubject($key, $args);
-      }
-      $data['subjects'] = $subjects;
+      $data['subjects'] = array_map(function (array $subject) {
+        return $this->subjectLoader->loadSubject($subject['key'], $subject['args']);
+      }, Json::decode($data['subjects']));
       return WorkflowRun::fromArray($data);
     }
     return null;

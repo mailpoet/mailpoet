@@ -76,7 +76,14 @@ class WorkflowRun {
   }
 
   /** @return Subject[] */
-  public function getSubjects(): array {
+  public function getSubjects(string $key = null): array {
+    if ($key) {
+      return array_values(
+        array_filter($this->subjects, function (Subject $subject) use ($key) {
+          return $subject->getKey() === $key;
+        })
+      );
+    }
     return $this->subjects;
   }
 
@@ -88,10 +95,9 @@ class WorkflowRun {
       'created_at' => $this->createdAt->format(DateTimeImmutable::W3C),
       'updated_at' => $this->updatedAt->format(DateTimeImmutable::W3C),
       'subjects' => Json::encode(
-        array_reduce($this->subjects, function (array $subjects, Subject $subject): array {
-          $subjects[$subject->getKey()] = $subject->pack();
-          return $subjects;
-        }, [])
+        array_map(function (Subject $subject): array {
+          return ['key' => $subject->getKey(), 'args' => $subject->pack()];
+        }, $this->subjects)
       ),
     ];
   }

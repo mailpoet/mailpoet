@@ -55,8 +55,8 @@ class TriggerHandler {
 
       // ensure subjects are registered and loadable
       $loadedSubjects = [];
-      foreach ($subjects as $key => $args) {
-        $loadedSubjects[] = $this->subjectLoader->loadSubject($key, $args);
+      foreach ($subjects as $subject) {
+        $loadedSubjects[] = $this->subjectLoader->loadSubject($subject['key'], $subject['args']);
       }
 
       $workflowRun = new WorkflowRun($workflow->getId(), $trigger->getKey(), $loadedSubjects);
