@@ -12,7 +12,7 @@ function getIcon(step: StepType): JSX.Element | null {
     return <TriggerIcon />;
   }
 
-  if (step.key === 'core:wait') {
+  if (step.key === 'core:delay') {
     return <DelayIcon />;
   }
 
@@ -29,7 +29,7 @@ function getTitle(step: StepType): string {
     return 'Trigger';
   }
 
-  if (step.key === 'core:wait') {
+  if (step.key === 'core:delay') {
     return 'Delay';
   }
 
@@ -45,7 +45,7 @@ function getSubtitle(step: StepType): string {
   if (step.key === 'mailpoet:segment:subscribed') {
     return 'Subscribed to segment';
   }
-  if (step.key === 'core:wait') {
+  if (step.key === 'core:delay') {
     return `${step.args.seconds as number} seconds`;
   }
   if (step.key === 'mailpoet:send-welcome-email') {
