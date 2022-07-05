@@ -16,7 +16,6 @@ use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Scheduler\WelcomeScheduler;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Subscribers\SubscriberSegmentRepository;
-use MailPoet\Subscribers\SubscribersRepository;
 
 class SendWelcomeEmailAction implements Action {
   /** @var NewslettersRepository */
@@ -28,9 +27,6 @@ class SendWelcomeEmailAction implements Action {
   /** @var SubscriberSegmentRepository */
   private $subscriberSegmentRepository;
 
-  /** @var SubscribersRepository */
-  private $subscribersRepository;
-
   /** @var WelcomeScheduler */
   private $welcomeScheduler;
 
@@ -38,13 +34,11 @@ class SendWelcomeEmailAction implements Action {
     NewslettersRepository $newslettersRepository,
     ScheduledTasksRepository $scheduledTasksRepository,
     SubscriberSegmentRepository $subscriberSegmentRepository,
-    SubscribersRepository $subscribersRepository,
     WelcomeScheduler $welcomeScheduler
   ) {
     $this->newslettersRepository = $newslettersRepository;
     $this->scheduledTasksRepository = $scheduledTasksRepository;
     $this->subscriberSegmentRepository = $subscriberSegmentRepository;
-    $this->subscribersRepository = $subscribersRepository;
     $this->welcomeScheduler = $welcomeScheduler;
   }
 
@@ -75,21 +69,15 @@ class SendWelcomeEmailAction implements Action {
 
   public function run(Workflow $workflow, WorkflowRun $workflowRun, Step $step): void {
     $newsletter = $this->getWelcomeEmailForStep($step);
-
     $subscriberSubject = $workflowRun->requireSubject(SubscriberSubject::class);
-    $subscriberId = $subscriberSubject->getFields()['id']->getValue();
-    $subscriber = $this->subscribersRepository->findOneById($subscriberId);
-
-    if (!$subscriber instanceof SubscriberEntity) {
-      throw InvalidStateException::create()->withMessage('Could not retrieve subscriber from the subscriber subject.');
-    }
+    $subscriber = $subscriberSubject->getSubscriber();
 
     if ($subscriber->getStatus() !== SubscriberEntity::STATUS_SUBSCRIBED) {
       throw InvalidStateException::create()->withMessage(sprintf("Cannot schedule a newsletter for subscriber ID '%s' because their status is '%s'.", $subscriber->getId(), $subscriber->getStatus()));
     }
 
     $segmentSubject = $workflowRun->requireSubject(SegmentSubject::class);
-    $segmentId = $segmentSubject->getFields()['id']->getValue();
+    $segmentId = $segmentSubject->getSegment()->getId();
     $subscriberSegment = $this->subscriberSegmentRepository->findOneBy([
       'subscriber' => $subscriber,
       'segment' => $segmentId,
