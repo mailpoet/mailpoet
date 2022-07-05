@@ -7,6 +7,7 @@ use Codeception\Stub\Expected;
 use MailPoet\API\JSON\ResponseBuilders\SubscribersResponseBuilder;
 use MailPoet\API\MP\v1\API;
 use MailPoet\API\MP\v1\CustomFields;
+use MailPoet\API\MP\v1\Segments;
 use MailPoet\API\MP\v1\Subscribers;
 use MailPoet\Config\Changelog;
 use MailPoet\CustomFields\CustomFieldsRepository;
@@ -72,6 +73,7 @@ class APITest extends \MailPoetTest {
     return new API(
       $this->diContainer->get(RequiredCustomFieldValidator::class),
       $this->diContainer->get(CustomFields::class),
+      $this->diContainer->get(Segments::class),
       $subscriberActions,
       $this->diContainer->get(Changelog::class)
     );
@@ -101,23 +103,6 @@ class APITest extends \MailPoetTest {
         [],
       ]
     );
-  }
-
-  public function testItGetsSegments() {
-    $segment = $this->getSegment();
-    $result = $this->getApi()->getLists();
-    expect($result)->count(1);
-    expect($result[0]['id'])->equals($segment->getId());
-  }
-
-  public function testItExcludesWPUsersAndWooCommerceCustomersSegmentsWhenGettingSegments() {
-    $defaultSegment = $this->getSegment();
-    $this->getSegment('WordPress', SegmentEntity::TYPE_WP_USERS);
-    $this->getSegment('WooCommerce', SegmentEntity::TYPE_WC_USERS);
-
-    $result = $this->getApi()->getLists();
-    expect($result)->count(1);
-    expect($result[0]['id'])->equals($defaultSegment->getId());
   }
 
   public function testItRequiresEmailAddressToAddSubscriber() {
