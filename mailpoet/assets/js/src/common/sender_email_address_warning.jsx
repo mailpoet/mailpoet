@@ -33,7 +33,8 @@ function SenderEmailAddressWarning({
               setAuthorizedAddress={setAuthorizedEmailAddress}
             />
           )}
-          {authorizedEmailAddress ? null : (
+          {authorizedEmailAddress &&
+          authorizedEmailAddress === emailAddress ? null : (
             <p className="sender_email_address_warning">
               {ReactStringReplace(
                 MailPoet.I18n.t('youNeedToAuthorizeTheEmail'),
