@@ -180,7 +180,7 @@ class NewsletterSendComponent extends Component {
       (match) =>
         `<a href="https://account.mailpoet.com/authorization?email=${encodeURIComponent(
           fromAddress,
-        )}" target="_blank" rel="noopener noreferrer">${match}</a>`,
+        )}" target="_blank" class="mailpoet-js-button-authorize-email" data-email="${fromAddress}" rel="noopener noreferrer">${match}</a>`,
     );
     jQuery('#field_sender_address')
       .parsley()
