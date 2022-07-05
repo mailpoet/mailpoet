@@ -14,6 +14,8 @@ use MailPoet\Automation\Engine\Storage\WorkflowStorage;
 use MailPoet\Automation\Integrations\Core\CoreIntegration;
 
 class Engine {
+  const CAPABILITY_MANAGE_AUTOMATIONS = 'mailpoet_manage_automations';
+
   /** @var API */
   private $api;
 
