@@ -2,6 +2,7 @@
 
 namespace MailPoet\Config;
 
+use MailPoet\Automation\Engine\Engine;
 use MailPoet\WP\Functions as WPFunctions;
 
 class AccessControl {
@@ -12,7 +13,7 @@ class AccessControl {
   const PERMISSION_MANAGE_SUBSCRIBERS = 'mailpoet_manage_subscribers';
   const PERMISSION_MANAGE_FORMS = 'mailpoet_manage_forms';
   const PERMISSION_MANAGE_SEGMENTS = 'mailpoet_manage_segments';
-  const PERMISSION_MANAGE_AUTOMATIONS = 'mailpoet_manage_automations';
+  const PERMISSION_MANAGE_AUTOMATIONS = Engine::CAPABILITY_MANAGE_AUTOMATIONS;
   const NO_ACCESS_RESTRICTION = 'mailpoet_no_access_restriction';
   const ALL_ROLES_ACCESS = 'mailpoet_all_roles_access';
 
