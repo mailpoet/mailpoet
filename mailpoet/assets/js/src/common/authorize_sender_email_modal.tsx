@@ -60,6 +60,10 @@ const removeUnauthorizedEmailNotices = () => {
   }
 };
 
+const clearCurrentInterval = (intervalID: NodeJS.Timeout) => {
+  clearInterval(intervalID);
+};
+
 type Props = {
   senderEmail: string;
   onRequestClose: () => void;
@@ -81,46 +85,42 @@ function AuthorizeSenderEmailModal({
 
   const senderEmailAddress = String(senderEmail).toLowerCase();
 
+  const executeAction = () => {
+    const currentIntervalId = setIntervalId.current;
+    const currentIntervalStopTime = setIntervalStopTime.current;
+
+    if (currentIntervalStopTime && Date.now() >= currentIntervalStopTime) {
+      // stop polling after 2 hours
+      clearCurrentInterval(currentIntervalId);
+      return;
+    }
+
+    makeApiRequest(senderEmailAddress, 'confirm')
+      .then((res) => {
+        const response = Boolean(res?.data?.isAuthorized);
+
+        if (response) {
+          clearCurrentInterval(currentIntervalId);
+          return makeApiRequest(senderEmailAddress, 'setup');
+        }
+        throw new Error('Error: unconfirmed');
+      })
+      .then(() => {
+        setCreateEmailApiResponse(null);
+        setShowLoader(false);
+        setConfirmEmailApiResponse(true);
+        setAuthorizedAddress(senderEmailAddress);
+        removeUnauthorizedEmailNotices();
+      })
+      .catch(() => {
+        //
+      });
+  };
+
   useEffect(() => {
     if (!senderEmailAddress) {
       return null;
     }
-
-    const clearCurrentInterval = (intervalID: NodeJS.Timeout) => {
-      clearInterval(intervalID);
-    };
-
-    const executeAction = () => {
-      const currentIntervalId = setIntervalId.current;
-      const currentIntervalStopTime = setIntervalStopTime.current;
-
-      if (currentIntervalStopTime && Date.now() >= currentIntervalStopTime) {
-        // stop polling after 2 hours
-        clearCurrentInterval(currentIntervalId);
-        return;
-      }
-
-      makeApiRequest(senderEmailAddress, 'confirm')
-        .then((res) => {
-          const response = Boolean(res?.data?.isAuthorized);
-
-          if (response) {
-            clearCurrentInterval(currentIntervalId);
-            return makeApiRequest(senderEmailAddress, 'setup');
-          }
-          throw new Error('Error: unconfirmed');
-        })
-        .then(() => {
-          setCreateEmailApiResponse(null);
-          setShowLoader(false);
-          setConfirmEmailApiResponse(true);
-          setAuthorizedAddress(senderEmailAddress);
-          removeUnauthorizedEmailNotices();
-        })
-        .catch(() => {
-          //
-        });
-    };
 
     makeApiRequest(senderEmailAddress)
       .then((res) => {
@@ -146,7 +146,7 @@ function AuthorizeSenderEmailModal({
     setIntervalId.current = invervalID;
 
     return () => clearCurrentInterval(invervalID);
-  }, [senderEmailAddress, setAuthorizedAddress]);
+  }, [senderEmailAddress]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <Modal
