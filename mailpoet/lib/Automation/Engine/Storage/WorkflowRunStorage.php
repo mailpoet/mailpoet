@@ -22,7 +22,7 @@ class WorkflowRunStorage {
     SubjectLoader $subjectLoader
   ) {
     global $wpdb;
-    $this->table = $wpdb->prefix . 'mailpoet_automation_workflow_runs';
+    $this->table = $wpdb->prefix . 'mailpoet_workflow_runs';
     $this->wpdb = $wpdb;
     $this->subjectLoader = $subjectLoader;
   }
