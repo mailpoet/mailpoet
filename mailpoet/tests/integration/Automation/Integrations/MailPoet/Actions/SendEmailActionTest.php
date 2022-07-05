@@ -1,11 +1,11 @@
-<?php
+<?php declare(strict_types=1);
 
-namespace MailPoet\Test\Automation\Integrations\MailPoet\Actions\SendWelcomeEmail;
+namespace MailPoet\Test\Automation\Integrations\MailPoet\Actions;
 
 use MailPoet\Automation\Engine\Workflows\Step;
 use MailPoet\Automation\Engine\Workflows\Workflow;
 use MailPoet\Automation\Engine\Workflows\WorkflowRun;
-use MailPoet\Automation\Integrations\MailPoet\Actions\SendWelcomeEmailAction;
+use MailPoet\Automation\Integrations\MailPoet\Actions\SendEmailAction;
 use MailPoet\Automation\Integrations\MailPoet\Subjects\SegmentSubject;
 use MailPoet\Automation\Integrations\MailPoet\Subjects\SubscriberSubject;
 use MailPoet\DI\ContainerWrapper;
@@ -21,7 +21,7 @@ use MailPoet\Test\DataFactories\Newsletter;
 use MailPoet\Test\DataFactories\Segment;
 use MailPoet\Test\DataFactories\Subscriber;
 
-class SendWelcomeEmailActionTest extends \MailPoetTest {
+class SendEmailActionTest extends \MailPoetTest {
 
   /** @var ScheduledTasksRepository */
   private $scheduledTasksRepository;
@@ -32,7 +32,7 @@ class SendWelcomeEmailActionTest extends \MailPoetTest {
   /** @var SegmentsRepository */
   private $segmentsRepository;
 
-  /** @var SendWelcomeEmailAction */
+  /** @var SendEmailAction */
   private $action;
 
   /** @var SubscriberSubject */
@@ -47,24 +47,20 @@ class SendWelcomeEmailActionTest extends \MailPoetTest {
   /** @var Workflow */
   private $workflow;
 
-  /** @var SegmentEntity */
-  private $segment;
-
   /** @var NewsletterEntity */
-  private $welcomeEmail;
+  private $email;
 
   public function _before() {
     parent::_before();
     $this->scheduledTasksRepository = $this->diContainer->get(ScheduledTasksRepository::class);
     $this->segmentsRepository = $this->diContainer->get(SegmentsRepository::class);
     $this->subscribersRepository = $this->diContainer->get(SubscribersRepository::class);
-    $this->action = $this->diContainer->get(SendWelcomeEmailAction::class);
+    $this->action = $this->diContainer->get(SendEmailAction::class);
     $this->subscriberSubject = $this->diContainer->get(SubscriberSubject::class);
     $this->segmentSubject = $this->diContainer->get(SegmentSubject::class);
 
-    $this->segment = (new Segment())->create();
-    $this->welcomeEmail = (new Newsletter())->withWelcomeTypeForSegment($this->segment->getId())->create();
-    $this->step = new Step('step-id', Step::TYPE_ACTION, 'step-key', null, ['welcomeEmailId' => $this->welcomeEmail->getId()]);
+    $this->email = (new Newsletter())->withAutomationType()->create();
+    $this->step = new Step('step-id', Step::TYPE_ACTION, 'step-key', null, ['email_id' => $this->email->getId()]);
     $this->workflow = new Workflow('test-workflow', []);
   }
 
@@ -74,25 +70,21 @@ class SendWelcomeEmailActionTest extends \MailPoetTest {
   }
 
   public function testItRequiresASubscriberSubject() {
-    $subjects = $this->getSubjects();
-    unset($subjects[$this->subscriberSubject->getKey()]);
-    expect($this->action->isValid($subjects, $this->step, $this->workflow))->false();
+    expect($this->action->isValid([$this->segmentSubject], $this->step, $this->workflow))->false();
   }
 
   public function testItRequiresASegmentSubject() {
-    $subjects = $this->getSubjects();
-    unset($subjects[$this->segmentSubject->getKey()]);
-    expect($this->action->isValid($subjects, $this->step, $this->workflow))->false();
+    expect($this->action->isValid([$this->subscriberSubject], $this->step, $this->workflow))->false();
   }
 
-  public function testItIsNotValidIfStepHasNoWelcomeEmail(): void {
+  public function testItIsNotValidIfStepHasNoEmail(): void {
     $step = new Step('step-id', Step::TYPE_ACTION, 'step-key', null, []);
     expect($this->action->isValid($this->getSubjects(), $step, $this->workflow))->false();
   }
 
-  public function testItRequiresAWelcomeEmailType(): void {
+  public function testItRequiresAutomationEmailType(): void {
     $newsletter = (new Newsletter())->withPostNotificationsType()->create();
-    $step = new Step('step-id', Step::TYPE_ACTION, 'step-key', null, ['welcomeEmailId' => $newsletter->getId()]);
+    $step = new Step('step-id', Step::TYPE_ACTION, 'step-key', null, ['email_id' => $newsletter->getId()]);
     expect($this->action->isValid($this->getSubjects(), $step, $this->workflow))->false();
   }
 
@@ -103,18 +95,18 @@ class SendWelcomeEmailActionTest extends \MailPoetTest {
       ->withSegments([$segment])
       ->create();
     $subjects = $this->getLoadedSubjects($subscriber, $segment);
-    $welcomeEmail = (new Newsletter())->withWelcomeTypeForSegment($segment->getId())->create();
+    $email = (new Newsletter())->withAutomationType()->create();
 
-    $step = new Step('step-id', Step::TYPE_ACTION, 'step-key', null, ['welcomeEmailId' => $welcomeEmail->getId()]);
+    $step = new Step('step-id', Step::TYPE_ACTION, 'step-key', null, ['email_id' => $email->getId()]);
     $workflow = new Workflow('some-workflow', [$step]);
     $run = new WorkflowRun(1, 'trigger-key', $subjects);
 
-    $scheduled = $this->scheduledTasksRepository->findByNewsletterAndSubscriberId($welcomeEmail, (int)$subscriber->getId());
+    $scheduled = $this->scheduledTasksRepository->findByNewsletterAndSubscriberId($email, (int)$subscriber->getId());
     expect($scheduled)->count(0);
 
     $this->action->run($workflow, $run, $step);
 
-    $scheduled = $this->scheduledTasksRepository->findByNewsletterAndSubscriberId($welcomeEmail, (int)$subscriber->getId());
+    $scheduled = $this->scheduledTasksRepository->findByNewsletterAndSubscriberId($email, (int)$subscriber->getId());
     expect($scheduled)->count(1);
   }
 
@@ -125,19 +117,19 @@ class SendWelcomeEmailActionTest extends \MailPoetTest {
       ->withSegments([$segment])
       ->create();
     $subjects = $this->getLoadedSubjects($subscriber, $segment);
-    $welcomeEmail = (new Newsletter())->withWelcomeTypeForSegment($segment->getId())->create();
+    $email = (new Newsletter())->withAutomationType()->create();
 
-    $step = new Step('step-id', Step::TYPE_ACTION, 'step-key', null, ['welcomeEmailId' => $welcomeEmail->getId()]);
+    $step = new Step('step-id', Step::TYPE_ACTION, 'step-key', null, ['email_id' => $email->getId()]);
     $workflow = new Workflow('some-workflow', [$step]);
     $run = new WorkflowRun(1, 'trigger-key', $subjects);
 
-    $scheduled = $this->scheduledTasksRepository->findByNewsletterAndSubscriberId($welcomeEmail, (int)$subscriber->getId());
+    $scheduled = $this->scheduledTasksRepository->findByNewsletterAndSubscriberId($email, (int)$subscriber->getId());
     expect($scheduled)->count(0);
 
-    $action = ContainerWrapper::getInstance()->get(SendWelcomeEmailAction::class);
+    $action = ContainerWrapper::getInstance()->get(SendEmailAction::class);
     $action->run($workflow, $run, $step);
 
-    $scheduled = $this->scheduledTasksRepository->findByNewsletterAndSubscriberId($welcomeEmail, (int)$subscriber->getId());
+    $scheduled = $this->scheduledTasksRepository->findByNewsletterAndSubscriberId($email, (int)$subscriber->getId());
     expect($scheduled)->count(1);
 
     try {
@@ -146,7 +138,7 @@ class SendWelcomeEmailActionTest extends \MailPoetTest {
       // The exception itself isn't as important as the outcome
     }
 
-    $scheduled = $this->scheduledTasksRepository->findByNewsletterAndSubscriberId($welcomeEmail, (int)$subscriber->getId());
+    $scheduled = $this->scheduledTasksRepository->findByNewsletterAndSubscriberId($email, (int)$subscriber->getId());
     expect($scheduled)->count(1);
   }
 
@@ -157,17 +149,17 @@ class SendWelcomeEmailActionTest extends \MailPoetTest {
       ->withSegments([$segment])
       ->create();
     $subjects = $this->getLoadedSubjects($subscriber, $segment);
-    $welcomeEmail = (new Newsletter())->withWelcomeTypeForSegment($segment->getId())->create();
+    $email = (new Newsletter())->withAutomationType()->create();
 
-    $step = new Step('step-id', Step::TYPE_ACTION, 'step-key', null, ['welcomeEmailId' => $welcomeEmail->getId()]);
+    $step = new Step('step-id', Step::TYPE_ACTION, 'step-key', null, ['email_id' => $email->getId()]);
     $workflow = new Workflow('some-workflow', [$step]);
     $run = new WorkflowRun(1, 'trigger-key', $subjects);
 
-    $scheduled = $this->scheduledTasksRepository->findByNewsletterAndSubscriberId($welcomeEmail, (int)$subscriber->getId());
+    $scheduled = $this->scheduledTasksRepository->findByNewsletterAndSubscriberId($email, (int)$subscriber->getId());
     expect($scheduled)->count(0);
 
     $this->segmentsRepository->bulkDelete([$segment->getId()]);
-    $action = ContainerWrapper::getInstance()->get(SendWelcomeEmailAction::class);
+    $action = ContainerWrapper::getInstance()->get(SendEmailAction::class);
 
     try {
       $action->run($workflow, $run, $step);
@@ -175,7 +167,7 @@ class SendWelcomeEmailActionTest extends \MailPoetTest {
       // The exception itself isn't as important as the outcome
     }
 
-    $scheduled = $this->scheduledTasksRepository->findByNewsletterAndSubscriberId($welcomeEmail, (int)$subscriber->getId());
+    $scheduled = $this->scheduledTasksRepository->findByNewsletterAndSubscriberId($email, (int)$subscriber->getId());
     expect($scheduled)->count(0);
   }
 
@@ -186,17 +178,17 @@ class SendWelcomeEmailActionTest extends \MailPoetTest {
       ->withSegments([$segment])
       ->create();
     $subjects = $this->getLoadedSubjects($subscriber, $segment);
-    $welcomeEmail = (new Newsletter())->withWelcomeTypeForSegment($segment->getId())->create();
+    $email = (new Newsletter())->withAutomationType()->create();
 
-    $step = new Step('step-id', Step::TYPE_ACTION, 'step-key', null, ['welcomeEmailId' => $welcomeEmail->getId()]);
+    $step = new Step('step-id', Step::TYPE_ACTION, 'step-key', null, ['email_id' => $email->getId()]);
     $workflow = new Workflow('some-workflow', [$step]);
     $run = new WorkflowRun(1, 'trigger-key', $subjects);
 
-    $scheduled = $this->scheduledTasksRepository->findByNewsletterAndSubscriberId($welcomeEmail, (int)$subscriber->getId());
+    $scheduled = $this->scheduledTasksRepository->findByNewsletterAndSubscriberId($email, (int)$subscriber->getId());
     expect($scheduled)->count(0);
 
     $this->subscribersRepository->bulkDelete([$subscriber->getId()]);
-    $action = ContainerWrapper::getInstance()->get(SendWelcomeEmailAction::class);
+    $action = ContainerWrapper::getInstance()->get(SendEmailAction::class);
 
     try {
       $action->run($workflow, $run, $step);
@@ -204,7 +196,7 @@ class SendWelcomeEmailActionTest extends \MailPoetTest {
       // The exception itself isn't as important as the outcome
     }
 
-    $scheduled = $this->scheduledTasksRepository->findByNewsletterAndSubscriberId($welcomeEmail, (int)$subscriber->getId());
+    $scheduled = $this->scheduledTasksRepository->findByNewsletterAndSubscriberId($email, (int)$subscriber->getId());
     expect($scheduled)->count(0);
   }
 
@@ -224,17 +216,17 @@ class SendWelcomeEmailActionTest extends \MailPoetTest {
         ->withSegments([$segment])
         ->create();
       $subjects = $this->getLoadedSubjects($subscriber, $segment);
-      $welcomeEmail = (new Newsletter())->withWelcomeTypeForSegment($segment->getId())->create();
+      $email = (new Newsletter())->withAutomationType()->create();
 
-      $step = new Step('step-id', Step::TYPE_ACTION, 'step-key', null, ['welcomeEmailId' => $welcomeEmail->getId()]);
+      $step = new Step('step-id', Step::TYPE_ACTION, 'step-key', null, ['email_id' => $email->getId()]);
       $workflow = new Workflow('some-workflow', [$step]);
       $run = new WorkflowRun(1, 'trigger-key', $subjects);
 
-      $scheduled = $this->scheduledTasksRepository->findByNewsletterAndSubscriberId($welcomeEmail, (int)$subscriber->getId());
+      $scheduled = $this->scheduledTasksRepository->findByNewsletterAndSubscriberId($email, (int)$subscriber->getId());
       expect($scheduled)->count(0);
 
       $this->subscribersRepository->bulkDelete([$subscriber->getId()]);
-      $action = ContainerWrapper::getInstance()->get(SendWelcomeEmailAction::class);
+      $action = ContainerWrapper::getInstance()->get(SendEmailAction::class);
 
       try {
         $action->run($workflow, $run, $step);
@@ -242,7 +234,7 @@ class SendWelcomeEmailActionTest extends \MailPoetTest {
         // The exception itself isn't as important as the outcome
       }
 
-      $scheduled = $this->scheduledTasksRepository->findByNewsletterAndSubscriberId($welcomeEmail, (int)$subscriber->getId());
+      $scheduled = $this->scheduledTasksRepository->findByNewsletterAndSubscriberId($email, (int)$subscriber->getId());
       expect($scheduled)->count(0);
     }
   }
@@ -253,16 +245,16 @@ class SendWelcomeEmailActionTest extends \MailPoetTest {
       ->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)
       ->create();
     $subjects = $this->getLoadedSubjects($subscriber, $segment);
-    $welcomeEmail = (new Newsletter())->withWelcomeTypeForSegment($segment->getId())->create();
+    $email = (new Newsletter())->withAutomationType()->create();
 
-    $step = new Step('step-id', Step::TYPE_ACTION, 'step-key', null, ['welcomeEmailId' => $welcomeEmail->getId()]);
+    $step = new Step('step-id', Step::TYPE_ACTION, 'step-key', null, ['email_id' => $email->getId()]);
     $workflow = new Workflow('some-workflow', [$step]);
     $run = new WorkflowRun(1, 'trigger-key', $subjects);
 
-    $scheduled = $this->scheduledTasksRepository->findByNewsletterAndSubscriberId($welcomeEmail, (int)$subscriber->getId());
+    $scheduled = $this->scheduledTasksRepository->findByNewsletterAndSubscriberId($email, (int)$subscriber->getId());
     expect($scheduled)->count(0);
 
-    $action = ContainerWrapper::getInstance()->get(SendWelcomeEmailAction::class);
+    $action = ContainerWrapper::getInstance()->get(SendEmailAction::class);
 
     try {
       $action->run($workflow, $run, $step);
@@ -270,7 +262,7 @@ class SendWelcomeEmailActionTest extends \MailPoetTest {
       // The exception itself isn't as important as the outcome
     }
 
-    $scheduled = $this->scheduledTasksRepository->findByNewsletterAndSubscriberId($welcomeEmail, (int)$subscriber->getId());
+    $scheduled = $this->scheduledTasksRepository->findByNewsletterAndSubscriberId($email, (int)$subscriber->getId());
     expect($scheduled)->count(0);
   }
 
@@ -290,15 +282,15 @@ class SendWelcomeEmailActionTest extends \MailPoetTest {
 
   private function getSubjects(): array {
     return [
-      $this->segmentSubject->getKey() => $this->segmentSubject,
-      $this->subscriberSubject->getKey() => $this->subscriberSubject,
+      $this->segmentSubject,
+      $this->subscriberSubject,
     ];
   }
 
   private function getLoadedSubjects(SubscriberEntity $subscriber, SegmentEntity $segment): array {
     return [
-      $this->subscriberSubject->getKey() => $this->getLoadedSubscriberSubject($subscriber),
-      $this->segmentSubject->getKey() => $this->getLoadedSegmentSubject($segment),
+      $this->getLoadedSubscriberSubject($subscriber),
+      $this->getLoadedSegmentSubject($segment),
     ];
   }
 }

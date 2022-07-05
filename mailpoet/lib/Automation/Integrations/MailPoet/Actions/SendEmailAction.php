@@ -13,11 +13,12 @@ use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\InvalidStateException;
 use MailPoet\Newsletter\NewslettersRepository;
-use MailPoet\Newsletter\Scheduler\WelcomeScheduler;
+use MailPoet\Newsletter\Scheduler\AutomationEmailScheduler;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Subscribers\SubscriberSegmentRepository;
+use Throwable;
 
-class SendWelcomeEmailAction implements Action {
+class SendEmailAction implements Action {
   /** @var NewslettersRepository */
   private $newslettersRepository;
 
@@ -27,32 +28,32 @@ class SendWelcomeEmailAction implements Action {
   /** @var SubscriberSegmentRepository */
   private $subscriberSegmentRepository;
 
-  /** @var WelcomeScheduler */
-  private $welcomeScheduler;
+  /** @var AutomationEmailScheduler */
+  private $automationEmailScheduler;
 
   public function __construct(
     NewslettersRepository $newslettersRepository,
     ScheduledTasksRepository $scheduledTasksRepository,
     SubscriberSegmentRepository $subscriberSegmentRepository,
-    WelcomeScheduler $welcomeScheduler
+    AutomationEmailScheduler $automationEmailScheduler
   ) {
     $this->newslettersRepository = $newslettersRepository;
     $this->scheduledTasksRepository = $scheduledTasksRepository;
     $this->subscriberSegmentRepository = $subscriberSegmentRepository;
-    $this->welcomeScheduler = $welcomeScheduler;
+    $this->automationEmailScheduler = $automationEmailScheduler;
   }
 
   public function getKey(): string {
-    return 'mailpoet:send-welcome-email';
+    return 'mailpoet:send-email';
   }
 
   public function getName(): string {
-    return __('Send Welcome Email', 'mailpoet');
+    return __('Send email', 'mailpoet');
   }
 
   public function isValid(array $subjects, Step $step, Workflow $workflow): bool {
     try {
-      $this->getWelcomeEmailForStep($step);
+      $this->getEmailForStep($step);
     } catch (InvalidStateException $exception) {
       return false;
     }
@@ -68,7 +69,7 @@ class SendWelcomeEmailAction implements Action {
   }
 
   public function run(Workflow $workflow, WorkflowRun $workflowRun, Step $step): void {
-    $newsletter = $this->getWelcomeEmailForStep($step);
+    $newsletter = $this->getEmailForStep($step);
     $subscriberSubject = $workflowRun->requireSubject(SubscriberSubject::class);
     $subscriber = $subscriberSubject->getSubscriber();
 
@@ -93,33 +94,26 @@ class SendWelcomeEmailAction implements Action {
       throw InvalidStateException::create()->withMessage(sprintf("Subscriber ID '%s' was already scheduled to receive newsletter ID '%s'.", $subscriber->getId(), $newsletter->getId()));
     }
 
-    $sendingTask = $this->welcomeScheduler->createWelcomeNotificationSendingTask($newsletter, $subscriber->getId());
-    if ($sendingTask === null) {
+    try {
+      $this->automationEmailScheduler->createSendingTask($newsletter, $subscriber);
+    } catch (Throwable $e) {
       throw InvalidStateException::create()->withMessage('Could not create sending task.');
-    }
-
-    $errors = $sendingTask->getErrors();
-    if ($errors) {
-      throw InvalidStateException::create()
-        ->withMessage('There was an error saving the sending task.')
-        ->withErrors($errors);
     }
   }
 
-  private function getWelcomeEmailForStep(Step $step): NewsletterEntity {
-    $welcomeEmailId = $step->getArgs()['welcomeEmailId'] ?? null;
-    if ($welcomeEmailId === null) {
+  private function getEmailForStep(Step $step): NewsletterEntity {
+    $emailId = $step->getArgs()['email_id'] ?? null;
+    if (!$emailId) {
       throw InvalidStateException::create();
     }
-    $newsletter = $this->newslettersRepository->findOneById($welcomeEmailId);
-    if ($newsletter === null) {
-      throw InvalidStateException::create()->withMessage(sprintf("Welcome Email with ID '%s' not found.", $welcomeEmailId));
-    }
-    $type = $newsletter->getType();
-    if ($type !== NewsletterEntity::TYPE_WELCOME) {
-      throw InvalidStateException::create()->withMessage(sprintf("Newsletter must be a Welcome Email. Actual type for newsletter ID '%s' was '%s'.", $welcomeEmailId, $type));
-    }
 
-    return $newsletter;
+    $email = $this->newslettersRepository->findOneBy([
+      'id' => $emailId,
+      'type' => NewsletterEntity::TYPE_AUTOMATION,
+    ]);
+    if (!$email) {
+      throw InvalidStateException::create()->withMessage(sprintf("Automation email with ID '%s' not found.", $emailId));
+    }
+    return $email;
   }
 }
