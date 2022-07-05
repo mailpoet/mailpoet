@@ -6,6 +6,7 @@ import { Modal } from 'common/modal/modal';
 import { GlobalContext } from 'context';
 import { noop } from 'lodash';
 import { ErrorResponse, isErrorResponse } from '../ajax';
+import { AuthorizeSenderEmailModal } from './authorize_sender_email_modal';
 
 /**
  * @param {string|null} address
@@ -23,18 +24,13 @@ const handleSave = (address: string | null) =>
 
 const getErrorMessage = (
   error: ErrorResponse['errors'][number] | null,
-  address: string | null,
 ): string => {
   if (!error) {
     return MailPoet.I18n.t('setFromAddressEmailUnknownError');
   }
 
   if (error.error === 'unauthorized') {
-    const fromAddress = encodeURIComponent(address);
-    return MailPoet.I18n.t('setFromAddressEmailNotAuthorized').replace(
-      /\[link\](.*?)\[\/link\]/g,
-      `<a href="https://account.mailpoet.com/authorization?email=${fromAddress}" target="_blank" rel="noopener noreferrer">$1</a>`,
-    );
+    return ' ';
   }
 
   return error.message || MailPoet.I18n.t('setFromAddressEmailUnknownError');
@@ -86,6 +82,10 @@ type Props = {
 
 function SetFromAddressModal({ onRequestClose, setAuthorizedAddress }: Props) {
   const [address, setAddress] = useState<string>();
+  const [showAuthorizedEmailModel, setShowAuthorizedEmailModel] =
+    useState(false);
+  const [showAuthorizedEmailErrorMessage, setShowAuthorizedEmailErrorMessage] =
+    useState(false);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { notices } = useContext<any>(GlobalContext);
 
@@ -95,6 +95,21 @@ function SetFromAddressModal({ onRequestClose, setAuthorizedAddress }: Props) {
       onRequestClose={onRequestClose}
       contentClassName="set-from-address-modal"
     >
+      {showAuthorizedEmailModel && (
+        <AuthorizeSenderEmailModal
+          senderEmail={address}
+          onRequestClose={() => {
+            setShowAuthorizedEmailModel(false);
+          }}
+          setAuthorizedAddress={(emailAddres) => {
+            setAuthorizedAddress(emailAddres);
+            setShowAuthorizedEmailErrorMessage(false);
+            onRequestClose();
+            notices.success(getSuccessMessage(), { timeout: false });
+          }}
+        />
+      )}
+
       <p>
         {ReactStringReplace(
           MailPoet.I18n.t('setFromAddressModalDescription'),
@@ -126,6 +141,27 @@ function SetFromAddressModal({ onRequestClose, setAuthorizedAddress }: Props) {
           addressValidator.removeError('saveError');
         }}
       />
+      <p className="sender_email_address_warning">
+        {showAuthorizedEmailErrorMessage &&
+          ReactStringReplace(
+            MailPoet.I18n.t('setFromAddressEmailNotAuthorized'),
+            /\[link\](.*?)\[\/link\]/g,
+            (string, index) => (
+              <a
+                key={index}
+                href={`https://account.mailpoet.com/authorization?email=${address}`}
+                onClick={(event) => {
+                  event.preventDefault();
+                  setShowAuthorizedEmailModel(true);
+                }}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {string}
+              </a>
+            ),
+          )}
+      </p>
 
       <input
         className="button button-primary"
@@ -155,8 +191,9 @@ function SetFromAddressModal({ onRequestClose, setAuthorizedAddress }: Props) {
               MailPoet.trackEvent('Unauthorized email used', {
                 'Unauthorized email source': 'modal',
               });
+              setShowAuthorizedEmailErrorMessage(true);
             }
-            const message = getErrorMessage(error, address);
+            const message = getErrorMessage(error);
             addressValidator.addError('saveError', { message });
           }
         }}
