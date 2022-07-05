@@ -11,6 +11,11 @@ use MailPoet\Subscribers\Source;
 use MailPoet\Util\Helpers;
 use MailPoet\WP\Functions as WPFunctions;
 
+/**
+ * API used by other plugins
+ * Do not add bodies of methods into this class. Use other classes. See CustomFields or Subscribers.
+ * This class is under refactor, and we are going to move most of the remaining implementations from here.
+ */
 class API {
 
   /** @var RequiredCustomFieldValidator */
