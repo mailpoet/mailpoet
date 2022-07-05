@@ -41,8 +41,18 @@ class SegmentSubscribedTrigger implements Trigger {
     }
 
     $this->wp->doAction(Hooks::TRIGGER, $this, [
-      SegmentSubject::KEY => ['segment_id' => $segment->getId()],
-      SubscriberSubject::KEY => ['subscriber_id' => $subscriber->getId()],
+      [
+        'key' => SegmentSubject::KEY,
+        'args' => [
+          'segment_id' => $segment->getId(),
+        ],
+      ],
+      [
+        'key' => SubscriberSubject::KEY,
+        'args' => [
+          'subscriber_id' => $subscriber->getId(),
+        ],
+      ],
     ]);
   }
 }

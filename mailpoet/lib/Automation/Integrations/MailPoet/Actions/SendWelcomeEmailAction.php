@@ -4,6 +4,7 @@ namespace MailPoet\Automation\Integrations\MailPoet\Actions;
 
 use MailPoet\Automation\Engine\Workflows\Action;
 use MailPoet\Automation\Engine\Workflows\Step;
+use MailPoet\Automation\Engine\Workflows\Subject;
 use MailPoet\Automation\Engine\Workflows\Workflow;
 use MailPoet\Automation\Engine\Workflows\WorkflowRun;
 use MailPoet\Automation\Integrations\MailPoet\Subjects\SegmentSubject;
@@ -61,16 +62,20 @@ class SendWelcomeEmailAction implements Action {
     } catch (InvalidStateException $exception) {
       return false;
     }
-    
-    $segmentSubject = $subjects['mailpoet:segment'] ?? null;
-    $subscriberSubject = $subjects['mailpoet:subscriber'] ?? null;
 
-    return $segmentSubject instanceof SegmentSubject && $subscriberSubject instanceof SubscriberSubject;
+    $segmentSubjects = array_filter($subjects, function (Subject $subject) {
+      return $subject->getKey() === SegmentSubject::KEY;
+    });
+    $subscriberSubjects = array_filter($subjects, function (Subject $subject) {
+      return $subject->getKey() === SubscriberSubject::KEY;
+    });
+
+    return count($segmentSubjects) === 1 && count($subscriberSubjects) === 1;
   }
 
   public function run(Workflow $workflow, WorkflowRun $workflowRun, Step $step): void {
     $newsletter = $this->getWelcomeEmailForStep($step);
-    $subscriberSubject = $workflowRun->getSubjects()['mailpoet:subscriber'] ?? null;
+    $subscriberSubject = $workflowRun->getSubjects('mailpoet:subscriber')[0] ?? null;
     if (!$subscriberSubject instanceof SubscriberSubject) {
       throw InvalidStateException::create()->withMessage('A mailpoet:subscriber subject is required.');
     }
@@ -86,7 +91,7 @@ class SendWelcomeEmailAction implements Action {
       throw InvalidStateException::create()->withMessage(sprintf("Cannot schedule a newsletter for subscriber ID '%s' because their status is '%s'.", $subscriber->getId(), $subscriber->getStatus()));
     }
 
-    $segmentSubject = $workflowRun->getSubjects()['mailpoet:segment'] ?? null;
+    $segmentSubject = $workflowRun->getSubjects('mailpoet:segment')[0] ?? null;
     if (!$segmentSubject instanceof SegmentSubject) {
       throw InvalidStateException::create()->withMessage('A mailpoet:segment subject is required.');
     }
@@ -119,7 +124,7 @@ class SendWelcomeEmailAction implements Action {
         ->withErrors($errors);
     }
   }
-  
+
   private function getWelcomeEmailForStep(Step $step): NewsletterEntity {
     $welcomeEmailId = $step->getArgs()['welcomeEmailId'] ?? null;
     if ($welcomeEmailId === null) {
