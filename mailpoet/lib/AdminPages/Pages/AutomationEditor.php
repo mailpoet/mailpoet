@@ -8,6 +8,7 @@ use MailPoet\Automation\Engine\Storage\WorkflowStorage;
 use MailPoet\Automation\Engine\Workflows\Step;
 use MailPoet\Automation\Engine\Workflows\Workflow;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoet\WP\Notice as WPNotice;
 
 class AutomationEditor {
   /** @var WorkflowStorage */
@@ -33,8 +34,18 @@ class AutomationEditor {
     $id = isset($_GET['id']) ? (int)$_GET['id'] : null;
 
     $workflow = $id ? $this->workflowStorage->getWorkflow($id) : null;
+    if (!$workflow) {
+      $notice = new WPNotice(
+        WPNotice::TYPE_ERROR,
+        __("Workflow not found.", 'mailpoet')
+      );
+      $notice->displayWPNotice();
+      $this->pageRenderer->displayPage('blank.html');
+      return;
+    }
+
     $this->pageRenderer->displayPage('automation/editor.html', [
-      'workflow' => $workflow ? $this->buildWorkflow($workflow) : null,
+      'workflow' => $this->buildWorkflow($workflow),
       'sub_menu' => 'mailpoet-automation',
       'api' => [
         'root' => rtrim($this->wp->escUrlRaw($this->wp->restUrl()), '/'),
