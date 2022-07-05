@@ -30,11 +30,6 @@ class AutomationEditor {
   }
 
   public function render() {
-    // Gutenberg styles
-    $this->wp->wpEnqueueStyle('wp-edit-site');
-    $this->wp->wpEnqueueStyle('wp-format-library');
-    $this->wp->wpEnqueueMedia();
-
     $id = isset($_GET['id']) ? (int)$_GET['id'] : null;
 
     $workflow = $id ? $this->workflowStorage->getWorkflow($id) : null;

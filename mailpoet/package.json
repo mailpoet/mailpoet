@@ -53,6 +53,7 @@
     "@wordpress/data": "^6.4.1",
     "@wordpress/data-controls": "^2.9.0",
     "@wordpress/edit-post": "^6.1.1",
+    "@wordpress/edit-site": "^4.1.0",
     "@wordpress/editor": "^12.3.1",
     "@wordpress/element": "^4.2.1",
     "@wordpress/escape-html": "^2.4.1",
