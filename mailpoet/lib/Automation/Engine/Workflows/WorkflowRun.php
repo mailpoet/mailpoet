@@ -3,6 +3,7 @@
 namespace MailPoet\Automation\Engine\Workflows;
 
 use DateTimeImmutable;
+use MailPoet\Automation\Engine\Exceptions;
 use MailPoet\Automation\Engine\Utils\Json;
 
 class WorkflowRun {
@@ -85,6 +86,17 @@ class WorkflowRun {
       );
     }
     return $this->subjects;
+  }
+
+  public function requireSubject(string $key): Subject {
+    $subjects = $this->getSubjects($key);
+    if (count($subjects) === 0) {
+      throw Exceptions::subjectNotFound($key);
+    }
+    if (count($subjects) > 1) {
+      throw Exceptions::multipleSubjectsFound($key);
+    }
+    return $subjects[0];
   }
 
   public function toArray(): array {
