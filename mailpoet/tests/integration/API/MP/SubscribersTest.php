@@ -7,6 +7,7 @@ use Codeception\Stub\Expected;
 use MailPoet\API\JSON\ResponseBuilders\SubscribersResponseBuilder;
 use MailPoet\API\MP\v1\API;
 use MailPoet\API\MP\v1\CustomFields;
+use MailPoet\API\MP\v1\Segments;
 use MailPoet\API\MP\v1\Subscribers;
 use MailPoet\Config\Changelog;
 use MailPoet\Entities\SegmentEntity;
@@ -62,6 +63,7 @@ class SubscribersTest extends \MailPoetTest {
     return new API(
       $this->makeEmpty(RequiredCustomFieldValidator::class),
       $this->diContainer->get(CustomFields::class),
+      $this->diContainer->get(Segments::class),
       $subscriberActions,
       $this->diContainer->get(Changelog::class)
     );
