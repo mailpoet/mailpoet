@@ -7,6 +7,7 @@ import { GlobalContext } from 'context';
 import { noop } from 'lodash';
 import { ErrorResponse, isErrorResponse } from '../ajax';
 import { AuthorizeSenderEmailModal } from './authorize_sender_email_modal';
+import { Button } from './button/button';
 
 /**
  * @param {string|null} address
@@ -86,6 +87,7 @@ function SetFromAddressModal({ onRequestClose, setAuthorizedAddress }: Props) {
     useState(false);
   const [showAuthorizedEmailErrorMessage, setShowAuthorizedEmailErrorMessage] =
     useState(false);
+  const [loading, setLoading] = useState(false);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { notices } = useContext<any>(GlobalContext);
 
@@ -163,10 +165,9 @@ function SetFromAddressModal({ onRequestClose, setAuthorizedAddress }: Props) {
           )}
       </p>
 
-      <input
-        className="button button-primary"
+      <Button
+        withSpinner={loading}
         type="submit"
-        value={MailPoet.I18n.t('setFromAddressModalSave')}
         onClick={async () => {
           const addressValidator = jQuery(
             '#mailpoet-set-from-address-modal-input',
@@ -179,12 +180,15 @@ function SetFromAddressModal({ onRequestClose, setAuthorizedAddress }: Props) {
             return;
           }
           try {
+            setLoading(true);
             await handleSave(address);
+            setLoading(false);
             setAuthorizedAddress(address);
             onRequestClose();
             removeUnauthorizedEmailNotices();
             notices.success(getSuccessMessage(), { timeout: false });
           } catch (e) {
+            setLoading(false);
             const error =
               isErrorResponse(e) && e.errors[0] ? e.errors[0] : null;
             if (error.error === 'unauthorized') {
@@ -197,7 +201,9 @@ function SetFromAddressModal({ onRequestClose, setAuthorizedAddress }: Props) {
             addressValidator.addError('saveError', { message });
           }
         }}
-      />
+      >
+        {MailPoet.I18n.t('setFromAddressModalSave')}
+      </Button>
     </Modal>
   );
 }
