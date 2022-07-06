@@ -87,6 +87,11 @@ class AuthorizedEmailsController {
 
     $finalData = $this->bridge->createAuthorizedEmailAddress($email);
 
+    if (!is_bool($finalData) && is_array($finalData)) {
+      $errorMessage = isset($finalData['error']) ? $finalData['error'] : ' ';
+      throw new \InvalidArgumentException($errorMessage);
+    }
+
     return $finalData;
   }
 
