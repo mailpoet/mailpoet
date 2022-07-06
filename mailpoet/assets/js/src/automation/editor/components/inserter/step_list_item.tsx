@@ -3,8 +3,8 @@ import { ComponentProps } from 'react';
 import { useRef, memo } from '@wordpress/element';
 import { ENTER } from '@wordpress/keycodes';
 import { Item } from './item';
-import { StepIcon } from './step_icon';
 import { InserterListboxItem } from '../inserter-listbox/listbox_item';
+import { StepIcon } from '../step-icon';
 
 // See: https://github.com/WordPress/gutenberg/blob/628ae68152f572d0b395bb15c0f71b8821e7f130/packages/block-editor/src/components/inserter-list-item/index.js
 

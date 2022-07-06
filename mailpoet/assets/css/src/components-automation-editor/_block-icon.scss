@@ -1,0 +1,34 @@
+// See: https://github.com/WordPress/gutenberg/blob/af7da80dd54d7fe52772890e2cc1b65073db9655/packages/block-editor/src/components/block-icon/style.scss
+
+.block-editor-block-icon {
+  align-items: center;
+  display: flex;
+  height: 24px;
+  justify-content: center;
+  width: 24px;
+
+  &.has-colors {
+    svg {
+      fill: currentColor;
+
+      // Optimize for high contrast modes.
+      // See also https://blogs.windows.com/msedgedev/2020/09/17/styling-for-windows-high-contrast-with-new-standards-for-forced-colors/.
+
+      @media (forced-colors: active) {
+        fill: CanvasText;
+      }
+    }
+  }
+
+  // Icons with width/height attributes below 20px will be sized up to 20px,
+  // and icons with width/height attributes above 24px will be sized down to
+  // 24px. Icons with width/height >=20px and <=24px will display at the
+  // indicated size.
+  // See: https://github.com/WordPress/gutenberg/pull/9828
+  svg {
+    max-height: 24px;
+    max-width: 24px;
+    min-height: 20px;
+    min-width: 20px;
+  }
+}
