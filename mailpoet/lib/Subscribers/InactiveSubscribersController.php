@@ -2,12 +2,10 @@
 
 namespace MailPoet\Subscribers;
 
-use MailPoet\Config\MP2Migrator;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
-use MailPoet\Settings\SettingsRepository;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\DBAL\Connection;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
@@ -19,17 +17,12 @@ class InactiveSubscribersController {
 
   private $processedTaskIdsTableCreated = false;
 
-  /** @var SettingsRepository */
-  private $settingsRepository;
-
   /** @var EntityManager */
   private $entityManager;
 
   public function __construct(
-    EntityManager $entityManager,
-    SettingsRepository $settingsRepository
+    EntityManager $entityManager
   ) {
-    $this->settingsRepository = $settingsRepository;
     $this->entityManager = $entityManager;
   }
 
@@ -60,7 +53,7 @@ class InactiveSubscribersController {
   }
 
   /**
-   * @return int|bool
+   * @return int
    */
   private function deactivateSubscribers(Carbon $thresholdDate, int $batchSize, ?int $startId = null, ?int $unopenedEmails = self::UNOPENED_EMAILS_THRESHOLD) {
     $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
@@ -72,13 +65,6 @@ class InactiveSubscribersController {
     $thresholdDateIso = $thresholdDate->toDateTimeString();
     $dayAgo = new Carbon();
     $dayAgoIso = $dayAgo->subDay()->toDateTimeString();
-
-    // If MP2 migration occurred during detection interval we can't deactivate subscribers
-    // because they are imported with original subscription date but they were not present in a list for whole period
-    $mp2MigrationDate = $this->getMP2MigrationDate();
-    if ($mp2MigrationDate && $mp2MigrationDate > $thresholdDate) {
-      return false;
-    }
 
     // Temporary table with processed tasks from threshold date up to yesterday
     $processedTaskIdsTable = 'inactive_task_ids';
@@ -160,40 +146,24 @@ class InactiveSubscribersController {
     $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
     $connection = $this->entityManager->getConnection();
 
-    $mp2MigrationDate = $this->getMP2MigrationDate();
-    if ($mp2MigrationDate && $mp2MigrationDate > $thresholdDate) {
-      // If MP2 migration occurred during detection interval re-activate all subscribers created before migration
-      $idsToActivate = $connection->executeQuery("
-        SELECT id
-        FROM {$subscribersTable}
-        WHERE created_at < :migrationDate
-          AND status = :statusInactive
-        LIMIT :batchSize
-        ", [
-          'migrationDate' => $mp2MigrationDate,
-          'statusInactive' => SubscriberEntity::STATUS_INACTIVE,
-          'batchSize' => $batchSize,
-      ], ['batchSize' => \PDO::PARAM_INT])->fetchAllAssociative();
-    } else {
-      $idsToActivate = $connection->executeQuery("
-        SELECT s.id
-        FROM {$subscribersTable} s
-        LEFT OUTER JOIN {$subscribersTable} s2 ON s.id = s2.id AND GREATEST(
-          COALESCE(s2.last_engagement_at, '0'),
-          COALESCE(s2.last_subscribed_at, '0'),
-          COALESCE(s2.created_at, '0')
-        ) > :thresholdDate
-        WHERE s.last_subscribed_at < :thresholdDate
-          AND s.status = :statusInactive
-          AND s2.id IS NOT NULL
-        GROUP BY s.id
-        LIMIT :batchSize
-      ", [
-        'thresholdDate' => $thresholdDate,
-        'statusInactive' => SubscriberEntity::STATUS_INACTIVE,
-        'batchSize' => $batchSize,
-      ], ['batchSize' => \PDO::PARAM_INT])->fetchAllAssociative();
-    }
+    $idsToActivate = $connection->executeQuery("
+      SELECT s.id
+      FROM {$subscribersTable} s
+      LEFT OUTER JOIN {$subscribersTable} s2 ON s.id = s2.id AND GREATEST(
+        COALESCE(s2.last_engagement_at, '0'),
+        COALESCE(s2.last_subscribed_at, '0'),
+        COALESCE(s2.created_at, '0')
+      ) > :thresholdDate
+      WHERE s.last_subscribed_at < :thresholdDate
+        AND s.status = :statusInactive
+        AND s2.id IS NOT NULL
+      GROUP BY s.id
+      LIMIT :batchSize
+    ", [
+      'thresholdDate' => $thresholdDate,
+      'statusInactive' => SubscriberEntity::STATUS_INACTIVE,
+      'batchSize' => $batchSize,
+    ], ['batchSize' => \PDO::PARAM_INT])->fetchAllAssociative();
 
     $idsToActivate = array_map(
       function($id) {
@@ -208,10 +178,5 @@ class InactiveSubscribersController {
       'idsToActivate' => $idsToActivate,
     ], ['idsToActivate' => Connection::PARAM_INT_ARRAY]);
     return count($idsToActivate);
-  }
-
-  private function getMP2MigrationDate() {
-    $setting = $this->settingsRepository->findOneByName(MP2Migrator::MIGRATION_COMPLETE_SETTING_KEY);
-    return $setting ? Carbon::instance($setting->getCreatedAt()) : null;
   }
 }

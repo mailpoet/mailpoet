@@ -2,7 +2,6 @@
 
 namespace MailPoet\Subscribers;
 
-use MailPoet\Config\MP2Migrator;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\ScheduledTaskSubscriberEntity;
@@ -10,7 +9,6 @@ use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SettingEntity;
 use MailPoet\Entities\StatisticsOpenEntity;
 use MailPoet\Entities\SubscriberEntity;
-use MailPoet\Settings\SettingsRepository;
 use MailPoet\Tasks\Sending;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
@@ -32,8 +30,7 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
 
   public function _before() {
     $this->controller = new InactiveSubscribersController(
-      $this->diContainer->get(EntityManager::class),
-      $this->diContainer->get(SettingsRepository::class)
+      $this->diContainer->get(EntityManager::class)
     );
     $this->subscribersRepository = $this->diContainer->get(SubscribersRepository::class);
     $this->truncateEntity(SubscriberEntity::class);
@@ -169,20 +166,6 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
     expect($subscriber1->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
   }
 
-  public function testItDoesNotDeactivatesSubscribersWhenMP2MigrationHappenedWithinInterval(): void {
-    $this->createSetting(MP2Migrator::MIGRATION_COMPLETE_SETTING_KEY, true, (new Carbon())->subDays(3));
-
-    $subscriber = $this->createSubscriber('s1@email.com', 10);
-    $this->createCompletedSendingTasksForSubscriber($subscriber, self::UNOPENED_EMAILS_THRESHOLD, 3);
-
-    $result = $this->controller->markInactiveSubscribers(self::INACTIVITY_DAYS_THRESHOLD, self::PROCESS_BATCH_SIZE);
-    expect($result)->equals(0);
-    $subscriber = $this->subscribersRepository->findOneById($subscriber->getId());
-    assert($subscriber instanceof SubscriberEntity);
-    expect($subscriber->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
-    $this->removeSetting(MP2Migrator::MIGRATION_COMPLETE_SETTING_KEY);
-  }
-
   public function testItActivatesSubscriberWhoRecentlyOpenedEmail(): void {
     [$task, $queue] = $this->createCompletedSendingTask(2);
     $subscriber = $this->createSubscriber('s1@email.com', 10, SubscriberEntity::STATUS_INACTIVE);
@@ -237,23 +220,6 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
     $subscriber = $this->subscribersRepository->findOneById($subscriber->getId());
     assert($subscriber instanceof SubscriberEntity);
     expect($subscriber->getStatus())->equals(SubscriberEntity::STATUS_INACTIVE);
-  }
-
-  public function testItActivatesSubscribersWhenMP2MigrationHappenedWithinInterval(): void {
-    [$task] = $this->createCompletedSendingTask(3);
-
-    $this->createSetting(MP2Migrator::MIGRATION_COMPLETE_SETTING_KEY, true, (new Carbon())->subDays(3));
-
-    $subscriber = $this->createSubscriber('s1@email.com', 10, SubscriberEntity::STATUS_INACTIVE);
-    $this->addSubscriberToTask($subscriber, $task);
-
-    $result = $this->controller->markActiveSubscribers(self::INACTIVITY_DAYS_THRESHOLD, self::PROCESS_BATCH_SIZE);
-    $this->entityManager->clear();
-    expect($result)->equals(1);
-    $subscriber = $this->subscribersRepository->findOneById($subscriber->getId());
-    assert($subscriber instanceof SubscriberEntity);
-    expect($subscriber->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
-    $this->removeSetting(MP2Migrator::MIGRATION_COMPLETE_SETTING_KEY);
   }
 
   public function testItDoesReactivateInactiveSubscribers(): void {
