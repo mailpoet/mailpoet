@@ -9,7 +9,6 @@ use MailPoet\AdminPages\Pages\FormEditor;
 use MailPoet\AdminPages\Pages\Forms;
 use MailPoet\AdminPages\Pages\Help;
 use MailPoet\AdminPages\Pages\Logs;
-use MailPoet\AdminPages\Pages\MP2Migration;
 use MailPoet\AdminPages\Pages\NewsletterEditor;
 use MailPoet\AdminPages\Pages\Newsletters;
 use MailPoet\AdminPages\Pages\Segments;
@@ -388,19 +387,6 @@ class Menu {
       ]
     );
 
-    // Migration page
-    $this->wp->addSubmenuPage(
-      true,
-      $this->setPageTitle(__('Migration', 'mailpoet')),
-      '',
-      AccessControl::PERMISSION_ACCESS_PLUGIN_ADMIN,
-      'mailpoet-migration',
-      [
-        $this,
-        'migration',
-      ]
-    );
-
     // Experimental page
     $this->wp->addSubmenuPage(
       true,
@@ -454,10 +440,6 @@ class Menu {
   public function disableWPEmojis() {
     $this->wp->removeAction('admin_print_scripts', 'print_emoji_detection_script');
     $this->wp->removeAction('admin_print_styles', 'print_emoji_styles');
-  }
-
-  public function migration() {
-    $this->container->get(MP2Migration::class)->render();
   }
 
   public function welcomeWizard() {
