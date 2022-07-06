@@ -11,12 +11,14 @@ use MailPoet\Config\ServicesChecker;
 use MailPoet\CustomFields\CustomFieldsRepository;
 use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Entities\SegmentEntity;
+use MailPoet\Entities\TagEntity;
 use MailPoet\Listing\PageLimit;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Segments\SegmentDependencyValidator;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\TrackingConfig;
+use MailPoet\Tags\TagRepository;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 use MailPoet\WP\AutocompletePostListLoader as WPPostListLoader;
@@ -67,6 +69,9 @@ class Segments {
   /** @var NewslettersResponseBuilder */
   private $newslettersResponseBuilder;
 
+  /** @var TagRepository */
+  private $tagRepository;
+
   /** @var TrackingConfig */
   private $trackingConfig;
 
@@ -84,6 +89,7 @@ class Segments {
     SegmentsRepository $segmentsRepository,
     NewslettersRepository $newslettersRepository,
     NewslettersResponseBuilder $newslettersResponseBuilder,
+    TagRepository $tagRepository,
     TrackingConfig $trackingConfig,
     TransientCache $transientCache
   ) {
@@ -100,6 +106,7 @@ class Segments {
     $this->transientCache = $transientCache;
     $this->segmentsRepository = $segmentsRepository;
     $this->newslettersRepository = $newslettersRepository;
+    $this->tagRepository = $tagRepository;
     $this->trackingConfig = $trackingConfig;
     $this->newslettersResponseBuilder = $newslettersResponseBuilder;
   }
@@ -159,6 +166,12 @@ class Segments {
       ];
     }
 
+    $data['tags'] = array_map(function (TagEntity $tag): array {
+      return [
+        'id' => $tag->getId(),
+        'name' => $tag->getName(),
+      ];
+    }, $this->tagRepository->findBy([], ['name' => 'ASC']));
 
     $data['product_categories'] = $this->wpPostListLoader->getWooCommerceCategories();
 
