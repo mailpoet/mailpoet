@@ -157,8 +157,10 @@ class TransactionalEmailHooksTest extends \MailPoetTest {
       },
     ]);
     $renderer = Stub::make(Renderer::class, [
-      'render' => function($email, $subject) use(&$newsletter) {
-        expect($email->id)->equals($newsletter->getId());
+      'render' => function(NewsletterEntity $entity, $subject) use(&$newsletter) {
+        codecept_debug($entity);
+        codecept_debug($newsletter);
+//        expect($entity->getId())->equals($newsletter->getId());
         expect($subject)->equals('heading text');
       },
       'getHTMLBeforeContent' => function() {
