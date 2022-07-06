@@ -235,6 +235,79 @@ class AuthorizedEmailsControllerTest extends \MailPoetTest {
     $controller->setFromEmailAddress('invalid@email.com');
   }
 
+  public function testItDoesNotCreateNewAuthorizedEmailAddressForAuthorizedEmails() {
+    $this->expectException(InvalidArgumentException::class);
+    $this->expectExceptionMessage('Email address is already authorized');
+
+    $array = [
+      'pending' => ['pending@email.com'],
+      'authorized' => ['authorized@email.com']
+    ];
+    $controller = $this->getController($array);
+    $controller->createAuthorizedEmailAddress('authorized@email.com');
+  }
+
+  public function testItDoesNotCreateNewAuthorizedEmailAddressForPendingEmails() {
+    $this->expectException(InvalidArgumentException::class);
+    $this->expectExceptionMessage('Email address is pending confirmation');
+
+    $array = [
+      'pending' => ['pending@email.com'],
+      'authorized' => ['authorized@email.com']
+    ];
+    $controller = $this->getController($array);
+    $controller->createAuthorizedEmailAddress('pending@email.com');
+  }
+
+  public function testItCreateNewAuthorizedEmailAddress() {
+    $array = [
+      'pending' => ['pending@email.com'],
+      'authorized' => ['authorized@email.com']
+    ];
+    $bridgeMock = $this->make(Bridge::class, [
+      'getAuthorizedEmailAddresses' => Expected::once($array),
+      'createAuthorizedEmailAddress' => Expected::once(true)
+    ]);
+    $newslettersRepository = $this->diContainer->get(NewslettersRepository::class);
+    $controller = new AuthorizedEmailsController($this->settings, $bridgeMock, $newslettersRepository);
+    $result = $controller->createAuthorizedEmailAddress('new-authorized@email.com');
+    expect($result)->equals(true);
+  }
+
+  public function testItThrowsAnExceptionForReturnedArrayForCreateNewAuthorizedEmailAddress() {
+    $errorMessage = 'some errors';
+    $this->expectException(InvalidArgumentException::class);
+    $this->expectExceptionMessage($errorMessage );
+
+    $bridgeMock = $this->make(Bridge::class, [
+      'getAuthorizedEmailAddresses' => Expected::once([]),
+      'createAuthorizedEmailAddress' => Expected::once(['error' => $errorMessage])
+    ]);
+    $newslettersRepository = $this->diContainer->get(NewslettersRepository::class);
+    $controller = new AuthorizedEmailsController($this->settings, $bridgeMock, $newslettersRepository);
+    $controller->createAuthorizedEmailAddress('new-authorized@email.com');
+  }
+
+  public function testItReturnsTrueWhenAuthorizedForIsEmailAddressAuthorized() {
+    $array = ['authorized@email.com'];
+    $controller = $this->getController($array);
+    $result = $controller->isEmailAddressAuthorized('authorized@email.com');
+    expect($result)->equals(true);
+  }
+
+  public function testItReturnsFalseWhenNotAuthorizedForIsEmailAddressAuthorized() {
+    $array = ['authorized@email.com'];
+    $controller = $this->getController($array);
+    $result = $controller->isEmailAddressAuthorized('pending@email.com');
+    expect($result)->equals(false);
+  }
+
+  public function testItReturnsFalseWhenNoArrayForIsEmailAddressAuthorized() {
+    $controller = $this->getController([]);
+    $result = $controller->isEmailAddressAuthorized('pending@email.com');
+    expect($result)->equals(false);
+  }
+
   private function setMailPoetSendingMethod() {
     $this->settings->set(
       Mailer::MAILER_CONFIG_SETTING_NAME,
