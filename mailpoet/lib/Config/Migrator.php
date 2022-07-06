@@ -66,7 +66,6 @@ class Migrator {
       'statistics_unsubscribes',
       'statistics_forms',
       'statistics_woocommerce_purchases',
-      'mapping_to_external_entities',
       'log',
       'user_flags',
       'feature_flags',
@@ -557,18 +556,6 @@ class Migrator {
       'KEY queue_id (queue_id),',
       'KEY subscriber_id (subscriber_id),',
       'UNIQUE KEY click_id_order_id (click_id, order_id)',
-    ];
-    return $this->sqlify(__FUNCTION__, $attributes);
-  }
-
-  public function mappingToExternalEntities() {
-    $attributes = [
-      'old_id int(11) unsigned NOT NULL,',
-      'type varchar(50) NOT NULL,',
-      'new_id int(11) unsigned NOT NULL,',
-      'created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,',
-      'PRIMARY KEY (old_id, type),',
-      'KEY new_id (new_id)',
     ];
     return $this->sqlify(__FUNCTION__, $attributes);
   }
