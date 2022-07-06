@@ -411,18 +411,6 @@ const publicConfig = {
   },
 };
 
-// Migrator config
-const migratorConfig = {
-  name: 'mp2migrator',
-  entry: {
-    mp2migrator: ['mp2migrator.js'],
-  },
-  externals: {
-    jquery: 'jQuery',
-    mailpoet: 'MailPoet',
-  },
-};
-
 // Newsletter Editor Tests Config
 const testConfig = {
   name: 'test',
@@ -608,7 +596,6 @@ const marketingOptinBlock = Object.assign({}, wpScriptConfig, {
 const configs = [
   publicConfig,
   adminConfig,
-  migratorConfig,
   formPreviewConfig,
   testConfig,
   postEditorBlock,
