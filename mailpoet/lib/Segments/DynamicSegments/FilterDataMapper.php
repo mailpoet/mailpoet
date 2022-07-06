@@ -11,6 +11,7 @@ use MailPoet\Segments\DynamicSegments\Filters\MailPoetCustomFields;
 use MailPoet\Segments\DynamicSegments\Filters\SubscriberScore;
 use MailPoet\Segments\DynamicSegments\Filters\SubscriberSegment;
 use MailPoet\Segments\DynamicSegments\Filters\SubscriberSubscribedDate;
+use MailPoet\Segments\DynamicSegments\Filters\SubscriberTag;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceCategory;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceCountry;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceMembership;
@@ -124,6 +125,16 @@ class FilterDataMapper {
       if (!empty($data['date_type'])) $filterData['date_type'] = $data['date_type'];
       if (!empty($data['operator'])) $filterData['operator'] = $data['operator'];
       return new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_USER_ROLE, $data['action'], $filterData);
+    }
+    if ($data['action'] === SubscriberTag::TYPE) {
+      if (empty($data['tags'])) throw new InvalidFilterException('Missing tags', InvalidFilterException::MISSING_VALUE);
+      return new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_USER_ROLE, $data['action'], [
+        'tags' => array_map(function ($tagId) {
+          return intval($tagId);
+        }, $data['tags']),
+        'operator' => $data['operator'] ?? DynamicSegmentFilterData::OPERATOR_ANY,
+        'connect' => $data['connect'],
+      ]);
     }
     if (empty($data['wordpressRole'])) throw new InvalidFilterException('Missing role', InvalidFilterException::MISSING_ROLE);
     return new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_USER_ROLE, $data['action'], [
