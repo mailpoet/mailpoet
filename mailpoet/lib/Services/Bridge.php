@@ -125,7 +125,7 @@ class Bridge {
     if ($data && $type === 'all') {
       return $data;
     }
-    return $data ? $data[$type] : [];
+    return $data && isset($data[$type]) ? $data[$type] : [];
   }
 
   /**
