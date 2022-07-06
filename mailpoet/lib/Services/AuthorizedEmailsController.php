@@ -45,7 +45,7 @@ class AuthorizedEmailsController {
   }
 
   public function setFromEmailAddress(string $address) {
-    $authorizedEmails = array_map('strtolower', $this->bridge->getAuthorizedEmailAddresses() ?: []);
+    $authorizedEmails = $this->bridge->getAuthorizedEmailAddresses() ?: [];
     $isAuthorized = $this->validateAuthorizedEmail($authorizedEmails, $address);
     if (!$isAuthorized) {
       throw new \InvalidArgumentException("Email address '$address' is not authorized");
@@ -71,14 +71,14 @@ class AuthorizedEmailsController {
   public function createAuthorizedEmailAddress(string $email) {
     $allEmails = $this->getAllAuthorizedEmailAddress();
 
-    $authorizedEmails = array_map('strtolower', $allEmails[self::AUTHORIZED_EMAIL_ADDRESSES_API_TYPE_AUTHORIZED]);
+    $authorizedEmails = isset($allEmails[self::AUTHORIZED_EMAIL_ADDRESSES_API_TYPE_AUTHORIZED]) ? $allEmails[self::AUTHORIZED_EMAIL_ADDRESSES_API_TYPE_AUTHORIZED] : [];
     $isAuthorized = $this->validateAuthorizedEmail($authorizedEmails, $email);
 
     if ($isAuthorized) {
       throw new \InvalidArgumentException(self::AUTHORIZED_EMAIL_ERROR_ALREADY_AUTHORIZED);
     }
 
-    $pendingEmails = array_map('strtolower', $allEmails[self::AUTHORIZED_EMAIL_ADDRESSES_API_TYPE_PENDING]);
+    $pendingEmails = isset($allEmails[self::AUTHORIZED_EMAIL_ADDRESSES_API_TYPE_PENDING]) ? $allEmails[self::AUTHORIZED_EMAIL_ADDRESSES_API_TYPE_PENDING] : [];
     $isPending = $this->validateAuthorizedEmail($pendingEmails, $email);
 
     if ($isPending) {
@@ -96,7 +96,7 @@ class AuthorizedEmailsController {
   }
 
   public function isEmailAddressAuthorized(string $email): bool {
-    $authorizedEmails = array_map('strtolower', $this->bridge->getAuthorizedEmailAddresses() ?: []);
+    $authorizedEmails = $this->bridge->getAuthorizedEmailAddresses() ?: [];
     return $this->validateAuthorizedEmail($authorizedEmails, $email);
   }
 
@@ -197,7 +197,8 @@ class AuthorizedEmailsController {
     }
   }
 
-  private function validateAuthorizedEmail($authorizedEmails, $email) {
-    return in_array(strtolower($email), $authorizedEmails, true);
+  private function validateAuthorizedEmail($authorizedEmails = [], $email = '') {
+    $lowercaseAuthorizedEmails = array_map('strtolower', $authorizedEmails);
+    return in_array(strtolower($email), $lowercaseAuthorizedEmails, true);
   }
 }
