@@ -122,12 +122,14 @@ class Newsletter {
       'pre-processing newsletter',
       ['newsletter_id' => $newsletter->id, 'task_id' => $sendingTask->taskId]
     );
+    $newsletterEntity = $this->newslettersRepository->findOneById($newsletter->id);
+    if (!$newsletterEntity) return false;
     // if tracking is enabled, do additional processing
     if ($this->trackingEnabled) {
       // hook to the newsletter post-processing filter and add tracking image
       $this->trackingImageInserted = OpenTracking::addTrackingImage();
       // render newsletter
-      $renderedNewsletter = $this->renderer->render($newsletter, $sendingTask);
+      $renderedNewsletter = $this->renderer->render($newsletterEntity, $sendingTask);
       $renderedNewsletter = $this->wp->applyFilters(
         'mailpoet_sending_newsletter_render_after',
         $renderedNewsletter,
@@ -138,7 +140,7 @@ class Newsletter {
       $renderedNewsletter = $this->linksTask->process($renderedNewsletter, $newsletter, $sendingTask);
     } else {
       // render newsletter
-      $renderedNewsletter = $this->renderer->render($newsletter, $sendingTask);
+      $renderedNewsletter = $this->renderer->render($newsletterEntity, $sendingTask);
       $renderedNewsletter = $this->wp->applyFilters(
         'mailpoet_sending_newsletter_render_after',
         $renderedNewsletter,
@@ -160,8 +162,6 @@ class Newsletter {
       return false;
     }
     // extract and save newsletter posts
-    $newsletterEntity = $this->newslettersRepository->findOneById($newsletter->id);
-    if (!$newsletterEntity) return false;
     $this->postsTask->extractAndSave($renderedNewsletter, $newsletterEntity);
     // update queue with the rendered and pre-processed newsletter
     $sendingTask->newsletterRenderedSubject = ShortcodesTask::process(
