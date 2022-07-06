@@ -211,8 +211,6 @@ class API {
       $this->changelog->shouldShowWelcomeWizard()
       || $this->changelog->shouldShowWooCommerceListImportPage()
       || $this->changelog->shouldShowRevenueTrackingPermissionPage()
-      || $this->changelog->isMp2MigrationInProgress()
-      || $this->changelog->shouldShowMp2Migration()
     );
   }
 }
