@@ -5,6 +5,7 @@ namespace MailPoet\Test\Models;
 use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
+use MailPoetVendor\Idiorm\ORM;
 
 class SubscriberSegmentTest extends \MailPoetTest {
   public $wcSegment;
@@ -15,6 +16,7 @@ class SubscriberSegmentTest extends \MailPoetTest {
 
   public function _before() {
     parent::_before();
+    ORM::raw_execute('SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO"');
     $this->subscriber = Subscriber::createOrUpdate([
       'email' => 'john.doe@mailpoet.com',
       'first_name' => 'John',
