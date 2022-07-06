@@ -36,7 +36,7 @@ class MetaInfo {
   }
 
   public function getNewsletterMetaInfo($newsletter, Subscriber $subscriber) {
-    $type = 'unknown';
+    $type = $newsletter->type ?? 'unknown';
     switch ($newsletter->type) {
       case Newsletter::TYPE_AUTOMATIC:
         $group = isset($newsletter->options['group']) ? $newsletter->options['group'] : 'unknown';
