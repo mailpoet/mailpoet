@@ -5,6 +5,7 @@ namespace MailPoet\Segments;
 use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Entities\DynamicSegmentFilterEntity;
 use MailPoet\Entities\SegmentEntity;
+use MailPoet\Segments\DynamicSegments\Filters\SubscriberTag;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Doctrine\Common\Collections\Collection;
@@ -41,6 +42,14 @@ class SegmentDependencyValidator {
     DynamicSegmentFilterData::TYPE_WOOCOMMERCE_SUBSCRIPTION => [
       self::WOOCOMMERCE_SUBSCRIPTIONS_PLUGIN,
       self::WOOCOMMERCE_PLUGIN,
+    ],
+  ];
+
+  private const REQUIRED_PLUGINS_BY_TYPE_AND_ACTION = [
+    DynamicSegmentFilterData::TYPE_USER_ROLE => [
+      SubscriberTag::TYPE => [
+        self::MAILPOET_PREMIUM_PLUGIN,
+      ],
     ],
   ];
 
@@ -93,7 +102,10 @@ class SegmentDependencyValidator {
   }
 
   public function getMissingPluginsByFilter(DynamicSegmentFilterEntity $dynamicSegmentFilter): array {
-    $config = $this->getRequiredPluginsConfig($dynamicSegmentFilter->getFilterData()->getFilterType() ?? '');
+    $config = $this->getRequiredPluginsConfig(
+      $dynamicSegmentFilter->getFilterData()->getFilterType() ?? '',
+      $dynamicSegmentFilter->getFilterData()->getAction()
+    );
     return $this->getMissingPlugins($config);
   }
 
@@ -102,11 +114,15 @@ class SegmentDependencyValidator {
     return empty($this->getMissingPlugins($config));
   }
 
-  private function getRequiredPluginsConfig(string $type): array {
+  private function getRequiredPluginsConfig(string $type, ?string $action = null): array {
+    $requiredPlugins = [];
     if (isset(self::REQUIRED_PLUGINS_BY_TYPE[$type])) {
-      return self::REQUIRED_PLUGINS_BY_TYPE[$type];
+      $requiredPlugins = self::REQUIRED_PLUGINS_BY_TYPE[$type];
     }
-    return [];
+    if (isset(self::REQUIRED_PLUGINS_BY_TYPE_AND_ACTION[$type][$action])) {
+      $requiredPlugins = array_merge($requiredPlugins, self::REQUIRED_PLUGINS_BY_TYPE_AND_ACTION[$type][$action]);
+    }
+    return $requiredPlugins;
   }
 
   private function getMissingPlugins(array $config): array {
