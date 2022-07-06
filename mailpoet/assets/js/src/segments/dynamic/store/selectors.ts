@@ -7,6 +7,7 @@ import {
   StateType,
   StaticSegment,
   SubscriberCount,
+  Tag,
   WindowCustomFields,
   WindowEditableRoles,
   WindowMembershipPlans,
@@ -44,6 +45,7 @@ export const getStaticSegmentsList = (state: StateType): StaticSegment[] =>
   state.staticSegmentsList;
 export const getSubscriberCount = (state: StateType): SubscriberCount =>
   state.subscriberCount;
+export const getTags = (state: StateType): Tag[] => state.tags;
 export const getSegmentFilter = (
   state: StateType,
   index: number,
