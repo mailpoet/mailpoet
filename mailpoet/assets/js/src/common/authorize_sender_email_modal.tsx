@@ -122,6 +122,8 @@ function AuthorizeSenderEmailModal({
       return null;
     }
 
+    clearCurrentInterval(setIntervalId.current);
+
     makeApiRequest(senderEmailAddress)
       .then((res) => {
         const response = Boolean(res?.data);
@@ -130,6 +132,16 @@ function AuthorizeSenderEmailModal({
         if (response) {
           // if pending or already authorized perform the check ahead
           executeAction();
+
+          // start polling on success response
+          setIntervalStopTime.current = moment()
+            .add(STOP_POLLING_AFTER, 'hours')
+            .valueOf();
+
+          setIntervalId.current = setInterval(
+            executeAction,
+            1000 * SET_INTERVAL_SECONDS,
+          );
         }
       })
       .catch(() => {
@@ -137,15 +149,7 @@ function AuthorizeSenderEmailModal({
         setShowLoader(false);
       });
 
-    clearCurrentInterval(setIntervalId.current);
-    setIntervalStopTime.current = moment()
-      .add(STOP_POLLING_AFTER, 'hours')
-      .valueOf();
-
-    const invervalID = setInterval(executeAction, 1000 * SET_INTERVAL_SECONDS);
-    setIntervalId.current = invervalID;
-
-    return () => clearCurrentInterval(invervalID);
+    return () => clearCurrentInterval(setIntervalId.current);
   }, [senderEmailAddress]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
