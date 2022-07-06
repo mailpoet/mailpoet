@@ -34,6 +34,7 @@ export const createStore = (): void => {
     wooCurrencySymbol: window.mailpoet_woocommerce_currency_symbol,
     wooCountries: window.mailpoet_woocommerce_countries,
     customFieldsList: window.mailpoet_custom_fields,
+    tags: window.mailpoet_tags,
     segment: {
       filters_connect: SegmentConnectTypes.AND,
       filters: [

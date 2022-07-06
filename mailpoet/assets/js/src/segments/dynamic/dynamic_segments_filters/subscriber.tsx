@@ -23,6 +23,7 @@ import {
   SubscribedToList,
   validateSubscribedToList,
 } from './subscriber_subscribed_to_list';
+import { SubscriberTag, validateSubscriberTag } from './subscriber_tag';
 
 export function validateSubscriber(formItems: WordpressRoleFormItem): boolean {
   if (
@@ -42,6 +43,9 @@ export function validateSubscriber(formItems: WordpressRoleFormItem): boolean {
   }
   if (formItems.action === SubscriberActionTypes.SUBSCRIBED_TO_LIST) {
     return validateSubscribedToList(formItems);
+  }
+  if (formItems.action === SubscriberActionTypes.SUBSCRIBER_TAG) {
+    return validateSubscriberTag(formItems);
   }
   if (!formItems.operator || !formItems.value) {
     return false;
@@ -87,6 +91,11 @@ export const SubscriberSegmentOptions = [
     group: SegmentTypes.WordPressRole,
   },
   {
+    value: SubscriberActionTypes.SUBSCRIBER_TAG,
+    label: MailPoet.I18n.t('subscriberTag'),
+    group: SegmentTypes.WordPressRole,
+  },
+  {
     value: SubscriberActionTypes.WORDPRESS_ROLE,
     label: MailPoet.I18n.t('segmentsSubscriber'),
     group: SegmentTypes.WordPressRole,
@@ -99,6 +108,7 @@ const componentsMap = {
   [SubscriberActionTypes.SUBSCRIBED_DATE]: SubscribedDateFields,
   [SubscriberActionTypes.MAILPOET_CUSTOM_FIELD]: MailPoetCustomFields,
   [SubscriberActionTypes.SUBSCRIBED_TO_LIST]: SubscribedToList,
+  [SubscriberActionTypes.SUBSCRIBER_TAG]: SubscriberTag,
 };
 
 type Props = {
