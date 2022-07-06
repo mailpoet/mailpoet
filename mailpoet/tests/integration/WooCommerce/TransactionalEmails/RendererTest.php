@@ -104,7 +104,6 @@ class RendererTest extends \MailPoetTest {
         $wooPreprocessor
       ),
       $this->diContainer->get(\MailPoetVendor\CSS::class),
-      $this->diContainer->get(NewslettersRepository::class),
       $this->diContainer->get(ServicesChecker::class)
     );
   }

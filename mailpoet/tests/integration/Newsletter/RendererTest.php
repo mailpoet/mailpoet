@@ -51,7 +51,6 @@ class RendererTest extends \MailPoetTest {
       $this->diContainer->get(ColumnRenderer::class),
       $this->diContainer->get(Preprocessor::class),
       $this->diContainer->get(\MailPoetVendor\CSS::class),
-      $this->diContainer->get(NewslettersRepository::class),
       $this->servicesChecker
     );
     $this->columnRenderer = new ColumnRenderer();
