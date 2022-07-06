@@ -4,6 +4,7 @@ namespace MailPoet\WooCommerce\TransactionalEmails;
 
 use Codeception\Stub;
 use MailPoet\Config\ServicesChecker;
+use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Models\Newsletter;
 use MailPoet\Newsletter\Editor\LayoutHelper as L;
 use MailPoet\Newsletter\NewslettersRepository;
@@ -12,24 +13,27 @@ use MailPoet\Newsletter\Renderer\Renderer as NewsletterRenderer;
 use MailPoetVendor\csstidy;
 
 class RendererTest extends \MailPoetTest {
-  /** @var Newsletter */
+  /** @var NewsletterEntity */
   private $newsletter;
+
+  /** @var NewslettersRepository */
+  private $newslettersRepository;
 
   public function _before() {
     parent::_before();
-    $this->newsletter = Newsletter::createOrUpdate([
-      'type' => Newsletter::TYPE_WC_TRANSACTIONAL_EMAIL,
-      'subject' => 'WooCommerce Transactional Email',
-      'preheader' => '',
-      'body' => [
-        'content' => L::col([
-          L::row([L::col([['type' => 'text', 'text' => 'Some text before heading']])]),
-          ['type' => 'woocommerceHeading'],
-          L::row([L::col([['type' => 'text', 'text' => 'Some text between heading and content']])]),
-          ['type' => 'woocommerceContent'],
-          L::row([L::col([['type' => 'text', 'text' => 'Some text after content']])]),
-        ]),
-      ],
+    $this->newsletter = new NewsletterEntity();
+    $this->newslettersRepository = $this->diContainer->get(NewslettersRepository::class);
+    $this->newsletter->setSubject('WooCommerce Transactional Email');
+    $this->newsletter->setType(Newsletter::TYPE_WC_TRANSACTIONAL_EMAIL);
+    $this->newsletter->setPreheader('');
+    $this->newsletter->setBody([
+      'content' => L::col([
+        L::row([L::col([['type' => 'text', 'text' => 'Some text before heading']])]),
+        ['type' => 'woocommerceHeading'],
+        L::row([L::col([['type' => 'text', 'text' => 'Some text between heading and content']])]),
+        ['type' => 'woocommerceContent'],
+        L::row([L::col([['type' => 'text', 'text' => 'Some text after content']])]),
+      ]),
     ]);
   }
 
@@ -54,7 +58,7 @@ class RendererTest extends \MailPoetTest {
   }
 
   public function testRenderHeadingTextWhenHeadingBlockMovedToFooter() {
-    $this->newsletter->body = [
+    $this->newsletter->setBody([
       'content' => L::col([
         L::row([L::col([['type' => 'text', 'text' => 'Some text before heading']])]),
         L::row([L::col([['type' => 'text', 'text' => 'Some text between heading and content']])]),
@@ -62,8 +66,8 @@ class RendererTest extends \MailPoetTest {
         ['type' => 'woocommerceHeading'],
         L::row([L::col([['type' => 'text', 'text' => 'Some text after content']])]),
       ]),
-    ];
-    $this->newsletter->save();
+    ]);
+    $this->newslettersRepository->persist($this->newsletter);
     $renderer = new Renderer(new csstidy, $this->getNewsletterRenderer());
     $renderer->render($this->newsletter, 'Heading Text');
     $html = $renderer->getHTMLAfterContent();
