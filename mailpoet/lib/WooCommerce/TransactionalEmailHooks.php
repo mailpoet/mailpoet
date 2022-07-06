@@ -3,8 +3,6 @@
 namespace MailPoet\WooCommerce;
 
 use MailPoet\Entities\NewsletterEntity;
-use MailPoet\InvalidStateException;
-use MailPoet\Models\Newsletter;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Settings\SettingsController;
 use MailPoet\WooCommerce\TransactionalEmails\Renderer;
@@ -51,12 +49,7 @@ class TransactionalEmailHooks {
       $this->wp->addAction('woocommerce_email_header', function($emailHeading) {
         $newsletterEntity = $this->getNewsletter();
         if ($newsletterEntity) {
-          // Temporary load old model until we refactor renderer
-          $newsletterModel = Newsletter::findOne($newsletterEntity->getId());
-          if (!$newsletterModel instanceof Newsletter) {
-            throw new InvalidStateException('WooCommerce email template is missing!');
-          }
-          $this->renderer->render($newsletterModel, $emailHeading);
+          $this->renderer->render($newsletterEntity, $emailHeading);
           // The HTML is generated from a $newsletter entity and can be considered safe
           // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped, WordPressDotOrg.sniffs.OutputEscaping.UnescapedOutputParameter
           echo $this->renderer->getHTMLBeforeContent();
