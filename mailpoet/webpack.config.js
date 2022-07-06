@@ -181,6 +181,48 @@ const baseConfig = {
         ],
       },
       {
+        include: path.resolve(__dirname, 'assets/js/src/common/grid/index.tsx'),
+        use: [
+          {
+            loader: 'expose-loader',
+            options: {
+              exposes: `${globalPrefix}.CommonGrid`,
+            },
+          },
+          'babel-loader',
+        ],
+      },
+      {
+        include: path.resolve(
+          __dirname,
+          'assets/js/src/common/form/select/select.tsx',
+        ),
+        use: [
+          {
+            loader: 'expose-loader',
+            options: {
+              exposes: `${globalPrefix}.CommonFormSelect`,
+            },
+          },
+          'babel-loader',
+        ],
+      },
+      {
+        include: path.resolve(
+          __dirname,
+          'assets/js/src/common/form/react_select/react_select.tsx',
+        ),
+        use: [
+          {
+            loader: 'expose-loader',
+            options: {
+              exposes: `${globalPrefix}.CommonFormReactSelect`,
+            },
+          },
+          'babel-loader',
+        ],
+      },
+      {
         include: path.resolve(
           __dirname,
           'assets/js/src/segments/dynamic/types.ts',
@@ -277,6 +319,9 @@ const adminConfig = {
       'help-tooltip.jsx',
       'listing/index.ts',
       'common/index.ts',
+      'common/grid/index.tsx',
+      'common/form/select/select.tsx',
+      'common/form/react_select/react_select.tsx',
       'wp-data-hooks.js',
       'segments/dynamic/types.ts',
     ],
