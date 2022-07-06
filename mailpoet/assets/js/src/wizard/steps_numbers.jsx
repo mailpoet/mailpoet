@@ -19,12 +19,8 @@ export const redirectToNextStep = (history, finishWizard, currentStep) => {
 };
 
 export const mapStepNumberToStepName = (stepNumber) => {
-  const shouldSetSender = !window.is_mp2_migration_complete;
-  if (stepNumber === 1 && shouldSetSender) {
+  if (stepNumber === 1) {
     return 'WelcomeWizardSenderStep';
-  }
-  if (stepNumber === 1 && !shouldSetSender) {
-    return 'WelcomeWizardMigratedUserStep';
   }
   if (stepNumber === 2) {
     return 'WelcomeWizardUsageTrackingStep';
