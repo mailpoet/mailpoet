@@ -130,9 +130,10 @@ class Bridge {
 
   /**
    * Create Authorized Email Address
-   * Return true if done, false for errors
+   *
+   * returns true if done or an array of error messages
    */
-  public function createAuthorizedEmailAddress(string $emailAdress): bool {
+  public function createAuthorizedEmailAddress(string $emailAdress) {
     $data = $this
     ->getApi($this->settings->get(self::API_KEY_SETTING_NAME))
     ->createAuthorizedEmailAddress($emailAdress);

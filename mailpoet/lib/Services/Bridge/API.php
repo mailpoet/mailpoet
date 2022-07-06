@@ -180,7 +180,14 @@ class API {
     return is_array($data) ? $data : null;
   }
 
-  public function createAuthorizedEmailAddress(string $emailAdress): bool {
+  /**
+   * Create Authorized Email Address
+   *
+   * returns true if done or an array of error messages
+   * @param string $emailAdress
+   * @return bool|array
+   */
+  public function createAuthorizedEmailAddress(string $emailAdress) {
     $body = ['email' => $emailAdress];
     $result = $this->request(
       $this->urlAuthorizedEmailAddresses,
@@ -191,11 +198,15 @@ class API {
     $isSuccess = $code === self::RESPONSE_CODE_CREATED;
 
     if (!$isSuccess) {
+      $errorBody = $this->wp->wpRemoteRetrieveBody($result);
       $logData = [
         'code' => $code,
-        'error' => is_wp_error($result) ? $result->get_error_message() : $this->wp->wpRemoteRetrieveBody($result),
+        'error' => is_wp_error($result) ? $result->get_error_message() : $errorBody,
       ];
       $this->loggerFactory->getLogger(LoggerFactory::TOPIC_BRIDGE)->error('CreateAuthorizedEmailAddress API call failed.', $logData);
+      $errorResponseData = json_decode($errorBody, true);
+      $fallbackError = sprintf($this->wp->__('An error has happened while performing a request, the server has responded with response code %d'), $code);
+      return is_array($errorResponseData) ? $errorResponseData : ['error' => $fallbackError];
     }
 
     return $isSuccess;

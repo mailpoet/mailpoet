@@ -6,6 +6,7 @@ import moment from 'moment';
 import { MailPoet } from 'mailpoet';
 import { Modal } from 'common/modal/modal';
 import { Button, Loader } from 'common';
+import { isErrorResponse, ErrorResponse } from 'ajax';
 
 const SET_INTERVAL_SECONDS = 15;
 
@@ -77,6 +78,7 @@ function AuthorizeSenderEmailModal({
 }: Props) {
   const [createEmailApiResponse, setCreateEmailApiResponse] =
     useState<boolean>(null);
+  const [createEmailApiError, setCreateEmailApiError] = useState('');
   const [confirmEmailApiResponse, setConfirmEmailApiResponse] =
     useState<boolean>(null);
   const [showLoader, setShowLoader] = useState<boolean>(true);
@@ -144,7 +146,13 @@ function AuthorizeSenderEmailModal({
           );
         }
       })
-      .catch(() => {
+      .catch((e: ErrorResponse) => {
+        const error =
+          isErrorResponse(e) && e.errors[0] && e.errors[0].message
+            ? e.errors[0].message
+            : '';
+        setCreateEmailApiError(error);
+
         setCreateEmailApiResponse(false);
         setShowLoader(false);
       });
@@ -173,7 +181,10 @@ function AuthorizeSenderEmailModal({
         </p>
       )}
       {createEmailApiResponse === false && (
-        <p>{MailPoet.I18n.t('authorizeSenderEmailMessageError')}</p>
+        <>
+          <strong> {createEmailApiError} </strong>
+          <p>{MailPoet.I18n.t('authorizeSenderEmailMessageError')}</p>
+        </>
       )}
 
       {showLoader && <Loader size={64} />}
