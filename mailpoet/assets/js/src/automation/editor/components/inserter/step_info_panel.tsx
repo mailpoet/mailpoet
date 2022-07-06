@@ -1,5 +1,5 @@
-import { StepIcon } from './step_icon';
 import { Item } from './item';
+import { StepIcon } from '../step-icon';
 
 // See: https://github.com/WordPress/gutenberg/blob/9601a33e30ba41bac98579c8d822af63dd961488/packages/block-editor/src/components/inserter/preview-panel.js
 
