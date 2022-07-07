@@ -11,6 +11,7 @@ export type StepType = {
   title: string;
   description: string;
   icon: ComponentType;
+  edit: ComponentType;
 };
 
 export type State = {
