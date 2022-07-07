@@ -5,7 +5,6 @@ namespace MailPoet\Newsletter\Shortcodes\Categories;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
-use MailPoet\Models\SendingQueue;
 use MailPoet\Newsletter\Url as NewsletterUrl;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\TrackingConfig;
@@ -48,13 +47,15 @@ class Link implements CategoryInterface {
     bool $wpUserPreview = false
   ): ?string {
     $subscriptionUrlFactory = SubscriptionUrlFactory::getInstance();
-    $queueModel = $this->getQueueModel($queue);
 
     switch ($shortcodeDetails['action']) {
       case 'subscription_unsubscribe_url':
         return self::processUrl(
           $shortcodeDetails['action'],
-          $subscriptionUrlFactory->getConfirmUnsubscribeUrl($wpUserPreview ? null : $subscriber, self::getSendingQueueId($queue)),
+          $subscriptionUrlFactory->getConfirmUnsubscribeUrl(
+            $wpUserPreview ? null : $subscriber,
+            $queue ? $queue->getId() : null
+          ),
           $queue,
           $wpUserPreview
         );
@@ -62,7 +63,10 @@ class Link implements CategoryInterface {
       case 'subscription_instant_unsubscribe_url':
         return self::processUrl(
           $shortcodeDetails['action'],
-          $subscriptionUrlFactory->getUnsubscribeUrl($wpUserPreview ? null : $subscriber, self::getSendingQueueId($queue)),
+          $subscriptionUrlFactory->getUnsubscribeUrl(
+            $wpUserPreview ? null : $subscriber,
+            $queue ? $queue->getId() : null
+          ),
           $queue,
           $wpUserPreview
         );
@@ -79,7 +83,7 @@ class Link implements CategoryInterface {
         $url = $this->newsletterUrl->getViewInBrowserUrl(
           $newsletter,
           $wpUserPreview ? null : $subscriber,
-          $queueModel,
+          $queue,
           $wpUserPreview
         );
         return self::processUrl($shortcodeDetails['action'], $url, $queue, $wpUserPreview);
@@ -106,7 +110,7 @@ class Link implements CategoryInterface {
     }
   }
 
-  public function processUrl($action, $url, $queue, $wpUserPreview = false): string {
+  public function processUrl($action, $url, ?SendingQueueEntity $queue, $wpUserPreview = false): string {
     if ($wpUserPreview) return $url;
     return ($queue && $this->trackingConfig->isEmailTrackingEnabled()) ?
       self::getFullShortcode($action) :
@@ -120,14 +124,19 @@ class Link implements CategoryInterface {
     SendingQueueEntity $queue = null,
     $wpUserPreview = false
   ): ?string {
-    $queueModel = $this->getQueueModel($queue);
     $subscriptionUrlFactory = SubscriptionUrlFactory::getInstance();
     switch ($shortcodeAction) {
       case 'subscription_unsubscribe_url':
-        $url = $subscriptionUrlFactory->getConfirmUnsubscribeUrl($subscriber, self::getSendingQueueId($queue ? $queue) : null);
+        $url = $subscriptionUrlFactory->getConfirmUnsubscribeUrl(
+          $subscriber,
+          $queue ? $queue->getId() : null
+        );
         break;
       case 'subscription_instant_unsubscribe_url':
-        $url = $subscriptionUrlFactory->getUnsubscribeUrl($subscriber, self::getSendingQueueId($queue ? $queue) : null);
+        $url = $subscriptionUrlFactory->getUnsubscribeUrl(
+          $subscriber,
+          $queue ? $queue->getId() : null
+        );
         break;
       case 'subscription_manage_url':
         $url = $subscriptionUrlFactory->getManageUrl($subscriber);
@@ -136,7 +145,7 @@ class Link implements CategoryInterface {
         $url = $this->newsletterUrl->getViewInBrowserUrl(
           $newsletter,
           $subscriber,
-          $queueModel,
+          $queue,
           false
         );
         break;
@@ -161,20 +170,5 @@ class Link implements CategoryInterface {
 
   private function getFullShortcode($action): string {
     return sprintf('[link:%s]', $action);
-  }
-
-  private function getSendingQueueId($queue): ?int {
-    if ($queue instanceof SendingQueueEntity) {
-      return $queue->getId();
-    }
-    return null;
-  }
-
-  // temporary function until Links are refactored to Doctrine
-  private function getQueueModel(SendingQueueEntity $queue = null): ?SendingQueue {
-    if (!$queue) return null;
-    $queueModel = SendingQueue::where('id', $queue->getId())->findOne();
-    if ($queueModel) return $queueModel;
-    return null;
   }
 }

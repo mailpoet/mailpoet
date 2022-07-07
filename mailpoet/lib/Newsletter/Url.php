@@ -20,9 +20,9 @@ class Url {
   }
 
   public function getViewInBrowserUrl(
-    NewsletterEntity $newsletter = null,
-    SubscriberEntity $subscriber = null,
-    $queue = false,
+    ?NewsletterEntity $newsletter,
+    ?SubscriberEntity $subscriber = null,
+    ?SendingQueueEntity $queue = null,
     bool $preview = true
   ) {
     $data = $this->createUrlDataObject($newsletter, $subscriber, $queue, $preview);
@@ -33,15 +33,15 @@ class Url {
     );
   }
 
-  public function createUrlDataObject(NewsletterEntity $newsletter = null, SubscriberEntity $subscriber = null, $queue, $preview) {
+  public function createUrlDataObject(
+    ?NewsletterEntity $newsletter,
+    ?SubscriberEntity $subscriber,
+    ?SendingQueueEntity $queue,
+    bool $preview
+  ) {
     $newsletterId = $newsletter && $newsletter->getId() ? $newsletter->getId() : 0;
     $newsletterHash = $newsletter && $newsletter->getHash() ? $newsletter->getHash() : 0;
-
-    if ($queue instanceof SendingQueueEntity) {
-      $sendingQueueId = (!empty($queue->getId())) ? (int)$queue->getId() : 0;
-    } else {
-      $sendingQueueId = (!empty($queue->id)) ? (int)$queue->id : 0;
-    }
+    $sendingQueueId = $queue && $queue->getId() ? $queue->getId() : 0;
 
     return [
       $newsletterId,

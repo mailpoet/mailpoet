@@ -3,19 +3,23 @@
 namespace MailPoet\Tasks;
 
 use MailPoet\Cron\Workers\Scheduler;
-use MailPoet\Models\Newsletter;
 use MailPoet\Models\ScheduledTask;
-use MailPoet\Models\SendingQueue;
+use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Newsletter\Url as NewsletterUrl;
 
 class State {
   /** @var NewsletterUrl */
   private $newsletterUrl;
 
+  /*** @var SendingQueuesRepository */
+  private $sendingQueuesRepository;
+
   public function __construct(
-    NewsletterUrl $newsletterUrl
+    NewsletterUrl $newsletterUrl,
+    SendingQueuesRepository $sendingQueuesRepository
   ) {
     $this->newsletterUrl = $newsletterUrl;
+    $this->sendingQueuesRepository = $sendingQueuesRepository;
   }
 
   /**
@@ -83,8 +87,8 @@ class State {
   private function buildTaskData(ScheduledTask $task) {
     $queue = $newsletter = null;
     if ($task->type === Sending::TASK_TYPE) {
-      $queue = SendingQueue::where('task_id', $task->id)->findOne();
-      $newsletter = $queue instanceof SendingQueue ? $queue->newsletter()->findOne() : null;
+      $queue = $this->sendingQueuesRepository->findOneById($task->id);
+      $newsletter = $queue ? $queue->getNewsletter() : null;
     }
     return [
       'id' => (int)$task->id,
@@ -93,15 +97,11 @@ class State {
       'updated_at' => $task->updatedAt,
       'scheduled_at' => $task->scheduledAt ? $task->scheduledAt : null,
       'status' => $task->status,
-      'newsletter' => (($queue instanceof SendingQueue) && ($newsletter instanceof Newsletter)) ? [
-        'newsletter_id' => (int)$queue->newsletterId,
-        'queue_id' => (int)$queue->id,
-        'subject' => $queue->newsletterRenderedSubject ?: $newsletter->subject,
-        'preview_url' => $this->newsletterUrl->getViewInBrowserUrl(
-          $newsletter,
-          null,
-          $queue
-        ),
+      'newsletter' => $queue && $newsletter ? [
+        'newsletter_id' => $newsletter->getId(),
+        'queue_id' => $queue->getId(),
+        'subject' => $queue->getNewsletterRenderedSubject() ?: $newsletter->getSubject(),
+        'preview_url' => $this->newsletterUrl->getViewInBrowserUrl($newsletter, null, $queue),
       ] : [
         'newsletter_id' => null,
         'queue_id' => null,
