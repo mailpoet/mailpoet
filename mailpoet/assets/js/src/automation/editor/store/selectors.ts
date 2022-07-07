@@ -2,7 +2,7 @@ import { createRegistrySelector } from '@wordpress/data';
 import { store as interfaceStore } from '@wordpress/interface';
 import { store as preferencesStore } from '@wordpress/preferences';
 import { storeName } from './constants';
-import { Feature, State } from './types';
+import { Feature, State, StepType } from './types';
 import { Item } from '../components/inserter/item';
 import { Step, Workflow } from '../components/workflow/types';
 
@@ -41,4 +41,8 @@ export function getWorkflowData(state: State): Workflow {
 
 export function getSelectedStep(state: State): Step | undefined {
   return state.selectedStep;
+}
+
+export function getSelectedStepType(state: State): StepType | undefined {
+  return state.stepTypes[state.selectedStep?.key] ?? undefined;
 }
