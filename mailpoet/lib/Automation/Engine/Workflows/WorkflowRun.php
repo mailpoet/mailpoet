@@ -104,7 +104,7 @@ class WorkflowRun {
    * @param class-string<T> $class
    * @return T
    */
-  public function requireSubject(string $class): Subject {
+  public function requireSingleSubject(string $class): Subject {
     $key = $this->subjectKeyClassMap[$class] ?? null;
     if (!$key) {
       throw Exceptions::subjectClassNotFound($class);

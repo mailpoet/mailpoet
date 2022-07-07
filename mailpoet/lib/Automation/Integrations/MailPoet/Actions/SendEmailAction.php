@@ -70,14 +70,14 @@ class SendEmailAction implements Action {
 
   public function run(Workflow $workflow, WorkflowRun $workflowRun, Step $step): void {
     $newsletter = $this->getEmailForStep($step);
-    $subscriberSubject = $workflowRun->requireSubject(SubscriberSubject::class);
+    $subscriberSubject = $workflowRun->requireSingleSubject(SubscriberSubject::class);
     $subscriber = $subscriberSubject->getSubscriber();
 
     if ($subscriber->getStatus() !== SubscriberEntity::STATUS_SUBSCRIBED) {
       throw InvalidStateException::create()->withMessage(sprintf("Cannot schedule a newsletter for subscriber ID '%s' because their status is '%s'.", $subscriber->getId(), $subscriber->getStatus()));
     }
 
-    $segmentSubject = $workflowRun->requireSubject(SegmentSubject::class);
+    $segmentSubject = $workflowRun->requireSingleSubject(SegmentSubject::class);
     $segmentId = $segmentSubject->getSegment()->getId();
     $subscriberSegment = $this->subscriberSegmentRepository->findOneBy([
       'subscriber' => $subscriber,
