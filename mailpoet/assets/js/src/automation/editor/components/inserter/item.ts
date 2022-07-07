@@ -1,7 +1,9 @@
+import { ComponentType } from 'react';
+
 export type Item = {
-  id: string;
+  key: string;
   title: string;
-  icon: JSX.Element;
   description: string;
-  isDisabled: boolean;
+  icon: ComponentType | JSX.Element;
+  isDisabled?: boolean;
 };

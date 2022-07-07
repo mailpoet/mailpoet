@@ -46,9 +46,9 @@ export function StepList({
         <InserterListboxRow key={i}>
           {row.map((item, j) => (
             <InserterListItem
-              key={item.id}
+              key={item.key}
               item={item}
-              className={getBlockMenuDefaultClassName(item.id)}
+              className={getBlockMenuDefaultClassName(item.key)}
               onSelect={onSelect}
               onHover={onHover}
               isDraggable={isDraggable}
