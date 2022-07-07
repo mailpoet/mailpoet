@@ -1,3 +1,4 @@
+import { ComponentType } from 'react';
 import { Item } from '../components/inserter/item';
 import { Step, Workflow } from '../components/workflow/types';
 
@@ -9,6 +10,7 @@ export type StepType = {
   key: string;
   title: string;
   description: string;
+  icon: ComponentType;
 };
 
 export type State = {
