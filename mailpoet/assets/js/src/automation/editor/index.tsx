@@ -16,6 +16,7 @@ import { Sidebar } from './components/sidebar';
 import { Workflow } from './components/workflow';
 import { store, storeName } from './store';
 import { initializeApi } from '../api';
+import { initialize as initializeMailPoetIntegration } from '../integrations/mailpoet';
 
 // See:
 //   https://github.com/WordPress/gutenberg/blob/9601a33e30ba41bac98579c8d822af63dd961488/packages/edit-post/src/components/layout/index.js
@@ -77,6 +78,7 @@ window.addEventListener('DOMContentLoaded', () => {
   const root = document.getElementById('mailpoet_automation_editor');
   if (root) {
     initializeApi();
+    initializeMailPoetIntegration();
     ReactDOM.render(<Editor />, root);
   }
 });
