@@ -16,6 +16,8 @@ export function StepSidebar(): JSX.Element {
     return <PanelBody>No step selected.</PanelBody>;
   }
 
+  const Edit = selectedStepType.edit;
+
   return (
     <div className="block-editor-block-inspector">
       <StepCard
@@ -23,6 +25,8 @@ export function StepSidebar(): JSX.Element {
         description={selectedStepType.description}
         icon={selectedStepType.icon}
       />
+
+      <Edit />
 
       <PanelBody>
         <div>
