@@ -7,6 +7,7 @@ use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\InvalidStateException;
 use MailPoet\Tasks\Sending;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
@@ -28,6 +29,12 @@ class AutomationEmailScheduler {
   }
 
   public function createSendingTask(NewsletterEntity $email, SubscriberEntity $subscriber): ScheduledTaskEntity {
+    if ($email->getType() !== NewsletterEntity::TYPE_AUTOMATION) {
+      throw InvalidStateException::create()->withMessage(
+        sprintf(__("Email with type 'automation' expected, '%s' given."), $email->getType())
+      );
+    }
+
     $task = new ScheduledTaskEntity();
     $task->setType(Sending::TASK_TYPE);
     $task->setStatus(ScheduledTaskEntity::STATUS_SCHEDULED);
