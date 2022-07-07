@@ -10,6 +10,17 @@ use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Settings\SettingsController;
 use MailPoet\WooCommerce\TransactionalEmails\Renderer;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoetVendor\Doctrine\ORM\Mapping as ORM;
+
+/**
+ * NewsletterEntity implements __clone which resets the id, but we need this id to perform a test when stubbing Renderer
+ * @ORM\Entity()
+ * @ORM\Table(name="newsletters")
+ */
+class NewsletterEntityWithoutClone extends NewsletterEntity {
+  public function __clone() {
+  }
+}
 
 class TransactionalEmailHooksTest extends \MailPoetTest {
 
@@ -130,7 +141,8 @@ class TransactionalEmailHooksTest extends \MailPoetTest {
   public function testUseTemplateForWCEmails() {
     $addedActions = [];
     $removedActions = [];
-    $newsletter = new NewsletterEntity;
+
+    $newsletter = new NewsletterEntityWithoutClone;
     $newsletter->setType(Newsletter::TYPE_WC_TRANSACTIONAL_EMAIL);
     $newsletter->setSubject('WooCommerce Transactional Email');
     $newsletter->setBody([
@@ -145,6 +157,7 @@ class TransactionalEmailHooksTest extends \MailPoetTest {
     $this->newslettersRepository->persist($newsletter);
     $this->newslettersRepository->flush();
     $this->settings->set(TransactionalEmails::SETTING_EMAIL_ID, $newsletter->getId());
+
     $wp = Stub::make(new WPFunctions, [
       'getOption' => function($name) {
         return '';
@@ -158,9 +171,7 @@ class TransactionalEmailHooksTest extends \MailPoetTest {
     ]);
     $renderer = Stub::make(Renderer::class, [
       'render' => function(NewsletterEntity $entity, $subject) use(&$newsletter) {
-        codecept_debug($entity);
-        codecept_debug($newsletter);
-//        expect($entity->getId())->equals($newsletter->getId());
+        expect($entity->getId())->equals($newsletter->getId());
         expect($subject)->equals('heading text');
       },
       'getHTMLBeforeContent' => function() {
