@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { api } from './config';
+import { api } from '../config';
 
 const API_URL = `${api.root}/mailpoet/v1/automation`;
 
