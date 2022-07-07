@@ -1,0 +1,22 @@
+.components-panel__body-title.mailpoet-automation-panel-plain-body-title {
+  display: grid;
+  grid-template-columns: 1fr auto;
+}
+
+.mailpoet-automation-panel-plain-body-title-text {
+  font-size: 13px;
+  font-weight: 500;
+  line-height: normal;
+  padding: 16px 48px 16px 16px;
+}
+
+.mailpoet-automation-panel-plain-body-title-action {
+  align-items: center;
+  display: flex;
+  padding: 8px 16px;
+
+  button {
+    height: auto;
+    padding: 4px;
+  }
+}
