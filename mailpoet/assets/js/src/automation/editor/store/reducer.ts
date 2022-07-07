@@ -34,6 +34,14 @@ export function reducer(state: State, action: Action): State {
         ...state,
         workflowData: action.workflow,
       };
+    case 'REGISTER_STEP_TYPE':
+      return {
+        ...state,
+        stepTypes: {
+          ...state.stepTypes,
+          [action.stepType.key]: action.stepType,
+        },
+      };
     default:
       return state;
   }

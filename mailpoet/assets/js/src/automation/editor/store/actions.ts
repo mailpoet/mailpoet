@@ -65,3 +65,10 @@ export function* activate() {
     workflow: data.data,
   } as const;
 }
+
+export function registerStepType(stepType) {
+  return {
+    type: 'REGISTER_STEP_TYPE',
+    stepType,
+  };
+}

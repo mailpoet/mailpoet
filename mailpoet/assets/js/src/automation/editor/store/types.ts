@@ -5,7 +5,14 @@ export interface AutomationEditorWindow extends Window {
   mailpoet_automation_workflow: Workflow;
 }
 
+export type StepType = {
+  key: string;
+  title: string;
+  description: string;
+};
+
 export type State = {
+  stepTypes: Record<string, StepType>;
   workflowData: Workflow;
   selectedStep: Step | undefined;
   inserter: {
