@@ -182,6 +182,63 @@ class MetaInfoTest extends \MailPoetTest {
     ]);
   }
 
+  public function testItGetsMetaInfoForReEngagement() {
+    $subscriber = Subscriber::create();
+    $subscriber->hydrate([
+      'status' => 'subscribed',
+      'source' => 'form',
+    ]);
+    $newsletter1 = (object)[
+      'type' => Newsletter::TYPE_RE_ENGAGEMENT,
+    ];
+    $newsletter2 = (object)[
+      'type' => Newsletter::TYPE_RE_ENGAGEMENT,
+    ];
+    expect($this->meta->getNewsletterMetaInfo($newsletter1, $subscriber))->equals([
+      'email_type' => 're_engagement',
+      'subscriber_status' => 'subscribed',
+      'subscriber_source' => 'form',
+    ]);
+    expect($this->meta->getNewsletterMetaInfo($newsletter2, $subscriber))->equals([
+      'email_type' => 're_engagement',
+      'subscriber_status' => 'subscribed',
+      'subscriber_source' => 'form',
+    ]);
+  }
+
+  public function testItGetsMetaInfoForRandomType() {
+    $subscriber = Subscriber::create();
+    $subscriber->hydrate([
+      'status' => 'subscribed',
+      'source' => 'form',
+    ]);
+    $newsletter1 = (object)[
+      'type' => "random",
+    ];
+
+    expect($this->meta->getNewsletterMetaInfo($newsletter1, $subscriber))->equals([
+      'email_type' => 'random',
+      'subscriber_status' => 'subscribed',
+      'subscriber_source' => 'form',
+    ]);
+  }
+
+  public function testItGetsMetaInfoForUnknownType() {
+    $subscriber = Subscriber::create();
+    $subscriber->hydrate([
+      'status' => 'subscribed',
+      'source' => 'form',
+    ]);
+    $newsletter1 = (object)[
+      'type' => null
+    ];
+    expect($this->meta->getNewsletterMetaInfo($newsletter1, $subscriber))->equals([
+      'email_type' => 'unknown',
+      'subscriber_status' => 'subscribed',
+      'subscriber_source' => 'form',
+    ]);
+  }
+
   public function _after() {
     Subscriber::deleteMany();
   }
