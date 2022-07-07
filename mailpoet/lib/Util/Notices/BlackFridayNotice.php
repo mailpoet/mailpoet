@@ -2,7 +2,7 @@
 
 namespace MailPoet\Util\Notices;
 
-use MailPoet\Models\Subscriber;
+use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoet\WP\Notice as WPNotice;
 
@@ -10,6 +10,15 @@ class BlackFridayNotice {
 
   const OPTION_NAME = 'dismissed-black-friday-notice';
   const DISMISS_NOTICE_TIMEOUT_SECONDS = 2592000; // 30 days
+
+  /** @var SubscribersRepository */
+  private $subscribersRepository;
+
+  public function __construct(
+    SubscribersRepository $subscribersRepository
+  ) {
+    $this->subscribersRepository = $subscribersRepository;
+  }
 
   public function init($shouldDisplay) {
     $shouldDisplay = $shouldDisplay
@@ -22,9 +31,7 @@ class BlackFridayNotice {
   }
 
   private function display() {
-    $subscribers = Subscriber
-      ::whereNull('deleted_at')
-      ->count();
+    $subscribers = $this->subscribersRepository->countBy(['deletedAt' => null]);
     $header = '<h3 class="mailpoet-h3">' . __('Save big on MailPoet – 40% off this Black Friday', 'mailpoet') . '</h3>';
     $body = '<h5 class="mailpoet-h5">' . __('Our biggest ever sale is here! Save 40% on all annual plans and licenses until 8 am UTC, November 30. Terms and conditions apply.', 'mailpoet') . '</h5>';
     $link = "<p><a href='https://account.mailpoet.com/?s=$subscribers' class='mailpoet-button button-primary' target='_blank'>"

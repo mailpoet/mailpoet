@@ -5,6 +5,7 @@ namespace MailPoet\Util\Notices;
 use MailPoet\Config\Menu;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\TrackingConfig;
+use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\WP\Functions as WPFunctions;
 
 class PermanentNotices {
@@ -45,6 +46,7 @@ class PermanentNotices {
   public function __construct(
     WPFunctions $wp,
     TrackingConfig $trackingConfig,
+    SubscribersRepository $subscribersRepository,
     SettingsController $settings
   ) {
     $this->wp = $wp;
@@ -53,7 +55,7 @@ class PermanentNotices {
     $this->unauthorizedEmailsNotice = new UnauthorizedEmailNotice($wp, $settings);
     $this->unauthorizedEmailsInNewslettersNotice = new UnauthorizedEmailInNewslettersNotice($settings, $wp);
     $this->inactiveSubscribersNotice = new InactiveSubscribersNotice($settings, $wp);
-    $this->blackFridayNotice = new BlackFridayNotice();
+    $this->blackFridayNotice = new BlackFridayNotice($subscribersRepository);
     $this->headersAlreadySentNotice = new HeadersAlreadySentNotice($settings, $trackingConfig, $wp);
     $this->emailWithInvalidListNotice = new EmailWithInvalidSegmentNotice($wp);
     $this->changedTrackingNotice = new ChangedTrackingNotice($wp);
