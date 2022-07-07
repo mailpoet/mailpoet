@@ -5,16 +5,19 @@ namespace MailPoet\Util\Notices;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\SettingsRepository;
+use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Test\DataFactories\Settings;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 use MailPoet\WP\Functions as WPFunctions;
 
 class InactiveSubscribersNoticeTest extends \MailPoetTest {
+  /** @var InactiveSubscribersNotice */
+  private $notice;
+
   public function testItDisplays() {
     $this->createSubscribers(50);
 
-    $notice = new InactiveSubscribersNotice(SettingsController::getInstance(), new WPFunctions());
-    $result = $notice->init(true);
+    $result = $this->notice->init(true);
     expect($result)->stringContainsString('Good news! MailPoet won’t send emails to your 50 inactive subscribers.');
     expect($result)->stringContainsString('https://kb.mailpoet.com/article/264-inactive-subscribers');
     expect($result)->stringContainsString('<a href="admin.php?page=mailpoet-settings#advanced" class="button button-primary">Go to the Advanced Settings</a>');
@@ -23,9 +26,8 @@ class InactiveSubscribersNoticeTest extends \MailPoetTest {
   public function testItDoesntDisplayWhenDisabled() {
     $this->createSubscribers(50);
 
-    $notice = new InactiveSubscribersNotice(SettingsController::getInstance(), new WPFunctions());
-    $notice->disable();
-    $result = $notice->init(true);
+    $this->notice->disable();
+    $result = $this->notice->init(true);
     expect($result)->null();
   }
 
@@ -35,8 +37,7 @@ class InactiveSubscribersNoticeTest extends \MailPoetTest {
     $settingsFactory = new Settings();
     $settingsFactory->withDeactivateSubscriberAfter12Months();
 
-    $notice = new InactiveSubscribersNotice(SettingsController::getInstance(), new WPFunctions());
-    $result = $notice->init(true);
+    $result = $this->notice->init(true);
     expect($result)->stringContainsString('Good news! MailPoet won’t send emails to your 50 inactive subscribers.');
     expect($result)->stringContainsString('https://kb.mailpoet.com/article/264-inactive-subscribers');
     expect($result)->stringContainsString('<a href="admin.php?page=mailpoet-settings#advanced" class="button button-primary">Go to the Advanced Settings</a>');
@@ -48,22 +49,25 @@ class InactiveSubscribersNoticeTest extends \MailPoetTest {
     $settingsFactory = new Settings();
     $settingsFactory->withDeactivateSubscriberAfter3Months();
 
-    $notice = new InactiveSubscribersNotice(SettingsController::getInstance(), new WPFunctions());
-    $result = $notice->init(true);
+    $result = $this->notice->init(true);
     expect($result)->null();
   }
 
   public function testItDoesntDisplayWhenNotEnoughInactiveSubscribers() {
     $this->createSubscribers(49);
 
-    $notice = new InactiveSubscribersNotice(SettingsController::getInstance(), new WPFunctions());
-    $result = $notice->init(true);
+    $result = $this->notice->init(true);
     expect($result)->null();
   }
 
   public function _before() {
     parent::_before();
     $this->cleanup();
+    $this->notice = new InactiveSubscribersNotice(
+      SettingsController::getInstance(),
+      $this->diContainer->get(SubscribersRepository::class),
+      new WPFunctions()
+    );
   }
 
   public function _after() {

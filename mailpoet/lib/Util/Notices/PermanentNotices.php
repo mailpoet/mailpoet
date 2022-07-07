@@ -54,7 +54,7 @@ class PermanentNotices {
     $this->afterMigrationNotice = new AfterMigrationNotice();
     $this->unauthorizedEmailsNotice = new UnauthorizedEmailNotice($wp, $settings);
     $this->unauthorizedEmailsInNewslettersNotice = new UnauthorizedEmailInNewslettersNotice($settings, $wp);
-    $this->inactiveSubscribersNotice = new InactiveSubscribersNotice($settings, $wp);
+    $this->inactiveSubscribersNotice = new InactiveSubscribersNotice($settings, $subscribersRepository, $wp);
     $this->blackFridayNotice = new BlackFridayNotice($subscribersRepository);
     $this->headersAlreadySentNotice = new HeadersAlreadySentNotice($settings, $trackingConfig, $wp);
     $this->emailWithInvalidListNotice = new EmailWithInvalidSegmentNotice($wp);

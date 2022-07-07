@@ -2,8 +2,9 @@
 
 namespace MailPoet\Util\Notices;
 
-use MailPoet\Models\Subscriber;
+use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Util\Helpers;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoet\WP\Notice;
@@ -15,15 +16,20 @@ class InactiveSubscribersNotice {
   /** @var SettingsController */
   private $settings;
 
+  /** @var SubscribersRepository */
+  private $subscribersRepository;
+
   /** @var WPFunctions */
   private $wp;
 
   public function __construct(
     SettingsController $settings,
+    SubscribersRepository $subscribersRepository,
     WPFunctions $wp
   ) {
     $this->settings = $settings;
     $this->wp = $wp;
+    $this->subscribersRepository = $subscribersRepository;
   }
 
   public function init($shouldDisplay) {
@@ -37,7 +43,7 @@ class InactiveSubscribersNotice {
       return;
     }
 
-    $inactiveSubscribersCount = Subscriber::getInactiveSubscribersCount();
+    $inactiveSubscribersCount = $this->subscribersRepository->countBy(['deletedAt' => null, 'status' => SubscriberEntity::STATUS_INACTIVE]);
     if ($inactiveSubscribersCount < self::MIN_INACTIVE_SUBSCRIBERS_COUNT) {
       return;
     }
