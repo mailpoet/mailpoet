@@ -1,5 +1,10 @@
-import { PanelBody, TextareaControl, TextControl } from '@wordpress/components';
-import { edit, Icon } from '@wordpress/icons';
+import {
+  Button,
+  PanelBody,
+  TextareaControl,
+  TextControl,
+} from '@wordpress/components';
+import { plus, edit, Icon } from '@wordpress/icons';
 import {
   PlainBodyTitle,
   TitleActionButton,
@@ -37,6 +42,16 @@ export function Edit(): JSX.Element {
         value=""
         onChange={() => {}}
       />
+
+      <div className="mailpoet-automation-email-content-separator" />
+      <PlainBodyTitle title="Email content" />
+      <Button
+        className="mailpoet-automation-design-email-button"
+        variant="primary"
+        icon={plus}
+      >
+        Design email
+      </Button>
     </PanelBody>
   );
 }
