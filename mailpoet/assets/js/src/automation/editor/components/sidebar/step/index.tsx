@@ -28,7 +28,7 @@ export function StepSidebar(): JSX.Element {
 
       <Edit />
 
-      <PanelBody>
+      <PanelBody title="Debug info" initialOpen={false}>
         <div>
           <strong>ID:</strong> {selectedStep.id}
         </div>
