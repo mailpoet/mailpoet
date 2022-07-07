@@ -5,7 +5,6 @@ namespace MailPoet\Newsletter\Shortcodes\Categories;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
-use MailPoet\Models\Newsletter as NewsletterModel;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Subscriber as SubscriberModel;
 use MailPoet\Newsletter\Url as NewsletterUrl;
@@ -51,7 +50,6 @@ class Link implements CategoryInterface {
   ): ?string {
     $subscriptionUrlFactory = SubscriptionUrlFactory::getInstance();
     $subscriberModel = $this->getSubscriberModel($subscriber);
-    $newsletterModel = $this->getNewsletterModel($newsletter);
     $queueModel = $this->getQueueModel($queue);
 
     switch ($shortcodeDetails['action']) {
@@ -81,7 +79,7 @@ class Link implements CategoryInterface {
 
       case 'newsletter_view_in_browser_url':
         $url = $this->newsletterUrl->getViewInBrowserUrl(
-          $newsletterModel,
+          $newsletter,
           $wpUserPreview ? null : $subscriberModel,
           $queueModel,
           $wpUserPreview
@@ -112,7 +110,7 @@ class Link implements CategoryInterface {
 
   public function processUrl($action, $url, $queue, $wpUserPreview = false): string {
     if ($wpUserPreview) return $url;
-    return ($queue !== false && $this->trackingConfig->isEmailTrackingEnabled()) ?
+    return ($queue && $this->trackingConfig->isEmailTrackingEnabled()) ?
       self::getFullShortcode($action) :
       $url;
   }
@@ -125,22 +123,21 @@ class Link implements CategoryInterface {
     $wpUserPreview = false
   ): ?string {
     $subscriberModel = $this->getSubscriberModel($subscriber);
-    $newsletterModel = $this->getNewsletterModel($newsletter);
     $queueModel = $this->getQueueModel($queue);
     $subscriptionUrlFactory = SubscriptionUrlFactory::getInstance();
     switch ($shortcodeAction) {
       case 'subscription_unsubscribe_url':
-        $url = $subscriptionUrlFactory->getConfirmUnsubscribeUrl($subscriber, self::getSendingQueueId($queue));
+        $url = $subscriptionUrlFactory->getConfirmUnsubscribeUrl($subscriber, self::getSendingQueueId($queue ? $queue) : null);
         break;
       case 'subscription_instant_unsubscribe_url':
-        $url = $subscriptionUrlFactory->getUnsubscribeUrl($subscriber, self::getSendingQueueId($queue));
+        $url = $subscriptionUrlFactory->getUnsubscribeUrl($subscriber, self::getSendingQueueId($queue ? $queue) : null);
         break;
       case 'subscription_manage_url':
         $url = $subscriptionUrlFactory->getManageUrl($subscriber);
         break;
       case 'newsletter_view_in_browser_url':
         $url = $this->newsletterUrl->getViewInBrowserUrl(
-          $newsletterModel,
+          $newsletter,
           $subscriberModel,
           $queueModel,
           false
@@ -181,14 +178,6 @@ class Link implements CategoryInterface {
     if (!$subscriber) return null;
     $subscriberModel = SubscriberModel::where('id', $subscriber->getId())->findOne();
     if ($subscriberModel) return $subscriberModel;
-    return null;
-  }
-
-  // temporary function until Links are refactored to Doctrine
-  private function getNewsletterModel(NewsletterEntity $newsletter = null): ?NewsletterModel {
-    if (!$newsletter) return null;
-    $newsletterModel = NewsletterModel::where('id', $newsletter->getId())->findOne();
-    if ($newsletterModel) return $newsletterModel;
     return null;
   }
 
