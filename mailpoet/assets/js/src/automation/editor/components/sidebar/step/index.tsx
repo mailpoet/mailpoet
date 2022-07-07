@@ -16,6 +16,10 @@ export function StepSidebar(): JSX.Element {
     return <PanelBody>No step selected.</PanelBody>;
   }
 
+  if (!selectedStepType) {
+    return <PanelBody>Unknown step type.</PanelBody>;
+  }
+
   const Edit = selectedStepType.edit;
 
   return (
