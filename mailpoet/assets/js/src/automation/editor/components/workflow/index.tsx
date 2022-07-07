@@ -12,9 +12,10 @@ import { InserterPopover } from '../inserter-popover';
 import { store } from '../../store';
 
 export function Workflow(): JSX.Element {
-  const { workflowData } = useSelect(
+  const { workflowData, selectedStep } = useSelect(
     (select) => ({
       workflowData: select(store).getWorkflowData(),
+      selectedStep: select(store).getSelectedStep(),
     }),
     [],
   );
@@ -72,7 +73,10 @@ export function Workflow(): JSX.Element {
           {steps.map((step, i) => (
             <Fragment key={step.id}>
               {i > 0 && <Separator />}
-              <Step step={step} key={step.id} />
+              <Step
+                step={step}
+                isSelected={selectedStep && step.id === selectedStep.id}
+              />
             </Fragment>
           ))}
           <div />

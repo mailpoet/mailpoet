@@ -56,9 +56,10 @@ function getSubtitle(step: StepType): string {
 
 type Props = {
   step: StepType;
+  isSelected: boolean;
 };
 
-export function Step({ step }: Props): JSX.Element {
+export function Step({ step, isSelected }: Props): JSX.Element {
   const { openSidebar, selectStep } = useDispatch(store);
   const compositeState = useContext(WorkflowCompositeContext);
   const { batch } = useRegistry();
@@ -67,7 +68,9 @@ export function Step({ step }: Props): JSX.Element {
     <CompositeItem
       state={compositeState}
       role="treeitem"
-      className="mailpoet-automation-editor-step"
+      className={`mailpoet-automation-editor-step ${
+        isSelected ? 'selected-step' : ''
+      }`}
       key={step.id}
       focusable
       onClick={() =>
