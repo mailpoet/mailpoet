@@ -104,6 +104,8 @@ services:
       MYSQL_PASSWORD: wordpress
     volumes:
       - /dev/shm:/dev/shm
+    ports:
+      - 4401:3306
 
   chrome:
     environment:
