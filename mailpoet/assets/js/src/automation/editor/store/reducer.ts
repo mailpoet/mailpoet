@@ -42,6 +42,26 @@ export function reducer(state: State, action: Action): State {
           [action.stepType.key]: action.stepType,
         },
       };
+    case 'UPDATE_STEP_ARGS': {
+      const args = {
+        ...(state.workflowData.steps[action.stepId].args ?? {}),
+        [action.name]: action.value,
+      };
+
+      const step = { ...state.workflowData.steps[action.stepId], args };
+
+      return {
+        ...state,
+        workflowData: {
+          ...state.workflowData,
+          steps: {
+            ...state.workflowData.steps,
+            [action.stepId]: step,
+          },
+        },
+        selectedStep: step,
+      };
+    }
     default:
       return state;
   }

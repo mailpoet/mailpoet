@@ -72,3 +72,12 @@ export function registerStepType(stepType) {
     stepType,
   };
 }
+
+export function updateStepArgs(stepId, name, value) {
+  return {
+    type: 'UPDATE_STEP_ARGS',
+    stepId,
+    name,
+    value,
+  };
+}
