@@ -6,7 +6,6 @@ use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Models\SendingQueue;
-use MailPoet\Models\Subscriber as SubscriberModel;
 use MailPoet\Newsletter\Url as NewsletterUrl;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\TrackingConfig;
@@ -49,7 +48,6 @@ class Link implements CategoryInterface {
     bool $wpUserPreview = false
   ): ?string {
     $subscriptionUrlFactory = SubscriptionUrlFactory::getInstance();
-    $subscriberModel = $this->getSubscriberModel($subscriber);
     $queueModel = $this->getQueueModel($queue);
 
     switch ($shortcodeDetails['action']) {
@@ -80,7 +78,7 @@ class Link implements CategoryInterface {
       case 'newsletter_view_in_browser_url':
         $url = $this->newsletterUrl->getViewInBrowserUrl(
           $newsletter,
-          $wpUserPreview ? null : $subscriberModel,
+          $wpUserPreview ? null : $subscriber,
           $queueModel,
           $wpUserPreview
         );
@@ -122,7 +120,6 @@ class Link implements CategoryInterface {
     SendingQueueEntity $queue = null,
     $wpUserPreview = false
   ): ?string {
-    $subscriberModel = $this->getSubscriberModel($subscriber);
     $queueModel = $this->getQueueModel($queue);
     $subscriptionUrlFactory = SubscriptionUrlFactory::getInstance();
     switch ($shortcodeAction) {
@@ -138,7 +135,7 @@ class Link implements CategoryInterface {
       case 'newsletter_view_in_browser_url':
         $url = $this->newsletterUrl->getViewInBrowserUrl(
           $newsletter,
-          $subscriberModel,
+          $subscriber,
           $queueModel,
           false
         );
@@ -170,14 +167,6 @@ class Link implements CategoryInterface {
     if ($queue instanceof SendingQueueEntity) {
       return $queue->getId();
     }
-    return null;
-  }
-
-  // temporary function until Links are refactored to Doctrine
-  private function getSubscriberModel(SubscriberEntity $subscriber = null): ?SubscriberModel {
-    if (!$subscriber) return null;
-    $subscriberModel = SubscriberModel::where('id', $subscriber->getId())->findOne();
-    if ($subscriberModel) return $subscriberModel;
     return null;
   }
 

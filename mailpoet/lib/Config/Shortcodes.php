@@ -172,7 +172,6 @@ class Shortcodes {
     $newsletters = $this->newslettersRepository->getArchives($segmentIds);
 
     $subscriber = $this->subscribersRepository->getCurrentWPUser();
-    $subscriber = $subscriber ? Subscriber::findOne($subscriber->getId()) : null;
 
     if (empty($newsletters)) {
       return $this->wp->applyFilters(
@@ -216,7 +215,7 @@ class Shortcodes {
     );
   }
 
-  public function renderArchiveSubject(NewsletterEntity $newsletter, $subscriber, SendingQueueEntity $queue) {
+  public function renderArchiveSubject(NewsletterEntity $newsletter, ?SubscriberEntity $subscriber, ?SendingQueueEntity $queue) {
     $previewUrl = $this->newsletterUrl->getViewInBrowserUrl($newsletter, $subscriber, $queue);
     /**
      * An ugly workaround to make sure state is not shared via NewsletterShortcodes service
@@ -230,15 +229,9 @@ class Shortcodes {
       $this->subscriberCategory,
       $this->wp
     );
+
     $shortcodeProcessor->setNewsletter($newsletter);
-
-    if (is_object($subscriber) && !is_a($subscriber, SubscriberEntity::class) && !empty($subscriber->id)) {
-      $subscriberEntity = $this->entityManager->find(SubscriberEntity::class, $subscriber->id);
-    } else {
-      $subscriberEntity = new SubscriberEntity();
-    }
-
-    $shortcodeProcessor->setSubscriber($subscriberEntity);
+    $shortcodeProcessor->setSubscriber($subscriber ?? new SubscriberEntity());
     $shortcodeProcessor->setQueue($queue);
     return '<a href="' . esc_attr($previewUrl) . '" target="_blank" title="'
       . esc_attr(__('Preview in a new tab', 'mailpoet')) . '">'

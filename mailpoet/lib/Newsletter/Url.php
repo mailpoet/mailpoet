@@ -5,39 +5,26 @@ namespace MailPoet\Newsletter;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
-use MailPoet\Models\Subscriber as SubscriberModel;
 use MailPoet\Router\Endpoints\ViewInBrowser as ViewInBrowserEndpoint;
 use MailPoet\Router\Router;
 use MailPoet\Subscribers\LinkTokens;
-use MailPoet\Subscribers\SubscribersRepository;
 
 class Url {
   /** @var LinkTokens */
   private $linkTokens;
 
-  /** @var SubscribersRepository */
-  private $subscribersRepository;
-
   public function __construct(
-    LinkTokens $linkTokens,
-    SubscribersRepository $subscribersRepository
+    LinkTokens $linkTokens
   ) {
     $this->linkTokens = $linkTokens;
-    $this->subscribersRepository = $subscribersRepository;
   }
 
   public function getViewInBrowserUrl(
     NewsletterEntity $newsletter = null,
-    $subscriber = false,
+    SubscriberEntity $subscriber = null,
     $queue = false,
     bool $preview = true
   ) {
-    if ($subscriber instanceof SubscriberModel) {
-      $subscriberEntity = $this->subscribersRepository->findOneById($subscriber->id);
-      if ($subscriberEntity instanceof SubscriberEntity) {
-        $subscriber->token = $this->linkTokens->getToken($subscriberEntity);
-      }
-    }
     $data = $this->createUrlDataObject($newsletter, $subscriber, $queue, $preview);
     return Router::buildRequest(
       ViewInBrowserEndpoint::ENDPOINT,
@@ -46,7 +33,7 @@ class Url {
     );
   }
 
-  public function createUrlDataObject(NewsletterEntity $newsletter = null, $subscriber, $queue, $preview) {
+  public function createUrlDataObject(NewsletterEntity $newsletter = null, SubscriberEntity $subscriber = null, $queue, $preview) {
     $newsletterId = $newsletter && $newsletter->getId() ? $newsletter->getId() : 0;
     $newsletterHash = $newsletter && $newsletter->getHash() ? $newsletter->getHash() : 0;
 
@@ -59,12 +46,8 @@ class Url {
     return [
       $newsletterId,
       $newsletterHash,
-      (!empty($subscriber->id)) ?
-        (int)$subscriber->id :
-        0,
-      (!empty($subscriber->token)) ?
-        $subscriber->token :
-        0,
+      $subscriber && $subscriber->getId() ? $subscriber->getId() : 0,
+      $subscriber ? $this->linkTokens->getToken($subscriber) : 0,
       $sendingQueueId,
       (int)$preview,
     ];
