@@ -1,13 +1,15 @@
 import { ComponentType } from 'react';
-import { Item } from '../components/inserter/item';
 import { Step, Workflow } from '../components/workflow/types';
 
 export interface AutomationEditorWindow extends Window {
   mailpoet_automation_workflow: Workflow;
 }
 
+export type StepGroup = 'actions' | 'logical';
+
 export type StepType = {
   key: string;
+  group: StepGroup;
   title: string;
   description: string;
   icon: ComponentType;
@@ -18,10 +20,6 @@ export type State = {
   stepTypes: Record<string, StepType>;
   workflowData: Workflow;
   selectedStep: Step | undefined;
-  inserter: {
-    actionSteps: Item[];
-    logicalSteps: Item[];
-  };
   inserterSidebar: {
     isOpened: boolean;
   };

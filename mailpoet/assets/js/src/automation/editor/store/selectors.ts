@@ -22,11 +22,15 @@ export function isInserterSidebarOpened(state: State): boolean {
 }
 
 export function getInserterActionSteps(state: State): Item[] {
-  return state.inserter.actionSteps;
+  return Object.values(state.stepTypes).filter(
+    ({ group }) => group === 'actions',
+  );
 }
 
 export function getInserterLogicalSteps(state: State): Item[] {
-  return state.inserter.logicalSteps;
+  return Object.values(state.stepTypes).filter(
+    ({ group }) => group === 'logical',
+  );
 }
 
 export function getInserterPopoverAnchor(
