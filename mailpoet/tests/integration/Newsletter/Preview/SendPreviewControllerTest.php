@@ -66,12 +66,7 @@ class SendPreviewControllerTest extends \MailPoetTest {
         function ($newsletter, $subscriber, $extraParams) {
           $unsubscribeLink = $this->subscriptionUrlFactory->getConfirmUnsubscribeUrl(null);
           $manageLink = $this->subscriptionUrlFactory->getManageUrl(null);
-          $viewInBrowserLink = $this->newsletterUrl->getViewInBrowserUrl(
-            (object)[
-              'id' => $this->newsletter->getId(),
-              'hash' => $this->newsletter->getHash(),
-            ]
-          );
+          $viewInBrowserLink = $this->newsletterUrl->getViewInBrowserUrl($this->newsletter);
           $mailerMetaInfo = new MetaInfo;
 
           expect(is_array($newsletter))->true();

@@ -138,14 +138,11 @@ class NewslettersResponseBuilder {
         ? $statistics->asArray()
         : false,
       'preview_url' => $this->newsletterUrl->getViewInBrowserUrl(
-        (object)[
-          'id' => $newsletter->getId(),
-          'hash' => $newsletter->getHash(),
-        ],
+        $newsletter,
         null,
         in_array($newsletter->getStatus(), [NewsletterEntity::STATUS_SENT, NewsletterEntity::STATUS_SENDING], true)
           ? $latestQueue
-          : false
+          : null
       ),
     ];
 

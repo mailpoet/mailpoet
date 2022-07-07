@@ -9,7 +9,6 @@ use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberCustomFieldEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Models\Newsletter;
-use MailPoet\Models\Newsletter as NewsletterModel;
 use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\Shortcodes\Categories\Date;
 use MailPoet\Newsletter\Shortcodes\Shortcodes;
@@ -352,7 +351,6 @@ class ShortcodesTest extends \MailPoetTest {
     $shortcodesObject = $this->shortcodesObject;
     $shortcodesObject->setWpUserPreview(true);
     $shortcodesObject->setSubscriber(null);
-    $newsletterModel = NewsletterModel::where('id', $this->newsletter->getId())->findOne();
     $shortcodes = [
       '[link:subscription_unsubscribe_url]',
       '[link:subscription_instant_unsubscribe_url]',
@@ -363,7 +361,7 @@ class ShortcodesTest extends \MailPoetTest {
       $this->subscriptionUrlFactory->getConfirmUnsubscribeUrl(null),
       $this->subscriptionUrlFactory->getUnsubscribeUrl(null),
       $this->subscriptionUrlFactory->getManageUrl(null),
-      $this->newsletterUrl->getViewInBrowserUrl($newsletterModel),
+      $this->newsletterUrl->getViewInBrowserUrl($this->newsletter),
     ];
     $result = $shortcodesObject->process($shortcodes);
     // hash is returned

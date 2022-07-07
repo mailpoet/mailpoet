@@ -27,7 +27,7 @@ class Url {
   }
 
   public function getViewInBrowserUrl(
-    $newsletter,
+    NewsletterEntity $newsletter = null,
     $subscriber = false,
     $queue = false,
     bool $preview = true
@@ -46,14 +46,9 @@ class Url {
     );
   }
 
-  public function createUrlDataObject($newsletter, $subscriber, $queue, $preview) {
-    if ($newsletter instanceof NewsletterEntity) {
-      $newsletterId = (!empty($newsletter->getId())) ? (int)$newsletter->getId() : 0;
-      $newsletterHash = (!empty($newsletter->getHash())) ? $newsletter->getHash() : 0;
-    } else {
-      $newsletterId = (!empty($newsletter->id)) ? (int)$newsletter->id : 0;
-      $newsletterHash = (!empty($newsletter->hash)) ? $newsletter->hash : 0;
-    }
+  public function createUrlDataObject(NewsletterEntity $newsletter = null, $subscriber, $queue, $preview) {
+    $newsletterId = $newsletter && $newsletter->getId() ? $newsletter->getId() : 0;
+    $newsletterHash = $newsletter && $newsletter->getHash() ? $newsletter->getHash() : 0;
 
     if ($queue instanceof SendingQueueEntity) {
       $sendingQueueId = (!empty($queue->getId())) ? (int)$queue->getId() : 0;
