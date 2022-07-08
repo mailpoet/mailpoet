@@ -123,6 +123,30 @@ class Subscriber {
   }
 
   /**
+   * @return $this
+   */
+  public function withSubscribedIp(string $subscribedIp) {
+    $this->data['subscribedIp'] = $subscribedIp;
+    return $this;
+  }
+
+  /**
+   * @return $this
+   */
+  public function withConfirmedIp(string $confirmedIp) {
+    $this->data['confirmedIp'] = $confirmedIp;
+    return $this;
+  }
+
+  /**
+   * @return $this
+   */
+  public function withUnconfirmedData(string $unconfirmedData) {
+    $this->data['unconfirmedData'] = $unconfirmedData;
+    return $this;
+  }
+
+  /**
    * @throws \Exception
    */
   public function create(): SubscriberEntity {
@@ -136,6 +160,9 @@ class Subscriber {
     if (isset($this->data['first_name'])) $subscriber->setFirstName($this->data['first_name']);
     if (isset($this->data['is_woocommerce_user'])) $subscriber->setIsWoocommerceUser($this->data['is_woocommerce_user']);
     if (isset($this->data['wp_user_id'])) $subscriber->setWpUserId($this->data['wp_user_id']);
+    if (isset($this->data['subscribedIp'])) $subscriber->setSubscribedIp($this->data['subscribedIp']);
+    if (isset($this->data['confirmedIp'])) $subscriber->setConfirmedIp($this->data['confirmedIp']);
+    if (isset($this->data['unconfirmedData'])) $subscriber->setUnconfirmedData($this->data['unconfirmedData']);
     if (isset($this->data['source'])) {
       $subscriber->setSource($this->data['source']);
     }

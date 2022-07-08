@@ -2,22 +2,29 @@
 
 namespace MailPoet\Subscribers;
 
-use MailPoet\Models\CustomField;
-use MailPoet\Models\Subscriber;
-use MailPoet\Models\SubscriberCustomField;
-use MailPoetVendor\Idiorm\ORM;
+use MailPoetVendor\Carbon\Carbon;
+use MailPoet\Entities\CustomFieldEntity;
+use MailPoet\Entities\SubscriberCustomFieldEntity;
+use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Test\DataFactories\CustomField as CustomFieldFactory;
+use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 
 class SubscriberPersonalDataEraserTest extends \MailPoetTest {
 
   /** @var SubscriberPersonalDataEraser */
   private $eraser;
 
+  /** @var SubscribersRepository */
+  private $subscribersRepository;
+
+  /** @var SubscriberFactory */
+  private $subscribersFactory;
+
   public function _before() {
     parent::_before();
-    $this->eraser = new SubscriberPersonalDataEraser();
-    ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
-    ORM::raw_execute('TRUNCATE ' . CustomField::$_table);
-    ORM::raw_execute('TRUNCATE ' . SubscriberCustomField::$_table);
+    $this->eraser = $this->diContainer->get(SubscriberPersonalDataEraser::class);
+    $this->subscribersRepository = $this->diContainer->get(SubscribersRepository::class);
+    $this->subscribersFactory = new SubscriberFactory();
   }
 
   public function testExportWorksWhenSubscriberNotFound() {
@@ -30,56 +37,72 @@ class SubscriberPersonalDataEraserTest extends \MailPoetTest {
   }
 
   public function testItDeletesCustomFields() {
-    $subscriber = Subscriber::createOrUpdate([
-      'email' => 'eraser.test.email.that@has.custom.fields',
-    ]);
-    $customField1 = CustomField::createOrUpdate([
-      'name' => 'Custom field1',
-      'type' => 'input',
-    ]);
-    $customField2 = CustomField::createOrUpdate([
-      'name' => 'Custom field2',
-      'type' => 'input',
-    ]);
-    $subscriber->setCustomField($customField1->id(), 'Value');
-    $subscriber->setCustomField($customField2->id(), 'Value');
+    $customFieldFactory = new CustomFieldFactory();
+
+    $subscriber = $this->subscribersFactory
+      ->withEmail('eraser.test.email.that@has.custom.fields')
+      ->create();
+
+    $customField1 = $customFieldFactory
+      ->withName('Custom field1')
+      ->withType('input')
+      ->create();
+    $customField2 = $customFieldFactory
+      ->withName('Custom field2')
+      ->withType('input')
+      ->create();
+
+    $subscriberCustomField1 = new SubscriberCustomFieldEntity($subscriber, $customField1, 'Value');
+    $this->entityManager->persist($subscriberCustomField1);
+    $subscriberCustomField2 = new SubscriberCustomFieldEntity($subscriber, $customField2, 'Value');
+    $this->entityManager->persist($subscriberCustomField2);
+    $this->entityManager->flush();
 
     $this->eraser->erase('eraser.test.email.that@has.custom.fields');
 
-    $subscriberCustomFields = SubscriberCustomField::where('subscriber_id', $subscriber->id())->findMany();
+    $subscriberCustomFieldRepository = $this->diContainer->get(SubscriberCustomFieldRepository::class);
+    $subscriberCustomFields = $subscriberCustomFieldRepository->findBy(['subscriber' => $subscriber]);
     expect($subscriberCustomFields)->count(2);
-    expect($subscriberCustomFields[0]->value)->equals('');
-    expect($subscriberCustomFields[1]->value)->equals('');
-
+    expect($subscriberCustomFields[0]->getValue())->equals('');
+    expect($subscriberCustomFields[1]->getValue())->equals('');
   }
 
   public function testItDeletesSubscriberData() {
-    $subscriber = Subscriber::createOrUpdate([
-      'email' => 'subscriber@for.anon.test',
-      'first_name' => 'John',
-      'last_name' => 'Doe',
-      'status' => 'subscribed',
-      'created_at' => '2018-05-03 10:30:08',
-      'subscribed_ip' => 'IP1',
-      'confirmed_ip' => 'IP2',
-      'unconfirmed_data' => 'xyz',
-    ]);
+    $subscriber = $this->subscribersFactory
+      ->withEmail('subscriber@for.anon.test')
+      ->withFirstName('John')
+      ->withLastName('Doe')
+      ->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)
+      ->withCreatedAt(new Carbon('2018-05-03 10:30:08'))
+      ->withSubscribedIp('IP1')
+      ->withConfirmedIp('IP2')
+      ->withUnconfirmedData('xyz')
+      ->create();
     $this->eraser->erase('subscriber@for.anon.test');
-    $subscriberAfter = Subscriber::findOne($subscriber->id());
-    expect($subscriberAfter->firstName)->equals('Anonymous');
-    expect($subscriberAfter->lastName)->equals('Anonymous');
-    expect($subscriberAfter->status)->equals('unsubscribed');
-    expect($subscriberAfter->subscribedIp)->equals('0.0.0.0');
-    expect($subscriberAfter->confirmedIp)->equals('0.0.0.0');
-    expect($subscriberAfter->unconfirmedData)->equals('');
+    $subscriberAfter = $this->subscribersRepository->findOneById($subscriber->getId());
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriberAfter);
+    expect($subscriberAfter->getFirstName())->equals('Anonymous');
+    expect($subscriberAfter->getLastName())->equals('Anonymous');
+    expect($subscriberAfter->getStatus())->equals('unsubscribed');
+    expect($subscriberAfter->getSubscribedIp())->equals('0.0.0.0');
+    expect($subscriberAfter->getConfirmedIp())->equals('0.0.0.0');
+    expect($subscriberAfter->getUnconfirmedData())->equals('');
   }
 
   public function testItDeletesSubscriberEmailAddress() {
-    $subscriber = Subscriber::createOrUpdate([
-      'email' => 'subscriber@for.anon.test',
-    ]);
+    $subscriber = $this->subscribersFactory
+      ->withEmail('subscriber@for.anon.test')
+      ->create();
+
     $this->eraser->erase('subscriber@for.anon.test');
-    $subscriberAfter = Subscriber::findOne($subscriber->id());
-    expect($subscriberAfter->email)->notEquals('subscriber@for.anon.test');
+    $subscriberAfter = $this->subscribersRepository->findOneById($subscriber->getId());
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriberAfter);
+    expect($subscriberAfter->getEmail())->notEquals('subscriber@for.anon.test');
+  }
+
+  public function _after() {
+    $this->truncateEntity(SubscriberEntity::class);
+    $this->truncateEntity(CustomFieldEntity::class);
+    $this->truncateEntity(SubscriberCustomFieldEntity::class);
   }
 }
