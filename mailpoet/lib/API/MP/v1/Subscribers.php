@@ -6,8 +6,6 @@ use MailPoet\API\JSON\ResponseBuilders\SubscribersResponseBuilder;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Features\FeaturesController;
-use MailPoet\Models\Segment;
-use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\Scheduler\WelcomeScheduler;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Settings\SettingsController;
@@ -181,7 +179,7 @@ class Subscribers {
     }
 
     if (!$skipSubscriberNotification && ($subscriber->getStatus() === SubscriberEntity::STATUS_SUBSCRIBED)) {
-      $this->sendSubscriberNotification($subscriber, $foundSegmentsIds);
+      $this->newSubscriberNotificationMailer->send($subscriber, $this->segmentsRepository->findBy(['id' => $foundSegmentsIds]));
     }
 
     $this->subscribersRepository->refresh($subscriber);
@@ -217,17 +215,5 @@ class Subscribers {
         APIException::CONFIRMATION_FAILED_TO_SEND
       );
     }
-  }
-
-  /**
-   * @throws APIException
-   */
-  private function sendSubscriberNotification(SubscriberEntity $subscriberEntity, array $segmentIds) {
-    $subscriber = Subscriber::findOne($subscriberEntity->getId());
-    if (!$subscriber) {
-      throw new APIException(__('This subscriber does not exist.', 'mailpoet'), APIException::SUBSCRIBER_NOT_EXISTS);
-    }
-
-    $this->newSubscriberNotificationMailer->send($subscriber, Segment::whereIn('id', $segmentIds)->findMany());
   }
 }

@@ -7,8 +7,6 @@ use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Mailer\MailerFactory;
 use MailPoet\Mailer\MetaInfo;
-use MailPoet\Models\Segment;
-use MailPoet\Models\Subscriber;
 use MailPoet\Settings\SettingsController;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -39,33 +37,12 @@ class NewSubscriberNotificationMailer {
   }
 
   /**
-   * This method can be removed and code calling it can be updated to call self::send()
-   * once self::send() is migrated to use Doctrine instead of Paris.
-   *
+   * @param SubscriberEntity $subscriber
    * @param SegmentEntity[] $segments
-   */
-  public function sendWithSubscriberAndSegmentEntities(SubscriberEntity $subscriber, array $segments) {
-    $subscriberModel = Subscriber::findOne($subscriber->getId());
-    $segmentModels = [];
-
-    foreach ($segments as $segmentEntity) {
-      $segmentModel = Segment::findOne($segmentEntity->getId());
-
-      if ($segmentModel instanceof Segment) {
-        $segmentModels[] = $segmentModel;
-      }
-    }
-
-    $this->send($subscriberModel, $segmentModels);
-  }
-
-  /**
-   * @param Subscriber $subscriber
-   * @param Segment[] $segments
    *
    * @throws \Exception
    */
-  public function send(Subscriber $subscriber, array $segments) {
+  public function send(SubscriberEntity $subscriber, array $segments): void {
     $settings = $this->settings->get(NewSubscriberNotificationMailer::SETTINGS_KEY);
     if ($this->isDisabled($settings)) {
       return;
@@ -99,16 +76,16 @@ class NewSubscriberNotificationMailer {
   }
 
   /**
-   * @param Subscriber $subscriber
-   * @param Segment[] $segments
+   * @param SubscriberEntity $subscriber
+   * @param SegmentEntity[] $segments
    *
    * @return array
    * @throws \Exception
    */
-  private function constructNewsletter(Subscriber $subscriber, array $segments) {
+  private function constructNewsletter(SubscriberEntity $subscriber, array $segments) {
     $segmentNames = $this->getSegmentNames($segments);
     $context = [
-      'subscriber_email' => $subscriber->get('email'),
+      'subscriber_email' => $subscriber->getEmail(),
       'segments_names' => $segmentNames,
       'link_settings' => WPFunctions::get()->getSiteUrl(null, '/wp-admin/admin.php?page=mailpoet-settings'),
       'link_premium' => WPFunctions::get()->getSiteUrl(null, '/wp-admin/admin.php?page=mailpoet-upgrade'),
@@ -123,13 +100,13 @@ class NewSubscriberNotificationMailer {
   }
 
   /**
-   * @param Segment[] $segments
+   * @param SegmentEntity[] $segments
    * @return string
    */
-  private function getSegmentNames($segments) {
+  private function getSegmentNames(array $segments): string {
     $names = [];
     foreach ($segments as $segment) {
-      $names[] = $segment->get('name');
+      $names[] = $segment->getName();
     }
     return implode(', ', $names);
   }
