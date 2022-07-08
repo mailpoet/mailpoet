@@ -224,7 +224,7 @@ class Pages {
 
     // Send new subscriber notification only when status changes to subscribed or there are unconfirmed data to avoid spamming
     if ($originalStatus !== SubscriberEntity::STATUS_SUBSCRIBED || $subscriberData !== null) {
-      $this->newSubscriberNotificationSender->sendWithSubscriberAndSegmentEntities($this->subscriber, $subscriberSegments);
+      $this->newSubscriberNotificationSender->send($this->subscriber, $subscriberSegments);
     }
 
     // Update subscriber from stored data after confirmation
