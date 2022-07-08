@@ -1,0 +1,20 @@
+.components-button.mailpoet-automation-button-sidebar-primary,
+.components-button.mailpoet-automation-button-sidebar-primary.has-text,
+.components-button.mailpoet-automation-button-sidebar-primary.has-icon {
+  background: #1d2327;
+  width: 100%;
+
+  &:hover:not(:disabled) {
+    background: #1d2327;
+  }
+}
+
+.components-button.mailpoet-automation-button-centered,
+.components-button.mailpoet-automation-button-centered.has-text,
+.components-button.mailpoet-automation-button-centered.has-icon {
+  justify-content: center;
+
+  svg {
+    margin-right: 0;
+  }
+}
