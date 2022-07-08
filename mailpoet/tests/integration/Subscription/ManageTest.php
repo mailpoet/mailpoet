@@ -8,6 +8,7 @@ use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
 use MailPoet\Newsletter\Scheduler\WelcomeScheduler;
+use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Statistics\Track\Unsubscribes;
 use MailPoet\Subscribers\LinkTokens;
@@ -63,6 +64,7 @@ class ManageTest extends \MailPoetTest {
       $this->settings,
       $this->diContainer->get(NewSubscriberNotificationMailer::class),
       $this->diContainer->get(WelcomeScheduler::class),
+      $this->diContainer->get(SegmentsRepository::class),
       $this->diContainer->get(SubscribersRepository::class),
       $this->diContainer->get(SubscriberSegmentRepository::class)
     );

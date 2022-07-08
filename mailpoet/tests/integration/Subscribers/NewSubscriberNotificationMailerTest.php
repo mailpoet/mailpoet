@@ -5,33 +5,33 @@ namespace MailPoet\Subscribers;
 use Codeception\Stub;
 use Codeception\Stub\Expected;
 use MailPoet\Config\Renderer;
+use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SettingEntity;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\MailerFactory;
-use MailPoet\Models\Segment;
-use MailPoet\Models\Subscriber;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Test\DataFactories\Segment as SegmentFactory;
+use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 
 class NewSubscriberNotificationMailerTest extends \MailPoetTest {
 
-  /** @var Subscriber */
+  /** @var SubscriberEntity */
   private $subscriber;
 
-  /** @var Segment[] */
-  private $segments;
+  /** @var SegmentEntity[] */
+  private $segments = [];
 
   /** @var SettingsController */
   private $settings;
 
   public function _before() {
-    $this->subscriber = Subscriber::create();
-    $this->subscriber->email = 'subscriber@example.com';
-    $this->subscriber->save();
-    $this->segments = [Segment::create(), Segment::create()];
-    $this->segments[0]->name = 'List1';
-    $this->segments[1]->name = 'List2';
+    $this->subscriber = (new SubscriberFactory())
+      ->withEmail('subscriber@example.com')
+      ->create();
+    $this->segments[] = (new SegmentFactory())->withName('List1')->create();
+    $this->segments[] = (new SegmentFactory())->withName('List2')->create();
     $this->settings = SettingsController::getInstance();
   }
 
@@ -126,7 +126,7 @@ class NewSubscriberNotificationMailerTest extends \MailPoetTest {
     ], $this);
 
     $subscribersRepository = $this->diContainer->get(SubscribersRepository::class);
-    $subscriberEntity = $subscribersRepository->findOneById($this->subscriber->id);
+    $subscriberEntity = $subscribersRepository->findOneById($this->subscriber->getId());
     $this->assertInstanceOf(SubscriberEntity::class, $subscriberEntity);
 
     $segments = [(new SegmentFactory())->create(), (new SegmentFactory())->create()];
@@ -135,11 +135,13 @@ class NewSubscriberNotificationMailerTest extends \MailPoetTest {
     $mailerFactory->method('getDefaultMailer')->willReturn($mailer);
 
     $service = new NewSubscriberNotificationMailer($mailerFactory, $this->diContainer->get(Renderer::class), $this->diContainer->get(SettingsController::class));
-    $service->sendWithSubscriberAndSegmentEntities($subscriberEntity, $segments);
+    $service->send($subscriberEntity, $segments);
   }
 
   public function _after() {
     $this->truncateEntity(SettingEntity::class);
+    $this->truncateEntity(SegmentEntity::class);
+    $this->truncateEntity(SubscriberSegmentEntity::class);
     $this->truncateEntity(SubscriberEntity::class);
   }
 }
