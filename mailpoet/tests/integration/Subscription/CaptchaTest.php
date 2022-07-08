@@ -7,9 +7,11 @@ use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberIPEntity;
 use MailPoet\Models\Subscriber;
 use MailPoet\Subscribers\SubscriberIPsRepository;
+use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Subscription\Captcha;
 use MailPoet\Subscription\CaptchaSession;
 use MailPoet\Util\Cookies;
+use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoet\WP\Functions;
 use MailPoetVendor\Carbon\Carbon;
@@ -27,9 +29,10 @@ class CaptchaTest extends \MailPoetTest {
     $cookiesMock = $this->createMock(Cookies::class);
     $cookiesMock->method('get')->willReturn('abcd');
     $subscriberIPsRepository = $this->diContainer->get(SubscriberIPsRepository::class);
+    $subscribersRepository = $this->diContainer->get(SubscribersRepository::class);
     $this->captchaSession = new CaptchaSession(new Functions());
     $this->captchaSession->init(self::CAPTCHA_SESSION_ID);
-    $this->captcha = new Captcha($subscriberIPsRepository, new WPFunctions, $this->captchaSession);
+    $this->captcha = new Captcha($subscriberIPsRepository, $subscribersRepository, new WPFunctions, $this->captchaSession);
     $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
     $this->captchaSession->reset();
   }
@@ -58,11 +61,10 @@ class CaptchaTest extends \MailPoetTest {
     $result = $this->captcha->isRequired();
     expect($result)->equals(false);
 
-    $subscriber = Subscriber::create();
-    $subscriber->hydrate(Fixtures::get('subscriber_template'));
-    $subscriber->countConfirmations = 1;
-    $subscriber->save();
-    $result = $this->captcha->isRequired($subscriber->email);
+    $subscriberFactory = new SubscriberFactory();
+    $subscriber = $subscriberFactory->create();
+    $subscriber->setConfirmationsCount(1);
+    $result = $this->captcha->isRequired($subscriber->getEmail());
     expect($result)->equals(true);
 
     $ip = new SubscriberIPEntity('127.0.0.1');
