@@ -13,6 +13,9 @@ describe('Heading', function () {
       model.isWoocommerceTransactional = function () {
         return false;
       };
+      model.isAutomationEmail = function () {
+        return false;
+      };
       view = new HeadingComponent.HeadingView({
         model: model,
       });
@@ -30,6 +33,9 @@ describe('Heading', function () {
           preheader: 'a test preheader',
         });
         model.isWoocommerceTransactional = function () {
+          return false;
+        };
+        model.isAutomationEmail = function () {
           return false;
         };
         view = new HeadingComponent.HeadingView({
