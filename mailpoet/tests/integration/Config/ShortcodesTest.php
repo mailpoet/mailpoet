@@ -2,7 +2,6 @@
 
 namespace MailPoet\Config;
 
-use Codeception\Util\Fixtures;
 use Helper\WordPress;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\NewsletterEntity;
@@ -12,8 +11,8 @@ use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Newsletter\Url;
 use MailPoet\Router\Router;
 use MailPoet\Subscribers\SubscribersRepository;
-use MailPoet\Test\DataFactories\Newsletter;
-use MailPoet\Test\DataFactories\Subscriber;
+use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
+use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
 use MailPoet\Util\pQuery\pQuery;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -27,30 +26,27 @@ class ShortcodesTest extends \MailPoetTest {
   /** @var Url */
   private $newsletterUrl;
 
-  /*** @var SubscribersRepository */
+  /** @var SubscriberFactory */
+  private $subscriberFactory;
+
+  /** @var SubscribersRepository */
   private $subscribersRepository;
 
   public function _before() {
     parent::_before();
-    $this->newsletterUrl = $this->diContainer->get(Url::class);
+    $this->subscriberFactory = new SubscriberFactory();
     $this->subscribersRepository = $this->diContainer->get(SubscribersRepository::class);
-    $this->newsletter = (new Newsletter())
-      ->withSubject("Fancy newsletter subject")
-      ->withSentStatus()
+    $this->newsletterUrl = $this->diContainer->get(Url::class);
+    $newsletterFactory = new NewsletterFactory();
+
+    $this->newsletter = $newsletterFactory
+      ->withSubject('')
       ->withType(NewsletterEntity::TYPE_STANDARD)
+      ->withSentStatus()
+      ->withSendingQueue()
       ->create();
 
-    $task = new ScheduledTaskEntity();
-    $task->setStatus(ScheduledTaskEntity::STATUS_COMPLETED);
-    $this->entityManager->persist($task);
-    $this->entityManager->flush();
-    $this->queue = new SendingQueueEntity();
-    $this->queue->setNewsletter($this->newsletter);
-    $this->queue->setTask($task);
-    $this->newsletter->getQueues()->add($this->queue);
-    $this->entityManager->persist($this->queue);
-    $this->entityManager->flush();
-
+    $this->queue = $this->newsletter->getLatestQueue();
   }
 
   public function testItGetsArchives() {
@@ -85,8 +81,9 @@ class ShortcodesTest extends \MailPoetTest {
   public function testItRendersShortcodeDefaultsInSubject() {
     $shortcodes = ContainerWrapper::getInstance()->get(Shortcodes::class);
     $this->queue->setNewsletterRenderedSubject('Hello [subscriber:firstname | default:reader]');
+    $this->entityManager->persist($this->queue);
     $this->entityManager->flush();
-    $this->newsletter->getQueues()->add($this->queue);
+
     WordPress::interceptFunction('apply_filters', function() use($shortcodes) {
       $args = func_get_args();
       $filterName = array_shift($args);
@@ -110,17 +107,17 @@ class ShortcodesTest extends \MailPoetTest {
     $wpUser = wp_set_current_user($currentUser->ID);
     expect((new WPFunctions)->isUserLoggedIn())->true();
 
-    (new Subscriber())
-      ->withEmail($wpUser->user_email) // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-      ->withFirstName($userData['first_name'])
-      ->withLastName($userData['last_name'])
-      ->withWpUserId($userData['ID'])
+    $this->subscriberFactory
+      ->withFirstName('Foo')
+      ->withLastName('Bar')
+      ->withEmail($wpUser->user_email)
+      ->withWpUserId($currentUser->ID)
       ->create();
 
     $this->queue->setNewsletterRenderedSubject('Hello [subscriber:firstname | default:d_firstname] [subscriber:lastname | default:d_lastname]');
-    $this->queue->setSubscribers(strval($currentUser->ID));
     $this->entityManager->persist($this->queue);
     $this->entityManager->flush();
+
     WordPress::interceptFunction('apply_filters', function() use($shortcodes) {
       $args = func_get_args();
       $filterName = array_shift($args);
@@ -140,12 +137,12 @@ class ShortcodesTest extends \MailPoetTest {
   public function testItDisplaysManageSubscriptionFormForLoggedinExistingUsers() {
     $wpUser = wp_set_current_user(1);
     expect((new WPFunctions)->isUserLoggedIn())->true();
-    $subscriber = (new Subscriber())
-      ->withEmail($wpUser->user_email) // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-      ->withFirstName(Fixtures::get('subscriber_template')['first_name'])
-      ->withLastName(Fixtures::get('subscriber_template')['last_name'])
+
+    $subscriber = $this->subscriberFactory
+      ->withEmail($wpUser->user_email)
       ->withWpUserId($wpUser->ID)
       ->create();
+
     $shortcodes = ContainerWrapper::getInstance()->get(Shortcodes::class);
     $shortcodes->init();
     $result = do_shortcode('[mailpoet_manage_subscription]');
@@ -157,12 +154,12 @@ class ShortcodesTest extends \MailPoetTest {
     $wpUser = wp_set_current_user(1);
     $wp = new WPFunctions;
     expect($wp->isUserLoggedIn())->true();
-    (new Subscriber())
-      ->withEmail($wpUser->user_email) // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-      ->withFirstName(Fixtures::get('subscriber_template')['first_name'])
-      ->withLastName(Fixtures::get('subscriber_template')['last_name'])
+
+    $this->subscriberFactory
+      ->withEmail($wpUser->user_email)
       ->withWpUserId($wpUser->ID)
       ->create();
+
     $shortcodes = ContainerWrapper::getInstance()->get(Shortcodes::class);
     $shortcodes->init();
 
@@ -178,7 +175,8 @@ class ShortcodesTest extends \MailPoetTest {
   public function testItDoesNotDisplayManageSubscriptionFormForLoggedinNonexistentSubscribers() {
     $wpUser = wp_set_current_user(1);
     expect((new WPFunctions)->isUserLoggedIn())->true();
-    expect($this->subscribersRepository->findOneBy(['email' => $wpUser->user_email]))->isEmpty(); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+
+    expect($this->subscribersRepository->findOneBy(['email' => $wpUser->user_email]))->null(); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
 
     $shortcodes = ContainerWrapper::getInstance()->get(Shortcodes::class);
     $shortcodes->init();
@@ -199,10 +197,9 @@ class ShortcodesTest extends \MailPoetTest {
   public function testItDisplaysLinkToManageSubscriptionPageForLoggedinExistingUsers() {
     $wpUser = wp_set_current_user(1);
     expect((new WPFunctions)->isUserLoggedIn())->true();
-    (new Subscriber())
-      ->withEmail($wpUser->user_email) // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-      ->withFirstName(Fixtures::get('subscriber_template')['first_name'])
-      ->withLastName(Fixtures::get('subscriber_template')['last_name'])
+
+    $this->subscriberFactory
+      ->withEmail($wpUser->user_email)
       ->withWpUserId($wpUser->ID)
       ->create();
 
@@ -215,7 +212,7 @@ class ShortcodesTest extends \MailPoetTest {
   public function testItDoesNotDisplayLinkToManageSubscriptionPageForLoggedinNonexistentSubscribers() {
     $wpUser = wp_set_current_user(1);
     expect((new WPFunctions)->isUserLoggedIn())->true();
-    expect($this->subscribersRepository->findOneBy(['email' => $wpUser->user_email]))->isEmpty(); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    expect($this->subscribersRepository->findOneBy(['email' => $wpUser->user_email]))->null(); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
 
     $shortcodes = ContainerWrapper::getInstance()->get(Shortcodes::class);
     $shortcodes->init();
@@ -234,9 +231,9 @@ class ShortcodesTest extends \MailPoetTest {
   }
 
   public function _after() {
-    $this->truncateEntity(SubscriberEntity::class);
     $this->truncateEntity(NewsletterEntity::class);
     $this->truncateEntity(ScheduledTaskEntity::class);
     $this->truncateEntity(SendingQueueEntity::class);
+    $this->truncateEntity(SubscriberEntity::class);
   }
 }
