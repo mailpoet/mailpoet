@@ -17,6 +17,9 @@
       <div class="mailpoet_save_woocommerce_error"><%= __('The usage of this email template for your WooCommerce emails is not yet activated.') %></div>
       <input type="button" name="activate_wc_customizer" value="<%= __('Activate now') %>" class="button button-primary mailpoet_save_activate_wc_customizer_button" style="margin-top: 17px">
     </div>
+{{else if isAutomationEmail}}
+    <input type="button" name="preview" class="button mailpoet_show_preview mailpoet_hidden" value="<%= __('Preview') %>" />
+    <input type="button" name="save" value="<%= __('Save') %>" class="button button-primary mailpoet_save_go_to_workflow mailpoet_hidden" />
 {{else}}
     <input type="button" name="preview" class="button mailpoet_show_preview" value="<%= __('Preview') %>" />
     <input type="button" name="next" value="<%= __('Next') %>" class="button button-primary mailpoet_save_next" />

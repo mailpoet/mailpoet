@@ -16,6 +16,7 @@ Module.HeadingView = Marionette.View.extend({
     return {
       model: this.model.toJSON(),
       isWoocommerceTransactional: this.model.isWoocommerceTransactional(),
+      isAutomationEmail: this.model.isAutomationEmail(),
     };
   },
   // eslint-disable-next-line func-names
@@ -44,7 +45,7 @@ App.on('start', function (StartApp) {
     'headingRegion',
     new Module.HeadingView({ model: model }),
   );
-  if (!model.isWoocommerceTransactional()) {
+  if (!model.isWoocommerceTransactional() && !model.isAutomationEmail()) {
     MailPoet.helpTooltip.show(
       document.getElementById('tooltip-designer-subject-line'),
       {

@@ -102,6 +102,7 @@ Module.SaveView = Marionette.View.extend({
     return {
       wrapperClass: this.wrapperClass,
       isWoocommerceTransactional: this.model.isWoocommerceTransactional(),
+      isAutomationEmail: this.model.isAutomationEmail(),
       woocommerceCustomizerEnabled: App.getConfig().get(
         'woocommerceCustomizerEnabled',
       ),
@@ -120,6 +121,8 @@ Module.SaveView = Marionette.View.extend({
     /* WooCommerce */
     'click .mailpoet_save_activate_wc_customizer_button':
       'activateWooCommerceCustomizer',
+    /* Automation email */
+    'click .mailpoet_save_go_to_workflow': 'saveAndGoToWorkflow',
     'click .mailpoet_show_preview': 'showPreview',
   },
 
@@ -312,6 +315,19 @@ Module.SaveView = Marionette.View.extend({
         window.location.href = App.getConfig().get('urls.send');
       });
     }
+  },
+  saveAndGoToWorkflow: function () {
+    this.hideSaveOptions();
+    Module._cancelAutosave();
+    Module.save().done(function () {
+      const newsletter = App.getNewsletter();
+      const options = newsletter.get('options');
+      const workflowId = options?.workflowId;
+      const goToUrl = workflowId
+        ? `admin.php?page=mailpoet-automation-editor&id=${workflowId}`
+        : '/';
+      window.location.href = goToUrl;
+    });
   },
   validateNewsletter: function (jsonObject) {
     var body = '';

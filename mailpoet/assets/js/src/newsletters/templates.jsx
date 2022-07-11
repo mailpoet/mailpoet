@@ -70,6 +70,7 @@ class NewsletterTemplates extends Component {
       loading: true,
       templates: {}, // {category1: [template11, template12, ..], category2: [template21, ...]}
       emailType: null,
+      emailOptions: {},
       selectedTab: '',
     };
     this.templates = {};
@@ -175,6 +176,7 @@ class NewsletterTemplates extends Component {
 
   selectInitialTab() {
     let emailType;
+    let emailOptions;
     let selectedTab = 'standard';
     MailPoet.Ajax.post({
       api_version: window.mailpoet_api_version,
@@ -186,6 +188,7 @@ class NewsletterTemplates extends Component {
     })
       .done((response) => {
         emailType = response.data.type;
+        emailOptions = response.data.options;
         if (emailType === 'automatic') {
           emailType = response.data.options.group || emailType;
         }
@@ -218,6 +221,7 @@ class NewsletterTemplates extends Component {
         this.setState({
           templates: this.templates,
           emailType,
+          emailOptions,
           selectedTab,
           loading: false,
         });
@@ -310,6 +314,25 @@ class NewsletterTemplates extends Component {
       content = templates;
     }
 
+    let buttons = null;
+    if (this.state.emailType === 'automation') {
+      const workflowId = this.state.emailOptions?.workflowId;
+      const goToUrl = workflowId
+        ? `admin.php?page=mailpoet-automation-editor&id=${workflowId}`
+        : '/';
+      const onClick = () => {
+        window.location = goToUrl;
+      };
+      buttons = (
+        <input
+          type="button"
+          className="button link-button"
+          onClick={onClick}
+          value="Cancel"
+        />
+      );
+    }
+
     return (
       <div>
         <Background color="#fff" />
@@ -317,6 +340,7 @@ class NewsletterTemplates extends Component {
         <ListingHeadingStepsRoute
           emailType={this.state.emailType}
           automationId="email_template_selection_heading"
+          buttons={buttons}
         />
 
         <div className="mailpoet-templates">

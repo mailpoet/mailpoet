@@ -6,16 +6,57 @@ import { newsletterTypesWithActivation } from 'newsletters/listings/utils';
 import { fetchAutomaticEmailShortcodes } from 'newsletters/automatic_emails/fetch_editor_shortcodes.jsx';
 import { displayTutorial } from './tutorial.jsx';
 
-const renderHeading = (newsletterType) => {
+const renderHeading = (newsletterType, newsletterOptions) => {
   if (newsletterType !== 'wc_transactional') {
     const stepsHeadingContainer = document.getElementById(
       'mailpoet_editor_steps_heading',
     );
     const step = newsletterType === 'automation' ? 2 : 3;
+
+    let buttons = null;
+    if (newsletterType === 'automation') {
+      const workflowId = newsletterOptions?.workflowId;
+      const goToUrl = workflowId
+        ? `admin.php?page=mailpoet-automation-editor&id=${workflowId}`
+        : '/';
+      const onClickCancel = () => {
+        window.location = goToUrl;
+      };
+      // These actions are set up from Marionette, we just trigger them here.
+      const onClickPreview = () =>
+        document.querySelector('.mailpoet_show_preview').click();
+      const onClickSave = () =>
+        document.querySelector('.mailpoet_save_go_to_workflow').click();
+      buttons = (
+        <>
+          <input
+            type="button"
+            className="button link-button"
+            onClick={onClickCancel}
+            value="Cancel"
+          />{' '}
+          <input
+            type="button"
+            name="preview"
+            className="button link-button"
+            onClick={onClickPreview}
+            value="Preview"
+          />{' '}
+          <input
+            type="button"
+            className="button button-primary"
+            onClick={onClickSave}
+            value="Save and continue"
+          />
+        </>
+      );
+    }
+
     const stepsHeading = (
       <ListingHeadingSteps
         emailType={newsletterType}
         step={step}
+        buttons={buttons}
         showMailPoetLogo
       />
     );
@@ -68,6 +109,7 @@ const initializeEditor = (config) => {
         newsletter.type === 'automatic'
           ? newsletter.options?.group
           : newsletter.type,
+        newsletter.options,
       );
 
       if (
