@@ -12,7 +12,11 @@ const renderHeading = (newsletterType) => {
       'mailpoet_editor_steps_heading',
     );
     const stepsHeading = (
-      <ListingHeadingSteps emailType={newsletterType} step={3} />
+      <ListingHeadingSteps
+        emailType={newsletterType}
+        step={3}
+        showMailPoetLogo
+      />
     );
 
     ReactDOM.render(stepsHeading, stepsHeadingContainer);
