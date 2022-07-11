@@ -1,6 +1,7 @@
 import { Location } from 'history';
 import { MailPoet } from 'mailpoet';
 import { HideScreenOptions } from '../../common/hide_screen_options/hide_screen_options';
+import { MailPoetLogoResponsive } from '../../common/top_bar/mailpoet_logo_responsive';
 import { Steps } from '../../common/steps/steps';
 
 export const mapPathToSteps = (location: Location): number | null => {
@@ -56,6 +57,7 @@ const stepsListingHeading = (
   step: number,
   emailType: string,
   automationId: string,
+  showMailPoetLogo: boolean,
 ): JSX.Element => {
   const emailTypeTitle = getEmailTypeTitle(emailType);
   return (
@@ -63,6 +65,7 @@ const stepsListingHeading = (
       className="mailpoet-newsletter-listing-heading-wrapper"
       data-automation-id={automationId}
     >
+      {showMailPoetLogo && <MailPoetLogoResponsive />}
       <HideScreenOptions />
       <Steps
         count={4}
@@ -86,6 +89,7 @@ export interface Props {
   emailType?: string;
   automationId?: string;
   location: Location;
+  showMailPoetLogo?: boolean;
 }
 
 function ListingHeadingSteps({
@@ -93,10 +97,16 @@ function ListingHeadingSteps({
   emailType,
   location,
   automationId,
+  showMailPoetLogo,
 }: Props): JSX.Element {
   const stepNumber = step || mapPathToSteps(location);
   if (stepNumber !== null) {
-    return stepsListingHeading(stepNumber, emailType, automationId);
+    return stepsListingHeading(
+      stepNumber,
+      emailType,
+      automationId,
+      showMailPoetLogo,
+    );
   }
   return null;
 }
