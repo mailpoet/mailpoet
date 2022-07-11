@@ -6,7 +6,6 @@ use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Form\Widget;
-use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Shortcodes\Categories\Date;
 use MailPoet\Newsletter\Shortcodes\Categories\Link;
@@ -94,10 +93,20 @@ class Shortcodes {
     $this->wp->addFilter('mailpoet_archive_email_processed_date', [
       $this, 'renderArchiveDate',
     ], 2);
-    $this->wp->addFilter('mailpoet_archive_email_subject', [
+    $this->wp->addFilter('mailpoet_archive_email_subject_line', [
       $this, 'renderArchiveSubject',
     ], 2, 3);
-    
+
+    // This deprecated notice can be removed after 2023-01-11
+    if ($this->wp->hasFilter('mailpoet_archive_email_subject')) {
+      $this->wp->deprecatedHook(
+        'mailpoet_archive_email_subject_line',
+        '3.92.1',
+        'mailpoet_archive_email_subject',
+        __('Please note that mailpoet_archive_email_subject no longer runs and that the list of parameters of the new filter is different.', 'mailpoet')
+      );
+    }
+
     // initialize subscription pages data
     $this->subscriptionPages->init();
     // initialize subscription management shortcodes
@@ -125,7 +134,9 @@ class Shortcodes {
     }
 
     if (empty($segmentIds)) {
-      return $this->wp->numberFormatI18n(Subscriber::filter('subscribed')->count());
+      return $this->wp->numberFormatI18n(
+        $this->subscribersRepository->countBy(['status' => SubscriberEntity::STATUS_SUBSCRIBED, 'deletedAt' => null])
+      );
     } else {
       return $this->wp->numberFormatI18n(
         $this->segmentSubscribersRepository->getSubscribersCountBySegmentIds($segmentIds, SubscriberEntity::STATUS_SUBSCRIBED)
@@ -166,7 +177,7 @@ class Shortcodes {
             $this->wp->applyFilters('mailpoet_archive_email_processed_date', $newsletter) .
           '</span>
           <span class="mailpoet_archive_subject">' .
-            $this->wp->applyFilters('mailpoet_archive_email_subject', $newsletter, $subscriber, $queue) .
+            $this->wp->applyFilters('mailpoet_archive_email_subject_line', $newsletter, $subscriber, $queue) .
           '</span>
         </li>';
       }
@@ -190,6 +201,10 @@ class Shortcodes {
   }
 
   public function renderArchiveSubject(NewsletterEntity $newsletter, ?SubscriberEntity $subscriber, ?SendingQueueEntity $queue) {
+    if (is_null($subscriber)) {
+      $subscriber = new SubscriberEntity();
+    }
+
     $previewUrl = $this->newsletterUrl->getViewInBrowserUrl($newsletter, $subscriber, $queue);
     /**
      * An ugly workaround to make sure state is not shared via NewsletterShortcodes service
@@ -205,7 +220,8 @@ class Shortcodes {
     );
 
     $shortcodeProcessor->setNewsletter($newsletter);
-    $shortcodeProcessor->setSubscriber($subscriber ?? new SubscriberEntity());
+
+    $shortcodeProcessor->setSubscriber($subscriber);
     $shortcodeProcessor->setQueue($queue);
     return '<a href="' . esc_attr($previewUrl) . '" target="_blank" title="'
       . esc_attr(__('Preview in a new tab', 'mailpoet')) . '">'

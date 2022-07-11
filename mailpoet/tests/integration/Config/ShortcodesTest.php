@@ -57,7 +57,7 @@ class ShortcodesTest extends \MailPoetTest {
       switch ($filterName) {
         case 'mailpoet_archive_date':
           return $shortcodes->renderArchiveDate($args[0]);
-        case 'mailpoet_archive_subject':
+        case 'mailpoet_archive_subject_line':
           return $shortcodes->renderArchiveSubject($args[0], $args[1], $args[2]);
       }
       return '';
@@ -90,7 +90,7 @@ class ShortcodesTest extends \MailPoetTest {
       switch ($filterName) {
         case 'mailpoet_archive_date':
           return $shortcodes->renderArchiveDate($args[0]);
-        case 'mailpoet_archive_subject':
+        case 'mailpoet_archive_subject_line':
           return $shortcodes->renderArchiveSubject($args[0], $args[1], $args[2]);
       }
       return '';
@@ -124,7 +124,7 @@ class ShortcodesTest extends \MailPoetTest {
       switch ($filterName) {
         case 'mailpoet_archive_date':
           return $shortcodes->renderArchiveDate($args[0]);
-        case 'mailpoet_archive_subject':
+        case 'mailpoet_archive_subject_line':
           return $shortcodes->renderArchiveSubject($args[0], $args[1], $args[2]);
       }
       return '';
