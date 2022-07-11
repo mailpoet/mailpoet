@@ -8,7 +8,9 @@ use MailPoet\Models\Newsletter;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\StatisticsNewsletters;
 use MailPoet\Models\Subscriber;
+use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Url;
+use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Test\DataFactories\StatisticsOpens as StatisticsOpensFactory;
 use MailPoetVendor\Carbon\Carbon;
 
@@ -17,9 +19,17 @@ class NewslettersExporterTest extends \MailPoetTest {
   /** @var NewslettersExporter */
   private $exporter;
 
+  /*** @var SubscribersRepository */
+  private $subscribersRepository;
+
   public function _before() {
     parent::_before();
-    $this->exporter = new NewslettersExporter($this->diContainer->get(Url::class));
+    $this->subscribersRepository =  $this->diContainer->get(SubscribersRepository::class);
+    $this->exporter = new NewslettersExporter(
+      $this->diContainer->get(Url::class),
+      $this->subscribersRepository,
+      $this->diContainer->get(NewslettersRepository::class)
+    );
   }
 
   public function testExportWorksWhenSubscriberNotFound() {
