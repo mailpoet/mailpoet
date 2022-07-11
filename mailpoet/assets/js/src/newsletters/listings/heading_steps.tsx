@@ -4,15 +4,18 @@ import { HideScreenOptions } from '../../common/hide_screen_options/hide_screen_
 import { MailPoetLogoResponsive } from '../../common/top_bar/mailpoet_logo_responsive';
 import { Steps } from '../../common/steps/steps';
 
-export const mapPathToSteps = (location: Location): number | null => {
+export const mapPathToSteps = (
+  location: Location,
+  emailType?: string,
+): number | null => {
   const stepsMap = [
     ['/new/.+', 1],
-    ['/template/.+', 2],
+    ['/template/.+', emailType === 'automation' ? 1 : 2],
     ['/send/.+', 4],
   ];
 
   if (location.search.match(/page=mailpoet-newsletter-editor/g)) {
-    return 3;
+    return emailType === 'automation' ? 2 : 3;
   }
 
   let stepNumber = null;
@@ -60,6 +63,19 @@ const stepsListingHeading = (
   showMailPoetLogo: boolean,
 ): JSX.Element => {
   const emailTypeTitle = getEmailTypeTitle(emailType);
+  let stepTitles = [
+    emailTypeTitle,
+    MailPoet.I18n.t('stepNameTemplate'),
+    MailPoet.I18n.t('stepNameDesign'),
+    getEmailSendTitle(emailType),
+  ];
+  // Automation email has only 2 steps
+  if (emailType === 'automation') {
+    stepTitles = [
+      MailPoet.I18n.t('stepNameTemplate'),
+      MailPoet.I18n.t('stepNameDesign'),
+    ];
+  }
   return (
     <div
       className="mailpoet-newsletter-listing-heading-wrapper"
@@ -67,16 +83,7 @@ const stepsListingHeading = (
     >
       {showMailPoetLogo && <MailPoetLogoResponsive />}
       <HideScreenOptions />
-      <Steps
-        count={4}
-        current={step}
-        titles={[
-          emailTypeTitle,
-          MailPoet.I18n.t('stepNameTemplate'),
-          MailPoet.I18n.t('stepNameDesign'),
-          getEmailSendTitle(emailType),
-        ]}
-      />
+      <Steps count={stepTitles.length} current={step} titles={stepTitles} />
       <h1 className="mailpoet-newsletter-listing-heading title mailpoet_hidden">
         {' '}
       </h1>
@@ -99,7 +106,7 @@ function ListingHeadingSteps({
   automationId,
   showMailPoetLogo,
 }: Props): JSX.Element {
-  const stepNumber = step || mapPathToSteps(location);
+  const stepNumber = step || mapPathToSteps(location, emailType);
   if (stepNumber !== null) {
     return stepsListingHeading(
       stepNumber,

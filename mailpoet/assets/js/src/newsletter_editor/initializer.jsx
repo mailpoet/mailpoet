@@ -11,10 +11,11 @@ const renderHeading = (newsletterType) => {
     const stepsHeadingContainer = document.getElementById(
       'mailpoet_editor_steps_heading',
     );
+    const step = newsletterType === 'automation' ? 2 : 3;
     const stepsHeading = (
       <ListingHeadingSteps
         emailType={newsletterType}
-        step={3}
+        step={step}
         showMailPoetLogo
       />
     );
