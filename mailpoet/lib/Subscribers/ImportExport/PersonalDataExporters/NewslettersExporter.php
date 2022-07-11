@@ -2,10 +2,11 @@
 
 namespace MailPoet\Subscribers\ImportExport\PersonalDataExporters;
 
-use MailPoet\Models\Newsletter;
+use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Models\StatisticsNewsletters;
-use MailPoet\Models\Subscriber;
+use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Url as NewsletterUrl;
+use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\WP\Functions as WPFunctions;
 
 class NewslettersExporter {
@@ -15,21 +16,31 @@ class NewslettersExporter {
   /** @var NewsletterUrl */
   private $newsletterUrl;
 
+  /*** @var SubscribersRepository */
+  private $subscribersRepository;
+
+  /*** @var NewslettersRepository */
+  private $newslettersRepository;
+
   public function __construct(
-    NewsletterUrl $newsletterUrl
+    NewsletterUrl $newsletterUrl,
+    SubscribersRepository $subscribersRepository,
+    NewslettersRepository $newslettersRepository
   ) {
     $this->newsletterUrl = $newsletterUrl;
+    $this->subscribersRepository = $subscribersRepository;
+    $this->newslettersRepository = $newslettersRepository;
   }
 
   public function export($email, $page = 1) {
-    $data = $this->exportSubscriber(Subscriber::findOne(trim($email)), $page);
+    $data = $this->exportSubscriber($this->subscribersRepository->findOneBy(['email' => trim($email)]), $page);
     return [
       'data' => $data,
       'done' => count($data) < self::LIMIT,
     ];
   }
 
-  private function exportSubscriber($subscriber, $page) {
+  private function exportSubscriber(?SubscriberEntity $subscriber, $page) {
     if (!$subscriber) return [];
 
     $result = [];
@@ -97,11 +108,11 @@ class NewslettersExporter {
 
     if (empty($newsletterIds)) return [];
 
-    $newsletters = Newsletter::whereIn('id', $newsletterIds)->findMany();
+    $newsletters = $this->newslettersRepository->findBy(['id' => $newsletterIds]);
 
     $result = [];
     foreach ($newsletters as $newsletter) {
-      $result[$newsletter->id()] = $newsletter;
+      $result[$newsletter->getId()] = $newsletter;
     }
     return $result;
   }
