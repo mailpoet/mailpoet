@@ -29,16 +29,16 @@ $beamer-dot-size: 8px;
       top: 46px;
     }
   }
-}
 
-.mailpoet-top-bar-logo {
-  cursor: pointer;
-  position: relative;
-  top: 2px;
+  .mailpoet-top-bar-logo {
+    cursor: pointer;
+    position: relative;
+    top: 2px;
 
-  svg {
-    max-height: 100%;
-    max-width: 100%;
+    svg {
+      max-height: 100%;
+      max-width: 100%;
+    }
   }
 }
 
