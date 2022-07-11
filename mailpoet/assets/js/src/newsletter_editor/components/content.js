@@ -23,6 +23,9 @@ Module.NewsletterModel = SuperModel.extend({
   isWoocommerceTransactional: function isWoocommerceTransactional() {
     return this.get('type') === 'wc_transactional';
   },
+  isAutomationEmail: function isAutomationEmail() {
+    return this.get('type') === 'automation';
+  },
 });
 
 // Content block view and model handlers for different content types

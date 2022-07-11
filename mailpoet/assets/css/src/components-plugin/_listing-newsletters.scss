@@ -107,6 +107,17 @@ h1.title.mailpoet-newsletter-listing-heading {
   }
 }
 
+.mailpoet-newsletter-listing-heading-buttons {
+  position: absolute;
+  right: 20px;
+  top: 25px;
+
+  .link-button {
+    background-color: transparent;
+    border: 0;
+  }
+}
+
 .mailpoet-listing-schedule {
   align-items: center;
   display: flex;

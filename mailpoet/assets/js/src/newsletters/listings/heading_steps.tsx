@@ -1,3 +1,4 @@
+import { ReactNode } from 'react';
 import { Location } from 'history';
 import { MailPoet } from 'mailpoet';
 import { HideScreenOptions } from '../../common/hide_screen_options/hide_screen_options';
@@ -61,6 +62,7 @@ const stepsListingHeading = (
   emailType: string,
   automationId: string,
   showMailPoetLogo: boolean,
+  buttons: ReactNode,
 ): JSX.Element => {
   const emailTypeTitle = getEmailTypeTitle(emailType);
   let stepTitles = [
@@ -84,6 +86,11 @@ const stepsListingHeading = (
       {showMailPoetLogo && <MailPoetLogoResponsive />}
       <HideScreenOptions />
       <Steps count={stepTitles.length} current={step} titles={stepTitles} />
+      {buttons && (
+        <div className="mailpoet-newsletter-listing-heading-buttons">
+          {buttons}
+        </div>
+      )}
       <h1 className="mailpoet-newsletter-listing-heading title mailpoet_hidden">
         {' '}
       </h1>
@@ -97,6 +104,7 @@ export interface Props {
   automationId?: string;
   location: Location;
   showMailPoetLogo?: boolean;
+  buttons?: ReactNode;
 }
 
 function ListingHeadingSteps({
@@ -105,6 +113,7 @@ function ListingHeadingSteps({
   location,
   automationId,
   showMailPoetLogo,
+  buttons,
 }: Props): JSX.Element {
   const stepNumber = step || mapPathToSteps(location, emailType);
   if (stepNumber !== null) {
@@ -113,6 +122,7 @@ function ListingHeadingSteps({
       emailType,
       automationId,
       showMailPoetLogo,
+      buttons,
     );
   }
   return null;

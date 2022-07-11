@@ -216,6 +216,22 @@ class NewsletterSendComponent extends Component {
             ? this.getThumbnailPromise(response.meta.preview_url)
             : null;
         const item = response.data;
+        // Automation type emails should redirect
+        // to an associated workflow from the send page
+        if (item.type === 'automation') {
+          const workflowId = item.options?.workflowId;
+          const goToUrl = workflowId
+            ? `admin.php?page=mailpoet-automation-editor&id=${workflowId}`
+            : '/new';
+          return this.setState(
+            {
+              item: {},
+            },
+            () => {
+              this.props.history.push(goToUrl);
+            },
+          );
+        }
         if (!item.ga_campaign) {
           item.ga_campaign = generateGaTrackingCampaignName(
             item.id,
@@ -228,6 +244,7 @@ class NewsletterSendComponent extends Component {
           thumbnailPromise,
           validationError: validateNewsletter(response.data),
         });
+        return true;
       })
       .fail(() => {
         this.setState(
