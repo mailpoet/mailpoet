@@ -3,7 +3,7 @@ Contributors: mailpoet
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 5.6
 Tested up to: 6.0
-Stable tag: 3.91.0
+Stable tag: 3.91.1
 Requires PHP: 7.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -218,6 +218,13 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 3.91.1 - 2022-07-11 =
+* Updated: npm and composer dependencies;
+* Improved: small UI changes to unify spacing and colors;
+* Improved: add "noindex, nofollow" directive on email preview page to prevent search engines to index these pages;
+* Improved: use original $phpmailer as a WordPressMailer fallback;
+* Fixed: date badges in select boxes are not vertically aligned.
 
 = 3.91.0 - 2022-06-22 =
 * Fixed: template caching.
