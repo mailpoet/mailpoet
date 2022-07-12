@@ -63,6 +63,12 @@ $form-line-height: 1.4;
   .mailpoet-has-font-size {
     line-height: $form-line-height;
   }
+
+  fieldset {
+    border: 0;
+    margin: 0;
+    padding: 0;
+  }
 }
 
 .mailpoet_textarea {
