@@ -422,6 +422,24 @@ class NewslettersRepository extends Repository {
     return $result;
   }
 
+  /**
+   * Returns standard newsletters ordered by sentAt
+   * @return NewsletterEntity[]
+   */
+  public function getStandardNewsletterList(): array {
+    return $this->entityManager->createQueryBuilder()
+      ->select('n')
+      ->addSelect('CASE WHEN n.sentAt IS NULL THEN 1 ELSE 0 END as HIDDEN sent_at_is_null')
+      ->from(NewsletterEntity::class, 'n')
+      ->where('n.type = :typeStandard')
+      ->andWhere('n.deletedAt IS NULL')
+      ->orderBy('sent_at_is_null', 'DESC')
+      ->addOrderBy('n.sentAt', 'DESC')
+      ->setParameter('typeStandard', NewsletterEntity::TYPE_STANDARD)
+      ->getQuery()
+      ->getResult();
+  }
+
   public function prefetchOptions(array $newsletters) {
     $this->entityManager->createQueryBuilder()
       ->select('PARTIAL n.{id}, o, opf')
