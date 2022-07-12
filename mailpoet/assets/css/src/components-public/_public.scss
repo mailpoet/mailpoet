@@ -42,6 +42,12 @@ $form-line-height: 1.4;
       font-size: $form-mobile-font-size !important;
       line-height: $form-line-height !important;
     }
+
+    fieldset {
+      border: 0;
+      margin: 0;
+      padding: 0;
+    }
   }
 
   &.mailpoet_form_successfully_send {
@@ -554,10 +560,4 @@ h2.mailpoet-heading {
   top: 5px;
   width: auto;
   z-index: 100000;
-}
-
-fieldset {
-  border: 0;
-  margin: 0;
-  padding: 0;
 }
