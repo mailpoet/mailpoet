@@ -3,8 +3,9 @@
 namespace MailPoet\AdminPages\Pages;
 
 use MailPoet\AdminPages\PageRenderer;
+use MailPoet\API\JSON\ResponseBuilders\SegmentsResponseBuilder;
 use MailPoet\Listing\PageLimit;
-use MailPoet\Models\Segment;
+use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\UserFlagsController;
 use MailPoet\Util\Installation;
@@ -30,12 +31,20 @@ class Forms {
   /** @var SettingsController */
   private $settings;
 
+  /** @var SegmentsRepository */
+  private $segmentsRepository;
+
+  /** @var SegmentsResponseBuilder */
+  private $segmentsResponseBuilder;
+
   public function __construct(
     PageRenderer $pageRenderer,
     PageLimit $listingPageLimit,
     Installation $installation,
     SettingsController $settings,
     UserFlagsController $userFlags,
+    SegmentsRepository $segmentsRepository,
+    SegmentsResponseBuilder $segmentsResponseBuilder,
     WPFunctions $wp
   ) {
     $this->pageRenderer = $pageRenderer;
@@ -44,12 +53,14 @@ class Forms {
     $this->userFlags = $userFlags;
     $this->wp = $wp;
     $this->settings = $settings;
+    $this->segmentsRepository = $segmentsRepository;
+    $this->segmentsResponseBuilder = $segmentsResponseBuilder;
   }
 
   public function render() {
     $data = [];
     $data['items_per_page'] = $this->listingPageLimit->getLimitPerPage('forms');
-    $data['segments'] = Segment::findArray();
+    $data['segments'] = $this->segmentsResponseBuilder->buildForListing($this->segmentsRepository->findAll());
     $data['is_new_user'] = $this->installation->isNewInstallation();
 
     $data = $this->getNPSSurveyData($data);
