@@ -2,18 +2,16 @@
 
 namespace MailPoet\Test\Newsletter\Links;
 
-use Codeception\Util\Fixtures;
 use MailPoet\Cron\Workers\StatsNotifications\NewsletterLinkRepository;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterLinkEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
-use MailPoet\Models\SendingQueue;
-use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\Links\Links;
 use MailPoet\Router\Router;
 use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
 use MailPoet\Test\DataFactories\NewsletterLink as NewsletterLinkFactory;
+use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 
 class LinksTest extends \MailPoetTest {
   /** @var Links */
@@ -25,11 +23,14 @@ class LinksTest extends \MailPoetTest {
   /** @var NewsletterLinkRepository */
   private $newsletterLinkRepository;
 
+  /** @var NewsletterEntity */
+  private $newsletter;
+
   public function _before() {
     $this->links = $this->diContainer->get(Links::class);
     $newsletterFactory = new NewsletterFactory();
-    $newsletter = $newsletterFactory->withSendingQueue()->create();
-    $this->newsletterLinkFactory = new NewsletterLinkFactory($newsletter);
+    $this->newsletter = $newsletterFactory->withSendingQueue()->create();
+    $this->newsletterLinkFactory = new NewsletterLinkFactory($this->newsletter);
     $this->newsletterLinkRepository = $this->diContainer->get(NewsletterLinkRepository::class);
   }
 
@@ -158,14 +159,14 @@ class LinksTest extends \MailPoetTest {
   }
 
   public function testItReplacesHashedLinksWithSubscriberData() {
-    $subscriber = Subscriber::create();
-    $subscriber->hydrate(Fixtures::get('subscriber_template'));
-    $subscriber->save();
-    $queue = SendingQueue::create();
-    $queue->newsletterId = 1;
-    $queue->save();
+    $subscriberFactory = new SubscriberFactory();
+    $subscriber = $subscriberFactory->create();
+    $queue = $this->newsletter->getLatestQueue();
+
+    $this->assertInstanceOf(SendingQueueEntity::class, $queue);
+
     $template = '<a href="[mailpoet_click_data]-1234">some site</a> <img src="[mailpoet_open_data]"/>';
-    $result = $this->links->replaceSubscriberData($subscriber->id, $queue->id, $template);
+    $result = $this->links->replaceSubscriberData($subscriber->getId(), $queue->getId(), $template);
 
     // there are no click/open data tags
     expect($result)->stringNotContainsString(Links::DATA_TAG_CLICK);
@@ -182,8 +183,8 @@ class LinksTest extends \MailPoetTest {
     foreach ($result['data'] as $data) {
       $data = Router::decodeRequestData($data);
       $data = $this->links->transformUrlDataObject($data);
-      expect($data['subscriber_id'])->equals($subscriber->id);
-      expect($data['queue_id'])->equals($queue->id);
+      expect($data['subscriber_id'])->equals($subscriber->getId());
+      expect($data['queue_id'])->equals($queue->getId());
       expect(isset($data['subscriber_token']))->true();
     }
   }
