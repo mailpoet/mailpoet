@@ -8,14 +8,13 @@ use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberCustomFieldEntity;
 use MailPoet\Entities\SubscriberEntity;
-use MailPoet\Models\Newsletter;
-use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\Shortcodes\Categories\Date;
 use MailPoet\Newsletter\Shortcodes\Shortcodes;
 use MailPoet\Newsletter\Url as NewsletterUrl;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\TrackingConfig;
 use MailPoet\Subscribers\LinkTokens;
+use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Subscription\SubscriptionUrlFactory;
 use MailPoet\Util\Security;
 use MailPoet\WP\Functions as WPFunctions;
@@ -168,7 +167,7 @@ class ShortcodesTest extends \MailPoetTest {
     // create first post notification
     $postNotificationHistory = $this->_createNewsletter(
       $this->newsletter,
-      $type = Newsletter::TYPE_NOTIFICATION_HISTORY
+      $type = NewsletterEntity::TYPE_NOTIFICATION_HISTORY
     );
     $this->shortcodesObject->setNewsletter($postNotificationHistory);
     $result = $this->shortcodesObject->process(['[newsletter:number]']);
@@ -177,7 +176,7 @@ class ShortcodesTest extends \MailPoetTest {
     // create another post notification
     $postNotificationHistory = $this->_createNewsletter(
       $this->newsletter,
-      $type = Newsletter::TYPE_NOTIFICATION_HISTORY
+      $type = NewsletterEntity::TYPE_NOTIFICATION_HISTORY
     );
     $this->shortcodesObject->setNewsletter($postNotificationHistory);
     $result = $this->shortcodesObject->process(['[newsletter:number]']);
@@ -232,12 +231,18 @@ class ShortcodesTest extends \MailPoetTest {
     $result =
       $shortcodesObject->process(['[subscriber:displayname]']);
     expect($result[0])->equals($this->wPUser->user_login);
-    $subscribers = Subscriber::whereIn('status', [
-      SubscriberEntity::STATUS_SUBSCRIBED,
-      SubscriberEntity::STATUS_UNCONFIRMED,
-      SubscriberEntity::STATUS_INACTIVE,
-    ])->findMany();
-    $subscriberCount = count($subscribers);
+
+    $subscribersRepository = $this->diContainer->get(SubscribersRepository::class);
+    $subscriberCount = $subscribersRepository->countBy(
+      [
+        'status' =>[
+          SubscriberEntity::STATUS_SUBSCRIBED,
+          SubscriberEntity::STATUS_UNCONFIRMED,
+          SubscriberEntity::STATUS_INACTIVE
+        ]
+      ]
+    );
+
     $result =
       $shortcodesObject->process(['[subscriber:count]']);
     expect($result[0])->equals($subscriberCount);
@@ -429,7 +434,7 @@ class ShortcodesTest extends \MailPoetTest {
     return $subscriber;
   }
 
-  public function _createNewsletter(NewsletterEntity $parent = null, $type = Newsletter::TYPE_NOTIFICATION): NewsletterEntity {
+  public function _createNewsletter(NewsletterEntity $parent = null, $type = NewsletterEntity::TYPE_NOTIFICATION): NewsletterEntity {
     $newsletter = new NewsletterEntity();
     $newsletter->setSubject('some subject');
     $newsletter->setType($type);
