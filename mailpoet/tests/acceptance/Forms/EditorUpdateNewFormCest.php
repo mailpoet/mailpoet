@@ -46,6 +46,7 @@ class EditorUpdateNewFormCest {
     $i->waitForElement('[data-automation-id="template_selection_list"]');
     $i->click('[data-automation-id="select_template_template_1_popup"]');
     $i->waitForElement('[data-automation-id="form_title_input"]');
+    $i->clearField('[data-automation-id="form_title_input"]'); // Clear field due to flakiness
     $i->fillField('[data-automation-id="form_title_input"]', $formName);
     // Try saving form without selected list
     $i->click('[data-automation-id="form_save_button"]');
