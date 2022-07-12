@@ -450,12 +450,7 @@ function SubscriberList({ match }) {
           <Tags segments={subscribedSegments} dimension="large" />
         </td>
         <td className="column" data-colname={MailPoet.I18n.t('tags')}>
-          <Tags
-            strings={subscriberTags}
-            dimension="large"
-            variant="wordpress"
-            isInverted
-          />
+          <Tags strings={subscriberTags} variant="wordpress" isInverted />
         </td>
         {mailpoetTrackingEnabled === true ? (
           <td
