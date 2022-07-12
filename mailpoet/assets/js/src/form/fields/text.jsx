@@ -50,6 +50,7 @@ class FormFieldText extends Component {
         defaultValue={defaultValue}
         placeholder={this.props.field.placeholder}
         onChange={this.props.onValueChange}
+        onBlur={this.props.onBlurEvent}
         customLabel={this.props.field.customLabel}
         tooltip={this.props.field.tooltip}
         {...this.props.field.validation}
@@ -60,6 +61,7 @@ class FormFieldText extends Component {
 
 FormFieldText.propTypes = {
   onValueChange: PropTypes.func,
+  onBlurEvent: PropTypes.func,
   field: PropTypes.shape({
     name: PropTypes.string.isRequired,
     defaultValue: PropTypes.string,
@@ -83,6 +85,9 @@ FormFieldText.propTypes = {
 
 FormFieldText.defaultProps = {
   onValueChange: function onValueChange() {
+    // no-op
+  },
+  onBlurEvent: function onValueChange() {
     // no-op
   },
 };

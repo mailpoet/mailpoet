@@ -13,17 +13,13 @@ class SenderField extends Component {
       ),
     };
     this.onChange = this.onChange.bind(this);
+    this.onBlur = this.onBlur.bind(this);
   }
 
   onChange(event) {
-    const emailAddressIsAuthorized =
-      event.target.value.length >= 3
-        ? this.isEmailAddressAuthorized(event.target.value.toLowerCase())
-        : true;
-
     this.setState({
       emailAddress: event.target.value.toLowerCase(),
-      isEmailAuthorized: emailAddressIsAuthorized,
+      isEmailAuthorized: true, // hide email address warning when user is typing
     });
     this.props.onValueChange({
       ...event,
@@ -32,6 +28,19 @@ class SenderField extends Component {
         name: event.target.name,
         value: event.target.value.toLowerCase(),
       },
+    });
+  }
+
+  onBlur(event) {
+    const emailAddress = event.target.value.toLowerCase();
+    const emailAddressIsAuthorized =
+      event.target.value.length >= 3
+        ? this.isEmailAddressAuthorized(emailAddress)
+        : true;
+
+    this.setState({
+      isEmailAuthorized: emailAddressIsAuthorized,
+      emailAddress,
     });
   }
 
@@ -48,6 +57,7 @@ class SenderField extends Component {
           }}
           field={this.props.field}
           onValueChange={this.onChange}
+          onBlurEvent={this.onBlur}
         />
         <div className="regular-text" style={{ marginTop: '2.5rem' }}>
           <SenderEmailAddressWarning
