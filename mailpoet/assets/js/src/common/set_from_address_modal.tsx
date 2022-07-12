@@ -31,7 +31,7 @@ const getErrorMessage = (
   }
 
   if (error.error === 'unauthorized') {
-    return ' ';
+    return '';
   }
 
   return error.message || MailPoet.I18n.t('setFromAddressEmailUnknownError');
@@ -83,7 +83,7 @@ type Props = {
 
 function SetFromAddressModal({ onRequestClose, setAuthorizedAddress }: Props) {
   const [address, setAddress] = useState<string>();
-  const [showAuthorizedEmailModel, setShowAuthorizedEmailModel] =
+  const [showAuthorizedEmailModal, setShowAuthorizedEmailModal] =
     useState(false);
   const [showAuthorizedEmailErrorMessage, setShowAuthorizedEmailErrorMessage] =
     useState(false);
@@ -97,11 +97,11 @@ function SetFromAddressModal({ onRequestClose, setAuthorizedAddress }: Props) {
       onRequestClose={onRequestClose}
       contentClassName="set-from-address-modal"
     >
-      {showAuthorizedEmailModel && (
+      {showAuthorizedEmailModal && (
         <AuthorizeSenderEmailModal
           senderEmail={address}
           onRequestClose={() => {
-            setShowAuthorizedEmailModel(false);
+            setShowAuthorizedEmailModal(false);
           }}
           setAuthorizedAddress={(emailAddres) => {
             setAuthorizedAddress(emailAddres);
@@ -151,10 +151,12 @@ function SetFromAddressModal({ onRequestClose, setAuthorizedAddress }: Props) {
             (string, index) => (
               <a
                 key={index}
-                href={`https://account.mailpoet.com/authorization?email=${address}`}
+                href={`https://account.mailpoet.com/authorization?email=${encodeURIComponent(
+                  address,
+                )}`}
                 onClick={(event) => {
                   event.preventDefault();
-                  setShowAuthorizedEmailModel(true);
+                  setShowAuthorizedEmailModal(true);
                 }}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -198,7 +200,9 @@ function SetFromAddressModal({ onRequestClose, setAuthorizedAddress }: Props) {
               setShowAuthorizedEmailErrorMessage(true);
             }
             const message = getErrorMessage(error);
-            addressValidator.addError('saveError', { message });
+            if (message) {
+              addressValidator.addError('saveError', { message });
+            }
           }
         }}
       >
