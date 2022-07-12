@@ -8,9 +8,10 @@ use MailPoet\Config\Env;
 use MailPoet\Config\Installer;
 use MailPoet\Config\Menu;
 use MailPoet\Config\ServicesChecker;
+use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Features\FeaturesController;
 use MailPoet\Listing\PageLimit;
-use MailPoet\Models\Newsletter;
+use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\NewsletterTemplates\NewsletterTemplatesRepository;
 use MailPoet\Segments\SegmentsSimpleListRepository;
 use MailPoet\Services\Bridge;
@@ -69,6 +70,9 @@ class Newsletters {
   /** @var SegmentsSimpleListRepository */
   private $segmentsListRepository;
 
+  /** @var NewslettersRepository */
+  private $newslettersRepository;
+
   /** @var TrackingConfig */
   private $trackingConfig;
 
@@ -90,6 +94,7 @@ class Newsletters {
     WPPostListLoader $wpPostListLoader,
     AutomaticEmails $automaticEmails,
     SegmentsSimpleListRepository $segmentsListRepository,
+    NewslettersRepository $newslettersRepository,
     TrackingConfig $trackingConfig,
     Bridge $bridge
   ) {
@@ -108,6 +113,7 @@ class Newsletters {
     $this->wpPostListLoader = $wpPostListLoader;
     $this->segmentsListRepository = $segmentsListRepository;
     $this->trackingConfig = $trackingConfig;
+    $this->newslettersRepository = $newslettersRepository;
     $this->bridge = $bridge;
   }
 
@@ -158,7 +164,7 @@ class Newsletters {
     $data['is_woocommerce_active'] = $this->woocommerceHelper->isWooCommerceActive();
     $data['is_mailpoet_update_available'] = array_key_exists(Env::$pluginPath, $this->wp->getPluginUpdates());
     $data['subscriber_count'] = $this->subscribersFeature->getSubscribersCount();
-    $data['newsletters_count'] = Newsletter::count();
+    $data['newsletters_count'] = $this->newslettersRepository->countBy([]);
     $data['mailpoet_feature_flags'] = $this->featuresController->getAllFlags();
     $data['transactional_emails_opt_in_notice_dismissed'] = $this->userFlags->get('transactional_emails_opt_in_notice_dismissed');
     $data['has_premium_support'] = $this->subscribersFeature->hasPremiumSupport();
@@ -179,7 +185,7 @@ class Newsletters {
     $data['woocommerce_optin_on_checkout'] = $this->settings->get('woocommerce.optin_on_checkout.enabled', false);
 
     $data['is_new_user'] = $this->installation->isNewInstallation();
-    $data['sent_newsletters_count'] = (int)Newsletter::where('status', Newsletter::STATUS_SENT)->count();
+    $data['sent_newsletters_count'] = $this->newslettersRepository->countBy(['status' => NewsletterEntity::STATUS_SENT]);
     $data['woocommerce_transactional_email_id'] = $this->settings->get(TransactionalEmails::SETTING_EMAIL_ID);
     $data['display_detailed_stats'] = Installer::getPremiumStatus()['premium_plugin_initialized'];
     $data['newsletters_templates_recently_sent_count'] = $this->newsletterTemplatesRepository->getRecentlySentCount();
