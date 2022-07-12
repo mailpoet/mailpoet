@@ -100,6 +100,7 @@ class AuthorizedEmailAddressesValidationCest {
     $i->fillField('[name="sender_address"]', 'unauthorized@email.com');
     $i->selectOptionInSelect2('WordPress Users');
     $i->click('Send');
+    $i->waitForElement('.sender_email_address_warning'); // see new email unauthorized error
     $i->waitForElement('.parsley-invalidFromAddress');
   }
 }
