@@ -12,24 +12,24 @@ function SenderEmailAddressWarning({
   mssActive,
   isEmailAuthorized,
 }) {
-  const [showAuthorizedEmailModel, setShowAuthorizedEmailModel] =
+  const [showAuthorizedEmailModal, setShowAuthorizedEmailModal] =
     useState(false);
   const [authorizedEmailAddress, setAuthorizedEmailAddress] = useState('');
 
   const loadModal = (event) => {
     event.preventDefault();
-    setShowAuthorizedEmailModel(true);
+    setShowAuthorizedEmailModal(true);
   };
 
   if (mssActive) {
     if (!isEmailAuthorized) {
       return (
         <>
-          {showAuthorizedEmailModel && (
+          {showAuthorizedEmailModal && (
             <AuthorizeSenderEmailModal
               senderEmail={emailAddress}
               onRequestClose={() => {
-                setShowAuthorizedEmailModel(false);
+                setShowAuthorizedEmailModal(false);
               }}
               setAuthorizedAddress={setAuthorizedEmailAddress}
             />

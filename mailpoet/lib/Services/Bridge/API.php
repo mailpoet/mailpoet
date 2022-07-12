@@ -184,11 +184,11 @@ class API {
    * Create Authorized Email Address
    *
    * returns true if done or an array of error messages
-   * @param string $emailAdress
+   * @param string $emailAddress
    * @return bool|array
    */
-  public function createAuthorizedEmailAddress(string $emailAdress) {
-    $body = ['email' => $emailAdress];
+  public function createAuthorizedEmailAddress(string $emailAddress) {
+    $body = ['email' => $emailAddress];
     $result = $this->request(
       $this->urlAuthorizedEmailAddresses,
       $body

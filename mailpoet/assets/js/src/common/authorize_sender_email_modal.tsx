@@ -8,9 +8,9 @@ import { Modal } from 'common/modal/modal';
 import { Button, Loader } from 'common';
 import { isErrorResponse, ErrorResponse } from 'ajax';
 
-const SET_INTERVAL_SECONDS = 15;
+const SET_INTERVAL_PERFORM_REQUEST_EVERY_SECONDS = 15;
 
-const STOP_POLLING_AFTER = 2; // hours
+const SET_INTERVAL_STOP_POLLING_AFTER_HOURS = 2; // hours
 
 type ApiActionType = 'create' | 'confirm' | 'setup';
 
@@ -92,7 +92,7 @@ function AuthorizeSenderEmailModal({
     const currentIntervalStopTime = setIntervalStopTime.current;
 
     if (currentIntervalStopTime && Date.now() >= currentIntervalStopTime) {
-      // stop polling after 2 hours
+      // stop polling the server after X number of hours
       clearCurrentInterval(currentIntervalId);
       return;
     }
@@ -115,7 +115,7 @@ function AuthorizeSenderEmailModal({
         removeUnauthorizedEmailNotices();
       })
       .catch(() => {
-        //
+        // do nothing if unconfirmed
       });
   };
 
@@ -137,12 +137,12 @@ function AuthorizeSenderEmailModal({
 
           // start polling on success response
           setIntervalStopTime.current = moment()
-            .add(STOP_POLLING_AFTER, 'hours')
+            .add(SET_INTERVAL_STOP_POLLING_AFTER_HOURS, 'hours')
             .valueOf();
 
           setIntervalId.current = setInterval(
             executeAction,
-            1000 * SET_INTERVAL_SECONDS,
+            1000 * SET_INTERVAL_PERFORM_REQUEST_EVERY_SECONDS,
           );
         }
       })
@@ -158,6 +158,15 @@ function AuthorizeSenderEmailModal({
       });
 
     return () => clearCurrentInterval(setIntervalId.current);
+    /**
+     * I'm using eslint-disable-line react-hooks/exhaustive-deps here to fix eslint warning.
+     *
+     * The suggestion unfortunately will not apply in this case.
+     * setAuthorizedAddress is a props callback used to notify the parent component the sender email has been authorized
+     * Adding it to the useEffect dependency array just causes an unnecessary double render
+     * We can't make use of useCallback here
+     * MAILPOET-4300
+     */
   }, [senderEmailAddress]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
