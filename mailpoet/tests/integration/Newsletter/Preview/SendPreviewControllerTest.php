@@ -36,7 +36,7 @@ class SendPreviewControllerTest extends \MailPoetTest {
     $this->subscriptionUrlFactory = SubscriptionUrlFactory::getInstance();
     $newsletter = new NewsletterEntity();
     $newsletter->setType(NewsletterEntity::TYPE_STANDARD);
-    $newsletter->setSubject('My Standard Newsletter');
+    $newsletter->setSubject('My Standard Newsletter SendPreviewControllerTest');
     $newsletter->setPreheader('preheader');
     $newsletter->setBody(json_decode(Fixtures::get('newsletter_body_template'), true));
     $newsletter->setHash(Security::generateHash());
@@ -86,13 +86,15 @@ class SendPreviewControllerTest extends \MailPoetTest {
 
     $mailerFactory = $this->createMock(MailerFactory::class);
     $mailerFactory->method('getDefaultMailer')->willReturn($mailer);
+    $shortcodes = $this->diContainer->get(Shortcodes::class);
+    $shortcodes->setQueue(null);
     $sendPreviewController = new SendPreviewController(
       $mailerFactory,
       new MetaInfo(),
       $this->diContainer->get(Renderer::class),
       new WPFunctions(),
       $this->diContainer->get(SubscribersRepository::class),
-      $this->diContainer->get(Shortcodes::class)
+      $shortcodes
     );
     $sendPreviewController->sendPreview($this->newsletter, 'test@subscriber.com');
   }
