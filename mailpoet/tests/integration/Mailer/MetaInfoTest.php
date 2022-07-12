@@ -2,9 +2,9 @@
 
 namespace MailPoet\Test\Mailer;
 
+use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Mailer\MetaInfo;
-use MailPoet\Models\Newsletter;
 use MailPoet\Models\Subscriber;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 
@@ -85,7 +85,7 @@ class MetaInfoTest extends \MailPoetTest {
       'source' => 'form',
     ]);
     $newsletter = (object)[
-      'type' => Newsletter::TYPE_STANDARD,
+      'type' => NewsletterEntity::TYPE_STANDARD,
     ];
     expect($this->meta->getNewsletterMetaInfo($newsletter, $subscriber))->equals([
       'email_type' => 'newsletter',
@@ -101,7 +101,7 @@ class MetaInfoTest extends \MailPoetTest {
       'source' => 'form',
     ]);
     $newsletter = (object)[
-      'type' => Newsletter::TYPE_WELCOME,
+      'type' => NewsletterEntity::TYPE_WELCOME,
     ];
     expect($this->meta->getNewsletterMetaInfo($newsletter, $subscriber))->equals([
       'email_type' => 'welcome',
@@ -117,10 +117,10 @@ class MetaInfoTest extends \MailPoetTest {
       'source' => 'form',
     ]);
     $newsletter1 = (object)[
-      'type' => Newsletter::TYPE_NOTIFICATION,
+      'type' => NewsletterEntity::TYPE_NOTIFICATION,
     ];
     $newsletter2 = (object)[
-      'type' => Newsletter::TYPE_NOTIFICATION_HISTORY,
+      'type' => NewsletterEntity::TYPE_NOTIFICATION_HISTORY,
     ];
     expect($this->meta->getNewsletterMetaInfo($newsletter1, $subscriber))->equals([
       'email_type' => 'post_notification',
@@ -141,14 +141,14 @@ class MetaInfoTest extends \MailPoetTest {
       'source' => 'form',
     ]);
     $newsletter1 = (object)[
-      'type' => Newsletter::TYPE_AUTOMATIC,
+      'type' => NewsletterEntity::TYPE_AUTOMATIC,
       'options' => [
         'group' => 'woocommerce',
         'event' => 'woocommerce_first_purchase',
       ],
     ];
     $newsletter2 = (object)[
-      'type' => Newsletter::TYPE_AUTOMATIC,
+      'type' => NewsletterEntity::TYPE_AUTOMATIC,
       'options' => [
         'group' => 'woocommerce',
         'event' => 'woocommerce_purchased_in_category',
@@ -173,7 +173,7 @@ class MetaInfoTest extends \MailPoetTest {
       'source' => null,
     ]);
     $newsletter = (object)[
-      'type' => Newsletter::TYPE_STANDARD,
+      'type' => NewsletterEntity::TYPE_STANDARD,
     ];
     expect($this->meta->getNewsletterMetaInfo($newsletter, $subscriber))->equals([
       'email_type' => 'newsletter',
