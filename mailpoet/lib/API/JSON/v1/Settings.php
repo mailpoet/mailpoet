@@ -219,7 +219,7 @@ class Settings extends APIEndpoint {
         $e->getMessage() === AuthorizedEmailsController::AUTHORIZED_EMAIL_ERROR_PENDING_CONFIRMATION
       ) {
         // return true if the email is already authorized or pending confirmation
-        $response = true;
+        $response = ['status' => true];
       } else {
         return $this->badRequest([
           APIError::BAD_REQUEST => WPFunctions::get()->__($e->getMessage(), 'mailpoet'),

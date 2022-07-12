@@ -264,14 +264,15 @@ class AuthorizedEmailsControllerTest extends \MailPoetTest {
       'pending' => ['pending@email.com'],
       'authorized' => ['authorized@email.com']
     ];
+    $response = ['status' => true];
     $bridgeMock = $this->make(Bridge::class, [
       'getAuthorizedEmailAddresses' => Expected::once($array),
-      'createAuthorizedEmailAddress' => Expected::once(true)
+      'createAuthorizedEmailAddress' => Expected::once($response)
     ]);
     $newslettersRepository = $this->diContainer->get(NewslettersRepository::class);
     $controller = new AuthorizedEmailsController($this->settings, $bridgeMock, $newslettersRepository);
     $result = $controller->createAuthorizedEmailAddress('new-authorized@email.com');
-    expect($result)->equals(true);
+    expect($result)->equals($response);
   }
 
   public function testItThrowsAnExceptionForReturnedArrayForCreateNewAuthorizedEmailAddress() {
