@@ -16,9 +16,6 @@ use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\MailerFactory;
 use MailPoet\Mailer\MetaInfo;
-use MailPoet\Models\Newsletter;
-use MailPoet\Models\ScheduledTask;
-use MailPoet\Models\SendingQueue;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Newsletter\Statistics\NewsletterStatisticsRepository;
@@ -26,12 +23,12 @@ use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
 use MailPoet\Test\DataFactories\NewsletterLink as NewsletterLinkFactory;
+use MailPoet\Test\DataFactories\ScheduledTask as ScheduledTaskFactory;
 use MailPoet\Test\DataFactories\StatisticsClicks as StatisticsClicksFactory;
 use MailPoet\Test\DataFactories\StatisticsOpens as StatisticsOpensFactory;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 use MailPoetVendor\Carbon\Carbon;
-use MailPoetVendor\Idiorm\ORM;
 use PHPUnit\Framework\MockObject\MockObject;
 
 class WorkerTest extends \MailPoetTest {
@@ -72,6 +69,12 @@ class WorkerTest extends \MailPoetTest {
   /** @var SendingQueuesRepository */
   private $sendingQueuesRepository;
 
+  /** @var NewsletterFactory */
+  private $newsletterFactory;
+
+  /** @var ScheduledTaskFactory */
+  private $scheduledTaskFactory;
+
   public function _before() {
     parent::_before();
     $this->cleanup();
@@ -84,6 +87,7 @@ class WorkerTest extends \MailPoetTest {
     $this->renderer = $this->createMock(Renderer::class);
     $this->settings = SettingsController::getInstance();
     $this->cronHelper = $this->diContainer->get(CronHelper::class);
+    $this->scheduledTaskFactory = new ScheduledTaskFactory();
     $mailerFactory = $this->createMock(MailerFactory::class);
     $mailerFactory->method('getDefaultMailer')
       ->willReturn($this->mailer);
@@ -105,23 +109,18 @@ class WorkerTest extends \MailPoetTest {
       'enabled' => true,
       'address' => 'email@example.com',
     ]);
-    $this->newsletter = (new NewsletterFactory())
+    $this->newsletterFactory = new NewsletterFactory();
+    $this->newsletter = $this->newsletterFactory
       ->withSubject('Rendered Email Subject')
       ->withSendingQueue(['count_processed' => 5])
       ->create();
-    $statsNotificationsTask = ScheduledTask::createOrUpdate([
-      'type' => Worker::TASK_TYPE,
-      'status' => ScheduledTask::STATUS_SCHEDULED,
-      'scheduled_at' => '2017-01-02 12:13:14',
-      'processed_at' => null,
-    ]);
-    $cmd = $this->entityManager->getClassMetadata(StatsNotificationEntity::class);
-    ORM::raw_execute('INSERT INTO ' . $cmd->getTableName() . '(newsletter_id, task_id) VALUES ('
-      . $this->newsletter->getId()
-      . ','
-      . $statsNotificationsTask->id()
-      . ')'
-    );
+
+    $statsNotificationsTask = $this->scheduledTaskFactory
+      ->create(Worker::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED, new Carbon('2017-01-02 12:13:14'));
+
+    $statsNotificationEntity = new StatsNotificationEntity($this->newsletter, $statsNotificationsTask);
+    $this->entityManager->persist($statsNotificationEntity);
+
     $this->queue = $this->newsletter->getLatestQueue();
 
     $newsletterEntity = $this->newslettersRepository->findOneById($this->newsletter->getId());
@@ -260,33 +259,18 @@ class WorkerTest extends \MailPoetTest {
   }
 
   public function testItWorksForNewsletterWithNoStats() {
-    $newsletter = Newsletter::createOrUpdate([
-      'subject' => 'Email Subject2',
-      'type' => Newsletter::TYPE_STANDARD,
-    ]);
-    $sendingTask = ScheduledTask::createOrUpdate([
-      'type' => 'sending',
-      'status' => ScheduledTask::STATUS_COMPLETED,
-    ]);
-    $statsNotificationsTask = ScheduledTask::createOrUpdate([
-      'type' => Worker::TASK_TYPE,
-      'status' => ScheduledTask::STATUS_SCHEDULED,
-      'scheduled_at' => '2016-01-02 12:13:14',
-      'processed_at' => null,
-    ]);
-    $cmd = $this->entityManager->getClassMetadata(StatsNotificationEntity::class);
-    ORM::raw_execute('INSERT INTO ' . $cmd->getTableName() . '(newsletter_id, task_id) VALUES ('
-      . $this->newsletter->getId()
-      . ','
-      . $statsNotificationsTask->id()
-      . ')'
-    );
-    SendingQueue::createOrUpdate([
-      'newsletter_rendered_subject' => 'Rendered Email Subject2',
-      'task_id' => $sendingTask->id(),
-      'newsletter_id' => $newsletter->id(),
-      'count_processed' => 15,
-    ]);
+    $this->newsletterFactory
+      ->withSubject('Email Subject2')
+      ->withType(NewsletterEntity::TYPE_STANDARD)
+      ->withSendingQueue()
+      ->create();
+
+    $statsNotificationsTask = $this->scheduledTaskFactory
+      ->create(Worker::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED, new Carbon('2016-01-02 12:13:14'));
+
+    $statsNotificationEntity = new StatsNotificationEntity($this->newsletter, $statsNotificationsTask);
+    $this->entityManager->persist($statsNotificationEntity);
+    $this->entityManager->flush();
 
     $this->mailer->expects($this->exactly(2))
       ->method('send');
