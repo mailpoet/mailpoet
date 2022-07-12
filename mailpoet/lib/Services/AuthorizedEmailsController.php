@@ -64,11 +64,11 @@ class AuthorizedEmailsController {
     $this->settings->set(self::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING, null);
   }
 
-  public function getAllAuthorizedEmailAddress() {
+  public function getAllAuthorizedEmailAddress(): array {
     return $this->bridge->getAuthorizedEmailAddresses(self::AUTHORIZED_EMAIL_ADDRESSES_API_TYPE_ALL);
   }
 
-  public function createAuthorizedEmailAddress(string $email) {
+  public function createAuthorizedEmailAddress(string $email): array {
     $allEmails = $this->getAllAuthorizedEmailAddress();
 
     $authorizedEmails = isset($allEmails[self::AUTHORIZED_EMAIL_ADDRESSES_API_TYPE_AUTHORIZED]) ? $allEmails[self::AUTHORIZED_EMAIL_ADDRESSES_API_TYPE_AUTHORIZED] : [];
@@ -87,9 +87,8 @@ class AuthorizedEmailsController {
 
     $finalData = $this->bridge->createAuthorizedEmailAddress($email);
 
-    if (!is_bool($finalData) && is_array($finalData)) {
-      $errorMessage = isset($finalData['error']) ? $finalData['error'] : ' ';
-      throw new \InvalidArgumentException($errorMessage);
+    if ($finalData && isset($finalData['error'])) {
+      throw new \InvalidArgumentException($finalData['error']);
     }
 
     return $finalData;

@@ -130,8 +130,6 @@ class Bridge {
 
   /**
    * Create Authorized Email Address
-   *
-   * returns true if done or an array of error messages
    */
   public function createAuthorizedEmailAddress(string $emailAdress) {
     $data = $this

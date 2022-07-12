@@ -128,7 +128,7 @@ function AuthorizeSenderEmailModal({
 
     makeApiRequest(senderEmailAddress)
       .then((res) => {
-        const response = Boolean(res?.data);
+        const response = Boolean(res?.data?.status);
         setCreateEmailApiResponse(response);
         setShowLoader(response);
         if (response) {
