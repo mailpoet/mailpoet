@@ -40,12 +40,22 @@ export function selectStep(value) {
   } as const;
 }
 
+export function setWorkflowName(name) {
+  const workflow = select(storeName).getWorkflowData();
+  workflow.name = name;
+  return {
+    type: 'UPDATE_WORKFLOW',
+    workflow,
+  } as const;
+}
+
 export function* activate() {
   const workflow = select(storeName).getWorkflowData();
   const data = yield apiFetch({
     path: `/workflows/${workflow.id}`,
     method: 'PUT',
     data: {
+      name: workflow.name,
       status: 'active',
     },
   });

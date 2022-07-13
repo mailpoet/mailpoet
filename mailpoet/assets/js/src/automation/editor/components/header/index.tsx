@@ -1,6 +1,7 @@
-import { Button, NavigableMenu } from '@wordpress/components';
+import { Button, NavigableMenu, TextControl } from '@wordpress/components';
 import { useDispatch, useSelect } from '@wordpress/data';
 import { PinnedItems } from '@wordpress/interface';
+import { __ } from '@wordpress/i18n';
 import { DocumentActions } from './document_actions';
 import { InserterToggle } from './inserter_toggle';
 import { MoreMenu } from './more_menu';
@@ -32,8 +33,10 @@ function UpdateButton(): JSX.Element {
 }
 
 export function Header(): JSX.Element {
-  const { workflowStatus } = useSelect(
+  const { setWorkflowName } = useDispatch(store);
+  const { workflowName, workflowStatus } = useSelect(
     (select) => ({
+      workflowName: select(store).getWorkflowData().name,
       workflowStatus: select(store).getWorkflowData().status,
     }),
     [],
@@ -52,12 +55,23 @@ export function Header(): JSX.Element {
       </div>
 
       <div className="edit-site-header_center">
-        <DocumentActions>{() => <div>TODO: edit name</div>}</DocumentActions>
+        <DocumentActions>
+          {() => (
+            <div className="mailpoet-automation-editor-dropdown-name-edit">
+              <div className="mailpoet-automation-editor-dropdown-name-edit-title">{__('Automation name')}</div>
+              <TextControl
+                value={workflowName}
+                onChange={(newName) => setWorkflowName(newName)}
+                help={__(`Give the automation a name that indicates its purpose. E.g. "Abandoned cart recovery"`)}
+              />
+            </div>
+          )}
+        </DocumentActions>
       </div>
 
       <div className="edit-site-header_end">
         <div className="edit-site-header__actions">
-          <Button isTertiary>Save Draft</Button>
+          <Button isTertiary>{__('Save Draft')}</Button>
           {workflowStatus !== WorkflowStatus.ACTIVE && <ActivateButton />}
           {workflowStatus === WorkflowStatus.ACTIVE && <UpdateButton />}
           <PinnedItems.Slot scope={storeName} />
