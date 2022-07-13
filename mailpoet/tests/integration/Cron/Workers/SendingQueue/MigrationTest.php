@@ -1,30 +1,41 @@
-<?php
+<?php declare(strict_types = 1);
 
 namespace MailPoet\Test\Cron\Workers;
 
 use Codeception\Stub;
 use MailPoet\Cron\Workers\SendingQueue\Migration;
+use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Entities\ScheduledTaskSubscriberEntity;
+use MailPoet\Entities\SendingQueueEntity;
+use MailPoet\Entities\SubscriberEntity;
+use MailPoet\InvalidStateException;
 use MailPoet\Mailer\MailerLog;
-use MailPoet\Models\ScheduledTaskSubscriber;
-use MailPoet\Models\SendingQueue;
-use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
+use MailPoet\Newsletter\Sending\ScheduledTaskSubscribersRepository;
+use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Settings\SettingsRepository;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\Test\DataFactories\ScheduledTask as ScheduledTaskFactory;
+use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
-use MailPoetVendor\Idiorm\ORM;
 
 class MigrationTest extends \MailPoetTest {
-  public $altered;
+  /** @var bool */
+  public $altered = false;
+  /** @var SendingQueueEntity */
   public $queueScheduled;
+  /** @var SendingQueueEntity */
   public $queueCompleted;
+  /** @var SendingQueueEntity */
   public $queuePaused;
+  /** @var SendingQueueEntity */
   public $queueRunning;
-  public $subscriberProcessed;
+  /** @var SubscriberEntity */
   public $subscriberToProcess;
+  /** @var SubscriberEntity */
+  public $subscriberProcessed;
   /** @var ScheduledTaskFactory */
   private $scheduledTaskFactory;
   /** @var Migration */
@@ -33,30 +44,37 @@ class MigrationTest extends \MailPoetTest {
   /** @var ScheduledTasksRepository */
   private $scheduledTasksRepository;
 
+  /** @var ScheduledTaskSubscribersRepository */
+  private $scheduledTaskSubscribersRepository;
+
+  /** @var SendingQueuesRepository */
+  private $sendingQueuesRepository;
+
   public function _before() {
+    $this->scheduledTaskFactory = new ScheduledTaskFactory();
+    $this->scheduledTasksRepository = $this->diContainer->get(ScheduledTasksRepository::class);
+    $this->scheduledTaskSubscribersRepository = $this->diContainer->get(ScheduledTaskSubscribersRepository::class);
+    $this->sendingQueuesRepository = $this->diContainer->get(SendingQueuesRepository::class);
+
     parent::_before();
     // Alter table to test migration
     $this->downgradeTable();
 
-    $this->subscriberToProcess = Subscriber::createOrUpdate([
-      'status' => Subscriber::STATUS_SUBSCRIBED,
-      'email' => 'to_process@example.com',
-    ]);
-    $this->subscriberProcessed = Subscriber::createOrUpdate([
-      'status' => Subscriber::STATUS_SUBSCRIBED,
-      'email' => 'processed@example.com',
-    ]);
+    $this->subscriberToProcess = (new SubscriberFactory())
+      ->withEmail('to_process@example.com')
+      ->create();
+    $this->subscriberProcessed = (new SubscriberFactory())
+      ->withEmail('processed@example.com')
+      ->create();
 
     // subscribers should be migrated
     $this->queueRunning = $this->createSendingQueue();
-    $this->queuePaused = $this->createSendingQueue(SendingQueue::STATUS_PAUSED);
+    $this->queuePaused = $this->createSendingQueue(SendingQueueEntity::STATUS_PAUSED);
 
     // subscribers should not be migrated
-    $this->queueCompleted = $this->createSendingQueue(SendingQueue::STATUS_COMPLETED);
-    $this->queueScheduled = $this->createSendingQueue(SendingQueue::STATUS_SCHEDULED);
+    $this->queueCompleted = $this->createSendingQueue(SendingQueueEntity::STATUS_COMPLETED);
+    $this->queueScheduled = $this->createSendingQueue(SendingQueueEntity::STATUS_SCHEDULED);
 
-    $this->scheduledTaskFactory = new ScheduledTaskFactory();
-    $this->scheduledTasksRepository = $this->diContainer->get(ScheduledTasksRepository::class);
     $this->worker = new Migration();
   }
 
@@ -79,7 +97,7 @@ class MigrationTest extends \MailPoetTest {
   }
 
   public function testItResumesSendingIfThereIsNothingToMigrate() {
-    SendingQueue::deleteMany();
+    $this->truncateEntity(SendingQueueEntity::class);
     $this->worker->pauseSending();
     expect(MailerLog::isSendingPaused())->true();
     $task = $this->createScheduledTask();
@@ -88,7 +106,7 @@ class MigrationTest extends \MailPoetTest {
   }
 
   public function testItCompletesTaskIfThereIsNothingToMigrate() {
-    SendingQueue::deleteMany();
+    $this->truncateEntity(SendingQueueEntity::class);
     $task = $this->createScheduledTask();
     $this->worker->prepareTaskStrategy($task, microtime(true));
     $task = $this->scheduledTasksRepository->findOneById($task->getId());
@@ -100,7 +118,7 @@ class MigrationTest extends \MailPoetTest {
     expect($this->worker->getUnmigratedQueues()->count())->equals(4);
     $tasks = $this->scheduledTasksRepository->findBy(['type' => SendingTask::TASK_TYPE]);
     expect($tasks)->count(0);
-    expect(ScheduledTaskSubscriber::whereGt('task_id', 0)->count())->equals(0);
+    expect($this->scheduledTaskSubscribersRepository->countBy([]))->equals(0);
 
     $task = $this->createRunningTask();
     $this->worker->processTaskStrategy($task, microtime(true));
@@ -108,20 +126,19 @@ class MigrationTest extends \MailPoetTest {
     expect($this->worker->getUnmigratedQueues()->count())->equals(0);
     $tasks = $this->scheduledTasksRepository->findBy(['type' => SendingTask::TASK_TYPE]);
     expect($tasks)->count(4);
-    expect(ScheduledTaskSubscriber::whereGt('task_id', 0)->count())->equals(4); // 2 for running, 2 for paused
+    expect($this->scheduledTaskSubscribersRepository->countBy([]))->equals(4); // 2 for running, 2 for paused
 
-    $queue = SendingQueue::findOne($this->queueRunning->id);
-    assert($queue instanceof SendingQueue);
-    $task = $this->scheduledTasksRepository->findOneById($queue->taskId);
-    assert($task instanceof ScheduledTaskEntity);
+    $this->entityManager->clear();
+    $queue = $this->sendingQueuesRepository->findOneById($this->queueRunning->getId());
+     if (!$queue) throw new InvalidStateException();
+    $task = $this->scheduledTasksRepository->findOneBy(['id' => $queue->getTask()]);
+    if (!$task) throw new InvalidStateException();
     expect($task->getType())->equals(SendingTask::TASK_TYPE);
 
-    $migratedSubscribers = ScheduledTaskSubscriber::where('task_id', $queue->taskId)
-      ->orderByAsc('subscriber_id')
-      ->findMany();
+    $migratedSubscribers = $this->scheduledTaskSubscribersRepository->findBy(['task' => $task], ['subscriber' => 'asc']);
     expect($migratedSubscribers)->count(2);
-    expect($migratedSubscribers[0]->processed)->equals(ScheduledTaskSubscriber::STATUS_UNPROCESSED);
-    expect($migratedSubscribers[1]->processed)->equals(ScheduledTaskSubscriber::STATUS_PROCESSED);
+    expect($migratedSubscribers[0]->getProcessed())->equals(ScheduledTaskSubscriberEntity::STATUS_UNPROCESSED);
+    expect($migratedSubscribers[1]->getProcessed())->equals(ScheduledTaskSubscriberEntity::STATUS_PROCESSED);
   }
 
   public function testItResumesSendingAfterMigratingSendingQueuesAndSubscribers() {
@@ -171,25 +188,41 @@ class MigrationTest extends \MailPoetTest {
     );
   }
 
-  private function createSendingQueue($status = null) {
-    $queue = SendingQueue::create();
-    $queue->newsletterId = 0;
-    $queue->taskId = 0;
-    $queue->subscribers = serialize([
-      'to_process' => [$this->subscriberToProcess->id],
-      'processed' => [$this->subscriberProcessed->id],
-    ]);
-    $queue->countTotal = 2;
-    $queue->countProcessed = 1;
-    $queue->countToProcess = 1;
-    $queue->status = $status;
-    return $queue->save();
+  private function createSendingQueue($status = null): SendingQueueEntity {
+    $task = $this->entityManager->getReference(ScheduledTaskEntity::class, 0);
+    if (!$task) throw new InvalidStateException();
+    $newsletter = $this->entityManager->getReference(NewsletterEntity::class, 0);
+    if (!$newsletter) throw new InvalidStateException();
+
+    $queue = new SendingQueueEntity();
+    $queue->setNewsletter($newsletter);
+    $queue->setTask($task);
+    $queue->setSubscribers(serialize([
+      'to_process' => [$this->subscriberToProcess->getId()],
+      'processed' => [$this->subscriberProcessed->getId()],
+    ]));
+    $queue->setCountTotal(2);
+    $queue->setCountProcessed(1);
+    $queue->setCountToProcess(1);
+    $this->sendingQueuesRepository->persist($queue);
+    $this->sendingQueuesRepository->flush();
+
+    if ($status) {
+      $sendingQueueTable = $this->entityManager->getClassMetadata(SendingQueueEntity::class)->getTableName();
+      $this->entityManager->getConnection()->executeQuery(
+        "UPDATE {$sendingQueueTable} " .
+        "SET status = '{$status}' " .
+        "WHERE id = {$queue->getId()}"
+      );
+    }
+    return $queue;
   }
 
   private function downgradeTable() {
     global $wpdb;
+    $sendingQueueTable = $this->entityManager->getClassMetadata(SendingQueueEntity::class)->getTableName();
     $wpdb->query(
-      'ALTER TABLE ' . SendingQueue::$_table . ' ' .
+      'ALTER TABLE ' . $sendingQueueTable . ' ' .
       'ADD COLUMN `type` varchar(90) NULL DEFAULT NULL,' .
       'ADD COLUMN `status` varchar(12) NULL DEFAULT NULL,' .
       'ADD COLUMN `priority` mediumint(9) NOT NULL DEFAULT 0,' .
@@ -200,8 +233,9 @@ class MigrationTest extends \MailPoetTest {
 
   private function restoreTable() {
     global $wpdb;
+    $sendingQueueTable = $this->entityManager->getClassMetadata(SendingQueueEntity::class)->getTableName();
     $wpdb->query(
-      'ALTER TABLE ' . SendingQueue::$_table . ' ' .
+      'ALTER TABLE ' . $sendingQueueTable . ' ' .
       'DROP COLUMN `type`,' .
       'DROP COLUMN `status`,' .
       'DROP COLUMN `priority`,' .
@@ -213,9 +247,9 @@ class MigrationTest extends \MailPoetTest {
   public function _after() {
     $this->diContainer->get(SettingsRepository::class)->truncate();
     $this->truncateEntity(ScheduledTaskEntity::class);
-    ORM::raw_execute('TRUNCATE ' . ScheduledTaskSubscriber::$_table);
-    ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
-    ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
+    $this->truncateEntity(ScheduledTaskSubscriberEntity::class);
+    $this->truncateEntity(SendingQueueEntity::class);
+    $this->truncateEntity(SubscriberEntity::class);
 
     // Restore table after testing
     $this->restoreTable();
