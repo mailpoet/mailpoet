@@ -12,7 +12,6 @@ use MailPoet\Entities\StatisticsClickEntity;
 use MailPoet\Entities\StatisticsOpenEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\UserAgentEntity;
-use MailPoet\Models\SendingQueue;
 use MailPoet\Newsletter\Shortcodes\Categories\Link as LinkShortcodeCategory;
 use MailPoet\Newsletter\Shortcodes\Shortcodes;
 use MailPoet\Settings\TrackingConfig;
@@ -24,7 +23,6 @@ use MailPoet\Statistics\Track\SubscriberCookie;
 use MailPoet\Statistics\UserAgentsRepository;
 use MailPoet\Subscribers\LinkTokens;
 use MailPoet\Subscribers\SubscribersRepository;
-use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\Util\Cookies;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
@@ -95,10 +93,6 @@ class ClicksTest extends \MailPoetTest {
       'link' => $link,
       'preview' => false,
     ];
-    $queue = SendingQueue::findOne($queue->getId());
-    assert($queue instanceof SendingQueue);
-    $queue = SendingTask::createFromQueue($queue);
-    $queue->updateProcessedSubscribers([$subscriber->getId()]);
 
     $this->clicks = new Clicks(
       $this->diContainer->get(Cookies::class),
