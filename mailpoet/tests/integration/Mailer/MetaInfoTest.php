@@ -166,22 +166,6 @@ class MetaInfoTest extends \MailPoetTest {
     ]);
   }
 
-  public function testItSetsUnknownSubscriberSourceWhenNull() {
-    $subscriber = Subscriber::create();
-    $subscriber->hydrate([
-      'status' => 'subscribed',
-      'source' => null,
-    ]);
-    $newsletter = (object)[
-      'type' => NewsletterEntity::TYPE_STANDARD,
-    ];
-    expect($this->meta->getNewsletterMetaInfo($newsletter, $subscriber))->equals([
-      'email_type' => 'newsletter',
-      'subscriber_status' => 'subscribed',
-      'subscriber_source' => 'unknown',
-    ]);
-  }
-
   public function testItGetsMetaInfoForReEngagement() {
     $subscriber = Subscriber::create();
     $subscriber->hydrate([
