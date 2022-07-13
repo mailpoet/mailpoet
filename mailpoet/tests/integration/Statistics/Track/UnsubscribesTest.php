@@ -6,11 +6,11 @@ use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\StatisticsUnsubscribeEntity;
 use MailPoet\Entities\SubscriberEntity;
-use MailPoet\Models\Newsletter;
-use MailPoet\Models\Subscriber;
 use MailPoet\Statistics\StatisticsUnsubscribesRepository;
 use MailPoet\Statistics\Track\Unsubscribes;
 use MailPoet\Tasks\Sending as SendingTask;
+use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
+use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 
 class UnsubscribesTest extends \MailPoetTest {
   /** @var Unsubscribes */
@@ -20,27 +20,31 @@ class UnsubscribesTest extends \MailPoetTest {
   private $statisticsUnsubscribesRepository;
 
   public $queue;
+
+  /** @var SubscriberEntity */
   public $subscriber;
-  public $newsletter;
 
   public function _before() {
     parent::_before();
     $this->cleanup();
+
     // create newsletter
-    $newsletter = Newsletter::create();
-    $newsletter->type = 'type';
-    $this->newsletter = $newsletter->save();
+    $newsletterFactory = new NewsletterFactory();
+    $newsletter = $newsletterFactory->withType('type')->create();
+
     // create subscriber
-    $subscriber = Subscriber::create();
-    $subscriber->email = 'test@example.com';
-    $subscriber->firstName = 'First';
-    $subscriber->lastName = 'Last';
-    $this->subscriber = $subscriber->save();
+    $subscriberFactory = new SubscriberFactory();
+    $this->subscriber = $subscriberFactory
+      ->withEmail('test@example.com')
+      ->withFirstName('First')
+      ->withLastName('Last')
+      ->create();
+
     // create queue
     $queue = SendingTask::create();
-    $queue->newsletterId = $newsletter->id;
-    $queue->setSubscribers([$subscriber->id]);
-    $queue->updateProcessedSubscribers([$subscriber->id]);
+    $queue->newsletterId = $newsletter->getId();
+    $queue->setSubscribers([$this->subscriber->getId()]);
+    $queue->updateProcessedSubscribers([$this->subscriber->getId()]);
     $this->queue = $queue->save();
     // instantiate class
     $this->unsubscribes = $this->diContainer->get(Unsubscribes::class);
@@ -48,8 +52,10 @@ class UnsubscribesTest extends \MailPoetTest {
   }
 
   public function testItTracksUnsubscribeEvent() {
+    $subscriberId = $this->subscriber->getId();
+    $this->assertIsInt($subscriberId);
     $this->unsubscribes->track(
-      $this->subscriber->id,
+      $subscriberId,
       'source',
       $this->queue->id
     );
@@ -57,9 +63,12 @@ class UnsubscribesTest extends \MailPoetTest {
   }
 
   public function testItDoesNotTrackRepeatedUnsubscribeEvents() {
+    $subscriberId = $this->subscriber->getId();
+    $this->assertIsInt($subscriberId);
+    
     for ($count = 0; $count <= 2; $count++) {
       $this->unsubscribes->track(
-        $this->subscriber->id,
+        $subscriberId,
         'source',
         $this->queue->id
       );
