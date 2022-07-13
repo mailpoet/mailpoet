@@ -8,9 +8,20 @@ use MailPoet\Subscribers\ImportExport\PersonalDataExporters\NewsletterOpensExpor
 use MailPoet\Subscribers\ImportExport\PersonalDataExporters\NewslettersExporter;
 use MailPoet\Subscribers\ImportExport\PersonalDataExporters\SegmentsExporter;
 use MailPoet\Subscribers\ImportExport\PersonalDataExporters\SubscriberExporter;
+use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\WP\Functions as WPFunctions;
 
 class PersonalDataExporters {
+
+  /*** @var SubscribersRepository */
+  private $subscribersRepository;
+  
+  public function __construct(
+    SubscribersRepository $subscribersRepository
+  ) {
+    $this->subscribersRepository = $subscribersRepository;
+  }
+
   public function init() {
     WPFunctions::get()->addFilter('wp_privacy_personal_data_exporters', [$this, 'registerSubscriberExporter']);
     WPFunctions::get()->addFilter('wp_privacy_personal_data_exporters', [$this, 'registerSegmentsExporter']);
@@ -22,7 +33,7 @@ class PersonalDataExporters {
   public function registerSegmentsExporter($exporters) {
     $exporters[] = [
       'exporter_friendly_name' => WPFunctions::get()->__('MailPoet Lists', 'mailpoet'),
-      'callback' => [new SegmentsExporter(), 'export'],
+      'callback' => [new SegmentsExporter($this->subscribersRepository), 'export'],
     ];
     return $exporters;
   }

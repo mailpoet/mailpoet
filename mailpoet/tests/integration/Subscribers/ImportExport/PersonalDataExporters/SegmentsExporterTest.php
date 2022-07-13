@@ -5,6 +5,7 @@ namespace MailPoet\Subscribers\ImportExport\PersonalDataExporters;
 use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
+use MailPoet\Subscribers\SubscribersRepository;
 
 class SegmentsExporterTest extends \MailPoetTest {
 
@@ -13,7 +14,9 @@ class SegmentsExporterTest extends \MailPoetTest {
 
   public function _before() {
     parent::_before();
-    $this->exporter = new SegmentsExporter();
+    $this->exporter = new SegmentsExporter(
+      $this->diContainer->get(SubscribersRepository::class)
+    );
   }
 
   public function testExportWorksWhenSubscriberNotFound() {
