@@ -4,7 +4,9 @@
 @import '../../../node_modules/@wordpress/block-editor/build-style/style'; // for inserter styles
 @import 'settings/colors';
 @import './components-automation-editor/add-step-button';
+@import './components-automation-editor/dropdown';
 @import './components-automation-editor/empty-workflow';
 @import './components-automation-editor/separator';
+@import './components-automation-editor/status';
 @import './components-automation-editor/step';
 @import './components-automation-editor/workflow';

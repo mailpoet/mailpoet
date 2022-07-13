@@ -35,21 +35,16 @@ export function DocumentActions({ children }): JSX.Element {
   // is centered over the whole title area rather than just one part of it.
   const titleRef = useRef();
 
+  let chipClass = 'mailpoet-automation-editor-chip-gray';
+  if (workflowStatus === WorkflowStatus.ACTIVE) {
+    chipClass = 'mailpoet-automation-editor-chip-success';
+  } else if (workflowStatus === WorkflowStatus.INACTIVE) {
+    chipClass = 'mailpoet-automation-editor-chip-danger';
+  }
+
   return (
     <div className="edit-site-document-actions has-secondary-label">
       <div ref={titleRef} className="edit-site-document-actions__title-wrapper">
-        <Text size="body" className="edit-site-document-actions__title" as="h1">
-          <VisuallyHidden as="span">{__('Editing workflow: ')}</VisuallyHidden>
-          {workflowName}
-        </Text>
-
-        <Text
-          size="body"
-          className="edit-site-document-actions__secondary-item"
-        >
-          {workflowStatus === WorkflowStatus.ACTIVE ? 'Active' : 'Not Active'}
-        </Text>
-
         {children && (
           <Dropdown
             popoverProps={{
@@ -57,16 +52,44 @@ export function DocumentActions({ children }): JSX.Element {
             }}
             position="bottom center"
             renderToggle={({ isOpen, onToggle }) => (
-              <Button
-                className="edit-site-document-actions__get-info"
-                icon={chevronDown}
-                aria-expanded={isOpen}
-                aria-haspopup="true"
-                onClick={onToggle}
-                label={__('Change workflow name')}
-              >
-                {showIconLabels && __('Rename')}
-              </Button>
+              <>
+                <a
+                  className="mailpoet-automation-editor-dropdown-toggle-link"
+                  href="#"
+                  onClick={onToggle}
+                >
+                  <Text
+                    size="body"
+                    className="edit-site-document-actions__title"
+                    as="h1"
+                  >
+                    <VisuallyHidden as="span">
+                      {__('Editing workflow: ')}
+                    </VisuallyHidden>
+                    {workflowName}
+                  </Text>
+
+                  <Text
+                    size="body"
+                    className={`edit-site-document-actions__secondary-item ${chipClass}`}
+                  >
+                    {workflowStatus === WorkflowStatus.ACTIVE && __('Active')}
+                    {workflowStatus === WorkflowStatus.INACTIVE &&
+                      __('Inactive')}
+                    {workflowStatus === WorkflowStatus.DRAFT && __('Draft')}
+                  </Text>
+                </a>
+                <Button
+                  className="edit-site-document-actions__get-info"
+                  icon={chevronDown}
+                  aria-expanded={isOpen}
+                  aria-haspopup="true"
+                  onClick={onToggle}
+                  label={__('Change workflow name')}
+                >
+                  {showIconLabels && __('Rename')}
+                </Button>
+              </>
             )}
             contentClassName="edit-site-document-actions__info-dropdown"
             renderContent={children}
