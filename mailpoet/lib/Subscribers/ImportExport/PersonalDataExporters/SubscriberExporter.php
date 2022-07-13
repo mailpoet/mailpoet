@@ -2,94 +2,132 @@
 
 namespace MailPoet\Subscribers\ImportExport\PersonalDataExporters;
 
-use MailPoet\Models\CustomField;
-use MailPoet\Models\Subscriber;
+use MailPoet\CustomFields\CustomFieldsRepository;
+use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Subscribers\Source;
+use MailPoet\Subscribers\SubscribersRepository;
+use MailPoet\WP\DateTime;
 use MailPoet\WP\Functions as WPFunctions;
 
 class SubscriberExporter {
-  public function export($email) {
+  /*** @var SubscribersRepository */
+  private $subscribersRepository;
+
+  /*** @var CustomFieldsRepository */
+  private $customFieldsRepository;
+
+  /*** @var array<int, string> */
+  private $customFields = [];
+
+  public function __construct(
+    SubscribersRepository $subscribersRepository,
+    CustomFieldsRepository $customFieldsRepository
+  ) {
+    $this->subscribersRepository = $subscribersRepository;
+    $this->customFieldsRepository = $customFieldsRepository;
+  }
+
+  /**
+   * @param string $email
+   * @return array(data: mixed[], done: boolean)
+   */
+  public function export(string $email): array {
     return [
-      'data' => $this->exportSubscriber(Subscriber::findOne(trim($email))),
+      'data' => $this->exportSubscriber($this->subscribersRepository->findOneBy(['email' => trim($email)])),
       'done' => true,
     ];
   }
 
-  private function exportSubscriber($subscriber) {
+  /**
+   * @param SubscriberEntity|null $subscriber
+   * @return array|mixed[][]
+   */
+  private function exportSubscriber(?SubscriberEntity $subscriber): array {
     if (!$subscriber) return [];
     return [[
       'group_id' => 'mailpoet-subscriber',
       'group_label' => WPFunctions::get()->__('MailPoet Subscriber Data', 'mailpoet'),
-      'item_id' => 'subscriber-' . $subscriber->id,
-      'data' => $this->getSubscriberExportData($subscriber->withCustomFields()),
+      'item_id' => 'subscriber-' . $subscriber->getId(),
+      'data' => $this->getSubscriberExportData($subscriber),
     ]];
   }
 
-  private function getSubscriberExportData($subscriber) {
+  /**
+   * @param SubscriberEntity $subscriber
+   * @return mixed[][]
+   */
+  private function getSubscriberExportData(SubscriberEntity $subscriber): array {
     $customFields = $this->getCustomFields();
     $result = [
       [
         'name' => WPFunctions::get()->__('First Name', 'mailpoet'),
-        'value' => $subscriber->firstName,
+        'value' => $subscriber->getFirstName(),
       ],
       [
         'name' => WPFunctions::get()->__('Last Name', 'mailpoet'),
-        'value' => $subscriber->lastName,
+        'value' => $subscriber->getLastName(),
       ],
       [
         'name' => WPFunctions::get()->__('Email', 'mailpoet'),
-        'value' => $subscriber->email,
+        'value' => $subscriber->getEmail(),
       ],
       [
         'name' => WPFunctions::get()->__('Status', 'mailpoet'),
-        'value' => $subscriber->status,
+        'value' => $subscriber->getStatus(),
       ],
     ];
-    if ($subscriber->subscribedIp) {
+    if ($subscriber->getSubscribedIp()) {
       $result[] = [
         'name' => WPFunctions::get()->__('Subscribed IP', 'mailpoet'),
-        'value' => $subscriber->subscribedIp,
+        'value' => $subscriber->getSubscribedIp(),
       ];
     }
-    if ($subscriber->confirmedIp) {
+    if ($subscriber->getConfirmedIp()) {
       $result[] = [
         'name' => WPFunctions::get()->__('Confirmed IP', 'mailpoet'),
-        'value' => $subscriber->confirmedIp,
+        'value' => $subscriber->getConfirmedIp(),
       ];
     }
     $result[] = [
       'name' => WPFunctions::get()->__('Created at', 'mailpoet'),
-      'value' => $subscriber->createdAt,
+      'value' => $subscriber->getCreatedAt()
+        ? $subscriber->getCreatedAt()->format(DateTime::DEFAULT_DATE_TIME_FORMAT)
+        : '',
     ];
 
-    foreach ($customFields as $customFieldId => $customFieldName) {
-      $customFieldValue = $subscriber->{$customFieldId};
-      if ($customFieldValue) {
+    foreach ($subscriber->getSubscriberCustomFields() as $field) {
+      if (isset($this->getCustomFields()[$field->getId()])) {
         $result[] = [
-          'name' => $customFieldName,
-          'value' => $customFieldValue,
+          'name' => $customFields[$field->getId()],
+          'value' => $field->getValue(),
         ];
       }
     }
 
     $result[] = [
       'name' => WPFunctions::get()->__("Subscriber's subscription source", 'mailpoet'),
-      'value' => $this->formatSource($subscriber->source),
+      'value' => $this->formatSource($subscriber->getSource()),
     ];
 
     return $result;
   }
 
-  private function getCustomFields() {
-    $fields = CustomField::findMany();
-    $result = [];
-    foreach ($fields as $field) {
-      $result['cf_' . $field->id] = $field->name;
+  /**
+   * @return array<int, string>
+   */
+  private function getCustomFields(): array {
+    if (!empty($this->customFields)) {
+      return $this->customFields;
     }
-    return $result;
+
+    $fields = $this->customFieldsRepository->findAll();
+    foreach ($fields as $field) {
+      $this->customFields[$field->getId()] = $field->getName();
+    }
+    return $this->customFields;
   }
 
-  private function formatSource($source) {
+  private function formatSource(string $source): string {
     switch ($source) {
       case Source::WORDPRESS_USER:
         return WPFunctions::get()->__('Subscriber information synchronized via WP user sync', 'mailpoet');

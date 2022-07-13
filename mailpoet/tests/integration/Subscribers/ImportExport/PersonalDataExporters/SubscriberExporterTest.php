@@ -2,8 +2,10 @@
 
 namespace MailPoet\Subscribers\ImportExport\PersonalDataExporters;
 
+use MailPoet\CustomFields\CustomFieldsRepository;
 use MailPoet\Models\CustomField;
 use MailPoet\Models\Subscriber;
+use MailPoet\Subscribers\SubscribersRepository;
 
 class SubscriberExporterTest extends \MailPoetTest {
 
@@ -12,7 +14,10 @@ class SubscriberExporterTest extends \MailPoetTest {
 
   public function _before() {
     parent::_before();
-    $this->exporter = new SubscriberExporter();
+    $this->exporter = new SubscriberExporter(
+      $this->diContainer->get(SubscribersRepository::class),
+      $this->diContainer->get(CustomFieldsRepository::class)
+    );
   }
 
   public function testExportWorksWhenSubscriberNotFound() {
