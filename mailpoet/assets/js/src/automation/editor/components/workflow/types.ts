@@ -9,7 +9,7 @@ export type Step = {
 export type Workflow = {
   id?: number;
   name: string;
-  status: 'active' | 'inactive';
+  status: 'active' | 'inactive' | 'draft';
   created_at: string;
   updated_at: string;
   steps: Record<string, Step>;

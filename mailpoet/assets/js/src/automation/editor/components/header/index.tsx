@@ -58,11 +58,15 @@ export function Header(): JSX.Element {
         <DocumentActions>
           {() => (
             <div className="mailpoet-automation-editor-dropdown-name-edit">
-              <div className="mailpoet-automation-editor-dropdown-name-edit-title">{__('Automation name')}</div>
+              <div className="mailpoet-automation-editor-dropdown-name-edit-title">
+                {__('Automation name')}
+              </div>
               <TextControl
                 value={workflowName}
                 onChange={(newName) => setWorkflowName(newName)}
-                help={__(`Give the automation a name that indicates its purpose. E.g. "Abandoned cart recovery"`)}
+                help={__(
+                  `Give the automation a name that indicates its purpose. E.g. "Abandoned cart recovery"`,
+                )}
               />
             </div>
           )}
