@@ -8,25 +8,28 @@ use MailPoet\API\JSON\ErrorResponse;
 use MailPoet\API\JSON\Response;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\FormEntity;
+use MailPoet\Entities\SegmentEntity;
+use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Form\Util\FieldNameObfuscator;
-use MailPoet\Models\Segment as SegmentModel;
-use MailPoet\Models\Subscriber as SubscriberModel;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\SettingsRepository;
+use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Subscription\Form;
+use MailPoet\Test\DataFactories\Segment as SegmentFactory;
 use MailPoet\Util\Url as UrlHelper;
 use MailPoet\WP\Functions as WPFunctions;
-use MailPoetVendor\Idiorm\ORM;
 
 class FormTest extends \MailPoetTest {
   public $post;
   public $requestData;
   public $form;
-  public $segment;
   public $testEmail;
 
   /** @var SettingsController */
   private $settings;
+
+  /** @var SubscribersRepository */
+  private $subscribersRepository;
 
   public function _before() {
     parent::_before();
@@ -36,11 +39,8 @@ class FormTest extends \MailPoetTest {
       'address' => 'john.doe@example.com',
     ]);
     $this->testEmail = 'test@example.com';
-    $this->segment = SegmentModel::createOrUpdate(
-      [
-        'name' => 'Test segment',
-      ]
-    );
+    $segmentFactory = new SegmentFactory();
+    $segment = $segmentFactory->withName('Test segment')->create();
     $this->form = new FormEntity('Test form');
     $this->form->setBody([
       [
@@ -49,7 +49,7 @@ class FormTest extends \MailPoetTest {
       ],
     ]);
     $this->form->setSettings([
-      'segments' => [$this->segment->id],
+      'segments' => [$segment->getId()],
     ]);
     $this->entityManager->persist($this->form);
     $this->entityManager->flush();
@@ -74,6 +74,7 @@ class FormTest extends \MailPoetTest {
       ]
     );
     $this->settings->set('signup_confirmation.enabled', false);
+    $this->subscribersRepository = $this->diContainer->get(SubscribersRepository::class);
   }
 
   public function testItSubscribesAndRedirectsBackWithSuccessResponse() {
@@ -84,7 +85,7 @@ class FormTest extends \MailPoetTest {
     ], $this);
     $formController = new Form(ContainerWrapper::getInstance()->get(API::class), $urlHelper);
     $result = $formController->onSubmit($this->requestData);
-    expect(SubscriberModel::findOne($this->testEmail))->notEmpty();
+    expect($this->subscribersRepository->findOneBy(['email' => $this->testEmail]))->notEmpty();
     expect($result['mailpoet_success'])->equals($this->form->getId());
     expect($result['mailpoet_error'])->null();
   }
@@ -107,7 +108,7 @@ class FormTest extends \MailPoetTest {
     ], $this);
     $formController = new Form(ContainerWrapper::getInstance()->get(API::class), $urlHelper);
     $result = $formController->onSubmit($this->requestData);
-    expect(SubscriberModel::findOne($this->testEmail))->notEmpty();
+    expect($this->subscribersRepository->findOneBy(['email' => $this->testEmail]))->notEmpty();
     expect($result)->regExp('/http.*?sample-post|http.*?\?p=\d+/i');
   }
 
@@ -122,7 +123,7 @@ class FormTest extends \MailPoetTest {
     ], $this);
     $formController = new Form(ContainerWrapper::getInstance()->get(API::class), $urlHelper);
     $result = $formController->onSubmit($requestData);
-    expect(SubscriberModel::findMany())->isEmpty();
+    expect($this->subscribersRepository->findAll())->isEmpty();
     expect($result['mailpoet_error'])->equals($this->form->getId());
     expect($result['mailpoet_success'])->null();
   }
@@ -146,9 +147,9 @@ class FormTest extends \MailPoetTest {
 
   public function _after() {
     wp_delete_post($this->post);
-    ORM::raw_execute('TRUNCATE ' . SegmentModel::$_table);
+    $this->truncateEntity(SegmentEntity::class);
     $this->truncateEntity(FormEntity::class);
-    ORM::raw_execute('TRUNCATE ' . SubscriberModel::$_table);
+    $this->truncateEntity(SubscriberEntity::class);
     $this->diContainer->get(SettingsRepository::class)->truncate();
   }
 }
