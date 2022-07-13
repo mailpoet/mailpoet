@@ -75,7 +75,7 @@ class MigrationTest extends \MailPoetTest {
     $this->queueCompleted = $this->createSendingQueue(SendingQueueEntity::STATUS_COMPLETED);
     $this->queueScheduled = $this->createSendingQueue(SendingQueueEntity::STATUS_SCHEDULED);
 
-    $this->worker = new Migration();
+    $this->worker = $this->diContainer->get(Migration::class);
   }
 
   public function testItDefinesConstants() {
@@ -115,7 +115,7 @@ class MigrationTest extends \MailPoetTest {
   }
 
   public function testItMigratesSendingQueuesAndSubscribers() {
-    expect($this->worker->getUnmigratedQueues()->count())->equals(4);
+    expect($this->worker->getUnmigratedQueueIds())->count(4);
     $tasks = $this->scheduledTasksRepository->findBy(['type' => SendingTask::TASK_TYPE]);
     expect($tasks)->count(0);
     expect($this->scheduledTaskSubscribersRepository->countBy([]))->equals(0);
@@ -123,7 +123,7 @@ class MigrationTest extends \MailPoetTest {
     $task = $this->createRunningTask();
     $this->worker->processTaskStrategy($task, microtime(true));
 
-    expect($this->worker->getUnmigratedQueues()->count())->equals(0);
+    expect($this->worker->getUnmigratedQueueIds())->count(0);
     $tasks = $this->scheduledTasksRepository->findBy(['type' => SendingTask::TASK_TYPE]);
     expect($tasks)->count(4);
     expect($this->scheduledTaskSubscribersRepository->countBy([]))->equals(4); // 2 for running, 2 for paused
