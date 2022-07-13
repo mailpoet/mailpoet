@@ -55,6 +55,7 @@ use MailPoet\Subscribers\LinkTokens;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Subscription\SubscriptionUrlFactory;
 use MailPoet\Tasks\Sending as SendingTask;
+use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 
@@ -94,6 +95,8 @@ class SendingQueueTest extends \MailPoetTest {
   private $tasksLinks;
   /** @var ScheduledTasksRepository */
   private $scheduledTasksRepository;
+  /** @var SubscribersRepository */
+  private $subscribersRepository;
 
   public function _before() {
     parent::_before();
@@ -151,6 +154,7 @@ class SendingQueueTest extends \MailPoetTest {
     $this->segmentsRepository = $this->diContainer->get(SegmentsRepository::class);
     $this->tasksLinks = $this->diContainer->get(TasksLinks::class);
     $this->scheduledTasksRepository = $this->diContainer->get(ScheduledTasksRepository::class);
+    $this->subscribersRepository = $this->diContainer->get(SubscribersRepository::class);
     $this->sendingQueueWorker = $this->getSendingQueueWorker($this->makeEmpty(NewslettersRepository::class, ['findOneById' => new NewsletterEntity()]));
   }
 
@@ -205,7 +209,8 @@ class SendingQueueTest extends \MailPoetTest {
       $this->wp,
       $this->tasksLinks,
       $this->scheduledTasksRepository,
-      $this->diContainer->get(MailerTask::class)
+      $this->diContainer->get(MailerTask::class),
+      $this->subscribersRepository
     );
     try {
       $sendingQueueWorker->process();
@@ -238,7 +243,8 @@ class SendingQueueTest extends \MailPoetTest {
         [
           'sendBulk' => $this->mailerTaskDummyResponse,
         ]
-      )
+      ),
+      $this->subscribersRepository
     );
     $sendingQueueWorker->sendNewsletters(
       $this->queue,
@@ -282,7 +288,8 @@ class SendingQueueTest extends \MailPoetTest {
         [
           'sendBulk' => $this->mailerTaskDummyResponse,
         ]
-      )
+      ),
+      $this->subscribersRepository
     );
     $sendingQueueWorker->sendNewsletters(
       $queue,
@@ -320,7 +327,8 @@ class SendingQueueTest extends \MailPoetTest {
       $this->wp,
       $this->tasksLinks,
       $this->scheduledTasksRepository,
-      $this->diContainer->get(MailerTask::class)
+      $this->diContainer->get(MailerTask::class),
+      $this->subscribersRepository
     );
     $sendingQueueWorker->process();
   }
@@ -438,34 +446,35 @@ class SendingQueueTest extends \MailPoetTest {
   }
 
   public function testItSendCorrectDataToSubscribersOneByOne() {
-    /**
-     * @var Subscriber[] $subscribers
-     */
-    $subscribers = [
-      Subscriber::create(),
-      Subscriber::create(),
-    ];
-    $subscribers[0]->set('id', '1');
-    $subscribers[1]->set('id', '2');
-    $subscribers[0]->set('status', 'status-1');
-    $subscribers[1]->set('status', 'status-2');
-    $subscribers[0]->set('source', 'source-1');
-    $subscribers[1]->set('source', 'source-2');
-    $subscribers[0]->set('email', '1@localhost.com');
-    $subscribers[1]->set('email', '2@localhost.com');
     $subscribersRepository = ContainerWrapper::getInstance()->get(SubscribersRepository::class);
-    /**
-     * @var SubscriberEntity $entity
-     */
-    $entity = $subscribersRepository->findOneById(1);
-    $entity->setEmail('1@localhost.com');
-    $subscribersRepository->persist($entity);
-    $entity = $subscribersRepository->findOneById(2);
-    $entity->setEmail('2@localhost.com');
-    $subscribersRepository->persist($entity);
-    $subscriberIds = array_map(function(Subscriber $item): int { return (int)$item->id();
 
-    }, $subscribers);
+    $subscriber1 = $subscribersRepository->findOneById(1);
+    $subscriber1->setStatus(SubscriberEntity::STATUS_SUBSCRIBED);
+    $subscriber1->setSource('form');
+    $subscriber1->setEmail('1@localhost.com');
+    $subscribersRepository->persist($subscriber1);
+
+
+    $subscriber2 = $subscribersRepository->findOneById(2);
+    $subscriber2->setStatus(SubscriberEntity::STATUS_SUBSCRIBED);
+    $subscriber2->setSource('form');
+    $subscriber2->setEmail('2@localhost.com');
+    $subscribersRepository->persist($subscriber2);
+
+    $subscribersRepository->flush();
+
+    $subscribers = [
+      $subscriber1,
+      $subscriber2,
+    ];
+
+    $subscriberIds = array_map(
+      function(SubscriberEntity $item): int {
+        return (int)$item->getId();
+      },
+      $subscribers
+    );
+
     $queue = SendingTask::create();
     $queue->newsletterRenderedBody = ['html' => '<p>Hello [subscriber:email]</p>', 'text' => 'Hello [subscriber:email]'];
     $queue->newsletterRenderedSubject = 'News for [subscriber:email]';
@@ -495,8 +504,8 @@ class SendingQueueTest extends \MailPoetTest {
             expect($newsletter['body']['html'])->equals('<p>Hello ' . $subscriberEmail . '</p>');
             expect($newsletter['body']['text'])->equals('Hello ' . $subscriberEmail);
             expect($extraParams['meta']['email_type'])->equals('newsletter');
-            expect($extraParams['meta']['subscriber_status'])->equals('status-' . $subscriberId);
-            expect($extraParams['meta']['subscriber_source'])->equals('source-' . $subscriberId);
+            expect($extraParams['meta']['subscriber_status'])->equals(SubscriberEntity::STATUS_SUBSCRIBED);
+            expect($extraParams['meta']['subscriber_source'])->equals('form');
             expect($extraParams['unsubscribe_url'])->equals($unsubscribeUrl);
 
             return $this->mailerTaskDummyResponse;
@@ -505,7 +514,12 @@ class SendingQueueTest extends \MailPoetTest {
       )
     );
 
-    $sendingQueueWorker->processQueue($queue, $newsletter, $subscribers, $timer);
+    $subscribersModels = [
+      Subscriber::findOne($subscriber1->getId()),
+      Subscriber::findOne($subscriber2->getId())
+    ];
+
+    $sendingQueueWorker->processQueue($queue, $newsletter, $subscribersModels, $timer);
   }
 
   public function testItCanProcessSubscribersInBulk() {
@@ -642,7 +656,8 @@ class SendingQueueTest extends \MailPoetTest {
         [
           'sendBulk' => Stub::consecutive(['response' => false, 'error' => $mailerError], $this->mailerTaskDummyResponse),
         ]
-      )
+      ),
+      $this->subscribersRepository
     );
 
     $sendingQueueWorker->sendNewsletters(
@@ -1044,7 +1059,8 @@ class SendingQueueTest extends \MailPoetTest {
         [
           'sendBulk' => $this->mailerTaskDummyResponse,
         ]
-      )
+      ),
+      $this->subscribersRepository
     );
     try {
       $sendingQueueWorker->sendNewsletters(
@@ -1268,7 +1284,8 @@ class SendingQueueTest extends \MailPoetTest {
       $this->wp,
       $this->tasksLinks,
       $this->scheduledTasksRepository,
-      $mailerMock ?? $this->diContainer->get(MailerTask::class)
+      $mailerMock ?? $this->diContainer->get(MailerTask::class),
+      $this->subscribersRepository
     );
   }
 }
