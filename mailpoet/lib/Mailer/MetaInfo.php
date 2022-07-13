@@ -4,7 +4,6 @@ namespace MailPoet\Mailer;
 
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Models\Newsletter;
-use MailPoet\Models\Subscriber;
 
 class MetaInfo {
   public function getSendingTestMetaInfo() {
@@ -35,7 +34,7 @@ class MetaInfo {
     return $this->makeMetaInfo('new_subscriber_notification', 'unknown', 'administrator');
   }
 
-  public function getNewsletterMetaInfo($newsletter, Subscriber $subscriber) {
+  public function getNewsletterMetaInfo($newsletter, SubscriberEntity $subscriber) {
     $type = $newsletter->type ?? 'unknown';
     switch ($newsletter->type) {
       case Newsletter::TYPE_AUTOMATIC:
@@ -54,7 +53,7 @@ class MetaInfo {
         $type = 'post_notification';
         break;
     }
-    return $this->makeMetaInfo($type, $subscriber->status, $subscriber->source);
+    return $this->makeMetaInfo($type, $subscriber->getStatus(), $subscriber->getSource());
   }
 
   private function makeMetaInfo($emailType, $subscriberStatus, $subscriberSource) {
