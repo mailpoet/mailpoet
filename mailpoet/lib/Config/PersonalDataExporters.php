@@ -2,6 +2,7 @@
 
 namespace MailPoet\Config;
 
+use MailPoet\CustomFields\CustomFieldsRepository;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Subscribers\ImportExport\PersonalDataExporters\NewsletterClicksExporter;
 use MailPoet\Subscribers\ImportExport\PersonalDataExporters\NewsletterOpensExporter;
@@ -15,11 +16,18 @@ class PersonalDataExporters {
 
   /*** @var SubscribersRepository */
   private $subscribersRepository;
+
+  /**
+   * @var CustomFieldsRepository
+   */
+  private $customFieldsRepository;
   
   public function __construct(
-    SubscribersRepository $subscribersRepository
+    SubscribersRepository $subscribersRepository,
+    CustomFieldsRepository $customFieldsRepository
   ) {
     $this->subscribersRepository = $subscribersRepository;
+    $this->customFieldsRepository = $customFieldsRepository;
   }
 
   public function init() {
@@ -41,7 +49,7 @@ class PersonalDataExporters {
   public function registerSubscriberExporter($exporters) {
     $exporters[] = [
       'exporter_friendly_name' => WPFunctions::get()->__('MailPoet Subscriber Data', 'mailpoet'),
-      'callback' => [new SubscriberExporter(), 'export'],
+      'callback' => [new SubscriberExporter($this->subscribersRepository, $this->customFieldsRepository), 'export'],
     ];
     return $exporters;
   }
