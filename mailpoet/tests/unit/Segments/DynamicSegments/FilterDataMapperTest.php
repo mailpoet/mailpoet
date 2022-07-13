@@ -2,12 +2,17 @@
 
 namespace MailPoet\Segments\DynamicSegments;
 
+use MailPoet\Entities\CustomFieldEntity;
 use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Segments\DynamicSegments\Exceptions\InvalidFilterException;
 use MailPoet\Segments\DynamicSegments\Filters\EmailAction;
 use MailPoet\Segments\DynamicSegments\Filters\EmailActionClickAny;
 use MailPoet\Segments\DynamicSegments\Filters\EmailOpensAbsoluteCountAction;
+use MailPoet\Segments\DynamicSegments\Filters\MailPoetCustomFields;
+use MailPoet\Segments\DynamicSegments\Filters\SubscriberScore;
+use MailPoet\Segments\DynamicSegments\Filters\SubscriberSegment;
 use MailPoet\Segments\DynamicSegments\Filters\SubscriberSubscribedDate;
+use MailPoet\Segments\DynamicSegments\Filters\SubscriberTag;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceCategory;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceCountry;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceNumberOfOrders;
@@ -522,5 +527,163 @@ class FilterDataMapperTest extends \MailPoetUnitTest {
       'segmentType' => DynamicSegmentFilterData::TYPE_WOOCOMMERCE,
       'action' => WooCommerceCountry::ACTION_CUSTOMER_COUNTRY,
     ]]]);
+  }
+
+  public function testItChecksSubscriberScoreValue(): void {
+    $this->expectException(InvalidFilterException::class);
+    $this->expectExceptionCode(InvalidFilterException::MISSING_VALUE);
+    $this->expectExceptionMessage('Missing engagement score value');
+    $this->mapper->map(['filters' => [[
+      'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
+      'action' => SubscriberScore::TYPE,
+    ]]]);
+  }
+
+  public function testItMapsSubscribedDate(): void {
+    $filters = $this->mapper->map(['filters' => [[
+      'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
+      'action' => SubscriberScore::TYPE,
+      'value' => 2,
+      'operator' => SubscriberScore::HIGHER_THAN,
+      'some' => 'mess',
+    ]]]);
+    expect($filters)->array();
+    expect($filters)->count(1);
+    $filter = reset($filters);
+    assert($filter instanceof DynamicSegmentFilterData);
+    expect($filter)->isInstanceOf(DynamicSegmentFilterData::class);
+    expect($filter->getFilterType())->equals(DynamicSegmentFilterData::TYPE_USER_ROLE);
+    expect($filter->getAction())->equals(SubscriberScore::TYPE);
+    expect($filter->getData())->equals([
+      'value' => 2,
+      'operator' => SubscriberScore::HIGHER_THAN,
+      'connect' => DynamicSegmentFilterData::CONNECT_TYPE_AND,
+    ]);
+  }
+
+  public function testItChecksSubscriberSegmentSegments(): void {
+    $this->expectException(InvalidFilterException::class);
+    $this->expectExceptionCode(InvalidFilterException::MISSING_VALUE);
+    $this->expectExceptionMessage('Missing segments');
+    $this->mapper->map(['filters' => [[
+      'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
+      'action' => SubscriberSegment::TYPE,
+    ]]]);
+  }
+
+  public function testItMapsSubscriberSegment(): void {
+    $filters = $this->mapper->map(['filters' => [[
+      'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
+      'action' => SubscriberSegment::TYPE,
+      'segments' => [1, 5],
+      'operator' => DynamicSegmentFilterData::OPERATOR_NONE,
+      'some' => 'mess',
+    ]]]);
+    expect($filters)->array();
+    expect($filters)->count(1);
+    $filter = reset($filters);
+    assert($filter instanceof DynamicSegmentFilterData);
+    expect($filter)->isInstanceOf(DynamicSegmentFilterData::class);
+    expect($filter->getFilterType())->equals(DynamicSegmentFilterData::TYPE_USER_ROLE);
+    expect($filter->getAction())->equals(SubscriberSegment::TYPE);
+    expect($filter->getData())->equals([
+      'segments' => [1 , 5],
+      'operator' => DynamicSegmentFilterData::OPERATOR_NONE,
+      'connect' => DynamicSegmentFilterData::CONNECT_TYPE_AND,
+    ]);
+  }
+
+  public function testItChecksCustomFieldCustomFieldId(): void {
+    $this->expectException(InvalidFilterException::class);
+    $this->expectExceptionCode(InvalidFilterException::MISSING_VALUE);
+    $this->expectExceptionMessage('Missing custom field id');
+    $this->mapper->map(['filters' => [[
+      'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
+      'action' => MailPoetCustomFields::TYPE,
+    ]]]);
+  }
+
+  public function testItChecksCustomFieldCustomFieldType(): void {
+    $this->expectException(InvalidFilterException::class);
+    $this->expectExceptionCode(InvalidFilterException::MISSING_VALUE);
+    $this->expectExceptionMessage('Missing custom field type');
+    $this->mapper->map(['filters' => [[
+      'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
+      'action' => MailPoetCustomFields::TYPE,
+      'custom_field_id' => 123,
+    ]]]);
+  }
+
+  public function testItChecksCustomFieldValue(): void {
+    $this->expectException(InvalidFilterException::class);
+    $this->expectExceptionCode(InvalidFilterException::MISSING_VALUE);
+    $this->expectExceptionMessage('Missing value');
+    $this->mapper->map(['filters' => [[
+      'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
+      'action' => MailPoetCustomFields::TYPE,
+      'custom_field_id' => 123,
+      'custom_field_type' => CustomFieldEntity::TYPE_TEXT,
+    ]]]);
+  }
+
+  public function testItMapsCustomFieldFilter(): void {
+    $data = ['filters' => [[
+      'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
+      'action' => MailPoetCustomFields::TYPE,
+      'custom_field_id' => 123,
+      'custom_field_type' => CustomFieldEntity::TYPE_TEXT,
+      'value' => 4,
+      'operator' => 'equals',
+    ]]];
+    $filters = $this->mapper->map($data);
+    expect($filters)->array();
+    expect($filters)->count(1);
+    $filter = reset($filters);
+    assert($filter instanceof DynamicSegmentFilterData);
+    expect($filter)->isInstanceOf(DynamicSegmentFilterData::class);
+    expect($filter->getFilterType())->equals(DynamicSegmentFilterData::TYPE_USER_ROLE);
+    expect($filter->getAction())->equals(MailPoetCustomFields::TYPE);
+    expect($filter->getData())->equals([
+      'custom_field_id' => 123,
+      'custom_field_type' => CustomFieldEntity::TYPE_TEXT,
+      'value' => 4,
+      'operator' => 'equals',
+      'connect' => DynamicSegmentFilterData::CONNECT_TYPE_AND,
+    ]);
+  }
+
+  public function testItCheckSubscriberTagTags(): void {
+    $this->expectException(InvalidFilterException::class);
+    $this->expectExceptionMessage('Missing tags');
+    $this->expectExceptionCode(InvalidFilterException::MISSING_VALUE);
+    $data = ['filters' => [[
+      'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
+      'action' => SubscriberTag::TYPE,
+      'operator' => DynamicSegmentFilterData::OPERATOR_ANY,
+    ]]];
+    $this->mapper->map($data);
+  }
+
+  public function testItMapsSubscriberTagFilter(): void {
+    $data = ['filters' => [[
+      'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
+      'action' => SubscriberTag::TYPE,
+      'operator' => DynamicSegmentFilterData::OPERATOR_ANY,
+      'tags' => ['12'],
+      'some_mess' => 'mess',
+    ]]];
+    $filters = $this->mapper->map($data);
+    expect($filters)->array();
+    expect($filters)->count(1);
+    $filter = reset($filters);
+    assert($filter instanceof DynamicSegmentFilterData);
+    expect($filter)->isInstanceOf(DynamicSegmentFilterData::class);
+    expect($filter->getFilterType())->equals(DynamicSegmentFilterData::TYPE_USER_ROLE);
+    expect($filter->getAction())->equals(SubscriberTag::TYPE);
+    expect($filter->getData())->equals([
+      'tags' => ['12'],
+      'operator' => DynamicSegmentFilterData::OPERATOR_ANY,
+      'connect' => DynamicSegmentFilterData::CONNECT_TYPE_AND,
+    ]);
   }
 }
