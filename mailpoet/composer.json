@@ -7,7 +7,6 @@
   ],
   "require": {
     "php": ">=7.2",
-    "composer/composer": "^2.2.12",
     "mtdowling/cron-expression": "^1.1",
     "soundasleep/html2text": "dev-master",
     "woocommerce/action-scheduler": "^3.4"
@@ -27,6 +26,7 @@
     "codeception/module-db": "^1.1",
     "codeception/module-webdriver": "^1.4",
     "codeception/verify": "1.5.0",
+    "composer/composer": "^2.2.12",
     "composer/xdebug-handler": "^2.0.5",
     "consolidation/robo": "3.0.10",
     "guzzlehttp/guzzle": "6.5.8",
