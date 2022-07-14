@@ -84,10 +84,13 @@ function AuthorizeSenderEmailModal({
   const [showLoader, setShowLoader] = useState<boolean>(true);
   const setIntervalId = useRef<NodeJS.Timeout>();
   const setIntervalStopTime = useRef<number>();
+  const modalIsOpened = useRef<boolean>(false);
 
   const senderEmailAddress = String(senderEmail).toLowerCase();
 
   const executeAction = () => {
+    if (!modalIsOpened.current) return; // do nothing if modal is not opened
+
     const currentIntervalId = setIntervalId.current;
     const currentIntervalStopTime = setIntervalStopTime.current;
 
@@ -124,10 +127,14 @@ function AuthorizeSenderEmailModal({
       return null;
     }
 
+    modalIsOpened.current = true;
+
     clearCurrentInterval(setIntervalId.current);
 
     makeApiRequest(senderEmailAddress)
       .then((res) => {
+        if (!modalIsOpened.current) return; // do nothing if modal is not opened
+
         const response = Boolean(res?.data?.status);
         setCreateEmailApiResponse(response);
         setShowLoader(response);
@@ -147,6 +154,8 @@ function AuthorizeSenderEmailModal({
         }
       })
       .catch((e: ErrorResponse) => {
+        if (!modalIsOpened.current) return; // do nothing if modal is not opened
+
         const error =
           isErrorResponse(e) && e.errors[0] && e.errors[0].message
             ? e.errors[0].message
@@ -157,7 +166,10 @@ function AuthorizeSenderEmailModal({
         setShowLoader(false);
       });
 
-    return () => clearCurrentInterval(setIntervalId.current);
+    return () => {
+      modalIsOpened.current = false;
+      clearCurrentInterval(setIntervalId.current);
+    };
     /**
      * I'm using eslint-disable-line react-hooks/exhaustive-deps here to fix eslint warning.
      *
