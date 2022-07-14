@@ -99,8 +99,8 @@ class AuthorizedEmailAddressesValidationCest {
     $i->waitForText('Sender');
     $i->fillField('[name="sender_address"]', 'unauthorized@email.com');
     $i->selectOptionInSelect2('WordPress Users');
+    $i->waitForElement('.parsley-invalidFromAddress'); // see new email unauthorized error on input blur
     $i->click('Send');
-    $i->waitForElement('.sender_email_address_warning'); // see new email unauthorized error
     $i->waitForElement('.parsley-invalidFromAddress');
   }
 }
