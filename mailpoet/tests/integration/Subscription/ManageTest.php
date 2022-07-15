@@ -3,46 +3,61 @@
 namespace MailPoet\Test\Subscription;
 
 use Codeception\Stub;
+use MailPoet\CustomFields\CustomFieldsRepository;
+use MailPoet\Entities\SegmentEntity;
+use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Form\Util\FieldNameObfuscator;
-use MailPoet\Models\Segment;
-use MailPoet\Models\Subscriber;
-use MailPoet\Models\SubscriberSegment;
+use MailPoet\InvalidStateException;
 use MailPoet\Newsletter\Scheduler\WelcomeScheduler;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Statistics\Track\Unsubscribes;
 use MailPoet\Subscribers\LinkTokens;
 use MailPoet\Subscribers\NewSubscriberNotificationMailer;
+use MailPoet\Subscribers\SubscriberSaveController;
 use MailPoet\Subscribers\SubscriberSegmentRepository;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Subscription\Manage;
+use MailPoet\Test\DataFactories\Segment as SegmentFactory;
+use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 use MailPoet\Util\Url as UrlHelper;
-use MailPoetVendor\Idiorm\ORM;
 
 class ManageTest extends \MailPoetTest {
-
+  /** @var SettingsController */
   private $settings;
-  private $segmentA;
+
+  /** @var SegmentEntity */
   private $segmentB;
+
+  /** @var SegmentEntity */
   private $hiddenSegment;
+
+  /** @var SegmentEntity */
+  private $segmentA;
+
+  /** @var SubscriberEntity */
   private $subscriber;
+
+  /** @var SubscribersRepository */
+  private $subscribersRepository;
 
   public function _before() {
     parent::_before();
     $this->_after();
-    $di = $this->diContainer;
-    $this->settings = $di->get(SettingsController::class);
-    $this->segmentA = Segment::createOrUpdate(['name' => 'List A']);
-    $this->segmentB = Segment::createOrUpdate(['name' => 'List B']);
-    $this->hiddenSegment = Segment::createOrUpdate(['name' => 'Hidden List']);
-    $this->settings->set('subscription.segments', [$this->segmentA->id, $this->segmentB->id]);
-    $this->subscriber = Subscriber::createOrUpdate([
-      'first_name' => 'John',
-      'last_name' => 'John',
-      'email' => 'john.doe@example.com',
-      'status' => Subscriber::STATUS_SUBSCRIBED,
-      'segments' => [$this->segmentA->id, $this->hiddenSegment->id],
-    ]);
+    $segmentFactory = new SegmentFactory();
+    $this->settings = $this->diContainer->get(SettingsController::class);
+    $this->subscribersRepository = $this->diContainer->get(SubscribersRepository::class);
+    $this->segmentA = $segmentFactory->withName('List A')->create();
+    $this->segmentB = $segmentFactory->withName('List B')->create();
+    $this->hiddenSegment = $segmentFactory->withName('Hidden List')->create();
+    $this->settings->set('subscription.segments', [$this->segmentA->getId(), $this->segmentB->getId()]);
+    $this->subscriber = (new SubscriberFactory())
+      ->withFirstName('John')
+      ->withLastName('John')
+      ->withEmail('john.doe@example.com')
+      ->withSegments([$this->segmentA, $this->hiddenSegment])
+      ->create();
   }
 
   public function testItDoesntRemoveHiddenSegmentsAndCanResubscribe() {
@@ -64,9 +79,11 @@ class ManageTest extends \MailPoetTest {
       $this->settings,
       $this->diContainer->get(NewSubscriberNotificationMailer::class),
       $this->diContainer->get(WelcomeScheduler::class),
+      $this->diContainer->get(CustomFieldsRepository::class),
       $this->diContainer->get(SegmentsRepository::class),
       $this->diContainer->get(SubscribersRepository::class),
-      $this->diContainer->get(SubscriberSegmentRepository::class)
+      $this->diContainer->get(SubscriberSegmentRepository::class),
+      $this->diContainer->get(SubscriberSaveController::class)
     );
     $_POST['action'] = 'mailpoet_subscription_update';
     $_POST['token'] = 'token';
@@ -74,49 +91,53 @@ class ManageTest extends \MailPoetTest {
       'first_name' => 'John',
       'last_name' => 'John',
       'email' => 'john.doe@example.com',
-      'status' => Subscriber::STATUS_SUBSCRIBED,
-      'segments' => [$this->segmentB->id],
+      'status' => SubscriberEntity::STATUS_SUBSCRIBED,
+      'segments' => [$this->segmentB->getId()],
     ];
 
     $manage->onSave();
 
-    $subscriber = Subscriber::findOne($this->subscriber->id);
-    $subscriber->withSubscriptions();
-    $subscriptions = array_map(function($s) {
-      return ['status' => $s['status'], 'segment_id' => $s['segment_id']];
-    }, $subscriber->subscriptions);
-    usort($subscriptions, function($a, $b) {
-      return $a['segment_id'] - $b['segment_id'];
-    });
-    expect($subscriber->status)->equals(Subscriber::STATUS_SUBSCRIBED);
+    $subscriber = $this->subscribersRepository->findOneById($this->subscriber->getId());
+    if (!$subscriber) throw new InvalidStateException();
+    $subscriptions = $this->createSegmentsMap($subscriber);
+    expect($subscriber->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
     expect($subscriptions)->equals([
-      ['segment_id' => $this->segmentA->id, 'status' => Subscriber::STATUS_UNSUBSCRIBED],
-      ['segment_id' => $this->segmentB->id, 'status' => Subscriber::STATUS_SUBSCRIBED],
-      ['segment_id' => $this->hiddenSegment->id, 'status' => Subscriber::STATUS_SUBSCRIBED],
+      ['segment_id' => $this->segmentA->getId(), 'status' => SubscriberEntity::STATUS_UNSUBSCRIBED],
+      ['segment_id' => $this->segmentB->getId(), 'status' => SubscriberEntity::STATUS_SUBSCRIBED],
+      ['segment_id' => $this->hiddenSegment->getId(), 'status' => SubscriberEntity::STATUS_SUBSCRIBED],
     ]);
 
     // Test it can resubscribe
-    $_POST['data']['segments'] = [$this->segmentA->id];
+    $_POST['data']['segments'] = [$this->segmentA->getId()];
     $manage->onSave();
 
-    $subscriber = Subscriber::findOne($this->subscriber->id);
-    $subscriber->withSubscriptions();
-    $subscriptions = array_map(function($s) {
-      return ['status' => $s['status'], 'segment_id' => $s['segment_id']];
-    }, $subscriber->subscriptions);
-    usort($subscriptions, function($a, $b) {
-      return $a['segment_id'] - $b['segment_id'];
-    });
+    $subscriber = $this->subscribersRepository->findOneById($this->subscriber->getId());
+    if (!$subscriber) throw new InvalidStateException();
+    $subscriptions = $this->createSegmentsMap($subscriber);
     expect($subscriptions)->equals([
-      ['segment_id' => $this->segmentA->id, 'status' => Subscriber::STATUS_SUBSCRIBED],
-      ['segment_id' => $this->segmentB->id, 'status' => Subscriber::STATUS_UNSUBSCRIBED],
-      ['segment_id' => $this->hiddenSegment->id, 'status' => Subscriber::STATUS_SUBSCRIBED],
+      ['segment_id' => $this->segmentA->getId(), 'status' => SubscriberEntity::STATUS_SUBSCRIBED],
+      ['segment_id' => $this->segmentB->getId(), 'status' => SubscriberEntity::STATUS_UNSUBSCRIBED],
+      ['segment_id' => $this->hiddenSegment->getId(), 'status' => SubscriberEntity::STATUS_SUBSCRIBED],
     ]);
   }
 
+  /**
+   * @return array<int, array{status: string, segment_id: int}>
+   */
+  private function createSegmentsMap(SubscriberEntity $subscriber): array {
+    $subscriptions = array_map(function(SubscriberSegmentEntity $subscriberSegment): array {
+      $segment = $subscriberSegment->getSegment();
+      return ['status' => $subscriberSegment->getStatus(), 'segment_id' => (int)(!$segment ?: $segment->getId())];
+    }, $subscriber->getSubscriberSegments()->toArray());
+    usort($subscriptions, function(array $a, array $b) {
+      return $a['segment_id'] - $b['segment_id'];
+    });
+    return $subscriptions;
+  }
+
   public function _after() {
-    ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
-    ORM::raw_execute('TRUNCATE ' . Segment::$_table);
-    ORM::raw_execute('TRUNCATE ' . SubscriberSegment::$_table);
+    $this->truncateEntity(SubscriberEntity::class);
+    $this->truncateEntity(SegmentEntity::class);
+    $this->truncateEntity(SubscriberSegmentEntity::class);
   }
 }
