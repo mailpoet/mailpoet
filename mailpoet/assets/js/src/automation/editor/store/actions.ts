@@ -49,6 +49,20 @@ export function setWorkflowName(name) {
   } as const;
 }
 
+export function* save() {
+  const workflow = select(storeName).getWorkflowData();
+  const data = yield apiFetch({
+    path: `/workflows/${workflow.id}`,
+    method: 'PUT',
+    data: workflow,
+  });
+
+  return {
+    type: 'SAVE',
+    workflow: data.data,
+  } as const;
+}
+
 export function* activate() {
   const workflow = select(storeName).getWorkflowData();
   const data = yield apiFetch({
