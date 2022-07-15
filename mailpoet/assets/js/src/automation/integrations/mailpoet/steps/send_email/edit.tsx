@@ -1,6 +1,7 @@
 import { PanelBody, TextareaControl, TextControl } from '@wordpress/components';
 import { dispatch, useSelect } from '@wordpress/data';
 import { plus, edit, Icon } from '@wordpress/icons';
+import { Thumbnail } from './thumbnail';
 import { Button } from '../../components/button';
 import {
   PlainBodyTitle,
@@ -59,9 +60,13 @@ export function Edit(): JSX.Element {
 
       <div className="mailpoet-automation-email-content-separator" />
       <PlainBodyTitle title="Email content" />
-      <Button variant="sidebar-primary" centered icon={plus}>
-        Design email
-      </Button>
+      {selectedStep.args.email_id ? (
+        <Thumbnail emailId={selectedStep.args.email_id as number} />
+      ) : (
+        <Button variant="sidebar-primary" centered icon={plus}>
+          Design email
+        </Button>
+      )}
     </PanelBody>
   );
 }
