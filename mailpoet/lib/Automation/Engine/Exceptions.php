@@ -21,6 +21,7 @@ class Exceptions {
   private const SUBJECT_NOT_FOUND = 'mailpoet_automation_subject_not_found';
   private const SUBJECT_LOAD_FAILED = 'mailpoet_automation_workflow_subject_load_failed';
   private const MULTIPLE_SUBJECTS_FOUND = 'mailpoet_automation_multiple_subjects_found';
+  private const WORKFLOW_STRUCTURE_MODIFICATION_NOT_SUPPORTED = 'mailpoet_automation_workflow_structure_modification_not_supported';
 
   public function __construct() {
     throw new InvalidStateException(
@@ -111,5 +112,11 @@ class Exceptions {
     return InvalidStateException::create()
       ->withErrorCode(self::MULTIPLE_SUBJECTS_FOUND)
       ->withMessage(__(sprintf("Multiple subjects with key '%s' found, only one expected.", $key), 'mailpoet'));
+  }
+
+  public static function workflowStructureModificationNotSupported(): UnexpectedValueException {
+    return UnexpectedValueException::create()
+      ->withErrorCode(self::WORKFLOW_STRUCTURE_MODIFICATION_NOT_SUPPORTED)
+      ->withMessage(__("Workflow structure modification not supported.", 'mailpoet'));
   }
 }

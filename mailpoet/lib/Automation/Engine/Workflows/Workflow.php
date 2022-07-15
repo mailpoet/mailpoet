@@ -82,6 +82,11 @@ class Workflow {
     return $this->steps;
   }
 
+  /** @param array<string, Step> $steps */
+  public function setSteps(array $steps): void {
+    $this->steps = $steps;
+  }
+
   public function getStep(string $id): ?Step {
     return $this->steps[$id] ?? null;
   }
