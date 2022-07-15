@@ -31,7 +31,7 @@ class WorkflowsPutEndpoint extends Endpoint {
   public static function getRequestSchema(): array {
     return [
       'id' => Builder::integer()->required(),
-      'name' => Builder::string(),
+      'name' => Builder::string()->minLength(1),
       'status' => Builder::string(),
     ];
   }

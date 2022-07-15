@@ -27,15 +27,20 @@ class UpdateWorkflowController {
       throw Exceptions::workflowNotFound($id);
     }
 
+    $changed = false;
+
     if (array_key_exists('name', $data)) {
-      $this->checkWorkflowName($data['name']);
       $workflow->setName($data['name']);
-      $this->storage->updateWorkflow($workflow);
+      $changed = true;
     }
 
     if (array_key_exists('status', $data)) {
       $this->checkWorkflowStatus($data['status']);
       $workflow->setStatus($data['status']);
+      $changed = true;
+    }
+
+    if ($changed) {
       $this->storage->updateWorkflow($workflow);
     }
 
@@ -44,12 +49,6 @@ class UpdateWorkflowController {
       throw Exceptions::workflowNotFound($id);
     }
     return $workflow;
-  }
-
-  private function checkWorkflowName(string $name): void {
-    if (empty($name)) {
-      throw UnexpectedValueException::create()->withMessage(__('Workflow name must not be empty', 'mailpoet'));
-    }
   }
 
   private function checkWorkflowStatus(string $status): void {
