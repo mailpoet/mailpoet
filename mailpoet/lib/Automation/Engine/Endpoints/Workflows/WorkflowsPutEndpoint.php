@@ -29,10 +29,19 @@ class WorkflowsPutEndpoint extends Endpoint {
   }
 
   public static function getRequestSchema(): array {
+    $step = Builder::object([
+      'id' => Builder::string()->required(),
+      'type' => Builder::string()->required(),
+      'key' => Builder::string()->required(),
+      'args' => Builder::object(),
+      'next_step_id' => Builder::string()->nullable(),
+    ]);
+
     return [
       'id' => Builder::integer()->required(),
       'name' => Builder::string()->minLength(1),
       'status' => Builder::string(),
+      'steps' => Builder::object()->additionalProperties($step),
     ];
   }
 
