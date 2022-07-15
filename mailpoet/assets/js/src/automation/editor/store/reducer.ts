@@ -29,6 +29,11 @@ export function reducer(state: State, action: Action): State {
         ...state,
         workflowData: action.workflow,
       };
+    case 'SAVE':
+      return {
+        ...state,
+        workflowData: action.workflow,
+      };
     case 'ACTIVATE':
       return {
         ...state,

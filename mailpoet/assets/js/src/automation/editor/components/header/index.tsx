@@ -32,6 +32,16 @@ function UpdateButton(): JSX.Element {
   );
 }
 
+function SaveDraftButton(): JSX.Element {
+  const { save } = useDispatch(store);
+
+  return (
+    <Button isTertiary onClick={save}>
+      {__('Save Draft')}
+    </Button>
+  );
+}
+
 export function Header(): JSX.Element {
   const { setWorkflowName } = useDispatch(store);
   const { workflowName, workflowStatus } = useSelect(
@@ -75,7 +85,7 @@ export function Header(): JSX.Element {
 
       <div className="edit-site-header_end">
         <div className="edit-site-header__actions">
-          <Button isTertiary>{__('Save Draft')}</Button>
+          <SaveDraftButton />
           {workflowStatus !== WorkflowStatus.ACTIVE && <ActivateButton />}
           {workflowStatus === WorkflowStatus.ACTIVE && <UpdateButton />}
           <PinnedItems.Slot scope={storeName} />
