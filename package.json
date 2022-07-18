@@ -9,5 +9,8 @@
   "devDependencies": {
     "lint-staged": "^12.3.7",
     "prettier": "2.6.2"
+  },
+  "volta": {
+    "node": "17.9.1"
   }
 }
