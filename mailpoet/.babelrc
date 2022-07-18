@@ -13,12 +13,6 @@
         "corejs": 3
       }
     ],
-    [
-      "@babel/plugin-proposal-decorators",
-      {
-        "legacy": true
-      }
-    ],
     "@babel/plugin-proposal-function-sent",
     "@babel/plugin-proposal-throw-expressions"
   ]
