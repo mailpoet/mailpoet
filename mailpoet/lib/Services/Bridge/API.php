@@ -38,6 +38,8 @@ class API {
   public $urlBounces = 'https://bridge.mailpoet.com/api/v0/bounces/search';
   public $urlStats = 'https://bridge.mailpoet.com/api/v0/stats';
   public $urlAuthorizedEmailAddresses = 'https://bridge.mailpoet.com/api/v1/authorized_email_address';
+  public $urlAuthorizedSenderDomains = 'https://bridge.mailpoet.com/api/v1/sender_domain';
+  public $urlAuthorizedSenderDomainVerification = 'https://bridge.mailpoet.com/api/v1/sender_domain_verify';
 
   public function __construct(
     $apiKey,
@@ -214,6 +216,89 @@ class API {
     }
 
     return ['status' => $isSuccess];
+  }
+
+  /**
+   * Get a list of sender domains
+   * Fetched from API
+   */
+  public function getAuthorizedSenderDomains(): ?array {
+    $result = $this->request(
+      $this->urlAuthorizedSenderDomains,
+      null,
+      'GET'
+    );
+    if ($this->wp->wpRemoteRetrieveResponseCode($result) !== 200) {
+      return null;
+    }
+    $data = json_decode($this->wp->wpRemoteRetrieveBody($result), true);
+    return is_array($data) ? $data : null;
+  }
+
+  /**
+   * Create Sender domain record
+   * Done via API
+   */
+  public function createAuthorizedSenderDomain(string $domain): array {
+    $body = ['domain' => strtolower($domain)];
+    $result = $this->request(
+      $this->urlAuthorizedSenderDomains,
+      $body
+    );
+
+    $code = $this->wp->wpRemoteRetrieveResponseCode($result);
+    $rawResponseBody = $this->wp->wpRemoteRetrieveBody($result);
+
+    $responseBody = json_decode($rawResponseBody, true);
+    $isSuccess = $code === self::RESPONSE_CODE_CREATED;
+
+    if (!$isSuccess) {
+      $logData = [
+        'code' => $code,
+        'error' => is_wp_error($result) ? $result->get_error_message() : $rawResponseBody,
+      ];
+      $this->loggerFactory->getLogger(LoggerFactory::TOPIC_BRIDGE)->error('createAuthorizedSenderDomain API call failed.', $logData);
+
+      $fallbackError = sprintf($this->wp->__('An error has happened while performing a request, the server has responded with response code %d'), $code);
+
+      $errorData = is_array($responseBody) && isset($responseBody['error']) ? $responseBody['error'] : $fallbackError;
+      return ['error' => $errorData, 'status' => false];
+    }
+
+    return is_array($responseBody) ? $responseBody : [];
+  }
+
+  /**
+   * Verify Sender Domain records
+   * returns an Array of DNS response or an array of error
+   */
+  public function verifyAuthorizedSenderDomain(string $domain): array {
+    $url = $this->urlAuthorizedSenderDomainVerification . '/' . urlencode(strtolower($domain));
+    $result = $this->request(
+      $url,
+      null
+    );
+
+    $code = $this->wp->wpRemoteRetrieveResponseCode($result);
+    $rawResponseBody = $this->wp->wpRemoteRetrieveBody($result);
+
+    $responseBody = json_decode($rawResponseBody, true);
+    $isSuccess = $code === 200;
+
+    if (!$isSuccess) {
+      $logData = [
+        'code' => $code,
+        'error' => is_wp_error($result) ? $result->get_error_message() : $rawResponseBody,
+      ];
+      $this->loggerFactory->getLogger(LoggerFactory::TOPIC_BRIDGE)->error('verifyAuthorizedSenderDomain API call failed.', $logData);
+
+      $fallbackError = sprintf($this->wp->__('An error has happened while performing a request, the server has responded with response code %d'), $code);
+
+      $errorData = is_array($responseBody) && isset($responseBody['error']) ? $responseBody['error'] : $fallbackError;
+      return ['error' => $errorData, 'status' => false];
+    }
+
+    return is_array($responseBody) ? $responseBody : [];
   }
 
   public function setKey($apiKey) {
