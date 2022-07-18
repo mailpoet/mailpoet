@@ -139,6 +139,57 @@ class Bridge {
     return $data;
   }
 
+  /**
+   * Get a list of sender domains
+   * returns an assoc array of [domainName => Array(DNS responses)]
+   * pass in the domain arg to return only the DNS response for the domain
+   */
+  public function getAuthorizedSenderDomains($domain = 'all'): array {
+    $data = $this
+      ->getApi($this->settings->get(self::API_KEY_SETTING_NAME))
+      ->getAuthorizedSenderDomains();
+    $data = $data ?? [];
+
+    $allSenderDomains = [];
+
+    foreach ($data as $subarray) {
+      if (isset($subarray['domain'])) {
+        $allSenderDomains[$subarray['domain']] = $subarray['dns'] ?? [];
+      }
+    }
+
+    if ($domain !== 'all') {
+      // return an empty array if the provided domain can not be found
+      return $allSenderDomains[$domain] ?? [];
+    }
+
+    return $allSenderDomains;
+  }
+
+  /**
+   * Create a new Sender domain record
+   * returns an Array of DNS response or array of error
+   */
+  public function createAuthorizedSenderDomain(string $domain): array {
+    $data = $this
+    ->getApi($this->settings->get(self::API_KEY_SETTING_NAME))
+    ->createAuthorizedSenderDomain($domain);
+
+    return $data['dns'] ?? $data;
+  }
+
+  /**
+   * Verify Sender Domain records
+   * returns an Array of DNS response or an array of error
+   */
+  public function verifyAuthorizedSenderDomain(string $domain): array {
+    $data = $this
+    ->getApi($this->settings->get(self::API_KEY_SETTING_NAME))
+    ->verifyAuthorizedSenderDomain($domain);
+
+    return $data;
+  }
+
   public function checkMSSKey($apiKey) {
     $result = $this
       ->getApi($apiKey)
