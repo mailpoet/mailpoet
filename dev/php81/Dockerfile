@@ -8,7 +8,7 @@ RUN apt-get update \
 	&& apt-get install -y git zlib1g-dev libzip-dev zip wget gnupg msmtp libpng-dev gettext subversion \
 	&& \
     # Install NodeJS + NPM
-    curl -sL https://deb.nodesource.com/setup_16.x | bash - && \
+    curl -sL https://deb.nodesource.com/setup_17.x | bash - && \
     apt-get install -y nodejs build-essential && \
 	\
 	# Install WP-CLI
@@ -39,5 +39,6 @@ RUN docker-php-ext-install pdo_mysql
 # allow .htaccess files (between <Directory /var/www/> and </Directory>, which is WordPress installation)
 RUN sed -i '/<Directory \/var\/www\/>/,/<\/Directory>/ s/AllowOverride None/AllowOverride All/' /etc/apache2/apache2.conf
 
-# ensure existing content in /var/www/html respects UID and GID
-RUN chown -R ${UID}:${GID} /var/www/html
+# ensure existing content in /var/www/html respects UID and GID, give Node permissions for Corepack
+RUN chown -R ${UID}:${GID} /var/www/html && \
+  mkdir -p /.node && chown -R ${UID}:${GID} /.node
