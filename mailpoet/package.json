@@ -210,5 +210,8 @@
     "webpack": "$webpack",
     "underscore": "$underscore",
     "react": "$react"
+  },
+  "volta": {
+    "extends": "../package.json"
   }
 }
