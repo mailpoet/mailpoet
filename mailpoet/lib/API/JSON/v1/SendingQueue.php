@@ -6,8 +6,8 @@ use MailPoet\API\JSON\Endpoint as APIEndpoint;
 use MailPoet\API\JSON\Error as APIError;
 use MailPoet\API\JSON\Response;
 use MailPoet\Config\AccessControl;
+use MailPoet\Cron\ActionScheduler\Actions\DaemonTrigger;
 use MailPoet\Cron\CronTrigger;
-use MailPoet\Cron\DaemonActionSchedulerRunner;
 use MailPoet\Cron\Triggers\WordPress;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
@@ -57,8 +57,8 @@ class SendingQueue extends APIEndpoint {
   /** @var SettingsController */
   private $settings;
 
-  /** @var DaemonActionSchedulerRunner */
-  private $actionSchedulerRunner;
+  /** @var DaemonTrigger */
+  private $actionSchedulerDaemonTriggerAction;
 
   public function __construct(
     SubscribersFeature $subscribersFeature,
@@ -69,7 +69,7 @@ class SendingQueue extends APIEndpoint {
     MailerFactory $mailerFactory,
     Scheduler $scheduler,
     SettingsController $settings,
-    DaemonActionSchedulerRunner $actionSchedulerRunner,
+    DaemonTrigger $actionSchedulerDaemonTriggerAction,
     NewsletterValidator $newsletterValidator
   ) {
     $this->subscribersFeature = $subscribersFeature;
@@ -80,7 +80,7 @@ class SendingQueue extends APIEndpoint {
     $this->mailerFactory = $mailerFactory;
     $this->scheduler = $scheduler;
     $this->settings = $settings;
-    $this->actionSchedulerRunner = $actionSchedulerRunner;
+    $this->actionSchedulerDaemonTriggerAction = $actionSchedulerDaemonTriggerAction;
     $this->newsletterValidator = $newsletterValidator;
   }
 
@@ -257,7 +257,7 @@ class SendingQueue extends APIEndpoint {
       $newsletter->getStatus() === NewsletterEntity::STATUS_SENDING
       && $this->settings->get('cron_trigger.method') === CronTrigger::METHOD_ACTION_SCHEDULER
     ) {
-      $this->actionSchedulerRunner->trigger();
+      $this->actionSchedulerDaemonTriggerAction->process();
     }
   }
 }
