@@ -64,7 +64,7 @@ class SegmentTest extends \MailPoetUnitTest {
   }
 
   public function testItShouldRenderSegments() {
-    $this->rendererHelperMock->expects($this->once())->method('renderLabel')->willReturn('<label></label>');
+    $this->rendererHelperMock->expects($this->once())->method('renderLegend')->willReturn('<legend></legend>');
     $this->rendererHelperMock->expects($this->once())->method('getInputValidation')->willReturn('validation="1"');
     $this->rendererHelperMock->expects($this->once())->method('getFieldName')->willReturn('Segments');
     $this->segmentsRepositoryMock->expects($this->once())->method('findBy')->willReturn([
@@ -89,7 +89,7 @@ class SegmentTest extends \MailPoetUnitTest {
   }
 
   public function testItShouldRenderErrorContainerWithFormId(): void {
-    $this->rendererHelperMock->expects($this->once())->method('renderLabel')->willReturn('<label></label>');
+    $this->rendererHelperMock->expects($this->once())->method('renderLegend')->willReturn('<legend></legend>');
     $this->rendererHelperMock->expects($this->once())->method('getInputValidation')->willReturn('validation="1"');
     $this->rendererHelperMock->expects($this->once())->method('getFieldName')->willReturn('Segments');
     $this->segmentsRepositoryMock->expects($this->once())->method('findBy')->willReturn([

@@ -55,7 +55,7 @@ class CheckboxTest extends \MailPoetUnitTest {
   }
 
   public function testItShouldRenderCheckbox() {
-    $this->rendererHelperMock->expects($this->once())->method('renderLabel')->willReturn('<label></label>');
+    $this->rendererHelperMock->expects($this->once())->method('renderLegend')->willReturn('<legend></legend>');
     $this->rendererHelperMock->expects($this->once())->method('getFieldName')->willReturn('Field name');
     $this->rendererHelperMock->expects($this->once())->method('getInputValidation')->willReturn('validation="1"');
     $this->rendererHelperMock->expects($this->once())->method('getFieldValue')->willReturn('1');
@@ -68,7 +68,7 @@ class CheckboxTest extends \MailPoetUnitTest {
   }
 
   public function testItShouldRenderErrorContainerWithFormId() {
-    $this->rendererHelperMock->expects($this->once())->method('renderLabel')->willReturn('<label></label>');
+    $this->rendererHelperMock->expects($this->once())->method('renderLegend')->willReturn('<legend></legend>');
     $this->rendererHelperMock->expects($this->once())->method('getFieldName')->willReturn('Field name');
     $this->rendererHelperMock->expects($this->once())->method('getInputValidation')->willReturn('validation="1"');
     $this->rendererHelperMock->expects($this->once())->method('getFieldValue')->willReturn('1');

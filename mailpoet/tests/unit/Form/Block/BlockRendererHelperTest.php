@@ -99,13 +99,13 @@ class BlockRendererHelperTest extends \MailPoetUnitTest {
     expect($validation)->equals('');
 
     $block['params']['required'] = '1';
-    $validation = $this->rendererHelper->getInputValidation($block);
-    expect($validation)->equals('data-parsley-required="true" data-parsley-required-message="This field is required."');
+    $validation = $this->rendererHelper->getInputValidation($block, [], 2);
+    expect($validation)->equals('data-parsley-required="true" data-parsley-errors-container=".mailpoet_error_1_2" data-parsley-required-message="This field is required."');
 
     $block['params']['required'] = '0';
     $block['id'] = 'email';
     $validation = $this->rendererHelper->getInputValidation($block);
-    expect($validation)->equals('data-parsley-required="true" data-parsley-minlength="6" data-parsley-maxlength="150" data-parsley-error-message="Please specify a valid email address."');
+    expect($validation)->equals('data-parsley-required="true" data-parsley-minlength="6" data-parsley-maxlength="150" data-parsley-type-message="This value should be a valid email."');
 
     $block = $this->block;
     $block['params']['validate'] = 'phone';
