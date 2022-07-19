@@ -24,7 +24,6 @@ class RoboFile extends \Robo\Tasks {
       ->stopOnFail()
       ->exec('./tools/vendor/composer.phar install')
       ->exec('cd .. && pnpm install --frozen-lockfile --prefer-offline')
-      ->exec('cd ../eslint-config && npm ci --prefer-offline')
       ->addCode([$this, 'cleanupCachedFiles'])
       ->run();
   }
@@ -40,7 +39,7 @@ class RoboFile extends \Robo\Tasks {
     return $this->taskExecStack()
       ->stopOnFail()
       ->exec('./tools/vendor/composer.phar update')
-      ->exec('npm update')
+      ->exec('pnpm update')
       ->run();
   }
 
@@ -51,8 +50,8 @@ class RoboFile extends \Robo\Tasks {
         $file = $changedFile->getResource()->getResource();
         $this->taskExecStack()
           ->stopOnFail()
-          ->exec('npm run scss')
-          ->exec('npm run autoprefixer')
+          ->exec('pnpm run scss')
+          ->exec('pnpm run autoprefixer')
           ->run();
       })
       ->run();
@@ -91,9 +90,9 @@ class RoboFile extends \Robo\Tasks {
     // Clean up folder from previous files
     array_map('unlink', glob("assets/dist/css/*.*"));
 
-    $this->_exec('npm run stylelint -- "assets/css/src/**/*.scss"');
-    $this->_exec('npm run scss');
-    $compilationResult = $this->_exec('npm run autoprefixer');
+    $this->_exec('pnpm run stylelint -- "assets/css/src/**/*.scss"');
+    $this->_exec('pnpm run scss');
+    $compilationResult = $this->_exec('pnpm run autoprefixer');
 
     // Create manifest file
     $manifest = [];
@@ -414,11 +413,11 @@ class RoboFile extends \Robo\Tasks {
   }
 
   public function qaLintJavascript() {
-    return $this->_exec('npm run check-types && npm run lint');
+    return $this->_exec('pnpm run check-types && pnpm run lint');
   }
 
   public function qaLintCss() {
-    return $this->_exec('npm run stylelint-check -- "assets/css/src/**/*.scss"');
+    return $this->_exec('pnpm run stylelint-check -- "assets/css/src/**/*.scss"');
   }
 
   public function qaCodeSniffer(array $filesToCheck, $opts = ['severity' => 'all']) {
@@ -553,11 +552,11 @@ class RoboFile extends \Robo\Tasks {
   }
 
   public function storybookBuild() {
-    return $this->_exec('npm run build-storybook');
+    return $this->_exec('pnpm run build-storybook');
   }
 
   public function storybookWatch() {
-    return $this->_exec('npm run storybook');
+    return $this->_exec('pnpm run storybook');
   }
 
   public function svnCheckout() {

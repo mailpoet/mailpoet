@@ -5,11 +5,11 @@
     "extends @wordpress/browserslist-config"
   ],
   "scripts": {
-    "lint": "npm run lint6 && npm run lint-ts && npm run lint5 && npm run lint-tests",
-    "lint6": "../eslint-config/node_modules/.bin/eslint -c ../eslint-config/.eslintrc.es6.json --max-warnings 0 'assets/js/src/**/*.jsx' 'tests/javascript/**/*.js'",
-    "lint-ts": "../eslint-config/node_modules/.bin/eslint -c ../eslint-config/.eslintrc.ts.json --max-warnings 0 'assets/js/src/**/*.tsx' 'assets/js/src/**/*.ts'",
-    "lint5": "../eslint-config/node_modules/.bin/eslint -c ../eslint-config/.eslintrc.es5.json --max-warnings 0 'assets/js/src/**/*.js' 'webpack.config.js'",
-    "lint-tests": "../eslint-config/node_modules/.bin/eslint -c ../eslint-config/.eslintrc.tests_newsletter_editor.json --max-warnings 0 'tests/javascript_newsletter_editor'",
+    "lint": "pnpm run lint6 && pnpm run lint-ts && pnpm run lint5 && pnpm run lint-tests",
+    "lint6": "eslint -c ../packages/js/eslint-config/.eslintrc.es6.json --max-warnings 0 'assets/js/src/**/*.jsx' 'tests/javascript/**/*.js'",
+    "lint-ts": "eslint -c ../packages/js/eslint-config/.eslintrc.ts.json --max-warnings 0 'assets/js/src/**/*.tsx' 'assets/js/src/**/*.ts'",
+    "lint5": "eslint -c ../packages/js/eslint-config/.eslintrc.es5.json --max-warnings 0 'assets/js/src/**/*.js' 'webpack.config.js'",
+    "lint-tests": "eslint -c ../packages/js/eslint-config/.eslintrc.tests_newsletter_editor.json --max-warnings 0 'tests/javascript_newsletter_editor'",
     "autoprefixer": "postcss assets/dist/css/*.css --use autoprefixer --no-map --replace",
     "scss": "sass assets/css/src/:assets/dist/css/ --style compressed",
     "stylelint": "stylelint --fix",
@@ -22,11 +22,11 @@
     "prepare": "cd .. && husky install"
   },
   "lint-staged": {
-    "*.{scss,css}": "npm run stylelint",
-    "!(*spec).js": "../eslint-config/node_modules/.bin/eslint -c ../eslint-config/.eslintrc.es5.json --max-warnings 0",
-    "*.jsx": "../eslint-config/node_modules/.bin/eslint -c ../eslint-config/.eslintrc.es6.json --max-warnings 0",
-    "*.{tsx,ts}": "../eslint-config/node_modules/.bin/eslint -c ../eslint-config/.eslintrc.ts.json --max-warnings 0",
-    "**/newsletter_editor/**/*spec.js": "../eslint-config/node_modules/.bin/eslint -c ../eslint-config/.eslintrc.tests_newsletter_editor.json --max-warnings 0",
+    "*.{scss,css}": "pnpm run stylelint",
+    "!(*spec).js": "eslint -c ../packages/js/eslint-config/.eslintrc.es5.json --max-warnings 0",
+    "*.jsx": "eslint -c ../packages/js/eslint-config/.eslintrc.es6.json --max-warnings 0",
+    "*.{tsx,ts}": "eslint -c ../packages/js/eslint-config/.eslintrc.ts.json --max-warnings 0",
+    "**/newsletter_editor/**/*spec.js": "eslint -c ../packages/js/eslint-config/.eslintrc.tests_newsletter_editor.json --max-warnings 0",
     "*.php": [
       "phplint",
       "./do qa:code-sniffer",
