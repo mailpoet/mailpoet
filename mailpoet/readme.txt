@@ -3,7 +3,7 @@ Contributors: mailpoet
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 5.6
 Tested up to: 6.0
-Stable tag: 3.91.1
+Stable tag: 3.92.0
 Requires PHP: 7.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -218,6 +218,13 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 3.92.0 - 2022-07-19 =
+* Added: show tags on Subscribers listing page;
+* Added: tagging subscribers on the edit page;
+* Added: the ability to authorise the email address in the plugin;
+* Improved: when sending with MailPoet Sending Service, show a warning when unauthorized email is used immediately before sending an email;
+* Improved: don't load 3rd-party libraries on new installations unless an active consent is given.
 
 = 3.91.1 - 2022-07-11 =
 * Updated: npm and composer dependencies;
