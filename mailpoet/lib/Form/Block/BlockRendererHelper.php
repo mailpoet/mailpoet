@@ -34,7 +34,7 @@ class BlockRendererHelper {
       $rules['required'] = true;
       $rules['minlength'] = ModelValidator::EMAIL_MIN_LENGTH;
       $rules['maxlength'] = ModelValidator::EMAIL_MAX_LENGTH;
-      $rules['type-message'] = __('This value should be a valid email', 'mailpoet');
+      $rules['type-message'] = __('This value should be a valid email.', 'mailpoet');
     }
 
     if (($blockId === 'first_name') || ($blockId === 'last_name')) {
