@@ -63,7 +63,10 @@ $form-line-height: 1.4;
   .mailpoet-has-font-size {
     line-height: $form-line-height;
   }
+}
 
+/* Reset fieldset styles in form for backward compatibility. */
+.mailpoet_paragraph {
   fieldset {
     border: 0;
     margin: 0;
