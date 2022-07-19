@@ -6,6 +6,7 @@ _output
 composer.json
 composer.lock
 node_modules
+pnpm-lock.yaml
 vendor
 vendor-prefixed
 /.mp_svn

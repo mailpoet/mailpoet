@@ -1,8 +1,5 @@
 {
   "private": true,
-  "engines": {
-    "npm": "^8.1"
-  },
   "lint-staged": {
     "**/*": "prettier --write --ignore-unknown"
   },
@@ -10,6 +7,7 @@
     "lint-staged": "^12.3.7",
     "prettier": "2.6.2"
   },
+  "packageManager": "pnpm@7.6.0",
   "volta": {
     "node": "17.9.1"
   }

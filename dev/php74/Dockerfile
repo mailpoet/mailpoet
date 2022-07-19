@@ -9,9 +9,10 @@ RUN apt-get update \
 	&& docker-php-ext-install pdo_mysql \
 	&& pecl install xdebug-2.9.8 && \
 	\
-    # Install NodeJS + NPM
+    # Install NodeJS, enable Corepack
     curl -sL https://deb.nodesource.com/setup_17.x | bash - && \
     apt-get install -y nodejs build-essential && \
+    corepack enable && \
 	\
 	# Install WP-CLI
 	curl -o /usr/local/bin/wp https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar && \
