@@ -2,6 +2,8 @@
 
 namespace MailPoet\Cron;
 
+use MailPoet\Cron\ActionScheduler\Actions\DaemonRun;
+use MailPoet\Cron\ActionScheduler\Actions\DaemonTrigger;
 use MailPoet\Cron\ActionScheduler\ActionScheduler;
 use MailPoet\Cron\Workers\UnsubscribeTokens;
 use MailPoet\Entities\ScheduledTaskEntity;
@@ -33,7 +35,7 @@ class DaemonActionSchedulerRunnerTest extends \MailPoetTest {
     expect($actions)->count(1);
     $action = reset($actions);
     $this->assertInstanceOf(\ActionScheduler_Action::class, $action);
-    expect($action->get_hook())->equals(DaemonActionSchedulerRunner::DAEMON_TRIGGER_SCHEDULER_ACTION);
+    expect($action->get_hook())->equals(DaemonTrigger::NAME);
   }
 
   public function testItDeactivateAllTasks(): void {
@@ -48,17 +50,19 @@ class DaemonActionSchedulerRunnerTest extends \MailPoetTest {
   public function testTriggerDoesNotTriggerAnythingIfThereAreNoJobs(): void {
     $actions = $this->getMailPoetScheduledActions();
     expect($actions)->count(0);
-    $this->actionSchedulerRunner->trigger();
+    $triggerAction = $this->diContainer->get(DaemonTrigger::class);
+    $triggerAction->process();
     $actions = $this->getMailPoetScheduledActions();
     expect($actions)->count(0);
   }
 
   public function testTriggerUnschedulesRunJobIfThereIsNoMoreWork(): void {
     $actionScheduler = $this->diContainer->get(ActionScheduler::class);
-    $actionScheduler->scheduleRecurringAction(time() + 60, 1, DaemonActionSchedulerRunner::DAEMON_RUN_SCHEDULER_ACTION);
+    $actionScheduler->scheduleRecurringAction(time() + 60, 1, DaemonRun::NAME);
     $actions = $this->getMailPoetScheduledActions();
     expect($actions)->count(1);
-    $this->actionSchedulerRunner->trigger();
+    $triggerAction = $this->diContainer->get(DaemonTrigger::class);
+    $triggerAction->process();
     $actions = $this->getMailPoetScheduledActions();
     expect($actions)->count(0);
   }
@@ -68,12 +72,13 @@ class DaemonActionSchedulerRunnerTest extends \MailPoetTest {
     $this->createDueScheduledTask();
     $actions = $this->getMailPoetScheduledActions();
     expect($actions)->count(0);
-    $this->actionSchedulerRunner->trigger();
+    $triggerAction = $this->diContainer->get(DaemonTrigger::class);
+    $triggerAction->process();
     $actions = $this->getMailPoetScheduledActions();
     expect($actions)->count(2);
     $action = reset($actions);
     $this->assertInstanceOf(\ActionScheduler_Action::class, $action);
-    expect($action->get_hook())->equals(DaemonActionSchedulerRunner::DAEMON_RUN_SCHEDULER_ACTION);
+    expect($action->get_hook())->equals(DaemonRun::NAME);
     $this->cleanup();
   }
 
@@ -85,14 +90,15 @@ class DaemonActionSchedulerRunnerTest extends \MailPoetTest {
       'name' => 'John',
       'address' => 'john@example.com',
     ]);
+    $runAction = $this->diContainer->get(DaemonRun::class);
     // Activate filter for watching execution limit.
     // This normally happens in DaemonActionSchedulerRunner::init but it can't be called in tests since it cause some background requests and made test flaky
     $wp = $this->diContainer->get(Functions::class);
-    $wp->addFilter('action_scheduler_maximum_execution_time_likely_to_be_exceeded', [$this->actionSchedulerRunner, 'storeRemainingExecutionLimit'], 10, 5);
-    expect($this->actionSchedulerRunner->getDaemonExecutionLimit())->equals(20); // Verify initial execution limit
+    $wp->addFilter('action_scheduler_maximum_execution_time_likely_to_be_exceeded', [$runAction, 'storeRemainingExecutionLimit'], 10, 5);
+    expect($runAction->getDaemonExecutionLimit())->equals(20); // Verify initial execution limit
 
     $actionScheduler = $this->diContainer->get(ActionScheduler::class);
-    $actionScheduler->scheduleRecurringAction(time() - 1, 100, DaemonActionSchedulerRunner::DAEMON_RUN_SCHEDULER_ACTION);
+    $actionScheduler->scheduleRecurringAction(time() - 1, 100, DaemonRun::NAME);
     $actions = $this->getMailPoetScheduledActions();
     expect($actions)->count(1);
     $doneActions = $this->getMailPoetCompleteActions();
@@ -110,8 +116,8 @@ class DaemonActionSchedulerRunnerTest extends \MailPoetTest {
     expect($actions)->count(1);
 
     // Verify execution limit after run. floor(30 - some time taken by previous action) - 10s (safety execution timout margin)
-    expect($this->actionSchedulerRunner->getDaemonExecutionLimit())->greaterThan(0);
-    expect($this->actionSchedulerRunner->getDaemonExecutionLimit())->lessThan(20);
+    expect($runAction->getDaemonExecutionLimit())->greaterThan(0);
+    expect($runAction->getDaemonExecutionLimit())->lessThan(20);
   }
 
   private function getMailPoetScheduledActions(): array {

@@ -3,8 +3,9 @@
 namespace MailPoet\AdminPages\Pages;
 
 use MailPoet\AdminPages\PageRenderer;
+use MailPoet\Cron\ActionScheduler\Actions\DaemonRun;
+use MailPoet\Cron\ActionScheduler\Actions\DaemonTrigger;
 use MailPoet\Cron\CronHelper;
-use MailPoet\Cron\DaemonActionSchedulerRunner;
 use MailPoet\Helpscout\Beacon;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Router\Endpoints\CronDaemon;
@@ -87,9 +88,9 @@ class Help {
     $actionSchedulerData = [];
     $actionSchedulerData['version'] = \ActionScheduler_Versions::instance()->latest_version();
     $actionSchedulerData['storage'] = str_replace('ActionScheduler_', '', get_class(\ActionScheduler_Store::instance()));
-    $actionSchedulerData['latestTrigger'] = $this->getLatestActionSchedulerActionDate(DaemonActionSchedulerRunner::DAEMON_TRIGGER_SCHEDULER_ACTION);
-    $actionSchedulerData['latestCompletedTrigger'] = $this->getLatestActionSchedulerActionDate(DaemonActionSchedulerRunner::DAEMON_TRIGGER_SCHEDULER_ACTION, 'complete');
-    $actionSchedulerData['latestCompletedRun'] = $this->getLatestActionSchedulerActionDate(DaemonActionSchedulerRunner::DAEMON_RUN_SCHEDULER_ACTION, 'complete');
+    $actionSchedulerData['latestTrigger'] = $this->getLatestActionSchedulerActionDate(DaemonTrigger::NAME);
+    $actionSchedulerData['latestCompletedTrigger'] = $this->getLatestActionSchedulerActionDate(DaemonTrigger::NAME, 'complete');
+    $actionSchedulerData['latestCompletedRun'] = $this->getLatestActionSchedulerActionDate(DaemonRun::NAME, 'complete');
     return $actionSchedulerData;
   }
 
