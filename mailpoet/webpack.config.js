@@ -45,9 +45,7 @@ const baseConfig = {
     modules: ['node_modules', 'assets/js/src'],
     fallback: {
       fs: false,
-      // We need path polyfill so that eslint is able to lint webpack.config.js
-      // and it is imported in css module, but we don't use the functionality which requires it
-      path: require.resolve('path-browserify'),
+      path: false, // path is used in css module, but we don't use the functionality which requires it
     },
     extensions: ['.js', '.jsx', '.ts', '.tsx'],
     alias: {
