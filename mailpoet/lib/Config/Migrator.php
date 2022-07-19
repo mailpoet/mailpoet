@@ -642,7 +642,7 @@ class Migrator {
   public function tags(): string {
     $attributes = [
       'id int(11) unsigned NOT NULL AUTO_INCREMENT,',
-      'name varchar(255) NOT NULL,',
+      'name varchar(191) NOT NULL,',
       'description text NOT NULL DEFAULT "",',
       'created_at timestamp NULL,', // must be NULL, see comment at the top
       'updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
