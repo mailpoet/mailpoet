@@ -133,10 +133,6 @@ jobs:
           key: composer-prefixed-{{ checksum "prefixer-checksum" }}
       - restore_cache:
           keys:
-            - npm-{{ checksum "package-lock.json" }}
-            - npm- # fallback to most recent npm-* if not found by checksum
-      - restore_cache:
-          keys:
             - pnpm-{{ checksum "../pnpm-lock.yaml" }}
             - pnpm- # fallback to most recent pnpm-* if not found by checksum
       - run:
@@ -176,10 +172,6 @@ jobs:
             - prefixer/build
             - prefixer/vendor
             - vendor-prefixed
-      - save_cache:
-          key: npm-{{ checksum "package-lock.json" }}
-          paths:
-            - ~/.npm
       - save_cache:
           key: pnpm-{{ checksum "../pnpm-lock.yaml" }}
           paths:

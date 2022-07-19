@@ -23,7 +23,6 @@ class RoboFile extends \Robo\Tasks {
     return $this->taskExecStack()
       ->stopOnFail()
       ->exec('./tools/vendor/composer.phar install')
-      ->exec('npm ci --prefer-offline')
       ->exec('cd .. && pnpm install --frozen-lockfile --prefer-offline')
       ->exec('cd ../eslint-config && npm ci --prefer-offline')
       ->addCode([$this, 'cleanupCachedFiles'])

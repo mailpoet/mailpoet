@@ -1,9 +1,6 @@
 {
   "private": true,
   "name": "MailPoet3",
-  "engines": {
-    "npm": "^8.3"
-  },
   "browserslist": [
     "extends @wordpress/browserslist-config"
   ],
@@ -21,7 +18,7 @@
     "check-types": "tsc --noEmit",
     "storybook": "start-storybook -s ./ -p 8083",
     "build-storybook": "build-storybook",
-    "postinstall": "./tasks/npm_post_install.sh",
+    "postinstall": "INIT_CWD=$PWD ./tasks/npm_post_install.sh",
     "prepare": "cd .. && husky install"
   },
   "lint-staged": {
