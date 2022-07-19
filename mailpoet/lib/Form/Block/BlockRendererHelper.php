@@ -153,6 +153,37 @@ class BlockRendererHelper {
     return $html;
   }
 
+  public function renderLegend(array $block, array $formSettings): string {
+    $html = '';
+
+    if (
+      isset($block['params']['hide_label'])
+      && $block['params']['hide_label']
+    ) {
+      return $html;
+    }
+
+    if (
+      isset($block['params']['label'])
+      && strlen(trim($block['params']['label'])) > 0
+    ) {
+      // Use _label suffix for backward compatibility
+      $labelClass = 'class="mailpoet_' . $block['type'] . '_label" ';
+      $html .= '<legend '
+        . $labelClass
+        . $this->renderFontStyle($formSettings, $block['styles'] ?? [])
+        . '>';
+      $html .= htmlspecialchars($block['params']['label']);
+
+      if (isset($block['params']['required']) && $block['params']['required']) {
+        $html .= ' <span class="mailpoet_required">*</span>';
+      }
+
+      $html .= '</legend>';
+    }
+    return $html;
+  }
+
   public function renderFontStyle(array $formSettings, array $styles = []) {
     $rules = [];
     if (isset($formSettings['fontSize'])) {

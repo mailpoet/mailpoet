@@ -60,6 +60,25 @@ class BlockRendererHelperTest extends \MailPoetUnitTest {
     expect($label)->equals('');
   }
 
+  public function testItShouldRenderLegend() {
+    $block = $this->block;
+    $label = $this->rendererHelper->renderLegend($block, []);
+    expect($label)->regExp('#<legend.*class="mailpoet_text_label".*>Input label</legend>#m');
+
+    $block['styles'] = ['bold' => '1'];
+    $label = $this->rendererHelper->renderLegend($block, []);
+    expect($label)->equals('<legend class="mailpoet_text_label" style="font-weight: bold;">Input label</legend>');
+
+    $block['params']['required'] = '1';
+    $block['styles'] = [];
+    $label = $this->rendererHelper->renderLegend($block, []);
+    expect($label)->equals('<legend class="mailpoet_text_label" >Input label <span class="mailpoet_required">*</span></legend>');
+
+    $block['params']['hide_label'] = '1';
+    $label = $this->rendererHelper->renderLegend($block, []);
+    expect($label)->equals('');
+  }
+
   public function testItShouldRenderPlaceholder() {
     $block = $this->block;
     $placeholder = $this->rendererHelper->renderInputPlaceholder($block);

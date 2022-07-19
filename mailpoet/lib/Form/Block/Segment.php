@@ -40,8 +40,7 @@ class Segment {
 
     // Add fieldset around the checkboxes
     $html .= '<fieldset>';
-
-    $html .= '<legend>' . $block['params']['label'] . '</legend>';
+    $html .= $this->rendererHelper->renderLegend($block, $formSettings);
 
     $options = (!empty($block['params']['values'])
       ? $block['params']['values']
