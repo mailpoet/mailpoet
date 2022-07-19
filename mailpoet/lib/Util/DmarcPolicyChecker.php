@@ -47,7 +47,7 @@ class DmarcPolicyChecker {
         $item = explode('=', $value);
         $dKey = $item[0] ?? '';
         $dValue = $item[1] ?? '';
-        $dmarcInfo[trim($dKey)] = trim($dValue);
+        $dmarcInfo[strtolower(trim($dKey))] = strtolower(trim($dValue));
     }
 
     // policy can either be reject or quarantine or none
