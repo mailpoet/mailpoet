@@ -12,6 +12,16 @@ If you'd like to use the plugin code directly, see details in [the plugin's read
 3. Run `./do start` to start the stack.
 4. Go to http://localhost:8888 to see the dashboard of the dev environment.
 
+## ✅ Additional dependencies
+
+Even though it possible to run everything using Docker, in the development workflow,
+it may be faster and more convenient to run some tasks outside the container. Therefore,
+the following tools are recommended:
+
+1. **PHP** as per `composer.json` requirements.
+2. **Node.js**, as specified by `.nvmrc`. For automatic management use [nvm](https://github.com/nvm-sh/nvm), [FNM](https://github.com/Schniz/fnm), or [Volta](https://github.com/volta-cli/volta).
+3. **pnpm**, as specified in `package.json`. For automatic setup enable [Corepack](https://nodejs.org/docs/latest-v17.x/api/corepack.html) using `corepack enable`.
+
 ## 🔍 PHPStorm setup for XDebug
 
 In `Languages & Preferences > PHP > Servers` set path mappings:
