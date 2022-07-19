@@ -96,7 +96,7 @@ class GutenbergFormBlockCest {
     $i->fillField('[data-automation-id="form_last_name"]', $this->lastName);
     $i->fillField('[data-automation-id="form_email"]', $this->firstName);
     $i->click('.mailpoet_submit');
-    $i->waitForText('Please specify a valid email address.');
+    $i->waitForText('This value should be a valid email.');
 
     $i->fillField('[data-automation-id="form_email"]', $this->subscriberEmail);
     $i->click('.mailpoet_submit');
