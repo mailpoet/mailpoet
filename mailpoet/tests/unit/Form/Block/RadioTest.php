@@ -60,7 +60,7 @@ class RadioTest extends \MailPoetUnitTest {
   }
 
   public function testItShouldRenderRadioInputs() {
-    $this->baseMock->expects($this->once())->method('renderLabel')->willReturn('<label></label>');
+    $this->baseMock->expects($this->once())->method('renderLegend')->willReturn('<legend></legend>');
     $this->baseMock->expects($this->once())->method('getFieldName')->willReturn('Field name');
     $this->baseMock->expects($this->once())->method('getInputValidation')->willReturn(' validation="1" ');
     $this->baseMock->expects($this->once())->method('getFieldValue')->willReturn('Radio 2');
@@ -81,7 +81,7 @@ class RadioTest extends \MailPoetUnitTest {
   }
 
   public function testItShouldRenderErrorContainerWithFormId() {
-    $this->baseMock->expects($this->once())->method('renderLabel')->willReturn('<label></label>');
+    $this->baseMock->expects($this->once())->method('renderLegend')->willReturn('<legend></legend>');
     $this->baseMock->expects($this->once())->method('getFieldName')->willReturn('Field name');
     $this->baseMock->expects($this->once())->method('getInputValidation')->willReturn(' validation="1" ');
     $this->baseMock->expects($this->once())->method('getFieldValue')->willReturn('Radio 2');
