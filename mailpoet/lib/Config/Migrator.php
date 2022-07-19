@@ -646,7 +646,7 @@ class Migrator {
       'description text NOT NULL DEFAULT "",',
       'created_at timestamp NULL,', // must be NULL, see comment at the top
       'updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
-      'PRIMARY KEY (id),',
+      'PRIMARY KEY  (id),',
       'UNIQUE KEY name (name)',
     ];
     return $this->sqlify(__FUNCTION__, $attributes);
@@ -659,7 +659,7 @@ class Migrator {
       'tag_id int(11) unsigned NOT NULL,',
       'created_at timestamp NULL,', // must be NULL, see comment at the top
       'updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
-      'PRIMARY KEY (id),',
+      'PRIMARY KEY  (id),',
       'UNIQUE KEY subscriber_tag (subscriber_id, tag_id),',
       'KEY tag_id (tag_id)',
     ];
