@@ -116,6 +116,9 @@ jobs:
       - checkout:
           path: /home/circleci/mailpoet
       - run:
+          name: 'Set PNPM store directory'
+          command: pnpm config set store-dir ~/.pnpm-store
+      - run:
           name: 'Compute checksum for prefixer'
           command: find prefixer -type f -not -path 'prefixer/build/*' -not -path 'prefixer/vendor/*' | sort | xargs cat | sha512sum > prefixer-checksum
       - restore_cache:
@@ -132,6 +135,10 @@ jobs:
           keys:
             - npm-{{ checksum "package-lock.json" }}
             - npm- # fallback to most recent npm-* if not found by checksum
+      - restore_cache:
+          keys:
+            - pnpm-{{ checksum "../pnpm-lock.yaml" }}
+            - pnpm- # fallback to most recent pnpm-* if not found by checksum
       - run:
           name: 'Set up test environment'
           command: |
@@ -173,6 +180,10 @@ jobs:
           key: npm-{{ checksum "package-lock.json" }}
           paths:
             - ~/.npm
+      - save_cache:
+          key: pnpm-{{ checksum "../pnpm-lock.yaml" }}
+          paths:
+            - ~/.pnpm-store
       - run:
           name: Download additional WP Plugins for tests
           command: |
