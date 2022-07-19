@@ -17,7 +17,7 @@ mkdir $plugin_name
 # Production assets.
 echo '[BUILD] Generating production CSS and JS assets'
 rm -rf node_modules
-npm ci --prefer-offline
+pnpm install --frozen-lockfile --prefer-offline
 ./do compile:all --env production
 
 # Dependency injection container cache.
