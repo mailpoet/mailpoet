@@ -49,7 +49,7 @@ class DaemonActionSchedulerRunner {
     $this->actionScheduler = $actionScheduler;
   }
 
-  public function init() {
+  public function init(): void {
     $this->wp->addAction(self::DAEMON_RUN_SCHEDULER_ACTION, [$this, 'run']);
     $this->wp->addAction(self::DAEMON_TRIGGER_SCHEDULER_ACTION, [$this, 'trigger']);
     $this->wp->addAction('wp_ajax_nopriv_' . self::RUN_ACTION_SCHEDULER, [$this, 'runActionScheduler'], 0);
@@ -59,7 +59,7 @@ class DaemonActionSchedulerRunner {
     }
   }
 
-  public function deactivate() {
+  public function deactivate(): void {
     $this->actionScheduler->unscheduleAction(self::DAEMON_TRIGGER_SCHEDULER_ACTION);
     $this->actionScheduler->unscheduleAction(self::DAEMON_RUN_SCHEDULER_ACTION);
   }
@@ -67,9 +67,8 @@ class DaemonActionSchedulerRunner {
   /**
    * In regular intervals checks if there are scheduled tasks to execute.
    * In case there are tasks it spawns a recurring action.
-   * @return void
    */
-  public function trigger() {
+  public function trigger(): void {
     $hasJobsToDo = $this->wordpressTrigger->checkExecutionRequirements();
     if (!$hasJobsToDo) {
       $this->actionScheduler->unscheduleAction(self::DAEMON_RUN_SCHEDULER_ACTION);
@@ -97,7 +96,7 @@ class DaemonActionSchedulerRunner {
    * It creates ActionScheduler runner and process a batch actions that are ready to be processed
    * @return void
    */
-  public function runActionScheduler() {
+  public function runActionScheduler(): void {
     $this->wp->addFilter( 'action_scheduler_queue_runner_concurrent_batches', [$this, 'ensureConcurrency']);
     \ActionScheduler_QueueRunner::instance()->run();
     wp_die();
@@ -105,7 +104,6 @@ class DaemonActionSchedulerRunner {
 
   /**
    * When triggering Action Runner we need to make sure we are able to trigger new runner from a runner
-   * @return int
    */
   public function ensureConcurrency(int $concurrency): int {
     return ($concurrency) < 2 ? 2 : $concurrency;
@@ -121,7 +119,7 @@ class DaemonActionSchedulerRunner {
   /**
    * After Action Scheduler finishes queue always check there is more work to do and in case there is trigger additional runner.
    */
-  public function afterProcess() {
+  public function afterProcess(): void {
     if ($this->wordpressTrigger->checkExecutionRequirements()) {
       sleep(2); // Add short sleep to ensure next action ready to be processed since minimal schedule interval is 1 second
       $this->triggerRemoteExecutor();
@@ -135,18 +133,17 @@ class DaemonActionSchedulerRunner {
    * and used to listen on how many execution time is needed.
    * The execution limit is then used for the daemon run
    */
-  public function storeRemainingExecutionLimit($likelyExceeded, $runner, $processedActions, $executionTime, $maxExecutionTime) {
+  public function storeRemainingExecutionLimit($likelyExceeded, $runner, $processedActions, $executionTime, $maxExecutionTime): bool {
     $newLimit = floor(($maxExecutionTime - $executionTime) - self::EXECUTION_LIMIT_MARGIN);
     $this->remainingExecutionLimit = intval(max($newLimit, 0));
-    return $likelyExceeded;
+    return (bool)$likelyExceeded;
   }
 
   /**
    * Spawns addition Action Scheduler runner
    * @see https://actionscheduler.org/perf/#increasing-initialisation-rate-of-runners
-   * @return void
    */
-  private function triggerRemoteExecutor() {
+  private function triggerRemoteExecutor(): void {
     $this->wp->addFilter('https_local_ssl_verify', '__return_false', 100);
     $this->wp->wpRemotePost( $this->wp->adminUrl( 'admin-ajax.php' ), [
       'method' => 'POST',
