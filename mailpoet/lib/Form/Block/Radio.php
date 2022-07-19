@@ -33,7 +33,7 @@ class Radio {
     $fieldValidation = $this->rendererHelper->getInputValidation($block, [], $formId);
 
     $html .= '<fieldset>';
-    $html .= '<legend>' . $block['params']['label'] . '</legend>';
+    $html .= $this->rendererHelper->renderLegend($block, $formSettings);
 
     $options = (!empty($block['params']['values'])
       ? $block['params']['values']
