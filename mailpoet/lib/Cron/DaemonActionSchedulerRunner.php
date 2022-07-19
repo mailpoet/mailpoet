@@ -97,7 +97,7 @@ class DaemonActionSchedulerRunner {
    * @return void
    */
   public function runActionScheduler(): void {
-    $this->wp->addFilter( 'action_scheduler_queue_runner_concurrent_batches', [$this, 'ensureConcurrency']);
+    $this->wp->addFilter('action_scheduler_queue_runner_concurrent_batches', [$this, 'ensureConcurrency']);
     \ActionScheduler_QueueRunner::instance()->run();
     wp_die();
   }
@@ -145,7 +145,7 @@ class DaemonActionSchedulerRunner {
    */
   private function triggerRemoteExecutor(): void {
     $this->wp->addFilter('https_local_ssl_verify', '__return_false', 100);
-    $this->wp->wpRemotePost( $this->wp->adminUrl( 'admin-ajax.php' ), [
+    $this->wp->wpRemotePost($this->wp->adminUrl('admin-ajax.php'), [
       'method' => 'POST',
       'timeout' => 5,
       'redirection' => 5,
