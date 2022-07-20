@@ -10,6 +10,9 @@ patchedDependencies:
   parsleyjs@2.9.2:
     hash: omwuxp36airmeyyvhh2whskxvm
     path: patches/parsleyjs@2.9.2.patch
+  spectrum-colorpicker@1.8.1:
+    hash: km5kmldrym63lx54pzrt7a3qq4
+    path: patches/spectrum-colorpicker@1.8.1.patch
 
 importers:
 
@@ -269,7 +272,7 @@ importers:
       select2: 4.1.0-rc.0
       setimmediate: 1.0.5
       slugify: 1.6.5
-      spectrum-colorpicker: 1.8.1
+      spectrum-colorpicker: 1.8.1_km5kmldrym63lx54pzrt7a3qq4
       tinymce: 5.10.2
       underscore: 1.13.4
       velocity-animate: 1.5.2
@@ -18491,9 +18494,10 @@ packages:
       - supports-color
     dev: true
 
-  /spectrum-colorpicker/1.8.1:
+  /spectrum-colorpicker/1.8.1_km5kmldrym63lx54pzrt7a3qq4:
     resolution: {integrity: sha512-x1picQ5giVso71ESII7jZ3+ZFdit8WthNkzwJqLNdPDPzrltKUQGpTohWyPfSAID+bK1zGdO6bDbSh1S6GoLYA==}
     dev: false
+    patched: true
 
   /split-string/3.1.0:
     resolution: {integrity: sha512-NzNVhJDYpwceVVii8/Hu6DKfD2G+NrQHlS/V/qgv763EYudVwEcMQNxd2lh+0VrUByXN/oJkl5grOhYWvQUYiw==}
