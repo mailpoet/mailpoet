@@ -19,6 +19,7 @@ use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Services\AuthorizedEmailsController;
+use MailPoet\Services\AuthorizedSenderDomainController;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsChangeHandler;
 use MailPoet\Settings\SettingsController;
@@ -53,6 +54,7 @@ class SettingsTest extends \MailPoetTest {
       $this->settings,
       new Bridge,
       $this->make(AuthorizedEmailsController::class, ['onSettingsSave' => null ]),
+      $this->diContainer->get(AuthorizedSenderDomainController::class),
       $this->make(TransactionalEmails::class),
       WPFunctions::get(),
       $this->diContainer->get(EntityManager::class),
@@ -96,6 +98,7 @@ class SettingsTest extends \MailPoetTest {
       $this->settings,
       $this->make(Bridge::class, ['onSettingsSave' => Expected::once()]),
       $this->make(AuthorizedEmailsController::class, ['onSettingsSave' => Expected::once()]),
+      $this->diContainer->get(AuthorizedSenderDomainController::class),
       $this->make(TransactionalEmails::class),
       WPFunctions::get(),
       $this->diContainer->get(EntityManager::class),
@@ -130,6 +133,7 @@ class SettingsTest extends \MailPoetTest {
       $this->settings,
       $bridgeMock,
       new AuthorizedEmailsController($this->settings, $bridgeMock, $this->diContainer->get(NewslettersRepository::class)),
+      $this->diContainer->get(AuthorizedSenderDomainController::class),
       $this->make(TransactionalEmails::class),
       WPFunctions::get(),
       $this->diContainer->get(EntityManager::class),
@@ -159,6 +163,7 @@ class SettingsTest extends \MailPoetTest {
       $this->settings,
       $bridgeMock,
       new AuthorizedEmailsController($this->settings, $bridgeMock, $this->diContainer->get(NewslettersRepository::class)),
+      $this->diContainer->get(AuthorizedSenderDomainController::class),
       $this->make(TransactionalEmails::class),
       WPFunctions::get(),
       $this->diContainer->get(EntityManager::class),
@@ -190,6 +195,7 @@ class SettingsTest extends \MailPoetTest {
       $this->settings,
       $bridgeMock,
       new AuthorizedEmailsController($this->settings, $bridgeMock, $this->diContainer->get(NewslettersRepository::class)),
+      $this->diContainer->get(AuthorizedSenderDomainController::class),
       $this->make(TransactionalEmails::class),
       WPFunctions::get(),
       $this->diContainer->get(EntityManager::class),

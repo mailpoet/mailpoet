@@ -11,6 +11,7 @@ function SenderEmailAddressWarning({
   emailAddress,
   mssActive,
   isEmailAuthorized,
+  showSenderDomainWarning,
 }) {
   const [showAuthorizedEmailModal, setShowAuthorizedEmailModal] =
     useState(false);
@@ -20,6 +21,8 @@ function SenderEmailAddressWarning({
     event.preventDefault();
     setShowAuthorizedEmailModal(true);
   };
+
+  const emailAddressDomain = emailAddress.split('@').pop().toLowerCase();
 
   if (mssActive) {
     if (!isEmailAuthorized) {
@@ -56,9 +59,42 @@ function SenderEmailAddressWarning({
         </>
       );
     }
+    if (showSenderDomainWarning) {
+      return (
+        <>
+          {showAuthorizedEmailModal && (
+            // TODO: Change me. This should open the sender domain modal
+            <AuthorizeSenderEmailModal
+              senderEmail={emailAddress}
+              onRequestClose={() => {
+                setShowAuthorizedEmailModal(false);
+              }}
+              setAuthorizedAddress={setAuthorizedEmailAddress}
+            />
+          )}
+          <p className="sender_email_address_warning">
+            {ReactStringReplace(
+              MailPoet.I18n.t('authorizeSenderDomain'),
+              /\[link](.*?)\[\/link]/g,
+              (match) => (
+                <a
+                  key={match}
+                  className="mailpoet-link"
+                  href="https://kb.mailpoet.com/article/328-set-up-dkim-for-your-sender-domain"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={loadModal}
+                >
+                  {match}
+                </a>
+              ),
+            )}
+          </p>
+        </>
+      );
+    }
     return null;
   }
-  const emailAddressDomain = emailAddress.split('@').pop().toLowerCase();
   if (window.mailpoet_free_domains.indexOf(emailAddressDomain) > -1) {
     return (
       <>
@@ -100,10 +136,12 @@ SenderEmailAddressWarning.propTypes = {
   emailAddress: PropTypes.string.isRequired,
   mssActive: PropTypes.bool.isRequired,
   isEmailAuthorized: PropTypes.bool,
+  showSenderDomainWarning: PropTypes.bool,
 };
 
 SenderEmailAddressWarning.defaultProps = {
   isEmailAuthorized: true, // don't show error message by default
+  showSenderDomainWarning: false,
 };
 
 export { SenderEmailAddressWarning };
