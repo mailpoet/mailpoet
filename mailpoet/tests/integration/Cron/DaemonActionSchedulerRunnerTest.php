@@ -2,7 +2,9 @@
 
 namespace MailPoet\Cron;
 
+use MailPoet\Cron\ActionScheduler\Actions\DaemonRun;
 use MailPoet\Cron\ActionScheduler\Actions\DaemonTrigger;
+use MailPoet\Cron\ActionScheduler\ActionScheduler;
 use MailPoet\Cron\ActionScheduler\ActionSchedulerTestHelper;
 use MailPoet\Entities\ScheduledTaskEntity;
 
@@ -16,8 +18,12 @@ class DaemonActionSchedulerRunnerTest extends \MailPoetTest {
   /** @var ActionSchedulerTestHelper */
   private $actionSchedulerHelper;
 
+  /** @var ActionScheduler */
+  private $actionScheduler;
+
   public function _before(): void {
     $this->actionSchedulerRunner = $this->diContainer->get(DaemonActionSchedulerRunner::class);
+    $this->actionScheduler = $this->diContainer->get(ActionScheduler::class);
     $this->cleanup();
     $this->actionSchedulerHelper = new ActionSchedulerTestHelper();
   }
@@ -38,6 +44,20 @@ class DaemonActionSchedulerRunnerTest extends \MailPoetTest {
     $actions = $this->actionSchedulerHelper->getMailPoetScheduledActions();
     expect($actions)->count(1);
     $this->actionSchedulerRunner->deactivate();
+    $actions = $this->actionSchedulerHelper->getMailPoetScheduledActions();
+    expect($actions)->count(0);
+  }
+
+  public function testItDeactivatesAllTasksOnTrigger(): void {
+    $this->actionScheduler->scheduleRecurringAction(time() - 1, 100, DaemonTrigger::NAME);
+    $this->actionScheduler->scheduleRecurringAction(time() - 1, 100, DaemonRun::NAME);
+    $actions = $this->actionSchedulerHelper->getMailPoetScheduledActions();
+    expect($actions)->count(2);
+    $this->actionSchedulerRunner->deactivateOnTrigger();
+
+    $runner = new \ActionScheduler_QueueRunner();
+    $runner->run();
+
     $actions = $this->actionSchedulerHelper->getMailPoetScheduledActions();
     expect($actions)->count(0);
   }

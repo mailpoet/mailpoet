@@ -46,7 +46,7 @@ class CronTrigger {
         $this->cronActionScheduler->init();
         return true;
       } else {
-        $this->cronActionScheduler->deactivate();
+        $this->cronActionScheduler->deactivateOnTrigger();
       }
       if ($currentMethod === self::METHOD_WORDPRESS) {
         return $this->wordpressTrigger->run();
