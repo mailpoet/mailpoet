@@ -1,26 +1,9 @@
-From 8fd0a3a5f6a478f319763f999aaf5d8531c52b1d Mon Sep 17 00:00:00 2001
-From: Anders Kaseorg <andersk@mit.edu>
-Date: Tue, 21 Jul 2020 20:52:17 -0700
-Subject: [PATCH] Replace deprecated jQuery methods
-
-Fixes these warnings from jquery-migrate:
-
-JQMIGRATE: jQuery.isArray is deprecated; use Array.isArray
-JQMIGRATE: jQuery.fn.click() event shorthand is deprecated
-JQMIGRATE: jQuery.fn.change() event shorthand is deprecated
-JQMIGRATE: jQuery.fn.keydown() event shorthand is deprecated
-
-Signed-off-by: Anders Kaseorg <andersk@mit.edu>
----
- node_modules/spectrum-colorpicker/spectrum.js | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
-
-diff --git a/node_modules/spectrum-colorpicker/spectrum.js b/node_modules/spectrum-colorpicker/spectrum.js
-index e2e0687..6c48c12 100644
---- a/node_modules/spectrum-colorpicker/spectrum.js
-+++ b/node_modules/spectrum-colorpicker/spectrum.js
+diff --git a/spectrum.js b/spectrum.js
+index e2e068755fba7a86987a097bcf8f1def22ab10c4..6c48c12543a6ab611f5acc25ad5fd8d28b53dfd5 100644
+--- a/spectrum.js
++++ b/spectrum.js
 @@ -249,7 +249,7 @@
-
+ 
              if (opts.palette) {
                  palette = opts.palette.slice(0);
 -                paletteArray = $.isArray(palette[0]) ? palette : [palette];
@@ -30,11 +13,11 @@ index e2e0687..6c48c12 100644
                      for (var j = 0; j < paletteArray[i].length; j++) {
 @@ -321,14 +321,14 @@
              }
-
+ 
              // Prevent clicks from bubbling up to document.  This would cause it to be hidden.
 -            container.click(stopPropagation);
 +            container.on("click", stopPropagation);
-
+ 
              // Handle user typed input
 -            textInput.change(setFromTextInput);
 +            textInput.on("change", setFromTextInput);
@@ -43,6 +26,6 @@ index e2e0687..6c48c12 100644
              });
 -            textInput.keydown(function (e) { if (e.keyCode == 13) { setFromTextInput(); } });
 +            textInput.on("keydown", function (e) { if (e.keyCode == 13) { setFromTextInput(); } });
-
+ 
              cancelButton.text(opts.cancelText);
              cancelButton.on("click.spectrum", function (e) {

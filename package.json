@@ -15,7 +15,8 @@
     "patchedDependencies": {
       "@woocommerce/components@10.0.0": "patches/@woocommerce__components@10.0.0.patch",
       "backbone.supermodel@1.2.0": "patches/backbone.supermodel@1.2.0.patch",
-      "parsleyjs@2.9.2": "patches/parsleyjs@2.9.2.patch"
+      "parsleyjs@2.9.2": "patches/parsleyjs@2.9.2.patch",
+      "spectrum-colorpicker@1.8.1": "patches/spectrum-colorpicker@1.8.1.patch"
     }
   }
 }
