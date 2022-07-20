@@ -118,6 +118,10 @@ if [[ ! -d "/wp-core/wp-content/plugins/woo-gutenberg-products-block" ]]; then
   unzip -q -o "$WOOCOMMERCE_BLOCKS_ZIP" -d /wp-core/wp-content/plugins/
 fi
 
+# Install a fix plugin for PHPMailer on WP 5.6
+cp /project/tests/docker/codeception/wp-56-phpmailer-fix.php /wp-core/wp-content/plugins/wp-56-phpmailer-fix.php
+wp plugin activate wp-56-phpmailer-fix
+
 # activate all plugins which source code want to access in tests runtime
 wp plugin activate woocommerce
 wp plugin activate woocommerce-subscriptions
