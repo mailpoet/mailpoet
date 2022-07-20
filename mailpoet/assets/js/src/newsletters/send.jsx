@@ -635,6 +635,7 @@ class NewsletterSendComponent extends Component {
               variant="secondary"
               type="submit"
               automationId="email-save-draft"
+              isDisabled={this.state.loading}
             >
               {MailPoet.I18n.t('saveDraftAndClose')}
             </Button>
@@ -642,7 +643,7 @@ class NewsletterSendComponent extends Component {
               <Button
                 type="button"
                 onClick={this.handleResume}
-                isDisabled={sendingDisabled}
+                isDisabled={sendingDisabled || this.state.loading}
                 automationId="email-resume"
               >
                 {MailPoet.I18n.t('resume')}
@@ -652,7 +653,7 @@ class NewsletterSendComponent extends Component {
                 type="button"
                 onClick={this.handleSend}
                 {...sendButtonOptions}
-                isDisabled={sendingDisabled}
+                isDisabled={sendingDisabled || this.state.loading}
                 automationId="email-submit"
               >
                 {sendButtonOptions.value || MailPoet.I18n.t('send')}
