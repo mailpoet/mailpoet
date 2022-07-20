@@ -7,6 +7,9 @@ patchedDependencies:
   backbone.supermodel@1.2.0:
     hash: hhsvgimsfhfs4itf7ipk47fane
     path: patches/backbone.supermodel@1.2.0.patch
+  parsleyjs@2.9.2:
+    hash: omwuxp36airmeyyvhh2whskxvm
+    path: patches/parsleyjs@2.9.2.patch
 
 importers:
 
@@ -248,7 +251,7 @@ importers:
       moment: 2.29.4
       mousetrap: 1.6.5
       papaparse: 5.3.2
-      parsleyjs: 2.9.2
+      parsleyjs: 2.9.2_omwuxp36airmeyyvhh2whskxvm
       postcss: 8.4.14
       process: 0.11.10
       prop-types: 15.8.1
@@ -15794,11 +15797,12 @@ packages:
     engines: {node: '>= 0.8'}
     dev: true
 
-  /parsleyjs/2.9.2:
+  /parsleyjs/2.9.2_omwuxp36airmeyyvhh2whskxvm:
     resolution: {integrity: sha512-DKS2XXTjEUZ1BJWUzgXAr+550kFBZrom2WYweubqdV7WzdNC1hjOajZDfeBPoAZMkXumJPlB3v37IKatbiW8zQ==}
     dependencies:
       jquery: 3.6.0
     dev: false
+    patched: true
 
   /pascal-case/3.1.2:
     resolution: {integrity: sha512-uWlGT3YSnK9x3BQJaOdcZwrnV6hPpd8jFH1/ucpiLRPh/2zCVJKS19E4GvYHvaCcACn3foXZ0cLB9Wrx1KGe5g==}
