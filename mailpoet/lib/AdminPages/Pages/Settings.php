@@ -7,6 +7,7 @@ use MailPoet\API\JSON\v1\Premium;
 use MailPoet\Config\Installer;
 use MailPoet\Config\ServicesChecker;
 use MailPoet\Segments\SegmentsSimpleListRepository;
+use MailPoet\Services\AuthorizedSenderDomainController;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\Hosts;
 use MailPoet\Settings\Pages;
@@ -45,6 +46,9 @@ class Settings {
   /** @var Bridge */
   private $bridge;
 
+  /** @var AuthorizedSenderDomainController */
+  private $senderDomainController;
+
   public function __construct(
     PageRenderer $pageRenderer,
     SettingsController $settings,
@@ -54,7 +58,8 @@ class Settings {
     Installation $installation,
     Captcha $captcha,
     SegmentsSimpleListRepository $segmentsListRepository,
-    Bridge $bridge
+    Bridge $bridge,
+    AuthorizedSenderDomainController $senderDomainController
   ) {
     $this->pageRenderer = $pageRenderer;
     $this->settings = $settings;
@@ -65,6 +70,7 @@ class Settings {
     $this->captcha = $captcha;
     $this->segmentsListRepository = $segmentsListRepository;
     $this->bridge = $bridge;
+    $this->senderDomainController = $senderDomainController;
   }
 
   public function render() {
@@ -97,6 +103,7 @@ class Settings {
       ],
       'built_in_captcha_supported' => $this->captcha->isSupported(),
       'authorized_emails' => $this->bridge->getAuthorizedEmailAddresses(),
+      'verified_sender_domains' => $this->senderDomainController->getVerifiedSenderDomains(),
     ];
 
     $data['is_new_user'] = $this->installation->isNewInstallation();
