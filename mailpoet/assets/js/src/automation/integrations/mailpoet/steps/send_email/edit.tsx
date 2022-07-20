@@ -1,3 +1,4 @@
+import { ComponentProps } from 'react';
 import { PanelBody, TextareaControl, TextControl } from '@wordpress/components';
 import { dispatch, useSelect } from '@wordpress/data';
 import { plus, edit, Icon } from '@wordpress/icons';
@@ -8,6 +9,29 @@ import {
   TitleActionButton,
 } from '../../../../editor/components/panel';
 import { store } from '../../../../editor/store';
+
+function SingleLineTextareaControl(
+  props: ComponentProps<typeof TextareaControl>,
+): JSX.Element {
+  return (
+    <TextareaControl
+      {...props}
+      onChange={(value) =>
+        // replace a newline or a group of multiple newlines by a space (text pasting)
+        props.onChange(value.replaceAll(/(\r?\n)+/g, ' '))
+      }
+      onKeyDown={(event) => {
+        // disable inserting newlines via "Enter" key
+        if (event.key === 'Enter') {
+          event.preventDefault();
+        }
+        if (props.onKeyDown) {
+          props.onKeyDown(event);
+        }
+      }}
+    />
+  );
+}
 
 export function Edit(): JSX.Element {
   const { selectedStep } = useSelect(
@@ -41,7 +65,7 @@ export function Edit(): JSX.Element {
           dispatch(store).updateStepArgs(selectedStep.id, 'email', value)
         }
       />
-      <TextareaControl
+      <SingleLineTextareaControl
         label="Subject"
         placeholder="Type in subject…"
         value={(selectedStep.args.subject as string) ?? ''}
@@ -49,7 +73,7 @@ export function Edit(): JSX.Element {
           dispatch(store).updateStepArgs(selectedStep.id, 'subject', value)
         }
       />
-      <TextareaControl
+      <SingleLineTextareaControl
         label="Preheader"
         placeholder="Type in preheader…"
         value={(selectedStep.args.preheader as string) ?? ''}
