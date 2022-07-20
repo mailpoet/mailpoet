@@ -13,7 +13,8 @@
   },
   "pnpm": {
     "patchedDependencies": {
-      "@woocommerce/components@10.0.0": "patches/@woocommerce__components@10.0.0.patch"
+      "@woocommerce/components@10.0.0": "patches/@woocommerce__components@10.0.0.patch",
+      "backbone.supermodel@1.2.0": "patches/backbone.supermodel@1.2.0.patch"
     }
   }
 }

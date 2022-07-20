@@ -1,0 +1,16 @@
+diff --git a/build/backbone.supermodel.js b/build/backbone.supermodel.js
+index f33f8e5f959b25a344ec4c3b2d301d9cfb7d9838..6ef9df05cde4905cb17b66a842213a53d51f1550 100644
+--- a/build/backbone.supermodel.js
++++ b/build/backbone.supermodel.js
+@@ -66,9 +66,9 @@ Backbone.SuperModel = (function(_, Backbone){
+   var walkObject = function(obj, keyPath, doThing) {
+     keyPath = processKeyPath(keyPath);
+ 
+-    lastKeyIndex = keyPath.length-1;
++    var lastKeyIndex = keyPath.length-1;
+     for (var i = 0; i < lastKeyIndex; ++ i) {
+-      key = keyPath[i];
++      var key = keyPath[i];
+       if (!(key in obj))
+         obj[key] = {};
+       obj = obj[key];
