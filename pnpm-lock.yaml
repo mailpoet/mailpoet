@@ -43,7 +43,7 @@ importers:
       '@babel/runtime-corejs3': ^7.17.8
       '@emotion/react': ^11.8.2
       '@emotion/styled': ^11.8.1
-      '@mailpoet/eslint-config': workspace:^0.1.0
+      '@mailpoet/eslint-config': workspace:^
       '@storybook/addon-actions': ^6.4.19
       '@storybook/addon-links': ^6.4.19
       '@storybook/addon-storysource': ^6.4.19

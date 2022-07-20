@@ -124,7 +124,7 @@
     "@babel/preset-react": "^7.16.7",
     "@babel/preset-typescript": "^7.16.7",
     "@babel/register": "^7.17.7",
-    "@mailpoet/eslint-config": "workspace:^0.1.0",
+    "@mailpoet/eslint-config": "workspace:^",
     "@storybook/addon-actions": "^6.4.19",
     "@storybook/addon-links": "^6.4.19",
     "@storybook/addon-storysource": "^6.4.19",
