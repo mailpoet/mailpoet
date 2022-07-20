@@ -2,36 +2,31 @@
 
 namespace MailPoet\Cron;
 
-use MailPoet\Cron\ActionScheduler\Actions\DaemonRun;
 use MailPoet\Cron\ActionScheduler\Actions\DaemonTrigger;
-use MailPoet\Cron\ActionScheduler\ActionScheduler;
-use MailPoet\Cron\Workers\UnsubscribeTokens;
+use MailPoet\Cron\ActionScheduler\ActionSchedulerTestHelper;
 use MailPoet\Entities\ScheduledTaskEntity;
-use MailPoet\Settings\SettingsController;
-use MailPoet\Test\DataFactories\ScheduledTask;
-use MailPoet\WP\Functions;
-use MailPoetVendor\Carbon\Carbon;
+
+require_once __DIR__ . '/ActionScheduler/ActionSchedulerTestHelper.php';
 
 class DaemonActionSchedulerRunnerTest extends \MailPoetTest {
 
   /** @var DaemonActionSchedulerRunner */
   private $actionSchedulerRunner;
 
-  /** @var ScheduledTask */
-  private $scheduledTaskFactory;
+  /** @var ActionSchedulerTestHelper */
+  private $actionSchedulerHelper;
 
   public function _before(): void {
     $this->actionSchedulerRunner = $this->diContainer->get(DaemonActionSchedulerRunner::class);
     $this->cleanup();
-    $this->scheduledTaskFactory = new ScheduledTask();
-    $this->scheduledTaskFactory->withDefaultTasks();
+    $this->actionSchedulerHelper = new ActionSchedulerTestHelper();
   }
 
   public function testItSchedulesTriggerActionOnInit(): void {
-    $actions = $this->getMailPoetScheduledActions();
+    $actions = $this->actionSchedulerHelper->getMailPoetScheduledActions();
     expect($actions)->count(0);
     $this->actionSchedulerRunner->init();
-    $actions = $this->getMailPoetScheduledActions();
+    $actions = $this->actionSchedulerHelper->getMailPoetScheduledActions();
     expect($actions)->count(1);
     $action = reset($actions);
     $this->assertInstanceOf(\ActionScheduler_Action::class, $action);
@@ -40,105 +35,11 @@ class DaemonActionSchedulerRunnerTest extends \MailPoetTest {
 
   public function testItDeactivateAllTasks(): void {
     $this->actionSchedulerRunner->init();
-    $actions = $this->getMailPoetScheduledActions();
+    $actions = $this->actionSchedulerHelper->getMailPoetScheduledActions();
     expect($actions)->count(1);
     $this->actionSchedulerRunner->deactivate();
-    $actions = $this->getMailPoetScheduledActions();
+    $actions = $this->actionSchedulerHelper->getMailPoetScheduledActions();
     expect($actions)->count(0);
-  }
-
-  public function testTriggerDoesNotTriggerAnythingIfThereAreNoJobs(): void {
-    $actions = $this->getMailPoetScheduledActions();
-    expect($actions)->count(0);
-    $triggerAction = $this->diContainer->get(DaemonTrigger::class);
-    $triggerAction->process();
-    $actions = $this->getMailPoetScheduledActions();
-    expect($actions)->count(0);
-  }
-
-  public function testTriggerUnschedulesRunJobIfThereIsNoMoreWork(): void {
-    $actionScheduler = $this->diContainer->get(ActionScheduler::class);
-    $actionScheduler->scheduleRecurringAction(time() + 60, 1, DaemonRun::NAME);
-    $actions = $this->getMailPoetScheduledActions();
-    expect($actions)->count(1);
-    $triggerAction = $this->diContainer->get(DaemonTrigger::class);
-    $triggerAction->process();
-    $actions = $this->getMailPoetScheduledActions();
-    expect($actions)->count(0);
-  }
-
-  public function testTriggerTriggerRunnerActionWhenThereIsJob(): void {
-    $this->diContainer->get(SettingsController::class)->set('cron_trigger.method', CronTrigger::METHOD_ACTION_SCHEDULER);
-    $this->createDueScheduledTask();
-    $actions = $this->getMailPoetScheduledActions();
-    expect($actions)->count(0);
-    $triggerAction = $this->diContainer->get(DaemonTrigger::class);
-    $triggerAction->process();
-    $actions = $this->getMailPoetScheduledActions();
-    expect($actions)->count(2);
-    $action = reset($actions);
-    $this->assertInstanceOf(\ActionScheduler_Action::class, $action);
-    expect($action->get_hook())->equals(DaemonRun::NAME);
-    $this->cleanup();
-  }
-
-  public function testRunnerCanProcessActions(): void {
-    $settings = $this->diContainer->get(SettingsController::class);
-    $settings->set('cron_trigger.method', CronTrigger::METHOD_ACTION_SCHEDULER);
-    // We need configure sender so that Daemon::run doesn't fail due incomplete configuration for Mailer.
-    $settings->set('sender', [
-      'name' => 'John',
-      'address' => 'john@example.com',
-    ]);
-    $runAction = $this->diContainer->get(DaemonRun::class);
-    // Activate filter for watching execution limit.
-    // This normally happens in DaemonActionSchedulerRunner::init but it can't be called in tests since it cause some background requests and made test flaky
-    $wp = $this->diContainer->get(Functions::class);
-    $wp->addFilter('action_scheduler_maximum_execution_time_likely_to_be_exceeded', [$runAction, 'storeRemainingExecutionLimit'], 10, 5);
-    expect($runAction->getDaemonExecutionLimit())->equals(20); // Verify initial execution limit
-
-    $actionScheduler = $this->diContainer->get(ActionScheduler::class);
-    $actionScheduler->scheduleRecurringAction(time() - 1, 100, DaemonRun::NAME);
-    $actions = $this->getMailPoetScheduledActions();
-    expect($actions)->count(1);
-    $doneActions = $this->getMailPoetCompleteActions();
-    expect($doneActions)->count(0);
-
-    // We can't call $this->actionSchedulerRunner->runActionScheduler directly because it ends up with wp_die();
-    // We must also instantiate fresh runner, because the global instance may have exhausted execution time, because it is created
-    // at the start of all tests
-    $runner = new \ActionScheduler_QueueRunner();
-    $runner->run();
-
-    $doneActions = $this->getMailPoetCompleteActions();
-    expect($doneActions)->count(1);
-    $actions = $this->getMailPoetScheduledActions();
-    expect($actions)->count(1);
-
-    // Verify execution limit after run. floor(30 - some time taken by previous action) - 10s (safety execution timout margin)
-    expect($runAction->getDaemonExecutionLimit())->greaterThan(0);
-    expect($runAction->getDaemonExecutionLimit())->lessThan(20);
-  }
-
-  private function getMailPoetScheduledActions(): array {
-    $actions = as_get_scheduled_actions([
-      'group' => ActionScheduler::GROUP_ID,
-      'status' => [\ActionScheduler_Store::STATUS_PENDING, \ActionScheduler_Store::STATUS_RUNNING],
-    ]);
-    return $actions;
-  }
-
-  private function getMailPoetCompleteActions(): array {
-    $actions = as_get_scheduled_actions([
-      'group' => ActionScheduler::GROUP_ID,
-      'status' => [\ActionScheduler_Store::STATUS_COMPLETE],
-    ]);
-    return $actions;
-  }
-
-  private function createDueScheduledTask(): void {
-    $date = Carbon::now()->subSecond();
-    $this->scheduledTaskFactory->create(UnsubscribeTokens::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED, $date);
   }
 
   private function cleanup(): void {
