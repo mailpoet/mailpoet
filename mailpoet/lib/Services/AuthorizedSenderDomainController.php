@@ -42,6 +42,7 @@ class AuthorizedSenderDomainController {
     $verifiedDomains = [];
 
     foreach ($records as $key => $value) {
+      if (count($value) < 3) continue;
       [$domainKey1, $domainKey2, $secretRecord] = $value;
       if (
         $domainKey1['status'] === self::DOMAIN_VERIFICATION_STATUS_VALID &&
@@ -64,5 +65,14 @@ class AuthorizedSenderDomainController {
   public function isDomainDmarcRetricted(string $domain): bool {
     $result = $this->dmarcPolicyChecker->getDomainDmarcPolicy($domain);
     return $result !== DmarcPolicyChecker::POLICY_NONE;
+  }
+
+  /**
+   * Fetch Domain DMARC Policy
+   *
+   * returns reject or quarantine or none
+   */
+  public function getDmarcPolicyForDomain(string $domain): string {
+    return $this->dmarcPolicyChecker->getDomainDmarcPolicy($domain);
   }
 }

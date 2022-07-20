@@ -145,6 +145,8 @@ class Bridge {
    * pass in the domain arg to return only the DNS response for the domain
    */
   public function getAuthorizedSenderDomains($domain = 'all'): array {
+    $domain = strtolower($domain);
+
     $data = $this
       ->getApi($this->settings->get(self::API_KEY_SETTING_NAME))
       ->getAuthorizedSenderDomains();
@@ -154,7 +156,7 @@ class Bridge {
 
     foreach ($data as $subarray) {
       if (isset($subarray['domain'])) {
-        $allSenderDomains[$subarray['domain']] = $subarray['dns'] ?? [];
+        $allSenderDomains[strtolower($subarray['domain'])] = $subarray['dns'] ?? [];
       }
     }
 

@@ -14,6 +14,7 @@ use MailPoet\Listing\PageLimit;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\NewsletterTemplates\NewsletterTemplatesRepository;
 use MailPoet\Segments\SegmentsSimpleListRepository;
+use MailPoet\Services\AuthorizedSenderDomainController;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\TrackingConfig;
@@ -79,6 +80,9 @@ class Newsletters {
   /** @var Bridge */
   private $bridge;
 
+  /** @var AuthorizedSenderDomainController */
+  private $senderDomainController;
+
   public function __construct(
     PageRenderer $pageRenderer,
     PageLimit $listingPageLimit,
@@ -96,7 +100,8 @@ class Newsletters {
     SegmentsSimpleListRepository $segmentsListRepository,
     NewslettersRepository $newslettersRepository,
     TrackingConfig $trackingConfig,
-    Bridge $bridge
+    Bridge $bridge,
+    AuthorizedSenderDomainController $senderDomainController
   ) {
     $this->pageRenderer = $pageRenderer;
     $this->listingPageLimit = $listingPageLimit;
@@ -115,6 +120,7 @@ class Newsletters {
     $this->trackingConfig = $trackingConfig;
     $this->newslettersRepository = $newslettersRepository;
     $this->bridge = $bridge;
+    $this->senderDomainController = $senderDomainController;
   }
 
   public function render() {
@@ -195,6 +201,8 @@ class Newsletters {
     $data['products'] = $this->wpPostListLoader->getProducts();
 
     $data['authorized_emails'] = $this->bridge->getAuthorizedEmailAddresses();
+
+    $data['verified_sender_domains'] = $this->senderDomainController->getVerifiedSenderDomains();
 
     $this->pageRenderer->displayPage('newsletters.html', $data);
   }
