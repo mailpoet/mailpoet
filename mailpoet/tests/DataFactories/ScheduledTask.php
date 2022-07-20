@@ -3,9 +3,13 @@
 namespace MailPoet\Test\DataFactories;
 
 use MailPoet\Cron\Workers\Beamer;
+use MailPoet\Cron\Workers\Bounce;
 use MailPoet\Cron\Workers\InactiveSubscribers;
+use MailPoet\Cron\Workers\KeyCheck\PremiumKeyCheck;
+use MailPoet\Cron\Workers\KeyCheck\SendingServiceKeyCheck;
 use MailPoet\Cron\Workers\SendingQueue\Migration;
 use MailPoet\Cron\Workers\SubscriberLinkTokens;
+use MailPoet\Cron\Workers\SubscribersStatsReport;
 use MailPoet\Cron\Workers\UnsubscribeTokens;
 use MailPoet\Cron\Workers\WooCommercePastOrders;
 use MailPoet\DI\ContainerWrapper;
@@ -58,6 +62,10 @@ class ScheduledTask {
     $this->scheduleTask(Beamer::TASK_TYPE, $datetime);
     $this->scheduleTask(InactiveSubscribers::TASK_TYPE, $datetime);
     $this->scheduleTask(Migration::TASK_TYPE, $datetime);
+    $this->scheduleTask(PremiumKeyCheck::TASK_TYPE, $datetime);
+    $this->scheduleTask(SendingServiceKeyCheck::TASK_TYPE, $datetime);
+    $this->scheduleTask(Bounce::TASK_TYPE, $datetime);
+    $this->scheduleTask(SubscribersStatsReport::TASK_TYPE, $datetime);
   }
 
   private function scheduleTask(string $type, Carbon $datetime) {
