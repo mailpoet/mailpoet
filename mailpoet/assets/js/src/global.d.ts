@@ -124,4 +124,5 @@ interface Window {
     ajax_url: string;
   };
   mailpoet_authorized_emails?: string[];
+  mailpoet_verified_sender_domains?: string[];
 }

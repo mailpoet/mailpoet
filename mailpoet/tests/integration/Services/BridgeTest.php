@@ -49,7 +49,6 @@ class BridgeTest extends \MailPoetTest {
   }
 
   public function testItChecksIfCurrentSendingMethodIsMailpoet() {
-    expect(Bridge::isMPSendingServiceEnabled())->false();
     $this->setMailPoetSendingMethod();
     expect(Bridge::isMPSendingServiceEnabled())->true();
   }
