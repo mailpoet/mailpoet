@@ -211,11 +211,6 @@
     "webpack-manifest-plugin": "^5.0.0",
     "wp-types": "^3.59.1"
   },
-  "overrides": {
-    "webpack": "$webpack",
-    "underscore": "$underscore",
-    "react": "$react"
-  },
   "volta": {
     "extends": "../package.json"
   }
