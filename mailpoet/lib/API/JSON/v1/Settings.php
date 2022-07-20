@@ -15,6 +15,7 @@ use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Services\AuthorizedEmailsController;
+use MailPoet\Services\AuthorizedSenderDomainController;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsChangeHandler;
 use MailPoet\Settings\SettingsController;
@@ -36,6 +37,9 @@ class Settings extends APIEndpoint {
 
   /** @var AuthorizedEmailsController */
   private $authorizedEmailsController;
+
+  /** @var AuthorizedSenderDomainController */
+  private $senderDomainController;
 
   /** @var TransactionalEmails */
   private $wcTransactionalEmails;
@@ -80,6 +84,7 @@ class Settings extends APIEndpoint {
     SettingsController $settings,
     Bridge $bridge,
     AuthorizedEmailsController $authorizedEmailsController,
+    AuthorizedSenderDomainController $senderDomainController,
     TransactionalEmails $wcTransactionalEmails,
     WPFunctions $wp,
     EntityManager $entityManager,
@@ -96,6 +101,7 @@ class Settings extends APIEndpoint {
     $this->settings = $settings;
     $this->bridge = $bridge;
     $this->authorizedEmailsController = $authorizedEmailsController;
+    $this->senderDomainController = $senderDomainController;
     $this->wcTransactionalEmails = $wcTransactionalEmails;
     $this->servicesChecker = $servicesChecker;
     $this->wp = $wp;
@@ -242,6 +248,22 @@ class Settings extends APIEndpoint {
     $emailAddress = trim($emailAddress);
 
     $response = ['isAuthorized' => $this->authorizedEmailsController->isEmailAddressAuthorized($emailAddress)];
+
+    return $this->successResponse($response);
+  }
+
+  public function checkDomainDmarcPolicy($data = []) {
+    $domain = $data['domain'] ?? null;
+
+    if (!$domain) {
+      return $this->badRequest([
+        APIError::BAD_REQUEST => WPFunctions::get()->__('No sender domain specified.', 'mailpoet'),
+      ]);
+    }
+
+    $domain = trim($domain);
+
+    $response = ['isDmarcPolicyRetricted' => $this->senderDomainController->isDomainDmarcRetricted($domain)];
 
     return $this->successResponse($response);
   }
