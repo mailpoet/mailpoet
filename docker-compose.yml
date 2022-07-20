@@ -53,6 +53,7 @@ services:
       - './package.json:/var/www/html/wp-content/plugins/package.json'
       - './pnpm-lock.yaml:/var/www/html/wp-content/plugins/pnpm-lock.yaml'
       - './pnpm-workspace.yaml:/var/www/html/wp-content/plugins/pnpm-workspace.yaml'
+      - './patches:/var/www/html/wp-content/plugins/patches'
       - './mailpoet:/var/www/html/wp-content/plugins/mailpoet'
       - './mailpoet-premium:/var/www/html/wp-content/plugins/mailpoet-premium'
       - './packages:/var/www/html/wp-content/plugins/packages'
