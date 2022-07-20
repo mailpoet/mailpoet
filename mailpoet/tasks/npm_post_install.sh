@@ -20,6 +20,3 @@ sed -i -- "s/_focusedField\.focus()/_focusedField\.trigger('focus')/g" node_modu
 # Fix strict mode issues in Backbone.Supermodel
 sed -i -- "s/  lastKeyIndex = keyPath.length-1;/  var lastKeyIndex = keyPath.length-1;/g" node_modules/backbone.supermodel/build/backbone.supermodel.js
 sed -i -- "s/  key = keyPath\[i\];/  var key = keyPath\[i\];/g" node_modules/backbone.supermodel/build/backbone.supermodel.js
-
-# Fix @woocommerce/components having invalid CSS not parseable by SASS
-sed -i -- "s/[(]1fr[)]/1fr /g" node_modules/@woocommerce/components/build-style/style.css

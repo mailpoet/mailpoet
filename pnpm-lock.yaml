@@ -1,5 +1,10 @@
 lockfileVersion: 5.4
 
+patchedDependencies:
+  '@woocommerce/components@10.0.0':
+    hash: prtmohnt73dk73q3vnzuiaioji
+    path: patches/@woocommerce__components@10.0.0.patch
+
 importers:
 
   .:
@@ -192,7 +197,7 @@ importers:
       '@emotion/react': 11.8.2_yhhwp62ayfwdsajg6mapyglucm
       '@emotion/styled': 11.8.1_tynkqtbjedbrxh4wfjztxjncwq
       '@types/select2': 4.0.55
-      '@woocommerce/components': 10.0.0_j4iraxlqgettcbpgjfq3wssi4m
+      '@woocommerce/components': 10.0.0_prtmohnt73dk73q3vnzuiaioji_j4iraxlqgettcbpgjfq3wssi4m
       '@wordpress/a11y': 3.8.0
       '@wordpress/api-fetch': 6.6.0
       '@wordpress/block-editor': 8.3.1_zlylvskpbsx6y7yplr6ejap2ga
@@ -5454,7 +5459,7 @@ packages:
       react: 17.0.2
     dev: true
 
-  /@woocommerce/components/10.0.0_j4iraxlqgettcbpgjfq3wssi4m:
+  /@woocommerce/components/10.0.0_prtmohnt73dk73q3vnzuiaioji_j4iraxlqgettcbpgjfq3wssi4m:
     resolution: {integrity: sha512-gal/58XaVSl6ZsfKmc2ZCf6Bd2+baP2GJClqWoqA7qUCWsPzY6xvWXykTKZW79qzfttKjL7Pt/FDU2LuiQp2Kg==}
     peerDependencies:
       '@wordpress/data': ^6.2.1
@@ -5509,6 +5514,7 @@ packages:
       - '@babel/core'
       - '@types/react'
     dev: false
+    patched: true
 
   /@woocommerce/csv-export/1.5.0:
     resolution: {integrity: sha512-VPzBcEEWkkHEg8r1McVkUtE6H+fbV10wFNn5NCA5PDbc4rmjqISYz7L7gBNAhCOq1RL8N9722ZceGCEJhifpYA==}
