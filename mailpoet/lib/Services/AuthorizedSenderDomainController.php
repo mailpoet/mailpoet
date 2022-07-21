@@ -9,11 +9,17 @@ class AuthorizedSenderDomainController {
   const DOMAIN_VERIFICATION_STATUS_INVALID = 'invalid';
   const DOMAIN_VERIFICATION_STATUS_PENDING = 'pending';
 
+  const AUTHORIZED_SENDER_DOMAIN_ERROR_ALREADY_CREATED = 'Sender domain exist';
+  const AUTHORIZED_SENDER_DOMAIN_ERROR_NOT_CREATED = 'Sender domain does not exist';
+  const AUTHORIZED_SENDER_DOMAIN_ERROR_ALREADY_VERIFIED = 'Sender domain already verified';
+
   /** @var Bridge */
   private $bridge;
 
   /** @var DmarcPolicyChecker */
   private $dmarcPolicyChecker;
+
+  private $currentRecords;
 
   public function __construct(
     Bridge $bridge,
@@ -24,36 +30,100 @@ class AuthorizedSenderDomainController {
   }
 
   /**
+   * Get the most recent cached record of Bridge::getAuthorizedSenderDomains
+   */
+  public function getDomainRecords($domain = ''): array {
+    if ($domain) {
+      return $this->currentRecords[$domain] ?? [];
+    }
+    return $this->currentRecords;
+  }
+
+  /**
    * Get all Authorized Sender Domains
    *
    * Note: This includes both verified and unverified domains
    */
   public function getAllSenderDomains(): array {
-    $records = $this->bridge->getAuthorizedSenderDomains();
-    $domains = array_keys($records);
-    return $domains;
+    $records = $this->currentRecords = $this->bridge->getAuthorizedSenderDomains();
+    return $this->returnAllDomains($records);
   }
 
   /**
    * Get all Verified Sender Domains
    */
   public function getVerifiedSenderDomains(): array {
-    $records = $this->bridge->getAuthorizedSenderDomains();
-    $verifiedDomains = [];
+    $records = $this->currentRecords = $this->bridge->getAuthorizedSenderDomains();
+    return $this->returnVerifiedDomains($records);
+  }
 
-    foreach ($records as $key => $value) {
-      if (count($value) < 3) continue;
-      [$domainKey1, $domainKey2, $secretRecord] = $value;
-      if (
-        $domainKey1['status'] === self::DOMAIN_VERIFICATION_STATUS_VALID &&
-        $domainKey2['status'] === self::DOMAIN_VERIFICATION_STATUS_VALID &&
-        $secretRecord['status'] === self::DOMAIN_VERIFICATION_STATUS_VALID
-      ) {
-        $verifiedDomains[] = $key;
-      }
+  /**
+   * Create new Sender Domain
+   *
+   * Throws an InvalidArgumentException if domain already exist
+   *
+   * returns an Array of DNS response or array of error
+   */
+  public function createAuthorizedSenderDomain(string $domain): array {
+    $allDomains = $this->getAllSenderDomains();
+
+    $alreadyExist = in_array($domain, $allDomains);
+
+    if ($alreadyExist) {
+      // sender domain already created. skip making new request
+      throw new \InvalidArgumentException(self::AUTHORIZED_SENDER_DOMAIN_ERROR_ALREADY_CREATED);
     }
 
-    return $verifiedDomains;
+    $finalData = $this->bridge->createAuthorizedSenderDomain($domain);
+
+    if ($finalData && isset($finalData['error'])) {
+      throw new \InvalidArgumentException($finalData['error']);
+    }
+
+    return $finalData;
+  }
+
+  /**
+   * Verify Sender Domain
+   *
+   * Throws an InvalidArgumentException if domain does not exist or domain is already verified
+   *
+   * * returns [ok: bool, dns: array] if domain verification is successful
+   * * or [ok: bool, error:  string, dns: array] if domain verification failed
+   * * or [error: string, status: bool] for other errors
+   */
+  public function verifyAuthorizedSenderDomain(string $domain): array {
+    $records = $this->bridge->getAuthorizedSenderDomains();
+
+    $allDomains = $this->returnAllDomains($records);
+    $verifiedDomains = $this->returnVerifiedDomains($records);
+
+    $alreadyExist = in_array($domain, $allDomains);
+
+    if (!$alreadyExist) {
+      // can't verify a domain that does not exist
+      throw new \InvalidArgumentException(self::AUTHORIZED_SENDER_DOMAIN_ERROR_NOT_CREATED);
+    }
+
+    $alreadyVerified = in_array($domain, $verifiedDomains);
+
+    if ($alreadyVerified) {
+      // no need to reverify an already verified domain
+      throw new \InvalidArgumentException(self::AUTHORIZED_SENDER_DOMAIN_ERROR_ALREADY_VERIFIED);
+    }
+
+    $finalData = $this->bridge->verifyAuthorizedSenderDomain($domain);
+
+    if ($finalData && isset($finalData['error']) && !isset($finalData['dns'])) {
+      // verify api response returns
+      // ok: bool,
+      // error:  string,
+      // dns: array
+      // due to this, we need to make sure this is an actual server (or other user) error and not a verification error
+      throw new \InvalidArgumentException($finalData['error']);
+    }
+
+    return $finalData;
   }
 
   /**
@@ -74,5 +144,36 @@ class AuthorizedSenderDomainController {
    */
   public function getDmarcPolicyForDomain(string $domain): string {
     return $this->dmarcPolicyChecker->getDomainDmarcPolicy($domain);
+  }
+
+  /**
+   * Little helper function to return All Domains. alias to `array_keys`
+   *
+   * The domain is the key returned from the Bridge::getAuthorizedSenderDomains
+   */
+  private function returnAllDomains(array $records): array {
+    $domains = array_keys($records);
+    return $domains;
+  }
+
+  /**
+   * Little helper function to return All verified domains
+   */
+  private function returnVerifiedDomains(array $records): array {
+    $verifiedDomains = [];
+
+    foreach ($records as $key => $value) {
+      if (count($value) < 3) continue;
+      [$domainKey1, $domainKey2, $secretRecord] = $value;
+      if (
+        $domainKey1['status'] === self::DOMAIN_VERIFICATION_STATUS_VALID &&
+        $domainKey2['status'] === self::DOMAIN_VERIFICATION_STATUS_VALID &&
+        $secretRecord['status'] === self::DOMAIN_VERIFICATION_STATUS_VALID
+      ) {
+        $verifiedDomains[] = $key;
+      }
+    }
+
+    return $verifiedDomains;
   }
 }

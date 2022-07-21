@@ -261,9 +261,89 @@ class Settings extends APIEndpoint {
       ]);
     }
 
-    $domain = trim($domain);
+    $domain = strtolower(trim($domain));
 
     $response = ['isDmarcPolicyRetricted' => $this->senderDomainController->isDomainDmarcRetricted($domain)];
+
+    return $this->successResponse($response);
+  }
+
+  public function getAuthorizedSenderDomains($data = []) {
+    $domain = $data['domain'] ?? null;
+
+    if (!$domain) {
+      return $this->badRequest([
+        APIError::BAD_REQUEST => WPFunctions::get()->__('No sender domain specified.', 'mailpoet'),
+      ]);
+    }
+
+    $domain = strtolower(trim($domain));
+
+    $records = $this->bridge->getAuthorizedSenderDomains($domain);
+    return $this->successResponse($records);
+  }
+
+  public function createAuthorizedSenderDomain($data = []) {
+    $domain = $data['domain'] ?? null;
+
+    if (!$domain) {
+      return $this->badRequest([
+        APIError::BAD_REQUEST => WPFunctions::get()->__('No sender domain specified.', 'mailpoet'),
+      ]);
+    }
+
+    $domain = strtolower(trim($domain));
+
+    try {
+      $response = $this->senderDomainController->createAuthorizedSenderDomain($domain);
+    } catch (\InvalidArgumentException $e) {
+      if (
+        $e->getMessage() === AuthorizedSenderDomainController::AUTHORIZED_SENDER_DOMAIN_ERROR_ALREADY_CREATED
+      ) {
+        // domain already created
+        $response = $this->senderDomainController->getDomainRecords($domain);
+      } else {
+        return $this->badRequest([
+          APIError::BAD_REQUEST => WPFunctions::get()->__($e->getMessage(), 'mailpoet'),
+        ]);
+      }
+    }
+
+    return $this->successResponse($response);
+  }
+
+  public function verifyAuthorizedSenderDomain($data = []) {
+    $domain = $data['domain'] ?? null;
+
+    if (!$domain) {
+      return $this->badRequest([
+        APIError::BAD_REQUEST => WPFunctions::get()->__('No sender domain specified.', 'mailpoet'),
+      ]);
+    }
+
+    $domain = strtolower(trim($domain));
+
+    try {
+      $response = $this->senderDomainController->verifyAuthorizedSenderDomain($domain);
+    } catch (\InvalidArgumentException $e) {
+      if (
+        $e->getMessage() === AuthorizedSenderDomainController::AUTHORIZED_SENDER_DOMAIN_ERROR_ALREADY_VERIFIED
+      ) {
+        // domain already verified, we have to wrap this in the format returned by the api
+        $response = ['ok' => true, 'dns' => $this->senderDomainController->getDomainRecords($domain)];
+      } else {
+        return $this->badRequest([
+          APIError::BAD_REQUEST => WPFunctions::get()->__($e->getMessage(), 'mailpoet'),
+        ]);
+      }
+    }
+
+    if (!$response['ok']) {
+      // sender domain verification error. probably an improper setup
+      return $this->badRequest([
+        APIError::BAD_REQUEST => WPFunctions::get()->__('failed sender domain verification', 'mailpoet'),
+      ], $response);
+    }
 
     return $this->successResponse($response);
   }
