@@ -51,8 +51,9 @@ class DaemonActionSchedulerRunner {
 
   /**
    * Unschedule all MailPoet actions when next "trigger" action is processed.
-   * Note: We can't unschedule the actions directly inside the trigger action process, because the action is recurring and would schedule itself.
-   * We need to do it after the action scheduler process.
+   * Note: We can't unschedule the actions directly inside the trigger action itself,
+   * because the action is recurring and would reschedule itself anyway.
+   * We need do the deactivation after the action scheduler process finishes.
    */
   public function deactivateOnTrigger(): void {
     $this->wp->addAction(DaemonTrigger::NAME, [$this, 'deactivateAfterProcess']);

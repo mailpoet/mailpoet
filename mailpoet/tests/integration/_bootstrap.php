@@ -116,7 +116,7 @@ abstract class MailPoetTest extends \Codeception\TestCase\Test { // phpcs:ignore
     $this->diContainer = ContainerWrapper::getInstance(WP_DEBUG);
     $this->connection = $this->diContainer->get(Connection::class);
     $this->entityManager = $this->diContainer->get(EntityManager::class);
-    // Cleanup scheduled tasks from previous tests and deactivate cron
+    // Cleanup scheduled tasks from previous tests and switch cron to Linux method
     $this->truncateEntity(ScheduledTaskEntity::class);
     $this->diContainer->get(\MailPoet\Cron\DaemonActionSchedulerRunner::class)->deactivate();
     $this->diContainer->get(SettingsController::class)->set('cron_trigger.method', CronTrigger::METHOD_LINUX_CRON);

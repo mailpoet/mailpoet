@@ -40,9 +40,6 @@ class RemoteExecutorHandler {
     ]);
   }
 
-  /**
-   * This method is triggered via an ajax request.
-   */
   public function runActionScheduler(): void {
     $this->wp->addFilter('action_scheduler_queue_runner_concurrent_batches', [$this, 'ensureConcurrency']);
     \ActionScheduler_QueueRunner::instance()->run();

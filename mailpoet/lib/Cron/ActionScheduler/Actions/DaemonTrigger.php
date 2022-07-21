@@ -42,8 +42,8 @@ class DaemonTrigger {
   }
 
   /**
-   * In regular intervals checks if there are scheduled tasks to execute.
-   * In case there are tasks it spawns a recurring action.
+   * It checks if there are scheduled tasks to execute.
+   * In case there are tasks to do, it schedules a daemon-run action.
    */
   public function process(): void {
     $hasJobsToDo = $this->wordpressTrigger->checkExecutionRequirements();
