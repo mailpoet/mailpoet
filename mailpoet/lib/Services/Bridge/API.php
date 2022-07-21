@@ -285,6 +285,10 @@ class API {
     $isSuccess = $code === 200;
 
     if (!$isSuccess) {
+      if ($code === 400) {
+        // we need to return the body as it is
+        return is_array($responseBody) ? $responseBody : [];
+      }
       $logData = [
         'code' => $code,
         'error' => is_wp_error($result) ? $result->get_error_message() : $rawResponseBody,
