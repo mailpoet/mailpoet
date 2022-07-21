@@ -203,6 +203,7 @@ class Newsletters {
     $data['authorized_emails'] = $this->bridge->getAuthorizedEmailAddresses();
 
     $data['verified_sender_domains'] = $this->senderDomainController->getVerifiedSenderDomains();
+    $data['all_sender_domains'] = $this->senderDomainController->getAllSenderDomains();
 
     $this->pageRenderer->displayPage('newsletters.html', $data);
   }

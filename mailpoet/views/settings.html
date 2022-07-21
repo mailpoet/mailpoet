@@ -7,6 +7,7 @@
     <% autoescape 'js' %>
       var mailpoet_authorized_emails = <%= json_encode(authorized_emails) %>;
       var mailpoet_verified_sender_domains = <%= json_encode(verified_sender_domains) %>;
+      var mailpoet_all_sender_domains = <%= json_encode(all_sender_domains) %>;
       var mailpoet_woocommerce_active = <%= json_encode(is_woocommerce_active == true) %>;
       var mailpoet_members_plugin_active = <%= json_encode(is_members_plugin_active == true) %>;
       var mailpoet_is_new_user = <%= json_encode(is_new_user == true) %>;
