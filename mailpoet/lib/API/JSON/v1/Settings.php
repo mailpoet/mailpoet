@@ -341,7 +341,7 @@ class Settings extends APIEndpoint {
     if (!$response['ok']) {
       // sender domain verification error. probably an improper setup
       return $this->badRequest([
-        APIError::BAD_REQUEST => WPFunctions::get()->__('failed sender domain verification', 'mailpoet'),
+        APIError::BAD_REQUEST => WPFunctions::get()->__($response['error'] ?? 'failed sender domain verification', 'mailpoet'),
       ], $response);
     }
 
