@@ -33,7 +33,7 @@ class DaemonRun {
 
   /**
    * Default 20 seconds
-   * @var int
+   * @var float
    */
   private $remainingExecutionLimit = 20;
 
@@ -70,7 +70,7 @@ class DaemonRun {
   /**
    * Callback for adjusting the execution for the cron daemon (MailPoet\Cron\Daemon)
    */
-  public function getDaemonExecutionLimit(): int {
+  public function getDaemonExecutionLimit(): float {
     return $this->remainingExecutionLimit;
   }
 
@@ -93,8 +93,8 @@ class DaemonRun {
    * It checks how much action scheduler execution time is left for the daemon to run
    */
   public function storeRemainingExecutionLimit($likelyExceeded, $runner, $processedActions, $executionTime, $maxExecutionTime): bool {
-    $newLimit = floor(($maxExecutionTime - $executionTime) - self::EXECUTION_LIMIT_MARGIN);
-    $this->remainingExecutionLimit = intval(max($newLimit, 0));
+    $newLimit = ($maxExecutionTime - $executionTime) - self::EXECUTION_LIMIT_MARGIN;
+    $this->remainingExecutionLimit = max($newLimit, 0);
     return (bool)$likelyExceeded;
   }
 }
