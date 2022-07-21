@@ -17,6 +17,7 @@ function SenderEmailAddressWarning({
   const [showAuthorizedEmailModal, setShowAuthorizedEmailModal] =
     useState(false);
   const [authorizedEmailAddress, setAuthorizedEmailAddress] = useState('');
+  const [verifiedSenderDomain, setVerifiedSenderDomain] = useState('');
 
   const loadModal = (event) => {
     event.preventDefault();
@@ -69,26 +70,30 @@ function SenderEmailAddressWarning({
               onRequestClose={() => {
                 setShowAuthorizedEmailModal(false);
               }}
+              setVerifiedSenderDomain={setVerifiedSenderDomain}
             />
           )}
-          <p className="sender_email_address_warning">
-            {ReactStringReplace(
-              MailPoet.I18n.t('authorizeSenderDomain'),
-              /\[link](.*?)\[\/link]/g,
-              (match) => (
-                <a
-                  key={match}
-                  className="mailpoet-link"
-                  href="https://kb.mailpoet.com/article/295-spf-and-dkim"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={loadModal}
-                >
-                  {match}
-                </a>
-              ),
-            )}
-          </p>
+          {verifiedSenderDomain &&
+          verifiedSenderDomain === emailAddressDomain ? null : (
+            <p className="sender_email_address_warning">
+              {ReactStringReplace(
+                MailPoet.I18n.t('authorizeSenderDomain'),
+                /\[link](.*?)\[\/link]/g,
+                (match) => (
+                  <a
+                    key={match}
+                    className="mailpoet-link"
+                    href="https://kb.mailpoet.com/article/295-spf-and-dkim"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={loadModal}
+                  >
+                    {match}
+                  </a>
+                ),
+              )}
+            </p>
+          )}
         </>
       );
     }
