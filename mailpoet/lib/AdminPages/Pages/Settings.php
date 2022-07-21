@@ -104,6 +104,7 @@ class Settings {
       'built_in_captcha_supported' => $this->captcha->isSupported(),
       'authorized_emails' => $this->bridge->getAuthorizedEmailAddresses(),
       'verified_sender_domains' => $this->senderDomainController->getVerifiedSenderDomains(),
+      'all_sender_domains' => $this->senderDomainController->getAllSenderDomains(),
     ];
 
     $data['is_new_user'] = $this->installation->isNewInstallation();
