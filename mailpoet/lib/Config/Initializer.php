@@ -371,10 +371,7 @@ class Initializer {
   }
 
   public function setupCronTrigger() {
-    // setup cron trigger only outside of cli environment
-    if (php_sapi_name() !== 'cli') {
-      $this->cronTrigger->init();
-    }
+    $this->cronTrigger->init((string)php_sapi_name());
   }
 
   public function setupConflictResolver() {

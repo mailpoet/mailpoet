@@ -31,6 +31,14 @@ class CronTriggerTest extends \MailPoetUnitTest {
     expect($cronTrigger->init())->true();
   }
 
+  public function testItDoesntTriggerWordPressMethodInCliEnvironment() {
+    $settingsMock = Stub::makeEmpty(SettingsController::class, [
+      'get' => CronTrigger::METHOD_WORDPRESS,
+    ]);
+    $cronTrigger = $this->createCronTrigger($settingsMock);
+    expect($cronTrigger->init('cli'))->false();
+  }
+
   public function testItReturnsFalseWhenItCantInitializeCronTriggerMethod() {
     $settingsMock = Stub::makeEmpty(SettingsController::class, [
       'get' => 'unknown-method',
