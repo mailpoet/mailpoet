@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { MailPoet } from 'mailpoet';
 import ReactStringReplace from 'react-string-replace';
 import { AuthorizeSenderEmailModal } from 'common/authorize_sender_email_modal';
+import { AuthorizeSenderDomainModal } from 'common/authorize_sender_domain_modal';
 
 const userHostDomain = window.location.hostname.replace('www.', '');
 const suggestedEmailAddress = `contact@${userHostDomain}`;
@@ -63,13 +64,11 @@ function SenderEmailAddressWarning({
       return (
         <>
           {showAuthorizedEmailModal && (
-            // TODO: Change me. This should open the sender domain modal
-            <AuthorizeSenderEmailModal
-              senderEmail={emailAddress}
+            <AuthorizeSenderDomainModal
+              senderDomain={emailAddressDomain}
               onRequestClose={() => {
                 setShowAuthorizedEmailModal(false);
               }}
-              setAuthorizedAddress={setAuthorizedEmailAddress}
             />
           )}
           <p className="sender_email_address_warning">
@@ -80,7 +79,7 @@ function SenderEmailAddressWarning({
                 <a
                   key={match}
                   className="mailpoet-link"
-                  href="https://kb.mailpoet.com/article/328-set-up-dkim-for-your-sender-domain"
+                  href="https://kb.mailpoet.com/article/295-spf-and-dkim"
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={loadModal}
