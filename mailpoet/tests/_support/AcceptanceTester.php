@@ -685,7 +685,7 @@ class AcceptanceTester extends \Codeception\Actor {
    */
   public function triggerMailPoetActionScheduler(): void {
     $i = $this;
-    // Schedule MailPoet trigger in action scheduler to run immediately
+    // Reschedule MailPoet's daemon trigger action to run immediately
     $i->importSql([
       "UPDATE mp_actionscheduler_actions SET scheduled_date_gmt = SUBTIME(now(), '01:00:00'), scheduled_date_local = SUBTIME(now(), '01:00:00') WHERE hook = 'mailpoet/cron/daemon-trigger' AND status = 'pending';",
     ]);

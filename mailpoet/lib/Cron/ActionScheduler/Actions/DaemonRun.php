@@ -68,14 +68,14 @@ class DaemonRun {
   }
 
   /**
-   * Callback for adjusting the execution for the cron daemon (MailPoet\Cron\Daemon)
+   * Callback for setting the remaining execution time for the cron daemon (MailPoet\Cron\Daemon)
    */
   public function getDaemonExecutionLimit(): float {
     return $this->remainingExecutionLimit;
   }
 
   /**
-   * After Action Scheduler finishes queue always check there is more work to do and in case there is we trigger additional runner.
+   * After Action Scheduler finishes its work we need to check if there is more work and in case there is we trigger additional runner.
    */
   public function afterProcess(): void {
     if ($this->wordpressTrigger->checkExecutionRequirements()) {
@@ -90,7 +90,7 @@ class DaemonRun {
 
   /**
    * This method is hooked into action_scheduler_maximum_execution_time_likely_to_be_exceeded
-   * It checks how much action scheduler execution time is left for the daemon to run
+   * It checks how much execution time is left for the daemon to run
    */
   public function storeRemainingExecutionLimit($likelyExceeded, $runner, $processedActions, $executionTime, $maxExecutionTime): bool {
     $newLimit = ($maxExecutionTime - $executionTime) - self::EXECUTION_LIMIT_MARGIN;
