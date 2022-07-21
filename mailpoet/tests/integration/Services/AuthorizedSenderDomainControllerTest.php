@@ -3,6 +3,7 @@
 namespace MailPoet\Test\Services;
 
 use Codeception\Stub\Expected;
+use InvalidArgumentException;
 use MailPoet\Services\AuthorizedSenderDomainController;
 use MailPoet\Util\DmarcPolicyChecker;
 use MailPoet\Mailer\Mailer;
@@ -73,6 +74,75 @@ class AuthorizedSenderDomainControllerTest extends \MailPoetTest {
     $controller = $this->getController($bridgeMock);
     $verifiedDomains = $controller->getVerifiedSenderDomains();
     expect($verifiedDomains)->same([]);
+  }
+
+  public function testCreateAuthorizedSenderDomainThrowsForExistingDomains() {
+    $this->expectException(InvalidArgumentException::class);
+    $this->expectExceptionMessage('Sender domain exist');
+
+    $domains = ['testdomain.com' => []];
+    $getSenderDomainsExpectaton = Expected::once($domains);
+    $createSenderDomainsExpectaton = Expected::never();
+
+    $bridgeMock = $this->make(Bridge::class, [
+      'getAuthorizedSenderDomains' => $getSenderDomainsExpectaton,
+      'createAuthorizedSenderDomain' => $createSenderDomainsExpectaton,
+    ]);
+    $controller = $this->getController($bridgeMock);
+    $controller->createAuthorizedSenderDomain('testdomain.com');
+  }
+
+  public function testVerifyAuthorizedSenderDomainThrowsForNoneExistingDomains() {
+    $this->expectException(InvalidArgumentException::class);
+    $this->expectExceptionMessage('Sender domain does not exist');
+
+    $domains = ['newdomain.com' => []];
+    $getSenderDomainsExpectaton = Expected::once($domains);
+    $verifySenderDomainsExpectaton = Expected::never();
+
+    $bridgeMock = $this->make(Bridge::class, [
+      'getAuthorizedSenderDomains' => $getSenderDomainsExpectaton,
+      'verifyAuthorizedSenderDomain' => $verifySenderDomainsExpectaton,
+    ]);
+    $controller = $this->getController($bridgeMock);
+    $controller->verifyAuthorizedSenderDomain('testdomain.com');
+  }
+
+  public function testVerifyAuthorizedSenderDomainThrowsForVerifiedDomains() {
+    $this->expectException(InvalidArgumentException::class);
+    $this->expectExceptionMessage('Sender domain already verified');
+
+    $domains = ['testdomain.com' => [
+      ['status' => 'valid'],
+      ['status' => 'valid'],
+      ['status' => 'valid'],
+    ]];
+    $getSenderDomainsExpectaton = Expected::once($domains);
+    $verifySenderDomainsExpectaton = Expected::never();
+
+    $bridgeMock = $this->make(Bridge::class, [
+      'getAuthorizedSenderDomains' => $getSenderDomainsExpectaton,
+      'verifyAuthorizedSenderDomain' => $verifySenderDomainsExpectaton,
+    ]);
+    $controller = $this->getController($bridgeMock);
+    $controller->verifyAuthorizedSenderDomain('testdomain.com');
+  }
+
+  public function testVerifyAuthorizedSenderDomainThrowsForOtherErrors() {
+    $errorMessage = 'This is a test message';
+    $this->expectException(InvalidArgumentException::class);
+    $this->expectExceptionMessage($errorMessage);
+
+    $domains = ['testdomain.com' => []];
+    $getSenderDomainsExpectaton = Expected::once($domains);
+    $verifySenderDomainsExpectaton = Expected::once(['error' => $errorMessage, 'status' => false]);
+
+    $bridgeMock = $this->make(Bridge::class, [
+      'getAuthorizedSenderDomains' => $getSenderDomainsExpectaton,
+      'verifyAuthorizedSenderDomain' => $verifySenderDomainsExpectaton,
+    ]);
+    $controller = $this->getController($bridgeMock);
+    $controller->verifyAuthorizedSenderDomain('testdomain.com');
   }
 
   public function testItReturnsTrueWhenDmarcIsEnabled() {
