@@ -108,6 +108,10 @@ function SetFromAddressModal({ onRequestClose, setAuthorizedAddress }: Props) {
             setShowAuthorizedEmailErrorMessage(false);
             onRequestClose();
             notices.success(getSuccessMessage(), { timeout: false });
+            MailPoet.trackEvent('MSS in plugin authorize email', {
+              'authorized email source': 'SetFromAddressModal',
+              wasSuccessful: 'yes',
+            });
           }}
         />
       )}
