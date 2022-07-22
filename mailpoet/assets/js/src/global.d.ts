@@ -126,4 +126,5 @@ interface Window {
   mailpoet_authorized_emails?: string[];
   mailpoet_verified_sender_domains?: string[];
   mailpoet_all_sender_domains?: string[];
+  mailpoet_mss_active: boolean;
 }
