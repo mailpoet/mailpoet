@@ -125,6 +125,10 @@ export function DefaultSender() {
             mssActive={isMssActive}
             isEmailAuthorized={isAuthorized}
             showSenderDomainWarning={showSenderDomainWarning}
+            onSuccessfulEmailOrDomainAuthorization={(data) => {
+              if (data.type === 'email') setIsAuthorized(true);
+              if (data.type === 'domain') setShowSenderDomainWarning(false);
+            }}
           />
         </div>
         <label className="mailpoet-settings-inputs-row" htmlFor="reply_to-name">
