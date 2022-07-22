@@ -8,6 +8,7 @@ type Props = {
   route?: string;
   automationId?: string;
   children: ReactNode;
+  className?: string;
 };
 
 export function Tab({ children }: Props) {

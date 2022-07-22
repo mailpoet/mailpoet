@@ -112,9 +112,13 @@ export function Tabs({
         {validChildren.map((child: ReactElement) => (
           <button
             key={child.key}
-            className={classnames('mailpoet-tab', {
-              'mailpoet-tab-active': child === activeChild,
-            })}
+            className={classnames(
+              'mailpoet-tab',
+              {
+                'mailpoet-tab-active': child === activeChild,
+              },
+              String(child.props?.className || ''),
+            )}
             type="button"
             role="tab"
             onClick={() => switchTab(child.key.toString())}
