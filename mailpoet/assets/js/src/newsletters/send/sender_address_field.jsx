@@ -75,11 +75,27 @@ class SenderField extends Component {
   isEmailAddressAuthorized = (email) =>
     (window.mailpoet_authorized_emails || []).includes(email);
 
-  showInvalidFromAddressError = () => {
-    // We add an empty error to the parsley validator on the field
-    // The error message is too big to fit into space we have for parsley errors. We render it in own component SenderEmailAddressWarning.
-    addOrUpdateError(this.domElementSelector, this.parsleyFieldName, ' ');
-    this.setState({ showAuthEmailsError: true });
+  showInvalidFromAddressError = (emailAddress) => {
+    const fromAddress = emailAddress;
+    let errorMessage = ReactStringReplace(
+      MailPoet.I18n.t('newsletterInvalidFromAddress'),
+      '%1$s',
+      () => fromAddress,
+    );
+    errorMessage = ReactStringReplace(
+      errorMessage,
+      /\[link\](.*?)\[\/link\]/g,
+      (match) =>
+        `<a href="https://account.mailpoet.com/authorization?email=${encodeURIComponent(
+          fromAddress,
+        )}" target="_blank" class="mailpoet-js-button-authorize-email-and-sender-domain" data-email="${fromAddress}" data-type="email" rel="noopener noreferrer">${match}</a>`,
+    );
+
+    addOrUpdateError(
+      this.domElementSelector,
+      this.parsleyFieldName,
+      errorMessage.join(''),
+    );
   };
 
   showSenderFieldError = (emailAddressIsAuthorized, emailAddress) => {
@@ -100,7 +116,18 @@ class SenderField extends Component {
   showSenderDomainError = (status) => {
     if (!status) return;
 
-    this.setState({ showSenderDomainWarning: true });
+    const errorMessage = ReactStringReplace(
+      MailPoet.I18n.t('authorizeSenderDomain'),
+      /\[link\](.*?)\[\/link\]/g,
+      (match) =>
+        `<a href="https://kb.mailpoet.com/article/295-spf-and-dkim" target="_blank" class="mailpoet-js-button-authorize-email-and-sender-domain" data-email="${emailAddress}" data-type="domain" rel="noopener noreferrer">${match}</a>`,
+    );
+
+    addOrUpdateError(
+      this.domElementSelector,
+      this.parsleySenderDomainFieldName,
+      errorMessage,
+    );
   };
 
   render() {
