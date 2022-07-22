@@ -69,12 +69,14 @@ type Props = {
   senderEmail: string;
   onRequestClose: () => void;
   setAuthorizedAddress?: (emailAddress: string) => void;
+  useModal: boolean;
 };
 
 function AuthorizeSenderEmailModal({
   senderEmail,
   onRequestClose,
   setAuthorizedAddress,
+  useModal,
 }: Props) {
   const [createEmailApiResponse, setCreateEmailApiResponse] =
     useState<boolean>(null);
@@ -181,15 +183,8 @@ function AuthorizeSenderEmailModal({
      */
   }, [senderEmailAddress]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  return (
-    <Modal
-      title={MailPoet.I18n.t('authorizeSenderEmailModalTitle').replace(
-        '[senderEmail]',
-        senderEmailAddress,
-      )}
-      onRequestClose={onRequestClose}
-      contentClassName="authorize-sender-email-modal"
-    >
+  const content = (
+    <>
       {createEmailApiResponse && (
         <p>
           {ReactStringReplace(
@@ -219,16 +214,33 @@ function AuthorizeSenderEmailModal({
           </Button>
         </>
       )}
+    </>
+  );
+
+  return useModal ? (
+    <Modal
+      title={MailPoet.I18n.t('authorizeSenderEmailModalTitle').replace(
+        '[senderEmail]',
+        senderEmailAddress,
+      )}
+      onRequestClose={onRequestClose}
+      contentClassName="authorize-sender-email-modal"
+    >
+      {content}
     </Modal>
+  ) : (
+    <div>{content}</div>
   );
 }
 
 AuthorizeSenderEmailModal.propTypes = {
   senderEmail: PropTypes.string.isRequired,
+  useModal: PropTypes.bool,
 };
 
 AuthorizeSenderEmailModal.defaultProps = {
   setAuthorizedAddress: noop,
+  useModal: true,
 };
 
 export { AuthorizeSenderEmailModal };

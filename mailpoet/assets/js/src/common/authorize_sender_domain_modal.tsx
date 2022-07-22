@@ -66,12 +66,14 @@ type Props = {
   senderDomain: string;
   onRequestClose: () => void;
   setVerifiedSenderDomain?: (senderDomain: string) => void;
+  useModal: boolean;
 };
 
 function AuthorizeSenderDomainModal({
   senderDomain,
   onRequestClose,
   setVerifiedSenderDomain,
+  useModal,
 }: Props): JSX.Element {
   const [errorMessage, setErrorMessage] = useState('');
   const [loadingButton, setLoadingButton] = useState(false);
@@ -156,11 +158,8 @@ function AuthorizeSenderDomainModal({
     };
   }, [senderDomain]);
 
-  return (
-    <Modal
-      onRequestClose={onRequestClose}
-      contentClassName="authorize-sender-domain-modal"
-    >
+  const content = (
+    <>
       {errorMessage && (
         <strong className="mailpoet_error_item mailpoet_error">
           {' '}
@@ -172,16 +171,28 @@ function AuthorizeSenderDomainModal({
         verifyDnsButtonClicked={verifyDnsButtonClicked}
         loadingButton={loadingButton}
       />
+    </>
+  );
+  return useModal ? (
+    <Modal
+      onRequestClose={onRequestClose}
+      contentClassName="authorize-sender-domain-modal"
+    >
+      {content}
     </Modal>
+  ) : (
+    <div>{content}</div>
   );
 }
 
 AuthorizeSenderDomainModal.propTypes = {
   senderDomain: PropTypes.string.isRequired,
+  useModal: PropTypes.bool,
 };
 
 AuthorizeSenderDomainModal.defaultProps = {
   setVerifiedSenderDomain: noop,
+  useModal: true,
 };
 
 export { AuthorizeSenderDomainModal };
