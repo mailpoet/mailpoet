@@ -1,7 +1,7 @@
 import jQuery from 'jquery';
 import { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
-import { AuthorizeSenderEmailModal } from 'common/authorize_sender_email_modal';
+import { AuthorizeSenderEmailAndDomainModal } from 'common/authorize_sender_email_and_domain_modal';
 
 /**
  * Perform action after the email has been successfully Authorized
@@ -20,16 +20,28 @@ const performSuccessActionOnModalClose = () => {
     jQuery('#field_sender_address')
       .parsley()
       .removeError('invalidFromAddress', { updateClass: true });
+    jQuery('#field_sender_address')
+      .parsley()
+      .removeError('invalidSenderDomain', { updateClass: true });
   }
 };
 
 function AuthorizeSenderEmailApp() {
   const [showModal, setShowModal] = useState(''); // used to hold the email address as well
+  const [actionType, setActionType] = useState('email'); // use email as default for backwards compatibility
 
   useEffect(() => {
     const performAction = (e) => {
       e.preventDefault();
       const email = String(e?.target?.dataset?.email || '');
+      const type = String(e?.target?.dataset?.type || '');
+
+      if (type) {
+        setActionType(type);
+      } else {
+        setActionType('email'); // fallback for when type is not provided
+      }
+
       setShowModal(email);
     };
     // use jQuery since some of the targeted notices are added to the DOM using the old
@@ -52,12 +64,14 @@ function AuthorizeSenderEmailApp() {
   return (
     <>
       {showModal && (
-        <AuthorizeSenderEmailModal
+        <AuthorizeSenderEmailAndDomainModal
           senderEmail={showModal}
           onRequestClose={() => {
             setShowModal('');
           }}
-          setAuthorizedAddress={performSuccessActionOnModalClose}
+          onSuccessAction={performSuccessActionOnModalClose}
+          showSenderEmailTab={actionType === 'email'}
+          showSenderDomainTab={actionType === 'domain'}
         />
       )}
     </>
