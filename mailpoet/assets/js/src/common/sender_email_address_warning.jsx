@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
+import { noop } from 'lodash';
 import { MailPoet } from 'mailpoet';
 import ReactStringReplace from 'react-string-replace';
 import { AuthorizeSenderEmailAndDomainModal } from 'common/authorize_sender_email_and_domain_modal';
@@ -12,11 +13,10 @@ function SenderEmailAddressWarning({
   mssActive,
   isEmailAuthorized,
   showSenderDomainWarning,
+  onSuccessfulEmailOrDomainAuthorization,
 }) {
   const [showAuthorizedEmailModal, setShowAuthorizedEmailModal] =
     useState(false);
-  const [authorizedEmailAddress, setAuthorizedEmailAddress] = useState('');
-  const [verifiedSenderDomain, setVerifiedSenderDomain] = useState('');
 
   const loadModal = (event) => {
     event.preventDefault();
@@ -31,52 +31,46 @@ function SenderEmailAddressWarning({
     if (!isEmailAuthorized) {
       displayElements.push(
         <div key="authorizeMyEmail">
-          {authorizedEmailAddress &&
-          authorizedEmailAddress === emailAddress ? null : (
-            <p className="sender_email_address_warning">
-              {ReactStringReplace(
-                MailPoet.I18n.t('youNeedToAuthorizeTheEmail'),
-                '[email]',
-                () => emailAddress,
-              )}{' '}
-              <a
-                className="mailpoet-link"
-                href="#"
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={loadModal}
-              >
-                {MailPoet.I18n.t('authorizeMyEmail')}
-              </a>
-            </p>
-          )}
+          <p className="sender_email_address_warning">
+            {ReactStringReplace(
+              MailPoet.I18n.t('youNeedToAuthorizeTheEmail'),
+              '[email]',
+              () => emailAddress,
+            )}{' '}
+            <a
+              className="mailpoet-link"
+              href="#"
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={loadModal}
+            >
+              {MailPoet.I18n.t('authorizeMyEmail')}
+            </a>
+          </p>
         </div>,
       );
     }
     if (showSenderDomainWarning) {
       displayElements.push(
         <div key="authorizeSenderDomain">
-          {verifiedSenderDomain &&
-          verifiedSenderDomain === emailAddressDomain ? null : (
-            <p className="sender_email_address_warning">
-              {ReactStringReplace(
-                MailPoet.I18n.t('authorizeSenderDomain'),
-                /\[link](.*?)\[\/link]/g,
-                (match) => (
-                  <a
-                    key={match}
-                    className="mailpoet-link"
-                    href="https://kb.mailpoet.com/article/295-spf-and-dkim"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    onClick={loadModal}
-                  >
-                    {match}
-                  </a>
-                ),
-              )}
-            </p>
-          )}
+          <p className="sender_email_address_warning">
+            {ReactStringReplace(
+              MailPoet.I18n.t('authorizeSenderDomain'),
+              /\[link](.*?)\[\/link]/g,
+              (match) => (
+                <a
+                  key={match}
+                  className="mailpoet-link"
+                  href="https://kb.mailpoet.com/article/295-spf-and-dkim"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={loadModal}
+                >
+                  {match}
+                </a>
+              ),
+            )}
+          </p>
         </div>,
       );
     }
@@ -89,10 +83,7 @@ function SenderEmailAddressWarning({
               onRequestClose={() => {
                 setShowAuthorizedEmailModal(false);
               }}
-              onSuccessAction={(data) => {
-                if (data.type === 'email') setAuthorizedEmailAddress(data.data);
-                if (data.type === 'domain') setVerifiedSenderDomain(data.data);
-              }}
+              onSuccessAction={onSuccessfulEmailOrDomainAuthorization}
               showSenderEmailTab={!isEmailAuthorized}
               showSenderDomainTab={showSenderDomainWarning}
             />
@@ -153,11 +144,13 @@ SenderEmailAddressWarning.propTypes = {
   mssActive: PropTypes.bool.isRequired,
   isEmailAuthorized: PropTypes.bool,
   showSenderDomainWarning: PropTypes.bool,
+  onSuccessfulEmailOrDomainAuthorization: PropTypes.func,
 };
 
 SenderEmailAddressWarning.defaultProps = {
   isEmailAuthorized: true, // don't show error message by default
   showSenderDomainWarning: false,
+  onSuccessfulEmailOrDomainAuthorization: noop,
 };
 
 export { SenderEmailAddressWarning };
