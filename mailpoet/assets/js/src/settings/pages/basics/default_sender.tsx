@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { MailPoet } from 'mailpoet';
 import { Label, Inputs } from 'settings/components';
 import { isEmail, t, onChange, setLowercaseValue } from 'common/functions';
 import { Input } from 'common/form/input/input';
@@ -96,8 +97,20 @@ export function DefaultSender() {
             isEmailAuthorized={isAuthorized}
             showSenderDomainWarning={showSenderDomainWarning}
             onSuccessfulEmailOrDomainAuthorization={(data) => {
-              if (data.type === 'email') setIsAuthorized(true);
-              if (data.type === 'domain') setShowSenderDomainWarning(false);
+              if (data.type === 'email') {
+                setIsAuthorized(true);
+                MailPoet.trackEvent('MSS in plugin authorize email', {
+                  'authorized email source': 'settings',
+                  wasSuccessful: 'yes',
+                });
+              }
+              if (data.type === 'domain') {
+                setShowSenderDomainWarning(false);
+                MailPoet.trackEvent('MSS in plugin verify sender domain', {
+                  'verify sender domain source': 'settings',
+                  wasSuccessful: 'yes',
+                });
+              }
             }}
           />
         </div>

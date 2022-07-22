@@ -1,12 +1,29 @@
 import jQuery from 'jquery';
 import { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
+import { MailPoet } from 'mailpoet';
 import { AuthorizeSenderEmailAndDomainModal } from 'common/authorize_sender_email_and_domain_modal';
+
+const trackEvent = (data, page) => {
+  if (data && data.type && data.type === 'email') {
+    MailPoet.trackEvent('MSS in plugin authorize email', {
+      'authorized email source': 'modal',
+      'original page': page,
+      wasSuccessful: 'yes',
+    });
+  } else if (data && data.type && data.type === 'domain') {
+    MailPoet.trackEvent('MSS in plugin verify sender domain', {
+      'verify sender domain source': 'modal',
+      'original page': page,
+      wasSuccessful: 'yes',
+    });
+  }
+};
 
 /**
  * Perform action after the email has been successfully Authorized
  */
-const performSuccessActionOnModalClose = () => {
+const performSuccessActionOnModalClose = (data) => {
   // if in Settings, reload page, so the new saved FROM address is loaded
   const isInSettings = window.location.href.includes('?page=mailpoet-settings');
 
@@ -15,14 +32,18 @@ const performSuccessActionOnModalClose = () => {
   );
 
   if (isInSettings) {
+    trackEvent(data, 'settings page');
     window.location.reload();
   } else if (isInNewsletterSendPage) {
+    trackEvent(data, 'newsletter send page');
     jQuery('#field_sender_address')
       .parsley()
       .removeError('invalidFromAddress', { updateClass: true });
     jQuery('#field_sender_address')
       .parsley()
       .removeError('invalidSenderDomain', { updateClass: true });
+  } else {
+    trackEvent(data, 'other pages');
   }
 };
 
