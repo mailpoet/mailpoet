@@ -2,8 +2,7 @@ import { useState } from 'react';
 import PropTypes from 'prop-types';
 import { MailPoet } from 'mailpoet';
 import ReactStringReplace from 'react-string-replace';
-import { AuthorizeSenderEmailModal } from 'common/authorize_sender_email_modal';
-import { AuthorizeSenderDomainModal } from 'common/authorize_sender_domain_modal';
+import { AuthorizeSenderEmailAndDomainModal } from 'common/authorize_sender_email_and_domain_modal';
 
 const userHostDomain = window.location.hostname.replace('www.', '');
 const suggestedEmailAddress = `contact@${userHostDomain}`;
@@ -26,19 +25,12 @@ function SenderEmailAddressWarning({
 
   const emailAddressDomain = emailAddress.split('@').pop().toLowerCase();
 
+  const displayElements = [];
+
   if (mssActive) {
     if (!isEmailAuthorized) {
-      return (
-        <>
-          {showAuthorizedEmailModal && (
-            <AuthorizeSenderEmailModal
-              senderEmail={emailAddress}
-              onRequestClose={() => {
-                setShowAuthorizedEmailModal(false);
-              }}
-              setAuthorizedAddress={setAuthorizedEmailAddress}
-            />
-          )}
+      displayElements.push(
+        <div key="authorizeMyEmail">
           {authorizedEmailAddress &&
           authorizedEmailAddress === emailAddress ? null : (
             <p className="sender_email_address_warning">
@@ -58,21 +50,12 @@ function SenderEmailAddressWarning({
               </a>
             </p>
           )}
-        </>
+        </div>,
       );
     }
     if (showSenderDomainWarning) {
-      return (
-        <>
-          {showAuthorizedEmailModal && (
-            <AuthorizeSenderDomainModal
-              senderDomain={emailAddressDomain}
-              onRequestClose={() => {
-                setShowAuthorizedEmailModal(false);
-              }}
-              setVerifiedSenderDomain={setVerifiedSenderDomain}
-            />
-          )}
+      displayElements.push(
+        <div key="authorizeSenderDomain">
           {verifiedSenderDomain &&
           verifiedSenderDomain === emailAddressDomain ? null : (
             <p className="sender_email_address_warning">
@@ -94,9 +77,38 @@ function SenderEmailAddressWarning({
               )}
             </p>
           )}
-        </>
+        </div>,
       );
     }
+    if (displayElements.length) {
+      displayElements.push(
+        <div key="AuthorizeSenderEmailAndDomainModal">
+          {showAuthorizedEmailModal && (
+            <AuthorizeSenderEmailAndDomainModal
+              senderEmail={emailAddress}
+              onRequestClose={() => {
+                setShowAuthorizedEmailModal(false);
+              }}
+              onSuccessAction={(data) => {
+                if (data.type === 'email') setAuthorizedEmailAddress(data.data);
+                if (data.type === 'domain') setVerifiedSenderDomain(data.data);
+              }}
+              showSenderEmailTab={!isEmailAuthorized}
+              showSenderDomainTab={showSenderDomainWarning}
+            />
+          )}
+        </div>,
+      );
+    }
+    if (displayElements.length)
+      return (
+        <>
+          {' '}
+          {displayElements.map((child) => (
+            <div key={child.key}>{child}</div>
+          ))}
+        </>
+      );
     return null;
   }
   if (window.mailpoet_free_domains.indexOf(emailAddressDomain) > -1) {
