@@ -88,3 +88,15 @@ p.sender_email_address_warning:first-child {
     margin-left: 10px;
   }
 }
+
+.mailpoet_manage_sender_domain {
+  .mailpoet_table_header {
+    font-weight: 700 !important;
+    text-align: center !important; // to prevent being overwritten by widefat table classes
+  }
+
+  .dns_record_type_column {
+    font-weight: 550 !important;
+    text-align: center !important; // to prevent being overwritten by widefat table classes
+  }
+}

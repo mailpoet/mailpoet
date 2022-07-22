@@ -4,6 +4,8 @@ import ReactStringReplace from 'react-string-replace';
 import { Button, Loader, TypographyHeading as Heading } from 'common';
 import { MailPoet } from 'mailpoet';
 import { SenderDomainEntity } from './manage_sender_domain_types';
+import { DomainKeyComponent } from './domain_key_component';
+import { DomainStatusComponent } from './domain_status_component';
 
 type Props = {
   max_width: string;
@@ -45,29 +47,63 @@ function ManageSenderDomain({
         )}
       </p>
 
-      <table className="widefat fixed" style={{ maxWidth: max_width }}>
+      <table
+        className="mailpoet_manage_sender_domain widefat fixed striped"
+        style={{ maxWidth: max_width }}
+      >
         <thead>
           <tr>
-            <th> {MailPoet.I18n.t('manageSenderDomainTableHeaderType')} </th>
-            <th> {MailPoet.I18n.t('manageSenderDomainTableHeaderHost')} </th>
-            <th> {MailPoet.I18n.t('manageSenderDomainTableHeaderValue')} </th>
-            <th> {MailPoet.I18n.t('manageSenderDomainTableHeaderStatus')} </th>
+            <th className="mailpoet_table_header">
+              {' '}
+              {MailPoet.I18n.t('manageSenderDomainTableHeaderType')}{' '}
+            </th>
+            <th className="mailpoet_table_header">
+              {' '}
+              {MailPoet.I18n.t('manageSenderDomainTableHeaderHost')}{' '}
+            </th>
+            <th className="mailpoet_table_header">
+              {' '}
+              {MailPoet.I18n.t('manageSenderDomainTableHeaderValue')}{' '}
+            </th>
+            <th className="mailpoet_table_header">
+              {' '}
+              {MailPoet.I18n.t('manageSenderDomainTableHeaderStatus')}{' '}
+            </th>
           </tr>
         </thead>
         <tbody>
-          {dns.map((dnsRecord) => (
+          {dns.map((dnsRecord, index) => (
             <tr key={`row_${domain}_${dnsRecord.host}`}>
-              <td>{dnsRecord.type}</td>
-              <td>{dnsRecord.host}</td>
-              <td>{dnsRecord.value}</td>
-              <td>{dnsRecord.status}</td>
+              <td className="dns_record_type_column">{dnsRecord.type}</td>
+              <td>
+                <DomainKeyComponent
+                  name={`dkim_host_${index}`}
+                  value={dnsRecord.host}
+                  readOnly
+                  tooltip={MailPoet.I18n.t('manageSenderDomainTooltipText')}
+                />
+              </td>
+              <td>
+                <DomainKeyComponent
+                  name={`dkim_value_${index}`}
+                  value={dnsRecord.value}
+                  readOnly
+                  tooltip={MailPoet.I18n.t('manageSenderDomainTooltipText')}
+                />
+              </td>
+              <td className="dns_record_type_column">
+                <DomainStatusComponent
+                  status={dnsRecord.status}
+                  message={dnsRecord.message}
+                  index={index}
+                />
+              </td>
             </tr>
           ))}
         </tbody>
       </table>
       <Button withSpinner={loadingButton} onClick={verifyDnsButtonClicked}>
-        {' '}
-        {MailPoet.I18n.t('manageSenderDomainVerifyButton')}{' '}
+        {MailPoet.I18n.t('manageSenderDomainVerifyButton')}
       </Button>
     </div>
   );
