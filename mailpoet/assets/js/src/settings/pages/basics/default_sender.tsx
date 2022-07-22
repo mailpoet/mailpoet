@@ -1,23 +1,10 @@
 import { useEffect, useState } from 'react';
-import { MailPoet } from 'mailpoet';
 import { Label, Inputs } from 'settings/components';
 import { isEmail, t, onChange, setLowercaseValue } from 'common/functions';
 import { Input } from 'common/form/input/input';
 import { useSetting, useSelector, useAction } from 'settings/store/hooks';
 import { SenderEmailAddressWarning } from 'common/sender_email_address_warning.jsx';
-
-/**
- * @param {string} email - Email address
- * @param {ApiActionType} type - action type
- * @returns {Promise}
- */
-const makeApiRequest = (domain: string) =>
-  MailPoet.Ajax.post({
-    api_version: MailPoet.apiVersion,
-    endpoint: 'settings',
-    action: 'checkDomainDmarcPolicy',
-    data: { domain },
-  });
+import { checkSenderEmailDomainDmarcPolicy } from 'common/check_sender_domain_dmarc_policy';
 
 export function DefaultSender() {
   const isMssActive = useSelector('isMssActive')();
@@ -38,33 +25,16 @@ export function DefaultSender() {
     setIsAuthorized(window.mailpoet_authorized_emails.includes(email));
   };
 
-  const checkSenderEmailDomain = (email: string) => {
-    const emailAddressDomain = email.split('@').pop().toLowerCase();
+  const performActionOnBlur = (data: string) => {
+    isAuthorizedEmail(data);
 
-    const isDomainVerified =
-      window.mailpoet_verified_sender_domains.includes(emailAddressDomain);
-    if (isDomainVerified) {
-      // do nothing if the email domain is verified
-      return;
-    }
-
-    // check domain DMARC policy
-    makeApiRequest(emailAddressDomain)
-      .then((res) => {
-        const isDmarcPolicyRetricted = Boolean(
-          res?.data?.isDmarcPolicyRetricted,
-        );
-        setShowSenderDomainWarning(isDmarcPolicyRetricted);
+    checkSenderEmailDomainDmarcPolicy(data, isMssActive)
+      .then((status) => {
+        setShowSenderDomainWarning(status);
       })
       .catch(() => {
         // do nothing for now when the request fails
       });
-  };
-
-  const performActionOnBlur = (data: string) => {
-    isAuthorizedEmail(data);
-
-    checkSenderEmailDomain(data);
   };
 
   const updateSenderEmailController = (email: string) => {
