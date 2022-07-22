@@ -77,7 +77,7 @@ class SenderField extends Component {
       (match) =>
         `<a href="https://account.mailpoet.com/authorization?email=${encodeURIComponent(
           fromAddress,
-        )}" target="_blank" class="mailpoet-js-button-authorize-email" data-email="${fromAddress}" data-type="email" rel="noopener noreferrer">${match}</a>`,
+        )}" target="_blank" class="mailpoet-js-button-authorize-email-and-sender-domain" data-email="${fromAddress}" data-type="email" rel="noopener noreferrer">${match}</a>`,
     );
 
     addOrUpdateError(
@@ -109,7 +109,7 @@ class SenderField extends Component {
       MailPoet.I18n.t('authorizeSenderDomain'),
       /\[link\](.*?)\[\/link\]/g,
       (match) =>
-        `<a href="https://kb.mailpoet.com/article/295-spf-and-dkim" target="_blank" class="mailpoet-js-button-authorize-email" data-email="${emailAddress}" data-type="domain" rel="noopener noreferrer">${match}</a>`,
+        `<a href="https://kb.mailpoet.com/article/295-spf-and-dkim" target="_blank" class="mailpoet-js-button-authorize-email-and-sender-domain" data-email="${emailAddress}" data-type="domain" rel="noopener noreferrer">${match}</a>`,
     );
 
     addOrUpdateError(

@@ -64,7 +64,7 @@ class UnauthorizedEmailNotice {
 
   private function getAuthorizeEmailButton($validationError) {
     $email = $this->wp->escAttr($validationError['invalid_sender_address']);
-    $button = '<a target="_blank" href="https://account.mailpoet.com/authorization?email=' . $email . '" class="button button-primary mailpoet-js-button-authorize-email" data-email="' . $email . '">' . __('Authorize this email address', 'mailpoet') . '</a>';
+    $button = '<a target="_blank" href="https://account.mailpoet.com/authorization?email=' . $email . '" class="button button-primary mailpoet-js-button-authorize-email-and-sender-domain" data-type="email" data-email="' . $email . '">' . __('Authorize this email address', 'mailpoet') . '</a>';
     return $button;
   }
 
