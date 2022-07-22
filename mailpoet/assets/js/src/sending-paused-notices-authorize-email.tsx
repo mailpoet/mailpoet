@@ -49,13 +49,7 @@ function AuthorizeSenderEmailApp() {
     jQuery(($) => {
       $(document).on(
         'click',
-        '.notice .mailpoet-js-button-authorize-email',
-        performAction,
-      );
-
-      $(document).on(
-        'click',
-        '.parsley-errors-list .mailpoet-js-button-authorize-email',
+        '.mailpoet-js-button-authorize-email-and-sender-domain',
         performAction,
       );
     });

@@ -1,5 +1,6 @@
 import { MailPoet } from 'mailpoet';
 import classnames from 'classnames';
+import { extractEmailDomain } from 'common/functions';
 import { Tabs } from './tabs/tabs';
 import { Tab } from './tabs/tab';
 import { Modal } from './modal/modal';
@@ -23,7 +24,7 @@ function AuthorizeSenderEmailAndDomainModal({
 }: Props): JSX.Element {
   if (!senderEmail) return null;
 
-  const emailAddressDomain = senderEmail.split('@').pop().toLowerCase();
+  const emailAddressDomain = extractEmailDomain(senderEmail);
 
   let defaultTab = 'sender_email';
   defaultTab =
