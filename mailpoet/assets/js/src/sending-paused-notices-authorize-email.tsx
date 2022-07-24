@@ -2,9 +2,12 @@ import jQuery from 'jquery';
 import { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import { MailPoet } from 'mailpoet';
+import { extractPageNameFromUrl } from 'common/functions';
 import { AuthorizeSenderEmailAndDomainModal } from 'common/authorize_sender_email_and_domain_modal';
 
-const trackEvent = (data, page) => {
+const trackEvent = (data) => {
+  const page = `${extractPageNameFromUrl() || 'some other'} page`;
+
   if (data && data.type && data.type === 'email') {
     MailPoet.trackEvent('MSS in plugin authorize email', {
       'authorized email source': 'modal',
@@ -28,14 +31,14 @@ const performSuccessActionOnModalClose = (data) => {
   const isInSettings = window.location.href.includes('?page=mailpoet-settings');
 
   const isInNewsletterSendPage = window.location.href.includes(
-    '?page=mailpoet-newsletters#/send',
+    '?page=mailpoet-newsletters',
   );
 
   if (isInSettings) {
-    trackEvent(data, 'settings page');
+    trackEvent(data);
     window.location.reload();
   } else if (isInNewsletterSendPage) {
-    trackEvent(data, 'newsletter send page');
+    trackEvent(data);
     jQuery('#field_sender_address')
       .parsley()
       .removeError('invalidFromAddress', { updateClass: true });
@@ -43,7 +46,7 @@ const performSuccessActionOnModalClose = (data) => {
       .parsley()
       .removeError('invalidSenderDomain', { updateClass: true });
   } else {
-    trackEvent(data, 'other pages');
+    trackEvent(data);
   }
 };
 
