@@ -51,7 +51,13 @@ class DmarcPolicyChecker {
     }
 
     // policy can either be reject or quarantine or none
-    $dmarcStatus = $dmarcInfo['sp'] ?? $dmarcInfo['p'] ?? self::POLICY_NONE;
+    $dmarcStatus = $dmarcInfo['p'] ?? self::POLICY_NONE;
+    // check for subdomain policy
+    $dmarcStatus = (
+      isset($dmarcInfo['sp']) &&
+      ($dmarcInfo['sp'] === self::POLICY_QUARANTINE ||
+      $dmarcInfo['sp'] === self::POLICY_REJECT)
+    ) ? $dmarcInfo['sp'] : $dmarcStatus;
 
     return $dmarcStatus;
   }
