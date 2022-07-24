@@ -133,7 +133,7 @@ class AuthorizedSenderDomainController {
    * otherwise returns `false`
    */
   public function isDomainDmarcRetricted(string $domain): bool {
-    $result = $this->dmarcPolicyChecker->getDomainDmarcPolicy($domain);
+    $result = $this->getDmarcPolicyForDomain($domain);
     return $result !== DmarcPolicyChecker::POLICY_NONE;
   }
 
