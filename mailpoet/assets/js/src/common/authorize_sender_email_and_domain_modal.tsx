@@ -1,11 +1,27 @@
 import { MailPoet } from 'mailpoet';
 import classnames from 'classnames';
-import { extractEmailDomain } from 'common/functions';
+import { extractEmailDomain, extractPageNameFromUrl } from 'common/functions';
 import { Tabs } from './tabs/tabs';
 import { Tab } from './tabs/tab';
 import { Modal } from './modal/modal';
 import { AuthorizeSenderEmailModal } from './authorize_sender_email_modal';
 import { AuthorizeSenderDomainModal } from './authorize_sender_domain_modal';
+
+const trackEvent = (type: 'email' | 'domain') => {
+  const page = `${extractPageNameFromUrl() || 'some other'} page`;
+
+  if (type === 'email') {
+    MailPoet.trackEvent('MSS in plugin authorize email', {
+      'attempt to authorize': type,
+      'original page': page,
+    });
+  } else if (type === 'domain') {
+    MailPoet.trackEvent('MSS in plugin verify sender domain', {
+      'attempt to authorize': type,
+      'original page': page,
+    });
+  }
+};
 
 type Props = {
   onRequestClose: () => void;
@@ -25,6 +41,14 @@ function AuthorizeSenderEmailAndDomainModal({
   if (!senderEmail) return null;
 
   const emailAddressDomain = extractEmailDomain(senderEmail);
+
+  if (showSenderEmailTab) {
+    trackEvent('email');
+  }
+
+  if (showSenderDomainTab) {
+    trackEvent('domain');
+  }
 
   let defaultTab = 'sender_email';
   defaultTab =
