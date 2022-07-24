@@ -72,12 +72,33 @@ export function MailerError(props) {
       links[match],
       'text/xml',
     ).firstChild;
+
+    const listOfAttributeNames = link.getAttributeNames();
+    const allowedAttributesList = [
+      'target',
+      'rel',
+      'class',
+      'data-email',
+      'data-type',
+    ];
+
+    // include these custom attributes in the final link
+    const otherAttributes = listOfAttributeNames.reduce((acc, name) => {
+      if (allowedAttributesList.includes(name)) {
+        // react requires the class attribute to be named className.
+        return {
+          ...acc,
+          [name === 'class' ? 'className' : name]: link.getAttribute(name),
+        };
+      }
+      return { ...acc };
+    }, {});
+
     return (
       <a
         key={`a-${match}`}
         href={link.getAttribute('href')}
-        target={link.getAttribute('target')}
-        rel={link.getAttribute('rel')}
+        {...otherAttributes}
       >
         {link.textContent}
       </a>

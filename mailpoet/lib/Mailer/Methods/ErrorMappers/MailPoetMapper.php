@@ -23,6 +23,7 @@ class MailPoetMapper {
   const METHOD = Mailer::METHOD_MAILPOET;
 
   const TEMPORARY_UNAVAILABLE_RETRY_INTERVAL = 300; // seconds
+  const MAILPOET_BRIDGE_DMRAC_ERROR = "Email violates Sender Domain's DMARC policy. Please set up sender authentication.";
 
   /** @var Bridge */
   private $bridge;
@@ -76,7 +77,11 @@ class MailPoetMapper {
         $resultParsed = json_decode($result['message'], true);
         $message = __('Error while sending.', 'mailpoet');
         if (!is_array($resultParsed)) {
-          $message .= ' ' . $result['message'];
+          if ($result['message'] === self::MAILPOET_BRIDGE_DMRAC_ERROR) {
+            $message .= $this->getDmarcMessage($result, $sender);
+          } else {
+            $message .= ' ' . $result['message'];
+          }
           break;
         }
         try {
@@ -176,6 +181,25 @@ class MailPoetMapper {
     );
 
     return "{$message}<br/>";
+  }
+
+  private function getDmarcMessage($result, $sender): string {
+    $messageToAppend = __('[link1]Click here to start the authentication[/link1].');
+    $senderEmail = $sender['from_email'] ?? '';
+
+    $appendMessage = Helpers::replaceLinkTags(
+      $messageToAppend,
+      '#',
+      [
+        'class' => 'mailpoet-js-button-authorize-email-and-sender-domain',
+        'data-email' => $senderEmail,
+        'data-type' => 'domain',
+        'rel' => 'noopener noreferrer',
+      ],
+      'link1'
+    );
+    $final = $result['message'] . ' ' . $appendMessage;
+    return $final;
   }
 
   private function getEmailVolumeLimitReachedMessage(): string {
