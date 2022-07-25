@@ -894,6 +894,41 @@ class RoboFile extends \Robo\Tasks {
     $printReviewers($logins, 'Full');
   }
 
+  public function displayCreatedPullRequests(ConsoleIO $io, int $months = 6) {
+    $projects = [
+      \MailPoetTasks\Release\GitHubController::PROJECT_SHOP,
+      \MailPoetTasks\Release\GitHubController::PROJECT_MAILPOET,
+      \MailPoetTasks\Release\GitHubController::PROJECT_PREMIUM,
+    ];
+    $io->progressStart(count($projects));
+    $counts = [];
+    foreach ($projects as $project) {
+      $githubController = $this->createGitHubController($project);
+      $countsProject = $githubController->calculatePRcounts($months);
+
+      foreach ($countsProject as $login => $num) {
+        if (!isset($counts[$login])) {
+          $counts[$login] = 0;
+        }
+        $counts[$login] += $num;
+      }
+      $io->progressAdvance();
+    }
+    $io->progressFinish();
+
+    arsort($counts);
+    $io->title('Pull Request counts');
+    $outputList = [];
+    foreach ($counts as $login => $num) {
+      $outputList[] = [
+        $login,
+        $num,
+        round($num / $months, 2),
+      ];
+    }
+    $io->table(['Login', 'Count', 'Per month'], $outputList);
+  }
+
   public function releaseCheckPullRequest($version) {
     $this->createGitHubController()
       ->checkReleasePullRequestPassed($version);

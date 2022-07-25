@@ -4,6 +4,7 @@ namespace MailPoetTasks\Release;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
+use MailPoetVendor\Carbon\Carbon;
 
 class GitHubController {
   const PROJECT_MAILPOET = 'MAILPOET';
@@ -38,6 +39,39 @@ class GitHubController {
       ],
       'base_uri' => self::API_BASE_URI . "/{$this->getGithubPathByProject($project)}/",
     ]);
+  }
+
+  public function calculatePRcounts($months): array {
+    $since = (new Carbon())->subMonths($months)->startOfMonth();
+    $startOfThisMonth = (new Carbon())->startOfMonth();
+    $page = 1;
+    $counts = [];
+    do {
+      $response = $this->httpClient->get('pulls', [
+        'query' => [
+          'per_page' => '100',
+          'state' => 'all',
+          'page' => $page,
+        ],
+      ]);
+      $response = json_decode($response->getBody()->getContents(), true);
+      // if there are no more pull requests finish
+      if (empty($response)) break;
+      foreach ($response as $item) {
+        $created = new Carbon($item['created_at']);
+        // continue until we reach the desired number of months
+        if ($since->isAfter($created)) break 2;
+        // ignore all pull requests in this month so that we can calculate average per month
+        if ($startOfThisMonth->isBefore($created)) continue;
+        // itnore all release PRs
+        if (str_starts_with($item['title'], 'Release ')) continue;
+        $author = $item['user']['login'];
+        $counts[$author] = ($counts[$author] ?? 0) + 1;
+      }
+      $page += 1;
+    } while (true);
+
+    return $this->mergeAlex($counts);
   }
 
   /**
@@ -80,7 +114,10 @@ class GitHubController {
       }
     }
 
-    // merge Alex
+    return $this->mergeAlex($logins);
+  }
+
+  private function mergeAlex($logins) {
     if (!isset($logins['alex-mailpoet'])) {
       $logins['alex-mailpoet'] = 0;
     }
