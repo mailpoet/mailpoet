@@ -284,6 +284,8 @@ class SendingQueue {
       $subscriberEntity = $this->subscribersRepository->findOneById($subscriber->id);
       if ($subscriberEntity instanceof SubscriberEntity) {
         $metas[] = $this->mailerMetaInfo->getNewsletterMetaInfo($newsletter, $subscriberEntity);
+      } else {
+        $metas[] = [];
       }
 
       // keep track of values for statistics purposes
