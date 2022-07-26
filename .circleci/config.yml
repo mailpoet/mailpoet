@@ -188,16 +188,17 @@ jobs:
           command: |
             (printenv | grep WP_TEST_ > .env) || true
       - persist_to_workspace:
-          root: /home/circleci/mailpoet
+          root: /home/circleci
           paths:
-            - .
+            - .node
+            - mailpoet
   build_premium:
     executor: wpcli_php_latest
     resource_class: medium
     working_directory: /home/circleci/mailpoet
     steps:
       - attach_workspace:
-          at: /home/circleci/mailpoet
+          at: /home/circleci
       - add_ssh_keys
       - run:
           name: 'Install Premium plugin'
@@ -229,9 +230,11 @@ jobs:
           paths:
             - mailpoet-premium/vendor
       - persist_to_workspace:
-          root: /home/circleci/mailpoet
+          root: /home/circleci
           paths:
-            - .
+            - .node
+            - mailpoet
+
   static_analysis:
     executor: wpcli_php_latest
     resource_class: medium
@@ -242,7 +245,7 @@ jobs:
         default: 70200
     steps:
       - attach_workspace:
-          at: /home/circleci/mailpoet
+          at: /home/circleci
       - run:
           name: 'Static analysis'
           command: ./do qa:phpstan --php-version=<< parameters.php_version >>
@@ -251,7 +254,7 @@ jobs:
     working_directory: /home/circleci/mailpoet/mailpoet
     steps:
       - attach_workspace:
-          at: /home/circleci/mailpoet
+          at: /home/circleci
       - run:
           name: 'QA Frontend Assets'
           command: ./do qa:frontend-assets
@@ -260,7 +263,7 @@ jobs:
     working_directory: /home/circleci/mailpoet/mailpoet
     steps:
       - attach_workspace:
-          at: /home/circleci/mailpoet
+          at: /home/circleci
       - run:
           name: 'QA PHP'
           command: ./do qa:php
@@ -269,7 +272,7 @@ jobs:
     working_directory: /home/circleci/mailpoet/mailpoet
     steps:
       - attach_workspace:
-          at: /home/circleci/mailpoet
+          at: /home/circleci
       - run:
           name: 'QA PHP'
           command: ./do qa:php
@@ -277,7 +280,7 @@ jobs:
     executor: wpcli_php_max_wporg
     steps:
       - attach_workspace:
-          at: /home/circleci/mailpoet
+          at: /home/circleci
       - run:
           name: 'QA PHP'
           command: ./do qa:php-max-wporg
@@ -286,7 +289,7 @@ jobs:
     working_directory: /home/circleci/mailpoet/mailpoet
     steps:
       - attach_workspace:
-          at: /home/circleci/mailpoet
+          at: /home/circleci
       - run:
           name: 'Preparing test results folder'
           command: mkdir test-results
@@ -344,7 +347,7 @@ jobs:
       WORDPRESS_IMAGE_VERSION: << parameters.wordpress_image_version >>
     steps:
       - attach_workspace:
-          at: /home/circleci/mailpoet
+          at: /home/circleci
       - run:
           name: 'Set up virtual host'
           command: echo 127.0.0.1 mailpoet.loc | sudo tee -a /etc/hosts
@@ -418,7 +421,7 @@ jobs:
     executor: << parameters.executor >>
     steps:
       - attach_workspace:
-          at: /home/circleci/mailpoet
+          at: /home/circleci
       - run:
           name: 'Set up virtual host'
           command: echo 127.0.0.1 mailpoet.loc | sudo tee -a /etc/hosts
@@ -477,7 +480,7 @@ jobs:
             codeception_integration --steps --debug -vvv --html --xml
     steps:
       - attach_workspace:
-          at: /home/circleci/mailpoet
+          at: /home/circleci
       - run:
           name: 'Pull test docker images'
           # Pull docker images with 3 retries
@@ -498,7 +501,7 @@ jobs:
     resource_class: medium+
     steps:
       - attach_workspace:
-          at: /home/circleci/mailpoet
+          at: /home/circleci
       - run:
           name: 'Set up environment'
           command: |
