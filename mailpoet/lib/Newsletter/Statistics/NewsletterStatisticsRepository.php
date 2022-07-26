@@ -5,14 +5,18 @@ namespace MailPoet\Newsletter\Statistics;
 use MailPoet\Doctrine\Repository;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\StatisticsBounceEntity;
 use MailPoet\Entities\StatisticsClickEntity;
+use MailPoet\Entities\StatisticsNewsletterEntity;
 use MailPoet\Entities\StatisticsOpenEntity;
 use MailPoet\Entities\StatisticsUnsubscribeEntity;
 use MailPoet\Entities\StatisticsWooCommercePurchaseEntity;
+use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\UserAgentEntity;
 use MailPoet\WooCommerce\Helper as WCHelper;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
+use MailPoetVendor\Doctrine\ORM\Query\Expr\Join;
 use MailPoetVendor\Doctrine\ORM\QueryBuilder;
 use MailPoetVendor\Doctrine\ORM\UnexpectedResultException;
 
@@ -100,6 +104,39 @@ class NewsletterStatisticsRepository extends Repository {
 
     if (empty($result)) return 0;
     return $result['cnt'] ?? 0;
+  }
+
+  /**
+   * @param SubscriberEntity $subscriber
+   * @param int|null $limit
+   * @param int|null $offset
+   * @return array(newsletter_id: string, newsletter_rendered_subject: string, opened_at: string|null, sent_at: string)
+   */
+  public function getAllForSubscriber(
+    SubscriberEntity $subscriber,
+    int $limit = null,
+    int $offset = null
+  ): array {
+    return $this->entityManager->createQueryBuilder()
+      ->select('IDENTITY(statistics.newsletter) AS newsletter_id')
+      ->addSelect('opens.createdAt AS opened_at')
+      ->addSelect('queue.newsletterRenderedSubject AS newsletter_rendered_subject')
+      ->addSelect('statistics.sentAt AS sent_at')
+      ->from(StatisticsNewsletterEntity::class, 'statistics')
+      ->join(SendingQueueEntity::class, 'queue', Join::WITH, 'statistics.queue = queue' )
+      ->leftJoin(
+        StatisticsOpenEntity::class,
+        'opens',
+        Join::WITH,
+        'statistics.newsletter = opens.newsletter AND statistics.subscriber = opens.subscriber'
+      )
+      ->where('statistics.subscriber = :subscriber')
+      ->setParameter('subscriber', $subscriber)
+      ->addOrderBy('newsletter_id')
+      ->setMaxResults($limit)
+      ->setFirstResult($offset)
+      ->getQuery()
+      ->getResult();
   }
 
   public function getStatisticsUnsubscribeCount(NewsletterEntity $newsletter): int {

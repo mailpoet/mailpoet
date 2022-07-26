@@ -9,6 +9,7 @@ use MailPoet\Models\SendingQueue;
 use MailPoet\Models\StatisticsNewsletters;
 use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\NewslettersRepository;
+use MailPoet\Newsletter\Statistics\NewsletterStatisticsRepository;
 use MailPoet\Newsletter\Url;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Test\DataFactories\StatisticsOpens as StatisticsOpensFactory;
@@ -28,7 +29,8 @@ class NewslettersExporterTest extends \MailPoetTest {
     $this->exporter = new NewslettersExporter(
       $this->diContainer->get(Url::class),
       $this->subscribersRepository,
-      $this->diContainer->get(NewslettersRepository::class)
+      $this->diContainer->get(NewslettersRepository::class),
+      $this->diContainer->get(NewsletterStatisticsRepository::class)
     );
   }
 
