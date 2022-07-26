@@ -1,5 +1,5 @@
 export const getStepsCount = () => {
-  let stepsCount = 3;
+  let stepsCount = 2;
   if (!window.has_mss_key_specified) {
     stepsCount += 1;
   }
@@ -27,9 +27,6 @@ export const mapStepNumberToStepName = (stepNumber) => {
     return 'WelcomeWizardMigratedUserStep';
   }
   if (stepNumber === 2) {
-    return 'WelcomeWizardEmailCourseStep';
-  }
-  if (stepNumber === 3) {
     return 'WelcomeWizardUsageTrackingStep';
   }
   if (window.is_woocommerce_active && stepNumber === getStepsCount()) {
