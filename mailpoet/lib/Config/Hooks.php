@@ -91,6 +91,7 @@ class Hooks {
     $this->setupPostNotifications();
     $this->setupWooCommerceSettings();
     $this->setupFooter();
+    $this->setupSettingsLinkInPluginPage();
   }
 
   public function initEarlyHooks() {
@@ -414,5 +415,20 @@ class Hooks {
 
   public function setFooter($text) {
     return '<a href="https://feedback.mailpoet.com/" rel="noopener noreferrer" target="_blank">Give feedback</a>';
+  }
+
+  public function setupSettingsLinkInPluginPage() {
+    $this->wp->addFilter(
+      'plugin_action_links_' . Env::$pluginPath,
+      [$this, 'setSettingsLinkInPluginPage']
+    );
+  }
+
+  public function setSettingsLinkInPluginPage($actionLinks) {
+    $customLinks = [
+      'settings' => '<a href="' . $this->wp->adminUrl('admin.php?page=mailpoet-settings') . '" aria-label="' . esc_attr__( 'View MailPoet settings', 'mailpoet' ) . '">' . esc_html__( 'Settings', 'mailpoet' ) . '</a>',
+    ];
+
+    return array_merge($actionLinks, $customLinks);
   }
 }
