@@ -49,13 +49,13 @@ services:
       MAILPOET_DEV_SITE: 1
     volumes:
       - './wordpress:/var/www/html'
-      - './eslint-config:/var/www/html/wp-content/plugins/eslint-config'
       - './tsconfig.base.json:/var/www/html/wp-content/plugins/tsconfig.base.json:ro'
       - './package.json:/var/www/html/wp-content/plugins/package.json'
       - './pnpm-lock.yaml:/var/www/html/wp-content/plugins/pnpm-lock.yaml'
       - './pnpm-workspace.yaml:/var/www/html/wp-content/plugins/pnpm-workspace.yaml'
       - './mailpoet:/var/www/html/wp-content/plugins/mailpoet'
       - './mailpoet-premium:/var/www/html/wp-content/plugins/mailpoet-premium'
+      - './packages:/var/www/html/wp-content/plugins/packages'
       - './templates:/var/www/templates'
 
   test_wordpress:
@@ -79,9 +79,9 @@ services:
       WORDPRESS_DB_PASSWORD: wordpress
       PHP_IDE_CONFIG: 'serverName=Mailpoet'
     volumes:
-      - './eslint-config:/var/www/html/wp-content/plugins/eslint-config'
       - './mailpoet:/var/www/html/wp-content/plugins/mailpoet'
       - './mailpoet-premium:/var/www/html/wp-content/plugins/mailpoet-premium'
+      - './packages:/var/www/html/wp-content/plugins/packages'
 
   smtp:
     container_name: mp-mailhog
