@@ -147,8 +147,6 @@ class Manage {
     foreach ($subscriber->getSubscriberSegments() as $subscriberSegment) {
       $segment = $subscriberSegment->getSegment();
       if (!$segment) {
-        $this->subscriberSegmentRepository->remove($subscriberSegment);
-        $subscriber->getSubscriberSegments()->removeElement($subscriberSegment);
         continue;
       }
 
