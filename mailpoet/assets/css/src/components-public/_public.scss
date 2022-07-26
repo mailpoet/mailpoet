@@ -67,8 +67,11 @@ $form-line-height: 1.4;
 
 /* Reset fieldset styles in form for backward compatibility. */
 .mailpoet_paragraph {
-  fieldset {
+  fieldset,
+  legend {
+    background: transparent;
     border: 0;
+    color: inherit;
     margin: 0;
     padding: 0;
   }
