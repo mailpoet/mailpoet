@@ -129,10 +129,10 @@ class AuthorizedSenderDomainController {
   /**
    * Check Domain DMARC Policy
    *
-   * returns `true` if domain has Retricted policy e.g policy === reject or quarantine
+   * returns `true` if domain has Restricted policy e.g. policy === reject or quarantine
    * otherwise returns `false`
    */
-  public function isDomainDmarcRetricted(string $domain): bool {
+  public function isDomainDmarcRestricted(string $domain): bool {
     $result = $this->getDmarcPolicyForDomain($domain);
     return $result !== DmarcPolicyChecker::POLICY_NONE;
   }
