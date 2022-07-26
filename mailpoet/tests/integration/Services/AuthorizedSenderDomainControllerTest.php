@@ -147,13 +147,13 @@ class AuthorizedSenderDomainControllerTest extends \MailPoetTest {
 
   public function testItReturnsTrueWhenDmarcIsEnabled() {
     $controller = $this->getController();
-    $isRetricted = $controller->isDomainDmarcRetricted('mailpoet.com');
+    $isRetricted = $controller->isDomainDmarcRestricted('mailpoet.com');
     expect($isRetricted)->same(true);
   }
 
   public function testItReturnsFalseWhenDmarcIsNotEnabled() {
     $controller = $this->getController();
-    $isRetricted = $controller->isDomainDmarcRetricted('example.com');
+    $isRetricted = $controller->isDomainDmarcRestricted('example.com');
     expect($isRetricted)->same(false);
   }
 
