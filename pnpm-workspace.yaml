@@ -1,2 +1,3 @@
 packages:
   - mailpoet
+  - packages/js/*

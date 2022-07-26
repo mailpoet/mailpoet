@@ -21,6 +21,6 @@
     "eslint-plugin-react-hooks": "^4.3.0"
   },
   "volta": {
-    "extends": "../package.json"
+    "extends": "../../../package.json"
   }
 }
