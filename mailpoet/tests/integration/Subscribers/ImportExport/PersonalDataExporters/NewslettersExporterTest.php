@@ -3,16 +3,17 @@
 namespace MailPoet\Subscribers\ImportExport\PersonalDataExporters;
 
 use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Entities\SendingQueueEntity;
+use MailPoet\Entities\StatisticsNewsletterEntity;
 use MailPoet\Entities\SubscriberEntity;
-use MailPoet\Models\Newsletter;
-use MailPoet\Models\SendingQueue;
-use MailPoet\Models\StatisticsNewsletters;
-use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Statistics\NewsletterStatisticsRepository;
 use MailPoet\Newsletter\Url;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Test\DataFactories\StatisticsOpens as StatisticsOpensFactory;
+use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
+use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
 use MailPoetVendor\Carbon\Carbon;
 
 class NewslettersExporterTest extends \MailPoetTest {
@@ -44,9 +45,7 @@ class NewslettersExporterTest extends \MailPoetTest {
   }
 
   public function testExportWorksForSubscriberWithNoNewsletters() {
-    Subscriber::createOrUpdate([
-      'email' => 'email.that@has.no.newsletters',
-    ]);
+    (new SubscriberFactory())->withEmail('email.that@has.no.newsletters')->create();
     $result = $this->exporter->export('email.that@has.no.newsletters');
     expect($result)->array();
     expect($result)->hasKey('data');
@@ -56,19 +55,34 @@ class NewslettersExporterTest extends \MailPoetTest {
   }
 
   public function testExportReturnsRenderedSubjects() {
-    $subscriber = Subscriber::createOrUpdate([
-      'email' => 'user@with.newsletters',
-    ]);
-    $queue = SendingQueue::createOrUpdate([
-      'newsletter_rendered_subject' => 'Email Subject',
-      'task_id' => 1,
-      'newsletter_id' => 8,
-    ]);
-    StatisticsNewsletters::createMultiple([[
-      'newsletter_id' => 8,
-      'subscriber_id' => $subscriber->id(),
-      'queue_id' => $queue->id(),
-    ]]);
+    $subscriber = (new SubscriberFactory())
+      ->withEmail('user@with.newsletters')
+      ->create();
+
+    $task = new ScheduledTaskEntity();
+    $this->entityManager->persist($task);
+    $this->entityManager->flush();
+
+    $newsletter = (new NewsletterFactory())
+      ->withType(NewsletterEntity::TYPE_STANDARD)
+      ->withSubject('Newsletter subject')
+      ->create();
+
+    $queue = new SendingQueueEntity();
+    $queue->setNewsletter($newsletter);
+    $queue->setNewsletterRenderedSubject('Email Subject');
+    $queue->setTask($task);
+    $this->entityManager->persist($queue);
+    $this->entityManager->flush();
+
+    $stat = new StatisticsNewsletterEntity(
+      $newsletter,
+      $queue,
+      $subscriber
+    );
+    $this->entityManager->persist($stat);
+    $this->entityManager->flush();
+
     $result = $this->exporter->export('user@with.newsletters');
     expect($result['data'])->array();
     expect($result['data'])->count(1);
@@ -81,72 +95,103 @@ class NewslettersExporterTest extends \MailPoetTest {
   }
 
   public function testExportReturnsUrl() {
-    $subscriber = Subscriber::createOrUpdate([
-      'email' => 'user1@with.newsletters',
-    ]);
-    $newsletter = Newsletter::createOrUpdate([
-      'subject' => 'Email Subject1',
-      'type' => Newsletter::TYPE_STANDARD,
-    ]);
-    $queue = SendingQueue::createOrUpdate([
-      'newsletter_rendered_subject' => 'Email Subject1',
-      'task_id' => 2,
-      'newsletter_id' => $newsletter->id(),
-    ]);
-    StatisticsNewsletters::createMultiple([[
-      'newsletter_id' => $newsletter->id(),
-      'subscriber_id' => $subscriber->id(),
-      'queue_id' => $queue->id(),
-    ]]);
+    $subscriber = (new SubscriberFactory())
+      ->withEmail('user1@with.newsletters')
+      ->create();
+
+    $newsletter = (new NewsletterFactory())
+      ->withSubject('Email Subject1')
+      ->withType(NewsletterEntity::TYPE_STANDARD)
+      ->create();
+
+    $task = new ScheduledTaskEntity();
+    $this->entityManager->persist($task);
+    $this->entityManager->flush();
+
+    $queue = new SendingQueueEntity();
+    $queue->setNewsletter($newsletter);
+    $queue->setNewsletterRenderedSubject('Email Subject1');
+    $queue->setTask($task);
+    $this->entityManager->persist($queue);
+    $this->entityManager->flush();
+
+    $stat = new StatisticsNewsletterEntity(
+      $newsletter,
+      $queue,
+      $subscriber
+    );
+    $this->entityManager->persist($stat);
+    $this->entityManager->flush();
+
     $result = $this->exporter->export('user1@with.newsletters');
     expect($result['data'][0]['data'][3]['name'])->equals('Email preview');
     expect($result['data'][0]['data'][3]['value'])->stringContainsString('mailpoet_router&endpoint=view_in_browser&action=view&data=');
   }
 
   public function testExportOpens() {
-    $subscriber = Subscriber::createOrUpdate([
-      'email' => 'user21@with.newsletters',
-    ]);
-    $subscriber2 = Subscriber::createOrUpdate([
-      'email' => 'user22@with.newsletters',
-    ]);
-    $newsletter1 = Newsletter::createOrUpdate([
-      'subject' => 'Email Subject1',
-      'type' => Newsletter::TYPE_STANDARD,
-    ]);
-    $newsletter2 = Newsletter::createOrUpdate([
-      'subject' => 'Email Subject2',
-      'type' => Newsletter::TYPE_STANDARD,
-    ]);
-    $queue1 = SendingQueue::createOrUpdate([
-      'newsletter_rendered_subject' => 'Email Subject1',
-      'task_id' => 2,
-      'newsletter_id' => $newsletter1->id(),
-    ]);
-    $queue2 = SendingQueue::createOrUpdate([
-      'newsletter_rendered_subject' => 'Email Subject1',
-      'task_id' => 2,
-      'newsletter_id' => $newsletter1->id(),
-    ]);
-    StatisticsNewsletters::createMultiple([[
-      'newsletter_id' => $newsletter1->id(),
-      'subscriber_id' => $subscriber->id(),
-      'queue_id' => $queue1->id(),
-    ], [
-        'newsletter_id' => $newsletter1->id(),
-        'subscriber_id' => $subscriber2->id(),
-        'queue_id' => $queue1->id(),
-    ]]);
 
-    StatisticsNewsletters::createMultiple([[
-      'newsletter_id' => $newsletter2->id(),
-      'subscriber_id' => $subscriber->id(),
-      'queue_id' => $queue2->id(),
-    ]]);
+    $subscriber = (new SubscriberFactory())
+      ->withEmail('user21@with.newsletters')
+      ->create();
+    $subscriber2 = (new SubscriberFactory())
+      ->withEmail('user22@with.newsletters')
+      ->create();
 
-    $newsletter1Entity = $this->entityManager->getReference(NewsletterEntity::class, $newsletter1->id());
-    $subscriber1Entity = $this->entityManager->getReference(SubscriberEntity::class, $subscriber->id());
-    $subscriber2Entity = $this->entityManager->getReference(SubscriberEntity::class, $subscriber2->id());
+    $newsletter1 = (new NewsletterFactory())
+      ->withSubject('Email Subject1')
+      ->withType(NewsletterEntity::TYPE_STANDARD)
+      ->create();
+    $newsletter2 = (new NewsletterFactory())
+      ->withSubject('Email Subject2')
+      ->withType(NewsletterEntity::TYPE_STANDARD)
+      ->create();
+
+    $task = new ScheduledTaskEntity();
+    $this->entityManager->persist($task);
+    $this->entityManager->flush();
+    $queue1 = new SendingQueueEntity();
+    $queue1->setNewsletter($newsletter1);
+    $queue1->setNewsletterRenderedSubject('Email Subject1');
+    $queue1->setTask($task);
+    $this->entityManager->persist($queue1);
+    $this->entityManager->flush();
+    $this->entityManager->refresh($newsletter1);
+
+    $queue2 = new SendingQueueEntity();
+    $queue2->setNewsletter($newsletter1);
+    $queue2->setNewsletterRenderedSubject('Email Subject1');
+    $queue2->setTask($task);
+    $this->entityManager->persist($queue2);
+    $this->entityManager->flush();
+    $this->entityManager->refresh($newsletter1);
+
+    $stat1 = new StatisticsNewsletterEntity(
+      $newsletter1,
+      $queue1,
+      $subscriber
+    );
+    $this->entityManager->persist($stat1);
+    $this->entityManager->flush();
+
+    $stat11 = new StatisticsNewsletterEntity(
+      $newsletter1,
+      $queue1,
+      $subscriber2
+    );
+    $this->entityManager->persist($stat11);
+    $this->entityManager->flush();
+
+    $stat2 = new StatisticsNewsletterEntity(
+      $newsletter2,
+      $queue2,
+      $subscriber
+    );
+    $this->entityManager->persist($stat2);
+    $this->entityManager->flush();
+
+    $newsletter1Entity = $this->entityManager->getReference(NewsletterEntity::class, $newsletter1->getId());
+    $subscriber1Entity = $this->entityManager->getReference(SubscriberEntity::class, $subscriber->getId());
+    $subscriber2Entity = $this->entityManager->getReference(SubscriberEntity::class, $subscriber2->getId());
     $this->assertInstanceOf(NewsletterEntity::class, $newsletter1Entity);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber1Entity);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber2Entity);
