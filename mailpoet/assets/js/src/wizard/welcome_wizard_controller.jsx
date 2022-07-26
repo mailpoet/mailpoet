@@ -5,7 +5,6 @@ import { partial } from 'underscore';
 import { MailPoet } from 'mailpoet';
 import { WelcomeWizardSenderStep } from './steps/sender_step.jsx';
 import { WelcomeWizardMigratedUserStep } from './steps/migrated_user_step.jsx';
-import { WelcomeWizardEmailCourseStep } from './steps/email_course_step.jsx';
 import { WelcomeWizardUsageTrackingStep } from './steps/usage_tracking_step.jsx';
 import { WelcomeWizardPitchMSSStep } from './steps/pitch_mss_step.jsx';
 import { WooCommerceController } from './woocommerce_controller.jsx';
@@ -124,14 +123,6 @@ function WelcomeWizardStepsController(props) {
             illustrationUrl={window.wizard_sender_illustration_url}
           >
             <WelcomeWizardMigratedUserStep next={() => redirect(step)} />
-          </WelcomeWizardStepLayout>
-        ) : null}
-
-        {stepName === 'WelcomeWizardEmailCourseStep' ? (
-          <WelcomeWizardStepLayout
-            illustrationUrl={window.wizard_email_course_illustration_url}
-          >
-            <WelcomeWizardEmailCourseStep next={() => redirect(step)} />
           </WelcomeWizardStepLayout>
         ) : null}
 
