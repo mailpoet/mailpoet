@@ -445,7 +445,7 @@ class Menu {
       // add body class for automation editor page
       $this->wp->addAction('load-' . $automationEditorPage, function() {
         $this->wp->addAction('admin_body_class', function ($classes) {
-          return ltrim($classes . ' block-editor-page');
+          return ltrim($classes . ' site-editor-php');
         });
       });
     }
