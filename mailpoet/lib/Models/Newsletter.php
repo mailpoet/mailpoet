@@ -5,6 +5,7 @@ namespace MailPoet\Models;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Newsletter\NewslettersRepository;
+use MailPoet\Newsletter\Options\NewsletterOptionFieldsRepository;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\Util\Helpers;
@@ -382,15 +383,16 @@ class Newsletter extends Model {
 
   public static function filterWithOptions($orm, $type) {
     $orm = $orm->select(MP_NEWSLETTERS_TABLE . '.*');
-    $optionFields = NewsletterOptionField::findArray();
-    foreach ($optionFields as $optionField) {
-      if ($optionField['newsletter_type'] !== $type) {
+    $optionFieldsRepository = ContainerWrapper::getInstance()->get(NewsletterOptionFieldsRepository::class);
+    $optionFieldsEntities = $optionFieldsRepository->findAll();
+    foreach ($optionFieldsEntities as $optionField) {
+      if ($optionField->getNewsletterType() !== $type) {
         continue;
       }
       $orm = $orm->select_expr(
         'IFNULL(GROUP_CONCAT(CASE WHEN ' .
-        MP_NEWSLETTER_OPTION_FIELDS_TABLE . '.id=' . $optionField['id'] . ' THEN ' .
-        MP_NEWSLETTER_OPTION_TABLE . '.value END), NULL) as "' . $optionField['name'] . '"');
+        MP_NEWSLETTER_OPTION_FIELDS_TABLE . '.id=' . $optionField->getId() . ' THEN ' .
+        MP_NEWSLETTER_OPTION_TABLE . '.value END), NULL) as "' . $optionField->getName() . '"');
     }
     $orm = $orm
       ->left_outer_join(
