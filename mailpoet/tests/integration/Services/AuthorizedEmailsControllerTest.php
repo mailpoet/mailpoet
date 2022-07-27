@@ -5,26 +5,29 @@ namespace MailPoet\Test\Services;
 use Codeception\Stub\Expected;
 use InvalidArgumentException;
 use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\SettingEntity;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\MailerLog;
-use MailPoet\Models\Newsletter;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
-use MailPoet\Settings\SettingsRepository;
+use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
 use MailPoetVendor\Carbon\Carbon;
-use MailPoetVendor\Idiorm\ORM;
 
 class AuthorizedEmailsControllerTest extends \MailPoetTest {
 
   /** @var SettingsController */
   private $settings;
 
+  /** @var NewsletterFactory */
+  private $newsletterFactory;
+
   public function _before() {
     parent::_before();
     $this->settings = SettingsController::getInstance();
+    $this->newsletterFactory = new NewsletterFactory();
   }
 
   public function testItResetsAuthorisedEmailsErrorIfMssIsNotActive() {
@@ -63,36 +66,30 @@ class AuthorizedEmailsControllerTest extends \MailPoetTest {
   }
 
   public function testItSetErrorForScheduledNewsletterWithUnauthorizedSender() {
-    $this->checkUnauthorizedInNewsletter(Newsletter::TYPE_STANDARD, Newsletter::STATUS_SCHEDULED);
+    $this->checkUnauthorizedInNewsletter(NewsletterEntity::TYPE_STANDARD, NewsletterEntity::STATUS_SCHEDULED);
   }
 
   public function testItSetErrorForActiveWelcomeEmailUnauthorizedSender() {
-    $this->checkUnauthorizedInNewsletter(Newsletter::TYPE_WELCOME, Newsletter::STATUS_ACTIVE);
+    $this->checkUnauthorizedInNewsletter(NewsletterEntity::TYPE_WELCOME, NewsletterEntity::STATUS_ACTIVE);
   }
 
   public function testItSetErrorForPostNotificationUnauthorizedSender() {
-    $this->checkUnauthorizedInNewsletter(Newsletter::TYPE_NOTIFICATION, Newsletter::STATUS_ACTIVE);
+    $this->checkUnauthorizedInNewsletter(NewsletterEntity::TYPE_NOTIFICATION, NewsletterEntity::STATUS_ACTIVE);
   }
 
   public function testItSetErrorForAutomaticEmailUnauthorizedSender() {
-    $this->checkUnauthorizedInNewsletter(Newsletter::TYPE_AUTOMATIC, Newsletter::STATUS_ACTIVE);
+    $this->checkUnauthorizedInNewsletter(NewsletterEntity::TYPE_AUTOMATIC, NewsletterEntity::STATUS_ACTIVE);
   }
 
   public function testItResetErrorWhenAllSendersAreCorrect() {
-    $newsletter = Newsletter::createOrUpdate([
-      'subject' => 'Subject',
-      'status' => Newsletter::STATUS_ACTIVE,
-      'type' => Newsletter::TYPE_AUTOMATIC,
-    ]);
-    $newsletter->senderAddress = 'auth@email.com';
-    $newsletter->save();
-    $newsletter2 = Newsletter::createOrUpdate([
-      'subject' => 'Subject2',
-      'status' => Newsletter::STATUS_SCHEDULED,
-      'type' => Newsletter::TYPE_STANDARD,
-    ]);
-    $newsletter2->senderAddress = 'auth@email.com';
-    $newsletter2->save();
+    $this->newsletterFactory
+      ->withSenderAddress('auth@email.com')
+      ->create();
+
+    $this->newsletterFactory
+      ->withSenderAddress('auth@email.com')
+      ->create();
+
     $this->settings->set('installed_at', new Carbon());
     $this->settings->set('sender.address', 'auth@email.com');
     $this->setMailPoetSendingMethod();
@@ -145,13 +142,13 @@ class AuthorizedEmailsControllerTest extends \MailPoetTest {
   }
 
   private function checkUnauthorizedInNewsletter($type, $status) {
-    $newsletter = Newsletter::createOrUpdate([
-      'subject' => 'Subject',
-      'status' => $status,
-      'type' => $type,
-    ]);
-    $newsletter->senderAddress = 'invalid@email.com';
-    $newsletter->save();
+    $newsletter = $this->newsletterFactory
+      ->withSubject('Subject')
+      ->withType($type)
+      ->withStatus($status)
+      ->withSenderAddress('invalid@email.com')
+      ->create();
+
     $this->settings->set('installed_at', new Carbon());
     $this->settings->set('sender.address', 'auth@email.com');
     $this->setMailPoetSendingMethod();
@@ -159,7 +156,7 @@ class AuthorizedEmailsControllerTest extends \MailPoetTest {
     $controller->checkAuthorizedEmailAddresses();
     $error = $this->settings->get(AuthorizedEmailsController::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING);
     expect(count($error['invalid_senders_in_newsletters']))->equals(1);
-    expect($error['invalid_senders_in_newsletters'][0]['newsletter_id'])->equals($newsletter->id);
+    expect($error['invalid_senders_in_newsletters'][0]['newsletter_id'])->equals($newsletter->getId());
     expect($error['invalid_senders_in_newsletters'][0]['sender_address'])->equals('invalid@email.com');
     expect($error['invalid_senders_in_newsletters'][0]['subject'])->equals('Subject');
   }
@@ -331,7 +328,7 @@ class AuthorizedEmailsControllerTest extends \MailPoetTest {
   }
 
   public function _after() {
-    $this->diContainer->get(SettingsRepository::class)->truncate();
-    ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
+    $this->truncateEntity(NewsletterEntity::class);
+    $this->truncateEntity(SettingEntity::class);
   }
 }
