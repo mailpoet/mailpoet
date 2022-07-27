@@ -3,10 +3,11 @@
 namespace MailPoet\Cron\Workers;
 
 use MailPoet\Entities\ScheduledTaskEntity;
-use MailPoet\Models\Subscriber;
+use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\TrackingConfig;
 use MailPoet\Subscribers\InactiveSubscribersController;
+use MailPoetVendor\Doctrine\ORM\EntityManager;
 
 class InactiveSubscribers extends SimpleWorker {
   const TASK_TYPE = 'inactive_subscribers';
@@ -22,14 +23,19 @@ class InactiveSubscribers extends SimpleWorker {
   /** @var TrackingConfig */
   private $trackingConfig;
 
+  /** @var EntityManager */
+  private $entityManager;
+
   public function __construct(
     InactiveSubscribersController $inactiveSubscribersController,
     SettingsController $settings,
-    TrackingConfig $trackingConfig
+    TrackingConfig $trackingConfig,
+    EntityManager $entityManager
   ) {
     $this->inactiveSubscribersController = $inactiveSubscribersController;
     $this->settings = $settings;
     $this->trackingConfig = $trackingConfig;
+    $this->entityManager = $entityManager;
     parent::__construct();
   }
 
@@ -48,7 +54,17 @@ class InactiveSubscribers extends SimpleWorker {
     // Handle activation/deactivation within interval
     $meta = $task->getMeta();
     $lastSubscriberId = isset($meta['last_subscriber_id']) ? $meta['last_subscriber_id'] : 0;
-    $maxSubscriberId = isset($meta['max_subscriber_id']) ? $meta['max_subscriber_id'] : (int)Subscriber::max('id');
+
+    if (isset($meta['max_subscriber_id'])) {
+      $maxSubscriberId = $meta['max_subscriber_id'];
+    } else {
+      $maxSubscriberId = $this->entityManager->createQueryBuilder()
+        ->select('MAX(s.id)')
+        ->from(SubscriberEntity::class, 's')
+        ->getQuery()
+        ->getSingleScalarResult();
+    }
+
     while ($lastSubscriberId <= $maxSubscriberId) {
       $count = $this->inactiveSubscribersController->markInactiveSubscribers($daysToInactive, self::BATCH_SIZE, $lastSubscriberId);
       if ($count === false) {
