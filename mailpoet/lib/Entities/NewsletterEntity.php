@@ -443,6 +443,21 @@ class NewsletterEntity {
     return $option ?: null;
   }
 
+  /**
+   * @return array<string, mixed> Associative array of newsletter option values with option names as keys
+   */
+  public function getOptionsAsArray(): array {
+    $optionsArray = [];
+    foreach ($this->options as $option) {
+      $name = $option->getName();
+      if (!$name) {
+        continue;
+      }
+      $optionsArray[$name] = $option->getValue();
+    }
+    return $optionsArray;
+  }
+
   public function getOptionValue(string $name) {
     $option = $this->getOption($name);
     return $option ? $option->getValue() : null;

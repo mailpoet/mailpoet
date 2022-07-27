@@ -189,8 +189,8 @@ class SendingQueueTest extends \MailPoetTest {
   }
 
   public function testItEnforcesExecutionLimitsBeforeQueueProcessing() {
-    $sendingQueueWorker = $this->make($this->getSendingQueueWorker(
-      $this->makeEmpty(NewslettersRepository::class)),
+    $sendingQueueWorker = $this->make(
+      $this->getSendingQueueWorker(),
       [
         'processQueue' => Expected::never(),
         'enforceSendingAndExecutionLimits' => Expected::exactly(1, function() {
@@ -202,7 +202,7 @@ class SendingQueueTest extends \MailPoetTest {
       $this->sendingThrottlingHandler,
       $this->statsNotificationsWorker,
       $this->loggerFactory,
-      $this->makeEmpty(NewslettersRepository::class),
+      $this->newslettersRepository,
       $this->cronHelper,
       $this->subscribersFinder,
       $this->segmentsRepository,
@@ -307,7 +307,7 @@ class SendingQueueTest extends \MailPoetTest {
 
   public function testItEnforcesExecutionLimitsAfterQueueProcessing() {
     $sendingQueueWorker = $this->make(
-      $this->getSendingQueueWorker($this->makeEmpty(NewslettersRepository::class)),
+      $this->getSendingQueueWorker(),
       [
         'processQueue' => function() {
           // this function returns a queue object
@@ -320,7 +320,7 @@ class SendingQueueTest extends \MailPoetTest {
       $this->sendingThrottlingHandler,
       $this->statsNotificationsWorker,
       $this->loggerFactory,
-      $this->makeEmpty(NewslettersRepository::class),
+      $this->newslettersRepository,
       $this->cronHelper,
       $this->subscribersFinder,
       $this->segmentsRepository,
@@ -781,7 +781,7 @@ class SendingQueueTest extends \MailPoetTest {
     $this->newsletterSegment->delete();
 
     $sendingQueueWorker = $this->getSendingQueueWorker(
-      $this->makeEmpty(NewslettersRepository::class),
+      null,
       $this->construct(
         MailerTask::class,
         [$this->diContainer->get(MailerFactory::class)],

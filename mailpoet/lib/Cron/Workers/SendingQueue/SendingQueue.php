@@ -70,7 +70,7 @@ class SendingQueue {
 
   /** @var ScheduledTasksRepository */
   private $scheduledTasksRepository;
-  
+
   /** @var SubscribersRepository */
   private $subscribersRepository;
 
@@ -145,7 +145,8 @@ class SendingQueue {
       ['task_id' => $queue->taskId]
     );
     $newsletter = $this->newsletterTask->getNewsletterFromQueue($queue);
-    if (!$newsletter) {
+    $newsletterEntity = $this->newslettersRepository->findOneById($newsletter->id);
+    if (!$newsletter || !$newsletterEntity) {
       return;
     }
     // pre-process newsletter (render, replace shortcodes/links, etc.)
@@ -160,11 +161,7 @@ class SendingQueue {
     }
     // clone the original object to be used for processing
     $_newsletter = (object)$newsletter->asArray();
-    $options = $newsletter->options()->findMany();
-    if (!empty($options)) {
-      $options = array_column($options, 'value', 'name');
-    }
-    $_newsletter->options = $options;
+    $_newsletter->options = $newsletterEntity->getOptionsAsArray();
     // configure mailer
     $this->mailerTask->configureMailer($newsletter);
     // get newsletter segments
