@@ -464,6 +464,42 @@ class NewslettersRepository extends Repository {
       ->getResult();
   }
 
+  /**
+   * Returns a list of emails that are either scheduled standard emails
+   * or active automatic emails of the provided types.
+   *
+   * @param array $automaticEmailTypes
+   *
+   * @return array
+   */
+  public function getScheduledStandardEmailsAndActiveAutomaticEmails(array $automaticEmailTypes): array {
+    $queryBuilder = $this->entityManager->createQueryBuilder();
+
+    $newsletters = $queryBuilder
+      ->select('n')
+      ->from(NewsletterEntity::class, 'n')
+      ->orWhere(
+        $queryBuilder->expr()->andX(
+          $queryBuilder->expr()->eq('n.type', ':typeStandard'),
+          $queryBuilder->expr()->eq('n.status', ':statusScheduled')
+        )
+      )
+      ->orWhere(
+        $queryBuilder->expr()->andX(
+          $queryBuilder->expr()->in('n.type', ':automaticEmailTypes'),
+          $queryBuilder->expr()->eq('n.status', ':statusActive')
+        )
+      )
+      ->setParameter('typeStandard', NewsletterEntity::TYPE_STANDARD)
+      ->setParameter('statusScheduled', NewsletterEntity::STATUS_SCHEDULED)
+      ->setParameter('automaticEmailTypes', $automaticEmailTypes)
+      ->setParameter('statusActive', NewsletterEntity::STATUS_ACTIVE)
+      ->getQuery()
+      ->getResult();
+
+    return $newsletters;
+  }
+
   private function fetchChildrenIds(array $parentIds) {
     $ids = $this->entityManager->createQueryBuilder()->select('n.id')
       ->from(NewsletterEntity::class, 'n')
