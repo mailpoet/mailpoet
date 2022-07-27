@@ -129,15 +129,12 @@ wp plugin activate woocommerce-memberships
 wp plugin activate woo-gutenberg-products-block
 fi # end of check for enabling extra plugins
 
-# add configuration
-CONFIG=''
-CONFIG+="define('WP_DEBUG', true);\n"
-CONFIG+="define('WP_DEBUG_DISPLAY', true);\n"
-CONFIG+="define('WP_DEBUG_LOG', true);\n"
-CONFIG+="define('COOKIE_DOMAIN', \$_SERVER['HTTP_HOST']);\n"
-CONFIG+="define('DISABLE_WP_CRON', true);\n"
-
-sed -i "s/define( *'WP_DEBUG', !!getenv_docker('WORDPRESS_DEBUG', '')* );/$CONFIG/" /wp-core/wp-config.php
+# Set constants in wp-config.php
+wp config set WP_DEBUG true --raw
+wp config set WP_DEBUG_DISPLAY true --raw
+wp config set WP_DEBUG_LOG true --raw
+wp config set COOKIE_DOMAIN \$_SERVER[\'HTTP_HOST\'] --raw
+wp config set DISABLE_WP_CRON true --raw
 
 # activate theme
 wp theme activate twentytwentyone
