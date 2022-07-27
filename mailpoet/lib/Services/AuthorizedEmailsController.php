@@ -6,7 +6,6 @@ use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\MailerLog;
-use MailPoet\Models\Newsletter;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Settings\SettingsController;
 
@@ -29,9 +28,9 @@ class AuthorizedEmailsController {
   private $newslettersRepository;
 
   private $automaticEmailTypes = [
-    Newsletter::TYPE_WELCOME,
-    Newsletter::TYPE_NOTIFICATION,
-    Newsletter::TYPE_AUTOMATIC,
+    NewsletterEntity::TYPE_WELCOME,
+    NewsletterEntity::TYPE_NOTIFICATION,
+    NewsletterEntity::TYPE_AUTOMATIC,
   ];
 
   public function __construct(
@@ -137,7 +136,7 @@ class AuthorizedEmailsController {
     if ($newsletter->getType() === NewsletterEntity::TYPE_STANDARD && $newsletter->getStatus() === NewsletterEntity::STATUS_SCHEDULED) {
       $this->checkAuthorizedEmailAddresses();
     }
-    if (in_array($newsletter->getType(), $this->automaticEmailTypes, true) && $newsletter->getStatus() === Newsletter::STATUS_ACTIVE) {
+    if (in_array($newsletter->getType(), $this->automaticEmailTypes, true) && $newsletter->getStatus() === NewsletterEntity::STATUS_ACTIVE) {
       $this->checkAuthorizedEmailAddresses();
     }
   }
@@ -153,25 +152,17 @@ class AuthorizedEmailsController {
   }
 
   private function validateAddressesInScheduledAndAutomaticEmails($authorizedEmails, $result = []) {
-    $condittion = sprintf(
-      "(`type` = '%s' AND `status` = '%s') OR (`type` IN ('%s') AND `status` = '%s')",
-      Newsletter::TYPE_STANDARD,
-      Newsletter::STATUS_SCHEDULED,
-      implode("', '", $this->automaticEmailTypes),
-      Newsletter::STATUS_ACTIVE
-    );
-
-    $newsletters = Newsletter::whereRaw($condittion)->findMany();
+    $newsletters = $this->newslettersRepository->getScheduledStandardEmailsAndActiveAutomaticEmails($this->automaticEmailTypes);
 
     $invalidSendersInNewsletters = [];
     foreach ($newsletters as $newsletter) {
-      if ($this->validateAuthorizedEmail($authorizedEmails, $newsletter->senderAddress)) {
+      if ($this->validateAuthorizedEmail($authorizedEmails, $newsletter->getSenderAddress())) {
         continue;
       }
       $invalidSendersInNewsletters[] = [
-        'newsletter_id' => $newsletter->id,
-        'subject' => $newsletter->subject,
-        'sender_address' => $newsletter->senderAddress,
+        'newsletter_id' => $newsletter->getId(),
+        'subject' => $newsletter->getSubject(),
+        'sender_address' => $newsletter->getSenderAddress(),
       ];
     }
 
