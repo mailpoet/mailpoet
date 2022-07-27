@@ -137,9 +137,6 @@ CONFIG+="define('WP_DEBUG_LOG', true);\n"
 CONFIG+="define('COOKIE_DOMAIN', \$_SERVER['HTTP_HOST']);\n"
 CONFIG+="define('DISABLE_WP_CRON', true);\n"
 
-# fix for WP CLI bug (https://core.trac.wordpress.org/ticket/44569)
-CONFIG+="if (!isset(\$_SERVER['SERVER_NAME'])) \$_SERVER['SERVER_NAME'] = '';\n"
-
 sed -i "s/define( *'WP_DEBUG', !!getenv_docker('WORDPRESS_DEBUG', '')* );/$CONFIG/" /wp-core/wp-config.php
 
 # activate theme
