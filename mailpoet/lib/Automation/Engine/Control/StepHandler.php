@@ -15,7 +15,7 @@ use MailPoet\Automation\Engine\Workflows\StepRunner as StepRunnerInterface;
 use MailPoet\Automation\Engine\Workflows\WorkflowRun;
 use Throwable;
 
-class StepRunner {
+class StepHandler {
   /** @var ActionScheduler */
   private $actionScheduler;
 
@@ -49,7 +49,7 @@ class StepRunner {
   }
 
   public function initialize(): void {
-    $this->wordPress->addAction(Hooks::WORKFLOW_STEP, [$this, 'run']);
+    $this->wordPress->addAction(Hooks::WORKFLOW_STEP, [$this, 'handle']);
     $this->addStepRunner(Step::TYPE_ACTION, $this->actionStepRunner);
     $this->wordPress->doAction(Hooks::STEP_RUNNER_INITIALIZE, [$this]);
   }
@@ -59,7 +59,7 @@ class StepRunner {
   }
 
   /** @param mixed $args */
-  public function run($args): void {
+  public function handle($args): void {
     // TODO: args validation
     if (!is_array($args)) {
       throw new InvalidStateException();
@@ -68,7 +68,7 @@ class StepRunner {
     // Action Scheduler catches only Exception instances, not other errors.
     // We need to convert them to exceptions to be processed and logged.
     try {
-      $this->runStep($args);
+      $this->handleStep($args);
     } catch (Throwable $e) {
       $this->workflowRunStorage->updateStatus((int)$args['workflow_run_id'], WorkflowRun::STATUS_FAILED);
       if (!$e instanceof Exception) {
@@ -78,7 +78,7 @@ class StepRunner {
     }
   }
 
-  private function runStep(array $args): void {
+  private function handleStep(array $args): void {
     $workflowRunId = $args['workflow_run_id'];
     $stepId = $args['step_id'];
 
