@@ -90,6 +90,11 @@ class Newsletter {
     return $this;
   }
 
+  public function withStatus($status) {
+    $this->data['status'] = $status;
+    return $this;
+  }
+
   public function withActiveStatus() {
     $this->data['status'] = NewsletterEntity::STATUS_ACTIVE;
     return $this;
