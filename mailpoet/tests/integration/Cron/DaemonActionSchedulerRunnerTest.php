@@ -53,7 +53,7 @@ class DaemonActionSchedulerRunnerTest extends \MailPoetTest {
     $this->actionScheduler->scheduleRecurringAction(time() - 1, 100, DaemonRun::NAME);
     $actions = $this->actionSchedulerHelper->getMailPoetScheduledActions();
     expect($actions)->count(2);
-    $this->actionSchedulerRunner->deactivateOnTrigger();
+    $this->actionSchedulerRunner->init(false);
 
     $runner = new \ActionScheduler_QueueRunner();
     $runner->run();

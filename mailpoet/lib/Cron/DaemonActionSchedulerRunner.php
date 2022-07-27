@@ -38,7 +38,11 @@ class DaemonActionSchedulerRunner {
     $this->wp = $wp;
   }
 
-  public function init(): void {
+  public function init(bool $isActive = true): void {
+    if (!$isActive) {
+      $this->deactivateOnTrigger();
+      return;
+    }
     $this->daemonRunAction->init();
     $this->daemonTriggerAction->init();
     $this->remoteExecutorHandler->init();
@@ -55,7 +59,7 @@ class DaemonActionSchedulerRunner {
    * because the action is recurring and would reschedule itself anyway.
    * We need do the deactivation after the action scheduler process finishes.
    */
-  public function deactivateOnTrigger(): void {
+  private function deactivateOnTrigger(): void {
     $this->wp->addAction(DaemonTrigger::NAME, [$this, 'deactivateAfterProcess']);
   }
 

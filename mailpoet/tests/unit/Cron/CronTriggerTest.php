@@ -66,7 +66,7 @@ class CronTriggerTest extends \MailPoetUnitTest {
     DaemonActionSchedulerRunner $actionSchedulerRunner = null
   ) {
     $wordpressTrigger = $wordpressTrigger ?: $this->make(WordPress::class, ['run' => true]);
-    $actionSchedulerRunner = $actionSchedulerRunner ?: $this->make(DaemonActionSchedulerRunner::class, ['init' => true, 'deactivateOnTrigger' => true]);
+    $actionSchedulerRunner = $actionSchedulerRunner ?: $this->make(DaemonActionSchedulerRunner::class, ['init' => true]);
     return new CronTrigger($wordpressTrigger, $settings, $actionSchedulerRunner);
   }
 }
