@@ -11,7 +11,6 @@ use MailPoet\Automation\Engine\Storage\WorkflowRunStorage;
 use MailPoet\Automation\Engine\Storage\WorkflowStorage;
 use MailPoet\Automation\Engine\WordPress;
 use MailPoet\Automation\Engine\Workflows\Step;
-use MailPoet\Automation\Engine\Workflows\StepRunner as StepRunnerInterface;
 use MailPoet\Automation\Engine\Workflows\WorkflowRun;
 use Throwable;
 
@@ -31,7 +30,7 @@ class StepHandler {
   /** @var WorkflowStorage */
   private $workflowStorage;
 
-  /** @var array<string, StepRunnerInterface> */
+  /** @var array<string, StepRunner> */
   private $stepRunners;
 
   public function __construct(
@@ -54,7 +53,7 @@ class StepHandler {
     $this->wordPress->doAction(Hooks::STEP_RUNNER_INITIALIZE, [$this]);
   }
 
-  public function addStepRunner(string $stepType, StepRunnerInterface $stepRunner): void {
+  public function addStepRunner(string $stepType, StepRunner $stepRunner): void {
     $this->stepRunners[$stepType] = $stepRunner;
   }
 
