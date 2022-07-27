@@ -42,12 +42,7 @@ class CronTrigger {
   public function init(string $environment = '') {
     $currentMethod = $this->settings->get(self::SETTING_NAME . '.method');
     try {
-      if ($currentMethod === self::METHOD_ACTION_SCHEDULER) {
-        $this->cronActionScheduler->init();
-        return true;
-      } else {
-        $this->cronActionScheduler->deactivateOnTrigger();
-      }
+      $this->cronActionScheduler->init($currentMethod === self::METHOD_ACTION_SCHEDULER);
       // setup WordPress cron method trigger only outside of cli environment
       if ($currentMethod === self::METHOD_WORDPRESS && $environment !== 'cli') {
         return $this->wordpressTrigger->run();
