@@ -15,6 +15,8 @@ class RecaptchaValidator implements CaptchaValidator {
   /** @var WPFunctions  */
   private $wp;
 
+  private const ENDPOINT = 'https://www.google.com/recaptcha/api/siteverify';
+
   public function __construct(
     SettingsController $settings,
     WPFunctions $wp
@@ -32,7 +34,7 @@ class RecaptchaValidator implements CaptchaValidator {
 
     $secretToken = $captchaSettings['type'] === CaptchaConstants::TYPE_RECAPTCHA_INVISIBLE ? $captchaSettings['recaptcha_invisible_secret_token'] : $captchaSettings['recaptcha_secret_token'];
 
-    $response = $this->wp->wpRemotePost('https://www.google.com/recaptcha/api/siteverify', [
+    $response = $this->wp->wpRemotePost(self::ENDPOINT, [
       'body' => [
         'secret' => $secretToken,
         'response' => $data['recaptchaResponseToken'],
