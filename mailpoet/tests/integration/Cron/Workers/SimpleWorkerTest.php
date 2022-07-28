@@ -6,11 +6,11 @@ use Codeception\Stub;
 use MailPoet\Cron\CronHelper;
 use MailPoet\Cron\Workers\SimpleWorkerMockImplementation as MockSimpleWorker;
 use MailPoet\DI\ContainerWrapper;
-use MailPoet\Models\ScheduledTask;
-use MailPoet\Settings\SettingsRepository;
+use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Entities\SettingEntity;
+use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
-use MailPoetVendor\Idiorm\ORM;
 
 require_once __DIR__ . '/SimpleWorkerMockImplementation.php';
 
@@ -18,10 +18,14 @@ class SimpleWorkerTest extends \MailPoetTest {
   public $worker;
   public $cronHelper;
 
+  /** @var ScheduledTasksRepository */
+  private $scheduledTasksRepository;
+
   public function _before() {
     parent::_before();
     $this->cronHelper = ContainerWrapper::getInstance()->get(CronHelper::class);
     $this->worker = new MockSimpleWorker();
+    $this->scheduledTasksRepository = $this->diContainer->get(ScheduledTasksRepository::class);
   }
 
   public function testItRequiresTaskTypeToConstruct() {
@@ -40,18 +44,18 @@ class SimpleWorkerTest extends \MailPoetTest {
   }
 
   public function testItSchedulesTask() {
-    expect(ScheduledTask::where('type', MockSimpleWorker::TASK_TYPE)->findMany())->isEmpty();
+    expect($this->scheduledTasksRepository->findBy(['type' => MockSimpleWorker::TASK_TYPE]))->isEmpty();
     (new MockSimpleWorker())->schedule();
-    expect(ScheduledTask::where('type', MockSimpleWorker::TASK_TYPE)->findMany())->notEmpty();
+    expect($this->scheduledTasksRepository->findBy(['type' => MockSimpleWorker::TASK_TYPE]))->notEmpty();
   }
 
   public function testItDoesNotScheduleTaskTwice() {
     $worker = new MockSimpleWorker();
-    expect(count(ScheduledTask::where('type', MockSimpleWorker::TASK_TYPE)->findMany()))->equals(0);
+    expect(count($this->scheduledTasksRepository->findBy(['type' => MockSimpleWorker::TASK_TYPE])))->equals(0);
     $worker->schedule();
-    expect(count(ScheduledTask::where('type', MockSimpleWorker::TASK_TYPE)->findMany()))->equals(1);
+    expect(count($this->scheduledTasksRepository->findBy(['type' => MockSimpleWorker::TASK_TYPE])))->equals(1);
     $worker->schedule();
-    expect(count(ScheduledTask::where('type', MockSimpleWorker::TASK_TYPE)->findMany()))->equals(1);
+    expect(count($this->scheduledTasksRepository->findBy(['type' => MockSimpleWorker::TASK_TYPE])))->equals(1);
   }
 
   public function testItCalculatesNextRunDateWithinNextWeekBoundaries() {
@@ -66,7 +70,7 @@ class SimpleWorkerTest extends \MailPoetTest {
   }
 
   public function _after() {
-    $this->diContainer->get(SettingsRepository::class)->truncate();
-    ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
+    $this->truncateEntity(SettingEntity::class);
+    $this->truncateEntity(ScheduledTaskEntity::class);
   }
 }
