@@ -362,4 +362,14 @@ class SubscribersRepository extends Repository {
       ->getQuery()
       ->getArrayResult();
   }
+
+  public function getMaxSubscriberId(): int {
+    $maxSubscriberId = $this->entityManager->createQueryBuilder()
+      ->select('MAX(s.id)')
+      ->from(SubscriberEntity::class, 's')
+      ->getQuery()
+      ->getSingleScalarResult();
+
+    return is_int($maxSubscriberId) ? $maxSubscriberId : 0;
+  }
 }
