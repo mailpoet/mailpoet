@@ -20,6 +20,15 @@ class Registry {
   /** @var array<string, Action> */
   private $actions = [];
 
+  /** @var WordPress */
+  private $wordPress;
+
+  public function __construct(
+    WordPress $wordPress
+  ) {
+    $this->wordPress = $wordPress;
+  }
+
   public function addSubject(Subject $subject): void {
     $key = $subject->getKey();
     if (isset($this->subjects[$key])) {
@@ -90,5 +99,13 @@ class Registry {
   /** @return array<string, Action> */
   public function getActions(): array {
     return $this->actions;
+  }
+
+  public function onBeforeWorkflowSave(callable $callback, int $priority = 10): void {
+    $this->wordPress->addAction(Hooks::WORKFLOW_BEFORE_SAVE, $callback, $priority);
+  }
+
+  public function onBeforeWorkflowStepSave(callable $callback, int $priority = 10): void {
+    $this->wordPress->addAction(Hooks::WORKFLOW_STEP_BEFORE_SAVE, $callback, $priority);
   }
 }
