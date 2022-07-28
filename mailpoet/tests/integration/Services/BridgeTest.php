@@ -443,7 +443,7 @@ class BridgeTest extends \MailPoetTest {
     expect($result[0]['host'])->equals('mailpoet1._domainkey.example.com');
     expect($result[0]['value'])->equals('dkim1.sendingservice.net');
     expect($result[0]['type'])->equals('CNAME');
-    expect($result[0]['status'])->equals('pending');
+    expect($result[0]['status'])->equals('valid');
     expect($result[0]['message'])->equals('');
   }
 
