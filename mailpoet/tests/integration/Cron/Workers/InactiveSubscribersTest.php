@@ -11,7 +11,6 @@ use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\TrackingConfig;
 use MailPoet\Subscribers\InactiveSubscribersController;
-use MailPoet\Subscribers\SubscribersRepository;
 use MailPoetVendor\Carbon\Carbon;
 
 class InactiveSubscribersTest extends \MailPoetTest {
@@ -23,16 +22,12 @@ class InactiveSubscribersTest extends \MailPoetTest {
   /** @var ScheduledTasksRepository */
   private $scheduledTasksRepository;
 
-  /** @var SubscribersRepository */
-  private $subscribersRepository;
-
   public function _before() {
     $this->settings = SettingsController::getInstance();
     $this->scheduledTasksRepository = $this->diContainer->get(ScheduledTasksRepository::class);
     $this->truncateEntity(ScheduledTaskEntity::class);
     $this->settings->set('tracking.level', TrackingConfig::LEVEL_PARTIAL);
     $this->cronHelper = ContainerWrapper::getInstance()->get(CronHelper::class);
-    $this->subscribersRepository = ContainerWrapper::getInstance()->get(SubscribersRepository::class);
     parent::_before();
   }
 
@@ -44,7 +39,9 @@ class InactiveSubscribersTest extends \MailPoetTest {
       'reactivateInactiveSubscribers' => Stub\Expected::once(),
     ], $this);
 
-    $worker = new InactiveSubscribers($controllerMock, $this->settings, $this->diContainer->get(TrackingConfig::class), $this->subscribersRepository);
+    $worker = $this->getServiceWithOverrides(InactiveSubscribers::class, [
+      'inactiveSubscribersController' => $controllerMock
+    ]);
     $worker->processTaskStrategy(new ScheduledTaskEntity(), microtime(true));
 
     $task = $this->scheduledTasksRepository->findOneBy(
@@ -65,7 +62,9 @@ class InactiveSubscribersTest extends \MailPoetTest {
       'reactivateInactiveSubscribers' => Stub\Expected::never(),
     ], $this);
 
-    $worker = new InactiveSubscribers($controllerMock, $this->settings, $this->diContainer->get(TrackingConfig::class), $this->subscribersRepository);
+    $worker = $this->getServiceWithOverrides(InactiveSubscribers::class, [
+      'inactiveSubscribersController' => $controllerMock
+    ]);
     $worker->processTaskStrategy(new ScheduledTaskEntity(), microtime(true));
   }
 
@@ -77,7 +76,9 @@ class InactiveSubscribersTest extends \MailPoetTest {
       'reactivateInactiveSubscribers' => Stub\Expected::never(),
     ], $this);
 
-    $worker = new InactiveSubscribers($controllerMock, $this->settings, $this->diContainer->get(TrackingConfig::class), $this->subscribersRepository);
+    $worker = $this->getServiceWithOverrides(InactiveSubscribers::class, [
+      'inactiveSubscribersController' => $controllerMock
+    ]);
     $worker->processTaskStrategy(new ScheduledTaskEntity(), microtime(true));
 
     $task = $this->scheduledTasksRepository->findOneBy(
@@ -97,7 +98,9 @@ class InactiveSubscribersTest extends \MailPoetTest {
       'reactivateInactiveSubscribers' => Stub\Expected::never(),
     ], $this);
 
-    $worker = new InactiveSubscribers($controllerMock, $this->settings, $this->diContainer->get(TrackingConfig::class), $this->subscribersRepository);
+    $worker = $this->getServiceWithOverrides(InactiveSubscribers::class, [
+      'inactiveSubscribersController' => $controllerMock
+    ]);
     $task = new ScheduledTaskEntity();
     $task->setMeta(['max_subscriber_id' => 2001 /* 3 iterations of BATCH_SIZE in markInactiveSubscribers */]);
     $this->entityManager->persist($task);
@@ -118,7 +121,9 @@ class InactiveSubscribersTest extends \MailPoetTest {
 
     $task = new ScheduledTaskEntity();
 
-    $worker = new InactiveSubscribers($controllerMock, $this->settings, $this->diContainer->get(TrackingConfig::class), $this->subscribersRepository);
+    $worker = $this->getServiceWithOverrides(InactiveSubscribers::class, [
+      'inactiveSubscribersController' => $controllerMock
+    ]);
     $worker->processTaskStrategy($task, microtime(true));
 
     $meta = $task->getMeta();
@@ -133,7 +138,10 @@ class InactiveSubscribersTest extends \MailPoetTest {
       'reactivateInactiveSubscribers' => Stub\Expected::never(),
     ], $this);
 
-    $worker = new InactiveSubscribers($controllerMock, $this->settings, $this->diContainer->get(TrackingConfig::class), $this->subscribersRepository);
+    $worker = $this->getServiceWithOverrides(InactiveSubscribers::class, [
+      'inactiveSubscribersController' => $controllerMock
+    ]);
+
     $this->expectException(\Exception::class);
     $this->expectExceptionMessage('Maximum execution time has been reached.');
     $worker->processTaskStrategy(new ScheduledTaskEntity(), microtime(true) - $this->cronHelper->getDaemonExecutionLimit());
