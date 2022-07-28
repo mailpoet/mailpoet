@@ -6,6 +6,31 @@ use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 
 class BridgeTestMockAPI extends API {
+  const VERIFIED_DOMAIN_RESPONSE = [ 'dns' => [
+    [
+      'host' => 'mailpoet1._domainkey.example.com',
+      'value' => 'dkim1.sendingservice.net',
+      'type' => 'CNAME',
+      'status' => 'pending',
+      'message' => '',
+    ],
+    [
+      'host' => 'mailpoet2._domainkey.example.com',
+      'value' => 'dkim2.sendingservice.net',
+      'type' => 'CNAME',
+      'status' => 'pending',
+      'message' => '',
+    ],
+    [
+      'host' => '_mailpoet.example.com',
+      'value' => '34567abc876556abc8754',
+      'type' => 'TXT',
+      'status' => 'pending',
+      'message' => '',
+    ]
+  ]
+  ];
+
   public $apiKey;
 
   public function __construct(
@@ -31,6 +56,34 @@ class BridgeTestMockAPI extends API {
 
   public function updateSubscriberCount($count): bool {
     return true;
+  }
+
+  public function createAuthorizedSenderDomain(string $domain): array {
+    switch ($domain) {
+      case 'existing.com':
+        return [
+          'status' => false,
+          'error' => 'This domain was already added to the list.',
+        ];
+      default:
+        return self::VERIFIED_DOMAIN_RESPONSE;
+    }
+  }
+
+  public function getAuthorizedSenderDomains(string $domain = 'all'): ?array {
+    $result = self::VERIFIED_DOMAIN_RESPONSE;
+    $result['domain'] = 'mailpoet.com';
+    if ($domain === 'all') {
+      return [ $result ];
+    }
+    return $result;
+  }
+
+  public function verifyAuthorizedSenderDomain(string $domain): array {
+    //always valid
+    $result = self::VERIFIED_DOMAIN_RESPONSE;
+    $result['ok'] = true;
+    return $result;
   }
 
   public function setKey($apiKey) {

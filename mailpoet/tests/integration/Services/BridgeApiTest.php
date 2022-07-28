@@ -8,6 +8,8 @@ use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Monolog\Logger;
 use PHPUnit\Framework\MockObject\MockObject;
 
+require_once('BridgeTestMockAPI.php');
+
 class BridgeApiTest extends \MailPoetTest {
 
   /** @var API */
@@ -93,6 +95,57 @@ class BridgeApiTest extends \MailPoetTest {
     expect($errorLog->getMessage())->stringContainsString('www.home-example.com');
     expect($errorLog->getMessage())->stringContainsString('key-validation.failed');
     expect($errorLog->getMessage())->stringContainsString('"key_type":"mss"');
+  }
+
+  public function testItCanGetSenderDomains() {
+    $domainResult = BridgeTestMockAPI::VERIFIED_DOMAIN_RESPONSE;
+    $domainResult['domain'] = 'mailpoet.com';
+    $this->wpMock
+      ->expects($this->once())
+      ->method('wpRemoteRetrieveResponseCode')
+      ->willReturn(200);
+    $this->wpMock
+      ->expects($this->once())
+      ->method('wpRemoteRetrieveBody')
+      ->willReturn(json_encode([$domainResult]));
+    $result = $this->api->getAuthorizedSenderDomains();
+    expect($result)->equals([$domainResult]);
+  }
+
+  public function testItReturnsNullIfCantGetSenderDomains() {
+    $this->wpMock
+      ->expects($this->once())
+      ->method('wpRemoteRetrieveResponseCode')
+      ->willReturn(400);
+    $result = $this->api->getAuthorizedSenderDomains();
+    expect($result)->null();
+  }
+
+  public function testItCanCreateSenderDomain() {
+    $this->wpMock
+      ->expects($this->once())
+      ->method('wpRemoteRetrieveResponseCode')
+      ->willReturn(201);
+    $this->wpMock
+      ->expects($this->once())
+      ->method('wpRemoteRetrieveBody')
+      ->willReturn(json_encode(BridgeTestMockAPI::VERIFIED_DOMAIN_RESPONSE));
+    $result = $this->api->createAuthorizedSenderDomain('mailpoet.com');
+    expect($result)->equals(BridgeTestMockAPI::VERIFIED_DOMAIN_RESPONSE);
+  }
+
+  public function testItCantCreateSenderDomainWhichExists() {
+    $this->wpMock
+      ->expects($this->once())
+      ->method('wpRemoteRetrieveResponseCode')
+      ->willReturn(403);
+    $this->wpMock
+      ->expects($this->once())
+      ->method('wpRemoteRetrieveBody')
+      ->willReturn(json_encode(['error' => 'This domain was already added to the list.']));
+    $result = $this->api->createAuthorizedSenderDomain('existing.com');
+    expect($result['status'])->equals(false);
+    expect($result['error'])->equals('This domain was already added to the list.');
   }
 
   private function cleanUp() {
