@@ -43,7 +43,7 @@ class BuiltInCaptchaValidator implements CaptchaValidator {
   }
 
   public function validate(array $data): bool {
-    $isBuiltinCaptchaRequired = $this->isRequired(isset($data['email']) ? $data['email'] : '');
+    $isBuiltinCaptchaRequired = $this->isRequired(isset($data['email']) ? $data['email'] : null);
     if (!$isBuiltinCaptchaRequired) {
       return true;
     }
