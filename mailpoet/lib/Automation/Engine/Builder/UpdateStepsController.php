@@ -2,8 +2,8 @@
 
 namespace MailPoet\Automation\Engine\Builder;
 
-use MailPoet\Automation\Engine\Workflows\Step;
-use MailPoet\Automation\Engine\Workflows\Workflow;
+use MailPoet\Automation\Engine\Data\Step;
+use MailPoet\Automation\Engine\Data\Workflow;
 
 class UpdateStepsController {
   public function updateSteps(Workflow $workflow, array $data): Workflow {

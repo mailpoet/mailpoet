@@ -2,10 +2,10 @@
 
 namespace MailPoet\Automation\Engine\Storage;
 
+use MailPoet\Automation\Engine\Data\Workflow;
 use MailPoet\Automation\Engine\Exceptions;
 use MailPoet\Automation\Engine\Utils\Json;
 use MailPoet\Automation\Engine\Workflows\Trigger;
-use MailPoet\Automation\Engine\Workflows\Workflow;
 use wpdb;
 
 class WorkflowStorage {
