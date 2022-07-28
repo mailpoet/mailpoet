@@ -2,10 +2,6 @@
 
 namespace MailPoet\Automation\Engine\Workflows;
 
-interface Trigger {
-  public function getKey(): string;
-
-  public function getName(): string;
-
+interface Trigger extends Step {
   public function registerHooks(): void;
 }
