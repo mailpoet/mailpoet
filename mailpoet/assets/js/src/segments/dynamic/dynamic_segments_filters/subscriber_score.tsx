@@ -80,7 +80,7 @@ export function SubscriberScoreFields({ filterIndex }: Props): JSX.Element {
     if (
       !availableOperators.includes(segment.operator as SubscriberScoreOperator)
     ) {
-      updateSegmentFilter(
+      void updateSegmentFilter(
         { operator: SubscriberScoreOperator.HIGHER_THAN },
         filterIndex,
       );
@@ -92,13 +92,13 @@ export function SubscriberScoreFields({ filterIndex }: Props): JSX.Element {
         segment.operator === SubscriberScoreOperator.NOT_EQUALS) &&
       typeof segment.value === 'undefined'
     ) {
-      updateSegmentFilter({ value: '' }, filterIndex);
+      void updateSegmentFilter({ value: '' }, filterIndex);
     }
     if (
       segment.operator === SubscriberScoreOperator.UNKNOWN ||
       segment.operator === SubscriberScoreOperator.NOT_UNKNOWN
     ) {
-      updateSegmentFilter({ value: null }, filterIndex);
+      void updateSegmentFilter({ value: null }, filterIndex);
     }
   }, [updateSegmentFilter, segment, filterIndex]);
 
@@ -112,7 +112,7 @@ export function SubscriberScoreFields({ filterIndex }: Props): JSX.Element {
               value={segment.operator}
               automationId="segment-subscriber-score-operator"
               onChange={(e) => {
-                updateSegmentFilterFromEvent('operator', filterIndex, e);
+                void updateSegmentFilterFromEvent('operator', filterIndex, e);
               }}
             >
               <option value={SubscriberScoreOperator.HIGHER_THAN}>
@@ -148,7 +148,7 @@ export function SubscriberScoreFields({ filterIndex }: Props): JSX.Element {
                 value={segment.value || ''}
                 data-automation-id="segment-subscriber-score-value"
                 onChange={(e) => {
-                  updateSegmentFilterFromEvent('value', filterIndex, e);
+                  void updateSegmentFilterFromEvent('value', filterIndex, e);
                 }}
                 min="0"
                 placeholder={MailPoet.I18n.t('subscriberScorePlaceholder')}

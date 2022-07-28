@@ -51,14 +51,14 @@ export function EmailOpenStatisticsFields({ filterIndex }: Props): JSX.Element {
       segment.operator !== AnyValueTypes.ALL &&
       segment.operator !== AnyValueTypes.NONE
     ) {
-      updateSegmentFilter({ operator: AnyValueTypes.ANY }, filterIndex);
+      void updateSegmentFilter({ operator: AnyValueTypes.ANY }, filterIndex);
     }
     // None is not allowed for Machine Opened
     if (
       segment.action === EmailActionTypes.MACHINE_OPENED &&
       segment.operator === AnyValueTypes.NONE
     ) {
-      updateSegmentFilter({ operator: AnyValueTypes.ANY }, filterIndex);
+      void updateSegmentFilter({ operator: AnyValueTypes.ANY }, filterIndex);
     }
   }, [segment.action, segment.operator, filterIndex, updateSegmentFilter]);
 
@@ -70,7 +70,7 @@ export function EmailOpenStatisticsFields({ filterIndex }: Props): JSX.Element {
           isFullWidth
           value={segment.operator}
           onChange={(e) => {
-            updateSegmentFilterFromEvent('operator', filterIndex, e);
+            void updateSegmentFilterFromEvent('operator', filterIndex, e);
           }}
         >
           <option value={AnyValueTypes.ANY}>{MailPoet.I18n.t('anyOf')}</option>
@@ -96,7 +96,7 @@ export function EmailOpenStatisticsFields({ filterIndex }: Props): JSX.Element {
             return segment.newsletters.indexOf(newsletterId) !== -1;
           }, newsletterOptions)}
           onChange={(options: SelectOption[]): void => {
-            updateSegmentFilter(
+            void updateSegmentFilter(
               { newsletters: map('value', options) },
               filterIndex,
             );

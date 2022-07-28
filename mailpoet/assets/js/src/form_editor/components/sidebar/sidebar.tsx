@@ -14,7 +14,7 @@ export function Sidebar(): JSX.Element {
   );
 
   const closePlacementSettings = (): void => {
-    changeActiveSidebar('default');
+    void changeActiveSidebar('default');
   };
 
   const selectedBlockId = useSelect(
@@ -26,13 +26,17 @@ export function Sidebar(): JSX.Element {
     if (!selectedBlockId) {
       return;
     }
-    changeActiveSidebar('default');
+    void changeActiveSidebar('default');
   }, [selectedBlockId, changeActiveSidebar]);
 
   return (
     <div className="edit-post-sidebar interface-complementary-area mailpoet_form_editor_sidebar">
       {activeSidebar === 'default' && (
-        <DefaultSidebar onClose={(): void => toggleSidebar(false)} />
+        <DefaultSidebar
+          onClose={(): void => {
+            void toggleSidebar(false);
+          }}
+        />
       )}
       {activeSidebar === 'placement_settings' && (
         <PlacementSettingsSidebar onClose={closePlacementSettings} />

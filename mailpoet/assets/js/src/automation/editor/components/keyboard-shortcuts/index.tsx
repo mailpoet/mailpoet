@@ -22,7 +22,7 @@ export function KeyboardShortcuts(): null {
   const { registerShortcut } = useDispatch(keyboardShortcutsStore);
 
   useEffect(() => {
-    registerShortcut({
+    void registerShortcut({
       name: 'mailpoet/automation-editor/toggle-fullscreen',
       category: 'global',
       description: __('Toggle fullscreen mode.'),
@@ -32,7 +32,7 @@ export function KeyboardShortcuts(): null {
       },
     });
 
-    registerShortcut({
+    void registerShortcut({
       name: 'mailpoet/automation-editor/toggle-sidebar',
       category: 'global',
       description: __('Show or hide the settings sidebar.'),

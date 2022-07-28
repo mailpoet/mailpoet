@@ -52,7 +52,7 @@ export function SubscribedToList({ filterIndex }: Props): JSX.Element {
       segment.operator !== AnyValueTypes.ALL &&
       segment.operator !== AnyValueTypes.NONE
     ) {
-      updateSegmentFilter({ operator: AnyValueTypes.ANY }, filterIndex);
+      void updateSegmentFilter({ operator: AnyValueTypes.ANY }, filterIndex);
     }
   }, [updateSegmentFilter, segment, filterIndex]);
   const options = staticSegmentsList.map((currentValue) => ({
@@ -68,7 +68,7 @@ export function SubscribedToList({ filterIndex }: Props): JSX.Element {
           isFullWidth
           value={segment.operator}
           onChange={(e) => {
-            updateSegmentFilterFromEvent('operator', filterIndex, e);
+            void updateSegmentFilterFromEvent('operator', filterIndex, e);
           }}
         >
           <option value={AnyValueTypes.ANY}>{MailPoet.I18n.t('anyOf')}</option>
@@ -91,7 +91,7 @@ export function SubscribedToList({ filterIndex }: Props): JSX.Element {
             return segment.segments.indexOf(segmentId) !== -1;
           }, options)}
           onChange={(selectOptions: SelectOption[]): void => {
-            updateSegmentFilter(
+            void updateSegmentFilter(
               { segments: map('value', selectOptions) },
               filterIndex,
             );

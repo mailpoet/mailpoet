@@ -57,7 +57,7 @@ function SubscribersCounter(): JSX.Element {
           finished.count = response.count;
           finished.errors = response.errors;
         }
-        updateSubscriberCount(finished);
+        void updateSubscriberCount(finished);
       },
       (errorResponse) => {
         isRequestInFlight.current = false;
@@ -66,7 +66,7 @@ function SubscribersCounter(): JSX.Element {
         finished.loading = false;
         finished.count = undefined;
         finished.errors = errors;
-        updateSubscriberCount(finished);
+        void updateSubscriberCount(finished);
       },
     );
   }
@@ -75,7 +75,7 @@ function SubscribersCounter(): JSX.Element {
 
   useEffect(() => {
     if (isFormValid(segment.filters)) {
-      updateSubscriberCount({
+      void updateSubscriberCount({
         loading: true,
         count: undefined,
         errors: undefined,
@@ -83,7 +83,7 @@ function SubscribersCounter(): JSX.Element {
       const debouncedLoad = debouncedLoadRef.current;
       debouncedLoad(segment);
     } else {
-      updateSubscriberCount({
+      void updateSubscriberCount({
         count: undefined,
         loading: false,
       });

@@ -15,7 +15,7 @@ export function HistoryUndo(props: Record<string, unknown>): JSX.Element {
   const { registerShortcut } = useDispatch('core/keyboard-shortcuts');
 
   const undoAction = (): void => {
-    historyUndo();
+    void historyUndo();
   };
 
   useShortcut(
@@ -23,7 +23,7 @@ export function HistoryUndo(props: Record<string, unknown>): JSX.Element {
     'mailpoet-form-editor/undo',
     // Shortcut callback
     (event): void => {
-      historyUndo();
+      void historyUndo();
       event.preventDefault();
     },
   );

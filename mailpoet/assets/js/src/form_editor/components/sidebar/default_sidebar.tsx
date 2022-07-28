@@ -26,9 +26,9 @@ export function DefaultSidebar({ onClose }: Props): JSX.Element {
 
   useEffect(() => {
     if (selectedBlockId) {
-      switchDefaultSidebarTab('block');
+      void switchDefaultSidebarTab('block');
     } else {
-      switchDefaultSidebarTab('form');
+      void switchDefaultSidebarTab('form');
     }
   }, [selectedBlockId, switchDefaultSidebarTab]);
 
@@ -38,7 +38,9 @@ export function DefaultSidebar({ onClose }: Props): JSX.Element {
         <ul>
           <li>
             <button
-              onClick={(): void => switchDefaultSidebarTab('form')}
+              onClick={(): void => {
+                void switchDefaultSidebarTab('form');
+              }}
               className={classnames(
                 'components-button edit-post-sidebar__panel-tab',
                 { 'is-active': activeTab === 'form' },
@@ -51,7 +53,9 @@ export function DefaultSidebar({ onClose }: Props): JSX.Element {
           </li>
           <li>
             <button
-              onClick={(): void => switchDefaultSidebarTab('block')}
+              onClick={(): void => {
+                void switchDefaultSidebarTab('block');
+              }}
               className={classnames(
                 'components-button edit-post-sidebar__panel-tab',
                 { 'is-active': activeTab === 'block' },

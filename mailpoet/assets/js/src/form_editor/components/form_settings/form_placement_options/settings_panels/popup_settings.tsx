@@ -42,15 +42,15 @@ export function PopUpSettings(): JSX.Element {
             maxPercents={100}
             defaultPixelValue={560}
             defaultPercentValue={100}
-            onChange={(width): void =>
-              changeFormSettings(
+            onChange={(width): void => {
+              void changeFormSettings(
                 assocPath(
                   'formPlacement.popup.styles.width',
                   width,
                   formSettings,
                 ),
-              )
-            }
+              );
+            }}
           />
           <PlacementSettings settingsPlacementKey="popup" />
           <AnimationSettings settingsPlacementKey="popup" />

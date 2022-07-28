@@ -101,7 +101,9 @@ export function Form({ segmentId }: Props): JSX.Element {
               name="name"
               id="field_name"
               defaultValue={segment.name}
-              onChange={(e): void => updateSegment({ name: e.target.value })}
+              onChange={(e): void => {
+                void updateSegment({ name: e.target.value });
+              }}
             />
           </div>
         </div>
@@ -120,9 +122,9 @@ export function Form({ segmentId }: Props): JSX.Element {
               name="description"
               id="field_description"
               value={segment.description}
-              onChange={(e): void =>
-                updateSegment({ description: e.target.value })
-              }
+              onChange={(e): void => {
+                void updateSegment({ description: e.target.value });
+              }}
             />
           </div>
         </div>
@@ -148,7 +150,7 @@ export function Form({ segmentId }: Props): JSX.Element {
                       options={segmentFilters}
                       value={filterRow.filterValue}
                       onChange={(newValue: FilterValue): void => {
-                        updateSegmentFilter(
+                        void updateSegmentFilter(
                           {
                             segmentType: newValue.group,
                             action: newValue.value,
@@ -193,7 +195,7 @@ export function Form({ segmentId }: Props): JSX.Element {
             type="submit"
             onClick={(e): void => {
               e.preventDefault();
-              handleSave(segmentId);
+              void handleSave(segmentId);
             }}
             isDisabled={
               !isFormValid(segment.filters) ||

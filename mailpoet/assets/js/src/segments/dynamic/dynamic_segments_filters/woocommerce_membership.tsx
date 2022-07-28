@@ -74,7 +74,7 @@ export function WooCommerceMembershipFields({
       segment.operator !== AnyValueTypes.ALL &&
       segment.operator !== AnyValueTypes.NONE
     ) {
-      updateSegmentFilter({ operator: AnyValueTypes.ANY }, filterIndex);
+      void updateSegmentFilter({ operator: AnyValueTypes.ANY }, filterIndex);
     }
   }, [updateSegmentFilter, segment, filterIndex]);
 
@@ -108,12 +108,12 @@ export function WooCommerceMembershipFields({
             if (!segment.plan_ids) return false;
             return segment.plan_ids.indexOf(option.value) !== -1;
           }, planOptions)}
-          onChange={(options: SelectOption[]): void =>
-            updateSegmentFilter(
+          onChange={(options: SelectOption[]): void => {
+            void updateSegmentFilter(
               { plan_ids: (options || []).map((x: SelectOption) => x.value) },
               filterIndex,
-            )
-          }
+            );
+          }}
           automationId="select-segment-plans"
         />
       </Grid.CenteredRow>

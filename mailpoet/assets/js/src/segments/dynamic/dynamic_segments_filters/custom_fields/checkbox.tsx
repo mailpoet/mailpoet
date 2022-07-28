@@ -27,7 +27,7 @@ export function Checkbox({ filterIndex }: Props): JSX.Element {
 
   useEffect(() => {
     if (segment.value !== '1' && segment.value !== '0') {
-      updateSegmentFilter({ operator: 'equals', value: '1' }, filterIndex);
+      void updateSegmentFilter({ operator: 'equals', value: '1' }, filterIndex);
     }
   }, [updateSegmentFilter, segment, filterIndex]);
 

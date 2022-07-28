@@ -108,11 +108,11 @@ export function OtherSettings(): JSX.Element {
         maxPercents={100}
         defaultPixelValue={200}
         defaultPercentValue={100}
-        onChange={(width): void =>
-          changeFormSettings(
+        onChange={(width): void => {
+          void changeFormSettings(
             assocPath('formPlacement.others.styles.width', width, formSettings),
-          )
-        }
+          );
+        }}
       />
     </>
   );

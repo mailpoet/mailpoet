@@ -237,7 +237,7 @@ export function CustomFieldDate({
 
   useEffect(() => {
     if (segment.date_type !== customField.params.date_type) {
-      updateSegmentFilter(
+      void updateSegmentFilter(
         { date_type: customField.params.date_type, value: '' },
         filterIndex,
       );

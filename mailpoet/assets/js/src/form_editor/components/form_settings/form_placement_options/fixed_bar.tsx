@@ -16,7 +16,9 @@ export function FixedBar(): JSX.Element {
       active={formSettings.formPlacement.fixedBar.enabled}
       label={MailPoet.I18n.t('placeFixedBarFormOnPages')}
       icon={FixedBarIcon}
-      onClick={(): void => showPlacementSettings('fixed_bar')}
+      onClick={(): void => {
+        void showPlacementSettings('fixed_bar');
+      }}
       canBeActive
     />
   );

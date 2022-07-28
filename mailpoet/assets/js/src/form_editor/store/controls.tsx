@@ -47,7 +47,7 @@ export const controls = {
     if (select('mailpoet-form-editor').getIsFormSaving()) {
       return;
     }
-    dispatch('mailpoet-form-editor').saveFormStarted();
+    void dispatch('mailpoet-form-editor').saveFormStarted();
     const formErrors = select('mailpoet-form-editor').getFormErrors();
     if (formErrors.length) {
       return;
@@ -75,18 +75,18 @@ export const controls = {
       data: requestData,
     })
       .done((result) => {
-        dispatch('mailpoet-form-editor').saveFormDone(result.data.id);
+        void dispatch('mailpoet-form-editor').saveFormDone(result.data.id);
         Cookies.remove(`popup_form_dismissed_${result.data.id}`, { path: '/' });
       })
       .fail((response) => {
-        dispatch('mailpoet-form-editor').saveFormFailed(
+        void dispatch('mailpoet-form-editor').saveFormFailed(
           formatApiErrorMessage(response),
         );
       });
   },
 
   async SAVE_CUSTOM_FIELD(actionData) {
-    dispatch('mailpoet-form-editor').saveCustomFieldStarted();
+    void dispatch('mailpoet-form-editor').saveCustomFieldStarted();
     const customFields = select(
       'mailpoet-form-editor',
     ).getAllAvailableCustomFields();
@@ -102,15 +102,15 @@ export const controls = {
       data: requestData,
     })
       .then((response) => {
-        dispatch('mailpoet-form-editor').saveCustomFieldDone(
+        void dispatch('mailpoet-form-editor').saveCustomFieldDone(
           customField.id,
           response.data,
         );
         if (typeof actionData.onFinish === 'function') actionData.onFinish();
       })
-      .then(dispatch('mailpoet-form-editor').saveForm)
+      .then(() => void dispatch('mailpoet-form-editor').saveForm())
       .fail((response) => {
-        dispatch('mailpoet-form-editor').saveCustomFieldFailed(
+        void dispatch('mailpoet-form-editor').saveCustomFieldFailed(
           formatApiErrorMessage(response),
         );
       });
@@ -124,7 +124,7 @@ export const controls = {
     if (select('mailpoet-form-editor').getIsCustomFieldCreating()) {
       return;
     }
-    dispatch('mailpoet-form-editor').createCustomFieldStarted(action.data);
+    void dispatch('mailpoet-form-editor').createCustomFieldStarted(action.data);
     // Check if it really started. Could been blocked by an error.
     if (!select('mailpoet-form-editor').getIsCustomFieldCreating()) {
       return;
@@ -143,10 +143,12 @@ export const controls = {
         const blockName = registerCustomFieldBlock(customField);
         const customFieldBlock = createBlock(blockName);
         dispatch('core/block-editor').replaceBlock(clientId, customFieldBlock);
-        dispatch('mailpoet-form-editor').createCustomFieldDone(response.data);
+        void dispatch('mailpoet-form-editor').createCustomFieldDone(
+          response.data,
+        );
       })
       .fail((response) => {
-        dispatch('mailpoet-form-editor').createCustomFieldFailed(
+        void dispatch('mailpoet-form-editor').createCustomFieldFailed(
           formatApiErrorMessage(response),
         );
       });
@@ -157,7 +159,7 @@ export const controls = {
       customFieldId,
       clientId,
     }: { customFieldId: number; clientId: string } = actionData;
-    dispatch('mailpoet-form-editor').deleteCustomFieldStarted();
+    void dispatch('mailpoet-form-editor').deleteCustomFieldStarted();
     const customFields = select(
       'mailpoet-form-editor',
     ).getAllAvailableCustomFields();
@@ -175,7 +177,7 @@ export const controls = {
         MailPoet.trackEvent('Forms > Delete custom field', {
           'Field type': customField.type,
         });
-        dispatch('mailpoet-form-editor').deleteCustomFieldDone(
+        void dispatch('mailpoet-form-editor').deleteCustomFieldDone(
           customFieldId,
           clientId,
         );
@@ -190,7 +192,7 @@ export const controls = {
         dispatch('core/block-editor').removeBlock(clientId);
       })
       .fail((response) => {
-        dispatch('mailpoet-form-editor').deleteCustomFieldFailed(
+        void dispatch('mailpoet-form-editor').deleteCustomFieldFailed(
           formatApiErrorMessage(response),
         );
       });
@@ -240,7 +242,7 @@ export const controls = {
     const emailInput = findBlock(newBlocks, 'mailpoet-form/email-input');
     const submitInput = findBlock(newBlocks, 'mailpoet-form/submit-button');
     if (emailInput && submitInput) {
-      dispatch('mailpoet-form-editor').changeFormBlocks(newBlocks);
+      void dispatch('mailpoet-form-editor').changeFormBlocks(newBlocks);
       return;
     }
 

@@ -75,20 +75,20 @@ export function FormPreview(): JSX.Element {
     if (beacon) {
       beacon.style.display = 'block';
     }
-    hidePreview();
+    void hidePreview();
   }, [hidePreview]);
 
   const setFormType = useCallback(
     (type): void => {
       setIframeLoaded(false);
-      changePreviewSettings({ ...previewSettings, formType: type });
+      void changePreviewSettings({ ...previewSettings, formType: type });
     },
     [changePreviewSettings, previewSettings],
   );
 
   const onPreviewTypeChange = useCallback(
     (type): void => {
-      changePreviewSettings({ ...previewSettings, displayType: type });
+      void changePreviewSettings({ ...previewSettings, displayType: type });
     },
     [changePreviewSettings, previewSettings],
   );

@@ -93,7 +93,7 @@ export function EmailClickStatisticsFields({
       segment.operator !== AnyValueTypes.ALL &&
       segment.operator !== AnyValueTypes.NONE
     ) {
-      updateSegmentFilter({ operator: AnyValueTypes.ANY }, filterIndex);
+      void updateSegmentFilter({ operator: AnyValueTypes.ANY }, filterIndex);
     }
   }, [segment.operator, filterIndex, updateSegmentFilter]);
 
@@ -108,7 +108,7 @@ export function EmailClickStatisticsFields({
           options={newsletterOptions}
           value={find(['value', segment.newsletter_id], newsletterOptions)}
           onChange={(option: SelectOption): void => {
-            updateSegmentFilter(
+            void updateSegmentFilter(
               { newsletter_id: option.value, link_ids: [] },
               filterIndex,
             );
@@ -158,7 +158,7 @@ export function EmailClickStatisticsFields({
               return segment.link_ids.indexOf(option.value) !== -1;
             }, links)}
             onChange={(options: SelectOption[]): void => {
-              updateSegmentFilter(
+              void updateSegmentFilter(
                 { link_ids: (options || []).map((x) => x.value) },
                 filterIndex,
               );

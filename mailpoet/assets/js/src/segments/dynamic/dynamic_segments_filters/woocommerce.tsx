@@ -170,13 +170,13 @@ export const WooCommerceFields: FunctionComponent<Props> = ({
       segment.number_of_orders_type === undefined &&
       segment.action === WooCommerceActionTypes.NUMBER_OF_ORDERS
     ) {
-      updateSegmentFilter({ number_of_orders_type: '=' }, filterIndex);
+      void updateSegmentFilter({ number_of_orders_type: '=' }, filterIndex);
     }
     if (
       segment.total_spent_type === undefined &&
       segment.action === WooCommerceActionTypes.TOTAL_SPENT
     ) {
-      updateSegmentFilter({ total_spent_type: '>' }, filterIndex);
+      void updateSegmentFilter({ total_spent_type: '>' }, filterIndex);
     }
     if (
       actionTypesWithDefaultTypeAny.includes(segment.action) &&
@@ -184,14 +184,14 @@ export const WooCommerceFields: FunctionComponent<Props> = ({
       segment.operator !== AnyValueTypes.ANY &&
       segment.operator !== AnyValueTypes.NONE
     ) {
-      updateSegmentFilter({ operator: AnyValueTypes.ANY }, filterIndex);
+      void updateSegmentFilter({ operator: AnyValueTypes.ANY }, filterIndex);
     }
     if (
       segment.action === WooCommerceActionTypes.CUSTOMER_IN_COUNTRY &&
       segment.operator !== AnyValueTypes.ANY &&
       segment.operator !== AnyValueTypes.NONE
     ) {
-      updateSegmentFilter({ operator: AnyValueTypes.ANY }, filterIndex);
+      void updateSegmentFilter({ operator: AnyValueTypes.ANY }, filterIndex);
     }
   }, [updateSegmentFilter, segment, filterIndex]);
 
@@ -202,9 +202,12 @@ export const WooCommerceFields: FunctionComponent<Props> = ({
           <Select
             key="select-operator"
             value={segment.operator}
-            onChange={(e): void =>
-              updateSegmentFilter({ operator: e.target.value }, filterIndex)
-            }
+            onChange={(e): void => {
+              void updateSegmentFilter(
+                { operator: e.target.value },
+                filterIndex,
+              );
+            }}
             automationId="select-operator"
           >
             <option value={AnyValueTypes.ANY}>
@@ -235,16 +238,16 @@ export const WooCommerceFields: FunctionComponent<Props> = ({
               }
               return segment.product_ids.indexOf(productOption.value) !== -1;
             }, productOptions)}
-            onChange={(options: SelectOption[]): void =>
-              updateSegmentFilter(
+            onChange={(options: SelectOption[]): void => {
+              void updateSegmentFilter(
                 {
                   product_ids: (options || []).map(
                     (x: SelectOption) => x.value,
                   ),
                 },
                 filterIndex,
-              )
-            }
+              );
+            }}
             automationId="select-segment-products"
           />
         </Grid.CenteredRow>
@@ -257,9 +260,12 @@ export const WooCommerceFields: FunctionComponent<Props> = ({
           <Select
             key="select-operator"
             value={segment.operator}
-            onChange={(e): void =>
-              updateSegmentFilter({ operator: e.target.value }, filterIndex)
-            }
+            onChange={(e): void => {
+              void updateSegmentFilter(
+                { operator: e.target.value },
+                filterIndex,
+              );
+            }}
             automationId="select-operator"
           >
             <option value={AnyValueTypes.ANY}>
@@ -290,16 +296,16 @@ export const WooCommerceFields: FunctionComponent<Props> = ({
               }
               return segment.category_ids.indexOf(categoryOption.value) !== -1;
             }, categoryOptions)}
-            onChange={(options: SelectOption[]): void =>
-              updateSegmentFilter(
+            onChange={(options: SelectOption[]): void => {
+              void updateSegmentFilter(
                 {
                   category_ids: (options || []).map(
                     (x: SelectOption) => x.value,
                   ),
                 },
                 filterIndex,
-              )
-            }
+              );
+            }}
             automationId="select-segment-category"
           />
         </Grid.CenteredRow>
@@ -313,7 +319,7 @@ export const WooCommerceFields: FunctionComponent<Props> = ({
             key="select"
             value={segment.number_of_orders_type}
             onChange={(e): void => {
-              updateSegmentFilterFromEvent(
+              void updateSegmentFilterFromEvent(
                 'number_of_orders_type',
                 filterIndex,
                 e,
@@ -333,7 +339,7 @@ export const WooCommerceFields: FunctionComponent<Props> = ({
             value={segment.number_of_orders_count || ''}
             placeholder={MailPoet.I18n.t('wooNumberOfOrdersCount')}
             onChange={(e): void => {
-              updateSegmentFilterFromEvent(
+              void updateSegmentFilterFromEvent(
                 'number_of_orders_count',
                 filterIndex,
                 e,
@@ -351,7 +357,7 @@ export const WooCommerceFields: FunctionComponent<Props> = ({
             value={segment.number_of_orders_days || ''}
             placeholder={MailPoet.I18n.t('daysPlaceholder')}
             onChange={(e): void => {
-              updateSegmentFilterFromEvent(
+              void updateSegmentFilterFromEvent(
                 'number_of_orders_days',
                 filterIndex,
                 e,
@@ -370,7 +376,11 @@ export const WooCommerceFields: FunctionComponent<Props> = ({
             key="select"
             value={segment.total_spent_type}
             onChange={(e): void => {
-              updateSegmentFilterFromEvent('total_spent_type', filterIndex, e);
+              void updateSegmentFilterFromEvent(
+                'total_spent_type',
+                filterIndex,
+                e,
+              );
             }}
             automationId="select-total-spent-type"
           >
@@ -387,7 +397,7 @@ export const WooCommerceFields: FunctionComponent<Props> = ({
             value={segment.total_spent_amount || ''}
             placeholder={MailPoet.I18n.t('wooTotalSpentAmount')}
             onChange={(e): void => {
-              updateSegmentFilterFromEvent(
+              void updateSegmentFilterFromEvent(
                 'total_spent_amount',
                 filterIndex,
                 e,
@@ -405,7 +415,11 @@ export const WooCommerceFields: FunctionComponent<Props> = ({
             value={segment.total_spent_days || ''}
             placeholder={MailPoet.I18n.t('daysPlaceholder')}
             onChange={(e): void => {
-              updateSegmentFilterFromEvent('total_spent_days', filterIndex, e);
+              void updateSegmentFilterFromEvent(
+                'total_spent_days',
+                filterIndex,
+                e,
+              );
             }}
           />
           <div>{MailPoet.I18n.t('days')}</div>
@@ -419,9 +433,12 @@ export const WooCommerceFields: FunctionComponent<Props> = ({
           <Select
             key="select-operator-country"
             value={segment.operator}
-            onChange={(e): void =>
-              updateSegmentFilter({ operator: e.target.value }, filterIndex)
-            }
+            onChange={(e): void => {
+              void updateSegmentFilter(
+                { operator: e.target.value },
+                filterIndex,
+              );
+            }}
             automationId="select-operator-country"
           >
             <option value={AnyValueTypes.ANY}>
@@ -444,16 +461,16 @@ export const WooCommerceFields: FunctionComponent<Props> = ({
               if (!segment.country_code) return undefined;
               return segment.country_code.indexOf(option.value) !== -1;
             }, countryOptions)}
-            onChange={(options: SelectOption[]): void =>
-              updateSegmentFilter(
+            onChange={(options: SelectOption[]): void => {
+              void updateSegmentFilter(
                 {
                   country_code: (options || []).map(
                     (x: SelectOption) => x.value,
                   ),
                 },
                 filterIndex,
-              )
-            }
+              );
+            }}
             automationId="select-segment-country"
           />
         </Grid.CenteredRow>

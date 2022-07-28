@@ -16,7 +16,9 @@ export function SlideIn(): JSX.Element {
       active={formSettings.formPlacement.slideIn.enabled}
       label={MailPoet.I18n.t('placeSlideInFormOnPages')}
       icon={SlideInIcon}
-      onClick={(): void => showPlacementSettings('slide_in')}
+      onClick={(): void => {
+        void showPlacementSettings('slide_in');
+      }}
       canBeActive
     />
   );

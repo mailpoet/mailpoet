@@ -17,7 +17,7 @@ export function Tutorial(): JSX.Element {
   const { tutorialDismissed } = useDispatch('mailpoet-form-editor');
 
   const onClose = useCallback((): void => {
-    tutorialDismissed();
+    void tutorialDismissed();
   }, [tutorialDismissed]);
 
   if (tutorialSeen) {

@@ -63,15 +63,15 @@ export function FixedBarSettings(): JSX.Element {
             maxPercents={100}
             defaultPixelValue={560}
             defaultPercentValue={100}
-            onChange={(width): void =>
-              changeFormSettings(
+            onChange={(width): void => {
+              void changeFormSettings(
                 assocPath(
                   'formPlacement.fixedBar.styles.width',
                   width,
                   formSettings,
                 ),
-              )
-            }
+              );
+            }}
           />
           <PlacementSettings settingsPlacementKey="fixedBar" />
           <AnimationSettings settingsPlacementKey="fixedBar" />

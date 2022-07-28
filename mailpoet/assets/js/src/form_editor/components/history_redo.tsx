@@ -15,7 +15,7 @@ export function HistoryRedo(props: Record<string, unknown>): JSX.Element {
   const { registerShortcut } = useDispatch('core/keyboard-shortcuts');
 
   const redoAction = (): void => {
-    historyRedo();
+    void historyRedo();
   };
 
   useShortcut(
