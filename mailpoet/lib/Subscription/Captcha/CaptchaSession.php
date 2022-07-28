@@ -15,8 +15,8 @@ class CaptchaSession {
   /** @var WPFunctions */
   private $wp;
 
-  /** @var ?string */
-  private $id = null;
+  /** @var string */
+  private $id = '';
 
   public function __construct(
     WPFunctions $wp
@@ -24,11 +24,14 @@ class CaptchaSession {
     $this->wp = $wp;
   }
 
-  public function init($id = null) {
+  public function init(string $id = null) {
     $this->id = $id ?: Security::generateRandomString(self::ID_LENGTH);
   }
 
-  public function getId(): ?string {
+  public function getId(): string {
+    if (!$this->id) {
+      $this->init();
+    }
     return $this->id;
   }
 

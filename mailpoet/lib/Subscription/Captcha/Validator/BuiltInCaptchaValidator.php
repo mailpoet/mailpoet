@@ -56,7 +56,7 @@ class BuiltInCaptchaValidator implements CaptchaValidator {
       throw new ValidationError(
         __('Please fill in the CAPTCHA.', 'mailpoet'),
         [
-          'redirect_url' => $this->subscriptionUrlFactory->getCaptchaUrl($this->getSessionId()),
+          'redirect_url' => $this->subscriptionUrlFactory->getCaptchaUrl($this->captchaSession->getId()),
         ]
       );
     }
@@ -65,7 +65,7 @@ class BuiltInCaptchaValidator implements CaptchaValidator {
       throw new ValidationError(
         __('Please regenerate the CAPTCHA.', 'mailpoet'),
         [
-          'redirect_url' => $this->subscriptionUrlFactory->getCaptchaUrl($this->getSessionId()),
+          'redirect_url' => $this->subscriptionUrlFactory->getCaptchaUrl($this->captchaSession->getId()),
         ]
       );
     }
@@ -82,15 +82,6 @@ class BuiltInCaptchaValidator implements CaptchaValidator {
 
     return true;
 
-  }
-
-  private function getSessionId() {
-    $id = $this->captchaSession->getId();
-    if ($id === null) {
-      $this->captchaSession->init();
-      $id = $this->captchaSession->getId();
-    }
-    return $id;
   }
 
   public function isRequired($subscriberEmail = null) {
