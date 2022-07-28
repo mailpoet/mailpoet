@@ -17,7 +17,8 @@ const createDelayStep = (nextStepId: string) => ({
   key: 'core:delay',
   next_step_id: nextStepId,
   args: {
-    seconds: 60,
+    delay: 1,
+    delay_type: 'HOURS',
   },
 });
 

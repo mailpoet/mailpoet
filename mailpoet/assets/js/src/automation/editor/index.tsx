@@ -16,6 +16,7 @@ import { Sidebar } from './components/sidebar';
 import { Workflow } from './components/workflow';
 import { store, storeName } from './store';
 import { initializeApi } from '../api';
+import { initialize as initializeCoreIntegration } from '../integrations/core';
 import { initialize as initializeMailPoetIntegration } from '../integrations/mailpoet';
 
 // See:
@@ -78,6 +79,7 @@ window.addEventListener('DOMContentLoaded', () => {
   const root = document.getElementById('mailpoet_automation_editor');
   if (root) {
     initializeApi();
+    initializeCoreIntegration();
     initializeMailPoetIntegration();
     ReactDOM.render(<Editor />, root);
   }
