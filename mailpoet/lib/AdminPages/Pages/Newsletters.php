@@ -127,6 +127,7 @@ class Newsletters {
     global $wp_roles; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     $installer = new Installer(Installer::PREMIUM_PLUGIN_SLUG);
     $pluginInformation = $installer->retrievePluginInformation();
+    $mssEnabled = $this->bridge->isMailpoetSendingServiceEnabled();
 
     $data = [];
 
@@ -134,7 +135,7 @@ class Newsletters {
     $segments = $this->segmentsListRepository->getListWithSubscribedSubscribersCounts();
     $data['segments'] = $segments;
     $data['settings'] = $this->settings->getAll();
-    $data['mss_active'] = Bridge::isMPSendingServiceEnabled();
+    $data['mss_active'] = $mssEnabled;
     $data['has_mss_key_specified'] = Bridge::isMSSKeySpecified();
     $data['mss_key_pending_approval'] = $this->servicesChecker->isMailPoetAPIKeyPendingApproval();
     $data['current_wp_user'] = $this->wp->wpGetCurrentUser()->to_array();
@@ -200,10 +201,15 @@ class Newsletters {
 
     $data['products'] = $this->wpPostListLoader->getProducts();
 
-    $data['authorized_emails'] = $this->bridge->getAuthorizedEmailAddresses();
+    $data['authorized_emails'] = [];
+    $data['verified_sender_domains'] = [];
+    $data['all_sender_domains'] = [];
 
-    $data['verified_sender_domains'] = $this->senderDomainController->getVerifiedSenderDomains();
-    $data['all_sender_domains'] = $this->senderDomainController->getAllSenderDomains();
+    if ($mssEnabled) {
+      $data['authorized_emails'] = $this->bridge->getAuthorizedEmailAddresses();
+      $data['verified_sender_domains'] = $this->senderDomainController->getVerifiedSenderDomains();
+      $data['all_sender_domains'] = $this->senderDomainController->getAllSenderDomains();
+    }
 
     $this->pageRenderer->displayPage('newsletters.html', $data);
   }
