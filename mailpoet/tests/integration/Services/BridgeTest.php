@@ -419,75 +419,35 @@ class BridgeTest extends \MailPoetTest {
     $api = Stub::make(new API(null), ['getAuthorizedSenderDomains' => $data], $this);
     $this->bridge->api = $api;
 
-    $result = $this->bridge->getAuthorizedSenderDomains('all');
+    $result = $this->bridge->getAuthorizedSenderDomains();
     expect($result)->same($returnDataForNoArgs);
   }
 
   public function testItCanCreateSenderDomain() {
-    $apiKey = getenv('WP_TEST_MAILER_MAILPOET_API');
-    if (!$apiKey) {
-      $this->markTestSkipped("Skipping, 'WP_TEST_MAILER_MAILPOET_API' not set.");
-    }
-
-    $api = new API($apiKey, new WPFunctions());
-    $this->bridge->api = $api;
-    $this->settings->set(
-      Mailer::MAILER_CONFIG_SETTING_NAME,
-      [
-        'method' => 'MailPoet',
-        'mailpoet_api_key' => $apiKey,
-      ]
-    );
-
-    // this should be an error since the mailpoet.com record exists for this API key
     $result = $this->bridge->createAuthorizedSenderDomain('mailpoet.com');
+    expect($result)->notEmpty();
+    expect(isset($result['error']))->false();
+    expect($result[0]['host'])->equals('mailpoet1._domainkey.example.com');
+  }
+
+  public function testItDoesntCreateSenderDomainThatExists() {
+    $result = $this->bridge->createAuthorizedSenderDomain('existing.com');
     expect($result)->notEmpty();
     expect($result['error'])->equals('This domain was already added to the list.');
     expect($result['status'])->equals(false);
   }
 
   public function testTheSenderDomainApiReturnsValidDataType() {
-    $apiKey = getenv('WP_TEST_MAILER_MAILPOET_API');
-    if (!$apiKey) {
-      $this->markTestSkipped("Skipping, 'WP_TEST_MAILER_MAILPOET_API' not set.");
-    }
-
-    // testing the API response to confirm the Data type is as expected
-    $api = new API($apiKey, new WPFunctions());
-    $this->bridge->api = $api;
-    $this->settings->set(
-      Mailer::MAILER_CONFIG_SETTING_NAME,
-      [
-        'method' => 'MailPoet',
-        'mailpoet_api_key' => $apiKey,
-      ]
-    );
-
     $result = $this->bridge->getAuthorizedSenderDomains('mailpoet.com');
     expect($result)->notEmpty();
-    expect($result[0]['host'])->equals('mailpoet1._domainkey.mailpoet.com');
+    expect($result[0]['host'])->equals('mailpoet1._domainkey.example.com');
     expect($result[0]['value'])->equals('dkim1.sendingservice.net');
     expect($result[0]['type'])->equals('CNAME');
-    expect($result[0]['status'])->equals('valid');
+    expect($result[0]['status'])->equals('pending');
     expect($result[0]['message'])->equals('');
   }
 
   public function testItCanVerifySenderDomain() {
-    $apiKey = getenv('WP_TEST_MAILER_MAILPOET_API');
-    if (!$apiKey) {
-      $this->markTestSkipped("Skipping, 'WP_TEST_MAILER_MAILPOET_API' not set.");
-    }
-
-    $api = new API($apiKey, new WPFunctions());
-    $this->bridge->api = $api;
-    $this->settings->set(
-      Mailer::MAILER_CONFIG_SETTING_NAME,
-      [
-        'method' => 'MailPoet',
-        'mailpoet_api_key' => $apiKey,
-      ]
-    );
-
     $result = $this->bridge->verifyAuthorizedSenderDomain('mailpoet.com');
     expect($result)->notEmpty();
     expect($result['ok'])->equals(true); // verified
