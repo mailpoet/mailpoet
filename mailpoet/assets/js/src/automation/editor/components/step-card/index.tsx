@@ -1,4 +1,3 @@
-import { ComponentType } from 'react';
 import { StepIcon } from '../step-icon';
 
 // See: https://github.com/WordPress/gutenberg/blob/af7da80dd54d7fe52772890e2cc1b65073db9655/packages/block-editor/src/components/block-card/index.js
@@ -6,7 +5,7 @@ import { StepIcon } from '../step-icon';
 type Props = {
   title: string;
   description: string;
-  icon: ComponentType;
+  icon: JSX.Element;
 };
 
 export function StepCard({ title, description, icon }: Props): JSX.Element {
