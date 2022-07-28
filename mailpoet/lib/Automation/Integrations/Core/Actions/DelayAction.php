@@ -28,7 +28,7 @@ class DelayAction implements Action {
   }
 
   public function run(Workflow $workflow, WorkflowRun $workflowRun, Step $step): void {
-    $this->actionScheduler->schedule(time() + $step->getArgs()['seconds'], Hooks::WORKFLOW_STEP, [
+    $this->actionScheduler->schedule(time() + $this->calculateSeconds($step), Hooks::WORKFLOW_STEP, [
       [
         'workflow_run_id' => $workflowRun->getId(),
         'step_id' => $step->getNextStepId(),
@@ -39,6 +39,22 @@ class DelayAction implements Action {
   }
 
   public function isValid(array $subjects, Step $step, Workflow $workflow): bool {
-    return (int)($step->getArgs()['seconds'] ?? null) > 0;
+    $seconds = $this->calculateSeconds($step);
+
+    return $seconds > 0 && $seconds < 2 * YEAR_IN_SECONDS;
+  }
+
+  private function calculateSeconds(Step $step): int {
+    $delay = (int)($step->getArgs()['delay'] ?? null);
+    switch ($step->getArgs()['delay_type']) {
+      case "HOURS":
+        return $delay * HOUR_IN_SECONDS;
+      case "DAYS":
+        return $delay * DAY_IN_SECONDS;
+      case "WEEKS":
+        return $delay * WEEK_IN_SECONDS;
+      default:
+        return 0;
+    }
   }
 }
