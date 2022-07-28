@@ -47,6 +47,10 @@ export function getSelectedStep(state: State): Step | undefined {
   return state.selectedStep;
 }
 
+export function getStepType(state: State, type: string): StepType | undefined {
+  return state.stepTypes[type] ?? undefined;
+}
+
 export function getSelectedStepType(state: State): StepType | undefined {
-  return state.stepTypes[state.selectedStep?.key] ?? undefined;
+  return getStepType(state, state.selectedStep?.key);
 }
