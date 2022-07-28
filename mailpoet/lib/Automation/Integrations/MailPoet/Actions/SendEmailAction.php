@@ -101,6 +101,24 @@ class SendEmailAction implements Action {
     }
   }
 
+  public function saveEmailSettings(Step $step): void {
+    if ($step->getKey() !== $this->getKey()) {
+      return;
+    }
+
+    $args = $step->getArgs();
+    if (!isset($args['email_id'])) {
+      return;
+    }
+
+    $email = $this->getEmailForStep($step);
+    $email->setSubject($args['subject'] ?? '');
+    $email->setPreheader($args['preheader'] ?? '');
+    $email->setSenderName($args['from_name'] ?? '');
+    $email->setSenderAddress($args['email'] ?? '');
+    $this->newslettersRepository->flush();
+  }
+
   private function getEmailForStep(Step $step): NewsletterEntity {
     $emailId = $step->getArgs()['email_id'] ?? null;
     if (!$emailId) {

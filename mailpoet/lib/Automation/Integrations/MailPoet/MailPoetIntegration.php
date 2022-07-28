@@ -39,5 +39,8 @@ class MailPoetIntegration implements Integration {
     $registry->addSubject($this->subscriberSubject);
     $registry->addTrigger($this->segmentSubscribedTrigger);
     $registry->addAction($this->sendEmailAction);
+
+    // sync step args (subject, preheader, etc.) to email settings
+    $registry->onBeforeWorkflowStepSave([$this->sendEmailAction, 'saveEmailSettings']);
   }
 }
