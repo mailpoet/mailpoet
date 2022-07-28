@@ -3,10 +3,14 @@
 namespace MailPoet\Automation\Engine;
 
 use MailPoet\Automation\Engine\Workflows\Action;
+use MailPoet\Automation\Engine\Workflows\Step;
 use MailPoet\Automation\Engine\Workflows\Subject;
 use MailPoet\Automation\Engine\Workflows\Trigger;
 
 class Registry {
+  /** @var array<string, Step> */
+  private $steps = [];
+
   /** @var array<string, Subject> */
   private $subjects = [];
 
@@ -33,11 +37,31 @@ class Registry {
     return $this->subjects;
   }
 
+  public function addStep(Step $step): void {
+    if ($step instanceof Trigger) {
+      $this->addTrigger($step);
+    } elseif ($step instanceof Action) {
+      $this->addAction($step);
+    }
+
+    // TODO: allow adding any other step implementations?
+  }
+
+  public function getStep(string $key): ?Step {
+    return $this->steps[$key] ?? null;
+  }
+
+  /** @return array<string, Step> */
+  public function getSteps(): array {
+    return $this->steps;
+  }
+
   public function addTrigger(Trigger $trigger): void {
     $key = $trigger->getKey();
-    if (isset($this->triggers[$key])) {
+    if (isset($this->steps[$key]) || isset($this->triggers[$key])) {
       throw new \Exception(); // TODO
     }
+    $this->steps[$key] = $trigger;
     $this->triggers[$key] = $trigger;
   }
 
@@ -52,9 +76,10 @@ class Registry {
 
   public function addAction(Action $action): void {
     $key = $action->getKey();
-    if (isset($this->actions[$key])) {
+    if (isset($this->steps[$key]) || isset($this->actions[$key])) {
       throw new \Exception(); // TODO
     }
+    $this->steps[$key] = $action;
     $this->actions[$key] = $action;
   }
 
