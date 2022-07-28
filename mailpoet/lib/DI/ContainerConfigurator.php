@@ -162,6 +162,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->register(\MailPoet\Config\Renderer::class)
       ->setPublic(true)
       ->setFactory([new Reference(\MailPoet\Config\RendererFactory::class), 'getRenderer']);
+    $container->autowire(\MailPoet\Config\PersonalDataExporters::class)->setPublic(true);
     // Doctrine
     $container->autowire(\MailPoet\Doctrine\Annotations\AnnotationReaderProvider::class);
     $container->autowire(\MailPoet\Doctrine\ConfigurationFactory::class);
