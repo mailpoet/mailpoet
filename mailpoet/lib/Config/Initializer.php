@@ -102,6 +102,9 @@ class Initializer {
   /** @var FeaturesController */
   private $featuresController;
 
+  /*** @var PersonalDataExporters */
+  private $personalDataExporters;
+
   const INITIALIZED = 'MAILPOET_INITIALIZED';
 
   public function __construct(
@@ -129,7 +132,8 @@ class Initializer {
     AssetsLoader $assetsLoader,
     Engine $automationEngine,
     MailPoetIntegration $automationMailPoetIntegration,
-    FeaturesController $featuresController
+    FeaturesController $featuresController,
+    PersonalDataExporters $personalDataExporters
   ) {
     $this->rendererFactory = $rendererFactory;
     $this->accessControl = $accessControl;
@@ -156,6 +160,7 @@ class Initializer {
     $this->automationEngine = $automationEngine;
     $this->automationMailPoetIntegration = $automationMailPoetIntegration;
     $this->featuresController = $featuresController;
+    $this->personalDataExporters = $personalDataExporters;
   }
 
   public function init() {
@@ -387,8 +392,7 @@ class Initializer {
   }
 
   public function setupPersonalDataExporters() {
-    $exporters = new PersonalDataExporters();
-    $exporters->init();
+    $this->personalDataExporters->init();
   }
 
   public function setupPersonalDataErasers() {
