@@ -3,10 +3,10 @@
 namespace MailPoet\Test\Automation\Integrations\Core\Actions;
 
 use MailPoet\Automation\Engine\Control\ActionScheduler;
+use MailPoet\Automation\Engine\Data\Step;
+use MailPoet\Automation\Engine\Data\Workflow;
+use MailPoet\Automation\Engine\Data\WorkflowRun;
 use MailPoet\Automation\Engine\Hooks;
-use MailPoet\Automation\Engine\Workflows\Step;
-use MailPoet\Automation\Engine\Workflows\Workflow;
-use MailPoet\Automation\Engine\Workflows\WorkflowRun;
 use MailPoet\Automation\Integrations\Core\Actions\DelayAction;
 
 class DelayActionTest extends \MailPoetTest {

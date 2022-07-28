@@ -3,11 +3,11 @@
 namespace MailPoet\Automation\Engine\Control\Steps;
 
 use MailPoet\Automation\Engine\Control\StepRunner;
+use MailPoet\Automation\Engine\Data\Step;
+use MailPoet\Automation\Engine\Data\Workflow;
+use MailPoet\Automation\Engine\Data\WorkflowRun;
 use MailPoet\Automation\Engine\Exceptions\InvalidStateException;
 use MailPoet\Automation\Engine\Registry;
-use MailPoet\Automation\Engine\Workflows\Step;
-use MailPoet\Automation\Engine\Workflows\Workflow;
-use MailPoet\Automation\Engine\Workflows\WorkflowRun;
 
 class ActionStepRunner implements StepRunner {
   /** @var Registry */

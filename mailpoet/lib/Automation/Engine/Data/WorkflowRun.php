@@ -1,11 +1,12 @@
 <?php declare(strict_types = 1);
 
-namespace MailPoet\Automation\Engine\Workflows;
+namespace MailPoet\Automation\Engine\Data;
 
 use DateTimeImmutable;
 use MailPoet\Automation\Engine\Exceptions;
 use MailPoet\Automation\Engine\Exceptions\InvalidStateException;
 use MailPoet\Automation\Engine\Utils\Json;
+use MailPoet\Automation\Engine\Workflows\Subject;
 
 class WorkflowRun {
   public const STATUS_RUNNING = 'running';

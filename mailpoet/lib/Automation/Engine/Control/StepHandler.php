@@ -4,14 +4,14 @@ namespace MailPoet\Automation\Engine\Control;
 
 use Exception;
 use MailPoet\Automation\Engine\Control\Steps\ActionStepRunner;
+use MailPoet\Automation\Engine\Data\Step;
+use MailPoet\Automation\Engine\Data\WorkflowRun;
 use MailPoet\Automation\Engine\Exceptions;
 use MailPoet\Automation\Engine\Exceptions\InvalidStateException;
 use MailPoet\Automation\Engine\Hooks;
 use MailPoet\Automation\Engine\Storage\WorkflowRunStorage;
 use MailPoet\Automation\Engine\Storage\WorkflowStorage;
 use MailPoet\Automation\Engine\WordPress;
-use MailPoet\Automation\Engine\Workflows\Step;
-use MailPoet\Automation\Engine\Workflows\WorkflowRun;
 use Throwable;
 
 class StepHandler {

@@ -4,9 +4,9 @@ namespace MailPoet\AdminPages\Pages;
 
 use DateTimeImmutable;
 use MailPoet\AdminPages\PageRenderer;
+use MailPoet\Automation\Engine\Data\Step;
+use MailPoet\Automation\Engine\Data\Workflow;
 use MailPoet\Automation\Engine\Storage\WorkflowStorage;
-use MailPoet\Automation\Engine\Workflows\Step;
-use MailPoet\Automation\Engine\Workflows\Workflow;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoet\WP\Notice as WPNotice;
 
