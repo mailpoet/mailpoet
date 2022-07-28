@@ -1,61 +1,40 @@
-import { useContext } from 'react';
+import { ComponentType, useContext } from 'react';
 import { __unstableCompositeItem as CompositeItem } from '@wordpress/components';
-import { useDispatch, useRegistry } from '@wordpress/data';
+import { useDispatch, useRegistry, select } from '@wordpress/data';
 import { WorkflowCompositeContext } from './context';
-import { Step as StepType } from './types';
-import { DelayIcon, EmailIcon, TriggerIcon } from '../icons';
+import { Step as StepData } from './types';
 import { stepSidebarKey, store } from '../../store';
+import { TriggerIcon } from '../icons';
 
 // mocked data
-function getIcon(step: StepType): JSX.Element | null {
+function getIcon(step: StepData): JSX.Element | ComponentType | null {
   if (step.type === 'trigger') {
     return <TriggerIcon />;
   }
-
-  if (step.key === 'core:delay') {
-    return <DelayIcon />;
-  }
-
-  if (step.key === 'mailpoet:send-email') {
-    return <EmailIcon />;
-  }
-
-  return null;
+  const selectedStepType = select(store).getStepType(step.key);
+  return selectedStepType ? selectedStepType.icon : null;
 }
 
 // mocked data
-function getTitle(step: StepType): string {
+function getTitle(step: StepData): string {
   if (step.type === 'trigger') {
     return 'Trigger';
   }
-
-  if (step.key === 'core:delay') {
-    return 'Delay';
-  }
-
-  if (step.key === 'mailpoet:send-email') {
-    return 'Send email';
-  }
-
-  return '';
+  const selectedStepType = select(store).getStepType(step.key);
+  return selectedStepType ? selectedStepType.title : '';
 }
 
 // mocked data
-function getSubtitle(step: StepType): string {
+function getSubtitle(step: StepData): string {
   if (step.key === 'mailpoet:segment:subscribed') {
     return 'Subscribed to segment';
   }
-  if (step.key === 'core:delay') {
-    return `${step.args.seconds as number} seconds`;
-  }
-  if (step.key === 'mailpoet:send-email') {
-    return `Email ID: ${step.args.email_id as number}`;
-  }
-  return step.key;
+  const selectedStepType = select(store).getStepType(step.key);
+  return selectedStepType ? selectedStepType.subtitle(step) : '';
 }
 
 type Props = {
-  step: StepType;
+  step: StepData;
   isSelected: boolean;
 };
 

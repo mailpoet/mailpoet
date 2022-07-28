@@ -12,7 +12,8 @@ export type StepType = {
   group: StepGroup;
   title: string;
   description: string;
-  icon: ComponentType;
+  subtitle: (step: Step) => string;
+  icon: JSX.Element;
   edit: ComponentType;
 };
 
