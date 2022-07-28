@@ -67,7 +67,7 @@ export function SubscribedDateFields({ filterIndex }: Props): JSX.Element {
     if (
       !availableOperators.includes(segment.operator as SubscribedDateOperator)
     ) {
-      updateSegmentFilter(
+      void updateSegmentFilter(
         { operator: SubscribedDateOperator.BEFORE },
         filterIndex,
       );
@@ -80,7 +80,7 @@ export function SubscribedDateFields({ filterIndex }: Props): JSX.Element {
       (parseDate(segment.value) === undefined ||
         !/^\d+-\d+-\d+$/.test(segment.value))
     ) {
-      updateSegmentFilter(
+      void updateSegmentFilter(
         { value: convertDateToString(new Date()) },
         filterIndex,
       );
@@ -91,7 +91,7 @@ export function SubscribedDateFields({ filterIndex }: Props): JSX.Element {
       typeof segment.value === 'string' &&
       !/^\d*$/.exec(segment.value)
     ) {
-      updateSegmentFilter({ value: '' }, filterIndex);
+      void updateSegmentFilter({ value: '' }, filterIndex);
     }
   }, [updateSegmentFilter, segment, filterIndex]);
 
@@ -101,7 +101,7 @@ export function SubscribedDateFields({ filterIndex }: Props): JSX.Element {
         key="select"
         value={segment.operator}
         onChange={(e) => {
-          updateSegmentFilterFromEvent('operator', filterIndex, e);
+          void updateSegmentFilterFromEvent('operator', filterIndex, e);
         }}
       >
         <option value={SubscribedDateOperator.BEFORE}>
@@ -130,7 +130,7 @@ export function SubscribedDateFields({ filterIndex }: Props): JSX.Element {
         <Datepicker
           dateFormat="MMM d, yyyy"
           onChange={(value): void => {
-            updateSegmentFilter(
+            void updateSegmentFilter(
               { value: convertDateToString(value) },
               filterIndex,
             );
@@ -146,7 +146,7 @@ export function SubscribedDateFields({ filterIndex }: Props): JSX.Element {
             type="number"
             value={segment.value}
             onChange={(e) => {
-              updateSegmentFilterFromEvent('value', filterIndex, e);
+              void updateSegmentFilterFromEvent('value', filterIndex, e);
             }}
             min="1"
             placeholder={MailPoet.I18n.t('daysPlaceholder')}

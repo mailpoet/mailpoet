@@ -37,7 +37,7 @@ export function Text({ filterIndex }: Props): JSX.Element {
 
   useEffect(() => {
     if (segment.operator === undefined) {
-      updateSegmentFilter({ operator: 'equals', value: '' }, filterIndex);
+      void updateSegmentFilter({ operator: 'equals', value: '' }, filterIndex);
     }
   }, [updateSegmentFilter, segment, filterIndex]);
 
@@ -48,7 +48,7 @@ export function Text({ filterIndex }: Props): JSX.Element {
         automationId="text-custom-field-operator"
         value={segment.operator}
         onChange={(e) => {
-          updateSegmentFilterFromEvent('operator', filterIndex, e);
+          void updateSegmentFilterFromEvent('operator', filterIndex, e);
         }}
       >
         <option value="equals">{MailPoet.I18n.t('equals')}</option>
@@ -62,7 +62,7 @@ export function Text({ filterIndex }: Props): JSX.Element {
         data-automation-id="text-custom-field-value"
         value={segment.value || ''}
         onChange={(e) => {
-          updateSegmentFilterFromEvent('value', filterIndex, e);
+          void updateSegmentFilterFromEvent('value', filterIndex, e);
         }}
         placeholder={MailPoet.I18n.t('value')}
       />

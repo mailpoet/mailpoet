@@ -16,7 +16,9 @@ export function Popup(): JSX.Element {
       active={formSettings.formPlacement.popup.enabled}
       label={MailPoet.I18n.t('placePopupFormOnPages')}
       icon={PopupIcon}
-      onClick={(): void => showPlacementSettings('popup')}
+      onClick={(): void => {
+        void showPlacementSettings('popup');
+      }}
       canBeActive
     />
   );

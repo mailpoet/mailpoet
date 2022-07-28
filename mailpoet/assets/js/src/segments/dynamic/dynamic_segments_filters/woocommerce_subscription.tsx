@@ -77,7 +77,7 @@ export function WooCommerceSubscriptionFields({
       segment.operator !== AnyValueTypes.ALL &&
       segment.operator !== AnyValueTypes.NONE
     ) {
-      updateSegmentFilter({ operator: AnyValueTypes.ANY }, filterIndex);
+      void updateSegmentFilter({ operator: AnyValueTypes.ANY }, filterIndex);
     }
   }, [updateSegmentFilter, segment, filterIndex]);
 
@@ -111,14 +111,14 @@ export function WooCommerceSubscriptionFields({
             if (!segment.product_ids) return false;
             return segment.product_ids.indexOf(option.value) !== -1;
           }, productOptions)}
-          onChange={(options: SelectOption[]): void =>
-            updateSegmentFilter(
+          onChange={(options: SelectOption[]): void => {
+            void updateSegmentFilter(
               {
                 product_ids: (options || []).map((x: SelectOption) => x.value),
               },
               filterIndex,
-            )
-          }
+            );
+          }}
           automationId="select-segment-products"
         />
       </Grid.CenteredRow>

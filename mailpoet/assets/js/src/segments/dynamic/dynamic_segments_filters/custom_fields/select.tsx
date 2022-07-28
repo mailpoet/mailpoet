@@ -60,7 +60,7 @@ export function RadioSelect({ filterIndex }: Props): JSX.Element {
         segment.value ? { value: segment.value, label: segment.value } : null
       }
       onChange={(option: SelectOption): void => {
-        updateSegmentFilter(
+        void updateSegmentFilter(
           { value: option.value, operator: 'equals' },
           filterIndex,
         );

@@ -42,7 +42,7 @@ export function EmailOpensAbsoluteCountFields({
   );
   useEffect(() => {
     if (segment.operator === undefined) {
-      updateSegmentFilter({ operator: 'more' }, filterIndex);
+      void updateSegmentFilter({ operator: 'more' }, filterIndex);
     }
   }, [updateSegmentFilter, segment, filterIndex]);
 
@@ -56,7 +56,7 @@ export function EmailOpensAbsoluteCountFields({
                 key="select"
                 value={segment.operator}
                 onChange={(e) => {
-                  updateSegmentFilterFromEvent('operator', filterIndex, e);
+                  void updateSegmentFilterFromEvent('operator', filterIndex, e);
                 }}
               >
                 <option value="more">{MailPoet.I18n.t('moreThan')}</option>
@@ -76,7 +76,7 @@ export function EmailOpensAbsoluteCountFields({
                 value={segment.opens || ''}
                 data-automation-id="segment-number-of-opens"
                 onChange={(e) => {
-                  updateSegmentFilterFromEvent('opens', filterIndex, e);
+                  void updateSegmentFilterFromEvent('opens', filterIndex, e);
                 }}
                 min="0"
                 placeholder={MailPoet.I18n.t('emailActionOpens')}
@@ -99,7 +99,7 @@ export function EmailOpensAbsoluteCountFields({
                 value={segment.days || ''}
                 data-automation-id="segment-number-of-days"
                 onChange={(e) => {
-                  updateSegmentFilterFromEvent('days', filterIndex, e);
+                  void updateSegmentFilterFromEvent('days', filterIndex, e);
                 }}
                 min="0"
                 placeholder={MailPoet.I18n.t('emailActionDays')}

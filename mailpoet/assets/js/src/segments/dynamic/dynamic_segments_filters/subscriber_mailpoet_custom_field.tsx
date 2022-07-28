@@ -99,7 +99,7 @@ export function MailPoetCustomFields({ filterIndex }: Props): JSX.Element {
               customFieldsList,
             );
             if (!customField) return;
-            updateSegmentFilter(
+            void updateSegmentFilter(
               {
                 custom_field_id: option.value,
                 custom_field_type: customField.type,

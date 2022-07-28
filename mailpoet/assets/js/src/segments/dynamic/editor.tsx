@@ -18,7 +18,7 @@ export function Editor(): JSX.Element {
   const { pageLoaded } = useDispatch('mailpoet-dynamic-segments-form');
 
   useEffect(() => {
-    pageLoaded(match.params.id);
+    void pageLoaded(match.params.id);
   }, [match.params.id, pageLoaded]);
 
   return (

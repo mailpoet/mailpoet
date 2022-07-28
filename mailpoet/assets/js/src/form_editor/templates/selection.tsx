@@ -76,7 +76,9 @@ export function Selection(): JSX.Element {
         <Heading level={4}>{MailPoet.I18n.t('selectTemplate')}</Heading>
         <Button
           automationId="create_blank_form"
-          onClick={(): void => selectTemplate('initial_form', 'Blank template')}
+          onClick={(): void => {
+            void selectTemplate('initial_form', 'Blank template');
+          }}
         >
           {MailPoet.I18n.t('createBlankTemplate')}
         </Button>
@@ -97,7 +99,9 @@ export function Selection(): JSX.Element {
           {templates[selectedCategory].map((template) => (
             <TemplateBox
               key={template.id}
-              onSelect={(): void => selectTemplate(template.id, template.name)}
+              onSelect={(): void => {
+                void selectTemplate(template.id, template.name);
+              }}
               label={template.name}
               automationId={`select_template_${template.id}`}
               className="mailpoet-form-template"

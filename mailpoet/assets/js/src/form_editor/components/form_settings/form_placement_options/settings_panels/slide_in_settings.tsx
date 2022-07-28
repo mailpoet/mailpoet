@@ -63,15 +63,15 @@ export function SlideInSettings(): JSX.Element {
             maxPercents={100}
             defaultPixelValue={560}
             defaultPercentValue={100}
-            onChange={(width): void =>
-              changeFormSettings(
+            onChange={(width): void => {
+              void changeFormSettings(
                 assocPath(
                   'formPlacement.slideIn.styles.width',
                   width,
                   formSettings,
                 ),
-              )
-            }
+              );
+            }}
           />
           <PlacementSettings settingsPlacementKey="slideIn" />
           <AnimationSettings settingsPlacementKey="slideIn" />

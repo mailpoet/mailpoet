@@ -11,7 +11,9 @@ export function Other(): JSX.Element {
       active={false}
       label={MailPoet.I18n.t('formPlacementOtherLabel')}
       icon={SidebarIcon}
-      onClick={(): void => showPlacementSettings('others')}
+      onClick={(): void => {
+        void showPlacementSettings('others');
+      }}
       canBeActive={false}
     />
   );

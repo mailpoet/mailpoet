@@ -36,15 +36,15 @@ export function BelowPostsSettings(): JSX.Element {
             maxPercents={100}
             defaultPixelValue={560}
             defaultPercentValue={100}
-            onChange={(width): void =>
-              changeFormSettings(
+            onChange={(width): void => {
+              void changeFormSettings(
                 assocPath(
                   'formPlacement.belowPosts.styles.width',
                   width,
                   formSettings,
                 ),
-              )
-            }
+              );
+            }}
           />
           <PlacementSettings settingsPlacementKey="belowPosts" />
         </>
