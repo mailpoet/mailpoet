@@ -144,11 +144,16 @@ class SendingQueue {
       'sending queue processing',
       ['task_id' => $queue->taskId]
     );
+
     $newsletter = $this->newsletterTask->getNewsletterFromQueue($queue);
-    $newsletterEntity = $this->newslettersRepository->findOneById($newsletter->id);
-    if (!$newsletter || !$newsletterEntity) {
+    if (!$newsletter) {
       return;
     }
+    $newsletterEntity = $this->newslettersRepository->findOneById($newsletter->id);
+    if (!$newsletterEntity) {
+      return;
+    }
+
     // pre-process newsletter (render, replace shortcodes/links, etc.)
     $newsletter = $this->newsletterTask->preProcessNewsletter($newsletter, $queue);
     if (!$newsletter) {
