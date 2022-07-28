@@ -5,9 +5,13 @@ namespace MailPoet\Automation\Engine\Builder;
 use MailPoet\Automation\Engine\Data\Workflow;
 use MailPoet\Automation\Engine\Exceptions;
 use MailPoet\Automation\Engine\Exceptions\UnexpectedValueException;
+use MailPoet\Automation\Engine\Hooks;
 use MailPoet\Automation\Engine\Storage\WorkflowStorage;
 
 class UpdateWorkflowController {
+  /** @var Hooks */
+  private $hooks;
+
   /** @var WorkflowStorage */
   private $storage;
 
@@ -15,9 +19,11 @@ class UpdateWorkflowController {
   private $updateStepsController;
 
   public function __construct(
+    Hooks $hooks,
     WorkflowStorage $storage,
     UpdateStepsController $updateStepsController
   ) {
+    $this->hooks = $hooks;
     $this->storage = $storage;
     $this->updateStepsController = $updateStepsController;
   }
@@ -52,6 +58,7 @@ class UpdateWorkflowController {
     }
 
     if ($changed) {
+      $this->hooks->doWorkflowBeforeSave($workflow);
       $this->storage->updateWorkflow($workflow);
     }
 
