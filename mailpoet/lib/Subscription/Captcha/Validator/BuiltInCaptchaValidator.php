@@ -2,8 +2,8 @@
 
 namespace MailPoet\Subscription\Captcha\Validator;
 
-use MailPoet\Models\Subscriber;
 use MailPoet\Subscribers\SubscriberIPsRepository;
+use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Subscription\Captcha\CaptchaPhrase;
 use MailPoet\Subscription\Captcha\CaptchaSession;
 use MailPoet\Subscription\SubscriptionUrlFactory;
@@ -28,18 +28,23 @@ class BuiltInCaptchaValidator implements CaptchaValidator {
   /** @var SubscriberIPsRepository  */
   private $subscriberIPsRepository;
 
+  /** @var SubscribersRepository  */
+  private $subscribersRepository;
+
   public function __construct(
     SubscriptionUrlFactory $subscriptionUrlFactory,
     CaptchaPhrase $captchaPhrase,
     CaptchaSession $captchaSession,
     WPFunctions $wp,
-    SubscriberIPsRepository $subscriberIPsRepository
+    SubscriberIPsRepository $subscriberIPsRepository,
+    SubscribersRepository $subscribersRepository
   ) {
     $this->subscriptionUrlFactory = $subscriptionUrlFactory;
     $this->captchaPhrase = $captchaPhrase;
     $this->captchaSession = $captchaSession;
     $this->wp = $wp;
     $this->subscriberIPsRepository = $subscriberIPsRepository;
+    $this->subscribersRepository = $subscribersRepository;
   }
 
   public function validate(array $data): bool {
@@ -100,10 +105,9 @@ class BuiltInCaptchaValidator implements CaptchaValidator {
 
     // Check limits per recipient if enabled
     if ($subscriberEmail) {
-      $subscriber = Subscriber::where('email', $subscriberEmail)->findOne();
+      $subscriber = $this->subscribersRepository->findOneBy(['email' => $subscriberEmail]);
       if (
-        $subscriber instanceof Subscriber
-        && $subscriber->countConfirmations >= $subscriptionCaptchaRecipientLimit
+        $subscriber && $subscriber->getConfirmationsCount() >= $subscriptionCaptchaRecipientLimit
       ) {
         return true;
       }
