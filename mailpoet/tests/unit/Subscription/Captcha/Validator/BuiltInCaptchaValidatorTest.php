@@ -4,6 +4,7 @@ namespace MailPoet\Subscription\Captcha\Validator;
 
 use Codeception\Stub;
 use MailPoet\Subscribers\SubscriberIPsRepository;
+use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Subscription\Captcha\CaptchaPhrase;
 use MailPoet\Subscription\Captcha\CaptchaSession;
 use MailPoet\Subscription\SubscriptionUrlFactory;
@@ -43,12 +44,14 @@ class BuiltInCaptchaValidatorTest extends \MailPoetUnitTest
       $this
     );
     $captchaSession = Stub::makeEmpty(CaptchaSession::class);
-    $subscriberRepository = Stub::makeEmpty(SubscriberIPsRepository::class);
+    $subscriberIpRepository = Stub::makeEmpty(SubscriberIPsRepository::class);
+    $subscriberRepository = Stub::makeEmpty(SubscribersRepository::class);
     $testee = new BuiltInCaptchaValidator(
       $subscriptionUrlFactory,
       $captchaPhrase,
       $captchaSession,
       $this->wp,
+      $subscriberIpRepository,
       $subscriberRepository
     );
 
@@ -74,12 +77,14 @@ class BuiltInCaptchaValidatorTest extends \MailPoetUnitTest
     );
     $captchaSession = Stub::makeEmpty(CaptchaSession::class);
 
-    $subscriberRepository = Stub::makeEmpty(SubscriberIPsRepository::class);
+    $subscriberIpRepository = Stub::makeEmpty(SubscriberIPsRepository::class);
+    $subscriberRepository = Stub::makeEmpty(SubscribersRepository::class);
     $testee = new BuiltInCaptchaValidator(
       $subscriptionUrlFactory,
       $captchaPhrase,
       $captchaSession,
       $wp,
+      $subscriberIpRepository,
       $subscriberRepository
     );
 
@@ -171,12 +176,14 @@ class BuiltInCaptchaValidatorTest extends \MailPoetUnitTest
     ],
     $this
   );
-  $subscriberRepository = Stub::makeEmpty(SubscriberIPsRepository::class);
+  $subscriberIpRepository = Stub::makeEmpty(SubscriberIPsRepository::class);
+  $subscriberRepository = Stub::makeEmpty(SubscribersRepository::class);
   $testee = new BuiltInCaptchaValidator(
     $subscriptionUrlFactory,
     $captchaPhrase,
     $captchaSession,
     $wp,
+    $subscriberIpRepository,
     $subscriberRepository
   );
 
@@ -206,12 +213,14 @@ class BuiltInCaptchaValidatorTest extends \MailPoetUnitTest
       $this
     );
     $captchaSession = Stub::makeEmpty(CaptchaSession::class);
-    $subscriberRepository = Stub::makeEmpty(SubscriberIPsRepository::class);
+    $subscriberIpRepository = Stub::makeEmpty(SubscriberIPsRepository::class);
+    $subscriberRepository = Stub::makeEmpty(SubscribersRepository::class);
     $testee = new BuiltInCaptchaValidator(
       $subscriptionUrlFactory,
       $captchaPhrase,
       $captchaSession,
       $this->wp,
+      $subscriberIpRepository,
       $subscriberRepository
     );
 
@@ -241,12 +250,14 @@ class BuiltInCaptchaValidatorTest extends \MailPoetUnitTest
       $this
     );
     $captchaSession = Stub::makeEmpty(CaptchaSession::class);
-    $subscriberRepository = Stub::makeEmpty(SubscriberIPsRepository::class);
+    $subscriberIpRepository = Stub::makeEmpty(SubscriberIPsRepository::class);
+    $subscriberRepository = Stub::makeEmpty(SubscribersRepository::class);
     $testee = new BuiltInCaptchaValidator(
       $subscriptionUrlFactory,
       $captchaPhrase,
       $captchaSession,
       $this->wp,
+      $subscriberIpRepository,
       $subscriberRepository
     );
 
@@ -282,12 +293,14 @@ class BuiltInCaptchaValidatorTest extends \MailPoetUnitTest
       $this
     );
     $captchaSession = Stub::makeEmpty(CaptchaSession::class);
-    $subscriberRepository = Stub::makeEmpty(SubscriberIPsRepository::class);
+    $subscriberIpRepository = Stub::makeEmpty(SubscriberIPsRepository::class);
+    $subscriberRepository = Stub::makeEmpty(SubscribersRepository::class);
     $testee = new BuiltInCaptchaValidator(
       $subscriptionUrlFactory,
       $captchaPhrase,
       $captchaSession,
       $this->wp,
+      $subscriberIpRepository,
       $subscriberRepository
     );
 
