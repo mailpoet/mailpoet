@@ -12,6 +12,8 @@ use MailPoet\Services\Bridge\API;
 use MailPoet\Settings\SettingsController;
 use MailPoet\WP\Functions as WPFunctions;
 
+require_once('BridgeTestMockAPI.php');
+
 class AuthorizedSenderDomainControllerTest extends \MailPoetTest {
 
   /** @var SettingsController */
@@ -41,19 +43,35 @@ class AuthorizedSenderDomainControllerTest extends \MailPoetTest {
   }
 
   public function testItFetchSenderDomains() {
-    $this->skipTestsIfApiKeyIsMissing();
-
     $domains =  ['mailpoet.com', 'good', 'testdomain.com'];
+    $bridgeResponse = [
+      'mailpoet.com' => ['data'],
+      'good' => ['data'],
+      'testdomain.com' => ['data'],
+    ];
 
-    $controller = $this->getController();
+    $bridgeMock = $this->make(Bridge::class, [
+      'getAuthorizedSenderDomains' => Expected::once($bridgeResponse),
+    ]);
+
+
+    $controller = $this->getController($bridgeMock);
     $allDomains = $controller->getAllSenderDomains();
     expect($allDomains)->same($domains);
   }
 
   public function testItReturnsVerifiedSenderDomains() {
-    $this->skipTestsIfApiKeyIsMissing();
+    $bridgeResponse = [
+      'mailpoet.com' => Bridge\BridgeTestMockAPI::VERIFIED_DOMAIN_RESPONSE['dns'],
+      'good' => ['data'],
+      'testdomain.com' => ['data'],
+    ];
 
-    $controller = $this->getController();
+    $bridgeMock = $this->make(Bridge::class, [
+      'getAuthorizedSenderDomains' => Expected::once($bridgeResponse),
+    ]);
+
+    $controller = $this->getController($bridgeMock);
     $verifiedDomains = $controller->getVerifiedSenderDomains();
     expect($verifiedDomains)->same(['mailpoet.com']); // only this is Verified for now
   }
@@ -161,12 +179,6 @@ class AuthorizedSenderDomainControllerTest extends \MailPoetTest {
     $controller = $this->getController();
     $isRetricted = $controller->getDmarcPolicyForDomain('example.com');
     expect($isRetricted)->same('none');
-  }
-
-  private function skipTestsIfApiKeyIsMissing() {
-    if (!$this->apiKey) {
-      $this->markTestSkipped("Skipping, 'WP_TEST_MAILER_MAILPOET_API' not set.");
-    }
   }
 
   private function getController($bridgeMock = null): AuthorizedSenderDomainController {

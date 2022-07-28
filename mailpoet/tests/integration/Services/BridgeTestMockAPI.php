@@ -11,21 +11,21 @@ class BridgeTestMockAPI extends API {
       'host' => 'mailpoet1._domainkey.example.com',
       'value' => 'dkim1.sendingservice.net',
       'type' => 'CNAME',
-      'status' => 'pending',
+      'status' => 'valid',
       'message' => '',
     ],
     [
       'host' => 'mailpoet2._domainkey.example.com',
       'value' => 'dkim2.sendingservice.net',
       'type' => 'CNAME',
-      'status' => 'pending',
+      'status' => 'valid',
       'message' => '',
     ],
     [
       'host' => '_mailpoet.example.com',
       'value' => '34567abc876556abc8754',
       'type' => 'TXT',
-      'status' => 'pending',
+      'status' => 'valid',
       'message' => '',
     ]
   ]
