@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace MailPoet\Automation\Engine\Workflows;
+namespace MailPoet\Automation\Engine\Data;
 
 class Step {
   public const TYPE_TRIGGER = 'trigger';

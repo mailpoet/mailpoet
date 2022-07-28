@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace MailPoet\Automation\Engine\Workflows;
+namespace MailPoet\Automation\Engine\Data;
 
 use DateTimeImmutable;
 use MailPoet\Automation\Engine\Utils\Json;

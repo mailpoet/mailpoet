@@ -2,10 +2,10 @@
 
 namespace MailPoet\Automation\Engine\Builder;
 
+use MailPoet\Automation\Engine\Data\Workflow;
 use MailPoet\Automation\Engine\Exceptions;
 use MailPoet\Automation\Engine\Exceptions\UnexpectedValueException;
 use MailPoet\Automation\Engine\Storage\WorkflowStorage;
-use MailPoet\Automation\Engine\Workflows\Workflow;
 
 class UpdateWorkflowController {
   /** @var WorkflowStorage */

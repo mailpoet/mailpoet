@@ -2,6 +2,10 @@
 
 namespace MailPoet\Automation\Engine\Workflows;
 
+use MailPoet\Automation\Engine\Data\Step;
+use MailPoet\Automation\Engine\Data\Workflow;
+use MailPoet\Automation\Engine\Data\WorkflowRun;
+
 interface Action {
   public function getKey(): string;
 

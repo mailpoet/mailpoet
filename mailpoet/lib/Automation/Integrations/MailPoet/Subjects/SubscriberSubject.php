@@ -2,7 +2,7 @@
 
 namespace MailPoet\Automation\Integrations\MailPoet\Subjects;
 
-use MailPoet\Automation\Engine\Workflows\Field;
+use MailPoet\Automation\Engine\Data\Field;
 use MailPoet\Automation\Engine\Workflows\Subject;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\InvalidStateException;

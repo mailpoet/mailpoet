@@ -6,8 +6,8 @@ use DateTimeImmutable;
 use MailPoet\Automation\Engine\API\Endpoint;
 use MailPoet\Automation\Engine\API\Request;
 use MailPoet\Automation\Engine\API\Response;
+use MailPoet\Automation\Engine\Data\Workflow;
 use MailPoet\Automation\Engine\Storage\WorkflowStorage;
-use MailPoet\Automation\Engine\Workflows\Workflow;
 
 class WorkflowsGetEndpoint extends Endpoint {
   /** @var WorkflowStorage */

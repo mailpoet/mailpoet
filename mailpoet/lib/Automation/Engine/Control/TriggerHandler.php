@@ -2,13 +2,13 @@
 
 namespace MailPoet\Automation\Engine\Control;
 
+use MailPoet\Automation\Engine\Data\WorkflowRun;
 use MailPoet\Automation\Engine\Exceptions;
 use MailPoet\Automation\Engine\Hooks;
 use MailPoet\Automation\Engine\Storage\WorkflowRunStorage;
 use MailPoet\Automation\Engine\Storage\WorkflowStorage;
 use MailPoet\Automation\Engine\WordPress;
 use MailPoet\Automation\Engine\Workflows\Trigger;
-use MailPoet\Automation\Engine\Workflows\WorkflowRun;
 
 class TriggerHandler {
   /** @var ActionScheduler */
