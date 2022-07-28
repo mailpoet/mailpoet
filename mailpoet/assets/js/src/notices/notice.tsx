@@ -58,10 +58,11 @@ function Notice({
 
   if (hidden) return null;
 
+  // inline class is used to prevent moving notice by WP JavaScript (wp-admin/js/common.js) because it can break DOM, and events don't work anymore
   const content = (
     <div
       ref={elementRef}
-      className={`notice ${type} ${closable ? 'is-dismissible' : ''}`}
+      className={`notice inline ${type} ${closable ? 'is-dismissible' : ''}`}
     >
       {children}
       {closable && (
