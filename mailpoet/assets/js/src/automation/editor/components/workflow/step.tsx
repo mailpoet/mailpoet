@@ -38,13 +38,13 @@ function getTitle(step: StepData): string {
   return selectedStepType ? selectedStepType.title : '';
 }
 
-function getSubtitle(step: StepData): string {
+function getSubtitle(step: StepData): JSX.Element | string {
   // mocked data
   if (step.key === 'mailpoet:segment:subscribed') {
     return 'Subscribed to segment';
   }
   const selectedStepType = select(store).getStepType(step.key);
-  return selectedStepType ? selectedStepType.subtitle(step) : '';
+  return selectedStepType ? selectedStepType.subtitle(step) : null;
 }
 
 type Props = {
