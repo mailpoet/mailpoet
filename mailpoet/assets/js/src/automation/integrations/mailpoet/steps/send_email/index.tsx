@@ -10,6 +10,6 @@ export const step: StepType = {
   subtitle: (data) => `Email ID ${data.args.email_id as string}`,
   foreground: '#996800',
   background: '#FCF9E8',
-  icon: Icon(),
+  icon: Icon,
   edit: Edit,
 } as const;

@@ -31,6 +31,6 @@ export const step: StepType = {
       data.args.delay === 1,
     )}`;
   },
-  icon: Icon(),
+  icon: Icon,
   edit: Edit,
 } as const;

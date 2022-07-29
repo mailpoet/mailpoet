@@ -15,7 +15,7 @@ function getIcon(step: StepData): JSX.Element | null {
         background="#f0f6fc"
         width="23px"
         height="23px"
-        icon={TriggerIcon()}
+        icon={TriggerIcon}
       />
     );
   }

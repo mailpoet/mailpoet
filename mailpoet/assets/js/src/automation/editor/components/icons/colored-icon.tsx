@@ -1,12 +1,13 @@
-import { Icon } from '@wordpress/icons';
-import { IconProps } from '@wordpress/icons/build-types/icon';
+import { Icon } from '@wordpress/components';
+import { ComponentType } from 'react';
 
 export type ColoredIconProps = {
   width: string;
   height: string;
   background: string;
   foreground: string;
-} & IconProps;
+  icon: ComponentType;
+};
 
 export function ColoredIcon({
   foreground,
@@ -20,9 +21,10 @@ export function ColoredIcon({
         width: iconProps.width,
         height: iconProps.height,
         backgroundColor: background,
+        fill: foreground,
       }}
     >
-      <Icon color={foreground} {...iconProps} />
+      <Icon {...iconProps} />
     </div>
   );
 }
