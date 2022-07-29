@@ -31,6 +31,7 @@ class NewsletterOptionFieldEntity {
   public const NAME_TIME_OF_DAY = 'timeOfDay';
   public const NAME_WEEK_DAY = 'weekDay';
   public const NAME_WORKFLOW_ID = 'workflowId';
+  public const NAME_WORKFLOW_STEP_ID = 'workflowStepId';
 
   use AutoincrementedIdTrait;
   use CreatedAtTrait;

@@ -18,6 +18,7 @@ export function DesignEmailButton(): JSX.Element {
   );
 
   const emailId = selectedStep?.args?.email_id as string | undefined;
+  const workflowStepId = selectedStep.id;
 
   const createEmail = useCallback(async () => {
     setIsSaving(true);
@@ -30,18 +31,19 @@ export function DesignEmailButton(): JSX.Element {
         subject: '',
         options: {
           workflowId,
+          workflowStepId,
         },
       },
     });
 
     dispatch(store).updateStepArgs(
-      selectedStep.id,
+      workflowStepId,
       'email_id',
       parseInt(response.data.id as string, 10),
     );
 
     dispatch(store).save();
-  }, [workflowId, selectedStep.id]);
+  }, [workflowId, workflowStepId]);
 
   // This component is rendered only when no email ID is set. Once we have the ID
   // and the workflow is saved, we can safely redirect to the email design flow.
