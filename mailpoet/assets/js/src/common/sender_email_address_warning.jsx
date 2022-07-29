@@ -27,6 +27,9 @@ function SenderEmailAddressWarning({
 
   const displayElements = [];
 
+  const isFreeDomain =
+    MailPoet.freeMailDomains.indexOf(emailAddressDomain) > -1;
+
   if (mssActive) {
     if (!isEmailAuthorized) {
       displayElements.push(
@@ -102,7 +105,7 @@ function SenderEmailAddressWarning({
       );
     return null;
   }
-  if (window.mailpoet_free_domains.indexOf(emailAddressDomain) > -1) {
+  if (isFreeDomain) {
     return (
       <>
         <p

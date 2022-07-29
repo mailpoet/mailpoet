@@ -1,5 +1,6 @@
 import { Component } from 'react';
 import PropTypes from 'prop-types';
+import { MailPoet } from 'mailpoet';
 import { FormFieldText } from 'form/fields/text.jsx';
 import { SenderEmailAddressWarning } from 'common/sender_email_address_warning.jsx';
 import {
@@ -8,6 +9,7 @@ import {
   resetFieldError,
   validateField,
 } from 'common/functions/parsley_helper_functions';
+import { extractEmailDomain } from 'common/functions';
 import { checkSenderEmailDomainDmarcPolicy } from 'common/check_sender_domain_dmarc_policy';
 
 class SenderField extends Component {
@@ -52,6 +54,11 @@ class SenderField extends Component {
       this.isEmailAddressAuthorized(emailAddress);
 
     this.showSenderFieldError(emailAddressIsAuthorized, emailAddress);
+
+    // Skip domain DMARC validation if the email is a freemail
+    const isFreeDomain =
+      MailPoet.freeMailDomains.indexOf(extractEmailDomain(emailAddress)) > -1;
+    if (isFreeDomain) return;
 
     checkSenderEmailDomainDmarcPolicy(emailAddress)
       .then((status) => {

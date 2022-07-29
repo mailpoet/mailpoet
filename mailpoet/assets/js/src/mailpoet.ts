@@ -57,6 +57,7 @@ export const MailPoet = {
   emailVolumeLimit: window.mailpoet_email_volume_limit,
   emailVolumeLimitReached: window.mailpoet_email_volume_limit_reached,
   currentWpUserEmail: window.mailpoet_current_wp_user_email,
+  freeMailDomains: window.mailpoet_free_domains || [],
 } as const;
 
 declare global {
