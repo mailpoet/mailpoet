@@ -35,21 +35,8 @@
 }
 
 .mailpoet-automation-colored-icon {
+  border-radius: 50%;
   box-sizing: content-box;
   padding: 12px;
   position: relative;
-
-  .mailpoet-automation-colored-icon-background {
-    border-radius: 50%;
-    height: 100%;
-    left: 0;
-    position: absolute;
-    top: 0;
-    width: 100%;
-  }
-
-  svg {
-    position: relative;
-    z-index: 1;
-  }
 }

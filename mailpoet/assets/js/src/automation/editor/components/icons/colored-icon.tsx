@@ -19,12 +19,9 @@ export function ColoredIcon({
       style={{
         width: iconProps.width,
         height: iconProps.height,
+        backgroundColor: background,
       }}
     >
-      <div
-        className="mailpoet-automation-colored-icon-background"
-        style={{ backgroundColor: background }}
-      />
       <Icon color={foreground} {...iconProps} />
     </div>
   );
