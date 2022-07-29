@@ -45,6 +45,8 @@ class SenderField extends Component {
   }
 
   onBlur() {
+    if (!window.mailpoet_mss_active) return;
+
     const emailAddress = this.state.emailAddress;
     const emailAddressIsAuthorized =
       this.isEmailAddressAuthorized(emailAddress);
@@ -86,7 +88,7 @@ class SenderField extends Component {
   };
 
   showSenderDomainError = (status) => {
-    if (!status || !window.mailpoet_mss_active) return;
+    if (!status) return;
 
     this.setState({ showSenderDomainWarning: true });
   };
