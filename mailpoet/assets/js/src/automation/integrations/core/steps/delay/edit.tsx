@@ -25,6 +25,7 @@ export function Edit(): JSX.Element {
         <FlexItem style={{ flex: '1 1 0' }}>
           <TextControl
             label=""
+            type="number"
             placeholder="Number"
             value={(selectedStep.args.delay as string) ?? ''}
             onChange={(rawValue) => {
