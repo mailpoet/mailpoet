@@ -8,6 +8,7 @@ use MailPoet\Automation\Integrations\Core\Actions\DelayAction;
 use MailPoet\Automation\Integrations\MailPoet\Actions\SendEmailAction;
 use MailPoet\Automation\Integrations\MailPoet\Triggers\SegmentSubscribedTrigger;
 use MailPoet\Util\Security;
+use MailPoet\Validator\Schema\ObjectSchema;
 
 class WorkflowBuilder {
 
@@ -75,25 +76,51 @@ class WorkflowBuilder {
   }
 
   private function delayStep(?int $delay, string $delayType): Step {
-    return new Step($this->uniqueId(), Step::TYPE_ACTION, $this->delayAction->getKey(), null, [
-      'delay' => $delay??"",
-      'delay_type' => $delayType,
-    ]);
+    return new Step(
+      $this->uniqueId(),
+      Step::TYPE_ACTION,
+      $this->delayAction->getKey(),
+      null,
+      [
+        'delay' => $delay,
+        'delay_type' => $delayType,
+      ] + $this->getDefaultArgs($this->delayAction->getArgsSchema())
+    );
   }
 
   private function segmentSubscribedTriggerStep(?int $segmentId = null): Step {
-    return new Step($this->uniqueId(), Step::TYPE_TRIGGER, $this->segmentSubscribedTrigger->getKey(), null, [
-      'segment_id' => $segmentId,
-    ]);
+    return new Step(
+      $this->uniqueId(),
+      Step::TYPE_TRIGGER,
+      $this->segmentSubscribedTrigger->getKey(),
+      null,
+      [
+        'segment_id' => $segmentId,
+      ] + $this->getDefaultArgs($this->segmentSubscribedTrigger->getArgsSchema())
+    );
   }
 
-  private function sendEmailActionStep(?int $newsletterId = null): Step {
-    return new Step($this->uniqueId(), Step::TYPE_ACTION, $this->sendEmailAction->getKey(), null, [
-      'email_id' => $newsletterId
-    ]);
+  private function sendEmailActionStep(): Step {
+    return new Step(
+      $this->uniqueId(),
+      Step::TYPE_ACTION,
+      $this->sendEmailAction->getKey(),
+      null,
+      $this->getDefaultArgs($this->sendEmailAction->getArgsSchema())
+    );
   }
 
   private function uniqueId(): string {
     return Security::generateRandomString(16);
+  }
+
+  private function getDefaultArgs(ObjectSchema $argsSchema): array {
+    $args = [];
+    foreach ($argsSchema->toArray()['properties'] ?? [] as $name => $schema) {
+      if (array_key_exists('default', $schema)) {
+        $args[$name] = $schema['default'];
+      }
+    }
+    return $args;
   }
 }
