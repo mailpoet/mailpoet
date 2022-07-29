@@ -1,26 +1,25 @@
 import { SelectControl } from '@wordpress/components';
 
 export type DelayTypes = SelectControl.Option & {
-  singular: string;
-  plural: string;
+  subtitle: (value: number) => string;
 };
 export const DelayTypeOptions: DelayTypes[] = [
   {
     label: 'Hours',
-    singular: 'hour',
-    plural: 'hours',
+    subtitle: (value: number) =>
+      `Wait for ${value} ${value === 1 ? 'hour' : 'hours'}`,
     value: 'HOURS',
   },
   {
     label: 'Days',
-    singular: 'day',
-    plural: 'days',
+    subtitle: (value: number) =>
+      `Wait for ${value} ${value === 1 ? 'day' : 'days'}`,
     value: 'DAYS',
   },
   {
     label: 'Weeks',
-    singular: 'week',
-    plural: 'weeks',
+    subtitle: (value: number) =>
+      `Wait for ${value} ${value === 1 ? 'week' : 'weeks'}`,
     value: 'WEEKS',
   },
 ];

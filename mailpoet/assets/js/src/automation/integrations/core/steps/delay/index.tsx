@@ -3,15 +3,12 @@ import { Edit } from './edit';
 import { StepType } from '../../../../editor/store/types';
 import { DelayTypeOptions } from './types/delayTypes';
 
-const getCorrectDelayTypeName = (
-  delayTypeValue: string,
-  isSingular: boolean,
-): string =>
+const getDelayInformation = (delayTypeValue: string, value: number): string =>
   DelayTypeOptions.reduce((previousValue, current): string => {
     if (current.value !== delayTypeValue) {
       return previousValue;
     }
-    return isSingular ? current.singular : current.plural;
+    return current.subtitle(value);
   }, '');
 
 export const step: StepType = {
@@ -26,10 +23,10 @@ export const step: StepType = {
       return 'Not set up yet.';
     }
 
-    return `Wait for ${data.args.delay as string} ${getCorrectDelayTypeName(
+    return getDelayInformation(
       data.args.delay_type as string,
-      data.args.delay === 1,
-    )}`;
+      data.args.delay as number,
+    );
   },
   icon: Icon,
   edit: Edit,
