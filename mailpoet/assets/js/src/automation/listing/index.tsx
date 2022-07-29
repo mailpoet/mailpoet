@@ -27,7 +27,7 @@ export function AutomationListing({ workflows, loading }: Props): JSX.Element {
       isLoading={workflows.length === 0 || loading}
       headers={headers}
       rows={rows}
-      rowKey={(data, i) => data[i].id}
+      rowKey={(_, i) => workflows[i].id}
       query={{ page: 2 }}
       rowsPerPage={7}
       totalRows={workflows.length}
