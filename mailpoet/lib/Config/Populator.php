@@ -467,7 +467,10 @@ class Populator {
         'name' => 'afterTimeType',
         'newsletter_type' => NewsletterEntity::TYPE_RE_ENGAGEMENT,
       ],
-
+      [
+        'name' => 'workflowId',
+        'newsletter_type' => NewsletterEntity::TYPE_AUTOMATION,
+      ],
     ];
 
     return [
