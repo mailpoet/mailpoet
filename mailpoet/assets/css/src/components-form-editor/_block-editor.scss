@@ -83,13 +83,14 @@ h2 {
   }
 }
 
+// Adjustments for family-font-select in popover
 .mailpoet_toolbar_item {
-  align-items: center;
-  background-color: white;
-  display: flex;
-
   .mailpoet-font-family-select {
-    width: $grid-column-small;
+    height: 48px;
+
+    .components-input-control__container .components-custom-select-control__button {
+      width: 200px;
+    }
   }
 
   // Force rendering of select arrow on the right

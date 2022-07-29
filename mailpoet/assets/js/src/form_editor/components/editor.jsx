@@ -131,21 +131,22 @@ export function Editor() {
                     </div>
                   )}
                   <div className="interface-interface-skeleton__content">
-                    <BlockTools />
                     <Notices />
                     <UnsavedChangesNotice />
                     <BlockSelectionClearer className="edit-post-visual-editor editor-styles-wrapper">
-                      <BlockEditorKeyboardShortcuts />
-                      <BlockEditorKeyboardShortcuts.Register />
-                      <div className="mailpoet_form">
-                        <WritingFlow>
-                          <ObserveTyping>
-                            <FormStylingBackground>
-                              <BlockList />
-                            </FormStylingBackground>
-                          </ObserveTyping>
-                        </WritingFlow>
-                      </div>
+                      <BlockTools>
+                        <BlockEditorKeyboardShortcuts />
+                        <BlockEditorKeyboardShortcuts.Register />
+                        <div className="mailpoet_form">
+                          <WritingFlow>
+                            <ObserveTyping>
+                              <FormStylingBackground>
+                                <BlockList />
+                              </FormStylingBackground>
+                            </ObserveTyping>
+                          </WritingFlow>
+                        </div>
+                      </BlockTools>
                     </BlockSelectionClearer>
                   </div>
                   {sidebarOpened && (
