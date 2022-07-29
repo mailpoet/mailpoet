@@ -11,7 +11,8 @@ function getIcon(step: StepData): JSX.Element | null {
   if (step.type === 'trigger') {
     return (
       <ColoredIcon
-        color="#2271B1"
+        foreground="#2271b1"
+        background="#f0f6fc"
         width="20px"
         height="20px"
         icon={TriggerIcon()}
@@ -23,7 +24,8 @@ function getIcon(step: StepData): JSX.Element | null {
     <ColoredIcon
       width="20px"
       height="20px"
-      color={selectedStepType.color}
+      foreground={selectedStepType.foreground}
+      background={selectedStepType.background}
       icon={selectedStepType.icon}
     />
   ) : null;

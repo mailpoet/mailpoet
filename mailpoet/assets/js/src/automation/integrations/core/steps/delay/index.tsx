@@ -18,7 +18,8 @@ export const step: StepType = {
   key: 'core:delay',
   group: 'actions',
   title: 'Delay',
-  color: '#7F54B3',
+  foreground: '#7F54B3',
+  background: '#f7edf7',
   description: 'Wait some time before proceeding with the steps below',
   subtitle: (data): string => {
     if (!data.args.delay || !data.args.delay_type) {
