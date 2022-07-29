@@ -10,14 +10,14 @@ export type ColoredIconProps = {
 export function ColoredIcon(props: ColoredIconProps): JSX.Element {
   return (
     <div
-      className="colored-icon"
+      className="mailpoet-automation-colored-icon"
       style={{
         width: props.width,
         height: props.height,
       }}
     >
       <div
-        className="colored-icon-background"
+        className="mailpoet-automation-colored-icon-background"
         style={{ backgroundColor: props.color }}
       />
       <Icon {...props} />
