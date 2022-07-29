@@ -17,10 +17,14 @@ interface Props extends ButtonHTMLAttributes<HTMLButtonElement> {
   target?: '_blank' | '_self' | '_parent' | '_top' | string;
   automationId?: string;
   className?: string;
+  dataTip?: boolean;
+  dataFor?: string;
 }
 
 export function Button({
   children,
+  dataFor,
+  dataTip,
   dimension,
   variant,
   withSpinner,
@@ -56,6 +60,8 @@ export function Button({
         'button-small': dimension === 'small',
       })}
       data-automation-id={automationId}
+      data-tip={dataTip}
+      data-for={dataFor}
     >
       {iconStart}
       {children && <span>{children}</span>}
