@@ -1,6 +1,8 @@
 import classnames from 'classnames';
 import { Tooltip } from 'common/tooltip/tooltip';
+import { Button } from 'common/button/button';
 import { useRef } from 'react';
+import { copy } from '@wordpress/icons';
 
 const copyTextToClipboard = (value: string) => {
   if (!navigator.clipboard) {
@@ -34,15 +36,13 @@ function DomainKeyComponent({ className = '', tooltip = '', ...props }) {
 
       {tooltip && (
         <>
-          <button
-            className="mailpoet-form-tooltip-without-icon button-secondary"
-            data-tip
-            data-for={props.name}
-            type="button"
+          <Button
+            iconStart={copy}
+            variant="secondary"
             onClick={performActionOnClick}
-          >
-            <span className="dashicons dashicons-clipboard" />
-          </button>
+            dataTip
+            dataFor={props.name}
+          />
           <Tooltip id={props.name} place="top">
             <span> {tooltip} </span>
           </Tooltip>
