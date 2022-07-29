@@ -6,13 +6,11 @@ import { DomainKeyComponent } from './domain_key_component';
 import { DomainStatusComponent } from './domain_status_component';
 
 type Props = {
-  max_width: string;
   rows: Array<SenderDomainEntity>;
   loadingButton: boolean;
   verifyDnsButtonClicked: () => void;
 };
 function ManageSenderDomain({
-  max_width,
   rows,
   loadingButton,
   verifyDnsButtonClicked,
@@ -45,10 +43,7 @@ function ManageSenderDomain({
         )}
       </p>
 
-      <table
-        className="mailpoet_manage_sender_domain widefat fixed striped"
-        style={{ maxWidth: max_width }}
-      >
+      <table className="mailpoet_manage_sender_domain widefat fixed striped">
         <thead>
           <tr>
             <th className="mailpoet_table_header">
