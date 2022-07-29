@@ -1,22 +1,36 @@
-import { ComponentType, useContext } from 'react';
+import { useContext } from 'react';
 import { __unstableCompositeItem as CompositeItem } from '@wordpress/components';
 import { useDispatch, useRegistry, select } from '@wordpress/data';
 import { WorkflowCompositeContext } from './context';
 import { Step as StepData } from './types';
 import { stepSidebarKey, store } from '../../store';
-import { TriggerIcon } from '../icons';
+import { TriggerIcon, ColoredIcon } from '../icons';
 
-// mocked data
-function getIcon(step: StepData): JSX.Element | ComponentType | null {
+function getIcon(step: StepData): JSX.Element | null {
+  // mocked data
   if (step.type === 'trigger') {
-    return <TriggerIcon />;
+    return (
+      <ColoredIcon
+        color="#2271B1"
+        width="20px"
+        height="20px"
+        icon={TriggerIcon()}
+      />
+    );
   }
   const selectedStepType = select(store).getStepType(step.key);
-  return selectedStepType ? selectedStepType.icon : null;
+  return selectedStepType ? (
+    <ColoredIcon
+      width="20px"
+      height="20px"
+      color={selectedStepType.color}
+      icon={selectedStepType.icon}
+    />
+  ) : null;
 }
 
-// mocked data
 function getTitle(step: StepData): string {
+  // mocked data
   if (step.type === 'trigger') {
     return 'Trigger';
   }
@@ -24,8 +38,8 @@ function getTitle(step: StepData): string {
   return selectedStepType ? selectedStepType.title : '';
 }
 
-// mocked data
 function getSubtitle(step: StepData): string {
+  // mocked data
   if (step.key === 'mailpoet:segment:subscribed') {
     return 'Subscribed to segment';
   }

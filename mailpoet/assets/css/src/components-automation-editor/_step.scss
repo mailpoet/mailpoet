@@ -33,3 +33,19 @@
 .mailpoet-automation-editor-step-subtitle {
   color: inherit;
 }
+
+.colored-icon {
+  box-sizing: content-box;
+  padding: 10px;
+  position: relative;
+
+  .colored-icon-background {
+    border-radius: 50%;
+    height: 100%;
+    left: 0;
+    opacity: .1;
+    position: absolute;
+    top: 0;
+    width: 100%;
+  }
+}

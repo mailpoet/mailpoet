@@ -15,6 +15,7 @@ export type StepType = {
   subtitle: (step: Step) => string;
   icon: JSX.Element;
   edit: ComponentType;
+  color: string;
 };
 
 export type State = {
