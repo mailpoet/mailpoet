@@ -15,10 +15,8 @@ const renderHeading = (newsletterType, newsletterOptions) => {
 
     let buttons = null;
     if (newsletterType === 'automation') {
-      const workflowId = newsletterOptions?.workflowId;
-      const goToUrl = workflowId
-        ? `admin.php?page=mailpoet-automation-editor&id=${workflowId}`
-        : '/';
+      const workflowId = newsletterOptions.workflowId;
+      const goToUrl = `admin.php?page=mailpoet-automation-editor&id=${workflowId}`;
       const onClickCancel = () => {
         window.location = goToUrl;
       };

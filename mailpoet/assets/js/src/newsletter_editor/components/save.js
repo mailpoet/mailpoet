@@ -321,11 +321,8 @@ Module.SaveView = Marionette.View.extend({
     Module._cancelAutosave();
     Module.save().done(function () {
       const newsletter = App.getNewsletter();
-      const options = newsletter.get('options');
-      const workflowId = options?.workflowId;
-      const goToUrl = workflowId
-        ? `admin.php?page=mailpoet-automation-editor&id=${workflowId}`
-        : '/';
+      const workflowId = newsletter.get('options').get('workflowId');
+      const goToUrl = `admin.php?page=mailpoet-automation-editor&id=${workflowId}`;
       window.location.href = goToUrl;
     });
   },
