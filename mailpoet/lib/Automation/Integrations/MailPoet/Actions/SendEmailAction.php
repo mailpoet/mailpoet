@@ -15,10 +15,16 @@ use MailPoet\InvalidStateException;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Scheduler\AutomationEmailScheduler;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
+use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\SubscriberSegmentRepository;
+use MailPoet\Validator\Builder;
+use MailPoet\Validator\Schema\ObjectSchema;
 use Throwable;
 
 class SendEmailAction implements Action {
+  /** @var SettingsController */
+  private $settings;
+
   /** @var NewslettersRepository */
   private $newslettersRepository;
 
@@ -32,11 +38,13 @@ class SendEmailAction implements Action {
   private $automationEmailScheduler;
 
   public function __construct(
+    SettingsController $settings,
     NewslettersRepository $newslettersRepository,
     ScheduledTasksRepository $scheduledTasksRepository,
     SubscriberSegmentRepository $subscriberSegmentRepository,
     AutomationEmailScheduler $automationEmailScheduler
   ) {
+    $this->settings = $settings;
     $this->newslettersRepository = $newslettersRepository;
     $this->scheduledTasksRepository = $scheduledTasksRepository;
     $this->subscriberSegmentRepository = $subscriberSegmentRepository;
@@ -49,6 +57,15 @@ class SendEmailAction implements Action {
 
   public function getName(): string {
     return __('Send email', 'mailpoet');
+  }
+
+  public function getArgsSchema(): ObjectSchema {
+    return Builder::object([
+      'subject' => Builder::string()->default(__('Subject', 'mailpoet')),
+      'preheader' => Builder::string(),
+      'from_name' => Builder::string()->default($this->settings->get('sender.name')),
+      'email' => Builder::string()->default($this->settings->get('sender.address')),
+    ]);
   }
 
   public function isValid(array $subjects, Step $step, Workflow $workflow): bool {
