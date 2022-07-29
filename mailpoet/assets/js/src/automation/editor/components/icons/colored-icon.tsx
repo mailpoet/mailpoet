@@ -4,23 +4,28 @@ import { IconProps } from '@wordpress/icons/build-types/icon';
 export type ColoredIconProps = {
   width: string;
   height: string;
-  color: string;
+  background: string;
+  foreground: string;
 } & IconProps;
 
-export function ColoredIcon(props: ColoredIconProps): JSX.Element {
+export function ColoredIcon({
+  foreground,
+  background,
+  ...iconProps
+}: ColoredIconProps): JSX.Element {
   return (
     <div
       className="mailpoet-automation-colored-icon"
       style={{
-        width: props.width,
-        height: props.height,
+        width: iconProps.width,
+        height: iconProps.height,
       }}
     >
       <div
         className="mailpoet-automation-colored-icon-background"
-        style={{ backgroundColor: props.color }}
+        style={{ backgroundColor: background }}
       />
-      <Icon {...props} />
+      <Icon color={foreground} {...iconProps} />
     </div>
   );
 }

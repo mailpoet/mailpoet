@@ -43,9 +43,13 @@
     border-radius: 50%;
     height: 100%;
     left: 0;
-    opacity: .1;
     position: absolute;
     top: 0;
     width: 100%;
+  }
+
+  svg {
+    position: relative;
+    z-index: 1;
   }
 }
