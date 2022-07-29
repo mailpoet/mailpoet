@@ -43,6 +43,10 @@ export function getWorkflowData(state: State): Workflow {
   return state.workflowData;
 }
 
+export function getWorkflowSaved(state: State): boolean {
+  return state.workflowSaved;
+}
+
 export function getSelectedStep(state: State): Step | undefined {
   return state.selectedStep;
 }

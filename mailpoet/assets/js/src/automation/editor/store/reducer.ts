@@ -28,16 +28,19 @@ export function reducer(state: State, action: Action): State {
       return {
         ...state,
         workflowData: action.workflow,
+        workflowSaved: false,
       };
     case 'SAVE':
       return {
         ...state,
         workflowData: action.workflow,
+        workflowSaved: true,
       };
     case 'ACTIVATE':
       return {
         ...state,
         workflowData: action.workflow,
+        workflowSaved: true,
       };
     case 'REGISTER_STEP_TYPE':
       return {
@@ -64,6 +67,7 @@ export function reducer(state: State, action: Action): State {
             [action.stepId]: step,
           },
         },
+        workflowSaved: false,
         selectedStep: step,
       };
     }
