@@ -22,6 +22,7 @@ export type StepType = {
 export type State = {
   stepTypes: Record<string, StepType>;
   workflowData: Workflow;
+  workflowSaved: boolean;
   selectedStep: Step | undefined;
   inserterSidebar: {
     isOpened: boolean;
