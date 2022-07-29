@@ -64,7 +64,7 @@ export const addOrUpdateError = (
 };
 
 /**
- * Alias to Parsely removeError method
+ * Alias to Parsely reset method
  *
  * Remove an already present error message.
  *
@@ -72,13 +72,11 @@ export const addOrUpdateError = (
  * @param {string} parsleyFieldName Parsely Error name
  * @returns
  */
-export const removeError = (
+export const resetFieldError = (
   domElementSelector: string,
   parsleyFieldName: string,
 ) => {
   if (!doesErrorFieldExist(parsleyFieldName)) return; // do nothing if error message does not exist
 
-  jQuery(domElementSelector)
-    .parsley()
-    .removeError(parsleyFieldName, { updateClass: true });
+  jQuery(domElementSelector).parsley().reset();
 };
