@@ -13,8 +13,8 @@ function getIcon(step: StepData): JSX.Element | null {
       <ColoredIcon
         foreground="#2271b1"
         background="#f0f6fc"
-        width="20px"
-        height="20px"
+        width="23px"
+        height="23px"
         icon={TriggerIcon()}
       />
     );
@@ -22,8 +22,8 @@ function getIcon(step: StepData): JSX.Element | null {
   const selectedStepType = select(store).getStepType(step.key);
   return selectedStepType ? (
     <ColoredIcon
-      width="20px"
-      height="20px"
+      width="23px"
+      height="23px"
       foreground={selectedStepType.foreground}
       background={selectedStepType.background}
       icon={selectedStepType.icon}
