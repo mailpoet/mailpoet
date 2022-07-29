@@ -1,5 +1,3 @@
-import PropTypes from 'prop-types';
-import { noop } from 'lodash';
 import ReactStringReplace from 'react-string-replace';
 import { Button, Loader, TypographyHeading as Heading } from 'common';
 import { MailPoet } from 'mailpoet';
@@ -108,29 +106,5 @@ function ManageSenderDomain({
     </div>
   );
 }
-
-ManageSenderDomain.propTypes = {
-  max_width: PropTypes.string,
-  rows: PropTypes.arrayOf(
-    PropTypes.shape({
-      domain: PropTypes.string.isRequired,
-      dns: PropTypes.arrayOf(
-        PropTypes.shape({
-          host: PropTypes.string,
-          value: PropTypes.string,
-          type: PropTypes.string,
-          status: PropTypes.string,
-          message: PropTypes.string,
-        }),
-      ).isRequired,
-    }),
-  ).isRequired,
-  verifyDnsButtonClicked: PropTypes.func,
-};
-
-ManageSenderDomain.defaultProps = {
-  max_width: 'auto',
-  verifyDnsButtonClicked: noop,
-};
 
 export { ManageSenderDomain };
