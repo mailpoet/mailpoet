@@ -8,6 +8,7 @@ export const step: StepType = {
   title: 'Send email',
   description: 'An email will be sent to subscriber',
   subtitle: (data) => `Email ID ${data.args.email_id as string}`,
+  color: '#996800',
   icon: Icon(),
   edit: Edit,
 } as const;
