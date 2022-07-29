@@ -475,6 +475,10 @@ class Populator {
         'name' => 'workflowId',
         'newsletter_type' => NewsletterEntity::TYPE_AUTOMATION,
       ],
+      [
+        'name' => 'workflowStepId',
+        'newsletter_type' => NewsletterEntity::TYPE_AUTOMATION,
+      ],
     ];
 
     return [
