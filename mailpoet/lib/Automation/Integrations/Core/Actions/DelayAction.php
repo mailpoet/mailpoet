@@ -8,6 +8,8 @@ use MailPoet\Automation\Engine\Data\Workflow;
 use MailPoet\Automation\Engine\Data\WorkflowRun;
 use MailPoet\Automation\Engine\Hooks;
 use MailPoet\Automation\Engine\Workflows\Action;
+use MailPoet\Validator\Builder;
+use MailPoet\Validator\Schema\ObjectSchema;
 
 class DelayAction implements Action {
   /** @var ActionScheduler */
@@ -25,6 +27,13 @@ class DelayAction implements Action {
 
   public function getName(): string {
     return __('Delay', 'mailpoet');
+  }
+
+  public function getArgsSchema(): ObjectSchema {
+    return Builder::object([
+      'delay' => Builder::integer()->minimum(1),
+      'delay_type' => Builder::string()->default('HOURS'),
+    ]);
   }
 
   public function run(Workflow $workflow, WorkflowRun $workflowRun, Step $step): void {
