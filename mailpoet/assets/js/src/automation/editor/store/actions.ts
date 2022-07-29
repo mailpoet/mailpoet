@@ -69,7 +69,7 @@ export function* activate() {
     path: `/workflows/${workflow.id}`,
     method: 'PUT',
     data: {
-      name: workflow.name,
+      ...workflow,
       status: 'active',
     },
   });
