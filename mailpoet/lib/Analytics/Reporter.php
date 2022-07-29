@@ -197,6 +197,8 @@ class Reporter {
       $result['Number of active WooCommerce purchased this product emails'] = $newsletters['product_purchased_emails_count'];
       $result['Number of active purchased in this category'] = $newsletters['product_purchased_in_category_emails_count'];
       $result['Number of active abandoned cart'] = $newsletters['abandoned_cart_emails_count'];
+
+      $result['Installed via WooCommerce onboarding wizard'] = $this->woocommerceHelper->wasMailPoetInstalledViaWooCommerceOnboardingWizard();
     }
     return $result;
   }
