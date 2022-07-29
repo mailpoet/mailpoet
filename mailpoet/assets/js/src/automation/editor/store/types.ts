@@ -13,7 +13,7 @@ export type StepType = {
   title: string;
   description: string;
   subtitle: (step: Step) => JSX.Element | string;
-  icon: JSX.Element;
+  icon: ComponentType;
   edit: ComponentType;
   foreground: string;
   background: string;
