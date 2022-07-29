@@ -1,7 +1,13 @@
 import { useEffect, useState } from 'react';
 import { MailPoet } from 'mailpoet';
 import { Label, Inputs } from 'settings/components';
-import { isEmail, t, onChange, setLowercaseValue } from 'common/functions';
+import {
+  isEmail,
+  t,
+  onChange,
+  setLowercaseValue,
+  extractEmailDomain,
+} from 'common/functions';
 import { Input } from 'common/form/input/input';
 import { useSetting, useSelector, useAction } from 'settings/store/hooks';
 import { SenderEmailAddressWarning } from 'common/sender_email_address_warning.jsx';
@@ -28,6 +34,11 @@ export function DefaultSender() {
 
   const performActionOnBlur = (data: string) => {
     isAuthorizedEmail(data);
+
+    // Skip domain DMARC validation if the email is a freemail
+    const isFreeDomain =
+      MailPoet.freeMailDomains.indexOf(extractEmailDomain(data)) > -1;
+    if (isFreeDomain) return;
 
     checkSenderEmailDomainDmarcPolicy(data, isMssActive)
       .then((status) => {
