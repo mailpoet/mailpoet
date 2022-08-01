@@ -7,6 +7,7 @@ import { MailPoet } from 'mailpoet';
 import { Modal } from 'common/modal/modal';
 import { Button, Loader } from 'common';
 import { isErrorResponse, ErrorResponse } from 'ajax';
+import { Grid } from 'common/grid';
 
 const SET_INTERVAL_PERFORM_REQUEST_EVERY_SECONDS = 15;
 
@@ -203,7 +204,11 @@ function AuthorizeSenderEmailModal({
         </>
       )}
 
-      {showLoader && <Loader size={64} />}
+      {showLoader && (
+        <Grid.Column align="center">
+          <Loader size={64} />
+        </Grid.Column>
+      )}
 
       {confirmEmailApiResponse && (
         <>
