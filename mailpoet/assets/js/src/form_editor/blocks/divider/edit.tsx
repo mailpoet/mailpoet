@@ -25,7 +25,7 @@ export function DividerEdit({ attributes, setAttributes }: Props): JSX.Element {
   const attributeHeight = attributes.height ?? defaultAttributes.height;
 
   const dividerSettings = (
-    <>
+    <div className="mailpoet-styles-settings">
       <SelectControl
         label={MailPoet.I18n.t('blockDividerStyle')}
         data-automation-id="settings_divider_style"
@@ -83,7 +83,7 @@ export function DividerEdit({ attributes, setAttributes }: Props): JSX.Element {
           },
         ]}
       />
-    </>
+    </div>
   );
 
   const dividerStyles = {} as CSSProperties;

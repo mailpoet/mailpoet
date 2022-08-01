@@ -22,6 +22,15 @@
     min-width: 5em;
   }
 
+  .block-editor-panel-color-gradient-settings {
+    border: none;
+    padding: 10px 0;
+
+    h2 {
+      font-weight: normal;
+    }
+  }
+
   hr {
     margin: 0;
   }
@@ -38,20 +47,6 @@
     .components-custom-select-control__label {
       font-weight: bold;
     }
-  }
-}
-
-.mailpoet-font-family-select {
-  .components-flex {
-    height: auto;
-  }
-
-  .components-input-control__container {
-    width: 100%;
-  }
-
-  .components-custom-select-control__label {
-    font-weight: bold;
   }
 }
 
