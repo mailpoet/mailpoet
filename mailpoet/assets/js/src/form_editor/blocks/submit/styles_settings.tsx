@@ -9,7 +9,6 @@ import {
 import { partial } from 'lodash';
 
 import { ColorGradientSettings } from 'form_editor/components/color_gradient_settings';
-import { ColorSettings } from 'form_editor/components/color_settings';
 import { FontSizeSettings } from 'form_editor/components/font_size_settings';
 import { InputBlockStyles } from 'form_editor/store/form_data_types';
 import { FontFamilySettings } from '../../components/font_family_settings';
@@ -80,16 +79,26 @@ function StylesSettings({
           {!localStyles.inheritFromTheme ? (
             <>
               <ColorGradientSettings
-                name={MailPoet.I18n.t('formSettingsStylesBackgroundColor')}
-                colorValue={styles.backgroundColor}
-                gradientValue={styles.gradient}
-                onColorChange={partial(updateStyles, 'backgroundColor')}
-                onGradientChange={partial(updateStyles, 'gradient')}
-              />
-              <ColorSettings
-                name={MailPoet.I18n.t('formSettingsStylesFontColor')}
-                value={styles.fontColor}
-                onChange={partial(updateStyles, 'fontColor')}
+                title={MailPoet.I18n.t('formSettingsColor')}
+                settings={[
+                  {
+                    label: MailPoet.I18n.t('formSettingsStylesBackground'),
+                    colorValue: styles.backgroundColor,
+                    gradientValue: styles.gradient,
+                    onColorChange: partial(updateStyles, 'backgroundColor'),
+                    onGradientChange: partial(updateStyles, 'gradient'),
+                  },
+                  {
+                    label: MailPoet.I18n.t('formSettingsStylesFont'),
+                    colorValue: styles.fontColor,
+                    onColorChange: partial(updateStyles, 'fontColor'),
+                  },
+                  {
+                    label: MailPoet.I18n.t('formSettingsBorder'),
+                    colorValue: localStyles.borderColor,
+                    onColorChange: partial(updateStyles, 'borderColor'),
+                  },
+                ]}
               />
               <FontSizeSettings
                 value={styles.fontSize}
@@ -142,11 +151,6 @@ function StylesSettings({
                 max={40}
                 allowReset
                 onChange={partial(updateStyles, 'borderRadius')}
-              />
-              <ColorSettings
-                name={MailPoet.I18n.t('formSettingsBorderColor')}
-                value={localStyles.borderColor}
-                onChange={partial(updateStyles, 'borderColor')}
               />
             </>
           ) : null}

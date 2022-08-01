@@ -11,7 +11,7 @@ import { MailPoet } from 'mailpoet';
 import {
   inputStylesPropTypes,
   InputStylesSettings,
-} from '../input_styles_settings.jsx';
+} from '../input_styles_settings';
 import { TextInputEdit } from '../text_input_edit.jsx';
 
 function EmailEdit({ attributes, setAttributes }) {

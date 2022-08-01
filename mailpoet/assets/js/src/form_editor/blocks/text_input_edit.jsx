@@ -4,7 +4,7 @@ import { useSelect } from '@wordpress/data';
 
 import { ParagraphEdit } from './paragraph_edit.jsx';
 import { formatLabel } from './label_formatter.jsx';
-import { inputStylesPropTypes } from './input_styles_settings.jsx';
+import { inputStylesPropTypes } from './input_styles_settings';
 import { convertAlignmentToMargin } from './convert_alignment_to_margin';
 
 function TextInputEdit({

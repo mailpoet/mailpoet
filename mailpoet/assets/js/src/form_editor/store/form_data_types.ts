@@ -19,14 +19,18 @@ export type FormSettingsType = {
   backgroundImageUrl?: string;
   belowPostStyles: PlacementStyles;
   borderColor?: string;
+  backgroundColor?: string;
   borderRadius: number;
   borderSize: number;
+  closeButton?: string;
   errorValidationColor?: string;
   fixedBarFormDelay: number;
   fixedBarFormCookieExpiration: number;
   fixedBarFormPosition: string;
   fixedBarStyles: PlacementStyles;
+  fontColor?: string;
   fontFamily?: string;
+  fontSize?: number;
   formPadding: number;
   formPlacement: {
     popup: FormPlacementBase & {
@@ -52,6 +56,7 @@ export type FormSettingsType = {
       styles: PlacementStyles;
     };
   };
+  gradient?: string;
   inputPadding: number;
   otherStyles: PlacementStyles;
   placeFixedBarFormOnAllPages: boolean;

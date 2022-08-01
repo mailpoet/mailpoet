@@ -2,7 +2,7 @@ import { CSSProperties } from 'react';
 import classnames from 'classnames';
 import { MailPoet } from 'mailpoet';
 import { InspectorControls } from '@wordpress/block-editor';
-import { ColorSettings } from 'form_editor/components/color_settings';
+import { ColorGradientSettings } from 'form_editor/components/color_gradient_settings';
 import {
   Panel,
   PanelBody,
@@ -73,10 +73,15 @@ export function DividerEdit({ attributes, setAttributes }: Props): JSX.Element {
         allowReset
         onChange={(dividerWidth): void => setAttributes({ dividerWidth })}
       />
-      <ColorSettings
-        name={MailPoet.I18n.t('blockDividerColor')}
-        value={attributes.color}
-        onChange={(color): void => setAttributes({ color })}
+      <ColorGradientSettings
+        title={MailPoet.I18n.t('formSettingsColor')}
+        settings={[
+          {
+            label: MailPoet.I18n.t('blockDividerBackground'),
+            colorValue: attributes.color,
+            onColorChange: (color): void => setAttributes({ color }),
+          },
+        ]}
       />
     </>
   );

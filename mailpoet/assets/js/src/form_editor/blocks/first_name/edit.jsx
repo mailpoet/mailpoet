@@ -12,7 +12,7 @@ import { TextInputEdit } from '../text_input_edit.jsx';
 import {
   InputStylesSettings,
   inputStylesPropTypes,
-} from '../input_styles_settings.jsx';
+} from '../input_styles_settings';
 
 function FirstNameEdit({ attributes, setAttributes }) {
   const inspectorControls = (
