@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useState } from 'react';
 import { dispatch, useSelect } from '@wordpress/data';
 import { plus } from '@wordpress/icons';
-import { Button } from '../../components/button';
-import { store } from '../../../../editor/store';
-import { MailPoet } from '../../../../../mailpoet';
+import { Button } from '../../../components/button';
+import { store } from '../../../../../editor/store';
+import { MailPoet } from '../../../../../../mailpoet';
 
 export function DesignEmailButton(): JSX.Element {
   const [isSaving, setIsSaving] = useState(false);

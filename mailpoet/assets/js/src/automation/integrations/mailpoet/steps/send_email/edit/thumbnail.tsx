@@ -1,7 +1,7 @@
 import { ComponentProps, ComponentType, useEffect, useState } from 'react';
 import { Spinner as WpSpinner } from '@wordpress/components';
-import { Button } from '../../components/button';
-import { MailPoetAjax } from '../../../../../ajax';
+import { Button } from '../../../components/button';
+import { MailPoetAjax } from '../../../../../../ajax';
 
 // @types/wordpress__components don't define "className", which is supported
 const Spinner = WpSpinner as ComponentType<

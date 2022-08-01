@@ -7,8 +7,8 @@ import { Thumbnail } from './thumbnail';
 import {
   PlainBodyTitle,
   TitleActionButton,
-} from '../../../../editor/components/panel';
-import { store } from '../../../../editor/store';
+} from '../../../../../editor/components/panel';
+import { store } from '../../../../../editor/store';
 
 function SingleLineTextareaControl(
   props: ComponentProps<typeof TextareaControl>,
