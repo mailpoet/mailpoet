@@ -50,7 +50,9 @@ export function DefaultSender() {
   };
 
   const updateSenderEmailController = (email: string) => {
+    // Reset email related states
     setIsAuthorized(true);
+    setShowSenderDomainWarning(false);
     setSenderEmail(email);
   };
   useEffect(() => {
