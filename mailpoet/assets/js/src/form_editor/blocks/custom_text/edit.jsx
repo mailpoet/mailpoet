@@ -9,7 +9,7 @@ import { mapCustomFieldFormData } from '../map_custom_field_form_data.jsx';
 import {
   InputStylesSettings,
   inputStylesPropTypes,
-} from '../input_styles_settings.jsx';
+} from '../input_styles_settings';
 import { TextInputEdit } from '../text_input_edit.jsx';
 
 function CustomTextEdit({ attributes, setAttributes, clientId }) {

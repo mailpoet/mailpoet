@@ -11,7 +11,6 @@ import { useDispatch, useSelect } from '@wordpress/data';
 import { partial } from 'lodash';
 import { HorizontalAlignment } from 'common/styles';
 
-import { ColorSettings } from 'form_editor/components/color_settings';
 import { ColorGradientSettings } from 'form_editor/components/color_gradient_settings';
 import { FontSizeSettings } from 'form_editor/components/font_size_settings';
 import { ImageSettings } from 'form_editor/components/image_settings';
@@ -33,7 +32,7 @@ function StylesSettingsPanel({ onToggle, isOpened }) {
   const updateStyles = (property, value) => {
     const updated = { ...settingsRef.current };
     updated[property] = value ?? defaultFormStyles[property] ?? undefined;
-    changeFormSettings(updated);
+    void changeFormSettings(updated);
     settingsRef.current = updated;
   };
 
@@ -46,11 +45,26 @@ function StylesSettingsPanel({ onToggle, isOpened }) {
       >
         <div className="mailpoet-styles-settings">
           <ColorGradientSettings
-            name={MailPoet.I18n.t('formSettingsStylesBackgroundColor')}
-            colorValue={settings.backgroundColor}
-            gradientValue={settings.gradient}
-            onColorChange={partial(updateStyles, 'backgroundColor')}
-            onGradientChange={partial(updateStyles, 'gradient')}
+            title={MailPoet.I18n.t('formSettingsColor')}
+            settings={[
+              {
+                label: MailPoet.I18n.t('formSettingsStylesBackground'),
+                colorValue: settings.backgroundColor,
+                gradientValue: settings.gradient,
+                onColorChange: partial(updateStyles, 'backgroundColor'),
+                onGradientChange: partial(updateStyles, 'gradient'),
+              },
+              {
+                label: MailPoet.I18n.t('formSettingsStylesFont'),
+                colorValue: settings.fontColor,
+                onColorChange: partial(updateStyles, 'fontColor'),
+              },
+              {
+                label: MailPoet.I18n.t('formSettingsBorder'),
+                colorValue: settings.borderColor,
+                onColorChange: partial(updateStyles, 'borderColor'),
+              },
+            ]}
           />
           <ImageSettings
             name={MailPoet.I18n.t('formSettingsStylesBackgroundImage')}
@@ -61,11 +75,6 @@ function StylesSettingsPanel({ onToggle, isOpened }) {
               updateStyles,
               'backgroundImageDisplay',
             )}
-          />
-          <ColorSettings
-            name={MailPoet.I18n.t('formSettingsStylesFontColor')}
-            value={settings.fontColor}
-            onChange={partial(updateStyles, 'fontColor')}
           />
           <FontSizeSettings
             value={settings.fontSize}
@@ -103,11 +112,6 @@ function StylesSettingsPanel({ onToggle, isOpened }) {
             allowReset
             onChange={partial(updateStyles, 'borderRadius')}
           />
-          <ColorSettings
-            name={MailPoet.I18n.t('formSettingsBorderColor')}
-            value={settings.borderColor}
-            onChange={partial(updateStyles, 'borderColor')}
-          />
           <SelectControl
             label={MailPoet.I18n.t('formSettingsAlignment')}
             onChange={partial(updateStyles, 'alignment')}
@@ -135,15 +139,20 @@ function StylesSettingsPanel({ onToggle, isOpened }) {
             allowReset
             onChange={partial(updateStyles, 'formPadding')}
           />
-          <ColorSettings
-            name={MailPoet.I18n.t('successValidationColorTitle')}
-            value={settings.successValidationColor}
-            onChange={partial(updateStyles, 'successValidationColor')}
-          />
-          <ColorSettings
-            name={MailPoet.I18n.t('errorValidationColorTitle')}
-            value={settings.errorValidationColor}
-            onChange={partial(updateStyles, 'errorValidationColor')}
+          <ColorGradientSettings
+            title={MailPoet.I18n.t('validationMessageColor')}
+            settings={[
+              {
+                label: MailPoet.I18n.t('successValidationColorTitle'),
+                colorValue: settings.successValidationColor,
+                onColorChange: partial(updateStyles, 'successValidationColor'),
+              },
+              {
+                label: MailPoet.I18n.t('errorValidationColorTitle'),
+                colorValue: settings.errorValidationColor,
+                onColorChange: partial(updateStyles, 'errorValidationColor'),
+              },
+            ]}
           />
           <CloseButtonsSettings
             name={MailPoet.I18n.t('closeButtonHeading')}

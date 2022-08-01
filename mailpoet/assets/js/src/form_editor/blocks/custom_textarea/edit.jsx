@@ -16,7 +16,7 @@ import { formatLabel } from '../label_formatter.jsx';
 import {
   inputStylesPropTypes,
   InputStylesSettings,
-} from '../input_styles_settings.jsx';
+} from '../input_styles_settings';
 import { mapCustomFieldFormData } from '../map_custom_field_form_data.jsx';
 import { ParagraphEdit } from '../paragraph_edit.jsx';
 
