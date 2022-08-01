@@ -65,6 +65,8 @@ class SendEmailAction implements Action {
       'preheader' => Builder::string(),
       'from_name' => Builder::string()->default($this->settings->get('sender.name')),
       'email' => Builder::string()->default($this->settings->get('sender.address')),
+      'reply_to_name' => Builder::string()->default($this->settings->get('reply_to.name')),
+      'reply_to_address' => Builder::string()->default($this->settings->get('reply_to.address')),
     ]);
   }
 
@@ -129,6 +131,8 @@ class SendEmailAction implements Action {
     $email->setPreheader($args['preheader'] ?? '');
     $email->setSenderName($args['from_name'] ?? '');
     $email->setSenderAddress($args['email'] ?? '');
+    $email->setReplyToName($args['reply_to_name'] ?? '');
+    $email->setReplyToAddress($args['reply_to_address'] ?? '');
     $this->newslettersRepository->flush();
   }
 
