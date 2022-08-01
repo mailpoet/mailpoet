@@ -29,6 +29,7 @@ type Props = {
   onSuccessAction: (param: { type: 'email' | 'domain'; data: string }) => void;
   showSenderEmailTab: boolean;
   showSenderDomainTab: boolean;
+  initialTab: 'sender_email' | 'sender_domain';
 };
 
 function AuthorizeSenderEmailAndDomainModal({
@@ -37,6 +38,7 @@ function AuthorizeSenderEmailAndDomainModal({
   onSuccessAction,
   showSenderEmailTab = false,
   showSenderDomainTab = false,
+  initialTab = 'sender_email',
 }: Props): JSX.Element {
   if (!senderEmail) return null;
 
@@ -50,16 +52,12 @@ function AuthorizeSenderEmailAndDomainModal({
     trackEvent('domain');
   }
 
-  let defaultTab = 'sender_email';
-  defaultTab =
-    showSenderDomainTab && !showSenderEmailTab ? 'sender_domain' : defaultTab;
-
   return (
     <Modal
       onRequestClose={onRequestClose}
       contentClassName="authorize-sender-email-and-domain-modal"
     >
-      <Tabs activeKey={defaultTab}>
+      <Tabs activeKey={initialTab}>
         <Tab
           key="sender_email"
           className={classnames({

@@ -16,11 +16,11 @@ function SenderEmailAddressWarning({
   onSuccessfulEmailOrDomainAuthorization,
 }) {
   const [showAuthorizedEmailModal, setShowAuthorizedEmailModal] =
-    useState(false);
+    useState(null);
 
-  const loadModal = (event) => {
+  const loadModal = (event, tab) => {
     event.preventDefault();
-    setShowAuthorizedEmailModal(true);
+    setShowAuthorizedEmailModal(tab);
   };
 
   const emailAddressDomain = emailAddress.split('@').pop().toLowerCase();
@@ -45,7 +45,7 @@ function SenderEmailAddressWarning({
               href="#"
               target="_blank"
               rel="noopener noreferrer"
-              onClick={loadModal}
+              onClick={(e) => loadModal(e, 'sender_email')}
             >
               {MailPoet.I18n.t('authorizeMyEmail')}
             </a>
@@ -67,7 +67,7 @@ function SenderEmailAddressWarning({
                   href="https://kb.mailpoet.com/article/295-spf-and-dkim"
                   target="_blank"
                   rel="noopener noreferrer"
-                  onClick={loadModal}
+                  onClick={(e) => loadModal(e, 'sender_domain')}
                 >
                   {match}
                 </a>
@@ -84,11 +84,12 @@ function SenderEmailAddressWarning({
             <AuthorizeSenderEmailAndDomainModal
               senderEmail={emailAddress}
               onRequestClose={() => {
-                setShowAuthorizedEmailModal(false);
+                setShowAuthorizedEmailModal(null);
               }}
               onSuccessAction={onSuccessfulEmailOrDomainAuthorization}
               showSenderEmailTab={!isEmailAuthorized}
               showSenderDomainTab={showSenderDomainWarning}
+              initialTab={showAuthorizedEmailModal}
             />
           )}
         </div>,
