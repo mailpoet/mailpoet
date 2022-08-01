@@ -41,8 +41,11 @@ class SenderField extends Component {
         value: emailAddress,
       },
     });
-    // hide email address warning when user is typing
-    this.setState({ showAuthEmailsError: false });
+    // hide email address and domain warning when user is typing
+    this.setState({
+      showAuthEmailsError: false,
+      showSenderDomainWarning: false,
+    });
     resetFieldError(this.domElementSelector, this.parsleyFieldName);
   }
 
