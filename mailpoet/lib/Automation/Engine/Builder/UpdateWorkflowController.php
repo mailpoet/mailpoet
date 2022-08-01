@@ -39,19 +39,20 @@ class UpdateWorkflowController {
     }
 
     $changed = false;
+    $storedData = $workflow->toArray();
 
-    if (array_key_exists('name', $data)) {
+    if (array_key_exists('name', $data) && $workflow->getName() !== $data['name']) {
       $workflow->setName($data['name']);
       $changed = true;
     }
 
-    if (array_key_exists('status', $data)) {
+    if (array_key_exists('status', $data) && $workflow->getStatus() !== $data['status']) {
       $this->checkWorkflowStatus($data['status']);
       $workflow->setStatus($data['status']);
       $changed = true;
     }
 
-    if (array_key_exists('steps', $data)) {
+    if (array_key_exists('steps', $data) && json_decode($storedData['steps'], true) !== $data['steps']) {
       $this->validateWorkflowSteps($workflow, $data['steps']);
       $this->updateStepsController->updateSteps($workflow, $data['steps']);
       foreach ($workflow->getSteps() as $step) {
@@ -61,10 +62,12 @@ class UpdateWorkflowController {
       $changed = true;
     }
 
-    if ($changed) {
-      $this->hooks->doWorkflowBeforeSave($workflow);
-      $this->storage->updateWorkflow($workflow);
+    if (!$changed) {
+      return $workflow;
     }
+
+    $this->hooks->doWorkflowBeforeSave($workflow);
+    $this->storage->updateWorkflow($workflow);
 
     $workflow = $this->storage->getWorkflow($id);
     if (!$workflow) {
