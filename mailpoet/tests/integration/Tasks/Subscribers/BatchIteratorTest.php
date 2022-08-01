@@ -2,9 +2,15 @@
 
 namespace MailPoet\Test\Tasks\Subscribers;
 
-use MailPoet\Models\ScheduledTaskSubscriber;
+use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Entities\ScheduledTaskSubscriberEntity;
+use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Tasks\Subscribers\BatchIterator;
-use MailPoetVendor\Idiorm\ORM;
+use MailPoet\Test\DataFactories\ScheduledTask;
+use MailPoet\Test\DataFactories\ScheduledTask as ScheduledTaskFactory;
+use MailPoet\Test\DataFactories\ScheduledTaskSubscriber as ScheduledTaskSubscriberFactory;
+use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
+use MailPoetVendor\Carbon\Carbon;
 
 class BatchIteratorTest extends \MailPoetTest {
   public $iterator;
@@ -14,14 +20,19 @@ class BatchIteratorTest extends \MailPoetTest {
 
   public function _before() {
     parent::_before();
-    $this->taskId = 123; // random ID
     $this->batchSize = 2;
     $this->subscriberCount = 10;
+
+    $scheduledTaskFactory = new ScheduledTaskFactory();
+    $task = $scheduledTaskFactory->create('some_task_type', ScheduledTaskEntity::STATUS_SCHEDULED, new Carbon());
+    $this->taskId = $task->getId();
+
+    $scheduledTaskSubscriberFactory = new ScheduledTaskSubscriberFactory();
+
     for ($i = 0; $i < $this->subscriberCount; $i++) {
-      ScheduledTaskSubscriber::createOrUpdate([
-        'task_id' => $this->taskId,
-        'subscriber_id' => $i + 1,
-      ]);
+      $subscriberFactory = new SubscriberFactory();
+      $subscriber = $subscriberFactory->create();
+      $scheduledTaskSubscriberFactory->createUnprocessed($task, $subscriber);
     }
     $this->iterator = new BatchIterator($this->taskId, $this->batchSize);
   }
@@ -46,14 +57,6 @@ class BatchIteratorTest extends \MailPoetTest {
     foreach ($this->iterator as $batch) {
       $i++;
 
-      // process subscribers
-      // @phpstan-ignore-next-line
-      ScheduledTaskSubscriber::where('task_id', $this->taskId) 
-        ->whereIn('subscriber_id', $batch)
-        ->findResultSet()
-        ->set('processed', ScheduledTaskSubscriber::STATUS_PROCESSED)
-        ->save();
-
       if ($i < $iterations) {
         expect(count($batch))->equals($this->batchSize);
       } else {
@@ -68,6 +71,8 @@ class BatchIteratorTest extends \MailPoetTest {
   }
 
   public function _after() {
-    ORM::raw_execute('TRUNCATE ' . ScheduledTaskSubscriber::$_table);
+    $this->truncateEntity(ScheduledTaskEntity::class);
+    $this->truncateEntity(ScheduledTaskSubscriberEntity::class);
+    $this->truncateEntity(SubscriberEntity::class);
   }
 }
