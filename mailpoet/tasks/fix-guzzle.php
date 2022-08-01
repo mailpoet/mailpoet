@@ -7,7 +7,18 @@ set_error_handler(function ($severity, $message, $file, $line) {
 
 $clientFilePath = __DIR__ . '/../vendor/guzzlehttp/guzzle/src/Client.php';
 
-// Skip for production build
+$composerJson = \json_decode(file_get_contents(__DIR__ . '/../composer.json'), true);
+$installedGuzzleHttpVersion = $composerJson['require-dev']['guzzlehttp/guzzle'] ?? false;
+
+if ($installedGuzzleHttpVersion === false) {
+  exit;
+}
+
+if (version_compare($installedGuzzleHttpVersion, '7.0') === 1) {
+  //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped, WordPressDotOrg.sniffs.OutputEscaping.UnescapedOutputParameter
+  die("Patching Guzzlehttp is not needed since version $installedGuzzleHttpVersion is installed" . PHP_EOL);
+}
+
 if (!file_exists($clientFilePath) || version_compare(phpversion(), '8.0.0') == -1) {
   exit;
 }
