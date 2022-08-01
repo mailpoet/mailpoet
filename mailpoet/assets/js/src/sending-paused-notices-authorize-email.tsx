@@ -90,6 +90,9 @@ function AuthorizeSenderEmailApp() {
           onSuccessAction={performSuccessActionOnModalClose}
           showSenderEmailTab={actionType === 'email'}
           showSenderDomainTab={actionType === 'domain'}
+          initialTab={
+            actionType === 'domain' ? 'sender_domain' : 'sender_email'
+          }
         />
       )}
     </>
