@@ -1,6 +1,7 @@
 import ReactStringReplace from 'react-string-replace';
 import { Button, Loader, TypographyHeading as Heading } from 'common';
 import { MailPoet } from 'mailpoet';
+import { Grid } from 'common/grid';
 import { SenderDomainEntity } from './manage_sender_domain_types';
 import { DomainKeyComponent } from './domain_key_component';
 import { DomainStatusComponent } from './domain_status_component';
@@ -15,7 +16,12 @@ function ManageSenderDomain({
   loadingButton,
   verifyDnsButtonClicked,
 }: Props) {
-  if (rows.length === 0) return <Loader size={84} />;
+  if (rows.length === 0)
+    return (
+      <Grid.Column align="center">
+        <Loader size={64} />
+      </Grid.Column>
+    );
 
   const { dns, domain } = rows[0];
 
