@@ -25,12 +25,12 @@ class HelperTest extends \MailPoetTest {
   public function testGetDataMailPoetNotInstalledViaWooCommerceOnboardingWizard() {
     $this->assertFalse($this->helper->wasMailPoetInstalledViaWooCommerceOnboardingWizard());
 
-    $this->wp->addOption('woocommerce_onboarding_profile', ['business_extensions' => ['jetpack', 'mailchimp', 'another_plugin']]);
+    $this->wp->updateOption('woocommerce_onboarding_profile', ['business_extensions' => ['jetpack', 'mailchimp', 'another_plugin']]);
     $this->assertFalse($this->helper->wasMailPoetInstalledViaWooCommerceOnboardingWizard());
   }
 
   public function testGetDataMailPoetInstalledViaWooCommerceOnboardingWizard() {
-    $this->wp->addOption('woocommerce_onboarding_profile', ['business_extensions' => ['jetpack', 'mailchimp', 'mailpoet', 'another_plugin']]);
+    $this->wp->updateOption('woocommerce_onboarding_profile', ['business_extensions' => ['jetpack', 'mailchimp', 'mailpoet', 'another_plugin']]);
     $this->assertTrue($this->helper->wasMailPoetInstalledViaWooCommerceOnboardingWizard());
   }
 }
