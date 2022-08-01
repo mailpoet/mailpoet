@@ -76,11 +76,13 @@
     ],
     "post-update-cmd": [
       "./tools/vendor/composer.phar --working-dir=tasks/code_sniffer install",
-      "./tools/vendor/composer.phar --working-dir=tasks/phpstan install"
+      "./tools/vendor/composer.phar --working-dir=tasks/phpstan install",
+      "php ./tasks/fix-guzzle.php"
     ],
     "post-install-cmd": [
       "./tools/vendor/composer.phar --working-dir=tasks/code_sniffer install",
-      "./tools/vendor/composer.phar --working-dir=tasks/phpstan install"
+      "./tools/vendor/composer.phar --working-dir=tasks/phpstan install",
+      "php ./tasks/fix-guzzle.php"
     ],
     "pre-autoload-dump": [
       "php ./tasks/fix-codeception-stub.php",
