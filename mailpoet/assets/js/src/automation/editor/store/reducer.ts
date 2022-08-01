@@ -51,9 +51,16 @@ export function reducer(state: State, action: Action): State {
         },
       };
     case 'UPDATE_STEP_ARGS': {
+      const prevArgs = state.workflowData.steps[action.stepId].args ?? {};
+
+      const value =
+        typeof action.value === 'function'
+          ? action.value(prevArgs[action.name] ?? undefined)
+          : action.value;
+
       const args = {
-        ...(state.workflowData.steps[action.stepId].args ?? {}),
-        [action.name]: action.value,
+        ...prevArgs,
+        [action.name]: value,
       };
 
       const step = { ...state.workflowData.steps[action.stepId], args };
