@@ -1,34 +1,29 @@
-import ColorGradientControl from '@wordpress/block-editor/build-module/components/colors-gradients/control';
+import PanelColorGradientSettings from '@wordpress/block-editor/build-module/components/colors-gradients/panel-color-gradient-settings';
 import { useSetting } from '@wordpress/block-editor';
 
-type Props = {
-  name: string;
+type Setting = {
+  label: string;
   colorValue: string | undefined;
-  gradientValue: string | undefined;
+  gradientValue?: string | undefined;
   onColorChange: (value: string | undefined) => void;
-  onGradientChange: (value: string | undefined) => void;
+  onGradientChange?: (value: string | undefined) => void;
 };
 
-export function ColorGradientSettings({
-  name,
-  colorValue,
-  gradientValue,
-  onColorChange,
-  onGradientChange,
-}: Props): JSX.Element {
+type Props = {
+  title: string;
+  settings: Setting[];
+};
+
+export function ColorGradientSettings({ title, settings }: Props): JSX.Element {
   const settingsColors = useSetting('color.palette');
   const settingsGradients = useSetting('color.gradients');
   return (
     <div>
-      <ColorGradientControl
-        colorValue={colorValue}
-        gradientValue={gradientValue}
-        onColorChange={onColorChange}
-        onGradientChange={onGradientChange}
+      <PanelColorGradientSettings
+        title={title}
         colors={settingsColors}
         gradients={settingsGradients}
-        label={name}
-        className="mailpoet-color-gradient-picker block-editor-panel-color-gradient-settings"
+        settings={settings}
       />
     </div>
   );
