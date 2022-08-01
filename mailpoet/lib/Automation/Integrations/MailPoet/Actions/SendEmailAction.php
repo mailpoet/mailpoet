@@ -67,6 +67,7 @@ class SendEmailAction implements Action {
       'email' => Builder::string()->default($this->settings->get('sender.address')),
       'reply_to_name' => Builder::string()->default($this->settings->get('reply_to.name')),
       'reply_to_address' => Builder::string()->default($this->settings->get('reply_to.address')),
+      'ga_campaign' => Builder::string(),
     ]);
   }
 
@@ -133,6 +134,7 @@ class SendEmailAction implements Action {
     $email->setSenderAddress($args['email'] ?? '');
     $email->setReplyToName($args['reply_to_name'] ?? '');
     $email->setReplyToAddress($args['reply_to_address'] ?? '');
+    $email->setGaCampaign($args['ga_campaign'] ?? '');
     $this->newslettersRepository->flush();
   }
 
