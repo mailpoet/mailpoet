@@ -88,7 +88,7 @@ class Helper {
     $wooCommerceOnboardingProfile = $wp->getOption('woocommerce_onboarding_profile');
 
     if (
-      !empty($wooCommerceOnboardingProfile)
+      is_array($wooCommerceOnboardingProfile)
       && isset($wooCommerceOnboardingProfile['business_extensions'])
       && is_array($wooCommerceOnboardingProfile['business_extensions'])
       && in_array('mailpoet', $wooCommerceOnboardingProfile['business_extensions'])
