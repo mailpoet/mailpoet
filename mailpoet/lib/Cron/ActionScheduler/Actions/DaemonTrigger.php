@@ -37,7 +37,7 @@ class DaemonTrigger {
   public function init() {
     $this->wp->addAction(self::NAME, [$this, 'process']);
     if (!$this->actionScheduler->hasScheduledAction(self::NAME)) {
-      $this->actionScheduler->scheduleRecurringAction($this->wp->currentTime('timestamp'), 20, self::NAME);
+      $this->actionScheduler->scheduleRecurringAction($this->wp->currentTime('timestamp', true), 20, self::NAME);
     }
   }
 
@@ -55,7 +55,7 @@ class DaemonTrigger {
       return;
     }
     // Start recurring action with minimal interval to ensure continuous execution of the daemon
-    $this->actionScheduler->scheduleRecurringAction($this->wp->currentTime('timestamp') - 1, 1, DaemonRun::NAME);
+    $this->actionScheduler->scheduleRecurringAction($this->wp->currentTime('timestamp', true) - 1, 1, DaemonRun::NAME);
     $this->remoteExecutorHandler->triggerExecutor();
   }
 }
