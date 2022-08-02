@@ -153,7 +153,7 @@ class Manage {
       if ($allowedSegments && !in_array($segment->getId(), $allowedSegments)) {
         continue;
       }
-      if (!in_array($subscriberSegment->getId(), $segmentsIds)) {
+      if (!in_array($segment->getId(), $segmentsIds)) {
         $this->subscriberSegmentRepository->createOrUpdate(
           $subscriber,
           $segment,
