@@ -33,7 +33,7 @@ class WorkflowBuilder {
   public function delayedEmailAfterSignupWorkflow(string $name): Workflow {
     $triggerStep = $this->segmentSubscribedTriggerStep();
 
-    $delayStep = $this->delayStep(60 * 60);
+    $delayStep = $this->delayStep(null, "HOURS");
     $triggerStep->setNextStepId($delayStep->getId());
 
     $sendEmailStep = $this->sendEmailActionStep();
@@ -51,13 +51,13 @@ class WorkflowBuilder {
   public function welcomeEmailSequence(string $name): Workflow {
     $triggerStep = $this->segmentSubscribedTriggerStep();
 
-    $firstDelayStep = $this->delayStep(5 * 60);
+    $firstDelayStep = $this->delayStep( null, "HOURS");
     $triggerStep->setNextStepId($firstDelayStep->getId());
 
     $sendFirstEmailStep = $this->sendEmailActionStep(1);
     $firstDelayStep->setNextStepId($sendFirstEmailStep->getId());
 
-    $secondDelayStep = $this->delayStep(3 * 60);
+    $secondDelayStep = $this->delayStep( null,"HOURS");
     $sendFirstEmailStep->setNextStepId($secondDelayStep->getId());
 
     $sendSecondEmailStep = $this->sendEmailActionStep(2);
@@ -74,9 +74,10 @@ class WorkflowBuilder {
     return new Workflow($name, $steps);
   }
 
-  private function delayStep(int $seconds): Step {
+  private function delayStep(?int $delay, string $delayType): Step {
     return new Step($this->uniqueId(), Step::TYPE_ACTION, $this->delayAction->getKey(), null, [
-      'seconds' => $seconds,
+      'delay' => $delay??"",
+      'delay_type' => $delayType,
     ]);
   }
 
