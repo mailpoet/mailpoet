@@ -3,7 +3,7 @@ Contributors: mailpoet
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 5.6
 Tested up to: 6.0
-Stable tag: 3.93.0
+Stable tag: 3.93.1
 Requires PHP: 7.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -218,6 +218,12 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 3.93.1 - 2022-08-02 =
+* Added: link to MailPoet settings from Plugins page;
+* Changed: email signup step removed from the MailPoet setup;
+* Fixed: a notice to send all emails through MailPoet can't be dismissed;
+* Fixed: MailPoet menu icon on WordPress.com.
 
 = 3.93.0 - 2022-07-25 =
 * Added: premium feature: new segment by subscriber tags.
