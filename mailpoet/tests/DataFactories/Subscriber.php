@@ -165,6 +165,16 @@ class Subscriber {
   }
 
   /**
+   * @param string $linkToken
+   *
+   * @return $this
+   */
+  public function withLinkToken(string $linkToken) {
+    $this->data['linkToken'] = $linkToken;
+    return $this;
+  }
+
+  /**
    * @throws \Exception
    */
   public function create(): SubscriberEntity {
@@ -183,6 +193,9 @@ class Subscriber {
     if (isset($this->data['unconfirmedData'])) $subscriber->setUnconfirmedData($this->data['unconfirmedData']);
     if (isset($this->data['source'])) {
       $subscriber->setSource($this->data['source']);
+    }
+    if (isset($this->data['linkToken'])) {
+      $subscriber->setLinkToken($this->data['linkToken']);
     }
     $entityManager->persist($subscriber);
 
