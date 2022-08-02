@@ -37,7 +37,7 @@ export function TaskScheduler() {
             onCheck={setMethod}
             automationId="action_scheduler_cron_radio"
           />
-          <label htmlFor="cron_trigger-method-cron">
+          <label htmlFor="cron_trigger-method-action-scheduler">
             {t('actionSchedulerCron')}
           </label>
         </div>
