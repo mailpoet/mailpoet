@@ -54,6 +54,9 @@ class UpdateWorkflowController {
     if (array_key_exists('steps', $data)) {
       $this->validateWorkflowSteps($workflow, $data['steps']);
       $this->updateStepsController->updateSteps($workflow, $data['steps']);
+      foreach ($workflow->getSteps() as $step) {
+        $this->hooks->doWorkflowStepBeforeSave($step);
+      }
       $changed = true;
     }
 
