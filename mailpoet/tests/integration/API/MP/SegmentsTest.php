@@ -46,6 +46,48 @@ class SegmentsTest extends \MailPoetTest {
     $this->validateResponseItem($defaultSegment, $resultItem);
   }
 
+  public function testItRequiresNameToAddList() {
+    try {
+      $this->getApi()->addList([]);
+      $this->fail('List name required exception should have been thrown.');
+    } catch (\Exception $e) {
+      expect($e->getMessage())->equals('List name is required.');
+    }
+  }
+
+  public function testItDoesOnlySaveWhiteListedPropertiesWhenAddingList() {
+    $result = $this->getApi()->addList([
+      'name' => 'Test segment123',
+      'description' => 'Description',
+      'type' => 'ignore this field',
+    ]);
+    expect($result['id'])->greaterThan(0);
+    expect($result['name'])->equals('Test segment123');
+    expect($result['description'])->equals('Description');
+    expect($result['type'])->equals('default');
+  }
+
+  public function testItDoesNotAddExistingList() {
+    $segment = $this->createOrUpdateSegment('Test Segment');
+
+    try {
+      $this->getApi()->addList(['name' => $segment->getName()]);
+      $this->fail('List exists exception should have been thrown.');
+    } catch (\Exception $e) {
+      expect($e->getMessage())->equals('This list already exists.');
+    }
+  }
+
+  public function testItAddsList() {
+    $segment = [
+      'name' => 'Test segment',
+    ];
+
+    $result = $this->getApi()->addList($segment);
+    expect($result['id'])->greaterThan(0);
+    expect($result['name'])->equals($segment['name']);
+  }
+
   private function getApi(): API {
     return new API(
       $this->makeEmpty(RequiredCustomFieldValidator::class),
