@@ -26,6 +26,25 @@ class Segments {
     return $result;
   }
 
+  public function addList(array $data): array {
+    if (empty($data['name'])) {
+      throw new APIException(
+        __('List name is required.', 'mailpoet'),
+        APIException::LIST_NAME_REQUIRED
+      );
+    }
+
+    if (!$this->segmentsRepository->isNameUnique($data['name'], null)) {
+      throw new APIException(
+        __('This list already exists.', 'mailpoet'),
+        APIException::LIST_EXISTS
+      );
+    }
+
+    $segment = $this->segmentsRepository->createOrUpdate($data['name'], $data['description'] ?? '');
+    return $this->buildItem($segment);
+  }
+
   /**
    * @param SegmentEntity $segment
    * @return array

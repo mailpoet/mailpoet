@@ -191,43 +191,7 @@ class API {
   }
 
   public function addList(array $list) {
-    // throw exception when list name is missing
-    if (empty($list['name'])) {
-      throw new APIException(
-        __('List name is required.', 'mailpoet'),
-        APIException::LIST_NAME_REQUIRED
-      );
-    }
-
-    // throw exception when list already exists
-    if (Segment::where('name', $list['name'])->findOne()) {
-      throw new APIException(
-        __('This list already exists.', 'mailpoet'),
-        APIException::LIST_EXISTS
-      );
-    }
-
-    // filter out all incoming data that we don't want to change, like type,
-    $list = array_intersect_key($list, array_flip(['name', 'description']));
-
-    // add list
-    $newList = Segment::create();
-    $newList->hydrate($list);
-    $newList->save();
-    if ($newList->getErrors() !== false) {
-      throw new APIException(
-        __(sprintf('Failed to add list: %s', strtolower(implode(', ', $newList->getErrors()))), 'mailpoet'),
-        APIException::FAILED_TO_SAVE_LIST
-      );
-    }
-
-    // reload list to get the saved created|updated|delete dates/other fields
-    $newList = Segment::findOne($newList->id);
-    if (!$newList instanceof Segment) {
-      throw new APIException(__('Failed to add list', 'mailpoet'), APIException::FAILED_TO_SAVE_LIST);
-    }
-
-    return $newList->asArray();
+    return $this->segments->addList($list);
   }
 
   public function getSubscriber($subscriberEmail) {
