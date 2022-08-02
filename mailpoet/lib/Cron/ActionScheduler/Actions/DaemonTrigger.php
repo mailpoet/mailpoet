@@ -9,6 +9,7 @@ use MailPoet\WP\Functions as WPFunctions;
 
 class DaemonTrigger {
   const NAME = 'mailpoet/cron/daemon-trigger';
+  const TRIGGER_RUN_INTERVAL = 120; // 2 minutes
 
   /** @var WPFunctions */
   private $wp;
@@ -37,7 +38,7 @@ class DaemonTrigger {
   public function init() {
     $this->wp->addAction(self::NAME, [$this, 'process']);
     if (!$this->actionScheduler->hasScheduledAction(self::NAME)) {
-      $this->actionScheduler->scheduleRecurringAction($this->wp->currentTime('timestamp', true), 20, self::NAME);
+      $this->actionScheduler->scheduleRecurringAction($this->wp->currentTime('timestamp', true), self::TRIGGER_RUN_INTERVAL, self::NAME);
     }
   }
 
