@@ -56,6 +56,7 @@ class UpdateWorkflowController {
       $this->updateStepsController->updateSteps($workflow, $data['steps']);
       foreach ($workflow->getSteps() as $step) {
         $this->hooks->doWorkflowStepBeforeSave($step);
+        $this->hooks->doWorkflowStepByKeyBeforeSave($step);
       }
       $changed = true;
     }

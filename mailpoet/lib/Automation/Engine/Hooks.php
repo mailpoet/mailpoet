@@ -31,4 +31,8 @@ class Hooks {
   public function doWorkflowStepBeforeSave(Step $step): void {
     $this->wordPress->doAction(self::WORKFLOW_STEP_BEFORE_SAVE, $step);
   }
+
+  public function doWorkflowStepByKeyBeforeSave(Step $step): void {
+    $this->wordPress->doAction(self::WORKFLOW_STEP_BEFORE_SAVE . '/key=' . $step->getKey(), $step);
+  }
 }
