@@ -2,7 +2,8 @@
 
 namespace MailPoet\Tasks\Subscribers;
 
-use MailPoet\Models\ScheduledTaskSubscriber;
+use MailPoet\DI\ContainerWrapper;
+use MailPoet\Newsletter\Sending\ScheduledTaskSubscribersRepository;
 
 /**
  * @implements \Iterator<null, array>
@@ -12,6 +13,9 @@ class BatchIterator implements \Iterator, \Countable {
   private $batchSize;
   private $lastProcessedId = 0;
   private $batchLastId;
+
+  /** @var ScheduledTaskSubscribersRepository */
+  private $scheduledTaskSubscribersRepository;
 
   public function __construct(
     $taskId,
@@ -24,6 +28,7 @@ class BatchIterator implements \Iterator, \Countable {
     }
     $this->taskId = (int)$taskId;
     $this->batchSize = (int)$batchSize;
+    $this->scheduledTaskSubscribersRepository = ContainerWrapper::getInstance()->get(ScheduledTaskSubscribersRepository::class);
   }
 
   public function rewind(): void {
@@ -35,11 +40,7 @@ class BatchIterator implements \Iterator, \Countable {
    */
   #[\ReturnTypeWillChange]
   public function current() {
-    $subscribers = $this->getSubscribers()
-      ->orderByAsc('subscriber_id')
-      ->limit($this->batchSize)
-      ->findArray();
-    $subscribers = array_column($subscribers, 'subscriber_id');
+    $subscribers = $this->scheduledTaskSubscribersRepository->getSubscriberIdsBatchForTask($this->taskId, $this->lastProcessedId, $this->batchSize);
     $this->batchLastId = end($subscribers);
     return $subscribers;
   }
@@ -61,13 +62,6 @@ class BatchIterator implements \Iterator, \Countable {
   }
 
   public function count(): int {
-    return $this->getSubscribers()->count();
-  }
-
-  private function getSubscribers() {
-    return ScheduledTaskSubscriber::select('subscriber_id')
-      ->where('task_id', $this->taskId)
-      ->whereGt('subscriber_id', $this->lastProcessedId)
-      ->where('processed', ScheduledTaskSubscriber::STATUS_UNPROCESSED);
+    return $this->scheduledTaskSubscribersRepository->countSubscriberIdsBatchForTask($this->taskId, $this->lastProcessedId);
   }
 }
