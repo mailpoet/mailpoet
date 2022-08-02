@@ -7,6 +7,7 @@ use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\InvalidStateException;
+use MailPoetVendor\Doctrine\ORM\QueryBuilder;
 
 /**
  * @extends Repository<ScheduledTaskSubscriberEntity>
@@ -52,5 +53,46 @@ class ScheduledTaskSubscribersRepository extends Repository {
     $taskSubscriber->setFailed($failed);
     $this->flush();
     return $taskSubscriber;
+  }
+
+  public function countSubscriberIdsBatchForTask(int $taskId, int $lastProcessedSubscriberId): int {
+    $queryBuilder = $this->entityManager
+      ->createQueryBuilder()
+      ->select('count(sts.subscriber)');
+    $queryBuilder = $this->prepareSubscriberIdsBatchForTaskQuery($queryBuilder, $taskId, $lastProcessedSubscriberId);
+    $countSubscribers = $queryBuilder
+      ->getQuery()
+      ->getSingleScalarResult();
+
+    if (is_numeric($countSubscribers)) {
+      return (int)$countSubscribers;
+    } else {
+      return 0;
+    }
+  }
+
+  public function getSubscriberIdsBatchForTask(int $taskId, int $lastProcessedSubscriberId, int $limit): array {
+    $queryBuilder = $this->entityManager
+      ->createQueryBuilder()
+      ->select('IDENTITY(sts.subscriber) AS subscriber_id');
+    $queryBuilder = $this->prepareSubscriberIdsBatchForTaskQuery($queryBuilder, $taskId, $lastProcessedSubscriberId);
+    $subscribersIds = $queryBuilder
+      ->orderBy('sts.subscriber', 'asc')
+      ->setMaxResults($limit)
+      ->getQuery()
+      ->getSingleColumnResult();
+
+    return $subscribersIds;
+  }
+
+  private function prepareSubscriberIdsBatchForTaskQuery(QueryBuilder $queryBuilder, int $taskId, int $lastProcessedSubscriberId): QueryBuilder {
+    return $queryBuilder
+      ->from(ScheduledTaskSubscriberEntity::class, 'sts')
+      ->andWhere('sts.task = :taskId')
+      ->andWhere('sts.subscriber > :lastProcessedSubscriberId')
+      ->andWhere('sts.processed = :status')
+      ->setParameter('taskId', $taskId)
+      ->setParameter('lastProcessedSubscriberId', $lastProcessedSubscriberId)
+      ->setParameter('status', ScheduledTaskSubscriberEntity::STATUS_UNPROCESSED);
   }
 }
