@@ -2,11 +2,13 @@
 
 namespace MailPoet\Cron\Workers;
 
+use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\ScheduledTaskEntity;
-use MailPoet\Models\Subscriber;
+use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
-use MailPoetVendor\Idiorm\ORM;
+use MailPoetVendor\Doctrine\ORM\EntityManager;
 
 if (!defined('ABSPATH')) exit;
 
@@ -16,13 +18,22 @@ class SubscriberLinkTokens extends SimpleWorker {
   const AUTOMATIC_SCHEDULING = false;
 
   public function processTaskStrategy(ScheduledTaskEntity $task, $timer) {
-    $count = Subscriber::whereNull('link_token')->count();
+    $entityManager = ContainerWrapper::getInstance()->get(EntityManager::class);
+    $subscribersRepository = ContainerWrapper::getInstance()->get(SubscribersRepository::class);
+    $subscribersTable = $entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
+    $connection = $entityManager->getConnection();
+
+    $count = $subscribersRepository->countBy(['linkToken' => null]);
+
     if ($count) {
       $authKey = defined('AUTH_KEY') ? AUTH_KEY : '';
-      ORM::rawExecute(
-        sprintf('UPDATE %s SET link_token = SUBSTRING(MD5(CONCAT(?, email)), 1, ?) WHERE link_token IS NULL LIMIT ?', Subscriber::$_table),
-        [$authKey, Subscriber::OBSOLETE_LINK_TOKEN_LENGTH, self::BATCH_SIZE]
+
+      $connection->executeStatement(
+        "UPDATE {$subscribersTable} SET link_token = SUBSTRING(MD5(CONCAT(:authKey, email)), 1, :tokenLength) WHERE link_token IS NULL LIMIT :limit",
+        ['authKey' => $authKey, 'tokenLength' => SubscriberEntity::OBSOLETE_LINK_TOKEN_LENGTH, 'limit' => self::BATCH_SIZE],
+        ['authKey' => \PDO::PARAM_STR, 'tokenLength' => \PDO::PARAM_INT, 'limit' => \PDO::PARAM_INT]
       );
+
       $this->schedule();
     }
     return true;
