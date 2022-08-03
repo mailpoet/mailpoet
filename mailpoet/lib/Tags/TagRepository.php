@@ -32,4 +32,27 @@ class TagRepository extends Repository {
     }
     return $tag;
   }
+
+  public function getSubscriberStatisticsCount(?string $status, bool $isDeleted): array {
+    $qb = $this->entityManager->createQueryBuilder()
+      ->select('t.id, t.name, COUNT(st) AS subscribersCount')
+      ->from(TagEntity::class, 't')
+      ->leftJoin('t.subscriberTags', 'st')
+      ->join('st.subscriber', 's')
+      ->groupBy('t.id')
+      ->orderBy('t.name');
+
+    if ($isDeleted) {
+      $qb->andWhere('s.deletedAt IS NOT NULL');
+    } else {
+      $qb->andWhere('s.deletedAt IS NULL');
+    }
+
+    if ($status) {
+      $qb->andWhere('s.status = :status')
+        ->setParameter('status', $status);
+    }
+
+    return $qb->getQuery()->getArrayResult();
+  }
 }
