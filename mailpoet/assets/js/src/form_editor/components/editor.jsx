@@ -78,6 +78,7 @@ export function Editor() {
   // Editor settings - see @wordpress/block-editor/src/store/defaults.js
   const editorSettings = {
     mediaUpload: canUserUpload ? uploadMedia : null,
+    supportsLayout: false, // Disable layout settings for columns because the wide configuration doesn't work properly
     maxWidth: 580,
     enableCustomSpacing: true,
     enableCustomLineHeight: true,
