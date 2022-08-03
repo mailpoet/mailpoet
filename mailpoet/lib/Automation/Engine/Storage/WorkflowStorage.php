@@ -42,10 +42,11 @@ class WorkflowStorage {
     $this->insertWorkflowVersion($workflow->getId(), $workflow);
   }
 
-  public function getWorkflow(int $id): ?Workflow {
+  public function getWorkflow(int $workflowId, int $versionId = null): ?Workflow {
     $workflowTable = esc_sql($this->workflowTable);
     $versionTable = esc_sql($this->versionsTable);
-    $query = (string)$this->wpdb->prepare("
+
+    $query = !$versionId ? (string)$this->wpdb->prepare("
 SELECT
       workflow.*,
       version.id AS version_id,
@@ -55,12 +56,26 @@ FROM
       $workflowTable as workflow,
       $versionTable as version
 WHERE
-      version.workflow_id = workflow.id
+      version.workflow_id = workflow.id AND
+      workflow.id = %d
 ORDER BY
       version.id DESC
 LIMIT
-      0,1; ",
-      $id
+      0,1;",
+      $workflowId
+    ) : (string)$this->wpdb->prepare("
+SELECT
+      workflow.*,
+      version.id AS version_id,
+      version.steps,
+      version.trigger_keys
+FROM
+      $workflowTable as workflow,
+      $versionTable as version
+WHERE
+      version.workflow_id = workflow.id AND
+      version.id = %d",
+      $versionId
     );
     $data = $this->wpdb->get_row($query, ARRAY_A);
     return $data ? Workflow::fromArray((array)$data) : null;

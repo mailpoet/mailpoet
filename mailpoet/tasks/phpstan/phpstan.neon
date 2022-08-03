@@ -50,7 +50,7 @@ parameters:
       path: ../../lib/Automation/Engine/Storage/WorkflowRunStorage.php
     -
       message: "#^Cannot cast string|void to string\\.$#"
-      count: 3
+      count: 4
       path: ../../lib/Automation/Engine/Storage/WorkflowStorage.php
   reportUnmatchedIgnoredErrors: true
   dynamicConstantNames:

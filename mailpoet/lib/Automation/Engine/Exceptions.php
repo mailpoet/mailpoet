@@ -70,6 +70,12 @@ class Exceptions {
       ->withMessage(sprintf(__("Workflow with ID '%d' not found.", 'mailpoet'), $id));
   }
 
+  public static function workflowVersionNotFound(int $workflow, int $version): NotFoundException {
+    return NotFoundException::create()
+      ->withErrorCode(self::WORKFLOW_NOT_FOUND)
+      ->withMessage(sprintf(__('Workflow with ID "%1$s" in version "%2$s" not found.', 'mailpoet'), $workflow, $version));
+  }
+
   public static function workflowRunNotFound(int $id): NotFoundException {
     return NotFoundException::create()
       ->withErrorCode(self::WORKFLOW_RUN_NOT_FOUND)
