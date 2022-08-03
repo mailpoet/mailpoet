@@ -36,8 +36,7 @@ class Renderer {
 
   public function renderStyles(FormEntity $form, string $prefix, string $displayType): string {
     $this->customFonts->enqueueStyle();
-    $html = '.mailpoet_hp_email_label{display:none!important;}'; // move honeypot field out of sight
-    $html .= $this->styleUtils->prefixStyles($this->getCustomStyles($form), $prefix);
+    $html = $this->styleUtils->prefixStyles($this->getCustomStyles($form), $prefix);
     $html .= strip_tags($this->styleUtils->renderFormSettingsStyles($form, $prefix, $displayType));
     return $html;
   }
@@ -85,7 +84,7 @@ class Renderer {
   }
 
   private function renderHoneypot(): string {
-    return '<label class="mailpoet_hp_email_label">' . __('Please leave this field empty', 'mailpoet') . '<input type="email" name="data[email]"/></label>';
+    return '<label class="mailpoet_hp_email_label" style="display: none !important;">' . __('Please leave this field empty', 'mailpoet') . '<input type="email" name="data[email]"/></label>';
   }
 
   private function renderReCaptcha(): string {
