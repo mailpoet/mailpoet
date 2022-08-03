@@ -3,10 +3,10 @@
 namespace MailPoet\Test\Cron\Workers\SendingQueue\Tasks;
 
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Shortcodes;
-use MailPoet\Models\Newsletter;
-use MailPoet\Models\SendingQueue;
-use MailPoet\Models\Subscriber;
-use MailPoetVendor\Idiorm\ORM;
+use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\SendingQueueEntity;
+use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
+use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 use WP_Post;
 
 class ShortcodesTest extends \MailPoetTest {
@@ -24,18 +24,9 @@ class ShortcodesTest extends \MailPoetTest {
   }
 
   public function testItCanReplaceShortcodes() {
-    $newsletter = (object)[
-      'id' => 1,
-    ];
-    $queue = SendingQueue::createOrUpdate([
-      'task_id' => 1,
-      'newsletter_id' => 1,
-    ]);
-    $subscriber = Subscriber::createOrUpdate([
-      'email' => 'test@xample.com',
-      'first_name' => 'John',
-      'last_name' => 'Doe',
-    ]);
+    $newsletter = (new NewsletterFactory())->withSendingQueue()->create();
+    $queue = $newsletter->getLatestQueue();
+    $subscriber = (new SubscriberFactory())->withFirstName('John')->withLastName('Doe')->create();
     $renderedBody = '[subscriber:firstname] [subscriber:lastname]';
     $result = Shortcodes::process($renderedBody, null, $newsletter, $subscriber, $queue);
     expect($result)->equals('John Doe');
@@ -56,8 +47,8 @@ class ShortcodesTest extends \MailPoetTest {
   }
 
   public function _after() {
-    ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
-    ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
+    $this->truncateEntity(SendingQueueEntity::class);
+    $this->truncateEntity(NewsletterEntity::class);
     wp_delete_post($this->wPPost, true);
   }
 }
