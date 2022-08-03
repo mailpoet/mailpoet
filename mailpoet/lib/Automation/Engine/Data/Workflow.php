@@ -13,6 +13,9 @@ class Workflow {
   /** @var int */
   private $id;
 
+  /** @var int */
+  private $versionId;
+
   /** @var string */
   private $name;
 
@@ -32,7 +35,8 @@ class Workflow {
   public function __construct(
     string $name,
     array $steps,
-    int $id = null
+    int $id = null,
+    int $versionId = null
   ) {
     $this->name = $name;
     $this->steps = [];
@@ -43,6 +47,9 @@ class Workflow {
     if ($id) {
       $this->id = $id;
     }
+    if ($versionId) {
+      $this->versionId = $versionId;
+    }
 
     $now = new DateTimeImmutable();
     $this->createdAt = $now;
@@ -51,6 +58,10 @@ class Workflow {
 
   public function getId(): int {
     return $this->id;
+  }
+
+  public function getVersionId(): int {
+    return $this->versionId;
   }
 
   public function getName(): string {
@@ -126,6 +137,7 @@ class Workflow {
     // TODO: validation
     $workflow = new self($data['name'], self::parseSteps(Json::decode($data['steps'])));
     $workflow->id = (int)$data['id'];
+    $workflow->versionId = (int)$data['version_id'];
     $workflow->status = $data['status'];
     $workflow->createdAt = new DateTimeImmutable($data['created_at']);
     $workflow->updatedAt = new DateTimeImmutable($data['updated_at']);
