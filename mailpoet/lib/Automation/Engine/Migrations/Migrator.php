@@ -47,6 +47,7 @@ class Migrator {
       CREATE TABLE {$this->prefix}workflow_runs (
         id int(11) unsigned NOT NULL AUTO_INCREMENT,
         workflow_id int(11) unsigned NOT NULL,
+        version_id int(11) unsigned NOT NULL,
         trigger_key varchar(255) NOT NULL,
         status varchar(255) NOT NULL,
         created_at timestamp NOT NULL,
