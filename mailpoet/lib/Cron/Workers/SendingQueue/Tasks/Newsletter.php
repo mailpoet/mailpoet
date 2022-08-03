@@ -11,12 +11,15 @@ use MailPoet\Mailer\MailerLog;
 use MailPoet\Models\Newsletter as NewsletterModel;
 use MailPoet\Models\NewsletterSegment as NewsletterSegmentModel;
 use MailPoet\Models\SendingQueue as SendingQueueModel;
+use MailPoet\Models\Subscriber as SubscriberModel;
 use MailPoet\Newsletter\Links\Links as NewsletterLinks;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Renderer\PostProcess\OpenTracking;
 use MailPoet\Newsletter\Renderer\Renderer;
+use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Settings\TrackingConfig;
 use MailPoet\Statistics\GATracking;
+use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Util\Helpers;
 use MailPoet\WP\Emoji;
 use MailPoet\WP\Functions as WPFunctions;
@@ -52,6 +55,12 @@ class Newsletter {
   /** @var NewsletterLinks */
   private $newsletterLinks;
 
+  /** @var SendingQueuesRepository */
+  private $sendingQueuesRepository;
+
+  /** @var SubscribersRepository */
+  private $subscribersRepository;
+
   public function __construct(
     WPFunctions $wp = null,
     PostsTask $postsTask = null,
@@ -81,6 +90,8 @@ class Newsletter {
     $this->newslettersRepository = ContainerWrapper::getInstance()->get(NewslettersRepository::class);
     $this->linksTask = ContainerWrapper::getInstance()->get(LinksTask::class);
     $this->newsletterLinks = ContainerWrapper::getInstance()->get(NewsletterLinks::class);
+    $this->sendingQueuesRepository = ContainerWrapper::getInstance()->get(SendingQueuesRepository::class);
+    $this->subscribersRepository = ContainerWrapper::getInstance()->get(SubscribersRepository::class);
   }
 
   public function getNewsletterFromQueue($queue) {
@@ -163,13 +174,20 @@ class Newsletter {
     }
     // extract and save newsletter posts
     $this->postsTask->extractAndSave($renderedNewsletter, $newsletterEntity);
+
+    if ($sendingTask->queue() instanceof SendingQueueModel) {
+      $sendingQueueEntity = $this->sendingQueuesRepository->findOneById($sendingTask->queue()->id);
+    } else {
+      $sendingQueueEntity = null;
+    }
+
     // update queue with the rendered and pre-processed newsletter
     $sendingTask->newsletterRenderedSubject = ShortcodesTask::process(
       $newsletter->subject,
       $renderedNewsletter['html'],
-      $newsletter,
+      $newsletterEntity,
       null,
-      $sendingTask
+      $sendingQueueEntity
     );
     // if the rendered subject is empty, use a default subject,
     // having no subject in a newsletter is considered spammy
@@ -206,12 +224,31 @@ class Newsletter {
         $renderedNewsletter['text'],
       ]
     );
+
+    if ($newsletter instanceof NewsletterModel) {
+      $newsletterEntity = $this->newslettersRepository->findOneById($newsletter->id);
+    } else {
+      $newsletterEntity = null;
+    }
+
+    if ($subscriber instanceof SubscriberModel) {
+      $subscriberEntity = $this->subscribersRepository->findOneById($subscriber->id);
+    } else {
+      $subscriberEntity = null;
+    }
+
+    if ($queue->queue() instanceof SendingQueueModel) {
+      $sendingQueueEntity = $this->sendingQueuesRepository->findOneById($queue->queue()->id);
+    } else {
+      $sendingQueueEntity = null;
+    }
+
     $preparedNewsletter = ShortcodesTask::process(
       $preparedNewsletter,
       null,
-      $newsletter,
-      $subscriber,
-      $queue
+      $newsletterEntity,
+      $subscriberEntity,
+      $sendingQueueEntity
     );
     if ($this->trackingEnabled) {
       $preparedNewsletter = $this->newsletterLinks->replaceSubscriberData(
