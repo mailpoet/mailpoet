@@ -59,7 +59,7 @@ class TriggerHandler {
         $loadedSubjects[] = $this->subjectLoader->loadSubject($subject['key'], $subject['args']);
       }
 
-      $workflowRun = new WorkflowRun($workflow->getId(), $trigger->getKey(), $loadedSubjects);
+      $workflowRun = new WorkflowRun($workflow->getId(), $workflow->getVersionId(), $trigger->getKey(), $loadedSubjects);
       $workflowRunId = $this->workflowRunStorage->createWorkflowRun($workflowRun);
 
       $this->actionScheduler->enqueue(Hooks::WORKFLOW_STEP, [

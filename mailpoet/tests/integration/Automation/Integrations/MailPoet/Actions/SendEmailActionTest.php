@@ -99,7 +99,7 @@ class SendEmailActionTest extends \MailPoetTest {
 
     $step = new Step('step-id', Step::TYPE_ACTION, 'step-key', null, ['email_id' => $email->getId()]);
     $workflow = new Workflow('some-workflow', [$step]);
-    $run = new WorkflowRun(1, 'trigger-key', $subjects);
+    $run = new WorkflowRun(1, 1, 'trigger-key', $subjects);
 
     $scheduled = $this->scheduledTasksRepository->findByNewsletterAndSubscriberId($email, (int)$subscriber->getId());
     expect($scheduled)->count(0);
@@ -121,7 +121,7 @@ class SendEmailActionTest extends \MailPoetTest {
 
     $step = new Step('step-id', Step::TYPE_ACTION, 'step-key', null, ['email_id' => $email->getId()]);
     $workflow = new Workflow('some-workflow', [$step]);
-    $run = new WorkflowRun(1, 'trigger-key', $subjects);
+    $run = new WorkflowRun(1, 1, 'trigger-key', $subjects);
 
     $scheduled = $this->scheduledTasksRepository->findByNewsletterAndSubscriberId($email, (int)$subscriber->getId());
     expect($scheduled)->count(0);
@@ -153,7 +153,7 @@ class SendEmailActionTest extends \MailPoetTest {
 
     $step = new Step('step-id', Step::TYPE_ACTION, 'step-key', null, ['email_id' => $email->getId()]);
     $workflow = new Workflow('some-workflow', [$step]);
-    $run = new WorkflowRun(1, 'trigger-key', $subjects);
+    $run = new WorkflowRun(1, 1, 'trigger-key', $subjects);
 
     $scheduled = $this->scheduledTasksRepository->findByNewsletterAndSubscriberId($email, (int)$subscriber->getId());
     expect($scheduled)->count(0);
@@ -182,7 +182,7 @@ class SendEmailActionTest extends \MailPoetTest {
 
     $step = new Step('step-id', Step::TYPE_ACTION, 'step-key', null, ['email_id' => $email->getId()]);
     $workflow = new Workflow('some-workflow', [$step]);
-    $run = new WorkflowRun(1, 'trigger-key', $subjects);
+    $run = new WorkflowRun(1, 1, 'trigger-key', $subjects);
 
     $scheduled = $this->scheduledTasksRepository->findByNewsletterAndSubscriberId($email, (int)$subscriber->getId());
     expect($scheduled)->count(0);
@@ -220,7 +220,7 @@ class SendEmailActionTest extends \MailPoetTest {
 
       $step = new Step('step-id', Step::TYPE_ACTION, 'step-key', null, ['email_id' => $email->getId()]);
       $workflow = new Workflow('some-workflow', [$step]);
-      $run = new WorkflowRun(1, 'trigger-key', $subjects);
+      $run = new WorkflowRun(1, 1, 'trigger-key', $subjects);
 
       $scheduled = $this->scheduledTasksRepository->findByNewsletterAndSubscriberId($email, (int)$subscriber->getId());
       expect($scheduled)->count(0);
@@ -249,7 +249,7 @@ class SendEmailActionTest extends \MailPoetTest {
 
     $step = new Step('step-id', Step::TYPE_ACTION, 'step-key', null, ['email_id' => $email->getId()]);
     $workflow = new Workflow('some-workflow', [$step]);
-    $run = new WorkflowRun(1, 'trigger-key', $subjects);
+    $run = new WorkflowRun(1, 1, 'trigger-key', $subjects);
 
     $scheduled = $this->scheduledTasksRepository->findByNewsletterAndSubscriberId($email, (int)$subscriber->getId());
     expect($scheduled)->count(0);
