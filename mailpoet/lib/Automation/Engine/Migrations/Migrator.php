@@ -29,6 +29,14 @@ class Migrator {
         created_at timestamp NOT NULL,
         updated_at timestamp NOT NULL,
         deleted_at timestamp NULL,
+        PRIMARY KEY (id)
+      );
+    ");
+
+    $this->runQuery("
+      CREATE TABLE {$this->prefix}workflow_versions (
+        id int(11) unsigned NOT NULL AUTO_INCREMENT,
+        workflow_id int(11) unsigned NOT NULL,
         trigger_keys longtext NOT NULL,
         steps longtext,
         PRIMARY KEY (id)
@@ -53,6 +61,7 @@ class Migrator {
     $this->removeOldSchema();
     $this->runQuery("DROP TABLE IF EXISTS {$this->prefix}workflows");
     $this->runQuery("DROP TABLE IF EXISTS {$this->prefix}workflow_runs");
+    $this->runQuery("DROP TABLE IF EXISTS {$this->prefix}workflow_versions");
 
     // clean Action Scheduler data
     $this->runQuery("
