@@ -56,11 +56,9 @@ class ScheduledTaskSubscribersRepository extends Repository {
   }
 
   public function countSubscriberIdsBatchForTask(int $taskId, int $lastProcessedSubscriberId): int {
-    $queryBuilder = $this->entityManager
-      ->createQueryBuilder()
-      ->select('count(sts.subscriber)');
-    $queryBuilder = $this->prepareSubscriberIdsBatchForTaskQuery($queryBuilder, $taskId, $lastProcessedSubscriberId);
+    $queryBuilder = $this->getBaseSubscribersIdsBatchForTaskQuery($taskId, $lastProcessedSubscriberId);
     $countSubscribers = $queryBuilder
+      ->select('count(sts.subscriber)')
       ->getQuery()
       ->getSingleScalarResult();
 
@@ -72,11 +70,9 @@ class ScheduledTaskSubscribersRepository extends Repository {
   }
 
   public function getSubscriberIdsBatchForTask(int $taskId, int $lastProcessedSubscriberId, int $limit): array {
-    $queryBuilder = $this->entityManager
-      ->createQueryBuilder()
-      ->select('IDENTITY(sts.subscriber) AS subscriber_id');
-    $queryBuilder = $this->prepareSubscriberIdsBatchForTaskQuery($queryBuilder, $taskId, $lastProcessedSubscriberId);
+    $queryBuilder = $this->getBaseSubscribersIdsBatchForTaskQuery($taskId, $lastProcessedSubscriberId);
     $subscribersIds = $queryBuilder
+      ->select('IDENTITY(sts.subscriber) AS subscriber_id')
       ->orderBy('sts.subscriber', 'asc')
       ->setMaxResults($limit)
       ->getQuery()
@@ -85,8 +81,9 @@ class ScheduledTaskSubscribersRepository extends Repository {
     return $subscribersIds;
   }
 
-  private function prepareSubscriberIdsBatchForTaskQuery(QueryBuilder $queryBuilder, int $taskId, int $lastProcessedSubscriberId): QueryBuilder {
-    return $queryBuilder
+  private function getBaseSubscribersIdsBatchForTaskQuery(int $taskId, int $lastProcessedSubscriberId): QueryBuilder {
+    return $this->entityManager
+      ->createQueryBuilder()
       ->from(ScheduledTaskSubscriberEntity::class, 'sts')
       ->andWhere('sts.task = :taskId')
       ->andWhere('sts.subscriber > :lastProcessedSubscriberId')
