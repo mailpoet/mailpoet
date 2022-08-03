@@ -5,6 +5,7 @@ namespace MailPoet\Entities;
 use MailPoet\Doctrine\EntityTraits\AutoincrementedIdTrait;
 use MailPoet\Doctrine\EntityTraits\CreatedAtTrait;
 use MailPoet\Doctrine\EntityTraits\UpdatedAtTrait;
+use MailPoetVendor\Doctrine\Common\Collections\ArrayCollection;
 use MailPoetVendor\Doctrine\ORM\Mapping as ORM;
 use MailPoetVendor\Symfony\Component\Validator\Constraints as Assert;
 
@@ -30,12 +31,19 @@ class TagEntity {
    */
   private $description;
 
+  /**
+   * @ORM\OneToMany(targetEntity="MailPoet\Entities\SubscriberTagEntity", mappedBy="tag", fetch="EXTRA_LAZY")
+   * @var ArrayCollection<int, SubscriberTagEntity>
+   */
+  private $subscriberTags;
+
   public function __construct(
     string $name,
     string $description = ''
   ) {
     $this->name = $name;
     $this->description = $description;
+    $this->subscriberTags = new ArrayCollection();
   }
 
   public function getName(): string {
