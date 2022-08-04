@@ -1,4 +1,4 @@
-import { Search, TableCard } from '@woocommerce/components';
+import { Search, TableCard } from '@woocommerce/components/build';
 import { Button, Dropdown, MenuGroup, MenuItem } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import { getRow } from './get-row';
