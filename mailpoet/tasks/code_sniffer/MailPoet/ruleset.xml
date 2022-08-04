@@ -233,6 +233,13 @@
   <config name="prefixes" value=""/>
   <rule ref="MinimalPluginStandard"/>
   <rule ref="WordPress.Security.ValidatedSanitizedInput"/>
+  <rule ref="WordPress.WP.I18n">
+    <properties>
+      <property name="text_domain" type="array">
+        <element value="mailpoet"/>
+      </property>
+    </properties>
+  </rule>
   <!--
     Instead of directly using <config name="testVersion" value="7.2-"/>, this
     needs to be included to override what MinimalPluginStandard set before.
