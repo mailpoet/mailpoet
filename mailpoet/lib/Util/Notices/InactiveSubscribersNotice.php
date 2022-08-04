@@ -58,6 +58,7 @@ class InactiveSubscribersNotice {
     $goToSettingsString = __('Go to the Advanced Settings', 'mailpoet');
 
     $notice = sprintf(
+      // translators: %d is the number of inactive subscribers.
       __('Good news! MailPoet won’t send emails to your %s inactive subscribers. This is a standard practice to maintain good deliverability and open rates. But if you want to disable it, you can do so in settings. [link]Read more.[/link]', 'mailpoet'),
       $this->wp->numberFormatI18n($inactiveSubscribersCount)
     );

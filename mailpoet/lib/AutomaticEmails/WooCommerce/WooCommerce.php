@@ -109,6 +109,7 @@ class WooCommerce {
 
   private function displayEventWarning($event) {
     $notice = sprintf('%s %s',
+      // translators: %s is the name of the event.
       sprintf(__('WooCommerce %s event is misconfigured.', 'mailpoet'), $event),
       __('Please contact our technical support for assistance.', 'mailpoet')
     );

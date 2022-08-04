@@ -357,6 +357,7 @@ class Pages {
   private function getConfirmTitle() {
     if ($this->isPreview()) {
       $title = sprintf(
+        // translators: %s is a comma-separated list of segment names.
         __("You have subscribed to: %s", 'mailpoet'),
         'demo 1, demo 2'
       );
@@ -369,6 +370,7 @@ class Pages {
         $title = __("You are now subscribed!", 'mailpoet');
       } else {
         $title = sprintf(
+          // translators: %s is a comma-separated list of segment names.
           __("You have subscribed to: %s", 'mailpoet'),
           join(', ', $segmentNames)
         );

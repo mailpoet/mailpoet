@@ -28,6 +28,7 @@ class AmazonSESMapper {
   public function getErrorFromResponse($response, $subscriber) {
     $message = ($response) ?
       $response->Error->Message->__toString() : // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+      // translators: %s is the name of the method.
       sprintf(__('%s has returned an unknown error.', 'mailpoet'), Mailer::METHOD_AMAZONSES);
 
     $level = MailerError::LEVEL_HARD;

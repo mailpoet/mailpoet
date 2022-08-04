@@ -60,7 +60,8 @@ class SegmentSubject implements Subject {
     $id = $args['segment_id'];
     $this->segment = $this->segmentsRepository->findOneById($args['segment_id']);
     if (!$this->segment) {
-      throw NotFoundException::create()->withMessage(__(sprintf("Segment with ID '%s' not found.", $id), 'mailpoet'));
+      // translators: %d is the ID.
+      throw NotFoundException::create()->withMessage(__(sprintf("Segment with ID '%d' not found.", $id), 'mailpoet'));
     }
   }
 

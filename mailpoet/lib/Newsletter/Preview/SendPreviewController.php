@@ -78,6 +78,7 @@ class SendPreviewController {
     $result = $this->mailerFactory->getDefaultMailer()->send($renderedNewsletter, $emailAddress, $extraParams);
     if ($result['response'] === false) {
       $error = sprintf(
+        // translators: %s contains the actual error message.
         __('The email could not be sent: %s', 'mailpoet'),
         $result['error']->getMessage()
       );

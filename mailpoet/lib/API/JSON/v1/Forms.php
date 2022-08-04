@@ -116,6 +116,7 @@ class Forms extends APIEndpoint {
       return $this->badRequest([
         APIError::BAD_REQUEST =>
           sprintf(
+          // translators: %1$s is a comma-seperated list of allowed values, %2$s the status the user specified.
             __('Invalid status. Allowed values are (%1$s), you specified %2$s', 'mailpoet'),
             join(', ', [FormEntity::STATUS_ENABLED, FormEntity::STATUS_DISABLED]),
             $status

@@ -72,7 +72,9 @@ class PurchasedProduct {
       'slug' => self::SLUG,
       'title' => __('Purchased This Product', 'mailpoet'),
       'description' => __('Let MailPoet send an email to customers who purchase a specific product for the first time.', 'mailpoet'),
+      // translators: %s is the name of the product.
       'listingScheduleDisplayText' => __('Email sent when a customer buys product: %s', 'mailpoet'),
+      // translators: %s is the name of the products.
       'listingScheduleDisplayTextPlural' => __('Email sent when a customer buys products: %s', 'mailpoet'),
       'options' => [
         'multiple' => true,

@@ -67,8 +67,11 @@ class Throttling {
     $min = floor($seconds % 3600 / 60);
     $sec = $seconds % 3600 % 60;
     $result = [
+      // translators: %s is the number of hours
       'hours' => $hrs ? sprintf(__('%d hours', 'mailpoet'), $hrs) : '',
+      // translators: %s is the number of minutes
       'minutes' => $min ? sprintf(__('%d minutes', 'mailpoet'), $min) : '',
+      // translators: %s is the number of seconds
       'seconds' => $sec ? sprintf(__('%d seconds', 'mailpoet'), $sec) : '',
     ];
     return join(' ', array_filter($result));
