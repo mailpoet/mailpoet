@@ -232,8 +232,13 @@ class API {
     if ($this->wp->wpRemoteRetrieveResponseCode($result) !== 200) {
       return null;
     }
-    $data = json_decode($this->wp->wpRemoteRetrieveBody($result), true);
-    return is_array($data) ? $data : null;
+    $rawData = $this->wp->wpRemoteRetrieveBody($result);
+    $data = json_decode($rawData, true);
+    if (!is_array($data)) {
+      $this->logInvalidDataFormat('getAuthorizedSenderDomains', $rawData);
+      return null;
+    }
+    return $data;
   }
 
   /**
@@ -267,7 +272,12 @@ class API {
       return ['error' => $errorData, 'status' => false];
     }
 
-    return is_array($responseBody) ? $responseBody : [];
+    if (!is_array($responseBody)) {
+      $this->logInvalidDataFormat('createAuthorizedSenderDomain', $rawResponseBody);
+      return [];
+    }
+
+    return $responseBody;
   }
 
   /**
@@ -305,7 +315,12 @@ class API {
       return ['error' => $errorData, 'status' => false];
     }
 
-    return is_array($responseBody) ? $responseBody : [];
+    if (!is_array($responseBody)) {
+      $this->logInvalidDataFormat('verifyAuthorizedSenderDomain', $rawResponseBody);
+      return [];
+    }
+
+    return $responseBody;
   }
 
   public function setKey($apiKey) {
@@ -350,5 +365,13 @@ class API {
       'key_type' => $keyType,
     ];
     $this->loggerFactory->getLogger(LoggerFactory::TOPIC_MSS)->error('key-validation.failed', $logData);
+  }
+
+  private function logInvalidDataFormat(string $method, ?string $response = null): void {
+    $logData = [
+      'code' => json_last_error(),
+      'response' => $response,
+    ];
+    $this->loggerFactory->getLogger(LoggerFactory::TOPIC_BRIDGE)->error($method . ' API response was not in expected format.', $logData);
   }
 }
