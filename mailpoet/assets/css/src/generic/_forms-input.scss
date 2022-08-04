@@ -61,7 +61,7 @@
     margin-top: $grid-gap;
   }
 
-  &:not(.mailpoet-full-width) + .mailpoet-form-input:not(.mailpoet-full-width),
+  &:not(.mailpoet-full-width) + .mailpoet-form-input:not(.mailpoet-full-width):not(.mailpoet-form-select),
   &:not(.mailpoet-full-width) + .mailpoet-button:not(.mailpoet-full-width) {
     margin-left: $grid-gap;
   }
