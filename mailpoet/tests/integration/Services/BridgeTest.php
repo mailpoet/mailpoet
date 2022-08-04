@@ -356,35 +356,9 @@ class BridgeTest extends \MailPoetTest {
   }
 
   public function testItReturnsSenderDomainsDnsRecords() {
-    $data = array (
-      array (
-        'domain' => 'example.com',
-        'dns' =>
-        array (
-          array (
-            'host' => 'mailpoet1._domainkey.example.com',
-            'value' => 'dkim1.sendingservice.net',
-            'type' => 'CNAME',
-            'status' => 'pending',
-            'message' => '',
-          ),
-          array (
-            'host' => 'mailpoet2._domainkey.example.com',
-            'value' => 'dkim2.sendingservice.net',
-            'type' => 'CNAME',
-            'status' => 'pending',
-            'message' => '',
-          ),
-          array (
-            'host' => '_mailpoet.example.com',
-            'value' => 'some_value',
-            'type' => 'TXT',
-            'status' => 'pending',
-            'message' => '',
-          ),
-        ),
-      ),
-    );
+    $domainData = MockAPI::VERIFIED_DOMAIN_RESPONSE;
+    $domainData['domain'] = 'example.com';
+    $data = [$domainData];
 
     // with a custom sender domain param
     $api = Stub::make(new API(null), ['getAuthorizedSenderDomains' => $data], $this);
