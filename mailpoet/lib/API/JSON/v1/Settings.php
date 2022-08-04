@@ -227,7 +227,7 @@ class Settings extends APIEndpoint {
         $response = ['status' => true];
       } else {
         return $this->badRequest([
-          APIError::BAD_REQUEST => __($e->getMessage(), 'mailpoet'),
+          APIError::BAD_REQUEST => $e->getMessage(),
         ]);
       }
     }
@@ -402,7 +402,12 @@ class Settings extends APIEndpoint {
       return $this->deactivateReEngagementEmails();
     } catch (\Exception $e) {
       throw new \Exception(
-        __('Unable to deactivate re-engagement emails: ' . $e->getMessage(), 'mailpoet'));
+        sprintf(
+          // translators: %s is the error message.
+          __('Unable to deactivate re-engagement emails: %s', 'mailpoet'),
+          $e->getMessage()
+        )
+      );
     }
   }
 

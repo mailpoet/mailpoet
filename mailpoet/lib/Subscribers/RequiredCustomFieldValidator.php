@@ -28,7 +28,7 @@ class RequiredCustomFieldValidator {
       if ($this->isCustomFieldMissing($customFieldId, $data)) {
         throw new Exception(
           // translators: %s is the name of the custom field.
-          __(sprintf('Missing value for custom field "%s"', $customFieldName), 'mailpoet')
+          sprintf(__('Missing value for custom field "%s"', 'mailpoet'), $customFieldName)
         );
       }
     }
