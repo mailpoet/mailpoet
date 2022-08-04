@@ -70,6 +70,7 @@ class Workflow {
 
   public function setName(string $name): void {
     $this->name = $name;
+    $this->setUpdatedAt();
   }
 
   public function getStatus(): string {
@@ -78,6 +79,7 @@ class Workflow {
 
   public function setStatus(string $status): void {
     $this->status = $status;
+    $this->setUpdatedAt();
   }
 
   public function getCreatedAt(): DateTimeImmutable {
@@ -96,6 +98,7 @@ class Workflow {
   /** @param array<string, Step> $steps */
   public function setSteps(array $steps): void {
     $this->steps = $steps;
+    $this->setUpdatedAt();
   }
 
   public function getStep(string $id): ?Step {
@@ -145,6 +148,10 @@ class Workflow {
         }, [])
       ),
     ];
+  }
+
+  private function setUpdatedAt(): void {
+    $this->updatedAt = new DateTimeImmutable();
   }
 
   public static function fromArray(array $data): self {
