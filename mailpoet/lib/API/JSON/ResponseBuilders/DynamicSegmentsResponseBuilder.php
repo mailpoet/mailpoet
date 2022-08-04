@@ -85,6 +85,7 @@ class DynamicSegmentsResponseBuilder {
       $data['missing_plugin_message'] = $this->segmentDependencyValidator->getCustomErrorMessage($missingPlugin)
         ?:
         sprintf(
+          // translators: %s is the name of the missing plugin.
           __('Activate the %s plugin to see the number of subscribers and enable the editing of this segment.', 'mailpoet'),
           $missingPlugin
         );

@@ -67,6 +67,7 @@ class Mailer extends APIEndpoint {
 
     if ($result['response'] === false) {
       $error = sprintf(
+        // translators: %s is the error message.
         __('The email could not be sent: %s', 'mailpoet'),
         $result['error']->getMessage()
       );

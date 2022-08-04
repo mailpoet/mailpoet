@@ -189,6 +189,7 @@ class Validator {
     $type = is_array($type) ? $type : [$type];
     return new WP_Error(
       'rest_invalid_type',
+      // translators: %1$s is the current parameter and %2$s a comma-separated list of the allowed types.
       sprintf(__('%1$s is not of type %2$s.', 'mailpoet'), $param, implode(',', $type)),
       ['param' => $param]
     );

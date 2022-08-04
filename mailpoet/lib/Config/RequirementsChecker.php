@@ -89,6 +89,7 @@ class RequirementsChecker {
       $dependencyPath = $this->getDependencyPath($dependency);
       if (!$dependencyPath) {
         $error = sprintf(
+        // translators: %s is the dependency.
           __('A MailPoet dependency (%s) does not appear to be loaded correctly, thus MailPoet will not work correctly. Please reinstall the plugin.', 'mailpoet'),
           $dependency
         );
@@ -100,7 +101,8 @@ class RequirementsChecker {
       $isLoadedByPlugin = preg_match($pattern, $dependencyPath);
       if (!$isLoadedByPlugin) {
         $error = sprintf(
-          __('MailPoet has detected a dependency conflict (%s) with another plugin (%s), which may cause unexpected behavior. Please disable the offending plugin to fix this issue.', 'mailpoet'),
+          // translators: %1$s is the dependency and %2$s the plugin.
+          __('MailPoet has detected a dependency conflict (%1$s) with another plugin (%2$s), which may cause unexpected behavior. Please disable the offending plugin to fix this issue.', 'mailpoet'),
           $dependency,
           $dependencyPath
         );

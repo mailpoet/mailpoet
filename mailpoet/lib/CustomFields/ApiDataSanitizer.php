@@ -31,9 +31,11 @@ class ApiDataSanitizer {
 
   private function checkMandatoryStringParameter(array $data, $parameterName) {
     if (empty($data[$parameterName])) {
+      // translators: %s is the name of the missing argument.
       throw new InvalidArgumentException(sprintf(__('Mandatory argument "%s" is missing', 'mailpoet'), $parameterName), self::ERROR_MANDATORY_ARGUMENT_MISSING);
     }
     if (!is_string($data[$parameterName])) {
+      // translators: %s is the name of the malformed argument.
       throw new InvalidArgumentException(sprintf(__('Mandatory argument "%s" has to be string', 'mailpoet'), $parameterName), self::ERROR_MANDATORY_ARGUMENT_WRONG_TYPE);
     }
   }
@@ -85,6 +87,7 @@ class ApiDataSanitizer {
       return $this->getExtraParamsForDate($data['params']);
     }
 
+    // translators: %s is the name of the type.
     throw new InvalidArgumentException(sprintf(__('Invalid type "%s"', 'mailpoet'), $type), self::ERROR_INVALID_TYPE);
   }
 

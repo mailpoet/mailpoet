@@ -54,6 +54,7 @@ class UnauthorizedEmailNotice {
   }
 
   private function getMessageText($validationError) {
+    // translators: %s is the email address.
     $text = _x('<b>Sending all of your emails has been paused</b> because your email address <b>%s</b> hasn’t been authorized yet.',
       'Email addresses have to be authorized to be used to send emails. %s will be replaced by an email address.',
       'mailpoet');

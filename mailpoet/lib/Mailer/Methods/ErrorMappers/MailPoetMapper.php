@@ -183,7 +183,8 @@ class MailPoetMapper {
     $emailVolumeLimit = $this->subscribersFeature->getEmailVolumeLimit();
     $date = Carbon::now()->startOfMonth()->addMonth();
     $message = sprintf(
-      __('You have sent more emails this month than your MailPoet plan includes (%s), and sending has been temporarily paused. To continue sending with MailPoet Sending Service please [link]upgrade your plan[/link], or wait until sending is automatically resumed on <b>%s</b>.', 'mailpoet'),
+      // translators: %1$s is email volume limit and %2$s the date when you can resume sending.
+      __('You have sent more emails this month than your MailPoet plan includes (%1$s), and sending has been temporarily paused. To continue sending with MailPoet Sending Service please [link]upgrade your plan[/link], or wait until sending is automatically resumed on <b>%2$s</b>.', 'mailpoet'),
       $emailVolumeLimit,
       $this->wp->dateI18n(get_option('date_format'), $date->getTimestamp())
     );

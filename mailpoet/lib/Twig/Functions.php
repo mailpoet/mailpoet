@@ -190,8 +190,10 @@ class Functions extends AbstractExtension {
     $label = null;
     $labels = [
       'minute' => __('every minute', 'mailpoet'),
+      // translators: %1$d is the amount of minutes.
       'minutes' => __('every %1$d minutes', 'mailpoet'),
       'hour' => __('every hour', 'mailpoet'),
+      // translators: %1$d is the amount of hours.
       'hours' => __('every %1$d hours', 'mailpoet'),
     ];
 

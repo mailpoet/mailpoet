@@ -32,6 +32,7 @@ class EmailWithInvalidSegmentNotice {
 
   private function display($newsletterSubject) {
     $notice = sprintf(
+      // translators: %s is the subject of the newsletter.
       __('You are sending “%s“ to the deleted list. To continue sending, please restore the list. Alternatively, delete the newsletter if you no longer want to keep sending it.', 'mailpoet'),
       $this->wp->escHtml($newsletterSubject)
     );

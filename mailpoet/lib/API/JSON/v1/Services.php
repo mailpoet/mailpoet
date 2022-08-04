@@ -106,6 +106,7 @@ class Services extends APIEndpoint {
       $successMessage = __('Your MailPoet Sending Service key has been successfully validated', 'mailpoet');
     } elseif ($state == Bridge::KEY_EXPIRING) {
       $successMessage = sprintf(
+        // translators: %s is the expiration date.
         __('Your MailPoet Sending Service key expires on %s!', 'mailpoet'),
         $this->dateTime->formatDate(strtotime($result['data']['expire_at']))
       );
@@ -128,6 +129,7 @@ class Services extends APIEndpoint {
         break;
       default:
         $code = !empty($result['code']) ? $result['code'] : Bridge::CHECK_ERROR_UNKNOWN;
+        // translators: %s is the error message.
         $errorMessage = __('Error validating MailPoet Sending Service key, please try again later (%s).', 'mailpoet');
         // If site runs on localhost
         if (1 === preg_match("/^(http|https)\:\/\/(localhost|127\.0\.0\.1)/", $this->wp->siteUrl())) {
@@ -168,6 +170,7 @@ class Services extends APIEndpoint {
       $successMessage = __('Your Premium key has been successfully validated', 'mailpoet');
     } elseif ($state == Bridge::KEY_EXPIRING) {
       $successMessage = sprintf(
+        // translators: %s is the expiration date.
         __('Your Premium key expires on %s', 'mailpoet'),
         $this->dateTime->formatDate(strtotime($result['data']['expire_at']))
       );
@@ -194,6 +197,7 @@ class Services extends APIEndpoint {
       default:
         $code = !empty($result['code']) ? $result['code'] : Bridge::CHECK_ERROR_UNKNOWN;
         $error = sprintf(
+          // translators: %s is the error message.
           __('Error validating Premium key, please try again later (%s)', 'mailpoet'),
           $this->getErrorDescriptionByCode($code)
         );
@@ -238,6 +242,7 @@ class Services extends APIEndpoint {
       return $this->createBadRequest(__('Sender email address is not set.', 'mailpoet'));
     }
     if (!in_array($fromEmail, $authorizedEmails, true)) {
+      // translators: %s is the email address, which is not authorized.
       return $this->createBadRequest(sprintf(__("Sender email address '%s' is not authorized.", 'mailpoet'), $fromEmail));
     }
 
@@ -263,6 +268,7 @@ class Services extends APIEndpoint {
         $text = __('Contact your hosting support to check the connection between your host and https://bridge.mailpoet.com', 'mailpoet');
         break;
       default:
+        // translators: %s is the code.
         $text = sprintf(_x('code: %s', 'Error code (inside parentheses)', 'mailpoet'), $code);
         break;
     }

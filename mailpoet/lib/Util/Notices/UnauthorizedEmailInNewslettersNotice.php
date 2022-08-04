@@ -53,6 +53,7 @@ class UnauthorizedEmailInNewslettersNotice {
   private function getNewslettersLinks($validationError) {
     $links = '';
     foreach ($validationError['invalid_senders_in_newsletters'] as $error) {
+      // translators: %s is the newsletter subject.
       $linkText = _x('Update the from address of %s', '%s will be replaced by a newsletter subject', 'mailpoet');
       $linkText = str_replace('%s', EscapeHelper::escapeHtmlText($error['subject']), $linkText);
       $linkUrl = $this->wp->adminUrl('admin.php?page=' . Menu::MAIN_PAGE_SLUG . '#/send/' . $error['newsletter_id']);
