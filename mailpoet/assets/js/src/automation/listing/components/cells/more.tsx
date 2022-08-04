@@ -1,4 +1,4 @@
-import { EllipsisMenu, MenuItem } from '@woocommerce/components';
+import { EllipsisMenu, MenuItem } from '@woocommerce/components/build';
 import { __ } from '@wordpress/i18n';
 import { Workflow } from '../../workflow';
 
