@@ -75,7 +75,7 @@ class Migration extends SimpleWorker {
     $mailerLog = MailerLog::setError(
       $mailerLog,
       'migration',
-      __('Your sending queue data is being migrated to allow better performance, sending is paused while the migration is in progress and will resume automatically upon completion. This may take a few minutes.')
+      __('Your sending queue data is being migrated to allow better performance, sending is paused while the migration is in progress and will resume automatically upon completion. This may take a few minutes.', 'mailpoet')
     );
     return MailerLog::pauseSending($mailerLog);
   }

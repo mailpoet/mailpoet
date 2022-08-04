@@ -209,7 +209,7 @@ class API {
 
       $errorResponseData = json_decode($errorBody, true);
       // translators: %d is the error code.
-      $fallbackError = sprintf(__('An error has happened while performing a request, the server has responded with response code %d'), $code);
+      $fallbackError = sprintf(__('An error has happened while performing a request, the server has responded with response code %d', 'mailpoet'), $code);
 
       $errorData = is_array($errorResponseData) && isset($errorResponseData['error']) ? $errorResponseData['error'] : $fallbackError;
       return ['error' => $errorData, 'status' => false];

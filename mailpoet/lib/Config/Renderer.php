@@ -103,7 +103,7 @@ class Renderer {
     } catch (\RuntimeException $e) {
       throw new \Exception(sprintf(
         // translators: %1$s is the name of the render, %2$s the folder path, %3$s the error message.
-        __('Failed to render template "%1$s". Please ensure the template cache folder "%2$s" exists and has write permissions. Terminated with error: "%3$s"'),
+        __('Failed to render template "%1$s". Please ensure the template cache folder "%2$s" exists and has write permissions. Terminated with error: "%3$s"', 'mailpoet'),
         $template,
         $this->cachePath,
         $e->getMessage()
