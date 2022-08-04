@@ -19,7 +19,8 @@ class AuthorizedSenderDomainController {
   /** @var DmarcPolicyChecker */
   private $dmarcPolicyChecker;
 
-  private $currentRecords;
+  /** @var null|array Cached response for with authorized domains */
+  private $currentRecords = null;
 
   public function __construct(
     Bridge $bridge,
@@ -30,13 +31,14 @@ class AuthorizedSenderDomainController {
   }
 
   /**
-   * Get the most recent cached record of Bridge::getAuthorizedSenderDomains
+   * Get record of Bridge::getAuthorizedSenderDomains
    */
-  public function getDomainRecords($domain = ''): array {
+  public function getDomainRecords(string $domain = ''): array {
+    $records = $this->getAllRecords();
     if ($domain) {
-      return $this->currentRecords[$domain] ?? [];
+      return $records[$domain] ?? [];
     }
-    return $this->currentRecords;
+    return $records;
   }
 
   /**
@@ -45,16 +47,14 @@ class AuthorizedSenderDomainController {
    * Note: This includes both verified and unverified domains
    */
   public function getAllSenderDomains(): array {
-    $records = $this->currentRecords = $this->bridge->getAuthorizedSenderDomains();
-    return $this->returnAllDomains($records);
+    return $this->returnAllDomains($this->getAllRecords());
   }
 
   /**
    * Get all Verified Sender Domains
    */
   public function getVerifiedSenderDomains(): array {
-    $records = $this->currentRecords = $this->bridge->getAuthorizedSenderDomains();
-    return $this->returnVerifiedDomains($records);
+    return $this->returnVerifiedDomains($this->getAllRecords());
   }
 
   /**
@@ -79,6 +79,9 @@ class AuthorizedSenderDomainController {
     if ($finalData && isset($finalData['error'])) {
       throw new \InvalidArgumentException($finalData['error']);
     }
+
+    // Reset cached value since a new domain was added
+    $this->currentRecords = null;
 
     return $finalData;
   }
@@ -175,5 +178,12 @@ class AuthorizedSenderDomainController {
     }
 
     return $verifiedDomains;
+  }
+
+  private function getAllRecords(): array {
+    if ($this->currentRecords === null) {
+      $this->currentRecords = $this->bridge->getAuthorizedSenderDomains();
+    }
+    return $this->currentRecords;
   }
 }
