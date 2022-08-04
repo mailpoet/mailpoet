@@ -227,7 +227,7 @@ class Settings extends APIEndpoint {
         $response = ['status' => true];
       } else {
         return $this->badRequest([
-          APIError::BAD_REQUEST => $e->getMessage(),
+          APIError::BAD_REQUEST => __($e->getMessage(), 'mailpoet'),
         ]);
       }
     }
