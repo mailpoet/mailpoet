@@ -3,6 +3,7 @@
 namespace MailPoet\Automation\Engine\Storage;
 
 use MailPoet\Automation\Engine\Data\Workflow;
+use DateTimeImmutable;
 use MailPoet\Automation\Engine\Exceptions;
 use MailPoet\Automation\Engine\Utils\Json;
 use MailPoet\Automation\Engine\Workflows\Trigger;
@@ -173,10 +174,13 @@ WHERE
 
   private function insertWorkflowVersion(int $workflowId, Workflow $workflow): void {
 
+    $dateString = (new DateTimeImmutable())->format(DateTimeImmutable::W3C);
     $data = [
       'workflow_id' => $workflowId,
       'steps' => $workflow->toArray()['steps'],
       'trigger_keys' => $workflow->toArray()['trigger_keys'],
+      'created_at' => $dateString,
+      'updated_at' => $dateString,
     ];
     $result = $this->wpdb->insert($this->versionsTable, $data);
     if (!$result) {
