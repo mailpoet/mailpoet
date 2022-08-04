@@ -262,14 +262,14 @@ class Pages {
     global $post;
 
     if (
-      ($post->post_title !== $this->wp->__('MailPoet Page', 'mailpoet')) // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+      ($post->post_title !== __('MailPoet Page', 'mailpoet')) // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
       ||
       ($pageTitle !== $this->wp->singlePostTitle('', false))
     ) {
       // when it's a custom page, just return the original page title
       return $pageTitle;
     } elseif ($this->action !== self::ACTION_CAPTCHA && $this->isPreview() === false && $this->subscriber === null) {
-      return $this->wp->__("Hmmm... we don't have a record of you.", 'mailpoet');
+      return __("Hmmm... we don't have a record of you.", 'mailpoet');
     } else {
       // when it's our own page, generate page title based on requested action
       switch ($this->action) {
@@ -297,7 +297,7 @@ class Pages {
   public function setPageContent($pageContent = '[mailpoet_page]') {
     // if we're not in preview mode or captcha page and the subscriber does not exist
     if ($this->action !== self::ACTION_CAPTCHA && $this->isPreview() === false && $this->subscriber === null) {
-      return $this->wp->__("Your email address doesn't appear in our lists anymore. Sign up again or contact us if this appears to be a mistake.", 'mailpoet');
+      return __("Your email address doesn't appear in our lists anymore. Sign up again or contact us if this appears to be a mistake.", 'mailpoet');
     }
 
     $this->assetsController->setupFrontEndDependencies();
@@ -357,7 +357,7 @@ class Pages {
   private function getConfirmTitle() {
     if ($this->isPreview()) {
       $title = sprintf(
-        $this->wp->__("You have subscribed to: %s", 'mailpoet'),
+        __("You have subscribed to: %s", 'mailpoet'),
         'demo 1, demo 2'
       );
     } else {
@@ -366,10 +366,10 @@ class Pages {
       }, $this->subscriber->getSegments()->toArray());
 
       if (empty($segmentNames)) {
-        $title = $this->wp->__("You are now subscribed!", 'mailpoet');
+        $title = __("You are now subscribed!", 'mailpoet');
       } else {
         $title = sprintf(
-          $this->wp->__("You have subscribed to: %s", 'mailpoet'),
+          __("You have subscribed to: %s", 'mailpoet'),
           join(', ', $segmentNames)
         );
       }
@@ -379,13 +379,13 @@ class Pages {
 
   private function getManageTitle() {
     if ($this->isPreview() || $this->subscriber !== null) {
-      return $this->wp->__("Manage your subscription", 'mailpoet');
+      return __("Manage your subscription", 'mailpoet');
     }
   }
 
   private function getUnsubscribeTitle() {
     if ($this->isPreview() || $this->subscriber !== null) {
-      return $this->wp->__("You are now unsubscribed.", 'mailpoet');
+      return __("You are now unsubscribed.", 'mailpoet');
     }
   }
 
@@ -397,13 +397,13 @@ class Pages {
 
   private function getConfirmUnsubscribeTitle() {
     if ($this->isPreview() || $this->subscriber !== null) {
-      return $this->wp->__('Confirm you want to unsubscribe', 'mailpoet');
+      return __('Confirm you want to unsubscribe', 'mailpoet');
     }
   }
 
   private function getConfirmContent() {
     if ($this->isPreview() || $this->subscriber !== null) {
-      return $this->wp->__("Yup, we've added you to our email list. You'll hear from us shortly.", 'mailpoet');
+      return __("Yup, we've added you to our email list. You'll hear from us shortly.", 'mailpoet');
     }
   }
 
@@ -417,7 +417,7 @@ class Pages {
     } else if ($this->subscriber !== null) {
       $subscriber = $this->subscriber;
     } else {
-      return $this->wp->__('Subscription management form is only available to mailing lists subscribers.', 'mailpoet');
+      return __('Subscription management form is only available to mailing lists subscribers.', 'mailpoet');
     }
 
     $formStatus = isset($_GET['success']) && absint(wp_unslash($_GET['success']))
@@ -471,7 +471,7 @@ class Pages {
     $text = (
       isset($params['text'])
       ? htmlspecialchars($params['text'])
-      : $this->wp->__('Manage your subscription', 'mailpoet')
+      : __('Manage your subscription', 'mailpoet')
     );
 
     return '<a href="' . $this->subscriptionUrlFactory->getManageUrl($this->subscriber) . '">' . $text . '</a>';

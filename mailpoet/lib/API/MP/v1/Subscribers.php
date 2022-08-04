@@ -107,7 +107,7 @@ class Subscribers {
     // throw exception when none of the segments exist
     $foundSegments = $this->segmentsRepository->findBy(['id' => $listIds]);
     if (!$foundSegments) {
-      $exception = WPFunctions::get()->_n('This list does not exist.', 'These lists do not exist.', count($listIds), 'mailpoet');
+      $exception = _n('This list does not exist.', 'These lists do not exist.', count($listIds), 'mailpoet');
       throw new APIException($exception, APIException::LIST_NOT_EXISTS);
     }
 
@@ -130,7 +130,7 @@ class Subscribers {
     if (count($foundSegmentsIds) !== count($listIds)) {
       $missingIds = array_values(array_diff($listIds, $foundSegmentsIds));
       $exception = sprintf(
-        WPFunctions::get()->_n('List with ID %s does not exist.', 'Lists with IDs %s do not exist.', count($missingIds), 'mailpoet'),
+        _n('List with ID %s does not exist.', 'Lists with IDs %s do not exist.', count($missingIds), 'mailpoet'),
         implode(', ', $missingIds)
       );
       throw new APIException(sprintf($exception, implode(', ', $missingIds)), APIException::LIST_NOT_EXISTS);

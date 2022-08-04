@@ -16,7 +16,7 @@ class FestivalEvent {
 
   public function get() {
     return [
-      'name' => WPFunctions::get()->__("Festival Event", 'mailpoet'),
+      'name' => __("Festival Event", 'mailpoet'),
       'categories' => json_encode(['standard', 'all']),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),
@@ -461,7 +461,7 @@ class FestivalEvent {
                   ],
                   2 => [
                     'type' => 'footer',
-                    'text' => '<p>Mauris tristique ultricies ullamcorper. <br />Don\'t want to hear from us?&nbsp;<a href="[link:subscription_unsubscribe_url]">'.WPFunctions::get()->__("Unsubscribe", 'mailpoet').'</a></p><p></p><p>Add your postal address here.&nbsp;</p>',
+                    'text' => '<p>Mauris tristique ultricies ullamcorper. <br />Don\'t want to hear from us?&nbsp;<a href="[link:subscription_unsubscribe_url]">'.__("Unsubscribe", 'mailpoet').'</a></p><p></p><p>Add your postal address here.&nbsp;</p>',
                     'styles' => [
                       'block' => [
                         'backgroundColor' => 'transparent',

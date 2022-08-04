@@ -3,7 +3,6 @@
 namespace MailPoet\Config;
 
 use MailPoet\Util\Helpers;
-use MailPoet\WP\Functions as WPFunctions;
 use MailPoet\WP\Notice as WPNotice;
 
 class RequirementsChecker {
@@ -47,7 +46,7 @@ class RequirementsChecker {
     ];
     if (!is_dir($paths['temp_path']) && !wp_mkdir_p($paths['temp_path'])) {
       $error = Helpers::replaceLinkTags(
-        WPFunctions::get()->__('MailPoet requires write permissions inside the /wp-content/uploads folder. Please read our [link]instructions[/link] on how to resolve this issue.', 'mailpoet'),
+        __('MailPoet requires write permissions inside the /wp-content/uploads folder. Please read our [link]instructions[/link] on how to resolve this issue.', 'mailpoet'),
         'https://kb.mailpoet.com/article/152-minimum-requirements-for-mailpoet-3#folder_permissions',
         ['target' => '_blank']
       );
@@ -68,7 +67,7 @@ class RequirementsChecker {
   public function checkPDOExtension() {
     if (extension_loaded('pdo') && extension_loaded('pdo_mysql')) return true;
     $error = Helpers::replaceLinkTags(
-      WPFunctions::get()->__('MailPoet requires a PDO_MYSQL PHP extension. Please read our [link]instructions[/link] on how to resolve this issue.', 'mailpoet'),
+      __('MailPoet requires a PDO_MYSQL PHP extension. Please read our [link]instructions[/link] on how to resolve this issue.', 'mailpoet'),
       'https://kb.mailpoet.com/article/152-minimum-requirements-for-mailpoet-3#php_extension',
       ['target' => '_blank']
     );
@@ -78,7 +77,7 @@ class RequirementsChecker {
   public function checkXmlExtension() {
     if (extension_loaded('xml')) return true;
     $error = Helpers::replaceLinkTags(
-      WPFunctions::get()->__('MailPoet requires an XML PHP extension. Please read our [link]instructions[/link] on how to resolve this issue.', 'mailpoet'),
+      __('MailPoet requires an XML PHP extension. Please read our [link]instructions[/link] on how to resolve this issue.', 'mailpoet'),
       'https://kb.mailpoet.com/article/152-minimum-requirements-for-mailpoet-3#php_extension',
       ['target' => '_blank']
     );
@@ -90,7 +89,7 @@ class RequirementsChecker {
       $dependencyPath = $this->getDependencyPath($dependency);
       if (!$dependencyPath) {
         $error = sprintf(
-          WPFunctions::get()->__('A MailPoet dependency (%s) does not appear to be loaded correctly, thus MailPoet will not work correctly. Please reinstall the plugin.', 'mailpoet'),
+          __('A MailPoet dependency (%s) does not appear to be loaded correctly, thus MailPoet will not work correctly. Please reinstall the plugin.', 'mailpoet'),
           $dependency
         );
 
@@ -101,7 +100,7 @@ class RequirementsChecker {
       $isLoadedByPlugin = preg_match($pattern, $dependencyPath);
       if (!$isLoadedByPlugin) {
         $error = sprintf(
-          WPFunctions::get()->__('MailPoet has detected a dependency conflict (%s) with another plugin (%s), which may cause unexpected behavior. Please disable the offending plugin to fix this issue.', 'mailpoet'),
+          __('MailPoet has detected a dependency conflict (%s) with another plugin (%s), which may cause unexpected behavior. Please disable the offending plugin to fix this issue.', 'mailpoet'),
           $dependency,
           $dependencyPath
         );

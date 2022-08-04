@@ -189,10 +189,10 @@ class Functions extends AbstractExtension {
 
     $label = null;
     $labels = [
-      'minute' => $this->getWp()->__('every minute', 'mailpoet'),
-      'minutes' => $this->getWp()->__('every %1$d minutes', 'mailpoet'),
-      'hour' => $this->getWp()->__('every hour', 'mailpoet'),
-      'hours' => $this->getWp()->__('every %1$d hours', 'mailpoet'),
+      'minute' => __('every minute', 'mailpoet'),
+      'minutes' => __('every %1$d minutes', 'mailpoet'),
+      'hour' => __('every hour', 'mailpoet'),
+      'hours' => __('every %1$d hours', 'mailpoet'),
     ];
 
     if ($value >= 60) {
@@ -212,11 +212,7 @@ class Functions extends AbstractExtension {
       }
     }
 
-    if ($label !== null) {
-      return sprintf($label, $value);
-    } else {
-      return $value;
-    }
+    return sprintf($label, $value);
   }
 
   public function getWPDateFormat() {

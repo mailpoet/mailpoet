@@ -52,11 +52,11 @@ class AbandonedCart {
   public function getEventDetails() {
     return [
       'slug' => self::SLUG,
-      'title' => WPFunctions::get()->_x('Abandoned Shopping Cart', 'This is the name of a type of automatic email for ecommerce. Those emails are sent automatically when a customer adds product to his shopping cart but never complete the checkout process.', 'mailpoet'),
-      'description' => WPFunctions::get()->__('Send an email to logged-in visitors who have items in their shopping carts but left your website without checking out. Can convert up to 5% of abandoned carts.', 'mailpoet'),
-      'listingScheduleDisplayText' => WPFunctions::get()->_x('Email sent when a customer abandons his cart.', 'Description of Abandoned Shopping Cart email', 'mailpoet'),
+      'title' => _x('Abandoned Shopping Cart', 'This is the name of a type of automatic email for ecommerce. Those emails are sent automatically when a customer adds product to his shopping cart but never complete the checkout process.', 'mailpoet'),
+      'description' => __('Send an email to logged-in visitors who have items in their shopping carts but left your website without checking out. Can convert up to 5% of abandoned carts.', 'mailpoet'),
+      'listingScheduleDisplayText' => _x('Email sent when a customer abandons his cart.', 'Description of Abandoned Shopping Cart email', 'mailpoet'),
       'badge' => [
-        'text' => WPFunctions::get()->__('Must-have', 'mailpoet'),
+        'text' => __('Must-have', 'mailpoet'),
         'style' => 'red',
       ],
       'timeDelayValues' => [

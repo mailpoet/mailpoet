@@ -16,7 +16,7 @@ class Faith {
 
   public function get() {
     return [
-      'name' => WPFunctions::get()->__("Faith", 'mailpoet'),
+      'name' => __("Faith", 'mailpoet'),
       'categories' => json_encode(['standard', 'all']),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),
@@ -350,7 +350,7 @@ class Faith {
                 'blocks' => [
                   0 => [
                     'type' => 'footer',
-                    'text' => '<a href="[link:subscription_unsubscribe_url]">'.WPFunctions::get()->__("Unsubscribe", 'mailpoet').'</a> | <a href="[link:subscription_manage_url]">'.WPFunctions::get()->__("Manage your subscription", 'mailpoet').'</a><br /><b>'.WPFunctions::get()->__("Add your postal address here!", 'mailpoet').'</b>',
+                    'text' => '<a href="[link:subscription_unsubscribe_url]">'.__("Unsubscribe", 'mailpoet').'</a> | <a href="[link:subscription_manage_url]">'.__("Manage your subscription", 'mailpoet').'</a><br /><b>'.__("Add your postal address here!", 'mailpoet').'</b>',
                     'styles' => [
                       'block' => [
                         'backgroundColor' => '#e7eff6',

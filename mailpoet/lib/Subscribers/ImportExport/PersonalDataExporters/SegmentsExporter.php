@@ -6,7 +6,6 @@ use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\WP\DateTime;
-use MailPoet\WP\Functions as WPFunctions;
 
 class SegmentsExporter {
 
@@ -54,20 +53,20 @@ class SegmentsExporter {
   private function exportSegment(SubscriberSegmentEntity $segment): array {
     $segmentData = [];
     $segmentData[] = [
-      'name' => WPFunctions::get()->__('List name', 'mailpoet'),
+      'name' => __('List name', 'mailpoet'),
       'value' => $segment->getSegment() ? $segment->getSegment()->getName() : '',
     ];
     $segmentData[] = [
-      'name' => WPFunctions::get()->__('Subscription status', 'mailpoet'),
+      'name' => __('Subscription status', 'mailpoet'),
       'value' => $segment->getStatus(),
     ];
     $segmentData[] = [
-      'name' => WPFunctions::get()->__('Timestamp of the subscription (or last change of the subscription status)', 'mailpoet'),
+      'name' => __('Timestamp of the subscription (or last change of the subscription status)', 'mailpoet'),
       'value' => $segment->getUpdatedAt()->format(DateTime::DEFAULT_DATE_TIME_FORMAT),
     ];
     return [
       'group_id' => 'mailpoet-lists',
-      'group_label' => WPFunctions::get()->__('MailPoet Mailing Lists', 'mailpoet'),
+      'group_label' => __('MailPoet Mailing Lists', 'mailpoet'),
       'item_id' => 'list-' . ($segment->getSegment() ? $segment->getSegment()->getId() : ''),
       'data' => $segmentData,
     ];

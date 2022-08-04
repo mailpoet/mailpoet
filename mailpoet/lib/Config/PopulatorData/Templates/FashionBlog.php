@@ -102,7 +102,7 @@ class FashionBlog {
                   1 =>
                    [
                     'type' => 'header',
-                    'text' => '<p><span style="color: #999999;"><a href="[link:newsletter_view_in_browser_url]" style="color: #999999;">' . WPFunctions::get()->__("View this in your browser.", 'mailpoet') . '</a></span></p>',
+                    'text' => '<p><span style="color: #999999;"><a href="[link:newsletter_view_in_browser_url]" style="color: #999999;">' . __("View this in your browser.", 'mailpoet') . '</a></span></p>',
                     'styles' =>
                      [
                       'block' =>
@@ -653,7 +653,7 @@ class FashionBlog {
                   3 =>
                    [
                     'type' => 'footer',
-                    'text' => '<p><strong><span style="color: #000000;"><a href="[link:subscription_unsubscribe_url]" style="color: #000000;">' . WPFunctions::get()->__("Unsubscribe", 'mailpoet') . '</a> | <a href="[link:subscription_manage_url]" style="color: #000000;">' . WPFunctions::get()->__("Manage your subscription", 'mailpoet') . '</a></span></strong><br />' . WPFunctions::get()->__("Add your postal address here!", 'mailpoet') . '</p>',
+                    'text' => '<p><strong><span style="color: #000000;"><a href="[link:subscription_unsubscribe_url]" style="color: #000000;">' . __("Unsubscribe", 'mailpoet') . '</a> | <a href="[link:subscription_manage_url]" style="color: #000000;">' . __("Manage your subscription", 'mailpoet') . '</a></span></strong><br />' . __("Add your postal address here!", 'mailpoet') . '</p>',
                     'styles' =>
                      [
                       'block' =>
@@ -940,7 +940,7 @@ class FashionBlog {
          ],
         'footer' =>
          [
-          'text' => '<p><a href="[link:subscription_unsubscribe_url]">' . WPFunctions::get()->__("Unsubscribe", 'mailpoet') . '</a> | <a href="[link:subscription_manage_url]">' . WPFunctions::get()->__("Manage your subscription", 'mailpoet') . '</a><br />' . WPFunctions::get()->__("Add your postal address here!", 'mailpoet') . '</p>',
+          'text' => '<p><a href="[link:subscription_unsubscribe_url]">' . __("Unsubscribe", 'mailpoet') . '</a> | <a href="[link:subscription_manage_url]">' . __("Manage your subscription", 'mailpoet') . '</a><br />' . __("Add your postal address here!", 'mailpoet') . '</p>',
           'styles' =>
            [
             'block' =>
@@ -1077,7 +1077,7 @@ class FashionBlog {
          ],
         'header' =>
          [
-          'text' => '<a href="[link:newsletter_view_in_browser_url]">' . WPFunctions::get()->__("View this in your browser.", 'mailpoet') . '</a>',
+          'text' => '<a href="[link:newsletter_view_in_browser_url]">' . __("View this in your browser.", 'mailpoet') . '</a>',
           'styles' =>
            [
             'block' =>

@@ -74,14 +74,14 @@ class AccessControl {
 
   public function getPermissionLabels() {
     return [
-      self::PERMISSION_ACCESS_PLUGIN_ADMIN => WPFunctions::get()->__('Admin menu item', 'mailpoet'),
-      self::PERMISSION_MANAGE_SETTINGS => WPFunctions::get()->__('Manage settings', 'mailpoet'),
-      self::PERMISSION_MANAGE_FEATURES => WPFunctions::get()->__('Manage features', 'mailpoet'),
-      self::PERMISSION_MANAGE_EMAILS => WPFunctions::get()->__('Manage emails', 'mailpoet'),
-      self::PERMISSION_MANAGE_SUBSCRIBERS => WPFunctions::get()->__('Manage subscribers', 'mailpoet'),
-      self::PERMISSION_MANAGE_FORMS => WPFunctions::get()->__('Manage forms', 'mailpoet'),
-      self::PERMISSION_MANAGE_SEGMENTS => WPFunctions::get()->__('Manage segments', 'mailpoet'),
-      self::PERMISSION_MANAGE_AUTOMATIONS => WPFunctions::get()->__('Manage automations', 'mailpoet'),
+      self::PERMISSION_ACCESS_PLUGIN_ADMIN => __('Admin menu item', 'mailpoet'),
+      self::PERMISSION_MANAGE_SETTINGS => __('Manage settings', 'mailpoet'),
+      self::PERMISSION_MANAGE_FEATURES => __('Manage features', 'mailpoet'),
+      self::PERMISSION_MANAGE_EMAILS => __('Manage emails', 'mailpoet'),
+      self::PERMISSION_MANAGE_SUBSCRIBERS => __('Manage subscribers', 'mailpoet'),
+      self::PERMISSION_MANAGE_FORMS => __('Manage forms', 'mailpoet'),
+      self::PERMISSION_MANAGE_SEGMENTS => __('Manage segments', 'mailpoet'),
+      self::PERMISSION_MANAGE_AUTOMATIONS => __('Manage automations', 'mailpoet'),
     ];
   }
 

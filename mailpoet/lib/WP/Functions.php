@@ -57,26 +57,6 @@ class Functions {
     return call_user_func_array('add_action', func_get_args());
   }
 
-  public function __($text, $domain = 'default') {
-    return __($text, $domain);
-  }
-
-  // phpcs:disable WordPress.Security.EscapeOutput.UnsafePrintingFunction, WordPress.Security.EscapeOutput.OutputNotEscaped
-  public function _e($text, $domain = 'default') {
-    return _e($text, $domain);
-  }
-
-  // phpcs:enable WordPress.Security.EscapeOutput.UnsafePrintingFunction, WordPress.Security.EscapeOutput.OutputNotEscaped
-
-
-  public function _n($single, $plural, $number, $domain = 'default') {
-    return _n($single, $plural, $number, $domain);
-  }
-
-  public function _x($text, $context, $domain = 'default') {
-    return _x($text, $context, $domain);
-  }
-
   public function addCommentMeta($commentId, $metaKey, $metaValue, $unique = false) {
     return add_comment_meta($commentId, $metaKey, $metaValue, $unique);
   }
@@ -476,10 +456,6 @@ class Functions {
 
   public function stripslashesDeep($value) {
     return stripslashes_deep($value);
-  }
-
-  public function translate($text, $domain = 'default') {
-    return translate($text, $domain);
   }
 
   public function unloadTextdomain($domain) {

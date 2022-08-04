@@ -15,7 +15,7 @@ class RenewableEnergy {
 
   public function get() {
     return [
-      'name' => WPFunctions::get()->__("Renewable Energy", 'mailpoet'),
+      'name' => __("Renewable Energy", 'mailpoet'),
       'categories' => json_encode(['standard', 'all']),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),
@@ -974,7 +974,7 @@ class RenewableEnergy {
                   3 =>
                    [
                     'type' => 'text',
-                    'text' => '<p style="text-align: center;"><span style="color: #fdb323;"><a href="[link:subscription_unsubscribe_url]" style="color: #fdb323;">'.WPFunctions::get()->__("Unsubscribe", 'mailpoet').'</a>&nbsp;|&nbsp;<a href="[link:subscription_manage_url]" style="color: #fdb323;">'.WPFunctions::get()->__("Manage your subscription", 'mailpoet').'</a></span><br /><span style="color: #999999;">'.WPFunctions::get()->__("Add your postal address here!", 'mailpoet').'</span></p>',
+                    'text' => '<p style="text-align: center;"><span style="color: #fdb323;"><a href="[link:subscription_unsubscribe_url]" style="color: #fdb323;">'.__("Unsubscribe", 'mailpoet').'</a>&nbsp;|&nbsp;<a href="[link:subscription_manage_url]" style="color: #fdb323;">'.__("Manage your subscription", 'mailpoet').'</a></span><br /><span style="color: #999999;">'.__("Add your postal address here!", 'mailpoet').'</span></p>',
                    ],
                  ],
                ],
@@ -1188,7 +1188,7 @@ class RenewableEnergy {
          ],
         'footer' =>
          [
-          'text' => '<p><a href="[link:subscription_unsubscribe_url]">'.WPFunctions::get()->__("Unsubscribe", 'mailpoet').'</a> | <a href="[link:subscription_manage_url]">'.WPFunctions::get()->__("Manage your subscription", 'mailpoet').'</a><br />'.WPFunctions::get()->__("Add your postal address here!", 'mailpoet').'</p>',
+          'text' => '<p><a href="[link:subscription_unsubscribe_url]">'.__("Unsubscribe", 'mailpoet').'</a> | <a href="[link:subscription_manage_url]">'.__("Manage your subscription", 'mailpoet').'</a><br />'.__("Add your postal address here!", 'mailpoet').'</p>',
           'styles' =>
            [
             'block' =>
@@ -1324,7 +1324,7 @@ class RenewableEnergy {
          ],
         'header' =>
          [
-          'text' => '<a href="[link:newsletter_view_in_browser_url]">'.WPFunctions::get()->__("View this in your browser.", 'mailpoet').'</a>',
+          'text' => '<a href="[link:newsletter_view_in_browser_url]">'.__("View this in your browser.", 'mailpoet').'</a>',
           'styles' =>
            [
             'block' =>

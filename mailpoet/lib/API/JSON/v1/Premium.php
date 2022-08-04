@@ -34,7 +34,7 @@ class Premium extends APIEndpoint {
   public function installPlugin() {
     $premiumKeyValid = $this->servicesChecker->isPremiumKeyValid(false);
     if (!$premiumKeyValid) {
-      return $this->error($this->wp->__('Premium key is not valid.', 'mailpoet'));
+      return $this->error(__('Premium key is not valid.', 'mailpoet'));
     }
 
     $pluginInfo = $this->wp->pluginsApi('plugin_information', [
@@ -42,13 +42,13 @@ class Premium extends APIEndpoint {
     ]);
 
     if (!$pluginInfo || $pluginInfo instanceof WP_Error) {
-      return $this->error($this->wp->__('Error when installing MailPoet Premium plugin.', 'mailpoet'));
+      return $this->error(__('Error when installing MailPoet Premium plugin.', 'mailpoet'));
     }
 
     $pluginInfo = (array)$pluginInfo;
     $result = $this->wp->installPlugin($pluginInfo['download_link']);
     if ($result !== true) {
-      return $this->error($this->wp->__('Error when installing MailPoet Premium plugin.', 'mailpoet'));
+      return $this->error(__('Error when installing MailPoet Premium plugin.', 'mailpoet'));
     }
     return $this->successResponse();
   }
@@ -56,12 +56,12 @@ class Premium extends APIEndpoint {
   public function activatePlugin() {
     $premiumKeyValid = $this->servicesChecker->isPremiumKeyValid(false);
     if (!$premiumKeyValid) {
-      return $this->error($this->wp->__('Premium key is not valid.', 'mailpoet'));
+      return $this->error(__('Premium key is not valid.', 'mailpoet'));
     }
 
     $result = $this->wp->activatePlugin(self::PREMIUM_PLUGIN_PATH);
     if ($result !== null) {
-      return $this->error($this->wp->__('Error when activating MailPoet Premium plugin.', 'mailpoet'));
+      return $this->error(__('Error when activating MailPoet Premium plugin.', 'mailpoet'));
     }
     return $this->successResponse();
   }

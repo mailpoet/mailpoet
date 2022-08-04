@@ -54,7 +54,7 @@ class UnauthorizedEmailNotice {
   }
 
   private function getMessageText($validationError) {
-    $text = $this->wp->_x('<b>Sending all of your emails has been paused</b> because your email address <b>%s</b> hasn’t been authorized yet.',
+    $text = _x('<b>Sending all of your emails has been paused</b> because your email address <b>%s</b> hasn’t been authorized yet.',
       'Email addresses have to be authorized to be used to send emails. %s will be replaced by an email address.',
       'mailpoet');
     $message = str_replace('%s', EscapeHelper::escapeHtmlText($validationError['invalid_sender_address']), $text);
@@ -63,18 +63,18 @@ class UnauthorizedEmailNotice {
 
   private function getAuthorizeEmailButton($validationError) {
     $email = $this->wp->escAttr($validationError['invalid_sender_address']);
-    $button = '<a target="_blank" href="https://account.mailpoet.com/authorization?email=' . $email . '" class="button button-primary mailpoet-js-button-authorize-email-and-sender-domain" data-type="email" data-email="' . $email . '">' . $this->wp->__('Authorize this email address', 'mailpoet') . '</a>';
+    $button = '<a target="_blank" href="https://account.mailpoet.com/authorization?email=' . $email . '" class="button button-primary mailpoet-js-button-authorize-email-and-sender-domain" data-type="email" data-email="' . $email . '">' . __('Authorize this email address', 'mailpoet') . '</a>';
     return $button;
   }
 
   private function getDifferentEmailButton() {
-    $button = '<button class="button button-secondary mailpoet-js-button-fix-this">' . $this->wp->__('Use a different email address', 'mailpoet') . '</button>';
+    $button = '<button class="button button-secondary mailpoet-js-button-fix-this">' . __('Use a different email address', 'mailpoet') . '</button>';
     return $button;
   }
 
   private function getResumeSendingButton($validationError) {
     $email = $this->wp->escAttr($validationError['invalid_sender_address']);
-    $button = '<button class="button button-secondary mailpoet-js-button-resume-sending" value="' . $email . '">' . $this->wp->__('Resume sending', 'mailpoet') . '</button>';
+    $button = '<button class="button button-secondary mailpoet-js-button-resume-sending" value="' . $email . '">' . __('Resume sending', 'mailpoet') . '</button>';
     return $button;
   }
 }

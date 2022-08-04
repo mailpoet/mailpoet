@@ -16,7 +16,7 @@ class KidsClothing {
 
   public function get() {
     return [
-      'name' => WPFunctions::get()->__("Abandoned Cart – Kids", 'mailpoet'),
+      'name' => __("Abandoned Cart – Kids", 'mailpoet'),
       'categories' => json_encode(['woocommerce', 'all']),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),

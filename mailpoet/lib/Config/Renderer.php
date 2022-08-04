@@ -3,7 +3,6 @@
 namespace MailPoet\Config;
 
 use MailPoet\Twig;
-use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Twig\Extension\DebugExtension;
 use MailPoetVendor\Twig\Lexer as TwigLexer;
 use MailPoetVendor\Twig\Loader\FilesystemLoader as TwigFileSystem;
@@ -103,7 +102,7 @@ class Renderer {
       return $this->renderer->render($template, $context);
     } catch (\RuntimeException $e) {
       throw new \Exception(sprintf(
-        WPFunctions::get()->__('Failed to render template "%s". Please ensure the template cache folder "%s" exists and has write permissions. Terminated with error: "%s"'),
+        __('Failed to render template "%s". Please ensure the template cache folder "%s" exists and has write permissions. Terminated with error: "%s"'),
         $template,
         $this->cachePath,
         $e->getMessage()

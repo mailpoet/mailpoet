@@ -20,7 +20,7 @@ class SimpleText {
 
   public function get() {
     return [
-      'name' => WPFunctions::get()->__("Simple Text", 'mailpoet'),
+      'name' => __("Simple Text", 'mailpoet'),
       'categories' => json_encode(['standard', 'blank']),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),
@@ -70,7 +70,7 @@ class SimpleText {
                     "type" => "image",
                     "link" => "",
                     "src" => $this->template_image_url . "/fake-logo.png",
-                    "alt" => WPFunctions::get()->__("Fake logo", 'mailpoet'),
+                    "alt" => __("Fake logo", 'mailpoet'),
                     "fullWidth" => false,
                     "width" => "598px",
                     "height" => "71px",
@@ -82,7 +82,7 @@ class SimpleText {
                   ],
                   [
                     "type" => "text",
-                    "text" => WPFunctions::get()->__("<p style=\"text-align: left;\">Hi [subscriber:firstname | default:subscriber],</p>\n<p style=\"text-align: left;\"></p>\n<p style=\"text-align: left;\">In MailPoet, you can write emails in plain text, just like in a regular email. This can make your email newsletters more personal and attention-grabbing.</p>\n<p style=\"text-align: left;\"></p>\n<p style=\"text-align: left;\">Is this too simple? You can still style your text with basic formatting, like <strong>bold</strong> or <em>italics.</em></p>\n<p style=\"text-align: left;\"></p>\n<p style=\"text-align: left;\">Finally, you can also add a call-to-action button between 2 blocks of text, like this:</p>", 'mailpoet'),
+                    "text" => __("<p style=\"text-align: left;\">Hi [subscriber:firstname | default:subscriber],</p>\n<p style=\"text-align: left;\"></p>\n<p style=\"text-align: left;\">In MailPoet, you can write emails in plain text, just like in a regular email. This can make your email newsletters more personal and attention-grabbing.</p>\n<p style=\"text-align: left;\"></p>\n<p style=\"text-align: left;\">Is this too simple? You can still style your text with basic formatting, like <strong>bold</strong> or <em>italics.</em></p>\n<p style=\"text-align: left;\"></p>\n<p style=\"text-align: left;\">Finally, you can also add a call-to-action button between 2 blocks of text, like this:</p>", 'mailpoet'),
                   ],
                 ],
               ],
@@ -117,7 +117,7 @@ class SimpleText {
                   ],
                   [
                     "type" => "button",
-                    "text" => WPFunctions::get()->__("It's time to take action!", 'mailpoet'),
+                    "text" => __("It's time to take action!", 'mailpoet'),
                     "url" => "",
                     "styles" => [
                       "block" => [
@@ -138,11 +138,11 @@ class SimpleText {
                   ],
                   [
                     "type" => "text",
-                    "text" => WPFunctions::get()->__("<p>Thanks for reading. See you soon!</p>\n<p>&nbsp;</p>\n<p><strong><em>The MailPoet Team</em></strong></p>", 'mailpoet'),
+                    "text" => __("<p>Thanks for reading. See you soon!</p>\n<p>&nbsp;</p>\n<p><strong><em>The MailPoet Team</em></strong></p>", 'mailpoet'),
                   ],
                   [
                     "type" => "footer",
-                    "text" => '<p><a href="[link:subscription_unsubscribe_url]">'.WPFunctions::get()->__("Unsubscribe", 'mailpoet').'</a> | <a href="[link:subscription_manage_url]">'.WPFunctions::get()->__("Manage your subscription", 'mailpoet').'</a><br />'.WPFunctions::get()->__("Add your postal address here!", 'mailpoet').'</p>',
+                    "text" => '<p><a href="[link:subscription_unsubscribe_url]">'.__("Unsubscribe", 'mailpoet').'</a> | <a href="[link:subscription_manage_url]">'.__("Manage your subscription", 'mailpoet').'</a><br />'.__("Add your postal address here!", 'mailpoet').'</p>',
                     "styles" => [
                       "block" => [
                         "backgroundColor" => "transparent",

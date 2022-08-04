@@ -306,8 +306,8 @@ class Populator {
     }
 
     $woocommerceOptinOnCheckout = $this->settings->fetch('woocommerce.optin_on_checkout');
-    $legacyLabelText = $this->wp->_x('Yes, I would like to be added to your mailing list', "default email opt-in message displayed on checkout page for ecommerce websites", 'mailpoet');
-    $currentLabelText = $this->wp->_x('I would like to receive exclusive emails with discounts and product information', "default email opt-in message displayed on checkout page for ecommerce websites", 'mailpoet');
+    $legacyLabelText = _x('Yes, I would like to be added to your mailing list', "default email opt-in message displayed on checkout page for ecommerce websites", 'mailpoet');
+    $currentLabelText = _x('I would like to receive exclusive emails with discounts and product information', "default email opt-in message displayed on checkout page for ecommerce websites", 'mailpoet');
     if (empty($woocommerceOptinOnCheckout)) {
       $this->settings->set('woocommerce.optin_on_checkout', [
         'enabled' => empty($settingsDbVersion), // enable on new installs only
@@ -371,9 +371,9 @@ class Populator {
     if (!$defaultSegment instanceof Segment) {
       $defaultSegment = Segment::create();
       $newList = [
-        'name' => $this->wp->__('Newsletter mailing list', 'mailpoet'),
+        'name' => __('Newsletter mailing list', 'mailpoet'),
         'description' =>
-          $this->wp->__('This list is automatically created when you install MailPoet.', 'mailpoet'),
+          __('This list is automatically created when you install MailPoet.', 'mailpoet'),
       ];
       $defaultSegment->hydrate($newList);
       $defaultSegment->save();

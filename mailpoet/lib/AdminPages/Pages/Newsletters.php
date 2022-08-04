@@ -143,7 +143,7 @@ class Newsletters {
     $data['current_wp_user_firstname'] = $this->wp->wpGetCurrentUser()->user_firstname;
     $data['site_url'] = $this->wp->siteUrl();
     $data['roles'] = $wp_roles->get_names(); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-    $data['roles']['mailpoet_all'] = $this->wp->__('In any WordPress role', 'mailpoet');
+    $data['roles']['mailpoet_all'] = __('In any WordPress role', 'mailpoet');
 
     $installedAtDiff = (new \DateTime($this->settings->get('installed_at')))->diff(new \DateTime());
     $data['installed_days_ago'] = (int)$installedAtDiff->format('%a');

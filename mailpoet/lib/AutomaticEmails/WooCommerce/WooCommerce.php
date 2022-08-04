@@ -62,15 +62,15 @@ class WooCommerce {
   public function setupGroup() {
     return [
       'slug' => self::SLUG,
-      'title' => WPFunctions::get()->__('WooCommerce', 'mailpoet'),
-      'description' => WPFunctions::get()->__('Automatically send an email based on your customers’ purchase behavior. Enhance your customer service and start increasing sales with WooCommerce follow up emails.', 'mailpoet'),
+      'title' => __('WooCommerce', 'mailpoet'),
+      'description' => __('Automatically send an email based on your customers’ purchase behavior. Enhance your customer service and start increasing sales with WooCommerce follow up emails.', 'mailpoet'),
       'events' => $this->wp->applyFilters(self::EVENTS_FILTER, []),
     ];
   }
 
   public function setupEvents($events) {
     $customEventDetails = (!$this->woocommerceEnabled) ? [
-      'actionButtonTitle' => WPFunctions::get()->__('WooCommerce is required', 'mailpoet'),
+      'actionButtonTitle' => __('WooCommerce is required', 'mailpoet'),
       'actionButtonLink' => 'https://wordpress.org/plugins/woocommerce/',
     ] : [];
 
@@ -110,7 +110,7 @@ class WooCommerce {
   private function displayEventWarning($event) {
     $notice = sprintf('%s %s',
       sprintf(__('WooCommerce %s event is misconfigured.', 'mailpoet'), $event),
-      WPFunctions::get()->__('Please contact our technical support for assistance.', 'mailpoet')
+      __('Please contact our technical support for assistance.', 'mailpoet')
     );
     Notice::displayWarning($notice);
   }

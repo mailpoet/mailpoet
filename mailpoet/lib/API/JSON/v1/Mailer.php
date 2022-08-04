@@ -11,7 +11,6 @@ use MailPoet\Mailer\MetaInfo;
 use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
-use MailPoet\WP\Functions as WPFunctions;
 
 class Mailer extends APIEndpoint {
 
@@ -68,7 +67,7 @@ class Mailer extends APIEndpoint {
 
     if ($result['response'] === false) {
       $error = sprintf(
-        WPFunctions::get()->__('The email could not be sent: %s', 'mailpoet'),
+        __('The email could not be sent: %s', 'mailpoet'),
         $result['error']->getMessage()
       );
       return $this->errorResponse([APIError::BAD_REQUEST => $error]);
