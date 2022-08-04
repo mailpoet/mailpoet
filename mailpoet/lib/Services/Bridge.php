@@ -143,6 +143,7 @@ class Bridge {
    * Get a list of sender domains
    * returns an assoc array of [domainName => Array(DNS responses)]
    * pass in the domain arg to return only the DNS response for the domain
+   * For format see @see https://github.com/mailpoet/services-bridge#sender-domains
    */
   public function getAuthorizedSenderDomains($domain = 'all'): array {
     $domain = strtolower($domain);
@@ -171,6 +172,7 @@ class Bridge {
   /**
    * Create a new Sender domain record
    * returns an Array of DNS response or array of error
+   * @see https://github.com/mailpoet/services-bridge#verify-a-sender-domain for response format
    */
   public function createAuthorizedSenderDomain(string $domain): array {
     $data = $this
@@ -183,6 +185,7 @@ class Bridge {
   /**
    * Verify Sender Domain records
    * returns an Array of DNS response or an array of error
+   * @see https://github.com/mailpoet/services-bridge#verify-a-sender-domain
    */
   public function verifyAuthorizedSenderDomain(string $domain): array {
     $data = $this

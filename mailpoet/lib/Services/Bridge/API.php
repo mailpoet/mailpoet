@@ -220,6 +220,7 @@ class API {
   /**
    * Get a list of sender domains
    * Fetched from API
+   * @see https://github.com/mailpoet/services-bridge#sender-domains
    */
   public function getAuthorizedSenderDomains(): ?array {
     $result = $this->request(
@@ -237,6 +238,7 @@ class API {
   /**
    * Create Sender domain record
    * Done via API
+   * Returns same response se sender_domain_verify @see https://github.com/mailpoet/services-bridge#verify-a-sender-domain
    */
   public function createAuthorizedSenderDomain(string $domain): array {
     $body = ['domain' => strtolower($domain)];
@@ -270,6 +272,7 @@ class API {
   /**
    * Verify Sender Domain records
    * returns an Array of DNS response or an array of error
+   * @see https://github.com/mailpoet/services-bridge#verify-a-sender-domain
    */
   public function verifyAuthorizedSenderDomain(string $domain): array {
     $url = $this->urlAuthorizedSenderDomainVerification . '/' . urlencode(strtolower($domain));
