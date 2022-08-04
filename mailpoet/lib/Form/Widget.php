@@ -150,7 +150,7 @@ class Widget extends \WP_Widget {
         // Select the first one from the list if none selected
         if ($selectedForm === 0 && !empty($forms)) $selectedForm = $forms[0]->getId();
         foreach ($forms as $form) {
-          $formName = $form->getName() ? $this->wp->escHtml($form->getName()) : '(' . _x('no name', 'fallback for forms without a name in a form list') . ')';
+          $formName = $form->getName() ? $this->wp->escHtml($form->getName()) : '(' . _x('no name', 'fallback for forms without a name in a form list', 'mailpoet') . ')';
           $formName .= $form->getStatus() === FormEntity::STATUS_DISABLED ? ' (' . __('inactive', 'mailpoet') . ')' : '';
           ?>
         <option value="<?php echo esc_attr((string)$form->getId()); ?>" <?php echo ($selectedForm === $form->getId()) ? 'selected="selected"' : ''; ?>><?php echo esc_html($formName); ?></option>

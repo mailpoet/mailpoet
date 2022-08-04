@@ -32,7 +32,7 @@ class AutomationEmailScheduler {
     if ($email->getType() !== NewsletterEntity::TYPE_AUTOMATION) {
       throw InvalidStateException::create()->withMessage(
         // translators: %s is the type which was given.
-        sprintf(__("Email with type 'automation' expected, '%s' given."), $email->getType())
+        sprintf(__("Email with type 'automation' expected, '%s' given.", 'mailpoet'), $email->getType())
       );
     }
 
