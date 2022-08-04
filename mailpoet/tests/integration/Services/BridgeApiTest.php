@@ -121,6 +121,25 @@ class BridgeApiTest extends \MailPoetTest {
     expect($result)->null();
   }
 
+  public function testGetDomainsLogsErrorWhenResponseHasUnexpectedFormat() {
+    $this->wpMock
+      ->expects($this->once())
+      ->method('wpRemoteRetrieveResponseCode')
+      ->willReturn(200);
+    $this->wpMock
+      ->expects($this->once())
+      ->method('wpRemoteRetrieveBody')
+      ->willReturn('trololo');
+    $this->api->getAuthorizedSenderDomains();
+    $logs = $this->logRepository->findAll();
+    expect($logs)->count(1);
+    $errorLog = $logs[0];
+    $this->assertInstanceOf(LogEntity::class, $errorLog);
+    expect($errorLog->getLevel())->equals(Logger::ERROR);
+    expect($errorLog->getMessage())->stringContainsString('getAuthorizedSenderDomains API response was not in expected format.');
+    expect($errorLog->getMessage())->stringContainsString('trololo');
+  }
+
   public function testItCanCreateSenderDomain() {
     $this->wpMock
       ->expects($this->once())
@@ -134,7 +153,27 @@ class BridgeApiTest extends \MailPoetTest {
     expect($result)->equals(BridgeTestMockAPI::VERIFIED_DOMAIN_RESPONSE);
   }
 
-  public function testItCantCreateSenderDomainWhichExists() {
+  public function testCreateDomainLogsErrorWhenResponseHasUnexpectedFormat() {
+    $this->wpMock
+      ->expects($this->once())
+      ->method('wpRemoteRetrieveResponseCode')
+      ->willReturn(201);
+    $this->wpMock
+      ->expects($this->once())
+      ->method('wpRemoteRetrieveBody')
+      ->willReturn('trololo');
+    $result = $this->api->createAuthorizedSenderDomain('mailpoet.com');
+    expect($result)->equals([]);
+    $logs = $this->logRepository->findAll();
+    expect($logs)->count(1);
+    $errorLog = $logs[0];
+    $this->assertInstanceOf(LogEntity::class, $errorLog);
+    expect($errorLog->getLevel())->equals(Logger::ERROR);
+    expect($errorLog->getMessage())->stringContainsString('createAuthorizedSenderDomain API response was not in expected format.');
+    expect($errorLog->getMessage())->stringContainsString('trololo');
+  }
+
+  public function testCantCreateSenderDomainWhichExists() {
     $this->wpMock
       ->expects($this->once())
       ->method('wpRemoteRetrieveResponseCode')
@@ -146,6 +185,26 @@ class BridgeApiTest extends \MailPoetTest {
     $result = $this->api->createAuthorizedSenderDomain('existing.com');
     expect($result['status'])->equals(false);
     expect($result['error'])->equals('This domain was already added to the list.');
+  }
+
+  public function testVerifyDomainLogsErrorWhenResponseHasUnexpectedFormat() {
+    $this->wpMock
+      ->expects($this->once())
+      ->method('wpRemoteRetrieveResponseCode')
+      ->willReturn(200);
+    $this->wpMock
+      ->expects($this->once())
+      ->method('wpRemoteRetrieveBody')
+      ->willReturn('trololo');
+    $result = $this->api->verifyAuthorizedSenderDomain('mailpoet.com');
+    expect($result)->equals([]);
+    $logs = $this->logRepository->findAll();
+    expect($logs)->count(1);
+    $errorLog = $logs[0];
+    $this->assertInstanceOf(LogEntity::class, $errorLog);
+    expect($errorLog->getLevel())->equals(Logger::ERROR);
+    expect($errorLog->getMessage())->stringContainsString('verifyAuthorizedSenderDomain API response was not in expected format.');
+    expect($errorLog->getMessage())->stringContainsString('trololo');
   }
 
   private function cleanUp() {
