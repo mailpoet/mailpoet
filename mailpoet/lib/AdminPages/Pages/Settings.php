@@ -106,8 +106,9 @@ class Settings {
     if (isset($_GET['enable-customizer-notice'])) {
       $notice = new WPNotice(WPNotice::TYPE_ERROR, _x(
         'You need to have WooCommerce active to access the MailPoet email customizer for WooCommerce.',
-        'Notice in Settings when WooCommerce is not enabled'
-      ), 'mailpoet');
+        'Notice in Settings when WooCommerce is not enabled',
+        'mailpoet'
+      ));
       $notice->displayWPNotice();
     }
     $this->pageRenderer->displayPage('settings.html', $data);

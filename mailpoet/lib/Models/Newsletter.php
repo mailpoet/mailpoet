@@ -158,7 +158,7 @@ class Newsletter extends Model {
       if (!$this->body || empty(json_decode($this->getBodyString()))) {
         $this->setError(
           Helpers::replaceLinkTags(
-            __('This is an empty email without any content and it cannot be sent. Please update [link]the email[/link].'),
+            __('This is an empty email without any content and it cannot be sent. Please update [link]the email[/link].', 'mailpoet'),
             'admin.php?page=mailpoet-newsletter-editor&id=' . $this->id
           )
         );
