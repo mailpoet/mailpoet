@@ -26,6 +26,30 @@ class SubscribersListingCest {
     $i->waitForText('My Tag');
   }
 
+  public function useTagFilter(\AcceptanceTester $i) {
+    $i->wantTo('Open subscribers listings page');
+
+    $tag = (new Tag())
+      ->withName('My Tag')
+      ->create();
+
+    (new Subscriber())
+      ->withEmail('wp@example.com')
+      ->create();
+
+    (new Subscriber())
+      ->withEmail('wp@mailpoet.com')
+      ->withTags([$tag])
+      ->create();
+
+    $i->login();
+    $i->amOnMailpoetPage('Subscribers');
+    $i->selectOption('[data-automation-id="listing_filter_tag"]', $tag->getName());
+    $i->waitForText('wp@mailpoet.com');
+    $i->dontSee('wp@example.com');
+    $i->waitForText('My Tag');
+  }
+
   public function sendConfirmationEmail(\AcceptanceTester $i) {
     $i->wantTo('Send confirmation email');
 
