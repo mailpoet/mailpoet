@@ -36,6 +36,10 @@ class WorkflowStorage {
   }
 
   public function updateWorkflow(Workflow $workflow): void {
+    $oldRecord = $this->getWorkflow($workflow->getId());
+    if ($oldRecord && $oldRecord->equals($workflow)) {
+      return;
+    }
     $result = $this->wpdb->update($this->workflowTable, $this->workflowHeaderData($workflow), ['id' => $workflow->getId()]);
     if ($result === false) {
       throw Exceptions::databaseError($this->wpdb->last_error);

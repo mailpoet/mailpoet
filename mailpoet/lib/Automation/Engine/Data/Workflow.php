@@ -111,6 +111,20 @@ class Workflow {
     return null;
   }
 
+  public function equals(Workflow $compare): bool {
+    $compareArray = $compare->toArray();
+    $currentArray = $this->toArray();
+    $ignoreValues = [
+      'created_at',
+      'updated_at',
+    ];
+    foreach ($ignoreValues as $ignore) {
+      unset($compareArray[$ignore]);
+      unset($currentArray[$ignore]);
+    }
+    return $compareArray === $currentArray;
+  }
+
   public function toArray(): array {
     return [
       'name' => $this->name,
