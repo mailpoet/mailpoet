@@ -99,11 +99,11 @@ class API {
     foreach ($foundSegments as $segment) {
       if ($segment->type === Segment::TYPE_WP_USERS) {
         // translators: %d is the ID of the segment
-        throw new APIException(__(sprintf("Can't unsubscribe from a WordPress Users list with ID %d.", $segment->id), 'mailpoet'), APIException::SUBSCRIBING_TO_WP_LIST_NOT_ALLOWED);
+        throw new APIException(sprintf(__("Can't unsubscribe from a WordPress Users list with ID %d.", 'mailpoet'), $segment->id), APIException::SUBSCRIBING_TO_WP_LIST_NOT_ALLOWED);
       }
       if ($segment->type === Segment::TYPE_WC_USERS) {
         // translators: %d is the ID of the segment
-        throw new APIException(__(sprintf("Can't unsubscribe from a WooCommerce Customers list with ID %d.", $segment->id), 'mailpoet'), APIException::SUBSCRIBING_TO_WC_LIST_NOT_ALLOWED);
+        throw new APIException(sprintf(__("Can't unsubscribe from a WooCommerce Customers list with ID %d.", 'mailpoet'), $segment->id), APIException::SUBSCRIBING_TO_WC_LIST_NOT_ALLOWED);
       }
       $foundSegmentsIds[] = $segment->id;
     }
@@ -171,7 +171,7 @@ class API {
     if ($newSubscriber->getErrors() !== false) {
       throw new APIException(
         // translators: %s is a comma-seperated list of errors.
-        __(sprintf('Failed to add subscriber: %s', strtolower(implode(', ', $newSubscriber->getErrors()))), 'mailpoet'),
+        sprintf(__('Failed to add subscriber: %s', 'mailpoet'), strtolower(implode(', ', $newSubscriber->getErrors()))),
         APIException::FAILED_TO_SAVE_SUBSCRIBER
       );
     }
