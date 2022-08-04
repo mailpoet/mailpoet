@@ -4,7 +4,6 @@ namespace MailPoet\Models;
 
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\WooCommerce\Helper as WCHelper;
-use MailPoet\WP\Functions as WPFunctions;
 
 /**
  * @property array $subscribersCount
@@ -26,7 +25,7 @@ class Segment extends Model {
     parent::__construct();
 
     $this->addValidations('name', [
-      'required' => WPFunctions::get()->__('Please specify a name.', 'mailpoet'),
+      'required' => __('Please specify a name.', 'mailpoet'),
     ]);
   }
 
@@ -138,9 +137,9 @@ class Segment extends Model {
       // create the wp users segment
       $wpSegment = Segment::create();
       $wpSegment->hydrate([
-        'name' => WPFunctions::get()->__('WordPress Users', 'mailpoet'),
+        'name' => __('WordPress Users', 'mailpoet'),
         'description' =>
-          WPFunctions::get()->__('This list contains all of your WordPress users.', 'mailpoet'),
+          __('This list contains all of your WordPress users.', 'mailpoet'),
         'type' => self::TYPE_WP_USERS,
       ]);
       $wpSegment->save();
@@ -156,9 +155,9 @@ class Segment extends Model {
       // create the WooCommerce customers segment
       $wcSegment = Segment::create();
       $wcSegment->hydrate([
-        'name' => WPFunctions::get()->__('WooCommerce Customers', 'mailpoet'),
+        'name' => __('WooCommerce Customers', 'mailpoet'),
         'description' =>
-          WPFunctions::get()->__('This list contains all of your WooCommerce customers.', 'mailpoet'),
+          __('This list contains all of your WooCommerce customers.', 'mailpoet'),
         'type' => self::TYPE_WC_USERS,
       ]);
       $wcSegment->save();
@@ -267,7 +266,7 @@ class Segment extends Model {
       'AND subscribers.deleted_at IS NULL ' .
       'GROUP BY segments.id) ' .
       'UNION ALL ' .
-      '(SELECT 0 as id, "' . WPFunctions::get()->__('Subscribers without a list', 'mailpoet') . '" as name, COUNT(*) as subscribers ' .
+      '(SELECT 0 as id, "' . __('Subscribers without a list', 'mailpoet') . '" as name, COUNT(*) as subscribers ' .
       'FROM ' . MP_SUBSCRIBERS_TABLE . ' subscribers ' .
       'LEFT JOIN ' . MP_SUBSCRIBER_SEGMENT_TABLE . ' relation on relation.subscriber_id = subscribers.id ' .
       'WHERE relation.subscriber_id is NULL ' .

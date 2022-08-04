@@ -20,7 +20,7 @@ class WelcomeBlank1Column {
 
   public function get() {
     return [
-      'name' => WPFunctions::get()->__("Welcome Email: Blank 1 Column", 'mailpoet'),
+      'name' => __("Welcome Email: Blank 1 Column", 'mailpoet'),
       'categories' => json_encode(['welcome', 'blank']),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),
@@ -59,7 +59,7 @@ class WelcomeBlank1Column {
                 "blocks" => [
                   [
                     "type" => "header",
-                    "text" => '<a href="[link:newsletter_view_in_browser_url]">'.WPFunctions::get()->__("View this in your browser.", 'mailpoet').'</a>',
+                    "text" => '<a href="[link:newsletter_view_in_browser_url]">'.__("View this in your browser.", 'mailpoet').'</a>',
                     "styles" => [
                       "block" => [
                         "backgroundColor" => "transparent",
@@ -111,7 +111,7 @@ class WelcomeBlank1Column {
                     "type" => "image",
                     "link" => "",
                     "src" => $this->template_image_url . "/fake-logo.png",
-                    "alt" => WPFunctions::get()->__("Fake logo", 'mailpoet'),
+                    "alt" => __("Fake logo", 'mailpoet'),
                     "fullWidth" => false,
                     "width" => "598px",
                     "height" => "71px",
@@ -123,7 +123,7 @@ class WelcomeBlank1Column {
                   ],
                   [
                     "type" => "text",
-                    "text" => WPFunctions::get()->__("<h1 style=\"text-align: center;\"><strong>Hi, new subscriber!</strong></h1>\n<p>&nbsp;</p>\n<p>[subscriber:firstname | default:Subscriber],</p>\n<p>&nbsp;</p>\n<p>You recently joined our list and we'd like to give you a warm welcome!</p>\n<p>&nbsp;</p>\n<p>Want to get to know us better? Check out some of our most popular articles: </p>\n<ol>\n<li><a href=\"http://www.mailpoet.com/the-importance-of-focus-when-writing/\">The Importance of Focus When Writing</a></li>\n<li><a href=\"http://www.mailpoet.com/write-great-subject-line/\">How to Write a Great Subject Line</a></li>\n<li><a href=\"http://www.mailpoet.com/just-sit-write-advice-motivation-ernest-hemingway/\">Just Sit Down and Write &ndash; Advice on Motivation from Ernest Hemingway</a></li>\n</ol>", 'mailpoet'),
+                    "text" => __("<h1 style=\"text-align: center;\"><strong>Hi, new subscriber!</strong></h1>\n<p>&nbsp;</p>\n<p>[subscriber:firstname | default:Subscriber],</p>\n<p>&nbsp;</p>\n<p>You recently joined our list and we'd like to give you a warm welcome!</p>\n<p>&nbsp;</p>\n<p>Want to get to know us better? Check out some of our most popular articles: </p>\n<ol>\n<li><a href=\"http://www.mailpoet.com/the-importance-of-focus-when-writing/\">The Importance of Focus When Writing</a></li>\n<li><a href=\"http://www.mailpoet.com/write-great-subject-line/\">How to Write a Great Subject Line</a></li>\n<li><a href=\"http://www.mailpoet.com/just-sit-write-advice-motivation-ernest-hemingway/\">Just Sit Down and Write &ndash; Advice on Motivation from Ernest Hemingway</a></li>\n</ol>", 'mailpoet'),
                   ],
                 ],
               ],
@@ -197,7 +197,7 @@ class WelcomeBlank1Column {
                   ],
                   [
                     "type" => "footer",
-                    "text" => '<p><a href="[link:subscription_unsubscribe_url]">'.WPFunctions::get()->__("Unsubscribe", 'mailpoet').'</a> | <a href="[link:subscription_manage_url]">'.WPFunctions::get()->__("Manage your subscription", 'mailpoet').'</a><br />'.WPFunctions::get()->__("Add your postal address here!", 'mailpoet').'</p>',
+                    "text" => '<p><a href="[link:subscription_unsubscribe_url]">'.__("Unsubscribe", 'mailpoet').'</a> | <a href="[link:subscription_manage_url]">'.__("Manage your subscription", 'mailpoet').'</a><br />'.__("Add your postal address here!", 'mailpoet').'</p>',
                     "styles" => [
                       "block" => [
                         "backgroundColor" => "transparent",

@@ -16,7 +16,7 @@ class GiftWelcome {
 
   public function get() {
     return [
-      'name' => WPFunctions::get()->__("Gift Welcome", 'mailpoet'),
+      'name' => __("Gift Welcome", 'mailpoet'),
       'categories' => json_encode(['welcome', 'all']),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),
@@ -295,7 +295,7 @@ class GiftWelcome {
                               5 =>
                                  [
                                   'type' => 'text',
-                                  'text' => '<p style="text-align: center; font-size: 11px;"><a href="[link:subscription_unsubscribe_url]">'.WPFunctions::get()->__("Unsubscribe", 'mailpoet').'</a><span>&nbsp;|&nbsp;</span><a href="[link:subscription_manage_url]">'.WPFunctions::get()->__("Manage your subscription", 'mailpoet').'</a></p>',
+                                  'text' => '<p style="text-align: center; font-size: 11px;"><a href="[link:subscription_unsubscribe_url]">'.__("Unsubscribe", 'mailpoet').'</a><span>&nbsp;|&nbsp;</span><a href="[link:subscription_manage_url]">'.__("Manage your subscription", 'mailpoet').'</a></p>',
                                  ],
                              ],
                          ],

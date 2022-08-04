@@ -374,7 +374,7 @@ class Hooks {
 
   public function appendImageSize($sizes) {
     return array_merge($sizes, [
-      'mailpoet_newsletter_max' => WPFunctions::get()->__('MailPoet Newsletter', 'mailpoet'),
+      'mailpoet_newsletter_max' => __('MailPoet Newsletter', 'mailpoet'),
     ]);
   }
 

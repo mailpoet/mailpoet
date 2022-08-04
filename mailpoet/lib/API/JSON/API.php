@@ -106,7 +106,7 @@ class API {
     );
 
     if (!$ignoreToken && $this->wp->wpVerifyNonce($this->requestToken, 'mailpoet_token') === false) {
-      $errorMessage = WPFunctions::get()->__("Sorry, but we couldn't connect to the MailPoet server. Please refresh the web page and try again.", 'mailpoet');
+      $errorMessage = __("Sorry, but we couldn't connect to the MailPoet server. Please refresh the web page and try again.", 'mailpoet');
       $errorResponse = $this->createErrorResponse(Error::UNAUTHORIZED, $errorMessage, Response::STATUS_UNAUTHORIZED);
       return $errorResponse->send();
     }
@@ -134,7 +134,7 @@ class API {
       : null;
 
     if (!$this->requestEndpoint || !$this->requestMethod || !$this->requestApiVersion) {
-      $errorMessage = WPFunctions::get()->__('Invalid API request.', 'mailpoet');
+      $errorMessage = __('Invalid API request.', 'mailpoet');
       $errorResponse = $this->createErrorResponse(Error::BAD_REQUEST, $errorMessage, Response::STATUS_BAD_REQUEST);
       return $errorResponse;
     } else if (!empty($this->endpointNamespaces[$this->requestApiVersion])) {
@@ -202,7 +202,7 @@ class API {
       // check the accessibility of the requested endpoint's action
       // by default, an endpoint's action is considered "private"
       if (!$this->validatePermissions($this->requestMethod, $endpoint->permissions)) {
-        $errorMessage = WPFunctions::get()->__('You do not have the required permissions.', 'mailpoet');
+        $errorMessage = __('You do not have the required permissions.', 'mailpoet');
         $errorResponse = $this->createErrorResponse(Error::FORBIDDEN, $errorMessage, Response::STATUS_FORBIDDEN);
         return $errorResponse;
       }

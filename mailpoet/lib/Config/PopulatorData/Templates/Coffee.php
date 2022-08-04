@@ -16,7 +16,7 @@ class Coffee {
 
   public function get() {
     return [
-      'name' => WPFunctions::get()->__("Coffee", 'mailpoet'),
+      'name' => __("Coffee", 'mailpoet'),
       'categories' => json_encode(['standard', 'all']),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),
@@ -223,7 +223,7 @@ class Coffee {
                               1 =>
                                  [
                                   'type' => 'header',
-                                  'text' => '<p><span style="color: #000000;"><a href="[link:newsletter_view_in_browser_url]" style="color: #000000;">' . WPFunctions::get()->__("View this in your browser.", 'mailpoet') . '</a></span></p>',
+                                  'text' => '<p><span style="color: #000000;"><a href="[link:newsletter_view_in_browser_url]" style="color: #000000;">' . __("View this in your browser.", 'mailpoet') . '</a></span></p>',
                                   'styles' =>
                                      [
                                       'block' =>
@@ -931,7 +931,7 @@ class Coffee {
                               3 =>
                                  [
                                   'type' => 'footer',
-                                  'text' => '<p><strong><span style="color: #000000;"><a href="[link:subscription_unsubscribe_url]" style="color: #000000;">' . WPFunctions::get()->__("Unsubscribe", 'mailpoet') . '</a> | <a href="[link:subscription_manage_url]" style="color: #000000;">' . WPFunctions::get()->__("Manage your subscription", 'mailpoet') . '</a></span></strong><br />' . WPFunctions::get()->__("Add your postal address here!", 'mailpoet') . '</p>',
+                                  'text' => '<p><strong><span style="color: #000000;"><a href="[link:subscription_unsubscribe_url]" style="color: #000000;">' . __("Unsubscribe", 'mailpoet') . '</a> | <a href="[link:subscription_manage_url]" style="color: #000000;">' . __("Manage your subscription", 'mailpoet') . '</a></span></strong><br />' . __("Add your postal address here!", 'mailpoet') . '</p>',
                                   'styles' =>
                                      [
                                       'block' =>

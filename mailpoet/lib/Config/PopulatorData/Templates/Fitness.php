@@ -16,7 +16,7 @@ class Fitness {
 
   public function get() {
     return [
-      'name' => WPFunctions::get()->__("Abandoned Cart – Fitness", 'mailpoet'),
+      'name' => __("Abandoned Cart – Fitness", 'mailpoet'),
       'categories' => json_encode(['woocommerce', 'all']),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),
@@ -704,7 +704,7 @@ class Fitness {
                                  [
                                   'type' => 'text',
                                   'text' => '<p style="text-align: center;"><span style="color: #999999;">Address Line 1, Address Line 2, City, Country</span></p>
-<p style="text-align: center;"><span style="color: #999999;"><strong><a href="[link:subscription_unsubscribe_url]" style="color: #999999;">'.WPFunctions::get()->__("Unsubscribe", 'mailpoet').'</a><span>&nbsp;</span>|<span>&nbsp;</span><a href="[link:subscription_manage_url]" style="color: #999999;">'.WPFunctions::get()->__("Manage your subscription", 'mailpoet').'</a></strong></span></p>',
+<p style="text-align: center;"><span style="color: #999999;"><strong><a href="[link:subscription_unsubscribe_url]" style="color: #999999;">'.__("Unsubscribe", 'mailpoet').'</a><span>&nbsp;</span>|<span>&nbsp;</span><a href="[link:subscription_manage_url]" style="color: #999999;">'.__("Manage your subscription", 'mailpoet').'</a></strong></span></p>',
                                  ],
                               4 =>
                                  [
@@ -978,7 +978,7 @@ class Fitness {
              ],
           'footer' =>
              [
-              'text' => '<p><a href="[link:subscription_unsubscribe_url]">'.WPFunctions::get()->__("Unsubscribe", 'mailpoet').'</a> | <a href="[link:subscription_manage_url]">'.WPFunctions::get()->__("Manage your subscription", 'mailpoet').'</a><br />'.WPFunctions::get()->__("Add your postal address here!", 'mailpoet').'</p>',
+              'text' => '<p><a href="[link:subscription_unsubscribe_url]">'.__("Unsubscribe", 'mailpoet').'</a> | <a href="[link:subscription_manage_url]">'.__("Manage your subscription", 'mailpoet').'</a><br />'.__("Add your postal address here!", 'mailpoet').'</p>',
               'styles' =>
                  [
                   'block' =>
@@ -1161,7 +1161,7 @@ class Fitness {
              ],
           'header' =>
              [
-              'text' => '<a href="[link:newsletter_view_in_browser_url]">'.WPFunctions::get()->__("View this in your browser.", 'mailpoet').'</a>',
+              'text' => '<a href="[link:newsletter_view_in_browser_url]">'.__("View this in your browser.", 'mailpoet').'</a>',
               'styles' =>
                  [
                   'block' =>

@@ -152,7 +152,7 @@ class Photography {
                   1 =>
                    [
                     'type' => 'text',
-                    'text' => '<p style="text-align: right;"><a href="[link:newsletter_view_in_browser_url]">' . WPFunctions::get()->__("View this in your browser.", 'mailpoet') . '</a></p>',
+                    'text' => '<p style="text-align: right;"><a href="[link:newsletter_view_in_browser_url]">' . __("View this in your browser.", 'mailpoet') . '</a></p>',
                    ],
                  ],
                ],
@@ -1697,7 +1697,7 @@ class Photography {
                   3 =>
                    [
                     'type' => 'footer',
-                    'text' => '<p><a href="[link:subscription_unsubscribe_url]">' . WPFunctions::get()->__("Unsubscribe", 'mailpoet') . '</a> | <a href="[link:subscription_manage_url]">' . WPFunctions::get()->__("Manage your subscription", 'mailpoet') . '</a><br /><span style="color: #999999;">' . WPFunctions::get()->__("Add your postal address here!", 'mailpoet') . '</span></p>',
+                    'text' => '<p><a href="[link:subscription_unsubscribe_url]">' . __("Unsubscribe", 'mailpoet') . '</a> | <a href="[link:subscription_manage_url]">' . __("Manage your subscription", 'mailpoet') . '</a><br /><span style="color: #999999;">' . __("Add your postal address here!", 'mailpoet') . '</span></p>',
                     'styles' =>
                      [
                       'block' =>
@@ -1943,7 +1943,7 @@ class Photography {
          ],
         'footer' =>
          [
-          'text' => '<p><a href="[link:subscription_unsubscribe_url]">' . WPFunctions::get()->__("Unsubscribe", 'mailpoet') . '</a> | <a href="[link:subscription_manage_url]">' . WPFunctions::get()->__("Manage your subscription", 'mailpoet') . '</a><br />' . WPFunctions::get()->__("Add your postal address here!", 'mailpoet') . '</p>',
+          'text' => '<p><a href="[link:subscription_unsubscribe_url]">' . __("Unsubscribe", 'mailpoet') . '</a> | <a href="[link:subscription_manage_url]">' . __("Manage your subscription", 'mailpoet') . '</a><br />' . __("Add your postal address here!", 'mailpoet') . '</p>',
           'styles' =>
            [
             'block' =>
@@ -2090,7 +2090,7 @@ class Photography {
          ],
         'header' =>
          [
-          'text' => '<a href="[link:newsletter_view_in_browser_url]">' . WPFunctions::get()->__("View this in your browser.", 'mailpoet') . '</a>',
+          'text' => '<a href="[link:newsletter_view_in_browser_url]">' . __("View this in your browser.", 'mailpoet') . '</a>',
           'styles' =>
            [
             'block' =>

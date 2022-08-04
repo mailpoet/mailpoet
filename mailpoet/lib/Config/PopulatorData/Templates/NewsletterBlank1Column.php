@@ -20,7 +20,7 @@ class NewsletterBlank1Column {
 
   public function get() {
     return [
-      'name' => WPFunctions::get()->__("Newsletter: Blank 1 Column", 'mailpoet'),
+      'name' => __("Newsletter: Blank 1 Column", 'mailpoet'),
       'categories' => json_encode(['standard', 'blank']),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),
@@ -59,7 +59,7 @@ class NewsletterBlank1Column {
                 "blocks" => [
                   [
                     "type" => "header",
-                    "text" => '<a href="[link:newsletter_view_in_browser_url]">'.WPFunctions::get()->__("View this in your browser.", 'mailpoet').'</a>',
+                    "text" => '<a href="[link:newsletter_view_in_browser_url]">'.__("View this in your browser.", 'mailpoet').'</a>',
                     "styles" => [
                       "block" => [
                         "backgroundColor" => "transparent",
@@ -111,7 +111,7 @@ class NewsletterBlank1Column {
                     "type" => "image",
                     "link" => "",
                     "src" => $this->template_image_url . "/fake-logo.png",
-                    "alt" => WPFunctions::get()->__("Fake logo", 'mailpoet'),
+                    "alt" => __("Fake logo", 'mailpoet'),
                     "fullWidth" => false,
                     "width" => "598px",
                     "height" => "71px",
@@ -123,7 +123,7 @@ class NewsletterBlank1Column {
                   ],
                   [
                     "type" => "text",
-                    "text" => WPFunctions::get()->__("<h1 style=\"text-align: center;\"><strong>Let's Get Started! </strong></h1>\n<p>&nbsp;</p>\n<p>It's time to design your newsletter! In the right sidebar, you'll find 4 menu items that will help you customize your newsletter:</p>\n<ol>\n<li>Content</li>\n<li>Columns</li>\n<li>Styles</li>\n<li>Preview</li>\n</ol>", 'mailpoet'),
+                    "text" => __("<h1 style=\"text-align: center;\"><strong>Let's Get Started! </strong></h1>\n<p>&nbsp;</p>\n<p>It's time to design your newsletter! In the right sidebar, you'll find 4 menu items that will help you customize your newsletter:</p>\n<ol>\n<li>Content</li>\n<li>Columns</li>\n<li>Styles</li>\n<li>Preview</li>\n</ol>", 'mailpoet'),
                   ],
                 ],
               ],
@@ -197,7 +197,7 @@ class NewsletterBlank1Column {
                   ],
                   [
                     "type" => "footer",
-                    "text" => '<p><a href="[link:subscription_unsubscribe_url]">'.WPFunctions::get()->__("Unsubscribe", 'mailpoet').'</a> | <a href="[link:subscription_manage_url]">'.WPFunctions::get()->__("Manage your subscription", 'mailpoet').'</a><br />'.WPFunctions::get()->__("Add your postal address here!", 'mailpoet').'</p>',
+                    "text" => '<p><a href="[link:subscription_unsubscribe_url]">'.__("Unsubscribe", 'mailpoet').'</a> | <a href="[link:subscription_manage_url]">'.__("Manage your subscription", 'mailpoet').'</a><br />'.__("Add your postal address here!", 'mailpoet').'</p>',
                     "styles" => [
                       "block" => [
                         "backgroundColor" => "transparent",

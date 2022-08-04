@@ -51,7 +51,7 @@ class NewsletterTemplates extends APIEndpoint {
 
     if (!$template) {
       return $this->errorResponse([
-        APIError::NOT_FOUND => WPFunctions::get()->__('This template does not exist.', 'mailpoet'),
+        APIError::NOT_FOUND => __('This template does not exist.', 'mailpoet'),
       ]);
     }
 
@@ -91,7 +91,7 @@ class NewsletterTemplates extends APIEndpoint {
 
     if (!$template) {
       return $this->errorResponse([
-        APIError::NOT_FOUND => WPFunctions::get()->__('This template does not exist.', 'mailpoet'),
+        APIError::NOT_FOUND => __('This template does not exist.', 'mailpoet'),
       ]);
     }
 

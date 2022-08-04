@@ -61,10 +61,10 @@ class DaemonHttpRunner {
     }
     $this->addCacheHeaders();
     if (!$requestData) {
-      $error = WPFunctions::get()->__('Invalid or missing request data.', 'mailpoet');
+      $error = __('Invalid or missing request data.', 'mailpoet');
     } else {
       if (!$this->settingsDaemonData) {
-        $error = WPFunctions::get()->__('Daemon does not exist.', 'mailpoet');
+        $error = __('Daemon does not exist.', 'mailpoet');
       } else {
         if (
           !isset($requestData['token']) ||
@@ -78,7 +78,7 @@ class DaemonHttpRunner {
       return $this->abortWithError($error);
     }
     if ($this->daemon === null) {
-      return $this->abortWithError(WPFunctions::get()->__('Daemon does not set correctly.', 'mailpoet'));
+      return $this->abortWithError(__('Daemon does not set correctly.', 'mailpoet'));
     }
     $this->settingsDaemonData['token'] = $this->token;
     $this->daemon->run($this->settingsDaemonData);

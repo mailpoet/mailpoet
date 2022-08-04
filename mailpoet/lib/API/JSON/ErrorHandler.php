@@ -4,17 +4,14 @@ namespace MailPoet\API\JSON;
 
 use MailPoet\Exception;
 use MailPoet\HttpAwareException;
-use MailPoet\WP\Functions as WPFunctions;
 
 class ErrorHandler {
   /** @var string[] */
   private $defaultErrors;
 
-  public function __construct(
-    WPFunctions $wp
-  ) {
+  public function __construct() {
     $this->defaultErrors = [
-      Error::UNKNOWN => $wp->__('An unknown error occurred.', 'mailpoet'),
+      Error::UNKNOWN => __('An unknown error occurred.', 'mailpoet'),
     ];
   }
 

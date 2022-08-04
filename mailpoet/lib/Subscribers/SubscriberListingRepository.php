@@ -10,7 +10,6 @@ use MailPoet\Listing\ListingRepository;
 use MailPoet\Segments\DynamicSegments\FilterHandler;
 use MailPoet\Segments\SegmentSubscribersRepository;
 use MailPoet\Util\Helpers;
-use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Doctrine\DBAL\Driver\Statement;
 use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder as DBALQueryBuilder;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
@@ -198,37 +197,37 @@ class SubscriberListingRepository extends ListingRepository {
     return [
       [
         'name' => 'all',
-        'label' => WPFunctions::get()->__('All', 'mailpoet'),
+        'label' => __('All', 'mailpoet'),
         'count' => $totalCount,
       ],
       [
         'name' => SubscriberEntity::STATUS_SUBSCRIBED,
-        'label' => WPFunctions::get()->__('Subscribed', 'mailpoet'),
+        'label' => __('Subscribed', 'mailpoet'),
         'count' => $groupCounts[SubscriberEntity::STATUS_SUBSCRIBED],
       ],
       [
         'name' => SubscriberEntity::STATUS_UNCONFIRMED,
-        'label' => WPFunctions::get()->__('Unconfirmed', 'mailpoet'),
+        'label' => __('Unconfirmed', 'mailpoet'),
         'count' => $groupCounts[SubscriberEntity::STATUS_UNCONFIRMED],
       ],
       [
         'name' => SubscriberEntity::STATUS_UNSUBSCRIBED,
-        'label' => WPFunctions::get()->__('Unsubscribed', 'mailpoet'),
+        'label' => __('Unsubscribed', 'mailpoet'),
         'count' => $groupCounts[SubscriberEntity::STATUS_UNSUBSCRIBED],
       ],
       [
         'name' => SubscriberEntity::STATUS_INACTIVE,
-        'label' => WPFunctions::get()->__('Inactive', 'mailpoet'),
+        'label' => __('Inactive', 'mailpoet'),
         'count' => $groupCounts[SubscriberEntity::STATUS_INACTIVE],
       ],
       [
         'name' => SubscriberEntity::STATUS_BOUNCED,
-        'label' => WPFunctions::get()->__('Bounced', 'mailpoet'),
+        'label' => __('Bounced', 'mailpoet'),
         'count' => $groupCounts[SubscriberEntity::STATUS_BOUNCED],
       ],
       [
         'name' => 'trash',
-        'label' => WPFunctions::get()->__('Trash', 'mailpoet'),
+        'label' => __('Trash', 'mailpoet'),
         'count' => $trashedCount,
       ],
     ];
@@ -268,7 +267,7 @@ class SubscriberListingRepository extends ListingRepository {
 
     // format segment list
     $allSubscribersList = [
-      'label' => WPFunctions::get()->__('All Lists', 'mailpoet'),
+      'label' => __('All Lists', 'mailpoet'),
       'value' => '',
     ];
 

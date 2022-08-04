@@ -34,7 +34,7 @@ class ErrorHandlerTest extends \MailPoetUnitTest {
   }
 
   private function runErrorHandlerTest(Exception $exception, int $expectedCode) {
-    $errorHandler = new ErrorHandler(new WPFunctions());
+    $errorHandler = new ErrorHandler();
     $response = $errorHandler->convertToResponse($exception->withErrors([
       'key' => 'value',
     ]));

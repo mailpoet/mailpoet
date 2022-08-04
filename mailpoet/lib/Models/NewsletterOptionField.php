@@ -2,8 +2,6 @@
 
 namespace MailPoet\Models;
 
-use MailPoet\WP\Functions as WPFunctions;
-
 /**
  * @property string $name
  * @property string $newsletterType
@@ -21,10 +19,10 @@ class NewsletterOptionField extends Model {
     self::deprecationError(__METHOD__);
     parent::__construct();
     $this->addValidations('name', [
-      'required' => WPFunctions::get()->__('Please specify a name.', 'mailpoet'),
+      'required' => __('Please specify a name.', 'mailpoet'),
     ]);
     $this->addValidations('newsletter_type', [
-      'required' => WPFunctions::get()->__('Please specify a newsletter type.', 'mailpoet'),
+      'required' => __('Please specify a newsletter type.', 'mailpoet'),
     ]);
   }
 

@@ -146,7 +146,7 @@ class Menu {
     $newslettersPage = $this->wp->addSubmenuPage(
       self::MAIN_PAGE_SLUG,
       $this->setPageTitle(__('Emails', 'mailpoet')),
-      $this->wp->__('Emails', 'mailpoet'),
+      __('Emails', 'mailpoet'),
       AccessControl::PERMISSION_MANAGE_EMAILS,
       self::MAIN_PAGE_SLUG,
       [
@@ -158,7 +158,7 @@ class Menu {
     // add limit per page to screen options
     $this->wp->addAction('load-' . $newslettersPage, function() {
       $this->wp->addScreenOption('per_page', [
-        'label' => $this->wp->_x(
+        'label' => _x(
           'Number of newsletters per page',
           'newsletters per page (screen options)',
           'mailpoet'
@@ -171,7 +171,7 @@ class Menu {
     $this->wp->addSubmenuPage(
       true,
       $this->setPageTitle(__('Newsletter', 'mailpoet')),
-      $this->wp->__('Newsletter Editor', 'mailpoet'),
+      __('Newsletter Editor', 'mailpoet'),
       AccessControl::PERMISSION_MANAGE_EMAILS,
       'mailpoet-newsletter-editor',
       [
@@ -184,7 +184,7 @@ class Menu {
     $formsPage = $this->wp->addSubmenuPage(
       self::MAIN_PAGE_SLUG,
       $this->setPageTitle(__('Forms', 'mailpoet')),
-      $this->wp->__('Forms', 'mailpoet'),
+      __('Forms', 'mailpoet'),
       AccessControl::PERMISSION_MANAGE_FORMS,
       'mailpoet-forms',
       [
@@ -196,7 +196,7 @@ class Menu {
     // add limit per page to screen options
     $this->wp->addAction('load-' . $formsPage, function() {
       $this->wp->addScreenOption('per_page', [
-        'label' => $this->wp->_x(
+        'label' => _x(
           'Number of forms per page',
           'forms per page (screen options)',
           'mailpoet'
@@ -209,7 +209,7 @@ class Menu {
     $formEditorPage = $this->wp->addSubmenuPage(
       true,
       $this->setPageTitle(__('Form Editor', 'mailpoet')),
-      $this->wp->__('Form Editor', 'mailpoet'),
+      __('Form Editor', 'mailpoet'),
       AccessControl::PERMISSION_MANAGE_FORMS,
       'mailpoet-form-editor',
       [
@@ -229,7 +229,7 @@ class Menu {
     $formTemplateSelectionEditorPage = $this->wp->addSubmenuPage(
       true,
       $this->setPageTitle(__('Select Form Template', 'mailpoet')),
-      $this->wp->__('Select Form Template', 'mailpoet'),
+      __('Select Form Template', 'mailpoet'),
       AccessControl::PERMISSION_MANAGE_FORMS,
       'mailpoet-form-editor-template-selection',
       [
@@ -250,7 +250,7 @@ class Menu {
     $subscribersPage = $this->wp->addSubmenuPage(
       self::MAIN_PAGE_SLUG,
       $this->setPageTitle(__('Subscribers', 'mailpoet')),
-      $this->wp->__('Subscribers', 'mailpoet'),
+      __('Subscribers', 'mailpoet'),
       AccessControl::PERMISSION_MANAGE_SUBSCRIBERS,
       'mailpoet-subscribers',
       [
@@ -262,7 +262,7 @@ class Menu {
     // add limit per page to screen options
     $this->wp->addAction('load-' . $subscribersPage, function() {
       $this->wp->addScreenOption('per_page', [
-        'label' => $this->wp->_x(
+        'label' => _x(
           'Number of subscribers per page',
           'subscribers per page (screen options)',
           'mailpoet'
@@ -275,7 +275,7 @@ class Menu {
     $this->wp->addSubmenuPage(
       'admin.php?page=mailpoet-subscribers',
       $this->setPageTitle(__('Import', 'mailpoet')),
-      $this->wp->__('Import', 'mailpoet'),
+      __('Import', 'mailpoet'),
       AccessControl::PERMISSION_MANAGE_SUBSCRIBERS,
       'mailpoet-import',
       [
@@ -288,7 +288,7 @@ class Menu {
     $this->wp->addSubmenuPage(
       true,
       $this->setPageTitle(__('Export', 'mailpoet')),
-      $this->wp->__('Export', 'mailpoet'),
+      __('Export', 'mailpoet'),
       AccessControl::PERMISSION_MANAGE_SUBSCRIBERS,
       'mailpoet-export',
       [
@@ -301,7 +301,7 @@ class Menu {
     $segmentsPage = $this->wp->addSubmenuPage(
       self::MAIN_PAGE_SLUG,
       $this->setPageTitle(__('Lists', 'mailpoet')),
-      $this->wp->__('Lists', 'mailpoet'),
+      __('Lists', 'mailpoet'),
       AccessControl::PERMISSION_MANAGE_SEGMENTS,
       'mailpoet-segments',
       [
@@ -313,7 +313,7 @@ class Menu {
     // add limit per page to screen options
     $this->wp->addAction('load-' . $segmentsPage, function() {
       $this->wp->addScreenOption('per_page', [
-        'label' => $this->wp->_x(
+        'label' => _x(
           'Number of segments per page',
           'segments per page (screen options)',
           'mailpoet'
@@ -326,7 +326,7 @@ class Menu {
     $this->wp->addSubmenuPage(
       self::MAIN_PAGE_SLUG,
       $this->setPageTitle(__('Settings', 'mailpoet')),
-      $this->wp->__('Settings', 'mailpoet'),
+      __('Settings', 'mailpoet'),
       AccessControl::PERMISSION_MANAGE_SETTINGS,
       'mailpoet-settings',
       [
@@ -339,7 +339,7 @@ class Menu {
     $this->wp->addSubmenuPage(
       self::MAIN_PAGE_SLUG,
       $this->setPageTitle(__('Help', 'mailpoet')),
-      $this->wp->__('Help', 'mailpoet'),
+      __('Help', 'mailpoet'),
       AccessControl::PERMISSION_ACCESS_PLUGIN_ADMIN,
       'mailpoet-help',
       [
@@ -353,7 +353,7 @@ class Menu {
     $this->wp->addSubmenuPage(
       License::getLicense() ? true : self::MAIN_PAGE_SLUG,
       $this->setPageTitle(__('Upgrade', 'mailpoet')),
-      $this->wp->__('Upgrade', 'mailpoet'),
+      __('Upgrade', 'mailpoet'),
       AccessControl::PERMISSION_ACCESS_PLUGIN_ADMIN,
       'mailpoet-upgrade',
       [
@@ -366,7 +366,7 @@ class Menu {
     $this->wp->addSubmenuPage(
       true,
       $this->setPageTitle(__('Welcome Wizard', 'mailpoet')),
-      $this->wp->__('Welcome Wizard', 'mailpoet'),
+      __('Welcome Wizard', 'mailpoet'),
       AccessControl::PERMISSION_ACCESS_PLUGIN_ADMIN,
       'mailpoet-welcome-wizard',
       [
@@ -378,8 +378,8 @@ class Menu {
     // WooCommerce Setup
     $this->wp->addSubmenuPage(
       true,
-      $this->setPageTitle($this->wp->__('WooCommerce Setup', 'mailpoet')),
-      $this->wp->__('WooCommerce Setup', 'mailpoet'),
+      $this->setPageTitle(__('WooCommerce Setup', 'mailpoet')),
+      __('WooCommerce Setup', 'mailpoet'),
       AccessControl::PERMISSION_ACCESS_PLUGIN_ADMIN,
       'mailpoet-woocommerce-setup',
       [
@@ -535,7 +535,7 @@ class Menu {
   public function setPageTitle($title) {
     return sprintf(
       '%s - %s',
-      $this->wp->__('MailPoet', 'mailpoet'),
+      __('MailPoet', 'mailpoet'),
       $title
     );
   }

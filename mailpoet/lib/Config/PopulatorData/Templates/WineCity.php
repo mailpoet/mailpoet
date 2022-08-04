@@ -15,7 +15,7 @@ class WineCity {
 
   public function get() {
     return [
-      'name' => WPFunctions::get()->__("Wine City (with coupon)", 'mailpoet'),
+      'name' => __("Wine City (with coupon)", 'mailpoet'),
       'categories' => json_encode(['woocommerce', 'all']),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),
@@ -501,7 +501,7 @@ class WineCity {
                               4 =>
                                  [
                                   'type' => 'footer',
-                                  'text' => '<p><strong><span style="color: #6d6d6d;"><a href="[link:subscription_unsubscribe_url]" style="color: #6d6d6d;">'.WPFunctions::get()->__("Unsubscribe", 'mailpoet').'</a> | <a href="[link:subscription_manage_url]" style="color: #6d6d6d;">'.WPFunctions::get()->__("Manage your subscription", 'mailpoet').'</a></span></strong><br /><span style="color: #6d6d6d;">'.WPFunctions::get()->__("Add your postal address here!", 'mailpoet').'</span></p>',
+                                  'text' => '<p><strong><span style="color: #6d6d6d;"><a href="[link:subscription_unsubscribe_url]" style="color: #6d6d6d;">'.__("Unsubscribe", 'mailpoet').'</a> | <a href="[link:subscription_manage_url]" style="color: #6d6d6d;">'.__("Manage your subscription", 'mailpoet').'</a></span></strong><br /><span style="color: #6d6d6d;">'.__("Add your postal address here!", 'mailpoet').'</span></p>',
                                   'styles' =>
                                      [
                                       'block' =>
@@ -798,7 +798,7 @@ class WineCity {
              ],
           'footer' =>
              [
-              'text' => '<p><a href="[link:subscription_unsubscribe_url]">'.WPFunctions::get()->__("Unsubscribe", 'mailpoet').'</a> | <a href="[link:subscription_manage_url]">'.WPFunctions::get()->__("Manage your subscription", 'mailpoet').'</a><br />'.WPFunctions::get()->__("Add your postal address here!", 'mailpoet').'</p>',
+              'text' => '<p><a href="[link:subscription_unsubscribe_url]">'.__("Unsubscribe", 'mailpoet').'</a> | <a href="[link:subscription_manage_url]">'.__("Manage your subscription", 'mailpoet').'</a><br />'.__("Add your postal address here!", 'mailpoet').'</p>',
               'styles' =>
                  [
                   'block' =>
@@ -934,7 +934,7 @@ class WineCity {
              ],
           'header' =>
              [
-              'text' => '<a href="[link:newsletter_view_in_browser_url]">'.WPFunctions::get()->__("View this in your browser.", 'mailpoet').'</a>',
+              'text' => '<a href="[link:newsletter_view_in_browser_url]">'.__("View this in your browser.", 'mailpoet').'</a>',
               'styles' =>
                  [
                   'block' =>

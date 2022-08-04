@@ -57,9 +57,9 @@ class SegmentsRepository extends Repository {
     if (!$segment) {
       // create the WooCommerce customers segment
       $segment = new SegmentEntity(
-        WPFunctions::get()->__('WooCommerce Customers', 'mailpoet'),
+        __('WooCommerce Customers', 'mailpoet'),
         SegmentEntity::TYPE_WC_USERS,
-        WPFunctions::get()->__('This list contains all of your WooCommerce customers.', 'mailpoet')
+        __('This list contains all of your WooCommerce customers.', 'mailpoet')
       );
       $this->entityManager->persist($segment);
       $this->entityManager->flush();
