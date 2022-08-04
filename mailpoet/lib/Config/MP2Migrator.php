@@ -307,16 +307,19 @@ class MP2Migrator {
     // User Lists
     $usersListsCount = ORM::for_table($this->mp2ListTable)->count();
     $totalCount += $usersListsCount;
+    // translators: %d is the number of lists.
     $result .= sprintf(_n('%d subscribers list', '%d subscribers lists', $usersListsCount, 'mailpoet'), $usersListsCount) . "\n";
 
     // Users
     $usersCount = ORM::for_table($this->mp2UserTable)->count();
     $totalCount += $usersCount;
+    // translators: %d is the number of subscribers.
     $result .= sprintf(_n('%d subscriber', '%d subscribers', $usersCount, 'mailpoet'), $usersCount) . "\n";
 
     // Forms
     $formsCount = ORM::for_table($this->mp2FormTable)->count();
     $totalCount += $formsCount;
+    // translators: %d is the number of forms.
     $result .= sprintf(_n('%d form', '%d forms', $formsCount, 'mailpoet'), $formsCount) . "\n";
 
     $this->progressbar->setTotalCount($totalCount);
@@ -355,6 +358,7 @@ class MP2Migrator {
 
     $this->segmentsMapping = $this->getImportedMapping('segments');
 
+    // translators: %d is the number of segments imported.
     $this->log(sprintf(_n("%d segment imported", "%d segments imported", $importedSegmentsCount, 'mailpoet'), $importedSegmentsCount));
   }
 
@@ -433,6 +437,7 @@ class MP2Migrator {
       }
     }
 
+    // translators: %d is the number of custom fields imported.
     $this->log(sprintf(_n("%d custom field imported", "%d custom fields imported", $importedCustomFieldsCount, 'mailpoet'), $importedCustomFieldsCount));
   }
 
@@ -593,6 +598,7 @@ class MP2Migrator {
       $this->progressbar->incrementCurrentCount($usersCount);
     } while (($users != null) && ($usersCount > 0));
 
+    // translators: %d is the number of subscribers imported.
     $this->log(sprintf(_n("%d subscriber imported", "%d subscribers imported", $importedSubscribersCount, 'mailpoet'), $importedSubscribersCount));
   }
 
@@ -839,6 +845,7 @@ class MP2Migrator {
       $this->progressbar->incrementCurrentCount($formsCount);
     } while (($forms != null) && ($formsCount > 0));
 
+    // translators: %d is the number of forms imported.
     $this->log(sprintf(_n("%d form imported", "%d forms imported", $importedFormsCount, 'mailpoet'), $importedFormsCount));
   }
 

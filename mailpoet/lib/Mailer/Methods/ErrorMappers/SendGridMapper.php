@@ -15,6 +15,7 @@ class SendGridMapper {
   public function getErrorFromResponse($response, $subscriber) {
     $response = (!empty($response['errors'][0])) ?
       $response['errors'][0] :
+      // translators: %s is the name of the method.
       sprintf(__('%s has returned an unknown error.', 'mailpoet'), Mailer::METHOD_SENDGRID);
 
     $level = MailerError::LEVEL_HARD;

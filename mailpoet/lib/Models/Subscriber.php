@@ -168,6 +168,7 @@ class Subscriber extends Model {
       ->whereNull('deleted_at')
       ->count();
     $subscribersWithoutSegmentLabel = sprintf(
+      // translators: %s is the number of subscribers without a segment.
       __('Subscribers without a list (%s)', 'mailpoet'),
       number_format($subscribersWithoutSegment)
     );

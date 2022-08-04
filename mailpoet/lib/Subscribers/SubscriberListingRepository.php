@@ -251,6 +251,7 @@ class SubscriberListingRepository extends ListingRepository {
     $subscribersWithoutSegmentCount = $subscribersWithoutSegmentStats[$key];
 
     $subscribersWithoutSegmentLabel = sprintf(
+      // translators: %s is the number of subscribers without a list.
       __('Subscribers without a list (%s)', 'mailpoet'),
       number_format((float)$subscribersWithoutSegmentCount)
     );

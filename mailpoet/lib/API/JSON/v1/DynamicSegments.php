@@ -176,6 +176,7 @@ class DynamicSegments extends APIEndpoint {
         Error::BAD_REQUEST => str_replace(
           '%1$s',
           "'" . join("', '", $activelyUsedNewslettersSubjects[$segment->getId()] ) . "'",
+          // translators: %1$s is a comma-seperated list of emails for which the segment is used.
           _x('Segment cannot be deleted because it’s used for %1$s email', 'Alert shown when trying to delete segment, which is assigned to any automatic emails.', 'mailpoet')
         ),
       ]);

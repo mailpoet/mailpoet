@@ -122,6 +122,7 @@ class SubscriberSubscribeController {
     if ($timeout > 0) {
       $timeToWait = $this->throttling->secondsToTimeString($timeout);
       $meta['refresh_captcha'] = true;
+      // translators: %s is the amount of time the user has to wait.
       $meta['error'] = sprintf(__('You need to wait %s before subscribing again.', 'mailpoet'), $timeToWait);
       return $meta;
     }

@@ -115,12 +115,15 @@ class Subscribers {
     $foundSegmentsIds = [];
     foreach ($foundSegments as $foundSegment) {
       if ($foundSegment->getType() === SegmentEntity::TYPE_WP_USERS) {
+        // translators: %d is the ID of the segment
         throw new APIException(__(sprintf("Can't subscribe to a WordPress Users list with ID %d.", $foundSegment->getId()), 'mailpoet'), APIException::SUBSCRIBING_TO_WP_LIST_NOT_ALLOWED);
       }
       if ($foundSegment->getType() === SegmentEntity::TYPE_WC_USERS) {
+        // translators: %d is the ID of the segment
         throw new APIException(__(sprintf("Can't subscribe to a WooCommerce Customers list with ID %d.", $foundSegment->getId()), 'mailpoet'), APIException::SUBSCRIBING_TO_WC_LIST_NOT_ALLOWED);
       }
       if ($foundSegment->getType() !== SegmentEntity::TYPE_DEFAULT) {
+        // translators: %d is the ID of the segment
         throw new APIException(__(sprintf("Can't subscribe to a list with ID %d.", $foundSegment->getId()), 'mailpoet'), APIException::SUBSCRIBING_TO_LIST_NOT_ALLOWED);
       }
       $foundSegmentsIds[] = $foundSegment->getId();
@@ -130,6 +133,7 @@ class Subscribers {
     if (count($foundSegmentsIds) !== count($listIds)) {
       $missingIds = array_values(array_diff($listIds, $foundSegmentsIds));
       $exception = sprintf(
+        // translators: %s is a comma-separated list of list IDs.
         _n('List with ID %s does not exist.', 'Lists with IDs %s do not exist.', count($missingIds), 'mailpoet'),
         implode(', ', $missingIds)
       );
@@ -149,6 +153,7 @@ class Subscribers {
         $this->subscribersRepository->flush();
       } catch (\Exception $e) {
         throw new APIException(
+          // translators: %s is the error message
           __(sprintf('Failed to save a status of a subscriber : %s', $e->getMessage()), 'mailpoet'),
           APIException::FAILED_TO_SAVE_SUBSCRIBER
         );
@@ -195,6 +200,7 @@ class Subscribers {
       foreach ($result as $queue) {
         if ($queue instanceof Sending && $queue->getErrors()) {
           throw new APIException(
+            // translators: %s is a comma-separated list of errors
             __(sprintf('Subscriber added, but welcome email failed to send: %s', strtolower(implode(', ', $queue->getErrors()))), 'mailpoet'),
             APIException::WELCOME_FAILED_TO_SEND
           );
@@ -211,6 +217,7 @@ class Subscribers {
       $this->confirmationEmailMailer->sendConfirmationEmailOnce($subscriberEntity);
     } catch (\Exception $e) {
       throw new APIException(
+        // translators: %s is the error message
         __(sprintf('Subscriber added to lists, but confirmation email failed to send: %s', strtolower($e->getMessage())), 'mailpoet'),
         APIException::CONFIRMATION_FAILED_TO_SEND
       );

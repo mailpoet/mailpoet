@@ -19,6 +19,7 @@ abstract class PHPMailerMapper {
   }
 
   public function getErrorForSubscriber($subscriber) {
+    // translators: %s is the name of the method.
     $message = sprintf(__('%s has returned an unknown error.', 'mailpoet'), $this->getMethodName());
     $subscriberErrors = [new SubscriberError($subscriber, null)];
     return new MailerError(MailerError::OPERATION_SEND, MailerError::LEVEL_HARD, $message, null, $subscriberErrors);

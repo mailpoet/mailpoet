@@ -91,6 +91,7 @@ class NewSubscriberNotificationMailer {
       'link_premium' => WPFunctions::get()->getSiteUrl(null, '/wp-admin/admin.php?page=mailpoet-upgrade'),
     ];
     return [
+      // translators: %s is name of the segment.
       'subject' => sprintf(__('New subscriber to %s', 'mailpoet'), $segmentNames),
       'body' => [
         'html' => $this->renderer->render('emails/newSubscriberNotification.html', $context),
