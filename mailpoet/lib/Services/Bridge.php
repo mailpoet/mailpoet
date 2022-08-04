@@ -133,8 +133,8 @@ class Bridge {
    */
   public function createAuthorizedEmailAddress(string $emailAdress) {
     $data = $this
-    ->getApi($this->settings->get(self::API_KEY_SETTING_NAME))
-    ->createAuthorizedEmailAddress($emailAdress);
+      ->getApi($this->settings->get(self::API_KEY_SETTING_NAME))
+      ->createAuthorizedEmailAddress($emailAdress);
 
     return $data;
   }
