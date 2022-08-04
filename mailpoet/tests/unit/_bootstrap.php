@@ -5,6 +5,11 @@ if (!function_exists('__')) {
     return $text;
   }
 }
+if (!function_exists('_x')) {
+  function _x($text, $context, $domain) {
+    return $text;
+  }
+}
 
 // Fix for mocking WPFunctions
 // [PHPUnit\Framework\Exception] Use of undefined constant OBJECT - assumed 'OBJECT' (this will throw an Error in a future version of PHP)
