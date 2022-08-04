@@ -237,6 +237,7 @@
     <properties>
       <property name="text_domain" type="array">
         <element value="mailpoet"/>
+        <element value="mailpoet-premium"/>
         <element value="woocommerce"/>
       </property>
     </properties>
