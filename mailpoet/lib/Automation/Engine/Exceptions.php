@@ -33,14 +33,14 @@ class Exceptions {
     return InvalidStateException::create()
       ->withErrorCode(self::MIGRATION_FAILED)
       // translators: %s is the error message.
-      ->withMessage(__(sprintf('Migration failed: %s', $error), 'mailpoet'));
+      ->withMessage(sprintf(__('Migration failed: %s', 'mailpoet'), $error));
   }
 
   public static function databaseError(string $error): InvalidStateException {
     return InvalidStateException::create()
       ->withErrorCode(self::DATABASE_ERROR)
       // translators: %s is the error message.
-      ->withMessage(__(sprintf('Database error: %s', $error), 'mailpoet'));
+      ->withMessage(sprintf(__('Database error: %s', 'mailpoet'), $error));
   }
 
   public static function apiMethodNotAllowed(): UnexpectedValueException {
@@ -60,70 +60,70 @@ class Exceptions {
     return UnexpectedValueException::create()
       ->withErrorCode(self::JSON_NOT_OBJECT)
       // translators: %s is the mentioned JSON string.
-      ->withMessage(__(sprintf("JSON string '%s' doesn't encode an object.", $json), 'mailpoet'));
+      ->withMessage(sprintf(__("JSON string '%s' doesn't encode an object.", 'mailpoet'), $json));
   }
 
   public static function workflowNotFound(int $id): NotFoundException {
     return NotFoundException::create()
       ->withErrorCode(self::WORKFLOW_NOT_FOUND)
       // translators: %d is the ID of the workflow.
-      ->withMessage(__(sprintf("Workflow with ID '%d' not found.", $id), 'mailpoet'));
+      ->withMessage(sprintf(__("Workflow with ID '%d' not found.", 'mailpoet'), $id));
   }
 
   public static function workflowRunNotFound(int $id): NotFoundException {
     return NotFoundException::create()
       ->withErrorCode(self::WORKFLOW_RUN_NOT_FOUND)
       // translators: %d is the ID of the workflow run.
-      ->withMessage(__(sprintf("Workflow run with ID '%d' not found.", $id), 'mailpoet'));
+      ->withMessage(sprintf(__("Workflow run with ID '%d' not found.", 'mailpoet'), $id));
   }
 
   public static function workflowStepNotFound(string $id): NotFoundException {
     return NotFoundException::create()
       ->withErrorCode(self::WORKFLOW_STEP_NOT_FOUND)
       // translators: %s is the ID of the workflow step.
-      ->withMessage(__(sprintf("Workflow step with ID '%s' not found.", $id), 'mailpoet'));
+      ->withMessage(sprintf(__("Workflow step with ID '%s' not found.", 'mailpoet'), $id));
   }
 
   public static function workflowTriggerNotFound(int $workflowId, string $key): NotFoundException {
     return NotFoundException::create()
       ->withErrorCode(self::WORKFLOW_TRIGGER_NOT_FOUND)
       // translators: %1$s is the key, %2$d is the workflow ID.
-      ->withMessage(__(sprintf('Workflow trigger with key "%1$s" not found in workflow ID "%2$d".', $key, $workflowId), 'mailpoet'));
+      ->withMessage(sprintf(__('Workflow trigger with key "%1$s" not found in workflow ID "%2$d".', 'mailpoet'), $key, $workflowId));
   }
 
   public static function workflowRunNotRunning(int $id, string $status): InvalidStateException {
     return InvalidStateException::create()
       ->withErrorCode(self::WORKFLOW_RUN_NOT_RUNNING)
       // translators: %1$d is the ID of the workflow run, %2$s it's current status.
-      ->withMessage(__(sprintf('Workflow run with ID "%1$d" is not running. Status: %2$s', $id, $status), 'mailpoet'));
+      ->withMessage(sprintf(__('Workflow run with ID "%1$d" is not running. Status: %2$s', 'mailpoet'), $id, $status));
   }
 
   public static function subjectNotFound(string $key): NotFoundException {
     return NotFoundException::create()
       ->withErrorCode(self::SUBJECT_NOT_FOUND)
       // translators: %s is the key of the subject not found.
-      ->withMessage(__(sprintf("Subject with key '%s' not found.", $key), 'mailpoet'));
+      ->withMessage(sprintf(__("Subject with key '%s' not found.", 'mailpoet'), $key));
   }
 
   public static function subjectClassNotFound(string $key): NotFoundException {
     return NotFoundException::create()
       ->withErrorCode(self::SUBJECT_NOT_FOUND)
       // translators: %s is the key of the subject class not found.
-      ->withMessage(__(sprintf("Subject of class '%s' not found.", $key), 'mailpoet'));
+      ->withMessage(sprintf(__("Subject of class '%s' not found.", 'mailpoet'), $key));
   }
 
   public static function subjectLoadFailed(string $key, array $args): InvalidStateException {
     return InvalidStateException::create()
       ->withErrorCode(self::SUBJECT_LOAD_FAILED)
       // translators: %1$s is the name of the key, %2$s the arguments.
-      ->withMessage(__(sprintf('Subject with key "%1$s" and args "%2$s" failed to load.', $key, Json::encode($args)), 'mailpoet'));
+      ->withMessage(sprintf(__('Subject with key "%1$s" and args "%2$s" failed to load.', 'mailpoet'), $key, Json::encode($args)));
   }
 
   public static function multipleSubjectsFound(string $key): InvalidStateException {
     return InvalidStateException::create()
       ->withErrorCode(self::MULTIPLE_SUBJECTS_FOUND)
       // translators: %s is the name of the key.
-      ->withMessage(__(sprintf("Multiple subjects with key '%s' found, only one expected.", $key), 'mailpoet'));
+      ->withMessage(sprintf(__("Multiple subjects with key '%s' found, only one expected.", 'mailpoet'), $key));
   }
 
   public static function workflowStructureModificationNotSupported(): UnexpectedValueException {
