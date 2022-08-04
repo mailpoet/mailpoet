@@ -124,8 +124,7 @@ class Settings extends APIEndpoint {
     if (empty($settings)) {
       return $this->badRequest(
         [
-          APIError::BAD_REQUEST =>
-            WPFunctions::get()->__('You have not specified any settings to be saved.', 'mailpoet'),
+          APIError::BAD_REQUEST => __('You have not specified any settings to be saved.', 'mailpoet'),
         ]);
     } else {
       $oldSettings = $this->settings->getAll();
@@ -184,7 +183,7 @@ class Settings extends APIEndpoint {
     $address = $data['address'] ?? null;
     if (!$address) {
       return $this->badRequest([
-        APIError::BAD_REQUEST => WPFunctions::get()->__('No email address specified.', 'mailpoet'),
+        APIError::BAD_REQUEST => __('No email address specified.', 'mailpoet'),
       ]);
     }
     $address = trim($address);
@@ -193,7 +192,7 @@ class Settings extends APIEndpoint {
       $this->authorizedEmailsController->setFromEmailAddress($address);
     } catch (\InvalidArgumentException $e) {
       return $this->badRequest([
-        APIError::UNAUTHORIZED => WPFunctions::get()->__('Can’t use this email yet! Please authorize it first.', 'mailpoet'),
+        APIError::UNAUTHORIZED => __('Can’t use this email yet! Please authorize it first.', 'mailpoet'),
       ]);
     }
 
@@ -211,7 +210,7 @@ class Settings extends APIEndpoint {
 
     if (!$emailAddress) {
       return $this->badRequest([
-        APIError::BAD_REQUEST => WPFunctions::get()->__('No email address specified.', 'mailpoet'),
+        APIError::BAD_REQUEST => __('No email address specified.', 'mailpoet'),
       ]);
     }
 
@@ -228,7 +227,7 @@ class Settings extends APIEndpoint {
         $response = ['status' => true];
       } else {
         return $this->badRequest([
-          APIError::BAD_REQUEST => WPFunctions::get()->__($e->getMessage(), 'mailpoet'),
+          APIError::BAD_REQUEST => __($e->getMessage(), 'mailpoet'),
         ]);
       }
     }
@@ -241,7 +240,7 @@ class Settings extends APIEndpoint {
 
     if (!$emailAddress) {
       return $this->badRequest([
-        APIError::BAD_REQUEST => WPFunctions::get()->__('No email address specified.', 'mailpoet'),
+        APIError::BAD_REQUEST => __('No email address specified.', 'mailpoet'),
       ]);
     }
 
@@ -257,7 +256,7 @@ class Settings extends APIEndpoint {
 
     if (!$domain) {
       return $this->badRequest([
-        APIError::BAD_REQUEST => WPFunctions::get()->__('No sender domain specified.', 'mailpoet'),
+        APIError::BAD_REQUEST => __('No sender domain specified.', 'mailpoet'),
       ]);
     }
 
@@ -273,7 +272,7 @@ class Settings extends APIEndpoint {
 
     if (!$domain) {
       return $this->badRequest([
-        APIError::BAD_REQUEST => WPFunctions::get()->__('No sender domain specified.', 'mailpoet'),
+        APIError::BAD_REQUEST => __('No sender domain specified.', 'mailpoet'),
       ]);
     }
 
@@ -288,7 +287,7 @@ class Settings extends APIEndpoint {
 
     if (!$domain) {
       return $this->badRequest([
-        APIError::BAD_REQUEST => WPFunctions::get()->__('No sender domain specified.', 'mailpoet'),
+        APIError::BAD_REQUEST => __('No sender domain specified.', 'mailpoet'),
       ]);
     }
 
@@ -304,7 +303,7 @@ class Settings extends APIEndpoint {
         $response = $this->senderDomainController->getDomainRecords($domain);
       } else {
         return $this->badRequest([
-          APIError::BAD_REQUEST => WPFunctions::get()->__($e->getMessage(), 'mailpoet'),
+          APIError::BAD_REQUEST => __($e->getMessage(), 'mailpoet'),
         ]);
       }
     }
@@ -317,7 +316,7 @@ class Settings extends APIEndpoint {
 
     if (!$domain) {
       return $this->badRequest([
-        APIError::BAD_REQUEST => WPFunctions::get()->__('No sender domain specified.', 'mailpoet'),
+        APIError::BAD_REQUEST => __('No sender domain specified.', 'mailpoet'),
       ]);
     }
 
@@ -333,7 +332,7 @@ class Settings extends APIEndpoint {
         $response = ['ok' => true, 'dns' => $this->senderDomainController->getDomainRecords($domain)];
       } else {
         return $this->badRequest([
-          APIError::BAD_REQUEST => WPFunctions::get()->__($e->getMessage(), 'mailpoet'),
+          APIError::BAD_REQUEST => __($e->getMessage(), 'mailpoet'),
         ]);
       }
     }
@@ -341,7 +340,7 @@ class Settings extends APIEndpoint {
     if (!$response['ok']) {
       // sender domain verification error. probably an improper setup
       return $this->badRequest([
-        APIError::BAD_REQUEST => WPFunctions::get()->__($response['error'] ?? 'failed sender domain verification', 'mailpoet'),
+        APIError::BAD_REQUEST => __($response['error'] ?? 'failed sender domain verification', 'mailpoet'),
       ], $response);
     }
 
