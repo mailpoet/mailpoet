@@ -39,6 +39,8 @@ class Migrator {
         workflow_id int(11) unsigned NOT NULL,
         trigger_keys longtext NOT NULL,
         steps longtext,
+        created_at timestamp NOT NULL,
+        updated_at timestamp NOT NULL,
         PRIMARY KEY (id)
       );
     ");
