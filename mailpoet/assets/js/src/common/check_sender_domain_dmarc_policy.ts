@@ -17,10 +17,10 @@ const makeApiRequest = (domain: string) =>
 /**
  * Check domain DMARC policy
  *
- * returns `false` if not required, `true` if DMARC policy is Retricted
+ * returns `false` if not required, `true` if DMARC policy is Restricted
  * @param {string} email Email address
  * @param {boolean} isMssActive Is MailPoet sending service active?
- * @returns {Promise<boolean>} false if not required, `true` if DMARC policy is Retricted
+ * @returns {Promise<boolean>} false if not required, `true` if DMARC policy is Restricted
  */
 const checkSenderEmailDomainDmarcPolicy = async (
   email: string,
@@ -43,8 +43,8 @@ const checkSenderEmailDomainDmarcPolicy = async (
 
   try {
     const res = await makeApiRequest(emailAddressDomain);
-    const isDmarcPolicyRetricted = Boolean(res?.data?.isDmarcPolicyRetricted);
-    return isDmarcPolicyRetricted;
+    const isDmarcPolicyRestricted = Boolean(res?.data?.isDmarcPolicyRestricted);
+    return isDmarcPolicyRestricted;
   } catch (error) {
     // do nothing for now when the request fails
     return false;

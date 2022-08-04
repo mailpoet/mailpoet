@@ -77,18 +77,18 @@ class AuthorizedSenderDomainControllerTest extends \MailPoetTest {
   }
 
   public function testItReturnsEmptyArrayWhenNoVerifiedSenderDomains() {
-    $expectaton = Expected::once([]); // with empty array
+    $expectation = Expected::once([]); // with empty array
 
-    $bridgeMock = $this->make(Bridge::class, ['getAuthorizedSenderDomains' => $expectaton]);
+    $bridgeMock = $this->make(Bridge::class, ['getAuthorizedSenderDomains' => $expectation]);
     $controller = $this->getController($bridgeMock);
 
     $verifiedDomains = $controller->getVerifiedSenderDomains();
     expect($verifiedDomains)->same([]);
 
     $domains = ['testdomain.com' => []];
-    $expectaton = Expected::once($domains);
+    $expectation = Expected::once($domains);
 
-    $bridgeMock = $this->make(Bridge::class, ['getAuthorizedSenderDomains' => $expectaton]);
+    $bridgeMock = $this->make(Bridge::class, ['getAuthorizedSenderDomains' => $expectation]);
     $controller = $this->getController($bridgeMock);
     $verifiedDomains = $controller->getVerifiedSenderDomains();
     expect($verifiedDomains)->same([]);
@@ -99,12 +99,12 @@ class AuthorizedSenderDomainControllerTest extends \MailPoetTest {
     $this->expectExceptionMessage('Sender domain exist');
 
     $domains = ['testdomain.com' => []];
-    $getSenderDomainsExpectaton = Expected::once($domains);
-    $createSenderDomainsExpectaton = Expected::never();
+    $getSenderDomainsExpectation = Expected::once($domains);
+    $createSenderDomainsExpectation = Expected::never();
 
     $bridgeMock = $this->make(Bridge::class, [
-      'getAuthorizedSenderDomains' => $getSenderDomainsExpectaton,
-      'createAuthorizedSenderDomain' => $createSenderDomainsExpectaton,
+      'getAuthorizedSenderDomains' => $getSenderDomainsExpectation,
+      'createAuthorizedSenderDomain' => $createSenderDomainsExpectation,
     ]);
     $controller = $this->getController($bridgeMock);
     $controller->createAuthorizedSenderDomain('testdomain.com');
@@ -115,12 +115,12 @@ class AuthorizedSenderDomainControllerTest extends \MailPoetTest {
     $this->expectExceptionMessage('Sender domain does not exist');
 
     $domains = ['newdomain.com' => []];
-    $getSenderDomainsExpectaton = Expected::once($domains);
-    $verifySenderDomainsExpectaton = Expected::never();
+    $getSenderDomainsExpectation = Expected::once($domains);
+    $verifySenderDomainsExpectation = Expected::never();
 
     $bridgeMock = $this->make(Bridge::class, [
-      'getAuthorizedSenderDomains' => $getSenderDomainsExpectaton,
-      'verifyAuthorizedSenderDomain' => $verifySenderDomainsExpectaton,
+      'getAuthorizedSenderDomains' => $getSenderDomainsExpectation,
+      'verifyAuthorizedSenderDomain' => $verifySenderDomainsExpectation,
     ]);
     $controller = $this->getController($bridgeMock);
     $controller->verifyAuthorizedSenderDomain('testdomain.com');
@@ -135,12 +135,12 @@ class AuthorizedSenderDomainControllerTest extends \MailPoetTest {
       ['status' => 'valid'],
       ['status' => 'valid'],
     ]];
-    $getSenderDomainsExpectaton = Expected::once($domains);
-    $verifySenderDomainsExpectaton = Expected::never();
+    $getSenderDomainsExpectation = Expected::once($domains);
+    $verifySenderDomainsExpectation = Expected::never();
 
     $bridgeMock = $this->make(Bridge::class, [
-      'getAuthorizedSenderDomains' => $getSenderDomainsExpectaton,
-      'verifyAuthorizedSenderDomain' => $verifySenderDomainsExpectaton,
+      'getAuthorizedSenderDomains' => $getSenderDomainsExpectation,
+      'verifyAuthorizedSenderDomain' => $verifySenderDomainsExpectation,
     ]);
     $controller = $this->getController($bridgeMock);
     $controller->verifyAuthorizedSenderDomain('testdomain.com');
@@ -152,12 +152,12 @@ class AuthorizedSenderDomainControllerTest extends \MailPoetTest {
     $this->expectExceptionMessage($errorMessage);
 
     $domains = ['testdomain.com' => []];
-    $getSenderDomainsExpectaton = Expected::once($domains);
-    $verifySenderDomainsExpectaton = Expected::once(['error' => $errorMessage, 'status' => false]);
+    $getSenderDomainsExpectation = Expected::once($domains);
+    $verifySenderDomainsExpectation = Expected::once(['error' => $errorMessage, 'status' => false]);
 
     $bridgeMock = $this->make(Bridge::class, [
-      'getAuthorizedSenderDomains' => $getSenderDomainsExpectaton,
-      'verifyAuthorizedSenderDomain' => $verifySenderDomainsExpectaton,
+      'getAuthorizedSenderDomains' => $getSenderDomainsExpectation,
+      'verifyAuthorizedSenderDomain' => $verifySenderDomainsExpectation,
     ]);
     $controller = $this->getController($bridgeMock);
     $controller->verifyAuthorizedSenderDomain('testdomain.com');
@@ -165,20 +165,20 @@ class AuthorizedSenderDomainControllerTest extends \MailPoetTest {
 
   public function testItReturnsTrueWhenDmarcIsEnabled() {
     $controller = $this->getController();
-    $isRetricted = $controller->isDomainDmarcRestricted('mailpoet.com');
-    expect($isRetricted)->same(true);
+    $isRestricted = $controller->isDomainDmarcRestricted('mailpoet.com');
+    expect($isRestricted)->same(true);
   }
 
   public function testItReturnsFalseWhenDmarcIsNotEnabled() {
     $controller = $this->getController();
-    $isRetricted = $controller->isDomainDmarcRestricted('example.com');
-    expect($isRetricted)->same(false);
+    $isRestricted = $controller->isDomainDmarcRestricted('example.com');
+    expect($isRestricted)->same(false);
   }
 
   public function testItReturnsDmarcStatus() {
     $controller = $this->getController();
-    $isRetricted = $controller->getDmarcPolicyForDomain('example.com');
-    expect($isRetricted)->same('none');
+    $isRestricted = $controller->getDmarcPolicyForDomain('example.com');
+    expect($isRestricted)->same('none');
   }
 
   private function getController($bridgeMock = null): AuthorizedSenderDomainController {

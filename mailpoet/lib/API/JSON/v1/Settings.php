@@ -263,7 +263,7 @@ class Settings extends APIEndpoint {
 
     $domain = strtolower(trim($domain));
 
-    $response = ['isDmarcPolicyRetricted' => $this->senderDomainController->isDomainDmarcRestricted($domain)];
+    $response = ['isDmarcPolicyRestricted' => $this->senderDomainController->isDomainDmarcRestricted($domain)];
 
     return $this->successResponse($response);
   }
