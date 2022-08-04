@@ -41,7 +41,15 @@ class Segments {
       );
     }
 
-    $segment = $this->segmentsRepository->createOrUpdate($data['name'], $data['description'] ?? '');
+    try {
+      $segment = $this->segmentsRepository->createOrUpdate($data['name'], $data['description'] ?? '');
+    } catch (\Exception $e) {
+      throw new APIException(
+       sprintf(__('Failed to add subscriber: %s', 'mailpoet'), $e->getMessage()),
+        APIException::FAILED_TO_SAVE_LIST
+      );
+    }
+
     return $this->buildItem($segment);
   }
 
