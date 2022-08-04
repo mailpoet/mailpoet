@@ -6,7 +6,6 @@ use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Listing\ListingDefinition;
 use MailPoet\Listing\ListingRepository;
 use MailPoet\Util\Helpers;
-use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Doctrine\ORM\QueryBuilder;
 
 class NewsletterListingRepository extends ListingRepository {
@@ -60,7 +59,7 @@ class NewsletterListingRepository extends ListingRepository {
     // format segment list
     $segmentList = [
       [
-        'label' => WPFunctions::get()->__('All Lists', 'mailpoet'),
+        'label' => __('All Lists', 'mailpoet'),
         'value' => '',
       ],
     ];
@@ -104,7 +103,7 @@ class NewsletterListingRepository extends ListingRepository {
     $groups = [
       [
         'name' => 'all',
-        'label' => WPFunctions::get()->__('All', 'mailpoet'),
+        'label' => __('All', 'mailpoet'),
         'count' => $totalCount,
       ],
     ];
@@ -115,22 +114,22 @@ class NewsletterListingRepository extends ListingRepository {
         $groups = array_merge($groups, [
           [
             'name' => NewsletterEntity::STATUS_DRAFT,
-            'label' => WPFunctions::get()->__('Draft', 'mailpoet'),
+            'label' => __('Draft', 'mailpoet'),
             'count' => $map[NewsletterEntity::STATUS_DRAFT] ?? 0,
           ],
           [
             'name' => NewsletterEntity::STATUS_SCHEDULED,
-            'label' => WPFunctions::get()->__('Scheduled', 'mailpoet'),
+            'label' => __('Scheduled', 'mailpoet'),
             'count' => $map[NewsletterEntity::STATUS_SCHEDULED] ?? 0,
           ],
           [
             'name' => NewsletterEntity::STATUS_SENDING,
-            'label' => WPFunctions::get()->__('Sending', 'mailpoet'),
+            'label' => __('Sending', 'mailpoet'),
             'count' => $map[NewsletterEntity::STATUS_SENDING] ?? 0,
           ],
           [
             'name' => NewsletterEntity::STATUS_SENT,
-            'label' => WPFunctions::get()->__('Sent', 'mailpoet'),
+            'label' => __('Sent', 'mailpoet'),
             'count' => $map[NewsletterEntity::STATUS_SENT] ?? 0,
           ],
         ]);
@@ -140,12 +139,12 @@ class NewsletterListingRepository extends ListingRepository {
         $groups = array_merge($groups, [
           [
             'name' => NewsletterEntity::STATUS_SENDING,
-            'label' => WPFunctions::get()->__('Sending', 'mailpoet'),
+            'label' => __('Sending', 'mailpoet'),
             'count' => $map[NewsletterEntity::STATUS_SENDING] ?? 0,
           ],
           [
             'name' => NewsletterEntity::STATUS_SENT,
-            'label' => WPFunctions::get()->__('Sent', 'mailpoet'),
+            'label' => __('Sent', 'mailpoet'),
             'count' => $map[NewsletterEntity::STATUS_SENT] ?? 0,
           ],
         ]);
@@ -158,12 +157,12 @@ class NewsletterListingRepository extends ListingRepository {
         $groups = array_merge($groups, [
           [
             'name' => NewsletterEntity::STATUS_ACTIVE,
-            'label' => WPFunctions::get()->__('Active', 'mailpoet'),
+            'label' => __('Active', 'mailpoet'),
             'count' => $map[NewsletterEntity::STATUS_ACTIVE] ?? 0,
           ],
           [
             'name' => NewsletterEntity::STATUS_DRAFT,
-            'label' => WPFunctions::get()->__('Not active', 'mailpoet'),
+            'label' => __('Not active', 'mailpoet'),
             'count' => $map[NewsletterEntity::STATUS_DRAFT] ?? 0,
           ],
         ]);
@@ -172,7 +171,7 @@ class NewsletterListingRepository extends ListingRepository {
 
     $groups[] = [
       'name' => 'trash',
-      'label' => WPFunctions::get()->__('Trash', 'mailpoet'),
+      'label' => __('Trash', 'mailpoet'),
       'count' => $trashedCount,
     ];
 

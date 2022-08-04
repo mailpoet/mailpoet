@@ -161,7 +161,7 @@ class Shortcodes {
     if (empty($newsletters)) {
       return $this->wp->applyFilters(
         'mailpoet_archive_no_newsletters',
-        $this->wp->__('Oops! There are no newsletters to display.', 'mailpoet')
+        __('Oops! There are no newsletters to display.', 'mailpoet')
       );
     } else {
       $title = $this->wp->applyFilters('mailpoet_archive_title', '');

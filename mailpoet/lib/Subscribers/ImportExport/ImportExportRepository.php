@@ -9,7 +9,6 @@ use MailPoet\Entities\SubscriberCustomFieldEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Segments\DynamicSegments\FilterHandler;
-use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Doctrine\DBAL\Connection;
 use MailPoetVendor\Doctrine\DBAL\Driver\Statement;
 use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
@@ -182,7 +181,7 @@ class ImportExportRepository {
     if (!$segment) {
       // if there are subscribers who do not belong to any segment, use
       // a CASE function to group them under "Not In Segment"
-      $qb->addSelect("'" . WPFunctions::get()->__('Not In Segment', 'mailpoet') . "' AS segment_name")
+      $qb->addSelect("'" . __('Not In Segment', 'mailpoet') . "' AS segment_name")
         ->leftJoin($subscriberTable, $subscriberTable, 's2', "{$subscriberTable}.id = s2.id")
         ->leftJoin('s2', $subscriberSegmentTable, 'ssg2', "s2.id = ssg2.subscriber_id AND ssg2.status = :statusSubscribed AND {$segmentTable}.id <> ssg2.segment_id")
         ->leftJoin('ssg2', $segmentTable, 'sg2', 'ssg2.segment_id = sg2.id AND sg2.deleted_at IS NULL')

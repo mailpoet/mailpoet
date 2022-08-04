@@ -19,7 +19,6 @@ use MailPoet\Segments\DynamicSegments\SegmentSaveController;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Segments\SegmentSubscribersRepository;
 use MailPoet\UnexpectedValueException;
-use MailPoet\WP\Functions as WPFunctions;
 
 class DynamicSegments extends APIEndpoint {
 
@@ -76,14 +75,14 @@ class DynamicSegments extends APIEndpoint {
       $id = (int)$data['id'];
     } else {
       return $this->errorResponse([
-        Error::BAD_REQUEST => WPFunctions::get()->__('Missing mandatory argument `id`.', 'mailpoet'),
+        Error::BAD_REQUEST => __('Missing mandatory argument `id`.', 'mailpoet'),
       ]);
     }
 
     $segment = $this->segmentsRepository->findOneById($id);
     if (!$segment instanceof SegmentEntity) {
       return $this->errorResponse([
-        Error::NOT_FOUND => WPFunctions::get()->__('This segment does not exist.', 'mailpoet'),
+        Error::NOT_FOUND => __('This segment does not exist.', 'mailpoet'),
       ]);
     }
 
@@ -126,48 +125,48 @@ class DynamicSegments extends APIEndpoint {
   private function getErrorString(InvalidFilterException $e) {
     switch ($e->getCode()) {
       case InvalidFilterException::MISSING_TYPE:
-        return WPFunctions::get()->__('The segment type is missing.', 'mailpoet');
+        return __('The segment type is missing.', 'mailpoet');
       case InvalidFilterException::INVALID_TYPE:
-        return WPFunctions::get()->__('The segment type is unknown.', 'mailpoet');
+        return __('The segment type is unknown.', 'mailpoet');
       case InvalidFilterException::MISSING_ROLE:
-        return WPFunctions::get()->__('Please select a user role.', 'mailpoet');
+        return __('Please select a user role.', 'mailpoet');
       case InvalidFilterException::MISSING_ACTION:
       case InvalidFilterException::INVALID_EMAIL_ACTION:
-        return WPFunctions::get()->__('Please select an email action.', 'mailpoet');
+        return __('Please select an email action.', 'mailpoet');
       case InvalidFilterException::MISSING_NEWSLETTER_ID:
-        return WPFunctions::get()->__('Please select an email.', 'mailpoet');
+        return __('Please select an email.', 'mailpoet');
       case InvalidFilterException::MISSING_PRODUCT_ID:
-        return WPFunctions::get()->__('Please select a product.', 'mailpoet');
+        return __('Please select a product.', 'mailpoet');
       case InvalidFilterException::MISSING_COUNTRY:
-        return WPFunctions::get()->__('Please select a country.', 'mailpoet');
+        return __('Please select a country.', 'mailpoet');
       case InvalidFilterException::MISSING_CATEGORY_ID:
-        return WPFunctions::get()->__('Please select a category.', 'mailpoet');
+        return __('Please select a category.', 'mailpoet');
       case InvalidFilterException::MISSING_VALUE:
-        return WPFunctions::get()->__('Please fill all required values.', 'mailpoet');
+        return __('Please fill all required values.', 'mailpoet');
       case InvalidFilterException::MISSING_NUMBER_OF_ORDERS_FIELDS:
-        return WPFunctions::get()->__('Please select a type for the comparison, a number of orders and a number of days.', 'mailpoet');
+        return __('Please select a type for the comparison, a number of orders and a number of days.', 'mailpoet');
       case InvalidFilterException::MISSING_TOTAL_SPENT_FIELDS:
-        return WPFunctions::get()->__('Please select a type for the comparison, an amount and a number of days.', 'mailpoet');
+        return __('Please select a type for the comparison, an amount and a number of days.', 'mailpoet');
       case InvalidFilterException::MISSING_FILTER:
-        return WPFunctions::get()->__('Please add at least one condition for filtering.', 'mailpoet');
+        return __('Please add at least one condition for filtering.', 'mailpoet');
       case InvalidFilterException::MISSING_OPERATOR:
-        return WPFunctions::get()->__('Please select a type for the comparison.', 'mailpoet');
+        return __('Please select a type for the comparison.', 'mailpoet');
       default:
-        return WPFunctions::get()->__('An error occurred while saving data.', 'mailpoet');
+        return __('An error occurred while saving data.', 'mailpoet');
     }
   }
 
   public function trash($data = []) {
     if (!isset($data['id'])) {
       return $this->errorResponse([
-        Error::BAD_REQUEST => WPFunctions::get()->__('Missing mandatory argument `id`.', 'mailpoet'),
+        Error::BAD_REQUEST => __('Missing mandatory argument `id`.', 'mailpoet'),
       ]);
     }
 
     $segment = $this->getSegment($data);
     if ($segment === null) {
       return $this->errorResponse([
-        Error::NOT_FOUND => WPFunctions::get()->__('This segment does not exist.', 'mailpoet'),
+        Error::NOT_FOUND => __('This segment does not exist.', 'mailpoet'),
       ]);
     }
 
@@ -192,14 +191,14 @@ class DynamicSegments extends APIEndpoint {
   public function restore($data = []) {
     if (!isset($data['id'])) {
       return $this->errorResponse([
-        Error::BAD_REQUEST => WPFunctions::get()->__('Missing mandatory argument `id`.', 'mailpoet'),
+        Error::BAD_REQUEST => __('Missing mandatory argument `id`.', 'mailpoet'),
       ]);
     }
 
     $segment = $this->getSegment($data);
     if ($segment === null) {
       return $this->errorResponse([
-        Error::NOT_FOUND => WPFunctions::get()->__('This segment does not exist.', 'mailpoet'),
+        Error::NOT_FOUND => __('This segment does not exist.', 'mailpoet'),
       ]);
     }
 
@@ -213,14 +212,14 @@ class DynamicSegments extends APIEndpoint {
   public function delete($data = []) {
     if (!isset($data['id'])) {
       return $this->errorResponse([
-        Error::BAD_REQUEST => WPFunctions::get()->__('Missing mandatory argument `id`.', 'mailpoet'),
+        Error::BAD_REQUEST => __('Missing mandatory argument `id`.', 'mailpoet'),
       ]);
     }
 
     $segment = $this->getSegment($data);
     if ($segment === null) {
       return $this->errorResponse([
-        Error::NOT_FOUND => WPFunctions::get()->__('This segment does not exist.', 'mailpoet'),
+        Error::NOT_FOUND => __('This segment does not exist.', 'mailpoet'),
       ]);
     }
 

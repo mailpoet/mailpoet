@@ -206,7 +206,7 @@ class API {
       $this->loggerFactory->getLogger(LoggerFactory::TOPIC_BRIDGE)->error('CreateAuthorizedEmailAddress API call failed.', $logData);
 
       $errorResponseData = json_decode($errorBody, true);
-      $fallbackError = sprintf($this->wp->__('An error has happened while performing a request, the server has responded with response code %d'), $code);
+      $fallbackError = sprintf(__('An error has happened while performing a request, the server has responded with response code %d'), $code);
 
       $errorData = is_array($errorResponseData) && isset($errorResponseData['error']) ? $errorResponseData['error'] : $fallbackError;
       return ['error' => $errorData, 'status' => false];

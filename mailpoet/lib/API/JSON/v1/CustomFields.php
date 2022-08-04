@@ -9,7 +9,6 @@ use MailPoet\API\JSON\ResponseBuilders\CustomFieldsResponseBuilder;
 use MailPoet\Config\AccessControl;
 use MailPoet\CustomFields\CustomFieldsRepository;
 use MailPoet\Entities\CustomFieldEntity;
-use MailPoet\WP\Functions as WPFunctions;
 
 class CustomFields extends APIEndpoint {
   public $permissions = [
@@ -45,7 +44,7 @@ class CustomFields extends APIEndpoint {
       return $this->successResponse($this->customFieldsResponseBuilder->build($customField));
     } else {
       return $this->errorResponse([
-        APIError::NOT_FOUND => WPFunctions::get()->__('This custom field does not exist.', 'mailpoet'),
+        APIError::NOT_FOUND => __('This custom field does not exist.', 'mailpoet'),
       ]);
     }
   }
@@ -68,7 +67,7 @@ class CustomFields extends APIEndpoint {
       return $this->successResponse($this->customFieldsResponseBuilder->build($customField));
     }
     return $this->errorResponse([
-      APIError::NOT_FOUND => WPFunctions::get()->__('This custom field does not exist.', 'mailpoet'),
+      APIError::NOT_FOUND => __('This custom field does not exist.', 'mailpoet'),
     ]);
   }
 }

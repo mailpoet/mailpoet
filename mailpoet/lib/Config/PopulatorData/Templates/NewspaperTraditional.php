@@ -16,7 +16,7 @@ class NewspaperTraditional {
 
   public function get() {
     return [
-      'name' => WPFunctions::get()->__("Newspaper Traditional", 'mailpoet'),
+      'name' => __("Newspaper Traditional", 'mailpoet'),
       'categories' => json_encode(['notification', 'all']),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),
@@ -140,7 +140,7 @@ class NewspaperTraditional {
                   1 =>
                    [
                     'type' => 'header',
-                    'text' => '<p><span style="color: #008080;"><a href="[link:newsletter_view_in_browser_url]" style="color: #008080;">'.WPFunctions::get()->__("View this in your browser.", 'mailpoet').'</a></span></p>',
+                    'text' => '<p><span style="color: #008080;"><a href="[link:newsletter_view_in_browser_url]" style="color: #008080;">'.__("View this in your browser.", 'mailpoet').'</a></span></p>',
                     'styles' =>
                      [
                       'block' =>
@@ -719,7 +719,7 @@ class NewspaperTraditional {
                   0 =>
                    [
                     'type' => 'footer',
-                    'text' => '<p><span style="color: #458687;"><a href="[link:subscription_unsubscribe_url]" style="color: #458687;">'.WPFunctions::get()->__("Unsubscribe", 'mailpoet').'</a> | <a href="[link:subscription_manage_url]" style="color: #458687;">'.WPFunctions::get()->__("Manage your subscription", 'mailpoet').'</a></span><br />'.WPFunctions::get()->__("Add your postal address here!", 'mailpoet').'</p>',
+                    'text' => '<p><span style="color: #458687;"><a href="[link:subscription_unsubscribe_url]" style="color: #458687;">'.__("Unsubscribe", 'mailpoet').'</a> | <a href="[link:subscription_manage_url]" style="color: #458687;">'.__("Manage your subscription", 'mailpoet').'</a></span><br />'.__("Add your postal address here!", 'mailpoet').'</p>',
                     'styles' =>
                      [
                       'block' =>
@@ -1061,7 +1061,7 @@ class NewspaperTraditional {
          ],
         'footer' =>
          [
-          'text' => '<p><a href="[link:subscription_unsubscribe_url]">'.WPFunctions::get()->__("Unsubscribe", 'mailpoet').'</a> | <a href="[link:subscription_manage_url]">'.WPFunctions::get()->__("Manage your subscription", 'mailpoet').'</a><br />'.WPFunctions::get()->__("Add your postal address here!", 'mailpoet').'</p>',
+          'text' => '<p><a href="[link:subscription_unsubscribe_url]">'.__("Unsubscribe", 'mailpoet').'</a> | <a href="[link:subscription_manage_url]">'.__("Manage your subscription", 'mailpoet').'</a><br />'.__("Add your postal address here!", 'mailpoet').'</p>',
           'styles' =>
            [
             'block' =>
@@ -1208,7 +1208,7 @@ class NewspaperTraditional {
          ],
         'header' =>
          [
-          'text' => '<a href="[link:newsletter_view_in_browser_url]">'.WPFunctions::get()->__("View this in your browser.", 'mailpoet').'</a>',
+          'text' => '<a href="[link:newsletter_view_in_browser_url]">'.__("View this in your browser.", 'mailpoet').'</a>',
           'styles' =>
            [
             'block' =>

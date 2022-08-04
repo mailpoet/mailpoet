@@ -36,7 +36,7 @@ class Registration {
   public function extendForm() {
     $label = $this->settings->get(
       'subscribe.on_register.label',
-      WPFunctions::get()->__('Yes, please add me to your mailing list.', 'mailpoet')
+      __('Yes, please add me to your mailing list.', 'mailpoet')
     );
 
     $form = '<p class="registration-form-mailpoet">

@@ -4,7 +4,6 @@ namespace MailPoet\Util\Notices;
 
 use MailPoet\Settings\SettingsController;
 use MailPoet\Util\Helpers;
-use MailPoet\WP\Functions as WPFunctions;
 
 class AfterMigrationNotice {
 
@@ -33,7 +32,7 @@ class AfterMigrationNotice {
 
   private function display() {
     $message = Helpers::replaceLinkTags(
-      WPFunctions::get()->__('Congrats! You’re progressing well so far. Complete your upgrade thanks to this [link]checklist[/link].', 'mailpoet'),
+      __('Congrats! You’re progressing well so far. Complete your upgrade thanks to this [link]checklist[/link].', 'mailpoet'),
       'https://kb.mailpoet.com/article/199-checklist-after-migrating-to-mailpoet3',
       [
         'target' => '_blank',

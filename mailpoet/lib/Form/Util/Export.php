@@ -57,7 +57,7 @@ class Export {
         $output = [];
 
         $output[] = '<!-- ' .
-          WPFunctions::get()->__(
+          __(
             'BEGIN Scripts: you should place them in the header of your theme',
             'mailpoet'
           ) .
@@ -89,7 +89,7 @@ class Export {
         $output[] = '   };';
         $output[] = '</script>';
         $output[] = '<!-- ' .
-          WPFunctions::get()->__('END Scripts', 'mailpoet') .
+          __('END Scripts', 'mailpoet') .
         '-->';
 
         $formWidget = new Widget();

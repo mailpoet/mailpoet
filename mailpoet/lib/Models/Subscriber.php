@@ -48,8 +48,8 @@ class Subscriber extends Model {
     parent::__construct();
 
     $this->addValidations('email', [
-      'required' => WPFunctions::get()->__('Please enter your email address', 'mailpoet'),
-      'validEmail' => WPFunctions::get()->__('Your email address is invalid!', 'mailpoet'),
+      'required' => __('Please enter your email address', 'mailpoet'),
+      'validEmail' => __('Your email address is invalid!', 'mailpoet'),
     ]);
   }
 
@@ -160,7 +160,7 @@ class Subscriber extends Model {
       ->findMany();
     $segmentList = [];
     $segmentList[] = [
-      'label' => WPFunctions::get()->__('All Lists', 'mailpoet'),
+      'label' => __('All Lists', 'mailpoet'),
       'value' => '',
     ];
 

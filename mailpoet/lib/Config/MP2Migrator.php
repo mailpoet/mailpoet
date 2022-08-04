@@ -302,7 +302,7 @@ class MP2Migrator {
 
     $this->progressbar->setTotalCount(0);
 
-    $result .= WPFunctions::get()->__('MailPoet 2 data found:', 'mailpoet') . "\n";
+    $result .= __('MailPoet 2 data found:', 'mailpoet') . "\n";
 
     // User Lists
     $usersListsCount = ORM::for_table($this->mp2ListTable)->count();

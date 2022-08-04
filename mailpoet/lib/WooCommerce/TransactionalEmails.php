@@ -111,7 +111,7 @@ class TransactionalEmails {
       'woocommerce_email_background_color' => '#f7f7f7',
       'woocommerce_email_base_color' => '#333333',
       'woocommerce_email_body_background_color' => '#ffffff',
-      'woocommerce_email_footer_text' => $this->wp->_x('Footer text', 'Default footer text for a WooCommerce transactional email', 'mailpoet'),
+      'woocommerce_email_footer_text' => _x('Footer text', 'Default footer text for a WooCommerce transactional email', 'mailpoet'),
       'woocommerce_email_header_image' => Env::$assetsUrl . '/img/newsletter_editor/wc-default-logo.png',
       'woocommerce_email_text_color' => '#111111',
     ];

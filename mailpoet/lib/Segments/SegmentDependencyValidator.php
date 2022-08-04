@@ -142,7 +142,7 @@ class SegmentDependencyValidator {
       && (!$this->subscribersFeature->hasValidPremiumKey() || $this->subscribersFeature->check())
     ) {
       return [
-        'message' => $this->wp->__('Your current MailPoet plan does not support advanced segments. Please [link]upgrade to a MailPoet Premium plan[/link] to reactivate this segment.', 'mailpoet'),
+        'message' => __('Your current MailPoet plan does not support advanced segments. Please [link]upgrade to a MailPoet Premium plan[/link] to reactivate this segment.', 'mailpoet'),
         'link' => 'https://account.mailpoet.com',
       ];
     }

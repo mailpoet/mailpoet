@@ -72,20 +72,20 @@ class FirstPurchase {
   public function getEventDetails() {
     return [
       'slug' => self::SLUG,
-      'title' => WPFunctions::get()->__('First Purchase', 'mailpoet'),
-      'description' => WPFunctions::get()->__('Let MailPoet send an email to customers who make their first purchase.', 'mailpoet'),
-      'listingScheduleDisplayText' => WPFunctions::get()->__('Email sent when a customer makes their first purchase.', 'mailpoet'),
+      'title' => __('First Purchase', 'mailpoet'),
+      'description' => __('Let MailPoet send an email to customers who make their first purchase.', 'mailpoet'),
+      'listingScheduleDisplayText' => __('Email sent when a customer makes their first purchase.', 'mailpoet'),
       'badge' => [
-        'text' => WPFunctions::get()->__('Must-have', 'mailpoet'),
+        'text' => __('Must-have', 'mailpoet'),
         'style' => 'red',
       ],
       'shortcodes' => [
         [
-          'text' => WPFunctions::get()->__('Order amount', 'mailpoet'),
+          'text' => __('Order amount', 'mailpoet'),
           'shortcode' => self::ORDER_TOTAL_SHORTCODE,
         ],
         [
-          'text' => WPFunctions::get()->__('Order date', 'mailpoet'),
+          'text' => __('Order date', 'mailpoet'),
           'shortcode' => self::ORDER_DATE_SHORTCODE,
         ],
       ],

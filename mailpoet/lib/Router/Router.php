@@ -45,16 +45,16 @@ class Router {
     $endpointClass = __NAMESPACE__ . "\\Endpoints\\" . ucfirst($this->endpoint);
 
     if (!$this->endpoint || !class_exists($endpointClass)) {
-      return $this->terminateRequest(self::RESPONSE_ERROR, WPFunctions::get()->__('Invalid router endpoint', 'mailpoet'));
+      return $this->terminateRequest(self::RESPONSE_ERROR, __('Invalid router endpoint', 'mailpoet'));
     }
 
     $endpoint = $this->container->get($endpointClass);
 
     if (!method_exists($endpoint, $this->endpointAction) || !in_array($this->endpointAction, $endpoint->allowedActions)) {
-      return $this->terminateRequest(self::RESPONSE_ERROR, WPFunctions::get()->__('Invalid router endpoint action', 'mailpoet'));
+      return $this->terminateRequest(self::RESPONSE_ERROR, __('Invalid router endpoint action', 'mailpoet'));
     }
     if (!$this->validatePermissions($this->endpointAction, $endpoint->permissions)) {
-      return $this->terminateRequest(self::RESPONE_FORBIDDEN, WPFunctions::get()->__('You do not have the required permissions.', 'mailpoet'));
+      return $this->terminateRequest(self::RESPONE_FORBIDDEN, __('You do not have the required permissions.', 'mailpoet'));
     }
     WPFunctions::get()->doAction('mailpoet_conflict_resolver_router_url_query_parameters');
     $callback = [

@@ -87,7 +87,7 @@ class AssetsController {
       'is_rtl' => (function_exists('is_rtl') ? (bool)is_rtl() : false),
     ]);
 
-    $ajaxFailedErrorMessage = $this->wp->__('An error has happened while performing a request, please try again later.');
+    $ajaxFailedErrorMessage = __('An error has happened while performing a request, please try again later.');
 
     $inlineScript = <<<EOL
 function initMailpoetTranslation() {

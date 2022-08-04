@@ -16,7 +16,7 @@ class ModularStyleStories {
 
   public function get() {
     return [
-      'name' => WPFunctions::get()->__("Modular Style Stories", 'mailpoet'),
+      'name' => __("Modular Style Stories", 'mailpoet'),
       'categories' => json_encode(['notification', 'all']),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),
@@ -1019,7 +1019,7 @@ class ModularStyleStories {
                               2 =>
                                  [
                                   'type' => 'footer',
-                                  'text' => '<p><span style="color: #ffffff;"><a href="[link:subscription_unsubscribe_url]" style="color: #ffffff;">'.WPFunctions::get()->__("Unsubscribe", 'mailpoet').'</a> | <a href="[link:subscription_manage_url]" style="color: #ffffff;">'.WPFunctions::get()->__("Manage your subscription", 'mailpoet').'</a></span><br /><span style="color: #ffffff;">'.WPFunctions::get()->__("Add your postal address here!", 'mailpoet').'</span></p>',
+                                  'text' => '<p><span style="color: #ffffff;"><a href="[link:subscription_unsubscribe_url]" style="color: #ffffff;">'.__("Unsubscribe", 'mailpoet').'</a> | <a href="[link:subscription_manage_url]" style="color: #ffffff;">'.__("Manage your subscription", 'mailpoet').'</a></span><br /><span style="color: #ffffff;">'.__("Add your postal address here!", 'mailpoet').'</span></p>',
                                   'styles' =>
                                      [
                                       'block' =>
@@ -1287,7 +1287,7 @@ class ModularStyleStories {
              ],
           'footer' =>
              [
-              'text' => '<p><a href="[link:subscription_unsubscribe_url]">'.WPFunctions::get()->__("Unsubscribe", 'mailpoet').'</a> | <a href="[link:subscription_manage_url]">'.WPFunctions::get()->__("Manage your subscription", 'mailpoet').'</a><br />'.WPFunctions::get()->__("Add your postal address here!", 'mailpoet').'</p>',
+              'text' => '<p><a href="[link:subscription_unsubscribe_url]">'.__("Unsubscribe", 'mailpoet').'</a> | <a href="[link:subscription_manage_url]">'.__("Manage your subscription", 'mailpoet').'</a><br />'.__("Add your postal address here!", 'mailpoet').'</p>',
               'styles' =>
                  [
                   'block' =>
@@ -1419,7 +1419,7 @@ class ModularStyleStories {
              ],
           'header' =>
              [
-              'text' => '<a href="[link:newsletter_view_in_browser_url]">'.WPFunctions::get()->__("View this in your browser.", 'mailpoet').'</a>',
+              'text' => '<a href="[link:newsletter_view_in_browser_url]">'.__("View this in your browser.", 'mailpoet').'</a>',
               'styles' =>
                  [
                   'block' =>

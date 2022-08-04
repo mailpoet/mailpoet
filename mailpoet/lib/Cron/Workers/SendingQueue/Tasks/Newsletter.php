@@ -192,7 +192,7 @@ class Newsletter {
     // if the rendered subject is empty, use a default subject,
     // having no subject in a newsletter is considered spammy
     if (empty(trim((string)$sendingTask->newsletterRenderedSubject))) {
-      $sendingTask->newsletterRenderedSubject = WPFunctions::get()->__('No subject', 'mailpoet');
+      $sendingTask->newsletterRenderedSubject = __('No subject', 'mailpoet');
     }
     $renderedNewsletter = $this->emoji->encodeEmojisInBody($renderedNewsletter);
     $sendingTask->newsletterRenderedBody = $renderedNewsletter;
@@ -290,7 +290,7 @@ class Newsletter {
   public function stopNewsletterPreProcessing($errorCode = null) {
     MailerLog::processError(
       'queue_save',
-      WPFunctions::get()->__('There was an error processing your newsletter during sending. If possible, please contact us and report this issue.', 'mailpoet'),
+      __('There was an error processing your newsletter during sending. If possible, please contact us and report this issue.', 'mailpoet'),
       $errorCode
     );
   }
