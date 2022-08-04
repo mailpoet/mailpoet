@@ -38,21 +38,16 @@ class UpdateWorkflowController {
       throw Exceptions::workflowNotFound($id);
     }
 
-    $changed = false;
-    $storedData = $workflow->toArray();
-
-    if (array_key_exists('name', $data) && $workflow->getName() !== $data['name']) {
+    if (array_key_exists('name', $data)) {
       $workflow->setName($data['name']);
-      $changed = true;
     }
 
-    if (array_key_exists('status', $data) && $workflow->getStatus() !== $data['status']) {
+    if (array_key_exists('status', $data)) {
       $this->checkWorkflowStatus($data['status']);
       $workflow->setStatus($data['status']);
-      $changed = true;
     }
 
-    if (array_key_exists('steps', $data) && json_decode($storedData['steps'], true) !== $data['steps']) {
+    if (array_key_exists('steps', $data)) {
       $this->validateWorkflowSteps($workflow, $data['steps']);
       $this->updateStepsController->updateSteps($workflow, $data['steps']);
       foreach ($workflow->getSteps() as $step) {
