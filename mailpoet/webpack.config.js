@@ -547,24 +547,16 @@ function requestToHandle(request) {
   /* eslint-disable-next-line consistent-return, no-useless-return */
   return;
 }
-
 const marketingOptinBlock = Object.assign({}, wpScriptConfig, {
   name: 'marketing_optin_block',
   entry: {
-    'marketing-optin-block': path.resolve(
-      process.cwd(),
-      'assets/js/src/marketing_optin_block',
-      'index.tsx',
-    ),
-    'marketing-optin-block-frontend': path.resolve(
-      process.cwd(),
-      'assets/js/src/marketing_optin_block',
-      'frontend.ts',
-    ),
+    'marketing-optin-block': '/assets/js/src/marketing_optin_block/index.tsx',
+    'marketing-optin-block-frontend':
+      '/assets/js/src/marketing_optin_block/frontend.ts',
   },
   output: {
     filename: '[name].js',
-    path: path.resolve(process.cwd(), 'assets/dist/js/marketing_optin_block'),
+    path: path.join(__dirname, 'assets/dist/js/marketing_optin_block'),
   },
   module: Object.assign({}, wpScriptConfig.module, {
     rules: [
@@ -590,10 +582,12 @@ const marketingOptinBlock = Object.assign({}, wpScriptConfig, {
   resolve: {
     extensions: ['.js', '.jsx', '.ts', '.tsx'],
   },
+  // use only needed plugins from wpScriptConfig and add the custom ones
   plugins: [
     ...wpScriptConfig.plugins.filter(
       (plugin) =>
-        plugin.constructor.name !== 'DependencyExtractionWebpackPlugin',
+        plugin.constructor.pluginName === 'mini-css-extract-plugin' ||
+        plugin.constructor.name === 'CleanWebpackPlugin',
     ),
     new DependencyExtractionWebpackPlugin({
       injectPolyfill: true,
