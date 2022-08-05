@@ -69,10 +69,10 @@ jQuery(($) => {
     const captcha = document.querySelector(imgSelector);
     const audioCaptcha =
       document.querySelector<HTMLAudioElement>(audioSelector);
-    const audioCaptchaSource = audioCaptcha.querySelector('source');
-    if (!captcha) {
+    if (!captcha || !audioCaptcha) {
       return false;
     }
+    const audioCaptchaSource = audioCaptcha.querySelector('source');
     let captchaSrc = captcha.getAttribute('src');
     let hashPos = captchaSrc.indexOf('#');
     let newSrc = hashPos > 0 ? captchaSrc.substring(0, hashPos) : captchaSrc;
