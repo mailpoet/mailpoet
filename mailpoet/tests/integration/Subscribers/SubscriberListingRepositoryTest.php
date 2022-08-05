@@ -12,6 +12,8 @@ use MailPoet\Segments\DynamicSegments\FilterHandler;
 use MailPoet\Segments\DynamicSegments\Filters\UserRole;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Segments\SegmentSubscribersRepository;
+use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
+use MailPoet\Test\DataFactories\Tag;
 
 class SubscriberListingRepositoryTest extends \MailPoetTest {
 
@@ -47,7 +49,13 @@ class SubscriberListingRepositoryTest extends \MailPoetTest {
   }
 
   public function testItBuildsFilters() {
-    $this->createSubscriberEntity(); // subscriber without a list
+    $tag = (new Tag())
+      ->withName('My Tag')
+      ->create();
+
+    (new SubscriberFactory())  // subscriber without a list with a tag
+      ->withTags([$tag])
+      ->create();
     $subscriberWithDeletedList = $this->createSubscriberEntity();
     $deletedList = $this->segmentRepository->createOrUpdate('Segment 1');
     $deletedList->setDeletedAt(new \DateTimeImmutable());
@@ -72,7 +80,10 @@ class SubscriberListingRepositoryTest extends \MailPoetTest {
     expect($filters['segment'])->count(3);
     expect($filters['segment'][0]['label'])->equals('All Lists');
     expect($filters['segment'][1]['label'])->equals('Subscribers without a list (3)');
-    expect($filters['segment'][2]['label'])->endsWith('(2)');
+    expect($filters['segment'][2]['label'])->equals('Segment 2 (2)');
+    expect($filters['tag'])->count(2);
+    expect($filters['tag'][0]['label'])->equals('All Tags');
+    expect($filters['tag'][1]['label'])->equals('My Tag (1)');
   }
 
   public function testItBuildsGroups() {
