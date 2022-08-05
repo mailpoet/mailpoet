@@ -44,10 +44,7 @@ function Tags({
           return (
             <div key={randomId}>
               <Tooltip id={tooltipId} place="top">
-                {MailPoet.I18n.t('viewFilteredSubscribersMessage').replace(
-                  '%1$s',
-                  segment.name,
-                )}
+                {MailPoet.I18n.t('viewFilteredSubscribersMessage')}
               </Tooltip>
               <a
                 data-tip=""
