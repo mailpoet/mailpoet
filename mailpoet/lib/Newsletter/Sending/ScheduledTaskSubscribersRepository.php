@@ -62,11 +62,7 @@ class ScheduledTaskSubscribersRepository extends Repository {
       ->getQuery()
       ->getSingleScalarResult();
 
-    if (is_numeric($countSubscribers)) {
-      return (int)$countSubscribers;
-    } else {
-      return 0;
-    }
+    return intval($countSubscribers);
   }
 
   public function getSubscriberIdsBatchForTask(int $taskId, int $lastProcessedSubscriberId, int $limit): array {
