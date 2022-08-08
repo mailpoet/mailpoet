@@ -103,166 +103,19 @@ const baseConfig = {
         loader: 'babel-loader',
       },
       {
+        include: path.resolve(
+          __dirname,
+          'assets/js/src/webpack_admin_expose.js',
+        ),
+        loader: 'expose-loader',
+        options: { exposes: globalPrefix },
+      },
+      {
         include: require.resolve('underscore'),
         loader: 'expose-loader',
         options: {
           exposes: '_',
         },
-      },
-      {
-        include: require.resolve('react-tooltip'),
-        loader: 'expose-loader',
-        options: {
-          exposes: `${globalPrefix}.ReactTooltip`,
-        },
-      },
-      {
-        include: require.resolve('react'),
-        loader: 'expose-loader',
-        options: {
-          exposes: `${globalPrefix}.React`,
-        },
-      },
-      {
-        include: require.resolve('react/jsx-runtime'),
-        loader: 'expose-loader',
-        options: {
-          exposes: `${globalPrefix}.ReactJsxRuntime`,
-        },
-      },
-      {
-        include: require.resolve('react-dom'),
-        loader: 'expose-loader',
-        options: {
-          exposes: `${globalPrefix}.ReactDOM`,
-        },
-      },
-      {
-        include: require.resolve('react-router-dom'),
-        loader: 'expose-loader',
-        options: {
-          exposes: `${globalPrefix}.ReactRouter`,
-        },
-      },
-      {
-        include: require.resolve('react-string-replace'),
-        loader: 'expose-loader',
-        options: {
-          exposes: `${globalPrefix}.ReactStringReplace`,
-        },
-      },
-      {
-        include: path.resolve(__dirname, 'assets/js/src/wp-data-hooks.js'),
-        loader: 'expose-loader',
-        options: {
-          exposes: {
-            globalName: `${globalPrefix}.WordPressData`,
-            override: true,
-          },
-        },
-      },
-      {
-        include: path.resolve(__dirname, 'assets/js/src/hooks.js'),
-        loader: 'expose-loader',
-        options: {
-          exposes: {
-            globalName: `${globalPrefix}.Hooks`,
-            override: true,
-          },
-        },
-      },
-      {
-        include: path.resolve(__dirname, 'assets/js/src/listing/index.ts'),
-        use: [
-          {
-            loader: 'expose-loader',
-            options: {
-              exposes: `${globalPrefix}.Listing`,
-            },
-          },
-          'babel-loader',
-        ],
-      },
-      {
-        include: path.resolve(__dirname, 'assets/js/src/help-tooltip.jsx'),
-        use: [
-          {
-            loader: 'expose-loader',
-            options: {
-              exposes: `${globalPrefix}.HelpTooltip`,
-            },
-          },
-          'babel-loader',
-        ],
-      },
-      {
-        include: path.resolve(__dirname, 'assets/js/src/common/index.ts'),
-        use: [
-          {
-            loader: 'expose-loader',
-            options: {
-              exposes: `${globalPrefix}.Common`,
-            },
-          },
-          'babel-loader',
-        ],
-      },
-      {
-        include: path.resolve(__dirname, 'assets/js/src/common/grid/index.tsx'),
-        use: [
-          {
-            loader: 'expose-loader',
-            options: {
-              exposes: `${globalPrefix}.CommonGrid`,
-            },
-          },
-          'babel-loader',
-        ],
-      },
-      {
-        include: path.resolve(
-          __dirname,
-          'assets/js/src/common/form/select/select.tsx',
-        ),
-        use: [
-          {
-            loader: 'expose-loader',
-            options: {
-              exposes: `${globalPrefix}.CommonFormSelect`,
-            },
-          },
-          'babel-loader',
-        ],
-      },
-      {
-        include: path.resolve(
-          __dirname,
-          'assets/js/src/common/form/react_select/react_select.tsx',
-        ),
-        use: [
-          {
-            loader: 'expose-loader',
-            options: {
-              exposes: `${globalPrefix}.CommonFormReactSelect`,
-            },
-          },
-          'babel-loader',
-        ],
-      },
-      {
-        include: path.resolve(
-          __dirname,
-          'assets/js/src/segments/dynamic/types.ts',
-        ),
-        use: [
-          {
-            loader: 'expose-loader',
-            options: {
-              exposes: `${globalPrefix}.DynamicSegmentsTypes`,
-            },
-          },
-          'babel-loader',
-        ],
       },
       {
         include: /Blob.js$/,
@@ -287,18 +140,6 @@ const baseConfig = {
             moduleName: 'jquery',
           },
         },
-      },
-      {
-        include: require.resolve('classnames'),
-        use: [
-          {
-            loader: 'expose-loader',
-            options: {
-              exposes: `${globalPrefix}.ClassNames`,
-            },
-          },
-          'babel-loader',
-        ],
       },
       {
         test: /node_modules\/tinymce/,
@@ -334,24 +175,7 @@ const adminConfig = {
   entry: {
     vendor: 'webpack_vendor_index.jsx',
     mailpoet: 'webpack_mailpoet_index.jsx',
-    // Admin vendor contains libraries shared between free and premium plugin
-    admin_vendor: [
-      'react',
-      'react-dom',
-      require.resolve('react-router-dom'),
-      'react-string-replace',
-      'prop-types',
-      'classnames',
-      'lodash',
-      'help-tooltip.jsx',
-      'listing/index.ts',
-      'common/index.ts',
-      'common/grid/index.tsx',
-      'common/form/select/select.tsx',
-      'common/form/react_select/react_select.tsx',
-      'wp-data-hooks.js',
-      'segments/dynamic/types.ts',
-    ],
+    admin_vendor: ['prop-types', 'lodash', 'webpack_admin_expose.js'], // libraries shared between free and premium plugin
     admin: 'webpack_admin_index.jsx',
     automation: 'automation/automation.tsx',
     automation_editor: 'automation/editor/index.tsx',
