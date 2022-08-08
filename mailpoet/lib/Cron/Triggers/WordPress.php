@@ -29,6 +29,7 @@ use MailPoet\Cron\Workers\WooCommercePastOrders;
 use MailPoet\Cron\Workers\WooCommerceSync as WooCommerceSyncWorker;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Mailer\MailerLog;
+use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
 use MailPoet\WP\Functions as WPFunctions;
@@ -58,6 +59,9 @@ class WordPress {
   /** @var ServicesChecker */
   private $serviceChecker;
 
+  /** @var ScheduledTasksRepository */
+  private $scheduledTasksRepository;
+
   /** @var EntityManager */
   private $entityManager;
 
@@ -67,6 +71,7 @@ class WordPress {
     SettingsController $settings,
     ServicesChecker $serviceChecker,
     WPFunctions $wp,
+    ScheduledTasksRepository $scheduledTasksRepository,
     EntityManager $entityManager
   ) {
     $this->supervisor = $supervisor;
@@ -74,6 +79,7 @@ class WordPress {
     $this->wp = $wp;
     $this->cronHelper = $cronHelper;
     $this->serviceChecker = $serviceChecker;
+    $this->scheduledTasksRepository = $scheduledTasksRepository;
     $this->entityManager = $entityManager;
   }
 
@@ -131,7 +137,7 @@ class WordPress {
     ]);
     // sending queue
     $scheduledQueues = SchedulerWorker::getScheduledQueues();
-    $runningQueues = SendingQueueWorker::getRunningQueues();
+    $runningQueues = $this->scheduledTasksRepository->findRunningSendingTasks(SendingQueueWorker::TASK_BATCH_SIZE);
     $sendingLimitReached = MailerLog::isSendingLimitReached();
     $sendingIsPaused = MailerLog::isSendingPaused();
     // sending service
