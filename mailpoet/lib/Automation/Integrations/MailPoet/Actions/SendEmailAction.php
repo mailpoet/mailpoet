@@ -63,8 +63,8 @@ class SendEmailAction implements Action {
     return Builder::object([
       'subject' => Builder::string()->default(__('Subject', 'mailpoet')),
       'preheader' => Builder::string(),
-      'from_name' => Builder::string()->default($this->settings->get('sender.name')),
-      'email' => Builder::string()->default($this->settings->get('sender.address')),
+      'sender_name' => Builder::string()->default($this->settings->get('sender.name')),
+      'sender_address' => Builder::string()->default($this->settings->get('sender.address')),
       'reply_to_name' => Builder::string()->default($this->settings->get('reply_to.name')),
       'reply_to_address' => Builder::string()->default($this->settings->get('reply_to.address')),
       'ga_campaign' => Builder::string(),
@@ -130,8 +130,8 @@ class SendEmailAction implements Action {
     $email = $this->getEmailForStep($step);
     $email->setSubject($args['subject'] ?? '');
     $email->setPreheader($args['preheader'] ?? '');
-    $email->setSenderName($args['from_name'] ?? '');
-    $email->setSenderAddress($args['email'] ?? '');
+    $email->setSenderName($args['sender_name'] ?? '');
+    $email->setSenderAddress($args['sender_address'] ?? '');
     $email->setReplyToName($args['reply_to_name'] ?? '');
     $email->setReplyToAddress($args['reply_to_address'] ?? '');
     $email->setGaCampaign($args['ga_campaign'] ?? '');
