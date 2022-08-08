@@ -6,6 +6,7 @@ use DateTimeInterface;
 use MailPoet\Doctrine\EntityTraits\AutoincrementedIdTrait;
 use MailPoet\Doctrine\EntityTraits\CreatedAtTrait;
 use MailPoet\Doctrine\EntityTraits\DeletedAtTrait;
+use MailPoet\Doctrine\EntityTraits\SafeToOneAssociationLoadTrait;
 use MailPoet\Doctrine\EntityTraits\UpdatedAtTrait;
 use MailPoetVendor\Doctrine\Common\Collections\ArrayCollection;
 use MailPoetVendor\Doctrine\Common\Collections\Collection;
@@ -32,6 +33,7 @@ class ScheduledTaskEntity {
   use CreatedAtTrait;
   use UpdatedAtTrait;
   use DeletedAtTrait;
+  use SafeToOneAssociationLoadTrait;
 
   /**
    * @ORM\Column(type="string", nullable=true)
@@ -86,6 +88,12 @@ class ScheduledTaskEntity {
    * @var Collection<int, ScheduledTaskSubscriberEntity>
    */
   public $subscribers;
+
+  /**
+   * @ORM\OneToOne(targetEntity="MailPoet\Entities\SendingQueueEntity", mappedBy="task", fetch="EAGER")
+   * @var SendingQueueEntity|null
+   */
+  private $sendingQueue;
 
   public function __construct() {
     $this->subscribers = new ArrayCollection();
@@ -202,5 +210,14 @@ class ScheduledTaskEntity {
    */
   public function getSubscribers(): Collection {
     return $this->subscribers;
+  }
+
+  public function getSendingQueue(): ?SendingQueueEntity {
+    $this->safelyLoadToOneAssociation('sendingQueue');
+    return $this->sendingQueue;
+  }
+
+  public function setSendingQueue(SendingQueueEntity $sendingQueue): void {
+    $this->sendingQueue = $sendingQueue;
   }
 }
