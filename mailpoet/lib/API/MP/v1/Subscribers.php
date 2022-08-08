@@ -84,61 +84,8 @@ class Subscribers {
     $skipSubscriberNotification = isset($options['skip_subscriber_notification']) && $options['skip_subscriber_notification'] === true;
     $signupConfirmationEnabled = (bool)$this->settings->get('signup_confirmation.enabled');
 
-    if (empty($listIds)) {
-      throw new APIException(__('At least one segment ID is required.', 'mailpoet'), APIException::SEGMENT_REQUIRED);
-    }
-
-    if (empty($subscriberId)) {
-      throw new APIException(__('A subscriber is required.', 'mailpoet'), APIException::SUBSCRIBER_NOT_EXISTS);
-    }
-
-    // throw exception when subscriber does not exist
-    $subscriber = null;
-    if (is_int($subscriberId) || (string)(int)$subscriberId === $subscriberId) {
-      $subscriber = $this->subscribersRepository->findOneById($subscriberId);
-    } else if (strlen(trim($subscriberId)) > 0) {
-      $subscriber = $this->subscribersRepository->findOneBy(['email' => $subscriberId]);
-    }
-
-    if (!$subscriber) {
-      throw new APIException(__('This subscriber does not exist.', 'mailpoet'), APIException::SUBSCRIBER_NOT_EXISTS);
-    }
-
-    // throw exception when none of the segments exist
-    $foundSegments = $this->segmentsRepository->findBy(['id' => $listIds]);
-    if (!$foundSegments) {
-      $exception = _n('This list does not exist.', 'These lists do not exist.', count($listIds), 'mailpoet');
-      throw new APIException($exception, APIException::LIST_NOT_EXISTS);
-    }
-
-    // throw exception when trying to subscribe to WP Users or WooCommerce Customers segments
-    $foundSegmentsIds = [];
-    foreach ($foundSegments as $foundSegment) {
-      if ($foundSegment->getType() === SegmentEntity::TYPE_WP_USERS) {
-        // translators: %d is the ID of the segment
-        throw new APIException(sprintf(__("Can't subscribe to a WordPress Users list with ID %d.", 'mailpoet'), $foundSegment->getId()), APIException::SUBSCRIBING_TO_WP_LIST_NOT_ALLOWED);
-      }
-      if ($foundSegment->getType() === SegmentEntity::TYPE_WC_USERS) {
-        // translators: %d is the ID of the segment
-        throw new APIException(sprintf(__("Can't subscribe to a WooCommerce Customers list with ID %d.", 'mailpoet'), $foundSegment->getId()), APIException::SUBSCRIBING_TO_WC_LIST_NOT_ALLOWED);
-      }
-      if ($foundSegment->getType() !== SegmentEntity::TYPE_DEFAULT) {
-        // translators: %d is the ID of the segment
-        throw new APIException(sprintf(__("Can't subscribe to a list with ID %d.", 'mailpoet'), $foundSegment->getId()), APIException::SUBSCRIBING_TO_LIST_NOT_ALLOWED);
-      }
-      $foundSegmentsIds[] = $foundSegment->getId();
-    }
-
-    // throw an exception when one or more segments do not exist
-    if (count($foundSegmentsIds) !== count($listIds)) {
-      $missingIds = array_values(array_diff($listIds, $foundSegmentsIds));
-      $exception = sprintf(
-        // translators: %s is a comma-separated list of list IDs.
-        _n('List with ID %s does not exist.', 'Lists with IDs %s do not exist.', count($missingIds), 'mailpoet'),
-        implode(', ', $missingIds)
-      );
-      throw new APIException(sprintf($exception, implode(', ', $missingIds)), APIException::LIST_NOT_EXISTS);
-    }
+    $subscriber = $this->findSubscriber($subscriberId);
+    $foundSegments = $this->getAndValidateSegments($listIds);
 
     $this->subscribersSegmentRepository->subscribeToSegments($subscriber, $foundSegments);
 
@@ -174,6 +121,11 @@ class Subscribers {
     }
 
     // schedule welcome email
+    $foundSegmentsIds = array_map(
+      function(SegmentEntity $segment) {
+        return $segment->getId();
+      }, $foundSegments
+    );
     if ($scheduleWelcomeEmail && $subscriber->getStatus() === SubscriberEntity::STATUS_SUBSCRIBED) {
       $this->_scheduleWelcomeNotification($subscriber, $foundSegmentsIds);
     }
@@ -222,5 +174,75 @@ class Subscribers {
         APIException::CONFIRMATION_FAILED_TO_SEND
       );
     }
+  }
+
+  /**
+   * @throws APIException
+   */
+  private function findSubscriber($subscriberIdOrEmail): SubscriberEntity {
+    if (empty($subscriberIdOrEmail)) {
+      throw new APIException(__('A subscriber is required.', 'mailpoet'), APIException::SUBSCRIBER_NOT_EXISTS);
+    }
+    // throw exception when subscriber does not exist
+    $subscriber = null;
+    if (is_int($subscriberIdOrEmail) || (string)(int)$subscriberIdOrEmail === $subscriberIdOrEmail) {
+      $subscriber = $this->subscribersRepository->findOneById($subscriberIdOrEmail);
+    } else if (strlen(trim($subscriberIdOrEmail)) > 0) {
+      $subscriber = $this->subscribersRepository->findOneBy(['email' => $subscriberIdOrEmail]);
+    }
+
+    if (!$subscriber) {
+      throw new APIException(__('This subscriber does not exist.', 'mailpoet'), APIException::SUBSCRIBER_NOT_EXISTS);
+    }
+
+    return $subscriber;
+  }
+
+  /**
+   * @return SegmentEntity[]
+   * @throws APIException
+   */
+  private function getAndValidateSegments(array $listIds): array {
+    if (empty($listIds)) {
+      throw new APIException(__('At least one segment ID is required.', 'mailpoet'), APIException::SEGMENT_REQUIRED);
+    }
+
+    // throw exception when none of the segments exist
+    $foundSegments = $this->segmentsRepository->findBy(['id' => $listIds]);
+    if (!$foundSegments) {
+      $exception = _n('This list does not exist.', 'These lists do not exist.', count($listIds), 'mailpoet');
+      throw new APIException($exception, APIException::LIST_NOT_EXISTS);
+    }
+
+    // throw exception when trying to subscribe to WP Users or WooCommerce Customers segments
+    $foundSegmentsIds = [];
+    foreach ($foundSegments as $foundSegment) {
+      if ($foundSegment->getType() === SegmentEntity::TYPE_WP_USERS) {
+        // translators: %d is the ID of the segment
+        throw new APIException(sprintf(__("Can't subscribe to a WordPress Users list with ID %d.", 'mailpoet'), $foundSegment->getId()), APIException::SUBSCRIBING_TO_WP_LIST_NOT_ALLOWED);
+      }
+      if ($foundSegment->getType() === SegmentEntity::TYPE_WC_USERS) {
+        // translators: %d is the ID of the segment
+        throw new APIException(sprintf(__("Can't subscribe to a WooCommerce Customers list with ID %d.", 'mailpoet'), $foundSegment->getId()), APIException::SUBSCRIBING_TO_WC_LIST_NOT_ALLOWED);
+      }
+      if ($foundSegment->getType() !== SegmentEntity::TYPE_DEFAULT) {
+        // translators: %d is the ID of the segment
+        throw new APIException(sprintf(__("Can't subscribe to a list with ID %d.", 'mailpoet'), $foundSegment->getId()), APIException::SUBSCRIBING_TO_LIST_NOT_ALLOWED);
+      }
+      $foundSegmentsIds[] = $foundSegment->getId();
+    }
+
+    // throw an exception when one or more segments do not exist
+    if (count($foundSegmentsIds) !== count($listIds)) {
+      $missingIds = array_values(array_diff($listIds, $foundSegmentsIds));
+      $exception = sprintf(
+        // translators: %s is the count of lists
+        _n('List with ID %s does not exist.', 'Lists with IDs %s do not exist.', count($missingIds), 'mailpoet'),
+        implode(', ', $missingIds)
+      );
+      throw new APIException(sprintf($exception, implode(', ', $missingIds)), APIException::LIST_NOT_EXISTS);
+    }
+
+    return $foundSegments;
   }
 }
