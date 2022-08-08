@@ -313,15 +313,4 @@ class Sending {
       ->findMany();
     return static::createManyFromTasks($tasks);
   }
-
-  public static function getRunningQueues($amount = self::RESULT_BATCH_SIZE) {
-    $tasks = ScheduledTask::orderByAsc('priority')
-      ->orderByAsc('updated_at')
-      ->whereNull('deleted_at')
-      ->whereNull('status')
-      ->where('type', 'sending')
-      ->limit($amount)
-      ->findMany();
-    return static::createManyFromTasks($tasks);
-  }
 }
