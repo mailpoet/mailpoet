@@ -85,6 +85,8 @@ $beamer-dot-size: 8px;
   border: none;
   color: $color-wordpress-grey-dark;
   cursor: pointer;
+  display: flex;
+  flex-direction: column;
   height: 60px;
   justify-content: center;
   position: relative;
