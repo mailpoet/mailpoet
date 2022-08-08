@@ -2,10 +2,12 @@
 
 namespace MailPoet\Test\Tasks;
 
+use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\ScheduledTaskSubscriber;
 use MailPoet\Models\SendingQueue;
+use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\Tasks\Subscribers;
 use MailPoet\WP\Functions as WPFunctions;
@@ -17,6 +19,9 @@ class SendingTest extends \MailPoetTest {
   public $queue;
   public $task;
   public $newsletter;
+
+  /** @var ScheduledTasksRepository */
+  private $scheduledTaskRepository;
 
   public function _before() {
     parent::_before();
@@ -31,6 +36,7 @@ class SendingTest extends \MailPoetTest {
       'task' => $this->task,
       'queue' => $this->queue,
     ]);
+    $this->scheduledTaskRepository = $this->diContainer->get(ScheduledTasksRepository::class);
   }
 
   public function testItCanBeConstructed() {
@@ -159,7 +165,7 @@ class SendingTest extends \MailPoetTest {
 
     // if task exists but sending queue is missing, results should not contain empty (false) values
     $this->queue->delete();
-    $tasks = SendingTask::getRunningQueues();
+    $tasks = $this->scheduledTaskRepository->findRunningSendingTasks();
     expect($tasks)->isEmpty();
   }
 
@@ -182,15 +188,15 @@ class SendingTest extends \MailPoetTest {
     $this->sending->status = null;
     $this->sending->scheduled_at = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'))->subHours(1);
     $this->sending->save();
-    $tasks = SendingTask::getRunningQueues();
+    $tasks = $this->scheduledTaskRepository->findRunningSendingTasks();
     expect($tasks)->notEmpty();
     foreach ($tasks as $task) {
-      expect($task)->isInstanceOf('MailPoet\Tasks\Sending');
+      expect($task)->isInstanceOf(ScheduledTaskEntity::class);
     }
 
     // if task exists but sending queue is missing, results should not contain empty (false) values
     $this->queue->delete();
-    $tasks = SendingTask::getRunningQueues();
+    $tasks = $this->scheduledTaskRepository->findRunningSendingTasks();
     expect($tasks)->isEmpty();
   }
 
@@ -200,7 +206,7 @@ class SendingTest extends \MailPoetTest {
     for ($i = 0; $i < $amount + 3; $i += 1) {
       $this->createNewSendingTask(['status' => null]);
     }
-    expect(SendingTask::getRunningQueues($amount))->count($amount);
+    expect($this->scheduledTaskRepository->findRunningSendingTasks($amount))->count($amount);
   }
 
   public function testItGetsBatchOfRunningQueuesSortedByUpdatedTime() {
@@ -235,10 +241,10 @@ class SendingTest extends \MailPoetTest {
     $sending3->updatedAt = '2017-05-04 15:00:00';
     $sending3->save();
 
-    $queues = SendingTask::getRunningQueues(3);
-    expect($queues[0]->task_id)->equals($sending1->id());
-    expect($queues[1]->task_id)->equals($sending3->id());
-    expect($queues[2]->task_id)->equals($sending2->id());
+    $tasks = $this->scheduledTaskRepository->findRunningSendingTasks(3);
+    expect($tasks[0]->getId())->equals($sending1->id());
+    expect($tasks[1]->getId())->equals($sending3->id());
+    expect($tasks[2]->getId())->equals($sending2->id());
   }
 
   public function createNewNewsletter() {
