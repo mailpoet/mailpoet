@@ -51,18 +51,22 @@ export function EmailPanel(): JSX.Element {
       <TextControl
         label="“From” name"
         placeholder="John Doe"
-        value={(selectedStep.args.from_name as string) ?? ''}
+        value={(selectedStep.args.sender_name as string) ?? ''}
         onChange={(value) =>
-          dispatch(store).updateStepArgs(selectedStep.id, 'from_name', value)
+          dispatch(store).updateStepArgs(selectedStep.id, 'sender_name', value)
         }
       />
       <TextControl
         type="email"
         label="“From” email address"
         placeholder="you@domain.com"
-        value={(selectedStep.args.email as string) ?? ''}
+        value={(selectedStep.args.sender_address as string) ?? ''}
         onChange={(value) =>
-          dispatch(store).updateStepArgs(selectedStep.id, 'email', value)
+          dispatch(store).updateStepArgs(
+            selectedStep.id,
+            'sender_address',
+            value,
+          )
         }
       />
       <SingleLineTextareaControl
