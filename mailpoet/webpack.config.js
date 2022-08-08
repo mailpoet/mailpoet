@@ -11,8 +11,16 @@ const globalPrefix = 'MailPoetLib';
 const PRODUCTION_ENV = process.env.NODE_ENV === 'production';
 const manifestSeed = {};
 
+const stats = {
+  preset: 'minimal',
+  assets: false,
+  modules: false,
+  chunks: true,
+};
+
 // Base config
 const baseConfig = {
+  stats,
   ignoreWarnings: [
     (warnings) => {
       // Todo: remove this if statement per MAILPOET-4544
@@ -360,6 +368,7 @@ function requestToHandle(request) {
   return;
 }
 const marketingOptinBlock = Object.assign({}, wpScriptConfig, {
+  stats,
   name: 'marketing_optin_block',
   entry: {
     'marketing-optin-block': '/assets/js/src/marketing_optin_block/index.tsx',
