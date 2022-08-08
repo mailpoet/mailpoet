@@ -125,6 +125,25 @@ class ScheduledTasksRepository extends Repository {
     return $this->findByTypeAndStatus($type, ScheduledTaskEntity::STATUS_SCHEDULED, $limit, true);
   }
 
+  /**
+   * @return ScheduledTaskEntity[]
+   */
+  public function findRunningSendingTasks(?int $limit = null): array {
+    return $this->doctrineRepository->createQueryBuilder('st')
+      ->select('st')
+      ->join('st.sendingQueue', 'sq')
+      ->where('st.type = :type')
+      ->andWhere('st.status IS NULL')
+      ->andWhere('st.deletedAt IS NULL')
+      ->andWhere('sq.deletedAt IS NULL')
+      ->orderBy('st.priority', 'ASC')
+      ->addOrderBy('st.updatedAt', 'ASC')
+      ->setMaxResults($limit)
+      ->setParameter('type', ScheduledTaskEntity::TYPE_SENDING)
+      ->getQuery()
+      ->getResult();
+  }
+
   protected function findByTypeAndStatus($type, $status, $limit = null, $future = false) {
     $queryBuilder = $this->doctrineRepository->createQueryBuilder('st')
       ->select('st')
