@@ -9,20 +9,20 @@
   }
 
   &:disabled {
-    color: rgba(255, 255, 255, 0.4);
+    color: rgba(255, 255, 255, .4);
   }
 
   &.is-busy {
     --background-color-1: #2c3236;
     --background-color-2: #535659;
-
-    background-image: linear-gradient(
-      -45deg,
-      var(--background-color-1) 33%,
-      var(--background-color-2) 33%,
-      var(--background-color-2) 70%,
-      var(--background-color-1) 70%
-    );
+    background-image:
+      linear-gradient(
+        -45deg,
+        var(--background-color-1) 33%,
+        var(--background-color-2) 33%,
+        var(--background-color-2) 70%,
+        var(--background-color-1) 70%
+      );
   }
 }
 
