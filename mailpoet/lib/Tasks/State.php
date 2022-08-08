@@ -87,7 +87,7 @@ class State {
   private function buildTaskData(ScheduledTask $task) {
     $queue = $newsletter = null;
     if ($task->type === Sending::TASK_TYPE) {
-      $queue = $this->sendingQueuesRepository->findOneById($task->id);
+      $queue = $this->sendingQueuesRepository->findOneBy(['task' => $task->id]);
       $newsletter = $queue ? $queue->getNewsletter() : null;
     }
     return [
