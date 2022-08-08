@@ -13,6 +13,35 @@ const manifestSeed = {};
 
 // Base config
 const baseConfig = {
+  ignoreWarnings: [
+    (warnings) => {
+      // Todo: remove this if statement per MAILPOET-4544
+      if (
+        warnings &&
+        [
+          'AssetsOverSizeLimitWarning',
+          'EntrypointsOverSizeLimitWarning',
+          'NoAsyncChunksWarning',
+        ].includes(warnings.name)
+      ) {
+        return true;
+      }
+
+      // only show warnings when watching
+      if (process.env.WEBPACK_WATCH || process.argv.includes('--watch')) {
+        return false;
+      }
+
+      if (warnings) {
+        // eslint-disable-next-line
+        console.warn(warnings);
+        process.emitWarning(warnings); // emit for listeners
+        process.exit(1);
+      }
+
+      return false;
+    },
+  ],
   mode: PRODUCTION_ENV ? 'production' : 'development',
   devtool: PRODUCTION_ENV ? undefined : 'eval-source-map',
   cache: true,
