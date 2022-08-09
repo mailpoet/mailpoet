@@ -26,7 +26,7 @@ class WorkflowStorage {
   }
 
   public function createWorkflow(Workflow $workflow): int {
-    $result = $this->wpdb->insert($this->workflowTable, $this->workflowHeaderData($workflow));
+    $result = $this->wpdb->insert($this->workflowTable, $this->getWorkflowHeaderData($workflow));
     if (!$result) {
       throw Exceptions::databaseError($this->wpdb->last_error);
     }
@@ -40,7 +40,7 @@ class WorkflowStorage {
     if ($oldRecord && $oldRecord->equals($workflow)) {
       return;
     }
-    $result = $this->wpdb->update($this->workflowTable, $this->workflowHeaderData($workflow), ['id' => $workflow->getId()]);
+    $result = $this->wpdb->update($this->workflowTable, $this->getWorkflowHeaderData($workflow), ['id' => $workflow->getId()]);
     if ($result === false) {
       throw Exceptions::databaseError($this->wpdb->last_error);
     }
@@ -169,7 +169,7 @@ WHERE
     }, (array)$data);
   }
 
-  private function workflowHeaderData(Workflow $workflow): array {
+  private function getWorkflowHeaderData(Workflow $workflow): array {
     $workflowHeader = $workflow->toArray();
     unset($workflowHeader['steps']);
     unset($workflowHeader['trigger_keys']);
