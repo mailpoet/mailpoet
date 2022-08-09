@@ -37,12 +37,25 @@ class Beacon {
   }
 
   public function getData($maskApiKey = false) {
+    return array_merge($this->getUserData(), $this->getSiteData($maskApiKey));
+  }
+
+  public function getUserData() {
+    $currentUser = WPFunctions::get()->wpGetCurrentUser();
+    $sender = $this->settings->get('sender', ['address' => null]);
+
+    return [
+      'name' => $currentUser->display_name, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+      'email' => $sender['address'],
+    ];
+  }
+
+  public function getSiteData($maskApiKey = false) {
     global $wpdb;
+
     $dbVersion = $wpdb->get_var('SELECT @@VERSION');
     $mta = $this->settings->get('mta');
     $currentTheme = WPFunctions::get()->wpGetTheme();
-    $currentUser = WPFunctions::get()->wpGetCurrentUser();
-    $sender = $this->settings->get('sender', ['address' => null]);
     $premiumKey = $this->settings->get(Bridge::PREMIUM_KEY_SETTING_NAME) ?: $this->settings->get(Bridge::API_KEY_SETTING_NAME);
 
     if ($maskApiKey) {
@@ -59,8 +72,6 @@ class Beacon {
     }
 
     return [
-      'name' => $currentUser->display_name, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-      'email' => $sender['address'],
       'PHP version' => PHP_VERSION,
       'MailPoet Free version' => MAILPOET_VERSION,
       'MailPoet Premium version' => (defined('MAILPOET_PREMIUM_VERSION')) ? MAILPOET_PREMIUM_VERSION : 'N/A',
