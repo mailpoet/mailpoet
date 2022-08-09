@@ -54,11 +54,6 @@ class UpdateWorkflowController {
         $this->hooks->doWorkflowStepBeforeSave($step);
         $this->hooks->doWorkflowStepByKeyBeforeSave($step);
       }
-      $changed = true;
-    }
-
-    if (!$changed) {
-      return $workflow;
     }
 
     $this->hooks->doWorkflowBeforeSave($workflow);
