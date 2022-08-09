@@ -304,7 +304,7 @@ class Settings extends APIEndpoint {
         $response = $this->senderDomainController->getDomainRecords($domain);
       } else {
         return $this->badRequest([
-          APIError::BAD_REQUEST => __($e->getMessage(), 'mailpoet'),
+          APIError::BAD_REQUEST => $e->getMessage(),
         ]);
       }
     }
@@ -333,7 +333,7 @@ class Settings extends APIEndpoint {
         $response = ['ok' => true, 'dns' => $this->senderDomainController->getDomainRecords($domain)];
       } else {
         return $this->badRequest([
-          APIError::BAD_REQUEST => __($e->getMessage(), 'mailpoet'),
+          APIError::BAD_REQUEST => $e->getMessage(),
         ]);
       }
     }
@@ -341,7 +341,7 @@ class Settings extends APIEndpoint {
     if (!$response['ok']) {
       // sender domain verification error. probably an improper setup
       return $this->badRequest([
-        APIError::BAD_REQUEST => __($response['error'] ?? 'failed sender domain verification', 'mailpoet'),
+        APIError::BAD_REQUEST => $response['error'] ?? __('Sender domain verification failed.', 'mailpoet'),
       ], $response);
     }
 

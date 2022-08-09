@@ -266,7 +266,8 @@ class API {
       ];
       $this->loggerFactory->getLogger(LoggerFactory::TOPIC_BRIDGE)->error('createAuthorizedSenderDomain API call failed.', $logData);
 
-      $fallbackError = sprintf(__('An error has happened while performing a request, the server has responded with response code %d'), $code);
+      // translators: %d will be replaced by an error code
+      $fallbackError = sprintf(__('An error has happened while performing a request, the server has responded with response code %d', 'mailpoet'), $code);
 
       $errorData = is_array($responseBody) && isset($responseBody['error']) ? $responseBody['error'] : $fallbackError;
       return ['error' => $errorData, 'status' => false];
@@ -309,7 +310,8 @@ class API {
       ];
       $this->loggerFactory->getLogger(LoggerFactory::TOPIC_BRIDGE)->error('verifyAuthorizedSenderDomain API call failed.', $logData);
 
-      $fallbackError = sprintf(__('An error has happened while performing a request, the server has responded with response code %d'), $code);
+      // translators: %d will be replaced by an error code
+      $fallbackError = sprintf(__('An error has happened while performing a request, the server has responded with response code %d', 'mailpoet'), $code);
 
       $errorData = is_array($responseBody) && isset($responseBody['error']) ? $responseBody['error'] : $fallbackError;
       return ['error' => $errorData, 'status' => false];
