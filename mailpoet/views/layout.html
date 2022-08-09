@@ -231,10 +231,15 @@ jQuery('#adminmenu #toplevel_page_mailpoet-newsletters')
         showContactFields: true
       });
 
-      // HelpScout Beacon: Custom information
+      // HelpScout Beacon: User identity information
       window.Beacon("identify",
-        <%= json_encode(get_helpscout_data()) %>
+        <%= json_encode(get_helpscout_user_data()) %>
       );
+
+      // HelpScout Beacon: Custom information
+      window.Beacon("session-data",
+        <%= json_encode(get_helpscout_site_data()) %>
+    );
 
       if (window.mailpoet_beacon_articles) {
         window.Beacon('suggest', window.mailpoet_beacon_articles)
