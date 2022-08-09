@@ -90,9 +90,9 @@ class StepHandler {
       throw Exceptions::workflowRunNotRunning($workflowRunId, $workflowRun->getStatus());
     }
 
-    $workflow = $this->workflowStorage->getWorkflow($workflowRun->getWorkflowId());
+    $workflow = $this->workflowStorage->getWorkflow($workflowRun->getWorkflowId(), $workflowRun->getVersionId());
     if (!$workflow) {
-      throw Exceptions::workflowNotFound($workflowRun->getWorkflowId());
+      throw Exceptions::workflowVersionNotFound($workflowRun->getWorkflowId(), $workflowRun->getVersionId());
     }
 
     // complete workflow run
