@@ -392,9 +392,18 @@ class APITest extends \MailPoetTest {
     $API->addSubscriber($subscriber, $segments, $options);
   }
 
-  public function testItDoesNotUnsubscribeMissingSubscriberFromLists() {
+  public function testItDoesNotUnsubscribeWhenSubscriberIdNotPasssedFromLists() {
     try {
       $this->getApi()->unsubscribeFromLists(false, [1,2,3]);
+      $this->fail('Subscriber does not exist exception should have been thrown.');
+    } catch (\Exception $e) {
+      expect($e->getMessage())->equals('A subscriber is required.');
+    }
+  }
+
+  public function testItDoesNotUnsubscribeMissingSubscriberFromLists() {
+    try {
+      $this->getApi()->unsubscribeFromLists('asdf', [1,2,3]);
       $this->fail('Subscriber does not exist exception should have been thrown.');
     } catch (\Exception $e) {
       expect($e->getMessage())->equals('This subscriber does not exist.');
