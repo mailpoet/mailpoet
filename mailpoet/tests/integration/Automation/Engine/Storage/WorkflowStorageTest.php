@@ -2,9 +2,9 @@
 
 namespace MailPoet\Test\Automation\Engine\Storage;
 
+use MailPoet\Automation\Engine\Data\Step;
+use MailPoet\Automation\Engine\Data\Workflow;
 use MailPoet\Automation\Engine\Storage\WorkflowStorage;
-use MailPoet\Automation\Engine\Workflows\Step;
-use MailPoet\Automation\Engine\Workflows\Workflow;
 use MailPoet\Automation\Integrations\MailPoet\Triggers\SegmentSubscribedTrigger;
 
 class WorkflowStorageTest extends \MailPoetTest
