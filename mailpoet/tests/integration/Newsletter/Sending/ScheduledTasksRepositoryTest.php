@@ -4,6 +4,7 @@ namespace MailPoet\Newsletter\Sending;
 
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Test\DataFactories\ScheduledTask as ScheduledTaskFactory;
+use MailPoet\Test\DataFactories\SendingQueue;
 use MailPoetVendor\Carbon\Carbon;
 
 class ScheduledTasksRepositoryTest extends \MailPoetTest {
@@ -13,11 +14,15 @@ class ScheduledTasksRepositoryTest extends \MailPoetTest {
   /** @var ScheduledTaskFactory */
   private $scheduledTaskFactory;
 
+  /** @var SendingQueue */
+  private $sendingQueueFactory;
+
   public function _before() {
     parent::_before();
     $this->cleanup();
     $this->repository = $this->diContainer->get(ScheduledTasksRepository::class);
     $this->scheduledTaskFactory = new ScheduledTaskFactory();
+    $this->sendingQueueFactory = new SendingQueue();
   }
 
   public function testItCanGetDueTasks() {
@@ -60,6 +65,28 @@ class ScheduledTasksRepositoryTest extends \MailPoetTest {
     $this->scheduledTaskFactory->create('test', null, Carbon::now()->addDay()); // wrong status (should not be fetched)
 
     $tasks = $this->repository->findFutureScheduledByType('test', 10);
+    $this->assertSame($expectedResult, $tasks);
+  }
+
+  public function testItCanGetRunningSendingTasks(): void {
+    // running task
+    $task = $this->scheduledTaskFactory->create(ScheduledTaskEntity::TYPE_SENDING, null, Carbon::now()->subDay());
+    $this->sendingQueueFactory->create($task);
+    $expectedResult[] = $task;
+    // deleted task
+    $task = $this->scheduledTaskFactory->create(ScheduledTaskEntity::TYPE_SENDING, null, Carbon::now()->subDay(), Carbon::now());
+    $this->sendingQueueFactory->create($task);
+    // deleted sending queue
+    $task = $this->scheduledTaskFactory->create(ScheduledTaskEntity::TYPE_SENDING, null, Carbon::now()->subDay());
+    $this->sendingQueueFactory->create($task, null, Carbon::now());
+    // scheduled in future
+    $task = $this->scheduledTaskFactory->create(ScheduledTaskEntity::TYPE_SENDING, ScheduledTaskEntity::STATUS_COMPLETED, Carbon::now()->addDay());
+    $this->sendingQueueFactory->create($task);
+    // wrong status
+    $task = $this->scheduledTaskFactory->create(ScheduledTaskEntity::TYPE_SENDING, ScheduledTaskEntity::STATUS_SCHEDULED, Carbon::now()->subDay());
+    $this->sendingQueueFactory->create($task);
+
+    $tasks = $this->repository->findRunningSendingTasks();
     $this->assertSame($expectedResult, $tasks);
   }
 
