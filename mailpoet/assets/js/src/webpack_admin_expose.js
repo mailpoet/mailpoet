@@ -9,6 +9,7 @@ export * as ReactJsxRuntime from 'react/jsx-runtime';
 export * as ReactRouter from 'react-router-dom';
 export * as ReactTooltip from 'react-tooltip';
 export * as ReactStringReplace from 'react-string-replace';
+export * as Slugify from 'slugify';
 export { TextControl as WordpressComponentsTextControl } from '@wordpress/components';
 export * as WordPressData from '@wordpress/data';
 
