@@ -98,7 +98,7 @@ SELECT
       version.trigger_keys
 FROM
       $workflowTable AS workflow
-        LEFT JOIN
+        INNER JOIN
          $versionTable as version ON (version.workflow_id=workflow.id)
 WHERE
       version.id = (SELECT Max(id) FROM $versionTable WHERE workflow_id= version.workflow_id)
@@ -152,7 +152,7 @@ SELECT
       version.trigger_keys
 FROM
      $workflowTable AS workflow
-        LEFT JOIN
+        INNER JOIN
          $versionTable as version ON (version.workflow_id=workflow.id)
 WHERE
       workflow.status = %s AND
