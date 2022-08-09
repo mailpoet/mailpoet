@@ -26,7 +26,7 @@ $replacement = '
 // Updated by MailPoet
 function http_build_query($data, ?string $numeric_prefix = "", ?string $arg_separator = "&", int $encoding_type = PHP_QUERY_RFC1738) {
   $prefix = empty($numeric_prefix) ? "" : $numeric_prefix;
-  return \http_build_query($data, $numeric_prefix, $arg_separator, $encoding_type);
+  return \http_build_query($data, $prefix, $arg_separator, $encoding_type);
 }
 
 ';
