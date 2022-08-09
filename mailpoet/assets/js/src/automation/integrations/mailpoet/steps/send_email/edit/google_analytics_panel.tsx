@@ -1,6 +1,7 @@
 import { PanelBody, ToggleControl } from '@wordpress/components';
 import { dispatch, useSelect } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
+import { PremiumModal } from 'common/premium_modal';
 import { Hooks } from 'wp-js-hooks';
 import { store } from '../../../../../editor/store';
 
@@ -13,7 +14,20 @@ export function GoogleAnalyticsPanel(): JSX.Element {
   const enabled = typeof selectedStep.args?.ga_campaign !== 'undefined';
   const panelBody = Hooks.applyFilters(
     'mailpoet.automation.send_email.google_analytics_panel',
-    <div>Premium required!</div>, // TODO: replace with premium upgrade modal
+    <PremiumModal
+      onRequestClose={() =>
+        dispatch(store).updateStepArgs(
+          selectedStep.id,
+          'ga_campaign',
+          undefined,
+        )
+      }
+    >
+      {__(
+        'Google Analytics tracking is not available in the free version of the MailPoet plugin.',
+        'mailpoet',
+      )}
+    </PremiumModal>,
   );
 
   return (
