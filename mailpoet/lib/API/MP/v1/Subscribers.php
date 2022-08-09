@@ -17,6 +17,9 @@ use MailPoet\Tasks\Sending;
 use MailPoet\WP\Functions as WPFunctions;
 
 class Subscribers {
+  const CONTEXT_SUBSCRIBE = 'subscribe';
+  const CONTEXT_UNSUBSCRIBE = 'unsubscribe';
+
   /** @var SettingsController */
   private $settings;
 
@@ -85,7 +88,7 @@ class Subscribers {
     $signupConfirmationEnabled = (bool)$this->settings->get('signup_confirmation.enabled');
 
     $subscriber = $this->findSubscriber($subscriberId);
-    $foundSegments = $this->getAndValidateSegments($listIds);
+    $foundSegments = $this->getAndValidateSegments($listIds, self::CONTEXT_SUBSCRIBE);
 
     $this->subscribersSegmentRepository->subscribeToSegments($subscriber, $foundSegments);
 
@@ -140,6 +143,14 @@ class Subscribers {
     }
 
     $this->subscribersRepository->refresh($subscriber);
+    return $this->subscribersResponseBuilder->build($subscriber);
+  }
+
+  public function unsubscribeFromLists($subscriberIdOrEmail, array $listIds): array {
+    $subscriber = $this->findSubscriber($subscriberIdOrEmail);
+    $foundSegments = $this->getAndValidateSegments($listIds, self::CONTEXT_UNSUBSCRIBE);
+    $this->subscribersSegmentRepository->unsubscribeFromSegments($subscriber, $foundSegments);
+
     return $this->subscribersResponseBuilder->build($subscriber);
   }
 
@@ -202,7 +213,7 @@ class Subscribers {
    * @return SegmentEntity[]
    * @throws APIException
    */
-  private function getAndValidateSegments(array $listIds): array {
+  private function getAndValidateSegments(array $listIds, string $context = self::CONTEXT_SUBSCRIBE): array {
     if (empty($listIds)) {
       throw new APIException(__('At least one segment ID is required.', 'mailpoet'), APIException::SEGMENT_REQUIRED);
     }
@@ -218,16 +229,34 @@ class Subscribers {
     $foundSegmentsIds = [];
     foreach ($foundSegments as $foundSegment) {
       if ($foundSegment->getType() === SegmentEntity::TYPE_WP_USERS) {
-        // translators: %d is the ID of the segment
-        throw new APIException(sprintf(__("Can't subscribe to a WordPress Users list with ID %d.", 'mailpoet'), $foundSegment->getId()), APIException::SUBSCRIBING_TO_WP_LIST_NOT_ALLOWED);
+        if ($context === self::CONTEXT_SUBSCRIBE) {
+          // translators: %d is the ID of the segment
+          $message = __("Can't subscribe to a WordPress Users list with ID %d.", 'mailpoet');
+        } else {
+          // translators: %d is the ID of the segment
+          $message = __("Can't unsubscribe from a WordPress Users list with ID %d.", 'mailpoet');
+        }
+        throw new APIException(sprintf($message, $foundSegment->getId()), APIException::SUBSCRIBING_TO_WP_LIST_NOT_ALLOWED);
       }
       if ($foundSegment->getType() === SegmentEntity::TYPE_WC_USERS) {
-        // translators: %d is the ID of the segment
-        throw new APIException(sprintf(__("Can't subscribe to a WooCommerce Customers list with ID %d.", 'mailpoet'), $foundSegment->getId()), APIException::SUBSCRIBING_TO_WC_LIST_NOT_ALLOWED);
+        if ($context === self::CONTEXT_SUBSCRIBE) {
+          // translators: %d is the ID of the segment
+          $message = __("Can't subscribe to a WooCommerce Customers list with ID %d.", 'mailpoet');
+        } else {
+          // translators: %d is the ID of the segment
+          $message = __("Can't unsubscribe from a WooCommerce Customers list with ID %d.", 'mailpoet');
+        }
+        throw new APIException(sprintf($message, $foundSegment->getId()), APIException::SUBSCRIBING_TO_WC_LIST_NOT_ALLOWED);
       }
       if ($foundSegment->getType() !== SegmentEntity::TYPE_DEFAULT) {
-        // translators: %d is the ID of the segment
-        throw new APIException(sprintf(__("Can't subscribe to a list with ID %d.", 'mailpoet'), $foundSegment->getId()), APIException::SUBSCRIBING_TO_LIST_NOT_ALLOWED);
+        if ($context === self::CONTEXT_SUBSCRIBE) {
+          // translators: %d is the ID of the segment
+          $message = __("Can't subscribe to a list with ID %d.", 'mailpoet');
+        } else {
+          // translators: %d is the ID of the segment
+          $message = __("Can't unsubscribe from a list with ID %d.", 'mailpoet');
+        }
+        throw new APIException(sprintf($message, $foundSegment->getId()), APIException::SUBSCRIBING_TO_LIST_NOT_ALLOWED);
       }
       $foundSegmentsIds[] = $foundSegment->getId();
     }

@@ -3,9 +3,7 @@
 namespace MailPoet\API\MP\v1;
 
 use MailPoet\Config\Changelog;
-use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
-use MailPoet\Models\SubscriberSegment;
 use MailPoet\Subscribers\RequiredCustomFieldValidator;
 use MailPoet\Subscribers\Source;
 use MailPoet\Util\Helpers;
@@ -77,50 +75,7 @@ class API {
   }
 
   public function unsubscribeFromLists($subscriberId, array $listIds) {
-    if (empty($listIds)) {
-      throw new APIException(__('At least one segment ID is required.', 'mailpoet'), APIException::SEGMENT_REQUIRED);
-    }
-
-    // throw exception when subscriber does not exist
-    $subscriber = Subscriber::findOne($subscriberId);
-    if (!$subscriber) {
-      throw new APIException(__('This subscriber does not exist.', 'mailpoet'), APIException::SUBSCRIBER_NOT_EXISTS);
-    }
-
-    // throw exception when none of the segments exist
-    $foundSegments = Segment::whereIn('id', $listIds)->findMany();
-    if (!$foundSegments) {
-      $exception = _n('This list does not exist.', 'These lists do not exist.', count($listIds), 'mailpoet');
-      throw new APIException($exception, APIException::LIST_NOT_EXISTS);
-    }
-
-    // throw exception when trying to subscribe to WP Users or WooCommerce Customers segments
-    $foundSegmentsIds = [];
-    foreach ($foundSegments as $segment) {
-      if ($segment->type === Segment::TYPE_WP_USERS) {
-        // translators: %d is the ID of the segment
-        throw new APIException(sprintf(__("Can't unsubscribe from a WordPress Users list with ID %d.", 'mailpoet'), $segment->id), APIException::SUBSCRIBING_TO_WP_LIST_NOT_ALLOWED);
-      }
-      if ($segment->type === Segment::TYPE_WC_USERS) {
-        // translators: %d is the ID of the segment
-        throw new APIException(sprintf(__("Can't unsubscribe from a WooCommerce Customers list with ID %d.", 'mailpoet'), $segment->id), APIException::SUBSCRIBING_TO_WC_LIST_NOT_ALLOWED);
-      }
-      $foundSegmentsIds[] = $segment->id;
-    }
-
-    // throw an exception when one or more segments do not exist
-    if (count($foundSegmentsIds) !== count($listIds)) {
-      $missingIds = array_values(array_diff($listIds, $foundSegmentsIds));
-      $exception = sprintf(
-        // translators: %s is a comma-separated list of list IDs.
-        _n('List with ID %s does not exist.', 'Lists with IDs %s do not exist.', count($missingIds), 'mailpoet'),
-        implode(', ', $missingIds)
-      );
-      throw new APIException($exception, APIException::LIST_NOT_EXISTS);
-    }
-
-    SubscriberSegment::unsubscribeFromSegments($subscriber, $foundSegmentsIds);
-    return $subscriber->withCustomFields()->withSubscriptions()->asArray();
+    return $this->subscribers->unsubscribeFromLists($subscriberId, $listIds);
   }
 
   public function getLists(): array {
