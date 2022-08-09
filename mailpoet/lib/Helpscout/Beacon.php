@@ -71,6 +71,7 @@ class Beacon {
       $cronPingUrl = __('Can‘t generate cron URL.', 'mailpoet') . ' (' . $e->getMessage() . ')';
     }
 
+    // the HelpScout Beacon API has a limit of 20 attribute-value pairs (https://developer.helpscout.com/beacon-2/web/javascript-api/#beacon-session-data)
     return [
       'PHP version' => PHP_VERSION,
       'MailPoet Free version' => MAILPOET_VERSION,
@@ -80,14 +81,10 @@ class Beacon {
       'Database version' => $dbVersion,
       'Web server' => (!empty($_SERVER["SERVER_SOFTWARE"])) ? sanitize_text_field(wp_unslash($_SERVER["SERVER_SOFTWARE"])) : 'N/A',
       'Server OS' => (function_exists('php_uname')) ? utf8_encode(php_uname()) : 'N/A',
-      'WP_MEMORY_LIMIT' => WP_MEMORY_LIMIT,
-      'WP_MAX_MEMORY_LIMIT' => WP_MAX_MEMORY_LIMIT,
-      'WP_DEBUG' => WP_DEBUG,
-      'PHP max_execution_time' => ini_get('max_execution_time'),
-      'PHP memory_limit' => ini_get('memory_limit'),
-      'PHP upload_max_filesize' => ini_get('upload_max_filesize'),
-      'PHP post_max_size' => ini_get('post_max_size'),
-      'WordPress language' => $this->wp->getLocale(),
+      'WP info' => 'WP_MEMORY_LIMIT: ' . WP_MEMORY_LIMIT . ' - WP_MAX_MEMORY_LIMIT: ' . WP_MAX_MEMORY_LIMIT . ' - WP_DEBUG: ' . WP_DEBUG .
+        ' - WordPress language: ' . $this->wp->getLocale(),
+      'PHP info' => 'PHP max_execution_time: ' . ini_get('max_execution_time') . ' - PHP memory_limit: ' . ini_get('memory_limit') .
+        ' - PHP upload_max_filesize: ' . ini_get('upload_max_filesize') . ' - PHP post_max_size: ' . ini_get('post_max_size'),
       'Multisite environment?' => (is_multisite() ? 'Yes' : 'No'),
       'Current Theme' => $currentTheme->get('Name') .
         ' (version ' . $currentTheme->get('Version') . ')',
@@ -97,12 +94,9 @@ class Beacon {
         $mta['frequency']['emails'],
         $mta['frequency']['interval']
       ),
-      "Send all site's emails with" => $this->settings->get('send_transactional_emails') ? 'current sending method' : 'default WordPress sending method',
-      'Task Scheduler method' => $this->settings->get('cron_trigger.method'),
-      'Cron ping URL' => $cronPingUrl,
-      'Default FROM address' => $this->settings->get('sender.address'),
-      'Default Reply-To address' => $this->settings->get('reply_to.address'),
-      'Bounce Email Address' => $this->settings->get('bounce.address'),
+      'MailPoet sending info' => "Send all site's emails with: " . ($this->settings->get('send_transactional_emails') ? 'current sending method' : 'default WordPress sending method') .
+        ' - Task Scheduler method: ' . $this->settings->get('cron_trigger.method') . ' - Cron ping URL: ' . $cronPingUrl . ' - Default FROM address: ' . $this->settings->get('sender.address') .
+        ' - Default Reply-To address: ' . $this->settings->get('reply_to.address') . ' - Bounce Email Address: ' . $this->settings->get('bounce.address'),
       'Total number of subscribers' => $this->subscribersFeature->getSubscribersCount(),
       'Plugin installed at' => $this->settings->get('installed_at'),
       'Installed via WooCommerce onboarding wizard' => $this->wooCommerceHelper->wasMailPoetInstalledViaWooCommerceOnboardingWizard(),
