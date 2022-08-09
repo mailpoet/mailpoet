@@ -14,6 +14,7 @@ class Exceptions {
   private const API_NO_JSON_BODY = 'mailpoet_automation_api_no_json_body';
   private const JSON_NOT_OBJECT = 'mailpoet_automation_json_not_object';
   private const WORKFLOW_NOT_FOUND = 'mailpoet_automation_workflow_not_found';
+  private const WORKFLOW_VERSION_NOT_FOUND = 'mailpoet_automation_workflowversion_not_found';
   private const WORKFLOW_RUN_NOT_FOUND = 'mailpoet_automation_workflow_run_not_found';
   private const WORKFLOW_STEP_NOT_FOUND = 'mailpoet_automation_workflow_step_not_found';
   private const WORKFLOW_TRIGGER_NOT_FOUND = 'mailpoet_automation_workflow_trigger_not_found';
@@ -72,7 +73,8 @@ class Exceptions {
 
   public static function workflowVersionNotFound(int $workflow, int $version): NotFoundException {
     return NotFoundException::create()
-      ->withErrorCode(self::WORKFLOW_NOT_FOUND)
+      ->withErrorCode(self::WORKFLOW_VERSION_NOT_FOUND)
+      // translators: %1$s is the ID of the workflow, %2$s the version.
       ->withMessage(sprintf(__('Workflow with ID "%1$s" in version "%2$s" not found.', 'mailpoet'), $workflow, $version));
   }
 
