@@ -100,3 +100,15 @@ p.sender_email_address_warning:first-child {
     text-align: center !important; // to prevent being overwritten by widefat table classes
   }
 }
+
+.mailpoet-premium-modal.components-modal__frame {
+  max-width: 400px;
+}
+
+.mailpoet-premium-modal-footer {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 16px;
+  padding-top: 12px;
+}
