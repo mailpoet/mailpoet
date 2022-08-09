@@ -307,7 +307,7 @@ class SubscriberListingRepository extends ListingRepository {
     $group = $definition->getGroup();
 
     $allTagsList = [
-      'label' => WPFunctions::get()->__('All Tags', 'mailpoet'),
+      'label' => __('All Tags', 'mailpoet'),
       'value' => '',
     ];
 
