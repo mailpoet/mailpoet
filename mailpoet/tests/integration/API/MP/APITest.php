@@ -392,84 +392,6 @@ class APITest extends \MailPoetTest {
     $API->addSubscriber($subscriber, $segments, $options);
   }
 
-  public function testItDoesNotUnsubscribeWhenSubscriberIdNotPasssedFromLists() {
-    try {
-      $this->getApi()->unsubscribeFromLists(false, [1,2,3]);
-      $this->fail('Subscriber does not exist exception should have been thrown.');
-    } catch (\Exception $e) {
-      expect($e->getMessage())->equals('A subscriber is required.');
-    }
-  }
-
-  public function testItDoesNotUnsubscribeMissingSubscriberFromLists() {
-    try {
-      $this->getApi()->unsubscribeFromLists('asdf', [1,2,3]);
-      $this->fail('Subscriber does not exist exception should have been thrown.');
-    } catch (\Exception $e) {
-      expect($e->getMessage())->equals('This subscriber does not exist.');
-    }
-  }
-
-  public function testItDoesNotUnsubscribeSubscriberFromMissingLists() {
-    $subscriber = $this->subscriberFactory->create();
-    // multiple lists error message
-    try {
-      $this->getApi()->unsubscribeFromLists($subscriber->getId(), [1,2,3]);
-      $this->fail('Missing segments exception should have been thrown.');
-    } catch (\Exception $e) {
-      expect($e->getMessage())->equals('These lists do not exist.');
-    }
-    // single list error message
-    try {
-      $this->getApi()->unsubscribeFromLists($subscriber->getId(), [1]);
-      $this->fail('Missing segments exception should have been thrown.');
-    } catch (\Exception $e) {
-      expect($e->getMessage())->equals('This list does not exist.');
-    }
-  }
-
-  public function testItDoesNotUnsubscribeSubscriberFromListsWhenOneOrMoreListsAreMissing() {
-    $subscriber = $this->subscriberFactory->create();
-    $segment = $this->getSegment();
-    // multiple lists error message
-    try {
-      $this->getApi()->unsubscribeFromLists($subscriber->getId(), [$segment->getId(), 90, 100]);
-      $this->fail('Missing segments with IDs exception should have been thrown.');
-    } catch (\Exception $e) {
-      expect($e->getMessage())->equals('Lists with IDs 90, 100 do not exist.');
-    }
-    // single list error message
-    try {
-      $this->getApi()->unsubscribeFromLists($subscriber->getId(), [$segment->getId(), 90]);
-      $this->fail('Missing segments with IDs exception should have been thrown.');
-    } catch (\Exception $e) {
-      expect($e->getMessage())->equals('List with ID 90 does not exist.');
-    }
-  }
-
-  public function testItDoesNotUnsubscribeSubscriberFromWPUsersList() {
-    $subscriber = $this->subscriberFactory->create();
-    $segment = $this->getSegment('WordPress', SegmentEntity::TYPE_WP_USERS);
-    try {
-      $this->getApi()->unsubscribeFromLists($subscriber->getId(), [$segment->getId()]);
-      $this->fail('WP Users segment exception should have been thrown.');
-    } catch (\Exception $e) {
-      expect($e->getMessage())->equals("Can't unsubscribe from a WordPress Users list with ID {$segment->getId()}.");
-    }
-  }
-
-  public function testItDoesNotUnsubscribeSubscriberFromWooCommerceCustomersList() {
-    $subscriber = $this->subscriberFactory->create();
-    $segment = $this->getSegment('Default', SegmentEntity::TYPE_WC_USERS);
-
-    try {
-      $this->getApi()->unsubscribeFromLists($subscriber->getId(), [$segment->getId()]);
-      $this->fail('WooCommerce Customers segment exception should have been thrown.');
-    } catch (\Exception $e) {
-      expect($e->getMessage())->equals("Can't unsubscribe from a WooCommerce Customers list with ID {$segment->getId()}.");
-    }
-  }
-
   public function testItUsesMultipleListsUnsubscribeMethodWhenUnsubscribingFromSingleList() {
     // unsubscribing from single list = converting list ID to an array and using
     // multiple lists unsubscribe method
@@ -486,24 +408,6 @@ class APITest extends \MailPoetTest {
         ],
       ]
     );
-  }
-
-  public function testItUnsubscribesSubscriberFromMultipleLists() {
-    $subscriber = $this->subscriberFactory->create();
-    $segment = $this->getSegment();
-
-    // test if segments are specified
-    try {
-      $this->getApi()->unsubscribeFromLists($subscriber->getId(), []);
-      $this->fail('Segments are required exception should have been thrown.');
-    } catch (\Exception $e) {
-      expect($e->getMessage())->equals('At least one segment ID is required.');
-    }
-
-    $result = $this->getApi()->subscribeToLists($subscriber->getId(), [$segment->getId()]);
-    expect($result['subscriptions'][0]['status'])->equals(SubscriberEntity::STATUS_SUBSCRIBED);
-    $result = $this->getApi()->unsubscribeFromLists($subscriber->getId(), [$segment->getId()]);
-    expect($result['subscriptions'][0]['status'])->equals(SubscriberEntity::STATUS_UNSUBSCRIBED);
   }
 
   public function testItGetsSubscriber() {
