@@ -20,3 +20,35 @@
     padding: 4px;
   }
 }
+
+.mailpoet-step-name-dropdown {
+  display: block;
+
+  h2 {
+    margin: 0;
+  }
+
+  .mailpoet-automation-panel-plain-body-title-text {
+    padding-left: 0;
+    padding-top: 0;
+  }
+
+  .mailpoet-automation-panel-plain-body-title-action {
+    margin-top: -13px;
+    padding-right: 0;
+    padding-top: 0;
+  }
+}
+
+.mailpoet-step-name-input,
+.mailpoet-step-name-description,
+.mailpoet-step-name-title {
+  min-width: 250px;
+}
+
+.mailpoet-step-name-title {
+  font-size: 13px;
+  font-weight: normal;
+  line-height: 1.5;
+  margin: 1em 0;
+}

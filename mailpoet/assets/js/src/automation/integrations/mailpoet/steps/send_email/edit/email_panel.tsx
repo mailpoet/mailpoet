@@ -1,14 +1,11 @@
 import { ComponentProps } from 'react';
 import { PanelBody, TextareaControl, TextControl } from '@wordpress/components';
 import { dispatch, useSelect } from '@wordpress/data';
-import { edit, Icon } from '@wordpress/icons';
 import { DesignEmailButton } from './design_email_button';
 import { Thumbnail } from './thumbnail';
-import {
-  PlainBodyTitle,
-  TitleActionButton,
-} from '../../../../../editor/components/panel';
+import { PlainBodyTitle } from '../../../../../editor/components/panel';
 import { store } from '../../../../../editor/store';
+import {StepName} from "../../../../../editor/components/panel/step-name";
 
 function SingleLineTextareaControl(
   props: ComponentProps<typeof TextareaControl>,
@@ -43,11 +40,7 @@ export function EmailPanel(): JSX.Element {
 
   return (
     <PanelBody opened>
-      <PlainBodyTitle title="Email">
-        <TitleActionButton>
-          <Icon icon={edit} size={16} />
-        </TitleActionButton>
-      </PlainBodyTitle>
+      <StepName step={selectedStep} />
       <TextControl
         label="“From” name"
         placeholder="John Doe"
@@ -57,6 +50,7 @@ export function EmailPanel(): JSX.Element {
         }
       />
       <TextControl
+
         type="email"
         label="“From” email address"
         placeholder="you@domain.com"
