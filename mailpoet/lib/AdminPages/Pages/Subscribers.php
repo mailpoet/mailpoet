@@ -11,7 +11,6 @@ use MailPoet\Entities\TagEntity;
 use MailPoet\Form\Block;
 use MailPoet\Listing\PageLimit;
 use MailPoet\Segments\SegmentsSimpleListRepository;
-use MailPoet\Settings\TrackingConfig;
 use MailPoet\Subscribers\ConfirmationEmailMailer;
 use MailPoet\Tags\TagRepository;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
@@ -45,9 +44,6 @@ class Subscribers {
   /** @var CustomFieldsResponseBuilder */
   private $customFieldsResponseBuilder;
 
-  /** @var TrackingConfig */
-  private $trackingConfig;
-
   public function __construct(
     PageRenderer $pageRenderer,
     PageLimit $listingPageLimit,
@@ -57,8 +53,7 @@ class Subscribers {
     TagRepository $tagRepository,
     TransientCache $transientCache,
     CustomFieldsRepository $customFieldsRepository,
-    CustomFieldsResponseBuilder $customFieldsResponseBuilder,
-    TrackingConfig $trackingConfig
+    CustomFieldsResponseBuilder $customFieldsResponseBuilder
   ) {
     $this->pageRenderer = $pageRenderer;
     $this->listingPageLimit = $listingPageLimit;
@@ -69,7 +64,6 @@ class Subscribers {
     $this->transientCache = $transientCache;
     $this->customFieldsRepository = $customFieldsRepository;
     $this->customFieldsResponseBuilder = $customFieldsResponseBuilder;
-    $this->trackingConfig = $trackingConfig;
   }
 
   public function render() {
@@ -103,7 +97,6 @@ class Subscribers {
     $data['month_names'] = $this->dateBlock->getMonthNames();
     $data['max_confirmation_emails'] = ConfirmationEmailMailer::MAX_CONFIRMATION_EMAILS;
     $data['subscriber_count'] = $this->subscribersFeature->getSubscribersCount();
-    $data['tracking_config'] = $this->trackingConfig->getConfig();
 
     $subscribersCacheCreatedAt = $this->transientCache->getOldestCreatedAt(TransientCache::SUBSCRIBERS_STATISTICS_COUNT_KEY);
     $subscribersCacheCreatedAt = $subscribersCacheCreatedAt ?: Carbon::now();

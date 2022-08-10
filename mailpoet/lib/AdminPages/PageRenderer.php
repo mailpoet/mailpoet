@@ -12,8 +12,10 @@ use MailPoet\Referrals\ReferralDetector;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Settings\TrackingConfig;
 use MailPoet\Settings\UserFlagsController;
 use MailPoet\Tracy\DIPanel\DIPanel;
+use MailPoet\Util\Installation;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 use MailPoet\Util\License\License;
 use MailPoet\WP\Functions as WPFunctions;
@@ -33,6 +35,9 @@ class PageRenderer {
   /** @var FeaturesController */
   private $featuresController;
 
+  /** @var Installation */
+  private $installation;
+
   /** @var SettingsController */
   private $settings;
 
@@ -48,6 +53,9 @@ class PageRenderer {
   /** @var SubscribersFeature */
   private $subscribersFeature;
 
+  /** @var TrackingConfig */
+  private $trackingConfig;
+
   /** @var WPFunctions */
   private $wp;
 
@@ -56,22 +64,26 @@ class PageRenderer {
     Renderer $renderer,
     ServicesChecker $servicesChecker,
     FeaturesController $featuresController,
+    Installation $installation,
     SettingsController $settings,
     UserFlagsController $userFlags,
     SegmentsRepository $segmentRepository,
     SubscribersCountCacheRecalculation $subscribersCountCacheRecalculation,
     SubscribersFeature $subscribersFeature,
+    TrackingConfig $trackingConfig,
     WPFunctions $wp
   ) {
     $this->bridge = $bridge;
     $this->renderer = $renderer;
     $this->servicesChecker = $servicesChecker;
     $this->featuresController = $featuresController;
+    $this->installation = $installation;
     $this->settings = $settings;
     $this->userFlags = $userFlags;
     $this->segmentRepository = $segmentRepository;
     $this->subscribersCountCacheRecalculation = $subscribersCountCacheRecalculation;
     $this->subscribersFeature = $subscribersFeature;
+    $this->trackingConfig = $trackingConfig;
     $this->wp = $wp;
   }
 
@@ -89,8 +101,12 @@ class PageRenderer {
     $wpSegment = $this->segmentRepository->getWPUsersSegment();
     $wpSegmentState = ($wpSegment instanceof SegmentEntity) && $wpSegment->getDeletedAt() === null ?
       SegmentEntity::SEGMENT_ENABLED : SegmentEntity::SEGMENT_DISABLED;
+    $installedAtDiff = (new \DateTime($this->settings->get('installed_at')))->diff(new \DateTime());
 
     $defaults = [
+      'site_name' => $this->wp->wpSpecialcharsDecode($this->wp->getOption('blogname'), ENT_QUOTES),
+      'site_url' => $this->wp->siteUrl(),
+      'site_address' => $this->wp->wpParseUrl($this->wp->homeUrl(), PHP_URL_HOST),
       'feature_flags' => $this->featuresController->getAllFlags(),
       'referral_id' => $this->settings->get(ReferralDetector::REFERRAL_SETTING_NAME),
       'mailpoet_api_key_state' => $this->settings->get('mta.mailpoet_api_key_state'),
@@ -99,6 +115,9 @@ class PageRenderer {
       'last_announcement_seen' => $lastAnnouncementSeen,
       'feature_announcement_has_news' => (empty($lastAnnouncementSeen) || $lastAnnouncementSeen < $lastAnnouncementDate),
       'wp_segment_state' => $wpSegmentState,
+      'tracking_config' => $this->trackingConfig->getConfig(),
+      'is_new_user' => $this->installation->isNewInstallation(),
+      'installed_days_ago' => (int)$installedAtDiff->format('%a'),
 
       // Premium & plan upgrade info
       'current_wp_user_email' => $this->wp->wpGetCurrentUser()->user_email,
