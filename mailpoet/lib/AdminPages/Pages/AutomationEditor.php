@@ -61,6 +61,7 @@ class AutomationEditor {
       'status' => $workflow->getStatus(),
       'created_at' => $workflow->getCreatedAt()->format(DateTimeImmutable::W3C),
       'updated_at' => $workflow->getUpdatedAt()->format(DateTimeImmutable::W3C),
+      'activated_at' => $workflow->getActivatedAt() ? $workflow->getActivatedAt()->format(DateTimeImmutable::W3C) : null,
       'steps' => array_map(function (Step $step) {
         return [
           'id' => $step->getId(),
