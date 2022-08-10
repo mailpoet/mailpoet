@@ -23,6 +23,7 @@ use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\ConfirmationEmailMailer;
 use MailPoet\Subscribers\NewSubscriberNotificationMailer;
 use MailPoet\Subscribers\RequiredCustomFieldValidator;
+use MailPoet\Subscribers\SubscriberSaveController;
 use MailPoet\Subscribers\SubscriberSegmentRepository;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Tasks\Sending;
@@ -59,9 +60,11 @@ class APITest extends \MailPoetTest {
       SettingsController::getInstance(),
       $this->diContainer->get(SubscriberSegmentRepository::class),
       $this->diContainer->get(SubscribersRepository::class),
+      $this->diContainer->get(SubscriberSaveController::class),
       $this->diContainer->get(SubscribersResponseBuilder::class),
       Stub::makeEmpty(WelcomeScheduler::class),
       $this->diContainer->get(FeaturesController::class),
+      $this->diContainer->get(RequiredCustomFieldValidator::class),
       $this->diContainer->get(WPFunctions::class)
     );
   }
@@ -71,7 +74,6 @@ class APITest extends \MailPoetTest {
       $subscriberActions = $this->getSubscribers();
     }
     return new API(
-      $this->diContainer->get(RequiredCustomFieldValidator::class),
       $this->diContainer->get(CustomFields::class),
       $this->diContainer->get(Segments::class),
       $subscriberActions,
@@ -146,7 +148,7 @@ class APITest extends \MailPoetTest {
     } catch (\Exception $e) {
       expect($e->getMessage())->stringContainsString('Failed to add subscriber:');
       // error message (converted to lowercase) returned by the model
-      expect($e->getMessage())->stringContainsString('your email address is invalid!');
+      expect($e->getMessage())->stringContainsString('value is not a valid email address.');
     }
   }
 
@@ -193,6 +195,7 @@ class APITest extends \MailPoetTest {
     ];
 
     $this->expectException('Exception');
+    $this->expectExceptionMessage('Missing value for custom field "custom field');
     $this->getApi()->addSubscriber($subscriber);
   }
 
@@ -222,15 +225,16 @@ class APITest extends \MailPoetTest {
         'segmentsRepository' => $this->diContainer->get(SegmentsRepository::class),
         'subscribersRepository' => $this->diContainer->get(SubscribersRepository::class),
         'subscribersSegmentRepository' => $this->diContainer->get(SubscriberSegmentRepository::class),
+        'subscriberSaveController' => $this->diContainer->get(SubscriberSaveController::class),
         'subscribersResponseBuilder' => $this->diContainer->get(SubscribersResponseBuilder::class),
         'settings' => $settings,
+        'requiredCustomFieldsValidator' => Stub::makeEmpty(RequiredCustomFieldValidator::class, ['validate']),
       ],
       $this);
 
     $API = Stub::make(
       API::class,
       [
-        'requiredCustomFieldValidator' => Stub::makeEmpty(RequiredCustomFieldValidator::class, ['validate']),
         'subscribers' => $subscriberActions,
       ],
       $this
@@ -324,15 +328,27 @@ class APITest extends \MailPoetTest {
   }
 
   public function testByDefaultItSendsConfirmationEmailAfterAddingSubscriber() {
+    $subscriberActions = Stub::make(
+      Subscribers::class,
+      [
+        'segmentsRepository' => $this->diContainer->get(SegmentsRepository::class),
+        'subscribersRepository' => $this->diContainer->get(SubscribersRepository::class),
+        'subscriberSaveController' => $this->diContainer->get(SubscriberSaveController::class),
+        'subscribersResponseBuilder' => $this->diContainer->get(SubscribersResponseBuilder::class),
+        'settings' => $this->diContainer->get(SettingsController::class),
+        'requiredCustomFieldsValidator' => Stub::makeEmpty(RequiredCustomFieldValidator::class, ['validate']),
+        'subscribeToLists' => Expected::once(function ($subscriberId, $segmentsIds, $options) {
+          expect($options)->contains('send_confirmation_email');
+          expect($options['send_confirmation_email'])->equals(true);
+          return [];
+        })
+      ],
+      $this);
     $API = $this->makeEmptyExcept(
       API::class,
       'addSubscriber',
       [
-        'subscribeToLists' => Expected::once(function ($subscriberId, $segmentsIds, $options) {
-          expect($options)->contains('send_confirmation_email');
-          expect($options['send_confirmation_email'])->equals(true);
-        }),
-        'requiredCustomFieldValidator' => Stub::makeEmpty(RequiredCustomFieldValidator::class, ['validate']),
+        'subscribers' => $subscriberActions,
       ]
     );
     $subscriber = [

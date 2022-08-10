@@ -4,9 +4,6 @@ namespace MailPoet\API\MP\v1;
 
 use MailPoet\Config\Changelog;
 use MailPoet\Models\Subscriber;
-use MailPoet\Subscribers\RequiredCustomFieldValidator;
-use MailPoet\Subscribers\Source;
-use MailPoet\Util\Helpers;
 
 /**
  * API used by other plugins
@@ -14,10 +11,6 @@ use MailPoet\Util\Helpers;
  * This class is under refactor, and we are going to move most of the remaining implementations from here.
  */
 class API {
-
-  /** @var RequiredCustomFieldValidator */
-  private $requiredCustomFieldValidator;
-
   /** @var CustomFields */
   private $customFields;
 
@@ -31,13 +24,11 @@ class API {
   private $changelog;
 
   public function __construct(
-    RequiredCustomFieldValidator $requiredCustomFieldValidator,
     CustomFields $customFields,
     Segments $segments,
     Subscribers $subscribers,
     Changelog $changelog
   ) {
-    $this->requiredCustomFieldValidator = $requiredCustomFieldValidator;
     $this->customFields = $customFields;
     $this->segments = $segments;
     $this->subscribers = $subscribers;
@@ -82,70 +73,8 @@ class API {
     return $this->segments->getAll();
   }
 
-  public function addSubscriber(array $subscriber, $listIds = [], $options = []) {
-    $sendConfirmationEmail = (isset($options['send_confirmation_email']) && $options['send_confirmation_email'] === false) ? false : true;
-    $scheduleWelcomeEmail = (isset($options['schedule_welcome_email']) && $options['schedule_welcome_email'] === false) ? false : true;
-    $skipSubscriberNotification = (isset($options['skip_subscriber_notification']) && $options['skip_subscriber_notification'] === true) ? true : false;
-
-    // throw exception when subscriber email is missing
-    if (empty($subscriber['email'])) {
-      throw new APIException(
-        __('Subscriber email address is required.', 'mailpoet'),
-        APIException::EMAIL_ADDRESS_REQUIRED
-      );
-    }
-
-    // throw exception when subscriber already exists
-    if (Subscriber::findOne($subscriber['email'])) {
-      throw new APIException(
-        __('This subscriber already exists.', 'mailpoet'),
-        APIException::SUBSCRIBER_EXISTS
-      );
-    }
-
-    if (empty($subscriber['subscribed_ip'])) {
-      $subscriber['subscribed_ip'] = Helpers::getIP();
-    }
-
-    // separate data into default and custom fields
-    [$defaultFields, $customFields] = Subscriber::extractCustomFieldsFromFromObject($subscriber);
-
-    // filter out all incoming data that we don't want to change, like status ...
-    $defaultFields = array_intersect_key($defaultFields, array_flip(['email', 'first_name', 'last_name', 'subscribed_ip']));
-
-    // if some required default fields are missing, set their values
-    $defaultFields = Subscriber::setRequiredFieldsDefaultValues($defaultFields);
-
-    $this->requiredCustomFieldValidator->validate($customFields);
-
-    // add subscriber
-    $newSubscriber = Subscriber::create();
-    $newSubscriber->hydrate($defaultFields);
-    $newSubscriber = Source::setSource($newSubscriber, Source::API);
-    $newSubscriber->save();
-    if ($newSubscriber->getErrors() !== false) {
-      throw new APIException(
-        // translators: %s is a comma-seperated list of errors.
-        sprintf(__('Failed to add subscriber: %s', 'mailpoet'), strtolower(implode(', ', $newSubscriber->getErrors()))),
-        APIException::FAILED_TO_SAVE_SUBSCRIBER
-      );
-    }
-    if (!empty($customFields)) {
-      $newSubscriber->saveCustomFields($customFields);
-    }
-
-    // reload subscriber to get the saved status/created|updated|delete dates/other fields
-    $newSubscriber = Subscriber::findOne($newSubscriber->id);
-
-    // subscribe to segments and optionally: 1) send confirmation email, 2) schedule welcome email(s)
-    if (!empty($listIds)) {
-      $this->subscribeToLists($newSubscriber->id, $listIds, [
-        'send_confirmation_email' => $sendConfirmationEmail,
-        'schedule_welcome_email' => $scheduleWelcomeEmail,
-        'skip_subscriber_notification' => $skipSubscriberNotification,
-      ]);
-    }
-    return $newSubscriber->withCustomFields()->withSubscriptions()->asArray();
+  public function addSubscriber(array $subscriber, $listIds = [], $options = []): array {
+    return $this->subscribers->addSubscriber($subscriber, $listIds, $options);
   }
 
   public function addList(array $list) {
