@@ -32,6 +32,8 @@ use MailPoetVendor\Carbon\Carbon;
 class SendingQueue {
   public $mailerTask;
   public $newsletterTask;
+
+  const TASK_TYPE = 'sending';
   const TASK_BATCH_SIZE = 5;
   const EMAIL_WITH_INVALID_SEGMENT_OPTION = 'mailpoet_email_with_invalid_segment';
 

@@ -2,6 +2,7 @@
 
 namespace MailPoet\Newsletter\Sending;
 
+use MailPoet\Cron\Workers\SendingQueue\SendingQueue as SendingQueueWorker;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Test\DataFactories\ScheduledTask as ScheduledTaskFactory;
 use MailPoet\Test\DataFactories\SendingQueue;
@@ -70,19 +71,19 @@ class ScheduledTasksRepositoryTest extends \MailPoetTest {
 
   public function testItCanGetRunningSendingTasks(): void {
     // running task
-    $task = $this->scheduledTaskFactory->create(ScheduledTaskEntity::TYPE_SENDING, null, Carbon::now()->subDay());
+    $task = $this->scheduledTaskFactory->create(SendingQueueWorker::TASK_TYPE, null, Carbon::now()->subDay());
     $this->sendingQueueFactory->create($task);
     $expectedResult[] = $task;
     // deleted task
-    $task = $this->scheduledTaskFactory->create(ScheduledTaskEntity::TYPE_SENDING, null, Carbon::now()->subDay(), Carbon::now());
+    $task = $this->scheduledTaskFactory->create(SendingQueueWorker::TASK_TYPE, null, Carbon::now()->subDay(), Carbon::now());
     $this->sendingQueueFactory->create($task);
     // without sending queue
-    $this->scheduledTaskFactory->create(ScheduledTaskEntity::TYPE_SENDING, null, Carbon::now()->subDay());
+    $this->scheduledTaskFactory->create(SendingQueueWorker::TASK_TYPE, null, Carbon::now()->subDay());
     // scheduled in future
-    $task = $this->scheduledTaskFactory->create(ScheduledTaskEntity::TYPE_SENDING, ScheduledTaskEntity::STATUS_COMPLETED, Carbon::now()->addDay());
+    $task = $this->scheduledTaskFactory->create(SendingQueueWorker::TASK_TYPE, ScheduledTaskEntity::STATUS_COMPLETED, Carbon::now()->addDay());
     $this->sendingQueueFactory->create($task);
     // wrong status
-    $task = $this->scheduledTaskFactory->create(ScheduledTaskEntity::TYPE_SENDING, ScheduledTaskEntity::STATUS_SCHEDULED, Carbon::now()->subDay());
+    $task = $this->scheduledTaskFactory->create(SendingQueueWorker::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED, Carbon::now()->subDay());
     $this->sendingQueueFactory->create($task);
 
     $tasks = $this->repository->findRunningSendingTasks();
