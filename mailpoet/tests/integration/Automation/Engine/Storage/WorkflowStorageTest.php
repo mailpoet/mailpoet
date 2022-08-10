@@ -74,7 +74,7 @@ class WorkflowStorageTest extends \MailPoetTest
   }
 
   private function createEmptyWorkflow(string $name="test"): Workflow {
-    $workflow = new Workflow($name, []);
+    $workflow = new Workflow($name, [], new \WP_User());
     $workflowId = $this->testee->createWorkflow($workflow);
     $workflow = $this->testee->getWorkflow($workflowId);
     if (! $workflow) {

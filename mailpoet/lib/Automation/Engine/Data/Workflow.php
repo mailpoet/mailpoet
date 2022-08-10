@@ -19,6 +19,9 @@ class Workflow {
   /** @var string */
   private $name;
 
+  /** @var \WP_User */
+  private $author;
+
   /** @var string */
   private $status = self::STATUS_DRAFT;
 
@@ -38,11 +41,13 @@ class Workflow {
   public function __construct(
     string $name,
     array $steps,
+    \WP_User $author,
     int $id = null,
     int $versionId = null
   ) {
     $this->name = $name;
     $this->steps = [];
+    $this->author = $author;
     foreach ($steps as $step) {
       $this->steps[$step->getId()] = $step;
     }
@@ -90,6 +95,10 @@ class Workflow {
 
   public function getCreatedAt(): DateTimeImmutable {
     return $this->createdAt;
+  }
+
+  public function getAuthor(): \WP_User {
+    return $this->author;
   }
 
   public function getUpdatedAt(): DateTimeImmutable {
@@ -142,6 +151,7 @@ class Workflow {
     return [
       'name' => $this->name,
       'status' => $this->status,
+      'author' => $this->author->ID,
       'created_at' => $this->createdAt->format(DateTimeImmutable::W3C),
       'updated_at' => $this->updatedAt->format(DateTimeImmutable::W3C),
       'activated_at' => $this->activatedAt ? $this->activatedAt->format(DateTimeImmutable::W3C) : null,
@@ -167,7 +177,11 @@ class Workflow {
 
   public static function fromArray(array $data): self {
     // TODO: validation
-    $workflow = new self($data['name'], self::parseSteps(Json::decode($data['steps'])));
+    $workflow = new self(
+      $data['name'],
+      self::parseSteps(Json::decode($data['steps'])),
+      new \WP_User((int)$data['author'])
+    );
     $workflow->id = (int)$data['id'];
     $workflow->versionId = (int)$data['version_id'];
     $workflow->status = $data['status'];
