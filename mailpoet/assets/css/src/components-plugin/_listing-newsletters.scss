@@ -92,17 +92,12 @@ h1.title.mailpoet-newsletter-listing-heading {
   margin-bottom: $grid-gap;
 }
 
-.mailpoet-newsletter-listing-heading-wrapper {
-  .mailpoet-top-bar-logo {
-    cursor: pointer;
-    left: 17px;
-    position: absolute;
-    top: 25px;
-    z-index: 1;
+#mailpoet_editor_steps_heading {
+  .mailpoet-top-bar {
+    left: 0;
 
-    svg {
-      max-height: 100%;
-      max-width: 100%;
+    .mailpoet-top-bar-logo {
+      z-index: 1;
     }
   }
 }
