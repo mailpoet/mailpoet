@@ -79,10 +79,7 @@ const stepsListingHeading = (
     ];
   }
   return (
-    <div
-      className="mailpoet-newsletter-listing-heading-wrapper"
-      data-automation-id={automationId}
-    >
+    <div className="mailpoet-top-bar" data-automation-id={automationId}>
       {showMailPoetLogo && <MailPoetLogoResponsive />}
       <HideScreenOptions />
       <Steps count={stepTitles.length} current={step} titles={stepTitles} />
