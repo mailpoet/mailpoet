@@ -44,7 +44,8 @@ class WorkflowBuilder {
     $steps = array_reverse($steps);
     return new Workflow(
       $name,
-      $steps
+      $steps,
+      wp_get_current_user()
     );
   }
 
