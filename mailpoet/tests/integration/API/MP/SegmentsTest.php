@@ -8,7 +8,6 @@ use MailPoet\API\MP\v1\Segments;
 use MailPoet\API\MP\v1\Subscribers;
 use MailPoet\Config\Changelog;
 use MailPoet\Entities\SegmentEntity;
-use MailPoet\Subscribers\RequiredCustomFieldValidator;
 use MailPoet\Test\DataFactories\Segment as SegmentFactory;
 
 class SegmentsTest extends \MailPoetTest {
@@ -90,7 +89,6 @@ class SegmentsTest extends \MailPoetTest {
 
   private function getApi(): API {
     return new API(
-      $this->makeEmpty(RequiredCustomFieldValidator::class),
       $this->diContainer->get(CustomFields::class),
       $this->diContainer->get(Segments::class),
       $this->diContainer->get(Subscribers::class),

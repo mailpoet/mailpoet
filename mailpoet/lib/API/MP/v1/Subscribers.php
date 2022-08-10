@@ -11,9 +11,13 @@ use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\ConfirmationEmailMailer;
 use MailPoet\Subscribers\NewSubscriberNotificationMailer;
+use MailPoet\Subscribers\RequiredCustomFieldValidator;
+use MailPoet\Subscribers\Source;
+use MailPoet\Subscribers\SubscriberSaveController;
 use MailPoet\Subscribers\SubscriberSegmentRepository;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Tasks\Sending;
+use MailPoet\Util\Helpers;
 use MailPoet\WP\Functions as WPFunctions;
 
 class Subscribers {
@@ -44,8 +48,14 @@ class Subscribers {
   /** @var NewSubscriberNotificationMailer */
   private $newSubscriberNotificationMailer;
 
+  /** @var SubscriberSaveController */
+  private $subscriberSaveController;
+
   /** @var FeaturesController */
   private $featuresController;
+
+  /** @var RequiredCustomFieldValidator */
+  private $requiredCustomFieldsValidator;
 
   /** @var WPFunctions */
   private $wp;
@@ -57,9 +67,11 @@ class Subscribers {
     SettingsController $settings,
     SubscriberSegmentRepository $subscriberSegmentRepository,
     SubscribersRepository $subscribersRepository,
+    SubscriberSaveController $subscriberSaveController,
     SubscribersResponseBuilder $subscribersResponseBuilder,
     WelcomeScheduler $welcomeScheduler,
     FeaturesController $featuresController,
+    RequiredCustomFieldValidator $requiredCustomFieldsValidator,
     WPFunctions $wp
   ) {
     $this->confirmationEmailMailer = $confirmationEmailMailer;
@@ -68,10 +80,76 @@ class Subscribers {
     $this->settings = $settings;
     $this->subscribersSegmentRepository = $subscriberSegmentRepository;
     $this->subscribersRepository = $subscribersRepository;
+    $this->subscriberSaveController = $subscriberSaveController;
     $this->subscribersResponseBuilder = $subscribersResponseBuilder;
     $this->welcomeScheduler = $welcomeScheduler;
     $this->featuresController = $featuresController;
+    $this->requiredCustomFieldsValidator = $requiredCustomFieldsValidator;
     $this->wp = $wp;
+  }
+
+  public function addSubscriber(array $data, array $listIds = [], array $options = []): array {
+    $sendConfirmationEmail = !(isset($options['send_confirmation_email']) && $options['send_confirmation_email'] === false);
+    $scheduleWelcomeEmail = !(isset($options['schedule_welcome_email']) && $options['schedule_welcome_email'] === false);
+    $skipSubscriberNotification = (isset($options['skip_subscriber_notification']) && $options['skip_subscriber_notification'] === true);
+
+    // throw exception when subscriber email is missing
+    if (empty($data['email'])) {
+      throw new APIException(
+        __('Subscriber email address is required.', 'mailpoet'),
+        APIException::EMAIL_ADDRESS_REQUIRED
+      );
+    }
+
+    // throw exception when subscriber already exists
+    if ($this->subscribersRepository->findOneBy(['email' => $data['email']])) {
+      throw new APIException(
+        __('This subscriber already exists.', 'mailpoet'),
+        APIException::SUBSCRIBER_EXISTS
+      );
+    }
+
+    [$defaultFields, $customFields] = $this->extractCustomFieldsFromFromSubscriberData($data);
+
+    $this->requiredCustomFieldsValidator->validate($customFields);
+
+    // filter out all incoming data that we don't want to change, like status ...
+    $defaultFields = array_intersect_key($defaultFields, array_flip(['email', 'first_name', 'last_name', 'subscribed_ip']));
+
+    if (empty($defaultFields['subscribed_ip'])) {
+      $defaultFields['subscribed_ip'] = Helpers::getIP();
+    }
+    $defaultFields['source'] = Source::API;
+
+    try {
+      $subscriberEntity = $this->subscriberSaveController->createOrUpdate($defaultFields, null);
+    } catch (\Exception $e) {
+      throw new APIException(
+      // translators: %s is an error message.
+        sprintf(__('Failed to add subscriber: %s', 'mailpoet'), $e->getMessage()),
+        APIException::FAILED_TO_SAVE_SUBSCRIBER
+      );
+    }
+
+    try {
+      $this->subscriberSaveController->updateCustomFields($customFields, $subscriberEntity);
+    } catch (\Exception $e) {
+      throw new APIException(
+      // translators: %s is an error message
+        sprintf(__('Failed to save subscriber custom fields: %s', 'mailpoet'), $e->getMessage()),
+        APIException::FAILED_TO_SAVE_SUBSCRIBER
+      );
+    }
+
+    // subscribe to segments and optionally: 1) send confirmation email, 2) schedule welcome email(s)
+    if (!empty($listIds)) {
+      $this->subscribeToLists($subscriberEntity->getId(), $listIds, [
+        'send_confirmation_email' => $sendConfirmationEmail,
+        'schedule_welcome_email' => $scheduleWelcomeEmail,
+        'skip_subscriber_notification' => $skipSubscriberNotification,
+      ]);
+    }
+    return $this->subscribersResponseBuilder->build($subscriberEntity);
   }
 
   /**
@@ -280,5 +358,20 @@ class Subscribers {
     }
 
     return $foundSegments;
+  }
+
+  /**
+   * Splits subscriber data into two arrays with basic data (index 0) and custom fields data (index 1)
+   * @return array<int, array>
+   */
+  private function extractCustomFieldsFromFromSubscriberData($data): array {
+    $customFields = [];
+    foreach ($data as $key => $value) {
+      if (strpos($key, 'cf_') === 0) {
+        $customFields[$key] = $value;
+        unset($data[$key]);
+      }
+    }
+    return [$data, $customFields];
   }
 }
