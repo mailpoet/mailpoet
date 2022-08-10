@@ -7,18 +7,14 @@
   var wizard_tracking_illustration_url = '<%= cdn_url('welcome-wizard/tracking.20200623.png') %>';
   var wizard_woocommerce_illustration_url = '<%= cdn_url('welcome-wizard/woocommerce.20200623.png') %>';
   var wizard_MSS_pitch_illustration_url = '<%= cdn_url('welcome-wizard/illu-pitch-mss.20190912.png') %>';
-  var is_woocommerce_active = <%= json_encode(is_woocommerce_active)  %>;
   var finish_wizard_url = '<%= finish_wizard_url %>';
   var sender_data = <%= json_encode(sender) %>;
   var admin_email = <%= json_encode(admin_email) %>;
   var hide_mailpoet_beacon = true;
   var subscribers_count = <%= subscriber_count %>;
   var mailpoet_account_url = '<%= add_referral_id("https://account.mailpoet.com/?s=" ~ subscriber_count ~ "&email=" ~ current_wp_user.user_email|escape('js')) %>';
-  var has_mss_key_specified = <%= json_encode(has_mss_key_specified) %>;
-  var mailpoet_feature_flags = <%= json_encode(mailpoet_feature_flags) %>;
   var mailpoet_settings = <%= json_encode(settings) %>;
   var mailpoet_subscribers_count = <%= subscriber_count %>;
-  var mailpoet_current_wp_user_email = '<%= current_wp_user.user_email|escape('js') %>';
 </script>
 
 <div id="mailpoet-wizard-container"></div>

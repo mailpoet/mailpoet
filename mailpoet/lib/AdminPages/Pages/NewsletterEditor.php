@@ -4,11 +4,9 @@ namespace MailPoet\AdminPages\Pages;
 
 use MailPoet\AdminPages\PageRenderer;
 use MailPoet\Config\Menu;
-use MailPoet\Config\ServicesChecker;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Form\Util\CustomFonts;
 use MailPoet\Newsletter\Shortcodes\ShortcodesHelper;
-use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\UserFlagsController;
 use MailPoet\Subscribers\SubscribersRepository;
@@ -38,9 +36,6 @@ class NewsletterEditor {
   /** @var TransactionalEmails */
   private $wcTransactionalEmails;
 
-  /** @var ServicesChecker */
-  private $servicesChecker;
-
   /** @var ShortcodesHelper */
   private $shortcodesHelper;
 
@@ -61,7 +56,6 @@ class NewsletterEditor {
     WPFunctions $wp,
     TransactionalEmails $wcTransactionalEmails,
     ShortcodesHelper $shortcodesHelper,
-    ServicesChecker $servicesChecker,
     SubscribersRepository $subscribersRepository,
     TransactionalEmailHooks $wooEmailHooks,
     CustomFonts $customFonts
@@ -72,7 +66,6 @@ class NewsletterEditor {
     $this->woocommerceHelper = $woocommerceHelper;
     $this->wp = $wp;
     $this->wcTransactionalEmails = $wcTransactionalEmails;
-    $this->servicesChecker = $servicesChecker;
     $this->shortcodesHelper = $shortcodesHelper;
     $this->subscribersRepository = $subscribersRepository;
     $this->wooEmailHooks = $wooEmailHooks;
@@ -119,12 +112,10 @@ class NewsletterEditor {
       'editor_tutorial_seen' => $this->userFlags->get('editor_tutorial_seen'),
       'current_wp_user' => array_merge($subscriberData, $this->wp->wpGetCurrentUser()->to_array()),
       'sub_menu' => Menu::MAIN_PAGE_SLUG,
-      'mss_active' => Bridge::isMPSendingServiceEnabled(),
       'woocommerce' => $woocommerceData,
       'is_wc_transactional_email' => $newsletterId === $woocommerceTemplateId,
       'site_name' => $this->wp->wpSpecialcharsDecode($this->wp->getOption('blogname'), ENT_QUOTES),
       'site_address' => $this->wp->wpParseUrl($this->wp->homeUrl(), PHP_URL_HOST),
-      'mss_key_pending_approval' => $this->servicesChecker->isMailPoetAPIKeyPendingApproval(),
     ];
     $this->wp->wpEnqueueMedia();
     $this->wp->wpEnqueueStyle('editor', $this->wp->includesUrl('css/editor.css'));

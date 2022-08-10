@@ -71,6 +71,30 @@ jQuery('#adminmenu #toplevel_page_mailpoet-newsletters')
   var mailpoet_feature_announcement_has_news = <%= json_encode(feature_announcement_has_news) %>;
   var mailpoet_wp_segment_state = <%= json_encode(wp_segment_state) %>;
   var mailpoet_mta_method = '<%= mta_method %>';
+
+  // Premium status
+  var mailpoet_current_wp_user_email = '<%= current_wp_user_email|escape('js') %>';
+  var mailpoet_premium_link = <%= json_encode(link_premium) %>;
+  var mailpoet_premium_plugin_installed = <%= json_encode(premium_plugin_installed) %>;
+  var mailpoet_premium_active = <%= json_encode(premium_plugin_active) %>;
+  var mailpoet_premium_plugin_download_url = <%= json_encode(premium_plugin_download_url) %>;
+  var mailpoet_premium_plugin_activation_url = <%= json_encode(premium_plugin_activation_url) %>;
+  var mailpoet_has_valid_api_key = <%= json_encode(has_valid_api_key) %>;
+  var mailpoet_has_valid_premium_key = <%= json_encode(has_valid_premium_key) %>;
+  var mailpoet_has_premium_support = <%= json_encode(has_premium_support) %>;
+  var has_mss_key_specified = <%= json_encode(has_mss_key_specified) %>;
+  var mailpoet_mss_key_invalid = <%= json_encode(mss_key_invalid) %>;
+  var mailpoet_mss_key_pending_approval = '<%= mss_key_pending_approval %>';
+  var mailpoet_mss_active = <%= json_encode(mss_active) %>;
+  var mailpoet_plugin_partial_key = '<%= plugin_partial_key %>';
+  var mailpoet_subscribers_limit = <%= subscribers_limit ? subscribers_limit : 'false'  %>;
+  var mailpoet_subscribers_limit_reached = <%= json_encode(subscribers_limit_reached) %>;
+  var mailpoet_email_volume_limit = <%= json_encode(email_volume_limit) %>;
+  var mailpoet_email_volume_limit_reached = <%= json_encode(email_volume_limit_reached) %>;
+
+  <% if not(premium_plugin_active) %>
+    var mailpoet_free_premium_subscribers_limit = <%= free_premium_subscribers_limit %>;
+  <% endif %>
 </script>
 
 <!-- javascripts -->
