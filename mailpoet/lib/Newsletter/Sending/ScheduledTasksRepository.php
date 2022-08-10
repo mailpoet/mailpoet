@@ -135,7 +135,6 @@ class ScheduledTasksRepository extends Repository {
       ->where('st.type = :type')
       ->andWhere('st.status IS NULL')
       ->andWhere('st.deletedAt IS NULL')
-      ->andWhere('sq.deletedAt IS NULL')
       ->orderBy('st.priority', 'ASC')
       ->addOrderBy('st.updatedAt', 'ASC')
       ->setMaxResults($limit)

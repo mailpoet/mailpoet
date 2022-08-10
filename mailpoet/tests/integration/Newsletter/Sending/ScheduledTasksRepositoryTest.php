@@ -76,9 +76,8 @@ class ScheduledTasksRepositoryTest extends \MailPoetTest {
     // deleted task
     $task = $this->scheduledTaskFactory->create(ScheduledTaskEntity::TYPE_SENDING, null, Carbon::now()->subDay(), Carbon::now());
     $this->sendingQueueFactory->create($task);
-    // deleted sending queue
-    $task = $this->scheduledTaskFactory->create(ScheduledTaskEntity::TYPE_SENDING, null, Carbon::now()->subDay());
-    $this->sendingQueueFactory->create($task, null, Carbon::now());
+    // without sending queue
+    $this->scheduledTaskFactory->create(ScheduledTaskEntity::TYPE_SENDING, null, Carbon::now()->subDay());
     // scheduled in future
     $task = $this->scheduledTaskFactory->create(ScheduledTaskEntity::TYPE_SENDING, ScheduledTaskEntity::STATUS_COMPLETED, Carbon::now()->addDay());
     $this->sendingQueueFactory->create($task);
