@@ -374,6 +374,24 @@ class SubscribersTest extends \MailPoetTest {
     expect($result['subscriptions'][0]['status'])->equals(SubscriberEntity::STATUS_UNSUBSCRIBED);
   }
 
+  public function testItChecksEmptyParamsInCorrectOrder() {
+    // test if segments are specified
+    try {
+      $this->getApi()->unsubscribeFromLists(null, []);
+      $this->fail('Segments are required exception should have been thrown.');
+    } catch (\Exception $e) {
+      expect($e->getMessage())->equals('At least one segment ID is required.');
+    }
+
+    // test if segments are specified
+    try {
+      $this->getApi()->unsubscribeFromLists(null, [1]);
+      $this->fail('Subscriber is required exception should have been thrown.');
+    } catch (\Exception $e) {
+      expect($e->getMessage())->equals('A subscriber is required.');
+    }
+  }
+
   public function _after() {
     $this->truncateEntity(SubscriberEntity::class);
     $this->truncateEntity(SegmentEntity::class);
