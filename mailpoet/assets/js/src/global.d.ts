@@ -128,4 +128,7 @@ interface Window {
   mailpoet_all_sender_domains?: string[];
   mailpoet_mss_active: boolean;
   mailpoet_free_domains?: string[];
+  mailpoet_installed_at?: string;
+  mailpoet_email_editor_tutorial_seen: number;
+  mailpoet_email_editor_tutorial_url: string;
 }
