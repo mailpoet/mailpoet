@@ -28,6 +28,9 @@ class Workflow {
   /** @var DateTimeImmutable */
   private $updatedAt;
 
+  /** @var ?DateTimeImmutable */
+  private $activatedAt = null;
+
   /** @var array<string, Step> */
   private $steps;
 
@@ -78,6 +81,9 @@ class Workflow {
   }
 
   public function setStatus(string $status): void {
+    if ($status === self::STATUS_ACTIVE && $this->status !== self::STATUS_ACTIVE) {
+      $this->activatedAt = new DateTimeImmutable();
+    }
     $this->status = $status;
     $this->setUpdatedAt();
   }
@@ -88,6 +94,10 @@ class Workflow {
 
   public function getUpdatedAt(): DateTimeImmutable {
     return $this->updatedAt;
+  }
+
+  public function getActivatedAt(): ?DateTimeImmutable {
+    return $this->activatedAt;
   }
 
   /** @return array<string, Step> */
@@ -134,6 +144,7 @@ class Workflow {
       'status' => $this->status,
       'created_at' => $this->createdAt->format(DateTimeImmutable::W3C),
       'updated_at' => $this->updatedAt->format(DateTimeImmutable::W3C),
+      'activated_at' => $this->activatedAt ? $this->activatedAt->format(DateTimeImmutable::W3C) : null,
       'steps' => Json::encode(
         array_map(function (Step $step) {
           return $step->toArray();
@@ -162,6 +173,7 @@ class Workflow {
     $workflow->status = $data['status'];
     $workflow->createdAt = new DateTimeImmutable($data['created_at']);
     $workflow->updatedAt = new DateTimeImmutable($data['updated_at']);
+    $workflow->activatedAt = $data['activated_at'] !== null ? new DateTimeImmutable($data['activated_at']) : null;
     return $workflow;
   }
 

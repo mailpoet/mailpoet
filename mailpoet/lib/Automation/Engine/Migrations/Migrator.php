@@ -28,6 +28,7 @@ class Migrator {
         status varchar(255) NOT NULL,
         created_at timestamp NOT NULL,
         updated_at timestamp NOT NULL,
+        activated_at timestamp NULL,
         deleted_at timestamp NULL,
         PRIMARY KEY (id)
       );
