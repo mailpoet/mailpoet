@@ -8,6 +8,7 @@ use MailPoet\Automation\Engine\API\Request;
 use MailPoet\Automation\Engine\API\Response;
 use MailPoet\Automation\Engine\Data\Workflow;
 use MailPoet\Automation\Engine\Storage\WorkflowStorage;
+use MailPoet\Validator\Builder;
 
 class WorkflowsGetEndpoint extends Endpoint {
   /** @var WorkflowStorage */
@@ -20,10 +21,17 @@ class WorkflowsGetEndpoint extends Endpoint {
   }
 
   public function handle(Request $request): Response {
-    $workflows = $this->workflowStorage->getWorkflows();
+    $status = $request->getParam('status') ? (array)$request->getParam('status') : null;
+    $workflows = $this->workflowStorage->getWorkflows($status);
     return new Response(array_map(function (Workflow $workflow) {
       return $this->buildWorkflow($workflow);
     }, $workflows));
+  }
+
+  public static function getRequestSchema(): array {
+    return [
+      'status' => Builder::array(Builder::string()),
+    ];
   }
 
   private function buildWorkflow(Workflow $workflow): array {
