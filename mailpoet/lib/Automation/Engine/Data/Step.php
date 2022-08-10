@@ -9,6 +9,9 @@ class Step {
   /** @var string */
   private $id;
 
+  /** @var ?string */
+  private $name;
+
   /** @var string */
   private $type;
 
@@ -23,12 +26,14 @@ class Step {
 
   public function __construct(
     string $id,
+    ?string $name,
     string $type,
     string $key,
     ?string $nextStepId = null,
     array $args = []
   ) {
     $this->id = $id;
+    $this->name = $name;
     $this->type = $type;
     $this->key = $key;
     $this->nextStepId = $nextStepId;
@@ -37,6 +42,10 @@ class Step {
 
   public function getId(): string {
     return $this->id;
+  }
+
+  public function getName(): ?string {
+    return $this->name;
   }
 
   public function getType(): string {
@@ -62,6 +71,7 @@ class Step {
   public function toArray(): array {
     return [
       'id' => $this->id,
+      'name' => $this->name,
       'type' => $this->type,
       'key' => $this->key,
       'next_step_id' => $this->nextStepId,

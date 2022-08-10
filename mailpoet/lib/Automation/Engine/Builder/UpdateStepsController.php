@@ -36,6 +36,7 @@ class UpdateStepsController {
 
     return new Step(
       $data['id'],
+      $data['name'] ?? null,
       $data['type'],
       $data['key'],
       $data['next_step_id'] ?? null,

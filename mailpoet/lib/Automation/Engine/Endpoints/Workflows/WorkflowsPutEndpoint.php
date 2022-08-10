@@ -31,6 +31,7 @@ class WorkflowsPutEndpoint extends Endpoint {
   public static function getRequestSchema(): array {
     $step = Builder::object([
       'id' => Builder::string()->required(),
+      'name' => Builder::string()->nullable(),
       'type' => Builder::string()->required(),
       'key' => Builder::string()->required(),
       'args' => Builder::object(),
@@ -55,6 +56,7 @@ class WorkflowsPutEndpoint extends Endpoint {
       'steps' => array_map(function (Step $step) {
         return [
           'id' => $step->getId(),
+          'name' => $step->getName(),
           'type' => $step->getType(),
           'key' => $step->getKey(),
           'next_step_id' => $step->getNextStepId(),
