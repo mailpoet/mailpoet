@@ -4,7 +4,7 @@ import ReactDOM from 'react-dom';
 import { ListingHeadingSteps } from 'newsletters/listings/heading_steps';
 import { newsletterTypesWithActivation } from 'newsletters/listings/utils';
 import { fetchAutomaticEmailShortcodes } from 'newsletters/automatic_emails/fetch_editor_shortcodes.jsx';
-import { displayTutorial } from './tutorial.jsx';
+import { initTutorial } from './tutorial';
 
 const renderHeading = (newsletterType, newsletterOptions) => {
   if (newsletterType !== 'wc_transactional') {
@@ -81,7 +81,7 @@ const initializeEditor = (config) => {
     },
   })
     .always(() => MailPoet.Modal.loading(false))
-    .always(() => displayTutorial())
+    .always(() => initTutorial())
     .done((response) => {
       const newsletter = response.data;
 
