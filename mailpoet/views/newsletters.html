@@ -1,7 +1,6 @@
 <% extends 'layout.html' %>
 
 <% block content %>
-<% include('shared_config.html') %>
   <div id="newsletters_container"></div>
 
   <script type="text/javascript">
@@ -9,14 +8,10 @@
       var mailpoet_update_available = <%= is_mailpoet_update_available ? 'true' : 'false' %>
       var mailpoet_listing_per_page = <%= items_per_page %>;
       var mailpoet_display_nps_poll = <%= (sent_newsletters_count > 0 and settings.display_nps_poll) ? 'true' : 'false' %>;
-      var mailpoet_subscribers_limit = <%= subscribers_limit ? subscribers_limit : 'false'  %>;
-      var mailpoet_subscribers_limit_reached = <%= subscribers_limit_reached ? 'true' : 'false' %>;
-      var mailpoet_has_valid_api_key = <%= has_valid_api_key ? 'true' : 'false' %>;
       var mailpoet_segments = <%= json_encode(segments) %>;
       var mailpoet_show_congratulate_after_first_newsletter = <%= show_congratulate_after_first_newsletter %>;
       var mailpoet_installed_days_ago = <%= installed_days_ago %>;
       var mailpoet_current_wp_user = <%= json_encode(current_wp_user) %>;
-      var mailpoet_current_wp_user_email = '<%= current_wp_user.user_email|escape('js') %>';
       var mailpoet_current_wp_user_firstname = '<%= current_wp_user_firstname %>';
       var mailpoet_lists = <%= json_encode(lists) %>;
       var mailpoet_roles = <%= json_encode(roles) %>;
@@ -29,20 +24,15 @@
       var mailpoet_site_url = "<%= site_url %>";
       var mailpoet_date_storage_format = "Y-m-d";
       var mailpoet_tracking_config = <%= json_encode(tracking_config) %>;
-      var mailpoet_premium_active = <%= json_encode(premium_plugin_active) %>;
       var mailpoet_transactional_emails_opt_in_notice_dismissed = '<%= transactional_emails_opt_in_notice_dismissed %>';
-      var mailpoet_mss_key_invalid = <%= mss_key_invalid ? 'true' : 'false' %>;
       var mailpoet_product_categories = <%= json_encode(product_categories)  %>;
       var mailpoet_products = <%= json_encode(products) %>;
 
-      var has_mss_key_specified = <%= json_encode(has_mss_key_specified) %>;
       var mailpoet_account_url = '<%= add_referral_id("https://account.mailpoet.com/?s=" ~ subscriber_count ~ "&email=" ~ current_wp_user.user_email|escape('js')) %>';
-      var mailpoet_feature_flags = <%= json_encode(mailpoet_feature_flags) %>;
 
       var mailpoet_woocommerce_automatic_emails = <%= json_encode(automatic_emails) %>;
       var mailpoet_woocommerce_optin_on_checkout = "<%= woocommerce_optin_on_checkout %>";
 
-      var mailpoet_woocommerce_active = <%= json_encode(is_woocommerce_active) %>;
       var mailpoet_woocommerce_transactional_email_id = <%= json_encode(woocommerce_transactional_email_id) %>;
       var mailpoet_display_detailed_stats = <%= json_encode(display_detailed_stats) %>;
       var mailpoet_last_announcement_seen = <%= json_encode(last_announcement_seen) %>;
@@ -60,7 +50,6 @@
       <% set newUser = (is_new_user == true) ? 'true' : 'false' %>
       var mailpoet_is_new_user = <%= newUser %>;
       var mailpoet_installed_at = '<%= settings.installed_at %>';
-      var mailpoet_mss_active = <%= json_encode(mss_active) %>;
       var mailpoet_editor_javascript_url = '<%= getJavascriptScriptUrl("newsletter_editor.js") %>';
       var mailpoet_subscribers_count = <%= subscriber_count %>;
       var mailpoet_newsletters_count = <%= newsletters_count %>;
@@ -69,10 +58,6 @@
       var mailpoet_authorized_emails = <%= json_encode(authorized_emails) %>;
       var mailpoet_verified_sender_domains = <%= json_encode(verified_sender_domains) %>;
       var mailpoet_all_sender_domains = <%= json_encode(all_sender_domains) %>;
-
-      <% if not(premium_plugin_active) %>
-        var mailpoet_free_premium_subscribers_limit = <%= free_premium_subscribers_limit %>;
-      <% endif %>
     <% endautoescape %>
     var mailpoet_beacon_articles = [
       '57fdc312c697911f2d324fd7',
@@ -81,7 +66,7 @@
       '5a0257ac2c7d3a272c0d7ad6',
       '58f671152c7d3a057f8858e8'
     ];
-    var mailpoet_mss_key_pending_approval = '<%= mss_key_pending_approval %>';
+
     var mailpoet_newsletters_templates_recently_sent_count = <%= json_decode(newsletters_templates_recently_sent_count) %>;
   </script>
 <% endblock %>

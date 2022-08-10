@@ -1,7 +1,6 @@
 <% extends 'layout.html' %>
 
 <% block content %>
-<% include('shared_config.html') %>
   <div id="segments_container"></div>
 
   <script type="text/javascript">
@@ -16,33 +15,22 @@
       '5a574bd92c7d3a194368233e',
       '59a89621042863033a1c82e6'
     ];
-    var mailpoet_mss_active = <%= json_encode(mss_active) %>;
-    var mailpoet_subscribers_limit = <%= subscribers_limit ? subscribers_limit : 'false'  %>;
-    var mailpoet_subscribers_limit_reached = <%= subscribers_limit_reached ? 'true' : 'false' %>;
-    var mailpoet_has_valid_api_key = <%= has_valid_api_key ? 'true' : 'false' %>;
-    var mailpoet_has_valid_premium_key = <%= has_valid_premium_key ? 'true' : 'false' %>;
-    var mailpoet_mss_key_invalid = <%= mss_key_invalid ? 'true' : 'false' %>;
     var mailpoet_subscribers_count = <%= subscriber_count %>;
     var mailpoet_custom_fields = <%= json_encode(custom_fields) %>;
     var mailpoet_static_segments_list = <%= json_encode(static_segments_list) %>;
     var mailpoet_tags = <%= json_encode(tags) %>;
-    var mailpoet_has_premium_support = <%= has_premium_support ? 'true' : 'false' %>;
-    var mailpoet_premium_link = <%= json_encode(link_premium) %>;
     var wordpress_editable_roles_list = <%= json_encode(wordpress_editable_roles_list)  %>;
     var mailpoet_newsletters_list = <%= json_encode(newsletters_list)  %>;
     var mailpoet_product_categories = <%= json_encode(product_categories)  %>;
     var mailpoet_products = <%= json_encode(products) %>;
     var mailpoet_membership_plans = <%= json_encode(membership_plans) %>;
     var mailpoet_subscription_products = <%= json_encode(subscription_products) %>;
-    var is_woocommerce_active = <%= json_encode(is_woocommerce_active)  %>;
     var mailpoet_can_use_woocommerce_memberships = <%= json_encode(can_use_woocommerce_memberships)  %>;
     var mailpoet_can_use_woocommerce_subscriptions = <%= json_encode(can_use_woocommerce_subscriptions)  %>;
     var mailpoet_woocommerce_currency_symbol = <%= json_encode(woocommerce_currency_symbol)  %>;
     var mailpoet_woocommerce_countries = <%= json_encode(woocommerce_countries)  %>;
     var mailpoet_tracking_config = <%= json_encode(tracking_config) %>;
     var mailpoet_subscribers_counts_cache_created_at = <%= json_encode(subscribers_counts_cache_created_at) %>;
-    var mailpoet_premium_active = <%= json_encode(premium_plugin_active) %>;
-    var mailpoet_current_wp_user_email = '<%= current_wp_user_email %>';
   </script>
 <% endblock %>
 
