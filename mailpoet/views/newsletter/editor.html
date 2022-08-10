@@ -357,6 +357,13 @@
     ];
   </script>
 <% endif %>
+
+<script type="text/javascript">
+  var mailpoet_email_editor_tutorial_seen  = '<%= editor_tutorial_seen %>';
+  var mailpoet_email_editor_tutorial_url = '<%= cdn_url('newsletter-editor/editor-drag-demo.20190226-1505.mp4') %>';
+  var mailpoet_installed_at = '<%= settings.installed_at %>';
+</script>
+
 <% endblock %>
 
 <% block translations %>
@@ -1554,10 +1561,7 @@
           "newsletter_editor/image-missing.svg"
         ) %>',
       },
-      dragDemoUrl: '<%= cdn_url('newsletter-editor/editor-drag-demo.20190226-1505.mp4') %>',
       currentUserId: '<%= current_wp_user.wp_user_id %>',
-      dragDemoUrlSettings: '<%= editor_tutorial_seen %>',
-      installedAt: '<%= settings["installed_at"] %>',
       mtaMethod: '<%= settings["mta"]["method"] %>',
       woocommerceCustomizerEnabled: <%= woocommerce.customizer_enabled ? 'true' : 'false' %>,
       <% if is_wc_transactional_email %>
