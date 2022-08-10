@@ -1,9 +1,11 @@
 import { ReactNode } from 'react';
 import { Location } from 'history';
 import { MailPoet } from 'mailpoet';
+import { Icon, video } from '@wordpress/icons';
 import { HideScreenOptions } from '../../common/hide_screen_options/hide_screen_options';
 import { MailPoetLogoResponsive } from '../../common/top_bar/mailpoet_logo_responsive';
 import { Steps } from '../../common/steps/steps';
+import { displayTutorial } from '../../newsletter_editor/tutorial';
 
 export const mapPathToSteps = (
   location: Location,
@@ -91,6 +93,29 @@ const stepsListingHeading = (
       <h1 className="mailpoet-newsletter-listing-heading title mailpoet_hidden">
         {' '}
       </h1>
+      <div className="mailpoet-flex-grow" />
+      <div>
+        <a
+          role="button"
+          onClick={displayTutorial}
+          className="mailpoet-top-bar-beamer"
+          title={MailPoet.I18n.t('topBarTutorial')}
+          tabIndex={0}
+          onKeyDown={(event) => {
+            if (
+              ['keydown', 'keypress'].includes(event.type) &&
+              ['Enter', ' '].includes(event.key)
+            ) {
+              event.preventDefault();
+              displayTutorial();
+            }
+          }}
+        >
+          <Icon icon={video} />
+          <span>{MailPoet.I18n.t('topBarTutorial')}</span>
+        </a>
+        <span id="beamer-empty-element" />
+      </div>
     </div>
   );
 };
