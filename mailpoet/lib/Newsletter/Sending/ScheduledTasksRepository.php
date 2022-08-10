@@ -2,6 +2,7 @@
 
 namespace MailPoet\Newsletter\Sending;
 
+use MailPoet\Cron\Workers\SendingQueue\SendingQueue;
 use MailPoet\Doctrine\Repository;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
@@ -138,7 +139,7 @@ class ScheduledTasksRepository extends Repository {
       ->orderBy('st.priority', 'ASC')
       ->addOrderBy('st.updatedAt', 'ASC')
       ->setMaxResults($limit)
-      ->setParameter('type', ScheduledTaskEntity::TYPE_SENDING)
+      ->setParameter('type', SendingQueue::TASK_TYPE)
       ->getQuery()
       ->getResult();
   }

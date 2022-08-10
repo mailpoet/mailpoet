@@ -22,7 +22,6 @@ class ScheduledTaskEntity {
   const STATUS_PAUSED = 'paused';
   const STATUS_INVALID = 'invalid';
   const VIRTUAL_STATUS_RUNNING = 'running'; // For historical reasons this is stored as null in DB
-  const TYPE_SENDING = 'sending';
   const PRIORITY_HIGH = 1;
   const PRIORITY_MEDIUM = 5;
   const PRIORITY_LOW = 10;
