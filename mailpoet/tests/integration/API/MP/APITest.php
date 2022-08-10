@@ -3,7 +3,6 @@
 namespace MailPoet\Test\API\MP;
 
 use Codeception\Stub;
-use Codeception\Stub\Expected;
 use MailPoet\API\JSON\ResponseBuilders\SubscribersResponseBuilder;
 use MailPoet\API\MP\v1\API;
 use MailPoet\API\MP\v1\CustomFields;
@@ -15,8 +14,6 @@ use MailPoet\Entities\CustomFieldEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Features\FeaturesController;
-use MailPoet\Models\ScheduledTask;
-use MailPoet\Models\SendingQueue;
 use MailPoet\Newsletter\Scheduler\WelcomeScheduler;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Settings\SettingsController;
@@ -26,16 +23,11 @@ use MailPoet\Subscribers\RequiredCustomFieldValidator;
 use MailPoet\Subscribers\SubscriberSaveController;
 use MailPoet\Subscribers\SubscriberSegmentRepository;
 use MailPoet\Subscribers\SubscribersRepository;
-use MailPoet\Tasks\Sending;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 use MailPoet\WP\Functions as WPFunctions;
-use MailPoetVendor\Idiorm\ORM;
 
 class APITest extends \MailPoetTest {
   const VERSION = 'v1';
-
-  /** @var CustomFieldsRepository */
-  private $customFieldRepository;
 
   /** @var SubscriberFactory */
   private $subscriberFactory;
@@ -47,7 +39,6 @@ class APITest extends \MailPoetTest {
     parent::_before();
     $settings = SettingsController::getInstance();
     $settings->set('signup_confirmation.enabled', true);
-    $this->customFieldRepository = $this->diContainer->get(CustomFieldsRepository::class);
     $this->subscriberFactory = new SubscriberFactory();
     $this->segmentRepository = $this->diContainer->get(SegmentsRepository::class);
   }
@@ -107,307 +98,6 @@ class APITest extends \MailPoetTest {
     );
   }
 
-  public function testItRequiresEmailAddressToAddSubscriber() {
-    try {
-      $this->getApi()->addSubscriber([]);
-      $this->fail('Subscriber email address required exception should have been thrown.');
-    } catch (\Exception $e) {
-      expect($e->getMessage())->equals('Subscriber email address is required.');
-    }
-  }
-
-  public function testItOnlyAcceptsWhitelistedProperties() {
-    $subscriber = [
-      'email' => 'test-ignore-status@example.com',
-      'first_name' => '',
-      'last_name' => '',
-      'status' => 'bounced',
-    ];
-
-    $result = $this->getApi()->addSubscriber($subscriber);
-    expect($result['status'])->equals('unconfirmed');
-  }
-
-  public function testItDoesNotAddExistingSubscriber() {
-    $subscriber = $this->subscriberFactory->create();
-    try {
-      $this->getApi()->addSubscriber(['email' => $subscriber->getEmail()]);
-      $this->fail('Subscriber exists exception should have been thrown.');
-    } catch (\Exception $e) {
-      expect($e->getMessage())->equals('This subscriber already exists.');
-    }
-  }
-
-  public function testItThrowsExceptionWhenSubscriberCannotBeAdded() {
-    $subscriber = [
-      'email' => 'test', // invalid email
-    ];
-    try {
-      $this->getApi()->addSubscriber($subscriber);
-      $this->fail('Failed to add subscriber exception should have been thrown.');
-    } catch (\Exception $e) {
-      expect($e->getMessage())->stringContainsString('Failed to add subscriber:');
-      // error message (converted to lowercase) returned by the model
-      expect($e->getMessage())->stringContainsString('value is not a valid email address.');
-    }
-  }
-
-  public function testItAddsSubscriber() {
-    $customField = $this->customFieldRepository->createOrUpdate([
-      'name' => 'test custom field',
-      'type' => CustomFieldEntity::TYPE_TEXT,
-    ]);
-
-    $subscriber = [
-    'email' => 'test@example.com',
-    'cf_' . $customField->getId() => 'test',
-    ];
-
-    $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
-    $result = $this->getApi()->addSubscriber($subscriber);
-    expect($result['id'])->greaterThan(0);
-    expect($result['email'])->equals($subscriber['email']);
-    expect($result['cf_' . $customField->getId()])->equals('test');
-    expect($result['source'])->equals('api');
-    expect($result['subscribed_ip'])->equals($_SERVER['REMOTE_ADDR']);
-    expect(strlen($result['unsubscribe_token']))->equals(15);
-  }
-
-  public function testItAllowsToOverrideSubscriberIPAddress() {
-    $subscriber = [
-      'email' => 'test-ip-2@example.com',
-      'subscribed_ip' => '1.2.3.4',
-    ];
-
-    $result = $this->getApi()->addSubscriber($subscriber);
-    expect($result['subscribed_ip'])->equals($subscriber['subscribed_ip']);
-  }
-
-  public function testItChecksForMandatoryCustomFields() {
-    $this->customFieldRepository->createOrUpdate([
-      'name' => 'custom field',
-      'type' => CustomFieldEntity::TYPE_TEXT,
-      'params' => ['required' => '1'],
-    ]);
-
-    $subscriber = [
-      'email' => 'test@example.com',
-    ];
-
-    $this->expectException('Exception');
-    $this->expectExceptionMessage('Missing value for custom field "custom field');
-    $this->getApi()->addSubscriber($subscriber);
-  }
-
-  public function testItSubscribesToSegmentsWhenAddingSubscriber() {
-    $segment = $this->getSegment();
-    $subscriber = [
-      'email' => 'test@example.com',
-    ];
-
-    $result = $this->getApi()->addSubscriber($subscriber, [$segment->getId()]);
-    expect($result['id'])->greaterThan(0);
-    expect($result['email'])->equals($subscriber['email']);
-    expect($result['subscriptions'][0]['segment_id'])->equals($segment->getId());
-  }
-
-  public function testItSchedulesWelcomeNotificationByDefaultAfterAddingSubscriber() {
-    $segment = $this->getSegment();
-    $settings = SettingsController::getInstance();
-    $settings->set('signup_confirmation.enabled', false);
-
-    $subscriberActions = Stub::make(
-      Subscribers::class,
-      [
-        '_scheduleWelcomeNotification' => Expected::once(),
-        'newSubscriberNotificationMailer' => Stub::makeEmpty(NewSubscriberNotificationMailer::class, ['send']),
-        'confirmationEmailMailer' => Stub::makeEmpty(ConfirmationEmailMailer::class),
-        'segmentsRepository' => $this->diContainer->get(SegmentsRepository::class),
-        'subscribersRepository' => $this->diContainer->get(SubscribersRepository::class),
-        'subscribersSegmentRepository' => $this->diContainer->get(SubscriberSegmentRepository::class),
-        'subscriberSaveController' => $this->diContainer->get(SubscriberSaveController::class),
-        'subscribersResponseBuilder' => $this->diContainer->get(SubscribersResponseBuilder::class),
-        'settings' => $settings,
-        'requiredCustomFieldsValidator' => Stub::makeEmpty(RequiredCustomFieldValidator::class, ['validate']),
-      ],
-      $this);
-
-    $API = Stub::make(
-      API::class,
-      [
-        'subscribers' => $subscriberActions,
-      ],
-      $this
-    );
-
-    $subscriber = [
-      'email' => 'test@example.com',
-    ];
-    $segments = [$segment->getId()];
-    $API->addSubscriber($subscriber, $segments);
-  }
-
-  public function testItThrowsIfWelcomeEmailFails() {
-    $settings = SettingsController::getInstance();
-    $settings->set('signup_confirmation.enabled', false);
-    $task = ScheduledTask::create();
-    $task->type = 'sending';
-    $task->setError("Big Error");
-    $sendingStub = Sending::create($task, SendingQueue::create());
-    $segment = $this->getSegment();
-
-    $subscribers = Stub::copy($this->getSubscribers(), [
-      'welcomeScheduler' => $this->make('MailPoet\Newsletter\Scheduler\WelcomeScheduler', [
-        'scheduleSubscriberWelcomeNotification' => [$sendingStub],
-      ]),
-    ]);
-    $API = $this->getApi($subscribers);
-
-    $subscriber = [
-      'email' => 'test@example.com',
-    ];
-    $segments = [$segment->getId()];
-    $this->expectException('\Exception');
-    $API->addSubscriber($subscriber, $segments, ['schedule_welcome_email' => true, 'send_confirmation_email' => false]);
-  }
-
-  public function testItDoesNotScheduleWelcomeNotificationAfterAddingSubscriberIfStatusIsNotSubscribed() {
-    $subscribers = Stub::makeEmptyExcept(
-      Subscribers::class,
-      'subscribeToLists',
-      [
-        '_scheduleWelcomeNotification' => Expected::never(),
-        'segmentsRepository' => $this->diContainer->get(SegmentsRepository::class),
-        'subscribersRepository' => $this->diContainer->get(SubscribersRepository::class),
-        'subscribersSegmentRepository' => $this->diContainer->get(SubscriberSegmentRepository::class),
-        'subscribersResponseBuilder' => $this->diContainer->get(SubscribersResponseBuilder::class),
-        'settings' => SettingsController::getInstance(),
-      ],
-      $this);
-    $API = Stub::makeEmptyExcept(
-      API::class,
-      'addSubscriber',
-      [
-        'subscribers' => $subscribers,
-        'requiredCustomFieldValidator' => Stub::makeEmpty(RequiredCustomFieldValidator::class, ['validate']),
-      ], $this);
-    $subscriber = [
-      'email' => 'test@example.com',
-    ];
-    $segments = [1];
-    $API->addSubscriber($subscriber, $segments);
-  }
-
-  public function testItDoesNotScheduleWelcomeNotificationAfterAddingSubscriberWhenDisabledByOption() {
-    $subscribers = Stub::makeEmptyExcept(
-      Subscribers::class,
-      'subscribeToLists',
-      [
-        '_scheduleWelcomeNotification' => Expected::never(),
-        'segmentsRepository' => $this->diContainer->get(SegmentsRepository::class),
-        'subscribersRepository' => $this->diContainer->get(SubscribersRepository::class),
-        'subscribersSegmentRepository' => $this->diContainer->get(SubscriberSegmentRepository::class),
-        'subscribersResponseBuilder' => $this->diContainer->get(SubscribersResponseBuilder::class),
-        'settings' => SettingsController::getInstance(),
-      ],
-      $this);
-    $API = Stub::makeEmptyExcept(
-      API::class,
-      'addSubscriber',
-      [
-        'subscribers' => $subscribers,
-        'requiredCustomFieldValidator' => Stub::makeEmpty(RequiredCustomFieldValidator::class, ['validate']),
-      ], $this);
-    $subscriber = [
-      'email' => 'test@example.com',
-      'status' => SubscriberEntity::STATUS_SUBSCRIBED,
-    ];
-    $segments = [1];
-    $options = ['schedule_welcome_email' => false];
-    $API->addSubscriber($subscriber, $segments, $options);
-  }
-
-  public function testByDefaultItSendsConfirmationEmailAfterAddingSubscriber() {
-    $subscriberActions = Stub::make(
-      Subscribers::class,
-      [
-        'segmentsRepository' => $this->diContainer->get(SegmentsRepository::class),
-        'subscribersRepository' => $this->diContainer->get(SubscribersRepository::class),
-        'subscriberSaveController' => $this->diContainer->get(SubscriberSaveController::class),
-        'subscribersResponseBuilder' => $this->diContainer->get(SubscribersResponseBuilder::class),
-        'settings' => $this->diContainer->get(SettingsController::class),
-        'requiredCustomFieldsValidator' => Stub::makeEmpty(RequiredCustomFieldValidator::class, ['validate']),
-        'subscribeToLists' => Expected::once(function ($subscriberId, $segmentsIds, $options) {
-          expect($options)->contains('send_confirmation_email');
-          expect($options['send_confirmation_email'])->equals(true);
-          return [];
-        })
-      ],
-      $this);
-    $API = $this->makeEmptyExcept(
-      API::class,
-      'addSubscriber',
-      [
-        'subscribers' => $subscriberActions,
-      ]
-    );
-    $subscriber = [
-      'email' => 'test@example.com',
-    ];
-    $segments = [1];
-    $API->addSubscriber($subscriber, $segments);
-  }
-
-  public function testItThrowsWhenConfirmationEmailFailsToSend() {
-    $confirmationMailer = $this->createMock(ConfirmationEmailMailer::class);
-    $confirmationMailer->expects($this->once())
-      ->method('sendConfirmationEmailOnce')
-      ->willThrowException(new \Exception('Something went wrong with your subscription. Please contact the website owner.'));
-
-    $subscribers = Stub::copy($this->getSubscribers(), [
-      'confirmationEmailMailer' => $confirmationMailer,
-    ]);
-    $API = $this->getApi($subscribers);
-
-    $segment = $this->getSegment();
-
-    $subscriber = [
-      'email' => 'test@example.com',
-    ];
-    $this->expectException('\Exception');
-    $this->expectExceptionMessage('Subscriber added to lists, but confirmation email failed to send: something went wrong with your subscription. please contact the website owner.');
-    $API->addSubscriber($subscriber, [$segment->getId()], ['send_confirmation_email' => true]);
-  }
-
-  public function testItDoesNotSendConfirmationEmailAfterAddingSubscriberWhenOptionIsSet() {
-    $subscribers = Stub::makeEmptyExcept(
-      Subscribers::class,
-      'subscribeToLists',
-      [
-        '_sendConfirmationEmail' => Expected::never(),
-        'segmentsRepository' => $this->diContainer->get(SegmentsRepository::class),
-        'subscribersRepository' => $this->diContainer->get(SubscribersRepository::class),
-        'subscribersSegmentRepository' => $this->diContainer->get(SubscriberSegmentRepository::class),
-        'subscribersResponseBuilder' => $this->diContainer->get(SubscribersResponseBuilder::class),
-        'settings' => SettingsController::getInstance(),
-      ],
-      $this);
-    $API = Stub::makeEmptyExcept(
-      API::class,
-      'addSubscriber',
-      [
-        'subscribers' => $subscribers,
-        'requiredCustomFieldValidator' => Stub::makeEmpty(RequiredCustomFieldValidator::class, ['validate']),
-      ], $this);
-
-    $subscriber = [
-      'email' => 'test@example.com',
-    ];
-    $segments = [1];
-    $options = ['send_confirmation_email' => false];
-    $API->addSubscriber($subscriber, $segments, $options);
-  }
-
   public function testItUsesMultipleListsUnsubscribeMethodWhenUnsubscribingFromSingleList() {
     // unsubscribing from single list = converting list ID to an array and using
     // multiple lists unsubscribe method
@@ -449,6 +139,5 @@ class APITest extends \MailPoetTest {
     $this->truncateEntity(SubscriberEntity::class);
     $this->truncateEntity(CustomFieldEntity::class);
     $this->truncateEntity(SegmentEntity::class);
-    ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
   }
 }
