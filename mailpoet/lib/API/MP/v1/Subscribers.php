@@ -224,7 +224,7 @@ class Subscribers {
    * @return SegmentEntity[]
    * @throws APIException
    */
-  private function getAndValidateSegments(array $listIds, string $context = self::CONTEXT_SUBSCRIBE): array {
+  private function getAndValidateSegments(array $listIds, string $context): array {
     // throw exception when none of the segments exist
     $foundSegments = $this->segmentsRepository->findBy(['id' => $listIds]);
     if (!$foundSegments) {
