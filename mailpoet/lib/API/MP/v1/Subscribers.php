@@ -87,6 +87,7 @@ class Subscribers {
     $skipSubscriberNotification = isset($options['skip_subscriber_notification']) && $options['skip_subscriber_notification'] === true;
     $signupConfirmationEnabled = (bool)$this->settings->get('signup_confirmation.enabled');
 
+    $this->checkSubscriberAndListParams($subscriberId, $listIds);
     $subscriber = $this->findSubscriber($subscriberId);
     $foundSegments = $this->getAndValidateSegments($listIds, self::CONTEXT_SUBSCRIBE);
 
@@ -147,6 +148,7 @@ class Subscribers {
   }
 
   public function unsubscribeFromLists($subscriberIdOrEmail, array $listIds): array {
+    $this->checkSubscriberAndListParams($subscriberIdOrEmail, $listIds);
     $subscriber = $this->findSubscriber($subscriberIdOrEmail);
     $foundSegments = $this->getAndValidateSegments($listIds, self::CONTEXT_UNSUBSCRIBE);
     $this->subscribersSegmentRepository->unsubscribeFromSegments($subscriber, $foundSegments);
@@ -190,10 +192,19 @@ class Subscribers {
   /**
    * @throws APIException
    */
-  private function findSubscriber($subscriberIdOrEmail): SubscriberEntity {
+  private function checkSubscriberAndListParams($subscriberIdOrEmail, array $listIds): void {
+    if (empty($listIds)) {
+      throw new APIException(__('At least one segment ID is required.', 'mailpoet'), APIException::SEGMENT_REQUIRED);
+    }
     if (empty($subscriberIdOrEmail)) {
       throw new APIException(__('A subscriber is required.', 'mailpoet'), APIException::SUBSCRIBER_NOT_EXISTS);
     }
+  }
+
+  /**
+   * @throws APIException
+   */
+  private function findSubscriber($subscriberIdOrEmail): SubscriberEntity {
     // throw exception when subscriber does not exist
     $subscriber = null;
     if (is_int($subscriberIdOrEmail) || (string)(int)$subscriberIdOrEmail === $subscriberIdOrEmail) {
@@ -214,10 +225,6 @@ class Subscribers {
    * @throws APIException
    */
   private function getAndValidateSegments(array $listIds, string $context = self::CONTEXT_SUBSCRIBE): array {
-    if (empty($listIds)) {
-      throw new APIException(__('At least one segment ID is required.', 'mailpoet'), APIException::SEGMENT_REQUIRED);
-    }
-
     // throw exception when none of the segments exist
     $foundSegments = $this->segmentsRepository->findBy(['id' => $listIds]);
     if (!$foundSegments) {
