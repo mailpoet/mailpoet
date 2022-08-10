@@ -64,6 +64,7 @@ class AutomationEditor {
       'steps' => array_map(function (Step $step) {
         return [
           'id' => $step->getId(),
+          'name' => $step->getName(),
           'type' => $step->getType(),
           'key' => $step->getKey(),
           'next_step_id' => $step->getNextStepId(),
