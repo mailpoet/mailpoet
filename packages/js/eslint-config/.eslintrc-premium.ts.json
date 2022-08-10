@@ -35,6 +35,7 @@
     "react-hooks/rules-of-hooks": "error",
     "react-hooks/exhaustive-deps": "warn",
     // Exceptions
+    "no-void": 0, // can conflict with @typescript-eslint/no-floating-promises
     "react/jsx-filename-extension": 0,
     "@typescript-eslint/no-unsafe-return": 0, // we need to disable it for wordpress select :(
     "@typescript-eslint/no-unsafe-member-access": 0, // we need to disable it for wordpress select :(
