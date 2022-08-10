@@ -12,7 +12,6 @@ use MailPoet\Settings\Hosts;
 use MailPoet\Settings\Pages;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscription\Captcha;
-use MailPoet\Util\Installation;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoet\WP\Notice as WPNotice;
 
@@ -32,9 +31,6 @@ class Settings {
   /** @var Captcha */
   private $captcha;
 
-  /** @var Installation */
-  private $installation;
-
   /** @var SegmentsSimpleListRepository */
   private $segmentsListRepository;
 
@@ -49,7 +45,6 @@ class Settings {
     SettingsController $settings,
     WPFunctions $wp,
     ServicesChecker $servicesChecker,
-    Installation $installation,
     Captcha $captcha,
     SegmentsSimpleListRepository $segmentsListRepository,
     Bridge $bridge,
@@ -59,7 +54,6 @@ class Settings {
     $this->settings = $settings;
     $this->wp = $wp;
     $this->servicesChecker = $servicesChecker;
-    $this->installation = $installation;
     $this->captcha = $captcha;
     $this->segmentsListRepository = $segmentsListRepository;
     $this->bridge = $bridge;
@@ -101,8 +95,6 @@ class Settings {
       $data['verified_sender_domains'] = $this->senderDomainController->getVerifiedSenderDomains();
       $data['all_sender_domains'] = $this->senderDomainController->getAllSenderDomains();
     }
-
-    $data['is_new_user'] = $this->installation->isNewInstallation();
 
     $data = array_merge($data, Installer::getPremiumStatus());
 

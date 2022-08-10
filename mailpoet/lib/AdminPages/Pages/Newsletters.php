@@ -15,9 +15,7 @@ use MailPoet\Segments\SegmentsSimpleListRepository;
 use MailPoet\Services\AuthorizedSenderDomainController;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
-use MailPoet\Settings\TrackingConfig;
 use MailPoet\Settings\UserFlagsController;
-use MailPoet\Util\Installation;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 use MailPoet\WooCommerce\TransactionalEmails;
 use MailPoet\WP\AutocompletePostListLoader as WPPostListLoader;
@@ -40,9 +38,6 @@ class Newsletters {
   /** @var UserFlagsController */
   private $userFlags;
 
-  /** @var Installation */
-  private $installation;
-
   /** @var SubscribersFeature */
   private $subscribersFeature;
 
@@ -61,9 +56,6 @@ class Newsletters {
   /** @var NewslettersRepository */
   private $newslettersRepository;
 
-  /** @var TrackingConfig */
-  private $trackingConfig;
-
   /** @var Bridge */
   private $bridge;
 
@@ -76,14 +68,12 @@ class Newsletters {
     WPFunctions $wp,
     SettingsController $settings,
     UserFlagsController $userFlags,
-    Installation $installation,
     SubscribersFeature $subscribersFeature,
     NewsletterTemplatesRepository $newsletterTemplatesRepository,
     WPPostListLoader $wpPostListLoader,
     AutomaticEmails $automaticEmails,
     SegmentsSimpleListRepository $segmentsListRepository,
     NewslettersRepository $newslettersRepository,
-    TrackingConfig $trackingConfig,
     Bridge $bridge,
     AuthorizedSenderDomainController $senderDomainController
   ) {
@@ -92,13 +82,11 @@ class Newsletters {
     $this->wp = $wp;
     $this->settings = $settings;
     $this->userFlags = $userFlags;
-    $this->installation = $installation;
     $this->subscribersFeature = $subscribersFeature;
     $this->newsletterTemplatesRepository = $newsletterTemplatesRepository;
     $this->automaticEmails = $automaticEmails;
     $this->wpPostListLoader = $wpPostListLoader;
     $this->segmentsListRepository = $segmentsListRepository;
-    $this->trackingConfig = $trackingConfig;
     $this->newslettersRepository = $newslettersRepository;
     $this->bridge = $bridge;
     $this->senderDomainController = $senderDomainController;
@@ -115,12 +103,8 @@ class Newsletters {
     $data['settings'] = $this->settings->getAll();
     $data['current_wp_user'] = $this->wp->wpGetCurrentUser()->to_array();
     $data['current_wp_user_firstname'] = $this->wp->wpGetCurrentUser()->user_firstname;
-    $data['site_url'] = $this->wp->siteUrl();
     $data['roles'] = $wp_roles->get_names(); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     $data['roles']['mailpoet_all'] = __('In any WordPress role', 'mailpoet');
-
-    $installedAtDiff = (new \DateTime($this->settings->get('installed_at')))->diff(new \DateTime());
-    $data['installed_days_ago'] = (int)$installedAtDiff->format('%a');
 
     $dateTime = new DateTime();
     $data['current_date'] = $dateTime->getCurrentDate(DateTime::DEFAULT_DATE_FORMAT);
@@ -136,7 +120,6 @@ class Newsletters {
     $data['mailpoet_main_page'] = $this->wp->adminUrl('admin.php?page=' . Menu::MAIN_PAGE_SLUG);
     $data['show_congratulate_after_first_newsletter'] = isset($data['settings']['show_congratulate_after_first_newsletter']) ? $data['settings']['show_congratulate_after_first_newsletter'] : 'false';
 
-    $data['tracking_config'] = $this->trackingConfig->getConfig();
     $data['is_mailpoet_update_available'] = array_key_exists(Env::$pluginPath, $this->wp->getPluginUpdates());
     $data['subscriber_count'] = $this->subscribersFeature->getSubscribersCount();
     $data['newsletters_count'] = $this->newslettersRepository->countBy([]);
@@ -145,7 +128,6 @@ class Newsletters {
     $data['automatic_emails'] = $this->automaticEmails->getAutomaticEmails();
     $data['woocommerce_optin_on_checkout'] = $this->settings->get('woocommerce.optin_on_checkout.enabled', false);
 
-    $data['is_new_user'] = $this->installation->isNewInstallation();
     $data['sent_newsletters_count'] = $this->newslettersRepository->countBy(['status' => NewsletterEntity::STATUS_SENT]);
     $data['woocommerce_transactional_email_id'] = $this->settings->get(TransactionalEmails::SETTING_EMAIL_ID);
     $data['display_detailed_stats'] = Installer::getPremiumStatus()['premium_plugin_initialized'];

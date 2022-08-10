@@ -14,7 +14,6 @@ use MailPoet\Listing\PageLimit;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Segments\SegmentDependencyValidator;
 use MailPoet\Segments\SegmentsRepository;
-use MailPoet\Settings\TrackingConfig;
 use MailPoet\Tags\TagRepository;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
@@ -66,9 +65,6 @@ class Segments {
   /** @var TagRepository */
   private $tagRepository;
 
-  /** @var TrackingConfig */
-  private $trackingConfig;
-
   public function __construct(
     PageRenderer $pageRenderer,
     PageLimit $listingPageLimit,
@@ -83,7 +79,6 @@ class Segments {
     NewslettersRepository $newslettersRepository,
     NewslettersResponseBuilder $newslettersResponseBuilder,
     TagRepository $tagRepository,
-    TrackingConfig $trackingConfig,
     TransientCache $transientCache
   ) {
     $this->pageRenderer = $pageRenderer;
@@ -99,7 +94,6 @@ class Segments {
     $this->segmentsRepository = $segmentsRepository;
     $this->newslettersRepository = $newslettersRepository;
     $this->tagRepository = $tagRepository;
-    $this->trackingConfig = $trackingConfig;
     $this->newslettersResponseBuilder = $newslettersResponseBuilder;
   }
 
@@ -163,7 +157,6 @@ class Segments {
     );
     $wooCurrencySymbol = $this->woocommerceHelper->isWooCommerceActive() ? $this->woocommerceHelper->getWoocommerceCurrencySymbol() : '';
     $data['woocommerce_currency_symbol'] = html_entity_decode($wooCurrencySymbol);
-    $data['tracking_config'] = $this->trackingConfig->getConfig();
     $subscribersCacheCreatedAt = $this->transientCache->getOldestCreatedAt(TransientCache::SUBSCRIBERS_STATISTICS_COUNT_KEY);
     $subscribersCacheCreatedAt = $subscribersCacheCreatedAt ?: Carbon::now();
     $data['subscribers_counts_cache_created_at'] = $subscribersCacheCreatedAt->format('Y-m-d\TH:i:sO');

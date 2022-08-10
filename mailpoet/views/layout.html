@@ -71,6 +71,9 @@ jQuery('#adminmenu #toplevel_page_mailpoet-newsletters')
   var mailpoet_feature_announcement_has_news = <%= json_encode(feature_announcement_has_news) %>;
   var mailpoet_wp_segment_state = <%= json_encode(wp_segment_state) %>;
   var mailpoet_mta_method = '<%= mta_method %>';
+  var mailpoet_tracking_config = <%= json_encode(tracking_config) %>;
+  var mailpoet_is_new_user = <%= json_encode(is_new_user == true) %>;
+  var mailpoet_installed_days_ago = <%= installed_days_ago %>;
 
   // Premium status
   var mailpoet_current_wp_user_email = '<%= current_wp_user_email|escape('js') %>';

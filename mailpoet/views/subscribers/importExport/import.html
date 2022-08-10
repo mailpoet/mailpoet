@@ -20,8 +20,6 @@
     mailpoetColumnsSelect2 = <%= subscriberFieldsSelect2|raw %>,
     mailpoetColumns = <%= subscriberFields|raw %>,
     mailpoetSegments = <%= segments|raw %>;
-    <% set newUser = (is_new_user == true) ? 'true' : 'false' %>
-    var mailpoet_is_new_user = <%= newUser %>;
     var mailpoet_beacon_articles = [
       '57ce07ffc6979108399a044b',
       '57ce079f903360649f6e56fc',
