@@ -157,10 +157,10 @@ class SendingTest extends \MailPoetTest {
     $this->sending->status = ScheduledTask::STATUS_SCHEDULED;
     $this->sending->scheduled_at = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'))->subHours(1);
     $this->sending->save();
-    $tasks = SendingTask::getScheduledQueues();
+    $tasks = $this->scheduledTaskRepository->findScheduledSendingTasks(5);
     expect($tasks)->notEmpty();
     foreach ($tasks as $task) {
-      expect($task)->isInstanceOf('MailPoet\Tasks\Sending');
+      expect($task)->isInstanceOf(ScheduledTaskEntity::class);
     }
 
     // if task exists but sending queue is missing, results should not contain empty (false) values
@@ -175,13 +175,13 @@ class SendingTest extends \MailPoetTest {
     for ($i = 0; $i < $amount + 3; $i += 1) {
       $this->createNewSendingTask(['status' => ScheduledTask::STATUS_SCHEDULED]);
     }
-    expect(SendingTask::getScheduledQueues($amount))->count($amount);
+    expect($this->scheduledTaskRepository->findScheduledSendingTasks($amount))->count($amount);
   }
 
   public function testItDoesNotGetPaused() {
     $this->_after();
     $this->createNewSendingTask(['status' => ScheduledTask::STATUS_PAUSED]);
-    expect(SendingTask::getScheduledQueues())->count(0);
+    expect($this->scheduledTaskRepository->findScheduledSendingTasks(5))->count(0);
   }
 
   public function testItGetsRunningQueues() {
@@ -222,10 +222,10 @@ class SendingTest extends \MailPoetTest {
     $sending3->updatedAt = '2017-05-04 15:00:00';
     $sending3->save();
 
-    $queues = SendingTask::getScheduledQueues(3);
-    expect($queues[0]->task_id)->equals($sending1->id());
-    expect($queues[1]->task_id)->equals($sending3->id());
-    expect($queues[2]->task_id)->equals($sending2->id());
+    $tasks = $this->scheduledTaskRepository->findScheduledSendingTasks(3);
+    expect($tasks[0]->getId())->equals($sending1->id());
+    expect($tasks[1]->getId())->equals($sending3->id());
+    expect($tasks[2]->getId())->equals($sending2->id());
   }
 
   public function testItGetsBatchOfScheduledQueuesSortedByUpdatedTime() {

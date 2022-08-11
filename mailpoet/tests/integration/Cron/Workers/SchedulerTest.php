@@ -101,13 +101,14 @@ class SchedulerTest extends \MailPoetTest {
   }
 
   public function testItCanGetScheduledQueues() {
-    expect(Scheduler::getScheduledQueues())->isEmpty();
+    $scheduler = $this->diContainer->get(Scheduler::class);
+    expect($scheduler->getScheduledSendingTasks())->isEmpty();
     $queue = SendingTask::create();
     $queue->newsletterId = 1;
     $queue->status = SendingQueue::STATUS_SCHEDULED;
     $queue->scheduledAt = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
     $queue->save();
-    expect(Scheduler::getScheduledQueues())->notEmpty();
+    expect($scheduler->getScheduledSendingTasks())->notEmpty();
   }
 
   public function testItCanCreateNotificationHistory() {

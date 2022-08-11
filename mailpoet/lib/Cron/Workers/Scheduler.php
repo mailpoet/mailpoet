@@ -11,6 +11,7 @@ use MailPoet\Entities\SegmentEntity;
 use MailPoet\InvalidStateException;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Models\Newsletter;
+use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
 use MailPoet\Newsletter\NewslettersRepository;
@@ -94,8 +95,19 @@ class Scheduler {
     // abort if execution limit is reached
     $this->cronHelper->enforceExecutionLimit($timer);
 
-    $scheduledQueues = self::getScheduledQueues();
-    if (!count($scheduledQueues)) return false;
+    $scheduledTasks = $this->getScheduledSendingTasks();
+    if (!count($scheduledTasks)) return false;
+
+    // To prevent big changes we convert ScheduledTaskEntity to old model
+    $scheduledQueues = [];
+    foreach ($scheduledTasks as $scheduledTask) {
+      $task = ScheduledTask::findOne($scheduledTask->getId());
+      if (!$task) continue;
+      $scheduledQueue = SendingTask::createFromScheduledTask($task);
+      if (!$scheduledQueue) continue;
+      $scheduledQueues[] = $scheduledQueue;
+    }
+
     $this->updateTasks($scheduledQueues);
     foreach ($scheduledQueues as $i => $queue) {
       $newsletter = Newsletter::findOneWithOptions($queue->newsletterId);
@@ -387,7 +399,10 @@ class Scheduler {
     $this->scheduledTasksRepository->touchAllByIds($ids);
   }
 
-  public static function getScheduledQueues() {
-    return SendingTask::getScheduledQueues(self::TASK_BATCH_SIZE);
+  /**
+   * @return ScheduledTaskEntity[]
+   */
+  public function getScheduledSendingTasks(): array {
+    return $this->scheduledTasksRepository->findScheduledSendingTasks(self::TASK_BATCH_SIZE);
   }
 }
