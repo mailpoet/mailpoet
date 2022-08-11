@@ -108,7 +108,7 @@ class Scheduler {
       $scheduledQueues[] = $scheduledQueue;
     }
 
-    $this->updateTasks($scheduledQueues);
+    $this->updateTasks($scheduledTasks);
     foreach ($scheduledQueues as $i => $queue) {
       $newsletter = Newsletter::findOneWithOptions($queue->newsletterId);
       if (!$newsletter || $newsletter->deletedAt !== null) {
@@ -392,10 +392,14 @@ class Scheduler {
     return $notificationHistory;
   }
 
-  private function updateTasks(array $scheduledQueues) {
-    $ids = array_map(function ($queue) {
-      return $queue->taskId;
-    }, $scheduledQueues);
+  /**
+   * @param ScheduledTaskEntity[] $scheduledTasks
+   */
+  private function updateTasks(array $scheduledTasks): void {
+    $ids = array_map(function (ScheduledTaskEntity $scheduledTask): ?int {
+      return $scheduledTask->getId();
+    }, $scheduledTasks);
+    $ids = array_filter($ids);
     $this->scheduledTasksRepository->touchAllByIds($ids);
   }
 
