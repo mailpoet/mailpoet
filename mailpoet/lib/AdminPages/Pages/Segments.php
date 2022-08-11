@@ -5,7 +5,6 @@ namespace MailPoet\AdminPages\Pages;
 use MailPoet\AdminPages\PageRenderer;
 use MailPoet\API\JSON\ResponseBuilders\CustomFieldsResponseBuilder;
 use MailPoet\API\JSON\ResponseBuilders\NewslettersResponseBuilder;
-use MailPoet\Cache\TransientCache;
 use MailPoet\CustomFields\CustomFieldsRepository;
 use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Entities\SegmentEntity;
@@ -15,11 +14,9 @@ use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Segments\SegmentDependencyValidator;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Tags\TagRepository;
-use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 use MailPoet\WP\AutocompletePostListLoader as WPPostListLoader;
 use MailPoet\WP\Functions as WPFunctions;
-use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\Common\Collections\Criteria;
 
 class Segments {
@@ -28,9 +25,6 @@ class Segments {
 
   /** @var PageLimit */
   private $listingPageLimit;
-
-  /** @var SubscribersFeature */
-  private $subscribersFeature;
 
   /** @var WPFunctions */
   private $wp;
@@ -50,9 +44,6 @@ class Segments {
   /** @var CustomFieldsResponseBuilder */
   private $customFieldsResponseBuilder;
 
-  /** @var TransientCache */
-  private $transientCache;
-
   /** @var SegmentsRepository */
   private $segmentsRepository;
 
@@ -71,26 +62,22 @@ class Segments {
     WPFunctions $wp,
     WooCommerceHelper $woocommerceHelper,
     WPPostListLoader $wpPostListLoader,
-    SubscribersFeature $subscribersFeature,
     CustomFieldsRepository $customFieldsRepository,
     CustomFieldsResponseBuilder $customFieldsResponseBuilder,
     SegmentDependencyValidator $segmentDependencyValidator,
     SegmentsRepository $segmentsRepository,
     NewslettersRepository $newslettersRepository,
     NewslettersResponseBuilder $newslettersResponseBuilder,
-    TagRepository $tagRepository,
-    TransientCache $transientCache
+    TagRepository $tagRepository
   ) {
     $this->pageRenderer = $pageRenderer;
     $this->listingPageLimit = $listingPageLimit;
-    $this->subscribersFeature = $subscribersFeature;
     $this->wp = $wp;
     $this->woocommerceHelper = $woocommerceHelper;
     $this->wpPostListLoader = $wpPostListLoader;
     $this->segmentDependencyValidator = $segmentDependencyValidator;
     $this->customFieldsRepository = $customFieldsRepository;
     $this->customFieldsResponseBuilder = $customFieldsResponseBuilder;
-    $this->transientCache = $transientCache;
     $this->segmentsRepository = $segmentsRepository;
     $this->newslettersRepository = $newslettersRepository;
     $this->tagRepository = $tagRepository;
@@ -100,7 +87,6 @@ class Segments {
   public function render() {
     $data = [];
     $data['items_per_page'] = $this->listingPageLimit->getLimitPerPage('segments');
-    $data['subscriber_count'] = $this->subscribersFeature->getSubscribersCount();
 
     $customFields = $this->customFieldsRepository->findBy([], ['name' => 'asc']);
     $data['custom_fields'] = $this->customFieldsResponseBuilder->buildBatch($customFields);
@@ -157,9 +143,6 @@ class Segments {
     );
     $wooCurrencySymbol = $this->woocommerceHelper->isWooCommerceActive() ? $this->woocommerceHelper->getWoocommerceCurrencySymbol() : '';
     $data['woocommerce_currency_symbol'] = html_entity_decode($wooCurrencySymbol);
-    $subscribersCacheCreatedAt = $this->transientCache->getOldestCreatedAt(TransientCache::SUBSCRIBERS_STATISTICS_COUNT_KEY);
-    $subscribersCacheCreatedAt = $subscribersCacheCreatedAt ?: Carbon::now();
-    $data['subscribers_counts_cache_created_at'] = $subscribersCacheCreatedAt->format('Y-m-d\TH:i:sO');
     $this->pageRenderer->displayPage('segments.html', $data);
   }
 }

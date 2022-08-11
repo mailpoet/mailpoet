@@ -46,7 +46,6 @@
       var mailpoet_review_request_illustration_url = '<%= cdn_url('review-request/review-request-illustration.20190815-1427.svg') %>';
       var mailpoet_installed_at = '<%= settings.installed_at %>';
       var mailpoet_editor_javascript_url = '<%= getJavascriptScriptUrl("newsletter_editor.js") %>';
-      var mailpoet_subscribers_count = <%= subscriber_count %>;
       var mailpoet_newsletters_count = <%= newsletters_count %>;
       var mailpoet_send_transactional_emails = <%= json_encode(settings.send_transactional_emails == '1') %>;
       var mailpoet_settings = <%= json_encode(settings) %>;

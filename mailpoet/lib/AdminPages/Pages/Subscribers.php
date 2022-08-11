@@ -4,7 +4,6 @@ namespace MailPoet\AdminPages\Pages;
 
 use MailPoet\AdminPages\PageRenderer;
 use MailPoet\API\JSON\ResponseBuilders\CustomFieldsResponseBuilder;
-use MailPoet\Cache\TransientCache;
 use MailPoet\CustomFields\CustomFieldsRepository;
 use MailPoet\Entities\CustomFieldEntity;
 use MailPoet\Entities\TagEntity;
@@ -13,8 +12,6 @@ use MailPoet\Listing\PageLimit;
 use MailPoet\Segments\SegmentsSimpleListRepository;
 use MailPoet\Subscribers\ConfirmationEmailMailer;
 use MailPoet\Tags\TagRepository;
-use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
-use MailPoetVendor\Carbon\Carbon;
 
 class Subscribers {
   /** @var PageRenderer */
@@ -22,9 +19,6 @@ class Subscribers {
 
   /** @var PageLimit */
   private $listingPageLimit;
-
-  /** @var SubscribersFeature */
-  private $subscribersFeature;
 
   /** @var Block\Date */
   private $dateBlock;
@@ -35,9 +29,6 @@ class Subscribers {
   /** @var TagRepository */
   private $tagRepository;
 
-  /** @var TransientCache */
-  private $transientCache;
-
   /** @var CustomFieldsRepository */
   private $customFieldsRepository;
 
@@ -47,21 +38,17 @@ class Subscribers {
   public function __construct(
     PageRenderer $pageRenderer,
     PageLimit $listingPageLimit,
-    SubscribersFeature $subscribersFeature,
     Block\Date $dateBlock,
     SegmentsSimpleListRepository $segmentsListRepository,
     TagRepository $tagRepository,
-    TransientCache $transientCache,
     CustomFieldsRepository $customFieldsRepository,
     CustomFieldsResponseBuilder $customFieldsResponseBuilder
   ) {
     $this->pageRenderer = $pageRenderer;
     $this->listingPageLimit = $listingPageLimit;
-    $this->subscribersFeature = $subscribersFeature;
     $this->dateBlock = $dateBlock;
     $this->segmentsListRepository = $segmentsListRepository;
     $this->tagRepository = $tagRepository;
-    $this->transientCache = $transientCache;
     $this->customFieldsRepository = $customFieldsRepository;
     $this->customFieldsResponseBuilder = $customFieldsResponseBuilder;
   }
@@ -96,11 +83,6 @@ class Subscribers {
     $data['date_formats'] = $this->dateBlock->getDateFormats();
     $data['month_names'] = $this->dateBlock->getMonthNames();
     $data['max_confirmation_emails'] = ConfirmationEmailMailer::MAX_CONFIRMATION_EMAILS;
-    $data['subscriber_count'] = $this->subscribersFeature->getSubscribersCount();
-
-    $subscribersCacheCreatedAt = $this->transientCache->getOldestCreatedAt(TransientCache::SUBSCRIBERS_STATISTICS_COUNT_KEY);
-    $subscribersCacheCreatedAt = $subscribersCacheCreatedAt ?: Carbon::now();
-    $data['subscribers_counts_cache_created_at'] = $subscribersCacheCreatedAt->format('Y-m-d\TH:i:sO');
     $this->pageRenderer->displayPage('subscribers/subscribers.html', $data);
   }
 }
