@@ -2,6 +2,7 @@
 
 namespace MailPoet\AdminPages;
 
+use MailPoet\Cache\TransientCache;
 use MailPoet\Config\Installer;
 use MailPoet\Config\Renderer;
 use MailPoet\Config\ServicesChecker;
@@ -20,6 +21,7 @@ use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 use MailPoet\Util\License\License;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoet\WP\Notice as WPNotice;
+use MailPoetVendor\Carbon\Carbon;
 use Tracy\Debugger;
 
 class PageRenderer {
@@ -56,6 +58,9 @@ class PageRenderer {
   /** @var TrackingConfig */
   private $trackingConfig;
 
+  /** @var TransientCache */
+  private $transientCache;
+
   /** @var WPFunctions */
   private $wp;
 
@@ -71,6 +76,7 @@ class PageRenderer {
     SubscribersCountCacheRecalculation $subscribersCountCacheRecalculation,
     SubscribersFeature $subscribersFeature,
     TrackingConfig $trackingConfig,
+    TransientCache $transientCache,
     WPFunctions $wp
   ) {
     $this->bridge = $bridge;
@@ -84,6 +90,7 @@ class PageRenderer {
     $this->subscribersCountCacheRecalculation = $subscribersCountCacheRecalculation;
     $this->subscribersFeature = $subscribersFeature;
     $this->trackingConfig = $trackingConfig;
+    $this->transientCache = $transientCache;
     $this->wp = $wp;
   }
 
@@ -104,6 +111,7 @@ class PageRenderer {
     $wpSegmentState = ($wpSegment instanceof SegmentEntity) && $wpSegment->getDeletedAt() === null ?
       SegmentEntity::SEGMENT_ENABLED : SegmentEntity::SEGMENT_DISABLED;
     $installedAtDiff = (new \DateTime($this->settings->get('installed_at')))->diff(new \DateTime());
+    $subscribersCacheCreatedAt = $this->transientCache->getOldestCreatedAt(TransientCache::SUBSCRIBERS_STATISTICS_COUNT_KEY) ?: Carbon::now();
 
     $defaults = [
       'site_name' => $this->wp->wpSpecialcharsDecode($this->wp->getOption('blogname'), ENT_QUOTES),
@@ -136,6 +144,8 @@ class PageRenderer {
       'mss_key_pending_approval' => $this->servicesChecker->isMailPoetAPIKeyPendingApproval(),
       'mss_active' => $this->bridge->isMailpoetSendingServiceEnabled(),
       'plugin_partial_key' => $this->servicesChecker->generatePartialApiKey(),
+      'subscriber_count' => $this->subscribersFeature->getSubscribersCount(),
+      'subscribers_counts_cache_created_at' => $subscribersCacheCreatedAt->format('Y-m-d\TH:i:sO'),
       'subscribers_limit' => $this->subscribersFeature->getSubscribersLimit(),
       'subscribers_limit_reached' => $this->subscribersFeature->check(),
       'email_volume_limit' => $this->subscribersFeature->getEmailVolumeLimit(),

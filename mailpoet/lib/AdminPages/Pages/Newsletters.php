@@ -16,7 +16,6 @@ use MailPoet\Services\AuthorizedSenderDomainController;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\UserFlagsController;
-use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 use MailPoet\WooCommerce\TransactionalEmails;
 use MailPoet\WP\AutocompletePostListLoader as WPPostListLoader;
 use MailPoet\WP\DateTime;
@@ -37,9 +36,6 @@ class Newsletters {
 
   /** @var UserFlagsController */
   private $userFlags;
-
-  /** @var SubscribersFeature */
-  private $subscribersFeature;
 
   /** @var NewsletterTemplatesRepository */
   private $newsletterTemplatesRepository;
@@ -68,7 +64,6 @@ class Newsletters {
     WPFunctions $wp,
     SettingsController $settings,
     UserFlagsController $userFlags,
-    SubscribersFeature $subscribersFeature,
     NewsletterTemplatesRepository $newsletterTemplatesRepository,
     WPPostListLoader $wpPostListLoader,
     AutomaticEmails $automaticEmails,
@@ -82,7 +77,6 @@ class Newsletters {
     $this->wp = $wp;
     $this->settings = $settings;
     $this->userFlags = $userFlags;
-    $this->subscribersFeature = $subscribersFeature;
     $this->newsletterTemplatesRepository = $newsletterTemplatesRepository;
     $this->automaticEmails = $automaticEmails;
     $this->wpPostListLoader = $wpPostListLoader;
@@ -121,7 +115,6 @@ class Newsletters {
     $data['show_congratulate_after_first_newsletter'] = isset($data['settings']['show_congratulate_after_first_newsletter']) ? $data['settings']['show_congratulate_after_first_newsletter'] : 'false';
 
     $data['is_mailpoet_update_available'] = array_key_exists(Env::$pluginPath, $this->wp->getPluginUpdates());
-    $data['subscriber_count'] = $this->subscribersFeature->getSubscribersCount();
     $data['newsletters_count'] = $this->newslettersRepository->countBy([]);
     $data['transactional_emails_opt_in_notice_dismissed'] = $this->userFlags->get('transactional_emails_opt_in_notice_dismissed');
 

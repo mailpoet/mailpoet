@@ -15,7 +15,6 @@
       '5a574bd92c7d3a194368233e',
       '59a89621042863033a1c82e6'
     ];
-    var mailpoet_subscribers_count = <%= subscriber_count %>;
     var mailpoet_custom_fields = <%= json_encode(custom_fields) %>;
     var mailpoet_static_segments_list = <%= json_encode(static_segments_list) %>;
     var mailpoet_tags = <%= json_encode(tags) %>;
@@ -29,7 +28,6 @@
     var mailpoet_can_use_woocommerce_subscriptions = <%= json_encode(can_use_woocommerce_subscriptions)  %>;
     var mailpoet_woocommerce_currency_symbol = <%= json_encode(woocommerce_currency_symbol)  %>;
     var mailpoet_woocommerce_countries = <%= json_encode(woocommerce_countries)  %>;
-    var mailpoet_subscribers_counts_cache_created_at = <%= json_encode(subscribers_counts_cache_created_at) %>;
   </script>
 <% endblock %>
 

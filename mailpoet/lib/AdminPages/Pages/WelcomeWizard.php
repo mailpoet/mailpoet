@@ -5,7 +5,6 @@ namespace MailPoet\AdminPages\Pages;
 use MailPoet\AdminPages\PageRenderer;
 use MailPoet\Config\Menu;
 use MailPoet\Settings\SettingsController;
-use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 use MailPoet\WP\Functions as WPFunctions;
 
 class WelcomeWizard {
@@ -18,19 +17,14 @@ class WelcomeWizard {
   /** @var WPFunctions */
   private $wp;
 
-  /** @var SubscribersFeature */
-  private $subscribersFeature;
-
   public function __construct(
     PageRenderer $pageRenderer,
     SettingsController $settings,
-    WPFunctions $wp,
-    SubscribersFeature $subscribersFeature
+    WPFunctions $wp
   ) {
     $this->pageRenderer = $pageRenderer;
     $this->settings = $settings;
     $this->wp = $wp;
-    $this->subscribersFeature = $subscribersFeature;
   }
 
   public function render() {
@@ -40,7 +34,6 @@ class WelcomeWizard {
       'sender' => $this->settings->get('sender'),
       'admin_email' => $this->wp->getOption('admin_email'),
       'current_wp_user' => $this->wp->wpGetCurrentUser()->to_array(),
-      'subscriber_count' => $this->subscribersFeature->getSubscribersCount(),
       'settings' => $this->settings->getAll(),
     ];
     $this->pageRenderer->displayPage('welcome_wizard.html', $data);
