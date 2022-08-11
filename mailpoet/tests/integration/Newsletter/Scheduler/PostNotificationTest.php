@@ -3,6 +3,7 @@
 namespace MailPoet\Newsletter\Scheduler;
 
 use MailPoet\Config\Hooks;
+use MailPoet\Cron\Workers\SendingQueue\SendingQueue;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterOptionEntity;
 use MailPoet\Entities\NewsletterOptionFieldEntity;
@@ -11,14 +12,15 @@ use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
-use MailPoet\Models\Newsletter;
-use MailPoet\Models\SendingQueue;
 use MailPoet\Newsletter\NewsletterPostsRepository;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Options\NewsletterOptionsRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
-use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\Test\DataFactories\NewsletterOption as NewsletterOptionsFactory;
+use MailPoet\Test\DataFactories\ScheduledTask;
+use MailPoet\Test\DataFactories\SendingQueue as SendingQueueFactory;
+use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
+use MailPoet\WP\DateTime;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoet\WP\Posts as WPPosts;
 use MailPoetVendor\Carbon\Carbon;
@@ -87,7 +89,7 @@ class PostNotificationTest extends \MailPoetTest {
     $newsletter = $this->newslettersRepository->findOneById($newsletterId);
     assert($newsletter instanceof NewsletterEntity);
     $this->postNotificationScheduler->createPostNotificationSendingTask($newsletter);
-    expect(SendingQueue::where('newsletter_id', $newsletter->getId())->findMany())->count(1);
+    expect($this->sendingQueuesRepository->findBy(['newsletter' => $newsletter]))->count(1);
   }
 
   public function testItCreatesPostNotificationSendingTaskIfAPausedNotificationExists() {
@@ -124,7 +126,7 @@ class PostNotificationTest extends \MailPoetTest {
     $newsletter = $this->newslettersRepository->findOneById($newsletterId);
     assert($newsletter instanceof NewsletterEntity);
     $this->postNotificationScheduler->createPostNotificationSendingTask($newsletter);
-    expect(SendingQueue::where('newsletter_id', $newsletter->getId())->findMany())->count(2);
+    expect($this->sendingQueuesRepository->findBy(['newsletter' => $newsletter]))->count(2);
   }
 
   public function testItDoesNotSchedulePostNotificationWhenNotificationWasAlreadySentForPost() {
@@ -134,9 +136,8 @@ class PostNotificationTest extends \MailPoetTest {
 
     // queue is not created when notification was already sent for the post
     $this->postNotificationScheduler->schedulePostNotification($postId);
-    $queue = SendingQueue::findTaskByNewsletterId($newsletter->getId())
-      ->findOne();
-    expect($queue)->false();
+    $queue = $this->sendingQueuesRepository->findOneBy(['newsletter' => $newsletter]);
+    expect($queue)->null();
   }
 
   public function testItSchedulesPostNotification() {
@@ -152,9 +153,9 @@ class PostNotificationTest extends \MailPoetTest {
     $nextRunDate = ($currentTime->hour < 5) ?
       $currentTime :
       $currentTime->addDay();
-    $queue = SendingQueue::findTaskByNewsletterId($newsletter->getId())
-      ->findOne();
-    expect($queue->scheduledAt)->startsWith($nextRunDate->format('Y-m-d 05:00'));
+    $queue = $this->sendingQueuesRepository->findOneBy(['newsletter' => $newsletter]);
+    expect($queue->getTask()->getScheduledAt()->format(DateTime::DEFAULT_DATE_TIME_FORMAT))
+      ->equals($nextRunDate->format('Y-m-d 05:00:00'));
   }
 
   public function testItProcessesPostNotificationScheduledForDailyDelivery() {
@@ -171,7 +172,7 @@ class PostNotificationTest extends \MailPoetTest {
     $this->postNotificationScheduler->processPostNotificationSchedule($newsletter);
 
     $scheduleOption = $newsletter->getOption(NewsletterOptionFieldEntity::NAME_SCHEDULE);
-    assert($scheduleOption instanceof NewsletterOptionEntity);
+    $this->assertInstanceOf(NewsletterOptionEntity::class, $scheduleOption);
     $currentTime = 1483275600; // Sunday, 1 January 2017 @ 1:00pm (UTC)
     expect($this->scheduler->getNextRunDate($scheduleOption->getValue(), $currentTime))
       ->equals('2017-01-01 14:00:00');
@@ -193,7 +194,7 @@ class PostNotificationTest extends \MailPoetTest {
     $this->postNotificationScheduler->processPostNotificationSchedule($newsletter);
 
     $scheduleOption = $newsletter->getOption(NewsletterOptionFieldEntity::NAME_SCHEDULE);
-    assert($scheduleOption instanceof NewsletterOptionEntity);
+    $this->assertInstanceOf(NewsletterOptionEntity::class, $scheduleOption);
     $currentTime = 1483275600; // Sunday, 1 January 2017 @ 1:00pm (UTC)
     expect($this->scheduler->getNextRunDate($scheduleOption->getValue(), $currentTime))
       ->equals('2017-01-03 14:00:00');
@@ -214,7 +215,7 @@ class PostNotificationTest extends \MailPoetTest {
 
     $this->postNotificationScheduler->processPostNotificationSchedule($newsletter);
     $scheduleOption = $newsletter->getOption(NewsletterOptionFieldEntity::NAME_SCHEDULE);
-    assert($scheduleOption instanceof NewsletterOptionEntity);
+    $this->assertInstanceOf(NewsletterOptionEntity::class, $scheduleOption);
     $currentTime = 1483275600; // Sunday, 1 January 2017 @ 1:00pm (UTC)
     expect($this->scheduler->getNextRunDate($scheduleOption->getValue(), $currentTime))
       ->equals('2017-01-19 14:00:00');
@@ -235,7 +236,7 @@ class PostNotificationTest extends \MailPoetTest {
 
     $this->postNotificationScheduler->processPostNotificationSchedule($newsletter);
     $scheduleOption = $newsletter->getOption(NewsletterOptionFieldEntity::NAME_SCHEDULE);
-    assert($scheduleOption instanceof NewsletterOptionEntity);
+    $this->assertInstanceOf(NewsletterOptionEntity::class, $scheduleOption);
     $currentTime = 1485694800; // Sunday, 29 January 2017 @ 1:00pm (UTC)
     expect($this->scheduler->getNextRunDate($scheduleOption->getValue(), $currentTime))
       ->equals('2017-02-25 14:00:00');
@@ -256,7 +257,7 @@ class PostNotificationTest extends \MailPoetTest {
 
     $this->postNotificationScheduler->processPostNotificationSchedule($newsletter);
     $scheduleOption = $newsletter->getOption(NewsletterOptionFieldEntity::NAME_SCHEDULE);
-    assert($scheduleOption instanceof NewsletterOptionEntity);
+    $this->assertInstanceOf(NewsletterOptionEntity::class, $scheduleOption);
     $currentTime = 1483275600; // Sunday, 1 January 2017 @ 1:00pm (UTC)
     expect($this->scheduler->getNextRunDate($scheduleOption->getValue(), $currentTime))
       ->equals('2017-01-01 13:01:00');
@@ -280,8 +281,8 @@ class PostNotificationTest extends \MailPoetTest {
     ];
     wp_insert_post($postData);
 
-    $queue = SendingQueue::findTaskByNewsletterId($newsletter->getId())->findOne();
-    expect($queue)->equals(false);
+    $queue = $this->sendingQueuesRepository->findOneBy(['newsletter' => $newsletter]);
+    expect($queue)->null();
 
     $this->_removePostNotificationHooks();
     register_post_type('post', ['exclude_from_search' => false]);
@@ -289,8 +290,8 @@ class PostNotificationTest extends \MailPoetTest {
 
     wp_insert_post($postData);
 
-    $queue = SendingQueue::findTaskByNewsletterId($newsletter->getId())->findOne();
-    expect($queue)->notequals(false);
+    $queue = $this->sendingQueuesRepository->findOneBy(['newsletter' => $newsletter]);
+    expect($queue)->notNull();
   }
 
   public function testSchedulerWontRunIfUnsentNotificationHistoryExists() {
@@ -301,18 +302,20 @@ class PostNotificationTest extends \MailPoetTest {
       NewsletterOptionFieldEntity::NAME_SCHEDULE => '* * * * *',
     ]);
 
-    $notificationHistory = new NewsletterEntity();
-    $notificationHistory->setType(Newsletter::TYPE_NOTIFICATION_HISTORY);
-    $notificationHistory->setStatus(Newsletter::STATUS_SENDING);
-    $notificationHistory->setParent($newsletter);
-    $notificationHistory->setSubject($newsletter->getSubject());
-    $this->newslettersRepository->persist($notificationHistory);
-    $this->newslettersRepository->flush();
+    $notificationHistory = (new NewsletterFactory())
+      ->withSubject($newsletter->getSubject())
+      ->withType(NewsletterEntity::TYPE_NOTIFICATION_HISTORY)
+      ->withStatus(NewsletterEntity::STATUS_SENDING)
+      ->withParent($newsletter)
+      ->create();
 
-    $sendingTask = SendingTask::create();
-    $sendingTask->newsletterId = $notificationHistory->getId();
-    $sendingTask->status = SendingQueue::STATUS_SCHEDULED;
-    $sendingTask->save();
+    $task = (new ScheduledTask())->create(
+      SendingQueue::TASK_TYPE,
+      SendingQueueEntity::STATUS_SCHEDULED, Carbon::now()
+      ->addDay()
+    );
+
+    (new SendingQueueFactory())->create($task, $notificationHistory);
 
     $postData = [
       'post_title' => 'title',
@@ -324,8 +327,8 @@ class PostNotificationTest extends \MailPoetTest {
     $this->hooks->setupPostNotifications();
     wp_insert_post($postData);
 
-    $queue = SendingQueue::findTaskByNewsletterId($newsletter->getId())->findOne();
-    expect($queue)->equals(false);
+    $queue = $this->sendingQueuesRepository->findOneBy(['newsletter' => $newsletter]);
+    expect($queue)->null();
   }
 
   public function _removePostNotificationHooks() {
@@ -336,17 +339,14 @@ class PostNotificationTest extends \MailPoetTest {
         10
       );
     }
-
   }
 
   private function createNewsletter(): NewsletterEntity {
-    $newsletter = new NewsletterEntity();
-    $newsletter->setType(Newsletter::TYPE_NOTIFICATION);
-    $newsletter->setStatus(Newsletter::STATUS_ACTIVE);
-    $newsletter->setSubject('Testing subject');
-    $this->newslettersRepository->persist($newsletter);
-    $this->newslettersRepository->flush();
-    return $newsletter;
+    return (new NewsletterFactory())
+      ->withType(NewsletterEntity::TYPE_NOTIFICATION)
+      ->withStatus(NewsletterEntity::STATUS_ACTIVE)
+      ->withSubject('Testing subject')
+      ->create();
   }
 
   private function createPost(NewsletterEntity $newsletter, int $postId): NewsletterPostEntity {
@@ -367,4 +367,5 @@ class PostNotificationTest extends \MailPoetTest {
     $this->truncateEntity(SubscriberEntity::class);
     $this->truncateEntity(SendingQueueEntity::class);
   }
+
 }
