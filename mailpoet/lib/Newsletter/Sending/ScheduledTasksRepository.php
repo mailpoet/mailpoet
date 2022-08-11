@@ -257,7 +257,7 @@ class ScheduledTasksRepository extends Repository {
       $queryBuilder->andWhere('st.scheduledAt <= :now');
     }
 
-    $now = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
+    $now = Carbon::createFromTimestamp($this->wp->currentTime('timestamp'));
     $queryBuilder->setParameter('now', $now);
 
     if ($limit) {
