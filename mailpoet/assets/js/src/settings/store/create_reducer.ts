@@ -16,17 +16,23 @@ export function createReducer(defaultValue: State) {
     action: Action,
   ): State => {
     switch (action.type) {
-      case 'SET_SETTING':
-        return setWith(
+      case 'SET_SETTING': {
+        const newState = setWith(
           clone(state),
           ['data', ...action.path],
           action.value,
           clone,
         );
+
+        newState.hasUnsavedChanges = true;
+
+        return newState;
+      }
       case 'SET_SETTINGS':
         return {
           ...state,
           data: normalizeSettings(action.value as Record<string, unknown>),
+          hasUnsavedChanges: false,
         };
       case 'SET_ERROR_FLAG':
         return { ...state, flags: { ...state.flags, error: !!action.value } };

@@ -97,3 +97,7 @@ export function hasReEngagementNotice(state: State): boolean {
 export function getReEngagementAction(state: State) {
   return state.reEngagement.action;
 }
+
+export function hasUnsavedChanges(state: State) {
+  return state.hasUnsavedChanges || state.save.inProgress;
+}
