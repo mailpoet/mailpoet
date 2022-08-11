@@ -3,8 +3,8 @@
 namespace MailPoet\Newsletter\Sending;
 
 use MailPoet\Cron\Workers\SendingQueue\Migration;
-use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Cron\Workers\SendingQueue\SendingQueue as SendingQueueWorker;
+use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Tasks\Sending as SendingTask;
@@ -176,6 +176,30 @@ class ScheduledTasksRepositoryTest extends \MailPoetTest {
     $updatedAt = $scheduledTask->getUpdatedAt();
     $this->assertInstanceOf(\DateTime::class, $updatedAt);
     $this->assertEquals($updatedAt->getTimestamp(), $originalUpdatedAt->getTimestamp());
+  }
+
+  public function testItCanGetScheduledSendingTasks(): void {
+    // scheduled task
+    $task = $this->scheduledTaskFactory->create(SendingQueueWorker::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED, Carbon::now()->subDay());
+    $this->sendingQueueFactory->create($task);
+    $expectedResult[] = $task;
+    // deleted task
+    $task = $this->scheduledTaskFactory->create(SendingQueueWorker::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED, Carbon::now()->subDay(), Carbon::now());
+    $this->sendingQueueFactory->create($task);
+    // without sending queue
+    $this->scheduledTaskFactory->create(SendingQueueWorker::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED, Carbon::now()->subDay());
+    // wrong status
+    $task = $this->scheduledTaskFactory->create(SendingQueueWorker::TASK_TYPE, ScheduledTaskEntity::STATUS_COMPLETED, Carbon::now()->subDay());
+    $this->sendingQueueFactory->create($task);
+    // wrong type
+    $task = $this->scheduledTaskFactory->create('test', ScheduledTaskEntity::STATUS_SCHEDULED, Carbon::now()->subDay());
+    $this->sendingQueueFactory->create($task);
+    // scheduled in the future
+    $task = $this->scheduledTaskFactory->create(SendingQueueWorker::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED, Carbon::now()->addDay());
+    $this->sendingQueueFactory->create($task);
+
+    $tasks = $this->repository->findScheduledSendingTasks(5);
+    $this->assertSame($expectedResult, $tasks);
   }
 
   public function cleanup() {
