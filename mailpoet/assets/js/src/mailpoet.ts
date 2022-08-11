@@ -38,7 +38,6 @@ export const MailPoet = {
     window.mailpoet_subscribers_counts_cache_created_at,
   getShortcodeLinks: (): string[] =>
     window.mailpoet_shortcode_links ? window.mailpoet_shortcode_links : [],
-  settings: window.mailpoet_settings,
   trackingConfig: window.mailpoet_tracking_config || {},
   I18n: MailPoetI18n,
   Date: MailPoetDate,
@@ -61,6 +60,8 @@ export const MailPoet = {
   installedAt: window.mailpoet_installed_at,
   emailEditorTutorialSeen: window.mailpoet_email_editor_tutorial_seen,
   emailEditorTutorialUrl: window.mailpoet_email_editor_tutorial_url,
+  deactivateSubscriberAfterInactiveDays:
+    window.mailpoet_deactivate_subscriber_after_inactive_days,
 } as const;
 
 declare global {

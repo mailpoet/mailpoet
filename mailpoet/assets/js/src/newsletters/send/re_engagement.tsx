@@ -31,7 +31,7 @@ function FormReEngagementScheduling(props: Props): JSX.Element {
       afterTimeNumber={props.item.options.afterTimeNumber.toString()}
       afterTimeType={props.item.options.afterTimeType}
       inactiveSubscribersPeriod={Number(
-        MailPoet.settings.deactivate_subscriber_after_inactive_days,
+        MailPoet.deactivateSubscriberAfterInactiveDays,
       )}
       updateAfterTimeNumber={(value) => {
         props.onValueChange({

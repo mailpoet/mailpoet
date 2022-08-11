@@ -13,12 +13,10 @@ import { ListingHeadingStepsRoute } from '../../listings/heading_steps_route';
 
 export function NewsletterTypeReEngagement(): JSX.Element {
   let defaultAfterTime = '';
-  if (MailPoet.settings.deactivate_subscriber_after_inactive_days) {
+  if (MailPoet.deactivateSubscriberAfterInactiveDays) {
     defaultAfterTime = (
-      Math.floor(
-        Number(MailPoet.settings.deactivate_subscriber_after_inactive_days) /
-          30,
-      ) - 1
+      Math.floor(Number(MailPoet.deactivateSubscriberAfterInactiveDays) / 30) -
+      1
     ).toString();
   }
 
@@ -74,7 +72,7 @@ export function NewsletterTypeReEngagement(): JSX.Element {
           afterTimeNumber={options.afterTimeNumber}
           afterTimeType={options.afterTimeType}
           inactiveSubscribersPeriod={Number(
-            MailPoet.settings.deactivate_subscriber_after_inactive_days,
+            MailPoet.deactivateSubscriberAfterInactiveDays,
           )}
           updateAfterTimeNumber={compose([
             setOptions,

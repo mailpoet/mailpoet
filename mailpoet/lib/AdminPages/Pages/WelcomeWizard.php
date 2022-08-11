@@ -34,7 +34,6 @@ class WelcomeWizard {
       'sender' => $this->settings->get('sender'),
       'admin_email' => $this->wp->getOption('admin_email'),
       'current_wp_user' => $this->wp->wpGetCurrentUser()->to_array(),
-      'settings' => $this->settings->getAll(),
     ];
     $this->pageRenderer->displayPage('welcome_wizard.html', $data);
   }
