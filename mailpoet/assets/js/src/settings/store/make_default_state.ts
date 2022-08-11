@@ -78,6 +78,7 @@ export function makeDefaultState(window: any): State {
     showNotice: false,
     action: null,
   };
+  const hasUnsavedChanges = false;
   return {
     data,
     flags,
@@ -89,5 +90,6 @@ export function makeDefaultState(window: any): State {
     hosts,
     testEmail,
     reEngagement,
+    hasUnsavedChanges,
   };
 }

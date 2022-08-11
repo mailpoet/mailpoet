@@ -14,6 +14,7 @@ import {
   WooCommerce,
 } from './pages';
 import { useSelector } from './store/hooks';
+import { UnsavedChangesNotice } from '../common/notices/unsaved_changes_notice';
 
 const trackTabSwitched = (tabKey: string) => {
   MailPoet.trackEvent('User has clicked a tab in Settings', {
@@ -29,6 +30,7 @@ export function Settings() {
       <TopBar />
       {isSaving && <Loading />}
       <Notices />
+      <UnsavedChangesNotice storeName="mailpoet-settings" />
       <RoutedTabs
         activeKey="basics"
         onSwitch={(tabKey: string) => trackTabSwitched(tabKey)}

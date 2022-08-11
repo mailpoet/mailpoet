@@ -247,6 +247,7 @@ export type State = {
   keyActivation: KeyActivationState;
   hosts: Hosts;
   reEngagement: ReEngagement;
+  hasUnsavedChanges: boolean;
 };
 
 export type Action =
