@@ -2,16 +2,20 @@
 
 namespace MailPoet\Newsletter\Scheduler;
 
+use MailPoet\Cron\Workers\SendingQueue\SendingQueue;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterOptionEntity;
 use MailPoet\Entities\NewsletterOptionFieldEntity;
+use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Newsletter\NewsletterPostsRepository;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Options\NewsletterOptionFieldsRepository;
 use MailPoet\Newsletter\Options\NewsletterOptionsRepository;
-use MailPoet\Tasks\Sending as SendingTask;
+use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
+use MailPoet\Newsletter\Sending\SendingQueuesRepository;
+use MailPoet\WP\DateTime;
 use MailPoet\WP\Posts;
 
 class PostNotificationScheduler {
@@ -43,12 +47,20 @@ class PostNotificationScheduler {
   /** @var Scheduler */
   private $scheduler;
 
+  /*** @var ScheduledTasksRepository */
+  private $scheduledTasksRepository;
+
+  /*** @var SendingQueuesRepository */
+  private $sendingQueuesRepository;
+
   public function __construct(
     NewslettersRepository $newslettersRepository,
     NewsletterOptionsRepository $newsletterOptionsRepository,
     NewsletterOptionFieldsRepository $newsletterOptionFieldsRepository,
     NewsletterPostsRepository $newsletterPostsRepository,
-    Scheduler $scheduler
+    Scheduler $scheduler,
+    ScheduledTasksRepository $scheduledTasksRepository,
+    SendingQueuesRepository $sendingQueuesRepository
   ) {
     $this->loggerFactory = LoggerFactory::getInstance();
     $this->newslettersRepository = $newslettersRepository;
@@ -56,6 +68,8 @@ class PostNotificationScheduler {
     $this->newsletterOptionFieldsRepository = $newsletterOptionFieldsRepository;
     $this->newsletterPostsRepository = $newsletterPostsRepository;
     $this->scheduler = $scheduler;
+    $this->scheduledTasksRepository = $scheduledTasksRepository;
+    $this->sendingQueuesRepository = $sendingQueuesRepository;
   }
 
   public function transitionHook($newStatus, $oldStatus, $post) {
@@ -95,7 +109,7 @@ class PostNotificationScheduler {
     }
   }
 
-  public function createPostNotificationSendingTask(NewsletterEntity $newsletter): ?SendingTask {
+  public function createPostNotificationSendingTask(NewsletterEntity $newsletter): ?ScheduledTaskEntity {
     $notificationHistory = $this->newslettersRepository->findSendigNotificationHistoryWithPausedTask($newsletter);
     if (count($notificationHistory) > 0) {
       return null;
@@ -105,7 +119,7 @@ class PostNotificationScheduler {
     if (!$scheduleOption) {
       return null;
     }
-    $nextRunDate = $this->scheduler->getNextRunDate($scheduleOption->getValue());
+    $nextRunDate = $this->scheduler->getNextRunDateTime($scheduleOption->getValue());
     if (!$nextRunDate) {
       return null;
     }
@@ -114,20 +128,33 @@ class PostNotificationScheduler {
     $lastQueue = $newsletter->getLatestQueue();
     $task = $lastQueue !== null ? $lastQueue->getTask() : null;
     $scheduledAt = $task !== null ? $task->getScheduledAt() : null;
-    if ($scheduledAt && $scheduledAt->format('Y-m-d H:i:s') === $nextRunDate) {
+    if ($scheduledAt && $scheduledAt->format('Y-m-d H:i:s') === $nextRunDate->format('Y-m-d H:i:s')) {
       return null;
     }
 
-    $sendingTask = SendingTask::create();
-    $sendingTask->newsletterId = $newsletter->getId();
-    $sendingTask->status = SendingQueueEntity::STATUS_SCHEDULED;
-    $sendingTask->scheduledAt = $nextRunDate;
-    $sendingTask->save();
+    $scheduledTask = new ScheduledTaskEntity();
+    $scheduledTask->setType(SendingQueue::TASK_TYPE);
+    $scheduledTask->setStatus(ScheduledTaskEntity::STATUS_SCHEDULED);
+    $scheduledTask->setScheduledAt($nextRunDate);
+    $scheduledTask->setPriority(ScheduledTaskEntity::PRIORITY_MEDIUM);
+    $this->scheduledTasksRepository->persist($scheduledTask);
+    $this->scheduledTasksRepository->flush();
+
+    $sendingQueue = new SendingQueueEntity();
+    $sendingQueue->setNewsletter($newsletter);
+    $sendingQueue->setTask($scheduledTask);
+    $this->sendingQueuesRepository->persist($sendingQueue);
+    $this->sendingQueuesRepository->flush();
+    $scheduledTask->setSendingQueue($sendingQueue);
+
     $this->loggerFactory->getLogger(LoggerFactory::TOPIC_POST_NOTIFICATIONS)->info(
       'schedule post notification',
-      ['sending_task' => $sendingTask->id(), 'scheduled_at' => $nextRunDate]
+      [
+        'sending_task' => $scheduledTask->getId(),
+        'scheduled_at' => $nextRunDate->format(DateTime::DEFAULT_DATE_TIME_FORMAT),
+      ]
     );
-    return $sendingTask;
+    return $scheduledTask;
   }
 
   public function processPostNotificationSchedule(NewsletterEntity $newsletter) {

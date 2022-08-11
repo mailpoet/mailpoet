@@ -16,6 +16,7 @@ use MailPoet\Models\SendingQueue;
 use MailPoet\Newsletter\NewsletterPostsRepository;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Options\NewsletterOptionsRepository;
+use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\Test\DataFactories\NewsletterOption as NewsletterOptionsFactory;
 use MailPoet\WP\Functions as WPFunctions;
@@ -45,12 +46,16 @@ class PostNotificationTest extends \MailPoetTest {
   /** @var NewsletterOptionsFactory */
   private $newsletterOptionsFactory;
 
+  /*** @var SendingQueuesRepository */
+  private $sendingQueuesRepository;
+
   public function _before() {
     parent::_before();
     $this->postNotificationScheduler = $this->diContainer->get(PostNotificationScheduler::class);
     $this->newslettersRepository = $this->diContainer->get(NewslettersRepository::class);
     $this->newsletterPostsRepository = $this->diContainer->get(NewsletterPostsRepository::class);
     $this->newsletterOptionsRepository = $this->diContainer->get(NewsletterOptionsRepository::class);
+    $this->sendingQueuesRepository = $this->diContainer->get(SendingQueuesRepository::class);
     $this->newsletterOptionsFactory = new NewsletterOptionsFactory();
     $this->hooks = $this->diContainer->get(Hooks::class);
     $this->scheduler = $this->diContainer->get(Scheduler::class);
@@ -63,14 +68,18 @@ class PostNotificationTest extends \MailPoetTest {
     ]);
 
     // new queue record should be created
-    $queue = $this->postNotificationScheduler->createPostNotificationSendingTask($newsletter);
-    assert($queue instanceof SendingTask);
-    expect(SendingQueue::where('newsletter_id', $newsletter->getId())->findMany())->count(1);
-    expect($queue->newsletterId)->equals($newsletter->getId());
-    expect($queue->status)->equals(SendingQueue::STATUS_SCHEDULED);
+    $sendingTask = $this->postNotificationScheduler->createPostNotificationSendingTask($newsletter);
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $sendingTask);
+    $this->assertInstanceOf(SendingQueueEntity::class, $sendingTask->getSendingQueue());
+    expect($this->sendingQueuesRepository->findBy(['newsletter' => $newsletter]))->count(1);
+    $this->assertInstanceOf(NewsletterEntity::class, $sendingTask->getSendingQueue()->getNewsletter());
+    expect($sendingTask->getSendingQueue()->getNewsletter()->getId())->equals($newsletter->getId());
 
-    expect($queue->scheduledAt)->equals($this->scheduler->getNextRunDate('* 5 * * *'));
-    expect($queue->priority)->equals(SendingQueue::PRIORITY_MEDIUM);
+    expect($sendingTask->getStatus())->equals(SendingQueueEntity::STATUS_SCHEDULED);
+
+
+    expect($sendingTask->getScheduledAt())->equals($this->scheduler->getNextRunDate('* 5 * * *'));
+    expect($sendingTask->getPriority())->equals(SendingQueueEntity::PRIORITY_MEDIUM);
 
     // duplicate queue record should not be created
     $newsletterId = $newsletter->getId();
@@ -88,22 +97,26 @@ class PostNotificationTest extends \MailPoetTest {
     ]);
 
     // new queue record should be created
-    $queueToBePaused = $this->postNotificationScheduler->createPostNotificationSendingTask($newsletter);
-    assert($queueToBePaused instanceof SendingTask);
-    $queueToBePaused->task()->pause();
+    $sendingTask = $this->postNotificationScheduler->createPostNotificationSendingTask($newsletter);
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $sendingTask);
+    $this->assertInstanceOf(SendingQueueEntity::class, $sendingTask->getSendingQueue());
+    $this->sendingQueuesRepository->pause($sendingTask->getSendingQueue());
 
     // another queue record should be created because the first one was paused
     $scheduleOption = $newsletter->getOption(NewsletterOptionFieldEntity::NAME_SCHEDULE);
     assert($scheduleOption instanceof NewsletterOptionEntity);
     $scheduleOption->setValue('* 10 * * *'); // different time to not clash with the first queue
     $this->newsletterOptionsRepository->flush();
-    $queue = $this->postNotificationScheduler->createPostNotificationSendingTask($newsletter);
-    assert($queue instanceof SendingTask);
-    expect(SendingQueue::where('newsletter_id', $newsletter->getId())->findMany())->count(2);
-    expect($queue->newsletterId)->equals($newsletter->getId());
-    expect($queue->status)->equals(SendingQueue::STATUS_SCHEDULED);
-    expect($queue->scheduledAt)->equals($this->scheduler->getNextRunDate('* 10 * * *'));
-    expect($queue->priority)->equals(SendingQueue::PRIORITY_MEDIUM);
+    $sendingTask = $this->postNotificationScheduler->createPostNotificationSendingTask($newsletter);
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $sendingTask);
+    $this->assertInstanceOf(SendingQueueEntity::class, $sendingTask->getSendingQueue());
+    expect($this->sendingQueuesRepository->findBy(['newsletter' => $newsletter]))->count(2);
+    $this->assertInstanceOf(NewsletterEntity::class, $sendingTask->getSendingQueue()->getNewsletter());
+    expect($sendingTask->getSendingQueue()->getNewsletter()->getId())->equals($newsletter->getId());
+
+    expect($sendingTask->getStatus())->equals(SendingQueueEntity::STATUS_SCHEDULED);
+    expect($sendingTask->getScheduledAt())->equals($this->scheduler->getNextRunDate('* 10 * * *'));
+    expect($sendingTask->getPriority())->equals(SendingQueueEntity::PRIORITY_MEDIUM);
 
     // duplicate queue record should not be created
     $newsletterId = $newsletter->getId();
