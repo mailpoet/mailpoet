@@ -21,7 +21,7 @@ import { Tutorial } from './tutorial';
 import { Sidebar } from './sidebar/sidebar';
 import { Inserter } from './inserter';
 import { Notices } from './notices.jsx';
-import { UnsavedChangesNotice } from './unsaved_changes_notice.jsx';
+import { UnsavedChangesNotice } from '../../common/notices/unsaved_changes_notice.jsx';
 import { FormStyles } from './form_styles.jsx';
 import { FormPreview } from './preview/preview';
 import { FormStylingBackground } from './form_styling_background.jsx';
@@ -133,7 +133,7 @@ export function Editor() {
                   )}
                   <div className="interface-interface-skeleton__content">
                     <Notices />
-                    <UnsavedChangesNotice />
+                    <UnsavedChangesNotice storeName="mailpoet-form-editor" />
                     <BlockSelectionClearer className="edit-post-visual-editor editor-styles-wrapper">
                       <BlockTools>
                         <BlockEditorKeyboardShortcuts />
