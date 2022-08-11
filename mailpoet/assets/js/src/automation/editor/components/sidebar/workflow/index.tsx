@@ -2,6 +2,7 @@ import { PanelBody, PanelRow } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 import { store } from '../../../store';
 import { PlainBodyTitle } from '../../panel';
+import { TrashButton } from '../../actions/trash-button';
 
 export function WorkflowSidebar(): JSX.Element {
   const { workflowData } = useSelect(
@@ -46,6 +47,9 @@ export function WorkflowSidebar(): JSX.Element {
       </PanelRow>
       <PanelRow>
         <strong>Author</strong> {workflowData.author.name}
+      </PanelRow>
+      <PanelRow>
+        <TrashButton />
       </PanelRow>
     </PanelBody>
   );
