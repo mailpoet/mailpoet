@@ -102,7 +102,6 @@ interface Window {
   mailpoet_wp_week_starts_on: number;
   mailpoet_subscribers_counts_cache_created_at: string;
   mailpoet_shortcode_links: string[];
-  mailpoet_settings: any;
   mailpoet_tracking_config: string;
   mailpoet_display_detailed_stats: boolean;
   mailpoet_premium_plugin_installed: boolean;
@@ -131,4 +130,5 @@ interface Window {
   mailpoet_installed_at?: string;
   mailpoet_email_editor_tutorial_seen: number;
   mailpoet_email_editor_tutorial_url: string;
+  mailpoet_deactivate_subscriber_after_inactive_days?: number;
 }
