@@ -25,10 +25,8 @@ import { GlobalContext } from 'context/index.jsx';
 const automaticEmails = window.mailpoet_woocommerce_automatic_emails || [];
 
 const generateGaTrackingCampaignName = (id, subject) => {
-  const name = slugify(subject, { lower: true })
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/-$/, '');
-  return `${name || 'newsletter'}_${id}`;
+  const name = slugify(subject, { strict: true, lower: true });
+  return `${name || 'email'}-${id}`;
 };
 
 function validateNewsletter(newsletter) {
