@@ -136,7 +136,7 @@ class WordPress {
       'status' => [ScheduledTaskEntity::STATUS_SCHEDULED],
     ]);
     // sending queue
-    $scheduledQueues = SchedulerWorker::getScheduledQueues();
+    $scheduledQueues = $this->scheduledTasksRepository->findScheduledSendingTasks(SchedulerWorker::TASK_BATCH_SIZE);
     $runningQueues = $this->scheduledTasksRepository->findRunningSendingTasks(SendingQueueWorker::TASK_BATCH_SIZE);
     $sendingLimitReached = MailerLog::isSendingLimitReached();
     $sendingIsPaused = MailerLog::isSendingPaused();
