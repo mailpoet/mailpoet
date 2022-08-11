@@ -6,6 +6,8 @@ use Codeception\Stub;
 use Codeception\Stub\Expected;
 use MailPoet\Config\Env;
 use MailPoet\Config\Installer;
+use MailPoet\Services\Bridge;
+use MailPoet\Settings\SettingsController;
 use MailPoet\WP\Functions as WPFunctions;
 
 class InstallerTest extends \MailPoetTest {
@@ -33,6 +35,13 @@ class InstallerTest extends \MailPoetTest {
     );
     $installer->init();
     WPFunctions::get()->applyFilters('plugins_api', null, null, null);
+  }
+
+  public function testItGetsPluginDownloadUrl() {
+    $key = 'premium-key';
+    $this->diContainer->get(SettingsController::class)->set(Bridge::PREMIUM_KEY_SETTING_NAME, $key);
+    $url = $this->installer->generatePluginDownloadUrl();
+    expect($url)->same("https://release.mailpoet.com/downloads/mailpoet-premium/$key/latest/mailpoet-premium.zip");
   }
 
   public function testItGetsPluginInformation() {

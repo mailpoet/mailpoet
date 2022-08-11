@@ -28,6 +28,11 @@ class Installer {
     WPFunctions::get()->addFilter('plugins_api', [$this, 'getPluginInformation'], 10, 3);
   }
 
+  public function generatePluginDownloadUrl(): string {
+    $premiumKey = $this->settings->get(Bridge::PREMIUM_KEY_SETTING_NAME);
+    return "https://release.mailpoet.com/downloads/mailpoet-premium/$premiumKey/latest/mailpoet-premium.zip";
+  }
+
   public function generatePluginActivationUrl(string $plugin): string {
     return WPFunctions::get()->adminUrl('plugins.php?' . implode('&', [
       'action=activate',
