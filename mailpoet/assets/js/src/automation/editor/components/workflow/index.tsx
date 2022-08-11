@@ -4,6 +4,7 @@ import {
   __unstableUseCompositeState as useCompositeState,
 } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
+import { EditorNotices } from '@wordpress/editor';
 import { WorkflowCompositeContext } from './context';
 import { EmptyWorkflow } from './empty-workflow';
 import { Separator } from './separator';
@@ -62,6 +63,7 @@ export function Workflow(): JSX.Element {
 
   return (
     <WorkflowCompositeContext.Provider value={compositeState}>
+      <EditorNotices />
       <Composite
         state={compositeState}
         role="tree"
