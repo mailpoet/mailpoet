@@ -2,6 +2,7 @@
 
 namespace MailPoet\Tasks;
 
+use MailPoet\Cron\Workers\SendingQueue\SendingQueue as SendingQueueAlias;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\ScheduledTaskSubscriber;
@@ -23,7 +24,7 @@ use MailPoetVendor\Carbon\Carbon;
  * @property int $priority
  */
 class Sending {
-  const TASK_TYPE = 'sending';
+  const TASK_TYPE = SendingQueueAlias::TASK_TYPE;
   const RESULT_BATCH_SIZE = 5;
 
   /** @var ScheduledTask */
