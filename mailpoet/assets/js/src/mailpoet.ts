@@ -34,6 +34,7 @@ export const MailPoet = {
   emailRegex: window.mailpoet_email_regex,
   wpSegmentState: window.mailpoet_wp_segment_state,
   wpWeekStartsOn: window.mailpoet_wp_week_starts_on,
+  urls: window.mailpoet_urls,
   subscribersCountsCacheCreatedAt:
     window.mailpoet_subscribers_counts_cache_created_at,
   getShortcodeLinks: (): string[] =>
