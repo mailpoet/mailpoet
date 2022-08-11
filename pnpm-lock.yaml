@@ -63,8 +63,6 @@ importers:
       '@types/react-dom': ^17.0.14
       '@types/react-router-dom': ^5.3.3
       '@types/select2': ^4.0.55
-      '@types/wordpress__a11y': ^2.9.0
-      '@types/wordpress__api-fetch': ^3.23.1
       '@types/wordpress__block-editor': ^7.0.0
       '@types/wordpress__block-library': ^2.6.1
       '@types/wordpress__blocks': ^11.0.5
@@ -73,16 +71,9 @@ importers:
       '@types/wordpress__data': ^6.0.1
       '@types/wordpress__edit-post': ^4.0.1
       '@types/wordpress__editor': ^11.0.0
-      '@types/wordpress__element': ^2.14.1
-      '@types/wordpress__escape-html': ^1.8.0
-      '@types/wordpress__hooks': ^2.11.0
-      '@types/wordpress__html-entities': ^2.7.0
-      '@types/wordpress__i18n': ^3.11.0
       '@types/wordpress__keycodes': ^2.3.1
       '@types/wordpress__media-utils': ^3.0.0
-      '@types/wordpress__notices': ^3.5.0
       '@types/wordpress__rich-text': ^3.4.6
-      '@types/wordpress__url': ^2.14.0
       '@woocommerce/components': ^10.0.0
       '@wordpress/a11y': ^3.14.0
       '@wordpress/api-fetch': ^6.11.0
@@ -309,8 +300,6 @@ importers:
       '@types/react-datepicker': 4.3.4_react@17.0.2
       '@types/react-dom': 17.0.14
       '@types/react-router-dom': 5.3.3
-      '@types/wordpress__a11y': 2.9.0
-      '@types/wordpress__api-fetch': 3.23.1
       '@types/wordpress__block-editor': 7.0.0_sfoxds7t5ydpegc3knd667wn6m
       '@types/wordpress__block-library': 2.6.1
       '@types/wordpress__blocks': 11.0.5_sfoxds7t5ydpegc3knd667wn6m
@@ -319,16 +308,9 @@ importers:
       '@types/wordpress__data': 6.0.1
       '@types/wordpress__edit-post': 4.0.1_sfoxds7t5ydpegc3knd667wn6m
       '@types/wordpress__editor': 11.0.0_sfoxds7t5ydpegc3knd667wn6m
-      '@types/wordpress__element': 2.14.1
-      '@types/wordpress__escape-html': 1.8.0
-      '@types/wordpress__hooks': 2.11.0
-      '@types/wordpress__html-entities': 2.7.0
-      '@types/wordpress__i18n': 3.11.0
       '@types/wordpress__keycodes': 2.3.1
       '@types/wordpress__media-utils': 3.0.0_sfoxds7t5ydpegc3knd667wn6m
-      '@types/wordpress__notices': 3.5.0
       '@types/wordpress__rich-text': 3.4.6
-      '@types/wordpress__url': 2.14.0
       '@wordpress/babel-preset-default': 6.16.0
       '@wordpress/browserslist-config': 4.1.2
       '@wordpress/dependency-extraction-webpack-plugin': 3.7.0_webpack@5.74.0
@@ -5560,17 +5542,21 @@ packages:
     dependencies:
       '@tannin/evaluate': 1.2.0
       '@tannin/postfix': 1.1.0
+    dev: false
 
   /@tannin/evaluate/1.2.0:
     resolution: {integrity: sha512-3ioXvNowbO/wSrxsDG5DKIMxC81P0QrQTYai8zFNY+umuoHWRPbQ/TuuDEOju9E+jQDXmj6yI5GyejNuh8I+eg==}
+    dev: false
 
   /@tannin/plural-forms/1.1.0:
     resolution: {integrity: sha512-xl9R2mDZO/qiHam1AgMnAES6IKIg7OBhcXqy6eDsRCdXuxAFPcjrej9HMjyCLE0DJ/8cHf0i5OQTstuBRhpbHw==}
     dependencies:
       '@tannin/compile': 1.1.0
+    dev: false
 
   /@tannin/postfix/1.1.0:
     resolution: {integrity: sha512-oocsqY7g0cR+Gur5jRQLSrX2OtpMLMse1I10JQBm8CdGMrDkh1Mg2gjsiquMHRtBs4Qwu5wgEp5GgIYHk4SNPw==}
+    dev: false
 
   /@testing-library/dom/7.31.2:
     resolution: {integrity: sha512-3UqjCpey6HiTZT92vODYLPxTBWlM8ZOOjr3LX5F37/VRipW2M1kX6I/Cm4VXzteZqfGfagg8yXywpcOgQBlNsQ==}
@@ -6043,20 +6029,6 @@ packages:
       source-map: 0.6.1
     dev: true
 
-  /@types/wordpress__a11y/2.9.0:
-    resolution: {integrity: sha512-ud4oedg7CXpd3Nho5SF/0tia2qd1Lh6a/FnftK7i5WLC4wXVWCLJ6MkWXjlQvo0XwzPwt9PfV2D0+4kBxh6ebQ==}
-    deprecated: This is a stub types definition. wordpress__a11y provides its own type definitions, so you do not need this installed.
-    dependencies:
-      '@wordpress/a11y': 3.14.0
-    dev: true
-
-  /@types/wordpress__api-fetch/3.23.1:
-    resolution: {integrity: sha512-uyv+1AVutyIjRE308HAjwFnpLf0D3pRhN928i4HmKZ3Uu8C0RkJJYye3md4jg/YsgZBMbAed2baCsEKg7gdmoQ==}
-    deprecated: This is a stub types definition. @wordpress/api-fetch provides its own type definitions, so you do not need this installed.
-    dependencies:
-      '@wordpress/api-fetch': 6.11.0
-    dev: true
-
   /@types/wordpress__block-editor/7.0.0_sfoxds7t5ydpegc3knd667wn6m:
     resolution: {integrity: sha512-JERpxKAQ7J07C2wtKxr+5ZE9NETIcpu0EiXuXka6Qmrq74oOypdy9jYdhMIYBDMOx4ptR3ne7edaFb2+1SBcqA==}
     dependencies:
@@ -6142,41 +6114,6 @@ packages:
       - react-dom
     dev: true
 
-  /@types/wordpress__element/2.14.1:
-    resolution: {integrity: sha512-qMp7A1r4Fdnm36FgSIQpwZ39CY6DDEfb2P4TfaLHoaSeZcPBdzs4hdhmIRrThX/W9AqOQYmGHyZ8RMzjg88KEg==}
-    deprecated: This is a stub types definition. wordpress__element provides its own type definitions, so you do not need this installed.
-    dependencies:
-      '@wordpress/element': 4.12.0
-    dev: true
-
-  /@types/wordpress__escape-html/1.8.0:
-    resolution: {integrity: sha512-iWS/OQq7w1kr7J2i/CfCSSL683kupo6iyPGXw47pM9YJ12CyDtg45DfwdQo4B8MTo60RR+qeTKGuPNDz+nc0vw==}
-    deprecated: This is a stub types definition. wordpress__escape-html provides its own type definitions, so you do not need this installed.
-    dependencies:
-      '@wordpress/escape-html': 2.14.0
-    dev: true
-
-  /@types/wordpress__hooks/2.11.0:
-    resolution: {integrity: sha512-1moZYhQaR9a4r5V8xHmYTHAlhPEryHaPPEcO/a358mXmMJw+RlJFU/7Sf9VkPwCjQLb5FhdgzfLT9Oc8XeAM7Q==}
-    deprecated: This is a stub types definition. @wordpress/hooks provides its own type definitions, so you do not need this installed.
-    dependencies:
-      '@wordpress/hooks': 3.14.0
-    dev: true
-
-  /@types/wordpress__html-entities/2.7.0:
-    resolution: {integrity: sha512-qZpF3dIbAwQi3h4gYJMP4C2hOyvqC0bN01pNmKQ0GFRXtJtHgRISCKqk7o69Te97/nFSO5MAF7C4C/dBr6+m0A==}
-    deprecated: This is a stub types definition. wordpress__html-entities provides its own type definitions, so you do not need this installed.
-    dependencies:
-      '@wordpress/html-entities': 3.14.0
-    dev: true
-
-  /@types/wordpress__i18n/3.11.0:
-    resolution: {integrity: sha512-l4OXE1LQH7IBqRXY//NGBCsM0jPv8sdUEubPaAzPxKUxYGe+I2UTREjwB0ejuh2+J0p90EhW3mX5FYM8a8lf2w==}
-    deprecated: This is a stub types definition. wordpress__i18n provides its own type definitions, so you do not need this installed.
-    dependencies:
-      '@wordpress/i18n': 4.14.0
-    dev: true
-
   /@types/wordpress__keycodes/2.3.1:
     resolution: {integrity: sha512-CUZv3WdPvWqnEwojbc4yEttwZlvsMGI8YurgB9CHVJXx6nQ4U2RU6PB0Mv7nxATufduFDMKq8TNpCHBenZqEjQ==}
     dev: true
@@ -6203,13 +6140,6 @@ packages:
     dependencies:
       '@types/react': 17.0.43
       '@types/wordpress__data': 6.0.1
-    dev: true
-
-  /@types/wordpress__url/2.14.0:
-    resolution: {integrity: sha512-zH0M0rejxnQ8usVPP55IPpcY0+kjEln0jfR/EY0WgKE/g0HSoRALexAxvGxSqWMee5nThJIEGQwHYSJSalDkyA==}
-    deprecated: This is a stub types definition. wordpress__url provides its own type definitions, so you do not need this installed.
-    dependencies:
-      '@wordpress/url': 3.15.0
     dev: true
 
   /@types/ws/8.5.3:
@@ -7019,6 +6949,7 @@ packages:
       '@babel/runtime': 7.18.6
       '@wordpress/dom-ready': 3.14.0
       '@wordpress/i18n': 4.14.0
+    dev: false
 
   /@wordpress/api-fetch/6.11.0:
     resolution: {integrity: sha512-C1HTWdJQ7ikhJ4mT+rONTODquJ/Xq5HteKak/VN+vf1VmLVfRX18wJ84kCAAZ83UNOIsE8EgjJrjJy//R+HWzg==}
@@ -7027,6 +6958,7 @@ packages:
       '@babel/runtime': 7.18.6
       '@wordpress/i18n': 4.14.0
       '@wordpress/url': 3.15.0
+    dev: false
 
   /@wordpress/autop/3.14.0:
     resolution: {integrity: sha512-S5QUDlg8+4YHFLx0sHJX7Gvq905LEbANQoaVGJYSF3SX2NCX9NDA3/ugWA5yKhZ7s+BpYny6or+OF7MmDFElcg==}
@@ -7432,6 +7364,7 @@ packages:
     engines: {node: '>=12'}
     dependencies:
       '@babel/runtime': 7.18.6
+    dev: false
 
   /@wordpress/dom/3.14.0:
     resolution: {integrity: sha512-U31BuODuyXsllErsURVITJNXdJGmoZoRWwnREOlxLfKZymmFFnNWvSJRqrB2ZLnUMc/qwQoX27LoK76CRl5vzQ==}
@@ -7700,12 +7633,14 @@ packages:
     engines: {node: '>=12'}
     dependencies:
       '@babel/runtime': 7.18.6
+    dev: false
 
   /@wordpress/html-entities/3.14.0:
     resolution: {integrity: sha512-9HpwT7uCPNp+8CJ9oPZq5RfOeqR4ml/wQ6zwGgJlmt/S+MxsJFABL/GHiVXgRJntaifq8u/tn6c2NCdcFaPV2Q==}
     engines: {node: '>=12'}
     dependencies:
       '@babel/runtime': 7.18.6
+    dev: false
 
   /@wordpress/i18n/3.20.0:
     resolution: {integrity: sha512-SIoOJFB4UrrYAScS4H91CYCLW9dX3Ghv8pBKc/yHGculb1AdGr6gRMlmJxZV62Cn3CZ4Ga86c+FfR+GiBu0JPg==}
@@ -7732,6 +7667,7 @@ packages:
       memize: 1.1.0
       sprintf-js: 1.1.2
       tannin: 1.2.0
+    dev: false
 
   /@wordpress/icons/6.3.0:
     resolution: {integrity: sha512-Vliw7QsFuTsrA05GZov4i3PQiLQOGO97PR2keUeY53fVZdeoJKv/nfDqOZxZCIts5jR2Mfje6P6hc/KlurxsKg==}
@@ -8178,6 +8114,7 @@ packages:
     dependencies:
       '@babel/runtime': 7.18.6
       remove-accents: 0.4.2
+    dev: false
 
   /@wordpress/viewport/4.12.0_react@17.0.2:
     resolution: {integrity: sha512-ddPkLRXSXA6/B9b1G9L3XRt6CZxzUyop2+j1sUmxbxz5F065Q5uwB1Mbui483ANqmCUfG0CI1xEACe/rIYEbyA==}
@@ -11609,6 +11546,7 @@ packages:
     resolution: {integrity: sha512-ETBauow1T35Y/WZMkio9jiM0Z5xjHHmJ4XmjZOq1l/dXz3lr2sRn87nJy20RupqSh1F2m3HHPSp8ShIPQJrJ3A==}
     dependencies:
       iconv-lite: 0.6.3
+    dev: false
 
   /end-of-stream/1.4.4:
     resolution: {integrity: sha512-+uw1inIHVPQoaVuHzRyXd21icM+cnt4CzD5rW+NC1wjOUSTOs+Te7FOv7AhN7vS9x/oIyhLP5PR1H+phQAHu5Q==}
@@ -13280,6 +13218,7 @@ packages:
     dependencies:
       encoding: 0.1.13
       safe-buffer: 5.2.1
+    dev: false
 
   /glob-parent/3.1.0:
     resolution: {integrity: sha512-E8Ak/2+dZY6fnzlR7+ueWvhsH1SjHr4jjss4YS/h4py44jY9MhK/VFdaZJAWDz6BbL21KeteKxFSFpq8OS5gVA==}
@@ -16151,6 +16090,7 @@ packages:
 
   /memize/1.1.0:
     resolution: {integrity: sha512-K4FcPETOMTwe7KL2LK0orMhpOmWD2wRGwWWpbZy0fyArwsyIKR8YJVz8+efBAh3BO4zPqlSICu4vsLTRRqtFAg==}
+    dev: false
 
   /memoize-one/5.2.1:
     resolution: {integrity: sha512-zYiwtZUcYyXKo/np96AGZAckk+FWWsUdJ3cHGGmld7+AhvcWmQyGCYUh1hc4Q/pkOhb65dQR/pqCyK0cOaHz4Q==}
@@ -19265,6 +19205,7 @@ packages:
 
   /remove-accents/0.4.2:
     resolution: {integrity: sha512-7pXIJqJOq5tFgG1A2Zxti3Ht8jJF337m4sowbuHsW30ZnkQFnDzy9qBNhgzX8ZLW4+UBcXiiR7SwR6pokHsxiA==}
+    dev: false
 
   /remove-trailing-separator/1.1.0:
     resolution: {integrity: sha512-/hS+Y0u3aOfIETiaiirUFwDBDzmXPvO+jAfKTitUngIPzdKc6Z0LoFjM/CK5PL4C+eKwHohlHAb6H0VFfmmUsw==}
@@ -20117,6 +20058,7 @@ packages:
 
   /sprintf-js/1.1.2:
     resolution: {integrity: sha512-VE0SOVEHCk7Qc8ulkWw3ntAzXuqf7S2lvwQaDLRnUeIEaKNQJzV6BwmLKhOqT61aGhfUMrXeaBk+oDGCzvhcug==}
+    dev: false
 
   /ssri/6.0.2:
     resolution: {integrity: sha512-cepbSq/neFK7xB6A50KHN0xHDotYzq58wWCa5LeWqnPrHG8GzfEjO/4O8kpmcGW+oaxkvhEJCWgbgNk4/ZV93Q==}
@@ -20678,6 +20620,7 @@ packages:
     resolution: {integrity: sha512-U7GgX/RcSeUETbV7gYgoz8PD7Ni4y95pgIP/Z6ayI3CfhSujwKEBlGFTCRN+Aqnuyf4AN2yHL+L8x+TCGjb9uA==}
     dependencies:
       '@tannin/plural-forms': 1.1.0
+    dev: false
 
   /tapable/0.1.10:
     resolution: {integrity: sha512-jX8Et4hHg57mug1/079yitEKWGB3LCwoxByLsNim89LABq8NqgiX+6iYVOsq0vX8uJHkU+DZ5fnq95f800bEsQ==}
