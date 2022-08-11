@@ -10,6 +10,7 @@ export * as ReactRouter from 'react-router-dom';
 export * as ReactTooltip from 'react-tooltip';
 export * as ReactStringReplace from 'react-string-replace';
 export { TextControl as WordpressComponentsTextControl } from '@wordpress/components';
+export * as WordPressData from '@wordpress/data';
 
 // assets
 export * as Common from 'common';
@@ -20,4 +21,3 @@ export * as HelpTooltip from 'help-tooltip';
 export * as Hooks from 'hooks.js';
 export * as Listing from 'listing';
 export * as DynamicSegmentsTypes from 'segments/dynamic/types';
-export * as WordPressData from 'wp-data-hooks';
