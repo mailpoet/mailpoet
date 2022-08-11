@@ -6,6 +6,7 @@ use Codeception\Util\Stub;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
+use MailPoet\WP\Functions as WPFunctions;
 
 class SubscribersTest extends \MailPoetUnitTest {
   public function testCheckReturnsTrueIfOldUserReachedLimit() {
@@ -178,12 +179,18 @@ class SubscribersTest extends \MailPoetUnitTest {
         if ($name === SubscribersFeature::PREMIUM_SUPPORT_SETTING_KEY) return isset($specs['support_tier']) ? $specs['support_tier'] : 'free';
       },
     ]);
+
     $subscribersRepository = Stub::make(SubscribersRepository::class, [
       'getTotalSubscribers' => function() use($specs) {
         return $specs['subscribers_count'];
       },
     ]);
 
-    return new SubscribersFeature($settings, $subscribersRepository);
+    $wpFunctions = Stub::make(WPFunctions::class, [
+      'getTransient' => false,
+      'setTransient' => false,
+    ]);
+
+    return new SubscribersFeature($settings, $subscribersRepository, $wpFunctions);
   }
 }
