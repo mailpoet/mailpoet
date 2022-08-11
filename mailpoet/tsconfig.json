@@ -6,6 +6,7 @@
     "tests/javascript_newsletter_editor/**/*.ts"
   ],
   "compilerOptions": {
-    "baseUrl": "./assets/js/src"
+    "baseUrl": "./assets/js/src",
+    "noEmit": true
   }
 }
