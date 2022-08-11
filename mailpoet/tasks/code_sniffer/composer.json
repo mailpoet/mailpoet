@@ -29,7 +29,7 @@
       "cd vendor/wporg/plugin-directory && rm -rf vendor && mkdir vendor && ln -s ../../../wp-coding-standards vendor/wp-coding-standards"
     ],
     "post-install-cmd": [
-      "sed -i \"s/trim( PHPCSHelper::get_config_data( 'text_domain' ) )/PHPCSHelper::get_config_data( 'text_domain' )/\" vendor/wp-coding-standards/wpcs/WordPress/Sniffs/WP/I18nSniff.php",
+      "sed -i.bak -e \"s/trim( PHPCSHelper::get_config_data( 'text_domain' ) )/PHPCSHelper::get_config_data( 'text_domain' )/\" vendor/wp-coding-standards/wpcs/WordPress/Sniffs/WP/I18nSniff.php; rm -rf  vendor/wp-coding-standards/wpcs/WordPress/Sniffs/WP/I18nSniff.php.bak",
       "echo '\\033[0;31m We need to remove the trim in the coding standards until v3 of the WordPress coding standards are available.'"
     ]
   }
