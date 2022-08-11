@@ -236,6 +236,27 @@ class ScheduledTasksRepository extends Repository {
       ->execute();
   }
 
+  /**
+   * @return ScheduledTaskEntity[]
+   */
+  public function findScheduledSendingTasks(int $limit): array {
+    $now = Carbon::createFromTimestamp($this->wp->currentTime('timestamp'));
+    return $this->doctrineRepository->createQueryBuilder('st')
+      ->select('st')
+      ->join('st.sendingQueue', 'sq')
+      ->where('st.deletedAt IS NULL')
+      ->andWhere('st.status = :status')
+      ->andWhere('st.scheduledAt <= :now')
+      ->andWhere('st.type = :type')
+      ->orderBy('st.updatedAt', 'ASC')
+      ->setMaxResults($limit)
+      ->setParameter('status', ScheduledTaskEntity::STATUS_SCHEDULED)
+      ->setParameter('now', $now)
+      ->setParameter('type', SendingQueue::TASK_TYPE)
+      ->getQuery()
+      ->getResult();
+  }
+
   protected function findByTypeAndStatus($type, $status, $limit = null, $future = false) {
     $queryBuilder = $this->doctrineRepository->createQueryBuilder('st')
       ->select('st')
