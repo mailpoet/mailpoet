@@ -211,13 +211,6 @@ class NewsletterTest extends \MailPoetTest {
       ->equals(Security::HASH_LENGTH);
   }
 
-  public function testItRegeneratesHashOnNotificationHistoryCreation() {
-    $notificationHistory = $this->newsletter->createNotificationHistory();
-    expect($notificationHistory->hash)->notEquals($this->newsletter->hash);
-    expect(strlen($notificationHistory->hash))
-      ->equals(Security::HASH_LENGTH);
-  }
-
   public function testItGetsQueueFromNewsletter() {
     expect($this->newsletter->queue()->findOne()->id)->equals($this->sendingQueue->id);
   }
