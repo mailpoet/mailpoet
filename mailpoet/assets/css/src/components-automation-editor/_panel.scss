@@ -34,21 +34,17 @@
   }
 
   .mailpoet-automation-panel-plain-body-title-action {
-    margin-top: -13px;
+    margin-top: -10px;
     padding-right: 0;
     padding-top: 0;
   }
 }
 
-.mailpoet-step-name-input,
-.mailpoet-step-name-description,
-.mailpoet-step-name-title {
-  min-width: 250px;
+.mailpoet-step-name-popover {
+  margin-top: -25px;
+  padding: 8px;
 }
 
-.mailpoet-step-name-title {
-  font-size: 13px;
-  font-weight: normal;
-  line-height: 1.5;
-  margin: 1em 0;
+.mailpoet-step-name-input {
+  min-width: 208px;
 }

@@ -19,7 +19,8 @@ export function StepName({ step }: Props): JSX.Element {
   return (
     <Dropdown
       className="mailpoet-step-name-dropdown"
-      position="bottom center"
+      contentClassName="mailpoet-step-name-popover"
+      position="bottom left"
       renderToggle={({ isOpen, onToggle }) => (
         <PlainBodyTitle
           title={step.name && step.name.length > 0 ? step.name : stepType.title}
@@ -34,22 +35,17 @@ export function StepName({ step }: Props): JSX.Element {
         </PlainBodyTitle>
       )}
       renderContent={() => (
-        <>
-          <h3 className="mailpoet-step-name-title">Step name</h3>
-          <TextControl
-            className="mailpoet-step-name-input"
-            placeholder={stepType.title}
-            value={step.name}
-            onChange={(value) => {
-              dispatch(store).updateStepName(step.id, value);
-            }}
-          />
-          <p className="mailpoet-step-name-description">
-            Give the automation step a name that indicates its purpose. E.g
-            “Abandoned cart recovery”. <br />
-            This name will be displayed only to you and not to the clients.
-          </p>
-        </>
+        <TextControl
+          label="Step name"
+          className="mailpoet-step-name-input"
+          placeholder={stepType.title}
+          value={step.name}
+          onChange={(value) => {
+            dispatch(store).updateStepName(step.id, value);
+          }}
+          help="Give the automation step a name that indicates its purpose. E.g
+            “Abandoned cart recovery”. This name will be displayed only to you and not to the clients."
+        />
       )}
     />
   );
