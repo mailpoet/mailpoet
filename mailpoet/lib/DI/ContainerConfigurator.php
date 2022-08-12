@@ -375,8 +375,6 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Services\AuthorizedEmailsController::class)->setPublic(true);
     $container->autowire(\MailPoet\Services\CongratulatoryMssEmailController::class)->setPublic(true);
     $container->autowire(\MailPoet\Services\AuthorizedSenderDomainController::class)->setPublic(true);
-    // Tasks
-    $container->autowire(\MailPoet\Tasks\State::class);
     // Settings
     $container->autowire(\MailPoet\Settings\SettingsController::class)->setPublic(true);
     $container->autowire(\MailPoet\Settings\SettingsChangeHandler::class)->setPublic(true);
