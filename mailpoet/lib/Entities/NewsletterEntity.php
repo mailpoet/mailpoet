@@ -177,6 +177,7 @@ class NewsletterEntity {
   public function __clone() {
     // reset ID
     $this->id = null;
+    $this->newsletterSegments = new ArrayCollection();
   }
 
   /**

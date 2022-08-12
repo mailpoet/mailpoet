@@ -5,8 +5,10 @@ namespace MailPoet\Cron\Workers;
 use MailPoet\Cron\CronHelper;
 use MailPoet\Cron\CronWorkerScheduler;
 use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\NewsletterSegmentEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SegmentEntity;
+use MailPoet\InvalidStateException;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\ScheduledTask;
@@ -16,10 +18,14 @@ use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Scheduler\PostNotificationScheduler;
 use MailPoet\Newsletter\Scheduler\Scheduler as NewsletterScheduler;
 use MailPoet\Newsletter\Scheduler\WelcomeScheduler;
+use MailPoet\Newsletter\Segment\NewsletterSegmentRepository;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Segments\SubscribersFinder;
 use MailPoet\Tasks\Sending as SendingTask;
+use MailPoet\Util\Security;
+use MailPoet\WP\Functions as WPFunctions;
+use MailPoetVendor\Carbon\Carbon;
 
 class Scheduler {
   const TASK_BATCH_SIZE = 5;
@@ -45,6 +51,15 @@ class Scheduler {
   /** @var SegmentsRepository */
   private $segmentsRepository;
 
+  /** @var NewsletterSegmentRepository */
+  private $newsletterSegmentRepository;
+
+  /** @var WPFunctions */
+  private $wp;
+
+  /** @var Security */
+  private $security;
+
   /** @var NewsletterScheduler */
   private $scheduler;
 
@@ -56,6 +71,9 @@ class Scheduler {
     ScheduledTasksRepository $scheduledTasksRepository,
     NewslettersRepository $newslettersRepository,
     SegmentsRepository $segmentsRepository,
+    NewsletterSegmentRepository $newsletterSegmentRepository,
+    WPFunctions $wp,
+    Security $security,
     NewsletterScheduler $scheduler
   ) {
     $this->cronHelper = $cronHelper;
@@ -65,6 +83,9 @@ class Scheduler {
     $this->scheduledTasksRepository = $scheduledTasksRepository;
     $this->newslettersRepository = $newslettersRepository;
     $this->segmentsRepository = $segmentsRepository;
+    $this->newsletterSegmentRepository = $newsletterSegmentRepository;
+    $this->wp = $wp;
+    $this->security = $security;
     $this->scheduler = $scheduler;
   }
 
@@ -129,23 +150,25 @@ class Scheduler {
 
     $newsletterEntity = $this->newslettersRepository->findOneById($newsletter->id);
 
-    if ($newsletterEntity instanceof NewsletterEntity) {
-      // ensure that segments exist
-      $segments = $newsletterEntity->getSegmentIds();
-      if (empty($segments)) {
-        $this->loggerFactory->getLogger(LoggerFactory::TOPIC_POST_NOTIFICATIONS)->info(
-          'post notification no segments',
-          ['newsletter_id' => $newsletter->id, 'task_id' => $queue->taskId]
-        );
-        return $this->deleteQueueOrUpdateNextRunDate($queue, $newsletter);
-      }
+    if (!$newsletterEntity instanceof NewsletterEntity) {
+      throw new InvalidStateException();
+    }
 
-      // ensure that subscribers are in segments
-      $taskModel = $queue->task();
-      $taskEntity = $this->scheduledTasksRepository->findOneById($taskModel->id);
-      if ($taskEntity instanceof ScheduledTaskEntity) {
-        $subscribersCount = $this->subscribersFinder->addSubscribersToTaskFromSegments($taskEntity, $segments);
-      }
+    // ensure that segments exist
+    $segments = $newsletterEntity->getSegmentIds();
+    if (empty($segments)) {
+      $this->loggerFactory->getLogger(LoggerFactory::TOPIC_POST_NOTIFICATIONS)->info(
+        'post notification no segments',
+        ['newsletter_id' => $newsletter->id, 'task_id' => $queue->taskId]
+      );
+      return $this->deleteQueueOrUpdateNextRunDate($queue, $newsletter);
+    }
+
+    // ensure that subscribers are in segments
+    $taskModel = $queue->task();
+    $taskEntity = $this->scheduledTasksRepository->findOneById($taskModel->id);
+    if ($taskEntity instanceof ScheduledTaskEntity) {
+      $subscribersCount = $this->subscribersFinder->addSubscribersToTaskFromSegments($taskEntity, $segments);
     }
 
     if (empty($subscribersCount)) {
@@ -157,11 +180,10 @@ class Scheduler {
     }
 
     // create a duplicate newsletter that acts as a history record
-    $notificationHistory = $this->createNotificationHistory($newsletter->id);
-    if (!$notificationHistory) return false;
+    $notificationHistory = $this->createPostNotificationHistory($newsletterEntity);
 
     // queue newsletter for delivery
-    $queue->newsletterId = $notificationHistory->id;
+    $queue->newsletterId = (int)$notificationHistory->getId();
     $queue->updateCount();
     $queue->status = null;
     $queue->save();
@@ -306,15 +328,39 @@ class Scheduler {
     }
   }
 
-  public function createNotificationHistory($newsletterId) {
-    $newsletter = Newsletter::findOne($newsletterId);
-    if (!$newsletter instanceof Newsletter) {
-      return false;
+  public function createPostNotificationHistory(NewsletterEntity $newsletter): NewsletterEntity {
+    // clone newsletter
+    $notificationHistory = clone $newsletter;
+    $notificationHistory->setParent($newsletter);
+    $notificationHistory->setType(NewsletterEntity::TYPE_NOTIFICATION_HISTORY);
+    $notificationHistory->setStatus(NewsletterEntity::STATUS_SENDING);
+    $notificationHistory->setUnsubscribeToken($this->security->generateUnsubscribeTokenByEntity($notificationHistory));
+
+    // reset timestamps
+    $createdAt = Carbon::createFromTimestamp($this->wp->currentTime('timestamp'));
+    $notificationHistory->setCreatedAt($createdAt);
+    $notificationHistory->setUpdatedAt($createdAt);
+    $notificationHistory->setDeletedAt(null);
+
+    // reset hash
+    $notificationHistory->setHash(Security::generateHash());
+
+    $this->newslettersRepository->persist($notificationHistory);
+    $this->newslettersRepository->flush();
+
+    // create relationships between notification history and segments
+    foreach ($newsletter->getNewsletterSegments() as $newsletterSegment) {
+      $segment = $newsletterSegment->getSegment();
+      if (!$segment) {
+        continue;
+      }
+      $duplicateSegment = new NewsletterSegmentEntity($notificationHistory, $segment);
+      $notificationHistory->getNewsletterSegments()->add($duplicateSegment);
+      $this->newsletterSegmentRepository->persist($duplicateSegment);
     }
-    $notificationHistory = $newsletter->createNotificationHistory();
-    return ($notificationHistory->getErrors() === false) ?
-      $notificationHistory :
-      false;
+    $this->newslettersRepository->flush();
+
+    return $notificationHistory;
   }
 
   private function updateTasks(array $scheduledQueues) {
