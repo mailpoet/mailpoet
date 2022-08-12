@@ -264,52 +264,6 @@ class Newsletter extends Model {
     return $duplicate;
   }
 
-  public function createNotificationHistory() {
-    $newsletterData = $this->asArray();
-
-    // remove id so that it creates a new record
-    unset($newsletterData['id']);
-
-    $data = array_merge(
-      $newsletterData,
-      [
-        'parent_id' => $this->id,
-        'type' => self::TYPE_NOTIFICATION_HISTORY,
-        'status' => self::STATUS_SENDING,
-        'unsubscribe_token' => Security::generateUnsubscribeToken(self::class),
-      ]
-    );
-
-    $notificationHistory = self::create();
-    $notificationHistory->hydrate($data);
-
-    // reset timestamps
-    $notificationHistory->set_expr('created_at', 'NOW()');
-    $notificationHistory->set_expr('updated_at', 'NOW()');
-    $notificationHistory->set_expr('deleted_at', 'NULL');
-
-    // reset hash
-    $notificationHistory->set('hash', null);
-
-    $notificationHistory->save();
-
-    if ($notificationHistory->getErrors() === false) {
-      // create relationships between notification history and segments
-      $segments = $this->segments()->findMany();
-
-      if (!empty($segments)) {
-        foreach ($segments as $segment) {
-          $relation = NewsletterSegment::create();
-          $relation->segmentId = $segment->id;
-          $relation->newsletterId = $notificationHistory->id;
-          $relation->save();
-        }
-      }
-    }
-
-    return $notificationHistory;
-  }
-
   public function asArray() {
     $model = parent::asArray();
 
