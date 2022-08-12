@@ -126,6 +126,34 @@ class ScheduledTasksRepository extends Repository {
     return $this->findByTypeAndStatus($type, ScheduledTaskEntity::STATUS_SCHEDULED, $limit, true);
   }
 
+  public function getCountsPerStatus(string $type = 'sending') {
+    $stats = [
+      ScheduledTaskEntity::STATUS_COMPLETED => 0,
+      ScheduledTaskEntity::STATUS_PAUSED => 0,
+      ScheduledTaskEntity::STATUS_SCHEDULED => 0,
+      ScheduledTaskEntity::VIRTUAL_STATUS_RUNNING => 0,
+    ];
+
+    $counts = $this->doctrineRepository->createQueryBuilder('st')
+      ->select('COUNT(st.id) as value')
+      ->addSelect('st.status')
+      ->where('st.deletedAt IS NULL')
+      ->andWhere('st.type = :type')
+      ->setParameter('type', $type)
+      ->addGroupBy('st.status')
+      ->getQuery()
+      ->getResult();
+
+    foreach ($counts as $count) {
+      if ($count['status'] === null) {
+        $stats[ScheduledTaskEntity::VIRTUAL_STATUS_RUNNING] = (int)$count['value'];
+        continue;
+      }
+      $stats[$count['status']] = (int)$count['value'];
+    }
+    return $stats;
+  }
+
   /**
    * @return ScheduledTaskEntity[]
    */

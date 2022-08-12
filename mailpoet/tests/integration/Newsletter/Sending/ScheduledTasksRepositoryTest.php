@@ -90,6 +90,24 @@ class ScheduledTasksRepositoryTest extends \MailPoetTest {
     $this->assertSame($expectedResult, $tasks);
   }
 
+  public function testCanCountByStatus(){
+    $this->scheduledTaskFactory->create('sending', ScheduledTaskEntity::STATUS_SCHEDULED, Carbon::now()->addDay());
+    $this->scheduledTaskFactory->create('sending', ScheduledTaskEntity::STATUS_SCHEDULED, Carbon::now()->addDays(20));
+    $this->scheduledTaskFactory->create('sending', ScheduledTaskEntity::STATUS_PAUSED, Carbon::now()->addDay());
+    $this->scheduledTaskFactory->create('sending', ScheduledTaskEntity::STATUS_PAUSED, Carbon::now()->addDays(3));
+    $this->scheduledTaskFactory->create('sending', ScheduledTaskEntity::STATUS_PAUSED, Carbon::now()->addDays(5));
+    $this->scheduledTaskFactory->create('sending', ScheduledTaskEntity::STATUS_INVALID, Carbon::now()->addDays(4));
+    $this->scheduledTaskFactory->create('sending', NULL, Carbon::now()->addDays(4));
+
+    $counts = $this->repository->getCountsPerStatus();
+    $this->assertEquals([
+      ScheduledTaskEntity::STATUS_SCHEDULED => 2,
+      ScheduledTaskEntity::STATUS_PAUSED => 3,
+      ScheduledTaskEntity::STATUS_INVALID => 1,
+      ScheduledTaskEntity::VIRTUAL_STATUS_RUNNING => 1,
+      ScheduledTaskEntity::STATUS_COMPLETED => 0,
+    ], $counts);
+  }
   public function cleanup() {
     $this->truncateEntity(ScheduledTaskEntity::class);
   }
