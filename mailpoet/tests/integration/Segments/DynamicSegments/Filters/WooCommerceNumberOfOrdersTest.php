@@ -8,10 +8,10 @@ use MailPoet\Entities\DynamicSegmentFilterEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Subscribers\Source;
+use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\DBAL\Driver\Statement;
 use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
-use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 
 class WooCommerceNumberOfOrdersTest extends \MailPoetTest {
   /** @var WooCommerceNumberOfOrders */
@@ -136,21 +136,15 @@ class WooCommerceNumberOfOrdersTest extends \MailPoetTest {
     return $userId;
   }
 
-  private function createOrder(int $customerId, Carbon $createdAt): int {
-    global $wpdb;
-    $orderData = [
-      'post_type' => 'shop_order',
-      'post_status' => 'wc-completed',
-      'post_date' => $createdAt->toDateTimeString(),
-    ];
+  private function createOrder(int $customerId, Carbon $createdAt, $status = 'wc-completed'): int {
+    $order = $this->tester->createWooCommerceOrder();
+    $order->set_customer_id($customerId);
+    $order->set_date_created($createdAt->toDateTimeString());
+    $order->set_status($status);
+    $order->save();
+    $this->tester->updateWooOrderStats($order->get_id());
 
-    $orderId = wp_insert_post($orderData);
-    assert(is_integer($orderId));
-    $this->connection->executeQuery("
-      INSERT INTO {$wpdb->prefix}wc_order_stats (order_id, customer_id, status, date_created, date_created_gmt)
-      VALUES ({$orderId}, {$customerId}, 'wc-completed', '{$createdAt->toDateTimeString()}', '{$createdAt->toDateTimeString()}')
-    ");
-    return $orderId;
+    return $order->get_id();
   }
 
   public function _after(): void {

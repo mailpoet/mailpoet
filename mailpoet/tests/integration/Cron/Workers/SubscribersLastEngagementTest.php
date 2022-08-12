@@ -15,13 +15,9 @@ class SubscribersLastEngagementTest extends \MailPoetTest {
   /** @var SubscribersLastEngagement */
   private $worker;
 
-  /** @var array */
-  private $orderIds = [];
-
   public function _before() {
     parent::_before();
     $this->worker = $this->diContainer->get(SubscribersLastEngagement::class);
-    $this->orderIds = [];
   }
 
   public function testItCanSetLastEngagementFromOpens() {
@@ -153,7 +149,10 @@ class SubscribersLastEngagementTest extends \MailPoetTest {
     expect($task->getMeta())->equals(['nextId' => 2001]);
   }
 
-  private function createSubscriber($email = 'last-engagement@test.com'): SubscriberEntity {
+  private function createSubscriber($email = null): SubscriberEntity {
+    if ($email === null) {
+      $email = sprintf("last-engagement-%s@test.com", $this->tester->uniqueId());
+    }
     $subscriber = new SubscriberEntity();
     $subscriber->setEmail($email);
     $this->entityManager->persist($subscriber);
@@ -203,19 +202,14 @@ class SubscribersLastEngagementTest extends \MailPoetTest {
   }
 
   private function createWooOrder(Carbon $postDate, string $email): void {
-    $this->orderIds[] = wp_insert_post([
-      'post_type' => 'shop_order',
-      'post_date' => $postDate->toDateTimeString(),
-      'meta_input' => [
-        '_billing_email' => $email,
-      ],
-    ]);
+    $order = $this->tester->createWooCommerceOrder();
+    $order->set_billing_email($email);
+    $order->set_date_created($postDate->toDateTimeString());
+    $order->save();
   }
 
   public function _after(): void {
-    foreach ($this->orderIds as $orderId) {
-      wp_delete_post($orderId);
-    }
+    $this->tester->deleteTestWooOrders();
     $this->truncateEntity(SubscriberEntity::class);
     $this->truncateEntity(ScheduledTaskEntity::class);
     $this->truncateEntity(SendingQueueEntity::class);

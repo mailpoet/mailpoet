@@ -152,20 +152,14 @@ class WooCommerceCategoryTest extends \MailPoetTest {
   }
 
   private function createOrder(int $customerId, Carbon $createdAt, string $status = 'wc-completed'): int {
-    global $wpdb;
-    $orderData = [
-      'post_type' => 'shop_order',
-      'post_status' => $status,
-      'post_date' => $createdAt->toDateTimeString(),
-    ];
+    $order = $this->tester->createWooCommerceOrder();
+    $order->set_customer_id($customerId);
+    $order->set_date_created($createdAt->toDateTimeString());
+    $order->set_status($status);
+    $order->save();
+    $this->tester->updateWooOrderStats($order->get_id());
 
-    $orderId = wp_insert_post($orderData);
-    assert(is_integer($orderId));
-    $this->connection->executeQuery("
-      INSERT INTO {$wpdb->prefix}wc_order_stats (order_id, customer_id, status, date_created, date_created_gmt)
-      VALUES ({$orderId}, {$customerId}, '{$status}', '{$createdAt->toDateTimeString()}', '{$createdAt->toDateTimeString()}')
-    ");
-    return $orderId;
+    return $order->get_id();
   }
 
   private function createProduct(string $name, array $terms): int {

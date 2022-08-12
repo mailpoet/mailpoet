@@ -154,19 +154,15 @@ class WooCommerceTotalSpentTest extends \MailPoetTest {
   }
 
   private function createOrder(int $customerId, Carbon $createdAt, int $orderTotal): int {
-    global $wpdb;
-    $orderId = (int)$this->wp->wpInsertPost([
-      'post_type' => 'shop_order',
-      'post_status' => 'wc-completed',
-      'post_date' => $createdAt->toDateTimeString(),
-    ]);
+    $order = $this->tester->createWooCommerceOrder();
+    $order->set_customer_id($customerId);
+    $order->set_date_created($createdAt->toDateTimeString());
+    $order->set_status('wc-completed');
+    $order->set_total((string)$orderTotal);
+    $order->save();
+    $this->tester->updateWooOrderStats($order->get_id());
 
-    assert(is_integer($orderId));
-    $this->connection->executeQuery("
-      INSERT INTO {$wpdb->prefix}wc_order_stats (order_id, customer_id, status, date_created, date_created_gmt, total_sales)
-      VALUES ({$orderId}, {$customerId}, 'wc-completed', '{$createdAt->toDateTimeString()}', '{$createdAt->toDateTimeString()}', $orderTotal)
-    ");
-    return $orderId;
+    return $order->get_id();
   }
 
   public function _after(): void {
