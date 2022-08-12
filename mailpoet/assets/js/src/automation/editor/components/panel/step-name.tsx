@@ -24,7 +24,11 @@ export function StepName({ step }: Props): JSX.Element {
         <PlainBodyTitle
           title={step.name && step.name.length > 0 ? step.name : stepType.title}
         >
-          <TitleActionButton onClick={onToggle} aria-expanded={isOpen}>
+          <TitleActionButton
+            onClick={onToggle}
+            aria-expanded={isOpen}
+            aria-label="Edit step name"
+          >
             <Icon icon={edit} size={16} />
           </TitleActionButton>
         </PlainBodyTitle>
