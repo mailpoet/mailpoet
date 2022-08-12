@@ -8,6 +8,7 @@ use MailPoet\Cron\ActionScheduler\Actions\DaemonTrigger;
 use MailPoet\Cron\CronHelper;
 use MailPoet\Helpscout\Beacon;
 use MailPoet\Mailer\MailerLog;
+use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Router\Endpoints\CronDaemon;
 use MailPoet\Services\Bridge;
 use MailPoet\Tasks\Sending;
@@ -29,18 +30,23 @@ class Help {
   /** @var Bridge $bridge */
   private $bridge;
 
+  /*** @var ScheduledTasksRepository */
+  private $scheduledTasksRepository;
+
   public function __construct(
     PageRenderer $pageRenderer,
     State $tasksState,
     CronHelper $cronHelper,
     Beacon $helpscoutBeacon,
-    Bridge $bridge
+    Bridge $bridge,
+    ScheduledTasksRepository $scheduledTasksRepository
   ) {
     $this->pageRenderer = $pageRenderer;
     $this->tasksState = $tasksState;
     $this->cronHelper = $cronHelper;
     $this->helpscoutBeacon = $helpscoutBeacon;
     $this->bridge = $bridge;
+    $this->scheduledTasksRepository = $scheduledTasksRepository;
   }
 
   public function render() {
@@ -69,7 +75,7 @@ class Help {
       'queueStatus' => $mailerLog,
     ];
     $systemStatusData['cronStatus']['accessible'] = $this->cronHelper->isDaemonAccessible();
-    $systemStatusData['queueStatus']['tasksStatusCounts'] = $this->tasksState->getCountsPerStatus();
+    $systemStatusData['queueStatus']['tasksStatusCounts'] = $this->scheduledTasksRepository->getCountsPerStatus();
     $systemStatusData['queueStatus']['latestTasks'] = $this->tasksState->getLatestTasks(Sending::TASK_TYPE);
     $this->pageRenderer->displayPage(
       'help.html',
