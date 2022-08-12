@@ -64,6 +64,7 @@ export function reducer(state: State, action: Action): State {
             [action.stepId]: step,
           },
         },
+        workflowSaved: false,
         selectedStep: step,
       };
     }
