@@ -2,6 +2,7 @@
 
 namespace MailPoet\Newsletter\Sending;
 
+use MailPoet\Cron\Workers\Scheduler;
 use MailPoet\Cron\Workers\SendingQueue\SendingQueue;
 use MailPoet\Doctrine\Repository;
 use MailPoet\Entities\NewsletterEntity;
@@ -152,6 +153,43 @@ class ScheduledTasksRepository extends Repository {
       $stats[$count['status']] = (int)$count['value'];
     }
     return $stats;
+  }
+
+  /**
+   * @param string|null $type
+   * @param array $statuses
+   * @param int $limit
+   * @return array<ScheduledTaskEntity>
+   */
+  public function getLatestTasks(
+    $type = null,
+    $statuses = [
+      ScheduledTaskEntity::STATUS_COMPLETED,
+      ScheduledTaskEntity::STATUS_SCHEDULED,
+      ScheduledTaskEntity::VIRTUAL_STATUS_RUNNING,
+    ],
+    $limit = Scheduler::TASK_BATCH_SIZE
+  ) {
+
+    $tasksQuery = $this->doctrineRepository->createQueryBuilder('st')
+      ->select('st')
+      ->where('st.deletedAt IS NULL')
+      ->where('st.status IN (:statuses)')
+      ->setParameter('statuses', $statuses)
+      ->setMaxResults($limit);
+
+    if ($type) {
+      $tasksQuery = $tasksQuery->andWhere('st.type = :type')
+        ->setParameter('type', $type);
+    }
+
+    if (in_array(ScheduledTaskEntity::VIRTUAL_STATUS_RUNNING, $statuses)) {
+      $tasksQuery = $tasksQuery->orWhere('st.status IS NULL');
+    }
+
+    return $tasksQuery
+      ->getQuery()
+      ->getResult();
   }
 
   /**

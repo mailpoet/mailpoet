@@ -2,8 +2,12 @@
 
 namespace MailPoet\Newsletter\Sending;
 
+use MailPoet\Cron\Workers\SendingQueue\Migration;
+use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Cron\Workers\SendingQueue\SendingQueue as SendingQueueWorker;
 use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Entities\SendingQueueEntity;
+use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\Test\DataFactories\ScheduledTask as ScheduledTaskFactory;
 use MailPoet\Test\DataFactories\SendingQueue;
 use MailPoetVendor\Carbon\Carbon;
@@ -108,7 +112,50 @@ class ScheduledTasksRepositoryTest extends \MailPoetTest {
       ScheduledTaskEntity::STATUS_COMPLETED => 0,
     ], $counts);
   }
+
+  public function testItCanFetchBasicTasksData() {
+    $this->scheduledTaskFactory->create(SendingTask::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED, Carbon::now()->addDay());
+    $this->scheduledTaskFactory->create(Migration::TASK_TYPE, ScheduledTaskEntity::VIRTUAL_STATUS_RUNNING, Carbon::now()->addDay());
+    $data = $this->repository->getLatestTasks();
+    expect(count($data))->equals(2);
+    $ids = array_map(function ($d){ return $d->getId(); }, $data);
+    $types = array_map(function ($d){ return $d->getType(); }, $data);
+    $this->assertContains(1, $ids);
+    $this->assertContains(2, $ids);
+    $this->assertContains(SendingTask::TASK_TYPE, $types);
+    $this->assertContains(Migration::TASK_TYPE, $types);
+    expect(is_int($data[1]->getPriority()))->true();
+    expect($data[1]->getUpdatedAt())->isInstanceOf(\DateTimeInterface::class);
+    expect($data[1]->getStatus())->notEmpty();
+    expect($data[0])->isInstanceOf(ScheduledTaskEntity::class);
+    expect($data[1])->isInstanceOf(ScheduledTaskEntity::class);
+  }
+
+  public function testItCanFilterTasksByType() {
+    $this->scheduledTaskFactory->create(SendingTask::TASK_TYPE, ScheduledTaskEntity::STATUS_COMPLETED, Carbon::now()->addDay());
+    $this->scheduledTaskFactory->create(Migration::TASK_TYPE, ScheduledTaskEntity::STATUS_COMPLETED, Carbon::now()->addDay());
+    $data = $this->repository->getLatestTasks(Migration::TASK_TYPE);
+    expect(count($data))->equals(1);
+    expect($data[0]->getType())->equals(Migration::TASK_TYPE);
+  }
+
+  public function testItCanFilterTasksByStatus() {
+    $this->scheduledTaskFactory->create(SendingTask::TASK_TYPE, ScheduledTaskEntity::STATUS_COMPLETED, Carbon::now()->addDay());
+    $this->scheduledTaskFactory->create(SendingTask::TASK_TYPE, ScheduledTaskEntity::STATUS_PAUSED, Carbon::now()->addDay());
+    $data = $this->repository->getLatestTasks(null, [ScheduledTaskEntity::STATUS_COMPLETED]);
+    expect(count($data))->equals(1);
+    expect($data[0]->getStatus())->equals(ScheduledTaskEntity::STATUS_COMPLETED);
+  }
+
+  public function testItDoesNotFailForSendingTaskWithoutQueue() {
+    $this->scheduledTaskFactory->create(SendingTask::TASK_TYPE, 'any', Carbon::now()->addDay());
+    $data = $this->repository->getLatestTasks();
+    expect(count($data))->equals(1);
+  }
+
   public function cleanup() {
     $this->truncateEntity(ScheduledTaskEntity::class);
+    $this->truncateEntity(NewsletterEntity::class);
+    $this->truncateEntity(SendingQueueEntity::class);
   }
 }
