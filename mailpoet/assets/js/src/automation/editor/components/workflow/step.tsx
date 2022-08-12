@@ -33,8 +33,8 @@ function getIcon(step: StepData): JSX.Element | null {
 
 function getTitle(step: StepData): string {
   // mocked data
-  if (step.key === 'mailpoet:segment:subscribed') {
-    return 'Subscribed to segment';
+  if (step.type === 'trigger') {
+    return 'Trigger';
   }
   if (step.name) {
     return step.name;
