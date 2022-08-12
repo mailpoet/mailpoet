@@ -62,8 +62,6 @@ if [[ -z "${SKIP_DEPS}" ]]; then
   cd - >/dev/null
 fi
 
-# extra plugins are not supported for integration tests yest
-if [[ $TEST_TYPE == "acceptance" ]]; then
 # Install WooCommerce
 if [[ ! -d "/wp-core/wp-content/plugins/woocommerce" ]]; then
   cd /wp-core/wp-content/plugins
@@ -127,7 +125,6 @@ wp plugin activate woocommerce
 wp plugin activate woocommerce-subscriptions
 wp plugin activate woocommerce-memberships
 wp plugin activate woo-gutenberg-products-block
-fi # end of check for enabling extra plugins
 
 # Set constants in wp-config.php
 wp config set WP_DEBUG true --raw
