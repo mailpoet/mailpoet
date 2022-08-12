@@ -41,7 +41,7 @@ export function StepName({ step }: Props): JSX.Element {
             }}
           />
           <p className="mailpoet-step-name-description">
-            Give the automation step a name that indicates it’s purpose. E.g
+            Give the automation step a name that indicates its purpose. E.g
             “Abandoned cart recovery”. <br />
             This name will be displayed only to you and not to the clients.
           </p>
