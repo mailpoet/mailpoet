@@ -112,3 +112,9 @@ p.sender_email_address_warning:first-child {
   margin-top: 16px;
   padding-top: 12px;
 }
+
+.mailpoet-premium-modal-error {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: $grid-gap-half;
+}

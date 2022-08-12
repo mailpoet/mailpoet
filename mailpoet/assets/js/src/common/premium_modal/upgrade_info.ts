@@ -1,5 +1,6 @@
 import { __ } from '@wordpress/i18n';
 import { MailPoet } from 'mailpoet';
+import { useState } from 'react';
 
 const {
   currentWpUserEmail,
@@ -10,29 +11,47 @@ const {
   hasValidApiKey,
   hasValidPremiumKey,
   isPremiumPluginInstalled,
-  premiumPluginDownloadUrl,
-  premiumPluginActivationUrl,
   pluginPartialKey,
+  premiumPluginActivationUrl,
 } = MailPoet;
+
+// allow updating installed state to refresh upgrade info
+let isPremiumInstalled = isPremiumPluginInstalled;
 
 export const premiumFeaturesEnabled =
   hasValidPremiumKey && !subscribersLimitReached;
 
-type UpgradeInfo = {
+export type UpgradeInfo = {
   title: string;
   info: string;
   cta: string;
-  url: string;
+  action:
+    | string
+    | {
+        handler: () => Promise<unknown>;
+        busy: string;
+        success: string;
+        successHandler: () => void;
+        error: string;
+      };
 };
 
-type UtmParams = {
+export type UtmParams = {
   utm_medium?: string;
   utm_campaign?: string;
 };
 
+const requestPremiumApi = async (action: string): Promise<unknown> =>
+  MailPoet.Ajax.post({
+    api_version: MailPoet.apiVersion,
+    endpoint: 'premium',
+    action,
+  });
+
 // See: https://mailpoet.atlassian.net/browse/MAILPOET-4416
 export const getUpgradeInfo = (
   utmParams: UtmParams = undefined,
+  onPremiumInstalled?: () => void,
 ): UpgradeInfo => {
   const utm = utmParams ? { utm_source: 'plugin', ...utmParams } : undefined;
 
@@ -42,7 +61,7 @@ export const getUpgradeInfo = (
       title: __('Purchase a MailPoet plan', 'mailpoet'),
       info: __('Please purchase a MailPoet plan.', 'mailpoet'),
       cta: __('Purchase', 'mailpoet'),
-      url: getPurchasePlanUrl(
+      action: getPurchasePlanUrl(
         subscribersCount,
         currentWpUserEmail,
         'business',
@@ -57,7 +76,7 @@ export const getUpgradeInfo = (
       title: __('Upgrade your MailPoet plan', 'mailpoet'),
       info: __('Please upgrade your MailPoet plan.', 'mailpoet'),
       cta: __('Upgrade', 'mailpoet'),
-      url: getUpgradeUrl(pluginPartialKey),
+      action: getUpgradeUrl(pluginPartialKey),
     };
   }
 
@@ -70,17 +89,28 @@ export const getUpgradeInfo = (
         'mailpoet',
       ),
       cta: __('Upgrade', 'mailpoet'),
-      url: getUpgradeUrl(pluginPartialKey),
+      action: getUpgradeUrl(pluginPartialKey),
     };
   }
 
   // d. User is eligible for premium features but doesn't have the premium plugin downloaded.
-  if (hasValidPremiumKey && !isPremiumPluginInstalled) {
+  if (hasValidPremiumKey && !isPremiumInstalled) {
     return {
       title: __('Download the MailPoet Premium plugin', 'mailpoet'),
       info: __('Please download the MailPoet Premium plugin.', 'mailpoet'),
       cta: __('Download', 'mailpoet'),
-      url: premiumPluginDownloadUrl,
+      action: {
+        handler: async () => {
+          await requestPremiumApi('installPlugin');
+          isPremiumInstalled = true;
+          onPremiumInstalled();
+        },
+        busy: __('Downloading…', 'mailpoet'),
+        success: __('Activate', 'mailpoet'),
+        successHandler: () =>
+          window.open(premiumPluginActivationUrl, '_blank').focus(),
+        error: __('Plugin installation failed.', 'mailpoet'),
+      },
     };
   }
 
@@ -90,7 +120,13 @@ export const getUpgradeInfo = (
       title: __('Activate the MailPoet Premium plugin', 'mailpoet'),
       info: __('Please activate the MailPoet Premium plugin.', 'mailpoet'),
       cta: __('Activate', 'mailpoet'),
-      url: premiumPluginActivationUrl,
+      action: {
+        handler: async () => requestPremiumApi('activatePlugin'),
+        busy: __('Activating…', 'mailpoet'),
+        success: __('Reload the page', 'mailpoet'),
+        successHandler: () => window.location.reload(),
+        error: __('Plugin activation failed.', 'mailpoet'),
+      },
     };
   }
 
@@ -102,6 +138,17 @@ export const getUpgradeInfo = (
       'mailpoet',
     ),
     cta: __('Reload the page', 'mailpoet'),
-    url: window.location.href,
+    action: window.location.href,
   };
+};
+
+export const useUpgradeInfo = (
+  utmParams: UtmParams = undefined,
+): UpgradeInfo => {
+  // update info via "onInstalled" callback when premium plugin is installed
+  const [info, setInfo] = useState(() => {
+    const onInstalled = () => setInfo(getUpgradeInfo(utmParams, onInstalled));
+    return getUpgradeInfo(utmParams, onInstalled);
+  });
+  return info;
 };

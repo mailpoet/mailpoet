@@ -4,14 +4,24 @@ import {
   FocusEvent,
   KeyboardEvent,
   MouseEvent,
+  useCallback,
+  useEffect,
+  useState,
 } from 'react';
-import { Button, Modal } from '@wordpress/components';
+import {
+  __experimentalText as Text,
+  Button,
+  Modal,
+} from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import { MailPoet } from 'mailpoet';
-import { getUpgradeInfo, premiumFeaturesEnabled } from './upgrade_info';
+import {
+  premiumFeaturesEnabled,
+  UpgradeInfo,
+  useUpgradeInfo,
+} from './upgrade_info';
 
 const premiumValidAndActive = premiumFeaturesEnabled && MailPoet.premiumActive;
-const upgradeInfo = getUpgradeInfo();
 
 type Props = Omit<ComponentProps<typeof Modal>, 'title' | 'onRequestClose'> & {
   // Fix type from "@types/wordpress__components" where it is defined as a union of event
@@ -19,7 +29,50 @@ type Props = Omit<ComponentProps<typeof Modal>, 'title' | 'onRequestClose'> & {
   onRequestClose: EventHandler<KeyboardEvent | MouseEvent | FocusEvent>;
 };
 
+type State = undefined | 'busy' | 'success' | 'error';
+
+const getCta = (state: State, upgradeInfo: UpgradeInfo): string => {
+  const { action, cta } = upgradeInfo;
+  if (typeof action === 'string') {
+    return cta;
+  }
+  if (state === 'busy') {
+    return action.busy;
+  }
+  if (state === 'success') {
+    return action.success;
+  }
+  return cta;
+};
+
 export function PremiumModal({ children, ...props }: Props): JSX.Element {
+  const [state, setState] = useState<State>();
+  const upgradeInfo = useUpgradeInfo();
+
+  //
+  useEffect(() => {
+    setState(undefined);
+  }, [upgradeInfo]);
+
+  const handleClick = useCallback(async () => {
+    if (typeof upgradeInfo.action === 'string') {
+      return;
+    }
+
+    if (state === 'success') {
+      upgradeInfo.action.successHandler();
+      return;
+    }
+
+    setState('busy');
+    try {
+      await upgradeInfo.action.handler();
+      setState('success');
+    } catch (_) {
+      setState('error');
+    }
+  }, [state, upgradeInfo.action]);
+
   return (
     <Modal
       className="mailpoet-premium-modal"
@@ -34,15 +87,34 @@ export function PremiumModal({ children, ...props }: Props): JSX.Element {
         <Button variant="tertiary" onClick={props.onRequestClose}>
           {__('Cancel', 'mailpoet')}
         </Button>
-        <Button
-          variant="primary"
-          href={upgradeInfo.url}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          {upgradeInfo.cta}
-        </Button>
+
+        {typeof upgradeInfo.action === 'string' ? (
+          <Button
+            variant="primary"
+            href={upgradeInfo.action}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {upgradeInfo.cta}
+          </Button>
+        ) : (
+          <Button
+            variant="primary"
+            isBusy={state === 'busy'}
+            disabled={state === 'busy'}
+            onClick={handleClick}
+          >
+            {getCta(state, upgradeInfo)}
+          </Button>
+        )}
       </div>
+      {typeof upgradeInfo.action !== 'string' && state === 'error' && (
+        <div className="mailpoet-premium-modal-error">
+          <Text isDestructive>
+            {upgradeInfo.action.error} {__('Please try again.', 'mailpoet')}
+          </Text>
+        </div>
+      )}
     </Modal>
   );
 }
