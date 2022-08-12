@@ -81,7 +81,7 @@ class DelayActionTest extends \MailPoetTest {
    */
   public function testDelayActionInvalidatesOutsideOfBoundaries(int $delay, bool $expectation) {
 
-    $step = new Step("1", null,'core:delay', 'core:delay', 'next-step', [
+    $step = new Step("1", null, 'core:delay', 'core:delay', 'next-step', [
       'delay' => $delay,
       'delay_type' => "HOURS",
     ]);
