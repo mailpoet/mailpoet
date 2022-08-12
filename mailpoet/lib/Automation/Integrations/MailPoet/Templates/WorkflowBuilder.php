@@ -58,7 +58,7 @@ class WorkflowBuilder {
     $sendFirstEmailStep = $this->sendEmailActionStep();
     $firstDelayStep->setNextStepId($sendFirstEmailStep->getId());
 
-    $secondDelayStep = $this->delayStep( null,"HOURS");
+    $secondDelayStep = $this->delayStep( null, "HOURS");
     $sendFirstEmailStep->setNextStepId($secondDelayStep->getId());
 
     $sendSecondEmailStep = $this->sendEmailActionStep();
