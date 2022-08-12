@@ -78,7 +78,6 @@ class WorkflowBuilder {
   private function delayStep(?int $delay, string $delayType): Step {
     return new Step(
       $this->uniqueId(),
-      null,
       Step::TYPE_ACTION,
       $this->delayAction->getKey(),
       null,
@@ -92,7 +91,6 @@ class WorkflowBuilder {
   private function segmentSubscribedTriggerStep(?int $segmentId = null): Step {
     return new Step(
       $this->uniqueId(),
-      null,
       Step::TYPE_TRIGGER,
       $this->segmentSubscribedTrigger->getKey(),
       null,
@@ -105,7 +103,6 @@ class WorkflowBuilder {
   private function sendEmailActionStep(): Step {
     return new Step(
       $this->uniqueId(),
-      __('Send email', 'mailpoet'),
       Step::TYPE_ACTION,
       $this->sendEmailAction->getKey(),
       null,
