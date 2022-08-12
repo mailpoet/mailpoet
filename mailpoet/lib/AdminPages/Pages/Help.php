@@ -11,18 +11,15 @@ use MailPoet\Helpscout\Beacon;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
+use MailPoet\Newsletter\Url as NewsletterURL;
 use MailPoet\Router\Endpoints\CronDaemon;
 use MailPoet\Services\Bridge;
 use MailPoet\Tasks\Sending;
-use MailPoet\Tasks\State;
 use MailPoet\WP\DateTime;
 
 class Help {
   /** @var PageRenderer */
   private $pageRenderer;
-
-  /** @var State */
-  private $tasksState;
 
   /** @var CronHelper */
   private $cronHelper;
@@ -39,22 +36,25 @@ class Help {
   /*** @var SendingQueuesRepository */
   private $sendingQueuesRepository;
 
+  /*** @var NewsletterURL */
+  private $newsletterUrl;
+
   public function __construct(
     PageRenderer $pageRenderer,
-    State $tasksState,
     CronHelper $cronHelper,
     Beacon $helpscoutBeacon,
     Bridge $bridge,
     ScheduledTasksRepository $scheduledTasksRepository,
-    SendingQueuesRepository $sendingQueuesRepository
+    SendingQueuesRepository $sendingQueuesRepository,
+    NewsletterURL $newsletterUrl
   ) {
     $this->pageRenderer = $pageRenderer;
-    $this->tasksState = $tasksState;
     $this->cronHelper = $cronHelper;
     $this->helpscoutBeacon = $helpscoutBeacon;
     $this->bridge = $bridge;
     $this->scheduledTasksRepository = $scheduledTasksRepository;
     $this->sendingQueuesRepository = $sendingQueuesRepository;
+    $this->newsletterUrl = $newsletterUrl;
   }
 
   public function render() {
@@ -128,10 +128,10 @@ class Help {
     return null;
   }
 
-  private function buildTaskData(ScheduledTaskEntity $task): array {
+  public function buildTaskData(ScheduledTaskEntity $task): array {
     $queue = $newsletter = null;
     if ($task->getType() === Sending::TASK_TYPE) {
-      $queue = $this->sendingQueuesRepository->findOneBy(['task' => $task->getId()]);
+      $queue = $this->sendingQueuesRepository->findOneBy(['task' => $task]);
       $newsletter = $queue ? $queue->getNewsletter() : null;
     }
     return [
