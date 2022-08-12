@@ -68,6 +68,7 @@ class SendEmailAction implements Action {
       'reply_to_name' => Builder::string()->default($this->settings->get('reply_to.name')),
       'reply_to_address' => Builder::string()->default($this->settings->get('reply_to.address')),
       'ga_campaign' => Builder::string(),
+      'name' => Builder::string()->default(__('Send email', 'mailpoet')),
     ]);
   }
 

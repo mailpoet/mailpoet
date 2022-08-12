@@ -170,7 +170,6 @@ class Workflow {
     foreach ($data as $step) {
       $steps[] = new Step(
         $step['id'],
-        $step['name'] ?? null,
         $step['type'],
         $step['key'],
         $step['next_step_id'] ?? null,

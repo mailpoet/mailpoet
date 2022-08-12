@@ -31,16 +31,23 @@ function SingleLineTextareaControl(
 }
 
 export function EmailPanel(): JSX.Element {
-  const { selectedStep } = useSelect(
+  const { selectedStep, selectedStepType } = useSelect(
     (select) => ({
       selectedStep: select(store).getSelectedStep(),
+      selectedStepType: select(store).getSelectedStepType(),
     }),
     [],
   );
 
   return (
     <PanelBody opened>
-      <StepName step={selectedStep} />
+      <StepName
+        currentName={(selectedStep.args.name as string) ?? ''}
+        defaultName={selectedStepType.title}
+        update={(value) => {
+          dispatch(store).updateStepArgs(selectedStep.id, 'name', value);
+        }}
+      />
       <TextControl
         label="“From” name"
         placeholder="John Doe"

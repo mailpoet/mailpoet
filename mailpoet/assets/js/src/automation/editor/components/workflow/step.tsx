@@ -36,11 +36,8 @@ function getTitle(step: StepData): string {
   if (step.type === 'trigger') {
     return 'Trigger';
   }
-  if (step.name) {
-    return step.name;
-  }
   const selectedStepType = select(store).getStepType(step.key);
-  return selectedStepType.title;
+  return selectedStepType ? selectedStepType.title : '';
 }
 
 function getSubtitle(step: StepData): JSX.Element | string {

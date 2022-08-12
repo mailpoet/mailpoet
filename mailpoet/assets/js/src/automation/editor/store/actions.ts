@@ -95,11 +95,3 @@ export function updateStepArgs(stepId, name, value) {
     value,
   };
 }
-
-export function updateStepName(stepId, name) {
-  return {
-    type: 'UPDATE_STEP_NAME',
-    stepId,
-    name,
-  };
-}
