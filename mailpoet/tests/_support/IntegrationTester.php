@@ -1,5 +1,10 @@
 <?php
 
+use Automattic\WooCommerce\Admin\API\Reports\Orders\Stats\DataStore;
+use MailPoet\DI\ContainerWrapper;
+use MailPoet\Util\Security;
+use MailPoet\WooCommerce\Helper;
+
 require_once(ABSPATH . 'wp-admin/includes/user.php');
 require_once(ABSPATH . 'wp-admin/includes/ms.php');
 
@@ -22,6 +27,8 @@ require_once(ABSPATH . 'wp-admin/includes/ms.php');
 class IntegrationTester extends \Codeception\Actor {
   use _generated\IntegrationTesterActions;
 
+  private $wooOrderIds = [];
+
   public function createWordPressUser(string $email, string $role) {
     return wp_insert_user([
       'user_login' => explode('@', $email)[0],
@@ -41,5 +48,34 @@ class IntegrationTester extends \Codeception\Actor {
     } else {
       wp_delete_user($user->ID);
     }
+  }
+
+  public function createWooCommerceOrder(): \WC_Order {
+    $helper = ContainerWrapper::getInstance()->get(Helper::class);
+    $order = $helper->wcCreateOrder([]);
+    $this->wooOrderIds[] = $order->get_id();
+
+    return $order;
+  }
+
+  public function updateWooOrderStats(int $orderId): void {
+    if (!class_exists('Automattic\WooCommerce\Admin\API\Reports\Orders\Stats\DataStore')) {
+      return;
+    }
+    DataStore::sync_order($orderId);
+  }
+
+  public function deleteTestWooOrders() {
+    $helper = ContainerWrapper::getInstance()->get(Helper::class);
+    foreach ($this->wooOrderIds as $wooOrderId) {
+      $order = $helper->wcGetOrder($wooOrderId);
+      if ($order instanceof \WC_Order) {
+        $order->delete(true);
+      }
+    }
+  }
+
+  public function uniqueId($length = 10): string {
+    return Security::generateRandomString($length);
   }
 }
