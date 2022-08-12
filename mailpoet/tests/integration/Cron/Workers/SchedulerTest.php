@@ -36,6 +36,7 @@ use MailPoet\Segments\SubscribersFinder;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
 use MailPoet\Test\DataFactories\NewsletterOption as NewsletterOptionFactory;
+use MailPoet\Test\DataFactories\Segment as SegmentFactory;
 use MailPoet\Util\Security;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
@@ -110,8 +111,15 @@ class SchedulerTest extends \MailPoetTest {
   }
 
   public function testItCanCreateNotificationHistory() {
+    $segments[] = (new SegmentFactory())
+      ->withName('Segment A')
+      ->create();
+    $segments[] = (new SegmentFactory())
+      ->withName('Segment B')
+      ->create();
     $newsletter = (new NewsletterFactory())
       ->withType(NewsletterEntity::TYPE_NOTIFICATION_HISTORY)
+      ->withSegments($segments)
       ->create();
 
     // ensure that notification history does not exist
@@ -124,6 +132,15 @@ class SchedulerTest extends \MailPoetTest {
     $notificationHistory = $this->newslettersRepository->findOneBy(['parent' => $newsletter, 'type' => NewsletterEntity::TYPE_NOTIFICATION_HISTORY]);
     expect($notificationHistory)->notEmpty();
     $this->assertInstanceOf(NewsletterEntity::class, $notificationHistory);
+    // check the hash of the post notification history
+    expect($notificationHistory->getHash())->notEquals($newsletter->getHash());
+    expect(strlen((string)$notificationHistory->getHash()))->equals(Security::HASH_LENGTH);
+    // check the unsubscribe token of the post notification history
+    expect($notificationHistory->getUnsubscribeToken())->notEquals($newsletter->getUnsubscribeToken());
+    expect(strlen((string)$notificationHistory->getUnsubscribeToken()))->equals(Security::UNSUBSCRIBE_TOKEN_LENGTH);
+
+    expect($notificationHistory->getParent())->equals($newsletter);
+    expect($notificationHistory->getNewsletterSegments())->count(count($segments));
   }
 
   public function testItCanDeleteQueueWhenDeliveryIsSetToImmediately() {
