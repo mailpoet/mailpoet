@@ -148,7 +148,11 @@ class ScheduledTasksRepositoryTest extends \MailPoetTest {
   }
 
   public function testItDoesNotFailForSendingTaskWithoutQueue() {
-    $this->scheduledTaskFactory->create(SendingTask::TASK_TYPE, 'any', Carbon::now()->addDay());
+    $this->scheduledTaskFactory->create(
+      SendingTask::TASK_TYPE,
+      ScheduledTaskEntity::VIRTUAL_STATUS_RUNNING,
+      Carbon::now()->addDay()
+    );
     $data = $this->repository->getLatestTasks();
     expect(count($data))->equals(1);
   }
