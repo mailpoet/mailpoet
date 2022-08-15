@@ -3,7 +3,7 @@ Contributors: mailpoet
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 5.6
 Tested up to: 6.0
-Stable tag: 3.94.0
+Stable tag: 3.95.0
 Requires PHP: 7.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -218,6 +218,12 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 3.95.0 - 2022-08-15 =
+* Added: the domain verification process can be performed in the plugin;
+* Updated: Gutenberg dependencies;
+* Fixed: emails are labeled as "Preview" on System Status page;
+* Removed support for migration data from MailPoet2.
 
 = 3.94.0 - 2022-08-08 =
 * Added: filter subscribers by a tag;
