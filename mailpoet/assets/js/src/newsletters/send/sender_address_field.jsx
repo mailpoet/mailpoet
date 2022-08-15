@@ -28,6 +28,10 @@ class SenderField extends Component {
     this.parsleyFieldName = 'invalidFromAddress';
   }
 
+  componentDidMount() {
+    this.validateEmailAddress();
+  }
+
   onChange(event) {
     const emailAddress = event.target.value.toLowerCase();
     this.setState({
@@ -50,26 +54,7 @@ class SenderField extends Component {
   }
 
   onBlur() {
-    if (!window.mailpoet_mss_active) return;
-
-    const emailAddress = this.state.emailAddress;
-    const emailAddressIsAuthorized =
-      this.isEmailAddressAuthorized(emailAddress);
-
-    this.showSenderFieldError(emailAddressIsAuthorized, emailAddress);
-
-    // Skip domain DMARC validation if the email is a freemail
-    const isFreeDomain =
-      MailPoet.freeMailDomains.indexOf(extractEmailDomain(emailAddress)) > -1;
-    if (isFreeDomain) return;
-
-    checkSenderEmailDomainDmarcPolicy(emailAddress)
-      .then((status) => {
-        this.showSenderDomainError(status, emailAddress);
-      })
-      .catch(() => {
-        // do nothing for now when the request fails
-      });
+    this.validateEmailAddress();
   }
 
   isEmailAddressAuthorized = (email) =>
@@ -102,6 +87,29 @@ class SenderField extends Component {
 
     this.setState({ showSenderDomainWarning: true });
   };
+
+  validateEmailAddress() {
+    if (!window.mailpoet_mss_active) return;
+
+    const emailAddress = this.state.emailAddress;
+    const emailAddressIsAuthorized =
+      this.isEmailAddressAuthorized(emailAddress);
+
+    this.showSenderFieldError(emailAddressIsAuthorized, emailAddress);
+
+    // Skip domain DMARC validation if the email is a freemail
+    const isFreeDomain =
+      MailPoet.freeMailDomains.indexOf(extractEmailDomain(emailAddress)) > -1;
+    if (isFreeDomain) return;
+
+    checkSenderEmailDomainDmarcPolicy(emailAddress)
+      .then((status) => {
+        this.showSenderDomainError(status, emailAddress);
+      })
+      .catch(() => {
+        // do nothing for now when the request fails
+      });
+  }
 
   render() {
     return (
