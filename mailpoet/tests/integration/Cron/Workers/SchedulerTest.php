@@ -617,6 +617,7 @@ class SchedulerTest extends \MailPoetTest {
     $scheduler = Stub::make(Scheduler::class, [
       'processWelcomeNewsletter' => Expected::exactly(1),
       'cronHelper' => $this->cronHelper,
+      'scheduledTasksRepository' => $this->scheduledTasksRepository,
     ], $this);
     $scheduler->process();
   }
@@ -629,6 +630,7 @@ class SchedulerTest extends \MailPoetTest {
     $scheduler = Stub::make(Scheduler::class, [
       'processPostNotificationNewsletter' => Expected::exactly(1),
       'cronHelper' => $this->cronHelper,
+      'scheduledTasksRepository' => $this->scheduledTasksRepository,
     ], $this);
     $scheduler->process();
   }
@@ -641,6 +643,7 @@ class SchedulerTest extends \MailPoetTest {
     $scheduler = Stub::make(Scheduler::class, [
       'processScheduledStandardNewsletter' => Expected::exactly(1),
       'cronHelper' => $this->cronHelper,
+      'scheduledTasksRepository' => $this->scheduledTasksRepository,
     ], $this);
     $scheduler->process();
   }
@@ -655,6 +658,7 @@ class SchedulerTest extends \MailPoetTest {
       'cronHelper' => $this->make(CronHelper::class, [
         'enforceExecutionLimit' => Expected::exactly(2), // call at start + during processing
       ]),
+      'scheduledTasksRepository' => $this->scheduledTasksRepository,
     ], $this);
     $scheduler->process();
   }
@@ -668,6 +672,7 @@ class SchedulerTest extends \MailPoetTest {
     $scheduler = Stub::make(Scheduler::class, [
       'processScheduledStandardNewsletter' => Expected::never(),
       'cronHelper' => $this->cronHelper,
+      'scheduledTasksRepository' => $this->scheduledTasksRepository,
     ], $this);
     // scheduled job is not processed
     $scheduler->process();
@@ -682,6 +687,7 @@ class SchedulerTest extends \MailPoetTest {
     $scheduler = Stub::make(Scheduler::class, [
       'processScheduledStandardNewsletter' => Expected::once(),
       'cronHelper' => $this->cronHelper,
+      'scheduledTasksRepository' => $this->scheduledTasksRepository,
     ], $this);
     // scheduled job is processed
     $scheduler->process();
@@ -712,6 +718,7 @@ class SchedulerTest extends \MailPoetTest {
     $scheduler = Stub::make(Scheduler::class, [
       'processScheduledStandardNewsletter' => Expected::once(),
       'cronHelper' => $this->cronHelper,
+      'scheduledTasksRepository' => $this->scheduledTasksRepository,
     ], $this);
     // scheduled job is processed
     $scheduler->process();

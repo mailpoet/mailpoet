@@ -11,7 +11,6 @@ use MailPoet\Entities\SegmentEntity;
 use MailPoet\InvalidStateException;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Models\Newsletter;
-use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
 use MailPoet\Newsletter\NewslettersRepository;
@@ -367,7 +366,7 @@ class Scheduler {
     $ids = array_map(function ($queue) {
       return $queue->taskId;
     }, $scheduledQueues);
-    ScheduledTask::touchAllByIds($ids);
+    $this->scheduledTasksRepository->touchAllByIds($ids);
   }
 
   public static function getScheduledQueues() {
