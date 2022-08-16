@@ -227,7 +227,7 @@ class Renderer {
           'blocks' => [
             [
               'type' => 'image',
-              'link' => 'http://www.mailpoet.com',
+              'link' => 'https://www.mailpoet.com/?ref=free-plan-user-email&utm_source=free_plan_user_email&utm_medium=email',
               'src' => Env::$assetsUrl . '/img/mailpoet_logo_newsletter.png',
               'fullWidth' => false,
               'alt' => 'Email Marketing Powered by MailPoet',
