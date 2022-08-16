@@ -87,6 +87,8 @@ export function* verifyPremiumKey(key: string) {
 
   MailPoet.trackEvent('User has validated a Premium key');
 
+  yield { type: 'SAVE_DONE' };
+
   return null;
 }
 
