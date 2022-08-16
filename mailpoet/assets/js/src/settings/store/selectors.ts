@@ -99,5 +99,5 @@ export function getReEngagementAction(state: State) {
 }
 
 export function hasUnsavedChanges(state: State) {
-  return state.hasUnsavedChanges || state.save.inProgress;
+  return state.save.hasUnsavedChanges || state.save.inProgress;
 }
