@@ -62,7 +62,9 @@ function Notice({
   const content = (
     <div
       ref={elementRef}
-      className={`notice inline ${type} ${closable ? 'is-dismissible' : ''}`}
+      className={`notice inline ${type} notice-${type} ${
+        closable ? 'is-dismissible' : ''
+      }`}
     >
       {children}
       {closable && (
