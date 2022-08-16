@@ -11,12 +11,26 @@ use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
+use MailPoetVendor\Carbon\CarbonImmutable;
+use MailPoetVendor\Doctrine\DBAL\Connection;
+use MailPoetVendor\Doctrine\ORM\EntityManager;
 use MailPoetVendor\Doctrine\ORM\Query\Expr\Join;
 
 /**
  * @extends Repository<ScheduledTaskEntity>
  */
 class ScheduledTasksRepository extends Repository {
+  /** @var WPFunctions */
+  private $wp;
+
+  public function __construct(
+    EntityManager $entityManager,
+    WPFunctions $wp
+  ) {
+    $this->wp = $wp;
+    parent::__construct($entityManager);
+  }
+
   /**
    * @param NewsletterEntity $newsletter
    * @return ScheduledTaskEntity[]
@@ -208,6 +222,18 @@ class ScheduledTasksRepository extends Repository {
       ->setParameter('type', SendingQueue::TASK_TYPE)
       ->getQuery()
       ->getResult();
+  }
+
+  public function touchAllByIds(array $ids): void {
+    $now = CarbonImmutable::createFromTimestamp((int)$this->wp->currentTime('timestamp'));
+    $this->entityManager->createQueryBuilder()
+      ->update(ScheduledTaskEntity::class, 'st')
+      ->set('st.updatedAt', ':updatedAt')
+      ->setParameter('updatedAt', $now)
+      ->where('st.id IN (:ids)')
+      ->setParameter('ids', $ids, Connection::PARAM_INT_ARRAY)
+      ->getQuery()
+      ->execute();
   }
 
   protected function findByTypeAndStatus($type, $status, $limit = null, $future = false) {
