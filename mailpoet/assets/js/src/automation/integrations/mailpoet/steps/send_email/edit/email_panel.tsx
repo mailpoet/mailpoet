@@ -5,7 +5,7 @@ import { DesignEmailButton } from './design_email_button';
 import { Thumbnail } from './thumbnail';
 import { PlainBodyTitle } from '../../../../../editor/components/panel';
 import { store } from '../../../../../editor/store';
-import {StepName} from "../../../../../editor/components/panel/step-name";
+import { StepName } from '../../../../../editor/components/panel/step-name';
 
 function SingleLineTextareaControl(
   props: ComponentProps<typeof TextareaControl>,
@@ -57,7 +57,6 @@ export function EmailPanel(): JSX.Element {
         }
       />
       <TextControl
-
         type="email"
         label="“From” email address"
         placeholder="you@domain.com"
