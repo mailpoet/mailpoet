@@ -10,11 +10,16 @@ use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\Test\DataFactories\ScheduledTask as ScheduledTaskFactory;
 use MailPoet\Test\DataFactories\SendingQueue;
+use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
+use MailPoetVendor\Carbon\CarbonImmutable;
 
 class ScheduledTasksRepositoryTest extends \MailPoetTest {
   /** @var ScheduledTasksRepository */
   private $repository;
+
+  /** @var WPFunctions */
+  private $wp;
 
   /** @var ScheduledTaskFactory */
   private $scheduledTaskFactory;
@@ -25,6 +30,7 @@ class ScheduledTasksRepositoryTest extends \MailPoetTest {
   public function _before() {
     parent::_before();
     $this->repository = $this->diContainer->get(ScheduledTasksRepository::class);
+    $this->wp = $this->diContainer->get(WPFunctions::class);
     $this->scheduledTaskFactory = new ScheduledTaskFactory();
     $this->sendingQueueFactory = new SendingQueue();
   }
@@ -154,6 +160,28 @@ class ScheduledTasksRepositoryTest extends \MailPoetTest {
     );
     $data = $this->repository->getLatestTasks();
     expect(count($data))->equals(1);
+  }
+
+  public function testItTouchAllScheduledTasksByIds(): void {
+    $originalUpdatedAt = CarbonImmutable::now()->subDay();
+    $touched[] = $this->scheduledTaskFactory->create('test', null, Carbon::now()->subDay(), null, $originalUpdatedAt);
+    $untouched[] = $this->scheduledTaskFactory->create('test', null, Carbon::now()->subDay(), null, $originalUpdatedAt);
+    $this->repository->touchAllByIds([$touched[0]->getId()]);
+
+    // check touched task
+    $now = CarbonImmutable::createFromTimestamp((int)$this->wp->currentTime('timestamp'));
+    $this->entityManager->clear();
+    $scheduledTask = $this->repository->findOneById($touched[0]->getId());
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $scheduledTask);
+    $updatedAt = $scheduledTask->getUpdatedAt();
+    $this->assertInstanceOf(\DateTime::class, $updatedAt);
+    $this->assertEqualsWithDelta($updatedAt->getTimestamp(), $now->getTimestamp(), 1);
+    // check untouched task
+    $scheduledTask = $this->repository->findOneById($untouched[0]->getId());
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $scheduledTask);
+    $updatedAt = $scheduledTask->getUpdatedAt();
+    $this->assertInstanceOf(\DateTime::class, $updatedAt);
+    $this->assertEquals($updatedAt->getTimestamp(), $originalUpdatedAt->getTimestamp());
   }
 
   public function cleanup() {
