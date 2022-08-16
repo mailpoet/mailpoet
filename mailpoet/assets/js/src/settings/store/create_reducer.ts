@@ -24,7 +24,7 @@ export function createReducer(defaultValue: State) {
           clone,
         );
 
-        newState.hasUnsavedChanges = true;
+        newState.save.hasUnsavedChanges = true;
 
         return newState;
       }
@@ -32,16 +32,32 @@ export function createReducer(defaultValue: State) {
         return {
           ...state,
           data: normalizeSettings(action.value as Record<string, unknown>),
-          hasUnsavedChanges: false,
         };
       case 'SET_ERROR_FLAG':
         return { ...state, flags: { ...state.flags, error: !!action.value } };
       case 'SAVE_STARTED':
-        return { ...state, save: { inProgress: true, error: null } };
+        return {
+          ...state,
+          save: {
+            inProgress: true,
+            error: null,
+            hasUnsavedChanges: state.save.hasUnsavedChanges,
+          },
+        };
       case 'SAVE_DONE':
-        return { ...state, save: { inProgress: false, error: null } };
+        return {
+          ...state,
+          save: { inProgress: false, error: null, hasUnsavedChanges: false },
+        };
       case 'SAVE_FAILED':
-        return { ...state, save: { inProgress: false, error: action.error } };
+        return {
+          ...state,
+          save: {
+            inProgress: false,
+            error: action.error,
+            hasUnsavedChanges: state.save.hasUnsavedChanges,
+          },
+        };
       case 'SET_RE_ENGAGEMENT_NOTICE':
         return {
           ...state,

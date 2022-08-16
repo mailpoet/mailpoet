@@ -239,6 +239,7 @@ export type State = {
   save: {
     inProgress: boolean;
     error: string[];
+    hasUnsavedChanges: boolean;
   };
   testEmail: {
     state: TestEmailState;
@@ -247,7 +248,6 @@ export type State = {
   keyActivation: KeyActivationState;
   hosts: Hosts;
   reEngagement: ReEngagement;
-  hasUnsavedChanges: boolean;
 };
 
 export type Action =

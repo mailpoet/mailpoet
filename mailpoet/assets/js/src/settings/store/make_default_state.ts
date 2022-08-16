@@ -29,7 +29,7 @@ export function makeDefaultState(window: any): State {
   const paths = window.mailpoet_paths;
   const segments = window.mailpoet_segments;
   const hosts = window.mailpoet_hosts;
-  const save = { inProgress: false, error: null };
+  const save = { inProgress: false, error: null, hasUnsavedChanges: false };
   const data = normalizeSettings(
     window.mailpoet_settings as Record<string, unknown>,
   );
@@ -78,7 +78,6 @@ export function makeDefaultState(window: any): State {
     showNotice: false,
     action: null,
   };
-  const hasUnsavedChanges = false;
   return {
     data,
     flags,
@@ -90,6 +89,5 @@ export function makeDefaultState(window: any): State {
     hosts,
     testEmail,
     reEngagement,
-    hasUnsavedChanges,
   };
 }
