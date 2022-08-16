@@ -34,7 +34,13 @@ class ScheduledTask {
     $this->scheduledTasksRepository = $diContainer->get(ScheduledTasksRepository::class);
   }
 
-  public function create(string $type, ?string $status, \DateTimeInterface $scheduledAt, \DateTimeInterface $deletedAt = null) {
+  public function create(
+    string $type,
+    ?string $status,
+    \DateTimeInterface $scheduledAt,
+    \DateTimeInterface $deletedAt = null,
+    \DateTimeInterface $updatedAt = null
+  ) {
     $task = new ScheduledTaskEntity();
     $task->setType($type);
     $task->setStatus($status);
@@ -46,6 +52,17 @@ class ScheduledTask {
 
     $this->entityManager->persist($task);
     $this->entityManager->flush();
+
+    // workaround for storing updatedAt because it's set in TimestampListener
+    if ($updatedAt) {
+      $tasksTable = $this->entityManager->getClassMetadata(ScheduledTaskEntity::class)->getTableName();
+      $this->entityManager->getConnection()->executeQuery("
+        UPDATE $tasksTable
+        SET updated_at = '{$updatedAt->format('Y-m-d H:i:s')}'
+        WHERE id = {$task->getId()}
+      ");
+      $this->entityManager->refresh($task);
+    }
 
     return $task;
   }
