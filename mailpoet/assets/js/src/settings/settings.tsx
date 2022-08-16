@@ -5,6 +5,7 @@ import { t } from 'common/functions';
 import { RoutedTabs } from 'common/tabs/routed_tabs';
 import { Tab } from 'common/tabs/tab';
 import { TopBar } from 'common/top_bar/top_bar';
+import { UnsavedChangesNotice } from 'common/notices/unsaved_changes_notice';
 import {
   Advanced,
   Basics,
@@ -14,7 +15,6 @@ import {
   WooCommerce,
 } from './pages';
 import { useSelector } from './store/hooks';
-import { UnsavedChangesNotice } from '../common/notices/unsaved_changes_notice';
 
 const trackTabSwitched = (tabKey: string) => {
   MailPoet.trackEvent('User has clicked a tab in Settings', {

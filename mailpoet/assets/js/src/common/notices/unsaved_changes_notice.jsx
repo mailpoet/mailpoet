@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useSelect } from '@wordpress/data';
-import { MailPoet } from '../../mailpoet';
+import { MailPoet } from 'mailpoet';
 
 export function UnsavedChangesNotice({ storeName }) {
   const hasUnsavedChanges = useSelect(

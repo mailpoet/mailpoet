@@ -15,13 +15,13 @@ import {
 } from '@wordpress/block-editor';
 import { ShortcutProvider } from '@wordpress/keyboard-shortcuts';
 
+import { UnsavedChangesNotice } from 'common/notices/unsaved_changes_notice.jsx';
 import { fetchLinkSuggestions } from '../utils/link_suggestions';
 import { Header } from './header.jsx';
 import { Tutorial } from './tutorial';
 import { Sidebar } from './sidebar/sidebar';
 import { Inserter } from './inserter';
 import { Notices } from './notices.jsx';
-import { UnsavedChangesNotice } from '../../common/notices/unsaved_changes_notice.jsx';
 import { FormStyles } from './form_styles.jsx';
 import { FormPreview } from './preview/preview';
 import { FormStylingBackground } from './form_styling_background.jsx';
