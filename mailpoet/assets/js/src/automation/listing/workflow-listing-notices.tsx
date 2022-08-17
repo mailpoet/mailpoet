@@ -1,4 +1,4 @@
-import { getQueryArg } from '@wordpress/url';
+import { getQueryArg, removeQueryArgs } from '@wordpress/url';
 import { __ } from '@wordpress/i18n';
 import { Notice } from '../../notices/notice';
 
@@ -22,6 +22,16 @@ export function WorkflowListingNotices(): JSX.Element {
     ) as string,
     10,
   );
+
+  if (Number.isNaN(workflowHadBeenDeleted) && Number.isNaN(workflowDeleted)) {
+    return null;
+  }
+
+  const urlWithoutNotices = removeQueryArgs(
+    window.location.href,
+    ...Object.values(LISTING_NOTICE_PARAMETERS),
+  );
+  window.history.pushState('', '', urlWithoutNotices);
   if (workflowHadBeenDeleted) {
     return (
       <Notice type="error" closable timeout={false}>
