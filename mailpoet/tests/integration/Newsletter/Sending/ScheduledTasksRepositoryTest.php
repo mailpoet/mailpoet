@@ -162,7 +162,7 @@ class ScheduledTasksRepositoryTest extends \MailPoetTest {
     expect(count($data))->equals(1);
   }
 
-  public function testItTouchAllScheduledTasksByIds(): void {
+  public function testItTouchesAllScheduledTasksByIds(): void {
     $originalUpdatedAt = CarbonImmutable::now()->subDay();
     $touched[] = $this->scheduledTaskFactory->create('test', null, Carbon::now()->subDay(), null, $originalUpdatedAt);
     $untouched[] = $this->scheduledTaskFactory->create('test', null, Carbon::now()->subDay(), null, $originalUpdatedAt);
