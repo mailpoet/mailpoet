@@ -15,6 +15,7 @@ use MailPoet\API\JSON\v2\APITestNamespacedEndpointStubV2;
 use MailPoet\Config\AccessControl;
 use MailPoet\DI\ContainerConfigurator;
 use MailPoet\DI\ContainerFactory;
+use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Settings\SettingsController;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Symfony\Component\DependencyInjection\Container;
@@ -335,5 +336,7 @@ class APITest extends \MailPoetTest {
 
   public function _after() {
     wp_delete_user($this->wpUserId);
+    // we need to trucate wp_mailpoet_subscriber_segment manually while https://mailpoet.atlassian.net/browse/MAILPOET-4580 is not fixed.
+    $this->truncateEntity(SubscriberSegmentEntity::class);
   }
 }
