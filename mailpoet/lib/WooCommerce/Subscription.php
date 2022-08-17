@@ -156,7 +156,7 @@ class Subscription {
       ->where('segment_id', $wcSegment->id)
       ->findOne();
     return $subscriberSegment instanceof SubscriberSegment
-      && $subscriberSegment->status === Subscriber::STATUS_SUBSCRIBED;
+      && $subscriberSegment->status === SubscriberEntity::STATUS_SUBSCRIBED;
   }
 
   public function subscribeOnOrderPay($orderId) {
@@ -232,7 +232,7 @@ class Subscription {
     $subscriber->source = Source::WOOCOMMERCE_CHECKOUT;
 
     if (
-      ($subscriber->status === Subscriber::STATUS_SUBSCRIBED)
+      ($subscriber->status === SubscriberEntity::STATUS_SUBSCRIBED)
       || ((bool)$signupConfirmation['enabled'] === false)
     ) {
       $this->subscribe($subscriber);
@@ -249,7 +249,7 @@ class Subscription {
   }
 
   private function subscribe(Subscriber $subscriber) {
-    $subscriber->status = Subscriber::STATUS_SUBSCRIBED;
+    $subscriber->status = SubscriberEntity::STATUS_SUBSCRIBED;
     if (empty($subscriber->confirmedIp) && empty($subscriber->confirmedAt)) {
       $subscriber->confirmedIp = Helpers::getIP();
       $subscriber->setExpr('confirmed_at', 'NOW()');
@@ -264,7 +264,7 @@ class Subscription {
     $subscriberEntity = $this->subscribersRepository->findOneById($subscriber->id);
 
     if ($subscriberEntity instanceof SubscriberEntity) {
-      $subscriberEntity->setStatus(Subscriber::STATUS_UNCONFIRMED);
+      $subscriberEntity->setStatus(SubscriberEntity::STATUS_UNCONFIRMED);
       $this->subscribersRepository->persist($subscriberEntity);
       $this->subscribersRepository->flush();
 
@@ -280,7 +280,7 @@ class Subscription {
     $ss = Subscriber::findOne($subscriber->id);
     $segmentsCount = $ss->segments()->count();
     if (!$segmentsCount) {
-      $subscriber->status = Subscriber::STATUS_UNSUBSCRIBED;
+      $subscriber->status = SubscriberEntity::STATUS_UNSUBSCRIBED;
       $subscriber->save();
       $this->unsubscribesTracker->track($subscriber->id, StatisticsUnsubscribeEntity::SOURCE_ORDER_CHECKOUT);
     }
