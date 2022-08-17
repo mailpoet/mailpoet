@@ -102,7 +102,11 @@ interface Window {
   mailpoet_wp_week_starts_on: number;
   mailpoet_subscribers_counts_cache_created_at: string;
   mailpoet_shortcode_links: string[];
-  mailpoet_tracking_config: string;
+  mailpoet_tracking_config: {
+    level: 'full' | 'partial' | 'basic';
+    cookieTrackingEnabled: boolean;
+    emailTrackingEnabled: boolean;
+  };
   mailpoet_display_detailed_stats: boolean;
   mailpoet_premium_plugin_installed: boolean;
   mailpoet_premium_plugin_download_url: string;
