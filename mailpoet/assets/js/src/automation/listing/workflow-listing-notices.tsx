@@ -2,13 +2,24 @@ import { getQueryArg } from '@wordpress/url';
 import { __ } from '@wordpress/i18n';
 import { Notice } from '../../notices/notice';
 
+export const LISTING_NOTICE_PARAMETERS = {
+  workflowHadBeenDeleted: 'mailpoet-had-been-deleted',
+  workflowDeleted: 'mailpoet-workflow-deleted',
+};
+
 export function WorkflowListingNotices(): JSX.Element {
   const workflowHadBeenDeleted = parseInt(
-    getQueryArg(window.location.href, 'mailpoet-had-been-deleted') as string,
+    getQueryArg(
+      window.location.href,
+      LISTING_NOTICE_PARAMETERS.workflowHadBeenDeleted,
+    ) as string,
     10,
   );
   const workflowDeleted = parseInt(
-    getQueryArg(window.location.href, 'mailpoet-workflow-deleted') as string,
+    getQueryArg(
+      window.location.href,
+      LISTING_NOTICE_PARAMETERS.workflowDeleted,
+    ) as string,
     10,
   );
   if (workflowHadBeenDeleted) {

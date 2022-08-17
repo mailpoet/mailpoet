@@ -7,6 +7,7 @@ import { confirmAlert } from '../../../../common/confirm_alert';
 import { store } from '../../store';
 import { Workflow } from '../workflow/types';
 import { MailPoet } from '../../../../mailpoet';
+import { LISTING_NOTICE_PARAMETERS } from '../../../listing/workflow-listing-notices';
 
 export function TrashButton(): JSX.Element {
   const { createErrorNotice } = useDispatch(noticesStore as StoreDescriptor);
@@ -35,7 +36,7 @@ export function TrashButton(): JSX.Element {
         }
 
         window.location.href = addQueryArgs(MailPoet.urls.automationListing, {
-          'mailpoet-workflow-deleted': workflow.id,
+          [LISTING_NOTICE_PARAMETERS.workflowDeleted]: workflow.id,
         });
       })
       .catch((): void => {
