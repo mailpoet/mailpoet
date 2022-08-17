@@ -9,11 +9,9 @@ use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Segments\WP;
 use MailPoet\Settings\SettingsController;
-use MailPoet\Statistics\Track\Unsubscribes;
 use MailPoet\Subscribers\ConfirmationEmailMailer;
 use MailPoet\Subscribers\Source;
 use MailPoet\Subscribers\SubscribersRepository;
-use MailPoet\WP\Functions as WPFunctions;
 use PHPUnit\Framework\MockObject\MockObject;
 
 class SubscriptionTest extends \MailPoetTest {
@@ -48,7 +46,6 @@ class SubscriptionTest extends \MailPoetTest {
   public function _before() {
     $this->orderId = 123; // dummy
     $this->settings = SettingsController::getInstance();
-    $wp = WPFunctions::get();
     $wcHelper = $this->make(
       Helper::class,
       [
@@ -60,13 +57,9 @@ class SubscriptionTest extends \MailPoetTest {
     $this->subscribersRepository = $this->diContainer->get(SubscribersRepository::class);
     $this->segmentsRepository = $this->diContainer->get(SegmentsRepository::class);
     $this->confirmationEmailMailer = $this->createMock(ConfirmationEmailMailer::class);
-    $this->subscription = new Subscription(
-      $this->settings,
-      $this->confirmationEmailMailer,
-      $wp,
-      $wcHelper,
-      $this->subscribersRepository,
-      $this->diContainer->get(Unsubscribes::class)
+    $this->subscription = $this->getServiceWithOverrides(
+      Subscription::class,
+      ['wcHelper' => $wcHelper, 'confirmationEmailMailer' => $this->confirmationEmailMailer]
     );
     $this->wcSegment = $this->segmentsRepository->getWooCommerceSegment();
     $this->wp = $this->diContainer->get(WP::class);
