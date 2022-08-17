@@ -20,6 +20,7 @@ import { initializeApi } from '../api';
 import { initialize as initializeCoreIntegration } from '../integrations/core';
 import { initialize as initializeMailPoetIntegration } from '../integrations/mailpoet';
 import { MailPoet } from '../../mailpoet';
+import { LISTING_NOTICE_PARAMETERS } from '../listing/workflow-listing-notices';
 
 // See:
 //   https://github.com/WordPress/gutenberg/blob/9601a33e30ba41bac98579c8d822af63dd961488/packages/edit-post/src/components/layout/index.js
@@ -50,7 +51,7 @@ function Editor(): JSX.Element {
 
   if (workflow.status === 'trash') {
     window.location.href = addQueryArgs(MailPoet.urls.automationListing, {
-      'mailpoet-had-been-deleted': workflow.id,
+      [LISTING_NOTICE_PARAMETERS.workflowHadBeenDeleted]: workflow.id,
     });
     return null;
   }
