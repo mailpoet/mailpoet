@@ -9,6 +9,7 @@ import {
   FullscreenMode,
 } from '@wordpress/interface';
 import { ShortcutProvider } from '@wordpress/keyboard-shortcuts';
+import { addQueryArgs } from '@wordpress/url';
 import { Header } from './components/header';
 import { InserterSidebar } from './components/inserter-sidebar';
 import { KeyboardShortcuts } from './components/keyboard-shortcuts';
@@ -18,6 +19,7 @@ import { store, storeName } from './store';
 import { initializeApi } from '../api';
 import { initialize as initializeCoreIntegration } from '../integrations/core';
 import { initialize as initializeMailPoetIntegration } from '../integrations/mailpoet';
+import { MailPoet } from '../../mailpoet';
 
 // See:
 //   https://github.com/WordPress/gutenberg/blob/9601a33e30ba41bac98579c8d822af63dd961488/packages/edit-post/src/components/layout/index.js
@@ -29,12 +31,14 @@ function Editor(): JSX.Element {
     isInserterOpened,
     isSidebarOpened,
     showIconLabels,
+    workflow,
   } = useSelect(
     (select) => ({
       isFullscreenActive: select(store).isFeatureActive('fullscreenMode'),
       isInserterOpened: select(store).isInserterSidebarOpened(),
       isSidebarOpened: select(store).isSidebarOpened(),
       showIconLabels: select(store).isFeatureActive('showIconLabels'),
+      workflow: select(store).getWorkflowData(),
     }),
     [],
   );
@@ -44,6 +48,12 @@ function Editor(): JSX.Element {
     'show-icon-labels': showIconLabels,
   });
 
+  if (workflow.status === 'trash') {
+    window.location.href = addQueryArgs(MailPoet.urls.automationListing, {
+      'mailpoet-had-been-deleted': workflow.id,
+    });
+    return null;
+  }
   return (
     <ShortcutProvider>
       <SlotFillProvider>
