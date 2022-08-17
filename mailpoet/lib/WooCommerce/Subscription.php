@@ -2,18 +2,22 @@
 
 namespace MailPoet\WooCommerce;
 
+use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\StatisticsUnsubscribeEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Models\Segment;
-use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
+use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Statistics\Track\Unsubscribes;
 use MailPoet\Subscribers\ConfirmationEmailMailer;
 use MailPoet\Subscribers\Source;
+use MailPoet\Subscribers\SubscriberSegmentRepository;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Util\Helpers;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoetVendor\Carbon\Carbon;
+use MailPoetVendor\Doctrine\ORM\EntityManager;
 
 class Subscription {
   const CHECKOUT_OPTIN_INPUT_NAME = 'mailpoet_woocommerce_checkout_optin';
@@ -64,13 +68,25 @@ class Subscription {
   /** @var Unsubscribes */
   private $unsubscribesTracker;
 
+  /** @var SegmentsRepository */
+  private $segmentsRepository;
+
+  /** @var SubscriberSegmentRepository */
+  private $subscriberSegmentRepository;
+
+  /** @var EntityManager */
+  private $entityManager;
+
   public function __construct(
     SettingsController $settings,
     ConfirmationEmailMailer $confirmationEmailMailer,
     WPFunctions $wp,
     Helper $wcHelper,
     SubscribersRepository $subscribersRepository,
-    Unsubscribes $unsubscribesTracker
+    Unsubscribes $unsubscribesTracker,
+    SegmentsRepository $segmentsRepository,
+    SubscriberSegmentRepository $subscriberSegmentRepository,
+    EntityManager $entityManager
   ) {
     $this->settings = $settings;
     $this->wp = $wp;
@@ -78,6 +94,9 @@ class Subscription {
     $this->confirmationEmailMailer = $confirmationEmailMailer;
     $this->subscribersRepository = $subscribersRepository;
     $this->unsubscribesTracker = $unsubscribesTracker;
+    $this->segmentsRepository = $segmentsRepository;
+    $this->subscriberSegmentRepository = $subscriberSegmentRepository;
+    $this->entityManager = $entityManager;
   }
 
   public function extendWooCommerceCheckoutForm() {
@@ -175,9 +194,9 @@ class Subscription {
       return null;
     }
 
-    $subscriber = Subscriber::where('email', $data['billing_email'])
-      ->where('is_woocommerce_user', 1)
-      ->findOne();
+    $subscriber = $this->subscribersRepository->findOneBy(
+      ['email' => $data['billing_email'], 'isWoocommerceUser' => 1]
+    );
 
     if (!$subscriber) {
       // no subscriber: WooCommerce sync didn't work
@@ -187,39 +206,28 @@ class Subscription {
     $checkoutOptinEnabled = (bool)$this->settings->get(self::OPTIN_ENABLED_SETTING_NAME);
     $checkoutOptin = !empty($_POST[self::CHECKOUT_OPTIN_INPUT_NAME]);
 
-    $subscriberEntity = $this->subscribersRepository->findOneById($subscriber->id);
-
-    if ($subscriberEntity instanceof SubscriberEntity) {
-      return $this->handleSubscriberOptin($subscriberEntity, $checkoutOptinEnabled, $checkoutOptin);
-    }
+    return $this->handleSubscriberOptin($subscriber, $checkoutOptinEnabled, $checkoutOptin);
   }
 
   /**
    * Subscribe or unsubscribe a subscriber.
    *
-   * @param SubscriberEntity $subscriberEntity Subscriber object
+   * @param SubscriberEntity $subscriber Subscriber object
    * @param bool $checkoutOptinEnabled
    * @param bool $checkoutOptin
    */
-  public function handleSubscriberOptin(SubscriberEntity $subscriberEntity, bool $checkoutOptinEnabled, bool $checkoutOptin): bool {
-    $subscriber = Subscriber::findOne($subscriberEntity->getId());
-
-    $wcSegment = Segment::getWooCommerceSegment();
-    $moreSegmentsToSubscribe = (array)$this->settings->get(self::OPTIN_SEGMENTS_SETTING_NAME, []);
+  public function handleSubscriberOptin(SubscriberEntity $subscriber, bool $checkoutOptinEnabled, bool $checkoutOptin): bool {
+    $wcSegment = $this->segmentsRepository->getWooCommerceSegment();
+    $moreSegmentsToSubscribe = $this->getOptinSegments();
     $signupConfirmation = $this->settings->get('signup_confirmation');
 
     if (!$checkoutOptin) {
       // Opt-in is disabled or checkbox is unchecked
-      SubscriberSegment::unsubscribeFromSegments(
-        $subscriber,
-        [$wcSegment->id]
-      );
+      $this->subscriberSegmentRepository->unsubscribeFromSegments($subscriber, [$wcSegment]);
+
       // Unsubscribe from configured segment only when opt-in is enabled
       if ($checkoutOptinEnabled && $moreSegmentsToSubscribe) {
-        SubscriberSegment::unsubscribeFromSegments(
-          $subscriber,
-          $moreSegmentsToSubscribe
-        );
+        $this->subscriberSegmentRepository->unsubscribeFromSegments($subscriber, $moreSegmentsToSubscribe);
       }
       // Update global status only in case the opt-in is enabled
       if ($checkoutOptinEnabled) {
@@ -229,10 +237,10 @@ class Subscription {
       return false;
     }
 
-    $subscriber->source = Source::WOOCOMMERCE_CHECKOUT;
+    $subscriber->setSource(Source::WOOCOMMERCE_CHECKOUT);
 
     if (
-      ($subscriber->status === SubscriberEntity::STATUS_SUBSCRIBED)
+      ($subscriber->getStatus() === SubscriberEntity::STATUS_SUBSCRIBED)
       || ((bool)$signupConfirmation['enabled'] === false)
     ) {
       $this->subscribe($subscriber);
@@ -240,49 +248,53 @@ class Subscription {
       $this->requireSubscriptionConfirmation($subscriber);
     }
 
-    SubscriberSegment::subscribeToSegments(
-      $subscriber,
-      array_merge([$wcSegment->id], $moreSegmentsToSubscribe)
-    );
+    $this->subscriberSegmentRepository->subscribeToSegments($subscriber, array_merge([$wcSegment], $moreSegmentsToSubscribe));
 
     return true;
   }
 
-  private function subscribe(Subscriber $subscriber) {
-    $subscriber->status = SubscriberEntity::STATUS_SUBSCRIBED;
-    if (empty($subscriber->confirmedIp) && empty($subscriber->confirmedAt)) {
-      $subscriber->confirmedIp = Helpers::getIP();
-      $subscriber->setExpr('confirmed_at', 'NOW()');
+  private function subscribe(SubscriberEntity $subscriber) {
+    $subscriber->setStatus(SubscriberEntity::STATUS_SUBSCRIBED);
+    if (empty($subscriber->getConfirmedIp()) && empty($subscriber->getConfirmedAt())) {
+      $subscriber->setConfirmedIp(Helpers::getIP());
+      $subscriber->setConfirmedAt(new Carbon());
     }
-    $subscriber->save();
+
+    $this->subscribersRepository->persist($subscriber);
+    $this->subscribersRepository->flush();
   }
 
-  private function requireSubscriptionConfirmation(Subscriber $subscriber) {
-    // we need to save the subscriber here since handleSubscriberOptin() sets the source but doesn't save the model.
-    // when we migrate this class to use Doctrine we can probably remove this call to save() as the call to persist() below should be enough.
-    $subscriber->save();
-    $subscriberEntity = $this->subscribersRepository->findOneById($subscriber->id);
+  private function requireSubscriptionConfirmation(SubscriberEntity $subscriber) {
+    $subscriber->setStatus(SubscriberEntity::STATUS_UNCONFIRMED);
+    $this->subscribersRepository->persist($subscriber);
+    $this->subscribersRepository->flush();
 
-    if ($subscriberEntity instanceof SubscriberEntity) {
-      $subscriberEntity->setStatus(SubscriberEntity::STATUS_UNCONFIRMED);
-      $this->subscribersRepository->persist($subscriberEntity);
-      $this->subscribersRepository->flush();
-
-      try {
-        $this->confirmationEmailMailer->sendConfirmationEmailOnce($subscriberEntity);
-      } catch (\Exception $e) {
-        // ignore errors
-      }
+    try {
+      $this->confirmationEmailMailer->sendConfirmationEmailOnce($subscriber);
+    } catch (\Exception $e) {
+      // ignore errors
     }
   }
 
-  private function updateSubscriberStatus(Subscriber $subscriber) {
-    $ss = Subscriber::findOne($subscriber->id);
-    $segmentsCount = $ss->segments()->count();
+  private function updateSubscriberStatus(SubscriberEntity $subscriber) {
+    $segmentsCount = $subscriber->getSubscribedSegments()->count();
+
     if (!$segmentsCount) {
-      $subscriber->status = SubscriberEntity::STATUS_UNSUBSCRIBED;
-      $subscriber->save();
-      $this->unsubscribesTracker->track($subscriber->id, StatisticsUnsubscribeEntity::SOURCE_ORDER_CHECKOUT);
+      $subscriber->setStatus(SubscriberEntity::STATUS_UNSUBSCRIBED);
+      $this->subscribersRepository->persist($subscriber);
+      $this->subscribersRepository->flush();
+      $this->unsubscribesTracker->track((int)$subscriber->getId(), StatisticsUnsubscribeEntity::SOURCE_ORDER_CHECKOUT);
     }
+  }
+
+  private function getOptinSegments(): array {
+    $segments = [];
+    $segmentsIds = (array)$this->settings->get(self::OPTIN_SEGMENTS_SETTING_NAME, []);
+
+    foreach ($segmentsIds as $segmentId) {
+      $segments[] = $this->entityManager->getReference(SegmentEntity::class, $segmentId);
+    }
+
+    return $segments;
   }
 }
