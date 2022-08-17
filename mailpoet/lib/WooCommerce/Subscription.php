@@ -5,7 +5,6 @@ namespace MailPoet\WooCommerce;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\StatisticsUnsubscribeEntity;
 use MailPoet\Entities\SubscriberEntity;
-use MailPoet\Models\Segment;
 use MailPoet\Models\SubscriberSegment;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Settings\SettingsController;
@@ -170,9 +169,9 @@ class Subscription {
     if (!$subscriber instanceof SubscriberEntity) {
       return false;
     }
-    $wcSegment = Segment::getWooCommerceSegment();
+    $wcSegment = $this->segmentsRepository->getWooCommerceSegment();
     $subscriberSegment = SubscriberSegment::where('subscriber_id', $subscriber->getId())
-      ->where('segment_id', $wcSegment->id)
+      ->where('segment_id', $wcSegment->getId())
       ->findOne();
     return $subscriberSegment instanceof SubscriberSegment
       && $subscriberSegment->status === SubscriberEntity::STATUS_SUBSCRIBED;
