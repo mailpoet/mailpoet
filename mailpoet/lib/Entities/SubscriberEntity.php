@@ -447,6 +447,12 @@ class SubscriberEntity {
     });
   }
 
+  public function getSubscribedSegments() {
+    $criteria = Criteria::create()
+      ->where(Criteria::expr()->eq('status', SubscriberEntity::STATUS_SUBSCRIBED));
+    return $this->getSubscriberSegments()->matching($criteria);
+  }
+
   /**
    * @return Collection<int, SubscriberCustomFieldEntity>
    */
