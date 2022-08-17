@@ -187,17 +187,23 @@ class Subscription {
     $checkoutOptinEnabled = (bool)$this->settings->get(self::OPTIN_ENABLED_SETTING_NAME);
     $checkoutOptin = !empty($_POST[self::CHECKOUT_OPTIN_INPUT_NAME]);
 
-    return $this->handleSubscriberOptin($subscriber, $checkoutOptinEnabled, $checkoutOptin);
+    $subscriberEntity = $this->subscribersRepository->findOneById($subscriber->id);
+
+    if ($subscriberEntity instanceof SubscriberEntity) {
+      return $this->handleSubscriberOptin($subscriberEntity, $checkoutOptinEnabled, $checkoutOptin);
+    }
   }
 
   /**
    * Subscribe or unsubscribe a subscriber.
    *
-   * @param Subscriber $subscriber Subscriber object
+   * @param SubscriberEntity $subscriberEntity Subscriber object
    * @param bool $checkoutOptinEnabled
    * @param bool $checkoutOptin
    */
-  public function handleSubscriberOptin(Subscriber $subscriber, bool $checkoutOptinEnabled, bool $checkoutOptin): bool {
+  public function handleSubscriberOptin(SubscriberEntity $subscriberEntity, bool $checkoutOptinEnabled, bool $checkoutOptin): bool {
+    $subscriber = Subscriber::findOne($subscriberEntity->getId());
+
     $wcSegment = Segment::getWooCommerceSegment();
     $moreSegmentsToSubscribe = (array)$this->settings->get(self::OPTIN_SEGMENTS_SETTING_NAME, []);
     $signupConfirmation = $this->settings->get('signup_confirmation');
