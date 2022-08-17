@@ -7,6 +7,7 @@ import {
   CreateWorkflowFromTemplateButton,
 } from './testing';
 import { useMutation, useQuery } from './api';
+import { WorkflowListingNotices } from './listing/workflow-listing-notices';
 
 function Workflows(): JSX.Element {
   const { data, loading, error } = useQuery<{ data: Workflow[] }>('workflows');
@@ -34,6 +35,7 @@ function RecreateSchemaButton(): JSX.Element {
 
   return (
     <div>
+      <WorkflowListingNotices />
       <button
         className="button button-link-delete"
         type="button"

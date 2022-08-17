@@ -2,6 +2,7 @@ import apiFetch from '@wordpress/api-fetch';
 import { Button } from '@wordpress/components';
 import { StoreDescriptor, useDispatch, useSelect } from '@wordpress/data';
 import { store as noticesStore } from '@wordpress/notices';
+import { addQueryArgs } from '@wordpress/url';
 import { confirmAlert } from '../../../../common/confirm_alert';
 import { store } from '../../store';
 import { Workflow } from '../workflow/types';
@@ -33,7 +34,9 @@ export function TrashButton(): JSX.Element {
           return;
         }
 
-        window.location.href = MailPoet.urls.automationListing;
+        window.location.href = addQueryArgs(MailPoet.urls.automationListing, {
+          'mailpoet-workflow-deleted': workflow.id,
+        });
       })
       .catch((): void => {
         void createErrorNotice('An error occurred!', {
