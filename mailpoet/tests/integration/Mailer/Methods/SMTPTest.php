@@ -201,6 +201,30 @@ class SMTPTest extends \MailPoetTest {
     expect($result['response'])->true();
   }
 
-  public function _after() {
+  public function testItAppliesSMTPFilters(): void {
+    $wp = new WPFunctions();
+    $wp->addFilter('mailpoet_mailer_smtp_host', function() {
+      return 'filter_host';
+    });
+    $wp->addFilter('mailpoet_mailer_smtp_port', function() {
+      return 'filter_port';
+    });
+    $wp->addFilter('mailpoet_mailer_smtp_encryption', function() {
+      return 'filter_encryption';
+    });
+    $wp->addFilter('mailpoet_mailer_smtp_username', function() {
+      return 'filter_username';
+    });
+    $wp->addFilter('mailpoet_mailer_smtp_password', function() {
+      return 'filter_password';
+    });
+
+    $mailer = $this->mailer->buildMailer();
+    expect($mailer->Host)->equals('filter_host');
+    expect($mailer->Port)->equals('filter_port');
+    expect($mailer->SMTPSecure)->equals('filter_encryption');
+    expect($mailer->SMTPAuth)->equals(true);
+    expect($mailer->Username)->equals('filter_username');
+    expect($mailer->Password)->equals('filter_password');
   }
 }
