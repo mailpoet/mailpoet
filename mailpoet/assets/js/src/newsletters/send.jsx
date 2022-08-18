@@ -105,6 +105,7 @@ class NewsletterSendComponent extends Component {
       item: {},
       loading: true,
       thumbnailPromise: null,
+      isSavingDraft: false,
     };
   }
 
@@ -586,19 +587,47 @@ class NewsletterSendComponent extends Component {
     return true;
   };
 
+  handleSaveDraft = () =>
+    this.setState({
+      isSavingDraft: true,
+    });
+
+  disableSegmentsValidation = (field) => {
+    if (
+      this.state.isSavingDraft &&
+      field.name === 'segments' &&
+      field.validation &&
+      field.validation['data-parsley-required']
+    ) {
+      return {
+        ...field,
+        validation: {
+          ...field.validation,
+          'data-parsley-required': false,
+        },
+      };
+    }
+
+    return field;
+  };
+
+  getPreparedFields = (isPaused) =>
+    this.state.fields.map((field) => {
+      const newField = field;
+      if (field.name === 'segments' || field.name === 'options') {
+        newField.disabled = isPaused;
+      }
+      return this.disableSegmentsValidation(newField);
+    });
+
   render() {
     const isPaused =
       this.state.item.status === 'sending' &&
       this.state.item.queue &&
       this.state.item.queue.status === 'paused';
-    const fields = this.state.fields.map((field) => {
-      const newField = field;
-      if (field.name === 'segments' || field.name === 'options') {
-        newField.disabled = isPaused;
-      }
-      return newField;
-    });
+
     const sendButtonOptions = this.getSendButtonOptions();
+    const fields = this.getPreparedFields(isPaused);
 
     const sendingDisabled = !!(
       window.mailpoet_subscribers_limit_reached ||
@@ -633,6 +662,7 @@ class NewsletterSendComponent extends Component {
               variant="secondary"
               type="submit"
               automationId="email-save-draft"
+              onClick={this.handleSaveDraft}
               isDisabled={this.state.loading}
             >
               {MailPoet.I18n.t('saveDraftAndClose')}
