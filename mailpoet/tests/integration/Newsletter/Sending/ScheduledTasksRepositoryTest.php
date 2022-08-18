@@ -24,7 +24,6 @@ class ScheduledTasksRepositoryTest extends \MailPoetTest {
 
   public function _before() {
     parent::_before();
-    $this->cleanup();
     $this->repository = $this->diContainer->get(ScheduledTasksRepository::class);
     $this->scheduledTaskFactory = new ScheduledTaskFactory();
     $this->sendingQueueFactory = new SendingQueue();
