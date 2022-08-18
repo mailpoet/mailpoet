@@ -24,6 +24,8 @@ class Hooks {
   public const WORKFLOW_BEFORE_SAVE = 'mailpoet/automation/workflow/before_save';
   public const WORKFLOW_STEP_BEFORE_SAVE = 'mailpoet/automation/workflow/step/before_save';
 
+  public const WORKFLOW_TEMPLATES = 'mailpoet/automation/workflow/templates';
+
   public function doWorkflowBeforeSave(Workflow $workflow): void {
     $this->wordPress->doAction(self::WORKFLOW_BEFORE_SAVE, $workflow);
   }

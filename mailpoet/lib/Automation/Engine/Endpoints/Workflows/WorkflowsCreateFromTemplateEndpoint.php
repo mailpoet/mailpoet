@@ -6,6 +6,8 @@ use MailPoet\Automation\Engine\API\Endpoint;
 use MailPoet\Automation\Engine\API\Request;
 use MailPoet\Automation\Engine\API\Response;
 use MailPoet\Automation\Engine\Builder\CreateWorkflowFromTemplateController;
+use MailPoet\RuntimeException;
+use MailPoet\UnexpectedValueException;
 use MailPoet\Validator\Builder;
 
 class WorkflowsCreateFromTemplateEndpoint extends Endpoint {
@@ -19,15 +21,13 @@ class WorkflowsCreateFromTemplateEndpoint extends Endpoint {
   }
 
   public function handle(Request $request): Response {
-    $data = $request->getParams();
-    $this->createWorkflowFromTemplateController->createWorkflow($data);
+    $this->createWorkflowFromTemplateController->createWorkflow((string)$request->getParam('slug'));
     return new Response();
   }
 
   public static function getRequestSchema(): array {
     return [
-      'name' => Builder::string()->required(),
-      'template' => Builder::string()->required(),
+      'slug' => Builder::string()->required(),
     ];
   }
 }

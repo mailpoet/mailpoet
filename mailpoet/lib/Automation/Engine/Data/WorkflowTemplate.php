@@ -18,8 +18,8 @@ class WorkflowTemplate
     self::CATEGORY_WOOCOMMERCE,
   ];
 
-  /** @var int */
-  private $id;
+  /** @var string */
+  private $slug;
 
   /** @var int */
   private $category;
@@ -30,18 +30,18 @@ class WorkflowTemplate
   /** @var Workflow */
   private $workflow;
 
-  public function __construct(int $id, int $category, string $description, Workflow $workflow) {
+  public function __construct(string $slug, int $category, string $description, Workflow $workflow) {
     if (! in_array($category, self::ALL_CATEGORIES)) {
       throw new RuntimeException("$category is not a valid category.");
     }
-    $this->id = $id;
+    $this->slug = $slug;
     $this->category = $category;
     $this->description = $description;
     $this->workflow = $workflow;
   }
 
-  public function getId() : int {
-    return $this->id;
+  public function getSlug() : string {
+    return $this->slug;
   }
 
   public function getName() : string {
@@ -62,7 +62,7 @@ class WorkflowTemplate
 
   public function toArray() : array {
     return [
-      'id' => $this->getId(),
+      'slug' => $this->getSlug(),
       'name' => $this->getName(),
       'category' => $this->getCategory(),
       'description' => $this->getDescription(),

@@ -1,6 +1,16 @@
 parameters:
 	ignoreErrors:
 		-
+			message: "#^Cannot cast mixed to string\\.$#"
+			count: 1
+			path: ../../lib/Automation/Engine/Endpoints/Workflows/WorkflowsCreateFromTemplateEndpoint.php
+		-
+			message: "#^Cannot cast mixed to int\\.$#"
+			count: 1
+			path: ../../lib/Automation/Engine/Endpoints/Workflows/WorkflowTemplatesGetEndpoint.php
+
+
+		-
 			message: "#^Cannot cast string|void to string\\.$#"
 			count: 2
 			path: ../../lib/Automation/Engine/Storage/WorkflowRunStorage.php
