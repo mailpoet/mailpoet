@@ -16,8 +16,7 @@ class WorkflowsCreateFromTemplateTest extends AutomationTest {
     $countBefore = count($storage->getWorkflows());
     $this->post(self::ENDPOINT_PATH, [
       'json' => [
-        'name' => 'Testing workflow from template',
-        'template' => 'delayed-email-after-signup'
+        'slug' => 'simple-welcome-email'
       ],
     ]);
     $countAfter = count($storage->getWorkflows());
@@ -28,8 +27,7 @@ class WorkflowsCreateFromTemplateTest extends AutomationTest {
     $storage = ContainerWrapper::getInstance()->get(WorkflowStorage::class);
     $this->post(self::ENDPOINT_PATH, [
       'json' => [
-        'name' => 'Testing workflow from template',
-        'template' => 'delayed-email-after-signup'
+        'slug' => 'simple-welcome-email'
       ],
     ]);
     $allWorkflows = $storage->getWorkflows();

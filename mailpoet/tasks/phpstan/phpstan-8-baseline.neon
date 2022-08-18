@@ -2,6 +2,15 @@ parameters:
 	ignoreErrors:
 
 		-
+			message: "#^Cannot cast mixed to string\\.$#"
+			count: 1
+			path: ../../lib/Automation/Engine/Endpoints/Workflows/WorkflowsCreateFromTemplateEndpoint.php
+		-
+			message: "#^Cannot cast mixed to int\\.$#"
+			count: 1
+			path: ../../lib/Automation/Engine/Endpoints/Workflows/WorkflowTemplatesGetEndpoint.php
+
+		-
 			message: "#^Cannot access property \\$permissions on mixed\\.$#"
 			count: 1
 			path: ../../lib/API/JSON/API.php
