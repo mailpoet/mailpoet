@@ -81,11 +81,15 @@ function App(): JSX.Element {
       <Workflows />
       <div style={{ marginTop: 30, display: 'grid', gridGap: 8 }}>
         <CreateTestingWorkflowButton />
-        <CreateWorkflowFromTemplateButton template="delayed-email-after-signup">
+        <CreateWorkflowFromTemplateButton slug="simple-welcome-email">
           Create testing workflow from template (welcome email)
         </CreateWorkflowFromTemplateButton>
-        <CreateWorkflowFromTemplateButton template="welcome-email-sequence">
-          Create testing workflow from template (welcome sequence)
+        <CreateWorkflowFromTemplateButton slug="welcome-email-sequence">
+          Create testing workflow from template (welcome sequence, only premium)
+        </CreateWorkflowFromTemplateButton>
+        <CreateWorkflowFromTemplateButton slug="advanced-welcome-email-sequence">
+          Create testing workflow from template (advanced welcome sequence, only
+          premium)
         </CreateWorkflowFromTemplateButton>
         <RecreateSchemaButton />
         <DeleteSchemaButton />

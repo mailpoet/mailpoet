@@ -71,18 +71,21 @@ export function CreateTestingWorkflowButton(): JSX.Element {
 }
 
 type TemplateButtonProps = {
-  template: string;
+  slug: string;
   children?: ReactNode;
 };
 
 export function CreateWorkflowFromTemplateButton({
-  template,
+  slug,
   children,
 }: TemplateButtonProps): JSX.Element {
   const [createWorkflowFromTemplate, { loading, error }] = useMutation(
     'workflows/create-from-template',
     {
       method: 'POST',
+      body: JSON.stringify({
+        slug,
+      }),
     },
   );
 
@@ -92,12 +95,7 @@ export function CreateWorkflowFromTemplateButton({
         className="button button-primary"
         type="button"
         onClick={async () => {
-          await createWorkflowFromTemplate({
-            body: JSON.stringify({
-              name: `Test from template ${new Date().toISOString()}`,
-              template,
-            }),
-          });
+          await createWorkflowFromTemplate();
           window.location.reload();
         }}
         disabled={loading}
