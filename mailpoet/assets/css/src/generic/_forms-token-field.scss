@@ -3,7 +3,6 @@
   border: 1px solid $color-input-border !important;
   border-radius: $form-control-border-radius !important;
   box-sizing: border-box;
-  display: inline-flex;
   max-width: 100%;
   min-height: $form-control-height;
   min-width: 0;
@@ -11,6 +10,7 @@
   // To align the left padding with the other inputs
   input[type=text].components-form-token-field__input {
     margin-left: 0;
+    min-height: 30px;
     padding-left: 8px;
   }
   // For better fit when the last item is active
