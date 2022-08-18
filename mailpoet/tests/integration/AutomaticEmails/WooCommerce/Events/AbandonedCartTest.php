@@ -43,8 +43,8 @@ class AbandonedCartTest extends \MailPoetTest {
   /** @var WPFunctions&MockObject */
   private $wp;
 
-  /** @var WooCommerce|MockObject */
-  private $wooCommerceMock;
+  /** @var \WooCommerce */
+  private $wooCommerce;
 
   /** @var WC_Cart|MockObject */
   private $wooCommerceCartMock;
@@ -70,6 +70,9 @@ class AbandonedCartTest extends \MailPoetTest {
   public function _before() {
     $this->cleanup();
 
+    global $woocommerce;
+    $this->wooCommerce = $woocommerce;
+
     $this->scheduledTasksRepository = $this->diContainer->get(ScheduledTasksRepository::class);
     $this->sendingQueuesRepository = $this->diContainer->get(SendingQueuesRepository::class);
     $this->scheduledTaskSubscribersRepository = $this->diContainer->get(ScheduledTaskSubscribersRepository::class);
@@ -93,13 +96,12 @@ class AbandonedCartTest extends \MailPoetTest {
 
     $this->automaticEmailScheduler = new AutomaticEmailScheduler(new Scheduler($this->wp, $this->diContainer->get(NewslettersRepository::class)));
 
-    $this->wooCommerceMock = $this->mockWooCommerceClass(WooCommerce::class, []);
     $this->wooCommerceCartMock = $this->mockWooCommerceClass(WC_Cart::class, ['is_empty', 'get_cart']);
-    $this->wooCommerceMock->cart = $this->wooCommerceCartMock;
+    $this->wooCommerce->cart = $this->wooCommerceCartMock;
     /** @var WooCommerceHelper|MockObject $wooCommerceHelperMock - for phpstan */
     $wooCommerceHelperMock = $this->make(WooCommerceHelper::class, [
       'isWooCommerceActive' => true,
-      'WC' => $this->wooCommerceMock,
+      'WC' => $this->wooCommerce,
     ]);
     $this->wooCommerceHelperMock = $wooCommerceHelperMock;
   }
