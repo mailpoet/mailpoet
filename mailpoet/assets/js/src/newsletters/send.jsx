@@ -611,14 +611,17 @@ class NewsletterSendComponent extends Component {
     return field;
   };
 
+  disableSegmentsSelectorWhenPaused = (isPaused) => (field) => {
+    if (field.name === 'segments' || field.name === 'options') {
+      return { ...field, disabled: isPaused };
+    }
+    return field;
+  };
+
   getPreparedFields = (isPaused) =>
-    this.state.fields.map((field) => {
-      const newField = field;
-      if (field.name === 'segments' || field.name === 'options') {
-        newField.disabled = isPaused;
-      }
-      return this.disableSegmentsValidation(newField);
-    });
+    this.state.fields
+      .map(this.disableSegmentsSelectorWhenPaused(isPaused))
+      .map(this.disableSegmentsValidation);
 
   render() {
     const isPaused =
