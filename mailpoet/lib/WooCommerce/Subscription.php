@@ -2,7 +2,6 @@
 
 namespace MailPoet\WooCommerce;
 
-use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\StatisticsUnsubscribeEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
@@ -16,7 +15,6 @@ use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Util\Helpers;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
-use MailPoetVendor\Doctrine\ORM\EntityManager;
 
 class Subscription {
   const CHECKOUT_OPTIN_INPUT_NAME = 'mailpoet_woocommerce_checkout_optin';
@@ -73,9 +71,6 @@ class Subscription {
   /** @var SubscriberSegmentRepository */
   private $subscriberSegmentRepository;
 
-  /** @var EntityManager */
-  private $entityManager;
-
   public function __construct(
     SettingsController $settings,
     ConfirmationEmailMailer $confirmationEmailMailer,
@@ -84,8 +79,7 @@ class Subscription {
     SubscribersRepository $subscribersRepository,
     Unsubscribes $unsubscribesTracker,
     SegmentsRepository $segmentsRepository,
-    SubscriberSegmentRepository $subscriberSegmentRepository,
-    EntityManager $entityManager
+    SubscriberSegmentRepository $subscriberSegmentRepository
   ) {
     $this->settings = $settings;
     $this->wp = $wp;
@@ -95,7 +89,6 @@ class Subscription {
     $this->unsubscribesTracker = $unsubscribesTracker;
     $this->segmentsRepository = $segmentsRepository;
     $this->subscriberSegmentRepository = $subscriberSegmentRepository;
-    $this->entityManager = $entityManager;
   }
 
   public function extendWooCommerceCheckoutForm() {
@@ -219,7 +212,12 @@ class Subscription {
    */
   public function handleSubscriberOptin(SubscriberEntity $subscriber, bool $checkoutOptinEnabled, bool $checkoutOptin): bool {
     $wcSegment = $this->segmentsRepository->getWooCommerceSegment();
-    $moreSegmentsToSubscribe = $this->getOptinSegments();
+
+    $segmentIds = (array)$this->settings->get(self::OPTIN_SEGMENTS_SETTING_NAME, []);
+    $moreSegmentsToSubscribe = [];
+    if (!empty($segmentIds)) {
+      $moreSegmentsToSubscribe = $this->segmentsRepository->findBy(['id' => $segmentIds]);
+    }
     $signupConfirmation = $this->settings->get('signup_confirmation');
 
     if (!$checkoutOptin) {
@@ -286,16 +284,5 @@ class Subscription {
       $this->subscribersRepository->flush();
       $this->unsubscribesTracker->track((int)$subscriber->getId(), StatisticsUnsubscribeEntity::SOURCE_ORDER_CHECKOUT);
     }
-  }
-
-  private function getOptinSegments(): array {
-    $segments = [];
-    $segmentsIds = (array)$this->settings->get(self::OPTIN_SEGMENTS_SETTING_NAME, []);
-
-    foreach ($segmentsIds as $segmentId) {
-      $segments[] = $this->entityManager->getReference(SegmentEntity::class, $segmentId);
-    }
-
-    return $segments;
   }
 }
