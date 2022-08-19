@@ -293,6 +293,14 @@ class Newsletter {
   }
 
   /**
+   * @return Newsletter
+   */
+  public function withGaCampaign($gaCampaign) {
+    $this->data['ga_campaign'] = $gaCampaign;
+    return $this;
+  }
+
+  /**
    * @param SegmentEntity[] $segments
    * @return Newsletter
    */
@@ -370,6 +378,8 @@ class Newsletter {
     $newsletter->setHash(Security::generateHash());
     if (isset($this->data['parent'])) $newsletter->setParent($this->data['parent']);
     if (isset($this->data['deleted_at'])) $newsletter->setDeletedAt($this->data['deleted_at']);
+    if (isset($this->data['ga_campaign'])) $newsletter->setGaCampaign($this->data['ga_campaign']);
+
     return $newsletter;
   }
 
