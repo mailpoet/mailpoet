@@ -2,7 +2,7 @@
 
 namespace MailPoet\Statistics;
 
-use MailPoet\Models\Newsletter;
+use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Newsletter\Links\Links as NewsletterLinks;
 use MailPoet\Util\Helpers;
 use MailPoet\Util\SecondLevelDomainNames;
@@ -22,12 +22,12 @@ class GATracking {
     $this->newsletterLinks = $newsletterLinks;
   }
 
-  public function applyGATracking($renderedNewsletter, $newsletter, $internalHost = null) {
-    if ($newsletter instanceof Newsletter && $newsletter->type == Newsletter::TYPE_NOTIFICATION_HISTORY) {
-      $parentNewsletter = $newsletter->parent()->findOne();
-      $field = $parentNewsletter->gaCampaign;
+  public function applyGATracking($renderedNewsletter, NewsletterEntity $newsletter, $internalHost = null) {
+    if ($newsletter->getType() == NewsletterEntity::TYPE_NOTIFICATION_HISTORY && $newsletter->getParent() instanceof NewsletterEntity) {
+      $parentNewsletter = $newsletter->getParent();
+      $field = $parentNewsletter->getGaCampaign();
     } else {
-      $field = $newsletter->gaCampaign;
+      $field = $newsletter->getGaCampaign();
     }
     if (!empty($field)) {
       $renderedNewsletter = $this->addGAParamsToLinks($renderedNewsletter, $field, $internalHost);

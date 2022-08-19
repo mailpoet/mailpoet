@@ -2,8 +2,10 @@
 
 namespace MailPoet\Statistics;
 
+use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Models\Newsletter;
-use MailPoetVendor\Idiorm\ORM;
+use MailPoet\Newsletter\NewslettersRepository;
+use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
 
 class GATrackingTest extends \MailPoetTest {
 
@@ -22,6 +24,9 @@ class GATrackingTest extends \MailPoetTest {
   /** @var GATracking */
   private $tracking;
 
+  /** @var NewsletterEntity */
+  private $newsletter;
+
   public function _before() {
     $this->tracking = $this->diContainer->get(GATracking::class);
     $this->internalHost = 'newsletters.mailpoet.com';
@@ -31,56 +36,43 @@ class GATrackingTest extends \MailPoetTest {
       'html' => '<p><a href="' . $this->link . '">Click here</a>. <a href="http://somehost.com/fff/?abc=123&email=[subscriber:email]">Do not process this</a> [link:some_link_shortcode]</p>',
       'text' => '[Click here](' . $this->link . '). [Do not process this](http://somehost.com/fff/?abc=123&email=[subscriber:email]) [link:some_link_shortcode]',
     ];
+    $this->newsletter = (new NewsletterFactory())->withGaCampaign($this->gaCampaign)->create();
   }
 
   public function testItConditionallyAppliesGATracking() {
     // No process (empty GA campaign)
-    $newsletter = Newsletter::createOrUpdate(['id' => 123]);
+    $newsletter = (new NewsletterFactory())->create();
     $result = $this->tracking->applyGATracking($this->renderedNewsletter, $newsletter, $this->internalHost);
     expect($result)->equals($this->renderedNewsletter);
+
     // Process (filled GA campaign)
-    $newsletter->gaCampaign = $this->gaCampaign;
-    $newsletter->save();
-    $result = $this->tracking->applyGATracking($this->renderedNewsletter, $newsletter, $this->internalHost);
+    $result = $this->tracking->applyGATracking($this->renderedNewsletter, $this->newsletter, $this->internalHost);
     expect($result)->notEquals($this->renderedNewsletter);
   }
 
   public function testItGetsGACampaignFromParentNewsletterForPostNotifications() {
-    $notification = Newsletter::create();
-    $notification->hydrate([
-      'type' => Newsletter::TYPE_NOTIFICATION,
-      'ga_campaign' => $this->gaCampaign,
-    ]);
-    $notification->save();
-    $notificationHistory = Newsletter::create();
-    $notificationHistory->hydrate([
-      'parent_id' => $notification->id,
-      'type' => Newsletter::TYPE_NOTIFICATION_HISTORY,
-    ]);
-    $notificationHistory->save();
+    $notificationHistory = (new NewsletterFactory())
+      ->withType(NewsletterEntity::TYPE_NOTIFICATION_HISTORY)
+      ->withParent($this->newsletter)
+      ->create();
+
     $result = $this->tracking->applyGATracking($this->renderedNewsletter, $notificationHistory, $this->internalHost);
     expect($result)->notEquals($this->renderedNewsletter);
   }
 
   public function testItCanAddGAParamsToLinks() {
-    $newsletter = Newsletter::createOrUpdate([
-      'ga_campaign' => $this->gaCampaign,
-    ]);
-    $result = $this->tracking->applyGATracking($this->renderedNewsletter, $newsletter, $this->internalHost);
+    $result = $this->tracking->applyGATracking($this->renderedNewsletter, $this->newsletter, $this->internalHost);
     expect($result['text'])->stringContainsString('utm_campaign=' . urlencode($this->gaCampaign));
     expect($result['html'])->stringContainsString('utm_campaign=' . urlencode($this->gaCampaign));
   }
 
   public function testItKeepsShorcodes() {
-    $newsletter = Newsletter::createOrUpdate([
-      'ga_campaign' => $this->gaCampaign,
-    ]);
-    $result = $this->tracking->applyGATracking($this->renderedNewsletter, $newsletter, $this->internalHost);
+    $result = $this->tracking->applyGATracking($this->renderedNewsletter, $this->newsletter, $this->internalHost);
     expect($result['text'])->stringContainsString('email=[subscriber:email]');
     expect($result['html'])->stringContainsString('email=[subscriber:email]');
   }
 
   public function _after() {
-    ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
+    $this->truncateEntity(NewsletterEntity::class);
   }
 }
