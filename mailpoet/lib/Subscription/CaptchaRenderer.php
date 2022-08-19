@@ -48,38 +48,12 @@ class CaptchaRenderer {
   }
 
   public function getCaptchaPageContent($sessionId) {
+
     $this->captchaSession->init($sessionId);
-    $fields = [
-      [
-        'id' => 'captcha',
-        'type' => 'text',
-        'params' => [
-          'label' => __('Type in the characters you see in the picture above:', 'mailpoet'),
-          'value' => '',
-          'obfuscate' => false,
-        ],
-      ],
-    ];
-
-    $form = array_merge(
-      $fields,
-      [
-        [
-          'id' => 'submit',
-          'type' => 'submit',
-          'params' => [
-            'label' => __('Subscribe', 'mailpoet'),
-          ],
-        ],
-      ]
-    );
-
     $captchaSessionForm = $this->captchaSession->getFormData();
-    $formId = 0;
-
     $showSuccessMessage = !empty($_GET['mailpoet_success']);
     $showErrorMessage = !empty($_GET['mailpoet_error']);
-
+    $formId = 0;
     if (isset($captchaSessionForm['form_id'])) {
       $formId = (int)$captchaSessionForm['form_id'];
     } elseif ($showSuccessMessage) {
@@ -92,6 +66,33 @@ class CaptchaRenderer {
     if (!$formModel instanceof FormEntity) {
       return false;
     }
+
+    $fields = [
+      [
+        'id' => 'captcha',
+        'type' => 'text',
+        'params' => [
+          'label' => __('Type in the characters you see in the picture above:', 'mailpoet'),
+          'value' => '',
+          'obfuscate' => false,
+        ],
+      ],
+    ];
+
+    $submitBlocks = $formModel->getBlocksByTypes(['submit']);
+    $submitLabel = count($submitBlocks) && $submitBlocks[0]['params']['label'] ? $submitBlocks[0]['params']['label'] : __('Subscribe', 'mailpoet');
+    $form = array_merge(
+      $fields,
+      [
+        [
+          'id' => 'submit',
+          'type' => 'submit',
+          'params' => [
+            'label' => $submitLabel,
+          ],
+        ],
+      ]
+    );
 
     if ($showSuccessMessage) {
       // Display a success message in a no-JS flow
