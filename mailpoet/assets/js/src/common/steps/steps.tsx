@@ -11,6 +11,7 @@ type Props = {
 function Steps({ count, current, titles }: Props) {
   return (
     <div className="mailpoet-steps">
+      <ContentWrapperFix />
       {range(1, count + 1).map((i) => (
         <div
           key={i}
@@ -30,7 +31,6 @@ function Steps({ count, current, titles }: Props) {
           )}
         </div>
       ))}
-      <ContentWrapperFix />
     </div>
   );
 }
