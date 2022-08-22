@@ -1,4 +1,7 @@
 import ReactDOM from 'react-dom';
+import { TopBarWithBeamer } from 'common/top_bar/top_bar';
+import { plusIcon } from 'common/button/icon/plus';
+import { Button, Flex } from '@wordpress/components';
 import { Workflow } from './listing/workflow';
 import { AutomationListing } from './listing';
 import { Onboarding } from './onboarding';
@@ -11,20 +14,39 @@ import { WorkflowListingNotices } from './listing/workflow-listing-notices';
 
 function Workflows(): JSX.Element {
   const { data, loading, error } = useQuery<{ data: Workflow[] }>('workflows');
+  let content;
 
   if (error) {
-    return <div>Error: {error}</div>;
+    content = <div>Error: {error}</div>;
+  } else if (loading) {
+    content = <div>Loading workflows...</div>;
+  } else {
+    const workflows = data?.data ?? [];
+    content =
+      workflows.length < 1 ? (
+        <Onboarding />
+      ) : (
+        <AutomationListing workflows={workflows} loading={loading} />
+      );
   }
 
-  if (loading) {
-    return <div>Loading workflows...</div>;
-  }
-
-  const workflows = data?.data ?? [];
-  return workflows.length === 0 ? (
-    <Onboarding />
-  ) : (
-    <AutomationListing workflows={workflows} loading={loading} />
+  return (
+    <>
+      <TopBarWithBeamer />
+      <Flex className="mailpoet-automation-listing-heading">
+        <h1 className="wp-heading-inline">Automations</h1>
+        <Button
+          onClick={() => {
+            // TODO: link to templates page when implemented, MAILPOET-4533
+          }}
+          icon={plusIcon}
+          variant="primary"
+        >
+          New automation
+        </Button>
+      </Flex>
+      {content}
+    </>
   );
 }
 
