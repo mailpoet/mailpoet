@@ -154,8 +154,8 @@ class JiraController {
     // Sort issues by importance of change (Added -> Updated -> Improved -> Changed -> Fixed -> Others)
     usort($issuesData['issues'], function($a, $b) use ($changelogId) {
       $order = array_flip(['added', 'updat', 'impro', 'chang', 'fixed']);
-      $aPrefix = strtolower(substr($a['fields'][$changelogId], 0, 5));
-      $bPrefix = strtolower(substr($b['fields'][$changelogId], 0, 5));
+      $aPrefix = !is_null($a['fields'][$changelogId]) ? strtolower(substr($a['fields'][$changelogId], 0, 5)) : '';
+      $bPrefix = !is_null($b['fields'][$changelogId]) ? strtolower(substr($b['fields'][$changelogId], 0, 5)) : '';
       $aRank = isset($order[$aPrefix]) ? $order[$aPrefix] : count($order);
       $bRank = isset($order[$bPrefix]) ? $order[$bPrefix] : count($order);
       return $aRank - $bRank;
