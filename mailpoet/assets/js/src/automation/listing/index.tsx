@@ -1,5 +1,4 @@
 import { Search, TableCard } from '@woocommerce/components/build';
-import { Button, Dropdown, MenuGroup, MenuItem } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import { getRow } from './get-row';
 import { Workflow } from './workflow';
@@ -34,27 +33,6 @@ export function AutomationListing({ workflows, loading }: Props): JSX.Element {
       hasSearch
       showMenu={false}
       actions={[
-        <div key="actions" className="mailpoet-automation-listing-actions">
-          <Dropdown
-            renderToggle={({ isOpen, onToggle }) => (
-              <Button
-                className="mailpoet-automation-listing-action-button"
-                variant="secondary"
-                aria-expanded={isOpen}
-                onClick={onToggle}
-                label=""
-                disabled
-              >
-                Actions
-              </Button>
-            )}
-            renderContent={() => (
-              <MenuGroup>
-                <MenuItem icon="trash">Move to trash</MenuItem>
-              </MenuGroup>
-            )}
-          />
-        </div>,
         <Search
           className="mailpoet-automation-listing-search"
           allowFreeTextSearch
