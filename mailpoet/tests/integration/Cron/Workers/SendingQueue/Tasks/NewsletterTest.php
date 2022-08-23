@@ -23,6 +23,7 @@ use MailPoet\Models\NewsletterSegment;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\NewsletterPostsRepository;
+use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Router\Router;
 use MailPoet\Settings\SettingsRepository;
 use MailPoet\Tasks\Sending as SendingTask;
@@ -52,6 +53,9 @@ class NewsletterTest extends \MailPoetTest {
   /** @var NewsletterLinkRepository */
   private $newsletterLinkRepository;
 
+  /** @var NewslettersRepository */
+  private $newslettersRepository;
+
   public function _before() {
     parent::_before();
     $this->newsletterTask = new NewsletterTask();
@@ -61,15 +65,15 @@ class NewsletterTest extends \MailPoetTest {
     $this->subscriber->lastName = 'Doe';
     $this->subscriber->save();
     $this->newsletter = Newsletter::create();
-    $this->newsletter->type = Newsletter::TYPE_STANDARD;
-    $this->newsletter->status = Newsletter::STATUS_ACTIVE;
+    $this->newsletter->type = NewsletterEntity::TYPE_STANDARD;
+    $this->newsletter->status = NewsletterEntity::STATUS_ACTIVE;
     $this->newsletter->subject = Fixtures::get('newsletter_subject_template');
     $this->newsletter->body = Fixtures::get('newsletter_body_template');
     $this->newsletter->preheader = '';
     $this->newsletter->save();
     $this->parentNewsletter = Newsletter::create();
-    $this->parentNewsletter->type = Newsletter::TYPE_STANDARD;
-    $this->parentNewsletter->status = Newsletter::STATUS_ACTIVE;
+    $this->parentNewsletter->type = NewsletterEntity::TYPE_STANDARD;
+    $this->parentNewsletter->status = NewsletterEntity::STATUS_ACTIVE;
     $this->parentNewsletter->subject = 'parent newsletter';
     $this->parentNewsletter->body = 'parent body';
     $this->parentNewsletter->preheader = '';
@@ -78,6 +82,7 @@ class NewsletterTest extends \MailPoetTest {
     $this->queue->newsletter_id = $this->newsletter->id;
     $this->queue->save();
     $this->loggerFactory = LoggerFactory::getInstance();
+    $this->newslettersRepository = $this->diContainer->get(NewslettersRepository::class);
     $this->newsletterLinkRepository = $this->diContainer->get(NewsletterLinkRepository::class);
   }
 
@@ -88,18 +93,18 @@ class NewsletterTest extends \MailPoetTest {
   public function testItDoesNotGetNewsletterWhenStatusIsNotActiveOrSending() {
     // draft or any other status return false
     $newsletter = $this->newsletter;
-    $newsletter->status = Newsletter::STATUS_DRAFT;
+    $newsletter->status = NewsletterEntity::STATUS_DRAFT;
     $newsletter->save();
     expect($this->newsletterTask->getNewsletterFromQueue($this->queue))->false();
 
     // active or sending statuses return newsletter
     $newsletter = $this->newsletter;
-    $newsletter->status = Newsletter::STATUS_ACTIVE;
+    $newsletter->status = NewsletterEntity::STATUS_ACTIVE;
     $newsletter->save();
     expect($this->newsletterTask->getNewsletterFromQueue($this->queue))->isInstanceOf('Mailpoet\Models\Newsletter');
 
     $newsletter = $this->newsletter;
-    $newsletter->status = Newsletter::STATUS_SENDING;
+    $newsletter->status = NewsletterEntity::STATUS_SENDING;
     $newsletter->save();
     expect($this->newsletterTask->getNewsletterFromQueue($this->queue))->isInstanceOf('Mailpoet\Models\Newsletter');
   }
@@ -114,29 +119,29 @@ class NewsletterTest extends \MailPoetTest {
   public function testItDoesNotGetNewsletterWhenParentNewsletterStatusIsNotActiveOrSending() {
     // draft or any other status return false
     $parentNewsletter = $this->parentNewsletter;
-    $parentNewsletter->status = Newsletter::STATUS_DRAFT;
+    $parentNewsletter->status = NewsletterEntity::STATUS_DRAFT;
     $parentNewsletter->save();
     $newsletter = $this->newsletter;
-    $newsletter->type = Newsletter::TYPE_NOTIFICATION_HISTORY;
+    $newsletter->type = NewsletterEntity::TYPE_NOTIFICATION_HISTORY;
     $newsletter->parentId = $parentNewsletter->id;
     $newsletter->save();
     expect($this->newsletterTask->getNewsletterFromQueue($this->queue))->false();
 
     // active or sending statuses return newsletter
     $parentNewsletter = $this->parentNewsletter;
-    $parentNewsletter->status = Newsletter::STATUS_ACTIVE;
+    $parentNewsletter->status = NewsletterEntity::STATUS_ACTIVE;
     $parentNewsletter->save();
     $newsletter = $this->newsletter;
-    $newsletter->type = Newsletter::TYPE_NOTIFICATION_HISTORY;
+    $newsletter->type = NewsletterEntity::TYPE_NOTIFICATION_HISTORY;
     $newsletter->parentId = $parentNewsletter->id;
     $newsletter->save();
     expect($this->newsletterTask->getNewsletterFromQueue($this->queue))->isInstanceOf('Mailpoet\Models\Newsletter');
 
     $parentNewsletter = $this->parentNewsletter;
-    $parentNewsletter->status = Newsletter::STATUS_SENDING;
+    $parentNewsletter->status = NewsletterEntity::STATUS_SENDING;
     $parentNewsletter->save();
     $newsletter = $this->newsletter;
-    $newsletter->type = Newsletter::TYPE_NOTIFICATION_HISTORY;
+    $newsletter->type = NewsletterEntity::TYPE_NOTIFICATION_HISTORY;
     $newsletter->parentId = $parentNewsletter->id;
     $newsletter->save();
     expect($this->newsletterTask->getNewsletterFromQueue($this->queue))->isInstanceOf('Mailpoet\Models\Newsletter');
@@ -147,7 +152,7 @@ class NewsletterTest extends \MailPoetTest {
     $parentNewsletter->set_expr('deleted_at', 'NOW()');
     $parentNewsletter->save();
     $newsletter = $this->newsletter;
-    $newsletter->type = Newsletter::TYPE_NOTIFICATION_HISTORY;
+    $newsletter->type = NewsletterEntity::TYPE_NOTIFICATION_HISTORY;
     $newsletter->parentId = $parentNewsletter->id;
     $newsletter->save();
     expect($this->newsletterTask->getNewsletterFromQueue($this->queue))->false();
@@ -211,7 +216,7 @@ class NewsletterTest extends \MailPoetTest {
   public function testItReturnsFalseAndDeletesNewsletterWhenPostNotificationContainsNoPosts() {
     $newsletter = $this->newsletter;
 
-    $newsletter->type = Newsletter::TYPE_NOTIFICATION_HISTORY;
+    $newsletter->type = NewsletterEntity::TYPE_NOTIFICATION_HISTORY;
     $newsletter->parentId = $newsletter->id;
     // replace post id data tag with something else
     $newsletter->body = str_replace('data-post-id', 'id', $newsletter->getBodyString());
@@ -219,14 +224,15 @@ class NewsletterTest extends \MailPoetTest {
     // returned result is false
     $result = $this->newsletterTask->preProcessNewsletter($this->newsletter, $this->queue);
     expect($result)->false();
-    // newsletter is deleted
-    $newsletter = Newsletter::findOne($newsletter->id);
-    expect($newsletter)->false();
+    // newsletter is deleted.
+    $this->entityManager->clear(); // needed while part of the code uses Paris models and part uses Doctrine
+    $newsletter = $this->newslettersRepository->findOneById($newsletter->id);
+    expect($newsletter)->null();
   }
 
   public function testItSavesNewsletterPosts() {
     $newsletterPostRepository = ContainerWrapper::getInstance()->get(NewsletterPostsRepository::class);
-    $this->newsletter->type = Newsletter::TYPE_NOTIFICATION_HISTORY;
+    $this->newsletter->type = NewsletterEntity::TYPE_NOTIFICATION_HISTORY;
     $this->newsletter->parentId = $this->newsletter->id;
     $postsTask = $this->make(PostsTask::class, [
       'getAlcPostsCount' => 1,
@@ -243,38 +249,46 @@ class NewsletterTest extends \MailPoetTest {
   }
 
   public function testItUpdatesStatusAndSetsSentAtDateOnlyForStandardAndPostNotificationNewsletters() {
-    $newsletter = $this->newsletter;
+    $newsletter = $this->newslettersRepository->findOneById($this->newsletter->id);
+    $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
     $queue = new \stdClass();
     $queue->processedAt = date('Y-m-d H:i:s');
 
     // newsletter type is 'standard'
-    $newsletter->type = Newsletter::TYPE_STANDARD;
-    $newsletter->status = 'not_sent';
-    $newsletter->save();
+    $newsletter->setType(NewsletterEntity::TYPE_STANDARD);
+    $newsletter->setStatus('not_sent');
+    $this->newslettersRepository->persist($newsletter);
+    $this->newslettersRepository->flush();
     $this->newsletterTask->markNewsletterAsSent($newsletter, $queue);
-    $updatedNewsletter = Newsletter::findOne($newsletter->id);
-    assert($updatedNewsletter instanceof Newsletter);
-    expect($updatedNewsletter->status)->equals(Newsletter::STATUS_SENT);
-    expect($updatedNewsletter->sentAt)->equals($queue->processedAt);
+    $updatedNewsletter = $this->newslettersRepository->findOneById($newsletter->getId());
+    assert($updatedNewsletter instanceof NewsletterEntity);
+    expect($updatedNewsletter->getStatus())->equals(NewsletterEntity::STATUS_SENT);
+    $sentAt = $updatedNewsletter->getSentAt();
+    $this->assertInstanceOf(\DateTime::class, $sentAt);
+    expect($sentAt->format('Y-m-d H:i:s'))->equals($queue->processedAt);
 
     // newsletter type is 'notification history'
-    $newsletter->type = Newsletter::TYPE_NOTIFICATION_HISTORY;
-    $newsletter->status = 'not_sent';
-    $newsletter->save();
+    $newsletter->setType(NewsletterEntity::TYPE_NOTIFICATION_HISTORY);
+    $newsletter->setStatus('not_sent');
+    $this->newslettersRepository->persist($newsletter);
+    $this->newslettersRepository->flush();
     $this->newsletterTask->markNewsletterAsSent($newsletter, $queue);
-    $updatedNewsletter = Newsletter::findOne($newsletter->id);
-    assert($updatedNewsletter instanceof Newsletter);
-    expect($updatedNewsletter->status)->equals(Newsletter::STATUS_SENT);
-    expect($updatedNewsletter->sentAt)->equals($queue->processedAt);
+    $updatedNewsletter = $this->newslettersRepository->findOneById($newsletter->getId());
+    assert($updatedNewsletter instanceof NewsletterEntity);
+    expect($updatedNewsletter->getStatus())->equals(NewsletterEntity::STATUS_SENT);
+    $sentAt = $updatedNewsletter->getSentAt();
+    $this->assertInstanceOf(\DateTime::class, $sentAt);
+    expect($sentAt->format('Y-m-d H:i:s'))->equals($queue->processedAt);
 
     // all other newsletter types
-    $newsletter->type = Newsletter::TYPE_WELCOME;
-    $newsletter->status = 'not_sent';
-    $newsletter->save();
+    $newsletter->setType(NewsletterEntity::TYPE_WELCOME);
+    $newsletter->setStatus('not_sent');
+    $this->newslettersRepository->persist($newsletter);
+    $this->newslettersRepository->flush();
     $this->newsletterTask->markNewsletterAsSent($newsletter, $queue);
-    $updatedNewsletter = Newsletter::findOne($newsletter->id);
-    assert($updatedNewsletter instanceof Newsletter);
-    expect($updatedNewsletter->status)->notEquals(Newsletter::STATUS_SENT);
+    $updatedNewsletter = $this->newslettersRepository->findOneById($newsletter->getId());
+    assert($updatedNewsletter instanceof NewsletterEntity);
+    expect($updatedNewsletter->getStatus())->notEquals(NewsletterEntity::STATUS_SENT);
   }
 
   public function testItDoesNotRenderSubscriberShortcodeInSubjectWhenPreprocessingNewsletter() {
