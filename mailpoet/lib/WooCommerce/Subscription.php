@@ -276,7 +276,7 @@ class Subscription {
   }
 
   private function updateSubscriberStatus(SubscriberEntity $subscriber) {
-    $segmentsCount = $subscriber->getSubscribedSegments()->count();
+    $segmentsCount = $subscriber->getSubscriberSegments(SubscriberEntity::STATUS_SUBSCRIBED)->count();
 
     if (!$segmentsCount) {
       $subscriber->setStatus(SubscriberEntity::STATUS_UNSUBSCRIBED);

@@ -435,8 +435,16 @@ class SubscriberEntity {
   /**
    * @return Collection<int, SubscriberSegmentEntity>
    */
-  public function getSubscriberSegments() {
-    return $this->subscriberSegments;
+  public function getSubscriberSegments(?string $status = null) {
+    if (!is_null($status)) {
+      $criteria = Criteria::create()
+        ->where(Criteria::expr()->eq('status', SubscriberEntity::STATUS_SUBSCRIBED));
+      $subscriberSegments = $this->subscriberSegments->matching($criteria);
+    } else {
+      $subscriberSegments = $this->subscriberSegments;
+    }
+
+    return $subscriberSegments;
   }
 
   public function getSegments() {
@@ -445,12 +453,6 @@ class SubscriberEntity {
     })->filter(function ($segment) {
       return $segment !== null;
     });
-  }
-
-  public function getSubscribedSegments() {
-    $criteria = Criteria::create()
-      ->where(Criteria::expr()->eq('status', SubscriberEntity::STATUS_SUBSCRIBED));
-    return $this->getSubscriberSegments()->matching($criteria);
   }
 
   /**
