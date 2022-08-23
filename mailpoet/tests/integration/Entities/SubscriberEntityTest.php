@@ -5,33 +5,50 @@ namespace MailPoet\Entities;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
+use MailPoet\Subscribers\SubscriberSegmentRepository;
 use \MailPoet\Test\DataFactories\Segment as SegmentFactory;
 use \MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 
 class SubscriberEntityTest extends \MailPoetTest {
+
+  /** @var SubscriberSegmentRepository */
+  private $subscriberSegmentRepository;
+
+  /** @var SegmentEntity */
+  private $segment2;
+
+  /** @var SubscriberEntity */
+  private $subscriber;
 
   protected function _before() {
     parent::_before();
 
     // Calling cleanup() here as some tests from other classes don't remove all SubscriberSegmentEntities causing issues here.
     $this->cleanup();
-  }
 
-  public function testGetSubscribedSegments() {
+    $this->subscriberSegmentRepository = $this->diContainer->get(SubscriberSegmentRepository::class);
+
     $segment1 = (new SegmentFactory())->create();
-    $segment2 = (new SegmentFactory())->create();
+    $this->segment2 = (new SegmentFactory())->create();
 
-    $subscriber = (new SubscriberFactory())->withSegments([$segment1, $segment2])->create();
+    $this->subscriber = (new SubscriberFactory())->withSegments([$segment1, $this->segment2])->create();
 
-    $subscriberSegment1 = $subscriber->getSubscriberSegments()->first();
+    $subscriberSegment1 = $this->subscriberSegmentRepository->findOneBy(['segment' => $segment1]);
     $this->assertInstanceOf(SubscriberSegmentEntity::class, $subscriberSegment1);
     $subscriberSegment1->setStatus(SubscriberEntity::STATUS_UNSUBSCRIBED);
     $this->entityManager->persist($subscriberSegment1);
     $this->entityManager->flush();
+  }
 
-    $subscriberSegment2 = $subscriber->getSubscriberSegments()->last();
+  public function testGetSubscriberSegmentsShouldReturnAllSubscriberSegments() {
+    $allSubscriberSegments = $this->subscriberSegmentRepository->findBy(['subscriber' => $this->subscriber]);
+    $this->assertSame($allSubscriberSegments, $this->subscriber->getSubscriberSegments()->toArray());
+  }
 
-    $this->assertSame([1 => $subscriberSegment2], $subscriber->getSubscribedSegments()->toArray());
+  public function testGetSubscriberSegmentsReturnsOnlySubscribersOfGivenStatus() {
+    $subscriberSegment2 = $this->subscriberSegmentRepository->findOneBy(['segment' => $this->segment2, 'subscriber' => $this->subscriber]);
+
+    $this->assertSame([1 => $subscriberSegment2], $this->subscriber->getSubscriberSegments(SubscriberEntity::STATUS_SUBSCRIBED)->toArray());
   }
 
   protected function _after() {
