@@ -5,6 +5,7 @@ namespace MailPoet\Automation\Integrations\MailPoet\Templates;
 use MailPoet\Automation\Engine\Data\Step;
 use MailPoet\Automation\Engine\Data\Workflow;
 use MailPoet\Automation\Engine\Data\WorkflowTemplate;
+use MailPoet\Automation\Engine\Registry;
 use MailPoet\Automation\Engine\Workflows\Trigger;
 use MailPoet\Automation\Integrations\Core\Actions\DelayAction;
 use MailPoet\Automation\Integrations\MailPoet\Actions\SendEmailAction;
@@ -14,15 +15,26 @@ use MailPoet\Validator\Schema\ObjectSchema;
 
 class WorkflowBuilder {
 
+  /** @var Registry */
+  private $registry;
+
+  public function __construct(Registry $registry) {
+    $this->registry = $registry;
+  }
+
   public function createFromSequence(string $name, array $sequence, array $sequenceArgs = []) : Workflow {
     $steps = [];
     $nextStep = null;
-    foreach (array_reverse($sequence) as $index => $stepClass) {
-      $args = array_merge($this->getDefaultArgs($stepClass::getArgsSchema()), array_reverse($sequenceArgs)[$index] ?? []);
+    foreach (array_reverse($sequence) as $index => $stepKey) {
+      $workflowStep = $this->registry->getStep($stepKey);
+      if (! $workflowStep) {
+        continue;
+      }
+      $args = array_merge($this->getDefaultArgs($workflowStep->getArgsSchema()), array_reverse($sequenceArgs)[$index] ?? []);
       $step = new Step(
         $this->uniqueId(),
-        in_array(Trigger::class, (array) class_implements($stepClass)) ? Step::TYPE_TRIGGER : Step::TYPE_ACTION,
-        $stepClass::getKey(),
+        in_array(Trigger::class, (array) class_implements($workflowStep)) ? Step::TYPE_TRIGGER : Step::TYPE_ACTION,
+        $stepKey,
         $nextStep,
         $args
       );
