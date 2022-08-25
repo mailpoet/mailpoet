@@ -4,6 +4,7 @@ import {
   __unstableUseCompositeState as useCompositeState,
 } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
+import { Icon, check } from '@wordpress/icons';
 import { EditorNotices } from '@wordpress/editor';
 import { WorkflowCompositeContext } from './context';
 import { EmptyWorkflow } from './empty-workflow';
@@ -72,15 +73,19 @@ export function Workflow(): JSX.Element {
       >
         <div className="mailpoet-automation-editor-workflow-wrapper">
           <div />
-          {steps.map((step, i) => (
+          {steps.map((step) => (
             <Fragment key={step.id}>
-              {i > 0 && <Separator />}
               <Step
                 step={step}
                 isSelected={selectedStep && step.id === selectedStep.id}
               />
+              <Separator />
             </Fragment>
           ))}
+          <Icon
+            className="mailpoet-automation-editor-workflow-end"
+            icon={check}
+          />
           <div />
         </div>
         <InserterPopover />
