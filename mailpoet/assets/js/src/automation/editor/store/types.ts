@@ -5,7 +5,7 @@ export interface AutomationEditorWindow extends Window {
   mailpoet_automation_workflow: Workflow;
 }
 
-export type StepGroup = 'actions' | 'logical';
+export type StepGroup = 'actions' | 'logical' | 'triggers';
 
 export type StepType = {
   key: string;

@@ -1,9 +1,10 @@
-import { forwardRef, useCallback, useMemo } from 'react';
+import { forwardRef, Fragment, useCallback, useMemo } from 'react';
 import { SearchControl } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 import { useRef, useImperativeHandle, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { blockDefault, Icon } from '@wordpress/icons';
+import { Group } from './group';
 import { Item } from './item';
 import { StepInfoPanel } from './step_info_panel';
 import { StepList } from './step_list';
@@ -21,12 +22,40 @@ export const Inserter = forwardRef((_, ref): JSX.Element => {
   const [filterValue, setFilterValue] = useState('');
   const [hoveredItem, setHoveredItem] = useState(null);
 
-  const { actionSteps, logicalSteps } = useSelect(
+  const { steps, type } = useSelect(
     (select) => ({
-      actionSteps: select(store).getInserterActionSteps(),
-      logicalSteps: select(store).getInserterLogicalSteps(),
+      steps: select(store).getSteps(),
+      type: select(store).getInserterPopover().type,
     }),
     [],
+  );
+
+  const groups: Group[] = useMemo(
+    () =>
+      type === 'triggers'
+        ? [
+            {
+              type: 'triggers',
+              title: undefined,
+              label: __('Triggers', 'mailpoet'),
+              items: steps.filter(({ group }) => group === 'triggers'),
+            },
+          ]
+        : [
+            {
+              type: 'actions',
+              title: __('Actions', 'mailpoet'),
+              label: __('Actions', 'mailpoet'),
+              items: steps.filter(({ group }) => group === 'actions'),
+            },
+            {
+              type: 'logical',
+              title: __('Logical', 'mailpoet'),
+              label: __('Logical', 'mailpoet'),
+              items: steps.filter(({ group }) => group === 'logical'),
+            },
+          ],
+    [steps, type],
   );
 
   const onHover = useCallback(
@@ -43,13 +72,13 @@ export const Inserter = forwardRef((_, ref): JSX.Element => {
     },
   }));
 
-  const filteredActionSteps = useMemo(
-    () => filterItems(filterValue, actionSteps),
-    [actionSteps, filterValue],
-  );
-  const filteredLogicalSteps = useMemo(
-    () => filterItems(filterValue, logicalSteps),
-    [filterValue, logicalSteps],
+  const filteredGroups = useMemo(
+    () =>
+      groups.map((group) => ({
+        ...group,
+        items: filterItems(filterValue, group.items),
+      })),
+    [filterValue, groups],
   );
 
   return (
@@ -70,52 +99,41 @@ export const Inserter = forwardRef((_, ref): JSX.Element => {
 
           <div className="block-editor-inserter__block-list">
             <InserterListbox>
-              {filteredActionSteps.length > 0 && (
-                <>
-                  <div className="block-editor-inserter__panel-header">
-                    <h2 className="block-editor-inserter__panel-title">
-                      <div>Actions</div>
-                    </h2>
-                  </div>
-                  <div className="block-editor-inserter__panel-content">
-                    <StepList
-                      items={filteredActionSteps}
-                      onHover={onHover}
-                      onSelect={() => {}}
-                      label="A"
-                    />
-                  </div>
-                </>
+              {filteredGroups.map(
+                (group) =>
+                  group.items.length > 0 && (
+                    <Fragment key={group.type}>
+                      {group.title && (
+                        <div className="block-editor-inserter__panel-header">
+                          <h2 className="block-editor-inserter__panel-title">
+                            <div>{group.title}</div>
+                          </h2>
+                        </div>
+                      )}
+                      <div className="block-editor-inserter__panel-content">
+                        <StepList
+                          items={group.items}
+                          onHover={onHover}
+                          onSelect={() => {}}
+                          label={group.label}
+                        />
+                      </div>
+                    </Fragment>
+                  ),
               )}
 
-              {filteredLogicalSteps.length > 0 && (
-                <>
-                  <div className="block-editor-inserter__panel-header">
-                    <h2 className="block-editor-inserter__panel-title">
-                      <div>Logical</div>
-                    </h2>
-                  </div>
-                  <div className="block-editor-inserter__panel-content">
-                    <StepList
-                      items={filteredLogicalSteps}
-                      onHover={onHover}
-                      onSelect={() => {}}
-                      label="B"
-                    />
-                  </div>
-                </>
+              {filteredGroups.reduce(
+                (sum, { items }) => sum + items.length,
+                0,
+              ) === 0 && (
+                <div className="block-editor-inserter__no-results">
+                  <Icon
+                    className="block-editor-inserter__no-results-icon"
+                    icon={blockDefault}
+                  />
+                  <p>{__('No results found.')}</p>
+                </div>
               )}
-
-              {filteredActionSteps.length === 0 &&
-                filteredLogicalSteps.length === 0 && (
-                  <div className="block-editor-inserter__no-results">
-                    <Icon
-                      className="block-editor-inserter__no-results-icon"
-                      icon={blockDefault}
-                    />
-                    <p>{__('No results found.')}</p>
-                  </div>
-                )}
             </InserterListbox>
           </div>
         </div>
