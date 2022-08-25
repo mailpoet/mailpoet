@@ -10,7 +10,5 @@ export const initialState: State = {
   inserterSidebar: {
     isOpened: false,
   },
-  inserterPopover: {
-    anchor: undefined,
-  },
+  inserterPopover: undefined,
 };

@@ -4,23 +4,23 @@ import { Inserter } from '../inserter';
 import { store } from '../../store';
 
 export function InserterPopover(): JSX.Element | null {
-  const { inserterPopoverAnchor } = useSelect(
+  const { inserterPopover } = useSelect(
     (select) => ({
-      inserterPopoverAnchor: select(store).getInserterPopoverAnchor(),
+      inserterPopover: select(store).getInserterPopover(),
     }),
     [],
   );
 
-  const { setInserterPopoverAnchor } = dispatch(store);
+  const { setInserterPopover } = dispatch(store);
 
-  if (!inserterPopoverAnchor) {
+  if (!inserterPopover) {
     return null;
   }
 
   return (
     <Popover
-      anchorRect={inserterPopoverAnchor.getBoundingClientRect()}
-      onClose={() => setInserterPopoverAnchor(undefined)}
+      anchorRect={inserterPopover.anchor.getBoundingClientRect()}
+      onClose={() => setInserterPopover(undefined)}
     >
       <Inserter />
     </Popover>

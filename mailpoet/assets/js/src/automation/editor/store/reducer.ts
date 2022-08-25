@@ -11,13 +11,10 @@ export function reducer(state: State, action: Action): State {
           isOpened: !state.inserterSidebar.isOpened,
         },
       };
-    case 'SET_INSERTER_POPOVER_ANCHOR':
+    case 'SET_INSERTER_POPOVER':
       return {
         ...state,
-        inserterPopover: {
-          ...state.inserterPopover,
-          anchor: action.anchor,
-        },
+        inserterPopover: action.data,
       };
     case 'SET_SELECTED_STEP':
       return {

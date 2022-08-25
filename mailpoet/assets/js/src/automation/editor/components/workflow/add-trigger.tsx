@@ -8,7 +8,7 @@ import { store } from '../../store';
 
 export function AddTrigger(): JSX.Element {
   const compositeState = useContext(WorkflowCompositeContext);
-  const { setInserterPopoverAnchor } = useDispatch(store);
+  const { setInserterPopover } = useDispatch(store);
 
   return (
     <CompositeItem
@@ -18,9 +18,10 @@ export function AddTrigger(): JSX.Element {
       focusable
       onClick={(event) => {
         event.stopPropagation();
-        setInserterPopoverAnchor(
-          (event.target as HTMLElement).closest('button'),
-        );
+        setInserterPopover({
+          anchor: (event.target as HTMLElement).closest('button'),
+          type: 'triggers',
+        });
       }}
     >
       <Icon icon={plus} size={16} />
