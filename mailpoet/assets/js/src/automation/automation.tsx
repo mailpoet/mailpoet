@@ -3,7 +3,7 @@ import { Workflow } from './listing/workflow';
 import { AutomationListing } from './listing';
 import { Onboarding } from './onboarding';
 import {
-  CreateTestingWorkflowButton,
+  CreateEmptyWorkflowButton,
   CreateWorkflowFromTemplateButton,
 } from './testing';
 import { useMutation, useQuery } from './api';
@@ -82,7 +82,7 @@ function App(): JSX.Element {
     <div>
       <Workflows />
       <div style={{ marginTop: 30, display: 'grid', gridGap: 8 }}>
-        <CreateTestingWorkflowButton />
+        <CreateEmptyWorkflowButton />
         <CreateWorkflowFromTemplateButton slug="simple-welcome-email">
           Create testing workflow from template (welcome email)
         </CreateWorkflowFromTemplateButton>
