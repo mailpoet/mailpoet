@@ -1,49 +1,12 @@
 import { ReactNode } from 'react';
 import { useMutation } from './api';
-import { id } from './id';
 
-const createSendEmailStep = () => ({
-  id: id(),
-  type: 'action',
-  key: 'mailpoet:send-email',
-  args: {
-    email_id: 1,
-  },
+const createWorkflow = () => ({
+  name: 'Empty workflow',
+  steps: {},
 });
 
-const createDelayStep = (nextStepId: string) => ({
-  id: id(),
-  type: 'action',
-  key: 'core:delay',
-  next_step_id: nextStepId,
-  args: {
-    delay: 1,
-    delay_type: 'HOURS',
-  },
-});
-
-const createTrigger = (nextStepId: string) => ({
-  id: id(),
-  type: 'trigger',
-  key: 'mailpoet:segment:subscribed',
-  next_step_id: nextStepId,
-});
-
-const createWorkflow = () => {
-  const sendEmail = createSendEmailStep();
-  const delay = createDelayStep(sendEmail.id);
-  const trigger = createTrigger(delay.id);
-  return {
-    name: `Test ${new Date().toISOString()}`,
-    steps: {
-      [trigger.id]: trigger,
-      [delay.id]: delay,
-      [sendEmail.id]: sendEmail,
-    },
-  };
-};
-
-export function CreateTestingWorkflowButton(): JSX.Element {
+export function CreateEmptyWorkflowButton(): JSX.Element {
   const [createSchema, { loading, error }] = useMutation('workflows', {
     method: 'POST',
   });
@@ -61,7 +24,7 @@ export function CreateTestingWorkflowButton(): JSX.Element {
         }}
         disabled={loading}
       >
-        Create testing workflow (premium required)
+        Create empty workflow (premium required)
       </button>
       {error && (
         <div>{error?.data?.message ?? 'An unknown error occurred'}</div>
