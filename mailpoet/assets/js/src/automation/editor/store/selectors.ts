@@ -21,6 +21,10 @@ export function isInserterSidebarOpened(state: State): boolean {
   return state.inserterSidebar.isOpened;
 }
 
+export function getSteps(state: State): StepType[] {
+  return Object.values(state.stepTypes);
+}
+
 export function getInserterActionSteps(state: State): Item[] {
   return Object.values(state.stepTypes).filter(
     ({ group }) => group === 'actions',
