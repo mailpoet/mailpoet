@@ -6,9 +6,11 @@ use Exception;
 use MailPoet\Automation\Engine\Control\Steps\ActionStepRunner;
 use MailPoet\Automation\Engine\Data\Step;
 use MailPoet\Automation\Engine\Data\WorkflowRun;
+use MailPoet\Automation\Engine\Data\WorkflowRunLog;
 use MailPoet\Automation\Engine\Exceptions;
 use MailPoet\Automation\Engine\Exceptions\InvalidStateException;
 use MailPoet\Automation\Engine\Hooks;
+use MailPoet\Automation\Engine\Storage\WorkflowRunLogStorage;
 use MailPoet\Automation\Engine\Storage\WorkflowRunStorage;
 use MailPoet\Automation\Engine\Storage\WorkflowStorage;
 use MailPoet\Automation\Engine\WordPress;
@@ -33,17 +35,27 @@ class StepHandler {
   /** @var array<string, StepRunner> */
   private $stepRunners;
 
+  /** @var WorkflowRunLogStorage */
+  private $workflowRunLogStorage;
+
+  /** @var Hooks */
+  private $hooks;
+
   public function __construct(
     ActionScheduler $actionScheduler,
     ActionStepRunner $actionStepRunner,
+    Hooks $hooks,
     WordPress $wordPress,
     WorkflowRunStorage $workflowRunStorage,
+    WorkflowRunLogStorage $workflowRunLogStorage,
     WorkflowStorage $workflowStorage
   ) {
     $this->actionScheduler = $actionScheduler;
     $this->actionStepRunner = $actionStepRunner;
+    $this->hooks = $hooks;
     $this->wordPress = $wordPress;
     $this->workflowRunStorage = $workflowRunStorage;
+    $this->workflowRunLogStorage = $workflowRunLogStorage;
     $this->workflowStorage = $workflowStorage;
   }
 
@@ -108,7 +120,22 @@ class StepHandler {
 
     $stepType = $step->getType();
     if (isset($this->stepRunners[$stepType])) {
-      $this->stepRunners[$stepType]->run($step, $workflow, $workflowRun);
+      $log = $this->createWorkflowRunLog($workflowRun, $step, $args);
+      try {
+        $this->stepRunners[$stepType]->run($step, $workflow, $workflowRun);
+        $log->markCompleted();
+      } catch (Exception $e) {
+        $log->markFailed();
+        $log->addError($e);
+        throw $e;
+      } finally {
+        try {
+          $this->hooks->doWorkflowStepAfterRun($step, $log);
+        } catch (Exception $e) {
+          $log->addError($e);
+        }
+        $this->workflowRunLogStorage->updateWorkflowRunLog($log);
+      }
     } else {
       throw new InvalidStateException();
     }
@@ -136,5 +163,15 @@ class StepHandler {
     $this->actionScheduler->enqueue(Hooks::WORKFLOW_STEP, $nextStepArgs);
 
     // TODO: allow long-running steps (that are not done here yet)
+  }
+
+  private function createWorkflowRunLog(WorkflowRun $workflowRun, Step $step, array $args): WorkflowRunLog {
+    $log = new WorkflowRunLog($workflowRun->getId(), $step->getId(), $args);
+    $logId = $this->workflowRunLogStorage->createWorkflowRunLog($log);
+    $workflowRunLog = $this->workflowRunLogStorage->getWorkflowRunLog($logId);
+    if (!$workflowRunLog instanceof WorkflowRunLog) {
+      throw new InvalidStateException();
+    }
+    return $workflowRunLog;
   }
 }

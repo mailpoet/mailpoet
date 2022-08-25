@@ -4,6 +4,7 @@ namespace MailPoet\Automation\Engine;
 
 use MailPoet\Automation\Engine\Data\Step;
 use MailPoet\Automation\Engine\Data\Workflow;
+use MailPoet\Automation\Engine\Data\WorkflowRunLog;
 
 class Hooks {
   /** @var WordPress */
@@ -24,6 +25,8 @@ class Hooks {
   public const WORKFLOW_BEFORE_SAVE = 'mailpoet/automation/workflow/before_save';
   public const WORKFLOW_STEP_BEFORE_SAVE = 'mailpoet/automation/workflow/step/before_save';
 
+  public const WORKFLOW_RUN_LOG_AFTER_STEP_RUN = 'mailpoet/automation/workflow/step/after_run';
+
   public const WORKFLOW_TEMPLATES = 'mailpoet/automation/workflow/templates';
 
   public function doWorkflowBeforeSave(Workflow $workflow): void {
@@ -36,5 +39,9 @@ class Hooks {
 
   public function doWorkflowStepByKeyBeforeSave(Step $step): void {
     $this->wordPress->doAction(self::WORKFLOW_STEP_BEFORE_SAVE . '/key=' . $step->getKey(), $step);
+  }
+
+  public function doWorkflowStepAfterRun(Step $step, WorkflowRunLog $workflowRunLog): void {
+    $this->wordPress->doAction(self::WORKFLOW_RUN_LOG_AFTER_STEP_RUN, $step, $workflowRunLog);
   }
 }
