@@ -92,9 +92,11 @@ export function KeyActivation() {
     'authorized_emails_addresses_check',
   );
   const [apiKeyState] = useSetting('mta', 'mailpoet_api_key_state', 'data');
+  const setSaveDone = useAction('setSaveDone');
   const setAuthorizedAddress = async (address: string) => {
     await setSenderAddress(address);
     await setUnauthorizedAddresses(null);
+    setSaveDone();
   };
 
   const showFromAddressModal =

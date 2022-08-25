@@ -14,6 +14,10 @@ export function setSettings(value: any): Action {
   return { type: 'SET_SETTINGS', value };
 }
 
+export function setSaveDone(): Action {
+  return { type: 'SAVE_DONE' };
+}
+
 export function setErrorFlag(value: boolean): Action {
   return { type: 'SET_ERROR_FLAG', value };
 }
