@@ -12,6 +12,7 @@ import { Separator } from './separator';
 import { Step } from './step';
 import { InserterPopover } from '../inserter-popover';
 import { store } from '../../store';
+import { AddTrigger } from './add-trigger';
 
 export function Workflow(): JSX.Element {
   const { workflowData, selectedStep } = useSelect(
@@ -75,10 +76,14 @@ export function Workflow(): JSX.Element {
           <div />
           {steps.map((step) => (
             <Fragment key={step.id}>
-              <Step
-                step={step}
-                isSelected={selectedStep && step.id === selectedStep.id}
-              />
+              {step.type === 'trigger' && step.key === 'core:empty' ? (
+                <AddTrigger />
+              ) : (
+                <Step
+                  step={step}
+                  isSelected={selectedStep && step.id === selectedStep.id}
+                />
+              )}
               <Separator />
             </Fragment>
           ))}

@@ -1,10 +1,24 @@
 import { ReactNode } from 'react';
 import { useMutation } from './api';
+import { id } from './id';
 
-const createWorkflow = () => ({
-  name: 'Empty workflow',
-  steps: {},
-});
+export const createEmptyTrigger = () =>
+  ({
+    id: id(),
+    type: 'trigger',
+    key: 'core:empty',
+    args: {},
+  } as const);
+
+const createWorkflow = () => {
+  const emptyTrigger = createEmptyTrigger();
+  return {
+    name: 'Empty workflow',
+    steps: {
+      [emptyTrigger.id]: emptyTrigger,
+    },
+  };
+};
 
 export function CreateEmptyWorkflowButton(): JSX.Element {
   const [createSchema, { loading, error }] = useMutation('workflows', {
