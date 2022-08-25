@@ -33,10 +33,10 @@ export function getInserterLogicalSteps(state: State): Item[] {
   );
 }
 
-export function getInserterPopoverAnchor(
+export function getInserterPopover(
   state: State,
-): HTMLElement | undefined {
-  return state.inserterPopover.anchor;
+): State['inserterPopover'] | undefined {
+  return state.inserterPopover;
 }
 
 export function getWorkflowData(state: State): Workflow {

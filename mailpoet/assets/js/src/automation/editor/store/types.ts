@@ -27,8 +27,9 @@ export type State = {
   inserterSidebar: {
     isOpened: boolean;
   };
-  inserterPopover: {
-    anchor?: HTMLElement;
+  inserterPopover?: {
+    anchor: HTMLElement;
+    type: 'steps' | 'triggers';
   };
 };
 

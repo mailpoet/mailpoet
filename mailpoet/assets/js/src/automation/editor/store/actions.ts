@@ -3,7 +3,7 @@ import { apiFetch } from '@wordpress/data-controls';
 import { store as interfaceStore } from '@wordpress/interface';
 import { store as preferencesStore } from '@wordpress/preferences';
 import { storeName } from './constants';
-import { Feature } from './types';
+import { Feature, State } from './types';
 
 export const openSidebar =
   (key) =>
@@ -26,10 +26,10 @@ export function toggleInserterSidebar() {
   } as const;
 }
 
-export function setInserterPopoverAnchor(anchor?: HTMLElement) {
+export function setInserterPopover(data?: State['inserterPopover']) {
   return {
-    type: 'SET_INSERTER_POPOVER_ANCHOR',
-    anchor,
+    type: 'SET_INSERTER_POPOVER',
+    data,
   } as const;
 }
 
