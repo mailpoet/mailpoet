@@ -61,12 +61,29 @@ class Migrator {
         PRIMARY KEY (id)
       );
     ");
+
+    $this->runQuery("
+      CREATE TABLE {$this->prefix}workflow_run_logs (
+        id int(11) unsigned NOT NULL AUTO_INCREMENT,
+        workflow_run_id int(11) unsigned NOT NULL,
+        step_id varchar(255) NOT NULL,
+        status varchar(255) NOT NULL,
+        created_at timestamp NOT NULL,
+        updated_at timestamp NOT NULL,
+        completed_at timestamp NULL DEFAULT NULL,
+        args longtext,
+        errors longtext,
+        data longtext,
+        PRIMARY KEY (id)
+      );
+    ");
   }
 
   public function deleteSchema(): void {
     $this->removeOldSchema();
     $this->runQuery("DROP TABLE IF EXISTS {$this->prefix}workflows");
     $this->runQuery("DROP TABLE IF EXISTS {$this->prefix}workflow_runs");
+    $this->runQuery("DROP TABLE IF EXISTS {$this->prefix}workflow_run_logs");
     $this->runQuery("DROP TABLE IF EXISTS {$this->prefix}workflow_versions");
 
     // clean Action Scheduler data
