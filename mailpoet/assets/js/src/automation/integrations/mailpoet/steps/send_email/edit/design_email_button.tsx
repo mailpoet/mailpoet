@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { dispatch, useSelect } from '@wordpress/data';
 import { plus } from '@wordpress/icons';
 import { Button } from '../../../components/button';
-import { store } from '../../../../../editor/store';
+import { storeName } from '../../../../../editor/store';
 import { MailPoet } from '../../../../../../mailpoet';
 
 export function DesignEmailButton(): JSX.Element {
@@ -10,9 +10,9 @@ export function DesignEmailButton(): JSX.Element {
 
   const { selectedStep, workflowId, workflowSaved } = useSelect(
     (select) => ({
-      selectedStep: select(store).getSelectedStep(),
-      workflowId: select(store).getWorkflowData().id,
-      workflowSaved: select(store).getSelectedStep(),
+      selectedStep: select(storeName).getSelectedStep(),
+      workflowId: select(storeName).getWorkflowData().id,
+      workflowSaved: select(storeName).getSelectedStep(),
     }),
     [],
   );
@@ -36,13 +36,13 @@ export function DesignEmailButton(): JSX.Element {
       },
     });
 
-    dispatch(store).updateStepArgs(
+    dispatch(storeName).updateStepArgs(
       workflowStepId,
       'email_id',
       parseInt(response.data.id as string, 10),
     );
 
-    dispatch(store).save();
+    dispatch(storeName).save();
   }, [workflowId, workflowStepId]);
 
   // This component is rendered only when no email ID is set. Once we have the ID

@@ -1,12 +1,12 @@
 import { PanelBody, PanelRow } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
-import { store } from '../../../store';
+import { storeName } from '../../../store';
 import { TrashButton } from '../../actions/trash-button';
 
 export function WorkflowSidebar(): JSX.Element {
   const { workflowData } = useSelect(
     (select) => ({
-      workflowData: select(store).getWorkflowData(),
+      workflowData: select(storeName).getWorkflowData(),
     }),
     [],
   );

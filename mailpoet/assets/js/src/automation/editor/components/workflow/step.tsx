@@ -8,7 +8,7 @@ import { WorkflowCompositeContext } from './context';
 import { StepMoreMenu } from './step-more-menu';
 import { Step as StepData } from './types';
 import { ColoredIcon } from '../icons';
-import { stepSidebarKey, store } from '../../store';
+import { stepSidebarKey, storeName } from '../../store';
 import { StepType } from '../../store/types';
 
 const getUnknownStepType = (step: StepData): StepType => {
@@ -41,11 +41,11 @@ type Props = {
 export function Step({ step, isSelected }: Props): JSX.Element {
   const { stepType } = useSelect(
     (select) => ({
-      stepType: select(store).getStepType(step.key),
+      stepType: select(storeName).getStepType(step.key),
     }),
     [step],
   );
-  const { openSidebar, selectStep } = useDispatch(store);
+  const { openSidebar, selectStep } = useDispatch(storeName);
   const compositeState = useContext(WorkflowCompositeContext);
   const { batch } = useRegistry();
 

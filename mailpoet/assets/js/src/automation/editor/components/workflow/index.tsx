@@ -11,14 +11,14 @@ import { EmptyWorkflow } from './empty-workflow';
 import { Separator } from './separator';
 import { Step } from './step';
 import { InserterPopover } from '../inserter-popover';
-import { store } from '../../store';
+import { storeName } from '../../store';
 import { AddTrigger } from './add-trigger';
 
 export function Workflow(): JSX.Element {
   const { workflowData, selectedStep } = useSelect(
     (select) => ({
-      workflowData: select(store).getWorkflowData(),
-      selectedStep: select(store).getSelectedStep(),
+      workflowData: select(storeName).getWorkflowData(),
+      selectedStep: select(storeName).getSelectedStep(),
     }),
     [],
   );

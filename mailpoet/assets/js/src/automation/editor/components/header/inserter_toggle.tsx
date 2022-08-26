@@ -2,7 +2,7 @@ import { Button, ToolbarItem } from '@wordpress/components';
 import { useSelect, useDispatch } from '@wordpress/data';
 import { __, _x } from '@wordpress/i18n';
 import { plus } from '@wordpress/icons';
-import { store } from '../../store';
+import { storeName } from '../../store';
 
 // See:
 //   https://github.com/WordPress/gutenberg/blob/5caeae34b3fb303761e3b9432311b26f4e5ea3a6/packages/edit-post/src/components/header/header-toolbar/index.js
@@ -11,13 +11,13 @@ import { store } from '../../store';
 export function InserterToggle(): JSX.Element {
   const { isInserterOpened, showIconLabels } = useSelect(
     (select) => ({
-      isInserterOpened: select(store).isInserterSidebarOpened(),
-      showIconLabels: select(store).isFeatureActive('showIconLabels'),
+      isInserterOpened: select(storeName).isInserterSidebarOpened(),
+      showIconLabels: select(storeName).isFeatureActive('showIconLabels'),
     }),
     [],
   );
 
-  const { toggleInserterSidebar } = useDispatch(store);
+  const { toggleInserterSidebar } = useDispatch(storeName);
 
   return (
     <ToolbarItem

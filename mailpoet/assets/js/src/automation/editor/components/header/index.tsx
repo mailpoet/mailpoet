@@ -5,7 +5,7 @@ import { __ } from '@wordpress/i18n';
 import { DocumentActions } from './document_actions';
 import { InserterToggle } from './inserter_toggle';
 import { MoreMenu } from './more_menu';
-import { store, storeName } from '../../store';
+import { storeName } from '../../store';
 import { WorkflowStatus } from '../../../listing/workflow';
 
 // See:
@@ -13,7 +13,7 @@ import { WorkflowStatus } from '../../../listing/workflow';
 //   https://github.com/WordPress/gutenberg/blob/0ee78b1bbe9c6f3e6df99f3b967132fa12bef77d/packages/edit-site/src/components/header/index.js
 
 function ActivateButton(): JSX.Element {
-  const { activate } = useDispatch(store);
+  const { activate } = useDispatch(storeName);
 
   return (
     <Button isPrimary className="editor-post-publish-button" onClick={activate}>
@@ -23,7 +23,7 @@ function ActivateButton(): JSX.Element {
 }
 
 function UpdateButton(): JSX.Element {
-  const { activate } = useDispatch(store);
+  const { activate } = useDispatch(storeName);
 
   return (
     <Button isPrimary className="editor-post-publish-button" onClick={activate}>
@@ -33,7 +33,7 @@ function UpdateButton(): JSX.Element {
 }
 
 function SaveDraftButton(): JSX.Element {
-  const { save } = useDispatch(store);
+  const { save } = useDispatch(storeName);
 
   return (
     <Button isTertiary onClick={save}>
@@ -47,11 +47,11 @@ type Props = {
 };
 
 export function Header({ showInserterToggle }: Props): JSX.Element {
-  const { setWorkflowName } = useDispatch(store);
+  const { setWorkflowName } = useDispatch(storeName);
   const { workflowName, workflowStatus } = useSelect(
     (select) => ({
-      workflowName: select(store).getWorkflowData().name,
-      workflowStatus: select(store).getWorkflowData().status,
+      workflowName: select(storeName).getWorkflowData().name,
+      workflowStatus: select(storeName).getWorkflowData().status,
     }),
     [],
   );
