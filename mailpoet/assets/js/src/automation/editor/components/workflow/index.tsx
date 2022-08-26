@@ -78,6 +78,17 @@ export function Workflow(): JSX.Element {
     [selectedStep],
   );
 
+  const renderSeparator = useMemo(
+    () =>
+      Hooks.applyFilters(
+        'mailpoet.automation.workflow.render_step_separator',
+        (previousStepData: StepData) => (
+          <Separator previousStepId={previousStepData.id} />
+        ),
+      ),
+    [],
+  );
+
   if (!workflowData) {
     return <EmptyWorkflow />;
   }
@@ -96,7 +107,7 @@ export function Workflow(): JSX.Element {
           {steps.map((step) => (
             <Fragment key={step.id}>
               {renderStep(step)}
-              <Separator previousStepId={step.id} />
+              {renderSeparator(step)}
             </Fragment>
           ))}
           <Icon
