@@ -77,14 +77,14 @@ export function Workflow(): JSX.Element {
           {steps.map((step) => (
             <Fragment key={step.id}>
               {step.type === 'trigger' && step.key === 'core:empty' ? (
-                <AddTrigger />
+                <AddTrigger step={step} />
               ) : (
                 <Step
                   step={step}
                   isSelected={selectedStep && step.id === selectedStep.id}
                 />
               )}
-              <Separator />
+              <Separator previousStepId={step.id} />
             </Fragment>
           ))}
           <Icon
