@@ -26,6 +26,9 @@ import { LISTING_NOTICE_PARAMETERS } from '../listing/workflow-listing-notices';
 //   https://github.com/WordPress/gutenberg/blob/9601a33e30ba41bac98579c8d822af63dd961488/packages/edit-post/src/components/layout/index.js
 //   https://github.com/WordPress/gutenberg/blob/0ee78b1bbe9c6f3e6df99f3b967132fa12bef77d/packages/edit-site/src/components/editor/index.js
 
+// disable inserter sidebar until we implement drag & drop
+const showInserterSidebar = false;
+
 function Editor(): JSX.Element {
   const {
     isFullscreenActive,
@@ -75,10 +78,12 @@ function Editor(): JSX.Element {
               </div>
             )
           }
-          header={<Header />}
+          header={<Header showInserterToggle={showInserterSidebar} />}
           content={<Workflow />}
           sidebar={<ComplementaryArea.Slot scope={storeName} />}
-          secondarySidebar={isInserterOpened ? <InserterSidebar /> : null}
+          secondarySidebar={
+            showInserterSidebar && isInserterOpened ? <InserterSidebar /> : null
+          }
         />
         <Popover.Slot />
       </SlotFillProvider>

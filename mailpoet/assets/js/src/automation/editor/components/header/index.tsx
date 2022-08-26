@@ -42,7 +42,11 @@ function SaveDraftButton(): JSX.Element {
   );
 }
 
-export function Header(): JSX.Element {
+type Props = {
+  showInserterToggle: boolean;
+};
+
+export function Header({ showInserterToggle }: Props): JSX.Element {
   const { setWorkflowName } = useDispatch(store);
   const { workflowName, workflowStatus } = useSelect(
     (select) => ({
@@ -60,7 +64,7 @@ export function Header(): JSX.Element {
           orientation="horizontal"
           role="toolbar"
         >
-          <InserterToggle />
+          {showInserterToggle && <InserterToggle />}
         </NavigableMenu>
       </div>
 
