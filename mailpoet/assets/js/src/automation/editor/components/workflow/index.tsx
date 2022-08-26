@@ -6,10 +6,12 @@ import {
 import { useSelect } from '@wordpress/data';
 import { Icon, check } from '@wordpress/icons';
 import { EditorNotices } from '@wordpress/editor';
+import { Hooks } from 'wp-js-hooks';
 import { WorkflowCompositeContext } from './context';
 import { EmptyWorkflow } from './empty-workflow';
 import { Separator } from './separator';
 import { Step } from './step';
+import { Step as StepData } from './types';
 import { InserterPopover } from '../inserter-popover';
 import { storeName } from '../../store';
 import { AddTrigger } from './add-trigger';
@@ -59,6 +61,23 @@ export function Workflow(): JSX.Element {
     return stepArray;
   }, [triggers, stepMap]);
 
+  const renderStep = useMemo(
+    () =>
+      Hooks.applyFilters(
+        'mailpoet.automation.workflow.render_step',
+        (stepData: StepData) =>
+          stepData.type === 'trigger' && stepData.key === 'core:empty' ? (
+            <AddTrigger step={stepData} />
+          ) : (
+            <Step
+              step={stepData}
+              isSelected={selectedStep && stepData.id === selectedStep.id}
+            />
+          ),
+      ),
+    [selectedStep],
+  );
+
   if (!workflowData) {
     return <EmptyWorkflow />;
   }
@@ -76,14 +95,7 @@ export function Workflow(): JSX.Element {
           <div />
           {steps.map((step) => (
             <Fragment key={step.id}>
-              {step.type === 'trigger' && step.key === 'core:empty' ? (
-                <AddTrigger step={step} />
-              ) : (
-                <Step
-                  step={step}
-                  isSelected={selectedStep && step.id === selectedStep.id}
-                />
-              )}
+              {renderStep(step)}
               <Separator previousStepId={step.id} />
             </Fragment>
           ))}
