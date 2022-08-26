@@ -18,7 +18,11 @@ const filterItems = (value: string, item: Item[]): Item[] =>
     step.title.toLowerCase().includes(value.trim().toLowerCase()),
   );
 
-export const Inserter = forwardRef((_, ref): JSX.Element => {
+type Props = {
+  onInsert?: (item: Item) => void;
+};
+
+export const Inserter = forwardRef(({ onInsert }: Props, ref): JSX.Element => {
   const [filterValue, setFilterValue] = useState('');
   const [hoveredItem, setHoveredItem] = useState(null);
 
@@ -114,7 +118,7 @@ export const Inserter = forwardRef((_, ref): JSX.Element => {
                         <StepList
                           items={group.items}
                           onHover={onHover}
-                          onSelect={() => {}}
+                          onSelect={(item: Item) => onInsert(item)}
                           label={group.label}
                         />
                       </div>
