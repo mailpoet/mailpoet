@@ -42,3 +42,5 @@ declare module '@wordpress/data' {
   function select(key: StoreKey): OmitFirstArgs<typeof selectors>;
   function dispatch(key: StoreKey): typeof actions;
 }
+
+export { actions, selectors };
