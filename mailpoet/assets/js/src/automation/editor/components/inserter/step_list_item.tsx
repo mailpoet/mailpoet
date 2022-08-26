@@ -15,7 +15,9 @@ const isAppleOS = (): boolean => {
   );
 };
 
-type Props = ComponentProps<typeof InserterListboxItem> & {
+type ListboxItemProps = ComponentProps<typeof InserterListboxItem>;
+
+type Props = Omit<ListboxItemProps, 'onSelect' | 'onHover'> & {
   item: Item;
   onSelect: (item: Item, isModifierKey: boolean) => void;
   onHover: (item: Item) => void;
