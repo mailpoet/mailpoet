@@ -1,53 +1,36 @@
+import classNames from 'classnames';
 import { useContext } from 'react';
 import { __unstableCompositeItem as CompositeItem } from '@wordpress/components';
-import { useDispatch, useRegistry, select } from '@wordpress/data';
+import { useDispatch, useRegistry, useSelect } from '@wordpress/data';
+import { blockMeta } from '@wordpress/icons';
+import { __ } from '@wordpress/i18n';
 import { WorkflowCompositeContext } from './context';
 import { Step as StepData } from './types';
+import { ColoredIcon } from '../icons';
 import { stepSidebarKey, store } from '../../store';
-import { TriggerIcon, ColoredIcon } from '../icons';
+import { StepType } from '../../store/types';
 
-function getIcon(step: StepData): JSX.Element | null {
-  // mocked data
-  if (step.type === 'trigger') {
-    return (
-      <ColoredIcon
-        foreground="#2271b1"
-        background="#f0f6fc"
-        width="23px"
-        height="23px"
-        icon={TriggerIcon}
-      />
-    );
-  }
-  const selectedStepType = select(store).getStepType(step.key);
-  return selectedStepType ? (
-    <ColoredIcon
-      width="23px"
-      height="23px"
-      foreground={selectedStepType.foreground}
-      background={selectedStepType.background}
-      icon={selectedStepType.icon}
-    />
-  ) : null;
-}
-
-function getTitle(step: StepData): string {
-  // mocked data
-  if (step.type === 'trigger') {
-    return 'Trigger';
-  }
-  const selectedStepType = select(store).getStepType(step.key);
-  return selectedStepType ? selectedStepType.title : '';
-}
-
-function getSubtitle(step: StepData): JSX.Element | string {
-  // mocked data
-  if (step.key === 'mailpoet:segment:subscribed') {
-    return 'Subscribed to segment';
-  }
-  const selectedStepType = select(store).getStepType(step.key);
-  return selectedStepType ? selectedStepType.subtitle(step) : null;
-}
+const getUnknownStepType = (step: StepData): StepType => {
+  const isTrigger = step.type === 'trigger';
+  return {
+    title: isTrigger
+      ? __('Unknown trigger', 'mailpoet')
+      : __('Unknown step', 'mailpoet'),
+    subtitle: () =>
+      isTrigger
+        ? __('Trigger type not registered', 'mailpoet')
+        : __('Step type not registered', 'mailpoet'),
+    description: isTrigger
+      ? __('Unknown trigger', 'mailpoet')
+      : __('Unknown step', 'mailpoet'),
+    group: step.type === 'trigger' ? 'triggers' : 'actions',
+    key: step.key,
+    foreground: '#8c8f94',
+    background: '#dcdcde',
+    edit: () => null,
+    icon: () => blockMeta,
+  };
+};
 
 type Props = {
   step: StepData;
@@ -55,17 +38,26 @@ type Props = {
 };
 
 export function Step({ step, isSelected }: Props): JSX.Element {
+  const { stepType } = useSelect(
+    (select) => ({
+      stepType: select(store).getStepType(step.key),
+    }),
+    [step],
+  );
   const { openSidebar, selectStep } = useDispatch(store);
   const compositeState = useContext(WorkflowCompositeContext);
   const { batch } = useRegistry();
 
+  const stepTypeData = stepType ?? getUnknownStepType(step);
   return (
     <CompositeItem
       state={compositeState}
       role="treeitem"
-      className={`mailpoet-automation-editor-step ${
-        isSelected ? 'selected-step' : ''
-      }`}
+      className={classNames({
+        'mailpoet-automation-editor-step': true,
+        'is-selected-step': isSelected,
+        'is-unknown-step': !stepType,
+      })}
       key={step.id}
       focusable
       onClick={() =>
@@ -76,14 +68,20 @@ export function Step({ step, isSelected }: Props): JSX.Element {
       }
     >
       <div className="mailpoet-automation-editor-step-icon">
-        {getIcon(step)}
+        <ColoredIcon
+          icon={stepTypeData.icon}
+          foreground={stepTypeData.foreground}
+          background={stepTypeData.background}
+          width="23px"
+          height="23px"
+        />
       </div>
       <div>
         <div className="mailpoet-automation-editor-step-title">
-          {getTitle(step)}
+          {stepTypeData.title}
         </div>
         <div className="mailpoet-automation-editor-step-subtitle">
-          {getSubtitle(step)}
+          {stepTypeData.subtitle(step)}
         </div>
       </div>
     </CompositeItem>
