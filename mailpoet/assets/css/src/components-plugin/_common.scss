@@ -101,6 +101,10 @@ p.sender_email_address_warning:first-child {
   }
 }
 
+body .components-modal__screen-overlay {
+  z-index: 9999999; // increased to overlay Gutenberg block inserter
+}
+
 .mailpoet-premium-modal.components-modal__frame {
   max-width: 500px;
 }
