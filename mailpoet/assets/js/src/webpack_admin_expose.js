@@ -14,6 +14,7 @@ export { TextControl as WordpressComponentsTextControl } from '@wordpress/compon
 export * as WordPressData from '@wordpress/data';
 
 // assets
+export * as Automation from 'automation';
 export * as Common from 'common';
 export * as CommonFormReactSelect from 'common/form/react_select/react_select';
 export * as CommonFormSelect from 'common/form/select/select';
