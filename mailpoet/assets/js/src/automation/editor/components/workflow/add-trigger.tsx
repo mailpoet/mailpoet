@@ -4,9 +4,14 @@ import { Icon, plus } from '@wordpress/icons';
 import { __ } from '@wordpress/i18n';
 import { useDispatch } from '@wordpress/data';
 import { WorkflowCompositeContext } from './context';
+import { Step } from './types';
 import { storeName } from '../../store';
 
-export function AddTrigger(): JSX.Element {
+type Props = {
+  step: Step;
+};
+
+export function AddTrigger({ step }: Props): JSX.Element {
   const compositeState = useContext(WorkflowCompositeContext);
   const { setInserterPopover } = useDispatch(storeName);
 
@@ -15,6 +20,7 @@ export function AddTrigger(): JSX.Element {
       state={compositeState}
       role="treeitem"
       className="mailpoet-automation-workflow-add-trigger"
+      data-step-id={step.id}
       focusable
       onClick={(event) => {
         event.stopPropagation();

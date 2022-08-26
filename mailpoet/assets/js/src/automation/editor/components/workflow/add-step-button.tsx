@@ -5,9 +5,10 @@ import { WorkflowCompositeContext } from './context';
 
 type Props = {
   onClick?: (element: HTMLButtonElement) => void;
+  previousStepId: string;
 };
 
-export function AddStepButton({ onClick }: Props): JSX.Element {
+export function AddStepButton({ onClick, previousStepId }: Props): JSX.Element {
   const compositeState = useContext(WorkflowCompositeContext);
   return (
     <CompositeItem
@@ -15,6 +16,7 @@ export function AddStepButton({ onClick }: Props): JSX.Element {
       role="treeitem"
       className="mailpoet-automation-editor-add-step-button"
       focusable
+      data-previous-step-id={previousStepId}
       onClick={(event) => {
         event.stopPropagation();
         const button = (event.target as HTMLElement).closest('button');

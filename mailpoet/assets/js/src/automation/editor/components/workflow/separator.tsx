@@ -2,7 +2,11 @@ import { dispatch } from '@wordpress/data';
 import { AddStepButton } from './add-step-button';
 import { storeName } from '../../store';
 
-export function Separator(): JSX.Element {
+type Props = {
+  previousStepId: string;
+};
+
+export function Separator({ previousStepId }: Props): JSX.Element {
   const { setInserterPopover } = dispatch(storeName);
 
   return (
@@ -11,6 +15,7 @@ export function Separator(): JSX.Element {
         onClick={(button) =>
           setInserterPopover({ anchor: button, type: 'steps' })
         }
+        previousStepId={previousStepId}
       />
     </div>
   );
