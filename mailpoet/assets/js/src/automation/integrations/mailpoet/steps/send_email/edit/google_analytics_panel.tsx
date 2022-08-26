@@ -3,11 +3,11 @@ import { dispatch, useSelect } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
 import { PremiumModal } from 'common/premium_modal';
 import { Hooks } from 'wp-js-hooks';
-import { store } from '../../../../../editor/store';
+import { storeName } from '../../../../../editor/store';
 
 export function GoogleAnalyticsPanel(): JSX.Element {
   const { selectedStep } = useSelect(
-    (select) => ({ selectedStep: select(store).getSelectedStep() }),
+    (select) => ({ selectedStep: select(storeName).getSelectedStep() }),
     [],
   );
 
@@ -16,7 +16,7 @@ export function GoogleAnalyticsPanel(): JSX.Element {
     'mailpoet.automation.send_email.google_analytics_panel',
     <PremiumModal
       onRequestClose={() =>
-        dispatch(store).updateStepArgs(
+        dispatch(storeName).updateStepArgs(
           selectedStep.id,
           'ga_campaign',
           undefined,
@@ -36,7 +36,7 @@ export function GoogleAnalyticsPanel(): JSX.Element {
         label="Enable custom GA tracking"
         checked={enabled}
         onChange={(value) =>
-          dispatch(store).updateStepArgs(
+          dispatch(storeName).updateStepArgs(
             selectedStep.id,
             'ga_campaign',
             value ? '' : undefined,

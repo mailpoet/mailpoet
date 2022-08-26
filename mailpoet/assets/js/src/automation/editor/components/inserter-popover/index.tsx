@@ -6,18 +6,18 @@ import { Hooks } from 'wp-js-hooks';
 import { PremiumModal } from 'common/premium_modal';
 import { Inserter } from '../inserter';
 import { Item } from '../inserter/item';
-import { store } from '../../store';
+import { storeName } from '../../store';
 
 export function InserterPopover(): JSX.Element | null {
   const popoverRef = useRef<HTMLDivElement>();
   const [showModal, setShowModal] = useState(false);
   const { inserterPopover } = useSelect(
     (select) => ({
-      inserterPopover: select(store).getInserterPopover(),
+      inserterPopover: select(storeName).getInserterPopover(),
     }),
     [],
   );
-  const { setInserterPopover } = useDispatch(store);
+  const { setInserterPopover } = useDispatch(storeName);
 
   const onInsert = useCallback((item: Item) => {
     const addStepCallback = Hooks.applyFilters(

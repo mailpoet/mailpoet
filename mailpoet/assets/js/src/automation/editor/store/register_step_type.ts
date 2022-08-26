@@ -1,7 +1,7 @@
 import { dispatch } from '@wordpress/data';
-import { store } from './store';
+import { storeName } from './constants';
 import { StepType } from './types';
 
 export const registerStepType = (stepType: StepType): void => {
-  dispatch(store).registerStepType(stepType);
+  dispatch(storeName).registerStepType(stepType);
 };

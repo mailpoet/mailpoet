@@ -4,11 +4,11 @@ import { Icon, plus } from '@wordpress/icons';
 import { __ } from '@wordpress/i18n';
 import { useDispatch } from '@wordpress/data';
 import { WorkflowCompositeContext } from './context';
-import { store } from '../../store';
+import { storeName } from '../../store';
 
 export function AddTrigger(): JSX.Element {
   const compositeState = useContext(WorkflowCompositeContext);
-  const { setInserterPopover } = useDispatch(store);
+  const { setInserterPopover } = useDispatch(storeName);
 
   return (
     <CompositeItem

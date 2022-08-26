@@ -15,7 +15,7 @@ import { InserterSidebar } from './components/inserter-sidebar';
 import { KeyboardShortcuts } from './components/keyboard-shortcuts';
 import { Sidebar } from './components/sidebar';
 import { Workflow } from './components/workflow';
-import { store, storeName } from './store';
+import { createStore, storeName } from './store';
 import { initializeApi } from '../api';
 import { initialize as initializeCoreIntegration } from '../integrations/core';
 import { initialize as initializeMailPoetIntegration } from '../integrations/mailpoet';
@@ -38,11 +38,11 @@ function Editor(): JSX.Element {
     workflow,
   } = useSelect(
     (select) => ({
-      isFullscreenActive: select(store).isFeatureActive('fullscreenMode'),
-      isInserterOpened: select(store).isInserterSidebarOpened(),
-      isSidebarOpened: select(store).isSidebarOpened(),
-      showIconLabels: select(store).isFeatureActive('showIconLabels'),
-      workflow: select(store).getWorkflowData(),
+      isFullscreenActive: select(storeName).isFeatureActive('fullscreenMode'),
+      isInserterOpened: select(storeName).isInserterSidebarOpened(),
+      isSidebarOpened: select(storeName).isSidebarOpened(),
+      showIconLabels: select(storeName).isFeatureActive('showIconLabels'),
+      workflow: select(storeName).getWorkflowData(),
     }),
     [],
   );
@@ -92,6 +92,8 @@ function Editor(): JSX.Element {
 }
 
 window.addEventListener('DOMContentLoaded', () => {
+  createStore();
+
   const root = document.getElementById('mailpoet_automation_editor');
   if (root) {
     initializeApi();

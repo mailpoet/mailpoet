@@ -2,7 +2,7 @@ import { AutomationEditorWindow, State } from './types';
 
 declare let window: AutomationEditorWindow;
 
-export const initialState: State = {
+export const getInitialState = (): State => ({
   stepTypes: {},
   workflowData: { ...window.mailpoet_automation_workflow },
   workflowSaved: true,
@@ -11,4 +11,4 @@ export const initialState: State = {
     isOpened: false,
   },
   inserterPopover: undefined,
-};
+});
