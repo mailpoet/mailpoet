@@ -1,3 +1,22 @@
+.mailpoet-automation-editor-step-wrapper {
+  margin: auto;
+  position: relative;
+  width: 280px;
+}
+
+.mailpoet-automation-step-more-menu {
+  position: absolute;
+  right: 4px;
+  top: 14px;
+
+  button.components-button.is-small.has-icon {
+    height: 24px;
+    min-width: 24px;
+    padding: 3px;
+    width: 24px;
+  }
+}
+
 .mailpoet-automation-editor-step {
   appearance: none;
   background: white;
@@ -11,7 +30,7 @@
   margin: 4px auto;
   padding: 12px;
   text-align: left;
-  width: 280px;
+  width: 100%;
 
   &.is-unknown-step {
     background: #f0f0f1;
