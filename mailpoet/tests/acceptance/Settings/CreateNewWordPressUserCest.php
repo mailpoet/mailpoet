@@ -27,6 +27,7 @@ class CreateNewWordPressUserCest {
     $i->waitForText('Settings');
     $i->selectOptionInReactSelect($secondListName, '[data-automation-id="subscribe-on_register-segments-selection"]');
     $i->click('[data-automation-id="settings-submit-button"]'); //save settings
+    $i->waitForElementNotVisible('#mailpoet_loading');
 
     // create a wp user via registration
     // Note: Xpath used to avoid flakyness and to pass multisite testing where we have different registration page designs
