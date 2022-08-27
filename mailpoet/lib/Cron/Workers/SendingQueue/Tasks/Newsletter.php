@@ -150,7 +150,7 @@ class Newsletter {
       );
       $renderedNewsletter = $this->gaTracking->applyGATracking($renderedNewsletter, $newsletterEntity);
       // hash and save all links
-      $renderedNewsletter = $this->linksTask->process($renderedNewsletter, $newsletter, $sendingTask);
+      $renderedNewsletter = $this->linksTask->process($renderedNewsletter, $newsletterEntity, $sendingTask);
     } else {
       // render newsletter
       $renderedNewsletter = $this->renderer->render($newsletterEntity, $sendingTask);
