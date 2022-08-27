@@ -215,7 +215,7 @@ class Newsletter {
     return $newsletter;
   }
 
-  public function prepareNewsletterForSending($newsletter, SubscriberEntity $subscriber, $queue) {
+  public function prepareNewsletterForSending($newsletter, SubscriberEntity $subscriber, $queue): array {
     // shortcodes and links will be replaced in the subject, html and text body
     // to speed the processing, join content into a continuous string
     $renderedNewsletter = $queue->getNewsletterRenderedBody();
