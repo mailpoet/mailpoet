@@ -273,11 +273,17 @@ class SendingQueue {
     $statistics = [];
     $metas = [];
     foreach ($subscribers as $subscriber) {
+      $subscriberEntity = $this->subscribersRepository->findOneById($subscriber->id);
+
+      if (!$subscriberEntity instanceof SubscriberEntity) {
+        continue;
+      }
+
       // render shortcodes and replace subscriber data in tracked links
       $preparedNewsletters[] =
         $this->newsletterTask->prepareNewsletterForSending(
           $newsletter,
-          $subscriber,
+          $subscriberEntity,
           $queue
         );
       // format subscriber name/address according to mailer settings
@@ -288,12 +294,7 @@ class SendingQueue {
       // create personalized instant unsubsribe link
       $unsubscribeUrls[] = $this->links->getUnsubscribeUrl($queue, $subscriber->id);
 
-      $subscriberEntity = $this->subscribersRepository->findOneById($subscriber->id);
-      if ($subscriberEntity instanceof SubscriberEntity) {
-        $metas[] = $this->mailerMetaInfo->getNewsletterMetaInfo($newsletter, $subscriberEntity);
-      } else {
-        $metas[] = [];
-      }
+      $metas[] = $this->mailerMetaInfo->getNewsletterMetaInfo($newsletter, $subscriberEntity);
 
       // keep track of values for statistics purposes
       $statistics[] = [
