@@ -13,13 +13,14 @@ use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterLinkEntity;
 use MailPoet\Entities\NewsletterPostEntity;
+use MailPoet\Entities\NewsletterSegmentEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Models\Newsletter;
-use MailPoet\Models\NewsletterSegment;
 use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\NewsletterPostsRepository;
 use MailPoet\Newsletter\NewslettersRepository;
@@ -366,12 +367,17 @@ class NewsletterTest extends \MailPoetTest {
   }
 
   public function testItGetsSegments() {
+    $newsletterEntity = $this->newslettersRepository->findOneById($this->newsletter->id);
+    $this->assertInstanceOf(NewsletterEntity::class, $newsletterEntity);
+
     for ($i = 1; $i <= 3; $i++) {
-      $newsletterSegment = NewsletterSegment::create();
-      $newsletterSegment->newsletterId = $this->newsletter->id;
-      $newsletterSegment->segmentId = $i;
-      $newsletterSegment->save();
+      $segment = $this->entityManager->getReference(SegmentEntity::class, $i);
+      $this->assertInstanceOf(SegmentEntity::class, $segment);
+      $newsletterSegment = new NewsletterSegmentEntity($newsletterEntity, $segment);
+      $this->entityManager->persist($newsletterSegment);
     }
+    $this->entityManager->flush();
+
     expect($this->newsletterTask->getNewsletterSegments($this->newsletter))->equals(
       [1,2,3]
     );
