@@ -9,11 +9,11 @@ use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterSegmentEntity;
 use MailPoet\Entities\SegmentEntity;
+use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Models\Newsletter as NewsletterModel;
 use MailPoet\Models\SendingQueue as SendingQueueModel;
-use MailPoet\Models\Subscriber as SubscriberModel;
 use MailPoet\Newsletter\Links\Links as NewsletterLinks;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Renderer\PostProcess\OpenTracking;
@@ -22,7 +22,6 @@ use MailPoet\Newsletter\Segment\NewsletterSegmentRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Settings\TrackingConfig;
 use MailPoet\Statistics\GATracking;
-use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Util\Helpers;
 use MailPoet\WP\Emoji;
 use MailPoet\WP\Functions as WPFunctions;
@@ -62,9 +61,6 @@ class Newsletter {
   /** @var SendingQueuesRepository */
   private $sendingQueuesRepository;
 
-  /** @var SubscribersRepository */
-  private $subscribersRepository;
-
   /** @var NewsletterSegmentRepository */
   private $newsletterSegmentRepository;
 
@@ -98,7 +94,6 @@ class Newsletter {
     $this->linksTask = ContainerWrapper::getInstance()->get(LinksTask::class);
     $this->newsletterLinks = ContainerWrapper::getInstance()->get(NewsletterLinks::class);
     $this->sendingQueuesRepository = ContainerWrapper::getInstance()->get(SendingQueuesRepository::class);
-    $this->subscribersRepository = ContainerWrapper::getInstance()->get(SubscribersRepository::class);
     $this->newsletterSegmentRepository = ContainerWrapper::getInstance()->get(NewsletterSegmentRepository::class);
   }
 
@@ -220,7 +215,7 @@ class Newsletter {
     return $newsletter;
   }
 
-  public function prepareNewsletterForSending($newsletter, $subscriber, $queue) {
+  public function prepareNewsletterForSending($newsletter, SubscriberEntity $subscriber, $queue) {
     // shortcodes and links will be replaced in the subject, html and text body
     // to speed the processing, join content into a continuous string
     $renderedNewsletter = $queue->getNewsletterRenderedBody();
@@ -239,12 +234,6 @@ class Newsletter {
       $newsletterEntity = null;
     }
 
-    if ($subscriber instanceof SubscriberModel) {
-      $subscriberEntity = $this->subscribersRepository->findOneById($subscriber->id);
-    } else {
-      $subscriberEntity = null;
-    }
-
     if ($queue->queue() instanceof SendingQueueModel) {
       $sendingQueueEntity = $this->sendingQueuesRepository->findOneById($queue->queue()->id);
     } else {
@@ -255,12 +244,12 @@ class Newsletter {
       $preparedNewsletter,
       null,
       $newsletterEntity,
-      $subscriberEntity,
+      $subscriber,
       $sendingQueueEntity
     );
     if ($this->trackingEnabled) {
       $preparedNewsletter = $this->newsletterLinks->replaceSubscriberData(
-        $subscriber->id,
+        $subscriber->getId(),
         $queue->id,
         $preparedNewsletter
       );
