@@ -155,7 +155,7 @@ class SendingQueueTest extends \MailPoetTest {
     $this->tasksLinks = $this->diContainer->get(TasksLinks::class);
     $this->scheduledTasksRepository = $this->diContainer->get(ScheduledTasksRepository::class);
     $this->subscribersRepository = $this->diContainer->get(SubscribersRepository::class);
-    $this->sendingQueueWorker = $this->getSendingQueueWorker($this->makeEmpty(NewslettersRepository::class, ['findOneById' => new NewsletterEntity()]));
+    $this->sendingQueueWorker = $this->getSendingQueueWorker();
   }
 
   private function getDirectUnsubscribeURL() {
@@ -222,7 +222,7 @@ class SendingQueueTest extends \MailPoetTest {
 
   public function testItEnforcesExecutionLimitsAfterSendingWhenQueueStatusIsNotSetToComplete() {
     $sendingQueueWorker = $this->make(
-      $this->getSendingQueueWorker($this->makeEmpty(NewslettersRepository::class)),
+      $this->getSendingQueueWorker(),
       [
         'enforceSendingAndExecutionLimits' => Expected::exactly(1),
       ]);
@@ -267,7 +267,7 @@ class SendingQueueTest extends \MailPoetTest {
     $queue = $this->queue;
     $queue->status = SendingQueue::STATUS_COMPLETED;
     $sendingQueueWorker = $this->make(
-      $this->getSendingQueueWorker($this->makeEmpty(NewslettersRepository::class)),
+      $this->getSendingQueueWorker(),
       [
         'enforceSendingAndExecutionLimits' => Expected::never(),
       ]);
@@ -351,7 +351,6 @@ class SendingQueueTest extends \MailPoetTest {
     $this->settings->set('tracking.level', TrackingConfig::LEVEL_BASIC);
     $directUnsubscribeURL = $this->getDirectUnsubscribeURL();
     $sendingQueueWorker = $this->getSendingQueueWorker(
-      $this->makeEmpty(NewslettersRepository::class, ['findOneById' => new NewsletterEntity()]),
       $this->construct(
         MailerTask::class,
         [$this->diContainer->get(MailerFactory::class)],
@@ -377,7 +376,6 @@ class SendingQueueTest extends \MailPoetTest {
     $this->settings->set('tracking.level', TrackingConfig::LEVEL_PARTIAL);
     $trackedUnsubscribeURL = $this->getTrackedUnsubscribeURL();
     $sendingQueueWorker = $this->getSendingQueueWorker(
-      $this->makeEmpty(NewslettersRepository::class, ['findOneById' => new NewsletterEntity()]),
       $this->construct(
         MailerTask::class,
         [$this->diContainer->get(MailerFactory::class)],
@@ -401,7 +399,6 @@ class SendingQueueTest extends \MailPoetTest {
 
   public function testItCanProcessSubscribersOneByOne() {
     $sendingQueueWorker = $this->getSendingQueueWorker(
-      $this->makeEmpty(NewslettersRepository::class, ['findOneById' => new NewsletterEntity()]),
       $this->construct(
         MailerTask::class,
         [$this->diContainer->get(MailerFactory::class)],
@@ -485,7 +482,6 @@ class SendingQueueTest extends \MailPoetTest {
     $timer = 1000000000000000000;
 
     $sendingQueueWorker = $this->getSendingQueueWorker(
-      $this->makeEmpty(NewslettersRepository::class, ['findOneById' => new NewsletterEntity()]),
       $this->make(
         MailerTask::class,
         [
@@ -524,7 +520,6 @@ class SendingQueueTest extends \MailPoetTest {
 
   public function testItCanProcessSubscribersInBulk() {
     $sendingQueueWorker = $this->getSendingQueueWorker(
-      $this->makeEmpty(NewslettersRepository::class, ['findOneById' => new NewsletterEntity()]),
       $this->construct(
         MailerTask::class,
         [$this->diContainer->get(MailerFactory::class)],
@@ -573,7 +568,6 @@ class SendingQueueTest extends \MailPoetTest {
 
   public function testItProcessesStandardNewsletters() {
     $sendingQueueWorker = $this->getSendingQueueWorker(
-      $this->makeEmpty(NewslettersRepository::class, ['findOneById' => new NewsletterEntity()]),
       $this->construct(
         MailerTask::class,
         [$this->diContainer->get(MailerFactory::class)],
@@ -637,7 +631,7 @@ class SendingQueueTest extends \MailPoetTest {
       [new SubscriberError($wrongSubscriber->getEmail(), 'must be an email')]
     );
     $sendingQueueWorker = $this->make(
-      $this->getSendingQueueWorker($this->makeEmpty(NewslettersRepository::class))
+      $this->getSendingQueueWorker()
     );
     $sendingQueueWorker->__construct(
       $this->sendingErrorHandler,
@@ -714,7 +708,6 @@ class SendingQueueTest extends \MailPoetTest {
     $this->newsletterSegment->delete();
 
     $sendingQueueWorker = $this->getSendingQueueWorker(
-      $this->makeEmpty(NewslettersRepository::class),
       $this->makeEmpty(MailerTask::class, [])
     );
     $sendingQueueWorker->process();
@@ -729,7 +722,6 @@ class SendingQueueTest extends \MailPoetTest {
     $this->newsletterSegment->delete();
 
     $sendingQueueWorker = $this->getSendingQueueWorker(
-      $this->makeEmpty(NewslettersRepository::class, ['findOneById' => new NewsletterEntity()]),
       $this->construct(
         MailerTask::class,
         [$this->diContainer->get(MailerFactory::class)],
@@ -781,7 +773,6 @@ class SendingQueueTest extends \MailPoetTest {
     $this->newsletterSegment->delete();
 
     $sendingQueueWorker = $this->getSendingQueueWorker(
-      null,
       $this->construct(
         MailerTask::class,
         [$this->diContainer->get(MailerFactory::class)],
@@ -814,7 +805,6 @@ class SendingQueueTest extends \MailPoetTest {
       $unsubscribedSubscriber->getId(), // subscriber that should be skipped
     ]);
     $sendingQueueWorker = $this->getSendingQueueWorker(
-      null,
       $this->construct(
         MailerTask::class,
         [$this->diContainer->get(MailerFactory::class)],
@@ -1039,7 +1029,7 @@ class SendingQueueTest extends \MailPoetTest {
       ->with('id')
       ->will($this->returnValue(100));
     $sendingQueueWorker = $this->make(
-      $this->getSendingQueueWorker($this->makeEmpty(NewslettersRepository::class))
+      $this->getSendingQueueWorker()
     );
     $sendingQueueWorker->__construct(
       $this->sendingErrorHandler,
@@ -1087,7 +1077,6 @@ class SendingQueueTest extends \MailPoetTest {
 
   public function testItDoesNotUpdateNewsletterHashDuringSending() {
     $sendingQueueWorker = $this->getSendingQueueWorker(
-      $this->makeEmpty(NewslettersRepository::class, ['findOneById' => new NewsletterEntity()]),
       $this->construct(
         MailerTask::class,
         [$this->diContainer->get(MailerFactory::class)],
@@ -1112,7 +1101,7 @@ class SendingQueueTest extends \MailPoetTest {
     };
     $wp = new WPFunctions;
     $wp->addFilter('mailpoet_cron_worker_sending_queue_batch_size', $filter);
-    $sendingQueueWorker = $this->getSendingQueueWorker($this->makeEmpty(NewslettersRepository::class));
+    $sendingQueueWorker = $this->getSendingQueueWorker();
     expect($sendingQueueWorker->getBatchSize())->equals($customBatchSizeValue);
     $wp->removeFilter('mailpoet_cron_worker_sending_queue_batch_size', $filter);
   }
@@ -1125,7 +1114,6 @@ class SendingQueueTest extends \MailPoetTest {
     ]);
 
     $sendingQueueWorker = $this->getSendingQueueWorker(
-      $this->makeEmpty(NewslettersRepository::class, ['findOneById' => new NewsletterEntity()]),
       $this->construct(MailerTask::class, [$this->diContainer->get(MailerFactory::class)], [
         'send' => $this->mailerTaskDummyResponse,
       ])
@@ -1146,7 +1134,6 @@ class SendingQueueTest extends \MailPoetTest {
     ]);
 
     $sendingQueueWorker = $this->getSendingQueueWorker(
-      $this->makeEmpty(NewslettersRepository::class, ['findOneById' => new NewsletterEntity()]),
       $this->construct(MailerTask::class, [$this->diContainer->get(MailerFactory::class)], [
         'send' => $this->mailerTaskDummyResponse,
       ])
@@ -1271,13 +1258,13 @@ class SendingQueueTest extends \MailPoetTest {
     return $queue;
   }
 
-  private function getSendingQueueWorker($newsletterRepositoryMock = null, $mailerMock = null): SendingQueueWorker {
+  private function getSendingQueueWorker($mailerMock = null): SendingQueueWorker {
     return new SendingQueueWorker(
       $this->sendingErrorHandler,
       $this->sendingThrottlingHandler,
       $this->statsNotificationsWorker,
       $this->loggerFactory,
-      $newsletterRepositoryMock ?: $this->newslettersRepository,
+      $this->newslettersRepository,
       $this->cronHelper,
       $this->subscribersFinder,
       $this->segmentsRepository,
