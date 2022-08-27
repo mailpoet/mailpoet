@@ -20,16 +20,16 @@ use MailPoet\Logging\LoggerFactory;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterSegment;
-use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\NewsletterPostsRepository;
 use MailPoet\Newsletter\NewslettersRepository;
+use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Router\Router;
 use MailPoet\Settings\SettingsRepository;
+use MailPoet\Tasks\Sending;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\WP\Emoji;
 use MailPoet\WP\Functions as WPFunctions;
-use MailPoetVendor\Idiorm\ORM;
 
 class NewsletterTest extends \MailPoetTest {
   /** @var NewsletterTask */
@@ -55,6 +55,9 @@ class NewsletterTest extends \MailPoetTest {
 
   /** @var NewslettersRepository */
   private $newslettersRepository;
+
+  /** @var SendingQueuesRepository */
+  private $sendingQueuesRepository;
 
   public function _before() {
     parent::_before();
@@ -84,6 +87,7 @@ class NewsletterTest extends \MailPoetTest {
     $this->loggerFactory = LoggerFactory::getInstance();
     $this->newslettersRepository = $this->diContainer->get(NewslettersRepository::class);
     $this->newsletterLinkRepository = $this->diContainer->get(NewsletterLinkRepository::class);
+    $this->sendingQueuesRepository = $this->diContainer->get(SendingQueuesRepository::class);
   }
 
   public function testItConstructs() {
@@ -174,9 +178,7 @@ class NewsletterTest extends \MailPoetTest {
     $newsletterTask->preProcessNewsletter($this->newsletter, $this->queue);
     $link = $this->newsletterLinkRepository->findOneBy(['newsletter' => $this->newsletter->id]);
     assert($link instanceof NewsletterLinkEntity);
-    /** @var SendingQueue $updatedQueue */
-    $updatedQueue = SendingQueue::findOne($this->queue->id);
-    $updatedQueue = SendingTask::createFromQueue($updatedQueue);
+    $updatedQueue = SendingTask::getByNewsletterId($this->newsletter->id);
     $renderedNewsletter = $updatedQueue->getNewsletterRenderedBody();
     expect($renderedNewsletter['html'])
       ->stringContainsString('[mailpoet_click_data]-' . $link->getHash());
@@ -198,9 +200,7 @@ class NewsletterTest extends \MailPoetTest {
     $newsletterTask->preProcessNewsletter($this->newsletter, $this->queue);
     $link = $this->newsletterLinkRepository->findOneBy(['newsletter' => $this->newsletter->id]);
     expect($link)->null();
-    /** @var SendingQueue $updatedQueue */
-    $updatedQueue = SendingQueue::findOne($this->queue->id);
-    $updatedQueue = SendingTask::createFromQueue($updatedQueue);
+    $updatedQueue = SendingTask::getByNewsletterId($this->newsletter->id);
     $renderedNewsletter = $updatedQueue->getNewsletterRenderedBody();
     expect($renderedNewsletter['html'])
       ->stringNotContainsString('[mailpoet_click_data]');
@@ -438,10 +438,13 @@ class NewsletterTest extends \MailPoetTest {
       ->method('__get')
       ->will($this->onConsecutiveCalls($queue->id, $queue->taskId, $queue->id));
 
-    $sendingQueue = ORM::forTable(SendingQueue::$_table)->findOne($queue->id);
-    assert($sendingQueue instanceof ORM);
-    $sendingQueue->set('newsletter_rendered_body', 'a:2:{s:4:"html"');
-    $sendingQueue->save();
+    $sendingQueuesTable = $this->entityManager->getClassMetadata(SendingQueueEntity::class)->getTableName();
+    $conn = $this->entityManager->getConnection();
+    $stmt = $conn->prepare("UPDATE $sendingQueuesTable SET newsletter_rendered_body = :invalid_body WHERE id = :id");
+    $stmt->executeQuery([
+      'invalid_body' => 'a:2:{s:4:"html"',
+      'id' => $queue->id,
+    ]);
     try {
       $this->newsletterTask->preProcessNewsletter($this->newsletter, $queueMock);
       self::fail('Sending error exception was not thrown.');
@@ -476,10 +479,11 @@ class NewsletterTest extends \MailPoetTest {
       ->will($this->onConsecutiveCalls($queue->id, $queue->taskId, $queue->id, $queue->newsletterRenderedBody));
 
     // properly serialized object
-    $sendingQueue = ORM::forTable(SendingQueue::$_table)->findOne($queue->id);
-    assert($sendingQueue instanceof ORM);
-    $sendingQueue->set('newsletter_rendered_body', 'a:2:{s:4:"html";s:4:"test";s:4:"text";s:4:"test";}');
-    $sendingQueue->save();
+    $sendingQueue = $this->sendingQueuesRepository->findOneById($queue->id);
+    assert($sendingQueue instanceof SendingQueueEntity);
+    $sendingQueue->setNewsletterRenderedBody(['html' => 'test', 'text' => 'test']);
+    $this->sendingQueuesRepository->persist($sendingQueue);
+    $this->sendingQueuesRepository->flush();
 
     $emoji = $this->make(
       Emoji::class,
