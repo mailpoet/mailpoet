@@ -6,6 +6,7 @@ use MailPoet\Cron\Workers\SendingQueue\Tasks\Links as LinksTask;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Posts as PostsTask;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Shortcodes as ShortcodesTask;
 use MailPoet\DI\ContainerWrapper;
+use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Models\Newsletter as NewsletterModel;
@@ -23,6 +24,7 @@ use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Util\Helpers;
 use MailPoet\WP\Emoji;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoetVendor\Carbon\Carbon;
 
 class Newsletter {
   public $trackingEnabled;
@@ -268,15 +270,16 @@ class Newsletter {
     ];
   }
 
-  public function markNewsletterAsSent($newsletter, $queue) {
+  public function markNewsletterAsSent(NewsletterEntity $newsletter, $queue) {
     // if it's a standard or notification history newsletter, update its status
     if (
-      $newsletter->type === NewsletterModel::TYPE_STANDARD ||
-       $newsletter->type === NewsletterModel::TYPE_NOTIFICATION_HISTORY
+      $newsletter->getType() === NewsletterModel::TYPE_STANDARD ||
+       $newsletter->getType() === NewsletterModel::TYPE_NOTIFICATION_HISTORY
     ) {
-      $newsletter->status = NewsletterModel::STATUS_SENT;
-      $newsletter->sentAt = $queue->processedAt;
-      $newsletter->save();
+      $newsletter->setStatus(NewsletterModel::STATUS_SENT);
+      $newsletter->setSentAt(new Carbon($queue->processedAt));
+      $this->newslettersRepository->persist($newsletter);
+      $this->newslettersRepository->flush();
     }
   }
 
