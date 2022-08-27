@@ -55,6 +55,7 @@ class BasicsPageCest {
     $i->click('[data-automation-id="subscribe-on_comment-checkbox"]');
     $i->selectOptionInReactSelect('Newsletter mailing list', '[data-automation-id="subscribe-on_comment-segments-selection"]');
     $i->click('[data-automation-id="settings-submit-button"]');
+    $i->waitForElementNotVisible('#mailpoet_loading');
     //go to the post and perform commenting + opting
     $i->amOnPage('/');
     $i->waitForText($postTitle);
@@ -90,6 +91,7 @@ class BasicsPageCest {
     $i->click('[data-automation-id="subscribe-on_comment-checkbox"]');
     //save settings
     $i->click('[data-automation-id="settings-submit-button"]');
+    $i->waitForElementNotVisible('#mailpoet_loading');
     //check to make sure comment subscription form is gone
     $i->amOnPage('/');
     $i->waitForText($postTitle);
@@ -116,6 +118,7 @@ class BasicsPageCest {
     $settings = new Settings();
     $settings->withSendingMethodMailPoet();
     $i->reloadPage();
+    $i->acceptPopup();
 
     $i->fillField($emailField, 'sender2@email.com');
     $i->dontSeeElement('[data-acceptance-id="freemail-sender-warning-new-installation"]');
