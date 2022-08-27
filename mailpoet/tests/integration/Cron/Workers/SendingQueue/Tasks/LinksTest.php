@@ -38,10 +38,9 @@ class LinksTest extends \MailPoetTest {
         'hash' => 'some_hash',
       ],
     ];
-    $newsletter = (object)['id' => $this->newsletter->getId()];
     $queue = (object)['id' => $this->queue->getId()];
 
-    $this->links->saveLinks($links, $newsletter, $queue);
+    $this->links->saveLinks($links, $this->newsletter, $queue);
 
     $newsletterLink = $this->newsletterLinkRepository->findOneBy(['hash' => $links[0]['hash']]);
     assert($newsletterLink instanceof NewsletterLinkEntity);
