@@ -21,7 +21,6 @@ use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Models\Newsletter;
-use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\NewsletterPostsRepository;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
@@ -29,6 +28,7 @@ use MailPoet\Router\Router;
 use MailPoet\Settings\SettingsRepository;
 use MailPoet\Tasks\Sending;
 use MailPoet\Tasks\Sending as SendingTask;
+use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 use MailPoet\WP\Emoji;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -36,7 +36,7 @@ class NewsletterTest extends \MailPoetTest {
   /** @var NewsletterTask */
   private $newsletterTask;
 
-  /** @var Subscriber */
+  /** @var SubscriberEntity */
   private $subscriber;
 
   /** @var Newsletter */
@@ -63,11 +63,7 @@ class NewsletterTest extends \MailPoetTest {
   public function _before() {
     parent::_before();
     $this->newsletterTask = new NewsletterTask();
-    $this->subscriber = Subscriber::create();
-    $this->subscriber->email = 'test@example.com';
-    $this->subscriber->firstName = 'John';
-    $this->subscriber->lastName = 'Doe';
-    $this->subscriber->save();
+    $this->subscriber = (new SubscriberFactory())->create();
     $this->newsletter = Newsletter::create();
     $this->newsletter->type = NewsletterEntity::TYPE_STANDARD;
     $this->newsletter->status = NewsletterEntity::STATUS_ACTIVE;
@@ -344,7 +340,7 @@ class NewsletterTest extends \MailPoetTest {
       $this->subscriber,
       $this->queue
     );
-    expect($result['subject'])->stringContainsString($this->subscriber->firstName);
+    expect($result['subject'])->stringContainsString($this->subscriber->getFirstName());
     expect($result['body']['html'])
       ->stringContainsString(Router::NAME . '&endpoint=track&action=click&data=');
     expect($result['body']['text'])
