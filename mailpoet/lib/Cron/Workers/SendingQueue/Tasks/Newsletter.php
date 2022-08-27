@@ -7,16 +7,18 @@ use MailPoet\Cron\Workers\SendingQueue\Tasks\Posts as PostsTask;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Shortcodes as ShortcodesTask;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\NewsletterSegmentEntity;
+use MailPoet\Entities\SegmentEntity;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Models\Newsletter as NewsletterModel;
-use MailPoet\Models\NewsletterSegment as NewsletterSegmentModel;
 use MailPoet\Models\SendingQueue as SendingQueueModel;
 use MailPoet\Models\Subscriber as SubscriberModel;
 use MailPoet\Newsletter\Links\Links as NewsletterLinks;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Renderer\PostProcess\OpenTracking;
 use MailPoet\Newsletter\Renderer\Renderer;
+use MailPoet\Newsletter\Segment\NewsletterSegmentRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Settings\TrackingConfig;
 use MailPoet\Statistics\GATracking;
@@ -63,6 +65,9 @@ class Newsletter {
   /** @var SubscribersRepository */
   private $subscribersRepository;
 
+  /** @var NewsletterSegmentRepository */
+  private $newsletterSegmentRepository;
+
   public function __construct(
     WPFunctions $wp = null,
     PostsTask $postsTask = null,
@@ -94,6 +99,7 @@ class Newsletter {
     $this->newsletterLinks = ContainerWrapper::getInstance()->get(NewsletterLinks::class);
     $this->sendingQueuesRepository = ContainerWrapper::getInstance()->get(SendingQueuesRepository::class);
     $this->subscribersRepository = ContainerWrapper::getInstance()->get(SubscribersRepository::class);
+    $this->newsletterSegmentRepository = ContainerWrapper::getInstance()->get(NewsletterSegmentRepository::class);
   }
 
   public function getNewsletterFromQueue($queue) {
@@ -283,11 +289,20 @@ class Newsletter {
     }
   }
 
-  public function getNewsletterSegments($newsletter) {
-    $segments = NewsletterSegmentModel::where('newsletter_id', $newsletter->id)
-      ->select('segment_id')
-      ->findArray();
-    return Helpers::flattenArray($segments);
+  public function getNewsletterSegments(NewsletterEntity $newsletter) {
+    $newsletterSegments = $this->newsletterSegmentRepository->findBy(['newsletter' => $newsletter]);
+    $segmentIds = array_map(
+      function(NewsletterSegmentEntity $newsletterSegment) {
+        $segment = $newsletterSegment->getSegment();
+
+        if ($segment instanceof SegmentEntity) {
+          return $segment->getId();
+        }
+      },
+      $newsletterSegments
+    );
+
+    return $segmentIds;
   }
 
   public function stopNewsletterPreProcessing($errorCode = null) {
