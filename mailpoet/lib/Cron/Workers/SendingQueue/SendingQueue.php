@@ -175,7 +175,7 @@ class SendingQueue {
     // configure mailer
     $this->mailerTask->configureMailer($newsletter);
     // get newsletter segments
-    $newsletterSegmentsIds = $this->newsletterTask->getNewsletterSegments($newsletter);
+    $newsletterSegmentsIds = $this->newsletterTask->getNewsletterSegments($newsletterEntity);
     // Pause task in case some of related segments was deleted or trashed
     if ($newsletterSegmentsIds && !$this->checkDeletedSegments($newsletterSegmentsIds)) {
       $this->loggerFactory->getLogger(LoggerFactory::TOPIC_NEWSLETTERS)->info(
