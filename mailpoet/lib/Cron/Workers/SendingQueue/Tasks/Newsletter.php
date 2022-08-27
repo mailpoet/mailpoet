@@ -12,7 +12,6 @@ use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Mailer\MailerLog;
-use MailPoet\Models\Newsletter as NewsletterModel;
 use MailPoet\Models\SendingQueue as SendingQueueModel;
 use MailPoet\Newsletter\Links\Links as NewsletterLinks;
 use MailPoet\Newsletter\NewslettersRepository;
@@ -103,20 +102,20 @@ class Newsletter {
       ->whereNull('deleted_at')
       ->whereAnyIs(
         [
-          ['status' => NewsletterModel::STATUS_ACTIVE],
-          ['status' => NewsletterModel::STATUS_SENDING],
+          ['status' => NewsletterEntity::STATUS_ACTIVE],
+          ['status' => NewsletterEntity::STATUS_SENDING],
         ]
       )
       ->findOne();
     if (!$newsletter) return false;
     // if this is a notification history, get existing active or sending parent newsletter
-    if ($newsletter->type == NewsletterModel::TYPE_NOTIFICATION_HISTORY) {
+    if ($newsletter->type == NewsletterEntity::TYPE_NOTIFICATION_HISTORY) {
       $parentNewsletter = $newsletter->parent()
         ->whereNull('deleted_at')
         ->whereAnyIs(
           [
-            ['status' => NewsletterModel::STATUS_ACTIVE],
-            ['status' => NewsletterModel::STATUS_SENDING],
+            ['status' => NewsletterEntity::STATUS_ACTIVE],
+            ['status' => NewsletterEntity::STATUS_SENDING],
           ]
         )
         ->findOne();
@@ -164,7 +163,7 @@ class Newsletter {
     }
     // check if this is a post notification and if it contains at least 1 ALC post
     if (
-      $newsletter->type === NewsletterModel::TYPE_NOTIFICATION_HISTORY &&
+      $newsletter->type === NewsletterEntity::TYPE_NOTIFICATION_HISTORY &&
       $this->postsTask->getAlcPostsCount($renderedNewsletter, $newsletter) === 0
     ) {
       // delete notification history record since it will never be sent
@@ -215,7 +214,7 @@ class Newsletter {
     return $newsletter;
   }
 
-  public function prepareNewsletterForSending($newsletter, SubscriberEntity $subscriber, $queue): array {
+  public function prepareNewsletterForSending(NewsletterEntity $newsletter, SubscriberEntity $subscriber, $queue): array {
     // shortcodes and links will be replaced in the subject, html and text body
     // to speed the processing, join content into a continuous string
     $renderedNewsletter = $queue->getNewsletterRenderedBody();
@@ -228,12 +227,6 @@ class Newsletter {
       ]
     );
 
-    if ($newsletter instanceof NewsletterModel) {
-      $newsletterEntity = $this->newslettersRepository->findOneById($newsletter->id);
-    } else {
-      $newsletterEntity = null;
-    }
-
     if ($queue->queue() instanceof SendingQueueModel) {
       $sendingQueueEntity = $this->sendingQueuesRepository->findOneById($queue->queue()->id);
     } else {
@@ -243,7 +236,7 @@ class Newsletter {
     $preparedNewsletter = ShortcodesTask::process(
       $preparedNewsletter,
       null,
-      $newsletterEntity,
+      $newsletter,
       $subscriber,
       $sendingQueueEntity
     );
@@ -256,7 +249,7 @@ class Newsletter {
     }
     $preparedNewsletter = Helpers::splitObject($preparedNewsletter);
     return [
-      'id' => $newsletter->id,
+      'id' => $newsletter->getId(),
       'subject' => $preparedNewsletter[0],
       'body' => [
         'html' => $preparedNewsletter[1],
@@ -268,10 +261,10 @@ class Newsletter {
   public function markNewsletterAsSent(NewsletterEntity $newsletter, $queue) {
     // if it's a standard or notification history newsletter, update its status
     if (
-      $newsletter->getType() === NewsletterModel::TYPE_STANDARD ||
-       $newsletter->getType() === NewsletterModel::TYPE_NOTIFICATION_HISTORY
+      $newsletter->getType() === NewsletterEntity::TYPE_STANDARD ||
+       $newsletter->getType() === NewsletterEntity::TYPE_NOTIFICATION_HISTORY
     ) {
-      $newsletter->setStatus(NewsletterModel::STATUS_SENT);
+      $newsletter->setStatus(NewsletterEntity::STATUS_SENT);
       $newsletter->setSentAt(new Carbon($queue->processedAt));
       $this->newslettersRepository->persist($newsletter);
       $this->newslettersRepository->flush();

@@ -272,6 +272,9 @@ class SendingQueue {
     $unsubscribeUrls = [];
     $statistics = [];
     $metas = [];
+
+    $newsletterEntity = $this->newslettersRepository->findOneById($newsletter->id);
+
     foreach ($subscribers as $subscriber) {
       $subscriberEntity = $this->subscribersRepository->findOneById($subscriber->id);
 
@@ -282,7 +285,7 @@ class SendingQueue {
       // render shortcodes and replace subscriber data in tracked links
       $preparedNewsletters[] =
         $this->newsletterTask->prepareNewsletterForSending(
-          $newsletter,
+          $newsletterEntity,
           $subscriberEntity,
           $queue
         );

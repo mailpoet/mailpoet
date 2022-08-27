@@ -310,6 +310,8 @@ class NewsletterTest extends \MailPoetTest {
   }
 
   public function testItUsesRenderedNewsletterBodyAndSubjectFromQueueObjectWhenPreparingNewsletterForSending() {
+    $newsletterEntity = $this->newslettersRepository->findOneById($this->newsletter->id);
+    $this->assertInstanceOf(NewsletterEntity::class, $newsletterEntity);
     $queue = $this->queue;
     $queue->newsletterRenderedBody = [
       'html' => 'queue HTML body',
@@ -324,7 +326,7 @@ class NewsletterTest extends \MailPoetTest {
     );
     $newsletterTask = new NewsletterTask(null, null, null, $emoji);
     $result = $newsletterTask->prepareNewsletterForSending(
-      $this->newsletter,
+      $newsletterEntity,
       $this->subscriber,
       $queue
     );
@@ -335,8 +337,10 @@ class NewsletterTest extends \MailPoetTest {
 
   public function testItRendersShortcodesAndReplacesSubscriberDataInLinks() {
     $newsletter = $this->newsletterTask->preProcessNewsletter($this->newsletter, $this->queue);
+    $newsletterEntity = $this->newslettersRepository->findOneById($newsletter->id);
+    $this->assertInstanceOf(NewsletterEntity::class, $newsletterEntity);
     $result = $this->newsletterTask->prepareNewsletterForSending(
-      $newsletter,
+      $newsletterEntity,
       $this->subscriber,
       $this->queue
     );
@@ -351,8 +355,10 @@ class NewsletterTest extends \MailPoetTest {
     $newsletterTask = $this->newsletterTask;
     $newsletterTask->trackingEnabled = false;
     $newsletter = $newsletterTask->preProcessNewsletter($this->newsletter, $this->queue);
+    $newsletterEntity = $this->newslettersRepository->findOneById($newsletter->id);
+    $this->assertInstanceOf(NewsletterEntity::class, $newsletterEntity);
     $result = $newsletterTask->prepareNewsletterForSending(
-      $newsletter,
+      $newsletterEntity,
       $this->subscriber,
       $this->queue
     );
