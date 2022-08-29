@@ -3,10 +3,13 @@
 namespace MailPoet\Tasks;
 
 use MailPoet\Cron\Workers\SendingQueue\SendingQueue as SendingQueueAlias;
+use MailPoet\DI\ContainerWrapper;
+use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\ScheduledTaskSubscriber;
 use MailPoet\Models\SendingQueue;
+use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Util\Helpers;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
@@ -188,6 +191,13 @@ class Sending {
 
   public function queue() {
     return $this->queue;
+  }
+
+  public function getSendingQueueEntity(): SendingQueueEntity {
+    $sendingQueuesRepository = ContainerWrapper::getInstance()->get(SendingQueuesRepository::class);
+    $sendingQueueEntity = $sendingQueuesRepository->findOneById($this->queue->id);
+
+    return $sendingQueueEntity;
   }
 
   public function task() {
