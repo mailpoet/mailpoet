@@ -21,6 +21,7 @@ use MailPoet\Newsletter\Segment\NewsletterSegmentRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Settings\TrackingConfig;
 use MailPoet\Statistics\GATracking;
+use MailPoet\Tasks\Sending;
 use MailPoet\Util\Helpers;
 use MailPoet\WP\Emoji;
 use MailPoet\WP\Functions as WPFunctions;
@@ -96,9 +97,10 @@ class Newsletter {
     $this->newsletterSegmentRepository = ContainerWrapper::getInstance()->get(NewsletterSegmentRepository::class);
   }
 
-  public function getNewsletterFromQueue($queue) {
+  public function getNewsletterFromQueue(Sending $queue) {
     // get existing active or sending newsletter
-    $newsletter = $queue->newsletter()
+    $sendingQueue = $queue->queue();
+    $newsletter = $sendingQueue->newsletter()
       ->whereNull('deleted_at')
       ->whereAnyIs(
         [
@@ -124,8 +126,9 @@ class Newsletter {
     return $newsletter;
   }
 
-  public function preProcessNewsletter(\MailPoet\Models\Newsletter $newsletter, $sendingTask) {
+  public function preProcessNewsletter(\MailPoet\Models\Newsletter $newsletter, Sending $sendingTask) {
     // return the newsletter if it was previously rendered
+    /** @phpstan-ignore-next-line - SendingQueue::getNewsletterRenderedBody() is called inside Sending using __call(). Sending will be refactored soon to stop using Paris models. */
     if (!is_null($sendingTask->getNewsletterRenderedBody())) {
       return (!$sendingTask->validate()) ?
         $this->stopNewsletterPreProcessing(sprintf('QUEUE-%d-RENDER', $sendingTask->id)) :
@@ -214,10 +217,13 @@ class Newsletter {
     return $newsletter;
   }
 
-  public function prepareNewsletterForSending(NewsletterEntity $newsletter, SubscriberEntity $subscriber, $queue): array {
-    // shortcodes and links will be replaced in the subject, html and text body
-    // to speed the processing, join content into a continuous string
-    $renderedNewsletter = $queue->getNewsletterRenderedBody();
+  /**
+   * Shortcodes and links will be replaced in the subject, html and text body
+   * to speed the processing, join content into a continuous string.
+   */
+  public function prepareNewsletterForSending(NewsletterEntity $newsletter, SubscriberEntity $subscriber, Sending $queue): array {
+    $sendingQueue = $queue->queue();
+    $renderedNewsletter = $sendingQueue->getNewsletterRenderedBody();
     $renderedNewsletter = $this->emoji->decodeEmojisInBody($renderedNewsletter);
     $preparedNewsletter = Helpers::joinObject(
       [
@@ -258,14 +264,15 @@ class Newsletter {
     ];
   }
 
-  public function markNewsletterAsSent(NewsletterEntity $newsletter, $queue) {
+  public function markNewsletterAsSent(NewsletterEntity $newsletter, Sending $queue) {
     // if it's a standard or notification history newsletter, update its status
     if (
       $newsletter->getType() === NewsletterEntity::TYPE_STANDARD ||
        $newsletter->getType() === NewsletterEntity::TYPE_NOTIFICATION_HISTORY
     ) {
+      $sendingQueue = $queue->queue();
       $newsletter->setStatus(NewsletterEntity::STATUS_SENT);
-      $newsletter->setSentAt(new Carbon($queue->processedAt));
+      $newsletter->setSentAt(new Carbon($sendingQueue->processedAt));
       $this->newslettersRepository->persist($newsletter);
       $this->newslettersRepository->flush();
     }

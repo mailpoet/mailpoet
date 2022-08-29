@@ -248,41 +248,41 @@ class NewsletterTest extends \MailPoetTest {
   public function testItUpdatesStatusAndSetsSentAtDateOnlyForStandardAndPostNotificationNewsletters() {
     $newsletter = $this->newslettersRepository->findOneById($this->newsletter->id);
     $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
-    $queue = new \stdClass();
-    $queue->processedAt = date('Y-m-d H:i:s');
+    $sendingQueue = $this->sendingTask->queue();
+    $sendingQueue->processedAt = date('Y-m-d H:i:s');
 
     // newsletter type is 'standard'
     $newsletter->setType(NewsletterEntity::TYPE_STANDARD);
     $newsletter->setStatus('not_sent');
     $this->newslettersRepository->persist($newsletter);
     $this->newslettersRepository->flush();
-    $this->newsletterTask->markNewsletterAsSent($newsletter, $queue);
+    $this->newsletterTask->markNewsletterAsSent($newsletter, $this->sendingTask);
     $updatedNewsletter = $this->newslettersRepository->findOneById($newsletter->getId());
     assert($updatedNewsletter instanceof NewsletterEntity);
     expect($updatedNewsletter->getStatus())->equals(NewsletterEntity::STATUS_SENT);
     $sentAt = $updatedNewsletter->getSentAt();
     $this->assertInstanceOf(\DateTime::class, $sentAt);
-    expect($sentAt->format('Y-m-d H:i:s'))->equals($queue->processedAt);
+    expect($sentAt->format('Y-m-d H:i:s'))->equals($sendingQueue->processedAt);
 
     // newsletter type is 'notification history'
     $newsletter->setType(NewsletterEntity::TYPE_NOTIFICATION_HISTORY);
     $newsletter->setStatus('not_sent');
     $this->newslettersRepository->persist($newsletter);
     $this->newslettersRepository->flush();
-    $this->newsletterTask->markNewsletterAsSent($newsletter, $queue);
+    $this->newsletterTask->markNewsletterAsSent($newsletter, $this->sendingTask);
     $updatedNewsletter = $this->newslettersRepository->findOneById($newsletter->getId());
     assert($updatedNewsletter instanceof NewsletterEntity);
     expect($updatedNewsletter->getStatus())->equals(NewsletterEntity::STATUS_SENT);
     $sentAt = $updatedNewsletter->getSentAt();
     $this->assertInstanceOf(\DateTime::class, $sentAt);
-    expect($sentAt->format('Y-m-d H:i:s'))->equals($queue->processedAt);
+    expect($sentAt->format('Y-m-d H:i:s'))->equals($sendingQueue->processedAt);
 
     // all other newsletter types
     $newsletter->setType(NewsletterEntity::TYPE_WELCOME);
     $newsletter->setStatus('not_sent');
     $this->newslettersRepository->persist($newsletter);
     $this->newslettersRepository->flush();
-    $this->newsletterTask->markNewsletterAsSent($newsletter, $queue);
+    $this->newsletterTask->markNewsletterAsSent($newsletter, $this->sendingTask);
     $updatedNewsletter = $this->newslettersRepository->findOneById($newsletter->getId());
     assert($updatedNewsletter instanceof NewsletterEntity);
     expect($updatedNewsletter->getStatus())->notEquals(NewsletterEntity::STATUS_SENT);
