@@ -36,7 +36,7 @@ export const createStore = (): StoreType => {
   return store;
 };
 
-type StoreKey = typeof storeName | StoreType;
+export type StoreKey = typeof storeName | StoreType;
 
 declare module '@wordpress/data' {
   function select(key: StoreKey): OmitFirstArgs<typeof selectors>;
