@@ -160,9 +160,8 @@ class NewsletterTest extends \MailPoetTest {
   }
 
   public function testItReturnsNewsletterObjectWhenRenderedNewsletterBodyExistsInTheQueue() {
-    $queue = $this->sendingTask;
-    $queue->newsletterRenderedBody = ['html' => 'test', 'text' => 'test'];
-    $result = $this->newsletterTask->preProcessNewsletter($this->newsletter, $queue);
+    $this->sendingTask->newsletterRenderedBody = ['html' => 'test', 'text' => 'test'];
+    $result = $this->newsletterTask->preProcessNewsletter($this->newsletter, $this->sendingTask);
     expect($result instanceof \MailPoet\Models\Newsletter)->true();
   }
 
@@ -291,33 +290,30 @@ class NewsletterTest extends \MailPoetTest {
   public function testItDoesNotRenderSubscriberShortcodeInSubjectWhenPreprocessingNewsletter() {
     $newsletter = $this->newsletter;
     $newsletter->subject = 'Newsletter for [subscriber:firstname] [date:dordinal]';
-    $queue = $this->sendingTask;
-    $newsletter = $this->newsletterTask->preProcessNewsletter($newsletter, $queue);
-    $queue = SendingTask::getByNewsletterId($newsletter->id);
+    $newsletter = $this->newsletterTask->preProcessNewsletter($newsletter, $this->sendingTask);
+    $this->sendingTask = SendingTask::getByNewsletterId($newsletter->id);
     $wp = new WPFunctions();
-    expect($queue->newsletterRenderedSubject)
+    expect($this->sendingTask->newsletterRenderedSubject)
       ->stringContainsString(date_i18n('jS', $wp->currentTime('timestamp')));
   }
 
   public function testItUsesADefaultSubjectIfRenderedSubjectIsEmptyWhenPreprocessingNewsletter() {
     $newsletter = $this->newsletter;
     $newsletter->subject = '  [custom_shortcode:should_render_empty]  ';
-    $queue = $this->sendingTask;
-    $newsletter = $this->newsletterTask->preProcessNewsletter($newsletter, $queue);
-    $queue = SendingTask::getByNewsletterId($newsletter->id);
-    expect($queue->newsletterRenderedSubject)
+    $newsletter = $this->newsletterTask->preProcessNewsletter($newsletter, $this->sendingTask);
+    $this->sendingTask = SendingTask::getByNewsletterId($newsletter->id);
+    expect($this->sendingTask->newsletterRenderedSubject)
       ->equals('No subject');
   }
 
   public function testItUsesRenderedNewsletterBodyAndSubjectFromQueueObjectWhenPreparingNewsletterForSending() {
     $newsletterEntity = $this->newslettersRepository->findOneById($this->newsletter->id);
     $this->assertInstanceOf(NewsletterEntity::class, $newsletterEntity);
-    $queue = $this->sendingTask;
-    $queue->newsletterRenderedBody = [
+    $this->sendingTask->newsletterRenderedBody = [
       'html' => 'queue HTML body',
       'text' => 'queue TEXT body',
     ];
-    $queue->newsletterRenderedSubject = 'queue subject';
+    $this->sendingTask->newsletterRenderedSubject = 'queue subject';
     $emoji = $this->make(
       Emoji::class,
       ['decodeEmojisInBody' => Expected::once(function ($params) {
@@ -328,7 +324,7 @@ class NewsletterTest extends \MailPoetTest {
     $result = $newsletterTask->prepareNewsletterForSending(
       $newsletterEntity,
       $this->subscriber,
-      $queue
+      $this->sendingTask
     );
     expect($result['subject'])->equals('queue subject');
     expect($result['body']['html'])->equals('queue HTML body');
@@ -387,10 +383,9 @@ class NewsletterTest extends \MailPoetTest {
   }
 
   public function testItLogsErrorWhenQueueWithCannotBeSaved() {
-    $queue = $this->sendingTask;
-    $queue->nonExistentColumn = true; // this will trigger save error
+    $this->sendingTask->nonExistentColumn = true; // this will trigger save error
     try {
-      $this->newsletterTask->preProcessNewsletter($this->newsletter, $queue);
+      $this->newsletterTask->preProcessNewsletter($this->newsletter, $this->sendingTask);
       self::fail('Sending error exception was not thrown.');
     } catch (\Exception $e) {
       $mailerLog = MailerLog::getMailerLog();
@@ -404,18 +399,18 @@ class NewsletterTest extends \MailPoetTest {
   }
 
   public function testItLogsErrorWhenExistingRenderedNewsletterBodyIsInvalid() {
-    $queueMock = $this->createMock(SendingTask::class);
-    $queueMock
+    $sendingTaskMock = $this->createMock(SendingTask::class);
+    $sendingTaskMock
       ->expects($this->any())
       ->method('__call')
       ->with('getNewsletterRenderedBody')
       ->willReturn('a:2:{s:4:"html"');
-    $queueMock
+    $sendingTaskMock
       ->expects($this->once())
       ->method('validate')
       ->willReturn(false);
     try {
-      $this->newsletterTask->preProcessNewsletter($this->newsletter, $queueMock);
+      $this->newsletterTask->preProcessNewsletter($this->newsletter, $sendingTaskMock);
       self::fail('Sending error exception was not thrown.');
     } catch (\Exception $e) {
       $mailerLog = MailerLog::getMailerLog();
@@ -428,34 +423,33 @@ class NewsletterTest extends \MailPoetTest {
   }
 
   public function testItLogsErrorWhenNewlyRenderedNewsletterBodyIsInvalid() {
-    $queue = $this->sendingTask;
-    $queueMock = $this->createMock(SendingTask::class);
-    $queueMock
+    $sendingTaskMock = $this->createMock(SendingTask::class);
+    $sendingTaskMock
       ->expects($this->any())
       ->method('__call')
       ->with('getNewsletterRenderedBody')
       ->willReturn(null);
-    $queueMock
+    $sendingTaskMock
       ->expects($this->once())
       ->method('save');
-    $queueMock
+    $sendingTaskMock
       ->expects($this->once())
       ->method('getErrors')
       ->willReturn([]);
-    $queueMock
+    $sendingTaskMock
       ->expects($this->any())
       ->method('__get')
-      ->will($this->onConsecutiveCalls($queue->id, $queue->taskId, $queue->id));
+      ->will($this->onConsecutiveCalls($this->sendingTask->id, $this->sendingTask->taskId, $this->sendingTask->id));
 
     $sendingQueuesTable = $this->entityManager->getClassMetadata(SendingQueueEntity::class)->getTableName();
     $conn = $this->entityManager->getConnection();
     $stmt = $conn->prepare("UPDATE $sendingQueuesTable SET newsletter_rendered_body = :invalid_body WHERE id = :id");
     $stmt->executeQuery([
       'invalid_body' => 'a:2:{s:4:"html"',
-      'id' => $queue->id,
+      'id' => $this->sendingTask->id,
     ]);
     try {
-      $this->newsletterTask->preProcessNewsletter($this->newsletter, $queueMock);
+      $this->newsletterTask->preProcessNewsletter($this->newsletter, $sendingTaskMock);
       self::fail('Sending error exception was not thrown.');
     } catch (\Exception $e) {
       $mailerLog = MailerLog::getMailerLog();
@@ -468,27 +462,26 @@ class NewsletterTest extends \MailPoetTest {
   }
 
   public function testItPreProcessesNewsletterWhenNewlyRenderedNewsletterBodyIsValid() {
-    $queue = $this->sendingTask;
-    $queueMock = $this->createMock(SendingTask::class);
-    $queueMock
+    $sendingTaskMock = $this->createMock(SendingTask::class);
+    $sendingTaskMock
       ->expects($this->any())
       ->method('__call')
       ->with('getNewsletterRenderedBody')
       ->willReturn(null);
-    $queueMock
+    $sendingTaskMock
       ->expects($this->once())
       ->method('save');
-    $queueMock
+    $sendingTaskMock
       ->expects($this->once())
       ->method('getErrors')
       ->willReturn([]);
-    $queueMock
+    $sendingTaskMock
       ->expects($this->any())
       ->method('__get')
-      ->will($this->onConsecutiveCalls($queue->id, $queue->taskId, $queue->id, $queue->newsletterRenderedBody));
+      ->will($this->onConsecutiveCalls($this->sendingTask->id, $this->sendingTask->taskId, $this->sendingTask->id, $this->sendingTask->newsletterRenderedBody));
 
     // properly serialized object
-    $sendingQueue = $this->sendingQueuesRepository->findOneById($queue->id);
+    $sendingQueue = $this->sendingQueuesRepository->findOneById($this->sendingTask->id);
     assert($sendingQueue instanceof SendingQueueEntity);
     $sendingQueue->setNewsletterRenderedBody(['html' => 'test', 'text' => 'test']);
     $this->sendingQueuesRepository->persist($sendingQueue);
@@ -501,7 +494,7 @@ class NewsletterTest extends \MailPoetTest {
       })]
     );
     $newsletterTask = new NewsletterTask(null, null, null, $emoji);
-    expect($newsletterTask->preProcessNewsletter($this->newsletter, $queueMock))->equals($this->newsletter);
+    expect($newsletterTask->preProcessNewsletter($this->newsletter, $sendingTaskMock))->equals($this->newsletter);
   }
 
   public function _after() {

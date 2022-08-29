@@ -97,9 +97,9 @@ class Newsletter {
     $this->newsletterSegmentRepository = ContainerWrapper::getInstance()->get(NewsletterSegmentRepository::class);
   }
 
-  public function getNewsletterFromQueue(Sending $queue) {
+  public function getNewsletterFromQueue(Sending $sendingTask) {
     // get existing active or sending newsletter
-    $sendingQueue = $queue->queue();
+    $sendingQueue = $sendingTask->queue();
     $newsletter = $sendingQueue->newsletter()
       ->whereNull('deleted_at')
       ->whereAnyIs(
@@ -221,20 +221,20 @@ class Newsletter {
    * Shortcodes and links will be replaced in the subject, html and text body
    * to speed the processing, join content into a continuous string.
    */
-  public function prepareNewsletterForSending(NewsletterEntity $newsletter, SubscriberEntity $subscriber, Sending $queue): array {
-    $sendingQueue = $queue->queue();
+  public function prepareNewsletterForSending(NewsletterEntity $newsletter, SubscriberEntity $subscriber, Sending $sendingTask): array {
+    $sendingQueue = $sendingTask->queue();
     $renderedNewsletter = $sendingQueue->getNewsletterRenderedBody();
     $renderedNewsletter = $this->emoji->decodeEmojisInBody($renderedNewsletter);
     $preparedNewsletter = Helpers::joinObject(
       [
-        $queue->newsletterRenderedSubject,
+        $sendingTask->newsletterRenderedSubject,
         $renderedNewsletter['html'],
         $renderedNewsletter['text'],
       ]
     );
 
-    if ($queue->queue() instanceof SendingQueueModel) {
-      $sendingQueueEntity = $this->sendingQueuesRepository->findOneById($queue->queue()->id);
+    if ($sendingTask->queue() instanceof SendingQueueModel) {
+      $sendingQueueEntity = $this->sendingQueuesRepository->findOneById($sendingTask->queue()->id);
     } else {
       $sendingQueueEntity = null;
     }
@@ -249,7 +249,7 @@ class Newsletter {
     if ($this->trackingEnabled) {
       $preparedNewsletter = $this->newsletterLinks->replaceSubscriberData(
         $subscriber->getId(),
-        $queue->id,
+        $sendingTask->id,
         $preparedNewsletter
       );
     }
@@ -264,13 +264,13 @@ class Newsletter {
     ];
   }
 
-  public function markNewsletterAsSent(NewsletterEntity $newsletter, Sending $queue) {
+  public function markNewsletterAsSent(NewsletterEntity $newsletter, Sending $sendingTask) {
     // if it's a standard or notification history newsletter, update its status
     if (
       $newsletter->getType() === NewsletterEntity::TYPE_STANDARD ||
        $newsletter->getType() === NewsletterEntity::TYPE_NOTIFICATION_HISTORY
     ) {
-      $sendingQueue = $queue->queue();
+      $sendingQueue = $sendingTask->queue();
       $newsletter->setStatus(NewsletterEntity::STATUS_SENT);
       $newsletter->setSentAt(new Carbon($sendingQueue->processedAt));
       $this->newslettersRepository->persist($newsletter);
