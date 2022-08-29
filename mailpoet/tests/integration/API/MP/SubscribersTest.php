@@ -6,6 +6,7 @@ use Codeception\Stub;
 use Codeception\Stub\Expected;
 use MailPoet\API\JSON\ResponseBuilders\SubscribersResponseBuilder;
 use MailPoet\API\MP\v1\API;
+use MailPoet\API\MP\v1\APIException;
 use MailPoet\API\MP\v1\CustomFields;
 use MailPoet\API\MP\v1\Segments;
 use MailPoet\API\MP\v1\Subscribers;
@@ -702,6 +703,22 @@ class SubscribersTest extends \MailPoetTest {
     $segments = [1];
     $options = ['send_confirmation_email' => false];
     $API->addSubscriber($subscriber, $segments, $options);
+  }
+
+  public function testItGetsSubscriber() {
+    $subscriber = $this->subscriberFactory->create();
+    $segment = $this->getSegment();
+    $this->getApi()->subscribeToList($subscriber->getId(), $segment->getId());
+
+    $result = $this->getApi()->getSubscriber($subscriber->getEmail());
+    expect($result['email'])->equals($subscriber->getEmail());
+    expect($result['subscriptions'][0]['segment_id'])->equals($segment->getId());
+  }
+
+  public function testGetSubscriberThrowsWhenSubscriberDoesntExist() {
+    $this->expectException(APIException::class);
+    $this->expectExceptionMessage('This subscriber does not exist.');
+    $this->getApi()->getSubscriber('some_fake_email');
   }
 
   public function _after() {

@@ -116,24 +116,6 @@ class APITest extends \MailPoetTest {
     );
   }
 
-  public function testItGetsSubscriber() {
-    $subscriber = $this->subscriberFactory->create();
-    $segment = $this->getSegment();
-    $this->getApi()->subscribeToList($subscriber->getId(), $segment->getId());
-
-    // successful response
-    $result = $this->getApi()->getSubscriber($subscriber->getEmail());
-    expect($result['email'])->equals($subscriber->getEmail());
-    expect($result['subscriptions'][0]['segment_id'])->equals($segment->getId());
-
-    // error response
-    try {
-      $this->getApi()->getSubscriber('some_fake_email');
-      $this->fail('Subscriber does not exist exception should have been thrown.');
-    } catch (\Exception $e) {
-      expect($e->getMessage())->equals('This subscriber does not exist.');
-    }
-  }
 
   public function _after() {
     $this->truncateEntity(SubscriberEntity::class);
