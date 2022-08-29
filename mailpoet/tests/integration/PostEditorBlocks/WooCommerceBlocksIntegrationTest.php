@@ -13,6 +13,9 @@ use MailPoet\WooCommerce\Subscription;
 use MailPoet\WP\Functions;
 use PHPUnit\Framework\MockObject\MockObject;
 
+/**
+ * @group woo
+ */
 class WooCommerceBlocksIntegrationTest extends \MailPoetTest {
 
   /** @var \WC_Order & MockObject */

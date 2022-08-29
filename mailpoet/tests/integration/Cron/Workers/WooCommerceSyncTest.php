@@ -11,6 +11,9 @@ use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\DBAL\Connection;
 
+/**
+ * @group woo
+ */
 class WooCommerceSyncTest extends \MailPoetTest {
   public $worker;
   public $woocommerceHelper;

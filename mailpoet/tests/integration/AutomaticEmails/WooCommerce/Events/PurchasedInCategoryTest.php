@@ -20,6 +20,9 @@ use MailPoet\WooCommerce\Helper as WCHelper;
 use MailPoet\WP\Functions as WPFunctions;
 use PHPUnit\Framework\MockObject\MockObject;
 
+/**
+ * @group woo
+ */
 class PurchasedInCategoryTest extends \MailPoetTest {
 
   /** @var MockObject&WCHelper */

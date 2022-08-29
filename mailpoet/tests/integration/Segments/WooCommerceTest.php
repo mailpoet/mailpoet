@@ -22,6 +22,9 @@ use PHPUnit\Framework\MockObject\MockObject;
 
 require_once('WPTestUser.php');
 
+/**
+ * @group woo
+ */
 class WooCommerceTest extends \MailPoetTest {
   /** @var bool */
   public $customerRoleAdded = false;

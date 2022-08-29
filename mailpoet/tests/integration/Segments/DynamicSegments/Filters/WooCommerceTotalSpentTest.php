@@ -13,6 +13,9 @@ use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\DBAL\Driver\Statement;
 use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
 
+/**
+ * @group woo
+ */
 class WooCommerceTotalSpentTest extends \MailPoetTest {
   /** @var WooCommerceTotalSpent */
   private $totalSpent;

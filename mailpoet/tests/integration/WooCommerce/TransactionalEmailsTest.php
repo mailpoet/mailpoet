@@ -12,6 +12,9 @@ use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 use MailPoet\WooCommerce\TransactionalEmails\Template;
 use MailPoet\WP\Functions as WPFunctions;
 
+/**
+ * @group woo
+ */
 class TransactionalEmailsTest extends \MailPoetTest {
   /** @var WPFunctions */
   private $wp;

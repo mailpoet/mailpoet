@@ -12,6 +12,9 @@ use MailPoet\Newsletter\Renderer\Preprocessor;
 use MailPoet\Newsletter\Renderer\Renderer as NewsletterRenderer;
 use MailPoetVendor\csstidy;
 
+/**
+ * @group woo
+ */
 class RendererTest extends \MailPoetTest {
   /** @var NewsletterEntity */
   private $newsletter;

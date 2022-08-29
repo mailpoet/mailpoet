@@ -26,6 +26,9 @@ use MailPoet\WP\Functions as WPFunctions;
 
 require_once __DIR__ . '/../WooCommerceStubs/OrderDetails.php';
 
+/**
+ * @group woo
+ */
 class FirstPurchaseTest extends \MailPoetTest {
   /** @var NewsletterFactory */
   private $newsletterFactory;

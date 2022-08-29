@@ -12,6 +12,9 @@ use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\DBAL\Driver\Statement;
 use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
 
+/**
+ * @group woo
+ */
 class WooCommerceProductTest extends \MailPoetTest {
   /** @var WooCommerceProduct */
   private $wooCommerceProduct;

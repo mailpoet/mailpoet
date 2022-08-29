@@ -11,6 +11,9 @@ use MailPoet\AutomaticEmails\WooCommerce\Events\PurchasedProduct;
 use MailPoet\WooCommerce\Helper;
 use MailPoet\WP\Functions as WPFunctions;
 
+/**
+ * @group woo
+ */
 class WooCommerceTest extends \MailPoetTest {
   /** @var WooCommerceEventFactory */
   private $wooCommerceEventFactory;

@@ -42,6 +42,9 @@ class SubscribersLastEngagementTest extends \MailPoetTest {
     expect($subscriber->getLastEngagementAt())->equals($clickTime);
   }
 
+  /**
+   * @group woo
+   */
   public function testItCanSetLastEngagementFromWooOrder() {
     $orderTime = new Carbon('2021-08-10 16:17:18');
     $subscriber = $this->createSubscriber();
@@ -52,6 +55,9 @@ class SubscribersLastEngagementTest extends \MailPoetTest {
     expect($subscriber->getLastEngagementAt())->equals($orderTime);
   }
 
+  /**
+   * @group woo
+   */
   public function testItPicksLatestTimeFromClick() {
     $openTime = new Carbon('2021-08-10 12:13:14');
     $clickTime = new Carbon('2021-08-10 13:14:15');
@@ -67,6 +73,9 @@ class SubscribersLastEngagementTest extends \MailPoetTest {
     expect($subscriber->getLastEngagementAt())->equals($clickTime);
   }
 
+  /**
+   * @group woo
+   */
   public function testItPicksLatestTimeFromOrder() {
     $openTime = new Carbon('2021-08-10 12:13:14');
     $clickTime = new Carbon('2021-08-10 13:14:15');
@@ -82,6 +91,9 @@ class SubscribersLastEngagementTest extends \MailPoetTest {
     expect($subscriber->getLastEngagementAt())->equals($wooOrderTime);
   }
 
+  /**
+   * @group woo
+   */
   public function testItPicksLatestTimeFromOpen() {
     $openTime = new Carbon('2021-08-10 14:13:14');
     $clickTime = new Carbon('2021-08-10 13:14:15');

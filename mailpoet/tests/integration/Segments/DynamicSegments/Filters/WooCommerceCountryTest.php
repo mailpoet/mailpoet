@@ -11,6 +11,9 @@ use MailPoet\Subscribers\SubscribersRepository;
 use MailPoetVendor\Doctrine\DBAL\ForwardCompatibility\DriverStatement;
 use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
 
+/**
+ * @group woo
+ */
 class WooCommerceCountryTest extends \MailPoetTest {
 
   /** @var WooCommerceCountry */
