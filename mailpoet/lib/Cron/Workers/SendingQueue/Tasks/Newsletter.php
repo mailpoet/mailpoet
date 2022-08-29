@@ -97,32 +97,32 @@ class Newsletter {
     $this->newsletterSegmentRepository = ContainerWrapper::getInstance()->get(NewsletterSegmentRepository::class);
   }
 
-  public function getNewsletterFromQueue(Sending $sendingTask) {
+  public function getNewsletterFromQueue(Sending $sendingTask): ?NewsletterEntity {
     // get existing active or sending newsletter
-    $sendingQueue = $sendingTask->queue();
-    $newsletter = $sendingQueue->newsletter()
-      ->whereNull('deleted_at')
-      ->whereAnyIs(
-        [
-          ['status' => NewsletterEntity::STATUS_ACTIVE],
-          ['status' => NewsletterEntity::STATUS_SENDING],
-        ]
-      )
-      ->findOne();
-    if (!$newsletter) return false;
-    // if this is a notification history, get existing active or sending parent newsletter
-    if ($newsletter->type == NewsletterEntity::TYPE_NOTIFICATION_HISTORY) {
-      $parentNewsletter = $newsletter->parent()
-        ->whereNull('deleted_at')
-        ->whereAnyIs(
-          [
-            ['status' => NewsletterEntity::STATUS_ACTIVE],
-            ['status' => NewsletterEntity::STATUS_SENDING],
-          ]
-        )
-        ->findOne();
-      if (!$parentNewsletter) return false;
+    $sendingQueue = $sendingTask->getSendingQueueEntity();
+    $newsletter = $sendingQueue->getNewsletter();
+
+    if (
+      is_null($newsletter)
+      || $newsletter->getDeletedAt() !== null
+      || !in_array($newsletter->getStatus(), [NewsletterEntity::STATUS_ACTIVE, NewsletterEntity::STATUS_SENDING])
+    ) {
+      return null;
     }
+
+    // if this is a notification history, get existing active or sending parent newsletter
+    if ($newsletter->getType() == NewsletterEntity::TYPE_NOTIFICATION_HISTORY) {
+      $parentNewsletter = $newsletter->getParent();
+
+      if (
+        is_null($parentNewsletter)
+        || $parentNewsletter->getDeletedAt() !== null
+        || !in_array($parentNewsletter->getStatus(), [NewsletterEntity::STATUS_ACTIVE, NewsletterEntity::STATUS_SENDING])
+      ) {
+        return null;
+      }
+    }
+
     return $newsletter;
   }
 

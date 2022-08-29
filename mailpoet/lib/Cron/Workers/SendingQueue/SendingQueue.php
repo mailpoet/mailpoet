@@ -15,6 +15,7 @@ use MailPoet\Logging\LoggerFactory;
 use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Mailer\MetaInfo;
+use MailPoet\Models\Newsletter;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\StatisticsNewsletters as StatisticsNewslettersModel;
 use MailPoet\Models\Subscriber as SubscriberModel;
@@ -150,12 +151,13 @@ class SendingQueue {
       ['task_id' => $queue->taskId]
     );
 
-    $newsletter = $this->newsletterTask->getNewsletterFromQueue($queue);
-    if (!$newsletter) {
+    $newsletterEntity = $this->newsletterTask->getNewsletterFromQueue($queue);
+    if (!$newsletterEntity) {
       return;
     }
-    $newsletterEntity = $this->newslettersRepository->findOneById($newsletter->id);
-    if (!$newsletterEntity) {
+
+    $newsletter = Newsletter::findOne($newsletterEntity->getId());
+    if (!$newsletter) {
       return;
     }
 
