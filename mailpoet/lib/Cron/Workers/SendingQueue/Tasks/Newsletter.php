@@ -18,7 +18,6 @@ use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Renderer\PostProcess\OpenTracking;
 use MailPoet\Newsletter\Renderer\Renderer;
 use MailPoet\Newsletter\Segment\NewsletterSegmentRepository;
-use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Settings\TrackingConfig;
 use MailPoet\Statistics\GATracking;
 use MailPoet\Tasks\Sending;
@@ -58,9 +57,6 @@ class Newsletter {
   /** @var NewsletterLinks */
   private $newsletterLinks;
 
-  /** @var SendingQueuesRepository */
-  private $sendingQueuesRepository;
-
   /** @var NewsletterSegmentRepository */
   private $newsletterSegmentRepository;
 
@@ -93,7 +89,6 @@ class Newsletter {
     $this->newslettersRepository = ContainerWrapper::getInstance()->get(NewslettersRepository::class);
     $this->linksTask = ContainerWrapper::getInstance()->get(LinksTask::class);
     $this->newsletterLinks = ContainerWrapper::getInstance()->get(NewsletterLinks::class);
-    $this->sendingQueuesRepository = ContainerWrapper::getInstance()->get(SendingQueuesRepository::class);
     $this->newsletterSegmentRepository = ContainerWrapper::getInstance()->get(NewsletterSegmentRepository::class);
   }
 
@@ -180,11 +175,7 @@ class Newsletter {
     // extract and save newsletter posts
     $this->postsTask->extractAndSave($renderedNewsletter, $newsletterEntity);
 
-    if ($sendingTask->queue() instanceof SendingQueueModel) {
-      $sendingQueueEntity = $this->sendingQueuesRepository->findOneById($sendingTask->queue()->id);
-    } else {
-      $sendingQueueEntity = null;
-    }
+    $sendingQueueEntity = $sendingTask->getSendingQueueEntity();
 
     // update queue with the rendered and pre-processed newsletter
     $sendingTask->newsletterRenderedSubject = ShortcodesTask::process(
@@ -233,11 +224,7 @@ class Newsletter {
       ]
     );
 
-    if ($sendingTask->queue() instanceof SendingQueueModel) {
-      $sendingQueueEntity = $this->sendingQueuesRepository->findOneById($sendingTask->queue()->id);
-    } else {
-      $sendingQueueEntity = null;
-    }
+    $sendingQueueEntity = $sendingTask->getSendingQueueEntity();
 
     $preparedNewsletter = ShortcodesTask::process(
       $preparedNewsletter,
