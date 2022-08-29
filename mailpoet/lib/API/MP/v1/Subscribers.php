@@ -88,6 +88,11 @@ class Subscribers {
     $this->wp = $wp;
   }
 
+  public function getSubscriber($subscriberIdOrEmail): array {
+    $subscriber = $this->findSubscriber($subscriberIdOrEmail);
+    return $this->subscribersResponseBuilder->build($subscriber);
+  }
+
   public function addSubscriber(array $data, array $listIds = [], array $options = []): array {
     $sendConfirmationEmail = !(isset($options['send_confirmation_email']) && $options['send_confirmation_email'] === false);
     $scheduleWelcomeEmail = !(isset($options['schedule_welcome_email']) && $options['schedule_welcome_email'] === false);
