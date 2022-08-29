@@ -14,6 +14,9 @@ use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\DBAL\Driver\Statement;
 use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
 
+/**
+ * @group woo
+ */
 class WooCommerceCategoryTest extends \MailPoetTest {
   /** @var WooCommerceCategory */
   private $wooCommerceCategory;

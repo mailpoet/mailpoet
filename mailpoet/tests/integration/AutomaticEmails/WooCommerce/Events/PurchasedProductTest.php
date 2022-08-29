@@ -26,6 +26,9 @@ use MailPoet\WP\Functions as WPFunctions;
 require_once __DIR__ . '/../WooCommerceStubs/ItemDetails.php';
 require_once __DIR__ . '/../WooCommerceStubs/OrderDetails.php';
 
+/**
+ * @group woo
+ */
 class PurchasedProductTest extends \MailPoetTest {
   /** @var SendingQueuesRepository */
   private $sendingQueuesRepository;

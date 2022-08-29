@@ -22,6 +22,9 @@ class NewsletterEntityWithoutClone extends NewsletterEntity {
   }
 }
 
+/**
+ * @group woo
+ */
 class TransactionalEmailHooksTest extends \MailPoetTest {
 
   /** @var SettingsController */

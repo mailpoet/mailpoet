@@ -16,6 +16,9 @@ use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\WP\Functions as WPFunctions;
 use PHPUnit\Framework\MockObject\MockObject;
 
+/**
+ * @group woo
+ */
 class SubscriptionTest extends \MailPoetTest {
   public $originalSettings;
   /** @var int */

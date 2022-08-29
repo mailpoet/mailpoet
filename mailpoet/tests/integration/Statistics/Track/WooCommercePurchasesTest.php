@@ -21,6 +21,9 @@ use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 use PHPUnit\Framework\MockObject\MockObject;
 use WC_Order;
 
+/**
+ * @group woo
+ */
 class WooCommercePurchasesTest extends \MailPoetTest {
   /** @var SubscriberEntity */
   private $subscriber;

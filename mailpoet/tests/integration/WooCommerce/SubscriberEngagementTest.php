@@ -9,6 +9,9 @@ use MailPoetVendor\Carbon\Carbon;
 use PHPUnit\Framework\MockObject\MockObject;
 use WC_Order;
 
+/**
+ * @group woo
+ */
 class SubscriberEngagementTest extends \MailPoetTest {
 
   /** @var WPFunctions & MockObject */

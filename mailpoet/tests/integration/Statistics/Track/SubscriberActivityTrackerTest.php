@@ -108,6 +108,9 @@ class SubscriberActivityTrackerTest extends \MailPoetTest {
     expect($subscriber->getLastEngagementAt())->lessThan(Carbon::now()->addMinute());
   }
 
+  /**
+   * @group woo
+   */
   public function testItUpdatesPageViewCookieAndSubscriberEngagementForSubscriberDetectedFromWooSession() {
     $subscriber = $this->createSubscriber();
     $customer = ['email' => $subscriber->getEmail()];

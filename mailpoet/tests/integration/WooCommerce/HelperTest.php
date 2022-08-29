@@ -4,6 +4,9 @@ namespace MailPoet\WooCommerce;
 
 use MailPoet\WP\Functions as WPFunctions;
 
+/**
+ * @group woo
+ */
 class HelperTest extends \MailPoetTest {
   /** @var WPFunctions */
   private $wp;

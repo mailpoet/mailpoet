@@ -19,6 +19,9 @@ use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 use PHPUnit\Framework\MockObject\MockObject;
 
+/**
+ * @group woo
+ */
 class WooCommerceOrdersTest extends \MailPoetTest {
   /** @var MockObject */
   private $woocommerceHelper;

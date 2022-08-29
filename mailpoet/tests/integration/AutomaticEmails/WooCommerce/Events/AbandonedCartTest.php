@@ -34,6 +34,9 @@ use WC_Cart;
 use WooCommerce;
 use WP_User;
 
+/**
+ * @group woo
+ */
 class AbandonedCartTest extends \MailPoetTest {
   const SCHEDULE_EMAIL_AFTER_HOURS = 5;
 
@@ -269,6 +272,9 @@ class AbandonedCartTest extends \MailPoetTest {
     $this->assertEquals($scheduled->getScheduledAt(), $expectedTime);
   }
 
+  /**
+   * @group woo
+   */
   public function testItPostponesEmailWhenSubscriberIsActiveOnSite() {
     $newsletter = $this->createNewsletter();
     $subscriber = $this->createSubscriberAsCurrentUser();
