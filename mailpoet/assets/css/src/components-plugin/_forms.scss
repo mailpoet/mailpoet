@@ -217,6 +217,11 @@ progress::-moz-progress-bar {
   .mailpoet-form-notice-message {
     font-style: italic;
   }
+
+  .parsley-errors-list {
+    left: 0;
+    margin-top: 6px;
+  }
 }
 
 // We need to hide the label because it doesn't fit to our form design, and it's added automatically by Gutenberg component
