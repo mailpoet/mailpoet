@@ -50,6 +50,11 @@ class AutomationEditor {
       return;
     }
 
+    if ($workflow->getStatus() === Workflow::STATUS_TRASH) {
+      $this->wp->wpSafeRedirect($this->wp->adminUrl('admin.php?page=mailpoet-automation&status=trash'));
+      exit();
+    }
+
     $this->pageRenderer->displayPage('automation/editor.html', [
       'context' => $this->buildContext(),
       'workflow' => $this->buildWorkflow($workflow),
