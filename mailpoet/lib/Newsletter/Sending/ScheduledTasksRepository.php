@@ -239,7 +239,7 @@ class ScheduledTasksRepository extends Repository {
   /**
    * @return ScheduledTaskEntity[]
    */
-  public function findScheduledSendingTasks(int $limit): array {
+  public function findScheduledSendingTasks(?int $limit = null): array {
     $now = Carbon::createFromTimestamp($this->wp->currentTime('timestamp'));
     return $this->doctrineRepository->createQueryBuilder('st')
       ->select('st')
