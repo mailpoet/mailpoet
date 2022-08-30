@@ -1,4 +1,5 @@
 import ReactDOM from 'react-dom';
+import { BrowserRouter } from 'react-router-dom';
 import { TopBarWithBeamer } from 'common/top_bar/top_bar';
 import { plusIcon } from 'common/button/icon/plus';
 import { Button, Flex } from '@wordpress/components';
@@ -101,24 +102,27 @@ function DeleteSchemaButton(): JSX.Element {
 
 function App(): JSX.Element {
   return (
-    <div>
-      <Workflows />
-      <div style={{ marginTop: 30, display: 'grid', gridGap: 8 }}>
-        <CreateEmptyWorkflowButton />
-        <CreateWorkflowFromTemplateButton slug="simple-welcome-email">
-          Create testing workflow from template (welcome email)
-        </CreateWorkflowFromTemplateButton>
-        <CreateWorkflowFromTemplateButton slug="welcome-email-sequence">
-          Create testing workflow from template (welcome sequence, only premium)
-        </CreateWorkflowFromTemplateButton>
-        <CreateWorkflowFromTemplateButton slug="advanced-welcome-email-sequence">
-          Create testing workflow from template (advanced welcome sequence, only
-          premium)
-        </CreateWorkflowFromTemplateButton>
-        <RecreateSchemaButton />
-        <DeleteSchemaButton />
+    <BrowserRouter>
+      <div>
+        <Workflows />
+        <div style={{ marginTop: 30, display: 'grid', gridGap: 8 }}>
+          <CreateEmptyWorkflowButton />
+          <CreateWorkflowFromTemplateButton slug="simple-welcome-email">
+            Create testing workflow from template (welcome email)
+          </CreateWorkflowFromTemplateButton>
+          <CreateWorkflowFromTemplateButton slug="welcome-email-sequence">
+            Create testing workflow from template (welcome sequence, only
+            premium)
+          </CreateWorkflowFromTemplateButton>
+          <CreateWorkflowFromTemplateButton slug="advanced-welcome-email-sequence">
+            Create testing workflow from template (advanced welcome sequence,
+            only premium)
+          </CreateWorkflowFromTemplateButton>
+          <RecreateSchemaButton />
+          <DeleteSchemaButton />
+        </div>
       </div>
-    </div>
+    </BrowserRouter>
   );
 }
 

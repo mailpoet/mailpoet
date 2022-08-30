@@ -2,6 +2,22 @@
   box-sizing: border-box;
 }
 
+.mailpoet-filter-tab-panel {
+  background-color: #fff;
+  border-radius: calc(2px - 1px);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, .1);
+  outline: none;
+
+  .count {
+    background-color: #f0f0f1;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 400;
+    margin-left: 6px;
+    padding: 2px 5px;
+  }
+}
+
 .mailpoet-automation-listing-heading {
   margin-bottom: 16px;
 }
