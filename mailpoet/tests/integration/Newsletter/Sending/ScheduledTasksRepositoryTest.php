@@ -198,7 +198,7 @@ class ScheduledTasksRepositoryTest extends \MailPoetTest {
     $task = $this->scheduledTaskFactory->create(SendingQueueWorker::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED, Carbon::now()->addDay());
     $this->sendingQueueFactory->create($task);
 
-    $tasks = $this->repository->findScheduledSendingTasks(5);
+    $tasks = $this->repository->findScheduledSendingTasks();
     $this->assertSame($expectedResult, $tasks);
   }
 

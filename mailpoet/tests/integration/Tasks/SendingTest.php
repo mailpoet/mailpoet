@@ -157,7 +157,7 @@ class SendingTest extends \MailPoetTest {
     $this->sending->status = ScheduledTask::STATUS_SCHEDULED;
     $this->sending->scheduled_at = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'))->subHours(1);
     $this->sending->save();
-    $tasks = $this->scheduledTaskRepository->findScheduledSendingTasks(5);
+    $tasks = $this->scheduledTaskRepository->findScheduledSendingTasks();
     expect($tasks)->notEmpty();
     foreach ($tasks as $task) {
       expect($task)->isInstanceOf(ScheduledTaskEntity::class);
@@ -181,7 +181,7 @@ class SendingTest extends \MailPoetTest {
   public function testItDoesNotGetPaused() {
     $this->_after();
     $this->createNewSendingTask(['status' => ScheduledTask::STATUS_PAUSED]);
-    expect($this->scheduledTaskRepository->findScheduledSendingTasks(5))->count(0);
+    expect($this->scheduledTaskRepository->findScheduledSendingTasks())->count(0);
   }
 
   public function testItGetsRunningQueues() {
