@@ -456,28 +456,6 @@ jobs:
       multisite:
         type: integer
         default: 0
-      run_command:
-        type: string
-        default: |
-          mkdir -m 777 -p tests/_output/exceptions
-          cd tests/docker
-          docker-compose run -e SKIP_DEPS=1 \
-            -e CIRCLE_BRANCH=${CIRCLE_BRANCH} \
-            -e CIRCLE_JOB=${CIRCLE_JOB} \
-            -e WP_TEST_MAILER_ENABLE_SENDING=${WP_TEST_MAILER_ENABLE_SENDING} \
-            -e WP_TEST_ENABLE_NETWORK_TESTS=${WP_TEST_ENABLE_NETWORK_TESTS} \
-            -e WP_TEST_MAILER_MAILPOET_API=${WP_TEST_MAILER_MAILPOET_API} \
-            -e WP_TEST_MAILER_SENDGRID_API=${WP_TEST_MAILER_SENDGRID_API} \
-            -e WP_TEST_MAILER_AMAZON_ACCESS=${WP_TEST_MAILER_AMAZON_ACCESS} \
-            -e WP_TEST_MAILER_AMAZON_REGION=${WP_TEST_MAILER_AMAZON_REGION} \
-            -e WP_TEST_MAILER_AMAZON_SECRET=${WP_TEST_MAILER_AMAZON_SECRET} \
-            -e WP_TEST_IMPORT_MAILCHIMP_API=${WP_TEST_IMPORT_MAILCHIMP_API} \
-            -e WP_TEST_IMPORT_MAILCHIMP_LISTS=${WP_TEST_IMPORT_MAILCHIMP_LISTS} \
-            -e WP_TEST_MAILER_SMTP_HOST=${WP_TEST_MAILER_SMTP_HOST} \
-            -e WP_TEST_MAILER_SMTP_LOGIN=${WP_TEST_MAILER_SMTP_LOGIN} \
-            -e WP_TEST_MAILER_SMTP_PASSWORD=${WP_TEST_MAILER_SMTP_PASSWORD} \
-            -e MULTISITE=<< parameters.multisite >> \
-            codeception_integration --steps --debug -vvv --html --xml
     steps:
       - attach_workspace:
           at: /home/circleci
@@ -487,7 +465,26 @@ jobs:
           command: i='0';while ! docker-compose -f tests/docker/docker-compose.yml pull && ((i < 3)); do sleep 3 && i=$[$i+1]; done
       - run:
           name: 'PHP Integration tests'
-          command: << parameters.run_command >>
+          command: |
+            mkdir -m 777 -p tests/_output/exceptions
+            cd tests/docker
+            docker-compose run -e SKIP_DEPS=1 \
+              -e CIRCLE_BRANCH=${CIRCLE_BRANCH} \
+              -e CIRCLE_JOB=${CIRCLE_JOB} \
+              -e WP_TEST_MAILER_ENABLE_SENDING=${WP_TEST_MAILER_ENABLE_SENDING} \
+              -e WP_TEST_ENABLE_NETWORK_TESTS=${WP_TEST_ENABLE_NETWORK_TESTS} \
+              -e WP_TEST_MAILER_MAILPOET_API=${WP_TEST_MAILER_MAILPOET_API} \
+              -e WP_TEST_MAILER_SENDGRID_API=${WP_TEST_MAILER_SENDGRID_API} \
+              -e WP_TEST_MAILER_AMAZON_ACCESS=${WP_TEST_MAILER_AMAZON_ACCESS} \
+              -e WP_TEST_MAILER_AMAZON_REGION=${WP_TEST_MAILER_AMAZON_REGION} \
+              -e WP_TEST_MAILER_AMAZON_SECRET=${WP_TEST_MAILER_AMAZON_SECRET} \
+              -e WP_TEST_IMPORT_MAILCHIMP_API=${WP_TEST_IMPORT_MAILCHIMP_API} \
+              -e WP_TEST_IMPORT_MAILCHIMP_LISTS=${WP_TEST_IMPORT_MAILCHIMP_LISTS} \
+              -e WP_TEST_MAILER_SMTP_HOST=${WP_TEST_MAILER_SMTP_HOST} \
+              -e WP_TEST_MAILER_SMTP_LOGIN=${WP_TEST_MAILER_SMTP_LOGIN} \
+              -e WP_TEST_MAILER_SMTP_PASSWORD=${WP_TEST_MAILER_SMTP_PASSWORD} \
+              -e MULTISITE=<< parameters.multisite >> \
+              codeception_integration --steps --debug -vvv --html --xml
       - store_test_results:
           path: tests/_output
       - store_artifacts:
