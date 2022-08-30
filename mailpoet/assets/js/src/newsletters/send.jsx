@@ -551,7 +551,10 @@ class NewsletterSendComponent extends Component {
         response.errors.map((error) => (
           <p key={error.message}>{error.message}</p>
         )),
-        { scroll: true },
+        {
+          scroll: true,
+          timeout: false,
+        },
       );
     }
   };
