@@ -453,6 +453,12 @@ jobs:
       codeception_image_version:
         type: string
         default: ''
+      group:
+        type: string
+        default: ''
+      skip_group:
+        type: string
+        default: ''
       multisite:
         type: integer
         default: 0
@@ -468,6 +474,19 @@ jobs:
           command: |
             mkdir -m 777 -p tests/_output/exceptions
             cd tests/docker
+            args=(
+              --steps
+              --debug
+              -vvv
+              --html
+              --xml
+            )
+            if [[ -n '<< parameters.group >>' ]]; then
+              args+=(--group << parameters.group >>)
+            fi
+            if [[ -n '<< parameters.skip_group >>' ]]; then
+              args+=(--skip-group << parameters.skip_group >>)
+            fi
             docker-compose run -e SKIP_DEPS=1 \
               -e CIRCLE_BRANCH=${CIRCLE_BRANCH} \
               -e CIRCLE_JOB=${CIRCLE_JOB} \
@@ -484,7 +503,7 @@ jobs:
               -e WP_TEST_MAILER_SMTP_LOGIN=${WP_TEST_MAILER_SMTP_LOGIN} \
               -e WP_TEST_MAILER_SMTP_PASSWORD=${WP_TEST_MAILER_SMTP_PASSWORD} \
               -e MULTISITE=<< parameters.multisite >> \
-              codeception_integration --steps --debug -vvv --html --xml
+              codeception_integration "${args[@]}"
       - store_test_results:
           path: tests/_output
       - store_artifacts:
@@ -569,6 +588,17 @@ workflows:
             - build
       - integration_tests:
           <<: *slack-fail-post-step
+          group: woo
+          name: integration_test_woocommerce
+          requires:
+            - unit_tests
+            - static_analysis_php8
+            - qa_js
+            - qa_php
+      - integration_tests:
+          <<: *slack-fail-post-step
+          skip_group: woo
+          name: integration_test_base
           requires:
             - unit_tests
             - static_analysis_php8
@@ -595,7 +625,8 @@ workflows:
             - build
             - acceptance_tests
             - js_tests
-            - integration_tests
+            - integration_test_woocommerce
+            - integration_test_base
 
   nightly:
     triggers:
