@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { MailPoet } from 'mailpoet';
 import classnames from 'classnames';
 import { extractEmailDomain, extractPageNameFromUrl } from 'common/functions';
@@ -30,27 +31,62 @@ type Props = {
   showSenderEmailTab: boolean;
   showSenderDomainTab: boolean;
   initialTab: 'sender_email' | 'sender_domain';
+  autoSwitchTab?: (param: 'sender_email' | 'sender_domain') => void;
 };
 
 function AuthorizeSenderEmailAndDomainModal({
   onRequestClose,
   senderEmail,
-  onSuccessAction,
+  onSuccessAction = () => {},
   showSenderEmailTab = false,
   showSenderDomainTab = false,
   initialTab = 'sender_email',
+  autoSwitchTab = () => {},
 }: Props): JSX.Element {
-  if (!senderEmail) return null;
+  useEffect(() => {
+    if (!showSenderEmailTab && !showSenderDomainTab) {
+      onRequestClose(); // close modal
+    }
+  });
+
+  useEffect(() => {
+    if (!senderEmail) return;
+
+    if (
+      initialTab === 'sender_email' &&
+      showSenderEmailTab === false &&
+      showSenderDomainTab
+    ) {
+      // email address is verified but pending sender domain verification
+      // inform parent component to autoswitch tab and load sender domain tab
+      autoSwitchTab('sender_domain');
+    }
+    if (
+      initialTab === 'sender_domain' &&
+      showSenderDomainTab === false &&
+      showSenderEmailTab
+    ) {
+      // sender domain is verified but pending email address authorization
+      // load email authorize tab
+      autoSwitchTab('sender_email');
+    }
+
+    if (showSenderEmailTab) {
+      trackEvent('email');
+    }
+
+    if (showSenderDomainTab) {
+      trackEvent('domain');
+    }
+  }, [
+    senderEmail,
+    showSenderEmailTab,
+    showSenderDomainTab,
+    initialTab,
+    autoSwitchTab,
+  ]);
 
   const emailAddressDomain = extractEmailDomain(senderEmail);
-
-  if (showSenderEmailTab) {
-    trackEvent('email');
-  }
-
-  if (showSenderDomainTab) {
-    trackEvent('domain');
-  }
 
   return (
     <Modal
