@@ -13,6 +13,10 @@ export const step: StepType = {
     'mailpoet',
   ),
   subtitle: () => __('Trigger', 'mailpoet'),
-  icon: () => commentAuthorAvatar,
+  icon: () => (
+    <div style={{ width: '100%', height: '100%', scale: '1.4' }}>
+      {commentAuthorAvatar}
+    </div>
+  ),
   edit: () => <div />,
 } as const;
