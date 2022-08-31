@@ -459,6 +459,9 @@ jobs:
       skip_group:
         type: string
         default: ''
+      skip_plugins:
+        type: integer
+        default: 0
       multisite:
         type: integer
         default: 0
@@ -490,6 +493,7 @@ jobs:
             docker-compose run -e SKIP_DEPS=1 \
               -e CIRCLE_BRANCH=${CIRCLE_BRANCH} \
               -e CIRCLE_JOB=${CIRCLE_JOB} \
+              -e SKIP_PLUGINS=<< parameters.skip_plugins >> \
               -e WP_TEST_MAILER_ENABLE_SENDING=${WP_TEST_MAILER_ENABLE_SENDING} \
               -e WP_TEST_ENABLE_NETWORK_TESTS=${WP_TEST_ENABLE_NETWORK_TESTS} \
               -e WP_TEST_MAILER_MAILPOET_API=${WP_TEST_MAILER_MAILPOET_API} \
@@ -598,6 +602,7 @@ workflows:
       - integration_tests:
           <<: *slack-fail-post-step
           skip_group: woo
+          skip_plugins: 1
           name: integration_test_base
           requires:
             - unit_tests
