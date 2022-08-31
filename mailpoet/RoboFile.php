@@ -182,11 +182,11 @@ class RoboFile extends \Robo\Tasks {
     return $this->_exec($command);
   }
 
-  public function testIntegration(array $opts = ['file' => null, 'group' => null, 'skip-group' => null, 'xml' => false, 'multisite' => false, 'debug' => false, 'skip-deps' => false]) {
+  public function testIntegration(array $opts = ['file' => null, 'group' => null, 'skip-group' => null, 'xml' => false, 'multisite' => false, 'debug' => false, 'skip-deps' => false, 'skip-plugins' => false]) {
     return $this->runTestsInContainer(array_merge($opts, ['test_type' => 'integration']));
   }
 
-  public function testMultisiteIntegration($opts = ['file' => null, 'group' => null, 'skip-group' => null, 'xml' => false, 'multisite' => true, 'skip-deps' => false]) {
+  public function testMultisiteIntegration($opts = ['file' => null, 'group' => null, 'skip-group' => null, 'xml' => false, 'multisite' => true, 'skip-deps' => false, 'skip-plugins' => false]) {
     return $this->runTestsInContainer(array_merge($opts, ['test_type' => 'integration']));
 
   }
@@ -1216,6 +1216,7 @@ class RoboFile extends \Robo\Tasks {
     return $this->taskExec(
       'COMPOSE_HTTP_TIMEOUT=200 docker-compose run ' .
       (isset($opts['skip-deps']) && $opts['skip-deps'] ? '-e SKIP_DEPS=1 ' : '') .
+      (isset($opts['skip-plugins']) && $opts['skip-plugins'] ? '-e SKIP_PLUGINS=1 ' : '') .
       (isset($opts['timeout']) && $opts['timeout'] ? '-e WAIT_TIMEOUT=' . (int)$opts['timeout'] . ' ' : '') .
       (isset($opts['multisite']) && $opts['multisite'] ? '-e MULTISITE=1 ' : '-e MULTISITE=0 ') .
       "codeception_{$testType} --steps --debug -vvv " .
