@@ -16,6 +16,7 @@ class SaveNewsletterAsDraftCest {
     $sendFormElement = '[data-automation-id="newsletter_send_form"]';
     $i->waitForElement($sendFormElement);
     $i->selectOptionInSelect2($segmentName);
+    $i->waitForElementClickable('[data-automation-id="email-save-draft"]');
     $i->click('Save as draft and close');
     $i->waitForText($newsletterTitle);
     $this->assertNewsletterNotSent($i);
@@ -28,8 +29,7 @@ class SaveNewsletterAsDraftCest {
     $this->startCreatingNewsletter($i, $newsletterTitle);
 
     // step 4 - Save as draft without selecting a list
-    $sendFormElement = '[data-automation-id="newsletter_send_form"]';
-    $i->waitForElement($sendFormElement);
+    $i->waitForElementClickable('[data-automation-id="email-save-draft"]');
     $i->click('Save as draft and close');
     $i->waitForText($newsletterTitle);
     $this->assertNewsletterNotSent($i);
