@@ -135,5 +135,5 @@ interface Window {
   mailpoet_installed_at?: string;
   mailpoet_email_editor_tutorial_seen: number;
   mailpoet_email_editor_tutorial_url: string;
-  mailpoet_deactivate_subscriber_after_inactive_days?: number;
+  mailpoet_deactivate_subscriber_after_inactive_days: string;
 }
