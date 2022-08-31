@@ -23,6 +23,10 @@ function SenderEmailAddressWarning({
     setShowAuthorizedEmailModal(tab);
   };
 
+  const switchToNewTab = (newTab) => {
+    setShowAuthorizedEmailModal(newTab);
+  };
+
   const emailAddressDomain = emailAddress.split('@').pop().toLowerCase();
 
   const displayElements = [];
@@ -77,24 +81,25 @@ function SenderEmailAddressWarning({
         </div>,
       );
     }
-    if (displayElements.length) {
-      displayElements.push(
-        <div key="AuthorizeSenderEmailAndDomainModal">
-          {showAuthorizedEmailModal && (
-            <AuthorizeSenderEmailAndDomainModal
-              senderEmail={emailAddress}
-              onRequestClose={() => {
-                setShowAuthorizedEmailModal(null);
-              }}
-              onSuccessAction={onSuccessfulEmailOrDomainAuthorization}
-              showSenderEmailTab={!isEmailAuthorized}
-              showSenderDomainTab={showSenderDomainWarning}
-              initialTab={showAuthorizedEmailModal}
-            />
-          )}
-        </div>,
-      );
-    }
+
+    displayElements.push(
+      <div key="AuthorizeSenderEmailAndDomainModal">
+        {showAuthorizedEmailModal && (
+          <AuthorizeSenderEmailAndDomainModal
+            senderEmail={emailAddress}
+            onRequestClose={() => {
+              setShowAuthorizedEmailModal(null);
+            }}
+            showSenderEmailTab={!isEmailAuthorized}
+            showSenderDomainTab={showSenderDomainWarning}
+            initialTab={showAuthorizedEmailModal}
+            onSuccessAction={onSuccessfulEmailOrDomainAuthorization}
+            autoSwitchTab={switchToNewTab}
+          />
+        )}
+      </div>,
+    );
+
     if (displayElements.length)
       return (
         <>
