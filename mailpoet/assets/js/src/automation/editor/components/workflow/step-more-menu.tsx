@@ -46,6 +46,10 @@ export function StepMoreMenu({ step }: Props): JSX.Element {
           onRequestClose={() => {
             setShowModal(false);
           }}
+          tracking={{
+            utm_medium: 'upsell_modal',
+            utm_campaign: 'remove_automation_step',
+          }}
         >
           {__('You cannot remove a new step from the automation.', 'mailpoet')}
         </PremiumModal>

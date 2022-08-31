@@ -19,6 +19,7 @@ import {
   premiumFeaturesEnabled,
   UpgradeInfo,
   useUpgradeInfo,
+  UtmParams,
 } from './upgrade_info';
 
 const premiumValidAndActive = premiumFeaturesEnabled && MailPoet.premiumActive;
@@ -27,6 +28,8 @@ type Props = Omit<ComponentProps<typeof Modal>, 'title' | 'onRequestClose'> & {
   // Fix type from "@types/wordpress__components" where it is defined as a union of event
   // handlers, resulting in a function requiring intersection of all of the event types.
   onRequestClose: EventHandler<KeyboardEvent | MouseEvent | FocusEvent>;
+} & {
+  tracking?: UtmParams;
 };
 
 type State = undefined | 'busy' | 'success' | 'error';
@@ -45,9 +48,13 @@ const getCta = (state: State, upgradeInfo: UpgradeInfo): string => {
   return cta;
 };
 
-export function PremiumModal({ children, ...props }: Props): JSX.Element {
+export function PremiumModal({
+  children,
+  tracking,
+  ...props
+}: Props): JSX.Element {
   const [state, setState] = useState<State>();
-  const upgradeInfo = useUpgradeInfo();
+  const upgradeInfo = useUpgradeInfo(tracking);
 
   //
   useEffect(() => {
