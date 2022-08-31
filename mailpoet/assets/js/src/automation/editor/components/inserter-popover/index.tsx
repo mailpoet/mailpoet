@@ -53,6 +53,10 @@ export function InserterPopover(): JSX.Element | null {
             setShowModal(false);
             popoverRef.current?.focus();
           }}
+          tracking={{
+            utm_medium: 'upsell_modal',
+            utm_campaign: 'add_automation_step',
+          }}
         >
           {__('You cannot add a new step to the automation.', 'mailpoet')}
         </PremiumModal>
