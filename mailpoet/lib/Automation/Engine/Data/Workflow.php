@@ -156,6 +156,7 @@ class Workflow {
 
   public function toArray(): array {
     return [
+      'id' => $this->id,
       'name' => $this->name,
       'status' => $this->status,
       'author' => $this->author->ID,
