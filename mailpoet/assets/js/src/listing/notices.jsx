@@ -74,7 +74,7 @@ export function MailerError(props) {
     ).firstChild;
 
     const listOfAttributeNames = link.getAttributeNames();
-    const allowedAttributesList = [
+    const allowedAttributeNames = [
       'target',
       'rel',
       'class',
@@ -83,22 +83,22 @@ export function MailerError(props) {
     ];
 
     // include these custom attributes in the final link
-    const otherAttributes = listOfAttributeNames.reduce((acc, name) => {
-      if (allowedAttributesList.includes(name)) {
+    const allowedAttributes = listOfAttributeNames.reduce((acc, name) => {
+      if (allowedAttributeNames.includes(name)) {
         // react requires the class attribute to be named className.
         return {
           ...acc,
           [name === 'class' ? 'className' : name]: link.getAttribute(name),
         };
       }
-      return { ...acc };
+      return acc;
     }, {});
 
     return (
       <a
         key={`a-${match}`}
         href={link.getAttribute('href')}
-        {...otherAttributes}
+        {...allowedAttributes}
       >
         {link.textContent}
       </a>
