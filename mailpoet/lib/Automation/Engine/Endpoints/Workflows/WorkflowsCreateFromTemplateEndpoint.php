@@ -19,8 +19,8 @@ class WorkflowsCreateFromTemplateEndpoint extends Endpoint {
   }
 
   public function handle(Request $request): Response {
-    $this->createWorkflowFromTemplateController->createWorkflow((string)$request->getParam('slug'));
-    return new Response();
+    $workflow = $this->createWorkflowFromTemplateController->createWorkflow((string)$request->getParam('slug'));
+    return new Response($workflow->toArray());
   }
 
   public static function getRequestSchema(): array {
