@@ -120,17 +120,22 @@ fi
 cp /project/tests/docker/codeception/wp-56-phpmailer-fix.php /wp-core/wp-content/plugins/wp-56-phpmailer-fix.php
 wp plugin activate wp-56-phpmailer-fix
 
-# activate all plugins which source code want to access in tests runtime
-wp plugin activate woocommerce
-wp plugin activate woocommerce-subscriptions
-wp plugin activate woocommerce-memberships
-wp plugin activate woo-gutenberg-products-block
+# Activate and print info about plugins that we want to use in tests runtime.
+# The plugin activation could be skipped by setting env. variable SKIP_PLUGINS
+# E.g. we want to run some tests without the plugins to make sure we are not dependent on those
+if [[ $SKIP_PLUGINS != "1" ]]; then
+  # activate all plugins
+  wp plugin activate woocommerce
+  wp plugin activate woocommerce-subscriptions
+  wp plugin activate woocommerce-memberships
+  wp plugin activate woo-gutenberg-products-block
 
-# print info about activated plugins
-wp plugin get woocommerce
-wp plugin get woocommerce-subscriptions
-wp plugin get woocommerce-memberships
-wp plugin get woo-gutenberg-products-block
+  # print info about activated plugins
+  wp plugin get woocommerce
+  wp plugin get woocommerce-subscriptions
+  wp plugin get woocommerce-memberships
+  wp plugin get woo-gutenberg-products-block
+fi
 
 # Set constants in wp-config.php
 wp config set WP_DEBUG true --raw
