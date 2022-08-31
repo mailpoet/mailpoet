@@ -130,9 +130,25 @@ class SenderField extends Component {
             mssActive={window.mailpoet_mss_active}
             isEmailAuthorized={!this.state.showAuthEmailsError}
             showSenderDomainWarning={this.state.showSenderDomainWarning}
-            onSuccessfulEmailOrDomainAuthorization={() =>
-              this.setState({ showSenderDomainWarning: false })
-            }
+            onSuccessfulEmailOrDomainAuthorization={(data) => {
+              if (data.type === 'email') {
+                this.setState({ showAuthEmailsError: false });
+
+                MailPoet.trackEvent('MSS in plugin authorize email', {
+                  'authorized email source': 'newsletter',
+                  wasSuccessful: 'yes',
+                });
+              }
+              if (data.type === 'domain') {
+                this.setState({ showSenderDomainWarning: false });
+
+                MailPoet.trackEvent('MSS in plugin verify sender domain', {
+                  'verify sender domain source': 'newsletter',
+                  wasSuccessful: 'yes',
+                });
+              }
+              resetFieldError(this.domElementSelector, this.parsleyFieldName);
+            }}
           />
         </div>
       </>
