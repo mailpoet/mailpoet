@@ -31,22 +31,13 @@ const performSuccessActionOnModalClose = (data) => {
   const isInSettings = window.location.href.includes('?page=mailpoet-settings');
 
   const isInNewsletterSendPage = window.location.href.includes(
-    '?page=mailpoet-newsletters',
+    '?page=mailpoet-newsletters#/send',
   );
 
-  if (isInSettings) {
-    trackEvent(data);
+  trackEvent(data);
+
+  if (isInSettings || isInNewsletterSendPage) {
     window.location.reload();
-  } else if (isInNewsletterSendPage) {
-    trackEvent(data);
-    jQuery('#field_sender_address')
-      .parsley()
-      .removeError('invalidFromAddress', { updateClass: true });
-    jQuery('#field_sender_address')
-      .parsley()
-      .removeError('invalidSenderDomain', { updateClass: true });
-  } else {
-    trackEvent(data);
   }
 };
 
