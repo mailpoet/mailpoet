@@ -73,7 +73,7 @@ class UpdateWorkflowController {
     }
   }
 
-  private function validateWorkflowSteps(Workflow $workflow, array $steps): void {
+  protected function validateWorkflowSteps(Workflow $workflow, array $steps): void {
     $existingSteps = $workflow->getSteps();
     if (count($steps) !== count($existingSteps)) {
       throw Exceptions::workflowStructureModificationNotSupported();
