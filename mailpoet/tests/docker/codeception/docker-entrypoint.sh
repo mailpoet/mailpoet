@@ -126,6 +126,12 @@ wp plugin activate woocommerce-subscriptions
 wp plugin activate woocommerce-memberships
 wp plugin activate woo-gutenberg-products-block
 
+# print info about activated plugins
+wp plugin get woocommerce
+wp plugin get woocommerce-subscriptions
+wp plugin get woocommerce-memberships
+wp plugin get woo-gutenberg-products-block
+
 # Set constants in wp-config.php
 wp config set WP_DEBUG true --raw
 wp config set WP_DEBUG_DISPLAY true --raw
@@ -140,13 +146,6 @@ if [[ $CIRCLE_JOB == *"_oldest"* ]]; then
   wp theme activate twentynineteen
 fi
 
-if [[ $TEST_TYPE == "acceptance" ]]; then
-  # print info about installed plugins
-  wp plugin get woocommerce
-  wp plugin get woocommerce-subscriptions
-  wp plugin get woocommerce-memberships
-  wp plugin get woo-gutenberg-products-block
-fi
 # activate MailPoet
 wp plugin activate mailpoet/mailpoet.php
 if [[ $MULTISITE == "1" ]]; then
