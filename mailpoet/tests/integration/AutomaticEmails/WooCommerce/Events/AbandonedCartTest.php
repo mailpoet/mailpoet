@@ -70,6 +70,9 @@ class AbandonedCartTest extends \MailPoetTest {
   /** @var AutomaticEmailScheduler */
   private $automaticEmailScheduler;
 
+  /** @var WC_Cart */
+  private $cartBackup;
+
   public function _before() {
     $this->cleanup();
 
@@ -100,6 +103,7 @@ class AbandonedCartTest extends \MailPoetTest {
     $this->automaticEmailScheduler = new AutomaticEmailScheduler(new Scheduler($this->wp, $this->diContainer->get(NewslettersRepository::class)));
 
     $this->wooCommerceCartMock = $this->mockWooCommerceClass(WC_Cart::class, ['is_empty', 'get_cart']);
+    $this->cartBackup = $this->wooCommerce->cart;
     $this->wooCommerce->cart = $this->wooCommerceCartMock;
     /** @var WooCommerceHelper|MockObject $wooCommerceHelperMock - for phpstan */
     $wooCommerceHelperMock = $this->make(WooCommerceHelper::class, [
@@ -402,6 +406,8 @@ class AbandonedCartTest extends \MailPoetTest {
   public function _after() {
     WPFunctions::set(new WPFunctions());
     Carbon::setTestNow();
+    // Restore original cart object
+    $this->wooCommerce->cart = $this->cartBackup;
     $this->cleanup();
   }
 }
