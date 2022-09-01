@@ -188,7 +188,14 @@ class RoboFile extends \Robo\Tasks {
 
   public function testMultisiteIntegration($opts = ['file' => null, 'group' => null, 'skip-group' => null, 'xml' => false, 'multisite' => true, 'skip-deps' => false, 'skip-plugins' => false]) {
     return $this->runTestsInContainer(array_merge($opts, ['test_type' => 'integration']));
+  }
 
+  public function testWooIntegration(array $opts = ['file' => null, 'xml' => false, 'multisite' => false, 'debug' => false]) {
+    return $this->runTestsInContainer(array_merge($opts, ['test_type' => 'integration', 'group' => 'woo', 'skip-deps' => true, 'skip-plugins' => false]));
+  }
+
+  public function testBaseIntegration(array $opts = ['file' => null, 'xml' => false, 'multisite' => false, 'debug' => false]) {
+    return $this->runTestsInContainer(array_merge($opts, ['test_type' => 'integration', 'skip-group' => 'woo', 'skip-deps' => true, 'skip-plugins' => true]));
   }
 
   public function testCoverage($opts = ['file' => null, 'xml' => false]) {
