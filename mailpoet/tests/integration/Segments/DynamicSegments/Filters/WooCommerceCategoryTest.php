@@ -4,7 +4,6 @@ namespace MailPoet\Segments\DynamicSegments\Filters;
 
 require_once(ABSPATH . 'wp-admin/includes/taxonomy.php');
 
-use Helper\Database;
 use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Entities\DynamicSegmentFilterEntity;
 use MailPoet\Entities\SegmentEntity;
@@ -37,7 +36,6 @@ class WooCommerceCategoryTest extends \MailPoetTest {
     $this->wooCommerceCategory = $this->diContainer->get(WooCommerceCategory::class);
     $this->subscribersRepository = $this->diContainer->get(SubscribersRepository::class);
 
-    Database::loadSQL('createWCLookupTables');
     $this->cleanUp();
 
     $customerId1 = $this->createCustomer('customer1@example.com', 'customer');

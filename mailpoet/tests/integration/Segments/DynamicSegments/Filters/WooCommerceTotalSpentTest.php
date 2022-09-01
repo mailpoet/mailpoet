@@ -2,7 +2,6 @@
 
 namespace MailPoet\Segments\DynamicSegments\Filters;
 
-use Helper\Database;
 use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Entities\DynamicSegmentFilterEntity;
 use MailPoet\Entities\SegmentEntity;
@@ -33,7 +32,6 @@ class WooCommerceTotalSpentTest extends \MailPoetTest {
     $this->totalSpent = $this->diContainer->get(WooCommerceTotalSpent::class);
     $this->subscribersRepository = $this->diContainer->get(SubscribersRepository::class);
     $this->wp = $this->diContainer->get(WPFunctions::class);
-    Database::loadSQL('createWCLookupTables');
     $this->cleanUp();
 
     $customerId1 = $this->createCustomer('customer1@example.com', 'customer');

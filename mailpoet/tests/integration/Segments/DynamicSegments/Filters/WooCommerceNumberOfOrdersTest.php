@@ -2,7 +2,6 @@
 
 namespace MailPoet\Segments\DynamicSegments\Filters;
 
-use Helper\Database;
 use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Entities\DynamicSegmentFilterEntity;
 use MailPoet\Entities\SegmentEntity;
@@ -31,7 +30,6 @@ class WooCommerceNumberOfOrdersTest extends \MailPoetTest {
   public function _before(): void {
     $this->subscriberFactory = new SubscriberFactory();
     $this->numberOfOrders = $this->diContainer->get(WooCommerceNumberOfOrders::class);
-    Database::loadSQL('createWCLookupTables');
     $this->cleanUp();
 
     $customerId1 = $this->createCustomer('customer1@example.com', 'customer');

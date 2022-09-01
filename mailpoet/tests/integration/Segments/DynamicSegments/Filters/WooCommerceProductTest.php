@@ -2,7 +2,6 @@
 
 namespace MailPoet\Segments\DynamicSegments\Filters;
 
-use Helper\Database;
 use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Entities\DynamicSegmentFilterEntity;
 use MailPoet\Entities\SegmentEntity;
@@ -32,7 +31,6 @@ class WooCommerceProductTest extends \MailPoetTest {
     $this->wooCommerceProduct = $this->diContainer->get(WooCommerceProduct::class);
     $this->subscribersRepository = $this->diContainer->get(SubscribersRepository::class);
 
-    Database::loadSQL('createWCLookupTables');
     $this->cleanUp();
 
     $customerId1 = $this->createCustomer('customer1@example.com', 'customer');
