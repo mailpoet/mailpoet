@@ -7,6 +7,7 @@ use MailPoet\Entities\DynamicSegmentFilterEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Subscribers\SubscribersRepository;
+use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\DBAL\ForwardCompatibility\DriverStatement;
 use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
 
@@ -136,12 +137,15 @@ class WooCommerceCountryTest extends \MailPoetTest {
     $id = $connection->lastInsertId();
     $orderId = (int)$id + 1;
     $orderLookupTable = $wpdb->prefix . 'wc_order_stats';
+    $dateCreated = Carbon::now()->toDateTimeString();
     $connection->executeQuery("
-      INSERT INTO {$orderLookupTable} (order_id, status, customer_id)
+      INSERT INTO {$orderLookupTable} (order_id, status, customer_id, date_created, date_created_gmt)
         VALUES (
             {$orderId},
             'wc-completed',
-            {$id}
+            {$id},
+            '{$dateCreated}',
+            '{$dateCreated}'
         )
     ");
   }
