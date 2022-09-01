@@ -2,8 +2,23 @@ import { ComponentType } from 'react';
 import { Step, Workflow } from '../components/workflow/types';
 
 export interface AutomationEditorWindow extends Window {
+  mailpoet_automation_context: Context;
   mailpoet_automation_workflow: Workflow;
 }
+
+export type Context = {
+  steps: Record<
+    string,
+    {
+      key: string;
+      name: string;
+      args_schema: {
+        type: 'object';
+        properties?: Record<string, { type: string; default?: unknown }>;
+      };
+    }
+  >;
+};
 
 export type StepGroup = 'actions' | 'logical' | 'triggers';
 
@@ -20,6 +35,7 @@ export type StepType = {
 };
 
 export type State = {
+  context: Context;
   stepTypes: Record<string, StepType>;
   workflowData: Workflow;
   workflowSaved: boolean;
