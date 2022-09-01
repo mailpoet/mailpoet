@@ -2,7 +2,6 @@
 
 namespace MailPoet\Segments\DynamicSegments\Filters;
 
-use Helper\Database;
 use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Entities\DynamicSegmentFilterEntity;
 use MailPoet\Entities\SegmentEntity;
@@ -35,9 +34,6 @@ class WooCommerceSubscriptionTest extends \MailPoetTest {
   private $products = [];
 
   public function _before(): void {
-
-    Database::createLookUpTables();
-
     $this->cleanup();
     $productId = $this->createProduct('Premium Newsletter');
     foreach (self::SUBSCRIBER_EMAILS as $email) {
@@ -217,10 +213,6 @@ class WooCommerceSubscriptionTest extends \MailPoetTest {
 
   public function _after(): void {
     $this->cleanUp();
-
-    global $wpdb;
-    $this->connection->executeQuery("DROP TABLE IF EXISTS {$wpdb->prefix}woocommerce_order_itemmeta");
-    $this->connection->executeQuery("DROP TABLE IF EXISTS {$wpdb->prefix}woocommerce_order_items");
   }
 
   public function cleanUp(): void {
