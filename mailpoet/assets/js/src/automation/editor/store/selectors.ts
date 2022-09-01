@@ -2,7 +2,7 @@ import { createRegistrySelector } from '@wordpress/data';
 import { store as interfaceStore } from '@wordpress/interface';
 import { store as preferencesStore } from '@wordpress/preferences';
 import { storeName } from './constants';
-import { Feature, State, StepType } from './types';
+import { Context, Feature, State, StepType } from './types';
 import { Item } from '../components/inserter/item';
 import { Step, Workflow } from '../components/workflow/types';
 
@@ -19,6 +19,17 @@ export const isSidebarOpened = createRegistrySelector(
 
 export function isInserterSidebarOpened(state: State): boolean {
   return state.inserterSidebar.isOpened;
+}
+
+export function getContext(state: State): Context {
+  return state.context;
+}
+
+export function getContextStep(
+  state: State,
+  key: string,
+): Context['steps'][number] | undefined {
+  return state.context.steps[key];
 }
 
 export function getSteps(state: State): StepType[] {

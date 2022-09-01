@@ -6,6 +6,7 @@ use DateTimeImmutable;
 use MailPoet\AdminPages\PageRenderer;
 use MailPoet\Automation\Engine\Data\Step;
 use MailPoet\Automation\Engine\Data\Workflow;
+use MailPoet\Automation\Engine\Registry;
 use MailPoet\Automation\Engine\Storage\WorkflowStorage;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoet\WP\Notice as WPNotice;
@@ -17,16 +18,21 @@ class AutomationEditor {
   /** @var PageRenderer */
   private $pageRenderer;
 
+  /** @var Registry */
+  private $registry;
+
   /** @var WPFunctions */
   private $wp;
 
   public function __construct(
     WorkflowStorage $workflowStorage,
     PageRenderer $pageRenderer,
+    Registry $registry,
     WPFunctions $wp
   ) {
     $this->workflowStorage = $workflowStorage;
     $this->pageRenderer = $pageRenderer;
+    $this->registry = $registry;
     $this->wp = $wp;
   }
 
@@ -45,6 +51,7 @@ class AutomationEditor {
     }
 
     $this->pageRenderer->displayPage('automation/editor.html', [
+      'context' => $this->buildContext(),
       'workflow' => $this->buildWorkflow($workflow),
       'sub_menu' => 'mailpoet-automation',
       'api' => [
@@ -52,6 +59,18 @@ class AutomationEditor {
         'nonce' => $this->wp->wpCreateNonce('wp_rest'),
       ],
     ]);
+  }
+
+  private function buildContext(): array {
+    $steps = [];
+    foreach ($this->registry->getSteps() as $key => $step) {
+      $steps[$key] = [
+        'key' => $step->getKey(),
+        'name' => $step->getName(),
+        'args_schema' => $step->getArgsSchema()->toArray(),
+      ];
+    }
+    return ['steps' => $steps];
   }
 
   private function buildWorkflow(Workflow $workflow): array {
