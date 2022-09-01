@@ -280,7 +280,7 @@ class WooCommerceTest extends \MailPoetTest {
     $this->wooCommerce->synchronizeCustomers();
     $subscriber = $this->subscribersRepository->findOneBy(['email' => '']);
     expect($subscriber)->isEmpty();
-    $this->deleteOrder($guest['order_id']);
+    $this->tester->deleteTestWooOrders();
   }
 
   public function testItDoesNotSynchronizeInvalidEmailsForNewUsers(): void {
@@ -290,7 +290,7 @@ class WooCommerceTest extends \MailPoetTest {
     $this->wooCommerce->synchronizeCustomers();
     $subscriber = $this->subscribersRepository->findOneBy(['email' => $invalidEmail]);
     expect($subscriber)->isEmpty();
-    $this->deleteOrder($guest['order_id']);
+    $this->tester->deleteTestWooOrders();
   }
 
   public function testItSynchronizesFirstNamesForRegisteredCustomers(): void {
@@ -392,8 +392,8 @@ class WooCommerceTest extends \MailPoetTest {
     $guest = $this->insertGuestCustomer();
     $this->wooCommerce->synchronizeCustomers();
     $user->remove_role('customer');
-    $this->deleteOrder($user->orderId);
-    $this->deleteOrder($guest['order_id']);
+    $this->tester->deleteTestWooOrder((int)$user->orderId);
+    $this->tester->deleteTestWooOrder((int)$guest['order_id']);
     $this->wooCommerce->synchronizeCustomers();
     $subscribers = $this->getWCSubscribersByEmails($this->userEmails);
     expect($subscribers)->count(2);
@@ -660,7 +660,7 @@ class WooCommerceTest extends \MailPoetTest {
       DELETE FROM
         {$subscribersTable}
       WHERE
-        email LIKE 'user-sync-test%'
+        email LIKE 'user-sync-test%' OR email = ''
     ");
     // delete orders
     $connection->executeQuery("
@@ -775,37 +775,15 @@ class WooCommerceTest extends \MailPoetTest {
    * @return int
    */
   private function createOrder(array $data): int {
-    $orderData = [
-      'post_type' => 'shop_order',
-      'meta_input' => [
-        '_billing_email' => isset($data['email']) ? $data['email'] : '',
-        '_billing_first_name' => isset($data['first_name']) ? $data['first_name'] : '',
-        '_billing_last_name' => isset($data['last_name']) ? $data['last_name'] : '',
-      ],
-    ];
+    $order = $this->tester->createWooCommerceOrder();
+    $order->set_billing_email($data['email'] ?? '');
+    $order->set_billing_first_name($data['first_name'] ?? '');
+    $order->set_billing_last_name($data['last_name'] ?? '');
     if (!empty($data['user_id'])) {
-      $orderData['meta_input']['_customer_user'] = (int)$data['user_id'];
+      $order->set_customer_id((int)$data['user_id']);
     }
-    $id = wp_insert_post($orderData);
-    $this->assertIsInt($id);
-    return $id;
-  }
-
-  private function deleteOrder(int $id): void {
-    global $wpdb;
-    $connection = $this->entityManager->getConnection();
-    $connection->executeQuery("
-      DELETE FROM
-        {$wpdb->posts}
-      WHERE
-        id = :id
-    ", ['id' => $id]);
-    $connection->executeQuery("
-      DELETE FROM
-        {$wpdb->postmeta}
-      WHERE
-        post_id = :id
-    ", ['id' => $id]);
+    $order->save();
+    return $order->get_id();
   }
 
   private function clearEmail(SubscriberEntity $subscriber): void {
