@@ -65,6 +65,14 @@ class IntegrationTester extends \Codeception\Actor {
     DataStore::sync_order($orderId);
   }
 
+  public function deleteTestWooOrder(int $wooOrderId) {
+    $helper = ContainerWrapper::getInstance()->get(Helper::class);
+    $order = $helper->wcGetOrder($wooOrderId);
+    if ($order instanceof \WC_Order) {
+      $order->delete(true);
+    }
+  }
+
   public function deleteTestWooOrders() {
     $helper = ContainerWrapper::getInstance()->get(Helper::class);
     foreach ($this->wooOrderIds as $wooOrderId) {
@@ -73,6 +81,7 @@ class IntegrationTester extends \Codeception\Actor {
         $order->delete(true);
       }
     }
+    $this->wooOrderIds = [];
   }
 
   public function uniqueId($length = 10): string {
