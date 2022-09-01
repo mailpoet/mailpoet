@@ -78,7 +78,7 @@ class WorkflowRun {
   }
 
   public function getVersionId(): int {
-    return $this->workflowId;
+    return $this->versionId;
   }
 
   public function getTriggerKey(): string {
@@ -156,8 +156,8 @@ class WorkflowRun {
     $workflowRun = new WorkflowRun((int)$data['workflow_id'], (int)$data['version_id'], $data['trigger_key'], $data['subjects']);
     $workflowRun->id = (int)$data['id'];
     $workflowRun->status = $data['status'];
-    $workflowRun->createdAt = $data['created_at'];
-    $workflowRun->updatedAt = $data['updated_at'];
+    $workflowRun->createdAt = new DateTimeImmutable($data['created_at']);
+    $workflowRun->updatedAt = new DateTimeImmutable($data['updated_at']);
     return $workflowRun;
   }
 }
