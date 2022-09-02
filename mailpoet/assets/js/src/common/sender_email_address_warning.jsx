@@ -41,18 +41,20 @@ function SenderEmailAddressWarning({
           <p className="sender_email_address_warning">
             {ReactStringReplace(
               MailPoet.I18n.t('youNeedToAuthorizeTheEmail'),
-              '[email]',
-              () => emailAddress,
-            )}{' '}
-            <a
-              className="mailpoet-link"
-              href="#"
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={(e) => loadModal(e, 'sender_email')}
-            >
-              {MailPoet.I18n.t('authorizeMyEmail')}
-            </a>
+              /\[link\](.*?)\[\/link\]/g,
+              (match) => (
+                <a
+                  className="mailpoet-link"
+                  href="#"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={(e) => loadModal(e, 'sender_email')}
+                  key={emailAddress}
+                >
+                  {match}
+                </a>
+              ),
+            )}
           </p>
         </div>,
       );

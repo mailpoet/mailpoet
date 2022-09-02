@@ -22,6 +22,8 @@ class SenderField extends Component {
     };
     this.onChange = this.onChange.bind(this);
     this.onBlur = this.onBlur.bind(this);
+    // to allow use the same error message from the last step of sending
+    window.mailpoet_sender_address_field_blur = this.onBlur;
 
     const fieldId = props.field.id || `field_${props.field.name}`;
     this.domElementSelector = `#${fieldId}`;
