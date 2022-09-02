@@ -4,11 +4,18 @@
   .mailpoet-add-new-button {
     padding-right: 12px;
   }
+
+  .mailpoet-automation-listing {
+    /* Prevent border radius beneath tabs */
+    border-radius: 0 0 1px 1px;
+    /* Prevent overlapping box shadow since listing is rendered inside tabs */
+    clip-path: inset(-1px 0 0 0);
+  }
 }
 
 .mailpoet-filter-tab-panel {
   background-color: #fff;
-  border-radius: calc(2px - 1px);
+  border-radius: 1px;
   box-shadow: 0 0 0 1px rgba(0, 0, 0, .1);
   outline: none;
 
