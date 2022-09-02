@@ -1,11 +1,7 @@
 import { Search, TableCard } from '@woocommerce/components/build';
 import { TabPanel } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
-<<<<<<< HEAD
-import { useEffect, useMemo } from 'react';
-=======
 import { useCallback, useLayoutEffect, useMemo } from 'react';
->>>>>>> a3f7da72c (fixup! Add counts dynamically to avoid type mismatch)
 import { useHistory, useLocation } from 'react-router-dom';
 import { getRow } from './get-row';
 import { Workflow, WorkflowStatus } from './workflow';
@@ -18,17 +14,23 @@ type Props = {
 export function AutomationListing({ workflows, loading }: Props): JSX.Element {
   const history = useHistory();
   const location = useLocation();
-  const pageSearch = new URLSearchParams(location.search);
+  const pageSearch = useMemo(
+    () => new URLSearchParams(location.search),
+    [location],
+  );
 
-  const updateUrlSearchString = (keysAndValues: Record<string, string>) => {
-    Object.keys(keysAndValues).forEach((key) => {
-      pageSearch.set(key, keysAndValues[key]);
-      if (['per_page', 'status'].includes(key)) {
-        pageSearch.delete('paged');
-      }
-    });
-    history.replace({ search: pageSearch.toString() });
-  };
+  const updateUrlSearchString = useCallback(
+    (keysAndValues: Record<string, string>) => {
+      Object.keys(keysAndValues).forEach((key) => {
+        pageSearch.set(key, keysAndValues[key]);
+        if (['per_page', 'status'].includes(key)) {
+          pageSearch.delete('paged');
+        }
+      });
+      history.replace({ search: pageSearch.toString() });
+    },
+    [pageSearch, history],
+  );
 
   const groupedWorkflows = useMemo(() => {
     const grouped = {};
