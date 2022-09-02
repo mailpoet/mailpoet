@@ -27,7 +27,7 @@ export function AutomationListing({ workflows, loading }: Props): JSX.Element {
           pageSearch.delete('paged');
         }
       });
-      history.replace({ search: pageSearch.toString() });
+      history.push({ search: pageSearch.toString() });
     },
     [pageSearch, history],
   );
@@ -97,13 +97,73 @@ export function AutomationListing({ workflows, loading }: Props): JSX.Element {
     });
   }, [workflows, groupedWorkflows, tabs]);
 
-  const tableHeaders = [
-    { key: 'name', label: __('Name', 'mailpoet') },
-    { key: 'subscribers', label: __('Subscribers', 'mailpoet') },
-    { key: 'status', label: __('Status', 'mailpoet') },
-    { key: 'edit' },
-    { key: 'more' },
-  ];
+  const tableHeaders = useMemo(
+    () => [
+      { key: 'name', label: __('Name', 'mailpoet') },
+      { key: 'subscribers', label: __('Subscribers', 'mailpoet') },
+      { key: 'status', label: __('Status', 'mailpoet') },
+      { key: 'edit' },
+      { key: 'more' },
+    ],
+    [],
+  );
+
+  const tabRenderer = useCallback(
+    (tab) => {
+      const filteredWorkflows: Workflow[] =
+        tab.name === 'all' ? workflows : groupedWorkflows[tab.name] ?? [];
+      const rowsPerPage = parseInt(pageSearch.get('per_page') || '25', 10);
+      const currentPage = parseInt(pageSearch.get('paged') || '1', 10);
+      const start = (currentPage - 1) * rowsPerPage;
+      const rows = filteredWorkflows
+        .map((workflow) => getRow(workflow))
+        .slice(start, start + rowsPerPage);
+
+      return (
+        <TableCard
+          className="mailpoet-automation-listing"
+          title=""
+          isLoading={loading}
+          headers={tableHeaders}
+          rows={rows}
+          rowKey={(_, i) => filteredWorkflows[i].id}
+          rowsPerPage={rowsPerPage}
+          onQueryChange={(key) => (value) => {
+            updateUrlSearchString({ [key]: value });
+          }}
+          totalRows={filteredWorkflows.length}
+          query={Object.fromEntries(pageSearch)}
+          hasSearch
+          showMenu={false}
+          actions={[
+            <Search
+              className="mailpoet-automation-listing-search"
+              allowFreeTextSearch
+              inlineTags
+              key="search"
+              // onChange={ onSearchChange }
+              // placeholder={
+              //  labels.placeholder ||
+              //  __( 'Search by item name', 'woocommerce' )
+              // }
+              // selected={ searchedLabels }
+              type="custom"
+              disabled={loading || workflows.length === 0}
+              autocompleter={{}}
+            />,
+          ]}
+        />
+      );
+    },
+    [
+      workflows,
+      groupedWorkflows,
+      pageSearch,
+      loading,
+      tableHeaders,
+      updateUrlSearchString,
+    ],
+  );
 
   return (
     <TabPanel
@@ -114,52 +174,7 @@ export function AutomationListing({ workflows, loading }: Props): JSX.Element {
       }}
       initialTabName={pageSearch.get('status') || 'all'}
     >
-      {(tab) => {
-        const filteredWorkflows: Workflow[] =
-          tab.name === 'all' ? workflows : groupedWorkflows[tab.name] ?? [];
-        const rowsPerPage = parseInt(pageSearch.get('per_page') || '25', 10);
-        const currentPage = parseInt(pageSearch.get('paged') || '1', 10);
-        const start = (currentPage - 1) * rowsPerPage;
-        const rows = filteredWorkflows
-          .map((workflow) => getRow(workflow))
-          .slice(start, start + rowsPerPage);
-
-        return (
-          <TableCard
-            className="mailpoet-automation-listing"
-            title=""
-            isLoading={loading}
-            headers={tableHeaders}
-            rows={rows}
-            rowKey={(_, i) => filteredWorkflows[i].id}
-            rowsPerPage={rowsPerPage}
-            onQueryChange={(key) => (value) => {
-              updateUrlSearchString({ [key]: value });
-            }}
-            totalRows={filteredWorkflows.length}
-            query={Object.fromEntries(pageSearch)}
-            hasSearch
-            showMenu={false}
-            actions={[
-              <Search
-                className="mailpoet-automation-listing-search"
-                allowFreeTextSearch
-                inlineTags
-                key="search"
-                // onChange={ onSearchChange }
-                // placeholder={
-                //  labels.placeholder ||
-                //  __( 'Search by item name', 'woocommerce' )
-                // }
-                // selected={ searchedLabels }
-                type="custom"
-                disabled={loading || workflows.length === 0}
-                autocompleter={{}}
-              />,
-            ]}
-          />
-        );
-      }}
+      {tabRenderer}
     </TabPanel>
   );
 }
