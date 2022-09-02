@@ -44,6 +44,7 @@ function Workflows(): JSX.Element {
           }}
           icon={plusIcon}
           variant="primary"
+          className="mailpoet-add-new-button"
         >
           New automation
         </Button>
