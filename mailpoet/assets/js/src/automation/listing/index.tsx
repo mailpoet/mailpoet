@@ -1,6 +1,7 @@
 import { Search, TableCard } from '@woocommerce/components/build';
 import { TabPanel } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
+import { useMemo } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import { getRow } from './get-row';
 import { Workflow, WorkflowStatus } from './workflow';
@@ -31,13 +32,16 @@ export function AutomationListing({ workflows, loading }: Props): JSX.Element {
     history.replace({ search: pageSearch.toString() });
   };
 
-  const groupedWorkflows = {};
-  workflows.forEach((workflow) => {
-    if (!groupedWorkflows[workflow.status]) {
-      groupedWorkflows[workflow.status] = [];
-    }
-    groupedWorkflows[workflow.status].push(workflow);
-  });
+  const groupedWorkflows = useMemo(() => {
+    const grouped = {};
+    workflows.forEach((workflow) => {
+      if (!grouped[workflow.status]) {
+        grouped[workflow.status] = [];
+      }
+      grouped[workflow.status].push(workflow);
+    });
+    return grouped;
+  }, [workflows]);
 
   const tabLabels = [
     { status: WorkflowStatus.ACTIVE, label: 'Active' },
