@@ -25,7 +25,7 @@ export function AutomationListing({ workflows, loading }: Props): JSX.Element {
     Object.keys(keysAndValues).forEach((key) => {
       pageSearch.set(key, keysAndValues[key]);
       if (['per_page', 'status'].includes(key)) {
-        pageSearch.set('paged', '1');
+        pageSearch.delete('paged');
       }
     });
     history.replace({ search: pageSearch.toString() });
