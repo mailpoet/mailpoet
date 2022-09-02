@@ -809,6 +809,53 @@ class SchedulerTest extends \MailPoetTest {
     expect($subscribers[0]->id)->equals($subscriber->id);
   }
 
+  public function testItProcessesScheduledAutomationEmail() {
+    $newsletter = $this->_createNewsletter(Newsletter::TYPE_AUTOMATION, Newsletter::STATUS_ACTIVE);
+    $subscriber = $this->_createSubscriber();
+    $task = SendingTask::create();
+    $task->newsletterId = $newsletter->id;
+    $task->status = SendingQueue::STATUS_SCHEDULED;
+    $task->scheduledAt = Carbon::now()->subDay()->toDateTimeString();
+    $task->setSubscribers([$subscriber->id]);
+    $task->save();
+
+    // scheduled task should exist
+    $task = SendingTask::getByNewsletterId($newsletter->id);
+    expect($task->status)->equals(SendingQueue::STATUS_SCHEDULED);
+    expect($task->newsletterId)->equals($newsletter->id);
+    expect($task->getSubscribers())->equals([$subscriber->id]);
+
+    // task should have its status set to null (i.e., sending)
+    $scheduler = $this->getScheduler();
+    $scheduler->process();
+    $task = SendingTask::getByNewsletterId($newsletter->id);
+    expect($task->status)->null();
+  }
+
+  public function testItDeletesScheduledAutomationEmailWhenUserDoesNotExist() {
+    $newsletter = $this->_createNewsletter(Newsletter::TYPE_AUTOMATION, Newsletter::STATUS_ACTIVE);
+    $subscriber = $this->_createSubscriber();
+    $task = SendingTask::create();
+    $task->newsletterId = $newsletter->id;
+    $task->status = SendingQueue::STATUS_SCHEDULED;
+    $task->scheduledAt = Carbon::now()->subDay()->toDateTimeString();
+    $task->setSubscribers([$subscriber->id]);
+    $task->save();
+    $subscriber->delete();
+
+    // scheduled task should exist
+    $task = SendingTask::getByNewsletterId($newsletter->id);
+    expect($task->status)->equals(SendingQueue::STATUS_SCHEDULED);
+    expect($task->newsletterId)->equals($newsletter->id);
+    expect($task->getSubscribers())->equals([$subscriber->id]);
+
+    // task should be deleted
+    $scheduler = $this->getScheduler();
+    $scheduler->process();
+    $task = SendingTask::getByNewsletterId($newsletter->id);
+    expect($task)->false();
+  }
+
   public function testItUpdatesUpdateTime() {
     $originalUpdated = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'))->subHours(5)->toDateTimeString();
     $newsletter = $this->_createNewsletter(Newsletter::TYPE_WELCOME, Newsletter::STATUS_DRAFT);

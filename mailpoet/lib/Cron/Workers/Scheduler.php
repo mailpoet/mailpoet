@@ -113,6 +113,8 @@ class Scheduler {
         $this->processScheduledAutomaticEmail($newsletter, $queue);
       } elseif ($newsletter->type === NewsletterEntity::TYPE_RE_ENGAGEMENT) {
         $this->processReEngagementEmail($queue);
+      } elseif ($newsletter->type === NewsletterEntity::TYPE_AUTOMATION) {
+        $this->processScheduledAutomationEmail($queue);
       }
       $this->cronHelper->enforceExecutionLimit($timer);
     }
@@ -223,6 +225,22 @@ class Scheduler {
       if ($this->verifySubscriber($subscriber, $queue) === false) {
         return false;
       }
+    }
+
+    $queue->status = null;
+    $queue->save();
+    return true;
+  }
+
+  public function processScheduledAutomationEmail($queue): bool {
+    $subscribers = $queue->getSubscribers();
+    $subscriber = (!empty($subscribers) && is_array($subscribers)) ? Subscriber::findOne($subscribers[0]) : null;
+    if (!$subscriber) {
+      $queue->delete();
+      return false;
+    }
+    if (!$this->verifySubscriber($subscriber, $queue)) {
+      return false;
     }
 
     $queue->status = null;
