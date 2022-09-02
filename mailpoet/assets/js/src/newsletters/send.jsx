@@ -166,38 +166,6 @@ class NewsletterSendComponent extends Component {
     return addresses.indexOf(fromAddress) !== -1;
   };
 
-  showInvalidFromAddressError = () => {
-    const fromAddress = this.state.item.sender_address;
-    let errorMessage = ReactStringReplace(
-      MailPoet.I18n.t('newsletterInvalidFromAddress'),
-      '%1$s',
-      () => fromAddress,
-    );
-    errorMessage = ReactStringReplace(
-      errorMessage,
-      /\[link\](.*?)\[\/link\]/g,
-      (match) =>
-        `<a href="https://account.mailpoet.com/authorization?email=${encodeURIComponent(
-          fromAddress,
-        )}" target="_blank" class="mailpoet-js-button-authorize-email-and-sender-domain" data-email="${fromAddress}" data-type="email" rel="noopener noreferrer">${match}</a>`,
-    );
-    jQuery('#field_sender_address')
-      .parsley()
-      .addError('invalidFromAddress', {
-        message: errorMessage.join(''),
-        updateClass: true,
-      });
-    MailPoet.trackEvent('Unauthorized email used', {
-      'Unauthorized email source': 'send',
-    });
-  };
-
-  removeInvalidFromAddressError = () => {
-    jQuery('#field_sender_address')
-      .parsley()
-      .removeError('invalidFromAddress', { updateClass: true });
-  };
-
   loadItem = (id) => {
     this.setState({ loading: true });
 
@@ -295,12 +263,13 @@ class NewsletterSendComponent extends Component {
       endpoint: 'mailer',
       action: 'getAuthorizedEmailAddresses',
     });
-    return response.data || [];
+    const authorizedEmails = response.data || [];
+    window.mailpoet_authorized_emails = authorizedEmails;
+    return authorizedEmails;
   };
 
   handleSend = (e) => {
     e.preventDefault();
-    this.removeInvalidFromAddressError();
 
     if (!this.isValid()) {
       return jQuery('#mailpoet_newsletter').parsley().validate();
@@ -310,7 +279,8 @@ class NewsletterSendComponent extends Component {
 
     return this.isValidFromAddress().then((valid) => {
       if (!valid) {
-        this.showInvalidFromAddressError();
+        // handling invalid error message is handled in sender_address_field component
+        window.mailpoet_sender_address_field_blur();
         return MailPoet.Modal.loading(false);
       }
       return this.saveNewsletter(e)
