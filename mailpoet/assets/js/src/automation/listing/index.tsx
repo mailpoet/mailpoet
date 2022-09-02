@@ -11,12 +11,6 @@ type Props = {
   loading: boolean;
 };
 
-type FilterTab = {
-  name: string;
-  title?: JSX.Element;
-  classname: string;
-};
-
 export function AutomationListing({ workflows, loading }: Props): JSX.Element {
   const history = useHistory();
   const location = useLocation();
@@ -43,50 +37,48 @@ export function AutomationListing({ workflows, loading }: Props): JSX.Element {
     return grouped;
   }, [workflows]);
 
-  const tabLabels = [
-    { status: WorkflowStatus.ACTIVE, label: 'Active' },
-    { status: WorkflowStatus.INACTIVE, label: 'Inactive' },
-    { status: WorkflowStatus.DRAFT, label: 'Draft' },
-    { status: WorkflowStatus.TRASH, label: 'Trash' },
-  ];
+  const tabs = useMemo(
+    () =>
+      [
+        {
+          name: 'all',
+          title: (
+            <>
+              <span>All</span>
+              <span className="count">{workflows.length.toString()}</span>
+            </>
+          ),
+          classname: 'tab-all',
+        },
+      ].concat(
+        [
+          { status: WorkflowStatus.ACTIVE, label: 'Active' },
+          { status: WorkflowStatus.INACTIVE, label: 'Inactive' },
+          { status: WorkflowStatus.DRAFT, label: 'Draft' },
+          { status: WorkflowStatus.TRASH, label: 'Trash' },
+        ].map((tabLabel) => {
+          const tab = {
+            name: tabLabel.status,
+            title: <span>{tabLabel.label}</span>,
+            classname: `tab-${tabLabel.status}`,
+          };
 
-  const tabs: FilterTab[] = [
-    {
-      name: 'all',
-      title: (
-        <>
-          <span>All</span>{' '}
-          <span className="count">{workflows.length.toString()}</span>
-        </>
+          const count = (groupedWorkflows[tabLabel.status] || []).length;
+
+          if (count > 0) {
+            tab.title = (
+              <>
+                <span>{tabLabel.label}</span>
+                <span className="count">{count}</span>
+              </>
+            );
+          }
+
+          return tab;
+        }),
       ),
-      classname: 'tab-all',
-    },
-  ];
-
-  tabLabels.forEach((tabInfo) => {
-    const tab: FilterTab = {
-      name: tabInfo.status,
-      classname: `tab-${tabInfo.status}`,
-    };
-
-    if (
-      groupedWorkflows[tabInfo.status] &&
-      groupedWorkflows[tabInfo.status].length > 0
-    ) {
-      tab.title = (
-        <>
-          <span>{tabInfo.label}</span>{' '}
-          <span className="count">
-            {groupedWorkflows[tabInfo.status].length}
-          </span>
-        </>
-      );
-    } else {
-      tab.title = <span>{tabInfo.label}</span>;
-    }
-
-    tabs.push(tab);
-  });
+    [groupedWorkflows, workflows],
+  );
 
   const tableHeaders = [
     { key: 'name', label: __('Name', 'mailpoet') },
@@ -101,7 +93,7 @@ export function AutomationListing({ workflows, loading }: Props): JSX.Element {
       className="mailpoet-filter-tab-panel"
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore - the Tab type actually expects a string for titles but won't render HTML,
-      // making it very difficult to style the count badges. It seems to be compatible wtih JSX
+      // making it very difficult to style the count badges. It seems to be compatible with JSX
       // elements, however.
       tabs={tabs}
       onSelect={(tabName) => {
