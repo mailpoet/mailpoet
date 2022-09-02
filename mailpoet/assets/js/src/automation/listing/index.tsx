@@ -1,7 +1,11 @@
 import { Search, TableCard } from '@woocommerce/components/build';
 import { TabPanel } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
-import { useMemo } from 'react';
+<<<<<<< HEAD
+import { useEffect, useMemo } from 'react';
+=======
+import { useCallback, useLayoutEffect, useMemo } from 'react';
+>>>>>>> a3f7da72c (fixup! Add counts dynamically to avoid type mismatch)
 import { useHistory, useLocation } from 'react-router-dom';
 import { getRow } from './get-row';
 import { Workflow, WorkflowStatus } from './workflow';
@@ -42,13 +46,8 @@ export function AutomationListing({ workflows, loading }: Props): JSX.Element {
       [
         {
           name: 'all',
-          title: (
-            <>
-              <span>All</span>
-              <span className="count">{workflows.length.toString()}</span>
-            </>
-          ),
-          classname: 'tab-all',
+          title: 'All',
+          className: 'mailpoet-tab-all',
         },
       ].concat(
         [
@@ -56,29 +55,45 @@ export function AutomationListing({ workflows, loading }: Props): JSX.Element {
           { status: WorkflowStatus.INACTIVE, label: 'Inactive' },
           { status: WorkflowStatus.DRAFT, label: 'Draft' },
           { status: WorkflowStatus.TRASH, label: 'Trash' },
-        ].map((tabLabel) => {
-          const tab = {
-            name: tabLabel.status,
-            title: <span>{tabLabel.label}</span>,
-            classname: `tab-${tabLabel.status}`,
-          };
-
-          const count = (groupedWorkflows[tabLabel.status] || []).length;
-
-          if (count > 0) {
-            tab.title = (
-              <>
-                <span>{tabLabel.label}</span>
-                <span className="count">{count}</span>
-              </>
-            );
-          }
-
-          return tab;
-        }),
+        ].map((tabLabel) => ({
+          name: tabLabel.status,
+          title: tabLabel.label,
+          className: `mailpoet-tab-${tabLabel.status}`,
+        })),
       ),
-    [groupedWorkflows, workflows],
+    [],
   );
+
+  // Add counts to tabs. The tab `title` must be a non-HTML string, so to avoid
+  // a type mismatch we're adding the counts dynamically after the fact.
+  useLayoutEffect(() => {
+    tabs.forEach((tab) => {
+      const count =
+        tab.name === 'all'
+          ? workflows.length
+          : (groupedWorkflows[tab.name] || []).length;
+
+      if (count < 1) {
+        return;
+      }
+
+      const tabElement = document.querySelector(`.${tab.className}`);
+
+      if (!tabElement) {
+        return;
+      }
+
+      const existingCount = tabElement.querySelector('.count');
+      if (existingCount) {
+        tabElement.removeChild(existingCount);
+      }
+
+      const countElement = document.createElement('span');
+      countElement.classList.add('count');
+      countElement.innerHTML = count;
+      tabElement.appendChild(countElement);
+    });
+  }, [workflows, groupedWorkflows, tabs]);
 
   const tableHeaders = [
     { key: 'name', label: __('Name', 'mailpoet') },
@@ -91,10 +106,6 @@ export function AutomationListing({ workflows, loading }: Props): JSX.Element {
   return (
     <TabPanel
       className="mailpoet-filter-tab-panel"
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore - the Tab type actually expects a string for titles but won't render HTML,
-      // making it very difficult to style the count badges. It seems to be compatible with JSX
-      // elements, however.
       tabs={tabs}
       onSelect={(tabName) => {
         updateUrlSearchString({ status: tabName });
