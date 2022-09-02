@@ -13,24 +13,26 @@ import {
 import { useMutation, useQuery } from './api';
 import { WorkflowListingNotices } from './listing/workflow-listing-notices';
 
-function Workflows(): JSX.Element {
+function Content(): JSX.Element {
   const { data, loading, error } = useQuery<{ data: Workflow[] }>('workflows');
-  let content;
 
   if (error) {
-    content = <div>Error: {error}</div>;
-  } else if (loading) {
-    content = <div>Loading workflows...</div>;
-  } else {
-    const workflows = data?.data ?? [];
-    content =
-      workflows.length < 1 ? (
-        <Onboarding />
-      ) : (
-        <AutomationListing workflows={workflows} loading={loading} />
-      );
+    return <div>Error: {error}</div>;
   }
 
+  if (loading) {
+    return <div>Loading workflows...</div>;
+  }
+
+  const workflows = data?.data ?? [];
+  return workflows.length > 0 ? (
+    <AutomationListing workflows={workflows} loading={loading} />
+  ) : (
+    <Onboarding />
+  );
+}
+
+function Workflows(): JSX.Element {
   return (
     <>
       <TopBarWithBeamer />
@@ -46,7 +48,7 @@ function Workflows(): JSX.Element {
           New automation
         </Button>
       </Flex>
-      {content}
+      <Content />
     </>
   );
 }
