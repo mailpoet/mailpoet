@@ -62,7 +62,15 @@ if [[ -z "${SKIP_DEPS}" ]]; then
   cd - >/dev/null
 fi
 
-# Install WooCommerce
+# Install a fix plugin for PHPMailer on WP 5.6
+cp /project/tests/docker/codeception/wp-56-phpmailer-fix.php /wp-core/wp-content/plugins/wp-56-phpmailer-fix.php
+wp plugin activate wp-56-phpmailer-fix
+
+# Install, activate and print info about plugins that we want to use in tests runtime.
+# The plugin activation could be skipped by setting env. variable SKIP_PLUGINS
+# E.g. we want to run some tests without the plugins to make sure we are not dependent on those
+if [[ $SKIP_PLUGINS != "1" ]]; then
+  # Install WooCommerce
 if [[ ! -d "/wp-core/wp-content/plugins/woocommerce" ]]; then
   cd /wp-core/wp-content/plugins
   WOOCOMMERCE_CORE_ZIP="/wp-core/wp-content/plugins/mailpoet/tests/plugins/woocommerce.zip"
@@ -77,53 +85,45 @@ if [[ ! -d "/wp-core/wp-content/plugins/woocommerce" ]]; then
   unzip -q -o "$WOOCOMMERCE_CORE_ZIP" -d /wp-core/wp-content/plugins/
 fi
 
-# Install WooCommerce Subscriptions
-if [[ ! -d "/wp-core/wp-content/plugins/woocommerce-subscriptions" ]]; then
-  WOOCOMMERCE_SUBS_ZIP="/wp-core/wp-content/plugins/mailpoet/tests/plugins/woocommerce-subscriptions.zip"
-  if [ ! -f "$WOOCOMMERCE_SUBS_ZIP" ]; then
-    echo "WooCommerce Subscriptions plugin zip not found. Downloading WooCommerce Subscription plugin latest zip"
-    cd /project
-    ./do download:woo-commerce-subscriptions-zip latest
-    cd /wp-core/wp-content/plugins
+  # Install WooCommerce Subscriptions
+  if [[ ! -d "/wp-core/wp-content/plugins/woocommerce-subscriptions" ]]; then
+    WOOCOMMERCE_SUBS_ZIP="/wp-core/wp-content/plugins/mailpoet/tests/plugins/woocommerce-subscriptions.zip"
+    if [ ! -f "$WOOCOMMERCE_SUBS_ZIP" ]; then
+      echo "WooCommerce Subscriptions plugin zip not found. Downloading WooCommerce Subscription plugin latest zip"
+      cd /project
+      ./do download:woo-commerce-subscriptions-zip latest
+      cd /wp-core/wp-content/plugins
+    fi
+    echo "Unzip Woocommerce Subscription plugin from $WOOCOMMERCE_SUBS_ZIP"
+    unzip -q -o "$WOOCOMMERCE_SUBS_ZIP" -d /wp-core/wp-content/plugins/
   fi
-  echo "Unzip Woocommerce Subscription plugin from $WOOCOMMERCE_SUBS_ZIP"
-  unzip -q -o "$WOOCOMMERCE_SUBS_ZIP" -d /wp-core/wp-content/plugins/
-fi
 
-# Install WooCommerce Memberships
-if [[ ! -d "/wp-core/wp-content/plugins/woocommerce-memberships" ]]; then
-  WOOCOMMERCE_MEMBERSHIPS_ZIP="/wp-core/wp-content/plugins/mailpoet/tests/plugins/woocommerce-memberships.zip"
-  if [ ! -f "$WOOCOMMERCE_MEMBERSHIPS_ZIP" ]; then
-    echo "WooCommerce Memberships plugin zip not found. Downloading WooCommerce Memberships plugin latest zip"
-    cd /project
-    ./do download:woo-commerce-memberships-zip latest
-    cd /wp-core/wp-content/plugins
+  # Install WooCommerce Memberships
+  if [[ ! -d "/wp-core/wp-content/plugins/woocommerce-memberships" ]]; then
+    WOOCOMMERCE_MEMBERSHIPS_ZIP="/wp-core/wp-content/plugins/mailpoet/tests/plugins/woocommerce-memberships.zip"
+    if [ ! -f "$WOOCOMMERCE_MEMBERSHIPS_ZIP" ]; then
+      echo "WooCommerce Memberships plugin zip not found. Downloading WooCommerce Memberships plugin latest zip"
+      cd /project
+      ./do download:woo-commerce-memberships-zip latest
+      cd /wp-core/wp-content/plugins
+    fi
+    echo "Unzip Woocommerce Memberships plugin from $WOOCOMMERCE_MEMBERSHIPS_ZIP"
+    unzip -q -o "$WOOCOMMERCE_MEMBERSHIPS_ZIP" -d /wp-core/wp-content/plugins/
   fi
-  echo "Unzip Woocommerce Memberships plugin from $WOOCOMMERCE_MEMBERSHIPS_ZIP"
-  unzip -q -o "$WOOCOMMERCE_MEMBERSHIPS_ZIP" -d /wp-core/wp-content/plugins/
-fi
 
-# Install WooCommerce Blocks
-if [[ ! -d "/wp-core/wp-content/plugins/woo-gutenberg-products-block" ]]; then
-  WOOCOMMERCE_BLOCKS_ZIP="/wp-core/wp-content/plugins/mailpoet/tests/plugins/woo-gutenberg-products-block.zip"
-  if [ ! -f "$WOOCOMMERCE_BLOCKS_ZIP" ]; then
-    echo "WooCommerce Blocks plugin zip not found. Downloading WooCommerce Blocks plugin latest zip"
-    cd /project
-    ./do download:woo-commerce-blocks-zip latest
-    cd /wp-core/wp-content/plugins
+  # Install WooCommerce Blocks
+  if [[ ! -d "/wp-core/wp-content/plugins/woo-gutenberg-products-block" ]]; then
+    WOOCOMMERCE_BLOCKS_ZIP="/wp-core/wp-content/plugins/mailpoet/tests/plugins/woo-gutenberg-products-block.zip"
+    if [ ! -f "$WOOCOMMERCE_BLOCKS_ZIP" ]; then
+      echo "WooCommerce Blocks plugin zip not found. Downloading WooCommerce Blocks plugin latest zip"
+      cd /project
+      ./do download:woo-commerce-blocks-zip latest
+      cd /wp-core/wp-content/plugins
+    fi
+    echo "Unzip Woocommerce Blocks plugin from $WOOCOMMERCE_BLOCKS_ZIP"
+    unzip -q -o "$WOOCOMMERCE_BLOCKS_ZIP" -d /wp-core/wp-content/plugins/
   fi
-  echo "Unzip Woocommerce Blocks plugin from $WOOCOMMERCE_BLOCKS_ZIP"
-  unzip -q -o "$WOOCOMMERCE_BLOCKS_ZIP" -d /wp-core/wp-content/plugins/
-fi
 
-# Install a fix plugin for PHPMailer on WP 5.6
-cp /project/tests/docker/codeception/wp-56-phpmailer-fix.php /wp-core/wp-content/plugins/wp-56-phpmailer-fix.php
-wp plugin activate wp-56-phpmailer-fix
-
-# Activate and print info about plugins that we want to use in tests runtime.
-# The plugin activation could be skipped by setting env. variable SKIP_PLUGINS
-# E.g. we want to run some tests without the plugins to make sure we are not dependent on those
-if [[ $SKIP_PLUGINS != "1" ]]; then
   # activate all plugins
   wp plugin activate woocommerce
   wp plugin activate woocommerce-subscriptions
