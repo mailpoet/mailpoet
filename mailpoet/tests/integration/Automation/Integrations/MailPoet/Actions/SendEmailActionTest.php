@@ -300,6 +300,11 @@ class SendEmailActionTest extends \MailPoetTest {
     ];
   }
 
+  public function _after() {
+    parent::_after();
+    $this->cleanup();
+  }
+
   private function cleanup() {
     $this->truncateEntity(NewsletterEntity::class);
     $this->truncateEntity(SubscriberEntity::class);
