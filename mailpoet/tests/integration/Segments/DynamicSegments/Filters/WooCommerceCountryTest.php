@@ -2,12 +2,12 @@
 
 namespace MailPoet\Segments\DynamicSegments\Filters;
 
+use Automattic\WooCommerce\Admin\API\Reports\Orders\Stats\DataStore as OrdersStatsDataStore;
 use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Entities\DynamicSegmentFilterEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Subscribers\SubscribersRepository;
-use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\DBAL\ForwardCompatibility\DriverStatement;
 use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
 
@@ -121,33 +121,13 @@ class WooCommerceCountryTest extends \MailPoetTest {
   }
 
   private function createCustomerLookupData(array $data): void {
-    global $wpdb;
-    $connection = $this->entityManager->getConnection();
-    $customerLookupTable = $wpdb->prefix . 'wc_customer_lookup';
-    $connection->executeQuery("
-      INSERT INTO {$customerLookupTable} (user_id, first_name, last_name, email, country)
-        VALUES (
-            {$data['user_id']},
-            '',
-            '',
-            '{$data['email']}',
-            '{$data['country']}'
-        )
-    ");
-    $id = $connection->lastInsertId();
-    $orderId = (int)$id + 1;
-    $orderLookupTable = $wpdb->prefix . 'wc_order_stats';
-    $dateCreated = Carbon::now()->toDateTimeString();
-    $connection->executeQuery("
-      INSERT INTO {$orderLookupTable} (order_id, status, customer_id, date_created, date_created_gmt)
-        VALUES (
-            {$orderId},
-            'wc-completed',
-            {$id},
-            '{$dateCreated}',
-            '{$dateCreated}'
-        )
-    ");
+    $order = $this->tester->createWooCommerceOrder();
+    $order->set_customer_id($data['user_id']);
+    $order->set_billing_email($data['email']);
+    $order->set_billing_country($data['country']);
+    $order->save();
+    // Force sync to lookup table
+    OrdersStatsDataStore::sync_order($order->get_id());
   }
 
   private function cleanUpLookUpTables(): void {
@@ -171,6 +151,7 @@ class WooCommerceCountryTest extends \MailPoetTest {
     foreach ($emails as $email) {
       $this->tester->deleteWordPressUser($email);
     }
+    $this->tester->deleteTestWooOrders();
     $this->cleanUpLookUpTables();
   }
 }
