@@ -181,6 +181,9 @@ let fields: Array<Field> = [
       'data-parsley-required-message': MailPoet.I18n.t(
         'noSegmentsSelectedError',
       ),
+      'data-parsley-segments-with-subscribers': MailPoet.I18n.t(
+        'noSegmentWithSubscribersSelectedError',
+      ),
     },
   },
   {
