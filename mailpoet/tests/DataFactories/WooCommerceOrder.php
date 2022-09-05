@@ -95,15 +95,12 @@ class WooCommerceOrder {
     $orderOut = $this->tester->cliToString(['wc', 'shop_order', 'get', $createOutput, '--format=json', '--user=admin']);
     $order = json_decode($orderOut, true);
     if (isset($this->data['date_created'])) {
-      global $wpdb;
-      $dateCreated = $this->data['date_created'];
-      $dateCreatedGmt = get_gmt_from_date( $this->data['date_created']);
-      $wpdb->query(
-        "UPDATE $wpdb->posts SET
-        `post_date` = '{$dateCreated}',
-        `post_modified_gmt` = '{$dateCreatedGmt}'
-        WHERE ID = {$order['id']};"
-      );
+      $wcOrder = wc_get_order($order['id']);
+      if ($wcOrder instanceof \WC_Order) {
+        $wcOrder->set_date_created(get_gmt_from_date($this->data['date_created']));
+        $wcOrder->set_date_modified(get_gmt_from_date($this->data['date_created']));
+        $wcOrder->save();
+      }
     }
     return $order;
   }
