@@ -1101,11 +1101,6 @@ parameters:
 			path: ../../tests/DataFactories/WooCommerceOrder.php
 
 		-
-			message: "#^Part \\$order\\['id'\\] \\(mixed\\) of encapsed string cannot be cast to string\\.$#"
-			count: 1
-			path: ../../tests/DataFactories/WooCommerceOrder.php
-
-		-
 			message: "#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\\.$#"
 			count: 1
 			path: ../../tests/DataFactories/WooCommerceProduct.php
