@@ -34,4 +34,27 @@ jQuery(($) => {
       en: 'An email can only be scheduled up to 5 years in the future. Please choose a shorter period.',
     },
   });
+
+  Parsley.addValidator('segmentsWithSubscribers', {
+    requirementType: 'string',
+    validateMultiple: (values, noSegmentWithSubscribersError) => {
+      const segments = window.mailpoet_segments || [];
+
+      let isValid = true;
+      values.forEach((segmentId) => {
+        const segment = segments.find((s) => s.id === segmentId);
+        if (segment && segment.subscribers === 0) {
+          isValid = false;
+        }
+      });
+
+      if (!isValid) {
+        return $.Deferred().reject(noSegmentWithSubscribersError);
+      }
+      return true;
+    },
+    messages: {
+      en: 'Please select a list with subscribers',
+    },
+  });
 });
