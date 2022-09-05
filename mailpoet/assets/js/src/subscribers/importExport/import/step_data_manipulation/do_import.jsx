@@ -9,6 +9,7 @@ export const doImport = (
   newSubscribersStatus,
   existingSubscribersStatus,
   updateExistingSubscribers,
+  tags,
   onImportComplete,
 ) => {
   const columns = {};
@@ -21,6 +22,7 @@ export const doImport = (
     updated: 0,
     errors: [],
     segments: [],
+    tags: [],
   };
 
   MailPoet.Modal.loading(true);
@@ -60,6 +62,7 @@ export const doImport = (
           newSubscribersStatus,
           existingSubscribersStatus,
           updateSubscribers: updateExistingSubscribers,
+          tags,
         }),
       })
         .done((response) => {
