@@ -275,10 +275,7 @@ class AbandonedCartTest extends \MailPoetTest {
     $this->assertInstanceOf(ScheduledTaskEntity::class, $scheduled);
     $this->assertEquals($scheduled->getScheduledAt(), $expectedTime);
   }
-
-  /**
-   * @group woo
-   */
+  
   public function testItPostponesEmailWhenSubscriberIsActiveOnSite() {
     $newsletter = $this->createNewsletter();
     $subscriber = $this->createSubscriberAsCurrentUser();
