@@ -630,6 +630,7 @@ class WooCommerceTest extends \MailPoetTest {
   }
 
   private function cleanData(): void {
+    $this->tester->deleteTestWooOrders();
     $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
     $segmentsTable = $this->entityManager->getClassMetadata(SegmentEntity::class)->getTableName();
     $subscriberSegmentTable = $this->entityManager->getClassMetadata(SubscriberSegmentEntity::class)->getTableName();
@@ -661,24 +662,6 @@ class WooCommerceTest extends \MailPoetTest {
         {$subscribersTable}
       WHERE
         email LIKE 'user-sync-test%' OR email = ''
-    ");
-    // delete orders
-    $connection->executeQuery("
-      DELETE FROM
-        {$wpdb->posts}
-      WHERE
-        id IN (SELECT DISTINCT post_id FROM {$wpdb->postmeta} WHERE meta_value LIKE 'user-sync-test%')
-    ");
-    // delete order meta
-    $connection->executeQuery("
-      DELETE FROM
-        {$wpdb->postmeta}
-      WHERE
-        post_id IN (
-          SELECT post_id FROM (
-            SELECT DISTINCT post_id FROM {$wpdb->postmeta} WHERE meta_value LIKE 'user-sync-test%'
-          ) AS t
-        )
     ");
   }
 
