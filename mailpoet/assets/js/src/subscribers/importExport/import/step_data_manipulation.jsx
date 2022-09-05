@@ -9,6 +9,7 @@ import { NewSubscribersStatus } from './step_data_manipulation/new_subscribers_s
 import { ExistingSubscribersStatus } from './step_data_manipulation/existing_subscribers_status';
 import { UpdateExistingSubscribers } from './step_data_manipulation/update_existing_subscribers.jsx';
 import { doImport } from './step_data_manipulation/do_import.jsx';
+import { AssignTags } from './step_data_manipulation/assign_tags';
 
 function getPreviousStepLink(importData, subscribersLimitForValidation) {
   if (importData === undefined) {
@@ -36,6 +37,7 @@ function StepDataManipulationComponent({
     useState('subscribed');
   const [existingSubscribersStatus, setExistingSubscribersStatus] =
     useState('dontUpdate');
+  const [selectedTags, setSelectedTags] = useState([]);
   useEffect(() => {
     if (typeof stepMethodSelectionData === 'undefined') {
       history.replace('step_method_selection');
@@ -49,6 +51,7 @@ function StepDataManipulationComponent({
       newSubscribersStatus,
       existingSubscribersStatus,
       updateExistingSubscribers,
+      selectedTags,
       (importResults) => {
         setStepDataManipulationData(importResults);
         history.push('step_results');
@@ -80,6 +83,10 @@ function StepDataManipulationComponent({
         <UpdateExistingSubscribers
           setUpdateExistingSubscribers={setUpdateExistingSubscribers}
           updateExistingSubscribers={updateExistingSubscribers}
+        />
+        <AssignTags
+          selectedTags={selectedTags}
+          setSelectedTags={setSelectedTags}
         />
         <PreviousNextStepButtons
           canGoNext={selectedSegments.length > 0}

@@ -5,7 +5,9 @@ namespace MailPoet\Subscribers\ImportExport;
 use MailPoet\CustomFields\CustomFieldsRepository;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\SegmentEntity;
+use MailPoet\Entities\TagEntity;
 use MailPoet\Segments\SegmentsSimpleListRepository;
+use MailPoet\Tags\TagRepository;
 use MailPoet\Util\Helpers;
 
 class ImportExportFactory {
@@ -21,12 +23,16 @@ class ImportExportFactory {
   /** @var CustomFieldsRepository */
   private $customFieldsRepository;
 
+  /** @var TagRepository */
+  private $tagRepository;
+
   public function __construct(
     $action = null
   ) {
     $this->action = $action;
     $this->segmentsListRepository = ContainerWrapper::getInstance()->get(SegmentsSimpleListRepository::class);
     $this->customFieldsRepository = ContainerWrapper::getInstance()->get(CustomFieldsRepository::class);
+    $this->tagRepository = ContainerWrapper::getInstance()->get(TagRepository::class);
   }
 
   public function getSegments() {
@@ -172,6 +178,12 @@ class ImportExportFactory {
       );
       $data['maxPostSizeBytes'] = Helpers::getMaxPostSize('bytes');
       $data['maxPostSize'] = Helpers::getMaxPostSize();
+      $data['tags'] = array_map(function (TagEntity $tag): array {
+        return [
+          'id' => $tag->getId(),
+          'name' => $tag->getName(),
+        ];
+      }, $this->tagRepository->findAll());
     }
     $data['zipExtensionLoaded'] = extension_loaded('zip');
     return $data;

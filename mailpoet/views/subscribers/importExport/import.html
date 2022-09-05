@@ -19,6 +19,7 @@
     importData = {},
     mailpoetColumnsSelect2 = <%= subscriberFieldsSelect2|raw %>,
     mailpoetColumns = <%= subscriberFields|raw %>,
+    mailpoet_tags = <%= json_encode(tags) %>,
     mailpoetSegments = <%= segments|raw %>;
     var mailpoet_beacon_articles = [
       '57ce07ffc6979108399a044b',
@@ -134,5 +135,8 @@
 'congratulationResult': __('Congratulations, you’ve imported your subscribers!'),
 'suppressionListReminder': __('Are you importing subscribers from another marketing service provider? You may need to separately import the list of bad or previously unsubscribed addresses to avoid contacting them. [link]See how to import a suppression list.[/link]'),
 'existingSubscribersStatus': __('Update existing subscribers’ status to'),
+'assignTagsLabel': __('Assign tags'),
+'assignTagsDescription': __('Pick a tag or create a new one to assign to these subscribers.'),
+
 }) %>
 <% endblock %>

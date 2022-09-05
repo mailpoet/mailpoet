@@ -136,4 +136,8 @@ interface Window {
   mailpoet_email_editor_tutorial_seen: number;
   mailpoet_email_editor_tutorial_url: string;
   mailpoet_deactivate_subscriber_after_inactive_days: string;
+  mailpoet_tags?: {
+    id: number;
+    name: string;
+  }[];
 }
