@@ -16,6 +16,7 @@ use MailPoet\Subscribers\ImportExport\ImportExportRepository;
 use MailPoet\Subscribers\SubscriberCustomFieldRepository;
 use MailPoet\Subscribers\SubscriberSegmentRepository;
 use MailPoet\Subscribers\SubscribersRepository;
+use MailPoet\Tags\TagRepository;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 
@@ -59,6 +60,9 @@ class ImportTest extends \MailPoetTest {
   /** @var SubscriberSegmentRepository */
   private $subscriberSegmentRepository;
 
+  /** @var TagRepository */
+  private $tagRepository;
+
   public function _before(): void {
     $this->wpSegment = $this->diContainer->get(WP::class);
     $this->customFieldsRepository = $this->diContainer->get(CustomFieldsRepository::class);
@@ -68,6 +72,7 @@ class ImportTest extends \MailPoetTest {
     $this->subscriberCustomFieldRepository = $this->diContainer->get(SubscriberCustomFieldRepository::class);
     $this->subscriberRepository = $this->diContainer->get(SubscribersRepository::class);
     $this->subscriberSegmentRepository = $this->diContainer->get(SubscriberSegmentRepository::class);
+    $this->tagRepository = $this->diContainer->get(TagRepository::class);
     $customField = $this->customFieldsRepository->createOrUpdate([
       'name' => 'country',
       'type' => CustomFieldEntity::TYPE_TEXT,
@@ -780,6 +785,7 @@ class ImportTest extends \MailPoetTest {
       $this->importExportRepository,
       $this->newsletterOptionsRepository,
       $this->subscriberRepository,
+      $this->tagRepository,
       $data
     );
   }

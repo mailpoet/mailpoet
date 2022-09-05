@@ -55,7 +55,7 @@ parameters:
 			path: ../../lib/API/JSON/v1/ImportExport.php
 
 		-
-			message: "#^Parameter \\#6 \\$data of class MailPoet\\\\Subscribers\\\\ImportExport\\\\Import\\\\Import constructor expects array, mixed given\\.$#"
+			message: "#^Parameter \\#7 \\$data of class MailPoet\\\\Subscribers\\\\ImportExport\\\\Import\\\\Import constructor expects array, mixed given\\.$#"
 			count: 1
 			path: ../../lib/API/JSON/v1/ImportExport.php
 
