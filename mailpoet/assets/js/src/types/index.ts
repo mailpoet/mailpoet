@@ -1,4 +1,6 @@
+import { ComponentProps, ComponentType } from 'react';
 import { ColorPalette, FontSizePicker } from '@wordpress/components';
+import { ConfirmDialog } from '@wordpress/components/build-types/confirm-dialog';
 import { store as interfaceStore } from '@wordpress/interface';
 import { store as keyboardShortcutsStore } from '@wordpress/keyboard-shortcuts';
 import { store as preferencesStore } from '@wordpress/preferences';
@@ -52,6 +54,9 @@ declare module '@wordpress/block-editor' {
 }
 
 declare module '@wordpress/components' {
+  export const __experimentalConfirmDialog: ComponentType<
+    ComponentProps<typeof ConfirmDialog>
+  >;
   export const __experimentalText: any;
   export const __unstableComposite: typeof Composite;
   export const __unstableCompositeGroup: typeof CompositeGroup;
