@@ -173,6 +173,7 @@ export function AutomationListing({ workflows, loading }: Props): JSX.Element {
         updateUrlSearchString({ status: tabName });
       }}
       initialTabName={pageSearch.get('status') || 'all'}
+      key={pageSearch.get('status')} // Force re-render on browser forward/back
     >
       {tabRenderer}
     </TabPanel>
