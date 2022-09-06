@@ -10,7 +10,9 @@ class ValidationListener {
   /** @var ValidatorInterface */
   private $validator;
 
-  public function __construct(ValidatorInterface $validator) {
+  public function __construct(
+    ValidatorInterface $validator
+  ) {
     $this->validator = $validator;
   }
 

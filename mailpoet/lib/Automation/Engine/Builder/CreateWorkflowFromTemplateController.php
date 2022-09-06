@@ -5,7 +5,6 @@ namespace MailPoet\Automation\Engine\Builder;
 use MailPoet\Automation\Engine\Data\Workflow;
 use MailPoet\Automation\Engine\Storage\WorkflowStorage;
 use MailPoet\Automation\Engine\Storage\WorkflowTemplateStorage;
-use MailPoet\Automation\Integrations\MailPoet\Templates\WorkflowBuilder;
 use MailPoet\UnexpectedValueException;
 
 class CreateWorkflowFromTemplateController {
@@ -26,7 +25,7 @@ class CreateWorkflowFromTemplateController {
   public function createWorkflow(string $slug): Workflow {
 
     $template = $this->templateStorage->getTemplateBySlug($slug);
-    if (! $template) {
+    if (!$template) {
       throw UnexpectedValueException::create()->withMessage('Template not found.');
     }
 

@@ -6,8 +6,6 @@ use MailPoet\Automation\Engine\API\Endpoint;
 use MailPoet\Automation\Engine\API\Request;
 use MailPoet\Automation\Engine\API\Response;
 use MailPoet\Automation\Engine\Builder\CreateWorkflowFromTemplateController;
-use MailPoet\RuntimeException;
-use MailPoet\UnexpectedValueException;
 use MailPoet\Validator\Builder;
 
 class WorkflowsCreateFromTemplateEndpoint extends Endpoint {

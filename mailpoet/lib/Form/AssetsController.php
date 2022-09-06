@@ -20,7 +20,11 @@ class AssetsController {
 
   const RECAPTCHA_API_URL = 'https://www.google.com/recaptcha/api.js?render=explicit';
 
-  public function __construct(WPFunctions $wp, BasicRenderer $renderer, SettingsController $settings) {
+  public function __construct(
+    WPFunctions $wp,
+    BasicRenderer $renderer,
+    SettingsController $settings
+  ) {
     $this->wp = $wp;
     $this->renderer = $renderer;
     $this->settings = $settings;

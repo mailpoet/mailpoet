@@ -16,7 +16,9 @@ class DoctrinePanel implements IBarPanel {
   /** @var DebugStack */
   private $sqlLogger;
 
-  public function __construct(Configuration $doctrineConfiguration) {
+  public function __construct(
+    Configuration $doctrineConfiguration
+  ) {
     $this->sqlLogger = new DebugStack();
     $doctrineConfiguration->setSQLLogger($this->sqlLogger);
   }

@@ -14,7 +14,10 @@ class Assets extends AbstractExtension {
   /** @var CdnAssetUrl|null */
   private $cdnAssetsUrl;
 
-  public function __construct(array $globals, CdnAssetUrl $cdnAssetsUrl = null) {
+  public function __construct(
+    array $globals,
+    CdnAssetUrl $cdnAssetsUrl = null
+  ) {
     $this->globals = $globals;
     $this->cdnAssetsUrl = $cdnAssetsUrl;
   }

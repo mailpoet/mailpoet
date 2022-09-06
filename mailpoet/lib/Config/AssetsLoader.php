@@ -12,14 +12,17 @@ class AssetsLoader {
   /** @var WPFunctions */
   private $wp;
 
-  public function __construct(RendererFactory $rendererFactory, WPFunctions $wp) {
+  public function __construct(
+    RendererFactory $rendererFactory,
+    WPFunctions $wp
+  ) {
     $this->renderer = $rendererFactory->getRenderer();
     $this->wp = $wp;
   }
 
   public function loadStyles(): void {
     // MailPoet plugin style should be loaded on all mailpoet sites
-    if (isset($_GET['page']) && strpos($_GET['page'], 'mailpoet-') === 0 ) {
+    if (isset($_GET['page']) && strpos($_GET['page'], 'mailpoet-') === 0) {
       $this->enqueueStyle('mailpoet-plugin', [
         'forms', // To prevent conflict in CSS with WP forms we need to add dependency
         'buttons',

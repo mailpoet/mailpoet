@@ -7,7 +7,7 @@ use MailPoet\Config\Env;
 class Template {
   public function create($wcEmailSettings) {
     $socialIconUrl = Env::$assetsUrl . '/img/newsletter_editor/social-icons';
-    return  [
+    return [
       'content' =>
        [
         'type' => 'container',
