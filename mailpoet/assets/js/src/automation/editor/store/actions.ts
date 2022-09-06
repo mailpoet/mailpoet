@@ -2,8 +2,11 @@ import { select } from '@wordpress/data';
 import { apiFetch } from '@wordpress/data-controls';
 import { store as interfaceStore } from '@wordpress/interface';
 import { store as preferencesStore } from '@wordpress/preferences';
+import { addQueryArgs } from '@wordpress/url';
 import { storeName } from './constants';
 import { Feature, State } from './types';
+import { LISTING_NOTICE_PARAMETERS } from '../../listing/workflow-listing-notices';
+import { MailPoet } from '../../../mailpoet';
 
 export const openSidebar =
   (key) =>
@@ -76,6 +79,31 @@ export function* activate() {
 
   return {
     type: 'ACTIVATE',
+    workflow: data?.data ?? workflow,
+  } as const;
+}
+
+export function* trash(onTrashed: () => void = undefined) {
+  const workflow = select(storeName).getWorkflowData();
+  const data = yield apiFetch({
+    path: `/workflows/${workflow.id}`,
+    method: 'PUT',
+    data: {
+      ...workflow,
+      status: 'trash',
+    },
+  });
+
+  onTrashed?.();
+
+  if (data?.status === 'trash') {
+    window.location.href = addQueryArgs(MailPoet.urls.automationListing, {
+      [LISTING_NOTICE_PARAMETERS.workflowDeleted]: workflow.id,
+    });
+  }
+
+  return {
+    type: 'TRASH',
     workflow: data?.data ?? workflow,
   } as const;
 }
