@@ -423,6 +423,7 @@ class RoboFile extends \Robo\Tasks {
   public function qaCodeSniffer(array $filesToCheck, $opts = ['severity' => 'all']) {
     $severityFlag = $opts['severity'] === 'all' ? '-w' : '-n';
     $task = implode(' ', [
+      'php -d memory_limit=-1',
       './tasks/code_sniffer/vendor/bin/phpcs',
       '--extensions=php',
       $severityFlag,
