@@ -1,59 +1,20 @@
 import { useState } from 'react';
-import apiFetch from '@wordpress/api-fetch';
 import {
-  Button,
   __experimentalConfirmDialog as ConfirmDialog,
+  Button,
 } from '@wordpress/components';
-import { StoreDescriptor, useDispatch, useSelect } from '@wordpress/data';
-import { store as noticesStore } from '@wordpress/notices';
-import { addQueryArgs } from '@wordpress/url';
+import { useDispatch, useSelect } from '@wordpress/data';
 import { storeName } from '../../store';
-import { Workflow } from '../workflow/types';
-import { MailPoet } from '../../../../mailpoet';
-import { LISTING_NOTICE_PARAMETERS } from '../../../listing/workflow-listing-notices';
 
 export function TrashButton(): JSX.Element {
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
-  const { createErrorNotice } = useDispatch(noticesStore as StoreDescriptor);
   const { workflow } = useSelect(
     (select) => ({
       workflow: select(storeName).getWorkflowData(),
     }),
     [],
   );
-
-  const trash = () => {
-    apiFetch({
-      path: `/workflows/${workflow.id}`,
-      method: 'PUT',
-      data: {
-        ...workflow,
-        status: 'trash',
-      },
-    })
-      .then(({ data }: { data: Workflow }) => {
-        if (data.status !== 'trash') {
-          void createErrorNotice('An error occurred!', {
-            explicitDismiss: true,
-          });
-          return;
-        }
-
-        window.location.href = addQueryArgs(MailPoet.urls.automationListing, {
-          [LISTING_NOTICE_PARAMETERS.workflowDeleted]: workflow.id,
-        });
-      })
-      .catch((): void => {
-        void createErrorNotice('An error occurred!', {
-          explicitDismiss: true,
-        });
-      })
-      .finally(() => {
-        setShowConfirmDialog(false);
-      });
-
-    return true;
-  };
+  const { trash } = useDispatch(storeName);
 
   return (
     <>
@@ -61,7 +22,11 @@ export function TrashButton(): JSX.Element {
         isOpen={showConfirmDialog}
         title="Delete workflow"
         confirmButtonText="Yes, delete"
-        onConfirm={trash}
+        onConfirm={async () => {
+          trash(() => {
+            setShowConfirmDialog(false);
+          });
+        }}
         onCancel={() => setShowConfirmDialog(false)}
         __experimentalHideHeader={false}
       >
