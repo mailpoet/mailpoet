@@ -9,8 +9,8 @@ use MailPoetVendor\Doctrine\Common\Cache\CacheProvider;
  * Based on https://github.com/doctrine/cache/blob/1.11.x/lib/Doctrine/Common/Cache/ArrayCache.php
  * The cache implementation was removed from the doctrine/cache v2.0 so we need to provide own implementation.
  */
-class ArrayCache extends CacheProvider
-{
+class ArrayCache extends CacheProvider {
+
   /** @var mixed[] */
   private $data = [];
 
@@ -26,8 +26,7 @@ class ArrayCache extends CacheProvider
   /**
    * {@inheritdoc}
    */
-  public function __construct()
-  {
+  public function __construct() {
     $this->upTime = time();
   }
 
@@ -35,7 +34,7 @@ class ArrayCache extends CacheProvider
    * {@inheritdoc}
    */
   protected function doFetch($id) {
-    if (! $this->doContains($id)) {
+    if (!$this->doContains($id)) {
       $this->missesCount += 1;
       return false;
     }
@@ -47,7 +46,7 @@ class ArrayCache extends CacheProvider
    * {@inheritdoc}
    */
   protected function doContains($id) {
-    if (! isset($this->data[$id])) {
+    if (!isset($this->data[$id])) {
       return false;
     }
     $expiration = $this->data[$id][1];
@@ -87,10 +86,10 @@ class ArrayCache extends CacheProvider
    */
   protected function doGetStats() {
     return [
-      CacheProvider::STATS_HITS             => $this->hitsCount,
-      CacheProvider::STATS_MISSES           => $this->missesCount,
-      CacheProvider::STATS_UPTIME           => $this->upTime,
-      CacheProvider::STATS_MEMORY_USAGE     => null,
+      CacheProvider::STATS_HITS => $this->hitsCount,
+      CacheProvider::STATS_MISSES => $this->missesCount,
+      CacheProvider::STATS_UPTIME => $this->upTime,
+      CacheProvider::STATS_MEMORY_USAGE => null,
       CacheProvider::STATS_MEMORY_AVAILABLE => null,
     ];
   }

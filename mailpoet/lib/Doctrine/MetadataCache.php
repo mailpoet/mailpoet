@@ -19,7 +19,10 @@ class MetadataCache extends CacheProvider {
   /** @var string */
   private $directory;
 
-  public function __construct($dir, $isReadOnly) {
+  public function __construct(
+    $dir,
+    $isReadOnly
+  ) {
     $this->isDevMode = defined('WP_DEBUG') && WP_DEBUG && !$isReadOnly;
     $this->directory = rtrim($dir, '/\\');
     if (!file_exists($this->directory)) {

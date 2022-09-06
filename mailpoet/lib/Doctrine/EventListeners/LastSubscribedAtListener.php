@@ -11,7 +11,9 @@ class LastSubscribedAtListener {
   /** @var Carbon */
   private $now;
 
-  public function __construct(WPFunctions $wp) {
+  public function __construct(
+    WPFunctions $wp
+  ) {
     $this->now = Carbon::createFromTimestamp($wp->currentTime('timestamp'));
   }
 

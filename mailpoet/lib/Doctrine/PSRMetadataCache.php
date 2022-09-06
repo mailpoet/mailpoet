@@ -9,7 +9,10 @@ class PSRMetadataCache implements CacheItemPoolInterface {
   /** @var MetadataCache */
   private $metadataCache;
 
-  public function __construct(string $dir, bool $isReadOnly) {
+  public function __construct(
+    string $dir,
+    bool $isReadOnly
+  ) {
     $this->metadataCache = new MetadataCache($dir, $isReadOnly);
   }
 

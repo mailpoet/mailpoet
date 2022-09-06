@@ -4,12 +4,12 @@ namespace MailPoet\Doctrine;
 
 use MailPoet\Config\Env;
 use MailPoet\Doctrine\Types\BigIntType;
+use MailPoet\Doctrine\Types\DateTimeTzToStringType;
 use MailPoet\Doctrine\Types\JsonOrSerializedType;
 use MailPoet\Doctrine\Types\JsonType;
 use MailPoet\Doctrine\Types\SerializedArrayType;
-use MailPoet\Doctrine\Types\DateTimeTzToStringType;
-use MailPoetVendor\Doctrine\DBAL\DriverManager;
 use MailPoetVendor\Doctrine\DBAL\Driver\PDO\MySQL\Driver;
+use MailPoetVendor\Doctrine\DBAL\DriverManager;
 use MailPoetVendor\Doctrine\DBAL\Platforms\MySqlPlatform;
 use MailPoetVendor\Doctrine\DBAL\Types\Type;
 use PDO;

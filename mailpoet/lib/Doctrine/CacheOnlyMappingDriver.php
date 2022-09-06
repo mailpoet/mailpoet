@@ -49,7 +49,7 @@ class CacheOnlyMappingDriver implements MappingDriver {
   /**
    * Copy pasted from MailPoetVendor\Doctrine\Persistence\Mapping\AbstractClassMetadataFactory
    */
-  protected function getCacheKey(string $className) : string {
+  protected function getCacheKey(string $className): string {
     return str_replace('\\', '__', $className) . $this->cacheSalt;
   }
 }
