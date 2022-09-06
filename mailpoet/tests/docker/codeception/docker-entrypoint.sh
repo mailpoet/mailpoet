@@ -71,19 +71,19 @@ wp plugin activate wp-56-phpmailer-fix
 # E.g. we want to run some tests without the plugins to make sure we are not dependent on those
 if [[ $SKIP_PLUGINS != "1" ]]; then
   # Install WooCommerce
-if [[ ! -d "/wp-core/wp-content/plugins/woocommerce" ]]; then
-  cd /wp-core/wp-content/plugins
-  WOOCOMMERCE_CORE_ZIP="/wp-core/wp-content/plugins/mailpoet/tests/plugins/woocommerce.zip"
-  if [ ! -f "$WOOCOMMERCE_CORE_ZIP" ]; then
-    echo "WooCommerce plugin zip not found. Downloading WooCommerce plugin latest zip"
-    cd /project
-    ./do download:woo-commerce-zip latest
+  if [[ ! -d "/wp-core/wp-content/plugins/woocommerce" ]]; then
     cd /wp-core/wp-content/plugins
-  fi
+    WOOCOMMERCE_CORE_ZIP="/wp-core/wp-content/plugins/mailpoet/tests/plugins/woocommerce.zip"
+    if [ ! -f "$WOOCOMMERCE_CORE_ZIP" ]; then
+      echo "WooCommerce plugin zip not found. Downloading WooCommerce plugin latest zip"
+      cd /project
+      ./do download:woo-commerce-zip latest
+      cd /wp-core/wp-content/plugins
+    fi
 
-  echo "Unzip Woocommerce plugin from $WOOCOMMERCE_CORE_ZIP"
-  unzip -q -o "$WOOCOMMERCE_CORE_ZIP" -d /wp-core/wp-content/plugins/
-fi
+    echo "Unzip Woocommerce plugin from $WOOCOMMERCE_CORE_ZIP"
+    unzip -q -o "$WOOCOMMERCE_CORE_ZIP" -d /wp-core/wp-content/plugins/
+  fi
 
   # Install WooCommerce Subscriptions
   if [[ ! -d "/wp-core/wp-content/plugins/woocommerce-subscriptions" ]]; then
