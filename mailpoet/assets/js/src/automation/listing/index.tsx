@@ -20,14 +20,20 @@ export function AutomationListing({ workflows, loading }: Props): JSX.Element {
   );
 
   const updateUrlSearchString = useCallback(
-    (keysAndValues: Record<string, string>) => {
-      Object.keys(keysAndValues).forEach((key) => {
-        pageSearch.set(key, keysAndValues[key]);
-        if (['per_page', 'status'].includes(key)) {
-          pageSearch.delete('paged');
-        }
+    (search: Record<string, string>) => {
+      const newSearch = new URLSearchParams({
+        ...Object.fromEntries(pageSearch.entries()),
+        ...search,
       });
-      history.push({ search: pageSearch.toString() });
+      const changedKeys = Object.keys(search);
+      if (
+        changedKeys.includes('status') ||
+        changedKeys.includes('per_page') ||
+        newSearch.get('paged') === '1'
+      ) {
+        newSearch.delete('paged');
+      }
+      history.push({ search: newSearch.toString() });
     },
     [pageSearch, history],
   );
