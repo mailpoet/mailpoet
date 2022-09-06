@@ -13,6 +13,7 @@ import { addQueryArgs } from '@wordpress/url';
 import { Header } from './components/header';
 import { InserterSidebar } from './components/inserter-sidebar';
 import { KeyboardShortcuts } from './components/keyboard-shortcuts';
+import { EditorNotices } from './components/notices';
 import { Sidebar } from './components/sidebar';
 import { Workflow } from './components/workflow';
 import { createStore, storeName } from './store';
@@ -21,6 +22,7 @@ import { initialize as initializeCoreIntegration } from '../integrations/core';
 import { initialize as initializeMailPoetIntegration } from '../integrations/mailpoet';
 import { MailPoet } from '../../mailpoet';
 import { LISTING_NOTICE_PARAMETERS } from '../listing/workflow-listing-notices';
+import { registerApiErrorHandler } from './api-error-handler';
 
 // See:
 //   https://github.com/WordPress/gutenberg/blob/9601a33e30ba41bac98579c8d822af63dd961488/packages/edit-post/src/components/layout/index.js
@@ -79,7 +81,12 @@ function Editor(): JSX.Element {
             )
           }
           header={<Header showInserterToggle={showInserterSidebar} />}
-          content={<Workflow />}
+          content={
+            <>
+              <EditorNotices />
+              <Workflow />
+            </>
+          }
           sidebar={<ComplementaryArea.Slot scope={storeName} />}
           secondarySidebar={
             showInserterSidebar && isInserterOpened ? <InserterSidebar /> : null
@@ -96,6 +103,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
   const root = document.getElementById('mailpoet_automation_editor');
   if (root) {
+    registerApiErrorHandler();
     initializeApi();
     initializeCoreIntegration();
     initializeMailPoetIntegration();

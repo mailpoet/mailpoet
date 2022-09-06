@@ -54,12 +54,12 @@ export function* save() {
   const data = yield apiFetch({
     path: `/workflows/${workflow.id}`,
     method: 'PUT',
-    data: workflow,
+    data: { ...workflow },
   });
 
   return {
     type: 'SAVE',
-    workflow: data.data,
+    workflow: data?.data ?? workflow,
   } as const;
 }
 
@@ -76,7 +76,7 @@ export function* activate() {
 
   return {
     type: 'ACTIVATE',
-    workflow: data.data,
+    workflow: data?.data ?? workflow,
   } as const;
 }
 

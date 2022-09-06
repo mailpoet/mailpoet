@@ -12,7 +12,6 @@ import { Separator } from './separator';
 import { Step } from './step';
 import { Step as StepData } from './types';
 import { InserterPopover } from '../inserter-popover';
-import { EditorNotices } from '../notices';
 import { storeName } from '../../store';
 import { AddTrigger } from './add-trigger';
 
@@ -95,7 +94,6 @@ export function Workflow(): JSX.Element {
 
   return (
     <WorkflowCompositeContext.Provider value={compositeState}>
-      <EditorNotices />
       <Composite
         state={compositeState}
         role="tree"
