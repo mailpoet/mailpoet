@@ -5,7 +5,6 @@ import {
 } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 import { Icon, check } from '@wordpress/icons';
-import { EditorNotices } from '@wordpress/editor';
 import { Hooks } from 'wp-js-hooks';
 import { WorkflowCompositeContext } from './context';
 import { EmptyWorkflow } from './empty-workflow';
@@ -13,6 +12,7 @@ import { Separator } from './separator';
 import { Step } from './step';
 import { Step as StepData } from './types';
 import { InserterPopover } from '../inserter-popover';
+import { EditorNotices } from '../notices';
 import { storeName } from '../../store';
 import { AddTrigger } from './add-trigger';
 
