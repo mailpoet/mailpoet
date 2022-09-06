@@ -38,7 +38,7 @@ export function AutomationListing({ workflows, loading }: Props): JSX.Element {
     [pageSearch, history],
   );
 
-  const groupedWorkflows = useMemo(() => {
+  const groupedWorkflows = useMemo<Record<string, Workflow[]>>(() => {
     const grouped = {};
     workflows.forEach((workflow) => {
       if (!grouped[workflow.status]) {
