@@ -53,6 +53,8 @@ class ManageImportExportCest {
     $i->click('[data-automation-id="show-more-details"]');
     $i->waitForText('1 emails are not valid:');
     $i->waitForText('1 role-based addresses are not permitted');
+    $i->wantTo('Select a tag for imported subscribers');
+    $i->fillField('.mailpoet-import-tags input[type="text"]', 'My tag,'); // the comma separates the tag
     $this->chooseListAndConfirm($i);
     $i->see('9 subscribers added to');
     // Test reimporting the same list
@@ -65,22 +67,31 @@ class ManageImportExportCest {
     $i->amOnMailPoetPage ('Subscribers');
     $i->searchFor('aaa@example.com');
     $i->waitForText('aaa@example.com');
+    $i->waitForText('My tag');
     $i->searchFor('bbb@example.com');
     $i->waitForText('bbb@example.com');
+    $i->waitForText('My tag');
     $i->searchFor('ccc@example.com');
     $i->waitForText('ccc@example.com');
+    $i->waitForText('My tag');
     $i->searchFor('ddd@example.com');
     $i->waitForText('ddd@example.com');
+    $i->waitForText('My tag');
     $i->searchFor('eee@example.com');
     $i->waitForText('eee@example.com');
+    $i->waitForText('My tag');
     $i->searchFor('fff@example.com');
     $i->waitForText('fff@example.com');
+    $i->waitForText('My tag');
     $i->searchFor('ggg@example.com');
     $i->waitForText('ggg@example.com');
+    $i->waitForText('My tag');
     $i->searchFor('hhh@example.com');
     $i->waitForText('hhh@example.com');
+    $i->waitForText('My tag');
     $i->searchFor('iii@example.com');
     $i->waitForText('iii@example.com');
+    $i->waitForText('My tag');
     $i->seeNoJSErrors();
   }
 
