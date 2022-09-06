@@ -9,6 +9,8 @@ use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberCustomFieldEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
+use MailPoet\Entities\SubscriberTagEntity;
+use MailPoet\Entities\TagEntity;
 use MailPoet\Newsletter\Options\NewsletterOptionsRepository;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Segments\WP;
@@ -16,7 +18,9 @@ use MailPoet\Subscribers\ImportExport\ImportExportRepository;
 use MailPoet\Subscribers\SubscriberCustomFieldRepository;
 use MailPoet\Subscribers\SubscriberSegmentRepository;
 use MailPoet\Subscribers\SubscribersRepository;
+use MailPoet\Subscribers\SubscriberTagRepository;
 use MailPoet\Tags\TagRepository;
+use MailPoet\Test\DataFactories\Tag;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 
@@ -35,6 +39,8 @@ class ImportTest extends \MailPoetTest {
   public $segment1;
   /** @var SegmentEntity */
   public $segment2;
+  /** @var TagEntity */
+  private $tag1;
 
   /** @var WP */
   private $wpSegment;
@@ -63,6 +69,9 @@ class ImportTest extends \MailPoetTest {
   /** @var TagRepository */
   private $tagRepository;
 
+  /** @var SubscriberTagRepository */
+  private $subscribersTagRepository;
+
   public function _before(): void {
     $this->wpSegment = $this->diContainer->get(WP::class);
     $this->customFieldsRepository = $this->diContainer->get(CustomFieldsRepository::class);
@@ -73,6 +82,7 @@ class ImportTest extends \MailPoetTest {
     $this->subscriberRepository = $this->diContainer->get(SubscribersRepository::class);
     $this->subscriberSegmentRepository = $this->diContainer->get(SubscriberSegmentRepository::class);
     $this->tagRepository = $this->diContainer->get(TagRepository::class);
+    $this->subscribersTagRepository = $this->diContainer->get(SubscriberTagRepository::class);
     $customField = $this->customFieldsRepository->createOrUpdate([
       'name' => 'country',
       'type' => CustomFieldEntity::TYPE_TEXT,
@@ -81,6 +91,7 @@ class ImportTest extends \MailPoetTest {
     $this->subscribersCustomFields = [$customField->getId()];
     $this->segment1 = $this->segmentsRepository->createOrUpdate('Segment 1');
     $this->segment2 = $this->segmentsRepository->createOrUpdate('Segment 2');
+    $this->tag1 = (new Tag())->withName('Tag 1')->create();
     $this->testData = [
       'subscribers' => [
         [
@@ -117,6 +128,7 @@ class ImportTest extends \MailPoetTest {
       'segments' => [
         $this->segment1->getId(),
       ],
+      'tags' => [],
       'timestamp' => time(),
       'newSubscribersStatus' => SubscriberEntity::STATUS_SUBSCRIBED,
       'existingSubscribersStatus' => Import::STATUS_DONT_UPDATE,
@@ -287,6 +299,7 @@ class ImportTest extends \MailPoetTest {
         'email' => ['index' => 2],
       ],
       'segments' => [],
+      'tags' => [],
       'timestamp' => time(),
       'newSubscribersStatus' => SubscriberEntity::STATUS_SUBSCRIBED,
       'existingSubscribersStatus' => Import::STATUS_DONT_UPDATE,
@@ -383,6 +396,7 @@ class ImportTest extends \MailPoetTest {
         'email' => ['index' => 0],
       ],
       'segments' => [1],
+      'tags' => [],
       'timestamp' => time(),
       'newSubscribersStatus' => SubscriberEntity::STATUS_SUBSCRIBED,
       'existingSubscribersStatus' => Import::STATUS_DONT_UPDATE,
@@ -560,6 +574,41 @@ class ImportTest extends \MailPoetTest {
         'segment' => $this->segment2->getId(),
       ]);
       expect($subscriberSegment2)->isInstanceOf(SubscriberSegmentEntity::class);
+    }
+  }
+
+  public function testItAddsTagsToSubscribers(): void {
+    $subscribersData = [
+      'data' => $this->subscribersData,
+      'fields' => $this->subscribersFields,
+    ];
+    $this->import->createOrUpdateSubscribers(
+      Import::ACTION_CREATE,
+      $subscribersData,
+      $this->subscribersFields
+    );
+    $dbSubscribers = array_map(function (SubscriberEntity $subscriber): int {
+      return (int)$subscriber->getId();
+    }, $this->subscriberRepository->findAll());
+    // tagging
+    $this->import->addTagsToSubscribers(
+      $dbSubscribers,
+      [$this->tag1->getName(), 'Tag 2'] // one tag is existing and second should be created
+    );
+    $tag2 = $this->tagRepository->findOneBy(['name' => 'Tag 2']);
+    $this->assertInstanceOf(TagEntity::class, $tag2);
+    // check added tags
+    foreach ($dbSubscribers as $dbSubscriber) {
+      $subscriberTag = $this->subscribersTagRepository->findOneBy([
+        'subscriber' => $dbSubscriber,
+        'tag' => $this->tag1,
+      ]);
+      expect($subscriberTag)->isInstanceOf(SubscriberTagEntity::class);
+      $subscriberTag = $this->subscribersTagRepository->findOneBy([
+        'subscriber' => $dbSubscriber,
+        'tag' => $tag2,
+      ]);
+      expect($subscriberTag)->isInstanceOf(SubscriberTagEntity::class);
     }
   }
 
@@ -836,5 +885,7 @@ class ImportTest extends \MailPoetTest {
     $this->truncateEntity(SubscriberSegmentEntity::class);
     $this->truncateEntity(CustomFieldEntity::class);
     $this->truncateEntity(SubscriberCustomFieldEntity::class);
+    $this->truncateEntity(SubscriberTagEntity::class);
+    $this->truncateEntity(TagEntity::class);
   }
 }
