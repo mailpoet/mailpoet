@@ -38,7 +38,7 @@ class AssetsController {
     ob_start();
     $captcha = $this->settings->get('captcha');
     if (!empty($captcha['type']) && Captcha::isReCaptcha($captcha['type'])) {
-      echo '<script src="' . self::RECAPTCHA_API_URL . '" async defer></script>';
+      echo '<script src="' . esc_attr(self::RECAPTCHA_API_URL) . '" async defer></script>';
     }
 
     $this->wp->wpPrintScripts('jquery');
@@ -91,7 +91,7 @@ class AssetsController {
       'is_rtl' => (function_exists('is_rtl') ? (bool)is_rtl() : false),
     ]);
 
-    $ajaxFailedErrorMessage = __('An error has happened while performing a request, please try again later.');
+    $ajaxFailedErrorMessage = __('An error has happened while performing a request, please try again later.', 'mailpoet');
 
     $inlineScript = <<<EOL
 function initMailpoetTranslation() {
