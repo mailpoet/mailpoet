@@ -100,6 +100,12 @@ ul.sending-method-benefits {
   .mailpoet-form-input:not(:first-child) {
     margin-top: $grid-gap-half;
   }
+
+  &.mailpoet-import-tags {
+    label.components-form-token-field__label {
+      display: none;
+    }
+  }
 }
 
 .mailpoet-settings-inputs-row {

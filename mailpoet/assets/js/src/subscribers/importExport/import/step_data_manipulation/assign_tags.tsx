@@ -27,12 +27,13 @@ export function AssignTags({
           {MailPoet.I18n.t('assignTagsDescription')}
         </p>
       </div>
-      <div className="mailpoet-settings-inputs">
+      <div className="mailpoet-settings-inputs mailpoet-import-tags">
         <TokenField
           name="tags"
           onChange={handleChange}
           suggestedValues={tags}
           selectedValues={selectedTags}
+          placeholder={MailPoet.I18n.t('addNewTag')}
         />
       </div>
     </>
