@@ -11,6 +11,42 @@ type Props = {
   loading: boolean;
 };
 
+const filterTabs = [
+  {
+    name: 'all',
+    title: 'All',
+    className: 'mailpoet-tab-all',
+  },
+  {
+    name: WorkflowStatus.ACTIVE,
+    title: 'Active',
+    className: 'mailpoet-tab-active',
+  },
+  {
+    name: WorkflowStatus.INACTIVE,
+    title: 'Inactive',
+    className: 'mailpoet-tab-inactive',
+  },
+  {
+    name: WorkflowStatus.DRAFT,
+    title: 'Draft',
+    className: 'mailpoet-tab-draft',
+  },
+  {
+    name: WorkflowStatus.TRASH,
+    title: 'Trash',
+    className: 'mailpoet-tab-trash',
+  },
+] as const;
+
+const tableHeaders = [
+  { key: 'name', label: __('Name', 'mailpoet') },
+  { key: 'subscribers', label: __('Subscribers', 'mailpoet') },
+  { key: 'status', label: __('Status', 'mailpoet') },
+  { key: 'edit' },
+  { key: 'more' },
+] as const;
+
 export function AutomationListing({ workflows, loading }: Props): JSX.Element {
   const history = useHistory();
   const location = useLocation();
@@ -51,52 +87,26 @@ export function AutomationListing({ workflows, loading }: Props): JSX.Element {
 
   const tabs = useMemo(
     () =>
-      [
-        {
-          name: 'all',
-          title: (
-            <>
-              <span>All</span>
-              <span className="count">{workflows.length}</span>
-            </>
-          ),
-          className: 'mailpoet-tab-all',
-        },
-      ].concat(
-        [
-          { status: WorkflowStatus.ACTIVE, label: 'Active' },
-          { status: WorkflowStatus.INACTIVE, label: 'Inactive' },
-          { status: WorkflowStatus.DRAFT, label: 'Draft' },
-          { status: WorkflowStatus.TRASH, label: 'Trash' },
-        ].map((tabLabel) => {
-          const count = (groupedWorkflows[tabLabel.status] || []).length;
-          return {
-            name: tabLabel.status,
-            title:
-              count > 0 ? (
-                <>
-                  <span>{tabLabel.label}</span>
-                  <span className="count">{count}</span>
-                </>
-              ) : (
-                <span>{tabLabel.label}</span>
-              ),
-            className: `mailpoet-tab-${tabLabel.status}`,
-          };
-        }),
-      ),
+      filterTabs.map((filterTab) => {
+        const count =
+          filterTab.name === 'all'
+            ? workflows.length
+            : (groupedWorkflows[filterTab.name] || []).length;
+        return {
+          name: filterTab.name,
+          title:
+            count > 0 ? (
+              <>
+                <span>{filterTab.title}</span>
+                <span className="count">{count}</span>
+              </>
+            ) : (
+              <span>{filterTab.title}</span>
+            ),
+          className: filterTab.className,
+        };
+      }),
     [workflows, groupedWorkflows],
-  );
-
-  const tableHeaders = useMemo(
-    () => [
-      { key: 'name', label: __('Name', 'mailpoet') },
-      { key: 'subscribers', label: __('Subscribers', 'mailpoet') },
-      { key: 'status', label: __('Status', 'mailpoet') },
-      { key: 'edit' },
-      { key: 'more' },
-    ],
-    [],
   );
 
   const tabRenderer = useCallback(
@@ -146,14 +156,7 @@ export function AutomationListing({ workflows, loading }: Props): JSX.Element {
         />
       );
     },
-    [
-      workflows,
-      groupedWorkflows,
-      pageSearch,
-      loading,
-      tableHeaders,
-      updateUrlSearchString,
-    ],
+    [workflows, groupedWorkflows, pageSearch, loading, updateUrlSearchString],
   );
 
   return (
