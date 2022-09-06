@@ -429,7 +429,8 @@ class RoboFile extends \Robo\Tasks {
       '--standard=tasks/code_sniffer/MailPoet',
       '-s',
     ]);
-    $foldersToIgnore = [
+
+    $ignorePaths = [
       '.mp_svn',
       'assets',
       'doc',
@@ -452,11 +453,17 @@ class RoboFile extends \Robo\Tasks {
       'vendor-prefixed',
       'views',
     ];
+
+    // the "--ignore" arg takes a list of regexes, we need to anchor and escape them
+    $ignorePatterns = array_map(function (string $path): string {
+      return '^' . preg_quote(__DIR__ . DIRECTORY_SEPARATOR . $path);
+    }, $ignorePaths);
+
     $stringFilesToCheck = !empty($filesToCheck) ? implode(' ', $filesToCheck) : '.';
 
     return $this
       ->taskExec($task)
-      ->arg('--ignore=' . implode(',', $foldersToIgnore))
+      ->arg('--ignore=' . implode(',', $ignorePatterns))
       ->rawArg($stringFilesToCheck)
       ->run();
   }
