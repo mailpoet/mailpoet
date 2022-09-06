@@ -45,10 +45,12 @@ export function selectStep(value) {
 
 export function setWorkflowName(name) {
   const workflow = select(storeName).getWorkflowData();
-  workflow.name = name;
   return {
     type: 'UPDATE_WORKFLOW',
-    workflow,
+    workflow: {
+      ...workflow,
+      name,
+    },
   } as const;
 }
 
