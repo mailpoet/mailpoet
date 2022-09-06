@@ -165,7 +165,9 @@ export function AutomationListing({ workflows, loading }: Props): JSX.Element {
       // elements, however.
       tabs={tabs}
       onSelect={(tabName) => {
-        updateUrlSearchString({ status: tabName });
+        if (pageSearch.get('status') !== tabName) {
+          updateUrlSearchString({ status: tabName });
+        }
       }}
       initialTabName={pageSearch.get('status') || 'all'}
       key={pageSearch.get('status')} // Force re-render on browser forward/back
