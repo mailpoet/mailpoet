@@ -7,6 +7,7 @@ use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberCustomFieldEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
+use MailPoet\Entities\SubscriberTagEntity;
 use MailPoet\Util\License\Features\Subscribers;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
@@ -162,6 +163,16 @@ class SubscribersRepository extends Repository {
          DELETE scs FROM $subscriberCustomFieldTable scs
          JOIN $subscriberTable s ON s.`id` = scs.`subscriber_id`
          WHERE scs.`subscriber_id` IN (:ids)
+         AND s.`is_woocommerce_user` = false
+         AND s.`wp_user_id` IS NULL
+      ", ['ids' => $ids], ['ids' => Connection::PARAM_INT_ARRAY]);
+
+      // Delete subscriber tags
+      $subscriberTagTable = $entityManager->getClassMetadata(SubscriberTagEntity::class)->getTableName();
+      $entityManager->getConnection()->executeStatement("
+         DELETE st FROM $subscriberTagTable st
+         JOIN $subscriberTable s ON s.`id` = st.`subscriber_id`
+         WHERE st.`subscriber_id` IN (:ids)
          AND s.`is_woocommerce_user` = false
          AND s.`wp_user_id` IS NULL
       ", ['ids' => $ids], ['ids' => Connection::PARAM_INT_ARRAY]);
