@@ -31,7 +31,7 @@ class Widget extends \WP_Widget {
   public function __construct() {
     parent::__construct(
       'mailpoet_form',
-      __('MailPoet 3 Form', 'mailpoet'),
+      __('MailPoet Form', 'mailpoet'),
       ['description' => __('Add a newsletter subscription form', 'mailpoet')]
     );
     $this->wp = new WPFunctions;
