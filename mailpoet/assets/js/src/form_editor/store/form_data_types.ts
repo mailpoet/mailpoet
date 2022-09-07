@@ -76,6 +76,7 @@ export type FormSettingsType = {
   slideInFormPosition: string;
   slideInStyles: PlacementStyles;
   successValidationColor?: string;
+  tags: string[];
 };
 
 export type InputBlockStyles = {
