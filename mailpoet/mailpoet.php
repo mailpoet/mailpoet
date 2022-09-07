@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Plugin Name: MailPoet 3 (New)
+ * Plugin Name: MailPoet
  * Version: 3.96.1
  * Plugin URI: http://www.mailpoet.com
  * Description: Create and send newsletters, post notifications and welcome emails from your WordPress.
