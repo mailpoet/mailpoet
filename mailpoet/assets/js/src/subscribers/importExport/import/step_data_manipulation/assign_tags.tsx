@@ -18,7 +18,7 @@ export function AssignTags({
     [setSelectedTags],
   );
 
-  const tags = window.mailpoet_tags.map((tag) => tag.name);
+  const tags = MailPoet.tags.map((tag) => tag.name);
   return (
     <>
       <div className="mailpoet-settings-label">
