@@ -4,6 +4,7 @@ import { BasicSettingsPanel } from './basic_settings_panel';
 import { StylesSettingsPanel } from './styles_settings_panel';
 import { FormPlacementPanel } from './form_placement_panel';
 import { CustomCssPanel } from './custom_css_panel';
+import { TagsPanel } from './tags_panel';
 
 export function FormSettings(): JSX.Element {
   const dispatchResult = useDispatch('mailpoet-form-editor');
@@ -27,6 +28,10 @@ export function FormSettings(): JSX.Element {
       <FormPlacementPanel
         isOpened={openedPanels.includes('form-placement')}
         onToggle={partial(toggleSidebarPanel, 'form-placement')}
+      />
+      <TagsPanel
+        isOpened={openedPanels.includes('tags')}
+        onToggle={partial(toggleSidebarPanel, 'tags')}
       />
       <CustomCssPanel
         isOpened={openedPanels.includes('custom-css')}
