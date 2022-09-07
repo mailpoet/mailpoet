@@ -616,9 +616,9 @@ class Import {
       'segment_id',
       'created_at',
     ];
-    foreach (array_chunk($subscribersIds, self::DB_QUERY_CHUNK_SIZE) as $subscriberIdsChunk) {
-      $data = [];
-      foreach ($segmentsIds as $segmentId) {
+    foreach ($segmentsIds as $segmentId) {
+      foreach (array_chunk($subscribersIds, self::DB_QUERY_CHUNK_SIZE) as $subscriberIdsChunk) {
+        $data = [];
         $data = array_merge($data, array_map(function ($subscriberId) use ($segmentId): array {
           return [
             $subscriberId,
@@ -626,12 +626,13 @@ class Import {
             $this->createdAt,
           ];
         }, $subscriberIdsChunk));
+
+        $this->importExportRepository->insertMultiple(
+          SubscriberSegmentEntity::class,
+          $columns,
+          $data
+        );
       }
-      $this->importExportRepository->insertMultiple(
-        SubscriberSegmentEntity::class,
-        $columns,
-        $data
-      );
     }
   }
 
@@ -654,9 +655,9 @@ class Import {
       'tag_id',
       'created_at',
     ];
-    foreach (array_chunk($subscribersIds, self::DB_QUERY_CHUNK_SIZE) as $subscriberIdsChunk) {
-      $data = [];
-      foreach ($tagIds as $tagId) {
+    foreach ($tagIds as $tagId) {
+      foreach (array_chunk($subscribersIds, self::DB_QUERY_CHUNK_SIZE) as $subscriberIdsChunk) {
+        $data = [];
         $data = array_merge($data, array_map(function ($subscriberId) use ($tagId): array {
           return [
             $subscriberId,
@@ -664,12 +665,13 @@ class Import {
             $this->createdAt,
           ];
         }, $subscriberIdsChunk));
+
+        $this->importExportRepository->insertMultiple(
+          SubscriberTagEntity::class,
+          $columns,
+          $data
+        );
       }
-      $this->importExportRepository->insertMultiple(
-        SubscriberTagEntity::class,
-        $columns,
-        $data
-      );
     }
   }
 }
