@@ -63,6 +63,7 @@ export const MailPoet = {
   emailEditorTutorialUrl: window.mailpoet_email_editor_tutorial_url,
   deactivateSubscriberAfterInactiveDays:
     window.mailpoet_deactivate_subscriber_after_inactive_days,
+  tags: window.mailpoet_tags,
 } as const;
 
 declare global {
