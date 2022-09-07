@@ -133,7 +133,7 @@ class SubscriberExporter {
       case Source::FORM:
         return __('Subscription via a MailPoet subscription form', 'mailpoet');
       case Source::API:
-        return __('Added by a 3rd party via MailPoet 3 API', 'mailpoet');
+        return __('Added by a 3rd party via MailPoet API', 'mailpoet');
       case Source::ADMINISTRATOR:
         return __('Created by the administrator', 'mailpoet');
       case Source::IMPORTED:
