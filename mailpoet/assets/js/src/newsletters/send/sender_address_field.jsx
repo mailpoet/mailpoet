@@ -126,7 +126,7 @@ class SenderField extends Component {
           onBlurEvent={this.onBlur}
         />
 
-        <div className="regular-text" style={{ marginTop: '2rem' }}>
+        <div className="regular-text regular-text-full-width">
           <SenderEmailAddressWarning
             emailAddress={this.state.emailAddress}
             mssActive={window.mailpoet_mss_active}

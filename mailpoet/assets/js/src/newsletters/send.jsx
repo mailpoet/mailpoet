@@ -113,7 +113,9 @@ class NewsletterSendComponent extends Component {
     this.loadItem(this.props.match.params.id).always(() => {
       this.setState({ loading: false });
     });
-    jQuery('#mailpoet_newsletter').parsley();
+    jQuery('#mailpoet_newsletter').parsley({
+      successClass: '', // Disable green inputs for the validation because it's not consistent for select2 and our custom validations
+    });
   }
 
   componentDidUpdate(prevProps) {

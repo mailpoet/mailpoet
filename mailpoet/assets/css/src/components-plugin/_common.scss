@@ -44,7 +44,7 @@ p.sender_email_address_warning.sender_email_address_warning a {
 }
 
 p.sender_email_address_warning:first-child {
-  margin-top: 1em;
+  margin-top: 0; // unify spacing with parsley errors
 }
 
 .button.mailpoet-button-bigger {
