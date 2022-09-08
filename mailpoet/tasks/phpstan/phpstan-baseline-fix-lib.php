@@ -9,12 +9,12 @@ $config['parameters']['phpVersion'] = $phpVersion;
 # PHPStan will throw violations only in new and changed code.
 # read more here: https://phpstan.org/user-guide/baseline
 # we need to load different baseline file based on the php version
-if ($phpVersion == 80100) {
-  $config['includes'][] = 'phpstan-8.1-baseline.neon';
-} elseif ($phpVersion == 70100 || $phpVersion < 80000) {
+if ($phpVersion >= 70100 && $phpVersion < 80000) {
   $config['includes'][] = 'phpstan-7-baseline.neon';
-} else {
+} elseif ($phpVersion >= 80000 && $phpVersion < 80100) {
   $config['includes'][] = 'phpstan-8-baseline.neon';
+} else {
+  $config['includes'][] = 'phpstan-8.1-baseline.neon';
 }
 
 return $config;
