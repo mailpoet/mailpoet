@@ -9,17 +9,6 @@ parameters:
 			count: 1
 			path: ../../lib/Automation/Engine/Endpoints/Workflows/WorkflowTemplatesGetEndpoint.php
 
-
-		-
-			message: "#^Cannot cast string|void to string\\.$#"
-			count: 2
-			path: ../../lib/Automation/Engine/Storage/WorkflowRunStorage.php
-
-		-
-			message: "#^Cannot cast string|void to string\\.$#"
-			count: 3
-			path: ../../lib/Automation/Engine/Storage/WorkflowStorage.php
-
 		-
 			message: "#^Cannot access property \\$permissions on mixed\\.$#"
 			count: 1
@@ -389,11 +378,6 @@ parameters:
 			message: "#^Method MailPoet\\\\Listing\\\\ListingRepository\\:\\:getData\\(\\) should return array but returns mixed\\.$#"
 			count: 1
 			path: ../../lib/Listing/ListingRepository.php
-
-		-
-			message: "#^Variable \\$mailer in empty\\(\\) is never defined\\.$#"
-			count: 1
-			path: ../../lib/Mailer/MailerLog.php
 
 		-
 			message: "#^Method MailPoet\\\\Models\\\\DynamicSegmentFilter\\:\\:__get\\(\\) should return string\\|null but returns mixed\\.$#"
@@ -872,16 +856,6 @@ parameters:
 
 		-
 			message: "#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\\.$#"
-			count: 2
-			path: ../../lib/Subscribers/SubscriberListingRepository.php
-
-		-
-			message: "#^Cannot access offset 'status' on mixed\\.$#"
-			count: 1
-			path: ../../lib/Subscribers/SubscriberListingRepository.php
-
-		-
-			message: "#^Cannot access offset 'subscribersCount' on mixed\\.$#"
 			count: 1
 			path: ../../lib/Subscribers/SubscriberListingRepository.php
 
@@ -898,11 +872,6 @@ parameters:
 		-
 			message: "#^Cannot call method isStatic\\(\\) on mixed\\.$#"
 			count: 1
-			path: ../../lib/Subscribers/SubscriberListingRepository.php
-
-		-
-			message: "#^Cannot cast mixed to int\\.$#"
-			count: 3
 			path: ../../lib/Subscribers/SubscriberListingRepository.php
 
 		-
