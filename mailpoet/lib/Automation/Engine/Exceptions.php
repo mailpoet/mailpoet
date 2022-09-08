@@ -85,11 +85,11 @@ class Exceptions {
       ->withMessage(sprintf(__("Workflow run with ID '%d' not found.", 'mailpoet'), $id));
   }
 
-  public static function workflowStepNotFound(string $id): NotFoundException {
+  public static function workflowStepNotFound(string $key): NotFoundException {
     return NotFoundException::create()
       ->withErrorCode(self::WORKFLOW_STEP_NOT_FOUND)
       // translators: %s is the ID of the workflow step.
-      ->withMessage(sprintf(__("Workflow step with ID '%s' not found.", 'mailpoet'), $id));
+      ->withMessage(sprintf(__("Workflow step with key '%s' not found.", 'mailpoet'), $key));
   }
 
   public static function workflowTriggerNotFound(int $workflowId, string $key): NotFoundException {
