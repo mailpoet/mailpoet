@@ -17,6 +17,7 @@ use MailPoet\Subscription\CaptchaSession;
 use MailPoet\Subscription\SubscriptionUrlFactory;
 use MailPoet\Subscription\Throttling;
 use MailPoet\Subscription\Throttling as SubscriptionThrottling;
+use MailPoet\Tags\TagRepository;
 use MailPoet\UnexpectedValueException;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -38,6 +39,9 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
     $requiredCustomFieldValidator = Stub::makeEmpty(RequiredCustomFieldValidator::class);
     $settings = Stub::makeEmpty(SettingsController::class);
     $form = Stub::makeEmpty(FormEntity::class);
+    $tagRepository = Stub::makeEmpty(TagRepository::class);
+    $subscriberTagRepository = Stub::makeEmpty(SubscriberTagRepository::class);
+
 
     $formsRepository = Stub::makeEmpty(
       FormsRepository::class,
@@ -74,6 +78,8 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       $settings,
       $formsRepository,
       $statisticsFormsRepository,
+      $tagRepository,
+      $subscriberTagRepository,
       $wp
     );
 
@@ -144,6 +150,8 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       ],
       $this
     );
+    $tagRepository = Stub::makeEmpty(TagRepository::class);
+    $subscriberTagRepository = Stub::makeEmpty(SubscriberTagRepository::class);
 
     $testee = new SubscriberSubscribeController(
       $subscriptionCaptcha,
@@ -157,6 +165,8 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       $settings,
       $formsRepository,
       $statisticsFormsRepository,
+      $tagRepository,
+      $subscriberTagRepository,
       $wp
     );
 
@@ -223,6 +233,8 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       ],
       $this
     );
+    $tagRepository = Stub::makeEmpty(TagRepository::class);
+    $subscriberTagRepository = Stub::makeEmpty(SubscriberTagRepository::class);
 
     $testee = new SubscriberSubscribeController(
       $subscriptionCaptcha,
@@ -236,6 +248,8 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       $settings,
       $formsRepository,
       $statisticsFormsRepository,
+      $tagRepository,
+      $subscriberTagRepository,
       $wp
     );
 
@@ -328,6 +342,8 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       ],
       $this
     );
+    $tagRepository = Stub::makeEmpty(TagRepository::class);
+    $subscriberTagRepository = Stub::makeEmpty(SubscriberTagRepository::class);
 
     $testee = new SubscriberSubscribeController(
       $subscriptionCaptcha,
@@ -341,6 +357,8 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       $settings,
       $formsRepository,
       $statisticsFormsRepository,
+      $tagRepository,
+      $subscriberTagRepository,
       $wp
     );
 
@@ -443,6 +461,9 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       ],
       $this
     );
+    $tagRepository = Stub::makeEmpty(TagRepository::class);
+    $subscriberTagRepository = Stub::makeEmpty(SubscriberTagRepository::class);
+
     $testee = new SubscriberSubscribeController(
       $subscriptionCaptcha,
       $captchaSession,
@@ -455,6 +476,8 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       $settings,
       $formsRepository,
       $statisticsFormsRepository,
+      $tagRepository,
+      $subscriberTagRepository,
       $wp
     );
 
@@ -509,6 +532,8 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       Stub::makeEmpty(SettingsController::class),
       Stub::makeEmpty(FormsRepository::class),
       Stub::makeEmpty(StatisticsFormsRepository::class),
+      Stub::makeEmpty(TagRepository::class),
+      Stub::makeEmpty(SubscriberTagRepository::class),
       Stub::makeEmpty(WPFunctions::class)
     );
 
@@ -560,6 +585,8 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       Stub::makeEmpty(SettingsController::class),
       Stub::makeEmpty(FormsRepository::class),
       Stub::makeEmpty(StatisticsFormsRepository::class),
+      Stub::makeEmpty(TagRepository::class),
+      Stub::makeEmpty(SubscriberTagRepository::class),
       Stub::makeEmpty(WPFunctions::class)
     );
 
@@ -670,6 +697,8 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       },
       ]
     );
+    $tagRepository = Stub::makeEmpty(TagRepository::class);
+    $subscriberTagRepository = Stub::makeEmpty(SubscriberTagRepository::class);
 
     $testee = new SubscriberSubscribeController(
       $subscriptionCaptcha,
@@ -683,6 +712,8 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       $settings,
       $formsRepository,
       $statisticsFormsRepository,
+      $tagRepository,
+      $subscriberTagRepository,
       $wp
     );
 
