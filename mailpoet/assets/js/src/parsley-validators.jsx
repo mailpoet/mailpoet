@@ -40,11 +40,11 @@ jQuery(($) => {
     validateMultiple: (values, noSegmentWithSubscribersError) => {
       const segments = window.mailpoet_segments || [];
 
-      let isValid = true;
+      let isValid = false;
       values.forEach((segmentId) => {
         const segment = segments.find((s) => s.id === segmentId);
-        if (segment && segment.subscribers === 0) {
-          isValid = false;
+        if (segment && segment.subscribers > 0) {
+          isValid = true;
         }
       });
 
