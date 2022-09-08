@@ -20,6 +20,7 @@ use MailPoet\Form\PreviewPage;
 use MailPoet\Form\Templates\TemplateRepository;
 use MailPoet\Listing;
 use MailPoet\Settings\UserFlagsController;
+use MailPoet\Tags\TagRepository;
 use MailPoet\UnexpectedValueException;
 use MailPoet\WP\Emoji;
 use MailPoet\WP\Functions as WPFunctions;
@@ -56,6 +57,9 @@ class Forms extends APIEndpoint {
   /** @var ApiDataSanitizer */
   private $dataSanitizer;
 
+  /** @var TagRepository */
+  private $tagRepository;
+
   /** @var FormSaveController */
   private $formSaveController;
 
@@ -69,6 +73,7 @@ class Forms extends APIEndpoint {
     WPFunctions $wp,
     Emoji $emoji,
     ApiDataSanitizer $dataSanitizer,
+    TagRepository $tagRepository,
     FormSaveController $formSaveController
   ) {
     $this->listingHandler = $listingHandler;
@@ -80,6 +85,7 @@ class Forms extends APIEndpoint {
     $this->formsResponseBuilder = $formsResponseBuilder;
     $this->emoji = $emoji;
     $this->dataSanitizer = $dataSanitizer;
+    $this->tagRepository = $tagRepository;
     $this->formSaveController = $formSaveController;
   }
 
@@ -199,6 +205,11 @@ class Forms extends APIEndpoint {
       $settings['segments'] = $listSelection;
     } else {
       $settings['segments_selected_by'] = 'admin';
+    }
+
+    // check tags and create them if they don't exist
+    if (isset($settings['tags'])) {
+      $this->createTagsIfDoNotExist($settings['tags']);
     }
 
     // Check Custom HTML block permissions
@@ -337,5 +348,11 @@ class Forms extends APIEndpoint {
     $formTemplate = $this->templateRepository->getFormTemplate($templateId);
     $form = $formTemplate->toFormEntity();
     return $form->toArray();
+  }
+
+  private function createTagsIfDoNotExist(array $tagNames): void {
+    foreach ($tagNames as $tagName) {
+      $this->tagRepository->createOrUpdate(['name' => $tagName]);
+    }
   }
 }

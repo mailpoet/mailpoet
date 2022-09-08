@@ -7,9 +7,12 @@ use MailPoet\API\JSON\v1\Forms;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\FormEntity;
 use MailPoet\Entities\SegmentEntity;
+use MailPoet\Entities\TagEntity;
 use MailPoet\Form\FormsRepository;
 use MailPoet\Form\PreviewPage;
 use MailPoet\Segments\SegmentsRepository;
+use MailPoet\Tags\TagRepository;
+use MailPoet\Test\DataFactories\Tag;
 use MailPoet\WP\Functions as WPFunctions;
 
 class FormsTest extends \MailPoetTest {
@@ -26,10 +29,14 @@ class FormsTest extends \MailPoetTest {
   /** @var WPFunctions */
   private $wp;
 
+  /** @var TagRepository */
+  private $tagRepository;
+
   public function _before() {
     parent::_before();
     $this->endpoint = ContainerWrapper::getInstance()->get(Forms::class);
     $this->formsRepository = ContainerWrapper::getInstance()->get(FormsRepository::class);
+    $this->tagRepository = ContainerWrapper::getInstance()->get(TagRepository::class);
     $this->wp = WPFunctions::get();
     $this->form1 = $this->createForm('Form 1');
     $this->form2 = $this->createForm('Form 2');
@@ -177,6 +184,28 @@ class FormsTest extends \MailPoetTest {
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->data['settings']['segments_selected_by'])->equals('user');
     expect($response->data['settings']['segments'])->equals([2, 4]);
+  }
+
+  public function testItCreatesTagsDuringSavingFormEditor(): void {
+    $tag = (new Tag())
+      ->withName('Tag 1')
+      ->create();
+    $tagName = 'Tag 2';
+    $response = $this->endpoint->saveEditor([
+      'settings' => [
+        'tags' => [
+          $tag->getName(),
+          $tagName,
+        ],
+      ],
+    ]);
+    expect($response->status)->equals(APIResponse::STATUS_OK);
+
+    $tag1 = $this->tagRepository->findOneBy(['name' => $tag->getName()]);
+    $this->assertEquals($tag1, $tag);
+    $tag2 = $this->tagRepository->findOneBy(['name' => $tagName]);
+    $this->assertInstanceOf(TagEntity::class, $tag2);
+    $this->assertEquals($tag2->getName(), $tagName);
   }
 
   public function testItCanRestoreAForm() {
