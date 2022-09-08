@@ -575,7 +575,6 @@ class NewsletterSendComponent extends Component {
       return {
         ...field,
         validation: {
-          ...field.validation,
           'data-parsley-required': false,
         },
       };
