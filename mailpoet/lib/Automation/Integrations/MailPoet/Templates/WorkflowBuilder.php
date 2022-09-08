@@ -2,6 +2,7 @@
 
 namespace MailPoet\Automation\Integrations\MailPoet\Templates;
 
+use MailPoet\Automation\Engine\Data\NextStep;
 use MailPoet\Automation\Engine\Data\Step;
 use MailPoet\Automation\Engine\Data\Workflow;
 use MailPoet\Automation\Engine\Registry;
@@ -22,7 +23,7 @@ class WorkflowBuilder {
 
   public function createFromSequence(string $name, array $sequence, array $sequenceArgs = []): Workflow {
     $steps = [];
-    $nextStep = null;
+    $nextSteps = [];
     foreach (array_reverse($sequence) as $index => $stepKey) {
       $workflowStep = $this->registry->getStep($stepKey);
       if (!$workflowStep) {
@@ -33,12 +34,13 @@ class WorkflowBuilder {
         $this->uniqueId(),
         in_array(Trigger::class, (array)class_implements($workflowStep)) ? Step::TYPE_TRIGGER : Step::TYPE_ACTION,
         $stepKey,
-        $nextStep,
-        $args
+        $args,
+        $nextSteps
       );
-      $nextStep = $step->getId();
+      $nextSteps = [new NextStep($step->getId())];
       $steps[] = $step;
     }
+    $steps[] = new Step('root', 'root', 'core:root', [], $nextSteps);
     $steps = array_reverse($steps);
     return new Workflow(
       $name,

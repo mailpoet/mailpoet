@@ -66,7 +66,7 @@ class SendEmailActionTest extends \MailPoetTest {
     $this->segmentSubject = $this->diContainer->get(SegmentSubject::class);
 
     $this->email = (new Newsletter())->withAutomationType()->create();
-    $this->step = new Step('step-id', Step::TYPE_ACTION, 'step-key', null, ['email_id' => $this->email->getId()]);
+    $this->step = new Step('step-id', Step::TYPE_ACTION, 'step-key',['email_id' => $this->email->getId()], []);
     $this->workflow = new Workflow('test-workflow', [], new \WP_User());
   }
 
@@ -84,13 +84,13 @@ class SendEmailActionTest extends \MailPoetTest {
   }
 
   public function testItIsNotValidIfStepHasNoEmail(): void {
-    $step = new Step('step-id', Step::TYPE_ACTION, 'step-key', null, []);
+    $step = new Step('step-id', Step::TYPE_ACTION, 'step-key', [], []);
     expect($this->action->isValid($this->getSubjects(), $step, $this->workflow))->false();
   }
 
   public function testItRequiresAutomationEmailType(): void {
     $newsletter = (new Newsletter())->withPostNotificationsType()->create();
-    $step = new Step('step-id', Step::TYPE_ACTION, 'step-key', null, ['email_id' => $newsletter->getId()]);
+    $step = new Step('step-id', Step::TYPE_ACTION, 'step-key', ['email_id' => $newsletter->getId()], []);
     expect($this->action->isValid($this->getSubjects(), $step, $this->workflow))->false();
   }
 
@@ -103,7 +103,7 @@ class SendEmailActionTest extends \MailPoetTest {
     $subjects = $this->getLoadedSubjects($subscriber, $segment);
     $email = (new Newsletter())->withAutomationType()->create();
 
-    $step = new Step('step-id', Step::TYPE_ACTION, 'step-key', null, ['email_id' => $email->getId()]);
+    $step = new Step('step-id', Step::TYPE_ACTION, 'step-key', ['email_id' => $email->getId()], []);
     $workflow = new Workflow('some-workflow', [$step], new \WP_User());
     $run = new WorkflowRun(1, 1, 'trigger-key', $subjects);
 
@@ -125,7 +125,7 @@ class SendEmailActionTest extends \MailPoetTest {
     $subjects = $this->getLoadedSubjects($subscriber, $segment);
     $email = (new Newsletter())->withAutomationType()->create();
 
-    $step = new Step('step-id', Step::TYPE_ACTION, 'step-key', null, ['email_id' => $email->getId()]);
+    $step = new Step('step-id', Step::TYPE_ACTION, 'step-key', ['email_id' => $email->getId()], []);
     $workflow = new Workflow('some-workflow', [$step], new \WP_User());
     $run = new WorkflowRun(1, 1, 'trigger-key', $subjects);
 
@@ -157,7 +157,7 @@ class SendEmailActionTest extends \MailPoetTest {
     $subjects = $this->getLoadedSubjects($subscriber, $segment);
     $email = (new Newsletter())->withAutomationType()->create();
 
-    $step = new Step('step-id', Step::TYPE_ACTION, 'step-key', null, ['email_id' => $email->getId()]);
+    $step = new Step('step-id', Step::TYPE_ACTION, 'step-key', ['email_id' => $email->getId()], []);
     $workflow = new Workflow('some-workflow', [$step], new \WP_User());
     $run = new WorkflowRun(1, 1, 'trigger-key', $subjects);
 
@@ -186,7 +186,7 @@ class SendEmailActionTest extends \MailPoetTest {
     $subjects = $this->getLoadedSubjects($subscriber, $segment);
     $email = (new Newsletter())->withAutomationType()->create();
 
-    $step = new Step('step-id', Step::TYPE_ACTION, 'step-key', null, ['email_id' => $email->getId()]);
+    $step = new Step('step-id', Step::TYPE_ACTION, 'step-key', ['email_id' => $email->getId()], []);
     $workflow = new Workflow('some-workflow', [$step], new \WP_User());
     $run = new WorkflowRun(1, 1, 'trigger-key', $subjects);
 
@@ -224,7 +224,7 @@ class SendEmailActionTest extends \MailPoetTest {
       $subjects = $this->getLoadedSubjects($subscriber, $segment);
       $email = (new Newsletter())->withAutomationType()->create();
 
-      $step = new Step('step-id', Step::TYPE_ACTION, 'step-key', null, ['email_id' => $email->getId()]);
+      $step = new Step('step-id', Step::TYPE_ACTION, 'step-key', ['email_id' => $email->getId()], []);
       $workflow = new Workflow('some-workflow', [$step], new \WP_User());
       $run = new WorkflowRun(1, 1, 'trigger-key', $subjects);
 
@@ -253,7 +253,7 @@ class SendEmailActionTest extends \MailPoetTest {
     $subjects = $this->getLoadedSubjects($subscriber, $segment);
     $email = (new Newsletter())->withAutomationType()->create();
 
-    $step = new Step('step-id', Step::TYPE_ACTION, 'step-key', null, ['email_id' => $email->getId()]);
+    $step = new Step('step-id', Step::TYPE_ACTION, 'step-key', ['email_id' => $email->getId()], []);
     $workflow = new Workflow('some-workflow', [$step], new \WP_User());
     $run = new WorkflowRun(1, 1, 'trigger-key', $subjects);
 

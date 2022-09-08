@@ -7,10 +7,11 @@ use MailPoet\Automation\Engine\API\Endpoint;
 use MailPoet\Automation\Engine\API\Request;
 use MailPoet\Automation\Engine\API\Response;
 use MailPoet\Automation\Engine\Builder\UpdateWorkflowController;
+use MailPoet\Automation\Engine\Data\NextStep;
 use MailPoet\Automation\Engine\Data\Step;
 use MailPoet\Automation\Engine\Data\Workflow;
+use MailPoet\Automation\Engine\Validators\WorkflowSchema;
 use MailPoet\Validator\Builder;
-use stdClass;
 
 class WorkflowsPutEndpoint extends Endpoint {
   /** @var UpdateWorkflowController */
@@ -29,19 +30,11 @@ class WorkflowsPutEndpoint extends Endpoint {
   }
 
   public static function getRequestSchema(): array {
-    $step = Builder::object([
-      'id' => Builder::string()->required(),
-      'type' => Builder::string()->required(),
-      'key' => Builder::string()->required(),
-      'args' => Builder::object(),
-      'next_step_id' => Builder::string()->nullable(),
-    ]);
-
     return [
       'id' => Builder::integer()->required(),
       'name' => Builder::string()->minLength(1),
       'status' => Builder::string(),
-      'steps' => Builder::object()->additionalProperties($step),
+      'steps' => WorkflowSchema::getStepsSchema(),
     ];
   }
 
@@ -62,8 +55,10 @@ class WorkflowsPutEndpoint extends Endpoint {
           'id' => $step->getId(),
           'type' => $step->getType(),
           'key' => $step->getKey(),
-          'next_step_id' => $step->getNextStepId(),
-          'args' => $step->getArgs() ?: new stdClass(),
+          'args' => $step->getArgs(),
+          'next_steps' => array_map(function (NextStep $nextStep) {
+            return $nextStep->toArray();
+          }, $step->getNextSteps()),
         ];
       }, $workflow->getSteps()),
     ];

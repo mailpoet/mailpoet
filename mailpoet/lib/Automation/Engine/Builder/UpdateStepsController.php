@@ -33,13 +33,6 @@ class UpdateStepsController {
     if (!$step) {
       throw Exceptions::workflowStepNotFound($key);
     }
-
-    return new Step(
-      $data['id'],
-      $data['type'],
-      $data['key'],
-      $data['next_step_id'] ?? null,
-      $data['args'] ?? null
-    );
+    return Step::fromArray($data);
   }
 }

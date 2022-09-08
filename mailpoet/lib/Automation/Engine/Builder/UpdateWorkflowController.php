@@ -2,6 +2,7 @@
 
 namespace MailPoet\Automation\Engine\Builder;
 
+use MailPoet\Automation\Engine\Data\Step;
 use MailPoet\Automation\Engine\Data\Workflow;
 use MailPoet\Automation\Engine\Exceptions;
 use MailPoet\Automation\Engine\Exceptions\UnexpectedValueException;
@@ -81,15 +82,17 @@ class UpdateWorkflowController {
 
     foreach ($steps as $id => $data) {
       $existingStep = $existingSteps[$id] ?? null;
-      if (
-        !$existingStep
-        || $data['id'] !== $existingStep->getId()
-        || $data['type'] !== $existingStep->getType()
-        || $data['key'] !== $existingStep->getKey()
-        || $data['next_step_id'] !== $existingStep->getNextStepId()
-      ) {
+      if (!$existingStep || !$this->stepChanged(Step::fromArray($data), $existingStep)) {
         throw Exceptions::workflowStructureModificationNotSupported();
       }
     }
+  }
+
+  private function stepChanged(Step $a, Step $b): bool {
+    $aData = $a->toArray();
+    $bData = $b->toArray();
+    unset($aData['args']);
+    unset($bData['args']);
+    return $aData === $bData;
   }
 }
