@@ -2,6 +2,7 @@
 
 namespace MailPoet\Automation\Engine;
 
+use MailPoet\Automation\Engine\Control\RootStep;
 use MailPoet\Automation\Engine\Workflows\Action;
 use MailPoet\Automation\Engine\Workflows\Step;
 use MailPoet\Automation\Engine\Workflows\Subject;
@@ -24,9 +25,11 @@ class Registry {
   private $wordPress;
 
   public function __construct(
+    RootStep $rootStep,
     WordPress $wordPress
   ) {
     $this->wordPress = $wordPress;
+    $this->steps[$rootStep->getKey()] = $rootStep;
   }
 
   public function addSubject(Subject $subject): void {
