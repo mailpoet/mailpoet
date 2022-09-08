@@ -1,11 +1,11 @@
-# MailPoet 3 - Documentation for Integrators
+# MailPoet – Documentation for Integrators
 
-This is a place where we put documentation for developers who want to build an extension for MailPoet 3 plugin.
+This is a place where we put documentation for developers who want to build an extension for MailPoet plugin.
 If you are a user looking for a user guide please visit our [knowledge base](https://kb.mailpoet.com/).
 
 ## MailPoet API
 
-MailPoet API is the officially supported way to integrate with the MailPoet 3 plugin. It focuses on functionality for managing subscribers.
+MailPoet API is the officially supported way to integrate with the MailPoet plugin. It focuses on functionality for managing subscribers.
 Developers integrating MailPoet functionality in their own plugins or projects are strongly discouraged against using other functions and classes within MailPoet codebase! We are continually refactoring as part of our rapid development process, and backward compatibility is not guaranteed.
 
 ### Basics
