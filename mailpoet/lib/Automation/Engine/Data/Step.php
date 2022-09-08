@@ -15,24 +15,28 @@ class Step {
   /** @var string */
   private $key;
 
-  /** @var string|null */
-  protected $nextStepId;
-
   /** @var array */
   protected $args;
 
+  /** @var NextStep[] */
+  protected $nextSteps;
+
+  /**
+   * @param array<string, mixed> $args
+   * @param NextStep[] $nextSteps
+   */
   public function __construct(
     string $id,
     string $type,
     string $key,
-    ?string $nextStepId = null,
-    array $args = []
+    array $args,
+    array $nextSteps
   ) {
     $this->id = $id;
     $this->type = $type;
     $this->key = $key;
-    $this->nextStepId = $nextStepId;
     $this->args = $args;
+    $this->nextSteps = $nextSteps;
   }
 
   public function getId(): string {
@@ -47,12 +51,14 @@ class Step {
     return $this->key;
   }
 
-  public function getNextStepId(): ?string {
-    return $this->nextStepId;
+  /** @return NextStep[] */
+  public function getNextSteps(): array {
+    return $this->nextSteps;
   }
 
-  public function setNextStepId(string $id): void {
-    $this->nextStepId = $id;
+  /** @param NextStep[] $nextSteps */
+  public function setNextSteps(array $nextSteps): void {
+    $this->nextSteps = $nextSteps;
   }
 
   public function getArgs(): array {
@@ -64,8 +70,22 @@ class Step {
       'id' => $this->id,
       'type' => $this->type,
       'key' => $this->key,
-      'next_step_id' => $this->nextStepId,
       'args' => $this->args,
+      'next_steps' => array_map(function (NextStep $nextStep) {
+        return $nextStep->toArray();
+      }, $this->nextSteps),
     ];
+  }
+
+  public static function fromArray(array $data): self {
+    return new self(
+      $data['id'],
+      $data['type'],
+      $data['key'],
+      $data['args'],
+      array_map(function (array $nextStep) {
+        return NextStep::fromArray($nextStep);
+      }, $data['next_steps'])
+    );
   }
 }

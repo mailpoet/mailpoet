@@ -186,7 +186,9 @@ class Workflow {
     // TODO: validation
     $workflow = new self(
       $data['name'],
-      self::parseSteps(Json::decode($data['steps'])),
+      array_map(function (array $stepData): Step {
+        return Step::fromArray($stepData);
+      }, Json::decode($data['steps'])),
       new \WP_User((int)$data['author'])
     );
     $workflow->id = (int)$data['id'];
@@ -196,19 +198,5 @@ class Workflow {
     $workflow->updatedAt = new DateTimeImmutable($data['updated_at']);
     $workflow->activatedAt = $data['activated_at'] !== null ? new DateTimeImmutable($data['activated_at']) : null;
     return $workflow;
-  }
-
-  private static function parseSteps(array $data): array {
-    $steps = [];
-    foreach ($data as $step) {
-      $steps[] = new Step(
-        $step['id'],
-        $step['type'],
-        $step['key'],
-        $step['next_step_id'] ?? null,
-        $step['args'] ?? []
-      );
-    }
-    return $steps;
   }
 }

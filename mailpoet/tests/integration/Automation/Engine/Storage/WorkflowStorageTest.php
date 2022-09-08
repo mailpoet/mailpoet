@@ -20,7 +20,7 @@ class WorkflowStorageTest extends \MailPoetTest
   public function testItLoadsLatestVersion() {
     $workflow = $this->createEmptyWorkflow();
 
-    $step1 = new Step('id', Step::TYPE_ACTION, 'key');
+    $step1 = new Step('id', Step::TYPE_ACTION, 'key', [], []);
     $workflow->setSteps(['id' => $step1]);
     $this->testee->updateWorkflow($workflow);
     $updatedWorkflow = $this->testee->getWorkflow($workflow->getId());
@@ -28,7 +28,7 @@ class WorkflowStorageTest extends \MailPoetTest
     $this->assertTrue($workflow->getVersionId() < $updatedWorkflow->getVersionId());
     $this->assertEquals(1, count($updatedWorkflow->getSteps()));
 
-    $step2 = new Step('id-2', Step::TYPE_ACTION, 'key');
+    $step2 = new Step('id-2', Step::TYPE_ACTION, 'key', [], []);
     $workflow->setSteps(['id' => $step1, 'id-2' => $step2]);
     $this->testee->updateWorkflow($workflow);
     $latestWorkflow = $this->testee->getWorkflow($workflow->getId());
@@ -40,7 +40,7 @@ class WorkflowStorageTest extends \MailPoetTest
   public function testItLoadsCorrectVersion() {
     $workflow = $this->createEmptyWorkflow();
 
-    $step1 = new Step('id', Step::TYPE_ACTION, 'key');
+    $step1 = new Step('id', Step::TYPE_ACTION, 'key', [], []);
     $workflow->setSteps(['id' => $step1]);
     $this->testee->updateWorkflow($workflow);
     $updatedWorkflow = $this->testee->getWorkflow($workflow->getId());
@@ -48,7 +48,7 @@ class WorkflowStorageTest extends \MailPoetTest
     $this->assertTrue($workflow->getVersionId() < $updatedWorkflow->getVersionId());
     $this->assertEquals(1, count($updatedWorkflow->getSteps()));
 
-    $step2 = new Step('id-2', Step::TYPE_ACTION, 'key');
+    $step2 = new Step('id-2', Step::TYPE_ACTION, 'key', [], []);
     $workflow->setSteps(['id' => $step1, 'id-2' => $step2]);
     $this->testee->updateWorkflow($workflow);
     $correctWorkflow = $this->testee->getWorkflow($workflow->getId(), $updatedWorkflow->getVersionId());
@@ -60,7 +60,7 @@ class WorkflowStorageTest extends \MailPoetTest
   public function testItLoadsOnlyActiveWorkflowsByTrigger() {
     $workflow = $this->createEmptyWorkflow();
     $subscriberTrigger = $this->diContainer->get(SegmentSubscribedTrigger::class);
-    $trigger = new Step('id', Step::TYPE_TRIGGER, $subscriberTrigger->getKey());
+    $trigger = new Step('id', Step::TYPE_TRIGGER, $subscriberTrigger->getKey(), [], []);
     $workflow->setSteps(['id' => $trigger]);
     $workflow->setStatus(Workflow::STATUS_INACTIVE);
     $this->testee->updateWorkflow($workflow);

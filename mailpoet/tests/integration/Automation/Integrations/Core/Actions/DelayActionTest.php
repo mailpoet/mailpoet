@@ -3,6 +3,7 @@
 namespace MailPoet\Test\Automation\Integrations\Core\Actions;
 
 use MailPoet\Automation\Engine\Control\ActionScheduler;
+use MailPoet\Automation\Engine\Data\NextStep;
 use MailPoet\Automation\Engine\Data\Step;
 use MailPoet\Automation\Engine\Data\Workflow;
 use MailPoet\Automation\Engine\Data\WorkflowRun;
@@ -15,11 +16,16 @@ class DelayActionTest extends \MailPoetTest {
    * @dataProvider dataForTestItCalculatesDelayTypesCorrectly
    */
   public function testItCalculatesDelayTypesCorrectly(int $delay, string $type, int $expectation) {
-
-    $step = new Step("1", 'core:delay', 'core:delay', 'next-step', [
-      'delay' => $delay,
-      'delay_type' => $type,
-    ]);
+    $step = new Step(
+      '1',
+      'core:delay',
+      'core:delay',
+      [
+        'delay' => $delay,
+        'delay_type' => $type,
+      ],
+      [new NextStep('next-step')]
+    );
     $workflow = $this->createMock(Workflow::class);
     $workflowRun =  $this->createMock(WorkflowRun::class);
     $workflowRun->expects($this->atLeastOnce())->method('getId')->willReturn(1);
@@ -81,10 +87,16 @@ class DelayActionTest extends \MailPoetTest {
    */
   public function testDelayActionInvalidatesOutsideOfBoundaries(int $delay, bool $expectation) {
 
-    $step = new Step("1", 'core:delay', 'core:delay', 'next-step', [
-      'delay' => $delay,
-      'delay_type' => "HOURS",
-    ]);
+    $step = new Step(
+      '1',
+      'core:delay',
+      'core:delay',
+      [
+        'delay' => $delay,
+        'delay_type' => "HOURS",
+      ],
+      [new NextStep('next-step')]
+    );
     $workflow = $this->createMock(Workflow::class);
     $actionScheduler = $this->createMock(ActionScheduler::class);
     $testee = new DelayAction($actionScheduler);

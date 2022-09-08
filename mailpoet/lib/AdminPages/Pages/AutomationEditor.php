@@ -4,6 +4,7 @@ namespace MailPoet\AdminPages\Pages;
 
 use DateTimeImmutable;
 use MailPoet\AdminPages\PageRenderer;
+use MailPoet\Automation\Engine\Data\NextStep;
 use MailPoet\Automation\Engine\Data\Step;
 use MailPoet\Automation\Engine\Data\Workflow;
 use MailPoet\Automation\Engine\Registry;
@@ -95,8 +96,10 @@ class AutomationEditor {
           'id' => $step->getId(),
           'type' => $step->getType(),
           'key' => $step->getKey(),
-          'next_step_id' => $step->getNextStepId(),
-          'args' => $step->getArgs() ?: new \stdClass(),
+          'args' => $step->getArgs(),
+          'next_steps' => array_map(function (NextStep $nextStep) {
+            return $nextStep->toArray();
+          }, $step->getNextSteps()),
         ];
       }, $workflow->getSteps()),
     ];
