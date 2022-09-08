@@ -52,6 +52,14 @@ parameters:
       message: "#^Cannot cast string|void to string\\.$#"
       count: 5
       path: ../../lib/Automation/Engine/Storage/WorkflowStorage.php
+    -
+      message: '/^Call to static method custom_orders_table_usage_is_enabled\(\) on an unknown class Automattic\\WooCommerce\\Utilities\\OrderUtil\.$/'
+      count: 1
+      path: ../../lib/WooCommerce/Helper.php
+    -
+      message: '/^Call to function method_exists\(\) with/'
+      count: 1
+      path: ../../lib/WooCommerce/Helper.php
   reportUnmatchedIgnoredErrors: true
   dynamicConstantNames:
     - MAILPOET_PREMIUM_INITIALIZED
