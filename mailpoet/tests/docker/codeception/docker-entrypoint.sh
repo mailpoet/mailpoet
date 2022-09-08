@@ -124,17 +124,25 @@ if [[ $SKIP_PLUGINS != "1" ]]; then
     unzip -q -o "$WOOCOMMERCE_BLOCKS_ZIP" -d /wp-core/wp-content/plugins/
   fi
 
+  ACTIVATION_CONTEXT=$HTTP_HOST
+  # For integration tests in multisite environment we need to activate the plugin for correct site that is loaded in tests
+  # The acceptance tests activate/deactivate plugins using a helper.
+  # We still need to activate them here so that we can access WooCommerce code in tests
+  if [[ $MULTISITE == "1" && $TEST_TYPE == "integration" ]]; then
+    ACTIVATION_CONTEXT="$HTTP_HOST/$WP_TEST_MULTISITE_SLUG"
+  fi
+
   # activate all plugins
-  wp plugin activate woocommerce
-  wp plugin activate woocommerce-subscriptions
-  wp plugin activate woocommerce-memberships
-  wp plugin activate woo-gutenberg-products-block
+  wp plugin activate woocommerce --url=$ACTIVATION_CONTEXT
+  wp plugin activate woocommerce-subscriptions --url=$ACTIVATION_CONTEXT
+  wp plugin activate woocommerce-memberships --url=$ACTIVATION_CONTEXT
+  wp plugin activate woo-gutenberg-products-block --url=$ACTIVATION_CONTEXT
 
   # print info about activated plugins
-  wp plugin get woocommerce
-  wp plugin get woocommerce-subscriptions
-  wp plugin get woocommerce-memberships
-  wp plugin get woo-gutenberg-products-block
+  wp plugin get woocommerce --url=$ACTIVATION_CONTEXT
+  wp plugin get woocommerce-subscriptions --url=$ACTIVATION_CONTEXT
+  wp plugin get woocommerce-memberships --url=$ACTIVATION_CONTEXT
+  wp plugin get woo-gutenberg-products-block --url=$ACTIVATION_CONTEXT
 fi
 
 # Set constants in wp-config.php
@@ -154,7 +162,7 @@ fi
 # activate MailPoet
 wp plugin activate mailpoet/mailpoet.php
 if [[ $MULTISITE == "1" ]]; then
-  wp plugin activate mailpoet/mailpoet.php --url=http://test.local/php7_multisite/
+  wp plugin activate mailpoet/mailpoet.php --url=$HTTP_HOST/$WP_TEST_MULTISITE_SLUG
 fi
 
 if [[ $CIRCLE_JOB == *"_with_premium_"* ]]; then
