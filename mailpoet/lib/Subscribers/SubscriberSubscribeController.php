@@ -4,6 +4,7 @@ namespace MailPoet\Subscribers;
 
 use MailPoet\Entities\FormEntity;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Entities\SubscriberTagEntity;
 use MailPoet\Form\FormsRepository;
 use MailPoet\Form\Util\FieldNameObfuscator;
 use MailPoet\NotFoundException;
@@ -14,6 +15,7 @@ use MailPoet\Subscription\Captcha;
 use MailPoet\Subscription\CaptchaSession;
 use MailPoet\Subscription\SubscriptionUrlFactory;
 use MailPoet\Subscription\Throttling as SubscriptionThrottling;
+use MailPoet\Tags\TagRepository;
 use MailPoet\UnexpectedValueException;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -54,6 +56,12 @@ class SubscriberSubscribeController {
   /** @var SubscribersFinder */
   private $subscribersFinder;
 
+  /** @var TagRepository */
+  private $tagRepository;
+
+  /** @var SubscriberTagRepository */
+  private $subscriberTagRepository;
+
   public function __construct(
     Captcha $subscriptionCaptcha,
     CaptchaSession $captchaSession,
@@ -66,6 +74,8 @@ class SubscriberSubscribeController {
     SettingsController $settings,
     FormsRepository $formsRepository,
     StatisticsFormsRepository $statisticsFormsRepository,
+    TagRepository $tagRepository,
+    SubscriberTagRepository $subscriberTagRepository,
     WPFunctions $wp
   ) {
     $this->formsRepository = $formsRepository;
@@ -80,6 +90,8 @@ class SubscriberSubscribeController {
     $this->wp = $wp;
     $this->throttling = $throttling;
     $this->statisticsFormsRepository = $statisticsFormsRepository;
+    $this->tagRepository = $tagRepository;
+    $this->subscriberTagRepository = $subscriberTagRepository;
   }
 
   public function subscribe(array $data): array {
@@ -149,6 +161,10 @@ class SubscriberSubscribeController {
     $this->statisticsFormsRepository->record($form, $subscriber);
 
     $formSettings = $form->getSettings();
+
+    // add tags to subscriber if they are filled
+    $this->addTagsToSubscriber($formSettings['tags'] ?? [], $subscriber);
+
     if (!empty($formSettings['on_success'])) {
       if ($formSettings['on_success'] === 'page') {
         // redirect to a page on a success, pass the page url in the meta
@@ -283,5 +299,22 @@ class SubscriberSubscribeController {
     }
 
     return $form;
+  }
+
+  /**
+   * @param string[] $tagNames
+   */
+  private function addTagsToSubscriber(array $tagNames, SubscriberEntity $subscriber): void {
+    foreach ($tagNames as $tagName) {
+      $tag = $this->tagRepository->createOrUpdate(['name' => $tagName]);
+
+      $subscriberTag = $subscriber->getSubscriberTag($tag);
+      if (!$subscriberTag) {
+        $subscriberTag = new SubscriberTagEntity($tag, $subscriber);
+        $subscriber->getSubscriberTags()->add($subscriberTag);
+        $this->subscriberTagRepository->persist($subscriberTag);
+        $this->subscriberTagRepository->flush();
+      }
+    }
   }
 }
