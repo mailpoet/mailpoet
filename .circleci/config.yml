@@ -179,10 +179,10 @@ jobs:
       - run:
           name: Download additional WP Plugins for tests
           command: |
-            ./do download:woo-commerce-zip 6.2.0
-            ./do download:woo-commerce-subscriptions-zip 3.0.14
-            ./do download:woo-commerce-memberships-zip 1.22.9
-            ./do download:woo-commerce-blocks-zip 7.2.1
+            ./do download:woo-commerce-zip 6.6.0
+            ./do download:woo-commerce-subscriptions-zip 4.3.0
+            ./do download:woo-commerce-memberships-zip 1.21.0
+            ./do download:woo-commerce-blocks-zip 8.2.0
       - run:
           name: Dump tests ENV variables for acceptance tests
           command: |
@@ -623,10 +623,10 @@ workflows:
       - acceptance_tests:
           <<: *slack-fail-post-step
           name: acceptance_oldest
-          woo_core_version: 6.2.2
-          woo_subscriptions_version: 3.0.10
-          woo_memberships_version: 1.22.9
-          woo_blocks_version: 5.5.1
+          woo_core_version: 6.6.0
+          woo_subscriptions_version: 4.3.0
+          woo_memberships_version: 1.21.0
+          woo_blocks_version: 8.2.0
           mysql_command: --max_allowed_packet=100M
           mysql_image_version: 5.7.36
           codeception_image_version: 7.4-cli_20210126.1
