@@ -35,6 +35,10 @@ textarea.regular-text {
   width: 25em !important;
 }
 
+.regular-text-full-width {
+  width: 100%;
+}
+
 @include respond-to(small-screen) {
   .select2-container {
     width: 100% !important;
@@ -220,7 +224,7 @@ progress::-moz-progress-bar {
 
   .parsley-errors-list {
     left: 0;
-    margin-top: 6px;
+    margin-top: 2px;
   }
 }
 

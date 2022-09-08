@@ -11,12 +11,12 @@ select.parsley-error,
 textarea.parsley-error {
   background-color: #f2dede;
   border-color: #eed3d7;
-  color: #b94a48;
+  color: #900;
 }
 
 .parsley-errors-list {
-  color: #b94a48;
-  font-size: .9em;
+  color: #900;
+  font-size: 13px;
   line-height: 1em;
   list-style-type: none;
   margin: 8px 0 3px;
@@ -38,7 +38,7 @@ textarea.parsley-error {
 
 .parsley-required,
 .parsley-custom-error-message {
-  color: #b94a48;
+  color: #900;
 }
 
 .mailpoet-form-errors {
