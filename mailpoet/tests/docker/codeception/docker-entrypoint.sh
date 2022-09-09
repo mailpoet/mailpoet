@@ -155,6 +155,11 @@ if [[ $SKIP_PLUGINS != "1" ]]; then
      wp option update woocommerce_custom_orders_table_enabled yes
      wp option update woocommerce_custom_orders_table_data_sync_enabled no
      echo "WooCommerce COT ENABLED!";
+     # Enable Sync of COT and posts tables
+     if [[ $ENABLE_COT_SYNC == "1" ]]; then
+       wp option update woocommerce_custom_orders_table_data_sync_enabled yes
+       echo "WooCommerce COT Synchronization enabled!";
+     fi
    fi
 
 fi
