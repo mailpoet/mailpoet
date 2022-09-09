@@ -9,9 +9,12 @@ use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberCustomFieldEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
+use MailPoet\Entities\SubscriberTagEntity;
+use MailPoet\Entities\TagEntity;
 use MailPoet\Form\Util\FieldNameObfuscator;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Test\DataFactories\Tag;
 
 class SubscriberSubscribeControllerTest extends \MailPoetTest {
   /** @var SettingsController */
@@ -116,14 +119,39 @@ class SubscriberSubscribeControllerTest extends \MailPoetTest {
     expect($subscriberCustomField->getValue())->equals($data['cf_' . $customField->getId()]);
   }
 
+  public function testItCanSubscribeSubscriberWithTags(): void {
+    $this->settings->set('signup_confirmation.enabled', false);
+    $segment = $this->segmentsRepository->createOrUpdate('Segment 1');
+    $tag = (new Tag())->withName('My Tag')->create();
+    $form = $this->createForm($segment, [], [$tag]);
+
+    $data = [
+      $this->obfuscatedEmail => 'subscriber' . rand(0, 10000) . '@example.com',
+      $this->obfuscatedSegments => [$segment->getId()],
+      'form_id' => $form->getId(),
+    ];
+    $this->subscribeController->subscribe($data);
+
+    $subscriber = $this->subscribersRepository->findOneBy(['email' => $data[$this->obfuscatedEmail]]);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
+    $this->assertEquals(SubscriberEntity::STATUS_SUBSCRIBED, $subscriber->getStatus());
+    $this->assertCount(1, $subscriber->getSubscriberTags());
+    $this->assertNotNull($subscriber->getSubscriberTag($tag));
+  }
+
   public function _after(): void {
     $this->cleanup();
   }
 
   /**
    * @param CustomFieldEntity[] $customFields
+   * @param TagEntity[] $tags
    */
-  private function createForm(SegmentEntity $segment, array $customFields = []): FormEntity {
+  private function createForm(
+    SegmentEntity $segment,
+    array $customFields = [],
+    array $tags = []
+  ): FormEntity {
     $form = new FormEntity('Form' . rand(0, 10000));
     $body = Fixtures::get('form_body_template');
     // Add segment selection block
@@ -141,10 +169,16 @@ class SubscriberSubscribeControllerTest extends \MailPoetTest {
         'params' => $customField->getParams(),
       ];
     }
+    $tagNames = [];
+    foreach ($tags as $tag) {
+      $tagNames[] = $tag->getName();
+    }
+
     $form->setBody($body);
     $form->setSettings([
       'segments_selected_by' => 'user',
       'segments' => [$segment->getId()],
+      'tags' => $tagNames,
     ]);
     $this->entityManager->persist($form);
     $this->entityManager->flush();
@@ -165,5 +199,7 @@ class SubscriberSubscribeControllerTest extends \MailPoetTest {
     $this->truncateEntity(SubscriberEntity::class);
     $this->truncateEntity(SubscriberSegmentEntity::class);
     $this->truncateEntity(SegmentEntity::class);
+    $this->truncateEntity(TagEntity::class);
+    $this->truncateEntity(SubscriberTagEntity::class);
   }
 }
