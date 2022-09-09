@@ -2,9 +2,9 @@
 
 namespace MailPoet\Automation\Engine\Endpoints\Workflows;
 
+use MailPoet\API\REST\Request;
+use MailPoet\API\REST\Response;
 use MailPoet\Automation\Engine\API\Endpoint;
-use MailPoet\Automation\Engine\API\Request;
-use MailPoet\Automation\Engine\API\Response;
 use MailPoet\Automation\Engine\Builder\CreateWorkflowFromTemplateController;
 use MailPoet\Validator\Builder;
 

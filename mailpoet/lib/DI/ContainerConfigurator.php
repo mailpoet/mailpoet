@@ -94,6 +94,11 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\API\JSON\ResponseBuilders\SegmentsResponseBuilder::class)->setPublic(true);
     $container->autowire(\MailPoet\API\JSON\ResponseBuilders\DynamicSegmentsResponseBuilder::class)->setPublic(true);
     $container->autowire(\MailPoet\API\JSON\ResponseBuilders\ScheduledTaskSubscriberResponseBuilder::class)->setPublic(true);
+    // REST API
+    $container->autowire(\MailPoet\API\REST\API::class)->setPublic(true);
+    $container->autowire(\MailPoet\API\REST\EndpointContainer::class)
+      ->setPublic(true)
+      ->setArgument('$container', new Reference(ContainerWrapper::class));
     // Automatic emails
     $container->autowire(\MailPoet\AutomaticEmails\AutomaticEmails::class)->setPublic(true);
     $container->autowire(\MailPoet\AutomaticEmails\AutomaticEmailFactory::class)->setPublic(true);
@@ -105,9 +110,6 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\AutomaticEmails\WooCommerce\Events\PurchasedProduct::class)->setPublic(true);
     // Automation
     $container->autowire(\MailPoet\Automation\Engine\API\API::class)->setPublic(true);
-    $container->autowire(\MailPoet\Automation\Engine\API\EndpointContainer::class)
-      ->setPublic(true)
-      ->setArgument('$container', new Reference(ContainerWrapper::class));
     $container->autowire(\MailPoet\Automation\Engine\Builder\CreateWorkflowFromTemplateController::class)->setPublic(true);
     $container->autowire(\MailPoet\Automation\Engine\Builder\UpdateStepsController::class)->setPublic(true);
     $container->autowire(\MailPoet\Automation\Engine\Builder\UpdateWorkflowController::class)->setPublic(true);

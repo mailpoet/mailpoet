@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace MailPoet\Automation\Engine\API;
+namespace MailPoet\API\REST;
 
 use MailPoet\InvalidStateException;
 use MailPoetVendor\Psr\Container\ContainerInterface;

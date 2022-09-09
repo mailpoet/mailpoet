@@ -2,9 +2,9 @@
 
 namespace MailPoet\REST\Automation\API\Endpoints;
 
-use MailPoet\Automation\Engine\API\Endpoint as APIEndpoint;
-use MailPoet\Automation\Engine\API\Request;
-use MailPoet\Automation\Engine\API\Response;
+use MailPoet\API\REST\Endpoint as APIEndpoint;
+use MailPoet\API\REST\Request;
+use MailPoet\API\REST\Response;
 use MailPoet\Validator\Builder;
 
 class Endpoint extends APIEndpoint {

@@ -762,6 +762,10 @@ class Functions {
     return rest_url($path, $scheme);
   }
 
+  public function registerRestRoute(string $namespace, string $route, array $args = [], bool $override = false): bool {
+    return register_rest_route($namespace, $route, $args, $override);
+  }
+
   /**
    * @param mixed $value
    * @return true|WP_Error

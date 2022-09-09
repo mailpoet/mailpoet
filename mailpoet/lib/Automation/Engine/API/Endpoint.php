@@ -2,20 +2,11 @@
 
 namespace MailPoet\Automation\Engine\API;
 
+use MailPoet\API\REST\Endpoint as MailPoetEndpoint;
 use MailPoet\Automation\Engine\Engine;
-use MailPoet\Validator\Schema;
 
-use function current_user_can;
-
-abstract class Endpoint {
-  abstract public function handle(Request $request): Response;
-
+abstract class Endpoint extends MailPoetEndpoint {
   public function checkPermissions(): bool {
     return current_user_can(Engine::CAPABILITY_MANAGE_AUTOMATIONS);
-  }
-
-  /** @return array<string, Schema> */
-  public static function getRequestSchema(): array {
-    return [];
   }
 }
