@@ -37,10 +37,11 @@ class DelayAction implements Action {
   }
 
   public function run(Workflow $workflow, WorkflowRun $workflowRun, Step $step): void {
+    $nextStep = $step->getNextSteps()[0] ?? null;
     $this->actionScheduler->schedule(time() + $this->calculateSeconds($step), Hooks::WORKFLOW_STEP, [
       [
         'workflow_run_id' => $workflowRun->getId(),
-        'step_id' => $step->getNextStepId(),
+        'step_id' => $nextStep ? $nextStep->getId() : null,
       ],
     ]);
 
