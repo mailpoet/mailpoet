@@ -182,15 +182,15 @@ class RoboFile extends \Robo\Tasks {
     return $this->_exec($command);
   }
 
-  public function testIntegration(array $opts = ['file' => null, 'group' => null, 'skip-group' => null, 'xml' => false, 'multisite' => false, 'debug' => false, 'skip-deps' => false, 'skip-plugins' => false]) {
+  public function testIntegration(array $opts = ['file' => null, 'group' => null, 'skip-group' => null, 'xml' => false, 'multisite' => false, 'debug' => false, 'skip-deps' => false, 'skip-plugins' => false, 'enable-cot' => false]) {
     return $this->runTestsInContainer(array_merge($opts, ['test_type' => 'integration']));
   }
 
-  public function testMultisiteIntegration($opts = ['file' => null, 'group' => null, 'skip-group' => null, 'xml' => false, 'multisite' => true, 'skip-deps' => false, 'skip-plugins' => false]) {
+  public function testMultisiteIntegration($opts = ['file' => null, 'group' => null, 'skip-group' => null, 'xml' => false, 'multisite' => true, 'skip-deps' => false, 'skip-plugins' => false, 'enable-cot' => false]) {
     return $this->runTestsInContainer(array_merge($opts, ['test_type' => 'integration']));
   }
 
-  public function testWooIntegration(array $opts = ['file' => null, 'xml' => false, 'multisite' => false, 'debug' => false]) {
+  public function testWooIntegration(array $opts = ['file' => null, 'xml' => false, 'multisite' => false, 'debug' => false, 'enable-cot' => false]) {
     return $this->runTestsInContainer(array_merge($opts, ['test_type' => 'integration', 'group' => 'woo', 'skip-deps' => true, 'skip-plugins' => false]));
   }
 
@@ -257,7 +257,7 @@ class RoboFile extends \Robo\Tasks {
     return $this->testIntegration($opts);
   }
 
-  public function testAcceptance($opts = ['file' => null, 'skip-deps' => false, 'timeout' => null]) {
+  public function testAcceptance($opts = ['file' => null, 'skip-deps' => false, 'timeout' => null, 'enable-cot' => false]) {
     return $this->runTestsInContainer($opts);
   }
 
@@ -1272,10 +1272,10 @@ class RoboFile extends \Robo\Tasks {
   private function runTestsInContainer(array $opts) {
     $testType = $opts['test_type'] ?? 'acceptance';
     $this->doctrineGenerateCache();
-
     return $this->taskExec(
       'COMPOSE_HTTP_TIMEOUT=200 docker-compose run ' .
       (isset($opts['skip-deps']) && $opts['skip-deps'] ? '-e SKIP_DEPS=1 ' : '') .
+      (isset($opts['enable-cot']) && $opts['enable-cot'] ? '-e ENABLE_COT=1 ' : '') .
       (isset($opts['skip-plugins']) && $opts['skip-plugins'] ? '-e SKIP_PLUGINS=1 ' : '') .
       (isset($opts['timeout']) && $opts['timeout'] ? '-e WAIT_TIMEOUT=' . (int)$opts['timeout'] . ' ' : '') .
       (isset($opts['multisite']) && $opts['multisite'] ? '-e MULTISITE=1 ' : '-e MULTISITE=0 ') .
