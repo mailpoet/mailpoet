@@ -113,10 +113,11 @@ class StepHandler {
       throw new InvalidStateException();
     }
 
+    $nextStep = $step->getNextSteps()[0] ?? null;
     $nextStepArgs = [
       [
         'workflow_run_id' => $workflowRunId,
-        'step_id' => $step->getNextStepId(),
+        'step_id' => $nextStep ? $nextStep->getId() : null,
       ],
     ];
 
