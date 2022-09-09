@@ -1077,6 +1077,12 @@ class RoboFile extends \Robo\Tasks {
     ->downloadPluginZip('woocommerce.zip', __DIR__ . '/tests/plugins/', $tag);
   }
 
+  public function downloadWooCommerceCotZip() {
+    $cotBuildUrl = 'https://github.com/woocommerce/woocommerce/files/9392652/woocommerce.zip';
+    file_put_contents(__DIR__ . '/tests/plugins/woocommerce.zip', file_get_contents($cotBuildUrl));
+    file_put_contents(__DIR__ . '/tests/plugins/woocommerce.zip-info', 'https://github.com/woocommerce/woocommerce/files/9392652/woocommerce.zip');
+  }
+
   public function generateData($generatorName = null, $threads = 1) {
     require_once __DIR__ . '/tests/DataGenerator/_bootstrap.php';
     $generator = new \MailPoet\Test\DataGenerator\DataGenerator(new \Codeception\Lib\Console\Output([]));
