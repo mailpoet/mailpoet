@@ -1,34 +1,21 @@
 import { ReactNode } from 'react';
 import { useMutation } from './api';
-import { id } from './id';
-import { NextStep, Step, Workflow } from './editor/components/workflow/types';
+import { Step, Workflow } from './editor/components/workflow/types';
 
-export const createRootStep = (nextSteps: NextStep[]): Step => ({
+export const createRootStep = (): Step => ({
   id: 'root',
   type: 'root',
   key: 'core:root',
   args: {},
-  next_steps: nextSteps,
-});
-
-export const createEmptyTrigger = (): Step => ({
-  id: id(),
-  type: 'trigger',
-  key: 'core:empty',
-  args: {},
   next_steps: [],
 });
 
-const createWorkflow = (): Partial<Workflow> => {
-  const emptyTrigger = createEmptyTrigger();
-  return {
-    name: 'Empty workflow',
-    steps: {
-      root: createRootStep([{ id: emptyTrigger.id }]),
-      [emptyTrigger.id]: emptyTrigger,
-    },
-  };
-};
+const createWorkflow = (): Partial<Workflow> => ({
+  name: 'Empty workflow',
+  steps: {
+    root: createRootStep(),
+  },
+});
 
 export function CreateEmptyWorkflowButton(): JSX.Element {
   const [createSchema, { loading, error }] = useMutation('workflows', {

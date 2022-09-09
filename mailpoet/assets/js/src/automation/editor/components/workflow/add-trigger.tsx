@@ -20,7 +20,7 @@ export function AddTrigger({ step }: Props): JSX.Element {
       state={compositeState}
       role="treeitem"
       className="mailpoet-automation-workflow-add-trigger"
-      data-step-id={step.id}
+      data-previous-step-id={step.id}
       focusable
       onClick={(event) => {
         event.stopPropagation();
