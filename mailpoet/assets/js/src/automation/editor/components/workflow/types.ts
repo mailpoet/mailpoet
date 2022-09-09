@@ -1,13 +1,17 @@
+export type NextStep = {
+  id: string;
+};
+
 export type Step = {
   id: string;
-  type: 'trigger' | 'action';
+  type: 'root' | 'trigger' | 'action';
   key: string;
-  next_step_id?: string;
   args: Record<string, unknown>;
+  next_steps: NextStep[];
 };
 
 export type Workflow = {
-  id?: number;
+  id: number;
   name: string;
   status: 'active' | 'inactive' | 'draft' | 'trash';
   created_at: string;
@@ -17,5 +21,5 @@ export type Workflow = {
     id: number;
     name: string;
   };
-  steps: Record<string, Step>;
+  steps: Record<string, Step> & { root: Step };
 };
