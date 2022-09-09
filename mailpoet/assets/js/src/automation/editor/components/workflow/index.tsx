@@ -32,33 +32,20 @@ export function Workflow(): JSX.Element {
 
   const stepMap = workflowData?.steps ?? undefined;
 
-  const triggers = useMemo(
-    () => Object.values(stepMap ?? {}).filter(({ type }) => type === 'trigger'),
-    [stepMap],
-  );
-
   // serialize steps (for now, we support only one trigger and linear workflows)
   const steps = useMemo(() => {
-    if (!stepMap || triggers.length < 1) {
-      return [];
-    }
-
-    const stepArray = [triggers[0]];
+    const stepArray = [stepMap.root];
 
     // eslint-disable-next-line no-constant-condition
     while (true) {
       const lastStep = stepArray[stepArray.length - 1];
-      if (
-        !('next_step_id' in lastStep) ||
-        !lastStep.next_step_id ||
-        !(stepMap[lastStep.next_step_id] ?? false)
-      ) {
+      if (!lastStep || lastStep.next_steps.length === 0) {
         break;
       }
-      stepArray.push(stepMap[lastStep.next_step_id]);
+      stepArray.push(stepMap[lastStep.next_steps[0].id]);
     }
-    return stepArray;
-  }, [triggers, stepMap]);
+    return stepArray.slice(1);
+  }, [stepMap]);
 
   const renderStep = useMemo(
     () =>
