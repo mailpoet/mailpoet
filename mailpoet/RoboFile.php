@@ -265,9 +265,21 @@ class RoboFile extends \Robo\Tasks {
     return $this->runTestsInContainer(array_merge($opts, ['multisite' => true]));
   }
 
+  /**
+   * Deletes docker stuff related to tests including docker images.
+   */
   public function deleteDocker() {
     return $this->taskExec(
       'docker-compose down -v --remove-orphans --rmi all'
+    )->dir(__DIR__ . '/tests/docker')->run();
+  }
+
+  /**
+   * Deletes docker containers and volumes used in tests
+   */
+  public function resetTestDocker() {
+    return $this->taskExec(
+      'docker-compose down -v --remove-orphans'
     )->dir(__DIR__ . '/tests/docker')->run();
   }
 
