@@ -47,6 +47,6 @@ class WorkflowSchema {
       Builder::object([
         'id' => Builder::string()->required(),
       ])
-    );
+    )->maxItems(1);
   }
 }
