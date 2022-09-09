@@ -2,19 +2,19 @@
 
 namespace MailPoet\REST\Automation\API;
 
-require_once __DIR__ . '/../../Test.php';
+require_once __DIR__ . '/../Test.php';
 require_once __DIR__ . '/Endpoint.php';
 
-use MailPoet\Automation\Engine\API\API;
-use MailPoet\Automation\Engine\API\EndpointContainer;
-use MailPoet\Automation\Engine\API\Request;
-use MailPoet\Automation\Engine\WordPress;
+use MailPoet\API\REST\API;
+use MailPoet\API\REST\EndpointContainer;
+use MailPoet\API\REST\Request;
 use MailPoet\REST\Automation\API\Endpoints\Endpoint;
 use MailPoet\REST\Test;
+use MailPoet\WP\Functions as WPFunctions;
 
 class EndpointTest extends Test {
   /** @var string */
-  private $prefix = '/mailpoet/v1/automation/mailpoet-api-testing-route';
+  private $prefix = '/mailpoet/v1/mailpoet-api-testing-route';
 
   public function testGetParams(): void {
     $path = strtolower(__FUNCTION__);
@@ -127,7 +127,7 @@ class EndpointTest extends Test {
           return new Endpoint($requestCallback);
         }
       ]),
-      $this->diContainer->get(WordPress::class)
+      $this->diContainer->get(WPFunctions::class)
     );
   }
 }
