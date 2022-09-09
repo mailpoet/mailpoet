@@ -52,7 +52,7 @@ export function Workflow(): JSX.Element {
       Hooks.applyFilters(
         'mailpoet.automation.workflow.render_step',
         (stepData: StepData) =>
-          stepData.type === 'trigger' && stepData.key === 'core:empty' ? (
+          stepData.type === 'root' ? (
             <AddTrigger step={stepData} />
           ) : (
             <Step
@@ -89,6 +89,22 @@ export function Workflow(): JSX.Element {
       >
         <div className="mailpoet-automation-editor-workflow-wrapper">
           <div />
+          {stepMap.root.next_steps.length === 0 ? (
+            <>
+              {renderStep(stepMap.root)}
+              {renderSeparator(stepMap.root)}
+            </>
+          ) : (
+            stepMap.root.next_steps.map(
+              ({ id }) =>
+                stepMap[id]?.type !== 'trigger' && (
+                  <Fragment key={`root-${id}`}>
+                    {renderStep(stepMap.root)}
+                    {renderSeparator(stepMap.root)}
+                  </Fragment>
+                ),
+            )
+          )}
           {steps.map((step) => (
             <Fragment key={step.id}>
               {renderStep(step)}
