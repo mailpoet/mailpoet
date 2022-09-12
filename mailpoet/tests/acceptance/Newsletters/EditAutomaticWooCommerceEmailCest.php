@@ -4,6 +4,9 @@ namespace MailPoet\Test\Acceptance;
 
 use MailPoet\Test\DataFactories\Newsletter;
 
+/**
+ * @group woo
+ */
 class EditAutomaticWooCommerceEmailCest {
   public function dontSeeWooCommerceTabWhenWooCommerceIsNotActive(\AcceptanceTester $i) {
     $i->wantTo('Not see WooCommerce tab');

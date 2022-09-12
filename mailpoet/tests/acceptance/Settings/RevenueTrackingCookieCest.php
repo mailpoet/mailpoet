@@ -6,6 +6,9 @@ use Codeception\Util\Locator;
 use MailPoet\Test\DataFactories\Newsletter;
 use MailPoet\Test\DataFactories\Settings;
 
+/**
+ * @group woo
+ */
 class RevenueTrackingCookieCest {
 
   /** @var Settings */

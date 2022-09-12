@@ -8,6 +8,9 @@ use MailPoet\Test\DataFactories\Settings;
 use MailPoet\Test\DataFactories\WooCommerceProduct;
 use MailPoet\Util\Security;
 
+/**
+ * @group woo
+ */
 class SendCategoryPurchaseEmailCest {
   public function _before(\AcceptanceTester $i) {
     $i->activateWooCommerce();

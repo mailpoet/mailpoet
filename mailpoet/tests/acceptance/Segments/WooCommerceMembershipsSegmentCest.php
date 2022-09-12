@@ -6,6 +6,9 @@ use MailPoet\Test\DataFactories\Settings;
 use MailPoet\Test\DataFactories\User;
 use MailPoet\Test\DataFactories\WooCommerceMembership;
 
+/**
+ * @group woo
+ */
 class WooCommerceMembershipsSegmentCest {
   public function _before(\AcceptanceTester $i, $scenario) {
     if (!$i->canTestWithPlugin(\AcceptanceTester::WOO_COMMERCE_MEMBERSHIPS_PLUGIN)) {

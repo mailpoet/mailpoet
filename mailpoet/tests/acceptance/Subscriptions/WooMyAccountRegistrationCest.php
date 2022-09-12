@@ -8,6 +8,7 @@ use MailPoet\Test\DataFactories\Settings;
 /**
  * This class contains tests for subscriptions
  * of guest customers done via checkout page
+ * @group woo
  */
 class WooMyAccountRegistrationCest {
 

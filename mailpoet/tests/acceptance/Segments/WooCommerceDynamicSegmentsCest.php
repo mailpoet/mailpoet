@@ -7,6 +7,9 @@ use MailPoet\Test\DataFactories\DynamicSegment;
 use MailPoet\Test\DataFactories\Settings;
 use MailPoet\Test\DataFactories\WooCommerceProduct;
 
+/**
+ * @group woo
+ */
 class WooCommerceDynamicSegmentsCest {
   const CATEGORY_SEGMENT = 'Purchase in category segment';
   const PRODUCT_SEGMENT = 'Purchased product segment';

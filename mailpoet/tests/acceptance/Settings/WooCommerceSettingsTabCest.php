@@ -4,6 +4,9 @@ namespace MailPoet\Test\Acceptance;
 
 use MailPoet\Test\DataFactories\Settings;
 
+/**
+ * @group woo
+ */
 class WooCommerceSettingsTabCest {
 
   const CUSTOMIZE_SELECTOR = '[data-automation-id="mailpoet_woocommerce_customize"]';
