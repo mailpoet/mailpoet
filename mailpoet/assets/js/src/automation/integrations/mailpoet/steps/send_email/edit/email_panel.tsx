@@ -2,6 +2,7 @@ import { ComponentProps } from 'react';
 import { PanelBody, TextareaControl, TextControl } from '@wordpress/components';
 import { dispatch, useSelect } from '@wordpress/data';
 import { DesignEmailButton } from './design_email_button';
+import { ShortcodeHelpText } from './shortcode_help_text';
 import { Button } from '../../../components/button';
 import { PlainBodyTitle } from '../../../../../editor/components/panel';
 import { storeName } from '../../../../../editor/store';
@@ -80,6 +81,7 @@ export function EmailPanel(): JSX.Element {
         onChange={(value) =>
           dispatch(storeName).updateStepArgs(selectedStep.id, 'subject', value)
         }
+        help={<ShortcodeHelpText />}
       />
       <SingleLineTextareaControl
         label="Preheader"
@@ -92,6 +94,7 @@ export function EmailPanel(): JSX.Element {
             value,
           )
         }
+        help={<ShortcodeHelpText />}
       />
 
       <div className="mailpoet-automation-email-content-separator" />
