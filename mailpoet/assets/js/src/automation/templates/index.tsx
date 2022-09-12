@@ -7,6 +7,7 @@ import { workflowTemplates } from './config';
 import { TemplateListItem } from './components/template-list-item';
 import { initializeApi } from '../api';
 import { PremiumModal } from '../../common/premium_modal';
+import { TopBarWithBeamer } from '../../common/top_bar/top_bar';
 
 function Templates(): JSX.Element {
   const [showModal, setShowModal] = useState(false);
@@ -21,6 +22,7 @@ function Templates(): JSX.Element {
   }, []);
   return (
     <>
+      <TopBarWithBeamer />
       <h1>{__('Choose your automation template', 'mailpoet')}</h1>
       <Button onClick={() => onClickScratchButton()}>
         {__('From scratch test', 'mailpoet')}
