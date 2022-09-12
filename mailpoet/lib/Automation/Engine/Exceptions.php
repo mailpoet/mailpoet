@@ -88,7 +88,7 @@ class Exceptions {
   public static function workflowStepNotFound(string $key): NotFoundException {
     return NotFoundException::create()
       ->withErrorCode(self::WORKFLOW_STEP_NOT_FOUND)
-      // translators: %s is the ID of the workflow step.
+      // translators: %s is the key of the workflow step.
       ->withMessage(sprintf(__("Workflow step with key '%s' not found.", 'mailpoet'), $key));
   }
 
