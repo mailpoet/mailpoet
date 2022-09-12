@@ -37,7 +37,7 @@ class WorkflowSchema {
       'id' => Builder::string()->pattern('^root$'),
       'type' => Builder::string()->pattern('^root$'),
       'key' => Builder::string()->pattern('^core:root$'),
-      'args' => Builder::array()->maxItems(0)->maxItems(0),
+      'args' => Builder::array()->maxItems(0),
       'next_steps' => self::getNextStepsSchema()->required(),
     ]);
   }
