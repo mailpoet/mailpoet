@@ -115,6 +115,15 @@ class WorkflowRunLogTest extends \MailPoetTest {
     expect($log->getCompletedAt())->isInstanceOf(\DateTimeImmutable::class);
   }
 
+  public function testItAddsCompletedAtTimestampAfterFailing(): void {
+    $workflowRunLogs = $this->getLogsForAction(function() {
+      throw new \Exception('error');
+    });
+    expect($workflowRunLogs)->count(1);
+    $log = $workflowRunLogs[0];
+    expect($log->getCompletedAt())->isInstanceOf(\DateTimeImmutable::class);
+  }
+
   public function testItLogsFailedStatusCorrectly(): void {
     $workflowRunLogs = $this->getLogsForAction(function() {
       throw new \Exception('error');
@@ -122,15 +131,6 @@ class WorkflowRunLogTest extends \MailPoetTest {
     expect($workflowRunLogs)->count(1);
     $log = $workflowRunLogs[0];
     expect($log->getStatus())->equals('failed');
-  }
-
-  public function testItDoesNotHaveCompletedAtIfItFailsToRun(): void {
-    $workflowRunLogs = $this->getLogsForAction(function() {
-      throw new \Exception('error');
-    });
-    expect($workflowRunLogs)->count(1);
-    $log = $workflowRunLogs[0];
-    expect($log->getCompletedAt())->null();
   }
 
   public function testItIncludesErrorOnFailure(): void {
