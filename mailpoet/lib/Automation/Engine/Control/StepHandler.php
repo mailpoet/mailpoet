@@ -126,13 +126,13 @@ class StepHandler {
         $log->markCompletedSuccessfully();
       } catch (Throwable $e) {
         $log->markFailed();
-        $log->addError($e);
+        $log->setError($e);
         throw $e;
       } finally {
         try {
           $this->hooks->doWorkflowStepAfterRun($log);
         } catch (Throwable $e) {
-          $log->addError($e);
+          // Ignore integration errors
         }
         $this->workflowRunLogStorage->createWorkflowRunLog($log);
       }

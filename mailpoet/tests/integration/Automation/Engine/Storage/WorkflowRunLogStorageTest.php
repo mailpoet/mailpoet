@@ -25,14 +25,22 @@ class WorkflowRunLogStorageTest extends \MailPoetTest {
     expect($preSave)->equals($fromDatabase->toArray());
   }
 
-  public function testItStoresErrors() {
+  public function testItCanStoreAnError() {
     $log = new WorkflowRunLog(1, 'step-id', []);
-    $log->addError(new \Exception('test'));
+    $log->setError(new \Exception('test'));
     $id = $this->storage->createWorkflowRunLog($log);
     $log = $this->storage->getWorkflowRunLog($id);
     $this->assertInstanceOf(WorkflowRunLog::class, $log);
-    $errors = $log->getErrors();
-    expect($errors)->count(1);
+    $errors = $log->getError();
+    expect($errors)->array();
+    expect(array_keys($errors))->equals([
+      'message',
+      'errorClass',
+      'code',
+      'trace'
+    ]);
+    expect($errors['trace'])->array();
+    expect(count($errors['trace']))->greaterThan(0);
   }
 
   public function _after() {

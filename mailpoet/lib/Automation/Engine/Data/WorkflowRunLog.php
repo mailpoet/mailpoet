@@ -28,7 +28,7 @@ class WorkflowRunLog {
   private $status;
 
   /** @var array */
-  private $errors;
+  private $error;
 
   /** @var array */
   private $data;
@@ -57,7 +57,7 @@ class WorkflowRunLog {
     $now = new DateTimeImmutable();
     $this->createdAt = $now;
 
-    $this->errors = [];
+    $this->error = [];
     $this->data = [];
   }
 
@@ -81,8 +81,8 @@ class WorkflowRunLog {
     return $this->args;
   }
 
-  public function getErrors(): array {
-    return $this->errors;
+  public function getError(): array {
+    return $this->error;
   }
 
   public function getData(): array {
@@ -117,7 +117,7 @@ class WorkflowRunLog {
       'created_at' => $this->createdAt->format(DateTimeImmutable::W3C),
       'completed_at' => $this->completedAt ? $this->completedAt->format(DateTimeImmutable::W3C) : null,
       'args' => Json::encode($this->args),
-      'errors' => Json::encode($this->errors),
+      'error' => Json::encode($this->error),
       'data' => Json::encode($this->data),
     ];
   }
@@ -132,7 +132,7 @@ class WorkflowRunLog {
     $this->completedAt = new DateTimeImmutable();
   }
 
-  public function addError(Throwable $error): void {
+  public function setError(Throwable $error): void {
     $error = [
       'message' => $error->getMessage(),
       'errorClass' => get_class($error),
@@ -140,14 +140,14 @@ class WorkflowRunLog {
       'trace' => $error->getTrace(),
     ];
 
-    $this->errors[] = $error;
+    $this->error = $error;
   }
 
   public static function fromArray(array $data): self {
     $workflowRunLog = new WorkflowRunLog((int)$data['workflow_run_id'], $data['step_id'], []);
     $workflowRunLog->id = (int)$data['id'];
     $workflowRunLog->status = $data['status'];
-    $workflowRunLog->errors = Json::decode($data['errors']);
+    $workflowRunLog->error = Json::decode($data['error']);
     $workflowRunLog->data = Json::decode($data['data']);
     $workflowRunLog->args = Json::decode($data['args']);
     $workflowRunLog->createdAt = new DateTimeImmutable($data['created_at']);
