@@ -316,6 +316,9 @@ jobs:
       multisite:
         type: integer
         default: 0
+      group:
+        type: string
+        default: ''
       mysql_command:
         type: string
         default: ''
@@ -340,6 +343,12 @@ jobs:
       woo_blocks_version:
         type: string
         default: ''
+      enable_cot:
+        type: integer
+        default: 0
+      enable_cot_sync:
+        type: integer
+        default: 0
     environment:
       MYSQL_COMMAND: << parameters.mysql_command >>
       MYSQL_IMAGE_VERSION: << parameters.mysql_image_version >>
@@ -400,7 +409,24 @@ jobs:
           command: |
             mkdir -m 777 -p tests/_output/exceptions
             cd tests/docker
-            docker-compose run -e SKIP_DEPS=1 -e CIRCLE_BRANCH=${CIRCLE_BRANCH} -e CIRCLE_JOB=${CIRCLE_JOB} -e MULTISITE=<< parameters.multisite >> codeception_acceptance -g circleci_split_group --steps --debug -vvv --html --xml
+            args=(
+              --steps
+              --debug
+              -vvv
+              --html
+              --xml
+              -g circleci_split_group
+            )
+            if [[ -n '<< parameters.group >>' ]]; then
+              args+=(--group << parameters.group >>)
+            fi
+            docker-compose run -e SKIP_DEPS=1 \
+            -e CIRCLE_BRANCH=${CIRCLE_BRANCH} \
+            -e CIRCLE_JOB=${CIRCLE_JOB} \
+            -e MULTISITE=<< parameters.multisite >> \
+            -e ENABLE_COT=<< parameters.enable_cot >> \
+            -e ENABLE_COT_SYNC=<< parameters.enable_cot_sync >> \
+            codeception_acceptance "${args[@]}"
       - run:
           name: Check exceptions
           command: |
@@ -600,6 +626,19 @@ workflows:
       - acceptance_tests:
           <<: *slack-fail-post-step
           name: acceptance_tests
+          requires:
+            - unit_tests
+            - static_analysis_php8
+            - qa_js
+            - qa_php
+      - acceptance_tests:
+          <<: *slack-fail-post-step
+          name: acceptance_tests_woo_cot_sync
+          group: woo
+          enable_cot: 1
+          enable_cot_sync: 1
+          allow_fail: 1
+          woo_core_version: woo-cot-beta # Temporarily force COT beta version
           requires:
             - unit_tests
             - static_analysis_php8
