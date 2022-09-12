@@ -20,9 +20,6 @@ class WorkflowRunLog {
   /** @var DateTimeImmutable */
   private $createdAt;
 
-  /** @var DateTimeImmutable */
-  private $updatedAt;
-
   /** @var DateTimeImmutable|null */
   private $completedAt;
 
@@ -58,7 +55,6 @@ class WorkflowRunLog {
 
     $now = new DateTimeImmutable();
     $this->createdAt = $now;
-    $this->updatedAt = $now;
 
     $this->errors = [];
     $this->data = [];
@@ -112,17 +108,12 @@ class WorkflowRunLog {
     return $this->createdAt;
   }
 
-  public function getUpdatedAt(): DateTimeImmutable {
-    return $this->updatedAt;
-  }
-
   public function toArray(): array {
     return [
       'workflow_run_id' => $this->workflowRunId,
       'step_id' => $this->stepId,
       'status' => $this->status,
       'created_at' => $this->createdAt->format(DateTimeImmutable::W3C),
-      'updated_at' => $this->updatedAt->format(DateTimeImmutable::W3C),
       'completed_at' => $this->completedAt ? $this->completedAt->format(DateTimeImmutable::W3C) : null,
       'args' => Json::encode($this->args),
       'errors' => Json::encode($this->errors),
@@ -159,7 +150,6 @@ class WorkflowRunLog {
     $workflowRunLog->data = Json::decode($data['data']);
     $workflowRunLog->args = Json::decode($data['args']);
     $workflowRunLog->createdAt = new DateTimeImmutable($data['created_at']);
-    $workflowRunLog->updatedAt = new DateTimeImmutable($data['updated_at']);
 
     if ($data['completed_at']) {
       $workflowRunLog->completedAt = new DateTimeImmutable($data['completed_at']);

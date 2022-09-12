@@ -28,21 +28,6 @@ class WorkflowRunLogStorage {
     return $this->wpdb->insert_id;
   }
 
-  public function updateWorkflowRunLog(WorkflowRunLog $workflowRunLog): int {
-    $data = $workflowRunLog->toArray();
-    unset($data['id']);
-    $data['updated_at'] = (new \DateTimeImmutable())->format(\DateTimeImmutable::W3C);
-    $where = ['id' => $workflowRunLog->getId()];
-
-    $result = $this->wpdb->update($this->table, $data, $where);
-
-    if ($result === false) {
-      throw Exceptions::databaseError($this->wpdb->last_error);
-    }
-
-    return $result;
-  }
-
   public function getWorkflowRunLog(int $id): ?WorkflowRunLog {
     $table = esc_sql($this->table);
     $query = $this->wpdb->prepare("SELECT * FROM $table WHERE id = %d", $id);
