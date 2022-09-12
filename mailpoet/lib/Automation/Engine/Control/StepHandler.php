@@ -123,8 +123,8 @@ class StepHandler {
       $log = new WorkflowRunLog($workflowRun->getId(), $step->getId(), $args);
       try {
         $this->stepRunners[$stepType]->run($step, $workflow, $workflowRun);
-        $log->markCompleted();
-      } catch (Exception $e) {
+        $log->markCompletedSuccessfully();
+      } catch (\Exception $e) {
         $log->markFailed();
         $log->addError($e);
         throw $e;

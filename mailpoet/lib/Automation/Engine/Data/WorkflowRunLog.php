@@ -121,13 +121,14 @@ class WorkflowRunLog {
     ];
   }
 
-  public function markCompleted(): void {
+  public function markCompletedSuccessfully(): void {
     $this->status = self::STATUS_COMPLETED;
     $this->completedAt = new DateTimeImmutable();
   }
 
   public function markFailed(): void {
     $this->status = self::STATUS_FAILED;
+    $this->completedAt = new DateTimeImmutable();
   }
 
   public function addError(\Exception $exception, string $userFacingMessage = ''): void {
