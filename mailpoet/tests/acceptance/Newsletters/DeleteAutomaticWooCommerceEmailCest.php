@@ -4,6 +4,9 @@ namespace MailPoet\Test\Acceptance;
 
 use MailPoet\Test\DataFactories\Newsletter;
 
+/**
+ * @group woo
+ */
 class DeleteAutomaticWooCommerceEmailCest {
   public function _before(\AcceptanceTester $i) {
     $i->activateWooCommerce();

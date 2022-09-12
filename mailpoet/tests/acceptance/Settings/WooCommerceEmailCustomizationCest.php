@@ -4,6 +4,9 @@ namespace MailPoet\Test\Acceptance;
 
 use MailPoet\Test\DataFactories\Settings;
 
+/**
+ * @group woo
+ */
 class WooCommerceEmailCustomizationCest {
 
   /** @var Settings */

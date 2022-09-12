@@ -7,6 +7,9 @@ use MailPoet\Test\DataFactories\WooCommerceCustomer;
 use MailPoet\Test\DataFactories\WooCommerceOrder;
 use PHPUnit\Framework\Exception;
 
+/**
+ * @group woo
+ */
 class WooCommerceSetupPageCest {
 
   /** @var WooCommerceCustomer */

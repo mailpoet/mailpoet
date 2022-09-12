@@ -4,6 +4,9 @@ namespace MailPoet\Test\Acceptance;
 
 use MailPoet\Test\DataFactories\Newsletter;
 
+/**
+ * @group woo
+ */
 class DuplicateAutomaticEmailCest {
   public function duplicateAutomaticEmail(\AcceptanceTester $i) {
     $i->wantTo('Duplicate an automatic email');

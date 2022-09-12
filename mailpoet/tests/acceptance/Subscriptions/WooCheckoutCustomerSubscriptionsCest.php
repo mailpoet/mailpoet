@@ -11,6 +11,7 @@ use MailPoet\Test\DataFactories\WooCommerceProduct;
 /**
  * This class contains tests for subscriptions
  * of registered customers done via checkout page
+ * @group woo
  */
 class WooCheckoutCustomerSubscriptionsCest {
 

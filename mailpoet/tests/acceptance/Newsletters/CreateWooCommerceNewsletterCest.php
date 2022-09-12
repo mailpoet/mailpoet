@@ -2,6 +2,9 @@
 
 namespace MailPoet\Test\Acceptance;
 
+/**
+ * @group woo
+ */
 class CreateWooCommerceNewsletterCest {
   public function createFirstPurchaseEmail(\AcceptanceTester $i) {
     $i->wantTo('Create and configure a first purchase automatic email');

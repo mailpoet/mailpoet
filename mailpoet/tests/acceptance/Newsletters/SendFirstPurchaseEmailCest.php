@@ -7,6 +7,9 @@ use MailPoet\Test\DataFactories\Newsletter;
 use MailPoet\Test\DataFactories\Settings;
 use MailPoet\Test\DataFactories\WooCommerceProduct;
 
+/**
+ * @group woo
+ */
 class SendFirstPurchaseEmailCest {
   /** @var Settings */
   private $settingsFactory;

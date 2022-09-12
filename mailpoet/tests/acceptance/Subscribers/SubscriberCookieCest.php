@@ -85,6 +85,9 @@ class SubscriberCookieCest {
     $this->checkSubscriberCookie($i, $email);
   }
 
+  /**
+   * @group woo
+   */
   public function setSubscriberCookieOnWooCheckoutAndSubscriptionConfirmation(AcceptanceTester $i) {
     $i->wantTo('Set subscriber cookie on WooCommerce checkout and subscription confirmation');
 
