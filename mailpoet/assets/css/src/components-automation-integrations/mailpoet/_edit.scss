@@ -1,3 +1,9 @@
 .mailpoet-automation-email-content-separator {
   height: 16px;
 }
+
+.mailpoet-automation-email-buttons {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: 1fr 1fr;
+}
