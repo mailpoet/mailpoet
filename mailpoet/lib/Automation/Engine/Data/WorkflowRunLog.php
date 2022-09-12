@@ -132,11 +132,10 @@ class WorkflowRunLog {
     $this->completedAt = new DateTimeImmutable();
   }
 
-  public function addError(Throwable $error, string $userFacingMessage = ''): void {
+  public function addError(Throwable $error): void {
     $error = [
       'message' => $error->getMessage(),
       'errorClass' => get_class($error),
-      'userFacingMessage' => $userFacingMessage,
       'code' => $error->getCode(),
       'trace' => $error->getTrace(),
     ];
