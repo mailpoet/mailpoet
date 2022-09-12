@@ -58,6 +58,16 @@ class WorkflowRunLogTest extends \MailPoetTest {
     $this->assertSame('value', $data['key']);
   }
 
+  public function testItDoesNotAllowSettingDataThatCannotBeSaved(): void {
+    $log = new WorkflowRunLog(1, 'step-id', []);
+    $badData = [
+      function() { echo 'closures cannot be serialized'; }
+    ];
+    $this->expectException(\InvalidArgumentException::class);
+    $log->setData('badData', $badData);
+    expect($log->getData())->count(0);
+  }
+
   public function testItGetsExposedViaAction(): void {
     $this->wp->addAction(Hooks::WORKFLOW_RUN_LOG_AFTER_STEP_RUN, function(WorkflowRunLog $log) {
       $log->setData('test', 'value');
