@@ -462,9 +462,18 @@ jobs:
       skip_plugins:
         type: integer
         default: 0
+      enable_cot:
+        type: integer
+        default: 0
+      enable_cot_sync:
+        type: integer
+        default: 0
       multisite:
         type: integer
         default: 0
+      woo_core_version:
+        type: string
+        default: ''
     steps:
       - attach_workspace:
           at: /home/circleci
@@ -472,6 +481,14 @@ jobs:
           name: 'Pull test docker images'
           # Pull docker images with 3 retries
           command: i='0';while ! docker-compose -f tests/docker/docker-compose.yml pull && ((i < 3)); do sleep 3 && i=$[$i+1]; done
+      - when:
+          condition: << parameters.woo_core_version >>
+          steps:
+            - run:
+                name: Download WooCommerce Core
+                command: |
+                  cd tests/docker
+                  docker-compose run --rm -w /project --entrypoint "./do download:woo-commerce-zip << parameters.woo_core_version >>" --no-deps codeception_integration
       - run:
           name: 'PHP Integration tests'
           command: |
@@ -507,6 +524,8 @@ jobs:
               -e WP_TEST_MAILER_SMTP_LOGIN=${WP_TEST_MAILER_SMTP_LOGIN} \
               -e WP_TEST_MAILER_SMTP_PASSWORD=${WP_TEST_MAILER_SMTP_PASSWORD} \
               -e MULTISITE=<< parameters.multisite >> \
+              -e ENABLE_COT=<< parameters.enable_cot >> \
+              -e ENABLE_COT_SYNC=<< parameters.enable_cot_sync >> \
               codeception_integration "${args[@]}"
       - store_test_results:
           path: tests/_output
@@ -594,6 +613,18 @@ workflows:
           <<: *slack-fail-post-step
           group: woo
           name: integration_test_woocommerce
+          requires:
+            - unit_tests
+            - static_analysis_php8
+            - qa_js
+            - qa_php
+      - integration_tests:
+          <<: *slack-fail-post-step
+          group: woo
+          enable_cot: 1
+          enable_cot_sync: 1
+          woo_core_version: woo-cot-beta # Temporarily force COT beta version
+          name: integration_test_woo_cot_sync
           requires:
             - unit_tests
             - static_analysis_php8
