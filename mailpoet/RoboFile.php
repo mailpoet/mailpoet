@@ -1085,6 +1085,10 @@ class RoboFile extends \Robo\Tasks {
   }
 
   public function downloadWooCommerceZip($tag = null) {
+    if ($tag === 'woo-cot-beta') {
+      $this->downloadWooCommerceCotZip();
+      return;
+    }
     $this->createWpOrgDownloader('woocommerce')
     ->downloadPluginZip('woocommerce.zip', __DIR__ . '/tests/plugins/', $tag);
   }
