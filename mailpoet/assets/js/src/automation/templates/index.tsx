@@ -2,7 +2,7 @@ import ReactDOM from 'react-dom';
 import { useCallback, useState } from 'react';
 import { __ } from '@wordpress/i18n';
 import { Hooks } from 'wp-js-hooks';
-import { Button } from '@wordpress/components';
+import { Button, Flex } from '@wordpress/components';
 import { workflowTemplates } from './config';
 import { TemplateListItem } from './components/template-list-item';
 import { initializeApi } from '../api';
@@ -23,10 +23,15 @@ function Templates(): JSX.Element {
   return (
     <>
       <TopBarWithBeamer />
-      <h1>{__('Choose your automation template', 'mailpoet')}</h1>
-      <Button onClick={() => onClickScratchButton()}>
-        {__('From scratch test', 'mailpoet')}
-      </Button>
+      <Flex className="mailpoet-automation-templates-heading">
+        <h1 className="wp-heading-inline">
+          {__('Choose your automation template', 'mailpoet')}
+        </h1>
+        <Button variant="primary" onClick={() => onClickScratchButton()}>
+          {__('From Scratch', 'mailpoet')}
+        </Button>
+      </Flex>
+
       {showModal && (
         <PremiumModal
           onRequestClose={() => {

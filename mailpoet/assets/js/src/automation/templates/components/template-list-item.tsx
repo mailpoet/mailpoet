@@ -42,18 +42,17 @@ export function TemplateListItem({
   }
 
   return (
-    <li>
+    <li className="mailpoet-template-list-item">
       {notice}
       <Button
-        isPrimary
         isBusy={loading}
         onClick={() => {
           void createWorkflowFromTemplate();
         }}
       >
-        {template.name}
+        <h2>{template.name} →</h2>
+        <p>{template.description}</p>
       </Button>
-      <p>{template.description}</p>
     </li>
   );
 }
