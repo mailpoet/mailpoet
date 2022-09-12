@@ -1,0 +1,55 @@
+.mailpoet-automation-templates-heading {
+  margin: auto;
+  max-width: 982px;
+}
+
+ul.mailpoet-templates {
+  clear: both;
+  cursor: pointer;
+  display: grid;
+  grid-gap: 32px;
+  grid-template-columns: repeat(auto-fill, 306px);
+  justify-content: center;
+  margin: auto;
+  max-width: 982px;
+  padding: 48px 0;
+
+  button.components-button {
+    background: #fff;
+    border: 1px solid #dcdcde;
+    border-radius: 4px;
+    cursor: pointer;
+    display: block;
+    height: 100%;
+    padding: 24px 24px 26px;
+    text-align: left;
+
+    &:hover {
+      background: #fff;
+      border: 1px solid #dcdcde;
+      box-shadow: 0 3px 6px rgba(0, 0, 0, .15);
+      color: inherit;
+    }
+
+    &:focus {
+      border-color: #2271b1;
+      box-shadow: 0 3px 6px rgba(0, 0, 0, .15);
+      color: inherit;
+    }
+  }
+
+  h2 {
+    background: transparent;
+    border: none;
+    color: #2271b1;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 21px;
+    margin: 0;
+    padding: 0;
+  }
+
+  p {
+    margin: 8px 0 0;
+  }
+}
