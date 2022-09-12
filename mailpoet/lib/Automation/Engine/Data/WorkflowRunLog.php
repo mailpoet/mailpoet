@@ -4,6 +4,7 @@ namespace MailPoet\Automation\Engine\Data;
 
 use DateTimeImmutable;
 use MailPoet\Automation\Engine\Utils\Json;
+use Throwable;
 
 class WorkflowRunLog {
 
@@ -131,13 +132,13 @@ class WorkflowRunLog {
     $this->completedAt = new DateTimeImmutable();
   }
 
-  public function addError(\Exception $exception, string $userFacingMessage = ''): void {
+  public function addError(Throwable $error, string $userFacingMessage = ''): void {
     $error = [
-      'message' => $exception->getMessage(),
-      'exceptionClass' => get_class($exception),
+      'message' => $error->getMessage(),
+      'errorClass' => get_class($error),
       'userFacingMessage' => $userFacingMessage,
-      'code' => $exception->getCode(),
-      'trace' => $exception->getTrace(),
+      'code' => $error->getCode(),
+      'trace' => $error->getTrace(),
     ];
 
     $this->errors[] = $error;
