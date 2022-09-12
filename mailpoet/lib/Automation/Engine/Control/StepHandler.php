@@ -130,7 +130,7 @@ class StepHandler {
         throw $e;
       } finally {
         try {
-          $this->hooks->doWorkflowStepAfterRun($step, $log);
+          $this->hooks->doWorkflowStepAfterRun($log);
         } catch (Exception $e) {
           $log->addError($e);
         }

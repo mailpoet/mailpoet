@@ -41,7 +41,7 @@ class Hooks {
     $this->wordPress->doAction(self::WORKFLOW_STEP_BEFORE_SAVE . '/key=' . $step->getKey(), $step);
   }
 
-  public function doWorkflowStepAfterRun(Step $step, WorkflowRunLog $workflowRunLog): void {
-    $this->wordPress->doAction(self::WORKFLOW_RUN_LOG_AFTER_STEP_RUN, $step, $workflowRunLog);
+  public function doWorkflowStepAfterRun(WorkflowRunLog $workflowRunLog): void {
+    $this->wordPress->doAction(self::WORKFLOW_RUN_LOG_AFTER_STEP_RUN, $workflowRunLog);
   }
 }
