@@ -73,7 +73,8 @@ class Migrator {
         args longtext,
         error longtext,
         data longtext,
-        PRIMARY KEY (id)
+        PRIMARY KEY (id),
+        INDEX (workflow_run_id)
       );
     ");
   }
