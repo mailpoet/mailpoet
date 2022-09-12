@@ -71,7 +71,7 @@ class Migrator {
         created_at timestamp NOT NULL,
         completed_at timestamp NULL DEFAULT NULL,
         args longtext,
-        errors longtext,
+        error longtext,
         data longtext,
         PRIMARY KEY (id)
       );

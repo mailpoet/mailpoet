@@ -139,8 +139,7 @@ class WorkflowRunLogTest extends \MailPoetTest {
     });
     expect($workflowRunLogs)->count(1);
     $log = $workflowRunLogs[0];
-    expect($log->getErrors())->count(1);
-    $error = $log->getErrors()[0];
+    $error = $log->getError();
     expect($error['message'])->equals('error');
     expect($error['code'])->equals(12345);
     expect($error['errorClass'])->equals('Exception');
