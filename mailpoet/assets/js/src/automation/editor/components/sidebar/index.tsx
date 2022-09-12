@@ -51,7 +51,7 @@ export function Sidebar(props: Props): JSX.Element {
       headerClassName="edit-site-sidebar__panel-tabs"
       title={__('Settings')}
       icon={cog}
-      className="edit-site-sidebar"
+      className="edit-site-sidebar mailpoet-automation-sidebar"
       panelClassName="edit-site-sidebar"
       smallScreenTitle={workflowName || __('(no title)')}
       scope={storeName}
