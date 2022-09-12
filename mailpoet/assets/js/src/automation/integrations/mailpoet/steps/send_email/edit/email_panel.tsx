@@ -95,7 +95,7 @@ export function EmailPanel(): JSX.Element {
       />
 
       <div className="mailpoet-automation-email-content-separator" />
-      <PlainBodyTitle title="Email content" />
+      <PlainBodyTitle title="Email" />
       {selectedStep.args.email_id ? (
         <div className="mailpoet-automation-email-buttons">
           <Button
