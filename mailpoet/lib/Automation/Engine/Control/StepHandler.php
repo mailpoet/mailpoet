@@ -120,7 +120,7 @@ class StepHandler {
 
     $stepType = $step->getType();
     if (isset($this->stepRunners[$stepType])) {
-      $log = $this->createWorkflowRunLog($workflowRun, $step, $args);
+      $log = new WorkflowRunLog($workflowRun->getId(), $step->getId(), $args);
       try {
         $this->stepRunners[$stepType]->run($step, $workflow, $workflowRun);
         $log->markCompleted();
@@ -134,7 +134,7 @@ class StepHandler {
         } catch (Exception $e) {
           $log->addError($e);
         }
-        $this->workflowRunLogStorage->updateWorkflowRunLog($log);
+        $this->workflowRunLogStorage->createWorkflowRunLog($log);
       }
     } else {
       throw new InvalidStateException();
@@ -161,17 +161,6 @@ class StepHandler {
 
     // enqueue next step
     $this->actionScheduler->enqueue(Hooks::WORKFLOW_STEP, $nextStepArgs);
-
     // TODO: allow long-running steps (that are not done here yet)
-  }
-
-  private function createWorkflowRunLog(WorkflowRun $workflowRun, Step $step, array $args): WorkflowRunLog {
-    $log = new WorkflowRunLog($workflowRun->getId(), $step->getId(), $args);
-    $logId = $this->workflowRunLogStorage->createWorkflowRunLog($log);
-    $workflowRunLog = $this->workflowRunLogStorage->getWorkflowRunLog($logId);
-    if (!$workflowRunLog instanceof WorkflowRunLog) {
-      throw new InvalidStateException();
-    }
-    return $workflowRunLog;
   }
 }

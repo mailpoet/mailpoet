@@ -25,24 +25,6 @@ class WorkflowRunLogStorageTest extends \MailPoetTest {
     expect($preSave)->equals($fromDatabase->toArray());
   }
 
-  public function testUpdatingLogUpdatesUpdatedAtTimestamp() {
-    $log = new WorkflowRunLog(1, 'step-id', []);
-    $reflectionClass = new \ReflectionClass(WorkflowRunLog::class);
-    $updatedAt = $reflectionClass->getProperty('updatedAt');
-    $updatedAt->setAccessible(true);
-    $updatedAt->setValue($log, new \DateTimeImmutable('2022-09-07'));
-    $id = $this->storage->createWorkflowRunLog($log);
-    $log = $this->storage->getWorkflowRunLog($id);
-    $this->assertInstanceOf(WorkflowRunLog::class, $log);
-    $originalUpdatedAt = $log->getUpdatedAt();
-    $log->setData('key', 'value');
-    $this->assertInstanceOf(WorkflowRunLog::class, $log);
-    $this->storage->updateWorkflowRunLog($log);
-    $fromDatabase = $this->storage->getWorkflowRunLog($id);
-    $this->assertInstanceOf(WorkflowRunLog::class, $fromDatabase);
-    expect($fromDatabase->getUpdatedAt())->greaterThan($originalUpdatedAt);
-  }
-
   public function testItStoresErrors() {
     $log = new WorkflowRunLog(1, 'step-id', []);
     $log->addError(new \Exception('test'));
