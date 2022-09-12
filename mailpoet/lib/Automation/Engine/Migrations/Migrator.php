@@ -68,7 +68,7 @@ class Migrator {
         workflow_run_id int(11) unsigned NOT NULL,
         step_id varchar(255) NOT NULL,
         status varchar(255) NOT NULL,
-        created_at timestamp NOT NULL,
+        started_at timestamp NOT NULL,
         completed_at timestamp NULL DEFAULT NULL,
         args longtext,
         error longtext,
