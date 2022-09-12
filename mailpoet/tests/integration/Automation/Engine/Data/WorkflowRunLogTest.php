@@ -59,9 +59,9 @@ class WorkflowRunLogTest extends \MailPoetTest {
   }
 
   public function testItGetsExposedViaAction(): void {
-    $this->wp->addAction(Hooks::WORKFLOW_RUN_LOG_AFTER_STEP_RUN, function(Step $step, WorkflowRunLog $log) {
+    $this->wp->addAction(Hooks::WORKFLOW_RUN_LOG_AFTER_STEP_RUN, function(WorkflowRunLog $log) {
       $log->setData('test', 'value');
-    }, 10, 2);
+    });
     $workflowRunLogs = $this->getLogsForAction();
     expect($workflowRunLogs)->count(1);
     $log = $workflowRunLogs[0];
@@ -69,9 +69,9 @@ class WorkflowRunLogTest extends \MailPoetTest {
   }
 
   public function testBadActionIntegrationsCannotDerailStepFromRunning() {
-    $this->wp->addAction(Hooks::WORKFLOW_RUN_LOG_AFTER_STEP_RUN, function(Step $step, WorkflowRunLog $log) {
+    $this->wp->addAction(Hooks::WORKFLOW_RUN_LOG_AFTER_STEP_RUN, function(WorkflowRunLog $log) {
       throw new \Exception('bad integration');
-    }, 9, 2);
+    });
     $workflowRunLogs = $this->getLogsForAction();
     expect($workflowRunLogs)->count(1);
     $log = $workflowRunLogs[0];
@@ -99,21 +99,17 @@ class WorkflowRunLogTest extends \MailPoetTest {
   }
 
   public function testItLogsCompletedStatusCorrectly(): void {
-    $workflowRunLogs = $this->getLogsForAction(function() {
-      return true;
-    });
+    $workflowRunLogs = $this->getLogsForAction();
     expect($workflowRunLogs)->count(1);
     $log = $workflowRunLogs[0];
     expect($log->getStatus())->equals('completed');
   }
 
   public function testItAddsCompletedAtTimestampAfterRunningSuccessfully(): void {
-    $this->wp->addAction(Hooks::WORKFLOW_RUN_LOG_AFTER_STEP_RUN, function(Step $step, WorkflowRunLog $log) {
+    $this->wp->addAction(Hooks::WORKFLOW_RUN_LOG_AFTER_STEP_RUN, function(WorkflowRunLog $log) {
       expect($log->getCompletedAt())->null();
-    }, 10, 2);
-    $workflowRunLogs = $this->getLogsForAction(function() {
-      return true;
     });
+    $workflowRunLogs = $this->getLogsForAction();
     expect($workflowRunLogs)->count(1);
     $log = $workflowRunLogs[0];
     expect($log->getCompletedAt())->isInstanceOf(\DateTimeImmutable::class);
@@ -171,6 +167,9 @@ class WorkflowRunLogTest extends \MailPoetTest {
   }
 
   private function getLogsForAction($callback = null) {
+    if ($callback === null) {
+      $callback = function() { return true; };
+    }
     $testAction = $this->getRegisteredTestAction($callback);
     $actionStep = new Step('action-step-id', Step::TYPE_ACTION, $testAction->getKey());
     $workflow = new Workflow('test_workflow', [$actionStep], new \WP_User());
