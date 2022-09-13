@@ -26,21 +26,28 @@ export function DefaultSender() {
   const invalidReplyToEmail = replyToEmail && !isEmail(replyToEmail);
 
   const isAuthorizedEmail = (email: string) => {
-    if (!isMssActive) {
-      return;
-    }
     setIsAuthorized(window.mailpoet_authorized_emails.includes(email));
   };
 
-  const performActionOnBlur = (data: string) => {
-    isAuthorizedEmail(data);
+  const performActionOnBlur = (email: string) => {
+    if (!isMssActive) {
+      return;
+    }
+
+    const emailDomain = extractEmailDomain(email);
+
+    if (window.mailpoet_verified_sender_domains.includes(emailDomain)) {
+      // allow user send with any email address from verified domains
+      return;
+    }
+
+    isAuthorizedEmail(email);
 
     // Skip domain DMARC validation if the email is a freemail
-    const isFreeDomain =
-      MailPoet.freeMailDomains.indexOf(extractEmailDomain(data)) > -1;
+    const isFreeDomain = MailPoet.freeMailDomains.indexOf(emailDomain) > -1;
     if (isFreeDomain) return;
 
-    checkSenderEmailDomainDmarcPolicy(data, isMssActive)
+    checkSenderEmailDomainDmarcPolicy(email, isMssActive)
       .then((status) => {
         setShowSenderDomainWarning(status);
       })
@@ -55,6 +62,7 @@ export function DefaultSender() {
     setShowSenderDomainWarning(false);
     setSenderEmail(email);
   };
+
   useEffect(() => {
     setErrorFlag(
       invalidSenderEmail ||
