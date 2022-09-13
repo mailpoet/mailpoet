@@ -50,7 +50,7 @@ class WorkflowRunLogTest extends \MailPoetTest {
   }
 
   public function testItAllowsSettingData(): void {
-    $log = new WorkflowRunLog(1, 'step-id', []);
+    $log = new WorkflowRunLog(1, 'step-id');
     $this->assertSame([], $log->getData());
     $log->setData('key', 'value');
     $data = $log->getData();
@@ -59,7 +59,7 @@ class WorkflowRunLogTest extends \MailPoetTest {
   }
 
   public function testItDoesNotAllowSettingDataThatCannotBeSaved(): void {
-    $log = new WorkflowRunLog(1, 'step-id', []);
+    $log = new WorkflowRunLog(1, 'step-id');
     $badData = [
       function() { echo 'closures cannot be serialized'; }
     ];
@@ -155,12 +155,6 @@ class WorkflowRunLogTest extends \MailPoetTest {
     expect($error['errorClass'])->equals('Exception');
     expect($error['trace'])->array();
     expect(count($error['trace']))->greaterThan(0);
-  }
-
-  public function testItLogsStepArgs(): void {
-    $log = $this->getLogsForAction()[0];
-    expect($log->getArgs())->count(2);
-    expect(array_keys($log->getArgs()))->equals(['workflow_run_id', 'step_id']);
   }
 
   public function _after() {

@@ -70,7 +70,6 @@ class Migrator {
         status varchar(255) NOT NULL,
         started_at timestamp NOT NULL,
         completed_at timestamp NULL DEFAULT NULL,
-        args longtext,
         error longtext,
         data longtext,
         PRIMARY KEY (id),

@@ -15,7 +15,7 @@ class WorkflowRunLogStorageTest extends \MailPoetTest {
   }
 
   public function testItSavesAndRetrievesAsExpected() {
-    $log = new WorkflowRunLog(1, 'step-id', []);
+    $log = new WorkflowRunLog(1, 'step-id');
     $log->setData('key', 'value');
     $log->setData('key2', ['arrayData']);
     $preSave = $log->toArray();
@@ -26,7 +26,7 @@ class WorkflowRunLogStorageTest extends \MailPoetTest {
   }
 
   public function testItCanStoreAnError() {
-    $log = new WorkflowRunLog(1, 'step-id', []);
+    $log = new WorkflowRunLog(1, 'step-id');
     $log->setError(new \Exception('test'));
     $id = $this->storage->createWorkflowRunLog($log);
     $log = $this->storage->getWorkflowRunLog($id);
