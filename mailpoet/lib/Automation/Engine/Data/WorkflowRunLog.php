@@ -39,18 +39,13 @@ class WorkflowRunLog {
   /** @var string */
   private $stepId;
 
-  /** @var array */
-  private $args;
-
   public function __construct(
     int $workflowRunId,
     string $stepId,
-    array $args,
     int $id = null
   ) {
     $this->workflowRunId = $workflowRunId;
     $this->stepId = $stepId;
-    $this->args = $args;
     $this->status = self::STATUS_RUNNING;
 
     if ($id) {
@@ -77,10 +72,6 @@ class WorkflowRunLog {
 
   public function getStatus(): string {
     return $this->status;
-  }
-
-  public function getArgs(): array {
-    return $this->args;
   }
 
   public function getError(): array {
@@ -126,7 +117,6 @@ class WorkflowRunLog {
       'status' => $this->status,
       'started_at' => $this->startedAt->format(DateTimeImmutable::W3C),
       'completed_at' => $this->completedAt ? $this->completedAt->format(DateTimeImmutable::W3C) : null,
-      'args' => Json::encode($this->args),
       'error' => Json::encode($this->error),
       'data' => Json::encode($this->data),
     ];
@@ -154,12 +144,11 @@ class WorkflowRunLog {
   }
 
   public static function fromArray(array $data): self {
-    $workflowRunLog = new WorkflowRunLog((int)$data['workflow_run_id'], $data['step_id'], []);
+    $workflowRunLog = new WorkflowRunLog((int)$data['workflow_run_id'], $data['step_id']);
     $workflowRunLog->id = (int)$data['id'];
     $workflowRunLog->status = $data['status'];
     $workflowRunLog->error = Json::decode($data['error']);
     $workflowRunLog->data = Json::decode($data['data']);
-    $workflowRunLog->args = Json::decode($data['args']);
     $workflowRunLog->startedAt = new DateTimeImmutable($data['started_at']);
 
     if ($data['completed_at']) {

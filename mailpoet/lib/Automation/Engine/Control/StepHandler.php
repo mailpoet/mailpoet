@@ -120,7 +120,7 @@ class StepHandler {
 
     $stepType = $step->getType();
     if (isset($this->stepRunners[$stepType])) {
-      $log = new WorkflowRunLog($workflowRun->getId(), $step->getId(), $args);
+      $log = new WorkflowRunLog($workflowRun->getId(), $step->getId());
       try {
         $this->stepRunners[$stepType]->run($step, $workflow, $workflowRun);
         $log->markCompletedSuccessfully();
