@@ -92,14 +92,21 @@ class SenderField extends Component {
     if (!window.mailpoet_mss_active) return;
 
     const emailAddress = this.state.emailAddress;
+
+    const emailDomain = extractEmailDomain(emailAddress);
+
+    if (window.mailpoet_verified_sender_domains.includes(emailDomain)) {
+      // allow user send with any email address from verified domains
+      return;
+    }
+
     const emailAddressIsAuthorized =
       this.isEmailAddressAuthorized(emailAddress);
 
     this.showSenderFieldError(emailAddressIsAuthorized, emailAddress);
 
     // Skip domain DMARC validation if the email is a freemail
-    const isFreeDomain =
-      MailPoet.freeMailDomains.indexOf(extractEmailDomain(emailAddress)) > -1;
+    const isFreeDomain = MailPoet.freeMailDomains.indexOf(emailDomain) > -1;
     if (isFreeDomain) return;
 
     checkSenderEmailDomainDmarcPolicy(emailAddress)
