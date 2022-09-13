@@ -52,7 +52,12 @@ class WorkflowRunLogStorage {
    */
   public function getLogsForWorkflowRun(int $workflowRunId): array {
     $table = esc_sql($this->table);
-    $query = $this->wpdb->prepare("SELECT * FROM $table WHERE workflow_run_id = %d", $workflowRunId);
+    $query = $this->wpdb->prepare("
+        SELECT *
+        FROM $table
+        WHERE workflow_run_id = %d
+        ORDER BY id ASC
+        ", $workflowRunId);
 
     if (!is_string($query)) {
       throw InvalidStateException::create();
