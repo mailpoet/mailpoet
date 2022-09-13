@@ -91,10 +91,7 @@ class WorkflowRunLog {
     return $this->data;
   }
 
-  /**
-   * @return DateTimeImmutable|null
-   */
-  public function getCompletedAt() {
+  public function getCompletedAt(): ?DateTimeImmutable {
     return $this->completedAt;
   }
 
