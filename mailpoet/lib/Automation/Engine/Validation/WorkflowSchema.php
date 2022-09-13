@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace MailPoet\Automation\Engine\Validators;
+namespace MailPoet\Automation\Engine\Validation;
 
 use MailPoet\Validator\Builder;
 use MailPoet\Validator\Schema\ArraySchema;
