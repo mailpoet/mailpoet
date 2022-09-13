@@ -130,10 +130,11 @@ class SettingsTest extends \MailPoetTest {
 
   public function testItSetsAuthorizedFromAddressAndResumesSending() {
     $bridgeMock = $this->make(Bridge::class, ['getAuthorizedEmailAddresses' => Expected::once(['authorized@email.com'])]);
+    $senderDomainController = $this->diContainer->get(AuthorizedSenderDomainController::class);
     $this->endpoint = new Settings(
       $this->settings,
       $bridgeMock,
-      new AuthorizedEmailsController($this->settings, $bridgeMock, $this->diContainer->get(NewslettersRepository::class)),
+      new AuthorizedEmailsController($this->settings, $bridgeMock, $this->diContainer->get(NewslettersRepository::class), $senderDomainController),
       $this->diContainer->get(AuthorizedSenderDomainController::class),
       $this->make(TransactionalEmails::class),
       WPFunctions::get(),
@@ -160,10 +161,11 @@ class SettingsTest extends \MailPoetTest {
   public function testItSaveUnauthorizedAddressAndReturnsMeta() {
     $this->settings->set(Mailer::MAILER_CONFIG_SETTING_NAME, ['method' => Mailer::METHOD_MAILPOET]);
     $bridgeMock = $this->make(Bridge::class, ['getAuthorizedEmailAddresses' => Expected::once(['authorized@email.com'])]);
+    $senderDomainController = $this->diContainer->get(AuthorizedSenderDomainController::class);
     $this->endpoint = new Settings(
       $this->settings,
       $bridgeMock,
-      new AuthorizedEmailsController($this->settings, $bridgeMock, $this->diContainer->get(NewslettersRepository::class)),
+      new AuthorizedEmailsController($this->settings, $bridgeMock, $this->diContainer->get(NewslettersRepository::class), $senderDomainController),
       $this->diContainer->get(AuthorizedSenderDomainController::class),
       $this->make(TransactionalEmails::class),
       WPFunctions::get(),
@@ -192,10 +194,11 @@ class SettingsTest extends \MailPoetTest {
 
   public function testItRejectsUnauthorizedFromAddress() {
     $bridgeMock = $this->make(Bridge::class, ['getAuthorizedEmailAddresses' => Expected::once(['authorized@email.com'])]);
+    $senderDomainController = $this->diContainer->get(AuthorizedSenderDomainController::class);
     $this->endpoint = new Settings(
       $this->settings,
       $bridgeMock,
-      new AuthorizedEmailsController($this->settings, $bridgeMock, $this->diContainer->get(NewslettersRepository::class)),
+      new AuthorizedEmailsController($this->settings, $bridgeMock, $this->diContainer->get(NewslettersRepository::class), $senderDomainController),
       $this->diContainer->get(AuthorizedSenderDomainController::class),
       $this->make(TransactionalEmails::class),
       WPFunctions::get(),
