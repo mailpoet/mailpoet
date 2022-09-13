@@ -7,6 +7,7 @@ use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Newsletter\NewslettersRepository;
+use MailPoet\Services\AuthorizedSenderDomainController;
 use MailPoet\Settings\SettingsController;
 
 class AuthorizedEmailsController {
@@ -27,6 +28,9 @@ class AuthorizedEmailsController {
   /** @var NewslettersRepository */
   private $newslettersRepository;
 
+  /** @var AuthorizedSenderDomainController */
+  private $senderDomainController;
+
   private $automaticEmailTypes = [
     NewsletterEntity::TYPE_WELCOME,
     NewsletterEntity::TYPE_NOTIFICATION,
@@ -36,23 +40,29 @@ class AuthorizedEmailsController {
   public function __construct(
     SettingsController $settingsController,
     Bridge $bridge,
-    NewslettersRepository $newslettersRepository
+    NewslettersRepository $newslettersRepository,
+    AuthorizedSenderDomainController $senderDomainController
   ) {
     $this->settings = $settingsController;
     $this->bridge = $bridge;
     $this->newslettersRepository = $newslettersRepository;
+    $this->senderDomainController = $senderDomainController;
   }
 
   public function setFromEmailAddress(string $address) {
     $authorizedEmails = $this->bridge->getAuthorizedEmailAddresses() ?: [];
+    $verifiedDomains = $this->senderDomainController->getVerifiedSenderDomains(true);
     $isAuthorized = $this->validateAuthorizedEmail($authorizedEmails, $address);
-    if (!$isAuthorized) {
+
+    $emailDomainIsVerified = $this->validateEmailDomainIsVerified($verifiedDomains, $address);
+
+    if (!$emailDomainIsVerified && !$isAuthorized) {
       throw new \InvalidArgumentException("Email address '$address' is not authorized");
     }
 
     // update FROM address in settings & all scheduled and active emails
     $this->settings->set('sender.address', $address);
-    $result = $this->validateAddressesInScheduledAndAutomaticEmails($authorizedEmails);
+    $result = $this->validateAddressesInScheduledAndAutomaticEmails($authorizedEmails, $verifiedDomains);
     foreach ($result['invalid_senders_in_newsletters'] ?? [] as $item) {
       $newsletter = $this->newslettersRepository->findOneById((int)$item['newsletter_id']);
       if ($newsletter) {
@@ -112,9 +122,11 @@ class AuthorizedEmailsController {
     }
     $authorizedEmails = array_map('strtolower', $authorizedEmails);
 
+    $verifiedDomains = $this->senderDomainController->getVerifiedSenderDomains(true);
+
     $result = [];
-    $result = $this->validateAddressesInSettings($authorizedEmails, $result);
-    $result = $this->validateAddressesInScheduledAndAutomaticEmails($authorizedEmails, $result);
+    $result = $this->validateAddressesInSettings($authorizedEmails, $verifiedDomains, $result);
+    $result = $this->validateAddressesInScheduledAndAutomaticEmails($authorizedEmails, $verifiedDomains, $result);
     $this->settings->set(self::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING, $result ?: null);
     $this->updateMailerLog($result);
     return $result;
@@ -141,8 +153,13 @@ class AuthorizedEmailsController {
     }
   }
 
-  private function validateAddressesInSettings($authorizedEmails, $result = []) {
+  private function validateAddressesInSettings($authorizedEmails, $verifiedDomains, $result = []) {
     $defaultSenderAddress = $this->settings->get('sender.address');
+
+    if ($this->validateEmailDomainIsVerified($verifiedDomains, $defaultSenderAddress)) {
+      // allow sending from any email address in a verified domain
+      return $result;
+    }
 
     if (!$this->validateAuthorizedEmail($authorizedEmails, $defaultSenderAddress)) {
       $result['invalid_sender_address'] = $defaultSenderAddress;
@@ -151,12 +168,16 @@ class AuthorizedEmailsController {
     return $result;
   }
 
-  private function validateAddressesInScheduledAndAutomaticEmails($authorizedEmails, $result = []) {
+  private function validateAddressesInScheduledAndAutomaticEmails($authorizedEmails, $verifiedDomains, $result = []) {
     $newsletters = $this->newslettersRepository->getScheduledStandardEmailsAndActiveAutomaticEmails($this->automaticEmailTypes);
 
     $invalidSendersInNewsletters = [];
     foreach ($newsletters as $newsletter) {
       if ($this->validateAuthorizedEmail($authorizedEmails, $newsletter->getSenderAddress())) {
+        continue;
+      }
+      if ($this->validateEmailDomainIsVerified($verifiedDomains, $newsletter->getSenderAddress())) {
+        // allow sending from any email address in a verified domain
         continue;
       }
       $invalidSendersInNewsletters[] = [
@@ -190,5 +211,12 @@ class AuthorizedEmailsController {
   private function validateAuthorizedEmail($authorizedEmails = [], $email = '') {
     $lowercaseAuthorizedEmails = array_map('strtolower', $authorizedEmails);
     return in_array(strtolower($email), $lowercaseAuthorizedEmails, true);
+  }
+
+  private function validateEmailDomainIsVerified($verifiedDomains = [], $email = ''): bool {
+    $lowercaseVerifiedDomains = array_map('strtolower', $verifiedDomains);
+    $arrayOfItems = explode('@', $email);
+    $emailDomain = array_pop($arrayOfItems);
+    return in_array(strtolower($emailDomain), $lowercaseVerifiedDomains, true);
   }
 }

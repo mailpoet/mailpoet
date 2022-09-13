@@ -46,14 +46,20 @@ class AuthorizedSenderDomainController {
    *
    * Note: This includes both verified and unverified domains
    */
-  public function getAllSenderDomains(): array {
+  public function getAllSenderDomains(bool $skipCache = false): array {
+    if ($skipCache) {
+      $this->currentRecords = null;
+    }
     return $this->returnAllDomains($this->getAllRecords());
   }
 
   /**
    * Get all Verified Sender Domains
    */
-  public function getVerifiedSenderDomains(): array {
+  public function getVerifiedSenderDomains(bool $skipCache = false): array {
+    if ($skipCache) {
+      $this->currentRecords = null;
+    }
     return $this->returnVerifiedDomains($this->getAllRecords());
   }
 
