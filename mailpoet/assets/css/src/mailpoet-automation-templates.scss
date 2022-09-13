@@ -23,6 +23,7 @@ ul.mailpoet-templates {
     height: 100%;
     padding: 24px 24px 26px;
     text-align: left;
+    width: 100%;
 
     &:hover {
       background: #fff;
@@ -51,5 +52,23 @@ ul.mailpoet-templates {
 
   p {
     margin: 8px 0 0;
+  }
+
+  .mailpoet-from-scratch {
+    button {
+      align-content: center;
+      border: 2px dashed #dcdcde;
+      display: grid;
+      grid-gap: 24px;
+      justify-items: center;
+
+      &:hover {
+        border: 2px dashed #dcdcde;
+      }
+    }
+
+    svg {
+      fill: #dcdcde;
+    }
   }
 }
