@@ -10,7 +10,7 @@ use MailPoet\Automation\Engine\Builder\UpdateWorkflowController;
 use MailPoet\Automation\Engine\Data\NextStep;
 use MailPoet\Automation\Engine\Data\Step;
 use MailPoet\Automation\Engine\Data\Workflow;
-use MailPoet\Automation\Engine\Validators\WorkflowSchema;
+use MailPoet\Automation\Engine\Validation\WorkflowSchema;
 use MailPoet\Validator\Builder;
 
 class WorkflowsPutEndpoint extends Endpoint {
