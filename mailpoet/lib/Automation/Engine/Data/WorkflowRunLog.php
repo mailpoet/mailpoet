@@ -4,8 +4,6 @@ namespace MailPoet\Automation\Engine\Data;
 
 use DateTimeImmutable;
 use InvalidArgumentException;
-use MailPoet\Automation\Engine\Exceptions\InvalidStateException;
-use MailPoet\Automation\Engine\Exceptions\UnexpectedValueException;
 use MailPoet\Automation\Engine\Utils\Json;
 use Throwable;
 
@@ -92,16 +90,8 @@ class WorkflowRunLog {
    * @return void
    */
   public function setData(string $key, $value): void {
-    try {
-      $newData = $this->getData();
-      $newData[$key] = $value;
-      $encoded = Json::encode($newData);
-      $decoded = Json::decode($encoded);
-      if ($decoded !== $newData) {
-        throw new InvalidArgumentException('$value must be serializable');
-      }
-    } catch (InvalidStateException | InvalidArgumentException | UnexpectedValueException $e) {
-      throw new InvalidArgumentException("Invalid data provided for key $key.");
+    if (!$this->isDataStorable($value)) {
+      throw new InvalidArgumentException("Invalid data provided for key '$key'. Only scalar values and arrays of scalar values are allowed.");
     }
     $this->data[$key] = $value;
   }
@@ -156,5 +146,31 @@ class WorkflowRunLog {
     }
 
     return $workflowRunLog;
+  }
+
+  /**
+   * @param mixed $data
+   * @return bool
+   */
+  private function isDataStorable($data): bool {
+    if (is_object($data)) {
+      return false;
+    }
+
+    if (is_scalar($data)) {
+      return true;
+    }
+
+    if (!is_array($data)) {
+      return false;
+    }
+
+    foreach ($data as $value) {
+      if (!$this->isDataStorable($value)) {
+        return false;
+      }
+    }
+
+    return true;
   }
 }
