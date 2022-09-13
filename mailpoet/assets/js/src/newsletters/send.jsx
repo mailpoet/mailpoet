@@ -22,6 +22,8 @@ import { fromUrl } from 'common/thumbnail.ts';
 
 import { GlobalContext } from 'context/index.jsx';
 
+import { extractEmailDomain } from 'common/functions';
+
 const automaticEmails = window.mailpoet_woocommerce_automatic_emails || [];
 
 const generateGaTrackingCampaignName = (id, subject) => {
@@ -168,6 +170,12 @@ class NewsletterSendComponent extends Component {
     if (window.mailpoet_mta_method !== 'MailPoet') {
       return true;
     }
+    const verifiedDomains = await this.loadVerifiedSenderDomains();
+    const senderDomain = extractEmailDomain(this.state.item.sender_address);
+    if (verifiedDomains.indexOf(senderDomain) !== -1) {
+      // allow user send with any email address from verified domain
+      return true;
+    }
     const addresses = await this.loadAuthorizedEmailAddresses();
     const fromAddress = this.state.item.sender_address;
     return addresses.indexOf(fromAddress) !== -1;
@@ -273,6 +281,18 @@ class NewsletterSendComponent extends Component {
     const authorizedEmails = response.data || [];
     window.mailpoet_authorized_emails = authorizedEmails;
     return authorizedEmails;
+  };
+
+  loadVerifiedSenderDomains = async () => {
+    if (window.mailpoet_mta_method !== 'MailPoet') {
+      return [];
+    }
+    const response = await MailPoet.Ajax.post({
+      api_version: window.mailpoet_api_version,
+      endpoint: 'mailer',
+      action: 'getVerifiedSenderDomains',
+    });
+    return response.data || [];
   };
 
   handleSend = (e) => {

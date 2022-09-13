@@ -9,6 +9,7 @@ use MailPoet\Mailer\MailerFactory;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Mailer\MetaInfo;
 use MailPoet\Services\AuthorizedEmailsController;
+use MailPoet\Services\AuthorizedSenderDomainController;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
 
@@ -29,6 +30,9 @@ class Mailer extends APIEndpoint {
   /** @var MailerFactory */
   private $mailerFactory;
 
+  /** @var AuthorizedSenderDomainController */
+  private $senderDomainController;
+
   public $permissions = [
     'global' => AccessControl::PERMISSION_MANAGE_EMAILS,
   ];
@@ -38,13 +42,15 @@ class Mailer extends APIEndpoint {
     SettingsController $settings,
     Bridge $bridge,
     MailerFactory $mailerFactory,
-    MetaInfo $mailerMetaInfo
+    MetaInfo $mailerMetaInfo,
+    AuthorizedSenderDomainController $senderDomainController
   ) {
     $this->authorizedEmailsController = $authorizedEmailsController;
     $this->settings = $settings;
     $this->bridge = $bridge;
     $this->mailerFactory = $mailerFactory;
     $this->mailerMetaInfo = $mailerMetaInfo;
+    $this->senderDomainController = $senderDomainController;
   }
 
   public function send($data = []) {
@@ -88,5 +94,10 @@ class Mailer extends APIEndpoint {
   public function getAuthorizedEmailAddresses() {
     $authorizedEmails = $this->bridge->getAuthorizedEmailAddresses();
     return $this->successResponse($authorizedEmails);
+  }
+
+  public function getVerifiedSenderDomains() {
+    $verifiedDomains = $this->senderDomainController->getVerifiedSenderDomains();
+    return $this->successResponse($verifiedDomains);
   }
 }
