@@ -1,4 +1,4 @@
-<?php declare(strict_types=1);
+<?php declare(strict_types = 1);
 
 namespace MailPoet\Test\Automation\Engine\Data;
 
@@ -17,6 +17,7 @@ use MailPoet\Util\Security;
 use MailPoet\Validator\Builder;
 use MailPoet\Validator\Schema\ObjectSchema;
 use MailPoet\WP\Functions as WPFunctions;
+use stdClass;
 
 class WorkflowRunLogTest extends \MailPoetTest {
 
@@ -49,7 +50,7 @@ class WorkflowRunLogTest extends \MailPoetTest {
     $this->wp = new WPFunctions();
   }
 
-  public function testItAllowsSettingData(): void {
+  public function testItAllowsSettingSimpleData(): void {
     $log = new WorkflowRunLog(1, 'step-id');
     $this->assertSame([], $log->getData());
     $log->setData('key', 'value');
@@ -58,13 +59,74 @@ class WorkflowRunLogTest extends \MailPoetTest {
     $this->assertSame('value', $data['key']);
   }
 
-  public function testItDoesNotAllowSettingDataThatCannotBeSaved(): void {
+  public function testItAllowsSettingArraysOfScalarValues(): void {
+    $log = new WorkflowRunLog(1, 'step-id');
+    $data = [
+      'string',
+      11.1,
+      10,
+      true,
+      false
+    ];
+    $log->setData('data', $data);
+    $this->workflowRunLogStorage->createWorkflowRunLog($log);
+    $retrieved = $this->workflowRunLogStorage->getLogsForWorkflowRun(1)[0];
+    expect($retrieved->getData()['data'])->equals($data);
+  }
+
+  public function testItAllowsSettingMultidimensionalArraysOfScalarValues(): void {
+    $log = new WorkflowRunLog(1, 'step-id');
+    $data = [
+      'values' => [
+        'string',
+        11.1,
+        10,
+        true,
+        false
+      ]
+    ];
+    $log->setData('data', $data);
+    $this->workflowRunLogStorage->createWorkflowRunLog($log);
+    $retrieved = $this->workflowRunLogStorage->getLogsForWorkflowRun(1)[0];
+    expect($retrieved->getData()['data'])->equals($data);
+  }
+
+  public function testItDoesNotAllowSettingDataThatIncludesClosures(): void {
     $log = new WorkflowRunLog(1, 'step-id');
     $badData = [
-      function() { echo 'closures cannot be serialized'; }
+      function() {
+        echo 'closures cannot be serialized';
+      }
     ];
     $this->expectException(\InvalidArgumentException::class);
     $log->setData('badData', $badData);
+    expect($log->getData())->count(0);
+  }
+
+  public function testItDoesNotAllowSettingObjectsForData(): void {
+    $log = new WorkflowRunLog(1, 'step-id');
+    $object = new stdClass();
+    $object->key = 'value';
+    $this->expectException(\InvalidArgumentException::class);
+    $log->setData('object', $object);
+    expect($log->getData())->count(0);
+  }
+
+  public function testItDoesNotAllowSettingMultidimensionalArrayThatContainsNonScalarValue(): void {
+    $log = new WorkflowRunLog(1, 'step-id');
+    $data = [
+      'test' => [
+        'multidimensional' => [
+          'array' => [
+            'values' => [
+              new stdClass()
+            ]
+          ]
+        ]
+      ]
+    ];
+    $this->expectException(\InvalidArgumentException::class);
+    $log->setData('data', $data);
     expect($log->getData())->count(0);
   }
 
@@ -171,7 +233,9 @@ class WorkflowRunLogTest extends \MailPoetTest {
 
   private function getLogsForAction($callback = null) {
     if ($callback === null) {
-      $callback = function() { return true; };
+      $callback = function() {
+        return true;
+      };
     }
     $testAction = $this->getRegisteredTestAction($callback);
     $actionStep = new Step('action-step-id', Step::TYPE_ACTION, $testAction->getKey(), [], []);
@@ -196,7 +260,9 @@ class WorkflowRunLogTest extends \MailPoetTest {
 
   private function getRegisteredTestAction($callback = null) {
     if ($callback === null) {
-      $callback = function() { return true; };
+      $callback = function() {
+        return true;
+      };
     }
     $action = new TestAction();
     $action->setCallback($callback);
