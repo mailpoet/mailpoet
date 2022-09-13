@@ -11,6 +11,7 @@ use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Services\AuthorizedEmailsController;
+use MailPoet\Services\AuthorizedSenderDomainController;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
@@ -267,7 +268,8 @@ class AuthorizedEmailsControllerTest extends \MailPoetTest {
       'createAuthorizedEmailAddress' => Expected::once($response)
     ]);
     $newslettersRepository = $this->diContainer->get(NewslettersRepository::class);
-    $controller = new AuthorizedEmailsController($this->settings, $bridgeMock, $newslettersRepository);
+    $senderDomainController = $this->diContainer->get(AuthorizedSenderDomainController::class);
+    $controller = new AuthorizedEmailsController($this->settings, $bridgeMock, $newslettersRepository, $senderDomainController);
     $result = $controller->createAuthorizedEmailAddress('new-authorized@email.com');
     expect($result)->equals($response);
   }
@@ -282,7 +284,8 @@ class AuthorizedEmailsControllerTest extends \MailPoetTest {
       'createAuthorizedEmailAddress' => Expected::once(['error' => $errorMessage])
     ]);
     $newslettersRepository = $this->diContainer->get(NewslettersRepository::class);
-    $controller = new AuthorizedEmailsController($this->settings, $bridgeMock, $newslettersRepository);
+    $senderDomainController = $this->diContainer->get(AuthorizedSenderDomainController::class);
+    $controller = new AuthorizedEmailsController($this->settings, $bridgeMock, $newslettersRepository, $senderDomainController);
     $controller->createAuthorizedEmailAddress('new-authorized@email.com');
   }
 
@@ -324,7 +327,9 @@ class AuthorizedEmailsControllerTest extends \MailPoetTest {
     }
     $bridgeMock = $this->make(Bridge::class, ['getAuthorizedEmailAddresses' => $getEmailsExpectaton]);
     $newslettersRepository = $this->diContainer->get(NewslettersRepository::class);
-    return new AuthorizedEmailsController($this->settings, $bridgeMock, $newslettersRepository);
+    $senderDomainController = $this->diContainer->get(AuthorizedSenderDomainController::class);
+
+    return new AuthorizedEmailsController($this->settings, $bridgeMock, $newslettersRepository, $senderDomainController);
   }
 
   public function _after() {

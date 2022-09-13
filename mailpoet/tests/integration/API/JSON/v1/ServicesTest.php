@@ -12,6 +12,7 @@ use MailPoet\Cron\Workers\KeyCheck\PremiumKeyCheck;
 use MailPoet\Cron\Workers\KeyCheck\SendingServiceKeyCheck;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\MailerLog;
+use MailPoet\Services\AuthorizedSenderDomainController;
 use MailPoet\Services\Bridge;
 use MailPoet\Services\CongratulatoryMssEmailController;
 use MailPoet\Settings\SettingsController;
@@ -549,7 +550,8 @@ class ServicesTest extends \MailPoetTest {
       $this->diContainer->get(PremiumKeyCheck::class),
       $this->diContainer->get(ServicesChecker::class),
       $mocks['congratulatoryEmailController'] ?? $this->diContainer->get(CongratulatoryMssEmailController::class),
-      $this->diContainer->get(WPFunctions::class)
+      $this->diContainer->get(WPFunctions::class),
+      $this->diContainer->get(AuthorizedSenderDomainController::class)
     );
   }
 }
