@@ -90,7 +90,7 @@ class WorkflowRunLogTest extends \MailPoetTest {
 
   public function testItStoresWorkflowRunAndStepIdsCorrectly() {
     $testAction = $this->getRegisteredTestAction();
-    $actionStep = new Step('action-step-id', Step::TYPE_ACTION, $testAction->getKey());
+    $actionStep = new Step('action-step-id', Step::TYPE_ACTION, $testAction->getKey(), [], []);
     $workflow = new Workflow('test_workflow', [$actionStep], new \WP_User());
     $workflowId = $this->workflowStorage->createWorkflow($workflow);
     // Reload to get additional data post-save
@@ -174,7 +174,7 @@ class WorkflowRunLogTest extends \MailPoetTest {
       $callback = function() { return true; };
     }
     $testAction = $this->getRegisteredTestAction($callback);
-    $actionStep = new Step('action-step-id', Step::TYPE_ACTION, $testAction->getKey());
+    $actionStep = new Step('action-step-id', Step::TYPE_ACTION, $testAction->getKey(), [], []);
     $workflow = new Workflow('test_workflow', [$actionStep], new \WP_User());
     $workflowId = $this->workflowStorage->createWorkflow($workflow);
     // Reload to get additional data post-save
