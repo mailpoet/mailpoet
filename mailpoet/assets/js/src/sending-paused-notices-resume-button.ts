@@ -1,5 +1,6 @@
 import jQuery from 'jquery';
 import { MailPoet } from 'mailpoet';
+import { extractEmailDomain } from 'common/functions';
 
 const loadAuthorizedEmailAddresses = async () => {
   if (MailPoet.mtaMethod !== 'MailPoet') {
@@ -13,8 +14,26 @@ const loadAuthorizedEmailAddresses = async () => {
   return response.data || [];
 };
 
+const loadVerifiedSenderDomains = async () => {
+  if (MailPoet.mtaMethod !== 'MailPoet') {
+    return [];
+  }
+  const response = await MailPoet.Ajax.post({
+    api_version: MailPoet.apiVersion,
+    endpoint: 'mailer',
+    action: 'getVerifiedSenderDomains',
+  });
+  return response.data || [];
+};
+
 const isValidFromAddress = async (fromAddress: string | null) => {
   if (MailPoet.mtaMethod !== 'MailPoet') {
+    return true;
+  }
+  const verifiedDomains = await loadVerifiedSenderDomains();
+  const senderDomain = extractEmailDomain(fromAddress);
+  if (verifiedDomains.indexOf(senderDomain) !== -1) {
+    // allow user send with any email address from verified domain
     return true;
   }
   const addresses = await loadAuthorizedEmailAddresses();
