@@ -75,12 +75,17 @@ export function AutomationListing({ workflows, loading }: Props): JSX.Element {
   );
 
   const groupedWorkflows = useMemo<Record<string, Workflow[]>>(() => {
-    const grouped = {};
+    const grouped = {
+      all: [],
+    };
     workflows.forEach((workflow) => {
       if (!grouped[workflow.status]) {
         grouped[workflow.status] = [];
       }
       grouped[workflow.status].push(workflow);
+      if (workflow.status !== WorkflowStatus.TRASH) {
+        grouped.all.push(workflow);
+      }
     });
     return grouped;
   }, [workflows]);
@@ -88,10 +93,7 @@ export function AutomationListing({ workflows, loading }: Props): JSX.Element {
   const tabs = useMemo(
     () =>
       filterTabs.map((filterTab) => {
-        const count =
-          filterTab.name === 'all'
-            ? workflows.length
-            : (groupedWorkflows[filterTab.name] || []).length;
+        const count = (groupedWorkflows[filterTab.name] || []).length;
         return {
           name: filterTab.name,
           title:
@@ -106,13 +108,12 @@ export function AutomationListing({ workflows, loading }: Props): JSX.Element {
           className: filterTab.className,
         };
       }),
-    [workflows, groupedWorkflows],
+    [groupedWorkflows],
   );
 
   const tabRenderer = useCallback(
     (tab) => {
-      const filteredWorkflows: Workflow[] =
-        tab.name === 'all' ? workflows : groupedWorkflows[tab.name] ?? [];
+      const filteredWorkflows: Workflow[] = groupedWorkflows[tab.name] ?? [];
       const rowsPerPage = parseInt(pageSearch.get('per_page') || '25', 10);
       const currentPage = parseInt(pageSearch.get('paged') || '1', 10);
       const start = (currentPage - 1) * rowsPerPage;
