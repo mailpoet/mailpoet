@@ -12,6 +12,8 @@ export * as ReactStringReplace from 'react-string-replace';
 export * as Slugify from 'slugify';
 export { TextControl as WordpressComponentsTextControl } from '@wordpress/components';
 export * as WordPressData from '@wordpress/data';
+export * as WordPressUrl from '@wordpress/url';
+export * as WordPressI18n from '@wordpress/i18n';
 
 // assets
 export * as Automation from 'automation';
