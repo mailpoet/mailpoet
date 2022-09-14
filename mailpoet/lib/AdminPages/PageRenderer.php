@@ -154,6 +154,7 @@ class PageRenderer {
       'urls' => [
         'automationListing' => admin_url('admin.php?page=mailpoet-automation'),
         'automationEditor' => admin_url('admin.php?page=mailpoet-automation-editor'),
+        'automationTemplates' => admin_url('admin.php?page=mailpoet-automation-templates'),
       ],
     ];
 

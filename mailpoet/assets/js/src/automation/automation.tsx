@@ -12,6 +12,7 @@ import {
 } from './testing';
 import { useMutation, useQuery } from './api';
 import { WorkflowListingNotices } from './listing/workflow-listing-notices';
+import { MailPoet } from '../mailpoet';
 
 function Content(): JSX.Element {
   const { data, loading, error } = useQuery<{ data: Workflow[] }>('workflows');
@@ -39,9 +40,7 @@ function Workflows(): JSX.Element {
       <Flex className="mailpoet-automation-listing-heading">
         <h1 className="wp-heading-inline">Automations</h1>
         <Button
-          onClick={() => {
-            // TODO: link to templates page when implemented, MAILPOET-4533
-          }}
+          href={MailPoet.urls.automationTemplates}
           icon={plusIcon}
           variant="primary"
           className="mailpoet-add-new-button"
