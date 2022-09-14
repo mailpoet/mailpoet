@@ -23,6 +23,7 @@ class Exceptions {
   private const SUBJECT_LOAD_FAILED = 'mailpoet_automation_workflow_subject_load_failed';
   private const MULTIPLE_SUBJECTS_FOUND = 'mailpoet_automation_multiple_subjects_found';
   private const WORKFLOW_STRUCTURE_MODIFICATION_NOT_SUPPORTED = 'mailpoet_automation_workflow_structure_modification_not_supported';
+  private const WORKFLOW_STRUCTURE_NOT_VALID = 'mailpoet_automation_workflow_structure_not_valid';
 
   public function __construct() {
     throw new InvalidStateException(
@@ -138,5 +139,12 @@ class Exceptions {
     return UnexpectedValueException::create()
       ->withErrorCode(self::WORKFLOW_STRUCTURE_MODIFICATION_NOT_SUPPORTED)
       ->withMessage(__("Workflow structure modification not supported.", 'mailpoet'));
+  }
+
+  public static function workflowStructureNotValid(string $detail): UnexpectedValueException {
+    return UnexpectedValueException::create()
+      ->withErrorCode(self::WORKFLOW_STRUCTURE_NOT_VALID)
+      // translators: %s is a detailed information
+      ->withMessage(sprintf(__("Invalid workflow structure: %s", 'mailpoet'), $detail));
   }
 }
