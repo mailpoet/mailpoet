@@ -260,11 +260,6 @@ parameters:
 			path: ../../lib/Cron/Workers/SubscribersLastEngagement.php
 
 		-
-			message: "#^Cannot cast mixed to int\\.$#"
-			count: 1
-			path: ../../lib/Cron/Workers/WooCommerceSync.php
-
-		-
 			message: "#^Cannot call method get\\(\\) on mixed\\.$#"
 			count: 1
 			path: ../../lib/DI/ContainerConfigurator.php
