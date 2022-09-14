@@ -776,11 +776,6 @@ parameters:
 			path: ../../lib/Segments/WooCommerce.php
 
 		-
-			message: "#^Method MailPoet\\\\Segments\\\\WooCommerce\\:\\:insertSubscriberFromOrder\\(\\) should return string\\|null but returns mixed\\.$#"
-			count: 1
-			path: ../../lib/Segments/WooCommerce.php
-
-		-
 			message: "#^Parameter \\#1 \\$ch of function curl_errno expects resource, mixed given\\.$#"
 			count: 1
 			path: ../../lib/Services/Bridge/API.php

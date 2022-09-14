@@ -148,7 +148,7 @@ class WooCommerce {
       $status = SubscriberEntity::STATUS_SUBSCRIBED;
     }
 
-    $email = $this->insertSubscriberFromOrder($orderId, $status);
+    $email = $this->insertSubscriberFromOrder($wcOrder, $status);
 
     if (empty($email)) {
       return;
@@ -240,17 +240,10 @@ class WooCommerce {
     ", ['capabilities' => $wpdb->prefix . 'capabilities', 'source' => Source::WOOCOMMERCE_USER]);
   }
 
-  private function insertSubscriberFromOrder(int $orderId, string $status): ?string {
-    global $wpdb;
+  private function insertSubscriberFromOrder(\WC_Order $wcOrder, string $status): ?string {
     $validator = new ModelValidator();
 
-    $email = $this->connection->executeQuery("
-      SELECT wppm.meta_value AS email
-      FROM `{$wpdb->posts}` wpp
-      JOIN `{$wpdb->postmeta}` wppm ON wpp.ID = wppm.post_id AND wppm.meta_key = '_billing_email' AND wppm.meta_value != ''
-      WHERE wpp.post_type = 'shop_order'
-      AND wpp.ID = :orderId
-    ", ['orderId' => $orderId])->fetchOne();
+    $email = $wcOrder->get_billing_email();
 
     if (!$email || !$validator->validateEmail($email)) {
       return null;
