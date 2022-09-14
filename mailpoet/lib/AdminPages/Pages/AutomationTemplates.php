@@ -31,17 +31,21 @@ class AutomationTemplates {
   public function render() {
     $this->wp->wpEnqueueStyle('wp-components');
 
-    $this->pageRenderer->displayPage('automation/templates.html', [
-    'api' => [
-      'root' => rtrim($this->wp->escUrlRaw($this->wp->restUrl()), '/'),
-      'nonce' => $this->wp->wpCreateNonce('wp_rest'),
-    ],
-    'templates' => array_map(
-      function(WorkflowTemplate $template): array {
-        return $template->toArray();
-      },
-      $this->templateStorage->getTemplates()
-    ),
-    ]);
+    $this->pageRenderer->displayPage(
+      'automation/templates.html',
+      [
+        'sub_menu' => 'mailpoet-automation',
+        'api' => [
+          'root' => rtrim($this->wp->escUrlRaw($this->wp->restUrl()), '/'),
+          'nonce' => $this->wp->wpCreateNonce('wp_rest'),
+        ],
+        'templates' => array_map(
+          function(WorkflowTemplate $template): array {
+            return $template->toArray();
+          },
+          $this->templateStorage->getTemplates()
+        ),
+      ]
+    );
   }
 }
