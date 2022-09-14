@@ -54,7 +54,7 @@ jQuery(($) => {
       return true;
     },
     messages: {
-      en: 'Please select a list with subscribers',
+      en: 'Please select a list with subscribers.',
     },
   });
 });
