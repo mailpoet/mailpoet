@@ -29,7 +29,6 @@ class AutomationTemplates {
   }
 
   public function render() {
-    $this->wp->wpEnqueueStyle('wp-components');
 
     $this->pageRenderer->displayPage(
       'automation/templates.html',
