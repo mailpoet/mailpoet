@@ -267,9 +267,10 @@ class AuthorizedEmailsControllerTest extends \MailPoetTest {
       'getAuthorizedEmailAddresses' => Expected::once($array),
       'createAuthorizedEmailAddress' => Expected::once($response)
     ]);
-    $newslettersRepository = $this->diContainer->get(NewslettersRepository::class);
-    $senderDomainController = $this->diContainer->get(AuthorizedSenderDomainController::class);
-    $controller = new AuthorizedEmailsController($this->settings, $bridgeMock, $newslettersRepository, $senderDomainController);
+    $mocks = [
+      'Bridge' => $bridgeMock
+    ];
+    $controller = $this->getControllerWithCustomMocks($mocks);
     $result = $controller->createAuthorizedEmailAddress('new-authorized@email.com');
     expect($result)->equals($response);
   }
@@ -283,9 +284,10 @@ class AuthorizedEmailsControllerTest extends \MailPoetTest {
       'getAuthorizedEmailAddresses' => Expected::once([]),
       'createAuthorizedEmailAddress' => Expected::once(['error' => $errorMessage])
     ]);
-    $newslettersRepository = $this->diContainer->get(NewslettersRepository::class);
-    $senderDomainController = $this->diContainer->get(AuthorizedSenderDomainController::class);
-    $controller = new AuthorizedEmailsController($this->settings, $bridgeMock, $newslettersRepository, $senderDomainController);
+    $mocks = [
+      'Bridge' => $bridgeMock
+    ];
+    $controller = $this->getControllerWithCustomMocks($mocks);
     $controller->createAuthorizedEmailAddress('new-authorized@email.com');
   }
 
@@ -326,8 +328,17 @@ class AuthorizedEmailsControllerTest extends \MailPoetTest {
       $getEmailsExpectaton = Expected::once($authorizedEmails);
     }
     $bridgeMock = $this->make(Bridge::class, ['getAuthorizedEmailAddresses' => $getEmailsExpectaton]);
-    $newslettersRepository = $this->diContainer->get(NewslettersRepository::class);
-    $senderDomainController = $this->diContainer->get(AuthorizedSenderDomainController::class);
+
+    $mocks = [
+      'Bridge' => $bridgeMock
+    ];
+    return $this->getControllerWithCustomMocks($mocks);
+  }
+
+  private function getControllerWithCustomMocks($data = []) {
+    $bridgeMock = $data['Bridge'] ?? $this->diContainer->get(Bridge::class);
+    $newslettersRepository = $data['NewslettersRepository'] ?? $this->diContainer->get(NewslettersRepository::class);
+    $senderDomainController = $data['AuthorizedSenderDomainController'] ?? $this->diContainer->get(AuthorizedSenderDomainController::class);
 
     return new AuthorizedEmailsController($this->settings, $bridgeMock, $newslettersRepository, $senderDomainController);
   }
