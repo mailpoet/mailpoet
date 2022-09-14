@@ -9,7 +9,6 @@ use MailPoet\Test\DataFactories\ScheduledTask as ScheduledTaskFactory;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
-use MailPoetVendor\Doctrine\DBAL\Connection;
 
 /**
  * @group woo
@@ -18,16 +17,14 @@ class WooCommerceSyncTest extends \MailPoetTest {
   public $worker;
   public $woocommerceHelper;
   public $woocommerceSegment;
-  public $connection;
   /** @var ScheduledTaskFactory */
   private $scheduledTaskFactory;
 
   public function _before() {
     $this->woocommerceSegment = $this->createMock(WooCommerceSegment::class);
     $this->woocommerceHelper = $this->createMock(WooCommerceHelper::class);
-    $this->connection = $this->diContainer->get(Connection::class);
     $this->scheduledTaskFactory = new ScheduledTaskFactory();
-    $this->worker = new WooCommerceSync($this->woocommerceSegment, $this->woocommerceHelper, $this->connection);
+    $this->worker = new WooCommerceSync($this->woocommerceSegment, $this->woocommerceHelper);
   }
 
   public function testItWillNotRunIfWooCommerceIsDisabled() {
@@ -46,7 +43,7 @@ class WooCommerceSyncTest extends \MailPoetTest {
     $this->tester->createWooCommerceOrder();
 
     $woocommerceHelper = $this->diContainer->get(WooCommerceHelper::class);
-    $worker = new WooCommerceSync($this->woocommerceSegment, $woocommerceHelper, $this->connection);
+    $worker = new WooCommerceSync($this->woocommerceSegment, $woocommerceHelper);
     $this->woocommerceSegment->expects($this->once())
       ->method('synchronizeCustomers')
       ->with(0, $this->greaterThan(0), WooCommercesync::BATCH_SIZE)
