@@ -66,6 +66,30 @@ class AuthorizedEmailsControllerTest extends \MailPoetTest {
     expect($this->settings->get(AuthorizedEmailsController::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING))->null();
   }
 
+  public function testItSetEmptyErrorWhenDomainIsVerifiedButSenderAddressIsNotAuthorized() {
+    $this->settings->set('installed_at', new Carbon());
+    $this->settings->set('sender.address', 'not-valid-auth@email.com');
+    $this->setMailPoetSendingMethod();
+
+    $authorizedEmails = ['auth@email.com'];
+    $bridgeMock = $this->make(Bridge::class, [
+      'getAuthorizedEmailAddresses' => Expected::once($authorizedEmails),
+    ]);
+
+    $verifiedDomains = ['email.com'];
+    $senderDomainMock = $this->make(AuthorizedSenderDomainController::class, [
+      'getVerifiedSenderDomains' => Expected::once($verifiedDomains),
+    ]);
+
+    $mocks = [
+      'Bridge' => $bridgeMock,
+      'AuthorizedSenderDomainController' => $senderDomainMock
+    ];
+    $controller = $this->getControllerWithCustomMocks($mocks);
+    $controller->checkAuthorizedEmailAddresses();
+    expect($this->settings->get(AuthorizedEmailsController::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING))->null();
+  }
+
   public function testItSetErrorForScheduledNewsletterWithUnauthorizedSender() {
     $this->checkUnauthorizedInNewsletter(NewsletterEntity::TYPE_STANDARD, NewsletterEntity::STATUS_SCHEDULED);
   }
@@ -108,6 +132,35 @@ class AuthorizedEmailsControllerTest extends \MailPoetTest {
     $this->setMailPoetSendingMethod();
     $controller = $this->getController($authorizedEmailsFromApi = ['auth@email.com']);
     $controller->checkAuthorizedEmailAddresses();
+    $error = MailerLog::getError();
+    expect($error)->null();
+  }
+
+  public function testItResetsUnauthorizedErrorInMailerLogWhenDomainIsVerified() {
+    $log = MailerLog::setError(MailerLog::getMailerLog(), MailerError::OPERATION_AUTHORIZATION, 'message');
+    MailerLog::updateMailerLog($log);
+    $this->settings->set('installed_at', new Carbon());
+    $this->settings->set('sender.address', 'invalid@email.com');
+    $this->setMailPoetSendingMethod();
+
+    $authorizedEmails = ['auth@email.com'];
+    $bridgeMock = $this->make(Bridge::class, [
+      'getAuthorizedEmailAddresses' => Expected::once($authorizedEmails),
+    ]);
+
+    $verifiedDomains = ['email.com'];
+    $senderDomainMock = $this->make(AuthorizedSenderDomainController::class, [
+      'getVerifiedSenderDomains' => Expected::once($verifiedDomains),
+    ]);
+
+    $mocks = [
+      'Bridge' => $bridgeMock,
+      'AuthorizedSenderDomainController' => $senderDomainMock
+    ];
+    $controller = $this->getControllerWithCustomMocks($mocks);
+
+    $controller->checkAuthorizedEmailAddresses();
+
     $error = MailerLog::getError();
     expect($error)->null();
   }
@@ -165,6 +218,22 @@ class AuthorizedEmailsControllerTest extends \MailPoetTest {
   public function testItSetsFromAddressInSettings() {
     $this->settings->set('sender.address', '');
     $controller = $this->getController(['authorized@email.com']);
+    $controller->setFromEmailAddress('authorized@email.com');
+    expect($this->settings->get('sender.address'))->same('authorized@email.com');
+  }
+
+  public function testItSetsFromAddressInSettingsWhenDomainIsVerified() {
+    $this->settings->set('sender.address', '');
+
+    $verifiedDomains = ['email.com'];
+    $senderDomainMock = $this->make(AuthorizedSenderDomainController::class, [
+      'getVerifiedSenderDomains' => Expected::once($verifiedDomains),
+    ]);
+
+    $mocks = [
+      'AuthorizedSenderDomainController' => $senderDomainMock
+    ];
+    $controller = $this->getControllerWithCustomMocks($mocks);
     $controller->setFromEmailAddress('authorized@email.com');
     expect($this->settings->get('sender.address'))->same('authorized@email.com');
   }
