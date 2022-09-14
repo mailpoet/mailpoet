@@ -21,7 +21,7 @@ function Templates(): JSX.Element {
         <FromScratchButton />
       </Flex>
 
-      <ul className="mailpoet-templates">
+      <ul className="mailpoet-automation-templates">
         {workflowTemplates.map((template) => (
           <TemplateListItem key={template.slug} template={template} />
         ))}

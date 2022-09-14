@@ -42,7 +42,7 @@ export function TemplateListItem({
   }
 
   return (
-    <li className="mailpoet-template-list-item">
+    <li className="mailpoet-automation-template-list-item">
       {notice}
       <Button
         isBusy={loading}

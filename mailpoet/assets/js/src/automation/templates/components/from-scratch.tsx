@@ -78,7 +78,7 @@ export function FromScratchListItem(): JSX.Element {
     }, errorHandler);
   }, []);
   return (
-    <li className="mailpoet-template-list-item mailpoet-from-scratch">
+    <li className="mailpoet-automation-template-list-item mailpoet-automation-from-scratch">
       {error && (
         <Notice type="error" closable timeout={false}>
           <p>{error}</p>
