@@ -25,7 +25,7 @@ class WooCommerceSyncTest extends \MailPoetTest {
   public function _before() {
     $this->woocommerceSegment = $this->createMock(WooCommerceSegment::class);
     $this->woocommerceHelper = $this->createMock(WooCommerceHelper::class);
-    $this->connection = $this->createMock(Connection::class);
+    $this->connection = $this->diContainer->get(Connection::class);
     $this->scheduledTaskFactory = new ScheduledTaskFactory();
     $this->worker = new WooCommerceSync($this->woocommerceSegment, $this->woocommerceHelper, $this->connection);
   }
@@ -43,18 +43,24 @@ class WooCommerceSyncTest extends \MailPoetTest {
   }
 
   public function testItCallsWooCommerceSync() {
+    $this->tester->createWooCommerceOrder();
+
+    $woocommerceHelper = $this->diContainer->get(WooCommerceHelper::class);
+    $worker = new WooCommerceSync($this->woocommerceSegment, $woocommerceHelper, $this->connection);
     $this->woocommerceSegment->expects($this->once())
       ->method('synchronizeCustomers')
+      ->with(0, $this->greaterThan(0), WooCommercesync::BATCH_SIZE)
       ->willReturn(1000);
     $task = $this->scheduledTaskFactory->create(
       WooCommerceSync::TASK_TYPE,
       null,
       Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'))
     );
-    expect($this->worker->processTaskStrategy($task, microtime(true)))->equals(true);
+    expect($worker->processTaskStrategy($task, microtime(true)))->equals(true);
   }
 
   public function _after() {
     $this->truncateEntity(ScheduledTaskEntity::class);
+    $this->tester->deleteTestWooOrders();
   }
 }
