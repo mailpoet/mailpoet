@@ -8,6 +8,7 @@ use MailPoet\Automation\Engine\Exceptions;
 use MailPoet\Automation\Engine\Exceptions\UnexpectedValueException;
 use MailPoet\Automation\Engine\Hooks;
 use MailPoet\Automation\Engine\Storage\WorkflowStorage;
+use MailPoet\Automation\Engine\Validation\WorkflowValidator;
 
 class UpdateWorkflowController {
   /** @var Hooks */
@@ -16,24 +17,25 @@ class UpdateWorkflowController {
   /** @var WorkflowStorage */
   private $storage;
 
+  /** @var WorkflowValidator */
+  private $workflowValidator;
+
   /** @var UpdateStepsController */
   private $updateStepsController;
 
   public function __construct(
     Hooks $hooks,
     WorkflowStorage $storage,
+    WorkflowValidator $workflowValidator,
     UpdateStepsController $updateStepsController
   ) {
     $this->hooks = $hooks;
     $this->storage = $storage;
+    $this->workflowValidator = $workflowValidator;
     $this->updateStepsController = $updateStepsController;
   }
 
   public function updateWorkflow(int $id, array $data): Workflow {
-    // TODO: data & workflow validation (trigger existence, graph consistency, etc.)
-    // TODO: new revisions when content is changed
-    // TODO: validation when status being is changed
-
     $workflow = $this->storage->getWorkflow($id);
     if (!$workflow) {
       throw Exceptions::workflowNotFound($id);
@@ -58,6 +60,8 @@ class UpdateWorkflowController {
     }
 
     $this->hooks->doWorkflowBeforeSave($workflow);
+
+    $this->workflowValidator->validate($workflow);
     $this->storage->updateWorkflow($workflow);
 
     $workflow = $this->storage->getWorkflow($id);
