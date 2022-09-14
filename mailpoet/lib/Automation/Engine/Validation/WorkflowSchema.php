@@ -18,7 +18,7 @@ class WorkflowSchema {
 
   public static function getStepsSchema(): ObjectSchema {
     return Builder::object()
-      ->properties(['root' => self::getRootStepSchema()])
+      ->properties(['root' => self::getRootStepSchema()->required()])
       ->additionalProperties(self::getStepSchema());
   }
 
