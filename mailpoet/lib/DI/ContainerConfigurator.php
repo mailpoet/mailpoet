@@ -129,6 +129,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Automation\Engine\Storage\WorkflowTemplateStorage::class)->setPublic(true);
     $container->autowire(\MailPoet\Automation\Engine\Storage\WorkflowStorage::class)->setPublic(true);
     $container->autowire(\MailPoet\Automation\Engine\Validation\WorkflowGraph\WorkflowWalker::class)->setPublic(true);
+    $container->autowire(\MailPoet\Automation\Engine\Validation\WorkflowValidator::class)->setPublic(true);
     $container->autowire(\MailPoet\Automation\Engine\WordPress::class)->setPublic(true);
     // Automation - API endpoints
     $container->autowire(\MailPoet\Automation\Engine\Endpoints\Workflows\WorkflowsGetEndpoint::class)->setPublic(true);
