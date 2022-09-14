@@ -58,7 +58,7 @@ export function FromScratchButton(): JSX.Element {
           <p>{error}</p>
         </Notice>
       )}
-      <Button variant="primary" onClick={() => onClickScratchButton()}>
+      <Button variant="secondary" onClick={() => onClickScratchButton()}>
         {__('From scratch', 'mailpoet')}
       </Button>
       <FromScratchPremiumModal
