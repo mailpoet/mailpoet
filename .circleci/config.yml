@@ -349,6 +349,9 @@ jobs:
       enable_cot_sync:
         type: integer
         default: 0
+      allow_fail:
+        type: integer
+        default: 0
     environment:
       MYSQL_COMMAND: << parameters.mysql_command >>
       MYSQL_IMAGE_VERSION: << parameters.mysql_image_version >>
@@ -420,6 +423,9 @@ jobs:
             if [[ -n '<< parameters.group >>' ]]; then
               args+=(--group << parameters.group >>)
             fi
+            if [[ << parameters.allow_fail >> == 1 ]]; then
+              args+=(--no-exit)
+            fi
             docker-compose run -e SKIP_DEPS=1 \
             -e CIRCLE_BRANCH=${CIRCLE_BRANCH} \
             -e CIRCLE_JOB=${CIRCLE_JOB} \
@@ -427,13 +433,18 @@ jobs:
             -e ENABLE_COT=<< parameters.enable_cot >> \
             -e ENABLE_COT_SYNC=<< parameters.enable_cot_sync >> \
             codeception_acceptance "${args[@]}"
-      - run:
-          name: Check exceptions
-          command: |
-            if [ "$(ls tests/_output/exceptions/*.html)" ]; then
-              echo "There were some exceptions during the tests run"
-              exit 1
-            fi
+      - when:
+          condition:
+            not:
+              equal: [1, << parameters.allow_fail >>]
+          steps:
+            - run:
+                name: Check exceptions
+                command: |
+                  if [ "$(ls tests/_output/exceptions/*.html)" ]; then
+                    echo "There were some exceptions during the tests run"
+                    exit 1
+                  fi
       - store_artifacts:
           path: tests/_output
       - store_test_results:
@@ -500,6 +511,9 @@ jobs:
       woo_core_version:
         type: string
         default: ''
+      allow_fail:
+        type: integer
+        default: 0
     steps:
       - attach_workspace:
           at: /home/circleci
@@ -532,6 +546,9 @@ jobs:
             fi
             if [[ -n '<< parameters.skip_group >>' ]]; then
               args+=(--skip-group << parameters.skip_group >>)
+            fi
+            if [[ << parameters.allow_fail >> == 1 ]]; then
+              args+=(--no-exit)
             fi
             docker-compose run -e SKIP_DEPS=1 \
               -e CIRCLE_BRANCH=${CIRCLE_BRANCH} \
@@ -662,6 +679,7 @@ workflows:
           group: woo
           enable_cot: 1
           enable_cot_sync: 1
+          allow_fail: 1
           woo_core_version: woo-cot-beta # Temporarily force COT beta version
           name: integration_test_woo_cot_sync
           requires:
