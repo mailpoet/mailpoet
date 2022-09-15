@@ -18,12 +18,12 @@ use MailPoet\Entities\NewsletterTemplateEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\StatisticsFormEntity;
+use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\UserFlagEntity;
 use MailPoet\Form\FormsRepository;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\Segment;
-use MailPoet\Models\Subscriber;
 use MailPoet\Referrals\ReferralDetector;
 use MailPoet\Segments\WP;
 use MailPoet\Services\Bridge;
@@ -591,20 +591,24 @@ class Populator {
 
   private function createSourceForSubscribers() {
     $statisticsFormTable = $this->entityManager->getClassMetadata(StatisticsFormEntity::class)->getTableName();
-    Subscriber::rawExecute(
-      ' UPDATE LOW_PRIORITY `' . Subscriber::$_table . '` subscriber ' .
+    $subscriberTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
+
+    $this->entityManager->getConnection()->executeStatement(
+      ' UPDATE LOW_PRIORITY `' . $subscriberTable . '` subscriber ' .
       ' JOIN `' . $statisticsFormTable . '` stats ON stats.subscriber_id=subscriber.id ' .
       ' SET `source` = "' . Source::FORM . '"' .
       ' WHERE `source` = "' . Source::UNKNOWN . '"'
     );
-    Subscriber::rawExecute(
-      'UPDATE LOW_PRIORITY `' . Subscriber::$_table . '`' .
+
+    $this->entityManager->getConnection()->executeStatement(
+      'UPDATE LOW_PRIORITY `' . $subscriberTable . '`' .
       ' SET `source` = "' . Source::WORDPRESS_USER . '"' .
       ' WHERE `source` = "' . Source::UNKNOWN . '"' .
       ' AND `wp_user_id` IS NOT NULL'
     );
-    Subscriber::rawExecute(
-      'UPDATE LOW_PRIORITY `' . Subscriber::$_table . '`' .
+
+    $this->entityManager->getConnection()->executeStatement(
+      'UPDATE LOW_PRIORITY `' . $subscriberTable . '`' .
       ' SET `source` = "' . Source::WOOCOMMERCE_USER . '"' .
       ' WHERE `source` = "' . Source::UNKNOWN . '"' .
       ' AND `is_woocommerce_user` = 1'
@@ -657,10 +661,10 @@ class Populator {
     if (version_compare((string)$this->settings->get('db_version', '3.42.1'), '3.42.0', '>')) {
       return false;
     }
-    $table = esc_sql(Subscriber::$_table);
+    $table = esc_sql($this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName());
     $query = $wpdb->prepare(
       "UPDATE `{$table}` SET last_subscribed_at = GREATEST(COALESCE(confirmed_at, 0), COALESCE(created_at, 0)) WHERE status != %s AND last_subscribed_at IS NULL;",
-      Subscriber::STATUS_UNCONFIRMED
+      SubscriberEntity::STATUS_UNCONFIRMED
     );
     $wpdb->query($query);
     return true;
