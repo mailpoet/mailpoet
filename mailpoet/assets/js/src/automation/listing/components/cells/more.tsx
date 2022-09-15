@@ -13,12 +13,6 @@ export function More({ workflow }: Props): JSX.Element {
       renderContent={() => (
         <div>
           <MenuItem onInvoke={() => {}}>
-            <p>{__('Rename automation', 'mailpoet')}</p>
-          </MenuItem>
-          <MenuItem onInvoke={() => {}}>
-            <p>{__('Statistics', 'mailpoet')}</p>
-          </MenuItem>
-          <MenuItem onInvoke={() => {}}>
             <p>{__('Duplicate', 'mailpoet')}</p>
           </MenuItem>
           <MenuItem onInvoke={() => {}}>
