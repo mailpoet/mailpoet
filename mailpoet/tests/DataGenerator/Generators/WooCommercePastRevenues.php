@@ -10,9 +10,9 @@ use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\StatisticsClickEntity;
+use MailPoet\Entities\StatisticsNewsletterEntity;
 use MailPoet\Entities\StatisticsOpenEntity;
 use MailPoet\Entities\SubscriberEntity;
-use MailPoet\Models\StatisticsNewsletters;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
 use MailPoet\Newsletter\Segment\NewsletterSegmentRepository;
@@ -402,7 +402,7 @@ class WooCommercePastRevenues implements Generator {
       $statsBatchData[] = "({$newsletter->getId()}, $subscriberId, {$queue->getId()}, '$sentAt')";
       if (count($statsBatchData) % 1000 === 0) {
         $connection->executeStatement(
-          "INSERT INTO " . StatisticsNewsletters::$_table . " (`newsletter_id`, `subscriber_id`, `queue_id`, `sent_at`) VALUES " . implode(', ', $statsBatchData)
+          "INSERT INTO " . $this->entityManager->getClassMetadata(StatisticsNewsletterEntity::class)->getTableName() . " (`newsletter_id`, `subscriber_id`, `queue_id`, `sent_at`) VALUES " . implode(', ', $statsBatchData)
         );
         $statsBatchData = [];
       }
@@ -415,7 +415,7 @@ class WooCommercePastRevenues implements Generator {
     }
     if ($statsBatchData) {
       $connection->executeStatement(
-        "INSERT INTO " . StatisticsNewsletters::$_table . " (`newsletter_id`, `subscriber_id`, `queue_id`, `sent_at`) VALUES " . implode(', ', $statsBatchData)
+        "INSERT INTO " . $this->entityManager->getClassMetadata(StatisticsNewsletterEntity::class)->getTableName() . " (`newsletter_id`, `subscriber_id`, `queue_id`, `sent_at`) VALUES " . implode(', ', $statsBatchData)
       );
     }
 
