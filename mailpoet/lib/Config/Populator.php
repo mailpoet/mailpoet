@@ -22,8 +22,8 @@ use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\UserFlagEntity;
 use MailPoet\Form\FormsRepository;
 use MailPoet\Mailer\MailerLog;
-use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\Segment;
+use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Referrals\ReferralDetector;
 use MailPoet\Segments\WP;
 use MailPoet\Services\Bridge;
@@ -59,6 +59,8 @@ class Populator {
   private $wpSegment;
   /** @var EntityManager */
   private $entityManager;
+  /** @var ScheduledTasksRepository */
+  private $scheduledTasksRepository;
 
   public function __construct(
     SettingsController $settings,
@@ -67,7 +69,8 @@ class Populator {
     ReferralDetector $referralDetector,
     FormsRepository $formsRepository,
     EntityManager $entityManager,
-    WP $wpSegment
+    WP $wpSegment,
+    ScheduledTasksRepository $scheduledTasksRepository
   ) {
     $this->settings = $settings;
     $this->wp = $wp;
@@ -159,6 +162,7 @@ class Populator {
     ];
     $this->formsRepository = $formsRepository;
     $this->entityManager = $entityManager;
+    $this->scheduledTasksRepository = $scheduledTasksRepository;
   }
 
   public function up() {
@@ -621,8 +625,9 @@ class Populator {
     if (version_compare((string)$this->settings->get('db_version', '3.26.1'), '3.26.0', '>')) {
       return false;
     }
+    $scheduledTaskTable = $this->entityManager->getClassMetadata(ScheduledTaskEntity::class)->getTableName();
     $sendingQueueTable = $this->entityManager->getClassMetadata(SendingQueueEntity::class)->getTableName();
-    $tables = [ScheduledTask::$_table, $sendingQueueTable];
+    $tables = [$scheduledTaskTable, $sendingQueueTable];
     foreach ($tables as $table) {
       $wpdb->query("UPDATE `" . esc_sql($table) . "` SET meta = NULL WHERE meta = 'null'");
     }
@@ -685,20 +690,28 @@ class Populator {
   }
 
   private function scheduleTask($type, $datetime, $priority = null) {
-    $task = ScheduledTask::where('type', $type)
-      ->whereRaw('(status = ? OR status IS NULL)', [ScheduledTask::STATUS_SCHEDULED])
-      ->findOne();
+    $task = $this->scheduledTasksRepository->findOneBy(
+      [
+        'type' => $type,
+        'status' => [ScheduledTaskEntity::STATUS_SCHEDULED, null],
+      ]
+    );
+
     if ($task) {
       return true;
     }
-    $task = ScheduledTask::create();
-    $task->type = $type;
+
+    $task = new ScheduledTaskEntity();
+    $task->setType($type);
+    $task->setStatus(ScheduledTaskEntity::STATUS_SCHEDULED);
+    $task->setScheduledAt($datetime);
+
     if ($priority !== null) {
-      $task->priority = $priority;
+      $task->setPriority($priority);
     }
-    $task->status = ScheduledTask::STATUS_SCHEDULED;
-    $task->scheduledAt = $datetime;
-    $task->save();
+
+    $this->scheduledTasksRepository->persist($task);
+    $this->scheduledTasksRepository->flush();
   }
 
   private function enableStatsNotificationsForAutomatedEmails() {

@@ -32,15 +32,7 @@ class SetupTest extends \MailPoetTest {
     $settings = SettingsController::getInstance();
     $referralDetector = new ReferralDetector($wpStub, $settings);
     $subscriptionCaptcha = $this->diContainer->get(Captcha::class);
-    $populator = new Populator(
-      $settings,
-      $wpStub,
-      $subscriptionCaptcha,
-      $referralDetector,
-      $this->diContainer->get(FormsRepository::class),
-      $this->entityManager,
-      $this->diContainer->get(WP::class)
-    );
+    $populator = $this->getServiceWithOverrides(Populator::class, ['wp' => $wpStub, 'referralDetector' => $referralDetector]);
     $migrator = $this->diContainer->get(Migrator::class);
     $router = new Setup($wpStub, new Activator($settings, $populator, $wpStub, $migrator));
     $response = $router->reset();
