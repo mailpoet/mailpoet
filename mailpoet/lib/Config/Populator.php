@@ -21,7 +21,6 @@ use MailPoet\Entities\StatisticsFormEntity;
 use MailPoet\Entities\UserFlagEntity;
 use MailPoet\Form\FormsRepository;
 use MailPoet\Mailer\MailerLog;
-use MailPoet\Models\Newsletter;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\Segment;
 use MailPoet\Models\SendingQueue;
@@ -891,7 +890,7 @@ class Populator {
       )
     );
     if ($premiumTableExists) {
-      $table = esc_sql(Newsletter::$_table);
+      $table = esc_sql($this->entityManager->getClassMetadata(NewsletterEntity::class)->getTableName());
       $query = "
         UPDATE
           `{$table}` as n
