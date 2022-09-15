@@ -7,11 +7,11 @@ use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterLinkEntity;
 use MailPoet\Entities\NewsletterSegmentEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\StatisticsClickEntity;
 use MailPoet\Entities\StatisticsOpenEntity;
 use MailPoet\Entities\SubscriberEntity;
-use MailPoet\Models\ScheduledTaskSubscriber;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\StatisticsNewsletters;
 use MailPoet\Models\Subscriber;
@@ -299,7 +299,7 @@ class WooCommercePastRevenues implements Generator {
     $connection->executeStatement("ALTER TABLE `" . SubscriberSegment::$_table . "` DISABLE KEYS");
     $connection->executeStatement("ALTER TABLE `" . $this->entityManager->getClassMetadata(NewsletterLinkEntity::class)->getTableName() . "` DISABLE KEYS");
     $connection->executeStatement("ALTER TABLE `" . $this->entityManager->getClassMetadata(ScheduledTaskEntity::class)->getTableName() . "` DISABLE KEYS");
-    $connection->executeStatement("ALTER TABLE `" . ScheduledTaskSubscriber::$_table . "` DISABLE KEYS");
+    $connection->executeStatement("ALTER TABLE `" . $this->entityManager->getClassMetadata(ScheduledTaskSubscriberEntity::class)->getTableName() . "` DISABLE KEYS");
     $connection->executeStatement("ALTER TABLE `" . SendingQueue::$_table . "` DISABLE KEYS");
     $connection->executeStatement("ALTER TABLE `" . $this->entityManager->getClassMetadata(StatisticsOpenEntity::class)->getTableName() . "` DISABLE KEYS");
     $connection->executeStatement("ALTER TABLE `" . $this->entityManager->getClassMetadata(StatisticsClickEntity::class)->getTableName() . "` DISABLE KEYS");
@@ -323,7 +323,7 @@ class WooCommercePastRevenues implements Generator {
     $connection->executeStatement("ALTER TABLE `" . SubscriberSegment::$_table . "` ENABLE KEYS");
     $connection->executeStatement("ALTER TABLE `" . $this->entityManager->getClassMetadata(NewsletterLinkEntity::class)->getTableName() . "` ENABLE KEYS");
     $connection->executeStatement("ALTER TABLE `" . $this->entityManager->getClassMetadata(ScheduledTaskEntity::class)->getTableName() . "` ENABLE KEYS");
-    $connection->executeStatement("ALTER TABLE `" . ScheduledTaskSubscriber::$_table . "` ENABLE KEYS");
+    $connection->executeStatement("ALTER TABLE `" . $this->entityManager->getClassMetadata(ScheduledTaskSubscriberEntity::class)->getTableName() . "` ENABLE KEYS");
     $connection->executeStatement("ALTER TABLE `" . SendingQueue::$_table . "` ENABLE KEYS");
     $connection->executeStatement("ALTER TABLE `" . $this->entityManager->getClassMetadata(StatisticsOpenEntity::class)->getTableName() . "` ENABLE KEYS");
     $connection->executeStatement("ALTER TABLE `" . $this->entityManager->getClassMetadata(StatisticsClickEntity::class)->getTableName() . "` ENABLE KEYS");
@@ -391,7 +391,7 @@ class WooCommercePastRevenues implements Generator {
       $batchData[] = "({$task->getId()}, $subscriberId, 1, '$sentAt')";
       if (count($batchData) % 1000 === 0) {
         $connection->executeStatement(
-          "INSERT INTO " . ScheduledTaskSubscriber::$_table . " (`task_id`, `subscriber_id`, `processed`, `created_at`) VALUES " . implode(', ', $batchData)
+          "INSERT INTO " . $this->entityManager->getClassMetadata(ScheduledTaskSubscriberEntity::class)->getTableName() . " (`task_id`, `subscriber_id`, `processed`, `created_at`) VALUES " . implode(', ', $batchData)
         );
         $batchData = [];
       }
@@ -406,7 +406,7 @@ class WooCommercePastRevenues implements Generator {
 
     if ($batchData) {
       $connection->executeStatement(
-        "INSERT INTO " . ScheduledTaskSubscriber::$_table . " (`task_id`, `subscriber_id`, `processed`, `created_at`) VALUES " . implode(', ', $batchData)
+        "INSERT INTO " . $this->entityManager->getClassMetadata(ScheduledTaskSubscriberEntity::class)->getTableName() . " (`task_id`, `subscriber_id`, `processed`, `created_at`) VALUES " . implode(', ', $batchData)
       );
     }
     if ($statsBatchData) {
