@@ -80,13 +80,16 @@ class Helper {
     return wc_hex_is_light($color);
   }
 
-  public function getOrdersCountCreatedBefore($dateTime) {
-    global $wpdb;
-    $result = $wpdb->get_var($wpdb->prepare("
-        SELECT DISTINCT count(p.ID) FROM {$wpdb->prefix}posts as p
-        WHERE p.post_type = 'shop_order' AND p.post_date < %s
-    ", $dateTime));
-    return (int)$result;
+  public function getOrdersCountCreatedBefore(string $dateTime): int {
+    $ordersCount = $this->wcGetOrders([
+      'status' => 'all',
+      'type' => 'shop_order',
+      'date_created' => '<' . $dateTime,
+      'limit' => 1,
+      'paginate' => true,
+    ])->total;
+
+    return $ordersCount;
   }
 
   public function getRawPrice($price, array $args = []) {
