@@ -16,15 +16,16 @@ use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterLinkEntity;
 use MailPoet\Entities\NewsletterTemplateEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\StatisticsFormEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\UserFlagEntity;
 use MailPoet\Form\FormsRepository;
 use MailPoet\Mailer\MailerLog;
-use MailPoet\Models\Segment;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Referrals\ReferralDetector;
+use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Segments\WP;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\Pages;
@@ -61,6 +62,8 @@ class Populator {
   private $entityManager;
   /** @var ScheduledTasksRepository */
   private $scheduledTasksRepository;
+  /** @var SegmentsRepository */
+  private $segmentsRepository;
 
   public function __construct(
     SettingsController $settings,
@@ -70,7 +73,8 @@ class Populator {
     FormsRepository $formsRepository,
     EntityManager $entityManager,
     WP $wpSegment,
-    ScheduledTasksRepository $scheduledTasksRepository
+    ScheduledTasksRepository $scheduledTasksRepository,
+    SegmentsRepository $segmentsRepository
   ) {
     $this->settings = $settings;
     $this->wp = $wp;
@@ -163,6 +167,7 @@ class Populator {
     $this->formsRepository = $formsRepository;
     $this->entityManager = $entityManager;
     $this->scheduledTasksRepository = $scheduledTasksRepository;
+    $this->segmentsRepository = $segmentsRepository;
   }
 
   public function up() {
@@ -361,25 +366,29 @@ class Populator {
 
   private function createDefaultSegment() {
     // WP Users segment
-    Segment::getWPSegment();
+    $this->segmentsRepository->getWPUsersSegment();
     // WooCommerce customers segment
-    Segment::getWooCommerceSegment();
+    $this->segmentsRepository->getWooCommerceSegment();
 
     // Synchronize WP Users
     $this->wpSegment->synchronizeUsers();
 
     // Default segment
-    $defaultSegment = Segment::where('type', 'default')->orderByAsc('id')->limit(1)->findOne();
-    if (!$defaultSegment instanceof Segment) {
-      $defaultSegment = Segment::create();
-      $newList = [
-        'name' => __('Newsletter mailing list', 'mailpoet'),
-        'description' =>
-          __('This list is automatically created when you install MailPoet.', 'mailpoet'),
-      ];
-      $defaultSegment->hydrate($newList);
-      $defaultSegment->save();
+    $defaultSegment = $this->segmentsRepository->findOneBy(
+      ['type' => 'default'],
+      ['id' => 'ASC']
+    );
+
+    if (!$defaultSegment instanceof SegmentEntity) {
+      $defaultSegment = new SegmentEntity(
+        __('Newsletter mailing list', 'mailpoet'),
+        SegmentEntity::TYPE_DEFAULT,
+        __('This list is automatically created when you install MailPoet.', 'mailpoet')
+      );
+      $this->segmentsRepository->persist($defaultSegment);
+      $this->segmentsRepository->flush();
     }
+
     return $defaultSegment;
   }
 
