@@ -2,6 +2,7 @@
 
 namespace MailPoet\Automation\Engine;
 
+use MailPoet\Automation\Engine\Data\Step;
 use MailPoet\Automation\Engine\Exceptions\InvalidStateException;
 use MailPoet\Automation\Engine\Exceptions\NotFoundException;
 use MailPoet\Automation\Engine\Exceptions\UnexpectedValueException;
@@ -24,6 +25,7 @@ class Exceptions {
   private const MULTIPLE_SUBJECTS_FOUND = 'mailpoet_automation_multiple_subjects_found';
   private const WORKFLOW_STRUCTURE_MODIFICATION_NOT_SUPPORTED = 'mailpoet_automation_workflow_structure_modification_not_supported';
   private const WORKFLOW_STRUCTURE_NOT_VALID = 'mailpoet_automation_workflow_structure_not_valid';
+  private const WORKFLOW_STEP_MODIFIED_WHEN_UNKNOWN = 'mailpoet_automation_workflow_step_modified_when_unknon';
 
   public function __construct() {
     throw new InvalidStateException(
@@ -146,5 +148,19 @@ class Exceptions {
       ->withErrorCode(self::WORKFLOW_STRUCTURE_NOT_VALID)
       // translators: %s is a detailed information
       ->withMessage(sprintf(__("Invalid workflow structure: %s", 'mailpoet'), $detail));
+  }
+
+  public static function workflowStepModifiedWhenUnknown(Step $step): UnexpectedValueException {
+    return UnexpectedValueException::create()
+      ->withErrorCode(self::WORKFLOW_STEP_MODIFIED_WHEN_UNKNOWN)
+      // translators: %1$s is the key of the step, %2$s is the type of the step, %3\$s is its ID.
+      ->withMessage(
+        sprintf(
+          __("Modification of step '%1\$s' of type '%2\$s' with ID '%3\$s' is not supported when the related plugin is not active.", 'mailpoet'),
+          $step->getKey(),
+          $step->getType(),
+          $step->getId()
+        )
+      );
   }
 }

@@ -13,16 +13,22 @@ use MailPoet\Automation\Engine\Validation\WorkflowRules\NoUnreachableStepsRule;
 use MailPoet\Automation\Engine\Validation\WorkflowRules\TriggersUnderRootRule;
 
 class WorkflowValidator {
+  /** @var WorkflowStepsValidator */
+  private $stepsValidator;
+
   /** @var WorkflowWalker */
   private $workflowWalker;
 
   public function __construct(
+    WorkflowStepsValidator $stepsValidator,
     WorkflowWalker $workflowWalker
   ) {
     $this->workflowWalker = $workflowWalker;
+    $this->stepsValidator = $stepsValidator;
   }
 
   public function validate(Workflow $workflow): void {
+    // validate graph
     $this->workflowWalker->walk($workflow, [
       new NoUnreachableStepsRule(),
       new ConsistentStepMapRule(),
@@ -32,5 +38,8 @@ class WorkflowValidator {
       new NoJoinRule(),
       new NoSplitRule(),
     ]);
+
+    // validate steps
+    $this->stepsValidator->validateSteps($workflow);
   }
 }
