@@ -5,17 +5,19 @@ namespace MailPoet\Test\DataGenerator\Generators;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterLinkEntity;
+use MailPoet\Entities\NewsletterSegmentEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\StatisticsClickEntity;
 use MailPoet\Entities\StatisticsOpenEntity;
 use MailPoet\Entities\SubscriberEntity;
-use MailPoet\Models\NewsletterSegment;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\ScheduledTaskSubscriber;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\StatisticsNewsletters;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
+use MailPoet\Newsletter\Segment\NewsletterSegmentRepository;
+use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Tasks\Sending;
 use MailPoet\Test\DataFactories\Newsletter;
 use MailPoet\Test\DataFactories\Segment;
@@ -38,8 +40,16 @@ class WooCommercePastRevenues implements Generator {
   /** @var EntityManager */
   private $entityManager;
 
+  /** @var SegmentsRepository */
+  private $segmentsRepository;
+
+  /** @var NewsletterSegmentRepository */
+  private $newsletterSegmentRepository;
+
   public function __construct() {
     $this->entityManager = ContainerWrapper::getInstance()->get(EntityManager::class);
+    $this->segmentsRepository = ContainerWrapper::getInstance()->get(SegmentsRepository::class);
+    $this->newsletterSegmentRepository = ContainerWrapper::getInstance()->get(NewsletterSegmentRepository::class);
   }
 
   public function generate() {
@@ -401,9 +411,16 @@ class WooCommercePastRevenues implements Generator {
       ->create();
 
     // Newsletter segment
-    NewsletterSegment::createOrUpdate(['newsletter_id' => $newsletter->getId(), 'segment_id' => $segmentId])->save();
+    $segment = $this->segmentsRepository->findOneById($segmentId);
+    $newsletterSegment = $this->newsletterSegmentRepository->findOneBy(['newsletter' => $newsletter, 'segment' => $segment]);
 
-    $this->entityManager->refresh($newsletter);
+    if (!$newsletterSegment instanceof NewsletterSegmentEntity) {
+      $newsletterSegment = new NewsletterSegmentEntity($newsletter, $segment);
+      $this->segmentsRepository->persist($newsletterSegment);
+      $this->segmentsRepository->flush();
+
+      $this->entityManager->refresh($newsletter);
+    }
 
     if ($newsletter->getStatus() === \MailPoet\Models\Newsletter::STATUS_DRAFT) {
       $newsletter->setStatus(\MailPoet\Models\Newsletter::STATUS_SENT);
