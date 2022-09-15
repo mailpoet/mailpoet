@@ -21,6 +21,7 @@ use MailPoet\Tasks\Sending;
 use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
 use MailPoet\Test\DataFactories\NewsletterOption as NewsletterOptionFactory;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
+use MailPoet\WooCommerce\Helper;
 use MailPoet\WooCommerce\Helper as WCHelper;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -45,12 +46,16 @@ class FirstPurchaseTest extends \MailPoetTest {
   /** @var SendingQueuesRepository */
   private $sendingQueueRepository;
 
+  /** @var Helper */
+  private $wooCommerceHelper;
+
   public function _before() {
     $this->newsletterFactory = new NewsletterFactory();
     $this->newsletterOptionFactory = new NewsletterOptionFactory();
     $this->scheduledTasksRepository = $this->diContainer->get(ScheduledTasksRepository::class);
     $this->segmentsRepository = $this->diContainer->get(SegmentsRepository::class);
     $this->sendingQueueRepository = $this->diContainer->get(SendingQueuesRepository::class);
+    $this->wooCommerceHelper = $this->diContainer->get(Helper::class);
     WPFunctions::get()->removeAllFilters('mailpoet_newsletter_shortcode');
   }
 
@@ -217,6 +222,39 @@ class FirstPurchaseTest extends \MailPoetTest {
     expect($result)->isEmpty();
   }
 
+  public function testItScheduleEmailForGuestCustomer() {
+    $newsletter = $this->createWooCommerceEmail();
+    $customerEmail = 'guest_customer@example.com';
+    $subscriber = (new SubscriberFactory())->withEmail($customerEmail)
+      ->withIsWooCommerceUser()
+      ->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)
+      ->create();
+    $subscriberSegment = new SubscriberSegmentEntity(
+      $this->segmentsRepository->getWooCommerceSegment(),
+      $subscriber,
+      SubscriberEntity::STATUS_SUBSCRIBED
+    );
+    $this->entityManager->persist($subscriberSegment);
+    $this->entityManager->flush();
+    $this->tester->createWooCommerceOrder();
+    $order = $this->tester->createWooCommerceOrder(['billing_email' => $customerEmail]);
+    $orderDate = $order->get_date_created();
+    $this->assertInstanceOf(\WC_DateTime::class, $orderDate);
+
+    $event = new FirstPurchase($this->wooCommerceHelper);
+    $result = $event->scheduleEmailWhenOrderIsPlaced($order->get_id());
+    expect($result)->isEmpty();
+
+    $sendingQueue = $this->sendingQueueRepository->findOneBy(['newsletter' => $newsletter]);
+    $this->assertInstanceOf(SendingQueueEntity::class, $sendingQueue);
+    $meta = $sendingQueue->getMeta();
+    expect($meta)->equals([
+      'order_amount' => $order->get_total(),
+      'order_date' => $orderDate->getTimestamp(),
+      'order_id' => $order->get_id(),
+    ]);
+  }
+
   public function testItSchedulesEmailForProcessingOrder() {
     WPFunctions::get()->removeAllFilters('woocommerce_order_status_processing');
     $this->_runTestItSchedulesEmailForState('processing');
@@ -238,18 +276,7 @@ class FirstPurchaseTest extends \MailPoetTest {
   }
 
   public function _runTestItSchedulesEmailForState($orderState) {
-    $newsletter = $this->newsletterFactory
-      ->withSubject('WooCommerce')
-      ->withType(NewsletterEntity::TYPE_AUTOMATIC)
-      ->withActiveStatus()
-      ->create();
-    $this->newsletterOptionFactory->createMultipleOptions($newsletter, [
-      'group' => WooCommerce::SLUG,
-      'event' => FirstPurchase::SLUG,
-      'afterTimeType' => 'days',
-      'afterTimeNumber' => 1,
-      'sendTo' => 'user',
-    ]);
+    $newsletter = $this->createWooCommerceEmail();
     $customerEmail = 'test@example.com';
     $subscriber = (new SubscriberFactory())->withEmail($customerEmail)
       ->withIsWooCommerceUser()
@@ -305,6 +332,23 @@ class FirstPurchaseTest extends \MailPoetTest {
     return $orderId;
   }
 
+  private function createWooCommerceEmail(): NewsletterEntity {
+    $newsletter = $this->newsletterFactory
+      ->withSubject('WooCommerce')
+      ->withType(NewsletterEntity::TYPE_AUTOMATIC)
+      ->withActiveStatus()
+      ->create();
+    $this->newsletterOptionFactory->createMultipleOptions($newsletter, [
+      'group' => WooCommerce::SLUG,
+      'event' => FirstPurchase::SLUG,
+      'afterTimeType' => 'days',
+      'afterTimeNumber' => 1,
+      'sendTo' => 'user',
+    ]);
+
+    return $newsletter;
+  }
+
   private function createSendingQueue(NewsletterEntity $newsletter, array $meta = []): SendingQueueEntity {
     $task = new ScheduledTaskEntity();
     $this->entityManager->persist($task);
@@ -320,6 +364,7 @@ class FirstPurchaseTest extends \MailPoetTest {
   }
 
   public function _after() {
+    $this->tester->deleteTestWooOrders();
     $this->truncateEntity(NewsletterEntity::class);
     $this->truncateEntity(NewsletterOptionEntity::class);
     $this->truncateEntity(NewsletterOptionFieldEntity::class);
