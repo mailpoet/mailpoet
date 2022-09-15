@@ -13,7 +13,6 @@ use MailPoet\Entities\StatisticsClickEntity;
 use MailPoet\Entities\StatisticsNewsletterEntity;
 use MailPoet\Entities\StatisticsOpenEntity;
 use MailPoet\Entities\SubscriberEntity;
-use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
 use MailPoet\Newsletter\Segment\NewsletterSegmentRepository;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
@@ -78,8 +77,8 @@ class WooCommercePastRevenues implements Generator {
     for ($i = 1; $i <= self::SUBSCRIBERS_COUNT; $i++) {
       $email = $this->getRandomString() . "address$i@email.com";
       $subscriber = $this->createSubscriber($email, "last_name_$i", $minimalCreatedAtDate, $subscribersList);
-      $subscribersIds[] = $subscriber->id;
-      $subscriberEmails[$subscriber->id] = $email;
+      $subscribersIds[] = $subscriber->getId();
+      $subscriberEmails[$subscriber->getId()] = $email;
       $batchLog = $this->getBatchLog('Subscribers', count($subscribersIds));
       if ($batchLog) {
         yield $batchLog;
@@ -299,7 +298,7 @@ class WooCommercePastRevenues implements Generator {
     $prefix = $wpdb->prefix;
     $connection->executeStatement("ALTER TABLE `{$prefix}posts` DISABLE KEYS");
     $connection->executeStatement("ALTER TABLE `{$prefix}postmeta` DISABLE KEYS");
-    $connection->executeStatement("ALTER TABLE `" . Subscriber::$_table . "` DISABLE KEYS");
+    $connection->executeStatement("ALTER TABLE `" . $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName() . "` DISABLE KEYS");
     $connection->executeStatement("ALTER TABLE `" . SubscriberSegment::$_table . "` DISABLE KEYS");
     $connection->executeStatement("ALTER TABLE `" . $this->entityManager->getClassMetadata(NewsletterLinkEntity::class)->getTableName() . "` DISABLE KEYS");
     $connection->executeStatement("ALTER TABLE `" . $this->entityManager->getClassMetadata(ScheduledTaskEntity::class)->getTableName() . "` DISABLE KEYS");
@@ -323,7 +322,7 @@ class WooCommercePastRevenues implements Generator {
     $prefix = $wpdb->prefix;
     $connection->executeStatement("ALTER TABLE `{$prefix}posts` ENABLE KEYS");
     $connection->executeStatement("ALTER TABLE `{$prefix}postmeta` DISABLE KEYS");
-    $connection->executeStatement("ALTER TABLE `" . Subscriber::$_table . "` ENABLE KEYS");
+    $connection->executeStatement("ALTER TABLE `" . $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName() . "` ENABLE KEYS");
     $connection->executeStatement("ALTER TABLE `" . SubscriberSegment::$_table . "` ENABLE KEYS");
     $connection->executeStatement("ALTER TABLE `" . $this->entityManager->getClassMetadata(NewsletterLinkEntity::class)->getTableName() . "` ENABLE KEYS");
     $connection->executeStatement("ALTER TABLE `" . $this->entityManager->getClassMetadata(ScheduledTaskEntity::class)->getTableName() . "` ENABLE KEYS");
@@ -334,15 +333,15 @@ class WooCommercePastRevenues implements Generator {
     $connection->executeStatement("SET UNIQUE_CHECKS = 1;");
   }
 
-  private function createSubscriber($email, $lastName, $createdAtDate, \MailPoet\Models\Segment $segment, $status = Subscriber::STATUS_SUBSCRIBED) {
-    $subscriber = Subscriber::createOrUpdate([
-      'email' => $email,
-      'status' => $status,
-      'last_name' => $lastName,
-      'created_at' => $createdAtDate,
-    ]);
-    $subscriber->save();
-    $segment->addSubscriber($subscriber->id);
+  private function createSubscriber(string $email, string $lastName, string $createdAtDate, \MailPoet\Models\Segment $segment, $status = SubscriberEntity::STATUS_SUBSCRIBED) {
+    $subscriber = new SubscriberEntity();
+    $subscriber->setEmail($email);
+    $subscriber->setStatus($status);
+    $subscriber->setLastName($lastName);
+    $subscriber->setCreatedAt(new Carbon($createdAtDate));
+    $this->entityManager->persist($subscriber);
+    $this->entityManager->flush();
+    $segment->addSubscriber($subscriber->getId());
     return $subscriber;
   }
 
