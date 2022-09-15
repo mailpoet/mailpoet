@@ -435,8 +435,8 @@ class WooCommercePastRevenues implements Generator {
       $this->entityManager->refresh($newsletter);
     }
 
-    if ($newsletter->getStatus() === \MailPoet\Models\Newsletter::STATUS_DRAFT) {
-      $newsletter->setStatus(\MailPoet\Models\Newsletter::STATUS_SENT);
+    if ($newsletter->getStatus() === NewsletterEntity::STATUS_DRAFT) {
+      $newsletter->setStatus(NewsletterEntity::STATUS_SENT);
       $newsletter->setSentAt(Carbon::createFromFormat('Y-m-d H:i:s', $sentAt));
       $this->entityManager->flush();
     }
