@@ -23,7 +23,6 @@ use MailPoet\Form\FormsRepository;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\Segment;
-use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Subscriber;
 use MailPoet\Referrals\ReferralDetector;
 use MailPoet\Segments\WP;
@@ -618,7 +617,8 @@ class Populator {
     if (version_compare((string)$this->settings->get('db_version', '3.26.1'), '3.26.0', '>')) {
       return false;
     }
-    $tables = [ScheduledTask::$_table, SendingQueue::$_table];
+    $sendingQueueTable = $this->entityManager->getClassMetadata(SendingQueueEntity::class)->getTableName();
+    $tables = [ScheduledTask::$_table, $sendingQueueTable];
     foreach ($tables as $table) {
       $wpdb->query("UPDATE `" . esc_sql($table) . "` SET meta = NULL WHERE meta = 'null'");
     }
