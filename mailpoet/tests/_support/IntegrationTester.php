@@ -58,6 +58,10 @@ class IntegrationTester extends \Codeception\Actor {
       $order->set_date_created($data['date_created']);
     }
 
+    if (isset($data['billing_email'])) {
+      $order->set_billing_email($data['billing_email']);
+    }
+
     $order->save();
 
     $this->wooOrderIds[] = $order->get_id();
