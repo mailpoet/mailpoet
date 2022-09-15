@@ -50,9 +50,16 @@ class IntegrationTester extends \Codeception\Actor {
     }
   }
 
-  public function createWooCommerceOrder(): \WC_Order {
+  public function createWooCommerceOrder(array $data = []): \WC_Order {
     $helper = ContainerWrapper::getInstance()->get(Helper::class);
     $order = $helper->wcCreateOrder([]);
+
+    if (isset($data['date_created'])) {
+      $order->set_date_created($data['date_created']);
+    }
+
+    $order->save();
+
     $this->wooOrderIds[] = $order->get_id();
 
     return $order;
