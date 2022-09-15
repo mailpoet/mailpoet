@@ -6,24 +6,24 @@ use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterLinkEntity;
 use MailPoet\Entities\NewsletterSegmentEntity;
+use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\StatisticsClickEntity;
 use MailPoet\Entities\StatisticsOpenEntity;
 use MailPoet\Entities\SubscriberEntity;
-use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\ScheduledTaskSubscriber;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\StatisticsNewsletters;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
 use MailPoet\Newsletter\Segment\NewsletterSegmentRepository;
+use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Tasks\Sending;
 use MailPoet\Test\DataFactories\Newsletter;
 use MailPoet\Test\DataFactories\Segment;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
-use MailPoetVendor\Idiorm\ORM;
 
 class WooCommercePastRevenues implements Generator {
   // Date range
@@ -46,10 +46,14 @@ class WooCommercePastRevenues implements Generator {
   /** @var NewsletterSegmentRepository */
   private $newsletterSegmentRepository;
 
+  /** @var ScheduledTasksRepository */
+  private $scheduledTasksRepository;
+
   public function __construct() {
     $this->entityManager = ContainerWrapper::getInstance()->get(EntityManager::class);
     $this->segmentsRepository = ContainerWrapper::getInstance()->get(SegmentsRepository::class);
     $this->newsletterSegmentRepository = ContainerWrapper::getInstance()->get(NewsletterSegmentRepository::class);
+    $this->scheduledTasksRepository = ContainerWrapper::getInstance()->get(ScheduledTasksRepository::class);
   }
 
   public function generate() {
@@ -278,8 +282,10 @@ class WooCommercePastRevenues implements Generator {
   }
 
   public function runBefore() {
+    $connection = $this->entityManager->getConnection();
+
     // Turn off CURRENT_TIMESTAMP to be able to save generated value
-    ORM::rawExecute(
+    $connection->executeStatement(
       "ALTER TABLE `" . $this->entityManager->getClassMetadata(StatisticsClickEntity::class)->getTableName() . "`
       CHANGE `updated_at` `updated_at` timestamp NULL;"
     );
@@ -287,21 +293,23 @@ class WooCommercePastRevenues implements Generator {
     // Disable keys
     global $wpdb;
     $prefix = $wpdb->prefix;
-    ORM::rawExecute("ALTER TABLE `{$prefix}posts` DISABLE KEYS");
-    ORM::rawExecute("ALTER TABLE `{$prefix}postmeta` DISABLE KEYS");
-    ORM::rawExecute("ALTER TABLE `" . Subscriber::$_table . "` DISABLE KEYS");
-    ORM::rawExecute("ALTER TABLE `" . SubscriberSegment::$_table . "` DISABLE KEYS");
-    ORM::rawExecute("ALTER TABLE `" . $this->entityManager->getClassMetadata(NewsletterLinkEntity::class)->getTableName() . "` DISABLE KEYS");
-    ORM::rawExecute("ALTER TABLE `" . ScheduledTask::$_table . "` DISABLE KEYS");
-    ORM::rawExecute("ALTER TABLE `" . ScheduledTaskSubscriber::$_table . "` DISABLE KEYS");
-    ORM::rawExecute("ALTER TABLE `" . SendingQueue::$_table . "` DISABLE KEYS");
-    ORM::rawExecute("ALTER TABLE `" . $this->entityManager->getClassMetadata(StatisticsOpenEntity::class)->getTableName() . "` DISABLE KEYS");
-    ORM::rawExecute("ALTER TABLE `" . $this->entityManager->getClassMetadata(StatisticsClickEntity::class)->getTableName() . "` DISABLE KEYS");
-    ORM::rawExecute("SET UNIQUE_CHECKS = 0;");
+    $connection->executeStatement("ALTER TABLE `{$prefix}posts` DISABLE KEYS");
+    $connection->executeStatement("ALTER TABLE `{$prefix}postmeta` DISABLE KEYS");
+    $connection->executeStatement("ALTER TABLE `" . Subscriber::$_table . "` DISABLE KEYS");
+    $connection->executeStatement("ALTER TABLE `" . SubscriberSegment::$_table . "` DISABLE KEYS");
+    $connection->executeStatement("ALTER TABLE `" . $this->entityManager->getClassMetadata(NewsletterLinkEntity::class)->getTableName() . "` DISABLE KEYS");
+    $connection->executeStatement("ALTER TABLE `" . $this->entityManager->getClassMetadata(ScheduledTaskEntity::class)->getTableName() . "` DISABLE KEYS");
+    $connection->executeStatement("ALTER TABLE `" . ScheduledTaskSubscriber::$_table . "` DISABLE KEYS");
+    $connection->executeStatement("ALTER TABLE `" . SendingQueue::$_table . "` DISABLE KEYS");
+    $connection->executeStatement("ALTER TABLE `" . $this->entityManager->getClassMetadata(StatisticsOpenEntity::class)->getTableName() . "` DISABLE KEYS");
+    $connection->executeStatement("ALTER TABLE `" . $this->entityManager->getClassMetadata(StatisticsClickEntity::class)->getTableName() . "` DISABLE KEYS");
+    $connection->executeStatement("SET UNIQUE_CHECKS = 0;");
   }
 
   public function runAfter() {
-    ORM::rawExecute(
+    $connection = $this->entityManager->getConnection();
+
+    $connection->executeStatement(
       "ALTER TABLE `" . $this->entityManager->getClassMetadata(StatisticsClickEntity::class)->getTableName() . "`
       CHANGE `updated_at` `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;"
     );
@@ -309,17 +317,17 @@ class WooCommercePastRevenues implements Generator {
     // Enable keys
     global $wpdb;
     $prefix = $wpdb->prefix;
-    ORM::rawExecute("ALTER TABLE `{$prefix}posts` ENABLE KEYS");
-    ORM::rawExecute("ALTER TABLE `{$prefix}postmeta` DISABLE KEYS");
-    ORM::rawExecute("ALTER TABLE `" . Subscriber::$_table . "` ENABLE KEYS");
-    ORM::rawExecute("ALTER TABLE `" . SubscriberSegment::$_table . "` ENABLE KEYS");
-    ORM::rawExecute("ALTER TABLE `" . $this->entityManager->getClassMetadata(NewsletterLinkEntity::class)->getTableName() . "` ENABLE KEYS");
-    ORM::rawExecute("ALTER TABLE `" . ScheduledTask::$_table . "` ENABLE KEYS");
-    ORM::rawExecute("ALTER TABLE `" . ScheduledTaskSubscriber::$_table . "` ENABLE KEYS");
-    ORM::rawExecute("ALTER TABLE `" . SendingQueue::$_table . "` ENABLE KEYS");
-    ORM::rawExecute("ALTER TABLE `" . $this->entityManager->getClassMetadata(StatisticsOpenEntity::class)->getTableName() . "` ENABLE KEYS");
-    ORM::rawExecute("ALTER TABLE `" . $this->entityManager->getClassMetadata(StatisticsClickEntity::class)->getTableName() . "` ENABLE KEYS");
-    ORM::rawExecute("SET UNIQUE_CHECKS = 1;");
+    $connection->executeStatement("ALTER TABLE `{$prefix}posts` ENABLE KEYS");
+    $connection->executeStatement("ALTER TABLE `{$prefix}postmeta` DISABLE KEYS");
+    $connection->executeStatement("ALTER TABLE `" . Subscriber::$_table . "` ENABLE KEYS");
+    $connection->executeStatement("ALTER TABLE `" . SubscriberSegment::$_table . "` ENABLE KEYS");
+    $connection->executeStatement("ALTER TABLE `" . $this->entityManager->getClassMetadata(NewsletterLinkEntity::class)->getTableName() . "` ENABLE KEYS");
+    $connection->executeStatement("ALTER TABLE `" . $this->entityManager->getClassMetadata(ScheduledTaskEntity::class)->getTableName() . "` ENABLE KEYS");
+    $connection->executeStatement("ALTER TABLE `" . ScheduledTaskSubscriber::$_table . "` ENABLE KEYS");
+    $connection->executeStatement("ALTER TABLE `" . SendingQueue::$_table . "` ENABLE KEYS");
+    $connection->executeStatement("ALTER TABLE `" . $this->entityManager->getClassMetadata(StatisticsOpenEntity::class)->getTableName() . "` ENABLE KEYS");
+    $connection->executeStatement("ALTER TABLE `" . $this->entityManager->getClassMetadata(StatisticsClickEntity::class)->getTableName() . "` ENABLE KEYS");
+    $connection->executeStatement("SET UNIQUE_CHECKS = 1;");
   }
 
   private function createSubscriber($email, $lastName, $createdAtDate, \MailPoet\Models\Segment $segment, $status = Subscriber::STATUS_SUBSCRIBED) {
@@ -353,19 +361,21 @@ class WooCommercePastRevenues implements Generator {
   /**
    * @return array
    */
-  private function createSentEmailData(NewsletterEntity $newsletter, $sentAt, $subscribersIds, $segmentId) {
+  private function createSentEmailData(NewsletterEntity $newsletter, string $sentAt, $subscribersIds, $segmentId) {
+    $connection = $this->entityManager->getConnection();
+
     // Sending task
-    $task = ScheduledTask::createOrUpdate([
-      'type' => Sending::TASK_TYPE,
-      'status' => ScheduledTask::STATUS_COMPLETED,
-      'created_at' => $sentAt,
-      'processed_at' => $sentAt,
-    ]);
-    $task->save();
+    $task = new ScheduledTaskEntity();
+    $task->setType(Sending::TASK_TYPE);
+    $task->setStatus(ScheduledTaskEntity::STATUS_COMPLETED);
+    $task->setCreatedAt(new Carbon($sentAt));
+    $task->setProcessedAt(new Carbon($sentAt));
+    $this->scheduledTasksRepository->persist($task);
+    $this->scheduledTasksRepository->flush();
 
     // Sending queue
     $queue = SendingQueue::createOrUpdate([
-      'task_id' => $task->id,
+      'task_id' => $task->getId(),
       'newsletter_id' => $newsletter->getId(),
       'count_total' => count($subscribersIds),
       'count_processed' => count($subscribersIds),
@@ -378,16 +388,16 @@ class WooCommercePastRevenues implements Generator {
     $batchData = [];
     $statsBatchData = [];
     foreach ($subscribersIds as $subscriberId) {
-      $batchData[] = "({$task->id}, $subscriberId, 1, '$sentAt')";
+      $batchData[] = "({$task->getId()}, $subscriberId, 1, '$sentAt')";
       if (count($batchData) % 1000 === 0) {
-        ORM::rawExecute(
+        $connection->executeStatement(
           "INSERT INTO " . ScheduledTaskSubscriber::$_table . " (`task_id`, `subscriber_id`, `processed`, `created_at`) VALUES " . implode(', ', $batchData)
         );
         $batchData = [];
       }
       $statsBatchData[] = "({$newsletter->getId()}, $subscriberId, $queue->id, '$sentAt')";
       if (count($statsBatchData) % 1000 === 0) {
-        ORM::rawExecute(
+        $connection->executeStatement(
           "INSERT INTO " . StatisticsNewsletters::$_table . " (`newsletter_id`, `subscriber_id`, `queue_id`, `sent_at`) VALUES " . implode(', ', $statsBatchData)
         );
         $statsBatchData = [];
@@ -395,12 +405,12 @@ class WooCommercePastRevenues implements Generator {
     }
 
     if ($batchData) {
-      ORM::rawExecute(
+      $connection->executeStatement(
         "INSERT INTO " . ScheduledTaskSubscriber::$_table . " (`task_id`, `subscriber_id`, `processed`, `created_at`) VALUES " . implode(', ', $batchData)
       );
     }
     if ($statsBatchData) {
-      ORM::rawExecute(
+      $connection->executeStatement(
         "INSERT INTO " . StatisticsNewsletters::$_table . " (`newsletter_id`, `subscriber_id`, `queue_id`, `sent_at`) VALUES " . implode(', ', $statsBatchData)
       );
     }
@@ -430,7 +440,7 @@ class WooCommercePastRevenues implements Generator {
 
     return [
       'newsletter_id' => $newsletter->getId(),
-      'task_id' => $task->id,
+      'task_id' => $task->getId(),
       'queue_id' => $queue->id,
       'sent_at' => strtotime($sentAt),
       'link_id' => $link->getId(),
