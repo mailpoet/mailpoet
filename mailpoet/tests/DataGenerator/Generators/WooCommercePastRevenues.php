@@ -8,12 +8,13 @@ use MailPoet\Entities\NewsletterLinkEntity;
 use MailPoet\Entities\NewsletterSegmentEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\ScheduledTaskSubscriberEntity;
+use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\StatisticsClickEntity;
 use MailPoet\Entities\StatisticsNewsletterEntity;
 use MailPoet\Entities\StatisticsOpenEntity;
 use MailPoet\Entities\SubscriberEntity;
-use MailPoet\Models\SubscriberSegment;
+use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Newsletter\Segment\NewsletterSegmentRepository;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
@@ -68,8 +69,7 @@ class WooCommercePastRevenues implements Generator {
 
     // Create list
     $segmentFactory = new Segment();
-    $subscribersListEntity = $segmentFactory->withName('WC revenues load test ' . $this->getRandomString())->create();
-    $subscribersList = \MailPoet\Models\Segment::findOne($subscribersListEntity->getId());
+    $subscribersList = $segmentFactory->withName('WC revenues load test ' . $this->getRandomString())->create();
 
     // Create subscribers
     $subscribersIds = [];
@@ -102,10 +102,10 @@ class WooCommercePastRevenues implements Generator {
       $sentAt = $this->getRandomDateInPast();
       $newsletter = $emailFactory
         ->withSubject("Standard $i " . $this->getRandomString())
-        ->withSegments([$subscribersListEntity])
+        ->withSegments([$subscribersList])
         ->withCreatedAt($sentAt)
         ->create();
-      $sentStandardNewsletters[] = $this->createSentEmailData($newsletter, $sentAt, $subscribersIds, $subscribersList->id);
+      $sentStandardNewsletters[] = $this->createSentEmailData($newsletter, $sentAt, $subscribersIds, $subscribersList->getId());
     }
     yield "Standard newsletters done";
 
@@ -115,7 +115,7 @@ class WooCommercePastRevenues implements Generator {
       ->withSubject("Post Notification Parent")
       ->withPostNotificationsType()
       ->withActiveStatus()
-      ->withSegments([$subscribersListEntity])
+      ->withSegments([$subscribersList])
       ->withCreatedAt($minimalCreatedAtDate)
       ->create();
     $sentPostNotifications = [];
@@ -124,11 +124,11 @@ class WooCommercePastRevenues implements Generator {
       $newsletter = $emailFactory
         ->withSubject("Post notification history $i")
         ->withPostNotificationHistoryType()
-        ->withSegments([$subscribersListEntity])
+        ->withSegments([$subscribersList])
         ->withCreatedAt($sentAt)
         ->withParent($postNotification)
         ->create();
-      $sentPostNotifications[] = $this->createSentEmailData($newsletter, $sentAt, $subscribersIds, $subscribersList->id);
+      $sentPostNotifications[] = $this->createSentEmailData($newsletter, $sentAt, $subscribersIds, $subscribersList->getId());
     }
 
     yield "Post notifications done";
@@ -138,13 +138,13 @@ class WooCommercePastRevenues implements Generator {
     $welcomeEmail = $emailFactory
       ->withSubject("Welcome email" . $this->getRandomString())
       ->withActiveStatus()
-      ->withWelcomeTypeForSegment($subscribersList->id)
-      ->withSegments([$subscribersListEntity])
+      ->withWelcomeTypeForSegment($subscribersList->getId())
+      ->withSegments([$subscribersList])
       ->withCreatedAt($minimalCreatedAtDate)
       ->create();
     $sentWelcomeEmails = [];
     foreach ($subscribersIds as $subscriberId) {
-      $sentWelcomeEmails[$subscriberId] = $this->createSentEmailData($welcomeEmail, $minimalCreatedAtDate, [$subscriberId], $subscribersList->id);
+      $sentWelcomeEmails[$subscriberId] = $this->createSentEmailData($welcomeEmail, $minimalCreatedAtDate, [$subscriberId], $subscribersList->getId());
       $batchLog = $this->getBatchLog('Welcome emails sent', count($sentWelcomeEmails));
       if ($batchLog) {
         yield $batchLog;
@@ -207,7 +207,7 @@ class WooCommercePastRevenues implements Generator {
         array_flip(array_rand($automaticEmails, 3))
       );
       foreach ($emailsToSend as $email) {
-        $sentAutomaticEmails[$subscriberId][] = $this->createSentEmailData($email, $this->getRandomDateInPast(), [$subscriberId], $subscribersList->id);
+        $sentAutomaticEmails[$subscriberId][] = $this->createSentEmailData($email, $this->getRandomDateInPast(), [$subscriberId], $subscribersList->getId());
       }
       $batchLog = $this->getBatchLog('Automatic emails sent', count($sentAutomaticEmails));
       if ($batchLog) {
@@ -299,7 +299,7 @@ class WooCommercePastRevenues implements Generator {
     $connection->executeStatement("ALTER TABLE `{$prefix}posts` DISABLE KEYS");
     $connection->executeStatement("ALTER TABLE `{$prefix}postmeta` DISABLE KEYS");
     $connection->executeStatement("ALTER TABLE `" . $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName() . "` DISABLE KEYS");
-    $connection->executeStatement("ALTER TABLE `" . SubscriberSegment::$_table . "` DISABLE KEYS");
+    $connection->executeStatement("ALTER TABLE `" . $this->entityManager->getClassMetadata(SubscriberSegmentEntity::class)->getTableName() . "` DISABLE KEYS");
     $connection->executeStatement("ALTER TABLE `" . $this->entityManager->getClassMetadata(NewsletterLinkEntity::class)->getTableName() . "` DISABLE KEYS");
     $connection->executeStatement("ALTER TABLE `" . $this->entityManager->getClassMetadata(ScheduledTaskEntity::class)->getTableName() . "` DISABLE KEYS");
     $connection->executeStatement("ALTER TABLE `" . $this->entityManager->getClassMetadata(ScheduledTaskSubscriberEntity::class)->getTableName() . "` DISABLE KEYS");
@@ -323,7 +323,7 @@ class WooCommercePastRevenues implements Generator {
     $connection->executeStatement("ALTER TABLE `{$prefix}posts` ENABLE KEYS");
     $connection->executeStatement("ALTER TABLE `{$prefix}postmeta` DISABLE KEYS");
     $connection->executeStatement("ALTER TABLE `" . $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName() . "` ENABLE KEYS");
-    $connection->executeStatement("ALTER TABLE `" . SubscriberSegment::$_table . "` ENABLE KEYS");
+    $connection->executeStatement("ALTER TABLE `" . $this->entityManager->getClassMetadata(SubscriberSegmentEntity::class)->getTableName() . "` ENABLE KEYS");
     $connection->executeStatement("ALTER TABLE `" . $this->entityManager->getClassMetadata(NewsletterLinkEntity::class)->getTableName() . "` ENABLE KEYS");
     $connection->executeStatement("ALTER TABLE `" . $this->entityManager->getClassMetadata(ScheduledTaskEntity::class)->getTableName() . "` ENABLE KEYS");
     $connection->executeStatement("ALTER TABLE `" . $this->entityManager->getClassMetadata(ScheduledTaskSubscriberEntity::class)->getTableName() . "` ENABLE KEYS");
@@ -333,15 +333,18 @@ class WooCommercePastRevenues implements Generator {
     $connection->executeStatement("SET UNIQUE_CHECKS = 1;");
   }
 
-  private function createSubscriber(string $email, string $lastName, string $createdAtDate, \MailPoet\Models\Segment $segment, $status = SubscriberEntity::STATUS_SUBSCRIBED) {
+  private function createSubscriber(string $email, string $lastName, string $createdAtDate, SegmentEntity $segment, $status = SubscriberEntity::STATUS_SUBSCRIBED): SubscriberEntity {
     $subscriber = new SubscriberEntity();
     $subscriber->setEmail($email);
     $subscriber->setStatus($status);
     $subscriber->setLastName($lastName);
     $subscriber->setCreatedAt(new Carbon($createdAtDate));
     $this->entityManager->persist($subscriber);
+
+    $subscriberSegment = new SubscriberSegmentEntity($segment, $subscriber, $status);
+    $this->entityManager->persist($subscriberSegment);
     $this->entityManager->flush();
-    $segment->addSubscriber($subscriber->getId());
+
     return $subscriber;
   }
 
