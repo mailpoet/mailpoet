@@ -22,6 +22,7 @@ class HelperTest extends \MailPoetTest {
   }
 
   public function _after() {
+    $this->tester->deleteTestWooOrders();
     $this->wp->deleteOption('woocommerce_onboarding_profile');
   }
 
@@ -35,5 +36,13 @@ class HelperTest extends \MailPoetTest {
   public function testGetDataMailPoetInstalledViaWooCommerceOnboardingWizard() {
     $this->wp->updateOption('woocommerce_onboarding_profile', ['business_extensions' => ['jetpack', 'mailchimp', 'mailpoet', 'another_plugin']]);
     $this->assertTrue($this->helper->wasMailPoetInstalledViaWooCommerceOnboardingWizard());
+  }
+
+  public function testGetOrdersCountCreatedBefore() {
+    $this->tester->createWooCommerceOrder(['date_created' => '2022-07-01 00:00:00']);
+    $this->tester->createWooCommerceOrder(['date_created' => '2022-07-31 23:59:59']);
+    $this->tester->createWooCommerceOrder(['date_created' => '2022-08-01 00:00:00']);
+
+    $this->assertSame(2, $this->helper->getOrdersCountCreatedBefore('2022-08-01 00:00:00'));
   }
 }
