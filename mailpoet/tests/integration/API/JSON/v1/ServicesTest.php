@@ -479,6 +479,7 @@ class ServicesTest extends \MailPoetTest {
 
   public function testCongratulatoryEmailRespondsWithErrorWhenNoEmailAuthorized() {
     $this->settings->set(Mailer::MAILER_CONFIG_SETTING_NAME, ['method' => Mailer::METHOD_MAILPOET]);
+    $this->settings->set('sender.address', 'unauthorized@email.com');
     $bridge = $this->make(Bridge::class, [
       'getAuthorizedEmailAddresses' => [],
     ]);
@@ -497,7 +498,7 @@ class ServicesTest extends \MailPoetTest {
 
     $verifiedDomains = ['email.com'];
     $senderDomainMock = $this->make(AuthorizedSenderDomainController::class, [
-      'getVerifiedSenderDomains' => Expected::once($verifiedDomains),
+      'getVerifiedSenderDomainsIgnoringCache' => $verifiedDomains,
     ]);
 
     $servicesEndpoint = $this->createServicesEndpointWithMocks([

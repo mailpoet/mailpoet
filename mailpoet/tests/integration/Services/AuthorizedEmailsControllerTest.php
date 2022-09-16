@@ -78,7 +78,7 @@ class AuthorizedEmailsControllerTest extends \MailPoetTest {
 
     $verifiedDomains = ['email.com'];
     $senderDomainMock = $this->make(AuthorizedSenderDomainController::class, [
-      'getVerifiedSenderDomains' => Expected::once($verifiedDomains),
+      'getVerifiedSenderDomainsIgnoringCache' => Expected::once($verifiedDomains),
     ]);
 
     $mocks = [
@@ -150,7 +150,7 @@ class AuthorizedEmailsControllerTest extends \MailPoetTest {
 
     $verifiedDomains = ['email.com'];
     $senderDomainMock = $this->make(AuthorizedSenderDomainController::class, [
-      'getVerifiedSenderDomains' => Expected::once($verifiedDomains),
+      'getVerifiedSenderDomainsIgnoringCache' => Expected::once($verifiedDomains),
     ]);
 
     $mocks = [
@@ -227,7 +227,7 @@ class AuthorizedEmailsControllerTest extends \MailPoetTest {
 
     $verifiedDomains = ['email.com'];
     $senderDomainMock = $this->make(AuthorizedSenderDomainController::class, [
-      'getVerifiedSenderDomains' => Expected::once($verifiedDomains),
+      'getVerifiedSenderDomainsIgnoringCache' => Expected::once($verifiedDomains),
     ]);
 
     $mocks = [

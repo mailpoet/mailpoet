@@ -238,25 +238,27 @@ class Services extends APIEndpoint {
       return $this->createBadRequest(__('MailPoet Sending Service is not active.', 'mailpoet'));
     }
 
-    $authorizedEmails = $this->bridge->getAuthorizedEmailAddresses();
-
-    $verifiedDomains = $this->senderDomainController->getVerifiedSenderDomains(true);
-
-    if (!$authorizedEmails && !$verifiedDomains) {
-      return $this->createBadRequest(__('No FROM email addresses are authorized.', 'mailpoet'));
-    }
-
     $fromEmail = $this->settings->get('sender.address');
     if (!$fromEmail) {
       return $this->createBadRequest(__('Sender email address is not set.', 'mailpoet'));
     }
 
-    $arrayOfItems = explode('@', $fromEmail);
-    $emailDomain = array_pop($arrayOfItems);
+    $verifiedDomains = $this->senderDomainController->getVerifiedSenderDomainsIgnoringCache();
 
-    if (!$this->isItemInArray($fromEmail, $authorizedEmails) && !$this->isItemInArray($emailDomain, $verifiedDomains)) {
-      // translators: %s is the email address, which is not authorized.
-      return $this->createBadRequest(sprintf(__("Sender email address '%s' is not authorized.", 'mailpoet'), $fromEmail));
+    $arrayOfItems = explode('@', trim($fromEmail));
+    $emailDomain = strtolower(array_pop($arrayOfItems));
+
+    if (!$this->isItemInArray($emailDomain, $verifiedDomains)) {
+      $authorizedEmails = $this->bridge->getAuthorizedEmailAddresses();
+
+      if (!$authorizedEmails) {
+        return $this->createBadRequest(__('No FROM email addresses are authorized.', 'mailpoet'));
+      }
+
+      if (!$this->isItemInArray($fromEmail, $authorizedEmails)) {
+        // translators: %s is the email address, which is not authorized.
+        return $this->createBadRequest(sprintf(__("Sender email address '%s' is not authorized.", 'mailpoet'), $fromEmail));
+      }
     }
 
     try {
