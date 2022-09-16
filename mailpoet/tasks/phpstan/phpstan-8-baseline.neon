@@ -1339,3 +1339,8 @@ parameters:
 			message: "#^Parameter \\#1 \\$value of function count expects array\\|Countable, mixed given\\.$#"
 			count: 5
 			path: ../../tests/integration/Subscribers/ImportExport/ImportExportFactoryTest.php
+
+		-
+			message: "#^Method MailPoet\\\\Newsletter\\\\NewslettersRepository\\:\\:getStandardNewsletterList\\(\\) should return array\\<MailPoet\\\\Entities\\\\NewsletterEntity\\> but returns mixed\\.$#"
+			count: 1
+			path: ../../lib/Newsletter/NewslettersRepository.php
