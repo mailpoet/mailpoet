@@ -4,7 +4,6 @@ namespace MailPoet\AdminPages\Pages;
 
 use MailPoet\AdminPages\PageRenderer;
 use MailPoet\API\JSON\ResponseBuilders\CustomFieldsResponseBuilder;
-use MailPoet\API\JSON\ResponseBuilders\NewslettersResponseBuilder;
 use MailPoet\CustomFields\CustomFieldsRepository;
 use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Entities\SegmentEntity;
@@ -50,9 +49,6 @@ class Segments {
   /** @var NewslettersRepository */
   private $newslettersRepository;
 
-  /** @var NewslettersResponseBuilder */
-  private $newslettersResponseBuilder;
-
   /** @var TagRepository */
   private $tagRepository;
 
@@ -67,7 +63,6 @@ class Segments {
     SegmentDependencyValidator $segmentDependencyValidator,
     SegmentsRepository $segmentsRepository,
     NewslettersRepository $newslettersRepository,
-    NewslettersResponseBuilder $newslettersResponseBuilder,
     TagRepository $tagRepository
   ) {
     $this->pageRenderer = $pageRenderer;
@@ -81,7 +76,6 @@ class Segments {
     $this->segmentsRepository = $segmentsRepository;
     $this->newslettersRepository = $newslettersRepository;
     $this->tagRepository = $tagRepository;
-    $this->newslettersResponseBuilder = $newslettersResponseBuilder;
   }
 
   public function render() {
@@ -99,7 +93,7 @@ class Segments {
       ];
     }, array_keys($wpRoles), $wpRoles);
 
-    $data['newsletters_list'] = $this->newslettersResponseBuilder->buildForListing($this->newslettersRepository->getStandardNewsletterList());
+    $data['newsletters_list'] = $this->getNewslettersList();
 
     $data['static_segments_list'] = [];
     $criteria = new Criteria();
@@ -144,5 +138,17 @@ class Segments {
     $wooCurrencySymbol = $this->woocommerceHelper->isWooCommerceActive() ? $this->woocommerceHelper->getWoocommerceCurrencySymbol() : '';
     $data['woocommerce_currency_symbol'] = html_entity_decode($wooCurrencySymbol);
     $this->pageRenderer->displayPage('segments.html', $data);
+  }
+
+  private function getNewslettersList(): array {
+    $result = [];
+    foreach ($this->newslettersRepository->getStandardNewsletterList() as $newsletter) {
+      $result[] = [
+        'id' => (string)$newsletter->getId(),
+        'subject' => $newsletter->getSubject(),
+        'sent_at' => ($sentAt = $newsletter->getSentAt()) ? $sentAt->format('Y-m-d H:i:s') : null,
+      ];
+    }
+    return $result;
   }
 }
