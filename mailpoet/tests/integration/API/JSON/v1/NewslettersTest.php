@@ -19,13 +19,12 @@ use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
-use MailPoet\Models\ScheduledTask;
-use MailPoet\Models\SendingQueue;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Preview\SendPreviewController;
 use MailPoet\Newsletter\Preview\SendPreviewException;
 use MailPoet\Newsletter\Scheduler\Scheduler;
 use MailPoet\Newsletter\Segment\NewsletterSegmentRepository;
+use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Newsletter\Statistics\NewsletterStatisticsRepository;
 use MailPoet\Newsletter\Url;
@@ -65,6 +64,9 @@ class NewslettersTest extends \MailPoetTest {
   /** @var NewsletterSegmentRepository */
   private $newsletterSegmentRepository;
 
+  /** @var ScheduledTasksRepository */
+  private $scheduledTasksRepository;
+
   /** @var NewslettersResponseBuilder */
   private $newslettersResponseBuilder;
 
@@ -80,6 +82,7 @@ class NewslettersTest extends \MailPoetTest {
     $this->newsletterRepository = ContainerWrapper::getInstance()->get(NewslettersRepository::class);
     $this->segmentRepository = ContainerWrapper::getInstance()->get(SegmentsRepository::class);
     $this->newsletterSegmentRepository = ContainerWrapper::getInstance()->get(NewsletterSegmentRepository::class);
+    $this->scheduledTasksRepository = ContainerWrapper::getInstance()->get(ScheduledTasksRepository::class);
     $this->newslettersResponseBuilder = ContainerWrapper::getInstance()->get(NewslettersResponseBuilder::class);
     $this->newsletterUrl = ContainerWrapper::getInstance()->get(Url::class);
     $this->scheduler = ContainerWrapper::getInstance()->get(Scheduler::class);
@@ -273,12 +276,12 @@ class NewslettersTest extends \MailPoetTest {
     $sendingQueue1 = SendingTask::create();
     $sendingQueue1->newsletterId = $this->postNotification->getId();
     $sendingQueue1->scheduledAt = $this->scheduler->getPreviousRunDate($schedule);
-    $sendingQueue1->status = SendingQueue::STATUS_SCHEDULED;
+    $sendingQueue1->status = SendingQueueEntity::STATUS_SCHEDULED;
     $sendingQueue1->save();
     $sendingQueue2 = SendingTask::create();
     $sendingQueue2->newsletterId = $this->postNotification->getId();
     $sendingQueue2->scheduledAt = $randomFutureDate;
-    $sendingQueue2->status = SendingQueue::STATUS_SCHEDULED;
+    $sendingQueue2->status = SendingQueueEntity::STATUS_SCHEDULED;
     $sendingQueue2->save();
     $sendingQueue3 = SendingTask::create();
     $sendingQueue3->newsletterId = $this->postNotification->getId();
@@ -292,13 +295,16 @@ class NewslettersTest extends \MailPoetTest {
         'status' => NewsletterEntity::STATUS_ACTIVE,
       ]
     );
-    $tasks = ScheduledTask::findMany();
+    $tasks = $this->scheduledTasksRepository->findAll();
     // previously scheduled notification is rescheduled for future date
-    expect($tasks[0]->scheduled_at)->equals($this->scheduler->getNextRunDate($schedule));
+    $this->assertInstanceOf(\DateTimeInterface::class, $tasks[0]->getScheduledAt());
+    expect($tasks[0]->getScheduledAt()->format('Y-m-d H:i:s'))->equals($this->scheduler->getNextRunDate($schedule));
     // future scheduled notifications are left intact
-    expect($tasks[1]->scheduled_at)->equals($randomFutureDate);
+    $this->assertInstanceOf(\DateTimeInterface::class, $tasks[1]->getScheduledAt());
+    expect($tasks[1]->getScheduledAt()->format('Y-m-d H:i:s'))->equals($randomFutureDate);
     // previously unscheduled (e.g., sent/sending) notifications are left intact
-    expect($tasks[2]->scheduled_at)->equals($this->scheduler->getPreviousRunDate($schedule));
+    $this->assertInstanceOf(\DateTimeInterface::class, $tasks[2]->getScheduledAt());
+    expect($tasks[2]->getScheduledAt()->format('Y-m-d H:i:s'))->equals($this->scheduler->getPreviousRunDate($schedule));
   }
 
   public function testItSchedulesPostNotificationsWhenStatusIsSetBackToActive() {
@@ -311,7 +317,7 @@ class NewslettersTest extends \MailPoetTest {
         'status' => NewsletterEntity::STATUS_ACTIVE,
       ]
     );
-    $tasks = ScheduledTask::findMany();
+    $tasks = $this->scheduledTasksRepository->findAll();
     expect($tasks)->notEmpty();
   }
 
