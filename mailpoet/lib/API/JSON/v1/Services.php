@@ -16,6 +16,7 @@ use MailPoet\Services\AuthorizedSenderDomainController;
 use MailPoet\Services\Bridge;
 use MailPoet\Services\CongratulatoryMssEmailController;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Util\Helpers;
 use MailPoet\WP\DateTime;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -245,8 +246,7 @@ class Services extends APIEndpoint {
 
     $verifiedDomains = $this->senderDomainController->getVerifiedSenderDomainsIgnoringCache();
 
-    $arrayOfItems = explode('@', trim($fromEmail));
-    $emailDomain = strtolower(array_pop($arrayOfItems));
+    $emailDomain = Helpers::extractEmailDomain($fromEmail);
 
     if (!$this->isItemInArray($emailDomain, $verifiedDomains)) {
       $authorizedEmails = $this->bridge->getAuthorizedEmailAddresses();
