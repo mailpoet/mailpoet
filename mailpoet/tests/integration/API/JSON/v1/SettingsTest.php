@@ -14,7 +14,6 @@ use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Form\FormMessageController;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\MailerLog;
-use MailPoet\Models\ScheduledTask;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Segments\SegmentsRepository;
@@ -31,7 +30,6 @@ use MailPoet\WooCommerce\TransactionalEmails;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
-use MailPoetVendor\Idiorm\ORM;
 
 class SettingsTest extends \MailPoetTest {
 
@@ -44,10 +42,13 @@ class SettingsTest extends \MailPoetTest {
   /* @var NewslettersRepository */
   private $newsletterRepository;
 
+  /** @var ScheduledTasksRepository */
+  private $scheduledTasksRepository;
+
   public function _before() {
     parent::_before();
-    ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
     $this->newsletterRepository = $this->diContainer->get(NewslettersRepository::class);
+    $this->scheduledTasksRepository = $this->diContainer->get(ScheduledTasksRepository::class);
     $this->settings = SettingsController::getInstance();
     $this->settings->set('some.setting.key', true);
     $this->endpoint = new Settings(
@@ -224,18 +225,24 @@ class SettingsTest extends \MailPoetTest {
     $this->settings->set('deactivate_subscriber_after_inactive_days', 30);
     $settings = ['deactivate_subscriber_after_inactive_days' => 30];
     $this->endpoint->set($settings);
-    $task = ScheduledTask::where('type', InactiveSubscribers::TASK_TYPE)
-      ->whereRaw('status = ?', [ScheduledTask::STATUS_SCHEDULED])
-      ->findOne();
-    expect($task)->false();
+    $task = $this->scheduledTasksRepository->findOneBy(
+      [
+        'type' => InactiveSubscribers::TASK_TYPE,
+        'status' => ScheduledTaskEntity::STATUS_SCHEDULED
+      ]
+    );
+    expect($task)->null();
 
     $settings = ['deactivate_subscriber_after_inactive_days' => 0];
     $this->endpoint->set($settings);
-    $task = ScheduledTask::where('type', InactiveSubscribers::TASK_TYPE)
-      ->whereRaw('status = ?', [ScheduledTask::STATUS_SCHEDULED])
-      ->findOne();
-    assert($task instanceof ScheduledTask);
-    expect($task->scheduledAt)->lessThan(Carbon::now());
+    $task = $this->scheduledTasksRepository->findOneBy(
+      [
+        'type' => InactiveSubscribers::TASK_TYPE,
+        'status' => ScheduledTaskEntity::STATUS_SCHEDULED
+      ]
+    );
+    assert($task instanceof ScheduledTaskEntity);
+    expect($task->getScheduledAt())->lessThan(Carbon::now());
   }
 
   public function testItRemovesFreeAddressOverrideOnMSSActivation() {
