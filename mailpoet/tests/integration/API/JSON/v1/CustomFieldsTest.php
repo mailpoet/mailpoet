@@ -8,7 +8,6 @@ use MailPoet\API\JSON\v1\CustomFields;
 use MailPoet\CustomFields\CustomFieldsRepository;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\CustomFieldEntity;
-use MailPoet\Models\CustomField;
 
 class CustomFieldsTest extends \MailPoetTest {
 
@@ -83,16 +82,16 @@ class CustomFieldsTest extends \MailPoetTest {
   }
 
   public function testItCanDeleteACustomField() {
-    $customField = CustomField::where('type', 'date')->findOne();
-    assert($customField instanceof CustomField);
-    $customFieldId = $customField->id();
+    $customField = $this->repository->findOneBy(['type' => 'date']);
+    assert($customField instanceof CustomFieldEntity);
+    $customFieldId = $customField->getId();
 
     $router = new CustomFields($this->repository, new CustomFieldsResponseBuilder());
     $response = $router->delete(['id' => $customFieldId]);
     expect($response->status)->equals(APIResponse::STATUS_OK);
 
-    $customField = CustomField::where('type', 'date')->findOne();
-    expect($customField)->false();
+    $customField = $this->repository->findOneBy(['type' => 'date']);
+    expect($customField)->null();
 
     $response = $router->delete(['id' => $customFieldId]);
     expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
