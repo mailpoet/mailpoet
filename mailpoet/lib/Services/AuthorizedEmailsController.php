@@ -51,7 +51,7 @@ class AuthorizedEmailsController {
 
   public function setFromEmailAddress(string $address) {
     $authorizedEmails = $this->bridge->getAuthorizedEmailAddresses() ?: [];
-    $verifiedDomains = $this->senderDomainController->getVerifiedSenderDomains(true);
+    $verifiedDomains = $this->senderDomainController->getVerifiedSenderDomainsIgnoringCache();
     $isAuthorized = $this->validateAuthorizedEmail($authorizedEmails, $address);
 
     $emailDomainIsVerified = $this->validateEmailDomainIsVerified($verifiedDomains, $address);
@@ -122,7 +122,7 @@ class AuthorizedEmailsController {
     }
     $authorizedEmails = array_map('strtolower', $authorizedEmails);
 
-    $verifiedDomains = $this->senderDomainController->getVerifiedSenderDomains(true);
+    $verifiedDomains = $this->senderDomainController->getVerifiedSenderDomainsIgnoringCache();
 
     $result = [];
     $result = $this->validateAddressesInSettings($authorizedEmails, $verifiedDomains, $result);
@@ -213,7 +213,7 @@ class AuthorizedEmailsController {
     return in_array(strtolower($email), $lowercaseAuthorizedEmails, true);
   }
 
-  private function validateEmailDomainIsVerified($verifiedDomains = [], $email = ''): bool {
+  private function validateEmailDomainIsVerified(array $verifiedDomains = [], string $email = ''): bool {
     $lowercaseVerifiedDomains = array_map('strtolower', $verifiedDomains);
     $arrayOfItems = explode('@', $email);
     $emailDomain = array_pop($arrayOfItems);
