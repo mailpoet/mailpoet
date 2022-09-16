@@ -8,8 +8,6 @@
   .mailpoet-automation-listing {
     /* Prevent border radius beneath tabs */
     border-radius: 0 0 1px 1px;
-    /* Prevent overlapping box shadow since listing is rendered inside tabs */
-    clip-path: inset(-1px 0 0 0);
   }
 }
 
