@@ -141,6 +141,15 @@ class Subscriber {
   }
 
   /**
+   * @param DateTimeInterface $deletedAt
+   * @return $this
+   */
+  public function withDeletedAt(DateTimeInterface $deletedAt) {
+    $this->data['deletedAt'] = $deletedAt;
+    return $this;
+  }
+
+  /**
    * @return $this
    */
   public function withSubscribedIp(string $subscribedIp) {
@@ -197,6 +206,11 @@ class Subscriber {
     if (isset($this->data['linkToken'])) {
       $subscriber->setLinkToken($this->data['linkToken']);
     }
+
+    if (isset($this->data['deletedAt'])) {
+      $subscriber->setDeletedAt($this->data['deletedAt']);
+    }
+
     $entityManager->persist($subscriber);
 
     foreach ($this->segments as $segment) {
