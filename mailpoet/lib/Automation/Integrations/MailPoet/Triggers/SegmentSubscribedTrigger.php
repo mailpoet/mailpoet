@@ -31,7 +31,9 @@ class SegmentSubscribedTrigger implements Trigger {
   }
 
   public function getArgsSchema(): ObjectSchema {
-    return Builder::object();
+    return Builder::object([
+      'segment_ids' => Builder::array(Builder::number())->required(),
+    ]);
   }
 
   public function registerHooks(): void {
