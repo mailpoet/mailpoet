@@ -60,6 +60,11 @@ class TriggerHandler {
       }
 
       $workflowRun = new WorkflowRun($workflow->getId(), $workflow->getVersionId(), $trigger->getKey(), $loadedSubjects);
+
+      if (!$trigger->isTriggeredBy($workflowRun)) {
+        return;
+      }
+
       $workflowRunId = $this->workflowRunStorage->createWorkflowRun($workflowRun);
 
       $nextStep = $step->getNextSteps()[0] ?? null;
