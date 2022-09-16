@@ -2,7 +2,9 @@
 
 namespace MailPoet\Automation\Integrations\MailPoet\Triggers;
 
+use MailPoet\Automation\Engine\Data\WorkflowRun;
 use MailPoet\Automation\Engine\Hooks;
+use MailPoet\Automation\Engine\Storage\WorkflowStorage;
 use MailPoet\Automation\Engine\Workflows\Trigger;
 use MailPoet\Automation\Integrations\MailPoet\Subjects\SegmentSubject;
 use MailPoet\Automation\Integrations\MailPoet\Subjects\SubscriberSubject;
@@ -13,12 +15,18 @@ use MailPoet\Validator\Schema\ObjectSchema;
 use MailPoet\WP\Functions as WPFunctions;
 
 class SegmentSubscribedTrigger implements Trigger {
+
+  /** @var WorkflowStorage  */
+  private $workflowStorage;
+
   /** @var WPFunctions */
   private $wp;
 
   public function __construct(
+    WorkflowStorage $workflowStorage,
     WPFunctions $wp
   ) {
+    $this->workflowStorage = $workflowStorage;
     $this->wp = $wp;
   }
 
@@ -62,5 +70,30 @@ class SegmentSubscribedTrigger implements Trigger {
         ],
       ],
     ]);
+  }
+
+  public function isTriggeredBy(WorkflowRun $workflowRun): bool {
+    if ($workflowRun->getTriggerKey() !== $this->getKey()) {
+      return false;
+    }
+    $workflow = $this->workflowStorage->getWorkflow($workflowRun->getWorkflowId(), $workflowRun->getVersionId());
+    if (!$workflow) {
+      return false;
+    }
+
+    $triggerData = $workflow->getTrigger($workflowRun->getTriggerKey());
+    if (!$triggerData) {
+      return false;
+    }
+
+    $segmentSubject = $workflowRun->requireSingleSubject(SegmentSubject::class);
+    $segment = $segmentSubject->getSegment();
+    $stepArgs = $triggerData->getArgs();
+    if (!isset($stepArgs['segment_ids']) || !is_array($stepArgs['segment_ids'])) {
+      return false;
+    }
+    $segmentIds = $stepArgs['segment_ids'];
+    $anyList = 0;
+    return in_array($anyList, $segmentIds, true) || in_array($segment->getId(), $segmentIds, true);
   }
 }
