@@ -30,9 +30,20 @@ class WorkflowStorage {
     if (!$result) {
       throw Exceptions::databaseError($this->wpdb->last_error);
     }
-    $id = (int)$this->wpdb->insert_id;
+    $id = $this->wpdb->insert_id;
     $this->insertWorkflowVersion($id, $workflow);
     return $id;
+  }
+
+  public function duplicateWorkflow(Workflow $workflow): int {
+    $data = $workflow->toArray();
+    $now = (new DateTimeImmutable())->format(DateTimeImmutable::W3C);
+    $data['created_at'] = $now;
+    $data['updated_at'] = $now;
+    $data['status'] = Workflow::STATUS_DRAFT;
+    $data['name'] = 'Copy of ' . $workflow->getName();
+    $duplicate = Workflow::fromArray($data);
+    return $this->createWorkflow($duplicate);
   }
 
   public function updateWorkflow(Workflow $workflow): void {
@@ -146,7 +157,6 @@ class WorkflowStorage {
   }
 
   private function insertWorkflowVersion(int $workflowId, Workflow $workflow): void {
-
     $dateString = (new DateTimeImmutable())->format(DateTimeImmutable::W3C);
     $data = [
       'workflow_id' => $workflowId,

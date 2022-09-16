@@ -8,6 +8,7 @@ use MailPoet\Automation\Engine\Control\TriggerHandler;
 use MailPoet\Automation\Engine\Endpoints\System\DatabaseDeleteEndpoint;
 use MailPoet\Automation\Engine\Endpoints\System\DatabasePostEndpoint;
 use MailPoet\Automation\Engine\Endpoints\Workflows\WorkflowsCreateFromTemplateEndpoint;
+use MailPoet\Automation\Engine\Endpoints\Workflows\WorkflowsDuplicateEndpoint;
 use MailPoet\Automation\Engine\Endpoints\Workflows\WorkflowsGetEndpoint;
 use MailPoet\Automation\Engine\Endpoints\Workflows\WorkflowsPutEndpoint;
 use MailPoet\Automation\Engine\Endpoints\Workflows\WorkflowTemplatesGetEndpoint;
@@ -73,6 +74,7 @@ class Engine {
       $api->registerGetRoute('workflows', WorkflowsGetEndpoint::class);
       $api->registerPutRoute('workflows/(?P<id>\d+)', WorkflowsPutEndpoint::class);
       $api->registerPostRoute('workflows/create-from-template', WorkflowsCreateFromTemplateEndpoint::class);
+      $api->registerPostRoute('workflows/(?P<id>\d+)/duplicate', WorkflowsDuplicateEndpoint::class);
       $api->registerPostRoute('system/database', DatabasePostEndpoint::class);
       $api->registerDeleteRoute('system/database', DatabaseDeleteEndpoint::class);
       $api->registerGetRoute('workflow-templates', WorkflowTemplatesGetEndpoint::class);
