@@ -9,6 +9,7 @@ use MailPoet\Mailer\MailerLog;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Services\AuthorizedSenderDomainController;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Util\Helpers;
 
 class AuthorizedEmailsController {
   const AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING = 'authorized_emails_addresses_check';
@@ -215,8 +216,7 @@ class AuthorizedEmailsController {
 
   private function validateEmailDomainIsVerified(array $verifiedDomains = [], string $email = ''): bool {
     $lowercaseVerifiedDomains = array_map('strtolower', $verifiedDomains);
-    $arrayOfItems = explode('@', $email);
-    $emailDomain = array_pop($arrayOfItems);
-    return in_array(strtolower($emailDomain), $lowercaseVerifiedDomains, true);
+    $emailDomain = Helpers::extractEmailDomain($email);
+    return in_array($emailDomain, $lowercaseVerifiedDomains, true);
   }
 }
