@@ -81,10 +81,14 @@ export function Step({ step, isSelected }: Props): JSX.Element {
         </div>
         <div>
           <div className="mailpoet-automation-editor-step-title">
-            {stepTypeData.title}
+            {step.type !== 'trigger'
+              ? stepTypeData.title
+              : __('Trigger', 'mailpoet')}
           </div>
           <div className="mailpoet-automation-editor-step-subtitle">
-            {stepTypeData.subtitle(step)}
+            {step.type !== 'trigger'
+              ? stepTypeData.subtitle(step)
+              : stepTypeData.title}
           </div>
         </div>
       </CompositeItem>
