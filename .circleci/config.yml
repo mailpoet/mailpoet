@@ -713,6 +713,29 @@ workflows:
             - qa_php
       - integration_tests:
           <<: *slack-fail-post-step
+          group: woo
+          enable_cot: 1
+          enable_cot_sync: 0
+          allow_fail: 1
+          woo_core_version: woo-cot-beta # Temporarily force COT beta version
+          name: integration_test_woo_cot_no_sync
+          requires:
+            - unit_tests
+            - static_analysis_php8
+            - qa_js
+            - qa_php
+      - integration_tests:
+          <<: *slack-fail-post-step
+          group: woo
+          woo_core_version: woo-cot-beta # Temporarily force COT beta version
+          name: integration_test_woo_cot_off
+          requires:
+            - unit_tests
+            - static_analysis_php8
+            - qa_js
+            - qa_php
+      - integration_tests:
+          <<: *slack-fail-post-step
           skip_group: woo
           skip_plugins: 1
           name: integration_test_base
