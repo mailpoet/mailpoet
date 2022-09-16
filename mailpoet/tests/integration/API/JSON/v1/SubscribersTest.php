@@ -24,7 +24,6 @@ use MailPoet\Entities\SubscriberIPEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Form\Util\FieldNameObfuscator;
 use MailPoet\Listing\Handler;
-use MailPoet\Models\CustomField;
 use MailPoet\Models\Segment;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Subscriber;
@@ -40,6 +39,7 @@ use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Subscribers\SubscriberSubscribeController;
 use MailPoet\Subscription\Captcha;
 use MailPoet\Subscription\CaptchaSession;
+use MailPoet\Test\DataFactories\CustomField as CustomFieldFactory;
 use MailPoet\Test\DataFactories\DynamicSegment;
 use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
 use MailPoet\Test\DataFactories\Segment as SegmentFactory;
@@ -779,16 +779,13 @@ class SubscribersTest extends \MailPoetTest {
   }
 
   public function testItCannotSubscribeWithoutMandatoryCustomField() {
-    $customField = CustomField::createOrUpdate([
-      'name' => 'custom field',
-      'type' => 'text',
-      'params' => ['required' => '1'],
-    ]);
+    $customField = (new CustomFieldFactory())->create();
+
     $form = new FormEntity('form');
     $form->setBody([[
       'type' => 'text',
       'name' => 'mandatory',
-      'id' => $customField->id(),
+      'id' => $customField->getId(),
       'unique' => '1',
       'static' => '0',
       'params' => ['required' => '1'],
