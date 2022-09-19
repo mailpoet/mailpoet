@@ -2,10 +2,8 @@
 
 namespace MailPoet\Automation\Engine\Storage;
 
-use MailPoet\Automation\Engine\Control\SubjectLoader;
 use MailPoet\Automation\Engine\Data\WorkflowRun;
 use MailPoet\Automation\Engine\Exceptions;
-use MailPoet\Automation\Engine\Utils\Json;
 use wpdb;
 
 class WorkflowRunStorage {
@@ -15,16 +13,10 @@ class WorkflowRunStorage {
   /** @var wpdb */
   private $wpdb;
 
-  /** @var SubjectLoader */
-  private $subjectLoader;
-
-  public function __construct(
-    SubjectLoader $subjectLoader
-  ) {
+  public function __construct() {
     global $wpdb;
     $this->table = $wpdb->prefix . 'mailpoet_workflow_runs';
     $this->wpdb = $wpdb;
-    $this->subjectLoader = $subjectLoader;
   }
 
   public function createWorkflowRun(WorkflowRun $workflowRun): int {
@@ -39,15 +31,7 @@ class WorkflowRunStorage {
     $table = esc_sql($this->table);
     $query = (string)$this->wpdb->prepare("SELECT * FROM $table WHERE id = %d", $id);
     $result = $this->wpdb->get_row($query, ARRAY_A);
-
-    if ($result) {
-      $data = (array)$result;
-      $data['subjects'] = array_map(function (array $subject) {
-        return $this->subjectLoader->loadSubject($subject['key'], $subject['args']);
-      }, Json::decode($data['subjects']));
-      return WorkflowRun::fromArray($data);
-    }
-    return null;
+    return $result ? WorkflowRun::fromArray((array)$result) : null;
   }
 
   public function updateStatus(int $id, string $status): void {

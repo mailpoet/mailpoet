@@ -3,10 +3,7 @@
 namespace MailPoet\Automation\Engine\Data;
 
 use DateTimeImmutable;
-use MailPoet\Automation\Engine\Exceptions;
-use MailPoet\Automation\Engine\Exceptions\InvalidStateException;
 use MailPoet\Automation\Engine\Utils\Json;
-use MailPoet\Automation\Engine\Workflows\Subject;
 
 class WorkflowRun {
   public const STATUS_RUNNING = 'running';
@@ -38,9 +35,6 @@ class WorkflowRun {
   /** @var Subject[] */
   private $subjects;
 
-  /** @var array<class-string, string> */
-  private $subjectKeyClassMap = [];
-
   /**
    * @param Subject[] $subjects
    */
@@ -55,10 +49,6 @@ class WorkflowRun {
     $this->versionId = $versionId;
     $this->triggerKey = $triggerKey;
     $this->subjects = $subjects;
-
-    foreach ($subjects as $subject) {
-      $this->subjectKeyClassMap[get_class($subject)] = $subject->getKey();
-    }
 
     if ($id) {
       $this->id = $id;
@@ -109,33 +99,6 @@ class WorkflowRun {
     return $this->subjects;
   }
 
-  /**
-   * @template T of Subject
-   * @param class-string<T> $class
-   * @return T
-   */
-  public function requireSingleSubject(string $class): Subject {
-    $key = $this->subjectKeyClassMap[$class] ?? null;
-    if (!$key) {
-      throw Exceptions::subjectClassNotFound($class);
-    }
-
-    $subjects = $this->getSubjects($key);
-    if (count($subjects) === 0) {
-      throw Exceptions::subjectNotFound($key);
-    }
-    if (count($subjects) > 1) {
-      throw Exceptions::multipleSubjectsFound($key);
-    }
-
-    // ensure PHPStan we're indeed returning an instance of $class
-    $subject = $subjects[0];
-    if (!$subject instanceof $class) {
-      throw new InvalidStateException();
-    }
-    return $subject;
-  }
-
   public function toArray(): array {
     return [
       'workflow_id' => $this->workflowId,
@@ -146,14 +109,21 @@ class WorkflowRun {
       'updated_at' => $this->updatedAt->format(DateTimeImmutable::W3C),
       'subjects' => Json::encode(
         array_map(function (Subject $subject): array {
-          return ['key' => $subject->getKey(), 'args' => $subject->pack()];
+          return $subject->toArray();
         }, $this->subjects)
       ),
     ];
   }
 
   public static function fromArray(array $data): self {
-    $workflowRun = new WorkflowRun((int)$data['workflow_id'], (int)$data['version_id'], $data['trigger_key'], $data['subjects']);
+    $workflowRun = new WorkflowRun(
+      (int)$data['workflow_id'],
+      (int)$data['version_id'],
+      $data['trigger_key'],
+      array_map(function (array $subject) {
+        return Subject::fromArray($subject);
+      }, Json::decode($data['subjects']))
+    );
     $workflowRun->id = (int)$data['id'];
     $workflowRun->status = $data['status'];
     $workflowRun->createdAt = new DateTimeImmutable($data['created_at']);
