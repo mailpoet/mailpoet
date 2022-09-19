@@ -2,12 +2,8 @@
 
 namespace MailPoet\Automation\Engine\Control;
 
-use MailPoet\Automation\Engine\Data\Step;
-use MailPoet\Automation\Engine\Data\SubjectEntry;
-use MailPoet\Automation\Engine\Data\Workflow;
-use MailPoet\Automation\Engine\Data\WorkflowRun;
+use MailPoet\Automation\Engine\Data\StepRunArgs;
 
 interface StepRunner {
-  /** @var SubjectEntry[] $subjectEntries */
-  public function run(Step $step, Workflow $workflow, WorkflowRun $workflowRun, array $subjectEntries): void;
+  public function run(StepRunArgs $args): void;
 }
