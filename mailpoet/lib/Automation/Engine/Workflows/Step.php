@@ -10,4 +10,7 @@ interface Step {
   public function getName(): string;
 
   public function getArgsSchema(): ObjectSchema;
+
+  /** @return string[] */
+  public function getSubjectKeys(): array;
 }

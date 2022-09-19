@@ -285,6 +285,11 @@ class TestAction implements Action {
     $this->callback = $callback;
   }
 
+
+  public function getSubjectKeys(): array {
+    return [];
+  }
+
   public function isValid(array $subjects, Step $step, Workflow $workflow): bool {
     return true;
   }

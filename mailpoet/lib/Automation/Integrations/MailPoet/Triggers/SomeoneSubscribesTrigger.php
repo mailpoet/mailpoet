@@ -39,6 +39,13 @@ class SomeoneSubscribesTrigger implements Trigger {
     ]);
   }
 
+  public function getSubjectKeys(): array {
+    return [
+      SubscriberSubject::KEY,
+      SegmentSubject::KEY,
+    ];
+  }
+
   public function registerHooks(): void {
     $this->wp->addAction('mailpoet_segment_subscribed', [$this, 'handleSubscription'], 10, 2);
   }
