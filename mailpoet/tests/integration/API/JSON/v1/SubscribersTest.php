@@ -24,7 +24,7 @@ use MailPoet\Entities\SubscriberIPEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Form\Util\FieldNameObfuscator;
 use MailPoet\Listing\Handler;
-use MailPoet\Models\SendingQueue;
+use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\SettingsRepository;
@@ -79,6 +79,9 @@ class SubscribersTest extends \MailPoetTest {
 
   /** @var SubscribersRepository */
   private $subscribersRepository;
+
+  /** @var SendingQueuesRepository */
+  private $sendingQueuesRepository;
 
   public function _before() {
     parent::_before();
@@ -157,6 +160,7 @@ class SubscribersTest extends \MailPoetTest {
     $this->entityManager->flush();
 
     $this->subscribersRepository = $this->diContainer->get(SubscribersRepository::class);
+    $this->sendingQueuesRepository = $this->diContainer->get(SendingQueuesRepository::class);
   }
 
   public function testItCanGetASubscriber() {
@@ -922,7 +926,7 @@ class SubscribersTest extends \MailPoetTest {
     ];
 
     $this->endpoint->save($subscriberData);
-    expect(SendingQueue::findMany())->count(1);
+    expect($this->sendingQueuesRepository->findAll())->count(1);
   }
 
   public function testItSchedulesWelcomeEmailNotificationWhenExistedSubscriberIsUpdated() {
@@ -938,11 +942,11 @@ class SubscribersTest extends \MailPoetTest {
 
     // welcome notification is created only for segment #1
     $this->endpoint->save($subscriberData);
-    expect(SendingQueue::findMany())->isEmpty();
+    expect($this->sendingQueuesRepository->findAll())->isEmpty();
 
     $subscriberData['segments'] = [$this->segment1->getId()];
     $this->endpoint->save($subscriberData);
-    expect(SendingQueue::findMany())->count(1);
+    expect($this->sendingQueuesRepository->findAll())->count(1);
   }
 
   public function testItDoesNotSchedulesWelcomeEmailNotificationWhenNoNewSegmentIsAdded() {
@@ -967,7 +971,7 @@ class SubscribersTest extends \MailPoetTest {
     ];
 
     $this->endpoint->save($subscriberData);
-    expect(SendingQueue::findMany())->count(0);
+    expect($this->sendingQueuesRepository->findAll())->count(0);
   }
 
   public function testItSendsConfirmationEmail() {
