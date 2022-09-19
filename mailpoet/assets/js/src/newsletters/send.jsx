@@ -29,7 +29,7 @@ const generateGaTrackingCampaignName = (id, subject) => {
   return `${name || 'email'}-${id}`;
 };
 
-const getDelayValueForTracking = (emailOpts) =>
+const getTimingValueForTracking = (emailOpts) =>
   emailOpts.afterTimeType === 'immediate'
     ? 'immediate'
     : `${emailOpts.afterTimeNumber} ${emailOpts.afterTimeType}`;
@@ -396,8 +396,8 @@ class NewsletterSendComponent extends Component {
               </p>,
             );
             MailPoet.trackEvent('Emails > Automatic email activated', {
-              Delay: getDelayValueForTracking(opts),
               Type: slugify(`${opts.group}-${opts.event}`),
+              Delay: getTimingValueForTracking(opts),
             });
           } else if (response.data.type === 'welcome') {
             this.context.notices.success(
@@ -405,7 +405,14 @@ class NewsletterSendComponent extends Component {
             );
             MailPoet.trackEvent('Emails > Welcome email activated', {
               'List type': opts.event,
-              Delay: getDelayValueForTracking(opts),
+              Delay: getTimingValueForTracking(opts),
+            });
+          } else if (response.data.type === 're_engagement') {
+            this.context.notices.success(
+              <p>{MailPoet.I18n.t('reEngagementEmailActivated')}</p>,
+            );
+            MailPoet.trackEvent('Emails > Re-engagement email activated', {
+              Inactivity: getTimingValueForTracking(opts),
             });
           } else if (response.data.type === 'notification') {
             this.context.notices.success(
