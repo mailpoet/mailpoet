@@ -2,6 +2,7 @@
 
 namespace MailPoet\Automation\Integrations\MailPoet\Triggers;
 
+use MailPoet\Automation\Engine\Data\Subject;
 use MailPoet\Automation\Engine\Hooks;
 use MailPoet\Automation\Engine\Workflows\Subject;
 use MailPoet\Automation\Engine\Workflows\Trigger;
@@ -51,18 +52,8 @@ class SomeoneSubscribesTrigger implements Trigger {
     }
 
     $this->wp->doAction(Hooks::TRIGGER, $this, [
-      [
-        'key' => SegmentSubject::KEY,
-        'args' => [
-          'segment_id' => $segment->getId(),
-        ],
-      ],
-      [
-        'key' => SubscriberSubject::KEY,
-        'args' => [
-          'subscriber_id' => $subscriber->getId(),
-        ],
-      ],
+      new Subject(SegmentSubject::KEY, ['segment_id' => $segment->getId()]),
+      new Subject(SubscriberSubject::KEY, ['subscriber_id' => $subscriber->getId()]),
     ]);
   }
 
