@@ -2,6 +2,7 @@
 
 namespace MailPoet\Automation\Engine\Control;
 
+use MailPoet\Automation\Engine\Data\Subject;
 use MailPoet\Automation\Engine\Data\WorkflowRun;
 use MailPoet\Automation\Engine\Exceptions;
 use MailPoet\Automation\Engine\Hooks;
@@ -44,7 +45,7 @@ class TriggerHandler {
     $this->wordPress->addAction(Hooks::TRIGGER, [$this, 'processTrigger'], 10, 2);
   }
 
-  /** @param array<string, array> $subjects */
+  /** @param Subject[] $subjects */
   public function processTrigger(Trigger $trigger, array $subjects): void {
     $workflows = $this->workflowStorage->getActiveWorkflowsByTrigger($trigger);
     foreach ($workflows as $workflow) {
@@ -54,19 +55,17 @@ class TriggerHandler {
       }
 
       // ensure subjects are registered and loadable
-      $loadedSubjects = [];
-      foreach ($subjects as $subject) {
-        $loadedSubjects[] = $this->subjectLoader->loadSubject($subject['key'], $subject['args']);
+      $subjectEntries = $this->subjectLoader->getSubjectsEntries($subjects);
+      foreach ($subjectEntries as $entry) {
+        $entry->getPayload();
       }
 
-      $workflowRun = new WorkflowRun($workflow->getId(), $workflow->getVersionId(), $trigger->getKey(), $loadedSubjects);
-
-      if (!$trigger->isTriggeredBy($step->getArgs(), ...$loadedSubjects)) {
+      if (!$trigger->isTriggeredBy($step->getArgs(), $subjectEntries)) {
         return;
       }
 
+      $workflowRun = new WorkflowRun($workflow->getId(), $workflow->getVersionId(), $trigger->getKey(), $subjects);
       $workflowRunId = $this->workflowRunStorage->createWorkflowRun($workflowRun);
-
       $nextStep = $step->getNextSteps()[0] ?? null;
       $this->actionScheduler->enqueue(Hooks::WORKFLOW_STEP, [
         [

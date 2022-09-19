@@ -3,11 +3,13 @@
 namespace MailPoet\Automation\Engine\Workflows;
 
 use MailPoet\Automation\Engine\Data\Step as StepData;
+use MailPoet\Automation\Engine\Data\SubjectEntry;
 use MailPoet\Automation\Engine\Data\Workflow;
 use MailPoet\Automation\Engine\Data\WorkflowRun;
 
 interface Action extends Step {
   public function isValid(array $subjects, StepData $step, Workflow $workflow): bool;
 
-  public function run(Workflow $workflow, WorkflowRun $workflowRun, StepData $step): void;
+  /** @var SubjectEntry[] $subjectEntries */
+  public function run(Workflow $workflow, WorkflowRun $workflowRun, StepData $step, array $subjectEntries): void;
 }
