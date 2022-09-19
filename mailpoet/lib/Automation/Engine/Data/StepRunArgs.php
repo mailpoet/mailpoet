@@ -3,6 +3,7 @@
 namespace MailPoet\Automation\Engine\Data;
 
 use MailPoet\Automation\Engine\Exceptions;
+use MailPoet\Automation\Engine\Exceptions\InvalidStateException;
 use MailPoet\Automation\Engine\Workflows\Payload;
 use MailPoet\Automation\Engine\Workflows\Subject;
 
@@ -80,5 +81,39 @@ class StepRunArgs {
     /** @var SubjectEntry<S<P>> $entry -- for PHPStan */
     $entry = $this->getSingleSubjectEntry($key);
     return $entry;
+  }
+
+  /**
+   * @template P of Payload
+   * @param class-string<P> $class
+   * @return P
+   */
+  public function getSinglePayloadByClass(string $class): Payload {
+    $payloads = [];
+    foreach ($this->subjectEntries as $entries) {
+      if (count($entries) > 1) {
+        throw Exceptions::multiplePayloadsFound($class, $this->workflowRun->getId());
+      }
+
+      $entry = $entries[0];
+      $payload = $entry->getPayload();
+      if (get_class($payload) === $class) {
+        $payloads[] = $payload;
+      }
+    }
+
+    if (count($payloads) === 0) {
+      throw Exceptions::payloadNotFound($class, $this->workflowRun->getId());
+    }
+    if (count($payloads) > 1) {
+      throw Exceptions::multiplePayloadsFound($class, $this->workflowRun->getId());
+    }
+
+    // ensure PHPStan we're indeed returning an instance of $class
+    $payload = $payloads[0];
+    if (!$payload instanceof $class) {
+      throw InvalidStateException::create();
+    }
+    return $payload;
   }
 }

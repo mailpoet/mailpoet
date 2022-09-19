@@ -100,18 +100,8 @@ class SendEmailAction implements Action {
 
   public function run(StepRunArgs $args): void {
     $newsletter = $this->getEmailForStep($args->getStep());
-
-    $segmentPayload = $args->getSingleSubjectEntry('mailpoet:segment')->getPayload();
-    if (!$segmentPayload instanceof SegmentPayload) {
-      throw new InvalidStateException();
-    }
-    $segmentId = $segmentPayload->getId();
-
-    $subscriberPayload = $args->getSingleSubjectEntry('mailpoet:subscriber')->getPayload();
-    if (!$subscriberPayload instanceof SubscriberPayload) {
-      throw new InvalidStateException();
-    }
-    $subscriberId = $subscriberPayload->getId();
+    $segmentId = $args->getSinglePayloadByClass(SegmentPayload::class)->getId();
+    $subscriberId = $args->getSinglePayloadByClass(SubscriberPayload::class)->getId();
 
     $subscriberSegment = $this->subscriberSegmentRepository->findOneBy([
       'subscriber' => $subscriberId,

@@ -24,6 +24,8 @@ class Exceptions {
   private const SUBJECT_LOAD_FAILED = 'mailpoet_automation_workflow_subject_load_failed';
   private const SUBJECT_DATA_NOT_FOUND = 'mailpoet_automation_subject_data_not_found';
   private const MULTIPLE_SUBJECTS_FOUND = 'mailpoet_automation_multiple_subjects_found';
+  private const PAYLOAD_NOT_FOUND = 'mailpoet_automation_payload_not_found';
+  private const MULTIPLE_PAYLOADS_FOUND = 'mailpoet_automation_multiple_payloads_found';
   private const WORKFLOW_STRUCTURE_MODIFICATION_NOT_SUPPORTED = 'mailpoet_automation_workflow_structure_modification_not_supported';
   private const WORKFLOW_STRUCTURE_NOT_VALID = 'mailpoet_automation_workflow_structure_not_valid';
   private const WORKFLOW_STEP_MODIFIED_WHEN_UNKNOWN = 'mailpoet_automation_workflow_step_modified_when_unknon';
@@ -146,6 +148,24 @@ class Exceptions {
       // translators: %1$s is the key of the subject, %2$d is workflow run ID.
       ->withMessage(
         sprintf(__("Multiple subjects with key '%1\$s' found for workflow run with ID '%2\$d', only one expected.", 'mailpoet'), $key, $workflowRunId)
+      );
+  }
+
+  public static function payloadNotFound(string $class, int $workflowRunId): NotFoundException {
+    return NotFoundException::create()
+      ->withErrorCode(self::PAYLOAD_NOT_FOUND)
+      // translators: %1$s is the class of the payload, %2$d is workflow run ID.
+      ->withMessage(
+        sprintf(__("Payload of class '%1\$s' not found for workflow run with ID '%2\$d'.", 'mailpoet'), $class, $workflowRunId)
+      );
+  }
+
+  public static function multiplePayloadsFound(string $class, int $workflowRunId): NotFoundException {
+    return NotFoundException::create()
+      ->withErrorCode(self::MULTIPLE_PAYLOADS_FOUND)
+      // translators: %1$s is the class of the payloads, %2$d is workflow run ID.
+      ->withMessage(
+        sprintf(__("Multiple payloads of class '%1\$s' found for workflow run with ID '%2\$d'.", 'mailpoet'), $class, $workflowRunId)
       );
   }
 
