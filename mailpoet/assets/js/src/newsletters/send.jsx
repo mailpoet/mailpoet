@@ -29,6 +29,11 @@ const generateGaTrackingCampaignName = (id, subject) => {
   return `${name || 'email'}-${id}`;
 };
 
+const getDelayValueForTracking = (emailOpts) =>
+  emailOpts.afterTimeType === 'immediate'
+    ? 'immediate'
+    : `${emailOpts.afterTimeNumber} ${emailOpts.afterTimeType}`;
+
 function validateNewsletter(newsletter) {
   let body;
   let content;
@@ -390,17 +395,17 @@ class NewsletterSendComponent extends Component {
                 )}
               </p>,
             );
+            MailPoet.trackEvent('Emails > Automatic email activated', {
+              Delay: getDelayValueForTracking(opts),
+              Type: slugify(`${opts.group}-${opts.event}`),
+            });
           } else if (response.data.type === 'welcome') {
             this.context.notices.success(
               <p>{MailPoet.I18n.t('welcomeEmailActivated')}</p>,
             );
-            const trackDelay =
-              opts.afterTimeType === 'immediate'
-                ? 'immediate'
-                : `${opts.afterTimeNumber} ${opts.afterTimeType}`;
             MailPoet.trackEvent('Emails > Welcome email activated', {
               'List type': opts.event,
-              Delay: trackDelay,
+              Delay: getDelayValueForTracking(opts),
             });
           } else if (response.data.type === 'notification') {
             this.context.notices.success(
