@@ -5,6 +5,7 @@ namespace MailPoet\Automation\Engine\Control;
 use Exception;
 use MailPoet\Automation\Engine\Control\Steps\ActionStepRunner;
 use MailPoet\Automation\Engine\Data\Step;
+use MailPoet\Automation\Engine\Data\StepRunArgs;
 use MailPoet\Automation\Engine\Data\SubjectEntry;
 use MailPoet\Automation\Engine\Data\WorkflowRun;
 use MailPoet\Automation\Engine\Data\WorkflowRunLog;
@@ -133,7 +134,8 @@ class StepHandler {
       try {
         $requiredSubjects = $step instanceof Action ? $step->getSubjectKeys() : [];
         $subjectEntries = $this->getSubjectEntries($workflowRun, $requiredSubjects);
-        $this->stepRunners[$stepType]->run($workflow, $workflowRun, $step, $subjectEntries);
+        $args = new StepRunArgs($workflow, $workflowRun, $step, $subjectEntries);
+        $this->stepRunners[$stepType]->run($args);
         $log->markCompletedSuccessfully();
       } catch (Throwable $e) {
         $log->markFailed();

@@ -140,11 +140,13 @@ class Exceptions {
       );
   }
 
-  public static function multipleSubjectsFound(string $key): InvalidStateException {
+  public static function multipleSubjectsFound(string $key, int $workflowRunId): InvalidStateException {
     return InvalidStateException::create()
       ->withErrorCode(self::MULTIPLE_SUBJECTS_FOUND)
-      // translators: %s is the name of the key.
-      ->withMessage(sprintf(__("Multiple subjects with key '%s' found, only one expected.", 'mailpoet'), $key));
+      // translators: %1$s is the key of the subject, %2$d is workflow run ID.
+      ->withMessage(
+        sprintf(__("Multiple subjects with key '%1\$s' found for workflow run with ID '%2\$d', only one expected.", 'mailpoet'), $key, $workflowRunId)
+      );
   }
 
   public static function workflowStructureModificationNotSupported(): UnexpectedValueException {
