@@ -56,6 +56,7 @@ class AutomationEditor {
       exit();
     }
 
+    $roles = new \WP_Roles();
     $this->pageRenderer->displayPage('automation/editor.html', [
       'context' => $this->buildContext(),
       'workflow' => $this->buildWorkflow($workflow),
@@ -64,6 +65,7 @@ class AutomationEditor {
         'root' => rtrim($this->wp->escUrlRaw($this->wp->restUrl()), '/'),
         'nonce' => $this->wp->wpCreateNonce('wp_rest'),
       ],
+      'user_roles' => $roles->get_names(),
     ]);
   }
 
