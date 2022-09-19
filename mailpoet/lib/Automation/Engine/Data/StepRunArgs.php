@@ -19,6 +19,9 @@ class StepRunArgs {
   /** @var array<string, SubjectEntry<Subject<Payload>>[]> */
   private $subjectEntries = [];
 
+  /** @var array<class-string, string> */
+  private $subjectKeyClassMap = [];
+
   /** @param SubjectEntry<Subject<Payload>>[] $subjectsEntries */
   public function __construct(
     Workflow $workflow,
@@ -34,6 +37,7 @@ class StepRunArgs {
       $subject = $entry->getSubject();
       $key = $subject->getKey();
       $this->subjectEntries[$key] = array_merge($this->subjectEntries[$key] ?? [], [$entry]);
+      $this->subjectKeyClassMap[get_class($subject)] = $key;
     }
   }
 
@@ -59,5 +63,22 @@ class StepRunArgs {
       throw Exceptions::multipleSubjectsFound($key, $this->workflowRun->getId());
     }
     return $subjects[0];
+  }
+
+  /**
+   * @template P of Payload
+   * @template S of Subject<P>
+   * @param class-string<S> $class
+   * @return SubjectEntry<S<P>>
+   */
+  public function getSingleSubjectEntryByClass(string $class): SubjectEntry {
+    $key = $this->subjectKeyClassMap[$class] ?? null;
+    if (!$key) {
+      throw Exceptions::subjectClassNotFound($class);
+    }
+
+    /** @var SubjectEntry<S<P>> $entry -- for PHPStan */
+    $entry = $this->getSingleSubjectEntry($key);
+    return $entry;
   }
 }
