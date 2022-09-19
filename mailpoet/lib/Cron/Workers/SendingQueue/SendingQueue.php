@@ -30,7 +30,10 @@ use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 
 class SendingQueue {
+  /** @var MailerTask */
   public $mailerTask;
+
+  /** @var NewsletterTask  */
   public $newsletterTask;
 
   const TASK_TYPE = 'sending';
@@ -281,6 +284,10 @@ class SendingQueue {
       $subscriberEntity = $this->subscribersRepository->findOneById($subscriber->id);
 
       if (!$subscriberEntity instanceof SubscriberEntity) {
+        continue;
+      }
+
+      if (!$newsletterEntity instanceof NewsletterEntity) {
         continue;
       }
 
