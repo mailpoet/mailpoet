@@ -15,6 +15,7 @@ use MailPoet\Segments\DynamicSegments\Filters\MailPoetCustomFields;
 use MailPoet\Segments\DynamicSegments\Filters\SubscriberScore;
 use MailPoet\Segments\DynamicSegments\Filters\SubscriberSegment;
 use MailPoet\Segments\DynamicSegments\Filters\SubscriberSubscribedDate;
+use MailPoet\Segments\DynamicSegments\Filters\SubscriberTag;
 use MailPoet\Segments\DynamicSegments\Filters\UserRole;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceCategory;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceCountry;
@@ -29,6 +30,7 @@ use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\TrackingConfig;
 use MailPoet\Subscribers\NewSubscriberNotificationMailer;
 use MailPoet\Subscribers\SubscriberListingRepository;
+use MailPoet\Tags\TagRepository;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 use MailPoet\WP\Functions as WPFunctions;
@@ -43,6 +45,9 @@ class Reporter {
 
   /** @var DynamicSegmentFilterRepository */
   private $dynamicSegmentFilterRepository;
+
+  /** @var TagRepository */
+  private $tagRepository;
 
   /** @var ServicesChecker */
   private $servicesChecker;
@@ -69,6 +74,7 @@ class Reporter {
     NewslettersRepository $newslettersRepository,
     SegmentsRepository $segmentsRepository,
     DynamicSegmentFilterRepository $dynamicSegmentFilterRepository,
+    TagRepository $tagRepository,
     ServicesChecker $servicesChecker,
     SettingsController $settings,
     WooCommerceHelper $woocommerceHelper,
@@ -80,6 +86,7 @@ class Reporter {
     $this->newslettersRepository = $newslettersRepository;
     $this->segmentsRepository = $segmentsRepository;
     $this->dynamicSegmentFilterRepository = $dynamicSegmentFilterRepository;
+    $this->tagRepository = $tagRepository;
     $this->servicesChecker = $servicesChecker;
     $this->settings = $settings;
     $this->woocommerceHelper = $woocommerceHelper;
@@ -136,6 +143,7 @@ class Reporter {
       'Total number of standard newsletters sent' => $newsletters['sent_newsletters_count'],
       'Number of segments' => isset($segments['dynamic']) ? (int)$segments['dynamic'] : 0,
       'Number of lists' => isset($segments['default']) ? (int)$segments['default'] : 0,
+      'Number of subscriber tags' => $this->tagRepository->countBy([]),
       'Stop sending to inactive subscribers' => $inactiveSubscribersStatus,
       'Plugin > MailPoet Premium' => $this->wp->isPluginActive('mailpoet-premium/mailpoet-premium.php'),
       'Plugin > bounce add-on' => $this->wp->isPluginActive('mailpoet-bounce-handler/mailpoet-bounce-handler.php'),
@@ -177,6 +185,7 @@ class Reporter {
       'Segment > subscribed date' => $this->isFilterTypeActive(DynamicSegmentFilterData::TYPE_USER_ROLE, SubscriberSubscribedDate::TYPE),
       'Segment > total spent' => $this->isFilterTypeActive(DynamicSegmentFilterData::TYPE_WOOCOMMERCE, WooCommerceTotalSpent::ACTION_TOTAL_SPENT),
       'Segment > WordPress user role' => $this->isFilterTypeActive(DynamicSegmentFilterData::TYPE_USER_ROLE, UserRole::TYPE),
+      'Segment > subscriber tags' => $this->isFilterTypeActive(DynamicSegmentFilterData::TYPE_USER_ROLE, SubscriberTag::TYPE),
       'Number of segments with multiple conditions' => $this->segmentsRepository->getSegmentCountWithMultipleFilters(),
       'Support tier' => $this->subscribersFeature->hasPremiumSupport() ? 'premium' : 'free',
       'Unauthorized email notice shown' => !empty($this->settings->get(AuthorizedEmailsController::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING)),
