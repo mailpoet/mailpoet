@@ -361,24 +361,6 @@ class NewsletterTest extends \MailPoetTest {
       ->stringNotContainsString(Router::NAME . '&endpoint=track&action=click&data=');
   }
 
-  public function testItGetsSegments() {
-    $newsletterEntity = $this->newslettersRepository->findOneById($this->newsletter->id);
-    $this->assertInstanceOf(NewsletterEntity::class, $newsletterEntity);
-    $segmentIds = [];
-
-    for ($i = 1; $i <= 3; $i++) {
-      $segment = (new SegmentFactory())->create();
-      $segmentIds[] = $segment->getId();
-      $newsletterSegment = new NewsletterSegmentEntity($newsletterEntity, $segment);
-      $this->entityManager->persist($newsletterSegment);
-    }
-    $this->entityManager->flush();
-
-    expect($this->newsletterTask->getNewsletterSegments($newsletterEntity))->equals(
-      $segmentIds
-    );
-  }
-
   public function testItLogsErrorWhenQueueWithCannotBeSaved() {
     $this->sendingTask->nonExistentColumn = true; // this will trigger save error
     try {
