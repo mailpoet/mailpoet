@@ -24,7 +24,6 @@ use MailPoet\Entities\SubscriberIPEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Form\Util\FieldNameObfuscator;
 use MailPoet\Listing\Handler;
-use MailPoet\Models\Segment;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Settings\SettingsController;
@@ -995,7 +994,7 @@ class SubscribersTest extends \MailPoetTest {
   public function testItKeepsSpecialSegmentsUnchangedAfterSaving() {
     $wcSegment = (new SegmentFactory())
       ->withName('WooCommerce Users')
-      ->withType(Segment::TYPE_WC_USERS)
+      ->withType(SegmentEntity::TYPE_WC_USERS)
       ->create();
     $subscriber = (new SubscriberFactory())
       ->withEmail('woo@commerce.com')
