@@ -108,7 +108,7 @@ class Exceptions {
   public static function workflowRunNotRunning(int $id, string $status): InvalidStateException {
     return InvalidStateException::create()
       ->withErrorCode(self::WORKFLOW_RUN_NOT_RUNNING)
-      // translators: %1$d is the ID of the workflow run, %2$s it's current status.
+      // translators: %1$d is the ID of the workflow run, %2$s its current status.
       ->withMessage(sprintf(__('Workflow run with ID "%1$d" is not running. Status: %2$s', 'mailpoet'), $id, $status));
   }
 
@@ -119,11 +119,11 @@ class Exceptions {
       ->withMessage(sprintf(__("Subject with key '%s' not found.", 'mailpoet'), $key));
   }
 
-  public static function subjectClassNotFound(string $key): NotFoundException {
+  public static function subjectClassNotFound(string $class): NotFoundException {
     return NotFoundException::create()
       ->withErrorCode(self::SUBJECT_NOT_FOUND)
-      // translators: %s is the key of the subject class not found.
-      ->withMessage(sprintf(__("Subject of class '%s' not found.", 'mailpoet'), $key));
+      // translators: %s is the class name of the subject not found.
+      ->withMessage(sprintf(__("Subject of class '%s' not found.", 'mailpoet'), $class));
   }
 
   public static function subjectLoadFailed(string $key, array $args): InvalidStateException {
