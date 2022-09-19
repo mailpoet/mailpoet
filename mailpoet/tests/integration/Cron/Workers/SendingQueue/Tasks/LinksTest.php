@@ -43,7 +43,7 @@ class LinksTest extends \MailPoetTest {
     $this->links->saveLinks($links, $this->newsletter, $queue);
 
     $newsletterLink = $this->newsletterLinkRepository->findOneBy(['hash' => $links[0]['hash']]);
-    assert($newsletterLink instanceof NewsletterLinkEntity);
+    $this->assertInstanceOf(NewsletterLinkEntity::class, $newsletterLink);
     $this->assertInstanceOf(NewsletterEntity::class, $newsletterLink->getNewsletter());
     expect($newsletterLink->getNewsletter()->getId())->equals($this->newsletter->getId());
     $this->assertInstanceOf(SendingQueueEntity::class, $newsletterLink->getQueue());
@@ -75,7 +75,7 @@ class LinksTest extends \MailPoetTest {
     $result = $this->links->process($renderedNewsletter, $this->newsletter, $this->queue);
 
     $newsletterLink = $this->newsletterLinkRepository->findOneBy(['newsletter' => $this->newsletter->getId()]);
-    assert($newsletterLink instanceof NewsletterLinkEntity);
+    $this->assertInstanceOf(NewsletterLinkEntity::class, $newsletterLink);
     expect($result['html'])->stringContainsString($newsletterLink->getHash());
   }
 

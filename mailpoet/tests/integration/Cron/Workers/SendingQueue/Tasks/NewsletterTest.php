@@ -170,7 +170,7 @@ class NewsletterTest extends \MailPoetTest {
     $newsletterTask->trackingEnabled = true;
     $newsletterTask->preProcessNewsletter($this->newsletter, $this->sendingTask);
     $link = $this->newsletterLinkRepository->findOneBy(['newsletter' => $this->newsletter->id]);
-    assert($link instanceof NewsletterLinkEntity);
+    $this->assertInstanceOf(NewsletterLinkEntity::class, $link);
     $updatedQueue = SendingTask::getByNewsletterId($this->newsletter->id);
     $renderedNewsletter = $updatedQueue->getNewsletterRenderedBody();
     expect($renderedNewsletter['html'])
@@ -254,7 +254,7 @@ class NewsletterTest extends \MailPoetTest {
     $this->newslettersRepository->flush();
     $this->newsletterTask->markNewsletterAsSent($newsletter, $this->sendingTask);
     $updatedNewsletter = $this->newslettersRepository->findOneById($newsletter->getId());
-    assert($updatedNewsletter instanceof NewsletterEntity);
+    $this->assertInstanceOf(NewsletterEntity::class, $updatedNewsletter);
     expect($updatedNewsletter->getStatus())->equals(NewsletterEntity::STATUS_SENT);
     $sentAt = $updatedNewsletter->getSentAt();
     $this->assertInstanceOf(\DateTime::class, $sentAt);
@@ -267,7 +267,7 @@ class NewsletterTest extends \MailPoetTest {
     $this->newslettersRepository->flush();
     $this->newsletterTask->markNewsletterAsSent($newsletter, $this->sendingTask);
     $updatedNewsletter = $this->newslettersRepository->findOneById($newsletter->getId());
-    assert($updatedNewsletter instanceof NewsletterEntity);
+    $this->assertInstanceOf(NewsletterEntity::class, $updatedNewsletter);
     expect($updatedNewsletter->getStatus())->equals(NewsletterEntity::STATUS_SENT);
     $sentAt = $updatedNewsletter->getSentAt();
     $this->assertInstanceOf(\DateTime::class, $sentAt);
@@ -280,7 +280,7 @@ class NewsletterTest extends \MailPoetTest {
     $this->newslettersRepository->flush();
     $this->newsletterTask->markNewsletterAsSent($newsletter, $this->sendingTask);
     $updatedNewsletter = $this->newslettersRepository->findOneById($newsletter->getId());
-    assert($updatedNewsletter instanceof NewsletterEntity);
+    $this->assertInstanceOf(NewsletterEntity::class, $updatedNewsletter);
     expect($updatedNewsletter->getStatus())->notEquals(NewsletterEntity::STATUS_SENT);
   }
 
@@ -479,7 +479,7 @@ class NewsletterTest extends \MailPoetTest {
 
     // properly serialized object
     $sendingQueue = $this->sendingQueuesRepository->findOneById($this->sendingTask->id);
-    assert($sendingQueue instanceof SendingQueueEntity);
+    $this->assertInstanceOf(SendingQueueEntity::class, $sendingQueue);
     $sendingQueue->setNewsletterRenderedBody(['html' => 'test', 'text' => 'test']);
     $this->sendingQueuesRepository->persist($sendingQueue);
     $this->sendingQueuesRepository->flush();
