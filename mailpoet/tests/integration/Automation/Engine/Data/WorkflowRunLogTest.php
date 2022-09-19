@@ -3,6 +3,7 @@
 namespace MailPoet\Test\Automation\Engine\Data;
 
 use MailPoet\Automation\Engine\Control\StepHandler;
+use MailPoet\Automation\Engine\Data\StepRunArgs;
 use MailPoet\Automation\Engine\Data\Step;
 use MailPoet\Automation\Engine\Data\Workflow;
 use MailPoet\Automation\Engine\Data\WorkflowRun;
@@ -294,9 +295,9 @@ class TestAction implements Action {
     return true;
   }
 
-  public function run(Workflow $workflow, WorkflowRun $workflowRun, Step $step): void {
+  public function run(StepRunArgs $args): void {
     if ($this->callback) {
-      ($this->callback)($workflow, $workflowRun, $step);
+      ($this->callback)($args);
     }
   }
 

@@ -4,8 +4,8 @@ namespace MailPoet\Automation\Integrations\Core\Actions;
 
 use MailPoet\Automation\Engine\Control\ActionScheduler;
 use MailPoet\Automation\Engine\Data\Step;
+use MailPoet\Automation\Engine\Data\StepRunArgs;
 use MailPoet\Automation\Engine\Data\Workflow;
-use MailPoet\Automation\Engine\Data\WorkflowRun;
 use MailPoet\Automation\Engine\Hooks;
 use MailPoet\Automation\Engine\Workflows\Action;
 use MailPoet\Validator\Builder;
@@ -40,11 +40,12 @@ class DelayAction implements Action {
     return [];
   }
 
-  public function run(Workflow $workflow, WorkflowRun $workflowRun, Step $step): void {
+  public function run(StepRunArgs $args): void {
+    $step = $args->getStep();
     $nextStep = $step->getNextSteps()[0] ?? null;
     $this->actionScheduler->schedule(time() + $this->calculateSeconds($step), Hooks::WORKFLOW_STEP, [
       [
-        'workflow_run_id' => $workflowRun->getId(),
+        'workflow_run_id' => $args->getWorkflowRun()->getId(),
         'step_id' => $nextStep ? $nextStep->getId() : null,
       ],
     ]);
