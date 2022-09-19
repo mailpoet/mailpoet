@@ -2,13 +2,19 @@
 
 namespace MailPoet\Automation\Engine\Workflows;
 
+use MailPoet\Automation\Engine\Data\Subject as SubjectData;
+use MailPoet\Validator\Schema\ObjectSchema;
+
+/**
+ * @template-covariant T of Payload
+ */
 interface Subject {
   public function getKey(): string;
 
-  /** array<SubjectField> */
-  public function getFields(): array;
+  public function getName(): string;
 
-  public function load(array $args): void;
+  public function getArgsSchema(): ObjectSchema;
 
-  public function pack(): array;
+  /** @return T */
+  public function getPayload(SubjectData $subjectData): Payload;
 }
