@@ -394,9 +394,13 @@ class NewsletterSendComponent extends Component {
             this.context.notices.success(
               <p>{MailPoet.I18n.t('welcomeEmailActivated')}</p>,
             );
+            const trackDelay =
+              opts.afterTimeType === 'immediate'
+                ? 'immediate'
+                : `${opts.afterTimeNumber} ${opts.afterTimeType}`;
             MailPoet.trackEvent('Emails > Welcome email activated', {
               'List type': opts.event,
-              Delay: `${opts.afterTimeNumber} ${opts.afterTimeType}`,
+              Delay: trackDelay,
             });
           } else if (response.data.type === 'notification') {
             this.context.notices.success(
