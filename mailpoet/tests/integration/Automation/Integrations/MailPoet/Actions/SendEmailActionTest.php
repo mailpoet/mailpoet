@@ -2,7 +2,10 @@
 
 namespace MailPoet\Test\Automation\Integrations\MailPoet\Actions;
 
+use MailPoet\Automation\Engine\Data\StepRunArgs;
 use MailPoet\Automation\Engine\Data\Step;
+use MailPoet\Automation\Engine\Data\Subject;
+use MailPoet\Automation\Engine\Data\SubjectEntry;
 use MailPoet\Automation\Engine\Data\Workflow;
 use MailPoet\Automation\Engine\Data\WorkflowRun;
 use MailPoet\Automation\Integrations\MailPoet\Actions\SendEmailAction;
@@ -100,7 +103,7 @@ class SendEmailActionTest extends \MailPoetTest {
       ->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)
       ->withSegments([$segment])
       ->create();
-    $subjects = $this->getLoadedSubjects($subscriber, $segment);
+    $subjects = $this->getSubjectData($subscriber, $segment);
     $email = (new Newsletter())->withAutomationType()->create();
 
     $step = new Step('step-id', Step::TYPE_ACTION, 'step-key', ['email_id' => $email->getId()], []);
@@ -110,7 +113,7 @@ class SendEmailActionTest extends \MailPoetTest {
     $scheduled = $this->scheduledTasksRepository->findByNewsletterAndSubscriberId($email, (int)$subscriber->getId());
     expect($scheduled)->count(0);
 
-    $this->action->run($workflow, $run, $step);
+    $this->action->run(new StepRunArgs($workflow, $run, $step, $this->getSubjectEntries($subjects)));
 
     $scheduled = $this->scheduledTasksRepository->findByNewsletterAndSubscriberId($email, (int)$subscriber->getId());
     expect($scheduled)->count(1);
@@ -122,7 +125,7 @@ class SendEmailActionTest extends \MailPoetTest {
       ->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)
       ->withSegments([$segment])
       ->create();
-    $subjects = $this->getLoadedSubjects($subscriber, $segment);
+    $subjects = $this->getSubjectData($subscriber, $segment);
     $email = (new Newsletter())->withAutomationType()->create();
 
     $step = new Step('step-id', Step::TYPE_ACTION, 'step-key', ['email_id' => $email->getId()], []);
@@ -133,13 +136,13 @@ class SendEmailActionTest extends \MailPoetTest {
     expect($scheduled)->count(0);
 
     $action = ContainerWrapper::getInstance()->get(SendEmailAction::class);
-    $action->run($workflow, $run, $step);
+    $action->run(new StepRunArgs($workflow, $run, $step, $this->getSubjectEntries($subjects)));
 
     $scheduled = $this->scheduledTasksRepository->findByNewsletterAndSubscriberId($email, (int)$subscriber->getId());
     expect($scheduled)->count(1);
 
     try {
-      $action->run($workflow, $run, $step);
+      $action->run(new StepRunArgs($workflow, $run, $step, $this->getSubjectEntries($subjects)));
     } catch (InvalidStateException $exception) {
       // The exception itself isn't as important as the outcome
     }
@@ -154,7 +157,7 @@ class SendEmailActionTest extends \MailPoetTest {
       ->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)
       ->withSegments([$segment])
       ->create();
-    $subjects = $this->getLoadedSubjects($subscriber, $segment);
+    $subjects = $this->getSubjectData($subscriber, $segment);
     $email = (new Newsletter())->withAutomationType()->create();
 
     $step = new Step('step-id', Step::TYPE_ACTION, 'step-key', ['email_id' => $email->getId()], []);
@@ -168,7 +171,7 @@ class SendEmailActionTest extends \MailPoetTest {
     $action = ContainerWrapper::getInstance()->get(SendEmailAction::class);
 
     try {
-      $action->run($workflow, $run, $step);
+      $action->run(new StepRunArgs($workflow, $run, $step, $this->getSubjectEntries($subjects)));
     } catch (Exception $exception) {
       // The exception itself isn't as important as the outcome
     }
@@ -183,7 +186,7 @@ class SendEmailActionTest extends \MailPoetTest {
       ->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)
       ->withSegments([$segment])
       ->create();
-    $subjects = $this->getLoadedSubjects($subscriber, $segment);
+    $subjects = $this->getSubjectData($subscriber, $segment);
     $email = (new Newsletter())->withAutomationType()->create();
 
     $step = new Step('step-id', Step::TYPE_ACTION, 'step-key', ['email_id' => $email->getId()], []);
@@ -197,7 +200,7 @@ class SendEmailActionTest extends \MailPoetTest {
     $action = ContainerWrapper::getInstance()->get(SendEmailAction::class);
 
     try {
-      $action->run($workflow, $run, $step);
+      $action->run(new StepRunArgs($workflow, $run, $step, $this->getSubjectEntries($subjects)));
     } catch (Exception $exception) {
       // The exception itself isn't as important as the outcome
     }
@@ -221,7 +224,7 @@ class SendEmailActionTest extends \MailPoetTest {
         ->withStatus($status)
         ->withSegments([$segment])
         ->create();
-      $subjects = $this->getLoadedSubjects($subscriber, $segment);
+      $subjects = $this->getSubjectData($subscriber, $segment);
       $email = (new Newsletter())->withAutomationType()->create();
 
       $step = new Step('step-id', Step::TYPE_ACTION, 'step-key', ['email_id' => $email->getId()], []);
@@ -235,7 +238,7 @@ class SendEmailActionTest extends \MailPoetTest {
       $action = ContainerWrapper::getInstance()->get(SendEmailAction::class);
 
       try {
-        $action->run($workflow, $run, $step);
+        $action->run(new StepRunArgs($workflow, $run, $step, $this->getSubjectEntries($subjects)));
       } catch (Exception $exception) {
         // The exception itself isn't as important as the outcome
       }
@@ -250,7 +253,7 @@ class SendEmailActionTest extends \MailPoetTest {
     $subscriber = (new Subscriber())
       ->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)
       ->create();
-    $subjects = $this->getLoadedSubjects($subscriber, $segment);
+    $subjects = $this->getSubjectData($subscriber, $segment);
     $email = (new Newsletter())->withAutomationType()->create();
 
     $step = new Step('step-id', Step::TYPE_ACTION, 'step-key', ['email_id' => $email->getId()], []);
@@ -263,27 +266,13 @@ class SendEmailActionTest extends \MailPoetTest {
     $action = ContainerWrapper::getInstance()->get(SendEmailAction::class);
 
     try {
-      $action->run($workflow, $run, $step);
+      $action->run(new StepRunArgs($workflow, $run, $step, $this->getSubjectEntries($subjects)));
     } catch (Exception $exception) {
       // The exception itself isn't as important as the outcome
     }
 
     $scheduled = $this->scheduledTasksRepository->findByNewsletterAndSubscriberId($email, (int)$subscriber->getId());
     expect($scheduled)->count(0);
-  }
-
-  private function getLoadedSubscriberSubject(SubscriberEntity $subscriber): SubscriberSubject {
-    $subscriberSubject = $this->diContainer->get(SubscriberSubject::class);
-    $subscriberSubject->load(['subscriber_id' => $subscriber->getId()]);
-
-    return $subscriberSubject;
-  }
-
-  private function getLoadedSegmentSubject(SegmentEntity $segment): SegmentSubject {
-    $segmentSubject = $this->diContainer->get(SegmentSubject::class);
-    $segmentSubject->load(['segment_id' => $segment->getId()]);
-
-    return $segmentSubject;
   }
 
   private function getSubjects(): array {
@@ -293,10 +282,23 @@ class SendEmailActionTest extends \MailPoetTest {
     ];
   }
 
-  private function getLoadedSubjects(SubscriberEntity $subscriber, SegmentEntity $segment): array {
+  private function getSubjectData(SubscriberEntity $subscriber, SegmentEntity $segment): array {
     return [
-      $this->getLoadedSubscriberSubject($subscriber),
-      $this->getLoadedSegmentSubject($segment),
+      new Subject('mailpoet:segment', ['segment_id' => $segment->getId()]),
+      new Subject('mailpoet:subscriber', ['subscriber_id'=> $subscriber->getId()]),
+    ];
+  }
+
+  private function getSubjectEntries(array $subjects): array {
+    $segmentData = array_filter($subjects, function (Subject $subject) {
+      return $subject->getKey() === 'mailpoet:segment';
+    });
+    $subscriberData = array_filter($subjects, function (Subject $subject) {
+      return $subject->getKey() === 'mailpoet:subscriber';
+    });
+    return [
+      new SubjectEntry($this->segmentSubject, reset($segmentData)),
+      new SubjectEntry($this->subscriberSubject, reset($subscriberData)),
     ];
   }
 
