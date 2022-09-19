@@ -17,4 +17,8 @@ class RootStep implements Step {
   public function getArgsSchema(): ObjectSchema {
     return new ObjectSchema();
   }
+
+  public function getSubjectKeys(): array {
+    return [];
+  }
 }

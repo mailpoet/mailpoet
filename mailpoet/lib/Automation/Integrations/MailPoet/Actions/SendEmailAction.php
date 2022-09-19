@@ -72,6 +72,13 @@ class SendEmailAction implements Action {
     ]);
   }
 
+  public function getSubjectKeys(): array {
+    return [
+      'mailpoet:segment',
+      'mailpoet:subscriber',
+    ];
+  }
+
   public function isValid(array $subjects, Step $step, Workflow $workflow): bool {
     try {
       $this->getEmailForStep($step);

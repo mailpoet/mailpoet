@@ -36,6 +36,10 @@ class DelayAction implements Action {
     ]);
   }
 
+  public function getSubjectKeys(): array {
+    return [];
+  }
+
   public function run(Workflow $workflow, WorkflowRun $workflowRun, Step $step): void {
     $nextStep = $step->getNextSteps()[0] ?? null;
     $this->actionScheduler->schedule(time() + $this->calculateSeconds($step), Hooks::WORKFLOW_STEP, [
