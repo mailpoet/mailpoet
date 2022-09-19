@@ -22,6 +22,7 @@ class Exceptions {
   private const WORKFLOW_RUN_NOT_RUNNING = 'mailpoet_automation_workflow_run_not_running';
   private const SUBJECT_NOT_FOUND = 'mailpoet_automation_subject_not_found';
   private const SUBJECT_LOAD_FAILED = 'mailpoet_automation_workflow_subject_load_failed';
+  private const SUBJECT_DATA_NOT_FOUND = 'mailpoet_automation_subject_data_not_found';
   private const MULTIPLE_SUBJECTS_FOUND = 'mailpoet_automation_multiple_subjects_found';
   private const WORKFLOW_STRUCTURE_MODIFICATION_NOT_SUPPORTED = 'mailpoet_automation_workflow_structure_modification_not_supported';
   private const WORKFLOW_STRUCTURE_NOT_VALID = 'mailpoet_automation_workflow_structure_not_valid';
@@ -128,6 +129,15 @@ class Exceptions {
       ->withErrorCode(self::SUBJECT_LOAD_FAILED)
       // translators: %1$s is the name of the key, %2$s the arguments.
       ->withMessage(sprintf(__('Subject with key "%1$s" and args "%2$s" failed to load.', 'mailpoet'), $key, Json::encode($args)));
+  }
+
+  public static function subjectDataNotFound(string $key, int $workflowRunId): NotFoundException {
+    return NotFoundException::create()
+      ->withErrorCode(self::SUBJECT_DATA_NOT_FOUND)
+      // translators: %1$s is the key of the subject, %2$d is workflow run ID.
+      ->withMessage(
+        sprintf(__("Subject data for subject with key '%1\$s' not found for workflow run with ID '%2\$d'.", 'mailpoet'), $key, $workflowRunId)
+      );
   }
 
   public static function multipleSubjectsFound(string $key): InvalidStateException {
