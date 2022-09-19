@@ -8,6 +8,7 @@ use MailPoet\Automation\Integrations\MailPoet\Actions\SendEmailAction;
 use MailPoet\Automation\Integrations\MailPoet\Subjects\SegmentSubject;
 use MailPoet\Automation\Integrations\MailPoet\Subjects\SubscriberSubject;
 use MailPoet\Automation\Integrations\MailPoet\Triggers\SegmentSubscribedTrigger;
+use MailPoet\Automation\Integrations\MailPoet\Triggers\UserRegistrationTrigger;
 
 class MailPoetIntegration implements Integration {
   /** @var SegmentSubject */
@@ -19,6 +20,9 @@ class MailPoetIntegration implements Integration {
   /** @var SegmentSubscribedTrigger */
   private $segmentSubscribedTrigger;
 
+  /** @var UserRegistrationTrigger  */
+  private $userRegistrationTrigger;
+
   /** @var SendEmailAction */
   private $sendEmailAction;
 
@@ -26,11 +30,13 @@ class MailPoetIntegration implements Integration {
     SegmentSubject $segmentSubject,
     SubscriberSubject $subscriberSubject,
     SegmentSubscribedTrigger $segmentSubscribedTrigger,
+    UserRegistrationTrigger $userRegistrationTrigger,
     SendEmailAction $sendEmailAction
   ) {
     $this->segmentSubject = $segmentSubject;
     $this->subscriberSubject = $subscriberSubject;
     $this->segmentSubscribedTrigger = $segmentSubscribedTrigger;
+    $this->userRegistrationTrigger = $userRegistrationTrigger;
     $this->sendEmailAction = $sendEmailAction;
   }
 
@@ -38,6 +44,7 @@ class MailPoetIntegration implements Integration {
     $registry->addSubject($this->segmentSubject);
     $registry->addSubject($this->subscriberSubject);
     $registry->addTrigger($this->segmentSubscribedTrigger);
+    $registry->addTrigger($this->userRegistrationTrigger);
     $registry->addAction($this->sendEmailAction);
 
     // sync step args (subject, preheader, etc.) to email settings
