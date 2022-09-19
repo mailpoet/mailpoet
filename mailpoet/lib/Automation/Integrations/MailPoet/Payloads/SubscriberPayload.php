@@ -1,0 +1,34 @@
+<?php declare(strict_types = 1);
+
+namespace MailPoet\Automation\Integrations\MailPoet\Payloads;
+
+use MailPoet\Automation\Engine\Workflows\Payload;
+use MailPoet\Entities\SubscriberEntity;
+use MailPoet\InvalidStateException;
+
+class SubscriberPayload implements Payload {
+  /** @var SubscriberEntity */
+  private $subscriber;
+
+  public function __construct(
+    SubscriberEntity $subscriber
+  ) {
+    $this->subscriber = $subscriber;
+  }
+
+  public function getId(): int {
+    $id = $this->subscriber->getId();
+    if (!$id) {
+      throw new InvalidStateException();
+    }
+    return $id;
+  }
+
+  public function getEmail(): string {
+    return $this->subscriber->getEmail();
+  }
+
+  public function getStatus(): string {
+    return $this->subscriber->getStatus();
+  }
+}
