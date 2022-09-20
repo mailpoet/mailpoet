@@ -1,5 +1,6 @@
 <?php
 
+use Facebook\WebDriver\Exception\WebDriverException;
 use Facebook\WebDriver\Exception\UnrecognizedExceptionException;
 use Facebook\WebDriver\WebDriverKeys;
 use MailPoet\DI\ContainerWrapper;
@@ -116,16 +117,11 @@ class AcceptanceTester extends \Codeception\Actor {
 
   public function clickItemRowActionByItemName($itemName, $link) {
     $i = $this;
-    // Because click after mouseOver sometimes failed, we try the click multiple times
-    for ($x = 1; $x <= 3; $x++) {
-      try {
-        $i->moveMouseOver(['xpath' => '//*[text()="' . $itemName . '"]//ancestor::tr']);
-        $i->click($link, ['xpath' => '//*[text()="' . $itemName . '"]//ancestor::tr']);
-        break;
-      } catch (Exception $exception) {
-        continue;
-      }
-    }
+    $itemNameCellXpath = ['xpath' => '//tr//*[text()="' . $itemName . '"]//ancestor::td'];
+    $linkXpath = ['xpath' => '//*[text()="' . $itemName . '"]//ancestor::td//a[text()="' . $link . '"]'];
+    $i->moveMouseOver($itemNameCellXpath);
+    $i->waitForElementClickable($linkXpath);
+    $i->click($linkXpath);
   }
 
   /**
@@ -289,8 +285,9 @@ class AcceptanceTester extends \Codeception\Actor {
         $retries--;
         $this->_click($link, $context);
         break;
-      } catch (UnrecognizedExceptionException $e) {
-        if ($retries > 0 && strpos($e->getMessage(), 'element click intercepted') !== false) {
+      } catch (WebDriverException $e) {
+        if ($retries > 0 && preg_match('(element click intercepted|element not interactable)', $e->getMessage()) === 1) {
+          $this->wait(0.2);
           continue;
         }
         throw $e;
