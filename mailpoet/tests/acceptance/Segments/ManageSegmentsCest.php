@@ -53,9 +53,11 @@ class ManageSegmentsCest {
 
     $i->wantTo('Set pagination to 1 user per page and check if pagination is present');
     $i->click('#show-settings-link');
+    $applyListingSettingsButton = '#screen-options-apply';
+    $i->waitForElementClickable($applyListingSettingsButton);
     $i->fillField('#mailpoet_subscribers_per_page', '1');
-    $i->click('#screen-options-apply');
-    $i->wait(2); // to avoid flakyness, required to wait a bit
+    $i->click($applyListingSettingsButton);
+    $i->reloadPage(); // to avoid flakyness we reload page manually
     $i->wantTo('Reorder subscribers by email and check if correct subscribes are present');
     $i->waitForElement('.mailpoet-listing-pages-next');
     $i->click('Subscriber', '[data-automation-id="listing-column-header-email"]');
