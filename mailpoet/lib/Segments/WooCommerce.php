@@ -269,14 +269,22 @@ class WooCommerce {
       'highestOrderId' => \PDO::PARAM_INT,
     ];
 
-    $result = $this->connection->executeQuery("
-      SELECT wpp.id AS order_id, wppm.meta_value AS email
-      FROM `{$wpdb->posts}` wpp
-      JOIN `{$wpdb->postmeta}` wppm ON wpp.ID = wppm.post_id AND wppm.meta_key = '_billing_email' AND wppm.meta_value != ''
-      WHERE wpp.post_type = 'shop_order'
-      AND (wpp.ID > :lowestOrderId AND wpp.ID <= :highestOrderId)
-      ORDER BY wpp.id
-    ", $parameters, $parametersType)->fetchAllAssociative();
+    if ($this->woocommerceHelper->isWooCommerceCustomOrdersTableEnabled()) {
+      $ordersTable = $this->woocommerceHelper->getOrdersTableName();
+      $query = "SELECT id AS order_id, billing_email AS email
+        FROM `{$ordersTable}`
+        WHERE type = 'shop_order' AND billing_email != '' AND (id > :lowestOrderId AND id <= :highestOrderId)
+        ORDER BY id";
+    } else {
+      $query = "SELECT wpp.id AS order_id, wppm.meta_value AS email
+        FROM `{$wpdb->posts}` wpp
+        JOIN `{$wpdb->postmeta}` wppm ON wpp.ID = wppm.post_id AND wppm.meta_key = '_billing_email' AND wppm.meta_value != ''
+        WHERE wpp.post_type = 'shop_order'
+        AND (wpp.ID > :lowestOrderId AND wpp.ID <= :highestOrderId)
+        ORDER BY wpp.id";
+    }
+
+    $result = $this->connection->executeQuery($query, $parameters, $parametersType)->fetchAllAssociative();
 
     $processedOrders = [];
     foreach ($result as $item) {
