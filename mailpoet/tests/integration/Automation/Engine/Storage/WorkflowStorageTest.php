@@ -4,6 +4,10 @@ namespace MailPoet\Test\Automation\Engine\Storage;
 
 use MailPoet\Automation\Engine\Data\Step;
 use MailPoet\Automation\Engine\Data\Workflow;
+use MailPoet\Automation\Engine\Data\WorkflowRun;
+use MailPoet\Automation\Engine\Data\WorkflowRunLog;
+use MailPoet\Automation\Engine\Storage\WorkflowRunLogStorage;
+use MailPoet\Automation\Engine\Storage\WorkflowRunStorage;
 use MailPoet\Automation\Engine\Storage\WorkflowStorage;
 use MailPoet\Automation\Integrations\MailPoet\Triggers\SomeoneSubscribesTrigger;
 
@@ -71,6 +75,60 @@ class WorkflowStorageTest extends \MailPoetTest
     $workflow->setStatus(Workflow::STATUS_INACTIVE);
     $this->testee->updateWorkflow($workflow);
     $this->assertEmpty($this->testee->getActiveWorkflowsByTrigger($subscriberTrigger));
+  }
+
+  public function testItCanDeleteAWorkflow() {
+    $workflowToDelete = $this->createEmptyWorkflow();
+    $workflowToKeep = $this->createEmptyWorkflow();
+    expect($this->testee->getWorkflows())->count(2);
+    $this->testee->deleteWorkflow($workflowToDelete);
+    expect($this->testee->getWorkflows())->count(1);
+    expect($this->testee->getWorkflow($workflowToDelete->getId()))->null();
+    $workflowToKeepFromDatabase = $this->testee->getWorkflow($workflowToKeep->getId());
+    $this->assertInstanceOf(Workflow::class, $workflowToKeepFromDatabase);
+    expect($workflowToKeepFromDatabase->getVersionId())->notNull();
+  }
+
+  public function testItCanDeleteWorkflowsRelatedData() {
+    $workflowRunStorage = $this->diContainer->get(WorkflowRunStorage::class);
+    $workflowRunLogStorage = $this->diContainer->get(WorkflowRunLogStorage::class);
+    $workflows = [
+      'toDelete' => $this->createEmptyWorkflow(),
+      'toKeep' => $this->createEmptyWorkflow()
+    ];
+    $runs = [
+      'toDelete' => [],
+      'toKeep' => []
+    ];
+    $runLogs = [
+      'toDelete' => [],
+      'toKeep' => []
+    ];
+    foreach ($workflows as $type => $workflow) {
+      for ($i = 0; $i < 2; $i++) {
+        $workflowRun = new WorkflowRun($workflow->getId(), $workflow->getVersionId(), 'trigger-key', []);
+        $runId = $workflowRunStorage->createWorkflowRun($workflowRun);
+        $runs[$type][] = $runId;
+        for ($i = 0; $i < 2; $i++) {
+          $log = new WorkflowRunLog($runId, "step-{$i}");
+          $logId = $workflowRunLogStorage->createWorkflowRunLog($log);
+          $runLogs[$type][] = $logId;
+        }
+      }
+    }
+    $this->testee->deleteWorkflow($workflows['toDelete']);
+    foreach ($runs['toDelete'] as $runId) {
+      expect($workflowRunStorage->getWorkflowRun($runId))->null();
+    }
+    foreach ($runs['toKeep'] as $runId) {
+      expect($workflowRunStorage->getWorkflowRun($runId))->notNull();
+    }
+    foreach ($runLogs['toDelete'] as $runLogId) {
+      expect($workflowRunLogStorage->getWorkflowRunLog($runLogId))->null();
+    }
+    foreach ($runLogs['toKeep'] as $runLogId) {
+      expect($workflowRunLogStorage->getWorkflowRunLog($runLogId))->notNull();
+    }
   }
 
   private function createEmptyWorkflow(string $name="test"): Workflow {

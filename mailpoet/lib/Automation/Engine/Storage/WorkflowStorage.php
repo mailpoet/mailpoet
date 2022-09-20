@@ -142,6 +142,44 @@ class WorkflowStorage {
     }, (array)$data);
   }
 
+  public function deleteWorkflow(Workflow $workflow): void {
+    $workflowTable = esc_sql($this->workflowTable);
+    $versionTable = esc_sql($this->versionsTable);
+    $workflowRunTable = esc_sql($this->wpdb->prefix . 'mailpoet_workflow_runs');
+    $workflowRunLogTable = esc_sql($this->wpdb->prefix . 'mailpoet_workflow_run_logs');
+    $workflowId = $workflow->getId();
+    $runLogsQuery = $this->wpdb->prepare(
+      "
+        DELETE FROM $workflowRunLogTable
+        WHERE workflow_run_id IN (
+          SELECT id FROM $workflowRunTable
+          WHERE workflow_id = %d
+        )
+      ",
+      $workflowId
+    );
+
+    if (!is_string($runLogsQuery)) {
+      throw Exceptions\InvalidStateException::create();
+    }
+    $logsDeleted = $this->wpdb->query($runLogsQuery);
+    if (!is_int($logsDeleted)) {
+      throw Exceptions::databaseError($this->wpdb->last_error);
+    }
+    $runsDeleted = $this->wpdb->delete($this->wpdb->prefix . 'mailpoet_workflow_runs', ['workflow_id' => $workflowId]);
+    if (!is_int($runsDeleted)) {
+      throw Exceptions::databaseError($this->wpdb->last_error);
+    }
+    $versionsDeleted = $this->wpdb->delete($versionTable, ['workflow_id' => $workflowId]);
+    if (!is_int($versionsDeleted)) {
+      throw Exceptions::databaseError($this->wpdb->last_error);
+    }
+    $workflowDeleted = $this->wpdb->delete($workflowTable, ['id' => $workflowId]);
+    if (!is_int($workflowDeleted)) {
+      throw Exceptions::databaseError($this->wpdb->last_error);
+    }
+  }
+
   public function truncate(): bool {
     $workflowTable = esc_sql($this->workflowTable);
     $versionTable = esc_sql($this->versionsTable);
