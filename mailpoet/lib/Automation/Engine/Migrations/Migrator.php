@@ -59,6 +59,7 @@ class Migrator {
         updated_at timestamp NOT NULL,
         subjects longtext,
         PRIMARY KEY (id),
+        INDEX (workflow_id),
         INDEX (status)
       );
     ");
