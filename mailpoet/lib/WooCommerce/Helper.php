@@ -117,4 +117,12 @@ class Helper {
 
     return $installedViaWooCommerce;
   }
+
+  public function getOrdersTableName() {
+    if (!method_exists('\Automattic\WooCommerce\Internal\DataStores\Orders\OrdersTableDataStore', 'get_orders_table_name')) {
+      throw new \Exception('Cannot get orders table name when running a WooCommerce version that doesn\'t support custom order tables.');
+    }
+
+    return \Automattic\WooCommerce\Internal\DataStores\Orders\OrdersTableDataStore::get_orders_table_name();
+  }
 }
