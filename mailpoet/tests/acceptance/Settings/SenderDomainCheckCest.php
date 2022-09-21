@@ -19,7 +19,7 @@ class SenderDomainCheckCest {
     $i->click('[data-automation-id="from-name-field"]'); // Go to different field to trigger blur
     $i->waitForText($dmarcError);
     $i->click('sender authentication');
-    $i->waitForText('Manage Sender Domain');
+    $i->waitForText('Manage Sender Domain', 20);
     $dnsVerifyError = 'Some DNS records were not set up correctly.';
     $i->dontSee($dnsVerifyError);
     $i->click('Verify the DNS records');
