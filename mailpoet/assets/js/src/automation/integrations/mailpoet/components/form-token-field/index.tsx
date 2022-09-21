@@ -9,7 +9,7 @@ export type FormTokenFieldProps = Omit<
   WpFormTokenField.Props,
   'value' | 'suggestions' | 'onChange'
 > & {
-  selected: FormTokenItem[];
+  value: FormTokenItem[];
   suggestions: FormTokenItem[];
   onChange: (values: FormTokenItem[]) => void;
   placeholder: string;
@@ -18,7 +18,7 @@ export type FormTokenFieldProps = Omit<
 
 export function FormTokenField({
   label,
-  selected,
+  value,
   suggestions,
   placeholder,
   onChange,
@@ -30,7 +30,7 @@ export function FormTokenField({
       // @ts-ignore
       // The following error seems to be a mismatch. It claims the 'label' prop does not exist, but it does.
       label={label}
-      value={selected.map((item) => item.name)}
+      value={value.map((item) => item.name)}
       suggestions={suggestions.map((item) => item.name)}
       __experimentalExpandOnFocus
       __experimentalAutoSelectFirstMatch

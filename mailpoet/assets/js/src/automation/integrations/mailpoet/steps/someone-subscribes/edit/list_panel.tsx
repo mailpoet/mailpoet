@@ -34,7 +34,7 @@ export function ListPanel(): JSX.Element {
           'mailpoet',
         )}
         placeholder={__('Any list', 'mailpoet')}
-        selected={selected}
+        value={selected}
         suggestions={validSegments}
         onChange={(values) => {
           dispatch(storeName).updateStepArgs(
