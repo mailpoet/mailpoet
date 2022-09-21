@@ -1,5 +1,4 @@
 import { FormTokenField as WpFormTokenField } from '@wordpress/components';
-import { uniq } from 'lodash';
 
 export type FormTokenItem = {
   id: number | string;
@@ -13,24 +12,18 @@ export type FormTokenFieldProps = Omit<
   selected: FormTokenItem[];
   suggestions: FormTokenItem[];
   onChange: (values: FormTokenItem[]) => void;
+  placeholder: string;
   label: string;
-  anyValue?: FormTokenItem;
-  anyValueIsDefault?: boolean;
 };
 
 export function FormTokenField({
   label,
   selected,
   suggestions,
+  placeholder,
   onChange,
-  anyValue,
-  anyValueIsDefault,
   ...props
 }: FormTokenFieldProps): JSX.Element {
-  if (anyValue) {
-    suggestions.push(anyValue);
-  }
-  const uniqueSuggestions = uniq(suggestions);
   return (
     <WpFormTokenField
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -38,44 +31,21 @@ export function FormTokenField({
       // The following error seems to be a mismatch. It claims the 'label' prop does not exist, but it does.
       label={label}
       value={selected.map((item) => item.name)}
-      suggestions={uniqueSuggestions.map((item) => item.name)}
+      suggestions={suggestions.map((item) => item.name)}
       __experimentalExpandOnFocus
       __experimentalAutoSelectFirstMatch
+      placeholder={placeholder}
       onChange={(raw: string[]) => {
-        const allSelected: FormTokenItem[] = raw.map((item) => {
-          const match = uniqueSuggestions.find(
-            (suggestion) =>
-              suggestion.name.toLowerCase() === item.toLowerCase(),
-          );
-          return match;
-        });
-
-        // only the newly selected items
-        const newSelected = allSelected.filter((item) => {
-          for (let i = 0; i < selected.length; i += 1) {
-            if (selected[i].id === item.id) {
-              return false;
-            }
-          }
-          return true;
-        });
-        if (anyValue) {
-          const hasAny =
-            newSelected.filter((item) => item.id === anyValue.id).length > 0;
-          const hasNone = allSelected.length === 0 && anyValueIsDefault;
-          if (hasAny || hasNone) {
-            // when "any item" has been selected, all other items are removed
-            // or when no item has been selected but "any item" is default, we store "any item"
-            onChange([anyValue]);
-            return;
-          }
-        }
-
-        // kick out the "any item" if it was selected before.
-        const allSelectedWithoutAny = anyValue
-          ? allSelected.filter((item) => item.id !== anyValue.id)
-          : allSelected;
-        onChange(allSelectedWithoutAny);
+        const allSelected: FormTokenItem[] = raw
+          .map((item) => {
+            const match = suggestions.find(
+              (suggestion) =>
+                suggestion.name.toLowerCase() === item.toLowerCase(),
+            );
+            return match ?? null;
+          })
+          .filter((item) => item !== null);
+        onChange(allSelected);
       }}
       {...props}
     />

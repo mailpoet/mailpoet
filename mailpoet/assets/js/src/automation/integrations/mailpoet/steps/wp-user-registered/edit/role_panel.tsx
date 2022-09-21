@@ -1,7 +1,6 @@
 import { PanelBody } from '@wordpress/components';
 import { dispatch, useSelect } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
-import { uniq } from 'lodash';
 import { storeName } from '../../../../../editor/store';
 import { PlainBodyTitle } from '../../../../../editor/components/panel';
 import { userRoles } from './role';
@@ -15,20 +14,12 @@ export function RolePanel(): JSX.Element {
     [],
   );
 
-  const anyValue = {
-    id: '',
-    name: __('Any user role', 'mailpoet'),
-  };
-
   const rawSelected = selectedStep.args?.roles
     ? (selectedStep.args.roles as string[])
     : [];
   const selected = userRoles.filter((role): boolean =>
     rawSelected.includes(role.id as string),
   );
-  if (!selected.length) {
-    selected.push(anyValue);
-  }
   return (
     <PanelBody opened>
       <PlainBodyTitle title={__('Trigger settings', 'mailpoet')} />
@@ -38,9 +29,8 @@ export function RolePanel(): JSX.Element {
         // The following error seems to be a mismatch. It claims the 'label' prop does not exist, but it does.
         label={__('When WordPress user role is:', 'mailpoet')}
         selected={selected}
-        suggestions={uniq(userRoles)}
-        anyValue={anyValue}
-        anyValueIsDefault
+        suggestions={userRoles}
+        placeholder={__('Any user role', 'mailpoet')}
         onChange={(items) => {
           dispatch(storeName).updateStepArgs(
             selectedStep.id,

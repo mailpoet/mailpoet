@@ -102,7 +102,7 @@ class UserRegistrationTriggerTest extends \MailPoetTest
   public function dataForTestTriggeredByWorkflowRun() : array {
     return [
       'any_role' => [
-        [''], //Any list setting
+        [], //Any list setting
         true,
       ],
       'list_match' => [
