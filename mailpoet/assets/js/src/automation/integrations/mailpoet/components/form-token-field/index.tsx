@@ -39,6 +39,8 @@ export function FormTokenField({
       label={label}
       value={selected.map((item) => item.name)}
       suggestions={uniqueSuggestions.map((item) => item.name)}
+      __experimentalExpandOnFocus
+      __experimentalAutoSelectFirstMatch
       onChange={(raw: string[]) => {
         const allSelected: FormTokenItem[] = raw.map((item) => {
           const match = uniqueSuggestions.find(
