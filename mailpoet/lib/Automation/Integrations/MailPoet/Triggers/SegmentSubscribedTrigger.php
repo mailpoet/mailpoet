@@ -89,11 +89,13 @@ class SegmentSubscribedTrigger implements Trigger {
     $segmentSubject = $workflowRun->requireSingleSubject(SegmentSubject::class);
     $segment = $segmentSubject->getSegment();
     $stepArgs = $triggerData->getArgs();
-    if (!isset($stepArgs['segment_ids']) || !is_array($stepArgs['segment_ids'])) {
-      return false;
-    }
-    $segmentIds = $stepArgs['segment_ids'];
-    $anyList = 0;
-    return in_array($anyList, $segmentIds, true) || in_array($segment->getId(), $segmentIds, true);
+
+    // Return true, when no segment list is defined (=any list) or the segment matches the definition.
+    return (
+      !isset($stepArgs['segment_ids'])
+      || !is_array($stepArgs['segment_ids'])
+      || !count($stepArgs['segment_ids'])
+      || in_array($segment->getId(), $stepArgs['segment_ids'], true)
+    );
   }
 }

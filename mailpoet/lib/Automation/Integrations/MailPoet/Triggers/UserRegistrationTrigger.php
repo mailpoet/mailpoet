@@ -99,11 +99,14 @@ class UserRegistrationTrigger implements Trigger {
     if (!$user) {
       return false;
     }
-    $roles = $stepArgs['roles'];
-    $anyRole = '';
-    if (in_array($anyRole, $roles, true)) {
+    if (
+      !isset($stepArgs['roles'])
+      || !is_array($stepArgs['roles'])
+      || !count($stepArgs['roles'])
+    ) {
       return true;
     }
+    $roles = $stepArgs['roles'];
     foreach ($user->roles as $userRole) {
       if (in_array($userRole, $roles, true)) {
         return true;

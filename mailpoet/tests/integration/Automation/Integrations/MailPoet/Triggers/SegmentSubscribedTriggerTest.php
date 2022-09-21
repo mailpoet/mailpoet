@@ -72,7 +72,7 @@ class SegmentSubscribedTriggerTest extends \MailPoetTest
   public function dataForTestTriggeredByWorkflowRun() : array {
     return [
       'any_list' => [
-        [0], //Any list setting
+        [], //Any list setting
         'segment_1',
         true,
       ],

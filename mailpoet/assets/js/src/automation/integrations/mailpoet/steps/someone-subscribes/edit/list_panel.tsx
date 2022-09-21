@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { PanelBody, Spinner } from '@wordpress/components';
 import { dispatch, useSelect } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
-import { uniq } from 'lodash';
 import { storeName } from '../../../../../editor/store';
 import { MailPoetAjax } from '../../../../../../ajax';
 import { RawSegment, Segment } from './segment';
@@ -21,11 +20,6 @@ export function ListPanel(): JSX.Element {
   );
 
   const [segments, setSegments] = useState<FormTokenItem[]>([]);
-
-  const anyValue = {
-    id: 0,
-    name: __('Any list', 'mailpoet'),
-  };
 
   useEffect(() => {
     const getData = async () => {
@@ -60,9 +54,6 @@ export function ListPanel(): JSX.Element {
   const selected = segments.filter((segment): boolean =>
     rawSelected.includes(segment.id as number),
   );
-  if (!selected.length) {
-    selected.push(anyValue);
-  }
   return (
     <PanelBody opened>
       <PlainBodyTitle title={__('Trigger settings', 'mailpoet')} />
@@ -72,10 +63,9 @@ export function ListPanel(): JSX.Element {
             'When someone subscribers to the following list(s):',
             'mailpoet',
           )}
-          anyValue={anyValue}
-          anyValueIsDefault
+          placeholder={__('Any list', 'mailpoet')}
           selected={selected}
-          suggestions={uniq(segments)}
+          suggestions={segments}
           onChange={(values) => {
             dispatch(storeName).updateStepArgs(
               selectedStep.id,
