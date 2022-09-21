@@ -28,7 +28,7 @@ export function RolePanel(): JSX.Element {
         // @ts-ignore
         // The following error seems to be a mismatch. It claims the 'label' prop does not exist, but it does.
         label={__('When WordPress user role is:', 'mailpoet')}
-        selected={selected}
+        value={selected}
         suggestions={userRoles}
         placeholder={__('Any user role', 'mailpoet')}
         onChange={(items) => {
