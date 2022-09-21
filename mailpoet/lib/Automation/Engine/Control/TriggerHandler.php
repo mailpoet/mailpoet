@@ -61,7 +61,7 @@ class TriggerHandler {
 
       $workflowRun = new WorkflowRun($workflow->getId(), $workflow->getVersionId(), $trigger->getKey(), $loadedSubjects);
 
-      if (!$trigger->isTriggeredBy($workflowRun)) {
+      if (!$trigger->isTriggeredBy($step->getArgs(), ...$loadedSubjects)) {
         return;
       }
 

@@ -2,9 +2,8 @@
 
 namespace MailPoet\Automation\Integrations\MailPoet\Triggers;
 
-use MailPoet\Automation\Engine\Data\WorkflowRun;
 use MailPoet\Automation\Engine\Hooks;
-use MailPoet\Automation\Engine\Storage\WorkflowStorage;
+use MailPoet\Automation\Engine\Workflows\Subject;
 use MailPoet\Automation\Engine\Workflows\Trigger;
 use MailPoet\Automation\Integrations\MailPoet\Subjects\SegmentSubject;
 use MailPoet\Automation\Integrations\MailPoet\Subjects\SubscriberSubject;
@@ -16,17 +15,12 @@ use MailPoet\WP\Functions as WPFunctions;
 
 class SomeoneSubscribesTrigger implements Trigger {
 
-  /** @var WorkflowStorage  */
-  private $workflowStorage;
-
   /** @var WPFunctions */
   private $wp;
 
   public function __construct(
-    WorkflowStorage $workflowStorage,
     WPFunctions $wp
   ) {
-    $this->workflowStorage = $workflowStorage;
     $this->wp = $wp;
   }
 
@@ -72,30 +66,26 @@ class SomeoneSubscribesTrigger implements Trigger {
     ]);
   }
 
-  public function isTriggeredBy(WorkflowRun $workflowRun): bool {
-    if ($workflowRun->getTriggerKey() !== $this->getKey()) {
-      return false;
-    }
-    $workflow = $this->workflowStorage->getWorkflow($workflowRun->getWorkflowId(), $workflowRun->getVersionId());
-    if (!$workflow) {
-      return false;
-    }
+  public function isTriggeredBy(array $args, Subject ...$subjects): bool {
 
-    $triggerData = $workflow->getTrigger($workflowRun->getTriggerKey());
-    if (!$triggerData) {
-      return false;
+    $segment = null;
+    foreach ($subjects as $subject) {
+      if (!$subject instanceof SegmentSubject) {
+        continue;
+      }
+      /**
+       * @var SegmentSubject $subject
+       */
+      $segment = $subject->getSegment();
     }
-
-    $segmentSubject = $workflowRun->requireSingleSubject(SegmentSubject::class);
-    $segment = $segmentSubject->getSegment();
-    $stepArgs = $triggerData->getArgs();
 
     // Return true, when no segment list is defined (=any list) or the segment matches the definition.
     return (
-      !isset($stepArgs['segment_ids'])
-      || !is_array($stepArgs['segment_ids'])
-      || !count($stepArgs['segment_ids'])
-      || in_array($segment->getId(), $stepArgs['segment_ids'], true)
+      !$segment
+      || !isset($args['segment_ids'])
+      || !is_array($args['segment_ids'])
+      || !count($args['segment_ids'])
+      || in_array($segment->getId(), $args['segment_ids'], true)
     );
   }
 }

@@ -2,10 +2,6 @@
 
 namespace MailPoet\Test\Automation\Integrations\MailPoet\Triggers;
 
-use MailPoet\Automation\Engine\Data\Workflow;
-use MailPoet\Automation\Engine\Data\Step;
-use MailPoet\Automation\Engine\Data\WorkflowRun;
-use MailPoet\Automation\Engine\Storage\WorkflowStorage;
 use MailPoet\Automation\Integrations\MailPoet\Subjects\SegmentSubject;
 use MailPoet\Automation\Integrations\MailPoet\Triggers\SomeoneSubscribesTrigger;
 use MailPoet\Entities\SegmentEntity;
@@ -20,15 +16,12 @@ class SomeoneSubscribesTriggerTest extends \MailPoetTest
   /** @var SegmentEntity[] */
   private $segments;
 
-  /** @var WorkflowStorage */
-  private $workflowRepository;
   public function _before() {
     $this->segmentRepository = $this->diContainer->get(SegmentsRepository::class);
     $this->segments = [
         'segment_1' => $this->segmentRepository->createOrUpdate('Segment 1'),
         'segment_2' => $this->segmentRepository->createOrUpdate('Segment 2'),
     ];
-    $this->workflowRepository = $this->diContainer->get(WorkflowStorage::class);
   }
 
   /**
@@ -37,36 +30,18 @@ class SomeoneSubscribesTriggerTest extends \MailPoetTest
   public function testTriggeredByWorkflowRun(array $segmentSetting, string $currentSegmentId, bool $expectation) {
     /** @var SomeoneSubscribesTrigger $testee */
     $testee = $this->diContainer->get(SomeoneSubscribesTrigger::class);
-    $workflow = new Workflow(
-      'test',
-      [
-        Step::fromArray([
-          'id' => '1',
-          'name' => 'TestData',
-          'key' => $testee->getKey(),
-          'type' => Step::TYPE_TRIGGER,
-          'next_steps' => [],
-          'args' => [
-            'segment_ids' => array_map(
-              function($key) {
-                return isset($this->segments[$key]) ? $this->segments[$key]->getId() : $key;
-              },
-              $segmentSetting
-            )
-          ],
-        ])
-      ],
-      new \WP_User()
-    );
-    $workflowId = $this->workflowRepository->createWorkflow($workflow);
-    $workflow = $this->workflowRepository->getWorkflow($workflowId);
-    self::assertInstanceOf(Workflow::class, $workflow);
-
+    $args = [
+      'segment_ids' => array_map(
+        function($key) {
+          return isset($this->segments[$key]) ? $this->segments[$key]->getId() : $key;
+        },
+        $segmentSetting
+      )
+    ];
     /** @var SegmentSubject $segmentSubject */
     $segmentSubject = $this->diContainer->get(SegmentSubject::class);
     $segmentSubject->load(['segment_id' => $this->segments[$currentSegmentId]->getId()]);
-    $run = new WorkflowRun($workflow->getId(), $workflow->getVersionId(),$testee->getKey(),[$segmentSubject]);
-    $this->assertSame($expectation, $testee->isTriggeredBy($run));
+    $this->assertSame($expectation, $testee->isTriggeredBy($args, $segmentSubject));
   }
 
   public function dataForTestTriggeredByWorkflowRun() : array {

@@ -2,9 +2,8 @@
 
 namespace MailPoet\Automation\Integrations\MailPoet\Triggers;
 
-use MailPoet\Automation\Engine\Data\WorkflowRun;
 use MailPoet\Automation\Engine\Hooks;
-use MailPoet\Automation\Engine\Storage\WorkflowStorage;
+use MailPoet\Automation\Engine\Workflows\Subject;
 use MailPoet\Automation\Engine\Workflows\Trigger;
 use MailPoet\Automation\Integrations\MailPoet\Subjects\SegmentSubject;
 use MailPoet\Automation\Integrations\MailPoet\Subjects\SubscriberSubject;
@@ -17,17 +16,13 @@ use MailPoet\WP\Functions as WPFunctions;
 
 class UserRegistrationTrigger implements Trigger {
 
-  /** @var WorkflowStorage  */
-  private $workflowStorage;
 
   /** @var WPFunctions */
   private $wp;
 
   public function __construct(
-    WorkflowStorage $workflowStorage,
     WPFunctions $wp
   ) {
-    $this->workflowStorage = $workflowStorage;
     $this->wp = $wp;
   }
 
@@ -67,48 +62,39 @@ class UserRegistrationTrigger implements Trigger {
     ]);
   }
 
-  public function isTriggeredBy(WorkflowRun $workflowRun): bool {
-    if ($workflowRun->getTriggerKey() !== $this->getKey()) {
-      return false;
+  public function isTriggeredBy(array $args, Subject ...$subjects): bool {
+    $segment = null;
+    $subscriber = null;
+    foreach ($subjects as $subject) {
+      if ($subject instanceof SegmentSubject) {
+        $segment = $subject->getSegment();
+      }
+      if ($subject instanceof SubscriberSubject) {
+        $subscriber = $subject->getSubscriber();
+      }
     }
-    $workflow = $this->workflowStorage->getWorkflow($workflowRun->getWorkflowId(), $workflowRun->getVersionId());
-    if (!$workflow) {
+
+    if (!$segment || !$subscriber) {
       return false;
     }
 
-    $triggerData = $workflow->getTrigger($workflowRun->getTriggerKey());
-    if (!$triggerData) {
-      return false;
-    }
-
-    $segmentSubject = $workflowRun->requireSingleSubject(SegmentSubject::class);
-    $segment = $segmentSubject->getSegment();
     if ($segment->getType() !== SegmentEntity::TYPE_WP_USERS) {
       return false;
     }
-    $stepArgs = $triggerData->getArgs();
-    if (!isset($stepArgs['roles']) || !is_array($stepArgs['roles'])) {
-      return false;
+    if (!isset($args['roles']) || !is_array($args['roles']) || !count($args['roles'])) {
+      return true;
     }
 
-    $subscriber = $workflowRun->requireSingleSubject(SubscriberSubject::class);
-    if (!$subscriber->getSubscriber()->isWPUser()) {
+    if (!$subscriber->isWPUser()) {
       return false;
     }
-    $user = $this->wp->getUserBy('id', $subscriber->getSubscriber()->getWpUserId());
+    $user = $this->wp->getUserBy('id', $subscriber->getWpUserId());
     if (!$user) {
       return false;
     }
-    if (
-      !isset($stepArgs['roles'])
-      || !is_array($stepArgs['roles'])
-      || !count($stepArgs['roles'])
-    ) {
-      return true;
-    }
-    $roles = $stepArgs['roles'];
+
     foreach ($user->roles as $userRole) {
-      if (in_array($userRole, $roles, true)) {
+      if (in_array($userRole, $args['roles'], true)) {
         return true;
       }
     }
