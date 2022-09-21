@@ -9,6 +9,7 @@ use MailPoet\Automation\Engine\Data\Step;
 use MailPoet\Automation\Engine\Data\Workflow;
 use MailPoet\Automation\Engine\Registry;
 use MailPoet\Automation\Engine\Storage\WorkflowStorage;
+use MailPoet\Segments\SegmentsRepository;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoet\WP\Notice as WPNotice;
 
@@ -22,6 +23,9 @@ class AutomationEditor {
   /** @var Registry */
   private $registry;
 
+  /** @var SegmentsRepository  */
+  private $segmentsRepository;
+
   /** @var WPFunctions */
   private $wp;
 
@@ -29,11 +33,13 @@ class AutomationEditor {
     WorkflowStorage $workflowStorage,
     PageRenderer $pageRenderer,
     Registry $registry,
+    SegmentsRepository $segmentsRepository,
     WPFunctions $wp
   ) {
     $this->workflowStorage = $workflowStorage;
     $this->pageRenderer = $pageRenderer;
     $this->registry = $registry;
+    $this->segmentsRepository = $segmentsRepository;
     $this->wp = $wp;
   }
 
@@ -56,6 +62,10 @@ class AutomationEditor {
       exit();
     }
 
+    $segments = [];
+    foreach ($this->segmentsRepository->findAll() as $segment) {
+      $segments[] = ['id' => $segment->getId(), 'name' => $segment->getName(), 'type' => $segment->getType()];
+    }
     $roles = new \WP_Roles();
     $this->pageRenderer->displayPage('automation/editor.html', [
       'context' => $this->buildContext(),
@@ -66,6 +76,7 @@ class AutomationEditor {
         'nonce' => $this->wp->wpCreateNonce('wp_rest'),
       ],
       'user_roles' => $roles->get_names(),
+      'segments' => $segments,
     ]);
   }
 
