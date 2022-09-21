@@ -14,7 +14,7 @@ use MailPoet\Validator\Builder;
 use MailPoet\Validator\Schema\ObjectSchema;
 use MailPoet\WP\Functions as WPFunctions;
 
-class SegmentSubscribedTrigger implements Trigger {
+class SomeoneSubscribesTrigger implements Trigger {
 
   /** @var WorkflowStorage  */
   private $workflowStorage;
@@ -31,11 +31,11 @@ class SegmentSubscribedTrigger implements Trigger {
   }
 
   public function getKey(): string {
-    return 'mailpoet:segment:subscribed';
+    return 'mailpoet:someone-subscribes';
   }
 
   public function getName(): string {
-    return __('Subscribed to segment', 'mailpoet');
+    return __('Someone subscribes', 'mailpoet');
   }
 
   public function getArgsSchema(): ObjectSchema {

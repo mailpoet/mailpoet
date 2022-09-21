@@ -60,7 +60,7 @@ class WorkflowTemplateStorage {
       $this->builder->createFromSequence(
         __('Simple welcome email', 'mailpoet'),
         [
-          'mailpoet:segment:subscribed',
+          'mailpoet:someone-subscribes',
           'core:delay',
           'mailpoet:send-email',
         ]

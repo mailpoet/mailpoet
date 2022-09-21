@@ -5,7 +5,7 @@ namespace MailPoet\Test\Automation\Engine\Storage;
 use MailPoet\Automation\Engine\Data\Step;
 use MailPoet\Automation\Engine\Data\Workflow;
 use MailPoet\Automation\Engine\Storage\WorkflowStorage;
-use MailPoet\Automation\Integrations\MailPoet\Triggers\SegmentSubscribedTrigger;
+use MailPoet\Automation\Integrations\MailPoet\Triggers\SomeoneSubscribesTrigger;
 
 class WorkflowStorageTest extends \MailPoetTest
 {
@@ -59,7 +59,7 @@ class WorkflowStorageTest extends \MailPoetTest
 
   public function testItLoadsOnlyActiveWorkflowsByTrigger() {
     $workflow = $this->createEmptyWorkflow();
-    $subscriberTrigger = $this->diContainer->get(SegmentSubscribedTrigger::class);
+    $subscriberTrigger = $this->diContainer->get(SomeoneSubscribesTrigger::class);
     $trigger = new Step('id', Step::TYPE_TRIGGER, $subscriberTrigger->getKey(), [], []);
     $workflow->setSteps(['id' => $trigger]);
     $workflow->setStatus(Workflow::STATUS_INACTIVE);

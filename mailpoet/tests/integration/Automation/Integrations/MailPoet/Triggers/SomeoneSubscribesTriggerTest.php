@@ -7,11 +7,11 @@ use MailPoet\Automation\Engine\Data\Step;
 use MailPoet\Automation\Engine\Data\WorkflowRun;
 use MailPoet\Automation\Engine\Storage\WorkflowStorage;
 use MailPoet\Automation\Integrations\MailPoet\Subjects\SegmentSubject;
-use MailPoet\Automation\Integrations\MailPoet\Triggers\SegmentSubscribedTrigger;
+use MailPoet\Automation\Integrations\MailPoet\Triggers\SomeoneSubscribesTrigger;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Segments\SegmentsRepository;
 
-class SegmentSubscribedTriggerTest extends \MailPoetTest
+class SomeoneSubscribesTriggerTest extends \MailPoetTest
 {
 
   /** @var SegmentsRepository */
@@ -35,8 +35,8 @@ class SegmentSubscribedTriggerTest extends \MailPoetTest
    * @dataProvider dataForTestTriggeredByWorkflowRun
    */
   public function testTriggeredByWorkflowRun(array $segmentSetting, string $currentSegmentId, bool $expectation) {
-    /** @var SegmentSubscribedTrigger $testee */
-    $testee = $this->diContainer->get(SegmentSubscribedTrigger::class);
+    /** @var SomeoneSubscribesTrigger $testee */
+    $testee = $this->diContainer->get(SomeoneSubscribesTrigger::class);
     $workflow = new Workflow(
       'test',
       [
