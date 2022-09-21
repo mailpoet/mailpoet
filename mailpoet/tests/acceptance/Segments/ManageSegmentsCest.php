@@ -143,6 +143,7 @@ class ManageSegmentsCest {
     $i->waitForNoticeAndClose('1 segment has been restored from the Trash.');
     $i->seeInCurrentURL(urlencode('group[trash]'));
     $i->click('[data-automation-id="filters_all"]');
+    $i->seeInCurrentURL(urlencode('group[all]'));
     $i->waitForText($segmentEditedTitle);
     $i->seeNoJSErrors();
 
