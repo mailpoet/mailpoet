@@ -4,7 +4,7 @@ import { StepType } from '../../../../editor/store';
 import { Edit } from './edit';
 
 export const step: StepType = {
-  key: 'mailpoet:segment:subscribed',
+  key: 'mailpoet:someone-subscribes',
   group: 'triggers',
   title: __('Someone subscribes', 'mailpoet'),
   foreground: '#2271b1',

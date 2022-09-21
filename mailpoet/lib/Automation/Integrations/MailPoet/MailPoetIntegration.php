@@ -7,7 +7,7 @@ use MailPoet\Automation\Engine\Registry;
 use MailPoet\Automation\Integrations\MailPoet\Actions\SendEmailAction;
 use MailPoet\Automation\Integrations\MailPoet\Subjects\SegmentSubject;
 use MailPoet\Automation\Integrations\MailPoet\Subjects\SubscriberSubject;
-use MailPoet\Automation\Integrations\MailPoet\Triggers\SegmentSubscribedTrigger;
+use MailPoet\Automation\Integrations\MailPoet\Triggers\SomeoneSubscribesTrigger;
 use MailPoet\Automation\Integrations\MailPoet\Triggers\UserRegistrationTrigger;
 
 class MailPoetIntegration implements Integration {
@@ -17,8 +17,8 @@ class MailPoetIntegration implements Integration {
   /** @var SubscriberSubject */
   private $subscriberSubject;
 
-  /** @var SegmentSubscribedTrigger */
-  private $segmentSubscribedTrigger;
+  /** @var SomeoneSubscribesTrigger */
+  private $someoneSubscribesTrigger;
 
   /** @var UserRegistrationTrigger  */
   private $userRegistrationTrigger;
@@ -29,13 +29,13 @@ class MailPoetIntegration implements Integration {
   public function __construct(
     SegmentSubject $segmentSubject,
     SubscriberSubject $subscriberSubject,
-    SegmentSubscribedTrigger $segmentSubscribedTrigger,
+    SomeoneSubscribesTrigger $someoneSubscribesTrigger,
     UserRegistrationTrigger $userRegistrationTrigger,
     SendEmailAction $sendEmailAction
   ) {
     $this->segmentSubject = $segmentSubject;
     $this->subscriberSubject = $subscriberSubject;
-    $this->segmentSubscribedTrigger = $segmentSubscribedTrigger;
+    $this->someoneSubscribesTrigger = $someoneSubscribesTrigger;
     $this->userRegistrationTrigger = $userRegistrationTrigger;
     $this->sendEmailAction = $sendEmailAction;
   }
@@ -43,7 +43,7 @@ class MailPoetIntegration implements Integration {
   public function register(Registry $registry): void {
     $registry->addSubject($this->segmentSubject);
     $registry->addSubject($this->subscriberSubject);
-    $registry->addTrigger($this->segmentSubscribedTrigger);
+    $registry->addTrigger($this->someoneSubscribesTrigger);
     $registry->addTrigger($this->userRegistrationTrigger);
     $registry->addAction($this->sendEmailAction);
 

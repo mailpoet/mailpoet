@@ -8,7 +8,7 @@ use MailPoet\Automation\Engine\Data\WorkflowRun;
 use MailPoet\Automation\Engine\Storage\WorkflowStorage;
 use MailPoet\Automation\Integrations\MailPoet\Subjects\SegmentSubject;
 use MailPoet\Automation\Integrations\MailPoet\Subjects\SubscriberSubject;
-use MailPoet\Automation\Integrations\MailPoet\Triggers\SegmentSubscribedTrigger;
+use MailPoet\Automation\Integrations\MailPoet\Triggers\SomeoneSubscribesTrigger;
 use MailPoet\Automation\Integrations\MailPoet\Triggers\UserRegistrationTrigger;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
@@ -62,7 +62,7 @@ class UserRegistrationTriggerTest extends \MailPoetTest
    * @param bool $expectation
    */
   public function testTriggeredByWorkflowRun(array $roleSetting, bool $expectation) {
-    /** @var SegmentSubscribedTrigger $testee */
+    /** @var SomeoneSubscribesTrigger $testee */
     $testee = $this->diContainer->get(UserRegistrationTrigger::class);
     $workflow = new Workflow(
       'test',
