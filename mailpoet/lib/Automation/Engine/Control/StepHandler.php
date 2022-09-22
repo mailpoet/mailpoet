@@ -181,7 +181,7 @@ class StepHandler {
   private function getSubjectEntries(WorkflowRun $workflowRun, array $requiredSubjectKeys): array {
     $subjectDataMap = [];
     foreach ($workflowRun->getSubjects() as $data) {
-      $subjectDataMap[$data->getKey()] = array_merge($subjectDataMap[$data->getKey()], [$data]);
+      $subjectDataMap[$data->getKey()] = array_merge($subjectDataMap[$data->getKey()] ?? [], [$data]);
     }
 
     $subjectEntries = [];
