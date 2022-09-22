@@ -134,7 +134,7 @@ function WelcomeWizardStepsController(props) {
           >
             <WelcomeWizardPitchMSSStep
               next={() => redirect(step)}
-              subscribersCount={window.subscribers_count}
+              subscribersCount={window.mailpoet_subscribers_count}
               mailpoetAccountUrl={window.mailpoet_account_url}
               purchaseUrl={MailPoet.MailPoetComUrlFactory.getPurchasePlanUrl(
                 MailPoet.subscribersCount,
