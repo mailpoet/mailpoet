@@ -502,9 +502,10 @@ class AcceptanceTester extends \Codeception\Actor {
     $i = $this;
     // We need to scroll with some negative offset so that the input is not hidden above the top page fold
     $approximatePaymentMethodInputHeight = 40;
-    $i->scrollTo('#payment_method_' . $method, 0, -$approximatePaymentMethodInputHeight);
     $i->waitForElementNotVisible('.blockOverlay', 30); // wait for payment method loading overlay to disappear
+    $i->scrollTo('#payment_method_' . $method, 0, -$approximatePaymentMethodInputHeight);
     $i->click('label[for="payment_method_' . $method . '"]');
+    $i->wait(0.5); // Wait for animation after selecting the method.
   }
 
   /**
