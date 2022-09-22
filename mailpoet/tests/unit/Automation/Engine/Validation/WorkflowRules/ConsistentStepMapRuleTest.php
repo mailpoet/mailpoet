@@ -15,7 +15,7 @@ class ConsistentStepMapRuleTest extends WorkflowRuleTest {
     ]]);
 
     $this->expectException(UnexpectedValueException::class);
-    $this->expectExceptionMessage('Invalid workflow structure: TODO');
+    $this->expectExceptionMessage("Invalid workflow structure: Step with ID 'a' stored under a mismatched index 'root'.");
     (new WorkflowWalker())->walk($workflow, [new ConsistentStepMapRule()]);
   }
 
