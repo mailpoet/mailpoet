@@ -96,7 +96,7 @@ class UserRegistrationTriggerTest extends \MailPoetTest
     if (! $this->userId) {
       return;
     }
-    wp_delete_user($this->userId);
+    is_multisite() ? wpmu_delete_user($this->userId) : wp_delete_user($this->userId);
     $this->userId = null;
     $this->wpSegment->synchronizeUsers();
   }
