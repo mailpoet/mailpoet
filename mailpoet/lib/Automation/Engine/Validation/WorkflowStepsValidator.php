@@ -40,15 +40,19 @@ class WorkflowStepsValidator {
 
   private function validateStep(Workflow $workflow, Step $step): void {
     $registryStep = $this->registry->getStep($step->getKey());
-    if ($registryStep) {
-      $this->validator->validate($registryStep->getArgsSchema(), $step->getArgs());
-    } else {
+    if (!$registryStep) {
       // step not registered (e.g. plugin was deactivated) - allow saving it only if it hasn't changed
       $currentWorkflow = $this->getCurrentWorkflow($workflow->getId());
       $currentStep = $currentWorkflow ? ($currentWorkflow->getSteps()[$step->getId()] ?? null) : null;
       if (!$currentStep || $step->toArray() !== $currentStep->toArray()) {
         throw Exceptions::workflowStepModifiedWhenUnknown($step);
       }
+      return;
+    }
+
+    // full validation for active workflows
+    if ($workflow->getStatus() === Workflow::STATUS_ACTIVE) {
+      $this->validator->validate($registryStep->getArgsSchema(), $step->getArgs());
     }
   }
 
