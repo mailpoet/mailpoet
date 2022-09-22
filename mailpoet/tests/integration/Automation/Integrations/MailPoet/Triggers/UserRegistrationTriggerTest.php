@@ -1,7 +1,13 @@
-<?php
+<?php declare(strict_types = 1);
 
 namespace MailPoet\Test\Automation\Integrations\MailPoet\Triggers;
 
+use MailPoet\Automation\Engine\Data\Step;
+use MailPoet\Automation\Engine\Data\StepRunArgs;
+use MailPoet\Automation\Engine\Data\Subject;
+use MailPoet\Automation\Engine\Data\SubjectEntry;
+use MailPoet\Automation\Engine\Data\Workflow;
+use MailPoet\Automation\Engine\Data\WorkflowRun;
 use MailPoet\Automation\Integrations\MailPoet\Subjects\SegmentSubject;
 use MailPoet\Automation\Integrations\MailPoet\Subjects\SubscriberSubject;
 use MailPoet\Automation\Integrations\MailPoet\Triggers\UserRegistrationTrigger;
@@ -11,9 +17,7 @@ use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Segments\WP;
 use MailPoet\Subscribers\SubscribersRepository;
 
-class UserRegistrationTriggerTest extends \MailPoetTest
-{
-
+class UserRegistrationTriggerTest extends \MailPoetTest {
   const USER_NAME = 'user-name--x';
   const USER_EMAIL = 'user-name--x@mailpoet.com';
   const USER_ROLE = 'subscriber';
@@ -31,11 +35,10 @@ class UserRegistrationTriggerTest extends \MailPoetTest
   private $wpSegment;
 
   public function _before() {
-
     $this->wpSegment = $this->diContainer->get(WP::class);
     $this->segmentRepository = $this->diContainer->get(SegmentsRepository::class);
     $this->subscribersRepository = $this->diContainer->get(SubscribersRepository::class);
-    if (! is_numeric($this->userId)) {
+    if (!is_numeric($this->userId)) {
       $userId = wp_insert_user([
         'user_login' => self::USER_NAME,
         'user_pass' => 'abc',
@@ -50,35 +53,38 @@ class UserRegistrationTriggerTest extends \MailPoetTest
 
   /**
    * @dataProvider dataForTestTriggeredByWorkflowRun
-   * @param array $roleSetting
-   * @param bool $expectation
    */
   public function testTriggeredByWorkflowRun(array $roleSetting, bool $expectation) {
-    /** @var UserRegistrationTrigger $testee */
     $testee = $this->diContainer->get(UserRegistrationTrigger::class);
 
-    $args = [
-      'roles' => $roleSetting,
-    ];
-
     $subscriber = $this->subscribersRepository->findOneBy(['email' => self::USER_EMAIL]);
-    assert($subscriber instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
 
-    /** @var SubscriberSubject $subscriberSubject */
-    $subscriberSubject = $this->diContainer->get(SubscriberSubject::class);
-    $subscriberSubject->load(['subscriber_id' => $subscriber->getId()]);
     $segment = $this->segmentRepository->getWPUsersSegment();
-    assert($segment instanceof SegmentEntity);
-    /** @var SegmentSubject $subscriberSubject */
-    $segmentSubject = $this->diContainer->get(SegmentSubject::class);
-    $segmentSubject->load(['segment_id' => $segment->getId()]);
-    $this->assertSame($expectation, $testee->isTriggeredBy($args, $subscriberSubject, $segmentSubject));
+    $this->assertInstanceOf(SegmentEntity::class, $segment);
+
+    $stepRunArgs = new StepRunArgs(
+      $this->make(Workflow::class),
+      $this->make(WorkflowRun::class),
+      new Step('test-id', 'trigger', 'test:trigger', ['roles' => $roleSetting], []),
+      [
+        new SubjectEntry(
+          $this->diContainer->get(SegmentSubject::class),
+          new Subject('mailpoet:segment', ['segment_id' => $segment->getId()])
+        ),
+        new SubjectEntry(
+          $this->diContainer->get(SubscriberSubject::class),
+          new Subject('mailpoet:subscriber', ['subscriber_id' => $subscriber->getId()])
+        ),
+      ]
+    );
+    $this->assertSame($expectation, $testee->isTriggeredBy($stepRunArgs));
   }
 
   public function dataForTestTriggeredByWorkflowRun() : array {
     return [
       'any_role' => [
-        [], //Any list setting
+        [], // any list
         true,
       ],
       'list_match' => [
@@ -93,7 +99,7 @@ class UserRegistrationTriggerTest extends \MailPoetTest
   }
 
   public function _after() {
-    if (! $this->userId) {
+    if (!$this->userId) {
       return;
     }
     is_multisite() ? wpmu_delete_user($this->userId) : wp_delete_user($this->userId);
