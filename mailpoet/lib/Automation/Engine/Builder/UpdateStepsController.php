@@ -19,9 +19,9 @@ class UpdateStepsController {
 
   public function updateSteps(Workflow $workflow, array $data): Workflow {
     $steps = [];
-    foreach ($data as $stepData) {
+    foreach ($data as $index => $stepData) {
       $step = $this->processStep($stepData);
-      $steps[$step->getId()] = $step;
+      $steps[$index] = $step;
     }
     $workflow->setSteps($steps);
     return $workflow;
