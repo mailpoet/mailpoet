@@ -279,8 +279,16 @@ class AcceptanceTester extends \Codeception\Actor {
   }
 
   public function switchToNextTab($offset = 1) {
-    $this->_switchToNextTab($offset);
-
+    // Try switching multiple times. Sometimes we get an exception and maybe the tab is not ready.
+    for ($x = 1; $x <= 3; $x++) {
+      try {
+        $this->_switchToNextTab($offset);
+        break;
+      } catch (Exception $exception) {
+        $this->wait(1);
+        continue;
+      }
+    }
     // workaround for frozen tabs when opened by clicking on links
     $this->wait(1);
   }
