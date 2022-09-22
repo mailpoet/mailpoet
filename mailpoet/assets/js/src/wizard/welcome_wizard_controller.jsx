@@ -87,7 +87,7 @@ function WelcomeWizardStepsController(props) {
       updateSettings(
         createSenderSettings({ address: window.admin_email, name: '' }),
       ).then(() => {
-        if (window.is_woocommerce_active) {
+        if (window.mailpoet_woocommerce_active) {
           redirect(stepsCount - 1);
         } else {
           finishWizard();

@@ -3,7 +3,7 @@ export const getStepsCount = () => {
   if (!window.has_mss_key_specified) {
     stepsCount += 1;
   }
-  if (window.is_woocommerce_active) {
+  if (window.mailpoet_woocommerce_active) {
     stepsCount += 1;
   }
   return stepsCount;
@@ -25,7 +25,7 @@ export const mapStepNumberToStepName = (stepNumber) => {
   if (stepNumber === 2) {
     return 'WelcomeWizardUsageTrackingStep';
   }
-  if (window.is_woocommerce_active && stepNumber === getStepsCount()) {
+  if (window.mailpoet_woocommerce_active && stepNumber === getStepsCount()) {
     return 'WizardWooCommerceStep';
   }
   return 'WelcomeWizardPitchMSSStep';
