@@ -178,6 +178,13 @@ if [[ $CIRCLE_JOB == *"_oldest"* ]]; then
   wp theme activate twentynineteen
 fi
 
+# Remove Doctrine Annotations (they are not needed since generated metadata are packed)
+# We want to remove them for tests to make sure they are really not needed
+if [[ $TEST_TYPE == "acceptance" ]] && [[ $CIRCLE_JOB ]]; then
+  rm -rf /wp-core/wp-content/plugins/mailpoet/vendor-prefixed/doctrine/annotations
+  /wp-core/wp-content/plugins/mailpoet/tools/vendor/composer.phar --working-dir=/wp-core/wp-content/plugins/mailpoet dump-autoload
+fi
+
 # activate MailPoet
 wp plugin activate mailpoet/mailpoet.php
 if [[ $MULTISITE == "1" ]]; then
@@ -190,11 +197,6 @@ if [[ $CIRCLE_JOB == *"_with_premium_"* ]]; then
 fi
 
 cd /wp-core/wp-content/plugins/mailpoet
-# Remove Doctrine Annotations (no need since generated metadata are packed)
-if [[ $TEST_TYPE == "acceptance" ]] && [[ $CIRCLE_JOB ]]; then
-  rm -rf ./vendor-prefixed/doctrine/annotations
-  ./tools/vendor/composer.phar dump-autoload
-fi
 /project/vendor/bin/codecept run $TEST_TYPE $@
 exitcode=$?
 
