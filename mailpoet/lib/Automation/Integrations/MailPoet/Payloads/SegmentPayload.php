@@ -27,4 +27,8 @@ class SegmentPayload implements Payload {
   public function getName(): string {
     return $this->segment->getName();
   }
+
+  public function getType(): string {
+    return $this->segment->getType();
+  }
 }

@@ -2,10 +2,11 @@
 
 namespace MailPoet\Automation\Integrations\MailPoet\Triggers;
 
+use MailPoet\Automation\Engine\Data\StepRunArgs;
 use MailPoet\Automation\Engine\Data\Subject;
 use MailPoet\Automation\Engine\Hooks;
-use MailPoet\Automation\Engine\Workflows\Subject;
 use MailPoet\Automation\Engine\Workflows\Trigger;
+use MailPoet\Automation\Integrations\MailPoet\Payloads\SegmentPayload;
 use MailPoet\Automation\Integrations\MailPoet\Subjects\SegmentSubject;
 use MailPoet\Automation\Integrations\MailPoet\Subjects\SubscriberSubject;
 use MailPoet\Entities\SubscriberSegmentEntity;
@@ -64,26 +65,12 @@ class SomeoneSubscribesTrigger implements Trigger {
     ]);
   }
 
-  public function isTriggeredBy(array $args, Subject ...$subjects): bool {
+  public function isTriggeredBy(StepRunArgs $args): bool {
+    $segmentId = $args->getSinglePayloadByClass(SegmentPayload::class)->getId();
 
-    $segment = null;
-    foreach ($subjects as $subject) {
-      if (!$subject instanceof SegmentSubject) {
-        continue;
-      }
-      /**
-       * @var SegmentSubject $subject
-       */
-      $segment = $subject->getSegment();
-    }
-
-    // Return true, when no segment list is defined (=any list) or the segment matches the definition.
-    return (
-      !$segment
-      || !isset($args['segment_ids'])
-      || !is_array($args['segment_ids'])
-      || !count($args['segment_ids'])
-      || in_array($segment->getId(), $args['segment_ids'], true)
-    );
+    // Triggers when no segment IDs defined (= any segment) or the current segment paylo.
+    $triggerArgs = $args->getStep()->getArgs();
+    $segmentIds = $triggerArgs['segment_ids'] ?? [];
+    return !is_array($segmentIds) || !$segmentIds || in_array($segmentId, $segmentIds, true);
   }
 }
