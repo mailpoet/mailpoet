@@ -192,6 +192,8 @@ if [[ $MULTISITE == "1" ]]; then
 fi
 
 if [[ $CIRCLE_JOB == *"_with_premium_"* ]]; then
+  # Copy MailPoet Premium to plugin path
+  cp -r -n /project/mailpoet-premium /wp-core/wp-content/plugins/mailpoet-premium
   # Activate MailPoet Premium
   wp plugin activate mailpoet-premium
 fi
