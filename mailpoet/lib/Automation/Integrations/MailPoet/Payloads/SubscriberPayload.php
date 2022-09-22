@@ -31,4 +31,12 @@ class SubscriberPayload implements Payload {
   public function getStatus(): string {
     return $this->subscriber->getStatus();
   }
+
+  public function isWpUser(): bool {
+    return $this->subscriber->isWPUser();
+  }
+
+  public function getWpUserId(): ?int {
+    return $this->subscriber->getWpUserId();
+  }
 }

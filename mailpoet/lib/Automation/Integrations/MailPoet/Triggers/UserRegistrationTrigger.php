@@ -2,9 +2,11 @@
 
 namespace MailPoet\Automation\Integrations\MailPoet\Triggers;
 
+use MailPoet\Automation\Engine\Data\StepRunArgs;
 use MailPoet\Automation\Engine\Hooks;
-use MailPoet\Automation\Engine\Workflows\Subject;
 use MailPoet\Automation\Engine\Workflows\Trigger;
+use MailPoet\Automation\Integrations\MailPoet\Payloads\SegmentPayload;
+use MailPoet\Automation\Integrations\MailPoet\Payloads\SubscriberPayload;
 use MailPoet\Automation\Integrations\MailPoet\Subjects\SegmentSubject;
 use MailPoet\Automation\Integrations\MailPoet\Subjects\SubscriberSubject;
 use MailPoet\Entities\SegmentEntity;
@@ -62,47 +64,28 @@ class UserRegistrationTrigger implements Trigger {
     ]);
   }
 
-  public function isTriggeredBy(array $args, Subject ...$subjects): bool {
-    $segment = null;
-    $subscriber = null;
-    foreach ($subjects as $subject) {
-      if ($subject instanceof SegmentSubject) {
-        $segment = $subject->getSegment();
-      }
-      if ($subject instanceof SubscriberSubject) {
-        $subscriber = $subject->getSubscriber();
-      }
-    }
-
-    if (!$segment || !$subscriber) {
+  public function isTriggeredBy(StepRunArgs $args): bool {
+    $segmentPayload = $args->getSinglePayloadByClass(SegmentPayload::class);
+    if ($segmentPayload->getType() !== SegmentEntity::TYPE_WP_USERS) {
       return false;
     }
 
-    if ($segment->getType() !== SegmentEntity::TYPE_WP_USERS) {
+    $subscriberPayload = $args->getSinglePayloadByClass(SubscriberPayload::class);
+    if (!$subscriberPayload->isWPUser()) {
       return false;
-    }
-    if (!isset($args['roles']) || !is_array($args['roles']) || !count($args['roles'])) {
-      return true;
     }
 
-    if (!$subscriber->isWPUser()) {
-      return false;
-    }
-    $user = $this->wp->getUserBy('id', $subscriber->getWpUserId());
+    $user = $this->wp->getUserBy('id', $subscriberPayload->getWpUserId());
     if (!$user) {
       return false;
     }
 
-    foreach ($user->roles as $userRole) {
-      if (in_array($userRole, $args['roles'], true)) {
-        return true;
-      }
-    }
-    return false;
+    $triggerArgs = $args->getStep()->getArgs();
+    $roles = $triggerArgs['roles'] ?? [];
+    return !is_array($roles) || !$roles || count(array_intersect($user->roles, $roles)) > 0;
   }
 
   private function getSegment(SubscriberEntity $subscriber): SegmentEntity {
-
     $segments = $subscriber->getSubscriberSegments()->toArray();
     if (!$segments) {
       throw new InvalidStateException();

@@ -2,6 +2,7 @@
 
 namespace MailPoet\Automation\Engine\Control;
 
+use MailPoet\Automation\Engine\Data\StepRunArgs;
 use MailPoet\Automation\Engine\Data\Subject;
 use MailPoet\Automation\Engine\Data\WorkflowRun;
 use MailPoet\Automation\Engine\Exceptions;
@@ -60,11 +61,11 @@ class TriggerHandler {
         $entry->getPayload();
       }
 
-      if (!$trigger->isTriggeredBy($step->getArgs(), $subjectEntries)) {
+      $workflowRun = new WorkflowRun($workflow->getId(), $workflow->getVersionId(), $trigger->getKey(), $subjects);
+      if (!$trigger->isTriggeredBy(new StepRunArgs($workflow, $workflowRun, $step, $subjectEntries))) {
         return;
       }
 
-      $workflowRun = new WorkflowRun($workflow->getId(), $workflow->getVersionId(), $trigger->getKey(), $subjects);
       $workflowRunId = $this->workflowRunStorage->createWorkflowRun($workflowRun);
       $nextStep = $step->getNextSteps()[0] ?? null;
       $this->actionScheduler->enqueue(Hooks::WORKFLOW_STEP, [
