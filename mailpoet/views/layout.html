@@ -77,6 +77,10 @@ jQuery('#adminmenu #toplevel_page_mailpoet-newsletters')
   var mailpoet_installed_days_ago = <%= installed_days_ago %>;
   var mailpoet_deactivate_subscriber_after_inactive_days = <%= json_encode(deactivate_subscriber_after_inactive_days) %>;
 
+  var mailpoet_site_name = '<%= site_name %>';
+  var mailpoet_site_url = "<%= site_url %>";
+  var mailpoet_site_address = '<%= site_address %>';
+
   // Premium status
   var mailpoet_current_wp_user_email = '<%= current_wp_user_email|escape('js') %>';
   var mailpoet_premium_link = <%= json_encode(link_premium) %>;
