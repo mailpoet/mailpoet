@@ -194,6 +194,8 @@ fi
 if [[ $CIRCLE_JOB == *"_with_premium_"* ]]; then
   # Copy MailPoet Premium to plugin path
   cp -r -n /project/mailpoet-premium /wp-core/wp-content/plugins/mailpoet-premium
+  chown www-data:www-data /wp-core/wp-content/plugins/mailpoet-premium/generated
+  chmod -R 755 /wp-core/wp-content/plugins/mailpoet-premium/generated
   # Activate MailPoet Premium
   wp plugin activate mailpoet-premium
 fi
