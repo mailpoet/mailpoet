@@ -397,6 +397,8 @@ class ManageSegmentsCest {
     $productFactory->withName('Product 1')->create();
     $productFactory->withName('Product 2')->create();
     $productFactory->withName('Product 3')->create();
+    $segmentNameField = '[data-automation-id="input-name"]';
+    $segmentDescriptionField = '[data-automation-id="input-description"]';
     $productSelectElement = '[data-automation-id="select-segment-products"]';
     $operatorSelectElement = '[data-automation-id="select-operator"]';
     $actionSelectElement = '[data-automation-id="select-segment-action"]';
@@ -407,8 +409,8 @@ class ManageSegmentsCest {
     $i->login();
     $i->amOnMailpoetPage('Lists');
     $i->click('[data-automation-id="new-segment"]');
-    $i->fillField(['name' => 'name'], $segmentTitle);
-    $i->fillField(['name' => 'description'], $segmentDesc);
+    $i->fillField($segmentNameField, $segmentTitle);
+    $i->fillField($segmentDescriptionField, $segmentDesc);
     $i->selectOptionInReactSelect('purchased product', $actionSelectElement);
     $i->selectOption($operatorSelectElement, 'all of');
     $i->waitForElement($productSelectElement);
@@ -422,8 +424,8 @@ class ManageSegmentsCest {
     $i->wantTo('Open edit form and check that all values were saved correctly');
     $i->clickItemRowActionByItemName($segmentTitle, 'Edit');
     $i->waitForElement($productSelectElement);
-    $i->seeInField(['name' => 'name'], $segmentTitle);
-    $i->seeInField(['name' => 'description'], $segmentDesc);
+    $i->seeInField($segmentNameField, $segmentTitle);
+    $i->seeInField($segmentDescriptionField, $segmentDesc);
     $i->see('purchased product', $actionSelectElement);
     $i->seeOptionIsSelected($operatorSelectElement, 'all of');
     $i->see('Product 2', $productSelectElement);
@@ -432,8 +434,12 @@ class ManageSegmentsCest {
     $i->wantTo('Edit segment and save');
     $editedTitle = 'Segment Woo Product Test Edited';
     $editedDesc = 'Segment description Edited';
-    $i->fillField(['name' => 'name'], $editedTitle);
-    $i->fillField(['name' => 'description'], $editedDesc);
+    $i->clearFormField($segmentNameField);
+    $i->clearFormField($segmentDescriptionField);
+    $i->waitForElementVisible('input[value=""]' . $segmentNameField);
+    $i->waitForElementVisible($segmentDescriptionField . ':empty');
+    $i->fillField($segmentNameField, $editedTitle);
+    $i->fillField($segmentDescriptionField, $editedDesc);
     $i->selectOption($operatorSelectElement, 'none of');
     $i->selectOptionInReactSelect('Product 1', $productSelectElement);
     $i->click('[aria-label="Remove Product 3"]');
@@ -445,8 +451,8 @@ class ManageSegmentsCest {
     $i->wantTo('Open edit form and check that all values were saved correctly');
     $i->clickItemRowActionByItemName($editedTitle, 'Edit');
     $i->waitForElement($productSelectElement);
-    $i->seeInField(['name' => 'name'], $editedTitle);
-    $i->seeInField(['name' => 'description'], $editedDesc);
+    $i->seeInField($segmentNameField, $editedTitle);
+    $i->seeInField($segmentDescriptionField, $editedDesc);
     $i->see('purchased product', $actionSelectElement);
     $i->seeOptionIsSelected($operatorSelectElement, 'none of');
     $i->see('Product 1', $productSelectElement);
@@ -456,6 +462,8 @@ class ManageSegmentsCest {
 
   public function createAndEditWooCommerceNumberOfOrdersSegment(\AcceptanceTester $i) {
     $i->activateWooCommerce();
+    $segmentNameField = '[data-automation-id="input-name"]';
+    $segmentDescriptionField = '[data-automation-id="input-description"]';
     $actionSelectElement = '[data-automation-id="select-segment-action"]';
     $numberOfOrdersTypeElement = '[data-automation-id="select-number-of-orders-type"]';
     $numberOfOrdersCountElement = '[data-automation-id="input-number-of-orders-count"]';
@@ -467,8 +475,8 @@ class ManageSegmentsCest {
     $i->login();
     $i->amOnMailpoetPage('Lists');
     $i->click('[data-automation-id="new-segment"]');
-    $i->fillField(['name' => 'name'], $segmentTitle);
-    $i->fillField(['name' => 'description'], $segmentDesc);
+    $i->fillField($segmentNameField, $segmentTitle);
+    $i->fillField($segmentDescriptionField, $segmentDesc);
     $i->selectOptionInReactSelect('# of orders', $actionSelectElement);
     $i->waitForElement($numberOfOrdersTypeElement);
     $i->selectOption($numberOfOrdersTypeElement, '>');
@@ -483,8 +491,8 @@ class ManageSegmentsCest {
     $i->wantTo('Open edit form and check that all values were saved correctly');
     $i->clickItemRowActionByItemName($segmentTitle, 'Edit');
     $i->waitForElement($numberOfOrdersTypeElement);
-    $i->seeInField(['name' => 'name'], $segmentTitle);
-    $i->seeInField(['name' => 'description'], $segmentDesc);
+    $i->seeInField($segmentNameField, $segmentTitle);
+    $i->seeInField($segmentDescriptionField, $segmentDesc);
     $i->see('# of orders', $actionSelectElement);
     $i->see('more than', $numberOfOrdersTypeElement);
     $i->seeInField($numberOfOrdersCountElement, '2');
@@ -495,11 +503,15 @@ class ManageSegmentsCest {
     $editedDesc = 'Segment description Edited';
     $i->clearFormField($numberOfOrdersCountElement);
     $i->clearFormField($numberOfOrdersDaysElement);
-    $i->fillField(['name' => 'name'], $editedTitle);
-    $i->fillField(['name' => 'description'], $editedDesc);
-    $i->selectOption($numberOfOrdersTypeElement, '=');
+    $i->clearFormField($segmentNameField);
+    $i->clearFormField($segmentDescriptionField);
+    $i->waitForElementVisible('input[value=""]' . $segmentNameField);
+    $i->waitForElementVisible($segmentDescriptionField . ':empty');
+    $i->fillField($segmentNameField, $editedTitle);
+    $i->fillField($segmentDescriptionField, $editedDesc);
     $i->waitForElementVisible('input[value=""]' . $numberOfOrdersCountElement);
     $i->waitForElementVisible('input[value=""]' . $numberOfOrdersDaysElement);
+    $i->selectOption($numberOfOrdersTypeElement, '=');
     $i->fillField($numberOfOrdersCountElement, 4);
     $i->fillField($numberOfOrdersDaysElement, 20);
     $i->waitForElementClickable('button[type="submit"]');
@@ -510,8 +522,8 @@ class ManageSegmentsCest {
     $i->wantTo('Open edit form and check that all values were saved correctly');
     $i->clickItemRowActionByItemName($editedTitle, 'Edit');
     $i->waitForElement($numberOfOrdersTypeElement);
-    $i->seeInField(['name' => 'name'], $editedTitle);
-    $i->seeInField(['name' => 'description'], $editedDesc);
+    $i->seeInField($segmentNameField, $editedTitle);
+    $i->seeInField($segmentDescriptionField, $editedDesc);
     $i->see('# of orders', $actionSelectElement);
     $i->see('equals', $numberOfOrdersTypeElement);
     $i->seeInField($numberOfOrdersCountElement, '4');
@@ -520,6 +532,8 @@ class ManageSegmentsCest {
 
   public function createAndEditWooCommerceTotalSpentSegment(\AcceptanceTester $i) {
     $i->activateWooCommerce();
+    $segmentNameField = '[data-automation-id="input-name"]';
+    $segmentDescriptionField = '[data-automation-id="input-description"]';
     $actionSelectElement = '[data-automation-id="select-segment-action"]';
     $totalSpentTypeElement = '[data-automation-id="select-total-spent-type"]';
     $totalSpentAmountElement = '[data-automation-id="input-total-spent-amount"]';
@@ -531,7 +545,7 @@ class ManageSegmentsCest {
     $i->login();
     $i->amOnMailpoetPage('Lists');
     $i->click('[data-automation-id="new-segment"]');
-    $i->fillField(['name' => 'name'], $segmentTitle);
+    $i->fillField($segmentNameField, $segmentTitle);
     $i->fillField(['name' => 'description'], $segmentDesc);
     $i->selectOptionInReactSelect('total spent', $actionSelectElement);
     $i->waitForElement($totalSpentTypeElement);
@@ -548,8 +562,8 @@ class ManageSegmentsCest {
     $i->wantTo('Open edit form and check that all values were saved correctly');
     $i->clickItemRowActionByItemName($segmentTitle, 'Edit');
     $i->waitForElement($totalSpentTypeElement);
-    $i->seeInField(['name' => 'name'], $segmentTitle);
-    $i->seeInField(['name' => 'description'], $segmentDesc);
+    $i->seeInField($segmentNameField, $segmentTitle);
+    $i->seeInField($segmentDescriptionField, $segmentDesc);
     $i->see('total spent', $actionSelectElement);
     $i->see('more than', $totalSpentTypeElement);
     $i->seeInField($totalSpentAmountElement, '2');
@@ -560,8 +574,12 @@ class ManageSegmentsCest {
     $editedDesc = 'Segment description Edited';
     $i->clearFormField($totalSpentAmountElement);
     $i->clearFormField($totalSpentDaysElement);
-    $i->fillField(['name' => 'name'], $editedTitle);
-    $i->fillField(['name' => 'description'], $editedDesc);
+    $i->clearFormField($segmentNameField);
+    $i->clearFormField($segmentDescriptionField);
+    $i->waitForElementVisible('input[value=""]' . $segmentNameField);
+    $i->waitForElementVisible($segmentDescriptionField . ':empty');
+    $i->fillField($segmentNameField, $editedTitle);
+    $i->fillField($segmentDescriptionField, $editedDesc);
     $i->waitForElementVisible('input[value=""]' . $totalSpentAmountElement);
     $i->waitForElementVisible('input[value=""]' . $totalSpentDaysElement);
     $i->selectOption($totalSpentTypeElement, '<');
@@ -576,8 +594,8 @@ class ManageSegmentsCest {
     $i->wantTo('Open edit form and check that all values were saved correctly');
     $i->clickItemRowActionByItemName($editedTitle, 'Edit');
     $i->waitForElement($totalSpentTypeElement);
-    $i->seeInField(['name' => 'name'], $editedTitle);
-    $i->seeInField(['name' => 'description'], $editedDesc);
+    $i->seeInField($segmentNameField, $editedTitle);
+    $i->seeInField($segmentDescriptionField, $editedDesc);
     $i->see('total spent', $actionSelectElement);
     $i->see('less than', $totalSpentTypeElement);
     $i->seeInField($totalSpentAmountElement, '4');
