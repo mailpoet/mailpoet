@@ -18,7 +18,6 @@ use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Mailer\MailerLog;
-use MailPoet\Models\Newsletter;
 use MailPoet\Newsletter\NewsletterPostsRepository;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
@@ -179,10 +178,10 @@ class NewsletterTest extends \MailPoetTest {
     expect($renderedNewsletter['html'])
       ->stringContainsString('[mailpoet_open_data]');
 
-    $hookName = 'mailpoet_sending_newsletter_render_after';
+    $hookName = 'mailpoet_sending_newsletter_render_after_pre_process';
     expect(WPHooksHelper::isFilterApplied($hookName))->true();
     expect(WPHooksHelper::getFilterApplied($hookName)[0])->array();
-    expect(WPHooksHelper::getFilterApplied($hookName)[1] instanceof Newsletter)->true();
+    expect(WPHooksHelper::getFilterApplied($hookName)[1] instanceof NewsletterEntity)->true();
   }
 
   public function testItDoesNotHashLinksAndInsertTrackingCodeWhenTrackingIsDisabled() {
@@ -201,10 +200,10 @@ class NewsletterTest extends \MailPoetTest {
     expect($renderedNewsletter['html'])
       ->stringNotContainsString('[mailpoet_open_data]');
 
-    $hookName = 'mailpoet_sending_newsletter_render_after';
+    $hookName = 'mailpoet_sending_newsletter_render_after_pre_process';
     expect(WPHooksHelper::isFilterApplied($hookName))->true();
     expect(WPHooksHelper::getFilterApplied($hookName)[0])->array();
-    expect(WPHooksHelper::getFilterApplied($hookName)[1] instanceof Newsletter)->true();
+    expect(WPHooksHelper::getFilterApplied($hookName)[1] instanceof NewsletterEntity)->true();
   }
 
   public function testItReturnsFalseAndDeletesNewsletterWhenPostNotificationContainsNoPosts() {
