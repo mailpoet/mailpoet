@@ -48,7 +48,9 @@ $container = \MailPoet\DI\ContainerWrapper::getInstance(WP_DEBUG);
 // Check if Linux Cron method is set in plugin settings
 $settings = $container->get(\MailPoet\Settings\SettingsController::class);
 if ($settings->get('cron_trigger.method') !== \MailPoet\Cron\CronTrigger::METHOD_LINUX_CRON) {
-  echo 'MailPoet is not configured to run with Linux Cron.';
+  echo 'You attempt to run MailPoets "Server side cron (Linux cron)."' . PHP_EOL .
+    'But in your settings, you have defined a different method for the Newsletter task scheduler.' . PHP_EOL .
+    'If you want to use the "Server side cron", please go to MailPoet > Settings > Advanced and choose the correct Newsletter task scheduler.' . PHP_EOL;
   exit(1);
 }
 
