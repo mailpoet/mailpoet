@@ -101,6 +101,7 @@ export function Form({ segmentId }: Props): JSX.Element {
               name="name"
               id="field_name"
               defaultValue={segment.name}
+              data-automation-id="input-name"
               onChange={(e): void => {
                 void updateSegment({ name: e.target.value });
               }}
@@ -122,6 +123,7 @@ export function Form({ segmentId }: Props): JSX.Element {
               name="description"
               id="field_description"
               value={segment.description}
+              data-automation-id="input-description"
               onChange={(e): void => {
                 void updateSegment({ description: e.target.value });
               }}
