@@ -159,14 +159,9 @@ class SendingQueue {
       return;
     }
 
-    $newsletter = Newsletter::findOne($newsletterEntity->getId());
-    if (!$newsletter) {
-      return;
-    }
-
     // pre-process newsletter (render, replace shortcodes/links, etc.)
-    $newsletter = $this->newsletterTask->preProcessNewsletter($newsletter, $queue);
-    if (!$newsletter) {
+    $newsletterEntity = $this->newsletterTask->preProcessNewsletter($newsletterEntity, $queue);
+    if (!$newsletterEntity) {
       $this->loggerFactory->getLogger(LoggerFactory::TOPIC_NEWSLETTERS)->info(
         'delete task in sending queue',
         ['task_id' => $queue->taskId]
@@ -174,6 +169,12 @@ class SendingQueue {
       $queue->delete();
       return;
     }
+
+    $newsletter = Newsletter::findOne($newsletterEntity->getId());
+    if (!$newsletter) {
+      return;
+    }
+
     // clone the original object to be used for processing
     $_newsletter = (object)$newsletter->asArray();
     $_newsletter->options = $newsletterEntity->getOptionsAsArray();
@@ -255,10 +256,8 @@ class SendingQueue {
           'completed newsletter sending',
           ['newsletter_id' => $newsletter->id, 'task_id' => $queue->taskId]
         );
-        $newsletter = $this->newslettersRepository->findOneById($newsletter->id);
-        assert($newsletter instanceof NewsletterEntity);
-        $this->newsletterTask->markNewsletterAsSent($newsletter, $queue);
-        $this->statsNotificationsScheduler->schedule($newsletter);
+        $this->newsletterTask->markNewsletterAsSent($newsletterEntity, $queue);
+        $this->statsNotificationsScheduler->schedule($newsletterEntity);
       }
       $this->enforceSendingAndExecutionLimits($timer);
     }
