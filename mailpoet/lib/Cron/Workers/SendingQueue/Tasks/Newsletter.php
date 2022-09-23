@@ -155,7 +155,7 @@ class Newsletter {
     // check if this is a post notification and if it contains at least 1 ALC post
     if (
       $newsletter->type === NewsletterEntity::TYPE_NOTIFICATION_HISTORY &&
-      $this->postsTask->getAlcPostsCount($renderedNewsletter, $newsletter) === 0
+      $this->postsTask->getAlcPostsCount($renderedNewsletter, $newsletterEntity) === 0
     ) {
       // delete notification history record since it will never be sent
       $this->loggerFactory->getLogger(LoggerFactory::TOPIC_POST_NOTIFICATIONS)->info(
