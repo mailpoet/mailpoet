@@ -3,6 +3,7 @@
 namespace MailPoet\Automation\Engine\Data;
 
 use DateTimeImmutable;
+use MailPoet\Automation\Engine\Exceptions\InvalidStateException;
 use MailPoet\Automation\Engine\Utils\Json;
 
 class Workflow {
@@ -17,10 +18,10 @@ class Workflow {
     self::STATUS_TRASH,
   ];
 
-  /** @var int */
+  /** @var int|null */
   private $id;
 
-  /** @var int */
+  /** @var int|null */
   private $versionId;
 
   /** @var string */
@@ -55,13 +56,8 @@ class Workflow {
     $this->name = $name;
     $this->steps = $steps;
     $this->author = $author;
-
-    if ($id) {
-      $this->id = $id;
-    }
-    if ($versionId) {
-      $this->versionId = $versionId;
-    }
+    $this->id = $id;
+    $this->versionId = $versionId;
 
     $now = new DateTimeImmutable();
     $this->createdAt = $now;
@@ -69,10 +65,16 @@ class Workflow {
   }
 
   public function getId(): int {
+    if (!$this->id) {
+      throw InvalidStateException::create()->withMessage('No workflow ID was set');
+    }
     return $this->id;
   }
 
   public function getVersionId(): int {
+    if (!$this->versionId) {
+      throw InvalidStateException::create()->withMessage('No workflow version ID was set');
+    }
     return $this->versionId;
   }
 
