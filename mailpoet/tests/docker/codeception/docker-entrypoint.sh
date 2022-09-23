@@ -186,7 +186,7 @@ if [[ $TEST_TYPE == "acceptance" ]] && [[ $CIRCLE_JOB ]]; then
 fi
 
 # activate MailPoet
-wp plugin activate mailpoet/mailpoet.php
+wp plugin activate mailpoet/mailpoet.php || { echo "MailPoet plugin activation failed!" ; exit 1; }
 if [[ $MULTISITE == "1" ]]; then
   wp plugin activate mailpoet/mailpoet.php --url=$HTTP_HOST/$WP_TEST_MULTISITE_SLUG
 fi
@@ -197,7 +197,7 @@ if [[ $CIRCLE_JOB == *"_with_premium_"* ]]; then
   chown www-data:www-data /wp-core/wp-content/plugins/mailpoet-premium/generated
   chmod -R 755 /wp-core/wp-content/plugins/mailpoet-premium/generated
   # Activate MailPoet Premium
-  wp plugin activate mailpoet-premium
+  wp plugin activate mailpoet-premium || { echo "MailPoet Premium plugin activation failed!" ; exit 1; }
 fi
 
 cd /wp-core/wp-content/plugins/mailpoet
