@@ -132,7 +132,7 @@ class NewsletterEntity {
   private $parent;
 
   /**
-   * @ORM\OneToMany(targetEntity="MailPoet\Entities\NewsletterEntity", mappedBy="parent")
+   * @ORM\OneToMany(targetEntity="MailPoet\Entities\NewsletterEntity", mappedBy="parent", fetch="EXTRA_LAZY")
    * @var ArrayCollection<int, NewsletterEntity>
    */
   private $children;
@@ -178,6 +178,9 @@ class NewsletterEntity {
     // reset ID
     $this->id = null;
     $this->newsletterSegments = new ArrayCollection();
+    $this->children = new ArrayCollection();
+    $this->options = new ArrayCollection();
+    $this->queues = new ArrayCollection();
   }
 
   /**
