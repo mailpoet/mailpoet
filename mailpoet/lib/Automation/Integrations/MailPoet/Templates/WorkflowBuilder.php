@@ -5,8 +5,8 @@ namespace MailPoet\Automation\Integrations\MailPoet\Templates;
 use MailPoet\Automation\Engine\Data\NextStep;
 use MailPoet\Automation\Engine\Data\Step;
 use MailPoet\Automation\Engine\Data\Workflow;
+use MailPoet\Automation\Engine\Integration\Trigger;
 use MailPoet\Automation\Engine\Registry;
-use MailPoet\Automation\Engine\Workflows\Trigger;
 use MailPoet\Util\Security;
 use MailPoet\Validator\Schema\ObjectSchema;
 

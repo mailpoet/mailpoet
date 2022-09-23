@@ -13,7 +13,7 @@ use MailPoet\Automation\Engine\Registry;
 use MailPoet\Automation\Engine\Storage\WorkflowRunLogStorage;
 use MailPoet\Automation\Engine\Storage\WorkflowRunStorage;
 use MailPoet\Automation\Engine\Storage\WorkflowStorage;
-use MailPoet\Automation\Engine\Workflows\Action;
+use MailPoet\Automation\Engine\Integration\Action;
 use MailPoet\Util\Security;
 use MailPoet\Validator\Builder;
 use MailPoet\Validator\Schema\ObjectSchema;

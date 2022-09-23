@@ -7,10 +7,10 @@ use MailPoet\Automation\Engine\Data\Subject;
 use MailPoet\Automation\Engine\Data\WorkflowRun;
 use MailPoet\Automation\Engine\Exceptions;
 use MailPoet\Automation\Engine\Hooks;
+use MailPoet\Automation\Engine\Integration\Trigger;
 use MailPoet\Automation\Engine\Storage\WorkflowRunStorage;
 use MailPoet\Automation\Engine\Storage\WorkflowStorage;
 use MailPoet\Automation\Engine\WordPress;
-use MailPoet\Automation\Engine\Workflows\Trigger;
 
 class TriggerHandler {
   /** @var ActionScheduler */

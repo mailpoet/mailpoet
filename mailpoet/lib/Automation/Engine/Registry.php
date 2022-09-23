@@ -3,11 +3,11 @@
 namespace MailPoet\Automation\Engine;
 
 use MailPoet\Automation\Engine\Control\RootStep;
-use MailPoet\Automation\Engine\Workflows\Action;
-use MailPoet\Automation\Engine\Workflows\Payload;
-use MailPoet\Automation\Engine\Workflows\Step;
-use MailPoet\Automation\Engine\Workflows\Subject;
-use MailPoet\Automation\Engine\Workflows\Trigger;
+use MailPoet\Automation\Engine\Integration\Action;
+use MailPoet\Automation\Engine\Integration\Payload;
+use MailPoet\Automation\Engine\Integration\Step;
+use MailPoet\Automation\Engine\Integration\Subject;
+use MailPoet\Automation\Engine\Integration\Trigger;
 
 class Registry {
   /** @var array<string, Step> */

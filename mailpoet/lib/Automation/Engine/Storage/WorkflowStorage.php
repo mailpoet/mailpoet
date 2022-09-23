@@ -5,8 +5,8 @@ namespace MailPoet\Automation\Engine\Storage;
 use DateTimeImmutable;
 use MailPoet\Automation\Engine\Data\Workflow;
 use MailPoet\Automation\Engine\Exceptions;
+use MailPoet\Automation\Engine\Integration\Trigger;
 use MailPoet\Automation\Engine\Utils\Json;
-use MailPoet\Automation\Engine\Workflows\Trigger;
 use wpdb;
 
 class WorkflowStorage {

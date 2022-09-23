@@ -2,7 +2,7 @@
 
 namespace MailPoet\Automation\Engine\Control;
 
-use MailPoet\Automation\Engine\Workflows\Step;
+use MailPoet\Automation\Engine\Integration\Step;
 use MailPoet\Validator\Schema\ObjectSchema;
 
 class RootStep implements Step {

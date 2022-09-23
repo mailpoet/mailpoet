@@ -12,13 +12,13 @@ use MailPoet\Automation\Engine\Data\WorkflowRunLog;
 use MailPoet\Automation\Engine\Exceptions;
 use MailPoet\Automation\Engine\Exceptions\InvalidStateException;
 use MailPoet\Automation\Engine\Hooks;
+use MailPoet\Automation\Engine\Integration\Action;
+use MailPoet\Automation\Engine\Integration\Payload;
+use MailPoet\Automation\Engine\Integration\Subject;
 use MailPoet\Automation\Engine\Storage\WorkflowRunLogStorage;
 use MailPoet\Automation\Engine\Storage\WorkflowRunStorage;
 use MailPoet\Automation\Engine\Storage\WorkflowStorage;
 use MailPoet\Automation\Engine\WordPress;
-use MailPoet\Automation\Engine\Workflows\Action;
-use MailPoet\Automation\Engine\Workflows\Payload;
-use MailPoet\Automation\Engine\Workflows\Subject;
 use Throwable;
 
 class StepHandler {
