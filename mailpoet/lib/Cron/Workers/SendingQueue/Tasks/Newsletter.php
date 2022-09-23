@@ -134,7 +134,7 @@ class Newsletter {
       // render newsletter
       $renderedNewsletter = $this->renderer->render($newsletter, $sendingTask);
       $renderedNewsletter = $this->wp->applyFilters(
-        'mailpoet_sending_newsletter_render_after',
+        'mailpoet_sending_newsletter_render_after_pre_process',
         $renderedNewsletter,
         $newsletter
       );
@@ -145,12 +145,23 @@ class Newsletter {
       // render newsletter
       $renderedNewsletter = $this->renderer->render($newsletter, $sendingTask);
       $renderedNewsletter = $this->wp->applyFilters(
-        'mailpoet_sending_newsletter_render_after',
+        'mailpoet_sending_newsletter_render_after_pre_process',
         $renderedNewsletter,
         $newsletter
       );
       $renderedNewsletter = $this->gaTracking->applyGATracking($renderedNewsletter, $newsletter);
     }
+
+    // This deprecated notice can be removed after 2023-03-23
+    if ($this->wp->hasFilter('mailpoet_sending_newsletter_render_after')) {
+      $this->wp->deprecatedHook(
+        'mailpoet_sending_newsletter_render_after',
+        '3.98.1',
+        'mailpoet_sending_newsletter_render_after_pre_process',
+        __('Please note that mailpoet_sending_newsletter_render_after no longer runs and that the list of parameters of the new filter is different.', 'mailpoet')
+      );
+    }
+
     // check if this is a post notification and if it contains at least 1 ALC post
     if (
       $newsletter->getType() === NewsletterEntity::TYPE_NOTIFICATION_HISTORY &&
