@@ -38,9 +38,9 @@ class WorkflowBuilder {
         $nextSteps
       );
       $nextSteps = [new NextStep($step->getId())];
-      $steps[] = $step;
+      $steps[$step->getId()] = $step;
     }
-    $steps[] = new Step('root', 'root', 'core:root', [], $nextSteps);
+    $steps['root'] = new Step('root', 'root', 'core:root', [], $nextSteps);
     $steps = array_reverse($steps);
     return new Workflow(
       $name,
