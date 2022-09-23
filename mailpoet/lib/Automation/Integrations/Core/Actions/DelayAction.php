@@ -5,9 +5,10 @@ namespace MailPoet\Automation\Integrations\Core\Actions;
 use MailPoet\Automation\Engine\Control\ActionScheduler;
 use MailPoet\Automation\Engine\Data\Step;
 use MailPoet\Automation\Engine\Data\StepRunArgs;
-use MailPoet\Automation\Engine\Data\Workflow;
+use MailPoet\Automation\Engine\Data\StepValidationArgs;
 use MailPoet\Automation\Engine\Hooks;
 use MailPoet\Automation\Engine\Integration\Action;
+use MailPoet\Automation\Engine\Integration\ValidationException;
 use MailPoet\Validator\Builder;
 use MailPoet\Validator\Schema\ObjectSchema;
 
@@ -40,6 +41,16 @@ class DelayAction implements Action {
     return [];
   }
 
+  public function validate(StepValidationArgs $args): void {
+    $seconds = $this->calculateSeconds($args->getStep());
+    if ($seconds <= 0) {
+      throw new ValidationException(__('A delay must have a positive value', 'mailpoet'));
+    }
+    if ($seconds > 2 * YEAR_IN_SECONDS) {
+      throw new ValidationException(__("A delay can't be longer than two years", 'mailpoet'));
+    }
+  }
+
   public function run(StepRunArgs $args): void {
     $step = $args->getStep();
     $nextStep = $step->getNextSteps()[0] ?? null;
@@ -51,12 +62,6 @@ class DelayAction implements Action {
     ]);
 
     // TODO: call a step complete ($id) hook instead?
-  }
-
-  public function isValid(array $subjects, Step $step, Workflow $workflow): bool {
-    $seconds = $this->calculateSeconds($step);
-
-    return $seconds > 0 && $seconds < 2 * YEAR_IN_SECONDS;
   }
 
   private function calculateSeconds(Step $step): int {

@@ -5,6 +5,7 @@ namespace MailPoet\Test\Automation\Engine\Data;
 use MailPoet\Automation\Engine\Control\StepHandler;
 use MailPoet\Automation\Engine\Data\StepRunArgs;
 use MailPoet\Automation\Engine\Data\Step;
+use MailPoet\Automation\Engine\Data\StepValidationArgs;
 use MailPoet\Automation\Engine\Data\Workflow;
 use MailPoet\Automation\Engine\Data\WorkflowRun;
 use MailPoet\Automation\Engine\Data\WorkflowRunLog;
@@ -291,8 +292,7 @@ class TestAction implements Action {
     return [];
   }
 
-  public function isValid(array $subjects, Step $step, Workflow $workflow): bool {
-    return true;
+  public function validate(StepValidationArgs $args): void {
   }
 
   public function run(StepRunArgs $args): void {

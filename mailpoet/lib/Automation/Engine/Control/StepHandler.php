@@ -6,6 +6,7 @@ use Exception;
 use MailPoet\Automation\Engine\Control\Steps\ActionStepRunner;
 use MailPoet\Automation\Engine\Data\Step;
 use MailPoet\Automation\Engine\Data\StepRunArgs;
+use MailPoet\Automation\Engine\Data\StepValidationArgs;
 use MailPoet\Automation\Engine\Data\SubjectEntry;
 use MailPoet\Automation\Engine\Data\WorkflowRun;
 use MailPoet\Automation\Engine\Data\WorkflowRunLog;
@@ -135,7 +136,10 @@ class StepHandler {
         $requiredSubjects = $step instanceof Action ? $step->getSubjectKeys() : [];
         $subjectEntries = $this->getSubjectEntries($workflowRun, $requiredSubjects);
         $args = new StepRunArgs($workflow, $workflowRun, $step, $subjectEntries);
-        $this->stepRunners[$stepType]->run($args);
+        $validationArgs = new StepValidationArgs($workflow, $step, array_map(function (SubjectEntry $entry) {
+          return $entry->getSubject();
+        }, $subjectEntries));
+        $this->stepRunners[$stepType]->run($args, $validationArgs);
         $log->markCompletedSuccessfully();
       } catch (Throwable $e) {
         $log->markFailed();

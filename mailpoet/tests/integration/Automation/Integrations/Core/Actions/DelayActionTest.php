@@ -6,9 +6,11 @@ use MailPoet\Automation\Engine\Control\ActionScheduler;
 use MailPoet\Automation\Engine\Data\NextStep;
 use MailPoet\Automation\Engine\Data\StepRunArgs;
 use MailPoet\Automation\Engine\Data\Step;
+use MailPoet\Automation\Engine\Data\StepValidationArgs;
 use MailPoet\Automation\Engine\Data\Workflow;
 use MailPoet\Automation\Engine\Data\WorkflowRun;
 use MailPoet\Automation\Engine\Hooks;
+use MailPoet\Automation\Engine\Integration\ValidationException;
 use MailPoet\Automation\Integrations\Core\Actions\DelayAction;
 
 class DelayActionTest extends \MailPoetTest {
@@ -82,8 +84,7 @@ class DelayActionTest extends \MailPoetTest {
   /**
    * @dataProvider dataForTestDelayActionInvalidatesOutsideOfBoundaries
    */
-  public function testDelayActionInvalidatesOutsideOfBoundaries(int $delay, bool $expectation) {
-
+  public function testDelayActionInvalidatesOutsideOfBoundaries(int $delay, ?string $expectation) {
     $step = new Step(
       '1',
       'core:delay',
@@ -96,31 +97,36 @@ class DelayActionTest extends \MailPoetTest {
     );
     $workflow = $this->createMock(Workflow::class);
     $actionScheduler = $this->createMock(ActionScheduler::class);
+
+    if ($expectation) {
+      $this->expectException(ValidationException::class);
+      $this->expectExceptionMessage($expectation);
+    }
     $testee = new DelayAction($actionScheduler);
-    $this->assertEquals($expectation, $testee->isValid([], $step, $workflow));
+    $testee->validate(new StepValidationArgs($workflow, $step, []));
   }
 
   public function dataForTestDelayActionInvalidatesOutsideOfBoundaries() : array {
     return [
       'zero' => [
         0,
-        false,
+        'A delay must have a positive value',
       ],
       'minus_one' => [
         -1,
-        false,
+        'A delay must have a positive value',
       ],
       'one' => [
         1,
-        true,
+        null,
       ],
       'two_years' => [
-        2*8760,
-        false,
+        2*8760 + 1,
+        'A delay can\'t be longer than two years',
       ],
       'below_two_years' => [
-        2*8760-1,
-        true,
+        2*8760,
+        null,
       ],
     ];
   }
