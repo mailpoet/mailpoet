@@ -56,8 +56,8 @@ class Posts {
     return true;
   }
 
-  public function getAlcPostsCount($renderedNewsletter, \MailPoet\Models\Newsletter $newsletter) {
-    $templatePostsCount = substr_count($newsletter->getBodyString(), 'data-post-id');
+  public function getAlcPostsCount($renderedNewsletter, NewsletterEntity $newsletter) {
+    $templatePostsCount = substr_count($newsletter->getContent(), 'data-post-id');
     $newsletterPostsCount = substr_count($renderedNewsletter['html'], 'data-post-id');
     return $newsletterPostsCount - $templatePostsCount;
   }
