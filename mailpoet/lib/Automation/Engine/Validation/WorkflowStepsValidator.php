@@ -5,6 +5,7 @@ namespace MailPoet\Automation\Engine\Validation;
 use MailPoet\Automation\Engine\Data\Step;
 use MailPoet\Automation\Engine\Data\Workflow;
 use MailPoet\Automation\Engine\Exceptions;
+use MailPoet\Automation\Engine\Exceptions\InvalidStateException;
 use MailPoet\Automation\Engine\Registry;
 use MailPoet\Automation\Engine\Storage\WorkflowStorage;
 use MailPoet\Validator\Validator;
@@ -42,7 +43,7 @@ class WorkflowStepsValidator {
     $registryStep = $this->registry->getStep($step->getKey());
     if (!$registryStep) {
       // step not registered (e.g. plugin was deactivated) - allow saving it only if it hasn't changed
-      $currentWorkflow = $this->getCurrentWorkflow($workflow->getId());
+      $currentWorkflow = $this->getCurrentWorkflow($workflow);
       $currentStep = $currentWorkflow ? ($currentWorkflow->getSteps()[$step->getId()] ?? null) : null;
       if (!$currentStep || $step->toArray() !== $currentStep->toArray()) {
         throw Exceptions::workflowStepModifiedWhenUnknown($step);
@@ -56,9 +57,15 @@ class WorkflowStepsValidator {
     }
   }
 
-  private function getCurrentWorkflow(int $id): ?Workflow {
-    if ($this->cachedExistingWorkflow === false) {
-      $this->cachedExistingWorkflow = $this->workflowStorage->getWorkflow($id);
+  private function getCurrentWorkflow(Workflow $workflow): ?Workflow {
+    try {
+      $id = $workflow->getId();
+      if ($this->cachedExistingWorkflow === false) {
+        $this->cachedExistingWorkflow = $this->workflowStorage->getWorkflow($id);
+      }
+    } catch (InvalidStateException $e) {
+      // for new workflows, no workflow ID is set
+      $this->cachedExistingWorkflow = null;
     }
     return $this->cachedExistingWorkflow;
   }
