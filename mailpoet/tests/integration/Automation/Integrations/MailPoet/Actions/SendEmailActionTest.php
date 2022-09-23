@@ -107,7 +107,7 @@ class SendEmailActionTest extends \MailPoetTest {
     $email = (new Newsletter())->withAutomationType()->create();
 
     $step = new Step('step-id', Step::TYPE_ACTION, 'step-key', ['email_id' => $email->getId()], []);
-    $workflow = new Workflow('some-workflow', [$step], new \WP_User());
+    $workflow = new Workflow('some-workflow', [$step->getId() => $step], new \WP_User());
     $run = new WorkflowRun(1, 1, 'trigger-key', $subjects);
 
     $scheduled = $this->scheduledTasksRepository->findByNewsletterAndSubscriberId($email, (int)$subscriber->getId());
@@ -129,7 +129,7 @@ class SendEmailActionTest extends \MailPoetTest {
     $email = (new Newsletter())->withAutomationType()->create();
 
     $step = new Step('step-id', Step::TYPE_ACTION, 'step-key', ['email_id' => $email->getId()], []);
-    $workflow = new Workflow('some-workflow', [$step], new \WP_User());
+    $workflow = new Workflow('some-workflow', [$step->getId() => $step], new \WP_User());
     $run = new WorkflowRun(1, 1, 'trigger-key', $subjects);
 
     $scheduled = $this->scheduledTasksRepository->findByNewsletterAndSubscriberId($email, (int)$subscriber->getId());
@@ -161,7 +161,7 @@ class SendEmailActionTest extends \MailPoetTest {
     $email = (new Newsletter())->withAutomationType()->create();
 
     $step = new Step('step-id', Step::TYPE_ACTION, 'step-key', ['email_id' => $email->getId()], []);
-    $workflow = new Workflow('some-workflow', [$step], new \WP_User());
+    $workflow = new Workflow('some-workflow', [$step->getId() => $step], new \WP_User());
     $run = new WorkflowRun(1, 1, 'trigger-key', $subjects);
 
     $scheduled = $this->scheduledTasksRepository->findByNewsletterAndSubscriberId($email, (int)$subscriber->getId());
@@ -190,7 +190,7 @@ class SendEmailActionTest extends \MailPoetTest {
     $email = (new Newsletter())->withAutomationType()->create();
 
     $step = new Step('step-id', Step::TYPE_ACTION, 'step-key', ['email_id' => $email->getId()], []);
-    $workflow = new Workflow('some-workflow', [$step], new \WP_User());
+    $workflow = new Workflow('some-workflow', [$step->getId() => $step], new \WP_User());
     $run = new WorkflowRun(1, 1, 'trigger-key', $subjects);
 
     $scheduled = $this->scheduledTasksRepository->findByNewsletterAndSubscriberId($email, (int)$subscriber->getId());
@@ -228,7 +228,7 @@ class SendEmailActionTest extends \MailPoetTest {
       $email = (new Newsletter())->withAutomationType()->create();
 
       $step = new Step('step-id', Step::TYPE_ACTION, 'step-key', ['email_id' => $email->getId()], []);
-      $workflow = new Workflow('some-workflow', [$step], new \WP_User());
+      $workflow = new Workflow('some-workflow', [$step->getId() => $step], new \WP_User());
       $run = new WorkflowRun(1, 1, 'trigger-key', $subjects);
 
       $scheduled = $this->scheduledTasksRepository->findByNewsletterAndSubscriberId($email, (int)$subscriber->getId());
@@ -257,7 +257,7 @@ class SendEmailActionTest extends \MailPoetTest {
     $email = (new Newsletter())->withAutomationType()->create();
 
     $step = new Step('step-id', Step::TYPE_ACTION, 'step-key', ['email_id' => $email->getId()], []);
-    $workflow = new Workflow('some-workflow', [$step], new \WP_User());
+    $workflow = new Workflow('some-workflow', [$step->getId() => $step], new \WP_User());
     $run = new WorkflowRun(1, 1, 'trigger-key', $subjects);
 
     $scheduled = $this->scheduledTasksRepository->findByNewsletterAndSubscriberId($email, (int)$subscriber->getId());

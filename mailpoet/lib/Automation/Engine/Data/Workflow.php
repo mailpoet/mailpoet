@@ -44,7 +44,7 @@ class Workflow {
   /** @var array<string, Step> */
   private $steps;
 
-  /** @param Step[] $steps */
+  /** @param array<string, Step> $steps */
   public function __construct(
     string $name,
     array $steps,
@@ -53,11 +53,8 @@ class Workflow {
     int $versionId = null
   ) {
     $this->name = $name;
-    $this->steps = [];
+    $this->steps = $steps;
     $this->author = $author;
-    foreach ($steps as $step) {
-      $this->steps[$step->getId()] = $step;
-    }
 
     if ($id) {
       $this->id = $id;
