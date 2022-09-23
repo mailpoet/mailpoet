@@ -4,13 +4,11 @@ namespace MailPoet\Automation\Integrations\MailPoet\Actions;
 
 use MailPoet\Automation\Engine\Data\Step;
 use MailPoet\Automation\Engine\Data\StepRunArgs;
-use MailPoet\Automation\Engine\Data\Workflow;
+use MailPoet\Automation\Engine\Data\StepValidationArgs;
 use MailPoet\Automation\Engine\Integration\Action;
-use MailPoet\Automation\Engine\Integration\Subject;
+use MailPoet\Automation\Engine\Integration\ValidationException;
 use MailPoet\Automation\Integrations\MailPoet\Payloads\SegmentPayload;
 use MailPoet\Automation\Integrations\MailPoet\Payloads\SubscriberPayload;
-use MailPoet\Automation\Integrations\MailPoet\Subjects\SegmentSubject;
-use MailPoet\Automation\Integrations\MailPoet\Subjects\SubscriberSubject;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\InvalidStateException;
@@ -81,21 +79,16 @@ class SendEmailAction implements Action {
     ];
   }
 
-  public function isValid(array $subjects, Step $step, Workflow $workflow): bool {
+  public function validate(StepValidationArgs $args): void {
     try {
-      $this->getEmailForStep($step);
+      $this->getEmailForStep($args->getStep());
     } catch (InvalidStateException $exception) {
-      return false;
+      $emailId = $args->getStep()->getArgs()['email_id'] ?? '';
+      throw new ValidationException(
+        // translators: %s is the ID of email.
+        sprintf(__("Automation email with ID '%s' not found.", 'mailpoet'), $emailId)
+      );
     }
-
-    $segmentSubjects = array_filter($subjects, function (Subject $subject) {
-      return $subject->getKey() === SegmentSubject::KEY;
-    });
-    $subscriberSubjects = array_filter($subjects, function (Subject $subject) {
-      return $subject->getKey() === SubscriberSubject::KEY;
-    });
-
-    return count($segmentSubjects) === 1 && count($subscriberSubjects) === 1;
   }
 
   public function run(StepRunArgs $args): void {
@@ -164,7 +157,10 @@ class SendEmailAction implements Action {
       'type' => NewsletterEntity::TYPE_AUTOMATION,
     ]);
     if (!$email) {
-      throw InvalidStateException::create()->withMessage(sprintf("Automation email with ID '%s' not found.", $emailId));
+      throw InvalidStateException::create()->withMessage(
+        // translators: %s is the ID of email.
+        sprintf(__("Automation email with ID '%s' not found.", 'mailpoet'), $emailId)
+      );
     }
     return $email;
   }

@@ -4,10 +4,12 @@ namespace MailPoet\Test\Automation\Integrations\MailPoet\Actions;
 
 use MailPoet\Automation\Engine\Data\StepRunArgs;
 use MailPoet\Automation\Engine\Data\Step;
+use MailPoet\Automation\Engine\Data\StepValidationArgs;
 use MailPoet\Automation\Engine\Data\Subject;
 use MailPoet\Automation\Engine\Data\SubjectEntry;
 use MailPoet\Automation\Engine\Data\Workflow;
 use MailPoet\Automation\Engine\Data\WorkflowRun;
+use MailPoet\Automation\Engine\Integration\ValidationException;
 use MailPoet\Automation\Integrations\MailPoet\Actions\SendEmailAction;
 use MailPoet\Automation\Integrations\MailPoet\Subjects\SegmentSubject;
 use MailPoet\Automation\Integrations\MailPoet\Subjects\SubscriberSubject;
@@ -48,14 +50,8 @@ class SendEmailActionTest extends \MailPoetTest {
   /** @var SegmentSubject */
   private $segmentSubject;
 
-  /** @var Step */
-  private $step;
-
   /** @var Workflow */
   private $workflow;
-
-  /** @var NewsletterEntity */
-  private $email;
 
   public function _before() {
     parent::_before();
@@ -68,33 +64,28 @@ class SendEmailActionTest extends \MailPoetTest {
     $this->subscriberSubject = $this->diContainer->get(SubscriberSubject::class);
     $this->segmentSubject = $this->diContainer->get(SegmentSubject::class);
 
-    $this->email = (new Newsletter())->withAutomationType()->create();
-    $this->step = new Step('step-id', Step::TYPE_ACTION, 'step-key',['email_id' => $this->email->getId()], []);
     $this->workflow = new Workflow('test-workflow', [], new \WP_User());
   }
 
-  public function testItKnowsWhenItHasAllRequiredSubjects() {
-    expect($this->action->isValid([], $this->step, $this->workflow))->false();
-    expect($this->action->isValid($this->getSubjects(), $this->step, $this->workflow))->true();
-  }
-
-  public function testItRequiresASubscriberSubject() {
-    expect($this->action->isValid([$this->segmentSubject], $this->step, $this->workflow))->false();
-  }
-
-  public function testItRequiresASegmentSubject() {
-    expect($this->action->isValid([$this->subscriberSubject], $this->step, $this->workflow))->false();
+  public function testItReturnsRequiredSubjects() {
+    $this->assertSame(['mailpoet:segment', 'mailpoet:subscriber'], $this->action->getSubjectKeys());
   }
 
   public function testItIsNotValidIfStepHasNoEmail(): void {
     $step = new Step('step-id', Step::TYPE_ACTION, 'step-key', [], []);
-    expect($this->action->isValid($this->getSubjects(), $step, $this->workflow))->false();
+
+    $this->expectException(ValidationException::class);
+    $this->expectExceptionMessage("Automation email with ID '' not found.");
+    $this->action->validate(new StepValidationArgs($this->workflow, $step, []));
   }
 
   public function testItRequiresAutomationEmailType(): void {
     $newsletter = (new Newsletter())->withPostNotificationsType()->create();
     $step = new Step('step-id', Step::TYPE_ACTION, 'step-key', ['email_id' => $newsletter->getId()], []);
-    expect($this->action->isValid($this->getSubjects(), $step, $this->workflow))->false();
+
+    $this->expectExceptionMessage("Automation email with ID '{$newsletter->getId()}' not found.");
+    $this->action->validate(new StepValidationArgs($this->workflow, $step, []));
+    $this->action->validate(new StepValidationArgs($this->workflow, $step, []));
   }
 
   public function testHappyPath() {
