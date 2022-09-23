@@ -187,21 +187,31 @@ class Scheduler {
     if (empty($subscribersCount)) {
       $this->loggerFactory->getLogger(LoggerFactory::TOPIC_POST_NOTIFICATIONS)->info(
         'post notification no subscribers',
-        ['newsletter_id' => $newsletter->id, 'task_id' => $queue->taskId]
+        ['newsletter_id' => $newsletter->id, 'task_id' => $queue->taskId, 'segment_ids' => $segments]
       );
       return $this->deleteQueueOrUpdateNextRunDate($queue, $newsletter);
     }
 
     // create a duplicate newsletter that acts as a history record
-    $notificationHistory = $this->createPostNotificationHistory($newsletterEntity);
+    try {
+      $notificationHistory = $this->createPostNotificationHistory($newsletterEntity);
+    } catch (\Exception $exception) {
+      $this->loggerFactory->getLogger(LoggerFactory::TOPIC_POST_NOTIFICATIONS)->error(
+        'creating post notification history failed',
+        ['newsletter_id' => $newsletter->id, 'task_id' => $queue->taskId, 'error' => $exception->getMessage()]
+      );
+      return false;
+    }
 
     // queue newsletter for delivery
     $queue->newsletterId = (int)$notificationHistory->getId();
     $queue->updateCount();
     $queue->status = null;
     $queue->save();
-    // update notification status
-    $notificationHistory->setStatus(Newsletter::STATUS_SENDING);
+
+    // Because there is mixed usage of the old and new model, we want to be sure about the correct state
+    $this->newslettersRepository->refresh($notificationHistory);
+
     $this->loggerFactory->getLogger(LoggerFactory::TOPIC_POST_NOTIFICATIONS)->info(
       'post notification set status to sending',
       ['newsletter_id' => $newsletter->id, 'task_id' => $queue->taskId]
