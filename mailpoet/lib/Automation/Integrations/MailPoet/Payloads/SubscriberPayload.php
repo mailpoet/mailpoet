@@ -2,7 +2,7 @@
 
 namespace MailPoet\Automation\Integrations\MailPoet\Payloads;
 
-use MailPoet\Automation\Engine\Workflows\Payload;
+use MailPoet\Automation\Engine\Integration\Payload;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\InvalidStateException;
 
