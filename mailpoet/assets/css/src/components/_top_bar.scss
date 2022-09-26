@@ -32,6 +32,7 @@ $beamer-dot-size: 8px;
     cursor: pointer;
     position: relative;
     top: 2px;
+    z-index: 1;
 
     svg {
       max-height: 100%;
