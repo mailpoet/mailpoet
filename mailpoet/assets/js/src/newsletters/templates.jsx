@@ -341,6 +341,7 @@ class NewsletterTemplates extends Component {
           emailType={this.state.emailType}
           automationId="email_template_selection_heading"
           buttons={buttons}
+          showMailPoetLogo={this.state.emailType === 'automation'}
         />
 
         <div className="mailpoet-templates">

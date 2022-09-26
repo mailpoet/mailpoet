@@ -3,9 +3,15 @@ import { t } from 'common/functions/t';
 import { MailPoetLogo } from './mailpoet_logo';
 import { MailPoetLogoMobile } from './mailpoet_logo_mobile';
 
-export function MailPoetLogoResponsive() {
+type Props = {
+  onClick?: () => void;
+};
+export function MailPoetLogoResponsive({ onClick }: Props) {
   const history = useHistory();
-  const onLogoClick = () => history.push('/');
+  let onLogoClick = onClick;
+  if (!onClick) {
+    onLogoClick = () => history.push('/');
+  }
   return (
     <a
       role="button"
