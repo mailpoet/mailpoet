@@ -43,7 +43,18 @@ class WorkflowStorage {
     $data['created_at'] = $now;
     $data['updated_at'] = $now;
     $data['status'] = Workflow::STATUS_DRAFT;
-    $data['name'] = 'Copy of ' . $workflow->getName();
+    $prefix = 'Copy of ';
+    $newName = $prefix . $workflow->getName();
+    $nameColumnLengthInfo = $this->wpdb->get_col_length($this->workflowTable, 'name');
+    $maxLength = is_array($nameColumnLengthInfo)
+      ? $nameColumnLengthInfo['length'] ?? 255
+      : 255;
+    if (strlen($newName) > $maxLength) {
+      $truncateWith = '…';
+      $truncationLength = strlen($truncateWith);
+      $newName = substr($newName, 0, $maxLength - $truncationLength) . $truncateWith;
+    }
+    $data['name'] = $newName;
     $duplicate = Workflow::fromArray($data);
     return $this->createWorkflow($duplicate);
   }
