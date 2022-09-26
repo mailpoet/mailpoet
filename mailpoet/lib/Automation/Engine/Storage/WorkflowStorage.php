@@ -26,7 +26,9 @@ class WorkflowStorage {
   }
 
   public function createWorkflow(Workflow $workflow): int {
-    $result = $this->wpdb->insert($this->workflowTable, $this->getWorkflowHeaderData($workflow));
+    $workflowHeaderData = $this->getWorkflowHeaderData($workflow);
+    unset($workflowHeaderData['id']);
+    $result = $this->wpdb->insert($this->workflowTable, $workflowHeaderData);
     if (!$result) {
       throw Exceptions::databaseError($this->wpdb->last_error);
     }
