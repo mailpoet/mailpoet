@@ -453,13 +453,20 @@ class WooCommerce {
     // Insert WC customer IDs to a temporary table for left join to use an index
     $tmpTableName = Env::$dbPrefix . 'tmp_wc_ids';
     // Registered users with orders
+    if ($this->woocommerceHelper->isWooCommerceCustomOrdersTableEnabled()) {
+      $ordersTable = $this->woocommerceHelper->getOrdersTableName();
+      $registeredCustomersSubQuery = "SELECT DISTINCT customer_id AS id FROM `{$ordersTable}` WHERE type = 'shop_order'";
+    } else {
+      $registeredCustomersSubQuery = "SELECT DISTINCT wppm.meta_value AS id FROM {$wpdb->postmeta} wppm
+        JOIN {$wpdb->posts} wpp ON wppm.post_id = wpp.ID
+        AND wpp.post_type = 'shop_order'
+        WHERE wppm.meta_key = '_customer_user'";
+    }
+
     $this->connection->executeQuery("
       CREATE TEMPORARY TABLE {$tmpTableName}
         (`id` int(11) unsigned NOT NULL, UNIQUE(`id`)) AS
-      SELECT DISTINCT wppm.meta_value AS id FROM {$wpdb->postmeta} wppm
-        JOIN {$wpdb->posts} wpp ON wppm.post_id = wpp.ID
-        AND wpp.post_type = 'shop_order'
-        WHERE wppm.meta_key = '_customer_user'
+      {$registeredCustomersSubQuery}
     ");
     // Registered users with a customer role
     $this->connection->executeQuery("
