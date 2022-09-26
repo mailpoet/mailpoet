@@ -59,6 +59,36 @@ const getEmailSendTitle = (emailType: string): string => {
   return typeMap[emailType] || MailPoet.I18n.t('stepNameSend');
 };
 
+const tutorialIcon = (emailType: string): JSX.Element | null => {
+  if (emailType === 'automation') {
+    return null;
+  }
+  return (
+    <div>
+      <a
+        role="button"
+        onClick={displayTutorial}
+        className="mailpoet-top-bar-beamer"
+        title={MailPoet.I18n.t('topBarTutorial')}
+        tabIndex={0}
+        onKeyDown={(event) => {
+          if (
+            ['keydown', 'keypress'].includes(event.type) &&
+            ['Enter', ' '].includes(event.key)
+          ) {
+            event.preventDefault();
+            displayTutorial();
+          }
+        }}
+      >
+        <Icon icon={video} />
+        <span>{MailPoet.I18n.t('topBarTutorial')}</span>
+      </a>
+      <span id="beamer-empty-element" />
+    </div>
+  );
+};
+
 const stepsListingHeading = (
   step: number,
   emailType: string,
@@ -80,6 +110,7 @@ const stepsListingHeading = (
       MailPoet.I18n.t('stepNameDesign'),
     ];
   }
+
   return (
     <div className="mailpoet-top-bar" data-automation-id={automationId}>
       {showMailPoetLogo && <MailPoetLogoResponsive />}
@@ -94,28 +125,7 @@ const stepsListingHeading = (
         {' '}
       </h1>
       <div className="mailpoet-flex-grow" />
-      <div>
-        <a
-          role="button"
-          onClick={displayTutorial}
-          className="mailpoet-top-bar-beamer"
-          title={MailPoet.I18n.t('topBarTutorial')}
-          tabIndex={0}
-          onKeyDown={(event) => {
-            if (
-              ['keydown', 'keypress'].includes(event.type) &&
-              ['Enter', ' '].includes(event.key)
-            ) {
-              event.preventDefault();
-              displayTutorial();
-            }
-          }}
-        >
-          <Icon icon={video} />
-          <span>{MailPoet.I18n.t('topBarTutorial')}</span>
-        </a>
-        <span id="beamer-empty-element" />
-      </div>
+      {tutorialIcon(emailType)}
     </div>
   );
 };
