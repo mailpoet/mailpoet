@@ -497,13 +497,20 @@ class WooCommerce {
       $collation = "COLLATE $this->wpPostmetaValueCollation";
     }
 
+    if ($this->woocommerceHelper->isWooCommerceCustomOrdersTableEnabled()) {
+      $ordersTable = $this->woocommerceHelper->getOrdersTableName();
+      $guestCustomersSubQuery = "SELECT DISTINCT billing_email AS email FROM `{$ordersTable}` WHERE type = 'shop_order'";
+    } else {
+      $guestCustomersSubQuery = "SELECT DISTINCT wppm.meta_value AS email FROM {$wpdb->postmeta} wppm
+        JOIN {$wpdb->posts} wpp ON wppm.post_id = wpp.ID
+        AND wpp.post_type = 'shop_order'
+        WHERE wppm.meta_key = '_billing_email'";
+    }
+
     $this->connection->executeQuery("
       CREATE TEMPORARY TABLE {$tmpTableName}
         (`email` varchar(150) NOT NULL, UNIQUE(`email`)) {$collation}
-      SELECT DISTINCT wppm.meta_value AS email FROM {$wpdb->postmeta} wppm
-        JOIN {$wpdb->posts} wpp ON wppm.post_id = wpp.ID
-        AND wpp.post_type = 'shop_order'
-        WHERE wppm.meta_key = '_billing_email'
+      {$guestCustomersSubQuery}
     ");
 
     // Remove WC list guest users which aren't WC customers anymore
