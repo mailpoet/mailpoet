@@ -202,7 +202,7 @@ class NewslettersTest extends \MailPoetTest {
     expect($response->status)->equals(APIResponse::STATUS_OK);
     $updatedNewsletter = $this->newsletterRepository->findOneById($this->newsletter->getId());
     assert($updatedNewsletter instanceof NewsletterEntity); // PHPStan
-    expect($response->data)->equals($this->newslettersResponseBuilder->build($updatedNewsletter));
+    expect($response->data)->equals($this->newslettersResponseBuilder->build($updatedNewsletter, [NewslettersResponseBuilder::RELATION_SEGMENTS]));
     expect($updatedNewsletter->getType())->equals('Updated type');
     expect($updatedNewsletter->getSubject())->equals('Updated subject');
     expect($updatedNewsletter->getPreheader())->equals('Updated preheader');
