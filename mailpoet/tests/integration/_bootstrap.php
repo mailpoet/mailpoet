@@ -42,7 +42,6 @@ $entityManager = ContainerWrapper::getInstance(WP_DEBUG)->get(EntityManager::cla
 $entitiesMeta = $entityManager->getMetadataFactory()->getAllMetadata();
 foreach ($entitiesMeta as $entityMeta) {
   $tableName = $entityMeta->getTableName();
-  $console->writeln("Truncating up {$tableName}...");
   $connection->executeQuery('SET FOREIGN_KEY_CHECKS=0');
   $connection->executeStatement("TRUNCATE $tableName");
   $connection->executeQuery('SET FOREIGN_KEY_CHECKS=1');
