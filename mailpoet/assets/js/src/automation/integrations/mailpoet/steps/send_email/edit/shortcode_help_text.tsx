@@ -1,6 +1,6 @@
 export function ShortcodeHelpText(): JSX.Element {
   return (
-    <div className="mailpoet-shortcode-selector">
+    <span className="mailpoet-shortcode-selector">
       You can use{' '}
       <a
         href="https://kb.mailpoet.com/article/215-personalize-newsletter-with-shortcodes"
@@ -10,6 +10,6 @@ export function ShortcodeHelpText(): JSX.Element {
       >
         MailPoet shortcodes
       </a>
-    </div>
+    </span>
   );
 }
