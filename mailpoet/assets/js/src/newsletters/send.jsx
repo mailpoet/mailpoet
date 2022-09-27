@@ -1,4 +1,4 @@
-import _ from 'underscore';
+import _ from 'lodash';
 import { Component } from 'react';
 import jQuery from 'jquery';
 import PropTypes from 'prop-types';
@@ -23,6 +23,7 @@ import { fromUrl } from 'common/thumbnail.ts';
 import { GlobalContext } from 'context/index.jsx';
 
 import { extractEmailDomain } from 'common/functions';
+import { mapFilterType } from '../analytics';
 
 const automaticEmails = window.mailpoet_woocommerce_automatic_emails || [];
 
@@ -352,12 +353,27 @@ class NewsletterSendComponent extends Component {
           }
           // redirect to listing based on newsletter type
           this.props.history.push(`/${this.state.item.type || ''}`);
+          // prepare segments
+          let filters = [];
+          newsletter.data.segments.map((segment) =>
+            filters.push(...segment.filters),
+          );
+          filters = _.uniqWith(
+            filters,
+            (filterA, filterB) =>
+              filterA.action === filterB.action &&
+              filterA.type === filterB.type,
+          );
+          const segments = filters
+            .map((filter) => mapFilterType(filter))
+            .join(', ');
           if (response.data.status === 'scheduled') {
             this.context.notices.success(
               <p>{MailPoet.I18n.t('newsletterHasBeenScheduled')}</p>,
             );
             MailPoet.trackEvent('Emails > Newsletter sent', {
               scheduled: true,
+              segments,
             });
           } else {
             this.context.notices.success(
@@ -366,6 +382,7 @@ class NewsletterSendComponent extends Component {
             );
             MailPoet.trackEvent('Emails > Newsletter sent', {
               scheduled: false,
+              segments,
             });
           }
           MailPoet.Modal.loading(false);

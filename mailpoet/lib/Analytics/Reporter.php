@@ -167,6 +167,7 @@ class Reporter {
       'Plugin > WooCommerce Multi-Currency' => $this->wp->isPluginActive('woocommerce-multi-currency/woocommerce-multi-currency.php'),
       'Plugin > Multi Currency for WooCommerce' => $this->wp->isPluginActive('woo-multi-currency/woo-multi-currency.php'),
       'Web host' => $this->settings->get('mta_group') == 'website' ? $this->settings->get('web_host') : null,
+      // Dynamic segment filters tracking -- start. If you extend segments tracking, please extend mapping in analytics.js
       'Segment > # of machine-opens' => $this->isFilterTypeActive(DynamicSegmentFilterData::TYPE_EMAIL, EmailOpensAbsoluteCountAction::MACHINE_TYPE),
       'Segment > # of opens' => $this->isFilterTypeActive(DynamicSegmentFilterData::TYPE_EMAIL, EmailOpensAbsoluteCountAction::TYPE),
       'Segment > # of orders' => $this->isFilterTypeActive(DynamicSegmentFilterData::TYPE_WOOCOMMERCE, WooCommerceNumberOfOrders::ACTION_NUMBER_OF_ORDERS),
@@ -186,6 +187,7 @@ class Reporter {
       'Segment > total spent' => $this->isFilterTypeActive(DynamicSegmentFilterData::TYPE_WOOCOMMERCE, WooCommerceTotalSpent::ACTION_TOTAL_SPENT),
       'Segment > WordPress user role' => $this->isFilterTypeActive(DynamicSegmentFilterData::TYPE_USER_ROLE, UserRole::TYPE),
       'Segment > subscriber tags' => $this->isFilterTypeActive(DynamicSegmentFilterData::TYPE_USER_ROLE, SubscriberTag::TYPE),
+      // Dynamic segment filters tracking -- end. If you extend segments tracking, please extend mapping in analytics.js
       'Number of segments with multiple conditions' => $this->segmentsRepository->getSegmentCountWithMultipleFilters(),
       'Support tier' => $this->subscribersFeature->hasPremiumSupport() ? 'premium' : 'free',
       'Unauthorized email notice shown' => !empty($this->settings->get(AuthorizedEmailsController::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING)),
