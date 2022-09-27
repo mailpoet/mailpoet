@@ -156,7 +156,9 @@ class Newsletters extends APIEndpoint {
   public function save($data = []) {
     $data = $this->wp->applyFilters('mailpoet_api_newsletters_save_before', $data);
     $newsletter = $this->newsletterSaveController->save($data);
-    $response = $this->newslettersResponseBuilder->build($newsletter);
+    $response = $this->newslettersResponseBuilder->build($newsletter, [
+      NewslettersResponseBuilder::RELATION_SEGMENTS,
+    ]);
     $previewUrl = $this->getViewInBrowserUrl($newsletter);
     $response = $this->wp->applyFilters('mailpoet_api_newsletters_save_after', $response);
     return $this->successResponse($response, ['preview_url' => $previewUrl]);
