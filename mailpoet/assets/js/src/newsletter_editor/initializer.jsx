@@ -14,12 +14,16 @@ const renderHeading = (newsletterType, newsletterOptions) => {
     const step = newsletterType === 'automation' ? 2 : 3;
 
     let buttons = null;
+    let onLogoClick = () => {
+      window.location = `admin.php?page=mailpoet-newsletters`;
+    };
     if (newsletterType === 'automation') {
       const workflowId = newsletterOptions.workflowId;
       const goToUrl = `admin.php?page=mailpoet-automation-editor&id=${workflowId}`;
       const onClickCancel = () => {
         window.location = goToUrl;
       };
+      onLogoClick = onClickCancel;
       // These actions are set up from Marionette, we just trigger them here.
       const onClickPreview = () =>
         document.querySelector('.mailpoet_show_preview').click();
@@ -55,7 +59,7 @@ const renderHeading = (newsletterType, newsletterOptions) => {
         emailType={newsletterType}
         step={step}
         buttons={buttons}
-        showMailPoetLogo
+        onLogoClick={onLogoClick}
       />
     );
 

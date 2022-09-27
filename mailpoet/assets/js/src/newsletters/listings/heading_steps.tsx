@@ -93,8 +93,8 @@ const stepsListingHeading = (
   step: number,
   emailType: string,
   automationId: string,
-  showMailPoetLogo: boolean,
   buttons: ReactNode,
+  onLogoClick?: () => void,
 ): JSX.Element => {
   const emailTypeTitle = getEmailTypeTitle(emailType);
   let stepTitles = [
@@ -113,7 +113,7 @@ const stepsListingHeading = (
 
   return (
     <div className="mailpoet-top-bar" data-automation-id={automationId}>
-      {showMailPoetLogo && <MailPoetLogoResponsive />}
+      <MailPoetLogoResponsive onClick={onLogoClick} />
       <HideScreenOptions />
       <Steps count={stepTitles.length} current={step} titles={stepTitles} />
       {buttons && (
@@ -135,7 +135,7 @@ export interface Props {
   emailType?: string;
   automationId?: string;
   location: Location;
-  showMailPoetLogo?: boolean;
+  onLogoClick?: () => void;
   buttons?: ReactNode;
 }
 
@@ -144,17 +144,18 @@ function ListingHeadingSteps({
   emailType,
   location,
   automationId,
-  showMailPoetLogo,
   buttons,
+  onLogoClick,
 }: Props): JSX.Element {
   const stepNumber = step || mapPathToSteps(location, emailType);
+
   if (stepNumber !== null) {
     return stepsListingHeading(
       stepNumber,
       emailType,
       automationId,
-      showMailPoetLogo,
       buttons,
+      onLogoClick,
     );
   }
   return null;

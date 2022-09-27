@@ -315,12 +315,13 @@ class NewsletterTemplates extends Component {
     }
 
     let buttons = null;
+    let onClick;
     if (this.state.emailType === 'automation') {
       const workflowId = this.state.emailOptions?.workflowId;
       const goToUrl = workflowId
         ? `admin.php?page=mailpoet-automation-editor&id=${workflowId}`
-        : '/';
-      const onClick = () => {
+        : 'admin.php?page=mailpoet-automation';
+      onClick = () => {
         window.location = goToUrl;
       };
       buttons = (
@@ -341,7 +342,7 @@ class NewsletterTemplates extends Component {
           emailType={this.state.emailType}
           automationId="email_template_selection_heading"
           buttons={buttons}
-          showMailPoetLogo={this.state.emailType === 'automation'}
+          onLogoClick={onClick}
         />
 
         <div className="mailpoet-templates">
