@@ -90,9 +90,11 @@ class RoboFile extends \Robo\Tasks {
     // Clean up folder from previous files
     array_map('unlink', glob("assets/dist/css/*.*"));
 
-    $this->_exec('pnpm run stylelint -- "assets/css/src/**/*.scss"');
-    $this->_exec('pnpm run scss');
-    $compilationResult = $this->_exec('pnpm run autoprefixer');
+    $compilationResult = $this->taskExecStack()
+      ->exec('pnpm run stylelint-check -- "assets/css/src/**/*.scss"')
+      ->exec('pnpm run scss')
+      ->exec('pnpm run autoprefixer')
+      ->run();
 
     // Create manifest file
     $manifest = [];
