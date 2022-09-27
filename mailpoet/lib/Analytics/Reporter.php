@@ -2,9 +2,13 @@
 
 namespace MailPoet\Analytics;
 
+use MailPoet\Automation\Engine\Data\Step;
+use MailPoet\Automation\Engine\Data\Workflow;
+use MailPoet\Automation\Engine\Storage\WorkflowStorage;
 use MailPoet\Config\ServicesChecker;
 use MailPoet\Cron\CronTrigger;
 use MailPoet\Entities\DynamicSegmentFilterData;
+use MailPoet\Features\FeaturesController;
 use MailPoet\Listing\ListingDefinition;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Segments\DynamicSegments\DynamicSegmentFilterRepository;
@@ -70,6 +74,12 @@ class Reporter {
   /** @var SubscriberListingRepository */
   private $subscriberListingRepository;
 
+  /** @var FeaturesController  */
+  private $featuresController;
+
+  /** @var WorkflowStorage  */
+  private $workflowStorage;
+
   public function __construct(
     NewslettersRepository $newslettersRepository,
     SegmentsRepository $segmentsRepository,
@@ -81,7 +91,9 @@ class Reporter {
     WPFunctions $wp,
     SubscribersFeature $subscribersFeature,
     TrackingConfig $trackingConfig,
-    SubscriberListingRepository $subscriberListingRepository
+    SubscriberListingRepository $subscriberListingRepository,
+    FeaturesController $featuresController,
+    WorkflowStorage $workflowStorage
   ) {
     $this->newslettersRepository = $newslettersRepository;
     $this->segmentsRepository = $segmentsRepository;
@@ -94,6 +106,8 @@ class Reporter {
     $this->subscribersFeature = $subscribersFeature;
     $this->trackingConfig = $trackingConfig;
     $this->subscriberListingRepository = $subscriberListingRepository;
+    $this->featuresController = $featuresController;
+    $this->workflowStorage = $workflowStorage;
   }
 
   public function getData() {
@@ -195,7 +209,8 @@ class Reporter {
 
     $result = array_merge(
       $result,
-      $this->subscriberProperties()
+      $this->subscriberProperties(),
+      $this->automationProperties()
     );
     if ($hasWc) {
       $result['WooCommerce version'] = $woocommerce->version;
@@ -211,7 +226,75 @@ class Reporter {
 
       $result['Installed via WooCommerce onboarding wizard'] = $this->woocommerceHelper->wasMailPoetInstalledViaWooCommerceOnboardingWizard();
     }
+
     return $result;
+  }
+
+  private function automationProperties(): array {
+    if (!$this->featuresController->isSupported(FeaturesController::AUTOMATION)) {
+      return [];
+    }
+
+    $workflows = $this->workflowStorage->getWorkflows();
+    $activeWorkflows = array_filter(
+      $workflows,
+      function(Workflow $workflow): bool {
+        return $workflow->getStatus() === Workflow::STATUS_ACTIVE;
+      }
+    );
+    $activeWorkflowCount = count($activeWorkflows);
+    $draftWorkflows = array_filter(
+      $workflows,
+      function(Workflow $workflow): bool {
+        return $workflow->getStatus() === Workflow::STATUS_DRAFT;
+      }
+    );
+    $inactiveWorkflows = array_filter(
+      $workflows,
+      function(Workflow $workflow): bool {
+        return $workflow->getStatus() === Workflow::STATUS_INACTIVE;
+      }
+    );
+    $workflowsWithWordPressUserSubscribesTrigger = array_filter(
+      $activeWorkflows,
+      function(Workflow $workflow): bool {
+        return $workflow->getTrigger('mailpoet:wp-user-registered') !== null;
+      }
+    );
+    $workflowsWithSomeoneSubscribesTrigger = array_filter(
+      $activeWorkflows,
+      function(Workflow $workflow): bool {
+        return $workflow->getTrigger('mailpoet:someone-subscribes') !== null;
+      }
+    );
+
+    $totalSteps = 0;
+    $minSteps = null;
+    $maxSteps = 0;
+    foreach ($activeWorkflows as $workflow) {
+      $steps = array_filter(
+        $workflow->getSteps(),
+        function(Step $step): bool {
+          return $step->getType() === Step::TYPE_ACTION;
+        }
+      );
+      $stepCount = count($steps);
+      $minSteps = $minSteps !== null ? min($stepCount, $minSteps) : $stepCount;
+      $maxSteps = max($maxSteps, $stepCount);
+      $totalSteps += $stepCount;
+    }
+    $averageSteps = $activeWorkflowCount > 0 ? $totalSteps / $activeWorkflowCount : 0;
+
+    return [
+      'Automation > Number of active workflows' => $activeWorkflowCount,
+      'Automation > Number of draft workflows' => count($draftWorkflows),
+      'Automation > Number of inactive workflows' => count($inactiveWorkflows),
+      'Automation > Number of "WordPress user registers" active workflows' => count($workflowsWithWordPressUserSubscribesTrigger),
+      'Automation > Number of "Someone subscribes" active workflows ' => count($workflowsWithSomeoneSubscribesTrigger),
+      'Automation > Number of steps in shortest active workflow' => $minSteps,
+      'Automation > Number of steps in longest active workflow' => $maxSteps,
+      'Automation > Average number of steps in active workflows' => $averageSteps,
+    ];
   }
 
   private function subscriberProperties(): array {
