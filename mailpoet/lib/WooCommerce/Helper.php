@@ -3,6 +3,7 @@
 namespace MailPoet\WooCommerce;
 
 use MailPoet\DI\ContainerWrapper;
+use MailPoet\RuntimeException;
 use MailPoet\WP\Functions as WPFunctions;
 
 class Helper {
@@ -120,7 +121,7 @@ class Helper {
 
   public function getOrdersTableName() {
     if (!method_exists('\Automattic\WooCommerce\Internal\DataStores\Orders\OrdersTableDataStore', 'get_orders_table_name')) {
-      throw new \Exception('Cannot get orders table name when running a WooCommerce version that doesn\'t support custom order tables.');
+      throw new RuntimeException('Cannot get orders table name when running a WooCommerce version that doesn\'t support custom order tables.');
     }
 
     return \Automattic\WooCommerce\Internal\DataStores\Orders\OrdersTableDataStore::get_orders_table_name();
