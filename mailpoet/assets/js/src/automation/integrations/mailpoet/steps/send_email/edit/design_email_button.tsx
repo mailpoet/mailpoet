@@ -49,7 +49,7 @@ export function DesignEmailButton(): JSX.Element {
   // and the workflow is saved, we can safely redirect to the email design flow.
   useEffect(() => {
     if (emailId && workflowSaved) {
-      window.location.href = `admin.php?page=mailpoet-newsletter-editor&id=${emailId}`;
+      window.location.href = `admin.php?page=mailpoet-newsletters#/template/${emailId}`;
     }
   }, [emailId, workflowSaved]);
 
