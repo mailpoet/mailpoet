@@ -178,7 +178,7 @@ class AutomaticEmailTest extends \MailPoetTest {
     $wpMock->expects($this->any())
       ->method('currentTime')
       ->willReturn($currentTime->getTimestamp());
-    $automaticEmailScheduler = new AutomaticEmailScheduler(new Scheduler($wpMock, $this->diContainer->get(NewslettersRepository::class)));
+    $automaticEmailScheduler = $this->getServiceWithOverrides(AutomaticEmailScheduler::class, ['wp' => $wpMock]);
     // email should only be scheduled if it matches condition ("send to segment")
     $automaticEmailScheduler->scheduleAutomaticEmail('some_group', 'some_event', $condition);
     $result = $this->sendingQueuesRepository->findAll();
