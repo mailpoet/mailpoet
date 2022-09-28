@@ -5,6 +5,7 @@ namespace MailPoet\Automation\Integrations\MailPoet;
 use MailPoet\Automation\Engine\Integration;
 use MailPoet\Automation\Engine\Registry;
 use MailPoet\Automation\Integrations\MailPoet\Actions\SendEmailAction;
+use MailPoet\Automation\Integrations\MailPoet\Hooks\AutomationEditorLoadingHooks;
 use MailPoet\Automation\Integrations\MailPoet\Subjects\SegmentSubject;
 use MailPoet\Automation\Integrations\MailPoet\Subjects\SubscriberSubject;
 use MailPoet\Automation\Integrations\MailPoet\Triggers\SomeoneSubscribesTrigger;
@@ -26,18 +27,22 @@ class MailPoetIntegration implements Integration {
   /** @var SendEmailAction */
   private $sendEmailAction;
 
+  private $automationEditorLoadingHooks;
+
   public function __construct(
     SegmentSubject $segmentSubject,
     SubscriberSubject $subscriberSubject,
     SomeoneSubscribesTrigger $someoneSubscribesTrigger,
     UserRegistrationTrigger $userRegistrationTrigger,
-    SendEmailAction $sendEmailAction
+    SendEmailAction $sendEmailAction,
+    AutomationEditorLoadingHooks $automationEditorLoadingHooks
   ) {
     $this->segmentSubject = $segmentSubject;
     $this->subscriberSubject = $subscriberSubject;
     $this->someoneSubscribesTrigger = $someoneSubscribesTrigger;
     $this->userRegistrationTrigger = $userRegistrationTrigger;
     $this->sendEmailAction = $sendEmailAction;
+    $this->automationEditorLoadingHooks = $automationEditorLoadingHooks;
   }
 
   public function register(Registry $registry): void {
@@ -52,5 +57,7 @@ class MailPoetIntegration implements Integration {
       [$this->sendEmailAction, 'saveEmailSettings'],
       $this->sendEmailAction->getKey()
     );
+
+    $this->automationEditorLoadingHooks->init();
   }
 }
