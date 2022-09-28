@@ -85,17 +85,21 @@ class DaemonRun {
    * After Action Scheduler finishes its work we need to check if there is more work and in case there is we trigger additional runner.
    */
   public function afterProcess(): void {
-    $lastDurationWasTooShort = ($this->lastRunDuration < self::SHORT_DURATION_THRESHOLD) && ($this->remainingExecutionLimit > 0);
-    // Schedule next action in case we have more jobs to do.
+    $hasJobsToDo = $this->wordpressTrigger->checkExecutionRequirements();
+    if (!$hasJobsToDo) {
+      return;
+    }
     // The $lastDurationWasTooShort check prevents scheduling the next immediate action in case the last run was suspiciously short.
     // If there was still some execution time left, the daemon should have been continued.
-    if ($this->wordpressTrigger->checkExecutionRequirements() && !$lastDurationWasTooShort) {
-      $this->actionScheduler->scheduleImmediateSingleAction(self::NAME);
-      // The automatic rescheduling schedules the next recurring action to run after 1 second.
-      // So we need to wait before we trigger new remote executor to avoid skipping the action
-      sleep(2);
-      $this->remoteExecutorHandler->triggerExecutor();
+    $lastDurationWasTooShort = ($this->lastRunDuration < self::SHORT_DURATION_THRESHOLD) && ($this->remainingExecutionLimit > 0);
+    if ($lastDurationWasTooShort) {
+      return;
     }
+    $this->actionScheduler->scheduleImmediateSingleAction(self::NAME);
+    // The automatic rescheduling schedules the next recurring action to run after 1 second.
+    // So we need to wait before we trigger new remote executor to avoid skipping the action
+    sleep(2);
+    $this->remoteExecutorHandler->triggerExecutor();
   }
 
   /**
