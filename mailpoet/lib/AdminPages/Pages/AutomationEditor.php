@@ -7,6 +7,7 @@ use MailPoet\AdminPages\PageRenderer;
 use MailPoet\Automation\Engine\Data\NextStep;
 use MailPoet\Automation\Engine\Data\Step;
 use MailPoet\Automation\Engine\Data\Workflow;
+use MailPoet\Automation\Engine\Hooks;
 use MailPoet\Automation\Engine\Registry;
 use MailPoet\Automation\Engine\Storage\WorkflowStorage;
 use MailPoet\Segments\SegmentsRepository;
@@ -45,6 +46,8 @@ class AutomationEditor {
 
   public function render() {
     $id = isset($_GET['id']) ? (int)$_GET['id'] : null;
+
+    $this->wp->doAction(Hooks::EDITOR_BEFORE_LOAD, (int)$id);
 
     $workflow = $id ? $this->workflowStorage->getWorkflow($id) : null;
     if (!$workflow) {

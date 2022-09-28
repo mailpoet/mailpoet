@@ -22,6 +22,8 @@ class Hooks {
   public const TRIGGER = 'mailpoet/automation/trigger';
   public const WORKFLOW_STEP = 'mailpoet/automation/workflow/step';
 
+  public const EDITOR_BEFORE_LOAD = 'mailpoet/automation/editor/before_load';
+
   public const WORKFLOW_BEFORE_SAVE = 'mailpoet/automation/workflow/before_save';
   public const WORKFLOW_STEP_BEFORE_SAVE = 'mailpoet/automation/workflow/step/before_save';
 
