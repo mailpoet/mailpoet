@@ -7,6 +7,7 @@ use MailPoet\Cron\ActionScheduler\RemoteExecutorHandler;
 use MailPoet\Cron\CronHelper;
 use MailPoet\Cron\Daemon;
 use MailPoet\Cron\Triggers\WordPress;
+use MailPoet\Logging\LoggerFactory;
 use MailPoet\WP\Functions as WPFunctions;
 
 class DaemonRun {
@@ -32,6 +33,9 @@ class DaemonRun {
   /** @var ActionScheduler */
   private $actionScheduler;
 
+  /** @var LoggerFactory */
+  private $loggerFactory;
+
   /**
    * Default 20 seconds
    * @var float
@@ -47,7 +51,8 @@ class DaemonRun {
     WordPress $wordpressTrigger,
     CronHelper $cronHelper,
     RemoteExecutorHandler $remoteExecutorHandler,
-    ActionScheduler $actionScheduler
+    ActionScheduler $actionScheduler,
+    LoggerFactory $loggerFactory
   ) {
     $this->wp = $wp;
     $this->daemon = $daemon;
@@ -55,6 +60,7 @@ class DaemonRun {
     $this->cronHelper = $cronHelper;
     $this->remoteExecutorHandler = $remoteExecutorHandler;
     $this->actionScheduler = $actionScheduler;
+    $this->loggerFactory = $loggerFactory;
   }
 
   public function init(): void {
@@ -93,6 +99,10 @@ class DaemonRun {
     // If there was still some execution time left, the daemon should have been continued.
     $lastDurationWasTooShort = ($this->lastRunDuration < self::SHORT_DURATION_THRESHOLD) && ($this->remainingExecutionLimit > 0);
     if ($lastDurationWasTooShort) {
+      $this->loggerFactory->getLogger(LoggerFactory::TOPIC_CRON)->info('Daemon run ended too early!', [
+        'duration' => $this->lastRunDuration,
+        'remainingLimit' => $this->remainingExecutionLimit,
+      ]);
       return;
     }
     $this->actionScheduler->scheduleImmediateSingleAction(self::NAME);

@@ -9,7 +9,10 @@ use MailPoet\Cron\CronHelper;
 use MailPoet\Cron\CronTrigger;
 use MailPoet\Cron\Daemon;
 use MailPoet\Cron\Triggers\WordPress;
+use MailPoet\Entities\LogEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Logging\LoggerFactory;
+use MailPoet\Logging\LogRepository;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Test\DataFactories\ScheduledTask;
 use MailPoet\WP\Functions as WPFunctions;
@@ -69,6 +72,7 @@ class DaemonRunTest extends \MailPoetTest {
   }
 
   public function testItDoesNotContinueWhenThePreviousRunSuspiciouslyShort() {
+    $this->diContainer->get(SettingsController::class)->set('logging', 'everything');
     $triggerMock = $this->createMock(WordPress::class);
     $triggerMock->method('checkExecutionRequirements')
       ->willReturn(true);
@@ -78,12 +82,17 @@ class DaemonRunTest extends \MailPoetTest {
       $triggerMock,
       $this->diContainer->get(CronHelper::class),
       $this->diContainer->get(RemoteExecutorHandler::class),
-      $this->diContainer->get(ActionScheduler::class)
+      $this->diContainer->get(ActionScheduler::class),
+      $this->diContainer->get(LoggerFactory::class)
     );
     $runAction->process();
     $runAction->afterProcess();
     $actions = $this->actionSchedulerHelper->getMailPoetScheduledActions();
     expect($actions)->count(0);
+    $log = $this->diContainer->get(LogRepository::class)->findOneBy(['name' => 'cron', 'level' => 200]);
+    $this->assertInstanceOf(LogEntity::class, $log);
+    expect($log->getMessage())->stringContainsString('Daemon run ended too early');
+    $this->diContainer->get(SettingsController::class)->set('logging', 'errors');
   }
 
   public function testItDoesScheduleNextRun() {
@@ -101,7 +110,8 @@ class DaemonRunTest extends \MailPoetTest {
       $triggerMock,
       $this->diContainer->get(CronHelper::class),
       $this->diContainer->get(RemoteExecutorHandler::class),
-      $this->diContainer->get(ActionScheduler::class)
+      $this->diContainer->get(ActionScheduler::class),
+      $this->diContainer->get(LoggerFactory::class)
     );
     $actions = $this->actionSchedulerHelper->getMailPoetCronActions();
     expect($actions)->count(0);
@@ -118,5 +128,6 @@ class DaemonRunTest extends \MailPoetTest {
     $claimsTable = $wpdb->prefix . 'actionscheduler_claims';
     $wpdb->query('TRUNCATE ' . $claimsTable);
     $this->truncateEntity(ScheduledTaskEntity::class);
+    //$this->truncateEntity(LogEntity::class);
   }
 }
