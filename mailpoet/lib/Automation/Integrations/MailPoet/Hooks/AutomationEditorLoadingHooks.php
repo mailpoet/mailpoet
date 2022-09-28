@@ -58,6 +58,8 @@ class AutomationEditorLoadingHooks {
       if ($newsletterEntity && $newsletterEntity->getBody() !== null) {
         continue;
       }
+
+      $this->newslettersRepository->bulkDelete([$emailId]);
       $updatedStep = new Step(
         $step->getId(),
         $step->getType(),
