@@ -49,6 +49,22 @@ class ScheduledTasksRepository extends Repository {
 
   /**
    * @param NewsletterEntity $newsletter
+   */
+  public function findOneByNewsletter(NewsletterEntity $newsletter): ?ScheduledTaskEntity {
+    $scheduledTask = $this->doctrineRepository->createQueryBuilder('st')
+      ->join(SendingQueueEntity::class, 'sq', Join::WITH, 'st = sq.task')
+      ->andWhere('sq.newsletter = :newsletter')
+      ->orderBy('sq.updatedAt', 'desc')
+      ->setMaxResults(1)
+      ->setParameter('newsletter', $newsletter)
+      ->getQuery()
+      ->getOneOrNullResult();
+    // for phpstan because it detects mixed instead of entity
+    return ($scheduledTask instanceof ScheduledTaskEntity) ? $scheduledTask : null;
+  }
+
+  /**
+   * @param NewsletterEntity $newsletter
    * @return ScheduledTaskEntity[]
    */
   public function findByScheduledAndRunningForNewsletter(NewsletterEntity $newsletter): array {

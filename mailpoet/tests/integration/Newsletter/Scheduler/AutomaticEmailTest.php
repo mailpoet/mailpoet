@@ -11,8 +11,8 @@ use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Newsletter\NewslettersRepository;
+use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
-use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
 use MailPoet\Test\DataFactories\NewsletterOption as NewsletterOptionFactory;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
@@ -39,11 +39,15 @@ class AutomaticEmailTest extends \MailPoetTest {
   /** @var SendingQueuesRepository */
   private $sendingQueuesRepository;
 
+  /** @var ScheduledTasksRepository */
+  private $scheduledTasksRepository;
+
   public function _before() {
     parent::_before();
     $this->automaticEmailScheduler = $this->diContainer->get(AutomaticEmailScheduler::class);
     $this->newslettersRepository = $this->diContainer->get(NewslettersRepository::class);
     $this->sendingQueuesRepository = $this->diContainer->get(SendingQueuesRepository::class);
+    $this->scheduledTasksRepository = $this->diContainer->get(ScheduledTasksRepository::class);
 
     $this->newsletterFactory = new NewsletterFactory();
     $this->newsletter = $this->newsletterFactory->withActiveStatus()->withAutomaticType()->create();
@@ -65,18 +69,21 @@ class AutomaticEmailTest extends \MailPoetTest {
 
     $this->automaticEmailScheduler->createAutomaticEmailSendingTask($newsletter, $subscriber->getId());
     // new scheduled task should be created
-    $task = SendingTask::getByNewsletterId($newsletter->getId());
+    $task = $this->scheduledTasksRepository->findOneByNewsletter($newsletter);
     $currentTime = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
     Carbon::setTestNow($currentTime); // mock carbon to return current time
-    expect($task->id)->greaterOrEquals(1);
-    expect($task->priority)->equals(SendingQueueEntity::PRIORITY_MEDIUM);
-    expect($task->status)->equals(SendingQueueEntity::STATUS_SCHEDULED);
-    expect(Carbon::parse($task->scheduledAt)->format('Y-m-d H:i'))
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
+    expect($task->getId())->greaterOrEquals(1);
+    expect($task->getPriority())->equals(SendingQueueEntity::PRIORITY_MEDIUM);
+    expect($task->getStatus())->equals(SendingQueueEntity::STATUS_SCHEDULED);
+    $scheduledAt = $task->getScheduledAt();
+    $this->assertInstanceOf(\DateTimeInterface::class, $scheduledAt);
+    expect(Carbon::parse($scheduledAt)->format('Y-m-d H:i'))
       ->equals($currentTime->addHours(2)->format('Y-m-d H:i'));
     // task should have 1 associated user
-    $subscribers = $task->subscribers()->findMany();
+    $subscribers = $task->getSubscribers()->toArray();
     expect($subscribers)->count(1);
-    expect($subscribers[0]->id)->equals($subscriber->getId());
+    expect($subscribers[0]->getSubscriber())->equals($subscriber);
   }
 
   public function testItAddsMetaToSendingQueueWhenCreatingAutomaticEmailSendingTask() {
@@ -96,18 +103,21 @@ class AutomaticEmailTest extends \MailPoetTest {
     $newsletter = $this->newslettersRepository->findOneById($this->newsletter->getId());
     $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
 
-    $this->automaticEmailScheduler->createAutomaticEmailSendingTask($newsletter, $subscriber = null, $meta = null);
+    $this->automaticEmailScheduler->createAutomaticEmailSendingTask($newsletter, null);
     // new scheduled task should be created
-    $task = SendingTask::getByNewsletterId($newsletter->getId());
+    $task = $this->scheduledTasksRepository->findOneByNewsletter($newsletter);
     $currentTime = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
     Carbon::setTestNow($currentTime); // mock carbon to return current time
-    expect($task->id)->greaterOrEquals(1);
-    expect($task->priority)->equals(SendingQueueEntity::PRIORITY_MEDIUM);
-    expect($task->status)->equals(SendingQueueEntity::STATUS_SCHEDULED);
-    expect(Carbon::parse($task->scheduledAt)->format('Y-m-d H:i'))
+    expect($task->getId())->greaterOrEquals(1);
+    expect($task->getPriority())->equals(SendingQueueEntity::PRIORITY_MEDIUM);
+    expect($task->getStatus())->equals(SendingQueueEntity::STATUS_SCHEDULED);
+    $scheduledAt = $task->getScheduledAt();
+    $this->assertInstanceOf(\DateTimeInterface::class, $scheduledAt);
+    expect(Carbon::parse($scheduledAt)->format('Y-m-d H:i'))
       ->equals($currentTime->addHours(2)->format('Y-m-d H:i'));
     // task should not have any subscribers
-    $subscribers = $task->subscribers()->findMany();
+    $subscribers = $task->getSubscribers();
     expect($subscribers)->count(0);
   }
 
