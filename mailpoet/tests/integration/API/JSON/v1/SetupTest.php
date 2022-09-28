@@ -9,6 +9,7 @@ use MailPoet\API\JSON\v1\Setup;
 use MailPoet\Config\Activator;
 use MailPoet\Config\Migrator;
 use MailPoet\Config\Populator;
+use MailPoet\Cron\ActionScheduler\ActionScheduler;
 use MailPoet\Form\FormsRepository;
 use MailPoet\Referrals\ReferralDetector;
 use MailPoet\Segments\WP;
@@ -34,7 +35,8 @@ class SetupTest extends \MailPoetTest {
     $subscriptionCaptcha = $this->diContainer->get(Captcha::class);
     $populator = $this->getServiceWithOverrides(Populator::class, ['wp' => $wpStub, 'referralDetector' => $referralDetector]);
     $migrator = $this->diContainer->get(Migrator::class);
-    $router = new Setup($wpStub, new Activator($settings, $populator, $wpStub, $migrator));
+    $cronActionScheduler = $this->diContainer->get(ActionScheduler::class);
+    $router = new Setup($wpStub, new Activator($settings, $populator, $wpStub, $migrator, $cronActionScheduler));
     $response = $router->reset();
     expect($response->status)->equals(APIResponse::STATUS_OK);
 
