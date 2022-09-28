@@ -18,4 +18,11 @@ class ActionSchedulerTestHelper  {
     ]);
     return $actions;
   }
+
+  public function getMailPoetCronActions(): array {
+    $actions = as_get_scheduled_actions([
+      'group' => ActionScheduler::GROUP_ID,
+    ]);
+    return $actions;
+  }
 }

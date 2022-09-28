@@ -4,10 +4,15 @@ namespace MailPoet\Cron\ActionScheduler\Actions;
 
 use MailPoet\Cron\ActionScheduler\ActionScheduler;
 use MailPoet\Cron\ActionScheduler\ActionSchedulerTestHelper;
+use MailPoet\Cron\ActionScheduler\RemoteExecutorHandler;
+use MailPoet\Cron\CronHelper;
 use MailPoet\Cron\CronTrigger;
+use MailPoet\Cron\Daemon;
+use MailPoet\Cron\Triggers\WordPress;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Test\DataFactories\ScheduledTask;
+use MailPoet\WP\Functions as WPFunctions;
 
 require_once __DIR__ . '/../ActionSchedulerTestHelper.php';
 
@@ -61,6 +66,49 @@ class DaemonRunTest extends \MailPoetTest {
     // Verify execution limit after run. floor(30 - some time taken by previous action) - 10s (safety execution timout margin)
     expect($this->daemonRun->getDaemonExecutionLimit())->greaterThan(0);
     expect($this->daemonRun->getDaemonExecutionLimit())->lessThan(20);
+  }
+
+  public function testItDoesNotContinueWhenThePreviousRunSuspiciouslyShort() {
+    $triggerMock = $this->createMock(WordPress::class);
+    $triggerMock->method('checkExecutionRequirements')
+      ->willReturn(true);
+    $runAction = new DaemonRun(
+      $this->diContainer->get(WPFunctions::class),
+      $this->diContainer->get(Daemon::class),
+      $triggerMock,
+      $this->diContainer->get(CronHelper::class),
+      $this->diContainer->get(RemoteExecutorHandler::class),
+      $this->diContainer->get(ActionScheduler::class)
+    );
+    $runAction->process();
+    $runAction->afterProcess();
+    $actions = $this->actionSchedulerHelper->getMailPoetScheduledActions();
+    expect($actions)->count(0);
+  }
+
+  public function testItDoesScheduleNextRun() {
+    $triggerMock = $this->createMock(WordPress::class);
+    $triggerMock->method('checkExecutionRequirements')
+      ->willReturn(true);
+    $daemonMock = $this->createMock(Daemon::class);
+    $daemonMock->method('run')
+      ->willReturnCallback(function() {
+        return sleep(DaemonRun::SHORT_DURATION_THRESHOLD + 1);
+      });
+    $runAction = new DaemonRun(
+      $this->diContainer->get(WPFunctions::class),
+      $daemonMock,
+      $triggerMock,
+      $this->diContainer->get(CronHelper::class),
+      $this->diContainer->get(RemoteExecutorHandler::class),
+      $this->diContainer->get(ActionScheduler::class)
+    );
+    $actions = $this->actionSchedulerHelper->getMailPoetCronActions();
+    expect($actions)->count(0);
+    $runAction->process();
+    $runAction->afterProcess();
+    $actions = $this->actionSchedulerHelper->getMailPoetCronActions();
+    expect($actions)->count(1);
   }
 
   private function cleanup(): void {

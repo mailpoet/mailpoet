@@ -12,6 +12,7 @@ use MailPoet\WP\Functions as WPFunctions;
 class DaemonRun {
   const NAME = 'mailpoet/cron/daemon-run';
   const EXECUTION_LIMIT_MARGIN = 10; // 10 seconds
+  const SHORT_DURATION_THRESHOLD = 2; // 2 seconds
 
   /** @var WPFunctions */
   private $wp;
@@ -36,6 +37,9 @@ class DaemonRun {
    * @var float
    */
   private $remainingExecutionLimit = 20;
+
+  /** @var int */
+  private $lastRunDuration = 0;
 
   public function __construct(
     WPFunctions $wp,
@@ -64,7 +68,10 @@ class DaemonRun {
   public function process(): void {
     $this->wp->addAction('action_scheduler_after_process_queue', [$this, 'afterProcess']);
     $this->wp->addAction('mailpoet_cron_get_execution_limit', [$this, 'getDaemonExecutionLimit']);
+    $this->lastRunDuration = 0;
+    $startTime = time();
     $this->daemon->run($this->cronHelper->createDaemon($this->cronHelper->createToken()));
+    $this->lastRunDuration = time() - $startTime;
   }
 
   /**
@@ -78,7 +85,11 @@ class DaemonRun {
    * After Action Scheduler finishes its work we need to check if there is more work and in case there is we trigger additional runner.
    */
   public function afterProcess(): void {
-    if ($this->wordpressTrigger->checkExecutionRequirements()) {
+    $lastDurationWasTooShort = ($this->lastRunDuration < self::SHORT_DURATION_THRESHOLD) && ($this->remainingExecutionLimit > 0);
+    // Schedule next action in case we have more jobs to do.
+    // The $lastDurationWasTooShort check prevents scheduling the next immediate action in case the last run was suspiciously short.
+    // If there was still some execution time left, the daemon should have been continued.
+    if ($this->wordpressTrigger->checkExecutionRequirements() && !$lastDurationWasTooShort) {
       $this->actionScheduler->scheduleImmediateSingleAction(self::NAME);
       // The automatic rescheduling schedules the next recurring action to run after 1 second.
       // So we need to wait before we trigger new remote executor to avoid skipping the action
