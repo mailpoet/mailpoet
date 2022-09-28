@@ -93,14 +93,13 @@ class MailerLog {
     if (self::isSendingPaused($mailerLog)) {
       throw new \Exception(__('Sending has been paused.', 'mailpoet'));
     }
-    if (!is_null($mailerLog['retry_at'])) {
-      if (time() <= $mailerLog['retry_at']) {
-        throw new \Exception(__('Sending is waiting to be retried.', 'mailpoet'));
-      } else {
-        $mailerLog['retry_at'] = null;
-        self::updateMailerLog($mailerLog);
-      }
+    if (self::isSendingWaitingForRetry($mailerLog)) {
+      throw new \Exception(__('Sending is waiting to be retried.', 'mailpoet'));
+    } else {
+      $mailerLog['retry_at'] = null;
+      self::updateMailerLog($mailerLog);
     }
+
     // ensure that sending frequency has not been reached
     if (self::isSendingLimitReached($mailerLog)) {
       throw new \Exception(__('Sending frequency limit has been reached.', 'mailpoet'));
@@ -337,5 +336,15 @@ class MailerLog {
   public static function isSendingPaused(array $mailerLog = null): bool {
     $mailerLog = self::getMailerLog($mailerLog);
     return $mailerLog['status'] === self::STATUS_PAUSED;
+  }
+
+  /**
+   * @param MailerLogData|null $mailerLog
+   * @return bool
+   */
+  public static function isSendingWaitingForRetry(array $mailerLog = null): bool {
+    $mailerLog = self::getMailerLog($mailerLog);
+    $retryAt = $mailerLog['retry_at'] ?? null;
+    return $retryAt && (time() <= $retryAt);
   }
 }
