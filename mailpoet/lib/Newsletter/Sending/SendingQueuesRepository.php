@@ -141,4 +141,13 @@ class SendingQueuesRepository extends Repository {
       $this->flush();
     }
   }
+
+  public function deleteByTask(ScheduledTaskEntity $scheduledTask): void {
+    $this->entityManager->createQueryBuilder()
+      ->delete(SendingQueueEntity::class, 'sq')
+      ->where('sq.task = :task')
+      ->setParameter('task', $scheduledTask)
+      ->getQuery()
+      ->execute();
+  }
 }

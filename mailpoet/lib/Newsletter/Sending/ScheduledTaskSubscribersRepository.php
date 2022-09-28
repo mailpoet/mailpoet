@@ -77,6 +77,15 @@ class ScheduledTaskSubscribersRepository extends Repository {
     return $subscribersIds;
   }
 
+  public function deleteByTask(ScheduledTaskEntity $scheduledTask): void {
+    $this->entityManager->createQueryBuilder()
+      ->delete(ScheduledTaskSubscriberEntity::class, 'sts')
+      ->where('sts.task = :task')
+      ->setParameter('task', $scheduledTask)
+      ->getQuery()
+      ->execute();
+  }
+
   private function getBaseSubscribersIdsBatchForTaskQuery(int $taskId, int $lastProcessedSubscriberId): QueryBuilder {
     return $this->entityManager
       ->createQueryBuilder()
