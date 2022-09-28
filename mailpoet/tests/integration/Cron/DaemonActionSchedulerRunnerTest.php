@@ -50,7 +50,7 @@ class DaemonActionSchedulerRunnerTest extends \MailPoetTest {
 
   public function testItDeactivatesAllTasksOnTrigger(): void {
     $this->actionScheduler->scheduleRecurringAction(time() - 1, 100, DaemonTrigger::NAME);
-    $this->actionScheduler->scheduleRecurringAction(time() - 1, 100, DaemonRun::NAME);
+    $this->actionScheduler->scheduleImmediateSingleAction(DaemonRun::NAME);
     $actions = $this->actionSchedulerHelper->getMailPoetScheduledActions();
     expect($actions)->count(2);
     $this->actionSchedulerRunner->init(false);
