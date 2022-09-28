@@ -114,6 +114,16 @@ class WordPressTest extends \MailPoetTest {
     expect($this->wordpressTrigger->checkExecutionRequirements())->false();
   }
 
+  public function testItDoesNotExecuteWhenWeAreWaitingForRetry() {
+    $this->_addQueue($status = null);
+    $this->_addMTAConfigAndLog($sent = null);
+    expect($this->wordpressTrigger->checkExecutionRequirements())->true();
+    $this->_addMTAConfigAndLog($sent = null, $status = null, time() - 1);
+    expect($this->wordpressTrigger->checkExecutionRequirements())->true();
+    $this->_addMTAConfigAndLog($sent = null, $status = null, time() + 120);
+    expect($this->wordpressTrigger->checkExecutionRequirements())->false();
+  }
+
   public function testItExecutesWhenMigrationIsNotPresent() {
     $this->_enableMigration();
     expect($this->wordpressTrigger->checkExecutionRequirements())->true();
@@ -211,7 +221,7 @@ class WordPressTest extends \MailPoetTest {
     expect($this->wordpressTrigger->checkExecutionRequirements())->true();
   }
 
-  public function _addMTAConfigAndLog($sent, $status = null) {
+  public function _addMTAConfigAndLog($sent, $status = null, int $retryAt = null) {
     $mtaConfig = [
       'frequency' => [
         'emails' => 1,
@@ -227,6 +237,9 @@ class WordPressTest extends \MailPoetTest {
       'started' => time(),
       'status' => $status,
     ];
+    if ($retryAt) {
+      $mtaLog['retry_at'] = $retryAt;
+    }
     $this->settings->set(
       MailerLog::SETTING_NAME,
       $mtaLog

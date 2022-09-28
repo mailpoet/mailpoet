@@ -140,6 +140,7 @@ class WordPress {
     $runningQueues = $this->scheduledTasksRepository->findRunningSendingTasks(SendingQueueWorker::TASK_BATCH_SIZE);
     $sendingLimitReached = MailerLog::isSendingLimitReached();
     $sendingIsPaused = MailerLog::isSendingPaused();
+    $sendingWaitingForRetry = MailerLog::isSendingWaitingForRetry();
     // sending service
     $mpSendingEnabled = Bridge::isMPSendingServiceEnabled();
     // bounce sync
@@ -292,7 +293,7 @@ class WordPress {
     ]);
 
     // check requirements for each worker
-    $sendingQueueActive = (($scheduledQueues || $runningQueues) && !$sendingLimitReached && !$sendingIsPaused);
+    $sendingQueueActive = (($scheduledQueues || $runningQueues) && !$sendingLimitReached && !$sendingIsPaused && !$sendingWaitingForRetry);
     $bounceSyncActive = ($mpSendingEnabled && ($bounceDueTasks || !$bounceFutureTasks));
     $sendingServiceKeyCheckActive = ($mpSendingEnabled && ($msskeycheckDueTasks || !$msskeycheckFutureTasks));
     $premiumKeyCheckActive = ($premiumKeySpecified && ($premiumKeycheckDueTasks || !$premiumKeycheckFutureTasks));
