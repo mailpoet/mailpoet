@@ -1,27 +1,28 @@
-import { useCallback, useEffect, useState } from 'react';
 import { dispatch, useSelect } from '@wordpress/data';
 import { plus } from '@wordpress/icons';
+import { useCallback, useEffect, useState } from 'react';
 import { Button } from '../../../components/button';
 import { storeName } from '../../../../../editor/store';
 import { MailPoet } from '../../../../../../mailpoet';
 
-export function DesignEmailButton(): JSX.Element {
-  const [isSaving, setIsSaving] = useState(false);
+export function EditNewsletter(): JSX.Element {
+  const [redirectToTemplateSelection, setRedirectToTemplateSelection] =
+    useState(false);
 
   const { selectedStep, workflowId, workflowSaved } = useSelect(
     (select) => ({
       selectedStep: select(storeName).getSelectedStep(),
       workflowId: select(storeName).getWorkflowData().id,
-      workflowSaved: select(storeName).getSelectedStep(),
+      workflowSaved: select(storeName).getWorkflowSaved(),
     }),
     [],
   );
 
-  const emailId = selectedStep?.args?.email_id as string | undefined;
+  const emailId = selectedStep?.args?.email_id as number | undefined;
   const workflowStepId = selectedStep.id;
 
   const createEmail = useCallback(async () => {
-    setIsSaving(true);
+    setRedirectToTemplateSelection(true);
     const response = await MailPoet.Ajax.post({
       api_version: window.mailpoet_api_version,
       endpoint: 'newsletters',
@@ -48,21 +49,40 @@ export function DesignEmailButton(): JSX.Element {
   // This component is rendered only when no email ID is set. Once we have the ID
   // and the workflow is saved, we can safely redirect to the email design flow.
   useEffect(() => {
-    if (emailId && workflowSaved) {
+    if (redirectToTemplateSelection && emailId && workflowSaved) {
       window.location.href = `admin.php?page=mailpoet-newsletters#/template/${emailId}`;
     }
-  }, [emailId, workflowSaved]);
+  }, [emailId, workflowSaved, redirectToTemplateSelection]);
+
+  if (!emailId || redirectToTemplateSelection) {
+    return (
+      <Button
+        variant="sidebar-primary"
+        centered
+        icon={plus}
+        onClick={createEmail}
+        isBusy={redirectToTemplateSelection}
+        disabled={redirectToTemplateSelection}
+      >
+        Design email
+      </Button>
+    );
+  }
 
   return (
-    <Button
-      variant="sidebar-primary"
-      centered
-      icon={plus}
-      onClick={createEmail}
-      isBusy={isSaving}
-      disabled={isSaving}
-    >
-      Design email
-    </Button>
+    <div className="mailpoet-automation-email-buttons">
+      <Button
+        variant="sidebar-primary"
+        centered
+        href={`?page=mailpoet-newsletter-editor&id=${
+          selectedStep.args.email_id as string
+        }`}
+      >
+        Edit content
+      </Button>
+      <Button variant="secondary" centered>
+        Preview
+      </Button>
+    </div>
   );
 }

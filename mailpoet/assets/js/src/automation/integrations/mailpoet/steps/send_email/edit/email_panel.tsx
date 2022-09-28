@@ -1,12 +1,11 @@
 import { ComponentProps } from 'react';
 import { PanelBody, TextareaControl, TextControl } from '@wordpress/components';
 import { dispatch, useSelect } from '@wordpress/data';
-import { DesignEmailButton } from './design_email_button';
 import { ShortcodeHelpText } from './shortcode_help_text';
-import { Button } from '../../../components/button';
 import { PlainBodyTitle } from '../../../../../editor/components/panel';
 import { storeName } from '../../../../../editor/store';
 import { StepName } from '../../../../../editor/components/panel/step-name';
+import { EditNewsletter } from './edit_newsletter';
 
 function SingleLineTextareaControl(
   props: ComponentProps<typeof TextareaControl>,
@@ -99,24 +98,7 @@ export function EmailPanel(): JSX.Element {
 
       <div className="mailpoet-automation-email-content-separator" />
       <PlainBodyTitle title="Email" />
-      {selectedStep.args.email_id ? (
-        <div className="mailpoet-automation-email-buttons">
-          <Button
-            variant="sidebar-primary"
-            centered
-            href={`?page=mailpoet-newsletter-editor&id=${
-              selectedStep.args.email_id as string
-            }`}
-          >
-            Edit content
-          </Button>
-          <Button variant="secondary" centered>
-            Preview
-          </Button>
-        </div>
-      ) : (
-        <DesignEmailButton />
-      )}
+      <EditNewsletter />
     </PanelBody>
   );
 }
