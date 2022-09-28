@@ -96,6 +96,23 @@ class ScheduledTasksRepository extends Repository {
       ->getResult();
   }
 
+  public function findOneScheduledByNewsletterAndSubscriberId(NewsletterEntity $newsletter, int $subscriberId): ?ScheduledTaskEntity {
+    $scheduledTask = $this->doctrineRepository->createQueryBuilder('st')
+      ->join(SendingQueueEntity::class, 'sq', Join::WITH, 'st = sq.task')
+      ->join(ScheduledTaskSubscriberEntity::class, 'sts', Join::WITH, 'st = sts.task')
+      ->andWhere('st.status = :status')
+      ->andWhere('sq.newsletter = :newsletter')
+      ->andWhere('sts.subscriber = :subscriber')
+      ->setMaxResults(1)
+      ->setParameter('status', ScheduledTaskEntity::STATUS_SCHEDULED)
+      ->setParameter('newsletter', $newsletter)
+      ->setParameter('subscriber', $subscriberId)
+      ->getQuery()
+      ->getOneOrNullResult();
+    // for phpstan because it detects mixed instead of entity
+    return ($scheduledTask instanceof ScheduledTaskEntity) ? $scheduledTask : null;
+  }
+
   public function findScheduledOrRunningTask(?string $type): ?ScheduledTaskEntity {
     $queryBuilder = $this->doctrineRepository->createQueryBuilder('st')
       ->select('st')
