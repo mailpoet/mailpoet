@@ -2,6 +2,8 @@
 
 namespace MailPoet\Config;
 
+use MailPoet\Cron\ActionScheduler\ActionScheduler as CronActionScheduler;
+use MailPoet\Cron\CronTrigger;
 use MailPoet\InvalidStateException;
 use MailPoet\Settings\SettingsController;
 use MailPoet\WP\Functions as WPFunctions;
@@ -22,16 +24,21 @@ class Activator {
   /** @var Migrator */
   private $migrator;
 
+  /** @var CronActionScheduler */
+  private $cronActionSchedulerRunner;
+
   public function __construct(
     SettingsController $settings,
     Populator $populator,
     WPFunctions $wp,
-    Migrator $migrator
+    Migrator $migrator,
+    CronActionScheduler $cronActionSchedulerRunner
   ) {
     $this->settings = $settings;
     $this->populator = $populator;
     $this->wp = $wp;
     $this->migrator = $migrator;
+    $this->cronActionSchedulerRunner = $cronActionSchedulerRunner;
   }
 
   public function activate() {
@@ -58,6 +65,7 @@ class Activator {
 
   private function processActivate(): void {
     $this->migrator->up();
+    $this->deactivateCronActions();
 
     $this->populator->up();
     $this->updateDbVersion();
@@ -76,6 +84,21 @@ class Activator {
     $caps = new Capabilities();
     $caps->removeWPCapabilities();
     $this->unlockActivation();
+  }
+
+  /**
+   * Deactivate action scheduler cron actions when the migration run.
+   * This should prevent processing actions during migrations.
+   * They are later re-activated in CronTrigger
+   *
+   * @return void
+   */
+  private function deactivateCronActions(): void {
+    $currentMethod = $this->settings->get(CronTrigger::SETTING_NAME . '.method');
+    if ($currentMethod !== CronTrigger::METHOD_ACTION_SCHEDULER) {
+      return;
+    }
+    $this->cronActionSchedulerRunner->unscheduleAllCronActions();
   }
 
   public function updateDbVersion() {
