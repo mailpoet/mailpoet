@@ -14,6 +14,11 @@ class ActionScheduler {
     return $id !== null ? intval($id) : null;
   }
 
+  public function unscheduleAllCronActions(): void {
+    // Passing only group to unschedule all by group
+    as_unschedule_all_actions('', [], self::GROUP_ID);
+  }
+
   public function hasScheduledAction(string $hook, array $args = []): bool {
     return as_has_scheduled_action($hook, $args, self::GROUP_ID);
   }
