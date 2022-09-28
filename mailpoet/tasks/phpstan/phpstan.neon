@@ -64,7 +64,10 @@ parameters:
       message: '/^Call to function method_exists\(\) with/'
       count: 2
       path: ../../lib/WooCommerce/Helper.php
-
+    - # WooCommerce stubs contains stubs for older ActionScheduler version
+      message: '/^Function as_schedule_recurring_action invoked with 6 parameters, 3-5 required.$/'
+      count: 1
+      path: ../../lib/Cron/ActionScheduler/ActionScheduler.php
   reportUnmatchedIgnoredErrors: true
   dynamicConstantNames:
     - MAILPOET_PREMIUM_INITIALIZED
