@@ -59,10 +59,7 @@ const getEmailSendTitle = (emailType: string): string => {
   return typeMap[emailType] || MailPoet.I18n.t('stepNameSend');
 };
 
-const tutorialIcon = (emailType: string): JSX.Element | null => {
-  if (emailType === 'automation') {
-    return null;
-  }
+function TutorialIcon(): JSX.Element {
   return (
     <div>
       <a
@@ -87,7 +84,7 @@ const tutorialIcon = (emailType: string): JSX.Element | null => {
       <span id="beamer-empty-element" />
     </div>
   );
-};
+}
 
 const stepsListingHeading = (
   step: number,
@@ -125,7 +122,7 @@ const stepsListingHeading = (
         {' '}
       </h1>
       <div className="mailpoet-flex-grow" />
-      {tutorialIcon(emailType)}
+      {emailType !== 'automation' && <TutorialIcon />}
     </div>
   );
 };
