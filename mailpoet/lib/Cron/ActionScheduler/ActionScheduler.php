@@ -2,11 +2,26 @@
 
 namespace MailPoet\Cron\ActionScheduler;
 
+use MailPoet\WP\Functions as WPFunctions;
+
 class ActionScheduler {
   public const GROUP_ID = 'mailpoet-cron';
 
+  /** @var WPFunctions */
+  private $wp;
+
+  public function __construct(
+    WPFunctions $wp
+  ) {
+    $this->wp = $wp;
+  }
+
   public function scheduleRecurringAction(int $timestamp, int $interval_in_seconds, string $hook, array $args = [], bool $unique = true): int {
     return as_schedule_recurring_action($timestamp, $interval_in_seconds, $hook, $args, self::GROUP_ID, $unique);
+  }
+
+  public function scheduleImmediateSingleAction(string $hook, array $args = [], bool $unique = true): int {
+    return as_schedule_single_action($this->wp->currentTime('timestamp', true), $hook, $args, self::GROUP_ID, $unique);
   }
 
   public function unscheduleAction(string $hook, array $args = []): ?int {

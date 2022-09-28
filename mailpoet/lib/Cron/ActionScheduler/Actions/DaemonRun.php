@@ -79,12 +79,11 @@ class DaemonRun {
    */
   public function afterProcess(): void {
     if ($this->wordpressTrigger->checkExecutionRequirements()) {
+      $this->actionScheduler->scheduleImmediateSingleAction(self::NAME);
       // The automatic rescheduling schedules the next recurring action to run after 1 second.
       // So we need to wait before we trigger new remote executor to avoid skipping the action
       sleep(2);
       $this->remoteExecutorHandler->triggerExecutor();
-    } else {
-      $this->actionScheduler->unscheduleAction(self::NAME);
     }
   }
 

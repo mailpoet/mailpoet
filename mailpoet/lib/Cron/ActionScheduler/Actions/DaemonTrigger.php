@@ -55,8 +55,8 @@ class DaemonTrigger {
     if ($this->actionScheduler->hasScheduledAction(DaemonRun::NAME)) {
       return;
     }
-    // Start recurring action with minimal interval to ensure continuous execution of the daemon
-    $this->actionScheduler->scheduleRecurringAction($this->wp->currentTime('timestamp', true) - 1, 1, DaemonRun::NAME);
+    // Schedule immediate action for execution of the daemon
+    $this->actionScheduler->scheduleImmediateSingleAction(DaemonRun::NAME);
     $this->remoteExecutorHandler->triggerExecutor();
   }
 }
