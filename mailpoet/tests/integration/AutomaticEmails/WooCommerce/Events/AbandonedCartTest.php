@@ -100,7 +100,7 @@ class AbandonedCartTest extends \MailPoetTest {
     $this->wp = $wp;
     WPFunctions::set($this->wp);
 
-    $this->automaticEmailScheduler = new AutomaticEmailScheduler(new Scheduler($this->wp, $this->diContainer->get(NewslettersRepository::class)));
+    $this->automaticEmailScheduler = $this->getServiceWithOverrides(AutomaticEmailScheduler::class, ['wp' => $this->wp]);
 
     $this->wooCommerceCartMock = $this->mockWooCommerceClass(WC_Cart::class, ['is_empty', 'get_cart']);
     $this->cartBackup = $this->wooCommerce->cart;
@@ -275,7 +275,7 @@ class AbandonedCartTest extends \MailPoetTest {
     $this->assertInstanceOf(ScheduledTaskEntity::class, $scheduled);
     $this->assertEquals($scheduled->getScheduledAt(), $expectedTime);
   }
-  
+
   public function testItPostponesEmailWhenSubscriberIsActiveOnSite() {
     $newsletter = $this->createNewsletter();
     $subscriber = $this->createSubscriberAsCurrentUser();
