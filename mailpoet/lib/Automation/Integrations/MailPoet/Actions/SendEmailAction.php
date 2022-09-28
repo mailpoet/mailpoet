@@ -137,7 +137,7 @@ class SendEmailAction implements Action {
 
   public function saveEmailSettings(Step $step): void {
     $args = $step->getArgs();
-    if (!isset($args['email_id'])) {
+    if (!isset($args['email_id']) || !$args['email_id']) {
       return;
     }
 
