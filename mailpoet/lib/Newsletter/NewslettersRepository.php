@@ -413,6 +413,7 @@ class NewslettersRepository extends Repository {
       ->where('n.parent = :parent')
       ->andWhere('n.type = :type')
       ->andWhere('n.status = :status')
+      ->andWhere('n.deletedAt IS NULL')
       ->andWhere('t.status != :taskStatus')
       ->setParameter('parent', $newsletter)
       ->setParameter('type', NewsletterEntity::TYPE_NOTIFICATION_HISTORY)
