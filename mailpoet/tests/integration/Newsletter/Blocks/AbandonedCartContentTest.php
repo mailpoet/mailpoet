@@ -8,8 +8,12 @@ use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterOptionEntity;
 use MailPoet\Entities\NewsletterOptionFieldEntity;
 use MailPoet\Entities\NewsletterPostEntity;
+use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Entities\SendingQueueEntity;
+use MailPoet\Models\ScheduledTask;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Scheduler\AutomaticEmailScheduler;
+use MailPoet\Tasks\Sending;
 use MailPoet\Test\DataFactories\NewsletterOption;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -182,8 +186,11 @@ class AbandonedCartContentTest extends \MailPoetTest {
   private function createSendingTask($newsletter, $subscriberId = null, $meta = null) {
     $subscriberId = $subscriberId ?: 1; // dummy default value
     $meta = $meta ?: [AbandonedCart::TASK_META_NAME => array_slice($this->productIds, 0, 3)];
-    $sendingTask = $this->automaticEmailScheduler->createAutomaticEmailSendingTask($newsletter, $subscriberId, $meta);
-    return $sendingTask;
+    $scheduledTask = $this->automaticEmailScheduler->createAutomaticEmailScheduledTask($newsletter, $subscriberId, $meta);
+    // this can be removed when SendingTask usage is removed from AbandonedCartContent
+    $parisTask = ScheduledTask::findOne($scheduledTask->getId());
+    $this->assertInstanceOf(ScheduledTask::class, $parisTask);
+    return Sending::createFromScheduledTask($parisTask);
   }
 
   public function _after() {
@@ -192,5 +199,7 @@ class AbandonedCartContentTest extends \MailPoetTest {
     $this->truncateEntity(NewsletterOptionEntity::class);
     $this->truncateEntity(NewsletterOptionFieldEntity::class);
     $this->truncateEntity(NewsletterEntity::class);
+    $this->truncateEntity(ScheduledTaskEntity::class);
+    $this->truncateEntity(SendingQueueEntity::class);
   }
 }
