@@ -250,9 +250,9 @@ class Newsletter {
       $newsletter->getType() === NewsletterEntity::TYPE_STANDARD ||
        $newsletter->getType() === NewsletterEntity::TYPE_NOTIFICATION_HISTORY
     ) {
-      $sendingQueue = $sendingTask->queue();
+      $scheduledTask = $sendingTask->task();
       $newsletter->setStatus(NewsletterEntity::STATUS_SENT);
-      $newsletter->setSentAt(new Carbon($sendingQueue->processedAt));
+      $newsletter->setSentAt(new Carbon($scheduledTask->processedAt));
       $this->newslettersRepository->persist($newsletter);
       $this->newslettersRepository->flush();
     }
