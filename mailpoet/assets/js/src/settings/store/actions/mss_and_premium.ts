@@ -10,6 +10,7 @@ import {
 } from 'settings/store/types';
 import { updateKeyActivationState } from './key_activation';
 import { setSettings, setSetting } from './settings';
+import { getMssStatus } from '../make_default_state';
 
 export function* verifyMssKey(key: string) {
   const { success, error, res } = yield {
@@ -43,7 +44,10 @@ export function* verifyMssKey(key: string) {
     fields.mssStatus = MssStatus.VALID_MSS_NOT_ACTIVE;
   } else {
     yield setSettings(call.res.data);
-    fields.mssStatus = MssStatus.VALID_MSS_ACTIVE;
+    fields.mssStatus = getMssStatus(
+      call.res.data.mta.mailpoet_api_key_state.code === 200,
+      call.res.data,
+    );
   }
   return updateKeyActivationState(fields);
 }
