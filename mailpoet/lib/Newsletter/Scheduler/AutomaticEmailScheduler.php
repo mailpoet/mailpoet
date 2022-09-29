@@ -8,10 +8,10 @@ use MailPoet\Entities\NewsletterOptionFieldEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Entities\SendingQueueEntity;
+use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Newsletter\Sending\ScheduledTaskSubscribersRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
-use MailPoet\Subscribers\SubscribersRepository;
 
 class AutomaticEmailScheduler {
 
@@ -27,24 +27,26 @@ class AutomaticEmailScheduler {
   /** @var ScheduledTaskSubscribersRepository */
   private $scheduledTaskSubscribersRepository;
 
-  /** @var SubscribersRepository */
-  private $subscribersRepository;
-
   public function __construct(
     Scheduler $scheduler,
     ScheduledTasksRepository $scheduledTasksRepository,
     ScheduledTaskSubscribersRepository $scheduledTaskSubscribersRepository,
-    SendingQueuesRepository $sendingQueuesRepository,
-    SubscribersRepository $subscribersRepository
+    SendingQueuesRepository $sendingQueuesRepository
   ) {
     $this->scheduler = $scheduler;
     $this->scheduledTasksRepository = $scheduledTasksRepository;
     $this->scheduledTaskSubscribersRepository = $scheduledTaskSubscribersRepository;
     $this->sendingQueuesRepository = $sendingQueuesRepository;
-    $this->subscribersRepository = $subscribersRepository;
   }
 
-  public function scheduleAutomaticEmail(string $group, string $event, $schedulingCondition = false, $subscriberId = false, $meta = false, $metaModifier = null) {
+  public function scheduleAutomaticEmail(
+    string $group,
+    string $event,
+    ?callable $schedulingCondition = null,
+    ?SubscriberEntity $subscriber = null,
+    ?array $meta = null,
+    ?callable $metaModifier = null
+  ) {
     $newsletters = $this->scheduler->getNewsletters(NewsletterEntity::TYPE_AUTOMATIC, $group);
     if (empty($newsletters)) return false;
     foreach ($newsletters as $newsletter) {
@@ -62,11 +64,11 @@ class AutomaticEmailScheduler {
       if (is_callable($metaModifier)) {
         $meta = $metaModifier($newsletter, $meta);
       }
-      $this->createAutomaticEmailScheduledTask($newsletter, $subscriberId, $meta);
+      $this->createAutomaticEmailScheduledTask($newsletter, $subscriber, $meta);
     }
   }
 
-  public function scheduleOrRescheduleAutomaticEmail(string $group, string $event, int $subscriberId, array $meta): void {
+  public function scheduleOrRescheduleAutomaticEmail(string $group, string $event, SubscriberEntity $subscriber, array $meta): void {
     $newsletters = $this->scheduler->getNewsletters(NewsletterEntity::TYPE_AUTOMATIC, $group);
     if (empty($newsletters)) {
       return;
@@ -78,16 +80,16 @@ class AutomaticEmailScheduler {
       }
 
       // try to find existing scheduled task for given subscriber
-      $task = $this->scheduledTasksRepository->findOneScheduledByNewsletterAndSubscriberId($newsletter, $subscriberId);
+      $task = $this->scheduledTasksRepository->findOneScheduledByNewsletterAndSubscriber($newsletter, $subscriber);
       if ($task) {
         $this->rescheduleAutomaticEmailSendingTask($newsletter, $task, $meta);
       } else {
-        $this->createAutomaticEmailScheduledTask($newsletter, $subscriberId, $meta);
+        $this->createAutomaticEmailScheduledTask($newsletter, $subscriber, $meta);
       }
     }
   }
 
-  public function rescheduleAutomaticEmail(string $group, string $event, int $subscriberId): void {
+  public function rescheduleAutomaticEmail(string $group, string $event, SubscriberEntity $subscriber): void {
     $newsletters = $this->scheduler->getNewsletters(NewsletterEntity::TYPE_AUTOMATIC, $group);
     if (empty($newsletters)) {
       return;
@@ -99,14 +101,14 @@ class AutomaticEmailScheduler {
       }
 
       // try to find existing scheduled task for given subscriber
-      $task = $this->scheduledTasksRepository->findOneScheduledByNewsletterAndSubscriberId($newsletter, $subscriberId);
+      $task = $this->scheduledTasksRepository->findOneScheduledByNewsletterAndSubscriber($newsletter, $subscriber);
       if ($task) {
         $this->rescheduleAutomaticEmailSendingTask($newsletter, $task);
       }
     }
   }
 
-  public function cancelAutomaticEmail(string $group, string $event, int $subscriberId): void {
+  public function cancelAutomaticEmail(string $group, string $event, SubscriberEntity $subscriber): void {
     $newsletters = $this->scheduler->getNewsletters(NewsletterEntity::TYPE_AUTOMATIC, $group);
     if (empty($newsletters)) {
       return;
@@ -118,7 +120,7 @@ class AutomaticEmailScheduler {
       }
 
       // try to find existing scheduled task for given subscriber
-      $task = $this->scheduledTasksRepository->findOneScheduledByNewsletterAndSubscriberId($newsletter, $subscriberId);
+      $task = $this->scheduledTasksRepository->findOneScheduledByNewsletterAndSubscriber($newsletter, $subscriber);
       if ($task) {
         $this->sendingQueuesRepository->deleteByTask($task);
         $this->scheduledTaskSubscribersRepository->deleteByTask($task);
@@ -128,8 +130,7 @@ class AutomaticEmailScheduler {
     }
   }
 
-  public function createAutomaticEmailScheduledTask(NewsletterEntity $newsletter, $subscriberId, $meta = false): ScheduledTaskEntity {
-    $subscriber = $subscriberId ? $this->subscribersRepository->findOneById($subscriberId) : null;
+  public function createAutomaticEmailScheduledTask(NewsletterEntity $newsletter, ?SubscriberEntity $subscriber, ?array $meta = null): ScheduledTaskEntity {
     $scheduledTask = new ScheduledTaskEntity();
     $scheduledTask->setType(SendingQueue::TASK_TYPE);
     $scheduledTask->setStatus(SendingQueueEntity::STATUS_SCHEDULED);
@@ -165,7 +166,7 @@ class AutomaticEmailScheduler {
     return $scheduledTask;
   }
 
-  private function rescheduleAutomaticEmailSendingTask(NewsletterEntity $newsletter, ScheduledTaskEntity $scheduledTask, $meta = false) {
+  private function rescheduleAutomaticEmailSendingTask(NewsletterEntity $newsletter, ScheduledTaskEntity $scheduledTask, ?array $meta = null): void {
     $sendingQueue = $this->sendingQueuesRepository->findOneBy(['task' => $scheduledTask]);
     if (!$sendingQueue) {
       return;
