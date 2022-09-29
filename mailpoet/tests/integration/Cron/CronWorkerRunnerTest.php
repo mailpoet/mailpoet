@@ -47,10 +47,10 @@ class CronWorkerRunnerTest extends \MailPoetTest {
     $this->cronWorkerRunner->run($worker);
   }
 
-  public function testItPreparesTask() {
+  public function testItPreparesTaskAndProcessesItImmediately() {
     $worker = $this->make(SimpleWorkerMockImplementation::class, [
       'prepareTaskStrategy' => Expected::once(true),
-      'processTaskStrategy' => Expected::never(),
+      'processTaskStrategy' => Expected::once(true),
     ]);
 
     $task = $this->createScheduledTask();
@@ -58,7 +58,7 @@ class CronWorkerRunnerTest extends \MailPoetTest {
     expect($result)->true();
     $scheduledTask = $this->scheduledTasksRepository->findOneById($task->getId());
     assert($scheduledTask instanceof ScheduledTaskEntity);
-    expect($scheduledTask->getStatus())->null();
+    expect($scheduledTask->getStatus())->same(ScheduledTaskEntity::STATUS_COMPLETED);
   }
 
   public function testItProcessesTask() {

@@ -83,15 +83,7 @@ class WooCommerceOrdersTest extends \MailPoetTest {
     assert($task instanceof ScheduledTaskEntity);
     expect($task->getStatus())->equals(ScheduledTaskEntity::STATUS_SCHEDULED);
 
-    // 2. prepare
-    expect($this->worker->checkProcessingRequirements())->true();
-    $this->cronWorkerRunner->run($this->worker);
-    $this->entityManager->clear();
-    $task = $this->scheduledTaskRepository->findOneBy(['type' => WooCommercePastOrders::TASK_TYPE]);
-    assert($task instanceof ScheduledTaskEntity);
-    expect($task->getStatus())->null(); // null means 'running'
-
-    // 3. run
+    // 2. prepare and run
     expect($this->worker->checkProcessingRequirements())->true();
     $this->cronWorkerRunner->run($this->worker);
     $this->entityManager->clear();
@@ -99,7 +91,7 @@ class WooCommerceOrdersTest extends \MailPoetTest {
     assert($task instanceof ScheduledTaskEntity);
     expect($task->getStatus())->equals(ScheduledTaskEntity::STATUS_COMPLETED);
 
-    // 4. complete (do not schedule again)
+    // 3. complete (do not schedule again)
     expect($this->worker->checkProcessingRequirements())->false();
     $this->cronWorkerRunner->run($this->worker);
     $this->entityManager->clear();
@@ -120,8 +112,7 @@ class WooCommerceOrdersTest extends \MailPoetTest {
     $this->woocommercePurchases->expects($this->exactly(3))->method('trackPurchase');
 
     $this->cronWorkerRunner->run($this->worker); // schedule
-    $this->cronWorkerRunner->run($this->worker); // prepare
-    $this->cronWorkerRunner->run($this->worker); // run
+    $this->cronWorkerRunner->run($this->worker); // prepare and run
 
     $this->entityManager->clear();
     $tasks = $this->scheduledTaskRepository->findBy(['type' => WooCommercePastOrders::TASK_TYPE]);
@@ -137,8 +128,7 @@ class WooCommerceOrdersTest extends \MailPoetTest {
     $this->woocommercePurchases->expects($this->exactly(5))->method('trackPurchase');
 
     $this->cronWorkerRunner->run($this->worker); // schedule
-    $this->cronWorkerRunner->run($this->worker); // prepare
-    $this->cronWorkerRunner->run($this->worker); // run for 1, 2, 3
+    $this->cronWorkerRunner->run($this->worker); // prepare and run for 1, 2, 3
 
     $task = $this->scheduledTaskRepository->findOneBy(['type' => WooCommercePastOrders::TASK_TYPE]);
     assert($task instanceof ScheduledTaskEntity);
