@@ -486,11 +486,6 @@ parameters:
 			path: ../../lib/Newsletter/NewslettersRepository.php
 
 		-
-			message: "#^Method MailPoet\\\\Newsletter\\\\NewslettersRepository\\:\\:findSendigNotificationHistoryWithPausedTask\\(\\) should return array\\<MailPoet\\\\Entities\\\\NewsletterEntity\\> but returns mixed\\.$#"
-			count: 1
-			path: ../../lib/Newsletter/NewslettersRepository.php
-
-		-
 			message: "#^Method MailPoet\\\\Newsletter\\\\Renderer\\\\Renderer\\:\\:postProcessTemplate\\(\\) should return string but returns mixed\\.$#"
 			count: 1
 			path: ../../lib/Newsletter/Renderer/Renderer.php

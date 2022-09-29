@@ -404,8 +404,8 @@ class NewslettersRepository extends Repository {
   /**
    * @return NewsletterEntity[]
    */
-  public function findSendigNotificationHistoryWithPausedTask(NewsletterEntity $newsletter): array {
-    $result = $this->entityManager->createQueryBuilder()
+  public function findSendingNotificationHistoryWithoutPausedTask(NewsletterEntity $newsletter): array {
+    return $this->entityManager->createQueryBuilder()
       ->select('n')
       ->from(NewsletterEntity::class, 'n')
       ->join('n.queues', 'q')
@@ -418,8 +418,7 @@ class NewslettersRepository extends Repository {
       ->setParameter('type', NewsletterEntity::TYPE_NOTIFICATION_HISTORY)
       ->setParameter('status', NewsletterEntity::STATUS_SENDING)
       ->setParameter('taskStatus', ScheduledTaskEntity::STATUS_PAUSED)
-      ->getQuery()->execute();
-    return $result;
+      ->getQuery()->getResult();
   }
 
   /**
