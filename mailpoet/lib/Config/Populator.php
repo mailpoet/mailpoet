@@ -200,6 +200,7 @@ class Populator {
     $this->moveNewsletterTemplatesThumbnailData();
     $this->scheduleNewsletterTemplateThumbnails();
     $this->updateToUnifiedTrackingSettings();
+    $this->fixNotificationHistoryRecordsStuckAtSending();
   }
 
   private function createMailPoetPage() {
@@ -981,5 +982,33 @@ class Populator {
       $trackingLevel = $emailTracking ? TrackingConfig::LEVEL_PARTIAL : TrackingConfig::LEVEL_BASIC;
     }
     $this->settings->set('tracking.level', $trackingLevel);
+  }
+
+  private function fixNotificationHistoryRecordsStuckAtSending() {
+    // perform once for versions below or equal to 3.99.0
+    if (version_compare((string)$this->settings->get('db_version', '3.99.1'), '3.99.0', '>')) {
+      return false;
+    }
+
+    $newsletters = $this->entityManager->getClassMetadata(NewsletterEntity::class)->getTableName();
+    $queues = $this->entityManager->getClassMetadata(SendingQueueEntity::class)->getTableName();
+    $tasks = $this->entityManager->getClassMetadata(ScheduledTaskEntity::class)->getTableName();
+
+    $this->entityManager->getConnection()->executeStatement("
+      UPDATE {$newsletters} n
+      JOIN {$queues} q ON n.id = q.newsletter_id
+      JOIN {$tasks} t ON q.task_id = t.id
+      SET n.status = :sentStatus
+      WHERE n.type = :type
+      AND n.status = :sendingStatus
+      AND t.status = :taskStatus
+    ", [
+      'type' => NewsletterEntity::TYPE_NOTIFICATION_HISTORY,
+      'sendingStatus' => NewsletterEntity::STATUS_SENDING,
+      'sentStatus' => NewsletterEntity::STATUS_SENT,
+      'taskStatus' => ScheduledTaskEntity::STATUS_COMPLETED,
+    ]);
+
+    return true;
   }
 }
