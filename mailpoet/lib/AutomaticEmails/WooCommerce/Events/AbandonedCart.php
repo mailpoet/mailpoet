@@ -165,11 +165,11 @@ class AbandonedCart {
     }
 
     $meta = [self::TASK_META_NAME => $cartProductIds];
-    $this->scheduler->scheduleOrRescheduleAutomaticEmail(WooCommerceEmail::SLUG, self::SLUG, (int)$subscriber->getId(), $meta);
+    $this->scheduler->scheduleOrRescheduleAutomaticEmail(WooCommerceEmail::SLUG, self::SLUG, $subscriber, $meta);
   }
 
-  private function rescheduleAbandonedCartEmail(SubscriberEntity $subscriberEntity) {
-    $this->scheduler->rescheduleAutomaticEmail(WooCommerceEmail::SLUG, self::SLUG, (int)$subscriberEntity->getId());
+  private function rescheduleAbandonedCartEmail(SubscriberEntity $subscriber) {
+    $this->scheduler->rescheduleAutomaticEmail(WooCommerceEmail::SLUG, self::SLUG, $subscriber);
   }
 
   private function cancelAbandonedCartEmail() {
@@ -177,7 +177,7 @@ class AbandonedCart {
     if (!$subscriber) {
       return;
     }
-    $this->scheduler->cancelAutomaticEmail(WooCommerceEmail::SLUG, self::SLUG, (int)$subscriber->getId());
+    $this->scheduler->cancelAutomaticEmail(WooCommerceEmail::SLUG, self::SLUG, $subscriber);
   }
 
   private function getSubscriber(): ?SubscriberEntity {

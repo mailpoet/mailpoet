@@ -10,11 +10,13 @@ use MailPoet\Entities\NewsletterOptionFieldEntity;
 use MailPoet\Entities\NewsletterPostEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SendingQueueEntity;
+use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Scheduler\AutomaticEmailScheduler;
 use MailPoet\Tasks\Sending;
 use MailPoet\Test\DataFactories\NewsletterOption;
+use MailPoet\Test\DataFactories\Subscriber;
 use MailPoet\WP\Functions as WPFunctions;
 
 class AbandonedCartContentTest extends \MailPoetTest {
@@ -136,7 +138,7 @@ class AbandonedCartContentTest extends \MailPoetTest {
     $this->setGroupAndEventOptions($newsletter);
     $this->accBlock['displayType'] = 'titleOnly';
     $this->accBlock['pricePosition'] = 'hidden';
-    $sendingTask = $this->createSendingTask($newsletter, 1, [AbandonedCart::TASK_META_NAME => []]);
+    $sendingTask = $this->createSendingTask($newsletter, [AbandonedCart::TASK_META_NAME => []]);
     $result = $this->block->render($newsletter, $this->accBlock, false, $sendingTask);
     $encodedResult = json_encode($result);
     expect($encodedResult)->equals('[]');
@@ -183,10 +185,10 @@ class AbandonedCartContentTest extends \MailPoetTest {
     ]);
   }
 
-  private function createSendingTask($newsletter, $subscriberId = null, $meta = null) {
-    $subscriberId = $subscriberId ?: 1; // dummy default value
+  private function createSendingTask(NewsletterEntity $newsletter, ?array $meta = null) {
+    $subscriber = (new Subscriber())->create(); // dummy default value
     $meta = $meta ?: [AbandonedCart::TASK_META_NAME => array_slice($this->productIds, 0, 3)];
-    $scheduledTask = $this->automaticEmailScheduler->createAutomaticEmailScheduledTask($newsletter, $subscriberId, $meta);
+    $scheduledTask = $this->automaticEmailScheduler->createAutomaticEmailScheduledTask($newsletter, $subscriber, $meta);
     // this can be removed when SendingTask usage is removed from AbandonedCartContent
     $parisTask = ScheduledTask::findOne($scheduledTask->getId());
     $this->assertInstanceOf(ScheduledTask::class, $parisTask);

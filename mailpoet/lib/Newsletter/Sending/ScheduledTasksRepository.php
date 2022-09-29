@@ -9,6 +9,7 @@ use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Entities\SendingQueueEntity;
+use MailPoet\Entities\SubscriberEntity;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Carbon\CarbonImmutable;
@@ -96,7 +97,7 @@ class ScheduledTasksRepository extends Repository {
       ->getResult();
   }
 
-  public function findOneScheduledByNewsletterAndSubscriberId(NewsletterEntity $newsletter, int $subscriberId): ?ScheduledTaskEntity {
+  public function findOneScheduledByNewsletterAndSubscriber(NewsletterEntity $newsletter, SubscriberEntity $subscriber): ?ScheduledTaskEntity {
     $scheduledTask = $this->doctrineRepository->createQueryBuilder('st')
       ->join(SendingQueueEntity::class, 'sq', Join::WITH, 'st = sq.task')
       ->join(ScheduledTaskSubscriberEntity::class, 'sts', Join::WITH, 'st = sts.task')
@@ -106,7 +107,7 @@ class ScheduledTasksRepository extends Repository {
       ->setMaxResults(1)
       ->setParameter('status', ScheduledTaskEntity::STATUS_SCHEDULED)
       ->setParameter('newsletter', $newsletter)
-      ->setParameter('subscriber', $subscriberId)
+      ->setParameter('subscriber', $subscriber)
       ->getQuery()
       ->getOneOrNullResult();
     // for phpstan because it detects mixed instead of entity
