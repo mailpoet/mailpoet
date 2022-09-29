@@ -20,6 +20,7 @@ use MailPoet\Newsletter\Scheduler\Scheduler as NewsletterScheduler;
 use MailPoet\Newsletter\Scheduler\WelcomeScheduler;
 use MailPoet\Newsletter\Segment\NewsletterSegmentRepository;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
+use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Segments\SubscribersFinder;
 use MailPoet\Tasks\Sending as SendingTask;
@@ -54,6 +55,9 @@ class Scheduler {
   /** @var NewsletterSegmentRepository */
   private $newsletterSegmentRepository;
 
+  /** @var SendingQueuesRepository */
+  private $sendingQueuesRepository;
+
   /** @var WPFunctions */
   private $wp;
 
@@ -72,6 +76,7 @@ class Scheduler {
     NewslettersRepository $newslettersRepository,
     SegmentsRepository $segmentsRepository,
     NewsletterSegmentRepository $newsletterSegmentRepository,
+    SendingQueuesRepository $sendingQueuesRepository,
     WPFunctions $wp,
     Security $security,
     NewsletterScheduler $scheduler
@@ -84,6 +89,7 @@ class Scheduler {
     $this->newslettersRepository = $newslettersRepository;
     $this->segmentsRepository = $segmentsRepository;
     $this->newsletterSegmentRepository = $newsletterSegmentRepository;
+    $this->sendingQueuesRepository = $sendingQueuesRepository;
     $this->wp = $wp;
     $this->security = $security;
     $this->scheduler = $scheduler;
@@ -211,6 +217,7 @@ class Scheduler {
 
     // Because there is mixed usage of the old and new model, we want to be sure about the correct state
     $this->newslettersRepository->refresh($notificationHistory);
+    $this->sendingQueuesRepository->refresh($queue->getSendingQueueEntity());
 
     $this->loggerFactory->getLogger(LoggerFactory::TOPIC_POST_NOTIFICATIONS)->info(
       'post notification set status to sending',

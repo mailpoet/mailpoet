@@ -31,6 +31,7 @@ use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Scheduler\WelcomeScheduler;
 use MailPoet\Newsletter\Segment\NewsletterSegmentRepository;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
+use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Segments\SubscribersFinder;
 use MailPoet\Tasks\Sending as SendingTask;
@@ -72,6 +73,9 @@ class SchedulerTest extends \MailPoetTest {
   /** @var NewsletterSegmentRepository */
   private $newsletterSegmentRepository;
 
+  /** @var SendingQueuesRepository */
+  private $sendingQueuesRepository;
+
   /** @var Security */
   private $security;
 
@@ -87,6 +91,7 @@ class SchedulerTest extends \MailPoetTest {
     $this->newsletterScheduler = $this->diContainer->get(NewsletterScheduler::class);
     $this->newsletterOptionFactory = new NewsletterOptionFactory();
     $this->newsletterSegmentRepository = $this->diContainer->get(NewsletterSegmentRepository::class);
+    $this->sendingQueuesRepository = $this->diContainer->get(SendingQueuesRepository::class);
     $this->security = $this->diContainer->get(Security::class);
   }
 
@@ -534,6 +539,7 @@ class SchedulerTest extends \MailPoetTest {
         $this->newslettersRepository,
         $this->segmentsRepository,
         $this->newsletterSegmentRepository,
+        $this->sendingQueuesRepository,
         WPFunctions::get(),
         $this->security,
         $this->newsletterScheduler,
