@@ -149,7 +149,14 @@ export function normalizeSettings(data: Record<string, unknown>): Settings {
       authentication: asEnum(['1', '-1'], '1'),
       mailpoet_api_key_state: asObject({
         state: asEnum(
-          ['valid', 'invalid', 'expiring', 'already_used', 'check_error'],
+          [
+            'valid',
+            'invalid',
+            'expiring',
+            'already_used',
+            'check_error',
+            'valid_underprivileged',
+          ],
           'check_error',
         ),
         data: asIs,

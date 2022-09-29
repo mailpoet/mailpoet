@@ -53,6 +53,8 @@ export function MssMessages(props: Props) {
       );
     case MssStatus.INVALID:
       return <NotValidMessage message={props.keyMessage} />;
+
+    case MssStatus.VALID_UNDERPRIVILEGED:
     default:
       return null;
   }

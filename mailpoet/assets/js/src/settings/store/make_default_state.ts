@@ -15,8 +15,12 @@ function getPremiumStatus(keyValid, premiumInstalled): PremiumStatus {
     : PremiumStatus.VALID_PREMIUM_PLUGIN_NOT_INSTALLED;
 }
 
-function getMssStatus(keyValid, data): MssStatus {
-  if (!keyValid) return MssStatus.INVALID;
+export function getMssStatus(keyValid, data): MssStatus {
+  if (!keyValid)
+    return data.mta.mailpoet_api_key_state.state === 'valid_underprivileged'
+      ? MssStatus.VALID_UNDERPRIVILEGED
+      : MssStatus.INVALID;
+
   const mssActive = data.mta.method === 'MailPoet';
   return mssActive
     ? MssStatus.VALID_MSS_ACTIVE

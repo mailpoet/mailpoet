@@ -85,8 +85,15 @@ export type Settings = {
     encryption: string;
     authentication: '1' | '-1';
     mailpoet_api_key_state: {
-      state: 'valid' | 'invalid' | 'expiring' | 'already_used' | 'check_error';
+      state:
+        | 'valid'
+        | 'invalid'
+        | 'expiring'
+        | 'already_used'
+        | 'check_error'
+        | 'valid_underprivileged';
       data: Record<string, unknown>;
+      code: number;
     };
   };
   mailpoet_smtp_provider: 'server' | 'manual' | 'AmazonSES' | 'SendGrid';
@@ -180,6 +187,7 @@ export enum MssStatus {
   INVALID,
   VALID_MSS_NOT_ACTIVE,
   VALID_MSS_ACTIVE,
+  VALID_UNDERPRIVILEGED,
 }
 
 export enum PremiumInstallationStatus {
