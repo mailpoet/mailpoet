@@ -67,7 +67,7 @@ class AutomaticEmailTest extends \MailPoetTest {
     $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
     $subscriber = (new SubscriberFactory())->create();
 
-    $this->automaticEmailScheduler->createAutomaticEmailSendingTask($newsletter, $subscriber->getId());
+    $this->automaticEmailScheduler->createAutomaticEmailScheduledTask($newsletter, $subscriber->getId());
     // new scheduled task should be created
     $task = $this->scheduledTasksRepository->findOneByNewsletter($newsletter);
     $currentTime = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
@@ -92,7 +92,7 @@ class AutomaticEmailTest extends \MailPoetTest {
     $subscriber = (new SubscriberFactory())->create();
     $meta = ['some' => 'value'];
 
-    $this->automaticEmailScheduler->createAutomaticEmailSendingTask($newsletter, $subscriber->getId(), $meta);
+    $this->automaticEmailScheduler->createAutomaticEmailScheduledTask($newsletter, $subscriber->getId(), $meta);
     // new queue record should be created with meta data
     $queue = $this->sendingQueuesRepository->findOneBy(['newsletter' => $newsletter]);
     $this->assertInstanceOf(SendingQueueEntity::class, $queue);
@@ -103,7 +103,7 @@ class AutomaticEmailTest extends \MailPoetTest {
     $newsletter = $this->newslettersRepository->findOneById($this->newsletter->getId());
     $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
 
-    $this->automaticEmailScheduler->createAutomaticEmailSendingTask($newsletter, null);
+    $this->automaticEmailScheduler->createAutomaticEmailScheduledTask($newsletter, null);
     // new scheduled task should be created
     $task = $this->scheduledTasksRepository->findOneByNewsletter($newsletter);
     $currentTime = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));

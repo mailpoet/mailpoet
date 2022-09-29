@@ -62,7 +62,7 @@ class AutomaticEmailScheduler {
       if (is_callable($metaModifier)) {
         $meta = $metaModifier($newsletter, $meta);
       }
-      $this->createAutomaticEmailSendingTask($newsletter, $subscriberId, $meta);
+      $this->createAutomaticEmailScheduledTask($newsletter, $subscriberId, $meta);
     }
   }
 
@@ -82,7 +82,7 @@ class AutomaticEmailScheduler {
       if ($task) {
         $this->rescheduleAutomaticEmailSendingTask($newsletter, $task, $meta);
       } else {
-        $this->createAutomaticEmailSendingTask($newsletter, $subscriberId, $meta);
+        $this->createAutomaticEmailScheduledTask($newsletter, $subscriberId, $meta);
       }
     }
   }
@@ -128,7 +128,7 @@ class AutomaticEmailScheduler {
     }
   }
 
-  public function createAutomaticEmailSendingTask(NewsletterEntity $newsletter, $subscriberId, $meta = false) {
+  public function createAutomaticEmailScheduledTask(NewsletterEntity $newsletter, $subscriberId, $meta = false): ScheduledTaskEntity {
     $subscriber = $subscriberId ? $this->subscribersRepository->findOneById($subscriberId) : null;
     $scheduledTask = new ScheduledTaskEntity();
     $scheduledTask->setType(SendingQueue::TASK_TYPE);
@@ -161,6 +161,8 @@ class AutomaticEmailScheduler {
       $this->scheduledTaskSubscribersRepository->flush();
       $scheduledTask->getSubscribers()->add($scheduledTaskSubscriber);
     }
+
+    return $scheduledTask;
   }
 
   private function rescheduleAutomaticEmailSendingTask(NewsletterEntity $newsletter, ScheduledTaskEntity $scheduledTask, $meta = false) {
