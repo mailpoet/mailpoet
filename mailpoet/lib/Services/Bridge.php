@@ -23,6 +23,7 @@ class Bridge {
   const KEY_INVALID = 'invalid';
   const KEY_EXPIRING = 'expiring';
   const KEY_ALREADY_USED = 'already_used';
+  const KEY_VALID_UNDERPRIVILEGED = 'valid_underprivileged';
 
   const KEY_CHECK_ERROR = 'check_error';
 
@@ -235,7 +236,7 @@ class Bridge {
       200 => self::KEY_VALID,
       401 => self::KEY_INVALID,
       402 => self::KEY_ALREADY_USED,
-      403 => self::KEY_INVALID,
+      403 => self::KEY_VALID_UNDERPRIVILEGED,
     ];
 
     if (!empty($result['code']) && isset($stateMap[$result['code']])) {
