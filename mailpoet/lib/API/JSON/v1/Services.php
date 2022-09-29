@@ -111,6 +111,8 @@ class Services extends APIEndpoint {
     $successMessage = null;
     if ($state == Bridge::KEY_VALID) {
       $successMessage = __('Your MailPoet Sending Service key has been successfully validated', 'mailpoet');
+    } else if ($state == Bridge::KEY_VALID_UNDERPRIVILEGED) {
+      $successMessage = __('Your Premium key has been successfully validated, but is not valid for MailPoet Sending Service', 'mailpoet');
     } elseif ($state == Bridge::KEY_EXPIRING) {
       $successMessage = sprintf(
         // translators: %s is the expiration date.
@@ -175,6 +177,8 @@ class Services extends APIEndpoint {
     $successMessage = null;
     if ($state == Bridge::KEY_VALID) {
       $successMessage = __('Your Premium key has been successfully validated', 'mailpoet');
+    } else if ($state == Bridge::KEY_VALID_UNDERPRIVILEGED) {
+      $successMessage = __('Your Premium key has been successfully validated, but is not valid for MailPoet Sending Service', 'mailpoet');
     } elseif ($state == Bridge::KEY_EXPIRING) {
       $successMessage = sprintf(
         // translators: %s is the expiration date.
