@@ -21,5 +21,13 @@ export type Workflow = {
     id: number;
     name: string;
   };
+  stats: {
+    has_values: boolean;
+    totals: {
+      entered: number;
+      in_progress: number;
+      exited: number;
+    };
+  };
   steps: Record<string, Step> & { root: Step };
 };
