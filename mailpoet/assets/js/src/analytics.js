@@ -51,8 +51,6 @@ export function mapFilterType(filter) {
     return 'subscribed date';
   if (filterType === 'woocommerce' && action === 'totalSpent')
     return 'total spent';
-  if (filterType === 'woocommerce' && action === 'totalSpent')
-    return 'total spent';
   if (filterType === 'userRole' && action === 'wordpressRole')
     return 'WordPress user role';
   if (filterType === 'userRole' && action === 'subscriberTag')
