@@ -128,6 +128,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Automation\Engine\Storage\WorkflowRunLogStorage::class)->setPublic(true);
     $container->autowire(\MailPoet\Automation\Engine\Storage\WorkflowTemplateStorage::class)->setPublic(true);
     $container->autowire(\MailPoet\Automation\Engine\Storage\WorkflowStorage::class)->setPublic(true);
+    $container->autowire(\MailPoet\Automation\Engine\Storage\WorkflowStatisticsStorage::class)->setPublic(true);
     $container->autowire(\MailPoet\Automation\Engine\Validation\WorkflowGraph\WorkflowWalker::class)->setPublic(true);
     $container->autowire(\MailPoet\Automation\Engine\Validation\WorkflowStepsValidator::class)->setPublic(true);
     $container->autowire(\MailPoet\Automation\Engine\Validation\WorkflowValidator::class)->setPublic(true);
