@@ -1,0 +1,53 @@
+.mailpoet-automation-stats {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin: auto;
+  max-width: 560px;
+
+  @at-root #mailpoet_automation_editor #{&} {
+    margin-bottom: 32px;
+  }
+
+  > li {
+    color: $color-wordpress-heading;
+    flex-grow: 1;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 16px;
+    padding: 0 16px;
+    position: relative;
+    text-align: center;
+
+    @at-root #mailpoet_automation_editor #{&} {
+      font-size: 14px;
+      line-height: 22px;
+    }
+
+    &:after {
+      align-items: center;
+      color: #a7aaad;
+      content: '›';
+      display: flex;
+      font-size: 20px;
+      font-weight: normal;
+      height: 100%;
+      justify-content: center;
+      position: absolute;
+      right: 0;
+      top: 0;
+    }
+
+    &:last-of-type:after {
+      content: '';
+    }
+
+    span {
+      color: #646970;
+      display: block;
+      font-size: 12px;
+      font-weight: 400;
+      line-height: 16px;
+    }
+  }
+}
