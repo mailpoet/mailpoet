@@ -36,7 +36,7 @@ class SomeoneSubscribesTrigger implements Trigger {
 
   public function getArgsSchema(): ObjectSchema {
     return Builder::object([
-      'segment_ids' => Builder::array(Builder::number())->required(),
+      'segment_ids' => Builder::array(Builder::number()),
     ]);
   }
 
