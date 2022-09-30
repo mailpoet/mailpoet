@@ -7,6 +7,7 @@ use MailPoet\API\REST\Request;
 use MailPoet\API\REST\Response;
 use MailPoet\Automation\Engine\API\Endpoint;
 use MailPoet\Automation\Engine\Data\Workflow;
+use MailPoet\Automation\Engine\Storage\WorkflowStatisticsStorage;
 use MailPoet\Automation\Engine\Storage\WorkflowStorage;
 use MailPoet\Validator\Builder;
 
@@ -14,10 +15,15 @@ class WorkflowsGetEndpoint extends Endpoint {
   /** @var WorkflowStorage */
   private $workflowStorage;
 
+  /** @var WorkflowStatisticsStorage  */
+  private $statisticsStorage;
+
   public function __construct(
-    WorkflowStorage $workflowStorage
+    WorkflowStorage $workflowStorage,
+    WorkflowStatisticsStorage $statisticsStorage
   ) {
     $this->workflowStorage = $workflowStorage;
+    $this->statisticsStorage = $statisticsStorage;
   }
 
   public function handle(Request $request): Response {
@@ -41,6 +47,7 @@ class WorkflowsGetEndpoint extends Endpoint {
       'status' => $workflow->getStatus(),
       'created_at' => $workflow->getCreatedAt()->format(DateTimeImmutable::W3C),
       'updated_at' => $workflow->getUpdatedAt()->format(DateTimeImmutable::W3C),
+      'stats' => $this->statisticsStorage->getWorkflowStats($workflow->getId())->toArray(),
       'activated_at' => $workflow->getActivatedAt() ? $workflow->getActivatedAt()->format(DateTimeImmutable::W3C) : null,
       'author' => [
         'id' => $workflow->getAuthor()->ID,

@@ -8,6 +8,7 @@ use MailPoet\Automation\Engine\Data\NextStep;
 use MailPoet\Automation\Engine\Data\Step;
 use MailPoet\Automation\Engine\Data\Workflow;
 use MailPoet\Automation\Engine\Registry;
+use MailPoet\Automation\Engine\Storage\WorkflowStatisticsStorage;
 use MailPoet\Automation\Engine\Storage\WorkflowStorage;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\WP\Functions as WPFunctions;
@@ -16,6 +17,9 @@ use MailPoet\WP\Notice as WPNotice;
 class AutomationEditor {
   /** @var WorkflowStorage */
   private $workflowStorage;
+
+  /** @var WorkflowStatisticsStorage  */
+  private $statisticsStorage;
 
   /** @var PageRenderer */
   private $pageRenderer;
@@ -31,12 +35,14 @@ class AutomationEditor {
 
   public function __construct(
     WorkflowStorage $workflowStorage,
+    WorkflowStatisticsStorage $statisticsStorage,
     PageRenderer $pageRenderer,
     Registry $registry,
     SegmentsRepository $segmentsRepository,
     WPFunctions $wp
   ) {
     $this->workflowStorage = $workflowStorage;
+    $this->statisticsStorage = $statisticsStorage;
     $this->pageRenderer = $pageRenderer;
     $this->registry = $registry;
     $this->segmentsRepository = $segmentsRepository;
@@ -99,6 +105,7 @@ class AutomationEditor {
       'status' => $workflow->getStatus(),
       'created_at' => $workflow->getCreatedAt()->format(DateTimeImmutable::W3C),
       'updated_at' => $workflow->getUpdatedAt()->format(DateTimeImmutable::W3C),
+      'stats' => $this->statisticsStorage->getWorkflowStats($workflow->getId())->toArray(),
       'activated_at' => $workflow->getActivatedAt() ? $workflow->getActivatedAt()->format(DateTimeImmutable::W3C) : null,
       'author' => [
         'id' => $workflow->getAuthor()->ID,
