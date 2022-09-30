@@ -14,6 +14,7 @@ import { Step as StepData } from './types';
 import { InserterPopover } from '../inserter-popover';
 import { storeName } from '../../store';
 import { AddTrigger } from './add-trigger';
+import { Statistics } from './statistics';
 
 export function Workflow(): JSX.Element {
   const { workflowData, selectedStep } = useSelect(
@@ -88,7 +89,7 @@ export function Workflow(): JSX.Element {
         className="mailpoet-automation-editor-workflow"
       >
         <div className="mailpoet-automation-editor-workflow-wrapper">
-          <div />
+          <Statistics />
           {stepMap.root.next_steps.length === 0 ? (
             <>
               {renderStep(stepMap.root)}
