@@ -8,6 +8,7 @@ use MailPoet\Automation\Engine\Data\Subject;
 use MailPoet\Automation\Engine\Data\SubjectEntry;
 use MailPoet\Automation\Engine\Data\Workflow;
 use MailPoet\Automation\Engine\Data\WorkflowRun;
+use MailPoet\Automation\Engine\Hooks;
 use MailPoet\Automation\Integrations\MailPoet\Subjects\SegmentSubject;
 use MailPoet\Automation\Integrations\MailPoet\Subjects\SubscriberSubject;
 use MailPoet\Automation\Integrations\MailPoet\Triggers\UserRegistrationTrigger;
@@ -16,6 +17,7 @@ use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Segments\WP;
 use MailPoet\Subscribers\SubscribersRepository;
+use MailPoet\WP\Functions;
 
 class UserRegistrationTriggerTest extends \MailPoetTest {
   const USER_NAME = 'user-name--x';
@@ -49,6 +51,35 @@ class UserRegistrationTriggerTest extends \MailPoetTest {
       $this->userId = $userId;
       $this->wpSegment->synchronizeUsers();
     }
+  }
+
+  public function testCanHandleRegistration() {
+    $wpMock = $this->createMock(Functions::class);
+    $testee = new UserRegistrationTrigger(
+      $this->segmentRepository,
+      $wpMock
+    );
+
+    $subscriber = $this->subscribersRepository->findOneBy(['wpUserId' => $this->userId]);
+    assert($subscriber instanceof SubscriberEntity);
+
+    $wpMock->expects($this->once())->method(
+      'doAction'
+    )->willReturnCallback(function($hook, $trigger, array $subjects) use ($testee, $subscriber) {
+      $this->assertSame(Hooks::TRIGGER, $hook);
+      $this->assertSame($trigger, $testee);
+
+      /** @var Subject[] $subjects */
+      $this->assertSame(SegmentSubject::KEY, $subjects[0]->getKey());
+      $this->assertSame(SubscriberSubject::KEY, $subjects[1]->getKey());
+
+      $wpUserSegment = $this->segmentRepository->getWPUsersSegment();
+      assert($wpUserSegment instanceof SegmentEntity);
+      $this->assertSame($wpUserSegment->getId(), $subjects[0]->getArgs()['segment_id']);
+      $this->assertSame($subscriber->getId(), $subjects[1]->getArgs()['subscriber_id']);
+    });
+
+    $testee->handleSubscription($subscriber);
   }
 
   /**
