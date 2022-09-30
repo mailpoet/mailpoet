@@ -45,7 +45,7 @@ class UserRegistrationTrigger implements Trigger {
 
   public function getArgsSchema(): ObjectSchema {
     return Builder::object([
-      'roles' => Builder::array(Builder::string())->required(),
+      'roles' => Builder::array(Builder::string()),
     ]);
   }
 
