@@ -13,18 +13,25 @@ use MailPoet\Automation\Integrations\MailPoet\Subjects\SubscriberSubject;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\InvalidStateException;
+use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Validator\Builder;
 use MailPoet\Validator\Schema\ObjectSchema;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Doctrine\Common\Collections\Criteria;
 
 class UserRegistrationTrigger implements Trigger {
+
+  /** @var SegmentsRepository  */
+  private $segmentsRepository;
+
   /** @var WPFunctions */
   private $wp;
 
   public function __construct(
+    SegmentsRepository $segmentsRepository,
     WPFunctions $wp
   ) {
+    $this->segmentsRepository = $segmentsRepository;
     $this->wp = $wp;
   }
 
@@ -83,7 +90,9 @@ class UserRegistrationTrigger implements Trigger {
   }
 
   private function getWpSegment(SubscriberEntity $subscriber): SegmentEntity {
-    $criteria = Criteria::create()->where(Criteria::expr()->eq('type', SegmentEntity::TYPE_WP_USERS));
+    $wpUserSegment = $this->segmentsRepository->getWPUsersSegment();
+
+    $criteria = Criteria::create()->where(Criteria::expr()->eq('segment', $wpUserSegment));
     $segment = $subscriber->getSubscriberSegments()->matching($criteria)->first() ?: null;
     if (!$segment || !$segment->getSegment()) {
       throw new InvalidStateException();
