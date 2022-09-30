@@ -22,6 +22,7 @@ use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Tasks\Sending;
 use MailPoet\Test\DataFactories\Newsletter;
 use MailPoet\Test\DataFactories\Segment;
+use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 
@@ -334,12 +335,12 @@ class WooCommercePastRevenues implements Generator {
   }
 
   private function createSubscriber(string $email, string $lastName, string $createdAtDate, SegmentEntity $segment, $status = SubscriberEntity::STATUS_SUBSCRIBED): SubscriberEntity {
-    $subscriber = new SubscriberEntity();
-    $subscriber->setEmail($email);
-    $subscriber->setStatus($status);
-    $subscriber->setLastName($lastName);
-    $subscriber->setCreatedAt(new Carbon($createdAtDate));
-    $this->entityManager->persist($subscriber);
+    $subscriber = (new SubscriberFactory())
+      ->withEmail($email)
+      ->withStatus($status)
+      ->withLastName($lastName)
+      ->withCreatedAt(new Carbon($createdAtDate))
+      ->create();
 
     $subscriberSegment = new SubscriberSegmentEntity($segment, $subscriber, $status);
     $this->entityManager->persist($subscriberSegment);
