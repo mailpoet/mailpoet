@@ -10,6 +10,7 @@ use MailPoet\Automation\Engine\Builder\UpdateWorkflowController;
 use MailPoet\Automation\Engine\Data\NextStep;
 use MailPoet\Automation\Engine\Data\Step;
 use MailPoet\Automation\Engine\Data\Workflow;
+use MailPoet\Automation\Engine\Storage\WorkflowStatisticsStorage;
 use MailPoet\Automation\Engine\Validation\WorkflowSchema;
 use MailPoet\Validator\Builder;
 
@@ -17,10 +18,15 @@ class WorkflowsPutEndpoint extends Endpoint {
   /** @var UpdateWorkflowController */
   private $updateController;
 
+  /** @var WorkflowStatisticsStorage  */
+  private $statisticsStorage;
+
   public function __construct(
-    UpdateWorkflowController $updateController
+    UpdateWorkflowController $updateController,
+    WorkflowStatisticsStorage $statisticsStorage
   ) {
     $this->updateController = $updateController;
+    $this->statisticsStorage = $statisticsStorage;
   }
 
   public function handle(Request $request): Response {
@@ -50,6 +56,7 @@ class WorkflowsPutEndpoint extends Endpoint {
         'id' => $workflow->getAuthor()->ID,
         'name' => $workflow->getAuthor()->display_name,
       ],
+      'stats' => $this->statisticsStorage->getWorkflowStats($workflow->getId())->toArray(),
       'steps' => array_map(function (Step $step) {
         return [
           'id' => $step->getId(),
