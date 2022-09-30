@@ -17,44 +17,69 @@ export function mapFilterType(filter) {
   const action = filter.action;
   const filterType = filter.type;
 
-  if (filterType === 'email' && action === 'machineOpensAbsoluteCount')
-    return '# of machine-opens';
-  if (filterType === 'email' && action === 'opensAbsoluteCount')
-    return '# of opens';
-  if (filterType === 'woocommerce' && action === 'numberOfOrders')
-    return '# of orders';
-  if (filterType === 'email' && action === 'clicked') return 'clicked';
-  if (filterType === 'email' && action === 'clickedAny')
-    return 'clicked any email';
-  if (filterType === 'userRole' && action === 'subscriberScore') return 'score';
-  if (filterType === 'userRole' && action === 'subscribedToList')
-    return 'subscribed to list';
-  if (filterType === 'email' && action === 'opened') return 'opened';
-  if (filterType === 'email' && action === 'machineOpened')
-    return 'machine-opened';
-  if (filterType === 'woocommerceMembership' && action === 'isMemberOf')
-    return 'is active member of';
+  // Email
+  if (filterType === 'email') {
+    switch (action) {
+      case 'machineOpensAbsoluteCount':
+        return '# of machine-opens';
+      case 'opensAbsoluteCount':
+        return '# of opens';
+      case 'numberOfOrders':
+        return '# of orders';
+      case 'clicked':
+        return 'clicked';
+      case 'clickedAny':
+        return 'clicked any email';
+      case 'opened':
+        return 'opened';
+      case 'machineOpened':
+        return 'machine-opened';
+      default:
+        return '';
+    }
+  }
+  // User Role
+  if (filterType === 'userRole') {
+    switch (action) {
+      case 'subscriberTag':
+        return 'subscriber tags';
+      case 'subscribedToList':
+        return 'subscribed to list';
+      case 'subscriberScore':
+        return 'score';
+      case 'wordpressRole':
+        return 'WordPress user role';
+      case 'mailpoetCustomField':
+        return 'MailPoet custom field';
+      default:
+        return '';
+    }
+  }
+  // WooCommerce
+  if (filterType === 'woocommerce')
+    switch (action) {
+      case 'customerInCountry':
+        return 'is in country';
+      case 'purchasedCategory':
+        return 'purchased in category';
+      case 'purchasedProduct':
+        return 'purchased product';
+      case 'subscribedDate':
+        return 'subscribed date';
+      case 'totalSpent':
+        return 'total spent';
+      default:
+        return '';
+    }
+  // WooCommerce Subscription
   if (
     filterType === 'woocommerceSubscription' &&
     action === 'hasActiveSubscription'
   )
     return 'has an active subscription';
-  if (filterType === 'woocommerce' && action === 'customerInCountry')
-    return 'is in country';
-  if (filterType === 'userRole' && action === 'mailpoetCustomField')
-    return 'MailPoet custom field';
-  if (filterType === 'woocommerce' && action === 'purchasedCategory')
-    return 'purchased in category';
-  if (filterType === 'woocommerce' && action === 'purchasedProduct')
-    return 'purchased product';
-  if (filterType === 'userRole' && action === 'subscribedDate')
-    return 'subscribed date';
-  if (filterType === 'woocommerce' && action === 'totalSpent')
-    return 'total spent';
-  if (filterType === 'userRole' && action === 'wordpressRole')
-    return 'WordPress user role';
-  if (filterType === 'userRole' && action === 'subscriberTag')
-    return 'subscriber tags';
+  // WooCommerce Membership
+  if (filterType === 'woocommerceMembership' && action === 'isMemberOf')
+    return 'is active member of';
 
   return '';
 }
