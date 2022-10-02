@@ -18,7 +18,7 @@ class BridgeTest extends \MailPoetTest {
   public $usedPremiumKey;
   public $expiringPremiumKey;
   public $uncheckableKey;
-  public $forbiddenEndpointKey;
+  public $underPrivilegedKey;
   public $usedKey;
   public $expiringKey;
   public $invalidKey;
@@ -36,7 +36,7 @@ class BridgeTest extends \MailPoetTest {
     $this->invalidKey = '401' . $this->validKey;
     $this->expiringKey = 'expiring' . $this->validKey;
     $this->usedKey = '402' . $this->validKey;
-    $this->forbiddenEndpointKey = '403' . $this->validKey;
+    $this->underPrivilegedKey = '403' . $this->validKey;
     $this->uncheckableKey = '503' . $this->validKey;
 
     $this->expiringPremiumKey = 'expiring' . $this->validKey;
@@ -95,9 +95,9 @@ class BridgeTest extends \MailPoetTest {
   }
 
   public function testItChecksForbiddenEndpointMSSKey() {
-    $result = $this->bridge->checkMSSKey($this->forbiddenEndpointKey);
+    $result = $this->bridge->checkMSSKey($this->underPrivilegedKey);
     expect($result)->notEmpty();
-    expect($result['state'])->equals(Bridge::KEY_INVALID);
+    expect($result['state'])->equals(Bridge::KEY_VALID_UNDERPRIVILEGED);
   }
 
   public function testItReturnsErrorStateOnEmptyAPIResponseCodeDuringMSSCheck() {
@@ -153,9 +153,9 @@ class BridgeTest extends \MailPoetTest {
   }
 
   public function testItChecksForbiddenEndpointPremiumKey() {
-    $result = $this->bridge->checkPremiumKey($this->forbiddenEndpointKey);
+    $result = $this->bridge->checkPremiumKey($this->underPrivilegedKey);
     expect($result)->notEmpty();
-    expect($result['state'])->equals(Bridge::KEY_INVALID);
+    expect($result['state'])->equals(Bridge::KEY_VALID_UNDERPRIVILEGED);
   }
 
   public function testItChecksExpiringPremiumKey() {
