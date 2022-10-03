@@ -1,21 +1,18 @@
 <?php declare(strict_types = 1);
 
-namespace MailPoet\Automation\Engine\Validation;
+namespace MailPoet\Automation\Engine\Validation\WorkflowRules;
 
-use MailPoet\Automation\Engine\Data\Step;
 use MailPoet\Automation\Engine\Data\Workflow;
 use MailPoet\Automation\Engine\Exceptions;
 use MailPoet\Automation\Engine\Exceptions\InvalidStateException;
 use MailPoet\Automation\Engine\Registry;
 use MailPoet\Automation\Engine\Storage\WorkflowStorage;
-use MailPoet\Validator\Validator;
+use MailPoet\Automation\Engine\Validation\WorkflowGraph\WorkflowNode;
+use MailPoet\Automation\Engine\Validation\WorkflowGraph\WorkflowNodeVisitor;
 
-class WorkflowStepsValidator {
+class UnknownStepRule implements WorkflowNodeVisitor {
   /** @var Registry */
   private $registry;
-
-  /** @var Validator */
-  private $validator;
 
   /** @var WorkflowStorage */
   private $workflowStorage;
@@ -25,36 +22,31 @@ class WorkflowStepsValidator {
 
   public function __construct(
     Registry $registry,
-    Validator $validator,
     WorkflowStorage $workflowStorage
   ) {
-    $this->validator = $validator;
     $this->registry = $registry;
     $this->workflowStorage = $workflowStorage;
   }
 
-  public function validateSteps(Workflow $workflow): void {
-    foreach ($workflow->getSteps() as $step) {
-      $this->validateStep($workflow, $step);
-    }
+  public function initialize(Workflow $workflow): void {
+    $this->cachedExistingWorkflow = false;
   }
 
-  private function validateStep(Workflow $workflow, Step $step): void {
+  public function visitNode(Workflow $workflow, WorkflowNode $node): void {
+    $step = $node->getStep();
     $registryStep = $this->registry->getStep($step->getKey());
+
+    // step not registered (e.g. plugin was deactivated) - allow saving it only if it hasn't changed
     if (!$registryStep) {
-      // step not registered (e.g. plugin was deactivated) - allow saving it only if it hasn't changed
       $currentWorkflow = $this->getCurrentWorkflow($workflow);
       $currentStep = $currentWorkflow ? ($currentWorkflow->getSteps()[$step->getId()] ?? null) : null;
       if (!$currentStep || $step->toArray() !== $currentStep->toArray()) {
         throw Exceptions::workflowStepModifiedWhenUnknown($step);
       }
-      return;
     }
+  }
 
-    // full validation for active workflows
-    if ($workflow->getStatus() === Workflow::STATUS_ACTIVE) {
-      $this->validator->validate($registryStep->getArgsSchema(), $step->getArgs());
-    }
+  public function complete(Workflow $workflow): void {
   }
 
   private function getCurrentWorkflow(Workflow $workflow): ?Workflow {
