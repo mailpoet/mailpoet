@@ -3,7 +3,7 @@
 namespace MailPoet\API\REST;
 
 interface Exception {
-  public function getStatusCode();
+  public function getStatusCode(): int;
 
   public function getErrorCode(): string;
 
