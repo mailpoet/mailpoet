@@ -11,24 +11,30 @@ use MailPoet\Automation\Engine\Validation\WorkflowRules\NoJoinRule;
 use MailPoet\Automation\Engine\Validation\WorkflowRules\NoSplitRule;
 use MailPoet\Automation\Engine\Validation\WorkflowRules\NoUnreachableStepsRule;
 use MailPoet\Automation\Engine\Validation\WorkflowRules\TriggersUnderRootRule;
+use MailPoet\Automation\Engine\Validation\WorkflowRules\UnknownStepRule;
+use MailPoet\Automation\Engine\Validation\WorkflowRules\ValidStepArgsRule;
 
 class WorkflowValidator {
-  /** @var WorkflowStepsValidator */
-  private $stepsValidator;
-
   /** @var WorkflowWalker */
   private $workflowWalker;
 
+  /** @var ValidStepArgsRule */
+  private $validStepArgsRule;
+
+  /** @var UnknownStepRule */
+  private $unknownStepRule;
+
   public function __construct(
-    WorkflowStepsValidator $stepsValidator,
+    UnknownStepRule $unknownStepRule,
+    ValidStepArgsRule $validStepArgsRule,
     WorkflowWalker $workflowWalker
   ) {
+    $this->unknownStepRule = $unknownStepRule;
+    $this->validStepArgsRule = $validStepArgsRule;
     $this->workflowWalker = $workflowWalker;
-    $this->stepsValidator = $stepsValidator;
   }
 
   public function validate(Workflow $workflow): void {
-    // validate graph
     $this->workflowWalker->walk($workflow, [
       new NoUnreachableStepsRule(),
       new ConsistentStepMapRule(),
@@ -37,9 +43,8 @@ class WorkflowValidator {
       new NoCycleRule(),
       new NoJoinRule(),
       new NoSplitRule(),
+      $this->unknownStepRule,
+      $this->validStepArgsRule,
     ]);
-
-    // validate steps
-    $this->stepsValidator->validateSteps($workflow);
   }
 }
