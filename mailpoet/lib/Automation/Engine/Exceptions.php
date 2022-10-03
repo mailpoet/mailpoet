@@ -27,6 +27,7 @@ class Exceptions {
   private const WORKFLOW_STRUCTURE_MODIFICATION_NOT_SUPPORTED = 'mailpoet_automation_workflow_structure_modification_not_supported';
   private const WORKFLOW_STRUCTURE_NOT_VALID = 'mailpoet_automation_workflow_structure_not_valid';
   private const WORKFLOW_STEP_MODIFIED_WHEN_UNKNOWN = 'mailpoet_automation_workflow_step_modified_when_unknown';
+  private const WORKFLOW_NOT_VALID = 'mailpoet_automation_workflow_not_valid';
 
   public function __construct() {
     throw new InvalidStateException(
@@ -179,5 +180,13 @@ class Exceptions {
           $step->getId()
         )
       );
+  }
+
+  public static function workflowNotValid(string $detail, array $errors): UnexpectedValueException {
+    return UnexpectedValueException::create()
+      ->withErrorCode(self::WORKFLOW_NOT_VALID)
+      // translators: %s is a detailed information
+      ->withMessage(sprintf(__("Workflow validation failed: %s", 'mailpoet'), $detail))
+      ->withErrors($errors);
   }
 }
