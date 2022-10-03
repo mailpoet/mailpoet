@@ -80,7 +80,7 @@ class API {
 
   private function convertToErrorResponse(Throwable $e): ErrorResponse {
     $response = $e instanceof Exception
-      ? new ErrorResponse($e->getStatusCode(), $e->getMessage(), $e->getErrorCode())
+      ? new ErrorResponse($e->getStatusCode(), $e->getMessage(), $e->getErrorCode(), $e->getErrors())
       : new ErrorResponse(500, __('An unknown error occurred.', 'mailpoet'), 'mailpoet_automation_unknown_error');
 
     if ($response->get_status() >= 500) {
