@@ -15,7 +15,7 @@ class Exceptions {
   private const API_NO_JSON_BODY = 'mailpoet_automation_api_no_json_body';
   private const JSON_NOT_OBJECT = 'mailpoet_automation_json_not_object';
   private const WORKFLOW_NOT_FOUND = 'mailpoet_automation_workflow_not_found';
-  private const WORKFLOW_VERSION_NOT_FOUND = 'mailpoet_automation_workflowversion_not_found';
+  private const WORKFLOW_VERSION_NOT_FOUND = 'mailpoet_automation_workflow_version_not_found';
   private const WORKFLOW_RUN_NOT_FOUND = 'mailpoet_automation_workflow_run_not_found';
   private const WORKFLOW_STEP_NOT_FOUND = 'mailpoet_automation_workflow_step_not_found';
   private const WORKFLOW_TRIGGER_NOT_FOUND = 'mailpoet_automation_workflow_trigger_not_found';
@@ -28,7 +28,7 @@ class Exceptions {
   private const MULTIPLE_PAYLOADS_FOUND = 'mailpoet_automation_multiple_payloads_found';
   private const WORKFLOW_STRUCTURE_MODIFICATION_NOT_SUPPORTED = 'mailpoet_automation_workflow_structure_modification_not_supported';
   private const WORKFLOW_STRUCTURE_NOT_VALID = 'mailpoet_automation_workflow_structure_not_valid';
-  private const WORKFLOW_STEP_MODIFIED_WHEN_UNKNOWN = 'mailpoet_automation_workflow_step_modified_when_unknon';
+  private const WORKFLOW_STEP_MODIFIED_WHEN_UNKNOWN = 'mailpoet_automation_workflow_step_modified_when_unknown';
 
   public function __construct() {
     throw new InvalidStateException(
