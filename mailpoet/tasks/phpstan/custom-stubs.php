@@ -22,15 +22,17 @@ namespace {
 // We can remove them after the functionality is officially released and added into php-stubs/woocommerce-stubs
 namespace Automattic\WooCommerce\Internal\DataStores\Orders {
 
-  if (!class_exists(\Automattic\WooCommerce\Internal\DataStores\Orders\CustomOrdersTableController::class)) {
-    class CustomOrdersTableController {
-      function show_feature() {}
-    }
-  }
-
   if (!class_exists(\Automattic\WooCommerce\Internal\DataStores\Orders\DataSynchronizer::class)) {
     class DataSynchronizer {
       function create_database_tables() {}
+    }
+  }
+}
+namespace Automattic\WooCommerce\Internal\Features {
+
+  if (!class_exists(\Automattic\WooCommerce\Internal\Features\FeaturesController::class)) {
+    class FeaturesController {
+      function change_feature_enable(string $feature_id, bool $enable) {}
     }
   }
 }
