@@ -3,7 +3,7 @@ Contributors: mailpoet
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 5.6
 Tested up to: 6.0
-Stable tag: 3.99.1
+Stable tag: 3.100.0
 Requires PHP: 7.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -218,6 +218,11 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 3.100.0 - 2022-10-03 =
+* Added: tagging subscribers when signed up via a form;
+* Improved: linux cron error message;
+* Fixed: paid MailPoet plan is offered in onboarding instead of a free MailPoet plan.
 
 = 3.99.1 - 2022-09-29 =
 * Fix issue with post notifications in MailPoet 3.99.
