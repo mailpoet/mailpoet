@@ -7,7 +7,7 @@ Author: MailPoet
 Version: 1.0
 */
 
-use \Automattic\WooCommerce\Internal\DataStores\Orders\CustomOrdersTableController;
+use \Automattic\WooCommerce\Internal\Features\FeaturesController;
 use \Automattic\WooCommerce\Internal\DataStores\Orders\DataSynchronizer;
 
 /**
@@ -19,14 +19,13 @@ function mailpoet_enable_cot(): void {
   if (!function_exists('wc_get_container')) {
     return;
   }
-  /** @var CustomOrdersTableController $orderController */
-  $orderController = wc_get_container()->get(CustomOrdersTableController::class);
-  if ($orderController instanceof CustomOrdersTableController) {
-    $orderController->show_feature();
+  /** @var FeaturesController $featuresController */
+  $featuresController = wc_get_container()->get(FeaturesController::class);
+  if ($featuresController instanceof FeaturesController) {
+    $featuresController->change_feature_enable('custom_order_tables', true);
   }
 }
 add_action( 'init', 'mailpoet_enable_cot', 99 );
-
 
 /**
  * Add wp create_cot WP CLI command for creating Custom Order Tables from command line
