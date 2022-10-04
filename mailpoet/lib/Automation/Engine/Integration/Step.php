@@ -2,6 +2,7 @@
 
 namespace MailPoet\Automation\Engine\Integration;
 
+use MailPoet\Automation\Engine\Data\StepValidationArgs;
 use MailPoet\Validator\Schema\ObjectSchema;
 
 interface Step {
@@ -13,4 +14,6 @@ interface Step {
 
   /** @return string[] */
   public function getSubjectKeys(): array;
+
+  public function validate(StepValidationArgs $args): void;
 }

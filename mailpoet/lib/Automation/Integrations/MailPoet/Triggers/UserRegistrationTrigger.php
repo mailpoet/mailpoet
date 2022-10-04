@@ -3,6 +3,7 @@
 namespace MailPoet\Automation\Integrations\MailPoet\Triggers;
 
 use MailPoet\Automation\Engine\Data\StepRunArgs;
+use MailPoet\Automation\Engine\Data\StepValidationArgs;
 use MailPoet\Automation\Engine\Data\Subject;
 use MailPoet\Automation\Engine\Hooks;
 use MailPoet\Automation\Engine\Integration\Trigger;
@@ -54,6 +55,9 @@ class UserRegistrationTrigger implements Trigger {
       SegmentSubject::KEY,
       SubscriberSubject::KEY,
     ];
+  }
+
+  public function validate(StepValidationArgs $args): void {
   }
 
   public function registerHooks(): void {
