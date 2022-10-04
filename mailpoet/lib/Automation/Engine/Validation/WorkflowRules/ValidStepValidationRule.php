@@ -44,12 +44,9 @@ class ValidStepValidationRule implements WorkflowNodeVisitor {
     }
 
     try {
-      if ($registryStep instanceof Action) {
-        $subjects = $this->collectSubjects($workflow, $node->getParents());
-        $args = new StepValidationArgs($workflow, $step, $subjects);
-        $registryStep->validate($args);
-      }
-
+      $subjects = $this->collectSubjects($workflow, $node->getParents());
+      $args = new StepValidationArgs($workflow, $step, $subjects);
+      $registryStep->validate($args);
     } catch (Throwable $e) {
       $this->errors[$step->getId()] = [
         'step_id' => $step->getId(),
