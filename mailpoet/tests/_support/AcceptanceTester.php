@@ -705,4 +705,8 @@ class AcceptanceTester extends \Codeception\Actor {
     ]);
     $i->cli(['action-scheduler', 'run', '--force']);
   }
+
+  public function isWooCustomOrdersTableEnabled(): bool {
+    return (bool)getenv('ENABLE_COT');
+  }
 }
