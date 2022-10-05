@@ -132,6 +132,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Automation\Engine\Validation\WorkflowGraph\WorkflowWalker::class)->setPublic(true);
     $container->autowire(\MailPoet\Automation\Engine\Validation\WorkflowRules\UnknownStepRule::class)->setPublic(true);
     $container->autowire(\MailPoet\Automation\Engine\Validation\WorkflowRules\ValidStepArgsRule::class)->setPublic(true);
+    $container->autowire(\MailPoet\Automation\Engine\Validation\WorkflowRules\ValidStepOrderRule::class)->setPublic(true);
     $container->autowire(\MailPoet\Automation\Engine\Validation\WorkflowRules\ValidStepValidationRule::class)->setPublic(true);
     $container->autowire(\MailPoet\Automation\Engine\Validation\WorkflowValidator::class)->setPublic(true);
     $container->autowire(\MailPoet\Automation\Engine\WordPress::class)->setPublic(true);
