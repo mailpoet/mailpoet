@@ -9,9 +9,6 @@ export function Statistics(): JSX.Element {
     }),
     [],
   );
-  if (!workflow.stats.has_values) {
-    return <div />;
-  }
 
   return (
     <div>

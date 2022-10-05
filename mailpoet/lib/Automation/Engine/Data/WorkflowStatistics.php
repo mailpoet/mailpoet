@@ -33,10 +33,6 @@ class WorkflowStatistics {
     return $this->entered;
   }
 
-  public function hasValues(): bool {
-    return $this->entered > 0;
-  }
-
   public function getInProgress(): int {
     return $this->inProgress;
   }
@@ -48,7 +44,6 @@ class WorkflowStatistics {
   public function toArray(): array {
     return [
       'workflow_id' => $this->getWorkflowId(),
-      'has_values' => $this->hasValues(),
       'totals' => [
         'entered' => $this->getEntered(),
         'in_progress' => $this->getInProgress(),

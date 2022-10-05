@@ -10,7 +10,6 @@ export type Workflow = {
   name: string;
   status: WorkflowStatus;
   stats: {
-    has_values: boolean;
     totals: {
       entered: number;
       in_progress: number;
