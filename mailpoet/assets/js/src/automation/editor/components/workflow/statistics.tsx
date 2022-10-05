@@ -13,16 +13,22 @@ export function Statistics(): JSX.Element {
   return (
     <div>
       <ul className="mailpoet-automation-stats">
-        <li className="mailpoet-automation-stats-entered">
-          <span>{__('Total Entered', 'mailpoet')}</span>
+        <li className="mailpoet-automation-stats-item">
+          <span className="mailpoet-automation-stats-label">
+            {__('Total Entered', 'mailpoet')}
+          </span>
           {new Intl.NumberFormat().format(workflow.stats.totals.entered)}
         </li>
-        <li className="mailpoet-automation-stats-in-process">
-          <span>{__('Total Processing', 'mailpoet')}</span>
+        <li className="mailpoet-automation-stats-item">
+          <span className="mailpoet-automation-stats-label">
+            {__('Total Processing', 'mailpoet')}
+          </span>
           {new Intl.NumberFormat().format(workflow.stats.totals.in_progress)}
         </li>
-        <li className="mailpoet-automation-stats-exited">
-          <span>{__('Total Exited', 'mailpoet')}</span>
+        <li className="mailpoet-automation-stats-item">
+          <span className="mailpoet-automation-stats-label">
+            {__('Total Exited', 'mailpoet')}
+          </span>
           {new Intl.NumberFormat().format(workflow.stats.totals.exited)}
         </li>
       </ul>
