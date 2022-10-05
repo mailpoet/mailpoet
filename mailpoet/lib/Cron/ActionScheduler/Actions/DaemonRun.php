@@ -106,8 +106,8 @@ class DaemonRun {
       return;
     }
     $this->actionScheduler->scheduleImmediateSingleAction(self::NAME);
-    // The automatic rescheduling schedules the next recurring action to run after 1 second.
-    // So we need to wait before we trigger new remote executor to avoid skipping the action
+    // Chaining async requests can crash MySQL. A brief sleep call in PHP prevents that.
+    // @see https://github.com/woocommerce/action-scheduler/blob/6633378283d33746eec7314586783f58deee5375/classes/ActionScheduler_AsyncRequest_QueueRunner.php#L91-L96
     sleep(2);
     $this->remoteExecutorHandler->triggerExecutor();
   }
