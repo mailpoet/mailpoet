@@ -63,10 +63,8 @@ class WorkflowStatisticsStorageTest extends \MailPoetTest
     $this->assertEquals($expectedInProgress, $statistics->getInProgress());
     $this->assertEquals($expectedTotal, $statistics->getEntered());
     $this->assertEquals($expectedExited, $statistics->getExited());
-    $this->assertEquals((bool)$expectedTotal, $statistics->hasValues());
     $this->assertEquals([
       'workflow_id' => $workflow->getId(),
-      'has_values' => (bool) $expectedTotal,
       'totals' => [
         'entered' => $expectedTotal,
         'in_progress' => $expectedInProgress,
