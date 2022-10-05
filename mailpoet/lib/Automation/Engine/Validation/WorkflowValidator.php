@@ -13,7 +13,6 @@ use MailPoet\Automation\Engine\Validation\WorkflowRules\NoUnreachableStepsRule;
 use MailPoet\Automation\Engine\Validation\WorkflowRules\TriggersUnderRootRule;
 use MailPoet\Automation\Engine\Validation\WorkflowRules\UnknownStepRule;
 use MailPoet\Automation\Engine\Validation\WorkflowRules\ValidStepArgsRule;
-use MailPoet\Automation\Engine\Validation\WorkflowRules\ValidStepRule;
 use MailPoet\Automation\Engine\Validation\WorkflowRules\ValidStepOrderRule;
 use MailPoet\Automation\Engine\Validation\WorkflowRules\ValidStepValidationRule;
 
@@ -24,6 +23,9 @@ class WorkflowValidator {
   /** @var ValidStepArgsRule */
   private $validStepArgsRule;
 
+  /** @var ValidStepOrderRule */
+  private $validStepOrderRule;
+
   /** @var ValidStepValidationRule */
   private $validStepValidationRule;
 
@@ -33,11 +35,13 @@ class WorkflowValidator {
   public function __construct(
     UnknownStepRule $unknownStepRule,
     ValidStepArgsRule $validStepArgsRule,
+    ValidStepOrderRule $validStepOrderRule,
     ValidStepValidationRule $validStepValidationRule,
     WorkflowWalker $workflowWalker
   ) {
     $this->unknownStepRule = $unknownStepRule;
     $this->validStepArgsRule = $validStepArgsRule;
+    $this->validStepOrderRule = $validStepOrderRule;
     $this->validStepValidationRule = $validStepValidationRule;
     $this->workflowWalker = $workflowWalker;
   }
@@ -53,6 +57,7 @@ class WorkflowValidator {
       new NoSplitRule(),
       $this->unknownStepRule,
       $this->validStepArgsRule,
+      $this->validStepOrderRule,
       $this->validStepValidationRule,
     ]);
   }
