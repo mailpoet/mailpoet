@@ -1,23 +1,33 @@
 .mailpoet-automation-stats {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
+  justify-content: flex-start;
   margin: auto;
-  max-width: 560px;
 
   @at-root #mailpoet_automation_editor #{&} {
+    justify-content: center;
     margin-bottom: 32px;
+    max-width: 560px;
   }
 
-  > li {
+  .mailpoet-automation-stats-item {
     color: $color-wordpress-heading;
-    flex-grow: 1;
     font-size: 12px;
     font-weight: 600;
     line-height: 16px;
     padding: 0 16px;
     position: relative;
     text-align: center;
+
+    @at-root #mailpoet_automation_editor #{&} {
+      flex-grow: 1;
+    }
+
+    &:first-of-type {
+      @at-root #mailpoet_automation #{&} {
+        padding-left: 0;
+      }
+    }
 
     @at-root #mailpoet_automation_editor #{&} {
       font-size: 14px;
@@ -42,7 +52,7 @@
       content: '';
     }
 
-    span {
+    .mailpoet-automation-stats-label {
       color: #646970;
       display: block;
       font-size: 12px;

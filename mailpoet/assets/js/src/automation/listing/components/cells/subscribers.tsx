@@ -8,17 +8,23 @@ type Props = {
 export function Subscribers({ workflow }: Props): JSX.Element {
   return (
     <ul className="mailpoet-automation-stats">
-      <li className="mailpoet-automation-stats-entered">
+      <li className="mailpoet-automation-stats-item">
         {new Intl.NumberFormat().format(workflow.stats.totals.entered)}
-        <span>{__('Entered', 'mailpoet')}</span>
+        <span className="mailpoet-automation-stats-label">
+          {__('Entered', 'mailpoet')}
+        </span>
       </li>
-      <li className="mailpoet-automation-stats-in-process">
+      <li className="mailpoet-automation-stats-item">
         {new Intl.NumberFormat().format(workflow.stats.totals.in_progress)}
-        <span>{__('Processing', 'mailpoet')}</span>
+        <span className="mailpoet-automation-stats-label">
+          {__('Processing', 'mailpoet')}
+        </span>
       </li>
-      <li className="mailpoet-automation-stats-exited">
+      <li className="mailpoet-automation-stats-item">
         {new Intl.NumberFormat().format(workflow.stats.totals.exited)}
-        <span>{__('Exited', 'mailpoet')}</span>
+        <span className="mailpoet-automation-stats-label">
+          {__('Exited', 'mailpoet')}
+        </span>
       </li>
     </ul>
   );
