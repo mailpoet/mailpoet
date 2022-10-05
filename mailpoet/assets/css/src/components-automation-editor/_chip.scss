@@ -1,0 +1,27 @@
+.mailpoet-automation-chip {
+  align-items: center;
+  background: #fcf0f1;
+  border-radius: 9999px;
+  color: #8a2424;
+  cursor: pointer;
+  display: flex;
+  font-size: 13px;
+  height: 20px;
+  padding: 0 8px;
+
+  &.chip-small {
+    font-size: 13px;
+    height: 20px;
+  }
+
+  &.chip-medium {
+    font-size: 13px;
+    height: 24px;
+  }
+
+  &.chip-large {
+    font-size: 14px;
+    height: 32px;
+    padding: 0 12px;
+  }
+}
