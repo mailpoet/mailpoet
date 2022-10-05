@@ -34,6 +34,15 @@ export type StepType = {
   background: string;
 };
 
+export type StepError = {
+  step_id: string;
+  message: string;
+};
+
+export type Errors = {
+  steps: Record<string, StepError>;
+};
+
 export type State = {
   context: Context;
   stepTypes: Record<string, StepType>;
@@ -47,6 +56,7 @@ export type State = {
     anchor: HTMLElement;
     type: 'steps' | 'triggers';
   };
+  errors?: Errors;
 };
 
 export type Feature = 'fullscreenMode' | 'showIconLabels';

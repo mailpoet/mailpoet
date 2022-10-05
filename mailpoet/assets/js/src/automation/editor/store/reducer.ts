@@ -81,6 +81,11 @@ export function reducer(state: State, action: Action): State {
         selectedStep: step,
       };
     }
+    case 'SET_ERRORS':
+      return {
+        ...state,
+        errors: action.errors,
+      };
     default:
       return state;
   }

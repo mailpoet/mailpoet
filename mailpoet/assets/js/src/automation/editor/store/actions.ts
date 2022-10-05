@@ -125,3 +125,10 @@ export function updateStepArgs(stepId, name, value) {
     value,
   };
 }
+
+export function setErrors(errors) {
+  return {
+    type: 'SET_ERRORS',
+    errors,
+  };
+}
