@@ -5,6 +5,7 @@ import { __ } from '@wordpress/i18n';
 import { DocumentActions } from './document_actions';
 import { InserterToggle } from './inserter_toggle';
 import { MoreMenu } from './more_menu';
+import { Chip } from '../chip';
 import { storeName } from '../../store';
 import { WorkflowStatus } from '../../../listing/workflow';
 
@@ -48,10 +49,11 @@ type Props = {
 
 export function Header({ showInserterToggle }: Props): JSX.Element {
   const { setWorkflowName } = useDispatch(storeName);
-  const { workflowName, workflowStatus } = useSelect(
+  const { workflowName, workflowStatus, errors } = useSelect(
     (select) => ({
       workflowName: select(storeName).getWorkflowData().name,
       workflowStatus: select(storeName).getWorkflowData().status,
+      errors: select(storeName).getErrors(),
     }),
     [],
   );
@@ -89,6 +91,9 @@ export function Header({ showInserterToggle }: Props): JSX.Element {
 
       <div className="edit-site-header_end">
         <div className="edit-site-header__actions">
+          {errors && Object.values(errors.steps).length > 0 && (
+            <Chip>{Object.values(errors.steps).length} issues</Chip>
+          )}
           <SaveDraftButton />
           {workflowStatus !== WorkflowStatus.ACTIVE && <ActivateButton />}
           {workflowStatus === WorkflowStatus.ACTIVE && <UpdateButton />}
