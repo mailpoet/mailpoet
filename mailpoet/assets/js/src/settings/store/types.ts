@@ -223,6 +223,7 @@ export enum TestEmailState {
 
 export type State = {
   data: Settings;
+  originalData: Settings;
   segments: Segment[];
   pages: Page[];
   paths: {

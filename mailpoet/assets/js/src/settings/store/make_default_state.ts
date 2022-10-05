@@ -33,6 +33,7 @@ export function makeDefaultState(window: any): State {
   const data = normalizeSettings(
     window.mailpoet_settings as Record<string, unknown>,
   );
+  const originalData = data;
   const flags = {
     error: false,
     newUser: !!window.mailpoet_is_new_user,
@@ -80,6 +81,7 @@ export function makeDefaultState(window: any): State {
   };
   return {
     data,
+    originalData,
     flags,
     save,
     keyActivation,
