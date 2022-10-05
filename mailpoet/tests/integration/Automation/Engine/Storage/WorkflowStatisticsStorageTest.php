@@ -100,32 +100,23 @@ class WorkflowStatisticsStorageTest extends \MailPoetTest
     $workflow3 = $this->workflowStorage->getWorkflow($this->workflows[2]);
     assert($workflow3 instanceof Workflow);
 
-    $this->createRun($workflow1, WorkflowRun::STATUS_RUNNING);
     $this->createRun($workflow1, WorkflowRun::STATUS_COMPLETE);
 
-    $this->createRun($workflow2, WorkflowRun::STATUS_RUNNING);
-    $this->createRun($workflow2, WorkflowRun::STATUS_RUNNING);
-    $this->createRun($workflow2, WorkflowRun::STATUS_CANCELLED);
-    $this->createRun($workflow2, WorkflowRun::STATUS_CANCELLED);
+    $this->createRun($workflow2, WorkflowRun::STATUS_COMPLETE);
+    $this->createRun($workflow2, WorkflowRun::STATUS_COMPLETE);
 
-    $this->createRun($workflow3, WorkflowRun::STATUS_RUNNING);
-    $this->createRun($workflow3, WorkflowRun::STATUS_RUNNING);
-    $this->createRun($workflow3, WorkflowRun::STATUS_RUNNING);
-    $this->createRun($workflow3, WorkflowRun::STATUS_FAILED);
-    $this->createRun($workflow3, WorkflowRun::STATUS_FAILED);
-    $this->createRun($workflow3, WorkflowRun::STATUS_FAILED);
+    $this->createRun($workflow3, WorkflowRun::STATUS_COMPLETE);
+    $this->createRun($workflow3, WorkflowRun::STATUS_COMPLETE);
+    $this->createRun($workflow3, WorkflowRun::STATUS_COMPLETE);
 
     $statistics1 = $this->testee->getWorkflowStats($workflow1->getId(), $workflow1->getVersionId());
-    $this->assertEquals(1, $statistics1->getInProgress());
-    $this->assertEquals(1, $statistics1->getExited());
+    $this->assertEquals(1, $statistics1->getEntered());
 
     $statistics2 = $this->testee->getWorkflowStats($workflow2->getId(), $workflow2->getVersionId());
-    $this->assertEquals(2, $statistics2->getInProgress());
-    $this->assertEquals(2, $statistics2->getExited());
+    $this->assertEquals(2, $statistics2->getEntered());
 
     $statistics3 = $this->testee->getWorkflowStats($workflow3->getId(), $workflow3->getVersionId());
-    $this->assertEquals(3, $statistics3->getInProgress());
-    $this->assertEquals(3, $statistics3->getExited());
+    $this->assertEquals(3, $statistics3->getEntered());
   }
 
   public function testItCanDistinguishBetweenVersions() {
