@@ -92,7 +92,7 @@ class WorkflowStatisticsStorageTest extends \MailPoetTest
     ];
   }
 
-  public function testItSeperatesWorkflowRunsCorrectly() {
+  public function testItSeparatesWorkflowRunsCorrectly() {
     $workflow1 = $this->workflowStorage->getWorkflow($this->workflows[0]);
     assert($workflow1 instanceof Workflow);
     $workflow2 = $this->workflowStorage->getWorkflow($this->workflows[1]);
