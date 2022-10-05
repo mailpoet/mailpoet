@@ -4,7 +4,6 @@ namespace MailPoet\Automation\Engine\Data;
 
 class WorkflowStatistics {
 
-
   private $workflowId;
   private $versionId;
   private $entered;
