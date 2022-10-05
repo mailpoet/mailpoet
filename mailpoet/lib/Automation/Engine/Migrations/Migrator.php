@@ -58,7 +58,8 @@ class Migrator {
         created_at timestamp NOT NULL,
         updated_at timestamp NOT NULL,
         subjects longtext,
-        PRIMARY KEY (id)
+        PRIMARY KEY (id),
+        INDEX (status)
       );
     ");
 
