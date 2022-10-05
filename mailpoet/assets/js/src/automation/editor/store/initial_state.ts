@@ -12,4 +12,5 @@ export const getInitialState = (): State => ({
     isOpened: false,
   },
   inserterPopover: undefined,
+  errors: undefined,
 });
