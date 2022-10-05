@@ -12,6 +12,7 @@ export type ApiError = {
     status?: number;
     details?: Error;
     params?: Record<string, string>;
+    errors?: unknown[];
   };
 };
 
