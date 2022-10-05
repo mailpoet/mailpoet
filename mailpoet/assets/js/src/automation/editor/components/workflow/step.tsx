@@ -7,6 +7,7 @@ import { __ } from '@wordpress/i18n';
 import { WorkflowCompositeContext } from './context';
 import { StepMoreMenu } from './step-more-menu';
 import { Step as StepData } from './types';
+import { Chip } from '../chip';
 import { ColoredIcon } from '../icons';
 import { stepSidebarKey, storeName } from '../../store';
 import { StepType } from '../../store/types';
@@ -39,9 +40,10 @@ type Props = {
 };
 
 export function Step({ step, isSelected }: Props): JSX.Element {
-  const { stepType } = useSelect(
+  const { stepType, error } = useSelect(
     (select) => ({
       stepType: select(storeName).getStepType(step.key),
+      error: select(storeName).getStepError(step.id),
     }),
     [step],
   );
@@ -91,6 +93,13 @@ export function Step({ step, isSelected }: Props): JSX.Element {
               : stepTypeData.title}
           </div>
         </div>
+        {error && (
+          <div className="mailpoet-automation-editor-step-footer">
+            <div className="mailpoet-automation-editor-step-error">
+              <Chip size="small">{__('Not set', 'mailpoet')}</Chip>
+            </div>
+          </div>
+        )}
       </CompositeItem>
     </div>
   );
