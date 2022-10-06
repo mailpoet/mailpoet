@@ -8,7 +8,9 @@ import { YesNo } from '../../common/form/yesno/yesno';
 
 function WizardWooCommerceStep(props) {
   const [allowed, setAllowed] = useState(null);
-  const [importType, setImportType] = useState(null);
+  const [importType, setImportType] = useState(
+    props.showCustomersImportSetting === false ? 'unsubscribed' : null,
+  );
   const [submitted, setSubmitted] = useState(false);
 
   const submit = (event) => {
@@ -39,43 +41,44 @@ function WizardWooCommerceStep(props) {
       <p>{MailPoet.I18n.t('wooCommerceSetupInfo')}</p>
       <div className="mailpoet-gap" />
       <form onSubmit={submit}>
-        <div className="mailpoet-wizard-woocommerce-option">
-          <div className="mailpoet-wizard-woocommerce-toggle">
-            <YesNo
-              showError={submitted && importType === null}
-              checked={importTypeChecked}
-              onCheck={(value) =>
-                setImportType(value ? 'subscribed' : 'unsubscribed')
-              }
-              name="mailpoet_woocommerce_import_type"
-              automationId="woocommerce_import_type"
-            />
-          </div>
-          <div>
-            <p>
-              {ReactStringReplace(
-                MailPoet.I18n.t('wooCommerceSetupImportInfo'),
-                /\[link\](.*?)\[\/link\]/,
-                (match) => (
-                  <a
-                    key={match}
-                    href="https://kb.mailpoet.com/article/284-import-old-customers-to-the-woocommerce-customers-list"
-                    data-beacon-article="5d722c7104286364bc8ecf19"
-                    rel="noopener noreferrer"
-                    target="_blank"
-                  >
-                    {match}
-                  </a>
-                ),
-              )}
-            </p>
-            <div className="mailpoet-wizard-note">
-              <span>GDPR</span>
-              {MailPoet.I18n.t('wooCommerceSetupImportGDPRInfo')}
+        {props.showCustomersImportSetting ? (
+          <div className="mailpoet-wizard-woocommerce-option">
+            <div className="mailpoet-wizard-woocommerce-toggle">
+              <YesNo
+                showError={submitted && importType === null}
+                checked={importTypeChecked}
+                onCheck={(value) =>
+                  setImportType(value ? 'subscribed' : 'unsubscribed')
+                }
+                name="mailpoet_woocommerce_import_type"
+                automationId="woocommerce_import_type"
+              />
+            </div>
+            <div>
+              <p>
+                {ReactStringReplace(
+                  MailPoet.I18n.t('wooCommerceSetupImportInfo'),
+                  /\[link\](.*?)\[\/link\]/,
+                  (match) => (
+                    <a
+                      key={match}
+                      href="https://kb.mailpoet.com/article/284-import-old-customers-to-the-woocommerce-customers-list"
+                      data-beacon-article="5d722c7104286364bc8ecf19"
+                      rel="noopener noreferrer"
+                      target="_blank"
+                    >
+                      {match}
+                    </a>
+                  ),
+                )}
+              </p>
+              <div className="mailpoet-wizard-note">
+                <span>GDPR</span>
+                {MailPoet.I18n.t('wooCommerceSetupImportGDPRInfo')}
+              </div>
             </div>
           </div>
-        </div>
-
+        ) : null}
         <div className="mailpoet-wizard-woocommerce-option">
           <div className="mailpoet-wizard-woocommerce-toggle">
             <YesNo
@@ -129,6 +132,7 @@ function WizardWooCommerceStep(props) {
 WizardWooCommerceStep.propTypes = {
   submitForm: PropTypes.func.isRequired,
   loading: PropTypes.bool.isRequired,
+  showCustomersImportSetting: PropTypes.bool.isRequired,
   isWizardStep: PropTypes.bool,
 };
 
