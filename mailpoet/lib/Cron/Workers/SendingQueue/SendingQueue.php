@@ -156,22 +156,20 @@ class SendingQueue {
 
     $newsletterEntity = $this->newsletterTask->getNewsletterFromQueue($queue);
     if (!$newsletterEntity) {
+      $this->deleteTask($queue);
       return;
     }
 
     $newsletter = Newsletter::findOne($newsletterEntity->getId());
     if (!$newsletter) {
+      $this->deleteTask($queue);
       return;
     }
 
     // pre-process newsletter (render, replace shortcodes/links, etc.)
     $newsletter = $this->newsletterTask->preProcessNewsletter($newsletter, $queue);
     if (!$newsletter) {
-      $this->loggerFactory->getLogger(LoggerFactory::TOPIC_NEWSLETTERS)->info(
-        'delete task in sending queue',
-        ['task_id' => $queue->taskId]
-      );
-      $queue->delete();
+      $this->deleteTask($queue);
       return;
     }
     // clone the original object to be used for processing
@@ -262,6 +260,14 @@ class SendingQueue {
       }
       $this->enforceSendingAndExecutionLimits($timer);
     }
+  }
+
+  private function deleteTask(SendingTask $queue) {
+    $this->loggerFactory->getLogger(LoggerFactory::TOPIC_NEWSLETTERS)->info(
+      'delete task in sending queue',
+      ['task_id' => $queue->taskId]
+    );
+    $queue->delete();
   }
 
   public function getBatchSize(): int {
