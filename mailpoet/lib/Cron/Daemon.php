@@ -3,6 +3,7 @@
 namespace MailPoet\Cron;
 
 use MailPoet\Cron\Workers\WorkersFactory;
+use MailPoet\Logging\LoggerFactory;
 
 class Daemon {
   public $timer;
@@ -16,15 +17,20 @@ class Daemon {
   /** @var WorkersFactory */
   private $workersFactory;
 
+  /** @var LoggerFactory  */
+  private $loggerFactory;
+
   public function __construct(
     CronHelper $cronHelper,
     CronWorkerRunner $cronWorkerRunner,
-    WorkersFactory $workersFactory
+    WorkersFactory $workersFactory,
+    LoggerFactory $loggerFactory
   ) {
     $this->timer = microtime(true);
     $this->workersFactory = $workersFactory;
     $this->cronWorkerRunner = $cronWorkerRunner;
     $this->cronHelper = $cronHelper;
+    $this->loggerFactory = $loggerFactory;
   }
 
   public function run($settingsDaemonData) {
@@ -41,10 +47,16 @@ class Daemon {
         }
       } catch (\Exception $e) {
         $workerClassNameParts = explode('\\', get_class($worker));
+        $workerName = end($workerClassNameParts);
         $errors[] = [
-          'worker' => end($workerClassNameParts),
+          'worker' => $workerName,
           'message' => $e->getMessage(),
         ];
+
+        /**
+         * ToDo: Use \LoggerFactory::TOPIC_CRON as logger topic, once it is available
+         */
+        $this->loggerFactory->getLogger()->error($e->getMessage(), ['error' => $e, 'worker' => $workerName]);
       }
     }
 
