@@ -1,4 +1,4 @@
-import { setWith, clone } from 'lodash';
+import { setWith, clone, isEqual } from 'lodash';
 import {
   State,
   Action,
@@ -24,7 +24,10 @@ export function createReducer(defaultValue: State) {
           clone,
         );
 
-        newState.save.hasUnsavedChanges = true;
+        newState.save.hasUnsavedChanges = !isEqual(
+          newState.data,
+          state.originalData,
+        );
 
         return newState;
       }
