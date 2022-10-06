@@ -35,6 +35,10 @@ class WooCommerceSetupPageCest {
     $order = $this->orderFactory->create();
     $guestUserData = $order['billing'];
     $registeredCustomer = $this->customerFactory->withEmail('customer1@email.com')->create();
+    // run action scheduler to sync customer and order data to lookup tables
+    $i->wait(2);
+    $i->cli(['action-scheduler', 'run', '--force']);
+
     $i->login();
     $i->amOnPage('wp-admin/admin.php?page=mailpoet-woocommerce-setup');
     $importTypeToggle = '[data-automation-id="woocommerce_import_type"]';
@@ -72,9 +76,29 @@ class WooCommerceSetupPageCest {
     $i->see($guestUserData['email']);
   }
 
+
+  public function noCustomersBehaviourTest(\AcceptanceTester $i) {
+    $i->wantTo('Make sure we don‘t show import setting when there are no customers');
+    $i->login();
+    $i->amOnPage('wp-admin/admin.php?page=mailpoet-woocommerce-setup');
+    $i->see('Get ready to use MailPoet for WooCommerce');
+    $importTypeToggle = '[data-automation-id="woocommerce_import_type"]';
+    $trackingToggle = '[data-automation-id="woocommerce_tracking"]';
+    $submitButton = '[data-automation-id="submit_woocommerce_setup"]';
+    $errorClass = '.mailpoet-form-yesno-error';
+    $i->dontSeeElement($importTypeToggle);
+    $i->seeElement($trackingToggle);
+  }
+
   public function setupPageFormBehaviourTest(\AcceptanceTester $i) {
+    $order = $this->orderFactory->create();
+
     $i->wantTo('Make sure the form shows errors when it is submitted without making choices');
     $i->login();
+    // run action scheduler to sync customer and order data to lookup tables
+    $i->wait(2);
+    $i->cli(['action-scheduler', 'run', '--force']);
+
     $i->amOnPage('wp-admin/admin.php?page=mailpoet-woocommerce-setup');
     $i->see('Get ready to use MailPoet for WooCommerce');
     $importTypeToggle = '[data-automation-id="woocommerce_import_type"]';
