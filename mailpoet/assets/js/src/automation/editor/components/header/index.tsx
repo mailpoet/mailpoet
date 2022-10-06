@@ -3,9 +3,9 @@ import { useDispatch, useSelect } from '@wordpress/data';
 import { PinnedItems } from '@wordpress/interface';
 import { __ } from '@wordpress/i18n';
 import { DocumentActions } from './document_actions';
+import { Errors } from './errors';
 import { InserterToggle } from './inserter_toggle';
 import { MoreMenu } from './more_menu';
-import { Chip } from '../chip';
 import { storeName } from '../../store';
 import { WorkflowStatus } from '../../../listing/workflow';
 
@@ -14,10 +14,22 @@ import { WorkflowStatus } from '../../../listing/workflow';
 //   https://github.com/WordPress/gutenberg/blob/0ee78b1bbe9c6f3e6df99f3b967132fa12bef77d/packages/edit-site/src/components/header/index.js
 
 function ActivateButton(): JSX.Element {
+  const { errors } = useSelect(
+    (select) => ({
+      errors: select(storeName).getErrors(),
+    }),
+    [],
+  );
+
   const { activate } = useDispatch(storeName);
 
   return (
-    <Button isPrimary className="editor-post-publish-button" onClick={activate}>
+    <Button
+      isPrimary
+      className="editor-post-publish-button"
+      onClick={activate}
+      disabled={!!errors}
+    >
       Activate
     </Button>
   );
@@ -49,11 +61,10 @@ type Props = {
 
 export function Header({ showInserterToggle }: Props): JSX.Element {
   const { setWorkflowName } = useDispatch(storeName);
-  const { workflowName, workflowStatus, errors } = useSelect(
+  const { workflowName, workflowStatus } = useSelect(
     (select) => ({
       workflowName: select(storeName).getWorkflowData().name,
       workflowStatus: select(storeName).getWorkflowData().status,
-      errors: select(storeName).getErrors(),
     }),
     [],
   );
@@ -91,9 +102,7 @@ export function Header({ showInserterToggle }: Props): JSX.Element {
 
       <div className="edit-site-header_end">
         <div className="edit-site-header__actions">
-          {errors && Object.values(errors.steps).length > 0 && (
-            <Chip>{Object.values(errors.steps).length} issues</Chip>
-          )}
+          <Errors />
           <SaveDraftButton />
           {workflowStatus !== WorkflowStatus.ACTIVE && <ActivateButton />}
           {workflowStatus === WorkflowStatus.ACTIVE && <UpdateButton />}
