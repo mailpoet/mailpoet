@@ -7,6 +7,7 @@ use MailPoet\Entities\DynamicSegmentFilterEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Subscribers\SubscribersRepository;
+use MailPoet\WooCommerce\Helper;
 use MailPoetVendor\Doctrine\DBAL\ForwardCompatibility\DriverStatement;
 use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
 
@@ -34,6 +35,12 @@ class WooCommerceSubscriptionTest extends \MailPoetTest {
   private $products = [];
 
   public function _before(): void {
+    $wooCommerceHelper = $this->diContainer->get(Helper::class);
+
+    if ($wooCommerceHelper->isWooCommerceCustomOrdersTableEnabled()) {
+      $this->markTestSkipped('WooCommerce Subscriptions does not work with WooCommerce Custom Orders Table.');
+    }
+
     $this->cleanup();
     $productId = $this->createProduct('Premium Newsletter');
     foreach (self::SUBSCRIBER_EMAILS as $email) {
