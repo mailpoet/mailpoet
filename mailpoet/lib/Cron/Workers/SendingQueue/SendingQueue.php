@@ -156,17 +156,14 @@ class SendingQueue {
 
     $newsletterEntity = $this->newsletterTask->getNewsletterFromQueue($queue);
     if (!$newsletterEntity) {
+      $this->deleteTask($queue);
       return;
     }
 
     // pre-process newsletter (render, replace shortcodes/links, etc.)
     $newsletterEntity = $this->newsletterTask->preProcessNewsletter($newsletterEntity, $queue);
     if (!$newsletterEntity) {
-      $this->loggerFactory->getLogger(LoggerFactory::TOPIC_NEWSLETTERS)->info(
-        'delete task in sending queue',
-        ['task_id' => $queue->taskId]
-      );
-      $queue->delete();
+      $this->deleteTask($queue);
       return;
     }
 
@@ -493,5 +490,13 @@ class SendingQueue {
 
   private function getExecutionLimit(): int {
     return $this->cronHelper->getDaemonExecutionLimit() * 3;
+  }
+
+  private function deleteTask(SendingTask $queue) {
+    $this->loggerFactory->getLogger(LoggerFactory::TOPIC_NEWSLETTERS)->info(
+      'delete task in sending queue',
+      ['task_id' => $queue->taskId]
+    );
+    $queue->delete();
   }
 }
