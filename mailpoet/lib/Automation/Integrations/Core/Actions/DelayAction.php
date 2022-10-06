@@ -32,8 +32,8 @@ class DelayAction implements Action {
 
   public function getArgsSchema(): ObjectSchema {
     return Builder::object([
-      'delay' => Builder::integer()->minimum(1),
-      'delay_type' => Builder::string()->default('HOURS'),
+      'delay' => Builder::integer()->required()->minimum(1),
+      'delay_type' => Builder::string()->required()->pattern('^(DAYS|HOURS|WEEKS)$')->default('HOURS'),
     ]);
   }
 
