@@ -24,12 +24,22 @@ class ValidStepRule implements WorkflowNodeVisitor {
   }
 
   public function initialize(Workflow $workflow): void {
+    // run full step validation only for active workflows
+    if ($workflow->getStatus() !== Workflow::STATUS_ACTIVE) {
+      return;
+    }
+
     foreach ($this->rules as $rule) {
       $rule->initialize($workflow);
     }
   }
 
   public function visitNode(Workflow $workflow, WorkflowNode $node): void {
+    // run full step validation only for active workflows
+    if ($workflow->getStatus() !== Workflow::STATUS_ACTIVE) {
+      return;
+    }
+
     foreach ($this->rules as $rule) {
       $stepId = $node->getStep()->getId();
       try {
@@ -43,6 +53,11 @@ class ValidStepRule implements WorkflowNodeVisitor {
   }
 
   public function complete(Workflow $workflow): void {
+    // run full step validation only for active workflows
+    if ($workflow->getStatus() !== Workflow::STATUS_ACTIVE) {
+      return;
+    }
+
     foreach ($this->rules as $rule) {
       $rule->complete($workflow);
     }

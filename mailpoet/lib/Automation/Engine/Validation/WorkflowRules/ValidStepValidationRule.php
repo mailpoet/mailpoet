@@ -32,11 +32,6 @@ class ValidStepValidationRule implements WorkflowNodeVisitor {
       return;
     }
 
-    // run custom step validation only for active workflows
-    if ($workflow->getStatus() !== Workflow::STATUS_ACTIVE) {
-      return;
-    }
-
     $subjects = $this->collectSubjects($workflow, $node->getParents());
     $args = new StepValidationArgs($workflow, $step, $subjects);
     $registryStep->validate($args);

@@ -29,11 +29,6 @@ class ValidStepOrderRule implements WorkflowNodeVisitor {
       return;
     }
 
-    // validate step order only for active workflows
-    if ($workflow->getStatus() !== Workflow::STATUS_ACTIVE) {
-      return;
-    }
-
     // triggers don't require any subjects (they provide them)
     if ($step->getType() === Step::TYPE_TRIGGER) {
       return;
