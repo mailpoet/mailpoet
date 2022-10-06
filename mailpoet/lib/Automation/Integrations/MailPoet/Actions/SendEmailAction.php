@@ -60,15 +60,20 @@ class SendEmailAction implements Action {
   }
 
   public function getArgsSchema(): ObjectSchema {
+    // strings are required but some can be empty ('')
+    $string = Builder::string()->required()->default('');
+    $nonEmptyString = Builder::string()->required()->minLength(1);
+
     return Builder::object([
-      'subject' => Builder::string()->default(__('Subject', 'mailpoet')),
-      'preheader' => Builder::string(),
-      'sender_name' => Builder::string()->default($this->settings->get('sender.name')),
-      'sender_address' => Builder::string()->default($this->settings->get('sender.address')),
-      'reply_to_name' => Builder::string()->default($this->settings->get('reply_to.name')),
-      'reply_to_address' => Builder::string()->default($this->settings->get('reply_to.address')),
-      'ga_campaign' => Builder::string(),
-      'name' => Builder::string()->default(__('Send email', 'mailpoet')),
+      'email_id' => Builder::integer()->required(),
+      'name' => $nonEmptyString->default(__('Send email', 'mailpoet')),
+      'subject' => $nonEmptyString->default(__('Subject', 'mailpoet')),
+      'preheader' => $string,
+      'sender_name' => $nonEmptyString->default($this->settings->get('sender.name', '')),
+      'sender_address' => $nonEmptyString->default($this->settings->get('sender.address', '')),
+      'reply_to_name' => $string->default($this->settings->get('reply_to.name', '')),
+      'reply_to_address' => $nonEmptyString->default($this->settings->get('reply_to.address', '')),
+      'ga_campaign' => $string,
     ]);
   }
 
