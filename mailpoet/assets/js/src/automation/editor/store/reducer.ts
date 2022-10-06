@@ -68,6 +68,10 @@ export function reducer(state: State, action: Action): State {
 
       const step = { ...state.workflowData.steps[action.stepId], args };
 
+      const stepErrors = Object.values(state.errors?.steps ?? {}).filter(
+        ({ step_id }) => step_id !== action.stepId,
+      );
+
       return {
         ...state,
         workflowData: {
@@ -79,6 +83,15 @@ export function reducer(state: State, action: Action): State {
         },
         workflowSaved: false,
         selectedStep: step,
+        errors:
+          stepErrors.length > 0
+            ? {
+                ...state.errors,
+                steps: Object.fromEntries(
+                  stepErrors.map((error) => [error.step_id, error]),
+                ),
+              }
+            : undefined,
       };
     }
     case 'SET_ERRORS':
