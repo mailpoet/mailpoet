@@ -28,6 +28,7 @@ class Exceptions {
   private const WORKFLOW_STRUCTURE_NOT_VALID = 'mailpoet_automation_workflow_structure_not_valid';
   private const WORKFLOW_STEP_MODIFIED_WHEN_UNKNOWN = 'mailpoet_automation_workflow_step_modified_when_unknown';
   private const WORKFLOW_NOT_VALID = 'mailpoet_automation_workflow_not_valid';
+  private const MISSING_REQUIRED_SUBJECTS = 'mailpoet_automation_missing_required_subjects';
 
   public function __construct() {
     throw new InvalidStateException(
@@ -189,5 +190,18 @@ class Exceptions {
       // translators: %s is a detailed information
       ->withMessage(sprintf(__("Workflow validation failed: %s", 'mailpoet'), $detail))
       ->withErrors($errors);
+  }
+
+  public static function missingRequiredSubjects(Step $step, array $missingSubjectKeys): UnexpectedValueException {
+    return UnexpectedValueException::create()
+      ->withErrorCode(self::MISSING_REQUIRED_SUBJECTS)
+      // translators: %1$s is the key of the step, %2$s are the missing subject keys.
+      ->withMessage(
+        sprintf(
+          __("Step with ID '%1\$s' is missing required subjects with keys: %2\$s", 'mailpoet'),
+          $step->getId(),
+          implode(', ', $missingSubjectKeys)
+        )
+      );
   }
 }

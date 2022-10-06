@@ -8,18 +8,13 @@ use MailPoet\Automation\Engine\Data\Workflow;
 use MailPoet\Automation\Engine\Exceptions;
 use MailPoet\Automation\Engine\Integration\Payload;
 use MailPoet\Automation\Engine\Integration\Subject;
-use MailPoet\Automation\Engine\Integration\ValidationException;
 use MailPoet\Automation\Engine\Registry;
 use MailPoet\Automation\Engine\Validation\WorkflowGraph\WorkflowNode;
 use MailPoet\Automation\Engine\Validation\WorkflowGraph\WorkflowNodeVisitor;
-use Throwable;
 
 class ValidStepValidationRule implements WorkflowNodeVisitor {
   /** @var Registry */
   private $registry;
-
-  /** @var array<string, array{step_id: string, message: string}> */
-  private $errors = [];
 
   public function __construct(
     Registry $registry
@@ -28,7 +23,6 @@ class ValidStepValidationRule implements WorkflowNodeVisitor {
   }
 
   public function initialize(Workflow $workflow): void {
-    $this->errors = [];
   }
 
   public function visitNode(Workflow $workflow, WorkflowNode $node): void {
@@ -43,22 +37,12 @@ class ValidStepValidationRule implements WorkflowNodeVisitor {
       return;
     }
 
-    try {
-      $subjects = $this->collectSubjects($workflow, $node->getParents());
-      $args = new StepValidationArgs($workflow, $step, $subjects);
-      $registryStep->validate($args);
-    } catch (Throwable $e) {
-      $this->errors[$step->getId()] = [
-        'step_id' => $step->getId(),
-        'message' => $e instanceof ValidationException ? $e->getMessage() : __('Unknown error.', 'mailpoet'),
-      ];
-    }
+    $subjects = $this->collectSubjects($workflow, $node->getParents());
+    $args = new StepValidationArgs($workflow, $step, $subjects);
+    $registryStep->validate($args);
   }
 
   public function complete(Workflow $workflow): void {
-    if ($this->errors) {
-      throw Exceptions::workflowNotValid(__('Some steps are not valid', 'mailpoet'), $this->errors);
-    }
   }
 
   /**

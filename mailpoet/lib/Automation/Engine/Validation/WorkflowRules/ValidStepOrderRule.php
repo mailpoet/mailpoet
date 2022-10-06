@@ -13,9 +13,6 @@ class ValidStepOrderRule implements WorkflowNodeVisitor {
   /** @var Registry */
   private $registry;
 
-  /** @var array<string, array{step_id: string, message: string}> */
-  private $errors = [];
-
   public function __construct(
     Registry $registry
   ) {
@@ -23,7 +20,6 @@ class ValidStepOrderRule implements WorkflowNodeVisitor {
   }
 
   public function initialize(Workflow $workflow): void {
-    $this->errors = [];
   }
 
   public function visitNode(Workflow $workflow, WorkflowNode $node): void {
@@ -51,22 +47,11 @@ class ValidStepOrderRule implements WorkflowNodeVisitor {
     $subjectKeys = $this->collectSubjectKeys($workflow, $node->getParents());
     $missingSubjectKeys = array_diff($requiredSubjectKeys, $subjectKeys);
     if (count($missingSubjectKeys) > 0) {
-      $missingKeysString = implode(', ', $missingSubjectKeys);
-      $this->errors[$step->getId()] = [
-        'step_id' => $step->getId(),
-        'message' => sprintf(
-          // translators: %s are the missing subject keys.
-          __("Missing required subjects with keys: %s", 'mailpoet'),
-          $missingKeysString
-        ),
-      ];
+      throw Exceptions::missingRequiredSubjects($step, $missingSubjectKeys);
     }
   }
 
   public function complete(Workflow $workflow): void {
-    if ($this->errors) {
-      throw Exceptions::workflowNotValid(__('Some steps are not valid', 'mailpoet'), $this->errors);
-    }
   }
 
   /**
