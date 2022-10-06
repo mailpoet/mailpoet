@@ -185,7 +185,7 @@ export function normalizeSettings(data: Record<string, unknown>): Settings {
       }),
     }),
     mailpoet_subscribe_old_woocommerce_customers: asObject({
-      enabled: enabledRadio,
+      enabled: disabledCheckbox,
     }),
     premium: asObject({
       premium_key: text,
