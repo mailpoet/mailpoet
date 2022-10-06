@@ -8,6 +8,8 @@ use MailPoet\Automation\Engine\Validation\WorkflowGraph\WorkflowNode;
 use MailPoet\Automation\Engine\Validation\WorkflowGraph\WorkflowNodeVisitor;
 
 class NoUnreachableStepsRule implements WorkflowNodeVisitor {
+  public const RULE_ID = 'no-unreachable-steps';
+
   /** @var WorkflowNode[] */
   private $visitedNodes = [];
 
@@ -21,7 +23,7 @@ class NoUnreachableStepsRule implements WorkflowNodeVisitor {
 
   public function complete(Workflow $workflow): void {
     if (count($this->visitedNodes) !== count($workflow->getSteps())) {
-      throw Exceptions::workflowStructureNotValid(__('Unreachable steps found in workflow graph', 'mailpoet'));
+      throw Exceptions::workflowStructureNotValid(__('Unreachable steps found in workflow graph', 'mailpoet'), self::RULE_ID);
     }
   }
 }

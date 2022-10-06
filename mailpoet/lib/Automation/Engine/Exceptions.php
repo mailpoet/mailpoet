@@ -161,11 +161,12 @@ class Exceptions {
       ->withMessage(__("Workflow structure modification not supported.", 'mailpoet'));
   }
 
-  public static function workflowStructureNotValid(string $detail): UnexpectedValueException {
+  public static function workflowStructureNotValid(string $detail, string $ruleId): UnexpectedValueException {
     return UnexpectedValueException::create()
       ->withErrorCode(self::WORKFLOW_STRUCTURE_NOT_VALID)
       // translators: %s is a detailed information
-      ->withMessage(sprintf(__("Invalid workflow structure: %s", 'mailpoet'), $detail));
+      ->withMessage(sprintf(__("Invalid workflow structure: %s", 'mailpoet'), $detail))
+      ->withErrors(['rule_id' => $ruleId]);
   }
 
   public static function workflowStepModifiedWhenUnknown(Step $step): UnexpectedValueException {

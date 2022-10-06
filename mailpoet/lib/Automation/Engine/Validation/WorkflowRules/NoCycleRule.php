@@ -9,6 +9,8 @@ use MailPoet\Automation\Engine\Validation\WorkflowGraph\WorkflowNode;
 use MailPoet\Automation\Engine\Validation\WorkflowGraph\WorkflowNodeVisitor;
 
 class NoCycleRule implements WorkflowNodeVisitor {
+  public const RULE_ID = 'no-cycle';
+
   public function initialize(Workflow $workflow): void {
   }
 
@@ -25,7 +27,7 @@ class NoCycleRule implements WorkflowNodeVisitor {
     foreach ($step->getNextSteps() as $nextStep) {
       $nextStepId = $nextStep->getId();
       if ($nextStepId === $step->getId() || isset($parentIdsMap[$nextStepId])) {
-        throw Exceptions::workflowStructureNotValid(__('Cycle found in workflow graph', 'mailpoet'));
+        throw Exceptions::workflowStructureNotValid(__('Cycle found in workflow graph', 'mailpoet'), self::RULE_ID);
       }
     }
   }

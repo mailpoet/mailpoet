@@ -15,7 +15,7 @@ class WorkflowWalker {
     $steps = $workflow->getSteps();
     $root = $steps['root'] ?? null;
     if (!$root) {
-      throw Exceptions::workflowStructureNotValid(__("Workflow must contain a 'root' step", 'mailpoet'));
+      throw Exceptions::workflowStructureNotValid(__("Workflow must contain a 'root' step", 'mailpoet'), 'no-root');
     }
 
     foreach ($visitors as $visitor) {
@@ -75,7 +75,8 @@ class WorkflowWalker {
         __("Step with ID '%1\$s' not found (referenced from '%2\$s')", 'mailpoet'),
         $stepId,
         $parentStepId
-      )
+      ),
+      'step-not-found'
     );
   }
 }
