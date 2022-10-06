@@ -25,7 +25,7 @@ function ActivateButton(): JSX.Element {
 
   return (
     <Button
-      isPrimary
+      variant="primary"
       className="editor-post-publish-button"
       onClick={activate}
       disabled={!!errors}
@@ -39,7 +39,11 @@ function UpdateButton(): JSX.Element {
   const { activate } = useDispatch(storeName);
 
   return (
-    <Button isPrimary className="editor-post-publish-button" onClick={activate}>
+    <Button
+      variant="primary"
+      className="editor-post-publish-button"
+      onClick={activate}
+    >
       Update
     </Button>
   );
@@ -49,8 +53,8 @@ function SaveDraftButton(): JSX.Element {
   const { save } = useDispatch(storeName);
 
   return (
-    <Button isTertiary onClick={save}>
-      {__('Save Draft')}
+    <Button variant="tertiary" onClick={save}>
+      {__('Save draft')}
     </Button>
   );
 }

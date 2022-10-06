@@ -34,7 +34,7 @@ export function TrashButton(): JSX.Element {
       </ConfirmDialog>
 
       <Button
-        isSecondary
+        variant="secondary"
         isDestructive
         onClick={() => setShowConfirmDialog(true)}
       >
