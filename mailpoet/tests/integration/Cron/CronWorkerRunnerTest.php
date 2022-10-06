@@ -9,6 +9,7 @@ use MailPoet\Cron\CronWorkerRunner;
 use MailPoet\Cron\CronWorkerScheduler;
 use MailPoet\Cron\Workers\SimpleWorkerMockImplementation;
 use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Logging\LoggerFactory;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Test\DataFactories\ScheduledTask as ScheduledTaskFactory;
 use MailPoet\WP\Functions as WPFunctions;
@@ -33,7 +34,8 @@ class CronWorkerRunnerTest extends \MailPoetTest {
       $this->cronHelper,
       $this->diContainer->get(CronWorkerScheduler::class),
       $this->diContainer->get(WPFunctions::class),
-      $this->scheduledTasksRepository
+      $this->scheduledTasksRepository,
+      $this->diContainer->get(LoggerFactory::class)
     );
   }
 
