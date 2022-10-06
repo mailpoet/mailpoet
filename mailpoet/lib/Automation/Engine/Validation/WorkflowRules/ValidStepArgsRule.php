@@ -33,10 +33,7 @@ class ValidStepArgsRule implements WorkflowNodeVisitor {
       return;
     }
 
-    // validate args schema only for active workflows
-    if ($workflow->getStatus() === Workflow::STATUS_ACTIVE) {
-      $this->validator->validate($registryStep->getArgsSchema(), $step->getArgs());
-    }
+    $this->validator->validate($registryStep->getArgsSchema(), $step->getArgs());
   }
 
   public function complete(Workflow $workflow): void {
