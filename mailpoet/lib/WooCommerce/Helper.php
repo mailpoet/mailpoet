@@ -2,6 +2,7 @@
 
 namespace MailPoet\WooCommerce;
 
+use Automattic\WooCommerce\Admin\API\Reports\Customers\Stats\Query;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\RuntimeException;
 use MailPoet\WP\Functions as WPFunctions;
@@ -100,6 +101,18 @@ class Helper {
 
   public function getAllowedCountries(): array {
     return (new \WC_Countries)->get_allowed_countries() ?? [];
+  }
+
+  public function getCustomersCount(): int {
+    if (!class_exists(Query::class)) {
+      return 0;
+    }
+    $query = new Query([
+      'fields' => ['customers_count'],
+    ]);
+    // Query::get_data declares it returns array but the underlying DataStore returns stdClass
+    $result = (array)$query->get_data();
+    return isset($result['customers_count']) ? intval($result['customers_count']) : 0;
   }
 
   public function wasMailPoetInstalledViaWooCommerceOnboardingWizard(): bool {
