@@ -4,6 +4,7 @@ import {
   __unstableUseCompositeState as useCompositeState,
 } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
+import { __ } from '@wordpress/i18n';
 import { Icon, check } from '@wordpress/icons';
 import { Hooks } from 'wp-js-hooks';
 import { WorkflowCompositeContext } from './context';
@@ -85,6 +86,7 @@ export function Workflow(): JSX.Element {
       <Composite
         state={compositeState}
         role="tree"
+        aria-label={__('Workflow', 'mailpoet')}
         aria-orientation="vertical"
         className="mailpoet-automation-editor-workflow"
       >
