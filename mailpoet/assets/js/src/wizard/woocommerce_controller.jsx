@@ -57,6 +57,7 @@ function WooCommerceController({ isWizardStep = false }) {
         loading={loading}
         submitForm={submit}
         isWizardStep={isWizardStep}
+        showCustomersImportSetting={window.mailpoet_show_customers_import}
       />
     </WelcomeWizardStepLayout>
   );
