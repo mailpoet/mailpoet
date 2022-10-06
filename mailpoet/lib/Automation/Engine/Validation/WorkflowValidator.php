@@ -14,6 +14,7 @@ use MailPoet\Automation\Engine\Validation\WorkflowRules\TriggersUnderRootRule;
 use MailPoet\Automation\Engine\Validation\WorkflowRules\UnknownStepRule;
 use MailPoet\Automation\Engine\Validation\WorkflowRules\ValidStepArgsRule;
 use MailPoet\Automation\Engine\Validation\WorkflowRules\ValidStepOrderRule;
+use MailPoet\Automation\Engine\Validation\WorkflowRules\ValidStepRule;
 use MailPoet\Automation\Engine\Validation\WorkflowRules\ValidStepValidationRule;
 
 class WorkflowValidator {
@@ -56,9 +57,11 @@ class WorkflowValidator {
       new NoJoinRule(),
       new NoSplitRule(),
       $this->unknownStepRule,
-      $this->validStepArgsRule,
-      $this->validStepOrderRule,
-      $this->validStepValidationRule,
+      new ValidStepRule([
+        $this->validStepArgsRule,
+        $this->validStepOrderRule,
+        $this->validStepValidationRule,
+      ]),
     ]);
   }
 }
