@@ -17,7 +17,7 @@ class PotExtMeta {
 		//'Theme Name',
 		//'Plugin URI',
 		//'Theme URI',
-		//'Description',
+		'Description',
 		//'Author',
 		//'Author URI',
 		//'Tags',
