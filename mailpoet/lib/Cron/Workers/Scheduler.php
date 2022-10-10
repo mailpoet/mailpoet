@@ -280,6 +280,7 @@ class Scheduler {
   public function processScheduledStandardNewsletter($newsletter, SendingTask $task) {
     $newsletterEntity = $this->newslettersRepository->findOneById($newsletter->id);
 
+    $taskEntity = null;
     if ($newsletterEntity instanceof NewsletterEntity) {
       $segments = $newsletterEntity->getSegmentIds();
       $taskModel = $task->task();
@@ -296,6 +297,8 @@ class Scheduler {
     $task->save();
     // update newsletter status
     $newsletter->setStatus(Newsletter::STATUS_SENDING);
+    $newsletterEntity && $this->newslettersRepository->refresh($newsletterEntity);
+    $taskEntity && $this->scheduledTasksRepository->refresh($taskEntity);
     return true;
   }
 
