@@ -143,6 +143,12 @@ class SubscriberListingRepository extends ListingRepository {
       }
     }
 
+    // filtering by minimal updated at
+    if (isset($filters['minUpdatedAt']) && $filters['minUpdatedAt'] instanceof \DateTimeInterface) {
+      $queryBuilder->andWhere('s.updatedAt >= :updatedAt')
+        ->setParameter('updatedAt', $filters['minUpdatedAt']);
+    }
+
     if (isset($filters['tag'])) {
       $tag = $this->entityManager->find(TagEntity::class, (int)$filters['tag']);
       if ($tag) {

@@ -12,8 +12,10 @@ use MailPoet\Segments\DynamicSegments\FilterHandler;
 use MailPoet\Segments\DynamicSegments\Filters\UserRole;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Segments\SegmentSubscribersRepository;
+use MailPoet\Test\DataFactories\Subscriber;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 use MailPoet\Test\DataFactories\Tag;
+use MailPoetVendor\Carbon\Carbon;
 
 class SubscriberListingRepositoryTest extends \MailPoetTest {
 
@@ -288,6 +290,25 @@ class SubscriberListingRepositoryTest extends \MailPoetTest {
     expect($data[0]->getEmail())->equals($subscriberOnDeletedList->getEmail());
     expect($data[1]->getEmail())->equals($subscriberWithoutList->getEmail());
     $this->listingData['sort_by'] = '';
+  }
+
+  public function testFilterSubscribersByUpdatedAt() {
+    $subscriber1 = (new Subscriber())
+      ->withUpdatedAt(new Carbon('2022-10-10 12:00:00'))
+      ->create();
+    $subscriber2 = (new Subscriber())
+      ->withUpdatedAt(new Carbon('2022-10-11 12:00:00'))
+      ->create();
+    $subscriber3 = (new Subscriber())
+      ->withUpdatedAt(new Carbon('2022-10-12 12:00:00'))
+      ->create();
+
+    $this->listingData['filter'] = ['minUpdatedAt' => new Carbon('2022-10-11 12:00:00')];
+    $this->listingData['sort_by'] = 'id';
+    $data = $this->repository->getData($this->getListingDefinition());
+    expect(count($data))->equals(2);
+    expect($data[0]->getEmail())->equals($subscriber2->getEmail());
+    expect($data[1]->getEmail())->equals($subscriber3->getEmail());
   }
 
   private function createSubscriberEntity(): SubscriberEntity {
