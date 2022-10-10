@@ -333,6 +333,7 @@ class SchedulerTest extends \MailPoetTest {
     $queue->setSubscribers([1]);
     $scheduler = Stub::make(Scheduler::class, [
       'verifyMailpoetSubscriber' => Expected::exactly(1),
+      'scheduledTasksRepository' => $this->diContainer->get(ScheduledTasksRepository::class),
     ], $this);
     expect($queue->status)->notNull();
     expect($scheduler->processWelcomeNewsletter($newsletter, $queue))->true();
@@ -351,6 +352,7 @@ class SchedulerTest extends \MailPoetTest {
     $queue->setSubscribers([1]);
     $scheduler = Stub::make(Scheduler::class, [
       'verifyWPSubscriber' => Expected::exactly(1),
+      'scheduledTasksRepository' => $this->diContainer->get(ScheduledTasksRepository::class),
     ], $this);
     expect($queue->status)->notNull();
     expect($scheduler->processWelcomeNewsletter($newsletter, $queue))->true();
