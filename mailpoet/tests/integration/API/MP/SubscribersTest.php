@@ -24,6 +24,7 @@ use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\ConfirmationEmailMailer;
 use MailPoet\Subscribers\NewSubscriberNotificationMailer;
 use MailPoet\Subscribers\RequiredCustomFieldValidator;
+use MailPoet\Subscribers\SubscriberListingRepository;
 use MailPoet\Subscribers\SubscriberSaveController;
 use MailPoet\Subscribers\SubscriberSegmentRepository;
 use MailPoet\Subscribers\SubscribersRepository;
@@ -65,6 +66,7 @@ class SubscribersTest extends \MailPoetTest {
       Stub::makeEmpty(WelcomeScheduler::class),
       $this->diContainer->get(FeaturesController::class),
       $this->diContainer->get(RequiredCustomFieldValidator::class),
+      $this->diContainer->get(SubscriberListingRepository::class),
       $this->diContainer->get(WPFunctions::class)
     );
   }
