@@ -154,9 +154,10 @@ class SendingQueue {
       ['task_id' => $queue->taskId]
     );
 
+    $this->deleteTaskIfNewsletterDoesNotExist($queue);
+
     $newsletterEntity = $this->newsletterTask->getNewsletterFromQueue($queue);
     if (!$newsletterEntity) {
-      $this->deleteTask($queue);
       return;
     }
 
@@ -490,6 +491,15 @@ class SendingQueue {
 
   private function getExecutionLimit(): int {
     return $this->cronHelper->getDaemonExecutionLimit() * 3;
+  }
+
+  private function deleteTaskIfNewsletterDoesNotExist(SendingTask $sendingTask) {
+    $sendingQueue = $sendingTask->getSendingQueueEntity();
+    $newsletter = $sendingQueue->getNewsletter();
+    if ($newsletter !== null) {
+      return;
+    }
+    $this->deleteTask($sendingTask);
   }
 
   private function deleteTask(SendingTask $queue) {
