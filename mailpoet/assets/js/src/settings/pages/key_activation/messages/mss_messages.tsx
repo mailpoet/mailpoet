@@ -2,7 +2,7 @@ import { MailPoet } from 'mailpoet';
 import { useSelector } from 'settings/store/hooks';
 import { MssStatus } from 'settings/store/types';
 
-function ActiveMessage() {
+function MssActiveMessage() {
   return (
     <div className="mailpoet_success_item mailpoet_success mailpoet_mss_key_valid">
       {MailPoet.I18n.t('premiumTabMssActiveMessage')}
@@ -46,7 +46,7 @@ export function MssMessages(props: Props) {
   const { mssStatus } = useSelector('getKeyActivationState')();
   switch (mssStatus) {
     case MssStatus.VALID_MSS_ACTIVE:
-      return <ActiveMessage />;
+      return <MssActiveMessage />;
     case MssStatus.VALID_MSS_NOT_ACTIVE:
       return (
         <MssNotActiveMessage activationCallback={props.activationCallback} />
