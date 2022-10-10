@@ -1096,7 +1096,7 @@ class RoboFile extends \Robo\Tasks {
   }
 
   public function downloadWooCommerceCotZip() {
-    $cotBuildUrl = 'https://github.com/woocommerce/woocommerce/files/9666854/woocommerce.zip';
+    $cotBuildUrl = 'https://github.com/woocommerce/woocommerce/files/9706609/woocommerce.zip';
     file_put_contents(__DIR__ . '/tests/plugins/woocommerce.zip', file_get_contents($cotBuildUrl));
     file_put_contents(__DIR__ . '/tests/plugins/woocommerce.zip-info', $cotBuildUrl);
   }
