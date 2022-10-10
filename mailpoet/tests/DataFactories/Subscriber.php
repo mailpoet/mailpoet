@@ -183,6 +183,15 @@ class Subscriber {
     return $this;
   }
 
+
+  /**
+   * @return $this
+   */
+  public function withUpdatedAt(DateTimeInterface $updatedAt) {
+    $this->data['updatedAt'] = $updatedAt;
+    return $this;
+  }
+
   /**
    * @throws \Exception
    */
@@ -226,6 +235,18 @@ class Subscriber {
     }
 
     $entityManager->flush();
+
+    // workaround for storing updatedAt because it's set in TimestampListener
+    if (isset($this->data['updatedAt'])) {
+      $subscribersTable = $entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
+      $entityManager->getConnection()->executeQuery("
+        UPDATE $subscribersTable
+        SET updated_at = '{$this->data['updatedAt']->format('Y-m-d H:i:s')}'
+        WHERE id = {$subscriber->getId()}
+      ");
+      $entityManager->refresh($subscriber);
+    }
+
     return $subscriber;
   }
 }
