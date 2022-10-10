@@ -6,6 +6,7 @@ use MailPoet\API\JSON\ResponseBuilders\SubscribersResponseBuilder;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Features\FeaturesController;
+use MailPoet\Listing\ListingDefinition;
 use MailPoet\Newsletter\Scheduler\WelcomeScheduler;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Settings\SettingsController;
@@ -13,12 +14,14 @@ use MailPoet\Subscribers\ConfirmationEmailMailer;
 use MailPoet\Subscribers\NewSubscriberNotificationMailer;
 use MailPoet\Subscribers\RequiredCustomFieldValidator;
 use MailPoet\Subscribers\Source;
+use MailPoet\Subscribers\SubscriberListingRepository;
 use MailPoet\Subscribers\SubscriberSaveController;
 use MailPoet\Subscribers\SubscriberSegmentRepository;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Tasks\Sending;
 use MailPoet\Util\Helpers;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoetVendor\Carbon\Carbon;
 
 class Subscribers {
   const CONTEXT_SUBSCRIBE = 'subscribe';
@@ -60,6 +63,9 @@ class Subscribers {
   /** @var WPFunctions */
   private $wp;
 
+  /** @var SubscriberListingRepository */
+  private $subscriberListingRepository;
+
   public function __construct (
     ConfirmationEmailMailer $confirmationEmailMailer,
     NewSubscriberNotificationMailer $newSubscriberNotificationMailer,
@@ -72,6 +78,7 @@ class Subscribers {
     WelcomeScheduler $welcomeScheduler,
     FeaturesController $featuresController,
     RequiredCustomFieldValidator $requiredCustomFieldsValidator,
+    SubscriberListingRepository $subscriberListingRepository,
     WPFunctions $wp
   ) {
     $this->confirmationEmailMailer = $confirmationEmailMailer;
@@ -86,6 +93,7 @@ class Subscribers {
     $this->featuresController = $featuresController;
     $this->requiredCustomFieldsValidator = $requiredCustomFieldsValidator;
     $this->wp = $wp;
+    $this->subscriberListingRepository = $subscriberListingRepository;
   }
 
   public function getSubscriber($subscriberIdOrEmail): array {
@@ -237,6 +245,43 @@ class Subscribers {
     $this->subscribersSegmentRepository->unsubscribeFromSegments($subscriber, $foundSegments);
 
     return $this->subscribersResponseBuilder->build($subscriber);
+  }
+
+  /**
+   * @param array $filter {
+   *     Optional. Filters to retrieve subscribers.
+   *
+   *     @type string        $status       One of values: subscribed, unconfirmed, unsubscribed, inactive, bounced
+   *     @type int           $listId       id of a list or dynamic segment
+   *     @type \DateTime|int $minUpdatedAt DateTime object or timestamp of last update of subscriber.
+   * }
+   * @param int $limit
+   * @param int $offset
+   * @return array
+   */
+  public function getSubscribers(array $filter, int $limit, int $offset): array {
+    $group = isset($filter['status']) && is_string($filter['status']) ? $filter['status'] : null;
+    $listingFilters = [];
+    // Set filtering by listId
+    if (isset($filter['listId']) && is_int($filter['listId'])) {
+      $listingFilters['segment'] = $filter['listId'];
+    }
+    // Set filtering by minimal updatedAt
+    if (isset($filter['minUpdatedAt'])) {
+      if ($filter['minUpdatedAt'] instanceof \DateTime) {
+        $listingFilters['minUpdatedAt'] = $filter['minUpdatedAt'];
+      } elseif (is_int($filter['minUpdatedAt'])) {
+        $listingFilters['minUpdatedAt'] = Carbon::createFromTimestamp($filter['minUpdatedAt']);
+      }
+    }
+
+    $listingDefinition = new ListingDefinition($group, $listingFilters, null, [], 'id', 'asc', $offset, $limit);
+    $subscribers = $this->subscriberListingRepository->getData($listingDefinition);
+    $result = [];
+    foreach ($subscribers as $subscriber) {
+      $result[] = $this->subscribersResponseBuilder->build($subscriber);
+    }
+    return $result;
   }
 
   /**
