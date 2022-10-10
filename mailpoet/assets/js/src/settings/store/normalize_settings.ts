@@ -160,6 +160,7 @@ export function normalizeSettings(data: Record<string, unknown>): Settings {
           'check_error',
         ),
         data: asIs,
+        code: asIs,
       }),
     }),
     mailpoet_smtp_provider: smtpServer,

@@ -111,13 +111,13 @@ class Settings {
 
   public function withValidPremiumKey($key) {
     $this->settings->set(Bridge::PREMIUM_KEY_SETTING_NAME, $key);
-    $this->settings->set(Bridge::PREMIUM_KEY_STATE_SETTING_NAME, ['state' => Bridge::PREMIUM_KEY_VALID]);
+    $this->settings->set(Bridge::PREMIUM_KEY_STATE_SETTING_NAME, ['state' => Bridge::PREMIUM_KEY_VALID, 'code' => 200]);
     return $this;
   }
 
   public function withValidMssKey($key) {
     $this->settings->set(Bridge::API_KEY_SETTING_NAME, $key);
-    $this->settings->set(Bridge::API_KEY_STATE_SETTING_NAME, ['state' => Bridge::KEY_VALID]);
+    $this->settings->set(Bridge::API_KEY_STATE_SETTING_NAME, ['state' => Bridge::KEY_VALID, 'code' => 200]);
     return $this;
   }
 
