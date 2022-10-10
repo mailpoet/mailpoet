@@ -61,8 +61,12 @@ parameters:
       count: 1
       path: ../../lib/WooCommerce/Helper.php
     -
+      message: '/^Call to static method get_addresses_table_name\(\) on an unknown class Automattic\\WooCommerce\\Internal\\DataStores\\Orders\\OrdersTableDataStore\.$/'
+      count: 1
+      path: ../../lib/WooCommerce/Helper.php
+    -
       message: '/^Call to function method_exists\(\) with/'
-      count: 2
+      count: 3
       path: ../../lib/WooCommerce/Helper.php
 
   reportUnmatchedIgnoredErrors: true
