@@ -90,6 +90,28 @@ class WorkflowStatisticsStorageTest extends \MailPoetTest
     ];
   }
 
+  public function testPluralReturnsSameAsSingular() {
+    /** @var \MailPoet\Automation\Engine\Data\WorkflowStatistics[] $singleStatistics **/
+    $singleStatistics = [
+      $this->workflows[0] => $this->testee->getWorkflowStats($this->workflows[0]),
+      $this->workflows[1] => $this->testee->getWorkflowStats($this->workflows[1]),
+      $this->workflows[2] => $this->testee->getWorkflowStats($this->workflows[2]),
+    ];
+
+    $pluralStatistics = $this->testee->getWorkflowStatisticsForWorkflows(...$this->workflowStorage->getWorkflows());
+
+    $this->assertEquals(count($singleStatistics), count($pluralStatistics));
+    foreach ($singleStatistics as $workflowId => $statistic) {
+      $this->assertEquals($statistic->getEntered(), $pluralStatistics[$workflowId]->getEntered());
+      $this->assertEquals($statistic->getInProgress(), $pluralStatistics[$workflowId]->getInProgress());
+      $this->assertEquals($statistic->getExited(), $pluralStatistics[$workflowId]->getExited());
+      $this->assertEquals($statistic->getVersionId(), $pluralStatistics[$workflowId]->getVersionId());
+      $this->assertEquals($statistic->getWorkflowId(), $pluralStatistics[$workflowId]->getWorkflowId());
+    }
+
+
+  }
+
   public function testItSeparatesWorkflowRunsCorrectly() {
     $workflow1 = $this->workflowStorage->getWorkflow($this->workflows[0]);
     assert($workflow1 instanceof Workflow);
