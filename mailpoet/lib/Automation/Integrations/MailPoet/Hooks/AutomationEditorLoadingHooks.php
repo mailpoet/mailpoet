@@ -60,11 +60,13 @@ class AutomationEditorLoadingHooks {
       }
 
       $this->newslettersRepository->bulkDelete([$emailId]);
+      $args = $step->getArgs();
+      unset($args['email_id']);
       $updatedStep = new Step(
         $step->getId(),
         $step->getType(),
         $step->getKey(),
-        array_merge($step->getArgs(), ['email_id' => 0]),
+        $args,
         $step->getNextSteps()
       );
 
