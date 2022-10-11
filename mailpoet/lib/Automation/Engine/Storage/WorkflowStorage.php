@@ -131,6 +131,13 @@ class WorkflowStorage {
     }, (array)$data);
   }
 
+  public function flush(): bool {
+    $workflowTable = esc_sql($this->workflowTable);
+    $versionTable = esc_sql($this->versionsTable);
+    return $this->wpdb->query("truncate $workflowTable;") === true &&
+      $this->wpdb->query("truncate $versionTable;") === true;
+  }
+
   private function getWorkflowHeaderData(Workflow $workflow): array {
     $workflowHeader = $workflow->toArray();
     unset($workflowHeader['steps']);
