@@ -35,6 +35,7 @@ This method throws an `\Exception` in the event a subscriber with a given email 
 | source                   | string\|null | -         | Possible values: `form`,`imported`,`administrator`,`api`,`wordpress_user`,`woocommerce_user`,`woocommerce_checkout`,`unknown`) |
 | count_confirmations      | string       | 11 chars  | Counter for confirmation emails                                                                                                |
 | subscriptions            | array        | -         | List of subcriber subscriptions                                                                                                |
+| tags                     | array        | -         | List of subcriber tags                                                                                                         |
 | cf\_{custom_field['id']} | string       | 65K chars | A custom subscriber field value (see [Get Subscriber Fields](GetSubscriberFields.md)                                           |
 
 ### Subscriber's subscription
@@ -47,6 +48,17 @@ This method throws an `\Exception` in the event a subscriber with a given email 
 | status        | string | -        | Status of a subscription for the list. Possible values: `subscribed`, `unsubscribed` |
 | created_at    | string | -        | UTC time of creation in 'Y-m-d H:i:s' format                                         |
 | updated_at    | string | -        | UTC time of last update in 'Y-m-d H:i:s' format                                      |
+
+### Subscriber's tag
+
+| Property      | Type   | Limits   | Description                                     |
+| ------------- | ------ | -------- | ----------------------------------------------- |
+| id            | string | 11 chars | Id of relation                                  |
+| subscriber_id | string | 11 chars | Id of subscriber                                |
+| tag_id        | string | 11 chars | Id of a list                                    |
+| name          | string | -        | Name of a tag                                   |
+| created_at    | string | -        | UTC time of creation in 'Y-m-d H:i:s' format    |
+| updated_at    | string | -        | UTC time of last update in 'Y-m-d H:i:s' format |
 
 ### Response Example
 
@@ -85,6 +97,24 @@ This method throws an `\Exception` in the event a subscriber with a given email 
       'status' => 'unsubscribed',
       'created_at' => '2019-05-14 08:43:08',
       'updated_at' => '2019-05-14 08:43:08',
+    ],
+  ],
+  'tags' => [
+    0 => [
+      'id' => '2',
+      'subscriber_id' => '10',
+      'tag_id' => '1',
+      'name' => 'Alpha',
+      'created_at' => '2019-05-17 05:24:37',
+      'updated_at' => '2019-05-17 05:24:37',
+    ],
+    1 => [
+      'id' => '4',
+      'subscriber_id' => '10',
+      'tag_id' => '5',
+      'name' => 'Beta',
+      'created_at' => '2020-03-07 15:21:37',
+      'updated_at' => '2020-03-07 15:21:37',
     ],
   ],
   'cf_1' => 'US',
