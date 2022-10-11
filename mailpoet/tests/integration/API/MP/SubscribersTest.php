@@ -15,6 +15,7 @@ use MailPoet\CustomFields\CustomFieldsRepository;
 use MailPoet\Entities\CustomFieldEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Features\FeaturesController;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\SendingQueue;
@@ -29,8 +30,10 @@ use MailPoet\Subscribers\SubscriberSaveController;
 use MailPoet\Subscribers\SubscriberSegmentRepository;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Tasks\Sending;
+use MailPoet\Test\DataFactories\Segment as SegmentFactory;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoetVendor\Carbon\Carbon;
 
 class SubscribersTest extends \MailPoetTest {
 
@@ -723,7 +726,150 @@ class SubscribersTest extends \MailPoetTest {
     $this->getApi()->getSubscriber('some_fake_email');
   }
 
+  public function testItGetsSubscribersWithLimitAndOffset(): void {
+    $subscriber1 = $this->subscriberFactory->withEmail('subscriber1@test.com')->create();
+    $subscriber2 = $this->subscriberFactory->withEmail('subscriber2@test.com')->create();
+
+    $subscribers = $this->getApi()->getSubscribers([], 1, 0);
+    $this->assertCount(1, $subscribers);
+    $this->assertEquals($subscriber1->getEmail(), $subscribers[0]['email']);
+
+    $subscribers = $this->getApi()->getSubscribers([], 1, 1);
+    $this->assertEquals($subscriber2->getEmail(), $subscribers[0]['email']);
+  }
+
+  public function testItFiltersSubscribersByMinimalUpdatedAt(): void {
+    $subscriber1 = $this->subscriberFactory
+      ->withEmail('subscriber1@test.com')
+      ->withUpdatedAt(new Carbon('2022-10-10 14:00:00'))
+      ->create();
+    $subscriber2 = $this->subscriberFactory
+      ->withEmail('subscriber2@test.com')
+      ->withUpdatedAt(new Carbon('2022-10-10 16:00:00'))
+      ->create();
+
+    $minUpdatedAt = new Carbon('2022-10-10 15:00:00');
+    // test timestamp support
+    $subscribers = $this->getApi()->getSubscribers(['minUpdatedAt' => $minUpdatedAt->getTimestamp()]);
+    $this->assertCount(1, $subscribers);
+    $this->assertEquals($subscriber2->getEmail(), $subscribers[0]['email']);
+    // test DateTime support
+    $subscribers = $this->getApi()->getSubscribers(['minUpdatedAt' => $minUpdatedAt]);
+    $this->assertCount(1, $subscribers);
+    $this->assertEquals($subscriber2->getEmail(), $subscribers[0]['email']);
+  }
+
+  public function testItFiltersSubscribersByStatus(): void {
+    $subscriber1 = $this->subscriberFactory
+      ->withEmail('subscriber1@test.com')
+      ->withStatus(SubscriberEntity::STATUS_UNCONFIRMED)
+      ->create();
+    $subscriber2 = $this->subscriberFactory
+      ->withEmail('subscriber2@test.com')
+      ->withStatus(SubscriberEntity::STATUS_UNSUBSCRIBED)
+      ->create();
+    $subscriber3 = $this->subscriberFactory
+      ->withEmail('subscriber3@test.com')
+      ->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)
+      ->create();
+
+    $subscribers = $this->getApi()->getSubscribers(['status' => SubscriberEntity::STATUS_SUBSCRIBED]);
+    $this->assertCount(1, $subscribers);
+    $this->assertEquals($subscriber3->getEmail(), $subscribers[0]['email']);
+  }
+
+  public function testItFiltersSubscribersByListId(): void {
+    $segment1 = (new SegmentFactory())->create();
+    $segment2 = (new SegmentFactory())->create();
+    $subscriber1 = $this->subscriberFactory
+      ->withEmail('subscriber1@test.com')
+      ->withSegments([$segment1])
+      ->create();
+    $subscriber2 = $this->subscriberFactory
+      ->withEmail('subscriber2@test.com')
+      ->withSegments([$segment1, $segment2])
+      ->create();
+    $subscriber3 = $this->subscriberFactory
+      ->withEmail('subscriber3@test.com')
+      ->withSegments([$segment2])
+      ->create();
+    $subscriber4 = $this->subscriberFactory
+      ->withEmail('subscriber4@test.com')
+      ->withSegments([])
+      ->create();
+
+    $subscribers = $this->getApi()->getSubscribers(['listId' => $segment2->getId()]);
+    $this->assertCount(2, $subscribers);
+    $this->assertEquals($subscriber2->getEmail(), $subscribers[0]['email']);
+    $this->assertEquals($subscriber3->getEmail(), $subscribers[1]['email']);
+  }
+
+  public function testItFiltersSubscribersByListIdAndMinUpdatedAt(): void {
+    $segment1 = (new SegmentFactory())->create();
+    $segment2 = (new SegmentFactory())->create();
+    $subscriber1 = $this->subscriberFactory
+      ->withEmail('subscriber1@test.com')
+      ->withSegments([$segment1])
+      ->withUpdatedAt(new Carbon('2022-10-10 13:00:00'))
+      ->create();
+    $subscriber2 = $this->subscriberFactory
+      ->withEmail('subscriber2@test.com')
+      ->withSegments([$segment1, $segment2])
+      ->withUpdatedAt(new Carbon('2022-10-10 13:00:00'))
+      ->create();
+    $subscriber3 = $this->subscriberFactory
+      ->withEmail('subscriber3@test.com')
+      ->withSegments([$segment2])
+      ->withUpdatedAt(new Carbon('2022-10-11 13:00:00'))
+      ->create();
+    $subscriber4 = $this->subscriberFactory
+      ->withEmail('subscriber4@test.com')
+      ->withUpdatedAt(new Carbon('2022-10-10 13:00:00'))
+      ->withSegments([])
+      ->create();
+
+    $subscribers = $this->getApi()->getSubscribers([
+      'listId' => $segment2->getId(),
+      'minUpdatedAt' => new Carbon('2022-10-11 12:00:00')
+    ]);
+    $this->assertCount(1, $subscribers);
+    $this->assertEquals($subscriber3->getEmail(), $subscribers[0]['email']);
+  }
+
+  public function testItFiltersSubscribersByListIdAndStatus(): void {
+    $segment1 = (new SegmentFactory())->create();
+    $segment2 = (new SegmentFactory())->create();
+    $subscriber1 = $this->subscriberFactory
+      ->withEmail('subscriber1@test.com')
+      ->withSegments([$segment1])
+      ->withStatus(SubscriberEntity::STATUS_UNSUBSCRIBED)
+      ->create();
+    $subscriber2 = $this->subscriberFactory
+      ->withEmail('subscriber2@test.com')
+      ->withSegments([$segment1, $segment2])
+      ->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)
+      ->create();
+    $subscriber3 = $this->subscriberFactory
+      ->withEmail('subscriber3@test.com')
+      ->withSegments([$segment2])
+      ->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)
+      ->create();
+    $subscriber4 = $this->subscriberFactory
+      ->withEmail('subscriber4@test.com')
+      ->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)
+      ->withSegments([])
+      ->create();
+
+    $subscribers = $this->getApi()->getSubscribers([
+      'listId' => $segment1->getId(),
+      'status' => SubscriberEntity::STATUS_UNSUBSCRIBED,
+    ]);
+    $this->assertCount(1, $subscribers);
+    $this->assertEquals($subscriber1->getEmail(), $subscribers[0]['email']);
+  }
+
   public function _after() {
+    $this->truncateEntity(SubscriberSegmentEntity::class);
     $this->truncateEntity(SubscriberEntity::class);
     $this->truncateEntity(SegmentEntity::class);
     $this->truncateEntity(CustomFieldEntity::class);
