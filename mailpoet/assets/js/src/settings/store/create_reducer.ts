@@ -31,11 +31,19 @@ export function createReducer(defaultValue: State) {
 
         return newState;
       }
-      case 'SET_SETTINGS':
-        return {
+      case 'SET_SETTINGS': {
+        const newState = {
           ...state,
           data: normalizeSettings(action.value as Record<string, unknown>),
         };
+
+        newState.save.hasUnsavedChanges = !isEqual(
+          newState.data,
+          state.originalData,
+        );
+
+        return newState;
+      }
       case 'SET_ERROR_FLAG':
         return { ...state, flags: { ...state.flags, error: !!action.value } };
       case 'SAVE_STARTED':
