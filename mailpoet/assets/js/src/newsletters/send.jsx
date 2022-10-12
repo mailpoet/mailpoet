@@ -24,6 +24,7 @@ import { GlobalContext } from 'context/index.jsx';
 
 import { extractEmailDomain } from 'common/functions';
 import { mapFilterType } from '../analytics';
+import { PremiumModal } from '../common/premium_modal';
 
 const automaticEmails = window.mailpoet_woocommerce_automatic_emails || [];
 
@@ -114,6 +115,7 @@ class NewsletterSendComponent extends Component {
       loading: true,
       thumbnailPromise: null,
       isSavingDraft: false,
+      showPremiumModal: false,
     };
   }
 
@@ -649,7 +651,16 @@ class NewsletterSendComponent extends Component {
 
   disableGAIfPremiumInactive = (disabled) => (field) => {
     if (field.name === 'ga_campaign') {
-      return { ...field, disabled };
+      let onWrapperClick = () => {};
+      if (disabled()) {
+        onWrapperClick = () => this.setState({ showPremiumModal: true });
+      }
+
+      return {
+        ...field,
+        disabled,
+        onWrapperClick,
+      };
     }
     return field;
   };
@@ -660,12 +671,14 @@ class NewsletterSendComponent extends Component {
       .map(this.disableGAIfPremiumInactive(gaFieldDisabled))
       .map(this.disableSegmentsValidation);
 
-  render() {
-    const isPaused =
-      this.state.item.status === 'sending' &&
-      this.state.item.queue &&
-      this.state.item.queue.status === 'paused';
+  closePremiumModal = () => this.setState({ showPremiumModal: false });
 
+  render() {
+    const {
+      showPremiumModal,
+      item: { status, queue, type, options },
+    } = this.state;
+    const isPaused = status === 'sending' && queue && queue.status === 'paused';
     const sendButtonOptions = this.getSendButtonOptions();
     const fields = this.getPreparedFields(isPaused, this.isGaFieldDisabled);
 
@@ -675,9 +688,9 @@ class NewsletterSendComponent extends Component {
       this.state.validationError !== undefined
     );
 
-    let emailType = this.state.item.type;
+    let emailType = type;
     if (emailType === 'automatic') {
-      emailType = this.state.item.options.group || emailType;
+      emailType = options.group || emailType;
     }
 
     return (
@@ -763,6 +776,12 @@ class NewsletterSendComponent extends Component {
                 ),
               )}
             </div>
+          )}
+
+          {showPremiumModal && (
+            <PremiumModal onRequestClose={this.closePremiumModal}>
+              {MailPoet.I18n.t('gaOnlyAvailableForPremium')}
+            </PremiumModal>
           )}
         </Form>
       </div>
