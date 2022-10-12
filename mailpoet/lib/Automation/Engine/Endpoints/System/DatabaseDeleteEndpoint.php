@@ -9,6 +9,9 @@ use MailPoet\Automation\Engine\Migrations\Migrator;
 use MailPoet\Features\FeatureFlagsController;
 use MailPoet\Features\FeaturesController;
 
+/**
+ * @ToDo Remove before MVP
+ */
 class DatabaseDeleteEndpoint extends Endpoint {
   /** @var FeatureFlagsController */
   private $featureFlagsController;
