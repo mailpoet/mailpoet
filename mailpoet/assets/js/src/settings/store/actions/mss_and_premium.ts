@@ -45,9 +45,7 @@ export function* verifyMssKey(key: string) {
   } else {
     yield setSettings(call.res.data);
     fields.mssStatus = getMssStatus(
-      ['200', 200].includes(
-        call.res.data.mta.mailpoet_api_key_state.code as number | string,
-      ),
+      Number(call.res.data.mta.mailpoet_api_key_state.code) === 200,
       call.res.data,
     );
   }
