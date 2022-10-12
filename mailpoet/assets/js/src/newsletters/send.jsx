@@ -182,6 +182,8 @@ class NewsletterSendComponent extends Component {
     return addresses.indexOf(fromAddress) !== -1;
   };
 
+  isGaFieldDisabled = () => !window.mailpoet_premium_active;
+
   loadItem = (id) => {
     this.setState({ loading: true });
 
@@ -645,9 +647,17 @@ class NewsletterSendComponent extends Component {
     return field;
   };
 
-  getPreparedFields = (isPaused) =>
+  disableGAIfPremiumInactive = (disabled) => (field) => {
+    if (field.name === 'ga_campaign') {
+      return { ...field, disabled };
+    }
+    return field;
+  };
+
+  getPreparedFields = (isPaused, gaFieldDisabled) =>
     this.state.fields
       .map(this.disableSegmentsSelectorWhenPaused(isPaused))
+      .map(this.disableGAIfPremiumInactive(gaFieldDisabled))
       .map(this.disableSegmentsValidation);
 
   render() {
@@ -657,7 +667,7 @@ class NewsletterSendComponent extends Component {
       this.state.item.queue.status === 'paused';
 
     const sendButtonOptions = this.getSendButtonOptions();
-    const fields = this.getPreparedFields(isPaused);
+    const fields = this.getPreparedFields(isPaused, this.isGaFieldDisabled);
 
     const sendingDisabled = !!(
       window.mailpoet_subscribers_limit_reached ||
