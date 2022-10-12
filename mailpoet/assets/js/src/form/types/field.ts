@@ -26,4 +26,5 @@ export type Field = {
   getLabel?: (segment: Segment) => string;
   getCount?: (segment: Segment) => string;
   transformChangedValue?: (arg: unknown) => Segment;
+  onWrapperClick?: () => void;
 };
