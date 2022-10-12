@@ -113,6 +113,9 @@ class BridgeTest extends \MailPoetTest {
       Bridge::KEY_VALID => $this->validKey,
       Bridge::KEY_INVALID => $this->invalidKey,
       Bridge::KEY_EXPIRING => $this->expiringKey,
+      Bridge::KEY_ALREADY_USED => $this->usedKey,
+      Bridge::CHECK_ERROR_UNAVAILABLE => $this->uncheckableKey,
+      Bridge::KEY_VALID_UNDERPRIVILEGED => $this->underPrivilegedKey,
     ];
     foreach ($states as $state => $key) {
       $state = ['state' => $state];
