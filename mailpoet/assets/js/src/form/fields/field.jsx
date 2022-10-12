@@ -151,8 +151,15 @@ class FormField extends Component {
         field = 'invalid';
         break;
     }
+
+    const eventListeners = {
+      ...(this.props.field.onWrapperClick
+        ? { onClick: this.props.field.onWrapperClick }
+        : {}),
+    };
+    
     return (
-      <div className="mailpoet-form-field" key={`field-${data.index || 0}`}>
+      <div className="mailpoet-form-field" key={`field-${data.index || 0}`} {...eventListeners}>
         {field}
         {description}
       </div>
@@ -212,6 +219,7 @@ FormField.propTypes = {
     label: PropTypes.string,
     fields: PropTypes.arrayOf(PropTypes.object),
     description: PropTypes.string,
+    onWrapperClick: PropTypes.func,
   }).isRequired,
   item: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
 };
