@@ -7,6 +7,9 @@ use MailPoet\API\REST\Response;
 use MailPoet\Automation\Engine\API\Endpoint;
 use MailPoet\Automation\Engine\Migrations\Migrator;
 
+/**
+ * @ToDo Remove before MVP
+ */
 class DatabasePostEndpoint extends Endpoint {
   /** @var Migrator */
   private $migrator;
