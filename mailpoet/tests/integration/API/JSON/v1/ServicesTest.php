@@ -591,6 +591,26 @@ class ServicesTest extends \MailPoetTest {
     $this->diContainer->get(SettingsRepository::class)->truncate();
   }
 
+  public function testItRespondsWithCorrectMessageIfKeyDoesntSupportMSS() {
+    $bridge = $this->make(
+      new Bridge(),
+      [
+        'checkMSSKey' => [
+          'state' => Bridge::KEY_VALID_UNDERPRIVILEGED,
+          'code' => 403
+        ],
+        'storeMSSKeyAndState' => Expected::once(),
+      ]
+    );
+
+    $servicesEndpoint = $this->createServicesEndpointWithMocks(['bridge' => $bridge]);
+    $response = $servicesEndpoint->checkMSSKey($this->data);
+    expect($response->status)->equals(APIResponse::STATUS_OK);
+    expect($response->data['message'])->stringContainsString(
+      'Your Premium key has been successfully validated, but is not valid for MailPoet Sending Service'
+    );
+  }
+
   private function createServicesEndpointWithMocks(array $mocks) {
     return new Services(
       $mocks['bridge'] ?? $this->diContainer->get(Bridge::class),
