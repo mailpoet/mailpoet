@@ -217,7 +217,7 @@ class NewsletterSendComponent extends Component {
             },
           );
         }
-        if (!item.ga_campaign) {
+        if (!item.ga_campaign && !this.isGaFieldDisabled()) {
           item.ga_campaign = generateGaTrackingCampaignName(
             item.id,
             item.subject,
