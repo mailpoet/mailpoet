@@ -269,6 +269,21 @@ class Subscribers {
     return $result;
   }
 
+  /**
+   * @param array $filter {
+   *     Optional. Filters to retrieve subscribers.
+   *
+   *     @type string        $status       One of values: subscribed, unconfirmed, unsubscribed, inactive, bounced
+   *     @type int           $listId       id of a list or dynamic segment
+   *     @type \DateTime|int $minUpdatedAt DateTime object or timestamp of last update of subscriber.
+   * }
+   * @return int
+   */
+  public function getSubscribersCount(array $filter): int {
+    $listingDefinition = $this->buildListingDefinition($filter);
+    return $this->subscriberListingRepository->getCount($listingDefinition);
+  }
+
   private function buildListingDefinition(array $filter, int $limit = 50, int $offset = 0): ListingDefinition {
     $group = isset($filter['status']) && is_string($filter['status']) ? $filter['status'] : null;
     $listingFilters = [];
