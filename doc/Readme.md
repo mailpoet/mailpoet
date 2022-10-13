@@ -31,6 +31,7 @@ Class `\MailPoet\API\API` becomes available once MailPoet plugin is loaded by Wo
 - [Get Lists (getLists)](api_methods/GetLists.md)
 - [Get Subscriber (getSubscriber)](api_methods/GetSubscriber.md)
 - [Get Subscribers (getSubscribers)](api_methods/GetSubscribers.md)
+- [Get Subscribers Count (getSubscribersCount)](api_methods/GetSubscribersCount.md)
 - [Get Subscriber Fields (getSubscriberFields)](api_methods/GetSubscriberFields.md)
 - [Is Setup Complete (isSetupComplete)](api_methods/IsSetupComplete.md)
 - [Subscribe to List (subscribeToList)](api_methods/SubscribeToList.md)
