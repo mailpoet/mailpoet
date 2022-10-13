@@ -88,6 +88,10 @@ class API {
     return $this->subscribers->getSubscribers($filter, $limit, $offset);
   }
 
+  public function getSubscribersCount(array $filter = []): int {
+    return $this->subscribers->getSubscribersCount($filter);
+  }
+
   public function isSetupComplete() {
     return !(
       $this->changelog->shouldShowWelcomeWizard()
