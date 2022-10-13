@@ -232,3 +232,7 @@ progress::-moz-progress-bar {
 .mailpoet-form-field-tags label.components-form-token-field__label {
   display: none;
 }
+
+.mailpoet-form-field-disabled {
+  cursor: not-allowed;
+}
