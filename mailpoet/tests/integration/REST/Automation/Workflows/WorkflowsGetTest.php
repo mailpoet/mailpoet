@@ -170,7 +170,7 @@ class WorkflowsGetTest extends AutomationTest {
   }
 
   public function _after() {
-    $this->workflowStorage->flush();
+    $this->workflowStorage->truncate();
     foreach ($this->userIds as $userId) {
       is_multisite() ? wpmu_delete_user($userId) : wp_delete_user($userId);
     }
