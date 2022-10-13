@@ -114,18 +114,15 @@ class WorkflowsGetTest extends AutomationTest {
     }
 
     // Check activated_at behavior
-    if (isset($expectation['status']) && $expectation['status'] !== Workflow::STATUS_DRAFT) {
-      $this->assertNotNull($data['activated_at']);
-      //Check we can read the date correctly.
-      $date = null;
+    if ($data['activated_at'] === null) {
+      $this->assertEquals(Workflow::STATUS_DRAFT, $data['status']);
+    } else {
+      $activatedAt = null;
       try {
-        $date = new \DateTimeImmutable($data['activated_at']);
+        $activatedAt = new \DateTimeImmutable($data['activated_at']);
       } finally {
-        $this->assertInstanceOf(\DateTimeImmutable::class, $date);
+        $this->assertInstanceOf(\DateTimeImmutable::class, $activatedAt);
       }
-    }
-    if (isset($expectation['status']) && $expectation['status'] === Workflow::STATUS_DRAFT) {
-      $this->assertNull($data['activated_at']);
     }
 
     // Check the date time fields are convertible.
