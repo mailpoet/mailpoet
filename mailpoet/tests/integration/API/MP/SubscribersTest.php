@@ -868,6 +868,108 @@ class SubscribersTest extends \MailPoetTest {
     $this->assertEquals($subscriber1->getEmail(), $subscribers[0]['email']);
   }
 
+  public function testItGetsSubscribersCount(): void {
+    $this->subscriberFactory
+      ->withEmail('subscriber1@test.com')
+      ->create();
+    $this->subscriberFactory
+      ->withEmail('subscriber2@test.com')
+      ->withStatus(SubscriberEntity::STATUS_UNSUBSCRIBED)
+      ->create();
+
+    $count = $this->getApi()->getSubscribersCount([]);
+    $this->assertEquals(2, $count);
+  }
+
+  public function testItGetsSubscribersCountByMinimalUpdatedAt(): void {
+    $this->subscriberFactory
+      ->withEmail('subscriber1@test.com')
+      ->withUpdatedAt(new Carbon('2022-10-10 14:00:00'))
+      ->create();
+    $this->subscriberFactory
+      ->withEmail('subscriber2@test.com')
+      ->withUpdatedAt(new Carbon('2022-10-10 16:00:00'))
+      ->create();
+
+    $minUpdatedAt = new Carbon('2022-10-10 15:00:00');
+    // test timestamp support
+    $count = $this->getApi()->getSubscribersCount(['minUpdatedAt' => $minUpdatedAt->getTimestamp()]);
+    $this->assertEquals(1, $count);
+    // test DateTime support
+    $count = $this->getApi()->getSubscribersCount(['minUpdatedAt' => $minUpdatedAt]);
+    $this->assertEquals(1, $count);
+  }
+
+  public function testItGetsSubscribersCountByStatus(): void {
+    $this->subscriberFactory
+      ->withEmail('subscriber1@test.com')
+      ->withStatus(SubscriberEntity::STATUS_UNCONFIRMED)
+      ->create();
+    $this->subscriberFactory
+      ->withEmail('subscriber2@test.com')
+      ->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)
+      ->create();
+    $this->subscriberFactory
+      ->withEmail('subscriber3@test.com')
+      ->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)
+      ->create();
+
+    $this->assertEquals(1, $this->getApi()->getSubscribersCount(['status' => SubscriberEntity::STATUS_UNCONFIRMED]));
+    $this->assertEquals(0, $this->getApi()->getSubscribersCount(['status' => SubscriberEntity::STATUS_UNSUBSCRIBED]));
+    $this->assertEquals(2, $this->getApi()->getSubscribersCount(['status' => SubscriberEntity::STATUS_SUBSCRIBED]));
+  }
+
+  public function testItGetsSubscribersCountByListId(): void {
+    $segment1 = (new SegmentFactory())->create();
+    $segment2 = (new SegmentFactory())->create();
+    $this->subscriberFactory
+      ->withEmail('subscriber1@test.com')
+      ->withSegments([$segment1])
+      ->create();
+    $this->subscriberFactory
+      ->withEmail('subscriber2@test.com')
+      ->withSegments([$segment1, $segment2])
+      ->create();
+    $this->subscriberFactory
+      ->withEmail('subscriber3@test.com')
+      ->withSegments([])
+      ->create();
+
+    $this->assertEquals(2, $this->getApi()->getSubscribersCount(['listId' => $segment1->getId()]));
+    $this->assertEquals(1, $this->getApi()->getSubscribersCount(['listId' => $segment2->getId()]));
+  }
+
+  public function testItGetsSubscribersCountByListIdAndStatus(): void {
+    $segment1 = (new SegmentFactory())->create();
+    $segment2 = (new SegmentFactory())->create();
+    $this->subscriberFactory
+      ->withEmail('subscriber1@test.com')
+      ->withSegments([$segment1])
+      ->withStatus(SubscriberEntity::STATUS_UNSUBSCRIBED)
+      ->create();
+    $this->subscriberFactory
+      ->withEmail('subscriber2@test.com')
+      ->withSegments([$segment1, $segment2])
+      ->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)
+      ->create();
+    $this->subscriberFactory
+      ->withEmail('subscriber3@test.com')
+      ->withSegments([$segment2])
+      ->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)
+      ->create();
+    $this->subscriberFactory
+      ->withEmail('subscriber4@test.com')
+      ->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)
+      ->withSegments([])
+      ->create();
+
+    $count = $this->getApi()->getSubscribersCount([
+      'listId' => $segment1->getId(),
+      'status' => SubscriberEntity::STATUS_UNSUBSCRIBED,
+    ]);
+    $this->assertEquals(1, $count);
+  }
+
   public function _after() {
     $this->truncateEntity(SubscriberSegmentEntity::class);
     $this->truncateEntity(SubscriberEntity::class);
