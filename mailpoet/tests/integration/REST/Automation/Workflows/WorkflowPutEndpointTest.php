@@ -28,7 +28,7 @@ class WorkflowPutEndpointTest extends AutomationTest
     $this->workflowStorage = $this->diContainer->get(WorkflowStorage::class);
     $this->createWorkflow = $this->diContainer->get(CreateWorkflowFromTemplateController::class);
     $this->workflow = $this->createWorkflow->createWorkflow('simple-welcome-email');
-    assert($this->workflow instanceof Workflow);
+    $this->assertInstanceOf(Workflow::class, $this->workflow);
   }
 
   public function testGuestNotAllowed(): void {
@@ -49,14 +49,14 @@ class WorkflowPutEndpointTest extends AutomationTest
     ], $data);
 
     $workflow = $this->workflowStorage->getWorkflow($this->workflow->getId());
-    assert($workflow instanceof Workflow);
+    $this->assertInstanceOf(Workflow::class, $workflow);
     $this->assertSame('Simple welcome email', $workflow->getName());
   }
 
   public function testUpdateWorkflow(): void {
     $changes = [];
     $trigger = $this->workflow->getTrigger('mailpoet:someone-subscribes');
-    assert($trigger instanceof Step);
+    $this->assertInstanceOf(Step::class, $trigger);
     $changes[$trigger->getId()] = [
       'args' => [
         'segment_ids' => [1,2]
@@ -75,9 +75,9 @@ class WorkflowPutEndpointTest extends AutomationTest
     );
 
     $updatedWorkflow = $this->workflowStorage->getWorkflow($this->workflow->getId());
-    assert($updatedWorkflow instanceof Workflow);
+    $this->assertInstanceOf(Workflow::class, $updatedWorkflow);
     $updatedTrigger = $updatedWorkflow->getTrigger('mailpoet:someone-subscribes');
-    assert($updatedTrigger instanceof Step);
+    $this->assertInstanceOf(Step::class, $updatedTrigger);
 
     /** Ensure the old workflow does not already contain the values we attempt to change */
     $this->assertNotSame($changes[$trigger->getId()]['args'], $trigger->getArgs());
@@ -114,7 +114,7 @@ class WorkflowPutEndpointTest extends AutomationTest
 
     $this->assertSame('mailpoet_automation_workflow_structure_modification_not_supported', $data['code']);
     $workflow = $this->workflowStorage->getWorkflow($this->workflow->getId());
-    assert($workflow instanceof Workflow);
+    $this->assertInstanceOf(Workflow::class, $workflow);
     /** Ensure, the changes have not been stored to the database */
     $this->assertSame($this->workflow->getVersionId(), $workflow->getVersionId());
   }

@@ -28,7 +28,7 @@ class WorkflowsGetTest extends AutomationTest {
       'user_pass' => 'abc',
       'user_login' => 'workflows-get-endpoint-test',
     ]);
-    assert(is_numeric($userId));
+    $this->assertIsNumeric($userId);
     $this->userIds[] = $userId;
   }
 
