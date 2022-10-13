@@ -53,6 +53,10 @@ class Daemon {
           'message' => $e->getMessage(),
         ];
 
+        if ($e->getCode() === CronHelper::DAEMON_EXECUTION_LIMIT_REACHED) {
+          break;
+        }
+
         $this->loggerFactory->getLogger(LoggerFactory::TOPIC_CRON)->error($e->getMessage(), ['error' => $e, 'worker' => $workerName]);
       }
     }

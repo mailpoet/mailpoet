@@ -8,20 +8,32 @@ use MailPoet\Cron\CronWorkerRunner;
 use MailPoet\Cron\Daemon;
 use MailPoet\Cron\Workers\SimpleWorker;
 use MailPoet\Cron\Workers\WorkersFactory;
+use MailPoet\Entities\LogEntity;
 use MailPoet\Logging\LoggerFactory;
+use MailPoet\Logging\LogRepository;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\SettingsRepository;
+use MailPoet\WP\Functions as WpFunctions;
 
 class DaemonTest extends \MailPoetTest {
-  public $cronHelper;
+  /** @var CronHelper */
+  private $cronHelper;
 
   /** @var SettingsController */
   private $settings;
+
+  /** @var LogRepository */
+  private $logRepository;
+
+  /** @var WpFunctions */
+  private $wp;
 
   public function _before() {
     parent::_before();
     $this->settings = SettingsController::getInstance();
     $this->cronHelper = $this->diContainer->get(CronHelper::class);
+    $this->logRepository = $this->diContainer->get(LogRepository::class);
+    $this->wp = $this->diContainer->get(WpFunctions::class);
   }
 
   public function testItCanRun() {
@@ -36,8 +48,50 @@ class DaemonTest extends \MailPoetTest {
     $daemon->run($data);
   }
 
+  public function testItLogErrorFromWorker() {
+    $cronWorkerRunner = $this->make(CronWorkerRunner::class, [
+      'run' => function () {
+        throw new \Exception('Worker error!');
+      },
+    ]);
+    $data = [
+      'token' => 123,
+    ];
+    $this->settings->set(CronHelper::DAEMON_SETTING, $data);
+    $daemon = new Daemon($this->cronHelper, $cronWorkerRunner, $this->createWorkersFactoryMock(), $this->diContainer->get(LoggerFactory::class));
+    $daemon->run($data);
+    $log = $this->logRepository->findOneBy(['name' => 'cron', 'level' => 400]);
+    $this->assertInstanceOf(LogEntity::class, $log);
+    expect($log->getMessage())->stringContainsString('Worker error!');
+  }
+
+  public function testItTerminatesWhenExecutionLimitIsReached() {
+    // Set execution limit to 0 to get limit exceeded exception
+    $limitCallback = function () {
+      return 0;
+    };
+    $this->wp->addFilter('mailpoet_cron_get_execution_limit', $limitCallback);
+    $cronWorkerRunner = $this->diContainer->get(CronWorkerRunner::class);
+    $data = [
+      'token' => 123,
+    ];
+    $this->settings->set(CronHelper::DAEMON_SETTING, $data);
+
+    // Factory should return only the first worker then we stop because of execution limit
+    $factoryMock = $this->make(WorkersFactory::class, [
+        'createMigrationWorker' => $this->createSimpleWorkerMock(),
+        'createStatsNotificationsWorker' => function () {throw new \Exception('StatsNotificationsWorker should not be called');},
+    ]);
+    $daemon = new Daemon($this->cronHelper, $cronWorkerRunner, $factoryMock, $this->diContainer->get(LoggerFactory::class));
+    $daemon->run($data);
+    $log = $this->logRepository->findOneBy(['name' => 'cron', 'level' => 400]);
+    expect($log)->null();
+    $this->wp->removeFilter('mailpoet_cron_get_execution_limit', $limitCallback);
+  }
+
   public function _after() {
     $this->diContainer->get(SettingsRepository::class)->truncate();
+    $this->truncateEntity(LogEntity::class);
   }
 
   private function createWorkersFactoryMock(array $workers = []) {
