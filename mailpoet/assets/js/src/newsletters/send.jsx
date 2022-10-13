@@ -619,10 +619,14 @@ class NewsletterSendComponent extends Component {
     return true;
   };
 
-  handleSaveDraft = () =>
+  handleSaveDraft = () => {
+    // Disabling all validations when saving a draft
+    jQuery('#mailpoet_newsletter').parsley().destroy();
+
     this.setState({
       isSavingDraft: true,
     });
+  };
 
   disableSegmentsValidation = (field) => {
     if (
