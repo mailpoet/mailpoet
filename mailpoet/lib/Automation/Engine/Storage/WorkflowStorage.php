@@ -131,7 +131,7 @@ class WorkflowStorage {
     }, (array)$data);
   }
 
-  public function flush(): bool {
+  public function truncate(): bool {
     $workflowTable = esc_sql($this->workflowTable);
     $versionTable = esc_sql($this->versionsTable);
     return $this->wpdb->query("truncate $workflowTable;") === true &&

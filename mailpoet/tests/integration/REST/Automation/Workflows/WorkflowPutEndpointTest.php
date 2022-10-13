@@ -132,7 +132,7 @@ class WorkflowPutEndpointTest extends AutomationTest
   }
 
   public function _after() {
-    $this->workflowStorage->flush();
+    $this->workflowStorage->truncate();
     parent::_after();
   }
 }
