@@ -260,6 +260,16 @@ class Subscribers {
    * @return array
    */
   public function getSubscribers(array $filter, int $limit, int $offset): array {
+    $listingDefinition = $this->buildListingDefinition($filter, $limit, $offset);
+    $subscribers = $this->subscriberListingRepository->getData($listingDefinition);
+    $result = [];
+    foreach ($subscribers as $subscriber) {
+      $result[] = $this->subscribersResponseBuilder->build($subscriber);
+    }
+    return $result;
+  }
+
+  private function buildListingDefinition(array $filter, int $limit = 50, int $offset = 0): ListingDefinition {
     $group = isset($filter['status']) && is_string($filter['status']) ? $filter['status'] : null;
     $listingFilters = [];
     // Set filtering by listId
@@ -275,13 +285,7 @@ class Subscribers {
       }
     }
 
-    $listingDefinition = new ListingDefinition($group, $listingFilters, null, [], 'id', 'asc', $offset, $limit);
-    $subscribers = $this->subscriberListingRepository->getData($listingDefinition);
-    $result = [];
-    foreach ($subscribers as $subscriber) {
-      $result[] = $this->subscribersResponseBuilder->build($subscriber);
-    }
-    return $result;
+    return new ListingDefinition($group, $listingFilters, null, [], 'id', 'asc', $offset, $limit);
   }
 
   /**
