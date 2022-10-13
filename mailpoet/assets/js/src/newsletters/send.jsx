@@ -114,7 +114,6 @@ class NewsletterSendComponent extends Component {
       item: {},
       loading: true,
       thumbnailPromise: null,
-      isSavingDraft: false,
       showPremiumModal: false,
     };
   }
@@ -622,28 +621,6 @@ class NewsletterSendComponent extends Component {
   handleSaveDraft = () => {
     // Disabling all validations when saving a draft
     jQuery('#mailpoet_newsletter').parsley().destroy();
-
-    this.setState({
-      isSavingDraft: true,
-    });
-  };
-
-  disableSegmentsValidation = (field) => {
-    if (
-      this.state.isSavingDraft &&
-      field.name === 'segments' &&
-      field.validation &&
-      field.validation['data-parsley-required']
-    ) {
-      return {
-        ...field,
-        validation: {
-          'data-parsley-required': false,
-        },
-      };
-    }
-
-    return field;
   };
 
   disableSegmentsSelectorWhenPaused = (isPaused) => (field) => {
@@ -673,7 +650,6 @@ class NewsletterSendComponent extends Component {
     this.state.fields
       .map(this.disableSegmentsSelectorWhenPaused(isPaused))
       .map(this.disableGAIfPremiumInactive(gaFieldDisabled))
-      .map(this.disableSegmentsValidation);
 
   closePremiumModal = () => this.setState({ showPremiumModal: false });
 
