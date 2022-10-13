@@ -2,6 +2,7 @@ import { Component } from 'react';
 import { FormFieldText } from 'form/fields/text.jsx';
 import jQuery from 'jquery';
 import PropTypes from 'prop-types';
+import classNames from 'classnames';
 
 import { FormFieldTextarea } from 'form/fields/textarea.jsx';
 import { FormFieldSelect } from 'form/fields/select.jsx';
@@ -152,14 +153,25 @@ class FormField extends Component {
         break;
     }
 
+    const isDisabled =
+      typeof this.props.field.disabled === 'function'
+        ? this.props.field.disabled(this.props.field)
+        : this.props.field.disabled;
+
     const eventListeners = {
       ...(this.props.field.onWrapperClick
         ? { onClick: this.props.field.onWrapperClick }
         : {}),
     };
-    
+
     return (
-      <div className="mailpoet-form-field" key={`field-${data.index || 0}`} {...eventListeners}>
+      <div
+        className={classNames('mailpoet-form-field', {
+          'mailpoet-form-field-disabled': isDisabled,
+        })}
+        key={`field-${data.index || 0}`}
+        {...eventListeners}
+      >
         {field}
         {description}
       </div>
@@ -220,6 +232,7 @@ FormField.propTypes = {
     fields: PropTypes.arrayOf(PropTypes.object),
     description: PropTypes.string,
     onWrapperClick: PropTypes.func,
+    disabled: PropTypes.oneOfType([PropTypes.func, PropTypes.bool]),
   }).isRequired,
   item: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
 };
