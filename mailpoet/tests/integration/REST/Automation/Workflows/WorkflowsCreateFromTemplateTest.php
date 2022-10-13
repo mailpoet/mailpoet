@@ -4,6 +4,7 @@ namespace MailPoet\REST\Automation\Workflows;
 
 require_once __DIR__ . '/../AutomationTest.php';
 
+use MailPoet\Automation\Engine\Data\Workflow;
 use MailPoet\Automation\Engine\Storage\WorkflowStorage;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\REST\Automation\AutomationTest;
@@ -61,14 +62,14 @@ class WorkflowsCreateFromTemplateTest extends AutomationTest {
   }
 
   public function testWorkflowsCreatedFromTemplatesReturnsWorkflowId(): void {
-    $storage = ContainerWrapper::getInstance()->get(WorkflowStorage::class);
     $response = $this->post(self::ENDPOINT_PATH, [
       'json' => [
         'slug' => 'simple-welcome-email'
       ],
     ]);
-    $allWorkflows = $storage->getWorkflows();
+    $allWorkflows = $this->workflowStorage->getWorkflows();
     $createdWorkflow = array_pop($allWorkflows);
+    $this->assertInstanceOf(Workflow::class, $createdWorkflow);
     $this->assertSame($createdWorkflow->getId(), $response['data']['id']);
   }
 
