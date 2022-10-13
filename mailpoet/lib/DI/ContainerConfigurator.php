@@ -112,6 +112,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     // Automation
     $container->autowire(\MailPoet\Automation\Engine\API\API::class)->setPublic(true);
     $container->autowire(\MailPoet\Automation\Engine\Builder\CreateWorkflowFromTemplateController::class)->setPublic(true);
+    $container->autowire(\MailPoet\Automation\Engine\Builder\DuplicateWorkflowController::class)->setPublic(true);
     $container->autowire(\MailPoet\Automation\Engine\Builder\UpdateStepsController::class)->setPublic(true);
     $container->autowire(\MailPoet\Automation\Engine\Builder\UpdateWorkflowController::class)->setPublic(true);
     $container->autowire(\MailPoet\Automation\Engine\Control\ActionScheduler::class)->setPublic(true);

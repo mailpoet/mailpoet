@@ -5,41 +5,28 @@ namespace MailPoet\Automation\Engine\Endpoints\Workflows;
 use MailPoet\API\REST\Request;
 use MailPoet\API\REST\Response;
 use MailPoet\Automation\Engine\API\Endpoint;
-use MailPoet\Automation\Engine\Data\Workflow;
-use MailPoet\Automation\Engine\Exceptions\InvalidStateException;
+use MailPoet\Automation\Engine\Builder\DuplicateWorkflowController;
 use MailPoet\Automation\Engine\Mappers\WorkflowMapper;
-use MailPoet\Automation\Engine\Storage\WorkflowStorage;
 use MailPoet\Validator\Builder;
 
 class WorkflowsDuplicateEndpoint extends Endpoint {
   /** @var WorkflowMapper */
   private $workflowMapper;
 
-  /** @var WorkflowStorage */
-  private $workflowStorage;
+  /** @var DuplicateWorkflowController */
+  private $duplicateController;
 
   public function __construct(
-    WorkflowMapper $workflowMapper,
-    WorkflowStorage $workflowStorage
+    DuplicateWorkflowController $duplicateController,
+    WorkflowMapper $workflowMapper
   ) {
     $this->workflowMapper = $workflowMapper;
-    $this->workflowStorage = $workflowStorage;
+    $this->duplicateController = $duplicateController;
   }
 
   public function handle(Request $request): Response {
-    $workflowId = $request->getParam('id');
-    if (!is_int($workflowId)) {
-      throw InvalidStateException::create();
-    }
-    $existingWorkflow = $this->workflowStorage->getWorkflow($workflowId);
-    if (!$existingWorkflow instanceof Workflow) {
-      throw InvalidStateException::create();
-    }
-    $duplicateId = $this->workflowStorage->duplicateWorkflow($existingWorkflow);
-    $duplicate = $this->workflowStorage->getWorkflow($duplicateId);
-    if (!$duplicate instanceof Workflow) {
-      throw InvalidStateException::create();
-    }
+    $workflowId = intval($request->getParam('id'));
+    $duplicate = $this->duplicateController->duplicateWorkflow($workflowId);
     return new Response($this->workflowMapper->buildWorkflow($duplicate));
   }
 
