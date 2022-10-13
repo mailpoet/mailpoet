@@ -5,7 +5,6 @@ import { Label, Inputs } from 'settings/components';
 
 export function Libs3rdParty() {
   const [enabled, setEnabled] = useSetting('3rd_party_libs', 'enabled');
-  const [, setAnalyticsEnabled] = useSetting('analytics', 'enabled');
 
   return (
     <>
@@ -40,10 +39,7 @@ export function Libs3rdParty() {
           id="libs-3rd-party-disabled"
           value=""
           checked={enabled === ''}
-          onCheck={() => {
-            setEnabled('');
-            setAnalyticsEnabled('');
-          }}
+          onCheck={setEnabled}
         />
         <label htmlFor="libs-3rd-party-disabled">{t('no')}</label>
       </Inputs>
