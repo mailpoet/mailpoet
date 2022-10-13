@@ -33,12 +33,8 @@ function WelcomeWizardUsageTrackingStep({ loading, submitForm }) {
               onCheck={(value) => {
                 const newState = {
                   libs3rdParty: value,
-                  tracking: state.tracking,
                 };
-                if (!value) {
-                  newState.tracking = value;
-                }
-                setState(newState);
+                setState((prevState) => ({ ...prevState, ...newState }));
               }}
               checked={state.libs3rdParty}
               name="mailpoet_libs_3rdParty"
@@ -86,12 +82,8 @@ function WelcomeWizardUsageTrackingStep({ loading, submitForm }) {
               onCheck={(value) => {
                 const newState = {
                   tracking: value,
-                  libs3rdParty: state.libs3rdParty,
                 };
-                if (value) {
-                  newState.libs3rdParty = value;
-                }
-                setState(newState);
+                setState((prevState) => ({ ...prevState, ...newState }));
               }}
               checked={state.tracking}
               name="mailpoet_tracking"
