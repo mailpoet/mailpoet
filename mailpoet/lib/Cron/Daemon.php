@@ -53,10 +53,7 @@ class Daemon {
           'message' => $e->getMessage(),
         ];
 
-        /**
-         * ToDo: Use \LoggerFactory::TOPIC_CRON as logger topic, once it is available
-         */
-        $this->loggerFactory->getLogger()->error($e->getMessage(), ['error' => $e, 'worker' => $workerName]);
+        $this->loggerFactory->getLogger(LoggerFactory::TOPIC_CRON)->error($e->getMessage(), ['error' => $e, 'worker' => $workerName]);
       }
     }
 
