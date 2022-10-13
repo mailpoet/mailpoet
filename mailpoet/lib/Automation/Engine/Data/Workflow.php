@@ -191,8 +191,8 @@ class Workflow {
       }, Json::decode($data['steps'])),
       new \WP_User((int)$data['author'])
     );
-    $workflow->id = (int)($data['id'] ?? 0);
-    $workflow->versionId = (int)($data['version_id'] ?? 0);
+    $workflow->id = (int)$data['id'];
+    $workflow->versionId = (int)$data['version_id'];
     $workflow->status = $data['status'];
     $workflow->createdAt = new DateTimeImmutable($data['created_at']);
     $workflow->updatedAt = new DateTimeImmutable($data['updated_at']);

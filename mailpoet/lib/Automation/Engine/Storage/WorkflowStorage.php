@@ -37,28 +37,6 @@ class WorkflowStorage {
     return $id;
   }
 
-  public function duplicateWorkflow(Workflow $workflow): int {
-    $data = $workflow->toArray();
-    $now = (new DateTimeImmutable())->format(DateTimeImmutable::W3C);
-    $data['created_at'] = $now;
-    $data['updated_at'] = $now;
-    $data['status'] = Workflow::STATUS_DRAFT;
-    $prefix = 'Copy of ';
-    $newName = $prefix . $workflow->getName();
-    $nameColumnLengthInfo = $this->wpdb->get_col_length($this->workflowTable, 'name');
-    $maxLength = is_array($nameColumnLengthInfo)
-      ? $nameColumnLengthInfo['length'] ?? 255
-      : 255;
-    if (strlen($newName) > $maxLength) {
-      $truncateWith = '…';
-      $truncationLength = strlen($truncateWith);
-      $newName = substr($newName, 0, $maxLength - $truncationLength) . $truncateWith;
-    }
-    $data['name'] = $newName;
-    $duplicate = Workflow::fromArray($data);
-    return $this->createWorkflow($duplicate);
-  }
-
   public function updateWorkflow(Workflow $workflow): void {
     $oldRecord = $this->getWorkflow($workflow->getId());
     if ($oldRecord && $oldRecord->equals($workflow)) {
@@ -198,6 +176,13 @@ class WorkflowStorage {
     $versionTable = esc_sql($this->versionsTable);
     return $this->wpdb->query("truncate $workflowTable;") === true &&
       $this->wpdb->query("truncate $versionTable;") === true;
+  }
+
+  public function getNameColumnLength(): int {
+    $nameColumnLengthInfo = $this->wpdb->get_col_length($this->workflowTable, 'name');
+    return is_array($nameColumnLengthInfo)
+      ? $nameColumnLengthInfo['length'] ?? 255
+      : 255;
   }
 
   private function getWorkflowHeaderData(Workflow $workflow): array {
