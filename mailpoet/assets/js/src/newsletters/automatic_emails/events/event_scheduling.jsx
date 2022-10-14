@@ -6,6 +6,7 @@ import { MailPoet } from 'mailpoet';
 import { Selection } from 'form/fields/selection.jsx';
 import { FormFieldText } from 'form/fields/text.jsx';
 import { timeDelayValues } from 'newsletters/scheduling/common.jsx';
+import { Grid } from 'common/grid';
 
 const defaultAfterTimeType = 'immediate';
 const defaultAfterTimeNumber = 1;
@@ -142,10 +143,15 @@ class EventScheduling extends Component {
     const { event } = this.props;
     return (
       <>
-        <div className="mailpoet-grid-column mailpoet-flex">
+        <h4> {MailPoet.I18n.t('whenToSendMail')} </h4>
+
+        <Grid.CenteredRow className="mailpoet-re-engagement-scheduling">
           {this.displayAfterTimeNumberField()}
           {this.displayAfterTimeTypeOptions()}
-        </div>
+
+          {event.afterDelayText && <p>{event.afterDelayText}</p>}
+        </Grid.CenteredRow>
+
         <div className="mailpoet-form-errors" />
         <div className="mailpoet-gap" />
         {event.schedulingReadMoreLink && (
@@ -175,6 +181,7 @@ EventScheduling.propTypes = {
   onValueChange: PropTypes.func,
   event: PropTypes.shape({
     defaultAfterTimeType: PropTypes.string,
+    afterDelayText: PropTypes.string,
     timeDelayValues: PropTypes.objectOf(
       PropTypes.shape({
         text: PropTypes.string,
