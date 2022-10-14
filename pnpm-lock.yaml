@@ -109,7 +109,6 @@ importers:
       autoprefixer: ^10.4.4
       babel-loader: ^8.2.4
       babel-plugin-transform-commonjs: ^1.1.6
-      babel-plugin-typescript-to-proptypes: ^2.0.0
       backbone: 1.3.3
       backbone.marionette: 3.2.0
       backbone.radio: 2.0.0
@@ -318,7 +317,6 @@ importers:
       autoprefixer: 10.4.4_postcss@8.4.14
       babel-loader: 8.2.4_vuct2yjaylhfkatulzrh5yzzye
       babel-plugin-transform-commonjs: 1.1.6_@babel+core@7.17.8
-      babel-plugin-typescript-to-proptypes: 2.0.0_vy5zir67me7gk6f3w3iih67tqe
       browserslist: 4.20.2
       buffer: 6.0.3
       chai: 4.3.6
@@ -9126,20 +9124,6 @@ packages:
     dependencies:
       '@babel/core': 7.17.8
       '@babel/helper-plugin-utils': 7.16.7
-    dev: true
-
-  /babel-plugin-typescript-to-proptypes/2.0.0_vy5zir67me7gk6f3w3iih67tqe:
-    resolution: {integrity: sha512-LmXrkeqg4bzq0CiCOV/zN3hrvAvJOvoP9sEw0YgtkU6lIbqA5/RAY0bA6C6+i5/e5Wp/taJ68XKp2i8pkU+Qmw==}
-    engines: {node: '>=12.17.0', npm: '>=6.13.0'}
-    peerDependencies:
-      '@babel/core': ^7.0.0
-      typescript: ^4.0.0
-    dependencies:
-      '@babel/core': 7.17.8
-      '@babel/helper-module-imports': 7.16.7
-      '@babel/plugin-syntax-typescript': 7.16.7_@babel+core@7.17.8
-      '@babel/types': 7.17.0
-      typescript: 4.6.3
     dev: true
 
   /babel-preset-current-node-syntax/1.0.1_@babel+core@7.17.8:
