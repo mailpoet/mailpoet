@@ -5,7 +5,6 @@
     "@babel/preset-env"
   ],
   "plugins": [
-    "babel-plugin-typescript-to-proptypes",
     [
       "@babel/plugin-transform-runtime",
       {
