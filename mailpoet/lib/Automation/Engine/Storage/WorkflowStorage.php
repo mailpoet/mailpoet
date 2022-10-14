@@ -93,6 +93,11 @@ class WorkflowStorage {
     }, (array)$data);
   }
 
+  public function getWorkflowCount(): int {
+    $workflowTable = esc_sql($this->workflowTable);
+    return (int)$this->wpdb->get_var("SELECT COUNT(*) FROM $workflowTable");
+  }
+
   /** @return string[] */
   public function getActiveTriggerKeys(): array {
     $workflowTable = esc_sql($this->workflowTable);
