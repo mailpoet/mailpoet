@@ -77,7 +77,10 @@ class NewsletterNotificationComponent extends Component {
         />
 
         <Grid.Column align="center" className="mailpoet-schedule-email">
-          <Heading level={4}>{MailPoet.I18n.t('selectFrequency')}</Heading>
+          <Heading level={4}>
+            {MailPoet.I18n.t('selectEventToSendPostNotificationEmail')}
+          </Heading>
+          <h5> {MailPoet.I18n.t('selectFrequency')} </h5>
 
           <NotificationScheduling
             item={this.state}
