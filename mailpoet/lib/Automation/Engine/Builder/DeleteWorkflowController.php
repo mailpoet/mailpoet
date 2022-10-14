@@ -21,6 +21,11 @@ class DeleteWorkflowController {
     if (!$workflow) {
       throw Exceptions::workflowNotFound($id);
     }
+
+    if ($workflow->getStatus() !== Workflow::STATUS_TRASH) {
+      throw Exceptions::workflowNotTrashed($id);
+    }
+
     $this->workflowStorage->deleteWorkflow($workflow);
     return $workflow;
   }

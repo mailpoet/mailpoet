@@ -48,7 +48,24 @@ class WorkflowsDeleteEndpointTest extends AutomationTest {
     $this->assertSame('Testing workflow', $workflow->getName());
   }
 
+  public function testCantDeleteWorkflowWhenNotTrashed(): void {
+    $data = $this->delete(sprintf(self::ENDPOINT_PATH, $this->workflow->getId()));
+
+    $this->assertSame([
+      'code' => 'mailpoet_automation_workflow_not_trashed',
+      'message' => "Can't delete workflow with ID '{$this->workflow->getId()}' because it was not trashed.",
+      'data' => ['status' => 400, 'errors' => []],
+    ], $data);
+
+    $workflow = $this->workflowStorage->getWorkflow($this->workflow->getId());
+    $this->assertInstanceOf(Workflow::class, $workflow);
+    $this->assertSame('Testing workflow', $workflow->getName());
+  }
+
   public function testItDeletesAWorkflow(): void {
+    $this->workflow->setStatus(Workflow::STATUS_TRASH);
+    $this->workflowStorage->updateWorkflow($this->workflow);
+
     $data = $this->delete(sprintf(self::ENDPOINT_PATH, $this->workflow->getId()));
     $this->assertSame(['data' => null], $data);
 
