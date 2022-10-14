@@ -6,13 +6,13 @@ type Event = {
   name: string;
 };
 
-type Props = {
+export type TokenFieldProps = {
   id?: string;
   label?: string;
   name?: string;
   placeholder?: string;
   onChange: (event: Event) => void;
-  selectedValues?: FormTokenField.Value[];
+  selectedValues?: FormTokenField.Value[] | [];
   suggestedValues?: readonly string[];
 };
 
@@ -24,7 +24,7 @@ export function TokenField({
   selectedValues,
   suggestedValues,
   onChange,
-}: Props) {
+}: TokenFieldProps) {
   const args = {
     id,
     label,

@@ -1,7 +1,16 @@
-import PropTypes from 'prop-types';
-import { TokenField } from 'common/form/tokenField/tokenField';
+import { TokenFieldProps, TokenField } from 'common/form/tokenField/tokenField';
+import { FormTokenItem } from '../../automation/integrations/mailpoet/components/form-token-field';
 
-function getItems(endpoint: string) {
+interface TokenFormFieldProps {
+  onValueChange: TokenFieldProps['onChange'];
+  item?: Record<string, FormTokenItem[]>;
+  field: Omit<TokenFieldProps, 'id' | 'onChange' | 'selectedValues'> & {
+    endpoint: string;
+    getName: (item: FormTokenItem) => string;
+  };
+}
+
+function getItems(endpoint: string): FormTokenItem[] {
   let items = [];
   if (typeof window[`mailpoet_${endpoint}`] !== 'undefined') {
     items = window[`mailpoet_${endpoint}`];
@@ -10,12 +19,15 @@ function getItems(endpoint: string) {
   return items;
 }
 
-function FormFieldTokenField(props) {
-  const selectedValues = Array.isArray(props.item[props.field.name])
-    ? props.item[props.field.name].map((item) => props.field.getName(item))
+function FormFieldTokenField(props: TokenFormFieldProps) {
+  const selectedValues: TokenFieldProps['selectedValues'] = Array.isArray(
+    props.item[props.field.name],
+  )
+    ? props.field.name &&
+      props.item[props.field.name].map((item) => props.field.getName(item))
     : [];
 
-  let suggestedValues = [];
+  let suggestedValues;
   if (props.field.endpoint) {
     const items = getItems(String(props.field.endpoint));
     suggestedValues = items.map((item) => props.field.getName(item));
@@ -34,17 +46,5 @@ function FormFieldTokenField(props) {
     />
   );
 }
-
-FormFieldTokenField.propTypes = {
-  onValueChange: PropTypes.func,
-  item: PropTypes.object, // eslint-disable-line react/forbid-prop-types
-  field: PropTypes.shape({
-    name: PropTypes.string,
-    label: PropTypes.string,
-    suggestedValues: PropTypes.arrayOf(PropTypes.string),
-    placeholder: PropTypes.string,
-    getName: PropTypes.func,
-  }).isRequired,
-};
 
 export { FormFieldTokenField };
