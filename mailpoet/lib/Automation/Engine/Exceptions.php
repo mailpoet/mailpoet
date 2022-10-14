@@ -29,6 +29,7 @@ class Exceptions {
   private const WORKFLOW_STEP_MODIFIED_WHEN_UNKNOWN = 'mailpoet_automation_workflow_step_modified_when_unknown';
   private const WORKFLOW_NOT_VALID = 'mailpoet_automation_workflow_not_valid';
   private const MISSING_REQUIRED_SUBJECTS = 'mailpoet_automation_missing_required_subjects';
+  private const WORKFLOW_NOT_TRASHED = 'mailpoet_automation_workflow_not_trashed';
 
   public function __construct() {
     throw new InvalidStateException(
@@ -203,5 +204,12 @@ class Exceptions {
           implode(', ', $missingSubjectKeys)
         )
       );
+  }
+
+  public static function workflowNotTrashed(int $id): UnexpectedValueException {
+    return UnexpectedValueException::create()
+      ->withErrorCode(self::WORKFLOW_NOT_TRASHED)
+      // translators: %d is the ID of the workflow.
+      ->withMessage(sprintf(__("Can't delete workflow with ID '%d' because it was not trashed.", 'mailpoet'), $id));
   }
 }
