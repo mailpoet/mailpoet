@@ -47,6 +47,7 @@ class WorkflowsDuplicateEndpointTest extends AutomationTest {
     $workflow = $this->workflowStorage->getWorkflow($this->workflow->getId());
     $this->assertInstanceOf(Workflow::class, $workflow);
     $this->assertSame('Testing workflow', $workflow->getName());
+    $this->assertNull($this->workflowStorage->getWorkflow($this->workflow->getId() + 1));
   }
 
   public function testItDuplicatesAWorkflow(): void {
