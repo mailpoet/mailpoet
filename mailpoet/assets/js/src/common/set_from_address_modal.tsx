@@ -99,6 +99,7 @@ function SetFromAddressModal({ onRequestClose, setAuthorizedAddress }: Props) {
     >
       {showAuthorizedEmailModal && (
         <AuthorizeSenderEmailModal
+          useModal
           senderEmail={address}
           onRequestClose={() => {
             setShowAuthorizedEmailModal(false);

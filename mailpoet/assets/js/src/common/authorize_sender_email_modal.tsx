@@ -1,7 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
 import ReactStringReplace from 'react-string-replace';
-import PropTypes from 'prop-types';
-import { noop } from 'lodash';
 import moment from 'moment';
 import { MailPoet } from 'mailpoet';
 import { Modal } from 'common/modal/modal';
@@ -117,7 +115,7 @@ function AuthorizeSenderEmailModal({
         setCreateEmailApiResponse(null);
         setShowLoader(false);
         setConfirmEmailApiResponse(true);
-        setAuthorizedAddress(senderEmailAddress);
+        setAuthorizedAddress?.(senderEmailAddress);
         removeUnauthorizedEmailNotices();
       })
       .catch(() => {
@@ -237,15 +235,5 @@ function AuthorizeSenderEmailModal({
     <div>{content}</div>
   );
 }
-
-AuthorizeSenderEmailModal.propTypes = {
-  senderEmail: PropTypes.string.isRequired,
-  useModal: PropTypes.bool,
-};
-
-AuthorizeSenderEmailModal.defaultProps = {
-  setAuthorizedAddress: noop,
-  useModal: true,
-};
 
 export { AuthorizeSenderEmailModal };
