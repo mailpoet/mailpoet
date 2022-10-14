@@ -76,6 +76,7 @@ class PurchasedProduct {
       'listingScheduleDisplayText' => __('Email sent when a customer buys product: %s', 'mailpoet'),
       // translators: %s is the name of the products.
       'listingScheduleDisplayTextPlural' => __('Email sent when a customer buys products: %s', 'mailpoet'),
+      'afterDelayText' => __('after purchase', 'mailpoet'),
       'options' => [
         'multiple' => true,
         'endpoint' => 'products',
