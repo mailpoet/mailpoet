@@ -247,18 +247,6 @@ class Subscribers {
     return $this->subscribersResponseBuilder->build($subscriber);
   }
 
-  /**
-   * @param array $filter {
-   *     Optional. Filters to retrieve subscribers.
-   *
-   *     @type string        $status       One of values: subscribed, unconfirmed, unsubscribed, inactive, bounced
-   *     @type int           $listId       id of a list or dynamic segment
-   *     @type \DateTime|int $minUpdatedAt DateTime object or timestamp of last update of subscriber.
-   * }
-   * @param int $limit
-   * @param int $offset
-   * @return array
-   */
   public function getSubscribers(array $filter, int $limit, int $offset): array {
     $listingDefinition = $this->buildListingDefinition($filter, $limit, $offset);
     $subscribers = $this->subscriberListingRepository->getData($listingDefinition);
@@ -269,21 +257,20 @@ class Subscribers {
     return $result;
   }
 
-  /**
-   * @param array $filter {
-   *     Optional. Filters to retrieve subscribers.
-   *
-   *     @type string        $status       One of values: subscribed, unconfirmed, unsubscribed, inactive, bounced
-   *     @type int           $listId       id of a list or dynamic segment
-   *     @type \DateTime|int $minUpdatedAt DateTime object or timestamp of last update of subscriber.
-   * }
-   * @return int
-   */
   public function getSubscribersCount(array $filter): int {
     $listingDefinition = $this->buildListingDefinition($filter);
     return $this->subscriberListingRepository->getCount($listingDefinition);
   }
 
+  /**
+   * @param array $filter {
+   *     Filters to retrieve subscribers.
+   *
+   *     @type string        $status       One of values: subscribed, unconfirmed, unsubscribed, inactive, bounced
+   *     @type int           $listId       id of a list or dynamic segment
+   *     @type \DateTime|int $minUpdatedAt DateTime object or timestamp of last update of subscriber.
+   * }
+   */
   private function buildListingDefinition(array $filter, int $limit = 50, int $offset = 0): ListingDefinition {
     $group = isset($filter['status']) && is_string($filter['status']) ? $filter['status'] : null;
     $listingFilters = [];
