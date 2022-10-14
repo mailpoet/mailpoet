@@ -6,7 +6,6 @@ import {
   SelectControl,
 } from '@wordpress/components';
 import { MailPoet } from 'mailpoet';
-import PropTypes from 'prop-types';
 import { useDispatch, useSelect } from '@wordpress/data';
 import { partial } from 'lodash';
 import { HorizontalAlignment } from 'common/styles';
@@ -18,7 +17,12 @@ import { CloseButtonsSettings } from 'form_editor/components/close_button_settin
 import { formStyles as defaultFormStyles } from 'form_editor/store/defaults';
 import { FontFamilySettings } from '../font_family_settings';
 
-function StylesSettingsPanel({ onToggle, isOpened }) {
+type StylesSettingsPanelProps = {
+  onToggle: PanelBody.Props['onToggle'];
+  isOpened: boolean;
+};
+
+function StylesSettingsPanel({ onToggle, isOpened }: StylesSettingsPanelProps) {
   const { changeFormSettings } = useDispatch('mailpoet-form-editor');
   const settings = useSelect(
     (select) => select('mailpoet-form-editor').getFormSettings(),
@@ -164,10 +168,5 @@ function StylesSettingsPanel({ onToggle, isOpened }) {
     </Panel>
   );
 }
-
-StylesSettingsPanel.propTypes = {
-  onToggle: PropTypes.func.isRequired,
-  isOpened: PropTypes.bool.isRequired,
-};
 
 export { StylesSettingsPanel };
