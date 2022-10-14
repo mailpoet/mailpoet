@@ -71,7 +71,7 @@ class WorkflowsDuplicateEndpointTest extends AutomationTest {
       'activated_at' => null,
       'author' => [
         'id' => $user->ID,
-        'name' => $user->display_name
+        'name' => $user->display_name,
       ],
       'stats' => [
         'workflow_id' => $id,
