@@ -10,6 +10,7 @@
 <% block after_javascript %>
   <script type="text/javascript">
     var mailpoet_automation_api = <%= json_encode(api) %>;
+    var mailpoet_workflow_count = <%= json_encode(workflowCount) %>;
   </script>
   <%= javascript('automation.js')%>
 <% endblock %>
