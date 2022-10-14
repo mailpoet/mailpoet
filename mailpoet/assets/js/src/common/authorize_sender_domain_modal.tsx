@@ -1,6 +1,4 @@
 import { useEffect, useRef, useState } from 'react';
-import PropTypes from 'prop-types';
-import { noop } from 'lodash';
 import { MailPoet } from 'mailpoet';
 import { Modal } from 'common/modal/modal';
 import {
@@ -99,7 +97,7 @@ function AuthorizeSenderDomainModal({
       if (res.data.ok) {
         // record verified, close the modal
         setErrorMessage('');
-        setVerifiedSenderDomain(senderDomain);
+        setVerifiedSenderDomain?.(senderDomain);
         onRequestClose();
       }
     } catch (e) {
@@ -184,15 +182,5 @@ function AuthorizeSenderDomainModal({
     <div>{content}</div>
   );
 }
-
-AuthorizeSenderDomainModal.propTypes = {
-  senderDomain: PropTypes.string.isRequired,
-  useModal: PropTypes.bool,
-};
-
-AuthorizeSenderDomainModal.defaultProps = {
-  setVerifiedSenderDomain: noop,
-  useModal: true,
-};
 
 export { AuthorizeSenderDomainModal };
