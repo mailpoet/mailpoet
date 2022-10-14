@@ -12,7 +12,23 @@ import { partial } from 'lodash';
 import PropTypes from 'prop-types';
 import { ColorGradientSettings } from '../components/color_gradient_settings';
 
-function InputStylesSettings({ styles, onChange }) {
+type InputStyles = {
+  fullWidth: boolean;
+  inheritFromTheme: boolean;
+  bold: boolean;
+  backgroundColor: string;
+  borderSize: number;
+  borderRadius: number;
+  borderColor: string;
+  fontColor: string;
+};
+
+type InputStylesSettingsProps = {
+  styles: InputStyles;
+  onChange: (styles: InputStyles) => void;
+};
+
+function InputStylesSettings({ styles, onChange }: InputStylesSettingsProps) {
   const localStylesRef = useRef(styles);
   const localStyles = localStylesRef.current;
 
@@ -132,6 +148,10 @@ function InputStylesSettings({ styles, onChange }) {
   );
 }
 
+/**
+ * @deprecated since removal of propTypes for InputStylesSettings
+ * Remove when TextInputEdit is converted to tsx
+ */
 export const inputStylesPropTypes = PropTypes.shape({
   fullWidth: PropTypes.bool.isRequired,
   inheritFromTheme: PropTypes.bool.isRequired,
@@ -141,10 +161,5 @@ export const inputStylesPropTypes = PropTypes.shape({
   borderRadius: PropTypes.number,
   borderColor: PropTypes.string,
 });
-
-InputStylesSettings.propTypes = {
-  styles: inputStylesPropTypes.isRequired,
-  onChange: PropTypes.func.isRequired,
-};
 
 export { InputStylesSettings };
