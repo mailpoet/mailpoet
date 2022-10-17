@@ -706,6 +706,15 @@ class AcceptanceTester extends \Codeception\Actor {
     $i->cli(['action-scheduler', 'run', '--force']);
   }
 
+  public function triggerAutomationActionScheduler(): void {
+    $i = $this;
+    // Reschedule automation trigger action to run immediately
+    $i->importSql([
+      "UPDATE mp_actionscheduler_actions SET scheduled_date_gmt = SUBTIME(now(), '01:00:00'), scheduled_date_local = SUBTIME(now(), '01:00:00') WHERE hook = 'mailpoet/automation/workflow/step' AND status = 'pending';",
+    ]);
+    $i->cli(['action-scheduler', 'run', '--force']);
+  }
+
   public function isWooCustomOrdersTableEnabled(): bool {
     return (bool)getenv('ENABLE_COT');
   }
