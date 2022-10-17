@@ -2,11 +2,11 @@
 
 namespace MailPoet\REST\Automation\Workflows;
 
+use DateTimeImmutable;
 use MailPoet\Automation\Engine\Data\Step;
 use MailPoet\Automation\Engine\Data\Workflow;
 use MailPoet\Automation\Engine\Storage\WorkflowStorage;
 use MailPoet\REST\Automation\AutomationTest;
-use MailPoetVendor\Monolog\DateTimeImmutable;
 
 require_once __DIR__ . '/../AutomationTest.php';
 
