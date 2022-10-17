@@ -51,6 +51,7 @@ export function Step({ step, isSelected }: Props): JSX.Element {
   const compositeState = useContext(WorkflowCompositeContext);
   const { batch } = useRegistry();
 
+  const compositeItemId = `step-${step.id}`;
   const stepTypeData = stepType ?? getUnknownStepType(step);
   return (
     <div className="mailpoet-automation-editor-step-wrapper">
@@ -63,6 +64,7 @@ export function Step({ step, isSelected }: Props): JSX.Element {
           'is-selected-step': isSelected,
           'is-unknown-step': !stepType,
         })}
+        id={compositeItemId}
         key={step.id}
         focusable
         onClick={() =>
@@ -82,11 +84,14 @@ export function Step({ step, isSelected }: Props): JSX.Element {
           />
         </div>
         <div>
-          <div className="mailpoet-automation-editor-step-title">
+          <label
+            htmlFor={compositeItemId}
+            className="mailpoet-automation-editor-step-title"
+          >
             {step.type !== 'trigger'
               ? stepTypeData.title
               : __('Trigger', 'mailpoet')}
-          </div>
+          </label>
           <div className="mailpoet-automation-editor-step-subtitle">
             {step.type !== 'trigger'
               ? stepTypeData.subtitle(step)

@@ -12,6 +12,10 @@
   font-weight: 500;
   line-height: normal;
   padding: 16px 48px 16px 16px;
+
+  label & {
+    padding: 0;
+  }
 }
 
 .mailpoet-automation-panel-plain-body-title-action {
