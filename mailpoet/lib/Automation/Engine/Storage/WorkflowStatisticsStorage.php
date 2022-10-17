@@ -26,6 +26,9 @@ class WorkflowStatisticsStorage {
    * @throws \MailPoet\Automation\Engine\Exceptions\InvalidStateException
    */
   public function getWorkflowStatisticsForWorkflows(Workflow ...$workflows): array {
+    if (empty($workflows)) {
+      return [];
+    }
     $workflowIds = array_map(
       function(Workflow $workflow): int {
         return $workflow->getId();
