@@ -6,6 +6,7 @@ import {
   FlexItem,
 } from '@wordpress/components';
 import { dispatch, useSelect } from '@wordpress/data';
+import { __ } from '@wordpress/i18n';
 import { PlainBodyTitle } from '../../../../editor/components/panel';
 import { storeName } from '../../../../editor/store';
 import { DelayTypeOptions } from './types/delayTypes';
@@ -18,13 +19,16 @@ export function Edit(): JSX.Element {
     [],
   );
 
+  const delayValueInputId = `delay-number-${selectedStep.id}`;
   return (
     <PanelBody opened>
-      <PlainBodyTitle title="Wait for" />
+      <label htmlFor={delayValueInputId}>
+        <PlainBodyTitle title={__('Wait for', 'mailpoet')} />
+      </label>
       <Flex align="top">
         <FlexItem style={{ flex: '1 1 0' }}>
           <TextControl
-            label=""
+            id={delayValueInputId}
             type="number"
             placeholder="Number"
             value={(selectedStep.args.delay as string) ?? ''}
