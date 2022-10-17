@@ -16,6 +16,7 @@ use MailPoet\Automation\Engine\Hooks;
 use MailPoet\Automation\Engine\Integration\Action;
 use MailPoet\Automation\Engine\Integration\Payload;
 use MailPoet\Automation\Engine\Integration\Subject;
+use MailPoet\Automation\Engine\Registry;
 use MailPoet\Automation\Engine\Storage\WorkflowRunLogStorage;
 use MailPoet\Automation\Engine\Storage\WorkflowRunStorage;
 use MailPoet\Automation\Engine\Storage\WorkflowStorage;
@@ -50,6 +51,9 @@ class StepHandler {
   /** @var Hooks */
   private $hooks;
 
+  /** @var Registry */
+  private $registry;
+
   public function __construct(
     ActionScheduler $actionScheduler,
     ActionStepRunner $actionStepRunner,
@@ -58,7 +62,8 @@ class StepHandler {
     WordPress $wordPress,
     WorkflowRunStorage $workflowRunStorage,
     WorkflowRunLogStorage $workflowRunLogStorage,
-    WorkflowStorage $workflowStorage
+    WorkflowStorage $workflowStorage,
+    Registry $registry
   ) {
     $this->actionScheduler = $actionScheduler;
     $this->actionStepRunner = $actionStepRunner;
@@ -68,6 +73,7 @@ class StepHandler {
     $this->workflowRunStorage = $workflowRunStorage;
     $this->workflowRunLogStorage = $workflowRunLogStorage;
     $this->workflowStorage = $workflowStorage;
+    $this->registry = $registry;
   }
 
   public function initialize(): void {
@@ -124,19 +130,19 @@ class StepHandler {
       return;
     }
 
-    $step = $workflow->getStep($stepId);
-    if (!$step) {
+    $stepData = $workflow->getStep($stepId);
+    if (!$stepData) {
       throw Exceptions::workflowStepNotFound($stepId);
     }
-
-    $stepType = $step->getType();
+    $step = $this->registry->getStep($stepData->getKey());
+    $stepType = $stepData->getType();
     if (isset($this->stepRunners[$stepType])) {
-      $log = new WorkflowRunLog($workflowRun->getId(), $step->getId());
+      $log = new WorkflowRunLog($workflowRun->getId(), $stepData->getId());
       try {
         $requiredSubjects = $step instanceof Action ? $step->getSubjectKeys() : [];
         $subjectEntries = $this->getSubjectEntries($workflowRun, $requiredSubjects);
-        $args = new StepRunArgs($workflow, $workflowRun, $step, $subjectEntries);
-        $validationArgs = new StepValidationArgs($workflow, $step, array_map(function (SubjectEntry $entry) {
+        $args = new StepRunArgs($workflow, $workflowRun, $stepData, $subjectEntries);
+        $validationArgs = new StepValidationArgs($workflow, $stepData, array_map(function (SubjectEntry $entry) {
           return $entry->getSubject();
         }, $subjectEntries));
         $this->stepRunners[$stepType]->run($args, $validationArgs);
@@ -157,7 +163,7 @@ class StepHandler {
       throw new InvalidStateException();
     }
 
-    $nextStep = $step->getNextSteps()[0] ?? null;
+    $nextStep = $stepData->getNextSteps()[0] ?? null;
     $nextStepArgs = [
       [
         'workflow_run_id' => $workflowRunId,
