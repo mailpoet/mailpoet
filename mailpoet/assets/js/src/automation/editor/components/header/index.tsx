@@ -13,7 +13,7 @@ import { WorkflowStatus } from '../../../listing/workflow';
 //   https://github.com/WordPress/gutenberg/blob/9601a33e30ba41bac98579c8d822af63dd961488/packages/edit-post/src/components/header/index.js
 //   https://github.com/WordPress/gutenberg/blob/0ee78b1bbe9c6f3e6df99f3b967132fa12bef77d/packages/edit-site/src/components/header/index.js
 
-function ActivateButton(): JSX.Element {
+function ActivateButton({ onClick }): JSX.Element {
   const { errors } = useSelect(
     (select) => ({
       errors: select(storeName).getErrors(),
@@ -21,13 +21,11 @@ function ActivateButton(): JSX.Element {
     [],
   );
 
-  const { activate } = useDispatch(storeName);
-
   return (
     <Button
       variant="primary"
       className="editor-post-publish-button"
-      onClick={activate}
+      onClick={onClick}
       disabled={!!errors}
     >
       {__('Activate', 'mailpoet')}
@@ -61,9 +59,13 @@ function SaveDraftButton(): JSX.Element {
 
 type Props = {
   showInserterToggle: boolean;
+  toggleActivatePanel: () => void;
 };
 
-export function Header({ showInserterToggle }: Props): JSX.Element {
+export function Header({
+  showInserterToggle,
+  toggleActivatePanel,
+}: Props): JSX.Element {
   const { setWorkflowName } = useDispatch(storeName);
   const { workflowName, workflowStatus } = useSelect(
     (select) => ({
@@ -109,7 +111,9 @@ export function Header({ showInserterToggle }: Props): JSX.Element {
         <div className="edit-site-header__actions">
           <Errors />
           <SaveDraftButton />
-          {workflowStatus !== WorkflowStatus.ACTIVE && <ActivateButton />}
+          {workflowStatus !== WorkflowStatus.ACTIVE && (
+            <ActivateButton onClick={toggleActivatePanel} />
+          )}
           {workflowStatus === WorkflowStatus.ACTIVE && <UpdateButton />}
           <PinnedItems.Slot scope={storeName} />
           <MoreMenu />

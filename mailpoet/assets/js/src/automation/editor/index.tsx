@@ -1,5 +1,6 @@
 import classnames from 'classnames';
 import ReactDOM from 'react-dom';
+import { useState } from 'react';
 import { Button, Icon, Popover, SlotFillProvider } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 import { wordpress } from '@wordpress/icons';
@@ -23,6 +24,7 @@ import { initialize as initializeMailPoetIntegration } from '../integrations/mai
 import { MailPoet } from '../../mailpoet';
 import { LISTING_NOTICE_PARAMETERS } from '../listing/workflow-listing-notices';
 import { registerApiErrorHandler } from './api-error-handler';
+import { ActivatePanel } from './components/panel/activate-panel';
 
 // See:
 //   https://github.com/WordPress/gutenberg/blob/9601a33e30ba41bac98579c8d822af63dd961488/packages/edit-post/src/components/layout/index.js
@@ -48,6 +50,7 @@ function Editor(): JSX.Element {
     }),
     [],
   );
+  const [showActivatePanel, setShowActivatePanel] = useState(false);
 
   const className = classnames('interface-interface-skeleton', {
     'is-sidebar-opened': isSidebarOpened,
@@ -60,6 +63,11 @@ function Editor(): JSX.Element {
     });
     return null;
   }
+
+  const toggleActivatePanel = () => {
+    setShowActivatePanel(!showActivatePanel);
+  };
+
   return (
     <ShortcutProvider>
       <SlotFillProvider>
@@ -80,7 +88,12 @@ function Editor(): JSX.Element {
               </div>
             )
           }
-          header={<Header showInserterToggle={showInserterSidebar} />}
+          header={
+            <Header
+              showInserterToggle={showInserterSidebar}
+              toggleActivatePanel={toggleActivatePanel}
+            />
+          }
           content={
             <>
               <EditorNotices />
@@ -92,6 +105,7 @@ function Editor(): JSX.Element {
             showInserterSidebar && isInserterOpened ? <InserterSidebar /> : null
           }
         />
+        {showActivatePanel && <ActivatePanel onClose={toggleActivatePanel} />}
         <Popover.Slot />
       </SlotFillProvider>
     </ShortcutProvider>
