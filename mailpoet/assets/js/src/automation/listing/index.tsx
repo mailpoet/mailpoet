@@ -8,7 +8,7 @@ import { getRow } from './get-row';
 import { storeName } from './store/constants';
 import { Workflow, WorkflowStatus } from './workflow';
 
-const filterTabs = [
+const tabConfig = [
   {
     name: 'all',
     title: 'All',
@@ -54,6 +54,8 @@ export function AutomationListing(): JSX.Element {
   const workflows = useSelect((select) => select(storeName).getWorkflows());
   const { loadWorkflows } = useDispatch(storeName);
 
+  const status = pageSearch.get('status');
+
   useEffect(() => {
     loadWorkflows();
   }, [loadWorkflows]);
@@ -78,9 +80,7 @@ export function AutomationListing(): JSX.Element {
   );
 
   const groupedWorkflows = useMemo<Record<string, Workflow[]>>(() => {
-    const grouped = {
-      all: [],
-    };
+    const grouped = { all: [] };
     (workflows ?? []).forEach((workflow) => {
       if (!grouped[workflow.status]) {
         grouped[workflow.status] = [];
@@ -95,30 +95,27 @@ export function AutomationListing(): JSX.Element {
 
   const tabs = useMemo(
     () =>
-      filterTabs.map((filterTab) => {
-        const count = (groupedWorkflows[filterTab.name] || []).length;
+      tabConfig.map((tab) => {
+        const count = (groupedWorkflows[tab.name] ?? []).length;
         return {
-          name: filterTab.name,
-          title:
-            count > 0 ? (
-              <>
-                <span>{filterTab.title}</span>
-                <span className="count">{count}</span>
-              </>
-            ) : (
-              <span>{filterTab.title}</span>
-            ),
-          className: filterTab.className,
+          name: tab.name,
+          title: (
+            <>
+              <span>{tab.title}</span>
+              {count > 0 && <span className="count">{count}</span>}
+            </>
+          ) as any, // eslint-disable-line @typescript-eslint/no-explicit-any -- typed as string but supports JSX
+          className: tab.className,
         };
       }),
     [groupedWorkflows],
   );
 
-  const tabRenderer = useCallback(
+  const renderTabs = useCallback(
     (tab) => {
       const filteredWorkflows: Workflow[] = groupedWorkflows[tab.name] ?? [];
-      const rowsPerPage = parseInt(pageSearch.get('per_page') || '25', 10);
-      const currentPage = parseInt(pageSearch.get('paged') || '1', 10);
+      const rowsPerPage = parseInt(pageSearch.get('per_page') ?? '25', 10);
+      const currentPage = parseInt(pageSearch.get('paged') ?? '1', 10);
       const start = (currentPage - 1) * rowsPerPage;
       const rows = filteredWorkflows
         .map((workflow) => getRow(workflow))
@@ -160,20 +157,16 @@ export function AutomationListing(): JSX.Element {
   return (
     <TabPanel
       className="mailpoet-filter-tab-panel"
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore - the Tab type actually expects a string for titles but won't render HTML,
-      // making it very difficult to style the count badges. It seems to be compatible with JSX
-      // elements, however.
       tabs={tabs}
       onSelect={(tabName) => {
-        if (pageSearch.get('status') !== tabName) {
+        if (status !== tabName) {
           updateUrlSearchString({ status: tabName });
         }
       }}
-      initialTabName={pageSearch.get('status') || 'all'}
-      key={pageSearch.get('status')} // Force re-render on browser forward/back
+      initialTabName={status ?? 'all'}
+      key={status} // force re-mount on history change to switch tab (via "initialTabName")
     >
-      {tabRenderer}
+      {renderTabs}
     </TabPanel>
   );
 }
