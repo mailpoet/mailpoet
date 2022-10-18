@@ -1,5 +1,5 @@
 import { Workflow } from './workflow';
-import { Edit, More, Name, Status, Subscribers } from './components/cells';
+import { Actions, Name, Status, Subscribers } from './components/cells';
 
 export function getRow(workflow: Workflow): object[] {
   return [
@@ -21,12 +21,7 @@ export function getRow(workflow: Workflow): object[] {
     {
       id: workflow.id,
       value: null,
-      display: <Edit workflow={workflow} />,
-    },
-    {
-      id: workflow.id,
-      value: null,
-      display: <More workflow={workflow} />,
+      display: <Actions workflow={workflow} />,
     },
   ];
 }
