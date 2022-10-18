@@ -1,7 +1,12 @@
 import { __ } from '@wordpress/i18n';
 import { DropdownMenu } from '@wordpress/components';
 import { moreVertical } from '@wordpress/icons';
-import { useDuplicateButton, useRestoreButton, useTrashButton } from '../menu';
+import {
+  useDeleteButton,
+  useDuplicateButton,
+  useRestoreButton,
+  useTrashButton,
+} from '../menu';
 import { Workflow } from '../../workflow';
 
 type Props = {
@@ -14,8 +19,9 @@ export function More({ workflow }: Props): JSX.Element {
   const duplicate = useDuplicateButton(workflow);
   const trash = useTrashButton(workflow);
   const restore = useRestoreButton(workflow);
+  const del = useDeleteButton(workflow);
 
-  const menuItems = [duplicate, trash, restore].filter((item) => item);
+  const menuItems = [duplicate, trash, restore, del].filter((item) => item);
 
   return (
     <>
