@@ -24,6 +24,24 @@
     box-shadow: inset 0 -1px 0 0 #dcdcde;
   }
 
+  .components-tab-panel__tabs-item:focus {
+    box-shadow: none;
+  }
+
+  .components-tab-panel__tabs-item.is-active {
+    box-shadow: inset 0 -4px 0 0 var(--wp-admin-theme-color);
+  }
+
+  .components-tab-panel__tabs-item:focus-visible {
+    box-shadow: inset 0 0 0 var(--wp-admin-border-width-focus) var(--wp-admin-theme-color);
+  }
+
+  .components-tab-panel__tabs-item.is-active:focus-visible {
+    box-shadow:
+      inset 0 0 0 var(--wp-admin-border-width-focus) var(--wp-admin-theme-color),
+      inset 0 -4px 0 0 var(--wp-admin-theme-color);
+  }
+
   .count {
     background-color: #f0f0f1;
     border-radius: 12px;
