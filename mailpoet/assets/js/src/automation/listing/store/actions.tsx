@@ -1,5 +1,14 @@
+import { dispatch, StoreDescriptor } from '@wordpress/data';
 import { apiFetch } from '@wordpress/data-controls';
+import { __, sprintf } from '@wordpress/i18n';
+import { store as noticesStore } from '@wordpress/notices';
 import { Workflow, WorkflowStatus } from '../workflow';
+
+const createSuccessNotice = (content: string, options?: unknown) =>
+  dispatch(noticesStore as StoreDescriptor).createSuccessNotice(
+    content,
+    options,
+  );
 
 export function* loadWorkflows() {
   const data = yield apiFetch({
@@ -18,6 +27,11 @@ export function* duplicateWorkflow(workflow: Workflow) {
     method: 'POST',
   });
 
+  void createSuccessNotice(
+    // translators: %s is the workflow name
+    sprintf(__('Automation "%s" was duplicated.', 'mailpoet'), workflow.name),
+  );
+
   return {
     type: 'ADD_WORKFLOW',
     workflow: data.data,
@@ -32,6 +46,8 @@ export function* trashWorkflow(workflow: Workflow) {
       status: WorkflowStatus.TRASH,
     },
   });
+
+  void createSuccessNotice(__('1 automation moved to the Trash.', 'mailpoet'));
 
   return {
     type: 'UPDATE_WORKFLOW',
@@ -48,6 +64,10 @@ export function* restoreWorkflow(workflow: Workflow, status: WorkflowStatus) {
     },
   });
 
+  void createSuccessNotice(
+    __('1 automation restored from the Trash.', 'mailpoet'),
+  );
+
   return {
     type: 'UPDATE_WORKFLOW',
     workflow: data.data,
@@ -59,6 +79,10 @@ export function* deleteWorkflow(workflow: Workflow) {
     path: `/workflows/${workflow.id}`,
     method: 'DELETE',
   });
+
+  void createSuccessNotice(
+    __('1 automation and all associated data permanently deleted.', 'mailpoet'),
+  );
 
   return {
     type: 'DELETE_WORKFLOW',
