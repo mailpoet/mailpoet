@@ -1,68 +1,32 @@
 .mailpoet-automation-stats {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-start;
-  margin: auto;
+  display: grid;
+  grid-auto-flow: column;
+  justify-content: space-between;
+}
 
-  @at-root #mailpoet_automation_editor #{&} {
-    justify-content: center;
-    margin-bottom: 32px;
-    max-width: 560px;
+.mailpoet-automation-stats-item {
+  color: $color-wordpress-heading;
+  display: grid;
+  font-size: 12px;
+  line-height: 16px;
+  text-align: center;
+}
+
+.mailpoet-automation-stats-label {
+  color: #646970;
+  display: block;
+
+  &.display-after {
+    order: 1;
   }
+}
 
-  .mailpoet-automation-stats-item {
-    color: $color-wordpress-heading;
-    display: grid;
-    font-size: 12px;
-    font-weight: 600;
-    line-height: 16px;
-    padding: 0 16px;
-    position: relative;
-    text-align: center;
+.mailpoet-automation-stats-value {
+  font-weight: 600;
+}
 
-    @at-root #mailpoet_automation_editor #{&} {
-      flex-grow: 1;
-    }
-
-    &:first-of-type {
-      @at-root #mailpoet_automation #{&} {
-        padding-left: 0;
-      }
-    }
-
-    @at-root #mailpoet_automation_editor #{&} {
-      font-size: 14px;
-      line-height: 22px;
-    }
-
-    &:after {
-      align-items: center;
-      color: #a7aaad;
-      content: '›';
-      display: flex;
-      font-size: 20px;
-      font-weight: normal;
-      height: 100%;
-      justify-content: center;
-      position: absolute;
-      right: 0;
-      top: 0;
-    }
-
-    &:last-of-type:after {
-      content: '';
-    }
-
-    .mailpoet-automation-stats-label {
-      color: #646970;
-      display: block;
-      font-size: 12px;
-      font-weight: 400;
-      line-height: 16px;
-
-      &.display-after {
-        order: 1;
-      }
-    }
-  }
+.mailpoet-automation-stats-item-separator {
+  color: #a7aaad;
+  font-size: 20px;
+  margin: 0 16px;
 }
