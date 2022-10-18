@@ -2,7 +2,7 @@ import ReactDOM from 'react-dom';
 import { BrowserRouter } from 'react-router-dom';
 import { TopBarWithBeamer } from 'common/top_bar/top_bar';
 import { plusIcon } from 'common/button/icon/plus';
-import { Button, Flex } from '@wordpress/components';
+import { Button, Flex, Popover, SlotFillProvider } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 import { initializeApi, useMutation } from './api';
 import { createStore, storeName } from './listing/store';
@@ -94,27 +94,30 @@ function DeleteSchemaButton(): JSX.Element {
 
 function App(): JSX.Element {
   return (
-    <BrowserRouter>
-      <div>
-        <Workflows />
-        <div style={{ marginTop: 30, display: 'grid', gridGap: 8 }}>
-          <CreateEmptyWorkflowButton />
-          <CreateWorkflowFromTemplateButton slug="simple-welcome-email">
-            Create testing workflow from template (welcome email)
-          </CreateWorkflowFromTemplateButton>
-          <CreateWorkflowFromTemplateButton slug="welcome-email-sequence">
-            Create testing workflow from template (welcome sequence, only
-            premium)
-          </CreateWorkflowFromTemplateButton>
-          <CreateWorkflowFromTemplateButton slug="advanced-welcome-email-sequence">
-            Create testing workflow from template (advanced welcome sequence,
-            only premium)
-          </CreateWorkflowFromTemplateButton>
-          <RecreateSchemaButton />
-          <DeleteSchemaButton />
+    <SlotFillProvider>
+      <BrowserRouter>
+        <div>
+          <Workflows />
+          <div style={{ marginTop: 30, display: 'grid', gridGap: 8 }}>
+            <CreateEmptyWorkflowButton />
+            <CreateWorkflowFromTemplateButton slug="simple-welcome-email">
+              Create testing workflow from template (welcome email)
+            </CreateWorkflowFromTemplateButton>
+            <CreateWorkflowFromTemplateButton slug="welcome-email-sequence">
+              Create testing workflow from template (welcome sequence, only
+              premium)
+            </CreateWorkflowFromTemplateButton>
+            <CreateWorkflowFromTemplateButton slug="advanced-welcome-email-sequence">
+              Create testing workflow from template (advanced welcome sequence,
+              only premium)
+            </CreateWorkflowFromTemplateButton>
+            <RecreateSchemaButton />
+            <DeleteSchemaButton />
+          </div>
+          <Popover.Slot />
         </div>
-      </div>
-    </BrowserRouter>
+      </BrowserRouter>
+    </SlotFillProvider>
   );
 }
 

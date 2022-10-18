@@ -36,6 +36,7 @@ export function Actions({ workflow }: Props): JSX.Element {
         label={__('More', 'mailpoet')}
         icon={moreVertical}
         controls={menuItems.map(({ control }) => control)}
+        popoverProps={{ position: 'bottom left' }}
       />
     </div>
   );
