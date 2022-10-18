@@ -7,6 +7,7 @@ import { useSelect } from '@wordpress/data';
 import { initializeApi, useMutation } from './api';
 import { createStore, storeName } from './listing/store';
 import { AutomationListing } from './listing';
+import { Notices } from './listing/components/notices';
 import { WorkflowListingNotices } from './listing/workflow-listing-notices';
 import { Onboarding } from './onboarding';
 import {
@@ -35,6 +36,7 @@ function Workflows(): JSX.Element {
           New automation
         </Button>
       </Flex>
+      <Notices />
       <Content />
     </>
   );
