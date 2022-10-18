@@ -2,6 +2,13 @@
 @import '../../../node_modules/@wordpress/edit-site/build-style/style';
 @import '../../../node_modules/@wordpress/block-editor/build-style/style'; // for inserter styles
 @import 'settings/colors';
+
+// automation components
+
+@import './components-automation/statistics';
+
+// automation editor
+
 @import './components-automation-editor/add-step-button';
 @import './components-automation-editor/add-trigger';
 @import './components-automation-editor/block-icon';
@@ -20,4 +27,3 @@
 // integrations
 
 @import './components-automation-integrations/mailpoet';
-@import './components/automation_statistics';
