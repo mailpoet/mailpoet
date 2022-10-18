@@ -1,4 +1,4 @@
-import { Edit } from './edit';
+import { EditWorkflow } from '../actions';
 import { Workflow } from '../../workflow';
 
 type Props = {
@@ -6,5 +6,5 @@ type Props = {
 };
 
 export function Name({ workflow }: Props): JSX.Element {
-  return <Edit workflow={workflow} label={workflow.name} />;
+  return <EditWorkflow workflow={workflow} label={workflow.name} />;
 }
