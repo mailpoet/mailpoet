@@ -1,15 +1,12 @@
 import { Search, TableCard } from '@woocommerce/components/build';
 import { TabPanel } from '@wordpress/components';
+import { useDispatch, useSelect } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import { getRow } from './get-row';
+import { storeName } from './store/constants';
 import { Workflow, WorkflowStatus } from './workflow';
-
-type Props = {
-  workflows: Workflow[];
-  loading: boolean;
-};
 
 const filterTabs = [
   {
@@ -47,13 +44,20 @@ const tableHeaders = [
   { key: 'more' },
 ] as const;
 
-export function AutomationListing({ workflows, loading }: Props): JSX.Element {
+export function AutomationListing(): JSX.Element {
   const history = useHistory();
   const location = useLocation();
   const pageSearch = useMemo(
     () => new URLSearchParams(location.search),
     [location],
   );
+
+  const workflows = useSelect((select) => select(storeName).getWorkflows());
+  const { loadWorkflows } = useDispatch(storeName);
+
+  useEffect(() => {
+    loadWorkflows();
+  }, [loadWorkflows]);
 
   const updateUrlSearchString = useCallback(
     (search: Record<string, string>) => {
@@ -78,7 +82,7 @@ export function AutomationListing({ workflows, loading }: Props): JSX.Element {
     const grouped = {
       all: [],
     };
-    workflows.forEach((workflow) => {
+    (workflows ?? []).forEach((workflow) => {
       if (!grouped[workflow.status]) {
         grouped[workflow.status] = [];
       }
@@ -125,7 +129,7 @@ export function AutomationListing({ workflows, loading }: Props): JSX.Element {
         <TableCard
           className="mailpoet-automation-listing"
           title=""
-          isLoading={loading}
+          isLoading={!workflows}
           headers={tableHeaders}
           rows={rows}
           rowKey={(_, i) => filteredWorkflows[i].id}
@@ -143,21 +147,15 @@ export function AutomationListing({ workflows, loading }: Props): JSX.Element {
               allowFreeTextSearch
               inlineTags
               key="search"
-              // onChange={ onSearchChange }
-              // placeholder={
-              //  labels.placeholder ||
-              //  __( 'Search by item name', 'woocommerce' )
-              // }
-              // selected={ searchedLabels }
               type="custom"
-              disabled={loading || workflows.length === 0}
+              disabled={!workflows}
               autocompleter={{}}
             />,
           ]}
         />
       );
     },
-    [workflows, groupedWorkflows, pageSearch, loading, updateUrlSearchString],
+    [workflows, groupedWorkflows, pageSearch, updateUrlSearchString],
   );
 
   return (
