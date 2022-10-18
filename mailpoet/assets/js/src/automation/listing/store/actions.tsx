@@ -3,12 +3,16 @@ import { apiFetch } from '@wordpress/data-controls';
 import { __, sprintf } from '@wordpress/i18n';
 import { store as noticesStore } from '@wordpress/notices';
 import { Workflow, WorkflowStatus } from '../workflow';
+import { UndoTrashButton } from '../components/actions';
 
 const createSuccessNotice = (content: string, options?: unknown) =>
   dispatch(noticesStore as StoreDescriptor).createSuccessNotice(
     content,
     options,
   );
+
+const removeNotice = (id: string) =>
+  dispatch(noticesStore as StoreDescriptor).removeNotice(id);
 
 export function* loadWorkflows() {
   const data = yield apiFetch({
@@ -47,7 +51,16 @@ export function* trashWorkflow(workflow: Workflow) {
     },
   });
 
-  void createSuccessNotice(__('1 automation moved to the Trash.', 'mailpoet'));
+  const message = __('1 automation moved to the Trash.', 'mailpoet');
+  void createSuccessNotice(message, {
+    id: `workflow-trashed-${workflow.id}`,
+    __unstableHTML: (
+      <p>
+        {message}{' '}
+        <UndoTrashButton workflow={workflow} previousStatus={workflow.status} />
+      </p>
+    ),
+  });
 
   return {
     type: 'UPDATE_WORKFLOW',
@@ -63,6 +76,8 @@ export function* restoreWorkflow(workflow: Workflow, status: WorkflowStatus) {
       status,
     },
   });
+
+  void removeNotice(`workflow-trashed-${workflow.id}`);
 
   void createSuccessNotice(
     __('1 automation restored from the Trash.', 'mailpoet'),
