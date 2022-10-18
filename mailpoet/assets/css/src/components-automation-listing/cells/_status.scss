@@ -1,6 +1,8 @@
 .mailpoet-automation-listing-cell-status {
   align-items: center;
-  display: flex;
+  display: grid;
+  grid-auto-flow: column;
+  white-space: nowrap;
 
   > div.components-base-control > div.components-base-control__field {
     margin-bottom: 0;
