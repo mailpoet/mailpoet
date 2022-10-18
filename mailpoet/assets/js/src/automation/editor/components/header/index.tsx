@@ -30,7 +30,7 @@ function ActivateButton(): JSX.Element {
       onClick={activate}
       disabled={!!errors}
     >
-      Activate
+      {__('Activate', 'mailpoet')}
     </Button>
   );
 }
@@ -44,7 +44,7 @@ function UpdateButton(): JSX.Element {
       className="editor-post-publish-button"
       onClick={activate}
     >
-      Update
+      {__('Update', 'mailpoet')}
     </Button>
   );
 }
@@ -54,7 +54,7 @@ function SaveDraftButton(): JSX.Element {
 
   return (
     <Button variant="tertiary" onClick={save}>
-      {__('Save draft')}
+      {__('Save draft', 'mailpoet')}
     </Button>
   );
 }
@@ -90,13 +90,14 @@ export function Header({ showInserterToggle }: Props): JSX.Element {
           {() => (
             <div className="mailpoet-automation-editor-dropdown-name-edit">
               <div className="mailpoet-automation-editor-dropdown-name-edit-title">
-                {__('Automation name')}
+                {__('Automation name', 'mailpoet')}
               </div>
               <TextControl
                 value={workflowName}
                 onChange={(newName) => setWorkflowName(newName)}
                 help={__(
                   `Give the automation a name that indicates its purpose. E.g. "Abandoned cart recovery"`,
+                  'mailpoet',
                 )}
               />
             </div>
