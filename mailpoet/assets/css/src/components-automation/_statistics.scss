@@ -12,6 +12,7 @@
 
   .mailpoet-automation-stats-item {
     color: $color-wordpress-heading;
+    display: grid;
     font-size: 12px;
     font-weight: 600;
     line-height: 16px;
@@ -58,6 +59,10 @@
       font-size: 12px;
       font-weight: 400;
       line-height: 16px;
+
+      &.display-after {
+        order: 1;
+      }
     }
   }
 }
