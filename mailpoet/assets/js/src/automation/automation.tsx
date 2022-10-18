@@ -3,34 +3,21 @@ import { BrowserRouter } from 'react-router-dom';
 import { TopBarWithBeamer } from 'common/top_bar/top_bar';
 import { plusIcon } from 'common/button/icon/plus';
 import { Button, Flex } from '@wordpress/components';
-import { Workflow } from './listing/workflow';
+import { useSelect } from '@wordpress/data';
+import { initializeApi, useMutation } from './api';
+import { createStore, storeName } from './listing/store';
 import { AutomationListing } from './listing';
+import { WorkflowListingNotices } from './listing/workflow-listing-notices';
 import { Onboarding } from './onboarding';
 import {
   CreateEmptyWorkflowButton,
   CreateWorkflowFromTemplateButton,
 } from './testing';
-import { useMutation, useQuery } from './api';
-import { WorkflowListingNotices } from './listing/workflow-listing-notices';
 import { MailPoet } from '../mailpoet';
 
 function Content(): JSX.Element {
-  const { data, loading, error } = useQuery<{ data: Workflow[] }>('workflows');
-
-  if (error) {
-    return <div>Error: {error}</div>;
-  }
-
-  if (loading) {
-    return <div>Loading workflows...</div>;
-  }
-
-  const workflows = data?.data ?? [];
-  return workflows.length > 0 ? (
-    <AutomationListing workflows={workflows} loading={loading} />
-  ) : (
-    <Onboarding />
-  );
+  const count = useSelect((select) => select(storeName).getWorkflowCount());
+  return count > 0 ? <AutomationListing /> : <Onboarding />;
 }
 
 function Workflows(): JSX.Element {
@@ -129,8 +116,11 @@ function App(): JSX.Element {
 }
 
 window.addEventListener('DOMContentLoaded', () => {
+  createStore();
+
   const root = document.getElementById('mailpoet_automation');
   if (root) {
+    initializeApi();
     ReactDOM.render(<App />, root);
   }
 });
