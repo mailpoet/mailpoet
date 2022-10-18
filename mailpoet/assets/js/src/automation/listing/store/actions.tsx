@@ -3,7 +3,7 @@ import { apiFetch } from '@wordpress/data-controls';
 import { __, sprintf } from '@wordpress/i18n';
 import { store as noticesStore } from '@wordpress/notices';
 import { Workflow, WorkflowStatus } from '../workflow';
-import { UndoTrashButton } from '../components/actions';
+import { EditWorkflow, UndoTrashButton } from '../components/actions';
 
 const createSuccessNotice = (content: string, options?: unknown) =>
   dispatch(noticesStore as StoreDescriptor).createSuccessNotice(
@@ -79,9 +79,14 @@ export function* restoreWorkflow(workflow: Workflow, status: WorkflowStatus) {
 
   void removeNotice(`workflow-trashed-${workflow.id}`);
 
-  void createSuccessNotice(
-    __('1 automation restored from the Trash.', 'mailpoet'),
-  );
+  const message = __('1 automation restored from the Trash.', 'mailpoet');
+  void createSuccessNotice(message, {
+    __unstableHTML: (
+      <p>
+        {message} <EditWorkflow workflow={workflow} label="Edit Workflow" />
+      </p>
+    ),
+  });
 
   return {
     type: 'UPDATE_WORKFLOW',
