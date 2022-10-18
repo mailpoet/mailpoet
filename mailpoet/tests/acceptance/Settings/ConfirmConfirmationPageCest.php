@@ -12,7 +12,7 @@ class ConfirmConfirmationPageCest {
     $i->waitForText('MailPoet Page');
     $i->click('[data-automation-id="preview_page_link"]');
     $i->switchToNextTab();
-    $i->waitForText('You have subscribed to: demo 1, demo 2');
+    $i->see('You have subscribed to');
     $pageTitle = 'MailPoetConfirmationPage';
     $postContent = 'BobsYourUncle';
     $i->cli(['post', 'create', '--post_type=page', '--post_status=publish', "--post_title=$pageTitle", "--post_content=$postContent"]);
