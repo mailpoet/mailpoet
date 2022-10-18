@@ -36,13 +36,13 @@ function ActivateButton(): JSX.Element {
 }
 
 function UpdateButton(): JSX.Element {
-  const { activate } = useDispatch(storeName);
+  const { save } = useDispatch(storeName);
 
   return (
     <Button
       variant="primary"
       className="editor-post-publish-button"
-      onClick={activate}
+      onClick={save}
     >
       {__('Update', 'mailpoet')}
     </Button>
