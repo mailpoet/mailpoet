@@ -27,7 +27,7 @@ function FormFieldTokenField(props: TokenFormFieldProps) {
       props.item[props.field.name].map((item) => props.field.getName(item))
     : [];
 
-  let suggestedValues;
+  let suggestedValues: readonly string[] = [];
   if (props.field.endpoint) {
     const items = getItems(String(props.field.endpoint));
     suggestedValues = items.map((item) => props.field.getName(item));
