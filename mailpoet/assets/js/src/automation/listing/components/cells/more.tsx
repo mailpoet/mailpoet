@@ -1,5 +1,7 @@
-import { EllipsisMenu, MenuItem } from '@woocommerce/components/build';
 import { __ } from '@wordpress/i18n';
+import { DropdownMenu } from '@wordpress/components';
+import { moreVertical } from '@wordpress/icons';
+import { useDuplicateButton } from '../menu';
 import { Workflow } from '../../workflow';
 
 type Props = {
@@ -7,19 +9,19 @@ type Props = {
 };
 
 export function More({ workflow }: Props): JSX.Element {
+  // Menu items are using custom hooks because the "DropdownMenu" component uses the "controls"
+  // attribute rather than child components, but we need to render modal confirmation dialogs.
+  const duplicate = useDuplicateButton(workflow);
+
+  const menuItems = [duplicate].filter((item) => item);
+
   return (
-    <EllipsisMenu
-      label={`Actions for ${workflow.name}`}
-      renderContent={() => (
-        <div>
-          <MenuItem onInvoke={() => {}}>
-            <p>{__('Duplicate', 'mailpoet')}</p>
-          </MenuItem>
-          <MenuItem onInvoke={() => {}}>
-            <p>{__('Move to trash', 'mailpoet')}</p>
-          </MenuItem>
-        </div>
-      )}
-    />
+    <>
+      <DropdownMenu
+        label={__('More', 'mailpoet')}
+        icon={moreVertical}
+        controls={menuItems.map(({ control }) => control)}
+      />
+    </>
   );
 }
