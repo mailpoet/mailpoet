@@ -9,12 +9,13 @@ import {
   useTrashButton,
 } from '../menu';
 import { Workflow } from '../../workflow';
+import { EditWorkflow } from '../actions';
 
 type Props = {
   workflow: Workflow;
 };
 
-export function More({ workflow }: Props): JSX.Element {
+export function Actions({ workflow }: Props): JSX.Element {
   // Menu items are using custom hooks because the "DropdownMenu" component uses the "controls"
   // attribute rather than child components, but we need to render modal confirmation dialogs.
   const duplicate = useDuplicateButton(workflow);
@@ -25,15 +26,17 @@ export function More({ workflow }: Props): JSX.Element {
   const menuItems = [duplicate, trash, restore, del].filter((item) => item);
 
   return (
-    <>
+    <div className="mailpoet-automation-listing-cell-actions">
+      <EditWorkflow workflow={workflow} />
       {menuItems.map(({ control, slot }) => (
         <Fragment key={control.title}>{slot}</Fragment>
       ))}
       <DropdownMenu
+        className="mailpoet-automation-listing-more-button"
         label={__('More', 'mailpoet')}
         icon={moreVertical}
         controls={menuItems.map(({ control }) => control)}
       />
-    </>
+    </div>
   );
 }

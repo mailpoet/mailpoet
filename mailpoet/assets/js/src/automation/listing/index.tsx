@@ -40,8 +40,7 @@ const tableHeaders = [
   { key: 'name', label: __('Name', 'mailpoet') },
   { key: 'subscribers', label: __('Subscribers', 'mailpoet') },
   { key: 'status', label: __('Status', 'mailpoet') },
-  { key: 'edit' },
-  { key: 'more' },
+  { key: 'actions' },
 ] as const;
 
 export function AutomationListing(): JSX.Element {
