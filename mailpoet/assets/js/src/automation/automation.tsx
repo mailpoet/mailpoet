@@ -7,6 +7,7 @@ import { useSelect } from '@wordpress/data';
 import { initializeApi, useMutation } from './api';
 import { createStore, storeName } from './listing/store';
 import { AutomationListing } from './listing';
+import { registerApiErrorHandler } from './listing/api-error-handler';
 import { Notices } from './listing/components/notices';
 import { WorkflowListingNotices } from './listing/workflow-listing-notices';
 import { Onboarding } from './onboarding';
@@ -122,6 +123,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
   const root = document.getElementById('mailpoet_automation');
   if (root) {
+    registerApiErrorHandler();
     initializeApi();
     ReactDOM.render(<App />, root);
   }
