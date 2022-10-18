@@ -40,9 +40,6 @@ class SubscribeToMultipleListsCest {
     $i->click('I confirm my subscription!');
     $i->switchToNextTab();
     $i->see('You have subscribed');
-    $i->waitForText($seg1);
-    $i->waitForText($seg2);
-    $i->waitForText($seg3);
     $i->seeNoJSErrors();
   }
 }

@@ -45,7 +45,6 @@ class CreateNewWordPressUserCest {
     $i->click('I confirm my subscription!');
     $i->switchToNextTab();
     $i->see('You have subscribed to');
-    $i->see('Newsletter mailing list');
     $i->seeNoJSErrors();
 
     // check if user is assigned to second list
