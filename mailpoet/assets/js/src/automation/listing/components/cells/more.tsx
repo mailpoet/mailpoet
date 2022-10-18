@@ -1,3 +1,4 @@
+import { Fragment } from 'react';
 import { __ } from '@wordpress/i18n';
 import { DropdownMenu } from '@wordpress/components';
 import { moreVertical } from '@wordpress/icons';
@@ -25,6 +26,9 @@ export function More({ workflow }: Props): JSX.Element {
 
   return (
     <>
+      {menuItems.map(({ control, slot }) => (
+        <Fragment key={control.title}>{slot}</Fragment>
+      ))}
       <DropdownMenu
         label={__('More', 'mailpoet')}
         icon={moreVertical}
