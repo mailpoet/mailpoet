@@ -1,8 +1,14 @@
 @import '../../../node_modules/@woocommerce/components/build-style/style';
 @import 'settings/colors';
+
+// automation components
+
+@import './components-automation/statistics';
+
+// automation listing
+
 @import './components-automation-listing/listing';
 @import './components-automation-listing/header';
 @import './components-automation-listing/search';
 @import './components-automation-listing/cells/actions';
 @import './components-automation-listing/cells/status';
-@import './components/automation_statistics';
