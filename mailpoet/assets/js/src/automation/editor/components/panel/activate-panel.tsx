@@ -1,5 +1,6 @@
-import { useDispatch, useSelect } from '@wordpress/data';
+import { StoreDescriptor, useDispatch, useSelect } from '@wordpress/data';
 import { Button } from '@wordpress/components';
+import { store as noticesStore } from '@wordpress/notices';
 import { closeSmall } from '@wordpress/icons';
 import { __ } from '@wordpress/i18n';
 import { storeName } from '../../store';
@@ -8,11 +9,17 @@ import { MailPoet } from '../../../../mailpoet';
 
 function PreStep({ onClose }): JSX.Element {
   const { activate } = useDispatch(storeName);
+
   return (
     <>
       <div className="mailpoet-automation-activate-panel__header">
         <div className="mailpoet-automation-activate-panel__header-activate-button">
-          <Button variant="primary" onClick={activate}>
+          <Button
+            variant="primary"
+            onClick={() => {
+              activate();
+            }}
+          >
             {__('Activate', 'mailpoet')}
           </Button>
         </div>
@@ -45,6 +52,14 @@ function PostStep({ onClose }): JSX.Element {
   const goToListings = () => {
     window.location.href = MailPoet.urls.automationListing;
   };
+
+  const { createErrorNotice } = useDispatch(noticesStore as StoreDescriptor);
+  void createErrorNotice(
+    __('Well done! Automation is now activated!', 'mailpoet'),
+    {
+      type: 'snackbar',
+    },
+  );
 
   return (
     <>
