@@ -4,18 +4,25 @@
   .mailpoet-add-new-button {
     padding-right: 12px;
   }
+}
 
-  .mailpoet-automation-listing {
-    /* Prevent border radius beneath tabs */
-    border-radius: 0 0 1px 1px;
-  }
+.mailpoet-automation-listing-heading {
+  margin-bottom: 16px;
+}
+
+.mailpoet-automation-listing {
+  box-shadow: none;
+  margin-bottom: 0;
 }
 
 .mailpoet-filter-tab-panel {
   background-color: #fff;
-  border-radius: 1px;
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, .1);
-  outline: none;
+  border: 1px solid #dcdcde;
+  border-radius: 2px;
+
+  .components-tab-panel__tabs {
+    box-shadow: inset 0 -1px 0 0 #dcdcde;
+  }
 
   .count {
     background-color: #f0f0f1;
@@ -27,6 +34,13 @@
   }
 }
 
-.mailpoet-automation-listing-heading {
-  margin-bottom: 16px;
+.mailpoet-automation-listing-more-button button.components-button {
+  height: 36px;
+  padding: 0;
+  width: 36px;
+
+  svg {
+    height: 28px;
+    width: 28px;
+  }
 }
