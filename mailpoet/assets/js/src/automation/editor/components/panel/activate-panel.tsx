@@ -19,6 +19,7 @@ function PreStep({ onClose }): JSX.Element {
             variant="primary"
             disabled={isActivating}
             isBusy={isActivating}
+            autoFocus={!isActivating}
             onClick={() => {
               setIsActivating(true);
               activate();
