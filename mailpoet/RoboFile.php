@@ -136,9 +136,11 @@ class RoboFile extends \Robo\Tasks {
 
     $this->collectionBuilder()
       ->taskExec('mkdir -p ' . __DIR__ . '/lang')
-      ->taskExec(
-        "php -d memory_limit=-1 tasks/makepot/grunt-makepot.php wp-plugin . lang/mailpoet.pot mailpoet $exclude"
-      )->run();
+
+      // HTML, HBS
+      ->taskExec("php -d memory_limit=-1 tasks/makepot/grunt-makepot.php wp-plugin . lang/mailpoet.pot mailpoet $exclude \\.html$,\\.hbs$")
+
+      ->run();
   }
 
   public function translationsGetPotFileFromBuild() {
