@@ -100,6 +100,11 @@
 .mailpoet-automation-activate-panel__body {
   padding-left: 16px;
   padding-right: 16px;
+
+  .components-spinner {
+    display: block;
+    margin: 100px auto 0;
+  }
 }
 
 .mailpoet-automation-activate-panel__section {
