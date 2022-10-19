@@ -2,6 +2,7 @@
 
 namespace MailPoet\Twig;
 
+use MailPoet\Config\Env;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Util\CdnAssetUrl;
 use MailPoet\WP\Functions as WPFunctions;
@@ -83,10 +84,11 @@ class Assets extends AbstractExtension {
 
   public function getJavascriptScriptUrl($script) {
     return sprintf(
-      '%s/%s/%s',
+      '%s/%s/%s?ver=%s',
       $this->globals['assets_url'],
       strpos($script, 'lib/') === 0 ? 'js' : 'dist/js',
-      $this->getAssetFileName($this->globals['assets_manifest_js'], $script)
+      $this->getAssetFileName($this->globals['assets_manifest_js'], $script),
+      Env::$version
     );
   }
 
