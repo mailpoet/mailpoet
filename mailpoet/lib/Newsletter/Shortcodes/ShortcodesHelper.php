@@ -111,6 +111,16 @@ class ShortcodesHelper {
           ),
         ],
       ],
+      __('Site', 'mailpoet') => [
+        [
+          'text' => __('Site title', 'mailpoet'),
+          'shortcode' => '[site:title]',
+        ],
+        [
+          'text' => __('Homepage link', 'mailpoet'),
+          'shortcode' => '[site:homepage_link]',
+        ],
+      ],
     ];
     $customFields = $this->getCustomFields();
     if (count($customFields) > 0) {
