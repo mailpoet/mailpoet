@@ -49,7 +49,7 @@ class ReceiveWelcomeEmailCest {
     $i->checkEmailWasReceived($confirmationEmailName);
     $i->click(Locator::contains('span.subject', $confirmationEmailName));
     $i->switchToIframe('#preview-html');
-    $i->click('I confirm my subscription!');
+    $i->click('Click here to confirm your subscription.');
     $i->switchToNextTab();
     $i->reloadPage();
     $i->triggerMailPoetActionScheduler();

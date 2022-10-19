@@ -108,7 +108,7 @@ class SubscriberCookieCest {
     $i->checkEmailWasReceived('Confirm your subscription to MP Dev');
     $i->click(Locator::contains('span.subject', 'Confirm your subscription to MP Dev'));
     $i->switchToIframe('#preview-html');
-    $i->click('I confirm my subscription!');
+    $i->click('Click here to confirm your subscription.');
     $i->switchToNextTab();
 
     // subscriber cookie should be set after subscription confirmation

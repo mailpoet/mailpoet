@@ -75,7 +75,7 @@ class SubscribeOnRegistrationPageCest {
     $i->checkEmailWasReceived('Confirm your subscription');
     $i->click(Locator::contains('span.subject', 'Confirm your subscription'));
     $i->switchToIframe('#preview-html');
-    $i->click('I confirm my subscription!');
+    $i->click('Click here to confirm your subscription.');
     $i->switchToNextTab();
     if (!getenv('MULTISITE')) {
       $i->see('You have subscribed');
