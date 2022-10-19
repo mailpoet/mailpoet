@@ -5,9 +5,13 @@ namespace MailPoet\AdminPages\Pages;
 use MailPoet\AdminPages\PageRenderer;
 use MailPoet\Automation\Engine\Migrations\Migrator;
 use MailPoet\Automation\Engine\Storage\WorkflowStorage;
+use MailPoet\Form\AssetsController;
 use MailPoet\WP\Functions as WPFunctions;
 
 class Automation {
+  /** @var AssetsController */
+  private $assetsController;
+
   /** @var Migrator */
   private $migrator;
 
@@ -21,11 +25,13 @@ class Automation {
   private $workflowStorage;
 
   public function __construct(
+    AssetsController $assetsController,
     Migrator $migrator,
     PageRenderer $pageRenderer,
     WPFunctions $wp,
     WorkflowStorage $workflowStorage
   ) {
+    $this->assetsController = $assetsController;
     $this->migrator = $migrator;
     $this->pageRenderer = $pageRenderer;
     $this->wp = $wp;
@@ -33,6 +39,7 @@ class Automation {
   }
 
   public function render() {
+    $this->assetsController->setupAutomationListingDependencies();
 
     if (!$this->migrator->hasSchema()) {
       $this->migrator->createSchema();

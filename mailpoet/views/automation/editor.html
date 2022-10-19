@@ -12,7 +12,6 @@
   var mailpoet_automation_context = <%= json_encode(context) %>;
   var mailpoet_automation_workflow = <%= workflow ? json_encode(workflow) : 'undefined' %>;
 </script>
-<%= javascript('automation_editor.js')%>
 <% endblock %>
 
 <% block after_css %>
