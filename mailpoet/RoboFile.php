@@ -141,7 +141,7 @@ class RoboFile extends \Robo\Tasks {
       ->taskExec('mkdir -p ' . __DIR__ . '/lang')
 
       // HTML, HBS
-      ->taskExec("php -d memory_limit=-1 tasks/makepot/grunt-makepot.php wp-plugin . lang/mailpoet.pot mailpoet $exclude \\.html$,\\.hbs$")
+      ->taskExec("php -d memory_limit=-1 tasks/makepot/makepot-views.php . > lang/mailpoet.pot")
 
       // PHP, JS/TS
       ->taskExec("vendor/bin/wp i18n make-pot --merge --slug=mailpoet --domain=mailpoet --exclude=$exclude . lang/mailpoet.pot")
