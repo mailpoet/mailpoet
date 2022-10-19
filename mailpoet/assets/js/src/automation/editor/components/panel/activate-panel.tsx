@@ -2,7 +2,7 @@ import { StoreDescriptor, useDispatch, useSelect } from '@wordpress/data';
 import { Button } from '@wordpress/components';
 import { store as noticesStore } from '@wordpress/notices';
 import { closeSmall } from '@wordpress/icons';
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 import { storeName } from '../../store';
 import { WorkflowStatus } from '../../../listing/workflow';
 import { MailPoet } from '../../../../mailpoet';
@@ -73,7 +73,7 @@ function PostStep({ onClose }): JSX.Element {
 
       <div className="mailpoet-automation-activate-panel__body">
         <div className="mailpoet-automation-activate-panel__section">
-          {__('"%s" is now live.', 'mailpoet').replace('%s', workflow.name)}
+          {sprintf(__('"%s" is now live.', 'mailpoet'), workflow.name)}
         </div>
         <p>
           <strong>{__("What's next?", 'mailpoet')}</strong>
