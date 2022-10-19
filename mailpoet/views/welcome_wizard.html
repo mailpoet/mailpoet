@@ -11,6 +11,7 @@
   var sender_data = <%= json_encode(sender) %>;
   var admin_email = <%= json_encode(admin_email) %>;
   var hide_mailpoet_beacon = true;
+  var mailpoet_show_customers_import = <%= json_encode(show_customers_import) %>;
   var mailpoet_account_url = '<%= add_referral_id("https://account.mailpoet.com/?s=" ~ subscriber_count ~ "&email=" ~ current_wp_user.user_email|escape('js')) %>';
 </script>
 
