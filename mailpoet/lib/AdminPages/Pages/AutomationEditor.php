@@ -8,11 +8,15 @@ use MailPoet\Automation\Engine\Hooks;
 use MailPoet\Automation\Engine\Mappers\WorkflowMapper;
 use MailPoet\Automation\Engine\Registry;
 use MailPoet\Automation\Engine\Storage\WorkflowStorage;
+use MailPoet\Form\AssetsController;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoet\WP\Notice as WPNotice;
 
 class AutomationEditor {
+  /** @var AssetsController */
+  private $assetsController;
+
   /** @var WorkflowMapper */
   private $workflowMapper;
 
@@ -32,6 +36,7 @@ class AutomationEditor {
   private $wp;
 
   public function __construct(
+    AssetsController $assetsController,
     WorkflowMapper $workflowMapper,
     WorkflowStorage $workflowStorage,
     PageRenderer $pageRenderer,
@@ -39,6 +44,7 @@ class AutomationEditor {
     SegmentsRepository $segmentsRepository,
     WPFunctions $wp
   ) {
+    $this->assetsController = $assetsController;
     $this->workflowMapper = $workflowMapper;
     $this->workflowStorage = $workflowStorage;
     $this->pageRenderer = $pageRenderer;
@@ -48,6 +54,8 @@ class AutomationEditor {
   }
 
   public function render() {
+    $this->assetsController->setupAutomationEditorDependencies();
+
     $id = isset($_GET['id']) ? (int)$_GET['id'] : null;
 
     $this->wp->doAction(Hooks::EDITOR_BEFORE_LOAD, (int)$id);

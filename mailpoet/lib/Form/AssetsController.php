@@ -127,4 +127,34 @@ EOL;
       true
     );
   }
+
+  public function setupAutomationListingDependencies(): void {
+    $this->wp->wpEnqueueScript(
+      'automation',
+      Env::$assetsUrl . '/dist/js/' . $this->renderer->getJsAsset('automation.js'),
+      [],
+      Env::$version,
+      true
+    );
+  }
+
+  public function setupAutomationEditorDependencies(): void {
+    $this->wp->wpEnqueueScript(
+      'automation_editor',
+      Env::$assetsUrl . '/dist/js/' . $this->renderer->getJsAsset('automation_editor.js'),
+      [],
+      Env::$version,
+      true
+    );
+  }
+
+  public function setupAutomationTemplatesDependencies(): void {
+    $this->wp->wpEnqueueScript(
+      'automation_templates',
+      Env::$assetsUrl . '/dist/js/' . $this->renderer->getJsAsset('automation_templates.js'),
+      [],
+      Env::$version,
+      true
+    );
+  }
 }

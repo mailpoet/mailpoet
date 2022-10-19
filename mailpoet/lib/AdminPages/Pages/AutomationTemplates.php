@@ -5,9 +5,12 @@ namespace MailPoet\AdminPages\Pages;
 use MailPoet\AdminPages\PageRenderer;
 use MailPoet\Automation\Engine\Data\WorkflowTemplate;
 use MailPoet\Automation\Engine\Storage\WorkflowTemplateStorage;
+use MailPoet\Form\AssetsController;
 use MailPoet\WP\Functions as WPFunctions;
 
 class AutomationTemplates {
+  /** @var AssetsController */
+  private $assetsController;
 
   /** @var PageRenderer */
   private $pageRenderer;
@@ -19,16 +22,19 @@ class AutomationTemplates {
   private $wp;
 
   public function __construct(
+    AssetsController $assetsController,
     PageRenderer $pageRenderer,
     WorkflowTemplateStorage $templateStorage,
     WPFunctions $wp
   ) {
+    $this->assetsController = $assetsController;
     $this->pageRenderer = $pageRenderer;
     $this->templateStorage = $templateStorage;
     $this->wp = $wp;
   }
 
   public function render() {
+    $this->assetsController->setupAutomationTemplatesDependencies();
 
     $this->pageRenderer->displayPage(
       'automation/templates.html',
