@@ -66,7 +66,7 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
       'send' =>
         Stub\Expected::once(function($email, $subscriber, $extraParams) {
           expect($email['body']['html'])->stringContainsString('<strong>Test segment</strong>');
-          expect($email['body']['html'])->stringContainsString('<a target="_blank" href="http://example.com">I confirm my subscription!</a>');
+          expect($email['body']['html'])->stringContainsString('<a target="_blank" href="http://example.com">Click here to confirm your subscription.</a>');
           expect($extraParams['meta'])->equals([
             'email_type' => 'confirmation',
             'subscriber_status' => 'unconfirmed',
