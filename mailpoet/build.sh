@@ -1,8 +1,5 @@
 #!/bin/bash -e
 
-echo '[BUILD] Generating translations .pot file'
-./do translations:build
-
 plugin_name='mailpoet'
 
 # Remove previous build.
@@ -19,6 +16,10 @@ echo '[BUILD] Generating production CSS and JS assets'
 rm -rf node_modules
 pnpm install --frozen-lockfile --prefer-offline
 ./do compile:all --env production
+
+# Extract translations.
+echo '[BUILD] Generating translations .pot file'
+./do translations:build
 
 # Dependency injection container cache.
 echo '[BUILD] Building DI Container cache'
