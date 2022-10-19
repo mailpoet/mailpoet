@@ -19,6 +19,7 @@
       var mailpoet_free_plan_url = "<%= add_referral_id('https://www.mailpoet.com/free-plan') %>";
       var mailpoet_current_user_email = "<%= current_user.user_email %>";
       var mailpoet_hosts = <%= json_encode(hosts) %>;
+      var mailpoet_current_site_title = <%= json_encode(current_site_title) %>;
     <% endautoescape %>
     var mailpoet_beacon_articles = [
       '57f71d49c697911f2d323486',
@@ -107,7 +108,7 @@
     'signupConfirmationIsMandatory': __('Sign-up confirmation is mandatory when using the MailPoet Sending Service.'),
     'emailSubject':  __('Email subject'),
     'emailContent':  __('Email content'),
-    'emailContentDescription': __("Don't forget to include:<br /><br />[activation_link]Confirm your subscription.[/activation_link]<br /><br />Optional:<br /><br /> [lists_to_confirm] - comma separated subscriber's list names<br /><br />[subscriber:firstname | default: there] - Subscriber's first name, defaults to 'there' if not available<br /><br />[subscriber:lastname | default: there] - Subscriber's last name, defaults to 'there' if not available<br /><br />[subscriber:email] - Subscriber's email address<br /><br />[subscriber:count] - Total number of subscribers<br /><br />[site:title] - Your WordPress site title<br /><br />[site:homepage_link] - Link to your site's homepage."),
+    'emailContentDescription': __("Don't forget to include:<br /><br />[activation_link]Confirm your subscription.[/activation_link]<br /><br />Optional:<br /><br /> [lists_to_confirm] - comma separated subscriber's list names<br /><br />[subscriber:firstname | default: there] - Subscriber's first name, defaults to 'there' if not available<br /><br />[subscriber:lastname | default: there] - Subscriber's last name, defaults to 'there' if not available<br /><br />[subscriber:email] - Subscriber's email address<br /><br />[subscriber:count] - Total number of subscribers<br /><br />[site:title] - Your WordPress site title (currently '[current_site_title]')<br /><br />[site:homepage_link] - Link to your site's homepage."),
     'confirmationPage': __('Confirmation page'),
     'confirmationPageDescription': __('When subscribers click on the activation link, they will be redirected to this page.'),
     'subscribersNeedToActivateSub': __('Subscribers will need to activate their subscription via email in order to receive your newsletters. This is highly recommended!'),
