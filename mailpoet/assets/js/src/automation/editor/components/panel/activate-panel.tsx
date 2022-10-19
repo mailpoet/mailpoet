@@ -1,5 +1,6 @@
+import { useState } from 'react';
 import { StoreDescriptor, useDispatch, useSelect } from '@wordpress/data';
-import { Button } from '@wordpress/components';
+import { Button, Spinner } from '@wordpress/components';
 import { store as noticesStore } from '@wordpress/notices';
 import { closeSmall } from '@wordpress/icons';
 import { __, sprintf } from '@wordpress/i18n';
@@ -8,6 +9,7 @@ import { WorkflowStatus } from '../../../listing/workflow';
 import { MailPoet } from '../../../../mailpoet';
 
 function PreStep({ onClose }): JSX.Element {
+  const [isActivating, setIsActivating] = useState(false);
   const { activate } = useDispatch(storeName);
 
   return (
@@ -16,27 +18,41 @@ function PreStep({ onClose }): JSX.Element {
         <div className="mailpoet-automation-activate-panel__header-activate-button">
           <Button
             variant="primary"
+            disabled={isActivating}
+            isBusy={isActivating}
             onClick={() => {
+              setIsActivating(true);
               activate();
             }}
           >
-            {__('Activate', 'mailpoet')}
+            {isActivating && __('Activating…', 'mailpoet')}
+            {!isActivating && __('Activate', 'mailpoet')}
           </Button>
         </div>
 
         <div className="mailpoet-automation-activate-panel__header-cancel-button">
-          <Button variant="secondary" onClick={onClose}>
+          <Button variant="secondary" onClick={onClose} disabled={isActivating}>
             {__('Cancel', 'mailpoet')}
           </Button>
         </div>
       </div>
 
-      <div className="mailpoet-automation-activate-panel__body">
-        <p>
-          <strong>{__('Are you ready to activate?', 'mailpoet')}</strong>
-        </p>
-        <p>{__('Double-check your settings before activating.', 'mailpoet')}</p>
-      </div>
+      {isActivating && (
+        <div className="mailpoet-automation-activate-panel__body">
+          <Spinner />
+        </div>
+      )}
+
+      {!isActivating && (
+        <div className="mailpoet-automation-activate-panel__body">
+          <p>
+            <strong>{__('Are you ready to activate?', 'mailpoet')}</strong>
+          </p>
+          <p>
+            {__('Double-check your settings before activating.', 'mailpoet')}
+          </p>
+        </div>
+      )}
     </>
   );
 }
