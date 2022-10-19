@@ -1,7 +1,6 @@
 import { useState } from 'react';
-import { StoreDescriptor, useDispatch, useSelect } from '@wordpress/data';
+import { useDispatch, useSelect } from '@wordpress/data';
 import { Button, Spinner } from '@wordpress/components';
-import { store as noticesStore } from '@wordpress/notices';
 import { closeSmall } from '@wordpress/icons';
 import { __, sprintf } from '@wordpress/i18n';
 import { storeName } from '../../store';
@@ -68,14 +67,6 @@ function PostStep({ onClose }): JSX.Element {
   const goToListings = () => {
     window.location.href = MailPoet.urls.automationListing;
   };
-
-  const { createErrorNotice } = useDispatch(noticesStore as StoreDescriptor);
-  void createErrorNotice(
-    __('Well done! Automation is now activated!', 'mailpoet'),
-    {
-      type: 'snackbar',
-    },
-  );
 
   return (
     <>
