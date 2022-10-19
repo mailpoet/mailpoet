@@ -3,6 +3,7 @@
 namespace MailPoet\Subscribers;
 
 use Html2Text\Html2Text;
+use MailPoet\Cron\Workers\SendingQueue\Tasks\Shortcodes;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Mailer\MailerFactory;
@@ -106,6 +107,9 @@ class ConfirmationEmailMailer {
       ['target' => '_blank'],
       'activation_link'
     );
+
+
+    $body = Shortcodes::process($body, null, null, $subscriber, null);
 
     //create a text version. @ is important here, Html2Text throws warnings
     $text = @Html2Text::convert(
