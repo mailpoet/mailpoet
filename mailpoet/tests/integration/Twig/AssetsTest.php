@@ -2,6 +2,7 @@
 
 namespace MailPoet\Test\Twig;
 
+use MailPoet\Config\Env;
 use MailPoet\Twig\Assets;
 use MailPoet\Util\CdnAssetUrl;
 
@@ -41,17 +42,25 @@ class AssetsTest extends \MailPoetTest {
     );
 
     expect($assetsExtension->generateJavascript('script1.js', 'script2.js'))->equals(
-      '<script type="text/javascript" src="' . $this->assetsUrl . '/dist/js/script1.hash.js"></script>'
-      . "\n"
-      . '<script type="text/javascript" src="' . $this->assetsUrl . '/dist/js/script2.hash.js"></script>'
+      sprintf(
+        '<script type="text/javascript" src="' . $this->assetsUrl . '/dist/js/script1.hash.js?ver=%s"></script>'
+        . "\n"
+        . '<script type="text/javascript" src="' . $this->assetsUrl . '/dist/js/script2.hash.js?ver=%s"></script>',
+        Env::$version,
+        Env::$version
+      )
     );
   }
 
   public function testItGeneratesJavascriptTagsForAssetsWhenManifestFileDoesNotExist() {
     expect($this->assetsExtension->generateJavascript('lib/script1.js', 'script2.js'))->equals(
-      '<script type="text/javascript" src="' . $this->assetsUrl . '/js/lib/script1.js"></script>'
-      . "\n"
-      . '<script type="text/javascript" src="' . $this->assetsUrl . '/dist/js/script2.js"></script>'
+      sprintf(
+        '<script type="text/javascript" src="' . $this->assetsUrl . '/js/lib/script1.js?ver=%s"></script>'
+        . "\n"
+        . '<script type="text/javascript" src="' . $this->assetsUrl . '/dist/js/script2.js?ver=%s"></script>',
+        Env::$version,
+        Env::$version
+      )
     );
   }
 
