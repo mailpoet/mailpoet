@@ -108,6 +108,7 @@ class ConfirmationEmailMailer {
       'activation_link'
     );
 
+    $subject = Shortcodes::process($signupConfirmation['subject'], null, null, $subscriber, null);
 
     $body = Shortcodes::process($body, null, null, $subscriber, null);
 
@@ -119,7 +120,7 @@ class ConfirmationEmailMailer {
 
     // build email data
     $email = [
-      'subject' => $signupConfirmation['subject'],
+      'subject' => $subject,
       'body' => [
         'html' => $body,
         'text' => $text,
