@@ -23,6 +23,7 @@ class ShortcodesHelperTest extends \MailPoetTest {
         'Post Notifications',
         'Date',
         'Links',
+        'Site',
       ]
     );
   }
