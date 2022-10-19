@@ -35,7 +35,7 @@ function PreStep({ onClose }): JSX.Element {
         <p>
           <strong>{__('Are you ready to activate?', 'mailpoet')}</strong>
         </p>
-        <p>{__('Double-check your settings before activating', 'mailpoet')}</p>
+        <p>{__('Double-check your settings before activating.', 'mailpoet')}</p>
       </div>
     </>
   );
