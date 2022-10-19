@@ -9,6 +9,7 @@ export function EmailContent() {
 
   if (!enabled) return null;
   const descriptionLines = t('emailContentDescription')
+    .replace('[current_site_title]', window.mailpoet_current_site_title || '')
     .split('<br />')
     .filter((x) => x);
   return (

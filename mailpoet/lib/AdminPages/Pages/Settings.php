@@ -84,6 +84,7 @@ class Settings {
         'plugin' => dirname(dirname(dirname(__DIR__))),
       ],
       'built_in_captcha_supported' => $this->captcha->isSupported(),
+      'current_site_title' => $this->wp->getBloginfo('name'),
     ];
 
     $data['authorized_emails'] = [];
