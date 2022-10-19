@@ -119,6 +119,9 @@ class RoboFile extends \Robo\Tasks {
   public function translationsBuild() {
     $exclude = implode(',', [
       '.mp_svn',
+      'assets/css',
+      'assets/img',
+      'assets/js',
       'generated',
       'lang',
       'lib-3rd-party',
@@ -139,6 +142,9 @@ class RoboFile extends \Robo\Tasks {
 
       // HTML, HBS
       ->taskExec("php -d memory_limit=-1 tasks/makepot/grunt-makepot.php wp-plugin . lang/mailpoet.pot mailpoet $exclude \\.html$,\\.hbs$")
+
+      // PHP, JS/TS
+      ->taskExec("vendor/bin/wp i18n make-pot --merge --slug=mailpoet --domain=mailpoet --exclude=$exclude . lang/mailpoet.pot")
 
       ->run();
   }
