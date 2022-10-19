@@ -1,5 +1,7 @@
-import { select } from '@wordpress/data';
+import { dispatch, select, StoreDescriptor } from '@wordpress/data';
 import { apiFetch } from '@wordpress/data-controls';
+import { store as noticesStore } from '@wordpress/notices';
+import { __ } from '@wordpress/i18n';
 import { store as interfaceStore } from '@wordpress/interface';
 import { store as preferencesStore } from '@wordpress/preferences';
 import { addQueryArgs } from '@wordpress/url';
@@ -78,6 +80,15 @@ export function* activate() {
       status: 'active',
     },
   });
+
+  const { createNotice } = dispatch(noticesStore as StoreDescriptor);
+  void createNotice(
+    'success',
+    __('Well done! Automation is now activated!', 'mailpoet'),
+    {
+      type: 'snackbar',
+    },
+  );
 
   return {
     type: 'ACTIVATE',
