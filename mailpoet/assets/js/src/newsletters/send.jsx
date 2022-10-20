@@ -649,7 +649,7 @@ class NewsletterSendComponent extends Component {
   getPreparedFields = (isPaused, gaFieldDisabled) =>
     this.state.fields
       .map(this.disableSegmentsSelectorWhenPaused(isPaused))
-      .map(this.disableGAIfPremiumInactive(gaFieldDisabled))
+      .map(this.disableGAIfPremiumInactive(gaFieldDisabled));
 
   closePremiumModal = () => this.setState({ showPremiumModal: false });
 
