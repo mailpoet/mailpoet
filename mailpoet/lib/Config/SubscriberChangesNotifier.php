@@ -68,4 +68,22 @@ class SubscriberChangesNotifier {
     // store id as a key and timestamp change as the value
     $this->deletedSubscriberIds[$subscriberId] = Carbon::createFromTimestamp($this->wp->currentTime('timestamp'), 'UTC');
   }
+
+  public function subscribersCreated(array $subscriberIds): void {
+    foreach ($subscriberIds as $subscriberId) {
+      $this->subscriberCreated($subscriberId);
+    }
+  }
+
+  public function subscribersUpdated(array $subscriberIds): void {
+    foreach ($subscriberIds as $subscriberId) {
+      $this->subscriberUpdated($subscriberId);
+    }
+  }
+
+  public function subscribersDeleted(array $subscriberIds): void {
+    foreach ($subscriberIds as $subscriberId) {
+      $this->subscriberDeleted($subscriberId);
+    }
+  }
 }
