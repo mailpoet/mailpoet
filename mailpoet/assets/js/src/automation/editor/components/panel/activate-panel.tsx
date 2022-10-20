@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch, useSelect } from '@wordpress/data';
 import { Button, Spinner } from '@wordpress/components';
 import { closeSmall } from '@wordpress/icons';
@@ -108,6 +108,12 @@ export function ActivatePanel({ onClose }): JSX.Element {
     }),
     [],
   );
+
+  useEffect(() => {
+    if (errors) {
+      onClose();
+    }
+  }, [errors, onClose]);
 
   if (errors) {
     return null;
