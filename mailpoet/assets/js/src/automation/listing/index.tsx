@@ -1,7 +1,7 @@
 import { Search, TableCard } from '@woocommerce/components/build';
 import { TabPanel } from '@wordpress/components';
 import { useDispatch, useSelect } from '@wordpress/data';
-import { __ } from '@wordpress/i18n';
+import { __, _x } from '@wordpress/i18n';
 import { useCallback, useEffect, useLayoutEffect, useMemo } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import { getRow } from './get-row';
@@ -26,12 +26,12 @@ const tabConfig = [
   },
   {
     name: WorkflowStatus.DRAFT,
-    title: __('Draft', 'mailpoet'),
+    title: _x('Draft', 'noun', 'mailpoet'),
     className: 'mailpoet-tab-draft',
   },
   {
     name: WorkflowStatus.TRASH,
-    title: __('Trash', 'mailpoet'),
+    title: _x('Trash', 'noun', 'mailpoet'),
     className: 'mailpoet-tab-trash',
   },
 ] as const;

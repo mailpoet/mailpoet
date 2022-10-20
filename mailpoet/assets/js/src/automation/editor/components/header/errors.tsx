@@ -155,7 +155,10 @@ export function Errors(): JSX.Element | null {
               className="mailpoet-automation-errors"
             >
               <div className="mailpoet-automation-errors-header">
-                {__('The following steps are not fully set:', 'mailpoet')}
+                {
+                  // translators: Label for a list of automation workflow steps that are incomplete or have errors
+                  __('The following steps are not fully set:', 'mailpoet')
+                }
               </div>
               {stepErrors.map((error) => (
                 <StepError key={error.step_id} stepId={error.step_id} />

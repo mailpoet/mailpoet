@@ -14,6 +14,7 @@ export const InserterListboxGroup = forwardRef<HTMLDivElement, Props>(
     useEffect(() => {
       if (shouldSpeak) {
         speak(
+          // translators: Moving through automation step list using keyboard
           __('Use left and right arrow keys to move through steps', 'mailpoet'),
         );
       }

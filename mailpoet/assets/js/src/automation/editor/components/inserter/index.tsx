@@ -2,7 +2,7 @@ import { forwardRef, Fragment, useCallback, useMemo } from 'react';
 import { SearchControl } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 import { useRef, useImperativeHandle, useState } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
+import { __, _x } from '@wordpress/i18n';
 import { blockDefault, Icon } from '@wordpress/icons';
 import { Group } from './group';
 import { Item } from './item';
@@ -41,21 +41,26 @@ export const Inserter = forwardRef(({ onInsert }: Props, ref): JSX.Element => {
             {
               type: 'triggers',
               title: undefined,
-              label: __('Triggers', 'mailpoet'),
+              // translators: Label for a list of automation steps of type trigger
+              label: _x('Triggers', 'automation steps', 'mailpoet'),
               items: steps.filter(({ group }) => group === 'triggers'),
             },
           ]
         : [
             {
               type: 'actions',
-              title: __('Actions', 'mailpoet'),
-              label: __('Actions', 'mailpoet'),
+              // translators: Label for a list of automation steps of type action
+              title: _x('Actions', 'automation steps', 'mailpoet'),
+              // translators: Label for a list of automation steps of type action
+              label: _x('Actions', 'automation steps', 'mailpoet'),
               items: steps.filter(({ group }) => group === 'actions'),
             },
             {
               type: 'logical',
-              title: __('Logical', 'mailpoet'),
-              label: __('Logical', 'mailpoet'),
+              // translators: Label for a list of logical automation steps (if/else, etc.)
+              title: _x('Logical', 'automation steps', 'mailpoet'),
+              // translators: Label for a list of logical automation steps (if/else, etc.)
+              label: _x('Logical', 'automation steps', 'mailpoet'),
               items: steps.filter(({ group }) => group === 'logical'),
             },
           ],

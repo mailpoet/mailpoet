@@ -1,4 +1,4 @@
-import { __ } from '@wordpress/i18n';
+import { __, _x } from '@wordpress/i18n';
 import { wordpress } from '@wordpress/icons';
 import { StepType } from '../../../../editor/store';
 import { Edit } from './edit';
@@ -13,7 +13,7 @@ export const step: StepType = {
     'Starts the automation when a new user registered in WordPress.',
     'mailpoet',
   ),
-  subtitle: () => __('Trigger', 'mailpoet'),
+  subtitle: () => _x('Trigger', 'noun', 'mailpoet'),
   icon: () => (
     <div style={{ width: '100%', height: '100%', scale: '1.12' }}>
       {wordpress}
