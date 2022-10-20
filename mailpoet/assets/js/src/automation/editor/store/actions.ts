@@ -9,6 +9,7 @@ import { storeName } from './constants';
 import { Feature, State } from './types';
 import { LISTING_NOTICE_PARAMETERS } from '../../listing/workflow-listing-notices';
 import { MailPoet } from '../../../mailpoet';
+import { WorkflowStatus } from '../../listing/workflow';
 
 export const openSidebar =
   (key) =>
@@ -82,13 +83,15 @@ export function* activate() {
   });
 
   const { createNotice } = dispatch(noticesStore as StoreDescriptor);
-  void createNotice(
-    'success',
-    __('Well done! Automation is now activated!', 'mailpoet'),
-    {
-      type: 'snackbar',
-    },
-  );
+  if (data?.data.status === WorkflowStatus.ACTIVE) {
+    void createNotice(
+      'success',
+      __('Well done! Automation is now activated!', 'mailpoet'),
+      {
+        type: 'snackbar',
+      },
+    );
+  }
 
   return {
     type: 'ACTIVATE',
