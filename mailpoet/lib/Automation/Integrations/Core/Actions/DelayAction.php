@@ -27,7 +27,7 @@ class DelayAction implements Action {
   }
 
   public function getName(): string {
-    return __('Delay', 'mailpoet');
+    return _x('Delay', 'noun', 'mailpoet');
   }
 
   public function getArgsSchema(): ObjectSchema {

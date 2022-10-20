@@ -3,11 +3,11 @@
 namespace MailPoet\Automation\Engine\Builder;
 
 use MailPoet\Automation\Engine\Data\Workflow;
+use MailPoet\Automation\Engine\Exceptions;
 use MailPoet\Automation\Engine\Exceptions\InvalidStateException;
 use MailPoet\Automation\Engine\Storage\WorkflowStorage;
 use MailPoet\Automation\Engine\Storage\WorkflowTemplateStorage;
 use MailPoet\Automation\Engine\Validation\WorkflowValidator;
-use MailPoet\UnexpectedValueException;
 
 class CreateWorkflowFromTemplateController {
   /** @var WorkflowStorage */
@@ -32,7 +32,7 @@ class CreateWorkflowFromTemplateController {
   public function createWorkflow(string $slug): Workflow {
     $template = $this->templateStorage->getTemplateBySlug($slug);
     if (!$template) {
-      throw UnexpectedValueException::create()->withMessage('Template not found.');
+      throw Exceptions::workflowTemplateNotFound($slug);
     }
 
     $workflow = $template->getWorkflow();
