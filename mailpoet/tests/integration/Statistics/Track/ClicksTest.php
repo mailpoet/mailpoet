@@ -4,6 +4,7 @@ namespace MailPoet\Test\Statistics\Track;
 
 use Codeception\Stub;
 use Codeception\Stub\Expected;
+use MailPoet\Config\SubscriberChangesNotifier;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterLinkEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
@@ -511,7 +512,7 @@ class ClicksTest extends \MailPoetTest {
     $clicksRepository = $this->diContainer->get(StatisticsClicksRepository::class);
     $data = $this->trackData;
     $data->userAgent = 'User Agent';
-    $subscribersRepository = new SubscribersRepository($this->entityManager, $wpMock);
+    $subscribersRepository = new SubscribersRepository($this->entityManager, new SubscriberChangesNotifier($wpMock), $wpMock);
     $statisticsOpensRepository = $this->diContainer->get(StatisticsOpensRepository::class);
     $opens = new Opens(
       $statisticsOpensRepository,
@@ -546,7 +547,7 @@ class ClicksTest extends \MailPoetTest {
     $clicksRepository = $this->diContainer->get(StatisticsClicksRepository::class);
     $data = $this->trackData;
     $data->userAgent = null;
-    $subscribersRepository = new SubscribersRepository($this->entityManager, $wpMock);
+    $subscribersRepository = new SubscribersRepository($this->entityManager, new SubscriberChangesNotifier($wpMock), $wpMock);
     $statisticsOpensRepository = $this->diContainer->get(StatisticsOpensRepository::class);
     $opens = new Opens(
       $statisticsOpensRepository,
@@ -581,7 +582,7 @@ class ClicksTest extends \MailPoetTest {
     $clicksRepository = $this->diContainer->get(StatisticsClicksRepository::class);
     $data = $this->trackData;
     $data->userAgent = UserAgentEntity::MACHINE_USER_AGENTS[0];
-    $subscribersRepository = new SubscribersRepository($this->entityManager, $wpMock);
+    $subscribersRepository = new SubscribersRepository($this->entityManager, new SubscriberChangesNotifier($wpMock), $wpMock);
     $statisticsOpensRepository = $this->diContainer->get(StatisticsOpensRepository::class);
     $opens = new Opens(
       $statisticsOpensRepository,
