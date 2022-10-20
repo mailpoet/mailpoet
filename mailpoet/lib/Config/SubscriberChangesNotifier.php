@@ -4,16 +4,17 @@ namespace MailPoet\Config;
 
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoetVendor\Carbon\Carbon;
 
 class SubscriberChangesNotifier {
 
-  /** @var int[] */
+  /** @var array<int, Carbon> */
   private $createdSubscriberIds = [];
 
-  /** @var int[] */
+  /** @var array<int, Carbon> */
   private $deletedSubscriberIds = [];
 
-  /** @var int[] */
+  /** @var array<int, Carbon> */
   private $updatedSubscriberIds = [];
 
   /** @var WPFunctions */
@@ -32,39 +33,39 @@ class SubscriberChangesNotifier {
   }
 
   private function notifyCreations(): void {
-    foreach ($this->createdSubscriberIds as $subscriberId) {
-      $this->wp->doAction(SubscriberEntity::HOOK_SUBSCRIBER_CREATED, $subscriberId);
+    foreach ($this->createdSubscriberIds as $subscriberId => $createdAt) {
+      $this->wp->doAction(SubscriberEntity::HOOK_SUBSCRIBER_CREATED, $subscriberId, $createdAt->getTimestamp());
     }
   }
 
   private function notifyUpdates(): void {
-    foreach ($this->updatedSubscriberIds as $subscriberId) {
+    foreach ($this->updatedSubscriberIds as $subscriberId => $updatedAt) {
       // do not notify about changes when subscriber is new
-      if (in_array($subscriberId, $this->createdSubscriberIds, true)) {
+      if (isset($this->createdSubscriberIds[$subscriberId])) {
         continue;
       }
-      $this->wp->doAction(SubscriberEntity::HOOK_SUBSCRIBER_UPDATED, $subscriberId);
+      $this->wp->doAction(SubscriberEntity::HOOK_SUBSCRIBER_UPDATED, $subscriberId, $updatedAt->getTimestamp());
     }
   }
 
   private function notifyDeletes(): void {
-    foreach ($this->deletedSubscriberIds as $subscriberId) {
-      $this->wp->doAction(SubscriberEntity::HOOK_SUBSCRIBER_DELETED, $subscriberId);
+    foreach ($this->deletedSubscriberIds as $subscriberId => $deletedAt) {
+      $this->wp->doAction(SubscriberEntity::HOOK_SUBSCRIBER_DELETED, $subscriberId, $deletedAt->getTimestamp());
     }
   }
 
   public function subscriberCreated(int $subscriberId): void {
-    // to avoid duplicities we use id as a key
-    $this->createdSubscriberIds[$subscriberId] = $subscriberId;
+    // store id as a key and timestamp change as the value
+    $this->createdSubscriberIds[$subscriberId] = Carbon::createFromTimestamp($this->wp->currentTime('timestamp'), 'UTC');
   }
 
   public function subscriberUpdated(int $subscriberId): void {
-    // to avoid duplicities we use id as a key
-    $this->updatedSubscriberIds[$subscriberId] = $subscriberId;
+    // store id as a key and timestamp change as the value
+    $this->updatedSubscriberIds[$subscriberId] = Carbon::createFromTimestamp($this->wp->currentTime('timestamp'), 'UTC');
   }
 
   public function subscriberDeleted(int $subscriberId): void {
-    // to avoid duplicities we use id as a key
-    $this->deletedSubscriberIds[$subscriberId] = $subscriberId;
+    // store id as a key and timestamp change as the value
+    $this->deletedSubscriberIds[$subscriberId] = Carbon::createFromTimestamp($this->wp->currentTime('timestamp'), 'UTC');
   }
 }
