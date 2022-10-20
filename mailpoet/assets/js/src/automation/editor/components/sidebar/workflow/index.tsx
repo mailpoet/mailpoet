@@ -1,5 +1,6 @@
 import { PanelBody, PanelRow } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
+import { __ } from '@wordpress/i18n';
 import { storeName } from '../../../store';
 import { TrashButton } from '../../actions/trash-button';
 
@@ -18,7 +19,7 @@ export function WorkflowSidebar(): JSX.Element {
   };
 
   return (
-    <PanelBody title="Automation details" initialOpen>
+    <PanelBody title={__('Automation details', 'mailpoet')} initialOpen>
       <PanelRow>
         <strong>Date added</strong>{' '}
         {new Date(Date.parse(workflowData.created_at)).toLocaleDateString(

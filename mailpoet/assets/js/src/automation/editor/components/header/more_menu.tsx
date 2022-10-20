@@ -20,14 +20,14 @@ export function MoreMenu(): JSX.Element {
     >
       {() => (
         <>
-          <MenuGroup label={_x('View', 'noun')}>
+          <MenuGroup label={_x('View', 'noun', 'mailpoet')}>
             <PreferenceToggleMenuItem
               scope={storeName}
               name="fullscreenMode"
-              label={__('Fullscreen mode')}
-              info={__('Work without distraction')}
-              messageActivated={__('Fullscreen mode activated')}
-              messageDeactivated={__('Fullscreen mode deactivated')}
+              label={__('Fullscreen mode', 'mailpoet')}
+              info={__('Work without distraction', 'mailpoet')}
+              messageActivated={__('Fullscreen mode activated', 'mailpoet')}
+              messageDeactivated={__('Fullscreen mode deactivated', 'mailpoet')}
               shortcut={displayShortcut.secondary('f')}
             />
           </MenuGroup>

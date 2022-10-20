@@ -1,5 +1,6 @@
 import { Button } from '@wordpress/components';
 import { useDispatch } from '@wordpress/data';
+import { __ } from '@wordpress/i18n';
 import { stepSidebarKey, storeName, workflowSidebarKey } from '../../store';
 
 // See:
@@ -17,12 +18,12 @@ export function Header({ sidebarKey }: Props): JSX.Element {
 
   const [workflowAriaLabel, workflowActiveClass] =
     sidebarKey === workflowSidebarKey
-      ? ['Workflow (selected)', 'is-active']
+      ? [__('Workflow (selected)', 'mailpoet'), 'is-active']
       : ['Workflow', ''];
 
   const [stepAriaLabel, stepActiveClass] =
     sidebarKey === stepSidebarKey
-      ? ['Step (selected)', 'is-active']
+      ? [__('Step (selected)', 'mailpoet'), 'is-active']
       : ['Step', ''];
 
   return (
@@ -32,9 +33,9 @@ export function Header({ sidebarKey }: Props): JSX.Element {
           onClick={openWorkflowSettings}
           className={`edit-site-sidebar__panel-tab ${workflowActiveClass}`}
           aria-label={workflowAriaLabel}
-          data-label="Workflow"
+          data-label={__('Workflow', 'mailpoet')}
         >
-          Workflow
+          {__('Workflow', 'mailpoet')}
         </Button>
       </li>
       <li>
@@ -42,9 +43,9 @@ export function Header({ sidebarKey }: Props): JSX.Element {
           onClick={openStepSettings}
           className={`edit-site-sidebar__panel-tab ${stepActiveClass}`}
           aria-label={stepAriaLabel}
-          data-label="Workflow"
+          data-label={__('Step', 'mailpoet')}
         >
-          Step
+          {__('Step', 'mailpoet')}
         </Button>
       </li>
     </ul>

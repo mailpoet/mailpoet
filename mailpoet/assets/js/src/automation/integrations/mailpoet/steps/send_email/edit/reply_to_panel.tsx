@@ -1,5 +1,6 @@
 import { PanelBody, TextControl, ToggleControl } from '@wordpress/components';
 import { dispatch, useSelect } from '@wordpress/data';
+import { __ } from '@wordpress/i18n';
 import { storeName } from '../../../../../editor/store';
 
 export function ReplyToPanel(): JSX.Element {
@@ -25,9 +26,12 @@ export function ReplyToPanel(): JSX.Element {
   const replyToNameError = errorFields?.reply_to_name ?? '';
   const replyToAddressError = errorFields?.reply_to_address ?? '';
   return (
-    <PanelBody title="Reply to" initialOpen={false}>
+    <PanelBody title={__('Reply to', 'mailpoet')} initialOpen={false}>
       <ToggleControl
-        label="Use different email address for getting replies to the email"
+        label={__(
+          'Use different email address for getting replies to the email',
+          'mailpoet',
+        )}
         checked={enabled}
         onChange={(value) => {
           dispatch(storeName).updateStepArgs(
@@ -50,8 +54,8 @@ export function ReplyToPanel(): JSX.Element {
               replyToNameError ? 'mailpoet-automation-field__error' : ''
             }
             help={replyToNameError}
-            label="“Reply to” name"
-            placeholder="John Doe"
+            label={__('“Reply to” name', 'mailpoet')}
+            placeholder={__('John Doe', 'mailpoet')}
             value={replyToName ?? ''}
             onChange={(value) =>
               dispatch(storeName).updateStepArgs(
@@ -68,8 +72,8 @@ export function ReplyToPanel(): JSX.Element {
             }
             help={replyToAddressError}
             type="email"
-            label="“Reply to” email address"
-            placeholder="you@domain.com"
+            label={__('“Reply to” email address', 'mailpoet')}
+            placeholder={__('you@domain.com', 'mailpoet')}
             value={replyToAddress ?? ''}
             onChange={(value) =>
               dispatch(storeName).updateStepArgs(

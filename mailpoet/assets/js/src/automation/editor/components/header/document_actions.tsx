@@ -68,7 +68,7 @@ export function DocumentActions({ children }): JSX.Element {
                     as="h1"
                   >
                     <VisuallyHidden as="span">
-                      {__('Editing workflow: ')}
+                      {__('Editing workflow: ', 'mailpoet')}
                     </VisuallyHidden>
                     {workflowName}
                   </Text>
@@ -93,9 +93,9 @@ export function DocumentActions({ children }): JSX.Element {
                   aria-expanded={isOpen}
                   aria-haspopup="true"
                   onClick={onToggle}
-                  label={__('Change workflow name')}
+                  label={__('Change workflow name', 'mailpoet')}
                 >
-                  {showIconLabels && __('Rename')}
+                  {showIconLabels && __('Rename', 'mailpoet')}
                 </Button>
               </>
             )}

@@ -1,3 +1,4 @@
+import { __ } from '@wordpress/i18n';
 import { Icon } from './icon';
 import { Edit } from './edit';
 import { StepType } from '../../../../editor/store/types';
@@ -14,13 +15,16 @@ const getDelayInformation = (delayTypeValue: string, value: number): string =>
 export const step: StepType = {
   key: 'core:delay',
   group: 'actions',
-  title: 'Delay',
+  title: __('Delay', 'mailpoet'),
   foreground: '#7F54B3',
   background: '#f7edf7',
-  description: 'Wait some time before proceeding with the steps below',
+  description: __(
+    'Wait some time before proceeding with the steps below',
+    'mailpoet',
+  ),
   subtitle: (data): string => {
     if (!data.args.delay || !data.args.delay_type) {
-      return 'Not set up yet.';
+      return __('Not set up yet.', 'mailpoet');
     }
 
     return getDelayInformation(

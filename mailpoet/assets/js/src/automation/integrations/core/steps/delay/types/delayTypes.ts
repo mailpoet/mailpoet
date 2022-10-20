@@ -1,25 +1,35 @@
 import { SelectControl } from '@wordpress/components';
+import { __, _n, sprintf } from '@wordpress/i18n';
 
 export type DelayTypes = SelectControl.Option & {
   subtitle: (value: number) => string;
 };
 export const DelayTypeOptions: DelayTypes[] = [
   {
-    label: 'Hours',
+    label: __('Hours', 'mailpoet'),
     subtitle: (value: number) =>
-      `Wait for ${value} ${value === 1 ? 'hour' : 'hours'}`,
+      sprintf(
+        _n('Wait for %d hour', 'Wait for %d hours', value, 'mailpoet'),
+        value,
+      ),
     value: 'HOURS',
   },
   {
-    label: 'Days',
+    label: __('Days', 'mailpoet'),
     subtitle: (value: number) =>
-      `Wait for ${value} ${value === 1 ? 'day' : 'days'}`,
+      sprintf(
+        _n('Wait for %d day', 'Wait for %d days', value, 'mailpoet'),
+        value,
+      ),
     value: 'DAYS',
   },
   {
-    label: 'Weeks',
+    label: __('Weeks', 'mailpoet'),
     subtitle: (value: number) =>
-      `Wait for ${value} ${value === 1 ? 'week' : 'weeks'}`,
+      sprintf(
+        _n('Wait for %d week', 'Wait for %d weeks', value, 'mailpoet'),
+        value,
+      ),
     value: 'WEEKS',
   },
 ];

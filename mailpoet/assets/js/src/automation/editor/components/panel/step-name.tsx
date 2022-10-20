@@ -1,4 +1,5 @@
 import { Dropdown, TextControl } from '@wordpress/components';
+import { __ } from '@wordpress/i18n';
 import { edit, Icon } from '@wordpress/icons';
 import { PlainBodyTitle } from './plain-body-title';
 import { TitleActionButton } from './title-action-button';
@@ -25,7 +26,7 @@ export function StepName({
           <TitleActionButton
             onClick={onToggle}
             aria-expanded={isOpen}
-            aria-label="Edit step name"
+            aria-label={__('Edit step name', 'mailpoet')}
           >
             <Icon icon={edit} size={16} />
           </TitleActionButton>
@@ -33,13 +34,15 @@ export function StepName({
       )}
       renderContent={() => (
         <TextControl
-          label="Step name"
+          label={__('Step name', 'mailpoet')}
           className="mailpoet-step-name-input"
           placeholder={defaultName}
           value={currentName}
           onChange={update}
-          help="Give the automation step a name that indicates its purpose. E.g
-            “Abandoned cart recovery”. This name will be displayed only to you and not to the clients."
+          help={__(
+            'Give the automation step a name that indicates its purpose. E.g "Abandoned cart recovery". This name will be displayed only to you and not to the clients.',
+            'mailpoet',
+          )}
         />
       )}
     />

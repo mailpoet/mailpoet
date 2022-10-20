@@ -4,6 +4,7 @@ import { TopBarWithBeamer } from 'common/top_bar/top_bar';
 import { plusIcon } from 'common/button/icon/plus';
 import { Button, Flex, Popover, SlotFillProvider } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
+import { __ } from '@wordpress/i18n';
 import { initializeApi, useMutation } from './api';
 import { createStore, storeName } from './listing/store';
 import { AutomationListing } from './listing';
@@ -27,14 +28,14 @@ function Workflows(): JSX.Element {
     <>
       <TopBarWithBeamer />
       <Flex className="mailpoet-automation-listing-heading">
-        <h1 className="wp-heading-inline">Automations</h1>
+        <h1 className="wp-heading-inline">{__('Automations', 'mailpoet')}</h1>
         <Button
           href={MailPoet.urls.automationTemplates}
           icon={plusIcon}
           variant="primary"
           className="mailpoet-add-new-button"
         >
-          New automation
+          {__('New automation', 'mailpoet')}
         </Button>
       </Flex>
       <Notices />

@@ -1,6 +1,7 @@
 import { ComponentProps } from 'react';
 import { PanelBody, TextareaControl, TextControl } from '@wordpress/components';
 import { dispatch, useSelect } from '@wordpress/data';
+import { __ } from '@wordpress/i18n';
 import { ShortcodeHelpText } from './shortcode_help_text';
 import { PlainBodyTitle } from '../../../../../editor/components/panel';
 import { storeName } from '../../../../../editor/store';
@@ -60,8 +61,8 @@ export function EmailPanel(): JSX.Element {
           senderNameErrorMessage ? 'mailpoet-automation-field__error' : ''
         }
         help={senderNameErrorMessage}
-        label="“From” name"
-        placeholder="John Doe"
+        label={__('“From” name', 'mailpoet')}
+        placeholder={__('John Doe', 'mailpoet')}
         value={(selectedStep.args.sender_name as string) ?? ''}
         onChange={(value) =>
           dispatch(storeName).updateStepArgs(
@@ -77,8 +78,8 @@ export function EmailPanel(): JSX.Element {
         }
         help={senderAddressErrorMessage}
         type="email"
-        label="“From” email address"
-        placeholder="you@domain.com"
+        label={__('“From” email address', 'mailpoet')}
+        placeholder={__('you@domain.com', 'mailpoet')}
         value={(selectedStep.args.sender_address as string) ?? ''}
         onChange={(value) =>
           dispatch(storeName).updateStepArgs(
@@ -92,8 +93,8 @@ export function EmailPanel(): JSX.Element {
         className={
           subjectErrorMessage ? 'mailpoet-automation-field__error' : ''
         }
-        label="Subject"
-        placeholder="Type in subject…"
+        label={__('Subject', 'mailpoet')}
+        placeholder={__('Type in subject…', 'mailpoet')}
         value={(selectedStep.args.subject as string) ?? ''}
         onChange={(value) =>
           dispatch(storeName).updateStepArgs(selectedStep.id, 'subject', value)
@@ -106,8 +107,8 @@ export function EmailPanel(): JSX.Element {
         }
       />
       <SingleLineTextareaControl
-        label="Preheader"
-        placeholder="Type in preheader…"
+        label={__('Preheader', 'mailpoet')}
+        placeholder={__('Type in preheader…', 'mailpoet')}
         value={(selectedStep.args.preheader as string) ?? ''}
         onChange={(value) =>
           dispatch(storeName).updateStepArgs(
@@ -120,7 +121,7 @@ export function EmailPanel(): JSX.Element {
       />
 
       <div className="mailpoet-automation-email-content-separator" />
-      <PlainBodyTitle title="Email" />
+      <PlainBodyTitle title={__('Email', 'mailpoet')} />
       <EditNewsletter />
     </PanelBody>
   );

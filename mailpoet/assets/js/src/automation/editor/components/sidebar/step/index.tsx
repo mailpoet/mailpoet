@@ -1,5 +1,6 @@
 import { PanelBody } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
+import { __ } from '@wordpress/i18n';
 import { storeName } from '../../../store';
 import { StepCard } from '../../step-card';
 
@@ -32,7 +33,7 @@ export function StepSidebar(): JSX.Element {
 
       <Edit />
 
-      <PanelBody title="Debug info" initialOpen={false}>
+      <PanelBody title={__('Debug info', 'mailpoet')} initialOpen={false}>
         <div>
           <strong>ID:</strong> {selectedStep.id}
         </div>

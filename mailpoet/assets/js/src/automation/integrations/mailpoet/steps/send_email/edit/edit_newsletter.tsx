@@ -92,7 +92,7 @@ export function EditNewsletter(): JSX.Element {
           isBusy={redirectToTemplateSelection}
           disabled={redirectToTemplateSelection}
         >
-          Design email
+          {__('Design email', 'mailpoet')}
         </Button>
         {emailIdError && (
           <span className="mailpoet-automation-field-message">
@@ -115,7 +115,7 @@ export function EditNewsletter(): JSX.Element {
           selectedStep.args.email_id as string
         }`}
       >
-        Edit content
+        {__('Edit content', 'mailpoet')}
       </Button>
       <Button
         variant="secondary"
@@ -129,7 +129,7 @@ export function EditNewsletter(): JSX.Element {
           setFetchingPreviewLink(false);
         }}
       >
-        Preview
+        {__('Preview', 'mailpoet')}
       </Button>
     </div>
   );

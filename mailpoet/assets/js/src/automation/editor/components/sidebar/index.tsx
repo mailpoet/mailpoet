@@ -47,13 +47,13 @@ export function Sidebar(props: Props): JSX.Element {
     <ComplementaryArea
       identifier={sidebarKey}
       header={<Header sidebarKey={sidebarKey} />}
-      closeLabel={__('Close settings')}
+      closeLabel={__('Close settings', 'mailpoet')}
       headerClassName="edit-site-sidebar__panel-tabs"
-      title={__('Settings')}
+      title={__('Settings', 'mailpoet')}
       icon={cog}
       className="edit-site-sidebar mailpoet-automation-sidebar"
       panelClassName="edit-site-sidebar"
-      smallScreenTitle={workflowName || __('(no title)')}
+      smallScreenTitle={workflowName || __('(no title)', 'mailpoet')}
       scope={storeName}
       toggleShortcut={keyboardShortcut}
       isActiveByDefault={sidebarActiveByDefault}

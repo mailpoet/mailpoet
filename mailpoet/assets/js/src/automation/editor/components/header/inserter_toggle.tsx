@@ -1,6 +1,6 @@
 import { Button, ToolbarItem } from '@wordpress/components';
 import { useSelect, useDispatch } from '@wordpress/data';
-import { __, _x } from '@wordpress/i18n';
+import { __ } from '@wordpress/i18n';
 import { plus } from '@wordpress/icons';
 import { storeName } from '../../store';
 
@@ -28,13 +28,11 @@ export function InserterToggle(): JSX.Element {
       onMouseDown={(event) => event.preventDefault()}
       onClick={toggleInserterSidebar}
       icon={plus}
-      label={_x(
-        'Toggle step inserter',
-        'Generic label for step inserter button',
-      )}
+      label={__('Toggle step inserter', 'mailpoet')}
       showTooltip={!showIconLabels}
     >
-      {showIconLabels && (!isInserterOpened ? __('Add') : __('Close'))}
+      {showIconLabels &&
+        (!isInserterOpened ? __('Add', 'mailpoet') : __('Close', 'mailpoet'))}
     </ToolbarItem>
   );
 }

@@ -42,7 +42,7 @@ export function Edit(): JSX.Element {
             id={delayValueInputId}
             help={delayErrorMessage}
             type="number"
-            placeholder="Number"
+            placeholder={__('Number', 'mailpoet')}
             value={(selectedStep.args.delay as string) ?? ''}
             onChange={(rawValue) => {
               const value: number =

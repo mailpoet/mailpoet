@@ -1,5 +1,6 @@
 import { ComponentProps, ComponentType, useEffect, useState } from 'react';
 import { Spinner as WpSpinner } from '@wordpress/components';
+import { __ } from '@wordpress/i18n';
 import { MailPoetAjax } from '../../../../../../ajax';
 
 // @types/wordpress__components don't define "className", which is supported
@@ -39,7 +40,7 @@ export function Thumbnail({ emailId }: Props): JSX.Element {
           <img
             className="mailpoet-automation-thumbnail-image"
             src={thumbnailUrl}
-            alt="Email thumbnail"
+            alt={__('Email thumbnail', 'mailpoet')}
           />
         </div>
       ) : (
