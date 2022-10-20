@@ -17,14 +17,16 @@ class SubscriberChangesNotifierTest extends \MailPoetUnitTest {
   }
 
   public function testItNotifyCreatedSubscriberIds(): void {
-    $this->wpFunctions->expects($this->at(0))
+    $this->wpFunctions->method('currentTime')
+      ->willReturn(1234);
+    $this->wpFunctions->expects($this->at(2))
       ->method('doAction')
-      ->with(SubscriberEntity::HOOK_SUBSCRIBER_CREATED, 6)
+      ->with(SubscriberEntity::HOOK_SUBSCRIBER_CREATED, 6, 1234)
       ->willReturn(true);
 
-    $this->wpFunctions->expects($this->at(1))
+    $this->wpFunctions->expects($this->at(3))
       ->method('doAction')
-      ->with(SubscriberEntity::HOOK_SUBSCRIBER_CREATED, 10)
+      ->with(SubscriberEntity::HOOK_SUBSCRIBER_CREATED, 10, 1234)
       ->willReturn(true);
 
     $notifier = new SubscriberChangesNotifier($this->wpFunctions);
@@ -34,14 +36,16 @@ class SubscriberChangesNotifierTest extends \MailPoetUnitTest {
   }
 
   public function testItNotifyUpdatedSubscriberIds(): void {
-    $this->wpFunctions->expects($this->at(0))
+    $this->wpFunctions->method('currentTime')
+      ->willReturn(4567);
+    $this->wpFunctions->expects($this->at(2))
       ->method('doAction')
-      ->with(SubscriberEntity::HOOK_SUBSCRIBER_UPDATED, 2)
+      ->with(SubscriberEntity::HOOK_SUBSCRIBER_UPDATED, 2, 4567)
       ->willReturn(true);
 
-    $this->wpFunctions->expects($this->at(1))
+    $this->wpFunctions->expects($this->at(3))
       ->method('doAction')
-      ->with(SubscriberEntity::HOOK_SUBSCRIBER_UPDATED, 11)
+      ->with(SubscriberEntity::HOOK_SUBSCRIBER_UPDATED, 11, 4567)
       ->willReturn(true);
 
     $notifier = new SubscriberChangesNotifier($this->wpFunctions);
@@ -51,14 +55,16 @@ class SubscriberChangesNotifierTest extends \MailPoetUnitTest {
   }
 
   public function testItNotifyDeletedSubscriberIds(): void {
-    $this->wpFunctions->expects($this->at(0))
+    $this->wpFunctions->method('currentTime')
+      ->willReturn(3456);
+    $this->wpFunctions->expects($this->at(2))
       ->method('doAction')
-      ->with(SubscriberEntity::HOOK_SUBSCRIBER_DELETED, 1)
+      ->with(SubscriberEntity::HOOK_SUBSCRIBER_DELETED, 1, 3456)
       ->willReturn(true);
 
-    $this->wpFunctions->expects($this->at(1))
+    $this->wpFunctions->expects($this->at(3))
       ->method('doAction')
-      ->with(SubscriberEntity::HOOK_SUBSCRIBER_DELETED, 12)
+      ->with(SubscriberEntity::HOOK_SUBSCRIBER_DELETED, 12, 3456)
       ->willReturn(true);
 
     $notifier = new SubscriberChangesNotifier($this->wpFunctions);
@@ -68,19 +74,21 @@ class SubscriberChangesNotifierTest extends \MailPoetUnitTest {
   }
 
   public function testItNotifyDifferentSubscriberChanges(): void {
-    $this->wpFunctions->expects($this->at(0))
+    $this->wpFunctions->method('currentTime')
+      ->willReturn(12345);
+    $this->wpFunctions->expects($this->at(3))
       ->method('doAction')
-      ->with(SubscriberEntity::HOOK_SUBSCRIBER_CREATED, 1)
+      ->with(SubscriberEntity::HOOK_SUBSCRIBER_CREATED, 1, 12345)
       ->willReturn(true);
 
-    $this->wpFunctions->expects($this->at(1))
+    $this->wpFunctions->expects($this->at(4))
       ->method('doAction')
-      ->with(SubscriberEntity::HOOK_SUBSCRIBER_UPDATED, 3)
+      ->with(SubscriberEntity::HOOK_SUBSCRIBER_UPDATED, 3, 12345)
       ->willReturn(true);
 
-    $this->wpFunctions->expects($this->at(2))
+    $this->wpFunctions->expects($this->at(5))
       ->method('doAction')
-      ->with(SubscriberEntity::HOOK_SUBSCRIBER_DELETED, 5)
+      ->with(SubscriberEntity::HOOK_SUBSCRIBER_DELETED, 5, 12345)
       ->willReturn(true);
 
     $notifier = new SubscriberChangesNotifier($this->wpFunctions);
@@ -91,9 +99,11 @@ class SubscriberChangesNotifierTest extends \MailPoetUnitTest {
   }
 
   public function testItNotifyUpdateForCreatedSubscriber(): void {
-    $this->wpFunctions->expects($this->once())
+    $this->wpFunctions->method('currentTime')
+      ->willReturn(1235);
+    $this->wpFunctions->expects($this->at(2))
       ->method('doAction')
-      ->with(SubscriberEntity::HOOK_SUBSCRIBER_CREATED, 11)
+      ->with(SubscriberEntity::HOOK_SUBSCRIBER_CREATED, 11, 1235)
       ->willReturn(true);
 
     $notifier = new SubscriberChangesNotifier($this->wpFunctions);
