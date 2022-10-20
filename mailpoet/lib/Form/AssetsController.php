@@ -136,6 +136,7 @@ EOL;
       Env::$version,
       true
     );
+    $this->wp->wpSetScriptTranslations('automation', 'mailpoet');
   }
 
   public function setupAutomationEditorDependencies(): void {
@@ -146,6 +147,7 @@ EOL;
       Env::$version,
       true
     );
+    $this->wp->wpSetScriptTranslations('automation_editor', 'mailpoet');
   }
 
   public function setupAutomationTemplatesDependencies(): void {
@@ -156,5 +158,6 @@ EOL;
       Env::$version,
       true
     );
+    $this->wp->wpSetScriptTranslations('automation_templates', 'mailpoet');
   }
 }
