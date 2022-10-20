@@ -84,7 +84,7 @@ function PostStep({ onClose }): JSX.Element {
           {sprintf(__('"%s" is now live.', 'mailpoet'), workflow.name)}
         </div>
         <p>
-          <strong>{__("What's next?", 'mailpoet')}</strong>
+          <strong>{__('What’s next?', 'mailpoet')}</strong>
         </p>
         <p>
           {__(

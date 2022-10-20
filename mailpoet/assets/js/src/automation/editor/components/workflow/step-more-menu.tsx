@@ -51,7 +51,7 @@ export function StepMoreMenu({ step }: Props): JSX.Element {
             utm_campaign: 'remove_automation_step',
           }}
         >
-          {__('You cannot remove a new step from the automation.', 'mailpoet')}
+          {__('You cannot remove a step from the automation.', 'mailpoet')}
         </PremiumModal>
       )}
     </>

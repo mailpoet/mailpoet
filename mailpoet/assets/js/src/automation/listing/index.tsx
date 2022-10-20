@@ -11,27 +11,27 @@ import { Workflow, WorkflowStatus } from './workflow';
 const tabConfig = [
   {
     name: 'all',
-    title: 'All',
+    title: __('All', 'mailpoet'),
     className: 'mailpoet-tab-all',
   },
   {
     name: WorkflowStatus.ACTIVE,
-    title: 'Active',
+    title: __('Active', 'mailpoet'),
     className: 'mailpoet-tab-active',
   },
   {
     name: WorkflowStatus.INACTIVE,
-    title: 'Inactive',
+    title: __('Inactive', 'mailpoet'),
     className: 'mailpoet-tab-inactive',
   },
   {
     name: WorkflowStatus.DRAFT,
-    title: 'Draft',
+    title: __('Draft', 'mailpoet'),
     className: 'mailpoet-tab-draft',
   },
   {
     name: WorkflowStatus.TRASH,
-    title: 'Trash',
+    title: __('Trash', 'mailpoet'),
     className: 'mailpoet-tab-trash',
   },
 ] as const;

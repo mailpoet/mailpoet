@@ -13,7 +13,9 @@ export const InserterListboxGroup = forwardRef<HTMLDivElement, Props>(
 
     useEffect(() => {
       if (shouldSpeak) {
-        speak(__('Use left and right arrow keys to move through blocks'));
+        speak(
+          __('Use left and right arrow keys to move through steps', 'mailpoet'),
+        );
       }
     }, [shouldSpeak]);
 

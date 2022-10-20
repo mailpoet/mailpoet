@@ -1,3 +1,5 @@
+import { __ } from '@wordpress/i18n';
+
 export function ShortcodeHelpText(): JSX.Element {
   return (
     <span className="mailpoet-shortcode-selector">
@@ -8,7 +10,7 @@ export function ShortcodeHelpText(): JSX.Element {
         rel="noopener noreferrer"
         data-beacon-article="59d662ef042863379ddc6faa"
       >
-        MailPoet shortcodes
+        {__('MailPoet shortcodes', 'mailpoet')}
       </a>
     </span>
   );

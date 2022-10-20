@@ -25,7 +25,7 @@ export function KeyboardShortcuts(): null {
     void registerShortcut({
       name: 'mailpoet/automation-editor/toggle-fullscreen',
       category: 'global',
-      description: __('Toggle fullscreen mode.'),
+      description: __('Toggle fullscreen mode.', 'mailpoet'),
       keyCombination: {
         modifier: 'secondary',
         character: 'f',
@@ -35,7 +35,7 @@ export function KeyboardShortcuts(): null {
     void registerShortcut({
       name: 'mailpoet/automation-editor/toggle-sidebar',
       category: 'global',
-      description: __('Show or hide the settings sidebar.'),
+      description: __('Show or hide the settings sidebar.', 'mailpoet'),
       keyCombination: {
         modifier: 'primaryShift',
         character: ',',

@@ -31,9 +31,9 @@ export function GoogleAnalyticsPanel(): JSX.Element {
   );
 
   return (
-    <PanelBody title="Google analytics" initialOpen={false}>
+    <PanelBody title={__('Google analytics', 'mailpoet')} initialOpen={false}>
       <ToggleControl
-        label="Enable custom GA tracking"
+        label={__('Enable custom GA tracking', 'mailpoet')}
         checked={enabled}
         onChange={(value) =>
           dispatch(storeName).updateStepArgs(

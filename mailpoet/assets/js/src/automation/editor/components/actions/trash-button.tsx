@@ -21,8 +21,8 @@ export function TrashButton(): JSX.Element {
     <>
       <ConfirmDialog
         isOpen={showConfirmDialog}
-        title="Delete workflow"
-        confirmButtonText="Yes, delete"
+        title={__('Delete workflow', 'mailpoet')}
+        confirmButtonText={__('Yes, delete', 'mailpoet')}
         onConfirm={async () => {
           trash(() => {
             setShowConfirmDialog(false);
@@ -44,7 +44,7 @@ export function TrashButton(): JSX.Element {
         isDestructive
         onClick={() => setShowConfirmDialog(true)}
       >
-        Move to Trash
+        {__('Move to Trash', 'mailpoet')}
       </Button>
     </>
   );

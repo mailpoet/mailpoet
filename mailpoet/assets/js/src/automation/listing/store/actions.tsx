@@ -83,7 +83,11 @@ export function* restoreWorkflow(workflow: Workflow, status: WorkflowStatus) {
   void createSuccessNotice(message, {
     __unstableHTML: (
       <p>
-        {message} <EditWorkflow workflow={workflow} label="Edit Workflow" />
+        {message}{' '}
+        <EditWorkflow
+          workflow={workflow}
+          label={__('Edit workflow', 'mailpoet')}
+        />
       </p>
     ),
   });

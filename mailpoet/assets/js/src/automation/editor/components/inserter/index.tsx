@@ -96,8 +96,8 @@ export const Inserter = forwardRef(({ onInsert }: Props, ref): JSX.Element => {
               setFilterValue(value);
             }}
             value={filterValue}
-            label={__('Search for blocks and patterns')}
-            placeholder={__('Search')}
+            label={__('Search for automation steps', 'mailpoet')}
+            placeholder={__('Search', 'mailpoet')}
             ref={searchRef}
           />
 
@@ -135,7 +135,7 @@ export const Inserter = forwardRef(({ onInsert }: Props, ref): JSX.Element => {
                     className="block-editor-inserter__no-results-icon"
                     icon={blockDefault}
                   />
-                  <p>{__('No results found.')}</p>
+                  <p>{__('No results found.', 'mailpoet')}</p>
                 </div>
               )}
             </InserterListbox>
