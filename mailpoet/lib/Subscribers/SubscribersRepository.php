@@ -2,6 +2,7 @@
 
 namespace MailPoet\Subscribers;
 
+use MailPoet\Config\SubscriberChangesNotifier;
 use MailPoet\Doctrine\Repository;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberCustomFieldEntity;
@@ -31,12 +32,17 @@ class SubscribersRepository extends Repository {
     'last_subscribed_at',
   ];
 
+  /** @var SubscriberChangesNotifier */
+  private $changesNotifier;
+
   public function __construct(
     EntityManager $entityManager,
+    SubscriberChangesNotifier $changesNotifier,
     WPFunctions $wp
   ) {
     $this->wp = $wp;
     parent::__construct($entityManager);
+    $this->changesNotifier = $changesNotifier;
   }
 
   protected function getEntityClassName() {
@@ -185,6 +191,10 @@ class SubscribersRepository extends Repository {
         ->setParameter('ids', $ids)
         ->getQuery()->execute();
     });
+
+    foreach ($ids as $id) {
+      $this->changesNotifier->subscriberDeleted($id);
+    }
 
     $this->invalidateTotalSubscribersCache();
     return $count;

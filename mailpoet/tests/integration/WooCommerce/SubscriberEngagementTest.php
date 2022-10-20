@@ -2,6 +2,7 @@
 
 namespace MailPoet\WooCommerce;
 
+use MailPoet\Config\SubscriberChangesNotifier;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\WP\Functions as WPFunctions;
@@ -28,7 +29,7 @@ class SubscriberEngagementTest extends \MailPoetTest {
     $this->wpMock = $this->createMock(WPFunctions::class);
     $this->subscriberEngagement = new SubscriberEngagement(
       $this->wooCommerceHelperMock,
-      new SubscribersRepository($this->entityManager, $this->wpMock)
+      new SubscribersRepository($this->entityManager, new SubscriberChangesNotifier($this->wpMock), $this->wpMock)
     );
     $this->truncateEntity(SubscriberEntity::class);
   }

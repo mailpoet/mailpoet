@@ -4,6 +4,7 @@ namespace MailPoet\Test\Statistics\Track;
 
 use Codeception\Stub;
 use Codeception\Stub\Expected;
+use MailPoet\Config\SubscriberChangesNotifier;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SendingQueueEntity;
@@ -367,7 +368,7 @@ class OpensTest extends \MailPoetTest {
     $opens = Stub::construct($this->opens, [
       $this->diContainer->get(StatisticsOpensRepository::class),
       $this->diContainer->get(UserAgentsRepository::class),
-      new SubscribersRepository($this->entityManager, $wpMock),
+      new SubscribersRepository($this->entityManager, new SubscriberChangesNotifier($wpMock), $wpMock),
     ], [
       'returnResponse' => null,
     ], $this);
@@ -388,7 +389,7 @@ class OpensTest extends \MailPoetTest {
     $opens = Stub::construct($this->opens, [
       $this->diContainer->get(StatisticsOpensRepository::class),
       $this->diContainer->get(UserAgentsRepository::class),
-      new SubscribersRepository($this->entityManager, $wpMock),
+      new SubscribersRepository($this->entityManager, new SubscriberChangesNotifier($wpMock), $wpMock),
     ], [
       'returnResponse' => null,
     ], $this);
@@ -409,7 +410,7 @@ class OpensTest extends \MailPoetTest {
     $opens = Stub::construct($this->opens, [
       $this->diContainer->get(StatisticsOpensRepository::class),
       $this->diContainer->get(UserAgentsRepository::class),
-      new SubscribersRepository($this->entityManager, $wpMock),
+      new SubscribersRepository($this->entityManager, new SubscriberChangesNotifier($wpMock), $wpMock),
     ], [
       'returnResponse' => null,
     ], $this);
