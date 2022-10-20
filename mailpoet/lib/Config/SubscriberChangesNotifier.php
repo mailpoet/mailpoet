@@ -90,19 +90,19 @@ class SubscriberChangesNotifier {
 
   public function subscribersCreated(array $subscriberIds): void {
     foreach ($subscriberIds as $subscriberId) {
-      $this->subscriberCreated($subscriberId);
+      $this->subscriberCreated((int)$subscriberId);
     }
   }
 
   public function subscribersUpdated(array $subscriberIds): void {
     foreach ($subscriberIds as $subscriberId) {
-      $this->subscriberUpdated($subscriberId);
+      $this->subscriberUpdated((int)$subscriberId);
     }
   }
 
   public function subscribersDeleted(array $subscriberIds): void {
     foreach ($subscriberIds as $subscriberId) {
-      $this->subscriberDeleted($subscriberId);
+      $this->subscriberDeleted((int)$subscriberId);
     }
   }
 
