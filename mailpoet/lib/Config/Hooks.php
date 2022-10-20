@@ -51,6 +51,9 @@ class Hooks {
   /** @var HooksWooCommerce */
   private $hooksWooCommerce;
 
+  /** @var SubscriberChangesNotifier */
+  private $subscriberChangesNotifier;
+
   public function __construct(
     Form $subscriptionForm,
     Comment $subscriptionComment,
@@ -63,6 +66,7 @@ class Hooks {
     DisplayFormInWPContent $displayFormInWPContent,
     HooksWooCommerce $hooksWooCommerce,
     SubscriberHandler $subscriberHandler,
+    SubscriberChangesNotifier $subscriberChangesNotifier,
     WP $wpSegment
   ) {
     $this->subscriptionForm = $subscriptionForm;
@@ -77,6 +81,7 @@ class Hooks {
     $this->wpSegment = $wpSegment;
     $this->subscriberHandler = $subscriberHandler;
     $this->hooksWooCommerce = $hooksWooCommerce;
+    $this->subscriberChangesNotifier = $subscriberChangesNotifier;
   }
 
   public function init() {
@@ -92,6 +97,7 @@ class Hooks {
     $this->setupWooCommerceSettings();
     $this->setupFooter();
     $this->setupSettingsLinkInPluginPage();
+    $this->setupChangeNotifications();
   }
 
   public function initEarlyHooks() {
@@ -434,5 +440,12 @@ class Hooks {
     ];
 
     return array_merge($customLinks, $actionLinks);
+  }
+
+  private function setupChangeNotifications(): void {
+    $this->wp->addAction(
+      'shutdown',
+      [$this->subscriberChangesNotifier, 'notify']
+    );
   }
 }
