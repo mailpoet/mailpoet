@@ -410,7 +410,9 @@ jobs:
           name: Group acceptance tests
           command: |
             # Convert test result filename values to be relative paths because the circleci CLI's split command requires exact matches
-            sed -i.bak 's#/wp-core/wp-content/plugins/mailpoet/##g' $CIRCLE_INTERNAL_TASK_DATA/circle-test-results/results.json
+            if [ -e $CIRCLE_INTERNAL_TASK_DATA/circle-test-results/results.json ]; then
+              sed -i.bak 's#/wp-core/wp-content/plugins/mailpoet/##g' $CIRCLE_INTERNAL_TASK_DATA/circle-test-results/results.json
+            fi
             # `circleci tests split` returns different values based on the container it's run on
             # in case group is defined find only tests containing the group
             if [[ -n '<< parameters.group >>' ]]; then
