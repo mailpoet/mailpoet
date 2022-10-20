@@ -18,6 +18,7 @@ use MailPoetVendor\Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Entity()
  * @ORM\Table(name="subscribers")
  * @ORM\HasLifecycleCallbacks
+ * @ORM\EntityListeners({"\MailPoet\Doctrine\EventListeners\SubscriberListener"})
  */
 class SubscriberEntity {
   // hook names

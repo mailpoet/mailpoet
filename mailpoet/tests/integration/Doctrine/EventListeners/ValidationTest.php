@@ -2,12 +2,14 @@
 
 namespace MailPoet\Test\Doctrine\EventListeners;
 
+use MailPoet\Config\SubscriberChangesNotifier;
 use MailPoet\Doctrine\Annotations\AnnotationReaderProvider;
 use MailPoet\Doctrine\ArrayCache;
 use MailPoet\Doctrine\ConfigurationFactory;
 use MailPoet\Doctrine\EntityManagerFactory;
 use MailPoet\Doctrine\EventListeners\EmojiEncodingListener;
 use MailPoet\Doctrine\EventListeners\LastSubscribedAtListener;
+use MailPoet\Doctrine\EventListeners\SubscriberListener;
 use MailPoet\Doctrine\EventListeners\TimestampListener;
 use MailPoet\Doctrine\EventListeners\ValidationListener;
 use MailPoet\Doctrine\Validator\ValidationException;
@@ -80,13 +82,15 @@ class ValidationTest extends \MailPoetTest {
     $validationListener = new ValidationListener($validatorFactory->createValidator());
     $emojiEncodingListener = new EmojiEncodingListener(new Emoji($this->wp));
     $lastSubscribedAtListener = new LastSubscribedAtListener($this->wp);
+    $subscriberListener = new SubscriberListener(new SubscriberChangesNotifier($this->wp));
     $entityManagerFactory = new EntityManagerFactory(
       $this->connection,
       $configuration,
       $timestampListener,
       $validationListener,
       $emojiEncodingListener,
-      $lastSubscribedAtListener
+      $lastSubscribedAtListener,
+      $subscriberListener
     );
     return $entityManagerFactory->createEntityManager();
   }
