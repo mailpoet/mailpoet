@@ -29,7 +29,12 @@ export function Edit(): JSX.Element {
   return (
     <PanelBody opened>
       <label htmlFor={delayValueInputId}>
-        <PlainBodyTitle title={__('Wait for', 'mailpoet')} />
+        <PlainBodyTitle
+          title={
+            // translators: A label for a wait delay time selection form field - time unit follows
+            __('Wait for', 'mailpoet')
+          }
+        />
       </label>
       <Flex align="top">
         <FlexItem

@@ -1,4 +1,4 @@
-import { __ } from '@wordpress/i18n';
+import { __, _x } from '@wordpress/i18n';
 import { Icon } from './icon';
 import { Edit } from './edit';
 import { StepType } from '../../../../editor/store/types';
@@ -15,7 +15,7 @@ const getDelayInformation = (delayTypeValue: string, value: number): string =>
 export const step: StepType = {
   key: 'core:delay',
   group: 'actions',
-  title: __('Delay', 'mailpoet'),
+  title: _x('Delay', 'noun', 'mailpoet'),
   foreground: '#7F54B3',
   background: '#f7edf7',
   description: __(

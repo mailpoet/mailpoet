@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { __experimentalConfirmDialog as ConfirmDialog } from '@wordpress/components';
 import { useDispatch } from '@wordpress/data';
-import { __, sprintf } from '@wordpress/i18n';
+import { __, _x, sprintf } from '@wordpress/i18n';
 import { Item } from './item';
 import { storeName } from '../../store';
 import { Workflow, WorkflowStatus } from '../../workflow';
@@ -17,7 +17,7 @@ export const useTrashButton = (workflow: Workflow): Item | undefined => {
   return {
     key: 'trash',
     control: {
-      title: __('Trash', 'mailpoet'),
+      title: _x('Trash', 'verb', 'mailpoet'),
       icon: null,
       onClick: () => setShowDialog(true),
     },

@@ -32,7 +32,7 @@ export function* duplicateWorkflow(workflow: Workflow) {
   });
 
   void createSuccessNotice(
-    // translators: %s is the workflow name
+    // translators: %s is the automation workflow name
     sprintf(__('Automation "%s" was duplicated.', 'mailpoet'), workflow.name),
   );
 

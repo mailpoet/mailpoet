@@ -3,7 +3,7 @@ import { useContext } from 'react';
 import { __unstableCompositeItem as CompositeItem } from '@wordpress/components';
 import { useDispatch, useRegistry, useSelect } from '@wordpress/data';
 import { blockMeta } from '@wordpress/icons';
-import { __ } from '@wordpress/i18n';
+import { __, _x } from '@wordpress/i18n';
 import { WorkflowCompositeContext } from './context';
 import { StepMoreMenu } from './step-more-menu';
 import { Step as StepData } from './types';
@@ -90,7 +90,7 @@ export function Step({ step, isSelected }: Props): JSX.Element {
           >
             {step.type !== 'trigger'
               ? stepTypeData.title
-              : __('Trigger', 'mailpoet')}
+              : _x('Trigger', 'noun', 'mailpoet')}
           </label>
           <div className="mailpoet-automation-editor-step-subtitle">
             {step.type !== 'trigger'

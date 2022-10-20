@@ -62,7 +62,10 @@ export function EmailPanel(): JSX.Element {
         }
         help={senderNameErrorMessage}
         label={__('“From” name', 'mailpoet')}
-        placeholder={__('John Doe', 'mailpoet')}
+        placeholder={
+          // translators: A placeholder for a person's name
+          __('John Doe', 'mailpoet')
+        }
         value={(selectedStep.args.sender_name as string) ?? ''}
         onChange={(value) =>
           dispatch(storeName).updateStepArgs(
@@ -79,7 +82,10 @@ export function EmailPanel(): JSX.Element {
         help={senderAddressErrorMessage}
         type="email"
         label={__('“From” email address', 'mailpoet')}
-        placeholder={__('you@domain.com', 'mailpoet')}
+        placeholder={
+          // translators: A placeholder for an email
+          __('you@domain.com', 'mailpoet')
+        }
         value={(selectedStep.args.sender_address as string) ?? ''}
         onChange={(value) =>
           dispatch(storeName).updateStepArgs(

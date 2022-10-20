@@ -55,7 +55,10 @@ export function ReplyToPanel(): JSX.Element {
             }
             help={replyToNameError}
             label={__('“Reply to” name', 'mailpoet')}
-            placeholder={__('John Doe', 'mailpoet')}
+            placeholder={
+              // translators: A placeholder for a person's name
+              __('John Doe', 'mailpoet')
+            }
             value={replyToName ?? ''}
             onChange={(value) =>
               dispatch(storeName).updateStepArgs(
@@ -73,7 +76,10 @@ export function ReplyToPanel(): JSX.Element {
             help={replyToAddressError}
             type="email"
             label={__('“Reply to” email address', 'mailpoet')}
-            placeholder={__('you@domain.com', 'mailpoet')}
+            placeholder={
+              // translators: A placeholder for an email
+              __('you@domain.com', 'mailpoet')
+            }
             value={replyToAddress ?? ''}
             onChange={(value) =>
               dispatch(storeName).updateStepArgs(
