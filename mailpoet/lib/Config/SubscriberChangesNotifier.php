@@ -8,13 +8,13 @@ use MailPoetVendor\Carbon\Carbon;
 
 class SubscriberChangesNotifier {
 
-  /** @var array<int, Carbon> */
+  /** @var array<int, int> */
   private $createdSubscriberIds = [];
 
-  /** @var array<int, Carbon> */
+  /** @var array<int, int> */
   private $deletedSubscriberIds = [];
 
-  /** @var array<int, Carbon> */
+  /** @var array<int, int> */
   private $updatedSubscriberIds = [];
 
   /** @var WPFunctions */
@@ -33,40 +33,59 @@ class SubscriberChangesNotifier {
   }
 
   private function notifyCreations(): void {
-    foreach ($this->createdSubscriberIds as $subscriberId => $createdAt) {
-      $this->wp->doAction(SubscriberEntity::HOOK_SUBSCRIBER_CREATED, $subscriberId, $createdAt->getTimestamp());
+    if (count($this->createdSubscriberIds) === 1) {
+      foreach ($this->createdSubscriberIds as $subscriberId => $updatedAt) {
+        $this->wp->doAction(SubscriberEntity::HOOK_SUBSCRIBER_CREATED, $subscriberId);
+      }
+    } elseif ($this->createdSubscriberIds) {
+      $minTimestamp = min($this->createdSubscriberIds);
+      if ($minTimestamp) {
+        $this->wp->doAction(SubscriberEntity::HOOK_MULTIPLE_SUBSCRIBERS_CREATED, $minTimestamp);
+      }
     }
   }
 
   private function notifyUpdates(): void {
-    foreach ($this->updatedSubscriberIds as $subscriberId => $updatedAt) {
-      // do not notify about changes when subscriber is new
-      if (isset($this->createdSubscriberIds[$subscriberId])) {
-        continue;
+    // unset updated subscribers if subscriber is created
+    foreach ($this->createdSubscriberIds as $subscriberId => $timestamp) {
+      unset($this->updatedSubscriberIds[$subscriberId]);
+    }
+
+    if (count($this->updatedSubscriberIds) === 1) {
+      foreach ($this->updatedSubscriberIds as $subscriberId => $updatedAt) {
+        $this->wp->doAction(SubscriberEntity::HOOK_SUBSCRIBER_UPDATED, $subscriberId);
       }
-      $this->wp->doAction(SubscriberEntity::HOOK_SUBSCRIBER_UPDATED, $subscriberId, $updatedAt->getTimestamp());
+    } elseif ($this->updatedSubscriberIds) {
+      $minTimestamp = min($this->updatedSubscriberIds);
+      if ($minTimestamp) {
+        $this->wp->doAction(SubscriberEntity::HOOK_MULTIPLE_SUBSCRIBERS_UPDATED, $minTimestamp);
+      }
     }
   }
 
   private function notifyDeletes(): void {
-    foreach ($this->deletedSubscriberIds as $subscriberId => $deletedAt) {
-      $this->wp->doAction(SubscriberEntity::HOOK_SUBSCRIBER_DELETED, $subscriberId, $deletedAt->getTimestamp());
+    if (count($this->deletedSubscriberIds) === 1) {
+      foreach ($this->deletedSubscriberIds as $subscriberId => $updatedAt) {
+        $this->wp->doAction(SubscriberEntity::HOOK_SUBSCRIBER_DELETED, $subscriberId);
+      }
+    } elseif ($this->deletedSubscriberIds) {
+      $this->wp->doAction(SubscriberEntity::HOOK_MULTIPLE_SUBSCRIBERS_DELETED, array_keys($this->deletedSubscriberIds));
     }
   }
 
   public function subscriberCreated(int $subscriberId): void {
     // store id as a key and timestamp change as the value
-    $this->createdSubscriberIds[$subscriberId] = Carbon::createFromTimestamp($this->wp->currentTime('timestamp'), 'UTC');
+    $this->createdSubscriberIds[$subscriberId] = $this->getTimestamp();
   }
 
   public function subscriberUpdated(int $subscriberId): void {
     // store id as a key and timestamp change as the value
-    $this->updatedSubscriberIds[$subscriberId] = Carbon::createFromTimestamp($this->wp->currentTime('timestamp'), 'UTC');
+    $this->updatedSubscriberIds[$subscriberId] = $this->getTimestamp();
   }
 
   public function subscriberDeleted(int $subscriberId): void {
     // store id as a key and timestamp change as the value
-    $this->deletedSubscriberIds[$subscriberId] = Carbon::createFromTimestamp($this->wp->currentTime('timestamp'), 'UTC');
+    $this->deletedSubscriberIds[$subscriberId] = $this->getTimestamp();
   }
 
   public function subscribersCreated(array $subscriberIds): void {
@@ -85,5 +104,10 @@ class SubscriberChangesNotifier {
     foreach ($subscriberIds as $subscriberId) {
       $this->subscriberDeleted($subscriberId);
     }
+  }
+
+  private function getTimestamp(): int {
+    $dateTime = Carbon::createFromTimestamp($this->wp->currentTime('timestamp'), 'UTC');
+    return $dateTime->getTimestamp();
   }
 }
