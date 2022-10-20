@@ -31,6 +31,7 @@ class Exceptions {
   private const WORKFLOW_NOT_VALID = 'mailpoet_automation_workflow_not_valid';
   private const MISSING_REQUIRED_SUBJECTS = 'mailpoet_automation_missing_required_subjects';
   private const WORKFLOW_NOT_TRASHED = 'mailpoet_automation_workflow_not_trashed';
+  private const WORKFLOW_TEMPLATE_NOT_FOUND = 'mailpoet_automation_workflow_template_not_found';
 
   public function __construct() {
     throw new InvalidStateException(
@@ -219,5 +220,12 @@ class Exceptions {
       ->withErrorCode(self::WORKFLOW_NOT_TRASHED)
       // translators: %d is the ID of the workflow.
       ->withMessage(sprintf(__("Can't delete workflow with ID '%d' because it was not trashed.", 'mailpoet'), $id));
+  }
+
+  public static function workflowTemplateNotFound(string $id): NotFoundException {
+    return NotFoundException::create()
+      ->withErrorCode(self::WORKFLOW_TEMPLATE_NOT_FOUND)
+      // translators: %d is the ID of the workflow template.
+      ->withMessage(sprintf(__("Workflow template with ID '%d' not found.", 'mailpoet'), $id));
   }
 }

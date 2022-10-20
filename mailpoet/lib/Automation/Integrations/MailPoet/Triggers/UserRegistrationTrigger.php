@@ -41,7 +41,7 @@ class UserRegistrationTrigger implements Trigger {
   }
 
   public function getName(): string {
-    return __('Subscribed to segment', 'mailpoet');
+    return __('WordPress user registers', 'mailpoet');
   }
 
   public function getArgsSchema(): ObjectSchema {
