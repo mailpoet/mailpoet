@@ -8,6 +8,15 @@ use MailPoet\Entities\SubscriberEntity;
 use MailPoet\WP\Functions as WPFunctions;
 
 class Site implements CategoryInterface {
+  /** @var WPFunctions */
+  private $wp;
+
+  public function __construct(
+    WPFunctions $wp
+  ) {
+    $this->wp = $wp;
+  }
+
   public function process(
     array $shortcodeDetails,
     NewsletterEntity $newsletter = null,
@@ -16,14 +25,12 @@ class Site implements CategoryInterface {
     string $content = '',
     bool $wpUserPreview = false
   ): ?string {
-    $wp = new WPFunctions();
-
     switch ($shortcodeDetails['action']) {
       case 'title':
-        return $wp->getBloginfo('name');
+        return $this->wp->getBloginfo('name');
 
       case 'homepage_link':
-        return $wp->getBloginfo('url');
+        return $this->wp->getBloginfo('url');
 
       default:
         return null;

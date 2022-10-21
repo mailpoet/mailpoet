@@ -408,6 +408,26 @@ class ShortcodesTest extends \MailPoetTest {
     expect($result[0])->equals('[link:shortcode]');
   }
 
+  public function testItCanProcessSiteTitleShortcode() {
+    $optionName = 'blogname';
+    $siteName = get_option($optionName);
+
+    $shortcode = '[site:title]';
+    $shortcodesObject = $this->shortcodesObject;
+    $result = $shortcodesObject->process([$shortcode]);
+    expect($result[0])->equals($siteName);
+  }
+
+  public function testItCanProcessSiteHomepageLinkShortcode() {
+    $optionName = 'home';
+    $siteUrl = get_option($optionName);
+
+    $shortcode = '[site:homepage_link]';
+    $shortcodesObject = $this->shortcodesObject;
+    $result = $shortcodesObject->process([$shortcode]);
+    expect($result[0])->equals($siteUrl);
+  }
+
   public function _createWPPost() {
     $data = [
       'post_title' => 'Sample Post',
