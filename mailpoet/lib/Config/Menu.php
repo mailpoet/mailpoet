@@ -197,6 +197,8 @@ class Menu {
       ]
     );
 
+    $this->registerAutomationMenu();
+
     // Forms page
     $formsPage = $this->wp->addSubmenuPage(
       self::MAIN_PAGE_SLUG,
@@ -425,45 +427,49 @@ class Menu {
       [$this, 'logs']
     );
 
-    // Automation
-    if ($this->featuresController->isSupported(FeaturesController::AUTOMATION)) {
-      $this->wp->addSubmenuPage(
-        self::MAIN_PAGE_SLUG,
-        $this->setPageTitle(__('Automation', 'mailpoet')),
-        // @ToDo Remove Beta once Automation is no longer beta.
-        '<span>' . esc_html__('Automation', 'mailpoet') . '</span><span class="mailpoet-beta-badge">Beta</a>',
-        AccessControl::PERMISSION_MANAGE_EMAILS,
-        'mailpoet-automation',
-        [$this, 'automation']
-      );
+  }
 
-      // Automation editor
-      $automationEditorPage = $this->wp->addSubmenuPage(
-        true,
-        $this->setPageTitle(__('Automation Editor', 'mailpoet')),
-        esc_html__('Automation Editor', 'mailpoet'),
-        AccessControl::PERMISSION_MANAGE_AUTOMATIONS,
-        'mailpoet-automation-editor',
-        [$this, 'automationEditor']
-      );
+  private function registerAutomationMenu() {
 
-      // Automation templates
-      $this->wp->addSubmenuPage(
-        true,
-        $this->setPageTitle(__('Automation Templates', 'mailpoet')),
-        esc_html__('Automation Templates', 'mailpoet'),
-        AccessControl::PERMISSION_MANAGE_AUTOMATIONS,
-        'mailpoet-automation-templates',
-        [$this, 'automationTemplates']
-      );
-
-      // add body class for automation editor page
-      $this->wp->addAction('load-' . $automationEditorPage, function() {
-        $this->wp->addAction('admin_body_class', function ($classes) {
-          return ltrim($classes . ' site-editor-php');
-        });
-      });
+    if (!$this->featuresController->isSupported(FeaturesController::AUTOMATION)) {
+      return;
     }
+    $this->wp->addSubmenuPage(
+      self::MAIN_PAGE_SLUG,
+      $this->setPageTitle(__('Automation', 'mailpoet')),
+      // @ToDo Remove Beta once Automation is no longer beta.
+      '<span>' . esc_html__('Automation', 'mailpoet') . '</span><span class="mailpoet-beta-badge">Beta</a>',
+      AccessControl::PERMISSION_MANAGE_EMAILS,
+      'mailpoet-automation',
+      [$this, 'automation']
+    );
+
+    // Automation editor
+    $automationEditorPage = $this->wp->addSubmenuPage(
+      true,
+      $this->setPageTitle(__('Automation Editor', 'mailpoet')),
+      esc_html__('Automation Editor', 'mailpoet'),
+      AccessControl::PERMISSION_MANAGE_AUTOMATIONS,
+      'mailpoet-automation-editor',
+      [$this, 'automationEditor']
+    );
+
+    // Automation templates
+    $this->wp->addSubmenuPage(
+      true,
+      $this->setPageTitle(__('Automation Templates', 'mailpoet')),
+      esc_html__('Automation Templates', 'mailpoet'),
+      AccessControl::PERMISSION_MANAGE_AUTOMATIONS,
+      'mailpoet-automation-templates',
+      [$this, 'automationTemplates']
+    );
+
+    // add body class for automation editor page
+    $this->wp->addAction('load-' . $automationEditorPage, function() {
+      $this->wp->addAction('admin_body_class', function ($classes) {
+        return ltrim($classes . ' site-editor-php');
+      });
+    });
   }
 
   public function disableWPEmojis() {
