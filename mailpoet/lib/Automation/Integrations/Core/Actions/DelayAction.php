@@ -44,10 +44,12 @@ class DelayAction implements Action {
   public function validate(StepValidationArgs $args): void {
     $seconds = $this->calculateSeconds($args->getStep());
     if ($seconds <= 0) {
-      throw new ValidationException(__('A delay must have a positive value', 'mailpoet'));
+      throw ValidationException::create()
+        ->withError('delay', __('A delay must have a positive value', 'mailpoet'));
     }
     if ($seconds > 2 * YEAR_IN_SECONDS) {
-      throw new ValidationException(__("A delay can't be longer than two years", 'mailpoet'));
+      throw ValidationException::create()
+        ->withError('delay', __("A delay can't be longer than two years", 'mailpoet'));
     }
   }
 
