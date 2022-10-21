@@ -31,14 +31,21 @@ function SingleLineTextareaControl(
 }
 
 export function EmailPanel(): JSX.Element {
-  const { selectedStep, selectedStepType } = useSelect(
+  const { selectedStep, selectedStepType, errors } = useSelect(
     (select) => ({
       selectedStep: select(storeName).getSelectedStep(),
       selectedStepType: select(storeName).getSelectedStepType(),
+      errors: select(storeName).getStepError(
+        select(storeName).getSelectedStep().id,
+      ),
     }),
     [],
   );
 
+  const errorFields = errors?.fields ?? {};
+  const senderNameErrorMessage = errorFields?.sender_name ?? '';
+  const senderAddressErrorMessage = errorFields?.sender_address ?? '';
+  const subjectErrorMessage = errorFields?.subject ?? '';
   return (
     <PanelBody opened>
       <StepName
@@ -49,6 +56,10 @@ export function EmailPanel(): JSX.Element {
         }}
       />
       <TextControl
+        className={
+          senderNameErrorMessage ? 'mailpoet-automation-field__error' : ''
+        }
+        help={senderNameErrorMessage}
         label="“From” name"
         placeholder="John Doe"
         value={(selectedStep.args.sender_name as string) ?? ''}
@@ -61,6 +72,10 @@ export function EmailPanel(): JSX.Element {
         }
       />
       <TextControl
+        className={
+          senderAddressErrorMessage ? 'mailpoet-automation-field__error' : ''
+        }
+        help={senderAddressErrorMessage}
         type="email"
         label="“From” email address"
         placeholder="you@domain.com"
@@ -74,13 +89,21 @@ export function EmailPanel(): JSX.Element {
         }
       />
       <SingleLineTextareaControl
+        className={
+          subjectErrorMessage ? 'mailpoet-automation-field__error' : ''
+        }
         label="Subject"
         placeholder="Type in subject…"
         value={(selectedStep.args.subject as string) ?? ''}
         onChange={(value) =>
           dispatch(storeName).updateStepArgs(selectedStep.id, 'subject', value)
         }
-        help={<ShortcodeHelpText />}
+        help={
+          <>
+            {`${subjectErrorMessage} `}
+            <ShortcodeHelpText />
+          </>
+        }
       />
       <SingleLineTextareaControl
         label="Preheader"
