@@ -42,11 +42,13 @@ class ValidStepRuleTest extends WorkflowRuleTest {
     try {
       (new WorkflowWalker())->walk($workflow, [$rule]);
     } catch (UnexpectedValueException $e) {
+      $errors = $e->getErrors();
       $this->assertSame(
         [
           'root' => [
             'step_id' => 'root',
             'message' => 'Test error',
+            'fields' => []
           ],
         ],
         $e->getErrors()
@@ -77,6 +79,7 @@ class ValidStepRuleTest extends WorkflowRuleTest {
           'root' => [
             'step_id' => 'root',
             'message' => 'Unknown error.',
+            'fields' => [],
           ],
         ],
         $e->getErrors()
