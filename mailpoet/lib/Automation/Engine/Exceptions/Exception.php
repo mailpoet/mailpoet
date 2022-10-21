@@ -40,6 +40,12 @@ abstract class Exception extends PhpException implements RestException {
   }
 
   /** @return static */
+  public function withError(string $id, string $error) {
+    $this->errors[$id] = $error;
+    return $this;
+  }
+
+  /** @return static */
   public function withErrorCode(string $errorCode) {
     $this->errorCode = $errorCode;
     return $this;
