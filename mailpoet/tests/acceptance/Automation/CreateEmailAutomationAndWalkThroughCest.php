@@ -45,8 +45,8 @@ class CreateEmailAutomationAndWalkThroughCest
     $i->fillField('Wait for', '5');
 
     $i->click('Send email');
-    $i->fillField('“From” name','From');
-    $i->fillField('“From” email address','test@mailpoet.com');
+    $i->fillField('"From" name','From');
+    $i->fillField('"From" email address','test@mailpoet.com');
     $i->fillField('Subject','Automation-Test-Subject');
 
     $i->click('Design email');
@@ -60,8 +60,8 @@ class CreateEmailAutomationAndWalkThroughCest
 
     $i->click('Send email');
     $i->click('Reply to');
-    $i->fillField('“Reply to” name', 'Reply');
-    $i->fillField('“Reply to” email address', 'reply@mailpoet.com');
+    $i->fillField('"Reply to" name', 'Reply');
+    $i->fillField('"Reply to" email address', 'reply@mailpoet.com');
 
     $i->click('Activate');
     $i->waitForText('Are you ready to activate?');

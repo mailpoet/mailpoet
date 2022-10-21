@@ -54,7 +54,7 @@ export function ReplyToPanel(): JSX.Element {
               replyToNameError ? 'mailpoet-automation-field__error' : ''
             }
             help={replyToNameError}
-            label={__('“Reply to” name', 'mailpoet')}
+            label={__('"Reply to" name', 'mailpoet')}
             placeholder={
               // translators: A placeholder for a person's name
               __('John Doe', 'mailpoet')
@@ -75,7 +75,7 @@ export function ReplyToPanel(): JSX.Element {
             }
             help={replyToAddressError}
             type="email"
-            label={__('“Reply to” email address', 'mailpoet')}
+            label={__('"Reply to" email address', 'mailpoet')}
             placeholder={
               // translators: A placeholder for an email
               __('you@domain.com', 'mailpoet')

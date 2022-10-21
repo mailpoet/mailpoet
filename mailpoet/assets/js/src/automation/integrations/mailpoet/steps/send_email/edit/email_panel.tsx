@@ -61,7 +61,7 @@ export function EmailPanel(): JSX.Element {
           senderNameErrorMessage ? 'mailpoet-automation-field__error' : ''
         }
         help={senderNameErrorMessage}
-        label={__('“From” name', 'mailpoet')}
+        label={__('"From" name', 'mailpoet')}
         placeholder={
           // translators: A placeholder for a person's name
           __('John Doe', 'mailpoet')
@@ -81,7 +81,7 @@ export function EmailPanel(): JSX.Element {
         }
         help={senderAddressErrorMessage}
         type="email"
-        label={__('“From” email address', 'mailpoet')}
+        label={__('"From" email address', 'mailpoet')}
         placeholder={
           // translators: A placeholder for an email
           __('you@domain.com', 'mailpoet')
