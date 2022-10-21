@@ -74,18 +74,27 @@ class SendEmailActionTest extends \MailPoetTest {
   public function testItIsNotValidIfStepHasNoEmail(): void {
     $step = new Step('step-id', Step::TYPE_ACTION, 'step-key', [], []);
 
-    $this->expectException(ValidationException::class);
-    $this->expectExceptionMessage("Automation email with ID '' not found.");
-    $this->action->validate(new StepValidationArgs($this->workflow, $step, []));
+    $error = null;
+    try {
+      $this->action->validate(new StepValidationArgs($this->workflow, $step, []));
+    } catch (ValidationException $error) {
+      $this->assertSame('Automation email not found.', $error->getErrors()['email_id']);
+    }
+    $this->assertNotNull($error);
   }
 
   public function testItRequiresAutomationEmailType(): void {
     $newsletter = (new Newsletter())->withPostNotificationsType()->create();
     $step = new Step('step-id', Step::TYPE_ACTION, 'step-key', ['email_id' => $newsletter->getId()], []);
 
-    $this->expectExceptionMessage("Automation email with ID '{$newsletter->getId()}' not found.");
+    $error = null;
+    try {
     $this->action->validate(new StepValidationArgs($this->workflow, $step, []));
     $this->action->validate(new StepValidationArgs($this->workflow, $step, []));
+    } catch (ValidationException $error) {
+      $this->assertSame("Automation email with ID '{$newsletter->getId()}' not found.", $error->getErrors()['email_id']);
+    }
+    $this->assertNotNull($error);
   }
 
   public function testHappyPath() {
