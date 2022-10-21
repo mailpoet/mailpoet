@@ -25,11 +25,28 @@ class Validator {
    * @return mixed
    */
   public function validate(Schema $schema, $value, string $paramName = 'value') {
-    $result = $this->validateAndSanitizeValueFromSchema($value, $schema->toArray(), $paramName);
-    if ($result instanceof WP_Error) {
-      throw ValidationException::createFromWpError($result);
+
+    $schema = $schema->toArray();
+    if (!isset($schema['properties'])) {
+      $result = $this->validateAndSanitizeValueFromSchema($value, $schema, $paramName);
+      if ($result instanceof WP_Error) {
+        throw ValidationException::createFromWpError($result);
+      }
+      return $result;
     }
-    return $result;
+
+    $combinedError = new WP_Error();
+    foreach ($schema['properties'] as $propertyKey => $definition) {
+      $result = $this->validateAndSanitizeValueFromSchema($value, array_merge($schema, ['properties' => [$propertyKey => $definition]]), $paramName);
+      if ($result instanceof WP_Error) {
+        $combinedError->add($propertyKey, $result->get_error_message(), $result->get_error_data());
+      }
+    }
+
+    if ($combinedError->errors) {
+      throw ValidationException::createFromWpError($combinedError);
+    }
+    return $this->validateAndSanitizeValueFromSchema($value, $schema, $paramName);
   }
 
   /**
