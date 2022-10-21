@@ -12,7 +12,8 @@ class ConfirmConfirmationPageCest {
     $i->waitForText('MailPoet Page');
     $i->click('[data-automation-id="preview_page_link"]');
     $i->switchToNextTab();
-    $i->see('You have subscribed to');
+    $siteTitle = get_bloginfo('name', 'raw');
+    $i->see("You have subscribed to $siteTitle");
     $pageTitle = 'MailPoetConfirmationPage';
     $postContent = 'BobsYourUncle';
     $i->cli(['post', 'create', '--post_type=page', '--post_status=publish', "--post_title=$pageTitle", "--post_content=$postContent"]);
