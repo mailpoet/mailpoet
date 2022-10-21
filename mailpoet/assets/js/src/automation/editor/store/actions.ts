@@ -99,6 +99,35 @@ export function* activate() {
   } as const;
 }
 
+// @ToDo: Decide on best naming once MAILPOET-4731 decides about the "deactivating" status name
+export function* deactivate() {
+  const workflow = select(storeName).getWorkflowData();
+  const data = yield apiFetch({
+    path: `/workflows/${workflow.id}`,
+    method: 'PUT',
+    data: {
+      ...workflow,
+      status: 'inactive',
+    },
+  });
+
+  const { createNotice } = dispatch(noticesStore as StoreDescriptor);
+  if (data?.data.status === WorkflowStatus.INACTIVE) {
+    void createNotice(
+      'success',
+      __('Automation is now deactivated!', 'mailpoet'),
+      {
+        type: 'snackbar',
+      },
+    );
+  }
+
+  return {
+    type: 'DEACTIVATE',
+    workflow: data?.data ?? workflow,
+  } as const;
+}
+
 export function* trash(onTrashed: () => void = undefined) {
   const workflow = select(storeName).getWorkflowData();
   const data = yield apiFetch({
