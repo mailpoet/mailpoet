@@ -12,7 +12,7 @@ import { __ } from '@wordpress/i18n';
 import { Chip } from '../chip';
 import { ColoredIcon } from '../icons';
 import {
-  StepError as StepErrorType,
+  StepErrors as StepErrorType,
   stepSidebarKey,
   storeName,
 } from '../../store';

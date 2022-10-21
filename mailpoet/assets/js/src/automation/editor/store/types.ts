@@ -34,13 +34,14 @@ export type StepType = {
   background: string;
 };
 
-export type StepError = {
+export type StepErrors = {
   step_id: string;
   message: string;
+  fields: Record<string, string>;
 };
 
 export type Errors = {
-  steps: Record<string, StepError>;
+  steps: Record<string, StepErrors>;
 };
 
 export type State = {
