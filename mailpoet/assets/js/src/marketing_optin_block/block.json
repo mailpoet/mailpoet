@@ -22,6 +22,6 @@
     }
   },
   "parent": ["woocommerce/checkout-contact-information-block"],
-  "editorScript": "file:../../../dist/js/marketing_optin_block/marketing-optin-block.js",
-  "editorStyle": "file:../../../dist/js/marketing_optin_block/marketing-optin-block.css"
+  "editorScript": "file:./marketing-optin-block.js",
+  "editorStyle": "file:./marketing-optin-block.css"
 }
