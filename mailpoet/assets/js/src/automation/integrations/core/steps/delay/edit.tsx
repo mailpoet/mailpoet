@@ -12,13 +12,19 @@ import { storeName } from '../../../../editor/store';
 import { DelayTypeOptions } from './types/delayTypes';
 
 export function Edit(): JSX.Element {
-  const { selectedStep } = useSelect(
+  const { selectedStep, errors } = useSelect(
     (select) => ({
       selectedStep: select(storeName).getSelectedStep(),
+      errors: select(storeName).getStepError(
+        select(storeName).getSelectedStep().id,
+      ),
     }),
     [],
   );
 
+  const errorFields = errors?.fields ?? {};
+  const delayErrorMessage = errorFields?.delay ?? '';
+  const delayTypeErrorMessage = errorFields?.delay_type ?? '';
   const delayValueInputId = `delay-number-${selectedStep.id}`;
   return (
     <PanelBody opened>
@@ -26,9 +32,15 @@ export function Edit(): JSX.Element {
         <PlainBodyTitle title={__('Wait for', 'mailpoet')} />
       </label>
       <Flex align="top">
-        <FlexItem style={{ flex: '1 1 0' }}>
+        <FlexItem
+          style={{ flex: '1 1 0' }}
+          className={
+            delayErrorMessage ? 'mailpoet-automation-field__error' : ''
+          }
+        >
           <TextControl
             id={delayValueInputId}
+            help={delayErrorMessage}
             type="number"
             placeholder="Number"
             value={(selectedStep.args.delay as string) ?? ''}
@@ -45,9 +57,15 @@ export function Edit(): JSX.Element {
             }}
           />
         </FlexItem>
-        <FlexItem style={{ flex: '1 1 0' }}>
+        <FlexItem
+          style={{ flex: '1 1 0' }}
+          className={
+            delayTypeErrorMessage ? 'mailpoet-automation-field__error' : ''
+          }
+        >
           <SelectControl
             label=""
+            help={delayTypeErrorMessage}
             value={(selectedStep.args.delay_type as string) ?? 'HOURS'}
             options={DelayTypeOptions}
             onChange={(value) =>

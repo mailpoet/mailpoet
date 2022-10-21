@@ -9,17 +9,22 @@ export function EditNewsletter(): JSX.Element {
   const [redirectToTemplateSelection, setRedirectToTemplateSelection] =
     useState(false);
 
-  const { selectedStep, workflowId, workflowSaved } = useSelect(
+  const { selectedStep, workflowId, workflowSaved, errors } = useSelect(
     (select) => ({
       selectedStep: select(storeName).getSelectedStep(),
       workflowId: select(storeName).getWorkflowData().id,
       workflowSaved: select(storeName).getWorkflowSaved(),
+      errors: select(storeName).getStepError(
+        select(storeName).getSelectedStep().id,
+      ),
     }),
     [],
   );
 
   const emailId = selectedStep?.args?.email_id as number | undefined;
   const workflowStepId = selectedStep.id;
+  const errorFields = errors?.fields ?? {};
+  const emailIdError = errorFields?.email_id ?? '';
 
   const createEmail = useCallback(async () => {
     setRedirectToTemplateSelection(true);
@@ -56,16 +61,23 @@ export function EditNewsletter(): JSX.Element {
 
   if (!emailId || redirectToTemplateSelection) {
     return (
-      <Button
-        variant="sidebar-primary"
-        centered
-        icon={plus}
-        onClick={createEmail}
-        isBusy={redirectToTemplateSelection}
-        disabled={redirectToTemplateSelection}
-      >
-        Design email
-      </Button>
+      <div className={emailIdError ? 'mailpoet-automation-field__error' : ''}>
+        <Button
+          variant="sidebar-primary"
+          centered
+          icon={plus}
+          onClick={createEmail}
+          isBusy={redirectToTemplateSelection}
+          disabled={redirectToTemplateSelection}
+        >
+          Design email
+        </Button>
+        {emailIdError && (
+          <span className="mailpoet-automation-field-message">
+            {emailIdError}
+          </span>
+        )}
+      </div>
     );
   }
 

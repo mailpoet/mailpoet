@@ -3,9 +3,12 @@ import { dispatch, useSelect } from '@wordpress/data';
 import { storeName } from '../../../../../editor/store';
 
 export function ReplyToPanel(): JSX.Element {
-  const { selectedStep } = useSelect(
+  const { selectedStep, errors } = useSelect(
     (select) => ({
       selectedStep: select(storeName).getSelectedStep(),
+      errors: select(storeName).getStepError(
+        select(storeName).getSelectedStep().id,
+      ),
     }),
     [],
   );
@@ -18,6 +21,9 @@ export function ReplyToPanel(): JSX.Element {
   const enabled =
     typeof replyToName !== 'undefined' || typeof replyToAddress !== 'undefined';
 
+  const errorFields = errors?.fields ?? {};
+  const replyToNameError = errorFields?.reply_to_name ?? '';
+  const replyToAddressError = errorFields?.reply_to_address ?? '';
   return (
     <PanelBody title="Reply to" initialOpen={false}>
       <ToggleControl
@@ -40,6 +46,10 @@ export function ReplyToPanel(): JSX.Element {
       {enabled && (
         <>
           <TextControl
+            className={
+              replyToNameError ? 'mailpoet-automation-field__error' : ''
+            }
+            help={replyToNameError}
             label="“Reply to” name"
             placeholder="John Doe"
             value={replyToName ?? ''}
@@ -53,6 +63,10 @@ export function ReplyToPanel(): JSX.Element {
           />
 
           <TextControl
+            className={
+              replyToAddressError ? 'mailpoet-automation-field__error' : ''
+            }
+            help={replyToAddressError}
             type="email"
             label="“Reply to” email address"
             placeholder="you@domain.com"
