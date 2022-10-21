@@ -50,16 +50,7 @@ class AutomaticEmailTest extends \MailPoetTest {
     $this->scheduledTasksRepository = $this->diContainer->get(ScheduledTasksRepository::class);
 
     $this->newsletterFactory = new NewsletterFactory();
-    $this->newsletter = $this->newsletterFactory->withActiveStatus()->withAutomaticType()->create();
-    $this->newsletterOptionFactory = new NewsletterOptionFactory();
-    $this->newsletterOptionFactory->createMultipleOptions(
-      $this->newsletter,
-      [
-        'sendTo' => 'user',
-        'afterTimeType' => 'hours',
-        'afterTimeNumber' => 2,
-      ]
-    );
+    $this->newsletter = $this->createAutomaticNewsletter();
   }
 
   public function testItCreatesScheduledAutomaticEmailSendingTaskForUser() {
@@ -149,6 +140,30 @@ class AutomaticEmailTest extends \MailPoetTest {
     $this->assertCount(0, $this->sendingQueuesRepository->findAll());
   }
 
+  public function testItCanCancelMultipleAutomaticEmails() {
+    $newsletter = $this->newslettersRepository->findOneById($this->newsletter->getId());
+    $this->newsletterOptionFactory->createMultipleOptions(
+      $this->newsletter,
+      [
+        'group' => 'some_group',
+        'event' => 'some_event',
+      ]
+    );
+    $newsletter2 = $this->createAutomaticNewsletter();
+    $this->newsletterOptionFactory->createMultipleOptions(
+      $newsletter2,
+      [
+        'group' => 'some_group',
+        'event' => 'some_event',
+      ]
+    );
+    $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
+    $subscriber = (new SubscriberFactory())->create();
+    $this->automaticEmailScheduler->createAutomaticEmailScheduledTask($newsletter, $subscriber);
+    $this->automaticEmailScheduler->createAutomaticEmailScheduledTask($newsletter2, $subscriber);
+    $this->automaticEmailScheduler->cancelAutomaticEmail('some_group', 'some_event', $subscriber);
+  }
+
   public function testItSchedulesAutomaticEmailWhenConditionMatches() {
     $currentTime = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
     $this->newsletterOptionFactory->createMultipleOptions(
@@ -198,6 +213,20 @@ class AutomaticEmailTest extends \MailPoetTest {
     $this->assertInstanceOf(\DateTimeInterface::class, $scheduledAt);
     expect($scheduledAt->format('Y-m-d H:i'))
       ->equals($currentTime->addHours(2)->format('Y-m-d H:i'));
+  }
+
+  private function createAutomaticNewsletter(): NewsletterEntity {
+    $newsletter = $this->newsletterFactory->withActiveStatus()->withAutomaticType()->create();
+    $this->newsletterOptionFactory = new NewsletterOptionFactory();
+    $this->newsletterOptionFactory->createMultipleOptions(
+      $newsletter,
+      [
+        'sendTo' => 'user',
+        'afterTimeType' => 'hours',
+        'afterTimeNumber' => 2,
+      ]
+    );
+    return $newsletter;
   }
 
   public function _after() {

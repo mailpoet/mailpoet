@@ -347,6 +347,7 @@ class AbandonedCartTest extends \MailPoetTest {
     $this->entityManager->flush();
 
     $scheduledTask->setScheduledAt($scheduleAt);
+    $scheduledTask->setSendingQueue($sendingQueue);
     $scheduledTask->setStatus(($this->currentTime < $scheduleAt) ? ScheduledTaskEntity::STATUS_SCHEDULED : ScheduledTaskEntity::STATUS_COMPLETED);
     $this->entityManager->flush();
 
