@@ -25,6 +25,7 @@ import { MailPoet } from '../../mailpoet';
 import { LISTING_NOTICE_PARAMETERS } from '../listing/workflow-listing-notices';
 import { registerApiErrorHandler } from './api-error-handler';
 import { ActivatePanel } from './components/panel/activate-panel';
+import { registerTranslations } from '../i18n';
 
 // See:
 //   https://github.com/WordPress/gutenberg/blob/9601a33e30ba41bac98579c8d822af63dd961488/packages/edit-post/src/components/layout/index.js
@@ -117,6 +118,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
   const root = document.getElementById('mailpoet_automation_editor');
   if (root) {
+    registerTranslations();
     registerApiErrorHandler();
     initializeApi();
     initializeCoreIntegration();

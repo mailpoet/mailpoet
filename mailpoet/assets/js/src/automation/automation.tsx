@@ -6,6 +6,7 @@ import { Button, Flex, Popover, SlotFillProvider } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
 import { initializeApi, useMutation } from './api';
+import { registerTranslations } from './i18n';
 import { createStore, storeName } from './listing/store';
 import { AutomationListing } from './listing';
 import { registerApiErrorHandler } from './listing/api-error-handler';
@@ -127,6 +128,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
   const root = document.getElementById('mailpoet_automation');
   if (root) {
+    registerTranslations();
     registerApiErrorHandler();
     initializeApi();
     ReactDOM.render(<App />, root);

@@ -4,6 +4,7 @@ import { Flex } from '@wordpress/components';
 import { workflowTemplates } from './config';
 import { TemplateListItem } from './components/template-list-item';
 import { initializeApi } from '../api';
+import { registerTranslations } from '../i18n';
 import { TopBarWithBeamer } from '../../common/top_bar/top_bar';
 import {
   FromScratchButton,
@@ -37,6 +38,7 @@ window.addEventListener('DOMContentLoaded', () => {
     return;
   }
 
+  registerTranslations();
   initializeApi();
   ReactDOM.render(<Templates />, root);
 });
