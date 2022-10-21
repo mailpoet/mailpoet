@@ -39,6 +39,12 @@ export function reducer(state: State, action: Action): State {
         workflowData: action.workflow,
         workflowSaved: true,
       };
+    case 'DEACTIVATE':
+      return {
+        ...state,
+        workflowData: action.workflow,
+        workflowSaved: true,
+      };
     case 'TRASH':
       return {
         ...state,
