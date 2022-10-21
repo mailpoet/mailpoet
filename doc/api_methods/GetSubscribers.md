@@ -21,5 +21,5 @@ Filter argument supports following array keys.
 | Key            | Type         | Description                                                                                                       |
 | -------------- | ------------ | ----------------------------------------------------------------------------------------------------------------- |
 | status         | string       | Specific status of subscribers. One of values: `unconfirmed`, `subscribed`, `unsubscribed`, `bounced`, `inactive` |
-| listID         | int          | List id or dynamic segment id                                                                                     |
+| listId         | int          | List id or dynamic segment id                                                                                     |
 | minUpdatedAt   | DateTime\int | DateTime object or timestamp of the minimal last update of subscribers                                            |
