@@ -137,6 +137,15 @@ class RoboFile extends \Robo\Tasks {
       'vendor-prefixed',
     ]);
 
+    $headers = escapeshellarg(
+      json_encode([
+        'Report-Msgid-Bugs-To' => 'http://support.mailpoet.com/',
+        'Last-Translator' => 'MailPoet i18n (https://www.transifex.com/organization/wysija)',
+        'Language-Team' => 'MailPoet i18n <https://www.transifex.com/organization/wysija>',
+        'Plural-Forms' => 'nplurals=2; plural=(n != 1);',
+      ])
+    );
+
     $this->collectionBuilder()
       ->taskExec('mkdir -p ' . __DIR__ . '/lang')
 
@@ -144,7 +153,7 @@ class RoboFile extends \Robo\Tasks {
       ->taskExec("php -d memory_limit=-1 tasks/makepot/makepot-views.php . > lang/mailpoet.pot")
 
       // PHP, JS/TS
-      ->taskExec("vendor/bin/wp i18n make-pot --merge --slug=mailpoet --domain=mailpoet --exclude=$exclude . lang/mailpoet.pot")
+      ->taskExec("vendor/bin/wp i18n make-pot --merge --slug=mailpoet --domain=mailpoet --exclude=$exclude --headers=$headers . lang/mailpoet.pot")
 
       ->run();
   }
