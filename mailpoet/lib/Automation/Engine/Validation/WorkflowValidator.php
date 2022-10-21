@@ -4,12 +4,14 @@ namespace MailPoet\Automation\Engine\Validation;
 
 use MailPoet\Automation\Engine\Data\Workflow;
 use MailPoet\Automation\Engine\Validation\WorkflowGraph\WorkflowWalker;
+use MailPoet\Automation\Engine\Validation\WorkflowRules\AtLeastOneTriggerRule;
 use MailPoet\Automation\Engine\Validation\WorkflowRules\ConsistentStepMapRule;
 use MailPoet\Automation\Engine\Validation\WorkflowRules\NoCycleRule;
 use MailPoet\Automation\Engine\Validation\WorkflowRules\NoDuplicateEdgesRule;
 use MailPoet\Automation\Engine\Validation\WorkflowRules\NoJoinRule;
 use MailPoet\Automation\Engine\Validation\WorkflowRules\NoSplitRule;
 use MailPoet\Automation\Engine\Validation\WorkflowRules\NoUnreachableStepsRule;
+use MailPoet\Automation\Engine\Validation\WorkflowRules\TriggerNeedsToBeFollowedByActionRule;
 use MailPoet\Automation\Engine\Validation\WorkflowRules\TriggersUnderRootRule;
 use MailPoet\Automation\Engine\Validation\WorkflowRules\UnknownStepRule;
 use MailPoet\Automation\Engine\Validation\WorkflowRules\ValidStepArgsRule;
@@ -53,6 +55,8 @@ class WorkflowValidator {
       new ConsistentStepMapRule(),
       new NoDuplicateEdgesRule(),
       new TriggersUnderRootRule(),
+      new AtLeastOneTriggerRule(),
+      new TriggerNeedsToBeFollowedByActionRule(),
       new NoCycleRule(),
       new NoJoinRule(),
       new NoSplitRule(),
