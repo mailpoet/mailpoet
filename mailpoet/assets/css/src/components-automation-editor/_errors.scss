@@ -30,3 +30,31 @@
     outline: none;
   }
 }
+
+.mailpoet-automation-field__error {
+  position: relative;
+
+  input,
+  select,
+  textarea {
+    background: right top/26px no-repeat url('../../img/icons/warning.svg');
+    padding-right: 26px;
+  }
+
+  select,
+  input[type=number] {
+    background-position-x: calc(100% - 26px);
+    padding-right: 8px !important;
+  }
+
+  .components-base-control__help,
+  .mailpoet-automation-field-message {
+    color: #d63638;
+  }
+
+  .components-button.mailpoet-automation-button-sidebar-primary,
+  .components-button.mailpoet-automation-button-sidebar-primary.has-text,
+  .components-button.mailpoet-automation-button-sidebar-primary.has-icon {
+    background: #d63638;
+  }
+}
