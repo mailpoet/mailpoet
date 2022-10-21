@@ -98,12 +98,15 @@ class DelayActionTest extends \MailPoetTest {
     $workflow = $this->createMock(Workflow::class);
     $actionScheduler = $this->createMock(ActionScheduler::class);
 
-    if ($expectation) {
-      $this->expectException(ValidationException::class);
-      $this->expectExceptionMessage($expectation);
-    }
     $testee = new DelayAction($actionScheduler);
-    $testee->validate(new StepValidationArgs($workflow, $step, []));
+    try {
+      $testee->validate(new StepValidationArgs($workflow, $step, []));
+    } catch (\Throwable $error) {
+      if (! $expectation || ! $error instanceof ValidationException) {
+        throw $error;
+      }
+      $this->assertSame($expectation, $error->getErrors()['delay']);
+    }
   }
 
   public function dataForTestDelayActionInvalidatesOutsideOfBoundaries() : array {
