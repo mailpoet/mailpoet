@@ -65,6 +65,17 @@ export function* save() {
     data: { ...workflow },
   });
 
+  const { createNotice } = dispatch(noticesStore as StoreDescriptor);
+  if (data?.data) {
+    void createNotice(
+      'success',
+      __('The automation has been saved.', 'mailpoet'),
+      {
+        type: 'snackbar',
+      },
+    );
+  }
+
   return {
     type: 'SAVE',
     workflow: data?.data ?? workflow,
