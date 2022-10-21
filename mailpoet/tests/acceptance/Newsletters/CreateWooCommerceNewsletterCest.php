@@ -41,7 +41,7 @@ class CreateWooCommerceNewsletterCest {
     $i->click($template);
 
     $this->fillNewsletterTitle($i, 'Abandoned Cart Email Creation');
-    $this->activateNewsletterAndVerify($i, 'Abandoned Cart Email Creation', 'Email sent when a customer abandons his cart');
+    $this->activateNewsletterAndVerify($i, 'Abandoned Cart Email Creation', 'Send the email when a customer abandons their cart');
   }
 
   private function fillNewsletterTitle(\AcceptanceTester $i, $newsletterTitle) {
