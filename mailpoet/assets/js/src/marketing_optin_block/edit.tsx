@@ -21,11 +21,14 @@ function EmptyState(): JSX.Element {
   return (
     <Placeholder
       icon={<Icon icon={megaphone} />}
-      label={__('marketing-opt-in-label', 'mailpoet')}
+      label={__('Marketing opt-in', 'mailpoet')}
       className="wp-block-mailpoet-newsletter-block-placeholder"
     >
       <span className="wp-block-mailpoet-newsletter-block-placeholder__description">
-        {__('marketing-opt-in-not-shown', 'mailpoet')}
+        {__(
+          'MailPoet marketing opt-in would be shown here if enabled. You can enable from the settings page.',
+          'mailpoet',
+        )}
       </span>
       <Button
         isPrimary
@@ -34,7 +37,7 @@ function EmptyState(): JSX.Element {
         rel="noopener noreferrer"
         className="wp-block-mailpoet-newsletter-block-placeholder__button"
       >
-        {__('marketing-opt-in-enable', 'mailpoet')}
+        {__('Enable opt-in for Checkout', 'mailpoet')}
       </Button>
     </Placeholder>
   );

@@ -48,7 +48,6 @@ class MarketingOptinBlock implements IntegrationInterface {
       $script_asset['version'],
       true
     );
-    $this->registerEditorTranslations();
   }
 
   /**
@@ -76,31 +75,5 @@ class MarketingOptinBlock implements IntegrationInterface {
    */
   public function get_script_data() { // phpcs:ignore
     return $this->options;
-  }
-
-  /**
-   * Workaround for registering script translations.
-   * Currently, we don't generate translation files for scripts. This method enqueues an inline script
-   * that renders same output as a script translation file would render, when rendered via wp_scripts()->print_translations.
-   * Note that keys need to match strings in JS files
-   */
-  private function registerEditorTranslations() {
-    $handle = 'mailpoet-marketing-optin-block-editor-script';
-    $editorTranslations = <<<JS
-( function( domain, translations ) {
-	var localeData = translations.locale_data[ domain ] || translations.locale_data.messages;
-	localeData[""].domain = domain;
-	wp.i18n.setLocaleData( localeData, domain );
-} )( "mailpoet", { "locale_data": { "messages": { "": {} } } } );
-JS;
-
-    $translations = [
-      '' => ['domain' => 'messages'],
-      'marketing-opt-in-label' => [__('Marketing opt-in', 'mailpoet')],
-      'marketing-opt-in-not-shown' => [__('MailPoet marketing opt-in would be shown here if enabled. You can enable from the settings page.', 'mailpoet')],
-      'marketing-opt-in-enable' => [__('Enable opt-in for Checkout', 'mailpoet')],
-    ];
-    $editorTranslations = str_replace('{ "messages": { "": {} }', '{ "messages": ' . json_encode($translations), $editorTranslations);
-    $this->wp->wpAddInlineScript($handle, $editorTranslations, 'before');
   }
 }
