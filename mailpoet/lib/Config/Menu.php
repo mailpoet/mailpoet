@@ -436,9 +436,9 @@ class Menu {
     }
     $this->wp->addSubmenuPage(
       self::MAIN_PAGE_SLUG,
-      $this->setPageTitle(__('Automation', 'mailpoet')),
+      $this->setPageTitle(__('Automations', 'mailpoet')),
       // @ToDo Remove Beta once Automation is no longer beta.
-      '<span>' . esc_html__('Automation', 'mailpoet') . '</span><span class="mailpoet-beta-badge">Beta</a>',
+      '<span>' . esc_html__('Automations', 'mailpoet') . '</span><span class="mailpoet-beta-badge">Beta</a>',
       AccessControl::PERMISSION_MANAGE_EMAILS,
       'mailpoet-automation',
       [$this, 'automation']
