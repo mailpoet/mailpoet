@@ -30,29 +30,29 @@ class ValidatorTest extends MailPoetTest {
     $this->assertValidationPassed(Builder::string()->formatUuid(), 'b2c70356-0e19-4f30-87da-1d2eadaf2d39');
 
     // invalid
-    $this->assertValidationFailed(Builder::string()->minLength(3), 'ab', 'value must be at least 3 characters long.');
-    $this->assertValidationFailed(Builder::string()->maxLength(3), 'abcd', 'value must be at most 3 characters long.');
-    $this->assertValidationFailed(Builder::string()->pattern('^[a-z]+$'), 'a123', 'value does not match pattern ^[a-z]+$.');
-    $this->assertValidationFailed(Builder::string()->formatDateTime(), 'abc', 'Invalid date.');
-    $this->assertValidationFailed(Builder::string()->formatDateTime(), '2022-03-18', 'Invalid date.');
-    $this->assertValidationFailed(Builder::string()->formatDateTime(), '12:00:00', 'Invalid date.');
-    $this->assertValidationFailed(Builder::string()->formatEmail(), 'abc@', 'Invalid email address.');
-    $this->assertValidationFailed(Builder::string()->formatEmail(), 'example.com', 'Invalid email address.');
-    $this->assertValidationFailed(Builder::string()->formatEmail(), '@example.com', 'Invalid email address.');
-    $this->assertValidationFailed(Builder::string()->formatHexColor(), '00aaff', 'Invalid hex color.');
-    $this->assertValidationFailed(Builder::string()->formatHexColor(), 'ccc', 'Invalid hex color.');
-    $this->assertValidationFailed(Builder::string()->formatHexColor(), '#00xxzz', 'Invalid hex color.');
-    $this->assertValidationFailed(Builder::string()->formatIp(), '127.0.0.', 'value is not a valid IP address.');
-    $this->assertValidationFailed(Builder::string()->formatIp(), '127.0.0', 'value is not a valid IP address.');
-    $this->assertValidationFailed(Builder::string()->formatIp(), ':::1', 'value is not a valid IP address.');
-    $this->assertValidationFailed(Builder::string()->formatIp(), ':', 'value is not a valid IP address.');
-    $this->assertValidationFailed(Builder::string()->formatUuid(), 'b2c703560e194f3087da1d2eadaf2d39', 'value is not a valid UUID.');
-    $this->assertValidationFailed(Builder::string(), 1, 'value is not of type string.');
-    $this->assertValidationFailed(Builder::string(), null, 'value is not of type string.');
-    $this->assertValidationFailed(Builder::string(), true, 'value is not of type string.');
-    $this->assertValidationFailed(Builder::string(), false, 'value is not of type string.');
-    $this->assertValidationFailed(Builder::string(), [], 'value is not of type string.');
-    $this->assertValidationFailed(Builder::string(), new stdClass(), 'value is not of type string.');
+    $this->assertValidationFailed(Builder::string()->minLength(3), 'ab', 'rest_too_short');
+    $this->assertValidationFailed(Builder::string()->maxLength(3), 'abcd', 'rest_too_long');
+    $this->assertValidationFailed(Builder::string()->pattern('^[a-z]+$'), 'a123', 'rest_invalid_pattern');
+    $this->assertValidationFailed(Builder::string()->formatDateTime(), 'abc', 'rest_invalid_date');
+    $this->assertValidationFailed(Builder::string()->formatDateTime(), '2022-03-18', 'rest_invalid_date');
+    $this->assertValidationFailed(Builder::string()->formatDateTime(), '12:00:00', 'rest_invalid_date');
+    $this->assertValidationFailed(Builder::string()->formatEmail(), 'abc@', 'rest_invalid_email');
+    $this->assertValidationFailed(Builder::string()->formatEmail(), 'example.com', 'rest_invalid_email');
+    $this->assertValidationFailed(Builder::string()->formatEmail(), '@example.com', 'rest_invalid_email');
+    $this->assertValidationFailed(Builder::string()->formatHexColor(), '00aaff', 'rest_invalid_hex_color');
+    $this->assertValidationFailed(Builder::string()->formatHexColor(), 'ccc', 'rest_invalid_hex_color');
+    $this->assertValidationFailed(Builder::string()->formatHexColor(), '#00xxzz', 'rest_invalid_hex_color');
+    $this->assertValidationFailed(Builder::string()->formatIp(), '127.0.0.', 'rest_invalid_ip');
+    $this->assertValidationFailed(Builder::string()->formatIp(), '127.0.0', 'rest_invalid_ip');
+    $this->assertValidationFailed(Builder::string()->formatIp(), ':::1', 'rest_invalid_ip');
+    $this->assertValidationFailed(Builder::string()->formatIp(), ':', 'rest_invalid_ip');
+    $this->assertValidationFailed(Builder::string()->formatUuid(), 'b2c703560e194f3087da1d2eadaf2d39', 'rest_invalid_uuid');
+    $this->assertValidationFailed(Builder::string(), 1, 'rest_invalid_type');
+    $this->assertValidationFailed(Builder::string(), null, 'rest_invalid_type');
+    $this->assertValidationFailed(Builder::string(), true, 'rest_invalid_type');
+    $this->assertValidationFailed(Builder::string(), false, 'rest_invalid_type');
+    $this->assertValidationFailed(Builder::string(), [], 'rest_invalid_type');
+    $this->assertValidationFailed(Builder::string(), new stdClass(), 'rest_invalid_type');
   }
 
   public function testNumber(): void {
@@ -67,17 +67,17 @@ class ValidatorTest extends MailPoetTest {
     $this->assertValidationPassed(Builder::number(), -0, 0.0);
 
     // invalid
-    $this->assertValidationFailed(Builder::number(), '0', 'value is not of type number.');
-    $this->assertValidationFailed(Builder::number(), '5', 'value is not of type number.');
-    $this->assertValidationFailed(Builder::number(), '5.0', 'value is not of type number.');
-    $this->assertValidationFailed(Builder::number(), '-5', 'value is not of type number.');
-    $this->assertValidationFailed(Builder::number(), '1e3', 'value is not of type number.');
-    $this->assertValidationFailed(Builder::number(), '', 'value is not of type number.');
-    $this->assertValidationFailed(Builder::number(), null, 'value is not of type number.');
-    $this->assertValidationFailed(Builder::number(), true, 'value is not of type number.');
-    $this->assertValidationFailed(Builder::number(), false, 'value is not of type number.');
-    $this->assertValidationFailed(Builder::number(), [], 'value is not of type number.');
-    $this->assertValidationFailed(Builder::number(), new stdClass(), 'value is not of type number.');
+    $this->assertValidationFailed(Builder::number(), '0', 'rest_invalid_type');
+    $this->assertValidationFailed(Builder::number(), '5', 'rest_invalid_type');
+    $this->assertValidationFailed(Builder::number(), '5.0', 'rest_invalid_type');
+    $this->assertValidationFailed(Builder::number(), '-5', 'rest_invalid_type');
+    $this->assertValidationFailed(Builder::number(), '1e3', 'rest_invalid_type');
+    $this->assertValidationFailed(Builder::number(), '', 'rest_invalid_type');
+    $this->assertValidationFailed(Builder::number(), null, 'rest_invalid_type');
+    $this->assertValidationFailed(Builder::number(), true, 'rest_invalid_type');
+    $this->assertValidationFailed(Builder::number(), false, 'rest_invalid_type');
+    $this->assertValidationFailed(Builder::number(), [], 'rest_invalid_type');
+    $this->assertValidationFailed(Builder::number(), new stdClass(), 'rest_invalid_type');
   }
 
   public function testInteger(): void {
@@ -88,22 +88,22 @@ class ValidatorTest extends MailPoetTest {
     $this->assertValidationPassed(Builder::integer(), -0);
 
     // invalid
-    $this->assertValidationFailed(Builder::integer(), '0', 'value is not of type integer.');
-    $this->assertValidationFailed(Builder::integer(), '5', 'value is not of type integer.');
-    $this->assertValidationFailed(Builder::integer(), '5.0', 'value is not of type integer.');
-    $this->assertValidationFailed(Builder::integer(), '-5', 'value is not of type integer.');
-    $this->assertValidationFailed(Builder::integer(), '1e3', 'value is not of type integer.');
-    $this->assertValidationFailed(Builder::integer(), '5', 'value is not of type integer.');
-    $this->assertValidationFailed(Builder::integer(), '5.0', 'value is not of type integer.');
-    $this->assertValidationFailed(Builder::integer(), 5.0, 'value is not of type integer.');
-    $this->assertValidationFailed(Builder::integer(), 5.1, 'value is not of type integer.');
-    $this->assertValidationFailed(Builder::integer(), 1e3, 'value is not of type integer.');
-    $this->assertValidationFailed(Builder::integer(), '', 'value is not of type integer.');
-    $this->assertValidationFailed(Builder::integer(), null, 'value is not of type integer.');
-    $this->assertValidationFailed(Builder::integer(), true, 'value is not of type integer.');
-    $this->assertValidationFailed(Builder::integer(), false, 'value is not of type integer.');
-    $this->assertValidationFailed(Builder::integer(), [], 'value is not of type integer.');
-    $this->assertValidationFailed(Builder::integer(), new stdClass(), 'value is not of type integer.');
+    $this->assertValidationFailed(Builder::integer(), '0', 'rest_invalid_type');
+    $this->assertValidationFailed(Builder::integer(), '5', 'rest_invalid_type');
+    $this->assertValidationFailed(Builder::integer(), '5.0', 'rest_invalid_type');
+    $this->assertValidationFailed(Builder::integer(), '-5', 'rest_invalid_type');
+    $this->assertValidationFailed(Builder::integer(), '1e3', 'rest_invalid_type');
+    $this->assertValidationFailed(Builder::integer(), '5', 'rest_invalid_type');
+    $this->assertValidationFailed(Builder::integer(), '5.0', 'rest_invalid_type');
+    $this->assertValidationFailed(Builder::integer(), 5.0, 'rest_invalid_type');
+    $this->assertValidationFailed(Builder::integer(), 5.1, 'rest_invalid_type');
+    $this->assertValidationFailed(Builder::integer(), 1e3, 'rest_invalid_type');
+    $this->assertValidationFailed(Builder::integer(), '', 'rest_invalid_type');
+    $this->assertValidationFailed(Builder::integer(), null, 'rest_invalid_type');
+    $this->assertValidationFailed(Builder::integer(), true, 'rest_invalid_type');
+    $this->assertValidationFailed(Builder::integer(), false, 'rest_invalid_type');
+    $this->assertValidationFailed(Builder::integer(), [], 'rest_invalid_type');
+    $this->assertValidationFailed(Builder::integer(), new stdClass(), 'rest_invalid_type');
   }
 
   public function testBoolean(): void {
@@ -112,15 +112,15 @@ class ValidatorTest extends MailPoetTest {
     $this->assertValidationPassed(Builder::boolean(), false);
 
     // invalid
-    $this->assertValidationFailed(Builder::boolean(), 'true', 'value is not of type boolean.');
-    $this->assertValidationFailed(Builder::boolean(), 'false', 'value is not of type boolean.');
-    $this->assertValidationFailed(Builder::boolean(), '0', 'value is not of type boolean.');
-    $this->assertValidationFailed(Builder::boolean(), '1', 'value is not of type boolean.');
-    $this->assertValidationFailed(Builder::boolean(), '', 'value is not of type boolean.');
-    $this->assertValidationFailed(Builder::boolean(), 1, 'value is not of type boolean.');
-    $this->assertValidationFailed(Builder::boolean(), null, 'value is not of type boolean.');
-    $this->assertValidationFailed(Builder::boolean(), [], 'value is not of type boolean.');
-    $this->assertValidationFailed(Builder::boolean(), new stdClass(), 'value is not of type boolean.');
+    $this->assertValidationFailed(Builder::boolean(), 'true', 'rest_invalid_type');
+    $this->assertValidationFailed(Builder::boolean(), 'false', 'rest_invalid_type');
+    $this->assertValidationFailed(Builder::boolean(), '0', 'rest_invalid_type');
+    $this->assertValidationFailed(Builder::boolean(), '1', 'rest_invalid_type');
+    $this->assertValidationFailed(Builder::boolean(), '', 'rest_invalid_type');
+    $this->assertValidationFailed(Builder::boolean(), 1, 'rest_invalid_type');
+    $this->assertValidationFailed(Builder::boolean(), null, 'rest_invalid_type');
+    $this->assertValidationFailed(Builder::boolean(), [], 'rest_invalid_type');
+    $this->assertValidationFailed(Builder::boolean(), new stdClass(), 'rest_invalid_type');
   }
 
   public function testNull(): void {
@@ -128,11 +128,11 @@ class ValidatorTest extends MailPoetTest {
     $this->assertValidationPassed(Builder::null(), null);
 
     // invalid
-    $this->assertValidationFailed(Builder::null(), '', 'value is not of type null.');
-    $this->assertValidationFailed(Builder::null(), 'null', 'value is not of type null.');
-    $this->assertValidationFailed(Builder::null(), 0, 'value is not of type null.');
-    $this->assertValidationFailed(Builder::null(), [], 'value is not of type null.');
-    $this->assertValidationFailed(Builder::null(), new stdClass(), 'value is not of type null.');
+    $this->assertValidationFailed(Builder::null(), '', 'rest_invalid_type');
+    $this->assertValidationFailed(Builder::null(), 'null', 'rest_invalid_type');
+    $this->assertValidationFailed(Builder::null(), 0, 'rest_invalid_type');
+    $this->assertValidationFailed(Builder::null(), [], 'rest_invalid_type');
+    $this->assertValidationFailed(Builder::null(), new stdClass(), 'rest_invalid_type');
   }
 
   public function testArray(): void {
@@ -145,20 +145,20 @@ class ValidatorTest extends MailPoetTest {
     $this->assertValidationPassed(Builder::array(Builder::number())->uniqueItems(), [1, 2, 3], [1.0, 2.0, 3.0]);
 
     // invalid
-    $this->assertValidationFailed(Builder::array(), '', 'value is not of type array.');
-    $this->assertValidationFailed(Builder::array(), 'null', 'value is not of type array.');
-    $this->assertValidationFailed(Builder::array(), 0, 'value is not of type array.');
-    $this->assertValidationFailed(Builder::array(), new stdClass(), 'value is not of type array.');
-    $this->assertValidationFailed(Builder::array(), 'a,b', 'value is not of type array.');
-    $this->assertValidationFailed(Builder::array(), ['x' => 'x', 'y' => 'y'], 'value is not of type array.');
-    $this->assertValidationFailed(Builder::array(Builder::number()), [1, '2'], 'value[1] is not of type number.');
-    $this->assertValidationFailed(Builder::array(Builder::number()), [1, null], 'value[1] is not of type number.');
-    $this->assertValidationFailed(Builder::array(Builder::number()), [1, false], 'value[1] is not of type number.');
-    $this->assertValidationFailed(Builder::array(Builder::number())->minItems(3), [1, 2], 'value must contain at least 3 items.');
-    $this->assertValidationFailed(Builder::array(Builder::number())->maxItems(1), [1, 2], 'value must contain at most 1 item.');
-    $this->assertValidationFailed(Builder::array(Builder::number())->uniqueItems(), [1, 2, 1], 'value has duplicate items.');
-    $this->assertValidationFailed(Builder::array(Builder::number())->uniqueItems(), [1.0, 1], 'value has duplicate items.');
-    $this->assertValidationFailed(Builder::array(Builder::number())->uniqueItems(), [0, -0], 'value has duplicate items.');
+    $this->assertValidationFailed(Builder::array(), '', 'rest_invalid_type');
+    $this->assertValidationFailed(Builder::array(), 'null', 'rest_invalid_type');
+    $this->assertValidationFailed(Builder::array(), 0, 'rest_invalid_type');
+    $this->assertValidationFailed(Builder::array(), new stdClass(), 'rest_invalid_type');
+    $this->assertValidationFailed(Builder::array(), 'a,b', 'rest_invalid_type');
+    $this->assertValidationFailed(Builder::array(), ['x' => 'x', 'y' => 'y'], 'rest_invalid_type');
+    $this->assertValidationFailed(Builder::array(Builder::number()), [1, '2'], 'rest_invalid_type');
+    $this->assertValidationFailed(Builder::array(Builder::number()), [1, null], 'rest_invalid_type');
+    $this->assertValidationFailed(Builder::array(Builder::number()), [1, false], 'rest_invalid_type');
+    $this->assertValidationFailed(Builder::array(Builder::number())->minItems(3), [1, 2], 'rest_too_few_items');
+    $this->assertValidationFailed(Builder::array(Builder::number())->maxItems(1), [1, 2], 'rest_too_many_items');
+    $this->assertValidationFailed(Builder::array(Builder::number())->uniqueItems(), [1, 2, 1], 'rest_duplicate_items');
+    $this->assertValidationFailed(Builder::array(Builder::number())->uniqueItems(), [1.0, 1], 'rest_duplicate_items');
+    $this->assertValidationFailed(Builder::array(Builder::number())->uniqueItems(), [0, -0], 'rest_duplicate_items');
   }
 
   public function testObject(): void {
@@ -221,62 +221,62 @@ class ValidatorTest extends MailPoetTest {
     $this->assertValidationFailed(
       Builder::object(['n' => Builder::number(), 's' => Builder::string()]),
       ['n' => '1', 's' => 'abc'],
-      'value[n] is not of type number.'
+      'rest_invalid_type'
     );
-    $this->assertValidationFailed(Builder::object(['n' => Builder::number()]), ['abc'], 'value is not of type object.');
-    $this->assertValidationFailed(Builder::object(['n' => Builder::number()]), [1, 2, 3], 'value is not of type object.');
-    $this->assertValidationFailed(Builder::object(['n' => Builder::number()]), '', 'value is not of type object.');
-    $this->assertValidationFailed(Builder::object(['n' => Builder::number()]), null, 'value is not of type object.');
-    $this->assertValidationFailed(Builder::object(['n' => Builder::number()]), true, 'value is not of type object.');
-    $this->assertValidationFailed(Builder::object(['n' => Builder::number()]), false, 'value is not of type object.');
+    $this->assertValidationFailed(Builder::object(['n' => Builder::number()]), ['abc'], 'rest_invalid_type');
+    $this->assertValidationFailed(Builder::object(['n' => Builder::number()]), [1, 2, 3], 'rest_invalid_type');
+    $this->assertValidationFailed(Builder::object(['n' => Builder::number()]), '', 'rest_invalid_type');
+    $this->assertValidationFailed(Builder::object(['n' => Builder::number()]), null, 'rest_invalid_type');
+    $this->assertValidationFailed(Builder::object(['n' => Builder::number()]), true, 'rest_invalid_type');
+    $this->assertValidationFailed(Builder::object(['n' => Builder::number()]), false, 'rest_invalid_type');
 
     // invalid - required, min-properties, max-properties
-    $this->assertValidationFailed(Builder::object(['n' => Builder::number()->required()]), [], 'n is a required property of value.');
-    $this->assertValidationFailed(Builder::object(['n' => Builder::number()->required()]), new stdClass(), 'n is a required property of value.');
+    $this->assertValidationFailed(Builder::object(['n' => Builder::number()->required()]), [], 'rest_property_required');
+    $this->assertValidationFailed(Builder::object(['n' => Builder::number()->required()]), new stdClass(), 'rest_property_required');
 
     $this->assertValidationFailed(
       Builder::object(['i' => Builder::integer()->required(), 's' => Builder::string()]),
       ['s' => 'abc'],
-      'i is a required property of value.'
+      'rest_property_required'
     );
 
     $this->assertValidationFailed(
       Builder::object()->minProperties(1),
       [],
-      'value must contain at least 1 property.'
+      'rest_too_few_properties'
     );
 
     $this->assertValidationFailed(
       Builder::object()->maxProperties(1),
       ['i' => 5, 's' => 'abc'],
-      'value must contain at most 1 property.'
+      'rest_too_many_properties'
     );
 
     // invalid - no additional properties
     $this->assertValidationFailed(
       Builder::object(['i' => Builder::integer()])->disableAdditionalProperties(),
       ['i' => 5, 's' => 'abc'],
-      's is not a valid property of Object.'
+      'rest_additional_properties_forbidden'
     );
 
     // invalid - additional properties
     $this->assertValidationFailed(
       Builder::object()->additionalProperties(Builder::integer()),
       ['a' => 1, 'b' => 'abc', 'c' => 3],
-      'value[b] is not of type integer.'
+      'rest_invalid_type'
     );
 
     // invalid - pattern properties
     $this->assertValidationFailed(
       Builder::object()->patternProperties(['^i_' => Builder::integer(), '^s_' => Builder::string()]),
       ['i_1' => 'abc', 's_1' => 'abc'],
-      'value[i_1] is not of type integer.'
+      'rest_invalid_type'
     );
 
     $this->assertValidationFailed(
       Builder::object()->patternProperties(['^i_' => Builder::integer(), '^s_' => Builder::string()]),
       ['i_1' => 5, 's_1' => 5],
-      'value[s_1] is not of type string.'
+      'rest_invalid_type'
     );
   }
 
@@ -334,31 +334,31 @@ class ValidatorTest extends MailPoetTest {
     );
 
     // invalid
-    $this->assertValidationFailed(Builder::oneOf([Builder::number(), Builder::integer()]), 5, 'value matches more than one of the expected formats.');
-    $this->assertValidationFailed(Builder::oneOf([Builder::array(), Builder::object()]), [], 'value matches more than one of the expected formats.');
-    $this->assertValidationFailed(Builder::oneOf([]), null, 'value is not a valid ');
-    $this->assertValidationFailed(Builder::oneOf([]), '', 'value is not a valid ');
-    $this->assertValidationFailed(Builder::oneOf([]), 'abc', 'value is not a valid ');
-    $this->assertValidationFailed(Builder::oneOf([]), [], 'value is not a valid ');
-    $this->assertValidationFailed(Builder::oneOf([]), true, 'value is not a valid ');
-    $this->assertValidationFailed(Builder::oneOf([]), false, 'value is not a valid ');
-    $this->assertValidationFailed(Builder::oneOf([]), 0, 'value is not a valid ');
+    $this->assertValidationFailed(Builder::oneOf([Builder::number(), Builder::integer()]), 5, 'rest_one_of_multiple_matches');
+    $this->assertValidationFailed(Builder::oneOf([Builder::array(), Builder::object()]), [], 'rest_one_of_multiple_matches');
+    $this->assertValidationFailed(Builder::oneOf([]), null, 'rest_no_matching_schema');
+    $this->assertValidationFailed(Builder::oneOf([]), '', 'rest_no_matching_schema');
+    $this->assertValidationFailed(Builder::oneOf([]), 'abc', 'rest_no_matching_schema');
+    $this->assertValidationFailed(Builder::oneOf([]), [], 'rest_no_matching_schema');
+    $this->assertValidationFailed(Builder::oneOf([]), true, 'rest_no_matching_schema');
+    $this->assertValidationFailed(Builder::oneOf([]), false, 'rest_no_matching_schema');
+    $this->assertValidationFailed(Builder::oneOf([]), 0, 'rest_no_matching_schema');
 
     // invalid (integer and number both match, error on positions 1, 2)
     $e = $this->assertValidationFailed(
       Builder::oneOf([Builder::string(), Builder::integer(), Builder::number()]),
       5,
-      'value matches more than one of the expected formats.'
+      'rest_one_of_multiple_matches'
     );
-    $this->assertSame(['rest_one_of_multiple_matches' => ['positions' => [1, 2]]], $e->getWpError()->error_data);
+    $this->assertSame(['value' => ['positions' => [1, 2]]], $e->getWpError()->error_data);
 
     // invalid (string used twice, error on positions 1, 3)
     $e = $this->assertValidationFailed(
       Builder::oneOf([Builder::boolean(), Builder::string(), Builder::number(), Builder::string()]),
       '5',
-      'value matches more than one of the expected formats.'
+      'rest_one_of_multiple_matches'
     );
-    $this->assertSame(['rest_one_of_multiple_matches' => ['positions' => [1, 3]]], $e->getWpError()->error_data);
+    $this->assertSame(['value' => ['positions' => [1, 3]]], $e->getWpError()->error_data);
   }
 
   public function testAnyOf(): void {
@@ -381,14 +381,14 @@ class ValidatorTest extends MailPoetTest {
     $this->assertValidationPassed(Builder::anyOf([Builder::number(), Builder::integer()]), 5.0);
 
     // invalid
-    $this->assertValidationFailed(Builder::anyOf([Builder::number(), Builder::integer()]), '5', 'value does not match any of the expected formats.');
-    $this->assertValidationFailed(Builder::anyOf([]), null, 'value is not a valid ');
-    $this->assertValidationFailed(Builder::anyOf([]), '', 'value is not a valid ');
-    $this->assertValidationFailed(Builder::anyOf([]), 'abc', 'value is not a valid ');
-    $this->assertValidationFailed(Builder::anyOf([]), [], 'value is not a valid ');
-    $this->assertValidationFailed(Builder::anyOf([]), true, 'value is not a valid ');
-    $this->assertValidationFailed(Builder::anyOf([]), false, 'value is not a valid ');
-    $this->assertValidationFailed(Builder::anyOf([]), 0, 'value is not a valid ');
+    $this->assertValidationFailed(Builder::anyOf([Builder::number(), Builder::integer()]), '5', 'rest_no_matching_schema');
+    $this->assertValidationFailed(Builder::anyOf([]), null, 'rest_no_matching_schema');
+    $this->assertValidationFailed(Builder::anyOf([]), '', 'rest_no_matching_schema');
+    $this->assertValidationFailed(Builder::anyOf([]), 'abc', 'rest_no_matching_schema');
+    $this->assertValidationFailed(Builder::anyOf([]), [], 'rest_no_matching_schema');
+    $this->assertValidationFailed(Builder::anyOf([]), true, 'rest_no_matching_schema');
+    $this->assertValidationFailed(Builder::anyOf([]), false, 'rest_no_matching_schema');
+    $this->assertValidationFailed(Builder::anyOf([]), 0, 'rest_no_matching_schema');
   }
 
   public function testNullable(): void {
@@ -413,12 +413,12 @@ class ValidatorTest extends MailPoetTest {
     $this->assertValidationPassed(Builder::anyOf([Builder::number(), Builder::string()])->nullable(), 'abc');
 
     // invalid
-    $this->assertValidationFailed(Builder::number()->nullable(), '', 'value is not of type number,null.');
-    $this->assertValidationFailed(Builder::number()->nullable(), '0', 'value is not of type number,null.');
-    $this->assertValidationFailed(Builder::number()->nullable(), false, 'value is not of type number,null.');
-    $this->assertValidationFailed(Builder::number()->nullable(), [], 'value is not of type number,null.');
-    $this->assertValidationFailed(Builder::string()->nullable(), 0, 'value is not of type string,null.');
-    $this->assertValidationFailed(Builder::boolean()->nullable(), 0, 'value is not of type boolean,null.');
+    $this->assertValidationFailed(Builder::number()->nullable(), '', 'rest_invalid_type');
+    $this->assertValidationFailed(Builder::number()->nullable(), '0', 'rest_invalid_type');
+    $this->assertValidationFailed(Builder::number()->nullable(), false, 'rest_invalid_type');
+    $this->assertValidationFailed(Builder::number()->nullable(), [], 'rest_invalid_type');
+    $this->assertValidationFailed(Builder::string()->nullable(), 0, 'rest_invalid_type');
+    $this->assertValidationFailed(Builder::boolean()->nullable(), 0, 'rest_invalid_type');
   }
 
   public function testComplex(): void {
@@ -733,7 +733,7 @@ class ValidatorTest extends MailPoetTest {
       $validator = $this->diContainer->get(Validator::class);
       $validator->validate($schema, $value);
     } catch (ValidationException $e) {
-      $this->assertSame($message, $e->getMessage());
+      $this->assertSame($message, $e->getWpError()->get_error_message());
       return $e;
     }
     $class = ValidationException::class;
