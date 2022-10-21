@@ -10,8 +10,10 @@ class ValidationException extends UnexpectedValueException {
   protected $wpError;
 
   public static function createFromWpError(WP_Error $wpError): self {
-    $exception = self::create()
-      ->withMessage($wpError->get_error_message());
+    $exception = self::create();
+    foreach ($wpError->errors as $code => $error) {
+      $exception->withError($code, current($error));
+    }
     $exception->wpError = $wpError;
     return $exception;
   }
