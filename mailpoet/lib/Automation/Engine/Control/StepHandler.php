@@ -100,7 +100,7 @@ class StepHandler {
       $this->handleStep($args);
     } catch (Throwable $e) {
       $status = $e instanceof InvalidStateException && $e->getErrorCode() === 'mailpoet_automation_workflow_not_active' ? WorkflowRun::STATUS_CANCELLED : WorkflowRun::STATUS_FAILED;
-      $this->workflowRunStorage->updateStatus($status, (int)$args['workflow_run_id']);
+      $this->workflowRunStorage->updateStatus((int)$args['workflow_run_id'], $status);
       $this->postProcessWorkflowRun((int)$args['workflow_run_id']);
       if (!$e instanceof Exception) {
         throw new Exception($e->getMessage(), intval($e->getCode()), $e);
@@ -133,7 +133,7 @@ class StepHandler {
 
     // complete workflow run
     if (!$stepId) {
-      $this->workflowRunStorage->updateStatus(WorkflowRun::STATUS_COMPLETE, $workflowRunId);
+      $this->workflowRunStorage->updateStatus($workflowRunId, WorkflowRun::STATUS_COMPLETE);
       return;
     }
 
@@ -185,7 +185,7 @@ class StepHandler {
 
     // no need to schedule a new step if the next step is null, complete the run
     if (!$nextStep) {
-      $this->workflowRunStorage->updateStatus(WorkflowRun::STATUS_COMPLETE, $workflowRunId);
+      $this->workflowRunStorage->updateStatus($workflowRunId, WorkflowRun::STATUS_COMPLETE);
       return;
     }
 
