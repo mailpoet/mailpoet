@@ -99,23 +99,39 @@ export function* activate() {
   } as const;
 }
 
-// @ToDo: Decide on best naming once MAILPOET-4731 decides about the "deactivating" status name
-export function* deactivate() {
+export function* deactivate(deactivateWorkflowRuns = true) {
   const workflow = select(storeName).getWorkflowData();
   const data = yield apiFetch({
     path: `/workflows/${workflow.id}`,
     method: 'PUT',
     data: {
       ...workflow,
-      status: WorkflowStatus.INACTIVE,
+      status: deactivateWorkflowRuns
+        ? WorkflowStatus.INACTIVE
+        : WorkflowStatus.DEACTIVATING,
     },
   });
 
   const { createNotice } = dispatch(noticesStore as StoreDescriptor);
-  if (data?.data.status === WorkflowStatus.INACTIVE) {
+  if (deactivateWorkflowRuns && data?.data.status === WorkflowStatus.INACTIVE) {
     void createNotice(
       'success',
       __('Automation is now deactivated!', 'mailpoet'),
+      {
+        type: 'snackbar',
+      },
+    );
+  }
+  if (
+    !deactivateWorkflowRuns &&
+    data?.data.status === WorkflowStatus.DEACTIVATING
+  ) {
+    void createNotice(
+      'success',
+      __(
+        'Automation is deactivated. But recent users are still going through the flow.',
+        'mailpoet',
+      ),
       {
         type: 'snackbar',
       },
