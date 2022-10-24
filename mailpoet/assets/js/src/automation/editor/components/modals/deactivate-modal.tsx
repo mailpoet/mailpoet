@@ -5,6 +5,39 @@ import { dispatch, useSelect } from '@wordpress/data';
 import { storeName } from '../../store';
 import { WorkflowStatus } from '../../../listing/workflow';
 
+export function DeactivateImmediatelyModal({ onClose }): JSX.Element {
+  const [isBusy, setIsBusy] = useState<boolean>(false);
+  return (
+    <Modal
+      className="mailpoet-automatoin-deactivate-modal"
+      title={__('Stop automatoin for all subscribers?', 'mailpoet')}
+      onRequestClose={onClose}
+    >
+      <p>
+        {__(
+          'Are you sure you want to deactivate now? This would stop this automation for all subscribers immediately.',
+          'mailpoet',
+        )}
+      </p>
+
+      <Button
+        isBusy={isBusy}
+        variant="primary"
+        onClick={() => {
+          setIsBusy(true);
+          dispatch(storeName).deactivate(true);
+        }}
+      >
+        {__('Deactivate now', 'mailpoet')}
+      </Button>
+
+      <Button disabled={isBusy} variant="tertiary" onClick={onClose}>
+        {__('Cancel', 'mailpoet')}
+      </Button>
+    </Modal>
+  );
+}
+
 export function DeactivateModal({ onClose }): JSX.Element {
   const { workflowName } = useSelect(
     (select) => ({
