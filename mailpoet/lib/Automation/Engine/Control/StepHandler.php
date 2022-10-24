@@ -8,6 +8,7 @@ use MailPoet\Automation\Engine\Data\Step;
 use MailPoet\Automation\Engine\Data\StepRunArgs;
 use MailPoet\Automation\Engine\Data\StepValidationArgs;
 use MailPoet\Automation\Engine\Data\SubjectEntry;
+use MailPoet\Automation\Engine\Data\Workflow;
 use MailPoet\Automation\Engine\Data\WorkflowRun;
 use MailPoet\Automation\Engine\Data\WorkflowRunLog;
 use MailPoet\Automation\Engine\Exceptions;
@@ -98,7 +99,8 @@ class StepHandler {
     try {
       $this->handleStep($args);
     } catch (Throwable $e) {
-      $this->workflowRunStorage->updateStatus((int)$args['workflow_run_id'], WorkflowRun::STATUS_FAILED);
+      $status = $e instanceof InvalidStateException && $e->getErrorCode() === 'mailpoet_automation_workflow_not_active' ? WorkflowRun::STATUS_CANCELLED : WorkflowRun::STATUS_FAILED;
+      $this->workflowRunStorage->updateStatus((int)$args['workflow_run_id'], $status);
       if (!$e instanceof Exception) {
         throw new Exception($e->getMessage(), intval($e->getCode()), $e);
       }
@@ -122,6 +124,9 @@ class StepHandler {
     $workflow = $this->workflowStorage->getWorkflow($workflowRun->getWorkflowId(), $workflowRun->getVersionId());
     if (!$workflow) {
       throw Exceptions::workflowVersionNotFound($workflowRun->getWorkflowId(), $workflowRun->getVersionId());
+    }
+    if (!in_array($workflow->getStatus(), [Workflow::STATUS_ACTIVE, Workflow::STATUS_DEACTIVATING], true)) {
+      throw Exceptions::workflowNotActive($workflowRun->getWorkflowId());
     }
 
     // complete workflow run
