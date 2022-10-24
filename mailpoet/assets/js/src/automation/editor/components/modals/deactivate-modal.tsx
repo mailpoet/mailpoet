@@ -97,8 +97,7 @@ export function DeactivateModal({ onClose }): JSX.Element {
         onClick={() => {
           setIsBusy(true);
           if (selected === WorkflowStatus.DEACTIVATING) {
-            // @ToDo Use the correct method provided in MAILPOET-4731
-            dispatch(storeName).deactivate();
+            dispatch(storeName).deactivate(false);
             return;
           }
           dispatch(storeName).deactivate();
