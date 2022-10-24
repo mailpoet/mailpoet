@@ -1,9 +1,9 @@
 import { ComponentProps, ComponentType, Ref } from 'react';
 import {
-  Dropdown as WpDropdown,
-  Button,
-  VisuallyHidden,
   __experimentalText as Text,
+  Button,
+  Dropdown as WpDropdown,
+  VisuallyHidden,
 } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 import { useRef } from '@wordpress/element';
@@ -38,7 +38,11 @@ export function DocumentActions({ children }): JSX.Element {
   let chipClass = 'mailpoet-automation-editor-chip-gray';
   if (workflowStatus === WorkflowStatus.ACTIVE) {
     chipClass = 'mailpoet-automation-editor-chip-success';
-  } else if (workflowStatus === WorkflowStatus.INACTIVE) {
+  } else if (
+    [WorkflowStatus.INACTIVE, WorkflowStatus.DEACTIVATING].includes(
+      workflowStatus,
+    )
+  ) {
     chipClass = 'mailpoet-automation-editor-chip-danger';
   }
 
@@ -73,10 +77,14 @@ export function DocumentActions({ children }): JSX.Element {
                     size="body"
                     className={`edit-site-document-actions__secondary-item ${chipClass}`}
                   >
-                    {workflowStatus === WorkflowStatus.ACTIVE && __('Active')}
+                    {workflowStatus === WorkflowStatus.ACTIVE &&
+                      __('Active', 'mailpoet')}
                     {workflowStatus === WorkflowStatus.INACTIVE &&
-                      __('Inactive')}
-                    {workflowStatus === WorkflowStatus.DRAFT && __('Draft')}
+                      __('Inactive', 'mailpoet')}
+                    {workflowStatus === WorkflowStatus.DEACTIVATING &&
+                      __('Deactivating', 'mailpoet')}
+                    {workflowStatus === WorkflowStatus.DRAFT &&
+                      __('Draft', 'mailpoet')}
                   </Text>
                 </a>
                 <Button
