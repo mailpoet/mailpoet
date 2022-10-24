@@ -52,13 +52,9 @@ class WorkflowRunStorage {
     ) : [];
   }
 
-  public function updateStatus(string $status, int ...$ids): void {
-    if (!$ids) {
-      return;
-    }
+  public function updateStatus(int $id, string $status): void {
     $table = esc_sql($this->table);
-    $ids = esc_sql(implode(',', $ids));
-    $query = (string)$this->wpdb->prepare("UPDATE $table SET status = %s WHERE id IN ($ids)", $status);
+    $query = (string)$this->wpdb->prepare("UPDATE $table SET status = %s WHERE id = %d", $status, $id);
     $result = $this->wpdb->query($query);
     if ($result === false) {
       throw Exceptions::databaseError($this->wpdb->last_error);
