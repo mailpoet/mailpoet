@@ -77,12 +77,12 @@ class ValidStepRule implements WorkflowNodeVisitor {
           case "rest_property_required":
             return __('This is a required field.', 'mailpoet');
           case "rest_additional_properties_forbidden":
-            return "";
           case "rest_too_few_properties":
-            return "";
           case "rest_too_many_properties":
             return "";
           case "rest_invalid_type":
+          case "rest_invalid_multiple":
+          case "rest_not_in_enum":
             return __('This field is not well formed.', 'mailpoet');
           case "rest_too_few_items":
             return __('Please add more items.', 'mailpoet');
@@ -90,8 +90,6 @@ class ValidStepRule implements WorkflowNodeVisitor {
             return __('Please remove some items.', 'mailpoet');
           case "rest_duplicate_items":
             return __('Please remove duplicate items.', 'mailpoet');
-          case "rest_invalid_multiple":
-            return __('This field is not well formed.', 'mailpoet');
           case "rest_out_of_bounds":
             return __('This value is out of bounds.', 'mailpoet');
           case "rest_too_short":
@@ -104,8 +102,6 @@ class ValidStepRule implements WorkflowNodeVisitor {
             return __('This value does not match the expected format.', 'mailpoet');
           case "rest_one_of_multiple_matches":
             return __('This value is not matching the correct times.', 'mailpoet');
-          case "rest_not_in_enum":
-            return __('This value is not well formed.', 'mailpoet');
           case "rest_invalid_hex_color":
             return __('This value is not a hex formatted color.', 'mailpoet');
           case "rest_invalid_date":
