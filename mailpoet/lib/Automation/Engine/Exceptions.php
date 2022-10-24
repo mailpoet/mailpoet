@@ -14,6 +14,7 @@ class Exceptions {
   private const JSON_NOT_OBJECT = 'mailpoet_automation_json_not_object';
   private const WORKFLOW_NOT_FOUND = 'mailpoet_automation_workflow_not_found';
   private const WORKFLOW_VERSION_NOT_FOUND = 'mailpoet_automation_workflow_version_not_found';
+  private const WORKFLOW_NOT_ACTIVE = 'mailpoet_automation_workflow_not_active';
   private const WORKFLOW_RUN_NOT_FOUND = 'mailpoet_automation_workflow_run_not_found';
   private const WORKFLOW_STEP_NOT_FOUND = 'mailpoet_automation_workflow_step_not_found';
   private const WORKFLOW_TRIGGER_NOT_FOUND = 'mailpoet_automation_workflow_trigger_not_found';
@@ -70,6 +71,13 @@ class Exceptions {
       ->withErrorCode(self::WORKFLOW_VERSION_NOT_FOUND)
       // translators: %1$s is the ID of the workflow, %2$s the version.
       ->withMessage(sprintf(__('Workflow with ID "%1$s" in version "%2$s" not found.', 'mailpoet'), $workflow, $version));
+  }
+
+  public static function workflowNotActive(int $workflow): InvalidStateException {
+    return InvalidStateException::create()
+      ->withErrorCode(self::WORKFLOW_NOT_ACTIVE)
+      // translators: %1$s is the ID of the workflow.
+      ->withMessage(sprintf(__('Workflow with ID "%1$s" in no longer active.', 'mailpoet'), $workflow));
   }
 
   public static function workflowRunNotFound(int $id): NotFoundException {
