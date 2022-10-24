@@ -442,7 +442,7 @@ class Hooks {
     return array_merge($customLinks, $actionLinks);
   }
 
-  private function setupChangeNotifications(): void {
+  public function setupChangeNotifications(): void {
     $this->wp->addAction(
       'shutdown',
       [$this->subscriberChangesNotifier, 'notify']
