@@ -1,5 +1,6 @@
+import { useState } from 'react';
 import { Button, NavigableMenu, TextControl } from '@wordpress/components';
-import { useDispatch, useSelect } from '@wordpress/data';
+import { dispatch, useDispatch, useSelect } from '@wordpress/data';
 import { PinnedItems } from '@wordpress/interface';
 import { __ } from '@wordpress/i18n';
 import { DocumentActions } from './document_actions';
@@ -8,6 +9,7 @@ import { InserterToggle } from './inserter_toggle';
 import { MoreMenu } from './more_menu';
 import { storeName } from '../../store';
 import { WorkflowStatus } from '../../../listing/workflow';
+import { DeactivateModal } from '../modals/deactivate-modal';
 
 // See:
 //   https://github.com/WordPress/gutenberg/blob/9601a33e30ba41bac98579c8d822af63dd961488/packages/edit-post/src/components/header/index.js
@@ -54,6 +56,43 @@ function SaveDraftButton(): JSX.Element {
     <Button variant="tertiary" onClick={save}>
       {__('Save draft', 'mailpoet')}
     </Button>
+  );
+}
+
+function DeactivateButton(): JSX.Element {
+  const [showDeactivateModal, setShowDeactivateModal] = useState(false);
+  const [isBusy, setIsBusy] = useState(false);
+  const { hasUsersInProgress } = useSelect(
+    (select) => ({
+      hasUsersInProgress:
+        select(storeName).getWorkflowData().stats.totals.in_progress > 0,
+    }),
+    [],
+  );
+
+  const toggleModal = () => {
+    setShowDeactivateModal(!showDeactivateModal);
+  };
+  const deactivateOrShowModal = () => {
+    if (hasUsersInProgress) {
+      toggleModal();
+      return;
+    }
+    setIsBusy(true);
+    void dispatch(storeName).deactivate();
+  };
+
+  return (
+    <>
+      {showDeactivateModal && <DeactivateModal onClose={toggleModal} />}
+      <Button
+        isBusy={isBusy}
+        variant="tertiary"
+        onClick={deactivateOrShowModal}
+      >
+        {__('Deactivate', 'mailpoet')}
+      </Button>
+    </>
   );
 }
 
@@ -110,11 +149,18 @@ export function Header({
       <div className="edit-site-header_end">
         <div className="edit-site-header__actions">
           <Errors />
-          <SaveDraftButton />
           {workflowStatus !== WorkflowStatus.ACTIVE && (
-            <ActivateButton onClick={toggleActivatePanel} />
+            <>
+              <SaveDraftButton />
+              <ActivateButton onClick={toggleActivatePanel} />
+            </>
           )}
-          {workflowStatus === WorkflowStatus.ACTIVE && <UpdateButton />}
+          {workflowStatus === WorkflowStatus.ACTIVE && (
+            <>
+              <DeactivateButton />
+              <UpdateButton />
+            </>
+          )}
           <PinnedItems.Slot scope={storeName} />
           <MoreMenu />
         </div>
