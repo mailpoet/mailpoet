@@ -4,6 +4,7 @@ import {
   Button,
 } from '@wordpress/components';
 import { useDispatch, useSelect } from '@wordpress/data';
+import { __, sprintf } from '@wordpress/i18n';
 import { storeName } from '../../store';
 
 export function TrashButton(): JSX.Element {
@@ -30,7 +31,12 @@ export function TrashButton(): JSX.Element {
         onCancel={() => setShowConfirmDialog(false)}
         __experimentalHideHeader={false}
       >
-        You are about to delete the “{workflow.name}” workflow.
+        {sprintf(
+          __('You are about to delete the “%s” workflow.', 'mailpoet'),
+          workflow.name,
+        )}
+        <br />
+        {__(' This will stop it for all subscribers immediately.', 'mailpoet')}
       </ConfirmDialog>
 
       <Button
