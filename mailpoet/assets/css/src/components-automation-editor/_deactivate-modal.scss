@@ -1,0 +1,44 @@
+.mailpoet-automatoin-deactivate-modal {
+  color: #1d2327;
+  font-size: 13px;
+  line-height: 21px;
+  max-width: 480px;
+
+  .mailpoet-automation-options {
+    li {
+      margin-bottom: 12px;
+    }
+  }
+
+  .mailpoet-automation-option {
+    border: 2px solid #dcdcde;
+    border-radius: 4px;
+    color: #646970;
+    display: grid;
+    font-size: 12px;
+    grid-gap: 8px;
+    grid-template-columns: 20px auto;
+    line-height: 16px;
+    padding: 8px;
+
+    &.active {
+      border-color: #2271b1;
+    }
+
+    strong {
+      color: #1d2327;
+      display: block;
+      font-size: 13px;
+      font-weight: normal;
+      line-height: 21px;
+    }
+  }
+
+  .components-button {
+    float: right;
+
+    &.is-tertiary {
+      margin-right: 12px;
+    }
+  }
+}
