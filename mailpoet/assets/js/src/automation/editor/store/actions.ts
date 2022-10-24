@@ -78,7 +78,7 @@ export function* activate() {
     method: 'PUT',
     data: {
       ...workflow,
-      status: 'active',
+      status: WorkflowStatus.ACTIVE,
     },
   });
 
@@ -107,7 +107,7 @@ export function* deactivate() {
     method: 'PUT',
     data: {
       ...workflow,
-      status: 'inactive',
+      status: WorkflowStatus.INACTIVE,
     },
   });
 
@@ -135,13 +135,13 @@ export function* trash(onTrashed: () => void = undefined) {
     method: 'PUT',
     data: {
       ...workflow,
-      status: 'trash',
+      status: WorkflowStatus.TRASH,
     },
   });
 
   onTrashed?.();
 
-  if (data?.status === 'trash') {
+  if (data?.status === WorkflowStatus.TRASH) {
     window.location.href = addQueryArgs(MailPoet.urls.automationListing, {
       [LISTING_NOTICE_PARAMETERS.workflowDeleted]: workflow.id,
     });
