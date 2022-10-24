@@ -9,13 +9,16 @@ import { InserterToggle } from './inserter_toggle';
 import { MoreMenu } from './more_menu';
 import { storeName } from '../../store';
 import { WorkflowStatus } from '../../../listing/workflow';
-import { DeactivateModal } from '../modals/deactivate-modal';
+import {
+  DeactivateImmediatelyModal,
+  DeactivateModal,
+} from '../modals/deactivate-modal';
 
 // See:
 //   https://github.com/WordPress/gutenberg/blob/9601a33e30ba41bac98579c8d822af63dd961488/packages/edit-post/src/components/header/index.js
 //   https://github.com/WordPress/gutenberg/blob/0ee78b1bbe9c6f3e6df99f3b967132fa12bef77d/packages/edit-site/src/components/header/index.js
 
-function ActivateButton({ onClick }): JSX.Element {
+function ActivateButton({ onClick, label }): JSX.Element {
   const { errors } = useSelect(
     (select) => ({
       errors: select(storeName).getErrors(),
@@ -30,7 +33,7 @@ function ActivateButton({ onClick }): JSX.Element {
       onClick={onClick}
       disabled={!!errors}
     >
-      {__('Activate', 'mailpoet')}
+      {label}
     </Button>
   );
 }
@@ -99,6 +102,46 @@ function DeactivateButton(): JSX.Element {
   );
 }
 
+function DeactivateNowButton(): JSX.Element {
+  const [showDeactivateModal, setShowDeactivateModal] = useState(false);
+  const [isBusy, setIsBusy] = useState(false);
+  const { hasUsersInProgress } = useSelect(
+    (select) => ({
+      hasUsersInProgress:
+        select(storeName).getWorkflowData().stats.totals.in_progress > 0,
+    }),
+    [],
+  );
+
+  const deactivateOrShowModal = () => {
+    if (hasUsersInProgress) {
+      setShowDeactivateModal(true);
+      return;
+    }
+    setIsBusy(true);
+    void dispatch(storeName).deactivate();
+  };
+
+  return (
+    <>
+      {showDeactivateModal && (
+        <DeactivateImmediatelyModal
+          onClose={() => {
+            setShowDeactivateModal(false);
+          }}
+        />
+      )}
+      <Button
+        isBusy={isBusy}
+        variant="tertiary"
+        onClick={deactivateOrShowModal}
+      >
+        {__('Deactivate now', 'mailpoet')}
+      </Button>
+    </>
+  );
+}
+
 type Props = {
   showInserterToggle: boolean;
   toggleActivatePanel: () => void;
@@ -152,10 +195,13 @@ export function Header({
       <div className="edit-site-header_end">
         <div className="edit-site-header__actions">
           <Errors />
-          {workflowStatus !== WorkflowStatus.ACTIVE && (
+          {workflowStatus === WorkflowStatus.DRAFT && (
             <>
               <SaveDraftButton />
-              <ActivateButton onClick={toggleActivatePanel} />
+              <ActivateButton
+                onClick={toggleActivatePanel}
+                label={__('Activate', 'mailpoet')}
+              />
             </>
           )}
           {workflowStatus === WorkflowStatus.ACTIVE && (
@@ -163,6 +209,21 @@ export function Header({
               <DeactivateButton />
               <UpdateButton />
             </>
+          )}
+          {workflowStatus === WorkflowStatus.DEACTIVATING && (
+            <>
+              <DeactivateNowButton />
+              <ActivateButton
+                onClick={toggleActivatePanel}
+                label={__('Update & Activate', 'mailpoet')}
+              />
+            </>
+          )}
+          {workflowStatus === WorkflowStatus.INACTIVE && (
+            <ActivateButton
+              onClick={toggleActivatePanel}
+              label={__('Update & Activate', 'mailpoet')}
+            />
           )}
           <PinnedItems.Slot scope={storeName} />
           <MoreMenu />
