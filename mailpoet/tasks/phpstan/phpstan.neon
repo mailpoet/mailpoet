@@ -46,7 +46,7 @@ parameters:
     - '/Class Automattic\\WooCommerce\\StoreApi\\Schemas\\ExtendSchema not found./'
     -
       message: "#^Cannot cast string|void to string\\.$#"
-      count: 2
+      count: 3
       path: ../../lib/Automation/Engine/Storage/WorkflowRunStorage.php
     -
       message: "#^Cannot cast string|void to string\\.$#"

@@ -2,6 +2,7 @@
 
 namespace MailPoet\Automation\Engine\Storage;
 
+use MailPoet\Automation\Engine\Data\Workflow;
 use MailPoet\Automation\Engine\Data\WorkflowRun;
 use MailPoet\Automation\Engine\Exceptions;
 use wpdb;
@@ -32,6 +33,23 @@ class WorkflowRunStorage {
     $query = (string)$this->wpdb->prepare("SELECT * FROM $table WHERE id = %d", $id);
     $result = $this->wpdb->get_row($query, ARRAY_A);
     return $result ? WorkflowRun::fromArray((array)$result) : null;
+  }
+
+  /**
+   * @param Workflow $workflow
+   * @return WorkflowRun[]
+   * @throws Exceptions\InvalidStateException
+   */
+  public function getWorkflowRunsForWorkflow(Workflow $workflow): array {
+    $table = esc_sql($this->table);
+    $query = (string)$this->wpdb->prepare("SELECT * FROM $table WHERE workflow_id = %d", $workflow->getId());
+    $result = $this->wpdb->get_results($query, ARRAY_A);
+    return is_array($result) ? array_map(
+      function(array $runData): WorkflowRun {
+        return WorkflowRun::fromArray($runData);
+      },
+      $result
+    ) : [];
   }
 
   public function updateStatus(string $status, int ...$ids): void {
