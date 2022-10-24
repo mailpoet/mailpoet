@@ -1,3 +1,5 @@
+import { WorkflowStatus } from '../../../listing/workflow';
+
 export type NextStep = {
   id: string;
 };
@@ -13,7 +15,7 @@ export type Step = {
 export type Workflow = {
   id: number;
   name: string;
-  status: 'active' | 'inactive' | 'draft' | 'trash';
+  status: WorkflowStatus;
   created_at: string;
   updated_at: string;
   activated_at: string;
