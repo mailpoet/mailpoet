@@ -101,11 +101,13 @@ class StepHandler {
     } catch (Throwable $e) {
       $status = $e instanceof InvalidStateException && $e->getErrorCode() === 'mailpoet_automation_workflow_not_active' ? WorkflowRun::STATUS_CANCELLED : WorkflowRun::STATUS_FAILED;
       $this->workflowRunStorage->updateStatus($status, (int)$args['workflow_run_id']);
+      $this->postProcessWorkflowRun((int)$args['workflow_run_id']);
       if (!$e instanceof Exception) {
         throw new Exception($e->getMessage(), intval($e->getCode()), $e);
       }
       throw $e;
     }
+    $this->postProcessWorkflowRun((int)$args['workflow_run_id']);
   }
 
   private function handleStep(array $args): void {
@@ -210,5 +212,34 @@ class StepHandler {
       }
     }
     return $subjectEntries;
+  }
+
+  private function postProcessWorkflowRun(int $workflowRunId): void {
+    $workflowRun = $this->workflowRunStorage->getWorkflowRun($workflowRunId);
+    if (!$workflowRun) {
+      return;
+    }
+    $workflow = $this->workflowStorage->getWorkflow($workflowRun->getWorkflowId());
+    if (!$workflow) {
+      return;
+    }
+    $this->postProcessWorkflow($workflow);
+  }
+
+  private function postProcessWorkflow(Workflow $workflow): void {
+    if ($workflow->getStatus() === Workflow::STATUS_DEACTIVATING) {
+      $activeRuns = array_filter(
+        $this->workflowRunStorage->getWorkflowRunsForWorkflow($workflow),
+        function(WorkflowRun $run): bool {
+          return $run->getStatus() === WorkflowRun::STATUS_RUNNING;
+        }
+      );
+
+      // Set a deactivating Workflow to inactive once all workflow runs are finished.
+      if (!$activeRuns) {
+        $workflow->setStatus(Workflow::STATUS_INACTIVE);
+        $this->workflowStorage->updateWorkflow($workflow);
+      }
+    }
   }
 }
