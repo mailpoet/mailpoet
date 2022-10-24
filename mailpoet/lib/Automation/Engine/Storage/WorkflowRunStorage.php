@@ -64,4 +64,9 @@ class WorkflowRunStorage {
       throw Exceptions::databaseError($this->wpdb->last_error);
     }
   }
+
+  public function truncate(): void {
+    $table = esc_sql($this->table);
+    $this->wpdb->query("truncate $table");
+  }
 }

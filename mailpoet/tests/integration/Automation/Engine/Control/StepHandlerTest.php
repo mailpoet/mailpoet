@@ -89,6 +89,39 @@ class StepHandlerTest extends \MailPoetTest
     }
   }
 
+  public function testAnDeactivatingWorkflowGetsInactiveAfterLastRunIsExecuted() {
+    $workflow = $this->createWorkflow();
+    $this->assertInstanceOf(Workflow::class, $workflow);
+    $workflowRun1 = $this->createWorkflowRun($workflow);
+    $this->assertInstanceOf(WorkflowRun::class, $workflowRun1);
+    $workflowRun2 = $this->createWorkflowRun($workflow);
+    $this->assertInstanceOf(WorkflowRun::class, $workflowRun2);
+    $workflow->setStatus(Workflow::STATUS_DEACTIVATING);
+    $this->workflowStorage->updateWorkflow($workflow);
+
+    $steps = $workflow->getSteps();
+    $lastStep = end($steps);
+    $this->assertInstanceOf(Step::class, $lastStep);
+    $runner = $this->createMock(StepRunner::class);
+    $this->testee->addStepRunner($lastStep->getType(), $runner);
+
+    $this->testee->handle(['workflow_run_id' => $workflowRun1->getId(), 'step_id' => $lastStep->getId()]);
+    /** @var Workflow $updatedWorkflow */
+    $updatedWorkflow = $this->workflowStorage->getWorkflow($workflow->getId());
+    /** @var WorkflowRun $updatedworkflowRun */
+    $updatedworkflowRun = $this->workflowRunStorage->getWorkflowRun($workflowRun1->getId());
+    $this->assertSame(Workflow::STATUS_DEACTIVATING, $updatedWorkflow->getStatus());
+    $this->assertSame(WorkflowRun::STATUS_COMPLETE, $updatedworkflowRun->getStatus());
+
+    $this->testee->handle(['workflow_run_id' => $workflowRun2->getId(), 'step_id' => $lastStep->getId()]);
+    /** @var Workflow $updatedWorkflow */
+    $updatedWorkflow = $this->workflowStorage->getWorkflow($workflow->getId());
+    /** @var WorkflowRun $updatedworkflowRun */
+    $updatedworkflowRun = $this->workflowRunStorage->getWorkflowRun($workflowRun1->getId());
+    $this->assertSame(Workflow::STATUS_INACTIVE, $updatedWorkflow->getStatus());
+    $this->assertSame(WorkflowRun::STATUS_COMPLETE, $updatedworkflowRun->getStatus());
+  }
+
   private function createWorkflow(): ?Workflow {
     $trigger = $this->diContainer->get(SomeoneSubscribesTrigger::class);
     $delay = $this->diContainer->get(DelayAction::class);
@@ -114,6 +147,11 @@ class StepHandlerTest extends \MailPoetTest
       $subjects
     );
     return $this->workflowRunStorage->getWorkflowRun($this->workflowRunStorage->createWorkflowRun($workflowRun));
+  }
+
+  public function _after() {
+    $this->workflowStorage->truncate();
+    $this->workflowRunStorage->truncate();
   }
 
 }
