@@ -20,4 +20,9 @@ class EventListenersBaseTest extends \MailPoetTest {
       $replacement
     );
   }
+
+  protected function replaceEntityListener($replacement): void {
+    $this->entityManager->getConfiguration()->getEntityListenerResolver()->clear((string)get_class($replacement));
+    $this->entityManager->getConfiguration()->getEntityListenerResolver()->register($replacement);
+  }
 }
