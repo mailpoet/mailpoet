@@ -70,12 +70,9 @@ function DeactivateButton(): JSX.Element {
     [],
   );
 
-  const toggleModal = () => {
-    setShowDeactivateModal(!showDeactivateModal);
-  };
   const deactivateOrShowModal = () => {
     if (hasUsersInProgress) {
-      toggleModal();
+      setShowDeactivateModal(true);
       return;
     }
     setIsBusy(true);
@@ -84,7 +81,13 @@ function DeactivateButton(): JSX.Element {
 
   return (
     <>
-      {showDeactivateModal && <DeactivateModal onClose={toggleModal} />}
+      {showDeactivateModal && (
+        <DeactivateModal
+          onClose={() => {
+            setShowDeactivateModal(false);
+          }}
+        />
+      )}
       <Button
         isBusy={isBusy}
         variant="tertiary"
