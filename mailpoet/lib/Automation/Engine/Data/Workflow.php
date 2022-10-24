@@ -8,11 +8,13 @@ use MailPoet\Automation\Engine\Utils\Json;
 
 class Workflow {
   public const STATUS_ACTIVE = 'active';
+  public const STATUS_DEACTIVATING = 'deactivating';
   public const STATUS_INACTIVE = 'inactive';
   public const STATUS_DRAFT = 'draft';
   public const STATUS_TRASH = 'trash';
   public const STATUS_ALL = [
     self::STATUS_ACTIVE,
+    self::STATUS_DEACTIVATING,
     self::STATUS_INACTIVE,
     self::STATUS_DRAFT,
     self::STATUS_TRASH,
