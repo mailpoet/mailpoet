@@ -96,11 +96,9 @@ export function DeactivateModal({ onClose }): JSX.Element {
         variant="primary"
         onClick={() => {
           setIsBusy(true);
-          if (selected === WorkflowStatus.DEACTIVATING) {
-            dispatch(storeName).deactivate(false);
-            return;
-          }
-          dispatch(storeName).deactivate();
+          dispatch(storeName).deactivate(
+            selected !== WorkflowStatus.DEACTIVATING,
+          );
         }}
       >
         {__('Deactivate automation', 'mailpoet')}
