@@ -3,6 +3,8 @@ export enum WorkflowStatus {
   INACTIVE = 'inactive',
   DRAFT = 'draft',
   TRASH = 'trash',
+  // @ToDo: Needs to be aligned with MAILPOET-4731
+  DEACTIVATING = 'deactivating',
 }
 
 export type Workflow = {
