@@ -77,4 +77,10 @@ class WorkflowRunLogStorage {
 
     return [];
   }
+
+  public function truncate(): void {
+    $table = esc_sql($this->table);
+    $sql = "truncate $table";
+    $this->wpdb->query($sql);
+  }
 }

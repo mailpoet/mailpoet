@@ -223,15 +223,9 @@ class WorkflowRunLogTest extends \MailPoetTest {
   }
 
   public function _after() {
-    global $wpdb;
-    $sql = 'truncate ' . $wpdb->prefix . 'mailpoet_workflow_run_logs';
-    $wpdb->query($sql);
-    $sql = 'truncate ' . $wpdb->prefix . 'mailpoet_workflows';
-    $wpdb->query($sql);
-    $sql = 'truncate ' . $wpdb->prefix . 'mailpoet_workflow_versions';
-    $wpdb->query($sql);
-    $sql = 'truncate ' . $wpdb->prefix . 'mailpoet_workflow_runs';
-    $wpdb->query($sql);
+    $this->workflowRunStorage->truncate();
+    $this->workflowStorage->truncate();
+    $this->workflowRunLogStorage->truncate();
   }
 
   private function getLogsForAction($callback = null) {
