@@ -6,6 +6,7 @@ use MailPoet\Automation\Engine\Data\Workflow;
 use MailPoet\Automation\Engine\Registry;
 use MailPoet\Automation\Engine\Validation\WorkflowGraph\WorkflowNode;
 use MailPoet\Automation\Engine\Validation\WorkflowGraph\WorkflowNodeVisitor;
+use MailPoet\Validator\ValidationException;
 use MailPoet\Validator\Validator;
 
 class ValidStepArgsRule implements WorkflowNodeVisitor {
@@ -33,7 +34,36 @@ class ValidStepArgsRule implements WorkflowNodeVisitor {
       return;
     }
 
-    $this->validator->validate($registryStep->getArgsSchema(), $step->getArgs());
+    $schema = $registryStep->getArgsSchema();
+    $properties = $schema->toArray()['properties'] ?? null;
+    if (!$properties) {
+      $this->validator->validate($schema, $step->getArgs());
+      return;
+    }
+
+    $errors = [];
+    foreach ($properties as $property => $propertySchema) {
+      $schemaToValidate = array_merge(
+        $schema->toArray(),
+        ['properties' => [$property => $propertySchema]]
+      );
+      try {
+        $this->validator->validateArray(
+          $schemaToValidate,
+          $step->getArgs(),
+          $property
+        );
+      } catch (ValidationException $e) {
+        $errors[$property] = $e->getWpError()->get_error_code();
+      }
+    }
+    if ($errors) {
+      $throwable = ValidationException::create();
+      foreach ($errors as $errorKey => $errorMsg) {
+        $throwable->withError((string)$errorKey, (string)$errorMsg);
+      }
+      throw $throwable;
+    }
   }
 
   public function complete(Workflow $workflow): void {
