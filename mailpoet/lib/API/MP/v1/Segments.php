@@ -27,6 +27,26 @@ class Segments {
   }
 
   public function addList(array $data): array {
+    $this->validateSegmentName($data);
+
+    try {
+      $segment = $this->segmentsRepository->createOrUpdate($data['name'], $data['description'] ?? '');
+    } catch (\Exception $e) {
+      throw new APIException(
+        // translators: %s is the error message
+        sprintf(__('Failed to add subscriber: %s', 'mailpoet'), $e->getMessage()),
+        APIException::FAILED_TO_SAVE_LIST
+      );
+    }
+
+    return $this->buildItem($segment);
+  }
+
+  /**
+   * Throws an exception when the segment's name is invalid
+   * @return void
+   */
+  private function validateSegmentName(array $data): void {
     if (empty($data['name'])) {
       throw new APIException(
         __('List name is required.', 'mailpoet'),
@@ -40,18 +60,6 @@ class Segments {
         APIException::LIST_EXISTS
       );
     }
-
-    try {
-      $segment = $this->segmentsRepository->createOrUpdate($data['name'], $data['description'] ?? '');
-    } catch (\Exception $e) {
-      throw new APIException(
-        // translators: %s is the error message
-        sprintf(__('Failed to add subscriber: %s', 'mailpoet'), $e->getMessage()),
-        APIException::FAILED_TO_SAVE_LIST
-      );
-    }
-
-    return $this->buildItem($segment);
   }
 
   /**
