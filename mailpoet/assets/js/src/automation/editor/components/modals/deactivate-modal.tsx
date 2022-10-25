@@ -5,7 +5,12 @@ import { dispatch, useSelect } from '@wordpress/data';
 import { storeName } from '../../store';
 import { WorkflowStatus } from '../../../listing/workflow';
 
-export function DeactivateImmediatelyModal({ onClose }): JSX.Element {
+type DeactivateImmediatelyModalProps = {
+  onClose: () => void;
+};
+export function DeactivateImmediatelyModal({
+  onClose,
+}: DeactivateImmediatelyModalProps): JSX.Element {
   const [isBusy, setIsBusy] = useState<boolean>(false);
   return (
     <Modal
@@ -38,7 +43,12 @@ export function DeactivateImmediatelyModal({ onClose }): JSX.Element {
   );
 }
 
-export function DeactivateModal({ onClose }): JSX.Element {
+type DeactivateModalProps = {
+  onClose: () => void;
+};
+export function DeactivateModal({
+  onClose,
+}: DeactivateModalProps): JSX.Element {
   const { workflowName } = useSelect(
     (select) => ({
       workflowName: select(storeName).getWorkflowData().name,
