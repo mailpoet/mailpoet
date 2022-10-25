@@ -38,7 +38,6 @@ class WorkflowRunStorage {
   /**
    * @param Workflow $workflow
    * @return WorkflowRun[]
-   * @throws Exceptions\InvalidStateException
    */
   public function getWorkflowRunsForWorkflow(Workflow $workflow): array {
     $table = esc_sql($this->table);
@@ -50,6 +49,18 @@ class WorkflowRunStorage {
       },
       $result
     ) : [];
+  }
+
+  public function getCountForWorkflow(Workflow $workflow, string ...$status): int {
+    if (!count($status)) {
+      return 0;
+    }
+
+    $table = esc_sql($this->table);
+    $statusSql = (string)$this->wpdb->prepare(implode(',', array_fill(0, count($status), '%s')), ...$status);
+    $query = (string)$this->wpdb->prepare( "SELECT count(id) as count from $table where workflow_id = %d and status IN ($statusSql)", $workflow->getId());
+    $result = $this->wpdb->get_col($query);
+    return $result ? (int)current($result) : 0;
   }
 
   public function updateStatus(int $id, string $status): void {
