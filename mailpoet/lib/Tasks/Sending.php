@@ -194,6 +194,7 @@ class Sending {
   public function getSendingQueueEntity(): SendingQueueEntity {
     $sendingQueuesRepository = ContainerWrapper::getInstance()->get(SendingQueuesRepository::class);
     $sendingQueueEntity = $sendingQueuesRepository->findOneById($this->queue->id);
+    $sendingQueuesRepository->refresh($sendingQueueEntity);
 
     return $sendingQueueEntity;
   }
