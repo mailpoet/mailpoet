@@ -32,7 +32,7 @@ export function TrashButton(): JSX.Element {
         __experimentalHideHeader={false}
       >
         {sprintf(
-          __('You are about to delete the “%s” workflow.', 'mailpoet'),
+          __('You are about to delete the "%s" workflow.', 'mailpoet'),
           workflow.name,
         )}
         <br />
