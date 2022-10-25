@@ -31,11 +31,15 @@ class StepHandlerTest extends \MailPoetTest
   /** @var StepHandler */
   private $testee;
 
+  /** @var array<string, StepRunner> */
+  private $originalRunners = [];
+
   public function _before() {
     $this->testee = $this->diContainer->get(StepHandler::class);
     $this->workflowStorage = $this->diContainer->get(WorkflowStorage::class);
     $this->workflowRunStorage = $this->diContainer->get(WorkflowRunStorage::class);
     $this->workflowRunLogStorage = $this->diContainer->get(WorkflowRunLogStorage::class);
+    $this->originalRunners = $this->testee->getStepRunners();
   }
 
   public function testItDoesOnlyProcessActiveAndDeactivatingWorkflows() {
@@ -158,6 +162,7 @@ class StepHandlerTest extends \MailPoetTest
     $this->workflowStorage->truncate();
     $this->workflowRunStorage->truncate();
     $this->workflowRunLogStorage->truncate();
+    $this->testee->setStepRunners($this->originalRunners);
   }
 
 }
