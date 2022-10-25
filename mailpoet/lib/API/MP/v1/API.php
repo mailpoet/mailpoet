@@ -80,6 +80,10 @@ class API {
     return $this->segments->addList($list);
   }
 
+  public function updateList(array $list): array {
+    return $this->segments->updateList($list);
+  }
+
   public function getSubscriber($subscriberEmail) {
     return $this->subscribers->getSubscriber($subscriberEmail);
   }

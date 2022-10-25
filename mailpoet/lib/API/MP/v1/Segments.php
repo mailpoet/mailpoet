@@ -41,6 +41,43 @@ class Segments {
     return $this->buildItem($segment);
   }
 
+  public function updateList(array $data): array {
+    // firstly validation on list id
+    if (empty($data['id'])) {
+      throw new APIException(
+        __('List id is required.', 'mailpoet'),
+        APIException::LIST_ID_REQUIRED
+      );
+    }
+
+    if (!$this->segmentsRepository->findOneById((string)$data['id'])) {
+      throw new APIException(
+        __('The list does not exist.', 'mailpoet'),
+        APIException::LIST_NOT_EXISTS
+      );
+    }
+
+    // secondly validation on list name
+    $this->validateSegmentName($data);
+
+    try {
+      $segment = $this->segmentsRepository->createOrUpdate(
+        $data['name'],
+        $data['description'] ?? '',
+        SegmentEntity::TYPE_DEFAULT,
+        [],
+        $data['id']
+      );
+    } catch (\Exception $e) {
+      throw new APIException(
+        __('The list couldn’t be updated in the database', 'mailpoet'),
+        APIException::FAILED_TO_UPDATE_LIST
+      );
+    }
+
+    return $this->buildItem($segment);
+  }
+
   /**
    * Throws an exception when the segment's name is invalid
    * @return void

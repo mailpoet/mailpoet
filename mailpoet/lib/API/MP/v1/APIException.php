@@ -18,4 +18,6 @@ class APIException extends \Exception {
   const LIST_EXISTS = 15;
   const FAILED_TO_SAVE_LIST = 16;
   const WELCOME_FAILED_TO_SEND = 17;
+  const LIST_ID_REQUIRED = 18;
+  const FAILED_TO_UPDATE_LIST = 19;
 }
