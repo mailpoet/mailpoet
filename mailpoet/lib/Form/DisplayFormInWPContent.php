@@ -117,12 +117,11 @@ class DisplayFormInWPContent {
   private function displayFormInListingPage(): bool {
     $displayCheck = $this->wp->applyFilters('mailpoet_display_form_in_product_listing', true);
 
-    if (function_exists('wc_get_page_id')) {
-      $shopPageId = wc_get_page_id('shop');
-      $this->wooShopPageId = $shopPageId && $shopPageId >= 0 ? $shopPageId : null;
-      if ($displayCheck && !is_null($this->wooShopPageId) && $this->wp->isPage($shopPageId)) {
-        return true;
-      }
+    $shopPageId = $this->wp->wcGetPageId('shop');
+    $this->wooShopPageId = $shopPageId && $shopPageId >= 0 ? $shopPageId : null;
+
+    if ($displayCheck && !is_null($this->wooShopPageId) && $this->wp->isPage($this->wooShopPageId)) {
+      return true;
     }
 
     return $displayCheck && $this->wp->isArchive() && $this->wp->isPostTypeArchive('product');
