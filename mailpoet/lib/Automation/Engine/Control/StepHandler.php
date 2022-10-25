@@ -44,7 +44,7 @@ class StepHandler {
   private $workflowStorage;
 
   /** @var array<string, StepRunner> */
-  private $stepRunners;
+  private $stepRunners = [];
 
   /** @var WorkflowRunLogStorage */
   private $workflowRunLogStorage;
@@ -85,6 +85,17 @@ class StepHandler {
 
   public function addStepRunner(string $stepType, StepRunner $stepRunner): void {
     $this->stepRunners[$stepType] = $stepRunner;
+  }
+
+  public function getStepRunners(): array {
+    return $this->stepRunners;
+  }
+
+  /**
+   * @param array<string, StepRunner> $stepRunners
+   */
+  public function setStepRunners(array $stepRunners): void {
+    $this->stepRunners = $stepRunners;
   }
 
   /** @param mixed $args */
