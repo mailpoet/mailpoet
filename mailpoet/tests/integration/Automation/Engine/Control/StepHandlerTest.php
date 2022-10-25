@@ -11,6 +11,7 @@ use MailPoet\Automation\Engine\Data\WorkflowRun;
 use MailPoet\Automation\Engine\Exceptions;
 use MailPoet\Automation\Engine\Exceptions\InvalidStateException;
 use MailPoet\Automation\Engine\Exceptions\NotFoundException;
+use MailPoet\Automation\Engine\Storage\WorkflowRunLogStorage;
 use MailPoet\Automation\Engine\Storage\WorkflowRunStorage;
 use MailPoet\Automation\Engine\Storage\WorkflowStorage;
 use MailPoet\Automation\Integrations\Core\Actions\DelayAction;
@@ -24,6 +25,9 @@ class StepHandlerTest extends \MailPoetTest
   /** @var WorkflowRunStorage */
   private $workflowRunStorage;
 
+  /** @var WorkflowRunLogStorage */
+  private $workflowRunLogStorage;
+
   /** @var StepHandler */
   private $testee;
 
@@ -31,6 +35,7 @@ class StepHandlerTest extends \MailPoetTest
     $this->testee = $this->diContainer->get(StepHandler::class);
     $this->workflowStorage = $this->diContainer->get(WorkflowStorage::class);
     $this->workflowRunStorage = $this->diContainer->get(WorkflowRunStorage::class);
+    $this->workflowRunLogStorage = $this->diContainer->get(WorkflowRunLogStorage::class);
   }
 
   public function testItDoesOnlyProcessActiveAndDeactivatingWorkflows() {
@@ -152,6 +157,7 @@ class StepHandlerTest extends \MailPoetTest
   public function _after() {
     $this->workflowStorage->truncate();
     $this->workflowRunStorage->truncate();
+    $this->workflowRunLogStorage->truncate();
   }
 
 }
