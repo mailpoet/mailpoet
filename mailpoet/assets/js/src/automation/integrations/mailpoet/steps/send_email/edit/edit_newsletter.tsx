@@ -6,9 +6,31 @@ import { Button } from '../../../components/button';
 import { storeName } from '../../../../../editor/store';
 import { MailPoet } from '../../../../../../mailpoet';
 
+const emailPreviewLinkCache = {};
+const retrievePreviewLink = async (emailId, callback) => {
+  if (
+    emailPreviewLinkCache[emailId] &&
+    emailPreviewLinkCache[emailId].length > 0
+  ) {
+    callback(emailPreviewLinkCache[emailId]);
+    return;
+  }
+  const response = await MailPoet.Ajax.post({
+    api_version: window.mailpoet_api_version,
+    endpoint: 'newsletters',
+    action: 'get',
+    data: {
+      id: emailId,
+    },
+  });
+  emailPreviewLinkCache[emailId] = response?.meta?.preview_url ?? '';
+  callback(emailPreviewLinkCache[emailId]);
+};
+
 export function EditNewsletter(): JSX.Element {
   const [redirectToTemplateSelection, setRedirectToTemplateSelection] =
     useState(false);
+  const [previewLink, setPreviewLink] = useState('');
 
   const { selectedStep, workflowId, workflowSaved, errors } = useSelect(
     (select) => ({
@@ -26,6 +48,10 @@ export function EditNewsletter(): JSX.Element {
   const workflowStepId = selectedStep.id;
   const errorFields = errors?.fields ?? {};
   const emailIdError = errorFields?.email_id ?? '';
+
+  if (emailId && !previewLink) {
+    void retrievePreviewLink(emailId, setPreviewLink);
+  }
 
   const createEmail = useCallback(async () => {
     setRedirectToTemplateSelection(true);
@@ -96,7 +122,13 @@ export function EditNewsletter(): JSX.Element {
       >
         Edit content
       </Button>
-      <Button variant="secondary" centered>
+      <Button
+        variant="secondary"
+        centered
+        disabled={previewLink.length === 0}
+        href={previewLink}
+        target="_blank"
+      >
         Preview
       </Button>
     </div>
