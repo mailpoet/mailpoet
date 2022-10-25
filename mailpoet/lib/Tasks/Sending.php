@@ -168,8 +168,8 @@ class Sending {
   }
 
   public function save() {
-    $this->task->save();
     $this->queue->save();
+    $this->task->save();
     $errors = $this->getErrors();
     if ($errors) {
       $loggerFactory = LoggerFactory::getInstance();
