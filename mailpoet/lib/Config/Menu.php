@@ -438,7 +438,7 @@ class Menu {
       self::MAIN_PAGE_SLUG,
       $this->setPageTitle(__('Automations', 'mailpoet')),
       // @ToDo Remove Beta once Automation is no longer beta.
-      '<span>' . esc_html__('Automations', 'mailpoet') . '</span><span class="mailpoet-beta-badge">Beta</a>',
+      '<span>' . esc_html__('Automations', 'mailpoet') . '</span><span class="mailpoet-beta-badge">Beta</span>',
       AccessControl::PERMISSION_MANAGE_EMAILS,
       'mailpoet-automation',
       [$this, 'automation']
