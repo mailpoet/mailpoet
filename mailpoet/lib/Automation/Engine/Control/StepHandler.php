@@ -228,15 +228,10 @@ class StepHandler {
 
   private function postProcessWorkflow(Workflow $workflow): void {
     if ($workflow->getStatus() === Workflow::STATUS_DEACTIVATING) {
-      $activeRuns = array_filter(
-        $this->workflowRunStorage->getWorkflowRunsForWorkflow($workflow),
-        function(WorkflowRun $run): bool {
-          return $run->getStatus() === WorkflowRun::STATUS_RUNNING;
-        }
-      );
+      $activeRuns = $this->workflowRunStorage->getCountForWorkflow($workflow, WorkflowRun::STATUS_RUNNING);
 
       // Set a deactivating Workflow to inactive once all workflow runs are finished.
-      if (!$activeRuns) {
+      if ($activeRuns === 0) {
         $workflow->setStatus(Workflow::STATUS_INACTIVE);
         $this->workflowStorage->updateWorkflow($workflow);
       }
