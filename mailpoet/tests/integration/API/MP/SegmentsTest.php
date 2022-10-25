@@ -3,6 +3,7 @@
 namespace MailPoet\Test\API\MP;
 
 use MailPoet\API\MP\v1\API;
+use MailPoet\API\MP\v1\APIException;
 use MailPoet\API\MP\v1\CustomFields;
 use MailPoet\API\MP\v1\Segments;
 use MailPoet\API\MP\v1\Subscribers;
@@ -85,6 +86,69 @@ class SegmentsTest extends \MailPoetTest {
     $result = $this->getApi()->addList($segment);
     expect($result['id'])->greaterThan(0);
     expect($result['name'])->equals($segment['name']);
+  }
+
+  public function testItRequiresIdToUpdateList(): void {
+    try {
+      $this->getApi()->updateList([]);
+      $this->fail('List id required exception should have been thrown.');
+    } catch (\Exception $e) {
+      expect($e->getMessage())->equals('List id is required.');
+      expect($e->getCode())->equals(APIException::LIST_ID_REQUIRED);
+    }
+  }
+
+  public function testItChecksListExistenceForUpdateList(): void {
+    try {
+      $this->getApi()->updateList(['id' => 2]);
+      $this->fail('List id must be valid exception should have been thrown.');
+    } catch (\Exception $e) {
+      expect($e->getMessage())->equals('The list does not exist.');
+      expect($e->getCode())->equals(APIException::LIST_NOT_EXISTS);
+    }
+  }
+
+  public function testItRequiresNameToUpdateList(): void {
+    $segment = $this->createOrUpdateSegment('Test Segment');
+    try {
+      $this->getApi()->updateList(['id' => $segment->getId()]);
+      $this->fail('List name required exception should have been thrown.');
+    } catch (\Exception $e) {
+      expect($e->getMessage())->equals('List name is required.');
+    }
+  }
+
+  public function testItDoesNotUpdateListWhenNameIsAlreadyUsed(): void {
+    $segment1 = $this->createOrUpdateSegment('Test Segment 1');
+    $segment2 = $this->createOrUpdateSegment('Test Segment 2');
+
+    try {
+      $this->getApi()->addList([
+        'id' => $segment2->getId(),
+        'name' => $segment1->getName(),
+      ]);
+      $this->fail('List name is already used exception should have been thrown.');
+    } catch (\Exception $e) {
+      expect($e->getMessage())->equals('This list already exists.');
+    }
+  }
+
+  public function testItUpdatesList(): void {
+    $segment = $this->createOrUpdateSegment(
+      'Test Segment',
+      SegmentEntity::TYPE_DEFAULT,
+      'Description'
+    );
+
+    $data = [
+      'id' => $segment->getId(),
+      'name' => 'new name',
+      'description' => 'updated description',
+    ];
+    $result = $this->getApi()->updateList($data);
+    expect($result['id'])->equals($data['id']);
+    expect($result['name'])->equals($data['name']);
+    expect($result['description'])->equals($data['description']);
   }
 
   private function getApi(): API {
