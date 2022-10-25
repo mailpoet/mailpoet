@@ -239,7 +239,7 @@ class Menu {
 
     // add body class for form editor page
     $this->wp->addAction('load-' . $formEditorPage, function() {
-      $this->wp->addAction('admin_body_class', function ($classes) {
+      $this->wp->addFilter('admin_body_class', function ($classes) {
         return ltrim($classes . ' block-editor-page');
       });
     });
@@ -259,7 +259,7 @@ class Menu {
 
     // add body class for form editor page
     $this->wp->addAction('load-' . $formTemplateSelectionEditorPage, function() {
-      $this->wp->addAction('admin_body_class', function ($classes) {
+      $this->wp->addFilter('admin_body_class', function ($classes) {
         return ltrim($classes . ' block-editor-page');
       });
     });
@@ -466,7 +466,7 @@ class Menu {
 
     // add body class for automation editor page
     $this->wp->addAction('load-' . $automationEditorPage, function() {
-      $this->wp->addAction('admin_body_class', function ($classes) {
+      $this->wp->addFilter('admin_body_class', function ($classes) {
         return ltrim($classes . ' site-editor-php');
       });
     });
