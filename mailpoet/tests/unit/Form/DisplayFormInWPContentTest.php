@@ -36,6 +36,9 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
   /** @var SubscriberSubscribeController & MockObject */
   private $subscriberSubscribeController;
 
+  // fix for method return override
+  private $applyFiltersValue = false;
+
   public function _before() {
     parent::_before();
     if (!defined('ARRAY_A')) define('ARRAY_A', 'ARRAY_A');
@@ -44,7 +47,7 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     $this->wp->expects($this->any())->method('inTheLoop')->willReturn(true);
     $this->wp->expects($this->any())->method('isMainQuery')->willReturn(true);
     $this->wp->expects($this->any())->method('wpCreateNonce')->willReturn('asdfgh');
-    $this->wp->expects($this->any())->method('applyFilters')->willReturn(false);
+    $this->wp->expects($this->any())->method('applyFilters')->will( $this->returnCallback(function () { return $this->applyFiltersValue; } ) );
     WPFunctions::set($this->wp);
     $this->assetsController = $this->createMock(AssetsController::class);
     $this->templateRenderer = $this->createMock(TemplateRenderer::class);
@@ -303,6 +306,98 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     $form->setBody([['type' => 'submit', 'params' => ['label' => 'Subscribe!'], 'id' => 'submit', 'name' => 'Submit']]);
     $this->repository->expects($this->once())->method('findBy')->willReturn([$form]);
 
+    $result = $this->hook->display('content');
+    expect($result)->equals('content');
+  }
+
+  public function testAppendsRenderedFormOnWoocommerceShopListingPage() {
+    $renderedForm = '<form class="form"></form>';
+
+    $this->applyFiltersValue = true;
+    $this->wp->expects($this->once())->method('isSingle')->willReturn(false);
+    $this->wp->expects($this->any())->method('isSingular')->willReturn(false);
+    $this->wp->expects($this->any())->method('isArchive')->willReturn(true);
+    $this->wp->expects($this->any())->method('wcGetPageId')->willReturn(1);
+    $this->wp->expects($this->any())->method('isPostTypeArchive')->willReturn(true);
+    $this->wp->expects($this->any())->method('getPost')->willReturn(['ID' => 1]);
+    $this->assetsController->expects($this->once())->method('setupFrontEndDependencies');
+    $this->templateRenderer->expects($this->once())->method('render')->willReturn($renderedForm);
+
+    $form = new FormEntity('My Form');
+    $form->setSettings([
+      'segments' => ['3'],
+      'form_placement' => [
+        'below_posts' => [
+          'enabled' => '1',
+          'pages' => ['all' => '', 'selected' => ['1']],
+          'posts' => ['all' => ''],
+        ],
+      ],
+    ]);
+    $form->setBody([['type' => 'submit', 'params' => ['label' => 'Subscribe!'], 'id' => 'submit', 'name' => 'Submit']]);
+    $this->repository->expects($this->once())->method('findBy')->willReturn([$form]);
+    $result = $this->hook->display('content');
+    expect($result)->notEquals('content');
+    expect($result)->endsWith($renderedForm);
+  }
+
+  public function testAppendsRenderedFormOnWoocommerceShopListingPageWhenAllPagesIsSelected() {
+    $renderedForm = '<form class="form"></form>';
+
+    $this->applyFiltersValue = true;
+    $this->wp->expects($this->once())->method('isSingle')->willReturn(false);
+    $this->wp->expects($this->any())->method('isSingular')->willReturn(false);
+    $this->wp->expects($this->any())->method('isArchive')->willReturn(true);
+    $this->wp->expects($this->any())->method('wcGetPageId')->willReturn(1);
+    $this->wp->expects($this->any())->method('isPostTypeArchive')->willReturn(true);
+    $this->wp->expects($this->any())->method('getPost')->willReturn(['ID' => 1]);
+    $this->assetsController->expects($this->once())->method('setupFrontEndDependencies');
+    $this->templateRenderer->expects($this->once())->method('render')->willReturn($renderedForm);
+
+    $form = new FormEntity('My Form');
+    $form->setSettings([
+      'segments' => ['3'],
+      'form_placement' => [
+        'below_posts' => [
+          'enabled' => '1',
+          'pages' => ['all' => '1'],
+          'posts' => ['all' => ''],
+        ],
+      ],
+    ]);
+    $form->setBody([['type' => 'submit', 'params' => ['label' => 'Subscribe!'], 'id' => 'submit', 'name' => 'Submit']]);
+    $this->repository->expects($this->once())->method('findBy')->willReturn([$form]);
+    $result = $this->hook->display('content');
+    expect($result)->notEquals('content');
+    expect($result)->endsWith($renderedForm);
+  }
+
+  public function testItDoesNotAppendsFormOnWoocommerceShopListingPageWhenPageIsNotSelected() {
+    $renderedForm = '<form class="form"></form>';
+
+    $this->applyFiltersValue = true;
+    $this->wp->expects($this->once())->method('isSingle')->willReturn(false);
+    $this->wp->expects($this->any())->method('isSingular')->willReturn(false);
+    $this->wp->expects($this->any())->method('isArchive')->willReturn(true);
+    $this->wp->expects($this->any())->method('wcGetPageId')->willReturn(1);
+    $this->wp->expects($this->any())->method('isPostTypeArchive')->willReturn(true);
+    $this->wp->expects($this->any())->method('getPost')->willReturn(['ID' => 1]);
+    $this->assetsController->expects($this->never())->method('setupFrontEndDependencies');
+    $this->templateRenderer->expects($this->never())->method('render')->willReturn($renderedForm);
+
+    $form = new FormEntity('My Form');
+    $form->setSettings([
+      'segments' => ['3'],
+      'form_placement' => [
+        'below_posts' => [
+          'enabled' => '1',
+          'pages' => ['all' => '', 'selected' => ['5']],
+          'posts' => ['all' => ''],
+        ],
+      ],
+    ]);
+    $form->setBody([['type' => 'submit', 'params' => ['label' => 'Subscribe!'], 'id' => 'submit', 'name' => 'Submit']]);
+    $this->repository->expects($this->once())->method('findBy')->willReturn([$form]);
     $result = $this->hook->display('content');
     expect($result)->equals('content');
   }
