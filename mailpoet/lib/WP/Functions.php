@@ -658,6 +658,29 @@ class Functions {
   }
 
   /**
+   * Determines whether the query is for an existing archive page.
+   *
+   * Archive pages include category, tag, author, date, custom post type,
+   * and custom taxonomy based archives.
+   *
+   * @return bool Whether the query is for an existing archive page.
+   */
+  public function isArchive(): bool {
+    return is_archive();
+  }
+
+  /**
+   * Determines whether the query is for an existing post type archive page.
+   *
+   * @param string|string[] $postTypes Optional. Post type or array of posts types
+   *                                    to check against. Default empty.
+   * @return bool Whether the query is for an existing post type archive page.
+   */
+  public function isPostTypeArchive($postTypes = ''): bool {
+    return is_post_type_archive($postTypes);
+  }
+
+  /**
    * @param string $package
    * @param array $args
    * @return bool|WP_Error

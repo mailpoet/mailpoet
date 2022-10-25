@@ -53,6 +53,8 @@ class DisplayFormInWPContent {
   /** @var SubscriberSubscribeController */
   private $subscriberSubscribeController;
 
+  private $wooShopPageId = null;
+
   public function __construct(
     WPFunctions $wp,
     FormsRepository $formsRepository,
@@ -104,9 +106,26 @@ class DisplayFormInWPContent {
     }
     // this code ensures that we display the form only on a page which is related to single post
     if (!$this->wp->isSingle() && !$this->wp->isPage()) $result = $this->wp->applyFilters('mailpoet_display_form_is_single', false);
+
+    if ($this->displayFormInListingPage()) $result = true;
+
     $noFormsCache = $this->wp->getTransient(DisplayFormInWPContent::NO_FORM_TRANSIENT_KEY);
     if ($noFormsCache === '1') $result = false;
     return $result;
+  }
+
+  private function displayFormInListingPage(): bool {
+    $displayCheck = $this->wp->applyFilters('mailpoet_display_form_in_product_listing', true);
+
+    if (function_exists('wc_get_page_id')) {
+      $shopPageId = wc_get_page_id('shop');
+      $this->wooShopPageId = $shopPageId && $shopPageId >= 0 ? $shopPageId : null;
+      if ($displayCheck && !is_null($this->wooShopPageId) && $this->wp->isPage($shopPageId)) {
+        return true;
+      }
+    }
+
+    return $displayCheck && $this->wp->isArchive() && $this->wp->isPostTypeArchive('product');
   }
 
   private function saveNoForms() {
@@ -240,17 +259,23 @@ class DisplayFormInWPContent {
       return true;
     }
 
+    if ($this->displayFormInListingPage()) {
+      // Allow form display on Woo Shop listing page
+      if (is_null($this->wooShopPageId)) return false;
+      if ($this->shouldDisplayFormOnPost($setup, 'pages', $this->wooShopPageId)) return true;
+    }
+
     return false;
   }
 
-  private function shouldDisplayFormOnPost(array $setup, string $postsKey): bool {
+  private function shouldDisplayFormOnPost(array $setup, string $postsKey, $postId = null): bool {
     if (!isset($setup[$postsKey])) {
       return false;
     }
     if (isset($setup[$postsKey]['all']) && $setup[$postsKey]['all'] === '1') {
       return true;
     }
-    $post = $this->wp->getPost(null, ARRAY_A);
+    $post = $this->wp->getPost($postId, ARRAY_A);
     if (isset($setup[$postsKey]['selected']) && in_array($post['ID'], $setup[$postsKey]['selected'])) {
       return true;
     }

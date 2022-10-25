@@ -202,6 +202,10 @@ class Hooks {
       'the_content',
       [$this->displayFormInWPContent, 'display']
     );
+    $this->wp->addFilter(
+      'woocommerce_product_loop_end',
+      [$this->displayFormInWPContent, 'display']
+    );
   }
 
   public function setupMailer() {
