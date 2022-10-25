@@ -33,8 +33,7 @@ class Segments {
       $segment = $this->segmentsRepository->createOrUpdate($data['name'], $data['description'] ?? '');
     } catch (\Exception $e) {
       throw new APIException(
-        // translators: %s is the error message
-        sprintf(__('Failed to add subscriber: %s', 'mailpoet'), $e->getMessage()),
+        __('The list couldn’t be created in the database', 'mailpoet'),
         APIException::FAILED_TO_SAVE_LIST
       );
     }
