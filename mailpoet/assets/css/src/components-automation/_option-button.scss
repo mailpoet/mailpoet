@@ -9,7 +9,7 @@
 
   .mailpoet-option-button-main {
     border-radius: 2px 0 0 2px;
-    margin-right: 2px;
+    margin-right: 1px;
   }
 
   .mailpoet-option-button-opener {
@@ -37,5 +37,15 @@
       margin-bottom: 8px;
       width: 100%;
     }
+  }
+
+  .mailpoet-option-button-item {
+    background: transparent;
+    border: none;
+    color: #1d2327;
+    cursor: pointer;
+    font-size: 13px;
+    line-height: 21px;
+    text-align: left;
   }
 }

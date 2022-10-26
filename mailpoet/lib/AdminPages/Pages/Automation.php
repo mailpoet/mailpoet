@@ -3,9 +3,11 @@
 namespace MailPoet\AdminPages\Pages;
 
 use MailPoet\AdminPages\PageRenderer;
+use MailPoet\Automation\Engine\Data\WorkflowTemplate;
 use MailPoet\Automation\Engine\Migrations\Migrator;
 use MailPoet\Automation\Engine\Storage\WorkflowStorage;
 use MailPoet\Form\AssetsController;
+use MailPoet\Automation\Engine\Storage\WorkflowTemplateStorage;
 use MailPoet\WP\Functions as WPFunctions;
 
 class Automation {
@@ -24,18 +26,23 @@ class Automation {
   /** @var WorkflowStorage */
   private $workflowStorage;
 
+  /** @var WorkflowTemplateStorage  */
+  private $templateStorage;
+
   public function __construct(
     AssetsController $assetsController,
     Migrator $migrator,
     PageRenderer $pageRenderer,
     WPFunctions $wp,
-    WorkflowStorage $workflowStorage
+    WorkflowStorage $workflowStorage,
+    WorkflowTemplateStorage $templateStorage
   ) {
     $this->assetsController = $assetsController;
     $this->migrator = $migrator;
     $this->pageRenderer = $pageRenderer;
     $this->wp = $wp;
     $this->workflowStorage = $workflowStorage;
+    $this->templateStorage = $templateStorage;
   }
 
   public function render() {
@@ -50,6 +57,12 @@ class Automation {
         'nonce' => $this->wp->wpCreateNonce('wp_rest'),
       ],
       'workflowCount' => $this->workflowStorage->getWorkflowCount(),
+      'templates' => array_map(
+        function(WorkflowTemplate $template): array {
+          return $template->toArray();
+        },
+        $this->templateStorage->getTemplates()
+      ),
     ]);
   }
 }
