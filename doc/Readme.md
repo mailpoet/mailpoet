@@ -38,6 +38,7 @@ Class `\MailPoet\API\API` becomes available once MailPoet plugin is loaded by Wo
 - [Subscribe to Lists (subscribeToLists)](api_methods/SubscribeToLists.md)
 - [Unsubscribe from List (unsubscribeFromList)](api_methods/UnsubscribeFromList.md)
 - [Unsubscribe from Lists (unsubscribeFromLists)](api_methods/UnsubscribeFromLists.md)
+- [Update List (updateList)](api_methods/UpdateList.md)
 
 ### Usage examples
 
