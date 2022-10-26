@@ -20,4 +20,7 @@ class APIException extends \Exception {
   const WELCOME_FAILED_TO_SEND = 17;
   const LIST_ID_REQUIRED = 18;
   const FAILED_TO_UPDATE_LIST = 19;
+  const LIST_USED_IN_EMAIL = 20;
+  const LIST_USED_IN_FORM = 21;
+  const FAILED_TO_DELETE_LIST = 22;
 }

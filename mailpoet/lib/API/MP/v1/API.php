@@ -80,6 +80,10 @@ class API {
     return $this->segments->addList($list);
   }
 
+  public function deleteList(string $listId): bool {
+    return $this->segments->deleteList($listId);
+  }
+
   public function updateList(array $list): array {
     return $this->segments->updateList($list);
   }
