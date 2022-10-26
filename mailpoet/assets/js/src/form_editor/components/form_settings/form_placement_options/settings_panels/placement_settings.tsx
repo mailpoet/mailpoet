@@ -220,9 +220,7 @@ export function PlacementSettings({
         />
       </div>
       <div>
-        <h3 className="form-editor-sidebar-heading">
-          {MailPoet.I18n.t('displayOnCategories')}
-        </h3>
+        <p>{MailPoet.I18n.t('displayOnCategories')}</p>
         <div className="form-editor-placement-selection">
           <Selection
             dropDownParent={
@@ -278,9 +276,7 @@ export function PlacementSettings({
         </div>
       </div>
       <div>
-        <h3 className="form-editor-sidebar-heading">
-          {MailPoet.I18n.t('displayOnTags')}
-        </h3>
+        <p>{MailPoet.I18n.t('displayOnTags')}</p>
         <div className="form-editor-placement-selection">
           <Selection
             dropDownParent={
