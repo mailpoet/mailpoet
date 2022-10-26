@@ -1,0 +1,41 @@
+.mailpoet-option-button {
+  display: inline-block;
+  margin-top: 8px;
+  position: relative;
+
+  header {
+    display: flex;
+  }
+
+  .mailpoet-option-button-main {
+    border-radius: 2px 0 0 2px;
+    margin-right: 2px;
+  }
+
+  .mailpoet-option-button-opener {
+    border-radius: 0 2px 2px 0;
+  }
+
+  .mailpoet-option-button-options {
+    align-items: flex-end;
+    background: #fff;
+    border-radius: 2px;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, .15);
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    padding: 8px 8px 0;
+    position: absolute;
+    width: 100%;
+
+    &.isOpen {
+      display: flex;
+    }
+
+    > * {
+      display: block;
+      margin-bottom: 8px;
+      width: 100%;
+    }
+  }
+}
