@@ -147,4 +147,40 @@ class SubscriberChangesNotifierTest extends \MailPoetUnitTest {
     $notifier->subscriberUpdated(11);
     $notifier->notify();
   }
+
+  public function testItNotifySubscribersBatchCreate(): void {
+    $this->wpFunctions->expects($this->at(0))
+      ->method('currentTime')
+      ->willReturn(3456);
+    $this->wpFunctions->expects($this->at(1))
+      ->method('currentTime')
+      ->willReturn(98712);
+    $this->wpFunctions->expects($this->at(2))
+      ->method('doAction')
+      ->with(SubscriberEntity::HOOK_MULTIPLE_SUBSCRIBERS_CREATED, 3456)
+      ->willReturn(true);
+
+    $notifier = new SubscriberChangesNotifier($this->wpFunctions);
+    $notifier->subscribersBatchCreate();
+    $notifier->subscribersBatchCreate();
+    $notifier->notify();
+  }
+
+  public function testItNotifySubscribersBatchUpdate(): void {
+    $this->wpFunctions->expects($this->at(0))
+      ->method('currentTime')
+      ->willReturn(1234);
+    $this->wpFunctions->expects($this->at(1))
+      ->method('currentTime')
+      ->willReturn(123);
+    $this->wpFunctions->expects($this->at(2))
+      ->method('doAction')
+      ->with(SubscriberEntity::HOOK_MULTIPLE_SUBSCRIBERS_UPDATED, 123)
+      ->willReturn(true);
+
+    $notifier = new SubscriberChangesNotifier($this->wpFunctions);
+    $notifier->subscribersBatchUpdate();
+    $notifier->subscribersBatchUpdate();
+    $notifier->notify();
+  }
 }
