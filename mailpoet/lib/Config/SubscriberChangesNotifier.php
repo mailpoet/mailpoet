@@ -107,7 +107,7 @@ class SubscriberChangesNotifier {
   }
 
   private function getTimestamp(): int {
-    $dateTime = Carbon::createFromTimestamp($this->wp->currentTime('timestamp'), 'UTC');
+    $dateTime = Carbon::createFromTimestamp($this->wp->currentTime('timestamp', true), 'UTC');
     return $dateTime->getTimestamp();
   }
 }
