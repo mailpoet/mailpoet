@@ -215,6 +215,10 @@ class WP {
   }
 
   public function synchronizeUsers(): bool {
+    // Save timestamp about changes and update before insert
+    $this->subscriberChangesNotifier->subscribersBatchCreate();
+    $this->subscriberChangesNotifier->subscribersBatchUpdate();
+
     $updatedUsersEmails = $this->updateSubscribersEmails();
     $insertedUsersEmails = $this->insertSubscribers();
     $this->removeUpdatedSubscribersWithInvalidEmail(array_merge($updatedUsersEmails, $insertedUsersEmails));
