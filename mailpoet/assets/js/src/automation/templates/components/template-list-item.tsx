@@ -8,9 +8,11 @@ import { Notice } from '../../../notices/notice';
 
 type TemplateListItemProps = {
   template: WorkflowTemplate;
+  heading?: 'h2' | 'h3';
 };
 export function TemplateListItem({
   template,
+  heading,
 }: TemplateListItemProps): JSX.Element {
   const [createWorkflowFromTemplate, { loading, error, data }] = useMutation(
     'workflows/create-from-template',
@@ -41,6 +43,7 @@ export function TemplateListItem({
     );
   }
 
+  const headingTag = heading ?? 'h2';
   return (
     <li className="mailpoet-automation-template-list-item">
       {notice}
@@ -50,7 +53,9 @@ export function TemplateListItem({
           void createWorkflowFromTemplate();
         }}
       >
-        <h2>{template.name} →</h2>
+        {headingTag === 'h3' && <h3>{template.name} →</h3>}
+        {headingTag === 'h2' && <h2>{template.name} →</h2>}
+
         <p>{template.description}</p>
       </Button>
     </li>

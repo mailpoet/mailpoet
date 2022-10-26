@@ -1,10 +1,8 @@
 import ReactDOM from 'react-dom';
 import { BrowserRouter } from 'react-router-dom';
 import { TopBarWithBeamer } from 'common/top_bar/top_bar';
-import { plusIcon } from 'common/button/icon/plus';
-import { Button, Flex, Popover, SlotFillProvider } from '@wordpress/components';
+import { Popover, SlotFillProvider } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
-import { __ } from '@wordpress/i18n';
 import { initializeApi, useMutation } from './api';
 import { registerTranslations } from './i18n';
 import { createStore, storeName } from './listing/store';
@@ -12,33 +10,28 @@ import { AutomationListing } from './listing';
 import { registerApiErrorHandler } from './listing/api-error-handler';
 import { Notices } from './listing/components/notices';
 import { WorkflowListingNotices } from './listing/workflow-listing-notices';
-import { Onboarding } from './onboarding';
+import { BuildYourOwnSection, HeroSection, TemplatesSection } from './sections';
 import {
   CreateEmptyWorkflowButton,
   CreateWorkflowFromTemplateButton,
 } from './testing';
-import { MailPoet } from '../mailpoet';
 
 function Content(): JSX.Element {
   const count = useSelect((select) => select(storeName).getWorkflowCount());
-  return count > 0 ? <AutomationListing /> : <Onboarding />;
+  const content = count > 0 ? <AutomationListing /> : <HeroSection />;
+  return (
+    <>
+      {content}
+      <TemplatesSection />
+      <BuildYourOwnSection />
+    </>
+  );
 }
 
 function Workflows(): JSX.Element {
   return (
     <>
       <TopBarWithBeamer />
-      <Flex className="mailpoet-automation-listing-heading">
-        <h1 className="wp-heading-inline">{__('Automations', 'mailpoet')}</h1>
-        <Button
-          href={MailPoet.urls.automationTemplates}
-          icon={plusIcon}
-          variant="primary"
-          className="mailpoet-add-new-button"
-        >
-          {__('New automation', 'mailpoet')}
-        </Button>
-      </Flex>
       <Notices />
       <Content />
     </>
