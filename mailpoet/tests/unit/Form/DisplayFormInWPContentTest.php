@@ -7,6 +7,7 @@ use MailPoet\Entities\FormEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Subscribers\SubscriberSubscribeController;
+use MailPoet\WooCommerce\Helper as WCHelper;
 use MailPoet\WP\Functions as WPFunctions;
 use PHPUnit\Framework\MockObject\MockObject;
 
@@ -36,6 +37,9 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
   /** @var SubscriberSubscribeController & MockObject */
   private $subscriberSubscribeController;
 
+  /** @var WCHelper & MockObject */
+  private $woocommerceHelper;
+
   // fix for method return override
   private $applyFiltersValue = false;
 
@@ -56,6 +60,7 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     $this->renderer->expects($this->any())->method('renderHTML')->willReturn('<form></form>');
     $this->subscribersRepository = $this->createMock( SubscribersRepository::class);
     $this->subscriberSubscribeController = $this->createMock(SubscriberSubscribeController::class);
+    $this->woocommerceHelper = $this->createMock(WCHelper::class);
     $this->hook = new DisplayFormInWPContent(
       $this->wp,
       $this->repository,
@@ -63,7 +68,8 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
       $this->assetsController,
       $this->templateRenderer,
       $this->subscriberSubscribeController,
-      $this->subscribersRepository
+      $this->subscribersRepository,
+      $this->woocommerceHelper
     );
   }
 
@@ -317,9 +323,9 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     $this->wp->expects($this->once())->method('isSingle')->willReturn(false);
     $this->wp->expects($this->any())->method('isSingular')->willReturn(false);
     $this->wp->expects($this->any())->method('isArchive')->willReturn(true);
-    $this->wp->expects($this->any())->method('wcGetPageId')->willReturn(1);
     $this->wp->expects($this->any())->method('isPostTypeArchive')->willReturn(true);
     $this->wp->expects($this->any())->method('getPost')->willReturn(['ID' => 1]);
+    $this->woocommerceHelper->expects($this->any())->method('wcGetPageId')->willReturn(1);
     $this->assetsController->expects($this->once())->method('setupFrontEndDependencies');
     $this->templateRenderer->expects($this->once())->method('render')->willReturn($renderedForm);
 
@@ -348,9 +354,9 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     $this->wp->expects($this->once())->method('isSingle')->willReturn(false);
     $this->wp->expects($this->any())->method('isSingular')->willReturn(false);
     $this->wp->expects($this->any())->method('isArchive')->willReturn(true);
-    $this->wp->expects($this->any())->method('wcGetPageId')->willReturn(1);
     $this->wp->expects($this->any())->method('isPostTypeArchive')->willReturn(true);
     $this->wp->expects($this->any())->method('getPost')->willReturn(['ID' => 1]);
+    $this->woocommerceHelper->expects($this->any())->method('wcGetPageId')->willReturn(1);
     $this->assetsController->expects($this->once())->method('setupFrontEndDependencies');
     $this->templateRenderer->expects($this->once())->method('render')->willReturn($renderedForm);
 
@@ -379,9 +385,9 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     $this->wp->expects($this->once())->method('isSingle')->willReturn(false);
     $this->wp->expects($this->any())->method('isSingular')->willReturn(false);
     $this->wp->expects($this->any())->method('isArchive')->willReturn(true);
-    $this->wp->expects($this->any())->method('wcGetPageId')->willReturn(1);
     $this->wp->expects($this->any())->method('isPostTypeArchive')->willReturn(true);
     $this->wp->expects($this->any())->method('getPost')->willReturn(['ID' => 1]);
+    $this->woocommerceHelper->expects($this->any())->method('wcGetPageId')->willReturn(1);
     $this->assetsController->expects($this->never())->method('setupFrontEndDependencies');
     $this->templateRenderer->expects($this->never())->method('render')->willReturn($renderedForm);
 
