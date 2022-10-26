@@ -48,7 +48,7 @@ class ValidStepArgsRule implements WorkflowNodeVisitor {
         ['properties' => [$property => $propertySchema]]
       );
       try {
-        $this->validator->validateArray(
+        $this->validator->validateSchemaArray(
           $schemaToValidate,
           $step->getArgs(),
           $property
