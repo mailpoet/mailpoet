@@ -17,6 +17,12 @@ class SubscriberChangesNotifier {
   /** @var array<int, int> */
   private $updatedSubscriberIds = [];
 
+  /** @var array<int, int> */
+  private $createdSubscriberBatches = [];
+
+  /** @var array<int, int> */
+  private $updatedSubscriberBatches = [];
+
   /** @var WPFunctions */
   private $wp;
 
@@ -33,12 +39,20 @@ class SubscriberChangesNotifier {
   }
 
   private function notifyCreations(): void {
-    if (count($this->createdSubscriberIds) === 1) {
-      foreach ($this->createdSubscriberIds as $subscriberId => $updatedAt) {
-        $this->wp->doAction(SubscriberEntity::HOOK_SUBSCRIBER_CREATED, $subscriberId);
-      }
-    } elseif ($this->createdSubscriberIds) {
+    if (count($this->createdSubscriberIds) > 1) {
       $minTimestamp = min($this->createdSubscriberIds);
+      if ($minTimestamp) {
+        $this->createdSubscriberBatches[] = $minTimestamp;
+        $this->createdSubscriberIds = []; // reset created subscribers
+      }
+    }
+
+    foreach ($this->createdSubscriberIds as $subscriberId => $updatedAt) {
+      $this->wp->doAction(SubscriberEntity::HOOK_SUBSCRIBER_CREATED, $subscriberId);
+    }
+
+    if ($this->createdSubscriberBatches) {
+      $minTimestamp = min($this->createdSubscriberBatches);
       if ($minTimestamp) {
         $this->wp->doAction(SubscriberEntity::HOOK_MULTIPLE_SUBSCRIBERS_CREATED, $minTimestamp);
       }
@@ -51,12 +65,20 @@ class SubscriberChangesNotifier {
       unset($this->updatedSubscriberIds[$subscriberId]);
     }
 
-    if (count($this->updatedSubscriberIds) === 1) {
-      foreach ($this->updatedSubscriberIds as $subscriberId => $updatedAt) {
-        $this->wp->doAction(SubscriberEntity::HOOK_SUBSCRIBER_UPDATED, $subscriberId);
-      }
-    } elseif ($this->updatedSubscriberIds) {
+    if (count($this->updatedSubscriberIds) > 1) {
       $minTimestamp = min($this->updatedSubscriberIds);
+      if ($minTimestamp) {
+        $this->updatedSubscriberBatches[] = $minTimestamp;
+        $this->updatedSubscriberIds = []; // reset updated subscribers
+      }
+    }
+
+    foreach ($this->updatedSubscriberIds as $subscriberId => $updatedAt) {
+      $this->wp->doAction(SubscriberEntity::HOOK_SUBSCRIBER_UPDATED, $subscriberId);
+    }
+
+    if ($this->updatedSubscriberBatches) {
+      $minTimestamp = min($this->updatedSubscriberBatches);
       if ($minTimestamp) {
         $this->wp->doAction(SubscriberEntity::HOOK_MULTIPLE_SUBSCRIBERS_UPDATED, $minTimestamp);
       }
@@ -104,6 +126,14 @@ class SubscriberChangesNotifier {
     foreach ($subscriberIds as $subscriberId) {
       $this->subscriberDeleted((int)$subscriberId);
     }
+  }
+
+  public function subscribersBatchCreate(): void {
+    $this->createdSubscriberBatches[] = $this->getTimestamp();
+  }
+
+  public function subscribersBatchUpdate(): void {
+    $this->updatedSubscriberBatches[] = $this->getTimestamp();
   }
 
   private function getTimestamp(): int {
