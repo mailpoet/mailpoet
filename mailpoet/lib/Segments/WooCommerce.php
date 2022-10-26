@@ -3,6 +3,7 @@
 namespace MailPoet\Segments;
 
 use MailPoet\Config\Env;
+use MailPoet\Config\SubscriberChangesNotifier;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Models\ModelValidator;
@@ -54,6 +55,9 @@ class WooCommerce {
   /** @var Connection */
   private $connection;
 
+  /** @var SubscriberChangesNotifier */
+  private $subscriberChangesNotifier;
+
   public function __construct(
     SettingsController $settings,
     WPFunctions $wp,
@@ -64,7 +68,8 @@ class WooCommerce {
     SubscriberSaveController $subscriberSaveController,
     WP $wpSegment,
     EntityManager $entityManager,
-    Connection $connection
+    Connection $connection,
+    SubscriberChangesNotifier $subscriberChangesNotifier
   ) {
     $this->settings = $settings;
     $this->wp = $wp;
@@ -76,6 +81,7 @@ class WooCommerce {
     $this->woocommerceHelper = $woocommerceHelper;
     $this->entityManager = $entityManager;
     $this->connection = $connection;
+    $this->subscriberChangesNotifier = $subscriberChangesNotifier;
   }
 
   public function shouldShowWooCommerceSegment(): bool {
@@ -312,6 +318,8 @@ class WooCommerce {
       $subscribersValues[] = "(1, {$email}, '{$status}', '{$now}', '{$now}', '{$source}')";
     }
 
+    // Save timestamp about changes before insert
+    $this->subscriberChangesNotifier->subscribersBatchUpdate();
     // Update existing subscribers
     $this->connection->executeQuery('
       UPDATE ' . $subscribersTable . ' mps
@@ -319,6 +327,8 @@ class WooCommerce {
       WHERE mps.email IN (:emails)
     ', ['emails' => $emails], ['emails' => Connection::PARAM_STR_ARRAY]);
 
+    // Save timestamp about new subscribers before insert
+    $this->subscriberChangesNotifier->subscribersBatchCreate();
     // Insert new subscribers
     $this->connection->executeQuery('
       INSERT IGNORE INTO ' . $subscribersTable . ' (`is_woocommerce_user`, `email`, `status`, `created_at`, `last_subscribed_at`, `source`) VALUES
