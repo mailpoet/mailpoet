@@ -8,16 +8,34 @@ use MailPoet\API\MP\v1\CustomFields;
 use MailPoet\API\MP\v1\Segments;
 use MailPoet\API\MP\v1\Subscribers;
 use MailPoet\Config\Changelog;
+use MailPoet\Entities\FormEntity;
+use MailPoet\Entities\NewsletterOptionEntity;
+use MailPoet\Entities\NewsletterOptionFieldEntity;
 use MailPoet\Entities\SegmentEntity;
+use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Segments\SegmentsRepository;
+use MailPoet\Subscribers\SubscriberSegmentRepository;
+use MailPoet\Test\DataFactories\Form;
+use MailPoet\Test\DataFactories\Newsletter;
+use MailPoet\Test\DataFactories\NewsletterOption;
 use MailPoet\Test\DataFactories\Segment as SegmentFactory;
+use MailPoet\Test\DataFactories\Subscriber;
 
 class SegmentsTest extends \MailPoetTest {
   /** @var SegmentFactory */
   private $segmentFactory;
 
+  /** @var SegmentsRepository */
+  private $segmentsRepository;
+
+  /** @var SubscriberSegmentRepository */
+  private $subscriberSegmentsRepository;
+
   public function _before() {
     parent::_before();
     $this->segmentFactory = new SegmentFactory();
+    $this->segmentsRepository = $this->diContainer->get(SegmentsRepository::class);
+    $this->subscriberSegmentsRepository = $this->diContainer->get(SubscriberSegmentRepository::class);
   }
 
   public function testItGetsAllDefaultSegments(): void {
@@ -151,6 +169,69 @@ class SegmentsTest extends \MailPoetTest {
     expect($result['description'])->equals($data['description']);
   }
 
+  public function testItRequiresIdToDeleteList(): void {
+    try {
+      $this->getApi()->deleteList('');
+      $this->fail('List id required exception should have been thrown.');
+    } catch (\Exception $e) {
+      expect($e->getMessage())->equals('List id is required.');
+      expect($e->getCode())->equals(APIException::LIST_ID_REQUIRED);
+    }
+  }
+
+  public function testItChecksListExistenceForDeleteList(): void {
+    try {
+      $this->getApi()->updateList(['id' => 2]);
+      $this->fail('List id must be valid exception should have been thrown.');
+    } catch (\Exception $e) {
+      expect($e->getMessage())->equals('The list does not exist.');
+      expect($e->getCode())->equals(APIException::LIST_NOT_EXISTS);
+    }
+  }
+
+  public function testItDoesNotAllowDeleteListWithForm(): void {
+    $segment = $this->createOrUpdateSegment('Test Segment');
+    $form = (new Form())
+      ->withSegments([$segment])
+      ->create();
+    try {
+      $this->getApi()->deleteList((string)$segment->getId());
+      $this->fail('List id cannot not have relation on a form exception should be thrown.');
+    } catch (\Exception $e) {
+      expect($e->getMessage())->equals("List cannot be deleted because it’s used for '" . $form->getName() . "' form");
+      expect($e->getCode())->equals(APIException::LIST_USED_IN_FORM);
+    }
+  }
+
+  public function testItDoesNotAllowDeleteListWithEmail(): void {
+    $segment = $this->createOrUpdateSegment('Test Segment');
+    $newsletter = (new Newsletter())
+      ->withWelcomeTypeForSegment($segment->getId())
+      ->withActiveStatus()
+      ->create();
+    try {
+      $this->getApi()->deleteList((string)$segment->getId());
+      $this->fail('List id cannot not have relation on an email exception should be thrown.');
+    } catch (\Exception $e) {
+      expect($e->getMessage())->equals("List cannot be deleted because it’s used for '" . $newsletter->getSubject() . "' email");
+      expect($e->getCode())->equals(APIException::LIST_USED_IN_EMAIL);
+    }
+  }
+
+  public function testItDeletesList(): void {
+    $segment = $this->createOrUpdateSegment('Test Segment');
+    $subscriber = (new Subscriber())
+      ->withSegments([$segment])
+      ->create();
+    $segmentId = (string)$segment->getId();
+
+    $result = $this->getApi()->deleteList($segmentId);
+    expect($result)->equals(true);
+    $this->entityManager->clear();
+    expect($this->segmentsRepository->findOneById($segmentId))->null();
+    expect($this->subscriberSegmentsRepository->findBy(['segment' => $segmentId]))->count(0);
+  }
+
   private function getApi(): API {
     return new API(
       $this->diContainer->get(CustomFields::class),
@@ -180,5 +261,10 @@ class SegmentsTest extends \MailPoetTest {
 
   public function _after() {
     $this->truncateEntity(SegmentEntity::class);
+    $this->truncateEntity(SubscriberEntity::class);
+    $this->truncateEntity(FormEntity::class);
+    $this->truncateEntity(NewsletterOptionFieldEntity::class);
+    $this->truncateEntity(NewsletterOptionEntity::class);
+    $this->truncateEntity(NewsletterOptionFieldEntity::class);
   }
 }
