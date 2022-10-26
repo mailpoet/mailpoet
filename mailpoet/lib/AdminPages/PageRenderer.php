@@ -3,6 +3,7 @@
 namespace MailPoet\AdminPages;
 
 use MailPoet\Cache\TransientCache;
+use MailPoet\Config\Env;
 use MailPoet\Config\Installer;
 use MailPoet\Config\Renderer;
 use MailPoet\Config\ServicesChecker;
@@ -155,6 +156,7 @@ class PageRenderer {
         'automationListing' => admin_url('admin.php?page=mailpoet-automation'),
         'automationEditor' => admin_url('admin.php?page=mailpoet-automation-editor'),
         'automationTemplates' => admin_url('admin.php?page=mailpoet-automation-templates'),
+        'imageAssets' => plugin_dir_url(Env::$file) . 'assets/img/',
       ],
     ];
 
