@@ -6,13 +6,12 @@ import { storeName } from '../../../../../editor/store';
 import { MailPoet } from '../../../../../../mailpoet';
 
 const emailPreviewLinkCache = {};
-const retrievePreviewLink = async (emailId, callback) => {
+const retrievePreviewLink = async (emailId) => {
   if (
     emailPreviewLinkCache[emailId] &&
     emailPreviewLinkCache[emailId].length > 0
   ) {
-    callback(emailPreviewLinkCache[emailId]);
-    return;
+    return emailPreviewLinkCache[emailId];
   }
   const response = await MailPoet.Ajax.post({
     api_version: window.mailpoet_api_version,
@@ -23,13 +22,13 @@ const retrievePreviewLink = async (emailId, callback) => {
     },
   });
   emailPreviewLinkCache[emailId] = response?.meta?.preview_url ?? '';
-  callback(emailPreviewLinkCache[emailId]);
+  return emailPreviewLinkCache[emailId];
 };
 
 export function EditNewsletter(): JSX.Element {
   const [redirectToTemplateSelection, setRedirectToTemplateSelection] =
     useState(false);
-  const [previewLink, setPreviewLink] = useState('');
+  const [fetchingPreviewLink, setFetchingPreviewLink] = useState(false);
 
   const { selectedStep, workflowId, workflowSaved } = useSelect(
     (select) => ({
@@ -42,10 +41,6 @@ export function EditNewsletter(): JSX.Element {
 
   const emailId = selectedStep?.args?.email_id as number | undefined;
   const workflowStepId = selectedStep.id;
-
-  if (emailId && !previewLink) {
-    void retrievePreviewLink(emailId, setPreviewLink);
-  }
 
   const createEmail = useCallback(async () => {
     setRedirectToTemplateSelection(true);
@@ -109,9 +104,12 @@ export function EditNewsletter(): JSX.Element {
       <Button
         variant="secondary"
         centered
-        disabled={previewLink.length === 0}
-        href={previewLink}
-        target="_blank"
+        isBusy={fetchingPreviewLink}
+        onClick={async () => {
+          setFetchingPreviewLink(true);
+          const link = await retrievePreviewLink(emailId);
+          window.open(link as string, '_blank');
+        }}
       >
         Preview
       </Button>
