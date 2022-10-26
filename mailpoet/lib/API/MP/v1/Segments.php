@@ -43,19 +43,7 @@ class Segments {
 
   public function updateList(array $data): array {
     // firstly validation on list id
-    if (empty($data['id'])) {
-      throw new APIException(
-        __('List id is required.', 'mailpoet'),
-        APIException::LIST_ID_REQUIRED
-      );
-    }
-
-    if (!$this->segmentsRepository->findOneById((string)$data['id'])) {
-      throw new APIException(
-        __('The list does not exist.', 'mailpoet'),
-        APIException::LIST_NOT_EXISTS
-      );
-    }
+    $this->validateSegmentId((string)($data['id'] ?? ''));
 
     // secondly validation on list name
     $this->validateSegmentName($data);
@@ -76,6 +64,22 @@ class Segments {
     }
 
     return $this->buildItem($segment);
+  }
+
+  private function validateSegmentId(string $segmentId): void {
+    if (empty($segmentId)) {
+      throw new APIException(
+        __('List id is required.', 'mailpoet'),
+        APIException::LIST_ID_REQUIRED
+      );
+    }
+
+    if (!$this->segmentsRepository->findOneById($segmentId)) {
+      throw new APIException(
+        __('The list does not exist.', 'mailpoet'),
+        APIException::LIST_NOT_EXISTS
+      );
+    }
   }
 
   /**
