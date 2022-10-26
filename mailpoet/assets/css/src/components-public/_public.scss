@@ -63,6 +63,11 @@ $form-line-height: 1.4;
   .mailpoet-has-font-size {
     line-height: $form-line-height;
   }
+
+  .mailpoet_submit {
+    white-space: normal;
+    word-wrap: break-word;
+  }
 }
 
 /* Reset fieldset styles in form for backward compatibility. */
