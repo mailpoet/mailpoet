@@ -29,12 +29,11 @@ class CreateEmailAutomationAndWalkThroughCest
 
     $i->amOnMailpoetPage('Automation');
     $i->see('Automations');
-    $i->waitForText('Scale your business with advanced automations');
-    $i->dontSee('Simple welcome email');
+    $i->waitForText('Better engagement begins with automation');
     $i->dontSee('Active');
     $i->dontSee('Entered');
 
-    $i->click('New automation');
+    $i->click('Start with a template');
     $i->see('Choose your automation template');
     $i->click('Simple welcome email');
 
