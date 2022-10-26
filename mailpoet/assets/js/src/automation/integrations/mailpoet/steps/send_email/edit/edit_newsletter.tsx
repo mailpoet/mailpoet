@@ -1,4 +1,5 @@
 import { dispatch, useSelect } from '@wordpress/data';
+import { __ } from '@wordpress/i18n';
 import { plus } from '@wordpress/icons';
 import { useCallback, useEffect, useState } from 'react';
 import { Button } from '../../../components/button';
@@ -74,7 +75,10 @@ export function EditNewsletter(): JSX.Element {
         </Button>
         {emailIdError && (
           <span className="mailpoet-automation-field-message">
-            {emailIdError}
+            {__(
+              'You need to design an email before you can activate the workflow',
+              'mailpoet',
+            )}
           </span>
         )}
       </div>
