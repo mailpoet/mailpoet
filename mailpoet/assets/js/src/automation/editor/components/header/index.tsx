@@ -1,5 +1,10 @@
 import { useState } from 'react';
-import { Button, NavigableMenu, TextControl } from '@wordpress/components';
+import {
+  Button,
+  NavigableMenu,
+  TextControl,
+  Tooltip,
+} from '@wordpress/components';
 import { dispatch, useDispatch, useSelect } from '@wordpress/data';
 import { PinnedItems } from '@wordpress/interface';
 import { __ } from '@wordpress/i18n';
@@ -19,36 +24,62 @@ import {
 //   https://github.com/WordPress/gutenberg/blob/0ee78b1bbe9c6f3e6df99f3b967132fa12bef77d/packages/edit-site/src/components/header/index.js
 
 function ActivateButton({ onClick, label }): JSX.Element {
-  const { errors } = useSelect(
+  const { errors, isDeactivating } = useSelect(
     (select) => ({
       errors: select(storeName).getErrors(),
+      isDeactivating:
+        select(storeName).getWorkflowData().status ===
+        WorkflowStatus.DEACTIVATING,
     }),
     [],
   );
 
-  return (
+  const button = (
     <Button
       variant="primary"
       className="editor-post-publish-button"
       onClick={onClick}
-      disabled={!!errors}
+      disabled={isDeactivating || !!errors}
     >
       {label}
     </Button>
   );
+
+  if (isDeactivating) {
+    return (
+      <Tooltip
+        text={__(
+          'Editing an active workflow is temporarily unavailable. We are working on introducing this functionality',
+          'mailpoet',
+        )}
+      >
+        {button}
+      </Tooltip>
+    );
+  }
+
+  return button;
 }
 
 function UpdateButton(): JSX.Element {
   const { save } = useDispatch(storeName);
 
   return (
-    <Button
-      variant="primary"
-      className="editor-post-publish-button"
-      onClick={save}
+    <Tooltip
+      text={__(
+        'Editing an active workflow is temporarily unavailable. We are working on introducing this functionality',
+        'mailpoet',
+      )}
     >
-      {__('Update', 'mailpoet')}
-    </Button>
+      <Button
+        variant="primary"
+        className="editor-post-publish-button"
+        onClick={save}
+        disabled
+      >
+        {__('Update', 'mailpoet')}
+      </Button>
+    </Tooltip>
   );
 }
 
