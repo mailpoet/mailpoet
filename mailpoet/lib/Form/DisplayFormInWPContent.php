@@ -7,6 +7,7 @@ use MailPoet\Config\Renderer as TemplateRenderer;
 use MailPoet\Entities\FormEntity;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Subscribers\SubscriberSubscribeController;
+use MailPoet\WooCommerce\Helper as WCHelper;
 use MailPoet\WP\Functions as WPFunctions;
 
 class DisplayFormInWPContent {
@@ -53,6 +54,9 @@ class DisplayFormInWPContent {
   /** @var SubscriberSubscribeController */
   private $subscriberSubscribeController;
 
+  /** @var WCHelper */
+  private $woocommerceHelper;
+
   private $wooShopPageId = null;
 
   public function __construct(
@@ -62,7 +66,8 @@ class DisplayFormInWPContent {
     AssetsController $assetsController,
     TemplateRenderer $templateRenderer,
     SubscriberSubscribeController $subscriberSubscribeController,
-    SubscribersRepository $subscribersRepository
+    SubscribersRepository $subscribersRepository,
+    WCHelper $woocommerceHelper
   ) {
     $this->wp = $wp;
     $this->formsRepository = $formsRepository;
@@ -71,6 +76,7 @@ class DisplayFormInWPContent {
     $this->templateRenderer = $templateRenderer;
     $this->subscriberSubscribeController = $subscriberSubscribeController;
     $this->subscribersRepository = $subscribersRepository;
+    $this->woocommerceHelper = $woocommerceHelper;
   }
 
   /**
@@ -107,17 +113,17 @@ class DisplayFormInWPContent {
     // this code ensures that we display the form only on a page which is related to single post
     if (!$this->wp->isSingle() && !$this->wp->isPage()) $result = $this->wp->applyFilters('mailpoet_display_form_is_single', false);
 
-    if ($this->displayFormInListingPage()) $result = true;
+    if ($this->displayFormInProductListPage()) $result = true;
 
     $noFormsCache = $this->wp->getTransient(DisplayFormInWPContent::NO_FORM_TRANSIENT_KEY);
     if ($noFormsCache === '1') $result = false;
     return $result;
   }
 
-  private function displayFormInListingPage(): bool {
+  private function displayFormInProductListPage(): bool {
     $displayCheck = $this->wp->applyFilters('mailpoet_display_form_in_product_listing', true);
 
-    $shopPageId = $this->wp->wcGetPageId('shop');
+    $shopPageId = $this->woocommerceHelper->wcGetPageId('shop');
     $this->wooShopPageId = $shopPageId && $shopPageId >= 0 ? $shopPageId : null;
 
     if ($displayCheck && !is_null($this->wooShopPageId) && $this->wp->isPage($this->wooShopPageId)) {
@@ -258,7 +264,7 @@ class DisplayFormInWPContent {
       return true;
     }
 
-    if ($this->displayFormInListingPage()) {
+    if ($this->displayFormInProductListPage()) {
       // Allow form display on Woo Shop listing page
       if (is_null($this->wooShopPageId)) return false;
       if ($this->shouldDisplayFormOnPost($setup, 'pages', $this->wooShopPageId)) return true;

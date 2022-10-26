@@ -62,6 +62,13 @@ class Helper {
     return wc_get_product($theProduct);
   }
 
+  public function wcGetPageId(string $page): ?int {
+    if (function_exists('wc_get_page_id')) {
+      return wc_get_page_id($page);
+    }
+    return null;
+  }
+
   public function getWoocommerceCurrency() {
     return get_woocommerce_currency();
   }
