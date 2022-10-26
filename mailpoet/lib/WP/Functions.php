@@ -769,13 +769,6 @@ class Functions {
     return wp_set_script_translations($handle, $domain, $path);
   }
 
-  public function wcGetPageId(string $page): ?int {
-    if (function_exists('wc_get_page_id')) {
-      return wc_get_page_id($page);
-    }
-    return null;
-  }
-
   /**
    * @return \WP_Scripts
    */
