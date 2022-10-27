@@ -18,6 +18,10 @@ class Repository {
     $this->templateFile = __DIR__ . '/MigrationTemplate.php';
   }
 
+  public function getMigrationsDir(): string {
+    return $this->migrationsDir;
+  }
+
   public function create(): void {
     $template = @file_get_contents($this->templateFile);
     if (!$template) {
