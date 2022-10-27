@@ -13,20 +13,20 @@ type StatsBadgeProps = {
 const stats = {
   opened: {
     badgeRanges: [30, 10, 0],
-    badgeTypes: ['excellent', 'good', 'average'],
+    badgeTypes: ['excellent', 'good', 'critical'],
     tooltipText: [
       MailPoet.I18n.t('openedStatTooltipExcellent'),
       MailPoet.I18n.t('openedStatTooltipGood'),
-      MailPoet.I18n.t('openedStatTooltipAverage'),
+      MailPoet.I18n.t('openedStatTooltipCritical'),
     ],
   },
   clicked: {
     badgeRanges: [3, 1, 0],
-    badgeTypes: ['excellent', 'good', 'average'],
+    badgeTypes: ['excellent', 'good', 'critical'],
     tooltipText: [
       MailPoet.I18n.t('clickedStatTooltipExcellent'),
       MailPoet.I18n.t('clickedStatTooltipGood'),
-      MailPoet.I18n.t('clickedStatTooltipAverage'),
+      MailPoet.I18n.t('clickedStatTooltipCritical'),
     ],
   },
 };
@@ -60,9 +60,9 @@ function StatsBadge(props: StatsBadgeProps) {
       name: MailPoet.I18n.t('goodBadgeName'),
       tooltipTitle: MailPoet.I18n.t('goodBadgeTooltip'),
     },
-    average: {
-      name: MailPoet.I18n.t('averageBadgeName'),
-      tooltipTitle: MailPoet.I18n.t('averageBadgeTooltip'),
+    critical: {
+      name: MailPoet.I18n.t('criticalBadgeName'),
+      tooltipTitle: MailPoet.I18n.t('criticalBadgeTooltip'),
     },
   };
 
@@ -92,7 +92,7 @@ function StatsBadge(props: StatsBadgeProps) {
         {' : '}
         {stat.tooltipText[1]}
         <br />
-        <Badge type="average" name={badges.average.name} />
+        <Badge type="critical" name={badges.critical.name} />
         {' : '}
         {stat.tooltipText[2]}
       </div>
