@@ -2,6 +2,10 @@
 
 namespace MailPoet\Migrator;
 
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
+use SplFileInfo;
+
 class Repository {
   /** @var string */
   private $migrationsDir;
@@ -27,6 +31,21 @@ class Repository {
     if (!$result) {
       throw MigratorException::migrationFileWriteFailed($path);
     }
+  }
+
+  public function loadAll(): array {
+    $files = new RecursiveIteratorIterator(
+      new RecursiveDirectoryIterator($this->migrationsDir, RecursiveDirectoryIterator::SKIP_DOTS)
+    );
+
+    $migrations = [];
+    foreach ($files as $file) {
+      if ($file instanceof SplFileInfo && $file->isFile() && strtolower($file->getExtension()) === 'php') {
+        $migrations[] = $file->getBasename('.' . $file->getExtension());
+      }
+    }
+    sort($migrations);
+    return $migrations;
   }
 
   private function generateName(): string {
