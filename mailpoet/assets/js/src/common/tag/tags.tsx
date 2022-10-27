@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import { Tag } from './tag';
+import { Tag, TagVariant } from './tag';
 import { Tooltip } from '../tooltip/tooltip';
 import { MailPoet } from '../../mailpoet';
 
@@ -21,14 +21,7 @@ type Props = {
   segments?: Segment[];
   subscriberTags?: SubscriberTag[];
   strings?: string[];
-  variant?:
-    | 'average'
-    | 'good'
-    | 'excellent'
-    | 'critical'
-    | 'list'
-    | 'unknown'
-    | 'wordpress';
+  variant?: TagVariant;
   isInverted?: boolean;
 };
 
