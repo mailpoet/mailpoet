@@ -44,6 +44,14 @@ class Store {
     ", [$error ?: 'Unknown error', $name]);
   }
 
+  public function getAll(): array {
+    return $this->connection->fetchAllAssociative("
+      SELECT *
+      FROM {$this->table}
+      ORDER BY id ASC
+    ");
+  }
+
   public function ensureMigrationsTable(): void {
     $collate = Env::$dbCharsetCollate;
     $this->connection->executeStatement("
