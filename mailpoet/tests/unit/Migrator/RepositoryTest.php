@@ -55,6 +55,18 @@ class RepositoryTest extends MailPoetUnitTest {
     $repository->create();
   }
 
+  public function testItLoadsMigrationFiles(): void {
+    $repository = $this->make(Repository::class, [
+      'migrationsDir' => __DIR__ . '/TestMigrations',
+    ]);
+    $this->assertSame([
+      'Migration_1',
+      'Migration_2',
+      'Migration_3',
+      'Migration_4',
+    ], $repository->loadAll());
+  }
+
   public function _after() {
     parent::_after();
     $this->removeDir(self::MIGRATIONS_OUTPUT_DIR);
