@@ -6,14 +6,14 @@ MailPoet.I18n.add('excellentBadgeName', 'Excellent');
 MailPoet.I18n.add('excellentBadgeTooltip', 'Congrats!');
 MailPoet.I18n.add('goodBadgeName', 'Good');
 MailPoet.I18n.add('goodBadgeTooltip', 'Good stuff.');
-MailPoet.I18n.add('averageBadgeName', 'Average');
-MailPoet.I18n.add('averageBadgeTooltip', 'Something to improve.');
+MailPoet.I18n.add('criticalBadgeName', 'Critical');
+MailPoet.I18n.add('criticalBadgeTooltip', 'Something to improve.');
 MailPoet.I18n.add('openedStatTooltipExcellent', 'above 30%');
 MailPoet.I18n.add('openedStatTooltipGood', 'between 10 and 30%');
-MailPoet.I18n.add('openedStatTooltipAverage', 'under 10%');
+MailPoet.I18n.add('openedStatTooltipCritical', 'under 10%');
 MailPoet.I18n.add('clickedStatTooltipExcellent', 'above 3%');
 MailPoet.I18n.add('clickedStatTooltipGood', 'between 1 and 3%');
-MailPoet.I18n.add('clickedStatTooltipAverage', 'under 1%');
+MailPoet.I18n.add('clickedStatTooltipCritical', 'under 1%');
 MailPoet.I18n.add(
   'revenueStatsTooltipShort',
   'Revenues by customer who clicked on this email in the last 2 weeks.',
