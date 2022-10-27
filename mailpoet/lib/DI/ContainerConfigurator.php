@@ -210,6 +210,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\PostEditorBlocks\WooCommerceBlocksIntegration::class);
     // Migrations
     $container->autowire(\MailPoet\Migrator\Repository::class)->setPublic(true);
+    $container->autowire(\MailPoet\Migrator\Store::class)->setPublic(true);
     // Cron
     $container->autowire(\MailPoet\Cron\CronHelper::class)->setPublic(true);
     $container->autowire(\MailPoet\Cron\CronTrigger::class)->setPublic(true);
