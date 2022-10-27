@@ -49,7 +49,7 @@ function ActivateButton({ onClick, label }): JSX.Element {
     return (
       <Tooltip
         text={__(
-          'Editing an active workflow is temporarily unavailable. We are working on introducing this functionality',
+          'Editing an active workflow is temporarily unavailable. We are working on introducing this functionality.',
           'mailpoet',
         )}
       >
@@ -67,7 +67,7 @@ function UpdateButton(): JSX.Element {
   return (
     <Tooltip
       text={__(
-        'Editing an active workflow is temporarily unavailable. We are working on introducing this functionality',
+        'Editing an active workflow is temporarily unavailable. We are working on introducing this functionality.',
         'mailpoet',
       )}
     >
