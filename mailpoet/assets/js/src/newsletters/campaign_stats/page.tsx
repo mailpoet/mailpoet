@@ -99,6 +99,10 @@ function CampaignStatsPageComponent({ match, history, location }: Props) {
     );
   }
 
+  if (!newsletter) {
+    return <h3> {MailPoet.I18n.t('emailDoesNotExist')} </h3>;
+  }
+
   return (
     <>
       <HideScreenOptions />
