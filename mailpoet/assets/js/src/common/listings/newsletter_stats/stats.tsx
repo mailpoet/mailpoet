@@ -14,20 +14,38 @@ const stats = {
   opened: {
     badgeRanges: [30, 10, 0],
     badgeTypes: ['excellent', 'good', 'critical'],
-    tooltipText: [
-      MailPoet.I18n.t('openedStatTooltipExcellent'),
-      MailPoet.I18n.t('openedStatTooltipGood'),
-      MailPoet.I18n.t('openedStatTooltipCritical'),
-    ],
+    tooltipText: {
+      excellent: MailPoet.I18n.t('openedStatTooltipExcellent'),
+      good: MailPoet.I18n.t('openedStatTooltipGood'),
+      critical: MailPoet.I18n.t('openedStatTooltipCritical'),
+    },
   },
   clicked: {
     badgeRanges: [3, 1, 0],
     badgeTypes: ['excellent', 'good', 'critical'],
-    tooltipText: [
-      MailPoet.I18n.t('clickedStatTooltipExcellent'),
-      MailPoet.I18n.t('clickedStatTooltipGood'),
-      MailPoet.I18n.t('clickedStatTooltipCritical'),
-    ],
+    tooltipText: {
+      excellent: MailPoet.I18n.t('clickedStatTooltipExcellent'),
+      good: MailPoet.I18n.t('clickedStatTooltipGood'),
+      critical: MailPoet.I18n.t('clickedStatTooltipCritical'),
+    },
+  },
+  bounced: {
+    badgeRanges: [1.5, 0.5, 0],
+    badgeTypes: ['critical', 'good', 'excellent'],
+    tooltipText: {
+      excellent: MailPoet.I18n.t('bouncedStatTooltipExcellent'),
+      good: MailPoet.I18n.t('bouncedStatTooltipGood'),
+      critical: MailPoet.I18n.t('bouncedStatTooltipCritical'),
+    },
+  },
+  unsubscribed: {
+    badgeRanges: [0.7, 0.3, 0],
+    badgeTypes: ['critical', 'good', 'excellent'],
+    tooltipText: {
+      excellent: MailPoet.I18n.t('unsubscribeStatTooltipExcellent'),
+      good: MailPoet.I18n.t('unsubscribeStatTooltipGood'),
+      critical: MailPoet.I18n.t('unsubscribeStatTooltipCritical'),
+    },
   },
 };
 
@@ -86,15 +104,15 @@ function StatsBadge(props: StatsBadgeProps) {
       <div className="mailpoet-listing-stats-tooltip-content">
         <Badge type="excellent" name={badges.excellent.name} />
         {' : '}
-        {stat.tooltipText[0]}
+        {stat.tooltipText.excellent}
         <br />
         <Badge type="good" name={badges.good.name} />
         {' : '}
-        {stat.tooltipText[1]}
+        {stat.tooltipText.good}
         <br />
         <Badge type="critical" name={badges.critical.name} />
         {' : '}
-        {stat.tooltipText[2]}
+        {stat.tooltipText.critical}
       </div>
     </div>
   );
