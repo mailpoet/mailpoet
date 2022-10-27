@@ -351,6 +351,10 @@ class RoboFile extends \Robo\Tasks {
     $this->say("Validator metadata generated to: $validatorMetadataDir");
   }
 
+  public function migrationsRun() {
+    return $this->taskExec('vendor/bin/wp mailpoet:migrations:run');
+  }
+
   public function qa() {
     $collection = $this->collectionBuilder();
     $collection->addCode([$this, 'qaPhp']);
