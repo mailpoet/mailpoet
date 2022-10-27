@@ -7,10 +7,11 @@ use Helper\WordPressHooks as WPHooksHelper;
 use MailPoet\API\JSON\Response as APIResponse;
 use MailPoet\API\JSON\v1\Setup;
 use MailPoet\Config\Activator;
-use MailPoet\Config\Migrator;
+use MailPoet\Config\Migrator as LegacyMigrator;
 use MailPoet\Config\Populator;
 use MailPoet\Cron\ActionScheduler\ActionScheduler;
 use MailPoet\Form\FormsRepository;
+use MailPoet\Migrator\Migrator;
 use MailPoet\Referrals\ReferralDetector;
 use MailPoet\Segments\WP;
 use MailPoet\Settings\SettingsController;
@@ -35,8 +36,9 @@ class SetupTest extends \MailPoetTest {
     $subscriptionCaptcha = $this->diContainer->get(Captcha::class);
     $populator = $this->getServiceWithOverrides(Populator::class, ['wp' => $wpStub, 'referralDetector' => $referralDetector]);
     $migrator = $this->diContainer->get(Migrator::class);
+    $legacyMigrator = $this->diContainer->get(LegacyMigrator::class);
     $cronActionScheduler = $this->diContainer->get(ActionScheduler::class);
-    $router = new Setup($wpStub, new Activator($settings, $populator, $wpStub, $migrator, $cronActionScheduler));
+    $router = new Setup($wpStub, new Activator($settings, $populator, $wpStub, $migrator, $legacyMigrator, $cronActionScheduler));
     $response = $router->reset();
     expect($response->status)->equals(APIResponse::STATUS_OK);
 
