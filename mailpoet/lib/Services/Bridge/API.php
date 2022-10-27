@@ -57,7 +57,7 @@ class API {
   public function checkMSSKey() {
     $result = $this->request(
       $this->urlMe,
-      ['site' => WPFunctions::get()->homeUrl()]
+      ['site' => strtolower(WPFunctions::get()->homeUrl())]
     );
 
     $code = $this->wp->wpRemoteRetrieveResponseCode($result);
@@ -77,7 +77,7 @@ class API {
   public function checkPremiumKey() {
     $result = $this->request(
       $this->urlPremium,
-      ['site' => WPFunctions::get()->homeUrl()]
+      ['site' => strtolower(WPFunctions::get()->homeUrl())]
     );
 
     $code = $this->wp->wpRemoteRetrieveResponseCode($result);
