@@ -19,6 +19,31 @@ class Store {
     $this->table = Env::$dbPrefix . 'migrations';
   }
 
+  public function startMigration(string $name): void {
+    $this->connection->executeStatement("
+      INSERT INTO {$this->table} (name, started_at)
+      VALUES (?, now())
+    ", [$name]);
+  }
+
+  public function completeMigration(string $name): void {
+    $this->connection->executeStatement("
+      UPDATE {$this->table}
+      SET completed_at = current_timestamp()
+      WHERE name = ?
+    ", [$name]);
+  }
+
+  public function failMigration(string $name, string $error): void {
+    $this->connection->executeStatement("
+      UPDATE {$this->table}
+      SET
+        completed_at = current_timestamp(),
+        error = ?
+      WHERE name = ?
+    ", [$error ?: 'Unknown error', $name]);
+  }
+
   public function ensureMigrationsTable(): void {
     $collate = Env::$dbCharsetCollate;
     $this->connection->executeStatement("

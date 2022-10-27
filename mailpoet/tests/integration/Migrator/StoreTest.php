@@ -6,6 +6,8 @@ use MailPoet\Config\Env;
 use MailPoetTest;
 
 class StoreTest extends MailPoetTest {
+  private const DATE_TIME_FORMAT = '%d%d-%d%d-%d%d %d%d:%d%d:%d%d';
+
   /** @var string */
   private $table;
 
@@ -34,6 +36,50 @@ class StoreTest extends MailPoetTest {
     $this->store->ensureMigrationsTable();
     $result = $this->connection->executeQuery("SHOW TABLES LIKE '{$this->table}'")->fetchAllNumeric();
     $this->assertNotEmpty($result);
+  }
+
+  public function testItStartsAMigration(): void {
+    $this->store->ensureMigrationsTable();
+    $this->store->startMigration('TestingMigration');
+
+    $migrations = $this->connection->executeQuery("SELECT * FROM {$this->table}")->fetchAllAssociative();
+    $this->assertCount(1, $migrations);
+
+    $data = $migrations[0];
+    $this->assertSame('TestingMigration', $data['name']);
+    $this->assertStringMatchesFormat(self::DATE_TIME_FORMAT, strval($data['started_at']));
+    $this->assertNull($data['completed_at']);
+    $this->assertNull($data['error']);
+  }
+
+  public function testItCompletesAMigration(): void {
+    $this->store->ensureMigrationsTable();
+    $this->store->startMigration('TestingMigration');
+    $this->store->completeMigration('TestingMigration');
+
+    $migrations = $this->connection->executeQuery("SELECT * FROM {$this->table}")->fetchAllAssociative();
+    $this->assertCount(1, $migrations);
+
+    $data = $migrations[0];
+    $this->assertSame('TestingMigration', $data['name']);
+    $this->assertStringMatchesFormat(self::DATE_TIME_FORMAT, strval($data['started_at']));
+    $this->assertStringMatchesFormat(self::DATE_TIME_FORMAT, strval($data['completed_at']));
+    $this->assertNull($data['error']);
+  }
+
+  public function testItFailsAMigration(): void {
+    $this->store->ensureMigrationsTable();
+    $this->store->startMigration('TestingMigration');
+    $this->store->failMigration('TestingMigration', 'test-error');
+
+    $migrations = $this->connection->executeQuery("SELECT * FROM {$this->table}")->fetchAllAssociative();
+    $this->assertCount(1, $migrations);
+
+    $data = $migrations[0];
+    $this->assertSame('TestingMigration', $data['name']);
+    $this->assertStringMatchesFormat(self::DATE_TIME_FORMAT, strval($data['started_at']));
+    $this->assertStringMatchesFormat(self::DATE_TIME_FORMAT, strval($data['completed_at']));
+    $this->assertSame($data['error'], 'test-error');
   }
 
   public function _after() {
