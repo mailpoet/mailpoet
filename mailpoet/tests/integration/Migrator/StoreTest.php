@@ -82,6 +82,36 @@ class StoreTest extends MailPoetTest {
     $this->assertSame($data['error'], 'test-error');
   }
 
+  public function testItListsAllMigrations(): void {
+    $this->store->ensureMigrationsTable();
+    $this->store->startMigration('Started');
+    $this->store->startMigration('Completed');
+    $this->store->completeMigration('Completed');
+    $this->store->startMigration('Failed');
+    $this->store->failMigration('Failed', 'test-error');
+
+    $migrations = $this->store->getAll();
+    $this->assertCount(3, $migrations);
+
+    $data = $migrations[0];
+    $this->assertSame('Started', $data['name']);
+    $this->assertStringMatchesFormat(self::DATE_TIME_FORMAT, $data['started_at']);
+    $this->assertNull($data['completed_at']);
+    $this->assertNull($data['error']);
+
+    $data = $migrations[1];
+    $this->assertSame('Completed', $data['name']);
+    $this->assertStringMatchesFormat(self::DATE_TIME_FORMAT, $data['started_at']);
+    $this->assertStringMatchesFormat(self::DATE_TIME_FORMAT, $data['completed_at']);
+    $this->assertNull($data['error']);
+
+    $data = $migrations[2];
+    $this->assertSame('Failed', $data['name']);
+    $this->assertStringMatchesFormat(self::DATE_TIME_FORMAT, $data['started_at']);
+    $this->assertStringMatchesFormat(self::DATE_TIME_FORMAT, $data['completed_at']);
+    $this->assertSame($data['error'], 'test-error');
+  }
+
   public function _after() {
     parent::_after();
     $this->connection->executeStatement("DROP TABLE IF EXISTS {$this->table}");
