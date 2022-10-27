@@ -42,6 +42,12 @@ export function NewsletterStats({
             rate={clicked}
             tooltipId={`clicked-${newsletterId || '0'}`}
           />
+          <br />
+          <StatsBadge
+            stat="opened"
+            rate={opened}
+            tooltipId={`opened-${newsletterId || '0'}`}
+          />
         </div>
       )}
     </div>
