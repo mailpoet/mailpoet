@@ -105,10 +105,12 @@ export function EditNewsletter(): JSX.Element {
         variant="secondary"
         centered
         isBusy={fetchingPreviewLink}
+        disabled={fetchingPreviewLink}
         onClick={async () => {
           setFetchingPreviewLink(true);
           const link = await retrievePreviewLink(emailId);
           window.open(link as string, '_blank');
+          setFetchingPreviewLink(false);
         }}
       >
         Preview
