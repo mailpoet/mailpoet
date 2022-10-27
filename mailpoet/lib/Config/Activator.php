@@ -2,9 +2,11 @@
 
 namespace MailPoet\Config;
 
+use MailPoet\Config\Migrator as LegacyMigrator;
 use MailPoet\Cron\ActionScheduler\ActionScheduler as CronActionScheduler;
 use MailPoet\Cron\CronTrigger;
 use MailPoet\InvalidStateException;
+use MailPoet\Migrator\Migrator;
 use MailPoet\Settings\SettingsController;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -24,6 +26,9 @@ class Activator {
   /** @var Migrator */
   private $migrator;
 
+  /** @var LegacyMigrator */
+  private $legacyMigrator;
+
   /** @var CronActionScheduler */
   private $cronActionSchedulerRunner;
 
@@ -32,12 +37,14 @@ class Activator {
     Populator $populator,
     WPFunctions $wp,
     Migrator $migrator,
+    LegacyMigrator $legacyMigrator,
     CronActionScheduler $cronActionSchedulerRunner
   ) {
     $this->settings = $settings;
     $this->populator = $populator;
     $this->wp = $wp;
     $this->migrator = $migrator;
+    $this->legacyMigrator = $legacyMigrator;
     $this->cronActionSchedulerRunner = $cronActionSchedulerRunner;
   }
 
@@ -64,11 +71,13 @@ class Activator {
   }
 
   private function processActivate(): void {
-    $this->migrator->up();
+    $this->legacyMigrator->up();
     $this->deactivateCronActions();
 
     $this->populator->up();
     $this->updateDbVersion();
+
+    $this->migrator->run();
 
     $caps = new Capabilities();
     $caps->setupWPCapabilities();
@@ -79,7 +88,7 @@ class Activator {
 
   public function deactivate() {
     $this->lockActivation();
-    $this->migrator->down();
+    $this->legacyMigrator->down();
 
     $caps = new Capabilities();
     $caps->removeWPCapabilities();
