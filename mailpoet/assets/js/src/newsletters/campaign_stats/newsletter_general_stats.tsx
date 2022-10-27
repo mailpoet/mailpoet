@@ -17,6 +17,8 @@ type Props = {
 
 const minNewslettersSent = 20;
 const minNewslettersOpened = 5;
+const minUnsubscribedStat = 5;
+const minBouncedStat = 5;
 
 // When percentage value is lower then 0.1 we want to display value with two decimal places
 const formatWithOptimalPrecision = (value: number) => {
@@ -61,14 +63,32 @@ export function NewsletterGeneralStats({
     totalSent >= minNewslettersSent &&
     newsletter.statistics.opened >= minNewslettersOpened;
 
+  const displayUnsubscribedBadge =
+    newsletter.statistics.unsubscribed >= minUnsubscribedStat;
+  const displayBouncedBadge = newsletter.statistics.bounced >= minBouncedStat;
+
+  const badgeTypeOpened = getBadgeType('opened', percentageOpened);
   const opened = (
-    <div className="mailpoet-statistics-value-small">
-      <span className="mailpoet-statistics-value-number">
-        {percentageOpenedDisplay}
-        {'% '}
-      </span>
-      {MailPoet.I18n.t('percentageOpened')}
-    </div>
+    <>
+      <div className="mailpoet-statistics-value-small">
+        <span
+          className={`mailpoet-statistics-value-number mailpoet-statistics-value-number-${badgeTypeOpened}`}
+        >
+          {percentageOpenedDisplay}
+          {'% '}
+        </span>
+        {MailPoet.I18n.t('percentageOpened')}
+      </div>
+      {displayBadges && (
+        <StatsBadge
+          isInverted={false}
+          stat="opened"
+          rate={percentageOpened}
+          tooltipId={`opened-${newsletter.id || '0'}`}
+          tooltipPlace="right"
+        />
+      )}
+    </>
   );
 
   const machineOpened = (
@@ -100,24 +120,56 @@ export function NewsletterGeneralStats({
     </div>
   );
 
+  const badgeTypeUnsubscribed = displayUnsubscribedBadge
+    ? getBadgeType('unsubscribed', percentageUnsubscribed)
+    : '';
   const unsubscribed = (
-    <div className="mailpoet-statistics-value-small">
-      <span className="mailpoet-statistics-value-number">
-        {percentageUnsubscribedDisplay}
-        {'% '}
-      </span>
-      {MailPoet.I18n.t('percentageUnsubscribed')}
-    </div>
+    <>
+      <div className="mailpoet-statistics-value-small">
+        <span
+          className={`mailpoet-statistics-value-number mailpoet-statistics-value-number-${badgeTypeUnsubscribed}`}
+        >
+          {percentageUnsubscribedDisplay}
+          {'% '}
+        </span>
+        {MailPoet.I18n.t('percentageUnsubscribed')}
+      </div>
+      {displayUnsubscribedBadge && (
+        <StatsBadge
+          isInverted={false}
+          stat="unsubscribed"
+          rate={percentageUnsubscribed}
+          tooltipId={`unsubscribed-${newsletter.id || '0'}`}
+          tooltipPlace="right"
+        />
+      )}
+    </>
   );
 
+  const badgeTypeBounced = displayBouncedBadge
+    ? getBadgeType('bounced', percentageBounced)
+    : '';
   const bounced = (
-    <div className="mailpoet-statistics-value-small">
-      <span className="mailpoet-statistics-value-number">
-        {percentageBouncedDisplay}
-        {'% '}
-      </span>
-      {MailPoet.I18n.t('percentageBounced')}
-    </div>
+    <>
+      <div className="mailpoet-statistics-value-small">
+        <span
+          className={`mailpoet-statistics-value-number mailpoet-statistics-value-number-${badgeTypeBounced}`}
+        >
+          {percentageBouncedDisplay}
+          {'% '}
+        </span>
+        {MailPoet.I18n.t('percentageBounced')}
+      </div>
+      {displayBouncedBadge && (
+        <StatsBadge
+          isInverted={false}
+          stat="bounced"
+          rate={percentageBounced}
+          tooltipId={`bounced-${newsletter.id || '0'}`}
+          tooltipPlace="right"
+        />
+      )}
+    </>
   );
 
   const badgeTypeClicked = getBadgeType('clicked', percentageClicked);
