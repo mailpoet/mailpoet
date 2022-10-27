@@ -11,15 +11,41 @@ class Migrator {
   /** @var Repository */
   private $repository;
 
+  /** @var Runner */
+  private $runner;
+
   /** @var Store */
   private $store;
 
   public function __construct(
     Repository $repository,
+    Runner $runner,
     Store $store
   ) {
     $this->repository = $repository;
+    $this->runner = $runner;
     $this->store = $store;
+  }
+
+  public function run(): void {
+    $this->store->ensureMigrationsTable();
+    $migrations = $this->getStatus();
+
+    // do not try to run migrations if any are running or failed
+    foreach ($migrations as $migration) {
+      if ($migration['status'] === self::MIGRATION_STATUS_STARTED) {
+        throw MigratorException::runningMigrationsExist();
+      }
+      if ($migration['status'] === self::MIGRATION_STATUS_FAILED) {
+        throw MigratorException::failedMigrationsExist();
+      }
+    }
+
+    foreach ($migrations as $migration) {
+      if ($migration['status'] === self::MIGRATION_STATUS_NEW) {
+        $this->runner->runMigration($migration['name']);
+      }
+    }
   }
 
   /** @return array{name: string, status: string, started_at: string|null, completed_at: string|null, error: string|null}[] */

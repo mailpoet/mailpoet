@@ -35,4 +35,12 @@ class MigratorException extends InvalidStateException {
       sprintf('Migration "%1$s" failed. Details: %2$s', $className, $previous->getMessage())
     );
   }
+
+  public static function runningMigrationsExist(): self {
+    return self::create()->withMessage('Some migrations are already running.');
+  }
+
+  public static function failedMigrationsExist(): self {
+    return self::create()->withMessage('Some previously run migrations failed.');
+  }
 }

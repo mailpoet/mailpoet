@@ -9,7 +9,8 @@ use MailPoetTest;
 require_once __DIR__ . '/TestMigrations/Migration_20221024_080348.php';
 require_once __DIR__ . '/TestMigrations/Migration_20221025_120345.php';
 require_once __DIR__ . '/TestMigrations/Migration_20221026_160151.php';
-require_once __DIR__ . '/TestMigrations/Migration_20221027_180501.php';;
+require_once __DIR__ . '/TestMigrations/Migration_20221027_180501.php';
+require_once __DIR__ . '/TestMigrationsFail/Migration_20221023_040819.php';
 
 class MigratorTest extends MailPoetTest {
   private const DATE_TIME_FORMAT = '%d%d-%d%d-%d%d %d%d:%d%d:%d%d';
@@ -105,14 +106,124 @@ class MigratorTest extends MailPoetTest {
     ], $migrator->getStatus());
   }
 
+  public function testItRunsAllMigrations(): void {
+    $migrator = $this->createMigrator();
+    $this->assertEmpty($this->store->getAll());
+    $migrator->run();
+
+    $processed = $this->store->getAll();
+    $this->assertCount(4, $processed);
+
+    $migrations = [
+      'Migration_20221024_080348',
+      'Migration_20221025_120345',
+      'Migration_20221026_160151',
+      'Migration_20221027_180501',
+    ];
+
+    foreach ($processed as $i => $data) {
+      $this->assertSame(strval($i + 1), $data['id']);
+      $this->assertSame($migrations[$i], $data['name']);
+      $this->assertStringMatchesFormat(self::DATE_TIME_FORMAT, $data['started_at']);
+      $this->assertStringMatchesFormat(self::DATE_TIME_FORMAT, $data['completed_at']);
+      $this->assertNull($data['error']);
+    }
+  }
+
+  public function testItRunsNewMigrations(): void {
+    $this->store->startMigration('Migration_20221024_080348');
+    $this->store->completeMigration('Migration_20221024_080348');
+    $this->store->startMigration('Migration_20221026_160151');
+    $this->store->completeMigration('Migration_20221026_160151');
+
+    $this->assertCount(2, $this->store->getAll());
+    $migrator = $this->createMigrator();
+    $migrator->run();
+
+    $processed = $this->store->getAll();
+    $this->assertCount(4, $processed);
+
+    $migrations = [
+      'Migration_20221024_080348',
+      'Migration_20221026_160151',
+      'Migration_20221025_120345',
+      'Migration_20221027_180501',
+    ];
+
+    foreach ($processed as $i => $data) {
+      $this->assertSame($migrations[$i], $data['name']);
+      $this->assertStringMatchesFormat(self::DATE_TIME_FORMAT, $data['started_at']);
+      $this->assertStringMatchesFormat(self::DATE_TIME_FORMAT, $data['completed_at']);
+      $this->assertNull($data['error']);
+    }
+  }
+
+  public function testItFailsWhenRunningMigrationExists(): void {
+    $this->store->startMigration('Migration_20221025_120345');
+
+    $this->expectException(MigratorException::class);
+    $this->expectExceptionMessage('Some migrations are already running.');
+    $migrator = $this->createMigrator();
+    $migrator->run();
+
+    $processed = $this->store->getAll();
+    $this->assertCount(1, $processed);
+
+    $data = $processed[0];
+    $this->assertSame('Migration_20221025_120345', $data['name']);
+    $this->assertStringMatchesFormat(self::DATE_TIME_FORMAT, $data['started_at']);
+    $this->assertNull(self::DATE_TIME_FORMAT, $data['completed_at']);
+    $this->assertNull($data['error']);
+  }
+
+  public function testItFailsWhenFailedMigrationExists(): void {
+    $this->store->startMigration('Migration_20221026_160151');
+    $this->store->failMigration('Migration_20221026_160151', 'test-error');
+
+    $this->expectException(MigratorException::class);
+    $this->expectExceptionMessage('Some previously run migrations failed.');
+    $migrator = $this->createMigrator();
+    $migrator->run();
+
+    $processed = $this->store->getAll();
+    $this->assertCount(1, $processed);
+
+    $data = $processed[0];
+    $this->assertSame('Migration_20221026_160151', $data['name']);
+    $this->assertStringMatchesFormat(self::DATE_TIME_FORMAT, $data['started_at']);
+    $this->assertNull(self::DATE_TIME_FORMAT, $data['completed_at']);
+    $this->assertNull($data['error']);
+  }
+
+  public function testItFailsBrokenMigration(): void {
+    $this->expectException(MigratorException::class);
+    $this->expectExceptionMessage('Migration "MailPoet\Migrations\Migration_20221023_040819" failed. Details: Testing failing migration.');
+    $migrator = $this->createMigrator(__DIR__ . '/TestMigrationsFail');
+    $migrator->run();
+
+    $processed = $this->store->getAll();
+    $this->assertCount(1, $processed);
+
+    $data = $processed[0];
+    $this->assertSame('Migration_20221023_040819', $data['name']);
+    $this->assertStringMatchesFormat(self::DATE_TIME_FORMAT, $data['started_at']);
+    $this->assertStringMatchesFormat(self::DATE_TIME_FORMAT, $data['completed_at']);
+    $this->assertSame($data['error'], 'Testing failing migration.');
+  }
+
   /** @return Migrator */
   private function createMigrator(string $migrationsDir = __DIR__ . '/TestMigrations'): Migrator {
     $repository = $this->getServiceWithOverrides(Repository::class, [
       'migrationsDir' => $migrationsDir,
     ]);
 
+    $runner = $this->getServiceWithOverrides(Runner::class, [
+      'store' => $this->store,
+    ]);
+
     return $this->getServiceWithOverrides(Migrator::class, [
       'repository' => $repository,
+      'runner' => $runner,
       'store' => $this->store,
     ]);
   }
