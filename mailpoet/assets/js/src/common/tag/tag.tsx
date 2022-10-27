@@ -1,16 +1,18 @@
 import { ReactNode } from 'react';
 import classnames from 'classnames';
 
+export type TagVariant =
+  | 'average'
+  | 'good'
+  | 'excellent'
+  | 'critical'
+  | 'list'
+  | 'unknown'
+  | 'wordpress';
+
 type Props = {
   children?: ReactNode;
-  variant?:
-    | 'average'
-    | 'good'
-    | 'excellent'
-    | 'critical'
-    | 'list'
-    | 'unknown'
-    | 'wordpress';
+  variant?: TagVariant;
   dimension?: 'large';
   isInverted?: boolean;
   className?: string;
