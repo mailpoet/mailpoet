@@ -41,6 +41,15 @@
   }
 }
 
+.mailpoet-tag-critical {
+  border-color: $color-stats-critical;
+  color: $color-stats-critical;
+
+  &.mailpoet-tag-inverted {
+    background: $color-stats-critical;
+  }
+}
+
 .mailpoet-tag-good {
   border-color: $color-stats-good;
   color: $color-stats-good;

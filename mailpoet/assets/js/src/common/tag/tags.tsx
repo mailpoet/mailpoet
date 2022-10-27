@@ -21,7 +21,14 @@ type Props = {
   segments?: Segment[];
   subscriberTags?: SubscriberTag[];
   strings?: string[];
-  variant?: 'average' | 'good' | 'excellent' | 'list' | 'unknown' | 'wordpress';
+  variant?:
+    | 'average'
+    | 'good'
+    | 'excellent'
+    | 'critical'
+    | 'list'
+    | 'unknown'
+    | 'wordpress';
   isInverted?: boolean;
 };
 

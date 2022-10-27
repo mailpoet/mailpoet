@@ -61,6 +61,20 @@ export function Tags() {
         Excellent
       </Tag>
       <div className="mailpoet-gap" />
+      <Tag dimension="large" variant="critical">
+        Critical
+      </Tag>
+      &nbsp;
+      <Tag dimension="large" variant="critical" isInverted>
+        Critical
+      </Tag>
+      <br />
+      <Tag variant="critical">Critical</Tag>
+      &nbsp;
+      <Tag variant="critical" isInverted>
+        Critical
+      </Tag>
+      <div className="mailpoet-gap" />
       <Tag dimension="large" variant="wordpress">
         WordPress
       </Tag>
