@@ -19,6 +19,10 @@ class Store {
     $this->table = Env::$dbPrefix . 'migrations';
   }
 
+  public function getMigrationsTable(): string {
+    return $this->table;
+  }
+
   public function startMigration(string $name): void {
     $this->connection->executeStatement("
       INSERT INTO {$this->table} (name, started_at)

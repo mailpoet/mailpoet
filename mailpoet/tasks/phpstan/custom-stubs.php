@@ -36,3 +36,11 @@ namespace Automattic\WooCommerce\Internal\Features {
     }
   }
 }
+
+namespace WP_CLI\Utils {
+  if (!function_exists('format_items')) {
+    /** @param array|string $fields */
+    function format_items(string $format, array $items, $fields): void {
+    }
+  }
+}
