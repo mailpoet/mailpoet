@@ -48,6 +48,10 @@ function ActivateButton({ onClick, label }): JSX.Element {
   if (isDeactivating) {
     return (
       <Tooltip
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        // The following error seems to be a mismatch. It claims the 'delay' prop does not exist, but it does.
+        delay={0}
         text={__(
           'Editing an active workflow is temporarily unavailable. We are working on introducing this functionality.',
           'mailpoet',
@@ -66,6 +70,10 @@ function UpdateButton(): JSX.Element {
 
   return (
     <Tooltip
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      // The following error seems to be a mismatch. It claims the 'delay' prop does not exist, but it does.
+      delay={0}
       text={__(
         'Editing an active workflow is temporarily unavailable. We are working on introducing this functionality.',
         'mailpoet',
