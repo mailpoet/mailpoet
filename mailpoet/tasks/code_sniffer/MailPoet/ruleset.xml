@@ -58,7 +58,9 @@
   <rule ref="Generic.Classes.DuplicateClassName"/> <!-- Disallow same class or interface name in multiple files -->
   <rule ref="Generic.Classes.OpeningBraceSameLine"/> <!-- Opening brace of a class/interface/trait must be on the same line as declaration -->
   <rule ref="Squiz.Classes.ClassFileName"/> <!-- Class name and file name must match -->
-  <rule ref="Squiz.Classes.ValidClassName"/> <!-- Classes should be named camel case with first letter capitalised -->
+  <rule ref="Squiz.Classes.ValidClassName"> <!-- Classes should be named camel case with first letter capitalised -->
+    <exclude-pattern>lib/Migrations</exclude-pattern>
+  </rule>
   <rule ref="Squiz.Classes.LowercaseClassKeywords"/> <!-- The "class" keyword must be lowercased -->
   <rule ref="PSR1.Classes.ClassDeclaration"/> <!-- Each class must be in a file by itself and must be under a namespace -->
   <rule ref="PSR2.Classes.PropertyDeclaration"/> <!-- Properties must have visibility, no trailing "_", one property per statement, "static" before visibility -->
