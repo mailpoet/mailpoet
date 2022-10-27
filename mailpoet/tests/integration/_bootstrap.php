@@ -162,7 +162,7 @@ abstract class MailPoetTest extends \Codeception\TestCase\Test { // phpcs:ignore
    *
    * @template T of object
    * @param class-string<T> $id
-   * @param array<string, Object> $overrides
+   * @param array<string, mixed> $overrides
    *  string = property name
    *  Object = replacement
    * @return T
