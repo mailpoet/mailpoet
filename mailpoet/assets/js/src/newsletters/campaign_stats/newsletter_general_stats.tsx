@@ -26,6 +26,14 @@ const formatWithOptimalPrecision = (value: number) => {
   return MailPoet.Num.toLocaleFixed(value, precision);
 };
 
+/*
+ * FormatForStats
+ * always round-up to one decimal place
+ * in stats.tsx, we are comparing against 0, 0.3, 0.5, 0.7, 1.5, etc
+ */
+const formatForStats = (value: number): number =>
+  +MailPoet.Num.toLocaleFixed(value, 1);
+
 export function NewsletterGeneralStats({
   newsletter,
   isWoocommerceActive,
@@ -67,7 +75,7 @@ export function NewsletterGeneralStats({
     newsletter.statistics.unsubscribed >= minUnsubscribedStat;
   const displayBouncedBadge = newsletter.statistics.bounced >= minBouncedStat;
 
-  const badgeTypeOpened = getBadgeType('opened', percentageOpened);
+  const badgeTypeOpened = getBadgeType('opened', percentageOpened) || '';
   const opened = (
     <>
       <div className="mailpoet-statistics-value-small">
@@ -120,8 +128,11 @@ export function NewsletterGeneralStats({
     </div>
   );
 
+  const formattedPercentageUnsubscribed = formatForStats(
+    percentageUnsubscribed,
+  );
   const badgeTypeUnsubscribed = displayUnsubscribedBadge
-    ? getBadgeType('unsubscribed', percentageUnsubscribed)
+    ? getBadgeType('unsubscribed', formattedPercentageUnsubscribed)
     : '';
   const unsubscribed = (
     <>
@@ -138,7 +149,7 @@ export function NewsletterGeneralStats({
         <StatsBadge
           isInverted={false}
           stat="unsubscribed"
-          rate={percentageUnsubscribed}
+          rate={formattedPercentageUnsubscribed}
           tooltipId={`unsubscribed-${newsletter.id || '0'}`}
           tooltipPlace="right"
         />
@@ -146,8 +157,9 @@ export function NewsletterGeneralStats({
     </>
   );
 
+  const formattedPercentageBounced = formatForStats(percentageBounced);
   const badgeTypeBounced = displayBouncedBadge
-    ? getBadgeType('bounced', percentageBounced)
+    ? getBadgeType('bounced', formattedPercentageBounced)
     : '';
   const bounced = (
     <>
@@ -164,7 +176,7 @@ export function NewsletterGeneralStats({
         <StatsBadge
           isInverted={false}
           stat="bounced"
-          rate={percentageBounced}
+          rate={formattedPercentageBounced}
           tooltipId={`bounced-${newsletter.id || '0'}`}
           tooltipPlace="right"
         />
