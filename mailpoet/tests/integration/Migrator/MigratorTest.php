@@ -158,6 +158,20 @@ class MigratorTest extends MailPoetTest {
     }
   }
 
+  public function testItCallsLoggerWhenRunningMigrations(): void {
+    $migrator = $this->createMigrator();
+
+    $migrator->run($this->makeEmpty(Logger::class, [
+      'logBefore' => $this->exactly(1),
+      'logMigrationStarted' => $this->exactly(5),
+      'logMigrationCompleted' => $this->exactly(4),
+      'logAfter' => $this->exactly(1),
+    ]));
+
+    $processed = $this->store->getAll();
+    $this->assertCount(4, $processed);
+  }
+
   public function testItFailsWhenRunningMigrationExists(): void {
     $this->store->startMigration('Migration_20221025_120345');
 
