@@ -27,9 +27,13 @@ class Migrator {
     $this->store = $store;
   }
 
-  public function run(): void {
+  public function run(Logger $logger = null): void {
     $this->store->ensureMigrationsTable();
     $migrations = $this->getStatus();
+
+    if ($logger) {
+      $logger->logBefore($migrations);
+    }
 
     // do not try to run migrations if any are running or failed
     foreach ($migrations as $migration) {
@@ -42,9 +46,23 @@ class Migrator {
     }
 
     foreach ($migrations as $migration) {
-      if ($migration['status'] === self::MIGRATION_STATUS_NEW) {
-        $this->runner->runMigration($migration['name']);
+      if ($migration['status'] !== self::MIGRATION_STATUS_NEW) {
+        continue;
       }
+
+      if ($logger) {
+        $logger->logMigrationStarted($migration);
+      }
+
+      $this->runner->runMigration($migration['name']);
+
+      if ($logger) {
+        $logger->logMigrationCompleted($migration);
+      }
+    }
+
+    if ($logger) {
+      $logger->logAfter();
     }
   }
 
