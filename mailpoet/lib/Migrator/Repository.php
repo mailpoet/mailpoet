@@ -22,7 +22,8 @@ class Repository {
     return $this->migrationsDir;
   }
 
-  public function create(): void {
+  /** @return array{name: string, path: string} */
+  public function create(): array {
     $template = @file_get_contents($this->templateFile);
     if (!$template) {
       throw MigratorException::templateFileReadFailed($this->templateFile);
@@ -35,6 +36,10 @@ class Repository {
     if (!$result) {
       throw MigratorException::migrationFileWriteFailed($path);
     }
+    return [
+      'name' => $name,
+      'path' => $path,
+    ];
   }
 
   public function loadAll(): array {

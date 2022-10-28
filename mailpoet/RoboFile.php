@@ -385,6 +385,17 @@ class RoboFile extends \Robo\Tasks {
     $this->say("Validator metadata generated to: $validatorMetadataDir");
   }
 
+  public function migrationsNew() {
+    $generator = new \MailPoet\Migrator\Repository();
+    $result = $generator->create();
+    $path = realpath($result['path']);
+    $this->output->writeln('MAILPOET DATABASE MIGRATIONS');
+    $this->output->writeln("============================\n");
+    $this->output->writeln("New migration created ✔\n");
+    $this->output->writeln("  Name:  {$result['name']}");
+    $this->output->writeln("  Path:  $path");
+  }
+
   public function migrationsStatus() {
     return $this->taskExec('vendor/bin/wp mailpoet:migrations:status');
   }
