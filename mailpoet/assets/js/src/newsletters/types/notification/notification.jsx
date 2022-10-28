@@ -80,7 +80,6 @@ class NewsletterNotificationComponent extends Component {
           <Heading level={4}>
             {MailPoet.I18n.t('selectEventToSendPostNotificationEmail')}
           </Heading>
-          <h5> {MailPoet.I18n.t('selectFrequency')} </h5>
 
           <NotificationScheduling
             item={this.state}
