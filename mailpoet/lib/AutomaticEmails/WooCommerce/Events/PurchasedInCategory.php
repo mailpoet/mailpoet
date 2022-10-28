@@ -55,7 +55,7 @@ class PurchasedInCategory {
       'listingScheduleDisplayText' => __('Email sent when a customer buys a product in category: %s', 'mailpoet'),
       // translators: %s is the name of the category.
       'listingScheduleDisplayTextPlural' => __('Email sent when a customer buys a product in categories: %s', 'mailpoet'),
-      'afterDelayText' => __('after purchase', 'mailpoet'),
+      'afterDelayText' => __('after a purchase', 'mailpoet'),
       'options' => [
         'multiple' => true,
         'endpoint' => 'product_categories',

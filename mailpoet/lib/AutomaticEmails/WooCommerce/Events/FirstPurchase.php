@@ -75,7 +75,7 @@ class FirstPurchase {
       'title' => __('First Purchase', 'mailpoet'),
       'description' => __('Let MailPoet send an email to customers who make their first purchase.', 'mailpoet'),
       'listingScheduleDisplayText' => __('Email sent when a customer makes their first purchase.', 'mailpoet'),
-      'afterDelayText' => __('after first purchase', 'mailpoet'),
+      'afterDelayText' => __('after the first purchase', 'mailpoet'),
       'badge' => [
         'text' => __('Must-have', 'mailpoet'),
         'style' => 'red',
