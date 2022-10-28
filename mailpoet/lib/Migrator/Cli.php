@@ -29,13 +29,73 @@ class Cli {
       return;
     }
 
-    WP_CLI::add_command('mailpoet:migrations:run', [$this->migrator, 'run'], [
+    WP_CLI::add_command('mailpoet:migrations:run', [$this, 'run'], [
       'shortdesc' => 'Runs MailPoet database migrations',
     ]);
 
     WP_CLI::add_command('mailpoet:migrations:status', [$this, 'status'], [
       'shortdesc' => 'Shows status of MailPoet database migrations',
     ]);
+  }
+
+  public function run(): void {
+    $this->printHeader();
+    $this->migrator->run(new class($this) implements Logger {
+      /** @var Cli */
+      private $cli;
+
+      /** @var float */
+      private $started;
+
+      /** @var float */
+      private $migrationStarted;
+
+      /** @var int */
+      private $migrationsCount = 0;
+
+      public function __construct(
+        Cli $cli
+      ) {
+        $this->cli = $cli;
+      }
+
+      public function logBefore(array $status): void {
+        WP_CLI::log("STATUS:\n");
+        $this->cli->printStats($status);
+
+        $new = array_values(
+          array_filter($status, function (array $migration): bool {
+            return $migration['status'] === Migrator::MIGRATION_STATUS_NEW;
+          })
+        );
+
+        if (count($new) === 0) {
+          WP_CLI::success('No new migrations to run.');
+        } else {
+          WP_CLI::log("RUNNING MIGRATIONS:\n");
+        }
+        $this->started = microtime(true);
+      }
+
+      public function logMigrationStarted(array $migration): void {
+        WP_CLI::out(sprintf('  %s... ', $migration['name']));
+        $this->migrationStarted = microtime(true);
+      }
+
+      public function logMigrationCompleted(array $migration): void {
+        $this->migrationsCount += 1;
+        $seconds = microtime(true) - $this->migrationStarted;
+        WP_CLI::out(sprintf("completed in %.0Fs ✔\n", $seconds));
+      }
+
+      public function logAfter(): void {
+        if ($this->migrationsCount > 0) {
+          $seconds = microtime(true) - $this->started;
+          WP_CLI::log('');
+          WP_CLI::success(sprintf("Completed %d new migrations in %.0Fs.", $this->migrationsCount, $seconds));
+        }
+      }
+    });
   }
 
   public function status(): void {
