@@ -1,5 +1,6 @@
 import _ from 'underscore';
 import { Component } from 'react';
+import { MailPoet } from 'mailpoet';
 import PropTypes from 'prop-types';
 import { FormFieldSelect as Select } from 'form/fields/select.jsx';
 import {
@@ -10,9 +11,16 @@ import {
   nthWeekDayValues,
 } from 'newsletters/scheduling/common.jsx';
 
+const customValues = {
+  ...intervalValues,
+  immediately: `${MailPoet.I18n.t('immediately')} ${MailPoet.I18n.t(
+    'postNotificationNewsletterAfterValueText',
+  )}`,
+};
+
 const intervalField = {
   name: 'intervalType',
-  values: intervalValues,
+  values: customValues,
 };
 
 const timeOfDayField = {
