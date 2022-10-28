@@ -4,10 +4,16 @@ namespace MailPoet\Migrations;
 
 use MailPoet\Config\Env;
 use MailPoet\Cron\CronTrigger;
+use MailPoet\Cron\Workers\StatsNotifications\Worker;
 use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Entities\FormEntity;
 use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\NewsletterLinkEntity;
+use MailPoet\Entities\NewsletterTemplateEntity;
+use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Form\FormsRepository;
 use MailPoet\Migrator\Migration;
 use MailPoet\Segments\DynamicSegments\Filters\EmailAction;
 use MailPoet\Segments\DynamicSegments\Filters\UserRole;
@@ -16,7 +22,10 @@ use MailPoet\Segments\DynamicSegments\Filters\WooCommerceProduct;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceSubscription;
 use MailPoet\Settings\SettingsChangeHandler;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Settings\TrackingConfig;
 use MailPoet\Util\Helpers;
+use MailPoet\Util\Notices\ChangedTrackingNotice;
+use MailPoet\WP\Functions as WPFunctions;
 
 /**
  * Moved from MailPoet\Config\Migrator.
@@ -75,11 +84,19 @@ class Migration_20221028_105818 extends Migration {
   /** @var SettingsChangeHandler */
   private $settingsChangeHandler;
 
+  /** @var FormsRepository */
+  private $formsRepository;
+
+  /** @var WPFunctions */
+  private $wp;
+
   public function run(): void {
     $this->prefix = Env::$dbPrefix;
     $this->charsetCollate = Env::$dbCharsetCollate;
     $this->settings = $this->container->get(SettingsController::class);
     $this->settingsChangeHandler = $this->container->get(SettingsChangeHandler::class);
+    $this->formsRepository = $this->container->get(FormsRepository::class);
+    $this->wp = $this->container->get(WPFunctions::class);
 
     // Ensure dbDelta function
     require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
@@ -99,6 +116,19 @@ class Migration_20221028_105818 extends Migration {
     $this->updateDefaultInactiveSubscriberTimeRange();
     $this->setDefaultValueForLoadingThirdPartyLibrariesForExistingInstalls();
     $this->disableMailPoetCronTrigger();
+
+    // POPULATOR
+    $this->updateMetaFields();
+    $this->updateLastSubscribedAt();
+    $this->enableStatsNotificationsForAutomatedEmails();
+    $this->updateSentUnsubscribeLinksToInstantUnsubscribeLinks();
+    $this->pauseTasksForPausedNewsletters();
+    $this->moveGoogleAnalyticsFromPremium();
+    $this->addPlacementStatusToForms();
+    $this->migrateFormPlacement();
+    $this->moveNewsletterTemplatesThumbnailData();
+    $this->updateToUnifiedTrackingSettings();
+    $this->fixNotificationHistoryRecordsStuckAtSending();
   }
 
   private function segments() {
@@ -994,6 +1024,302 @@ class Migration_20221028_105818 extends Migration {
       // keep loading 3rd party libraries for existing users so the functionality is not broken
       $this->settings->set('3rd_party_libs.enabled', '1');
     }
+
+    return true;
+  }
+
+  private function updateMetaFields() {
+    global $wpdb;
+    // perform once for versions below or equal to 3.26.0
+    if (version_compare((string)$this->settings->get('db_version', '3.26.1'), '3.26.0', '>')) {
+      return false;
+    }
+    $scheduledTaskTable = $this->entityManager->getClassMetadata(ScheduledTaskEntity::class)->getTableName();
+    $sendingQueueTable = $this->entityManager->getClassMetadata(SendingQueueEntity::class)->getTableName();
+    $tables = [$scheduledTaskTable, $sendingQueueTable];
+    foreach ($tables as $table) {
+      $wpdb->query("UPDATE `" . esc_sql($table) . "` SET meta = NULL WHERE meta = 'null'");
+    }
+    return true;
+  }
+
+  private function enableStatsNotificationsForAutomatedEmails() {
+    if (version_compare((string)$this->settings->get('db_version', '3.31.2'), '3.31.1', '>')) {
+      return;
+    }
+    $settings = $this->settings->get(Worker::SETTINGS_KEY);
+    $settings['automated'] = true;
+    $this->settings->set(Worker::SETTINGS_KEY, $settings);
+  }
+
+  private function updateSentUnsubscribeLinksToInstantUnsubscribeLinks() {
+    if (version_compare((string)$this->settings->get('db_version', '3.46.14'), '3.46.13', '>')) {
+      return;
+    }
+    global $wpdb;
+    $table = esc_sql($this->entityManager->getClassMetadata(NewsletterLinkEntity::class)->getTableName());
+    $wpdb->query($wpdb->prepare(
+      "UPDATE `$table` SET `url` = %s WHERE `url` = %s;",
+      NewsletterLinkEntity::INSTANT_UNSUBSCRIBE_LINK_SHORT_CODE,
+      NewsletterLinkEntity::UNSUBSCRIBE_LINK_SHORT_CODE
+    ));
+  }
+
+  private function pauseTasksForPausedNewsletters() {
+    if (version_compare((string)$this->settings->get('db_version', '3.60.5'), '3.60.4', '>')) {
+      return;
+    }
+
+    $scheduledTaskTable = $this->entityManager->getClassMetadata(ScheduledTaskEntity::class)->getTableName();
+    $sendingQueueTable = $this->entityManager->getClassMetadata(SendingQueueEntity::class)->getTableName();
+    $newsletterTable = $this->entityManager->getClassMetadata(NewsletterEntity::class)->getTableName();
+
+    $query = "
+      UPDATE $scheduledTaskTable as t
+        JOIN $sendingQueueTable as q ON t.id = q.task_id
+        JOIN $newsletterTable as n ON n.id = q.newsletter_id
+        SET t.status = :tStatusPaused
+        WHERE
+          t.status = :tStatusScheduled
+          AND n.status = :nStatusDraft
+    ";
+    $this->entityManager->getConnection()->executeStatement(
+      $query,
+      [
+        'tStatusPaused' => ScheduledTaskEntity::STATUS_PAUSED,
+        'tStatusScheduled' => ScheduledTaskEntity::STATUS_SCHEDULED,
+        'nStatusDraft' => NewsletterEntity::STATUS_DRAFT,
+      ]
+    );
+  }
+
+  private function addPlacementStatusToForms() {
+    if (version_compare((string)$this->settings->get('db_version', '3.49.0'), '3.48.1', '>')) {
+      return;
+    }
+    $forms = $this->formsRepository->findAll();
+    foreach ($forms as $form) {
+      $settings = $form->getSettings();
+      if (
+        (isset($settings['place_form_bellow_all_posts']) && $settings['place_form_bellow_all_posts'] === '1')
+        || (isset($settings['place_form_bellow_all_pages']) && $settings['place_form_bellow_all_pages'] === '1')
+      ) {
+        $settings['form_placement_bellow_posts_enabled'] = '1';
+      } else {
+        $settings['form_placement_bellow_posts_enabled'] = '';
+      }
+      if (
+        (isset($settings['place_popup_form_on_all_posts']) && $settings['place_popup_form_on_all_posts'] === '1')
+        || (isset($settings['place_popup_form_on_all_pages']) && $settings['place_popup_form_on_all_pages'] === '1')
+      ) {
+        $settings['form_placement_popup_enabled'] = '1';
+      } else {
+        $settings['form_placement_popup_enabled'] = '';
+      }
+      if (
+        (isset($settings['place_fixed_bar_form_on_all_posts']) && $settings['place_fixed_bar_form_on_all_posts'] === '1')
+        || (isset($settings['place_fixed_bar_form_on_all_pages']) && $settings['place_fixed_bar_form_on_all_pages'] === '1')
+      ) {
+        $settings['form_placement_fixed_bar_enabled'] = '1';
+      } else {
+        $settings['form_placement_fixed_bar_enabled'] = '';
+      }
+      if (
+        (isset($settings['place_slide_in_form_on_all_posts']) && $settings['place_slide_in_form_on_all_posts'] === '1')
+        || (isset($settings['place_slide_in_form_on_all_pages']) && $settings['place_slide_in_form_on_all_pages'] === '1')
+      ) {
+        $settings['form_placement_slide_in_enabled'] = '1';
+      } else {
+        $settings['form_placement_slide_in_enabled'] = '';
+      }
+      $form->setSettings($settings);
+    }
+    $this->formsRepository->flush();
+  }
+
+  private function migrateFormPlacement() {
+    if (version_compare((string)$this->settings->get('db_version', '3.50.0'), '3.49.1', '>')) {
+      return;
+    }
+    $forms = $this->formsRepository->findAll();
+    foreach ($forms as $form) {
+      $settings = $form->getSettings();
+      if (!is_array($settings)) continue;
+      $settings['form_placement'] = [
+        FormEntity::DISPLAY_TYPE_POPUP => [
+          'enabled' => $settings['form_placement_popup_enabled'],
+          'delay' => $settings['popup_form_delay'] ?? 0,
+          'styles' => $settings['popup_styles'] ?? [],
+          'posts' => [
+            'all' => $settings['place_popup_form_on_all_posts'] ?? '',
+          ],
+          'pages' => [
+            'all' => $settings['place_popup_form_on_all_pages'] ?? '',
+          ],
+        ],
+        FormEntity::DISPLAY_TYPE_FIXED_BAR => [
+          'enabled' => $settings['form_placement_fixed_bar_enabled'],
+          'delay' => $settings['fixed_bar_form_delay'] ?? 0,
+          'styles' => $settings['fixed_bar_styles'] ?? [],
+          'position' => $settings['fixed_bar_form_position'] ?? 'top',
+          'posts' => [
+            'all' => $settings['place_fixed_bar_form_on_all_posts'] ?? '',
+          ],
+          'pages' => [
+            'all' => $settings['place_fixed_bar_form_on_all_pages'] ?? '',
+          ],
+        ],
+        FormEntity::DISPLAY_TYPE_BELOW_POST => [
+          'enabled' => $settings['form_placement_bellow_posts_enabled'],
+          'styles' => $settings['below_post_styles'] ?? [],
+          'posts' => [
+            'all' => $settings['place_form_bellow_all_posts'] ?? '',
+          ],
+          'pages' => [
+            'all' => $settings['place_form_bellow_all_pages'] ?? '',
+          ],
+        ],
+        FormEntity::DISPLAY_TYPE_SLIDE_IN => [
+          'enabled' => $settings['form_placement_slide_in_enabled'],
+          'delay' => $settings['slide_in_form_delay'] ?? 0,
+          'position' => $settings['slide_in_form_position'] ?? 'right',
+          'styles' => $settings['slide_in_styles'] ?? [],
+          'posts' => [
+            'all' => $settings['place_slide_in_form_on_all_posts'] ?? '',
+          ],
+          'pages' => [
+            'all' => $settings['place_slide_in_form_on_all_pages'] ?? '',
+          ],
+        ],
+        FormEntity::DISPLAY_TYPE_OTHERS => [
+          'styles' => $settings['other_styles'] ?? [],
+        ],
+      ];
+      if (isset($settings['form_placement_slide_in_enabled'])) unset($settings['form_placement_slide_in_enabled']);
+      if (isset($settings['form_placement_fixed_bar_enabled'])) unset($settings['form_placement_fixed_bar_enabled']);
+      if (isset($settings['form_placement_popup_enabled'])) unset($settings['form_placement_popup_enabled']);
+      if (isset($settings['form_placement_bellow_posts_enabled'])) unset($settings['form_placement_bellow_posts_enabled']);
+      if (isset($settings['place_form_bellow_all_pages'])) unset($settings['place_form_bellow_all_pages']);
+      if (isset($settings['place_form_bellow_all_posts'])) unset($settings['place_form_bellow_all_posts']);
+      if (isset($settings['place_popup_form_on_all_pages'])) unset($settings['place_popup_form_on_all_pages']);
+      if (isset($settings['place_popup_form_on_all_posts'])) unset($settings['place_popup_form_on_all_posts']);
+      if (isset($settings['popup_form_delay'])) unset($settings['popup_form_delay']);
+      if (isset($settings['place_fixed_bar_form_on_all_pages'])) unset($settings['place_fixed_bar_form_on_all_pages']);
+      if (isset($settings['place_fixed_bar_form_on_all_posts'])) unset($settings['place_fixed_bar_form_on_all_posts']);
+      if (isset($settings['fixed_bar_form_delay'])) unset($settings['fixed_bar_form_delay']);
+      if (isset($settings['fixed_bar_form_position'])) unset($settings['fixed_bar_form_position']);
+      if (isset($settings['place_slide_in_form_on_all_pages'])) unset($settings['place_slide_in_form_on_all_pages']);
+      if (isset($settings['place_slide_in_form_on_all_posts'])) unset($settings['place_slide_in_form_on_all_posts']);
+      if (isset($settings['slide_in_form_delay'])) unset($settings['slide_in_form_delay']);
+      if (isset($settings['slide_in_form_position'])) unset($settings['slide_in_form_position']);
+      if (isset($settings['other_styles'])) unset($settings['other_styles']);
+      if (isset($settings['slide_in_styles'])) unset($settings['slide_in_styles']);
+      if (isset($settings['below_post_styles'])) unset($settings['below_post_styles']);
+      if (isset($settings['fixed_bar_styles'])) unset($settings['fixed_bar_styles']);
+      if (isset($settings['popup_styles'])) unset($settings['popup_styles']);
+      $form->setSettings($settings);
+    }
+    $this->formsRepository->flush();
+  }
+
+  private function moveGoogleAnalyticsFromPremium() {
+    global $wpdb;
+    if (version_compare((string)$this->settings->get('db_version', '3.38.2'), '3.38.1', '>')) {
+      return;
+    }
+    $premiumTableName = $wpdb->prefix . 'mailpoet_premium_newsletter_extra_data';
+    $premiumTableExists = (int)$wpdb->get_var(
+      $wpdb->prepare(
+        "SELECT COUNT(1) FROM information_schema.tables WHERE table_schema=%s AND table_name=%s;",
+        $wpdb->dbname,
+        $premiumTableName
+      )
+    );
+    if ($premiumTableExists) {
+      $table = esc_sql($this->entityManager->getClassMetadata(NewsletterEntity::class)->getTableName());
+      $query = "
+        UPDATE
+          `{$table}` as n
+        JOIN `$premiumTableName` as ped ON n.id=ped.newsletter_id
+          SET n.ga_campaign = ped.ga_campaign
+      ";
+      $wpdb->query($query);
+    }
+    return true;
+  }
+
+  private function updateLastSubscribedAt() {
+    global $wpdb;
+    // perform once for versions below or equal to 3.42.0
+    if (version_compare((string)$this->settings->get('db_version', '3.42.1'), '3.42.0', '>')) {
+      return false;
+    }
+    $table = esc_sql($this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName());
+    $query = $wpdb->prepare(
+      "UPDATE `{$table}` SET last_subscribed_at = GREATEST(COALESCE(confirmed_at, 0), COALESCE(created_at, 0)) WHERE status != %s AND last_subscribed_at IS NULL;",
+      SubscriberEntity::STATUS_UNCONFIRMED
+    );
+    $wpdb->query($query);
+    return true;
+  }
+
+  private function moveNewsletterTemplatesThumbnailData() {
+    if (version_compare((string)$this->settings->get('db_version', '3.73.3'), '3.73.2', '>')) {
+      return;
+    }
+    $newsletterTemplatesTable = $this->entityManager->getClassMetadata(NewsletterTemplateEntity::class)->getTableName();
+    $this->entityManager->getConnection()->executeQuery("
+      UPDATE " . $newsletterTemplatesTable . "
+      SET thumbnail_data = thumbnail, thumbnail = NULL
+      WHERE thumbnail LIKE 'data:image%';"
+    );
+  }
+
+  private function updateToUnifiedTrackingSettings() {
+    if (version_compare((string)$this->settings->get('db_version', '3.74.3'), '3.74.2', '>')) {
+      return;
+    }
+    $emailTracking = $this->settings->get('tracking.enabled', true);
+    $wooTrackingCookie = $this->settings->get('woocommerce.accept_cookie_revenue_tracking.enabled');
+    if ($wooTrackingCookie === null) { // No setting for WooCommerce Cookie Tracking - WooCommerce was not active
+      $trackingLevel = $emailTracking ? TrackingConfig::LEVEL_FULL : TrackingConfig::LEVEL_BASIC;
+    } elseif ($wooTrackingCookie) { // WooCommerce Cookie Tracking enabled
+      $trackingLevel = TrackingConfig::LEVEL_FULL;
+      // Cookie was enabled but tracking disabled and we are switching to full.
+      // So we activate an admin notice to let the user know that we activated tracking
+      if (!$emailTracking) {
+        $this->wp->setTransient(ChangedTrackingNotice::OPTION_NAME, true);
+      }
+    } else { // WooCommerce Tracking Cookie Disabled
+      $trackingLevel = $emailTracking ? TrackingConfig::LEVEL_PARTIAL : TrackingConfig::LEVEL_BASIC;
+    }
+    $this->settings->set('tracking.level', $trackingLevel);
+  }
+
+  private function fixNotificationHistoryRecordsStuckAtSending() {
+    // perform once for versions below or equal to 3.99.0
+    if (version_compare((string)$this->settings->get('db_version', '3.99.1'), '3.99.0', '>')) {
+      return false;
+    }
+
+    $newsletters = $this->entityManager->getClassMetadata(NewsletterEntity::class)->getTableName();
+    $queues = $this->entityManager->getClassMetadata(SendingQueueEntity::class)->getTableName();
+    $tasks = $this->entityManager->getClassMetadata(ScheduledTaskEntity::class)->getTableName();
+
+    $this->entityManager->getConnection()->executeStatement("
+      UPDATE {$newsletters} n
+      JOIN {$queues} q ON n.id = q.newsletter_id
+      JOIN {$tasks} t ON q.task_id = t.id
+      SET n.status = :sentStatus
+      WHERE n.type = :type
+      AND n.status = :sendingStatus
+      AND t.status = :taskStatus
+    ", [
+      'type' => NewsletterEntity::TYPE_NOTIFICATION_HISTORY,
+      'sendingStatus' => NewsletterEntity::STATUS_SENDING,
+      'sentStatus' => NewsletterEntity::STATUS_SENT,
+      'taskStatus' => ScheduledTaskEntity::STATUS_COMPLETED,
+    ]);
 
     return true;
   }

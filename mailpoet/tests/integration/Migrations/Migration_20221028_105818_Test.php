@@ -11,6 +11,9 @@ use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Segments\DynamicSegments\Filters\EmailAction;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Settings\TrackingConfig;
+use MailPoet\Util\Notices\ChangedTrackingNotice;
+use MailPoet\WP\Functions;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 
@@ -194,6 +197,48 @@ class Migration_20221028_105818_Test extends \MailPoetTest {
     $this->migration->run();
 
     $this->assertEquals($currentTime->subMinute(), $existingTask->getScheduledAt());
+  }
+
+  public function testItMigratesTrackingSettings() {
+    $wp = $this->diContainer->get(Functions::class);
+    $wp->deleteTransient(ChangedTrackingNotice::OPTION_NAME);
+    // WooCommerce disabled and Tracking enabled
+    $this->settings->set('db_version', '3.74.1');
+    $this->settings->set('tracking', ['enabled' => true]);
+    $this->settings->set('woocommerce.accept_cookie_revenue_tracking.enabled', null);
+    $this->migration->run();
+    expect($this->settings->get('tracking.level'))->equals(TrackingConfig::LEVEL_FULL);
+    expect($wp->getTransient(ChangedTrackingNotice::OPTION_NAME))->false();
+    // WooCommerce disabled and Tracking disabled
+    $this->settings->set('tracking', ['enabled' => false]);
+    $this->settings->set('woocommerce.accept_cookie_revenue_tracking.enabled', null);
+    $this->migration->run();
+    expect($this->settings->get('tracking.level'))->equals(TrackingConfig::LEVEL_BASIC);
+    expect($wp->getTransient(ChangedTrackingNotice::OPTION_NAME))->false();
+    // WooCommerce enabled with cookie enabled and Tracking enabled
+    $this->settings->set('tracking', ['enabled' => true]);
+    $this->settings->set('woocommerce.accept_cookie_revenue_tracking.enabled', "1");
+    $this->migration->run();
+    expect($this->settings->get('tracking.level'))->equals(TrackingConfig::LEVEL_FULL);
+    expect($wp->getTransient(ChangedTrackingNotice::OPTION_NAME))->false();
+    // WooCommerce enabled with cookie disabled and Tracking enabled
+    $this->settings->set('tracking', ['enabled' => true]);
+    $this->settings->set('woocommerce.accept_cookie_revenue_tracking.enabled', "");
+    $this->migration->run();
+    expect($this->settings->get('tracking.level'))->equals(TrackingConfig::LEVEL_PARTIAL);
+    expect($wp->getTransient(ChangedTrackingNotice::OPTION_NAME))->false();
+    // WooCommerce enabled with cookie disabled and Tracking disabled
+    $this->settings->set('tracking', ['enabled' => false]);
+    $this->settings->set('woocommerce.accept_cookie_revenue_tracking.enabled', "");
+    $this->migration->run();
+    expect($this->settings->get('tracking.level'))->equals(TrackingConfig::LEVEL_BASIC);
+    expect($wp->getTransient(ChangedTrackingNotice::OPTION_NAME))->false();
+    // WooCommerce enabled with cookie enabled and Tracking disabled
+    $this->settings->set('tracking', ['enabled' => false]);
+    $this->settings->set('woocommerce.accept_cookie_revenue_tracking.enabled', "1");
+    $this->migration->run();
+    expect($this->settings->get('tracking.level'))->equals(TrackingConfig::LEVEL_FULL);
+    expect($wp->getTransient(ChangedTrackingNotice::OPTION_NAME))->equals(true);
   }
 
   private function createSegmentFilter(string $action, array $data, string $type, $segmentId = 1): int {
