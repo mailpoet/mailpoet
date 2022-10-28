@@ -77,11 +77,7 @@ class SubscribeOnRegistrationPageCest {
     $i->switchToIframe('#preview-html');
     $i->click('I confirm my subscription!');
     $i->switchToNextTab();
-    if (!getenv('MULTISITE')) {
-      $i->see('You have subscribed');
-    } else {
-      $i->see('You are now subscribed');
-    }
+    $i->see('You have subscribed');
     $i->seeNoJSErrors();
   }
 }
