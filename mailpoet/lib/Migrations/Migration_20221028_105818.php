@@ -756,6 +756,7 @@ class Migration_20221028_105818 extends Migration {
       if ($dynamicSegmentFilter['filter_type'] && $dynamicSegmentFilter['action']) {
         continue;
       }
+      /** @var array $filterData */
       $filterData = unserialize($dynamicSegmentFilter['filter_data']);
       // bc compatibility fix, the filter with the segmentType userRole didn't have filled action
       if ($filterData['segmentType'] === DynamicSegmentFilterData::TYPE_USER_ROLE && empty($filterData['action'])) {
@@ -788,6 +789,7 @@ class Migration_20221028_105818 extends Migration {
     ", ARRAY_A);
 
     foreach ($dynamicSegmentFilters as $dynamicSegmentFilter) {
+      /** @var array $filterData */
       $filterData = unserialize($dynamicSegmentFilter['filter_data']);
       if (!isset($filterData['product_ids'])) {
         $filterData['product_ids'] = [];
@@ -828,6 +830,7 @@ class Migration_20221028_105818 extends Migration {
     ", $filterType, $action), ARRAY_A);
 
     foreach ($dynamicSegmentFilters as $dynamicSegmentFilter) {
+      /** @var array $filterData */
       $filterData = unserialize($dynamicSegmentFilter['filter_data']);
       if (!isset($filterData['category_ids'])) {
         $filterData['category_ids'] = [];
@@ -868,6 +871,7 @@ class Migration_20221028_105818 extends Migration {
     ", $filterType, $action), ARRAY_A);
 
     foreach ($dynamicSegmentFilters as $dynamicSegmentFilter) {
+      /** @var array $filterData */
       $filterData = unserialize($dynamicSegmentFilter['filter_data']);
       if (!isset($filterData['product_ids'])) {
         $filterData['product_ids'] = [];
