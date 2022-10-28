@@ -91,7 +91,9 @@ class WooCommerceSetupPageCest {
   }
 
   public function setupPageFormBehaviourTest(\AcceptanceTester $i) {
-    $order = $this->orderFactory->create();
+    $this->orderFactory->create();
+    // make sure we have a registered customer for import toggle to show up
+    $this->customerFactory->create();
 
     $i->wantTo('Make sure the form shows errors when it is submitted without making choices');
     $i->login();
