@@ -1,6 +1,6 @@
 <?php
 
-namespace MailPoet\Test\Config;
+namespace MailPoet\Migrations;
 
 use MailPoet\Config\Migrator;
 use MailPoet\Entities\DynamicSegmentFilterData;
@@ -8,40 +8,25 @@ use MailPoet\Entities\DynamicSegmentFilterEntity;
 use MailPoet\Segments\DynamicSegments\Filters\EmailAction;
 use MailPoet\Settings\SettingsController;
 
-class MigratorTest extends \MailPoetTest {
-  /** @var Migrator */
-  private $migrator;
+class Migration_20221028_105818_Test extends \MailPoetTest {
+  /** @var Migration_20221028_105818 */
+  private $migration;
+
   /** @var SettingsController */
   private $settings;
 
   public function _before() {
     parent::_before();
-    $this->migrator = $this->diContainer->get(Migrator::class);
+    $this->migration = new Migration_20221028_105818($this->diContainer);
     $this->settings = $this->diContainer->get(SettingsController::class);
     $this->truncateEntity(DynamicSegmentFilterEntity::class);
-  }
-
-  public function testItCanGenerateTheSubscribersSql() {
-    $subscriberSql = $this->migrator->subscribers();
-    $expectedTable = $this->migrator->prefix . 'subscribers';
-    expect($subscriberSql)->stringContainsString($expectedTable);
-  }
-
-  public function testItDoesNotMigrateWhenDatabaseIsUpToDate() {
-    $changes = $this->migrator->up();
-    $this->assertIsArray($changes);
-    // phpcs:disable Squiz.PHP.CommentedOutCode
-    //    $this->assertEmpty(
-    //      $changes,
-    //      "Expected no migrations. However, the following changes are planned:\n\t" . implode($changes, "\n\t")
-    //    );
   }
 
   public function testItMigratesEmailMachineOpensFiltersCorrectly() {
     $this->settings->set('db_version', '3.76.0');
     $data = ['newsletter_id' => '1'];
     $id = $this->createSegmentFilter(EmailAction::ACTION_OPENED, $data, DynamicSegmentFilterData::TYPE_EMAIL);
-    $this->migrator->up();
+    $this->migration->run();
     $filter = $this->entityManager->find(DynamicSegmentFilterEntity::class, $id);
     $this->assertInstanceOf(DynamicSegmentFilterEntity::class, $filter);
     expect($filter->getFilterData()->getAction())->equals(EmailAction::ACTION_OPENED);
@@ -52,7 +37,7 @@ class MigratorTest extends \MailPoetTest {
     $this->settings->set('db_version', '3.76.0');
     $data = ['newsletter_id' => '1'];
     $id = $this->createSegmentFilter(EmailAction::ACTION_MACHINE_OPENED, $data, DynamicSegmentFilterData::TYPE_EMAIL);
-    $this->migrator->up();
+    $this->migration->run();
     $filter = $this->entityManager->find(DynamicSegmentFilterEntity::class, $id);
     $this->assertInstanceOf(DynamicSegmentFilterEntity::class, $filter);
     expect($filter->getFilterData()->getAction())->equals(EmailAction::ACTION_MACHINE_OPENED);
@@ -63,7 +48,7 @@ class MigratorTest extends \MailPoetTest {
     $this->settings->set('db_version', '3.76.0');
     $data = ['newsletter_id' => '1'];
     $id = $this->createSegmentFilter(EmailAction::ACTION_NOT_OPENED, $data, DynamicSegmentFilterData::TYPE_EMAIL);
-    $this->migrator->up();
+    $this->migration->run();
     $filter = $this->entityManager->find(DynamicSegmentFilterEntity::class, $id);
     $this->assertInstanceOf(DynamicSegmentFilterEntity::class, $filter);
     expect($filter->getFilterData()->getAction())->equals(EmailAction::ACTION_OPENED);
@@ -76,7 +61,7 @@ class MigratorTest extends \MailPoetTest {
     $id1 = $this->createSegmentFilter(EmailAction::ACTION_CLICKED, $dataNoLink, DynamicSegmentFilterData::TYPE_EMAIL);
     $dataWithLink = ['newsletter_id' => '1', 'link_id' => '2'];
     $id2 = $this->createSegmentFilter(EmailAction::ACTION_CLICKED, $dataWithLink, DynamicSegmentFilterData::TYPE_EMAIL);
-    $this->migrator->up();
+    $this->migration->run();
     $filterNoLink = $this->entityManager->find(DynamicSegmentFilterEntity::class, $id1);
     $filterLink = $this->entityManager->find(DynamicSegmentFilterEntity::class, $id2);
     $this->assertInstanceOf(DynamicSegmentFilterEntity::class, $filterNoLink);
@@ -93,7 +78,7 @@ class MigratorTest extends \MailPoetTest {
     $id1 = $this->createSegmentFilter(EmailAction::ACTION_NOT_CLICKED, $dataNoLink, DynamicSegmentFilterData::TYPE_EMAIL);
     $dataWithLink = ['newsletter_id' => '1', 'link_id' => '2'];
     $id2 = $this->createSegmentFilter(EmailAction::ACTION_NOT_CLICKED, $dataWithLink, DynamicSegmentFilterData::TYPE_EMAIL);
-    $this->migrator->up();
+    $this->migration->run();
     $filterNoLink = $this->entityManager->find(DynamicSegmentFilterEntity::class, $id1);
     $filterLink = $this->entityManager->find(DynamicSegmentFilterEntity::class, $id2);
     $this->assertInstanceOf(DynamicSegmentFilterEntity::class, $filterNoLink);

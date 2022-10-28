@@ -156,51 +156,6 @@ parameters:
 			path: ../../lib/Config/Hooks.php
 
 		-
-			message: "#^Cannot access an offset on mixed\\.$#"
-			count: 3
-			path: ../../lib/Config/Migrator.php
-
-		-
-			message: "#^Cannot access offset 'action' on mixed\\.$#"
-			count: 3
-			path: ../../lib/Config/Migrator.php
-
-		-
-			message: "#^Cannot access offset 'category_id' on mixed\\.$#"
-			count: 4
-			path: ../../lib/Config/Migrator.php
-
-		-
-			message: "#^Cannot access offset 'category_ids' on mixed\\.$#"
-			count: 3
-			path: ../../lib/Config/Migrator.php
-
-		-
-			message: "#^Cannot access offset 'operator' on mixed\\.$#"
-			count: 6
-			path: ../../lib/Config/Migrator.php
-
-		-
-			message: "#^Cannot access offset 'product_id' on mixed\\.$#"
-			count: 8
-			path: ../../lib/Config/Migrator.php
-
-		-
-			message: "#^Cannot access offset 'product_ids' on mixed\\.$#"
-			count: 6
-			path: ../../lib/Config/Migrator.php
-
-		-
-			message: "#^Cannot access offset 'segmentType' on mixed\\.$#"
-			count: 2
-			path: ../../lib/Config/Migrator.php
-
-		-
-			message: "#^Parameter \\#2 \\$haystack of function in_array expects array, mixed given\\.$#"
-			count: 3
-			path: ../../lib/Config/Migrator.php
-
-		-
 			message: "#^Call to an undefined method object\\:\\:get\\(\\)\\.$#"
 			count: 1
 			path: ../../lib/Config/Populator.php
