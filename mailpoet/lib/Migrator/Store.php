@@ -26,7 +26,10 @@ class Store {
   public function startMigration(string $name): void {
     $this->connection->executeStatement("
       INSERT INTO {$this->table} (name, started_at)
-      VALUES (?, now())
+      VALUES (?, current_timestamp())
+      ON DUPLICATE KEY UPDATE
+        started_at = current_timestamp(),
+        retries = retries + 1
     ", [$name]);
   }
 
@@ -64,6 +67,7 @@ class Store {
         name varchar(255) NOT NULL,
         started_at timestamp NOT NULL,
         completed_at timestamp NULL,
+        retries int(11) unsigned NOT NULL DEFAULT 0,
         error text NULL,
         PRIMARY KEY (id),
         UNIQUE KEY (name)
