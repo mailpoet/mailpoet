@@ -35,18 +35,8 @@ class Migrator {
       $logger->logBefore($migrations);
     }
 
-    // do not try to run migrations if any are running or failed
     foreach ($migrations as $migration) {
-      if ($migration['status'] === self::MIGRATION_STATUS_STARTED) {
-        throw MigratorException::runningMigrationsExist();
-      }
-      if ($migration['status'] === self::MIGRATION_STATUS_FAILED) {
-        throw MigratorException::failedMigrationsExist();
-      }
-    }
-
-    foreach ($migrations as $migration) {
-      if ($migration['status'] !== self::MIGRATION_STATUS_NEW) {
+      if ($migration['status'] === self::MIGRATION_STATUS_COMPLETED) {
         continue;
       }
 
@@ -66,7 +56,7 @@ class Migrator {
     }
   }
 
-  /** @return array{name: string, status: string, started_at: string|null, completed_at: string|null, error: string|null}[] */
+  /** @return array{name: string, status: string, started_at: string|null, completed_at: string|null, retries: int|null, error: string|null}[] */
   public function getStatus(): array {
     $defined = $this->repository->loadAll();
     $processed = $this->store->getAll();
@@ -82,6 +72,7 @@ class Migrator {
         'status' => $data ? $this->getMigrationStatus($data) : self::MIGRATION_STATUS_NEW,
         'started_at' => $data['started_at'] ?? null,
         'completed_at' => $data['completed_at'] ?? null,
+        'retries' => isset($data['retries']) ? (int)$data['retries'] : null,
         'error' => $data && $data['error'] ? mb_strimwidth($data['error'], 0, 20, '…') : null,
       ];
     }

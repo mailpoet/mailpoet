@@ -49,6 +49,7 @@ class MigratorTest extends MailPoetTest {
     $this->assertSame('completed', $data['status']);
     $this->assertStringMatchesFormat(self::DATE_TIME_FORMAT, (string)$data['started_at']);
     $this->assertStringMatchesFormat(self::DATE_TIME_FORMAT, (string)$data['completed_at']);
+    $this->assertSame(0, (int)$data['retries']);
     $this->assertNull($data['error']);
 
     // failed
@@ -57,6 +58,7 @@ class MigratorTest extends MailPoetTest {
     $this->assertSame('failed', $data['status']);
     $this->assertStringMatchesFormat(self::DATE_TIME_FORMAT, (string)$data['started_at']);
     $this->assertStringMatchesFormat(self::DATE_TIME_FORMAT, (string)$data['completed_at']);
+    $this->assertSame(0, (int)$data['retries']);
     $this->assertSame($data['error'], 'test-error');
 
     // started
@@ -65,6 +67,7 @@ class MigratorTest extends MailPoetTest {
     $this->assertSame('started', $data['status']);
     $this->assertStringMatchesFormat(self::DATE_TIME_FORMAT, (string)$data['started_at']);
     $this->assertNull($data['completed_at']);
+    $this->assertSame(0, (int)$data['retries']);
     $this->assertNull($data['error']);
 
     // new
@@ -73,6 +76,7 @@ class MigratorTest extends MailPoetTest {
     $this->assertSame('new', $data['status']);
     $this->assertNull($data['started_at']);
     $this->assertNull($data['completed_at']);
+    $this->assertNull($data['retries']);
     $this->assertNull($data['error']);
 
     // unknown completed (unknown = stored in DB but missing in the file system)
@@ -81,6 +85,7 @@ class MigratorTest extends MailPoetTest {
     $this->assertSame('completed', $data['status']);
     $this->assertStringMatchesFormat(self::DATE_TIME_FORMAT, (string)$data['started_at']);
     $this->assertStringMatchesFormat(self::DATE_TIME_FORMAT, (string)$data['completed_at']);
+    $this->assertSame(0, (int)$data['retries']);
     $this->assertNull($data['error']);
   }
 
@@ -94,6 +99,7 @@ class MigratorTest extends MailPoetTest {
       'status' => 'new',
       'started_at' => null,
       'completed_at' => null,
+      'retries' => null,
       'error' => null,
     ];
 
@@ -126,6 +132,7 @@ class MigratorTest extends MailPoetTest {
       $this->assertSame($migrations[$i], $data['name']);
       $this->assertStringMatchesFormat(self::DATE_TIME_FORMAT, $data['started_at']);
       $this->assertStringMatchesFormat(self::DATE_TIME_FORMAT, $data['completed_at']);
+      $this->assertSame(0, (int)$data['retries']);
       $this->assertNull($data['error']);
     }
   }
@@ -154,6 +161,7 @@ class MigratorTest extends MailPoetTest {
       $this->assertSame($migrations[$i], $data['name']);
       $this->assertStringMatchesFormat(self::DATE_TIME_FORMAT, $data['started_at']);
       $this->assertStringMatchesFormat(self::DATE_TIME_FORMAT, $data['completed_at']);
+      $this->assertSame(0, (int)$data['retries']);
       $this->assertNull($data['error']);
     }
   }
@@ -172,41 +180,39 @@ class MigratorTest extends MailPoetTest {
     $this->assertCount(4, $processed);
   }
 
-  public function testItFailsWhenRunningMigrationExists(): void {
+  public function testItRetriesWhenRunningMigrationExists(): void {
     $this->store->startMigration('Migration_20221025_120345');
 
-    $this->expectException(MigratorException::class);
-    $this->expectExceptionMessage('Some migrations are already running.');
     $migrator = $this->createMigrator();
     $migrator->run();
 
     $processed = $this->store->getAll();
-    $this->assertCount(1, $processed);
+    $this->assertCount(4, $processed);
 
     $data = $processed[0];
     $this->assertSame('Migration_20221025_120345', $data['name']);
     $this->assertStringMatchesFormat(self::DATE_TIME_FORMAT, $data['started_at']);
-    $this->assertNull(self::DATE_TIME_FORMAT, $data['completed_at']);
+    $this->assertStringMatchesFormat(self::DATE_TIME_FORMAT, $data['completed_at']);
+    $this->assertSame(1, (int)$data['retries']);
     $this->assertNull($data['error']);
   }
 
-  public function testItFailsWhenFailedMigrationExists(): void {
+  public function testItRetriesWhenFailedMigrationExists(): void {
     $this->store->startMigration('Migration_20221026_160151');
     $this->store->failMigration('Migration_20221026_160151', 'test-error');
 
-    $this->expectException(MigratorException::class);
-    $this->expectExceptionMessage('Some previously run migrations failed.');
     $migrator = $this->createMigrator();
     $migrator->run();
 
     $processed = $this->store->getAll();
-    $this->assertCount(1, $processed);
+    $this->assertCount(4, $processed);
 
     $data = $processed[0];
     $this->assertSame('Migration_20221026_160151', $data['name']);
     $this->assertStringMatchesFormat(self::DATE_TIME_FORMAT, $data['started_at']);
-    $this->assertNull(self::DATE_TIME_FORMAT, $data['completed_at']);
-    $this->assertNull($data['error']);
+    $this->assertStringMatchesFormat(self::DATE_TIME_FORMAT, $data['completed_at']);
+    $this->assertSame(1, (int)$data['retries']);
+    $this->assertSame('test-error', $data['error']);
   }
 
   public function testItFailsBrokenMigration(): void {
@@ -222,6 +228,7 @@ class MigratorTest extends MailPoetTest {
     $this->assertSame('Migration_20221023_040819', $data['name']);
     $this->assertStringMatchesFormat(self::DATE_TIME_FORMAT, $data['started_at']);
     $this->assertStringMatchesFormat(self::DATE_TIME_FORMAT, $data['completed_at']);
+    $this->assertNull($data['retries']);
     $this->assertSame($data['error'], 'Testing failing migration.');
   }
 
