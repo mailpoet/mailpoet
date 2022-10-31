@@ -4,7 +4,7 @@
 
 ## `array updateList(array $list)`
 
-This method provides functionality for updating a list name or description.
+This method provides functionality for updating a list name or description. Only lists of type 'default' are supported.
 
 It returns the updated list. See [Get Lists](GetLists.md) for a list data structure description.
 
@@ -29,10 +29,11 @@ An exception of base class `\Exception` can be thrown when something unexpected 
 
 Codes description:
 
-| Code | Description                                  |
-| ---- | -------------------------------------------- |
-| 5    | The list was not found by id                 |
-| 14   | Missing list name                            |
-| 15   | Trying to use a list that is already used    |
-| 18   | Missing list id                              |
-| 19   | The list couldn’t be updated in the database |
+| Code | Description                                     |
+| ---- | ----------------------------------------------- |
+| 5    | The list was not found by id                    |
+| 14   | Missing list name                               |
+| 15   | Trying to use a list name that is already used  |
+| 18   | Missing list id                                 |
+| 19   | The list couldn’t be updated in the database    |
+| 23   | Only lists of the type 'default' can be updated |

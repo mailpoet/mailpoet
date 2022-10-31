@@ -23,4 +23,5 @@ class APIException extends \Exception {
   const LIST_USED_IN_EMAIL = 20;
   const LIST_USED_IN_FORM = 21;
   const FAILED_TO_DELETE_LIST = 22;
+  const LIST_TYPE_IS_NOT_SUPPORTED = 23;
 }

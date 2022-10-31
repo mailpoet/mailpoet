@@ -60,6 +60,9 @@ class Segments {
     // secondly validation on list name
     $this->validateSegmentName($data);
 
+    // update is supported only for default segment type
+    $this->validateSegmentType((string)$data['id']);
+
     try {
       $segment = $this->segmentsRepository->createOrUpdate(
         $data['name'],
@@ -156,6 +159,21 @@ class Segments {
       throw new APIException(
         __('This list already exists.', 'mailpoet'),
         APIException::LIST_EXISTS
+      );
+    }
+  }
+
+  private function validateSegmentType(string $segmentId): void {
+    $segment = $this->segmentsRepository->findOneById($segmentId);
+    if ($segment && $segment->getType() !== SegmentEntity::TYPE_DEFAULT) {
+      throw new APIException(
+        str_replace(
+          '%1$s',
+          "'" . $segment->getType() . "'",
+          // translators: %1$s is an invalid segment type.
+          __('List of the type %1$s is not supported for this action.', 'mailpoet')
+        ),
+        APIException::LIST_TYPE_IS_NOT_SUPPORTED
       );
     }
   }
