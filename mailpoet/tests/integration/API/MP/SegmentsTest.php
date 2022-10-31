@@ -17,7 +17,6 @@ use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Subscribers\SubscriberSegmentRepository;
 use MailPoet\Test\DataFactories\Form;
 use MailPoet\Test\DataFactories\Newsletter;
-use MailPoet\Test\DataFactories\NewsletterOption;
 use MailPoet\Test\DataFactories\Segment as SegmentFactory;
 use MailPoet\Test\DataFactories\Subscriber;
 
@@ -159,7 +158,7 @@ class SegmentsTest extends \MailPoetTest {
     );
 
     $data = [
-      'id' => $segment->getId(),
+      'id' => (string)$segment->getId(),
       'name' => 'new name',
       'description' => 'updated description',
     ];
