@@ -229,6 +229,18 @@ class SegmentsTest extends \MailPoetTest {
     }
   }
 
+  public function testItDoesNotAllowDeletingWPSegment(): void {
+    $wpSegment = $this->segmentsRepository->getWPUsersSegment();
+    $this->assertInstanceOf(SegmentEntity::class, $wpSegment);
+    try {
+      $this->getApi()->deleteList((string)$wpSegment->getId());
+      $this->fail('WP list cannot be updated.');
+    } catch (\Exception $e) {
+      expect($e->getMessage())->equals('List of the type \'' . $wpSegment->getType() . '\' is not supported for this action.');
+      expect($e->getCode())->equals(APIException::LIST_TYPE_IS_NOT_SUPPORTED);
+    }
+  }
+
   public function testItDeletesList(): void {
     $segment = $this->createOrUpdateSegment('Test Segment');
     $subscriber = (new Subscriber())
