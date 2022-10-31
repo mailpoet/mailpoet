@@ -11,6 +11,8 @@ export * as ReactTooltip from 'react-tooltip';
 export * as ReactStringReplace from 'react-string-replace';
 export * as Slugify from 'slugify';
 export { TextControl as WordpressComponentsTextControl } from '@wordpress/components';
+export { __experimentalConfirmDialog as WordpressComponentsConfirmDialog } from '@wordpress/components';
+export { MenuItem as WordpressComponentsMenuItem } from '@wordpress/components';
 export * as WordPressData from '@wordpress/data';
 export * as WordPressUrl from '@wordpress/url';
 export * as WordPressI18n from '@wordpress/i18n';
