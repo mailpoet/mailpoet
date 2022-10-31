@@ -49,7 +49,13 @@ class Repository {
 
     $migrations = [];
     foreach ($files as $file) {
-      if ($file instanceof SplFileInfo && $file->isFile() && strtolower($file->getExtension()) === 'php') {
+      if (!$file instanceof SplFileInfo || !$file->isFile()) {
+        continue;
+      }
+      if (strtolower($file->getFilename()) === 'index.php') {
+        continue;
+      }
+      if (strtolower($file->getExtension()) === 'php') {
         $migrations[] = $file->getBasename('.' . $file->getExtension());
       }
     }
