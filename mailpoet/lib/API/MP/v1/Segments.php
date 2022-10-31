@@ -66,7 +66,7 @@ class Segments {
         $data['description'] ?? '',
         SegmentEntity::TYPE_DEFAULT,
         [],
-        $data['id']
+        (int)$data['id']
       );
     } catch (\Exception $e) {
       throw new APIException(
