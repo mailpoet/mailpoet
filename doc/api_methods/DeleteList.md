@@ -4,7 +4,7 @@
 
 ## `bool deleteList(string $list_id)`
 
-This method provides functionality for deleting a new list.
+This method provides functionality for deleting a list that is of the type 'default'.
 
 It returns a boolean value.
 
@@ -24,3 +24,4 @@ Codes description:
 | 20   | List cannot be deleted because it’s used for an automatic email |
 | 21   | List cannot be deleted because it’s used for a form             |
 | 22   | The list couldn’t be deleted from the database                  |
+| 23   | Only lists of the type 'default' can be deleted                 |

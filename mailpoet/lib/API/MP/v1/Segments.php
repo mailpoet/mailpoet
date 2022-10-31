@@ -84,6 +84,9 @@ class Segments {
   public function deleteList(string $listId): bool {
     $this->validateSegmentId($listId);
 
+    // delete is supported only for default segment type
+    $this->validateSegmentType($listId);
+
     $activelyUsedNewslettersSubjects = $this->newsletterSegmentRepository->getSubjectsOfActivelyUsedEmailsForSegments([$listId]);
     if (isset($activelyUsedNewslettersSubjects[$listId])) {
       throw new APIException(
