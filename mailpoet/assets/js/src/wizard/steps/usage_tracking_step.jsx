@@ -6,13 +6,25 @@ import { Button } from 'common/button/button';
 import { Heading } from 'common/typography/heading/heading';
 import { YesNo } from 'common/form/yesno/yesno';
 
+const checkForNullOrUndefined = (value) =>
+  value === null || value === undefined;
+
 function WelcomeWizardUsageTrackingStep({ loading, submitForm }) {
   const [state, setState] = useState({
     tracking: undefined,
     libs3rdParty: undefined,
   });
+  const [submitted, setSubmitted] = useState(false);
+
   function submit(event) {
     event.preventDefault();
+    setSubmitted(true);
+    if (
+      checkForNullOrUndefined(state.libs3rdParty) ||
+      checkForNullOrUndefined(state.tracking)
+    ) {
+      return false;
+    }
 
     submitForm(state.tracking, state.libs3rdParty);
     return false;
@@ -30,6 +42,9 @@ function WelcomeWizardUsageTrackingStep({ loading, submitForm }) {
         <div className="mailpoet-wizard-woocommerce-option">
           <div className="mailpoet-wizard-woocommerce-toggle">
             <YesNo
+              showError={
+                submitted && checkForNullOrUndefined(state.libs3rdParty)
+              }
               onCheck={(value) => {
                 const newState = {
                   libs3rdParty: value,
@@ -79,6 +94,7 @@ function WelcomeWizardUsageTrackingStep({ loading, submitForm }) {
         <div className="mailpoet-wizard-woocommerce-option">
           <div className="mailpoet-wizard-woocommerce-toggle">
             <YesNo
+              showError={submitted && checkForNullOrUndefined(state.tracking)}
               onCheck={(value) => {
                 const newState = {
                   tracking: value,
