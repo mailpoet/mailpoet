@@ -16,6 +16,7 @@ export { MenuItem as WordpressComponentsMenuItem } from '@wordpress/components';
 export * as WordPressData from '@wordpress/data';
 export * as WordPressUrl from '@wordpress/url';
 export * as WordPressI18n from '@wordpress/i18n';
+export * as WordPressIcons from '@wordpress/icons';
 
 // assets
 export * as Automation from 'automation';
