@@ -1,20 +1,13 @@
-:root {
-  --menu-width: 0;
-
-  @media screen and (min-width: 783px) {
-    --menu-width: 36px;
-  }
-
-  @media screen and (min-width: 961px) {
-    --menu-width: 160px;
-  }
-}
-
 @mixin full-width {
-  margin-left: calc(-50vw + var(--menu-width) / 2 + 50%);
+  margin-left: -20px;
   padding-left: 104px;
   padding-right: 104px;
-  width: calc(100vw - var(--menu-width));
+  width: calc(100% + 60px);
+
+  @media screen and (max-width: 782px) {
+    margin-left: -10px;
+    width: calc(100% + 34px);
+  }
 }
 
 .mailpoet-automation-section {
