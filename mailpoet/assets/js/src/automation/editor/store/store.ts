@@ -1,9 +1,4 @@
-import {
-  createReduxStore,
-  register,
-  StoreConfig,
-  StoreDescriptor,
-} from '@wordpress/data';
+import { createReduxStore, register, StoreDescriptor } from '@wordpress/data';
 import { controls } from '@wordpress/data-controls';
 import { Hooks } from 'wp-js-hooks';
 import * as actions from './actions';
@@ -13,6 +8,7 @@ import { reducer } from './reducer';
 import * as selectors from './selectors';
 import { State } from './types';
 import { OmitFirstArgs } from '../../../types';
+import { EditorStoreConfigType } from '../../types/filters';
 
 type StoreType = Omit<StoreDescriptor, 'name'> & {
   name: typeof storeName;
@@ -28,8 +24,8 @@ export const createStore = (): StoreType => {
       selectors,
       reducer,
       initialState: getInitialState(),
-    } as StoreConfig<State>,
-  ) as StoreConfig<State>;
+    } as EditorStoreConfigType,
+  ) as EditorStoreConfigType;
 
   const store = createReduxStore<State>(storeName, storeConfig) as StoreType;
   register(store);

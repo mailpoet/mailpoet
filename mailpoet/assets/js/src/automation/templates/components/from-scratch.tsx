@@ -5,6 +5,7 @@ import { Hooks } from 'wp-js-hooks';
 import { Icon, plusCircleFilled } from '@wordpress/icons';
 import { PremiumModal } from '../../../common/premium_modal';
 import { Notice } from '../../../notices/notice';
+import { FromScratchHookType } from '../../types/filters';
 
 type FromScratchPremiumModalProps = {
   showModal: boolean;
@@ -34,7 +35,7 @@ function FromScratchPremiumModal({
 }
 
 function fromScratchHook(callback: () => void, errorHandler: Dispatch<string>) {
-  const fromScratchCallback = Hooks.applyFilters(
+  const fromScratchCallback: FromScratchHookType = Hooks.applyFilters(
     'mailpoet.automation.templates.from_scratch_button',
     () => {
       callback();
