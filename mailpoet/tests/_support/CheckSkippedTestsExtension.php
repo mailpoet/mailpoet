@@ -18,7 +18,7 @@ class CheckSkippedTestsExtension extends Extension {
     $allowedToSkipList = ['createSubscriptionSegmentForActiveSubscriptions'];
 
     if (in_array($branch, ['trunk', 'release']) && !in_array($testName, $allowedToSkipList)) {
-      throw new \PHPUnit\Framework\ExpectationFailedException("Failed, Cannot skip tests on branch $branch.");
+      throw new \PHPUnit\Framework\ExpectationFailedException("Failed, cannot skip tests on branch $branch.");
     }
   }
 }
