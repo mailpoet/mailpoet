@@ -33,7 +33,7 @@ class DelayAction implements Action {
   public function getArgsSchema(): ObjectSchema {
     return Builder::object([
       'delay' => Builder::integer()->required()->minimum(1),
-      'delay_type' => Builder::string()->required()->pattern('^(DAYS|HOURS|WEEKS)$')->default('HOURS'),
+      'delay_type' => Builder::string()->required()->pattern('^(MINUTES|DAYS|HOURS|WEEKS)$')->default('HOURS'),
     ]);
   }
 
@@ -69,6 +69,8 @@ class DelayAction implements Action {
   private function calculateSeconds(Step $step): int {
     $delay = (int)($step->getArgs()['delay'] ?? null);
     switch ($step->getArgs()['delay_type']) {
+      case "MINUTES":
+        return $delay * MINUTE_IN_SECONDS;
       case "HOURS":
         return $delay * HOUR_IN_SECONDS;
       case "DAYS":

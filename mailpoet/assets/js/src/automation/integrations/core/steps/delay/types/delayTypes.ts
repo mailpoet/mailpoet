@@ -6,6 +6,15 @@ export type DelayTypes = SelectControl.Option & {
 };
 export const DelayTypeOptions: DelayTypes[] = [
   {
+    label: __('Minutes', 'mailpoet'),
+    subtitle: (value: number) =>
+      sprintf(
+        _n('Wait for %d minute', 'Wait for %d minutes', value, 'mailpoet'),
+        value,
+      ),
+    value: 'MINUTES',
+  },
+  {
     label: __('Hours', 'mailpoet'),
     subtitle: (value: number) =>
       sprintf(
