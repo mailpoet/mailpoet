@@ -93,7 +93,7 @@ Or if you opt for a MailPoet plan, you’ll get access to the MailPoet Sending S
 
 A free Starter plan is available for those who have 1,000 subscribers or less and would like to use the MailPoet Sending Service. And our paid plans offer features and functionality for those with larger lists who are looking to grow their business using email marketing.
 
-Take a look at [our pricing page](http://www.mailpoet.com/pricing) for full details on what’s included in each plan.
+Take a look at [our pricing page](https://www.mailpoet.com/pricing) for full details on what’s included in each plan.
 
 = Before you install =
 
