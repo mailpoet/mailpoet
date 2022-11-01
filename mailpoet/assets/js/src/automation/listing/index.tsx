@@ -39,7 +39,11 @@ const tabConfig = [
 ] as const;
 
 const tableHeaders = [
-  { key: 'name', label: __('Name', 'mailpoet') },
+  {
+    key: 'name',
+    label: __('Name', 'mailpoet'),
+    cellClassName: 'mailpoet-automation-listing-cell-name',
+  },
   { key: 'subscribers', label: __('Subscribers', 'mailpoet') },
   { key: 'status', label: __('Status', 'mailpoet') },
   { key: 'actions' },
