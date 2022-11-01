@@ -64,6 +64,6 @@ class Repository {
   }
 
   private function generateName(): string {
-    return 'Migration_' . gmdate('Ymd_his');
+    return 'Migration_' . gmdate('Ymd_His');
   }
 }
