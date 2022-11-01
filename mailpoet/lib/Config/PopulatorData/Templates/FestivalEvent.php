@@ -376,7 +376,7 @@ class FestivalEvent {
                   ],
                   2 => [
                     'type' => 'text',
-                    'text' => '<h3>Award-winning Street Food</h3><p>Nullam pharetra lectus id porta pulvinar. Proin ac massa nibh. Nullam ac mi pharetra, lobortis nunc et, placerat leo. Mauris eu feugiat elit. Pellentesque eget turpis eu diam vehicula convallis non <a href="http://www.mailpoet.com">luctus enim.</a></p>',
+                    'text' => '<h3>Award-winning Street Food</h3><p>Nullam pharetra lectus id porta pulvinar. Proin ac massa nibh. Nullam ac mi pharetra, lobortis nunc et, placerat leo. Mauris eu feugiat elit. Pellentesque eget turpis eu diam vehicula convallis non <a href="https://www.mailpoet.com">luctus enim.</a></p>',
                   ],
                 ],
               ],

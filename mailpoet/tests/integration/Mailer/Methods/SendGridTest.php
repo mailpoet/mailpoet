@@ -51,7 +51,7 @@ class SendGridTest extends \MailPoetTest {
       ],
     ];
     $this->extraParams = [
-      'unsubscribe_url' => 'http://www.mailpoet.com',
+      'unsubscribe_url' => 'https://www.mailpoet.com',
     ];
   }
 
