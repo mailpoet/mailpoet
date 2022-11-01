@@ -15,6 +15,11 @@ class TriggerNeedsToBeFollowedByActionRule implements WorkflowNodeVisitor {
   }
 
   public function visitNode(Workflow $workflow, WorkflowNode $node): void {
+    // run full step validation only for active workflows
+    if ($workflow->getStatus() !== Workflow::STATUS_ACTIVE) {
+      return;
+    }
+
     $step = $node->getStep();
     if ($step->getType() !== Step::TYPE_TRIGGER) {
       return;
