@@ -13,7 +13,9 @@ ul.mailpoet-automation-templates {
   margin: auto;
   max-width: 982px;
   padding: 48px 0;
+}
 
+.mailpoet-automation-template-list-item {
   button.components-button {
     background: #fff;
     border: 1px solid #dcdcde;
@@ -54,7 +56,7 @@ ul.mailpoet-automation-templates {
     margin: 8px 0 0;
   }
 
-  .mailpoet-automation-from-scratch {
+  &.mailpoet-automation-from-scratch {
     button {
       align-content: center;
       border: 2px dashed #dcdcde;
