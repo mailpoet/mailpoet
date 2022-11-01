@@ -9,7 +9,7 @@ export function TemplatesSection(): JSX.Element {
 
   return (
     <section className="mailpoet-automation-section mailpoet-section-templates">
-      <h2>{__('Start with essentials', 'mailpoet')}</h2>
+      <h2>{__('Explore essentials', 'mailpoet')}</h2>
       <p>
         {__(
           'Choose from our list of pre-made templates and make it your own.',
