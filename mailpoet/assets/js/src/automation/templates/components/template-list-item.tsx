@@ -53,8 +53,8 @@ export function TemplateListItem({
           void createWorkflowFromTemplate();
         }}
       >
-        {headingTag === 'h3' && <h3>{template.name} →</h3>}
-        {headingTag === 'h2' && <h2>{template.name} →</h2>}
+        {headingTag === 'h3' && <h3>{template.name}&nbsp;→</h3>}
+        {headingTag === 'h2' && <h2>{template.name}&nbsp;→</h2>}
 
         <p>{template.description}</p>
       </Button>
