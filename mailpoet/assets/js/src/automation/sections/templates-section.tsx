@@ -12,7 +12,7 @@ export function TemplatesSection(): JSX.Element {
       <h2>{__('Start with essentials', 'mailpoet')}</h2>
       <p>
         {__(
-          'Choose from our list of pre-made templates and make it your own',
+          'Choose from our list of pre-made templates and make it your own.',
           'mailpoet',
         )}
       </p>
