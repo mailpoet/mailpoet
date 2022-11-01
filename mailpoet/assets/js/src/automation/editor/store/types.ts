@@ -1,4 +1,5 @@
 import { ComponentType } from 'react';
+import { DropdownMenu } from '@wordpress/components';
 import { Step, Workflow } from '../components/workflow/types';
 
 export interface AutomationEditorWindow extends Window {
@@ -61,3 +62,14 @@ export type State = {
 };
 
 export type Feature = 'fullscreenMode' | 'showIconLabels';
+
+export type MoreControl = {
+  key: string;
+  control: DropdownMenu.Control;
+  slot: () => JSX.Element | undefined;
+};
+
+/**
+ * Used in the "mailpoet.automation.workflow.step.more-controls" filter
+ */
+export type MoreControls = Record<string, MoreControl>;
