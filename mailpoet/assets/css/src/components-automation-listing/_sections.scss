@@ -62,6 +62,12 @@
   > div {
     width: 400px;
   }
+
+  img {
+    height: 100%;
+    max-height: 334px;
+    width: auto;
+  }
 }
 
 .mailpoet-section-templates {
@@ -159,5 +165,11 @@
         border: 0;
       }
     }
+  }
+
+  img {
+    height: auto;
+    max-width: 400px;
+    width: 100%;
   }
 }
