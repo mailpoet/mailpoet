@@ -1,14 +1,20 @@
-import { PanelBody, ToggleControl } from '@wordpress/components';
+import { ToggleControl } from '@wordpress/components';
 import { dispatch, useSelect } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
 import { PremiumModal } from 'common/premium_modal';
 import { Hooks } from 'wp-js-hooks';
 import { storeName } from '../../../../../editor/store';
 import { GoogleAnalyticsPanelBodyType } from '../../../types/filters';
+import { PanelBody } from '../../../../../editor/components/panel/panel-body';
 
 export function GoogleAnalyticsPanel(): JSX.Element {
-  const { selectedStep } = useSelect(
-    (select) => ({ selectedStep: select(storeName).getSelectedStep() }),
+  const { selectedStep, errors } = useSelect(
+    (select) => ({
+      selectedStep: select(storeName).getSelectedStep(),
+      errors: select(storeName).getStepError(
+        select(storeName).getSelectedStep().id,
+      )?.fields?.ga_campaign,
+    }),
     [],
   );
 
@@ -32,7 +38,11 @@ export function GoogleAnalyticsPanel(): JSX.Element {
   );
 
   return (
-    <PanelBody title={__('Google Analytics', 'mailpoet')} initialOpen={false}>
+    <PanelBody
+      title={__('Google Analytics', 'mailpoet')}
+      initialOpen={false}
+      hasErrors={!!errors}
+    >
       <ToggleControl
         label={__('Enable custom GA tracking', 'mailpoet')}
         checked={enabled}

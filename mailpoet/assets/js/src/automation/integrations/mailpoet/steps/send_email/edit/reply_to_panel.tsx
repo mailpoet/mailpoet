@@ -1,7 +1,8 @@
-import { PanelBody, TextControl, ToggleControl } from '@wordpress/components';
+import { TextControl, ToggleControl } from '@wordpress/components';
 import { dispatch, useSelect } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
 import { storeName } from '../../../../../editor/store';
+import { PanelBody } from '../../../../../editor/components/panel/panel-body';
 
 export function ReplyToPanel(): JSX.Element {
   const { selectedStep, errors } = useSelect(
@@ -26,7 +27,11 @@ export function ReplyToPanel(): JSX.Element {
   const replyToNameError = errorFields?.reply_to_name ?? '';
   const replyToAddressError = errorFields?.reply_to_address ?? '';
   return (
-    <PanelBody title={__('Reply to', 'mailpoet')} initialOpen={false}>
+    <PanelBody
+      title={__('Reply to', 'mailpoet')}
+      initialOpen={false}
+      hasErrors={!!replyToNameError || !!replyToAddressError}
+    >
       <ToggleControl
         label={__(
           'Use different email address for getting replies to the email',
