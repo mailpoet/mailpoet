@@ -6,7 +6,8 @@ import { __ } from '@wordpress/i18n';
 import { Hooks } from 'wp-js-hooks';
 import { PremiumModal } from 'common/premium_modal';
 import { Step as StepData } from './types';
-import { MoreControls, storeName } from '../../store';
+import { storeName } from '../../store';
+import { StepMoreControlsType } from '../../../types/filters';
 
 type Props = {
   step: StepData;
@@ -21,7 +22,7 @@ export function StepMoreMenu({ step }: Props): JSX.Element {
   );
   const [showModal, setShowModal] = useState(false);
 
-  const moreControls: MoreControls = Hooks.applyFilters(
+  const moreControls: StepMoreControlsType = Hooks.applyFilters(
     'mailpoet.automation.workflow.step.more-controls',
     {
       delete: {

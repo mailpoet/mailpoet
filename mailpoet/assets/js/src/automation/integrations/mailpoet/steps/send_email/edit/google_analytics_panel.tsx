@@ -4,6 +4,7 @@ import { __ } from '@wordpress/i18n';
 import { PremiumModal } from 'common/premium_modal';
 import { Hooks } from 'wp-js-hooks';
 import { storeName } from '../../../../../editor/store';
+import { GoogleAnalyticsPanelBodyType } from '../../../types/filters';
 
 export function GoogleAnalyticsPanel(): JSX.Element {
   const { selectedStep } = useSelect(
@@ -12,7 +13,7 @@ export function GoogleAnalyticsPanel(): JSX.Element {
   );
 
   const enabled = typeof selectedStep.args?.ga_campaign !== 'undefined';
-  const panelBody = Hooks.applyFilters(
+  const panelBody: GoogleAnalyticsPanelBodyType = Hooks.applyFilters(
     'mailpoet.automation.send_email.google_analytics_panel',
     <PremiumModal
       onRequestClose={() =>

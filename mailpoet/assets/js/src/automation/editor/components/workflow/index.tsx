@@ -16,6 +16,10 @@ import { InserterPopover } from '../inserter-popover';
 import { storeName } from '../../store';
 import { AddTrigger } from './add-trigger';
 import { Statistics } from './statistics';
+import {
+  RenderStepSeparatorType,
+  RenderStepType,
+} from '../../../types/filters';
 
 export function Workflow(): JSX.Element {
   const { workflowData, selectedStep } = useSelect(
@@ -50,7 +54,7 @@ export function Workflow(): JSX.Element {
   }, [stepMap]);
 
   const renderStep = useMemo(
-    () =>
+    (): RenderStepType =>
       Hooks.applyFilters(
         'mailpoet.automation.workflow.render_step',
         (stepData: StepData) =>
@@ -67,7 +71,7 @@ export function Workflow(): JSX.Element {
   );
 
   const renderSeparator = useMemo(
-    () =>
+    (): RenderStepSeparatorType =>
       Hooks.applyFilters(
         'mailpoet.automation.workflow.render_step_separator',
         (previousStepData: StepData) => (

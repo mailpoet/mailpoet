@@ -7,6 +7,7 @@ import { PremiumModal } from 'common/premium_modal';
 import { Inserter } from '../inserter';
 import { Item } from '../inserter/item';
 import { storeName } from '../../store';
+import { AddStepCallbackType } from '../../../types/filters';
 
 export function InserterPopover(): JSX.Element | null {
   const popoverRef = useRef<HTMLDivElement>();
@@ -20,7 +21,7 @@ export function InserterPopover(): JSX.Element | null {
   const { setInserterPopover } = useDispatch(storeName);
 
   const onInsert = useCallback((item: Item) => {
-    const addStepCallback = Hooks.applyFilters(
+    const addStepCallback: AddStepCallbackType = Hooks.applyFilters(
       'mailpoet.automation.workflow.add_step_callback',
       () => {
         setShowModal(true);
