@@ -3,10 +3,10 @@
 /*
  * Plugin Name: MailPoet
  * Version: 3.102.1
- * Plugin URI: http://www.mailpoet.com
+ * Plugin URI: https://www.mailpoet.com
  * Description: Create and send newsletters, post notifications and welcome emails from your WordPress.
  * Author: MailPoet
- * Author URI: http://www.mailpoet.com
+ * Author URI: https://www.mailpoet.com
  * Requires at least: 5.3
  * Text Domain: mailpoet
  * Domain Path: /lang

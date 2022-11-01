@@ -39,7 +39,7 @@ class CreateEmailAutomationAndWalkThroughCest
 
     $i->waitForText('Draft');
     $i->click('Trigger');
-    $i->fillField('When someone subscribers to the following list(s):', 'Newsletter mailing list');
+    $i->fillField('When someone subscribes to the following lists:', 'Newsletter mailing list');
     $i->click('Delay');
     $i->fillField('Wait for', '5');
 

@@ -32,7 +32,7 @@ export function GoogleAnalyticsPanel(): JSX.Element {
   );
 
   return (
-    <PanelBody title={__('Google analytics', 'mailpoet')} initialOpen={false}>
+    <PanelBody title={__('Google Analytics', 'mailpoet')} initialOpen={false}>
       <ToggleControl
         label={__('Enable custom GA tracking', 'mailpoet')}
         checked={enabled}

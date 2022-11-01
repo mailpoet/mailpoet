@@ -68,7 +68,7 @@ export function DocumentActions({ children }): JSX.Element {
                     as="h1"
                   >
                     <VisuallyHidden as="span">
-                      {__('Editing workflow: ', 'mailpoet')}
+                      {__('Editing workflow:', 'mailpoet')}
                     </VisuallyHidden>
                     {workflowName}
                   </Text>

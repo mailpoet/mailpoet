@@ -30,7 +30,7 @@ export function ListPanel(): JSX.Element {
 
       <FormTokenField
         label={__(
-          'When someone subscribers to the following list(s):',
+          'When someone subscribes to the following lists:',
           'mailpoet',
         )}
         placeholder={__('Any list', 'mailpoet')}
