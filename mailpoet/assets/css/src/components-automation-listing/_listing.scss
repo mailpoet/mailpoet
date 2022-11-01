@@ -21,6 +21,21 @@
   margin-bottom: 0;
 }
 
+.mailpoet-automation-listing-cell-name {
+  position: relative;
+  width: 100%;
+
+  > a:only-child {
+    bottom: 2px;
+    display: flex;
+    left: 0;
+    padding: 16px 24px;
+    position: absolute;
+    right: 0;
+    top: 0;
+  }
+}
+
 .mailpoet-filter-tab-panel {
   background-color: #fff;
   border: 1px solid #dcdcde;
