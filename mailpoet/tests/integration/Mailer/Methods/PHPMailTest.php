@@ -47,7 +47,7 @@ class PHPMailTest extends \MailPoetTest {
       ],
     ];
     $this->extraParams = [
-      'unsubscribe_url' => 'http://www.mailpoet.com',
+      'unsubscribe_url' => 'https://www.mailpoet.com',
     ];
   }
 
@@ -94,7 +94,7 @@ class PHPMailTest extends \MailPoetTest {
       [
         [
           'List-Unsubscribe',
-          '<http://www.mailpoet.com>',
+          '<https://www.mailpoet.com>',
         ],
       ]
     );

@@ -174,7 +174,7 @@ class WelcomeBlank12Column {
                   ],
                   [
                     "type" => "text",
-                    "text" => __("<ul>\n<li><a href=\"http://www.mailpoet.com/the-importance-of-focus-when-writing/\">The Importance of Focus When Writing</a></li>\n<li><a href=\"http://www.mailpoet.com/write-great-subject-line/\">How to Write a Great Subject Line</a></li>\n<li><a href=\"http://www.mailpoet.com/just-sit-write-advice-motivation-ernest-hemingway/\">Just Sit Down and Write &ndash; Advice on Motivation from Ernest Hemingway</a></li>\n</ul>", 'mailpoet'),
+                    "text" => __("<ul>\n<li><a href=\"https://www.mailpoet.com/the-importance-of-focus-when-writing/\">The Importance of Focus When Writing</a></li>\n<li><a href=\"https://www.mailpoet.com/write-great-subject-line/\">How to Write a Great Subject Line</a></li>\n<li><a href=\"https://www.mailpoet.com/just-sit-write-advice-motivation-ernest-hemingway/\">Just Sit Down and Write &ndash; Advice on Motivation from Ernest Hemingway</a></li>\n</ul>", 'mailpoet'),
                   ],
                 ],
               ],
@@ -257,7 +257,7 @@ class WelcomeBlank12Column {
                       [
                         "type" => "socialIcon",
                         "iconType" => "facebook",
-                        "link" => "http://www.facebook.com",
+                        "link" => "https://www.facebook.com",
                         "image" => $this->social_icon_url . "/02-grey/Facebook.png",
                         "height" => "32px",
                         "width" => "32px",
@@ -266,7 +266,7 @@ class WelcomeBlank12Column {
                       [
                         "type" => "socialIcon",
                         "iconType" => "twitter",
-                        "link" => "http://www.twitter.com",
+                        "link" => "https://www.twitter.com",
                         "image" => $this->social_icon_url . "/02-grey/Twitter.png",
                         "height" => "32px",
                         "width" => "32px",

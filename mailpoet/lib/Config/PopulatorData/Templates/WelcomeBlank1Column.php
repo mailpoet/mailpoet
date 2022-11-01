@@ -123,7 +123,7 @@ class WelcomeBlank1Column {
                   ],
                   [
                     "type" => "text",
-                    "text" => __("<h1 style=\"text-align: center;\"><strong>Hi, new subscriber!</strong></h1>\n<p>&nbsp;</p>\n<p>[subscriber:firstname | default:Subscriber],</p>\n<p>&nbsp;</p>\n<p>You recently joined our list and we'd like to give you a warm welcome!</p>\n<p>&nbsp;</p>\n<p>Want to get to know us better? Check out some of our most popular articles: </p>\n<ol>\n<li><a href=\"http://www.mailpoet.com/the-importance-of-focus-when-writing/\">The Importance of Focus When Writing</a></li>\n<li><a href=\"http://www.mailpoet.com/write-great-subject-line/\">How to Write a Great Subject Line</a></li>\n<li><a href=\"http://www.mailpoet.com/just-sit-write-advice-motivation-ernest-hemingway/\">Just Sit Down and Write &ndash; Advice on Motivation from Ernest Hemingway</a></li>\n</ol>", 'mailpoet'),
+                    "text" => __("<h1 style=\"text-align: center;\"><strong>Hi, new subscriber!</strong></h1>\n<p>&nbsp;</p>\n<p>[subscriber:firstname | default:Subscriber],</p>\n<p>&nbsp;</p>\n<p>You recently joined our list and we'd like to give you a warm welcome!</p>\n<p>&nbsp;</p>\n<p>Want to get to know us better? Check out some of our most popular articles: </p>\n<ol>\n<li><a href=\"https://www.mailpoet.com/the-importance-of-focus-when-writing/\">The Importance of Focus When Writing</a></li>\n<li><a href=\"https://www.mailpoet.com/write-great-subject-line/\">How to Write a Great Subject Line</a></li>\n<li><a href=\"https://www.mailpoet.com/just-sit-write-advice-motivation-ernest-hemingway/\">Just Sit Down and Write &ndash; Advice on Motivation from Ernest Hemingway</a></li>\n</ol>", 'mailpoet'),
                   ],
                 ],
               ],
@@ -166,7 +166,7 @@ class WelcomeBlank1Column {
                       [
                         "type" => "socialIcon",
                         "iconType" => "facebook",
-                        "link" => "http://www.facebook.com",
+                        "link" => "https://www.facebook.com",
                         "image" => $this->social_icon_url . "/02-grey/Facebook.png",
                         "height" => "32px",
                         "width" => "32px",
@@ -175,7 +175,7 @@ class WelcomeBlank1Column {
                       [
                         "type" => "socialIcon",
                         "iconType" => "twitter",
-                        "link" => "http://www.twitter.com",
+                        "link" => "https://www.twitter.com",
                         "image" => $this->social_icon_url . "/02-grey/Twitter.png",
                         "height" => "32px",
                         "width" => "32px",

@@ -31,7 +31,7 @@ class GATrackingTest extends \MailPoetTest {
     $this->tracking = $this->diContainer->get(GATracking::class);
     $this->internalHost = 'newsletters.mailpoet.com';
     $this->gaCampaign = 'Spring email';
-    $this->link = add_query_arg(['foo' => 'bar', 'baz' => 'xyz'], 'http://www.mailpoet.com/');
+    $this->link = add_query_arg(['foo' => 'bar', 'baz' => 'xyz'], 'https://www.mailpoet.com/');
     $this->renderedNewsletter = [
       'html' => '<p><a href="' . $this->link . '">Click here</a>. <a href="http://somehost.com/fff/?abc=123&email=[subscriber:email]">Do not process this</a> [link:some_link_shortcode]</p>',
       'text' => '[Click here](' . $this->link . '). [Do not process this](http://somehost.com/fff/?abc=123&email=[subscriber:email]) [link:some_link_shortcode]',

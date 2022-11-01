@@ -58,7 +58,7 @@ class UpdaterTest extends \MailPoetTest {
             'slug' => $this->slug,
             'plugin' => $this->pluginName,
             'new_version' => $this->version . 1,
-            'url' => 'http://www.mailpoet.com/wordpress-newsletter-plugin-premium/',
+            'url' => 'https://www.mailpoet.com/wordpress-newsletter-plugin-premium/',
             'package' => home_url() . '/wp-content/uploads/mailpoet-premium.zip',
           ];
         },
@@ -95,7 +95,7 @@ class UpdaterTest extends \MailPoetTest {
             'slug' => $this->slug,
             'plugin' => $this->pluginName,
             'new_version' => $this->version,
-            'url' => 'http://www.mailpoet.com/wordpress-newsletter-plugin-premium/',
+            'url' => 'https://www.mailpoet.com/wordpress-newsletter-plugin-premium/',
             'package' => home_url() . '/wp-content/uploads/mailpoet-premium.zip',
           ];
         },

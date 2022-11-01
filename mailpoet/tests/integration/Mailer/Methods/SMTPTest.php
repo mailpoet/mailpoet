@@ -69,7 +69,7 @@ class SMTPTest extends \MailPoetTest {
       ],
     ];
     $this->extraParams = [
-      'unsubscribe_url' => 'http://www.mailpoet.com',
+      'unsubscribe_url' => 'https://www.mailpoet.com',
     ];
   }
 
@@ -105,7 +105,7 @@ class SMTPTest extends \MailPoetTest {
     expect($mailer->Subject)->equals($this->newsletter['subject']); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     expect($mailer->Body)->equals($this->newsletter['body']['html']); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     expect($mailer->AltBody)->equals($this->newsletter['body']['text']); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-    expect($mailer->getCustomHeaders())->equals([['List-Unsubscribe', '<http://www.mailpoet.com>']]);
+    expect($mailer->getCustomHeaders())->equals([['List-Unsubscribe', '<https://www.mailpoet.com>']]);
   }
 
   public function testItCanProcessSubscriber() {

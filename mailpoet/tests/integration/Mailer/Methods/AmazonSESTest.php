@@ -64,7 +64,7 @@ class AmazonSESTest extends \MailPoetTest {
       ],
     ];
     $this->extraParams = [
-      'unsubscribe_url' => 'http://www.mailpoet.com',
+      'unsubscribe_url' => 'https://www.mailpoet.com',
     ];
   }
 
@@ -131,7 +131,7 @@ class AmazonSESTest extends \MailPoetTest {
     expect($mailer->AltBody)->equals($this->newsletter['body']['text']); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     expect($mailer->getCustomHeaders())->equals([[
       'List-Unsubscribe',
-      '<http://www.mailpoet.com>',
+      '<https://www.mailpoet.com>',
     ]]);
   }
 
