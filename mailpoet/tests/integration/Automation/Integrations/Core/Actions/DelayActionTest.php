@@ -48,6 +48,16 @@ class DelayActionTest extends \MailPoetTest {
 
   public function dataForTestItCalculatesDelayTypesCorrectly() : array {
     return [
+      '1_minute' => [
+        1,
+        "MINUTES",
+        60,
+      ],
+      '3_minute' => [
+        3,
+        "MINUTES",
+        3*60,
+      ],
       '1_hour' => [
         1,
         "HOURS",
