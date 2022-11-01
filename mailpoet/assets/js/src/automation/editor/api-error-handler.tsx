@@ -30,6 +30,7 @@ export const registerApiErrorHandler = (): void =>
             message ?? __('An unknown error occurred.', 'mailpoet'),
             { explicitDismiss: true },
           );
+          dispatch(storeName).setErrors({ steps: [] });
           return undefined;
         }
 
