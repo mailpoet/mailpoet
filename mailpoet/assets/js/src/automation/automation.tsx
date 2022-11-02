@@ -7,7 +7,7 @@ import { useSelect } from '@wordpress/data';
 import { initializeApi, useMutation } from './api';
 import { registerTranslations } from './i18n';
 import { createStore, storeName } from './listing/store';
-import { AutomationListing } from './listing';
+import { AutomationListing, AutomationListingHeader } from './listing';
 import { registerApiErrorHandler } from './listing/api-error-handler';
 import { Notices } from './listing/components/notices';
 import { WorkflowListingNotices } from './listing/workflow-listing-notices';
@@ -19,7 +19,15 @@ import {
 
 function Content(): JSX.Element {
   const count = useSelect((select) => select(storeName).getWorkflowCount());
-  const content = count > 0 ? <AutomationListing /> : <HeroSection />;
+  const content =
+    count > 0 ? (
+      <>
+        <AutomationListingHeader />
+        <AutomationListing />
+      </>
+    ) : (
+      <HeroSection />
+    );
 
   // Hide notices on onboarding screen
   useEffect(() => {
