@@ -1,11 +1,10 @@
 import ReactStringReplace from 'react-string-replace';
 import { t } from 'common/functions';
 import { useSetting } from 'settings/store/hooks';
-import { Inputs, Label, PageSelect, SegmentsSelect } from 'settings/components';
+import { Inputs, Label, PageSelect } from 'settings/components';
 
 export function ManageSubscription() {
   const [page, setPage] = useSetting('subscription', 'pages', 'manage');
-  const [segments, setSegments] = useSetting('subscription', 'segments');
   return (
     <>
       <Label
@@ -42,18 +41,24 @@ export function ManageSubscription() {
           automationId="subscription-manage-page-selection"
           linkAutomationId="preview_manage_subscription_page_link"
         />
-        <label
-          className="mailpoet-settings-inputs-row"
-          htmlFor="subscription-segments"
-        >
-          {t('subscribersCanChooseFrom')}
-        </label>
-        <SegmentsSelect
-          id="subscription-segments"
-          value={segments}
-          setValue={setSegments}
-          placeholder={t('leaveEmptyToDisplayAll')}
-        />
+
+        <p>
+          {ReactStringReplace(
+            t('hideListFromManageSubPage'),
+            /\[link\](.*?)\[\/link\]/,
+            (text) => (
+              <a
+                className="mailpoet-link"
+                key={text}
+                href="/wp-admin/admin.php?page=mailpoet-segments#/lists"
+                rel="noopener noreferrer"
+                target="_blank"
+              >
+                {text}
+              </a>
+            ),
+          )}
+        </p>
       </Inputs>
     </>
   );
