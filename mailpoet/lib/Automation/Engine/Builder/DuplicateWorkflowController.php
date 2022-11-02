@@ -48,7 +48,7 @@ class DuplicateWorkflowController {
   }
 
   private function getName(string $name): string {
-    // translators: %s is the original workflow name.
+    // translators: %s is the original automation name.
     $newName = sprintf(__('Copy of %s', 'mailpoet'), $name);
     $maxLength = $this->workflowStorage->getNameColumnLength();
     if (strlen($newName) > $maxLength) {

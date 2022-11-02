@@ -32,7 +32,7 @@ export function* duplicateWorkflow(workflow: Workflow) {
   });
 
   void createSuccessNotice(
-    // translators: %s is the automation workflow name
+    // translators: %s is the automation name
     sprintf(__('Automation "%s" was duplicated.', 'mailpoet'), workflow.name),
   );
 
@@ -86,7 +86,7 @@ export function* restoreWorkflow(workflow: Workflow, status: WorkflowStatus) {
         {message}{' '}
         <EditWorkflow
           workflow={workflow}
-          label={__('Edit workflow', 'mailpoet')}
+          label={__('Edit automation', 'mailpoet')}
         />
       </p>
     ),

@@ -17,7 +17,7 @@ class NoCycleRuleTest extends WorkflowRuleTest {
     ]);
 
     $this->expectException(UnexpectedValueException::class);
-    $this->expectExceptionMessage('Invalid workflow structure: Cycle found in workflow graph');
+    $this->expectExceptionMessage('Invalid automation structure: Cycle found in automation graph');
     (new WorkflowWalker())->walk($workflow, [new NoCycleRule()]);
   }
 
@@ -27,7 +27,7 @@ class NoCycleRuleTest extends WorkflowRuleTest {
     ]);
 
     $this->expectException(UnexpectedValueException::class);
-    $this->expectExceptionMessage('Invalid workflow structure: Cycle found in workflow graph');
+    $this->expectExceptionMessage('Invalid automation structure: Cycle found in automation graph');
     (new WorkflowWalker())->walk($workflow, [new NoCycleRule()]);
   }
 

@@ -24,7 +24,7 @@ class NoJoinRule implements WorkflowNodeVisitor {
     foreach ($step->getNextSteps() as $nextStep) {
       $nextStepId = $nextStep->getId();
       if (isset($this->visitedSteps[$nextStepId])) {
-        throw Exceptions::workflowStructureNotValid(__('Path join found in workflow graph', 'mailpoet'), self::RULE_ID);
+        throw Exceptions::workflowStructureNotValid(__('Path join found in automation graph', 'mailpoet'), self::RULE_ID);
       }
     }
   }

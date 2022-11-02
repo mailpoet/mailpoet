@@ -31,7 +31,7 @@ export const useDeleteButton = (workflow: Workflow): Item | undefined => {
         onCancel={() => setShowDialog(false)}
       >
         {sprintf(
-          // translators: %s is the workflow name
+          // translators: %s is the automation name
           __(
             'Are you sure you want to permanently delete "%s" and all associated data? This cannot be undone!',
             'mailpoet',

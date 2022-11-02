@@ -16,7 +16,7 @@ export function BuildYourOwnSection(): JSX.Element {
     },
     {
       slug: 'customize-your-workflow',
-      title: __('Customize your workflow', 'mailpoet'),
+      title: __('Customize your automation', 'mailpoet'),
       text: __(
         'Choose steps and create a custom journey to best suit your needs.',
         'mailpoet',
@@ -49,7 +49,7 @@ export function BuildYourOwnSection(): JSX.Element {
     <section className="mailpoet-automation-section mailpoet-automation-white-background">
       <div className="mailpoet-automation-section-content mailpoet-section-build-your-own">
         <div>
-          <h2>{__('Build your own automation workflows', 'mailpoet')}</h2>
+          <h2>{__('Build your own automations', 'mailpoet')}</h2>
           <p>
             {__(
               'Create customized email sequences with our new automation editor.',

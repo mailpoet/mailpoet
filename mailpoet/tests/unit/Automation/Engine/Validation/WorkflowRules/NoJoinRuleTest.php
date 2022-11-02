@@ -17,7 +17,7 @@ class NoJoinRuleTest extends WorkflowRuleTest {
     ]);
 
     $this->expectException(UnexpectedValueException::class);
-    $this->expectExceptionMessage('Invalid workflow structure: Path join found in workflow graph');
+    $this->expectExceptionMessage('Invalid automation structure: Path join found in automation graph');
     (new WorkflowWalker())->walk($workflow, [new NoJoinRule()]);
   }
 
@@ -34,7 +34,7 @@ class NoJoinRuleTest extends WorkflowRuleTest {
     ]);
 
     $this->expectException(UnexpectedValueException::class);
-    $this->expectExceptionMessage('Invalid workflow structure: Path join found in workflow graph');
+    $this->expectExceptionMessage('Invalid automation structure: Path join found in automation graph');
     (new WorkflowWalker())->walk($workflow, [new NoJoinRule()]);
   }
 
@@ -44,7 +44,7 @@ class NoJoinRuleTest extends WorkflowRuleTest {
     ]);
 
     $this->expectException(UnexpectedValueException::class);
-    $this->expectExceptionMessage('Invalid workflow structure: Path join found in workflow graph');
+    $this->expectExceptionMessage('Invalid automation structure: Path join found in automation graph');
     (new WorkflowWalker())->walk($workflow, [new NoJoinRule()]);
   }
 

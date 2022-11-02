@@ -30,7 +30,7 @@ class AtLeastOnTriggerTest extends WorkflowRuleTest
 
 
     $this->expectException(UnexpectedValueException::class);
-    $this->expectExceptionMessage('Invalid workflow structure: There must be at least one trigger in the workflow.');
+    $this->expectExceptionMessage('Invalid automation structure: There must be at least one trigger in the automation.');
     (new WorkflowWalker())->walk($workflow, [new AtLeastOneTriggerRule()]);
   }
 }

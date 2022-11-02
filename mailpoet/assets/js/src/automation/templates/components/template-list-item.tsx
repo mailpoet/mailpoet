@@ -37,7 +37,7 @@ export function TemplateListItem({
         <p>
           {error.data
             ? error.data.message
-            : __('Could not create workflow.', 'mailpoet')}
+            : __('Could not create automation.', 'mailpoet')}
         </p>
       </Notice>
     );

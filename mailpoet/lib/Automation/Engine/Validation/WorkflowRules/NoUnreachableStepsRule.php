@@ -23,7 +23,7 @@ class NoUnreachableStepsRule implements WorkflowNodeVisitor {
 
   public function complete(Workflow $workflow): void {
     if (count($this->visitedNodes) !== count($workflow->getSteps())) {
-      throw Exceptions::workflowStructureNotValid(__('Unreachable steps found in workflow graph', 'mailpoet'), self::RULE_ID);
+      throw Exceptions::workflowStructureNotValid(__('Unreachable steps found in automation graph', 'mailpoet'), self::RULE_ID);
     }
   }
 }

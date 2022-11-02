@@ -136,7 +136,7 @@ class WorkflowStorageTest extends \MailPoetTest
     $workflowId = $this->testee->createWorkflow($workflow);
     $workflow = $this->testee->getWorkflow($workflowId);
     if (! $workflow) {
-      throw new \RuntimeException("Workflow not stored.");
+      throw new \RuntimeException("Automation not stored.");
     }
     return $workflow;
   }

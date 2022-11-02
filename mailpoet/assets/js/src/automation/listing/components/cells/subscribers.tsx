@@ -13,19 +13,19 @@ export function Subscribers({ workflow }: Props): JSX.Element {
       items={[
         {
           key: 'entered',
-          // translators: Total number of subscribers who entered an automation workflow
+          // translators: Total number of subscribers who entered an automation
           label: _x('Entered', 'automation stats', 'mailpoet'),
           value: workflow.stats.totals.entered,
         },
         {
           key: 'processing',
-          // translators: Total number of subscribers who are being processed in an automation workflow
+          // translators: Total number of subscribers who are being processed in an automation
           label: _x('Processing', 'automation stats', 'mailpoet'),
           value: workflow.stats.totals.in_progress,
         },
         {
           key: 'exited',
-          // translators: Total number of subscribers who exited an automation workflow, no matter the result
+          // translators: Total number of subscribers who exited an automation, no matter the result
           label: _x('Exited', 'automation stats', 'mailpoet'),
           value: workflow.stats.totals.exited,
         },

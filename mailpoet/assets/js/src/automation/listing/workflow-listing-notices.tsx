@@ -47,7 +47,7 @@ export function WorkflowListingNotices(): JSX.Element {
   if (workflowDeleted) {
     return (
       <Notice type="success" closable timeout={false}>
-        <p>{__('1 workflow moved to the Trash.', 'mailpoet')}</p>
+        <p>{__('1 automation moved to the Trash.', 'mailpoet')}</p>
       </Notice>
     );
   }

@@ -16,7 +16,7 @@ class NoSplitRuleTest extends WorkflowRuleTest {
     ]);
 
     $this->expectException(UnexpectedValueException::class);
-    $this->expectExceptionMessage('Invalid workflow structure: Path split found in workflow graph');
+    $this->expectExceptionMessage('Invalid automation structure: Path split found in automation graph');
     (new WorkflowWalker())->walk($workflow, [new NoSplitRule()]);
   }
 
@@ -27,7 +27,7 @@ class NoSplitRuleTest extends WorkflowRuleTest {
     ]);
 
     $this->expectException(UnexpectedValueException::class);
-    $this->expectExceptionMessage('Invalid workflow structure: Path split found in workflow graph');
+    $this->expectExceptionMessage('Invalid automation structure: Path split found in automation graph');
     (new WorkflowWalker())->walk($workflow, [new NoSplitRule()]);
   }
 

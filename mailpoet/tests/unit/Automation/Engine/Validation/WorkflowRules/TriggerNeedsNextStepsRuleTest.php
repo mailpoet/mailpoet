@@ -31,7 +31,7 @@ class TriggerNeedsNextStepsRuleTest extends WorkflowRuleTest
     $workflow = $this->make(Workflow::class, ['getSteps' => $steps, 'getStep' => function($id) use ($steps) { return $steps[$id]??null; }]);
 
     $this->expectException(UnexpectedValueException::class);
-    $this->expectExceptionMessage('Invalid workflow structure: A trigger needs to be followed by an action.');
+    $this->expectExceptionMessage('Invalid automation structure: A trigger needs to be followed by an action.');
     (new WorkflowWalker())->walk($workflow, [new TriggerNeedsToBeFollowedByActionRule()]);
   }
 
@@ -46,7 +46,7 @@ class TriggerNeedsNextStepsRuleTest extends WorkflowRuleTest
 
 
     $this->expectException(UnexpectedValueException::class);
-    $this->expectExceptionMessage('Invalid workflow structure: A trigger needs to be followed by an action.');
+    $this->expectExceptionMessage('Invalid automation structure: A trigger needs to be followed by an action.');
     (new WorkflowWalker())->walk($workflow, [new TriggerNeedsToBeFollowedByActionRule()]);
   }
 }

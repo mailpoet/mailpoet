@@ -32,7 +32,7 @@ class TriggersUnderRootRule implements WorkflowNodeVisitor {
     foreach ($step->getNextSteps() as $nextStep) {
       $nextStepId = $nextStep->getId();
       if (isset($this->triggersMap[$nextStepId])) {
-        throw Exceptions::workflowStructureNotValid(__('Trigger must be a direct descendant of workflow root', 'mailpoet'), self::RULE_ID);
+        throw Exceptions::workflowStructureNotValid(__('Trigger must be a direct descendant of automation root', 'mailpoet'), self::RULE_ID);
       }
     }
   }

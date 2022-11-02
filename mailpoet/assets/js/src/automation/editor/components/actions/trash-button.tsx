@@ -21,7 +21,7 @@ export function TrashButton(): JSX.Element {
     <>
       <ConfirmDialog
         isOpen={showConfirmDialog}
-        title={__('Delete workflow', 'mailpoet')}
+        title={__('Delete automation', 'mailpoet')}
         confirmButtonText={__('Yes, delete', 'mailpoet')}
         onConfirm={async () => {
           trash(() => {
@@ -32,7 +32,7 @@ export function TrashButton(): JSX.Element {
         __experimentalHideHeader={false}
       >
         {sprintf(
-          __('You are about to delete the "%s" workflow.', 'mailpoet'),
+          __('You are about to delete the automation "%s".', 'mailpoet'),
           workflow.name,
         )}
         <br />

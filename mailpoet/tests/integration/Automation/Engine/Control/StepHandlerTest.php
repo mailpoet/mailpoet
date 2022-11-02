@@ -87,7 +87,7 @@ class StepHandlerTest extends \MailPoetTest
       try {
         $this->testee->handle(['workflow_run_id' => $workflowRun->getId(), 'step_id' => $currentStep->getId()]);
       } catch (InvalidStateException $error) {
-        $this->assertSame('mailpoet_automation_workflow_not_active', $error->getErrorCode(), "Workflow with '$status' did not return expected error code.");
+        $this->assertSame('mailpoet_automation_workflow_not_active', $error->getErrorCode(), "Automation with '$status' did not return expected error code.");
       }
       $this->assertInstanceOf(InvalidStateException::class, $error);
 

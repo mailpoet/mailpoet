@@ -27,7 +27,7 @@ class NoCycleRule implements WorkflowNodeVisitor {
     foreach ($step->getNextSteps() as $nextStep) {
       $nextStepId = $nextStep->getId();
       if ($nextStepId === $step->getId() || isset($parentIdsMap[$nextStepId])) {
-        throw Exceptions::workflowStructureNotValid(__('Cycle found in workflow graph', 'mailpoet'), self::RULE_ID);
+        throw Exceptions::workflowStructureNotValid(__('Cycle found in automation graph', 'mailpoet'), self::RULE_ID);
       }
     }
   }

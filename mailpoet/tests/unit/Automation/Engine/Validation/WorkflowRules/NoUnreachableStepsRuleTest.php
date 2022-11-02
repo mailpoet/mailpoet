@@ -16,7 +16,7 @@ class NoUnreachableStepsRuleTest extends WorkflowRuleTest {
     ]);
 
     $this->expectException(UnexpectedValueException::class);
-    $this->expectExceptionMessage('Invalid workflow structure: Unreachable steps found in workflow graph');
+    $this->expectExceptionMessage('Invalid automation structure: Unreachable steps found in automation graph');
     (new WorkflowWalker())->walk($workflow, [new NoUnreachableStepsRule()]);
   }
 
@@ -29,7 +29,7 @@ class NoUnreachableStepsRuleTest extends WorkflowRuleTest {
     ]);
 
     $this->expectException(UnexpectedValueException::class);
-    $this->expectExceptionMessage('Invalid workflow structure: Unreachable steps found in workflow graph');
+    $this->expectExceptionMessage('Invalid automation structure: Unreachable steps found in automation graph');
     $walker = new WorkflowWalker();
     (new WorkflowWalker())->walk($workflow, [new NoUnreachableStepsRule()]);
   }

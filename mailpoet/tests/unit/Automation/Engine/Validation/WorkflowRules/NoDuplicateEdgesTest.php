@@ -15,7 +15,7 @@ class NoDuplicateEdgesTest extends WorkflowRuleTest {
     ]);
 
     $this->expectException(UnexpectedValueException::class);
-    $this->expectExceptionMessage('Invalid workflow structure: Duplicate next step definition found');
+    $this->expectExceptionMessage('Invalid automation structure: Duplicate next step definition found');
     (new WorkflowWalker())->walk($workflow, [new NoDuplicateEdgesRule()]);
   }
 
