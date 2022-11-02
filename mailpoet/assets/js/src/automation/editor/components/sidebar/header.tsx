@@ -19,12 +19,12 @@ export function Header({ sidebarKey }: Props): JSX.Element {
   const [workflowAriaLabel, workflowActiveClass] =
     sidebarKey === workflowSidebarKey
       ? [__('Automation (selected)', 'mailpoet'), 'is-active']
-      : ['Automation', ''];
+      : [__('Automation', 'mailpoet'), ''];
 
   const [stepAriaLabel, stepActiveClass] =
     sidebarKey === stepSidebarKey
       ? [__('Step (selected)', 'mailpoet'), 'is-active']
-      : ['Step', ''];
+      : [__('Step', 'mailpoet'), ''];
 
   return (
     <ul>
