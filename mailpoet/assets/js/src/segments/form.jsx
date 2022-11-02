@@ -19,6 +19,16 @@ const fields = [
     type: 'textarea',
     tip: MailPoet.I18n.t('segmentDescriptionTip'),
   },
+  {
+    name: 'showInManageSubscriptionPage',
+    label: MailPoet.I18n.t('showInManageSubscriptionPage'),
+    type: 'checkbox',
+    values: {
+      showInManageSubscriptionPage: MailPoet.I18n.t(
+        'showInManageSubscriptionPageTip',
+      ),
+    },
+  },
 ];
 
 const messages = {
