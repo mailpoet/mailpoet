@@ -133,8 +133,10 @@ class SegmentsRepository extends Repository {
     string $description = '',
     string $type = SegmentEntity::TYPE_DEFAULT,
     array $filtersData = [],
-    ?int $id = null
+    ?int $id = null,
+    ?int $displayInManageSubscriptionPage = 1
   ): SegmentEntity {
+    $displayInManageSubPage = $type === SegmentEntity::TYPE_DEFAULT ? $displayInManageSubscriptionPage ?? 1 : 0;
     if ($id) {
       $segment = $this->findOneById($id);
       if (!$segment instanceof SegmentEntity) {
@@ -145,9 +147,11 @@ class SegmentsRepository extends Repository {
         $segment->setName($name);
       }
       $segment->setDescription($description);
+      $segment->setDisplayInManageSubscriptionPage($displayInManageSubPage);
     } else {
       $this->verifyNameIsUnique($name, $id);
       $segment = new SegmentEntity($name, $type, $description);
+      $segment->setDisplayInManageSubscriptionPage($displayInManageSubPage);
       $this->persist($segment);
     }
 
