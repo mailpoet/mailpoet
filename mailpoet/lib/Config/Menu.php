@@ -434,7 +434,8 @@ class Menu {
     if (!$this->featuresController->isSupported(FeaturesController::AUTOMATION)) {
       return;
     }
-    $this->wp->addSubmenuPage(
+
+    $automationPage = $this->wp->addSubmenuPage(
       self::MAIN_PAGE_SLUG,
       $this->setPageTitle(__('Automations', 'mailpoet')),
       // @ToDo Remove Beta once Automation is no longer beta.
@@ -465,6 +466,11 @@ class Menu {
     );
 
     // add body class for automation editor page
+    $this->wp->addAction('load-' . $automationPage, function() {
+      $this->wp->addFilter('admin_body_class', function ($classes) {
+        return ltrim($classes . ' mailpoet-automation-is-onboarding');
+      });
+    });
     $this->wp->addAction('load-' . $automationEditorPage, function() {
       $this->wp->addFilter('admin_body_class', function ($classes) {
         return ltrim($classes . ' site-editor-php');
