@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import { BrowserRouter } from 'react-router-dom';
 import { TopBarWithBeamer } from 'common/top_bar/top_bar';
@@ -19,6 +20,18 @@ import {
 function Content(): JSX.Element {
   const count = useSelect((select) => select(storeName).getWorkflowCount());
   const content = count > 0 ? <AutomationListing /> : <HeroSection />;
+
+  // Hide notices on onboarding screen
+  useEffect(() => {
+    const onboardingClass = 'mailpoet-automation-is-onboarding';
+    const element = document.querySelector('body');
+    if (count === 0 && !element.classList.contains(onboardingClass)) {
+      element.classList.add(onboardingClass);
+    }
+    if (count > 0 && element.classList.contains(onboardingClass)) {
+      element.classList.remove(onboardingClass);
+    }
+  }, [count]);
   return (
     <>
       {content}
