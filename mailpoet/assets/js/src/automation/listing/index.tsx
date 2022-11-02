@@ -1,12 +1,14 @@
 import { Search, TableCard } from '@woocommerce/components/build';
-import { TabPanel } from '@wordpress/components';
+import { Button, Flex, TabPanel } from '@wordpress/components';
 import { useDispatch, useSelect } from '@wordpress/data';
 import { __, _x } from '@wordpress/i18n';
 import { useCallback, useEffect, useLayoutEffect, useMemo } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
+import { plusIcon } from 'common/button/icon/plus';
 import { getRow } from './get-row';
-import { storeName } from './store/constants';
+import { storeName } from './store';
 import { Workflow, WorkflowStatus } from './workflow';
+import { MailPoet } from '../../mailpoet';
 
 const tabConfig = [
   {
@@ -42,6 +44,22 @@ const tableHeaders = [
   { key: 'status', label: __('Status', 'mailpoet') },
   { key: 'actions' },
 ] as const;
+
+export function AutomationListingHeader(): JSX.Element {
+  return (
+    <Flex className="mailpoet-automation-listing-heading">
+      <h1 className="wp-heading-inline">{__('Automations', 'mailpoet')}</h1>
+      <Button
+        href={MailPoet.urls.automationTemplates}
+        icon={plusIcon}
+        variant="primary"
+        className="mailpoet-add-new-button"
+      >
+        {__('New automation', 'mailpoet')}
+      </Button>
+    </Flex>
+  );
+}
 
 export function AutomationListing(): JSX.Element {
   const history = useHistory();
