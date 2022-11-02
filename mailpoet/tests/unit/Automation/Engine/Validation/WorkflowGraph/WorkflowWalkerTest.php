@@ -13,7 +13,7 @@ class WorkflowWalkerTest extends MailPoetUnitTest {
     $workflow = $this->createWorkflow([]);
 
     $this->expectException(UnexpectedValueException::class);
-    $this->expectExceptionMessage("Invalid workflow structure: Workflow must contain a 'root' step");
+    $this->expectExceptionMessage("Invalid automation structure: Automation must contain a 'root' step");
     $this->walkWorkflow($workflow);
   }
 
@@ -21,7 +21,7 @@ class WorkflowWalkerTest extends MailPoetUnitTest {
     $workflow = $this->createWorkflow(['root' => ['a']]);
 
     $this->expectException(UnexpectedValueException::class);
-    $this->expectExceptionMessage("Invalid workflow structure: Step with ID 'a' not found (referenced from 'root')");
+    $this->expectExceptionMessage("Invalid automation structure: Step with ID 'a' not found (referenced from 'root')");
     $this->walkWorkflow($workflow);
   }
 

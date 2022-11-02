@@ -90,7 +90,7 @@ export function Workflow(): JSX.Element {
       <Composite
         state={compositeState}
         role="tree"
-        aria-label={__('Workflow', 'mailpoet')}
+        aria-label={__('Automation', 'mailpoet')}
         aria-orientation="vertical"
         className="mailpoet-automation-editor-workflow"
       >

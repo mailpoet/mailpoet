@@ -97,7 +97,7 @@ export function EditNewsletter(): JSX.Element {
         {emailIdError && (
           <span className="mailpoet-automation-field-message">
             {__(
-              'You need to design an email before you can activate the workflow',
+              'You need to design an email before you can activate the automation',
               'mailpoet',
             )}
           </span>

@@ -18,7 +18,7 @@ class TriggersUnderRootRuleTest extends WorkflowRuleTest {
     ]]);
 
     $this->expectException(UnexpectedValueException::class);
-    $this->expectExceptionMessage('Invalid workflow structure: Trigger must be a direct descendant of workflow root');
+    $this->expectExceptionMessage('Invalid automation structure: Trigger must be a direct descendant of automation root');
     (new WorkflowWalker())->walk($workflow, [new TriggersUnderRootRule()]);
   }
 

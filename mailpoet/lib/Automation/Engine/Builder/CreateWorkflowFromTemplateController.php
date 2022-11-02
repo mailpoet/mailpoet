@@ -40,7 +40,7 @@ class CreateWorkflowFromTemplateController {
     $workflowId = $this->storage->createWorkflow($workflow);
     $savedWorkflow = $this->storage->getWorkflow($workflowId);
     if (!$savedWorkflow) {
-      throw new InvalidStateException('Workflow not found.');
+      throw new InvalidStateException('Automation not found.');
     }
     return $savedWorkflow;
   }

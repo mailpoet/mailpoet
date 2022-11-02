@@ -16,7 +16,7 @@ class NoSplitRule implements WorkflowNodeVisitor {
   public function visitNode(Workflow $workflow, WorkflowNode $node): void {
     $step = $node->getStep();
     if (count($step->getNextSteps()) > 1) {
-      throw Exceptions::workflowStructureNotValid(__('Path split found in workflow graph', 'mailpoet'), self::RULE_ID);
+      throw Exceptions::workflowStructureNotValid(__('Path split found in automation graph', 'mailpoet'), self::RULE_ID);
     }
   }
 

@@ -151,12 +151,12 @@ export function Errors(): JSX.Element | null {
             <Composite
               state={compositeState}
               role="list"
-              aria-label={__('Workflow errors', 'mailpoet')}
+              aria-label={__('Automation errors', 'mailpoet')}
               className="mailpoet-automation-errors"
             >
               <div className="mailpoet-automation-errors-header">
                 {
-                  // translators: Label for a list of automation workflow steps that are incomplete or have errors
+                  // translators: Label for a list of automation steps that are incomplete or have errors
                   __('The following steps are not fully set:', 'mailpoet')
                 }
               </div>

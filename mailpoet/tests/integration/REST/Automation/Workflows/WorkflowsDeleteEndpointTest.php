@@ -53,7 +53,7 @@ class WorkflowsDeleteEndpointTest extends AutomationTest {
 
     $this->assertSame([
       'code' => 'mailpoet_automation_workflow_not_trashed',
-      'message' => "Can't delete workflow with ID '{$this->workflow->getId()}' because it was not trashed.",
+      'message' => "Can't delete automation with ID '{$this->workflow->getId()}' because it was not trashed.",
       'data' => ['status' => 400, 'errors' => []],
     ], $data);
 

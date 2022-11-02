@@ -15,7 +15,7 @@ class WorkflowWalker {
     $steps = $workflow->getSteps();
     $root = $steps['root'] ?? null;
     if (!$root) {
-      throw Exceptions::workflowStructureNotValid(__("Workflow must contain a 'root' step", 'mailpoet'), 'no-root');
+      throw Exceptions::workflowStructureNotValid(__("Automation must contain a 'root' step", 'mailpoet'), 'no-root');
     }
 
     foreach ($visitors as $visitor) {

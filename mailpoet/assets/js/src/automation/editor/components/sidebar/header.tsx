@@ -18,8 +18,8 @@ export function Header({ sidebarKey }: Props): JSX.Element {
 
   const [workflowAriaLabel, workflowActiveClass] =
     sidebarKey === workflowSidebarKey
-      ? [__('Workflow (selected)', 'mailpoet'), 'is-active']
-      : ['Workflow', ''];
+      ? [__('Automation (selected)', 'mailpoet'), 'is-active']
+      : ['Automation', ''];
 
   const [stepAriaLabel, stepActiveClass] =
     sidebarKey === stepSidebarKey
@@ -33,9 +33,9 @@ export function Header({ sidebarKey }: Props): JSX.Element {
           onClick={openWorkflowSettings}
           className={`edit-site-sidebar__panel-tab ${workflowActiveClass}`}
           aria-label={workflowAriaLabel}
-          data-label={__('Workflow', 'mailpoet')}
+          data-label={__('Automation', 'mailpoet')}
         >
-          {__('Workflow', 'mailpoet')}
+          {__('Automation', 'mailpoet')}
         </Button>
       </li>
       <li>

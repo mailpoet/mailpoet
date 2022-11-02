@@ -28,6 +28,6 @@ class AtLeastOneTriggerRule implements WorkflowNodeVisitor {
     if ($this->triggerFound) {
       return;
     }
-    throw Exceptions::workflowStructureNotValid(__('There must be at least one trigger in the workflow.', 'mailpoet'), self::RULE_ID);
+    throw Exceptions::workflowStructureNotValid(__('There must be at least one trigger in the automation.', 'mailpoet'), self::RULE_ID);
   }
 }

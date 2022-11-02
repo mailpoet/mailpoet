@@ -24,16 +24,16 @@ export const useTrashButton = (workflow: Workflow): Item | undefined => {
     slot: (
       <ConfirmDialog
         isOpen={showDialog}
-        title={__('Trash workflow', 'mailpoet')}
+        title={__('Trash automation', 'mailpoet')}
         confirmButtonText={__('Yes, move to trash', 'mailpoet')}
         __experimentalHideHeader={false}
         onConfirm={() => trashWorkflow(workflow)}
         onCancel={() => setShowDialog(false)}
       >
         {sprintf(
-          // translators: %s is the workflow name
+          // translators: %s is the automation name
           __(
-            'Are you sure you want to move the workflow "%s" to the Trash?',
+            'Are you sure you want to move the automation "%s" to the Trash?',
             'mailpoet',
           ),
           workflow.name,

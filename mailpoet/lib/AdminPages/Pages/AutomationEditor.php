@@ -64,7 +64,7 @@ class AutomationEditor {
     if (!$workflow) {
       $notice = new WPNotice(
         WPNotice::TYPE_ERROR,
-        __('Workflow not found.', 'mailpoet')
+        __('Automation not found.', 'mailpoet')
       );
       $notice->displayWPNotice();
       $this->pageRenderer->displayPage('blank.html');
