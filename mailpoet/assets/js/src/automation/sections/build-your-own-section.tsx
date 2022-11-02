@@ -12,7 +12,7 @@ export function BuildYourOwnSection(): JSX.Element {
         'Deliver relevant messages to your customers based on who they are and how they interact with your business.',
         'mailpoet',
       ),
-      image: `${MailPoet.urls.imageAssets}automations/sections/start-with-a-trigger.png`,
+      image: `${MailPoet.urls.imageAssets}automation/sections/start-with-a-trigger.png`,
     },
     {
       slug: 'customize-your-workflow',
@@ -21,7 +21,7 @@ export function BuildYourOwnSection(): JSX.Element {
         'Choose steps and create a custom journey to best suit your needs.',
         'mailpoet',
       ),
-      image: `${MailPoet.urls.imageAssets}automations/sections/customize-your-workflow.png`,
+      image: `${MailPoet.urls.imageAssets}automation/sections/customize-your-workflow.png`,
     },
     {
       slug: 'design-your-email',
@@ -30,7 +30,7 @@ export function BuildYourOwnSection(): JSX.Element {
         'Modify one of our pre-made email templates or create your own design.',
         'mailpoet',
       ),
-      image: `${MailPoet.urls.imageAssets}automations/sections/design-your-email.png`,
+      image: `${MailPoet.urls.imageAssets}automation/sections/design-your-email.png`,
     },
     {
       slug: 'start-engaging',
@@ -39,7 +39,7 @@ export function BuildYourOwnSection(): JSX.Element {
         'Activate the automation and start engaging with your customers as they interact with your business.',
         'mailpoet',
       ),
-      image: `${MailPoet.urls.imageAssets}automations/sections/start-engaging.png`,
+      image: `${MailPoet.urls.imageAssets}automation/sections/start-engaging.png`,
     },
   ];
 
