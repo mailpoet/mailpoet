@@ -249,6 +249,9 @@ jQuery('#adminmenu #toplevel_page_mailpoet-newsletters')
   <%if mailpoet_api_key_state.data.support_tier == 'premium' or premium_key_state.data.support_tier == 'premium' %>
     <% set helpscout_form_id = 'e93d0423-1fa6-4bbc-9df9-c174f823c35f' %>
   <% endif %>
+  <%if current_page == 'mailpoet-automation' or current_page == 'mailpoet-automation-editor' or current_page == 'mailpoet-automation-templates'%>
+    <% set helpscout_form_id = '69b66c7a-e9e9-4544-9d2a-5eb0ddc74959' %>
+  <% endif %>
 
   <script type="text/javascript">!function(e,t,n){function a(){var e=t.getElementsByTagName("script")[0],n=t.createElement("script");n.type="text/javascript",n.async=!0,n.src="https://beacon-v2.helpscout.net",e.parentNode.insertBefore(n,e)}if(e.Beacon=n=function(t,n,a){e.Beacon.readyQueue.push({method:t,options:n,data:a})},n.readyQueue=[],"complete"===t.readyState)return a();e.attachEvent?e.attachEvent("onload",a):e.addEventListener("load",a,!1)}(window,document,window.Beacon||function(){});</script>
 
