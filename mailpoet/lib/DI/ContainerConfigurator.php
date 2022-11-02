@@ -491,6 +491,7 @@ class ContainerConfigurator implements IContainerConfigurator {
       ->setFactory([__CLASS__, 'getCdnAssetsUrl']);
     $container->autowire(\MailPoet\Util\DmarcPolicyChecker::class)->setPublic(true);
     $container->autowire(\MailPoet\Newsletter\Scheduler\Scheduler::class)->setPublic(true);
+    $container->autowire(\MailPoet\Util\Request::class)->setPublic(true);
     // Validator
     $container->autowire(Validator::class)->setPublic(true);
     // WooCommerce

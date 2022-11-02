@@ -4,6 +4,7 @@ namespace MailPoet\Router\Endpoints;
 
 use MailPoet\Config\AccessControl;
 use MailPoet\Subscription as UserSubscription;
+use MailPoet\Util\Request;
 use MailPoet\WP\Functions as WPFunctions;
 
 class Subscription {
@@ -39,14 +40,19 @@ class Subscription {
   /** @var UserSubscription\Captcha */
   private $captcha;
 
+  /*** @var Request */
+  private $request;
+
   public function __construct(
     UserSubscription\Pages $subscriptionPages,
     WPFunctions $wp,
-    UserSubscription\Captcha $captcha
+    UserSubscription\Captcha $captcha,
+    Request $request
   ) {
     $this->subscriptionPages = $subscriptionPages;
     $this->wp = $wp;
     $this->captcha = $captcha;
+    $this->request = $request;
   }
 
   public function captcha($data) {
@@ -67,6 +73,11 @@ class Subscription {
 
   public function confirmUnsubscribe($data) {
     $enableUnsubscribeConfirmation = $this->wp->applyFilters('mailpoet_unsubscribe_confirmation_enabled', true);
+    if ($this->request->isPost()) {
+      $this->applyOneClickUnsubscribeStrategy($data);
+      exit;
+    }
+
     if ($enableUnsubscribeConfirmation) {
       $this->initSubscriptionPage(UserSubscription\Pages::ACTION_CONFIRM_UNSUBSCRIBE, $data);
     } else {
@@ -79,8 +90,13 @@ class Subscription {
   }
 
   public function unsubscribe($data) {
-    $subscription = $this->initSubscriptionPage(UserSubscription\Pages::ACTION_UNSUBSCRIBE, $data);
-    $subscription->unsubscribe();
+    if ($this->request->isPost()) {
+      $this->applyOneClickUnsubscribeStrategy($data);
+      exit;
+    } else {
+      $subscription = $this->initSubscriptionPage(UserSubscription\Pages::ACTION_UNSUBSCRIBE, $data);
+      $subscription->unsubscribe();
+    }
   }
 
   public function reEngagement($data) {
@@ -89,5 +105,13 @@ class Subscription {
 
   private function initSubscriptionPage($action, $data) {
     return $this->subscriptionPages->init($action, $data, true, true);
+  }
+
+  private function applyOneClickUnsubscribeStrategy($data): void {
+    if (!$this->wp->isSiteUsingHttps()) {
+      return;
+    }
+    $subscription = $this->initSubscriptionPage(UserSubscription\Pages::ACTION_UNSUBSCRIBE, $data);
+    $subscription->unsubscribe();
   }
 }
