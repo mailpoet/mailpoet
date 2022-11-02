@@ -6,8 +6,8 @@ use MailPoet\AdminPages\PageRenderer;
 use MailPoet\Automation\Engine\Data\WorkflowTemplate;
 use MailPoet\Automation\Engine\Migrations\Migrator;
 use MailPoet\Automation\Engine\Storage\WorkflowStorage;
-use MailPoet\Form\AssetsController;
 use MailPoet\Automation\Engine\Storage\WorkflowTemplateStorage;
+use MailPoet\Form\AssetsController;
 use MailPoet\WP\Functions as WPFunctions;
 
 class Automation {
