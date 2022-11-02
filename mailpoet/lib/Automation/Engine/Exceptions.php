@@ -32,6 +32,7 @@ class Exceptions {
   private const MISSING_REQUIRED_SUBJECTS = 'mailpoet_automation_missing_required_subjects';
   private const WORKFLOW_NOT_TRASHED = 'mailpoet_automation_workflow_not_trashed';
   private const WORKFLOW_TEMPLATE_NOT_FOUND = 'mailpoet_automation_workflow_template_not_found';
+  private const WORKFLOW_HAS_ACTIVE_RUNS = 'mailpoet_automation_workflow_has_active_runs';
 
   public function __construct() {
     throw new InvalidStateException(
@@ -227,5 +228,15 @@ class Exceptions {
       ->withErrorCode(self::WORKFLOW_TEMPLATE_NOT_FOUND)
       // translators: %d is the ID of the automation template.
       ->withMessage(sprintf(__("Automation template with ID '%d' not found.", 'mailpoet'), $id));
+  }
+
+  /**
+   * This is a temporary block, see MAILPOET-4744
+   */
+  public static function workflowHasActiveRuns(int $id): InvalidStateException {
+    return InvalidStateException::create()
+      ->withErrorCode(self::WORKFLOW_HAS_ACTIVE_RUNS)
+      // translators: %d is the ID of the workflow.
+      ->withMessage(sprintf(__("Can not update workflow with ID '%d' because users are currently active.", 'mailpoet'), $id));
   }
 }
