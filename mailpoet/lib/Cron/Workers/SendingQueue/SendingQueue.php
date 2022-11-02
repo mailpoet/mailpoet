@@ -274,6 +274,7 @@ class SendingQueue {
     $unsubscribeUrls = [];
     $statistics = [];
     $metas = [];
+    $oneClickUnsubscribeUrls = [];
 
     $newsletterEntity = $this->newslettersRepository->findOneById($newsletter->id);
 
@@ -301,7 +302,8 @@ class SendingQueue {
       );
       $preparedSubscribersIds[] = $subscriber->id;
       // create personalized instant unsubsribe link
-      $unsubscribeUrls[] = $this->links->getUnsubscribeUrl($queue, $subscriber->id);
+      $unsubscribeUrls[] = $this->links->getUnsubscribeUrl($queue->id, $subscriberEntity);
+      $oneClickUnsubscribeUrls[] = $this->links->getOneClickUnsubscribeUrl($queue->id, $subscriberEntity);
 
       $metas[] = $this->mailerMetaInfo->getNewsletterMetaInfo($newsletter, $subscriberEntity);
 
@@ -319,12 +321,17 @@ class SendingQueue {
           $preparedSubscribers[0],
           $statistics[0],
           $timer,
-          ['unsubscribe_url' => $unsubscribeUrls[0], 'meta' => $metas[0]]
+          [
+            'unsubscribe_url' => $unsubscribeUrls[0],
+            'meta' => $metas[0],
+            'one_click_unsubscribe' => $oneClickUnsubscribeUrls,
+          ]
         );
         $preparedNewsletters = [];
         $preparedSubscribers = [];
         $preparedSubscribersIds = [];
         $unsubscribeUrls = [];
+        $oneClickUnsubscribeUrls = [];
         $statistics = [];
         $metas = [];
       }
@@ -337,7 +344,7 @@ class SendingQueue {
         $preparedSubscribers,
         $statistics,
         $timer,
-        ['unsubscribe_url' => $unsubscribeUrls, 'meta' => $metas]
+        ['unsubscribe_url' => $unsubscribeUrls, 'meta' => $metas, 'one_click_unsubscribe' => $oneClickUnsubscribeUrls]
       );
     }
     return $queue;

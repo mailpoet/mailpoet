@@ -111,6 +111,7 @@ class MailPoet implements MailerMethod {
           $newsletter[$record],
           $this->processSubscriber($subscriber[$record]),
           (!empty($extraParams['unsubscribe_url'][$record])) ? $extraParams['unsubscribe_url'][$record] : false,
+          (!empty($extraParams['one_click_unsubscribe'][$record])) ? $extraParams['one_click_unsubscribe'][$record] : false,
           (!empty($extraParams['meta'][$record])) ? $extraParams['meta'][$record] : false
         );
       }
@@ -119,13 +120,14 @@ class MailPoet implements MailerMethod {
         $newsletter,
         $this->processSubscriber($subscriber),
         (!empty($extraParams['unsubscribe_url'])) ? $extraParams['unsubscribe_url'] : false,
+        (!empty($extraParams['one_click_unsubscribe'])) ? $extraParams['one_click_unsubscribe'] : false,
         (!empty($extraParams['meta'])) ? $extraParams['meta'] : false
       );
     }
     return $body;
   }
 
-  private function composeBody($newsletter, $subscriber, $unsubscribeUrl, $meta): array {
+  private function composeBody($newsletter, $subscriber, $unsubscribeUrl, $oneClickUnsubscribeUrl, $meta): array {
     $body = [
       'to' => ([
         'address' => $subscriber['email'],
@@ -150,9 +152,10 @@ class MailPoet implements MailerMethod {
       $body['text'] = $newsletter['body']['text'];
     }
     if ($unsubscribeUrl) {
+      $oneClickIsPossible = $this->url->isUsingHttps($unsubscribeUrl);
       $body['unsubscribe'] = [
-        'url' => $unsubscribeUrl,
-        'post' => $this->url->isUsingHttps($unsubscribeUrl),
+        'url' => $oneClickIsPossible ? $oneClickUnsubscribeUrl : $unsubscribeUrl,
+        'post' => $oneClickIsPossible,
       ];
     }
     if ($meta) {
