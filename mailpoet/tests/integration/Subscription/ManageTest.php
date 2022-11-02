@@ -7,7 +7,6 @@ use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Form\Util\FieldNameObfuscator;
-use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\LinkTokens;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Subscription\Manage;
@@ -16,9 +15,6 @@ use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 use MailPoet\Util\Url as UrlHelper;
 
 class ManageTest extends \MailPoetTest {
-  /** @var SettingsController */
-  private $settings;
-
   /** @var SegmentEntity */
   private $segmentB;
 
@@ -38,12 +34,10 @@ class ManageTest extends \MailPoetTest {
     parent::_before();
     $this->_after();
     $segmentFactory = new SegmentFactory();
-    $this->settings = $this->diContainer->get(SettingsController::class);
     $this->subscribersRepository = $this->diContainer->get(SubscribersRepository::class);
     $this->segmentA = $segmentFactory->withName('List A')->create();
     $this->segmentB = $segmentFactory->withName('List B')->create();
-    $this->hiddenSegment = $segmentFactory->withName('Hidden List')->create();
-    $this->settings->set('subscription.segments', [$this->segmentA->getId(), $this->segmentB->getId()]);
+    $this->hiddenSegment = $segmentFactory->withName('Hidden List')->withDisplayInManageSubscriptionPage(0)->create();
     $this->subscriber = (new SubscriberFactory())
       ->withFirstName('John')
       ->withLastName('John')
@@ -66,8 +60,7 @@ class ManageTest extends \MailPoetTest {
         'verifyToken' => function($token) {
           return true;
         },
-      ]),
-      'settings' => $this->settings,
+      ])
     ]);
     $_POST['action'] = 'mailpoet_subscription_update';
     $_POST['token'] = 'token';

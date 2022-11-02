@@ -26,6 +26,7 @@ class Segment {
       'type' => SegmentEntity::TYPE_DEFAULT,
       'name' => 'List ' . bin2hex(random_bytes(7)), // phpcs:ignore
       'description' => '',
+      'display_in_manage_subscription_page' => 1,
     ];
   }
 
@@ -57,11 +58,21 @@ class Segment {
     return $this->update('type', $type);
   }
 
+  /**
+   * @return $this
+   */
+  public function withDisplayInManageSubscriptionPage(int $value) {
+    return $this->update('display_in_manage_subscription_page', $value);
+  }
+
   public function create(): SegmentEntity {
     $segment = $this->segmentsRepository->createOrUpdate(
       $this->data['name'],
       $this->data['description'],
-      $this->data['type']
+      $this->data['type'],
+      [],
+      null,
+      $this->data['display_in_manage_subscription_page']
     );
     if (($this->data['deleted_at'] ?? null) instanceof \DateTimeInterface) {
       $segment->setDeletedAt($this->data['deleted_at']);

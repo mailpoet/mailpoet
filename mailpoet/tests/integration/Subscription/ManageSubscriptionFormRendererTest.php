@@ -54,6 +54,7 @@ class ManageSubscriptionFormRendererTest extends \MailPoetTest {
 
   private function getSegment(): SegmentEntity {
     $segment = new SegmentEntity('Test segment', SegmentEntity::TYPE_DEFAULT, 'Description');
+    $segment->setDisplayInManageSubscriptionPage(1);
     $this->entityManager->persist($segment);
     $this->entityManager->flush();
     return $segment;
