@@ -75,11 +75,17 @@
 
   .mailpoet-section-template-list {
     display: flex;
+    flex-wrap: wrap;
     justify-content: space-between;
     margin-bottom: 40px;
 
-    li {
+    > li {
+      margin-right: 8px;
       max-width: 336px;
+
+      &:last-child {
+        margin-right: 0;
+      }
 
       button {
         background: #fff;
