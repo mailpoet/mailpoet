@@ -56,19 +56,24 @@ export function BuildYourOwnSection(): JSX.Element {
           )}
         </p>
         <ol>
-          {list.map((item) => (
+          {list.map((item, index) => (
             <li
               key={item.slug}
               className={itemOpen === item.slug ? 'open' : ''}
             >
-              <button
-                type="button"
-                onClick={() => setItemOpen(item.slug)}
-                className="mailpoet-section-build-list-button"
-              >
-                {item.title}
-              </button>
-              <p>{item.text}</p>
+              <div className="marker">
+                {index < 10 ? `0${index + 1}` : index + 1}
+              </div>
+              <div>
+                <button
+                  type="button"
+                  onClick={() => setItemOpen(item.slug)}
+                  className="mailpoet-section-build-list-button"
+                >
+                  {item.title}
+                </button>
+                <p>{item.text}</p>
+              </div>
             </li>
           ))}
         </ol>

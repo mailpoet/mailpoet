@@ -124,7 +124,7 @@
   @include full-width;
 
   ol {
-    list-style: decimal-leading-zero;
+    list-style: decimal-leading-zero inside;
     margin: 0;
     max-width: 373px;
     padding: 0;
@@ -143,11 +143,15 @@
 
     > li {
       border-bottom: 1px solid #dcdcde;
+      display: grid;
+      grid-gap: 16px;
+      grid-template-columns: 16px auto;
       margin-bottom: 16px;
       padding-bottom: 16px;
 
-      &::marker {
+      .marker {
         color: #ff5301;
+        display: inline-block;
         font-size: 16px;
         font-weight: 600;
         line-height: 24px;
@@ -155,6 +159,11 @@
 
       p {
         display: none;
+        padding: 0;
+      }
+
+      .mailpoet-section-build-list-button {
+        padding: 0;
       }
 
       &.open {
