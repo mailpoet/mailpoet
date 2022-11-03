@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { ToggleControl } from '@wordpress/components';
 import { dispatch, useSelect } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
@@ -18,7 +19,9 @@ export function GoogleAnalyticsPanel(): JSX.Element {
     [],
   );
 
-  const enabled = typeof selectedStep.args?.ga_campaign !== 'undefined';
+  const hasValue = typeof selectedStep.args?.ga_campaign !== 'undefined';
+  const [enabled, setEnabled] = useState(hasValue);
+
   const panelBody: GoogleAnalyticsPanelBodyType = Hooks.applyFilters(
     'mailpoet.automation.send_email.google_analytics_panel',
     <PremiumModal
@@ -46,13 +49,14 @@ export function GoogleAnalyticsPanel(): JSX.Element {
       <ToggleControl
         label={__('Enable custom GA tracking', 'mailpoet')}
         checked={enabled}
-        onChange={(value) =>
+        onChange={(value) => {
+          setEnabled(value);
           dispatch(storeName).updateStepArgs(
             selectedStep.id,
             'ga_campaign',
             value ? '' : undefined,
-          )
-        }
+          );
+        }}
       />
 
       {enabled && panelBody}

@@ -59,6 +59,8 @@ class CreateEmailAutomationAndWalkThroughCest
 
     $i->click('Send email');
     $i->click('Reply to');
+    $i->waitForText('Use different email address for getting replies to the email');
+    $i->click("//label[contains(text(), 'Use different email address for getting replies to the email')]");
     $i->fillField('"Reply to" name', 'Reply');
     $i->fillField('"Reply to" email address', 'reply@mailpoet.com');
 
