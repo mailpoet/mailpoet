@@ -11,7 +11,6 @@ use MailPoet\Router\Endpoints\Track;
 use MailPoet\Router\Router;
 use MailPoet\Settings\TrackingConfig;
 use MailPoet\Subscribers\LinkTokens;
-use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Subscription\SubscriptionUrlFactory;
 use MailPoet\Util\Helpers;
 
@@ -22,9 +21,6 @@ class Links {
   /** @var NewsletterLinks */
   private $newsletterLinks;
 
-  /** @var SubscribersRepository */
-  private $subscribersRepository;
-
   /** @var NewsletterLinkRepository */
   private $newsletterLinkRepository;
 
@@ -34,13 +30,11 @@ class Links {
   public function __construct(
     LinkTokens $linkTokens,
     NewsletterLinks $newsletterLinks,
-    SubscribersRepository $subscribersRepository,
     NewsletterLinkRepository $newsletterLinkRepository,
     TrackingConfig $trackingConfig
   ) {
     $this->linkTokens = $linkTokens;
     $this->newsletterLinks = $newsletterLinks;
-    $this->subscribersRepository = $subscribersRepository;
     $this->newsletterLinkRepository = $newsletterLinkRepository;
     $this->trackingConfig = $trackingConfig;
   }
