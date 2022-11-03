@@ -42,8 +42,6 @@ parameters:
     - '/Parameter #1 \$cssOrXPath of method AcceptanceTester::moveMouseOver\(\) expects string\|null, array<string, string> given./'
     - '/Function expect invoked with 1 parameter, 0 required\./'
     - '/Call to method getName\(\) on an unknown class _generated\\([a-zA-Z])*Cookie/' # codeception generate incorrect return type in ../../tests/_support/_generated
-    - '/Call to static method container\(\) on an unknown class/'
-    - '/Class Automattic\\WooCommerce\\StoreApi\\Schemas\\ExtendSchema not found./'
     -
       message: "#^Cannot cast string|void to string\\.$#"
       count: 5
@@ -52,10 +50,6 @@ parameters:
       message: "#^Cannot cast string|void to string\\.$#"
       count: 5
       path: ../../lib/Automation/Engine/Storage/WorkflowStorage.php
-    -
-      message: '/^Call to static method custom_orders_table_usage_is_enabled\(\) on an unknown class Automattic\\WooCommerce\\Utilities\\OrderUtil\.$/'
-      count: 1
-      path: ../../lib/WooCommerce/Helper.php
     -
       message: '/^Call to static method get_orders_table_name\(\) on an unknown class Automattic\\WooCommerce\\Internal\\DataStores\\Orders\\OrdersTableDataStore\.$/'
       count: 1
@@ -66,7 +60,7 @@ parameters:
       path: ../../lib/WooCommerce/Helper.php
     -
       message: '/^Call to function method_exists\(\) with/'
-      count: 3
+      count: 2
       path: ../../lib/WooCommerce/Helper.php
     - # WooCommerce stubs contains stubs for older ActionScheduler version
       message: '/^Function as_schedule_recurring_action invoked with 6 parameters, 3-5 required.$/'
