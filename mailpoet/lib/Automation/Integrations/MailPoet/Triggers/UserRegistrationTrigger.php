@@ -12,27 +12,20 @@ use MailPoet\Automation\Integrations\MailPoet\Payloads\SubscriberPayload;
 use MailPoet\Automation\Integrations\MailPoet\Subjects\SegmentSubject;
 use MailPoet\Automation\Integrations\MailPoet\Subjects\SubscriberSubject;
 use MailPoet\Entities\SegmentEntity;
-use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\InvalidStateException;
-use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Validator\Builder;
 use MailPoet\Validator\Schema\ObjectSchema;
 use MailPoet\WP\Functions as WPFunctions;
-use MailPoetVendor\Doctrine\Common\Collections\Criteria;
 
 class UserRegistrationTrigger implements Trigger {
-
-  /** @var SegmentsRepository  */
-  private $segmentsRepository;
 
   /** @var WPFunctions */
   private $wp;
 
   public function __construct(
-    SegmentsRepository $segmentsRepository,
     WPFunctions $wp
   ) {
-    $this->segmentsRepository = $segmentsRepository;
     $this->wp = $wp;
   }
 
@@ -61,11 +54,17 @@ class UserRegistrationTrigger implements Trigger {
   }
 
   public function registerHooks(): void {
-    $this->wp->addAction('mailpoet_user_registered', [$this, 'handleSubscription']);
+    $this->wp->addAction('mailpoet_segment_subscribed', [$this, 'handleSubscription']);
   }
 
-  public function handleSubscription(SubscriberEntity $subscriber): void {
-    $segment = $this->getWpSegment($subscriber);
+  public function handleSubscription(SubscriberSegmentEntity $subscriberSegment): void {
+    $segment = $subscriberSegment->getSegment();
+    $subscriber = $subscriberSegment->getSubscriber();
+
+    if (!$segment || !$subscriber) {
+      throw new InvalidStateException();
+    }
+
     $this->wp->doAction(Hooks::TRIGGER, $this, [
       new Subject(SegmentSubject::KEY, ['segment_id' => $segment->getId()]),
       new Subject(SubscriberSubject::KEY, ['subscriber_id' => $subscriber->getId()]),
@@ -91,16 +90,5 @@ class UserRegistrationTrigger implements Trigger {
     $triggerArgs = $args->getStep()->getArgs();
     $roles = $triggerArgs['roles'] ?? [];
     return !is_array($roles) || !$roles || count(array_intersect($user->roles, $roles)) > 0;
-  }
-
-  private function getWpSegment(SubscriberEntity $subscriber): SegmentEntity {
-    $wpUserSegment = $this->segmentsRepository->getWPUsersSegment();
-
-    $criteria = Criteria::create()->where(Criteria::expr()->eq('segment', $wpUserSegment));
-    $segment = $subscriber->getSubscriberSegments()->matching($criteria)->first() ?: null;
-    if (!$segment || !$segment->getSegment()) {
-      throw new InvalidStateException();
-    }
-    return $segment->getSegment();
   }
 }
