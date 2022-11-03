@@ -561,6 +561,20 @@ class Menu {
     );
   }
 
+  public static function isOnMailPoetAutomationPage(): bool {
+    $screenId = isset($_REQUEST['page']) ? sanitize_text_field(wp_unslash($_REQUEST['page'])) : '';
+    $automationPages = [
+        'mailpoet-automation',
+        'mailpoet-automation-templates',
+        'mailpoet-automation-editor',
+      ];
+    return in_array(
+      $screenId,
+      $automationPages,
+      true
+    );
+  }
+
   public static function isOnMailPoetAdminPage(array $exclude = null, $screenId = null) {
     if (is_null($screenId)) {
       if (empty($_REQUEST['page'])) {
