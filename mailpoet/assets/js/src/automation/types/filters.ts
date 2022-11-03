@@ -21,6 +21,7 @@ export type MoreControlType = {
  */
 
 // mailpoet.automation.workflow.step.more-controls
+// mailpoet.automation.hero.actions
 export type StepMoreControlsType = Record<string, MoreControlType>;
 
 // mailpoet.automation.workflow.add_step_callback

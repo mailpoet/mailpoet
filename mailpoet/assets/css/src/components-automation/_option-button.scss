@@ -1,11 +1,7 @@
 .mailpoet-option-button {
-  display: inline-block;
+  display: flex;
   margin-top: 8px;
   position: relative;
-
-  header {
-    display: flex;
-  }
 }
 
 .mailpoet-option-button-main {
@@ -14,39 +10,16 @@
 }
 
 .mailpoet-option-button-opener {
+  background: var(--wp-admin-theme-color);
   border-radius: 0 2px 2px 0;
+  color: white;
 }
 
-.mailpoet-option-button-options {
-  align-items: flex-end;
-  background: #fff;
-  border-radius: 2px;
-  box-shadow: 0 3px 6px rgba(0, 0, 0, .15);
-  display: none;
-  flex-direction: column;
-  justify-content: center;
-  margin-top: 8px;
-  padding: 8px 8px 0;
-  position: absolute;
-  width: 100%;
-
-  &.isOpen {
-    display: flex;
-  }
-
-  > * {
-    display: block;
-    margin-bottom: 8px;
-    width: 100%;
-  }
+.mailpoet-option-button-opener svg {
+  fill: white;
 }
 
-.mailpoet-option-button-item {
-  background: transparent;
-  border: none;
-  color: #1d2327;
-  cursor: pointer;
-  font-size: 13px;
-  line-height: 21px;
-  text-align: left;
+.mailpoet-option-button-opener .is-opened svg {
+  transform: scale(-1, -1);
+  transform-origin: center 12.5px;
 }
