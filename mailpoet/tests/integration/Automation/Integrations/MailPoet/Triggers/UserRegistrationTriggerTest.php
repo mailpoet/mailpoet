@@ -14,8 +14,10 @@ use MailPoet\Automation\Integrations\MailPoet\Subjects\SubscriberSubject;
 use MailPoet\Automation\Integrations\MailPoet\Triggers\UserRegistrationTrigger;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Segments\WP;
+use MailPoet\Subscribers\SubscriberSegmentRepository;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\WP\Functions;
 
@@ -30,6 +32,9 @@ class UserRegistrationTriggerTest extends \MailPoetTest {
   /** @var SubscribersRepository */
   private $subscribersRepository;
 
+  /** @var SubscriberSegmentRepository */
+  private $subscriberSegmentRepository;
+
   /** @var ?int */
   private $userId = null;
 
@@ -40,6 +45,7 @@ class UserRegistrationTriggerTest extends \MailPoetTest {
     $this->wpSegment = $this->diContainer->get(WP::class);
     $this->segmentRepository = $this->diContainer->get(SegmentsRepository::class);
     $this->subscribersRepository = $this->diContainer->get(SubscribersRepository::class);
+    $this->subscriberSegmentRepository = $this->diContainer->get(SubscriberSegmentRepository::class);
     if (!is_numeric($this->userId)) {
       $userId = wp_insert_user([
         'user_login' => self::USER_NAME,
@@ -56,12 +62,15 @@ class UserRegistrationTriggerTest extends \MailPoetTest {
   public function testCanHandleRegistration() {
     $wpMock = $this->createMock(Functions::class);
     $testee = new UserRegistrationTrigger(
-      $this->segmentRepository,
       $wpMock
     );
 
     $subscriber = $this->subscribersRepository->findOneBy(['wpUserId' => $this->userId]);
-    assert($subscriber instanceof SubscriberEntity);
+    $segment = $this->segmentRepository->getWPUsersSegment();
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
+    $this->assertInstanceOf(SegmentEntity::class, $segment);
+
+    $this->subscriberSegmentRepository->subscribeToSegments($subscriber, [$segment]);
 
     $wpMock->expects($this->once())->method(
       'doAction'
@@ -79,7 +88,9 @@ class UserRegistrationTriggerTest extends \MailPoetTest {
       $this->assertSame($subscriber->getId(), $subjects[1]->getArgs()['subscriber_id']);
     });
 
-    $testee->handleSubscription($subscriber);
+    $subscriberSegment = $this->subscriberSegmentRepository->findOneBy(['subscriber' => $subscriber]);
+    $this->assertInstanceOf(SubscriberSegmentEntity::class, $subscriberSegment);
+    $testee->handleSubscription($subscriberSegment);
   }
 
   /**
@@ -136,5 +147,6 @@ class UserRegistrationTriggerTest extends \MailPoetTest {
     is_multisite() ? wpmu_delete_user($this->userId) : wp_delete_user($this->userId);
     $this->userId = null;
     $this->wpSegment->synchronizeUsers();
+    $this->subscriberSegmentRepository->truncate();
   }
 }
