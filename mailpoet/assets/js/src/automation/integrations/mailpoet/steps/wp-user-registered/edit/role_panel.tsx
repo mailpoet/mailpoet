@@ -1,10 +1,30 @@
 import { PanelBody } from '@wordpress/components';
 import { dispatch, useSelect } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
+import ReactStringReplace from 'react-string-replace';
 import { storeName } from '../../../../../editor/store';
 import { PlainBodyTitle } from '../../../../../editor/components/panel';
 import { userRoles } from './role';
 import { FormTokenField } from '../../../components/form-token-field';
+
+function SettingsInfoText(): JSX.Element {
+  return (
+    <p>
+      {ReactStringReplace(
+        __(
+          '[link]Subscribe in registration form[/link] setting must be enabled.',
+          'mailpoet',
+        ),
+        /\[link\](.*?)\[\/link\]/g,
+        (match) => (
+          <a href="admin.php?page=mailpoet-settings#/basics" target="_blank">
+            {match}
+          </a>
+        ),
+      )}
+    </p>
+  );
+}
 
 export function RolePanel(): JSX.Element {
   const { selectedStep } = useSelect(
@@ -20,9 +40,11 @@ export function RolePanel(): JSX.Element {
   const selected = userRoles.filter((role): boolean =>
     rawSelected.includes(role.id as string),
   );
+
   return (
     <PanelBody opened>
       <PlainBodyTitle title={__('Trigger settings', 'mailpoet')} />
+      <SettingsInfoText />
       <FormTokenField
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
