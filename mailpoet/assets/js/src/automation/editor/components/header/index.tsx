@@ -68,6 +68,24 @@ function ActivateButton({ onClick, label }): JSX.Element {
 function UpdateButton(): JSX.Element {
   const { save } = useDispatch(storeName);
 
+  const { workflow } = useSelect(
+    (select) => ({
+      workflow: select(storeName).getWorkflowData(),
+    }),
+    [],
+  );
+
+  if (workflow.stats.totals.in_progress === 0) {
+    return (
+      <Button
+        variant="primary"
+        className="editor-post-publish-button"
+        onClick={save}
+      >
+        {__('Update', 'mailpoet')}
+      </Button>
+    );
+  }
   return (
     <Tooltip
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
