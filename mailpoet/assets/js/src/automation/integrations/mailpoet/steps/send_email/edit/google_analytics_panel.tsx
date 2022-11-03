@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { ToggleControl } from '@wordpress/components';
-import { dispatch, useSelect } from '@wordpress/data';
+import { useDispatch, useSelect } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
 import { PremiumModal } from 'common/premium_modal';
 import { Hooks } from 'wp-js-hooks';
@@ -19,19 +19,18 @@ export function GoogleAnalyticsPanel(): JSX.Element {
     [],
   );
 
+  const { updateStepArgs } = useDispatch(storeName);
+
   const hasValue = typeof selectedStep.args?.ga_campaign !== 'undefined';
   const [enabled, setEnabled] = useState(hasValue);
 
   const panelBody: GoogleAnalyticsPanelBodyType = Hooks.applyFilters(
     'mailpoet.automation.send_email.google_analytics_panel',
     <PremiumModal
-      onRequestClose={() =>
-        dispatch(storeName).updateStepArgs(
-          selectedStep.id,
-          'ga_campaign',
-          undefined,
-        )
-      }
+      onRequestClose={() => {
+        setEnabled(false);
+        updateStepArgs(selectedStep.id, 'ga_campaign', undefined);
+      }}
     >
       {__(
         'Google Analytics tracking is not available in the free version of the MailPoet plugin.',
@@ -51,11 +50,9 @@ export function GoogleAnalyticsPanel(): JSX.Element {
         checked={enabled}
         onChange={(value) => {
           setEnabled(value);
-          dispatch(storeName).updateStepArgs(
-            selectedStep.id,
-            'ga_campaign',
-            value ? '' : undefined,
-          );
+          if (!value) {
+            updateStepArgs(selectedStep.id, 'ga_campaign', undefined);
+          }
         }}
       />
 
