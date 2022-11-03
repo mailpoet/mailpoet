@@ -423,8 +423,8 @@ class Hooks {
     );
   }
 
-  public function setFooter($text) {
-    return '<a href="https://feedback.mailpoet.com/" rel="noopener noreferrer" target="_blank">Give feedback</a>';
+  public function setFooter() {
+    return '<a href="https://feedback.mailpoet.com/" rel="noopener noreferrer" target="_blank">' . esc_html__('Give feedback', 'mailpoet') . '</a>';
   }
 
   public function setupSettingsLinkInPluginPage() {
