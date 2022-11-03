@@ -102,6 +102,7 @@ jQuery('#adminmenu #toplevel_page_mailpoet-newsletters')
   var mailpoet_subscribers_limit_reached = <%= json_encode(subscribers_limit_reached) %>;
   var mailpoet_email_volume_limit = <%= json_encode(email_volume_limit) %>;
   var mailpoet_email_volume_limit_reached = <%= json_encode(email_volume_limit_reached) %>;
+  var mailpoet_cdn_url = <%= json_encode(cdn_url("")) %>;
 
   <% if not(premium_plugin_active) %>
     var mailpoet_free_premium_subscribers_limit = <%= free_premium_subscribers_limit %>;
