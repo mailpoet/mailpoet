@@ -312,6 +312,11 @@ class Hooks {
       $this->hooksWooCommerce,
       'disableWooCommerceSettings',
     ]);
+
+    $this->wp->addAction('before_woocommerce_init', [
+      $this->hooksWooCommerce,
+      'declareHposCompatibility',
+    ]);
   }
 
   public function setupWooCommerceUsers() {

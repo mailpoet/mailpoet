@@ -133,6 +133,16 @@ class HooksWooCommerce {
     }
   }
 
+  public function declareHposCompatibility() {
+    try {
+      if (class_exists('\Automattic\WooCommerce\Utilities\FeaturesUtil')) {
+        \Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility('custom_order_tables', Env::$pluginPath);
+      }
+    } catch (\Throwable $e) {
+      $this->logError($e, 'WooCommerce HPOS Compatibility');
+    }
+  }
+
   private function logError(\Throwable $e, $name) {
     $logger = $this->loggerFactory->getLogger($name);
     $logger->error($e->getMessage(), [
