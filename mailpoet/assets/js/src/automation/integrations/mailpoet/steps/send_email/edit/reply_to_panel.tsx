@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { TextControl, ToggleControl } from '@wordpress/components';
 import { useDispatch, useSelect } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
@@ -26,6 +26,7 @@ export function ReplyToPanel(): JSX.Element {
   const args = selectedStep.args as ReplyToArgs;
   const hasValue = !!args.reply_to_name || !!args.reply_to_address;
   const [expanded, setExpanded] = useState(hasValue);
+  const prevValue = useRef<{ name?: string; address?: string }>();
 
   const errorFields = errors?.fields ?? {};
   const replyToNameError = errorFields?.reply_to_name ?? '';
@@ -45,7 +46,18 @@ export function ReplyToPanel(): JSX.Element {
         onChange={(value) => {
           setExpanded(value);
           const stepId = selectedStep.id;
-          if (!value) {
+          if (value) {
+            updateStepArgs(stepId, 'reply_to_name', prevValue.current?.name);
+            updateStepArgs(
+              stepId,
+              'reply_to_address',
+              prevValue.current?.address,
+            );
+          } else {
+            prevValue.current = {
+              name: args.reply_to_name,
+              address: args.reply_to_address,
+            };
             updateStepArgs(stepId, 'reply_to_name', undefined);
             updateStepArgs(stepId, 'reply_to_address', undefined);
           }
