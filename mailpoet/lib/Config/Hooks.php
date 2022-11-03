@@ -423,7 +423,11 @@ class Hooks {
     );
   }
 
-  public function setFooter() {
+  public function setFooter(): string {
+
+    if (Menu::isOnMailPoetAutomationPage()) {
+      return '';
+    }
     return '<a href="https://feedback.mailpoet.com/" rel="noopener noreferrer" target="_blank">' . esc_html__('Give feedback', 'mailpoet') . '</a>';
   }
 
