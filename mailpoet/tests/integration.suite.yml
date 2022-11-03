@@ -10,6 +10,3 @@ modules:
     - \Helper\Unit
     - \Helper\WordPress
 error_level: E_ALL
-extensions:
-  enabled:
-    - CheckSkippedTestsExtension
