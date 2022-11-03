@@ -74,6 +74,10 @@ parameters:
       message: '/^Cannot call method get\(\) on mixed.$/'
       count: 1
       path: ../../lib/PostEditorBlocks/WooCommerceBlocksIntegration.php
+    -
+      message: '/^Call to an undefined method Codeception\\TestInterface::getName()./'
+      count: 1
+      path: ../../tests/_support/CheckSkippedTestsExtension.php
   reportUnmatchedIgnoredErrors: true
   dynamicConstantNames:
     - MAILPOET_PREMIUM_INITIALIZED

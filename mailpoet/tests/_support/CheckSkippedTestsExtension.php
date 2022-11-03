@@ -12,7 +12,7 @@ class CheckSkippedTestsExtension extends Extension {
 
   public function checkSkippedTests(FailEvent $event) {
     $branch = getenv('CIRCLE_BRANCH');
-    $testName = $event->getTest()->getMetadata()->getName();
+    $testName = $event->getTest()->getName();
 
     // list of tests that are allowed to be skipped on trunk and release branches
     $allowedToSkipList = [
