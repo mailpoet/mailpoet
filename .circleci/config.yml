@@ -71,13 +71,6 @@ anchors:
           - trunk
           - release
 
-  only_trunk_and_cot: &only_trunk_and_cot
-    filters:
-      branches:
-        only:
-          - trunk
-          - /^cot-.*/
-
   multisite_acceptance_config: &multisite_acceptance_config
     multisite: 1
     requires:
@@ -644,7 +637,6 @@ workflows:
             - qa_php
       - acceptance_tests:
           <<: *slack-fail-post-step
-          <<: *only_trunk_and_cot
           name: acceptance_tests_woo_cot_sync
           group: woo
           enable_cot: 1
@@ -657,7 +649,6 @@ workflows:
             - qa_php
       - acceptance_tests:
           <<: *slack-fail-post-step
-          <<: *only_trunk_and_cot
           name: acceptance_tests_woo_cot_no_sync
           group: woo
           enable_cot: 1
@@ -670,7 +661,6 @@ workflows:
             - qa_php
       - acceptance_tests:
           <<: *slack-fail-post-step
-          <<: *only_trunk_and_cot
           name: acceptance_tests_woo_cot_off
           group: woo
           woo_core_version: 7.1.0-rc.2 # Temporarily force COT beta version
@@ -694,7 +684,6 @@ workflows:
             - qa_php
       - integration_tests:
           <<: *slack-fail-post-step
-          <<: *only_trunk_and_cot
           group: woo
           enable_cot: 1
           enable_cot_sync: 1
@@ -707,7 +696,6 @@ workflows:
             - qa_php
       - integration_tests:
           <<: *slack-fail-post-step
-          <<: *only_trunk_and_cot
           group: woo
           enable_cot: 1
           enable_cot_sync: 0
@@ -720,7 +708,6 @@ workflows:
             - qa_php
       - integration_tests:
           <<: *slack-fail-post-step
-          <<: *only_trunk_and_cot
           group: woo
           woo_core_version: 7.1.0-rc.2 # Temporarily force COT beta version
           name: integration_test_woo_cot_off
