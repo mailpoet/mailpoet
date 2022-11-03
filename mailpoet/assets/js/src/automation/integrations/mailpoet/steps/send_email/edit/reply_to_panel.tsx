@@ -11,8 +11,9 @@ type ReplyToArgs = {
 };
 
 export function ReplyToPanel(): JSX.Element {
-  const { selectedStep, errors } = useSelect(
+  const { context, selectedStep, errors } = useSelect(
     (select) => ({
+      context: select(storeName).getContext(),
       selectedStep: select(storeName).getSelectedStep(),
       errors: select(storeName).getStepError(
         select(storeName).getSelectedStep().id,
@@ -27,6 +28,12 @@ export function ReplyToPanel(): JSX.Element {
   const hasValue = !!args.reply_to_name || !!args.reply_to_address;
   const [expanded, setExpanded] = useState(hasValue);
   const prevValue = useRef<{ name?: string; address?: string }>();
+
+  // defaults
+  const argsContext =
+    context.steps['mailpoet:send-email']?.args_schema?.properties ?? {};
+  const defaultName = argsContext.reply_to_name?.default;
+  const defaultAddress = argsContext.reply_to_address?.default;
 
   const errorFields = errors?.fields ?? {};
   const replyToNameError = errorFields?.reply_to_name ?? '';
@@ -47,12 +54,10 @@ export function ReplyToPanel(): JSX.Element {
           setExpanded(value);
           const stepId = selectedStep.id;
           if (value) {
-            updateStepArgs(stepId, 'reply_to_name', prevValue.current?.name);
-            updateStepArgs(
-              stepId,
-              'reply_to_address',
-              prevValue.current?.address,
-            );
+            const name = prevValue.current?.name ?? defaultName;
+            const address = prevValue.current?.address ?? defaultAddress;
+            updateStepArgs(stepId, 'reply_to_name', name);
+            updateStepArgs(stepId, 'reply_to_address', address);
           } else {
             prevValue.current = {
               name: args.reply_to_name,
