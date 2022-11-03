@@ -1,8 +1,14 @@
+import { useState } from 'react';
 import { TextControl, ToggleControl } from '@wordpress/components';
-import { dispatch, useSelect } from '@wordpress/data';
+import { useDispatch, useSelect } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
 import { storeName } from '../../../../../editor/store';
 import { PanelBody } from '../../../../../editor/components/panel/panel-body';
+
+type ReplyToArgs = {
+  reply_to_name?: string;
+  reply_to_address?: string;
+};
 
 export function ReplyToPanel(): JSX.Element {
   const { selectedStep, errors } = useSelect(
@@ -15,13 +21,11 @@ export function ReplyToPanel(): JSX.Element {
     [],
   );
 
-  const replyToName = selectedStep.args.reply_to_name as string | undefined;
-  const replyToAddress = selectedStep.args.reply_to_address as
-    | string
-    | undefined;
+  const { updateStepArgs } = useDispatch(storeName);
 
-  const enabled =
-    typeof replyToName !== 'undefined' || typeof replyToAddress !== 'undefined';
+  const args = selectedStep.args as ReplyToArgs;
+  const hasValue = !!args.reply_to_name || !!args.reply_to_address;
+  const [expanded, setExpanded] = useState(hasValue);
 
   const errorFields = errors?.fields ?? {};
   const replyToNameError = errorFields?.reply_to_name ?? '';
@@ -37,22 +41,18 @@ export function ReplyToPanel(): JSX.Element {
           'Use different email address for getting replies to the email',
           'mailpoet',
         )}
-        checked={enabled}
+        checked={expanded}
         onChange={(value) => {
-          dispatch(storeName).updateStepArgs(
-            selectedStep.id,
-            'reply_to_name',
-            value ? '' : undefined,
-          );
-          dispatch(storeName).updateStepArgs(
-            selectedStep.id,
-            'reply_to_address',
-            value ? '' : undefined,
-          );
+          setExpanded(value);
+          const stepId = selectedStep.id;
+          if (!value) {
+            updateStepArgs(stepId, 'reply_to_name', undefined);
+            updateStepArgs(stepId, 'reply_to_address', undefined);
+          }
         }}
       />
 
-      {enabled && (
+      {expanded && (
         <>
           <TextControl
             className={
@@ -64,12 +64,12 @@ export function ReplyToPanel(): JSX.Element {
               // translators: A placeholder for a person's name
               __('John Doe', 'mailpoet')
             }
-            value={replyToName ?? ''}
+            value={args.reply_to_name ?? ''}
             onChange={(value) =>
-              dispatch(storeName).updateStepArgs(
+              updateStepArgs(
                 selectedStep.id,
                 'reply_to_name',
-                value,
+                value || undefined,
               )
             }
           />
@@ -85,12 +85,12 @@ export function ReplyToPanel(): JSX.Element {
               // translators: A placeholder for an email
               __('you@domain.com', 'mailpoet')
             }
-            value={replyToAddress ?? ''}
+            value={args.reply_to_address ?? ''}
             onChange={(value) =>
-              dispatch(storeName).updateStepArgs(
+              updateStepArgs(
                 selectedStep.id,
                 'reply_to_address',
-                value,
+                value || undefined,
               )
             }
           />
