@@ -32,6 +32,7 @@ export type StepType = {
   edit: ComponentType;
   foreground: string;
   background: string;
+  createStep?: (step: Step, state: State) => Step;
 };
 
 export type StepErrors = {
