@@ -3,7 +3,7 @@ Contributors: mailpoet
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 5.6
 Tested up to: 6.0
-Stable tag: 3.102.0
+Stable tag: 3.102.1
 Requires PHP: 7.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -218,6 +218,10 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 3.102.1 - 2022-11-03 =
+* Fixed: missing 'CheckoutSchema' class error in WooCommerce blocks integration;
+* Fixed: "Class 'Normalizer' not found" error in WP 6.1 when intl extension is missing.
 
 = 3.102.0 - 2022-11-01 =
 * Added: new subscribers hooks (https://github.com/mailpoet/mailpoet/pull/4443);
