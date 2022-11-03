@@ -667,7 +667,7 @@ workflows:
           enable_cot: 1
           enable_cot_sync: 1
           allow_fail: 1
-          woo_core_version: woo-cot-beta # Temporarily force COT beta version
+          woo_core_version: 7.1.0-rc.2 # Temporarily force COT beta version
           requires:
             - unit_tests
             - static_analysis_php8
@@ -681,7 +681,7 @@ workflows:
           enable_cot: 1
           enable_cot_sync: 0
           allow_fail: 1
-          woo_core_version: woo-cot-beta # Temporarily force COT beta version
+          woo_core_version: 7.1.0-rc.2 # Temporarily force COT beta version
           requires:
             - unit_tests
             - static_analysis_php8
@@ -692,7 +692,7 @@ workflows:
           <<: *only_trunk_and_cot
           name: acceptance_tests_woo_cot_off
           group: woo
-          woo_core_version: woo-cot-beta # Temporarily force COT beta version
+          woo_core_version: 7.1.0-rc.2 # Temporarily force COT beta version
           requires:
             - unit_tests
             - static_analysis_php8
@@ -718,7 +718,7 @@ workflows:
           enable_cot: 1
           enable_cot_sync: 1
           allow_fail: 1
-          woo_core_version: woo-cot-beta # Temporarily force COT beta version
+          woo_core_version: 7.1.0-rc.2 # Temporarily force COT beta version
           name: integration_test_woo_cot_sync
           requires:
             - unit_tests
@@ -732,7 +732,7 @@ workflows:
           enable_cot: 1
           enable_cot_sync: 0
           allow_fail: 1
-          woo_core_version: woo-cot-beta # Temporarily force COT beta version
+          woo_core_version: 7.1.0-rc.2 # Temporarily force COT beta version
           name: integration_test_woo_cot_no_sync
           requires:
             - unit_tests
@@ -743,7 +743,7 @@ workflows:
           <<: *slack-fail-post-step
           <<: *only_trunk_and_cot
           group: woo
-          woo_core_version: woo-cot-beta # Temporarily force COT beta version
+          woo_core_version: 7.1.0-rc.2 # Temporarily force COT beta version
           name: integration_test_woo_cot_off
           requires:
             - unit_tests
