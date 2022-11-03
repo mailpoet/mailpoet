@@ -2,8 +2,6 @@
 
 namespace MailPoet\PostEditorBlocks;
 
-use Automattic\WooCommerce\Blocks\Domain\Services\ExtendRestApi;
-use Automattic\WooCommerce\Blocks\Package;
 use Automattic\WooCommerce\StoreApi\Schemas\ExtendSchema;
 use Automattic\WooCommerce\StoreApi\Schemas\V1\CheckoutSchema;
 use Automattic\WooCommerce\StoreApi\StoreApi;
@@ -113,9 +111,7 @@ class WooCommerceBlocksIntegration {
       return;
     }
 
-    $extend = $this->wooHelper->isWooCommerceBlocksActive('7.2') ?
-      StoreApi::container()->get(ExtendSchema::class) :
-      Package::container()->get(ExtendRestApi::class);
+    $extend = StoreApi::container()->get(ExtendSchema::class);
     $extend->register_endpoint_data(
       [
         'endpoint' => CheckoutSchema::IDENTIFIER,

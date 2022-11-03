@@ -70,6 +70,10 @@ parameters:
       message: '/^Function as_schedule_single_action invoked with 5 parameters, 2-4 required.$/'
       count: 1
       path: ../../lib/Cron/ActionScheduler/ActionScheduler.php
+    -
+      message: '/^Cannot call method get\(\) on mixed.$/'
+      count: 1
+      path: ../../lib/PostEditorBlocks/WooCommerceBlocksIntegration.php
   reportUnmatchedIgnoredErrors: true
   dynamicConstantNames:
     - MAILPOET_PREMIUM_INITIALIZED
