@@ -2,14 +2,16 @@ import classnames from 'classnames';
 import ReactDOM from 'react-dom';
 import { useState } from 'react';
 import { Button, Icon, Popover, SlotFillProvider } from '@wordpress/components';
-import { useSelect } from '@wordpress/data';
+import { store as noticesStore } from '@wordpress/notices';
+import { dispatch, select, StoreDescriptor, useSelect } from '@wordpress/data';
 import { wordpress } from '@wordpress/icons';
 import {
   ComplementaryArea,
-  InterfaceSkeleton,
   FullscreenMode,
+  InterfaceSkeleton,
 } from '@wordpress/interface';
 import { ShortcutProvider } from '@wordpress/keyboard-shortcuts';
+import { __ } from '@wordpress/i18n';
 import { addQueryArgs } from '@wordpress/url';
 import { Header } from './components/header';
 import { InserterSidebar } from './components/inserter-sidebar';
@@ -26,6 +28,7 @@ import { LISTING_NOTICE_PARAMETERS } from '../listing/workflow-listing-notices';
 import { registerApiErrorHandler } from './api-error-handler';
 import { ActivatePanel } from './components/panel/activate-panel';
 import { registerTranslations } from '../i18n';
+import { WorkflowStatus } from '../listing/workflow';
 
 // See:
 //   https://github.com/WordPress/gutenberg/blob/9601a33e30ba41bac98579c8d822af63dd961488/packages/edit-post/src/components/layout/index.js
@@ -33,6 +36,36 @@ import { registerTranslations } from '../i18n';
 
 // disable inserter sidebar until we implement drag & drop
 const showInserterSidebar = false;
+
+/**
+ * Show temporary message that active workflows cant be updated
+ *
+ * see MAILPOET-4744
+ */
+function updateingActiveWorkflowNotPossible() {
+  const workflow = select(storeName).getWorkflowData();
+  if (
+    ![WorkflowStatus.ACTIVE, WorkflowStatus.DEACTIVATING].includes(
+      workflow.status,
+    )
+  ) {
+    return;
+  }
+  if (workflow.stats.totals.in_progress === 0) {
+    return;
+  }
+  const { createNotice } = dispatch(noticesStore as StoreDescriptor);
+  void createNotice(
+    'success',
+    __(
+      'Editing an active workflow is temporarily unavailable. We are working on introducing this functionality.',
+      'mailpoet',
+    ),
+    {
+      type: 'snackbar',
+    },
+  );
+}
 
 function Editor(): JSX.Element {
   const {
@@ -42,7 +75,7 @@ function Editor(): JSX.Element {
     showIconLabels,
     workflow,
   } = useSelect(
-    (select) => ({
+    () => ({
       isFullscreenActive: select(storeName).isFeatureActive('fullscreenMode'),
       isInserterOpened: select(storeName).isInserterSidebarOpened(),
       isSidebarOpened: select(storeName).isSidebarOpened(),
@@ -52,6 +85,7 @@ function Editor(): JSX.Element {
     [],
   );
   const [showActivatePanel, setShowActivatePanel] = useState(false);
+  const [isBooting, setIsBooting] = useState(true);
 
   const className = classnames('interface-interface-skeleton', {
     'is-sidebar-opened': isSidebarOpened,
@@ -69,6 +103,10 @@ function Editor(): JSX.Element {
     setShowActivatePanel(!showActivatePanel);
   };
 
+  if (isBooting) {
+    updateingActiveWorkflowNotPossible();
+    setIsBooting(false);
+  }
   return (
     <ShortcutProvider>
       <SlotFillProvider>
