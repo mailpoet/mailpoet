@@ -67,10 +67,12 @@ export function reducer(state: State, action: Action): State {
           ? action.value(prevArgs[action.name] ?? undefined)
           : action.value;
 
-      const args = {
-        ...prevArgs,
-        [action.name]: value,
-      };
+      const args =
+        value === undefined
+          ? Object.fromEntries(
+              Object.entries(prevArgs).filter(([name]) => name !== action.name),
+            )
+          : { ...prevArgs, [action.name]: value };
 
       const step = { ...state.workflowData.steps[action.stepId], args };
 
