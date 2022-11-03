@@ -4,8 +4,8 @@ namespace MailPoet\PostEditorBlocks;
 
 use Automattic\WooCommerce\Blocks\Domain\Services\ExtendRestApi;
 use Automattic\WooCommerce\Blocks\Package;
-use Automattic\WooCommerce\Blocks\StoreApi\Schemas\CheckoutSchema;
 use Automattic\WooCommerce\StoreApi\Schemas\ExtendSchema;
+use Automattic\WooCommerce\StoreApi\Schemas\V1\CheckoutSchema;
 use Automattic\WooCommerce\StoreApi\StoreApi;
 use MailPoet\Config\Env;
 use MailPoet\Entities\SubscriberEntity;
