@@ -46,39 +46,41 @@ export function BuildYourOwnSection(): JSX.Element {
   const selectedItem = list.filter((item) => item.slug === itemOpen)[0];
 
   return (
-    <section className="mailpoet-automation-section mailpoet-section-build-your-own">
-      <div>
-        <h2>{__('Build your own automation workflows', 'mailpoet')}</h2>
-        <p>
-          {__(
-            'Create customized email sequences with our new automation editor.',
-            'mailpoet',
-          )}
-        </p>
-        <ol>
-          {list.map((item, index) => (
-            <li
-              key={item.slug}
-              className={itemOpen === item.slug ? 'open' : ''}
-            >
-              <div className="marker">
-                {index < 10 ? `0${index + 1}` : index + 1}
-              </div>
-              <div>
-                <button
-                  type="button"
-                  onClick={() => setItemOpen(item.slug)}
-                  className="mailpoet-section-build-list-button"
-                >
-                  {item.title}
-                </button>
-                <p>{item.text}</p>
-              </div>
-            </li>
-          ))}
-        </ol>
+    <section className="mailpoet-automation-section mailpoet-automation-white-background">
+      <div className="mailpoet-automation-section-content mailpoet-section-build-your-own">
+        <div>
+          <h2>{__('Build your own automation workflows', 'mailpoet')}</h2>
+          <p>
+            {__(
+              'Create customized email sequences with our new automation editor.',
+              'mailpoet',
+            )}
+          </p>
+          <ol>
+            {list.map((item, index) => (
+              <li
+                key={item.slug}
+                className={itemOpen === item.slug ? 'open' : ''}
+              >
+                <div className="marker">
+                  {index < 10 ? `0${index + 1}` : index + 1}
+                </div>
+                <div>
+                  <button
+                    type="button"
+                    onClick={() => setItemOpen(item.slug)}
+                    className="mailpoet-section-build-list-button"
+                  >
+                    {item.title}
+                  </button>
+                  <p>{item.text}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
+        </div>
+        <img src={selectedItem.image} alt={selectedItem.title} />
       </div>
-      <img src={selectedItem.image} alt={selectedItem.title} />
     </section>
   );
 }

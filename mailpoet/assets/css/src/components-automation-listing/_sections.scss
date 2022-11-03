@@ -11,6 +11,19 @@
 }
 
 .mailpoet-automation-section {
+  @include full-width;
+}
+
+.mailpoet-automation-white-background {
+  background: #fff;
+}
+
+.mailpoet-automation-section-content {
+  display: block;
+  margin: auto;
+  max-width: 1072px;
+  padding: 65px 0;
+
   h2 {
     font-size: 23px;
     font-weight: 400;
@@ -29,14 +42,10 @@
 }
 
 .mailpoet-automation-section-hero {
-  background: #fff;
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
   margin-top: -20px;
-  padding: 65px;
-
-  @include full-width;
 
   h1 {
     font-size: 32px;
@@ -71,7 +80,7 @@
 }
 
 .mailpoet-section-templates {
-  padding: 48px 64px 48px 84px;
+  padding: 48px 0;
 
   .components-button {
     display: block;
@@ -129,13 +138,9 @@
 }
 
 .mailpoet-section-build-your-own {
-  background: #fff;
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
-  padding: 64px;
-
-  @include full-width;
 
   ol {
     list-style: decimal-leading-zero inside;
