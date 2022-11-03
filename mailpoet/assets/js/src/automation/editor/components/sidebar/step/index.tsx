@@ -30,7 +30,11 @@ export function StepSidebar(): JSX.Element {
         icon={selectedStepType.icon}
       />
 
-      <Edit />
+      <Edit
+        // Force sidebar remount to avoid different steps mixing their data.
+        // This can happen e.g. when having "useState" or "useRef" internally.
+        key={selectedStep.id}
+      />
     </div>
   );
 }
