@@ -64,9 +64,16 @@
   }
 
   img {
-    height: 100%;
-    max-height: 294px;
-    width: auto;
+    margin-top: 16px;
+    max-width: 100%;
+    width: 532px;
+
+    @media screen and (min-width: 1305px) {
+      height: 100%;
+      margin-top: 0;
+      max-height: 294px;
+      width: auto;
+    }
   }
 }
 
