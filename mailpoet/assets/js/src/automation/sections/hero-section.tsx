@@ -2,11 +2,12 @@ import { __ } from '@wordpress/i18n';
 import { Hooks } from '../../hooks';
 import { OptionButton } from '../components/option-button';
 import { MailPoet } from '../../mailpoet';
+import { StepMoreControlsType } from '../types/filters';
 
 export function HeroSection(): JSX.Element {
-  const buttonActions: JSX.Element[] = Hooks.applyFilters(
+  const buttonControls: StepMoreControlsType = Hooks.applyFilters(
     'mailpoet.automation.hero.actions',
-    [],
+    {},
   );
   return (
     <section className="mailpoet-automation-section mailpoet-automation-white-background">
@@ -29,9 +30,8 @@ export function HeroSection(): JSX.Element {
               window.location.href = MailPoet.urls.automationTemplates;
             }}
             title={__('Start with a template', 'mailpoet')}
-          >
-            {buttonActions}
-          </OptionButton>
+            controls={buttonControls}
+          />
         </div>
         <img
           src={`${MailPoet.cdnUrl}automation/sections/hero.png`}
