@@ -141,4 +141,5 @@ interface Window {
     id: number;
     name: string;
   }[];
+  mailpoet_cdn_url: string;
 }

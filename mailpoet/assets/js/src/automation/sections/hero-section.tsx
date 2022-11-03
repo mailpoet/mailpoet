@@ -33,7 +33,7 @@ export function HeroSection(): JSX.Element {
         </OptionButton>
       </div>
       <img
-        src={`${MailPoet.urls.imageAssets}automation/sections/hero.png`}
+        src={`${MailPoet.cdnUrl}automation/sections/hero.png`}
         alt={__('Welcome', 'mailpoet')}
       />
     </section>
