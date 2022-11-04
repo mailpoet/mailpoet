@@ -141,7 +141,7 @@ class Template6BelowPages extends FormTemplate {
         'type' => 'paragraph',
         'id' => 'paragraph',
         'params' => [
-          'content' => '<strong><span style="font-family: Montserrat" data-font="Montserrat" class="mailpoet-has-font">' . $this->replaceLinkTags(_x('We promise we’ll never spam! Take a look at our [link]Privacy Policy[/link] for more info.', 'Text in a web form.', 'mailpoet'), '#') . '</span></strong>',
+          'content' => '<strong><span style="font-family: Montserrat" data-font="Montserrat" class="mailpoet-has-font">' . $this->replacePrivacyLinkTags(_x('We promise we’ll never spam! Take a look at our [link]Privacy Policy[/link] for more info.', 'Text in a web form.', 'mailpoet'), '#') . '</span></strong>',
           'drop_cap' => '0',
           'align' => 'center',
           'font_size' => '14',

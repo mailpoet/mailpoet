@@ -60,7 +60,7 @@ class Template10FixedBar extends FormTemplate {
                 'type' => 'paragraph',
                 'id' => 'paragraph',
                 'params' => [
-                  'content' => '<span style="font-family: Concert One" data-font="Concert One" class="mailpoet-has-font">' . $this->replaceLinkTags(_x('We’d love to keep you updated with our latest news! We promise we’ll never spam. Take a look at our [link]Privacy Policy[/link] for more details.', 'Text in a web form.', 'mailpoet'), '#') . '</span>',
+                  'content' => '<span style="font-family: Concert One" data-font="Concert One" class="mailpoet-has-font">' . $this->replacePrivacyLinkTags(_x('We’d love to keep you updated with our latest news! We promise we’ll never spam. Take a look at our [link]Privacy Policy[/link] for more details.', 'Text in a web form.', 'mailpoet'), '#') . '</span>',
                   'drop_cap' => '0',
                   'align' => 'left',
                   'font_size' => '20',

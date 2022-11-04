@@ -113,7 +113,7 @@ class Template17FixedBar extends FormTemplate {
                 'type' => 'paragraph',
                 'id' => 'paragraph',
                 'params' => [
-                  'content' => '<span style="font-family: Oxygen" data-font="Oxygen" class="mailpoet-has-font"><strong>' . _x('There aren’t any tricks here, only treats!', 'Text in a web form.', 'mailpoet') . ' ' . _x('Subscribe to claim your exclusive Halloween offer from us.', 'Text in a web form.', 'mailpoet') . '</strong><br><strong>' . $this->replaceLinkTags(_x('We don’t spam! Read our [link]privacy policy[/link] for more info.', 'Text in a web form.', 'mailpoet'), '#') . '</strong></span>',
+                  'content' => '<span style="font-family: Oxygen" data-font="Oxygen" class="mailpoet-has-font"><strong>' . _x('There aren’t any tricks here, only treats!', 'Text in a web form.', 'mailpoet') . ' ' . _x('Subscribe to claim your exclusive Halloween offer from us.', 'Text in a web form.', 'mailpoet') . '</strong><br><strong>' . $this->replacePrivacyLinkTags(_x('We don’t spam! Read our [link]privacy policy[/link] for more info.', 'Text in a web form.', 'mailpoet'), '#') . '</strong></span>',
                   'drop_cap' => '0',
                   'align' => 'left',
                   'font_size' => '16',

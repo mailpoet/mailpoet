@@ -50,7 +50,7 @@ class Template7FixedBar extends FormTemplate {
                 'type' => 'paragraph',
                 'id' => 'paragraph',
                 'params' => [
-                  'content' => '<span style="font-family: Cairo" data-font="Cairo" class="mailpoet-has-font">' . $this->replaceLinkTags(_x('Let us do the hard work for you. Sign up to receive our latest deals directly in your inbox. We’ll never send you spam - promise. Find out more in our [link]Privacy Policy[/link].', 'Text in a web form. Keep HTML tags!', 'mailpoet'), '#') . '</span>',
+                  'content' => '<span style="font-family: Cairo" data-font="Cairo" class="mailpoet-has-font">' . $this->replacePrivacyLinkTags(_x('Let us do the hard work for you. Sign up to receive our latest deals directly in your inbox. We’ll never send you spam - promise. Find out more in our [link]Privacy Policy[/link].', 'Text in a web form. Keep HTML tags!', 'mailpoet'), '#') . '</span>',
                   'drop_cap' => '0',
                   'align' => 'left',
                   'font_size' => '13',
