@@ -263,7 +263,11 @@ class WooCheckoutBlocksCest {
 
   private function checkMinimalPluginVersions(\AcceptanceTester $i): bool {
     $wooCommerceVersion = $i->getWooCommerceVersion();
-    if (version_compare($wooCommerceVersion, '5.5.0', '<')) {
+    if (version_compare($wooCommerceVersion, '6.8.0', '<')) {
+      return false;
+    }
+    $wooCommerceBlocksVersion = $i->getWooCommerceBlocksVersion();
+    if (version_compare($wooCommerceBlocksVersion, '8.0.0', '<')) {
       return false;
     }
     $wordPressVersion = $i->getWordPressVersion();

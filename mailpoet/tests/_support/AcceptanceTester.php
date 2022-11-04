@@ -406,6 +406,11 @@ class AcceptanceTester extends \Codeception\Actor {
     return $i->cliToString(['plugin', 'get', self::WOO_COMMERCE_PLUGIN, '--field=version']);
   }
 
+  public function getWooCommerceBlocksVersion(): string {
+    $i = $this;
+    return $i->cliToString(['plugin', 'get', self::WOO_COMMERCE_BLOCKS_PLUGIN, '--field=version']);
+  }
+
   public function getWordPressVersion(): string {
     $i = $this;
     return $i->cliToString(['core', 'version']);
