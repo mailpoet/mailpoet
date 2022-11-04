@@ -848,7 +848,7 @@ class Functions {
     return is_wp_error($value);
   }
 
-  public function isSiteUsingHttps(): bool {
+  public function wpIsSiteUrlUsingHttps(): bool {
     return wp_is_site_url_using_https();
   }
 }
