@@ -56,7 +56,7 @@ export function DeactivateModal({
     [],
   );
   const [selected, setSelected] = useState<
-    WorkflowStatus.INACTIVE | WorkflowStatus.DEACTIVATING
+    WorkflowStatus.DRAFT | WorkflowStatus.DEACTIVATING
   >(WorkflowStatus.DEACTIVATING);
   const [isBusy, setIsBusy] = useState<boolean>(false);
   // translators: %s is the name of the automation.
@@ -107,7 +107,7 @@ export function DeactivateModal({
         <li>
           <label
             className={
-              selected === WorkflowStatus.INACTIVE
+              selected === WorkflowStatus.DRAFT
                 ? 'mailpoet-automation-option active'
                 : 'mailpoet-automation-option'
             }
@@ -117,8 +117,8 @@ export function DeactivateModal({
                 type="radio"
                 disabled={isBusy}
                 name="deactivation-method"
-                checked={selected === WorkflowStatus.INACTIVE}
-                onChange={() => setSelected(WorkflowStatus.INACTIVE)}
+                checked={selected === WorkflowStatus.DRAFT}
+                onChange={() => setSelected(WorkflowStatus.DRAFT)}
               />
             </span>
             <span>

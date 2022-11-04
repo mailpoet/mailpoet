@@ -22,11 +22,6 @@ const tabConfig = [
     className: 'mailpoet-tab-active',
   },
   {
-    name: WorkflowStatus.INACTIVE,
-    title: __('Inactive', 'mailpoet'),
-    className: 'mailpoet-tab-inactive',
-  },
-  {
     name: WorkflowStatus.DRAFT,
     title: _x('Draft', 'noun', 'mailpoet'),
     className: 'mailpoet-tab-draft',

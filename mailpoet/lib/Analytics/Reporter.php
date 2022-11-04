@@ -249,12 +249,6 @@ class Reporter {
         return $workflow->getStatus() === Workflow::STATUS_DRAFT;
       }
     );
-    $inactiveWorkflows = array_filter(
-      $workflows,
-      function(Workflow $workflow): bool {
-        return $workflow->getStatus() === Workflow::STATUS_INACTIVE;
-      }
-    );
     $workflowsWithWordPressUserSubscribesTrigger = array_filter(
       $activeWorkflows,
       function(Workflow $workflow): bool {
@@ -288,7 +282,6 @@ class Reporter {
     return [
       'Automation > Number of active workflows' => $activeWorkflowCount,
       'Automation > Number of draft workflows' => count($draftWorkflows),
-      'Automation > Number of inactive workflows' => count($inactiveWorkflows),
       'Automation > Number of "WordPress user registers" active workflows' => count($workflowsWithWordPressUserSubscribesTrigger),
       'Automation > Number of "Someone subscribes" active workflows ' => count($workflowsWithSomeoneSubscribesTrigger),
       'Automation > Number of steps in shortest active workflow' => $minSteps,

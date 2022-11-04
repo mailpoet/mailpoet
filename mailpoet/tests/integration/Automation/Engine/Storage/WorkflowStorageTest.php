@@ -66,13 +66,13 @@ class WorkflowStorageTest extends \MailPoetTest
     $subscriberTrigger = $this->diContainer->get(SomeoneSubscribesTrigger::class);
     $trigger = new Step('id', Step::TYPE_TRIGGER, $subscriberTrigger->getKey(), [], []);
     $workflow->setSteps(['id' => $trigger]);
-    $workflow->setStatus(Workflow::STATUS_INACTIVE);
+    $workflow->setStatus(Workflow::STATUS_DRAFT);
     $this->testee->updateWorkflow($workflow);
     $this->assertEmpty($this->testee->getActiveWorkflowsByTrigger($subscriberTrigger));
     $workflow->setStatus(Workflow::STATUS_ACTIVE);
     $this->testee->updateWorkflow($workflow);
     $this->assertCount(1, $this->testee->getActiveWorkflowsByTrigger($subscriberTrigger));
-    $workflow->setStatus(Workflow::STATUS_INACTIVE);
+    $workflow->setStatus(Workflow::STATUS_DRAFT);
     $this->testee->updateWorkflow($workflow);
     $this->assertEmpty($this->testee->getActiveWorkflowsByTrigger($subscriberTrigger));
   }

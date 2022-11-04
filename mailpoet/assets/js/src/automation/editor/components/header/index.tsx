@@ -219,12 +219,6 @@ export function Header({
               />
             </>
           )}
-          {workflowStatus === WorkflowStatus.INACTIVE && (
-            <ActivateButton
-              onClick={toggleActivatePanel}
-              label={__('Update & Activate', 'mailpoet')}
-            />
-          )}
           <PinnedItems.Slot scope={storeName} />
           <MoreMenu />
         </div>
