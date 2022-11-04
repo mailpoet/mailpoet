@@ -108,7 +108,7 @@ class Subscription {
   }
 
   private function applyOneClickUnsubscribeStrategy($data): void {
-    if (!$this->wp->isSiteUsingHttps()) {
+    if (!$this->wp->wpIsSiteUrlUsingHttps()) {
       return;
     }
     $subscription = $this->initSubscriptionPage(UserSubscription\Pages::ACTION_UNSUBSCRIBE, $data);
