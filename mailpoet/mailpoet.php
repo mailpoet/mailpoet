@@ -7,7 +7,7 @@
  * Description: Create and send newsletters, post notifications and welcome emails from your WordPress.
  * Author: MailPoet
  * Author URI: https://www.mailpoet.com
- * Requires at least: 5.3
+ * Requires at least: 5.8
  * Text Domain: mailpoet
  * Domain Path: /lang
  *
@@ -35,7 +35,7 @@ function mailpoet_deactivate_plugin() {
 }
 
 // Check for minimum supported WP version
-if (version_compare(get_bloginfo('version'), '5.6', '<')) {
+if (version_compare(get_bloginfo('version'), '5.8', '<')) {
   add_action('admin_notices', 'mailpoet_wp_version_notice');
   // deactivate the plugin
   add_action('admin_init', 'mailpoet_deactivate_plugin');
@@ -55,7 +55,7 @@ function mailpoet_wp_version_notice() {
   $notice = str_replace(
     '[link]',
     '<a href="https://kb.mailpoet.com/article/152-minimum-requirements-for-mailpoet-3#wp_version" target="_blank">',
-    __('MailPoet plugin requires WordPress version 5.6 or newer. Please read our [link]instructions[/link] on how to resolve this issue.', 'mailpoet')
+    __('MailPoet plugin requires WordPress version 5.8 or newer. Please read our [link]instructions[/link] on how to resolve this issue.', 'mailpoet')
   );
   $notice = str_replace('[/link]', '</a>', $notice);
   printf(
