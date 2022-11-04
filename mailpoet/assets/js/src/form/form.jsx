@@ -24,8 +24,19 @@ class FormComponent extends Component {
       this.loadItem(this.props.params.id);
     } else {
       setImmediate(() => {
+        const defaultValues =
+          jQuery('.mailpoet_form').mailpoetSerializeObject();
+        const checkboxField =
+          Array.isArray(this.props.fields) &&
+          this.props.fields.length > 0 &&
+          this.props.fields.find(
+            (field) => field?.type === 'checkbox' && field?.isChecked,
+          );
+        if (checkboxField && checkboxField.name) {
+          defaultValues[checkboxField.name] = '1';
+        }
         this.setState({
-          item: jQuery('.mailpoet_form').mailpoetSerializeObject(),
+          item: defaultValues,
         });
       });
     }

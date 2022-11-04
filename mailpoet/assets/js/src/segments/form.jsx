@@ -28,6 +28,7 @@ const fields = [
         'showInManageSubscriptionPageTip',
       ),
     },
+    isChecked: true, // default checked state
   },
 ];
 
