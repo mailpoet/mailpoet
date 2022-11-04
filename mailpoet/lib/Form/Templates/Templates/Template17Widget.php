@@ -128,7 +128,7 @@ class Template17Widget extends FormTemplate {
         'type' => 'paragraph',
         'id' => 'paragraph',
         'params' => [
-          'content' => '<span style="font-family: Oxygen" data-font="Oxygen" class="mailpoet-has-font">' . $this->replaceLinkTags(_x('We don’t spam! Read our [link]privacy policy[/link] for more info.', 'Text in a web form.', 'mailpoet'), '#') . '</span>',
+          'content' => '<span style="font-family: Oxygen" data-font="Oxygen" class="mailpoet-has-font">' . $this->replacePrivacyLinkTags(_x('We don’t spam! Read our [link]privacy policy[/link] for more info.', 'Text in a web form.', 'mailpoet'), '#') . '</span>',
           'drop_cap' => '0',
           'align' => 'center',
           'font_size' => '13',

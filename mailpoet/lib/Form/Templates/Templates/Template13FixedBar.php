@@ -109,7 +109,7 @@ class Template13FixedBar extends FormTemplate {
                 'type' => 'paragraph',
                 'id' => 'paragraph',
                 'params' => [
-                  'content' => '<span style="font-family: Titillium Web" data-font="Titillium Web" class="mailpoet-has-font">' . _x('SUBSCRIBE TO OUR NEWSLETTER AND SAVE 10% NEXT TIME YOU DINE IN', 'Text in a web form', 'mailpoet') . '</span><br>' . $this->replaceLinkTags(_x('We don’t spam! Read our [link]privacy policy[/link] for more info.', 'Text in a web form.', 'mailpoet'), '#'),
+                  'content' => '<span style="font-family: Titillium Web" data-font="Titillium Web" class="mailpoet-has-font">' . _x('SUBSCRIBE TO OUR NEWSLETTER AND SAVE 10% NEXT TIME YOU DINE IN', 'Text in a web form', 'mailpoet') . '</span><br>' . $this->replacePrivacyLinkTags(_x('We don’t spam! Read our [link]privacy policy[/link] for more info.', 'Text in a web form.', 'mailpoet'), '#'),
                   'drop_cap' => '0',
                   'align' => 'center',
                   'font_size' => '14',

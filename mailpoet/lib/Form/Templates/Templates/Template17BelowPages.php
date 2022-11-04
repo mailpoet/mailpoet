@@ -125,7 +125,7 @@ class Template17BelowPages extends FormTemplate {
                 'type' => 'paragraph',
                 'id' => 'paragraph',
                 'params' => [
-                  'content' => '<span style="font-family: Oxygen" data-font="Oxygen" class="mailpoet-has-font"><strong>' . $this->replaceLinkTags(_x('We don’t spam! Read our [link]privacy policy[/link] for more info.', 'Text in a web form.', 'mailpoet'), '#') . '</strong></span>',
+                  'content' => '<span style="font-family: Oxygen" data-font="Oxygen" class="mailpoet-has-font"><strong>' . $this->replacePrivacyLinkTags(_x('We don’t spam! Read our [link]privacy policy[/link] for more info.', 'Text in a web form.', 'mailpoet'), '#') . '</strong></span>',
                   'drop_cap' => '0',
                   'align' => 'center',
                   'font_size' => '13',
