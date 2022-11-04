@@ -205,7 +205,9 @@ class AbandonedCartTest extends \MailPoetTest {
     $scheduledTasks = $this->scheduledTasksRepository->findAll();
     $this->assertCount(1, $scheduledTasks);
     $this->assertEquals($scheduledTasks[0]->getStatus(), ScheduledTaskEntity::STATUS_SCHEDULED);
-    $this->assertEquals($scheduledTasks[0]->getScheduledAt(), $expectedTime);
+    $scheduledAt = $scheduledTasks[0]->getScheduledAt();
+    $this->assertInstanceOf(\DateTime::class, $scheduledAt);
+    $this->assertEqualsWithDelta($scheduledAt->getTimestamp(), $expectedTime->getTimestamp(), 1);
     $sendingQueue = $this->sendingQueuesRepository->findOneBy(['task' => $scheduledTasks[0]]);
     $this->assertInstanceOf(SendingQueueEntity::class, $sendingQueue);
     $this->assertEquals($sendingQueue->getMeta(), [AbandonedCart::TASK_META_NAME => [123, 456]]);
@@ -229,7 +231,9 @@ class AbandonedCartTest extends \MailPoetTest {
     $scheduledTasks = $this->scheduledTasksRepository->findAll();
     $this->assertCount(1, $scheduledTasks);
     $this->assertEquals($scheduledTasks[0]->getStatus(), ScheduledTaskEntity::STATUS_SCHEDULED);
-    $this->assertEquals($scheduledTasks[0]->getScheduledAt(), $expectedTime);
+    $scheduledAt = $scheduledTasks[0]->getScheduledAt();
+    $this->assertInstanceOf(\DateTime::class, $scheduledAt);
+    $this->assertEqualsWithDelta($scheduledAt->getTimestamp(), $expectedTime->getTimestamp(), 1);
   }
 
   public function testItCancelsEmailWhenCartEmpty() {
@@ -269,11 +273,15 @@ class AbandonedCartTest extends \MailPoetTest {
 
     $completed = $this->scheduledTasksRepository->findOneBy(['status' => ScheduledTaskEntity::STATUS_COMPLETED]);
     $this->assertInstanceOf(ScheduledTaskEntity::class, $completed);
-    $this->assertEquals($completed->getScheduledAt(), $scheduledInPast);
+    $scheduledAt = $completed->getScheduledAt();
+    $this->assertInstanceOf(\DateTime::class, $scheduledAt);
+    $this->assertEqualsWithDelta($scheduledAt->getTimestamp(), $scheduledInPast->getTimestamp(), 1);
 
     $scheduled = $this->scheduledTasksRepository->findOneBy(['status' => ScheduledTaskEntity::STATUS_SCHEDULED]);
     $this->assertInstanceOf(ScheduledTaskEntity::class, $scheduled);
-    $this->assertEquals($scheduled->getScheduledAt(), $expectedTime);
+    $scheduledAt = $scheduled->getScheduledAt();
+    $this->assertInstanceOf(\DateTime::class, $scheduledAt);
+    $this->assertEqualsWithDelta($scheduledAt->getTimestamp(), $expectedTime->getTimestamp(), 1);
   }
 
   public function testItPostponesEmailWhenSubscriberIsActiveOnSite() {
@@ -296,7 +304,9 @@ class AbandonedCartTest extends \MailPoetTest {
     $scheduledTasks = $this->scheduledTasksRepository->findAll();
     $this->assertCount(1, $scheduledTasks);
     $this->assertEquals($scheduledTasks[0]->getStatus(), ScheduledTaskEntity::STATUS_SCHEDULED);
-    $this->assertEquals($scheduledTasks[0]->getScheduledAt(), $expectedTime);
+    $scheduledAt = $scheduledTasks[0]->getScheduledAt();
+    $this->assertInstanceOf(\DateTime::class, $scheduledAt);
+    $this->assertEqualsWithDelta($scheduledAt->getTimestamp(), $expectedTime->getTimestamp(), 1);
   }
 
   private function createAbandonedCartEmail() {
