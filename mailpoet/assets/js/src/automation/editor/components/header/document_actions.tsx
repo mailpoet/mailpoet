@@ -38,11 +38,7 @@ export function DocumentActions({ children }): JSX.Element {
   let chipClass = 'mailpoet-automation-editor-chip-gray';
   if (workflowStatus === WorkflowStatus.ACTIVE) {
     chipClass = 'mailpoet-automation-editor-chip-success';
-  } else if (
-    [WorkflowStatus.INACTIVE, WorkflowStatus.DEACTIVATING].includes(
-      workflowStatus,
-    )
-  ) {
+  } else if (workflowStatus === WorkflowStatus.DEACTIVATING) {
     chipClass = 'mailpoet-automation-editor-chip-danger';
   }
 
@@ -79,8 +75,6 @@ export function DocumentActions({ children }): JSX.Element {
                   >
                     {workflowStatus === WorkflowStatus.ACTIVE &&
                       __('Active', 'mailpoet')}
-                    {workflowStatus === WorkflowStatus.INACTIVE &&
-                      __('Inactive', 'mailpoet')}
                     {workflowStatus === WorkflowStatus.DEACTIVATING &&
                       __('Deactivating', 'mailpoet')}
                     {workflowStatus === WorkflowStatus.DRAFT &&

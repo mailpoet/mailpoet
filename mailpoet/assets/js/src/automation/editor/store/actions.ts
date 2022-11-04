@@ -118,13 +118,13 @@ export function* deactivate(deactivateWorkflowRuns = true) {
     data: {
       ...workflow,
       status: deactivateWorkflowRuns
-        ? WorkflowStatus.INACTIVE
+        ? WorkflowStatus.DRAFT
         : WorkflowStatus.DEACTIVATING,
     },
   });
 
   const { createNotice } = dispatch(noticesStore as StoreDescriptor);
-  if (deactivateWorkflowRuns && data?.data.status === WorkflowStatus.INACTIVE) {
+  if (deactivateWorkflowRuns && data?.data.status === WorkflowStatus.DRAFT) {
     void createNotice(
       'success',
       __('Automation is now deactivated!', 'mailpoet'),

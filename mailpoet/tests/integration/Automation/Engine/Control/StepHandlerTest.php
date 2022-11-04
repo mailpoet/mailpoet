@@ -98,7 +98,7 @@ class StepHandlerTest extends \MailPoetTest
     }
   }
 
-  public function testAnDeactivatingWorkflowGetsInactiveAfterLastRunIsExecuted() {
+  public function testAnDeactivatingWorkflowBecomesDraftAfterLastRunIsExecuted() {
     $workflow = $this->createWorkflow();
     $this->assertInstanceOf(Workflow::class, $workflow);
     $workflowRun1 = $this->createWorkflowRun($workflow);
@@ -127,7 +127,7 @@ class StepHandlerTest extends \MailPoetTest
     $updatedWorkflow = $this->workflowStorage->getWorkflow($workflow->getId());
     /** @var WorkflowRun $updatedworkflowRun */
     $updatedworkflowRun = $this->workflowRunStorage->getWorkflowRun($workflowRun1->getId());
-    $this->assertSame(Workflow::STATUS_INACTIVE, $updatedWorkflow->getStatus());
+    $this->assertSame(Workflow::STATUS_DRAFT, $updatedWorkflow->getStatus());
     $this->assertSame(WorkflowRun::STATUS_COMPLETE, $updatedworkflowRun->getStatus());
   }
 

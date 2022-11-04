@@ -82,7 +82,6 @@ class SubscriberSubject implements Subject {
           SubscriberEntity::STATUS_SUBSCRIBED => __('Subscribed', 'mailpoet'),
           SubscriberEntity::STATUS_UNCONFIRMED => __('Unconfirmed', 'mailpoet'),
           SubscriberEntity::STATUS_UNSUBSCRIBED => __('Unsubscribed', 'mailpoet'),
-          SubscriberEntity::STATUS_INACTIVE => __('Inactive', 'mailpoet'),
           SubscriberEntity::STATUS_BOUNCED => __('Bounced', 'mailpoet'),
         ]
       ),

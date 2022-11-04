@@ -241,9 +241,9 @@ class StepHandler {
     if ($workflow->getStatus() === Workflow::STATUS_DEACTIVATING) {
       $activeRuns = $this->workflowRunStorage->getCountForWorkflow($workflow, WorkflowRun::STATUS_RUNNING);
 
-      // Set a deactivating Workflow to inactive once all workflow runs are finished.
+      // Set a deactivating Workflow to draft once all workflow runs are finished.
       if ($activeRuns === 0) {
-        $workflow->setStatus(Workflow::STATUS_INACTIVE);
+        $workflow->setStatus(Workflow::STATUS_DRAFT);
         $this->workflowStorage->updateWorkflow($workflow);
       }
     }
