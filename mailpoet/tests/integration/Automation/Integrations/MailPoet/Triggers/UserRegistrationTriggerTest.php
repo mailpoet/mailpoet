@@ -62,7 +62,8 @@ class UserRegistrationTriggerTest extends \MailPoetTest {
   public function testCanHandleRegistration() {
     $wpMock = $this->createMock(Functions::class);
     $testee = new UserRegistrationTrigger(
-      $wpMock
+      $wpMock,
+      $this->diContainer->get(SubscribersRepository::class)
     );
 
     $subscriber = $this->subscribersRepository->findOneBy(['wpUserId' => $this->userId]);
