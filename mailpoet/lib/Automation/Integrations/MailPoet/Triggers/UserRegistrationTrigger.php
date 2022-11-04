@@ -14,6 +14,7 @@ use MailPoet\Automation\Integrations\MailPoet\Subjects\SubscriberSubject;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\InvalidStateException;
+use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Validator\Builder;
 use MailPoet\Validator\Schema\ObjectSchema;
 use MailPoet\WP\Functions as WPFunctions;
@@ -23,10 +24,14 @@ class UserRegistrationTrigger implements Trigger {
   /** @var WPFunctions */
   private $wp;
 
+  private $subscribersRepository;
+
   public function __construct(
-    WPFunctions $wp
+    WPFunctions $wp,
+    SubscribersRepository $subscribersRepository
   ) {
     $this->wp = $wp;
+    $this->subscribersRepository = $subscribersRepository;
   }
 
   public function getKey(): string {
@@ -78,6 +83,7 @@ class UserRegistrationTrigger implements Trigger {
     }
 
     $subscriberPayload = $args->getSinglePayloadByClass(SubscriberPayload::class);
+    $this->subscribersRepository->refresh($subscriberPayload->getSubscriber());
     if (!$subscriberPayload->isWPUser()) {
       return false;
     }
