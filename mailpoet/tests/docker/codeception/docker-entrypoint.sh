@@ -53,6 +53,9 @@ else
   wp site create --slug=$WP_TEST_MULTISITE_SLUG
 fi
 
+echo "WORDPRESS VERSION:"
+wp core version
+
 # Load Composer dependencies
 # Set SKIP_DEPS environment flag to not download them. E.g. you have downloaded them yourself
 # Example: docker-compose run -e SKIP_DEPS=1 codeception ...
