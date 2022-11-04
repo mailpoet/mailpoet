@@ -60,6 +60,8 @@ class SendEmailAction implements Action {
   }
 
   public function getArgsSchema(): ObjectSchema {
+    $nameDefault = $this->settings->get('sender.name');
+    $addressDefault = $this->settings->get('sender.address');
     $replyToNameDefault = $this->settings->get('reply_to.name');
     $replyToAddressDefault = $this->settings->get('reply_to.address');
 
@@ -70,14 +72,14 @@ class SendEmailAction implements Action {
       'name' => $nonEmptyString->default(__('Send email', 'mailpoet')),
       'subject' => $nonEmptyString->default(__('Subject', 'mailpoet')),
       'preheader' => Builder::string()->required()->default(''),
-      'sender_name' => $nonEmptyString->default($this->settings->get('sender.name', '')),
-      'sender_address' => $nonEmptyString->formatEmail()->default($this->settings->get('sender.address', '')),
+      'sender_name' => $nonEmptyString->default($nameDefault),
+      'sender_address' => $nonEmptyString->formatEmail()->default($addressDefault),
 
       // optional fields
-      'reply_to_name' => $replyToNameDefault
+      'reply_to_name' => ($replyToNameDefault && $replyToNameDefault !== $nameDefault)
         ? Builder::string()->minLength(1)->default($replyToNameDefault)
         : Builder::string()->minLength(1),
-      'reply_to_address' => $replyToAddressDefault
+      'reply_to_address' => ($replyToAddressDefault && $replyToAddressDefault !== $addressDefault)
         ? Builder::string()->formatEmail()->default($replyToAddressDefault)
         : Builder::string()->formatEmail(),
       'ga_campaign' => Builder::string()->minLength(1),
