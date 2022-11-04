@@ -17,6 +17,7 @@ class CreateEmailAutomationAndWalkThroughCest
     $features->withFeatureEnabled(FeaturesController::AUTOMATION);
     $container = ContainerWrapper::getInstance();
     $migrator = $container->get(Migrator::class);
+    $migrator->deleteSchema();
     $migrator->createSchema();
 
     $settings = new Settings();
