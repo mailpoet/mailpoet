@@ -247,7 +247,7 @@ class NewsletterTest extends \MailPoetTest {
     $newsletter = $this->newslettersRepository->findOneById($this->newsletter->getId());
     $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
     $sendingQueue = $this->sendingTask->queue();
-    $sendingQueue->processedAt = date('Y-m-d H:i:s');
+    $sendingQueue->processedAt = new \DateTime();
 
     // newsletter type is 'standard'
     $newsletter->setType(NewsletterEntity::TYPE_STANDARD);
@@ -260,7 +260,7 @@ class NewsletterTest extends \MailPoetTest {
     expect($updatedNewsletter->getStatus())->equals(NewsletterEntity::STATUS_SENT);
     $sentAt = $updatedNewsletter->getSentAt();
     $this->assertInstanceOf(\DateTime::class, $sentAt);
-    expect($sentAt->format('Y-m-d H:i:s'))->equals($sendingQueue->processedAt);
+    expect($sentAt->getTimestamp())->equals($sendingQueue->processedAt->getTimestamp(), 1);
 
     // newsletter type is 'notification history'
     $newsletter->setType(NewsletterEntity::TYPE_NOTIFICATION_HISTORY);
@@ -273,7 +273,7 @@ class NewsletterTest extends \MailPoetTest {
     expect($updatedNewsletter->getStatus())->equals(NewsletterEntity::STATUS_SENT);
     $sentAt = $updatedNewsletter->getSentAt();
     $this->assertInstanceOf(\DateTime::class, $sentAt);
-    expect($sentAt->format('Y-m-d H:i:s'))->equals($sendingQueue->processedAt);
+    expect($sentAt->getTimestamp())->equals($sendingQueue->processedAt->getTimestamp(), 1);
 
     // all other newsletter types
     $newsletter->setType(NewsletterEntity::TYPE_WELCOME);
