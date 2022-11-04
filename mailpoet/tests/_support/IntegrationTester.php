@@ -98,4 +98,18 @@ class IntegrationTester extends \Codeception\Actor {
   public function uniqueId($length = 10): string {
     return Security::generateRandomString($length);
   }
+
+  /**
+   * Compares two DateTimeInterface objects by comparing timestamp values.
+   * $delta parameter specifies tolerated difference
+   */
+  public function assertEqualDateTimes(DateTimeInterface $date1 = null, DateTimeInterface $date2 = null, int $delta = 0) {
+    if (!$date1 instanceof DateTimeInterface) {
+      throw new \Exception('$date1 is not DateTimeInterface');
+    }
+    if (!$date2 instanceof DateTimeInterface) {
+      throw new \Exception('$date2 is not DateTimeInterface');
+    }
+    expect($date1->getTimestamp())->equals($date2->getTimestamp(), $delta);
+  }
 }
