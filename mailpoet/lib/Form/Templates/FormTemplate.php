@@ -151,4 +151,17 @@ EOL;
   protected function replaceLinkTags($source, $link, $attributes = [], $linkTag = false): string {
     return Helpers::replaceLinkTags($source, $link, $attributes, $linkTag);
   }
+
+  protected function replacePrivacyLinkTags($source, $link = '#'): string {
+    $privacyPolicyUrl = $this->wp->getPrivacyPolicyUrl();
+    $attributes = [];
+    $linkTag = false;
+
+    if (!empty($privacyPolicyUrl)) {
+      $link = $this->wp->escUrl($privacyPolicyUrl);
+      $attributes = ['target' => '_blank'];
+      $linkTag = 'link';
+    }
+    return $this->replaceLinkTags($source, $link, $attributes, $linkTag);
+  }
 }
