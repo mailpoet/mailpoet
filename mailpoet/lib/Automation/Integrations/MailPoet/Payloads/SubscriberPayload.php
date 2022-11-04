@@ -39,4 +39,8 @@ class SubscriberPayload implements Payload {
   public function getWpUserId(): ?int {
     return $this->subscriber->getWpUserId();
   }
+
+  public function getSubscriber(): SubscriberEntity {
+    return $this->subscriber;
+  }
 }
