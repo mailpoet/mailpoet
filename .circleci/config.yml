@@ -807,14 +807,14 @@ workflows:
       - acceptance_tests:
           <<: *slack-fail-post-step
           name: acceptance_oldest
-          woo_core_version: 6.2.2
+          woo_core_version: 6.8.0
           woo_subscriptions_version: 4.3.0
           woo_memberships_version: 1.21.0
-          woo_blocks_version: 5.3.2
+          woo_blocks_version: 6.8.0
           mysql_command: --max_allowed_packet=100M
           mysql_image_version: 5.7.36
-          codeception_image_version: 7.4-cli_20210126.1
-          wordpress_image_version: wp-5.6_php7.2_20220406.1
+          codeception_image_version: 7.4-cli_20220605.0
+          wordpress_image_version: wp-5.8_php7.3_20221104.1
           requires:
             - build
       - unit_tests:
