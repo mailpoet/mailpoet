@@ -15,6 +15,7 @@ use MailPoet\Newsletter\Scheduler\WelcomeScheduler;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\ConfirmationEmailMailer;
 use MailPoet\Subscribers\Source;
+use MailPoet\Subscribers\SubscriberSegmentRepository;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 use MailPoet\WooCommerce\Subscription as WooCommerceSubscription;
@@ -42,11 +43,14 @@ class WP {
   /** @var SubscriberChangesNotifier */
   private $subscriberChangesNotifier;
 
+  private $subscriberSegmentRepository;
+
   public function __construct(
     WPFunctions $wp,
     WelcomeScheduler $welcomeScheduler,
     WooCommerceHelper $wooHelper,
     SubscribersRepository $subscribersRepository,
+    SubscriberSegmentRepository $subscriberSegmentRepository,
     FeaturesController $featuresController,
     SubscriberChangesNotifier $subscriberChangesNotifier
   ) {
@@ -54,6 +58,7 @@ class WP {
     $this->welcomeScheduler = $welcomeScheduler;
     $this->wooHelper = $wooHelper;
     $this->subscribersRepository = $subscribersRepository;
+    $this->subscriberSegmentRepository = $subscriberSegmentRepository;
     $this->featuresController = $featuresController;
     $this->subscriberChangesNotifier = $subscriberChangesNotifier;
   }
@@ -167,6 +172,17 @@ class WP {
         $subscriber,
         [$wpSegment->id]
       );
+
+      if (!$signupConfirmationEnabled && $subscriber->status === Subscriber::STATUS_SUBSCRIBED && $currentFilter === 'user_register') {
+        $subscriberSegment = $this->subscriberSegmentRepository->findOneBy([
+          'subscriber' => $subscriber->id(),
+          'segment' => $wpSegment->id(),
+        ]);
+
+        if (!is_null($subscriberSegment)) {
+          $this->wp->doAction('mailpoet_segment_subscribed', $subscriberSegment);
+        }
+      }
 
       $subscribeOnRegisterEnabled = SettingsController::getInstance()->get('subscribe.on_register.enabled');
       $sendConfirmationEmail =
