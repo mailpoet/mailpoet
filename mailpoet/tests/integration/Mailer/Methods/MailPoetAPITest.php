@@ -128,16 +128,32 @@ class MailPoetAPITest extends \MailPoetTest {
   public function testItCanAddExtraParametersToMultipleMessages() {
     $newsletters = array_fill(0, 10, $this->newsletter);
     $subscribers = array_fill(0, 10, $this->subscriber);
+
+    $unsubscribeUrls = array_merge(array_fill(0, 5, 'http://example.com'), array_fill(0, 5, 'https://example.com'));
+    $unsubscribeUrls = array_map(function ($url, $index){
+      return "$url/$index";
+    }, $unsubscribeUrls, array_keys($unsubscribeUrls));
+
+    $oneClickUrls = array_fill(0, 10, 'https://oneclick.com');
+    $oneClickUrls = array_map(function ($url, $index){
+      return "$url/$index";
+    }, $oneClickUrls, array_keys($oneClickUrls));
+
     $extraParams = [
-      'unsubscribe_url' => array_fill(0, 10, 'http://example.com'),
-      'one_click_unsubscribe' => array_fill(0, 10, 'http://oneclick.com'),
+      'unsubscribe_url' => $unsubscribeUrls,
+      'one_click_unsubscribe' => $oneClickUrls,
       'meta' => array_fill(0, 10, $this->metaInfo),
     ];
 
     $body = $this->mailer->getBody($newsletters, $subscribers, $extraParams);
     expect(count($body))->equals(10);
-    expect($body[0]['unsubscribe'])->equals(['url' => $extraParams['unsubscribe_url'][0], 'post' => false]);
-    expect($body[9]['unsubscribe'])->equals(['url' => $extraParams['unsubscribe_url'][9], 'post' => false]);
+
+    for ($i = 0; $i < count($newsletters); $i++) {
+      $hasHttps = strpos($extraParams['unsubscribe_url'][$i], 'https://') !== false;
+      $url = $hasHttps ? $extraParams['one_click_unsubscribe'][$i] : $extraParams['unsubscribe_url'][$i];
+      expect($body[$i]['unsubscribe'])->equals(['url' => $url, 'post' => $hasHttps]);
+    }
+    
     expect($body[0]['meta'])->equals($extraParams['meta'][0]);
     expect($body[9]['meta'])->equals($extraParams['meta'][9]);
   }
