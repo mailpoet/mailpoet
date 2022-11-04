@@ -68,7 +68,6 @@ class WorkflowPutEndpointTest extends AutomationTest
       [
         'json' => [
           'name' => 'Test',
-          'status' => Workflow::STATUS_TRASH,
           'steps' => $updatedSteps,
         ]
       ]
@@ -82,16 +81,13 @@ class WorkflowPutEndpointTest extends AutomationTest
     /** Ensure the old workflow does not already contain the values we attempt to change */
     $this->assertNotSame($changes[$trigger->getId()]['args'], $trigger->getArgs());
     $this->assertNotSame('test', $this->workflow->getName());
-    $this->assertNotSame(Workflow::STATUS_TRASH, $this->workflow->getStatus());
 
     /** Ensure, the changes have been stored to the database */
     $this->assertSame('Test', $updatedWorkflow->getName());
-    $this->assertSame(Workflow::STATUS_TRASH, $updatedWorkflow->getStatus());
     $this->assertSame($changes[$trigger->getId()]['args'], $updatedTrigger->getArgs());
 
     /** Ensure the updated workflow gets returned from the endpoint */
     $this->assertSame('Test', $data['data']['name']);
-    $this->assertSame(Workflow::STATUS_TRASH, $data['data']['status']);
   }
 
   public function testWorkflowBasicValidationWorks(): void {
