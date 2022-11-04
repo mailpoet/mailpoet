@@ -25,8 +25,8 @@ class ValidStepRule implements WorkflowNodeVisitor {
   }
 
   public function initialize(Workflow $workflow): void {
-    // run full step validation only for active workflows
-    if ($workflow->getStatus() !== Workflow::STATUS_ACTIVE) {
+    // do not validate for drafts
+    if ($workflow->getStatus() === Workflow::STATUS_DRAFT) {
       return;
     }
 
@@ -36,8 +36,8 @@ class ValidStepRule implements WorkflowNodeVisitor {
   }
 
   public function visitNode(Workflow $workflow, WorkflowNode $node): void {
-    // run full step validation only for active workflows
-    if ($workflow->getStatus() !== Workflow::STATUS_ACTIVE) {
+    // do not validate for drafts
+    if ($workflow->getStatus() === Workflow::STATUS_DRAFT) {
       return;
     }
 
@@ -121,8 +121,8 @@ class ValidStepRule implements WorkflowNodeVisitor {
   }
 
   public function complete(Workflow $workflow): void {
-    // run full step validation only for active workflows
-    if ($workflow->getStatus() !== Workflow::STATUS_ACTIVE) {
+    // do not validate for drafts
+    if ($workflow->getStatus() === Workflow::STATUS_DRAFT) {
       return;
     }
 
