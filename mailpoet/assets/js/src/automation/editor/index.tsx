@@ -3,7 +3,12 @@ import ReactDOM from 'react-dom';
 import { useState } from 'react';
 import { Button, Icon, Popover, SlotFillProvider } from '@wordpress/components';
 import { store as noticesStore } from '@wordpress/notices';
-import { dispatch, select, StoreDescriptor, useSelect } from '@wordpress/data';
+import {
+  dispatch,
+  select as globalSelect,
+  StoreDescriptor,
+  useSelect,
+} from '@wordpress/data';
 import { wordpress } from '@wordpress/icons';
 import {
   ComplementaryArea,
@@ -43,7 +48,7 @@ const showInserterSidebar = false;
  * see MAILPOET-4744
  */
 function updateingActiveWorkflowNotPossible() {
-  const workflow = select(storeName).getWorkflowData();
+  const workflow = globalSelect(storeName).getWorkflowData();
   if (
     ![WorkflowStatus.ACTIVE, WorkflowStatus.DEACTIVATING].includes(
       workflow.status,
@@ -75,7 +80,7 @@ function Editor(): JSX.Element {
     showIconLabels,
     workflow,
   } = useSelect(
-    () => ({
+    (select) => ({
       isFullscreenActive: select(storeName).isFeatureActive('fullscreenMode'),
       isInserterOpened: select(storeName).isInserterSidebarOpened(),
       isSidebarOpened: select(storeName).isSidebarOpened(),
