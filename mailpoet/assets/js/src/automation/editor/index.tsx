@@ -47,7 +47,7 @@ const showInserterSidebar = false;
  *
  * see MAILPOET-4744
  */
-function updateingActiveWorkflowNotPossible() {
+function updatingActiveWorkflowNotPossible() {
   const workflow = globalSelect(storeName).getWorkflowData();
   if (
     ![WorkflowStatus.ACTIVE, WorkflowStatus.DEACTIVATING].includes(
@@ -96,7 +96,7 @@ function Editor(): JSX.Element {
     if (!isBooting) {
       return;
     }
-    updateingActiveWorkflowNotPossible();
+    updatingActiveWorkflowNotPossible();
     setIsBooting(false);
   }, [isBooting]);
   const className = classnames('interface-interface-skeleton', {
