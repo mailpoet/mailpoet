@@ -1,6 +1,6 @@
 import classnames from 'classnames';
 import ReactDOM from 'react-dom';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button, Icon, Popover, SlotFillProvider } from '@wordpress/components';
 import { store as noticesStore } from '@wordpress/notices';
 import {
@@ -92,6 +92,13 @@ function Editor(): JSX.Element {
   const [showActivatePanel, setShowActivatePanel] = useState(false);
   const [isBooting, setIsBooting] = useState(true);
 
+  useEffect(() => {
+    if (!isBooting) {
+      return;
+    }
+    updateingActiveWorkflowNotPossible();
+    setIsBooting(false);
+  }, [isBooting]);
   const className = classnames('interface-interface-skeleton', {
     'is-sidebar-opened': isSidebarOpened,
     'show-icon-labels': showIconLabels,
@@ -108,10 +115,6 @@ function Editor(): JSX.Element {
     setShowActivatePanel(!showActivatePanel);
   };
 
-  if (isBooting) {
-    updateingActiveWorkflowNotPossible();
-    setIsBooting(false);
-  }
   return (
     <ShortcutProvider>
       <SlotFillProvider>
