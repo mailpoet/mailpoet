@@ -1,4 +1,4 @@
-import { Search, TableCard } from '@woocommerce/components/build';
+import { TableCard } from '@woocommerce/components/build';
 import { Button, Flex, TabPanel } from '@wordpress/components';
 import { useDispatch, useSelect } from '@wordpress/data';
 import { __, _x } from '@wordpress/i18n';
@@ -160,19 +160,7 @@ export function AutomationListing(): JSX.Element {
           }}
           totalRows={filteredWorkflows.length}
           query={Object.fromEntries(pageSearch)}
-          hasSearch
           showMenu={false}
-          actions={[
-            <Search
-              className="mailpoet-automation-listing-search"
-              allowFreeTextSearch
-              inlineTags
-              key="search"
-              type="custom"
-              disabled={!workflows}
-              autocompleter={{}}
-            />,
-          ]}
         />
       );
     },
