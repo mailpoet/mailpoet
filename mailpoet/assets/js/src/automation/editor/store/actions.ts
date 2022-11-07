@@ -133,6 +133,10 @@ export function* deactivate(deactivateWorkflowRuns = true) {
         type: 'snackbar',
       },
     );
+
+    MailPoet.trackEvent('Automations > Workflow deactivated', {
+      type: 'immediate',
+    });
   }
   if (
     !deactivateWorkflowRuns &&
@@ -148,6 +152,9 @@ export function* deactivate(deactivateWorkflowRuns = true) {
         type: 'snackbar',
       },
     );
+    MailPoet.trackEvent('Automations > Workflow deactivated', {
+      type: 'continuous',
+    });
   }
 
   return {
