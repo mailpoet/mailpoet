@@ -66,6 +66,10 @@ export function getSelectedStep(state: State): Step | undefined {
   return state.selectedStep;
 }
 
+export function getStepById(state: State, id: string): Step | undefined {
+  return state.workflowData.steps[id] ?? undefined;
+}
+
 export function getStepType(state: State, key: string): StepType | undefined {
   return state.stepTypes[key] ?? undefined;
 }
