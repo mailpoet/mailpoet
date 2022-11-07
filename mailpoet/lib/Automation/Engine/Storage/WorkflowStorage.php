@@ -19,6 +19,9 @@ class WorkflowStorage {
   /** @var string */
   private $triggersTable;
 
+  /** @var string */
+  private $runsTable;
+
   /** @var wpdb */
   private $wpdb;
 
@@ -27,6 +30,7 @@ class WorkflowStorage {
     $this->workflowsTable = $wpdb->prefix . 'mailpoet_workflows';
     $this->versionsTable = $wpdb->prefix . 'mailpoet_workflow_versions';
     $this->triggersTable = $wpdb->prefix . 'mailpoet_workflow_triggers';
+    $this->runsTable = $wpdb->prefix . 'mailpoet_workflow_runs';
     $this->wpdb = $wpdb;
   }
 
@@ -152,9 +156,7 @@ class WorkflowStorage {
   }
 
   public function deleteWorkflow(Workflow $workflow): void {
-    $workflowsTable = esc_sql($this->workflowsTable);
-    $versionsTable = esc_sql($this->versionsTable);
-    $workflowRunsTable = esc_sql($this->wpdb->prefix . 'mailpoet_workflow_runs');
+    $workflowRunsTable = esc_sql($this->runsTable);
     $workflowRunLogsTable = esc_sql($this->wpdb->prefix . 'mailpoet_workflow_run_logs');
     $workflowId = $workflow->getId();
     $runLogsQuery = (string)$this->wpdb->prepare(
@@ -173,12 +175,12 @@ class WorkflowStorage {
       throw Exceptions::databaseError($this->wpdb->last_error);
     }
 
-    $runsDeleted = $this->wpdb->delete($this->wpdb->prefix . 'mailpoet_workflow_runs', ['workflow_id' => $workflowId]);
+    $runsDeleted = $this->wpdb->delete($this->runsTable, ['workflow_id' => $workflowId]);
     if ($runsDeleted === false) {
       throw Exceptions::databaseError($this->wpdb->last_error);
     }
 
-    $versionsDeleted = $this->wpdb->delete($versionsTable, ['workflow_id' => $workflowId]);
+    $versionsDeleted = $this->wpdb->delete($this->versionsTable, ['workflow_id' => $workflowId]);
     if ($versionsDeleted === false) {
       throw Exceptions::databaseError($this->wpdb->last_error);
     }
@@ -188,7 +190,7 @@ class WorkflowStorage {
       throw Exceptions::databaseError($this->wpdb->last_error);
     }
 
-    $workflowDeleted = $this->wpdb->delete($workflowsTable, ['id' => $workflowId]);
+    $workflowDeleted = $this->wpdb->delete($this->workflowsTable, ['id' => $workflowId]);
     if ($workflowDeleted === false) {
       throw Exceptions::databaseError($this->wpdb->last_error);
     }
