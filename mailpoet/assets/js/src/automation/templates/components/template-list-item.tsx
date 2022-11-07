@@ -25,6 +25,9 @@ export function TemplateListItem({
   );
 
   if (!error && data) {
+    MailPoet.trackEvent('Automations > Template selected', {
+      'Workflow slug': template.slug,
+    });
     window.location.href = addQueryArgs(MailPoet.urls.automationEditor, {
       id: data.data.id,
     });
