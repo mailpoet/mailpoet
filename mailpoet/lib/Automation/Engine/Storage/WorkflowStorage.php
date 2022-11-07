@@ -11,7 +11,7 @@ use wpdb;
 
 class WorkflowStorage {
   /** @var string */
-  private $workflowTable;
+  private $workflowsTable;
 
   /** @var string */
   private $versionsTable;
@@ -24,7 +24,7 @@ class WorkflowStorage {
 
   public function __construct() {
     global $wpdb;
-    $this->workflowTable = $wpdb->prefix . 'mailpoet_workflows';
+    $this->workflowsTable = $wpdb->prefix . 'mailpoet_workflows';
     $this->versionsTable = $wpdb->prefix . 'mailpoet_workflow_versions';
     $this->triggersTable = $wpdb->prefix . 'mailpoet_workflow_triggers';
     $this->wpdb = $wpdb;
@@ -33,7 +33,7 @@ class WorkflowStorage {
   public function createWorkflow(Workflow $workflow): int {
     $workflowHeaderData = $this->getWorkflowHeaderData($workflow);
     unset($workflowHeaderData['id']);
-    $result = $this->wpdb->insert($this->workflowTable, $workflowHeaderData);
+    $result = $this->wpdb->insert($this->workflowsTable, $workflowHeaderData);
     if (!$result) {
       throw Exceptions::databaseError($this->wpdb->last_error);
     }
@@ -48,7 +48,7 @@ class WorkflowStorage {
     if ($oldRecord && $oldRecord->equals($workflow)) {
       return;
     }
-    $result = $this->wpdb->update($this->workflowTable, $this->getWorkflowHeaderData($workflow), ['id' => $workflow->getId()]);
+    $result = $this->wpdb->update($this->workflowsTable, $this->getWorkflowHeaderData($workflow), ['id' => $workflow->getId()]);
     if ($result === false) {
       throw Exceptions::databaseError($this->wpdb->last_error);
     }
@@ -57,19 +57,19 @@ class WorkflowStorage {
   }
 
   public function getWorkflow(int $workflowId, int $versionId = null): ?Workflow {
-    $workflowTable = esc_sql($this->workflowTable);
-    $versionTable = esc_sql($this->versionsTable);
+    $workflowsTable = esc_sql($this->workflowsTable);
+    $versionsTable = esc_sql($this->versionsTable);
 
     $query = !$versionId ? (string)$this->wpdb->prepare("
       SELECT workflow.*, version.id AS version_id, version.steps
-      FROM $workflowTable as workflow, $versionTable as version
+      FROM $workflowsTable as workflow, $versionsTable as version
       WHERE version.workflow_id = workflow.id AND workflow.id = %d
       ORDER BY version.id DESC
       LIMIT 0,1;",
       $workflowId
     ) : (string)$this->wpdb->prepare("
       SELECT workflow.*, version.id AS version_id, version.steps
-      FROM $workflowTable as workflow, $versionTable as version
+      FROM $workflowsTable as workflow, $versionsTable as version
       WHERE version.workflow_id = workflow.id AND version.id = %d",
       $versionId
     );
@@ -79,19 +79,19 @@ class WorkflowStorage {
 
   /** @return Workflow[] */
   public function getWorkflows(array $status = null): array {
-    $workflowTable = esc_sql($this->workflowTable);
-    $versionTable = esc_sql($this->versionsTable);
+    $workflowsTable = esc_sql($this->workflowsTable);
+    $versionsTable = esc_sql($this->versionsTable);
     $query = $status ?
       (string)$this->wpdb->prepare("
         SELECT workflow.*, version.id AS version_id, version.steps
-        FROM $workflowTable AS workflow INNER JOIN $versionTable as version ON (version.workflow_id=workflow.id)
-        WHERE version.id = (SELECT Max(id) FROM $versionTable WHERE workflow_id= version.workflow_id) AND workflow.status IN (%s)
+        FROM $workflowsTable AS workflow INNER JOIN $versionsTable as version ON (version.workflow_id=workflow.id)
+        WHERE version.id = (SELECT Max(id) FROM $versionsTable WHERE workflow_id= version.workflow_id) AND workflow.status IN (%s)
         ORDER BY workflow.id DESC",
         implode(",", $status)
       ) :
       "SELECT workflow.*, version.id AS version_id, version.steps
-      FROM $workflowTable AS workflow INNER JOIN $versionTable as version ON (version.workflow_id=workflow.id)
-      WHERE version.id = (SELECT Max(id) FROM $versionTable WHERE workflow_id= version.workflow_id)
+      FROM $workflowsTable AS workflow INNER JOIN $versionsTable as version ON (version.workflow_id=workflow.id)
+      WHERE version.id = (SELECT Max(id) FROM $versionsTable WHERE workflow_id= version.workflow_id)
       ORDER BY workflow.id DESC;";
 
     $data = $this->wpdb->get_results($query, ARRAY_A);
@@ -101,19 +101,19 @@ class WorkflowStorage {
   }
 
   public function getWorkflowCount(): int {
-    $workflowTable = esc_sql($this->workflowTable);
-    return (int)$this->wpdb->get_var("SELECT COUNT(*) FROM $workflowTable");
+    $workflowsTable = esc_sql($this->workflowsTable);
+    return (int)$this->wpdb->get_var("SELECT COUNT(*) FROM $workflowsTable");
   }
 
   /** @return string[] */
   public function getActiveTriggerKeys(): array {
-    $workflowTable = esc_sql($this->workflowTable);
+    $workflowsTable = esc_sql($this->workflowsTable);
     $triggersTable = esc_sql($this->triggersTable);
 
     $query = (string)$this->wpdb->prepare(
       "
         SELECT DISTINCT triggers.trigger_key
-        FROM {$workflowTable} AS workflow
+        FROM {$workflowsTable} AS workflow
         JOIN $triggersTable as triggers
         WHERE workflow.status = %s AND workflow.id = triggers.workflow_id
         ORDER BY trigger_key DESC
@@ -125,20 +125,20 @@ class WorkflowStorage {
 
   /** @return Workflow[] */
   public function getActiveWorkflowsByTrigger(Trigger $trigger): array {
-    $workflowTable = esc_sql($this->workflowTable);
-    $versionTable = esc_sql($this->versionsTable);
+    $workflowsTable = esc_sql($this->workflowsTable);
+    $versionsTable = esc_sql($this->versionsTable);
     $triggersTable = esc_sql($this->triggersTable);
 
     $query = (string)$this->wpdb->prepare(
       "
         SELECT workflow.*, version.id AS version_id, version.steps
-        FROM $workflowTable AS workflow
+        FROM $workflowsTable AS workflow
         INNER JOIN $triggersTable as t ON (t.workflow_id = workflow.id)
-        INNER JOIN $versionTable as version ON (version.workflow_id = workflow.id)
+        INNER JOIN $versionsTable as version ON (version.workflow_id = workflow.id)
         WHERE workflow.status = %s
         AND t.trigger_key = %s
         AND version.id = (
-          SELECT MAX(id) FROM $versionTable WHERE workflow_id = version.workflow_id
+          SELECT MAX(id) FROM $versionsTable WHERE workflow_id = version.workflow_id
         )
       ",
       Workflow::STATUS_ACTIVE,
@@ -152,16 +152,16 @@ class WorkflowStorage {
   }
 
   public function deleteWorkflow(Workflow $workflow): void {
-    $workflowTable = esc_sql($this->workflowTable);
-    $versionTable = esc_sql($this->versionsTable);
-    $workflowRunTable = esc_sql($this->wpdb->prefix . 'mailpoet_workflow_runs');
-    $workflowRunLogTable = esc_sql($this->wpdb->prefix . 'mailpoet_workflow_run_logs');
+    $workflowsTable = esc_sql($this->workflowsTable);
+    $versionsTable = esc_sql($this->versionsTable);
+    $workflowRunsTable = esc_sql($this->wpdb->prefix . 'mailpoet_workflow_runs');
+    $workflowRunLogsTable = esc_sql($this->wpdb->prefix . 'mailpoet_workflow_run_logs');
     $workflowId = $workflow->getId();
     $runLogsQuery = $this->wpdb->prepare(
       "
-        DELETE FROM $workflowRunLogTable
+        DELETE FROM $workflowRunLogsTable
         WHERE workflow_run_id IN (
-          SELECT id FROM $workflowRunTable
+          SELECT id FROM $workflowRunsTable
           WHERE workflow_id = %d
         )
       ",
@@ -179,7 +179,7 @@ class WorkflowStorage {
     if (!is_int($runsDeleted)) {
       throw Exceptions::databaseError($this->wpdb->last_error);
     }
-    $versionsDeleted = $this->wpdb->delete($versionTable, ['workflow_id' => $workflowId]);
+    $versionsDeleted = $this->wpdb->delete($versionsTable, ['workflow_id' => $workflowId]);
     if (!is_int($versionsDeleted)) {
       throw Exceptions::databaseError($this->wpdb->last_error);
     }
@@ -187,23 +187,23 @@ class WorkflowStorage {
     if (!is_int($triggersDeleted)) {
       throw Exceptions::databaseError($this->wpdb->last_error);
     }
-    $workflowDeleted = $this->wpdb->delete($workflowTable, ['id' => $workflowId]);
+    $workflowDeleted = $this->wpdb->delete($workflowsTable, ['id' => $workflowId]);
     if (!is_int($workflowDeleted)) {
       throw Exceptions::databaseError($this->wpdb->last_error);
     }
   }
 
   public function truncate(): bool {
-    $workflowTable = esc_sql($this->workflowTable);
-    $versionTable = esc_sql($this->versionsTable);
+    $workflowsTable = esc_sql($this->workflowsTable);
+    $versionsTable = esc_sql($this->versionsTable);
     $triggersTable = esc_sql($this->versionsTable);
-    return $this->wpdb->query("truncate $workflowTable;") === true
-      && $this->wpdb->query("truncate $versionTable;") === true
+    return $this->wpdb->query("truncate $workflowsTable;") === true
+      && $this->wpdb->query("truncate $versionsTable;") === true
       && $this->wpdb->query("truncate $triggersTable;") === true;
   }
 
   public function getNameColumnLength(): int {
-    $nameColumnLengthInfo = $this->wpdb->get_col_length($this->workflowTable, 'name');
+    $nameColumnLengthInfo = $this->wpdb->get_col_length($this->workflowsTable, 'name');
     return is_array($nameColumnLengthInfo)
       ? $nameColumnLengthInfo['length'] ?? 255
       : 255;
