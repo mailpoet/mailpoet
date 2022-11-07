@@ -423,9 +423,7 @@ class SchedulerTest extends \MailPoetTest {
     /** @var SendingQueue $updatedQueue */
     $updatedQueue = SendingQueue::findOne($queue->id);
     $updatedQueue = SendingTask::createFromQueue($updatedQueue);
-    expect(Carbon::parse($updatedQueue->scheduledAt))->equals(
-      $currentTime->addMinutes(ScheduledTask::BASIC_RESCHEDULE_TIMEOUT)
-    );
+    $this->tester->assertEqualDateTimes(Carbon::parse($updatedQueue->scheduledAt), $currentTime->addMinutes(ScheduledTask::BASIC_RESCHEDULE_TIMEOUT), 1);
     WPFunctions::set(new WPFunctions());
   }
 
