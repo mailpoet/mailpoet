@@ -167,14 +167,6 @@ class Workflow {
           return $step->toArray();
         }, $this->steps)
       ),
-      'trigger_keys' => Json::encode(
-        array_reduce($this->steps, function (array $triggerKeys, Step $step): array {
-          if ($step->getType() === Step::TYPE_TRIGGER) {
-            $triggerKeys[] = $step->getKey();
-          }
-          return $triggerKeys;
-        }, [])
-      ),
     ];
   }
 
