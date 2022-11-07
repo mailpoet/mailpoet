@@ -102,6 +102,7 @@ export function* activate() {
         type: 'snackbar',
       },
     );
+    MailPoet.trackEvent('Automations > Workflow activated');
   }
 
   return {
