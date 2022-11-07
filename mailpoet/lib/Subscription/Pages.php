@@ -215,9 +215,11 @@ class Pages {
     // when global status changes to subscribed, fire subscribed hook for all subscribed segments
     if ($this->featuresController->isSupported(FeaturesController::AUTOMATION)) {
       $segments = $this->subscriber->getSubscriberSegments();
-      foreach ($segments as $subscriberSegment) {
-        if ($subscriberSegment->getStatus() === SubscriberEntity::STATUS_SUBSCRIBED) {
-          $this->wp->doAction('mailpoet_segment_subscribed', $subscriberSegment);
+      if ($originalStatus !== SubscriberEntity::STATUS_SUBSCRIBED) {
+        foreach ($segments as $subscriberSegment) {
+          if ($subscriberSegment->getStatus() === SubscriberEntity::STATUS_SUBSCRIBED) {
+            $this->wp->doAction('mailpoet_segment_subscribed', $subscriberSegment);
+          }
         }
       }
     }
