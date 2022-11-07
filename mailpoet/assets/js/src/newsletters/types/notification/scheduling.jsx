@@ -10,17 +10,11 @@ import {
   monthDayValues,
   nthWeekDayValues,
 } from 'newsletters/scheduling/common.jsx';
-
-const customValues = {
-  ...intervalValues,
-  immediately: `${MailPoet.I18n.t('immediately')} ${MailPoet.I18n.t(
-    'postNotificationNewsletterAfterValueText',
-  )}`,
-};
+import { Grid } from 'common/grid';
 
 const intervalField = {
   name: 'intervalType',
-  values: customValues,
+  values: intervalValues,
 };
 
 const timeOfDayField = {
@@ -131,12 +125,21 @@ class NotificationScheduling extends Component {
 
     return (
       <div>
-        <Select
-          field={intervalField}
-          item={this.getCurrentValue()}
-          onValueChange={this.handleIntervalChange}
-          automationId="newsletter_interval_type"
-        />
+        <Grid.CenteredRow>
+          <Select
+            field={intervalField}
+            item={this.getCurrentValue()}
+            onValueChange={this.handleIntervalChange}
+            automationId="newsletter_interval_type"
+          />
+          {value.intervalType === 'immediately' && (
+            <div>
+              <p>
+                {MailPoet.I18n.t('postNotificationNewsletterAfterValueText')}
+              </p>
+            </div>
+          )}
+        </Grid.CenteredRow>
         <div className="mailpoet-gap" />
 
         <div className="mailpoet-grid-column mailpoet-flex">
