@@ -76,6 +76,7 @@ function Editor(): JSX.Element {
   const {
     isFullscreenActive,
     isInserterOpened,
+    isActivationPanelOpened,
     isSidebarOpened,
     showIconLabels,
     workflow,
@@ -84,12 +85,12 @@ function Editor(): JSX.Element {
       isFullscreenActive: select(storeName).isFeatureActive('fullscreenMode'),
       isInserterOpened: select(storeName).isInserterSidebarOpened(),
       isSidebarOpened: select(storeName).isSidebarOpened(),
+      isActivationPanelOpened: select(storeName).isActivationPanelOpened(),
       showIconLabels: select(storeName).isFeatureActive('showIconLabels'),
       workflow: select(storeName).getWorkflowData(),
     }),
     [],
   );
-  const [showActivatePanel, setShowActivatePanel] = useState(false);
   const [isBooting, setIsBooting] = useState(true);
 
   useEffect(() => {
@@ -111,10 +112,6 @@ function Editor(): JSX.Element {
     return null;
   }
 
-  const toggleActivatePanel = () => {
-    setShowActivatePanel(!showActivatePanel);
-  };
-
   return (
     <ShortcutProvider>
       <SlotFillProvider>
@@ -135,12 +132,7 @@ function Editor(): JSX.Element {
               </div>
             )
           }
-          header={
-            <Header
-              showInserterToggle={showInserterSidebar}
-              toggleActivatePanel={toggleActivatePanel}
-            />
-          }
+          header={<Header showInserterToggle={showInserterSidebar} />}
           content={
             <>
               <EditorNotices />
@@ -152,7 +144,7 @@ function Editor(): JSX.Element {
             showInserterSidebar && isInserterOpened ? <InserterSidebar /> : null
           }
         />
-        {showActivatePanel && <ActivatePanel onClose={toggleActivatePanel} />}
+        {isActivationPanelOpened && <ActivatePanel />}
         <Popover.Slot />
       </SlotFillProvider>
     </ShortcutProvider>

@@ -23,7 +23,7 @@ import {
 //   https://github.com/WordPress/gutenberg/blob/9601a33e30ba41bac98579c8d822af63dd961488/packages/edit-post/src/components/header/index.js
 //   https://github.com/WordPress/gutenberg/blob/0ee78b1bbe9c6f3e6df99f3b967132fa12bef77d/packages/edit-site/src/components/header/index.js
 
-function ActivateButton({ onClick, label }): JSX.Element {
+function ActivateButton({ label }): JSX.Element {
   const { errors, isDeactivating } = useSelect(
     (select) => ({
       errors: select(storeName).getErrors(),
@@ -33,12 +33,13 @@ function ActivateButton({ onClick, label }): JSX.Element {
     }),
     [],
   );
+  const { openActivationPanel } = useDispatch(storeName);
 
   const button = (
     <Button
       variant="primary"
       className="editor-post-publish-button"
-      onClick={onClick}
+      onClick={openActivationPanel}
       disabled={isDeactivating || !!errors}
     >
       {label}
@@ -201,13 +202,9 @@ function DeactivateNowButton(): JSX.Element {
 
 type Props = {
   showInserterToggle: boolean;
-  toggleActivatePanel: () => void;
 };
 
-export function Header({
-  showInserterToggle,
-  toggleActivatePanel,
-}: Props): JSX.Element {
+export function Header({ showInserterToggle }: Props): JSX.Element {
   const { setWorkflowName } = useDispatch(storeName);
   const { workflowName, workflowStatus } = useSelect(
     (select) => ({
@@ -255,10 +252,7 @@ export function Header({
           {workflowStatus === WorkflowStatus.DRAFT && (
             <>
               <SaveDraftButton />
-              <ActivateButton
-                onClick={toggleActivatePanel}
-                label={__('Activate', 'mailpoet')}
-              />
+              <ActivateButton label={__('Activate', 'mailpoet')} />
             </>
           )}
           {workflowStatus === WorkflowStatus.ACTIVE && (
@@ -270,10 +264,7 @@ export function Header({
           {workflowStatus === WorkflowStatus.DEACTIVATING && (
             <>
               <DeactivateNowButton />
-              <ActivateButton
-                onClick={toggleActivatePanel}
-                label={__('Update & Activate', 'mailpoet')}
-              />
+              <ActivateButton label={__('Update & Activate', 'mailpoet')} />
             </>
           )}
           <PinnedItems.Slot scope={storeName} />

@@ -21,6 +21,10 @@ export function isInserterSidebarOpened(state: State): boolean {
   return state.inserterSidebar.isOpened;
 }
 
+export function isActivationPanelOpened(state: State): boolean {
+  return state.activationPanel.isOpened;
+}
+
 export function getContext(state: State): Context {
   return state.context;
 }

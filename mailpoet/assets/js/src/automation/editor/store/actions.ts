@@ -29,10 +29,20 @@ const trackErrors = (errors) => {
   });
 };
 
-export const openSidebar =
-  (key) =>
-  ({ registry }) =>
+export const openActivationPanel = () => ({
+  type: 'SET_ACTIVATION_PANEL_VISIBILITY',
+  value: true,
+});
+export const closeActivationPanel = () => ({
+  type: 'SET_ACTIVATION_PANEL_VISIBILITY',
+  value: false,
+});
+
+export const openSidebar = (key) => {
+  dispatch(storeName).closeActivationPanel();
+  return ({ registry }) =>
     registry.dispatch(interfaceStore).enableComplementaryArea(storeName, key);
+};
 
 export const closeSidebar =
   () =>

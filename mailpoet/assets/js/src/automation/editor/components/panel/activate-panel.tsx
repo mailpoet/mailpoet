@@ -100,7 +100,7 @@ function PostStep({ onClose }): JSX.Element {
   );
 }
 
-export function ActivatePanel({ onClose }): JSX.Element {
+export function ActivatePanel(): JSX.Element {
   const { workflow, errors } = useSelect(
     (select) => ({
       errors: select(storeName).getErrors(),
@@ -109,11 +109,13 @@ export function ActivatePanel({ onClose }): JSX.Element {
     [],
   );
 
+  const { closeActivationPanel } = useDispatch(storeName);
+
   useEffect(() => {
     if (errors) {
-      onClose();
+      closeActivationPanel();
     }
-  }, [errors, onClose]);
+  }, [errors, closeActivationPanel]);
 
   if (errors) {
     return null;
@@ -121,8 +123,8 @@ export function ActivatePanel({ onClose }): JSX.Element {
   const isActive = workflow.status === WorkflowStatus.ACTIVE;
   return (
     <div className="mailpoet-automation-activate-panel">
-      {isActive && <PostStep onClose={onClose} />}
-      {!isActive && <PreStep onClose={onClose} />}
+      {isActive && <PostStep onClose={closeActivationPanel} />}
+      {!isActive && <PreStep onClose={closeActivationPanel} />}
     </div>
   );
 }
