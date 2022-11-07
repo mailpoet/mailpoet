@@ -119,8 +119,14 @@ class UserRegistrationTriggerCest
     if ($signup) {
       $i->click('#mailpoet_subscribe_on_register');
     }
-    $i->click('Next');
-    $i->waitForText($username . ' is your new username', 10);
+    $i->click('input[type=submit]');
+
+    // Waiting text in Try is for normal WP site, Catch is for multi-site as they differ in UI
+    try {
+      $i->waitForText('Registration complete.', 10);
+    } catch (\Exception $e) {
+      $i->waitForText($username . ' is your new username', 10);
+    }
   }
 
   private function createWorkflow(): Workflow {
