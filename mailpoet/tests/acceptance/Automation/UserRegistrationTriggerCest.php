@@ -66,7 +66,7 @@ class UserRegistrationTriggerCest
     $i->dontSee('Entered 1');
     $i->logOut();
 
-    $this->registerWith($i,'workflow-triggered-by-registration', 'test@mailpoet.com');
+    $this->registerWith($i,'workflowtriggeredbyregistration', 'test@mailpoet.com');
 
     $i->login();
     $i->amOnMailpoetPage('automation');
@@ -90,7 +90,7 @@ class UserRegistrationTriggerCest
     $i->dontSee('Entered 1');
     $i->logOut();
 
-    $this->registerWith($i,'workflow-triggered-by-registration', 'test@mailpoet.com');
+    $this->registerWith($i,'workflowtriggeredbyregistration', 'test@mailpoet.com');
 
     $i->login();
 
@@ -119,8 +119,8 @@ class UserRegistrationTriggerCest
     if ($signup) {
       $i->click('#mailpoet_subscribe_on_register');
     }
-    $i->click('Register');
-    $i->waitForText('Registration complete.', 10);
+    $i->click('Next');
+    $i->waitForText($username + ' is your new username', 10);
   }
 
   private function createWorkflow(): Workflow {
