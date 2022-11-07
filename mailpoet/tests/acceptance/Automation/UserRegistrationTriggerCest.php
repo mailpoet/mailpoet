@@ -120,7 +120,7 @@ class UserRegistrationTriggerCest
       $i->click('#mailpoet_subscribe_on_register');
     }
     $i->click('Next');
-    $i->waitForText($username + ' is your new username', 10);
+    $i->waitForText($username . ' is your new username', 10);
   }
 
   private function createWorkflow(): Workflow {
