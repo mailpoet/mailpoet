@@ -6,7 +6,6 @@ use MailPoet\Config\SubscriberChangesNotifier;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
-use MailPoet\Features\FeaturesController;
 use MailPoet\Models\ModelValidator;
 use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
@@ -37,9 +36,6 @@ class WP {
   /** @var SubscribersRepository */
   private $subscribersRepository;
 
-  /** @var FeaturesController */
-  private $featuresController;
-
   /** @var SubscriberChangesNotifier */
   private $subscriberChangesNotifier;
 
@@ -51,7 +47,6 @@ class WP {
     WooCommerceHelper $wooHelper,
     SubscribersRepository $subscribersRepository,
     SubscriberSegmentRepository $subscriberSegmentRepository,
-    FeaturesController $featuresController,
     SubscriberChangesNotifier $subscriberChangesNotifier
   ) {
     $this->wp = $wp;
@@ -59,7 +54,6 @@ class WP {
     $this->wooHelper = $wooHelper;
     $this->subscribersRepository = $subscribersRepository;
     $this->subscriberSegmentRepository = $subscriberSegmentRepository;
-    $this->featuresController = $featuresController;
     $this->subscriberChangesNotifier = $subscriberChangesNotifier;
   }
 
@@ -215,17 +209,6 @@ class WP {
           (array)$wpUser,
           (array)$oldWpUserData
         );
-      }
-
-      // fire user registered hook for new WP segment subscribers
-      if (
-        $this->featuresController->isSupported(FeaturesController::AUTOMATION)
-        && $currentFilter === 'user_register'
-      ) {
-        $subscriberEntity = $this->subscribersRepository->findOneById($subscriber->id);
-        if ($subscriberEntity instanceof SubscriberEntity) {
-          $this->wp->doAction('mailpoet_user_registered', $subscriberEntity);
-        }
       }
     }
   }
