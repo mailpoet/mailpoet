@@ -53,22 +53,58 @@ class WorkflowTemplateStorage {
   }
 
   private function createTemplates(): array {
-    $simpleWelcomeEmail = new WorkflowTemplate(
-      'simple-welcome-email',
+    $subscriberWelcomeEmail = new WorkflowTemplate(
+      'subscriber-welcome-email',
       WorkflowTemplate::CATEGORY_WELCOME,
-      "Automation template description is going to be here. Let's describe a lot of interesting ideas which incorporated into this beautiful and useful template",
+      __(
+        "Send a welcome email when someone subscribes to your list. Optionally, you can choose to delay this email by a couple of hours or days.",
+        'mailpoet'
+      ),
       $this->builder->createFromSequence(
-        __('Simple welcome email', 'mailpoet'),
+        __('Welcome new subscribers', 'mailpoet'),
         [
           'mailpoet:someone-subscribes',
           'core:delay',
           'mailpoet:send-email',
+        ],
+        [
+          [],
+          [
+            'delay' => 1,
+            'delay_type' => 'MINUTES',
+          ],
+          [],
+        ]
+      )
+    );
+    $userWelcomeEmail = new WorkflowTemplate(
+      'user-welcome-email',
+      WorkflowTemplate::CATEGORY_WELCOME,
+      __(
+        "Send a welcome email when a new WordPress user registers to your website. Optionally, you can choose to delay this email by a couple of hours or days.",
+        'mailpoet'
+      ),
+      $this->builder->createFromSequence(
+        __('Welcome new WordPress users', 'mailpoet'),
+        [
+          'mailpoet:wp-user-registered',
+          'core:delay',
+          'mailpoet:send-email',
+        ],
+        [
+          [],
+          [
+            'delay' => 1,
+            'delay_type' => 'MINUTES',
+          ],
+          [],
         ]
       )
     );
 
     $templates = $this->wp->applyFilters(Hooks::WORKFLOW_TEMPLATES, [
-      $simpleWelcomeEmail,
+      $subscriberWelcomeEmail,
+      $userWelcomeEmail,
     ]);
     return is_array($templates) ? $templates : [];
   }
