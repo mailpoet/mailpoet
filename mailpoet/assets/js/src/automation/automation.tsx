@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
 import { BrowserRouter } from 'react-router-dom';
 import { TopBarWithBeamer } from 'common/top_bar/top_bar';
@@ -16,9 +16,23 @@ import {
   CreateEmptyWorkflowButton,
   CreateWorkflowFromTemplateButton,
 } from './testing';
+import { MailPoet } from '../mailpoet';
+
+const trackOpenEvent = () => {
+  MailPoet.trackEvent('Automations > Listing viewed');
+};
 
 function Content(): JSX.Element {
+  const [isBooting, setIsBooting] = useState(true);
   const count = useSelect((select) => select(storeName).getWorkflowCount());
+
+  useEffect(() => {
+    if (!isBooting || count === 0) {
+      return;
+    }
+    trackOpenEvent();
+    setIsBooting(false);
+  }, [isBooting, count]);
   const content =
     count > 0 ? (
       <>
