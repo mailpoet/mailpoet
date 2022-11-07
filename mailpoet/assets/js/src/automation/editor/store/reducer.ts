@@ -3,6 +3,14 @@ import { State } from './types';
 
 export function reducer(state: State, action: Action): State {
   switch (action.type) {
+    case 'SET_ACTIVATION_PANEL_VISIBILITY':
+      return {
+        ...state,
+        activationPanel: {
+          ...state.activationPanel,
+          isOpened: action.value,
+        },
+      };
     case 'TOGGLE_INSERTER_SIDEBAR':
       return {
         ...state,

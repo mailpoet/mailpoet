@@ -54,6 +54,9 @@ export type State = {
   inserterSidebar: {
     isOpened: boolean;
   };
+  activationPanel: {
+    isOpened: boolean;
+  };
   inserterPopover?: {
     anchor: HTMLElement;
     type: 'steps' | 'triggers';

@@ -11,6 +11,9 @@ export const getInitialState = (): State => ({
   inserterSidebar: {
     isOpened: false,
   },
+  activationPanel: {
+    isOpened: false,
+  },
   inserterPopover: undefined,
   errors: undefined,
 });
