@@ -103,7 +103,7 @@ class IntegrationTester extends \Codeception\Actor {
    * Compares two DateTimeInterface objects by comparing timestamp values.
    * $delta parameter specifies tolerated difference
    */
-  public function assertEqualDateTimes(DateTimeInterface $date1 = null, DateTimeInterface $date2 = null, int $delta = 0) {
+  public function assertEqualDateTimes(?DateTimeInterface $date1, ?DateTimeInterface $date2, int $delta = 0) {
     if (!$date1 instanceof DateTimeInterface) {
       throw new \Exception('$date1 is not DateTimeInterface');
     }
