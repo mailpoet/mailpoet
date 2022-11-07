@@ -80,6 +80,24 @@ class FirstPurchase {
         'text' => __('Must-have', 'mailpoet'),
         'style' => 'red',
       ],
+      'timeDelayValues' => [
+        'immediate' => [
+          'text' => __('immediately', 'mailpoet'),
+          'displayAfterTimeNumberField' => false,
+        ],
+        'hours' => [
+          'text' => __('hour(s)', 'mailpoet'),
+          'displayAfterTimeNumberField' => true,
+        ],
+        'days' => [
+          'text' => __('day(s)', 'mailpoet'),
+          'displayAfterTimeNumberField' => true,
+        ],
+        'weeks' => [
+          'text' => __('week(s)', 'mailpoet'),
+          'displayAfterTimeNumberField' => true,
+        ],
+      ],
       'shortcodes' => [
         [
           'text' => __('Order amount', 'mailpoet'),
