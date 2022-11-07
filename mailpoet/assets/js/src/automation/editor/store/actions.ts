@@ -11,6 +11,24 @@ import { LISTING_NOTICE_PARAMETERS } from '../../listing/workflow-listing-notice
 import { MailPoet } from '../../../mailpoet';
 import { WorkflowStatus } from '../../listing/workflow';
 
+const trackErrors = (errors) => {
+  if (!errors?.steps) {
+    return;
+  }
+  const payload = Object.keys(errors.steps as object).map((stepId) => {
+    const error = errors.steps[stepId];
+    const stepKey = select(storeName).getStepById(stepId)?.key;
+    const fields = Object.keys(error.fields as object)
+      .map((field) => `${stepKey}/${field}`)
+      .reduce((prev, next) => prev.concat(next));
+    return fields;
+  });
+
+  MailPoet.trackEvent('Automations > Workflow validation error', {
+    errors: payload,
+  });
+};
+
 export const openSidebar =
   (key) =>
   ({ registry }) =>
@@ -205,6 +223,7 @@ export function updateStepArgs(stepId, name, value) {
 }
 
 export function setErrors(errors) {
+  trackErrors(errors);
   return {
     type: 'SET_ERRORS',
     errors,
