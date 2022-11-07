@@ -157,7 +157,7 @@ class WorkflowStorage {
     $workflowRunsTable = esc_sql($this->wpdb->prefix . 'mailpoet_workflow_runs');
     $workflowRunLogsTable = esc_sql($this->wpdb->prefix . 'mailpoet_workflow_run_logs');
     $workflowId = $workflow->getId();
-    $runLogsQuery = $this->wpdb->prepare(
+    $runLogsQuery = (string)$this->wpdb->prepare(
       "
         DELETE FROM $workflowRunLogsTable
         WHERE workflow_run_id IN (
@@ -168,38 +168,50 @@ class WorkflowStorage {
       $workflowId
     );
 
-    if (!is_string($runLogsQuery)) {
-      throw Exceptions\InvalidStateException::create();
-    }
     $logsDeleted = $this->wpdb->query($runLogsQuery);
-    if (!is_int($logsDeleted)) {
+    if ($logsDeleted === false) {
       throw Exceptions::databaseError($this->wpdb->last_error);
     }
+
     $runsDeleted = $this->wpdb->delete($this->wpdb->prefix . 'mailpoet_workflow_runs', ['workflow_id' => $workflowId]);
-    if (!is_int($runsDeleted)) {
+    if ($runsDeleted === false) {
       throw Exceptions::databaseError($this->wpdb->last_error);
     }
+
     $versionsDeleted = $this->wpdb->delete($versionsTable, ['workflow_id' => $workflowId]);
-    if (!is_int($versionsDeleted)) {
+    if ($versionsDeleted === false) {
       throw Exceptions::databaseError($this->wpdb->last_error);
     }
+
     $triggersDeleted = $this->wpdb->delete($this->triggersTable, ['workflow_id' => $workflowId]);
-    if (!is_int($triggersDeleted)) {
+    if ($triggersDeleted === false) {
       throw Exceptions::databaseError($this->wpdb->last_error);
     }
+
     $workflowDeleted = $this->wpdb->delete($workflowsTable, ['id' => $workflowId]);
-    if (!is_int($workflowDeleted)) {
+    if ($workflowDeleted === false) {
       throw Exceptions::databaseError($this->wpdb->last_error);
     }
   }
 
-  public function truncate(): bool {
+  public function truncate(): void {
     $workflowsTable = esc_sql($this->workflowsTable);
+    $result = $this->wpdb->query("TRUNCATE {$workflowsTable}");
+    if ($result === false) {
+      throw Exceptions::databaseError($this->wpdb->last_error);
+    }
+
     $versionsTable = esc_sql($this->versionsTable);
-    $triggersTable = esc_sql($this->versionsTable);
-    return $this->wpdb->query("truncate $workflowsTable;") === true
-      && $this->wpdb->query("truncate $versionsTable;") === true
-      && $this->wpdb->query("truncate $triggersTable;") === true;
+    $result = $this->wpdb->query("TRUNCATE {$versionsTable}");
+    if ($result === false) {
+      throw Exceptions::databaseError($this->wpdb->last_error);
+    }
+
+    $triggersTable = esc_sql($this->triggersTable);
+    $result = $this->wpdb->query("TRUNCATE {$triggersTable}");
+    if ($result === false) {
+      throw Exceptions::databaseError($this->wpdb->last_error);
+    }
   }
 
   public function getNameColumnLength(): int {
