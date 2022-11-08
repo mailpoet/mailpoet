@@ -44,7 +44,7 @@ parameters:
     - '/Call to method getName\(\) on an unknown class _generated\\([a-zA-Z])*Cookie/' # codeception generate incorrect return type in ../../tests/_support/_generated
     -
       message: "#^Cannot cast string|void to string\\.$#"
-      count: 5
+      count: 6
       path: ../../lib/Automation/Engine/Storage/WorkflowRunStorage.php
     -
       message: "#^Cannot cast string|void to string\\.$#"

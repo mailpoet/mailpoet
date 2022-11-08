@@ -72,6 +72,15 @@ class WorkflowRunStorage {
     }
   }
 
+  public function updateNextStep(int $id, ?string $nextStepId): void {
+    $table = esc_sql($this->table);
+    $query = (string)$this->wpdb->prepare("UPDATE $table SET next_step_id = %s WHERE id = %d", $nextStepId, $id);
+    $result = $this->wpdb->query($query);
+    if ($result === false) {
+      throw Exceptions::databaseError($this->wpdb->last_error);
+    }
+  }
+
   public function truncate(): void {
     $table = esc_sql($this->table);
     $this->wpdb->query("truncate $table");

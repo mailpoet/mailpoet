@@ -189,6 +189,8 @@ class StepHandler {
       ],
     ];
 
+    $this->workflowRunStorage->updateNextStep($workflowRunId, $nextStep ? $nextStep->getId() : null);
+
     // next step scheduled by action
     if ($this->actionScheduler->hasScheduledAction(Hooks::WORKFLOW_STEP, $nextStepArgs)) {
       return;
