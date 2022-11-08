@@ -20,6 +20,7 @@ use MailPoet\Newsletter\Scheduler\WelcomeScheduler;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\TrackingConfig;
+use MailPoet\Statistics\StatisticsUnsubscribesRepository;
 use MailPoet\Statistics\Track\SubscriberHandler;
 use MailPoet\Statistics\Track\Unsubscribes;
 use MailPoet\Subscribers\LinkTokens;
@@ -49,9 +50,13 @@ class PagesTest extends \MailPoetTest {
   /** @var WPFunctions */
   private $wp;
 
+  /*** @var StatisticsUnsubscribesRepository */
+  private $statisticsUnsubscribesRepository;
+
   public function _before() {
     parent::_before();
     $this->subscribersRepository = $this->diContainer->get(SubscribersRepository::class);
+    $this->statisticsUnsubscribesRepository = $this->diContainer->get(StatisticsUnsubscribesRepository::class);
     $this->wp = $this->diContainer->get(WPFunctions::class);
     $this->subscriber = new SubscriberEntity();
     $this->subscriber->setEmail('jane.doe@example.com');
@@ -200,6 +205,35 @@ class PagesTest extends \MailPoetTest {
     $updatedSubscriber = $this->subscribersRepository->findOneById($this->subscriber->getId());
     $this->assertInstanceOf(SubscriberEntity::class, $updatedSubscriber);
     expect($updatedSubscriber->getStatus())->notEquals(SubscriberEntity::STATUS_UNSUBSCRIBED);
+  }
+
+  public function testItUnsubscribesAndTracksCorrectMethod() {
+    SettingsController::getInstance()->set('tracking.level', TrackingConfig::LEVEL_PARTIAL);
+    $this->testData['queueId'] = 1; // just a random queueId
+    $pages = $this->getPages()->init($action = 'unsubscribe', $this->testData);
+
+    // with link method
+    $pages->unsubscribe(StatisticsUnsubscribeEntity::METHOD_LINK);
+    $updatedSubscriber = $this->subscribersRepository->findOneById($this->subscriber->getId());
+    $this->assertInstanceOf(SubscriberEntity::class, $updatedSubscriber);
+
+    expect($updatedSubscriber->getStatus())->equals(SubscriberEntity::STATUS_UNSUBSCRIBED);
+    $unsubscriptionStat = $this->statisticsUnsubscribesRepository->findOneBy(['subscriber' => $updatedSubscriber->getId()]);
+    expect($unsubscriptionStat->getMethod() === StatisticsUnsubscribeEntity::METHOD_LINK);
+    expect($unsubscriptionStat->getSource() === StatisticsUnsubscribeEntity::SOURCE_NEWSLETTER);
+
+    $this->statisticsUnsubscribesRepository->remove($unsubscriptionStat);
+
+    // with one-click method
+    $pages->unsubscribe(StatisticsUnsubscribeEntity::METHOD_ONE_CLICK);
+    $updatedSubscriber = $this->subscribersRepository->findOneById($this->subscriber->getId());
+    $this->assertInstanceOf(SubscriberEntity::class, $updatedSubscriber);
+
+    expect($updatedSubscriber->getStatus())->equals(SubscriberEntity::STATUS_UNSUBSCRIBED);
+    $unsubscriptionStat = $this->statisticsUnsubscribesRepository->findOneBy(['subscriber' => $updatedSubscriber->getId()]);
+    expect($unsubscriptionStat->getMethod() === StatisticsUnsubscribeEntity::METHOD_ONE_CLICK);
+    expect($unsubscriptionStat->getSource() === StatisticsUnsubscribeEntity::SOURCE_NEWSLETTER);
+
   }
 
   public function _after() {
