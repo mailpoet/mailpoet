@@ -64,7 +64,7 @@ class Store {
     $this->connection->executeStatement("
       CREATE TABLE IF NOT EXISTS {$this->table} (
         id int(11) unsigned NOT NULL AUTO_INCREMENT,
-        name varchar(255) NOT NULL,
+        name varchar(191) NOT NULL,
         started_at timestamp NOT NULL,
         completed_at timestamp NULL,
         retries int(11) unsigned NOT NULL DEFAULT 0,
