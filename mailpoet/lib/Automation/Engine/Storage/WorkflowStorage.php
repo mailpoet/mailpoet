@@ -251,33 +251,34 @@ class WorkflowStorage {
       }
     }
 
-    if (!$triggerKeys) {
-      return;
-    }
     $triggersTable = esc_sql($this->triggersTable);
 
     // insert/update
-    $placeholders = implode(',', array_fill(0, count($triggerKeys), '(%d, %s)'));
-    $query = (string)$this->wpdb->prepare(
-      "INSERT IGNORE INTO {$triggersTable} (workflow_id, trigger_key) VALUES {$placeholders}",
-      array_merge(
-        ...array_map(function (string $key) use ($workflowId) {
-          return [$workflowId, $key];
-        }, $triggerKeys)
-      )
-    );
+    if ($triggerKeys) {
+      $placeholders = implode(',', array_fill(0, count($triggerKeys), '(%d, %s)'));
+      $query = (string)$this->wpdb->prepare(
+        "INSERT IGNORE INTO {$triggersTable} (workflow_id, trigger_key) VALUES {$placeholders}",
+        array_merge(
+          ...array_map(function (string $key) use ($workflowId) {
+            return [$workflowId, $key];
+          }, $triggerKeys)
+        )
+      );
 
-    $result = $this->wpdb->query($query);
-    if ($result === false) {
-      throw Exceptions::databaseError($this->wpdb->last_error);
+      $result = $this->wpdb->query($query);
+      if ($result === false) {
+        throw Exceptions::databaseError($this->wpdb->last_error);
+      }
     }
 
     // delete
     $placeholders = implode(',', array_fill(0, count($triggerKeys), '%s'));
-    $query = (string)$this->wpdb->prepare(
-      "DELETE FROM {$triggersTable} WHERE workflow_id = %d AND trigger_key NOT IN ({$placeholders})",
-      array_merge([$workflowId], $triggerKeys)
-    );
+    $query = $triggerKeys
+      ? (string)$this->wpdb->prepare(
+        "DELETE FROM {$triggersTable} WHERE workflow_id = %d AND trigger_key NOT IN ({$placeholders})",
+        array_merge([$workflowId], $triggerKeys)
+      )
+      : (string)$this->wpdb->prepare("DELETE FROM {$triggersTable} WHERE workflow_id = %d", $workflowId);
 
     $result = $this->wpdb->query($query);
     if ($result === false) {
