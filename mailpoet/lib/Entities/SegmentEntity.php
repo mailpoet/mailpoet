@@ -67,6 +67,12 @@ class SegmentEntity {
    */
   private $averageEngagementScoreUpdatedAt;
 
+  /**
+   * @ORM\Column(type="integer", nullable=true, options={"default" : 0})
+   * @var int|null
+   */
+  private $displayInManageSubscriptionPage;
+
   public function __construct(
     string $name,
     string $type,
@@ -154,6 +160,14 @@ class SegmentEntity {
 
   public function setAverageEngagementScoreUpdatedAt(?\DateTimeInterface $averageEngagementScoreUpdatedAt): void {
     $this->averageEngagementScoreUpdatedAt = $averageEngagementScoreUpdatedAt;
+  }
+
+  public function getDisplayInManageSubscriptionPage(): ?int {
+    return $this->displayInManageSubscriptionPage;
+  }
+
+  public function setDisplayInManageSubscriptionPage(int $value): void {
+    $this->displayInManageSubscriptionPage = $value;
   }
 
   /**
