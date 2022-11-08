@@ -72,6 +72,25 @@ function updatingActiveWorkflowNotPossible() {
   );
 }
 
+function onUnload(event) {
+  if (!globalSelect(storeName).getWorkflowSaved()) {
+    // eslint-disable-next-line no-param-reassign
+    event.returnValue = __(
+      'There are unsaved changes that will be lost. Do you want to continue?',
+      'mailpoet',
+    );
+    return event.returnValue;
+  }
+  return '';
+}
+
+function useConfirmUnsaved() {
+  useEffect(() => {
+    window.addEventListener('beforeunload', onUnload);
+    return () => window.removeEventListener('beforeunload', onUnload);
+  }, []);
+}
+
 function Editor(): JSX.Element {
   const {
     isFullscreenActive,
@@ -92,6 +111,8 @@ function Editor(): JSX.Element {
     [],
   );
   const [isBooting, setIsBooting] = useState(true);
+
+  useConfirmUnsaved();
 
   useEffect(() => {
     if (!isBooting) {
