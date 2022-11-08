@@ -22,7 +22,8 @@ import {
   UtmParams,
 } from './upgrade_info';
 
-const premiumValidAndActive = premiumFeaturesEnabled && MailPoet.premiumActive;
+export const premiumValidAndActive =
+  premiumFeaturesEnabled && MailPoet.premiumActive;
 
 type Props = Omit<ComponentProps<typeof Modal>, 'title' | 'onRequestClose'> & {
   // Fix type from "@types/wordpress__components" where it is defined as a union of event
