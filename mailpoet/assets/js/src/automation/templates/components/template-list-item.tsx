@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Button } from '@wordpress/components';
 import { addQueryArgs } from '@wordpress/url';
 import { __ } from '@wordpress/i18n';
@@ -5,6 +6,10 @@ import { WorkflowTemplate } from '../config';
 import { useMutation } from '../../api';
 import { MailPoet } from '../../../mailpoet';
 import { Notice } from '../../../notices/notice';
+import {
+  PremiumModal,
+  premiumValidAndActive,
+} from '../../../common/premium_modal';
 
 type TemplateListItemProps = {
   template: WorkflowTemplate;
@@ -14,6 +19,7 @@ export function TemplateListItem({
   template,
   heading,
 }: TemplateListItemProps): JSX.Element {
+  const [showPremium, setShowPremium] = useState(false);
   const [createWorkflowFromTemplate, { loading, error, data }] = useMutation(
     'workflows/create-from-template',
     {
@@ -56,6 +62,10 @@ export function TemplateListItem({
         isBusy={loading}
         disabled={template.type === 'coming-soon'}
         onClick={() => {
+          if (template.type === 'premium' && !premiumValidAndActive) {
+            setShowPremium(true);
+            return;
+          }
           void createWorkflowFromTemplate();
         }}
       >
@@ -72,6 +82,22 @@ export function TemplateListItem({
 
         <p>{template.description}</p>
       </Button>
+      {showPremium && (
+        <PremiumModal
+          onRequestClose={() => {
+            setShowPremium(false);
+          }}
+          tracking={{
+            utm_medium: 'upsell_modal',
+            utm_campaign: 'automation_premium_template',
+          }}
+        >
+          {__(
+            'All templates and fully configurable automations are available in the premium version.',
+            'mailpoet',
+          )}
+        </PremiumModal>
+      )}
     </li>
   );
 }
