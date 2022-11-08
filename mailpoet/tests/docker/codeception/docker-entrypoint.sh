@@ -63,7 +63,7 @@ if [[ -z "${SKIP_DEPS}" ]]; then
 fi
 
 # Install a fix plugin for PHPMailer on WP 5.6
-cp /project/tests/docker/codeception/wp-56-phpmailer-fix.php /wp-core/wp-content/plugins/wp-56-phpmailer-fix.php
+cp /project/tests/docker/codeception/send-wp-mail-with-smtp.php /wp-core/wp-content/plugins/send-wp-mail-with-smtp.php
 wp plugin activate wp-56-phpmailer-fix
 
 # Install, activate and print info about plugins that we want to use in tests runtime.
