@@ -227,7 +227,7 @@ class Pages {
     }
   }
 
-  public function unsubscribe() {
+  public function unsubscribe(string $method): void {
     if (
       !$this->isPreview()
       && ($this->subscriber !== null)
@@ -237,7 +237,9 @@ class Pages {
         $this->unsubscribesTracker->track(
           (int)$this->subscriber->id,
           StatisticsUnsubscribeEntity::SOURCE_NEWSLETTER,
-          (int)$this->data['queueId']
+          (int)$this->data['queueId'],
+          null,
+          $method
         );
       }
       $this->subscriber->setStatus(SubscriberEntity::STATUS_UNSUBSCRIBED);

@@ -22,6 +22,9 @@ class StatisticsUnsubscribeEntity {
   const SOURCE_ORDER_CHECKOUT = 'order_checkout';
   const SOURCE_AUTOMATION = 'automation';
 
+  const METHOD_LINK = 'link';
+  const METHOD_ONE_CLICK = 'one_click';
+
   /**
    * @ORM\ManyToOne(targetEntity="MailPoet\Entities\NewsletterEntity")
    * @ORM\JoinColumn(name="newsletter_id", referencedColumnName="id")
@@ -115,6 +118,13 @@ class StatisticsUnsubscribeEntity {
     return $this->meta;
   }
 
+  /**
+   * @param string $method
+   */
+  public function setMethod(string $method) {
+    $this->method = $method;
+  }
+  
   /**
    * @return string
    */

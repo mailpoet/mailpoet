@@ -164,7 +164,7 @@ class PagesTest extends \MailPoetTest {
     $this->createSubscriberSegment($segment);
 
     $pages = $this->getPages()->init($action = 'unsubscribe', $this->testData);
-    $pages->unsubscribe();
+    $pages->unsubscribe(StatisticsUnsubscribeEntity::METHOD_LINK);
 
     $updatedSubscriber = $this->subscribersRepository->findOneById($this->subscriber->getId());
     $this->assertInstanceOf(SubscriberEntity::class, $updatedSubscriber);
@@ -181,7 +181,7 @@ class PagesTest extends \MailPoetTest {
     $this->testData['queueId'] = 1;
     SettingsController::getInstance()->set('tracking.level', TrackingConfig::LEVEL_PARTIAL);
     $pages = $this->getPages(null, $unsubscribesMock)->init($action = 'unsubscribe', $this->testData);
-    $pages->unsubscribe();
+    $pages->unsubscribe(StatisticsUnsubscribeEntity::METHOD_LINK);
   }
 
   public function testItDontTrackUnsubscribeWhenTrackingIsDisabled() {
@@ -189,13 +189,13 @@ class PagesTest extends \MailPoetTest {
     $this->testData['queueId'] = 1;
     SettingsController::getInstance()->set('tracking.level', TrackingConfig::LEVEL_BASIC);
     $pages = $this->getPages(null, $unsubscribesMock)->init($action = 'unsubscribe', $this->testData);
-    $pages->unsubscribe();
+    $pages->unsubscribe(StatisticsUnsubscribeEntity::METHOD_LINK);
   }
 
   public function testItDoesntUnsubscribeWhenPreviewing() {
     $this->testData['preview'] = 1;
     $pages = $this->getPages()->init($action = 'unsubscribe', $this->testData);
-    $pages->unsubscribe();
+    $pages->unsubscribe(StatisticsUnsubscribeEntity::METHOD_LINK);
 
     $updatedSubscriber = $this->subscribersRepository->findOneById($this->subscriber->getId());
     $this->assertInstanceOf(SubscriberEntity::class, $updatedSubscriber);
