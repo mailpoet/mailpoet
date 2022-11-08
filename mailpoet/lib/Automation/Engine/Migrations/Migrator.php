@@ -58,6 +58,7 @@ class Migrator {
         created_at timestamp NOT NULL,
         updated_at timestamp NOT NULL,
         subjects longtext,
+        next_step_id varchar(255),
         PRIMARY KEY (id),
         INDEX (workflow_id),
         INDEX (status)
