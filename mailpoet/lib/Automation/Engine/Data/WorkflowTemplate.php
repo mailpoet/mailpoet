@@ -6,6 +6,10 @@ use MailPoet\RuntimeException;
 
 class WorkflowTemplate {
 
+  public const TYPE_DEFAULT = 'default';
+  public const TYPE_FREE_ONLY = 'free-only';
+  public const TYPE_PREMIUM = 'premium';
+  public const TYPE_COMING_SOON = 'coming-soon';
 
   public const CATEGORY_WELCOME = 1;
   public const CATEGORY_ABANDONED_CART = 2;
@@ -25,6 +29,9 @@ class WorkflowTemplate {
   private $category;
 
   /** @var string */
+  private $type;
+
+  /** @var string */
   private $description;
 
   /** @var Workflow */
@@ -34,7 +41,8 @@ class WorkflowTemplate {
     string $slug,
     int $category,
     string $description,
-    Workflow $workflow
+    Workflow $workflow,
+    string $type = self::TYPE_DEFAULT
   ) {
     if (!in_array($category, self::ALL_CATEGORIES)) {
       throw new RuntimeException("$category is not a valid category.");
@@ -43,6 +51,7 @@ class WorkflowTemplate {
     $this->category = $category;
     $this->description = $description;
     $this->workflow = $workflow;
+    $this->type = $type;
   }
 
   public function getSlug(): string {
@@ -55,6 +64,10 @@ class WorkflowTemplate {
 
   public function getCategory(): int {
     return $this->category;
+  }
+
+  public function getType(): string {
+    return $this->type;
   }
 
   public function getDescription(): string {
@@ -70,6 +83,7 @@ class WorkflowTemplate {
       'slug' => $this->getSlug(),
       'name' => $this->getName(),
       'category' => $this->getCategory(),
+      'type' => $this->getType(),
       'description' => $this->getDescription(),
       'workflow' => $this->getWorkflow()->toArray(),
     ];
