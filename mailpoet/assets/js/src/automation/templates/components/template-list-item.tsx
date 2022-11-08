@@ -48,14 +48,25 @@ export function TemplateListItem({
 
   const headingTag = heading ?? 'h2';
   return (
-    <li className="mailpoet-automation-template-list-item">
+    <li
+      className={`mailpoet-automation-template-list-item mailpoet-automation-template-list-item-${template.type}`}
+    >
       {notice}
       <Button
         isBusy={loading}
+        disabled={template.type === 'coming-soon'}
         onClick={() => {
           void createWorkflowFromTemplate();
         }}
       >
+        <div className="badge">
+          {template.type === 'coming-soon' && (
+            <span>{__('Coming soon', 'mailpoet')}</span>
+          )}
+          {template.type === 'premium' && (
+            <span>{__('Premium', 'mailpoet')}</span>
+          )}
+        </div>
         {headingTag === 'h3' && <h3>{template.name}&nbsp;→</h3>}
         {headingTag === 'h2' && <h2>{template.name}&nbsp;→</h2>}
 

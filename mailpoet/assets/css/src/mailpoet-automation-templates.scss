@@ -17,16 +17,24 @@ ul.mailpoet-automation-templates {
 
 .mailpoet-automation-template-list-item {
   button.components-button {
+    align-content: baseline;
+    align-items: flex-start;
     background: #fff;
     border: 1px solid #dcdcde;
     border-radius: 4px;
     cursor: pointer;
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-rows: 48px auto auto;
     height: 100%;
     padding: 24px 24px 26px;
     text-align: left;
     width: 100%;
+
+    &:disabled,
+    &[aria-disabled='true'] {
+      cursor: default;
+      opacity: 1;
+    }
 
     &:hover {
       background: #fff;
@@ -77,5 +85,22 @@ ul.mailpoet-automation-templates {
     svg {
       fill: #dcdcde;
     }
+  }
+
+  .badge {
+    text-align: right;
+    transform: translateX(24px);
+
+    span {
+      padding: 3px 8px;
+    }
+  }
+}
+
+.mailpoet-automation-template-list-item-coming-soon,
+.mailpoet-automation-template-list-item-premium {
+  .badge span {
+    background: #ffe9cc;
+    color: #1d2327;
   }
 }
