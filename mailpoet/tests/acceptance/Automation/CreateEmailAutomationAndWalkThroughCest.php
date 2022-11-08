@@ -36,7 +36,7 @@ class CreateEmailAutomationAndWalkThroughCest
 
     $i->click('Start with a template');
     $i->see('Choose your automation template');
-    $i->click('Simple welcome email');
+    $i->click('Welcome new subscribers');
 
     $i->waitForText('Draft');
     $i->click('Trigger');
@@ -73,10 +73,10 @@ class CreateEmailAutomationAndWalkThroughCest
     $i->click($panelActivateButton);
 
     // Check workflow is activated
-    $i->waitForText('"Simple welcome email" is now live.');
+    $i->waitForText('"Welcome new subscribers" is now live.');
     $i->click('View all automations');
     $i->waitForText('Name');
-    $i->see('Simple welcome email');
+    $i->see('Welcome new subscribers');
     $i->see('Active');
     $i->see('Entered 0'); //Actually I see "0 Entered", but this CSS switch is not caught by the test
     $i->dontSeeInDatabase('mp_actionscheduler_actions', ['hook' => 'mailpoet/automation/workflow/step']);
@@ -90,7 +90,7 @@ class CreateEmailAutomationAndWalkThroughCest
 
     $i->amOnMailpoetPage('Automation');
     $i->seeInDatabase('mp_actionscheduler_actions', ['hook' => 'mailpoet/automation/workflow/step', 'status' => 'pending']);
-    $i->waitForText('Simple welcome email');
+    $i->waitForText('Welcome new subscribers');
     $i->see('Entered 1'); //Actually I see "0 Entered", but this CSS switch is not caught by the test
     $i->see('Processing 1');
     $i->see('Exited 0');
@@ -104,7 +104,7 @@ class CreateEmailAutomationAndWalkThroughCest
 
     $i->amOnUrl('http://test.local/wp-admin/');
     $i->amOnMailpoetPage('Automation');
-    $i->waitForText('Simple welcome email');
+    $i->waitForText('Welcome new subscribers');
     $i->see('Entered 1'); //Actually I see "0 Entered", but this CSS switch is not caught by the test
     $i->see('Processing 0');
     $i->see('Exited 1');
