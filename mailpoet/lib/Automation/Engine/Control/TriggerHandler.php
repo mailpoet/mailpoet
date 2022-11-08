@@ -74,6 +74,8 @@ class TriggerHandler {
           'step_id' => $nextStep ? $nextStep->getId() : null,
         ],
       ]);
+
+      $this->workflowRunStorage->updateNextStep($workflowRunId, $nextStep ? $nextStep->getId() : null);
     }
   }
 }
