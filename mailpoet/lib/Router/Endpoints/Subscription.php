@@ -3,6 +3,7 @@
 namespace MailPoet\Router\Endpoints;
 
 use MailPoet\Config\AccessControl;
+use MailPoet\Entities\StatisticsUnsubscribeEntity;
 use MailPoet\Subscription as UserSubscription;
 use MailPoet\Util\Request;
 use MailPoet\WP\Functions as WPFunctions;
@@ -102,7 +103,7 @@ class Subscription {
       exit;
     } else {
       $subscription = $this->initSubscriptionPage(UserSubscription\Pages::ACTION_UNSUBSCRIBE, $data);
-      $subscription->unsubscribe();
+      $subscription->unsubscribe(StatisticsUnsubscribeEntity::METHOD_LINK);
     }
   }
 
@@ -119,6 +120,6 @@ class Subscription {
       return;
     }
     $subscription = $this->initSubscriptionPage(UserSubscription\Pages::ACTION_UNSUBSCRIBE, $data);
-    $subscription->unsubscribe();
+    $subscription->unsubscribe(StatisticsUnsubscribeEntity::METHOD_ONE_CLICK);
   }
 }
