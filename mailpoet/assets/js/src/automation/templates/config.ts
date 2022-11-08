@@ -2,6 +2,7 @@ export type WorkflowTemplate = {
   slug: string;
   name: string;
   description: string;
+  type: 'default' | 'free-only' | 'premium' | 'coming-soon';
 };
 
 declare global {
