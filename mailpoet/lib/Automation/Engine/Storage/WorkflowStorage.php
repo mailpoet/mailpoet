@@ -65,16 +65,16 @@ class WorkflowStorage {
     $versionsTable = esc_sql($this->versionsTable);
 
     $query = !$versionId ? (string)$this->wpdb->prepare("
-      SELECT workflow.*, version.id AS version_id, version.steps
-      FROM $workflowsTable as workflow, $versionsTable as version
-      WHERE version.workflow_id = workflow.id AND workflow.id = %d
-      ORDER BY version.id DESC
+      SELECT w.*, v.id AS version_id, v.steps
+      FROM $workflowsTable as w, $versionsTable as v
+      WHERE v.workflow_id = w.id AND w.id = %d
+      ORDER BY v.id DESC
       LIMIT 0,1;",
       $workflowId
     ) : (string)$this->wpdb->prepare("
-      SELECT workflow.*, version.id AS version_id, version.steps
-      FROM $workflowsTable as workflow, $versionsTable as version
-      WHERE version.workflow_id = workflow.id AND version.id = %d",
+      SELECT w.*, v.id AS version_id, v.steps
+      FROM $workflowsTable as w, $versionsTable as v
+      WHERE v.workflow_id = w.id AND v.id = %d",
       $versionId
     );
     $data = $this->wpdb->get_row($query, ARRAY_A);
@@ -87,16 +87,16 @@ class WorkflowStorage {
     $versionsTable = esc_sql($this->versionsTable);
     $query = $status ?
       (string)$this->wpdb->prepare("
-        SELECT workflow.*, version.id AS version_id, version.steps
-        FROM $workflowsTable AS workflow INNER JOIN $versionsTable as version ON (version.workflow_id=workflow.id)
-        WHERE version.id = (SELECT Max(id) FROM $versionsTable WHERE workflow_id= version.workflow_id) AND workflow.status IN (%s)
-        ORDER BY workflow.id DESC",
+        SELECT w.*, v.id AS version_id, v.steps
+        FROM $workflowsTable AS w INNER JOIN $versionsTable as v ON (v.workflow_id = w.id)
+        WHERE v.id = (SELECT Max(id) FROM $versionsTable WHERE workflow_id = v.workflow_id) AND w.status IN (%s)
+        ORDER BY w.id DESC",
         implode(",", $status)
       ) :
-      "SELECT workflow.*, version.id AS version_id, version.steps
-      FROM $workflowsTable AS workflow INNER JOIN $versionsTable as version ON (version.workflow_id=workflow.id)
-      WHERE version.id = (SELECT Max(id) FROM $versionsTable WHERE workflow_id= version.workflow_id)
-      ORDER BY workflow.id DESC;";
+      "SELECT w.*, v.id AS version_id, v.steps
+      FROM $workflowsTable AS w INNER JOIN $versionsTable as v ON (v.workflow_id = w.id)
+      WHERE v.id = (SELECT Max(id) FROM $versionsTable WHERE workflow_id = v.workflow_id)
+      ORDER BY w.id DESC;";
 
     $data = $this->wpdb->get_results($query, ARRAY_A);
     return array_map(function (array $workflowData) {
@@ -116,10 +116,10 @@ class WorkflowStorage {
 
     $query = (string)$this->wpdb->prepare(
       "
-        SELECT DISTINCT triggers.trigger_key
-        FROM {$workflowsTable} AS workflow
-        JOIN $triggersTable as triggers
-        WHERE workflow.status = %s AND workflow.id = triggers.workflow_id
+        SELECT DISTINCT t.trigger_key
+        FROM {$workflowsTable} AS w
+        JOIN $triggersTable as t
+        WHERE w.status = %s AND w.id = t.workflow_id
         ORDER BY trigger_key DESC
       ",
       Workflow::STATUS_ACTIVE
@@ -135,14 +135,14 @@ class WorkflowStorage {
 
     $query = (string)$this->wpdb->prepare(
       "
-        SELECT workflow.*, version.id AS version_id, version.steps
-        FROM $workflowsTable AS workflow
-        INNER JOIN $triggersTable as t ON (t.workflow_id = workflow.id)
-        INNER JOIN $versionsTable as version ON (version.workflow_id = workflow.id)
-        WHERE workflow.status = %s
+        SELECT w.*, v.id AS version_id, v.steps
+        FROM $workflowsTable AS w
+        INNER JOIN $triggersTable as t ON (t.workflow_id = w.id)
+        INNER JOIN $versionsTable as v ON (v.workflow_id = w.id)
+        WHERE w.status = %s
         AND t.trigger_key = %s
-        AND version.id = (
-          SELECT MAX(id) FROM $versionsTable WHERE workflow_id = version.workflow_id
+        AND v.id = (
+          SELECT MAX(id) FROM $versionsTable WHERE workflow_id = v.workflow_id
         )
       ",
       Workflow::STATUS_ACTIVE,
