@@ -749,6 +749,12 @@ workflows:
             - js_tests
             - integration_test_woocommerce
             - integration_test_base
+            - integration_test_woo_cot_no_sync
+            - integration_test_woo_cot_off
+            - integration_test_woo_cot_sync
+            - acceptance_tests_woo_cot_sync
+            - acceptance_tests_woo_cot_off
+            - acceptance_tests_woo_cot_no_sync
 
   nightly:
     triggers:
