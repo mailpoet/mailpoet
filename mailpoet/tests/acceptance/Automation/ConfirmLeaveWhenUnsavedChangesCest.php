@@ -31,7 +31,7 @@ class ConfirmLeaveWhenUnsavedChangesCest
 
     $i->click('Start with a template');
     $i->see('Choose your automation template');
-    $i->click('Simple welcome email');
+    $i->click('Welcome new subscribers');
 
     $i->waitForText('Draft');
     $i->click('Trigger');
