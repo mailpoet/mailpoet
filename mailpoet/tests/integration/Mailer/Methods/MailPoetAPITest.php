@@ -116,11 +116,11 @@ class MailPoetAPITest extends \MailPoetTest {
 
   public function testItCanAddExtraParametersToSingleMessage() {
     $extraParams = [
-      'unsubscribe_url' => 'https://example.com',
+      'unsubscribe_url' => 'http://example.com',
       'meta' => $this->metaInfo,
     ];
     $body = $this->mailer->getBody($this->newsletter, $this->subscriber, $extraParams);
-    expect($body[0]['unsubscribe'])->equals(['url' => $extraParams['unsubscribe_url'], 'post' => true]);
+    expect($body[0]['list_unsubscribe'])->equals($extraParams['unsubscribe_url']);
     expect($body[0]['meta'])->equals($extraParams['meta']);
   }
 
@@ -134,8 +134,8 @@ class MailPoetAPITest extends \MailPoetTest {
 
     $body = $this->mailer->getBody($newsletters, $subscribers, $extraParams);
     expect(count($body))->equals(10);
-    expect($body[0]['unsubscribe'])->equals(['url' => $extraParams['unsubscribe_url'][0], 'post' => false]);
-    expect($body[9]['unsubscribe'])->equals(['url' => $extraParams['unsubscribe_url'][9], 'post' => false]);
+    expect($body[0]['list_unsubscribe'])->equals($extraParams['unsubscribe_url'][0]);
+    expect($body[9]['list_unsubscribe'])->equals($extraParams['unsubscribe_url'][9]);
     expect($body[0]['meta'])->equals($extraParams['meta'][0]);
     expect($body[9]['meta'])->equals($extraParams['meta'][9]);
   }
