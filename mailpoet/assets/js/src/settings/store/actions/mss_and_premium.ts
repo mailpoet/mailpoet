@@ -9,7 +9,7 @@ import {
   PremiumStatus,
 } from 'settings/store/types';
 import { updateKeyActivationState } from './key_activation';
-import { setSettings, setSetting } from './settings';
+import { setSetting, setSettings } from './settings';
 import { getMssStatus } from '../make_default_state';
 
 export function* verifyMssKey(key: string) {
@@ -28,6 +28,11 @@ export function* verifyMssKey(key: string) {
   const fields: Partial<KeyActivationState> = {
     mssMessage: res.data.message || null,
   };
+
+  if (res.data.state === 'valid_underprivileged') {
+    fields.mssStatus = MssStatus.VALID_UNDERPRIVILEGED;
+    return updateKeyActivationState(fields);
+  }
 
   const data = select(STORE_NAME).getSettings();
   data.mta_group = 'mailpoet';
