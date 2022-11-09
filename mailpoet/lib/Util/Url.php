@@ -71,6 +71,6 @@ class Url {
   }
 
   public function isUsingHttps(string $url): bool {
-    return $this->wp->wpParseUrl($url, PHP_URL_SCHEME) === 'https';
+    return wp_parse_url($url, PHP_URL_SCHEME) === 'https';
   }
 }

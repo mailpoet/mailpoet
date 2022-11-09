@@ -10,7 +10,7 @@ use MailPoet\Mailer\Methods\ErrorMappers\MailPoetMapper;
 use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Services\Bridge;
 use MailPoet\Services\Bridge\API;
-use MailPoet\Util\Url;
+use MailPoet\Util\Url as UrlUtil;
 
 class MailPoet implements MailerMethod {
   public $api;
@@ -27,8 +27,8 @@ class MailPoet implements MailerMethod {
   /** @var BlacklistCheck */
   private $blacklist;
 
-  /*** @var Url */
-  private $url;
+  /*** @var UrlUtil */
+  private $urlUtil;
 
   public function __construct(
     $apiKey,
@@ -36,7 +36,7 @@ class MailPoet implements MailerMethod {
     $replyTo,
     MailPoetMapper $errorMapper,
     AuthorizedEmailsController $authorizedEmailsController,
-    Url $url
+    UrlUtil $urlUtil
   ) {
     $this->api = new API($apiKey);
     $this->sender = $sender;
@@ -45,7 +45,7 @@ class MailPoet implements MailerMethod {
     $this->errorMapper = $errorMapper;
     $this->authorizedEmailsController = $authorizedEmailsController;
     $this->blacklist = new BlacklistCheck();
-    $this->url = $url;
+    $this->urlUtil = $urlUtil;
   }
 
   public function send($newsletter, $subscriber, $extraParams = []): array {
@@ -152,7 +152,7 @@ class MailPoet implements MailerMethod {
     if ($unsubscribeUrl) {
       $body['unsubscribe'] = [
         'url' => $unsubscribeUrl,
-        'post' => $this->url->isUsingHttps($unsubscribeUrl),
+        'post' => $this->urlUtil->isUsingHttps($unsubscribeUrl),
       ];
     }
     if ($meta) {
