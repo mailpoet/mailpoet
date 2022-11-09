@@ -15,8 +15,7 @@ class TriggerNeedsToBeFollowedByActionRule implements WorkflowNodeVisitor {
   }
 
   public function visitNode(Workflow $workflow, WorkflowNode $node): void {
-    // do not validate for drafts
-    if ($workflow->getStatus() === Workflow::STATUS_DRAFT) {
+    if (!$workflow->needsFullValidation()) {
       return;
     }
 
