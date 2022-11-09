@@ -1,5 +1,7 @@
 import { useContext } from 'react';
 import { MailPoet } from 'mailpoet';
+import { STORE_NAME } from 'settings/store/store_name';
+import { select } from '@wordpress/data';
 import { useAction, useSelector, useSetting } from 'settings/store/hooks';
 import { GlobalContext } from 'context';
 import { Button } from 'common/button/button';
@@ -123,7 +125,11 @@ export function KeyActivation() {
     MailPoet.Modal.loading(true);
     setState({ inProgress: true });
     await verifyMssKey(state.key);
-    await sendCongratulatoryMssEmail();
+    const currentMssStatus =
+      select(STORE_NAME).getKeyActivationState().mssStatus;
+    if (currentMssStatus === MssStatus.VALID_MSS_ACTIVE) {
+      await sendCongratulatoryMssEmail();
+    }
     await verifyPremiumKey(state.key);
     setState({ inProgress: false });
     MailPoet.Modal.loading(false);
