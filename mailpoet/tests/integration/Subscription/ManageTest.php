@@ -37,7 +37,7 @@ class ManageTest extends \MailPoetTest {
     $this->subscribersRepository = $this->diContainer->get(SubscribersRepository::class);
     $this->segmentA = $segmentFactory->withName('List A')->create();
     $this->segmentB = $segmentFactory->withName('List B')->create();
-    $this->hiddenSegment = $segmentFactory->withName('Hidden List')->withDisplayInManageSubscriptionPage(0)->create();
+    $this->hiddenSegment = $segmentFactory->withName('Hidden List')->withDisplayInManageSubscriptionPage(false)->create();
     $this->subscriber = (new SubscriberFactory())
       ->withFirstName('John')
       ->withLastName('John')

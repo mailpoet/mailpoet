@@ -33,9 +33,9 @@ class SegmentSaveController {
     $id = isset($data['id']) ? (int)$data['id'] : null;
     $name = $data['name'] ?? '';
     $description = $data['description'] ?? '';
-    $displayInManageSubPage = $data['showInManageSubscriptionPage'] ?? null;
+    $displayInManageSubPage = isset($data['showInManageSubscriptionPage']) ? (int)$data['showInManageSubscriptionPage'] : false;
 
-    return $this->segmentsRepository->createOrUpdate($name, $description, SegmentEntity::TYPE_DEFAULT, [], $id, $displayInManageSubPage);
+    return $this->segmentsRepository->createOrUpdate($name, $description, SegmentEntity::TYPE_DEFAULT, [], $id, (bool)$displayInManageSubPage);
   }
 
   /**

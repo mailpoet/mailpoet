@@ -134,9 +134,9 @@ class SegmentsRepository extends Repository {
     string $type = SegmentEntity::TYPE_DEFAULT,
     array $filtersData = [],
     ?int $id = null,
-    ?int $displayInManageSubscriptionPage = 1
+    bool $displayInManageSubscriptionPage = true
   ): SegmentEntity {
-    $displayInManageSubPage = $type === SegmentEntity::TYPE_DEFAULT ? $displayInManageSubscriptionPage ?? 1 : 0;
+    $displayInManageSubPage = $type === SegmentEntity::TYPE_DEFAULT ? $displayInManageSubscriptionPage : false;
     if ($id) {
       $segment = $this->findOneById($id);
       if (!$segment instanceof SegmentEntity) {

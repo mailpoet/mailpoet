@@ -68,10 +68,10 @@ class SegmentEntity {
   private $averageEngagementScoreUpdatedAt;
 
   /**
-   * @ORM\Column(type="integer", nullable=true, options={"default" : 0})
-   * @var int|null
+   * @ORM\Column(type="boolean")
+   * @var bool
    */
-  private $displayInManageSubscriptionPage;
+  private $displayInManageSubscriptionPage = false;
 
   public function __construct(
     string $name,
@@ -162,12 +162,12 @@ class SegmentEntity {
     $this->averageEngagementScoreUpdatedAt = $averageEngagementScoreUpdatedAt;
   }
 
-  public function getDisplayInManageSubscriptionPage(): ?int {
+  public function getDisplayInManageSubscriptionPage(): bool {
     return $this->displayInManageSubscriptionPage;
   }
 
-  public function setDisplayInManageSubscriptionPage(int $value): void {
-    $this->displayInManageSubscriptionPage = $value;
+  public function setDisplayInManageSubscriptionPage(bool $state): void {
+    $this->displayInManageSubscriptionPage = $state;
   }
 
   /**

@@ -26,7 +26,7 @@ class Segment {
       'type' => SegmentEntity::TYPE_DEFAULT,
       'name' => 'List ' . bin2hex(random_bytes(7)), // phpcs:ignore
       'description' => '',
-      'display_in_manage_subscription_page' => 1,
+      'display_in_manage_subscription_page' => true,
     ];
   }
 
@@ -61,8 +61,8 @@ class Segment {
   /**
    * @return $this
    */
-  public function withDisplayInManageSubscriptionPage(int $value) {
-    return $this->update('display_in_manage_subscription_page', $value);
+  public function withDisplayInManageSubscriptionPage(bool $state) {
+    return $this->update('display_in_manage_subscription_page', $state);
   }
 
   public function create(): SegmentEntity {

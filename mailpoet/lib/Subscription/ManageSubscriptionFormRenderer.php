@@ -225,7 +225,7 @@ class ManageSubscriptionFormRenderer {
     $criteria = [
       'type' => SegmentEntity::TYPE_DEFAULT,
       'deletedAt' => null,
-      'displayInManageSubscriptionPage' => 1,
+      'displayInManageSubscriptionPage' => true,
       ];
     $segments = $this->segmentsRepository->findBy($criteria, ['name' => Criteria::ASC]);
 
