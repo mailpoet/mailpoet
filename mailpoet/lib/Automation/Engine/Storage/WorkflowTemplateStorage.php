@@ -57,7 +57,7 @@ class WorkflowTemplateStorage {
       'subscriber-welcome-email',
       WorkflowTemplate::CATEGORY_WELCOME,
       __(
-        "Send a welcome email when someone subscribes to your list. Optionally, you can choose to delay this email by a couple of hours or days.",
+        "Send a welcome email when someone subscribes to your list. Optionally, you can choose to send this email after a specified period.",
         'mailpoet'
       ),
       $this->builder->createFromSequence(
@@ -83,7 +83,7 @@ class WorkflowTemplateStorage {
       'user-welcome-email',
       WorkflowTemplate::CATEGORY_WELCOME,
       __(
-        "Send a welcome email when a new WordPress user registers to your website. Optionally, you can choose to delay this email by a couple of hours or days.",
+        "Send a welcome email when a new WordPress user registers to your website. Optionally, you can choose to send this email after a specified period.",
         'mailpoet'
       ),
       $this->builder->createFromSequence(
