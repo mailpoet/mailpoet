@@ -35,7 +35,7 @@ class Migration_20221108_140545 extends Migration {
     if (empty($displayInManageSubscriptionPageColumnExists)) {
       $addNewColumnQuery = "
         ALTER TABLE `$segmentsTable`
-        ADD `display_in_manage_subscription_page` tinyint(1) DEFAULT 0;
+        ADD `display_in_manage_subscription_page` tinyint(1) NOT NULL DEFAULT 0;
       ";
       $wpdb->query($addNewColumnQuery);
     }
