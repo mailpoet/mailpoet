@@ -25,8 +25,7 @@ class AtLeastOneTriggerRule implements WorkflowNodeVisitor {
   }
 
   public function complete(Workflow $workflow): void {
-    // do not validate for drafts
-    if ($workflow->getStatus() === Workflow::STATUS_DRAFT) {
+    if (!$workflow->needsFullValidation()) {
       return;
     }
 

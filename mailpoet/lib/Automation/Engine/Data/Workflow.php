@@ -153,6 +153,10 @@ class Workflow {
     return $compareArray === $currentArray;
   }
 
+  public function needsFullValidation(): bool {
+    return in_array($this->status, [Workflow::STATUS_ACTIVE, Workflow::STATUS_DEACTIVATING], true);
+  }
+
   public function toArray(): array {
     return [
       'id' => $this->id,
