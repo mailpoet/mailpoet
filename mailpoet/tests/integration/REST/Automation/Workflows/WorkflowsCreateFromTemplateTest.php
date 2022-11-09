@@ -24,7 +24,7 @@ class WorkflowsCreateFromTemplateTest extends AutomationTest {
     $countBefore = count($this->workflowStorage->getWorkflows());
     $this->post(self::ENDPOINT_PATH, [
       'json' => [
-        'slug' => 'simple-welcome-email'
+        'slug' => 'subscriber-welcome-email'
       ],
     ]);
     $countAfter = count($this->workflowStorage->getWorkflows());
@@ -36,7 +36,7 @@ class WorkflowsCreateFromTemplateTest extends AutomationTest {
     $countBefore = count($this->workflowStorage->getWorkflows());
     $data = $this->post(self::ENDPOINT_PATH, [
       'json' => [
-        'slug' => 'simple-welcome-email'
+        'slug' => 'subscriber-welcome-email'
       ],
     ]);
     $countAfter = count($this->workflowStorage->getWorkflows());
@@ -53,7 +53,7 @@ class WorkflowsCreateFromTemplateTest extends AutomationTest {
     $storage = ContainerWrapper::getInstance()->get(WorkflowStorage::class);
     $this->post(self::ENDPOINT_PATH, [
       'json' => [
-        'slug' => 'simple-welcome-email'
+        'slug' => 'subscriber-welcome-email'
       ],
     ]);
     $allWorkflows = $storage->getWorkflows();
@@ -64,7 +64,7 @@ class WorkflowsCreateFromTemplateTest extends AutomationTest {
   public function testWorkflowsCreatedFromTemplatesReturnsWorkflowId(): void {
     $response = $this->post(self::ENDPOINT_PATH, [
       'json' => [
-        'slug' => 'simple-welcome-email'
+        'slug' => 'subscriber-welcome-email'
       ],
     ]);
     $allWorkflows = $this->workflowStorage->getWorkflows();
