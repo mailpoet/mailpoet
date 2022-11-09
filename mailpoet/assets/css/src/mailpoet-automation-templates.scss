@@ -101,10 +101,16 @@ ul.mailpoet-automation-templates {
   }
 }
 
-.mailpoet-automation-template-list-item-coming-soon,
-.mailpoet-automation-template-list-item-premium {
+.mailpoet-automation-template-list-item-coming-soon {
   .badge span {
     background: #ffe9cc;
     color: #1d2327;
+  }
+}
+
+.mailpoet-automation-template-list-item-premium {
+  .badge span {
+    background: #ff5301;
+    color: #fff;
   }
 }
