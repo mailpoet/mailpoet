@@ -27,7 +27,7 @@ class WorkflowPutEndpointTest extends AutomationTest
     parent::_before();
     $this->workflowStorage = $this->diContainer->get(WorkflowStorage::class);
     $this->createWorkflow = $this->diContainer->get(CreateWorkflowFromTemplateController::class);
-    $this->workflow = $this->createWorkflow->createWorkflow('simple-welcome-email');
+    $this->workflow = $this->createWorkflow->createWorkflow('subscriber-welcome-email');
     $this->assertInstanceOf(Workflow::class, $this->workflow);
   }
 
@@ -50,7 +50,7 @@ class WorkflowPutEndpointTest extends AutomationTest
 
     $workflow = $this->workflowStorage->getWorkflow($this->workflow->getId());
     $this->assertInstanceOf(Workflow::class, $workflow);
-    $this->assertSame('Simple welcome email', $workflow->getName());
+    $this->assertSame('Welcome new subscribers', $workflow->getName());
   }
 
   public function testUpdateWorkflow(): void {
