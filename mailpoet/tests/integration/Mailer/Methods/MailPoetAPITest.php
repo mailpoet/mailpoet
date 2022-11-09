@@ -11,7 +11,6 @@ use MailPoet\Mailer\Methods\ErrorMappers\MailPoetMapper;
 use MailPoet\Mailer\Methods\MailPoet;
 use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Services\Bridge\API;
-use MailPoet\Util\Url;
 
 class MailPoetAPITest extends \MailPoetTest {
   public $metaInfo;
@@ -46,8 +45,7 @@ class MailPoetAPITest extends \MailPoetTest {
       $this->sender,
       $this->replyTo,
       $this->diContainer->get(MailPoetMapper::class),
-      $this->makeEmpty(AuthorizedEmailsController::class),
-      $this->diContainer->get(Url::class)
+      $this->makeEmpty(AuthorizedEmailsController::class)
     );
     $this->subscriber = 'Recipient <blackhole@mailpoet.com>';
     $this->newsletter = [
@@ -88,8 +86,7 @@ class MailPoetAPITest extends \MailPoetTest {
       $this->sender,
       $replyTo,
       $this->diContainer->get(MailPoetMapper::class),
-      $this->makeEmpty(AuthorizedEmailsController::class),
-      $this->diContainer->get(Url::class)
+      $this->makeEmpty(AuthorizedEmailsController::class)
     );
     $body = $mailer->getBody($this->newsletter, $this->subscriber);
     expect($body[0]['reply_to'])->equals([
@@ -278,8 +275,7 @@ class MailPoetAPITest extends \MailPoetTest {
       $this->sender,
       $this->replyTo,
       $this->diContainer->get(MailPoetMapper::class),
-      $this->makeEmpty(AuthorizedEmailsController::class, ['checkAuthorizedEmailAddresses' => Expected::once()]),
-      $this->diContainer->get(Url::class)
+      $this->makeEmpty(AuthorizedEmailsController::class, ['checkAuthorizedEmailAddresses' => Expected::once()])
     );
     $mailer->api = $this->makeEmpty(
       API::class,

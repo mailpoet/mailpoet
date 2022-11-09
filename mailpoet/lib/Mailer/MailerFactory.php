@@ -16,7 +16,6 @@ use MailPoet\Mailer\Methods\SendGrid;
 use MailPoet\Mailer\Methods\SMTP;
 use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Settings\SettingsController;
-use MailPoet\Util\Url;
 use MailPoet\WP\Functions as WPFunctions;
 
 class MailerFactory {
@@ -68,8 +67,7 @@ class MailerFactory {
           $sender,
           $replyTo,
           ContainerWrapper::getInstance()->get(MailPoetMapper::class),
-          ContainerWrapper::getInstance()->get(AuthorizedEmailsController::class),
-          ContainerWrapper::getInstance()->get(Url::class)
+          ContainerWrapper::getInstance()->get(AuthorizedEmailsController::class)
         );
         break;
       case Mailer::METHOD_SENDGRID:
