@@ -11,8 +11,6 @@ use MailPoet\Automation\Engine\Endpoints\Automations\AutomationsDuplicateEndpoin
 use MailPoet\Automation\Engine\Endpoints\Automations\AutomationsGetEndpoint;
 use MailPoet\Automation\Engine\Endpoints\Automations\AutomationsPutEndpoint;
 use MailPoet\Automation\Engine\Endpoints\Automations\AutomationTemplatesGetEndpoint;
-use MailPoet\Automation\Engine\Endpoints\System\DatabaseDeleteEndpoint;
-use MailPoet\Automation\Engine\Endpoints\System\DatabasePostEndpoint;
 use MailPoet\Automation\Engine\Storage\AutomationStorage;
 use MailPoet\Automation\Integrations\Core\CoreIntegration;
 
@@ -77,8 +75,6 @@ class Engine {
       $api->registerDeleteRoute('automations/(?P<id>\d+)', AutomationsDeleteEndpoint::class);
       $api->registerPostRoute('automations/(?P<id>\d+)/duplicate', AutomationsDuplicateEndpoint::class);
       $api->registerPostRoute('automations/create-from-template', AutomationsCreateFromTemplateEndpoint::class);
-      $api->registerPostRoute('automation/system/database', DatabasePostEndpoint::class);
-      $api->registerDeleteRoute('automation/system/database', DatabaseDeleteEndpoint::class);
       $api->registerGetRoute('automation-templates', AutomationTemplatesGetEndpoint::class);
     });
   }

@@ -146,8 +146,6 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Automation\Engine\Endpoints\Automations\AutomationsCreateFromTemplateEndpoint::class)->setPublic(true);
     $container->autowire(\MailPoet\Automation\Engine\Endpoints\Automations\AutomationsDuplicateEndpoint::class)->setPublic(true);
     $container->autowire(\MailPoet\Automation\Engine\Endpoints\Automations\AutomationsDeleteEndpoint::class)->setPublic(true);
-    $container->autowire(\MailPoet\Automation\Engine\Endpoints\System\DatabasePostEndpoint::class)->setPublic(true);
-    $container->autowire(\MailPoet\Automation\Engine\Endpoints\System\DatabaseDeleteEndpoint::class)->setPublic(true);
     // Automation - core integration
     $container->autowire(\MailPoet\Automation\Integrations\Core\Actions\DelayAction::class)->setPublic(true);
     $container->autowire(\MailPoet\Automation\Integrations\Core\CoreIntegration::class)->setPublic(true);
