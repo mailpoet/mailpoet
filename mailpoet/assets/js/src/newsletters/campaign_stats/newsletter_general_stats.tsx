@@ -31,8 +31,10 @@ const formatWithOptimalPrecision = (value: number) => {
  * always round-up to one decimal place
  * in stats.tsx, we are comparing against 0, 0.3, 0.5, 0.7, 1.5, etc
  */
-const formatForStats = (value: number): number =>
-  +MailPoet.Num.toLocaleFixed(value, 1);
+const formatForStats = (value: number): number => {
+  const numValue = +value;
+  return +numValue.toFixed(1);
+};
 
 export function NewsletterGeneralStats({
   newsletter,
