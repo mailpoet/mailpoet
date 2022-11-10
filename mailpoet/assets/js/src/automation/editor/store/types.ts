@@ -3,7 +3,7 @@ import { Step, Automation } from '../components/automation/types';
 
 export interface AutomationEditorWindow extends Window {
   mailpoet_automation_context: Context;
-  mailpoet_automation_automation: Automation;
+  mailpoet_automation: Automation;
 }
 
 export type Context = {

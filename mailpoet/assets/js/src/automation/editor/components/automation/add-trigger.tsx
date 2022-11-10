@@ -19,7 +19,7 @@ export function AddTrigger({ step }: Props): JSX.Element {
     <CompositeItem
       state={compositeState}
       role="treeitem"
-      className="mailpoet-automation-automation-add-trigger"
+      className="mailpoet-automation-add-trigger"
       data-previous-step-id={step.id}
       focusable
       onClick={(event) => {

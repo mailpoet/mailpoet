@@ -79,7 +79,7 @@ class CreateEmailAutomationAndWalkThroughCest
     $i->see('Welcome new subscribers');
     $i->see('Active');
     $i->see('Entered 0'); //Actually I see "0 Entered", but this CSS switch is not caught by the test
-    $i->dontSeeInDatabase('mp_actionscheduler_actions', ['hook' => 'mailpoet/automation/automation/step']);
+    $i->dontSeeInDatabase('mp_actionscheduler_actions', ['hook' => 'mailpoet/automation/step']);
 
     $i->wantTo('Check a new subscriber gets the automation email.');
     $i->amOnPage('/wp-admin/admin.php?page=mailpoet-subscribers#/new');
@@ -89,7 +89,7 @@ class CreateEmailAutomationAndWalkThroughCest
     $i->click('Save');
 
     $i->amOnMailpoetPage('Automation');
-    $i->seeInDatabase('mp_actionscheduler_actions', ['hook' => 'mailpoet/automation/automation/step', 'status' => 'pending']);
+    $i->seeInDatabase('mp_actionscheduler_actions', ['hook' => 'mailpoet/automation/step', 'status' => 'pending']);
     $i->waitForText('Welcome new subscribers');
     $i->see('Entered 1'); //Actually I see "0 Entered", but this CSS switch is not caught by the test
     $i->see('Processing 1');

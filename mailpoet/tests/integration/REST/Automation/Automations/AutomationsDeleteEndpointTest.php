@@ -10,7 +10,7 @@ use MailPoet\REST\Automation\AutomationTest;
 require_once __DIR__ . '/../AutomationTest.php';
 
 class AutomationsDeleteEndpointTest extends AutomationTest {
-  private const ENDPOINT_PATH = '/mailpoet/v1/automation/automations/%d';
+  private const ENDPOINT_PATH = '/mailpoet/v1/automations/%d';
 
   /** @var AutomationStorage */
   private $automationStorage;
@@ -52,7 +52,7 @@ class AutomationsDeleteEndpointTest extends AutomationTest {
     $data = $this->delete(sprintf(self::ENDPOINT_PATH, $this->automation->getId()));
 
     $this->assertSame([
-      'code' => 'mailpoet_automation_automation_not_trashed',
+      'code' => 'mailpoet_automation_not_trashed',
       'message' => "Can't delete automation with ID '{$this->automation->getId()}' because it was not trashed.",
       'data' => ['status' => 400, 'errors' => []],
     ], $data);

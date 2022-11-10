@@ -28,7 +28,7 @@ const emailStatisticsControl = (step: Step): MoreControlType => {
 
 export function registerStepControls() {
   Hooks.addFilter(
-    'mailpoet.automation.automation.step.more-controls',
+    'mailpoet.automation.step.more-controls',
     'mailpoet',
     (
       controls: StepMoreControlsType,

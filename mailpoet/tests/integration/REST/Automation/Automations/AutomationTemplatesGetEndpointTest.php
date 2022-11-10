@@ -9,7 +9,7 @@ require_once __DIR__ . '/../AutomationTest.php';
 
 class AutomationTemplatesGetEndpointTest extends AutomationTest
 {
-  private const ENDPOINT_PATH = '/mailpoet/v1/automation/automation-templates';
+  private const ENDPOINT_PATH = '/mailpoet/v1/automation-templates';
 
   public function testGetAllTemplates() {
     $result = $this->get(self::ENDPOINT_PATH, []);

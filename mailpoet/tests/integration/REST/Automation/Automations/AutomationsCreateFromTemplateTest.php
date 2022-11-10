@@ -10,7 +10,7 @@ use MailPoet\DI\ContainerWrapper;
 use MailPoet\REST\Automation\AutomationTest;
 
 class AutomationsCreateFromTemplateTest extends AutomationTest {
-  private const ENDPOINT_PATH = '/mailpoet/v1/automation/automations/create-from-template';
+  private const ENDPOINT_PATH = '/mailpoet/v1/automations/create-from-template';
 
   /** @var AutomationStorage */
   private $automationStorage;

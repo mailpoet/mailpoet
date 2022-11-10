@@ -11,7 +11,7 @@ use MailPoet\REST\Automation\AutomationTest;
 require_once __DIR__ . '/../AutomationTest.php';
 
 class AutomationsDuplicateEndpointTest extends AutomationTest {
-  private const ENDPOINT_PATH = '/mailpoet/v1/automation/automations/%d/duplicate';
+  private const ENDPOINT_PATH = '/mailpoet/v1/automations/%d/duplicate';
 
   /** @var AutomationStorage */
   private $automationStorage;

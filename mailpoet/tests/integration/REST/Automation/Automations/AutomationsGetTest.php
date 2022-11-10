@@ -10,7 +10,7 @@ use MailPoet\Automation\Engine\Storage\AutomationStorage;
 use MailPoet\REST\Automation\AutomationTest;
 
 class AutomationsGetTest extends AutomationTest {
-  private const ENDPOINT_PATH = '/mailpoet/v1/automation/automations';
+  private const ENDPOINT_PATH = '/mailpoet/v1/automations';
 
   /** @var AutomationStorage */
   private $automationStorage;

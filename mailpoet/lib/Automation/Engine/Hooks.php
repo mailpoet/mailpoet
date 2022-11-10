@@ -20,16 +20,16 @@ class Hooks {
   public const API_INITIALIZE = 'mailpoet/automation/api/initialize';
   public const STEP_RUNNER_INITIALIZE = 'mailpoet/automation/step_runner/initialize';
   public const TRIGGER = 'mailpoet/automation/trigger';
-  public const AUTOMATION_STEP = 'mailpoet/automation/automation/step';
+  public const AUTOMATION_STEP = 'mailpoet/automation/step';
 
   public const EDITOR_BEFORE_LOAD = 'mailpoet/automation/editor/before_load';
 
-  public const AUTOMATION_BEFORE_SAVE = 'mailpoet/automation/automation/before_save';
-  public const AUTOMATION_STEP_BEFORE_SAVE = 'mailpoet/automation/automation/step/before_save';
+  public const AUTOMATION_BEFORE_SAVE = 'mailpoet/automation/before_save';
+  public const AUTOMATION_STEP_BEFORE_SAVE = 'mailpoet/automation/step/before_save';
 
-  public const AUTOMATION_RUN_LOG_AFTER_STEP_RUN = 'mailpoet/automation/automation/step/after_run';
+  public const AUTOMATION_RUN_LOG_AFTER_STEP_RUN = 'mailpoet/automation/step/after_run';
 
-  public const AUTOMATION_TEMPLATES = 'mailpoet/automation/automation/templates';
+  public const AUTOMATION_TEMPLATES = 'mailpoet/automation/templates';
 
   public function doAutomationBeforeSave(Automation $automation): void {
     $this->wordPress->doAction(self::AUTOMATION_BEFORE_SAVE, $automation);

@@ -12,27 +12,27 @@ class Exceptions {
   private const MIGRATION_FAILED = 'mailpoet_automation_migration_failed';
   private const DATABASE_ERROR = 'mailpoet_automation_database_error';
   private const JSON_NOT_OBJECT = 'mailpoet_automation_json_not_object';
-  private const AUTOMATION_NOT_FOUND = 'mailpoet_automation_automation_not_found';
-  private const AUTOMATION_VERSION_NOT_FOUND = 'mailpoet_automation_automation_version_not_found';
-  private const AUTOMATION_NOT_ACTIVE = 'mailpoet_automation_automation_not_active';
-  private const AUTOMATION_RUN_NOT_FOUND = 'mailpoet_automation_automation_run_not_found';
-  private const AUTOMATION_STEP_NOT_FOUND = 'mailpoet_automation_automation_step_not_found';
-  private const AUTOMATION_TRIGGER_NOT_FOUND = 'mailpoet_automation_automation_trigger_not_found';
-  private const AUTOMATION_RUN_NOT_RUNNING = 'mailpoet_automation_automation_run_not_running';
+  private const AUTOMATION_NOT_FOUND = 'mailpoet_automation_not_found';
+  private const AUTOMATION_VERSION_NOT_FOUND = 'mailpoet_automation_version_not_found';
+  private const AUTOMATION_NOT_ACTIVE = 'mailpoet_automation_not_active';
+  private const AUTOMATION_RUN_NOT_FOUND = 'mailpoet_automation_run_not_found';
+  private const AUTOMATION_STEP_NOT_FOUND = 'mailpoet_automation_step_not_found';
+  private const AUTOMATION_TRIGGER_NOT_FOUND = 'mailpoet_automation_trigger_not_found';
+  private const AUTOMATION_RUN_NOT_RUNNING = 'mailpoet_automation_run_not_running';
   private const SUBJECT_NOT_FOUND = 'mailpoet_automation_subject_not_found';
-  private const SUBJECT_LOAD_FAILED = 'mailpoet_automation_automation_subject_load_failed';
+  private const SUBJECT_LOAD_FAILED = 'mailpoet_automation_subject_load_failed';
   private const SUBJECT_DATA_NOT_FOUND = 'mailpoet_automation_subject_data_not_found';
   private const MULTIPLE_SUBJECTS_FOUND = 'mailpoet_automation_multiple_subjects_found';
   private const PAYLOAD_NOT_FOUND = 'mailpoet_automation_payload_not_found';
   private const MULTIPLE_PAYLOADS_FOUND = 'mailpoet_automation_multiple_payloads_found';
-  private const AUTOMATION_STRUCTURE_MODIFICATION_NOT_SUPPORTED = 'mailpoet_automation_automation_structure_modification_not_supported';
-  private const AUTOMATION_STRUCTURE_NOT_VALID = 'mailpoet_automation_automation_structure_not_valid';
-  private const AUTOMATION_STEP_MODIFIED_WHEN_UNKNOWN = 'mailpoet_automation_automation_step_modified_when_unknown';
-  private const AUTOMATION_NOT_VALID = 'mailpoet_automation_automation_not_valid';
+  private const AUTOMATION_STRUCTURE_MODIFICATION_NOT_SUPPORTED = 'mailpoet_automation_structure_modification_not_supported';
+  private const AUTOMATION_STRUCTURE_NOT_VALID = 'mailpoet_automation_structure_not_valid';
+  private const AUTOMATION_STEP_MODIFIED_WHEN_UNKNOWN = 'mailpoet_automation_step_modified_when_unknown';
+  private const AUTOMATION_NOT_VALID = 'mailpoet_automation_not_valid';
   private const MISSING_REQUIRED_SUBJECTS = 'mailpoet_automation_missing_required_subjects';
-  private const AUTOMATION_NOT_TRASHED = 'mailpoet_automation_automation_not_trashed';
-  private const AUTOMATION_TEMPLATE_NOT_FOUND = 'mailpoet_automation_automation_template_not_found';
-  private const AUTOMATION_HAS_ACTIVE_RUNS = 'mailpoet_automation_automation_has_active_runs';
+  private const AUTOMATION_NOT_TRASHED = 'mailpoet_automation_not_trashed';
+  private const AUTOMATION_TEMPLATE_NOT_FOUND = 'mailpoet_automation_template_not_found';
+  private const AUTOMATION_HAS_ACTIVE_RUNS = 'mailpoet_automation_has_active_runs';
 
   public function __construct() {
     throw new InvalidStateException(

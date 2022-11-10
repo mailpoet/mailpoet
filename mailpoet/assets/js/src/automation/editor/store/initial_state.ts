@@ -5,7 +5,7 @@ declare let window: AutomationEditorWindow;
 export const getInitialState = (): State => ({
   context: { ...window.mailpoet_automation_context },
   stepTypes: {},
-  automationData: { ...window.mailpoet_automation_automation },
+  automationData: { ...window.mailpoet_automation },
   automationSaved: true,
   selectedStep: undefined,
   inserterSidebar: {

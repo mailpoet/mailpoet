@@ -110,7 +110,7 @@ class StepHandler {
     try {
       $this->handleStep($args);
     } catch (Throwable $e) {
-      $status = $e instanceof InvalidStateException && $e->getErrorCode() === 'mailpoet_automation_automation_not_active' ? AutomationRun::STATUS_CANCELLED : AutomationRun::STATUS_FAILED;
+      $status = $e instanceof InvalidStateException && $e->getErrorCode() === 'mailpoet_automation_not_active' ? AutomationRun::STATUS_CANCELLED : AutomationRun::STATUS_FAILED;
       $this->automationRunStorage->updateStatus((int)$args['automation_run_id'], $status);
       $this->postProcessAutomationRun((int)$args['automation_run_id']);
       if (!$e instanceof Exception) {
