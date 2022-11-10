@@ -4,7 +4,7 @@ import { store as preferencesStore } from '@wordpress/preferences';
 import { storeName } from './constants';
 import { Context, Errors, Feature, State, StepErrors, StepType } from './types';
 import { Item } from '../components/inserter/item';
-import { Step, Workflow } from '../components/workflow/types';
+import { Step, Automation } from '../components/automation/types';
 
 export const isFeatureActive = createRegistrySelector(
   (select) =>
@@ -58,12 +58,12 @@ export function getInserterPopover(
   return state.inserterPopover;
 }
 
-export function getWorkflowData(state: State): Workflow {
-  return state.workflowData;
+export function getAutomationData(state: State): Automation {
+  return state.automationData;
 }
 
-export function getWorkflowSaved(state: State): boolean {
-  return state.workflowSaved;
+export function getAutomationSaved(state: State): boolean {
+  return state.automationSaved;
 }
 
 export function getSelectedStep(state: State): Step | undefined {
@@ -71,7 +71,7 @@ export function getSelectedStep(state: State): Step | undefined {
 }
 
 export function getStepById(state: State, id: string): Step | undefined {
-  return state.workflowData.steps[id] ?? undefined;
+  return state.automationData.steps[id] ?? undefined;
 }
 
 export function getStepType(state: State, key: string): StepType | undefined {

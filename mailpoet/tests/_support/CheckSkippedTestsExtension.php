@@ -20,8 +20,8 @@ class CheckSkippedTestsExtension extends Extension {
       'testAllSubscribersFoundWithOperatorAny',
       'testAllSubscribersFoundWithOperatorNoneOf',
       'testAllSubscribersFoundWithOperatorAllOf',
-      'workflowTriggeredByRegistrationWitConfirmationNeeded',
-      'workflowTriggeredByRegistrationWithoutConfirmationNeeded',
+      'automationTriggeredByRegistrationWitConfirmationNeeded',
+      'automationTriggeredByRegistrationWithoutConfirmationNeeded',
     ];
 
     if (in_array($branch, ['trunk', 'release']) && !in_array($testName, $allowedToSkipList)) {

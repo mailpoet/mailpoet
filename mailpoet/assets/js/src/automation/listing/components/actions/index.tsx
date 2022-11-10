@@ -1,2 +1,2 @@
-export * from './edit-workflow';
+export * from './edit-automation';
 export * from './undo-trash';

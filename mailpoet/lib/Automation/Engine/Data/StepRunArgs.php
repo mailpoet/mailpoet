@@ -8,11 +8,11 @@ use MailPoet\Automation\Engine\Integration\Payload;
 use MailPoet\Automation\Engine\Integration\Subject;
 
 class StepRunArgs {
-  /** @var Workflow */
-  private $workflow;
+  /** @var Automation */
+  private $automation;
 
-  /** @var WorkflowRun */
-  private $workflowRun;
+  /** @var AutomationRun */
+  private $automationRun;
 
   /** @var Step */
   private $step;
@@ -25,14 +25,14 @@ class StepRunArgs {
 
   /** @param SubjectEntry<Subject<Payload>>[] $subjectsEntries */
   public function __construct(
-    Workflow $workflow,
-    WorkflowRun $workflowRun,
+    Automation $automation,
+    AutomationRun $automationRun,
     Step $step,
     array $subjectsEntries
   ) {
-    $this->workflow = $workflow;
+    $this->automation = $automation;
     $this->step = $step;
-    $this->workflowRun = $workflowRun;
+    $this->automationRun = $automationRun;
 
     foreach ($subjectsEntries as $entry) {
       $subject = $entry->getSubject();
@@ -42,12 +42,12 @@ class StepRunArgs {
     }
   }
 
-  public function getWorkflow(): Workflow {
-    return $this->workflow;
+  public function getAutomation(): Automation {
+    return $this->automation;
   }
 
-  public function getWorkflowRun(): WorkflowRun {
-    return $this->workflowRun;
+  public function getAutomationRun(): AutomationRun {
+    return $this->automationRun;
   }
 
   public function getStep(): Step {
@@ -58,10 +58,10 @@ class StepRunArgs {
   public function getSingleSubjectEntry(string $key): SubjectEntry {
     $subjects = $this->subjectEntries[$key] ?? [];
     if (count($subjects) === 0) {
-      throw Exceptions::subjectDataNotFound($key, $this->workflowRun->getId());
+      throw Exceptions::subjectDataNotFound($key, $this->automationRun->getId());
     }
     if (count($subjects) > 1) {
-      throw Exceptions::multipleSubjectsFound($key, $this->workflowRun->getId());
+      throw Exceptions::multipleSubjectsFound($key, $this->automationRun->getId());
     }
     return $subjects[0];
   }
@@ -92,7 +92,7 @@ class StepRunArgs {
     $payloads = [];
     foreach ($this->subjectEntries as $entries) {
       if (count($entries) > 1) {
-        throw Exceptions::multiplePayloadsFound($class, $this->workflowRun->getId());
+        throw Exceptions::multiplePayloadsFound($class, $this->automationRun->getId());
       }
 
       $entry = $entries[0];
@@ -103,10 +103,10 @@ class StepRunArgs {
     }
 
     if (count($payloads) === 0) {
-      throw Exceptions::payloadNotFound($class, $this->workflowRun->getId());
+      throw Exceptions::payloadNotFound($class, $this->automationRun->getId());
     }
     if (count($payloads) > 1) {
-      throw Exceptions::multiplePayloadsFound($class, $this->workflowRun->getId());
+      throw Exceptions::multiplePayloadsFound($class, $this->automationRun->getId());
     }
 
     // ensure PHPStan we're indeed returning an instance of $class

@@ -13,7 +13,7 @@ import { Errors } from './errors';
 import { InserterToggle } from './inserter_toggle';
 import { MoreMenu } from './more_menu';
 import { storeName } from '../../store';
-import { WorkflowStatus } from '../../../listing/workflow';
+import { AutomationStatus } from '../../../listing/automation';
 import {
   DeactivateImmediatelyModal,
   DeactivateModal,
@@ -28,8 +28,8 @@ function ActivateButton({ label }): JSX.Element {
     (select) => ({
       errors: select(storeName).getErrors(),
       isDeactivating:
-        select(storeName).getWorkflowData().status ===
-        WorkflowStatus.DEACTIVATING,
+        select(storeName).getAutomationData().status ===
+        AutomationStatus.DEACTIVATING,
     }),
     [],
   );
@@ -54,7 +54,7 @@ function ActivateButton({ label }): JSX.Element {
         // The following error seems to be a mismatch. It claims the 'delay' prop does not exist, but it does.
         delay={0}
         text={__(
-          'Editing an active workflow is temporarily unavailable. We are working on introducing this functionality.',
+          'Editing an active automation is temporarily unavailable. We are working on introducing this functionality.',
           'mailpoet',
         )}
       >
@@ -69,14 +69,14 @@ function ActivateButton({ label }): JSX.Element {
 function UpdateButton(): JSX.Element {
   const { save } = useDispatch(storeName);
 
-  const { workflow } = useSelect(
+  const { automation } = useSelect(
     (select) => ({
-      workflow: select(storeName).getWorkflowData(),
+      automation: select(storeName).getAutomationData(),
     }),
     [],
   );
 
-  if (workflow.stats.totals.in_progress === 0) {
+  if (automation.stats.totals.in_progress === 0) {
     return (
       <Button
         variant="primary"
@@ -94,7 +94,7 @@ function UpdateButton(): JSX.Element {
       // The following error seems to be a mismatch. It claims the 'delay' prop does not exist, but it does.
       delay={0}
       text={__(
-        'Editing an active workflow is temporarily unavailable. We are working on introducing this functionality.',
+        'Editing an active automation is temporarily unavailable. We are working on introducing this functionality.',
         'mailpoet',
       )}
     >
@@ -126,7 +126,7 @@ function DeactivateButton(): JSX.Element {
   const { hasUsersInProgress } = useSelect(
     (select) => ({
       hasUsersInProgress:
-        select(storeName).getWorkflowData().stats.totals.in_progress > 0,
+        select(storeName).getAutomationData().stats.totals.in_progress > 0,
     }),
     [],
   );
@@ -166,7 +166,7 @@ function DeactivateNowButton(): JSX.Element {
   const { hasUsersInProgress } = useSelect(
     (select) => ({
       hasUsersInProgress:
-        select(storeName).getWorkflowData().stats.totals.in_progress > 0,
+        select(storeName).getAutomationData().stats.totals.in_progress > 0,
     }),
     [],
   );
@@ -205,11 +205,11 @@ type Props = {
 };
 
 export function Header({ showInserterToggle }: Props): JSX.Element {
-  const { setWorkflowName } = useDispatch(storeName);
-  const { workflowName, workflowStatus } = useSelect(
+  const { setAutomationName } = useDispatch(storeName);
+  const { automationName, automationStatus } = useSelect(
     (select) => ({
-      workflowName: select(storeName).getWorkflowData().name,
-      workflowStatus: select(storeName).getWorkflowData().status,
+      automationName: select(storeName).getAutomationData().name,
+      automationStatus: select(storeName).getAutomationData().status,
     }),
     [],
   );
@@ -234,8 +234,8 @@ export function Header({ showInserterToggle }: Props): JSX.Element {
                 {__('Automation name', 'mailpoet')}
               </div>
               <TextControl
-                value={workflowName}
-                onChange={(newName) => setWorkflowName(newName)}
+                value={automationName}
+                onChange={(newName) => setAutomationName(newName)}
                 help={__(
                   `Give the automation a name that indicates its purpose. E.g. "Abandoned cart recovery"`,
                   'mailpoet',
@@ -249,19 +249,19 @@ export function Header({ showInserterToggle }: Props): JSX.Element {
       <div className="edit-site-header_end">
         <div className="edit-site-header__actions">
           <Errors />
-          {workflowStatus === WorkflowStatus.DRAFT && (
+          {automationStatus === AutomationStatus.DRAFT && (
             <>
               <SaveDraftButton />
               <ActivateButton label={__('Activate', 'mailpoet')} />
             </>
           )}
-          {workflowStatus === WorkflowStatus.ACTIVE && (
+          {automationStatus === AutomationStatus.ACTIVE && (
             <>
               <DeactivateButton />
               <UpdateButton />
             </>
           )}
-          {workflowStatus === WorkflowStatus.DEACTIVATING && (
+          {automationStatus === AutomationStatus.DEACTIVATING && (
             <>
               <DeactivateNowButton />
               <ActivateButton label={__('Update & Activate', 'mailpoet')} />

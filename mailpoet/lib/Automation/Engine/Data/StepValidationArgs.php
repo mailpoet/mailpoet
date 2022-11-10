@@ -7,8 +7,8 @@ use MailPoet\Automation\Engine\Integration\Payload;
 use MailPoet\Automation\Engine\Integration\Subject;
 
 class StepValidationArgs {
-  /** @var Workflow */
-  private $workflow;
+  /** @var Automation */
+  private $automation;
 
   /** @var Step */
   private $step;
@@ -21,11 +21,11 @@ class StepValidationArgs {
 
   /** @param Subject<Payload>[] $subjects */
   public function __construct(
-    Workflow $workflow,
+    Automation $automation,
     Step $step,
     array $subjects
   ) {
-    $this->workflow = $workflow;
+    $this->automation = $automation;
     $this->step = $step;
 
     foreach ($subjects as $subject) {
@@ -35,8 +35,8 @@ class StepValidationArgs {
     }
   }
 
-  public function getWorkflow(): Workflow {
-    return $this->workflow;
+  public function getAutomation(): Automation {
+    return $this->automation;
   }
 
   public function getStep(): Step {

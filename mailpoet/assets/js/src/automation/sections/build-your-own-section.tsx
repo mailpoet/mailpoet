@@ -15,13 +15,13 @@ export function BuildYourOwnSection(): JSX.Element {
       image: `${MailPoet.cdnUrl}automation/sections/start-with-a-trigger.png`,
     },
     {
-      slug: 'customize-your-workflow',
+      slug: 'customize-your-automation',
       title: __('Customize your automation', 'mailpoet'),
       text: __(
         'Choose steps and create a custom journey to best suit your needs.',
         'mailpoet',
       ),
-      image: `${MailPoet.cdnUrl}automation/sections/customize-your-workflow.png`,
+      image: `${MailPoet.cdnUrl}automation/sections/customize-your-automation.png`,
     },
     {
       slug: 'design-your-email',

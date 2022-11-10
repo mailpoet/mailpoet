@@ -3,7 +3,7 @@ import { Hooks } from 'wp-js-hooks';
 import { Icon } from './icon';
 import { Edit } from './edit';
 import { State, StepType } from '../../../../editor/store/types';
-import { Step } from '../../../../editor/components/workflow/types';
+import { Step } from '../../../../editor/components/automation/types';
 
 export const step: StepType = {
   key: 'mailpoet:send-email',
@@ -20,6 +20,6 @@ export const step: StepType = {
     Hooks.applyFilters(
       'mailpoet.automation.send_email.create_step',
       stepData,
-      state.workflowData.id,
+      state.automationData.id,
     ),
 } as const;

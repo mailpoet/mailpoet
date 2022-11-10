@@ -5,15 +5,15 @@ namespace MailPoet\Automation\Engine;
 use MailPoet\Automation\Engine\API\API;
 use MailPoet\Automation\Engine\Control\StepHandler;
 use MailPoet\Automation\Engine\Control\TriggerHandler;
+use MailPoet\Automation\Engine\Endpoints\Automations\AutomationsCreateFromTemplateEndpoint;
+use MailPoet\Automation\Engine\Endpoints\Automations\AutomationsDeleteEndpoint;
+use MailPoet\Automation\Engine\Endpoints\Automations\AutomationsDuplicateEndpoint;
+use MailPoet\Automation\Engine\Endpoints\Automations\AutomationsGetEndpoint;
+use MailPoet\Automation\Engine\Endpoints\Automations\AutomationsPutEndpoint;
+use MailPoet\Automation\Engine\Endpoints\Automations\AutomationTemplatesGetEndpoint;
 use MailPoet\Automation\Engine\Endpoints\System\DatabaseDeleteEndpoint;
 use MailPoet\Automation\Engine\Endpoints\System\DatabasePostEndpoint;
-use MailPoet\Automation\Engine\Endpoints\Workflows\WorkflowsCreateFromTemplateEndpoint;
-use MailPoet\Automation\Engine\Endpoints\Workflows\WorkflowsDeleteEndpoint;
-use MailPoet\Automation\Engine\Endpoints\Workflows\WorkflowsDuplicateEndpoint;
-use MailPoet\Automation\Engine\Endpoints\Workflows\WorkflowsGetEndpoint;
-use MailPoet\Automation\Engine\Endpoints\Workflows\WorkflowsPutEndpoint;
-use MailPoet\Automation\Engine\Endpoints\Workflows\WorkflowTemplatesGetEndpoint;
-use MailPoet\Automation\Engine\Storage\WorkflowStorage;
+use MailPoet\Automation\Engine\Storage\AutomationStorage;
 use MailPoet\Automation\Integrations\Core\CoreIntegration;
 
 class Engine {
@@ -37,8 +37,8 @@ class Engine {
   /** @var WordPress */
   private $wordPress;
 
-  /** @var WorkflowStorage */
-  private $workflowStorage;
+  /** @var AutomationStorage */
+  private $automationStorage;
 
   public function __construct(
     API $api,
@@ -47,7 +47,7 @@ class Engine {
     StepHandler $stepHandler,
     TriggerHandler $triggerHandler,
     WordPress $wordPress,
-    WorkflowStorage $workflowStorage
+    AutomationStorage $automationStorage
   ) {
     $this->api = $api;
     $this->coreIntegration = $coreIntegration;
@@ -55,7 +55,7 @@ class Engine {
     $this->stepHandler = $stepHandler;
     $this->triggerHandler = $triggerHandler;
     $this->wordPress = $wordPress;
-    $this->workflowStorage = $workflowStorage;
+    $this->automationStorage = $automationStorage;
   }
 
   public function initialize(): void {
@@ -72,19 +72,19 @@ class Engine {
 
   private function registerApiRoutes(): void {
     $this->wordPress->addAction(Hooks::API_INITIALIZE, function (API $api) {
-      $api->registerGetRoute('workflows', WorkflowsGetEndpoint::class);
-      $api->registerPutRoute('workflows/(?P<id>\d+)', WorkflowsPutEndpoint::class);
-      $api->registerDeleteRoute('workflows/(?P<id>\d+)', WorkflowsDeleteEndpoint::class);
-      $api->registerPostRoute('workflows/(?P<id>\d+)/duplicate', WorkflowsDuplicateEndpoint::class);
-      $api->registerPostRoute('workflows/create-from-template', WorkflowsCreateFromTemplateEndpoint::class);
-      $api->registerPostRoute('system/database', DatabasePostEndpoint::class);
-      $api->registerDeleteRoute('system/database', DatabaseDeleteEndpoint::class);
-      $api->registerGetRoute('workflow-templates', WorkflowTemplatesGetEndpoint::class);
+      $api->registerGetRoute('automations', AutomationsGetEndpoint::class);
+      $api->registerPutRoute('automations/(?P<id>\d+)', AutomationsPutEndpoint::class);
+      $api->registerDeleteRoute('automations/(?P<id>\d+)', AutomationsDeleteEndpoint::class);
+      $api->registerPostRoute('automations/(?P<id>\d+)/duplicate', AutomationsDuplicateEndpoint::class);
+      $api->registerPostRoute('automations/create-from-template', AutomationsCreateFromTemplateEndpoint::class);
+      $api->registerPostRoute('automation/system/database', DatabasePostEndpoint::class);
+      $api->registerDeleteRoute('automation/system/database', DatabaseDeleteEndpoint::class);
+      $api->registerGetRoute('automation-templates', AutomationTemplatesGetEndpoint::class);
     });
   }
 
   private function registerActiveTriggerHooks(): void {
-    $triggerKeys = $this->workflowStorage->getActiveTriggerKeys();
+    $triggerKeys = $this->automationStorage->getActiveTriggerKeys();
     foreach ($triggerKeys as $triggerKey) {
       $instance = $this->registry->getTrigger($triggerKey);
       if ($instance) {

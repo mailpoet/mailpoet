@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Button } from '@wordpress/components';
 import { addQueryArgs } from '@wordpress/url';
 import { __ } from '@wordpress/i18n';
-import { WorkflowTemplate } from '../config';
+import { AutomationTemplate } from '../config';
 import { useMutation } from '../../api';
 import { MailPoet } from '../../../mailpoet';
 import { Notice } from '../../../notices/notice';
@@ -12,7 +12,7 @@ import {
 } from '../../../common/premium_modal';
 
 type TemplateListItemProps = {
-  template: WorkflowTemplate;
+  template: AutomationTemplate;
   heading?: 'h2' | 'h3';
 };
 export function TemplateListItem({
@@ -20,8 +20,8 @@ export function TemplateListItem({
   heading,
 }: TemplateListItemProps): JSX.Element {
   const [showPremium, setShowPremium] = useState(false);
-  const [createWorkflowFromTemplate, { loading, error, data }] = useMutation(
-    'workflows/create-from-template',
+  const [createAutomationFromTemplate, { loading, error, data }] = useMutation(
+    'automations/create-from-template',
     {
       method: 'POST',
       body: JSON.stringify({
@@ -32,7 +32,7 @@ export function TemplateListItem({
 
   if (!error && data) {
     MailPoet.trackEvent('Automations > Template selected', {
-      'Workflow slug': template.slug,
+      'Automation slug': template.slug,
     });
     window.location.href = addQueryArgs(MailPoet.urls.automationEditor, {
       id: data.data.id,
@@ -66,7 +66,7 @@ export function TemplateListItem({
             setShowPremium(true);
             return;
           }
-          void createWorkflowFromTemplate();
+          void createAutomationFromTemplate();
         }}
       >
         <div className="badge">

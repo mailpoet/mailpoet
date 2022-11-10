@@ -7,7 +7,7 @@ import { Dispatch } from 'react';
 import { DropdownMenu } from '@wordpress/components';
 import { StoreConfig } from '@wordpress/data';
 import { Item } from '../editor/components/inserter/item';
-import { Step } from '../editor/components/workflow/types';
+import { Step } from '../editor/components/automation/types';
 import { State } from '../editor/store/types';
 
 export type MoreControlType = {
@@ -20,17 +20,17 @@ export type MoreControlType = {
  * APPLICATION HOOKS
  */
 
-// mailpoet.automation.workflow.step.more-controls
+// mailpoet.automation.automation.step.more-controls
 // mailpoet.automation.hero.actions
 export type StepMoreControlsType = Record<string, MoreControlType>;
 
-// mailpoet.automation.workflow.add_step_callback
+// mailpoet.automation.automation.add_step_callback
 export type AddStepCallbackType = (item?: Item) => void;
 
-// mailpoet.automation.workflow.render_step
+// mailpoet.automation.automation.render_step
 export type RenderStepType = (step: Step) => JSX.Element;
 
-// mailpoet.automation.workflow.render_step_separator
+// mailpoet.automation.automation.render_step_separator
 export type RenderStepSeparatorType = (step: Step) => JSX.Element;
 
 // mailpoet.automation.editor.create_store

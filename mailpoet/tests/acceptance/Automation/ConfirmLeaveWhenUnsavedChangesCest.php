@@ -19,8 +19,8 @@ class ConfirmLeaveWhenUnsavedChangesCest
     $migrator->createSchema();
   }
 
-  public function confirmationIsRequiredIfWorkflowNotSaved(\AcceptanceTester $i) {
-    $i->wantTo('Edit a new workflow draft');
+  public function confirmationIsRequiredIfAutomationNotSaved(\AcceptanceTester $i) {
+    $i->wantTo('Edit a new automation draft');
     $i->login();
 
     $i->amOnMailpoetPage('Automation');

@@ -1,11 +1,11 @@
 import { State } from './types';
-import { Workflow } from '../workflow';
-import { workflowCount } from '../../config';
+import { Automation } from '../automation';
+import { automationCount } from '../../config';
 
-export function getWorkflows(state: State): Workflow[] {
-  return state.workflows;
+export function getAutomations(state: State): Automation[] {
+  return state.automations;
 }
 
-export function getWorkflowCount(state: State): number {
-  return state.workflows ? state.workflows.length : workflowCount;
+export function getAutomationCount(state: State): number {
+  return state.automations ? state.automations.length : automationCount;
 }

@@ -7,8 +7,8 @@ use MailPoet\Automation\Engine\Data\Step;
 use MailPoet\Automation\Engine\Data\StepValidationArgs;
 use MailPoet\Automation\Engine\Data\Subject;
 use MailPoet\Automation\Engine\Data\SubjectEntry;
-use MailPoet\Automation\Engine\Data\Workflow;
-use MailPoet\Automation\Engine\Data\WorkflowRun;
+use MailPoet\Automation\Engine\Data\Automation;
+use MailPoet\Automation\Engine\Data\AutomationRun;
 use MailPoet\Automation\Engine\Integration\ValidationException;
 use MailPoet\Automation\Integrations\MailPoet\Actions\SendEmailAction;
 use MailPoet\Automation\Integrations\MailPoet\Subjects\SegmentSubject;
@@ -50,8 +50,8 @@ class SendEmailActionTest extends \MailPoetTest {
   /** @var SegmentSubject */
   private $segmentSubject;
 
-  /** @var Workflow */
-  private $workflow;
+  /** @var Automation */
+  private $automation;
 
   public function _before() {
     parent::_before();
@@ -64,7 +64,7 @@ class SendEmailActionTest extends \MailPoetTest {
     $this->subscriberSubject = $this->diContainer->get(SubscriberSubject::class);
     $this->segmentSubject = $this->diContainer->get(SegmentSubject::class);
 
-    $this->workflow = new Workflow('test-workflow', [], new \WP_User());
+    $this->automation = new Automation('test-automation', [], new \WP_User());
   }
 
   public function testItReturnsRequiredSubjects() {
@@ -76,7 +76,7 @@ class SendEmailActionTest extends \MailPoetTest {
 
     $error = null;
     try {
-      $this->action->validate(new StepValidationArgs($this->workflow, $step, []));
+      $this->action->validate(new StepValidationArgs($this->automation, $step, []));
     } catch (ValidationException $error) {
       $this->assertSame('Automation email not found.', $error->getErrors()['email_id']);
     }
@@ -89,8 +89,8 @@ class SendEmailActionTest extends \MailPoetTest {
 
     $error = null;
     try {
-    $this->action->validate(new StepValidationArgs($this->workflow, $step, []));
-    $this->action->validate(new StepValidationArgs($this->workflow, $step, []));
+    $this->action->validate(new StepValidationArgs($this->automation, $step, []));
+    $this->action->validate(new StepValidationArgs($this->automation, $step, []));
     } catch (ValidationException $error) {
       $this->assertSame("Automation email with ID '{$newsletter->getId()}' not found.", $error->getErrors()['email_id']);
     }
@@ -107,13 +107,13 @@ class SendEmailActionTest extends \MailPoetTest {
     $email = (new Newsletter())->withAutomationType()->create();
 
     $step = new Step('step-id', Step::TYPE_ACTION, 'step-key', ['email_id' => $email->getId()], []);
-    $workflow = new Workflow('some-workflow', [$step->getId() => $step], new \WP_User());
-    $run = new WorkflowRun(1, 1, 'trigger-key', $subjects);
+    $automation = new Automation('some-automation', [$step->getId() => $step], new \WP_User());
+    $run = new AutomationRun(1, 1, 'trigger-key', $subjects);
 
     $scheduled = $this->scheduledTasksRepository->findByNewsletterAndSubscriberId($email, (int)$subscriber->getId());
     expect($scheduled)->count(0);
 
-    $this->action->run(new StepRunArgs($workflow, $run, $step, $this->getSubjectEntries($subjects)));
+    $this->action->run(new StepRunArgs($automation, $run, $step, $this->getSubjectEntries($subjects)));
 
     $scheduled = $this->scheduledTasksRepository->findByNewsletterAndSubscriberId($email, (int)$subscriber->getId());
     expect($scheduled)->count(1);
@@ -129,20 +129,20 @@ class SendEmailActionTest extends \MailPoetTest {
     $email = (new Newsletter())->withAutomationType()->create();
 
     $step = new Step('step-id', Step::TYPE_ACTION, 'step-key', ['email_id' => $email->getId()], []);
-    $workflow = new Workflow('some-workflow', [$step->getId() => $step], new \WP_User());
-    $run = new WorkflowRun(1, 1, 'trigger-key', $subjects);
+    $automation = new Automation('some-automation', [$step->getId() => $step], new \WP_User());
+    $run = new AutomationRun(1, 1, 'trigger-key', $subjects);
 
     $scheduled = $this->scheduledTasksRepository->findByNewsletterAndSubscriberId($email, (int)$subscriber->getId());
     expect($scheduled)->count(0);
 
     $action = ContainerWrapper::getInstance()->get(SendEmailAction::class);
-    $action->run(new StepRunArgs($workflow, $run, $step, $this->getSubjectEntries($subjects)));
+    $action->run(new StepRunArgs($automation, $run, $step, $this->getSubjectEntries($subjects)));
 
     $scheduled = $this->scheduledTasksRepository->findByNewsletterAndSubscriberId($email, (int)$subscriber->getId());
     expect($scheduled)->count(1);
 
     try {
-      $action->run(new StepRunArgs($workflow, $run, $step, $this->getSubjectEntries($subjects)));
+      $action->run(new StepRunArgs($automation, $run, $step, $this->getSubjectEntries($subjects)));
     } catch (InvalidStateException $exception) {
       // The exception itself isn't as important as the outcome
     }
@@ -161,8 +161,8 @@ class SendEmailActionTest extends \MailPoetTest {
     $email = (new Newsletter())->withAutomationType()->create();
 
     $step = new Step('step-id', Step::TYPE_ACTION, 'step-key', ['email_id' => $email->getId()], []);
-    $workflow = new Workflow('some-workflow', [$step->getId() => $step], new \WP_User());
-    $run = new WorkflowRun(1, 1, 'trigger-key', $subjects);
+    $automation = new Automation('some-automation', [$step->getId() => $step], new \WP_User());
+    $run = new AutomationRun(1, 1, 'trigger-key', $subjects);
 
     $scheduled = $this->scheduledTasksRepository->findByNewsletterAndSubscriberId($email, (int)$subscriber->getId());
     expect($scheduled)->count(0);
@@ -171,7 +171,7 @@ class SendEmailActionTest extends \MailPoetTest {
     $action = ContainerWrapper::getInstance()->get(SendEmailAction::class);
 
     try {
-      $action->run(new StepRunArgs($workflow, $run, $step, $this->getSubjectEntries($subjects)));
+      $action->run(new StepRunArgs($automation, $run, $step, $this->getSubjectEntries($subjects)));
     } catch (Exception $exception) {
       // The exception itself isn't as important as the outcome
     }
@@ -190,8 +190,8 @@ class SendEmailActionTest extends \MailPoetTest {
     $email = (new Newsletter())->withAutomationType()->create();
 
     $step = new Step('step-id', Step::TYPE_ACTION, 'step-key', ['email_id' => $email->getId()], []);
-    $workflow = new Workflow('some-workflow', [$step->getId() => $step], new \WP_User());
-    $run = new WorkflowRun(1, 1, 'trigger-key', $subjects);
+    $automation = new Automation('some-automation', [$step->getId() => $step], new \WP_User());
+    $run = new AutomationRun(1, 1, 'trigger-key', $subjects);
 
     $scheduled = $this->scheduledTasksRepository->findByNewsletterAndSubscriberId($email, (int)$subscriber->getId());
     expect($scheduled)->count(0);
@@ -200,7 +200,7 @@ class SendEmailActionTest extends \MailPoetTest {
     $action = ContainerWrapper::getInstance()->get(SendEmailAction::class);
 
     try {
-      $action->run(new StepRunArgs($workflow, $run, $step, $this->getSubjectEntries($subjects)));
+      $action->run(new StepRunArgs($automation, $run, $step, $this->getSubjectEntries($subjects)));
     } catch (Exception $exception) {
       // The exception itself isn't as important as the outcome
     }
@@ -228,8 +228,8 @@ class SendEmailActionTest extends \MailPoetTest {
       $email = (new Newsletter())->withAutomationType()->create();
 
       $step = new Step('step-id', Step::TYPE_ACTION, 'step-key', ['email_id' => $email->getId()], []);
-      $workflow = new Workflow('some-workflow', [$step->getId() => $step], new \WP_User());
-      $run = new WorkflowRun(1, 1, 'trigger-key', $subjects);
+      $automation = new Automation('some-automation', [$step->getId() => $step], new \WP_User());
+      $run = new AutomationRun(1, 1, 'trigger-key', $subjects);
 
       $scheduled = $this->scheduledTasksRepository->findByNewsletterAndSubscriberId($email, (int)$subscriber->getId());
       expect($scheduled)->count(0);
@@ -238,7 +238,7 @@ class SendEmailActionTest extends \MailPoetTest {
       $action = ContainerWrapper::getInstance()->get(SendEmailAction::class);
 
       try {
-        $action->run(new StepRunArgs($workflow, $run, $step, $this->getSubjectEntries($subjects)));
+        $action->run(new StepRunArgs($automation, $run, $step, $this->getSubjectEntries($subjects)));
       } catch (Exception $exception) {
         // The exception itself isn't as important as the outcome
       }
@@ -257,8 +257,8 @@ class SendEmailActionTest extends \MailPoetTest {
     $email = (new Newsletter())->withAutomationType()->create();
 
     $step = new Step('step-id', Step::TYPE_ACTION, 'step-key', ['email_id' => $email->getId()], []);
-    $workflow = new Workflow('some-workflow', [$step->getId() => $step], new \WP_User());
-    $run = new WorkflowRun(1, 1, 'trigger-key', $subjects);
+    $automation = new Automation('some-automation', [$step->getId() => $step], new \WP_User());
+    $run = new AutomationRun(1, 1, 'trigger-key', $subjects);
 
     $scheduled = $this->scheduledTasksRepository->findByNewsletterAndSubscriberId($email, (int)$subscriber->getId());
     expect($scheduled)->count(0);
@@ -266,7 +266,7 @@ class SendEmailActionTest extends \MailPoetTest {
     $action = ContainerWrapper::getInstance()->get(SendEmailAction::class);
 
     try {
-      $action->run(new StepRunArgs($workflow, $run, $step, $this->getSubjectEntries($subjects)));
+      $action->run(new StepRunArgs($automation, $run, $step, $this->getSubjectEntries($subjects)));
     } catch (Exception $exception) {
       // The exception itself isn't as important as the outcome
     }

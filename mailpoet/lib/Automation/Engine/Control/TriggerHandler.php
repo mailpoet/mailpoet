@@ -2,14 +2,14 @@
 
 namespace MailPoet\Automation\Engine\Control;
 
+use MailPoet\Automation\Engine\Data\AutomationRun;
 use MailPoet\Automation\Engine\Data\StepRunArgs;
 use MailPoet\Automation\Engine\Data\Subject;
-use MailPoet\Automation\Engine\Data\WorkflowRun;
 use MailPoet\Automation\Engine\Exceptions;
 use MailPoet\Automation\Engine\Hooks;
 use MailPoet\Automation\Engine\Integration\Trigger;
-use MailPoet\Automation\Engine\Storage\WorkflowRunStorage;
-use MailPoet\Automation\Engine\Storage\WorkflowStorage;
+use MailPoet\Automation\Engine\Storage\AutomationRunStorage;
+use MailPoet\Automation\Engine\Storage\AutomationStorage;
 use MailPoet\Automation\Engine\WordPress;
 
 class TriggerHandler {
@@ -22,23 +22,23 @@ class TriggerHandler {
   /** @var WordPress */
   private $wordPress;
 
-  /** @var WorkflowStorage */
-  private $workflowStorage;
+  /** @var AutomationStorage */
+  private $automationStorage;
 
-  /** @var WorkflowRunStorage */
-  private $workflowRunStorage;
+  /** @var AutomationRunStorage */
+  private $automationRunStorage;
 
   public function __construct(
     ActionScheduler $actionScheduler,
     SubjectLoader $subjectLoader,
     WordPress $wordPress,
-    WorkflowStorage $workflowStorage,
-    WorkflowRunStorage $workflowRunStorage
+    AutomationStorage $automationStorage,
+    AutomationRunStorage $automationRunStorage
   ) {
     $this->actionScheduler = $actionScheduler;
     $this->wordPress = $wordPress;
-    $this->workflowStorage = $workflowStorage;
-    $this->workflowRunStorage = $workflowRunStorage;
+    $this->automationStorage = $automationStorage;
+    $this->automationRunStorage = $automationRunStorage;
     $this->subjectLoader = $subjectLoader;
   }
 
@@ -48,11 +48,11 @@ class TriggerHandler {
 
   /** @param Subject[] $subjects */
   public function processTrigger(Trigger $trigger, array $subjects): void {
-    $workflows = $this->workflowStorage->getActiveWorkflowsByTrigger($trigger);
-    foreach ($workflows as $workflow) {
-      $step = $workflow->getTrigger($trigger->getKey());
+    $automations = $this->automationStorage->getActiveAutomationsByTrigger($trigger);
+    foreach ($automations as $automation) {
+      $step = $automation->getTrigger($trigger->getKey());
       if (!$step) {
-        throw Exceptions::workflowTriggerNotFound($workflow->getId(), $trigger->getKey());
+        throw Exceptions::automationTriggerNotFound($automation->getId(), $trigger->getKey());
       }
 
       // ensure subjects are registered and loadable
@@ -61,21 +61,21 @@ class TriggerHandler {
         $entry->getPayload();
       }
 
-      $workflowRun = new WorkflowRun($workflow->getId(), $workflow->getVersionId(), $trigger->getKey(), $subjects);
-      if (!$trigger->isTriggeredBy(new StepRunArgs($workflow, $workflowRun, $step, $subjectEntries))) {
+      $automationRun = new AutomationRun($automation->getId(), $automation->getVersionId(), $trigger->getKey(), $subjects);
+      if (!$trigger->isTriggeredBy(new StepRunArgs($automation, $automationRun, $step, $subjectEntries))) {
         return;
       }
 
-      $workflowRunId = $this->workflowRunStorage->createWorkflowRun($workflowRun);
+      $automationRunId = $this->automationRunStorage->createAutomationRun($automationRun);
       $nextStep = $step->getNextSteps()[0] ?? null;
-      $this->actionScheduler->enqueue(Hooks::WORKFLOW_STEP, [
+      $this->actionScheduler->enqueue(Hooks::AUTOMATION_STEP, [
         [
-          'workflow_run_id' => $workflowRunId,
+          'automation_run_id' => $automationRunId,
           'step_id' => $nextStep ? $nextStep->getId() : null,
         ],
       ]);
 
-      $this->workflowRunStorage->updateNextStep($workflowRunId, $nextStep ? $nextStep->getId() : null);
+      $this->automationRunStorage->updateNextStep($automationRunId, $nextStep ? $nextStep->getId() : null);
     }
   }
 }

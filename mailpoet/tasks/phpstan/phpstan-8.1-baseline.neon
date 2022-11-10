@@ -3,11 +3,11 @@ parameters:
 		-
 			message: "#^Cannot cast mixed to string\\.$#"
 			count: 1
-			path: ../../lib/Automation/Engine/Endpoints/Workflows/WorkflowsCreateFromTemplateEndpoint.php
+			path: ../../lib/Automation/Engine/Endpoints/Automations/AutomationsCreateFromTemplateEndpoint.php
 		-
 			message: "#^Cannot cast mixed to int\\.$#"
 			count: 1
-			path: ../../lib/Automation/Engine/Endpoints/Workflows/WorkflowTemplatesGetEndpoint.php
+			path: ../../lib/Automation/Engine/Endpoints/Automations/AutomationTemplatesGetEndpoint.php
 
 		-
 			message: "#^Cannot access property \\$permissions on mixed\\.$#"

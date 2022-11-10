@@ -3,7 +3,7 @@ import { Button, Modal } from '@wordpress/components';
 import { __, sprintf } from '@wordpress/i18n';
 import { dispatch, useSelect } from '@wordpress/data';
 import { storeName } from '../../store';
-import { WorkflowStatus } from '../../../listing/workflow';
+import { AutomationStatus } from '../../../listing/automation';
 
 type DeactivateImmediatelyModalProps = {
   onClose: () => void;
@@ -49,20 +49,20 @@ type DeactivateModalProps = {
 export function DeactivateModal({
   onClose,
 }: DeactivateModalProps): JSX.Element {
-  const { workflowName } = useSelect(
+  const { automationName } = useSelect(
     (select) => ({
-      workflowName: select(storeName).getWorkflowData().name,
+      automationName: select(storeName).getAutomationData().name,
     }),
     [],
   );
   const [selected, setSelected] = useState<
-    WorkflowStatus.DRAFT | WorkflowStatus.DEACTIVATING
-  >(WorkflowStatus.DEACTIVATING);
+    AutomationStatus.DRAFT | AutomationStatus.DEACTIVATING
+  >(AutomationStatus.DEACTIVATING);
   const [isBusy, setIsBusy] = useState<boolean>(false);
   // translators: %s is the name of the automation.
   const title = sprintf(
     __('Deactivate the "%s" automation?', 'mailpoet'),
-    workflowName,
+    automationName,
   );
 
   return (
@@ -79,7 +79,7 @@ export function DeactivateModal({
         <li>
           <label
             className={
-              selected === WorkflowStatus.DEACTIVATING
+              selected === AutomationStatus.DEACTIVATING
                 ? 'mailpoet-automation-option active'
                 : 'mailpoet-automation-option'
             }
@@ -89,8 +89,8 @@ export function DeactivateModal({
                 type="radio"
                 disabled={isBusy}
                 name="deactivation-method"
-                checked={selected === WorkflowStatus.DEACTIVATING}
-                onChange={() => setSelected(WorkflowStatus.DEACTIVATING)}
+                checked={selected === AutomationStatus.DEACTIVATING}
+                onChange={() => setSelected(AutomationStatus.DEACTIVATING)}
               />
             </span>
             <span>
@@ -107,7 +107,7 @@ export function DeactivateModal({
         <li>
           <label
             className={
-              selected === WorkflowStatus.DRAFT
+              selected === AutomationStatus.DRAFT
                 ? 'mailpoet-automation-option active'
                 : 'mailpoet-automation-option'
             }
@@ -117,8 +117,8 @@ export function DeactivateModal({
                 type="radio"
                 disabled={isBusy}
                 name="deactivation-method"
-                checked={selected === WorkflowStatus.DRAFT}
-                onChange={() => setSelected(WorkflowStatus.DRAFT)}
+                checked={selected === AutomationStatus.DRAFT}
+                onChange={() => setSelected(AutomationStatus.DRAFT)}
               />
             </span>
             <span>
@@ -140,7 +140,7 @@ export function DeactivateModal({
         onClick={() => {
           setIsBusy(true);
           dispatch(storeName).deactivate(
-            selected !== WorkflowStatus.DEACTIVATING,
+            selected !== AutomationStatus.DEACTIVATING,
           );
         }}
       >

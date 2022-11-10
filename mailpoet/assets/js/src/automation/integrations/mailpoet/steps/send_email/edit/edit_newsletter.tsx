@@ -31,11 +31,11 @@ export function EditNewsletter(): JSX.Element {
     useState(false);
   const [fetchingPreviewLink, setFetchingPreviewLink] = useState(false);
 
-  const { selectedStep, workflowId, workflowSaved, errors } = useSelect(
+  const { selectedStep, automationId, automationSaved, errors } = useSelect(
     (select) => ({
       selectedStep: select(storeName).getSelectedStep(),
-      workflowId: select(storeName).getWorkflowData().id,
-      workflowSaved: select(storeName).getWorkflowSaved(),
+      automationId: select(storeName).getAutomationData().id,
+      automationSaved: select(storeName).getAutomationSaved(),
       errors: select(storeName).getStepError(
         select(storeName).getSelectedStep().id,
       ),
@@ -44,7 +44,7 @@ export function EditNewsletter(): JSX.Element {
   );
 
   const emailId = selectedStep?.args?.email_id as number | undefined;
-  const workflowStepId = selectedStep.id;
+  const automationStepId = selectedStep.id;
   const errorFields = errors?.fields ?? {};
   const emailIdError = errorFields?.email_id ?? '';
 
@@ -58,28 +58,28 @@ export function EditNewsletter(): JSX.Element {
         type: 'automation',
         subject: '',
         options: {
-          workflowId,
-          workflowStepId,
+          automationId,
+          automationStepId,
         },
       },
     });
 
     dispatch(storeName).updateStepArgs(
-      workflowStepId,
+      automationStepId,
       'email_id',
       parseInt(response.data.id as string, 10),
     );
 
     dispatch(storeName).save();
-  }, [workflowId, workflowStepId]);
+  }, [automationId, automationStepId]);
 
   // This component is rendered only when no email ID is set. Once we have the ID
-  // and the workflow is saved, we can safely redirect to the email design flow.
+  // and the automation is saved, we can safely redirect to the email design flow.
   useEffect(() => {
-    if (redirectToTemplateSelection && emailId && workflowSaved) {
+    if (redirectToTemplateSelection && emailId && automationSaved) {
       window.location.href = `admin.php?page=mailpoet-newsletters#/template/${emailId}`;
     }
-  }, [emailId, workflowSaved, redirectToTemplateSelection]);
+  }, [emailId, automationSaved, redirectToTemplateSelection]);
 
   if (!emailId || redirectToTemplateSelection) {
     return (

@@ -3,25 +3,25 @@ import { __ } from '@wordpress/i18n';
 import { DropdownMenu } from '@wordpress/components';
 import { moreVertical } from '@wordpress/icons';
 import { useDeleteButton, useRestoreButton, useTrashButton } from '../menu';
-import { Workflow } from '../../workflow';
-import { EditWorkflow } from '../actions';
+import { Automation } from '../../automation';
+import { EditAutomation } from '../actions';
 
 type Props = {
-  workflow: Workflow;
+  automation: Automation;
 };
 
-export function Actions({ workflow }: Props): JSX.Element {
+export function Actions({ automation }: Props): JSX.Element {
   // Menu items are using custom hooks because the "DropdownMenu" component uses the "controls"
   // attribute rather than child components, but we need to render modal confirmation dialogs.
-  const trash = useTrashButton(workflow);
-  const restore = useRestoreButton(workflow);
-  const del = useDeleteButton(workflow);
+  const trash = useTrashButton(automation);
+  const restore = useRestoreButton(automation);
+  const del = useDeleteButton(automation);
 
   const menuItems = [trash, restore, del].filter((item) => item);
 
   return (
     <div className="mailpoet-automation-listing-cell-actions">
-      <EditWorkflow workflow={workflow} />
+      <EditAutomation automation={automation} />
       {menuItems.map(({ control, slot }) => (
         <Fragment key={control.title}>{slot}</Fragment>
       ))}

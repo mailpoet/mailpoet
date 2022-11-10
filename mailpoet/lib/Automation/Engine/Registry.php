@@ -107,12 +107,12 @@ class Registry {
     return $this->actions;
   }
 
-  public function onBeforeWorkflowSave(callable $callback, int $priority = 10): void {
-    $this->wordPress->addAction(Hooks::WORKFLOW_BEFORE_SAVE, $callback, $priority);
+  public function onBeforeAutomationSave(callable $callback, int $priority = 10): void {
+    $this->wordPress->addAction(Hooks::AUTOMATION_BEFORE_SAVE, $callback, $priority);
   }
 
-  public function onBeforeWorkflowStepSave(callable $callback, string $key = null, int $priority = 10): void {
+  public function onBeforeAutomationStepSave(callable $callback, string $key = null, int $priority = 10): void {
     $keyPart = $key ? "/key=$key" : '';
-    $this->wordPress->addAction(Hooks::WORKFLOW_STEP_BEFORE_SAVE . $keyPart, $callback, $priority);
+    $this->wordPress->addAction(Hooks::AUTOMATION_STEP_BEFORE_SAVE . $keyPart, $callback, $priority);
   }
 }

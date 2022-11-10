@@ -3,11 +3,11 @@
 namespace MailPoet\AdminPages\Pages;
 
 use MailPoet\AdminPages\PageRenderer;
-use MailPoet\Automation\Engine\Data\Workflow;
+use MailPoet\Automation\Engine\Data\Automation;
 use MailPoet\Automation\Engine\Hooks;
-use MailPoet\Automation\Engine\Mappers\WorkflowMapper;
+use MailPoet\Automation\Engine\Mappers\AutomationMapper;
 use MailPoet\Automation\Engine\Registry;
-use MailPoet\Automation\Engine\Storage\WorkflowStorage;
+use MailPoet\Automation\Engine\Storage\AutomationStorage;
 use MailPoet\Form\AssetsController;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\WP\Functions as WPFunctions;
@@ -17,11 +17,11 @@ class AutomationEditor {
   /** @var AssetsController */
   private $assetsController;
 
-  /** @var WorkflowMapper */
-  private $workflowMapper;
+  /** @var AutomationMapper */
+  private $automationMapper;
 
-  /** @var WorkflowStorage */
-  private $workflowStorage;
+  /** @var AutomationStorage */
+  private $automationStorage;
 
   /** @var PageRenderer */
   private $pageRenderer;
@@ -37,16 +37,16 @@ class AutomationEditor {
 
   public function __construct(
     AssetsController $assetsController,
-    WorkflowMapper $workflowMapper,
-    WorkflowStorage $workflowStorage,
+    AutomationMapper $automationMapper,
+    AutomationStorage $automationStorage,
     PageRenderer $pageRenderer,
     Registry $registry,
     SegmentsRepository $segmentsRepository,
     WPFunctions $wp
   ) {
     $this->assetsController = $assetsController;
-    $this->workflowMapper = $workflowMapper;
-    $this->workflowStorage = $workflowStorage;
+    $this->automationMapper = $automationMapper;
+    $this->automationStorage = $automationStorage;
     $this->pageRenderer = $pageRenderer;
     $this->registry = $registry;
     $this->segmentsRepository = $segmentsRepository;
@@ -60,8 +60,8 @@ class AutomationEditor {
 
     $this->wp->doAction(Hooks::EDITOR_BEFORE_LOAD, (int)$id);
 
-    $workflow = $id ? $this->workflowStorage->getWorkflow($id) : null;
-    if (!$workflow) {
+    $automation = $id ? $this->automationStorage->getAutomation($id) : null;
+    if (!$automation) {
       $notice = new WPNotice(
         WPNotice::TYPE_ERROR,
         __('Automation not found.', 'mailpoet')
@@ -71,7 +71,7 @@ class AutomationEditor {
       return;
     }
 
-    if ($workflow->getStatus() === Workflow::STATUS_TRASH) {
+    if ($automation->getStatus() === Automation::STATUS_TRASH) {
       $this->wp->wpSafeRedirect($this->wp->adminUrl('admin.php?page=mailpoet-automation&status=trash'));
       exit();
     }
@@ -83,7 +83,7 @@ class AutomationEditor {
     $roles = new \WP_Roles();
     $this->pageRenderer->displayPage('automation/editor.html', [
       'context' => $this->buildContext(),
-      'workflow' => $this->workflowMapper->buildWorkflow($workflow),
+      'automation' => $this->automationMapper->buildAutomation($automation),
       'sub_menu' => 'mailpoet-automation',
       'api' => [
         'root' => rtrim($this->wp->escUrlRaw($this->wp->restUrl()), '/'),

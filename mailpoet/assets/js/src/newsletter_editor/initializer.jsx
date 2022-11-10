@@ -18,8 +18,8 @@ const renderHeading = (newsletterType, newsletterOptions) => {
       window.location = `admin.php?page=mailpoet-newsletters`;
     };
     if (newsletterType === 'automation') {
-      const workflowId = newsletterOptions.workflowId;
-      const goToUrl = `admin.php?page=mailpoet-automation-editor&id=${workflowId}`;
+      const automationId = newsletterOptions.automationId;
+      const goToUrl = `admin.php?page=mailpoet-automation-editor&id=${automationId}`;
       onLogoClick = () => {
         window.location = goToUrl;
       };
@@ -27,7 +27,7 @@ const renderHeading = (newsletterType, newsletterOptions) => {
       const onClickPreview = () =>
         document.querySelector('.mailpoet_show_preview').click();
       const onClickSave = () =>
-        document.querySelector('.mailpoet_save_go_to_workflow').click();
+        document.querySelector('.mailpoet_save_go_to_automation').click();
       buttons = (
         <>
           <input

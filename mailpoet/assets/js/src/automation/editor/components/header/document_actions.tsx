@@ -10,7 +10,7 @@ import { useRef } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { chevronDown } from '@wordpress/icons';
 import { storeName } from '../../store';
-import { WorkflowStatus } from '../../../listing/workflow';
+import { AutomationStatus } from '../../../listing/automation';
 
 // See: https://github.com/WordPress/gutenberg/blob/eff0cab2b3181c004dbd15398e570ecec28a3726/packages/edit-site/src/components/header/document-actions/index.js
 
@@ -22,10 +22,10 @@ const Dropdown: ComponentType<
 > = WpDropdown;
 
 export function DocumentActions({ children }): JSX.Element {
-  const { workflowName, workflowStatus, showIconLabels } = useSelect(
+  const { automationName, automationStatus, showIconLabels } = useSelect(
     (select) => ({
-      workflowName: select(storeName).getWorkflowData().name,
-      workflowStatus: select(storeName).getWorkflowData().status,
+      automationName: select(storeName).getAutomationData().name,
+      automationStatus: select(storeName).getAutomationData().status,
       showIconLabels: select(storeName).isFeatureActive('showIconLabels'),
     }),
     [],
@@ -36,9 +36,9 @@ export function DocumentActions({ children }): JSX.Element {
   const titleRef = useRef();
 
   let chipClass = 'mailpoet-automation-editor-chip-gray';
-  if (workflowStatus === WorkflowStatus.ACTIVE) {
+  if (automationStatus === AutomationStatus.ACTIVE) {
     chipClass = 'mailpoet-automation-editor-chip-success';
-  } else if (workflowStatus === WorkflowStatus.DEACTIVATING) {
+  } else if (automationStatus === AutomationStatus.DEACTIVATING) {
     chipClass = 'mailpoet-automation-editor-chip-danger';
   }
 
@@ -66,18 +66,18 @@ export function DocumentActions({ children }): JSX.Element {
                     <VisuallyHidden as="span">
                       {__('Editing automation:', 'mailpoet')}
                     </VisuallyHidden>
-                    {workflowName}
+                    {automationName}
                   </Text>
 
                   <Text
                     size="body"
                     className={`edit-site-document-actions__secondary-item ${chipClass}`}
                   >
-                    {workflowStatus === WorkflowStatus.ACTIVE &&
+                    {automationStatus === AutomationStatus.ACTIVE &&
                       __('Active', 'mailpoet')}
-                    {workflowStatus === WorkflowStatus.DEACTIVATING &&
+                    {automationStatus === AutomationStatus.DEACTIVATING &&
                       __('Deactivating', 'mailpoet')}
-                    {workflowStatus === WorkflowStatus.DRAFT &&
+                    {automationStatus === AutomationStatus.DRAFT &&
                       __('Draft', 'mailpoet')}
                   </Text>
                 </a>

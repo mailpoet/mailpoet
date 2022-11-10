@@ -10,8 +10,8 @@ import {
 import { store as keyboardShortcutsStore } from '@wordpress/keyboard-shortcuts';
 import { Header } from './header';
 import { StepSidebar } from './step';
-import { WorkflowSidebar } from './workflow';
-import { stepSidebarKey, storeName, workflowSidebarKey } from '../../store';
+import { AutomationSidebar } from './automation';
+import { stepSidebarKey, storeName, automationSidebarKey } from '../../store';
 
 // See:
 //   https://github.com/WordPress/gutenberg/blob/5caeae34b3fb303761e3b9432311b26f4e5ea3a6/packages/edit-post/src/components/sidebar/plugin-sidebar/index.js
@@ -26,7 +26,7 @@ const sidebarActiveByDefault = Platform.select({
 type Props = ComponentProps<typeof ComplementaryArea>;
 
 export function Sidebar(props: Props): JSX.Element {
-  const { keyboardShortcut, sidebarKey, showIconLabels, workflowName } =
+  const { keyboardShortcut, sidebarKey, showIconLabels, automationName } =
     useSelect(
       (select) => ({
         keyboardShortcut: select(
@@ -36,9 +36,9 @@ export function Sidebar(props: Props): JSX.Element {
         ),
         sidebarKey:
           select(interfaceStore).getActiveComplementaryArea(storeName) ??
-          workflowSidebarKey,
+          automationSidebarKey,
         showIconLabels: select(storeName).isFeatureActive('showIconLabels'),
-        workflowName: select(storeName).getWorkflowData().name,
+        automationName: select(storeName).getAutomationData().name,
       }),
       [],
     );
@@ -53,14 +53,14 @@ export function Sidebar(props: Props): JSX.Element {
       icon={cog}
       className="edit-site-sidebar mailpoet-automation-sidebar"
       panelClassName="edit-site-sidebar"
-      smallScreenTitle={workflowName || __('(no title)', 'mailpoet')}
+      smallScreenTitle={automationName || __('(no title)', 'mailpoet')}
       scope={storeName}
       toggleShortcut={keyboardShortcut}
       isActiveByDefault={sidebarActiveByDefault}
       showIconLabels={showIconLabels}
       {...props}
     >
-      {sidebarKey === workflowSidebarKey && <WorkflowSidebar />}
+      {sidebarKey === automationSidebarKey && <AutomationSidebar />}
       {sidebarKey === stepSidebarKey && <StepSidebar />}
     </ComplementaryArea>
   );

@@ -1,27 +1,27 @@
-import { Workflow } from './workflow';
+import { Automation } from './automation';
 import { Actions, Name, Status, Subscribers } from './components/cells';
 
-export function getRow(workflow: Workflow): object[] {
+export function getRow(automation: Automation): object[] {
   return [
     {
-      id: workflow.id,
-      value: workflow.name,
-      display: <Name workflow={workflow} />,
+      id: automation.id,
+      value: automation.name,
+      display: <Name automation={automation} />,
     },
     {
-      id: workflow.id,
+      id: automation.id,
       value: null,
-      display: <Subscribers workflow={workflow} />,
+      display: <Subscribers automation={automation} />,
     },
     {
-      id: workflow.id,
-      value: workflow.status,
-      display: <Status workflow={workflow} />,
+      id: automation.id,
+      value: automation.status,
+      display: <Status automation={automation} />,
     },
     {
-      id: workflow.id,
+      id: automation.id,
       value: null,
-      display: <Actions workflow={workflow} />,
+      display: <Actions automation={automation} />,
     },
   ];
 }

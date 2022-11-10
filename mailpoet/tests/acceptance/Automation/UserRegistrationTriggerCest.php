@@ -5,11 +5,11 @@ namespace MailPoet\Test\Acceptance;
 use Codeception\Util\Locator;
 use MailPoet\Automation\Engine\Data\NextStep;
 use MailPoet\Automation\Engine\Data\Step;
-use MailPoet\Automation\Engine\Data\Workflow;
+use MailPoet\Automation\Engine\Data\Automation;
 use MailPoet\Automation\Engine\Migrations\Migrator;
-use MailPoet\Automation\Engine\Storage\WorkflowRunLogStorage;
-use MailPoet\Automation\Engine\Storage\WorkflowRunStorage;
-use MailPoet\Automation\Engine\Storage\WorkflowStorage;
+use MailPoet\Automation\Engine\Storage\AutomationRunLogStorage;
+use MailPoet\Automation\Engine\Storage\AutomationRunStorage;
+use MailPoet\Automation\Engine\Storage\AutomationStorage;
 use MailPoet\Automation\Integrations\Core\Actions\DelayAction;
 use MailPoet\Automation\Integrations\MailPoet\Triggers\UserRegistrationTrigger;
 use MailPoet\DI\ContainerWrapper;
@@ -25,14 +25,14 @@ class UserRegistrationTriggerCest
   /** @var ContainerWrapper */
   private $container;
 
-  /** @var WorkflowStorage */
-  private $workflowStorage;
+  /** @var AutomationStorage */
+  private $automationStorage;
 
-  /** @var WorkflowRunStorage */
-  private $workflowRunStorage;
+  /** @var AutomationRunStorage */
+  private $automationRunStorage;
 
-  /** @var WorkflowRunLogStorage */
-  private $workflowRunLogStorage;
+  /** @var AutomationRunLogStorage */
+  private $automationRunLogStorage;
 
   public function _before(\AcceptanceTester $i) {
     // @ToDo Remove once MVP is released.
@@ -46,18 +46,18 @@ class UserRegistrationTriggerCest
     $this->settingsFactory = new Settings();
 
     $this->settingsFactory->withCronTriggerMethod('Action Scheduler');
-    $this->workflowStorage = $this->container->get(WorkflowStorage::class);
-    $this->workflowRunStorage = $this->container->get(WorkflowRunStorage::class);
-    $this->workflowRunLogStorage = $this->container->get(WorkflowRunLogStorage::class);
+    $this->automationStorage = $this->container->get(AutomationStorage::class);
+    $this->automationRunStorage = $this->container->get(AutomationRunStorage::class);
+    $this->automationRunLogStorage = $this->container->get(AutomationRunLogStorage::class);
   }
 
-  public function workflowTriggeredByRegistrationWithoutConfirmationNeeded(\AcceptanceTester $i, $scenario) {
+  public function automationTriggeredByRegistrationWithoutConfirmationNeeded(\AcceptanceTester $i, $scenario) {
     $scenario->skip('Temporally skip this test as it is failing when testing with WP multisite');
     $i->wantTo("Activate a trigger by registering.");
     $this->settingsFactory
       ->withSubscribeOnRegisterEnabled()
       ->withConfirmationEmailDisabled();
-    $this->createWorkflow();
+    $this->createAutomation();
 
     $i->login();
 
@@ -67,7 +67,7 @@ class UserRegistrationTriggerCest
     $i->dontSee('Entered 1');
     $i->logOut();
 
-    $this->registerWith($i,'workflowtriggeredbyregistration', 'test@mailpoet.com');
+    $this->registerWith($i,'automationtriggeredbyregistration', 'test@mailpoet.com');
 
     $i->login();
     $i->amOnMailpoetPage('automation');
@@ -76,13 +76,13 @@ class UserRegistrationTriggerCest
     $i->see('Entered 1'); //The visible text is 1 Entered, but in the DOM it's the other way around.
   }
 
-  public function workflowTriggeredByRegistrationWitConfirmationNeeded(\AcceptanceTester $i, $scenario) {
+  public function automationTriggeredByRegistrationWitConfirmationNeeded(\AcceptanceTester $i, $scenario) {
     $scenario->skip('Temporally skip this test as it is failing when testing with WP multisite');
     $i->wantTo("Activate a trigger by registering.");
     $this->settingsFactory
       ->withSubscribeOnRegisterEnabled()
       ->withConfirmationEmailEnabled();
-    $this->createWorkflow();
+    $this->createAutomation();
 
     $i->login();
 
@@ -92,7 +92,7 @@ class UserRegistrationTriggerCest
     $i->dontSee('Entered 1');
     $i->logOut();
 
-    $this->registerWith($i,'workflowtriggeredbyregistration', 'test@mailpoet.com');
+    $this->registerWith($i,'automationtriggeredbyregistration', 'test@mailpoet.com');
 
     $i->login();
 
@@ -131,7 +131,7 @@ class UserRegistrationTriggerCest
     }
   }
 
-  private function createWorkflow(): Workflow {
+  private function createAutomation(): Automation {
     $someoneSubscribesTrigger = $this->container->get(UserRegistrationTrigger::class);
     $delayStep = $this->container->get(DelayAction::class);
     $steps = [
@@ -139,23 +139,23 @@ class UserRegistrationTriggerCest
       't' => new Step('t', Step::TYPE_TRIGGER, $someoneSubscribesTrigger->getKey(), ['roles' => []], [new NextStep('a1')]),
       'a1' => new Step('a1', Step::TYPE_ACTION, $delayStep->getKey(), ['delay' => 1, 'delay_type' => 'HOURS'], []),
     ];
-    $workflow = new Workflow(
+    $automation = new Automation(
       'test',
       $steps,
       new \WP_User(1)
     );
-    $workflow->setStatus(Workflow::STATUS_ACTIVE);
-    $id = $this->workflowStorage->createWorkflow($workflow);
-    $storedWorkflow = $this->workflowStorage->getWorkflow($id);
-    if (!$storedWorkflow) {
-      throw new \Exception("Workflow not found.");
+    $automation->setStatus(Automation::STATUS_ACTIVE);
+    $id = $this->automationStorage->createAutomation($automation);
+    $storedAutomation = $this->automationStorage->getAutomation($id);
+    if (!$storedAutomation) {
+      throw new \Exception("Automation not found.");
     }
-    return $storedWorkflow;
+    return $storedAutomation;
   }
 
   public function _after() {
-    $this->workflowStorage->truncate();
-    $this->workflowRunStorage->truncate();
-    $this->workflowRunLogStorage->truncate();
+    $this->automationStorage->truncate();
+    $this->automationRunStorage->truncate();
+    $this->automationRunLogStorage->truncate();
   }
 }

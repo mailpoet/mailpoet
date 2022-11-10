@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
 import { useMutation } from './api';
-import { Step, Workflow } from './editor/components/workflow/types';
+import { Step, Automation } from './editor/components/automation/types';
 
 export const createRootStep = (): Step => ({
   id: 'root',
@@ -10,15 +10,15 @@ export const createRootStep = (): Step => ({
   next_steps: [],
 });
 
-const createWorkflow = (): Partial<Workflow> => ({
-  name: 'Empty workflow',
+const createAutomation = (): Partial<Automation> => ({
+  name: 'Empty automation',
   steps: {
     root: createRootStep(),
   },
 });
 
-export function CreateEmptyWorkflowButton(): JSX.Element {
-  const [createSchema, { loading, error }] = useMutation('workflows', {
+export function CreateEmptyAutomationButton(): JSX.Element {
+  const [createSchema, { loading, error }] = useMutation('automations', {
     method: 'POST',
   });
 
@@ -29,13 +29,13 @@ export function CreateEmptyWorkflowButton(): JSX.Element {
         type="button"
         onClick={async () => {
           await createSchema({
-            body: JSON.stringify(createWorkflow()),
+            body: JSON.stringify(createAutomation()),
           });
           window.location.reload();
         }}
         disabled={loading}
       >
-        Create empty workflow (premium required)
+        Create empty automation (premium required)
       </button>
       {error && (
         <div>{error?.data?.message ?? 'An unknown error occurred'}</div>
@@ -49,12 +49,12 @@ type TemplateButtonProps = {
   children?: ReactNode;
 };
 
-export function CreateWorkflowFromTemplateButton({
+export function CreateAutomationFromTemplateButton({
   slug,
   children,
 }: TemplateButtonProps): JSX.Element {
-  const [createWorkflowFromTemplate, { loading, error }] = useMutation(
-    'workflows/create-from-template',
+  const [createAutomationFromTemplate, { loading, error }] = useMutation(
+    'automations/create-from-template',
     {
       method: 'POST',
       body: JSON.stringify({
@@ -69,7 +69,7 @@ export function CreateWorkflowFromTemplateButton({
         className="button button-primary"
         type="button"
         onClick={async () => {
-          await createWorkflowFromTemplate();
+          await createAutomationFromTemplate();
           window.location.reload();
         }}
         disabled={loading}

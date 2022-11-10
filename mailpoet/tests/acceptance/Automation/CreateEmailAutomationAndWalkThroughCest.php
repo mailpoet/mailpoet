@@ -24,8 +24,8 @@ class CreateEmailAutomationAndWalkThroughCest
     $settings->withCronTriggerMethod('Action Scheduler');
   }
 
-  public function createEmailWorkflowAndReceiveAnAutomatedEmail(\AcceptanceTester $i) {
-    $i->wantTo('Create a workflow to send an email after a user subscribed');
+  public function createEmailAutomationAndReceiveAnAutomatedEmail(\AcceptanceTester $i) {
+    $i->wantTo('Create a automation to send an email after a user subscribed');
     $i->login();
 
     $i->amOnMailpoetPage('Automation');
@@ -72,14 +72,14 @@ class CreateEmailAutomationAndWalkThroughCest
     $panelActivateButton = '.mailpoet-automation-activate-panel__header-activate-button button';
     $i->click($panelActivateButton);
 
-    // Check workflow is activated
+    // Check automation is activated
     $i->waitForText('"Welcome new subscribers" is now live.');
     $i->click('View all automations');
     $i->waitForText('Name');
     $i->see('Welcome new subscribers');
     $i->see('Active');
     $i->see('Entered 0'); //Actually I see "0 Entered", but this CSS switch is not caught by the test
-    $i->dontSeeInDatabase('mp_actionscheduler_actions', ['hook' => 'mailpoet/automation/workflow/step']);
+    $i->dontSeeInDatabase('mp_actionscheduler_actions', ['hook' => 'mailpoet/automation/automation/step']);
 
     $i->wantTo('Check a new subscriber gets the automation email.');
     $i->amOnPage('/wp-admin/admin.php?page=mailpoet-subscribers#/new');
@@ -89,7 +89,7 @@ class CreateEmailAutomationAndWalkThroughCest
     $i->click('Save');
 
     $i->amOnMailpoetPage('Automation');
-    $i->seeInDatabase('mp_actionscheduler_actions', ['hook' => 'mailpoet/automation/workflow/step', 'status' => 'pending']);
+    $i->seeInDatabase('mp_actionscheduler_actions', ['hook' => 'mailpoet/automation/automation/step', 'status' => 'pending']);
     $i->waitForText('Welcome new subscribers');
     $i->see('Entered 1'); //Actually I see "0 Entered", but this CSS switch is not caught by the test
     $i->see('Processing 1');

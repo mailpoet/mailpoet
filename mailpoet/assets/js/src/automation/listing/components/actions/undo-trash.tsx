@@ -2,23 +2,23 @@ import { Button } from '@wordpress/components';
 import { useDispatch } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
 import { storeName } from '../../store/constants';
-import { Workflow, WorkflowStatus } from '../../workflow';
+import { Automation, AutomationStatus } from '../../automation';
 
 type Props = {
-  workflow: Workflow;
-  previousStatus: WorkflowStatus;
+  automation: Automation;
+  previousStatus: AutomationStatus;
 };
 
 export function UndoTrashButton({
-  workflow,
+  automation,
   previousStatus,
 }: Props): JSX.Element {
-  const { restoreWorkflow } = useDispatch(storeName);
+  const { restoreAutomation } = useDispatch(storeName);
 
   return (
     <Button
       variant="link"
-      onClick={() => restoreWorkflow(workflow, previousStatus)}
+      onClick={() => restoreAutomation(automation, previousStatus)}
     >
       {__('Undo', 'mailpoet')}
     </Button>

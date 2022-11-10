@@ -10,11 +10,11 @@ import { createStore, storeName } from './listing/store';
 import { AutomationListing, AutomationListingHeader } from './listing';
 import { registerApiErrorHandler } from './listing/api-error-handler';
 import { Notices } from './listing/components/notices';
-import { WorkflowListingNotices } from './listing/workflow-listing-notices';
+import { AutomationListingNotices } from './listing/automation-listing-notices';
 import { BuildYourOwnSection, HeroSection, TemplatesSection } from './sections';
 import {
-  CreateEmptyWorkflowButton,
-  CreateWorkflowFromTemplateButton,
+  CreateEmptyAutomationButton,
+  CreateAutomationFromTemplateButton,
 } from './testing';
 import { MailPoet } from '../mailpoet';
 
@@ -24,7 +24,7 @@ const trackOpenEvent = () => {
 
 function Content(): JSX.Element {
   const [isBooting, setIsBooting] = useState(true);
-  const count = useSelect((select) => select(storeName).getWorkflowCount());
+  const count = useSelect((select) => select(storeName).getAutomationCount());
 
   useEffect(() => {
     if (!isBooting || count === 0) {
@@ -63,7 +63,7 @@ function Content(): JSX.Element {
   );
 }
 
-function Workflows(): JSX.Element {
+function Automations(): JSX.Element {
   return (
     <>
       <TopBarWithBeamer />
@@ -80,7 +80,7 @@ function RecreateSchemaButton(): JSX.Element {
 
   return (
     <div>
-      <WorkflowListingNotices />
+      <AutomationListingNotices />
       <button
         className="button button-link-delete"
         type="button"
@@ -127,20 +127,20 @@ function App(): JSX.Element {
     <SlotFillProvider>
       <BrowserRouter>
         <div>
-          <Workflows />
+          <Automations />
           <div style={{ marginTop: 30, display: 'grid', gridGap: 8 }}>
-            <CreateEmptyWorkflowButton />
-            <CreateWorkflowFromTemplateButton slug="simple-welcome-email">
-              Create testing workflow from template (welcome email)
-            </CreateWorkflowFromTemplateButton>
-            <CreateWorkflowFromTemplateButton slug="welcome-email-sequence">
-              Create testing workflow from template (welcome sequence, only
+            <CreateEmptyAutomationButton />
+            <CreateAutomationFromTemplateButton slug="simple-welcome-email">
+              Create testing automation from template (welcome email)
+            </CreateAutomationFromTemplateButton>
+            <CreateAutomationFromTemplateButton slug="welcome-email-sequence">
+              Create testing automation from template (welcome sequence, only
               premium)
-            </CreateWorkflowFromTemplateButton>
-            <CreateWorkflowFromTemplateButton slug="advanced-welcome-email-sequence">
-              Create testing workflow from template (advanced welcome sequence,
-              only premium)
-            </CreateWorkflowFromTemplateButton>
+            </CreateAutomationFromTemplateButton>
+            <CreateAutomationFromTemplateButton slug="advanced-welcome-email-sequence">
+              Create testing automation from template (advanced welcome
+              sequence, only premium)
+            </CreateAutomationFromTemplateButton>
             <RecreateSchemaButton />
             <DeleteSchemaButton />
           </div>

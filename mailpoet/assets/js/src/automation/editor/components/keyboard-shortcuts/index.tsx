@@ -5,7 +5,7 @@ import {
   store as keyboardShortcutsStore,
 } from '@wordpress/keyboard-shortcuts';
 import { __ } from '@wordpress/i18n';
-import { stepSidebarKey, storeName, workflowSidebarKey } from '../../store';
+import { stepSidebarKey, storeName, automationSidebarKey } from '../../store';
 
 // See:
 //    https://github.com/WordPress/gutenberg/blob/9601a33e30ba41bac98579c8d822af63dd961488/packages/edit-post/src/components/keyboard-shortcuts/index.js
@@ -55,7 +55,7 @@ export function KeyboardShortcuts(): null {
     } else {
       const sidebarToOpen = selectedStep()
         ? stepSidebarKey
-        : workflowSidebarKey;
+        : automationSidebarKey;
       openSidebar(sidebarToOpen);
     }
   });

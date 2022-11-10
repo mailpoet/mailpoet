@@ -4,7 +4,7 @@ import { Button, Spinner } from '@wordpress/components';
 import { closeSmall } from '@wordpress/icons';
 import { __, sprintf } from '@wordpress/i18n';
 import { storeName } from '../../store';
-import { WorkflowStatus } from '../../../listing/workflow';
+import { AutomationStatus } from '../../../listing/automation';
 import { MailPoet } from '../../../../mailpoet';
 
 function PreStep({ onClose }): JSX.Element {
@@ -58,9 +58,9 @@ function PreStep({ onClose }): JSX.Element {
 }
 
 function PostStep({ onClose }): JSX.Element {
-  const { workflow } = useSelect(
+  const { automation } = useSelect(
     (select) => ({
-      workflow: select(storeName).getWorkflowData(),
+      automation: select(storeName).getAutomationData(),
     }),
     [],
   );
@@ -81,7 +81,7 @@ function PostStep({ onClose }): JSX.Element {
 
       <div className="mailpoet-automation-activate-panel__body">
         <div className="mailpoet-automation-activate-panel__section">
-          {sprintf(__('"%s" is now live.', 'mailpoet'), workflow.name)}
+          {sprintf(__('"%s" is now live.', 'mailpoet'), automation.name)}
         </div>
         <p>
           <strong>{__('What’s next?', 'mailpoet')}</strong>
@@ -101,10 +101,10 @@ function PostStep({ onClose }): JSX.Element {
 }
 
 export function ActivatePanel(): JSX.Element {
-  const { workflow, errors } = useSelect(
+  const { automation, errors } = useSelect(
     (select) => ({
       errors: select(storeName).getErrors(),
-      workflow: select(storeName).getWorkflowData(),
+      automation: select(storeName).getAutomationData(),
     }),
     [],
   );
@@ -120,7 +120,7 @@ export function ActivatePanel(): JSX.Element {
   if (errors) {
     return null;
   }
-  const isActive = workflow.status === WorkflowStatus.ACTIVE;
+  const isActive = automation.status === AutomationStatus.ACTIVE;
   return (
     <div className="mailpoet-automation-activate-panel">
       {isActive && <PostStep onClose={closeActivationPanel} />}

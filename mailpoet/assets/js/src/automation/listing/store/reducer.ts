@@ -1,31 +1,33 @@
 import { Action } from '@wordpress/data';
 import { State } from './types';
-import { Workflow } from '../workflow';
+import { Automation } from '../automation';
 
 export function reducer(state: State, action: Action): State {
   switch (action.type) {
-    case 'SET_WORKFLOWS':
+    case 'SET_AUTOMATIONS':
       return {
         ...state,
-        workflows: action.workflows,
+        automations: action.automations,
       };
-    case 'ADD_WORKFLOW':
+    case 'ADD_AUTOMATION':
       return {
         ...state,
-        workflows: [action.workflow, ...state.workflows],
+        automations: [action.automation, ...state.automations],
       };
-    case 'UPDATE_WORKFLOW':
+    case 'UPDATE_AUTOMATION':
       return {
         ...state,
-        workflows: state.workflows.map((workflow: Workflow) =>
-          workflow.id === action.workflow.id ? action.workflow : workflow,
+        automations: state.automations.map((automation: Automation) =>
+          automation.id === action.automation.id
+            ? action.automation
+            : automation,
         ),
       };
-    case 'DELETE_WORKFLOW':
+    case 'DELETE_AUTOMATION':
       return {
         ...state,
-        workflows: state.workflows.filter(
-          (workflow: Workflow) => workflow.id !== action.workflow.id,
+        automations: state.automations.filter(
+          (automation: Automation) => automation.id !== action.automation.id,
         ),
       };
     default:

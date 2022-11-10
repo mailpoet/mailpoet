@@ -6,8 +6,8 @@ use MailPoet\Automation\Engine\Data\Step;
 use MailPoet\Automation\Engine\Data\StepRunArgs;
 use MailPoet\Automation\Engine\Data\Subject;
 use MailPoet\Automation\Engine\Data\SubjectEntry;
-use MailPoet\Automation\Engine\Data\Workflow;
-use MailPoet\Automation\Engine\Data\WorkflowRun;
+use MailPoet\Automation\Engine\Data\Automation;
+use MailPoet\Automation\Engine\Data\AutomationRun;
 use MailPoet\Automation\Integrations\MailPoet\Subjects\SegmentSubject;
 use MailPoet\Automation\Integrations\MailPoet\Triggers\SomeoneSubscribesTrigger;
 use MailPoet\Entities\SegmentEntity;
@@ -29,16 +29,16 @@ class SomeoneSubscribesTriggerTest extends \MailPoetTest {
   }
 
   /**
-   * @dataProvider dataForTestTriggeredByWorkflowRun
+   * @dataProvider dataForTestTriggeredByAutomationRun
    */
-  public function testTriggeredByWorkflowRun(array $segmentIndexes, string $currentSegmentIndex, bool $expectation): void {
+  public function testTriggeredByAutomationRun(array $segmentIndexes, string $currentSegmentIndex, bool $expectation): void {
     $segmentIds = $this->getSegmentIds($segmentIndexes);
     $currentSegmentId = $this->getSegmentId($currentSegmentIndex);
 
     $testee = $this->diContainer->get(SomeoneSubscribesTrigger::class);
     $stepRunArgs = new StepRunArgs(
-      $this->make(Workflow::class),
-      $this->make(WorkflowRun::class),
+      $this->make(Automation::class),
+      $this->make(AutomationRun::class),
       new Step('test-id', 'trigger', 'test:trigger', ['segment_ids' => $segmentIds], []),
       [
         new SubjectEntry(
@@ -50,7 +50,7 @@ class SomeoneSubscribesTriggerTest extends \MailPoetTest {
     $this->assertSame($expectation, $testee->isTriggeredBy($stepRunArgs));
   }
 
-  public function dataForTestTriggeredByWorkflowRun(): array {
+  public function dataForTestTriggeredByAutomationRun(): array {
     return [
       'any_list' => [
         [], // any list
