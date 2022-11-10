@@ -179,7 +179,7 @@ jobs:
       - run:
           name: Download additional WP Plugins for tests
           command: |
-            ./do download:woo-commerce-zip 7.0.1
+            ./do download:woo-commerce-zip 7.1.0
             ./do download:woo-commerce-subscriptions-zip 4.6.0
             ./do download:woo-commerce-memberships-zip 1.23.1
             ./do download:woo-commerce-blocks-zip 8.8.2
