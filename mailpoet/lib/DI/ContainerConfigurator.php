@@ -125,7 +125,6 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Automation\Engine\Engine::class)->setPublic(true);
     $container->autowire(\MailPoet\Automation\Engine\Hooks::class)->setPublic(true);
     $container->autowire(\MailPoet\Automation\Engine\Mappers\AutomationMapper::class)->setPublic(true);
-    $container->autowire(\MailPoet\Automation\Engine\Migrations\Migrator::class)->setPublic(true);
     $container->autowire(\MailPoet\Automation\Engine\Registry::class)->setPublic(true);
     $container->autowire(\MailPoet\Automation\Engine\Storage\AutomationRunStorage::class)->setPublic(true);
     $container->autowire(\MailPoet\Automation\Engine\Storage\AutomationRunLogStorage::class)->setPublic(true);

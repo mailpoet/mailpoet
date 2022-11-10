@@ -4,7 +4,6 @@ namespace MailPoet\AdminPages\Pages;
 
 use MailPoet\AdminPages\PageRenderer;
 use MailPoet\Automation\Engine\Data\AutomationTemplate;
-use MailPoet\Automation\Engine\Migrations\Migrator;
 use MailPoet\Automation\Engine\Storage\AutomationStorage;
 use MailPoet\Automation\Engine\Storage\AutomationTemplateStorage;
 use MailPoet\Form\AssetsController;
@@ -13,9 +12,6 @@ use MailPoet\WP\Functions as WPFunctions;
 class Automation {
   /** @var AssetsController */
   private $assetsController;
-
-  /** @var Migrator */
-  private $migrator;
 
   /** @var PageRenderer */
   private $pageRenderer;
@@ -31,14 +27,12 @@ class Automation {
 
   public function __construct(
     AssetsController $assetsController,
-    Migrator $migrator,
     PageRenderer $pageRenderer,
     WPFunctions $wp,
     AutomationStorage $automationStorage,
     AutomationTemplateStorage $templateStorage
   ) {
     $this->assetsController = $assetsController;
-    $this->migrator = $migrator;
     $this->pageRenderer = $pageRenderer;
     $this->wp = $wp;
     $this->automationStorage = $automationStorage;
@@ -47,10 +41,6 @@ class Automation {
 
   public function render() {
     $this->assetsController->setupAutomationListingDependencies();
-
-    if (!$this->migrator->hasSchema()) {
-      $this->migrator->createSchema();
-    }
     $this->pageRenderer->displayPage('automation.html', [
       'api' => [
         'root' => rtrim($this->wp->escUrlRaw($this->wp->restUrl()), '/'),

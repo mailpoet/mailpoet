@@ -3,7 +3,6 @@
 namespace MailPoet\Test\Acceptance;
 
 use Facebook\WebDriver\WebDriverKeys;
-use MailPoet\Automation\Engine\Migrations\Migrator;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Features\FeaturesController;
 use MailPoet\Test\DataFactories\Features;
@@ -16,9 +15,6 @@ class CreateEmailAutomationAndWalkThroughCest
     $features = new Features();
     $features->withFeatureEnabled(FeaturesController::AUTOMATION);
     $container = ContainerWrapper::getInstance();
-    $migrator = $container->get(Migrator::class);
-    $migrator->deleteSchema();
-    $migrator->createSchema();
 
     $settings = new Settings();
     $settings->withCronTriggerMethod('Action Scheduler');

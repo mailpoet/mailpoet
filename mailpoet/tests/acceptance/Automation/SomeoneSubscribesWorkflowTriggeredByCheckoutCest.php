@@ -5,7 +5,6 @@ namespace MailPoet\Test\Acceptance;
 use MailPoet\Automation\Engine\Data\NextStep;
 use MailPoet\Automation\Engine\Data\Step;
 use MailPoet\Automation\Engine\Data\Automation;
-use MailPoet\Automation\Engine\Migrations\Migrator;
 use MailPoet\Automation\Engine\Storage\AutomationRunLogStorage;
 use MailPoet\Automation\Engine\Storage\AutomationRunStorage;
 use MailPoet\Automation\Engine\Storage\AutomationStatisticsStorage;
@@ -47,9 +46,6 @@ class SomeoneSubscribesAutomationTriggeredByCheckoutCest
     $features = new Features();
     $features->withFeatureEnabled(FeaturesController::AUTOMATION);
     $this->container = ContainerWrapper::getInstance();
-    $migrator = $this->container->get(Migrator::class);
-    $migrator->deleteSchema();
-    $migrator->createSchema();
 
     $this->settingsFactory = new Settings();
 
