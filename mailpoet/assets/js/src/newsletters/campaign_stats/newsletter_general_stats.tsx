@@ -19,6 +19,7 @@ const minNewslettersSent = 20;
 const minNewslettersOpened = 5;
 const minUnsubscribedStat = 5;
 const minBouncedStat = 5;
+const minNewslettersSentForBouncedAndUnsubscribed = 100;
 
 // When percentage value is lower then 0.1 we want to display value with two decimal places
 const formatWithOptimalPrecision = (value: number) => {
@@ -74,8 +75,11 @@ export function NewsletterGeneralStats({
     newsletter.statistics.opened >= minNewslettersOpened;
 
   const displayUnsubscribedBadge =
-    newsletter.statistics.unsubscribed >= minUnsubscribedStat;
-  const displayBouncedBadge = newsletter.statistics.bounced >= minBouncedStat;
+    newsletter.statistics.unsubscribed >= minUnsubscribedStat &&
+    totalSent >= minNewslettersSentForBouncedAndUnsubscribed;
+  const displayBouncedBadge =
+    newsletter.statistics.bounced >= minBouncedStat &&
+    totalSent >= minNewslettersSentForBouncedAndUnsubscribed;
 
   const badgeTypeOpened = getBadgeType('opened', percentageOpened) || '';
   const opened = (
