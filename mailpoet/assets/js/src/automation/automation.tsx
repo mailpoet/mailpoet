@@ -4,18 +4,13 @@ import { BrowserRouter } from 'react-router-dom';
 import { TopBarWithBeamer } from 'common/top_bar/top_bar';
 import { Popover, SlotFillProvider } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
-import { initializeApi, useMutation } from './api';
+import { initializeApi } from './api';
 import { registerTranslations } from './i18n';
 import { createStore, storeName } from './listing/store';
 import { AutomationListing, AutomationListingHeader } from './listing';
 import { registerApiErrorHandler } from './listing/api-error-handler';
 import { Notices } from './listing/components/notices';
-import { AutomationListingNotices } from './listing/automation-listing-notices';
 import { BuildYourOwnSection, HeroSection, TemplatesSection } from './sections';
-import {
-  CreateEmptyAutomationButton,
-  CreateAutomationFromTemplateButton,
-} from './testing';
 import { MailPoet } from '../mailpoet';
 
 const trackOpenEvent = () => {
@@ -73,79 +68,12 @@ function Automations(): JSX.Element {
   );
 }
 
-function RecreateSchemaButton(): JSX.Element {
-  const [createSchema, { loading, error }] = useMutation('system/database', {
-    method: 'POST',
-  });
-
-  return (
-    <div>
-      <AutomationListingNotices />
-      <button
-        className="button button-link-delete"
-        type="button"
-        onClick={() => createSchema()}
-        disabled={loading}
-      >
-        Recreate DB schema (data will be lost)
-      </button>
-      {error && (
-        <div>{error?.data?.message ?? 'An unknown error occurred'}</div>
-      )}
-    </div>
-  );
-}
-
-function DeleteSchemaButton(): JSX.Element {
-  const [deleteSchema, { loading, error }] = useMutation('system/database', {
-    method: 'DELETE',
-  });
-
-  return (
-    <div>
-      <button
-        className="button button-link-delete"
-        type="button"
-        onClick={async () => {
-          await deleteSchema();
-          window.location.href =
-            '/wp-admin/admin.php?page=mailpoet-experimental';
-        }}
-        disabled={loading}
-      >
-        Delete DB schema & deactivate feature
-      </button>
-      {error && (
-        <div>{error?.data?.message ?? 'An unknown error occurred'}</div>
-      )}
-    </div>
-  );
-}
-
 function App(): JSX.Element {
   return (
     <SlotFillProvider>
       <BrowserRouter>
-        <div>
-          <Automations />
-          <div style={{ marginTop: 30, display: 'grid', gridGap: 8 }}>
-            <CreateEmptyAutomationButton />
-            <CreateAutomationFromTemplateButton slug="simple-welcome-email">
-              Create testing automation from template (welcome email)
-            </CreateAutomationFromTemplateButton>
-            <CreateAutomationFromTemplateButton slug="welcome-email-sequence">
-              Create testing automation from template (welcome sequence, only
-              premium)
-            </CreateAutomationFromTemplateButton>
-            <CreateAutomationFromTemplateButton slug="advanced-welcome-email-sequence">
-              Create testing automation from template (advanced welcome
-              sequence, only premium)
-            </CreateAutomationFromTemplateButton>
-            <RecreateSchemaButton />
-            <DeleteSchemaButton />
-          </div>
-          <Popover.Slot />
-        </div>
+        <Automations />
+        <Popover.Slot />
       </BrowserRouter>
     </SlotFillProvider>
   );
