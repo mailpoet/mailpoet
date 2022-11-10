@@ -23,7 +23,7 @@ export function StepMoreMenu({ step }: Props): JSX.Element {
   const [showModal, setShowModal] = useState(false);
 
   const moreControls: StepMoreControlsType = Hooks.applyFilters(
-    'mailpoet.automation.automation.step.more-controls',
+    'mailpoet.automation.step.more-controls',
     {
       delete: {
         key: 'delete',

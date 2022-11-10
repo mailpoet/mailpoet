@@ -22,7 +22,7 @@ export function InserterPopover(): JSX.Element | null {
 
   const onInsert = useCallback((item: Item) => {
     const addStepCallback: AddStepCallbackType = Hooks.applyFilters(
-      'mailpoet.automation.automation.add_step_callback',
+      'mailpoet.automation.add_step_callback',
       () => {
         setShowModal(true);
       },

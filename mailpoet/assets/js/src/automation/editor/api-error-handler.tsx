@@ -19,7 +19,7 @@ export const registerApiErrorHandler = (): void =>
         const status = errorObject.data?.status;
         const code = errorObject.code;
 
-        if (code === 'mailpoet_automation_automation_not_valid') {
+        if (code === 'mailpoet_automation_not_valid') {
           dispatch(storeName).setErrors({ steps: errorObject.data.errors });
           return undefined;
         }

@@ -10,7 +10,7 @@
   var mailpoet_user_roles = <%= json_encode(user_roles) %>;
   var mailpoet_segments = <%= json_encode(segments) %>;
   var mailpoet_automation_context = <%= json_encode(context) %>;
-  var mailpoet_automation_automation = <%= automation ? json_encode(automation) : 'undefined' %>;
+  var mailpoet_automation = <%= automation ? json_encode(automation) : 'undefined' %>;
 </script>
 <% endblock %>
 

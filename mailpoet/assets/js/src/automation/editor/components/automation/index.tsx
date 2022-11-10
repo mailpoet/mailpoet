@@ -56,7 +56,7 @@ export function Automation(): JSX.Element {
   const renderStep = useMemo(
     (): RenderStepType =>
       Hooks.applyFilters(
-        'mailpoet.automation.automation.render_step',
+        'mailpoet.automation.render_step',
         (stepData: StepData) =>
           stepData.type === 'root' ? (
             <AddTrigger step={stepData} />
@@ -73,7 +73,7 @@ export function Automation(): JSX.Element {
   const renderSeparator = useMemo(
     (): RenderStepSeparatorType =>
       Hooks.applyFilters(
-        'mailpoet.automation.automation.render_step_separator',
+        'mailpoet.automation.render_step_separator',
         (previousStepData: StepData) => (
           <Separator previousStepId={previousStepData.id} />
         ),

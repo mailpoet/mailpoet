@@ -12,7 +12,7 @@ require_once __DIR__ . '/../AutomationTest.php';
 
 class AutomationPutEndpointTest extends AutomationTest
 {
-  private const ENDPOINT_PATH = '/mailpoet/v1/automation/automations/%d';
+  private const ENDPOINT_PATH = '/mailpoet/v1/automations/%d';
 
   /** @var AutomationStorage */
   private $automationStorage;
@@ -108,7 +108,7 @@ class AutomationPutEndpointTest extends AutomationTest
       ]
     );
 
-    $this->assertSame('mailpoet_automation_automation_structure_modification_not_supported', $data['code']);
+    $this->assertSame('mailpoet_automation_structure_modification_not_supported', $data['code']);
     $automation = $this->automationStorage->getAutomation($this->automation->getId());
     $this->assertInstanceOf(Automation::class, $automation);
     /** Ensure, the changes have not been stored to the database */

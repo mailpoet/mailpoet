@@ -20,17 +20,17 @@ export type MoreControlType = {
  * APPLICATION HOOKS
  */
 
-// mailpoet.automation.automation.step.more-controls
+// mailpoet.automation.step.more-controls
 // mailpoet.automation.hero.actions
 export type StepMoreControlsType = Record<string, MoreControlType>;
 
-// mailpoet.automation.automation.add_step_callback
+// mailpoet.automation.add_step_callback
 export type AddStepCallbackType = (item?: Item) => void;
 
-// mailpoet.automation.automation.render_step
+// mailpoet.automation.render_step
 export type RenderStepType = (step: Step) => JSX.Element;
 
-// mailpoet.automation.automation.render_step_separator
+// mailpoet.automation.render_step_separator
 export type RenderStepSeparatorType = (step: Step) => JSX.Element;
 
 // mailpoet.automation.editor.create_store

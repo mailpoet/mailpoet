@@ -710,7 +710,7 @@ class AcceptanceTester extends \Codeception\Actor {
     $i = $this;
     // Reschedule automation trigger action to run immediately
     $i->importSql([
-      "UPDATE mp_actionscheduler_actions SET scheduled_date_gmt = SUBTIME(now(), '01:00:00'), scheduled_date_local = SUBTIME(now(), '01:00:00') WHERE hook = 'mailpoet/automation/automation/step' AND status = 'pending';",
+      "UPDATE mp_actionscheduler_actions SET scheduled_date_gmt = SUBTIME(now(), '01:00:00'), scheduled_date_local = SUBTIME(now(), '01:00:00') WHERE hook = 'mailpoet/automation/step' AND status = 'pending';",
     ]);
     $i->cli(['action-scheduler', 'run', '--force']);
   }
