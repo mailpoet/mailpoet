@@ -54,7 +54,7 @@ class Subscriber implements CategoryInterface {
         }
         return $defaultValue;
       case 'count':
-        return (string)$this->subscribersRepository->getTotalSubscribers();
+        return (string)$this->getSubscribersCountWithSubscribedStatus();
       default:
         if (
           preg_match('/cf_(\d+)/', $shortcodeDetails['action'], $customField) &&
@@ -68,5 +68,9 @@ class Subscriber implements CategoryInterface {
         }
         return null;
     }
+  }
+
+  private function getSubscribersCountWithSubscribedStatus(): int {
+    return $this->subscribersRepository->countBy(['status' => SubscriberEntity::STATUS_SUBSCRIBED, 'deletedAt' => null]);
   }
 }
