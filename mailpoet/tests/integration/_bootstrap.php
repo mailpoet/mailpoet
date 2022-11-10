@@ -3,7 +3,6 @@
 use Codeception\Stub;
 use MailPoet\Automation\Engine\Engine;
 use MailPoet\Automation\Engine\Hooks;
-use MailPoet\Automation\Engine\Migrations\Migrator;
 use MailPoet\Automation\Integrations\MailPoet\MailPoetIntegration;
 use MailPoet\Cache\TransientCache;
 use MailPoet\Cron\CronTrigger;
@@ -63,12 +62,7 @@ remove_filter('admin_print_styles', 'wp_resource_hints', 1);
 // enable & initialize automation (this is needed only when behind a feature flag)
 $_SERVER['SERVER_NAME'] = '';
 $container = ContainerWrapper::getInstance();
-$migrator = $container->get(Migrator::class);
 $container->get(FeatureFlagsController::class)->set(FeaturesController::AUTOMATION, true);
-if ($migrator->hasSchema()) {
-  $migrator->deleteSchema();
-}
-$migrator->createSchema();
 $action = [$container->get(MailPoetIntegration::class), 'register'];
 if (!has_action(Hooks::INITIALIZE, $action) && is_callable($action)) {
   add_action(Hooks::INITIALIZE, $action);

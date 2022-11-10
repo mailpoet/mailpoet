@@ -6,7 +6,6 @@ use Codeception\Stub;
 use Helper\WordPressHooks as WPHooksHelper;
 use MailPoet\API\JSON\Response as APIResponse;
 use MailPoet\API\JSON\v1\Setup;
-use MailPoet\Automation\Engine\Migrations\Migrator as AutomationMigrator;
 use MailPoet\Config\Activator;
 use MailPoet\Config\Populator;
 use MailPoet\Cron\ActionScheduler\ActionScheduler;
@@ -66,6 +65,5 @@ class SetupTest extends \MailPoetTest {
     // Temporarily hotfix a side effect of this test, that is, removing automation feature flag
     // and tables and not setting them back. This will be removed very soon, before MVP release.
     $this->diContainer->get(FeatureFlagsController::class)->set(FeaturesController::AUTOMATION, true);
-    $this->diContainer->get(AutomationMigrator::class)->createSchema();
   }
 }
