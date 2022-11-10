@@ -90,7 +90,7 @@ class WooCommerceDynamicSegmentsCest {
 
     // run action scheduler to sync customer and order data to lookup tables
     $i->wait(2);
-    $i->cli(['action-scheduler', 'run', '--force']);
+    $i->cli(['action-scheduler', 'run', '--hooks=wc-admin_import_orders,wc-admin_import_customers --force']);
 
     $i->wantTo('Check subscriber is in category segment');
     $i->amOnMailpoetPage('Lists');
@@ -122,9 +122,10 @@ class WooCommerceDynamicSegmentsCest {
 
     $i->login();
 
-    // run action scheduler to sync customer and order data to lookup tables
+    // Run action scheduler wc-admin hooks to sync customer and order data to lookup tables
+    // See https://github.com/woocommerce/woocommerce/blob/ba91c94ca9b1c4903964de70c8658cc7bff67d3f/plugins/woocommerce/src/Internal/Admin/Schedulers/ImportScheduler.php#L90
     $i->wait(2);
-    $i->cli(['action-scheduler', 'run', '--force']);
+    $i->cli(['action-scheduler', 'run', '--hooks=wc-admin_import_orders,wc-admin_import_customers --force']);
 
     $i->wantTo('Check subscriber is in category segment');
     $i->amOnMailpoetPage('Lists');
@@ -147,51 +148,45 @@ class WooCommerceDynamicSegmentsCest {
   public function checkThatCustomersAreAddedToNumberOfOrdersSegment(\AcceptanceTester $i) {
     $i->wantTo('Check that customers are added to the number of orders segment when the number of orders they placed matches what is expected');
     $customer1Email = 'customer_2@example.com';
-    $product1 = $this->productFactory->create();
-    $i->orderProduct($product1, $customer1Email);
-    $guestEmail = 'guest_3@example.com';
-    $i->orderProduct($product1, $guestEmail);
+    $anyProduct = $this->productInCategory;
+    $i->orderProduct($anyProduct, $customer1Email);
 
     $i->login();
 
     // run action scheduler to sync customer and order data to lookup tables
     $i->wait(2);
-    $i->cli(['action-scheduler', 'run', '--force']);
+    $i->cli(['action-scheduler', 'run', '--hooks=wc-admin_import_orders,wc-admin_import_customers --force']);
 
     $i->wantTo('Check there is one subscriber in the number of orders segments (the segment was configured to match customers that placed one order in the last day)');
     $i->amOnMailpoetPage('Lists');
     $i->click('[data-automation-id="dynamic-segments-tab"]');
     $i->waitForText(self::NUMBER_OF_ORDERS_SEGMENT);
     $numberOfOrdersSegmentRow = "[data-automation-id='listing_item_{$this->numberOfOrdersSegment->getId()}']";
-    $i->see('2', $numberOfOrdersSegmentRow . " [data-colname='Number of subscribers']");
+    $i->see('1', $numberOfOrdersSegmentRow . " [data-colname='Number of subscribers']");
     $i->clickItemRowActionByItemName(self::NUMBER_OF_ORDERS_SEGMENT, 'View Subscribers');
     $i->waitForText($customer1Email);
-    $i->waitForText($guestEmail);
   }
 
   public function checkThatCustomersAreAddedToTotalSpentSegment(\AcceptanceTester $i) {
     $i->wantTo('Check that customers are added to the total spent segment when the value of orders they placed matches what is expected');
     $customerEmail = 'customer_2@example.com';
-    $product = $this->productFactory->create();
-    $i->orderProduct($product, $customerEmail);
-    $guestEmail = 'guest_2@example.com';
-    $i->orderProduct($product, $guestEmail);
+    $anyProduct = $this->productInCategory;
+    $i->orderProduct($anyProduct, $customerEmail);
 
     $i->login();
 
     // run action scheduler to sync customer and order data to lookup tables
     $i->wait(2);
-    $i->cli(['action-scheduler', 'run', '--force']);
+    $i->cli(['action-scheduler', 'run', '--hooks=wc-admin_import_orders,wc-admin_import_customers --force']);
 
     $i->wantTo('Check that there is one subscriber in the total spent segment');
     $i->amOnMailpoetPage('Lists');
     $i->click('[data-automation-id="dynamic-segments-tab"]');
     $i->waitForText(self::TOTAL_SPENT_SEGMENT);
     $totalSpentSegmentRow = "[data-automation-id='listing_item_{$this->totalSpentSegment->getId()}']";
-    $i->see('2', $totalSpentSegmentRow . " [data-colname='Number of subscribers']");
+    $i->see('1', $totalSpentSegmentRow . " [data-colname='Number of subscribers']");
     $i->clickItemRowActionByItemName(self::TOTAL_SPENT_SEGMENT, 'View Subscribers');
     $i->waitForText($customerEmail);
-    $i->waitForText($guestEmail);
   }
 
   public function checkThatCustomersAreAddedToCustomerInCountrySegment(\AcceptanceTester $i) {
@@ -206,7 +201,7 @@ class WooCommerceDynamicSegmentsCest {
 
     // run action scheduler to sync customer and order data to lookup tables
     $i->wait(2);
-    $i->cli(['action-scheduler', 'run', '--force']);
+    $i->cli(['action-scheduler', 'run', '--hooks=wc-admin_import_orders,wc-admin_import_customers --force']);
 
     $i->wantTo('Check that there is one subscriber in customer country segment');
     $i->amOnMailpoetPage('Lists');

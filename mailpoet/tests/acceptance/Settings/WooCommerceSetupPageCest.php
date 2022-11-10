@@ -37,7 +37,7 @@ class WooCommerceSetupPageCest {
     $registeredCustomer = $this->customerFactory->withEmail('customer1@email.com')->create();
     // run action scheduler to sync customer and order data to lookup tables
     $i->wait(2);
-    $i->cli(['action-scheduler', 'run', '--force']);
+    $i->cli(['action-scheduler', 'run', '--hooks=wc-admin_import_orders,wc-admin_import_customers --force']);
 
     $i->login();
     $i->amOnPage('wp-admin/admin.php?page=mailpoet-woocommerce-setup');
@@ -99,7 +99,7 @@ class WooCommerceSetupPageCest {
     $i->login();
     // run action scheduler to sync customer and order data to lookup tables
     $i->wait(2);
-    $i->cli(['action-scheduler', 'run', '--force']);
+    $i->cli(['action-scheduler', 'run', '--hooks=wc-admin_import_orders,wc-admin_import_customers --force']);
 
     $i->amOnPage('wp-admin/admin.php?page=mailpoet-woocommerce-setup');
     $i->see('Get ready to use MailPoet for WooCommerce');
