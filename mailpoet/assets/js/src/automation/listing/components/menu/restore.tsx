@@ -2,12 +2,12 @@ import { useDispatch } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
 import { Item } from './item';
 import { storeName } from '../../store';
-import { Workflow, WorkflowStatus } from '../../workflow';
+import { Automation, AutomationStatus } from '../../automation';
 
-export const useRestoreButton = (workflow: Workflow): Item | undefined => {
-  const { restoreWorkflow } = useDispatch(storeName);
+export const useRestoreButton = (automation: Automation): Item | undefined => {
+  const { restoreAutomation } = useDispatch(storeName);
 
-  if (workflow.status !== WorkflowStatus.TRASH) {
+  if (automation.status !== AutomationStatus.TRASH) {
     return undefined;
   }
 
@@ -16,7 +16,7 @@ export const useRestoreButton = (workflow: Workflow): Item | undefined => {
     control: {
       title: __('Restore', 'mailpoet'),
       icon: null,
-      onClick: () => restoreWorkflow(workflow, WorkflowStatus.DRAFT),
+      onClick: () => restoreAutomation(automation, AutomationStatus.DRAFT),
     },
   };
 };

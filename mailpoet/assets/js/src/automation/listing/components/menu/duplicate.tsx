@@ -2,12 +2,14 @@ import { useDispatch } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
 import { Item } from './item';
 import { storeName } from '../../store';
-import { Workflow, WorkflowStatus } from '../../workflow';
+import { Automation, AutomationStatus } from '../../automation';
 
-export const useDuplicateButton = (workflow: Workflow): Item | undefined => {
-  const { duplicateWorkflow } = useDispatch(storeName);
+export const useDuplicateButton = (
+  automation: Automation,
+): Item | undefined => {
+  const { duplicateAutomation } = useDispatch(storeName);
 
-  if (workflow.status === WorkflowStatus.TRASH) {
+  if (automation.status === AutomationStatus.TRASH) {
     return undefined;
   }
 
@@ -16,7 +18,7 @@ export const useDuplicateButton = (workflow: Workflow): Item | undefined => {
     control: {
       title: __('Duplicate', 'mailpoet'),
       icon: null,
-      onClick: () => duplicateWorkflow(workflow),
+      onClick: () => duplicateAutomation(automation),
     },
   };
 };

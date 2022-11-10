@@ -23,17 +23,17 @@ import { InserterSidebar } from './components/inserter-sidebar';
 import { KeyboardShortcuts } from './components/keyboard-shortcuts';
 import { EditorNotices } from './components/notices';
 import { Sidebar } from './components/sidebar';
-import { Workflow } from './components/workflow';
+import { Automation } from './components/automation';
 import { createStore, storeName } from './store';
 import { initializeApi } from '../api';
 import { initialize as initializeCoreIntegration } from '../integrations/core';
 import { initialize as initializeMailPoetIntegration } from '../integrations/mailpoet';
 import { MailPoet } from '../../mailpoet';
-import { LISTING_NOTICE_PARAMETERS } from '../listing/workflow-listing-notices';
+import { LISTING_NOTICE_PARAMETERS } from '../listing/automation-listing-notices';
 import { registerApiErrorHandler } from './api-error-handler';
 import { ActivatePanel } from './components/panel/activate-panel';
 import { registerTranslations } from '../i18n';
-import { WorkflowStatus } from '../listing/workflow';
+import { AutomationStatus } from '../listing/automation';
 
 // See:
 //   https://github.com/WordPress/gutenberg/blob/9601a33e30ba41bac98579c8d822af63dd961488/packages/edit-post/src/components/layout/index.js
@@ -43,27 +43,27 @@ import { WorkflowStatus } from '../listing/workflow';
 const showInserterSidebar = false;
 
 /**
- * Show temporary message that active workflows cant be updated
+ * Show temporary message that active automations cant be updated
  *
  * see MAILPOET-4744
  */
-function updatingActiveWorkflowNotPossible() {
-  const workflow = globalSelect(storeName).getWorkflowData();
+function updatingActiveAutomationNotPossible() {
+  const automation = globalSelect(storeName).getAutomationData();
   if (
-    ![WorkflowStatus.ACTIVE, WorkflowStatus.DEACTIVATING].includes(
-      workflow.status,
+    ![AutomationStatus.ACTIVE, AutomationStatus.DEACTIVATING].includes(
+      automation.status,
     )
   ) {
     return;
   }
-  if (workflow.stats.totals.in_progress === 0) {
+  if (automation.stats.totals.in_progress === 0) {
     return;
   }
   const { createNotice } = dispatch(noticesStore as StoreDescriptor);
   void createNotice(
     'success',
     __(
-      'Editing an active workflow is temporarily unavailable. We are working on introducing this functionality.',
+      'Editing an active automation is temporarily unavailable. We are working on introducing this functionality.',
       'mailpoet',
     ),
     {
@@ -73,7 +73,7 @@ function updatingActiveWorkflowNotPossible() {
 }
 
 function onUnload(event) {
-  if (!globalSelect(storeName).getWorkflowSaved()) {
+  if (!globalSelect(storeName).getAutomationSaved()) {
     // eslint-disable-next-line no-param-reassign
     event.returnValue = __(
       'There are unsaved changes that will be lost. Do you want to continue?',
@@ -98,7 +98,7 @@ function Editor(): JSX.Element {
     isActivationPanelOpened,
     isSidebarOpened,
     showIconLabels,
-    workflow,
+    automation,
   } = useSelect(
     (select) => ({
       isFullscreenActive: select(storeName).isFeatureActive('fullscreenMode'),
@@ -106,7 +106,7 @@ function Editor(): JSX.Element {
       isSidebarOpened: select(storeName).isSidebarOpened(),
       isActivationPanelOpened: select(storeName).isActivationPanelOpened(),
       showIconLabels: select(storeName).isFeatureActive('showIconLabels'),
-      workflow: select(storeName).getWorkflowData(),
+      automation: select(storeName).getAutomationData(),
     }),
     [],
   );
@@ -118,7 +118,7 @@ function Editor(): JSX.Element {
     if (!isBooting) {
       return;
     }
-    updatingActiveWorkflowNotPossible();
+    updatingActiveAutomationNotPossible();
     setIsBooting(false);
   }, [isBooting]);
   const className = classnames('interface-interface-skeleton', {
@@ -126,9 +126,9 @@ function Editor(): JSX.Element {
     'show-icon-labels': showIconLabels,
   });
 
-  if (workflow.status === 'trash') {
+  if (automation.status === 'trash') {
     window.location.href = addQueryArgs(MailPoet.urls.automationListing, {
-      [LISTING_NOTICE_PARAMETERS.workflowHadBeenDeleted]: workflow.id,
+      [LISTING_NOTICE_PARAMETERS.automationHadBeenDeleted]: automation.id,
     });
     return null;
   }
@@ -157,7 +157,7 @@ function Editor(): JSX.Element {
           content={
             <>
               <EditorNotices />
-              <Workflow />
+              <Automation />
             </>
           }
           sidebar={<ComplementaryArea.Slot scope={storeName} />}

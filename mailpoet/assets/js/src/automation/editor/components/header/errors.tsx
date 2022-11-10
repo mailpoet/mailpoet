@@ -35,17 +35,17 @@ type StepErrorProps = {
 function StepError({ stepId }: StepErrorProps): JSX.Element {
   const compositeState = useContext(ErrorsCompositeContext);
 
-  const { steps, workflowData } = useSelect(
+  const { steps, automationData } = useSelect(
     (select) => ({
       steps: select(storeName).getSteps(),
-      workflowData: select(storeName).getWorkflowData(),
+      automationData: select(storeName).getAutomationData(),
     }),
     [],
   );
 
   const { openSidebar, selectStep } = useDispatch(storeName);
 
-  const stepData = workflowData.steps[stepId];
+  const stepData = automationData.steps[stepId];
   const step = steps.find(({ key }) => key === stepData.key);
 
   return (
@@ -78,10 +78,10 @@ export function Errors(): JSX.Element | null {
     shift: true,
   });
 
-  const { errors, workflowData } = useSelect(
+  const { errors, automationData } = useSelect(
     (select) => ({
       errors: select(storeName).getErrors(),
-      workflowData: select(storeName).getWorkflowData(),
+      automationData: select(storeName).getAutomationData(),
     }),
     [],
   );
@@ -93,18 +93,18 @@ export function Errors(): JSX.Element | null {
     }
 
     const visited = new Map<string, StepErrorType | undefined>();
-    const ids = workflowData.steps.root.next_steps.map(({ id }) => id);
+    const ids = automationData.steps.root.next_steps.map(({ id }) => id);
     while (ids.length > 0) {
       const id = ids.shift();
       if (!visited.has(id)) {
         visited.set(id, errors.steps[id]);
-        workflowData.steps[id]?.next_steps?.forEach((step) =>
+        automationData.steps[id]?.next_steps?.forEach((step) =>
           ids.push(step.id),
         );
       }
     }
     return [...visited.values()].filter((error) => !!error);
-  }, [errors, workflowData]);
+  }, [errors, automationData]);
 
   // automatically open the popover when errors appear
   const hasErrors = stepErrors.length > 0;

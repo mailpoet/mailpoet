@@ -6,27 +6,27 @@ use MailPoet\Automation\Engine\Control\StepHandler;
 use MailPoet\Automation\Engine\Control\StepRunner;
 use MailPoet\Automation\Engine\Data\NextStep;
 use MailPoet\Automation\Engine\Data\Step;
-use MailPoet\Automation\Engine\Data\Workflow;
-use MailPoet\Automation\Engine\Data\WorkflowRun;
+use MailPoet\Automation\Engine\Data\Automation;
+use MailPoet\Automation\Engine\Data\AutomationRun;
 use MailPoet\Automation\Engine\Exceptions;
 use MailPoet\Automation\Engine\Exceptions\InvalidStateException;
 use MailPoet\Automation\Engine\Exceptions\NotFoundException;
-use MailPoet\Automation\Engine\Storage\WorkflowRunLogStorage;
-use MailPoet\Automation\Engine\Storage\WorkflowRunStorage;
-use MailPoet\Automation\Engine\Storage\WorkflowStorage;
+use MailPoet\Automation\Engine\Storage\AutomationRunLogStorage;
+use MailPoet\Automation\Engine\Storage\AutomationRunStorage;
+use MailPoet\Automation\Engine\Storage\AutomationStorage;
 use MailPoet\Automation\Integrations\Core\Actions\DelayAction;
 use MailPoet\Automation\Integrations\MailPoet\Triggers\SomeoneSubscribesTrigger;
 
 class StepHandlerTest extends \MailPoetTest
 {
-  /** @var WorkflowStorage */
-  private $workflowStorage;
+  /** @var AutomationStorage */
+  private $automationStorage;
 
-  /** @var WorkflowRunStorage */
-  private $workflowRunStorage;
+  /** @var AutomationRunStorage */
+  private $automationRunStorage;
 
-  /** @var WorkflowRunLogStorage */
-  private $workflowRunLogStorage;
+  /** @var AutomationRunLogStorage */
+  private $automationRunLogStorage;
 
   /** @var StepHandler */
   private $testee;
@@ -36,102 +36,102 @@ class StepHandlerTest extends \MailPoetTest
 
   public function _before() {
     $this->testee = $this->diContainer->get(StepHandler::class);
-    $this->workflowStorage = $this->diContainer->get(WorkflowStorage::class);
-    $this->workflowRunStorage = $this->diContainer->get(WorkflowRunStorage::class);
-    $this->workflowRunLogStorage = $this->diContainer->get(WorkflowRunLogStorage::class);
+    $this->automationStorage = $this->diContainer->get(AutomationStorage::class);
+    $this->automationRunStorage = $this->diContainer->get(AutomationRunStorage::class);
+    $this->automationRunLogStorage = $this->diContainer->get(AutomationRunLogStorage::class);
     $this->originalRunners = $this->testee->getStepRunners();
   }
 
-  public function testItDoesOnlyProcessActiveAndDeactivatingWorkflows() {
-    $workflow = $this->createWorkflow();
-    $this->assertInstanceOf(Workflow::class, $workflow);
-    $steps = $workflow->getSteps();
-    $workflowRun = $this->createWorkflowRun($workflow);
-    $this->assertInstanceOf(WorkflowRun::class, $workflowRun);
+  public function testItDoesOnlyProcessActiveAndDeactivatingAutomations() {
+    $automation = $this->createAutomation();
+    $this->assertInstanceOf(Automation::class, $automation);
+    $steps = $automation->getSteps();
+    $automationRun = $this->createAutomationRun($automation);
+    $this->assertInstanceOf(AutomationRun::class, $automationRun);
 
     $currentStep = current($steps);
     $this->assertInstanceOf(Step::class, $currentStep);
     $runner = $this->createMock(StepRunner::class);
 
-    $runner->expects(self::exactly(2))->method('run'); // The run method will be called twice: Once for the active workflow and once for the deactivating workflow.
+    $runner->expects(self::exactly(2))->method('run'); // The run method will be called twice: Once for the active automation and once for the deactivating automation.
 
     $this->testee->addStepRunner($currentStep->getType(), $runner);
-    $this->assertSame(Workflow::STATUS_ACTIVE, $workflow->getStatus());
-    $this->testee->handle(['workflow_run_id' => $workflowRun->getId(), 'step_id' => $currentStep->getId()]);
+    $this->assertSame(Automation::STATUS_ACTIVE, $automation->getStatus());
+    $this->testee->handle(['automation_run_id' => $automationRun->getId(), 'step_id' => $currentStep->getId()]);
     // no exception thrown.
-    $newWorkflowRun = $this->workflowRunStorage->getWorkflowRun($workflowRun->getId());
-    $this->assertInstanceOf(WorkflowRun::class, $newWorkflowRun);
-    $this->assertSame(WorkflowRun::STATUS_RUNNING, $newWorkflowRun->getStatus());
+    $newAutomationRun = $this->automationRunStorage->getAutomationRun($automationRun->getId());
+    $this->assertInstanceOf(AutomationRun::class, $newAutomationRun);
+    $this->assertSame(AutomationRun::STATUS_RUNNING, $newAutomationRun->getStatus());
 
-    $workflow->setStatus(Workflow::STATUS_DEACTIVATING);
-    $this->workflowStorage->updateWorkflow($workflow);
-    $this->testee->handle(['workflow_run_id' => $workflowRun->getId(), 'step_id' => $currentStep->getId()]);
+    $automation->setStatus(Automation::STATUS_DEACTIVATING);
+    $this->automationStorage->updateAutomation($automation);
+    $this->testee->handle(['automation_run_id' => $automationRun->getId(), 'step_id' => $currentStep->getId()]);
     // no exception thrown.
-    $newWorkflowRun = $this->workflowRunStorage->getWorkflowRun($workflowRun->getId());
-    $this->assertInstanceOf(WorkflowRun::class, $newWorkflowRun);
-    $this->assertSame(WorkflowRun::STATUS_RUNNING, $newWorkflowRun->getStatus());
+    $newAutomationRun = $this->automationRunStorage->getAutomationRun($automationRun->getId());
+    $this->assertInstanceOf(AutomationRun::class, $newAutomationRun);
+    $this->assertSame(AutomationRun::STATUS_RUNNING, $newAutomationRun->getStatus());
 
     $invalidStati = array_filter(
-      Workflow::STATUS_ALL,
+      Automation::STATUS_ALL,
       function(string $status) : bool {
-        return !in_array($status, [Workflow::STATUS_ACTIVE, Workflow::STATUS_DEACTIVATING], true);
+        return !in_array($status, [Automation::STATUS_ACTIVE, Automation::STATUS_DEACTIVATING], true);
       }
     );
 
     foreach ($invalidStati as $status) {
-      $workflow->setStatus($status);
-      $this->workflowStorage->updateWorkflow($workflow);
-      $workflowRun = $this->createWorkflowRun($workflow);
-      $this->assertInstanceOf(WorkflowRun::class, $workflowRun);
+      $automation->setStatus($status);
+      $this->automationStorage->updateAutomation($automation);
+      $automationRun = $this->createAutomationRun($automation);
+      $this->assertInstanceOf(AutomationRun::class, $automationRun);
       $error = null;
       try {
-        $this->testee->handle(['workflow_run_id' => $workflowRun->getId(), 'step_id' => $currentStep->getId()]);
+        $this->testee->handle(['automation_run_id' => $automationRun->getId(), 'step_id' => $currentStep->getId()]);
       } catch (InvalidStateException $error) {
-        $this->assertSame('mailpoet_automation_workflow_not_active', $error->getErrorCode(), "Automation with '$status' did not return expected error code.");
+        $this->assertSame('mailpoet_automation_automation_not_active', $error->getErrorCode(), "Automation with '$status' did not return expected error code.");
       }
       $this->assertInstanceOf(InvalidStateException::class, $error);
 
-      $newWorkflowRun = $this->workflowRunStorage->getWorkflowRun($workflowRun->getId());
-      $this->assertInstanceOf(WorkflowRun::class, $newWorkflowRun);
+      $newAutomationRun = $this->automationRunStorage->getAutomationRun($automationRun->getId());
+      $this->assertInstanceOf(AutomationRun::class, $newAutomationRun);
 
-      $this->assertSame(WorkflowRun::STATUS_CANCELLED, $newWorkflowRun->getStatus());
+      $this->assertSame(AutomationRun::STATUS_CANCELLED, $newAutomationRun->getStatus());
     }
   }
 
-  public function testAnDeactivatingWorkflowBecomesDraftAfterLastRunIsExecuted() {
-    $workflow = $this->createWorkflow();
-    $this->assertInstanceOf(Workflow::class, $workflow);
-    $workflowRun1 = $this->createWorkflowRun($workflow);
-    $this->assertInstanceOf(WorkflowRun::class, $workflowRun1);
-    $workflowRun2 = $this->createWorkflowRun($workflow);
-    $this->assertInstanceOf(WorkflowRun::class, $workflowRun2);
-    $workflow->setStatus(Workflow::STATUS_DEACTIVATING);
-    $this->workflowStorage->updateWorkflow($workflow);
+  public function testAnDeactivatingAutomationBecomesDraftAfterLastRunIsExecuted() {
+    $automation = $this->createAutomation();
+    $this->assertInstanceOf(Automation::class, $automation);
+    $automationRun1 = $this->createAutomationRun($automation);
+    $this->assertInstanceOf(AutomationRun::class, $automationRun1);
+    $automationRun2 = $this->createAutomationRun($automation);
+    $this->assertInstanceOf(AutomationRun::class, $automationRun2);
+    $automation->setStatus(Automation::STATUS_DEACTIVATING);
+    $this->automationStorage->updateAutomation($automation);
 
-    $steps = $workflow->getSteps();
+    $steps = $automation->getSteps();
     $lastStep = end($steps);
     $this->assertInstanceOf(Step::class, $lastStep);
     $runner = $this->createMock(StepRunner::class);
     $this->testee->addStepRunner($lastStep->getType(), $runner);
 
-    $this->testee->handle(['workflow_run_id' => $workflowRun1->getId(), 'step_id' => $lastStep->getId()]);
-    /** @var Workflow $updatedWorkflow */
-    $updatedWorkflow = $this->workflowStorage->getWorkflow($workflow->getId());
-    /** @var WorkflowRun $updatedworkflowRun */
-    $updatedworkflowRun = $this->workflowRunStorage->getWorkflowRun($workflowRun1->getId());
-    $this->assertSame(Workflow::STATUS_DEACTIVATING, $updatedWorkflow->getStatus());
-    $this->assertSame(WorkflowRun::STATUS_COMPLETE, $updatedworkflowRun->getStatus());
+    $this->testee->handle(['automation_run_id' => $automationRun1->getId(), 'step_id' => $lastStep->getId()]);
+    /** @var Automation $updatedAutomation */
+    $updatedAutomation = $this->automationStorage->getAutomation($automation->getId());
+    /** @var AutomationRun $updatedautomationRun */
+    $updatedautomationRun = $this->automationRunStorage->getAutomationRun($automationRun1->getId());
+    $this->assertSame(Automation::STATUS_DEACTIVATING, $updatedAutomation->getStatus());
+    $this->assertSame(AutomationRun::STATUS_COMPLETE, $updatedautomationRun->getStatus());
 
-    $this->testee->handle(['workflow_run_id' => $workflowRun2->getId(), 'step_id' => $lastStep->getId()]);
-    /** @var Workflow $updatedWorkflow */
-    $updatedWorkflow = $this->workflowStorage->getWorkflow($workflow->getId());
-    /** @var WorkflowRun $updatedworkflowRun */
-    $updatedworkflowRun = $this->workflowRunStorage->getWorkflowRun($workflowRun1->getId());
-    $this->assertSame(Workflow::STATUS_DRAFT, $updatedWorkflow->getStatus());
-    $this->assertSame(WorkflowRun::STATUS_COMPLETE, $updatedworkflowRun->getStatus());
+    $this->testee->handle(['automation_run_id' => $automationRun2->getId(), 'step_id' => $lastStep->getId()]);
+    /** @var Automation $updatedAutomation */
+    $updatedAutomation = $this->automationStorage->getAutomation($automation->getId());
+    /** @var AutomationRun $updatedautomationRun */
+    $updatedautomationRun = $this->automationRunStorage->getAutomationRun($automationRun1->getId());
+    $this->assertSame(Automation::STATUS_DRAFT, $updatedAutomation->getStatus());
+    $this->assertSame(AutomationRun::STATUS_COMPLETE, $updatedautomationRun->getStatus());
   }
 
-  private function createWorkflow(): ?Workflow {
+  private function createAutomation(): ?Automation {
     $trigger = $this->diContainer->get(SomeoneSubscribesTrigger::class);
     $delay = $this->diContainer->get(DelayAction::class);
     $steps = [
@@ -139,29 +139,29 @@ class StepHandlerTest extends \MailPoetTest
       'someone-subscribes' => new Step('someone-subscribes', Step::TYPE_TRIGGER, $trigger->getKey(), [], [new NextStep('a')]),
       'delay' => new Step('delay', Step::TYPE_ACTION, $delay->getKey(), [], []),
     ];
-    $workflow = new Workflow('test', $steps, wp_get_current_user());
-    $workflow->setStatus(Workflow::STATUS_ACTIVE);
-    return $this->workflowStorage->getWorkflow($this->workflowStorage->createWorkflow($workflow));
+    $automation = new Automation('test', $steps, wp_get_current_user());
+    $automation->setStatus(Automation::STATUS_ACTIVE);
+    return $this->automationStorage->getAutomation($this->automationStorage->createAutomation($automation));
   }
 
-  private function createWorkflowRun(Workflow $workflow, $subjects = []) : ?WorkflowRun {
-    $trigger = array_filter($workflow->getSteps(), function(Step $step) : bool { return $step->getType() === Step::TYPE_TRIGGER;});
+  private function createAutomationRun(Automation $automation, $subjects = []) : ?AutomationRun {
+    $trigger = array_filter($automation->getSteps(), function(Step $step) : bool { return $step->getType() === Step::TYPE_TRIGGER;});
     $triggerKeys = array_map(function(Step $step) : string { return $step->getKey();}, $trigger);
     $triggerKey = count($triggerKeys)>0?current($triggerKeys):'';
 
-    $workflowRun = new WorkflowRun(
-      $workflow->getId(),
-      $workflow->getVersionId(),
+    $automationRun = new AutomationRun(
+      $automation->getId(),
+      $automation->getVersionId(),
       $triggerKey,
       $subjects
     );
-    return $this->workflowRunStorage->getWorkflowRun($this->workflowRunStorage->createWorkflowRun($workflowRun));
+    return $this->automationRunStorage->getAutomationRun($this->automationRunStorage->createAutomationRun($automationRun));
   }
 
   public function _after() {
-    $this->workflowStorage->truncate();
-    $this->workflowRunStorage->truncate();
-    $this->workflowRunLogStorage->truncate();
+    $this->automationStorage->truncate();
+    $this->automationRunStorage->truncate();
+    $this->automationRunLogStorage->truncate();
     $this->testee->setStepRunners($this->originalRunners);
   }
 

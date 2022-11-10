@@ -9,9 +9,9 @@ import { storeName } from '../../store';
 
 export function TrashButton(): JSX.Element {
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
-  const { workflow } = useSelect(
+  const { automation } = useSelect(
     (select) => ({
-      workflow: select(storeName).getWorkflowData(),
+      automation: select(storeName).getAutomationData(),
     }),
     [],
   );
@@ -33,7 +33,7 @@ export function TrashButton(): JSX.Element {
       >
         {sprintf(
           __('You are about to delete the automation "%s".', 'mailpoet'),
-          workflow.name,
+          automation.name,
         )}
         <br />
         {__(' This will stop it for all subscribers immediately.', 'mailpoet')}

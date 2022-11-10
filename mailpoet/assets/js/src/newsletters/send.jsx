@@ -203,11 +203,11 @@ class NewsletterSendComponent extends Component {
             : null;
         const item = response.data;
         // Automation type emails should redirect
-        // to an associated workflow from the send page
+        // to an associated automation from the send page
         if (item.type === 'automation') {
-          const workflowId = item.options?.workflowId;
-          const goToUrl = workflowId
-            ? `admin.php?page=mailpoet-automation-editor&id=${workflowId}`
+          const automationId = item.options?.automationId;
+          const goToUrl = automationId
+            ? `admin.php?page=mailpoet-automation-editor&id=${automationId}`
             : '/new';
           return this.setState(
             {

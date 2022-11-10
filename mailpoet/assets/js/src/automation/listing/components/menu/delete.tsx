@@ -4,13 +4,13 @@ import { useDispatch } from '@wordpress/data';
 import { __, sprintf } from '@wordpress/i18n';
 import { Item } from './item';
 import { storeName } from '../../store';
-import { Workflow, WorkflowStatus } from '../../workflow';
+import { Automation, AutomationStatus } from '../../automation';
 
-export const useDeleteButton = (workflow: Workflow): Item | undefined => {
+export const useDeleteButton = (automation: Automation): Item | undefined => {
   const [showDialog, setShowDialog] = useState(false);
-  const { deleteWorkflow } = useDispatch(storeName);
+  const { deleteAutomation } = useDispatch(storeName);
 
-  if (workflow.status !== WorkflowStatus.TRASH) {
+  if (automation.status !== AutomationStatus.TRASH) {
     return undefined;
   }
 
@@ -27,7 +27,7 @@ export const useDeleteButton = (workflow: Workflow): Item | undefined => {
         title={__('Permanently delete automation', 'mailpoet')}
         confirmButtonText={__('Yes, permanently delete', 'mailpoet')}
         __experimentalHideHeader={false}
-        onConfirm={() => deleteWorkflow(workflow)}
+        onConfirm={() => deleteAutomation(automation)}
         onCancel={() => setShowDialog(false)}
       >
         {sprintf(
@@ -36,7 +36,7 @@ export const useDeleteButton = (workflow: Workflow): Item | undefined => {
             'Are you sure you want to permanently delete "%s" and all associated data? This cannot be undone!',
             'mailpoet',
           ),
-          workflow.name,
+          automation.name,
         )}
       </ConfirmDialog>
     ),

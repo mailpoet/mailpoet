@@ -1,11 +1,11 @@
 import { __ } from '@wordpress/i18n';
 import { Button } from '@wordpress/components';
 import { MailPoet } from '../../mailpoet';
-import { workflowTemplates } from '../templates/config';
+import { automationTemplates } from '../templates/config';
 import { TemplateListItem } from '../templates/components/template-list-item';
 
 export function TemplatesSection(): JSX.Element {
-  const templates = workflowTemplates.slice(0, 3);
+  const templates = automationTemplates.slice(0, 3);
 
   return (
     <section className="mailpoet-automation-section">

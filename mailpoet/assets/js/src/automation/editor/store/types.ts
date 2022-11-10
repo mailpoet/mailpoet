@@ -1,9 +1,9 @@
 import { ComponentType } from 'react';
-import { Step, Workflow } from '../components/workflow/types';
+import { Step, Automation } from '../components/automation/types';
 
 export interface AutomationEditorWindow extends Window {
   mailpoet_automation_context: Context;
-  mailpoet_automation_workflow: Workflow;
+  mailpoet_automation_automation: Automation;
 }
 
 export type Context = {
@@ -48,8 +48,8 @@ export type Errors = {
 export type State = {
   context: Context;
   stepTypes: Record<string, StepType>;
-  workflowData: Workflow;
-  workflowSaved: boolean;
+  automationData: Automation;
+  automationSaved: boolean;
   selectedStep: Step | undefined;
   inserterSidebar: {
     isOpened: boolean;

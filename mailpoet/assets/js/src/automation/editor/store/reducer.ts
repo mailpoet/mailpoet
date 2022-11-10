@@ -29,35 +29,35 @@ export function reducer(state: State, action: Action): State {
         ...state,
         selectedStep: action.value,
       };
-    case 'UPDATE_WORKFLOW':
+    case 'UPDATE_AUTOMATION':
       return {
         ...state,
-        workflowData: action.workflow,
-        workflowSaved: false,
+        automationData: action.automation,
+        automationSaved: false,
       };
     case 'SAVE':
       return {
         ...state,
-        workflowData: action.workflow,
-        workflowSaved: true,
+        automationData: action.automation,
+        automationSaved: true,
       };
     case 'ACTIVATE':
       return {
         ...state,
-        workflowData: action.workflow,
-        workflowSaved: true,
+        automationData: action.automation,
+        automationSaved: true,
       };
     case 'DEACTIVATE':
       return {
         ...state,
-        workflowData: action.workflow,
-        workflowSaved: true,
+        automationData: action.automation,
+        automationSaved: true,
       };
     case 'TRASH':
       return {
         ...state,
-        workflowData: action.workflow,
-        workflowSaved: true,
+        automationData: action.automation,
+        automationSaved: true,
       };
     case 'REGISTER_STEP_TYPE':
       return {
@@ -68,7 +68,7 @@ export function reducer(state: State, action: Action): State {
         },
       };
     case 'UPDATE_STEP_ARGS': {
-      const prevArgs = state.workflowData.steps[action.stepId].args ?? {};
+      const prevArgs = state.automationData.steps[action.stepId].args ?? {};
 
       const value =
         typeof action.value === 'function'
@@ -82,7 +82,7 @@ export function reducer(state: State, action: Action): State {
             )
           : { ...prevArgs, [action.name]: value };
 
-      const step = { ...state.workflowData.steps[action.stepId], args };
+      const step = { ...state.automationData.steps[action.stepId], args };
 
       const stepErrors = Object.values(state.errors?.steps ?? {}).filter(
         ({ step_id }) => step_id !== action.stepId,
@@ -90,14 +90,14 @@ export function reducer(state: State, action: Action): State {
 
       return {
         ...state,
-        workflowData: {
-          ...state.workflowData,
+        automationData: {
+          ...state.automationData,
           steps: {
-            ...state.workflowData.steps,
+            ...state.automationData.steps,
             [action.stepId]: step,
           },
         },
-        workflowSaved: false,
+        automationSaved: false,
         selectedStep: step,
         errors:
           stepErrors.length > 0

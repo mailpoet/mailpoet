@@ -7,8 +7,8 @@ use MailPoet\Automation\Engine\Data\NextStep;
 use MailPoet\Automation\Engine\Data\StepRunArgs;
 use MailPoet\Automation\Engine\Data\Step;
 use MailPoet\Automation\Engine\Data\StepValidationArgs;
-use MailPoet\Automation\Engine\Data\Workflow;
-use MailPoet\Automation\Engine\Data\WorkflowRun;
+use MailPoet\Automation\Engine\Data\Automation;
+use MailPoet\Automation\Engine\Data\AutomationRun;
 use MailPoet\Automation\Engine\Hooks;
 use MailPoet\Automation\Engine\Integration\ValidationException;
 use MailPoet\Automation\Integrations\Core\Actions\DelayAction;
@@ -29,21 +29,21 @@ class DelayActionTest extends \MailPoetTest {
       ],
       [new NextStep('next-step')]
     );
-    $workflow = $this->createMock(Workflow::class);
-    $workflowRun =  $this->createMock(WorkflowRun::class);
-    $workflowRun->expects($this->atLeastOnce())->method('getId')->willReturn(1);
+    $automation = $this->createMock(Automation::class);
+    $automationRun =  $this->createMock(AutomationRun::class);
+    $automationRun->expects($this->atLeastOnce())->method('getId')->willReturn(1);
 
     $actionScheduler = $this->createMock(ActionScheduler::class);
     $actionScheduler->expects($this->once())->method('schedule')->with(
       time() + $expectation,
-      Hooks::WORKFLOW_STEP,
+      Hooks::AUTOMATION_STEP,
       [[
-        'workflow_run_id' => 1,
+        'automation_run_id' => 1,
         'step_id' => 'next-step',
       ]]
     );
     $testee = new DelayAction($actionScheduler);
-    $testee->run(new StepRunArgs($workflow, $workflowRun, $step, []));
+    $testee->run(new StepRunArgs($automation, $automationRun, $step, []));
   }
 
   public function dataForTestItCalculatesDelayTypesCorrectly() : array {
@@ -105,12 +105,12 @@ class DelayActionTest extends \MailPoetTest {
       ],
       [new NextStep('next-step')]
     );
-    $workflow = $this->createMock(Workflow::class);
+    $automation = $this->createMock(Automation::class);
     $actionScheduler = $this->createMock(ActionScheduler::class);
 
     $testee = new DelayAction($actionScheduler);
     try {
-      $testee->validate(new StepValidationArgs($workflow, $step, []));
+      $testee->validate(new StepValidationArgs($automation, $step, []));
     } catch (\Throwable $error) {
       if (! $expectation || ! $error instanceof ValidationException) {
         throw $error;

@@ -1,10 +1,10 @@
-import { EditWorkflow } from '../actions';
-import { Workflow } from '../../workflow';
+import { EditAutomation } from '../actions';
+import { Automation } from '../../automation';
 
 type Props = {
-  workflow: Workflow;
+  automation: Automation;
 };
 
-export function Name({ workflow }: Props): JSX.Element {
-  return <EditWorkflow workflow={workflow} label={workflow.name} />;
+export function Name({ automation }: Props): JSX.Element {
+  return <EditAutomation automation={automation} label={automation.name} />;
 }

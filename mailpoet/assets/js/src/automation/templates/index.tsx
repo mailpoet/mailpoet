@@ -1,7 +1,7 @@
 import ReactDOM from 'react-dom';
 import { __ } from '@wordpress/i18n';
 import { Flex } from '@wordpress/components';
-import { workflowTemplates } from './config';
+import { automationTemplates } from './config';
 import { TemplateListItem } from './components/template-list-item';
 import { initializeApi } from '../api';
 import { registerTranslations } from '../i18n';
@@ -23,7 +23,7 @@ function Templates(): JSX.Element {
       </Flex>
 
       <ul className="mailpoet-automation-templates">
-        {workflowTemplates.map((template) => (
+        {automationTemplates.map((template) => (
           <TemplateListItem key={template.slug} template={template} />
         ))}
         <FromScratchListItem />

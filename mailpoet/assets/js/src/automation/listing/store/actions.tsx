@@ -2,8 +2,8 @@ import { dispatch, StoreDescriptor } from '@wordpress/data';
 import { apiFetch } from '@wordpress/data-controls';
 import { __, sprintf } from '@wordpress/i18n';
 import { store as noticesStore } from '@wordpress/notices';
-import { Workflow, WorkflowStatus } from '../workflow';
-import { EditWorkflow, UndoTrashButton } from '../components/actions';
+import { Automation, AutomationStatus } from '../automation';
+import { EditAutomation, UndoTrashButton } from '../components/actions';
 
 const createSuccessNotice = (content: string, options?: unknown) =>
   dispatch(noticesStore as StoreDescriptor).createSuccessNotice(
@@ -14,78 +14,84 @@ const createSuccessNotice = (content: string, options?: unknown) =>
 const removeNotice = (id: string) =>
   dispatch(noticesStore as StoreDescriptor).removeNotice(id);
 
-export function* loadWorkflows() {
+export function* loadAutomations() {
   const data = yield apiFetch({
-    path: `/workflows`,
+    path: `/automations`,
   });
 
   return {
-    type: 'SET_WORKFLOWS',
-    workflows: data.data,
+    type: 'SET_AUTOMATIONS',
+    automations: data.data,
   } as const;
 }
 
-export function* duplicateWorkflow(workflow: Workflow) {
+export function* duplicateAutomation(automation: Automation) {
   const data = yield apiFetch({
-    path: `/workflows/${workflow.id}/duplicate`,
+    path: `/automations/${automation.id}/duplicate`,
     method: 'POST',
   });
 
   void createSuccessNotice(
     // translators: %s is the automation name
-    sprintf(__('Automation "%s" was duplicated.', 'mailpoet'), workflow.name),
+    sprintf(__('Automation "%s" was duplicated.', 'mailpoet'), automation.name),
   );
 
   return {
-    type: 'ADD_WORKFLOW',
-    workflow: data.data,
+    type: 'ADD_AUTOMATION',
+    automation: data.data,
   } as const;
 }
 
-export function* trashWorkflow(workflow: Workflow) {
+export function* trashAutomation(automation: Automation) {
   const data = yield apiFetch({
-    path: `/workflows/${workflow.id}`,
+    path: `/automations/${automation.id}`,
     method: 'PUT',
     data: {
-      status: WorkflowStatus.TRASH,
+      status: AutomationStatus.TRASH,
     },
   });
 
   const message = __('1 automation moved to the Trash.', 'mailpoet');
   void createSuccessNotice(message, {
-    id: `workflow-trashed-${workflow.id}`,
+    id: `automation-trashed-${automation.id}`,
     __unstableHTML: (
       <p>
         {message}{' '}
-        <UndoTrashButton workflow={workflow} previousStatus={workflow.status} />
+        <UndoTrashButton
+          automation={automation}
+          previousStatus={automation.status}
+        />
       </p>
     ),
   });
 
   return {
-    type: 'UPDATE_WORKFLOW',
-    workflow: data.data,
+    type: 'UPDATE_AUTOMATION',
+    automation: data.data,
   } as const;
 }
 
-export function* restoreWorkflow(workflow: Workflow, status: WorkflowStatus) {
+export function* restoreAutomation(
+  automation: Automation,
+  status: AutomationStatus,
+) {
   const data = yield apiFetch({
-    path: `/workflows/${workflow.id}`,
+    path: `/automations/${automation.id}`,
     method: 'PUT',
     data: {
       status,
     },
   });
 
-  void removeNotice(`workflow-trashed-${workflow.id}`);
+  void removeNotice(`automation-trashed-${automation.id}`);
 
   const message = __('1 automation restored from the Trash.', 'mailpoet');
   void createSuccessNotice(message, {
     __unstableHTML: (
       <p>
         {message}{' '}
-        <EditWorkflow
-          workflow={workflow}
+        <EditAutomation
+          automation={automation}
           label={__('Edit automation', 'mailpoet')}
         />
       </p>
@@ -93,14 +99,14 @@ export function* restoreWorkflow(workflow: Workflow, status: WorkflowStatus) {
   });
 
   return {
-    type: 'UPDATE_WORKFLOW',
-    workflow: data.data,
+    type: 'UPDATE_AUTOMATION',
+    automation: data.data,
   } as const;
 }
 
-export function* deleteWorkflow(workflow: Workflow) {
+export function* deleteAutomation(automation: Automation) {
   yield apiFetch({
-    path: `/workflows/${workflow.id}`,
+    path: `/automations/${automation.id}`,
     method: 'DELETE',
   });
 
@@ -109,7 +115,7 @@ export function* deleteWorkflow(workflow: Workflow) {
   );
 
   return {
-    type: 'DELETE_WORKFLOW',
-    workflow,
+    type: 'DELETE_AUTOMATION',
+    automation,
   } as const;
 }

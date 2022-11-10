@@ -1,5 +1,5 @@
-import { Workflow } from '../workflow';
+import { Automation } from '../automation';
 
 export type State = {
-  workflows?: Workflow[];
+  automations?: Automation[];
 };

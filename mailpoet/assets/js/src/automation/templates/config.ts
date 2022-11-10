@@ -1,4 +1,4 @@
-export type WorkflowTemplate = {
+export type AutomationTemplate = {
   slug: string;
   name: string;
   description: string;
@@ -7,8 +7,8 @@ export type WorkflowTemplate = {
 
 declare global {
   interface Window {
-    mailpoet_automation_templates: WorkflowTemplate[];
+    mailpoet_automation_templates: AutomationTemplate[];
   }
 }
 
-export const workflowTemplates = window.mailpoet_automation_templates;
+export const automationTemplates = window.mailpoet_automation_templates;

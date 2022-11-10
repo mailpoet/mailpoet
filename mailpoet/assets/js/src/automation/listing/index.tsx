@@ -7,7 +7,7 @@ import { useHistory, useLocation } from 'react-router-dom';
 import { plusIcon } from 'common/button/icon/plus';
 import { getRow } from './get-row';
 import { storeName } from './store';
-import { Workflow, WorkflowStatus } from './workflow';
+import { Automation, AutomationStatus } from './automation';
 import { MailPoet } from '../../mailpoet';
 
 const tabConfig = [
@@ -17,17 +17,17 @@ const tabConfig = [
     className: 'mailpoet-tab-all',
   },
   {
-    name: WorkflowStatus.ACTIVE,
+    name: AutomationStatus.ACTIVE,
     title: __('Active', 'mailpoet'),
     className: 'mailpoet-tab-active',
   },
   {
-    name: WorkflowStatus.DRAFT,
+    name: AutomationStatus.DRAFT,
     title: _x('Draft', 'noun', 'mailpoet'),
     className: 'mailpoet-tab-draft',
   },
   {
-    name: WorkflowStatus.TRASH,
+    name: AutomationStatus.TRASH,
     title: _x('Trash', 'noun', 'mailpoet'),
     className: 'mailpoet-tab-trash',
   },
@@ -68,14 +68,14 @@ export function AutomationListing(): JSX.Element {
     [location],
   );
 
-  const workflows = useSelect((select) => select(storeName).getWorkflows());
-  const { loadWorkflows } = useDispatch(storeName);
+  const automations = useSelect((select) => select(storeName).getAutomations());
+  const { loadAutomations } = useDispatch(storeName);
 
   const status = pageSearch.get('status');
 
   useEffect(() => {
-    loadWorkflows();
-  }, [loadWorkflows]);
+    loadAutomations();
+  }, [loadAutomations]);
 
   // focus tab button on status change (needed due to the force re-mount below)
   useLayoutEffect(() => {
@@ -103,24 +103,24 @@ export function AutomationListing(): JSX.Element {
     [pageSearch, history],
   );
 
-  const groupedWorkflows = useMemo<Record<string, Workflow[]>>(() => {
+  const groupedAutomations = useMemo<Record<string, Automation[]>>(() => {
     const grouped = { all: [] };
-    (workflows ?? []).forEach((workflow) => {
-      if (!grouped[workflow.status]) {
-        grouped[workflow.status] = [];
+    (automations ?? []).forEach((automation) => {
+      if (!grouped[automation.status]) {
+        grouped[automation.status] = [];
       }
-      grouped[workflow.status].push(workflow);
-      if (workflow.status !== WorkflowStatus.TRASH) {
-        grouped.all.push(workflow);
+      grouped[automation.status].push(automation);
+      if (automation.status !== AutomationStatus.TRASH) {
+        grouped.all.push(automation);
       }
     });
     return grouped;
-  }, [workflows]);
+  }, [automations]);
 
   const tabs = useMemo(
     () =>
       tabConfig.map((tab) => {
-        const count = (groupedWorkflows[tab.name] ?? []).length;
+        const count = (groupedAutomations[tab.name] ?? []).length;
         return {
           name: tab.name,
           title: (
@@ -132,38 +132,39 @@ export function AutomationListing(): JSX.Element {
           className: tab.className,
         };
       }),
-    [groupedWorkflows],
+    [groupedAutomations],
   );
 
   const renderTabs = useCallback(
     (tab) => {
-      const filteredWorkflows: Workflow[] = groupedWorkflows[tab.name] ?? [];
+      const filteredAutomations: Automation[] =
+        groupedAutomations[tab.name] ?? [];
       const rowsPerPage = parseInt(pageSearch.get('per_page') ?? '25', 10);
       const currentPage = parseInt(pageSearch.get('paged') ?? '1', 10);
       const start = (currentPage - 1) * rowsPerPage;
-      const rows = filteredWorkflows
-        .map((workflow) => getRow(workflow))
+      const rows = filteredAutomations
+        .map((automation) => getRow(automation))
         .slice(start, start + rowsPerPage);
 
       return (
         <TableCard
           className="mailpoet-automation-listing"
           title=""
-          isLoading={!workflows}
+          isLoading={!automations}
           headers={tableHeaders}
           rows={rows}
-          rowKey={(_, i) => filteredWorkflows[i].id}
+          rowKey={(_, i) => filteredAutomations[i].id}
           rowsPerPage={rowsPerPage}
           onQueryChange={(key) => (value) => {
             updateUrlSearchString({ [key]: value });
           }}
-          totalRows={filteredWorkflows.length}
+          totalRows={filteredAutomations.length}
           query={Object.fromEntries(pageSearch)}
           showMenu={false}
         />
       );
     },
-    [workflows, groupedWorkflows, pageSearch, updateUrlSearchString],
+    [automations, groupedAutomations, pageSearch, updateUrlSearchString],
   );
 
   return (

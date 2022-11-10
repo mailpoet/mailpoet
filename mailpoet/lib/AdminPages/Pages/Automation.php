@@ -3,10 +3,10 @@
 namespace MailPoet\AdminPages\Pages;
 
 use MailPoet\AdminPages\PageRenderer;
-use MailPoet\Automation\Engine\Data\WorkflowTemplate;
+use MailPoet\Automation\Engine\Data\AutomationTemplate;
 use MailPoet\Automation\Engine\Migrations\Migrator;
-use MailPoet\Automation\Engine\Storage\WorkflowStorage;
-use MailPoet\Automation\Engine\Storage\WorkflowTemplateStorage;
+use MailPoet\Automation\Engine\Storage\AutomationStorage;
+use MailPoet\Automation\Engine\Storage\AutomationTemplateStorage;
 use MailPoet\Form\AssetsController;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -23,10 +23,10 @@ class Automation {
   /** @var WPFunctions */
   private $wp;
 
-  /** @var WorkflowStorage */
-  private $workflowStorage;
+  /** @var AutomationStorage */
+  private $automationStorage;
 
-  /** @var WorkflowTemplateStorage  */
+  /** @var AutomationTemplateStorage  */
   private $templateStorage;
 
   public function __construct(
@@ -34,14 +34,14 @@ class Automation {
     Migrator $migrator,
     PageRenderer $pageRenderer,
     WPFunctions $wp,
-    WorkflowStorage $workflowStorage,
-    WorkflowTemplateStorage $templateStorage
+    AutomationStorage $automationStorage,
+    AutomationTemplateStorage $templateStorage
   ) {
     $this->assetsController = $assetsController;
     $this->migrator = $migrator;
     $this->pageRenderer = $pageRenderer;
     $this->wp = $wp;
-    $this->workflowStorage = $workflowStorage;
+    $this->automationStorage = $automationStorage;
     $this->templateStorage = $templateStorage;
   }
 
@@ -56,9 +56,9 @@ class Automation {
         'root' => rtrim($this->wp->escUrlRaw($this->wp->restUrl()), '/'),
         'nonce' => $this->wp->wpCreateNonce('wp_rest'),
       ],
-      'workflowCount' => $this->workflowStorage->getWorkflowCount(),
+      'automationCount' => $this->automationStorage->getAutomationCount(),
       'templates' => array_map(
-        function(WorkflowTemplate $template): array {
+        function(AutomationTemplate $template): array {
           return $template->toArray();
         },
         $this->templateStorage->getTemplates()

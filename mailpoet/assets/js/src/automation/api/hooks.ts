@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { api } from '../config';
 
-const API_URL = `${api.root}/mailpoet/v1/automation`;
+const API_URL = `${api.root}/mailpoet/v1`;
 
 export const request = (
   path: string,

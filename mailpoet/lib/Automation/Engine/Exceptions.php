@@ -12,27 +12,27 @@ class Exceptions {
   private const MIGRATION_FAILED = 'mailpoet_automation_migration_failed';
   private const DATABASE_ERROR = 'mailpoet_automation_database_error';
   private const JSON_NOT_OBJECT = 'mailpoet_automation_json_not_object';
-  private const WORKFLOW_NOT_FOUND = 'mailpoet_automation_workflow_not_found';
-  private const WORKFLOW_VERSION_NOT_FOUND = 'mailpoet_automation_workflow_version_not_found';
-  private const WORKFLOW_NOT_ACTIVE = 'mailpoet_automation_workflow_not_active';
-  private const WORKFLOW_RUN_NOT_FOUND = 'mailpoet_automation_workflow_run_not_found';
-  private const WORKFLOW_STEP_NOT_FOUND = 'mailpoet_automation_workflow_step_not_found';
-  private const WORKFLOW_TRIGGER_NOT_FOUND = 'mailpoet_automation_workflow_trigger_not_found';
-  private const WORKFLOW_RUN_NOT_RUNNING = 'mailpoet_automation_workflow_run_not_running';
+  private const AUTOMATION_NOT_FOUND = 'mailpoet_automation_automation_not_found';
+  private const AUTOMATION_VERSION_NOT_FOUND = 'mailpoet_automation_automation_version_not_found';
+  private const AUTOMATION_NOT_ACTIVE = 'mailpoet_automation_automation_not_active';
+  private const AUTOMATION_RUN_NOT_FOUND = 'mailpoet_automation_automation_run_not_found';
+  private const AUTOMATION_STEP_NOT_FOUND = 'mailpoet_automation_automation_step_not_found';
+  private const AUTOMATION_TRIGGER_NOT_FOUND = 'mailpoet_automation_automation_trigger_not_found';
+  private const AUTOMATION_RUN_NOT_RUNNING = 'mailpoet_automation_automation_run_not_running';
   private const SUBJECT_NOT_FOUND = 'mailpoet_automation_subject_not_found';
-  private const SUBJECT_LOAD_FAILED = 'mailpoet_automation_workflow_subject_load_failed';
+  private const SUBJECT_LOAD_FAILED = 'mailpoet_automation_automation_subject_load_failed';
   private const SUBJECT_DATA_NOT_FOUND = 'mailpoet_automation_subject_data_not_found';
   private const MULTIPLE_SUBJECTS_FOUND = 'mailpoet_automation_multiple_subjects_found';
   private const PAYLOAD_NOT_FOUND = 'mailpoet_automation_payload_not_found';
   private const MULTIPLE_PAYLOADS_FOUND = 'mailpoet_automation_multiple_payloads_found';
-  private const WORKFLOW_STRUCTURE_MODIFICATION_NOT_SUPPORTED = 'mailpoet_automation_workflow_structure_modification_not_supported';
-  private const WORKFLOW_STRUCTURE_NOT_VALID = 'mailpoet_automation_workflow_structure_not_valid';
-  private const WORKFLOW_STEP_MODIFIED_WHEN_UNKNOWN = 'mailpoet_automation_workflow_step_modified_when_unknown';
-  private const WORKFLOW_NOT_VALID = 'mailpoet_automation_workflow_not_valid';
+  private const AUTOMATION_STRUCTURE_MODIFICATION_NOT_SUPPORTED = 'mailpoet_automation_automation_structure_modification_not_supported';
+  private const AUTOMATION_STRUCTURE_NOT_VALID = 'mailpoet_automation_automation_structure_not_valid';
+  private const AUTOMATION_STEP_MODIFIED_WHEN_UNKNOWN = 'mailpoet_automation_automation_step_modified_when_unknown';
+  private const AUTOMATION_NOT_VALID = 'mailpoet_automation_automation_not_valid';
   private const MISSING_REQUIRED_SUBJECTS = 'mailpoet_automation_missing_required_subjects';
-  private const WORKFLOW_NOT_TRASHED = 'mailpoet_automation_workflow_not_trashed';
-  private const WORKFLOW_TEMPLATE_NOT_FOUND = 'mailpoet_automation_workflow_template_not_found';
-  private const WORKFLOW_HAS_ACTIVE_RUNS = 'mailpoet_automation_workflow_has_active_runs';
+  private const AUTOMATION_NOT_TRASHED = 'mailpoet_automation_automation_not_trashed';
+  private const AUTOMATION_TEMPLATE_NOT_FOUND = 'mailpoet_automation_automation_template_not_found';
+  private const AUTOMATION_HAS_ACTIVE_RUNS = 'mailpoet_automation_automation_has_active_runs';
 
   public function __construct() {
     throw new InvalidStateException(
@@ -61,51 +61,51 @@ class Exceptions {
       ->withMessage(sprintf(__("JSON string '%s' doesn't encode an object.", 'mailpoet'), $json));
   }
 
-  public static function workflowNotFound(int $id): NotFoundException {
+  public static function automationNotFound(int $id): NotFoundException {
     return NotFoundException::create()
-      ->withErrorCode(self::WORKFLOW_NOT_FOUND)
+      ->withErrorCode(self::AUTOMATION_NOT_FOUND)
       // translators: %d is the ID of the automation.
       ->withMessage(sprintf(__("Automation with ID '%d' not found.", 'mailpoet'), $id));
   }
 
-  public static function workflowVersionNotFound(int $workflow, int $version): NotFoundException {
+  public static function automationVersionNotFound(int $automation, int $version): NotFoundException {
     return NotFoundException::create()
-      ->withErrorCode(self::WORKFLOW_VERSION_NOT_FOUND)
+      ->withErrorCode(self::AUTOMATION_VERSION_NOT_FOUND)
       // translators: %1$s is the ID of the automation, %2$s the version.
-      ->withMessage(sprintf(__('Automation with ID "%1$s" in version "%2$s" not found.', 'mailpoet'), $workflow, $version));
+      ->withMessage(sprintf(__('Automation with ID "%1$s" in version "%2$s" not found.', 'mailpoet'), $automation, $version));
   }
 
-  public static function workflowNotActive(int $workflow): InvalidStateException {
+  public static function automationNotActive(int $automation): InvalidStateException {
     return InvalidStateException::create()
-      ->withErrorCode(self::WORKFLOW_NOT_ACTIVE)
+      ->withErrorCode(self::AUTOMATION_NOT_ACTIVE)
       // translators: %1$s is the ID of the automation.
-      ->withMessage(sprintf(__('Automation with ID "%1$s" in no longer active.', 'mailpoet'), $workflow));
+      ->withMessage(sprintf(__('Automation with ID "%1$s" in no longer active.', 'mailpoet'), $automation));
   }
 
-  public static function workflowRunNotFound(int $id): NotFoundException {
+  public static function automationRunNotFound(int $id): NotFoundException {
     return NotFoundException::create()
-      ->withErrorCode(self::WORKFLOW_RUN_NOT_FOUND)
+      ->withErrorCode(self::AUTOMATION_RUN_NOT_FOUND)
       // translators: %d is the ID of the automation run.
       ->withMessage(sprintf(__("Automation run with ID '%d' not found.", 'mailpoet'), $id));
   }
 
-  public static function workflowStepNotFound(string $key): NotFoundException {
+  public static function automationStepNotFound(string $key): NotFoundException {
     return NotFoundException::create()
-      ->withErrorCode(self::WORKFLOW_STEP_NOT_FOUND)
+      ->withErrorCode(self::AUTOMATION_STEP_NOT_FOUND)
       // translators: %s is the key of the automation step.
       ->withMessage(sprintf(__("Automation step with key '%s' not found.", 'mailpoet'), $key));
   }
 
-  public static function workflowTriggerNotFound(int $workflowId, string $key): NotFoundException {
+  public static function automationTriggerNotFound(int $automationId, string $key): NotFoundException {
     return NotFoundException::create()
-      ->withErrorCode(self::WORKFLOW_TRIGGER_NOT_FOUND)
+      ->withErrorCode(self::AUTOMATION_TRIGGER_NOT_FOUND)
       // translators: %1$s is the key, %2$d is the automation ID.
-      ->withMessage(sprintf(__('Automation trigger with key "%1$s" not found in automation ID "%2$d".', 'mailpoet'), $key, $workflowId));
+      ->withMessage(sprintf(__('Automation trigger with key "%1$s" not found in automation ID "%2$d".', 'mailpoet'), $key, $automationId));
   }
 
-  public static function workflowRunNotRunning(int $id, string $status): InvalidStateException {
+  public static function automationRunNotRunning(int $id, string $status): InvalidStateException {
     return InvalidStateException::create()
-      ->withErrorCode(self::WORKFLOW_RUN_NOT_RUNNING)
+      ->withErrorCode(self::AUTOMATION_RUN_NOT_RUNNING)
       // translators: %1$d is the ID of the automation run, %2$s its current status.
       ->withMessage(sprintf(__('Automation run with ID "%1$d" is not running. Status: %2$s', 'mailpoet'), $id, $status));
   }
@@ -131,59 +131,59 @@ class Exceptions {
       ->withMessage(sprintf(__('Subject with key "%1$s" and args "%2$s" failed to load.', 'mailpoet'), $key, Json::encode($args)));
   }
 
-  public static function subjectDataNotFound(string $key, int $workflowRunId): NotFoundException {
+  public static function subjectDataNotFound(string $key, int $automationRunId): NotFoundException {
     return NotFoundException::create()
       ->withErrorCode(self::SUBJECT_DATA_NOT_FOUND)
       // translators: %1$s is the key of the subject, %2$d is automation run ID.
       ->withMessage(
-        sprintf(__("Subject data for subject with key '%1\$s' not found for automation run with ID '%2\$d'.", 'mailpoet'), $key, $workflowRunId)
+        sprintf(__("Subject data for subject with key '%1\$s' not found for automation run with ID '%2\$d'.", 'mailpoet'), $key, $automationRunId)
       );
   }
 
-  public static function multipleSubjectsFound(string $key, int $workflowRunId): InvalidStateException {
+  public static function multipleSubjectsFound(string $key, int $automationRunId): InvalidStateException {
     return InvalidStateException::create()
       ->withErrorCode(self::MULTIPLE_SUBJECTS_FOUND)
       // translators: %1$s is the key of the subject, %2$d is automation run ID.
       ->withMessage(
-        sprintf(__("Multiple subjects with key '%1\$s' found for automation run with ID '%2\$d', only one expected.", 'mailpoet'), $key, $workflowRunId)
+        sprintf(__("Multiple subjects with key '%1\$s' found for automation run with ID '%2\$d', only one expected.", 'mailpoet'), $key, $automationRunId)
       );
   }
 
-  public static function payloadNotFound(string $class, int $workflowRunId): NotFoundException {
+  public static function payloadNotFound(string $class, int $automationRunId): NotFoundException {
     return NotFoundException::create()
       ->withErrorCode(self::PAYLOAD_NOT_FOUND)
       // translators: %1$s is the class of the payload, %2$d is automation run ID.
       ->withMessage(
-        sprintf(__("Payload of class '%1\$s' not found for automation run with ID '%2\$d'.", 'mailpoet'), $class, $workflowRunId)
+        sprintf(__("Payload of class '%1\$s' not found for automation run with ID '%2\$d'.", 'mailpoet'), $class, $automationRunId)
       );
   }
 
-  public static function multiplePayloadsFound(string $class, int $workflowRunId): NotFoundException {
+  public static function multiplePayloadsFound(string $class, int $automationRunId): NotFoundException {
     return NotFoundException::create()
       ->withErrorCode(self::MULTIPLE_PAYLOADS_FOUND)
       // translators: %1$s is the class of the payloads, %2$d is automation run ID.
       ->withMessage(
-        sprintf(__("Multiple payloads of class '%1\$s' found for automation run with ID '%2\$d'.", 'mailpoet'), $class, $workflowRunId)
+        sprintf(__("Multiple payloads of class '%1\$s' found for automation run with ID '%2\$d'.", 'mailpoet'), $class, $automationRunId)
       );
   }
 
-  public static function workflowStructureModificationNotSupported(): UnexpectedValueException {
+  public static function automationStructureModificationNotSupported(): UnexpectedValueException {
     return UnexpectedValueException::create()
-      ->withErrorCode(self::WORKFLOW_STRUCTURE_MODIFICATION_NOT_SUPPORTED)
+      ->withErrorCode(self::AUTOMATION_STRUCTURE_MODIFICATION_NOT_SUPPORTED)
       ->withMessage(__('Automation structure modification not supported.', 'mailpoet'));
   }
 
-  public static function workflowStructureNotValid(string $detail, string $ruleId): UnexpectedValueException {
+  public static function automationStructureNotValid(string $detail, string $ruleId): UnexpectedValueException {
     return UnexpectedValueException::create()
-      ->withErrorCode(self::WORKFLOW_STRUCTURE_NOT_VALID)
+      ->withErrorCode(self::AUTOMATION_STRUCTURE_NOT_VALID)
       // translators: %s is a detailed information
       ->withMessage(sprintf(__("Invalid automation structure: %s", 'mailpoet'), $detail))
       ->withErrors(['rule_id' => $ruleId]);
   }
 
-  public static function workflowStepModifiedWhenUnknown(Step $step): UnexpectedValueException {
+  public static function automationStepModifiedWhenUnknown(Step $step): UnexpectedValueException {
     return UnexpectedValueException::create()
-      ->withErrorCode(self::WORKFLOW_STEP_MODIFIED_WHEN_UNKNOWN)
+      ->withErrorCode(self::AUTOMATION_STEP_MODIFIED_WHEN_UNKNOWN)
       // translators: %1$s is the key of the step, %2$s is the type of the step, %3\$s is its ID.
       ->withMessage(
         sprintf(
@@ -195,9 +195,9 @@ class Exceptions {
       );
   }
 
-  public static function workflowNotValid(string $detail, array $errors): UnexpectedValueException {
+  public static function automationNotValid(string $detail, array $errors): UnexpectedValueException {
     return UnexpectedValueException::create()
-      ->withErrorCode(self::WORKFLOW_NOT_VALID)
+      ->withErrorCode(self::AUTOMATION_NOT_VALID)
       // translators: %s is a detailed information
       ->withMessage(sprintf(__("Automation validation failed: %s", 'mailpoet'), $detail))
       ->withErrors($errors);
@@ -216,16 +216,16 @@ class Exceptions {
       );
   }
 
-  public static function workflowNotTrashed(int $id): UnexpectedValueException {
+  public static function automationNotTrashed(int $id): UnexpectedValueException {
     return UnexpectedValueException::create()
-      ->withErrorCode(self::WORKFLOW_NOT_TRASHED)
+      ->withErrorCode(self::AUTOMATION_NOT_TRASHED)
       // translators: %d is the ID of the automation.
       ->withMessage(sprintf(__("Can't delete automation with ID '%d' because it was not trashed.", 'mailpoet'), $id));
   }
 
-  public static function workflowTemplateNotFound(string $id): NotFoundException {
+  public static function automationTemplateNotFound(string $id): NotFoundException {
     return NotFoundException::create()
-      ->withErrorCode(self::WORKFLOW_TEMPLATE_NOT_FOUND)
+      ->withErrorCode(self::AUTOMATION_TEMPLATE_NOT_FOUND)
       // translators: %d is the ID of the automation template.
       ->withMessage(sprintf(__("Automation template with ID '%d' not found.", 'mailpoet'), $id));
   }
@@ -233,10 +233,10 @@ class Exceptions {
   /**
    * This is a temporary block, see MAILPOET-4744
    */
-  public static function workflowHasActiveRuns(int $id): InvalidStateException {
+  public static function automationHasActiveRuns(int $id): InvalidStateException {
     return InvalidStateException::create()
-      ->withErrorCode(self::WORKFLOW_HAS_ACTIVE_RUNS)
-      // translators: %d is the ID of the workflow.
-      ->withMessage(sprintf(__("Can not update workflow with ID '%d' because users are currently active.", 'mailpoet'), $id));
+      ->withErrorCode(self::AUTOMATION_HAS_ACTIVE_RUNS)
+      // translators: %d is the ID of the automation.
+      ->withMessage(sprintf(__("Can not update automation with ID '%d' because users are currently active.", 'mailpoet'), $id));
   }
 }

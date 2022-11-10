@@ -6,9 +6,7 @@ use MailPoet\API\REST\API as MailPoetApi;
 use MailPoet\Automation\Engine\Hooks;
 use MailPoet\Automation\Engine\WordPress;
 
-class API {
-  private const PREFIX = 'automation/';
-
+class API extends MailPoetApi {
   /** @var MailPoetApi */
   private $api;
 
@@ -30,22 +28,22 @@ class API {
   }
 
   public function registerGetRoute(string $route, string $endpoint): void {
-    $this->api->registerGetRoute(self::PREFIX . $route, $endpoint);
+    $this->api->registerGetRoute($route, $endpoint);
   }
 
   public function registerPostRoute(string $route, string $endpoint): void {
-    $this->api->registerPostRoute(self::PREFIX . $route, $endpoint);
+    $this->api->registerPostRoute($route, $endpoint);
   }
 
   public function registerPutRoute(string $route, string $endpoint): void {
-    $this->api->registerPutRoute(self::PREFIX . $route, $endpoint);
+    $this->api->registerPutRoute($route, $endpoint);
   }
 
   public function registerPatchRoute(string $route, string $endpoint): void {
-    $this->api->registerPatchRoute(self::PREFIX . $route, $endpoint);
+    $this->api->registerPatchRoute($route, $endpoint);
   }
 
   public function registerDeleteRoute(string $route, string $endpoint): void {
-    $this->api->registerDeleteRoute(self::PREFIX . $route, $endpoint);
+    $this->api->registerDeleteRoute($route, $endpoint);
   }
 }

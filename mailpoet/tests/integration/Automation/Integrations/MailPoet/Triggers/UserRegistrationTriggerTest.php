@@ -6,8 +6,8 @@ use MailPoet\Automation\Engine\Data\Step;
 use MailPoet\Automation\Engine\Data\StepRunArgs;
 use MailPoet\Automation\Engine\Data\Subject;
 use MailPoet\Automation\Engine\Data\SubjectEntry;
-use MailPoet\Automation\Engine\Data\Workflow;
-use MailPoet\Automation\Engine\Data\WorkflowRun;
+use MailPoet\Automation\Engine\Data\Automation;
+use MailPoet\Automation\Engine\Data\AutomationRun;
 use MailPoet\Automation\Engine\Hooks;
 use MailPoet\Automation\Integrations\MailPoet\Subjects\SegmentSubject;
 use MailPoet\Automation\Integrations\MailPoet\Subjects\SubscriberSubject;
@@ -95,9 +95,9 @@ class UserRegistrationTriggerTest extends \MailPoetTest {
   }
 
   /**
-   * @dataProvider dataForTestTriggeredByWorkflowRun
+   * @dataProvider dataForTestTriggeredByAutomationRun
    */
-  public function testTriggeredByWorkflowRun(array $roleSetting, bool $expectation) {
+  public function testTriggeredByAutomationRun(array $roleSetting, bool $expectation) {
     $testee = $this->diContainer->get(UserRegistrationTrigger::class);
 
     $subscriber = $this->subscribersRepository->findOneBy(['email' => self::USER_EMAIL]);
@@ -107,8 +107,8 @@ class UserRegistrationTriggerTest extends \MailPoetTest {
     $this->assertInstanceOf(SegmentEntity::class, $segment);
 
     $stepRunArgs = new StepRunArgs(
-      $this->make(Workflow::class),
-      $this->make(WorkflowRun::class),
+      $this->make(Automation::class),
+      $this->make(AutomationRun::class),
       new Step('test-id', 'trigger', 'test:trigger', ['roles' => $roleSetting], []),
       [
         new SubjectEntry(
@@ -124,7 +124,7 @@ class UserRegistrationTriggerTest extends \MailPoetTest {
     $this->assertSame($expectation, $testee->isTriggeredBy($stepRunArgs));
   }
 
-  public function dataForTestTriggeredByWorkflowRun() : array {
+  public function dataForTestTriggeredByAutomationRun() : array {
     return [
       'any_role' => [
         [], // any list

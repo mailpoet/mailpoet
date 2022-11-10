@@ -7,9 +7,9 @@ import { store as preferencesStore } from '@wordpress/preferences';
 import { addQueryArgs } from '@wordpress/url';
 import { storeName } from './constants';
 import { Feature, State } from './types';
-import { LISTING_NOTICE_PARAMETERS } from '../../listing/workflow-listing-notices';
+import { LISTING_NOTICE_PARAMETERS } from '../../listing/automation-listing-notices';
 import { MailPoet } from '../../../mailpoet';
-import { WorkflowStatus } from '../../listing/workflow';
+import { AutomationStatus } from '../../listing/automation';
 
 const trackErrors = (errors) => {
   if (!errors?.steps) {
@@ -24,7 +24,7 @@ const trackErrors = (errors) => {
     return fields;
   });
 
-  MailPoet.trackEvent('Automations > Workflow validation error', {
+  MailPoet.trackEvent('Automations > Automation validation error', {
     errors: payload,
   });
 };
@@ -74,23 +74,23 @@ export function selectStep(value) {
   } as const;
 }
 
-export function setWorkflowName(name) {
-  const workflow = select(storeName).getWorkflowData();
+export function setAutomationName(name) {
+  const automation = select(storeName).getAutomationData();
   return {
-    type: 'UPDATE_WORKFLOW',
-    workflow: {
-      ...workflow,
+    type: 'UPDATE_AUTOMATION',
+    automation: {
+      ...automation,
       name,
     },
   } as const;
 }
 
 export function* save() {
-  const workflow = select(storeName).getWorkflowData();
+  const automation = select(storeName).getAutomationData();
   const data = yield apiFetch({
-    path: `/workflows/${workflow.id}`,
+    path: `/automations/${automation.id}`,
     method: 'PUT',
-    data: { ...workflow },
+    data: { ...automation },
   });
 
   const { createNotice } = dispatch(noticesStore as StoreDescriptor);
@@ -106,23 +106,23 @@ export function* save() {
 
   return {
     type: 'SAVE',
-    workflow: data?.data ?? workflow,
+    automation: data?.data ?? automation,
   } as const;
 }
 
 export function* activate() {
-  const workflow = select(storeName).getWorkflowData();
+  const automation = select(storeName).getAutomationData();
   const data = yield apiFetch({
-    path: `/workflows/${workflow.id}`,
+    path: `/automations/${automation.id}`,
     method: 'PUT',
     data: {
-      ...workflow,
-      status: WorkflowStatus.ACTIVE,
+      ...automation,
+      status: AutomationStatus.ACTIVE,
     },
   });
 
   const { createNotice } = dispatch(noticesStore as StoreDescriptor);
-  if (data?.data.status === WorkflowStatus.ACTIVE) {
+  if (data?.data.status === AutomationStatus.ACTIVE) {
     void createNotice(
       'success',
       __('Well done! Automation is now activated!', 'mailpoet'),
@@ -130,30 +130,33 @@ export function* activate() {
         type: 'snackbar',
       },
     );
-    MailPoet.trackEvent('Automations > Workflow activated');
+    MailPoet.trackEvent('Automations > Automation activated');
   }
 
   return {
     type: 'ACTIVATE',
-    workflow: data?.data ?? workflow,
+    automation: data?.data ?? automation,
   } as const;
 }
 
-export function* deactivate(deactivateWorkflowRuns = true) {
-  const workflow = select(storeName).getWorkflowData();
+export function* deactivate(deactivateAutomationRuns = true) {
+  const automation = select(storeName).getAutomationData();
   const data = yield apiFetch({
-    path: `/workflows/${workflow.id}`,
+    path: `/automations/${automation.id}`,
     method: 'PUT',
     data: {
-      ...workflow,
-      status: deactivateWorkflowRuns
-        ? WorkflowStatus.DRAFT
-        : WorkflowStatus.DEACTIVATING,
+      ...automation,
+      status: deactivateAutomationRuns
+        ? AutomationStatus.DRAFT
+        : AutomationStatus.DEACTIVATING,
     },
   });
 
   const { createNotice } = dispatch(noticesStore as StoreDescriptor);
-  if (deactivateWorkflowRuns && data?.data.status === WorkflowStatus.DRAFT) {
+  if (
+    deactivateAutomationRuns &&
+    data?.data.status === AutomationStatus.DRAFT
+  ) {
     void createNotice(
       'success',
       __('Automation is now deactivated!', 'mailpoet'),
@@ -162,13 +165,13 @@ export function* deactivate(deactivateWorkflowRuns = true) {
       },
     );
 
-    MailPoet.trackEvent('Automations > Workflow deactivated', {
+    MailPoet.trackEvent('Automations > Automation deactivated', {
       type: 'immediate',
     });
   }
   if (
-    !deactivateWorkflowRuns &&
-    data?.data.status === WorkflowStatus.DEACTIVATING
+    !deactivateAutomationRuns &&
+    data?.data.status === AutomationStatus.DEACTIVATING
   ) {
     void createNotice(
       'success',
@@ -180,39 +183,39 @@ export function* deactivate(deactivateWorkflowRuns = true) {
         type: 'snackbar',
       },
     );
-    MailPoet.trackEvent('Automations > Workflow deactivated', {
+    MailPoet.trackEvent('Automations > Automation deactivated', {
       type: 'continuous',
     });
   }
 
   return {
     type: 'DEACTIVATE',
-    workflow: data?.data ?? workflow,
+    automation: data?.data ?? automation,
   } as const;
 }
 
 export function* trash(onTrashed: () => void = undefined) {
-  const workflow = select(storeName).getWorkflowData();
+  const automation = select(storeName).getAutomationData();
   const data = yield apiFetch({
-    path: `/workflows/${workflow.id}`,
+    path: `/automations/${automation.id}`,
     method: 'PUT',
     data: {
-      ...workflow,
-      status: WorkflowStatus.TRASH,
+      ...automation,
+      status: AutomationStatus.TRASH,
     },
   });
 
   onTrashed?.();
 
-  if (data?.status === WorkflowStatus.TRASH) {
+  if (data?.status === AutomationStatus.TRASH) {
     window.location.href = addQueryArgs(MailPoet.urls.automationListing, {
-      [LISTING_NOTICE_PARAMETERS.workflowDeleted]: workflow.id,
+      [LISTING_NOTICE_PARAMETERS.automationDeleted]: automation.id,
     });
   }
 
   return {
     type: 'TRASH',
-    workflow: data?.data ?? workflow,
+    automation: data?.data ?? automation,
   } as const;
 }
 

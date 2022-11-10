@@ -3,7 +3,7 @@ import { chartBar } from '@wordpress/icons';
 import { Hooks } from 'wp-js-hooks';
 import { MoreControlType, StepMoreControlsType } from '../../../types/filters';
 import { StepType } from '../../../editor/store';
-import { Step } from '../../../editor/components/workflow/types';
+import { Step } from '../../../editor/components/automation/types';
 
 const emailStatisticsControl = (step: Step): MoreControlType => {
   const hasEmail = step.args?.email_id > 0;
@@ -28,7 +28,7 @@ const emailStatisticsControl = (step: Step): MoreControlType => {
 
 export function registerStepControls() {
   Hooks.addFilter(
-    'mailpoet.automation.workflow.step.more-controls',
+    'mailpoet.automation.automation.step.more-controls',
     'mailpoet',
     (
       controls: StepMoreControlsType,

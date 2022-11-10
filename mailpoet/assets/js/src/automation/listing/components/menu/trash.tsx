@@ -4,13 +4,13 @@ import { useDispatch } from '@wordpress/data';
 import { __, _x, sprintf } from '@wordpress/i18n';
 import { Item } from './item';
 import { storeName } from '../../store';
-import { Workflow, WorkflowStatus } from '../../workflow';
+import { Automation, AutomationStatus } from '../../automation';
 
-export const useTrashButton = (workflow: Workflow): Item | undefined => {
+export const useTrashButton = (automation: Automation): Item | undefined => {
   const [showDialog, setShowDialog] = useState(false);
-  const { trashWorkflow } = useDispatch(storeName);
+  const { trashAutomation } = useDispatch(storeName);
 
-  if (workflow.status === WorkflowStatus.TRASH) {
+  if (automation.status === AutomationStatus.TRASH) {
     return undefined;
   }
 
@@ -27,7 +27,7 @@ export const useTrashButton = (workflow: Workflow): Item | undefined => {
         title={__('Trash automation', 'mailpoet')}
         confirmButtonText={__('Yes, move to trash', 'mailpoet')}
         __experimentalHideHeader={false}
-        onConfirm={() => trashWorkflow(workflow)}
+        onConfirm={() => trashAutomation(automation)}
         onCancel={() => setShowDialog(false)}
       >
         {sprintf(
@@ -36,7 +36,7 @@ export const useTrashButton = (workflow: Workflow): Item | undefined => {
             'Are you sure you want to move the automation "%s" to the Trash?',
             'mailpoet',
           ),
-          workflow.name,
+          automation.name,
         )}
       </ConfirmDialog>
     ),

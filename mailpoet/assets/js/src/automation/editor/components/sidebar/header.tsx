@@ -1,7 +1,7 @@
 import { Button } from '@wordpress/components';
 import { useDispatch } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
-import { stepSidebarKey, storeName, workflowSidebarKey } from '../../store';
+import { stepSidebarKey, storeName, automationSidebarKey } from '../../store';
 
 // See:
 //   https://github.com/WordPress/gutenberg/blob/9601a33e30ba41bac98579c8d822af63dd961488/packages/edit-post/src/components/sidebar/settings-header/index.js
@@ -13,11 +13,11 @@ type Props = {
 
 export function Header({ sidebarKey }: Props): JSX.Element {
   const { openSidebar } = useDispatch(storeName);
-  const openWorkflowSettings = () => openSidebar(workflowSidebarKey);
+  const openAutomationSettings = () => openSidebar(automationSidebarKey);
   const openStepSettings = () => openSidebar(stepSidebarKey);
 
-  const [workflowAriaLabel, workflowActiveClass] =
-    sidebarKey === workflowSidebarKey
+  const [automationAriaLabel, automationActiveClass] =
+    sidebarKey === automationSidebarKey
       ? [__('Automation (selected)', 'mailpoet'), 'is-active']
       : [__('Automation', 'mailpoet'), ''];
 
@@ -30,9 +30,9 @@ export function Header({ sidebarKey }: Props): JSX.Element {
     <ul>
       <li>
         <Button
-          onClick={openWorkflowSettings}
-          className={`edit-site-sidebar__panel-tab ${workflowActiveClass}`}
-          aria-label={workflowAriaLabel}
+          onClick={openAutomationSettings}
+          className={`edit-site-sidebar__panel-tab ${automationActiveClass}`}
+          aria-label={automationAriaLabel}
           data-label={__('Automation', 'mailpoet')}
         >
           {__('Automation', 'mailpoet')}

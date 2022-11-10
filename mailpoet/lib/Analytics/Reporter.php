@@ -2,9 +2,9 @@
 
 namespace MailPoet\Analytics;
 
+use MailPoet\Automation\Engine\Data\Automation;
 use MailPoet\Automation\Engine\Data\Step;
-use MailPoet\Automation\Engine\Data\Workflow;
-use MailPoet\Automation\Engine\Storage\WorkflowStorage;
+use MailPoet\Automation\Engine\Storage\AutomationStorage;
 use MailPoet\Config\ServicesChecker;
 use MailPoet\Cron\CronTrigger;
 use MailPoet\Entities\DynamicSegmentFilterData;
@@ -77,8 +77,8 @@ class Reporter {
   /** @var FeaturesController  */
   private $featuresController;
 
-  /** @var WorkflowStorage  */
-  private $workflowStorage;
+  /** @var AutomationStorage  */
+  private $automationStorage;
 
   public function __construct(
     NewslettersRepository $newslettersRepository,
@@ -93,7 +93,7 @@ class Reporter {
     TrackingConfig $trackingConfig,
     SubscriberListingRepository $subscriberListingRepository,
     FeaturesController $featuresController,
-    WorkflowStorage $workflowStorage
+    AutomationStorage $automationStorage
   ) {
     $this->newslettersRepository = $newslettersRepository;
     $this->segmentsRepository = $segmentsRepository;
@@ -107,7 +107,7 @@ class Reporter {
     $this->trackingConfig = $trackingConfig;
     $this->subscriberListingRepository = $subscriberListingRepository;
     $this->featuresController = $featuresController;
-    $this->workflowStorage = $workflowStorage;
+    $this->automationStorage = $automationStorage;
   }
 
   public function getData() {
@@ -235,39 +235,39 @@ class Reporter {
       return [];
     }
 
-    $workflows = $this->workflowStorage->getWorkflows();
-    $activeWorkflows = array_filter(
-      $workflows,
-      function(Workflow $workflow): bool {
-        return $workflow->getStatus() === Workflow::STATUS_ACTIVE;
+    $automations = $this->automationStorage->getAutomations();
+    $activeAutomations = array_filter(
+      $automations,
+      function(Automation $automation): bool {
+        return $automation->getStatus() === Automation::STATUS_ACTIVE;
       }
     );
-    $activeWorkflowCount = count($activeWorkflows);
-    $draftWorkflows = array_filter(
-      $workflows,
-      function(Workflow $workflow): bool {
-        return $workflow->getStatus() === Workflow::STATUS_DRAFT;
+    $activeAutomationCount = count($activeAutomations);
+    $draftAutomations = array_filter(
+      $automations,
+      function(Automation $automation): bool {
+        return $automation->getStatus() === Automation::STATUS_DRAFT;
       }
     );
-    $workflowsWithWordPressUserSubscribesTrigger = array_filter(
-      $activeWorkflows,
-      function(Workflow $workflow): bool {
-        return $workflow->getTrigger('mailpoet:wp-user-registered') !== null;
+    $automationsWithWordPressUserSubscribesTrigger = array_filter(
+      $activeAutomations,
+      function(Automation $automation): bool {
+        return $automation->getTrigger('mailpoet:wp-user-registered') !== null;
       }
     );
-    $workflowsWithSomeoneSubscribesTrigger = array_filter(
-      $activeWorkflows,
-      function(Workflow $workflow): bool {
-        return $workflow->getTrigger('mailpoet:someone-subscribes') !== null;
+    $automationsWithSomeoneSubscribesTrigger = array_filter(
+      $activeAutomations,
+      function(Automation $automation): bool {
+        return $automation->getTrigger('mailpoet:someone-subscribes') !== null;
       }
     );
 
     $totalSteps = 0;
     $minSteps = null;
     $maxSteps = 0;
-    foreach ($activeWorkflows as $workflow) {
+    foreach ($activeAutomations as $automation) {
       $steps = array_filter(
-        $workflow->getSteps(),
+        $automation->getSteps(),
         function(Step $step): bool {
           return $step->getType() === Step::TYPE_ACTION;
         }
@@ -277,16 +277,16 @@ class Reporter {
       $maxSteps = max($maxSteps, $stepCount);
       $totalSteps += $stepCount;
     }
-    $averageSteps = $activeWorkflowCount > 0 ? $totalSteps / $activeWorkflowCount : 0;
+    $averageSteps = $activeAutomationCount > 0 ? $totalSteps / $activeAutomationCount : 0;
 
     return [
-      'Automation > Number of active workflows' => $activeWorkflowCount,
-      'Automation > Number of draft workflows' => count($draftWorkflows),
-      'Automation > Number of "WordPress user registers" active workflows' => count($workflowsWithWordPressUserSubscribesTrigger),
-      'Automation > Number of "Someone subscribes" active workflows ' => count($workflowsWithSomeoneSubscribesTrigger),
-      'Automation > Number of steps in shortest active workflow' => $minSteps,
-      'Automation > Number of steps in longest active workflow' => $maxSteps,
-      'Automation > Average number of steps in active workflows' => $averageSteps,
+      'Automation > Number of active automations' => $activeAutomationCount,
+      'Automation > Number of draft automations' => count($draftAutomations),
+      'Automation > Number of "WordPress user registers" active automations' => count($automationsWithWordPressUserSubscribesTrigger),
+      'Automation > Number of "Someone subscribes" active automations ' => count($automationsWithSomeoneSubscribesTrigger),
+      'Automation > Number of steps in shortest active automation' => $minSteps,
+      'Automation > Number of steps in longest active automation' => $maxSteps,
+      'Automation > Average number of steps in active automations' => $averageSteps,
     ];
   }
 
