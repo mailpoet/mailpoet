@@ -71,7 +71,7 @@ class Store {
         error text NULL,
         PRIMARY KEY (id),
         UNIQUE KEY (name)
-      ) Engine=InnoDB {$collate};
+      ) {$collate};
     ");
   }
 }
