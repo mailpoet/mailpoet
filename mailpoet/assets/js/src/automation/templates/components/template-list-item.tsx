@@ -1,9 +1,9 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
+import apiFetch from '@wordpress/api-fetch';
 import { Button } from '@wordpress/components';
 import { addQueryArgs } from '@wordpress/url';
 import { __ } from '@wordpress/i18n';
 import { AutomationTemplate } from '../config';
-import { useMutation } from '../../api';
 import { MailPoet } from '../../../mailpoet';
 import { Notice } from '../../../notices/notice';
 import {
@@ -15,20 +15,40 @@ type TemplateListItemProps = {
   template: AutomationTemplate;
   heading?: 'h2' | 'h3';
 };
+
+const useCreateFromTemplate = () => {
+  const [state, setState] = useState({
+    data: undefined,
+    loading: false,
+    error: undefined,
+  });
+
+  const create = useCallback(async (slug: string) => {
+    setState((prevState) => ({ ...prevState, loading: true }));
+    try {
+      const data = await apiFetch({
+        path: `/automations/create-from-template`,
+        method: 'POST',
+        data: { slug },
+      });
+      setState((prevState) => ({ ...prevState, data }));
+    } catch (error) {
+      setState((prevState) => ({ ...prevState, error }));
+    } finally {
+      setState((prevState) => ({ ...prevState, loading: false }));
+    }
+  }, []);
+
+  return [create, state] as const;
+};
+
 export function TemplateListItem({
   template,
   heading,
 }: TemplateListItemProps): JSX.Element {
   const [showPremium, setShowPremium] = useState(false);
-  const [createAutomationFromTemplate, { loading, error, data }] = useMutation(
-    'automations/create-from-template',
-    {
-      method: 'POST',
-      body: JSON.stringify({
-        slug: template.slug,
-      }),
-    },
-  );
+  const [createAutomationFromTemplate, { loading, error, data }] =
+    useCreateFromTemplate();
 
   if (!error && data) {
     MailPoet.trackEvent('Automations > Template selected', {
@@ -66,7 +86,7 @@ export function TemplateListItem({
             setShowPremium(true);
             return;
           }
-          void createAutomationFromTemplate();
+          void createAutomationFromTemplate(template.slug);
         }}
       >
         <div className="badge">
