@@ -236,9 +236,7 @@ class ShortcodesTest extends \MailPoetTest {
     $subscriberCount = $subscribersRepository->countBy(
       [
         'status' =>[
-          SubscriberEntity::STATUS_SUBSCRIBED,
-          SubscriberEntity::STATUS_UNCONFIRMED,
-          SubscriberEntity::STATUS_INACTIVE
+          SubscriberEntity::STATUS_SUBSCRIBED
         ]
       ]
     );
