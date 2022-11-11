@@ -65,16 +65,16 @@ class AutomationStorage {
     $versionsTable = esc_sql($this->versionsTable);
 
     $query = !$versionId ? (string)$this->wpdb->prepare("
-      SELECT w.*, v.id AS version_id, v.steps
-      FROM $automationsTable as w, $versionsTable as v
-      WHERE v.automation_id = w.id AND w.id = %d
+      SELECT a.*, v.id AS version_id, v.steps
+      FROM $automationsTable as a, $versionsTable as v
+      WHERE v.automation_id = a.id AND a.id = %d
       ORDER BY v.id DESC
       LIMIT 0,1;",
       $automationId
     ) : (string)$this->wpdb->prepare("
-      SELECT w.*, v.id AS version_id, v.steps
-      FROM $automationsTable as w, $versionsTable as v
-      WHERE v.automation_id = w.id AND v.id = %d",
+      SELECT a.*, v.id AS version_id, v.steps
+      FROM $automationsTable as a, $versionsTable as v
+      WHERE v.automation_id = a.id AND v.id = %d",
       $versionId
     );
     $data = $this->wpdb->get_row($query, ARRAY_A);
@@ -87,16 +87,16 @@ class AutomationStorage {
     $versionsTable = esc_sql($this->versionsTable);
     $query = $status ?
       (string)$this->wpdb->prepare("
-        SELECT w.*, v.id AS version_id, v.steps
-        FROM $automationsTable AS w INNER JOIN $versionsTable as v ON (v.automation_id = w.id)
-        WHERE v.id = (SELECT Max(id) FROM $versionsTable WHERE automation_id = v.automation_id) AND w.status IN (%s)
-        ORDER BY w.id DESC",
+        SELECT a.*, v.id AS version_id, v.steps
+        FROM $automationsTable AS a INNER JOIN $versionsTable as v ON (v.automation_id = a.id)
+        WHERE v.id = (SELECT Max(id) FROM $versionsTable WHERE automation_id = v.automation_id) AND a.status IN (%s)
+        ORDER BY a.id DESC",
         implode(",", $status)
       ) :
-      "SELECT w.*, v.id AS version_id, v.steps
-      FROM $automationsTable AS w INNER JOIN $versionsTable as v ON (v.automation_id = w.id)
+      "SELECT a.*, v.id AS version_id, v.steps
+      FROM $automationsTable AS a INNER JOIN $versionsTable as v ON (v.automation_id = a.id)
       WHERE v.id = (SELECT Max(id) FROM $versionsTable WHERE automation_id = v.automation_id)
-      ORDER BY w.id DESC;";
+      ORDER BY a.id DESC;";
 
     $data = $this->wpdb->get_results($query, ARRAY_A);
     return array_map(function (array $automationData) {
@@ -117,9 +117,9 @@ class AutomationStorage {
     $query = (string)$this->wpdb->prepare(
       "
         SELECT DISTINCT t.trigger_key
-        FROM {$automationsTable} AS w
+        FROM {$automationsTable} AS a
         JOIN $triggersTable as t
-        WHERE w.status = %s AND w.id = t.automation_id
+        WHERE a.status = %s AND a.id = t.automation_id
         ORDER BY trigger_key DESC
       ",
       Automation::STATUS_ACTIVE
@@ -135,11 +135,11 @@ class AutomationStorage {
 
     $query = (string)$this->wpdb->prepare(
       "
-        SELECT w.*, v.id AS version_id, v.steps
-        FROM $automationsTable AS w
-        INNER JOIN $triggersTable as t ON (t.automation_id = w.id)
-        INNER JOIN $versionsTable as v ON (v.automation_id = w.id)
-        WHERE w.status = %s
+        SELECT a.*, v.id AS version_id, v.steps
+        FROM $automationsTable AS a
+        INNER JOIN $triggersTable as t ON (t.automation_id = a.id)
+        INNER JOIN $versionsTable as v ON (v.automation_id = a.id)
+        WHERE a.status = %s
         AND t.trigger_key = %s
         AND v.id = (
           SELECT MAX(id) FROM $versionsTable WHERE automation_id = v.automation_id
