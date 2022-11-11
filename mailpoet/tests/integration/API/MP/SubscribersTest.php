@@ -16,7 +16,6 @@ use MailPoet\Entities\CustomFieldEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
-use MailPoet\Features\FeaturesController;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Newsletter\Scheduler\WelcomeScheduler;
@@ -67,7 +66,6 @@ class SubscribersTest extends \MailPoetTest {
       $this->diContainer->get(SubscriberSaveController::class),
       $this->diContainer->get(SubscribersResponseBuilder::class),
       Stub::makeEmpty(WelcomeScheduler::class),
-      $this->diContainer->get(FeaturesController::class),
       $this->diContainer->get(RequiredCustomFieldValidator::class),
       $this->diContainer->get(SubscriberListingRepository::class),
       $this->diContainer->get(WPFunctions::class)
@@ -201,7 +199,6 @@ class SubscribersTest extends \MailPoetTest {
         'subscribersSegmentRepository' => $this->diContainer->get(SubscriberSegmentRepository::class),
         'subscribersResponseBuilder' => $this->diContainer->get(SubscribersResponseBuilder::class),
         'settings' => SettingsController::getInstance(),
-        'featuresController' => $this->diContainer->get(FeaturesController::class),
       ]
     );
 

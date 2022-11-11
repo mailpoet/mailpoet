@@ -7,17 +7,10 @@ use MailPoet\Automation\Engine\Data\Step;
 use MailPoet\Automation\Engine\Data\Automation;
 use MailPoet\Automation\Engine\Storage\AutomationRunLogStorage;
 use MailPoet\Automation\Engine\Storage\AutomationRunStorage;
-use MailPoet\Automation\Engine\Storage\AutomationStatisticsStorage;
 use MailPoet\Automation\Engine\Storage\AutomationStorage;
 use MailPoet\Automation\Integrations\Core\Actions\DelayAction;
 use MailPoet\Automation\Integrations\MailPoet\Triggers\SomeoneSubscribesTrigger;
 use MailPoet\DI\ContainerWrapper;
-use MailPoet\Entities\NewsletterSegmentEntity;
-use MailPoet\Entities\SegmentEntity;
-use MailPoet\Features\FeaturesController;
-use MailPoet\Models\NewsletterSegment;
-use MailPoet\Segments\SegmentsRepository;
-use MailPoet\Test\DataFactories\Features;
 use MailPoet\Test\DataFactories\Settings;
 use MailPoet\Test\DataFactories\WooCommerceProduct;
 
@@ -42,13 +35,8 @@ class SomeoneSubscribesAutomationTriggeredByCheckoutCest
 
   public function _before(\AcceptanceTester $i) {
     $i->activateWooCommerce();
-    // @ToDo Remove once MVP is released.
-    $features = new Features();
-    $features->withFeatureEnabled(FeaturesController::AUTOMATION);
     $this->container = ContainerWrapper::getInstance();
-
     $this->settingsFactory = new Settings();
-
     $this->settingsFactory->withCronTriggerMethod('Action Scheduler');
     $this->automationStorage = $this->container->get(AutomationStorage::class);
     $this->automationRunStorage = $this->container->get(AutomationRunStorage::class);

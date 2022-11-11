@@ -12,8 +12,6 @@ use MailPoet\Automation\Engine\Storage\AutomationStorage;
 use MailPoet\Automation\Integrations\Core\Actions\DelayAction;
 use MailPoet\Automation\Integrations\MailPoet\Triggers\UserRegistrationTrigger;
 use MailPoet\DI\ContainerWrapper;
-use MailPoet\Features\FeaturesController;
-use MailPoet\Test\DataFactories\Features;
 use MailPoet\Test\DataFactories\Settings;
 
 class UserRegistrationTriggerCest
@@ -34,13 +32,8 @@ class UserRegistrationTriggerCest
   private $automationRunLogStorage;
 
   public function _before(\AcceptanceTester $i) {
-    // @ToDo Remove once MVP is released.
-    $features = new Features();
-    $features->withFeatureEnabled(FeaturesController::AUTOMATION);
     $this->container = ContainerWrapper::getInstance();
-
     $this->settingsFactory = new Settings();
-
     $this->settingsFactory->withCronTriggerMethod('Action Scheduler');
     $this->automationStorage = $this->container->get(AutomationStorage::class);
     $this->automationRunStorage = $this->container->get(AutomationRunStorage::class);

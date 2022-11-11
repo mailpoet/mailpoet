@@ -2,19 +2,7 @@
 
 namespace MailPoet\Test\Acceptance;
 
-use MailPoet\DI\ContainerWrapper;
-use MailPoet\Features\FeaturesController;
-use MailPoet\Test\DataFactories\Features;
-
-class ConfirmLeaveWhenUnsavedChangesCest
-{
-  public function _before() {
-    // @ToDo Remove once MVP is released.
-    $features = new Features();
-    $features->withFeatureEnabled(FeaturesController::AUTOMATION);
-    $container = ContainerWrapper::getInstance();
-  }
-
+class ConfirmLeaveWhenUnsavedChangesCest {
   public function confirmationIsRequiredIfAutomationNotSaved(\AcceptanceTester $i) {
     $i->wantTo('Edit a new automation draft');
     $i->login();

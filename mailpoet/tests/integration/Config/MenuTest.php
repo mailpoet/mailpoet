@@ -8,9 +8,7 @@ use MailPoet\Config\Menu;
 use MailPoet\Config\Router;
 use MailPoet\Config\ServicesChecker;
 use MailPoet\DI\ContainerWrapper;
-use MailPoet\Features\FeaturesController;
 use MailPoet\Form\Util\CustomFonts;
-use MailPoet\Settings\SettingsController;
 use MailPoet\WP\Functions as WPFunctions;
 
 class MenuTest extends \MailPoetTest {
@@ -72,7 +70,6 @@ class MenuTest extends \MailPoetTest {
       new ServicesChecker,
       ContainerWrapper::getInstance(),
       $this->diContainer->get(Router::class),
-      $this->diContainer->get(FeaturesController::class),
       $this->diContainer->get(CustomFonts::class)
     );
   }

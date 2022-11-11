@@ -2,20 +2,10 @@
 
 namespace MailPoet\Test\Acceptance;
 
-use Facebook\WebDriver\WebDriverKeys;
-use MailPoet\DI\ContainerWrapper;
-use MailPoet\Features\FeaturesController;
-use MailPoet\Test\DataFactories\Features;
 use MailPoet\Test\DataFactories\Settings;
 
-class CreateEmailAutomationAndWalkThroughCest
-{
+class CreateEmailAutomationAndWalkThroughCest {
   public function _before() {
-    // @ToDo Remove once MVP is released.
-    $features = new Features();
-    $features->withFeatureEnabled(FeaturesController::AUTOMATION);
-    $container = ContainerWrapper::getInstance();
-
     $settings = new Settings();
     $settings->withCronTriggerMethod('Action Scheduler');
   }

@@ -9,12 +9,8 @@ use MailPoet\API\JSON\v1\Setup;
 use MailPoet\Config\Activator;
 use MailPoet\Config\Populator;
 use MailPoet\Cron\ActionScheduler\ActionScheduler;
-use MailPoet\Form\FormsRepository;
-use MailPoet\Features\FeatureFlagsController;
-use MailPoet\Features\FeaturesController;
 use MailPoet\Migrator\Migrator;
 use MailPoet\Referrals\ReferralDetector;
-use MailPoet\Segments\WP;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\SettingsRepository;
 use MailPoet\Subscription\Captcha;
@@ -61,9 +57,5 @@ class SetupTest extends \MailPoetTest {
 
   public function _after() {
     $this->diContainer->get(SettingsRepository::class)->truncate();
-
-    // Temporarily hotfix a side effect of this test, that is, removing automation feature flag
-    // and tables and not setting them back. This will be removed very soon, before MVP release.
-    $this->diContainer->get(FeatureFlagsController::class)->set(FeaturesController::AUTOMATION, true);
   }
 }
