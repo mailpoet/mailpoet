@@ -5,6 +5,7 @@ namespace MailPoet\Automation\Engine\Storage;
 use MailPoet\Automation\Engine\Data\Automation;
 use MailPoet\Automation\Engine\Data\AutomationRun;
 use MailPoet\Automation\Engine\Data\AutomationStatistics;
+use MailPoet\InvalidStateException;
 
 class AutomationStatisticsStorage {
 
@@ -89,17 +90,20 @@ class AutomationStatisticsStorage {
   private function queryRunsFor(int ...$automationIds): array {
     $table = esc_sql($this->table);
 
-    $sql = '
+    $placeholders = implode(',', array_fill(0, count($automationIds), '%d'));
+    $query = $this->wpdb->prepare("
       SELECT status, automation_id as workfowId, version_id as versionId, COUNT(id) as runs
-      FROM ' . $table . '
-      WHERE automation_id IN (' . implode(',', $automationIds) . ')
+      FROM $table
+      WHERE automation_id IN ($placeholders)
       GROUP BY status, automation_id, version_id
-    ';
+    ", $automationIds);
+
+    if (!is_string($query)) {
+      throw InvalidStateException::create();
+    }
 
     $matrix = [];
-    // All parameters are either escaped or type safe.
-    // phpcs:ignore WordPressDotOrg.sniffs.DirectDB.UnescapedDBParameter
-    $results = $this->wpdb->get_results($sql);
+    $results = $this->wpdb->get_results($query);
     if (!is_array($results) || !count($results)) {
       return $matrix;
     }
