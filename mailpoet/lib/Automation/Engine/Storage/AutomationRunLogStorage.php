@@ -53,11 +53,11 @@ class AutomationRunLogStorage {
   public function getLogsForAutomationRun(int $automationRunId): array {
     $table = esc_sql($this->table);
     $query = $this->wpdb->prepare("
-        SELECT *
-        FROM $table
-        WHERE automation_run_id = %d
-        ORDER BY id ASC
-        ", $automationRunId);
+      SELECT *
+      FROM $table
+      WHERE automation_run_id = %d
+      ORDER BY id ASC
+    ", $automationRunId);
 
     if (!is_string($query)) {
       throw InvalidStateException::create();
@@ -80,7 +80,7 @@ class AutomationRunLogStorage {
 
   public function truncate(): void {
     $table = esc_sql($this->table);
-    $sql = "truncate $table";
+    $sql = "TRUNCATE $table";
     $this->wpdb->query($sql);
   }
 }

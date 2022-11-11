@@ -89,7 +89,12 @@ class AutomationStatisticsStorage {
   private function queryRunsFor(int ...$automationIds): array {
     $table = esc_sql($this->table);
 
-    $sql = 'SELECT status,automation_id as workfowId,version_id as versionId,count(id) as runs FROM ' . $table . ' where automation_id IN (' . implode(',', $automationIds) . ') group by status,automation_id,version_id; ';
+    $sql = '
+      SELECT status, automation_id as workfowId, version_id as versionId, COUNT(id) as runs
+      FROM ' . $table . '
+      WHERE automation_id IN (' . implode(',', $automationIds) . ')
+      GROUP BY status, automation_id, version_id
+    ';
 
     $matrix = [];
     // All parameters are either escaped or type safe.
