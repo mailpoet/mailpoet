@@ -58,7 +58,12 @@ class AutomationRunStorage {
 
     $table = esc_sql($this->table);
     $statusSql = (string)$this->wpdb->prepare(implode(',', array_fill(0, count($status), '%s')), ...$status);
-    $query = (string)$this->wpdb->prepare( "SELECT count(id) as count from $table where automation_id = %d and status IN ($statusSql)", $automation->getId());
+    $query = (string)$this->wpdb->prepare("
+      SELECT COUNT(id) as count
+      FROM $table
+      WHERE automation_id = %d
+      AND status IN ($statusSql)
+    ", $automation->getId());
     $result = $this->wpdb->get_col($query);
     return $result ? (int)current($result) : 0;
   }
@@ -91,6 +96,6 @@ class AutomationRunStorage {
 
   public function truncate(): void {
     $table = esc_sql($this->table);
-    $this->wpdb->query("truncate $table");
+    $this->wpdb->query("TRUNCATE $table");
   }
 }
