@@ -142,10 +142,8 @@ class AutomationStorageTest extends \MailPoetTest
   }
 
   public function _after() {
-    global $wpdb;
-    $sql = 'truncate ' . $wpdb->prefix . 'mailpoet_automations';
-    $wpdb->query($sql);
-    $sql = 'truncate ' . $wpdb->prefix . 'mailpoet_automation_versions';
-    $wpdb->query($sql);
+    $this->diContainer->get(AutomationStorage::class)->truncate();
+    $this->diContainer->get(AutomationRunStorage::class)->truncate();
+    $this->diContainer->get(AutomationRunLogStorage::class)->truncate();
   }
 }
