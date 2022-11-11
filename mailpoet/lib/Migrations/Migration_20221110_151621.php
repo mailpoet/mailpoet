@@ -16,8 +16,8 @@ class Migration_20221110_151621 extends Migration {
         name varchar(255) NOT NULL,
         author bigint NOT NULL,
         status varchar(255) NOT NULL,
-        created_at timestamp NOT NULL,
-        updated_at timestamp NOT NULL,
+        created_at timestamp NULL, -- must be NULL, see comment at the top
+        updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
         activated_at timestamp NULL,
         deleted_at timestamp NULL,
         PRIMARY KEY (id)
@@ -29,8 +29,8 @@ class Migration_20221110_151621 extends Migration {
         id int(11) unsigned NOT NULL AUTO_INCREMENT,
         automation_id int(11) unsigned NOT NULL,
         steps longtext,
-        created_at timestamp NOT NULL,
-        updated_at timestamp NOT NULL,
+        created_at timestamp NULL, -- must be NULL, see comment at the top
+        updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
         PRIMARY KEY (id),
         INDEX (automation_id)
       ) {$charsetCollate};
@@ -51,8 +51,8 @@ class Migration_20221110_151621 extends Migration {
         version_id int(11) unsigned NOT NULL,
         trigger_key varchar(255) NOT NULL,
         status varchar(255) NOT NULL,
-        created_at timestamp NOT NULL,
-        updated_at timestamp NOT NULL,
+        created_at timestamp NULL, -- must be NULL, see comment at the top
+        updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
         subjects longtext,
         next_step_id varchar(255),
         PRIMARY KEY (id),
