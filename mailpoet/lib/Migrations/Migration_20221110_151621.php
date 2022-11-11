@@ -13,9 +13,9 @@ class Migration_20221110_151621 extends Migration {
     $this->connection->executeStatement("
       CREATE TABLE {$prefix}automations (
         id int(11) unsigned NOT NULL AUTO_INCREMENT,
-        name varchar(255) NOT NULL,
+        name varchar(191) NOT NULL,
         author bigint NOT NULL,
-        status varchar(255) NOT NULL,
+        status varchar(191) NOT NULL,
         created_at timestamp NULL, -- must be NULL, see comment at the top
         updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
         activated_at timestamp NULL,
@@ -39,7 +39,7 @@ class Migration_20221110_151621 extends Migration {
     $this->connection->executeStatement("
       CREATE TABLE {$prefix}automation_triggers (
         automation_id int(11) unsigned NOT NULL,
-        trigger_key varchar(255),
+        trigger_key varchar(191),
         PRIMARY KEY (automation_id, trigger_key)
       );
     ");
@@ -49,12 +49,12 @@ class Migration_20221110_151621 extends Migration {
         id int(11) unsigned NOT NULL AUTO_INCREMENT,
         automation_id int(11) unsigned NOT NULL,
         version_id int(11) unsigned NOT NULL,
-        trigger_key varchar(255) NOT NULL,
-        status varchar(255) NOT NULL,
+        trigger_key varchar(191) NOT NULL,
+        status varchar(191) NOT NULL,
         created_at timestamp NULL, -- must be NULL, see comment at the top
         updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
         subjects longtext,
-        next_step_id varchar(255),
+        next_step_id varchar(191),
         PRIMARY KEY (id),
         INDEX (automation_id, status)
       ) {$charsetCollate};
@@ -64,8 +64,8 @@ class Migration_20221110_151621 extends Migration {
       CREATE TABLE {$prefix}automation_run_logs (
         id int(11) unsigned NOT NULL AUTO_INCREMENT,
         automation_run_id int(11) unsigned NOT NULL,
-        step_id varchar(255) NOT NULL,
-        status varchar(255) NOT NULL,
+        step_id varchar(191) NOT NULL,
+        status varchar(191) NOT NULL,
         started_at timestamp NOT NULL,
         completed_at timestamp NULL DEFAULT NULL,
         error longtext,
