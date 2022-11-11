@@ -21,7 +21,6 @@ use MailPoet\AdminPages\Pages\Upgrade;
 use MailPoet\AdminPages\Pages\WelcomeWizard;
 use MailPoet\AdminPages\Pages\WooCommerceSetup;
 use MailPoet\DI\ContainerWrapper;
-use MailPoet\Features\FeaturesController;
 use MailPoet\Form\Util\CustomFonts;
 use MailPoet\Util\License\License;
 use MailPoet\WP\Functions as WPFunctions;
@@ -49,9 +48,6 @@ class Menu {
   /** @var Router */
   private $router;
 
-  /** @var FeaturesController */
-  private $featuresController;
-
   /** @var CustomFonts  */
   private $customFonts;
 
@@ -61,7 +57,6 @@ class Menu {
     ServicesChecker $servicesChecker,
     ContainerWrapper $container,
     Router $router,
-    FeaturesController $featuresController,
     CustomFonts $customFonts
   ) {
     $this->accessControl = $accessControl;
@@ -69,7 +64,6 @@ class Menu {
     $this->servicesChecker = $servicesChecker;
     $this->container = $container;
     $this->router = $router;
-    $this->featuresController = $featuresController;
     $this->customFonts = $customFonts;
   }
 
@@ -430,11 +424,6 @@ class Menu {
   }
 
   private function registerAutomationMenu() {
-
-    if (!$this->featuresController->isSupported(FeaturesController::AUTOMATION)) {
-      return;
-    }
-
     $automationPage = $this->wp->addSubmenuPage(
       self::MAIN_PAGE_SLUG,
       $this->setPageTitle(__('Automations', 'mailpoet')),

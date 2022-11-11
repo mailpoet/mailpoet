@@ -10,7 +10,6 @@ use MailPoet\Automation\Engine\Hooks as AutomationHooks;
 use MailPoet\Automation\Integrations\MailPoet\MailPoetIntegration;
 use MailPoet\Cron\CronTrigger;
 use MailPoet\Cron\DaemonActionSchedulerRunner;
-use MailPoet\Features\FeaturesController;
 use MailPoet\InvalidStateException;
 use MailPoet\Migrator\Cli as MigratorCli;
 use MailPoet\PostEditorBlocks\PostEditorBlock;
@@ -108,9 +107,6 @@ class Initializer {
   /** @var MailPoetIntegration */
   private $automationMailPoetIntegration;
 
-  /** @var FeaturesController */
-  private $featuresController;
-
   /** @var PersonalDataExporters */
   private $personalDataExporters;
 
@@ -146,7 +142,6 @@ class Initializer {
     AssetsLoader $assetsLoader,
     Engine $automationEngine,
     MailPoetIntegration $automationMailPoetIntegration,
-    FeaturesController $featuresController,
     PersonalDataExporters $personalDataExporters,
     DaemonActionSchedulerRunner $actionSchedulerRunner
   ) {
@@ -176,7 +171,6 @@ class Initializer {
     $this->assetsLoader = $assetsLoader;
     $this->automationEngine = $automationEngine;
     $this->automationMailPoetIntegration = $automationMailPoetIntegration;
-    $this->featuresController = $featuresController;
     $this->personalDataExporters = $personalDataExporters;
     $this->actionSchedulerRunner = $actionSchedulerRunner;
   }
@@ -254,12 +248,10 @@ class Initializer {
       'multisiteDropTables',
     ]);
 
-    if ($this->featuresController->isSupported(FeaturesController::AUTOMATION)) {
-      WPFunctions::get()->addAction(AutomationHooks::INITIALIZE, [
-        $this->automationMailPoetIntegration,
-        'register',
-      ]);
-    }
+    WPFunctions::get()->addAction(AutomationHooks::INITIALIZE, [
+      $this->automationMailPoetIntegration,
+      'register',
+    ]);
 
     $this->hooks->initEarlyHooks();
   }
@@ -315,10 +307,7 @@ class Initializer {
       $this->setupWoocommerceBlocksIntegration();
       $this->subscriberActivityTracker->trackActivity();
       $this->postEditorBlock->init();
-
-      if ($this->featuresController->isSupported(FeaturesController::AUTOMATION)) {
-        $this->automationEngine->initialize();
-      }
+      $this->automationEngine->initialize();
 
       $this->wpFunctions->doAction('mailpoet_initialized', MAILPOET_VERSION);
     } catch (InvalidStateException $e) {

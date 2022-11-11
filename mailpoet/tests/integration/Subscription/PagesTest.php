@@ -14,7 +14,6 @@ use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\StatisticsUnsubscribeEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
-use MailPoet\Features\FeaturesController;
 use MailPoet\Form\AssetsController;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Scheduler\WelcomeScheduler;
@@ -234,7 +233,6 @@ class PagesTest extends \MailPoetTest {
       $container->get(SubscriberHandler::class),
       $this->subscribersRepository,
       $container->get(TrackingConfig::class),
-      $container->get(FeaturesController::class),
       $container->get(EntityManager::class),
       $container->get(SubscriberSaveController::class),
       $container->get(SubscriberSegmentRepository::class)

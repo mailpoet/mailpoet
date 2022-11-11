@@ -8,7 +8,6 @@ use MailPoet\Automation\Engine\Storage\AutomationStorage;
 use MailPoet\Config\ServicesChecker;
 use MailPoet\Cron\CronTrigger;
 use MailPoet\Entities\DynamicSegmentFilterData;
-use MailPoet\Features\FeaturesController;
 use MailPoet\Listing\ListingDefinition;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Segments\DynamicSegments\DynamicSegmentFilterRepository;
@@ -74,9 +73,6 @@ class Reporter {
   /** @var SubscriberListingRepository */
   private $subscriberListingRepository;
 
-  /** @var FeaturesController  */
-  private $featuresController;
-
   /** @var AutomationStorage  */
   private $automationStorage;
 
@@ -92,7 +88,6 @@ class Reporter {
     SubscribersFeature $subscribersFeature,
     TrackingConfig $trackingConfig,
     SubscriberListingRepository $subscriberListingRepository,
-    FeaturesController $featuresController,
     AutomationStorage $automationStorage
   ) {
     $this->newslettersRepository = $newslettersRepository;
@@ -106,7 +101,6 @@ class Reporter {
     $this->subscribersFeature = $subscribersFeature;
     $this->trackingConfig = $trackingConfig;
     $this->subscriberListingRepository = $subscriberListingRepository;
-    $this->featuresController = $featuresController;
     $this->automationStorage = $automationStorage;
   }
 
@@ -231,10 +225,6 @@ class Reporter {
   }
 
   private function automationProperties(): array {
-    if (!$this->featuresController->isSupported(FeaturesController::AUTOMATION)) {
-      return [];
-    }
-
     $automations = $this->automationStorage->getAutomations();
     $activeAutomations = array_filter(
       $automations,
