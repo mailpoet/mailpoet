@@ -16,6 +16,15 @@ use MailPoet\Settings\SettingsRepository;
 use MailPoet\Subscription\Captcha;
 use MailPoet\WP\Functions as WPFunctions;
 
+/**
+ * The "created_at" column must be NULL in some tables to avoid "there can be only one
+ * TIMESTAMP column with CURRENT_TIMESTAMP" error on MySQL version < 5.6.5 that occurs
+ * even when other timestamp is simply "NOT NULL".
+ *
+ * Additionally, having multiple timestamp columns with "NOT NULL" seems to produce the
+ * following error in some SQL modes:
+ *   SQLSTATE[42000]: Syntax error or access violation: 1067 Invalid default value for 'updated_at'"
+ */
 class SetupTest extends \MailPoetTest {
   public function _before() {
     parent::_before();
