@@ -5,7 +5,6 @@ namespace MailPoet\Automation\Engine\Storage;
 use MailPoet\Automation\Engine\Data\Automation;
 use MailPoet\Automation\Engine\Data\AutomationRun;
 use MailPoet\Automation\Engine\Data\AutomationStatistics;
-use MailPoet\InvalidStateException;
 
 class AutomationStatisticsStorage {
 
@@ -24,7 +23,6 @@ class AutomationStatisticsStorage {
   /**
    * @param Automation ...$automations
    * @return AutomationStatistics[]
-   * @throws \MailPoet\Automation\Engine\Exceptions\InvalidStateException
    */
   public function getAutomationStatisticsForAutomations(Automation ...$automations): array {
     if (empty($automations)) {
@@ -36,80 +34,61 @@ class AutomationStatisticsStorage {
       },
       $automations
     );
-    $runMatrix = $this->queryRunsFor(...$automationIds);
+
+    $data = $this->getStatistics($automationIds);
     $statistics = [];
-    foreach ($automations as $automation) {
-      $statistics[$automation->getId()] = $this->buildAutomationStatisticFromMatrix($runMatrix, $automation->getId(), null);
+    foreach ($automationIds as $id) {
+      $statistics[$id] = new AutomationStatistics(
+        $id,
+        (int)($data[$id]['total'] ?? 0),
+        (int)($data[$id]['running'] ?? 0)
+      );
     }
     return $statistics;
   }
 
   public function getAutomationStats(int $automationId, int $versionId = null): AutomationStatistics {
-    return $this->buildAutomationStatisticFromMatrix(
-      $this->queryRunsFor($automationId),
-      $automationId,
-      $versionId
-    );
-  }
-
-  private function buildAutomationStatisticFromMatrix(array $matrix, int $automationId, int $versionId = null): AutomationStatistics {
-
-    $automationMatrix = $matrix[$automationId] ?? [];
-    $versionMatrix = $automationMatrix[$versionId] ?? [];
-    if ($versionId === null) {
-      foreach ($automationMatrix as $version) {
-        foreach ($version as $status => $runs) {
-          if (!isset($versionMatrix[$status])) {
-            $versionMatrix[$status] = 0;
-          }
-          $versionMatrix[$status] += $runs;
-        }
-      }
-    }
-    $totals = (int)array_sum($versionMatrix);
+    $data = $this->getStatistics([$automationId], $versionId);
     return new AutomationStatistics(
       $automationId,
-      $totals,
-      $versionMatrix[AutomationRun::STATUS_RUNNING] ?? 0,
+      (int)($data[$automationId]['total'] ?? 0),
+      (int)($data[$automationId]['running'] ?? 0),
       $versionId
     );
   }
 
   /**
-   * Returns an array with all runs for all versions of the given automations
-   * [
-   *    <automation_id> => [
-   *      <version_id> => [
-   *        <status> => int,
-   *      ],
-   *   ],
-   * ]
-   * @param int ...$automationIds
-   * @return array<int,array<int,array<string,int>>>
+   * @param int[] $automationIds
+   * @return array<int, array{id: int, total: int, running: int}>
    */
-  private function queryRunsFor(int ...$automationIds): array {
-    $table = esc_sql($this->table);
+  private function getStatistics(array $automationIds, int $versionId = null): array {
+    $totalSubquery = $this->getStatsQuery($automationIds, $versionId);
+    $runningSubquery = $this->getStatsQuery($automationIds, $versionId, AutomationRun::STATUS_RUNNING);
 
+    // The subqueries are created using $wpdb->prepare().
+    // phpcs:ignore WordPressDotOrg.sniffs.DirectDB.UnescapedDBParameter
+    $results = (array)$this->wpdb->get_results("
+      SELECT t.id, t.count AS total, r.count AS running
+      FROM ($totalSubquery) t
+      LEFT JOIN ($runningSubquery) r ON t.id = r.id
+    ", ARRAY_A);
+
+    return array_combine(array_column($results, 'id'), $results) ?: [];
+  }
+
+  private function getStatsQuery(array $automationIds, int $versionId = null, string $status = null): string {
+    $table = esc_sql($this->table);
     $placeholders = implode(',', array_fill(0, count($automationIds), '%d'));
+    $versionCondition = strval($versionId ? $this->wpdb->prepare('AND version_id = %d', $versionId) : '');
+    $statusCondition = strval($status ? $this->wpdb->prepare('AND status = %s', $status) : '');
     $query = $this->wpdb->prepare("
-      SELECT status, automation_id as workfowId, version_id as versionId, COUNT(id) as runs
+      SELECT automation_id AS id, COUNT(*) AS count
       FROM $table
       WHERE automation_id IN ($placeholders)
-      GROUP BY status, automation_id, version_id
+      $versionCondition
+      $statusCondition
+      GROUP BY automation_id
     ", $automationIds);
-
-    if (!is_string($query)) {
-      throw InvalidStateException::create();
-    }
-
-    $matrix = [];
-    $results = $this->wpdb->get_results($query);
-    if (!is_array($results) || !count($results)) {
-      return $matrix;
-    }
-    foreach ($results as $result) {
-      $matrix[(int)$result->workfowId][(int)$result->versionId][(string)$result->status] = (int)$result->runs;
-    }
-    return $matrix;
+    return strval($query);
   }
 }

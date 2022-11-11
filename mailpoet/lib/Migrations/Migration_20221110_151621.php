@@ -56,8 +56,7 @@ class Migration_20221110_151621 extends Migration {
         subjects longtext,
         next_step_id varchar(255),
         PRIMARY KEY (id),
-        INDEX (automation_id),
-        INDEX (status)
+        INDEX (automation_id, status)
       ) {$charsetCollate};
     ");
 
