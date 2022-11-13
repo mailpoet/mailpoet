@@ -34,7 +34,7 @@ class BlackFridayNotice {
     $subscribers = $this->subscribersRepository->countBy(['deletedAt' => null]);
     $header = '<h3 class="mailpoet-h3">' . __('Our Black Friday sale is live! Save 40% for a limited time.', 'mailpoet') . '</h3>';
     $body = '<h5 class="mailpoet-h5">' . __('Get a 40% discount on all MailPoet plans and upgrades until 3 PM UTC on 29 November. Terms & conditions apply.', 'mailpoet') . '</h5>';
-    $link = "<p><a href='https://account.mailpoet.com/?s=$subscribers&billing=yearly&ref=sale-bfcm-2022-plugin&utm_source=MP&utm_medium=plugin&utm_campaign=mp_bfcm' class='mailpoet-button button-primary' target='_blank'>"
+    $link = "<p><a href='https://account.mailpoet.com/?s=$subscribers&billing=yearly&ref=sale-bfcm-2022-plugin&utm_source=MP&utm_medium=plugin&utm_campaign=mp_bfcm22' class='mailpoet-button button-primary' target='_blank'>"
       . __('Shop Now', 'mailpoet')
       . '</a></p>';
 
