@@ -237,6 +237,7 @@ class ScheduledTasksRepository extends Repository {
       $tasks = $tasksQuery
         ->setParameter('status', $status)
         ->setMaxResults($limit)
+        ->orderBy('st.id', 'desc')
         ->getQuery()
         ->getResult();
       $result = array_merge($result, $tasks);
