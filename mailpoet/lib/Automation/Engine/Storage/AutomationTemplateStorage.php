@@ -25,10 +25,12 @@ class AutomationTemplateStorage {
   ) {
     $this->builder = $builder;
     $this->wp = $wp;
-    $this->templates = $this->createTemplates();
   }
 
   public function getTemplateBySlug(string $slug): ?AutomationTemplate {
+    if (!$this->templates) {
+      $this->templates = $this->createTemplates();
+    }
     foreach ($this->templates as $template) {
       if ($template->getSlug() === $slug) {
         return $template;
@@ -39,6 +41,9 @@ class AutomationTemplateStorage {
 
   /** @return AutomationTemplate[] */
   public function getTemplates(int $category = null): array {
+    if (!$this->templates) {
+      $this->templates = $this->createTemplates();
+    }
     if (!$category) {
       return $this->templates;
     }
