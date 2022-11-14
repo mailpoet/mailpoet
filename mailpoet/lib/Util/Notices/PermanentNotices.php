@@ -6,6 +6,7 @@ use MailPoet\Config\Menu;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\TrackingConfig;
 use MailPoet\Subscribers\SubscribersRepository;
+use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 use MailPoet\WP\Functions as WPFunctions;
 
 class PermanentNotices {
@@ -43,11 +44,15 @@ class PermanentNotices {
   /** @var DeprecatedFilterNotice */
   private $deprecatedFilterNotice;
 
+  /** @var DisabledMailFunctionNotice */
+  private $disabledMailFunctionNotice;
+
   public function __construct(
     WPFunctions $wp,
     TrackingConfig $trackingConfig,
     SubscribersRepository $subscribersRepository,
-    SettingsController $settings
+    SettingsController $settings,
+    SubscribersFeature $subscribersFeature
   ) {
     $this->wp = $wp;
     $this->phpVersionWarnings = new PHPVersionWarnings();
@@ -60,6 +65,7 @@ class PermanentNotices {
     $this->emailWithInvalidListNotice = new EmailWithInvalidSegmentNotice($wp);
     $this->changedTrackingNotice = new ChangedTrackingNotice($wp);
     $this->deprecatedFilterNotice = new DeprecatedFilterNotice($wp);
+    $this->disabledMailFunctionNotice = new DisabledMailFunctionNotice($wp, $settings, $subscribersFeature);
   }
 
   public function init() {
@@ -101,6 +107,9 @@ class PermanentNotices {
       Menu::isOnMailPoetAdminPage($excludeWizard)
     );
     $this->deprecatedFilterNotice->init(
+      Menu::isOnMailPoetAdminPage($excludeWizard)
+    );
+    $this->disabledMailFunctionNotice->init(
       Menu::isOnMailPoetAdminPage($excludeWizard)
     );
   }
