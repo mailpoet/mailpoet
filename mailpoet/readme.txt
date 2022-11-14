@@ -3,7 +3,7 @@ Contributors: mailpoet
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 5.8
 Tested up to: 6.0
-Stable tag: 3.103.1
+Stable tag: 4.0.0
 Requires PHP: 7.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -218,6 +218,13 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 4.0.0 - 2022-11-14 =
+* Added: new Automations page (beta version, please share your feedback directly from the plugin);
+* Added: optional support for POST unsubscribe when sending with MailPoet Sending Service, which enables 1-click unsubscribe button in more email clients;
+* Added: engagement badges for opens, unsubscribes, and bounces;
+* Updated: minimum required WordPress version to 5.8;
+* Fixed: "Unknown storage engine 'InnoDB'" error (InnoDB engine is no longer required).
 
 = 3.103.1 - 2022-11-08 =
 * Fix a database problem that affected some versions of MySQL when creating the new migrations table.
