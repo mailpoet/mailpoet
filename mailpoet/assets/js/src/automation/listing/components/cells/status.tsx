@@ -10,7 +10,7 @@ export function Status({ automation }: Props): JSX.Element {
     <div className="mailpoet-automation-listing-cell-status">
       {automation.status === AutomationStatus.ACTIVE
         ? __('Active', 'mailpoet')
-        : __('Not active', 'mailpoet')}
+        : __('Draft', 'mailpoet')}
     </div>
   );
 }
