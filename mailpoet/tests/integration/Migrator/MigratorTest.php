@@ -212,7 +212,7 @@ class MigratorTest extends MailPoetTest {
     $this->assertStringMatchesFormat(self::DATE_TIME_FORMAT, $data['started_at']);
     $this->assertStringMatchesFormat(self::DATE_TIME_FORMAT, $data['completed_at']);
     $this->assertSame(1, (int)$data['retries']);
-    $this->assertSame('test-error', $data['error']);
+    $this->assertNull($data['error']);
   }
 
   public function testItFailsBrokenMigration(): void {
