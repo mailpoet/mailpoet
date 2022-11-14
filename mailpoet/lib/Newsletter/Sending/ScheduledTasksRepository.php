@@ -218,26 +218,31 @@ class ScheduledTasksRepository extends Repository {
     ],
     $limit = Scheduler::TASK_BATCH_SIZE
   ) {
+    $result = [];
+    foreach ($statuses as $status) {
+      $tasksQuery = $this->doctrineRepository->createQueryBuilder('st')
+        ->select('st')
+        ->where('st.deletedAt IS NULL')
+        ->where('st.status = :status');
 
-    $tasksQuery = $this->doctrineRepository->createQueryBuilder('st')
-      ->select('st')
-      ->where('st.deletedAt IS NULL')
-      ->where('st.status IN (:statuses)');
+      if (in_array(ScheduledTaskEntity::VIRTUAL_STATUS_RUNNING, $statuses)) {
+        $tasksQuery = $tasksQuery->orWhere('st.status IS NULL');
+      }
 
-    if (in_array(ScheduledTaskEntity::VIRTUAL_STATUS_RUNNING, $statuses)) {
-      $tasksQuery = $tasksQuery->orWhere('st.status IS NULL');
+      if ($type) {
+        $tasksQuery = $tasksQuery->andWhere('st.type = :type')
+          ->setParameter('type', $type);
+      }
+
+      $tasks = $tasksQuery
+        ->setParameter('status', $status)
+        ->setMaxResults($limit)
+        ->getQuery()
+        ->getResult();
+      $result = array_merge($result, $tasks);
     }
 
-    if ($type) {
-      $tasksQuery = $tasksQuery->andWhere('st.type = :type')
-        ->setParameter('type', $type);
-    }
-
-    return $tasksQuery
-      ->setParameter('statuses', $statuses)
-      ->setMaxResults($limit)
-      ->getQuery()
-      ->getResult();
+    return $result;
   }
 
   /**
