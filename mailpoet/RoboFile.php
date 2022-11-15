@@ -800,6 +800,9 @@ class RoboFile extends \Robo\Tasks {
         $this->releaseCreatePullRequest($version);
       })
       ->addCode(function () use ($version) {
+        $this->releaseRerunCircleWorkflow(\MailPoetTasks\Release\CircleCiController::PROJECT_PREMIUM);
+      })
+      ->addCode(function () use ($version) {
         $this->translationsPrepareLanguagePacks($version);
       })
       ->run();
