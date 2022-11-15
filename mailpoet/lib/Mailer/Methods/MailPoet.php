@@ -152,10 +152,10 @@ class MailPoet implements MailerMethod {
       $body['text'] = $newsletter['body']['text'];
     }
     if ($unsubscribeUrl) {
-      $oneClickIsPossible = $this->url->isUsingHttps($unsubscribeUrl);
+      $isHttps = $this->url->isUsingHttps($unsubscribeUrl);
       $body['unsubscribe'] = [
-        'url' => $oneClickIsPossible ? $oneClickUnsubscribeUrl : $unsubscribeUrl,
-        'post' => $oneClickIsPossible,
+        'url' => $isHttps && $oneClickUnsubscribeUrl ? $oneClickUnsubscribeUrl : $unsubscribeUrl,
+        'post' => $isHttps,
       ];
     }
     if ($meta) {
