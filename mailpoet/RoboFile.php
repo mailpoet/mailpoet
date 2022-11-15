@@ -1116,21 +1116,15 @@ class RoboFile extends \Robo\Tasks {
     $this->say("Release '$version[name]' info was published on Slack.");
   }
 
-  public function releaseRerunCircleWorkflow(string $project) {
-    $project = strtoupper($project);
-    $supportedProjects = [
-      \MailPoetTasks\Release\CircleCiController::PROJECT_PREMIUM,
-      \MailPoetTasks\Release\CircleCiController::PROJECT_MAILPOET,
-    ];
-    if (!in_array($project, $supportedProjects, true)) {
-      throw new \Exception('Unsupported project');
-    }
+  public function releaseRerunCircleWorkflow(string $project = null) {
     $circleciController = $this->createCircleCiController();
     $result = $circleciController->rerunLatestWorkflow($project);
+    // Sometimes can be useful to know which Circle project workflow was restarted
+    $project = $project ? " for the project '{$project}'" : '';
     if (!$result) {
-      $this->yell("Circle Workflow for the project '{$project}' was not restarted", 40, 'red');
+      $this->yell("Circle Workflow{$project} was not restarted", 40, 'red');
     }
-    $this->say("Circle Workflow for the project '{$project}' was started from the beginning");
+    $this->say("Circle Workflow{$project} was started from the beginning");
   }
 
   public function downloadWooCommerceBlocksZip($tag = null) {
