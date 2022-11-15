@@ -300,6 +300,15 @@ $replacements = [
       '\'\\\\MailPoetVendor\\\\twig_call_macro(',
     ],
   ],
+  [
+    'file' => '../vendor-prefixed/twig/twig/src/Node/CheckSecurityCallNode.php',
+    'find' => [
+      '\'\\\\Twig\\\\Extension\\\\SandboxExtension',
+    ],
+    'replace' => [
+      '\'\\\\MailPoetVendor\\\\Twig\\\\Extension\\\\SandboxExtension',
+    ],
+  ],
 ];
 
 foreach ($replacements as $singleFile) {
