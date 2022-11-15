@@ -225,7 +225,7 @@ class ScheduledTasksRepository extends Repository {
         ->where('st.deletedAt IS NULL')
         ->where('st.status = :status');
 
-      if (in_array(ScheduledTaskEntity::VIRTUAL_STATUS_RUNNING, $statuses)) {
+      if ($status === ScheduledTaskEntity::VIRTUAL_STATUS_RUNNING) {
         $tasksQuery = $tasksQuery->orWhere('st.status IS NULL');
       }
 
