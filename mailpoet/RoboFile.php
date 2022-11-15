@@ -1116,6 +1116,23 @@ class RoboFile extends \Robo\Tasks {
     $this->say("Release '$version[name]' info was published on Slack.");
   }
 
+  public function releaseRerunCircleWorkflow(string $project) {
+    $project = strtoupper($project);
+    $supportedProjects = [
+      \MailPoetTasks\Release\CircleCiController::PROJECT_PREMIUM,
+      \MailPoetTasks\Release\CircleCiController::PROJECT_MAILPOET,
+    ];
+    if (!in_array($project, $supportedProjects, true)) {
+      throw new \Exception('Unsupported project');
+    }
+    $circleciController = $this->createCircleCiController();
+    $result = $circleciController->rerunLatestWorkflow($project);
+    if (!$result) {
+      $this->yell("Circle Workflow for the project '{$project}' was not restarted", 40, 'red');
+    }
+    $this->say("Circle Workflow for the project '{$project}' was started from the beginning");
+  }
+
   public function downloadWooCommerceBlocksZip($tag = null) {
     $this->createWpOrgDownloader('woo-gutenberg-products-block')
       ->downloadPluginZip('woo-gutenberg-products-block.zip', __DIR__ . '/tests/plugins/', $tag);
