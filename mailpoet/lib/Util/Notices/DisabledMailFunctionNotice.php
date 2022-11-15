@@ -32,11 +32,13 @@ class DisabledMailFunctionNotice {
     $this->subscribersFeature = $subscribersFeature;
   }
 
-  public function init($shouldDisplay) {
+  public function init($shouldDisplay): ?string {
     $shouldDisplay = $shouldDisplay && $this->checkRequirements();
-    if ($shouldDisplay) {
-      $this->display();
+    if (!$shouldDisplay) {
+      return null;
     }
+
+    return $this->display();
   }
 
   private function checkRequirements(): bool {
@@ -49,12 +51,12 @@ class DisabledMailFunctionNotice {
     return $isPhpMailSendingMethod && $isMailFunctionDisabled;
   }
 
-  private function isFunctionDisabled(string $function): bool {
+  public function isFunctionDisabled(string $function): bool {
     $result = function_exists($function) && is_callable($function, false);
     return !$result;
   }
 
-  private function display() {
+  private function display(): string {
     $header = $this->getHeader();
 
     $body = $this->getBody();
@@ -63,7 +65,9 @@ class DisabledMailFunctionNotice {
 
     $message = $header . $body . $button;
 
-     Notice::displayWarning($message, '', self::OPTION_NAME, false);
+    Notice::displayWarning($message, '', self::OPTION_NAME, false);
+
+    return $message;
   }
 
   private function getHeader(): string {
