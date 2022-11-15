@@ -69,8 +69,20 @@ class CircleCiController {
    * Returns true when the Circle workflow was started from the beginning
    * and false when the last workflow was successful.
    */
-  public function rerunLatestWorkflow(string $project): bool {
-    $circleCiProject = $this->getCircleCiProject($project);
+  public function rerunLatestWorkflow(?string $project = null): bool {
+    $circleCiProject = null;
+    // We use the current project if the project parameter is null
+    if ($project) {
+      $project = strtoupper($project);
+      $supportedProjects = [
+        \MailPoetTasks\Release\CircleCiController::PROJECT_PREMIUM,
+        \MailPoetTasks\Release\CircleCiController::PROJECT_MAILPOET,
+      ];
+      if (!in_array($project, $supportedProjects, true)) {
+        throw new \Exception('Unsupported project');
+      }
+      $circleCiProject = $this->getCircleCiProject($project);
+    }
     $pipeline = $this->getLatestPipeline($circleCiProject);
     if (!$pipeline) {
       throw new \Exception('No pipeline found');
