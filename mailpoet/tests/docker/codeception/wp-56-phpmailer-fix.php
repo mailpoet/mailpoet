@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types = 1);
 
 /*
 Plugin Name: MailPoet Testing Fix: Use SMTP In PHPMailer on WP 5.6

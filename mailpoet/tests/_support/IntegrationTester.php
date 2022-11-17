@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types = 1);
 
 use Automattic\WooCommerce\Admin\API\Reports\Orders\Stats\DataStore;
 use MailPoet\DI\ContainerWrapper;
