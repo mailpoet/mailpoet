@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types = 1);
 
 // Turn off transaction emails by defining dummy wp_mail
 if (!function_exists('wp_mail')) {

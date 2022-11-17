@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types = 1);
 
 use Codeception\Event\SuiteEvent;
 use Codeception\Event\TestEvent;

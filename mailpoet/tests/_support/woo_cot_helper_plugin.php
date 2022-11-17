@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types = 1);
 
 /*
 Plugin Name: MailPoet Woo COT Helper
