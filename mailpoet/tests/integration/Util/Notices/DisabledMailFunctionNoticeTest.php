@@ -4,6 +4,7 @@ namespace MailPoet\Util\Notices;
 
 use Codeception\Util\Stub;
 use MailPoet\Mailer\Mailer;
+use MailPoet\Mailer\MailerFactory;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 use MailPoet\WP\Functions as WPFunctions;
@@ -21,6 +22,7 @@ class DisabledMailFunctionNoticeTest extends \MailPoetTest
     $this->settings = SettingsController::getInstance();
     $this->wp = new WPFunctions;
     $this->settings->set('mta.method', Mailer::METHOD_PHPMAIL);
+    $this->settings->set(DisabledMailFunctionNotice::QUEUE_DISABLED_MAIL_FUNCTION_CHECK, true);
     $this->wp->setTransient(SubscribersFeature::SUBSCRIBERS_COUNT_CACHE_KEY, 50, SubscribersFeature::SUBSCRIBERS_COUNT_CACHE_EXPIRATION_MINUTES * 60);
   }
 
@@ -35,9 +37,13 @@ class DisabledMailFunctionNoticeTest extends \MailPoetTest
   }
 
   private function generateNotice($methodOverride = []) {
+    $mailerFactoryMock = $this->createMock(MailerFactory::class);
+    $mailerFactoryMock->method('buildMailer')
+      ->willReturn($this->createMock(Mailer::class));
+
     return Stub::construct(
       DisabledMailFunctionNotice::class,
-      [$this->wp, $this->settings, $this->diContainer->get(SubscribersFeature::class)],
+      [$this->wp, $this->settings, $this->diContainer->get(SubscribersFeature::class), $mailerFactoryMock],
       $methodOverride
     );
   }
@@ -81,4 +87,23 @@ class DisabledMailFunctionNoticeTest extends \MailPoetTest
     expect($result)->equals(false);
   }
 
+  public function testItResetQueueCheck() {
+    $this->settings->set(DisabledMailFunctionNotice::QUEUE_DISABLED_MAIL_FUNCTION_CHECK, true);
+    $disabledMailFunctionNotice = $this->generateNotice();
+    $notice = $disabledMailFunctionNotice->init(true);
+
+    expect($notice)->equals(null);
+    $status = $this->settings->get(DisabledMailFunctionNotice::QUEUE_DISABLED_MAIL_FUNCTION_CHECK, false);
+    expect($status)->equals(false);
+  }
+
+  public function testItDisplayNoticeWhenMailIsMisConfigured() {
+    $disabledMailFunctionNotice = $this->generateNotice(['sendTestMail' => false]);
+    $notice = $disabledMailFunctionNotice->init(true);
+
+    expect($notice)->stringContainsString('Get ready to send your first campaign');
+
+    $status = $this->settings->get(DisabledMailFunctionNotice::OPTION_NAME, false);
+    expect($status)->equals(true);
+  }
 }

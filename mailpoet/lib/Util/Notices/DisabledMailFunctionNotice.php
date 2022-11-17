@@ -3,6 +3,7 @@
 namespace MailPoet\Util\Notices;
 
 use MailPoet\Mailer\Mailer;
+use MailPoet\Mailer\MailerFactory;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Util\Helpers;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
@@ -11,7 +12,9 @@ use MailPoet\WP\Notice;
 
 class DisabledMailFunctionNotice {
 
-  const OPTION_NAME = 'disabled-mail-function';
+  const OPTION_NAME = 'disabled_mail_function_check';
+
+  const QUEUE_DISABLED_MAIL_FUNCTION_CHECK = 'queue_disabled_mail_function_check';
 
   /** @var SettingsController */
   private $settings;
@@ -22,18 +25,25 @@ class DisabledMailFunctionNotice {
   /** @var SubscribersFeature */
   private $subscribersFeature;
 
+  /** @var MailerFactory */
+  private $mailerFactory;
+
+  private $isInQueueForChecking = false;
+
   public function __construct(
     WPFunctions $wp,
     SettingsController $settings,
-    SubscribersFeature $subscribersFeature
+    SubscribersFeature $subscribersFeature,
+    MailerFactory $mailerFactory
   ) {
     $this->settings = $settings;
     $this->wp = $wp;
     $this->subscribersFeature = $subscribersFeature;
+    $this->mailerFactory = $mailerFactory;
   }
 
   public function init($shouldDisplay): ?string {
-    $shouldDisplay = $shouldDisplay && $this->checkRequirements();
+    $shouldDisplay = $shouldDisplay && $this->checkMisConfiguredFunction() && $this->checkRequirements();
     if (!$shouldDisplay) {
       return null;
     }
@@ -42,13 +52,43 @@ class DisabledMailFunctionNotice {
   }
 
   private function checkRequirements(): bool {
+    if ($this->isInQueueForChecking) {
+      $this->settings->set(self::QUEUE_DISABLED_MAIL_FUNCTION_CHECK, false);
+    }
+
     $sendingMethod = $this->settings->get('mta.method', false);
     $isPhpMailSendingMethod = $sendingMethod === Mailer::METHOD_PHPMAIL;
+
+    if (!$isPhpMailSendingMethod) {
+      return false; // fails requirements check
+    }
 
     $functionName = 'mail';
     $isMailFunctionDisabled = $this->isFunctionDisabled($functionName);
 
-    return $isPhpMailSendingMethod && $isMailFunctionDisabled;
+    if ($isMailFunctionDisabled) {
+      $this->settings->set(DisabledMailFunctionNotice::OPTION_NAME, true);
+      return true;
+    }
+
+    $isMailFunctionProperlyConfigured = $this->testMailFunctionIsCorrectlyConfigured();
+
+    return !$isMailFunctionProperlyConfigured;
+  }
+
+  /*
+   * Check MisConfigured Function
+   *
+   * This method will cause this class to only display the notice if the settings option
+   *
+   * disabled_mail_function_check === true
+   * or
+   * queue_disabled_mail_function_check === true
+   *
+   */
+  public function checkMisConfiguredFunction(): bool {
+    $this->isInQueueForChecking = $this->settings->get(self::QUEUE_DISABLED_MAIL_FUNCTION_CHECK, false);
+    return $this->settings->get(self::OPTION_NAME, false) || $this->isInQueueForChecking;
   }
 
   public function isFunctionDisabled(string $function): bool {
@@ -89,5 +129,88 @@ class DisabledMailFunctionNotice {
     $buttonLink = "https://account.mailpoet.com/?s={$subscribersCount}&utm_source=mailpoet&utm_medium=plugin&utm_campaign=disabled_mail_function";
     $link = $this->wp->escAttr($buttonLink);
     return '<p><a target="_blank" href="' . $link . '" class="button button-primary">' . __('Connect MailPoet', 'mailpoet') . '</a></p>';
+  }
+
+  /*
+   * Test Mail Function Is Correctly Configured
+   *
+   * This is a workaround for detecting the user PHP mail() function is Correctly Configured and not disabled by the host
+   */
+  private function testMailFunctionIsCorrectlyConfigured(): bool {
+    if ($this->settings->get(DisabledMailFunctionNotice::OPTION_NAME, false)) {
+      return false; // skip sending mail again
+    }
+
+    $mailBody = 'Yup, it works! You can start blasting away emails to the moon.';
+    $sendTestMailData = [
+      'mailer' => $this->settings->get('mta'),
+      'newsletter' => [
+        'subject' => 'This is a Sending Method Test',
+        'body' => [
+          'html' => "<p>$mailBody</p>",
+          'text' => $mailBody,
+        ],
+      ],
+      'subscriber' => 'blackhole@mailpoet.com',
+    ];
+
+    $sendMailResult = $this->sendTestMail($sendTestMailData);
+
+    if (!$sendMailResult) {
+      // Error with PHP mail() function
+      // keep displaying notice
+      $this->settings->set(DisabledMailFunctionNotice::OPTION_NAME, true);
+    }
+
+    return $sendMailResult;
+  }
+
+  /*
+   * Send Test Mail
+   * used to check for valid PHP mail()
+   *
+   * returns true if valid and okay
+   * else returns false if invalid.
+   *
+   * We determine the mail function is invalid by checking against the Exception error thrown by PHPMailer
+   * error message: Could not instantiate mail function.
+   *
+   * if the error is not equal to error message, we consider it okay.
+   */
+  public function sendTestMail($data = []): bool {
+    try {
+      $mailer = $this->mailerFactory->buildMailer(
+        $data['mailer'] ?? null,
+        $data['sender'] ?? null,
+        $data['reply_to'] ?? null
+      );
+      // report this as 'sending_test' in metadata since this endpoint is only used to test sending methods for now
+      $extraParams = [
+        'meta' => [
+          'email_type' => 'sending_test',
+          'subscriber_status' => 'unknown',
+          'subscriber_source' => 'administrator',
+        ],
+      ];
+      $result = $mailer->send($data['newsletter'], $data['subscriber'], $extraParams);
+
+      if ($result['response'] === false) {
+        $errorMessage = $result['error']->getMessage();
+        return !$this->checkForErrorMessage($errorMessage);
+      }
+
+    } catch (\Exception $e) {
+      $errorMessage = $e->getMessage();
+      return !$this->checkForErrorMessage($errorMessage);
+    }
+
+    return true;
+  }
+
+  private function checkForErrorMessage($errorMessage): bool {
+    $phpmailerError = 'Could not instantiate mail function';
+    $substringIndex = stripos($errorMessage, $phpmailerError);
+
+    return $substringIndex !== false;
   }
 }
