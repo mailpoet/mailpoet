@@ -1126,8 +1126,9 @@ class RoboFile extends \Robo\Tasks {
     $project = $project ? " for the project '{$project}'" : '';
     if (!$result) {
       $this->yell("Circle Workflow{$project} was not restarted", 40, 'red');
+    } else {
+      $this->say("Circle Workflow{$project} was started from the beginning");
     }
-    $this->say("Circle Workflow{$project} was started from the beginning");
   }
 
   public function downloadWooCommerceBlocksZip($tag = null) {
