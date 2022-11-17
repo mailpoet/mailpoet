@@ -22,6 +22,7 @@ use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\TrackingConfig;
 use MailPoet\Statistics\StatisticsOpensRepository;
 use MailPoet\Subscribers\SubscribersCountsController;
+use MailPoet\Util\Notices\DisabledMailFunctionNotice;
 use MailPoet\WooCommerce\TransactionalEmails;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
@@ -145,6 +146,17 @@ class Settings extends APIEndpoint {
       $meta = $this->authorizedEmailsController->onSettingsSave($settings);
       if ($signupConfirmation !== $this->settings->get('signup_confirmation.enabled')) {
         $this->messageController->updateSuccessMessages();
+      }
+
+      $sendingMethodSet = $settings['mta']['method'] ?? null;
+      if ($sendingMethodSet === 'PHPMail') {
+        // check for valid mail function
+        $this->settings->set(DisabledMailFunctionNotice::QUEUE_DISABLED_MAIL_FUNCTION_CHECK, true);
+      } else {
+        // when the user switch to a new sending method
+        // do not display the DisabledMailFunctionNotice
+        $this->settings->set(DisabledMailFunctionNotice::QUEUE_DISABLED_MAIL_FUNCTION_CHECK, false);
+        $this->settings->set(DisabledMailFunctionNotice::OPTION_NAME, false); // do not display notice
       }
 
       // Tracking and re-engagement Emails

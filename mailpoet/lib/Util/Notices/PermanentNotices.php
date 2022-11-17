@@ -3,6 +3,7 @@
 namespace MailPoet\Util\Notices;
 
 use MailPoet\Config\Menu;
+use MailPoet\Mailer\MailerFactory;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\TrackingConfig;
 use MailPoet\Subscribers\SubscribersRepository;
@@ -52,7 +53,8 @@ class PermanentNotices {
     TrackingConfig $trackingConfig,
     SubscribersRepository $subscribersRepository,
     SettingsController $settings,
-    SubscribersFeature $subscribersFeature
+    SubscribersFeature $subscribersFeature,
+    MailerFactory $mailerFactory
   ) {
     $this->wp = $wp;
     $this->phpVersionWarnings = new PHPVersionWarnings();
@@ -65,7 +67,7 @@ class PermanentNotices {
     $this->emailWithInvalidListNotice = new EmailWithInvalidSegmentNotice($wp);
     $this->changedTrackingNotice = new ChangedTrackingNotice($wp);
     $this->deprecatedFilterNotice = new DeprecatedFilterNotice($wp);
-    $this->disabledMailFunctionNotice = new DisabledMailFunctionNotice($wp, $settings, $subscribersFeature);
+    $this->disabledMailFunctionNotice = new DisabledMailFunctionNotice($wp, $settings, $subscribersFeature, $mailerFactory);
   }
 
   public function init() {
