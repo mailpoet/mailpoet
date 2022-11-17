@@ -18,7 +18,6 @@
       <property name="declareOnFirstLine" value="true" />
       <property name="spacesCountAroundEqualsSign" value="1" />
     </properties>
-    <include-pattern>lib/Automation</include-pattern>
   </rule>
 
   <!-- Namespaces -->
