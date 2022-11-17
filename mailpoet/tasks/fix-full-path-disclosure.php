@@ -1,4 +1,4 @@
-<?php
+<?php // phpcs:ignore SlevomatCodingStandard.TypeHints.DeclareStrictTypes.DeclareStrictTypesMissing
 
 // inject the following code to all PHP files in given directory to prevent full path disclosure
 // (directly used PHP file may output path-leaking errors, such as some used symbols are missing)

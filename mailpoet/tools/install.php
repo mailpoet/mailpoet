@@ -1,4 +1,4 @@
-<?php
+<?php // phpcs:ignore SlevomatCodingStandard.TypeHints.DeclareStrictTypes.DeclareStrictTypesMissing
 
 $tools = [
   'https://github.com/composer/composer/releases/download/2.3.5/composer.phar' => 'composer.phar',

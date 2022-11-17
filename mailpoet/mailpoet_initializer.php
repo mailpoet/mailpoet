@@ -1,4 +1,4 @@
-<?php
+<?php // phpcs:ignore SlevomatCodingStandard.TypeHints.DeclareStrictTypes.DeclareStrictTypesMissing
 
 use MailPoet\Config\Env;
 use MailPoet\Config\RequirementsChecker;

@@ -1,4 +1,4 @@
-<?php
+<?php // phpcs:ignore SlevomatCodingStandard.TypeHints.DeclareStrictTypes.DeclareStrictTypesMissing
 /**
  * Ensure multi-line function declarations are defined correctly.
  * Copy from PHP_CodeSniffer\Standards\PEAR\Sniffs\Functions\FunctionDeclarationSniff

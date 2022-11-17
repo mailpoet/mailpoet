@@ -1,4 +1,4 @@
-<?php
+<?php // phpcs:ignore SlevomatCodingStandard.TypeHints.DeclareStrictTypes.DeclareStrictTypesMissing
 namespace MailPoetVendor\Sudzy;
 
 use MailPoetVendor\Paris\Model;

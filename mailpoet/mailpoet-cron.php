@@ -1,4 +1,4 @@
-<?php
+<?php // phpcs:ignore SlevomatCodingStandard.TypeHints.DeclareStrictTypes.DeclareStrictTypesMissing
 
 /**
  * This file may be used by MailPoet to run a cron daemon that sends emails and perform other periodic tasks. It is

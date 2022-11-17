@@ -1,4 +1,4 @@
-<?php
+<?php // phpcs:ignore SlevomatCodingStandard.TypeHints.DeclareStrictTypes.DeclareStrictTypesMissing
 // phpcs:ignoreFile - This file contains stubs for 3rd party functions and classes that might break our PHPCS rules
 
 namespace {

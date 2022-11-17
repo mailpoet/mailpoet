@@ -1,4 +1,4 @@
-<?php
+<?php // phpcs:ignore SlevomatCodingStandard.TypeHints.DeclareStrictTypes.DeclareStrictTypesMissing
 
 use Facebook\WebDriver\Exception\UnrecognizedExceptionException;
 use Facebook\WebDriver\Exception\WebDriverException;
