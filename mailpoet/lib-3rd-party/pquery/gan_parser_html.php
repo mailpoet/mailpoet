@@ -1,4 +1,4 @@
-<?php
+<?php // phpcs:ignore SlevomatCodingStandard.TypeHints.DeclareStrictTypes.DeclareStrictTypesMissing
 /**
  * @author Niels A.D.
  * @author Todd Burry <todd@vanillaforums.com>

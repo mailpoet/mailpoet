@@ -1,4 +1,4 @@
-<?php
+<?php // phpcs:ignore SlevomatCodingStandard.TypeHints.DeclareStrictTypes.DeclareStrictTypesMissing
 
 // phpcs:disable PSR1.Classes.ClassDeclaration
 // phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
