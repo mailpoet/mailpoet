@@ -76,6 +76,9 @@ class Reporter {
   /** @var AutomationStorage  */
   private $automationStorage;
 
+  /*** @var UnsubscribeReporter */
+  private $unsubscribeReporter;
+
   public function __construct(
     NewslettersRepository $newslettersRepository,
     SegmentsRepository $segmentsRepository,
@@ -88,7 +91,8 @@ class Reporter {
     SubscribersFeature $subscribersFeature,
     TrackingConfig $trackingConfig,
     SubscriberListingRepository $subscriberListingRepository,
-    AutomationStorage $automationStorage
+    AutomationStorage $automationStorage,
+    UnsubscribeReporter $unsubscribeReporter
   ) {
     $this->newslettersRepository = $newslettersRepository;
     $this->segmentsRepository = $segmentsRepository;
@@ -102,6 +106,7 @@ class Reporter {
     $this->trackingConfig = $trackingConfig;
     $this->subscriberListingRepository = $subscriberListingRepository;
     $this->automationStorage = $automationStorage;
+    $this->unsubscribeReporter = $unsubscribeReporter;
   }
 
   public function getData() {
@@ -204,7 +209,8 @@ class Reporter {
     $result = array_merge(
       $result,
       $this->subscriberProperties(),
-      $this->automationProperties()
+      $this->automationProperties(),
+      $this->unsubscribeReporter->getProperties()
     );
     if ($hasWc) {
       $result['WooCommerce version'] = $woocommerce->version;

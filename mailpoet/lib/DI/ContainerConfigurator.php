@@ -52,6 +52,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     // Analytics
     $container->autowire(\MailPoet\Analytics\Analytics::class)->setPublic(true);
     $container->autowire(\MailPoet\Analytics\Reporter::class)->setPublic(true);
+    $container->autowire(\MailPoet\Analytics\UnsubscribeReporter::class)->setPublic(true);
     // API
     $container->autowire(\MailPoet\API\JSON\API::class)
       ->addArgument(new Reference(ContainerWrapper::class))
