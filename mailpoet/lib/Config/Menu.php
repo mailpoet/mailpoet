@@ -184,19 +184,6 @@ class Menu {
       30
     );
 
-    // Emails page
-    $newslettersPage = $this->wp->addSubmenuPage(
-      self::$mainPageSlug,
-      $this->setPageTitle(__('Emails', 'mailpoet')),
-      esc_html__('Emails', 'mailpoet'),
-      AccessControl::PERMISSION_MANAGE_EMAILS,
-      self::EMAILS_PAGE_SLUG,
-      [
-        $this,
-        'newsletters',
-      ]
-    );
-
     // Homepage
     if ($this->featuresController->isSupported(FeaturesController::FEATURE_HOMEPAGE)) {
       $this->wp->addSubmenuPage(
@@ -211,6 +198,19 @@ class Menu {
         ]
       );
     }
+
+    // Emails page
+    $newslettersPage = $this->wp->addSubmenuPage(
+      self::$mainPageSlug,
+      $this->setPageTitle(__('Emails', 'mailpoet')),
+      esc_html__('Emails', 'mailpoet'),
+      AccessControl::PERMISSION_MANAGE_EMAILS,
+      self::EMAILS_PAGE_SLUG,
+      [
+        $this,
+        'newsletters',
+      ]
+    );
 
     // add limit per page to screen options
     $this->wp->addAction('load-' . $newslettersPage, function() {
