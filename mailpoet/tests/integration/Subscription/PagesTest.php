@@ -111,7 +111,7 @@ class PagesTest extends \MailPoetTest {
     $subscriber->setFirstName('First name');
     $subscriber->setUnconfirmedData(null);
     $subscriber->setLastSubscribedAt(Carbon::createFromTimestamp($this->wp->currentTime('timestamp'))->subDays(10));
-    $subscriber->setConfirmedIp(Carbon::createFromTimestamp($this->wp->currentTime('timestamp'))->subDays(10));
+    $subscriber->setConfirmedIp('111.111.111.111');
     $this->entityManager->flush();
     $subscription = $pages->init(false, $this->testData, false, false);
     $subscription->confirm();
