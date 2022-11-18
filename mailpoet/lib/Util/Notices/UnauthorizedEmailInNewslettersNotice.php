@@ -56,7 +56,7 @@ class UnauthorizedEmailInNewslettersNotice {
       // translators: %s is the newsletter subject.
       $linkText = _x('Update the from address of %s', '%s will be replaced by a newsletter subject', 'mailpoet');
       $linkText = str_replace('%s', EscapeHelper::escapeHtmlText($error['subject']), $linkText);
-      $linkUrl = $this->wp->adminUrl('admin.php?page=' . Menu::MAIN_PAGE_SLUG . '#/send/' . $error['newsletter_id']);
+      $linkUrl = $this->wp->adminUrl('admin.php?page=' . Menu::EMAILS_PAGE_SLUG . '#/send/' . $error['newsletter_id']);
       $link = Helpers::replaceLinkTags("[link]{$linkText}[/link]", $linkUrl, ['target' => '_blank']);
       $links .= "<p>$link</p>";
     }

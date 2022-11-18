@@ -111,7 +111,7 @@ class NewsletterEditor {
       'settings' => $this->settings->getAll(),
       'editor_tutorial_seen' => $this->userFlags->get('editor_tutorial_seen'),
       'current_wp_user' => array_merge($subscriberData, $this->wp->wpGetCurrentUser()->to_array()),
-      'sub_menu' => Menu::MAIN_PAGE_SLUG,
+      'sub_menu' => Menu::EMAILS_PAGE_SLUG,
       'woocommerce' => $woocommerceData,
       'is_wc_transactional_email' => $newsletterId === $woocommerceTemplateId,
     ];
