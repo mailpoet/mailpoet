@@ -158,7 +158,7 @@ class SendingQueueTest extends \MailPoetTest {
   }
 
   private function getDirectUnsubscribeURL() {
-    return SubscriptionUrlFactory::getInstance()->getUnsubscribeUrl($this->subscriber, $this->queue->id);
+    return SubscriptionUrlFactory::getInstance()->getUnsubscribeUrl($this->subscriber, (int)$this->queue->id);
   }
 
   private function getTrackedUnsubscribeURL() {
@@ -494,7 +494,7 @@ class SendingQueueTest extends \MailPoetTest {
             $subscriberId = (int)$subscriberId[0];
             $subscriber = $subscribersRepository->findOneById($subscriberId);
             $subscriptionUrlFactory = SubscriptionUrlFactory::getInstance();
-            $unsubscribeUrl = $subscriptionUrlFactory->getUnsubscribeUrl($subscriber, $queue->id);
+            $unsubscribeUrl = $subscriptionUrlFactory->getUnsubscribeUrl($subscriber, (int)$queue->id);
             expect($newsletter['subject'])->equals('News for ' . $subscriberEmail);
             expect($newsletter['body']['html'])->equals('<p>Hello ' . $subscriberEmail . '</p>');
             expect($newsletter['body']['text'])->equals('Hello ' . $subscriberEmail);
