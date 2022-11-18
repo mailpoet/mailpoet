@@ -142,4 +142,5 @@ interface Window {
     name: string;
   }[];
   mailpoet_cdn_url: string;
+  mailpoet_main_page_slug: string;
 }
