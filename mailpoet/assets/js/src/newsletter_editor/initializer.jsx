@@ -15,7 +15,7 @@ const renderHeading = (newsletterType, newsletterOptions) => {
 
     let buttons = null;
     let onLogoClick = () => {
-      window.location = `admin.php?page=mailpoet-newsletters`;
+      window.location = `admin.php?page=${MailPoet.mainPageSlug}`;
     };
     if (newsletterType === 'automation') {
       const automationId = newsletterOptions.automationId;
