@@ -78,7 +78,7 @@ export function Settings() {
           title={t('keyActivationTab')}
           automationId="activation_settings_tab"
         >
-          <KeyActivation />
+          <KeyActivation subscribersCount={window.mailpoet_subscribers_count} />
         </Tab>
       </RoutedTabs>
     </>
