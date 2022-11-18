@@ -10,6 +10,7 @@ import { Input } from 'common/form/input/input';
 import { KeyActivationState, MssStatus } from 'settings/store/types';
 import { Inputs, Label } from 'settings/components';
 import { SetFromAddressModal } from 'common/set_from_address_modal';
+import ReactStringReplace from 'react-string-replace';
 import {
   KeyMessages,
   MssMessages,
@@ -81,7 +82,11 @@ function Messages(
   );
 }
 
-export function KeyActivation() {
+type Props = {
+  subscribersCount: number;
+};
+
+export function KeyActivation({ subscribersCount }: Props) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { notices } = useContext<any>(GlobalContext);
   const state = useSelector('getKeyActivationState')();
@@ -147,7 +152,53 @@ export function KeyActivation() {
       <Label
         htmlFor="mailpoet_premium_key"
         title={t('premiumTabActivationKeyLabel')}
-        description={t('premiumTabDescription')}
+        description={
+          <>
+            {ReactStringReplace(
+              t('premiumTabDescription'),
+              /\[link\](.*?)\[\/link\]/g,
+              (text) => (
+                <a
+                  href="https://account.mailpoet.com/account?utm_source=plugin&utm_medium=settings&utm_campaign=activate-existing-plan&ref=settings-key-activation"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {text}
+                </a>
+              ),
+            )}
+            <br />
+            <br />
+            {ReactStringReplace(
+              t('premiumTabGetKey'),
+              /\[link\](.*?)\[\/link\]/g,
+              (text) => (
+                <a
+                  href="https://account.mailpoet.com/account?utm_source=plugin&utm_medium=settings&utm_campaign=activate-existing-plan&ref=settings-key-activation"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {text}
+                </a>
+              ),
+            )}
+            <br />
+            <br />
+            {ReactStringReplace(
+              t('premiumTabGetPlan'),
+              /\[link\](.*?)\[\/link\]/g,
+              (text) => (
+                <a
+                  href={`https://account.mailpoet.com/?s=${subscribersCount}&utm_source=plugin&utm_medium=settings&utm_campaign=create-new-plan&ref=settings-key-activation`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {text}
+                </a>
+              ),
+            )}
+          </>
+        }
       />
       <Inputs>
         <Input
