@@ -97,6 +97,9 @@ class Menu {
   }
 
   public function init() {
+    if ($this->featuresController->isSupported(FeaturesController::FEATURE_HOMEPAGE)) {
+      self::$mainPageSlug = self::HOMEPAGE_PAGE_SLUG;
+    }
     $this->checkPremiumKey();
 
     $this->wp->addAction(
