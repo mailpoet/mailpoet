@@ -65,6 +65,7 @@ export const MailPoet = {
     window.mailpoet_deactivate_subscriber_after_inactive_days,
   tags: window.mailpoet_tags,
   cdnUrl: window.mailpoet_cdn_url,
+  mainPageSlug: window.mailpoet_main_page_slug,
 } as const;
 
 declare global {
