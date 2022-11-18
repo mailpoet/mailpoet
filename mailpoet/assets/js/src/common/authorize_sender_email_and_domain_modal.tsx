@@ -92,6 +92,7 @@ function AuthorizeSenderEmailAndDomainModal({
     <Modal
       onRequestClose={onRequestClose}
       contentClassName="authorize-sender-email-and-domain-modal"
+      overlayClassName="authorize-sender-email-and-domain-modal-overlay"
     >
       <Tabs activeKey={initialTab}>
         <Tab
