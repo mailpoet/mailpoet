@@ -18,7 +18,7 @@ function successPageClosed() {
     action: 'set',
     data: { show_congratulate_after_first_newsletter: false },
   }).always(() => {
-    window.location = window.mailpoet_main_page;
+    window.location = window.mailpoet_emails_page;
   });
 }
 
@@ -60,7 +60,7 @@ function renderFail() {
   return (
     <Fail
       failClicked={() => {
-        window.location = window.mailpoet_main_page;
+        window.location = window.mailpoet_emails_page;
       }}
     />
   );
