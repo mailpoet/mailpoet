@@ -34,7 +34,7 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
       []
     );
     $daemon = $this->diContainer->get(DaemonHttpRunner::class);
-    expect(strlen($daemon->timer))->greaterOrEquals(5);
+    expect(strlen((string)$daemon->timer))->greaterOrEquals(5);
     expect(strlen($daemon->token))->greaterOrEquals(5);
   }
 

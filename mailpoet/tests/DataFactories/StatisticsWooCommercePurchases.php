@@ -45,7 +45,7 @@ class StatisticsWooCommercePurchases {
       $this->click,
       $this->data['order_id'],
       $this->data['order_currency'],
-      $this->data['order_price_total']
+      (float)$this->data['order_price_total']
     );
     $entity->setSubscriber($this->subscriber);
 
