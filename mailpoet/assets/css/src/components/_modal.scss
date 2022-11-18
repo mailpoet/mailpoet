@@ -112,3 +112,11 @@
   max-width: 100%;
   width: 100%;
 }
+
+.authorize-sender-email-and-domain-modal {
+  z-index: 30; // overlay other modals
+}
+
+.authorize-sender-email-and-domain-modal-overlay {
+  z-index: $modal-screen-overlay-z-index + 4; // overlay other modals
+}
