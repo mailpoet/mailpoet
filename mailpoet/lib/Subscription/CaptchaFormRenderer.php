@@ -149,7 +149,7 @@ class CaptchaFormRenderer {
     $showErrorMessage = false
   ) {
     $settings = $formModel->getSettings() ?? [];
-    $formHtml = '<div class="mailpoet_message" role="region" aria-live="polite">';
+    $formHtml = '<div class="mailpoet_message" role="alert" aria-live="assertive">';
     $formHtml .= '<p class="mailpoet_validate_success" ' . ($showSuccessMessage ? '' : ' style="display:none;"') . '>' . $settings['success_message'] . '</p>';
     $formHtml .= '<p class="mailpoet_validate_error" ' . ($showErrorMessage ? '' : ' style="display:none;"') . '>' . __('The characters you entered did not match the CAPTCHA image. Please try again with this new image.', 'mailpoet') . '</p>';
     $formHtml .= '</div>';
