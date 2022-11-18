@@ -9,6 +9,7 @@ use MailPoet\AdminPages\Pages\ExperimentalFeatures;
 use MailPoet\AdminPages\Pages\FormEditor;
 use MailPoet\AdminPages\Pages\Forms;
 use MailPoet\AdminPages\Pages\Help;
+use MailPoet\AdminPages\Pages\Homepage;
 use MailPoet\AdminPages\Pages\Logs;
 use MailPoet\AdminPages\Pages\NewsletterEditor;
 use MailPoet\AdminPages\Pages\Newsletters;
@@ -21,6 +22,7 @@ use MailPoet\AdminPages\Pages\Upgrade;
 use MailPoet\AdminPages\Pages\WelcomeWizard;
 use MailPoet\AdminPages\Pages\WooCommerceSetup;
 use MailPoet\DI\ContainerWrapper;
+use MailPoet\Features\FeaturesController;
 use MailPoet\Form\Util\CustomFonts;
 use MailPoet\Util\License\License;
 use MailPoet\WP\Functions as WPFunctions;
@@ -51,13 +53,17 @@ class Menu {
   /** @var CustomFonts  */
   private $customFonts;
 
+  /** @var FeaturesController */
+  private $featuresController;
+
   public function __construct(
     AccessControl $accessControl,
     WPFunctions $wp,
     ServicesChecker $servicesChecker,
     ContainerWrapper $container,
     Router $router,
-    CustomFonts $customFonts
+    CustomFonts $customFonts,
+    FeaturesController $featuresController
   ) {
     $this->accessControl = $accessControl;
     $this->wp = $wp;
@@ -65,6 +71,7 @@ class Menu {
     $this->container = $container;
     $this->router = $router;
     $this->customFonts = $customFonts;
+    $this->featuresController = $featuresController;
   }
 
   public function init() {
@@ -164,6 +171,21 @@ class Menu {
         'newsletters',
       ]
     );
+
+    // Homepage
+    if ($this->featuresController->isSupported(FeaturesController::FEATURE_HOMEPAGE)) {
+      $this->wp->addSubmenuPage(
+        self::MAIN_PAGE_SLUG,
+        $this->setPageTitle(__('Home', 'mailpoet')),
+        esc_html__('Home', 'mailpoet'),
+        AccessControl::PERMISSION_ACCESS_PLUGIN_ADMIN,
+        'mailpoet-homepage',
+        [
+          $this,
+          'homepage',
+        ]
+      );
+    }
 
     // add limit per page to screen options
     $this->wp->addAction('load-' . $newslettersPage, function() {
@@ -489,6 +511,10 @@ class Menu {
 
   public function help() {
     $this->container->get(Help::class)->render();
+  }
+
+  public function homepage() {
+    $this->container->get(Homepage::class)->render();
   }
 
   public function automation() {
