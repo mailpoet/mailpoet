@@ -124,7 +124,7 @@ class DisplayFormInWPContent {
     $displayCheck = $this->wp->applyFilters('mailpoet_display_form_in_product_listing', true);
 
     $shopPageId = $this->woocommerceHelper->wcGetPageId('shop');
-    $this->wooShopPageId = $shopPageId && $shopPageId >= 0 ? $shopPageId : null;
+    $this->wooShopPageId = $shopPageId && $shopPageId > 0 ? $shopPageId : null;
 
     if ($displayCheck && !is_null($this->wooShopPageId) && $this->wp->isPage($this->wooShopPageId)) {
       return true;
