@@ -4,10 +4,10 @@ namespace MailPoet\Test\Subscription;
 
 use MailPoet\Entities\FormEntity;
 use MailPoet\Form\FormsRepository;
-use MailPoet\Subscription\CaptchaRenderer;
-use MailPoet\Subscription\CaptchaSession;
+use MailPoet\Subscription\CaptchaFormRenderer;
+use MailPoet\Subscription\Captcha\CaptchaSession;
 
-class CaptchaRendererTest extends \MailPoetTest
+class CaptchaFormRendererTest extends \MailPoetTest
 {
 
   public function testCaptchaSubmitTextIsConfigurable() {
@@ -37,7 +37,7 @@ class CaptchaRendererTest extends \MailPoetTest
     $captchaSession->init();
     $captchaSession->setFormData(['form_id' => $form->getId()]);
 
-    $testee = $this->diContainer->get(CaptchaRenderer::class);
+    $testee = $this->diContainer->get(CaptchaFormRenderer::class);
     $result = $testee->getCaptchaPageContent($captchaSession->getId());
     $this->assertStringContainsString('value="' . $expectedLabel . '"', $result);
   }
@@ -68,7 +68,7 @@ class CaptchaRendererTest extends \MailPoetTest
     $captchaSession->init();
     $captchaSession->setFormData(['form_id' => $form->getId()]);
 
-    $testee = $this->diContainer->get(CaptchaRenderer::class);
+    $testee = $this->diContainer->get(CaptchaFormRenderer::class);
     $result = $testee->getCaptchaPageContent($captchaSession->getId());
     $this->assertStringContainsString('value="Subscribe"', $result);
   }
