@@ -148,17 +148,6 @@ class Settings extends APIEndpoint {
         $this->messageController->updateSuccessMessages();
       }
 
-      $sendingMethodSet = $settings['mta']['method'] ?? null;
-      if ($sendingMethodSet === 'PHPMail') {
-        // check for valid mail function
-        $this->settings->set(DisabledMailFunctionNotice::QUEUE_DISABLED_MAIL_FUNCTION_CHECK, true);
-      } else {
-        // when the user switch to a new sending method
-        // do not display the DisabledMailFunctionNotice
-        $this->settings->set(DisabledMailFunctionNotice::QUEUE_DISABLED_MAIL_FUNCTION_CHECK, false);
-        $this->settings->set(DisabledMailFunctionNotice::OPTION_NAME, false); // do not display notice
-      }
-
       // Tracking and re-engagement Emails
       $meta['showNotice'] = false;
       if ($oldSettings['tracking'] !== $this->settings->get('tracking')) {
@@ -372,6 +361,19 @@ class Settings extends APIEndpoint {
     $newSendingMethod = $newSettings['mta_group'];
     if (($oldSendingMethod !== $newSendingMethod) && ($newSendingMethod === 'mailpoet')) {
       $this->settingsChangeHandler->onMSSActivate($newSettings);
+    }
+
+    if (($oldSendingMethod !== $newSendingMethod)) {
+      $sendingMethodSet = $newSettings['mta']['method'] ?? null;
+      if ($sendingMethodSet === 'PHPMail') {
+        // check for valid mail function
+        $this->settings->set(DisabledMailFunctionNotice::QUEUE_DISABLED_MAIL_FUNCTION_CHECK, true);
+      } else {
+        // when the user switch to a new sending method
+        // do not display the DisabledMailFunctionNotice
+        $this->settings->set(DisabledMailFunctionNotice::QUEUE_DISABLED_MAIL_FUNCTION_CHECK, false);
+        $this->settings->set(DisabledMailFunctionNotice::OPTION_NAME, false); // do not display notice
+      }
     }
 
     // Sync WooCommerce Customers list
