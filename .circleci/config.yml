@@ -311,7 +311,7 @@ jobs:
     parallelism: 20
     working_directory: /home/circleci/mailpoet/mailpoet
     machine:
-      image: ubuntu-2204:2022.07.1
+      image: ubuntu-2204:2022.10.2
     parameters:
       multisite:
         type: integer
@@ -476,7 +476,7 @@ jobs:
   integration_tests:
     working_directory: /home/circleci/mailpoet/mailpoet
     machine:
-      image: ubuntu-2204:2022.07.1
+      image: ubuntu-2204:2022.10.2
     environment:
       CODECEPTION_IMAGE_VERSION: << parameters.codeception_image_version >>
     parameters:
