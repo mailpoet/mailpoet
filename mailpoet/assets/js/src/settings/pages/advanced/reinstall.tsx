@@ -1,5 +1,6 @@
 import { useContext } from 'react';
 
+import { MailPoet } from 'mailpoet';
 import { Button } from 'common/button/button';
 import { t } from 'common/functions';
 import { GlobalContext } from 'context';
@@ -24,7 +25,7 @@ export function Reinstall() {
           { scroll: true },
         );
       } else {
-        window.location.href = 'admin.php?page=mailpoet-newsletters';
+        window.location.href = `admin.php?page=${MailPoet.mainPageSlug}`;
       }
     }
   };
