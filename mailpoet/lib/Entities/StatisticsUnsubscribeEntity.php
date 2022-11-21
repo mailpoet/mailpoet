@@ -55,6 +55,12 @@ class StatisticsUnsubscribeEntity {
    */
   private $meta;
 
+  /**
+   * @ORM\Column(type="string", nullable=false)
+   * @var string
+   */
+  private $method;
+
   public function __construct(
     NewsletterEntity $newsletter = null,
     SendingQueueEntity $queue = null,
@@ -107,5 +113,12 @@ class StatisticsUnsubscribeEntity {
    */
   public function getMeta() {
     return $this->meta;
+  }
+
+  /**
+   * @return string
+   */
+  public function getMethod() {
+    return $this->method;
   }
 }
