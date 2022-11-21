@@ -538,6 +538,7 @@ class Migration_20221028_105818 extends Migration {
       'queue_id int(11) unsigned NULL,',
       'created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,',
       "source varchar(255) DEFAULT 'unknown',",
+      "method varchar(40) NOT NULL DEFAULT 'unknown',",
       'meta varchar(255) NULL,',
       'PRIMARY KEY  (id),',
       'KEY newsletter_id_subscriber_id (newsletter_id, subscriber_id),',
