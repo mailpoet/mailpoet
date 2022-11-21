@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types = 1);
 
 namespace MailPoet\Analytics;
 
@@ -31,10 +31,7 @@ class UnsubscribeReporter {
     return $properties;
   }
 
-  /**
-   * @param string|null $methodKey
-   */
-  private function getMethodName($methodKey): string {
+  private function getMethodName(?string $methodKey): string {
     if ($methodKey === StatisticsUnsubscribeEntity::METHOD_ONE_CLICK) {
       return '1 Click';
     }

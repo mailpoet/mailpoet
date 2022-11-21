@@ -118,17 +118,11 @@ class StatisticsUnsubscribeEntity {
     return $this->meta;
   }
 
-  /**
-   * @param string $method
-   */
   public function setMethod(string $method) {
     $this->method = $method;
   }
   
-  /**
-   * @return string
-   */
-  public function getMethod() {
+  public function getMethod(): string {
     return $this->method;
   }
 }
