@@ -89,16 +89,12 @@ class Menu {
     // @ToDo Remove Beta once Automation is no longer beta.
     $this->wp->addAction('admin_head', function () {
       echo '<style>
-#adminmenu .toplevel_page_mailpoet-newsletters a[href="admin.php?page=mailpoet-automation"] {
-  display: flex;
-  gap: 8px;
-}
 .mailpoet-beta-badge {
-  background: #F0F0F1;
-  border-radius: 50px;
-  padding: 0 12px;
-  color: #1D2327;
-  font-weight: normal;
+  text-transform: uppercase;
+  font-size: 10px;
+  position: relative;
+  top: -5px;
+  color: #ffab66;
 }
 </style>';
     });
