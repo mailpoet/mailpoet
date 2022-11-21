@@ -291,6 +291,7 @@ class WorkerTest extends \MailPoetTest {
     $this->assertInstanceOf(SendingQueueEntity::class, $data['queue']);
     $this->assertInstanceOf(SubscriberEntity::class, $data['subscriber']);
     $entity = new StatisticsUnsubscribeEntity($data['newsletter'], $data['queue'], $data['subscriber']);
+    $entity->setMethod('unknown');
     $this->entityManager->persist($entity);
     if (isset($data['created_at'])) $entity->setCreatedAt(new Carbon($data['created_at']));
     $this->entityManager->flush();
