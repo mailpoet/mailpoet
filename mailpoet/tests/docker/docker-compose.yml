@@ -115,7 +115,7 @@ services:
       - DBUS_SESSION_BUS_ADDRESS=/dev/null
     volumes:
       - /dev/shm:/dev/shm
-    image: selenium/standalone-chrome:105.0.5195.52-20220831
+    image: selenium/standalone-chrome:107.0-20221104
     ports:
       - 4444
       - 5900:5900
