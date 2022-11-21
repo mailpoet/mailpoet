@@ -15,7 +15,7 @@ export function DeactivateImmediatelyModal({
   return (
     <Modal
       className="mailpoet-automatoin-deactivate-modal"
-      title={__('Stop automatoin for all subscribers?', 'mailpoet')}
+      title={__('Stop automation for all subscribers?', 'mailpoet')}
       onRequestClose={onClose}
     >
       <p>
