@@ -2,6 +2,7 @@
 
 namespace MailPoet\Migrator;
 
+use MailPoet\Config\Env;
 use MailPoet\DI\ContainerWrapper;
 use MailPoetVendor\Doctrine\DBAL\Connection;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
@@ -25,4 +26,15 @@ abstract class Migration {
   }
 
   abstract public function run(): void;
+
+  protected function createTable(string $tableName, array $attributes): void {
+    $prefix = Env::$dbPrefix;
+    $charsetCollate = Env::$dbCharsetCollate;
+    $sql = implode(",\n", $attributes);
+    $this->connection->executeStatement("
+      CREATE TABLE IF NOT EXISTS {$prefix}{$tableName} (
+        $sql
+      ) {$charsetCollate};
+    ");
+  }
 }
