@@ -1,6 +1,5 @@
 {
   "private": true,
-  "name": "MailPoet3",
   "browserslist": [
     "extends @wordpress/browserslist-config"
   ],
