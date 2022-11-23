@@ -685,8 +685,9 @@ class WooCommerceTest extends \MailPoetTest {
     $numberSql = !is_null($number) ? (int)$number : mt_rand();
     // add user
     $connection->executeQuery("
-      INSERT INTO {$wpdb->users} (user_login, user_email, user_registered)
+      INSERT INTO {$wpdb->users} (user_login, user_nicename, user_email, user_registered)
       VALUES (
+        CONCAT('user-sync-test', :number),
         CONCAT('user-sync-test', :number),
         CONCAT('user-sync-test', :number, '@example.com'),
         '2017-01-02 12:31:12'
