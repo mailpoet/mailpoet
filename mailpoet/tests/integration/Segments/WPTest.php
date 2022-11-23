@@ -634,9 +634,10 @@ class WPTest extends \MailPoetTest {
     $numberSql = !is_null($number) ? (int)$number : 'rand()';
     $db->exec(sprintf('
          INSERT INTO
-           %s (user_login, user_email, user_registered)
+           %s (user_login, user_nicename, user_email, user_registered)
            VALUES
            (
+             CONCAT("user-sync-test", ' . $numberSql . '),
              CONCAT("user-sync-test", ' . $numberSql . '),
              CONCAT("user-sync-test", ' . $numberSql . ', "@example.com"),
              "2017-01-02 12:31:12"
