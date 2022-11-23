@@ -82,6 +82,9 @@ class LoggerFactory {
         $this->loggerInstances[$name]->pushProcessor(new MemoryUsageProcessor());
       }
 
+      // Adds the plugin's versions to the log, we always want to see this
+      $this->loggerInstances[$name]->pushProcessor(new PluginVersionProcessor());
+
       $this->loggerInstances[$name]->pushHandler(new LogHandler(
         $this->logRepository,
         $this->entityManager,

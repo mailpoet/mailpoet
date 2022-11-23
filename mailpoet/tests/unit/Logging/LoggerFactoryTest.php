@@ -39,13 +39,13 @@ class LoggerFactoryTest extends \MailPoetUnitTest {
   public function testItAttachesProcessors() {
     $logger1 = $this->loggerFactory->getLogger('logger-with-processors', true);
     $processors = $logger1->getProcessors();
-    expect($processors)->notEmpty();
+    expect(count($processors))->greaterThan(1);
   }
 
   public function testItDoesNotAttachProcessors() {
     $logger1 = $this->loggerFactory->getLogger('logger-without-processors', false);
     $processors = $logger1->getProcessors();
-    expect($processors)->isEmpty();
+    expect($processors)->count(1);
   }
 
   public function testItAttachesHandler() {
