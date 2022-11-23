@@ -44,6 +44,7 @@ class SubscribersListingCest {
 
     $i->login();
     $i->amOnMailpoetPage('Subscribers');
+    $i->waitForText('All Tags');
     $i->selectOption('[data-automation-id="listing_filter_tag"]', $tag->getName());
     $i->waitForText('wp@mailpoet.com');
     $i->dontSee('wp@example.com');
