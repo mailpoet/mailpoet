@@ -154,6 +154,7 @@ class ManageSegmentsCest {
     $i->waitForText($segmentTrashedTitle . ' 2');
 
     $i->wantTo('Empty trash from other (2) segments');
+    $i->waitForElementClickable('[data-automation-id="empty_trash"]');
     $i->click('[data-automation-id="empty_trash"]');
     $i->waitForText('2 segments were permanently deleted.');
     $listingAutomationSelector = '[data-automation-id="listing_item_' . $segment->getId() . '"]';
