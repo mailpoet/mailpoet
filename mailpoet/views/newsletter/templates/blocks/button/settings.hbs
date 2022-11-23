@@ -41,7 +41,8 @@
     </div>
 </div>
 <div class="mailpoet_form_field mailpoet_form_narrow_select2">
-    <div class="mailpoet_form_field_input_option">
+    <div class="mailpoet_form_field_title"><%= __('Text') %></div>
+    <div class="mailpoet_form_field_input_option mailpoet_form_field_input_nowrap">
         <input type="text" name="font-color" id="mailpoet_field_button_font_color" class="mailpoet_field_button_font_color mailpoet_color" value="{{ model.styles.block.fontColor }}" />
         <select id="mailpoet_field_button_font_family" name="font-family" class="mailpoet_select mailpoet_select_medium mailpoet_field_button_font_family mailpoet_font_family">
         <optgroup label="<%= __('Standard fonts')%>">
@@ -61,7 +62,6 @@
         {{/each}}
         </select>
     </div>
-    <div class="mailpoet_form_field_title mailpoet_form_field_title_inline"><%= __('Text') %></div>
 </div>
 <div class="mailpoet_form_field">
     <div class="mailpoet_form_field_checkbox_option">
