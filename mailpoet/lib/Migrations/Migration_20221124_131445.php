@@ -12,12 +12,14 @@ class Migration_20221124_131445 extends Migration {
     $segmentsTable = $this->getTableName(SegmentEntity::class);
     $columnName = 'display_in_manage_subscription_page';
 
-    if (!$this->columnExists($segmentsTable, $columnName)) {
-      $this->connection->executeStatement("
-        ALTER TABLE {$segmentsTable}
-        ADD {$columnName} tinyint(1) NOT NULL DEFAULT 0
-      ");
+    if ($this->columnExists($segmentsTable, $columnName)) {
+      return;
     }
+
+    $this->connection->executeStatement("
+      ALTER TABLE {$segmentsTable}
+      ADD {$columnName} tinyint(1) NOT NULL DEFAULT 0
+    ");
 
     $settings = $this->container->get(SettingsController::class);
     $segmentIds = $settings->get('subscription.segments', []);
