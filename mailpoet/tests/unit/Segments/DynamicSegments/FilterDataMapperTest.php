@@ -65,7 +65,7 @@ class FilterDataMapperTest extends \MailPoetUnitTest {
     expect($filters)->array();
     expect($filters)->count(1);
     $filter = reset($filters);
-    assert($filter instanceof DynamicSegmentFilterData);
+    $this->assertInstanceOf(DynamicSegmentFilterData::class, $filter);
     expect($filter)->isInstanceOf(DynamicSegmentFilterData::class);
     expect($filter->getFilterType())->equals(DynamicSegmentFilterData::TYPE_EMAIL);
     expect($filter->getAction())->equals(EmailAction::ACTION_OPENED);
@@ -87,7 +87,7 @@ class FilterDataMapperTest extends \MailPoetUnitTest {
     expect($filters)->array();
     expect($filters)->count(1);
     $filter = reset($filters);
-    assert($filter instanceof DynamicSegmentFilterData);
+    $this->assertInstanceOf(DynamicSegmentFilterData::class, $filter);
     expect($filter)->isInstanceOf(DynamicSegmentFilterData::class);
     expect($filter->getFilterType())->equals(DynamicSegmentFilterData::TYPE_EMAIL);
     expect($filter->getAction())->equals(EmailAction::ACTION_CLICKED);
@@ -111,7 +111,7 @@ class FilterDataMapperTest extends \MailPoetUnitTest {
     expect($filters)->array();
     expect($filters)->count(1);
     $filter = reset($filters);
-    assert($filter instanceof DynamicSegmentFilterData);
+    $this->assertInstanceOf(DynamicSegmentFilterData::class, $filter);
     expect($filter)->isInstanceOf(DynamicSegmentFilterData::class);
     expect($filter->getFilterType())->equals(DynamicSegmentFilterData::TYPE_EMAIL);
     expect($filter->getAction())->equals(EmailAction::ACTION_CLICKED);
@@ -178,7 +178,7 @@ class FilterDataMapperTest extends \MailPoetUnitTest {
     expect($filters)->array();
     expect($filters)->count(1);
     $filter = reset($filters);
-    assert($filter instanceof DynamicSegmentFilterData);
+    $this->assertInstanceOf(DynamicSegmentFilterData::class, $filter);
     expect($filter)->isInstanceOf(DynamicSegmentFilterData::class);
     expect($filter->getFilterType())->equals(DynamicSegmentFilterData::TYPE_USER_ROLE);
     expect($filter->getAction())->equals('userRole');
@@ -216,7 +216,7 @@ class FilterDataMapperTest extends \MailPoetUnitTest {
     expect($filters)->array();
     expect($filters)->count(1);
     $filter = reset($filters);
-    assert($filter instanceof DynamicSegmentFilterData);
+    $this->assertInstanceOf(DynamicSegmentFilterData::class, $filter);
     expect($filter)->isInstanceOf(DynamicSegmentFilterData::class);
     expect($filter->getFilterType())->equals(DynamicSegmentFilterData::TYPE_USER_ROLE);
     expect($filter->getAction())->equals(SubscriberSubscribedDate::TYPE);
@@ -239,7 +239,7 @@ class FilterDataMapperTest extends \MailPoetUnitTest {
     expect($filters)->array();
     expect($filters)->count(1);
     $filter = reset($filters);
-    assert($filter instanceof DynamicSegmentFilterData);
+    $this->assertInstanceOf(DynamicSegmentFilterData::class, $filter);
     expect($filter)->isInstanceOf(DynamicSegmentFilterData::class);
     expect($filter->getFilterType())->equals(DynamicSegmentFilterData::TYPE_WOOCOMMERCE);
     expect($filter->getAction())->equals(WooCommerceCategory::ACTION_CATEGORY);
@@ -295,7 +295,7 @@ class FilterDataMapperTest extends \MailPoetUnitTest {
     expect($filters)->array();
     expect($filters)->count(1);
     $filter = reset($filters);
-    assert($filter instanceof DynamicSegmentFilterData);
+    $this->assertInstanceOf(DynamicSegmentFilterData::class, $filter);
     expect($filter)->isInstanceOf(DynamicSegmentFilterData::class);
     expect($filter->getFilterType())->equals(DynamicSegmentFilterData::TYPE_WOOCOMMERCE);
     expect($filter->getAction())->equals(WooCommerceProduct::ACTION_PRODUCT);
@@ -327,7 +327,7 @@ class FilterDataMapperTest extends \MailPoetUnitTest {
     expect($filters)->array();
     expect($filters)->count(1);
     $filter = reset($filters);
-    assert($filter instanceof DynamicSegmentFilterData);
+    $this->assertInstanceOf(DynamicSegmentFilterData::class, $filter);
     expect($filter)->isInstanceOf(DynamicSegmentFilterData::class);
     expect($filter->getFilterType())->equals(DynamicSegmentFilterData::TYPE_EMAIL);
     expect($filter->getAction())->equals(EmailOpensAbsoluteCountAction::TYPE);
@@ -349,7 +349,7 @@ class FilterDataMapperTest extends \MailPoetUnitTest {
     expect($filters)->array();
     expect($filters)->count(1);
     $filter = reset($filters);
-    assert($filter instanceof DynamicSegmentFilterData);
+    $this->assertInstanceOf(DynamicSegmentFilterData::class, $filter);
     expect($filter)->isInstanceOf(DynamicSegmentFilterData::class);
     expect($filter->getFilterType())->equals(DynamicSegmentFilterData::TYPE_EMAIL);
     expect($filter->getAction())->equals(EmailActionClickAny::TYPE);
@@ -370,7 +370,7 @@ class FilterDataMapperTest extends \MailPoetUnitTest {
     expect($filters)->array();
     expect($filters)->count(1);
     $filter = reset($filters);
-    assert($filter instanceof DynamicSegmentFilterData);
+    $this->assertInstanceOf(DynamicSegmentFilterData::class, $filter);
     expect($filter)->isInstanceOf(DynamicSegmentFilterData::class);
     expect($filter->getFilterType())->equals(DynamicSegmentFilterData::TYPE_EMAIL);
     expect($filter->getAction())->equals(EmailOpensAbsoluteCountAction::TYPE);
@@ -416,7 +416,7 @@ class FilterDataMapperTest extends \MailPoetUnitTest {
     expect($filters)->array();
     expect($filters)->count(1);
     $filter = reset($filters);
-    assert($filter instanceof DynamicSegmentFilterData);
+    $this->assertInstanceOf(DynamicSegmentFilterData::class, $filter);
 
     $expectedResult = reset($data['filters']);
     unset($expectedResult['some_mess'], $expectedResult['segmentType'], $expectedResult['action']);
@@ -451,7 +451,7 @@ class FilterDataMapperTest extends \MailPoetUnitTest {
     expect($filters)->array();
     expect($filters)->count(1);
     $filter = reset($filters);
-    assert($filter instanceof DynamicSegmentFilterData);
+    $this->assertInstanceOf(DynamicSegmentFilterData::class, $filter);
     expect($filter)->isInstanceOf(DynamicSegmentFilterData::class);
     expect($filter->getFilterType())->equals(DynamicSegmentFilterData::TYPE_WOOCOMMERCE_SUBSCRIPTION);
     expect($filter->getAction())->equals(WooCommerceSubscription::ACTION_HAS_ACTIVE);
@@ -508,7 +508,7 @@ class FilterDataMapperTest extends \MailPoetUnitTest {
     expect($filters)->array();
     expect($filters)->count(1);
     $filter = reset($filters);
-    assert($filter instanceof DynamicSegmentFilterData);
+    $this->assertInstanceOf(DynamicSegmentFilterData::class, $filter);
     expect($filter)->isInstanceOf(DynamicSegmentFilterData::class);
     expect($filter->getFilterType())->equals(DynamicSegmentFilterData::TYPE_WOOCOMMERCE);
     expect($filter->getAction())->equals(WooCommerceCountry::ACTION_CUSTOMER_COUNTRY);
@@ -550,7 +550,7 @@ class FilterDataMapperTest extends \MailPoetUnitTest {
     expect($filters)->array();
     expect($filters)->count(1);
     $filter = reset($filters);
-    assert($filter instanceof DynamicSegmentFilterData);
+    $this->assertInstanceOf(DynamicSegmentFilterData::class, $filter);
     expect($filter)->isInstanceOf(DynamicSegmentFilterData::class);
     expect($filter->getFilterType())->equals(DynamicSegmentFilterData::TYPE_USER_ROLE);
     expect($filter->getAction())->equals(SubscriberScore::TYPE);
@@ -582,7 +582,7 @@ class FilterDataMapperTest extends \MailPoetUnitTest {
     expect($filters)->array();
     expect($filters)->count(1);
     $filter = reset($filters);
-    assert($filter instanceof DynamicSegmentFilterData);
+    $this->assertInstanceOf(DynamicSegmentFilterData::class, $filter);
     expect($filter)->isInstanceOf(DynamicSegmentFilterData::class);
     expect($filter->getFilterType())->equals(DynamicSegmentFilterData::TYPE_USER_ROLE);
     expect($filter->getAction())->equals(SubscriberSegment::TYPE);
@@ -639,7 +639,7 @@ class FilterDataMapperTest extends \MailPoetUnitTest {
     expect($filters)->array();
     expect($filters)->count(1);
     $filter = reset($filters);
-    assert($filter instanceof DynamicSegmentFilterData);
+    $this->assertInstanceOf(DynamicSegmentFilterData::class, $filter);
     expect($filter)->isInstanceOf(DynamicSegmentFilterData::class);
     expect($filter->getFilterType())->equals(DynamicSegmentFilterData::TYPE_USER_ROLE);
     expect($filter->getAction())->equals(MailPoetCustomFields::TYPE);
@@ -676,7 +676,7 @@ class FilterDataMapperTest extends \MailPoetUnitTest {
     expect($filters)->array();
     expect($filters)->count(1);
     $filter = reset($filters);
-    assert($filter instanceof DynamicSegmentFilterData);
+    $this->assertInstanceOf(DynamicSegmentFilterData::class, $filter);
     expect($filter)->isInstanceOf(DynamicSegmentFilterData::class);
     expect($filter->getFilterType())->equals(DynamicSegmentFilterData::TYPE_USER_ROLE);
     expect($filter->getAction())->equals(SubscriberTag::TYPE);

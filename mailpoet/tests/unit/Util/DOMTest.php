@@ -16,9 +16,9 @@ class DOMTest extends \MailPoetUnitTest {
 
   public function testItDeepSplitsDOMTreeByElement() {
     $a = $this->root->query('a');
-    assert($a instanceof pQuery);
+    $this->assertInstanceOf(pQuery::class, $a);
     $aElement = $a->offsetGet(0);
-    assert($aElement instanceof DomNode);
+    $this->assertInstanceOf(DomNode::class, $aElement);
     DOMUtil::splitOn($this->root, $aElement);
 
     expect($this->root->html())->equals(
@@ -30,12 +30,12 @@ class DOMTest extends \MailPoetUnitTest {
 
   public function testItFindsTopAncestor() {
     $img = $this->root->query('img');
-    assert($img instanceof pQuery);
+    $this->assertInstanceOf(pQuery::class, $img);
     $image = $img->offsetGet(0);
-    assert($image instanceof DomNode);
+    $this->assertInstanceOf(DomNode::class, $image);
 
     $p = $this->root->query('p');
-    assert($p instanceof pQuery);
+    $this->assertInstanceOf(pQuery::class, $p);
     $paragraph = $p->offsetGet(0);
 
     expect(DOMUtil::findTopAncestor($image))->equals($paragraph);
