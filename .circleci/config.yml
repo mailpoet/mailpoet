@@ -312,6 +312,7 @@ jobs:
     working_directory: /home/circleci/mailpoet/mailpoet
     machine:
       image: ubuntu-2204:2022.10.2
+      docker_layer_caching: false
     parameters:
       multisite:
         type: integer
@@ -477,6 +478,7 @@ jobs:
     working_directory: /home/circleci/mailpoet/mailpoet
     machine:
       image: ubuntu-2204:2022.10.2
+      docker_layer_caching: false
     environment:
       CODECEPTION_IMAGE_VERSION: << parameters.codeception_image_version >>
     parameters:
