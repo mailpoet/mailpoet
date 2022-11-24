@@ -126,23 +126,24 @@ You can access this help in your command line running `./do` without parameters.
 
 [Read the article.](https://mailpoet.atlassian.net/wiki/spaces/MAILPOET/pages/629374977/Adding+new+templates+to+the+plugin)
 
-## 🚥 Testing with PHP 7.4 or PHP 8.0
+## 🚥 Testing with different PHP versions
 
-To switch the environment to PHP 7.4/8.0:
+To switch the environment to a different PHP version:
 
-1. Configure the `wordpress` service in `docker-compose.override.yml` to build from the php74 Dockerfile:
+1. Check https://github.com/mailpoet/mailpoet/tree/trunk/dev for a list of available PHP versions. Each directory starting with `php` corresponds to a available version.
+2. Configure the `wordpress` service in `docker-compose.override.yml` to build from the desired PHP version Dockerfile (replace {PHP_VERSION} with the name of the directory that corresponds to the version that you want to use):
 
    ```yaml
    wordpress:
      build:
        context: .
-       dockerfile: dev/php74/Dockerfile # OR dev/php80/Dockerfile
+       dockerfile: dev/{PHP_VERSION}/Dockerfile
    ```
 
-2. Run `docker-compose build wordpress`.
-3. Start the stack with `./do start`.
+3. Run `docker-compose build wordpress`.
+4. Start the stack with `./do start`.
 
-To switch back to PHP 8.1 remove what was added in 1) and, run `docker-compose build wordpress` for application container and `docker-compose build test_wordpress` for tests container,
+To switch back to the default PHP version remove what was added in 2) and, run `docker-compose build wordpress` for application container and `docker-compose build test_wordpress` for tests container,
 and start the stack using `./do start`.
 
 ## ✅ TODO
