@@ -2,61 +2,40 @@
 
 namespace MailPoet\Migrations;
 
-use MailPoet\Config\Env;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Migrator\Migration;
 use MailPoet\Settings\SettingsController;
+use MailPoetVendor\Doctrine\DBAL\Connection;
 
 class Migration_20221108_140545 extends Migration {
-  /** @var string */
-  private $prefix;
-
-  /** @var SettingsController */
-  private $settings;
-
   public function run(): void {
-    $this->prefix = Env::$dbPrefix;
-    $this->settings = $this->container->get(SettingsController::class);
+    $segmentsTable = $this->getTableName(SegmentEntity::class);
+    $columnName = 'display_in_manage_subscription_page';
 
-    $this->migrateSegmentDisplaySettingsOnManageSubscriptionPage();
-  }
-
-  private function migrateSegmentDisplaySettingsOnManageSubscriptionPage(): bool {
-    global $wpdb;
-    $segmentsTable = esc_sql("{$this->prefix}segments");
-
-    // Add display_in_manage_subscription_page column in case it doesn't exist
-    $displayInManageSubscriptionPageColumnExists = $wpdb->get_results($wpdb->prepare("
-      SELECT COLUMN_NAME
-      FROM INFORMATION_SCHEMA.COLUMNS
-      WHERE table_name = %s AND column_name = 'display_in_manage_subscription_page';
-     ", $segmentsTable));
-
-    if (empty($displayInManageSubscriptionPageColumnExists)) {
-      $addNewColumnQuery = "
-        ALTER TABLE `$segmentsTable`
-        ADD `display_in_manage_subscription_page` tinyint(1) NOT NULL DEFAULT 0;
-      ";
-      $wpdb->query($addNewColumnQuery);
+    if (!$this->columnExists($segmentsTable, $columnName)) {
+      $this->connection->executeStatement("
+        ALTER TABLE {$segmentsTable}
+        ADD {$columnName} tinyint(1) NOT NULL DEFAULT 0
+      ");
     }
 
-    $segmentIds = $this->settings->get('subscription.segments', []);
+    $settings = $this->container->get(SettingsController::class);
+    $segmentIds = $settings->get('subscription.segments', []);
+    if ($segmentIds) {
+      // display only segments from settings.subscription.segments
+      $this->connection->executeStatement("
+        UPDATE {$segmentsTable}
+        SET {$columnName} = 1
+        WHERE id IN (?)
+      ", [$segmentIds], [Connection::PARAM_INT_ARRAY]);
 
-    if (!empty($segmentIds)) {
-      // when a segment exist in the list (subscription.segments), show only that segment, do not display the other segments
-      foreach ($segmentIds as $segmentId) {
-        $wpdb->update($segmentsTable, [
-          'display_in_manage_subscription_page' => 1,
-        ], ['id' => $segmentId]);
-      }
-
-      $this->settings->set('subscription.segments', []);
+      $settings->set('subscription.segments', []);
     } else {
-      $wpdb->update($segmentsTable, [
-        'display_in_manage_subscription_page' => 1,
-      ], ['type' => SegmentEntity::TYPE_DEFAULT]);
+      $this->connection->executeStatement("
+        UPDATE {$segmentsTable}
+        SET {$columnName} = 1
+        WHERE type = ?
+      ", [SegmentEntity::TYPE_DEFAULT]);
     }
-
-    return true;
   }
 }
