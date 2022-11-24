@@ -48,7 +48,7 @@ class ColumnTest extends \MailPoetUnitTest {
     $block['params']['width'] = 'px';
     $html = $this->columns->render($block, 'content');
     $column = $this->htmlParser->getElementByXpath($html, '//div[@class="mailpoet_form_column"]');
-    assert($column->attributes instanceof \DOMNamedNodeMap);
+    $this->assertInstanceOf(\DOMNamedNodeMap::class, $column->attributes);
     expect($column->attributes->getNamedItem('style'))->null();
   }
 

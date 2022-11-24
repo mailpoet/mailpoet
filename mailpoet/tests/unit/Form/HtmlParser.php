@@ -2,6 +2,8 @@
 
 namespace MailPoet\Test\Form;
 
+use PHPUnit\Framework\Assert;
+
 class HtmlParser {
 
   private $allowedHtml5Tags = ['<figure', '<figcaption'];
@@ -27,20 +29,20 @@ class HtmlParser {
   public function getElementByXpath(string $html, string $xpath, int $index = 0): \DOMElement {
     $value = $this->findByXpath($html, $xpath);
     $element = $value->item($index);
-    assert($element instanceof \DOMElement);
+    Assert::assertInstanceOf(\DOMElement::class, $element);
     return $element;
   }
 
   public function getChildElement(\DOMElement $element, string $tagName, int $index = 0): \DOMElement {
     $result = $element->getElementsByTagName($tagName)->item($index);
-    assert($result instanceof \DOMElement);
+    Assert::assertInstanceOf(\DOMElement::class, $result);
     return $result;
   }
 
   public function getAttribute(\DOMElement $element, string $attrNam): \DOMAttr {
-    assert($element->attributes instanceof \DOMNamedNodeMap);
+    Assert::assertInstanceOf(\DOMNamedNodeMap::class, $element->attributes);
     $attr = $element->attributes->getNamedItem($attrNam);
-    assert($attr instanceof \DOMAttr);
+    Assert::assertInstanceOf(\DOMAttr::class, $attr);
     return $attr;
   }
 }
