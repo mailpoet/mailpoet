@@ -1251,11 +1251,6 @@ parameters:
 			path: ../../tests/integration/Settings/SettingsControllerTest.php
 
 		-
-			message: "#^Parameter \\#1 \\$jsonData of method MailPoet\\\\Subscribers\\\\ImportExport\\\\Export\\\\ExportTest\\:\\:createExport\\(\\) expects array, mixed given\\.$#"
-			count: 1
-			path: ../../tests/integration/Subscribers/ImportExport/Export/ExportTest.php
-
-		-
 			message: "#^Property MailPoet\\\\Subscribers\\\\ImportExport\\\\Export\\\\ExportTest\\:\\:\\$jSONData \\(array\\) does not accept mixed\\.$#"
 			count: 1
 			path: ../../tests/integration/Subscribers/ImportExport/Export/ExportTest.php
