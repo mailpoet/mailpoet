@@ -9,6 +9,7 @@ use MailPoet\Test\DataFactories\Form;
 use MailPoet\Test\DataFactories\Newsletter;
 use MailPoet\Test\DataFactories\Segment;
 use MailPoet\Test\DataFactories\User;
+use PHPUnit\Framework\Assert;
 
 class ManageListsCest {
   public function viewLists(\AcceptanceTester $i) {
@@ -243,7 +244,7 @@ class ManageListsCest {
     $subject = 'Blocking Post Notification';
 
     $segment = ContainerWrapper::getInstance()->get(SegmentsRepository::class)->findOneById(1);
-    assert($segment instanceof SegmentEntity);
+    Assert::assertInstanceOf(SegmentEntity::class, $segment);
 
     $newsletterFactory = new Newsletter();
     $newsletterFactory
