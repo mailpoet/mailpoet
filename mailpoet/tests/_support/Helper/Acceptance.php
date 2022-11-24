@@ -4,6 +4,7 @@ namespace Helper;
 
 use Codeception\Module\WebDriver;
 use Codeception\TestInterface;
+use PHPUnit\Framework\Assert;
 
 // here you can define custom actions
 // all public methods declared in helper class will be available in $I
@@ -19,7 +20,7 @@ class Acceptance extends \Codeception\Module {
    */
   public function seeNoJSErrors() {
     $wd = $this->getModule('WPWebDriver');
-    assert($wd instanceof WebDriver);
+    Assert::assertInstanceOf(WebDriver::class, $wd);
 
     try {
       $logEntries = array_slice(
@@ -48,7 +49,7 @@ class Acceptance extends \Codeception\Module {
 
   public function getCurrentUrl() {
     $wd = $this->getModule('WPWebDriver');
-    assert($wd instanceof WebDriver);
+    Assert::assertInstanceOf(WebDriver::class, $wd);
     return $wd->_getCurrentUri();
   }
 
