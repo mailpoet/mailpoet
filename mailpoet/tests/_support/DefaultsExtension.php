@@ -50,6 +50,9 @@ class DefaultsExtension extends Extension {
 
     // Make sure WP cron is not locked so that tests that rely on it don't timeout
     delete_transient('doing_cron');
+
+    // Hide black Friday notice, because it can cause tests flakiness
+    set_transient('dismissed-black-friday-notice', true, 3600 * 24);
   }
 
   private function setupWooCommerce() {
