@@ -32,6 +32,12 @@
   </rule>
   <rule ref="SlevomatCodingStandard.Namespaces.RequireOneNamespaceInFile"/>
 
+  <rule ref="Generic.PHP.ForbiddenFunctions">
+    <properties>
+      <property name="forbiddenFunctions" type="array" value="assert=>null"/>
+    </properties>
+  </rule>
+
   <!-- Namespaces - "use" statements -->
   <rule ref="PSR2.Namespaces.UseDeclaration"/> <!-- One namespace per use, one blank line after final use statement -->
   <rule ref="SlevomatCodingStandard.Namespaces.UseDoesNotStartWithBackslash"/>
