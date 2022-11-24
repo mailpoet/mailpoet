@@ -9,6 +9,7 @@ use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\StatisticsClickEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
+use PHPUnit\Framework\Assert;
 
 class StatisticsClicks {
   protected $data;
@@ -38,9 +39,9 @@ class StatisticsClicks {
   public function create(): StatisticsClickEntity {
     $entityManager = ContainerWrapper::getInstance()->get(EntityManager::class);
     $newsletter = $this->newsletterLink->getNewsletter();
-    assert($newsletter instanceof NewsletterEntity);
+    Assert::assertInstanceOf(NewsletterEntity::class, $newsletter);
     $queue = $newsletter->getLatestQueue();
-    assert($queue instanceof SendingQueueEntity);
+    Assert::assertInstanceOf(SendingQueueEntity::class, $queue);
     $entity = new StatisticsClickEntity(
       $newsletter,
       $queue,

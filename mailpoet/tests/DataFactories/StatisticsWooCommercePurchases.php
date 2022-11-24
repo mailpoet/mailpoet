@@ -9,6 +9,7 @@ use MailPoet\Entities\StatisticsClickEntity;
 use MailPoet\Entities\StatisticsWooCommercePurchaseEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
+use PHPUnit\Framework\Assert;
 
 class StatisticsWooCommercePurchases {
   protected $data;
@@ -34,10 +35,10 @@ class StatisticsWooCommercePurchases {
 
   public function create(): StatisticsWooCommercePurchaseEntity {
     $newsletter = $this->click->getNewsletter();
-    assert($newsletter instanceof NewsletterEntity);
+    Assert::assertInstanceOf(NewsletterEntity::class, $newsletter);
     $queue = $newsletter->getLatestQueue();
-    assert($queue instanceof SendingQueueEntity);
-    assert($this->subscriber instanceof SubscriberEntity);
+    Assert::assertInstanceOf(SendingQueueEntity::class, $queue);
+    Assert::assertInstanceOf(SubscriberEntity::class, $this->subscriber);
     $entity = new StatisticsWooCommercePurchaseEntity(
       $newsletter,
       $queue,
