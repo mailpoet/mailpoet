@@ -84,7 +84,7 @@ class UserRegistrationTriggerTest extends \MailPoetTest {
       $this->assertSame(SubscriberSubject::KEY, $subjects[1]->getKey());
 
       $wpUserSegment = $this->segmentRepository->getWPUsersSegment();
-      assert($wpUserSegment instanceof SegmentEntity);
+      $this->assertInstanceOf(SegmentEntity::class, $wpUserSegment);
       $this->assertSame($wpUserSegment->getId(), $subjects[0]->getArgs()['segment_id']);
       $this->assertSame($subscriber->getId(), $subjects[1]->getArgs()['subscriber_id']);
     });

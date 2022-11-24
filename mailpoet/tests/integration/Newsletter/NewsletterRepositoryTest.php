@@ -53,11 +53,11 @@ class NewsletterRepositoryTest extends \MailPoetTest {
 
     // Should trash sending queue and task
     $standardQueue = $standardNewsletter->getLatestQueue();
-    assert($standardQueue instanceof SendingQueueEntity);
+    $this->assertInstanceOf(SendingQueueEntity::class, $standardQueue);
     $this->entityManager->refresh($standardQueue);
     expect($standardQueue->getDeletedAt())->notNull();
     $scheduledTask = $standardQueue->getTask();
-    assert($scheduledTask instanceof ScheduledTaskEntity);
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $scheduledTask);
     $this->entityManager->refresh($scheduledTask);
     expect($scheduledTask->getDeletedAt())->notNull();
 
@@ -65,11 +65,11 @@ class NewsletterRepositoryTest extends \MailPoetTest {
     $this->entityManager->refresh($notificationHistory);
     expect($notificationHistory->getDeletedAt())->notNull();
     $notificationHistory = $notificationHistory->getLatestQueue();
-    assert($notificationHistory instanceof SendingQueueEntity);
+    $this->assertInstanceOf(SendingQueueEntity::class, $notificationHistory);
     $this->entityManager->refresh($notificationHistory);
     expect($notificationHistory->getDeletedAt())->notNull();
     $scheduledTask = $notificationHistory->getTask();
-    assert($scheduledTask instanceof ScheduledTaskEntity);
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $scheduledTask);
     $this->entityManager->refresh($scheduledTask);
     expect($scheduledTask->getDeletedAt())->notNull();
   }
@@ -95,11 +95,11 @@ class NewsletterRepositoryTest extends \MailPoetTest {
 
     // Should restore sending queue and task
     $standardQueue = $standardNewsletter->getLatestQueue();
-    assert($standardQueue instanceof SendingQueueEntity);
+    $this->assertInstanceOf(SendingQueueEntity::class, $standardQueue);
     $this->entityManager->refresh($standardQueue);
     expect($standardQueue->getDeletedAt())->null();
     $scheduledTask = $standardQueue->getTask();
-    assert($scheduledTask instanceof ScheduledTaskEntity);
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $scheduledTask);
     $this->entityManager->refresh($scheduledTask);
     expect($scheduledTask->getDeletedAt())->null();
     // Pause sending tasks which were in progress
@@ -109,11 +109,11 @@ class NewsletterRepositoryTest extends \MailPoetTest {
     $this->entityManager->refresh($notificationHistory);
     expect($notificationHistory->getDeletedAt())->null();
     $notificationHistoryQueue = $notificationHistory->getLatestQueue();
-    assert($notificationHistoryQueue instanceof SendingQueueEntity);
+    $this->assertInstanceOf(SendingQueueEntity::class, $notificationHistoryQueue);
     $this->entityManager->refresh($notificationHistoryQueue);
     expect($notificationHistoryQueue->getDeletedAt())->null();
     $scheduledTask = $notificationHistoryQueue->getTask();
-    assert($scheduledTask instanceof ScheduledTaskEntity);
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $scheduledTask);
     $this->entityManager->refresh($scheduledTask);
     expect($scheduledTask->getDeletedAt())->null();
     expect($scheduledTask->getStatus())->equals(ScheduledTaskEntity::STATUS_SCHEDULED);
@@ -127,23 +127,23 @@ class NewsletterRepositoryTest extends \MailPoetTest {
     $notificationHistoryQueue = $this->createQueueWithTaskAndSegmentAndSubscribers($notificationHistory);
 
     $standardSegment = $standardNewsletter->getNewsletterSegments()->first();
-    assert($standardSegment instanceof NewsletterSegmentEntity);
+    $this->assertInstanceOf(NewsletterSegmentEntity::class, $standardSegment);
     $standardScheduledTaks = $standardQueue->getTask();
-    assert($standardScheduledTaks instanceof ScheduledTaskEntity);
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $standardScheduledTaks);
     $standardScheduledTaskSubscriber = $this->taskSubscribersRepository->findOneBy(['task' => $standardScheduledTaks]);
-    assert($standardScheduledTaskSubscriber instanceof ScheduledTaskSubscriberEntity);
+    $this->assertInstanceOf(ScheduledTaskSubscriberEntity::class, $standardScheduledTaskSubscriber);
     $notificationHistoryScheduledTask = $notificationHistoryQueue->getTask();
-    assert($notificationHistoryScheduledTask instanceof ScheduledTaskEntity);
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $notificationHistoryScheduledTask);
     $notificationHistorySegment = $notificationHistory->getNewsletterSegments()->first();
-    assert($notificationHistorySegment instanceof NewsletterSegmentEntity);
+    $this->assertInstanceOf(NewsletterSegmentEntity::class, $notificationHistorySegment);
     $notificationHistoryScheduledTaskSubscriber = $this->taskSubscribersRepository->findOneBy(['task' => $notificationHistoryScheduledTask]);
-    assert($notificationHistoryScheduledTaskSubscriber instanceof ScheduledTaskSubscriberEntity);
+    $this->assertInstanceOf(ScheduledTaskSubscriberEntity::class, $notificationHistoryScheduledTaskSubscriber);
     $standardStatsNotification = $this->createStatNotification($standardNewsletter);
     $standardStatsNotificationScheduledTask = $standardStatsNotification->getTask();
-    assert($standardStatsNotificationScheduledTask instanceof ScheduledTaskEntity);
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $standardStatsNotificationScheduledTask);
     $notificationHistoryStatsNotification = $this->createStatNotification($notificationHistory);
     $notificationHistoryStatsNotificationScheduledTask = $notificationHistoryStatsNotification->getTask();
-    assert($notificationHistoryStatsNotificationScheduledTask instanceof ScheduledTaskEntity);
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $notificationHistoryStatsNotificationScheduledTask);
     $standardLink = $this->createNewsletterLink($standardNewsletter, $standardQueue);
     $notificationHistoryLink = $this->createNewsletterLink($notificationHistory, $notificationHistoryQueue);
     $optionField = $this->createNewsletterOptionField(NewsletterEntity::TYPE_NOTIFICATION, 'option');
@@ -151,7 +151,7 @@ class NewsletterRepositoryTest extends \MailPoetTest {
     $newsletterPost = $this->createNewsletterPost($notification, 1);
 
     $subscriber = $standardScheduledTaskSubscriber->getSubscriber();
-    assert($subscriber instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
     $statisticsNewsletter = $this->createNewsletterStatistics($standardNewsletter, $standardQueue, $subscriber);
     $statisticsOpen = $this->createOpenStatistics($standardNewsletter, $standardQueue, $subscriber);
     $statisticsClick = $this->createClickStatistics($standardNewsletter, $standardQueue, $subscriber, $standardLink);

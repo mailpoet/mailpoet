@@ -57,7 +57,7 @@ class SendingQueueTest extends \MailPoetTest {
     $queue->save();
 
     $queue = SendingQueue::findOne($queue->id);
-    assert($queue instanceof SendingQueue);
+    $this->assertInstanceOf(SendingQueue::class, $queue);
 
     /** @var string queue_newsletter_rendered_body */
     $queueNewsletterRenderedBody = $queue->newsletterRenderedBody;
@@ -67,7 +67,7 @@ class SendingQueueTest extends \MailPoetTest {
 
   public function testItJsonEncodesMetaWhenSaving() {
     $queue = SendingQueue::create();
-    assert($queue instanceof SendingQueue);
+    $this->assertInstanceOf(SendingQueue::class, $queue);
     $meta = [
       'some' => 'value',
     ];
@@ -77,7 +77,7 @@ class SendingQueueTest extends \MailPoetTest {
     $queue->save();
 
     $queue = SendingQueue::findOne($queue->id);
-    assert($queue instanceof SendingQueue);
+    $this->assertInstanceOf(SendingQueue::class, $queue);
 
     expect(Helpers::isJson($queue->meta))->true();
     assert(is_string($queue->meta));
@@ -93,7 +93,7 @@ class SendingQueueTest extends \MailPoetTest {
     $queue->save();
 
     $queue = SendingQueue::findOne($queue->id);
-    assert($queue instanceof SendingQueue);
+    $this->assertInstanceOf(SendingQueue::class, $queue);
 
     expect(Helpers::isJson($queue->meta))->false();
     expect($queue->meta)->equals($meta);
@@ -112,13 +112,13 @@ class SendingQueueTest extends \MailPoetTest {
       ]
     );
     $sendingQueue = SendingQueue::findOne($queue->id);
-    assert($sendingQueue instanceof SendingQueue);
+    $this->assertInstanceOf(SendingQueue::class, $sendingQueue);
     expect($sendingQueue->newsletterRenderedBody)->equals(serialize($newsletterRenderedBody));
 
     // re-saving the queue will re-rencode the body using json_encode()
     $sendingQueue->save();
     $sendingQueue = SendingQueue::findOne($queue->id);
-    assert($sendingQueue instanceof SendingQueue);
+    $this->assertInstanceOf(SendingQueue::class, $sendingQueue);
     expect($sendingQueue->newsletterRenderedBody)->equals(json_encode($newsletterRenderedBody));
   }
 

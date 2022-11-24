@@ -85,7 +85,7 @@ class SubscriptionTest extends \MailPoetTest {
     $wpUsers = get_users();
     wp_set_current_user($wpUsers[0]->ID);
     $subscriber = $this->subscribersRepository->getCurrentWPUser();
-    assert($subscriber instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
     $this->subscribeToSegment($subscriber, $this->wcSegment);
     expect($this->getRenderedOptinField())->stringContainsString('checked');
   }
@@ -95,7 +95,7 @@ class SubscriptionTest extends \MailPoetTest {
     $wpUsers = get_users();
     wp_set_current_user($wpUsers[0]->ID);
     $subscriber = $this->subscribersRepository->getCurrentWPUser();
-    assert($subscriber instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
     $this->unsubscribeToSegment($subscriber, $this->wcSegment);
     expect($this->getRenderedOptinField())->stringNotContainsString('checked');
   }
@@ -169,7 +169,7 @@ class SubscriptionTest extends \MailPoetTest {
     $this->subscribeToSegment($this->subscriber, $this->wcSegment);
     $this->entityManager->clear();
     $subscriber = $this->subscribersRepository->findOneById($this->subscriber->getId());
-    assert($subscriber instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
     $subscribedSegments = $subscriber->getSegments();
     expect($subscribedSegments)->count(1);
 
@@ -184,7 +184,7 @@ class SubscriptionTest extends \MailPoetTest {
 
     $this->entityManager->clear();
     $subscriber = $this->subscribersRepository->findOneById($this->subscriber->getId());
-    assert($subscriber instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
     expect($subscriber->getStatus())->equals(SubscriberEntity::STATUS_UNSUBSCRIBED);
     $unsubscribeLog = $this->entityManager->getRepository(StatisticsUnsubscribeEntity::class)->findOneBy(['subscriber' => $subscriber]);
     $this->assertInstanceOf(StatisticsUnsubscribeEntity::class, $unsubscribeLog);
@@ -221,7 +221,7 @@ class SubscriptionTest extends \MailPoetTest {
 
     $this->entityManager->clear();
     $subscriber = $this->subscribersRepository->findOneById($this->subscriber->getId());
-    assert($subscriber instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
     $subscribedSegments = $subscriber->getSegments()->toArray();
     expect($subscribedSegments)->count(2);
 
@@ -233,7 +233,7 @@ class SubscriptionTest extends \MailPoetTest {
 
     $this->entityManager->clear();
     $subscriber = $this->subscribersRepository->findOneById($this->subscriber->getId());
-    assert($subscriber instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
     expect($subscriber->getSource())->equals(Source::WOOCOMMERCE_CHECKOUT);
     expect($subscriber->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
     expect($subscriber->getConfirmedIp())->notEmpty();
@@ -252,7 +252,7 @@ class SubscriptionTest extends \MailPoetTest {
 
     $this->entityManager->clear();
     $subscriber = $this->subscribersRepository->findOneById($this->subscriber->getId());
-    assert($subscriber instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
     $subscribedSegments = $subscriber->getSegments();
     expect($subscribedSegments)->count(0);
 
@@ -268,12 +268,12 @@ class SubscriptionTest extends \MailPoetTest {
 
     $this->entityManager->clear();
     $subscriber = $this->subscribersRepository->findOneById($this->subscriber->getId());
-    assert($subscriber instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
     $subscribedSegments = $subscriber->getSegments();
     expect($subscribedSegments)->count(1);
 
     $subscriber = $this->subscribersRepository->findOneById($this->subscriber->getId());
-    assert($subscriber instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
     expect($subscriber->getSource())->equals(Source::WOOCOMMERCE_CHECKOUT);
     expect($subscriber->getStatus())->equals(SubscriberEntity::STATUS_UNCONFIRMED);
   }

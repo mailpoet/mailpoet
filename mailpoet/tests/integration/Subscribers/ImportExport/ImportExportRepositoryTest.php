@@ -63,12 +63,12 @@ class ImportExportRepositoryTest extends \MailPoetTest {
     $subscribers = $this->subscribersRepository->findAll();
     expect($subscribers)->count(2);
     $user1 = $subscribers[0];
-    assert($user1 instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $user1);
     expect($user1->getEmail())->equals('user1@export-test.com');
     expect($user1->getFirstName())->equals('One');
     expect($user1->getLastName())->equals('User');
     $user2 = $subscribers[1];
-    assert($user2 instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $user2);
     expect($user2->getEmail())->equals('user2@export-test.com');
     expect($user2->getFirstName())->equals('Two');
     expect($user2->getLastName())->equals('User');
@@ -99,13 +99,13 @@ class ImportExportRepositoryTest extends \MailPoetTest {
     $subscribers = $this->subscribersRepository->findAll();
     expect($subscribers)->count(2);
     $user1 = $subscribers[0];
-    assert($user1 instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $user1);
     expect($user1->getEmail())->equals('user1@export-test.com');
     expect($user1->getFirstName())->equals('OneOne');
     expect($user1->getLastName())->equals('UserOne');
     expect($user1->getUpdatedAt())->equals($updatedAt);
     $user2 = $subscribers[1];
-    assert($user2 instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $user2);
     expect($user2->getEmail())->equals('user2@export-test.com');
     expect($user2->getFirstName())->equals('TwoTwo');
     expect($user2->getLastName())->equals('UserTwo');
@@ -135,12 +135,12 @@ class ImportExportRepositoryTest extends \MailPoetTest {
     $customFields = $this->subscriberCustomFieldRepository->findAll();
     expect($customFields)->count(2);
     $subscriberCustomField1 = $customFields[0];
-    assert($subscriberCustomField1 instanceof SubscriberCustomFieldEntity);
+    $this->assertInstanceOf(SubscriberCustomFieldEntity::class, $subscriberCustomField1);
     expect($subscriberCustomField1->getSubscriber())->equals($subscriber1);
     expect($subscriberCustomField1->getCustomField())->equals($customField);
     expect($subscriberCustomField1->getValue())->equals('20');
     $subscriberCustomField2 = $customFields[1];
-    assert($subscriberCustomField2 instanceof SubscriberCustomFieldEntity);
+    $this->assertInstanceOf(SubscriberCustomFieldEntity::class, $subscriberCustomField2);
     expect($subscriberCustomField2->getSubscriber())->equals($subscriber2);
     expect($subscriberCustomField2->getCustomField())->equals($customField);
     expect($subscriberCustomField2->getValue())->equals('25');
@@ -176,16 +176,16 @@ class ImportExportRepositoryTest extends \MailPoetTest {
     $this->customFieldsRepository->findAll();
     $subscriberCustomFields = $this->subscriberCustomFieldRepository->findAll();
     $subscriberCustomField1 = $subscriberCustomFields[0];
-    assert($subscriberCustomField1 instanceof SubscriberCustomFieldEntity);
+    $this->assertInstanceOf(SubscriberCustomFieldEntity::class, $subscriberCustomField1);
     $resultSubscriber1 = $subscriberCustomField1->getSubscriber();
-    assert($resultSubscriber1 instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $resultSubscriber1);
     expect($resultSubscriber1->getId())->equals($subscriber1->getId());
     expect($subscriberCustomField1->getCustomField())->equals($customField);
     expect($subscriberCustomField1->getValue())->equals('20');
     $subscriberCustomField2 = $subscriberCustomFields[1];
-    assert($subscriberCustomField2 instanceof SubscriberCustomFieldEntity);
+    $this->assertInstanceOf(SubscriberCustomFieldEntity::class, $subscriberCustomField2);
     $resultSubscriber2 = $subscriberCustomField2->getSubscriber();
-    assert($resultSubscriber2 instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $resultSubscriber2);
     expect($resultSubscriber2->getId())->equals($subscriber2->getId());
     expect($subscriberCustomField2->getCustomField())->equals($customField);
     expect($subscriberCustomField2->getValue())->equals('25');
@@ -193,7 +193,7 @@ class ImportExportRepositoryTest extends \MailPoetTest {
 
   public function testItGetSubscribersByDefaultSegment(): void {
     $confirmedAt = Carbon::createFromFormat(DateTime::DEFAULT_DATE_TIME_FORMAT, '2021-02-12 12:11:00');
-    assert($confirmedAt instanceof Carbon);
+    $this->assertInstanceOf(Carbon::class, $confirmedAt);
     $confirmedIp = '122.122.122.122';
     $subscribedIp = '123.123.123.123';
     $user1 = $this->createSubscriber('user1@export-test.com', 'One', 'User');
@@ -301,7 +301,7 @@ class ImportExportRepositoryTest extends \MailPoetTest {
 
     $this->entityManager->clear();
     $segment2 = $this->segmentsRepository->findOneById($segment2->getId());
-    assert($segment2 instanceof SegmentEntity);
+    $this->assertInstanceOf(SegmentEntity::class, $segment2);
     $exported = $this->repository->getSubscribersBatchBySegment($segment2, 100);
     expect($exported)->count(2);
     expect($exported[0]['email'])->equals('user2@export-test.com');

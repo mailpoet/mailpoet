@@ -32,7 +32,7 @@ class NewsletterTemplatesTest extends \MailPoetTest {
 
   public function testItCanGetANewsletterTemplate() {
     $template = $this->newsletterTemplatesRepository->findOneBy(['name' => 'Template #1']);
-    assert($template instanceof NewsletterTemplateEntity);
+    $this->assertInstanceOf(NewsletterTemplateEntity::class, $template);
 
     $endpoint = $this->diContainer->get(NewsletterTemplates::class);
     $response = $endpoint->get(/* missing id */);
@@ -126,7 +126,7 @@ class NewsletterTemplatesTest extends \MailPoetTest {
       ->equals('This template does not exist.');
 
     $template = $this->newsletterTemplatesRepository->findOneBy(['name' => 'Template #1']);
-    assert($template instanceof NewsletterTemplateEntity);
+    $this->assertInstanceOf(NewsletterTemplateEntity::class, $template);
     $templateId = $template->getId();
     $response = $endpoint->delete(['id' => $template->getId()]);
     expect($response->status)->equals(APIResponse::STATUS_OK);

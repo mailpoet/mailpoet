@@ -93,9 +93,9 @@ class StatisticsOpensRepositoryTest extends \MailPoetTest {
     $this->createStatisticsNewsletter($this->createNewsletter(), $subscriber);
     $statisticsNewsletter = $this->createStatisticsNewsletter($this->createNewsletter(), $subscriber);
     $newsletter = $statisticsNewsletter->getNewsletter();
-    assert($newsletter instanceof NewsletterEntity);
+    $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
     $queue = $newsletter->getQueues()->first();
-    assert($queue instanceof SendingQueueEntity);
+    $this->assertInstanceOf(SendingQueueEntity::class, $queue);
     $open = new StatisticsOpenEntity($newsletter, $queue, $subscriber);
     $this->entityManager->persist($open);
     $this->entityManager->flush();
@@ -135,9 +135,9 @@ class StatisticsOpensRepositoryTest extends \MailPoetTest {
     $this->createStatisticsNewsletter($this->createNewsletter(), $subscriber);
     $statisticsNewsletter = $this->createStatisticsNewsletter($this->createNewsletter($sentAt), $subscriber);
     $newsletter = $statisticsNewsletter->getNewsletter();
-    assert($newsletter instanceof NewsletterEntity);
+    $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
     $queue = $newsletter->getQueues()->first();
-    assert($queue instanceof SendingQueueEntity);
+    $this->assertInstanceOf(SendingQueueEntity::class, $queue);
     $open = new StatisticsOpenEntity($newsletter, $queue, $subscriber);
     $this->entityManager->persist($open);
     $this->entityManager->flush();
@@ -146,9 +146,9 @@ class StatisticsOpensRepositoryTest extends \MailPoetTest {
     $this->createStatisticsNewsletter($this->createNewsletter(), $subscriber2);
     $statisticsNewsletter = $this->createStatisticsNewsletter($this->createNewsletter(), $subscriber2);
     $newsletter = $statisticsNewsletter->getNewsletter();
-    assert($newsletter instanceof NewsletterEntity);
+    $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
     $queue = $newsletter->getQueues()->first();
-    assert($queue instanceof SendingQueueEntity);
+    $this->assertInstanceOf(SendingQueueEntity::class, $queue);
     $open = new StatisticsOpenEntity($newsletter, $queue, $subscriber2);
     $this->entityManager->persist($open);
     $this->entityManager->flush();
@@ -192,9 +192,9 @@ class StatisticsOpensRepositoryTest extends \MailPoetTest {
     $this->createStatisticsNewsletter($this->createWooNewsletter(), $subscriber);
     $statisticsNewsletter = $this->createStatisticsNewsletter($this->createWooNewsletter(), $subscriber);
     $newsletter = $statisticsNewsletter->getNewsletter();
-    assert($newsletter instanceof NewsletterEntity);
+    $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
     $queue = $newsletter->getQueues()->first();
-    assert($queue instanceof SendingQueueEntity);
+    $this->assertInstanceOf(SendingQueueEntity::class, $queue);
     $open = new StatisticsOpenEntity($newsletter, $queue, $subscriber);
     $this->entityManager->persist($open);
     $this->entityManager->flush();

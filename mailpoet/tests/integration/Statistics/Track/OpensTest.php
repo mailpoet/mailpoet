@@ -233,7 +233,7 @@ class OpensTest extends \MailPoetTest {
     $openEntities = $this->statisticsOpensRepository->findAll();
     expect($openEntities)->count(1);
     $openEntity = reset($openEntities);
-    assert($openEntity instanceof StatisticsOpenEntity);
+    $this->assertInstanceOf(StatisticsOpenEntity::class, $openEntity);
     $userAgent = $openEntity->getUserAgent();
     $this->assertInstanceOf(UserAgentEntity::class, $userAgent);
     expect($userAgent->getUserAgent())->equals($humanUserAgentName);
@@ -247,7 +247,7 @@ class OpensTest extends \MailPoetTest {
     $openEntities = $this->statisticsOpensRepository->findAll();
     expect($openEntities)->count(1);
     $openEntity = reset($openEntities);
-    assert($openEntity instanceof StatisticsOpenEntity);
+    $this->assertInstanceOf(StatisticsOpenEntity::class, $openEntity);
     $userAgent = $openEntity->getUserAgent();
     $this->assertInstanceOf(UserAgentEntity::class, $userAgent);
     expect($userAgent->getUserAgent())->equals($humanUserAgentName);
@@ -271,7 +271,7 @@ class OpensTest extends \MailPoetTest {
     $openEntities = $this->statisticsOpensRepository->findAll();
     expect($openEntities)->count(1);
     $openEntity = reset($openEntities);
-    assert($openEntity instanceof StatisticsOpenEntity);
+    $this->assertInstanceOf(StatisticsOpenEntity::class, $openEntity);
     $userAgent = $openEntity->getUserAgent();
     $this->assertInstanceOf(UserAgentEntity::class, $userAgent);
     expect($userAgent->getUserAgent())->equals($machineUserAgentName);
@@ -285,7 +285,7 @@ class OpensTest extends \MailPoetTest {
     $openEntities = $this->statisticsOpensRepository->findAll();
     expect($openEntities)->count(1);
     $openEntity = reset($openEntities);
-    assert($openEntity instanceof StatisticsOpenEntity);
+    $this->assertInstanceOf(StatisticsOpenEntity::class, $openEntity);
     $userAgent = $openEntity->getUserAgent();
     $this->assertInstanceOf(UserAgentEntity::class, $userAgent);
     expect($userAgent->getUserAgent())->equals($humanUserAgentName);
@@ -308,7 +308,7 @@ class OpensTest extends \MailPoetTest {
     $openEntities = $this->statisticsOpensRepository->findAll();
     expect($openEntities)->count(1);
     $openEntity = reset($openEntities);
-    assert($openEntity instanceof StatisticsOpenEntity);
+    $this->assertInstanceOf(StatisticsOpenEntity::class, $openEntity);
     expect($openEntity->getUserAgent())->null();
     expect($openEntity->getUserAgentType())->equals(UserAgentEntity::USER_AGENT_TYPE_HUMAN);
     // Track Machine User Agent
@@ -319,7 +319,7 @@ class OpensTest extends \MailPoetTest {
     $openEntities = $this->statisticsOpensRepository->findAll();
     expect($openEntities)->count(1);
     $openEntity = reset($openEntities);
-    assert($openEntity instanceof StatisticsOpenEntity);
+    $this->assertInstanceOf(StatisticsOpenEntity::class, $openEntity);
     expect($openEntity->getUserAgent())->null();
     expect($openEntity->getUserAgentType())->equals(UserAgentEntity::USER_AGENT_TYPE_HUMAN);
   }
@@ -339,7 +339,7 @@ class OpensTest extends \MailPoetTest {
     $openEntities = $this->statisticsOpensRepository->findAll();
     expect($openEntities)->count(1);
     $openEntity = reset($openEntities);
-    assert($openEntity instanceof StatisticsOpenEntity);
+    $this->assertInstanceOf(StatisticsOpenEntity::class, $openEntity);
     expect($openEntity->getUserAgent())->null();
     expect($openEntity->getUserAgentType())->equals(UserAgentEntity::USER_AGENT_TYPE_HUMAN);
     // Track Human User Agent

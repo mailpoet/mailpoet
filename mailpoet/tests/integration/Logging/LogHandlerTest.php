@@ -37,7 +37,7 @@ class LogHandlerTest extends \MailPoetTest {
     ]);
 
     $log = $this->repository->findOneBy(['name' => 'name'], ['id' => 'desc']);
-    assert($log instanceof LogEntity);
+    $this->assertInstanceOf(LogEntity::class, $log);
     $createdAt = $log->getCreatedAt();
     $this->assertInstanceOf(\DateTimeInterface::class, $createdAt);
     expect($createdAt->format('Y-m-d H:i:s'))->equals($time->format('Y-m-d H:i:s'));
@@ -134,7 +134,7 @@ class LogHandlerTest extends \MailPoetTest {
     }
 
     $log = $logRepository->findOneBy(['name' => 'name'], ['id' => 'desc']);
-    assert($log instanceof LogEntity);
+    $this->assertInstanceOf(LogEntity::class, $log);
     $createdAt = $log->getCreatedAt();
     $this->assertInstanceOf(\DateTimeInterface::class, $createdAt);
     expect($createdAt->format('Y-m-d H:i:s'))->equals($time->format('Y-m-d H:i:s'));

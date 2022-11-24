@@ -416,7 +416,7 @@ class SendingQueueTest extends \MailPoetTest {
 
     // newsletter status is set to sent
     $updatedNewsletter = Newsletter::findOne($this->newsletter->id);
-    assert($updatedNewsletter instanceof Newsletter);
+    $this->assertInstanceOf(Newsletter::class, $updatedNewsletter);
     expect($updatedNewsletter->status)->equals(Newsletter::STATUS_SENT);
 
     // queue status is set to completed
@@ -540,7 +540,7 @@ class SendingQueueTest extends \MailPoetTest {
 
     // newsletter status is set to sent
     $updatedNewsletter = Newsletter::findOne($this->newsletter->id);
-    assert($updatedNewsletter instanceof Newsletter);
+    $this->assertInstanceOf(Newsletter::class, $updatedNewsletter);
     expect($updatedNewsletter->status)->equals(Newsletter::STATUS_SENT);
 
     // queue status is set to completed
@@ -591,7 +591,7 @@ class SendingQueueTest extends \MailPoetTest {
 
     // newsletter status is set to sent and sent_at date is populated
     $updatedNewsletter = Newsletter::findOne($this->newsletter->id);
-    assert($updatedNewsletter instanceof Newsletter);
+    $this->assertInstanceOf(Newsletter::class, $updatedNewsletter);
     expect($updatedNewsletter->status)->equals(Newsletter::STATUS_SENT);
     expect($updatedNewsletter->sentAt)->equals($updatedQueue->processedAt);
 
@@ -713,7 +713,7 @@ class SendingQueueTest extends \MailPoetTest {
     $sendingQueueWorker->process();
 
     $newQueue = ScheduledTask::findOne($this->queue->task_id);
-    assert($newQueue instanceof ScheduledTask);
+    $this->assertInstanceOf(ScheduledTask::class, $newQueue);
     expect($newQueue->updatedAt)->notEquals($originalUpdated);
   }
 
@@ -740,7 +740,7 @@ class SendingQueueTest extends \MailPoetTest {
 
     // newsletter status is set to sent
     $updatedNewsletter = Newsletter::findOne($this->newsletter->id);
-    assert($updatedNewsletter instanceof Newsletter);
+    $this->assertInstanceOf(Newsletter::class, $updatedNewsletter);
     expect($updatedNewsletter->status)->equals(Newsletter::STATUS_SENT);
 
     // queue status is set to completed
@@ -1089,7 +1089,7 @@ class SendingQueueTest extends \MailPoetTest {
 
     // newsletter is sent and hash remains intact
     $updatedNewsletter = Newsletter::findOne($this->newsletter->id);
-    assert($updatedNewsletter instanceof Newsletter);
+    $this->assertInstanceOf(Newsletter::class, $updatedNewsletter);
     expect($updatedNewsletter->status)->equals(Newsletter::STATUS_SENT);
     expect($updatedNewsletter->hash)->equals($this->newsletter->hash);
   }
@@ -1121,7 +1121,7 @@ class SendingQueueTest extends \MailPoetTest {
     $sendingQueueWorker->process();
 
     $refetchedTask = ScheduledTask::where('id', $task->id)->findOne();
-    assert($refetchedTask instanceof ScheduledTask); // PHPStan
+    $this->assertInstanceOf(ScheduledTask::class, $refetchedTask); // PHPStan
     expect($refetchedTask->scheduledAt)->lessThan(Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'))->addHours(42));
   }
 
@@ -1141,7 +1141,7 @@ class SendingQueueTest extends \MailPoetTest {
     $sendingQueueWorker->process();
 
     $refetchedTask = ScheduledTask::where('id', $task->id)->findOne();
-    assert($refetchedTask instanceof ScheduledTask); // PHPStan
+    $this->assertInstanceOf(ScheduledTask::class, $refetchedTask); // PHPStan
     expect($refetchedTask->scheduledAt)->equals($inOneHour);
   }
 
@@ -1157,7 +1157,7 @@ class SendingQueueTest extends \MailPoetTest {
     $sendingQueueWorker->process();
 
     $task = $queue->getTask();
-    assert($task instanceof ScheduledTaskEntity);
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
     $this->entityManager->refresh($task);
     $this->entityManager->refresh($newsletter);
     expect($task->getStatus())->equals(ScheduledTaskEntity::STATUS_PAUSED);
@@ -1179,7 +1179,7 @@ class SendingQueueTest extends \MailPoetTest {
     $sendingQueueWorker->process();
 
     $task = $queue->getTask();
-    assert($task instanceof ScheduledTaskEntity);
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
     $this->entityManager->refresh($task);
     $this->entityManager->refresh($newsletter);
     expect($task->getStatus())->equals(ScheduledTaskEntity::STATUS_PAUSED);

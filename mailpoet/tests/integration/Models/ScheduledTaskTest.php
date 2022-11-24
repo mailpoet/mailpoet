@@ -70,16 +70,16 @@ class ScheduledTaskTest extends \MailPoetTest {
     ]);
     ScheduledTask::setScheduledAllByNewsletter($newsletter);
     $task1Found = ScheduledTask::findOne($task1->id());
-    assert($task1Found instanceof ScheduledTask);
+    $this->assertInstanceOf(ScheduledTask::class, $task1Found);
     expect($task1Found->status)->equals(ScheduledTask::STATUS_SCHEDULED);
     $task2Found = ScheduledTask::findOne($task2->id());
-    assert($task2Found instanceof ScheduledTask);
+    $this->assertInstanceOf(ScheduledTask::class, $task2Found);
     expect($task2Found->status)->equals(ScheduledTask::STATUS_COMPLETED);
     $task3Found = ScheduledTask::findOne($task3->id());
-    assert($task3Found instanceof ScheduledTask);
+    $this->assertInstanceOf(ScheduledTask::class, $task3Found);
     expect($task3Found->status)->equals(ScheduledTask::STATUS_SCHEDULED);
     $outdatedTaskFound = ScheduledTask::findOne($outdatedTask->id());
-    assert($outdatedTaskFound instanceof ScheduledTask);
+    $this->assertInstanceOf(ScheduledTask::class, $outdatedTaskFound);
     expect($outdatedTaskFound->status)->equals(ScheduledTask::STATUS_PAUSED);
   }
 
@@ -103,10 +103,10 @@ class ScheduledTaskTest extends \MailPoetTest {
     ]);
     ScheduledTask::pauseAllByNewsletter($newsletter);
     $task1Found = ScheduledTask::findOne($task1->id());
-    assert($task1Found instanceof ScheduledTask);
+    $this->assertInstanceOf(ScheduledTask::class, $task1Found);
     expect($task1Found->status)->equals(ScheduledTask::STATUS_COMPLETED);
     $task2Found = ScheduledTask::findOne($task2->id());
-    assert($task2Found instanceof ScheduledTask);
+    $this->assertInstanceOf(ScheduledTask::class, $task2Found);
     expect($task2Found->status)->equals(ScheduledTask::STATUS_PAUSED);
   }
 
@@ -134,7 +134,7 @@ class ScheduledTaskTest extends \MailPoetTest {
 
   public function testItJsonEncodesMetaWhenSaving() {
     $task = ScheduledTask::create();
-    assert($task instanceof ScheduledTask);
+    $this->assertInstanceOf(ScheduledTask::class, $task);
     $meta = [
       'some' => 'value',
     ];
@@ -142,7 +142,7 @@ class ScheduledTaskTest extends \MailPoetTest {
     $task->save();
 
     $task = ScheduledTask::findOne($task->id);
-    assert($task instanceof ScheduledTask);
+    $this->assertInstanceOf(ScheduledTask::class, $task);
 
     /** @var string $taskMeta */
     $taskMeta = $task->meta;
@@ -157,7 +157,7 @@ class ScheduledTaskTest extends \MailPoetTest {
     $task->save();
 
     $task = ScheduledTask::findOne($task->id);
-    assert($task instanceof ScheduledTask);
+    $this->assertInstanceOf(ScheduledTask::class, $task);
 
     expect(Helpers::isJson($task->meta))->false();
     expect($task->meta)->equals($meta);

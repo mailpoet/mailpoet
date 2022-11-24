@@ -71,7 +71,7 @@ class UserFlagsControllerTest extends \MailPoetTest {
       'userId' => $this->currentUserId,
       'name' => 'flag_1',
     ]);
-    assert($flag instanceof UserFlagEntity);
+    $this->assertInstanceOf(UserFlagEntity::class, $flag);
     expect($flag->getValue())->equals('updated_value');
   }
 

@@ -87,7 +87,7 @@ class PostNotificationTest extends \MailPoetTest {
     $newsletterId = $newsletter->getId();
     $this->entityManager->clear();
     $newsletter = $this->newslettersRepository->findOneById($newsletterId);
-    assert($newsletter instanceof NewsletterEntity);
+    $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
     $this->postNotificationScheduler->createPostNotificationSendingTask($newsletter);
     expect($this->sendingQueuesRepository->findBy(['newsletter' => $newsletter]))->count(1);
   }
@@ -106,7 +106,7 @@ class PostNotificationTest extends \MailPoetTest {
 
     // another queue record should be created because the first one was paused
     $scheduleOption = $newsletter->getOption(NewsletterOptionFieldEntity::NAME_SCHEDULE);
-    assert($scheduleOption instanceof NewsletterOptionEntity);
+    $this->assertInstanceOf(NewsletterOptionEntity::class, $scheduleOption);
     $scheduleOption->setValue('* 10 * * *'); // different time to not clash with the first queue
     $this->newsletterOptionsRepository->flush();
     $sendingTask = $this->postNotificationScheduler->createPostNotificationSendingTask($newsletter);
@@ -124,7 +124,7 @@ class PostNotificationTest extends \MailPoetTest {
     $newsletterId = $newsletter->getId();
     $this->entityManager->clear();
     $newsletter = $this->newslettersRepository->findOneById($newsletterId);
-    assert($newsletter instanceof NewsletterEntity);
+    $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
     $this->postNotificationScheduler->createPostNotificationSendingTask($newsletter);
     expect($this->sendingQueuesRepository->findBy(['newsletter' => $newsletter]))->count(2);
   }

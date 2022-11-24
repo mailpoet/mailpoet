@@ -69,7 +69,7 @@ class SendingTest extends \MailPoetTest {
     $sendings = SendingTask::createManyFromTasks([$this->task]);
     expect($sendings)->isEmpty();
     $task = ScheduledTask::findOne($this->task->id);
-    assert($task instanceof ScheduledTask);
+    $this->assertInstanceOf(ScheduledTask::class, $task);
     expect($task->status)->equals(ScheduledTask::STATUS_INVALID);
   }
 
@@ -107,8 +107,8 @@ class SendingTest extends \MailPoetTest {
     $this->sending->save();
     $task = ScheduledTask::findOne($this->task->id);
     $queue = SendingQueue::findOne($this->queue->id);
-    assert($task instanceof ScheduledTask);
-    assert($queue instanceof SendingQueue);
+    $this->assertInstanceOf(ScheduledTask::class, $task);
+    $this->assertInstanceOf(SendingQueue::class, $queue);
     expect($task->status)->equals($status);
     expect($queue->newsletterRenderedSubject)->equals($newsletterRenderedSubject);
   }

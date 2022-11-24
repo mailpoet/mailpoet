@@ -51,7 +51,7 @@ class WooCommerceTotalSpentTest extends \MailPoetTest {
     $result = $statement instanceof Statement ? $statement->fetchAll() : [];
     expect($result)->count(1);
     $subscriber1 = $this->subscribersRepository->findOneById($result[0]['inner_subscriber_id']);
-    assert($subscriber1 instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
     expect($subscriber1)->isInstanceOf(SubscriberEntity::class);
     expect($subscriber1->getEmail())->equals('customer2@example.com');
   }
@@ -63,11 +63,11 @@ class WooCommerceTotalSpentTest extends \MailPoetTest {
     $result = $statement instanceof Statement ? $statement->fetchAll() : [];
     expect($result)->count(2);
     $subscriber1 = $this->subscribersRepository->findOneById($result[0]['inner_subscriber_id']);
-    assert($subscriber1 instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
     expect($subscriber1)->isInstanceOf(SubscriberEntity::class);
     expect($subscriber1->getEmail())->equals('customer1@example.com');
     $subscriber2 = $this->subscribersRepository->findOneById($result[1]['inner_subscriber_id']);
-    assert($subscriber2 instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber2);
     expect($subscriber2)->isInstanceOf(SubscriberEntity::class);
     expect($subscriber2->getEmail())->equals('customer2@example.com');
   }
@@ -79,11 +79,11 @@ class WooCommerceTotalSpentTest extends \MailPoetTest {
     $result = $statement instanceof Statement ? $statement->fetchAll() : [];
     expect($result)->count(2);
     $subscriber1 = $this->subscribersRepository->findOneById($result[0]['inner_subscriber_id']);
-    assert($subscriber1 instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
     expect($subscriber1)->isInstanceOf(SubscriberEntity::class);
     expect($subscriber1->getEmail())->equals('customer1@example.com');
     $subscriber2 = $this->subscribersRepository->findOneById($result[1]['inner_subscriber_id']);
-    assert($subscriber2 instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber2);
     expect($subscriber2)->isInstanceOf(SubscriberEntity::class);
     expect($subscriber2->getEmail())->equals('customer3@example.com');
   }
@@ -95,7 +95,7 @@ class WooCommerceTotalSpentTest extends \MailPoetTest {
     $result = $statement instanceof Statement ? $statement->fetchAll() : [];
     expect($result)->count(1);
     $subscriber1 = $this->subscribersRepository->findOneById($result[0]['inner_subscriber_id']);
-    assert($subscriber1 instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
     expect($subscriber1)->isInstanceOf(SubscriberEntity::class);
     expect($subscriber1->getEmail())->equals('customer3@example.com');
   }
@@ -107,7 +107,7 @@ class WooCommerceTotalSpentTest extends \MailPoetTest {
     $result = $statement instanceof Statement ? $statement->fetchAll() : [];
     expect($result)->count(1);
     $subscriber1 = $this->subscribersRepository->findOneById($result[0]['inner_subscriber_id']);
-    assert($subscriber1 instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
     expect($subscriber1)->isInstanceOf(SubscriberEntity::class);
     expect($subscriber1->getEmail())->equals('customer1@example.com');
   }

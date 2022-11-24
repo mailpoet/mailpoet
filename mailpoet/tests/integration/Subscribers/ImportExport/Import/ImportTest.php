@@ -87,7 +87,7 @@ class ImportTest extends \MailPoetTest {
       'name' => 'country',
       'type' => CustomFieldEntity::TYPE_TEXT,
     ]);
-    assert($customField instanceof CustomFieldEntity);
+    $this->assertInstanceOf(CustomFieldEntity::class, $customField);
     $this->subscribersCustomFields = [$customField->getId()];
     $this->segment1 = $this->segmentsRepository->createOrUpdate('Segment 1');
     $this->segment2 = $this->segmentsRepository->createOrUpdate('Segment 2');
@@ -648,7 +648,7 @@ class ImportTest extends \MailPoetTest {
     $this->import->process();
 
     $updatedSubscriber = $this->subscriberRepository->findOneBy(['email' => $subscriber->getEmail()]);
-    assert($updatedSubscriber instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $updatedSubscriber);
     expect($updatedSubscriber->getStatus())->equals(SubscriberEntity::STATUS_UNSUBSCRIBED);
   }
 
@@ -673,8 +673,8 @@ class ImportTest extends \MailPoetTest {
     expect(strlen((string)$newSubscribers[1]->getLinkToken()))->equals(SubscriberEntity::LINK_TOKEN_LENGTH);
     $lastSubscribed1 = $newSubscribers[0]->getLastSubscribedAt();
     $lastSubscribed2 = $newSubscribers[1]->getLastSubscribedAt();
-    assert($lastSubscribed1 instanceof \DateTimeInterface);
-    assert($lastSubscribed2 instanceof \DateTimeInterface);
+    $this->assertInstanceOf(\DateTimeInterface::class, $lastSubscribed1);
+    $this->assertInstanceOf(\DateTimeInterface::class, $lastSubscribed2);
     expect($lastSubscribed1->getTimestamp())->equals($this->testData['timestamp'], 1);
     expect($lastSubscribed2->getTimestamp())->equals($this->testData['timestamp'], 1);
   }
@@ -685,7 +685,7 @@ class ImportTest extends \MailPoetTest {
     $data['subscribers'][0][] = '2018-12-12 12:12:00';
     $data['subscribers'][1][] = '2018-12-12 12:12:00';
     $lastSubscribedAt = Carbon::createFromFormat('Y-m-d H:i:s', '2017-12-12 12:12:00');
-    assert($lastSubscribedAt instanceof Carbon);
+    $this->assertInstanceOf(Carbon::class, $lastSubscribedAt);
     $import = $this->createImportInstance($data);
     $existingSubscriber = $this->createSubscriber(
       'Adam',
@@ -697,21 +697,21 @@ class ImportTest extends \MailPoetTest {
     $import->process();
 
     $updatedSubscriber = $this->subscriberRepository->findOneBy(['email' => $existingSubscriber->getEmail()]);
-    assert($updatedSubscriber instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $updatedSubscriber);
     expect($updatedSubscriber->getLastSubscribedAt())->equals(Carbon::createFromFormat('Y-m-d H:i:s', '2017-12-12 12:12:00'));
   }
 
   public function testItSynchronizesWpUsers(): void {
     $this->tester->createWordPressUser('mary@jane.com', 'editor');
     $beforeImport = $this->subscriberRepository->findOneBy(['email' => 'mary@jane.com']);
-    assert($beforeImport instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $beforeImport);
     $data = $this->testData;
     $import = $this->createImportInstance($data);
     $import->process();
 
     $this->entityManager->clear();
     $imported = $this->subscriberRepository->findOneBy(['email' => 'mary@jane.com']);
-    assert($imported instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $imported);
     expect($imported->getFirstName())->equals($beforeImport->getFirstName()); // Subscriber name was synchronized from WP
     expect($imported->getFirstName())->notEquals('Mary');
     $this->tester->deleteWordPressUser('mary@jane.com');
@@ -721,7 +721,7 @@ class ImportTest extends \MailPoetTest {
     $data = $this->testData;
     $data['existingSubscribersStatus'] = SubscriberEntity::STATUS_SUBSCRIBED;
     $lastSubscribedAt = Carbon::createFromFormat('Y-m-d H:i:s', '2020-08-08 08:08:00');
-    assert($lastSubscribedAt instanceof Carbon);
+    $this->assertInstanceOf(Carbon::class, $lastSubscribedAt);
     $existingSubscriber = $this->createSubscriber(
       'Adam',
       'Smith',
@@ -734,7 +734,7 @@ class ImportTest extends \MailPoetTest {
 
     $this->entityManager->clear();
     $updatedSubscriber = $this->subscriberRepository->findOneBy(['email' => $existingSubscriber->getEmail()]);
-    assert($updatedSubscriber instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $updatedSubscriber);
     expect($updatedSubscriber->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
   }
 
@@ -744,10 +744,10 @@ class ImportTest extends \MailPoetTest {
     $import = $this->createImportInstance($data);
     $import->process();
     $newSubscriber = $this->subscriberRepository->findOneBy(['email' => 'Adam@Smith.com']);
-    assert($newSubscriber instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $newSubscriber);
     expect($newSubscriber->getStatus())->equals(SubscriberEntity::STATUS_UNSUBSCRIBED);
     $newSubscriber = $this->subscriberRepository->findOneBy(['email' => 'mary@jane.com']);
-    assert($newSubscriber instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $newSubscriber);
     expect($newSubscriber->getStatus())->equals(SubscriberEntity::STATUS_UNSUBSCRIBED);
   }
 
@@ -755,7 +755,7 @@ class ImportTest extends \MailPoetTest {
     $result = $this->import->process();
     expect($result['created'])->equals(2);
     $subscriber = $this->subscriberRepository->findOneBy(['email' => 'mary@jane.com']);
-    assert($subscriber instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
     $this->subscriberRepository->remove($subscriber);
     $this->subscriberRepository->flush();
     $this->import->createdAt = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));

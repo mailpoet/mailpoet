@@ -47,7 +47,7 @@ class AutomationStatisticsStorageTest extends \MailPoetTest
    */
   public function testItCalculatesTotalsCorrectlyForSingleAutomation(int $automationIndex, int $expectedTotal, int $expectedInProgress, int $expectedExited, int $versionId = null) {
     $automation = $this->automationStorage->getAutomation($this->automations[$automationIndex], $versionId);
-    assert($automation instanceof Automation);
+    $this->assertInstanceOf(Automation::class, $automation);
     $i = 0;
     while($i < $expectedInProgress) {
       $this->createRun($automation, AutomationRun::STATUS_RUNNING);
@@ -114,11 +114,11 @@ class AutomationStatisticsStorageTest extends \MailPoetTest
 
   public function testItSeparatesAutomationRunsCorrectly() {
     $automation1 = $this->automationStorage->getAutomation($this->automations[0]);
-    assert($automation1 instanceof Automation);
+    $this->assertInstanceOf(Automation::class, $automation1);
     $automation2 = $this->automationStorage->getAutomation($this->automations[1]);
-    assert($automation2 instanceof Automation);
+    $this->assertInstanceOf(Automation::class, $automation2);
     $automation3 = $this->automationStorage->getAutomation($this->automations[2]);
-    assert($automation3 instanceof Automation);
+    $this->assertInstanceOf(Automation::class, $automation3);
 
     $this->createRun($automation1, AutomationRun::STATUS_COMPLETE);
 
@@ -141,17 +141,17 @@ class AutomationStatisticsStorageTest extends \MailPoetTest
 
   public function testItCanDistinguishBetweenVersions() {
     $oldestAutomation = $this->automationStorage->getAutomation($this->automations[0]);
-    assert($oldestAutomation instanceof Automation);
+    $this->assertInstanceOf(Automation::class, $oldestAutomation);
     $oldestAutomation->setName('new-name');
     $this->automationStorage->updateAutomation($oldestAutomation);
 
     $middleWorkeflow = $this->automationStorage->getAutomation($this->automations[0]);
-    assert($middleWorkeflow instanceof Automation);
+    $this->assertInstanceOf(Automation::class, $middleWorkeflow);
     $middleWorkeflow->setName('another-name');
     $this->automationStorage->updateAutomation($middleWorkeflow);
 
     $newestAutomation = $this->automationStorage->getAutomation($this->automations[0]);
-    assert($newestAutomation instanceof Automation);
+    $this->assertInstanceOf(Automation::class, $newestAutomation);
     // 1 Run in the oldest Automation
     $this->createRun($oldestAutomation, AutomationRun::STATUS_CANCELLED);
 

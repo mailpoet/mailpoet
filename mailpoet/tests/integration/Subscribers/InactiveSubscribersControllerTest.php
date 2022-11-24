@@ -61,8 +61,8 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
     $this->entityManager->clear();
     $subscriber1 = $this->subscribersRepository->findOneById($subscriber1->getId());
     $subscriber2 = $this->subscribersRepository->findOneById($subscriber2->getId());
-    assert($subscriber1 instanceof SubscriberEntity);
-    assert($subscriber2 instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber2);
     expect($subscriber1->getStatus())->equals(SubscriberEntity::STATUS_INACTIVE);
     expect($subscriber2->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
   }
@@ -79,8 +79,8 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
     expect($result)->equals(1);
     $subscriber1 = $this->subscribersRepository->findOneById($subscriber1->getId());
     $subscriber2 = $this->subscribersRepository->findOneById($subscriber2->getId());
-    assert($subscriber1 instanceof SubscriberEntity);
-    assert($subscriber2 instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber2);
     expect($subscriber1->getStatus() === SubscriberEntity::STATUS_INACTIVE || $subscriber2->getStatus() === SubscriberEntity::STATUS_INACTIVE)->true();
     expect($subscriber1->getStatus() === SubscriberEntity::STATUS_SUBSCRIBED || $subscriber2->getStatus() === SubscriberEntity::STATUS_SUBSCRIBED)->true();
 
@@ -89,8 +89,8 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
     expect($result)->equals(1);
     $subscriber1 = $this->subscribersRepository->findOneById($subscriber1->getId());
     $subscriber2 = $this->subscribersRepository->findOneById($subscriber2->getId());
-    assert($subscriber1 instanceof SubscriberEntity);
-    assert($subscriber2 instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber2);
     expect($subscriber1->getStatus())->equals(SubscriberEntity::STATUS_INACTIVE);
     expect($subscriber2->getStatus())->equals(SubscriberEntity::STATUS_INACTIVE);
   }
@@ -102,7 +102,7 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
     $result = $this->controller->markInactiveSubscribers(self::INACTIVITY_DAYS_THRESHOLD, self::PROCESS_BATCH_SIZE);
     expect($result)->equals(0);
     $subscriber = $this->subscribersRepository->findOneById($subscriber->getId());
-    assert($subscriber instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
     expect($subscriber->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
   }
 
@@ -116,7 +116,7 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
     $result = $this->controller->markInactiveSubscribers(self::INACTIVITY_DAYS_THRESHOLD, self::PROCESS_BATCH_SIZE);
     expect($result)->equals(0);
     $subscriber = $this->subscribersRepository->findOneById($subscriber->getId());
-    assert($subscriber instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
     expect($subscriber->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
   }
 
@@ -126,7 +126,7 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
     $result = $this->controller->markInactiveSubscribers(self::INACTIVITY_DAYS_THRESHOLD, self::PROCESS_BATCH_SIZE);
     expect($result)->equals(0);
     $subscriber = $this->subscribersRepository->findOneById($subscriber->getId());
-    assert($subscriber instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
     expect($subscriber->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
   }
 
@@ -139,7 +139,7 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
     $result = $this->controller->markInactiveSubscribers(self::INACTIVITY_DAYS_THRESHOLD, self::PROCESS_BATCH_SIZE);
     expect($result)->equals(0);
     $subscriber = $this->subscribersRepository->findOneById($subscriber->getId());
-    assert($subscriber instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
     expect($subscriber->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
   }
 
@@ -149,7 +149,7 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
     $result = $this->controller->markInactiveSubscribers(self::INACTIVITY_DAYS_THRESHOLD, self::PROCESS_BATCH_SIZE);
     expect($result)->equals(0);
     $subscriber = $this->subscribersRepository->findOneById($subscriber->getId());
-    assert($subscriber instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
     expect($subscriber->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
   }
 
@@ -162,7 +162,7 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
     $this->entityManager->clear();
 
     $subscriber1 = $this->subscribersRepository->findOneById($subscriber1->getId());
-    assert($subscriber1 instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
     expect($subscriber1->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
   }
 
@@ -175,7 +175,7 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
     $this->entityManager->clear();
     expect($result)->equals(1);
     $subscriber = $this->subscribersRepository->findOneById($subscriber->getId());
-    assert($subscriber instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
     expect($subscriber->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
   }
 
@@ -194,8 +194,8 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
     expect($result)->equals(1);
     $subscriber1 = $this->subscribersRepository->findOneById($subscriber1->getId());
     $subscriber2 = $this->subscribersRepository->findOneById($subscriber2->getId());
-    assert($subscriber1 instanceof SubscriberEntity);
-    assert($subscriber2 instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber2);
     expect($subscriber1->getStatus() === SubscriberEntity::STATUS_INACTIVE || $subscriber2->getStatus() === SubscriberEntity::STATUS_INACTIVE)->true();
     expect($subscriber1->getStatus() === SubscriberEntity::STATUS_SUBSCRIBED || $subscriber2->getStatus() === SubscriberEntity::STATUS_SUBSCRIBED)->true();
 
@@ -204,8 +204,8 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
     expect($result)->equals(1);
     $subscriber1 = $this->subscribersRepository->findOneById($subscriber1->getId());
     $subscriber2 = $this->subscribersRepository->findOneById($subscriber2->getId());
-    assert($subscriber1 instanceof SubscriberEntity);
-    assert($subscriber2 instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber2);
     expect($subscriber1->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
     expect($subscriber2->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
   }
@@ -218,7 +218,7 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
     $this->entityManager->clear();
     expect($result)->equals(0);
     $subscriber = $this->subscribersRepository->findOneById($subscriber->getId());
-    assert($subscriber instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
     expect($subscriber->getStatus())->equals(SubscriberEntity::STATUS_INACTIVE);
   }
 
@@ -229,7 +229,7 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
     $this->controller->reactivateInactiveSubscribers();
     $this->entityManager->clear();
     $subscriber = $this->subscribersRepository->findOneById($subscriber->getId());
-    assert($subscriber instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
     expect($subscriber->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
   }
 

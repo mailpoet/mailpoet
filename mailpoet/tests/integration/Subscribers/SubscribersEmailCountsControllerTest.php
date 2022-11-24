@@ -56,9 +56,9 @@ class SubscribersEmailCountsControllerTest extends \MailPoetTest {
     $subscriber1 = $this->subscribersRepository->findOneById($subscriber1->getId());
     $subscriber2 = $this->subscribersRepository->findOneById($subscriber2->getId());
     $subscriber3 = $this->subscribersRepository->findOneById($subscriber3->getId());
-    assert($subscriber1 instanceof SubscriberEntity);
-    assert($subscriber2 instanceof SubscriberEntity);
-    assert($subscriber3 instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber2);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber3);
 
     expect($subscriber1->getEmailCount())->equals(80);
     expect($subscriber2->getEmailCount())->equals(8);
@@ -85,9 +85,9 @@ class SubscribersEmailCountsControllerTest extends \MailPoetTest {
     $subscriber1 = $this->subscribersRepository->findOneById($subscriber1->getId());
     $subscriber2 = $this->subscribersRepository->findOneById($subscriber2->getId());
     $subscriber3 = $this->subscribersRepository->findOneById($subscriber3->getId());
-    assert($subscriber1 instanceof SubscriberEntity);
-    assert($subscriber2 instanceof SubscriberEntity);
-    assert($subscriber3 instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber2);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber3);
 
     expect($subscriber1->getEmailCount())->equals(81);
     expect($subscriber2->getEmailCount())->equals(9);
@@ -113,9 +113,9 @@ class SubscribersEmailCountsControllerTest extends \MailPoetTest {
     $subscriber1 = $this->subscribersRepository->findOneById($subscriber1->getId());
     $subscriber2 = $this->subscribersRepository->findOneById($subscriber2->getId());
     $subscriber3 = $this->subscribersRepository->findOneById($subscriber3->getId());
-    assert($subscriber1 instanceof SubscriberEntity);
-    assert($subscriber2 instanceof SubscriberEntity);
-    assert($subscriber3 instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber2);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber3);
 
     expect($subscriber1->getEmailCount())->equals(80);
     expect($subscriber2->getEmailCount())->equals(8);
@@ -141,9 +141,9 @@ class SubscribersEmailCountsControllerTest extends \MailPoetTest {
     $subscriber1 = $this->subscribersRepository->findOneById($subscriber1->getId());
     $subscriber2 = $this->subscribersRepository->findOneById($subscriber2->getId());
     $subscriber3 = $this->subscribersRepository->findOneById($subscriber3->getId());
-    assert($subscriber1 instanceof SubscriberEntity);
-    assert($subscriber2 instanceof SubscriberEntity);
-    assert($subscriber3 instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber2);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber3);
 
     expect($subscriber1->getEmailCount())->equals(80);
     expect($subscriber2->getEmailCount())->equals(8);
@@ -178,9 +178,9 @@ class SubscribersEmailCountsControllerTest extends \MailPoetTest {
     $subscriber1 = $this->subscribersRepository->findOneById($subscriber1->getId());
     $subscriber2 = $this->subscribersRepository->findOneById($subscriber2->getId());
     $subscriber3 = $this->subscribersRepository->findOneById($subscriber3->getId());
-    assert($subscriber1 instanceof SubscriberEntity);
-    assert($subscriber2 instanceof SubscriberEntity);
-    assert($subscriber3 instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber2);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber3);
 
     expect($subscriber1->getEmailCount())->equals(0);
     expect($subscriber2->getEmailCount())->equals(0);

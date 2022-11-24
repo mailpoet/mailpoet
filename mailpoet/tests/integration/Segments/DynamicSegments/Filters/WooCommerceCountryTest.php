@@ -44,7 +44,7 @@ class WooCommerceCountryTest extends \MailPoetTest {
     $segmentFilter = $this->getSegmentFilter('CZ');
     $queryBuilder = $this->wooCommerceCountry->apply($this->getQueryBuilder(), $segmentFilter);
     $statement = $queryBuilder->execute();
-    assert($statement instanceof DriverStatement);
+    $this->assertInstanceOf(DriverStatement::class, $statement);
     $result = $statement->fetchAll();
     expect(count($result))->equals(1);
     $subscriber1 = $this->subscribersRepository->findOneById($result[0]['inner_subscriber_id']);
@@ -57,11 +57,11 @@ class WooCommerceCountryTest extends \MailPoetTest {
     $segmentFilter = $this->getSegmentFilter(['CZ','US']);
     $queryBuilder = $this->wooCommerceCountry->apply($this->getQueryBuilder(), $segmentFilter);
     $statement = $queryBuilder->execute();
-    assert($statement instanceof DriverStatement);
+    $this->assertInstanceOf(DriverStatement::class, $statement);
     $result = $statement->fetchAll();
     expect(count($result))->equals(3);
     $subscriber1 = $this->subscribersRepository->findOneById($result[0]['inner_subscriber_id']);
-    assert($subscriber1 instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
     expect($subscriber1->getEmail())->equals('customer1@example.com');
     $subscriber2 = $this->subscribersRepository->findOneById($result[1]['inner_subscriber_id']);
@@ -69,7 +69,7 @@ class WooCommerceCountryTest extends \MailPoetTest {
     expect($subscriber2)->isInstanceOf(SubscriberEntity::class);
     expect($subscriber2->getEmail())->equals('customer2@example.com');
     $subscriber3 = $this->subscribersRepository->findOneById($result[2]['inner_subscriber_id']);
-    assert($subscriber3 instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber3);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber3);
     expect($subscriber3->getEmail())->equals('customer3@example.com');
   }
@@ -78,7 +78,7 @@ class WooCommerceCountryTest extends \MailPoetTest {
     $segmentFilter = $this->getSegmentFilter(['CZ','US'], DynamicSegmentFilterData::OPERATOR_NONE);
     $queryBuilder = $this->wooCommerceCountry->apply($this->getQueryBuilder(), $segmentFilter);
     $statement = $queryBuilder->execute();
-    assert($statement instanceof DriverStatement);
+    $this->assertInstanceOf(DriverStatement::class, $statement);
     $result = $statement->fetchAll();
     expect(count($result))->equals(1);
     $subscriber1 = $this->subscribersRepository->findOneById($result[0]['inner_subscriber_id']);

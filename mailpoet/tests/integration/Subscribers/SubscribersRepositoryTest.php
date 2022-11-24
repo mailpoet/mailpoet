@@ -47,14 +47,14 @@ class SubscribersRepositoryTest extends \MailPoetTest {
 
     // trashed subscriber
     $subscriberOne = $this->repository->findOneById($subscriberOneId);
-    assert($subscriberOne instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriberOne);
     expect($subscriberOne->getDeletedAt())->notNull();
     $subscriberTwo = $this->repository->findOneById($subscriberOneId);
-    assert($subscriberTwo instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriberTwo);
     expect($subscriberTwo->getDeletedAt())->notNull();
     // don't trashed subscriber
     $subscriberThree = $this->repository->findOneById($subscriberThreeId);
-    assert($subscriberThree instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriberThree);
     expect($subscriberThree->getDeletedAt())->null();
   }
 
@@ -73,11 +73,11 @@ class SubscribersRepositoryTest extends \MailPoetTest {
 
     // restored subscriber
     $subscriberOne = $this->repository->findOneById($subscriberOneId);
-    assert($subscriberOne instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriberOne);
     expect($subscriberOne->getDeletedAt())->null();
     // don't restored subscriber
     $subscriberTwo = $this->repository->findOneById($subscriberTwoId);
-    assert($subscriberTwo instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriberTwo);
     expect($subscriberTwo->getDeletedAt())->notNull();
   }
 
@@ -106,7 +106,7 @@ class SubscribersRepositoryTest extends \MailPoetTest {
     expect($this->subscriberCustomFieldRepository->findOneBy(['subscriber' => $subscriberOneId]))->null();
     // don't restored subscriber
     $subscriberTwo = $this->repository->findOneById($subscriberTwoId);
-    assert($subscriberTwo instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriberTwo);
     expect($subscriberTwo->getDeletedAt())->notNull();
     expect($this->subscriberSegmentRepository->findOneBy(['subscriber' => $subscriberTwoId]))->notNull();
     expect($this->subscriberCustomFieldRepository->findOneBy(['subscriber' => $subscriberTwoId]))->notNull();
@@ -169,13 +169,13 @@ class SubscribersRepositoryTest extends \MailPoetTest {
     // subscriber with removed segments
     $unsubscribedSubscriber = $this->repository->findOneById($subscriberOneId);
     expect($unsubscribedSubscriber)->notNull();
-    assert($unsubscribedSubscriber instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $unsubscribedSubscriber);
     expect($unsubscribedSubscriber->getStatus())->equals(SubscriberEntity::STATUS_UNSUBSCRIBED);
 
     // subscriber still subscribed
     $subscribedSubscriber = $this->repository->findOneById($subscriberTwoId);
     expect($subscribedSubscriber)->notNull();
-    assert($subscribedSubscriber instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscribedSubscriber);
     expect($subscribedSubscriber->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
   }
 

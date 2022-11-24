@@ -95,10 +95,10 @@ class WelcomeTest extends \MailPoetTest {
     $this->assertInstanceOf(SendingQueueEntity::class, $queue);
     expect($queue->getId())->greaterOrEquals(1);
     $task = $queue->getTask();
-    assert($task instanceof ScheduledTaskEntity);
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
     expect($task->getPriority())->equals(ScheduledTaskEntity::PRIORITY_HIGH);
     $scheduledAt = $task->getScheduledAt();
-    assert($scheduledAt instanceof \DateTimeInterface);
+    $this->assertInstanceOf(\DateTimeInterface::class, $scheduledAt);
     expect($scheduledAt->format('Y-m-d H:i'))
       ->equals($currentTime->addHours(2)->format('Y-m-d H:i'));
   }
@@ -120,10 +120,10 @@ class WelcomeTest extends \MailPoetTest {
     $this->assertInstanceOf(SendingQueueEntity::class, $queue);
     expect($queue->getId())->greaterOrEquals(1);
     $task = $queue->getTask();
-    assert($task instanceof ScheduledTaskEntity);
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
     expect($task->getPriority())->equals(ScheduledTaskEntity::PRIORITY_HIGH);
     $scheduledAt = $task->getScheduledAt();
-    assert($scheduledAt instanceof \DateTimeInterface);
+    $this->assertInstanceOf(\DateTimeInterface::class, $scheduledAt);
     expect($scheduledAt->format('Y-m-d H:i'))
       ->equals($currentTime->addDays(2)->format('Y-m-d H:i'));
   }
@@ -145,10 +145,10 @@ class WelcomeTest extends \MailPoetTest {
     $this->assertInstanceOf(SendingQueueEntity::class, $queue);
     expect($queue->getId())->greaterOrEquals(1);
     $task = $queue->getTask();
-    assert($task instanceof ScheduledTaskEntity);
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
     expect($task->getPriority())->equals(ScheduledTaskEntity::PRIORITY_HIGH);
     $scheduledAt = $task->getScheduledAt();
-    assert($scheduledAt instanceof \DateTimeInterface);
+    $this->assertInstanceOf(\DateTimeInterface::class, $scheduledAt);
     expect($scheduledAt->format('Y-m-d H:i'))
       ->equals($currentTime->addWeeks(2)->format('Y-m-d H:i'));
   }
@@ -171,10 +171,10 @@ class WelcomeTest extends \MailPoetTest {
     $this->assertInstanceOf(SendingQueueEntity::class, $queue);
     expect($queue->getId())->greaterOrEquals(1);
     $task = $queue->getTask();
-    assert($task instanceof ScheduledTaskEntity);
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
     expect($task->getPriority())->equals(ScheduledTaskEntity::PRIORITY_HIGH);
     $scheduledAt = $task->getScheduledAt();
-    assert($scheduledAt instanceof \DateTimeInterface);
+    $this->assertInstanceOf(\DateTimeInterface::class, $scheduledAt);
     expect($scheduledAt->format('Y-m-d H:i'))
       ->equals($currentTime->format('Y-m-d H:i'));
   }
@@ -220,9 +220,9 @@ class WelcomeTest extends \MailPoetTest {
     $queue = $newsletter->getLatestQueue();
     $this->assertInstanceOf(SendingQueueEntity::class, $queue);
     $task = $queue->getTask();
-    assert($task instanceof ScheduledTaskEntity);
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
     $scheduledAt = $task->getScheduledAt();
-    assert($scheduledAt instanceof \DateTimeInterface);
+    $this->assertInstanceOf(\DateTimeInterface::class, $scheduledAt);
     expect($scheduledAt->format('Y-m-d H:i'))
       ->equals($currentTime->addDay()->format('Y-m-d H:i'));
     expect($result[0]->id())->equals($queue->getId());
@@ -390,9 +390,9 @@ class WelcomeTest extends \MailPoetTest {
     $queue = $newsletter->getLatestQueue();
     $this->assertInstanceOf(SendingQueueEntity::class, $queue);
     $task = $queue->getTask();
-    assert($task instanceof ScheduledTaskEntity);
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
     $scheduledAt = $task->getScheduledAt();
-    assert($scheduledAt instanceof \DateTimeInterface);
+    $this->assertInstanceOf(\DateTimeInterface::class, $scheduledAt);
     expect($scheduledAt->format('Y-m-d H:i'))
       ->equals($currentTime->addDay()->format('Y-m-d H:i'));
   }
@@ -418,9 +418,9 @@ class WelcomeTest extends \MailPoetTest {
     $queue = $newsletter->getLatestQueue();
     $this->assertInstanceOf(SendingQueueEntity::class, $queue);
     $task = $queue->getTask();
-    assert($task instanceof ScheduledTaskEntity);
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
     $scheduledAt = $task->getScheduledAt();
-    assert($scheduledAt instanceof \DateTimeInterface);
+    $this->assertInstanceOf(\DateTimeInterface::class, $scheduledAt);
     expect($scheduledAt->format('Y-m-d H:i'))
       ->equals($currentTime->addDay()->format('Y-m-d H:i'));
   }

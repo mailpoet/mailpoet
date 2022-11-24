@@ -244,7 +244,7 @@ class SettingsTest extends \MailPoetTest {
         'status' => ScheduledTaskEntity::STATUS_SCHEDULED
       ]
     );
-    assert($task instanceof ScheduledTaskEntity);
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
     expect($task->getScheduledAt())->lessThan(Carbon::now());
   }
 

@@ -98,7 +98,7 @@ class SegmentsTest extends \MailPoetTest {
     $response = $this->endpoint->save($segmentData);
     expect($response->status)->equals(APIResponse::STATUS_OK);
     $segment = $this->segmentRepository->findOneBy(['name' => $name]);
-    assert($segment instanceof SegmentEntity);
+    $this->assertInstanceOf(SegmentEntity::class, $segment);
     expect($response->data)->equals(
       $this->responseBuilder->build($segment)
     );
@@ -119,14 +119,14 @@ class SegmentsTest extends \MailPoetTest {
     $this->segmentRepository->flush();
 
     $trashedSegment = $this->segmentRepository->findOneById($this->segment1->getId());
-    assert($trashedSegment instanceof SegmentEntity);
+    $this->assertInstanceOf(SegmentEntity::class, $trashedSegment);
     expect($trashedSegment->getDeletedAt())->notNull();
     $this->entityManager->clear();
 
     $response = $this->endpoint->restore(['id' => $this->segment1->getId()]);
     expect($response->status)->equals(APIResponse::STATUS_OK);
     $segment = $this->segmentRepository->findOneById($trashedSegment->getId());
-    assert($segment instanceof SegmentEntity);
+    $this->assertInstanceOf(SegmentEntity::class, $segment);
     expect($response->data)->equals(
       $this->responseBuilder->build($segment)
     );
@@ -138,7 +138,7 @@ class SegmentsTest extends \MailPoetTest {
     $response = $this->endpoint->trash(['id' => $this->segment2->getId()]);
     $this->entityManager->clear();
     $segment = $this->segmentRepository->findOneById($this->segment2->getId());
-    assert($segment instanceof SegmentEntity);
+    $this->assertInstanceOf(SegmentEntity::class, $segment);
 
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->data)->equals(
@@ -191,7 +191,7 @@ class SegmentsTest extends \MailPoetTest {
     $response = $this->endpoint->trash(['id' => $this->segment2->getId()]);
     $this->entityManager->refresh($this->segment2);
     $segment = $this->segmentRepository->findOneById($this->segment2->getId());
-    assert($segment instanceof SegmentEntity);
+    $this->assertInstanceOf(SegmentEntity::class, $segment);
 
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->data)->equals(
@@ -211,7 +211,7 @@ class SegmentsTest extends \MailPoetTest {
   public function testItCanDuplicateASegment() {
     $response = $this->endpoint->duplicate(['id' => $this->segment1->getId()]);
     $segment = $this->segmentRepository->findOneBy(['name' => 'Copy of Segment 1']);
-    assert($segment instanceof SegmentEntity);
+    $this->assertInstanceOf(SegmentEntity::class, $segment);
 
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->data)->equals(

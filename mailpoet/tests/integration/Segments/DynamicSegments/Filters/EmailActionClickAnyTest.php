@@ -118,7 +118,7 @@ class EmailActionClickAnyTest extends \MailPoetTest {
 
   private function createStatsNewsletter(SubscriberEntity $subscriber): StatisticsNewsletterEntity {
     $queue = $this->newsletter->getLatestQueue();
-    assert($queue instanceof SendingQueueEntity);
+    $this->assertInstanceOf(SendingQueueEntity::class, $queue);
     $stats = new StatisticsNewsletterEntity($this->newsletter, $queue, $subscriber);
     $this->entityManager->persist($stats);
     $this->entityManager->flush();
@@ -127,7 +127,7 @@ class EmailActionClickAnyTest extends \MailPoetTest {
 
   private function createStatisticsOpens(SubscriberEntity $subscriber): StatisticsOpenEntity {
     $queue = $this->newsletter->getLatestQueue();
-    assert($queue instanceof SendingQueueEntity);
+    $this->assertInstanceOf(SendingQueueEntity::class, $queue);
     $open = new StatisticsOpenEntity($this->newsletter, $queue, $subscriber);
     $this->entityManager->persist($open);
     $this->entityManager->flush();
