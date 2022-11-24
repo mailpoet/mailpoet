@@ -53,7 +53,7 @@ class UserRegistrationTriggerTest extends \MailPoetTest {
         'user_email' => self::USER_EMAIL,
         'role' => self::USER_ROLE,
       ]);
-      assert(is_numeric($userId));
+      $this->assertIsNumeric($userId);
       $this->userId = $userId;
       $this->wpSegment->synchronizeUsers();
     }
