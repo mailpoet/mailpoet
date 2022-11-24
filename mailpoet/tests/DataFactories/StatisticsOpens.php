@@ -8,6 +8,7 @@ use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\StatisticsOpenEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
+use PHPUnit\Framework\Assert;
 
 class StatisticsOpens {
   protected $data;
@@ -29,7 +30,7 @@ class StatisticsOpens {
   public function create(): StatisticsOpenEntity {
     $entityManager = ContainerWrapper::getInstance()->get(EntityManager::class);
     $queue = $this->newsletter->getLatestQueue();
-    assert($queue instanceof SendingQueueEntity);
+    Assert::assertInstanceOf(SendingQueueEntity::class, $queue);
     $entity = new StatisticsOpenEntity(
       $this->newsletter,
       $queue,

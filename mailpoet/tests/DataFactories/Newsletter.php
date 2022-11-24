@@ -15,6 +15,7 @@ use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Util\Security;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
+use PHPUnit\Framework\Assert;
 
 class Newsletter {
 
@@ -57,7 +58,7 @@ class Newsletter {
    */
   public function loadBodyFrom($filename) {
     $body = file_get_contents(__DIR__ . '/../_data/' . $filename);
-    assert(is_string($body));
+    Assert::assertIsString($body);
     $this->data['body'] = json_decode($body, true);
     return $this;
   }

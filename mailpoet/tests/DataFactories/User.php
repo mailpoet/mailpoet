@@ -2,6 +2,7 @@
 
 namespace MailPoet\Test\DataFactories;
 
+use PHPUnit\Framework\Assert;
 use WP_User;
 
 class User {
@@ -11,9 +12,9 @@ class User {
     } else {
       $userId = wp_create_user($name, "$name-password", $email);
     }
-    assert(is_int($userId));
+    Assert::assertIsNumeric($userId);
     $user = get_user_by('ID', $userId);
-    assert($user instanceof WP_User);
+    Assert::assertInstanceOf(WP_User::class, $user);
     foreach ($user->roles as $defaultRole) {
       $user->remove_role($defaultRole);
     }

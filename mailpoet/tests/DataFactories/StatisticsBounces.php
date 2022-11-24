@@ -8,6 +8,7 @@ use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\StatisticsBounceEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
+use PHPUnit\Framework\Assert;
 
 class StatisticsBounces {
   protected $data;
@@ -29,7 +30,7 @@ class StatisticsBounces {
   public function create(): StatisticsBounceEntity {
     $entityManager = ContainerWrapper::getInstance()->get(EntityManager::class);
     $queue = $this->newsletter->getLatestQueue();
-    assert($queue instanceof SendingQueueEntity);
+    Assert::assertInstanceOf(SendingQueueEntity::class, $queue);
     $entity = new StatisticsBounceEntity(
       $this->newsletter,
       $queue,

@@ -7,6 +7,7 @@ use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterLinkEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
+use PHPUnit\Framework\Assert;
 
 class NewsletterLink {
   protected $data;
@@ -46,7 +47,7 @@ class NewsletterLink {
   public function create(): NewsletterLinkEntity {
     $entityManager = ContainerWrapper::getInstance()->get(EntityManager::class);
     $queue = $this->newsletter->getLatestQueue();
-    assert($queue instanceof SendingQueueEntity);
+    Assert::assertInstanceOf(SendingQueueEntity::class, $queue);
     $entity = new NewsletterLinkEntity(
       $this->newsletter,
       $queue,
