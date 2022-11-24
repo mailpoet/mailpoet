@@ -16,13 +16,19 @@ class SwitchingLanguagesCest {
     $i->click('[name="submit"]');
 
     $i->wantTo('Update translations to make sure strings are downloaded');
-    $i->amOnAdminPage('/update-core.php');
-    $i->waitForText('WordPress-Aktualisierungen');
-    try {
-      $i->click('Übersetzungen aktualisieren');
-      $i->waitForText('Weiter zur WordPress-Aktualisierungs-Seite');
-    } catch (ElementNotFound $e) {
-      // translations are already up-to-date
+
+    // translations may not be scheduled for update yet, retry multiple times in that case
+    for ($attemtps = 0; $attemtps < 3; $attemtps++) {
+      try {
+        $i->wait($attemtps);
+        $i->amOnAdminPage('update-core.php');
+        $i->waitForText('WordPress-Aktualisierungen');
+        $i->click('Übersetzungen aktualisieren');
+        $i->waitForText('Weiter zur WordPress-Aktualisierungs-Seite');
+        break;
+      } catch (ElementNotFound $e) {
+        // translations are not yet scheduled for update, or are already up-to-date
+      }
     }
 
     $i->wantTo('Check menu strings (translated in PHP)');
