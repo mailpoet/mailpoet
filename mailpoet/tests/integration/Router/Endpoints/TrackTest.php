@@ -76,7 +76,7 @@ class TrackTest extends \MailPoetTest {
       'preview' => false,
     ];
     $queue = SendingQueue::findOne($queue->getId());
-    assert($queue instanceof SendingQueue);
+    $this->assertInstanceOf(SendingQueue::class, $queue);
     $queue = SendingTask::createFromQueue($queue);
     $queue->updateProcessedSubscribers([$subscriber->getId()]);
     // instantiate class

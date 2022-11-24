@@ -45,8 +45,8 @@ class SegmentSaveControllerTest extends \MailPoetTest {
     $subscriberSegments = $this->subscriberSegmentRepository->findBy(['segment' => $duplicate]);
     $subscriberDuplicate1 = $this->subscriberSegmentRepository->findOneBy(['segment' => $duplicate, 'subscriber' => $subscriber1]);
     $subscriberDuplicate2 = $this->subscriberSegmentRepository->findOneBy(['segment' => $duplicate, 'subscriber' => $subscriber2]);
-    assert($subscriberDuplicate1 instanceof SubscriberSegmentEntity);
-    assert($subscriberDuplicate2 instanceof SubscriberSegmentEntity);
+    $this->assertInstanceOf(SubscriberSegmentEntity::class, $subscriberDuplicate1);
+    $this->assertInstanceOf(SubscriberSegmentEntity::class, $subscriberDuplicate2);
     expect($duplicate->getName())->equals('Copy of ' . $segment->getName());
     expect($duplicate->getDescription())->equals($segment->getDescription());
     expect($duplicate->getType())->equals($segment->getType());

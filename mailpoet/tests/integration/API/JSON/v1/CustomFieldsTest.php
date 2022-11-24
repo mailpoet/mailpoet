@@ -83,7 +83,7 @@ class CustomFieldsTest extends \MailPoetTest {
 
   public function testItCanDeleteACustomField() {
     $customField = $this->repository->findOneBy(['type' => 'date']);
-    assert($customField instanceof CustomFieldEntity);
+    $this->assertInstanceOf(CustomFieldEntity::class, $customField);
     $customFieldId = $customField->getId();
 
     $router = new CustomFields($this->repository, new CustomFieldsResponseBuilder());
@@ -123,7 +123,7 @@ class CustomFieldsTest extends \MailPoetTest {
 
   public function testItCanGetACustomField() {
     $customField = $this->repository->findOneBy(['name' => 'CF: text']);
-    assert($customField instanceof CustomFieldEntity);
+    $this->assertInstanceOf(CustomFieldEntity::class, $customField);
 
     $router = new CustomFields($this->repository, new CustomFieldsResponseBuilder());
     $response = $router->get(['id' => $customField->getId()]);

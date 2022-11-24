@@ -57,7 +57,7 @@ class CronWorkerRunnerTest extends \MailPoetTest {
     $result = $this->cronWorkerRunner->run($worker);
     expect($result)->true();
     $scheduledTask = $this->scheduledTasksRepository->findOneById($task->getId());
-    assert($scheduledTask instanceof ScheduledTaskEntity);
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $scheduledTask);
     expect($scheduledTask->getStatus())->same(ScheduledTaskEntity::STATUS_COMPLETED);
   }
 
@@ -71,7 +71,7 @@ class CronWorkerRunnerTest extends \MailPoetTest {
     $result = $this->cronWorkerRunner->run($worker);
     expect($result)->true();
     $scheduledTask = $this->scheduledTasksRepository->findOneById($task->getId());
-    assert($scheduledTask instanceof ScheduledTaskEntity);
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $scheduledTask);
     expect($scheduledTask->getStatus())->same(ScheduledTaskEntity::STATUS_COMPLETED);
   }
 
@@ -111,7 +111,7 @@ class CronWorkerRunnerTest extends \MailPoetTest {
     $result = $this->cronWorkerRunner->run($worker);
     expect($result)->false();
     $scheduledTask = $this->scheduledTasksRepository->findAll()[0];
-    assert($scheduledTask instanceof ScheduledTaskEntity);
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $scheduledTask);
     expect($scheduledTask->getScheduledAt())->same($inOneWeek);
   }
 
@@ -123,7 +123,7 @@ class CronWorkerRunnerTest extends \MailPoetTest {
 
     $task = $this->createRunningTask();
     $task = $this->scheduledTasksRepository->findOneById($task->getId()); // make sure `updated_at` is set by the DB
-    assert($task instanceof ScheduledTaskEntity);
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
 
     $result = $this->cronWorkerRunner->run($worker);
     expect($result)->true();
@@ -140,7 +140,7 @@ class CronWorkerRunnerTest extends \MailPoetTest {
     expect($result)->true();
 
     $task = $this->scheduledTasksRepository->findOneById($task->getId());
-    assert($task instanceof ScheduledTaskEntity);
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
     expect($task->getScheduledAt())->greaterThan($scheduledAt);
     expect($task->getStatus())->same(ScheduledTaskEntity::STATUS_SCHEDULED);
     expect($task->getInProgress())->isEmpty();
@@ -167,7 +167,7 @@ class CronWorkerRunnerTest extends \MailPoetTest {
     } catch (\Exception $e) {
       expect($e->getMessage())->equals('test error');
       $task = $this->scheduledTasksRepository->findOneById($task->getId());
-      assert($task instanceof ScheduledTaskEntity);
+      $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
       expect($task->getScheduledAt())->greaterThan($scheduledAt);
       expect($task->getStatus())->same(ScheduledTaskEntity::STATUS_SCHEDULED);
       expect($task->getRescheduleCount())->equals(1);
@@ -190,7 +190,7 @@ class CronWorkerRunnerTest extends \MailPoetTest {
     } catch (\Exception $e) {
       expect($e->getCode())->same(CronHelper::DAEMON_EXECUTION_LIMIT_REACHED);
       $task = $this->scheduledTasksRepository->findOneById($task->getId());
-      assert($task instanceof ScheduledTaskEntity);
+      $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
       expect($scheduledAt)->equals($task->getScheduledAt());
       expect($task->getStatus())->null();
       expect($task->getRescheduleCount())->equals(0);

@@ -67,7 +67,7 @@ class TimestampListenerTest extends EventListenersBaseTest {
     ");
 
     $entity = $this->entityManager->find(TimestampEntity::class, 123);
-    assert($entity instanceof TimestampEntity); // PHPStan
+    $this->assertInstanceOf(TimestampEntity::class, $entity); // PHPStan
     $entity->setName('Updated');
     $this->entityManager->flush();
 

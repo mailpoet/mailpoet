@@ -204,7 +204,7 @@ class LinksTest extends \MailPoetTest {
 
     // 1 database record was created
     $newsletterLink = $this->newsletterLinkRepository->findOneBy(['newsletter' => 1, 'queue' => 1]);
-    assert($newsletterLink instanceof NewsletterLinkEntity);
+    $this->assertInstanceOf(NewsletterLinkEntity::class, $newsletterLink);
     expect($newsletterLink->getHash())->equals('123');
     expect($newsletterLink->getUrl())->equals('http://example.com');
   }

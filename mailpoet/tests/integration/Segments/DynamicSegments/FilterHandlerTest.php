@@ -38,17 +38,17 @@ class FilterHandlerTest extends \MailPoetTest {
     /** @var SubscribersRepository $subscribersRepository */
     $subscribersRepository = $this->diContainer->get(SubscribersRepository::class);
     $subscriber1 = $subscribersRepository->findOneBy(['email' => 'user-role-test1@example.com']);
-    assert($subscriber1 instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
     $subscriber1->setStatus(SubscriberEntity::STATUS_SUBSCRIBED);
     $subscriber1->setLastSubscribedAt(new Carbon());
     $this->subscriber1 = $subscriber1;
     $subscriber2 = $subscribersRepository->findOneBy(['email' => 'user-role-test2@example.com']);
-    assert($subscriber2 instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber2);
     $subscriber2->setStatus(SubscriberEntity::STATUS_SUBSCRIBED);
     $subscriber2->setLastSubscribedAt(new Carbon());
     $this->subscriber2 = $subscriber2;
     $subscriber3 = $subscribersRepository->findOneBy(['email' => 'user-role-test3@example.com']);
-    assert($subscriber3 instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber3);
     $subscriber3->setStatus(SubscriberEntity::STATUS_SUBSCRIBED);
     $subscriber3->setLastSubscribedAt(new Carbon());
     $this->entityManager->flush();
@@ -57,13 +57,13 @@ class FilterHandlerTest extends \MailPoetTest {
   public function testItAppliesFilter(): void {
     $segment = $this->getSegment('editor');
     $statement = $this->filterHandler->apply($this->getQueryBuilder(), $segment)->execute();
-    assert($statement instanceof Statement);
+    $this->assertInstanceOf(Statement::class, $statement);
     $result = $statement->fetchAll();
     expect($result)->count(2);
     $subscriber1 = $this->entityManager->find(SubscriberEntity::class, $result[0]['id']);
-    assert($subscriber1 instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
     $subscriber2 = $this->entityManager->find(SubscriberEntity::class, $result[1]['id']);
-    assert($subscriber2 instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber2);
     expect($subscriber1->getEmail())->equals('user-role-test1@example.com');
     expect($subscriber2->getEmail())->equals('user-role-test3@example.com');
   }

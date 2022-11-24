@@ -287,9 +287,9 @@ class WorkerTest extends \MailPoetTest {
   }
 
   private function createStatisticsUnsubscribe($data): StatisticsUnsubscribeEntity {
-    assert($data['newsletter'] instanceof NewsletterEntity);
-    assert($data['queue'] instanceof SendingQueueEntity);
-    assert($data['subscriber'] instanceof SubscriberEntity);
+    $this->assertInstanceOf(NewsletterEntity::class, $data['newsletter']);
+    $this->assertInstanceOf(SendingQueueEntity::class, $data['queue']);
+    $this->assertInstanceOf(SubscriberEntity::class, $data['subscriber']);
     $entity = new StatisticsUnsubscribeEntity($data['newsletter'], $data['queue'], $data['subscriber']);
     $this->entityManager->persist($entity);
     if (isset($data['created_at'])) $entity->setCreatedAt(new Carbon($data['created_at']));

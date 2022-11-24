@@ -110,7 +110,7 @@ class MigrationTest extends \MailPoetTest {
     $task = $this->createScheduledTask();
     $this->worker->prepareTaskStrategy($task, microtime(true));
     $task = $this->scheduledTasksRepository->findOneById($task->getId());
-    assert($task instanceof ScheduledTaskEntity);
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
     expect($task->getStatus())->equals(ScheduledTaskEntity::STATUS_COMPLETED);
   }
 

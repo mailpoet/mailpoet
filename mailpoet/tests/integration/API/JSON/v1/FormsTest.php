@@ -213,7 +213,7 @@ class FormsTest extends \MailPoetTest {
     $this->formsRepository->flush();
     $this->entityManager->refresh($this->form1);
 
-    assert($this->form1 instanceof FormEntity);
+    $this->assertInstanceOf(FormEntity::class, $this->form1);
     expect($this->form1)->notNull();
 
     $response = $this->endpoint->restore(['id' => $this->form1->getId()]);
@@ -348,7 +348,7 @@ class FormsTest extends \MailPoetTest {
 
   private function reloadForm(int $id): FormEntity {
     $reloaded = $this->formsRepository->findOneById($id);
-    assert($reloaded instanceof FormEntity);
+    $this->assertInstanceOf(FormEntity::class, $reloaded);
     return $reloaded;
   }
 

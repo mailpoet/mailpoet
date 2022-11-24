@@ -70,10 +70,10 @@ class SubscribersLifetimeEmailCountTest extends \MailPoetTest {
 
     $this->entityManager->clear();
     $subscriber1 = $this->subscribersRepository->findOneById($subscriber1->getId());
-    assert($subscriber1 instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
     expect($subscriber1->getEmailCount())->equals(80);
     $subscriber2 = $this->subscribersRepository->findOneById($subscriber2->getId());
-    assert($subscriber2 instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber2);
     expect($subscriber2->getEmailCount())->equals(8);
   }
 
@@ -90,10 +90,10 @@ class SubscribersLifetimeEmailCountTest extends \MailPoetTest {
 
     $this->entityManager->clear();
     $subscriber1 = $this->subscribersRepository->findOneById($subscriber1->getId());
-    assert($subscriber1 instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
     expect($subscriber1->getEmailCount())->equals(0);
     $subscriber2 = $this->subscribersRepository->findOneById($subscriber2->getId());
-    assert($subscriber2 instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber2);
     expect($subscriber2->getEmailCount())->equals(8);
   }
 
@@ -111,10 +111,10 @@ class SubscribersLifetimeEmailCountTest extends \MailPoetTest {
 
     $this->entityManager->clear();
     $subscriber1 = $this->subscribersRepository->findOneById($subscriber1->getId());
-    assert($subscriber1 instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
     expect($subscriber1->getEmailCount())->equals(0);
     $subscriber2 = $this->subscribersRepository->findOneById($subscriber2->getId());
-    assert($subscriber2 instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber2);
     expect($subscriber2->getEmailCount())->equals(8);
   }
 
@@ -137,7 +137,7 @@ class SubscribersLifetimeEmailCountTest extends \MailPoetTest {
 
     $this->entityManager->clear();
     $subscriber1 = $this->subscribersRepository->findOneById($subscriber1->getId());
-    assert($subscriber1 instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
     expect($subscriber1->getEmailCount())->equals(81);
 
   }
@@ -149,7 +149,7 @@ class SubscribersLifetimeEmailCountTest extends \MailPoetTest {
       ['type' => SubscribersEmailCount::TASK_TYPE, 'status' => ScheduledTaskEntity::STATUS_SCHEDULED]
     );
 
-    assert($task instanceof ScheduledTaskEntity);
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
     expect($task)->isInstanceOf(ScheduledTaskEntity::class);
     expect($task->getScheduledAt())->greaterThan(new Carbon());
   }

@@ -70,9 +70,9 @@ class NewsletterEntityTest extends \MailPoetTest {
     $newsletterId = $newsletter->getId();
 
     $newsletter = $this->newsletterRepository->findOneById($newsletterId);
-    assert($newsletter instanceof NewsletterEntity);
+    $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
     $newsletterOptionField = $newsletter->getOption($optionField->getName());
-    assert($newsletterOption instanceof NewsletterOptionEntity);
+    $this->assertInstanceOf(NewsletterOptionEntity::class, $newsletterOption);
 
     expect($newsletterOptionField)->notNull();
     expect($newsletterOption->getValue())->equals($optionValue);

@@ -76,7 +76,7 @@ class WooCommercePurchasesTest extends \MailPoetTest {
     $purchaseStats = $this->statisticsWooCommercePurchasesRepository->findBy([]);
     expect(count($purchaseStats))->equals(1);
     $click = $purchaseStats[0]->getClick();
-    assert($click instanceof StatisticsClickEntity);
+    $this->assertInstanceOf(StatisticsClickEntity::class, $click);
     expect($click->getId())->equals($click->getId());
   }
 
@@ -98,14 +98,14 @@ class WooCommercePurchasesTest extends \MailPoetTest {
     $newsletter = $purchaseStats[0]->getNewsletter();
     $subscriber = $purchaseStats[0]->getSubscriber();
     $queue = $purchaseStats[0]->getQueue();
-    assert($newsletter instanceof NewsletterEntity);
-    assert($subscriber instanceof SubscriberEntity);
-    assert($queue instanceof SendingQueueEntity);
+    $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
+    $this->assertInstanceOf(SendingQueueEntity::class, $queue);
     expect($newsletter->getId())->equals($this->newsletter->getId());
     expect($subscriber->getId())->equals($this->subscriber->getId());
     expect($queue->getId())->equals($this->queue->getId());
     $click = $purchaseStats[0]->getClick();
-    assert($click instanceof StatisticsClickEntity);
+    $this->assertInstanceOf(StatisticsClickEntity::class, $click);
     expect($click->getId())->equals($click->getId());
     expect($purchaseStats[0]->getOrderId())->equals($orderMock->get_id());
     expect($purchaseStats[0]->getOrderCurrency())->equals($orderMock->get_currency());
@@ -136,25 +136,25 @@ class WooCommercePurchasesTest extends \MailPoetTest {
     expect(count($purchaseStats))->equals(2);
 
     $stats1 = $this->statisticsWooCommercePurchasesRepository->findOneBy(['newsletter' => $this->newsletter]);
-    assert($stats1 instanceof StatisticsWooCommercePurchaseEntity);
+    $this->assertInstanceOf(StatisticsWooCommercePurchaseEntity::class, $stats1);
     $subscriber = $stats1->getSubscriber();
     $queue = $stats1->getQueue();
     $click = $stats1->getClick();
-    assert($subscriber instanceof SubscriberEntity);
-    assert($queue instanceof SendingQueueEntity);
-    assert($click instanceof StatisticsClickEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
+    $this->assertInstanceOf(SendingQueueEntity::class, $queue);
+    $this->assertInstanceOf(StatisticsClickEntity::class, $click);
     expect($click->getId())->equals($click1->getId());
     expect($subscriber->getId())->equals($this->subscriber->getId());
     expect($queue->getId())->equals($this->queue->getId());
 
     $stats2 = $this->statisticsWooCommercePurchasesRepository->findOneBy(['newsletter' => $newsletter]);
-    assert($stats2 instanceof StatisticsWooCommercePurchaseEntity);
+    $this->assertInstanceOf(StatisticsWooCommercePurchaseEntity::class, $stats2);
     $subscriber = $stats2->getSubscriber();
     $queue = $stats2->getQueue();
     $click = $stats2->getClick();
-    assert($subscriber instanceof SubscriberEntity);
-    assert($queue instanceof SendingQueueEntity);
-    assert($click instanceof StatisticsClickEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
+    $this->assertInstanceOf(SendingQueueEntity::class, $queue);
+    $this->assertInstanceOf(StatisticsClickEntity::class, $click);
     expect($click->getId())->equals($click2->getId());
     expect($subscriber->getId())->equals($this->subscriber->getId());
     expect($queue->getId())->equals($queue->getId());
@@ -210,7 +210,7 @@ class WooCommercePurchasesTest extends \MailPoetTest {
     $purchaseStats = $this->statisticsWooCommercePurchasesRepository->findBy([], ['createdAt' => 'desc']);
     expect(count($purchaseStats))->equals(1);
     $click = $purchaseStats[0]->getClick();
-    assert($click instanceof StatisticsClickEntity);
+    $this->assertInstanceOf(StatisticsClickEntity::class, $click);
     expect($click->getId())->equals($latestClick->getId());
   }
 
@@ -317,7 +317,7 @@ class WooCommercePurchasesTest extends \MailPoetTest {
     $purchaseStats = $this->statisticsWooCommercePurchasesRepository->findBy([]);
     expect($purchaseStats)->count(1);
     $click = $purchaseStats[0]->getClick();
-    assert($click instanceof StatisticsClickEntity);
+    $this->assertInstanceOf(StatisticsClickEntity::class, $click);
     expect($click->getId())->equals($click->getId());
   }
 
@@ -347,7 +347,7 @@ class WooCommercePurchasesTest extends \MailPoetTest {
     $purchaseStats = $this->statisticsWooCommercePurchasesRepository->findBy([]);
     expect(count($purchaseStats))->equals(1);
     $click = $purchaseStats[0]->getClick();
-    assert($click instanceof StatisticsClickEntity);
+    $this->assertInstanceOf(StatisticsClickEntity::class, $click);
     expect($click->getId())->equals($click->getId());
   }
 
@@ -380,7 +380,7 @@ class WooCommercePurchasesTest extends \MailPoetTest {
     $purchaseStats = $this->statisticsWooCommercePurchasesRepository->findBy([]);
     expect(count($purchaseStats))->equals(1);
     $click = $purchaseStats[0]->getClick();
-    assert($click instanceof StatisticsClickEntity);
+    $this->assertInstanceOf(StatisticsClickEntity::class, $click);
     expect($click->getId())->equals($orderEmailClick->getId());
   }
 
@@ -419,9 +419,9 @@ class WooCommercePurchasesTest extends \MailPoetTest {
     expect(count($purchaseStats))->equals(2);
     foreach ($purchaseStats as $stats) {
       $click = $stats->getClick();
-      assert($click instanceof StatisticsClickEntity);
+      $this->assertInstanceOf(StatisticsClickEntity::class, $click);
       $statsNewsletter = $stats->getNewsletter();
-      assert($statsNewsletter instanceof NewsletterEntity);
+      $this->assertInstanceOf(NewsletterEntity::class, $statsNewsletter);
       if ($click->getId() === $orderEmailClick->getId()) {
         expect($statsNewsletter->getId())->equals($this->newsletter->getId());
       } else {
@@ -470,8 +470,8 @@ class WooCommercePurchasesTest extends \MailPoetTest {
   private function createClick(NewsletterLinkEntity $link, SubscriberEntity $subscriber, $createdDaysAgo = 5): StatisticsClickEntity {
     $newsletter = $link->getNewsletter();
     $queue = $link->getQueue();
-    assert($newsletter instanceof NewsletterEntity);
-    assert($queue instanceof SendingQueueEntity);
+    $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
+    $this->assertInstanceOf(SendingQueueEntity::class, $queue);
     $click = new StatisticsClickEntity($newsletter, $queue, $subscriber, $link, 1);
     $this->entityManager->persist($click);
 

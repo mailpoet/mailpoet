@@ -159,7 +159,7 @@ class ShortcodesTest extends \MailPoetTest {
     $result =
       $shortcodesObject->process(['[newsletter:post_title]'], $content);
     $wpPost = get_post($this->wPPost);
-    assert($wpPost instanceof WP_Post);
+    $this->assertInstanceOf(WP_Post::class, $wpPost);
     expect($result['0'])->equals($wpPost->post_title); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
   }
 

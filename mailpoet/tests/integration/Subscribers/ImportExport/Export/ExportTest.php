@@ -112,17 +112,17 @@ class ExportTest extends \MailPoetTest {
       $this->createCustomField($customField['name'], $customField['type']);
     }
     $subscriber1 = $this->subscribersRepository->findOneById(1);
-    assert($subscriber1 instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
     $subscriber2 = $this->subscribersRepository->findOneById(2);
-    assert($subscriber2 instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber2);
     $subscriber3 = $this->subscribersRepository->findOneById(3);
-    assert($subscriber3 instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber3);
     $customField = $this->customFieldsRepository->findOneById(1);
-    assert($customField instanceof CustomFieldEntity);
+    $this->assertInstanceOf(CustomFieldEntity::class, $customField);
     $segment1 = $this->segmentsRepository->findOneById(1);
-    assert($segment1 instanceof SegmentEntity);
+    $this->assertInstanceOf(SegmentEntity::class, $segment1);
     $segment2 = $this->segmentsRepository->findOneById(2);
-    assert($segment2 instanceof SegmentEntity);
+    $this->assertInstanceOf(SegmentEntity::class, $segment2);
     $this->createSubscriberCustomField($subscriber2, $customField, $this->subscribersData[1][1]);
 
     $this->createSubscriberSegment($subscriber1, $segment1, SubscriberEntity::STATUS_UNSUBSCRIBED);
@@ -178,7 +178,7 @@ class ExportTest extends \MailPoetTest {
 
   public function testItCanGetSubscriberCustomFields() {
     $source = $this->customFieldsRepository->findOneBy(['name' => $this->customFieldsData[0]['name']]);
-    assert($source instanceof CustomFieldEntity);
+    $this->assertInstanceOf(CustomFieldEntity::class, $source);
     $target = $this->export->getSubscriberCustomFields();
     expect($target)->equals([$source->getId() => $source->getName()]);
   }

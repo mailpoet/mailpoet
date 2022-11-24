@@ -24,13 +24,15 @@ class SettingsChangeHandlerTest extends \MailPoetTest {
 
   public function testItReschedulesScheduledTaskForWoocommerceSync(): void {
     $newTask = $this->createScheduledTask(WooCommerceSync::TASK_TYPE);
-    assert($newTask instanceof ScheduledTaskEntity);
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $newTask);
 
     $this->settingsChangeHandler->onSubscribeOldWoocommerceCustomersChange();
 
     $this->entityManager->clear();
     $task = $this->getScheduledTaskByType(WooCommerceSync::TASK_TYPE);
-    assert($task instanceof ScheduledTaskEntity);
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
+    $scheduledAt = $task->getScheduledAt();
+    $this->assertInstanceOf(\DateTime::class, $scheduledAt);
     $expectedScheduledAt = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
     $expectedScheduledAt->subMinute();
     $this->tester->assertEqualDateTimes($task->getScheduledAt(), $expectedScheduledAt, 1);
@@ -47,11 +49,13 @@ class SettingsChangeHandlerTest extends \MailPoetTest {
 
   public function testItReschedulesScheduledTaskForInactiveSubscribers(): void {
     $newTask = $this->createScheduledTask(InactiveSubscribers::TASK_TYPE);
-    assert($newTask instanceof ScheduledTaskEntity);
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $newTask);
     $this->settingsChangeHandler->onInactiveSubscribersIntervalChange();
 
     $task = $this->getScheduledTaskByType(InactiveSubscribers::TASK_TYPE);
-    assert($task instanceof ScheduledTaskEntity);
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
+    $scheduledAt = $task->getScheduledAt();
+    $this->assertInstanceOf(\DateTime::class, $scheduledAt);
     $expectedScheduledAt = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
     $expectedScheduledAt->subMinute();
     $this->tester->assertEqualDateTimes($task->getScheduledAt(), $expectedScheduledAt, 1);

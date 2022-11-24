@@ -34,7 +34,7 @@ class ImportExportTest extends \MailPoetTest {
     $response = $this->endpoint->setupWooCommerceInitialImport();
     expect($response->status)->equals(200);
     $task = $this->scheduledTasksRepository->findOneBy(['type' => WooCommerceSync::TASK_TYPE]);
-    assert($task instanceof ScheduledTaskEntity);
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
     expect($task->getStatus())->equals(ScheduledTaskEntity::STATUS_SCHEDULED);
     $now = time();
     $scheduledAt = new Carbon($task->getScheduledAt());
@@ -48,7 +48,7 @@ class ImportExportTest extends \MailPoetTest {
     $this->entityManager->clear();
     $this->endpoint->setupWooCommerceInitialImport();
     $task = $this->scheduledTasksRepository->findOneBy(['type' => WooCommerceSync::TASK_TYPE]);
-    assert($task instanceof ScheduledTaskEntity);
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
     expect($task->getStatus())->equals(ScheduledTaskEntity::STATUS_SCHEDULED);
     $now = time();
     $scheduledAt = new Carbon($task->getScheduledAt());
@@ -62,7 +62,7 @@ class ImportExportTest extends \MailPoetTest {
     $this->createTask(WooCommerceSync::TASK_TYPE, null);
     $this->endpoint->setupWooCommerceInitialImport();
     $task = $this->scheduledTasksRepository->findOneBy(['type' => WooCommerceSync::TASK_TYPE]);
-    assert($task instanceof ScheduledTaskEntity);
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
     expect($task->getStatus())->equals(null);
     $taskCount = $this->scheduledTasksRepository->countBy(['type' => WooCommerceSync::TASK_TYPE]);
     expect($taskCount)->equals(1);

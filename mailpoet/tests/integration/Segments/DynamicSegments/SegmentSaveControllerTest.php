@@ -36,7 +36,7 @@ class SegmentSaveControllerTest extends \MailPoetTest {
     expect($segment->getDynamicFilters()->count())->equals(1);
     expect($segment->getType())->equals(SegmentEntity::TYPE_DYNAMIC);
     $filter = $segment->getDynamicFilters()->first();
-    assert($filter instanceof DynamicSegmentFilterEntity);
+    $this->assertInstanceOf(DynamicSegmentFilterEntity::class, $filter);
     expect($filter->getFilterData()->getFilterType())->equals(DynamicSegmentFilterData::TYPE_USER_ROLE);
     expect($filter->getFilterData()->getAction())->equals(UserRole::TYPE);
     expect($filter->getFilterData()->getData())->equals([
@@ -70,7 +70,7 @@ class SegmentSaveControllerTest extends \MailPoetTest {
     expect($segment->getDynamicFilters()->count())->equals(1);
     expect($segment->getType())->equals(SegmentEntity::TYPE_DYNAMIC);
     $filter = $segment->getDynamicFilters()->first();
-    assert($filter instanceof DynamicSegmentFilterEntity);
+    $this->assertInstanceOf(DynamicSegmentFilterEntity::class, $filter);
     expect($filter->getFilterData()->getFilterType())->equals(DynamicSegmentFilterData::TYPE_USER_ROLE);
     expect($filter->getFilterData()->getAction())->equals(UserRole::TYPE);
     expect($filter->getFilterData()->getData())->equals([

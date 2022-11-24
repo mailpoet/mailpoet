@@ -307,12 +307,12 @@ class WPTest extends \MailPoetTest {
     expect($subscribersCount)->equals(2);
     $subscriber1 = Subscriber::where("wp_user_id", $id)->findOne();
     $deletedAt1 = Carbon::createFromFormat('Y-m-d H:i:s', $subscriber1->deletedAt);
-    assert($deletedAt1 instanceof Carbon);
+    $this->assertInstanceOf(Carbon::class, $deletedAt1);
     expect($subscriber1->status)->equals(SubscriberEntity::STATUS_UNCONFIRMED);
     expect($deletedAt1->timestamp)->equals(Carbon::now()->timestamp, 1);
     $subscriber2 = Subscriber::where("wp_user_id", $id2)->findOne();
     $deletedAt2 = Carbon::createFromFormat('Y-m-d H:i:s', $subscriber2->deletedAt);
-    assert($deletedAt2 instanceof Carbon);
+    $this->assertInstanceOf(Carbon::class, $deletedAt2);
     expect($subscriber2->status)->equals(SubscriberEntity::STATUS_UNCONFIRMED);
     expect($deletedAt2->timestamp)->equals(Carbon::now()->timestamp, 1);
   }
@@ -427,7 +427,7 @@ class WPTest extends \MailPoetTest {
     $wpSegment->synchronizeUser($id);
     $subscriber = Subscriber::where("wp_user_id", $id)->findOne();
     $deletedAt = Carbon::createFromFormat('Y-m-d H:i:s', $subscriber->deletedAt);
-    assert($deletedAt instanceof Carbon);
+    $this->assertInstanceOf(Carbon::class, $deletedAt);
     expect($subscriber->status)->equals(SubscriberEntity::STATUS_UNCONFIRMED);
     expect($deletedAt->timestamp)->equals(Carbon::now()->timestamp, 1);
   }

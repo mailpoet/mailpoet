@@ -112,7 +112,7 @@ class PagesTest extends \MailPoetTest {
     $subscription->confirm();
     $this->entityManager->clear();
     $confirmedSubscriber = $this->subscribersRepository->findOneById($subscriber->getId());
-    assert($confirmedSubscriber instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $confirmedSubscriber);
     expect($confirmedSubscriber->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
     expect($confirmedSubscriber->getConfirmedAt())->greaterOrEquals(Carbon::createFromTimestamp($this->wp->currentTime('timestamp'))->subSecond());
     expect($confirmedSubscriber->getConfirmedAt())->lessOrEquals(Carbon::createFromTimestamp($this->wp->currentTime('timestamp'))->addSecond());

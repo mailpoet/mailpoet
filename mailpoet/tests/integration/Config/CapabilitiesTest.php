@@ -45,7 +45,7 @@ class CapabilitiesTest extends \MailPoetTest {
       foreach ($roles as $role) {
         $checked = true;
         $role = get_role($role);
-        assert($role instanceof WP_Role);
+        $this->assertInstanceOf(WP_Role::class, $role);
         expect($role->has_cap($name))->true();
       }
     }
@@ -60,7 +60,7 @@ class CapabilitiesTest extends \MailPoetTest {
       foreach ($roles as $role) {
         $checked = true;
         $role = get_role($role);
-        assert($role instanceof WP_Role);
+        $this->assertInstanceOf(WP_Role::class, $role);
         expect($role->has_cap($name))->false();
       }
     }
@@ -84,7 +84,7 @@ class CapabilitiesTest extends \MailPoetTest {
 
     // other MailPoet capabilities were successfully configured
     $editorRole = get_role('editor');
-    assert($editorRole instanceof WP_Role);
+    $this->assertInstanceOf(WP_Role::class, $editorRole);
     expect($editorRole->has_cap(AccessControl::PERMISSION_ACCESS_PLUGIN_ADMIN))->false();
     expect($editorRole->has_cap(AccessControl::PERMISSION_MANAGE_EMAILS))->true();
 
@@ -93,7 +93,7 @@ class CapabilitiesTest extends \MailPoetTest {
     $this->caps->setupWPCapabilities();
 
     $editorRole = get_role('editor');
-    assert($editorRole instanceof WP_Role);
+    $this->assertInstanceOf(WP_Role::class, $editorRole);
     expect($editorRole->has_cap(AccessControl::PERMISSION_ACCESS_PLUGIN_ADMIN))->true();
     expect($editorRole->has_cap(AccessControl::PERMISSION_MANAGE_EMAILS))->true();
   }

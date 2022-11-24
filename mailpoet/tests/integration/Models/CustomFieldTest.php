@@ -85,19 +85,19 @@ class CustomFieldTest extends \MailPoetTest {
 
   public function testItHasACreatedAtOnCreation() {
     $customField = CustomField::findOne($this->customField->id);
-    assert($customField instanceof CustomField);
+    $this->assertInstanceOf(CustomField::class, $customField);
     expect($customField->createdAt)->notNull();
   }
 
   public function testItHasAnUpdatedAtOnCreation() {
     $customField = CustomField::findOne($this->customField->id);
-    assert($customField instanceof CustomField);
+    $this->assertInstanceOf(CustomField::class, $customField);
     expect($customField->updatedAt)->equals($customField->createdAt);
   }
 
   public function testItUpdatesTheUpdatedAtOnUpdate() {
     $customField = CustomField::findOne($this->customField->id);
-    assert($customField instanceof CustomField);
+    $this->assertInstanceOf(CustomField::class, $customField);
     $createdAt = $customField->createdAt;
 
     sleep(1);
@@ -106,7 +106,7 @@ class CustomFieldTest extends \MailPoetTest {
     $customField->save();
 
     $updatedCustomField = CustomField::findOne($customField->id);
-    assert($updatedCustomField instanceof CustomField);
+    $this->assertInstanceOf(CustomField::class, $updatedCustomField);
     expect($updatedCustomField->createdAt)->equals($createdAt);
     $isTimeUpdated = (
       $updatedCustomField->updatedAt > $updatedCustomField->createdAt
@@ -125,7 +125,7 @@ class CustomFieldTest extends \MailPoetTest {
       $association->save();
     }
     $customField = CustomField::findOne($this->customField->id);
-    assert($customField instanceof CustomField);
+    $this->assertInstanceOf(CustomField::class, $customField);
     $subscribers = $customField->subscribers()->findArray();
     expect(count($subscribers))->equals(2);
   }
@@ -139,7 +139,7 @@ class CustomFieldTest extends \MailPoetTest {
     $association->value = '12/12/2012';
     $association->save();
     $customField = CustomField::findOne($this->customField->id);
-    assert($customField instanceof CustomField);
+    $this->assertInstanceOf(CustomField::class, $customField);
     $subscriber = $customField->subscribers()->findOne();
     expect($subscriber->value)->equals($association->value);
   }

@@ -104,7 +104,7 @@ class DynamicSegmentsTest extends \MailPoetTest {
     expect($response->meta['count'])->equals(1);
 
     $this->entityManager->refresh($dynamicSegment);
-    assert($dynamicSegment instanceof SegmentEntity);
+    $this->assertInstanceOf(SegmentEntity::class, $dynamicSegment);
     expect($dynamicSegment->getDeletedAt())->notNull();
   }
 
@@ -134,14 +134,14 @@ class DynamicSegmentsTest extends \MailPoetTest {
     expect($response->meta['count'])->equals(1);
 
     $this->entityManager->refresh($dynamicSegment);
-    assert($dynamicSegment instanceof SegmentEntity);
+    $this->assertInstanceOf(SegmentEntity::class, $dynamicSegment);
     expect($dynamicSegment->getDeletedAt())->null();
   }
 
   public function testItCanDeleteASegment() {
     $dynamicSegment = $this->createDynamicSegmentEntity('Delete test', 'description');
     $dynamicSegmentFilter = $dynamicSegment->getDynamicFilters()->first();
-    assert($dynamicSegmentFilter instanceof DynamicSegmentFilterEntity);
+    $this->assertInstanceOf(DynamicSegmentFilterEntity::class, $dynamicSegmentFilter);
 
     $response = $this->endpoint->delete(['id' => $dynamicSegment->getId()]);
 

@@ -70,7 +70,7 @@ class NewsletterSaveControllerTest extends \MailPoetTest {
 
     $newsletter = $this->saveController->save($newsletterData);
     $updatedQueue = $newsletter->getLatestQueue();
-    assert($updatedQueue instanceof SendingQueueEntity); // PHPStan
+    $this->assertInstanceOf(SendingQueueEntity::class, $updatedQueue); // PHPStan
     expect($updatedQueue->getNewsletterRenderedSubject())->null();
     expect($updatedQueue->getNewsletterRenderedBody())->null();
   }
@@ -87,7 +87,7 @@ class NewsletterSaveControllerTest extends \MailPoetTest {
 
     $this->saveController->save($newsletterData);
     $updatedQueue = $newsletter->getLatestQueue();
-    assert($updatedQueue instanceof SendingQueueEntity); // PHPStan
+    $this->assertInstanceOf(SendingQueueEntity::class, $updatedQueue); // PHPStan
     expect($updatedQueue->getNewsletterRenderedSubject())->same('My Updated Newsletter');
     expect($updatedQueue->getNewsletterRenderedBody())->hasKey('html');
     expect($updatedQueue->getNewsletterRenderedBody())->hasKey('text');
@@ -115,7 +115,7 @@ class NewsletterSaveControllerTest extends \MailPoetTest {
       return $optionField && $optionField->getName() === 'schedule';
     })->first();
 
-    assert($scheduleOption instanceof NewsletterOptionEntity); // PHPStan
+    $this->assertInstanceOf(NewsletterOptionEntity::class, $scheduleOption); // PHPStan
     expect($scheduleOption->getValue())->equals('0 14 * * 1');
 
     // schedule should be recalculated when options change
@@ -127,7 +127,7 @@ class NewsletterSaveControllerTest extends \MailPoetTest {
       return $optionField && $optionField->getName() === 'schedule';
     })->first();
 
-    assert($scheduleOption instanceof NewsletterOptionEntity); // PHPStan
+    $this->assertInstanceOf(NewsletterOptionEntity::class, $scheduleOption); // PHPStan
     expect($scheduleOption->getValue())->equals('* * * * *');
   }
 
@@ -139,12 +139,12 @@ class NewsletterSaveControllerTest extends \MailPoetTest {
     $currentTime = Carbon::now();
     $queue1 = $this->createQueueWithTask($newsletter);
     $task1 = $queue1->getTask();
-    assert($task1 instanceof ScheduledTaskEntity); // PHPStan
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $task1); // PHPStan
     $task1->setScheduledAt($currentTime);
 
     $queue2 = $this->createQueueWithTask($newsletter);
     $task2 = $queue2->getTask();
-    assert($task2 instanceof ScheduledTaskEntity); // PHPStan
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $task2); // PHPStan
     $task2->setStatus(null);
 
     $this->entityManager->flush();
@@ -170,7 +170,7 @@ class NewsletterSaveControllerTest extends \MailPoetTest {
       return $optionField && $optionField->getName() === 'schedule';
     })->first();
     expect($task1->getScheduledAt())->notEquals($currentTime);
-    assert($scheduleOption instanceof NewsletterOptionEntity); // PHPStan
+    $this->assertInstanceOf(NewsletterOptionEntity::class, $scheduleOption); // PHPStan
 
     expect($task1->getScheduledAt())->equals($this->scheduler->getNextRunDate($scheduleOption->getValue()));
     expect($task2->getScheduledAt())->null();
@@ -195,9 +195,9 @@ class NewsletterSaveControllerTest extends \MailPoetTest {
     $newsletter = $this->saveController->save($newsletterData);
     expect(count($newsletter->getNewsletterSegments()))->equals(1);
     $newsletterSegment = $newsletter->getNewsletterSegments()->first();
-    assert($newsletterSegment instanceof NewsletterSegmentEntity); // PHPStan
+    $this->assertInstanceOf(NewsletterSegmentEntity::class, $newsletterSegment); // PHPStan
     $segment = $newsletterSegment->getSegment();
-    assert($segment instanceof SegmentEntity); // PHPStan
+    $this->assertInstanceOf(SegmentEntity::class, $segment); // PHPStan
     expect($segment->getName())->equals('Segment 1');
   }
 
@@ -230,7 +230,7 @@ class NewsletterSaveControllerTest extends \MailPoetTest {
       'text' => 'text',
     ]);
     $task = $queue->getTask();
-    assert($task instanceof ScheduledTaskEntity); // PHPStan
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $task); // PHPStan
     $task->setScheduledAt(Carbon::now());
     $this->entityManager->flush();
     $queueId = $queue->getId();

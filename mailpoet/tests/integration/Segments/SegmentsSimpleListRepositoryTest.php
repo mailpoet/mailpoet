@@ -37,7 +37,7 @@ class SegmentsSimpleListRepositoryTest extends \MailPoetTest {
     $wpUserSubscriber = $this->entityManager
       ->getRepository(SubscriberEntity::class)
       ->findOneBy(['email' => $wpUserEmail]);
-    assert($wpUserSubscriber instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $wpUserSubscriber);
     $wpUserSubscriber->setStatus(SubscriberEntity::STATUS_SUBSCRIBED);
 
     $subscriber1 = $this->createSubscriberEntity();

@@ -72,7 +72,7 @@ class WooCommerceTest extends \MailPoetTest {
     $hook = 'woocommerce_new_customer';
     $this->wooCommerceSegment->synchronizeRegisteredCustomer($user->ID, $hook);
     $subscriber = $this->findWCSubscriberByWpUserId($user->ID);
-    assert($subscriber instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
     expect($subscriber)->notEmpty();
     expect($subscriber->getEmail())->equals($user->user_email); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     expect($subscriber->getFirstName())->equals($firstName);
@@ -97,7 +97,7 @@ class WooCommerceTest extends \MailPoetTest {
     $hook = 'woocommerce_update_customer';
     $this->wooCommerceSegment->synchronizeRegisteredCustomer($user->ID, $hook);
     $subscriber = $this->findWCSubscriberByWpUserId($user->ID);
-    assert($subscriber instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
     expect($subscriber)->notEmpty();
     expect($subscriber->getEmail())->equals($user->user_email); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     expect($subscriber->getFirstName())->equals($firstName);
@@ -133,7 +133,7 @@ class WooCommerceTest extends \MailPoetTest {
     $subscribers = $this->getWCSubscribersByEmails([$guest['email']]);
     expect($subscribers)->isEmpty();
     $subscriber = $this->subscribersRepository->findOneBy(['email' => $guest['email']]);
-    assert($subscriber instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
     expect($subscriber->getFirstName())->equals($guest['first_name']);
     expect($subscriber->getLastName())->equals($guest['last_name']);
     expect($subscriber->getIsWoocommerceUser())->equals(true);
@@ -149,7 +149,7 @@ class WooCommerceTest extends \MailPoetTest {
     $subscribers = $this->getWCSubscribersByEmails([$guest['email']]);
     expect($subscribers)->isEmpty();
     $subscriber = $this->subscribersRepository->findOneBy(['email' => $guest['email']]);
-    assert($subscriber instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
     expect($subscriber->getFirstName())->equals($guest['first_name']);
     expect($subscriber->getLastName())->equals($guest['last_name']);
     expect($subscriber->getIsWoocommerceUser())->equals(true);
@@ -165,7 +165,7 @@ class WooCommerceTest extends \MailPoetTest {
     $subscribers = $this->getWCSubscribersByEmails([$guest['email']]);
     expect($subscribers)->isEmpty();
     $subscriber = $this->subscribersRepository->findOneBy(['email' => $guest['email']]);
-    assert($subscriber instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
     expect($subscriber->getFirstName())->equals($guest['first_name']);
     expect($subscriber->getLastName())->equals($guest['last_name']);
     expect($subscriber->getIsWoocommerceUser())->equals(true);
@@ -182,11 +182,11 @@ class WooCommerceTest extends \MailPoetTest {
     expect($subscribersCount)->equals(2);
 
     $subscriber = $this->subscribersRepository->findOneBy(['email' => $user->user_email]); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-    assert($subscriber instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
     expect($subscriber->getStatus())->equals(SubscriberEntity::STATUS_UNCONFIRMED);
     expect($subscriber->getSource())->equals(Source::WOOCOMMERCE_USER);
     $subscriber = $this->subscribersRepository->findOneBy(['email' => $guest['email']]);
-    assert($subscriber instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
     expect($subscriber->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
     expect($subscriber->getSource())->equals(Source::WOOCOMMERCE_USER);
   }
@@ -244,7 +244,7 @@ class WooCommerceTest extends \MailPoetTest {
       'wpUserId' => $user->ID,
       'isWoocommerceUser' => true,
     ]);
-    assert($wpSubscriber instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $wpSubscriber);
     expect($wpSubscriber)->notEmpty();
     expect($wpSubscriber->getId())->equals($subscriber->getId());
     expect($wpSubscriber->getStatus())->equals(SubscriberEntity::STATUS_UNSUBSCRIBED);
@@ -265,7 +265,7 @@ class WooCommerceTest extends \MailPoetTest {
       'email' => $guest['email'],
       'isWoocommerceUser' => true,
     ]);
-    assert($wpSubscriber instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $wpSubscriber);
     expect($wpSubscriber)->notEmpty();
     expect($wpSubscriber->getEmail())->equals($subscriber->getEmail());
     expect($wpSubscriber->getStatus())->equals(SubscriberEntity::STATUS_UNSUBSCRIBED);
@@ -297,7 +297,7 @@ class WooCommerceTest extends \MailPoetTest {
     $this->createOrder(['email' => $user->user_email, 'first_name' => 'First name (newer)']); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     $this->wooCommerceSegment->synchronizeCustomers();
     $subscriber = $this->subscribersRepository->findOneBy(['wpUserId' => $user->ID]);
-    assert($subscriber instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
     expect($subscriber->getFirstName())->equals('First name (newer)');
   }
 
@@ -308,7 +308,7 @@ class WooCommerceTest extends \MailPoetTest {
     $this->createOrder(['email' => $user->user_email, 'last_name' => 'Last name (newer)']); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     $this->wooCommerceSegment->synchronizeCustomers();
     $subscriber = $this->subscribersRepository->findOneBy(['wpUserId' => $user->ID]);
-    assert($subscriber instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
     expect($subscriber->getLastName())->equals('Last name (newer)');
   }
 
@@ -319,7 +319,7 @@ class WooCommerceTest extends \MailPoetTest {
     $this->createOrder(['email' => $guest['email'], 'first_name' => 'First name (newer)']);
     $this->wooCommerceSegment->synchronizeCustomers();
     $subscriber = $this->subscribersRepository->findOneBy(['email' => $guest['email']]);
-    assert($subscriber instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
     expect($subscriber->getFirstName())->equals('First name (newer)');
   }
 
@@ -330,7 +330,7 @@ class WooCommerceTest extends \MailPoetTest {
     $this->createOrder(['email' => $guest['email'], 'last_name' => 'Last name (newer)']);
     $this->wooCommerceSegment->synchronizeCustomers();
     $subscriber = $this->subscribersRepository->findOneBy(['email' => $guest['email']]);
-    assert($subscriber instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
     expect($subscriber->getLastName())->equals('Last name (newer)');
   }
 
@@ -351,7 +351,7 @@ class WooCommerceTest extends \MailPoetTest {
       'email' => $user->user_email, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
       'isWoocommerceUser' => true,
     ]);
-    assert($subscriber instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
     $subscriber->setDeletedAt(Carbon::now());
     $this->subscribersRepository->flush();
     $this->wooCommerceSegment->synchronizeCustomers();
@@ -359,7 +359,7 @@ class WooCommerceTest extends \MailPoetTest {
       'email' => $user->user_email, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
       'isWoocommerceUser' => true,
     ]);
-    assert($subscriber instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
     expect($subscriber->getDeletedAt())->notNull();
   }
 
@@ -370,7 +370,7 @@ class WooCommerceTest extends \MailPoetTest {
       'email' => $guest['email'],
       'isWoocommerceUser' => true,
     ]);
-    assert($subscriber instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
     $subscriber->setDeletedAt(Carbon::now());
     $this->entityManager->flush();
     $this->wooCommerceSegment->synchronizeCustomers();
@@ -378,7 +378,7 @@ class WooCommerceTest extends \MailPoetTest {
       'email' => $guest['email'],
       'isWoocommerceUser' => true,
     ]);
-    assert($subscriber instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
     expect($subscriber->getDeletedAt())->notNull();
   }
 
@@ -429,7 +429,7 @@ class WooCommerceTest extends \MailPoetTest {
     expect($subscribersCount)->equals(4);
     $this->entityManager->clear();
     $dbSubscriber = $this->subscribersRepository->findOneById($subscriber3->getId());
-    assert($dbSubscriber instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $dbSubscriber);
     expect($dbSubscriber)->notEmpty();
     $this->entityManager->remove($dbSubscriber);
     $this->entityManager->flush();
@@ -484,7 +484,7 @@ class WooCommerceTest extends \MailPoetTest {
     $this->wooCommerceSegment->synchronizeCustomers();
     $this->entityManager->clear();
     $subscriberAfterUpdate = $this->subscribersRepository->findOneBy(['email' => $subscriber->getEmail()]);
-    assert($subscriberAfterUpdate instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriberAfterUpdate);
     expect($subscriberAfterUpdate->getStatus())->equals(SubscriberEntity::STATUS_UNSUBSCRIBED);
   }
 
@@ -513,7 +513,7 @@ class WooCommerceTest extends \MailPoetTest {
     $this->wooCommerceSegment->synchronizeCustomers();
     $this->entityManager->clear();
     $subscriberAfterUpdate = $this->subscribersRepository->findOneBy(['email' => $subscriber->getEmail()]);
-    assert($subscriberAfterUpdate instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriberAfterUpdate);
     expect($subscriberAfterUpdate->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
   }
 
@@ -550,15 +550,15 @@ class WooCommerceTest extends \MailPoetTest {
     $this->entityManager->clear();
     $subscriber1AfterUpdate = $this->subscribersRepository->findOneBy(['email' => $subscriber1->getEmail()]);
     $subscriber2AfterUpdate = $this->subscribersRepository->findOneBy(['email' => $subscriber2->getEmail()]);
-    assert($subscriber1AfterUpdate instanceof SubscriberEntity);
-    assert($subscriber2AfterUpdate instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber1AfterUpdate);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber2AfterUpdate);
     expect($subscriber1AfterUpdate->getStatus())->equals(SubscriberEntity::STATUS_UNSUBSCRIBED);
     expect($subscriber2AfterUpdate->getStatus())->equals(SubscriberEntity::STATUS_UNSUBSCRIBED);
 
     $association1AfterUpdate = $this->subscriberSegmentsRepository->findOneById($association1->getId());
     $association2AfterUpdate = $this->subscriberSegmentsRepository->findOneById($association2->getId());
-    assert($association1AfterUpdate instanceof SubscriberSegmentEntity);
-    assert($association2AfterUpdate instanceof SubscriberSegmentEntity);
+    $this->assertInstanceOf(SubscriberSegmentEntity::class, $association1AfterUpdate);
+    $this->assertInstanceOf(SubscriberSegmentEntity::class, $association2AfterUpdate);
     expect($association1AfterUpdate->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
     expect($association2AfterUpdate->getStatus())->equals(SubscriberEntity::STATUS_UNSUBSCRIBED);
   }
@@ -595,15 +595,15 @@ class WooCommerceTest extends \MailPoetTest {
 
     $subscriber1AfterUpdate = $this->subscribersRepository->findOneBy(['email' => $subscriber1->getEmail()]);
     $subscriber2AfterUpdate = $this->subscribersRepository->findOneBy(['email' => $subscriber2->getEmail()]);
-    assert($subscriber1AfterUpdate instanceof SubscriberEntity);
-    assert($subscriber2AfterUpdate instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber1AfterUpdate);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber2AfterUpdate);
     expect($subscriber1AfterUpdate->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
     expect($subscriber2AfterUpdate->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
 
     $association1AfterUpdate = $this->subscriberSegmentsRepository->findOneById($association1->getId());
     $association2AfterUpdate = $this->subscriberSegmentsRepository->findOneById($association2->getId());
-    assert($association1AfterUpdate instanceof SubscriberSegmentEntity);
-    assert($association2AfterUpdate instanceof SubscriberSegmentEntity);
+    $this->assertInstanceOf(SubscriberSegmentEntity::class, $association1AfterUpdate);
+    $this->assertInstanceOf(SubscriberSegmentEntity::class, $association2AfterUpdate);
     expect($association1AfterUpdate->getStatus())->equals(SubscriberEntity::STATUS_UNSUBSCRIBED);
     expect($association2AfterUpdate->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
   }
@@ -814,7 +814,7 @@ class WooCommerceTest extends \MailPoetTest {
 
   private function findWCSubscriberByWpUserId(int $wpUserId): ?SubscriberEntity {
     $subscriber = $this->subscribersRepository->findOneBy(['wpUserId' => $wpUserId]);
-    assert($subscriber instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
     $wooCommerceSegment = $this->segmentsRepository->getWooCommerceSegment();
     foreach ($subscriber->getSegments() as $segment) {
       if ($segment->getId() === $wooCommerceSegment->getId()) {

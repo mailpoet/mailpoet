@@ -34,7 +34,7 @@ class ShortcodesTest extends \MailPoetTest {
 
   public function testItCanReplaceShortcodesInOneStringUsingContentsFromAnother() {
     $wpPost = get_post($this->wPPost);
-    assert($wpPost instanceof WP_Post);
+    $this->assertInstanceOf(WP_Post::class, $wpPost);
     $content = 'Subject line with one shortcode: [newsletter:post_title]';
     $contentSource = '<a data-post-id="' . $this->wPPost . '" href="#">latest post</a>';
 

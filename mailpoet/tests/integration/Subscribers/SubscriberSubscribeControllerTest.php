@@ -68,7 +68,7 @@ class SubscriberSubscribeControllerTest extends \MailPoetTest {
     $this->subscribeController->subscribe($data);
 
     $subscriber = $this->subscribersRepository->findOneBy(['email' => $data[$this->obfuscatedEmail]]);
-    assert($subscriber instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
     expect($subscriber)->isInstanceOf(SubscriberEntity::class);
     expect($subscriber->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
   }
@@ -86,7 +86,7 @@ class SubscriberSubscribeControllerTest extends \MailPoetTest {
     $this->subscribeController->subscribe($data);
 
     $subscriber = $this->subscribersRepository->findOneBy(['email' => $data[$this->obfuscatedEmail]]);
-    assert($subscriber instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
     expect($subscriber)->isInstanceOf(SubscriberEntity::class);
     expect($subscriber->getStatus())->equals(SubscriberEntity::STATUS_UNCONFIRMED);
   }
@@ -106,13 +106,13 @@ class SubscriberSubscribeControllerTest extends \MailPoetTest {
     $this->subscribeController->subscribe($data);
 
     $subscriber = $this->subscribersRepository->findOneBy(['email' => $data[$this->obfuscatedEmail]]);
-    assert($subscriber instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
     expect($subscriber)->isInstanceOf(SubscriberEntity::class);
     expect($subscriber->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
     $subscriberCustomFields = $this->subscriberCustomFieldRepository->findBy(['subscriber' => $subscriber]);
     expect($subscriberCustomFields)->count(1);
     $subscriberCustomField = reset($subscriberCustomFields);
-    assert($subscriberCustomField instanceof SubscriberCustomFieldEntity);
+    $this->assertInstanceOf(SubscriberCustomFieldEntity::class, $subscriberCustomField);
     expect($subscriberCustomField)->isInstanceOf(SubscriberCustomFieldEntity::class);
     expect($subscriberCustomField->getSubscriber())->equals($subscriber);
     expect($subscriberCustomField->getCustomField())->equals($customField);

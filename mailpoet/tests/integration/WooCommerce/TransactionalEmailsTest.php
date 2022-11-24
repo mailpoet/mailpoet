@@ -61,7 +61,7 @@ class TransactionalEmailsTest extends \MailPoetTest {
   public function testInitCreatesTransactionalEmailAndSavesItsId() {
     $this->transactionalEmails->init();
     $email = $this->newslettersRepository->findOneBy(['type' => NewsletterEntity::TYPE_WC_TRANSACTIONAL_EMAIL]);
-    assert($email instanceof NewsletterEntity);
+    $this->assertInstanceOf(NewsletterEntity::class, $email);
     $id = $this->settings->get(TransactionalEmails::SETTING_EMAIL_ID, null);
     expect($email)->notEmpty();
     expect($id)->notNull();
@@ -92,7 +92,7 @@ class TransactionalEmailsTest extends \MailPoetTest {
     $email = $this->newslettersRepository->findOneBy([
       'type' => NewsletterEntity::TYPE_WC_TRANSACTIONAL_EMAIL,
     ]);
-    assert($email instanceof NewsletterEntity);
+    $this->assertInstanceOf(NewsletterEntity::class, $email);
     expect($email)->notEmpty();
     expect(json_encode($email->getBody()))->stringContainsString('my-awesome-image-url');
   }
@@ -102,7 +102,7 @@ class TransactionalEmailsTest extends \MailPoetTest {
     $this->wp->updateOption('woocommerce_email_footer_text', '<div><p>Text <a href="http://example.com">Link</a></p></div>');
     $this->transactionalEmails->init();
     $email = $this->newslettersRepository->findOneBy(['type' => NewsletterEntity::TYPE_WC_TRANSACTIONAL_EMAIL]);
-    assert($email instanceof NewsletterEntity);
+    $this->assertInstanceOf(NewsletterEntity::class, $email);
     $body = $email->getBody();
     assert(is_array($body));
     $footerTextBlock = $body['content']['blocks'][5]['blocks'][0]['blocks'][1];

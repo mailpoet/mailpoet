@@ -173,7 +173,7 @@ class NewslettersTest extends \MailPoetTest {
 
     expect($response->status)->equals(APIResponse::STATUS_OK);
     $newsletter = $this->newsletterRepository->findOneById($this->newsletter->getId());
-    assert($newsletter instanceof NewsletterEntity);
+    $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
     expect($response->data)->equals($this->newslettersResponseBuilder->build($newsletter, [
       NewslettersResponseBuilder::RELATION_SEGMENTS,
       NewslettersResponseBuilder::RELATION_OPTIONS,
@@ -201,7 +201,7 @@ class NewslettersTest extends \MailPoetTest {
     $response = $this->endpoint->save($newsletterData);
     expect($response->status)->equals(APIResponse::STATUS_OK);
     $updatedNewsletter = $this->newsletterRepository->findOneById($this->newsletter->getId());
-    assert($updatedNewsletter instanceof NewsletterEntity); // PHPStan
+    $this->assertInstanceOf(NewsletterEntity::class, $updatedNewsletter); // PHPStan
     expect($response->data)->equals($this->newslettersResponseBuilder->build($updatedNewsletter, [NewslettersResponseBuilder::RELATION_SEGMENTS]));
     expect($updatedNewsletter->getType())->equals('Updated type');
     expect($updatedNewsletter->getSubject())->equals('Updated subject');
@@ -326,13 +326,13 @@ class NewslettersTest extends \MailPoetTest {
     $this->entityManager->clear();
 
     $trashedNewsletter = $this->newsletterRepository->findOneById($this->newsletter->getId());
-    assert($trashedNewsletter instanceof NewsletterEntity);
+    $this->assertInstanceOf(NewsletterEntity::class, $trashedNewsletter);
     expect($trashedNewsletter->getDeletedAt())->notNull();
 
     $response = $this->endpoint->restore(['id' => $this->newsletter->getId()]);
     expect($response->status)->equals(APIResponse::STATUS_OK);
     $newsletter = $this->newsletterRepository->findOneById($this->newsletter->getId());
-    assert($newsletter instanceof NewsletterEntity);
+    $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
     expect($response->data)->equals($this->newslettersResponseBuilder->build($newsletter));
     expect($response->data['deleted_at'])->null();
     expect($response->meta['count'])->equals(1);
@@ -342,7 +342,7 @@ class NewslettersTest extends \MailPoetTest {
     $response = $this->endpoint->trash(['id' => $this->newsletter->getId()]);
     expect($response->status)->equals(APIResponse::STATUS_OK);
     $newsletter = $this->newsletterRepository->findOneById($this->newsletter->getId());
-    assert($newsletter instanceof NewsletterEntity);
+    $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
     expect($response->data)->equals($this->newslettersResponseBuilder->build($newsletter));
     expect($response->data['deleted_at'])->notNull();
     expect($response->meta['count'])->equals(1);
@@ -367,7 +367,7 @@ class NewslettersTest extends \MailPoetTest {
     $response = $this->endpoint->duplicate(['id' => $this->newsletter->getId()]);
     expect($response->status)->equals(APIResponse::STATUS_OK);
     $newsletterCopy = $this->newsletterRepository->findOneBy(['subject' => 'Copy of My Standard Newsletter']);
-    assert($newsletterCopy instanceof NewsletterEntity);
+    $this->assertInstanceOf(NewsletterEntity::class, $newsletterCopy);
     expect($response->data)->equals($this->newslettersResponseBuilder->build($newsletterCopy));
     expect($response->meta['count'])->equals(1);
 
@@ -378,7 +378,7 @@ class NewslettersTest extends \MailPoetTest {
     $response = $this->endpoint->duplicate(['id' => $this->postNotification->getId()]);
     expect($response->status)->equals(APIResponse::STATUS_OK);
     $newsletterCopy = $this->newsletterRepository->findOneBy(['subject' => 'Copy of My Post Notification']);
-    assert($newsletterCopy instanceof NewsletterEntity);
+    $this->assertInstanceOf(NewsletterEntity::class, $newsletterCopy);
     expect($response->data)->equals($this->newslettersResponseBuilder->build($newsletterCopy));
     expect($response->meta['count'])->equals(1);
   }
@@ -391,7 +391,7 @@ class NewslettersTest extends \MailPoetTest {
     $response = $this->endpoint->create($data);
     expect($response->status)->equals(APIResponse::STATUS_OK);
     $newsletter = $this->newsletterRepository->findOneBy(['subject' => 'My New Newsletter']);
-    assert($newsletter instanceof NewsletterEntity);
+    $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
     expect($response->data)->equals($this->newslettersResponseBuilder->build($newsletter));
 
     $response = $this->endpoint->create();
@@ -407,7 +407,7 @@ class NewslettersTest extends \MailPoetTest {
     $response = $this->endpoint->create($data);
     expect($response->status)->equals(APIResponse::STATUS_OK);
     $newsletter = $this->newsletterRepository->findOneBy(['subject' => 'My Automation newsletter']);
-    assert($newsletter instanceof NewsletterEntity);
+    $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
     expect($response->data)->equals($this->newslettersResponseBuilder->build($newsletter));
   }
 

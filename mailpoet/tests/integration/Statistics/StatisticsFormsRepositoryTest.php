@@ -20,7 +20,7 @@ class StatisticsFormsRepositoryTest extends \MailPoetTest {
     $form = $this->createForm();
     $subscriber = $this->createSubscriber();
     $record = $this->repository->record($form, $subscriber);
-    assert($record instanceof StatisticsFormEntity);
+    $this->assertInstanceOf(StatisticsFormEntity::class, $record);
     expect($record->getForm())->equals($form);
     expect($record->getSubscriber())->equals($subscriber);
     expect($this->repository->findOneBy(['form' => $form, 'subscriber' => $subscriber]))->isInstanceOf(StatisticsFormEntity::class);
@@ -30,7 +30,7 @@ class StatisticsFormsRepositoryTest extends \MailPoetTest {
     $form = $this->createForm();
     $subscriber = $this->createSubscriber();
     $record = $this->repository->record($form, $subscriber);
-    assert($record instanceof StatisticsFormEntity);
+    $this->assertInstanceOf(StatisticsFormEntity::class, $record);
     expect($record->getForm())->equals($form);
     expect($record->getSubscriber())->equals($subscriber);
 

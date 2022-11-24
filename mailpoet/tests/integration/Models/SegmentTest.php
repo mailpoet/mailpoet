@@ -98,20 +98,20 @@ class SegmentTest extends \MailPoetTest {
 
   public function testItHasACreatedAtOnCreation() {
     $segment = Segment::findOne($this->segment->id);
-    assert($segment instanceof Segment);
+    $this->assertInstanceOf(Segment::class, $segment);
     expect($segment->createdAt)->notNull();
   }
 
   public function testItHasAnUpdatedAtOnCreation() {
     $segment = Segment::findOne($this->segment->id);
-    assert($segment instanceof Segment);
+    $this->assertInstanceOf(Segment::class, $segment);
     expect($segment->updatedAt)
       ->equals($segment->createdAt);
   }
 
   public function testItUpdatesTheUpdatedAtOnUpdate() {
     $segment = Segment::findOne($this->segment->id);
-    assert($segment instanceof Segment);
+    $this->assertInstanceOf(Segment::class, $segment);
     $createdAt = $segment->createdAt;
 
     sleep(1);
@@ -120,7 +120,7 @@ class SegmentTest extends \MailPoetTest {
     $segment->save();
 
     $updatedSegment = Segment::findOne($segment->id);
-    assert($updatedSegment instanceof Segment);
+    $this->assertInstanceOf(Segment::class, $updatedSegment);
     expect($updatedSegment->createdAt)->equals($createdAt);
     $isTimeUpdated = (
       $updatedSegment->updatedAt > $updatedSegment->createdAt
@@ -137,7 +137,7 @@ class SegmentTest extends \MailPoetTest {
 
     $segment = Segment::where('name', 'new list')
       ->findOne();
-    assert($segment instanceof Segment);
+    $this->assertInstanceOf(Segment::class, $segment);
     expect($segment->name)->equals('new list');
 
     $isUpdated = Segment::createOrUpdate(
@@ -147,7 +147,7 @@ class SegmentTest extends \MailPoetTest {
       ]);
     $segment = Segment::where('name', 'updated list')
       ->findOne();
-    assert($segment instanceof Segment);
+    $this->assertInstanceOf(Segment::class, $segment);
     expect($segment->name)->equals('updated list');
   }
 
@@ -162,7 +162,7 @@ class SegmentTest extends \MailPoetTest {
       $association->save();
     }
     $segment = Segment::findOne($this->segment->id);
-    assert($segment instanceof Segment);
+    $this->assertInstanceOf(Segment::class, $segment);
     $subscribers = $segment->subscribers()
       ->findArray();
 
@@ -180,7 +180,7 @@ class SegmentTest extends \MailPoetTest {
       $association->save();
     }
     $segment = Segment::findOne($this->segment->id);
-    assert($segment instanceof Segment);
+    $this->assertInstanceOf(Segment::class, $segment);
     $newsletters = $segment->newsletters()
       ->findArray();
 
