@@ -482,7 +482,7 @@ class WPTest extends \MailPoetTest {
       'user_pass' => 'password',
     ];
     $userId = wp_insert_user($args);
-    assert(is_numeric($userId));
+    $this->assertIsNumeric($userId);
     $subscriberRepository = $this->diContainer->get(SubscribersRepository::class);
     $subscriber = $subscriberRepository->findOneBy(['email' => 'user-sync-test-html-entities@example.com']);
     /**
@@ -506,7 +506,7 @@ class WPTest extends \MailPoetTest {
     ];
 
     $userId = wp_insert_user($args);
-    assert(is_numeric($userId));
+    $this->assertIsNumeric($userId);
     $subscriberRepository = $this->diContainer->get(SubscribersRepository::class);
     $subscriber = $subscriberRepository->findOneBy(['email' => 'user-sync-test-html-entities-display-name@example.com']);
     /**
