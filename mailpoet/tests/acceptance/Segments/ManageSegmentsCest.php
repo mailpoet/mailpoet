@@ -59,27 +59,12 @@ class ManageSegmentsCest {
     $i->waitForText($wpEditorEmail2, 20);
   }
 
-  public function createEditTrashRestoreAndDeleteExistingSegment(\AcceptanceTester $i) {
+  public function createAndEditSegment(\AcceptanceTester $i) {
     $i->wantTo('Create, edit, trash, restore and delete existing segment');
-    $segmentTrashedTitle = 'Trashed Segment';
     $segmentTitle = 'User Segment';
     $segmentEditedTitle = 'Edited Segment';
     $segmentDesc = 'Lorem ipsum dolor sit amet';
     $segmentEditedDesc = 'Edited description';
-
-    $i->wantTo('Prepare (2) additional trashed segments for the test');
-
-    $segmentFactory = new DynamicSegment();
-    $segment = $segmentFactory
-      ->withName($segmentTrashedTitle . ' 1')
-      ->withUserRoleFilter('Administrator')
-      ->withDeleted()
-      ->create();
-      $segmentFactory
-      ->withName($segmentTrashedTitle . ' 2')
-      ->withUserRoleFilter('Administrator')
-      ->withDeleted()
-      ->create();
 
     $i->wantTo('Create a new segment');
 
@@ -97,6 +82,7 @@ class ManageSegmentsCest {
     $i->selectOptionInReactSelect('Subscriber', '[data-automation-id="segment-wordpress-role"]');
     $i->waitForElementClickable('button[type="submit"]');
     $i->click('Save');
+    $i->waitForNoticeAndClose('Segment successfully updated!');
     $i->waitForElement('[data-automation-id="dynamic-segments-tab"]');
     $i->click('[data-automation-id="dynamic-segments-tab"]');
     $i->waitForText($segmentTitle);
@@ -113,51 +99,85 @@ class ManageSegmentsCest {
     $i->selectOptionInReactSelect('Editor', '[data-automation-id="segment-wordpress-role"]');
     $i->waitForElementClickable('button[type="submit"]');
     $i->click('Save');
+    $i->waitForNoticeAndClose('Segment successfully updated!');
     $i->waitForElement('[data-automation-id="dynamic-segments-tab"]');
     $i->click('[data-automation-id="dynamic-segments-tab"]');
     $i->waitForText($segmentEditedTitle);
     $i->seeNoJSErrors();
+  }
+
+  public function trashAndRestoreExistingSegment(\AcceptanceTester $i) {
+    $segmentFactory = new DynamicSegment();
+    $segment = $segmentFactory
+      ->withName('Segment 1')
+      ->withUserRoleFilter('Administrator')
+      ->create();
+    $segmentFactory
+      ->withName('Trashed Segment 2')
+      ->withUserRoleFilter('Administrator')
+      ->withDeleted()
+      ->create();
+
+    $i->login();
+    $i->amOnMailpoetPage('Lists');
+    $i->waitForElement('[data-automation-id="dynamic-segments-tab"]');
+    $i->click('[data-automation-id="dynamic-segments-tab"]');
 
     $i->wantTo('Trash existing segment');
-    $i->clickItemRowActionByItemName($segmentEditedTitle, 'Move to trash');
+    $i->clickItemRowActionByItemName($segment->getName(), 'Move to trash');
     $i->waitForNoticeAndClose('1 segment was moved to the trash.');
+    $i->waitForText('No segments found');
     $i->waitForElementClickable('[data-automation-id="filters_trash"]');
     $i->click('[data-automation-id="filters_trash"]');
+    $i->seeInCurrentURL(urlencode('group[trash]'));
 
-    // this test is flakey without the second click. Something switches back to "All" for some reason.
-    $i->waitForElementClickable('[data-automation-id="filters_trash"]');
-    $i->click('[data-automation-id="filters_trash"]');
-
-    $i->waitForText($segmentEditedTitle);
+    $i->waitForText($segment->getName());
     $i->seeNoJSErrors();
 
     $i->wantTo('Restore trashed segment');
-    $i->clickItemRowActionByItemName($segmentEditedTitle, 'Restore');
+    $i->clickItemRowActionByItemName($segment->getName(), 'Restore');
     $i->waitForNoticeAndClose('1 segment has been restored from the Trash.');
     $i->seeInCurrentURL(urlencode('group[trash]'));
     $i->click('[data-automation-id="filters_all"]');
     $i->seeInCurrentURL(urlencode('group[all]'));
-    $i->waitForText($segmentEditedTitle);
+    $i->waitForText($segment->getName());
     $i->seeNoJSErrors();
+  }
+
+  public function deleteExistingSegment(\AcceptanceTester $i) {
+    $segmentFactory = new DynamicSegment();
+    $segment1 = $segmentFactory
+      ->withName('Segment 1')
+      ->withUserRoleFilter('Administrator')
+      ->create();
+    $segment2 = $segmentFactory
+      ->withName('Trashed Segment')
+      ->withUserRoleFilter('Administrator')
+      ->withDeleted()
+      ->create();
+
+    $i->login();
+    $i->amOnMailpoetPage('Lists');
+    $i->waitForElement('[data-automation-id="dynamic-segments-tab"]');
+    $i->click('[data-automation-id="dynamic-segments-tab"]');
 
     $i->wantTo('Trash and delete existing segment');
-
-    $i->clickItemRowActionByItemName($segmentEditedTitle, 'Move to trash');
+    $i->clickItemRowActionByItemName($segment1->getName(), 'Move to trash');
     $i->waitForNoticeAndClose('1 segment was moved to the trash.');
+    $i->wait(1); // for flakiness prevention
     $i->waitForElementClickable('[data-automation-id="filters_trash"]');
     $i->click('[data-automation-id="filters_trash"]');
-    $i->waitForText($segmentEditedTitle);
-    $i->clickItemRowActionByItemName($segmentEditedTitle, 'Delete permanently');
+    $i->waitForText($segment1->getName());
+    $i->clickItemRowActionByItemName($segment1->getName(), 'Delete permanently');
     $i->waitForNoticeAndClose('1 segment was permanently deleted.');
     $i->seeNoJSErrors();
-    $i->waitForText($segmentTrashedTitle . ' 1');
-    $i->waitForText($segmentTrashedTitle . ' 2');
+    $i->waitForText($segment2->getName());
 
-    $i->wantTo('Empty trash from other (2) segments');
+    $i->wantTo('Empty trash from other segments');
     $i->waitForElementClickable('[data-automation-id="empty_trash"]');
     $i->click('[data-automation-id="empty_trash"]');
-    $i->waitForText('2 segments were permanently deleted.');
-    $listingAutomationSelector = '[data-automation-id="listing_item_' . $segment->getId() . '"]';
+    $i->waitForText('1 segment was permanently deleted.');
+    $listingAutomationSelector = '[data-automation-id="listing_item_' . $segment1->getId() . '"]';
     $i->dontSeeElement($listingAutomationSelector);
     $i->seeInCurrentURL(urlencode('group[all]'));
     $i->seeNoJSErrors();
