@@ -80,7 +80,7 @@ class SendingQueueTest extends \MailPoetTest {
     $this->assertInstanceOf(SendingQueue::class, $queue);
 
     expect(Helpers::isJson($queue->meta))->true();
-    assert(is_string($queue->meta));
+    $this->assertIsString($queue->meta);
     expect(json_decode((string)$queue->meta, true))->equals($meta);
   }
 
