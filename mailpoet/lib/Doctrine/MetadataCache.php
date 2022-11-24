@@ -3,8 +3,6 @@
 namespace MailPoet\Doctrine;
 
 use MailPoetVendor\Doctrine\Common\Cache\CacheProvider;
-use MailPoetVendor\Doctrine\ORM\Mapping\ClassMetadata as DoctrineClassMetadata;
-use MailPoetVendor\Symfony\Component\Validator\Mapping\ClassMetadata as ValidatorClassMetadata;
 use ReflectionClass;
 use ReflectionException;
 
@@ -44,8 +42,7 @@ class MetadataCache extends CacheProvider {
     // in dev mode invalidate cache if source file has changed
     if ($fileExists && $this->isDevMode) {
       $classMetadata = unserialize((string)file_get_contents($filename));
-      assert($classMetadata instanceof DoctrineClassMetadata || $classMetadata instanceof ValidatorClassMetadata);
-      if (!class_exists($classMetadata->name) && !interface_exists($classMetadata->name)) {
+      if (!isset($classMetadata->name) || (!class_exists($classMetadata->name) && !interface_exists($classMetadata->name))) {
         return false;
       }
       try {
