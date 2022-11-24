@@ -136,7 +136,7 @@ class ViewInBrowserControllerTest extends \MailPoetTest {
 
     $viewInBrowserRenderer = $this->make(ViewInBrowserRenderer::class, [
       'render' => Expected::once(function (bool $isPreview, NewsletterEntity $newsletter, SubscriberEntity $subscriber = null, SendingQueueEntity $queue = null) {
-        assert($subscriber !== null); // PHPStan
+        $this->assertNotNull($subscriber); // PHPStan
         expect($subscriber)->notNull();
         expect($subscriber->getId())->equals(0);
       }),
@@ -152,7 +152,7 @@ class ViewInBrowserControllerTest extends \MailPoetTest {
   public function testItSetsSubscriberToLoggedInWPUserWhenPreviewIsEnabled() {
     $viewInBrowserRenderer = $this->make(ViewInBrowserRenderer::class, [
       'render' => Expected::once(function (bool $isPreview, NewsletterEntity $newsletter, SubscriberEntity $subscriber = null, SendingQueueEntity $queue = null) {
-        assert($subscriber !== null); // PHPStan
+        $this->assertNotNull($subscriber); // PHPStan
         expect($subscriber)->notNull();
         expect($subscriber->getId())->equals(1);
       }),
@@ -173,7 +173,7 @@ class ViewInBrowserControllerTest extends \MailPoetTest {
   public function testItGetsQueueByQueueId() {
     $viewInBrowserRenderer = $this->make(ViewInBrowserRenderer::class, [
       'render' => Expected::once(function (bool $isPreview, NewsletterEntity $newsletter, SubscriberEntity $subscriber = null, SendingQueueEntity $queue = null) {
-        assert($queue !== null); // PHPStan
+        $this->assertNotNull($queue); // PHPStan
         expect($queue)->notNull();
         expect($queue->getId())->equals($this->sendingTask->id);
       }),
@@ -189,7 +189,7 @@ class ViewInBrowserControllerTest extends \MailPoetTest {
   public function testItGetsQueueByNewsletter() {
     $viewInBrowserRenderer = $this->make(ViewInBrowserRenderer::class, [
       'render' => Expected::once(function (bool $isPreview, NewsletterEntity $newsletter, SubscriberEntity $subscriber = null, SendingQueueEntity $queue = null) {
-        assert($queue !== null); // PHPStan
+        $this->assertNotNull($queue); // PHPStan
         expect($queue)->notNull();
         expect($queue->getId())->equals($this->sendingTask->queue()->id);
       }),
