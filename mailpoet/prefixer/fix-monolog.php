@@ -35,7 +35,7 @@ exec('rm -r ' . __DIR__ . '/../vendor-prefixed/monolog/monolog/src/Monolog/Handl
 exec('rm -r ' . __DIR__ . '/../vendor-prefixed/monolog/monolog/src/Monolog/Handler/DeduplicationHandler.php');
 exec('rm -r ' . __DIR__ . '/../vendor-prefixed/monolog/monolog/src/Monolog/Handler/DoctrineCouchDBHandler.php');
 exec('rm -r ' . __DIR__ . '/../vendor-prefixed/monolog/monolog/src/Monolog/Handler/DynamoDbHandler.php');
-exec('rm -r ' . __DIR__ . '/../vendor-prefixed/monolog/monolog/src/Monolog/Handler/ElasticSearchHandler.php');
+exec('rm -r ' . __DIR__ . '/../vendor-prefixed/monolog/monolog/src/Monolog/Handler/ElasticsearchHandler.php');
 exec('rm -r ' . __DIR__ . '/../vendor-prefixed/monolog/monolog/src/Monolog/Handler/ElasticaHandler.php');
 exec('rm -r ' . __DIR__ . '/../vendor-prefixed/monolog/monolog/src/Monolog/Handler/ErrorLogHandler.php');
 exec('rm -r ' . __DIR__ . '/../vendor-prefixed/monolog/monolog/src/Monolog/Handler/FilterHandler.php');
