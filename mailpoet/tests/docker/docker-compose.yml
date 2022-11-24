@@ -58,6 +58,7 @@ services:
 
   smtp:
     image: mailhog/mailhog:v1.0.0
+    container_name: mailhog_${CIRCLE_NODE_INDEX:-default}
     hostname: mailhog
     ports:
       - 1025:1025
@@ -71,6 +72,7 @@ services:
 
   wordpress:
     image: mailpoet/wordpress:${WORDPRESS_IMAGE_VERSION:-wp-6.0_php8.0_20220609.1}
+    container_name: wordpress_${CIRCLE_NODE_INDEX:-default}
     depends_on:
       - smtp
       - mysql
@@ -96,6 +98,7 @@ services:
 
   mysql:
     image: cimg/mysql:${MYSQL_IMAGE_VERSION:-5.7.36}
+    container_name: mysql_${CIRCLE_NODE_INDEX:-default}
     # Command used for MySQL 8+ because it needs default-authentication-plugin
     # parameter and there needs to be some fallback for other MySQL versions.
     # --verbose can be changed to any other useless parameter
@@ -111,6 +114,7 @@ services:
       - 4401:3306
 
   chrome:
+    container_name: chrome_${CIRCLE_NODE_INDEX:-default}
     environment:
       - DBUS_SESSION_BUS_ADDRESS=/dev/null
     volumes:
