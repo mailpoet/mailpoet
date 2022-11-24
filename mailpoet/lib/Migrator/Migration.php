@@ -41,4 +41,14 @@ abstract class Migration {
       ) {$charsetCollate};
     ");
   }
+
+  protected function columnExists(string $tableName, string $columnName): bool {
+    return $this->connection->executeQuery("
+      SELECT 1
+      FROM information_schema.columns
+      WHERE table_schema = ?
+      AND table_name = ?
+      AND column_name = ?
+    ", [Env::$dbName, $tableName, $columnName])->fetchOne() !== false;
+  }
 }
