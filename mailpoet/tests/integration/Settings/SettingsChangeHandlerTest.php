@@ -31,11 +31,9 @@ class SettingsChangeHandlerTest extends \MailPoetTest {
     $this->entityManager->clear();
     $task = $this->getScheduledTaskByType(WooCommerceSync::TASK_TYPE);
     assert($task instanceof ScheduledTaskEntity);
-    $scheduledAt = $task->getScheduledAt();
-    assert($scheduledAt instanceof \DateTime);
     $expectedScheduledAt = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
     $expectedScheduledAt->subMinute();
-    expect($scheduledAt)->equals($expectedScheduledAt);
+    $this->tester->assertEqualDateTimes($task->getScheduledAt(), $expectedScheduledAt, 1);
     expect($newTask->getId())->equals($task->getId());
   }
 
@@ -54,11 +52,9 @@ class SettingsChangeHandlerTest extends \MailPoetTest {
 
     $task = $this->getScheduledTaskByType(InactiveSubscribers::TASK_TYPE);
     assert($task instanceof ScheduledTaskEntity);
-    $scheduledAt = $task->getScheduledAt();
-    assert($scheduledAt instanceof \DateTime);
     $expectedScheduledAt = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
     $expectedScheduledAt->subMinute();
-    expect($scheduledAt)->equals($expectedScheduledAt);
+    $this->tester->assertEqualDateTimes($task->getScheduledAt(), $expectedScheduledAt, 1);
     expect($newTask->getId())->equals($task->getId());
   }
 
