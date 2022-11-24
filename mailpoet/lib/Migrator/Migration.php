@@ -27,6 +27,10 @@ abstract class Migration {
 
   abstract public function run(): void;
 
+  protected function getTableName(string $entityClass): string {
+    return $this->entityManager->getClassMetadata($entityClass)->getTableName();
+  }
+
   protected function createTable(string $tableName, array $attributes): void {
     $prefix = Env::$dbPrefix;
     $charsetCollate = Env::$dbCharsetCollate;
