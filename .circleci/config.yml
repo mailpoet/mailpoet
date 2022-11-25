@@ -413,6 +413,12 @@ jobs:
             fi
             cat tests/acceptance/_groups/circleci_split_group
       - run:
+          name: Create docker containers for test
+          # We experienced some failures when creating containers so we do it explicitly with one retry
+          command: |
+            cd tests/docker
+            docker-compose create || docker-compose create
+      - run:
           name: Run acceptance tests
           command: |
             mkdir -m 777 -p tests/_output/exceptions
