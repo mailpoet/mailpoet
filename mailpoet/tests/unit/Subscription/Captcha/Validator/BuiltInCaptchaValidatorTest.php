@@ -26,7 +26,7 @@ class BuiltInCaptchaValidatorTest extends \MailPoetUnitTest {
         'applyFilters' => function($filter, $value) {
           return $value;
         },
-        '__' => function($string) { return $string; 
+        '__' => function($string) { return $string;
         },
       ],
       $this
@@ -105,7 +105,7 @@ class BuiltInCaptchaValidatorTest extends \MailPoetUnitTest {
             'applyFilters' => function($filter, $value) {
               return $value;
             },
-            '__' => function($string) { return $string; 
+            '__' => function($string) { return $string;
             },
             'wpGetCurrentUser' => (object)[
               'roles' => ['administrator'],
@@ -122,7 +122,7 @@ class BuiltInCaptchaValidatorTest extends \MailPoetUnitTest {
             'applyFilters' => function($filter, $value) {
               return $value;
             },
-            '__' => function($string) { return $string; 
+            '__' => function($string) { return $string;
             },
             'wpGetCurrentUser' => (object)[
               'roles' => ['editor'],
@@ -142,7 +142,7 @@ class BuiltInCaptchaValidatorTest extends \MailPoetUnitTest {
               }
               return $value;
             },
-            '__' => function($string) { return $string; 
+            '__' => function($string) { return $string;
             },
             'wpGetCurrentUser' => (object)[
               'roles' => ['custom-role'],
@@ -175,7 +175,7 @@ class BuiltInCaptchaValidatorTest extends \MailPoetUnitTest {
       'applyFilters' => function($filter, $value) {
         return $value;
       },
-      '__' => function($string) { return $string; 
+      '__' => function($string) { return $string;
       },
       'wpGetCurrentUser' => $currentUser,
     ],
@@ -235,7 +235,7 @@ class BuiltInCaptchaValidatorTest extends \MailPoetUnitTest {
     $error = null;
     try {
       $testee->validate($data);
-    } catch(ValidationError $error) {
+    } catch (ValidationError $error) {
       expect($error->getMessage())->equals('Please regenerate the CAPTCHA.');
       expect($error->getMeta()['redirect_url'])->equals($newUrl);
     }
@@ -272,7 +272,7 @@ class BuiltInCaptchaValidatorTest extends \MailPoetUnitTest {
     $error = null;
     try {
       $testee->validate($data);
-    } catch(ValidationError $error) {
+    } catch (ValidationError $error) {
       expect($error->getMessage())->equals('The characters entered do not match with the previous CAPTCHA.');
       expect($error->getMeta()['refresh_captcha'])->true();
     }
@@ -315,7 +315,7 @@ class BuiltInCaptchaValidatorTest extends \MailPoetUnitTest {
     $error = null;
     try {
       $testee->validate($data);
-    } catch(ValidationError $error) {
+    } catch (ValidationError $error) {
       expect($error->getMessage())->equals('Please fill in the CAPTCHA.');
       expect($error->getMeta()['redirect_url'])->equals($newUrl);
     }

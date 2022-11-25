@@ -49,12 +49,12 @@ class AutomationStatisticsStorageTest extends \MailPoetTest {
     $automation = $this->automationStorage->getAutomation($this->automations[$automationIndex], $versionId);
     $this->assertInstanceOf(Automation::class, $automation);
     $i = 0;
-    while($i < $expectedInProgress) {
+    while ($i < $expectedInProgress) {
       $this->createRun($automation, AutomationRun::STATUS_RUNNING);
       $i++;
     }
     $i = 0;
-    while($i < $expectedExited) {
+    while ($i < $expectedExited) {
       $this->createRun($automation, AutomationRun::STATUS_FAILED);
       $i++;
     }
