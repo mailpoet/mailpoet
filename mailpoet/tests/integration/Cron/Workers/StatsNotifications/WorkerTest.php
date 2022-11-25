@@ -302,6 +302,7 @@ class WorkerTest extends \MailPoetTest {
     $this->truncateEntity(NewsletterEntity::class);
     $this->truncateEntity(StatisticsClickEntity::class);
     $this->truncateEntity(StatisticsOpenEntity::class);
+    $this->truncateEntity(SubscriberEntity::class);
     $this->truncateEntity(ScheduledTaskEntity::class);
     $this->truncateEntity(SendingQueueEntity::class);
     $this->truncateEntity(StatisticsUnsubscribeEntity::class);
