@@ -10,6 +10,8 @@ use MailPoet\REST\Automation\AutomationTest;
 
 require_once __DIR__ . '/../AutomationTest.php';
 
+//phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+
 class AutomationsDuplicateEndpointTest extends AutomationTest {
   private const ENDPOINT_PATH = '/mailpoet/v1/automations/%d/duplicate';
 

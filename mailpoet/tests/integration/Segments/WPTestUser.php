@@ -2,6 +2,8 @@
 
 namespace MailPoet\Test\Segments;
 
+//phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps, PSR1.Methods.CamelCapsMethodName.NotCamelCaps
+
 class WPTestUser extends \WP_User {
   /** @var int */
   public $orderId;
