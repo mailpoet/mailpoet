@@ -7,3 +7,4 @@ export * from './loading';
 export * from './form';
 export * from './tag';
 export * from './listings';
+export * from './error_boundary';
