@@ -733,4 +733,20 @@ class AcceptanceTester extends \Codeception\Actor {
   public function isWooCustomOrdersTableEnabled(): bool {
     return (bool)getenv('ENABLE_COT');
   }
+
+  public function changeGroupInListingFilter(string $name): void {
+    $i = $this;
+    for ($x = 1; $x <= 3; $x++) {
+      try {
+        $i->waitForElementClickable('[data-automation-id="filters_' . $name . '"]');
+        $i->click('[data-automation-id="filters_' . $name . '"]');
+        $i->seeInCurrentURL(urlencode('group[' . $name . ']'));
+        break;
+      } catch (Exception $exception) {
+        $this->wait(0.5);
+        continue;
+      }
+    }
+    $i->seeInCurrentURL(urlencode('group[' . $name . ']'));
+  }
 }

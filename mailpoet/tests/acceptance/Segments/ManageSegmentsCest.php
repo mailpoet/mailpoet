@@ -127,9 +127,7 @@ class ManageSegmentsCest {
     $i->clickItemRowActionByItemName($segment->getName(), 'Move to trash');
     $i->waitForNoticeAndClose('1 segment was moved to the trash.');
     $i->waitForText('No segments found');
-    $i->waitForElementClickable('[data-automation-id="filters_trash"]');
-    $i->click('[data-automation-id="filters_trash"]');
-    $i->seeInCurrentURL(urlencode('group[trash]'));
+    $i->changeGroupInListingFilter('trash');
 
     $i->waitForText($segment->getName());
     $i->seeNoJSErrors();
@@ -138,8 +136,7 @@ class ManageSegmentsCest {
     $i->clickItemRowActionByItemName($segment->getName(), 'Restore');
     $i->waitForNoticeAndClose('1 segment has been restored from the Trash.');
     $i->seeInCurrentURL(urlencode('group[trash]'));
-    $i->click('[data-automation-id="filters_all"]');
-    $i->seeInCurrentURL(urlencode('group[all]'));
+    $i->changeGroupInListingFilter('all');
     $i->waitForText($segment->getName());
     $i->seeNoJSErrors();
   }
@@ -164,9 +161,8 @@ class ManageSegmentsCest {
     $i->wantTo('Trash and delete existing segment');
     $i->clickItemRowActionByItemName($segment1->getName(), 'Move to trash');
     $i->waitForNoticeAndClose('1 segment was moved to the trash.');
-    $i->wait(1); // for flakiness prevention
-    $i->waitForElementClickable('[data-automation-id="filters_trash"]');
-    $i->click('[data-automation-id="filters_trash"]');
+    $i->waitForText('No segments found');
+    $i->changeGroupInListingFilter('trash');
     $i->waitForText($segment1->getName());
     $i->clickItemRowActionByItemName($segment1->getName(), 'Delete permanently');
     $i->waitForNoticeAndClose('1 segment was permanently deleted.');
@@ -228,8 +224,7 @@ class ManageSegmentsCest {
     $i->amOnMailpoetPage('Lists');
     $i->waitForElement('[data-automation-id="dynamic-segments-tab"]');
     $i->click('[data-automation-id="dynamic-segments-tab"]');
-    $i->waitForElement('[data-automation-id="filters_trash"]');
-    $i->click('[data-automation-id="filters_trash"]');
+    $i->changeGroupInListingFilter('trash');
     $i->waitForText($segment1Name);
     $i->checkOption('[data-automation-id="listing-row-checkbox-' . $segment1->getId() . '"]');
     $i->checkOption('[data-automation-id="listing-row-checkbox-' . $segment2->getId() . '"]');
@@ -249,8 +244,7 @@ class ManageSegmentsCest {
     $i->waitForText('No segments found');
 
     $i->wantTo('Select all segments in trash and bulk delete them permanently');
-    $i->waitForElement('[data-automation-id="filters_trash"]');
-    $i->click('[data-automation-id="filters_trash"]');
+    $i->changeGroupInListingFilter('trash');
     $i->waitForText($segment1Name);
     $i->click('[data-automation-id="select_all"]');
     $i->waitForText('Delete permanently', 10, $bulkActionsContainer);
