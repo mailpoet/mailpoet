@@ -142,12 +142,22 @@ class AcceptanceTester extends \Codeception\Actor {
    */
   public function selectOptionInSelect2($value, $element = 'textarea.select2-search__field') {
     $i = $this;
-    $i->waitForElement($element);
-    $i->fillField($element, $value);
-    $optionsContainer = $i->grabAttributeFrom($element, 'aria-controls');
-    // Wait until the searched value is in select options. There might be some delay on API
-    $i->waitForText($value, 5, "#$optionsContainer");
-    $i->pressKey($element, WebDriverKeys::ENTER);
+    for ($x = 1; $x <= 3; $x++) {
+      try {
+        $i->waitForElement($element);
+        $i->fillField($element, $value);
+        $optionsContainer = $i->grabAttributeFrom($element, 'aria-controls');
+        // Wait until the searched value is in select options. There might be some delay on API
+        $i->waitForText($value, 5, "#$optionsContainer");
+        $i->pressKey($element, WebDriverKeys::ENTER);
+        $i->seeSelectedInSelect2($value);
+        break;
+      } catch (Exception $exception) {
+        $this->wait(1);
+        continue;
+      }
+    }
+    $i->seeSelectedInSelect2($value);
   }
 
   /**
