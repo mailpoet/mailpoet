@@ -151,7 +151,7 @@ class WorkerTest extends \MailPoetTest {
     (new StatisticsOpensFactory($this->newsletter, $subscriber5))->create();
 
     $this->createStatisticsUnsubscribe([
-      'subscriber' => $this->createSubscriber(),
+      'subscriber' => (new SubscriberFactory())->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)->create(),
       'newsletter' => $this->newslettersRepository->findOneById($this->newsletter->getId()),
       'queue' => $this->sendingQueuesRepository->findOneById($this->queue->getId()),
       'created_at' => '2017-01-02 21:23:45',
@@ -276,14 +276,6 @@ class WorkerTest extends \MailPoetTest {
       ->method('send');
 
     $this->statsNotifications->process();
-  }
-
-  private function createSubscriber(): SubscriberEntity {
-    $subscriber = new SubscriberEntity();
-    $subscriber->setStatus(SubscriberEntity::STATUS_SUBSCRIBED);
-    $subscriber->setEmail('subscriber' . rand(0, 10000) . '@example.com');
-    $this->entityManager->persist($subscriber);
-    return $subscriber;
   }
 
   private function createStatisticsUnsubscribe($data): StatisticsUnsubscribeEntity {
