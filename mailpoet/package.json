@@ -30,6 +30,7 @@
     "*.php": [
       "phplint",
       "./do qa:code-sniffer",
+      "./do qa:minimal-plugin-standard",
       "bash -c './do qa:phpstan'"
     ]
   },
