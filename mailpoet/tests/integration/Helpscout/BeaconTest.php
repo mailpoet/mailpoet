@@ -138,7 +138,7 @@ class BeaconTest extends \MailPoetTest {
 
   public function testItReturnsWebserverInformation() {
     expect($this->beaconData['Web server'])->equals(
-      (!empty($_SERVER["SERVER_SOFTWARE"])) ? $_SERVER["SERVER_SOFTWARE"] : 'N/A'
+      (!empty($_SERVER["SERVER_SOFTWARE"])) ? sanitize_text_field(wp_unslash($_SERVER["SERVER_SOFTWARE"])) : 'N/A'
     );
   }
 
