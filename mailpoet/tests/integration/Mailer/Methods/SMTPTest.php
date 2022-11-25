@@ -9,6 +9,8 @@ use MailPoet\Mailer\Methods\ErrorMappers\SMTPMapper;
 use MailPoet\Mailer\Methods\SMTP;
 use MailPoet\WP\Functions as WPFunctions;
 
+//phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+
 class SMTPTest extends \MailPoetTest {
   public $extraParams;
   public $newsletter;

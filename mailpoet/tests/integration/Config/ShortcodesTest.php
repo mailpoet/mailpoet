@@ -16,6 +16,8 @@ use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 use MailPoet\Util\pQuery\pQuery;
 use MailPoet\WP\Functions as WPFunctions;
 
+//phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+
 class ShortcodesTest extends \MailPoetTest {
   /** @var SendingQueueEntity */
   public $queue;
