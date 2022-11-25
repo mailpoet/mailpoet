@@ -10,7 +10,6 @@ use MailPoet\Entities\NewsletterOptionFieldEntity;
 use MailPoet\Entities\NewsletterPostEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SendingQueueEntity;
-use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Scheduler\AutomaticEmailScheduler;

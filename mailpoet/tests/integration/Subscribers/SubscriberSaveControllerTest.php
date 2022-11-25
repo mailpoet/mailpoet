@@ -48,7 +48,7 @@ class SubscriberSaveControllerTest extends \MailPoetTest {
       'tags' => [
         'First',
         'Second',
-      ]
+      ],
     ];
 
     $subscriber = $this->saveController->save($data);

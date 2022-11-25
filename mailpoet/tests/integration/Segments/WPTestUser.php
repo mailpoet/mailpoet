@@ -12,8 +12,7 @@ class WPTestUser extends \WP_User {
    * for cases, where we do not want to trigger the synchronization but just want to
    * assign a role to a user.
    */
-  public function add_role($role): void
-  {
+  public function add_role($role): void {
     if (empty($role)) {
       return;
     }

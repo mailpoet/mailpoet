@@ -4,12 +4,12 @@ namespace MailPoet\Test\Services;
 
 use Codeception\Stub\Expected;
 use InvalidArgumentException;
-use MailPoet\Services\AuthorizedSenderDomainController;
-use MailPoet\Util\DmarcPolicyChecker;
 use MailPoet\Mailer\Mailer;
+use MailPoet\Services\AuthorizedSenderDomainController;
 use MailPoet\Services\Bridge;
 use MailPoet\Services\Bridge\API;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Util\DmarcPolicyChecker;
 use MailPoet\WP\Functions as WPFunctions;
 
 require_once('BridgeTestMockAPI.php');
@@ -43,7 +43,7 @@ class AuthorizedSenderDomainControllerTest extends \MailPoetTest {
   }
 
   public function testItFetchSenderDomains() {
-    $domains =  ['mailpoet.com', 'good', 'testdomain.com'];
+    $domains = ['mailpoet.com', 'good', 'testdomain.com'];
     $bridgeResponse = [
       'mailpoet.com' => ['data'],
       'good' => ['data'],

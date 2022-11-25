@@ -4,12 +4,10 @@ namespace MailPoet\Test\Subscription;
 
 use MailPoet\Entities\FormEntity;
 use MailPoet\Form\FormsRepository;
-use MailPoet\Subscription\CaptchaFormRenderer;
 use MailPoet\Subscription\Captcha\CaptchaSession;
+use MailPoet\Subscription\CaptchaFormRenderer;
 
-class CaptchaFormRendererTest extends \MailPoetTest
-{
-
+class CaptchaFormRendererTest extends \MailPoetTest {
   public function testCaptchaSubmitTextIsConfigurable() {
 
     $expectedLabel = 'EXPECTED_LABEL';

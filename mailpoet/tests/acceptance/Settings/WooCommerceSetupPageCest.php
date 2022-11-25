@@ -76,7 +76,6 @@ class WooCommerceSetupPageCest {
     $i->see($guestUserData['email']);
   }
 
-
   public function noCustomersBehaviourTest(\AcceptanceTester $i) {
     $i->wantTo('Make sure we don‘t show import setting when there are no customers');
     $i->login();

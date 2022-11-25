@@ -503,7 +503,7 @@ class ServicesTest extends \MailPoetTest {
 
     $servicesEndpoint = $this->createServicesEndpointWithMocks([
       'bridge' => $bridge,
-      'senderDomain' => $senderDomainMock
+      'senderDomain' => $senderDomainMock,
     ]);
     $response = $servicesEndpoint->sendCongratulatoryMssEmail();
     expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
@@ -557,7 +557,7 @@ class ServicesTest extends \MailPoetTest {
     $servicesEndpoint = $this->createServicesEndpointWithMocks([
       'bridge' => $bridge,
       'congratulatoryEmailController' => $congratulatoryEmailController,
-      'senderDomain' => $senderDomainMock
+      'senderDomain' => $senderDomainMock,
     ]);
     $response = $servicesEndpoint->sendCongratulatoryMssEmail();
 
@@ -597,7 +597,7 @@ class ServicesTest extends \MailPoetTest {
       [
         'checkMSSKey' => [
           'state' => Bridge::KEY_VALID_UNDERPRIVILEGED,
-          'code' => 403
+          'code' => 403,
         ],
         'storeMSSKeyAndState' => Expected::once(),
       ]

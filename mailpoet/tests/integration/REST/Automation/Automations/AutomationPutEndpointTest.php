@@ -3,15 +3,15 @@
 namespace MailPoet\REST\Automation\Automations;
 
 use MailPoet\Automation\Engine\Builder\CreateAutomationFromTemplateController;
-use MailPoet\Automation\Engine\Data\Step;
 use MailPoet\Automation\Engine\Data\Automation;
+use MailPoet\Automation\Engine\Data\Step;
 use MailPoet\Automation\Engine\Storage\AutomationStorage;
 use MailPoet\REST\Automation\AutomationTest;
 
 require_once __DIR__ . '/../AutomationTest.php';
 
-class AutomationPutEndpointTest extends AutomationTest
-{
+class AutomationPutEndpointTest extends AutomationTest {
+
   private const ENDPOINT_PATH = '/mailpoet/v1/automations/%d';
 
   /** @var AutomationStorage */
@@ -38,7 +38,7 @@ class AutomationPutEndpointTest extends AutomationTest
       [
         'json' => [
           'name' => 'Test',
-        ]
+        ],
       ]
     );
 
@@ -59,8 +59,8 @@ class AutomationPutEndpointTest extends AutomationTest
     $this->assertInstanceOf(Step::class, $trigger);
     $changes[$trigger->getId()] = [
       'args' => [
-        'segment_ids' => [1,2]
-      ]
+        'segment_ids' => [1,2],
+      ],
     ];
     $updatedSteps = $this->getChangedStepsStructureOfAutomation($this->automation, $changes);
     $data = $this->put(
@@ -69,7 +69,7 @@ class AutomationPutEndpointTest extends AutomationTest
         'json' => [
           'name' => 'Test',
           'steps' => $updatedSteps,
-        ]
+        ],
       ]
     );
 
@@ -104,7 +104,7 @@ class AutomationPutEndpointTest extends AutomationTest
               'next_steps' => [],
             ],
           ],
-        ]
+        ],
       ]
     );
 
@@ -121,7 +121,7 @@ class AutomationPutEndpointTest extends AutomationTest
     foreach ($steps as $step) {
       $data[$step->getId()] = array_merge(
         $step->toArray(),
-        $changes[$step->getId()]??[]
+        $changes[$step->getId()] ?? []
       );
     }
     return $data;

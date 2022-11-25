@@ -3,18 +3,17 @@
 namespace MailPoet\Test\Automation\Integrations\Core\Actions;
 
 use MailPoet\Automation\Engine\Control\ActionScheduler;
-use MailPoet\Automation\Engine\Data\NextStep;
-use MailPoet\Automation\Engine\Data\StepRunArgs;
-use MailPoet\Automation\Engine\Data\Step;
-use MailPoet\Automation\Engine\Data\StepValidationArgs;
 use MailPoet\Automation\Engine\Data\Automation;
 use MailPoet\Automation\Engine\Data\AutomationRun;
+use MailPoet\Automation\Engine\Data\NextStep;
+use MailPoet\Automation\Engine\Data\Step;
+use MailPoet\Automation\Engine\Data\StepRunArgs;
+use MailPoet\Automation\Engine\Data\StepValidationArgs;
 use MailPoet\Automation\Engine\Hooks;
 use MailPoet\Automation\Engine\Integration\ValidationException;
 use MailPoet\Automation\Integrations\Core\Actions\DelayAction;
 
 class DelayActionTest extends \MailPoetTest {
-
   /**
    * @dataProvider dataForTestItCalculatesDelayTypesCorrectly
    */
@@ -30,7 +29,7 @@ class DelayActionTest extends \MailPoetTest {
       [new NextStep('next-step')]
     );
     $automation = $this->createMock(Automation::class);
-    $automationRun =  $this->createMock(AutomationRun::class);
+    $automationRun = $this->createMock(AutomationRun::class);
     $automationRun->expects($this->atLeastOnce())->method('getId')->willReturn(1);
 
     $actionScheduler = $this->createMock(ActionScheduler::class);
@@ -46,7 +45,7 @@ class DelayActionTest extends \MailPoetTest {
     $testee->run(new StepRunArgs($automation, $automationRun, $step, []));
   }
 
-  public function dataForTestItCalculatesDelayTypesCorrectly() : array {
+  public function dataForTestItCalculatesDelayTypesCorrectly(): array {
     return [
       '1_minute' => [
         1,
@@ -56,7 +55,7 @@ class DelayActionTest extends \MailPoetTest {
       '3_minute' => [
         3,
         "MINUTES",
-        3*60,
+        3 * 60,
       ],
       '1_hour' => [
         1,
@@ -66,7 +65,7 @@ class DelayActionTest extends \MailPoetTest {
       '3_hour' => [
         3,
         "HOURS",
-        3*3600,
+        3 * 3600,
       ],
       '1_day' => [
         1,
@@ -76,7 +75,7 @@ class DelayActionTest extends \MailPoetTest {
       '3_days' => [
         3,
         "DAYS",
-        3*86400,
+        3 * 86400,
       ],
       '1_week' => [
         1,
@@ -86,7 +85,7 @@ class DelayActionTest extends \MailPoetTest {
       '3_weeks' => [
         3,
         "WEEKS",
-        3*604800,
+        3 * 604800,
       ],
     ];
   }
@@ -112,14 +111,14 @@ class DelayActionTest extends \MailPoetTest {
     try {
       $testee->validate(new StepValidationArgs($automation, $step, []));
     } catch (\Throwable $error) {
-      if (! $expectation || ! $error instanceof ValidationException) {
+      if (!$expectation || !$error instanceof ValidationException) {
         throw $error;
       }
       $this->assertSame($expectation, $error->getErrors()['delay']);
     }
   }
 
-  public function dataForTestDelayActionInvalidatesOutsideOfBoundaries() : array {
+  public function dataForTestDelayActionInvalidatesOutsideOfBoundaries(): array {
     return [
       'zero' => [
         0,
@@ -134,11 +133,11 @@ class DelayActionTest extends \MailPoetTest {
         null,
       ],
       'two_years' => [
-        2*8760 + 1,
+        2 * 8760 + 1,
         'A delay can\'t be longer than two years',
       ],
       'below_two_years' => [
-        2*8760,
+        2 * 8760,
         null,
       ],
     ];

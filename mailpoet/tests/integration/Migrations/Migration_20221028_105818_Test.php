@@ -3,7 +3,6 @@
 namespace MailPoet\Migrations;
 
 use Codeception\Stub;
-use MailPoet\Config\Migrator;
 use MailPoet\Cron\Workers\InactiveSubscribers;
 use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Entities\DynamicSegmentFilterEntity;

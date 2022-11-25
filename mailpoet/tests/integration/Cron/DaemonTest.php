@@ -80,7 +80,8 @@ class DaemonTest extends \MailPoetTest {
     // Factory should return only the first worker then we stop because of execution limit
     $factoryMock = $this->make(WorkersFactory::class, [
         'createMigrationWorker' => $this->createSimpleWorkerMock(),
-        'createStatsNotificationsWorker' => function () {throw new \Exception('StatsNotificationsWorker should not be called');},
+        'createStatsNotificationsWorker' => function () {throw new \Exception('StatsNotificationsWorker should not be called');
+        },
     ]);
     $daemon = new Daemon($this->cronHelper, $cronWorkerRunner, $factoryMock, $this->diContainer->get(LoggerFactory::class));
     $daemon->run($data);

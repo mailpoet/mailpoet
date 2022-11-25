@@ -83,7 +83,7 @@ class AuthorizedEmailsControllerTest extends \MailPoetTest {
 
     $mocks = [
       'Bridge' => $bridgeMock,
-      'AuthorizedSenderDomainController' => $senderDomainMock
+      'AuthorizedSenderDomainController' => $senderDomainMock,
     ];
     $controller = $this->getControllerWithCustomMocks($mocks);
     $controller->checkAuthorizedEmailAddresses();
@@ -155,7 +155,7 @@ class AuthorizedEmailsControllerTest extends \MailPoetTest {
 
     $mocks = [
       'Bridge' => $bridgeMock,
-      'AuthorizedSenderDomainController' => $senderDomainMock
+      'AuthorizedSenderDomainController' => $senderDomainMock,
     ];
     $controller = $this->getControllerWithCustomMocks($mocks);
 
@@ -231,7 +231,7 @@ class AuthorizedEmailsControllerTest extends \MailPoetTest {
     ]);
 
     $mocks = [
-      'AuthorizedSenderDomainController' => $senderDomainMock
+      'AuthorizedSenderDomainController' => $senderDomainMock,
     ];
     $controller = $this->getControllerWithCustomMocks($mocks);
     $controller->setFromEmailAddress('authorized@email.com');
@@ -308,7 +308,7 @@ class AuthorizedEmailsControllerTest extends \MailPoetTest {
 
     $array = [
       'pending' => ['pending@email.com'],
-      'authorized' => ['authorized@email.com']
+      'authorized' => ['authorized@email.com'],
     ];
     $controller = $this->getController($array);
     $controller->createAuthorizedEmailAddress('authorized@email.com');
@@ -320,7 +320,7 @@ class AuthorizedEmailsControllerTest extends \MailPoetTest {
 
     $array = [
       'pending' => ['pending@email.com'],
-      'authorized' => ['authorized@email.com']
+      'authorized' => ['authorized@email.com'],
     ];
     $controller = $this->getController($array);
     $controller->createAuthorizedEmailAddress('pending@email.com');
@@ -329,15 +329,15 @@ class AuthorizedEmailsControllerTest extends \MailPoetTest {
   public function testItCreateNewAuthorizedEmailAddress() {
     $array = [
       'pending' => ['pending@email.com'],
-      'authorized' => ['authorized@email.com']
+      'authorized' => ['authorized@email.com'],
     ];
     $response = ['status' => true];
     $bridgeMock = $this->make(Bridge::class, [
       'getAuthorizedEmailAddresses' => Expected::once($array),
-      'createAuthorizedEmailAddress' => Expected::once($response)
+      'createAuthorizedEmailAddress' => Expected::once($response),
     ]);
     $mocks = [
-      'Bridge' => $bridgeMock
+      'Bridge' => $bridgeMock,
     ];
     $controller = $this->getControllerWithCustomMocks($mocks);
     $result = $controller->createAuthorizedEmailAddress('new-authorized@email.com');
@@ -351,10 +351,10 @@ class AuthorizedEmailsControllerTest extends \MailPoetTest {
 
     $bridgeMock = $this->make(Bridge::class, [
       'getAuthorizedEmailAddresses' => Expected::once([]),
-      'createAuthorizedEmailAddress' => Expected::once(['error' => $errorMessage])
+      'createAuthorizedEmailAddress' => Expected::once(['error' => $errorMessage]),
     ]);
     $mocks = [
-      'Bridge' => $bridgeMock
+      'Bridge' => $bridgeMock,
     ];
     $controller = $this->getControllerWithCustomMocks($mocks);
     $controller->createAuthorizedEmailAddress('new-authorized@email.com');
@@ -399,7 +399,7 @@ class AuthorizedEmailsControllerTest extends \MailPoetTest {
     $bridgeMock = $this->make(Bridge::class, ['getAuthorizedEmailAddresses' => $getEmailsExpectaton]);
 
     $mocks = [
-      'Bridge' => $bridgeMock
+      'Bridge' => $bridgeMock,
     ];
     return $this->getControllerWithCustomMocks($mocks);
   }

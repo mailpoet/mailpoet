@@ -2,7 +2,6 @@
 
 namespace MailPoet\Cron\Workers\StatsNotifications;
 
-use MailPoetVendor\Carbon\Carbon;
 use Codeception\Stub;
 use MailPoet\Config\Renderer;
 use MailPoet\Cron\CronWorkerRunner;
@@ -25,6 +24,7 @@ use MailPoet\Test\DataFactories\ScheduledTask as ScheduledTaskFactory;
 use MailPoet\Test\DataFactories\StatisticsClicks as StatisticsClicksFactory;
 use MailPoet\Test\DataFactories\StatisticsOpens as StatisticsOpensFactory;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
+use MailPoetVendor\Carbon\Carbon;
 use PHPUnit\Framework\MockObject\MockObject;
 
 class AutomatedEmailsTest extends \MailPoetTest {

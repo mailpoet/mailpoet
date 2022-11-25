@@ -169,5 +169,4 @@ class WooCommerceNumberOfOrdersTest extends \MailPoetTest {
     $this->connection->executeQuery("TRUNCATE TABLE {$wpdb->prefix}wc_customer_lookup");
     $this->connection->executeQuery("TRUNCATE TABLE {$wpdb->prefix}wc_order_stats");
   }
-
 }

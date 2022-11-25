@@ -2,13 +2,13 @@
 
 namespace MailPoet\Test\Automation\Integrations\MailPoet\Actions;
 
-use MailPoet\Automation\Engine\Data\StepRunArgs;
+use MailPoet\Automation\Engine\Data\Automation;
+use MailPoet\Automation\Engine\Data\AutomationRun;
 use MailPoet\Automation\Engine\Data\Step;
+use MailPoet\Automation\Engine\Data\StepRunArgs;
 use MailPoet\Automation\Engine\Data\StepValidationArgs;
 use MailPoet\Automation\Engine\Data\Subject;
 use MailPoet\Automation\Engine\Data\SubjectEntry;
-use MailPoet\Automation\Engine\Data\Automation;
-use MailPoet\Automation\Engine\Data\AutomationRun;
 use MailPoet\Automation\Engine\Integration\ValidationException;
 use MailPoet\Automation\Integrations\MailPoet\Actions\SendEmailAction;
 use MailPoet\Automation\Integrations\MailPoet\Subjects\SegmentSubject;
@@ -89,8 +89,8 @@ class SendEmailActionTest extends \MailPoetTest {
 
     $error = null;
     try {
-    $this->action->validate(new StepValidationArgs($this->automation, $step, []));
-    $this->action->validate(new StepValidationArgs($this->automation, $step, []));
+      $this->action->validate(new StepValidationArgs($this->automation, $step, []));
+      $this->action->validate(new StepValidationArgs($this->automation, $step, []));
     } catch (ValidationException $error) {
       $this->assertSame("Automation email with ID '{$newsletter->getId()}' not found.", $error->getErrors()['email_id']);
     }
@@ -285,7 +285,7 @@ class SendEmailActionTest extends \MailPoetTest {
   private function getSubjectData(SubscriberEntity $subscriber, SegmentEntity $segment): array {
     return [
       new Subject('mailpoet:segment', ['segment_id' => $segment->getId()]),
-      new Subject('mailpoet:subscriber', ['subscriber_id'=> $subscriber->getId()]),
+      new Subject('mailpoet:subscriber', ['subscriber_id' => $subscriber->getId()]),
     ];
   }
 

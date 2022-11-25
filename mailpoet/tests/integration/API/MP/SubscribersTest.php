@@ -640,7 +640,7 @@ class SubscribersTest extends \MailPoetTest {
           expect($options)->contains('send_confirmation_email');
           expect($options['send_confirmation_email'])->equals(true);
           return [];
-        })
+        }),
       ],
       $this);
     $API = $this->makeEmptyExcept(
@@ -827,7 +827,7 @@ class SubscribersTest extends \MailPoetTest {
 
     $subscribers = $this->getApi()->getSubscribers([
       'listId' => $segment2->getId(),
-      'minUpdatedAt' => new Carbon('2022-10-11 12:00:00')
+      'minUpdatedAt' => new Carbon('2022-10-11 12:00:00'),
     ]);
     $this->assertCount(1, $subscribers);
     $this->assertEquals($subscriber3->getEmail(), $subscribers[0]['email']);

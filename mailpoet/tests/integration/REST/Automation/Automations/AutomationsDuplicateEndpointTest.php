@@ -3,8 +3,8 @@
 namespace MailPoet\REST\Automation\Automations;
 
 use DateTimeImmutable;
-use MailPoet\Automation\Engine\Data\Step;
 use MailPoet\Automation\Engine\Data\Automation;
+use MailPoet\Automation\Engine\Data\Step;
 use MailPoet\Automation\Engine\Storage\AutomationStorage;
 use MailPoet\REST\Automation\AutomationTest;
 

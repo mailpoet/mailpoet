@@ -5,26 +5,27 @@ namespace MailPoet\Subscription\Captcha;
 use Codeception\Stub;
 use MailPoetVendor\Gregwar\Captcha\PhraseBuilder;
 
-class CaptchaPhraseTest extends \MailPoetUnitTest
-{
+class CaptchaPhraseTest extends \MailPoetUnitTest {
   public function testItGeneratesPhraseWhenNewSession() {
 
     $expectedPhrase = 'abc';
     $session = Stub::make(
       CaptchaSession::class,
       [
-        'init' => function($sessionId) {},
+        'init' => function($sessionId) {
+        },
         'getCaptchaHash' => false,
         'setCaptchaHash' => Stub\Expected::once(function($data) use ($expectedPhrase) {
           expect($data['phrase'])->equals($expectedPhrase);
-        })
+        }),
       ],
       $this
     );
     $phraseBuilder = Stub::make(
       PhraseBuilder::class,
       [
-        'build' => Stub\Expected::once(function() use ($expectedPhrase) { return $expectedPhrase; }),
+        'build' => Stub\Expected::once(function() use ($expectedPhrase) { return $expectedPhrase; 
+        }),
       ],
       $this
     );
@@ -40,17 +41,18 @@ class CaptchaPhraseTest extends \MailPoetUnitTest
     $session = Stub::make(
       CaptchaSession::class,
       [
-        'init' => function($sessionId) {},
+        'init' => function($sessionId) {
+        },
         'getCaptchaHash' => false,
         'setCaptchaHash' => Stub\Expected::exactly(2, function($data) use ($expectedFirstPhrase, $expectedSecondPhrase) {
           static $count;
-          if (! $count) {
+          if (!$count) {
             $count = 1;
             expect($data['phrase'])->equals($expectedFirstPhrase);
             return;
           }
           expect($data['phrase'])->equals($expectedSecondPhrase);
-        })
+        }),
       ],
       $this
     );
@@ -59,7 +61,7 @@ class CaptchaPhraseTest extends \MailPoetUnitTest
       [
         'build' => Stub\Expected::exactly(2, function() use ($expectedFirstPhrase, $expectedSecondPhrase) {
           static $count;
-          if (! $count) {
+          if (!$count) {
             $count = 1;
             return $expectedFirstPhrase;
           }
@@ -88,10 +90,11 @@ class CaptchaPhraseTest extends \MailPoetUnitTest
     $session = Stub::make(
       CaptchaSession::class,
       [
-        'init' => function($sessionId) {},
+        'init' => function($sessionId) {
+        },
         'getCaptchaHash' => Stub\Expected::exactly(2, function() use ($expectedFirstStorage){
           static $count;
-          if (! $count) {
+          if (!$count) {
             $count = 1;
             return false;
           }
@@ -104,14 +107,15 @@ class CaptchaPhraseTest extends \MailPoetUnitTest
           }
           $count = 1;
           expect($storage)->equals($expectedFirstStorage);
-        })
+        }),
       ],
       $this
     );
     $phraseBuilder = Stub::make(
       PhraseBuilder::class,
       [
-        'build' => Stub\Expected::once(function() use ($phrase) { return $phrase; }),
+        'build' => Stub\Expected::once(function() use ($phrase) { return $phrase; 
+        }),
       ],
       $this
     );

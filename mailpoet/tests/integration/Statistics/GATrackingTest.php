@@ -3,8 +3,6 @@
 namespace MailPoet\Statistics;
 
 use MailPoet\Entities\NewsletterEntity;
-use MailPoet\Models\Newsletter;
-use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
 
 class GATrackingTest extends \MailPoetTest {

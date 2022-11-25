@@ -24,7 +24,7 @@ class AutomationsCreateFromTemplateTest extends AutomationTest {
     $countBefore = count($this->automationStorage->getAutomations());
     $this->post(self::ENDPOINT_PATH, [
       'json' => [
-        'slug' => 'subscriber-welcome-email'
+        'slug' => 'subscriber-welcome-email',
       ],
     ]);
     $countAfter = count($this->automationStorage->getAutomations());
@@ -36,7 +36,7 @@ class AutomationsCreateFromTemplateTest extends AutomationTest {
     $countBefore = count($this->automationStorage->getAutomations());
     $data = $this->post(self::ENDPOINT_PATH, [
       'json' => [
-        'slug' => 'subscriber-welcome-email'
+        'slug' => 'subscriber-welcome-email',
       ],
     ]);
     $countAfter = count($this->automationStorage->getAutomations());
@@ -53,7 +53,7 @@ class AutomationsCreateFromTemplateTest extends AutomationTest {
     $storage = ContainerWrapper::getInstance()->get(AutomationStorage::class);
     $this->post(self::ENDPOINT_PATH, [
       'json' => [
-        'slug' => 'subscriber-welcome-email'
+        'slug' => 'subscriber-welcome-email',
       ],
     ]);
     $allAutomations = $storage->getAutomations();
@@ -64,7 +64,7 @@ class AutomationsCreateFromTemplateTest extends AutomationTest {
   public function testAutomationsCreatedFromTemplatesReturnsAutomationId(): void {
     $response = $this->post(self::ENDPOINT_PATH, [
       'json' => [
-        'slug' => 'subscriber-welcome-email'
+        'slug' => 'subscriber-welcome-email',
       ],
     ]);
     $allAutomations = $this->automationStorage->getAutomations();
@@ -77,5 +77,4 @@ class AutomationsCreateFromTemplateTest extends AutomationTest {
     $this->automationStorage->truncate();
     parent::_after();
   }
-
 }

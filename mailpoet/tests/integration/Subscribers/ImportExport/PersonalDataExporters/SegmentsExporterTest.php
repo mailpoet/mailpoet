@@ -5,8 +5,8 @@ namespace MailPoet\Subscribers\ImportExport\PersonalDataExporters;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Subscribers\SubscribersRepository;
-use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 use MailPoet\Test\DataFactories\Segment as SegmentFactory;
+use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 use MailPoet\WP\DateTime;
 
 class SegmentsExporterTest extends \MailPoetTest {
@@ -73,7 +73,7 @@ class SegmentsExporterTest extends \MailPoetTest {
              ['name' => 'Subscription status', 'value' => 'subscribed'],
              [
                'name' => 'Timestamp of the subscription (or last change of the subscription status)',
-               'value' => $ss1->getUpdatedAt()->format(DateTime::DEFAULT_DATE_TIME_FORMAT)
+               'value' => $ss1->getUpdatedAt()->format(DateTime::DEFAULT_DATE_TIME_FORMAT),
              ],
           ],
        ],
@@ -86,7 +86,7 @@ class SegmentsExporterTest extends \MailPoetTest {
              ['name' => 'Subscription status', 'value' => 'unsubscribed'],
              [
                'name' => 'Timestamp of the subscription (or last change of the subscription status)',
-               'value' => $ss2->getUpdatedAt()->format(DateTime::DEFAULT_DATE_TIME_FORMAT)
+               'value' => $ss2->getUpdatedAt()->format(DateTime::DEFAULT_DATE_TIME_FORMAT),
              ],
           ],
        ],

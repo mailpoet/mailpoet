@@ -5,8 +5,8 @@ namespace MailPoet\Automation\Engine\Validation\AutomationRules;
 require_once __DIR__ . '/AutomationRuleTest.php';
 
 use MailPoet\Automation\Engine\Control\RootStep;
-use MailPoet\Automation\Engine\Data\Step;
 use MailPoet\Automation\Engine\Data\Automation;
+use MailPoet\Automation\Engine\Data\Step;
 use MailPoet\Automation\Engine\Exceptions\UnexpectedValueException;
 use MailPoet\Automation\Engine\Registry;
 use MailPoet\Automation\Engine\Storage\AutomationStorage;
@@ -45,7 +45,6 @@ class UnknownStepRuleTest extends AutomationRuleTest {
     $this->expectExceptionMessage("Modification of step 'core:root' of type 'root' with ID 'root' is not supported when the related plugin is not active.");
     (new AutomationWalker())->walk($automation, [$this->getRule($existingAutomation)]);
   }
-
 
   public function testItPassesWithDeletedStep(): void {
     $automation = $this->getAutomation();

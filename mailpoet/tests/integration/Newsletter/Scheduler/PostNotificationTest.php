@@ -16,10 +16,10 @@ use MailPoet\Newsletter\NewsletterPostsRepository;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Options\NewsletterOptionsRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
+use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
 use MailPoet\Test\DataFactories\NewsletterOption as NewsletterOptionsFactory;
 use MailPoet\Test\DataFactories\ScheduledTask;
 use MailPoet\Test\DataFactories\SendingQueue as SendingQueueFactory;
-use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
 use MailPoet\WP\DateTime;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoet\WP\Posts as WPPosts;
@@ -367,5 +367,4 @@ class PostNotificationTest extends \MailPoetTest {
     $this->truncateEntity(SubscriberEntity::class);
     $this->truncateEntity(SendingQueueEntity::class);
   }
-
 }

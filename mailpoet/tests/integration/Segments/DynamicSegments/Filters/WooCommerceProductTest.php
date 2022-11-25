@@ -155,14 +155,13 @@ class WooCommerceProductTest extends \MailPoetTest {
     return $order->get_id();
   }
 
-  private function createProduct(string $name): int
-  {
+  private function createProduct(string $name): int {
     $productData = [
       'post_type' => 'product',
       'post_status' => 'publish',
       'post_title' => $name,
     ];
-    $productId =  wp_insert_post($productData);
+    $productId = wp_insert_post($productData);
     $this->assertIsInt($productId);
     return $productId;
   }

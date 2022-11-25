@@ -2,9 +2,9 @@
 
 namespace MailPoet\Automation\Engine\Validation\AutomationRules;
 
+use MailPoet\Automation\Engine\Data\Automation;
 use MailPoet\Automation\Engine\Data\NextStep;
 use MailPoet\Automation\Engine\Data\Step;
-use MailPoet\Automation\Engine\Data\Automation;
 use MailPoetUnitTest;
 
 abstract class AutomationRuleTest extends MailPoetUnitTest {

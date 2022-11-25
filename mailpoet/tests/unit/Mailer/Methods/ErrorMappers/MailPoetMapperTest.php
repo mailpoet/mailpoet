@@ -184,7 +184,6 @@ class MailPoetMapperTest extends \MailPoetUnitTest {
     expect($error->getMessage())->stringContainsString("You’ll soon be able to send once our team reviews your account.");
   }
 
-
   public function testGetUnavailableServiceError() {
     $apiResult = [
       'code' => API::RESPONSE_CODE_GATEWAY_TIMEOUT,

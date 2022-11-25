@@ -60,7 +60,7 @@ class ManageTest extends \MailPoetTest {
         'verifyToken' => function($token) {
           return true;
         },
-      ])
+      ]),
     ]);
     $_POST['action'] = 'mailpoet_subscription_update';
     $_POST['token'] = 'token';

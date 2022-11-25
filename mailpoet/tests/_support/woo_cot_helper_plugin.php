@@ -7,8 +7,8 @@ Author: MailPoet
 Version: 1.0
 */
 
-use \Automattic\WooCommerce\Internal\Features\FeaturesController;
-use \Automattic\WooCommerce\Internal\DataStores\Orders\DataSynchronizer;
+use Automattic\WooCommerce\Internal\DataStores\Orders\DataSynchronizer;
+use Automattic\WooCommerce\Internal\Features\FeaturesController;
 
 /**
  * Enable WooCommerce COT tables
@@ -25,6 +25,7 @@ function mailpoet_enable_cot(): void {
     $featuresController->change_feature_enable('custom_order_tables', true);
   }
 }
+
 add_action( 'init', 'mailpoet_enable_cot', 99 );
 
 /**

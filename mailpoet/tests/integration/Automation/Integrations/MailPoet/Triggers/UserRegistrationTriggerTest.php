@@ -2,12 +2,12 @@
 
 namespace MailPoet\Test\Automation\Integrations\MailPoet\Triggers;
 
+use MailPoet\Automation\Engine\Data\Automation;
+use MailPoet\Automation\Engine\Data\AutomationRun;
 use MailPoet\Automation\Engine\Data\Step;
 use MailPoet\Automation\Engine\Data\StepRunArgs;
 use MailPoet\Automation\Engine\Data\Subject;
 use MailPoet\Automation\Engine\Data\SubjectEntry;
-use MailPoet\Automation\Engine\Data\Automation;
-use MailPoet\Automation\Engine\Data\AutomationRun;
 use MailPoet\Automation\Engine\Hooks;
 use MailPoet\Automation\Integrations\MailPoet\Subjects\SegmentSubject;
 use MailPoet\Automation\Integrations\MailPoet\Subjects\SubscriberSubject;
@@ -124,7 +124,7 @@ class UserRegistrationTriggerTest extends \MailPoetTest {
     $this->assertSame($expectation, $testee->isTriggeredBy($stepRunArgs));
   }
 
-  public function dataForTestTriggeredByAutomationRun() : array {
+  public function dataForTestTriggeredByAutomationRun(): array {
     return [
       'any_role' => [
         [], // any list

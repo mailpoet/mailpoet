@@ -3,9 +3,9 @@
 namespace MailPoet\Test\Acceptance;
 
 use Codeception\Util\Locator;
+use MailPoet\Automation\Engine\Data\Automation;
 use MailPoet\Automation\Engine\Data\NextStep;
 use MailPoet\Automation\Engine\Data\Step;
-use MailPoet\Automation\Engine\Data\Automation;
 use MailPoet\Automation\Engine\Storage\AutomationRunLogStorage;
 use MailPoet\Automation\Engine\Storage\AutomationRunStorage;
 use MailPoet\Automation\Engine\Storage\AutomationStorage;
@@ -14,8 +14,8 @@ use MailPoet\Automation\Integrations\MailPoet\Triggers\UserRegistrationTrigger;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Test\DataFactories\Settings;
 
-class UserRegistrationTriggerCest
-{
+class UserRegistrationTriggerCest {
+
   /** @var Settings */
   private $settingsFactory;
 
@@ -56,7 +56,7 @@ class UserRegistrationTriggerCest
     $i->dontSee('Entered 1');
     $i->logOut();
 
-    $this->registerWith($i,'automationtriggeredbyregistration', 'test@mailpoet.com');
+    $this->registerWith($i, 'automationtriggeredbyregistration', 'test@mailpoet.com');
 
     $i->login();
     $i->amOnMailpoetPage('automation');
@@ -81,7 +81,7 @@ class UserRegistrationTriggerCest
     $i->dontSee('Entered 1');
     $i->logOut();
 
-    $this->registerWith($i,'automationtriggeredbyregistration', 'test@mailpoet.com');
+    $this->registerWith($i, 'automationtriggeredbyregistration', 'test@mailpoet.com');
 
     $i->login();
 

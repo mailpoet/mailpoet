@@ -4,8 +4,8 @@ namespace MailPoet\REST\Automation\Automations;
 
 require_once __DIR__ . '/../AutomationTest.php';
 
-use MailPoet\Automation\Engine\Data\Step;
 use MailPoet\Automation\Engine\Data\Automation;
+use MailPoet\Automation\Engine\Data\Step;
 use MailPoet\Automation\Engine\Storage\AutomationStorage;
 use MailPoet\REST\Automation\AutomationTest;
 
@@ -58,7 +58,7 @@ class AutomationsGetTest extends AutomationTest {
     $automation2Data = [
       'name' => 'Test 2',
       'status' => Automation::STATUS_ACTIVE,
-      'author' => (int) current($this->userIds),
+      'author' => (int)current($this->userIds),
     ];
 
 
@@ -93,7 +93,7 @@ class AutomationsGetTest extends AutomationTest {
     }
 
     foreach (Automation::STATUS_ALL as $status) {
-      $result = $this->get(self::ENDPOINT_PATH, ['query'=> ['status' => $status]]);
+      $result = $this->get(self::ENDPOINT_PATH, ['query' => ['status' => $status]]);
       $this->assertCount(1, $result['data']);
       $this->assertEquals($status, $result['data'][0]['name']);
       $this->assertEquals($status, $result['data'][0]['status']);
@@ -137,26 +137,26 @@ class AutomationsGetTest extends AutomationTest {
     }
   }
 
-  private function createNewAutomation(array $data = []) : int {
-    $rootStep = ['id'=>'root','type'=>Step::TYPE_ROOT,'key'=>'core:root'];
-    $data['name'] = $data['name']??'Test';
-    $data['steps'] = $data['steps']??[$rootStep];
-    $data['author'] = $data['author']??wp_get_current_user()->ID;
+  private function createNewAutomation(array $data = []): int {
+    $rootStep = ['id' => 'root','type' => Step::TYPE_ROOT,'key' => 'core:root'];
+    $data['name'] = $data['name'] ?? 'Test';
+    $data['steps'] = $data['steps'] ?? [$rootStep];
+    $data['author'] = $data['author'] ?? wp_get_current_user()->ID;
     $automation = new Automation(
       $data['name'],
-      array_map([$this,'createStep'],$data['steps']),
+      array_map([$this,'createStep'], $data['steps']),
       new \WP_User((int)$data['author'])
     );
-    $automation->setStatus($data['status']??Automation::STATUS_ACTIVE);
+    $automation->setStatus($data['status'] ?? Automation::STATUS_ACTIVE);
     return $this->automationStorage->createAutomation($automation);
   }
 
-  private function createStep(array $data = []) : Step {
-    $data['id'] = $data['id']??uniqid();
-    $data['type'] = $data['type']??Step::TYPE_ACTION;
-    $data['key'] = $data['key']??'key';
-    $data['args'] = $data['args']??[];
-    $data['nextSteps']=$data['nextSteps']??[];
+  private function createStep(array $data = []): Step {
+    $data['id'] = $data['id'] ?? uniqid();
+    $data['type'] = $data['type'] ?? Step::TYPE_ACTION;
+    $data['key'] = $data['key'] ?? 'key';
+    $data['args'] = $data['args'] ?? [];
+    $data['nextSteps'] = $data['nextSteps'] ?? [];
     return new Step(
       $data['id'],
       $data['type'],

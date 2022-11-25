@@ -2,9 +2,9 @@
 
 namespace MailPoet\Automation\Engine\Validation\AutomationGraph;
 
+use MailPoet\Automation\Engine\Data\Automation;
 use MailPoet\Automation\Engine\Data\NextStep;
 use MailPoet\Automation\Engine\Data\Step;
-use MailPoet\Automation\Engine\Data\Automation;
 use MailPoet\Automation\Engine\Exceptions\UnexpectedValueException;
 use MailPoetUnitTest;
 
@@ -65,7 +65,6 @@ class AutomationWalkerTest extends MailPoetUnitTest {
     ], $path);
   }
 
-
   public function testCyclicAutomation(): void {
     $automation = $this->createAutomation([
       'root' => ['a', 'root'],
@@ -116,7 +115,8 @@ class AutomationWalkerTest extends MailPoetUnitTest {
         $this->nodes[] = $node;
       }
 
-      public function complete(Automation $automation): void {}
+      public function complete(Automation $automation): void {
+      }
     };
 
     $walker = new AutomationWalker();

@@ -34,9 +34,9 @@ use MailPoet\Subscribers\SubscriberListingRepository;
 use MailPoet\Subscribers\SubscriberSaveController;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Subscribers\SubscriberSubscribeController;
-use MailPoet\Test\DataFactories\CustomField as CustomFieldFactory;
 use MailPoet\Subscription\Captcha\CaptchaConstants;
 use MailPoet\Subscription\Captcha\CaptchaSession;
+use MailPoet\Test\DataFactories\CustomField as CustomFieldFactory;
 use MailPoet\Test\DataFactories\DynamicSegment;
 use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
 use MailPoet\Test\DataFactories\Segment as SegmentFactory;
@@ -280,7 +280,7 @@ class SubscribersTest extends \MailPoetTest {
     expect($response->data['source'])->equals('api');
   }
 
-  public function testItCanUpdateEmailOfAnExistingSubscriber(){
+  public function testItCanUpdateEmailOfAnExistingSubscriber() {
     $subscriberData = $this->responseBuilder->build($this->subscriber2);
     $subscriberData['email'] = 'newjane@mailpoet.com';
     $response = $this->endpoint->save($subscriberData);
@@ -293,7 +293,7 @@ class SubscribersTest extends \MailPoetTest {
     expect($response->data['first_name'])->equals($subscriberData['first_name']);
   }
 
-  public function testItCannotUpdateEmailOfAnExistingSubscriberIfEmailIsNotUnique(){
+  public function testItCannotUpdateEmailOfAnExistingSubscriberIfEmailIsNotUnique() {
     $subscriberData = $this->responseBuilder->build($this->subscriber2);
     $subscriberData['email'] = $this->subscriber1->getEmail();
     $response = $this->endpoint->save($subscriberData);

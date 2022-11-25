@@ -11,8 +11,8 @@ use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Newsletter\Url;
 use MailPoet\Router\Router;
 use MailPoet\Subscribers\SubscribersRepository;
-use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
+use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 use MailPoet\Util\pQuery\pQuery;
 use MailPoet\WP\Functions as WPFunctions;
 

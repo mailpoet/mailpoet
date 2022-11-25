@@ -5,7 +5,6 @@ namespace MailPoet\Test\Router\Endpoints;
 use Codeception\Stub;
 use Codeception\Stub\Expected;
 use MailPoet\Router\Endpoints\Subscription;
-use MailPoet\Subscription\Captcha\CaptchaConstants;
 use MailPoet\Subscription\Captcha\CaptchaRenderer;
 use MailPoet\Subscription\Pages;
 use MailPoet\Util\Request;

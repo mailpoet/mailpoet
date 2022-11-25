@@ -6,11 +6,9 @@ require_once(ABSPATH . 'wp-admin/includes/user.php');
 
 use Codeception\Stub;
 use MailPoet\Entities\SubscriberEntity;
-use MailPoet\Features\FeaturesController;
 use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
-use MailPoet\Newsletter\Scheduler\WelcomeScheduler;
 use MailPoet\Segments\WP;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\SubscribersRepository;
@@ -570,7 +568,7 @@ class WPTest extends \MailPoetTest {
     );
     $wpSegment = $this->getServiceWithOverrides(WP::class, [
       'wp' => $wp,
-      'wooHelper' => $wooHelper
+      'wooHelper' => $wooHelper,
     ]);
     $wpSegment->synchronizeUser($id);
     $subscriber1 = Subscriber::where("wp_user_id", $id)->findOne();
@@ -645,7 +643,7 @@ class WPTest extends \MailPoetTest {
     if (!is_string($id)) {
       throw new \RuntimeException('Unexpected error when creating WP user.');
     }
-    $this->userIds[] =  (int)$id;
+    $this->userIds[] = (int)$id;
     return (int)$id;
   }
 

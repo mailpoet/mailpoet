@@ -9,8 +9,8 @@ use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\MailerFactory;
 use MailPoet\Mailer\MetaInfo;
 use MailPoet\Subscribers\SubscribersRepository;
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPMailer\PHPMailer\Exception as PHPMailerException;
+use PHPUnit\Framework\MockObject\MockObject;
 
 // phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
 class WordpressMailerTest extends \MailPoetTest {
@@ -169,7 +169,7 @@ class WordpressMailerTest extends \MailPoetTest {
         'subscribersRepository' => $this->subscribersRepository,
       ],
       [
-        'postSend' => Expected::once(true)
+        'postSend' => Expected::once(true),
       ]
     );
 
@@ -195,7 +195,8 @@ class WordpressMailerTest extends \MailPoetTest {
         'subscribersRepository' => $this->subscribersRepository,
       ],
       [
-        'postSend' => function() { throw new \Exception('Some strange error in mailer'); }
+        'postSend' => function() { throw new \Exception('Some strange error in mailer'); 
+        },
       ]
     );
 

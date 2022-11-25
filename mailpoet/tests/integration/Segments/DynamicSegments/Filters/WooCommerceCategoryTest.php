@@ -177,7 +177,7 @@ class WooCommerceCategoryTest extends \MailPoetTest {
   }
 
   private function createCategory(string $name): int {
-    $categoryId =  wp_create_category($name);
+    $categoryId = wp_create_category($name);
     $this->assertIsInt($categoryId);
     return $categoryId;
   }

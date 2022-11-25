@@ -193,7 +193,7 @@ class MetaInfoTest extends \MailPoetTest {
 
   public function testItGetsMetaInfoForUnknownType() {
     $newsletter1 = (object)[
-      'type' => null
+      'type' => null,
     ];
     expect($this->meta->getNewsletterMetaInfo($newsletter1, $this->subscriber))->equals([
       'email_type' => 'unknown',

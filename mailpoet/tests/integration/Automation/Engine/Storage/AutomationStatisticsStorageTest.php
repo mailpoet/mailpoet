@@ -2,15 +2,15 @@
 
 namespace MailPoet\Test\Automation\Engine\Storage;
 
-use MailPoet\Automation\Engine\Data\Step;
 use MailPoet\Automation\Engine\Data\Automation;
 use MailPoet\Automation\Engine\Data\AutomationRun;
+use MailPoet\Automation\Engine\Data\Step;
 use MailPoet\Automation\Engine\Storage\AutomationRunStorage;
 use MailPoet\Automation\Engine\Storage\AutomationStatisticsStorage;
 use MailPoet\Automation\Engine\Storage\AutomationStorage;
 
-class AutomationStatisticsStorageTest extends \MailPoetTest
-{
+class AutomationStatisticsStorageTest extends \MailPoetTest {
+
 
   /** @var AutomationStorage */
   private $automationStorage;
@@ -31,13 +31,13 @@ class AutomationStatisticsStorageTest extends \MailPoetTest
 
     $this->automations = [
       $this->automationStorage->createAutomation(
-      new Automation('1', ['root' => new Step('root', Step::TYPE_ROOT, 'root', [], [])],new \WP_User(1))
+      new Automation('1', ['root' => new Step('root', Step::TYPE_ROOT, 'root', [], [])], new \WP_User(1))
     ),
       $this->automationStorage->createAutomation(
-      new Automation('2', ['root' => new Step('root', Step::TYPE_ROOT, 'root', [], [])],new \WP_User(1))
+      new Automation('2', ['root' => new Step('root', Step::TYPE_ROOT, 'root', [], [])], new \WP_User(1))
     ),
       $this->automationStorage->createAutomation(
-      new Automation('3', ['root' => new Step('root', Step::TYPE_ROOT, 'root', [], [])],new \WP_User(1))
+      new Automation('3', ['root' => new Step('root', Step::TYPE_ROOT, 'root', [], [])], new \WP_User(1))
     ),
     ];
   }
@@ -76,16 +76,16 @@ class AutomationStatisticsStorageTest extends \MailPoetTest
   public function dataForTestItCalculatesTotalsCorrectly() {
     return [
       'zero' => [
-        1, 0,0,0, null
+        1, 0,0,0, null,
       ],
       'two-one-one' => [
-        0, 2,1,1, null
+        0, 2,1,1, null,
       ],
       'two-two-zero' => [
-        2, 2,2,0, null
+        2, 2,2,0, null,
       ],
       'two-zero-two' => [
-        1, 2,0,2, null
+        1, 2,0,2, null,
       ],
     ];
   }

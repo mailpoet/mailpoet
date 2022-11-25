@@ -40,7 +40,7 @@ class InactiveSubscribersTest extends \MailPoetTest {
     ], $this);
 
     $worker = $this->getServiceWithOverrides(InactiveSubscribers::class, [
-      'inactiveSubscribersController' => $controllerMock
+      'inactiveSubscribersController' => $controllerMock,
     ]);
     $worker->processTaskStrategy(new ScheduledTaskEntity(), microtime(true));
 
@@ -63,7 +63,7 @@ class InactiveSubscribersTest extends \MailPoetTest {
     ], $this);
 
     $worker = $this->getServiceWithOverrides(InactiveSubscribers::class, [
-      'inactiveSubscribersController' => $controllerMock
+      'inactiveSubscribersController' => $controllerMock,
     ]);
     $worker->processTaskStrategy(new ScheduledTaskEntity(), microtime(true));
   }
@@ -77,7 +77,7 @@ class InactiveSubscribersTest extends \MailPoetTest {
     ], $this);
 
     $worker = $this->getServiceWithOverrides(InactiveSubscribers::class, [
-      'inactiveSubscribersController' => $controllerMock
+      'inactiveSubscribersController' => $controllerMock,
     ]);
     $worker->processTaskStrategy(new ScheduledTaskEntity(), microtime(true));
 
@@ -99,7 +99,7 @@ class InactiveSubscribersTest extends \MailPoetTest {
     ], $this);
 
     $worker = $this->getServiceWithOverrides(InactiveSubscribers::class, [
-      'inactiveSubscribersController' => $controllerMock
+      'inactiveSubscribersController' => $controllerMock,
     ]);
     $task = new ScheduledTaskEntity();
     $task->setMeta(['max_subscriber_id' => 2001 /* 3 iterations of BATCH_SIZE in markInactiveSubscribers */]);
@@ -122,7 +122,7 @@ class InactiveSubscribersTest extends \MailPoetTest {
     $task = new ScheduledTaskEntity();
 
     $worker = $this->getServiceWithOverrides(InactiveSubscribers::class, [
-      'inactiveSubscribersController' => $controllerMock
+      'inactiveSubscribersController' => $controllerMock,
     ]);
     $worker->processTaskStrategy($task, microtime(true));
 
@@ -139,7 +139,7 @@ class InactiveSubscribersTest extends \MailPoetTest {
     ], $this);
 
     $worker = $this->getServiceWithOverrides(InactiveSubscribers::class, [
-      'inactiveSubscribersController' => $controllerMock
+      'inactiveSubscribersController' => $controllerMock,
     ]);
 
     $this->expectException(\Exception::class);

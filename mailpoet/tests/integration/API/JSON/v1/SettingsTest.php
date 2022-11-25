@@ -231,7 +231,7 @@ class SettingsTest extends \MailPoetTest {
     $task = $this->scheduledTasksRepository->findOneBy(
       [
         'type' => InactiveSubscribers::TASK_TYPE,
-        'status' => ScheduledTaskEntity::STATUS_SCHEDULED
+        'status' => ScheduledTaskEntity::STATUS_SCHEDULED,
       ]
     );
     expect($task)->null();
@@ -241,7 +241,7 @@ class SettingsTest extends \MailPoetTest {
     $task = $this->scheduledTasksRepository->findOneBy(
       [
         'type' => InactiveSubscribers::TASK_TYPE,
-        'status' => ScheduledTaskEntity::STATUS_SCHEDULED
+        'status' => ScheduledTaskEntity::STATUS_SCHEDULED,
       ]
     );
     assert($task instanceof ScheduledTaskEntity);

@@ -69,7 +69,7 @@ class SendingQueueTest extends \MailPoetTest {
     $sendingQueue = $this->getServiceWithOverrides(SendingQueueAPI::class, [
       'subscribersFeature' => Stub::make(SubscribersFeature::class, [
         'check' => true,
-      ])
+      ]),
     ]);
     $res = $sendingQueue->add(['newsletter_id' => $this->newsletter->getId()]);
     expect($res->status)->equals(APIResponse::STATUS_FORBIDDEN);
@@ -117,7 +117,7 @@ class SendingQueueTest extends \MailPoetTest {
 
   public function testItRejectsInvalidNewsletters() {
     $sendingQueue = $this->getServiceWithOverrides(SendingQueueAPI::class, [
-      'newsletterValidator' => Stub::make(NewsletterValidator::class, ['validate' => 'some error'])
+      'newsletterValidator' => Stub::make(NewsletterValidator::class, ['validate' => 'some error']),
     ]);
     $response = $sendingQueue->add(['newsletter_id' => $this->newsletter->getId()]);
     $response = $response->getData();

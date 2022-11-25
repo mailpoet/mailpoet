@@ -11,9 +11,9 @@ use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Statistics\NewsletterStatisticsRepository;
 use MailPoet\Newsletter\Url;
 use MailPoet\Subscribers\SubscribersRepository;
+use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
 use MailPoet\Test\DataFactories\StatisticsOpens as StatisticsOpensFactory;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
-use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
 use MailPoetVendor\Carbon\Carbon;
 
 class NewslettersExporterTest extends \MailPoetTest {
@@ -26,7 +26,7 @@ class NewslettersExporterTest extends \MailPoetTest {
 
   public function _before() {
     parent::_before();
-    $this->subscribersRepository =  $this->diContainer->get(SubscribersRepository::class);
+    $this->subscribersRepository = $this->diContainer->get(SubscribersRepository::class);
     $this->exporter = new NewslettersExporter(
       $this->diContainer->get(Url::class),
       $this->subscribersRepository,

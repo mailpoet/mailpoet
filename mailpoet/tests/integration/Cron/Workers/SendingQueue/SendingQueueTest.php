@@ -55,7 +55,6 @@ use MailPoet\Subscribers\LinkTokens;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Subscription\SubscriptionUrlFactory;
 use MailPoet\Tasks\Sending as SendingTask;
-use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 
@@ -512,7 +511,7 @@ class SendingQueueTest extends \MailPoetTest {
 
     $subscribersModels = [
       Subscriber::findOne($subscriber1->getId()),
-      Subscriber::findOne($subscriber2->getId())
+      Subscriber::findOne($subscriber2->getId()),
     ];
 
     $sendingQueueWorker->processQueue($queue, $newsletter, $subscribersModels, $timer);
