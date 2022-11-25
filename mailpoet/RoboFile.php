@@ -425,6 +425,9 @@ class RoboFile extends \Robo\Tasks {
     $collection->addCode(function() {
       return $this->qaCodeSniffer([]);
     });
+    $collection->addCode(function() {
+      return $this->qaMinimalPluginStandard([]);
+    });
     return $collection->run();
   }
 
@@ -502,6 +505,55 @@ class RoboFile extends \Robo\Tasks {
       '--extensions=php',
       $severityFlag,
       '--standard=tasks/code_sniffer/MailPoet',
+      '-s',
+    ]);
+
+    $ignorePaths = [
+      '.mp_svn',
+      'assets',
+      'doc',
+      'generated',
+      'lib/Config/PopulatorData/Templates',
+      'lib-3rd-party',
+      'node_modules',
+      'plugin_repository',
+      'prefixer/build',
+      'prefixer/vendor',
+      'tasks/code_sniffer/vendor',
+      'tasks/phpstan/vendor',
+      'tasks/makepot',
+      'tools/vendor',
+      'temp',
+      'tests/_data',
+      'tests/_output',
+      'tests/_support/_generated',
+      'vendor',
+      'vendor-prefixed',
+      'views',
+    ];
+
+    // the "--ignore" arg takes a list of regexes, we need to anchor and escape them
+    $ignorePatterns = array_map(function (string $path): string {
+      return '^' . preg_quote(__DIR__ . DIRECTORY_SEPARATOR . $path);
+    }, $ignorePaths);
+
+    $stringFilesToCheck = !empty($filesToCheck) ? implode(' ', $filesToCheck) : '.';
+
+    return $this->taskExec($task)
+      ->arg('--ignore=' . implode(',', $ignorePatterns))
+      ->rawArg($stringFilesToCheck)
+      ->run();
+  }
+
+  public function qaMinimalPluginStandard(array $filesToCheck, $opts = ['severity' => 'all']) {
+    $severityFlag = $opts['severity'] === 'all' ? '-w' : '-n';
+
+    $task = implode(' ', [
+      'php -d memory_limit=-1',
+      './tasks/code_sniffer/vendor/bin/phpcs',
+      '--extensions=php',
+      $severityFlag,
+      '--standard=tasks/code_sniffer/vendor/wporg/plugin-directory/MinimalPluginStandard',
       '-s',
     ]);
 
