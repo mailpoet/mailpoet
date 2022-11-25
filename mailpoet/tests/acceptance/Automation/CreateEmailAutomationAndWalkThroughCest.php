@@ -31,9 +31,9 @@ class CreateEmailAutomationAndWalkThroughCest {
     $i->fillField('Wait for', '5');
 
     $i->click('Send email');
-    $i->fillField('"From" name','From');
-    $i->fillField('"From" email address','test@mailpoet.com');
-    $i->fillField('Subject','Automation-Test-Subject');
+    $i->fillField('"From" name', 'From');
+    $i->fillField('"From" email address', 'test@mailpoet.com');
+    $i->fillField('Subject', 'Automation-Test-Subject');
 
     $i->click('Design email');
     $i->waitForText('Newsletters');

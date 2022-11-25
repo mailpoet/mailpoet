@@ -11,7 +11,9 @@ class Endpoint extends APIEndpoint {
   /** @var callable|null */
   private $requestCallback;
 
-  public function __construct(callable $requestCallback = null) {
+  public function __construct(
+    callable $requestCallback = null
+  ) {
     $this->requestCallback = $requestCallback;
   }
 

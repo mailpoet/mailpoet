@@ -17,7 +17,6 @@ use MailPoet\Subscription\Captcha\CaptchaSession;
 use MailPoet\Subscription\Captcha\Validator\BuiltInCaptchaValidator;
 use MailPoet\Subscription\Captcha\Validator\RecaptchaValidator;
 use MailPoet\Subscription\Captcha\Validator\ValidationError;
-use MailPoet\Subscription\SubscriptionUrlFactory;
 use MailPoet\Subscription\Throttling;
 use MailPoet\Subscription\Throttling as SubscriptionThrottling;
 use MailPoet\Tags\TagRepository;
@@ -349,7 +348,7 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
     $recaptchaValidator = Stub::make(
       RecaptchaValidator::class,
       [
-        'validate' => Expected::never()
+        'validate' => Expected::never(),
       ],
       $this
     );
@@ -465,7 +464,7 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
     $builtInCaptchaValidator = Stub::make(
       BuiltInCaptchaValidator::class,
       [
-        'validate' => Expected::never()
+        'validate' => Expected::never(),
       ],
       $this
     );
@@ -479,7 +478,7 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
               'refresh_captcha' => true,
             ]
           );
-        }
+        },
       ],
       $this
     );
@@ -714,7 +713,7 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
         'validate' => function($data) use ($captcha) {
           expect($data['captcha'])->equals($captcha);
           return true;
-        }
+        },
       ],
       $this
     );

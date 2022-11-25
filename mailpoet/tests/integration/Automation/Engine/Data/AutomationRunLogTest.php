@@ -3,18 +3,18 @@
 namespace MailPoet\Test\Automation\Engine\Data;
 
 use MailPoet\Automation\Engine\Control\StepHandler;
-use MailPoet\Automation\Engine\Data\StepRunArgs;
-use MailPoet\Automation\Engine\Data\Step;
-use MailPoet\Automation\Engine\Data\StepValidationArgs;
 use MailPoet\Automation\Engine\Data\Automation;
 use MailPoet\Automation\Engine\Data\AutomationRun;
 use MailPoet\Automation\Engine\Data\AutomationRunLog;
+use MailPoet\Automation\Engine\Data\Step;
+use MailPoet\Automation\Engine\Data\StepRunArgs;
+use MailPoet\Automation\Engine\Data\StepValidationArgs;
 use MailPoet\Automation\Engine\Hooks;
+use MailPoet\Automation\Engine\Integration\Action;
 use MailPoet\Automation\Engine\Registry;
 use MailPoet\Automation\Engine\Storage\AutomationRunLogStorage;
 use MailPoet\Automation\Engine\Storage\AutomationRunStorage;
 use MailPoet\Automation\Engine\Storage\AutomationStorage;
-use MailPoet\Automation\Engine\Integration\Action;
 use MailPoet\Util\Security;
 use MailPoet\Validator\Builder;
 use MailPoet\Validator\Schema\ObjectSchema;
@@ -68,7 +68,7 @@ class AutomationRunLogTest extends \MailPoetTest {
       11.1,
       10,
       true,
-      false
+      false,
     ];
     $log->setData('data', $data);
     $this->automationRunLogStorage->createAutomationRunLog($log);
@@ -84,8 +84,8 @@ class AutomationRunLogTest extends \MailPoetTest {
         11.1,
         10,
         true,
-        false
-      ]
+        false,
+      ],
     ];
     $log->setData('data', $data);
     $this->automationRunLogStorage->createAutomationRunLog($log);
@@ -98,7 +98,7 @@ class AutomationRunLogTest extends \MailPoetTest {
     $badData = [
       function() {
         echo 'closures cannot be serialized';
-      }
+      },
     ];
     $this->expectException(\InvalidArgumentException::class);
     $log->setData('badData', $badData);
@@ -121,11 +121,11 @@ class AutomationRunLogTest extends \MailPoetTest {
         'multidimensional' => [
           'array' => [
             'values' => [
-              new stdClass()
-            ]
-          ]
-        ]
-      ]
+              new stdClass(),
+            ],
+          ],
+        ],
+      ],
     ];
     $this->expectException(\InvalidArgumentException::class);
     $log->setData('data', $data);
@@ -165,7 +165,7 @@ class AutomationRunLogTest extends \MailPoetTest {
     $automationRunId = $this->automationRunStorage->createAutomationRun($automationRun);
     $this->stepHandler->handle([
       'automation_run_id' => $automationRunId,
-      'step_id' => 'action-step-id'
+      'step_id' => 'action-step-id',
     ]);
 
     $log = $this->automationRunLogStorage->getLogsForAutomationRun($automationRunId)[0];
@@ -247,7 +247,7 @@ class AutomationRunLogTest extends \MailPoetTest {
     try {
       $this->stepHandler->handle([
         'automation_run_id' => $automationRunId,
-        'step_id' => 'action-step-id'
+        'step_id' => 'action-step-id',
       ]);
     } catch (\Exception $e) {
       // allow exceptions so we can test failure states
@@ -282,7 +282,6 @@ class TestAction implements Action {
   public function setCallback($callback) {
     $this->callback = $callback;
   }
-
 
   public function getSubjectKeys(): array {
     return [];

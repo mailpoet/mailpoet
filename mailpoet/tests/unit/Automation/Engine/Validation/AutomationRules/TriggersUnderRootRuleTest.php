@@ -4,8 +4,8 @@ namespace MailPoet\Automation\Engine\Validation\AutomationRules;
 
 require_once __DIR__ . '/AutomationRuleTest.php';
 
-use MailPoet\Automation\Engine\Data\Step;
 use MailPoet\Automation\Engine\Data\Automation;
+use MailPoet\Automation\Engine\Data\Step;
 use MailPoet\Automation\Engine\Exceptions\UnexpectedValueException;
 use MailPoet\Automation\Engine\Validation\AutomationGraph\AutomationWalker;
 

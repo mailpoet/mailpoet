@@ -125,7 +125,7 @@ class EndpointTest extends Test {
       $this->make(EndpointContainer::class, [
         'get' => function () use ($requestCallback) {
           return new Endpoint($requestCallback);
-        }
+        },
       ]),
       $this->diContainer->get(WPFunctions::class)
     );

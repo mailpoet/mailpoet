@@ -217,7 +217,7 @@ class NewslettersTest extends \MailPoetTest {
   public function testItReturnsErrorIfSubscribersLimitReached() {
     $endpoint = $this->getServiceWithOverrides(Newsletters::class, [
       'cronHelper' => $this->cronHelper,
-      'subscribersFeature' => Stub::make(Subscribers::class, ['check' => true])
+      'subscribersFeature' => Stub::make(Subscribers::class, ['check' => true]),
     ]);
     $res = $endpoint->setStatus([
       'id' => $this->newsletter->getId(),

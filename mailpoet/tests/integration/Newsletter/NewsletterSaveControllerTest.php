@@ -23,6 +23,7 @@ class NewsletterSaveControllerTest extends \MailPoetTest {
 
   /** @var Scheduler */
   private $scheduler;
+
   public function _before() {
     parent::_before();
     $this->cleanup();
@@ -200,7 +201,6 @@ class NewsletterSaveControllerTest extends \MailPoetTest {
     $this->assertInstanceOf(SegmentEntity::class, $segment); // PHPStan
     expect($segment->getName())->equals('Segment 1');
   }
-
 
   public function testItDoesNotSaveSegmentsForAutomationEmails() {
     $segment = new SegmentEntity('Segment 1', SegmentEntity::TYPE_DEFAULT, 'Segment 1 description');

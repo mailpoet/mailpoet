@@ -5,7 +5,6 @@ namespace MailPoet\Test\Doctrine\EventListeners;
 use MailPoet\Doctrine\EventListeners\TimestampListener;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
-use MailPoetVendor\Doctrine\ORM\Events;
 
 require_once __DIR__ . '/EventListenersBaseTest.php';
 require_once __DIR__ . '/TimestampEntity.php';

@@ -7,15 +7,13 @@ use MailPoet\Settings\SettingsController;
 use MailPoet\Subscription\Captcha\CaptchaConstants;
 use MailPoet\WP\Functions as WPFunctions;
 
-class RecaptchaValidatorTest extends \MailPoetUnitTest
-{
-
+class RecaptchaValidatorTest extends \MailPoetUnitTest {
   public function testSuccessfulInvisibleValidation() {
 
     $captchaSettings = [
       'type' => CaptchaConstants::TYPE_RECAPTCHA_INVISIBLE,
       'recaptcha_invisible_secret_token' => 'recaptcha_invisible_secret_token',
-      'recaptcha_secret_token' => 'recaptcha_secret_token'
+      'recaptcha_secret_token' => 'recaptcha_secret_token',
     ];
     $recaptchaResponseToken = 'recaptchaResponseToken';
     $response = json_encode(['success' => true]);
@@ -43,7 +41,7 @@ class RecaptchaValidatorTest extends \MailPoetUnitTest
         'wpRemoteRetrieveBody' => function($data) use ($response) {
           expect($data)->equals($response);
           return $response;
-        }
+        },
       ],
       $this
     );
@@ -60,7 +58,7 @@ class RecaptchaValidatorTest extends \MailPoetUnitTest
     $captchaSettings = [
       'type' => CaptchaConstants::TYPE_RECAPTCHA,
       'recaptcha_invisible_secret_token' => 'recaptcha_invisible_secret_token',
-      'recaptcha_secret_token' => 'recaptcha_secret_token'
+      'recaptcha_secret_token' => 'recaptcha_secret_token',
     ];
     $recaptchaResponseToken = 'recaptchaResponseToken';
     $response = json_encode(['success' => true]);
@@ -88,7 +86,7 @@ class RecaptchaValidatorTest extends \MailPoetUnitTest
         'wpRemoteRetrieveBody' => function($data) use ($response) {
           expect($data)->equals($response);
           return $response;
-        }
+        },
       ],
       $this
     );
@@ -105,7 +103,7 @@ class RecaptchaValidatorTest extends \MailPoetUnitTest
     $captchaSettings = [
       'type' => CaptchaConstants::TYPE_RECAPTCHA_INVISIBLE,
       'recaptcha_invisible_secret_token' => 'recaptcha_invisible_secret_token',
-      'recaptcha_secret_token' => 'recaptcha_secret_token'
+      'recaptcha_secret_token' => 'recaptcha_secret_token',
     ];
     $recaptchaResponseToken = 'recaptchaResponseToken';
     $response = json_encode(['success' => false]);
@@ -129,7 +127,7 @@ class RecaptchaValidatorTest extends \MailPoetUnitTest
         'isWpError' => false,
         'wpRemoteRetrieveBody' => function() use ($response) {
           return $response;
-        }
+        },
       ],
       $this
     );
@@ -152,10 +150,10 @@ class RecaptchaValidatorTest extends \MailPoetUnitTest
     $captchaSettings = [
       'type' => CaptchaConstants::TYPE_RECAPTCHA_INVISIBLE,
       'recaptcha_invisible_secret_token' => 'recaptcha_invisible_secret_token',
-      'recaptcha_secret_token' => 'recaptcha_secret_token'
+      'recaptcha_secret_token' => 'recaptcha_secret_token',
     ];
     $recaptchaResponseToken = 'recaptchaResponseToken';
-    $response = (object) ['wp-error'];
+    $response = (object)['wp-error'];
     $settings = Stub::make(
       SettingsController::class,
       [

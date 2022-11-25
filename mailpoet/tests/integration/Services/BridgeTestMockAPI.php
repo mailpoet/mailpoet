@@ -27,8 +27,8 @@ class BridgeTestMockAPI extends API {
       'type' => 'TXT',
       'status' => 'valid',
       'message' => '',
-    ]
-  ]
+    ],
+  ],
   ];
 
   public $apiKey;

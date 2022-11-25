@@ -2,17 +2,17 @@
 
 namespace MailPoet\Test\Automation\Engine\Storage;
 
-use MailPoet\Automation\Engine\Data\Step;
 use MailPoet\Automation\Engine\Data\Automation;
 use MailPoet\Automation\Engine\Data\AutomationRun;
 use MailPoet\Automation\Engine\Data\AutomationRunLog;
+use MailPoet\Automation\Engine\Data\Step;
 use MailPoet\Automation\Engine\Storage\AutomationRunLogStorage;
 use MailPoet\Automation\Engine\Storage\AutomationRunStorage;
 use MailPoet\Automation\Engine\Storage\AutomationStorage;
 use MailPoet\Automation\Integrations\MailPoet\Triggers\SomeoneSubscribesTrigger;
 
-class AutomationStorageTest extends \MailPoetTest
-{
+class AutomationStorageTest extends \MailPoetTest {
+
 
   /** @var AutomationStorage */
   private $testee;
@@ -94,15 +94,15 @@ class AutomationStorageTest extends \MailPoetTest
     $automationRunLogStorage = $this->diContainer->get(AutomationRunLogStorage::class);
     $automations = [
       'toDelete' => $this->createEmptyAutomation(),
-      'toKeep' => $this->createEmptyAutomation()
+      'toKeep' => $this->createEmptyAutomation(),
     ];
     $runs = [
       'toDelete' => [],
-      'toKeep' => []
+      'toKeep' => [],
     ];
     $runLogs = [
       'toDelete' => [],
-      'toKeep' => []
+      'toKeep' => [],
     ];
     foreach ($automations as $type => $automation) {
       for ($i = 0; $i < 2; $i++) {
@@ -131,11 +131,11 @@ class AutomationStorageTest extends \MailPoetTest
     }
   }
 
-  private function createEmptyAutomation(string $name="test"): Automation {
+  private function createEmptyAutomation(string $name = "test"): Automation {
     $automation = new Automation($name, [], new \WP_User());
     $automationId = $this->testee->createAutomation($automation);
     $automation = $this->testee->getAutomation($automationId);
-    if (! $automation) {
+    if (!$automation) {
       throw new \RuntimeException("Automation not stored.");
     }
     return $automation;

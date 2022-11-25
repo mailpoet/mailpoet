@@ -9,7 +9,6 @@ use MailPoet\InvalidStateException;
 use MailPoet\NotFoundException;
 use MailPoet\RuntimeException;
 use MailPoet\UnexpectedValueException;
-use MailPoet\WP\Functions as WPFunctions;
 
 class ErrorHandlerTest extends \MailPoetUnitTest {
   public function testItCovertsToBadRequest() {

@@ -2,9 +2,9 @@
 
 namespace MailPoet\Test\Acceptance;
 
+use MailPoet\Automation\Engine\Data\Automation;
 use MailPoet\Automation\Engine\Data\NextStep;
 use MailPoet\Automation\Engine\Data\Step;
-use MailPoet\Automation\Engine\Data\Automation;
 use MailPoet\Automation\Engine\Storage\AutomationRunLogStorage;
 use MailPoet\Automation\Engine\Storage\AutomationRunStorage;
 use MailPoet\Automation\Engine\Storage\AutomationStorage;
@@ -14,8 +14,8 @@ use MailPoet\DI\ContainerWrapper;
 use MailPoet\Test\DataFactories\Settings;
 use MailPoet\Test\DataFactories\WooCommerceProduct;
 
-class SomeoneSubscribesAutomationTriggeredByCheckoutCest
-{
+class SomeoneSubscribesAutomationTriggeredByCheckoutCest {
+
   /** @var Settings */
   private $settingsFactory;
 
@@ -75,7 +75,7 @@ class SomeoneSubscribesAutomationTriggeredByCheckoutCest
     $i->dontSee('Entered 0');
   }
 
-  private function createAutomation() : Automation {
+  private function createAutomation(): Automation {
     $someoneSubscribesTrigger = $this->container->get(SomeoneSubscribesTrigger::class);
     $delayStep = $this->container->get(DelayAction::class);
     $steps = [
@@ -91,7 +91,7 @@ class SomeoneSubscribesAutomationTriggeredByCheckoutCest
     $automation->setStatus(Automation::STATUS_ACTIVE);
     $id = $this->automationStorage->createAutomation($automation);
     $storedAutomation = $this->automationStorage->getAutomation($id);
-    if (! $storedAutomation) {
+    if (!$storedAutomation) {
       throw new \Exception("Automation not found.");
     }
     return $storedAutomation;

@@ -6,8 +6,8 @@ use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Subscribers\SubscriberSegmentRepository;
-use \MailPoet\Test\DataFactories\Segment as SegmentFactory;
-use \MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
+use MailPoet\Test\DataFactories\Segment as SegmentFactory;
+use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 
 class SubscriberEntityTest extends \MailPoetTest {
 

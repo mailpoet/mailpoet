@@ -39,4 +39,3 @@ class SubscriberLinkTokensTest extends \MailPoetTest {
     $this->truncateEntity(SubscriberEntity::class);
   }
 }
-

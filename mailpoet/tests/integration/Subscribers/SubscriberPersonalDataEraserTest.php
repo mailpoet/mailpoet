@@ -2,12 +2,12 @@
 
 namespace MailPoet\Subscribers;
 
-use MailPoetVendor\Carbon\Carbon;
 use MailPoet\Entities\CustomFieldEntity;
 use MailPoet\Entities\SubscriberCustomFieldEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Test\DataFactories\CustomField as CustomFieldFactory;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
+use MailPoetVendor\Carbon\Carbon;
 
 class SubscriberPersonalDataEraserTest extends \MailPoetTest {
 

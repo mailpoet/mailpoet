@@ -3,7 +3,6 @@
 namespace MailPoet\Test\Config;
 
 use MailPoet\Config\Env;
-use MailPoet\WP\Functions as WPFunctions;
 
 class EnvTest extends \MailPoetTest {
   public $version;

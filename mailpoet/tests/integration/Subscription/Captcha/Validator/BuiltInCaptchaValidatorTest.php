@@ -11,15 +11,15 @@ use MailPoet\Subscription\Captcha\Validator\ValidationError;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 
+class BuiltInCaptchaValidatorTest extends \MailPoetTest {
 
-class BuiltInCaptchaValidatorTest extends \MailPoetTest
-{
 
   /** @var BuiltInCaptchaValidator */
   private $testee;
 
   /** @var CaptchaSession */
   private $session;
+
   public function _before() {
     $this->testee = $this->diContainer->get(BuiltInCaptchaValidator::class);
     $this->session = $this->diContainer->get(CaptchaSession::class);
@@ -60,14 +60,13 @@ class BuiltInCaptchaValidatorTest extends \MailPoetTest
       $this->assertTrue(array_key_exists('redirect_url', $meta));
     }
   }
+
   public function testReturnsTrueWhenCaptchaIsSolved() {
 
     $this->session->init();
     $this->session->setCaptchaHash(['phrase' => 'abc']);
     $this->assertTrue($this->testee->validate(['captcha' => 'abc']));
   }
-
-
 
   public function testItRequiresCaptchaForFirstSubscription() {
     $email = 'non-existent-subscriber@example.com';

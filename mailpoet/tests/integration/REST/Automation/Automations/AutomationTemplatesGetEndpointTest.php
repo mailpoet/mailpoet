@@ -7,8 +7,8 @@ use MailPoet\REST\Automation\AutomationTest;
 
 require_once __DIR__ . '/../AutomationTest.php';
 
-class AutomationTemplatesGetEndpointTest extends AutomationTest
-{
+class AutomationTemplatesGetEndpointTest extends AutomationTest {
+
   private const ENDPOINT_PATH = '/mailpoet/v1/automation-templates';
 
   public function testGetAllTemplates() {

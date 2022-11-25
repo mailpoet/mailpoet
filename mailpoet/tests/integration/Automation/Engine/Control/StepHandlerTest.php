@@ -4,21 +4,19 @@ namespace MailPoet\Test\Automation\Engine\Control;
 
 use MailPoet\Automation\Engine\Control\StepHandler;
 use MailPoet\Automation\Engine\Control\StepRunner;
-use MailPoet\Automation\Engine\Data\NextStep;
-use MailPoet\Automation\Engine\Data\Step;
 use MailPoet\Automation\Engine\Data\Automation;
 use MailPoet\Automation\Engine\Data\AutomationRun;
-use MailPoet\Automation\Engine\Exceptions;
+use MailPoet\Automation\Engine\Data\NextStep;
+use MailPoet\Automation\Engine\Data\Step;
 use MailPoet\Automation\Engine\Exceptions\InvalidStateException;
-use MailPoet\Automation\Engine\Exceptions\NotFoundException;
 use MailPoet\Automation\Engine\Storage\AutomationRunLogStorage;
 use MailPoet\Automation\Engine\Storage\AutomationRunStorage;
 use MailPoet\Automation\Engine\Storage\AutomationStorage;
 use MailPoet\Automation\Integrations\Core\Actions\DelayAction;
 use MailPoet\Automation\Integrations\MailPoet\Triggers\SomeoneSubscribesTrigger;
 
-class StepHandlerTest extends \MailPoetTest
-{
+class StepHandlerTest extends \MailPoetTest {
+
   /** @var AutomationStorage */
   private $automationStorage;
 
@@ -73,7 +71,7 @@ class StepHandlerTest extends \MailPoetTest
 
     $invalidStati = array_filter(
       Automation::STATUS_ALL,
-      function(string $status) : bool {
+      function(string $status): bool {
         return !in_array($status, [Automation::STATUS_ACTIVE, Automation::STATUS_DEACTIVATING], true);
       }
     );
@@ -144,10 +142,14 @@ class StepHandlerTest extends \MailPoetTest
     return $this->automationStorage->getAutomation($this->automationStorage->createAutomation($automation));
   }
 
-  private function createAutomationRun(Automation $automation, $subjects = []) : ?AutomationRun {
-    $trigger = array_filter($automation->getSteps(), function(Step $step) : bool { return $step->getType() === Step::TYPE_TRIGGER;});
-    $triggerKeys = array_map(function(Step $step) : string { return $step->getKey();}, $trigger);
-    $triggerKey = count($triggerKeys)>0?current($triggerKeys):'';
+  private function createAutomationRun(Automation $automation, $subjects = []): ?AutomationRun {
+    $trigger = array_filter($automation->getSteps(), function(Step $step): bool { return $step->getType() === Step::TYPE_TRIGGER;
+
+    });
+    $triggerKeys = array_map(function(Step $step): string { return $step->getKey();
+
+    }, $trigger);
+    $triggerKey = count($triggerKeys) > 0 ? current($triggerKeys) : '';
 
     $automationRun = new AutomationRun(
       $automation->getId(),
@@ -164,5 +166,4 @@ class StepHandlerTest extends \MailPoetTest
     $this->automationRunLogStorage->truncate();
     $this->testee->setStepRunners($this->originalRunners);
   }
-
 }

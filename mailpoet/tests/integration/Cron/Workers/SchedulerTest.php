@@ -28,6 +28,7 @@ use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
 use MailPoet\Newsletter\NewslettersRepository;
+use MailPoet\Newsletter\Scheduler\Scheduler as NewsletterScheduler;
 use MailPoet\Newsletter\Scheduler\WelcomeScheduler;
 use MailPoet\Newsletter\Segment\NewsletterSegmentRepository;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
@@ -41,7 +42,6 @@ use MailPoet\Util\Security;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 use WP_User;
-use MailPoet\Newsletter\Scheduler\Scheduler as NewsletterScheduler;
 
 class SchedulerTest extends \MailPoetTest {
   public $cronHelper;
@@ -541,7 +541,7 @@ class SchedulerTest extends \MailPoetTest {
       'deleteQueueOrUpdateNextRunDate' => Expected::exactly(1, function() {
         return false;
       }),
-    ]);
+      ]);
     expect($scheduler->processPostNotificationNewsletter($newsletter, $queue))->false();
   }
 
@@ -784,7 +784,7 @@ class SchedulerTest extends \MailPoetTest {
       $newsletterEntity,
       [
         'sendTo' => 'segment',
-        'segment' => $segment->id
+        'segment' => $segment->id,
       ]
     );
 

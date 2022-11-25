@@ -5,8 +5,8 @@ namespace MailPoet\Test\Subscription\Captcha;
 use MailPoet\Subscription\Captcha\CaptchaRenderer;
 use MailPoet\Subscription\Captcha\CaptchaSession;
 
-class CaptchaRendererTest extends \MailPoetTest
-{
+class CaptchaRendererTest extends \MailPoetTest {
+
 
   /** @var CaptchaRenderer */
   private $testee;
@@ -14,8 +14,7 @@ class CaptchaRendererTest extends \MailPoetTest
   /** @var CaptchaSession */
   private $session;
 
-  public function _before()
-  {
+  public function _before() {
     $this->testee = $this->diContainer->get(CaptchaRenderer::class);
     $this->session = $this->diContainer->get(CaptchaSession::class);
   }
@@ -54,7 +53,6 @@ class CaptchaRendererTest extends \MailPoetTest
     expect($secondImage)->notEquals($firstImage);
     expect($firstCaptcha['phrase'])->notEquals($secondCaptcha['phrase']);
   }
-
 
   /**
    * We need to ensure that a new captcha phrase is created when reloading

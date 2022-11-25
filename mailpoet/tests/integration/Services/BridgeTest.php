@@ -289,7 +289,7 @@ class BridgeTest extends \MailPoetTest {
     $array = [
       'pending' => ['pending@email.com'],
       'authorized' => ['authorized@email.com'],
-      'main' => 'main@email.com'
+      'main' => 'main@email.com',
     ];
     $api = Stub::make(new API(null), ['getAuthorizedEmailAddresses' => $array], $this);
     $this->bridge->api = $api;
@@ -302,7 +302,7 @@ class BridgeTest extends \MailPoetTest {
     $array = [
       'pending' => ['pending@email.com'],
       'authorized' => ['authorized@email.com'],
-      'main' => 'main@email.com'
+      'main' => 'main@email.com',
     ];
     $api = Stub::make(new API(null), ['getAuthorizedEmailAddresses' => $array], $this);
     $this->bridge->api = $api;
@@ -379,7 +379,7 @@ class BridgeTest extends \MailPoetTest {
 
     // when param is all
     $returnDataForAllParam = [
-      'example.com' => $data[0]['dns']
+      'example.com' => $data[0]['dns'],
     ];
 
     $api = Stub::make(new API(null), ['getAuthorizedSenderDomains' => $data], $this);
@@ -390,7 +390,7 @@ class BridgeTest extends \MailPoetTest {
 
     // when param is not provided
     $returnDataForNoArgs = [
-      'example.com' => $data[0]['dns']
+      'example.com' => $data[0]['dns'],
     ];
 
     $api = Stub::make(new API(null), ['getAuthorizedSenderDomains' => $data], $this);

@@ -1,7 +1,7 @@
 <?php
 
-use Facebook\WebDriver\Exception\WebDriverException;
 use Facebook\WebDriver\Exception\UnrecognizedExceptionException;
+use Facebook\WebDriver\Exception\WebDriverException;
 use Facebook\WebDriver\WebDriverKeys;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\FormEntity;

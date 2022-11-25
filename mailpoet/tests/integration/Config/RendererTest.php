@@ -86,7 +86,7 @@ class RendererTest extends \MailPoetTest {
       [
         false,
         Env::$cachePath,
-        new TwigFileSystem(Env::$viewsPath)
+        new TwigFileSystem(Env::$viewsPath),
       ],
       [
         'renderer' => Stub::makeEmpty(TwigEnvironment::class,

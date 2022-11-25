@@ -47,13 +47,12 @@ class NewsletterValidatorTest extends \MailPoetTest {
     $newsletter = (new Newsletter())->withBody(['content' => ['type' => 'container', 'columnLayout' => false, 'orientation' => 'vertical', 'blocks' => [
       [
         'type' => 'text',
-        'text' => 'Some text'
-      ]
+        'text' => 'Some text',
+      ],
     ]]])->create();
     $validationError = $this->newsletterValidator->validate($newsletter);
     expect($validationError)->null();
   }
-
 
   public function testItRequiresReengagementShortcodes() {
     $newsletter = (new Newsletter())->withReengagementType()->withDefaultBody()->create();
@@ -68,9 +67,9 @@ class NewsletterValidatorTest extends \MailPoetTest {
           [
             'type' => 'text',
             'text' => '[link:subscription_re_engage_url]',
-          ]
-        ]
-      ]
+          ],
+        ],
+      ],
     ])->create();
     $validationError = $this->newsletterValidator->validate($newsletter);
     expect($validationError)->null();
@@ -83,12 +82,12 @@ class NewsletterValidatorTest extends \MailPoetTest {
           [
             'type' => 'text',
             'text' => '[link:subscription_re_engage_url]',
-          ]
-        ]
-      ]
+          ],
+        ],
+      ],
     ])->create();
     $validator = $this->getServiceWithOverrides(NewsletterValidator::class, [
-      'trackingConfig' => Stub::make(TrackingConfig::class, ['isEmailTrackingEnabled' => false])
+      'trackingConfig' => Stub::make(TrackingConfig::class, ['isEmailTrackingEnabled' => false]),
     ]);
     $validationError = $validator->validate($newsletter);
     expect($validationError)->equals('Re-engagement emails are disabled because open and click tracking is disabled in MailPoet → Settings → Advanced.');

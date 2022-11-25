@@ -2,7 +2,7 @@
 
 namespace MailPoet\Cron\ActionScheduler;
 
-class ActionSchedulerTestHelper  {
+class ActionSchedulerTestHelper {
   public function getMailPoetScheduledActions(): array {
     $actions = as_get_scheduled_actions([
       'group' => ActionScheduler::GROUP_ID,

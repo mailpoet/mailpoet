@@ -5,7 +5,6 @@ namespace MailPoet\Test\Newsletter;
 use Codeception\Util\Fixtures;
 use MailPoet\Config\ServicesChecker;
 use MailPoet\Entities\NewsletterEntity;
-use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Renderer\Blocks\Button;
 use MailPoet\Newsletter\Renderer\Blocks\Divider;
 use MailPoet\Newsletter\Renderer\Blocks\Footer;

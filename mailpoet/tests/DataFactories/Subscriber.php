@@ -2,6 +2,7 @@
 
 namespace MailPoet\Test\DataFactories;
 
+use DateTimeInterface;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
@@ -9,7 +10,6 @@ use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Entities\SubscriberTagEntity;
 use MailPoet\Entities\TagEntity;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
-use DateTimeInterface;
 
 class Subscriber {
 
@@ -182,7 +182,6 @@ class Subscriber {
     $this->data['linkToken'] = $linkToken;
     return $this;
   }
-
 
   /**
    * @return $this

@@ -6,8 +6,8 @@ require_once __DIR__ . '/AutomationRuleTest.php';
 
 use Codeception\Stub\Expected;
 use Exception;
-use MailPoet\Automation\Engine\Data\Step;
 use MailPoet\Automation\Engine\Data\Automation;
+use MailPoet\Automation\Engine\Data\Step;
 use MailPoet\Automation\Engine\Exceptions\UnexpectedValueException;
 use MailPoet\Automation\Engine\Validation\AutomationGraph\AutomationNodeVisitor;
 use MailPoet\Automation\Engine\Validation\AutomationGraph\AutomationWalker;
@@ -22,7 +22,7 @@ class ValidStepRuleTest extends AutomationRuleTest {
         'initialize' => Expected::once(),
         'visitNode' => Expected::once(),
         'complete' => Expected::once(),
-      ])
+      ]),
     ]);
     (new AutomationWalker())->walk($automation, [$rule]);
   }
@@ -48,7 +48,7 @@ class ValidStepRuleTest extends AutomationRuleTest {
           'root' => [
             'step_id' => 'root',
             'message' => 'Test error',
-            'fields' => []
+            'fields' => [],
           ],
         ],
         $e->getErrors()
@@ -57,7 +57,6 @@ class ValidStepRuleTest extends AutomationRuleTest {
     }
     $this->fail(sprintf("Exception of class '%s' was not thrown.", UnexpectedValueException::class));
   }
-
 
   public function testItCollectsUnrecognizedErrorsWithAGenericMessage(): void {
     $automation = $this->getAutomation();
@@ -97,7 +96,7 @@ class ValidStepRuleTest extends AutomationRuleTest {
         'initialize' => Expected::never(),
         'visitNode' => Expected::never(),
         'complete' => Expected::never(),
-      ])
+      ]),
     ]);
     (new AutomationWalker())->walk($automation, [$rule]);
   }

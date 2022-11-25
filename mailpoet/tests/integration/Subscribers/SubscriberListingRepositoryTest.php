@@ -55,7 +55,7 @@ class SubscriberListingRepositoryTest extends \MailPoetTest {
       ->withName('My Tag')
       ->create();
 
-    (new SubscriberFactory())  // subscriber without a list with a tag
+    (new SubscriberFactory()) // subscriber without a list with a tag
       ->withTags([$tag])
       ->create();
     $subscriberWithDeletedList = $this->createSubscriberEntity();

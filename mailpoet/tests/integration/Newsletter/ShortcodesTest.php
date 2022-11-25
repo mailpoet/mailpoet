@@ -235,9 +235,9 @@ class ShortcodesTest extends \MailPoetTest {
     $subscribersRepository = $this->diContainer->get(SubscribersRepository::class);
     $subscriberCount = $subscribersRepository->countBy(
       [
-        'status' =>[
-          SubscriberEntity::STATUS_SUBSCRIBED
-        ]
+        'status' => [
+          SubscriberEntity::STATUS_SUBSCRIBED,
+        ],
       ]
     );
 

@@ -94,14 +94,14 @@ class ScheduledTasksRepositoryTest extends \MailPoetTest {
     $this->assertSame($expectedResult, $tasks);
   }
 
-  public function testCanCountByStatus(){
+  public function testCanCountByStatus() {
     $this->scheduledTaskFactory->create('sending', ScheduledTaskEntity::STATUS_SCHEDULED, Carbon::now()->addDay());
     $this->scheduledTaskFactory->create('sending', ScheduledTaskEntity::STATUS_SCHEDULED, Carbon::now()->addDays(20));
     $this->scheduledTaskFactory->create('sending', ScheduledTaskEntity::STATUS_PAUSED, Carbon::now()->addDay());
     $this->scheduledTaskFactory->create('sending', ScheduledTaskEntity::STATUS_PAUSED, Carbon::now()->addDays(3));
     $this->scheduledTaskFactory->create('sending', ScheduledTaskEntity::STATUS_PAUSED, Carbon::now()->addDays(5));
     $this->scheduledTaskFactory->create('sending', ScheduledTaskEntity::STATUS_INVALID, Carbon::now()->addDays(4));
-    $this->scheduledTaskFactory->create('sending', NULL, Carbon::now()->addDays(4));
+    $this->scheduledTaskFactory->create('sending', null, Carbon::now()->addDays(4));
 
     $counts = $this->repository->getCountsPerStatus();
     $this->assertEquals([
@@ -118,8 +118,12 @@ class ScheduledTasksRepositoryTest extends \MailPoetTest {
     $this->scheduledTaskFactory->create(Migration::TASK_TYPE, ScheduledTaskEntity::VIRTUAL_STATUS_RUNNING, Carbon::now()->addDay());
     $data = $this->repository->getLatestTasks();
     expect(count($data))->equals(2);
-    $ids = array_map(function ($d){ return $d->getId(); }, $data);
-    $types = array_map(function ($d){ return $d->getType(); }, $data);
+    $ids = array_map(function ($d){ return $d->getId();
+
+    }, $data);
+    $types = array_map(function ($d){ return $d->getType();
+
+    }, $data);
     $this->assertContains(1, $ids);
     $this->assertContains(2, $ids);
     $this->assertContains(SendingTask::TASK_TYPE, $types);

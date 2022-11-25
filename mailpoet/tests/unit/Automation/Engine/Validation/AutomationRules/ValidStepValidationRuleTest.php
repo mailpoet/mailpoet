@@ -6,10 +6,10 @@ require_once __DIR__ . '/AutomationRuleTest.php';
 
 use Codeception\Stub\Expected;
 use MailPoet\Automation\Engine\Control\RootStep;
+use MailPoet\Automation\Engine\Data\Automation;
 use MailPoet\Automation\Engine\Data\NextStep;
 use MailPoet\Automation\Engine\Data\Step;
 use MailPoet\Automation\Engine\Data\StepValidationArgs;
-use MailPoet\Automation\Engine\Data\Automation;
 use MailPoet\Automation\Engine\Integration\Action;
 use MailPoet\Automation\Engine\Integration\Subject;
 use MailPoet\Automation\Engine\Integration\Trigger;
@@ -45,8 +45,8 @@ class ValidStepValidationRuleTest extends AutomationRuleTest {
           'validate' => Expected::once(function (StepValidationArgs $args) {
             $this->assertSame([], $args->getSubjects());
           }),
-        ])
-      ]
+        ]),
+      ],
     ]);
     $registry->addTrigger(
       $this->makeEmpty(Trigger::class, [

@@ -2,10 +2,10 @@
 
 namespace MailPoet\Subscribers;
 
-use MailPoet\Entities\SubscriberEntity;
-use MailPoet\WP\Functions as WPFunctions;
-use MailPoet\Util\License\Features\Subscribers;
 use Codeception\Stub;
+use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Util\License\Features\Subscribers;
+use MailPoet\WP\Functions as WPFunctions;
 
 class SubscribersTest extends \MailPoetTest {
   /** @var Subscribers */

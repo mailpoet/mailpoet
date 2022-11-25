@@ -7,7 +7,6 @@ use Codeception\Stub\Expected;
 use Helper\WordPressHooks as WPHooksHelper;
 use MailPoet\Config\AccessControl;
 use MailPoet\Config\Capabilities;
-use MailPoet\Config\Renderer;
 use MailPoet\Config\RendererFactory;
 use MailPoet\WP\Functions as WPFunctions;
 use WP_Role;

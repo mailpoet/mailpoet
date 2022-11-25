@@ -51,7 +51,9 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     $this->wp->expects($this->any())->method('inTheLoop')->willReturn(true);
     $this->wp->expects($this->any())->method('isMainQuery')->willReturn(true);
     $this->wp->expects($this->any())->method('wpCreateNonce')->willReturn('asdfgh');
-    $this->wp->expects($this->any())->method('applyFilters')->will( $this->returnCallback(function () { return $this->applyFiltersValue; } ) );
+    $this->wp->expects($this->any())->method('applyFilters')->will( $this->returnCallback(function () { return $this->applyFiltersValue;
+
+    } ) );
     WPFunctions::set($this->wp);
     $this->assetsController = $this->createMock(AssetsController::class);
     $this->templateRenderer = $this->createMock(TemplateRenderer::class);

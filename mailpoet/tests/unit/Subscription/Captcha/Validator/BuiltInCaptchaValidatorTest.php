@@ -10,15 +10,15 @@ use MailPoet\Subscription\Captcha\CaptchaSession;
 use MailPoet\Subscription\SubscriptionUrlFactory;
 use MailPoet\WP\Functions as WPFunctions;
 
-class BuiltInCaptchaValidatorTest extends \MailPoetUnitTest
-{
+class BuiltInCaptchaValidatorTest extends \MailPoetUnitTest {
+
 
   /**
    * @var WPFunctions
    */
   private $wp;
-  public function _before()
-  {
+
+  public function _before() {
     $this->wp = Stub::make(
       WPFunctions::class,
       [
@@ -26,7 +26,8 @@ class BuiltInCaptchaValidatorTest extends \MailPoetUnitTest
         'applyFilters' => function($filter, $value) {
           return $value;
         },
-        '__' => function($string) { return $string; },
+        '__' => function($string) { return $string; 
+        },
       ],
       $this
     );
@@ -104,8 +105,9 @@ class BuiltInCaptchaValidatorTest extends \MailPoetUnitTest
             'applyFilters' => function($filter, $value) {
               return $value;
             },
-            '__' => function($string) { return $string; },
-            'wpGetCurrentUser' => (object) [
+            '__' => function($string) { return $string; 
+            },
+            'wpGetCurrentUser' => (object)[
               'roles' => ['administrator'],
             ],
           ],
@@ -120,8 +122,9 @@ class BuiltInCaptchaValidatorTest extends \MailPoetUnitTest
             'applyFilters' => function($filter, $value) {
               return $value;
             },
-            '__' => function($string) { return $string; },
-            'wpGetCurrentUser' => (object) [
+            '__' => function($string) { return $string; 
+            },
+            'wpGetCurrentUser' => (object)[
               'roles' => ['editor'],
             ],
           ],
@@ -139,8 +142,9 @@ class BuiltInCaptchaValidatorTest extends \MailPoetUnitTest
               }
               return $value;
             },
-            '__' => function($string) { return $string; },
-            'wpGetCurrentUser' => (object) [
+            '__' => function($string) { return $string; 
+            },
+            'wpGetCurrentUser' => (object)[
               'roles' => ['custom-role'],
             ],
           ],
@@ -151,48 +155,49 @@ class BuiltInCaptchaValidatorTest extends \MailPoetUnitTest
   }
 
   public function testEditorsBypassCaptcha() {
-  $phrase = 'abc';
-  $subscriptionUrlFactory = Stub::makeEmpty(SubscriptionUrlFactory::class);
-  $captchaPhrase = Stub::make(
+    $phrase = 'abc';
+    $subscriptionUrlFactory = Stub::makeEmpty(SubscriptionUrlFactory::class);
+    $captchaPhrase = Stub::make(
     CaptchaPhrase::class,
     [
       'getPhrase' => 'something.else.' . $phrase,
     ],
     $this
-  );
-  $currentUser = (object) [
+    );
+    $currentUser = (object)[
     'roles' => ['editor'],
-  ];
-  $captchaSession = Stub::makeEmpty(CaptchaSession::class);
-  $wp = Stub::make(
+    ];
+    $captchaSession = Stub::makeEmpty(CaptchaSession::class);
+    $wp = Stub::make(
     WPFunctions::class,
     [
       'isUserLoggedIn' => true,
       'applyFilters' => function($filter, $value) {
         return $value;
       },
-      '__' => function($string) { return $string; },
+      '__' => function($string) { return $string; 
+      },
       'wpGetCurrentUser' => $currentUser,
     ],
     $this
-  );
-  $subscriberIpRepository = Stub::makeEmpty(SubscriberIPsRepository::class);
-  $subscriberRepository = Stub::makeEmpty(SubscribersRepository::class);
-  $testee = new BuiltInCaptchaValidator(
+    );
+    $subscriberIpRepository = Stub::makeEmpty(SubscriberIPsRepository::class);
+    $subscriberRepository = Stub::makeEmpty(SubscribersRepository::class);
+    $testee = new BuiltInCaptchaValidator(
     $subscriptionUrlFactory,
     $captchaPhrase,
     $captchaSession,
     $wp,
     $subscriberIpRepository,
     $subscriberRepository
-  );
+    );
 
-  $data = [
+    $data = [
     'captcha' => $phrase,
-  ];
-  expect($testee->validate($data))->true();
+    ];
+    expect($testee->validate($data))->true();
 
-}
+  }
 
   public function testNoCaptchaFound() {
 

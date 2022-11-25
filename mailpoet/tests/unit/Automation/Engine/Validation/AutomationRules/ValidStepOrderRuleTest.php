@@ -5,11 +5,11 @@ namespace MailPoet\Automation\Engine\Validation\AutomationRules;
 require_once __DIR__ . '/AutomationRuleTest.php';
 
 use MailPoet\Automation\Engine\Control\RootStep;
+use MailPoet\Automation\Engine\Data\Automation;
 use MailPoet\Automation\Engine\Data\NextStep;
 use MailPoet\Automation\Engine\Data\Step;
 use MailPoet\Automation\Engine\Data\StepRunArgs;
 use MailPoet\Automation\Engine\Data\StepValidationArgs;
-use MailPoet\Automation\Engine\Data\Automation;
 use MailPoet\Automation\Engine\Exceptions\UnexpectedValueException;
 use MailPoet\Automation\Engine\Integration\Action;
 use MailPoet\Automation\Engine\Integration\Trigger;
