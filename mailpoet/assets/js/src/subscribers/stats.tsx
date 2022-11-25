@@ -99,3 +99,5 @@ export function SubscriberStats(): JSX.Element {
     </div>
   );
 }
+
+SubscriberStats.displayName = 'SubscriberStats';

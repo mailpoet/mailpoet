@@ -1,11 +1,12 @@
 import ReactDOM from 'react-dom';
-import { HashRouter, Switch, Route } from 'react-router-dom';
+import { HashRouter, Route, Switch } from 'react-router-dom';
 
 import { SubscriberList } from 'subscribers/list.jsx';
 import { SubscriberForm } from 'subscribers/form.jsx';
 import { SubscriberStats } from 'subscribers/stats';
 import { GlobalContext, useGlobalContextValue } from 'context/index.jsx';
 import { Notices } from 'notices/notices.jsx';
+import { withBoundary } from 'common';
 
 function App() {
   return (
@@ -13,10 +14,13 @@ function App() {
       <HashRouter>
         <Notices />
         <Switch>
-          <Route path="/new" component={SubscriberForm} />
-          <Route path="/edit/:id" component={SubscriberForm} />
-          <Route path="/stats/:id/(.*)?" component={SubscriberStats} />
-          <Route path="*" component={SubscriberList} />
+          <Route path="/new" render={withBoundary(SubscriberForm)} />
+          <Route path="/edit/:id" render={withBoundary(SubscriberForm)} />
+          <Route
+            path="/stats/:id/(.*)?"
+            component={withBoundary(SubscriberStats)}
+          />
+          <Route path="*" component={withBoundary(SubscriberList)} />
         </Switch>
       </HashRouter>
     </GlobalContext.Provider>
