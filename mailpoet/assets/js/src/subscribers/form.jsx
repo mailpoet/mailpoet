@@ -276,4 +276,6 @@ SubscriberForm.propTypes = {
   }).isRequired,
 };
 
+SubscriberForm.displayName = 'SubscriberForm';
+
 export { SubscriberForm };

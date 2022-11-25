@@ -522,4 +522,5 @@ SubscriberList.propTypes = {
   }).isRequired,
 };
 
+SubscriberList.displayName = 'SubscriberList';
 export { SubscriberList };
