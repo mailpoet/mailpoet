@@ -83,7 +83,7 @@ class HelpTest extends \MailPoetTest {
     if ($newsletter instanceof NewsletterEntity) {
       $queue->setNewsletter($newsletter);
     }
-    
+
     if ($task instanceof ScheduledTaskEntity) {
       $queue->setTask($task);
     }
@@ -99,7 +99,7 @@ class HelpTest extends \MailPoetTest {
     $this->truncateEntity(SendingQueueEntity::class);
   }
 
-  function _after() {
+  protected function _after() {
     parent::_after();
     $this->cleanup();
   }
