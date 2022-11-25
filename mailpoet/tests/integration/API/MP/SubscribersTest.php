@@ -462,13 +462,14 @@ class SubscribersTest extends \MailPoetTest {
       'cf_' . $customField->getId() => 'test',
     ];
 
-    $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
+    $expectedRemoteAddr = '127.0.0.1';
+    $_SERVER['REMOTE_ADDR'] = $expectedRemoteAddr;
     $result = $this->getApi()->addSubscriber($subscriber);
     expect($result['id'])->greaterThan(0);
     expect($result['email'])->equals($subscriber['email']);
     expect($result['cf_' . $customField->getId()])->equals('test');
     expect($result['source'])->equals('api');
-    expect($result['subscribed_ip'])->equals($_SERVER['REMOTE_ADDR']);
+    expect($result['subscribed_ip'])->equals($expectedRemoteAddr);
     expect(strlen($result['unsubscribe_token']))->equals(15);
   }
 
