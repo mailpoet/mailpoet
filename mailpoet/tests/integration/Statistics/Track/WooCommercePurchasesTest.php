@@ -286,7 +286,7 @@ class WooCommercePurchasesTest extends \MailPoetTest {
   public function testItDoesNotTrackPaymentWhenClickNewerThanOrder() {
     $this->createClick($this->link, $this->subscriber, 0);
     $this->entityManager->flush();
-    $orderMock = $this->createOrderMock($this->subscriber->getEmail());
+    $orderMock = $this->createOrderMock($this->subscriber->getEmail(), 15.0, 123, new DateTime("-1 minute"));
     $woocommercePurchases = new WooCommercePurchases(
       $this->createWooCommerceHelperMock($orderMock),
       $this->diContainer->get(StatisticsWooCommercePurchasesRepository::class),
@@ -300,11 +300,11 @@ class WooCommercePurchasesTest extends \MailPoetTest {
   }
 
   public function testItTracksPaymentForCorrectClickWhenClickNewerThanOrderExists() {
-    $click = $this->createClick($this->link, $this->subscriber, 5);
+    $this->createClick($this->link, $this->subscriber, 5);
     $this->createClick($this->link, $this->subscriber, 0); // wrong click, should not be tracked
     $this->entityManager->flush();
 
-    $orderMock = $this->createOrderMock($this->subscriber->getEmail());
+    $orderMock = $this->createOrderMock($this->subscriber->getEmail(),15.0, 123, new DateTime("-1 minute"));
     $woocommercePurchases = new WooCommercePurchases(
       $this->createWooCommerceHelperMock($orderMock),
       $this->diContainer->get(StatisticsWooCommercePurchasesRepository::class),
@@ -487,7 +487,7 @@ class WooCommercePurchasesTest extends \MailPoetTest {
     return $mock;
   }
 
-  private function createOrderMock($email, $totalPrice = 15.0, $id = 123) {
+  private function createOrderMock($email, $totalPrice = 15.0, $id = 123, $dateCreated = null) {
     // WC_Order class needs to be mocked without default 'disallowMockingUnknownTypes'
     // since WooCommerce may not be active (would result in error mocking undefined class)
     $mock = $this->getMockBuilder(WC_Order::class)
@@ -498,7 +498,7 @@ class WooCommercePurchasesTest extends \MailPoetTest {
       ->getMock();
 
     $mock->method('get_id')->willReturn($id);
-    $mock->method('get_date_created')->willReturn(new DateTime());
+    $mock->method('get_date_created')->willReturn($dateCreated ?? new DateTime());
     $mock->method('get_billing_email')->willReturn($email);
     $mock->method('get_total')->willReturn((string)$totalPrice);
     $mock->method('get_currency')->willReturn('EUR');
