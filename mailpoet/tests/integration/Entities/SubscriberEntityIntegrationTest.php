@@ -2,14 +2,11 @@
 
 namespace MailPoet\Entities;
 
-use MailPoet\Entities\SegmentEntity;
-use MailPoet\Entities\SubscriberEntity;
-use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Subscribers\SubscriberSegmentRepository;
 use MailPoet\Test\DataFactories\Segment as SegmentFactory;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 
-class SubscriberEntityTest extends \MailPoetTest {
+class SubscriberEntityIntegrationTest extends \MailPoetTest {
 
   /** @var SubscriberSegmentRepository */
   private $subscriberSegmentRepository;
