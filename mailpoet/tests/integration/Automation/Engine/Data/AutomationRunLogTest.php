@@ -21,6 +21,8 @@ use MailPoet\Validator\Schema\ObjectSchema;
 use MailPoet\WP\Functions as WPFunctions;
 use stdClass;
 
+//phpcs:disable Squiz.Classes.ClassFileName.NoMatch, Generic.Files.OneClassPerFile.MultipleFound, PSR1.Classes.ClassDeclaration.MultipleClasses
+
 class AutomationRunLogTest extends \MailPoetTest {
 
   /** @var WPFunctions */
