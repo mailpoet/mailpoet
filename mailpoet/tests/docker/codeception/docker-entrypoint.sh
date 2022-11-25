@@ -4,12 +4,6 @@ wp() {
   command wp --allow-root "$@"
 }
 
-# wait for database container to be ready
-while ! mysqladmin ping -hmysql --silent; do
-  echo 'Waiting for the database'
-  sleep 1
-done
-
 # wait for WordPress container to be ready (otherwise tests may
 # try to run without 'wp-config.php' being properly configured)
 while ! bash -c "echo > /dev/tcp/wordpress/80" &>/dev/null; do
