@@ -105,12 +105,12 @@ class AutomationStorageTest extends \MailPoetTest {
       'toKeep' => [],
     ];
     foreach ($automations as $type => $automation) {
-      for ($i = 0; $i < 2; $i++) {
+      for ($runI = 0; $runI < 2; $runI++) {
         $automationRun = new AutomationRun($automation->getId(), $automation->getVersionId(), 'trigger-key', []);
         $runId = $automationRunStorage->createAutomationRun($automationRun);
         $runs[$type][] = $runId;
-        for ($i = 0; $i < 2; $i++) {
-          $log = new AutomationRunLog($runId, "step-{$i}");
+        for ($logI = 0; $logI < 2; $logI++) {
+          $log = new AutomationRunLog($runId, "step-{$logI}");
           $logId = $automationRunLogStorage->createAutomationRunLog($log);
           $runLogs[$type][] = $logId;
         }
