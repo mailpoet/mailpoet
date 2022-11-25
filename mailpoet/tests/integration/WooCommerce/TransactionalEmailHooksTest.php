@@ -12,6 +12,8 @@ use MailPoet\WooCommerce\TransactionalEmails\Renderer;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Doctrine\ORM\Mapping as ORM;
 
+//phpcs:disable Squiz.Classes.ClassFileName.NoMatch, Generic.Files.OneClassPerFile.MultipleFound, PSR1.Classes.ClassDeclaration.MultipleClasses
+
 /**
  * NewsletterEntity implements __clone which resets the id, but we need this id to perform a test when stubbing Renderer
  * @ORM\Entity()
