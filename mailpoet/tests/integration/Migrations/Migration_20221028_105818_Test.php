@@ -16,6 +16,7 @@ use MailPoet\WP\Functions;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 
+//phpcs:disable Squiz.Classes.ValidClassName.NotCamelCaps
 class Migration_20221028_105818_Test extends \MailPoetTest {
   /** @var Migration_20221028_105818 */
   private $migration;
