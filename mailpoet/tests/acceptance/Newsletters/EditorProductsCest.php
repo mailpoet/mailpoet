@@ -108,20 +108,12 @@ class EditorProductsCest {
 
     $i->wantTo('Select category without products');
     $i->selectOptionInSelect2(self::CATEGORY_ZERO_RESULTS);
-    $i->waitForText('No products available');
+    $i->waitForText('No products available', 15);
     $this->clearCategories($i);
 
     $i->wantTo('Select category with multiple products');
-    // Try twice since it may probably take longer to load from
     $i->selectOptionInSelect2(self::CATEGORY_MULTIPLE_RESULTS);
-    try {
-      $i->seeSelectedInSelect2(self::CATEGORY_MULTIPLE_RESULTS);
-      $this->checkElements($i);
-    } catch (\Exception $e) {
-      $i->selectOptionInSelect2(self::CATEGORY_MULTIPLE_RESULTS);
-      $i->seeSelectedInSelect2(self::CATEGORY_MULTIPLE_RESULTS);
-      $this->checkElements($i);
-    }
+    $this->checkElements($i);
     $this->clearCategories($i);
 
     // Click select2 to hide results
@@ -257,7 +249,7 @@ class EditorProductsCest {
 
   private function checkElements(\AcceptanceTester $i) {
     $i->waitForElementNotVisible('.mailpoet_products_scroll_container > div:nth-child(' . (self::PRODUCTS_COUNT + 1) . ')');
-    $i->waitForText(self::PRODUCT_PREFIX_CATEGORY, 15, '.mailpoet_products_scroll_container');
+    $i->waitForText(self::PRODUCT_PREFIX_CATEGORY, 20, '.mailpoet_products_scroll_container');
     $i->seeNumberOfElements('.mailpoet_products_scroll_container > div', self::PRODUCTS_COUNT);
   }
 
