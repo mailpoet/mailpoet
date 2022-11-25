@@ -74,8 +74,10 @@ services:
     image: mailpoet/wordpress:${WORDPRESS_IMAGE_VERSION:-wp-6.0_php8.0_20220609.1}
     container_name: wordpress_${CIRCLE_NODE_INDEX:-default}
     depends_on:
-      - smtp
-      - mysql
+      smtp:
+        condition: service_started
+      mysql:
+        condition: service_healthy
     volumes:
       - wp-core:/var/www/html
       - ../..:/var/www/html/wp-content/plugins/mailpoet
@@ -112,6 +114,11 @@ services:
       - /dev/shm:/dev/shm
     ports:
       - 4401:3306
+    healthcheck:
+      test: ['CMD-SHELL', 'mysqladmin ping -hmysql --silent']
+      interval: 2s
+      timeout: 30s
+      retries: 10
 
   chrome:
     container_name: chrome_${CIRCLE_NODE_INDEX:-default}
