@@ -46,7 +46,7 @@ class WooCommerceSyncTest extends \MailPoetTest {
     $worker = new WooCommerceSync($this->woocommerceSegment, $woocommerceHelper);
     $this->woocommerceSegment->expects($this->once())
       ->method('synchronizeCustomers')
-      ->with(0, $this->greaterThan(0), WooCommercesync::BATCH_SIZE)
+      ->with(0, $this->greaterThan(0), WooCommerceSync::BATCH_SIZE)
       ->willReturn(1000);
     $task = $this->scheduledTaskFactory->create(
       WooCommerceSync::TASK_TYPE,
