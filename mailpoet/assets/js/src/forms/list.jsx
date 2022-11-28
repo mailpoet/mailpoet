@@ -304,5 +304,5 @@ FormListComponent.propTypes = {
     params: PropTypes.object, // eslint-disable-line react/forbid-prop-types
   }).isRequired,
 };
-
+FormListComponent.displayName = 'FormList';
 export const FormList = withNpsPoll(FormListComponent);

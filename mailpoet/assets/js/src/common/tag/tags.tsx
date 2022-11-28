@@ -82,6 +82,8 @@ function Tags({ children, tags, dimension, variant, isInverted }: TagProps) {
   );
 }
 
+Tags.displayName = 'Tags';
+
 function StringTags({ children, strings, ...props }: StringTagsProps) {
   const tags: TagData[] = strings.map((item) => ({
     name: item,
@@ -92,6 +94,8 @@ function StringTags({ children, strings, ...props }: StringTagsProps) {
     </Tags>
   );
 }
+
+StringTags.displayName = 'StringTags';
 
 function SegmentTags({ children, segments, ...props }: SegmentTagsProps) {
   const tags: TagData[] = segments.map((segment) => ({
@@ -107,6 +111,8 @@ function SegmentTags({ children, segments, ...props }: SegmentTagsProps) {
     </Tags>
   );
 }
+
+SegmentTags.displayName = 'SegmentTags';
 
 function SubscriberTags({
   children,
@@ -125,4 +131,5 @@ function SubscriberTags({
   );
 }
 
+SubscriberTags.displayName = 'SubscriberTags';
 export { SegmentTags, StringTags, SubscriberTags };
