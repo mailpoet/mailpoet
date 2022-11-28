@@ -44,7 +44,6 @@ class UnsubscribeAnalyticsTest extends \MailPoetTest {
     expect($properties[sprintf(UnsubscribeReporter::COUNT_PER_METHOD_PATTERN, 'Link')])->equals(1);
   }
 
-
   private function createStatisticsUnsubscribe(\DateTimeInterface $createdAt, $method): StatisticsUnsubscribeEntity {
     $subscriber = (new Subscriber())->create();
     $newsletter = (new Newsletter())->create();
@@ -63,5 +62,4 @@ class UnsubscribeAnalyticsTest extends \MailPoetTest {
     parent::_after();
     $this->truncateEntity(StatisticsUnsubscribeEntity::class);
   }
-
 }

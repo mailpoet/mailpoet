@@ -16,8 +16,8 @@ use MailPoet\Automation\Integrations\MailPoet\Triggers\UserRegistrationTrigger;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Segments\SegmentsRepository;
 
-class TriggerHandlerTest extends \MailPoetTest
-{
+class TriggerHandlerTest extends \MailPoetTest {
+
 
   /** @var TriggerHandler */
   private $testee;
@@ -61,7 +61,7 @@ class TriggerHandlerTest extends \MailPoetTest
         Step::TYPE_TRIGGER,
         $trigger->getKey(),
         [
-          'segment_ids' => [$this->segments['segment_1']->getId()]
+          'segment_ids' => [$this->segments['segment_1']->getId()],
         ],
         []
       )
@@ -73,7 +73,7 @@ class TriggerHandlerTest extends \MailPoetTest
         Step::TYPE_TRIGGER,
         $trigger->getKey(),
         [
-          'segment_ids' => [$this->segments['segment_2']->getId()]
+          'segment_ids' => [$this->segments['segment_2']->getId()],
         ],
         []
       )
@@ -108,7 +108,7 @@ class TriggerHandlerTest extends \MailPoetTest
         Step::TYPE_TRIGGER,
         $trigger->getKey(),
         [
-          'segment_ids' => [$this->segments['segment_1']->getId()]
+          'segment_ids' => [$this->segments['segment_1']->getId()],
         ],
         []
       )
@@ -120,7 +120,7 @@ class TriggerHandlerTest extends \MailPoetTest
         Step::TYPE_TRIGGER,
         $trigger->getKey(),
         [
-          'segment_ids' => []
+          'segment_ids' => [],
         ],
         []
       )
@@ -190,5 +190,4 @@ class TriggerHandlerTest extends \MailPoetTest
     $this->automationStorage->truncate();
     $this->segmentRepository->truncate();
   }
-
 }
