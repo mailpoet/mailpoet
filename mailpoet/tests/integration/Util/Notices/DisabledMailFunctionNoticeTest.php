@@ -24,7 +24,7 @@ class DisabledMailFunctionNoticeTest extends \MailPoetTest
     $this->wp = new WPFunctions;
     $this->settings->set('mta.method', Mailer::METHOD_PHPMAIL);
     $this->settings->set(DisabledMailFunctionNotice::QUEUE_DISABLED_MAIL_FUNCTION_CHECK, true);
-    $this->settings->set(DisabledMailFunctionNotice::OPTION_NAME, false);
+    $this->settings->set(DisabledMailFunctionNotice::DISABLED_MAIL_FUNCTION_CHECK, false);
     $this->wp->setTransient(SubscribersFeature::SUBSCRIBERS_COUNT_CACHE_KEY, 50, SubscribersFeature::SUBSCRIBERS_COUNT_CACHE_EXPIRATION_MINUTES * 60);
   }
 
@@ -111,7 +111,7 @@ class DisabledMailFunctionNoticeTest extends \MailPoetTest
 
     expect($notice)->stringContainsString('Get ready to send your first campaign');
 
-    $status = $this->settings->get(DisabledMailFunctionNotice::OPTION_NAME, false);
+    $status = $this->settings->get(DisabledMailFunctionNotice::DISABLED_MAIL_FUNCTION_CHECK, false);
     expect($status)->equals(true);
   }
 

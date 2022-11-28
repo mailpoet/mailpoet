@@ -12,7 +12,7 @@ use MailPoet\WP\Notice;
 
 class DisabledMailFunctionNotice {
 
-  const OPTION_NAME = 'disabled_mail_function_check';
+  const DISABLED_MAIL_FUNCTION_CHECK = 'disabled_mail_function_check';
 
   const QUEUE_DISABLED_MAIL_FUNCTION_CHECK = 'queue_disabled_mail_function_check';
 
@@ -43,7 +43,7 @@ class DisabledMailFunctionNotice {
   }
 
   public function init($shouldDisplay): ?string {
-    $shouldDisplay = $shouldDisplay && $this->checkMisConfiguredFunction() && $this->checkRequirements();
+    $shouldDisplay = $shouldDisplay && $this->shouldCheckMisconfiguredFunction() && $this->checkRequirements();
     if (!$shouldDisplay) {
       return null;
     }
@@ -67,7 +67,7 @@ class DisabledMailFunctionNotice {
     $isMailFunctionDisabled = $this->isFunctionDisabled($functionName);
 
     if ($isMailFunctionDisabled) {
-      $this->settings->set(DisabledMailFunctionNotice::OPTION_NAME, true);
+      $this->settings->set(DisabledMailFunctionNotice::DISABLED_MAIL_FUNCTION_CHECK, true);
       return true;
     }
 
@@ -86,9 +86,9 @@ class DisabledMailFunctionNotice {
    * queue_disabled_mail_function_check === true
    *
    */
-  public function checkMisConfiguredFunction(): bool {
+  public function shouldCheckMisconfiguredFunction(): bool {
     $this->isInQueueForChecking = $this->settings->get(self::QUEUE_DISABLED_MAIL_FUNCTION_CHECK, false);
-    return $this->settings->get(self::OPTION_NAME, false) || $this->isInQueueForChecking;
+    return $this->settings->get(self::DISABLED_MAIL_FUNCTION_CHECK, false) || $this->isInQueueForChecking;
   }
 
   public function isFunctionDisabled(string $function): bool {
@@ -105,7 +105,7 @@ class DisabledMailFunctionNotice {
 
     $message = $header . $body . $button;
 
-    Notice::displayWarning($message, '', self::OPTION_NAME, false);
+    Notice::displayWarning($message, '', self::DISABLED_MAIL_FUNCTION_CHECK, false);
 
     return $message;
   }
@@ -137,7 +137,7 @@ class DisabledMailFunctionNotice {
    * This is a workaround for detecting the user PHP mail() function is Correctly Configured and not disabled by the host
    */
   private function testMailFunctionIsCorrectlyConfigured(): bool {
-    if ($this->settings->get(DisabledMailFunctionNotice::OPTION_NAME, false)) {
+    if ($this->settings->get(DisabledMailFunctionNotice::DISABLED_MAIL_FUNCTION_CHECK, false)) {
       return false; // skip sending mail again
     }
 
@@ -159,7 +159,7 @@ class DisabledMailFunctionNotice {
     if (!$sendMailResult) {
       // Error with PHP mail() function
       // keep displaying notice
-      $this->settings->set(DisabledMailFunctionNotice::OPTION_NAME, true);
+      $this->settings->set(DisabledMailFunctionNotice::DISABLED_MAIL_FUNCTION_CHECK, true);
     }
 
     return $sendMailResult;

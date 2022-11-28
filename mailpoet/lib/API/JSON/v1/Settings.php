@@ -372,7 +372,7 @@ class Settings extends APIEndpoint {
         // when the user switch to a new sending method
         // do not display the DisabledMailFunctionNotice
         $this->settings->set(DisabledMailFunctionNotice::QUEUE_DISABLED_MAIL_FUNCTION_CHECK, false);
-        $this->settings->set(DisabledMailFunctionNotice::OPTION_NAME, false); // do not display notice
+        $this->settings->set(DisabledMailFunctionNotice::DISABLED_MAIL_FUNCTION_CHECK, false); // do not display notice
       }
     }
 
