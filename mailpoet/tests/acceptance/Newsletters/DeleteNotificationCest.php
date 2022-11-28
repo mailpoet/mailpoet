@@ -20,8 +20,7 @@ class DeleteNotificationCest {
     //step 3 - Delete Notification
     $i->waitForText($newsletterName);
     $i->clickItemRowActionByItemName($newsletterName, 'Move to trash');
-    $i->waitForElement('[data-automation-id="filters_trash"]');
-    $i->click('[data-automation-id="filters_trash"]');
+    $i->changeGroupInListingFilter('trash');
     $i->waitForText($newsletterName);
   }
 
@@ -39,8 +38,7 @@ class DeleteNotificationCest {
     $i->amOnMailpoetPage('Emails');
     $i->click('Post Notifications', '[data-automation-id="newsletters_listing_tabs"]');
     //step 3 - Restore notification from trash
-    $i->waitForElement('[data-automation-id="filters_trash"]');
-    $i->click('[data-automation-id="filters_trash"]');
+    $i->changeGroupInListingFilter('trash');
     $i->waitForText($newsletterName);
     $i->clickItemRowActionByItemName($newsletterName, 'Restore');
     $i->amOnMailpoetPage('Emails');
@@ -62,8 +60,7 @@ class DeleteNotificationCest {
     $i->amOnMailpoetPage('Emails');
     $i->click('Post Notifications', '[data-automation-id="newsletters_listing_tabs"]');
     // step 3 - goodbye forever, notification
-    $i->waitForElement('[data-automation-id="filters_trash"]');
-    $i->click('[data-automation-id="filters_trash"]');
+    $i->changeGroupInListingFilter('trash');
     $i->waitForText($newsletterName);
     $i->clickItemRowActionByItemName($newsletterName, 'Delete Permanently');
     $i->waitForText('permanently deleted.');

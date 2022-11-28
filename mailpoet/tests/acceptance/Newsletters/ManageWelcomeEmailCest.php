@@ -45,7 +45,7 @@ class ManageWelcomeEmailCest {
     $newsletter = $this->createWelcomeEmailWithTitle($i, 'Edit Welcome Email Test');
     $i->wantTo('Edit a welcome newsletter');
     $i->login();
-    $i->amEditingNewsletter($newsletter->id);
+    $i->amEditingNewsletter($newsletter->getId());
     $i->fillField($this->titleElement, 'Edit Test Welcome Edited');
     $i->click('Next');
     $i->waitForText('Reply-to');
@@ -65,8 +65,7 @@ class ManageWelcomeEmailCest {
     $i->click('Welcome Emails', '[data-automation-id="newsletters_listing_tabs"]');
     $i->waitForText($newsletterTitle);
     $i->clickItemRowActionByItemName($newsletterTitle, 'Move to trash');
-    $i->waitForElement('[data-automation-id="filters_trash"]');
-    $i->click('[data-automation-id="filters_trash"]');
+    $i->changeGroupInListingFilter('trash');
     $i->waitForText($newsletterTitle);
     $i->clickItemRowActionByItemName($newsletterTitle, 'Restore');
     $i->amOnMailpoetPage('Emails');
@@ -110,7 +109,7 @@ class ManageWelcomeEmailCest {
     $saveTemplateButton = '[data-automation-id="newsletter_save_as_template_button"]';
 
     $i->login();
-    $i->amEditingNewsletter($newsletter->id);
+    $i->amEditingNewsletter($newsletter->getId());
     $i->click('[data-automation-id="newsletter_save_options_toggle"]');
     $i->waitForElement($saveTemplateOption);
     $i->click($saveTemplateOption);

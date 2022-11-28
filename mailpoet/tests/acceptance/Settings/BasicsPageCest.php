@@ -84,8 +84,7 @@ class BasicsPageCest {
     $i->waitForText('Lists');
     $i->clickItemRowActionByItemName('Newsletter mailing list', 'View Subscribers');
     $i->waitForText('Subscribers');
-    $i->waitForText('Status'); // fixing flakyness
-    $i->click('[data-automation-id="filters_unconfirmed"]');
+    $i->changeGroupInListingFilter('unconfirmed');
     $i->waitForText('test@test.com');
     //clear checkbox to hide Select2 from next test
     $i->amOnMailPoetPage('Settings');

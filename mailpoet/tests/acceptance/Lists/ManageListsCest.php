@@ -61,10 +61,12 @@ class ManageListsCest {
     $i->waitForText('Lists');
     $i->scrollTo('[data-automation-id="dynamic-segments-tab"]');
     $i->clickItemRowActionByItemName($newListTitle, 'Edit');
+    $i->waitForText($newListTitle);
     $i->clearFormField('#field_name');
     $i->fillField('Name', $editedListTitle);
     $i->fillField('Description', $editedListDesc);
     $i->click('Save');
+    $i->waitForNoticeAndClose('List successfully updated!');
     $i->waitForText('WordPress Users', 5, '[data-automation-id="listing_item_1"]');
     $i->see($editedListTitle, '[data-automation-id="listing_item_4"]');
     $i->seeNoJSErrors();
@@ -72,17 +74,16 @@ class ManageListsCest {
     $i->wantTo('Trash existing list');
     $i->scrollTo('[data-automation-id="dynamic-segments-tab"]');
     $i->clickItemRowActionByItemName($editedListTitle, 'Move to trash');
-    $i->waitForText('1 list was moved to the trash. Note that deleting a list does not delete its subscribers.');
-    $i->waitForElementVisible('[data-automation-id="filters_trash"]');
-    $i->click('[data-automation-id="filters_trash"]');
-    $i->waitForElementVisible('[data-automation-id="filters_trash"]');
+    $i->waitForNoticeAndClose('1 list was moved to the trash. Note that deleting a list does not delete its subscribers.');
+    $i->changeGroupInListingFilter('trash');
     $i->waitForText($editedListTitle);
     $i->seeNoJSErrors();
 
     $i->wantTo('Restore trashed list');
     $i->scrollTo('[data-automation-id="dynamic-segments-tab"]');
     $i->clickItemRowActionByItemName($editedListTitle, 'Restore');
-    $i->waitForText('1 list has been restored from the Trash.');
+    $i->waitForNoticeAndClose('1 list has been restored from the Trash.');
+    $i->waitForElementNotVisible('[data-automation-id="filters_trash"]');
     $i->seeInCurrentURL(urlencode('group[all]'));
     $i->waitForText($editedListTitle);
     $i->seeNoJSErrors();
@@ -95,14 +96,14 @@ class ManageListsCest {
       ->create();
     $i->scrollTo('[data-automation-id="dynamic-segments-tab"]');
     $i->clickItemRowActionByItemName($editedListTitle, 'Move to trash');
-    $i->waitForText('1 list was moved to the trash. Note that deleting a list does not delete its subscribers.');
+    $i->waitForNoticeAndClose('1 list was moved to the trash. Note that deleting a list does not delete its subscribers.');
     $i->reloadPage(); // just to clear all notifications from the above
-    $i->waitForElementVisible('[data-automation-id="filters_trash"]');
-    $i->click('[data-automation-id="filters_trash"]');
+    $i->changeGroupInListingFilter('trash');
     $i->waitForText($editedListTitle);
     $i->clickItemRowActionByItemName($editedListTitle, 'Delete permanently');
-    $i->waitForText('1 list was permanently deleted. Note that deleting a list does not delete its subscribers.');
+    $i->waitForNoticeAndClose('1 list was permanently deleted. Note that deleting a list does not delete its subscribers.');
     $i->seeNoJSErrors();
+    $i->waitForElementNotVisible('[data-automation-id="filters_trash"]');
     $i->seeInCurrentURL(urlencode('group[all]'));
     $i->reloadPage();
     $i->waitForText($newListTitle . '2');
@@ -127,16 +128,14 @@ class ManageListsCest {
 
     $i->login();
     $i->amOnMailpoetPage('Lists');
-    $i->waitForElementVisible('[data-automation-id="filters_trash"]');
-    $i->click('[data-automation-id="filters_trash"]');
-    $i->waitForElementVisible('[data-automation-id="empty_trash"]');
+    $i->changeGroupInListingFilter('trash');
     $i->waitForText($newListTitle);
     $i->click('[data-automation-id="empty_trash"]');
 
     $i->waitForText('1 list was permanently deleted. Note that deleting a list does not delete its subscribers.');
     $i->dontSee($newListTitle);
     $i->seeNoJSErrors();
-    $i->click('[data-automation-id="filters_all"]');
+    $i->changeGroupInListingFilter('all');
     $i->see('List to keep');
   }
 
@@ -155,25 +154,20 @@ class ManageListsCest {
     $i->seeNoJSErrors();
 
     $i->wantTo('See WP User list in the Trash');
-    $i->waitForElementVisible('[data-automation-id="filters_trash"]');
-    $i->click('[data-automation-id="filters_trash"]');
-    $i->waitForElementVisible('[data-automation-id="filters_trash"]');
+    $i->changeGroupInListingFilter('trash');
     $i->waitForText($listName);
     $i->seeNoJSErrors();
 
     $i->wantTo('Check trashed WP User');
     $i->amOnMailPoetPage('Subscribers');
-    $i->waitForElement('[data-automation-id="filters_trash"]');
-    $i->click('[data-automation-id="filters_trash"]');
+    $i->changeGroupInListingFilter('trash');
     $i->waitForText('test-editor@example.com', 5);
 
     $i->reloadPage();
 
     $i->wantTo('Enable WP User list by clicking on Restore and enable button');
     $i->amOnMailpoetPage('Lists');
-    $i->waitForElementVisible('[data-automation-id="filters_trash"]');
-    $i->click('[data-automation-id="filters_trash"]');
-    $i->waitForElementVisible('[data-automation-id="filters_trash"]');
+    $i->changeGroupInListingFilter('trash');
     $i->clickItemRowActionByItemName($listName, 'Restore and enable');
     $i->seeNoJSErrors();
 
