@@ -37,7 +37,7 @@ class Unsubscribes {
     string $source,
     int $queueId = null,
     string $meta = null,
-    string $method = 'unknown'
+    string $method = StatisticsUnsubscribeEntity::METHOD_UNKNOWN
   ) {
     $queue = null;
     $statistics = null;
