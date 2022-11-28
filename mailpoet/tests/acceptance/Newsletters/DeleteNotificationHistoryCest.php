@@ -27,8 +27,7 @@ class DeleteNotificationHistoryCest {
     //step 3 - Delete Notification
     $i->waitForElement('[data-automation-id="listing_item_' . $postNotificationHistory->getId() . '"]');
     $i->clickItemRowActionByItemName($newsletterName, 'Move to trash');
-    $i->waitForElement('[data-automation-id="filters_trash"]');
-    $i->click('[data-automation-id="filters_trash"]');
+    $i->changeGroupInListingFilter('trash');
     $i->waitForText($newsletterName);
     //step 4 - Restore Notification
     $i->clickItemRowActionByItemName($newsletterName, 'Restore');
@@ -36,8 +35,7 @@ class DeleteNotificationHistoryCest {
     $i->waitForText($newsletterName);
     //step 4 - Delete permanently Notification
     $i->clickItemRowActionByItemName($newsletterName, 'Move to trash');
-    $i->waitForElement('[data-automation-id="filters_trash"]');
-    $i->click('[data-automation-id="filters_trash"]');
+    $i->changeGroupInListingFilter('trash');
     $i->waitForText($newsletterName);
     $i->clickItemRowActionByItemName($newsletterName, 'Delete Permanently');
     $i->waitForText('permanently deleted.');

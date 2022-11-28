@@ -18,8 +18,7 @@ class FormsDeletingCest {
 
     $i->clickItemRowActionByItemName($formName, 'Move to trash');
 
-    $i->waitForElement('[data-automation-id="filters_trash"]');
-    $i->click('[data-automation-id="filters_trash"]');
+    $i->changeGroupInListingFilter('trash');
 
     $i->waitForText($formName);
   }
@@ -34,14 +33,12 @@ class FormsDeletingCest {
     $i->login();
     $i->amOnMailpoetPage('Forms');
 
-    $i->waitForElement('[data-automation-id="filters_trash"]');
-    $i->click('[data-automation-id="filters_trash"]');
+    $i->changeGroupInListingFilter('trash');
     $i->waitForText($formName);
 
     $i->clickItemRowActionByItemName($formName, 'Restore');
     $i->waitForText('1 form has been restored from the trash.');
-    $i->waitForElement('[data-automation-id="filters_all"]');
-    $i->click('[data-automation-id="filters_all"]');
+    $i->changeGroupInListingFilter('all');
     $i->waitForText($formName);
   }
 
@@ -56,8 +53,7 @@ class FormsDeletingCest {
     $i->login();
     $i->amOnMailpoetPage('Forms');
 
-    $i->waitForElement('[data-automation-id="filters_trash"]');
-    $i->click('[data-automation-id="filters_trash"]');
+    $i->changeGroupInListingFilter('trash');
     $i->waitForText($formName);
 
     $i->clickItemRowActionByItemName($formName, 'Delete Permanently');
@@ -79,15 +75,14 @@ class FormsDeletingCest {
     $i->login();
     $i->amOnMailpoetPage('Forms');
 
-    $i->waitForElement('[data-automation-id="filters_trash"]');
-    $i->click('[data-automation-id="filters_trash"]');
+    $i->changeGroupInListingFilter('trash');
     $i->waitForText($formName);
 
     $i->click('[data-automation-id="empty_trash"]');
 
     $i->waitForText('1 form was permanently deleted.');
     $i->waitForElementNotVisible($formName);
-    $i->click('[data-automation-id="filters_all"]');
+    $i->changeGroupInListingFilter('all');
 
     $i->waitForText($formName . '2');
   }

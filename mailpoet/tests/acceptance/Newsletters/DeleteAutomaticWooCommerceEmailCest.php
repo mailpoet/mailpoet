@@ -27,8 +27,7 @@ class DeleteAutomaticWooCommerceEmailCest {
     $i->click('[data-automation-id="tab-WooCommerce"]');
     $i->waitForText($newsletterName);
     $i->clickItemRowActionByItemName($newsletterName, 'Move to trash');
-    $i->waitForElement('[data-automation-id="filters_trash"]');
-    $i->click('[data-automation-id="filters_trash"]');
+    $i->changeGroupInListingFilter('trash');
     $i->waitForText($newsletterName);
   }
 
@@ -46,8 +45,7 @@ class DeleteAutomaticWooCommerceEmailCest {
     $i->login();
     $i->amOnMailpoetPage('Emails');
     $i->click('[data-automation-id="tab-WooCommerce"]');
-    $i->waitForElement('[data-automation-id="filters_trash"]');
-    $i->click('[data-automation-id="filters_trash"]');
+    $i->changeGroupInListingFilter('trash');
     $i->waitForText($newsletterName);
     $i->clickItemRowActionByItemName($newsletterName, 'Restore');
     $i->amOnMailpoetPage('Emails');
@@ -76,8 +74,7 @@ class DeleteAutomaticWooCommerceEmailCest {
     $i->login();
     $i->amOnMailpoetPage('Emails');
     $i->click('[data-automation-id="tab-WooCommerce"]');
-    $i->waitForElement('[data-automation-id="filters_trash"]');
-    $i->click('[data-automation-id="filters_trash"]');
+    $i->changeGroupInListingFilter('trash');
     $i->waitForText($newsletterName);
     $i->clickItemRowActionByItemName($newsletterName, 'Delete Permanently');
     $i->waitForText('permanently deleted.');

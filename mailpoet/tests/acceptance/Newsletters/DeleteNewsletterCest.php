@@ -16,13 +16,12 @@ class DeleteNewsletterCest {
     $i->amOnMailpoetPage('Emails');
     $i->waitForText($newsletterName);
     $i->clickItemRowActionByItemName($newsletterName, 'Move to trash');
-    $i->waitForText('1 email was moved to the trash.');
+    $i->waitForNoticeAndClose('1 email was moved to the trash.');
     // click to select all newsletters
     $i->click('[data-automation-id="select_all"]');
     $i->click('Move to trash');
-    $i->waitForText('2 emails were moved to the trash.');
-    $i->waitForElement('[data-automation-id="filters_trash"]');
-    $i->click('[data-automation-id="filters_trash"]');
+    $i->waitForNoticeAndClose('2 emails were moved to the trash.');
+    $i->changeGroupInListingFilter('trash');
     $i->waitForText($newsletterName);
   }
 
@@ -35,8 +34,7 @@ class DeleteNewsletterCest {
     $newsletter->withSubject($newsletterName . '3')->withDeleted()->create();
     $i->login();
     $i->amOnMailpoetPage('Emails');
-    $i->waitForElement('[data-automation-id="filters_trash"]');
-    $i->click('[data-automation-id="filters_trash"]');
+    $i->changeGroupInListingFilter('trash');
     $i->waitForText($newsletterName);
     $i->clickItemRowActionByItemName($newsletterName, 'Restore');
     $i->waitForText('1 email has been restored from the Trash.');
@@ -44,8 +42,7 @@ class DeleteNewsletterCest {
     $i->click('[data-automation-id="select_all"]');
     $i->click('Restore');
     $i->waitForText('2 emails have been restored from the Trash.');
-    $i->waitForElement('[data-automation-id="filters_all"]');
-    $i->click('[data-automation-id="filters_all"]');
+    $i->changeGroupInListingFilter('all');
     $i->waitForText($newsletterName);
   }
 
@@ -60,8 +57,7 @@ class DeleteNewsletterCest {
     $newsletter->withSubject($newsletterName . '4')->create();
     $i->login();
     $i->amOnMailpoetPage('Emails');
-    $i->waitForElement('[data-automation-id="filters_trash"]');
-    $i->click('[data-automation-id="filters_trash"]');
+    $i->changeGroupInListingFilter('trash');
     $i->waitForText($newsletterName);
     $i->clickItemRowActionByItemName($newsletterName, 'Delete Permanently');
     $i->waitForText('1 email was permanently deleted.');
@@ -86,13 +82,12 @@ class DeleteNewsletterCest {
     $newsletter->withSubject($newsletterName . '3')->create();
     $i->login();
     $i->amOnMailpoetPage('Emails');
-    $i->waitForElement('[data-automation-id="filters_trash"]');
-    $i->click('[data-automation-id="filters_trash"]');
+    $i->changeGroupInListingFilter('trash');
     $i->waitForText($newsletterName);
     $i->click('[data-automation-id="empty_trash"]');
     $i->waitForText('2 emails were permanently deleted.');
     $i->waitForElementNotVisible($newsletterName);
-    $i->click('[data-automation-id="filters_all"]');
+    $i->changeGroupInListingFilter('all');
     $i->waitForText($newsletterName . '3');
   }
 
@@ -113,8 +108,7 @@ class DeleteNewsletterCest {
     $i->waitForText('All 22 emails are selected.');
     $i->click('Move to trash');
     $i->waitForText('22 emails were moved to the trash.');
-    $i->waitForElement('[data-automation-id="filters_trash"]');
-    $i->click('[data-automation-id="filters_trash"]');
+    $i->changeGroupInListingFilter('trash');
     $i->waitForText($newsletterName);
     // click to select all newsletters
     $i->click('[data-automation-id="select_all"]');

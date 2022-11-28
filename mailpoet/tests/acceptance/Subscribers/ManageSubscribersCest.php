@@ -87,8 +87,7 @@ class ManageSubscribersCest {
     $i->amOnMailPoetPage('Subscribers');
     $i->waitForListingItemsToLoad();
     $i->clickItemRowActionByItemName($newSubscriberEmail, 'Move to trash');
-    $i->waitForElement('[data-automation-id="filters_trash"]');
-    $i->click('[data-automation-id="filters_trash"]');
+    $i->changeGroupInListingFilter('trash');
     $i->waitForText($newSubscriberEmail);
     $i->clickItemRowActionByItemName($newSubscriberEmail, 'Restore');
     $i->amOnMailpoetPage('Subscribers');
@@ -109,8 +108,7 @@ class ManageSubscribersCest {
     $i->waitForListingItemsToLoad();
     $i->clickItemRowActionByItemName($newSubscriberEmail2, 'Move to trash');
     $i->waitForListingItemsToLoad();
-    $i->waitForElementClickable('[data-automation-id="filters_trash"]');
-    $i->click('[data-automation-id="filters_trash"]');
+    $i->changeGroupInListingFilter('trash');
     $i->waitForListingItemsToLoad();
     $i->waitForText($newSubscriberEmail);
     $i->clickItemRowActionByItemName($newSubscriberEmail, 'Delete Permanently');
@@ -132,15 +130,14 @@ class ManageSubscribersCest {
     $i->waitForListingItemsToLoad();
     $i->clickItemRowActionByItemName($newSubscriberEmail, 'Move to trash');
 
-    $i->waitForElement('[data-automation-id="filters_trash"]');
-    $i->click('[data-automation-id="filters_trash"]');
+    $i->changeGroupInListingFilter('trash');
     $i->waitForText($newSubscriberEmail, 20);
 
     $i->click('[data-automation-id="empty_trash"]');
 
     $i->waitForText('1 subscriber was permanently deleted.');
     $i->dontSee($newSubscriberEmail);
-    $i->click('[data-automation-id="filters_all"]');
+    $i->changeGroupInListingFilter('all');
 
     $i->waitForText($newSubscriberEmail2, 20);
     $i->seeNoJSErrors();
@@ -229,8 +226,7 @@ class ManageSubscribersCest {
     $i->amOnMailPoetPage ('Subscribers');
 
     // Filter inactive subscribers
-    $i->waitForElement('[data-automation-id="filters_inactive"]');
-    $i->click('[data-automation-id="filters_inactive"]');
+    $i->changeGroupInListingFilter('inactive');
     $i->waitForListingItemsToLoad();
     $i->seeNumberOfElements('[data-automation-id^="listing_item_"]', self::INACTIVE_SUBSCRIBERS_COUNT);
 
