@@ -10,7 +10,7 @@ import {
 } from 'react-router-dom';
 import { noop } from 'lodash';
 
-import { Tabs, Props as TabProps } from './tabs';
+import { Props as TabProps, Tabs } from './tabs';
 
 function RouterAwareTabs(
   props: TabProps & {
@@ -104,5 +104,7 @@ function RoutedTabs({
     <HashRouter>{routedTabs}</HashRouter>
   );
 }
+
+RoutedTabs.displayName = 'RoutedTabs';
 
 export { RoutedTabs };

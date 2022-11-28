@@ -225,4 +225,6 @@ DynamicSegmentListComponent.propTypes = {
   }).isRequired,
 };
 
+DynamicSegmentListComponent.displayName = 'DynamicSegmentList';
+
 export const DynamicSegmentList = withRouter(DynamicSegmentListComponent);

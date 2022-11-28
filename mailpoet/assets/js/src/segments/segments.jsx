@@ -8,6 +8,7 @@ import { SegmentList } from 'segments/list.jsx';
 import { SegmentForm } from 'segments/form.jsx';
 import { GlobalContext, useGlobalContextValue } from 'context/index.jsx';
 import { Notices } from 'notices/notices.jsx';
+import { withBoundary } from 'common';
 import { Editor } from './dynamic/editor';
 import { DynamicSegmentList } from './dynamic/list.jsx';
 import { ListHeading } from './heading';
@@ -39,6 +40,8 @@ function Tabs() {
   );
 }
 
+Tabs.displayName = 'SegmentTabs';
+
 function App() {
   return (
     <GlobalContext.Provider value={useGlobalContextValue(window)}>
@@ -46,12 +49,12 @@ function App() {
         <Notices />
         <Switch>
           <Route exact path="/" render={() => <Redirect to="/lists" />} />
-          <Route path="/new" component={SegmentForm} />
-          <Route path="/edit/:id" component={SegmentForm} />
-          <Route path="/new-segment" component={Editor} />
-          <Route path="/edit-segment/:id" component={Editor} />
-          <Route path="/segments/(.*)?" component={Tabs} />
-          <Route path="/lists/(.*)?" component={Tabs} />
+          <Route path="/new" render={withBoundary(SegmentForm)} />
+          <Route path="/edit/:id" render={withBoundary(SegmentForm)} />
+          <Route path="/new-segment" render={withBoundary(Editor)} />
+          <Route path="/edit-segment/:id" render={withBoundary(Editor)} />
+          <Route path="/segments/(.*)?" render={withBoundary(Tabs)} />
+          <Route path="/lists/(.*)?" render={withBoundary(Tabs)} />
         </Switch>
       </HashRouter>
     </GlobalContext.Provider>
