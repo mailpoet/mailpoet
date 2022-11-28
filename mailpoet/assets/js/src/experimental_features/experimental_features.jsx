@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
 import { MailPoet } from 'mailpoet';
 import { GlobalContext, useGlobalContextValue } from 'context/index.jsx';
 import { Notices } from 'notices/notices.jsx';
+import { ErrorBoundary } from 'common';
 
 function ExperimentalFeatures() {
   const [flags, setFlags] = useState(null);
@@ -106,6 +107,14 @@ function ExperimentalFeatures() {
 const experimentalFeaturesContainer = document.getElementById(
   'experimental_features_container',
 );
+
+ExperimentalFeatures.displayName = 'ExperimentalFeatures';
+
 if (experimentalFeaturesContainer) {
-  ReactDOM.render(<ExperimentalFeatures />, experimentalFeaturesContainer);
+  ReactDOM.render(
+    <ErrorBoundary>
+      <ExperimentalFeatures />
+    </ErrorBoundary>,
+    experimentalFeaturesContainer,
+  );
 }
