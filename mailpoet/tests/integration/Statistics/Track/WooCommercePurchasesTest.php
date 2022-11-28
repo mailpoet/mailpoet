@@ -304,7 +304,7 @@ class WooCommercePurchasesTest extends \MailPoetTest {
     $this->createClick($this->link, $this->subscriber, 0); // wrong click, should not be tracked
     $this->entityManager->flush();
 
-    $orderMock = $this->createOrderMock($this->subscriber->getEmail(),15.0, 123, new DateTime("-1 minute"));
+    $orderMock = $this->createOrderMock($this->subscriber->getEmail(), 15.0, 123, new DateTime("-1 minute"));
     $woocommercePurchases = new WooCommercePurchases(
       $this->createWooCommerceHelperMock($orderMock),
       $this->diContainer->get(StatisticsWooCommercePurchasesRepository::class),
