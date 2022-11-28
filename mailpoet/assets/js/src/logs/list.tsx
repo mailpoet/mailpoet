@@ -84,7 +84,7 @@ type ListProps = {
   onFilter: (FilterType) => void;
 };
 
-export function List({
+function List({
   logs,
   onFilter,
   originalFrom,
@@ -219,3 +219,7 @@ export function List({
     </div>
   );
 }
+
+List.displayName = 'LogsList';
+
+export { List };

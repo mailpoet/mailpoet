@@ -1,6 +1,7 @@
 import classnames from 'classnames';
 import ReactDatePicker, { ReactDatePickerProps } from 'react-datepicker';
 import { MailPoet } from 'mailpoet';
+import { withBoundary } from '../error_boundary';
 
 type Props = ReactDatePickerProps & {
   dimension?: 'small';
@@ -9,7 +10,7 @@ type Props = ReactDatePickerProps & {
   iconEnd?: JSX.Element;
 };
 
-export function Datepicker({
+function Datepicker({
   dimension,
   isFullWidth,
   iconStart,
@@ -34,3 +35,8 @@ export function Datepicker({
     </div>
   );
 }
+
+Datepicker.displayName = 'Datepicker';
+const DatepickerWithBoundary = withBoundary(Datepicker);
+
+export { DatepickerWithBoundary as Datepicker };
