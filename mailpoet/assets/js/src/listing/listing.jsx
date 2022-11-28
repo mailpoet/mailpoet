@@ -790,4 +790,6 @@ ListingComponent.defaultProps = {
   className: undefined,
 };
 
+ListingComponent.displayName = 'Listing';
+
 export const Listing = withRouter(ListingComponent);
