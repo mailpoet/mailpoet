@@ -1,5 +1,5 @@
 import classnames from 'classnames';
-import { useState, useEffect, memo } from 'react';
+import { memo, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 
 import { Link } from 'react-router-dom';
@@ -78,6 +78,8 @@ SendingStatus.propTypes = {
     }).isRequired,
   }).isRequired,
 };
+
+SendingStatus.displayName = 'SendingStatus';
 
 const compareProps = (prev, next) =>
   prev.location.pathname === next.location.pathname &&

@@ -782,4 +782,6 @@ NewsletterSendComponent.propTypes = {
   }).isRequired,
 };
 
+NewsletterSendComponent.displayName = 'NewsletterSend';
+
 export const NewsletterSend = withRouter(NewsletterSendComponent);

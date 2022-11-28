@@ -299,4 +299,6 @@ EventsConditions.propTypes = {
   }).isRequired,
 };
 
+EventsConditions.displayName = 'EventsConditions';
+
 export { EventsConditions };

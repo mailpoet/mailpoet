@@ -56,4 +56,6 @@ NewsletterStandardComponent.propTypes = {
   }).isRequired,
 };
 
+NewsletterStandardComponent.displayName = 'NewsletterStandard';
+
 export const NewsletterTypeStandard = withRouter(NewsletterStandardComponent);

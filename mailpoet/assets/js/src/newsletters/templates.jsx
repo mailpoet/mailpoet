@@ -369,4 +369,6 @@ NewsletterTemplates.propTypes = {
   }).isRequired,
 };
 
+NewsletterTemplates.display = 'NewsletterTemplates';
+
 export { NewsletterTemplates };

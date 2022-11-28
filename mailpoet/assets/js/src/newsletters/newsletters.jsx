@@ -2,9 +2,9 @@ import _ from 'underscore';
 import ReactDOM from 'react-dom';
 import {
   HashRouter,
-  Switch,
-  Route,
   Redirect,
+  Route,
+  Switch,
   useParams,
 } from 'react-router-dom';
 import PropTypes from 'prop-types';
@@ -27,11 +27,10 @@ import { NewsletterListNotification } from 'newsletters/listings/notification.js
 import { NewsletterListReEngagement } from 'newsletters/listings/re_engagement.jsx';
 import { NewsletterListNotificationHistory } from 'newsletters/listings/notification_history.jsx';
 import { SendingStatus } from 'newsletters/sending_status.jsx';
-import { CampaignStatsPage } from 'newsletters/campaign_stats/page';
 import { GlobalContext, useGlobalContextValue } from 'context/index.jsx';
 import { Notices } from 'notices/notices.jsx';
 import { RoutedTabs } from 'common/tabs/routed_tabs';
-import { Tab } from 'common/tabs/tab';
+import { ErrorBoundary, Tab, withBoundary } from 'common';
 import { withNpsPoll } from 'nps_poll.jsx';
 import { ListingHeading } from 'newsletters/listings/heading.jsx';
 import { ListingHeadingDisplay } from 'newsletters/listings/heading_display.jsx';
@@ -39,6 +38,7 @@ import { SubscribersLimitNotice } from 'notices/subscribers_limit_notice.jsx';
 import { InvalidMssKeyNotice } from 'notices/invalid_mss_key_notice';
 import { TransactionalEmailsProposeOptInNotice } from 'notices/transactional_emails_propose_opt_in_notice';
 import { EmailVolumeLimitNotice } from 'notices/email_volume_limit_notice';
+import { CampaignStatsPage } from './campaign_stats/page';
 
 const automaticEmails = window.mailpoet_woocommerce_automatic_emails || [];
 
@@ -110,13 +110,14 @@ const Tabs = withNpsPoll(() => {
     </>
   );
 });
+Tabs.displayName = 'NewsletterTabs';
 
 const getAutomaticEmailsRoutes = () => {
   const routes = [];
   _.each(automaticEmails, (email) => {
     routes.push({
       path: `/${email.slug}/(.*)?`,
-      component: Tabs,
+      component: withBoundary(Tabs),
     });
 
     const { events } = email;
@@ -130,7 +131,11 @@ const getAutomaticEmailsRoutes = () => {
               email,
               name: event.slug,
             };
-            return <EventsConditions {...componentProps} />;
+            return (
+              <ErrorBoundary>
+                <EventsConditions {...componentProps} />
+              </ErrorBoundary>
+            );
           },
         });
       });
@@ -143,7 +148,11 @@ const getAutomaticEmailsRoutes = () => {
           ...props,
           email,
         };
-        return <AutomaticEmailEventsList {...componentProps} />;
+        return (
+          <ErrorBoundary>
+            <AutomaticEmailEventsList {...componentProps} />
+          </ErrorBoundary>
+        );
       },
     });
   });
@@ -152,10 +161,12 @@ const getAutomaticEmailsRoutes = () => {
 
 function NewNewsletter({ history }) {
   return (
-    <NewsletterTypes
-      history={history}
-      hideClosingButton={window.mailpoet_newsletters_count === 0}
-    />
+    <ErrorBoundary>
+      <NewsletterTypes
+        history={history}
+        hideClosingButton={window.mailpoet_newsletters_count === 0}
+      />
+    </ErrorBoundary>
   );
 }
 
@@ -165,63 +176,65 @@ NewNewsletter.propTypes = {
   }).isRequired,
 };
 
+NewNewsletter.displayName = 'NewNewsletter';
+
 const routes = [
   ...getAutomaticEmailsRoutes(),
 
   /* Listings */
   {
     path: '/notification/history/:parentId/(.*)?',
-    component: Tabs,
+    render: withBoundary(Tabs),
   },
   {
     path: '/(standard|welcome|notification|re_engagement)/(.*)?',
-    component: Tabs,
+    render: withBoundary(Tabs),
   },
   /* New newsletter: types */
   {
     path: '/new/standard',
-    component: NewsletterTypeStandard,
+    render: withBoundary(NewsletterTypeStandard),
   },
   {
     path: '/new/notification',
-    component: NewsletterNotification,
+    render: withBoundary(NewsletterNotification),
   },
   {
     path: '/new/welcome',
-    component: NewsletterWelcome,
+    render: withBoundary(NewsletterWelcome),
   },
   {
     path: '/new/re-engagement',
-    component: NewsletterTypeReEngagement,
+    render: withBoundary(NewsletterTypeReEngagement),
   },
   /* Newsletter: type selection */
   {
     path: '/new',
-    component: NewNewsletter,
+    render: withBoundary(NewNewsletter),
   },
   /* Template selection */
   {
     name: 'template',
     path: '/template/:id',
-    component: NewsletterTemplates,
+    render: withBoundary(NewsletterTemplates),
   },
   /* congratulate */
   {
     path: '/send/congratulate/:id',
-    component: Congratulate,
+    render: withBoundary(Congratulate),
   },
   /* Sending options */
   {
     path: '/send/:id',
-    component: NewsletterSend,
+    render: withBoundary(NewsletterSend),
   },
   {
     path: '/sending-status/:id/(.*)?',
-    component: SendingStatus,
+    render: withBoundary(SendingStatus),
   },
   {
     path: '/stats/:id/(.*)?',
-    component: CampaignStatsPage,
+    render: withBoundary(CampaignStatsPage),
   },
 ];
 

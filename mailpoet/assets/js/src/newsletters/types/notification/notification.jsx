@@ -104,6 +104,8 @@ NewsletterNotificationComponent.propTypes = {
   }).isRequired,
 };
 
+NewsletterNotificationComponent.displayName = 'NewsletterNotification';
+
 export const NewsletterNotification = withRouter(
   NewsletterNotificationComponent,
 );
