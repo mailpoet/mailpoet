@@ -3,7 +3,7 @@ Contributors: mailpoet
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 5.8
 Tested up to: 6.1
-Stable tag: 4.0.1
+Stable tag: 4.1.0
 Requires PHP: 7.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -218,6 +218,13 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 4.1.0 - 2022-11-28 =
+* Improved: don't automatically activate MailPoet Sending Service for Creator plans;
+* Improved: MailPoet's built-in CAPTCHA now includes audio fallback to improve accessibility;
+* Fixed: automation may not always start if there exists another automation with the same trigger;
+* Fixed: automations beta badge wraps in some languages;
+* Fixed: domain authentication is not shown when sending a preview email.
 
 = 4.0.1 - 2022-11-22 =
 * Improved: when editing a list, you can choose if it should be shown on the Manage Subscription page (on by default);
