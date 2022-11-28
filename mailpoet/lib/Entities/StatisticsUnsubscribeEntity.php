@@ -24,6 +24,7 @@ class StatisticsUnsubscribeEntity {
 
   const METHOD_LINK = 'link';
   const METHOD_ONE_CLICK = 'one_click';
+  const METHOD_UNKNOWN = 'unknown';
 
   /**
    * @ORM\ManyToOne(targetEntity="MailPoet\Entities\NewsletterEntity")
@@ -62,7 +63,7 @@ class StatisticsUnsubscribeEntity {
    * @ORM\Column(type="string", nullable=false)
    * @var string
    */
-  private $method;
+  private $method = self::METHOD_UNKNOWN;
 
   public function __construct(
     NewsletterEntity $newsletter = null,
@@ -121,7 +122,7 @@ class StatisticsUnsubscribeEntity {
   public function setMethod(string $method) {
     $this->method = $method;
   }
-  
+
   public function getMethod(): string {
     return $this->method;
   }
