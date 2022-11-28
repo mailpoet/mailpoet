@@ -16,7 +16,7 @@ use MailPoet\Automation\Integrations\MailPoet\Triggers\UserRegistrationTrigger;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Segments\SegmentsRepository;
 
-class TriggerandlerTest extends \MailPoetTest
+class TriggerHandlerTest extends \MailPoetTest
 {
 
   /** @var TriggerHandler */
