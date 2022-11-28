@@ -374,4 +374,6 @@ SegmentListComponent.propTypes = {
   }).isRequired,
 };
 
+SegmentListComponent.displayName = 'SegmentList';
+
 export const SegmentList = withRouter(SegmentListComponent);

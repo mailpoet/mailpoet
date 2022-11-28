@@ -40,3 +40,4 @@ export function Editor(): JSX.Element {
     </>
   );
 }
+Editor.displayName = 'SegmentEditor';

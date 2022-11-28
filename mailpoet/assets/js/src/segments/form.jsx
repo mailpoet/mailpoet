@@ -78,4 +78,6 @@ SegmentForm.propTypes = {
   }).isRequired,
 };
 
+SegmentForm.displayName = 'SegmentForm';
+
 export { SegmentForm };

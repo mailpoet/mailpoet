@@ -1,13 +1,14 @@
 import {
-  useState,
-  useRef,
+  ReactNode,
   useCallback,
   useEffect,
   useLayoutEffect,
-  ReactNode,
+  useRef,
+  useState,
 } from 'react';
 import ReactDOM from 'react-dom';
 import { MailPoet } from 'mailpoet';
+import { withBoundary } from 'common';
 
 type Props = {
   type: 'success' | 'info' | 'warning' | 'error';
@@ -86,6 +87,7 @@ function Notice({
     document.getElementById('mailpoet_notices'),
   );
 }
+
 Notice.defaultProps = {
   timeout: 10000,
   scroll: false,
@@ -94,5 +96,6 @@ Notice.defaultProps = {
   onDisplay: undefined,
   onClose: undefined,
 };
-
-export { Notice };
+Notice.displayName = 'Notice';
+const NoticeWithBoundary = withBoundary(Notice);
+export { NoticeWithBoundary as Notice };
