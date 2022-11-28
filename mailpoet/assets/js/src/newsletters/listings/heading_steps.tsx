@@ -158,4 +158,5 @@ function ListingHeadingSteps({
   return null;
 }
 
+ListingHeadingSteps.displayName = 'ListingHeadingSteps';
 export { ListingHeadingSteps };

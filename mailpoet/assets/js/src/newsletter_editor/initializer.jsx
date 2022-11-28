@@ -4,6 +4,7 @@ import ReactDOM from 'react-dom';
 import { ListingHeadingSteps } from 'newsletters/listings/heading_steps';
 import { newsletterTypesWithActivation } from 'newsletters/listings/utils';
 import { fetchAutomaticEmailShortcodes } from 'newsletters/automatic_emails/fetch_editor_shortcodes.jsx';
+import { ErrorBoundary } from 'common';
 import { initTutorial } from './tutorial';
 
 const renderHeading = (newsletterType, newsletterOptions) => {
@@ -48,12 +49,14 @@ const renderHeading = (newsletterType, newsletterOptions) => {
     }
 
     const stepsHeading = (
-      <ListingHeadingSteps
-        emailType={newsletterType}
-        step={step}
-        buttons={buttons}
-        onLogoClick={onLogoClick}
-      />
+      <ErrorBoundary>
+        <ListingHeadingSteps
+          emailType={newsletterType}
+          step={step}
+          buttons={buttons}
+          onLogoClick={onLogoClick}
+        />
+      </ErrorBoundary>
     );
 
     ReactDOM.render(stepsHeading, stepsHeadingContainer);
