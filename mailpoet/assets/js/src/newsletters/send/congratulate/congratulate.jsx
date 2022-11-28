@@ -187,4 +187,6 @@ Congratulate.propTypes = {
   }).isRequired,
 };
 
+Congratulate.displayName = 'Congratulate';
+
 export { Congratulate };

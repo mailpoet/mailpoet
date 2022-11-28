@@ -123,4 +123,6 @@ NewsletterWelcome.propTypes = {
   }).isRequired,
 };
 
+NewsletterWelcome.displayName = 'NewsletterWelcome';
+
 export { NewsletterWelcome };

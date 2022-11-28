@@ -97,3 +97,5 @@ export function NewsletterTypeReEngagement(): JSX.Element {
     </div>
   );
 }
+
+NewsletterTypeReEngagement.displayName = 'NewsletterTypeReEngagement';
