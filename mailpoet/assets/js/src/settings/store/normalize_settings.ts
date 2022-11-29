@@ -171,6 +171,8 @@ export function normalizeSettings(data: Record<string, unknown>): Settings {
       enabled: enabledRadio,
       subject: text,
       body: text,
+      use_mailpoet_editor: disabledRadio,
+      transactional_email_id: text,
     }),
     woocommerce: asObject({
       use_mailpoet_editor: disabledRadio,
