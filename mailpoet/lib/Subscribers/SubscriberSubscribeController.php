@@ -151,7 +151,7 @@ class SubscriberSubscribeController {
      */
     $this->wp->doAction('mailpoet_subscription_before_subscribe', $data, $segmentIds, $form);
 
-    [$subscriber] = $this->subscriberActions->subscribe($data, $segmentIds);
+    [$subscriber, $subscriptionMeta] = $this->subscriberActions->subscribe($data, $segmentIds);
 
     if (!empty($captchaSettings['type']) && $captchaSettings['type'] === CaptchaConstants::TYPE_BUILTIN) {
       // Captcha has been verified, invalidate the session vars
@@ -165,6 +165,12 @@ class SubscriberSubscribeController {
 
     // add tags to subscriber if they are filled
     $this->addTagsToSubscriber($formSettings['tags'] ?? [], $subscriber);
+
+    // Confirmation email failed. We want to show the error message
+    if ($subscriptionMeta['confirmationEmailResult'] instanceof \Exception) {
+      $meta['error'] = $subscriptionMeta['confirmationEmailResult']->getMessage();
+      return $meta;
+    }
 
     if (!empty($formSettings['on_success'])) {
       if ($formSettings['on_success'] === 'page') {
