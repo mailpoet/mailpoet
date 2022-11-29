@@ -55,7 +55,7 @@ class SubscriberActionsTest extends \MailPoetTest {
     $segment = $this->segmentsRepository->createOrUpdate('List #1');
     $segment2 = $this->segmentsRepository->createOrUpdate('List #2');
 
-    $subscriber = $this->subscriberActions->subscribe(
+    [$subscriber] = $this->subscriberActions->subscribe(
       $this->testData,
       [$segment->getId(), $segment2->getId()]
     );
@@ -86,7 +86,7 @@ class SubscriberActionsTest extends \MailPoetTest {
     (new NewsletterOption())->createMultipleOptions($newsletter, $newsletterOptions);
 
     $this->settings->set('signup_confirmation.enabled', false);
-    $subscriber = $this->subscriberActions->subscribe($this->testData, [$segment->getId()]);
+    [$subscriber] = $this->subscriberActions->subscribe($this->testData, [$segment->getId()]);
     expect($subscriber->getId() > 0)->equals(true);
     expect($subscriber->getSegments())->count(1);
 
@@ -113,7 +113,7 @@ class SubscriberActionsTest extends \MailPoetTest {
     (new NewsletterOption())->createMultipleOptions($newsletter, $newsletterOptions);
 
     $this->settings->set('signup_confirmation.enabled', true);
-    $subscriber = $this->subscriberActions->subscribe($this->testData, [$segment->getId()]);
+    [$subscriber] = $this->subscriberActions->subscribe($this->testData, [$segment->getId()]);
     expect($subscriber->getId() > 0)->equals(true);
     expect($subscriber->getSegments())->count(1);
     $scheduledNotification = $this->sendingQueuesRepository->findOneByNewsletterAndTaskStatus(
@@ -126,7 +126,7 @@ class SubscriberActionsTest extends \MailPoetTest {
   public function testItCannotSubscribeWithReservedColumns() {
     $segment = $this->segmentsRepository->createOrUpdate('List #1');
 
-    $subscriber = $this->subscriberActions->subscribe(
+    [$subscriber] = $this->subscriberActions->subscribe(
       [
         'email' => 'donald@mailpoet.com',
         'first_name' => 'Donald',
@@ -174,7 +174,7 @@ class SubscriberActionsTest extends \MailPoetTest {
       'last_name' => 'Example',
     ];
 
-    $subscriber = $this->subscriberActions->subscribe(
+    [$subscriber] = $this->subscriberActions->subscribe(
       $data,
       [$segment->getId()]
     );
@@ -189,7 +189,7 @@ class SubscriberActionsTest extends \MailPoetTest {
     $data2['first_name'] = 'Aaa';
     $data2['last_name'] = 'Bbb';
 
-    $subscriber = $this->subscriberActions->subscribe(
+    [$subscriber] = $this->subscriberActions->subscribe(
       $data2,
       [$segment->getId(), $segment2->getId()]
     );
@@ -216,7 +216,7 @@ class SubscriberActionsTest extends \MailPoetTest {
       'last_name' => 'Example',
     ];
 
-    $subscriber = $this->subscriberActions->subscribe(
+    [$subscriber] = $this->subscriberActions->subscribe(
       $data,
       [$segment->getId()]
     );
@@ -233,7 +233,7 @@ class SubscriberActionsTest extends \MailPoetTest {
     $data2['first_name'] = 'Aaa';
     $data2['last_name'] = 'Bbb';
 
-    $subscriber = $this->subscriberActions->subscribe(
+    [$subscriber] = $this->subscriberActions->subscribe(
       $data2,
       [$segment->getId(), $segment2->getId()]
     );

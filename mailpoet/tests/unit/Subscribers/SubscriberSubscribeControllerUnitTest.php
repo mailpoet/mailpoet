@@ -659,7 +659,7 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
 
           expect($receivedData)->equals($formFields);
           expect($receivedSegmentIds)->equals($segmentIds);
-          return $subscriber;
+          return [$subscriber, ['confirmationEmailResult' => true]];
         },
       ],
       $this

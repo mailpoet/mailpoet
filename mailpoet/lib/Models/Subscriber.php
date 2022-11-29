@@ -700,6 +700,7 @@ class Subscriber extends Model {
   public static function subscribe($subscriberData = [], $segmentIds = []) {
     trigger_error('Calling Subscriber::subscribe() is deprecated and will be removed. Use MailPoet\API\MP\v1\API instead. ', E_USER_DEPRECATED);
     $service = ContainerWrapper::getInstance()->get(\MailPoet\Subscribers\SubscriberActions::class);
-    return $service->subscribe($subscriberData, $segmentIds);
+    [$subscriber] = $service->subscribe($subscriberData, $segmentIds);
+    return $subscriber;
   }
 }
