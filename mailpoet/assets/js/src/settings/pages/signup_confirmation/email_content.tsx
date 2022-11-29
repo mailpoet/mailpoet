@@ -6,8 +6,14 @@ import { useSetting } from 'settings/store/hooks';
 export function EmailContent() {
   const [enabled] = useSetting('signup_confirmation', 'enabled');
   const [body, setBody] = useSetting('signup_confirmation', 'body');
+  const [enableConfirmationEmailCustomizer] = useSetting(
+    'signup_confirmation',
+    'use_mailpoet_editor',
+  );
 
   if (!enabled) return null;
+  if (enableConfirmationEmailCustomizer === '1') return null;
+
   const descriptionLines = t('emailContentDescription')
     .replace('[current_site_title]', window.mailpoet_current_site_title || '')
     .split('<br />')
