@@ -151,7 +151,7 @@ class SubscriberSubscribeController {
      */
     $this->wp->doAction('mailpoet_subscription_before_subscribe', $data, $segmentIds, $form);
 
-    $subscriber = $this->subscriberActions->subscribe($data, $segmentIds);
+    [$subscriber] = $this->subscriberActions->subscribe($data, $segmentIds);
 
     if (!empty($captchaSettings['type']) && $captchaSettings['type'] === CaptchaConstants::TYPE_BUILTIN) {
       // Captcha has been verified, invalidate the session vars
