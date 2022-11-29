@@ -6,8 +6,14 @@ import { useSetting } from 'settings/store/hooks';
 export function EmailSubject() {
   const [enabled] = useSetting('signup_confirmation', 'enabled');
   const [subject, setSubject] = useSetting('signup_confirmation', 'subject');
+  const [enableConfirmationEmailCustomizer] = useSetting(
+    'signup_confirmation',
+    'use_mailpoet_editor',
+  );
 
   if (!enabled) return null;
+  if (enableConfirmationEmailCustomizer === '1') return null;
+
   return (
     <>
       <Label title={t('emailSubject')} htmlFor="signup_confirmation-subject" />
