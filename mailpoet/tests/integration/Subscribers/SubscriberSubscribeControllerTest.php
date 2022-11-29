@@ -91,6 +91,28 @@ class SubscriberSubscribeControllerTest extends \MailPoetTest {
     expect($subscriber->getStatus())->equals(SubscriberEntity::STATUS_UNCONFIRMED);
   }
 
+  public function testItReturnsInfoAboutErrorWhenConfirmationEmailFails(): void {
+    $confirmationEmailMailerMock = $this->createMock(ConfirmationEmailMailer::class);
+    $confirmationEmailMailerMock->method('sendConfirmationEmailOnce')
+      ->willThrowException(new \Exception('Confirmation email error'));
+    $subscriberActions = $this->getServiceWithOverrides(SubscriberActions::class, ['confirmationEmailMailer' => $confirmationEmailMailerMock]);
+    $subscriberController = $this->getServiceWithOverrides(SubscriberSubscribeController::class, ['subscriberActions' => $subscriberActions]);
+    $segment = $this->segmentsRepository->createOrUpdate('Segment 1');
+    $form = $this->createForm($segment);
+
+    $data = [
+      $this->obfuscatedEmail => 'subscriber' . rand(0, 10000) . '@example.com',
+      $this->obfuscatedSegments => [$segment->getId()],
+      'form_id' => $form->getId(),
+    ];
+    $result = $subscriberController->subscribe($data);
+
+    $subscriber = $this->subscribersRepository->findOneBy(['email' => $data[$this->obfuscatedEmail]]);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
+    expect($result)->hasKey('error');
+    expect($result['error'])->equals('Confirmation email error');
+  }
+
   public function testItCanSubscribeSubscriberWithCustomField(): void {
     $this->settings->set('signup_confirmation.enabled', false);
     $segment = $this->segmentsRepository->createOrUpdate('Segment 1');
