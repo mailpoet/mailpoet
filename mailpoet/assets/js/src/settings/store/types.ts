@@ -104,6 +104,8 @@ export type Settings = {
     enabled: '1' | '';
     subject: string;
     body: string;
+    use_mailpoet_editor: '1' | '';
+    transactional_email_id: string;
   };
   woocommerce: {
     use_mailpoet_editor: '1' | '';
