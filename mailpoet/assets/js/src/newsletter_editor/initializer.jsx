@@ -7,7 +7,7 @@ import { fetchAutomaticEmailShortcodes } from 'newsletters/automatic_emails/fetc
 import { initTutorial } from './tutorial';
 
 const renderHeading = (newsletterType, newsletterOptions) => {
-  if (newsletterType !== 'wc_transactional') {
+  if (!['wc_transactional', 'confirmation_email'].includes(newsletterType)) {
     const stepsHeadingContainer = document.getElementById(
       'mailpoet_editor_steps_heading',
     );
