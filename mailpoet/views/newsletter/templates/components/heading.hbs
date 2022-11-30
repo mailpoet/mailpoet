@@ -12,6 +12,18 @@
   </div>
 {{else if isAutomationEmail}}
 
+{{else if isConfirmationEmailTemplate}}
+  <h3><%= _x('Edit template for Confirmation emails.', 'Name of user interface used to customize email template used for confirmation emails') %></h3>
+  <div class="mailpoet_form_field mailpoet_heading_form_field">
+    <input
+      type="text"
+      class="mailpoet_input mailpoet_input_title"
+      data-automation-id="newsletter_title"
+      value="{{ model.subject }}"
+      placeholder="<%= __('Click here to change the subject!') %>"
+    />
+    <span id="tooltip-designer-subject-line" class="tooltip-help-designer-subject-line"></span>
+  </div>
 {{else}}
 <div class="mailpoet_form_field mailpoet_heading_form_field">
   <input

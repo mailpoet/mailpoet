@@ -26,6 +26,9 @@ Module.NewsletterModel = SuperModel.extend({
   isAutomationEmail: function isAutomationEmail() {
     return this.get('type') === 'automation';
   },
+  isConfirmationEmailTemplate: function isConfirmationEmailTemplate() {
+    return this.get('type') === 'confirmation_email';
+  },
 });
 
 // Content block view and model handlers for different content types

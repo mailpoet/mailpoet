@@ -17,6 +17,7 @@ Module.HeadingView = Marionette.View.extend({
       model: this.model.toJSON(),
       isWoocommerceTransactional: this.model.isWoocommerceTransactional(),
       isAutomationEmail: this.model.isAutomationEmail(),
+      isConfirmationEmailTemplate: this.model.isConfirmationEmailTemplate(),
     };
   },
   // eslint-disable-next-line func-names
@@ -41,29 +42,32 @@ Module.HeadingView = Marionette.View.extend({
 // eslint-disable-next-line func-names
 App.on('start', function (StartApp) {
   var model = StartApp.getNewsletter();
+
+  var subjectToolTip = document.getElementById('tooltip-designer-subject-line');
+  var preheaderToolTip = document.getElementById('tooltip-designer-preheader');
+
   StartApp._appView.showChildView(
     'headingRegion',
     new Module.HeadingView({ model: model }),
   );
   if (!model.isWoocommerceTransactional() && !model.isAutomationEmail()) {
-    MailPoet.helpTooltip.show(
-      document.getElementById('tooltip-designer-subject-line'),
-      {
+    if (subjectToolTip) {
+      MailPoet.helpTooltip.show(subjectToolTip, {
         tooltipId: 'tooltip-designer-subject-line-ti',
         tooltip: MailPoet.I18n.t('helpTooltipDesignerSubjectLine'),
         place: 'right',
-      },
-    );
-    MailPoet.helpTooltip.show(
-      document.getElementById('tooltip-designer-preheader'),
-      {
+      });
+    }
+
+    if (preheaderToolTip) {
+      MailPoet.helpTooltip.show(preheaderToolTip, {
         tooltipId: 'tooltip-designer-preheader-ti',
         tooltip:
           MailPoet.I18n.t('helpTooltipDesignerPreheader') +
           ' ' +
           MailPoet.I18n.t('helpTooltipDesignerPreheaderWarning'),
-      },
-    );
+      });
+    }
   }
 });
 
