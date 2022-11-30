@@ -106,6 +106,10 @@ Module.SaveView = Marionette.View.extend({
       woocommerceCustomizerEnabled: App.getConfig().get(
         'woocommerceCustomizerEnabled',
       ),
+      isConfirmationEmailTemplate: this.model.isConfirmationEmailTemplate(),
+      confirmationEmailCustomizerEnabled: App.getConfig().get(
+        'confirmationEmailCustomizerEnabled',
+      ),
     };
   },
   events: {
@@ -121,6 +125,9 @@ Module.SaveView = Marionette.View.extend({
     /* WooCommerce */
     'click .mailpoet_save_activate_wc_customizer_button':
       'activateWooCommerceCustomizer',
+    /* Confirmation email */
+    'click .mailpoet_save_activate_confirmation_email_customizer_button':
+      'activateConfirmationEmailCustomizer',
     /* Automation email */
     'click .mailpoet_save_go_to_automation': 'saveAndGoToAutomation',
     'click .mailpoet_show_preview': 'showPreview',
@@ -142,8 +149,15 @@ Module.SaveView = Marionette.View.extend({
     this.validateNewsletter(App.toJSON());
   },
   save: function () {
-    this.hideSaveOptions();
-    App.getChannel().request('save');
+    if (this.model.isConfirmationEmailTemplate()) {
+      if (!this.$('.mailpoet_save_button').hasClass('button-disabled')) {
+        this.hideSaveOptions();
+        App.getChannel().request('save');
+      }
+    } else {
+      this.hideSaveOptions();
+      App.getChannel().request('save');
+    }
   },
   beforeSave: function () {
     // TODO: Add a loading animation instead
@@ -365,6 +379,14 @@ Module.SaveView = Marionette.View.extend({
     }
 
     if (
+      App.getConfig().get('validation.validateActivationLinkIsPresent') &&
+      body.indexOf('[activation_link]') < 0
+    ) {
+      this.showValidationError(MailPoet.I18n.t('activationLinkIsMissing'));
+      return;
+    }
+
+    if (
       newsletter.get('type') === 're_engagement' &&
       body.indexOf('[link:subscription_re_engage_url]') < 0
     ) {
@@ -404,10 +426,17 @@ Module.SaveView = Marionette.View.extend({
   showValidationError: function (message) {
     this.showError(message);
     this.$('.mailpoet_save_next').addClass('button-disabled');
+
+    if (this.model.isConfirmationEmailTemplate()) {
+      this.$('.mailpoet_save_button').addClass('button-disabled');
+    }
   },
   hideValidationError: function () {
     this.hideError();
     this.$('.mailpoet_save_next').removeClass('button-disabled');
+    if (this.model.isConfirmationEmailTemplate()) {
+      this.$('.mailpoet_save_button').removeClass('button-disabled');
+    }
   },
   activateWooCommerceCustomizer: function () {
     var $el = $('.mailpoet_save_woocommerce_customizer_disabled');
@@ -422,6 +451,24 @@ Module.SaveView = Marionette.View.extend({
       .done(function () {
         $el.addClass('mailpoet_hidden');
         MailPoet.trackEvent('Editor > WooCommerce email customizer enabled');
+      })
+      .fail(function (response) {
+        MailPoet.Notice.showApiErrorNotice(response, { scroll: true });
+      });
+  },
+  activateConfirmationEmailCustomizer: function () {
+    var $el = $('.mailpoet_save_confirmation_email_disabled');
+    return MailPoet.Ajax.post({
+      api_version: window.mailpoet_api_version,
+      endpoint: 'settings',
+      action: 'set',
+      data: {
+        'signup_confirmation.use_mailpoet_editor': 1,
+      },
+    })
+      .done(function () {
+        $el.addClass('mailpoet_hidden');
+        MailPoet.trackEvent('Editor > Confirmation email customizer enabled');
       })
       .fail(function (response) {
         MailPoet.Notice.showApiErrorNotice(response, { scroll: true });
@@ -569,6 +616,18 @@ Module.NewsletterPreviewView = Marionette.View.extend({
 
     if (data.subscriber.length <= 0) {
       MailPoet.Notice.error(MailPoet.I18n.t('newsletterPreviewEmailMissing'), {
+        positionAfter: $emailField,
+        scroll: true,
+      });
+      return false;
+    }
+
+    // don't send preview if activation_link is missing
+    if (
+      App.getConfig().get('validation.validateActivationLinkIsPresent') &&
+      $('.mailpoet_save_button').hasClass('button-disabled')
+    ) {
+      MailPoet.Notice.error(MailPoet.I18n.t('activationLinkIsMissing'), {
         positionAfter: $emailField,
         scroll: true,
       });
