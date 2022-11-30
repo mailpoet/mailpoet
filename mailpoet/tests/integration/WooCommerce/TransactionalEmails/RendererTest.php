@@ -10,6 +10,7 @@ use MailPoet\Newsletter\Editor\LayoutHelper as L;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Renderer\Preprocessor;
 use MailPoet\Newsletter\Renderer\Renderer as NewsletterRenderer;
+use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\csstidy;
 
 /**
@@ -111,7 +112,8 @@ class RendererTest extends \MailPoetTest {
         $wooPreprocessor
       ),
       $this->diContainer->get(\MailPoetVendor\CSS::class),
-      $this->diContainer->get(ServicesChecker::class)
+      $this->diContainer->get(ServicesChecker::class),
+      $this->diContainer->get(WPFunctions::class)
     );
   }
 }

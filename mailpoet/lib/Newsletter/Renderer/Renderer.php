@@ -29,18 +29,23 @@ class Renderer {
   /** @var ServicesChecker */
   private $servicesChecker;
 
+  /** @var WPFunctions */
+  private $wp;
+
   public function __construct(
     Blocks\Renderer $blocksRenderer,
     Columns\Renderer $columnsRenderer,
     Preprocessor $preprocessor,
     \MailPoetVendor\CSS $cSSInliner,
-    ServicesChecker $servicesChecker
+    ServicesChecker $servicesChecker,
+    WPFunctions $wp
   ) {
     $this->blocksRenderer = $blocksRenderer;
     $this->columnsRenderer = $columnsRenderer;
     $this->preprocessor = $preprocessor;
     $this->cSSInliner = $cSSInliner;
     $this->servicesChecker = $servicesChecker;
+    $this->wp = $wp;
   }
 
   public function render(NewsletterEntity $newsletter, SendingTask $sendingTask = null, $type = false) {
@@ -194,7 +199,7 @@ class Renderer {
     // because tburry/pquery contains a bug and replaces the opening non mso condition incorrectly we have to replace the opening tag with correct value
     $template = $templateDom->__toString();
     $template = str_replace('<!--[if !mso]><![endif]-->', '<!--[if !mso]><!-- -->', $template);
-    $template = WPFunctions::get()->applyFilters(
+    $template = $this->wp->applyFilters(
       self::FILTER_POST_PROCESS,
       $template
     );
