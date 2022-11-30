@@ -37,6 +37,9 @@ class ConfirmationEmailMailer {
   /** @var SubscriptionUrlFactory */
   private $subscriptionUrlFactory;
 
+  /** @var ConfirmationEmailCustomizer */
+  private $confirmationEmailCustomizer;
+
   /** @var array Cache for confirmation emails sent within a request */
   private $sentEmails = [];
 
@@ -45,7 +48,8 @@ class ConfirmationEmailMailer {
     WPFunctions $wp,
     SettingsController $settings,
     SubscribersRepository $subscribersRepository,
-    SubscriptionUrlFactory $subscriptionUrlFactory
+    SubscriptionUrlFactory $subscriptionUrlFactory,
+    ConfirmationEmailCustomizer $confirmationEmailCustomizer
   ) {
     $this->mailerFactory = $mailerFactory;
     $this->wp = $wp;
@@ -53,6 +57,7 @@ class ConfirmationEmailMailer {
     $this->mailerMetaInfo = new MetaInfo;
     $this->subscriptionUrlFactory = $subscriptionUrlFactory;
     $this->subscribersRepository = $subscribersRepository;
+    $this->confirmationEmailCustomizer = $confirmationEmailCustomizer;
   }
 
   /**
@@ -68,29 +73,17 @@ class ConfirmationEmailMailer {
     return $this->sendConfirmationEmail($subscriber);
   }
 
-  /**
-   * @throws \Exception if unable to send the email.
-   */
-  public function sendConfirmationEmail(SubscriberEntity $subscriber) {
-    $signupConfirmation = $this->settings->get('signup_confirmation');
-    if ((bool)$signupConfirmation['enabled'] === false) {
-      return false;
-    }
-    if (!$this->wp->isUserLoggedIn() && $subscriber->getConfirmationsCount() >= self::MAX_CONFIRMATION_EMAILS) {
-      return false;
-    }
+  public function buildEmailData(string $subject, string $html, string $text): array {
+    return [
+      'subject' => $subject,
+      'body' => [
+        'html' => $html,
+        'text' => $text,
+      ],
+    ];
+  }
 
-    $authorizationEmailsValidation = $this->settings->get(AuthorizedEmailsController::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING);
-    $unauthorizedSenderEmail = isset($authorizationEmailsValidation['invalid_sender_address']);
-    if (Bridge::isMPSendingServiceEnabled() && $unauthorizedSenderEmail) {
-      return false;
-    }
-
-    $segments = $subscriber->getSegments()->toArray();
-    $segmentNames = array_map(function(SegmentEntity $segment) {
-      return $segment->getName();
-    }, $segments);
-
+  public function getMailBody(array $signupConfirmation, SubscriberEntity $subscriber, array $segmentNames): array {
     $body = nl2br($signupConfirmation['body']);
 
     // replace list of segments shortcode
@@ -118,14 +111,67 @@ class ConfirmationEmailMailer {
       true
     );
 
-    // build email data
-    $email = [
-      'subject' => $subject,
-      'body' => [
-        'html' => $body,
-        'text' => $text,
-      ],
-    ];
+    return $this->buildEmailData($subject, $body, $text);
+  }
+
+  public function getMailBodyWithCustomizer(SubscriberEntity $subscriber, array $segmentNames): array {
+    $newsletter = $this->confirmationEmailCustomizer->getNewsletter();
+
+    $renderedNewsletter = $this->confirmationEmailCustomizer->render($newsletter);
+
+    $stringBody = Helpers::joinObject($renderedNewsletter);
+
+    // replace list of segments shortcode
+    $body = (string)str_replace(
+      '[lists_to_confirm]',
+      join(', ', $segmentNames),
+      $stringBody
+    );
+
+    // replace activation link
+    $body = (string)str_replace(
+      '[activation_link]',
+      $this->subscriptionUrlFactory->getConfirmationUrl($subscriber),
+      $body
+    );
+
+    [
+      $html,
+      $text,
+      $subject,
+    ] = Helpers::splitObject(Shortcodes::process($body, null, $newsletter, $subscriber, null));
+
+    return $this->buildEmailData($subject, $html, $text);
+  }
+
+  /**
+   * @throws \Exception if unable to send the email.
+   */
+  public function sendConfirmationEmail(SubscriberEntity $subscriber) {
+    $signupConfirmation = $this->settings->get('signup_confirmation');
+    if ((bool)$signupConfirmation['enabled'] === false) {
+      return false;
+    }
+    if (!$this->wp->isUserLoggedIn() && $subscriber->getConfirmationsCount() >= self::MAX_CONFIRMATION_EMAILS) {
+      return false;
+    }
+
+    $authorizationEmailsValidation = $this->settings->get(AuthorizedEmailsController::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING);
+    $unauthorizedSenderEmail = isset($authorizationEmailsValidation['invalid_sender_address']);
+    if (Bridge::isMPSendingServiceEnabled() && $unauthorizedSenderEmail) {
+      return false;
+    }
+
+    $segments = $subscriber->getSegments()->toArray();
+    $segmentNames = array_map(function(SegmentEntity $segment) {
+      return $segment->getName();
+    }, $segments);
+
+    $IsConfirmationEmailCustomizerEnabled = (bool)$this->settings->get(ConfirmationEmailCustomizer::SETTING_ENABLE_EMAIL_CUSTOMIZER, false);
+
+    $email = $IsConfirmationEmailCustomizerEnabled ?
+      $this->getMailBodyWithCustomizer($subscriber, $segmentNames) :
+      $this->getMailBody($signupConfirmation, $subscriber, $segmentNames);
 
     // send email
     $extraParams = [
