@@ -137,6 +137,9 @@ describe('Save', function () {
       model.isAutomationEmail = function () {
         return false;
       };
+      model.isConfirmationEmailTemplate = function () {
+        return false;
+      };
       view = new SaveComponent.SaveView({ model: model });
       expect(view.render).to.not.throw();
     });
@@ -151,6 +154,9 @@ describe('Save', function () {
           return false;
         };
         model.isAutomationEmail = function () {
+          return false;
+        };
+        model.isConfirmationEmailTemplate = function () {
           return false;
         };
         view = new SaveComponent.SaveView({ model: model });
@@ -200,6 +206,9 @@ describe('Save', function () {
           return false;
         };
         model.isAutomationEmail = function () {
+          return false;
+        };
+        model.isConfirmationEmailTemplate = function () {
           return false;
         };
         view = new SaveComponent.SaveView({ model: model });
@@ -282,6 +291,9 @@ describe('Save', function () {
         model.isAutomationEmail = function () {
           return false;
         };
+        model.isConfirmationEmailTemplate = function () {
+          return false;
+        };
         view = new module.SaveView({ model: model });
         view.render();
 
@@ -313,6 +325,9 @@ describe('Save', function () {
           return false;
         };
         model.isAutomationEmail = function () {
+          return false;
+        };
+        model.isConfirmationEmailTemplate = function () {
           return false;
         };
         view = new module.SaveView({ model: model });
