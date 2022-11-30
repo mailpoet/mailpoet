@@ -83,7 +83,8 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
       $this->diContainer->get(WPFunctions::class),
       $this->diContainer->get(SettingsController::class),
       $this->diContainer->get(SubscribersRepository::class),
-      $subcriptionUrlFactoryMock
+      $subcriptionUrlFactoryMock,
+      $this->diContainer->get(ConfirmationEmailCustomizer::class)
     );
 
     $segment = $this->segmentFactory->withName('Test segment')->create();
@@ -113,7 +114,8 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
       $this->diContainer->get(WPFunctions::class),
       $this->diContainer->get(SettingsController::class),
       $this->diContainer->get(SubscribersRepository::class),
-      $this->diContainer->get(SubscriptionUrlFactory::class)
+      $this->diContainer->get(SubscriptionUrlFactory::class),
+      $this->diContainer->get(ConfirmationEmailCustomizer::class)
     );
 
     $this->expectException(\Exception::class);
@@ -133,7 +135,8 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
       $this->diContainer->get(WPFunctions::class),
       $this->diContainer->get(SettingsController::class),
       $this->diContainer->get(SubscribersRepository::class),
-      $this->diContainer->get(SubscriptionUrlFactory::class)
+      $this->diContainer->get(SubscriptionUrlFactory::class),
+      $this->diContainer->get(ConfirmationEmailCustomizer::class)
     );
 
     $this->expectException(\Exception::class);
@@ -156,7 +159,8 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
       $this->diContainer->get(WPFunctions::class),
       $this->diContainer->get(SettingsController::class),
       $this->diContainer->get(SubscribersRepository::class),
-      $this->diContainer->get(SubscriptionUrlFactory::class)
+      $this->diContainer->get(SubscriptionUrlFactory::class),
+      $this->diContainer->get(ConfirmationEmailCustomizer::class)
     );
 
     $result = $sender->sendConfirmationEmail($this->subscriber);
@@ -180,7 +184,8 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
       $this->diContainer->get(WPFunctions::class),
       $this->diContainer->get(SettingsController::class),
       $this->diContainer->get(SubscribersRepository::class),
-      $this->diContainer->get(SubscriptionUrlFactory::class)
+      $this->diContainer->get(SubscriptionUrlFactory::class),
+      $this->diContainer->get(ConfirmationEmailCustomizer::class)
     );
 
     for ($i = 0; $i < $sender::MAX_CONFIRMATION_EMAILS; $i++) {
@@ -205,7 +210,8 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
       $this->diContainer->get(WPFunctions::class),
       $this->diContainer->get(SettingsController::class),
       $this->diContainer->get(SubscribersRepository::class),
-      $this->diContainer->get(SubscriptionUrlFactory::class)
+      $this->diContainer->get(SubscriptionUrlFactory::class),
+      $this->diContainer->get(ConfirmationEmailCustomizer::class)
     );
 
     for ($i = 0; $i < $sender::MAX_CONFIRMATION_EMAILS; $i++) {
