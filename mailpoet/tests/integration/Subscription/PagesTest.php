@@ -4,6 +4,7 @@ namespace MailPoet\Test\Subscription;
 
 use Codeception\Stub;
 use MailPoet\Config\Renderer;
+use MailPoet\Cron\Workers\StatsNotifications\NewsletterLinkRepository;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterOptionEntity;
@@ -18,8 +19,10 @@ use MailPoet\Form\AssetsController;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Scheduler\WelcomeScheduler;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
+use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\TrackingConfig;
+use MailPoet\Statistics\StatisticsClicksRepository;
 use MailPoet\Statistics\StatisticsUnsubscribesRepository;
 use MailPoet\Statistics\Track\SubscriberHandler;
 use MailPoet\Statistics\Track\Unsubscribes;
@@ -34,6 +37,7 @@ use MailPoet\Subscription\Pages;
 use MailPoet\Subscription\SubscriptionUrlFactory;
 use MailPoet\Test\DataFactories\NewsletterOption as NewsletterOptionFactory;
 use MailPoet\Test\DataFactories\Segment as SegmentFactory;
+use MailPoet\Test\DataFactories\Subscriber;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
@@ -53,6 +57,12 @@ class PagesTest extends \MailPoetTest {
   /*** @var StatisticsUnsubscribesRepository */
   private $statisticsUnsubscribesRepository;
 
+  /*** @var StatisticsClicksRepository */
+  private $statisticsClicksRepository;
+
+  /*** @var LinkTokens */
+  private $linkTokens;
+
   public function _before() {
     parent::_before();
     $this->subscribersRepository = $this->diContainer->get(SubscribersRepository::class);
@@ -63,9 +73,9 @@ class PagesTest extends \MailPoetTest {
     $this->subscriber->setStatus(SubscriberEntity::STATUS_UNCONFIRMED);
     $this->subscribersRepository->persist($this->subscriber);
     $this->subscribersRepository->flush();
-    $linkTokens = $this->diContainer->get(LinkTokens::class);
+    $this->linkTokens = $this->diContainer->get(LinkTokens::class);
     $this->testData['email'] = $this->subscriber->getEmail();
-    $this->testData['token'] = $linkTokens->getToken($this->subscriber);
+    $this->testData['token'] = $this->linkTokens->getToken($this->subscriber);
   }
 
   public function testItConfirmsSubscription() {
@@ -209,30 +219,43 @@ class PagesTest extends \MailPoetTest {
 
   public function testItUnsubscribesAndTracksCorrectMethod() {
     SettingsController::getInstance()->set('tracking.level', TrackingConfig::LEVEL_PARTIAL);
-    $this->testData['queueId'] = 1; // just a random queueId
-    $pages = $this->getPages()->init($action = 'unsubscribe', $this->testData);
+    $subscriber = (new Subscriber())->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)->create();
+    $testData = [
+      'email' => $subscriber->getEmail(),
+      'queueId' => 1, // just a random queueId,
+      'token' => $this->linkTokens->getToken($subscriber),
+    ];
+    $pages = $this->getPages()->init('unsubscribe', $testData);
 
     // with link method
     $pages->unsubscribe(StatisticsUnsubscribeEntity::METHOD_LINK);
-    $updatedSubscriber = $this->subscribersRepository->findOneById($this->subscriber->getId());
+    $updatedSubscriber = $this->subscribersRepository->findOneById($subscriber->getId());
     $this->assertInstanceOf(SubscriberEntity::class, $updatedSubscriber);
 
     expect($updatedSubscriber->getStatus())->equals(SubscriberEntity::STATUS_UNSUBSCRIBED);
     $unsubscriptionStat = $this->statisticsUnsubscribesRepository->findOneBy(['subscriber' => $updatedSubscriber->getId()]);
-    expect($unsubscriptionStat->getMethod() === StatisticsUnsubscribeEntity::METHOD_LINK);
-    expect($unsubscriptionStat->getSource() === StatisticsUnsubscribeEntity::SOURCE_NEWSLETTER);
+    expect($unsubscriptionStat->getMethod())->equals( StatisticsUnsubscribeEntity::METHOD_LINK);
+    expect($unsubscriptionStat->getSource())->equals(StatisticsUnsubscribeEntity::SOURCE_NEWSLETTER);
 
     $this->statisticsUnsubscribesRepository->remove($unsubscriptionStat);
+    $this->statisticsUnsubscribesRepository->flush();
 
     // with one-click method
+    $subscriber = (new Subscriber())->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)->create();
+    $testData = [
+      'email' => $subscriber->getEmail(),
+      'queueId' => 1, // just a random queueId,
+      'token' => $this->linkTokens->getToken($subscriber),
+    ];
+    $pages = $this->getPages()->init('unsubscribe', $testData);
     $pages->unsubscribe(StatisticsUnsubscribeEntity::METHOD_ONE_CLICK);
-    $updatedSubscriber = $this->subscribersRepository->findOneById($this->subscriber->getId());
+    $updatedSubscriber = $this->subscribersRepository->findOneById($subscriber->getId());
     $this->assertInstanceOf(SubscriberEntity::class, $updatedSubscriber);
 
     expect($updatedSubscriber->getStatus())->equals(SubscriberEntity::STATUS_UNSUBSCRIBED);
     $unsubscriptionStat = $this->statisticsUnsubscribesRepository->findOneBy(['subscriber' => $updatedSubscriber->getId()]);
-    expect($unsubscriptionStat->getMethod() === StatisticsUnsubscribeEntity::METHOD_ONE_CLICK);
-    expect($unsubscriptionStat->getSource() === StatisticsUnsubscribeEntity::SOURCE_NEWSLETTER);
+    expect($unsubscriptionStat->getMethod())->equals(StatisticsUnsubscribeEntity::METHOD_ONE_CLICK);
+    expect($unsubscriptionStat->getSource())->equals(StatisticsUnsubscribeEntity::SOURCE_NEWSLETTER);
 
   }
 
@@ -269,7 +292,10 @@ class PagesTest extends \MailPoetTest {
       $container->get(TrackingConfig::class),
       $container->get(EntityManager::class),
       $container->get(SubscriberSaveController::class),
-      $container->get(SubscriberSegmentRepository::class)
+      $container->get(SubscriberSegmentRepository::class),
+      $container->get(NewsletterLinkRepository::class),
+      $container->get(StatisticsClicksRepository::class),
+      $container->get(SendingQueuesRepository::class)
     );
   }
 
