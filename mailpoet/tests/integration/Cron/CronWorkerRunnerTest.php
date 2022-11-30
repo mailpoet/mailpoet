@@ -221,7 +221,7 @@ class CronWorkerRunnerTest extends \MailPoetTest {
       $cronWorkerRunner->run($worker);
       self::fail('Maximum execution time limit exception was not thrown.');
     } catch (\Exception $e) {
-      expect($e->getMessage())->same('Maximum execution time has been reached.');
+      expect($e->getMessage())->startsWith('The maximum execution time');
     }
   }
 
