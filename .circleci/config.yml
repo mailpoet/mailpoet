@@ -661,15 +661,6 @@ workflows:
       - integration_tests:
           <<: *slack-fail-post-step
           group: woo
-          name: integration_test_woocommerce
-          requires:
-            - unit_tests
-            - static_analysis_php8
-            - qa_js
-            - qa_php
-      - integration_tests:
-          <<: *slack-fail-post-step
-          group: woo
           enable_cot: 1
           enable_cot_sync: 1
           name: integration_test_woo_cot_sync
@@ -729,7 +720,6 @@ workflows:
             - build
             - acceptance_tests_base_and_woo_cot_off
             - js_tests
-            - integration_test_woocommerce
             - integration_test_base
             - integration_test_woo_cot_no_sync
             - integration_test_woo_cot_off
