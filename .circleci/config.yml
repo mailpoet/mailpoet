@@ -626,7 +626,7 @@ workflows:
             - build
       - acceptance_tests:
           <<: *slack-fail-post-step
-          name: acceptance_tests
+          name: acceptance_tests_base_and_woo_cot_off
           requires:
             - unit_tests
             - static_analysis_php8
@@ -736,7 +736,7 @@ workflows:
           <<: *slack-fail-post-step
           requires:
             - build
-            - acceptance_tests
+            - acceptance_tests_base_and_woo_cot_off
             - js_tests
             - integration_test_woocommerce
             - integration_test_base
