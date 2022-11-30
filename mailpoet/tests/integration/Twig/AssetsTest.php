@@ -5,6 +5,7 @@ namespace MailPoet\Test\Twig;
 use MailPoet\Config\Env;
 use MailPoet\Twig\Assets;
 use MailPoet\Util\CdnAssetUrl;
+use MailPoet\WP\Functions as WPFunctions;
 
 class AssetsTest extends \MailPoetTest {
   public $assetsExtension;
@@ -22,6 +23,7 @@ class AssetsTest extends \MailPoetTest {
         'assets_manifest_css' => false,
         'version' => $this->version,
       ],
+      WPFunctions::get(),
       new CdnAssetUrl('')
     );
   }
@@ -38,6 +40,7 @@ class AssetsTest extends \MailPoetTest {
         'assets_manifest_js' => $manifest,
         'version' => $this->version,
       ],
+      WPFunctions::get(),
       new CdnAssetUrl('')
     );
 
@@ -76,6 +79,7 @@ class AssetsTest extends \MailPoetTest {
         'assets_manifest_css' => $manifest,
         'version' => $this->version,
       ],
+      WPFunctions::get(),
       new CdnAssetUrl('')
     );
 
