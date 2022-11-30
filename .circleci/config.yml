@@ -654,15 +654,6 @@ workflows:
             - static_analysis_php8
             - qa_js
             - qa_php
-      - acceptance_tests:
-          <<: *slack-fail-post-step
-          name: acceptance_tests_woo_cot_off
-          group: woo
-          requires:
-            - unit_tests
-            - static_analysis_php8
-            - qa_js
-            - qa_php
       - js_tests:
           <<: *slack-fail-post-step
           requires:
@@ -744,7 +735,6 @@ workflows:
             - integration_test_woo_cot_off
             - integration_test_woo_cot_sync
             - acceptance_tests_woo_cot_sync
-            - acceptance_tests_woo_cot_off
             - acceptance_tests_woo_cot_no_sync
 
   nightly:
