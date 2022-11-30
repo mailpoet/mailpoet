@@ -21,6 +21,7 @@ use MailPoet\Settings\SettingsChangeHandler;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\TrackingConfig;
 use MailPoet\Statistics\StatisticsOpensRepository;
+use MailPoet\Subscribers\ConfirmationEmailCustomizer;
 use MailPoet\Subscribers\SubscribersCountsController;
 use MailPoet\Util\Notices\DisabledMailFunctionNotice;
 use MailPoet\WooCommerce\TransactionalEmails;
@@ -81,6 +82,9 @@ class Settings extends APIEndpoint {
   /** @var SettingsChangeHandler */
   private $settingsChangeHandler;
 
+  /** @var ConfirmationEmailCustomizer */
+  private $confirmationEmailCustomizer;
+
   public function __construct(
     SettingsController $settings,
     Bridge $bridge,
@@ -97,7 +101,8 @@ class Settings extends APIEndpoint {
     SegmentsRepository $segmentsRepository,
     SettingsChangeHandler $settingsChangeHandler,
     SubscribersCountsController $subscribersCountsController,
-    TrackingConfig $trackingConfig
+    TrackingConfig $trackingConfig,
+    ConfirmationEmailCustomizer $confirmationEmailCustomizer
   ) {
     $this->settings = $settings;
     $this->bridge = $bridge;
@@ -115,6 +120,7 @@ class Settings extends APIEndpoint {
     $this->settingsChangeHandler = $settingsChangeHandler;
     $this->subscribersCountsController = $subscribersCountsController;
     $this->trackingConfig = $trackingConfig;
+    $this->confirmationEmailCustomizer = $confirmationEmailCustomizer;
   }
 
   public function get() {
@@ -389,6 +395,10 @@ class Settings extends APIEndpoint {
 
     if (!empty($newSettings['woocommerce']['use_mailpoet_editor'])) {
       $this->wcTransactionalEmails->init();
+    }
+
+    if (!empty($newSettings['signup_confirmation']['use_mailpoet_editor'])) {
+      $this->confirmationEmailCustomizer->init();
     }
   }
 
