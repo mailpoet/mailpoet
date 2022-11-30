@@ -16,6 +16,9 @@ describe('Heading', function () {
       model.isAutomationEmail = function () {
         return false;
       };
+      model.isConfirmationEmailTemplate = function () {
+        return false;
+      };
       view = new HeadingComponent.HeadingView({
         model: model,
       });
@@ -36,6 +39,9 @@ describe('Heading', function () {
           return false;
         };
         model.isAutomationEmail = function () {
+          return false;
+        };
+        model.isConfirmationEmailTemplate = function () {
           return false;
         };
         view = new HeadingComponent.HeadingView({
