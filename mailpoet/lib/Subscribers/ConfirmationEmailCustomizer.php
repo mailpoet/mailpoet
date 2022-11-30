@@ -15,7 +15,6 @@ class ConfirmationEmailCustomizer {
   /** @var SettingsController */
   private $settings;
 
-
   /** @var NewslettersRepository */
   private $newslettersRepository;
 
