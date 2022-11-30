@@ -5,7 +5,7 @@ import { Link, withRouter } from 'react-router-dom';
 import ReactStringReplace from 'react-string-replace';
 
 import { Toggle } from 'common/form/toggle/toggle';
-import { Tags } from 'common/tag/tags';
+import { SegmentTags } from 'common/tag/tags';
 import { ScheduledIcon } from 'common/listings/newsletter_status';
 import { Listing } from 'listing/listing.jsx';
 import { MailPoet } from 'mailpoet';
@@ -238,7 +238,7 @@ class NewsletterListReEngagementComponent extends Component {
     const sendingToSegments = ReactStringReplace(
       MailPoet.I18n.t('sendTo'),
       '%1$s',
-      (match, i) => <Tags segments={newsletter.segments} key={i} />,
+      (match, i) => <SegmentTags segments={newsletter.segments} key={i} />,
     );
 
     let frequencyKey = 'reEngagementFrequencyMonth';

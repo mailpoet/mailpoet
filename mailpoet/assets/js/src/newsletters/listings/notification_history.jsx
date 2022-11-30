@@ -11,7 +11,7 @@ import {
   checkCronStatus,
   checkMailerStatus,
 } from 'newsletters/listings/utils.jsx';
-import { Tags } from 'common/tag/tags';
+import { SegmentTags } from 'common/tag/tags';
 
 const mailpoetTrackingEnabled = MailPoet.trackingConfig.emailTrackingEnabled;
 
@@ -147,7 +147,7 @@ const renderItem = (newsletter, actions, meta) => {
         className="column mailpoet-hide-on-mobile"
         data-colname={MailPoet.I18n.t('lists')}
       >
-        <Tags segments={newsletter.segments} dimension="large" />
+        <SegmentTags segments={newsletter.segments} dimension="large" />
       </td>
       {mailpoetTrackingEnabled === true ? (
         <td

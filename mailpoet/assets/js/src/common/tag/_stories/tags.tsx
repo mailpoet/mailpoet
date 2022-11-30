@@ -1,5 +1,5 @@
 import { Heading } from 'common/typography/heading/heading';
-import { Tags } from '../tags';
+import { SegmentTags, StringTags } from '../tags';
 
 export default {
   title: 'Tags',
@@ -18,15 +18,20 @@ export function Segments() {
     <>
       <Heading level={1}>Tags</Heading>
       <Heading level={2}>Segments</Heading>
-      <Tags segments={segments} dimension="large" />
+      <SegmentTags segments={segments} dimension="large" />
       <div className="mailpoet-gap" />
-      <Tags segments={segments}>
+      <SegmentTags segments={segments}>
         <span>Prefix: </span>
-      </Tags>
+      </SegmentTags>
       <Heading level={2}>Strings</Heading>
-      <Tags strings={strings} dimension="large" variant="good" />
+      <StringTags strings={strings} dimension="large" variant="good" />
       <div className="mailpoet-gap" />
-      <Tags strings={strings} dimension="large" variant="good" isInverted />
+      <StringTags
+        strings={strings}
+        dimension="large"
+        variant="good"
+        isInverted
+      />
     </>
   );
 }

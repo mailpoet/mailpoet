@@ -1,7 +1,7 @@
 import { MailPoet } from 'mailpoet';
 import { Heading } from 'common/typography/heading/heading';
 import { Grid } from 'common/grid';
-import { Button, Tags } from 'common';
+import { Button, SegmentTags } from 'common';
 import { NewsletterType } from './newsletter_type';
 
 type Props = {
@@ -28,7 +28,7 @@ export function NewsletterStatsInfo({ newsletter }: Props) {
               {MailPoet.I18n.t('statsToSegments')}
             </span>
             {': '}
-            <Tags dimension="large" segments={newsletter.segments} />
+            <SegmentTags dimension="large" segments={newsletter.segments} />
           </div>
         )}
       </div>

@@ -3,7 +3,7 @@ import jQuery from 'jquery';
 import { Link, useLocation } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
-import { Button, Tags } from 'common';
+import { Button, SegmentTags, SubscriberTags } from 'common';
 import { Listing } from 'listing/listing.jsx';
 import { MailPoet } from 'mailpoet';
 import { Modal } from 'common/modal/modal.tsx';
@@ -439,11 +439,11 @@ function SubscriberList({ match }) {
           {status}
         </td>
         <td className="column" data-colname={MailPoet.I18n.t('lists')}>
-          <Tags segments={subscribedSegments} dimension="large" />
+          <SegmentTags segments={subscribedSegments} dimension="large" />
         </td>
         <td className="column" data-colname={MailPoet.I18n.t('tags')}>
-          <Tags
-            subscriberTags={subscriber.tags}
+          <SubscriberTags
+            subscribers={subscriber.tags}
             variant="wordpress"
             isInverted
           />
