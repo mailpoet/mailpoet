@@ -7,7 +7,7 @@ import { Button } from 'common';
 import { Listing } from 'listing/listing.jsx';
 import { MailPoet } from 'mailpoet';
 import { plusIcon } from 'common/button/icon/plus';
-import { Tags } from 'common/tag/tags';
+import { SegmentTags } from 'common/tag/tags';
 import { Toggle } from 'common/form/toggle/toggle';
 import { withNpsPoll } from 'nps_poll.jsx';
 import { FormsHeading, onAddNewForm } from './heading';
@@ -248,13 +248,13 @@ class FormListComponent extends Component {
           {actions}
         </td>
         <td className="column" data-colname={MailPoet.I18n.t('segments')}>
-          <Tags segments={segments} dimension="large">
+          <SegmentTags segments={segments} dimension="large">
             {form.settings.segments_selected_by === 'user' && (
               <span className="mailpoet-tags-prefix">
                 {MailPoet.I18n.t('userChoice')}
               </span>
             )}
-          </Tags>
+          </SegmentTags>
         </td>
         <td className="column" data-colname={MailPoet.I18n.t('type')}>
           {placement}

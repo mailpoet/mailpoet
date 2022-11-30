@@ -15,7 +15,7 @@ import {
   monthDayValues,
   nthWeekDayValues,
 } from 'newsletters/scheduling/common.jsx';
-import { Tags } from 'common/tag/tags';
+import { SegmentTags } from 'common/tag/tags';
 import { Toggle } from 'common/form/toggle/toggle';
 
 import {
@@ -227,7 +227,7 @@ class NewsletterListNotificationComponent extends Component {
     const sendingToSegments = ReactStringReplace(
       MailPoet.I18n.t('sendTo'),
       '%1$s',
-      (match, i) => <Tags segments={newsletter.segments} key={i} />,
+      (match, i) => <SegmentTags segments={newsletter.segments} key={i} />,
     );
 
     // set sending frequency

@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
 
 import { confirmAlert } from 'common/confirm_alert.jsx';
-import { Tags } from 'common/tag/tags';
+import { SegmentTags } from 'common/tag/tags';
 import { Listing } from 'listing/listing.jsx';
 import { QueueStatus } from 'newsletters/listings/queue_status.jsx';
 import { Statistics } from 'newsletters/listings/statistics.jsx';
@@ -218,7 +218,7 @@ class NewsletterListStandardComponent extends Component {
           className="column mailpoet-hide-on-mobile"
           data-colname={MailPoet.I18n.t('lists')}
         >
-          <Tags segments={newsletter.segments} dimension="large" />
+          <SegmentTags segments={newsletter.segments} dimension="large" />
         </td>
         {mailpoetTrackingEnabled === true ? (
           <td

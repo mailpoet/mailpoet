@@ -13,7 +13,7 @@ import {
 import { Listing } from 'listing/listing.jsx';
 import { MailPoet } from 'mailpoet';
 import { NewsletterTypes } from 'newsletters/types';
-import { ScheduledIcon, Tags, Toggle } from 'common';
+import { ScheduledIcon, StringTags, Toggle } from 'common';
 import { Statistics } from 'newsletters/listings/statistics.jsx';
 
 const mailpoetTrackingEnabled = MailPoet.trackingConfig.emailTrackingEnabled;
@@ -269,13 +269,13 @@ class ListingsComponent extends Component {
       displayText = ReactStringReplace(
         event.listingScheduleDisplayTextPlural,
         '%s',
-        (match, i) => <Tags strings={metaOptionValues} key={i} />,
+        (match, i) => <StringTags strings={metaOptionValues} key={i} />,
       );
     } else {
       displayText = ReactStringReplace(
         event.listingScheduleDisplayText,
         '%s',
-        (match, i) => <Tags strings={metaOptionValues} key={i} />,
+        (match, i) => <StringTags strings={metaOptionValues} key={i} />,
       );
     }
 
