@@ -92,7 +92,7 @@ class SubscribersLastEngagementTest extends \MailPoetTest {
       $exception = $e;
     }
     $this->assertInstanceOf(\Exception::class, $exception);
-    expect($exception->getMessage())->equals('Maximum execution time has been reached.');
+    expect($exception->getMessage())->startsWith('The maximum execution time');
     $result = $this->worker->processTaskStrategy($task, microtime(true));
     expect($result)->true();
   }

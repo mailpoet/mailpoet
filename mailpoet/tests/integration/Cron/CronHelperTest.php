@@ -265,7 +265,7 @@ class CronHelperTest extends \MailPoetTest {
       $this->cronHelper->enforceExecutionLimit($time - $this->cronHelper->getDaemonExecutionLimit());
       self::fail('Execution limit exception not thrown.');
     } catch (\Exception $e) {
-      expect($e->getMessage())->equals('Maximum execution time has been reached.');
+      expect($e->getMessage())->startsWith('The maximum execution time');
     }
   }
 

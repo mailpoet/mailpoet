@@ -143,7 +143,7 @@ class InactiveSubscribersTest extends \MailPoetTest {
     ]);
 
     $this->expectException(\Exception::class);
-    $this->expectExceptionMessage('Maximum execution time has been reached.');
+    $this->expectExceptionCode(CronHelper::DAEMON_EXECUTION_LIMIT_REACHED);
     $worker->processTaskStrategy(new ScheduledTaskEntity(), microtime(true) - $this->cronHelper->getDaemonExecutionLimit());
   }
 }
