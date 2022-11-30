@@ -12,14 +12,19 @@ use MailPoetVendor\Twig\TwigFunction;
 class Assets extends AbstractExtension {
   private $globals;
 
+  /** @var WPFunctions  */
+  private $wp;
+
   /** @var CdnAssetUrl|null */
   private $cdnAssetsUrl;
 
   public function __construct(
     array $globals,
+    WPFunctions $wp,
     CdnAssetUrl $cdnAssetsUrl = null
   ) {
     $this->globals = $globals;
+    $this->wp = $wp;
     $this->cdnAssetsUrl = $cdnAssetsUrl;
   }
 
@@ -50,6 +55,11 @@ class Assets extends AbstractExtension {
         [$this, 'generateCdnUrl'],
         ['is_safe' => ['all']]
       ),
+      new TwigFunction(
+        'language',
+        [$this, 'language'],
+        ['is_safe' => ['all']]
+      ),
     ];
   }
 
@@ -66,6 +76,10 @@ class Assets extends AbstractExtension {
     }
 
     return join("\n", $output);
+  }
+
+  public function language() {
+    return $this->wp->getBlogInfo('language');
   }
 
   public function generateJavascript() {

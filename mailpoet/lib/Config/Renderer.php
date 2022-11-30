@@ -3,6 +3,7 @@
 namespace MailPoet\Config;
 
 use MailPoet\Twig;
+use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Twig\Extension\DebugExtension;
 use MailPoetVendor\Twig\Lexer as TwigLexer;
 use MailPoetVendor\Twig\Loader\FilesystemLoader as TwigFileSystem;
@@ -78,7 +79,8 @@ class Renderer {
       'assets_url' => Env::$assetsUrl,
       'assets_manifest_js' => $this->assetsManifestJs,
       'assets_manifest_css' => $this->assetsManifestCss,
-    ]));
+    ],
+      WPFunctions::get()));
   }
 
   public function setupSyntax() {
