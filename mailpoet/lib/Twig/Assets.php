@@ -78,8 +78,17 @@ class Assets extends AbstractExtension {
     return join("\n", $output);
   }
 
+  /**
+   * Returns the language, which is currently loaded.
+   * This function is used to add the language tag for our system emails like stats notifications.
+   */
   public function language() {
-    return $this->wp->getBlogInfo('language');
+
+    // If we do not have a translation, the language of the mail will be English.
+    if (!is_textdomain_loaded('mailpoet')) {
+      return 'en';
+    }
+    return (string)$this->wp->getBlogInfo('language');
   }
 
   public function generateJavascript() {
