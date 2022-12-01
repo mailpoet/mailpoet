@@ -190,6 +190,7 @@ class Worker {
   public static function getShortcodeLinksMapping() {
     return [
       NewsletterLinkEntity::UNSUBSCRIBE_LINK_SHORT_CODE => __('Unsubscribe link', 'mailpoet'),
+      NewsletterLinkEntity::INSTANT_UNSUBSCRIBE_LINK_SHORT_CODE => __('Unsubscribe link (without confirmation)', 'mailpoet'),
       '[link:subscription_manage_url]' => __('Manage subscription link', 'mailpoet'),
       '[link:newsletter_view_in_browser_url]' => __('View in browser link', 'mailpoet'),
     ];
