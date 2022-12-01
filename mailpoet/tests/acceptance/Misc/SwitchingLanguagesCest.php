@@ -18,7 +18,7 @@ class SwitchingLanguagesCest {
     $i->wantTo('Update translations to make sure strings are downloaded');
 
     // translations may not be scheduled for update yet, retry multiple times in that case
-    for ($attemtps = 0; $attemtps < 3; $attemtps++) {
+    for ($attemtps = 0; $attemtps < 5; $attemtps++) {
       try {
         $i->wait($attemtps);
         $i->amOnAdminPage('update-core.php');
