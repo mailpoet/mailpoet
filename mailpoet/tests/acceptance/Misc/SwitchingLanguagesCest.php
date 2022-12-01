@@ -8,6 +8,11 @@ use Throwable;
 
 class SwitchingLanguagesCest {
   public function switchLanguage(AcceptanceTester $i): void {
+    // We don't want to run the test on release branch because in our release process
+    // the language packs are not prepared at the time we crate the branch
+    if (getenv('CIRCLE_BRANCH') === 'release') {
+      return;
+    }
     $i->login();
 
     $i->wantTo('Switch WordPress language to German');
