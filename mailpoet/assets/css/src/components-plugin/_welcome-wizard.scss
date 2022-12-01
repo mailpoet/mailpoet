@@ -35,6 +35,7 @@
   align-items: center;
   display: flex;
   justify-content: center;
+  margin-top: 8px;
 
   @include respond-to(medium-screen) {
     flex-direction: column;
@@ -42,7 +43,7 @@
 }
 
 .mailpoet-wizard-step-illustration {
-  margin-right: $grid-gap;
+  margin-right: $grid-gap-xl;
   max-width: $grid-column;
   text-align: center;
   width: 100%;
@@ -63,11 +64,15 @@
 }
 
 .mailpoet-wizard-step-content {
-  max-width: $grid-column-small + $grid-gap + $grid-column;
+  max-width: 480px;
   width: 100%;
 
   @include respond-to(medium-screen) {
     max-width: $grid-column;
+  }
+
+  .mailpoet-button {
+    height: 36px;
   }
 }
 
