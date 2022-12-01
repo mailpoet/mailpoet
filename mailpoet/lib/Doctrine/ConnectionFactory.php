@@ -65,9 +65,10 @@ class ConnectionFactory {
     $driverOptions = [
       "@@session.time_zone = '$timezoneOffset'",
       "@@session.sql_mode = REPLACE(
-        REPLACE(@@sql_mode, 'ONLY_FULL_GROUP_BY', ''),
-        'ANSI_QUOTES', ''
-        )", // This is needed because ONLY_FULL_GROUP_BY mode in MariaDB is much more restrictive than in MySQL
+        REPLACE(
+          REPLACE(@@sql_mode, 'ONLY_FULL_GROUP_BY', ''),
+        '_QUOTES', ''
+        ), 'ANSI', '')", // This is needed because ONLY_FULL_GROUP_BY mode in MariaDB is much more restrictive than in MySQL
       // We need to use CONVERT for MySQL 8, Maria DB bug which triggers #1232 - Incorrect argument type to variable 'wait_timeout`
       // https://stackoverflow.com/questions/35187378/mariadb-type-error-when-setting-session-variable
       "@@session.wait_timeout = GREATEST(CONVERT(COALESCE(@@wait_timeout, 0), SIGNED), $this->minWaitTimeout)",
