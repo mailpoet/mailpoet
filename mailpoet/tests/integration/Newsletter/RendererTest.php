@@ -655,6 +655,28 @@ class RendererTest extends \MailPoetTest {
     wp_delete_post($postId, true);
   }
 
+  public function testItRendersLanguageAttribute() {
+    $currentLanguageOption = $this->currentGlobalLocale();
+    $this->setGlobalLocale('fr_FR');
+    $expectedLanguage = 'fr-FR';
+
+    $template = $this->renderer->render($this->newsletter);
+    $DOM = $this->dOMParser->parseStr($template['html']);
+    $html = $DOM->query('html');
+    $this->setGlobalLocale($currentLanguageOption);
+    $this->assertEquals($expectedLanguage, $html->attr('lang'));
+  }
+
+  private function currentGlobalLocale() {
+    global $locale;
+    return $locale;
+  }
+
+  private function setGlobalLocale($value) {
+    global $locale;
+    $locale = $value;
+  }
+
   public function makeAttachment($upload, $parentPostId = 0) {
     if (!function_exists( 'wp_crop_image' )) {
       include( ABSPATH . 'wp-admin/includes/image.php' );
