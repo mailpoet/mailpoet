@@ -4,19 +4,9 @@ import { WelcomeWizardStepLayoutBody } from './step_layout_body.jsx';
 
 function WelcomeWizardStepLayout(props) {
   return (
-    <>
-      <div className="mailpoet-wizard-logo">
-        <img
-          src={window.mailpoet_logo_url}
-          width="160"
-          height="50"
-          alt="MailPoet logo"
-        />
-      </div>
-      <WelcomeWizardStepLayoutBody illustrationUrl={props.illustrationUrl}>
-        {props.children}
-      </WelcomeWizardStepLayoutBody>
-    </>
+    <WelcomeWizardStepLayoutBody illustrationUrl={props.illustrationUrl}>
+      {props.children}
+    </WelcomeWizardStepLayoutBody>
   );
 }
 

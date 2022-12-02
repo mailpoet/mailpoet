@@ -17,6 +17,7 @@ import {
 } from './steps_numbers.jsx';
 import { Steps } from '../common/steps/steps';
 import { StepsContent } from '../common/steps/steps_content';
+import { TopBar } from '../common/top_bar/top_bar';
 
 function WelcomeWizardStepsController(props) {
   const stepsCount = getStepsCount();
@@ -101,7 +102,9 @@ function WelcomeWizardStepsController(props) {
 
   return (
     <>
-      <Steps count={stepsCount} current={step} />
+      <TopBar>
+        <Steps count={stepsCount} current={step} />
+      </TopBar>
       <StepsContent>
         {stepName === 'WelcomeWizardSenderStep' ? (
           <WelcomeWizardStepLayout
