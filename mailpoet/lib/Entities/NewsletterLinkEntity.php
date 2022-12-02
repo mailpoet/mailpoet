@@ -21,6 +21,7 @@ class NewsletterLinkEntity {
 
   public const UNSUBSCRIBE_LINK_SHORT_CODE = '[link:subscription_unsubscribe_url]';
   public const INSTANT_UNSUBSCRIBE_LINK_SHORT_CODE = '[link:subscription_instant_unsubscribe_url]';
+  public const UNSUBSCRIBE_LINK_SHORTCODES = [self::UNSUBSCRIBE_LINK_SHORT_CODE, self::INSTANT_UNSUBSCRIBE_LINK_SHORT_CODE];
 
   /**
    * @ORM\ManyToOne(targetEntity="MailPoet\Entities\NewsletterEntity")
