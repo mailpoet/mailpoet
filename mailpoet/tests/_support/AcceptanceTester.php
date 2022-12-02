@@ -455,6 +455,8 @@ class AcceptanceTester extends \Codeception\Actor {
     if ($doRegister) {
       $i->logOut();
     }
+    // ensure action scheduler jobs are done
+    $i->triggerMailPoetActionScheduler();
   }
 
   /**
