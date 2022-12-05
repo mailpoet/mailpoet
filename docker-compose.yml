@@ -15,6 +15,7 @@ services:
     volumes:
       - my-datavolume:/var/lib/mysql
       - ./dev/database/create_test_db.sh:/docker-entrypoint-initdb.d/10-create_test_db.sh
+    command: --sql_mode=STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION,ANSI,ONLY_FULL_GROUP_BY
     environment:
       MYSQL_ROOT_PASSWORD: somewordpress
       MYSQL_DATABASE: wordpress
