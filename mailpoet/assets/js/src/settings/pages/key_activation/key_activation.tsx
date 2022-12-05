@@ -86,6 +86,34 @@ type Props = {
   subscribersCount: number;
 };
 
+const premiumTabDescription = ReactStringReplace(
+  t('premiumTabDescription'),
+  /\[link\](.*?)\[\/link\]/g,
+  (text) => (
+    <a
+      href="https://account.mailpoet.com/account?utm_source=plugin&utm_medium=settings&utm_campaign=activate-existing-plan&ref=settings-key-activation"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      {text}
+    </a>
+  ),
+);
+
+const premiumTabGetKey = ReactStringReplace(
+  t('premiumTabGetKey'),
+  /\[link\](.*?)\[\/link\]/g,
+  (text) => (
+    <a
+      href="https://account.mailpoet.com/account?utm_source=plugin&utm_medium=settings&utm_campaign=activate-existing-plan&ref=settings-key-activation"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      {text}
+    </a>
+  ),
+);
+
 export function KeyActivation({ subscribersCount }: Props) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { notices } = useContext<any>(GlobalContext);
@@ -154,34 +182,10 @@ export function KeyActivation({ subscribersCount }: Props) {
         title={t('premiumTabActivationKeyLabel')}
         description={
           <>
-            {ReactStringReplace(
-              t('premiumTabDescription'),
-              /\[link\](.*?)\[\/link\]/g,
-              (text) => (
-                <a
-                  href="https://account.mailpoet.com/account?utm_source=plugin&utm_medium=settings&utm_campaign=activate-existing-plan&ref=settings-key-activation"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {text}
-                </a>
-              ),
-            )}
+            {premiumTabDescription}
             <br />
             <br />
-            {ReactStringReplace(
-              t('premiumTabGetKey'),
-              /\[link\](.*?)\[\/link\]/g,
-              (text) => (
-                <a
-                  href="https://account.mailpoet.com/account?utm_source=plugin&utm_medium=settings&utm_campaign=activate-existing-plan&ref=settings-key-activation"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {text}
-                </a>
-              ),
-            )}
+            {premiumTabGetKey}
             <br />
             <br />
             {ReactStringReplace(
