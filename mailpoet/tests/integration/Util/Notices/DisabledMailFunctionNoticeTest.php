@@ -1,17 +1,16 @@
-<?php
+<?php declare(strict_types = 1);
 
 namespace MailPoet\Util\Notices;
 
-use Codeception\Util\Stub;
 use Codeception\Stub\Expected;
+use Codeception\Util\Stub;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\MailerFactory;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 use MailPoet\WP\Functions as WPFunctions;
 
-class DisabledMailFunctionNoticeTest extends \MailPoetTest
-{
+class DisabledMailFunctionNoticeTest extends \MailPoetTest {
   /** @var SettingsController */
   private $settings;
 
