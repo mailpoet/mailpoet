@@ -4,7 +4,7 @@ import { curry } from 'lodash';
 import { parseISO } from 'date-fns';
 
 import { Datepicker } from '../common/datepicker/datepicker';
-import { Button, Input } from '../common';
+import { Button, ErrorBoundary, Input } from '../common';
 import { Icon } from '../listing/assets/search_icon';
 
 type LogData = {
@@ -66,6 +66,7 @@ function Log({ log }: LogProps): JSX.Element {
   );
 }
 
+Log.displayName = 'Log';
 export type FilterType = {
   from?: string;
   to?: string;
@@ -153,21 +154,23 @@ function List({
         </div>
         <div className="mailpoet-listing-filters">
           {`${MailPoet.I18n.t('from')}:`}
-          <Datepicker
-            dateFormat="MMMM d, yyyy"
-            onChange={dateChanged(setFrom)}
-            maxDate={new Date()}
-            selected={from ? parseISO(from) : undefined}
-            dimension="small"
-          />
-          {`${MailPoet.I18n.t('to')}:`}
-          <Datepicker
-            dateFormat="MMMM d, yyyy"
-            onChange={dateChanged(setTo)}
-            maxDate={new Date()}
-            selected={to ? parseISO(to) : undefined}
-            dimension="small"
-          />
+          <ErrorBoundary>
+            <Datepicker
+              dateFormat="MMMM d, yyyy"
+              onChange={dateChanged(setFrom)}
+              maxDate={new Date()}
+              selected={from ? parseISO(from) : undefined}
+              dimension="small"
+            />
+            {`${MailPoet.I18n.t('to')}:`}
+            <Datepicker
+              dateFormat="MMMM d, yyyy"
+              onChange={dateChanged(setTo)}
+              maxDate={new Date()}
+              selected={to ? parseISO(to) : undefined}
+              dimension="small"
+            />
+          </ErrorBoundary>
         </div>
         <div className="mailpoet-logs-limit">
           <label htmlFor="offset_input" className="screen-reader-text">
@@ -211,9 +214,11 @@ function List({
           </tr>
         </thead>
         <tbody>
-          {logs.map((log) => (
-            <Log log={log} key={`log-${log.id}`} />
-          ))}
+          <ErrorBoundary>
+            {logs.map((log) => (
+              <Log log={log} key={`log-${log.id}`} />
+            ))}
+          </ErrorBoundary>
         </tbody>
       </table>
     </div>
