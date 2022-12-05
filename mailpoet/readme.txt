@@ -3,7 +3,7 @@ Contributors: mailpoet
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 5.8
 Tested up to: 6.1
-Stable tag: 4.1.0
+Stable tag: 4.1.1
 Requires PHP: 7.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -218,6 +218,13 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 4.1.1 - 2022-12-05 =
+* Improved: the 3rd-party libraries description in Welcome Wizard;
+* Improved: display a warning if sending function is not available;
+* Fixed: Column not found error experienced by some users;
+* Fixed: wc_get_page_id causes an error when WooCommerce is not installed;
+* Fixed: block settings in email editor look broken.
 
 = 4.1.0 - 2022-11-28 =
 * Improved: don't automatically activate MailPoet Sending Service for Creator plans;
