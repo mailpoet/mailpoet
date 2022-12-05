@@ -104,7 +104,7 @@ services:
     # Command used for MySQL 8+ because it needs default-authentication-plugin
     # parameter and there needs to be some fallback for other MySQL versions.
     # --verbose can be changed to any other useless parameter
-    command: ${MYSQL_COMMAND:---verbose}
+    command: ${MYSQL_COMMAND:---verbose --sql_mode=STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION,ANSI,ONLY_FULL_GROUP_BY}
     environment:
       MYSQL_ROOT_PASSWORD: wordpress
       MYSQL_DATABASE: wordpress
