@@ -36,6 +36,9 @@ wp config set WP_AUTO_UPDATE_CORE false --raw
 mysqladmin --host=mysql --user=root --password=wordpress drop wordpress --force
 mysqladmin --host=mysql --user=root --password=wordpress create wordpress --force
 
+# print sql_mode
+mysql -u wordpress -pwordpress wordpress -h mysql -e "SELECT @@global.sql_mode"
+
 # install WordPress
 WP_CORE_INSTALL_PARAMS="--url=$HTTP_HOST --title=tests --admin_user=admin --admin_email=test@test.com --admin_password=password --skip-email"
 if [[ -z "$MULTISITE" || "$MULTISITE" -eq "0" ]]; then
