@@ -178,11 +178,11 @@ class WooCommerceSubscriptionTest extends \MailPoetTest {
     update_post_meta( $orderId, '_customer_user', $user );
 
     foreach ($productIds as $productId) {
-      $sql = 'insert into ' . $wpdb->prefix . 'woocommerce_order_items (order_id,order_item_type) values (' . $orderId . ', "line_item")';
+      $sql = "insert into " . $wpdb->prefix . "woocommerce_order_items (order_id,order_item_type) values (" . $orderId . ", 'line_item')";
       $wpdb->query($sql);
       $sql = 'select LAST_INSERT_ID() as id';
       $lineItemId = $wpdb->get_col($sql)[0];
-      $sql = 'insert into ' . $wpdb->prefix . 'woocommerce_order_itemmeta (order_item_id, meta_key, meta_value) values (' . $lineItemId . ', "_product_id", "' . $productId . '")';
+      $sql = "insert into " . $wpdb->prefix . "woocommerce_order_itemmeta (order_item_id, meta_key, meta_value) values (" . $lineItemId . ", '_product_id', '" . $productId . "')";
       $wpdb->query($sql);
     }
 

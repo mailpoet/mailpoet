@@ -123,8 +123,8 @@ class Migration extends SimpleWorker {
     global $wpdb;
     $query = sprintf(
       'SELECT queues.`task_id` FROM %1$s queues INNER JOIN %2$s tasks ON queues.`task_id` = tasks.`id` ' .
-      'WHERE tasks.`type` = "sending" AND (tasks.`status` IS NULL OR tasks.`status` = "paused") ' .
-      'AND queues.`subscribers` != "" AND queues.`subscribers` != "N;"' .
+      'WHERE tasks.`type` = \'sending\' AND (tasks.`status` IS NULL OR tasks.`status` = \'paused\') ' .
+      'AND queues.`subscribers` != \'\' AND queues.`subscribers` != \'N;\'' .
       'AND queues.`count_total` > (SELECT COUNT(*) FROM %3$s subs WHERE subs.`task_id` = queues.`task_id`)',
       esc_sql($this->getTableName(SendingQueueEntity::class)),
       esc_sql($this->getTableName(ScheduledTaskEntity::class)),
@@ -163,7 +163,7 @@ class Migration extends SimpleWorker {
           // phpcs:ignore WordPressDotOrg.sniffs.DirectDB.UnescapedDBParameter
           $wpdb->query(sprintf(
             'INSERT IGNORE INTO %1$s (`type`, %2$s) ' .
-            'SELECT "sending", %2$s FROM %3$s WHERE `id` = %4$s',
+            'SELECT \'sending\', %2$s FROM %3$s WHERE `id` = %4$s',
             $this->getTableName(ScheduledTaskEntity::class),
             '`' . join('`, `', $columnList) . '`',
             $this->getTableName(SendingQueueEntity::class),

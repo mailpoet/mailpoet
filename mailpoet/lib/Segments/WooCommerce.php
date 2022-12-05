@@ -204,11 +204,11 @@ class WooCommerce {
     }
     global $wpdb;
     $mailpoetEmailColumn = $wpdb->get_row(
-      'SHOW FULL COLUMNS FROM ' . MP_SUBSCRIBERS_TABLE . ' WHERE Field = "email"'
+      "SHOW FULL COLUMNS FROM " . MP_SUBSCRIBERS_TABLE . " WHERE Field = 'email'"
     );
     $this->mailpoetEmailCollation = $mailpoetEmailColumn->Collation; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     $wpPostmetaValueColumn = $wpdb->get_row(
-      'SHOW FULL COLUMNS FROM ' . $wpdb->postmeta . ' WHERE Field = "meta_value"'
+      "SHOW FULL COLUMNS FROM " . $wpdb->postmeta . " WHERE Field = 'meta_value'"
     );
     $this->wpPostmetaValueCollation = $wpPostmetaValueColumn->Collation; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
   }
