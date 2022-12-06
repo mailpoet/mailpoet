@@ -181,6 +181,11 @@ class WooCheckoutBlocksCest {
     $i->seeConfirmationEmailWasNotReceived();
   }
 
+  /**
+   * This method is almost identical with the other one in AcceptanceTester,
+   * but we need to use the exact checkout post. Also, there are some differences
+   * in UI, and clicks for subscription and registration are slightly changed.
+   */
   private function orderProduct(\AcceptanceTester $i, string $userEmail, bool $doRegister = true, bool $doSubscribe = true): void {
     $i->addProductToCart($this->product);
     $i->amOnPage("/?p={$this->checkoutPostId}");
@@ -194,6 +199,8 @@ class WooCheckoutBlocksCest {
     }
     $this->placeOrder($i);
     $i->logOut();
+    // ensure action scheduler jobs are done
+    $i->triggerMailPoetActionScheduler();
   }
 
   private function configureBlocksCheckoutPage(\AcceptanceTester $i): int {
