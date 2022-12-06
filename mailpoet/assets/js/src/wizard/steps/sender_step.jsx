@@ -13,7 +13,11 @@ function WelcomeWizardSenderStep(props) {
       </Heading>
 
       <div className="mailpoet-gap" />
-      <p>{MailPoet.I18n.t('welcomeWizardSenderText')}</p>
+      <p>
+        <b>{MailPoet.I18n.t('welcomeWizardSenderTitle')}</b>
+        <br />
+        {MailPoet.I18n.t('welcomeWizardSenderText')}
+      </p>
       <div className="mailpoet-gap" />
 
       <form
