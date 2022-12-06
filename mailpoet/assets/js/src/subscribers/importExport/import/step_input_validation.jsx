@@ -1,8 +1,9 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
 import { CleanList } from 'subscribers/importExport/import/clean_list';
+import { ErrorBoundary } from 'common';
 import { InitialQuestion } from './step_input_validation/initial_question.jsx';
 import { WrongSourceBlock } from './step_input_validation/wrong_source_block.jsx';
 import { LastSentQuestion } from './step_input_validation/last_sent_question.jsx';
@@ -30,17 +31,23 @@ function StepInputValidationComponent({ stepMethodSelectionData, history }) {
   return (
     <>
       {importSource === undefined && (
-        <InitialQuestion onSubmit={setImportSource} history={history} />
+        <ErrorBoundary>
+          <InitialQuestion onSubmit={setImportSource} history={history} />
+        </ErrorBoundary>
       )}
 
       {importSource === 'address-book' && <WrongSourceBlock />}
 
       {importSource === 'existing-list' && lastSent === undefined && (
-        <LastSentQuestion onSubmit={lastSentSubmit} />
+        <ErrorBoundary>
+          <LastSentQuestion onSubmit={lastSentSubmit} />
+        </ErrorBoundary>
       )}
 
       {importSource === 'existing-list' && lastSent === 'notRecently' && (
-        <CleanList />
+        <ErrorBoundary>
+          <CleanList />
+        </ErrorBoundary>
       )}
     </>
   );

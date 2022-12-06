@@ -78,5 +78,5 @@ SelectImportMethod.propTypes = {
 SelectImportMethod.defaultProps = {
   activeMethod: undefined,
 };
-
+SelectImportMethod.displayName = 'SelectImportMethod';
 export { SelectImportMethod };

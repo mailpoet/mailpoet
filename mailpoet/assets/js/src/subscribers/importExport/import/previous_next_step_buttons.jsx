@@ -47,5 +47,5 @@ PreviousNextStepButtons.defaultProps = {
   onPreviousAction: () => {},
   onNextAction: () => {},
 };
-
+PreviousNextStepButtons.displayName = 'PreviousNextStepButtons';
 export { PreviousNextStepButtons };

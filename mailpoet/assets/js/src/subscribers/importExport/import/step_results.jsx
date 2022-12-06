@@ -6,6 +6,7 @@ import { withRouter } from 'react-router-dom';
 import ReactStringReplace from 'react-string-replace';
 
 import { Button } from 'common/button/button';
+import { ErrorBoundary } from 'common';
 
 function ResultMessage({ subscribersCount, segments, initialMessage }) {
   if (subscribersCount) {
@@ -33,6 +34,7 @@ ResultMessage.defaultProps = {
   subscribersCount: 0,
   initialMessage: '',
 };
+ResultMessage.displayName = 'ResultMessage';
 
 function NoAction({ createdSubscribers, updatedSubscribers }) {
   if (!createdSubscribers && !updatedSubscribers) {
@@ -50,6 +52,7 @@ NoAction.defaultProps = {
   createdSubscribers: 0,
   updatedSubscribers: 0,
 };
+NoAction.displayName = 'NoAction';
 
 function SuppressionListReminder({ createdSubscribers, updatedSubscribers }) {
   if (createdSubscribers || updatedSubscribers) {
@@ -91,6 +94,7 @@ SuppressionListReminder.defaultProps = {
   createdSubscribers: 0,
   updatedSubscribers: 0,
 };
+SuppressionListReminder.displayName = 'SuppressionListReminder';
 
 function NoWelcomeEmail({ addedToSegmentWithWelcomeNotification }) {
   if (addedToSegmentWithWelcomeNotification) {
@@ -106,6 +110,7 @@ NoWelcomeEmail.propTypes = {
 NoWelcomeEmail.defaultProps = {
   addedToSegmentWithWelcomeNotification: false,
 };
+NoWelcomeEmail.diplayName = 'NoWelcomeEmail';
 
 function StepResultsComponent({
   errors,
@@ -136,31 +141,35 @@ function StepResultsComponent({
   }
   return (
     <>
-      <div className="updated">
-        <ResultMessage
-          subscribersCount={createdSubscribers}
-          segments={segments}
-          initialMessage={MailPoet.I18n.t('subscribersCreated')}
-        />
-        <ResultMessage
-          subscribersCount={updatedSubscribers}
-          segments={segments}
-          initialMessage={MailPoet.I18n.t('subscribersUpdated')}
-        />
-        <NoAction
+      <ErrorBoundary>
+        <div className="updated">
+          <ResultMessage
+            subscribersCount={createdSubscribers}
+            segments={segments}
+            initialMessage={MailPoet.I18n.t('subscribersCreated')}
+          />
+          <ResultMessage
+            subscribersCount={updatedSubscribers}
+            segments={segments}
+            initialMessage={MailPoet.I18n.t('subscribersUpdated')}
+          />
+          <NoAction
+            createdSubscribers={createdSubscribers}
+            updatedSubscribers={updatedSubscribers}
+          />
+          <NoWelcomeEmail
+            addedToSegmentWithWelcomeNotification={
+              addedToSegmentWithWelcomeNotification
+            }
+          />
+        </div>
+      </ErrorBoundary>
+      <ErrorBoundary>
+        <SuppressionListReminder
           createdSubscribers={createdSubscribers}
           updatedSubscribers={updatedSubscribers}
         />
-        <NoWelcomeEmail
-          addedToSegmentWithWelcomeNotification={
-            addedToSegmentWithWelcomeNotification
-          }
-        />
-      </div>
-      <SuppressionListReminder
-        createdSubscribers={createdSubscribers}
-        updatedSubscribers={updatedSubscribers}
-      />
+      </ErrorBoundary>
       <div className="mailpoet-settings-grid">
         <div className="mailpoet-settings-save">
           <Button
@@ -203,5 +212,5 @@ StepResultsComponent.defaultProps = {
   updatedSubscribers: undefined,
   addedToSegmentWithWelcomeNotification: undefined,
 };
-
+StepResultsComponent.displayName = 'StepResultsComponent';
 export const StepResults = withRouter(StepResultsComponent);

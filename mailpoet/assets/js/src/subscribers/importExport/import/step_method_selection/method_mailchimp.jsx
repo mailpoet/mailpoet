@@ -160,4 +160,6 @@ MethodMailChimp.defaultProps = {
   onPrevious: () => {},
 };
 
+MethodMailChimp.displayName = 'MethodMailChimp';
+
 export { MethodMailChimp };

@@ -70,5 +70,5 @@ MethodPaste.defaultProps = {
   onPrevious: () => {},
   data: '',
 };
-
+MethodPaste.displayName = 'MethodPaste';
 export { MethodPaste };

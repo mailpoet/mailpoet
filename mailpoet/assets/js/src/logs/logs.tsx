@@ -1,7 +1,7 @@
 import ReactDOM from 'react-dom';
 
-import { FilterType, List, Logs } from './list';
 import { ErrorBoundary } from 'common';
+import { FilterType, List, Logs } from './list';
 
 interface LogsWindow extends Window {
   mailpoet_logs: Logs;
