@@ -70,13 +70,13 @@ function WelcomeWizardSenderStep(props) {
           {MailPoet.I18n.t('continue')}
         </Button>
         <Button
-          href="#finish"
+          href="#skipStep"
           isDisabled={props.loading}
           isFullWidth
-          onClick={props.finish}
+          onClick={props.skipStep}
           variant="tertiary"
         >
-          {MailPoet.I18n.t('finishLater')}
+          {MailPoet.I18n.t('skipStep')}
         </Button>
       </form>
     </>
@@ -84,7 +84,7 @@ function WelcomeWizardSenderStep(props) {
 }
 
 WelcomeWizardSenderStep.propTypes = {
-  finish: PropTypes.func.isRequired,
+  skipStep: PropTypes.func.isRequired,
   loading: PropTypes.bool.isRequired,
   update_sender: PropTypes.func.isRequired,
   submit_sender: PropTypes.func.isRequired,
