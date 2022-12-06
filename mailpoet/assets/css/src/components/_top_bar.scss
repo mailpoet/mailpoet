@@ -29,7 +29,6 @@ $beamer-dot-size: 8px;
   }
 
   .mailpoet-top-bar-logo {
-    cursor: pointer;
     position: relative;
     top: 2px;
     z-index: 1;
@@ -38,6 +37,10 @@ $beamer-dot-size: 8px;
       max-height: 100%;
       max-width: 100%;
     }
+  }
+
+  a.mailpoet-top-bar-logo {
+    cursor: pointer;
   }
 }
 

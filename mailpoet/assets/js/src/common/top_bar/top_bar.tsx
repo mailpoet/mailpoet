@@ -10,16 +10,22 @@ type Props = {
   children?: ReactNode;
   hasNews?: boolean;
   onBeamerClick?: () => void;
+  logoWithLink?: boolean;
 };
 
-export function TopBar({ children, hasNews, onBeamerClick }: Props) {
+export function TopBar({
+  children,
+  hasNews,
+  onBeamerClick,
+  logoWithLink = true,
+}: Props) {
   const buttonClasses = classnames(
     'mailpoet-top-bar-beamer',
     hasNews ? 'mailpoet-top-bar-beamer-dot' : '',
   );
   return (
     <div className="mailpoet-top-bar">
-      <MailPoetLogoResponsive />
+      <MailPoetLogoResponsive withLink={logoWithLink} />
       <div className="mailpoet-top-bar-children">{children}</div>
       <div className="mailpoet-flex-grow" />
       {onBeamerClick && (
