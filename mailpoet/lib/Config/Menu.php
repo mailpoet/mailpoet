@@ -457,7 +457,7 @@ class Menu {
       [$this, 'experimentalFeatures']
     );
 
-    // display loggs page
+    // display logs page
     $this->wp->addSubmenuPage(
       true,
       $this->setPageTitle(__('Logs', 'mailpoet')),
