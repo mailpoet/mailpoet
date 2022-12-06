@@ -102,7 +102,7 @@ function WelcomeWizardStepsController(props) {
 
   return (
     <>
-      <TopBar>
+      <TopBar logoWithLink={false}>
         <Steps count={stepsCount} current={step} />
       </TopBar>
       <StepsContent>
