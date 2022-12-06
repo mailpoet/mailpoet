@@ -74,13 +74,17 @@ class Renderer {
   }
 
   public function setupGlobalVariables() {
-    $this->renderer->addExtension(new Twig\Assets([
-      'version' => Env::$version,
-      'assets_url' => Env::$assetsUrl,
-      'assets_manifest_js' => $this->assetsManifestJs,
-      'assets_manifest_css' => $this->assetsManifestCss,
-    ],
-      WPFunctions::get()));
+    $this->renderer->addExtension(
+      new Twig\Assets(
+        [
+          'version' => Env::$version,
+          'assets_url' => Env::$assetsUrl,
+          'assets_manifest_js' => $this->assetsManifestJs,
+          'assets_manifest_css' => $this->assetsManifestCss,
+        ],
+        WPFunctions::get()
+      )
+    );
   }
 
   public function setupSyntax() {
