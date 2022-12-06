@@ -71,5 +71,5 @@ MethodUpload.defaultProps = {
   onFinish: () => {},
   onPrevious: () => {},
 };
-
+MethodUpload.displayName = 'MethodUpload';
 export { MethodUpload };

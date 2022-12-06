@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { MailPoet } from 'mailpoet';
+import { ErrorBoundary } from 'common';
 import { SelectImportMethod } from './step_method_selection/select_import_method.jsx';
 import { MethodPaste } from './step_method_selection/method_paste.jsx';
 import { MethodUpload } from './step_method_selection/method_upload.jsx';
@@ -57,41 +58,51 @@ function StepMethodSelectionComponent({
 
   return (
     <div className="mailpoet-settings-grid">
-      <SelectImportMethod activeMethod={method} onMethodChange={setMethod} />
+      <ErrorBoundary>
+        <SelectImportMethod activeMethod={method} onMethodChange={setMethod} />
+      </ErrorBoundary>
       {method === 'paste-method' && (
-        <MethodPaste
-          onPrevious={previousStep}
-          onValueChange={setPastedCsvData}
-          onFinish={processLocal}
-          canFinish={!!pastedCsvData.trim()}
-          data={pastedCsvData}
-        />
+        <ErrorBoundary>
+          <MethodPaste
+            onPrevious={previousStep}
+            onValueChange={setPastedCsvData}
+            onFinish={processLocal}
+            canFinish={!!pastedCsvData.trim()}
+            data={pastedCsvData}
+          />
+        </ErrorBoundary>
       )}
       {method === 'file-method' && (
-        <MethodUpload
-          onPrevious={previousStep}
-          onValueChange={setFile}
-          onFinish={processLocal}
-          canFinish={!!file}
-          data={file}
-        />
+        <ErrorBoundary>
+          <MethodUpload
+            onPrevious={previousStep}
+            onValueChange={setFile}
+            onFinish={processLocal}
+            canFinish={!!file}
+            data={file}
+          />
+        </ErrorBoundary>
       )}
       {method === 'mailchimp-method' && (
-        <MethodMailChimp
-          onPrevious={previousStep}
-          onFinish={(data) => {
-            MailPoet.trackEvent('Subscribers import started', {
-              source: 'MailChimp',
-            });
-            finish(data);
-          }}
-        />
+        <ErrorBoundary>
+          <MethodMailChimp
+            onPrevious={previousStep}
+            onFinish={(data) => {
+              MailPoet.trackEvent('Subscribers import started', {
+                source: 'MailChimp',
+              });
+              finish(data);
+            }}
+          />
+        </ErrorBoundary>
       )}
       {method === undefined && (
-        <PreviousNextStepButtons
-          canGoNext={false}
-          onPreviousAction={previousStep}
-        />
+        <ErrorBoundary>
+          <PreviousNextStepButtons
+            canGoNext={false}
+            onPreviousAction={previousStep}
+          />
+        </ErrorBoundary>
       )}
     </div>
   );
@@ -104,5 +115,5 @@ StepMethodSelectionComponent.propTypes = {
   setStepMethodSelectionData: PropTypes.func.isRequired,
   subscribersLimitForValidation: PropTypes.number.isRequired,
 };
-
+StepMethodSelectionComponent.diplayName = 'StepMethodSelection';
 export const StepMethodSelection = withRouter(StepMethodSelectionComponent);

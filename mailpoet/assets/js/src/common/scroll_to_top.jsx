@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { withRouter } from 'react-router-dom';
+import { withBoundary } from './error_boundary';
 
 function ScrollToTopComponent({ children, location: { pathname } }) {
   useEffect(() => {
@@ -9,4 +10,5 @@ function ScrollToTopComponent({ children, location: { pathname } }) {
   return children || null;
 }
 
-export const ScrollToTop = withRouter(ScrollToTopComponent);
+ScrollToTopComponent.displayName = 'ScrollToTopComponent';
+export const ScrollToTop = withRouter(withBoundary(ScrollToTopComponent));

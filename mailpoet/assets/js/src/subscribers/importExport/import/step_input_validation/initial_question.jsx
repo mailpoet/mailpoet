@@ -57,5 +57,5 @@ InitialQuestion.propTypes = {
   }).isRequired,
   onSubmit: PropTypes.func.isRequired,
 };
-
+InitialQuestion.displayName = 'InitialQuestion';
 export { InitialQuestion };

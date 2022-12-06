@@ -5,6 +5,7 @@ import { ScrollToTop } from 'common/scroll_to_top.jsx';
 
 import { GlobalContext, useGlobalContextValue } from 'context/index.jsx';
 import { Notices } from 'notices/notices.jsx';
+import { withBoundary } from 'common';
 import { StepMethodSelection } from './import/step_method_selection.jsx';
 import { StepInputValidation } from './import/step_input_validation.jsx';
 import { StepDataManipulation } from './import/step_data_manipulation.jsx';
@@ -28,7 +29,7 @@ function ImportSubscribers() {
           <Switch>
             <Route
               path="/step_clean_list"
-              render={(props) => <StepCleanList {...props} />}
+              render={withBoundary(StepCleanList)}
             />
             <Route
               path="/step_method_selection"

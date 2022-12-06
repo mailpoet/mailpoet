@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import PropTypes from 'prop-types';
 import { MailPoet } from 'mailpoet';
 import { Button } from 'common/button/button';
@@ -63,5 +63,5 @@ function LastSentQuestion({ onSubmit }) {
 LastSentQuestion.propTypes = {
   onSubmit: PropTypes.func.isRequired,
 };
-
+LastSentQuestion.displayName = 'LastSentQuestion';
 export { LastSentQuestion };

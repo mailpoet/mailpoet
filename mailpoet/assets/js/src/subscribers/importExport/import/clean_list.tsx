@@ -5,7 +5,7 @@ type Props = {
   onProceed?: () => void;
 };
 
-export function CleanList({ onProceed }: Props): JSX.Element {
+function CleanList({ onProceed }: Props): JSX.Element {
   return (
     <div className="mailpoet-clean-list-step-container">
       <p>{MailPoet.I18n.t('cleanListText1')}</p>
@@ -26,3 +26,6 @@ export function CleanList({ onProceed }: Props): JSX.Element {
     </div>
   );
 }
+
+CleanList.displayName = 'CleanList';
+export { CleanList };
