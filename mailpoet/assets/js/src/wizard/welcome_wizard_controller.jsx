@@ -89,14 +89,10 @@ function WelcomeWizardStepsController(props) {
       updateSettings(
         createSenderSettings({ address: window.admin_email, name: '' }),
       ).then(() => {
-        if (window.mailpoet_woocommerce_active) {
-          redirect(stepsCount - 1);
-        } else {
-          finishWizard();
-        }
+        redirect(step);
       });
     },
-    [redirect, stepsCount],
+    [redirect, step],
   );
 
   const stepName = mapStepNumberToStepName(step);
@@ -115,7 +111,7 @@ function WelcomeWizardStepsController(props) {
               <WelcomeWizardSenderStep
                 update_sender={updateSender}
                 submit_sender={submitSender}
-                finish={skipSenderStep}
+                skipStep={skipSenderStep}
                 loading={loading}
                 sender={sender}
               />
