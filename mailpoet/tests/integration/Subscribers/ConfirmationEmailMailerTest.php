@@ -119,7 +119,7 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
     );
 
     $this->expectException(\Exception::class);
-    $this->expectExceptionMessage(__('Something went wrong with your subscription. Please contact the website owner.', 'mailpoet'));
+    $this->expectExceptionMessage(__('There was an error when sending a confirmation email for your subscription. Please contact the website owner.', 'mailpoet'));
     $sender->sendConfirmationEmail($this->subscriber);
   }
 
@@ -143,7 +143,7 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
     } catch (\Exception $e) {
       $exceptionMessage = $e->getMessage();
     }
-    expect($exceptionMessage)->equals(__('Something went wrong with your subscription. Please contact the website owner.', 'mailpoet'));
+    expect($exceptionMessage)->equals(__('There was an error when sending a confirmation email for your subscription. Please contact the website owner.', 'mailpoet'));
     $mailerLogError = MailerLog::getError();
     $this->assertIsArray($mailerLogError);
     expect($mailerLogError['operation'])->equals(MailerError::OPERATION_SEND);

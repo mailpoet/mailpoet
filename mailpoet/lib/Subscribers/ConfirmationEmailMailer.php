@@ -138,14 +138,14 @@ class ConfirmationEmailMailer {
       $result = $defaultMailer->send($email, $subscriber, $extraParams);
     } catch (\Exception $e) {
       MailerLog::processTransactionalEmailError(MailerError::OPERATION_CONNECT, $e->getMessage(), $e->getCode());
-      throw new \Exception(__('Something went wrong with your subscription. Please contact the website owner.', 'mailpoet'));
+      throw new \Exception(__('There was an error when sending a confirmation email for your subscription. Please contact the website owner.', 'mailpoet'));
     }
 
     if ($result['response'] === false) {
       if ($result['error'] instanceof MailerError) {
         MailerLog::processTransactionalEmailError($result['error']->getOperation(), (string)$result['error']->getMessage());
       }
-      throw new \Exception(__('Something went wrong with your subscription. Please contact the website owner.', 'mailpoet'));
+      throw new \Exception(__('There was an error when sending a confirmation email for your subscription. Please contact the website owner.', 'mailpoet'));
     };
 
     // E-mail was successfully sent we need to update the MailerLog
