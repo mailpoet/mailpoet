@@ -111,12 +111,16 @@
 
 .mailpoet-wizard-woocommerce-option {
   align-items: center;
-  box-shadow: 0 -1px 0 0 $color-tertiary-light;
+  box-shadow: 0 1px 0 0 $color-tertiary-light;
   display: flex;
   flex-direction: row-reverse;
   justify-content: space-between;
   padding-bottom: 25px;
   padding-top: 1px;
+
+  &:last-child {
+    box-shadow: 0 0;
+  }
 }
 
 .mailpoet-wizard-note {
