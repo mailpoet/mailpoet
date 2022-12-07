@@ -9,6 +9,7 @@ use MailPoet\Config\Renderer;
 use MailPoet\Config\ServicesChecker;
 use MailPoet\Cron\Workers\SubscribersCountCacheRecalculation;
 use MailPoet\Entities\SegmentEntity;
+use MailPoet\Entities\TagEntity;
 use MailPoet\Features\FeaturesController;
 use MailPoet\Referrals\ReferralDetector;
 use MailPoet\Segments\SegmentsRepository;
@@ -16,6 +17,7 @@ use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\TrackingConfig;
 use MailPoet\Settings\UserFlagsController;
+use MailPoet\Tags\TagRepository;
 use MailPoet\Tracy\DIPanel\DIPanel;
 use MailPoet\Util\Installation;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
@@ -50,6 +52,8 @@ class PageRenderer {
   /** @var SegmentsRepository */
   private $segmentRepository;
 
+  private $tagRepository;
+
   /** @var SubscribersCountCacheRecalculation */
   private $subscribersCountCacheRecalculation;
 
@@ -74,6 +78,7 @@ class PageRenderer {
     SettingsController $settings,
     UserFlagsController $userFlags,
     SegmentsRepository $segmentRepository,
+    TagRepository $tagRepository,
     SubscribersCountCacheRecalculation $subscribersCountCacheRecalculation,
     SubscribersFeature $subscribersFeature,
     TrackingConfig $trackingConfig,
@@ -88,6 +93,7 @@ class PageRenderer {
     $this->settings = $settings;
     $this->userFlags = $userFlags;
     $this->segmentRepository = $segmentRepository;
+    $this->tagRepository = $tagRepository;
     $this->subscribersCountCacheRecalculation = $subscribersCountCacheRecalculation;
     $this->subscribersFeature = $subscribersFeature;
     $this->trackingConfig = $trackingConfig;
@@ -159,6 +165,12 @@ class PageRenderer {
         'automationEditor' => admin_url('admin.php?page=mailpoet-automation-editor'),
         'automationTemplates' => admin_url('admin.php?page=mailpoet-automation-templates'),
       ],
+      'tags' => array_map(function (TagEntity $tag): array {
+        return [
+        'id' => $tag->getId(),
+        'name' => $tag->getName(),
+        ];
+      }, $this->tagRepository->findAll()),
     ];
 
     if (!$defaults['premium_plugin_active']) {

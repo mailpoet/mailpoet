@@ -38,7 +38,6 @@
   var mailpoet_tutorial_url = '<%= cdn_url('form-editor/tutorial.mp4') %>';
   var mailpoet_is_administrator = <%= is_administrator ? 'true' : 'false' %>;
   var mailpoet_form_edit_url = "<%= admin_url('admin.php?page=mailpoet-form-editor&id=') %>";
-  var mailpoet_tags = <%= json_encode(subscriber_tags) %>;
   <% endautoescape %>
 </script>
 
