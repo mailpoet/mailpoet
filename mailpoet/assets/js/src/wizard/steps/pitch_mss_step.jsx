@@ -111,6 +111,7 @@ function FreePlanSubscribers(props) {
 FreePlanSubscribers.propTypes = {
   next: PropTypes.func.isRequired,
 };
+FreePlanSubscribers.displayName = 'FreePlanSubscribers';
 
 function NotFreePlanSubscribers(props) {
   return (
@@ -136,6 +137,7 @@ NotFreePlanSubscribers.propTypes = {
   mailpoetAccountUrl: PropTypes.string.isRequired,
   next: PropTypes.func.isRequired,
 };
+NotFreePlanSubscribers.displayName = 'NotFreePlanSubscribers';
 
 function WelcomeWizardPitchMSSStep(props) {
   return props.subscribersCount < 1000 ? (

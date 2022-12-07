@@ -154,5 +154,6 @@ WelcomeWizardUsageTrackingStep.propTypes = {
   loading: PropTypes.bool.isRequired,
   submitForm: PropTypes.func.isRequired,
 };
+WelcomeWizardUsageTrackingStep.displayName = 'WelcomeWizardUsageTrackingStep';
 
 export { WelcomeWizardUsageTrackingStep };

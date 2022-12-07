@@ -1,5 +1,6 @@
 import range from 'lodash/range';
 import classnames from 'classnames';
+import { withBoundary } from 'common';
 import { ContentWrapperFix } from './content_wrapper_fix';
 
 type Props = {
@@ -8,7 +9,7 @@ type Props = {
   titles?: string[];
 };
 
-function Steps({ count, current, titles }: Props) {
+function StepsComponent({ count, current, titles }: Props) {
   return (
     <div className="mailpoet-steps">
       <ContentWrapperFix />
@@ -35,8 +36,9 @@ function Steps({ count, current, titles }: Props) {
   );
 }
 
-Steps.defaultProps = {
+StepsComponent.defaultProps = {
   titles: [],
 };
-
+StepsComponent.displayName = 'StepsComponent';
+const Steps = withBoundary(StepsComponent);
 export { Steps };
