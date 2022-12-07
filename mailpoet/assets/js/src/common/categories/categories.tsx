@@ -6,7 +6,7 @@ type Props = {
   active: string;
 };
 
-export function Categories({ onSelect, categories, active }: Props) {
+function Categories({ onSelect, categories, active }: Props) {
   const cats = categories.map((category) => (
     <CategoriesItem
       {...category}
@@ -18,3 +18,6 @@ export function Categories({ onSelect, categories, active }: Props) {
 
   return <div className="mailpoet-categories">{cats}</div>;
 }
+
+Categories.displayName = 'Categories';
+export { Categories };

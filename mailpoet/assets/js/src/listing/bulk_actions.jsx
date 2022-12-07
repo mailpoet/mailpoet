@@ -2,6 +2,7 @@ import { Component } from 'react';
 
 import { MailPoet } from 'mailpoet';
 import PropTypes from 'prop-types';
+import { withBoundary } from '../common';
 
 class ListingBulkActions extends Component {
   constructor(props) {
@@ -109,5 +110,6 @@ ListingBulkActions.propTypes = {
   selected_ids: PropTypes.arrayOf(PropTypes.number).isRequired,
   onBulkAction: PropTypes.func.isRequired,
 };
-
-export { ListingBulkActions };
+ListingBulkActions.displayName = 'ListingBulkActions';
+const ListingBulkActionsWithBoundary = withBoundary(ListingBulkActions);
+export { ListingBulkActionsWithBoundary as ListingBulkActions };

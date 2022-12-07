@@ -23,6 +23,7 @@ import {
   UtmParams,
 } from './upgrade_info';
 import { storeName } from '../../automation/editor/store';
+import { withBoundary } from '../error_boundary';
 
 export const premiumValidAndActive =
   premiumFeaturesEnabled && MailPoet.premiumActive;
@@ -51,11 +52,7 @@ const getCta = (state: State, upgradeInfo: UpgradeInfo): string => {
   return cta;
 };
 
-export function PremiumModal({
-  children,
-  tracking,
-  ...props
-}: Props): JSX.Element {
+function PremiumModal({ children, tracking, ...props }: Props): JSX.Element {
   const [state, setState] = useState<State>();
   const upgradeInfo = useUpgradeInfo(tracking);
 
@@ -129,8 +126,11 @@ export function PremiumModal({
   );
 }
 
+PremiumModal.displayName = 'PremiumModal';
+
 type EditProps = Omit<Props, 'onRequestClose'>;
-export function PremiumModalForStepEdit({
+
+function PremiumModalForStepEdit({
   children,
   ...props
 }: EditProps): JSX.Element {
@@ -157,3 +157,12 @@ export function PremiumModalForStepEdit({
     </PremiumModal>
   );
 }
+
+PremiumModalForStepEdit.displayName = 'PremiumModalForStepEdit';
+const PremiumModalForStepEditWithBoundary = withBoundary(
+  PremiumModalForStepEdit,
+);
+export {
+  PremiumModal,
+  PremiumModalForStepEditWithBoundary as PremiumModalForStepEdit,
+};

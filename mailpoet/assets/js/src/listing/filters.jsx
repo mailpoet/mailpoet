@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 import { Button } from 'common/button/button.tsx';
 import { MailPoet } from 'mailpoet';
 import { Select } from 'common/form/select/select.tsx';
+import { withBoundary } from '../common';
 
 class ListingFilters extends Component {
   componentDidUpdate() {
@@ -100,5 +101,6 @@ ListingFilters.propTypes = {
 ListingFilters.defaultProps = {
   onBeforeSelectFilter: undefined,
 };
-
-export { ListingFilters };
+ListingFilters.displayName = 'ListingFilters';
+const ListingFiltersWithBoundary = withBoundary(ListingFilters);
+export { ListingFiltersWithBoundary as ListingFilters };

@@ -163,5 +163,5 @@ SenderEmailAddressWarning.defaultProps = {
   showSenderDomainWarning: false,
   onSuccessfulEmailOrDomainAuthorization: noop,
 };
-
+SenderEmailAddressWarning.displayName = 'SenderEmailAddressWarning';
 export { SenderEmailAddressWarning };

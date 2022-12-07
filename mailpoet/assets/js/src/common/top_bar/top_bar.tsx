@@ -5,6 +5,7 @@ import { withFeatureAnnouncement } from 'announcements/with_feature_announcement
 import { MailPoetLogoResponsive } from './mailpoet_logo_responsive';
 import { BeamerIcon } from './beamer_icon';
 import { ScreenOptionsFix } from './screen_options_fix';
+import { withBoundary } from '../error_boundary';
 
 type Props = {
   children?: ReactNode;
@@ -57,4 +58,5 @@ export function TopBar({
   );
 }
 
-export const TopBarWithBeamer = withFeatureAnnouncement(TopBar);
+TopBar.displayName = 'TopBar';
+export const TopBarWithBeamer = withFeatureAnnouncement(withBoundary(TopBar));

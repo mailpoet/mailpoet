@@ -13,6 +13,7 @@ import { ListingItems } from 'listing/listing_items.jsx';
 import { MailerError } from 'listing/notices.jsx';
 import { withRouter } from 'react-router-dom';
 import { GlobalContext } from 'context/index.jsx';
+import { withBoundary } from '../common';
 
 class ListingComponent extends Component {
   constructor(props) {
@@ -792,4 +793,4 @@ ListingComponent.defaultProps = {
 
 ListingComponent.displayName = 'Listing';
 
-export const Listing = withRouter(ListingComponent);
+export const Listing = withRouter(withBoundary(ListingComponent));
