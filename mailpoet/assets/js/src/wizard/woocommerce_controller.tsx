@@ -37,7 +37,15 @@ function WooCommerceController({
     }).fail(handleApiError);
 
   const finishWizard = () => {
-    window.location.href = window.finish_wizard_url;
+    if (isWizardStep) {
+      updateSettings({
+        version: window.mailpoet_version,
+      }).then(() => {
+        window.location.href = window.finish_wizard_url;
+      });
+    } else {
+      window.location.href = window.finish_wizard_url;
+    }
   };
 
   const submit = (importType, allowed) => {
