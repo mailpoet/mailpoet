@@ -7,10 +7,7 @@ type Props = {
   subscribersCount: number;
 };
 
-export function InvalidMssKeyNotice({
-  mssKeyInvalid,
-  subscribersCount,
-}: Props) {
+function InvalidMssKeyNotice({ mssKeyInvalid, subscribersCount }: Props) {
   if (!mssKeyInvalid) return null;
   return (
     <Notice type="error" timeout={false} closable={false} renderInPlace>
@@ -39,3 +36,6 @@ export function InvalidMssKeyNotice({
     </Notice>
   );
 }
+
+InvalidMssKeyNotice.displayName = 'InvalidMssKeyNotice';
+export { InvalidMssKeyNotice };

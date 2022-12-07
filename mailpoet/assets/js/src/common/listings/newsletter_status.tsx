@@ -63,7 +63,7 @@ type NewsletterStatusProps = {
   status?: string;
 };
 
-export function NewsletterStatus({
+function NewsletterStatus({
   scheduledFor,
   processed,
   total,
@@ -150,3 +150,6 @@ export function NewsletterStatus({
     </div>
   );
 }
+
+NewsletterStatus.displayName = 'NewsletterStatus';
+export { NewsletterStatus };

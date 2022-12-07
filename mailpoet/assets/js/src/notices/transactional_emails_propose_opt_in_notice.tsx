@@ -10,7 +10,7 @@ type Props = {
   apiVersion: string;
 };
 
-export function TransactionalEmailsProposeOptInNotice({
+function TransactionalEmailsProposeOptInNotice({
   mailpoetInstalledDaysAgo,
   sendTransactionalEmails,
   mtaMethod,
@@ -68,3 +68,7 @@ export function TransactionalEmailsProposeOptInNotice({
     </Notice>
   );
 }
+
+TransactionalEmailsProposeOptInNotice.displayName =
+  'TransactionalEmailsProposeOptInNotice';
+export { TransactionalEmailsProposeOptInNotice };
