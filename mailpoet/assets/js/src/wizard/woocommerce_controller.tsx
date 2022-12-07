@@ -3,6 +3,7 @@ import { MailPoet } from 'mailpoet';
 import { StepsContent } from 'common/steps/steps_content';
 import { WizardWooCommerceStep } from './steps/woocommerce_step';
 import { WelcomeWizardStepLayout } from './layout/step_layout.jsx';
+import { ErrorBoundary } from '../common';
 
 type WooCommerceControllerPropType = {
   isWizardStep: boolean;
@@ -68,12 +69,14 @@ function WooCommerceController({
     <WelcomeWizardStepLayout
       illustrationUrl={window.wizard_woocommerce_illustration_url}
     >
-      <WizardWooCommerceStep
-        loading={loading}
-        submitForm={submit}
-        isWizardStep={isWizardStep}
-        showCustomersImportSetting={window.mailpoet_show_customers_import}
-      />
+      <ErrorBoundary>
+        <WizardWooCommerceStep
+          loading={loading}
+          submitForm={submit}
+          isWizardStep={isWizardStep}
+          showCustomersImportSetting={window.mailpoet_show_customers_import}
+        />
+      </ErrorBoundary>
     </WelcomeWizardStepLayout>
   );
 
@@ -84,4 +87,5 @@ function WooCommerceController({
   return result;
 }
 
+WooCommerceController.displayName = 'WooCommerceController';
 export { WooCommerceController };

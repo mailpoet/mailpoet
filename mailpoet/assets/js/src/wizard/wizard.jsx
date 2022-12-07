@@ -1,9 +1,10 @@
 import ReactDOM from 'react-dom';
-import { Route, HashRouter, Redirect, Switch } from 'react-router-dom';
+import { HashRouter, Redirect, Route, Switch } from 'react-router-dom';
 import { GlobalContext, useGlobalContextValue } from 'context/index.jsx';
 import { Notices } from 'notices/notices.jsx';
 import { WelcomeWizardStepsController } from './welcome_wizard_controller.jsx';
 import { WooCommerceController } from './woocommerce_controller';
+import { withBoundary } from '../common';
 
 function App() {
   let basePath = '/steps/1';
@@ -16,8 +17,14 @@ function App() {
       <HashRouter>
         <Notices />
         <Switch>
-          <Route path="/steps/:step" component={WelcomeWizardStepsController} />
-          <Route path="/woocommerce" component={WooCommerceController} />
+          <Route
+            path="/steps/:step"
+            render={withBoundary(WelcomeWizardStepsController)}
+          />
+          <Route
+            path="/woocommerce"
+            render={withBoundary(WooCommerceController)}
+          />
           <Route render={() => <Redirect to={basePath} />} />
         </Switch>
       </HashRouter>

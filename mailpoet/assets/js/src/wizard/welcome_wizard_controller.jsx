@@ -18,6 +18,7 @@ import {
 import { Steps } from '../common/steps/steps';
 import { StepsContent } from '../common/steps/steps_content';
 import { TopBar } from '../common/top_bar/top_bar';
+import { ErrorBoundary } from '../common';
 
 function WelcomeWizardStepsController(props) {
   const stepsCount = getStepsCount();
@@ -110,13 +111,15 @@ function WelcomeWizardStepsController(props) {
           <WelcomeWizardStepLayout
             illustrationUrl={window.wizard_sender_illustration_url}
           >
-            <WelcomeWizardSenderStep
-              update_sender={updateSender}
-              submit_sender={submitSender}
-              finish={skipSenderStep}
-              loading={loading}
-              sender={sender}
-            />
+            <ErrorBoundary>
+              <WelcomeWizardSenderStep
+                update_sender={updateSender}
+                submit_sender={submitSender}
+                finish={skipSenderStep}
+                loading={loading}
+                sender={sender}
+              />
+            </ErrorBoundary>
           </WelcomeWizardStepLayout>
         ) : null}
 
@@ -124,10 +127,12 @@ function WelcomeWizardStepsController(props) {
           <WelcomeWizardStepLayout
             illustrationUrl={window.wizard_tracking_illustration_url}
           >
-            <WelcomeWizardUsageTrackingStep
-              loading={loading}
-              submitForm={submitTracking}
-            />
+            <ErrorBoundary>
+              <WelcomeWizardUsageTrackingStep
+                loading={loading}
+                submitForm={submitTracking}
+              />
+            </ErrorBoundary>
           </WelcomeWizardStepLayout>
         ) : null}
 
@@ -135,25 +140,29 @@ function WelcomeWizardStepsController(props) {
           <WelcomeWizardStepLayout
             illustrationUrl={window.wizard_MSS_pitch_illustration_url}
           >
-            <WelcomeWizardPitchMSSStep
-              next={() => redirect(step)}
-              subscribersCount={window.mailpoet_subscribers_count}
-              mailpoetAccountUrl={window.mailpoet_account_url}
-              purchaseUrl={MailPoet.MailPoetComUrlFactory.getPurchasePlanUrl(
-                MailPoet.subscribersCount,
-                MailPoet.currentWpUserEmail,
-                'business',
-                { utm_medium: 'onboarding', utm_campaign: 'purchase' },
-              )}
-            />
+            <ErrorBoundary>
+              <WelcomeWizardPitchMSSStep
+                next={() => redirect(step)}
+                subscribersCount={window.mailpoet_subscribers_count}
+                mailpoetAccountUrl={window.mailpoet_account_url}
+                purchaseUrl={MailPoet.MailPoetComUrlFactory.getPurchasePlanUrl(
+                  MailPoet.subscribersCount,
+                  MailPoet.currentWpUserEmail,
+                  'business',
+                  { utm_medium: 'onboarding', utm_campaign: 'purchase' },
+                )}
+              />
+            </ErrorBoundary>
           </WelcomeWizardStepLayout>
         ) : null}
 
         {stepName === 'WizardWooCommerceStep' ? (
-          <WooCommerceController
-            isWizardStep
-            redirectToNextStep={() => redirect(step)}
-          />
+          <ErrorBoundary>
+            <WooCommerceController
+              isWizardStep
+              redirectToNextStep={() => redirect(step)}
+            />
+          </ErrorBoundary>
         ) : null}
       </StepsContent>
     </>
@@ -170,5 +179,5 @@ WelcomeWizardStepsController.propTypes = {
     push: PropTypes.func.isRequired,
   }).isRequired,
 };
-
+WelcomeWizardStepsController.displayName = 'WelcomeWizardStepsController';
 export { WelcomeWizardStepsController };
