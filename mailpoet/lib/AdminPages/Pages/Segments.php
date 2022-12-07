@@ -7,12 +7,10 @@ use MailPoet\API\JSON\ResponseBuilders\CustomFieldsResponseBuilder;
 use MailPoet\CustomFields\CustomFieldsRepository;
 use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Entities\SegmentEntity;
-use MailPoet\Entities\TagEntity;
 use MailPoet\Listing\PageLimit;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Segments\SegmentDependencyValidator;
 use MailPoet\Segments\SegmentsRepository;
-use MailPoet\Tags\TagRepository;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 use MailPoet\WP\AutocompletePostListLoader as WPPostListLoader;
 use MailPoet\WP\Functions as WPFunctions;
@@ -49,9 +47,6 @@ class Segments {
   /** @var NewslettersRepository */
   private $newslettersRepository;
 
-  /** @var TagRepository */
-  private $tagRepository;
-
   public function __construct(
     PageRenderer $pageRenderer,
     PageLimit $listingPageLimit,
@@ -62,8 +57,7 @@ class Segments {
     CustomFieldsResponseBuilder $customFieldsResponseBuilder,
     SegmentDependencyValidator $segmentDependencyValidator,
     SegmentsRepository $segmentsRepository,
-    NewslettersRepository $newslettersRepository,
-    TagRepository $tagRepository
+    NewslettersRepository $newslettersRepository
   ) {
     $this->pageRenderer = $pageRenderer;
     $this->listingPageLimit = $listingPageLimit;
@@ -75,7 +69,6 @@ class Segments {
     $this->customFieldsResponseBuilder = $customFieldsResponseBuilder;
     $this->segmentsRepository = $segmentsRepository;
     $this->newslettersRepository = $newslettersRepository;
-    $this->tagRepository = $tagRepository;
   }
 
   public function render() {
@@ -109,13 +102,6 @@ class Segments {
         'description' => $segment->getDescription(),
       ];
     }
-
-    $data['tags'] = array_map(function (TagEntity $tag): array {
-      return [
-        'id' => $tag->getId(),
-        'name' => $tag->getName(),
-      ];
-    }, $this->tagRepository->findBy([], ['name' => 'ASC']));
 
     $data['product_categories'] = $this->wpPostListLoader->getWooCommerceCategories();
 
