@@ -196,5 +196,5 @@ SendEventConditions.propTypes = {
 SendEventConditions.defaultProps = {
   onValueChange: null,
 };
-
+SendEventConditions.displayName = 'SendEventConditions';
 export { SendEventConditions };

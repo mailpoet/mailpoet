@@ -1,5 +1,6 @@
 import { Selection } from 'form/fields/selection.jsx';
 import _ from 'underscore';
+import { withBoundary } from '../../../common';
 
 type EventOptionData = {
   values?: {
@@ -29,7 +30,7 @@ function getEventOptionsValues(eventOptions: EventOptionData) {
     : values;
 }
 
-export function EventOptions({
+function EventOptions({
   eventOptions,
   eventSlug,
   selected,
@@ -96,3 +97,7 @@ export function EventOptions({
     </div>
   );
 }
+
+EventOptions.displayName = 'EventOptions';
+const EventOptionsWithBoundary = withBoundary(EventOptions);
+export { EventOptionsWithBoundary as EventOptions };

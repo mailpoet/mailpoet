@@ -17,6 +17,7 @@ import {
   confirmEdit,
 } from 'newsletters/listings/utils.jsx';
 import { NewsletterTypes } from 'newsletters/types';
+import { withBoundary } from 'common';
 
 const mailpoetTrackingEnabled = MailPoet.trackingConfig.emailTrackingEnabled;
 
@@ -379,7 +380,7 @@ NewsletterListReEngagementComponent.propTypes = {
     params: PropTypes.object, // eslint-disable-line react/forbid-prop-types
   }).isRequired,
 };
-
+NewsletterListReEngagementComponent.displayName = 'NewsletterListReEngagement';
 export const NewsletterListReEngagement = withRouter(
-  NewsletterListReEngagementComponent,
+  withBoundary(NewsletterListReEngagementComponent),
 );

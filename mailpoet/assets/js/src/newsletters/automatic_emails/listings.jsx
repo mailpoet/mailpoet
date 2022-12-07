@@ -13,7 +13,7 @@ import {
 import { Listing } from 'listing/listing.jsx';
 import { MailPoet } from 'mailpoet';
 import { NewsletterTypes } from 'newsletters/types';
-import { ScheduledIcon, StringTags, Toggle } from 'common';
+import { ScheduledIcon, StringTags, Toggle, withBoundary } from 'common';
 import { Statistics } from 'newsletters/listings/statistics.jsx';
 
 const mailpoetTrackingEnabled = MailPoet.trackingConfig.emailTrackingEnabled;
@@ -488,5 +488,5 @@ ListingsComponent.propTypes = {
   }).isRequired,
   location: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
 };
-
-export const Listings = withRouter(ListingsComponent);
+ListingsComponent.displayName = 'ListingsComponent';
+export const Listings = withRouter(withBoundary(ListingsComponent));

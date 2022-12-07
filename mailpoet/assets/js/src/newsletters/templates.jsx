@@ -10,6 +10,7 @@ import { Loading } from 'common/loading.jsx';
 import { MailPoet } from 'mailpoet';
 import { TemplateBox } from 'newsletters/templates/template_box.jsx';
 import { ImportTemplate } from 'newsletters/templates/import_template.jsx';
+import { ErrorBoundary } from '../common';
 
 const getEditorUrl = (id) =>
   `admin.php?page=mailpoet-newsletter-editor&id=${id}`;
@@ -346,13 +347,14 @@ class NewsletterTemplates extends Component {
         />
 
         <div className="mailpoet-templates">
-          <Categories
-            categories={categories}
-            active={this.state.selectedTab}
-            onSelect={(name) => this.setState({ selectedTab: name })}
-          />
-
-          {content}
+          <ErrorBoundary>
+            <Categories
+              categories={categories}
+              active={this.state.selectedTab}
+              onSelect={(name) => this.setState({ selectedTab: name })}
+            />
+          </ErrorBoundary>
+          <ErrorBoundary>{content}</ErrorBoundary>
         </div>
       </div>
     );

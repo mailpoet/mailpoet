@@ -4,6 +4,7 @@ import { Hooks } from 'wp-js-hooks';
 import { NotificationScheduling } from 'newsletters/types/notification/scheduling.jsx';
 import { SenderField } from 'newsletters/send/sender_address_field.jsx';
 import { GATrackingField } from 'newsletters/send/ga_tracking';
+import { withBoundary } from 'common';
 
 let fields = [
   {
@@ -95,7 +96,7 @@ let fields = [
       {
         name: 'sender_address',
         type: 'reactComponent',
-        component: SenderField,
+        component: withBoundary(SenderField),
         placeholder: MailPoet.I18n.t('senderAddressPlaceholder'),
         validation: {
           'data-parsley-required': true,

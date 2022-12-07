@@ -3,7 +3,7 @@ import { MailPoet } from 'mailpoet';
 import { Hooks } from 'wp-js-hooks';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
-import { Tag } from 'common';
+import { Tag, withBoundary } from 'common';
 import { trackStatsCTAClicked } from 'newsletters/listings/utils.jsx';
 import { NewsletterStats } from 'common/listings/newsletter_stats';
 
@@ -204,5 +204,6 @@ Statistics.defaultProps = {
   isSent: undefined,
   currentTime: undefined,
 };
-
-export { Statistics };
+Statistics.displayName = 'NewsletterStatistics';
+const StatisticsWithBoundary = withBoundary(Statistics);
+export { StatisticsWithBoundary as Statistics };

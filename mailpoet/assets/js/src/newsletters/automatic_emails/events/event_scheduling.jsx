@@ -199,5 +199,5 @@ EventScheduling.defaultProps = {
   afterTimeNumberSize: defaultAfterTimeNumberInputFieldSize,
   onValueChange: null,
 };
-
+EventScheduling.displayName = 'EventScheduling';
 export { EventScheduling };

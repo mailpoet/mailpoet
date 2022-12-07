@@ -160,5 +160,5 @@ TemplateBox.propTypes = {
 TemplateBox.defaultProps = {
   thumbnail: null,
 };
-
+TemplateBox.displayName = 'TemplateBox';
 export { TemplateBox };

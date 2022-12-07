@@ -40,5 +40,5 @@ TimeSelect.defaultProps = {
   disabled: false,
   validation: {},
 };
-
+TimeSelect.displayName = 'TimeSelect';
 export { TimeSelect };

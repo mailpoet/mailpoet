@@ -16,6 +16,7 @@ import {
 } from 'newsletters/listings/utils.jsx';
 import { NewsletterTypes } from 'newsletters/types';
 import { GlobalContext } from 'context/index.jsx';
+import { ErrorBoundary, withBoundary } from '../../common';
 
 const mailpoetTrackingEnabled = MailPoet.trackingConfig.emailTrackingEnabled;
 
@@ -218,7 +219,9 @@ class NewsletterListStandardComponent extends Component {
           className="column mailpoet-hide-on-mobile"
           data-colname={MailPoet.I18n.t('lists')}
         >
-          <SegmentTags segments={newsletter.segments} dimension="large" />
+          <ErrorBoundary>
+            <SegmentTags segments={newsletter.segments} dimension="large" />
+          </ErrorBoundary>
         </td>
         {mailpoetTrackingEnabled === true ? (
           <td
@@ -302,7 +305,7 @@ NewsletterListStandardComponent.propTypes = {
     params: PropTypes.object, // eslint-disable-line react/forbid-prop-types
   }).isRequired,
 };
-
+NewsletterListStandardComponent.displayName = 'NewsletterListStandard';
 export const NewsletterListStandard = withRouter(
-  NewsletterListStandardComponent,
+  withBoundary(NewsletterListStandardComponent),
 );

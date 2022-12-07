@@ -37,10 +37,7 @@ const formatForStats = (value: number): number => {
   return +numValue.toFixed(1);
 };
 
-export function NewsletterGeneralStats({
-  newsletter,
-  isWoocommerceActive,
-}: Props) {
+function NewsletterGeneralStats({ newsletter, isWoocommerceActive }: Props) {
   const totalSent = newsletter.total_sent || 0;
 
   let percentageClicked = 0;
@@ -261,3 +258,6 @@ export function NewsletterGeneralStats({
     </div>
   );
 }
+
+NewsletterGeneralStats.displayName = 'NewsletterGeneralStats';
+export { NewsletterGeneralStats };

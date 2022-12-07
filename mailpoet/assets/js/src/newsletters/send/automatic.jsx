@@ -1,6 +1,7 @@
 import { MailPoet } from 'mailpoet';
 import { SendEventConditions } from 'newsletters/automatic_emails/send_event_conditions.jsx';
 import { GATrackingField } from 'newsletters/send/ga_tracking';
+import { withBoundary } from 'common';
 
 const emails = window.mailpoet_woocommerce_automatic_emails || [];
 
@@ -53,7 +54,7 @@ const getAutomaticEmailFields = (newsletter) => {
         email.title,
       ),
       type: 'reactComponent',
-      component: SendEventConditions,
+      component: withBoundary(SendEventConditions),
       email,
       emailOptions,
     },

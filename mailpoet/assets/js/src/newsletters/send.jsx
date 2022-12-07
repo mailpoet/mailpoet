@@ -7,7 +7,7 @@ import slugify from 'slugify';
 import { withRouter } from 'react-router-dom';
 
 import { Background } from 'common/background/background';
-import { Button } from 'common';
+import { Button, ErrorBoundary } from 'common';
 import { Form } from 'form/form.jsx';
 import { Grid } from 'common/grid';
 import { ListingHeadingStepsRoute } from 'newsletters/listings/heading_steps_route';
@@ -680,90 +680,91 @@ class NewsletterSendComponent extends Component {
           emailType={emailType}
           automationId="newsletter_send_heading"
         />
-
-        <Form
-          id="mailpoet_newsletter"
-          fields={fields}
-          automationId="newsletter_send_form"
-          item={this.state.item}
-          loading={this.state.loading}
-          onChange={this.handleFormChange}
-          onSubmit={this.handleSave}
-        >
-          <Grid.CenteredRow className="send-newsletter-buttons">
-            <Button
-              variant="secondary"
-              type="submit"
-              automationId="email-save-draft"
-              onClick={this.handleSaveDraft}
-              isDisabled={this.state.loading}
-            >
-              {MailPoet.I18n.t('saveDraftAndClose')}
-            </Button>
-            {isPaused ? (
+        <ErrorBoundary>
+          <Form
+            id="mailpoet_newsletter"
+            fields={fields}
+            automationId="newsletter_send_form"
+            item={this.state.item}
+            loading={this.state.loading}
+            onChange={this.handleFormChange}
+            onSubmit={this.handleSave}
+          >
+            <Grid.CenteredRow className="send-newsletter-buttons">
               <Button
-                type="button"
-                onClick={this.handleResume}
-                isDisabled={sendingDisabled || this.state.loading}
-                automationId="email-resume"
+                variant="secondary"
+                type="submit"
+                automationId="email-save-draft"
+                onClick={this.handleSaveDraft}
+                isDisabled={this.state.loading}
               >
-                {MailPoet.I18n.t('resume')}
+                {MailPoet.I18n.t('saveDraftAndClose')}
               </Button>
-            ) : (
-              <Button
-                type="button"
-                onClick={this.handleSend}
-                {...sendButtonOptions}
-                isDisabled={sendingDisabled || this.state.loading}
-                automationId="email-submit"
-              >
-                {sendButtonOptions.value || MailPoet.I18n.t('send')}
-              </Button>
-            )}
-            {this.state.validationError !== undefined && (
-              <Tooltip
-                tooltip={<div>{this.state.validationError}</div>}
-                tooltipId="helpTooltipSendEmail"
-              />
-            )}
-          </Grid.CenteredRow>
-          <p>
-            {MailPoet.I18n.t('orSimply')}
-            &nbsp;
-            <a
-              className="mailpoet-link"
-              href={`?page=mailpoet-newsletter-editor&id=${this.props.match.params.id}`}
-              onClick={this.handleRedirectToDesign}
-            >
-              {MailPoet.I18n.t('goBackToDesign')}
-            </a>
-            .
-          </p>
-          {window.mailpoet_mss_key_pending_approval && (
-            <div className="mailpoet_error">
-              {ReactStringReplace(
-                MailPoet.I18n.t('pendingKeyApprovalNotice'),
-                /\[link\](.*?)\[\/link\]/g,
-                (match) => (
-                  <a
-                    key="pendingKeyApprovalNoticeLink"
-                    href="https://account.mailpoet.com/authorization"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    {match}
-                  </a>
-                ),
+              {isPaused ? (
+                <Button
+                  type="button"
+                  onClick={this.handleResume}
+                  isDisabled={sendingDisabled || this.state.loading}
+                  automationId="email-resume"
+                >
+                  {MailPoet.I18n.t('resume')}
+                </Button>
+              ) : (
+                <Button
+                  type="button"
+                  onClick={this.handleSend}
+                  {...sendButtonOptions}
+                  isDisabled={sendingDisabled || this.state.loading}
+                  automationId="email-submit"
+                >
+                  {sendButtonOptions.value || MailPoet.I18n.t('send')}
+                </Button>
               )}
-            </div>
-          )}
+              {this.state.validationError !== undefined && (
+                <Tooltip
+                  tooltip={<div>{this.state.validationError}</div>}
+                  tooltipId="helpTooltipSendEmail"
+                />
+              )}
+            </Grid.CenteredRow>
+            <p>
+              {MailPoet.I18n.t('orSimply')}
+              &nbsp;
+              <a
+                className="mailpoet-link"
+                href={`?page=mailpoet-newsletter-editor&id=${this.props.match.params.id}`}
+                onClick={this.handleRedirectToDesign}
+              >
+                {MailPoet.I18n.t('goBackToDesign')}
+              </a>
+              .
+            </p>
+            {window.mailpoet_mss_key_pending_approval && (
+              <div className="mailpoet_error">
+                {ReactStringReplace(
+                  MailPoet.I18n.t('pendingKeyApprovalNotice'),
+                  /\[link\](.*?)\[\/link\]/g,
+                  (match) => (
+                    <a
+                      key="pendingKeyApprovalNoticeLink"
+                      href="https://account.mailpoet.com/authorization"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {match}
+                    </a>
+                  ),
+                )}
+              </div>
+            )}
 
-          {showPremiumModal && (
-            <PremiumModal onRequestClose={this.closePremiumModal}>
-              {MailPoet.I18n.t('gaOnlyAvailableForPremium')}
-            </PremiumModal>
-          )}
-        </Form>
+            {showPremiumModal && (
+              <PremiumModal onRequestClose={this.closePremiumModal}>
+                {MailPoet.I18n.t('gaOnlyAvailableForPremium')}
+              </PremiumModal>
+            )}
+          </Form>
+        </ErrorBoundary>
       </div>
     );
   }

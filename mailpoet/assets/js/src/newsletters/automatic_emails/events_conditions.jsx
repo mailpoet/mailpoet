@@ -13,6 +13,7 @@ import { EventScheduling } from 'newsletters/automatic_emails/events/event_sched
 import { EventOptions } from 'newsletters/automatic_emails/events/event_options';
 import { MailPoet } from 'mailpoet';
 import { Selection } from 'form/fields/selection.jsx';
+import { ErrorBoundary } from 'common';
 
 const defaultAfterTimeType = 'immediate';
 const defaultAfterTimeNumber = 1;
@@ -240,11 +241,13 @@ class EventsConditions extends Component {
     };
 
     return (
-      <EventScheduling
-        item={props.item}
-        event={props.event}
-        onValueChange={props.onValueChange}
-      />
+      <ErrorBoundary>
+        <EventScheduling
+          item={props.item}
+          event={props.event}
+          onValueChange={props.onValueChange}
+        />
+      </ErrorBoundary>
     );
   }
 
