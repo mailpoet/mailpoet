@@ -1,5 +1,6 @@
 import { useDispatch, useSelect } from '@wordpress/data';
 import { partial } from 'lodash';
+import { ErrorBoundary } from 'common';
 import { BasicSettingsPanel } from './basic_settings_panel';
 import { StylesSettingsPanel } from './styles_settings_panel';
 import { FormPlacementPanel } from './form_placement_panel';
@@ -17,10 +18,12 @@ export function FormSettings(): JSX.Element {
 
   return (
     <>
-      <BasicSettingsPanel
-        isOpened={openedPanels.includes('basic-settings')}
-        onToggle={partial(toggleSidebarPanel, 'basic-settings')}
-      />
+      <ErrorBoundary>
+        <BasicSettingsPanel
+          isOpened={openedPanels.includes('basic-settings')}
+          onToggle={partial(toggleSidebarPanel, 'basic-settings')}
+        />
+      </ErrorBoundary>
       <StylesSettingsPanel
         isOpened={openedPanels.includes('styles-settings')}
         onToggle={partial(toggleSidebarPanel, 'styles-settings')}

@@ -117,5 +117,5 @@ Header.propTypes = {
   isInserterOpened: PropTypes.bool.isRequired,
   setIsInserterOpened: PropTypes.func.isRequired,
 };
-
+Header.displayName = 'FormEditorHeader';
 export { Header };

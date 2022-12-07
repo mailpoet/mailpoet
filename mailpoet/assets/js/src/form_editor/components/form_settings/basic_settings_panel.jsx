@@ -3,9 +3,9 @@ import {
   Panel,
   PanelBody,
   RadioControl,
+  SelectControl,
   TextareaControl,
   ToggleControl,
-  SelectControl,
 } from '@wordpress/components';
 import { useDispatch, useSelect } from '@wordpress/data';
 import { MailPoet } from 'mailpoet';
@@ -168,5 +168,5 @@ BasicSettingsPanel.propTypes = {
   onToggle: PropTypes.func.isRequired,
   isOpened: PropTypes.bool.isRequired,
 };
-
+BasicSettingsPanel.displayName = 'FormEditorBasicSettingsPanel';
 export { BasicSettingsPanel };

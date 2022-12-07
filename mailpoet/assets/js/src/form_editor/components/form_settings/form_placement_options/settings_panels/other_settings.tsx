@@ -7,7 +7,7 @@ import { assocPath } from 'lodash/fp';
 import { TextareaControl } from '@wordpress/components';
 import { SizeSettings } from 'form_editor/components/size_settings';
 
-export function OtherSettings(): JSX.Element {
+function OtherSettings(): JSX.Element {
   const [copyAreaContent, setCopyAreaContent] = useState(null);
 
   const formExports = useSelect(
@@ -117,3 +117,6 @@ export function OtherSettings(): JSX.Element {
     </>
   );
 }
+
+OtherSettings.displayName = 'FormEditorOtherSettings';
+export { OtherSettings };

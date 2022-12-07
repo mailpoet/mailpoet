@@ -2,12 +2,13 @@ import { MailPoet } from 'mailpoet';
 import { __, assocPath, compose } from 'lodash/fp';
 import { useDispatch, useSelect } from '@wordpress/data';
 import { SelectControl } from '@wordpress/components';
+import { withBoundary } from 'common';
 
 type Props = {
   settingsPlacementKey: string;
 };
 
-export function CookieSettings({ settingsPlacementKey }: Props): JSX.Element {
+function CookieSettings({ settingsPlacementKey }: Props): JSX.Element {
   const cookieExpirationValues = [3, 7, 14, 30, 60, 90];
   const formSettings = useSelect(
     (select) => select('mailpoet-form-editor').getFormSettings(),
@@ -47,3 +48,7 @@ export function CookieSettings({ settingsPlacementKey }: Props): JSX.Element {
     />
   );
 }
+
+CookieSettings.displayName = 'FormEditorCookieSettings';
+const CookieSettingsWithBoundary = withBoundary(CookieSettings);
+export { CookieSettingsWithBoundary as CookieSettings };

@@ -1,8 +1,9 @@
 import { useEffect } from 'react';
 import { useSelect } from '@wordpress/data';
 import { MailPoet } from 'mailpoet';
+import { withBoundary } from '../error_boundary';
 
-export function UnsavedChangesNotice({ storeName }) {
+function UnsavedChangesNotice({ storeName }) {
   const hasUnsavedChanges = useSelect(
     (sel) => sel(storeName).hasUnsavedChanges(),
     [],
@@ -24,3 +25,7 @@ export function UnsavedChangesNotice({ storeName }) {
 
   return null;
 }
+
+UnsavedChangesNotice.displayName = 'UnsavedChangesNotice';
+const UnsavedChangesNoticeWithBoundary = withBoundary(UnsavedChangesNotice);
+export { UnsavedChangesNoticeWithBoundary as UnsavedChangesNotice };

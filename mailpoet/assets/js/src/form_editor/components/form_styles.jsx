@@ -3,7 +3,7 @@ import { useSelect } from '@wordpress/data';
 import { transformStyles } from '@wordpress/block-editor';
 import css from 'css';
 
-export const FormStyles = () => {
+const FormStyles = () => {
   const element = document.getElementById('mailpoet-form-editor-form-styles');
 
   const formStyles = useSelect(
@@ -23,3 +23,6 @@ export const FormStyles = () => {
   );
   return ReactDOM.createPortal(transoformedStyles[0], element);
 };
+
+FormStyles.displayName = 'FormStyles';
+export { FormStyles };
