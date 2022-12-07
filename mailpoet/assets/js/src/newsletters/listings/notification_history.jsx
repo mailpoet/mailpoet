@@ -12,6 +12,7 @@ import {
   checkMailerStatus,
 } from 'newsletters/listings/utils.jsx';
 import { SegmentTags } from 'common/tag/tags';
+import { withBoundary } from '../../common';
 
 const mailpoetTrackingEnabled = MailPoet.trackingConfig.emailTrackingEnabled;
 
@@ -221,7 +222,8 @@ NewsletterListNotificationHistoryComponent.propTypes = {
     }).isRequired,
   }).isRequired,
 };
-
+NewsletterListNotificationHistoryComponent.displayName =
+  'NewsletterListNotificationHistory';
 export const NewsletterListNotificationHistory = withRouter(
-  NewsletterListNotificationHistoryComponent,
+  withBoundary(NewsletterListNotificationHistoryComponent),
 );

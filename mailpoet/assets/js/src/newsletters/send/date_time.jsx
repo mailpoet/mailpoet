@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import { Grid } from 'common/grid';
 import { DateText } from 'newsletters/send/date_text.jsx';
 import { TimeSelect } from 'newsletters/send/time_select.jsx';
+import { ErrorBoundary } from '../../common';
 
 class DateTime extends Component {
   DATE_TIME_SEPARATOR = ' ';
@@ -58,24 +59,26 @@ class DateTime extends Component {
   render() {
     return (
       <Grid.Column className="mailpoet-datetime-container">
-        <DateText
-          name="date"
-          value={this.state.date}
-          onChange={this.handleChange}
-          displayFormat={this.props.dateDisplayFormat}
-          storageFormat={this.props.dateStorageFormat}
-          disabled={this.props.disabled}
-          validation={this.props.dateValidation}
-          maxDate={this.props.maxDate}
-        />
-        <TimeSelect
-          name="time"
-          value={this.state.time}
-          onChange={this.handleChange}
-          disabled={this.props.disabled}
-          validation={this.props.timeValidation}
-          timeOfDayItems={this.props.timeOfDayItems}
-        />
+        <ErrorBoundary>
+          <DateText
+            name="date"
+            value={this.state.date}
+            onChange={this.handleChange}
+            displayFormat={this.props.dateDisplayFormat}
+            storageFormat={this.props.dateStorageFormat}
+            disabled={this.props.disabled}
+            validation={this.props.dateValidation}
+            maxDate={this.props.maxDate}
+          />
+          <TimeSelect
+            name="time"
+            value={this.state.time}
+            onChange={this.handleChange}
+            disabled={this.props.disabled}
+            validation={this.props.timeValidation}
+            timeOfDayItems={this.props.timeOfDayItems}
+          />
+        </ErrorBoundary>
       </Grid.Column>
     );
   }

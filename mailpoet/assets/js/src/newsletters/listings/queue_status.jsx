@@ -6,6 +6,7 @@ import parseDate from 'date-fns/parse';
 import { APIErrorsNotice } from 'notices/api_errors_notice.tsx';
 import { Button } from 'common/button/button';
 import { NewsletterStatus } from 'common/listings/newsletter_status';
+import { withBoundary } from '../../common';
 
 const QueuePropType = PropTypes.shape({
   status: PropTypes.string,
@@ -69,6 +70,7 @@ function QueueSending({ newsletter }) {
     </>
   );
 }
+
 QueueSending.propTypes = {
   newsletter: NewsletterPropType.isRequired,
 };
@@ -121,11 +123,13 @@ function QueueStatus({ newsletter, mailerLog }) {
     </>
   );
 }
+
 QueueStatus.propTypes = {
   newsletter: NewsletterPropType.isRequired,
   mailerLog: PropTypes.shape({
     status: PropTypes.string,
   }).isRequired,
 };
-
-export { QueueStatus };
+QueueStatus.displayName = 'QueueStatus';
+const QueueStatusWithBoundary = withBoundary(QueueStatus);
+export { QueueStatusWithBoundary as QueueStatus };

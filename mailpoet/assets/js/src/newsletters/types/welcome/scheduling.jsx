@@ -160,5 +160,5 @@ WelcomeSchedulingComponent.propTypes = {
   }).isRequired,
   onValueChange: PropTypes.func.isRequired,
 };
-
+WelcomeSchedulingComponent.displayName = 'WelcomeScheduling';
 export const WelcomeScheduling = withRouter(WelcomeSchedulingComponent);

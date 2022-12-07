@@ -8,7 +8,7 @@ type Props = {
   newsletter: NewsletterType;
 };
 
-export function NewsletterStatsInfo({ newsletter }: Props) {
+function NewsletterStatsInfo({ newsletter }: Props) {
   const newsletterDate =
     newsletter.queue.scheduled_at || newsletter.queue.created_at;
   return (
@@ -69,3 +69,6 @@ export function NewsletterStatsInfo({ newsletter }: Props) {
     </Grid.ThreeColumns>
   );
 }
+
+NewsletterStatsInfo.displayName = 'NewsletterStatsInfo';
+export { NewsletterStatsInfo };

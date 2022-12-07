@@ -243,5 +243,6 @@ ListingItem.propTypes = {
 ListingItem.defaultProps = {
   error: '',
 };
-
+ListingItem.displayName = 'ListingItem';
+SendingStatus.displayName = 'SendingStatus';
 export { SendingStatus };

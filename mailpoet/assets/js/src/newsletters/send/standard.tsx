@@ -7,6 +7,7 @@ import { DateTime } from 'newsletters/send/date_time.jsx';
 import { SenderField } from 'newsletters/send/sender_address_field.jsx';
 import { GATrackingField } from 'newsletters/send/ga_tracking';
 import { Toggle } from 'common/form/toggle/toggle';
+import { withBoundary } from 'common';
 import { NewsLetter, NewsletterStatus } from '../models';
 import { Field } from '../../form/types';
 
@@ -190,7 +191,7 @@ let fields: Array<Field> = [
     name: 'options',
     label: MailPoet.I18n.t('scheduleIt'),
     type: 'reactComponent',
-    component: StandardScheduling,
+    component: withBoundary(StandardScheduling),
   },
   {
     name: 'sender',
@@ -208,7 +209,7 @@ let fields: Array<Field> = [
       {
         name: 'sender_address',
         type: 'reactComponent',
-        component: SenderField,
+        component: withBoundary(SenderField),
         placeholder: MailPoet.I18n.t('senderAddressPlaceholder'),
         validation: {
           'data-parsley-required': true,

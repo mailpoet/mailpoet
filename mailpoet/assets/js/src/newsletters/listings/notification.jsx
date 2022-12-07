@@ -23,6 +23,7 @@ import {
   checkMailerStatus,
   confirmEdit,
 } from 'newsletters/listings/utils.jsx';
+import { withBoundary } from '../../common';
 
 const messages = {
   onNoItemsFound: (group, search) =>
@@ -404,7 +405,7 @@ NewsletterListNotificationComponent.propTypes = {
     params: PropTypes.object, // eslint-disable-line react/forbid-prop-types
   }).isRequired,
 };
-
+NewsletterListNotificationComponent.displayName = 'NewsletterListNotification';
 export const NewsletterListNotification = withRouter(
-  NewsletterListNotificationComponent,
+  withBoundary(NewsletterListNotificationComponent),
 );

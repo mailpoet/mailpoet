@@ -156,5 +156,5 @@ DateText.defaultProps = {
   name: 'date',
   maxDate: null,
 };
-
+DateText.displayName = 'DateText';
 export { DateText };

@@ -9,7 +9,7 @@ import { RemoveWrapMargin } from 'common/remove_wrap_margin/remove_wrap_margin';
 import { Tabs } from 'common/tabs/tabs';
 import { Tab } from 'common/tabs/tab';
 import { Heading } from 'common/typography/heading/heading';
-
+import { ErrorBoundary } from 'common';
 import { NewsletterGeneralStats } from './newsletter_general_stats';
 import { NewsletterType } from './newsletter_type';
 import { NewsletterStatsInfo } from './newsletter_stats_info';
@@ -115,12 +115,16 @@ function CampaignStatsPageComponent({ match, history, location }: Props) {
           subscribersCount={window.mailpoet_subscribers_count}
         />
 
-        <NewsletterStatsInfo newsletter={newsletter} />
+        <ErrorBoundary>
+          <NewsletterStatsInfo newsletter={newsletter} />
+        </ErrorBoundary>
 
-        <NewsletterGeneralStats
-          newsletter={newsletter}
-          isWoocommerceActive={MailPoet.isWoocommerceActive}
-        />
+        <ErrorBoundary>
+          <NewsletterGeneralStats
+            newsletter={newsletter}
+            isWoocommerceActive={MailPoet.isWoocommerceActive}
+          />
+        </ErrorBoundary>
 
         <Tabs activeKey="clicked">
           <Tab key="clicked" title={MailPoet.I18n.t('clickedLinks')}>
@@ -165,4 +169,5 @@ function CampaignStatsPageComponent({ match, history, location }: Props) {
   );
 }
 
+CampaignStatsPageComponent.displayName = 'CampaignStatsPage';
 export const CampaignStatsPage = withRouter(CampaignStatsPageComponent);

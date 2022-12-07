@@ -19,6 +19,7 @@ import {
 
 import { NewsletterTypes } from 'newsletters/types';
 import { MailPoet } from 'mailpoet';
+import { withBoundary } from 'common';
 
 const mailpoetRoles = window.mailpoet_roles || {};
 const mailpoetSegments = window.mailpoet_segments || {};
@@ -446,5 +447,7 @@ NewsletterListWelcomeComponent.propTypes = {
     params: PropTypes.object, // eslint-disable-line react/forbid-prop-types
   }).isRequired,
 };
-
-export const NewsletterListWelcome = withRouter(NewsletterListWelcomeComponent);
+NewsletterListWelcomeComponent.displayName = 'NewsletterListWelcome';
+export const NewsletterListWelcome = withRouter(
+  withBoundary(NewsletterListWelcomeComponent),
+);

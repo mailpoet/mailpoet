@@ -178,5 +178,5 @@ SenderField.defaultProps = {
     // no-op
   },
 };
-
+SenderField.displayName = 'SenderField';
 export { SenderField };

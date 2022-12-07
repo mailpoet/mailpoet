@@ -1,6 +1,7 @@
 import { MailPoet } from 'mailpoet';
 import { Button } from 'common/button/button';
 import { PremiumRequired } from 'common/premium_required/premium_required';
+import { withBoundary } from '../../common';
 
 function SkipDisplayingDetailedStats() {
   const ctaButton = (
@@ -39,7 +40,7 @@ function SkipDisplayingDetailedStats() {
   );
 }
 
-export function PremiumBanner() {
+function PremiumBanner() {
   if (!window.mailpoet_display_detailed_stats) {
     return <SkipDisplayingDetailedStats />;
   }
@@ -77,3 +78,8 @@ export function PremiumBanner() {
   }
   return null;
 }
+
+PremiumBanner.displayName = 'PremiumBanner';
+
+const PremiumBannerWithBoundary = withBoundary(PremiumBanner);
+export { PremiumBannerWithBoundary as PremiumBanner };
