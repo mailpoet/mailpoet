@@ -7,7 +7,9 @@ use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Mailer\Mailer;
+use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\MailerFactory;
+use MailPoet\Mailer\MailerLog;
 use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscription\SubscriptionUrlFactory;
@@ -123,9 +125,9 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
     $sender->sendConfirmationEmail($this->subscriber);
   }
 
-  public function testSendConfirmationEmailThrowsWhenSendReturnsFalse() {
+  public function testSendConfirmationEmailThrowsAndLogHardErrorWhenSendReturnsFalse() {
     $mailer = Stub::makeEmpty(Mailer::class, [
-      'send' => ['response' => false],
+      'send' => ['response' => false, 'error' => new MailerError(MailerError::OPERATION_SEND, MailerError::LEVEL_HARD, 'Error message')],
     ], $this);
 
     $mailerFactory = $this->createMock(MailerFactory::class);
@@ -138,10 +140,17 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
       $this->diContainer->get(SubscriptionUrlFactory::class),
       $this->diContainer->get(ConfirmationEmailCustomizer::class)
     );
-
-    $this->expectException(\Exception::class);
-    $this->expectExceptionMessage(__('Something went wrong with your subscription. Please contact the website owner.', 'mailpoet'));
-    $sender->sendConfirmationEmail($this->subscriber);
+    $exceptionMessage = '';
+    try {
+      $sender->sendConfirmationEmail($this->subscriber);
+    } catch (\Exception $e) {
+      $exceptionMessage = $e->getMessage();
+    }
+    expect($exceptionMessage)->equals(__('Something went wrong with your subscription. Please contact the website owner.', 'mailpoet'));
+    $mailerLogError = MailerLog::getError();
+    $this->assertIsArray($mailerLogError);
+    expect($mailerLogError['operation'])->equals(MailerError::OPERATION_SEND);
+    expect($mailerLogError['error_message'])->equals('Error message');
   }
 
   public function testItDoesntSendWhenMSSIsActiveAndConfirmationEmailIsNotAuthorized() {

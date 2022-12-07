@@ -6,7 +6,9 @@ use Html2Text\Html2Text;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Shortcodes;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\MailerFactory;
+use MailPoet\Mailer\MailerLog;
 use MailPoet\Mailer\MetaInfo;
 use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Services\Bridge;
@@ -181,12 +183,19 @@ class ConfirmationEmailMailer {
       $defaultMailer = $this->mailerFactory->getDefaultMailer();
       $result = $defaultMailer->send($email, $subscriber, $extraParams);
     } catch (\Exception $e) {
+      MailerLog::processTransactionalEmailError(MailerError::OPERATION_CONNECT, $e->getMessage(), $e->getCode());
       throw new \Exception(__('Something went wrong with your subscription. Please contact the website owner.', 'mailpoet'));
     }
 
     if ($result['response'] === false) {
+      if ($result['error'] instanceof MailerError) {
+        MailerLog::processTransactionalEmailError($result['error']->getOperation(), (string)$result['error']->getMessage());
+      }
       throw new \Exception(__('Something went wrong with your subscription. Please contact the website owner.', 'mailpoet'));
     };
+
+    // E-mail was successfully sent we need to update the MailerLog
+    MailerLog::incrementSentCount();
 
     if (!$this->wp->isUserLoggedIn()) {
       $subscriber->setConfirmationsCount($subscriber->getConfirmationsCount() + 1);
