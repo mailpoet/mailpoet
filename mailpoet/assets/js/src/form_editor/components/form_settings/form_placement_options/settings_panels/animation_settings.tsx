@@ -2,14 +2,13 @@ import { MailPoet } from 'mailpoet';
 import { __, assocPath, compose } from 'lodash/fp';
 import { useDispatch, useSelect } from '@wordpress/data';
 import { SelectControl } from '@wordpress/components';
+import { withBoundary } from 'common';
 
 type Props = {
   settingsPlacementKey: string;
 };
 
-export function AnimationSettings({
-  settingsPlacementKey,
-}: Props): JSX.Element {
+function AnimationSettings({ settingsPlacementKey }: Props): JSX.Element {
   const formSettings = useSelect(
     (select) => select('mailpoet-form-editor').getFormSettings(),
     [],
@@ -42,3 +41,7 @@ export function AnimationSettings({
     />
   );
 }
+
+AnimationSettings.displayName = 'FormEditorAnimationSettings';
+const AnimationSettingsWithBoundary = withBoundary(AnimationSettings);
+export { AnimationSettingsWithBoundary as AnimationSettings };

@@ -1,6 +1,6 @@
 import classnames from 'classnames';
 import '@wordpress/core-data';
-import { useSelect, useDispatch } from '@wordpress/data';
+import { useDispatch, useSelect } from '@wordpress/data';
 import { Popover, SlotFillProvider } from '@wordpress/components';
 import { uploadMedia } from '@wordpress/media-utils';
 import {
@@ -9,13 +9,14 @@ import {
   BlockList,
   BlockSelectionClearer,
   BlockTools,
-  WritingFlow,
   ObserveTyping,
   SETTINGS_DEFAULTS,
+  WritingFlow,
 } from '@wordpress/block-editor';
 import { ShortcutProvider } from '@wordpress/keyboard-shortcuts';
 
 import { UnsavedChangesNotice } from 'common/notices/unsaved_changes_notice.jsx';
+import { ErrorBoundary } from 'common';
 import { fetchLinkSuggestions } from '../utils/link_suggestions';
 import { Header } from './header.jsx';
 import { Tutorial } from './tutorial';
@@ -113,10 +114,12 @@ export function Editor() {
           <div className={layoutClass}>
             <div className="interface-interface-skeleton__editor">
               <div className="interface-interface-skeleton__header">
-                <Header
-                  isInserterOpened={isInserterOpened}
-                  setIsInserterOpened={toggleInserter}
-                />
+                <ErrorBoundary>
+                  <Header
+                    isInserterOpened={isInserterOpened}
+                    setIsInserterOpened={toggleInserter}
+                  />
+                </ErrorBoundary>
               </div>
               <div className="interface-interface-skeleton__body">
                 <BlockEditorProvider
@@ -132,7 +135,9 @@ export function Editor() {
                     </div>
                   )}
                   <div className="interface-interface-skeleton__content">
-                    <Notices />
+                    <ErrorBoundary>
+                      <Notices />
+                    </ErrorBoundary>
                     <UnsavedChangesNotice storeName="mailpoet-form-editor" />
                     <BlockSelectionClearer className="edit-post-visual-editor editor-styles-wrapper">
                       <BlockTools>
@@ -141,9 +146,11 @@ export function Editor() {
                         <div className="mailpoet_form">
                           <WritingFlow>
                             <ObserveTyping>
-                              <FormStylingBackground>
-                                <BlockList />
-                              </FormStylingBackground>
+                              <ErrorBoundary>
+                                <FormStylingBackground>
+                                  <BlockList />
+                                </FormStylingBackground>
+                              </ErrorBoundary>
                             </ObserveTyping>
                           </WritingFlow>
                         </div>
@@ -152,19 +159,27 @@ export function Editor() {
                   </div>
                   {sidebarOpened && (
                     <div className="interface-interface-skeleton__sidebar">
-                      <Sidebar />
+                      <ErrorBoundary>
+                        <Sidebar />
+                      </ErrorBoundary>
                     </div>
                   )}
                 </BlockEditorProvider>
               </div>
-              <FormStyles />
-              <Fullscreen />
+              <ErrorBoundary>
+                <FormStyles />
+              </ErrorBoundary>
+              <ErrorBoundary>
+                <Fullscreen />
+              </ErrorBoundary>
             </div>
             <Popover.Slot />
           </div>
         </SlotFillProvider>
       </ShortcutProvider>
-      <FormPreview />
+      <ErrorBoundary>
+        <FormPreview />
+      </ErrorBoundary>
       <Tutorial />
     </>
   );

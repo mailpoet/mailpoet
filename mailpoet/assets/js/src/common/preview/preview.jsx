@@ -77,5 +77,5 @@ Preview.defaultProps = {
   onDisplayTypeChange: () => {},
   selectedDisplayType: 'desktop',
 };
-
+Preview.displayName = 'FormEditorPreview';
 export { Preview };

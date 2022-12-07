@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
-import { RangeControl, RadioControl, BaseControl } from '@wordpress/components';
+import { useEffect, useState } from 'react';
+import { BaseControl, RadioControl, RangeControl } from '@wordpress/components';
+import { withBoundary } from 'common';
 
 export type SizeDefinition = {
   value: number | undefined;
@@ -18,7 +19,7 @@ type Props = {
   onChange: (value: SizeDefinition) => void;
 };
 
-export function SizeSettings({
+function SizeSettings({
   label,
   minPercents = 0,
   maxPercents = 100,
@@ -76,3 +77,7 @@ export function SizeSettings({
     </div>
   );
 }
+
+SizeSettings.displayName = 'FormEditorSizeSettings';
+const SizeSettingsWithBoundary = withBoundary(SizeSettings);
+export { SizeSettingsWithBoundary as SizeSettings };

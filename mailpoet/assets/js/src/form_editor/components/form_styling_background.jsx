@@ -129,5 +129,5 @@ function FormStylingBackground({ children }) {
 FormStylingBackground.propTypes = {
   children: PropTypes.node.isRequired,
 };
-
+FormStylingBackground.displayName = 'FormStylingBackground';
 export { FormStylingBackground };

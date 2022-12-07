@@ -3,7 +3,7 @@ import { useDispatch, useSelect } from '@wordpress/data';
 import { DefaultSidebar } from './default_sidebar';
 import { PlacementSettingsSidebar } from './placement_settings_sidebar';
 
-export function Sidebar(): JSX.Element {
+function Sidebar(): JSX.Element {
   const { toggleSidebar, changeActiveSidebar } = useDispatch(
     'mailpoet-form-editor',
   );
@@ -44,3 +44,6 @@ export function Sidebar(): JSX.Element {
     </div>
   );
 }
+
+Sidebar.displayName = 'FormEditorSidebar';
+export { Sidebar };

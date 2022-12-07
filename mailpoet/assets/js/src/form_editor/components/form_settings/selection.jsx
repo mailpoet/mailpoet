@@ -1,9 +1,10 @@
-import { createRef, Component } from 'react';
+import { Component, createRef } from 'react';
 import jQuery from 'jquery';
 import _ from 'underscore';
 import 'react-dom';
 import 'select2';
 import PropTypes from 'prop-types';
+import { withBoundary } from 'common';
 
 class Selection extends Component {
   constructor(props) {
@@ -372,5 +373,6 @@ Selection.defaultProps = {
   item: undefined,
   dropDownParent: undefined,
 };
-
-export { Selection };
+Selection.displayName = 'FormEditorSelection';
+const SelectionWithBoundary = withBoundary(Selection);
+export { SelectionWithBoundary as Selection };

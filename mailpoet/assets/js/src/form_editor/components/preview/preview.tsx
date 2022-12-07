@@ -6,8 +6,9 @@ import { useDispatch, useSelect } from '@wordpress/data';
 import { Modal } from 'common/modal/modal';
 import { Preview } from 'common/preview/preview.jsx';
 import { SettingsPanel } from 'form_editor/components/form_settings/form_placement_options/settings_panel';
+import { ErrorBoundary } from 'common';
 
-export function FormPreview(): JSX.Element {
+function FormPreview(): JSX.Element {
   const iframeElement = useRef(null);
   const [iframeLoaded, setIframeLoaded] = useState(false);
   const { hidePreview, changePreviewSettings } = useDispatch(
@@ -148,33 +149,38 @@ export function FormPreview(): JSX.Element {
             />
             <SettingsPanel activePanel={previewSettings.formType} />
           </div>
-          <Preview
-            onDisplayTypeChange={onPreviewTypeChange}
-            selectedDisplayType={previewSettings.displayType}
-          >
-            {!iframeLoaded && (
-              <div className="mailpoet_spinner_wrapper">
-                <Spinner />
-              </div>
-            )}
-            <iframe
-              ref={iframeElement}
-              className="mailpoet_form_preview_iframe"
-              src={iframeSrc}
-              title={MailPoet.I18n.t('formPreview')}
-              onLoad={(): void => setIframeLoaded(true)}
-              data-automation-id="form_preview_iframe"
-              scrolling={previewSettings.formType === 'others' ? 'no' : 'yes'}
-            />
-            {previewSettings.formType === 'others' &&
-              previewSettings.displayType === 'desktop' && (
-                <div className="mailpoet_form_preview_disclaimer">
-                  {MailPoet.I18n.t('formPreviewOthersDisclaimer')}
+          <ErrorBoundary>
+            <Preview
+              onDisplayTypeChange={onPreviewTypeChange}
+              selectedDisplayType={previewSettings.displayType}
+            >
+              {!iframeLoaded && (
+                <div className="mailpoet_spinner_wrapper">
+                  <Spinner />
                 </div>
               )}
-          </Preview>
+              <iframe
+                ref={iframeElement}
+                className="mailpoet_form_preview_iframe"
+                src={iframeSrc}
+                title={MailPoet.I18n.t('formPreview')}
+                onLoad={(): void => setIframeLoaded(true)}
+                data-automation-id="form_preview_iframe"
+                scrolling={previewSettings.formType === 'others' ? 'no' : 'yes'}
+              />
+              {previewSettings.formType === 'others' &&
+                previewSettings.displayType === 'desktop' && (
+                  <div className="mailpoet_form_preview_disclaimer">
+                    {MailPoet.I18n.t('formPreviewOthersDisclaimer')}
+                  </div>
+                )}
+            </Preview>
+          </ErrorBoundary>
         </div>
       )}
     </Modal>
   );
 }
+
+FormPreview.displayName = 'FormPreviewWrapper';
+export { FormPreview };

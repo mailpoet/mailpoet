@@ -2,7 +2,7 @@ import { memoize } from 'lodash';
 import { NoticeList } from '@wordpress/components';
 import { useDispatch, useSelect } from '@wordpress/data';
 
-export function Notices() {
+function Notices() {
   const dismissibleNotices = useSelect(
     (select) => select('mailpoet-form-editor').getDismissibleNotices(),
     [],
@@ -33,3 +33,7 @@ export function Notices() {
     </>
   );
 }
+
+Notices.displayName = 'FormEditorNotices';
+
+export { Notices };
