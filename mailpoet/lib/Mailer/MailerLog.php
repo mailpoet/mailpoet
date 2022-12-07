@@ -16,7 +16,9 @@ use MailPoet\Settings\SettingsController;
  *   "status": ?string,
  *   "retry_attempt": ?int,
  *   "retry_at": ?int,
- *   "error": ?MailerLogError
+ *   "error": ?MailerLogError,
+ *   "transactional_email_last_error_at": ?int,
+ *   "transactional_email_error_count": ?int,
  * }
  */
 
@@ -56,6 +58,8 @@ class MailerLog {
       'retry_attempt' => null,
       'retry_at' => null,
       'error' => null,
+      'transactional_email_last_error_at' => null,
+      'transactional_email_error_count' => null,
     ];
     $settings = SettingsController::getInstance();
     $settings->set(self::SETTING_NAME, $mailerLog);
@@ -115,6 +119,8 @@ class MailerLog {
     $mailerLog['status'] = self::STATUS_PAUSED;
     $mailerLog['retry_attempt'] = null;
     $mailerLog['retry_at'] = null;
+    $mailerLog['transactional_email_last_error_at'] = null;
+    $mailerLog['transactional_email_error_count'] = null;
     return self::updateMailerLog($mailerLog);
   }
 
@@ -170,6 +176,34 @@ class MailerLog {
       self::pauseSending($mailerLog);
     }
     self::enforceExecutionRequirements();
+  }
+
+  /**
+   * Process error, increase transactional_email_error_count and pauses sending if it reaches retry limit
+   * This method is meant to be used for processing errors when sending transactional emails
+   * like: Confirmation Email, Preview email, Stats Notification etc.
+   *
+   * @throws \Exception
+   */
+  public static function processTransactionalEmailError(
+    string $operation,
+    string $errorMessage,
+    ?string $errorCode = null
+  ): void {
+    $mailerLog = self::getMailerLog();
+    $lastErrorTime = $mailerLog['transactional_email_last_error_at'] ?? null;
+    $ignoreErrorThreshold = time() - (2 * 60); // 2 minutes ago
+    // We want to log the error max one time per 2 minutes
+    if ($lastErrorTime && $lastErrorTime > $ignoreErrorThreshold) {
+      return;
+    }
+    $mailerLog = self::setError($mailerLog, $operation, $errorMessage, $errorCode);
+    $mailerLog['transactional_email_last_error_at'] = time();
+    $mailerLog['transactional_email_error_count'] = ($mailerLog['transactional_email_error_count'] ?? 0) + 1;
+    self::updateMailerLog($mailerLog);
+    if ($mailerLog['transactional_email_error_count'] > self::RETRY_ATTEMPTS_LIMIT) {
+      self::pauseSending($mailerLog);
+    }
   }
 
   /**
@@ -242,6 +276,8 @@ class MailerLog {
     $mailerLog['retry_attempt'] = null;
     $mailerLog['retry_at'] = null;
     $mailerLog['error'] = null;
+    $mailerLog['transactional_email_last_error_at'] = null;
+    $mailerLog['transactional_email_error_count'] = null;
     return self::updateMailerLog($mailerLog);
   }
 

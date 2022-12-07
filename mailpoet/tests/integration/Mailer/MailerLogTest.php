@@ -3,6 +3,7 @@
 namespace MailPoet\Test\Mailer;
 
 use MailPoet\Mailer\Mailer;
+use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\SettingsRepository;
@@ -266,6 +267,59 @@ class MailerLogTest extends \MailPoetTest {
     );
   }
 
+  public function testItProcessesTransactionalEmailSendingError() {
+    $mailerLog = MailerLog::getMailerLog();
+    expect($mailerLog['transactional_email_last_error_at'])->null();
+    expect($mailerLog['transactional_email_error_count'])->null();
+    MailerLog::processTransactionalEmailError(MailerError::OPERATION_SEND, 'email rejected');
+    $mailerLog = MailerLog::getMailerLog();
+    expect($mailerLog['transactional_email_last_error_at'])->equals(time(), 1);
+    expect($mailerLog['transactional_email_error_count'])->equals(1);
+    expect($mailerLog['error'])->equals(
+      [
+        'operation' => MailerError::OPERATION_SEND,
+        'error_message' => 'email rejected',
+      ]
+    );
+  }
+
+  public function testItSkipsTransactionalEmailSendingErrorWhenLastLoggedIsWithinIgnoreThreshold() {
+    $mailerLog = MailerLog::createMailerLog();
+    $almostTwoMinutesAgo = time() - 110;
+    $mailerLog['transactional_email_last_error_at'] = $almostTwoMinutesAgo;
+    $mailerLog['transactional_email_error_count'] = 1;
+    MailerLog::updateMailerLog($mailerLog);
+    MailerLog::processTransactionalEmailError(MailerError::OPERATION_SEND, 'email rejected');
+    $mailerLog = MailerLog::getMailerLog();
+    expect($mailerLog['transactional_email_last_error_at'])->equals($almostTwoMinutesAgo);
+    expect($mailerLog['transactional_email_error_count'])->equals(1);
+  }
+
+  public function testItIncreaseCounterOfTransactionalEmailSendingErrorWhenLastLoggedOlderThanIgnoreThreshold() {
+    $mailerLog = MailerLog::createMailerLog();
+    $moreThanTwoMinutesAgo = time() - 130;
+    $mailerLog['transactional_email_last_error_at'] = $moreThanTwoMinutesAgo;
+    $mailerLog['transactional_email_error_count'] = 1;
+    MailerLog::updateMailerLog($mailerLog);
+    MailerLog::processTransactionalEmailError(MailerError::OPERATION_SEND, 'email rejected');
+    $mailerLog = MailerLog::getMailerLog();
+    expect($mailerLog['transactional_email_last_error_at'])->equals(time(), 1);
+    expect($mailerLog['transactional_email_error_count'])->equals(2);
+  }
+
+  public function testItPausesSendingWhenTransactionalEmailSendingErrorCountReachesLimit() {
+    $mailerLog = MailerLog::createMailerLog();
+    $moreThanTwoMinutesAgo = time() - 130;
+    $mailerLog['transactional_email_last_error_at'] = $moreThanTwoMinutesAgo;
+    $mailerLog['transactional_email_error_count'] = MailerLog::RETRY_ATTEMPTS_LIMIT;
+    MailerLog::updateMailerLog($mailerLog);
+    MailerLog::processTransactionalEmailError(MailerError::OPERATION_SEND, 'email rejected');
+    $mailerLog = MailerLog::getMailerLog();
+    expect($mailerLog['transactional_email_last_error_at'])->null();
+    expect($mailerLog['transactional_email_error_count'])->null();
+    expect(MailerLog::isSendingPaused())->true();
+  }
+
   public function testItEnforcesSendingLimit() {
     $mailerConfig = [
       'frequency' => [
@@ -368,12 +422,16 @@ class MailerLogTest extends \MailPoetTest {
       'operation' => 'operation',
       'error_code' => 'error_code',
       'error_message' => 'error_message',
+      'transactional_email_last_error_at' => time(),
+      'transactional_email_error_count' => 1,
     ];
     $mailerLog['status'] = 'status';
     $mailerLog = MailerLog::clearSendingErrorLog($mailerLog);
     expect($mailerLog['retry_attempt'])->null();
     expect($mailerLog['retry_at'])->null();
     expect($mailerLog['error'])->null();
+    expect($mailerLog['transactional_email_last_error_at'])->null();
+    expect($mailerLog['transactional_email_error_count'])->null();
     expect($mailerLog['status'])->equals('status');
   }
 
