@@ -68,7 +68,7 @@ class Changelog {
     $version = $this->settings->get('version');
     if ($version === null) {
       $this->setupNewInstallation();
-      $this->checkWelcomeWizard();
+      $this->maybeRedirectToWelcomeWizard();
     }
     $this->checkWooCommerceListImportPage();
     $this->checkRevenueTrackingPermissionPage();
@@ -102,10 +102,16 @@ class Changelog {
     $this->settings->set('show_congratulate_after_first_newsletter', true);
   }
 
-  private function checkWelcomeWizard() {
-    if ($this->shouldShowWelcomeWizard()) {
-      $this->terminateWithRedirect($this->wp->adminUrl('admin.php?page=mailpoet-welcome-wizard'));
+  private function maybeRedirectToWelcomeWizard() {
+    if ($this->shouldShowWelcomeWizard() && !$this->isWelcomeWizardPage()) {
+      $this->urlHelper->redirectWithReferer(
+        $this->wp->adminUrl('admin.php?page=mailpoet-welcome-wizard')
+      );
     }
+  }
+
+  private function isWelcomeWizardPage() {
+    return isset($_GET['page']) && $_GET['page'] === Menu::WELCOME_WIZARD_PAGE_SLUG;
   }
 
   private function checkWooCommerceListImportPage() {
@@ -140,11 +146,5 @@ class Changelog {
     ) {
       $this->urlHelper->redirectTo($this->wp->adminUrl('admin.php?page=mailpoet-woocommerce-setup'));
     }
-  }
-
-  private function terminateWithRedirect($redirectUrl) {
-    // save version number
-    $this->settings->set('version', Env::$version);
-    $this->urlHelper->redirectWithReferer($redirectUrl);
   }
 }

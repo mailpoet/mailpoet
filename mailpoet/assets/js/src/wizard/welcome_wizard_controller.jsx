@@ -33,13 +33,6 @@ function WelcomeWizardStepsController(props) {
     }
   }, [step, stepsCount, props.history]);
 
-  function finishWizard() {
-    setLoading(true);
-    window.location = window.finish_wizard_url;
-  }
-
-  const redirect = partial(redirectToNextStep, props.history, finishWizard);
-
   function updateSettings(data) {
     setLoading(true);
     return MailPoet.Ajax.post({
@@ -59,6 +52,16 @@ function WelcomeWizardStepsController(props) {
         }
       });
   }
+
+  function finishWizard() {
+    updateSettings({
+      version: window.mailpoet_version,
+    }).then(() => {
+      window.location = window.finish_wizard_url;
+    });
+  }
+
+  const redirect = partial(redirectToNextStep, props.history, finishWizard);
 
   const submitTracking = useCallback(
     (tracking, libs3rdParty) => {
