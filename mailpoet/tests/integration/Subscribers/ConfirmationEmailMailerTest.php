@@ -124,6 +124,7 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
   }
 
   public function testSendConfirmationEmailThrowsAndLogHardErrorWhenSendReturnsFalse() {
+    MailerLog::resetMailerLog();
     $mailer = Stub::makeEmpty(Mailer::class, [
       'send' => ['response' => false, 'error' => new MailerError(MailerError::OPERATION_SEND, MailerError::LEVEL_HARD, 'Error message')],
     ], $this);
@@ -148,6 +149,31 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
     $this->assertIsArray($mailerLogError);
     expect($mailerLogError['operation'])->equals(MailerError::OPERATION_SEND);
     expect($mailerLogError['error_message'])->equals('Error message');
+  }
+
+  public function testSendConfirmationEmailThrowsAndIgnoresSoftErrorWhenSendReturnsFalse() {
+    MailerLog::resetMailerLog();
+    $mailer = Stub::makeEmpty(Mailer::class, [
+      'send' => ['response' => false, 'error' => new MailerError(MailerError::OPERATION_SEND, MailerError::LEVEL_SOFT, 'Error message')],
+    ], $this);
+
+    $mailerFactory = $this->createMock(MailerFactory::class);
+    $mailerFactory->method('getDefaultMailer')->willReturn($mailer);
+    $sender = new ConfirmationEmailMailer(
+      $mailerFactory,
+      $this->diContainer->get(WPFunctions::class),
+      $this->diContainer->get(SettingsController::class),
+      $this->diContainer->get(SubscribersRepository::class),
+      $this->diContainer->get(SubscriptionUrlFactory::class)
+    );
+    $exceptionMessage = '';
+    try {
+      $sender->sendConfirmationEmail($this->subscriber);
+    } catch (\Exception $e) {
+      $exceptionMessage = $e->getMessage();
+    }
+    expect($exceptionMessage)->equals(__('There was an error when sending a confirmation email for your subscription. Please contact the website owner.', 'mailpoet'));
+    expect(MailerLog::getError())->null();
   }
 
   public function testItDoesntSendWhenMSSIsActiveAndConfirmationEmailIsNotAuthorized() {

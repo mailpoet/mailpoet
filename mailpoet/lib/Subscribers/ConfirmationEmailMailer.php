@@ -142,7 +142,7 @@ class ConfirmationEmailMailer {
     }
 
     if ($result['response'] === false) {
-      if ($result['error'] instanceof MailerError) {
+      if ($result['error'] instanceof MailerError && $result['error']->getLevel() === MailerError::LEVEL_HARD) {
         MailerLog::processTransactionalEmailError($result['error']->getOperation(), (string)$result['error']->getMessage());
       }
       throw new \Exception(__('There was an error when sending a confirmation email for your subscription. Please contact the website owner.', 'mailpoet'));
