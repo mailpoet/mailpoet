@@ -45,6 +45,7 @@ class Localizer {
     }
 
     if (!empty($mailpoetTranslations)) {
+      require_once ABSPATH . '/wp-admin/includes/file.php';
       require_once ABSPATH . '/wp-admin/includes/class-wp-upgrader.php';
       $upgrader = new \Language_Pack_Upgrader(new SilentUpgraderSkin());
       $upgrader->bulk_upgrade($mailpoetTranslations);
