@@ -15,7 +15,10 @@ use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
-use MailPoet\Tasks\Sending as SendingTask;
+use MailPoet\Tasks\Sending;
+use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
+use MailPoet\Test\DataFactories\ScheduledTask as ScheduledTaskFactory;
+use MailPoet\Test\DataFactories\SendingQueue as SendingQueueFactory;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 
@@ -246,18 +249,14 @@ class WordPressTest extends \MailPoetTest {
     );
   }
 
-  private function addQueue($status) {
-    $queue = SendingTask::create();
-    $queue->hydrate(
-      [
-        'newsletter_id' => 1,
-        'status' => $status,
-        'scheduled_at' => ($status === SendingQueueEntity::STATUS_SCHEDULED) ?
-          Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp')) :
-          null,
-      ]
-    );
-    return $queue->save();
+  private function addQueue($status): SendingQueueEntity {
+    $scheduledAt = ($status === SendingQueueEntity::STATUS_SCHEDULED) ?
+      Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp')) :
+      null;
+    $newsletter = (new NewsletterFactory())->create();
+    $scheduledTask = (new ScheduledTaskFactory())->create(Sending::TASK_TYPE, $status, $scheduledAt);
+    $sendingQueue = (new SendingQueueFactory())->create($scheduledTask, $newsletter);
+    return $sendingQueue;
   }
 
   private function addScheduledTask($type, $status, $scheduledAt = null) {
