@@ -8,6 +8,7 @@ import {
 import { dispatch, useDispatch, useSelect } from '@wordpress/data';
 import { PinnedItems } from '@wordpress/interface';
 import { __ } from '@wordpress/i18n';
+import { ErrorBoundary } from 'common';
 import { DocumentActions } from './document_actions';
 import { Errors } from './errors';
 import { InserterToggle } from './inserter_toggle';
@@ -227,28 +228,32 @@ export function Header({ showInserterToggle }: Props): JSX.Element {
       </div>
 
       <div className="edit-site-header_center">
-        <DocumentActions>
-          {() => (
-            <div className="mailpoet-automation-editor-dropdown-name-edit">
-              <div className="mailpoet-automation-editor-dropdown-name-edit-title">
-                {__('Automation name', 'mailpoet')}
+        <ErrorBoundary>
+          <DocumentActions>
+            {() => (
+              <div className="mailpoet-automation-editor-dropdown-name-edit">
+                <div className="mailpoet-automation-editor-dropdown-name-edit-title">
+                  {__('Automation name', 'mailpoet')}
+                </div>
+                <TextControl
+                  value={automationName}
+                  onChange={(newName) => setAutomationName(newName)}
+                  help={__(
+                    `Give the automation a name that indicates its purpose. E.g. "Abandoned cart recovery"`,
+                    'mailpoet',
+                  )}
+                />
               </div>
-              <TextControl
-                value={automationName}
-                onChange={(newName) => setAutomationName(newName)}
-                help={__(
-                  `Give the automation a name that indicates its purpose. E.g. "Abandoned cart recovery"`,
-                  'mailpoet',
-                )}
-              />
-            </div>
-          )}
-        </DocumentActions>
+            )}
+          </DocumentActions>
+        </ErrorBoundary>
       </div>
 
       <div className="edit-site-header_end">
         <div className="edit-site-header__actions">
-          <Errors />
+          <ErrorBoundary>
+            <Errors />
+          </ErrorBoundary>
           {automationStatus === AutomationStatus.DRAFT && (
             <>
               <SaveDraftButton />

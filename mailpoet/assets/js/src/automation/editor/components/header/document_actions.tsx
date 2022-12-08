@@ -21,7 +21,7 @@ const Dropdown: ComponentType<
   }
 > = WpDropdown;
 
-export function DocumentActions({ children }): JSX.Element {
+function DocumentActions({ children }): JSX.Element {
   const { automationName, automationStatus, showIconLabels } = useSelect(
     (select) => ({
       automationName: select(storeName).getAutomationData().name,
@@ -101,3 +101,6 @@ export function DocumentActions({ children }): JSX.Element {
     </div>
   );
 }
+
+DocumentActions.displayName = 'DocumentActions';
+export { DocumentActions };
