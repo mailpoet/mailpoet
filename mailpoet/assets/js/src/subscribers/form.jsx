@@ -8,7 +8,7 @@ import { Form } from 'form/form.jsx';
 import { Heading } from 'common/typography/heading/heading';
 import { HideScreenOptions } from 'common/hide_screen_options/hide_screen_options';
 import { MailPoet } from 'mailpoet';
-import { SubscribersLimitNotice } from 'notices/subscribers_limit_notice.jsx';
+import { SubscribersLimitNotice } from 'notices/subscribers_limit_notice';
 
 const fields = [
   {
