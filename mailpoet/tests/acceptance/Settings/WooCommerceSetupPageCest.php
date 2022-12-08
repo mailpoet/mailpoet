@@ -80,7 +80,7 @@ class WooCommerceSetupPageCest {
     $i->wantTo('Make sure we don‘t show import setting when there are no customers');
     $i->login();
     $i->amOnPage('wp-admin/admin.php?page=mailpoet-woocommerce-setup');
-    $i->see('Get ready to use MailPoet for WooCommerce');
+    $i->see('Power up your WooCommerce store');
     $importTypeToggle = '[data-automation-id="woocommerce_import_type"]';
     $trackingToggle = '[data-automation-id="woocommerce_tracking"]';
     $submitButton = '[data-automation-id="submit_woocommerce_setup"]';
@@ -101,7 +101,7 @@ class WooCommerceSetupPageCest {
     $i->cli(['action-scheduler', 'run', '--hooks=wc-admin_import_orders,wc-admin_import_customers --force']);
 
     $i->amOnPage('wp-admin/admin.php?page=mailpoet-woocommerce-setup');
-    $i->see('Get ready to use MailPoet for WooCommerce');
+    $i->see('Power up your WooCommerce store');
     $importTypeToggle = '[data-automation-id="woocommerce_import_type"]';
     $trackingToggle = '[data-automation-id="woocommerce_tracking"]';
     $submitButton = '[data-automation-id="submit_woocommerce_setup"]';
