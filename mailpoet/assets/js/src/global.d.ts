@@ -156,4 +156,12 @@ interface Window {
   mailpoet_installed_days_ago: number;
   mailpoet_send_transactional_emails: boolean;
   mailpoet_transactional_emails_opt_in_notice_dismissed: boolean;
+
+  mailpoet_mta_log?: {
+    status: string;
+    error: {
+      message: ?string;
+      operation: ?string;
+    };
+  };
 }
