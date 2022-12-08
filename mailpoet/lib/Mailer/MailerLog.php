@@ -201,7 +201,7 @@ class MailerLog {
     $mailerLog['transactional_email_last_error_at'] = time();
     $mailerLog['transactional_email_error_count'] = ($mailerLog['transactional_email_error_count'] ?? 0) + 1;
     self::updateMailerLog($mailerLog);
-    if ($mailerLog['transactional_email_error_count'] > self::RETRY_ATTEMPTS_LIMIT) {
+    if ($mailerLog['transactional_email_error_count'] >= self::RETRY_ATTEMPTS_LIMIT) {
       self::pauseSending($mailerLog);
     }
   }
