@@ -13,6 +13,7 @@ import {
   Button,
   Modal,
 } from '@wordpress/components';
+import { dispatch } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
 import { MailPoet } from 'mailpoet';
 import {
@@ -21,6 +22,7 @@ import {
   useUpgradeInfo,
   UtmParams,
 } from './upgrade_info';
+import { storeName } from '../../automation/editor/store';
 
 export const premiumValidAndActive =
   premiumFeaturesEnabled && MailPoet.premiumActive;
@@ -124,5 +126,34 @@ export function PremiumModal({
         </div>
       )}
     </Modal>
+  );
+}
+
+type EditProps = Omit<Props, 'onRequestClose'>;
+export function PremiumModalForStepEdit({
+  children,
+  ...props
+}: EditProps): JSX.Element {
+  const [showModal, setShowModal] = useState(true);
+  useEffect(() => {
+    if (showModal) {
+      return;
+    }
+    const { selectStep } = dispatch(storeName);
+    selectStep(undefined);
+    setShowModal(true);
+  }, [showModal]);
+  if (!showModal) {
+    return null;
+  }
+  return (
+    <PremiumModal
+      onRequestClose={() => {
+        setShowModal(false);
+      }}
+      {...props}
+    >
+      {children}
+    </PremiumModal>
   );
 }
