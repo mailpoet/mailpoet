@@ -1,12 +1,10 @@
 import { useState, Fragment } from 'react';
 import { DropdownMenu } from '@wordpress/components';
-import { useSelect } from '@wordpress/data';
 import { moreVertical, trash } from '@wordpress/icons';
 import { __ } from '@wordpress/i18n';
 import { Hooks } from 'wp-js-hooks';
 import { PremiumModal } from 'common/premium_modal';
 import { Step as StepData } from './types';
-import { storeName } from '../../store';
 import { StepMoreControlsType } from '../../../types/filters';
 
 type Props = {
@@ -14,12 +12,6 @@ type Props = {
 };
 
 export function StepMoreMenu({ step }: Props): JSX.Element {
-  const { stepType } = useSelect(
-    (select) => ({
-      stepType: select(storeName).getStepType(step.key),
-    }),
-    [step],
-  );
   const [showModal, setShowModal] = useState(false);
 
   const moreControls: StepMoreControlsType = Hooks.applyFilters(
@@ -53,7 +45,6 @@ export function StepMoreMenu({ step }: Props): JSX.Element {
       },
     },
     step,
-    stepType,
   );
 
   const slots = Object.values(moreControls).filter(
