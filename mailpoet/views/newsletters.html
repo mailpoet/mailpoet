@@ -21,7 +21,6 @@
       var mailpoet_schedule_time_of_day = <%= json_encode(schedule_time_of_day) %>;
       var mailpoet_date_display_format = "<%= wp_date_format() %>";
       var mailpoet_date_storage_format = "Y-m-d";
-      var mailpoet_transactional_emails_opt_in_notice_dismissed = '<%= transactional_emails_opt_in_notice_dismissed %>';
       var mailpoet_product_categories = <%= json_encode(product_categories)  %>;
       var mailpoet_products = <%= json_encode(products) %>;
 
@@ -47,7 +46,6 @@
       var mailpoet_installed_at = '<%= settings.installed_at %>';
       var mailpoet_editor_javascript_url = '<%= getJavascriptScriptUrl("newsletter_editor.js") %>';
       var mailpoet_newsletters_count = <%= newsletters_count %>;
-      var mailpoet_send_transactional_emails = <%= json_encode(settings.send_transactional_emails == '1') %>;
       var mailpoet_authorized_emails = <%= json_encode(authorized_emails) %>;
       var mailpoet_verified_sender_domains = <%= json_encode(verified_sender_domains) %>;
       var mailpoet_all_sender_domains = <%= json_encode(all_sender_domains) %>;
@@ -346,10 +344,6 @@
     'backToPostNotifications': __('Back to Post notifications'),
     'noSubscribers': __('No subscribers!'),
 
-    'transactionalEmailNoticeTitle': __('Good news! MailPoet can now send your website’s emails too'),
-    'transactionalEmailNoticeBody': __('All of your WordPress and WooCommerce emails are sent with your hosting company, unless you have an SMTP plugin. Would you like such emails to be delivered with MailPoet’s active sending method for better deliverability?'),
-    'transactionalEmailNoticeBodyReadMore': _x('Read more.', 'This is a link that leads to more information about transactional emails'),
-    'transactionalEmailNoticeCTA': _x('Enable', 'Button, after clicking it we will enable transactional emails'),
     'mailerSendErrorNotice': __('Sending has been paused due to a technical issue with %1$s'),
     'mailerSendErrorCheckConfiguration': __('Please check your sending method configuration, you may need to consult with your hosting company.'),
     'mailerSendErrorUseSendingService': __('The easy alternative is to <b>send emails with MailPoet Sending Service</b> instead, like thousands of other users do.'),
