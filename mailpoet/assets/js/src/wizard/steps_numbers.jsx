@@ -25,7 +25,7 @@ export const mapStepNumberToStepName = (stepNumber) => {
   if (stepNumber === 2) {
     return 'WelcomeWizardUsageTrackingStep';
   }
-  if (window.mailpoet_woocommerce_active && stepNumber === getStepsCount()) {
+  if (window.mailpoet_woocommerce_active && stepNumber === 3) {
     return 'WizardWooCommerceStep';
   }
   return 'WelcomeWizardPitchMSSStep';

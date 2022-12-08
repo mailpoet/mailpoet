@@ -150,7 +150,11 @@ function WelcomeWizardStepsController(props) {
         ) : null}
 
         {stepName === 'WizardWooCommerceStep' ? (
-          <WooCommerceController isWizardStep />
+          <WooCommerceController
+            isWizardStep
+            currentStep={step}
+            redirectToNextStep={redirect}
+          />
         ) : null}
       </StepsContent>
     </>

@@ -5,7 +5,11 @@ import { StepsContent } from 'common/steps/steps_content.tsx';
 import { WizardWooCommerceStep } from './steps/woo_commerce_step.jsx';
 import { WelcomeWizardStepLayout } from './layout/step_layout.jsx';
 
-function WooCommerceController({ isWizardStep = false }) {
+function WooCommerceController({
+  isWizardStep = false,
+  currentStep = null,
+  redirectToNextStep = null,
+}) {
   const [loading, setLoading] = useState(false);
 
   const handleApiError = (response) => {
@@ -46,7 +50,15 @@ function WooCommerceController({ isWizardStep = false }) {
       'tracking.level': newTrackingLevel,
       'woocommerce.accept_cookie_revenue_tracking.set': 1,
     };
-    updateSettings(settings).then(scheduleImport).then(finishWizard);
+    updateSettings(settings)
+      .then(scheduleImport)
+      .then(() => {
+        if (isWizardStep) {
+          redirectToNextStep(currentStep);
+        } else {
+          finishWizard();
+        }
+      });
   };
 
   const result = (
@@ -71,10 +83,14 @@ function WooCommerceController({ isWizardStep = false }) {
 
 WooCommerceController.propTypes = {
   isWizardStep: PropTypes.bool,
+  currentStep: PropTypes.number,
+  redirectToNextStep: PropTypes.shape,
 };
 
 WooCommerceController.defaultProps = {
   isWizardStep: false,
+  currentStep: null,
+  redirectToNextStep: null,
 };
 
 export { WooCommerceController };
