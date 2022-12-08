@@ -41,29 +41,65 @@ function WizardWooCommerceStep(props) {
       <p>{MailPoet.I18n.t('wooCommerceSetupInfo')}</p>
       <div className="mailpoet-gap" />
       <form onSubmit={submit}>
-        {props.showCustomersImportSetting ? (
+        <div>
+          {props.showCustomersImportSetting ? (
+            <div className="mailpoet-wizard-woocommerce-option">
+              <div className="mailpoet-wizard-woocommerce-toggle">
+                <YesNo
+                  showError={submitted && importType === null}
+                  checked={importTypeChecked}
+                  onCheck={(value) =>
+                    setImportType(value ? 'subscribed' : 'unsubscribed')
+                  }
+                  name="mailpoet_woocommerce_import_type"
+                  automationId="woocommerce_import_type"
+                />
+              </div>
+              <div>
+                <p>
+                  {ReactStringReplace(
+                    MailPoet.I18n.t('wooCommerceSetupImportInfo'),
+                    /\[link\](.*?)\[\/link\]/,
+                    (match) => (
+                      <a
+                        key={match}
+                        href="https://kb.mailpoet.com/article/284-import-old-customers-to-the-woocommerce-customers-list"
+                        data-beacon-article="5d722c7104286364bc8ecf19"
+                        rel="noopener noreferrer"
+                        target="_blank"
+                      >
+                        {match}
+                      </a>
+                    ),
+                  )}
+                </p>
+                <div className="mailpoet-wizard-note">
+                  <span>GDPR</span>
+                  {MailPoet.I18n.t('wooCommerceSetupImportGDPRInfo')}
+                </div>
+              </div>
+            </div>
+          ) : null}
           <div className="mailpoet-wizard-woocommerce-option">
             <div className="mailpoet-wizard-woocommerce-toggle">
               <YesNo
-                showError={submitted && importType === null}
-                checked={importTypeChecked}
-                onCheck={(value) =>
-                  setImportType(value ? 'subscribed' : 'unsubscribed')
-                }
-                name="mailpoet_woocommerce_import_type"
-                automationId="woocommerce_import_type"
+                showError={submitted && allowed === null}
+                checked={allowed}
+                onCheck={(value) => setAllowed(value)}
+                name="mailpoet_woocommerce_tracking"
+                automationId="woocommerce_tracking"
               />
             </div>
             <div>
               <p>
                 {ReactStringReplace(
-                  MailPoet.I18n.t('wooCommerceSetupImportInfo'),
+                  MailPoet.I18n.t('wooCommerceSetupTrackingInfo'),
                   /\[link\](.*?)\[\/link\]/,
                   (match) => (
                     <a
                       key={match}
-                      href="https://kb.mailpoet.com/article/284-import-old-customers-to-the-woocommerce-customers-list"
-                      data-beacon-article="5d722c7104286364bc8ecf19"
+                      href="https://kb.mailpoet.com/article/280-woocommerce-cookie-tracking"
+                      data-beacon-article="5d5fa44c2c7d3a7a4d778906"
                       rel="noopener noreferrer"
                       target="_blank"
                     >
@@ -74,42 +110,8 @@ function WizardWooCommerceStep(props) {
               </p>
               <div className="mailpoet-wizard-note">
                 <span>GDPR</span>
-                {MailPoet.I18n.t('wooCommerceSetupImportGDPRInfo')}
+                {MailPoet.I18n.t('wooCommerceSetupTrackingGDPRInfo')}
               </div>
-            </div>
-          </div>
-        ) : null}
-        <div className="mailpoet-wizard-woocommerce-option">
-          <div className="mailpoet-wizard-woocommerce-toggle">
-            <YesNo
-              showError={submitted && allowed === null}
-              checked={allowed}
-              onCheck={(value) => setAllowed(value)}
-              name="mailpoet_woocommerce_tracking"
-              automationId="woocommerce_tracking"
-            />
-          </div>
-          <div>
-            <p>
-              {ReactStringReplace(
-                MailPoet.I18n.t('wooCommerceSetupTrackingInfo'),
-                /\[link\](.*?)\[\/link\]/,
-                (match) => (
-                  <a
-                    key={match}
-                    href="https://kb.mailpoet.com/article/280-woocommerce-cookie-tracking"
-                    data-beacon-article="5d5fa44c2c7d3a7a4d778906"
-                    rel="noopener noreferrer"
-                    target="_blank"
-                  >
-                    {match}
-                  </a>
-                ),
-              )}
-            </p>
-            <div className="mailpoet-wizard-note">
-              <span>GDPR</span>
-              {MailPoet.I18n.t('wooCommerceSetupTrackingGDPRInfo')}
             </div>
           </div>
         </div>
