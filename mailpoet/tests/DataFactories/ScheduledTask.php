@@ -37,14 +37,16 @@ class ScheduledTask {
   public function create(
     string $type,
     ?string $status,
-    \DateTimeInterface $scheduledAt,
+    ?\DateTimeInterface $scheduledAt = null,
     \DateTimeInterface $deletedAt = null,
     \DateTimeInterface $updatedAt = null
   ) {
     $task = new ScheduledTaskEntity();
     $task->setType($type);
     $task->setStatus($status);
-    $task->setScheduledAt($scheduledAt);
+    if ($scheduledAt) {
+      $task->setScheduledAt($scheduledAt);
+    }
 
     if ($deletedAt) {
       $task->setDeletedAt($deletedAt);
