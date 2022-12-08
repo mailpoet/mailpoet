@@ -3,8 +3,10 @@ import { dispatch, useSelect } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
 import { storeName } from '../../../../../editor/store';
 import { segments } from './segment';
-import { PlainBodyTitle } from '../../../../../editor/components/panel';
-import { FormTokenField } from '../../../components/form-token-field';
+import {
+  PlainBodyTitle,
+  FormTokenField,
+} from '../../../../../editor/components';
 
 export function ListPanel(): JSX.Element {
   const { selectedStep } = useSelect(

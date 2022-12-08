@@ -3,9 +3,11 @@ import { dispatch, useSelect } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
 import ReactStringReplace from 'react-string-replace';
 import { storeName } from '../../../../../editor/store';
-import { PlainBodyTitle } from '../../../../../editor/components/panel';
+import {
+  PlainBodyTitle,
+  FormTokenField,
+} from '../../../../../editor/components';
 import { userRoles } from './role';
-import { FormTokenField } from '../../../components/form-token-field';
 
 function SettingsInfoText(): JSX.Element {
   return (
