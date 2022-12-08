@@ -75,7 +75,9 @@ jQuery('#adminmenu #toplevel_page_mailpoet-newsletters')
   var mailpoet_mta_method = '<%= mta_method %>';
   var mailpoet_tracking_config = <%= json_encode(tracking_config) %>;
   var mailpoet_is_new_user = <%= json_encode(is_new_user == true) %>;
-  var mailpoet_installed_days_ago = <%= installed_days_ago %>;
+  var mailpoet_installed_days_ago = <%= json_encode(installed_days_ago) %>;
+  var mailpoet_send_transactional_emails = <%= json_encode(send_transactional_emails) %>;
+  var mailpoet_transactional_emails_opt_in_notice_dismissed = <%= json_encode(ransactional_emails_opt_in_notice_dismissed) %>;
   var mailpoet_deactivate_subscriber_after_inactive_days = <%= json_encode(deactivate_subscriber_after_inactive_days) %>;
 
   var mailpoet_site_name = '<%= site_name %>';
@@ -188,6 +190,11 @@ jQuery('#adminmenu #toplevel_page_mailpoet-newsletters')
   'allSendingPausedHeader': __('All sending is currently paused!'),
   'allSendingPausedBody': __('Your [link]API key[/link] to send with MailPoet is invalid.'),
   'allSendingPausedLink': __('Purchase a key'),
+
+  'transactionalEmailNoticeTitle': __('Good news! MailPoet can now send your website’s emails too'),
+  'transactionalEmailNoticeBody': __('All of your WordPress and WooCommerce emails are sent with your hosting company, unless you have an SMTP plugin. Would you like such emails to be delivered with MailPoet’s active sending method for better deliverability?'),
+  'transactionalEmailNoticeBodyReadMore': _x('Read more.', 'This is a link that leads to more information about transactional emails'),
+  'transactionalEmailNoticeCTA': _x('Enable', 'Button, after clicking it we will enable transactional emails'),
 
   'topBarLogoTitle': __('Back to section root'),
 

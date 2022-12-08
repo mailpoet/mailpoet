@@ -138,6 +138,8 @@ class PageRenderer {
       'is_new_user' => $this->installation->isNewInstallation(),
       'installed_days_ago' => (int)$installedAtDiff->format('%a'),
       'deactivate_subscriber_after_inactive_days' => $this->settings->get('deactivate_subscriber_after_inactive_days'),
+      'send_transactional_emails' => (bool)$this->settings->get('send_transactional_emails'),
+      'transactional_emails_opt_in_notice_dismissed' => (bool)$this->userFlags->get('transactional_emails_opt_in_notice_dismissed'),
 
       // Premium & plan upgrade info
       'current_wp_user_email' => $this->wp->wpGetCurrentUser()->user_email,

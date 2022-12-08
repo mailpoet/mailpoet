@@ -59,6 +59,7 @@ export const MailPoet = {
   currentWpUserEmail: window.mailpoet_current_wp_user_email,
   freeMailDomains: window.mailpoet_free_domains || [],
   installedAt: window.mailpoet_installed_at,
+  installedDaysAgo: window.mailpoet_installed_days_ago,
   emailEditorTutorialSeen: window.mailpoet_email_editor_tutorial_seen,
   emailEditorTutorialUrl: window.mailpoet_email_editor_tutorial_url,
   deactivateSubscriberAfterInactiveDays:
@@ -66,6 +67,9 @@ export const MailPoet = {
   tags: window.mailpoet_tags,
   cdnUrl: window.mailpoet_cdn_url,
   mainPageSlug: window.mailpoet_main_page_slug,
+  transactionalEmailsEnabled: window.mailpoet_send_transactional_emails,
+  transactionalEmailsOptInNoticeDismissed:
+    window.mailpoet_transactional_emails_opt_in_notice_dismissed,
 } as const;
 
 declare global {

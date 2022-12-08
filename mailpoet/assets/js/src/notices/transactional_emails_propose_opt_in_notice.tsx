@@ -5,7 +5,7 @@ import { MailPoet } from 'mailpoet';
 type Props = {
   mailpoetInstalledDaysAgo: number;
   sendTransactionalEmails: boolean;
-  noticeDismissed: string;
+  noticeDismissed: boolean;
   mtaMethod: string;
   apiVersion: string;
 };
@@ -44,7 +44,7 @@ function TransactionalEmailsProposeOptInNotice({
   if (mailpoetInstalledDaysAgo < 30) return null;
   if (sendTransactionalEmails) return null;
   if (mtaMethod === 'PHPMail') return null;
-  if (noticeDismissed === '1') return null;
+  if (noticeDismissed) return null;
   if (hidden) return null;
 
   return (
