@@ -2,7 +2,6 @@ import { __ } from '@wordpress/i18n';
 import { chartBar } from '@wordpress/icons';
 import { Hooks } from 'wp-js-hooks';
 import { MoreControlType, StepMoreControlsType } from '../../../types/filters';
-import { StepType } from '../../../editor/store';
 import { Step } from '../../../editor/components/automation/types';
 
 const emailStatisticsControl = (step: Step): MoreControlType => {
@@ -30,12 +29,8 @@ export function registerStepControls() {
   Hooks.addFilter(
     'mailpoet.automation.step.more-controls',
     'mailpoet',
-    (
-      controls: StepMoreControlsType,
-      step: Step,
-      stepType: StepType,
-    ): StepMoreControlsType => {
-      if (stepType.key === 'mailpoet:send-email') {
+    (controls: StepMoreControlsType, step: Step): StepMoreControlsType => {
+      if (step.key === 'mailpoet:send-email') {
         return {
           statistics: emailStatisticsControl(step),
           ...controls,
