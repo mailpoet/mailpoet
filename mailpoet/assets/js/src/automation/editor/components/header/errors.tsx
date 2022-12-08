@@ -9,6 +9,7 @@ import {
 import { useDispatch, useSelect } from '@wordpress/data';
 import { createContext } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
+import { ErrorBoundary } from 'common';
 import { Chip } from '../chip';
 import { ColoredIcon } from '../icons';
 import {
@@ -69,6 +70,8 @@ function StepError({ stepId }: StepErrorProps): JSX.Element {
     </CompositeItem>
   );
 }
+
+StepError.displayName = 'StepError';
 
 export function Errors(): JSX.Element | null {
   const [showPopover, setShowPopover] = useState(false);
@@ -160,9 +163,11 @@ export function Errors(): JSX.Element | null {
                   __('The following steps are not fully set:', 'mailpoet')
                 }
               </div>
-              {stepErrors.map((error) => (
-                <StepError key={error.step_id} stepId={error.step_id} />
-              ))}
+              <ErrorBoundary>
+                {stepErrors.map((error) => (
+                  <StepError key={error.step_id} stepId={error.step_id} />
+                ))}
+              </ErrorBoundary>
             </Composite>
           </ErrorsCompositeContext.Provider>
         </Popover>
