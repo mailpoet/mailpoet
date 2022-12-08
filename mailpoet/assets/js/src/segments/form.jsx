@@ -4,7 +4,7 @@ import { Background } from 'common/background/background';
 import { Form } from 'form/form.jsx';
 import { Heading } from 'common/typography/heading/heading';
 import { HideScreenOptions } from 'common/hide_screen_options/hide_screen_options';
-import { SubscribersLimitNotice } from 'notices/subscribers_limit_notice.jsx';
+import { SubscribersLimitNotice } from 'notices/subscribers_limit_notice';
 import { MailPoet } from 'mailpoet';
 
 const fields = [

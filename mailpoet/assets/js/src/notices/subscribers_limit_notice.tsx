@@ -1,17 +1,18 @@
 import ReactStringReplace from 'react-string-replace';
 import { MailPoet } from 'mailpoet';
-import { Notice } from 'notices/notice.tsx';
+import { Notice } from 'notices/notice';
 
-function SubscribersLimitNotice() {
+function SubscribersLimitNotice(): JSX.Element {
   if (!MailPoet.subscribersLimitReached) return null;
   const hasValidApiKey = MailPoet.hasValidApiKey;
+  const subscribersLimit = MailPoet.subscribersLimit.toString();
   const title = MailPoet.I18n.t('subscribersLimitNoticeTitle').replace(
     '[subscribersLimit]',
-    MailPoet.subscribersLimit,
+    subscribersLimit,
   );
   const youReachedTheLimit = MailPoet.I18n.t(
     hasValidApiKey ? 'yourPlanLimit' : 'freeVersionLimit',
-  ).replace('[subscribersLimit]', MailPoet.subscribersLimit);
+  ).replace('[subscribersLimit]', subscribersLimit);
   const upgradeLink = hasValidApiKey
     ? MailPoet.MailPoetComUrlFactory.getUpgradeUrl(MailPoet.pluginPartialKey)
     : MailPoet.MailPoetComUrlFactory.getPurchasePlanUrl(

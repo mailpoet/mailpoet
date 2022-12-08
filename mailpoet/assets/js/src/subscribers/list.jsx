@@ -8,7 +8,7 @@ import { Listing } from 'listing/listing.jsx';
 import { MailPoet } from 'mailpoet';
 import { Modal } from 'common/modal/modal.tsx';
 import { Selection } from 'form/fields/selection.jsx';
-import { SubscribersLimitNotice } from 'notices/subscribers_limit_notice.jsx';
+import { SubscribersLimitNotice } from 'notices/subscribers_limit_notice';
 import { InvalidMssKeyNotice } from 'notices/invalid_mss_key_notice';
 import { EmailVolumeLimitNotice } from 'notices/email_volume_limit_notice';
 import { SubscribersCacheMessage } from 'common/subscribers_cache_message';
