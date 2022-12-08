@@ -311,7 +311,7 @@ class MailerLogTest extends \MailPoetTest {
     $mailerLog = MailerLog::createMailerLog();
     $moreThanTwoMinutesAgo = time() - 130;
     $mailerLog['transactional_email_last_error_at'] = $moreThanTwoMinutesAgo;
-    $mailerLog['transactional_email_error_count'] = MailerLog::RETRY_ATTEMPTS_LIMIT;
+    $mailerLog['transactional_email_error_count'] = MailerLog::RETRY_ATTEMPTS_LIMIT - 1;
     MailerLog::updateMailerLog($mailerLog);
     MailerLog::processTransactionalEmailError(MailerError::OPERATION_SEND, 'email rejected');
     $mailerLog = MailerLog::getMailerLog();
