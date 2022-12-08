@@ -22,8 +22,7 @@ export const step: StepType = {
         utm_campaign: 'create_automation_editor_add_tag',
       }}
     >
-      {' '}
-      {__('Adding tags is a premium feature.', 'mailpoet')}{' '}
+      {__('Adding tags is a premium feature.', 'mailpoet')}
     </PremiumModalForStepEdit>
   ),
 } as const;
