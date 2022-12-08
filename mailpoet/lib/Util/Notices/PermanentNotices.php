@@ -91,7 +91,7 @@ class PermanentNotices {
       Menu::isOnMailPoetAdminPage($excludeWizard)
     );
     $this->unauthorizedEmailsInNewslettersNotice->init(
-      Menu::isOnMailPoetAdminPage($exclude = null, $pageId = 'mailpoet-newsletters')
+      Menu::isOnMailPoetAdminPage($excludeWizard)
     );
     $this->inactiveSubscribersNotice->init(
       Menu::isOnMailPoetAdminPage($excludeWizard)
@@ -103,7 +103,7 @@ class PermanentNotices {
       Menu::isOnMailPoetAdminPage($excludeWizard)
     );
     $this->emailWithInvalidListNotice->init(
-      Menu::isOnMailPoetAdminPage($exclude = null, $pageId = 'mailpoet-newsletters')
+      Menu::isOnMailPoetAdminPage($excludeWizard)
     );
     $this->changedTrackingNotice->init(
       Menu::isOnMailPoetAdminPage($excludeWizard)
