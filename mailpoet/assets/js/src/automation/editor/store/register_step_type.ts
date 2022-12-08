@@ -5,6 +5,6 @@ import { StepType } from './types';
 
 export const registerStepType = (stepType: StepType): void => {
   dispatch(storeName).registerStepType(
-    Hooks.applyFilters('mailpoet.register_step_type', stepType),
+    Hooks.applyFilters('mailpoet.automation.register_step_type', stepType),
   );
 };
