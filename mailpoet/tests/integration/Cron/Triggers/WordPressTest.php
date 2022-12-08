@@ -39,8 +39,8 @@ class WordPressTest extends \MailPoetTest {
     ]);
 
     $future = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp') + 600);
-    $this->_addScheduledTask(Beamer::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED, $future);
-    $this->_addScheduledTask(SubscribersStatsReport::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED, $future);
+    $this->addScheduledTask(Beamer::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED, $future);
+    $this->addScheduledTask(SubscribersStatsReport::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED, $future);
     $this->wordpressTrigger = $this->diContainer->get(WordPress::class);
   }
 
@@ -51,7 +51,7 @@ class WordPressTest extends \MailPoetTest {
     });
     $currentTime = time();
     $this->settings->set(WordPress::LAST_RUN_AT_SETTING, $currentTime);
-    $this->_addQueue(SendingQueueEntity::STATUS_SCHEDULED);
+    $this->addQueue(SendingQueueEntity::STATUS_SCHEDULED);
     expect($this->wordpressTrigger->run())->equals(false);
     expect($this->settings->get(WordPress::LAST_RUN_AT_SETTING))->equals($currentTime);
     WPFunctions::get()->removeAllFilters('mailpoet_cron_trigger_wordpress_run_interval');
@@ -64,7 +64,7 @@ class WordPressTest extends \MailPoetTest {
     });
     $timeInThePast = (time() - $runInterval) - 1;
     $this->settings->set(WordPress::LAST_RUN_AT_SETTING, $timeInThePast);
-    $this->_addQueue(SendingQueueEntity::STATUS_SCHEDULED);
+    $this->addQueue(SendingQueueEntity::STATUS_SCHEDULED);
     expect($this->wordpressTrigger->run())->notEmpty();
     expect($this->settings->get(WordPress::LAST_RUN_AT_SETTING))->greaterThan($timeInThePast);
     WPFunctions::get()->removeAllFilters('mailpoet_cron_trigger_wordpress_run_interval');
@@ -73,7 +73,7 @@ class WordPressTest extends \MailPoetTest {
   public function testItCanResetRunInterval() {
     $currentTime = time();
     $this->settings->set(WordPress::LAST_RUN_AT_SETTING, $currentTime);
-    $this->_addQueue(SendingQueueEntity::STATUS_SCHEDULED);
+    $this->addQueue(SendingQueueEntity::STATUS_SCHEDULED);
     WordPress::resetRunInterval();
     expect($this->settings->get(WordPress::LAST_RUN_AT_SETTING))->isEmpty();
     expect($this->wordpressTrigger->run())->notEmpty();
@@ -81,74 +81,74 @@ class WordPressTest extends \MailPoetTest {
 
   public function testItRequiresScheduledQueuesToExecute() {
     expect($this->wordpressTrigger->checkExecutionRequirements())->false();
-    $this->_addQueue(SendingQueueEntity::STATUS_SCHEDULED);
+    $this->addQueue(SendingQueueEntity::STATUS_SCHEDULED);
     expect($this->wordpressTrigger->checkExecutionRequirements())->true();
   }
 
   public function testItRequiresRunningQueuesToExecute() {
     expect($this->wordpressTrigger->checkExecutionRequirements())->false();
     // status of 'null' indicates that queue is running
-    $this->_addQueue($status = null);
+    $this->addQueue(null);
     expect($this->wordpressTrigger->checkExecutionRequirements())->true();
   }
 
   public function testItFailsExecutionRequiremenetsCheckWhenQueueStatusIsCompleted() {
     expect($this->wordpressTrigger->checkExecutionRequirements())->false();
-    $this->_addQueue($status = 'completed');
+    $this->addQueue(ScheduledTaskEntity::STATUS_COMPLETED);
     expect($this->wordpressTrigger->checkExecutionRequirements())->false();
   }
 
   public function testItRequiresSendingLimitNotToBeReachedToExecute() {
-    $this->_addQueue($status = null);
-    $this->_addMTAConfigAndLog($sent = null);
+    $this->addQueue(null);
+    $this->addMTAConfigAndLog(null);
     expect($this->wordpressTrigger->checkExecutionRequirements())->true();
-    $this->_addMTAConfigAndLog($sent = 1);
+    $this->addMTAConfigAndLog(1);
     expect($this->wordpressTrigger->checkExecutionRequirements())->false();
   }
 
   public function testItRequiresSendingNotToBePausedToExecute() {
-    $this->_addQueue($status = null);
-    $this->_addMTAConfigAndLog($sent = null);
+    $this->addQueue(null);
+    $this->addMTAConfigAndLog(null);
     expect($this->wordpressTrigger->checkExecutionRequirements())->true();
-    $this->_addMTAConfigAndLog($sent = 0, $status = MailerLog::STATUS_PAUSED);
+    $this->addMTAConfigAndLog(0, MailerLog::STATUS_PAUSED);
     expect($this->wordpressTrigger->checkExecutionRequirements())->false();
   }
 
   public function testItDoesNotExecuteWhenWeAreWaitingForRetry() {
-    $this->_addQueue($status = null);
-    $this->_addMTAConfigAndLog($sent = null);
+    $this->addQueue(null);
+    $this->addMTAConfigAndLog(null);
     expect($this->wordpressTrigger->checkExecutionRequirements())->true();
-    $this->_addMTAConfigAndLog($sent = null, $status = null, time() - 1);
+    $this->addMTAConfigAndLog(null, null, time() - 1);
     expect($this->wordpressTrigger->checkExecutionRequirements())->true();
-    $this->_addMTAConfigAndLog($sent = null, $status = null, time() + 120);
+    $this->addMTAConfigAndLog(null, null, time() + 120);
     expect($this->wordpressTrigger->checkExecutionRequirements())->false();
   }
 
   public function testItExecutesWhenMigrationIsNotPresent() {
-    $this->_enableMigration();
+    $this->enableMigration();
     expect($this->wordpressTrigger->checkExecutionRequirements())->true();
   }
 
   public function testItExecutesWhenMigrationIsDue() {
-    $this->_enableMigration();
-    $this->_addScheduledTask(MigrationWorker::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED);
+    $this->enableMigration();
+    $this->addScheduledTask(MigrationWorker::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED);
     expect($this->wordpressTrigger->checkExecutionRequirements())->true();
   }
 
   public function testItExecutesWhenAuthorizedEmailsCheckIsDue() {
-    $this->_enableMigration();
-    $this->_addScheduledTask(AuthorizedSendingEmailsCheck::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED);
+    $this->enableMigration();
+    $this->addScheduledTask(AuthorizedSendingEmailsCheck::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED);
     expect($this->wordpressTrigger->checkExecutionRequirements())->true();
   }
 
   public function testItExecutesWhenBeamerTaskIsDue() {
-    $this->_addScheduledTask(Beamer::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED);
+    $this->addScheduledTask(Beamer::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED);
     expect($this->wordpressTrigger->checkExecutionRequirements())->true();
   }
 
   public function testItDoesNotExecuteWhenMigrationIsCompleted() {
-    $this->_enableMigration();
-    $this->_addScheduledTask(MigrationWorker::TASK_TYPE, ScheduledTaskEntity::STATUS_COMPLETED);
+    $this->enableMigration();
+    $this->addScheduledTask(MigrationWorker::TASK_TYPE, ScheduledTaskEntity::STATUS_COMPLETED);
     expect($this->wordpressTrigger->checkExecutionRequirements())->false();
   }
 
@@ -160,7 +160,7 @@ class WordPressTest extends \MailPoetTest {
         'interval' => SettingsController::DEFAULT_SENDING_FREQUENCY_INTERVAL,
       ],
     ]);
-    $this->_addScheduledTask(BounceWorker::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED);
+    $this->addScheduledTask(BounceWorker::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED);
     expect($this->wordpressTrigger->checkExecutionRequirements())->true();
   }
 
@@ -173,7 +173,7 @@ class WordPressTest extends \MailPoetTest {
 
   public function testItRunsWhenExecutionRequirementsAreMet() {
     // status of 'null' indicates that queue is running
-    $this->_addQueue($status = null);
+    $this->addQueue(null);
     // check that cron daemon does not exist
     expect($this->settings->get(CronHelper::DAEMON_SETTING))->null();
     $this->wordpressTrigger->run();
@@ -196,7 +196,7 @@ class WordPressTest extends \MailPoetTest {
     $this->settings->set(Bridge::API_KEY_SETTING_NAME, 'asdfgh');
     $this->settings->set(Bridge::API_KEY_STATE_SETTING_NAME, ['state' => 'valid']);
     expect($this->wordpressTrigger->checkExecutionRequirements())->true();
-    $this->_addScheduledTask(SubscribersStatsReport::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED, $future);
+    $this->addScheduledTask(SubscribersStatsReport::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED, $future);
     expect($this->wordpressTrigger->checkExecutionRequirements())->false();
   }
 
@@ -221,7 +221,7 @@ class WordPressTest extends \MailPoetTest {
     expect($this->wordpressTrigger->checkExecutionRequirements())->true();
   }
 
-  public function _addMTAConfigAndLog($sent, $status = null, int $retryAt = null) {
+  private function addMTAConfigAndLog($sent, $status = null, int $retryAt = null) {
     $mtaConfig = [
       'frequency' => [
         'emails' => 1,
@@ -246,7 +246,7 @@ class WordPressTest extends \MailPoetTest {
     );
   }
 
-  public function _addQueue($status) {
+  private function addQueue($status) {
     $queue = SendingTask::create();
     $queue->hydrate(
       [
@@ -260,7 +260,7 @@ class WordPressTest extends \MailPoetTest {
     return $queue->save();
   }
 
-  public function _addScheduledTask($type, $status, $scheduledAt = null) {
+  private function addScheduledTask($type, $status, $scheduledAt = null) {
     if (!$scheduledAt && $status === ScheduledTaskEntity::STATUS_SCHEDULED) {
       $scheduledAt = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
     }
@@ -273,7 +273,7 @@ class WordPressTest extends \MailPoetTest {
     $this->entityManager->flush();
   }
 
-  public function _enableMigration() {
+  private function enableMigration() {
     // Migration can be triggered only if cron execution method is selected
     // and is not "none"
     $this->settings->set('cron_trigger', [
