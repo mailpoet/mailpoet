@@ -28,3 +28,5 @@ export * as HelpTooltip from 'help-tooltip';
 export * as Hooks from 'hooks.js';
 export * as Listing from 'listing';
 export * as DynamicSegmentsTypes from 'segments/dynamic/types';
+export * as AutomationEditorComponents from 'automation/editor/components';
+export * as AutomationIntegrationComponents from 'automation/integrations/components';
