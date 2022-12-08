@@ -1,4 +1,4 @@
-import { FormTokenItem } from '../../../components/form-token-field';
+import { FormTokenItem } from '../../../../../editor/components';
 
 declare global {
   interface Window {

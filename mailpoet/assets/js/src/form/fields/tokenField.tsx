@@ -1,5 +1,5 @@
 import { TokenFieldProps, TokenField } from 'common/form/tokenField/tokenField';
-import { FormTokenItem } from '../../automation/integrations/mailpoet/components/form-token-field';
+import { FormTokenItem } from '../../automation/editor/components';
 
 interface TokenFormFieldProps {
   onValueChange: TokenFieldProps['onChange'];
