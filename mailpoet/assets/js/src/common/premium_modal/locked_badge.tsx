@@ -24,8 +24,8 @@ const lockIcon = (
 
 export function LockedBadge({ text }): JSX.Element {
   return (
-    <p className="mailpoet-locked-badge">
+    <span className="mailpoet-locked-badge">
       {lockIcon} {text}
-    </p>
+    </span>
   );
 }
