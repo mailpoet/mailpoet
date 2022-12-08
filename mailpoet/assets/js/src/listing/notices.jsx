@@ -1,6 +1,7 @@
 import { MailPoet } from 'mailpoet';
 import PropTypes from 'prop-types';
 import ReactStringReplace from 'react-string-replace';
+import classnames from 'classnames';
 
 const resumeMailerSending = () => {
   MailPoet.Ajax.post({
@@ -10,7 +11,9 @@ const resumeMailerSending = () => {
   })
     .done(() => {
       MailPoet.Notice.success(MailPoet.I18n.t('mailerSendingResumedNotice'));
-      window.mailpoet_listing.forceUpdate();
+      if (window.mailpoet_listing) {
+        window.mailpoet_listing.forceUpdate();
+      }
     })
     .fail((response) => {
       if (response.errors.length > 0) {
@@ -24,7 +27,7 @@ const resumeMailerSending = () => {
 
 export function MailerError(props) {
   if (
-    !props.mta_log.error ||
+    !props.mta_log?.error ||
     props.mta_log.status !== 'paused' ||
     props.mta_log.error.operation === 'authorization'
   ) {
@@ -45,9 +48,13 @@ export function MailerError(props) {
   ) {
     return null;
   }
+
   if (props.mta_log.error.operation === 'migration') {
+    const className = classnames('mailpoet_notice notice notice-warning', {
+      inline: props.is_inline,
+    });
     return (
-      <div className="mailpoet_notice notice notice-warning">
+      <div className={className}>
         <p>{props.mta_log.error.error_message}</p>
       </div>
     );
@@ -55,6 +62,9 @@ export function MailerError(props) {
 
   let message = props.mta_log.error.error_message;
   const code = props.mta_log.error.error_code;
+  const className = classnames('mailpoet_notice notice notice-error', {
+    inline: props.is_inline,
+  });
   if (code) {
     message += message ? ', ' : '';
     message += MailPoet.I18n.t('mailerErrorCode').replace('%1$s', code);
@@ -115,7 +125,7 @@ export function MailerError(props) {
 
   if (props.mta_log.error.operation === 'pending_approval') {
     return (
-      <div className="mailpoet_notice notice notice-error">
+      <div className={className}>
         <p>{message}</p>
       </div>
     );
@@ -123,7 +133,7 @@ export function MailerError(props) {
 
   if (props.mta_log.error.operation === 'insufficient_privileges') {
     return (
-      <div className="mailpoet_notice notice notice-error">
+      <div className={className}>
         <p>{message}</p>
         <p>
           <a
@@ -142,7 +152,7 @@ export function MailerError(props) {
   }
 
   return (
-    <div className="mailpoet_notice notice notice-error">
+    <div className={className}>
       <p>
         {props.mta_log.error.operation === 'send'
           ? MailPoet.I18n.t('mailerSendErrorNotice').replace(
@@ -175,7 +185,13 @@ export function MailerError(props) {
 
 MailerError.propTypes = {
   mta_method: PropTypes.string.isRequired,
-  mta_log: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
+  mta_log: PropTypes.object, // eslint-disable-line react/forbid-prop-types
+  is_inline: PropTypes.bool,
+};
+
+MailerError.defaultProps = {
+  mta_log: {},
+  is_inline: false,
 };
 
 function PHPMailerCheckSettingsNotice() {

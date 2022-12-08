@@ -3,4 +3,11 @@
 <% block content %>
 <div id="mailpoet_homepage_container">
 </div>
+
+<script>
+  <% autoescape 'js' %>
+    var mailpoet_mta_log = <%= json_encode(mta_log) %>;
+  <% endautoescape %>
+</script>
+
 <% endblock %>
