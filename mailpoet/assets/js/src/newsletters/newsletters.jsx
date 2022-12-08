@@ -262,8 +262,8 @@ function App() {
         </ErrorBoundary>
         <ErrorBoundary>
           <InvalidMssKeyNotice
-            mssKeyInvalid={window.mailpoet_mss_key_invalid}
-            subscribersCount={window.mailpoet_subscribers_count}
+            mssKeyInvalid={MailPoet.hasInvalidMssApiKey}
+            subscribersCount={MailPoet.subscribersCount}
           />
         </ErrorBoundary>
         <Switch>
