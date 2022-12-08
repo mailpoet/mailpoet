@@ -23,8 +23,8 @@ function WizardWooCommerceStep(props) {
     return false;
   };
 
-  const finishButtonText = props.isWizardStep
-    ? MailPoet.I18n.t('wooCommerceSetupFinishButtonTextWizard')
+  const buttonText = props.isWizardStep
+    ? MailPoet.I18n.t('continue')
     : MailPoet.I18n.t('wooCommerceSetupFinishButtonTextStandalone');
 
   let importTypeChecked;
@@ -122,7 +122,7 @@ function WizardWooCommerceStep(props) {
           disabled={props.loading}
           automationId="submit_woocommerce_setup"
         >
-          {finishButtonText}
+          {buttonText}
         </Button>
       </form>
     </>
