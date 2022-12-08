@@ -6,8 +6,21 @@ use MailPoet\Cron\CronHelper;
 use MailPoet\Cron\Workers\AuthorizedSendingEmailsCheck;
 use MailPoet\Cron\Workers\Beamer;
 use MailPoet\Cron\Workers\Bounce as BounceWorker;
+use MailPoet\Cron\Workers\InactiveSubscribers;
+use MailPoet\Cron\Workers\NewsletterTemplateThumbnails;
+use MailPoet\Cron\Workers\ReEngagementEmailsScheduler;
 use MailPoet\Cron\Workers\SendingQueue\Migration as MigrationWorker;
+use MailPoet\Cron\Workers\StatsNotifications\AutomatedEmails;
+use MailPoet\Cron\Workers\StatsNotifications\Worker as StatsNotificationsWorker;
+use MailPoet\Cron\Workers\SubscriberLinkTokens;
+use MailPoet\Cron\Workers\SubscribersCountCacheRecalculation;
+use MailPoet\Cron\Workers\SubscribersEmailCount;
+use MailPoet\Cron\Workers\SubscribersEngagementScore;
+use MailPoet\Cron\Workers\SubscribersLastEngagement;
 use MailPoet\Cron\Workers\SubscribersStatsReport;
+use MailPoet\Cron\Workers\UnsubscribeTokens;
+use MailPoet\Cron\Workers\WooCommercePastOrders;
+use MailPoet\Cron\Workers\WooCommerceSync as WooCommerceSyncWorker;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SettingEntity;
@@ -221,6 +234,76 @@ class WordPressTest extends \MailPoetTest {
     $this->entityManager->getConnection()->executeStatement("DELETE FROM $scheduledTaskTable WHERE type = '$statsJobType';");
     $this->settings->set(Bridge::API_KEY_SETTING_NAME, 'somekey');
     $this->settings->set(Bridge::API_KEY_STATE_SETTING_NAME, ['state' => 'valid']);
+    expect($this->wordpressTrigger->checkExecutionRequirements())->true();
+  }
+
+  public function testItExecutesWhenStatsNotificationsWorkerTaskIsDue() {
+    $this->addScheduledTask(StatsNotificationsWorker::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED);
+    expect($this->wordpressTrigger->checkExecutionRequirements())->true();
+  }
+
+  public function testItExecutesWhenAutomatedEmailsTaskIsDue() {
+    $this->addScheduledTask(AutomatedEmails::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED);
+    expect($this->wordpressTrigger->checkExecutionRequirements())->true();
+  }
+
+  public function testItExecutesWhenSubscribersEmailCountTaskIsDue() {
+    $this->addScheduledTask(SubscribersEmailCount::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED);
+    expect($this->wordpressTrigger->checkExecutionRequirements())->true();
+  }
+
+  public function testItExecutesWhenInactiveSubscribersTaskIsDue() {
+    $this->addScheduledTask(InactiveSubscribers::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED);
+    expect($this->wordpressTrigger->checkExecutionRequirements())->true();
+  }
+
+  public function testItExecutesWhenUnsubscribeTokensTaskIsDue() {
+    $this->addScheduledTask(UnsubscribeTokens::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED);
+    expect($this->wordpressTrigger->checkExecutionRequirements())->true();
+  }
+
+  public function testItExecutesWhenSubscriberLinkTokensTaskIsDue() {
+    $this->addScheduledTask(SubscriberLinkTokens::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED);
+    expect($this->wordpressTrigger->checkExecutionRequirements())->true();
+  }
+
+  public function testItExecutesWhenWooCommerceSyncWorkerTaskIsDue() {
+    $this->addScheduledTask(WooCommerceSyncWorker::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED);
+    expect($this->wordpressTrigger->checkExecutionRequirements())->true();
+  }
+
+  public function testItExecutesWhenAuthorizedSendingEmailsCheckTaskIsDue() {
+    $this->addScheduledTask(AuthorizedSendingEmailsCheck::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED);
+    expect($this->wordpressTrigger->checkExecutionRequirements())->true();
+  }
+
+  public function testItExecutesWhenWooCommercePastOrdersTaskIsDue() {
+    $this->addScheduledTask(WooCommercePastOrders::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED);
+    expect($this->wordpressTrigger->checkExecutionRequirements())->true();
+  }
+
+  public function testItExecutesWhenSubscribersEngagementScoreTaskIsDue() {
+    $this->addScheduledTask(SubscribersEngagementScore::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED);
+    expect($this->wordpressTrigger->checkExecutionRequirements())->true();
+  }
+
+  public function testItExecutesWhenSubscribersCountCacheRecalculationTaskIsDue() {
+    $this->addScheduledTask(SubscribersCountCacheRecalculation::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED);
+    expect($this->wordpressTrigger->checkExecutionRequirements())->true();
+  }
+
+  public function testItExecutesWhenSubscribersLastEngagementTaskIsDue() {
+    $this->addScheduledTask(SubscribersLastEngagement::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED);
+    expect($this->wordpressTrigger->checkExecutionRequirements())->true();
+  }
+
+  public function testItExecutesWhenReEngagementEmailsSchedulerTaskIsDue() {
+    $this->addScheduledTask(ReEngagementEmailsScheduler::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED);
+    expect($this->wordpressTrigger->checkExecutionRequirements())->true();
+  }
+
+  public function testItExecutesWhenNewsletterTemplateThumbnailsTaskIsDue() {
+    $this->addScheduledTask(NewsletterTemplateThumbnails::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED);
     expect($this->wordpressTrigger->checkExecutionRequirements())->true();
   }
 
