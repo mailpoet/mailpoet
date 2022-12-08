@@ -2,6 +2,7 @@
 
 namespace MailPoet\Test\DataFactories;
 
+use MailPoet\Config\Env;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Services\AuthorizedEmailsController;
@@ -90,6 +91,10 @@ class Settings {
     $this->settings->set('display_nps_poll', 0);
     $this->settings->set('show_congratulate_after_first_newsletter', 0);
     return $this;
+  }
+
+  public function withSkippedWelcomeWizard() {
+    $this->settings->set('version', Env::$version);
   }
 
   public function withSendingMethod($sendingMethod) {

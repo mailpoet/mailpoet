@@ -15,6 +15,8 @@ class ReinstallFromScratchCest {
     $i->login();
 
     // Step 1 - create email, form, list and subscribers
+    $settings = new Settings();
+    $settings->withSkippedWelcomeWizard();
     $newsletter = new Newsletter();
     $newsletter->create();
     $form = new Form();
@@ -37,7 +39,9 @@ class ReinstallFromScratchCest {
 
     // Step 3 - skip all tutorials, which could interfere with other tests
     $settings = new Settings();
-    $settings->withSkippedTutorials();
+    $settings
+      ->withSkippedTutorials()
+      ->withSkippedWelcomeWizard();
 
     // Step 4 - check if data are emptied and repopulated
     // Check emails
