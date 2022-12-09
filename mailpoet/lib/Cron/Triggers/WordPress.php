@@ -83,7 +83,7 @@ class WordPress {
     return $this->supervisor->checkDaemon();
   }
 
-  private function checkRunInterval() {
+  private function checkRunInterval(): bool {
     $runInterval = $this->wp->applyFilters('mailpoet_cron_trigger_wordpress_run_interval', self::RUN_INTERVAL);
     if ($runInterval === -1) {
       return true;
@@ -97,12 +97,12 @@ class WordPress {
     return false;
   }
 
-  public static function resetRunInterval() {
+  public static function resetRunInterval(): void {
     $settings = SettingsController::getInstance();
     $settings->set(self::LAST_RUN_AT_SETTING, 0);
   }
 
-  public function checkExecutionRequirements() {
+  public function checkExecutionRequirements(): bool {
     $this->loadTasksCounts();
 
     // check requirements for each worker
@@ -256,17 +256,17 @@ class WordPress {
     return $beamerDueChecks || !$beamerFutureChecks;
   }
 
-  private function loadTasksCounts() {
+  private function loadTasksCounts(): void {
     $scheduledTasksTableName = $this->entityManager->getClassMetadata(ScheduledTaskEntity::class)->getTableName();
     $sql = "
-      select
+      SELECT
         type,
         status,
-        count(*) as count,
-        case when scheduled_at <= :now then :past else :future end as scheduled_in
-      from $scheduledTasksTableName
-      where deleted_at is null AND (status != :statusCompleted OR status IS NULL OR `type` = :typeMigration)
-      group by type, status, scheduled_in";
+        count(*) AS count,
+        CASE WHEN scheduled_at <= :now THEN :past ELSE :future END AS scheduled_in
+      FROM $scheduledTasksTableName
+      WHERE deleted_at IS NULL AND (status != :statusCompleted OR status IS NULL OR `type` = :typeMigration)
+      GROUP BY type, status, scheduled_in";
 
     $stmt = $this->entityManager->getConnection()->prepare($sql);
     $stmt->bindValue('now', date('Y-m-d H:i:s', $this->wp->currentTime('timestamp')));
@@ -288,7 +288,7 @@ class WordPress {
     }
   }
 
-  private function getTasksCount(array $options) {
+  private function getTasksCount(array $options): int {
     $count = 0;
     $type = $options['type'];
     foreach ($options['scheduled_in'] as $scheduledIn) {
