@@ -5,28 +5,15 @@ namespace MailPoet\Cron\Triggers;
 use MailPoet\Config\ServicesChecker;
 use MailPoet\Cron\CronHelper;
 use MailPoet\Cron\Supervisor;
-use MailPoet\Cron\Workers\AuthorizedSendingEmailsCheck;
 use MailPoet\Cron\Workers\Beamer as BeamerWorker;
 use MailPoet\Cron\Workers\Bounce as BounceWorker;
-use MailPoet\Cron\Workers\InactiveSubscribers;
 use MailPoet\Cron\Workers\KeyCheck\PremiumKeyCheck as PremiumKeyCheckWorker;
 use MailPoet\Cron\Workers\KeyCheck\SendingServiceKeyCheck as SendingServiceKeyCheckWorker;
-use MailPoet\Cron\Workers\NewsletterTemplateThumbnails;
-use MailPoet\Cron\Workers\ReEngagementEmailsScheduler;
 use MailPoet\Cron\Workers\Scheduler as SchedulerWorker;
 use MailPoet\Cron\Workers\SendingQueue\Migration as MigrationWorker;
 use MailPoet\Cron\Workers\SendingQueue\SendingQueue as SendingQueueWorker;
-use MailPoet\Cron\Workers\StatsNotifications\AutomatedEmails;
-use MailPoet\Cron\Workers\StatsNotifications\Worker as StatsNotificationsWorker;
-use MailPoet\Cron\Workers\SubscriberLinkTokens;
-use MailPoet\Cron\Workers\SubscribersCountCacheRecalculation;
-use MailPoet\Cron\Workers\SubscribersEmailCount;
-use MailPoet\Cron\Workers\SubscribersEngagementScore;
-use MailPoet\Cron\Workers\SubscribersLastEngagement;
 use MailPoet\Cron\Workers\SubscribersStatsReport;
-use MailPoet\Cron\Workers\UnsubscribeTokens;
-use MailPoet\Cron\Workers\WooCommercePastOrders;
-use MailPoet\Cron\Workers\WooCommerceSync as WooCommerceSyncWorker;
+use MailPoet\Cron\Workers\WorkersFactory;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
@@ -189,48 +176,6 @@ class WordPress {
       'scheduled_in' => [self::SCHEDULED_IN_THE_FUTURE],
       'status' => [ScheduledTaskEntity::STATUS_SCHEDULED],
     ]);
-    // stats notifications
-    $statsNotificationsTasks = $this->getTasksCount([
-      'type' => StatsNotificationsWorker::TASK_TYPE,
-      'scheduled_in' => [self::SCHEDULED_IN_THE_PAST],
-      'status' => ['null', ScheduledTaskEntity::STATUS_SCHEDULED],
-    ]);
-    // stats notifications for auto emails
-    $autoStatsNotificationsTasks = $this->getTasksCount([
-      'type' => AutomatedEmails::TASK_TYPE,
-      'scheduled_in' => [self::SCHEDULED_IN_THE_PAST],
-      'status' => ['null', ScheduledTaskEntity::STATUS_SCHEDULED],
-    ]);
-    // subscribers emails count
-    $subscribersEmailsCount = $this->getTasksCount([
-      'type' => SubscribersEmailCount::TASK_TYPE,
-      'scheduled_in' => [self::SCHEDULED_IN_THE_PAST],
-      'status' => ['null', ScheduledTaskEntity::STATUS_SCHEDULED],
-    ]);
-    // inactive subscribers check
-    $inactiveSubscribersTasks = $this->getTasksCount([
-      'type' => InactiveSubscribers::TASK_TYPE,
-      'scheduled_in' => [self::SCHEDULED_IN_THE_PAST],
-      'status' => ['null', ScheduledTaskEntity::STATUS_SCHEDULED],
-    ]);
-    // unsubscribe tokens check
-    $unsubscribeTokensTasks = $this->getTasksCount([
-      'type' => UnsubscribeTokens::TASK_TYPE,
-      'scheduled_in' => [self::SCHEDULED_IN_THE_PAST],
-      'status' => ['null', ScheduledTaskEntity::STATUS_SCHEDULED],
-    ]);
-    // subscriber link tokens check
-    $subscriberLinkTokensTasks = $this->getTasksCount([
-      'type' => SubscriberLinkTokens::TASK_TYPE,
-      'scheduled_in' => [self::SCHEDULED_IN_THE_PAST],
-      'status' => ['null', ScheduledTaskEntity::STATUS_SCHEDULED],
-    ]);
-    // WooCommerce sync
-    $wooCommerceSyncTasks = $this->getTasksCount([
-      'type' => WooCommerceSyncWorker::TASK_TYPE,
-      'scheduled_in' => [self::SCHEDULED_IN_THE_PAST],
-      'status' => ['null', ScheduledTaskEntity::STATUS_SCHEDULED],
-    ]);
     // Beamer
     $beamerDueChecks = $this->getTasksCount([
       'type' => BeamerWorker::TASK_TYPE,
@@ -243,55 +188,6 @@ class WordPress {
       'status' => [ScheduledTaskEntity::STATUS_SCHEDULED],
     ]);
 
-    // Authorized email addresses check
-    $authorizedEmailAddressesTasks = $this->getTasksCount([
-      'type' => AuthorizedSendingEmailsCheck::TASK_TYPE,
-      'scheduled_in' => [self::SCHEDULED_IN_THE_PAST],
-      'status' => ['null', ScheduledTaskEntity::STATUS_SCHEDULED],
-    ]);
-
-    // WooCommerce past orders revenues sync
-    $wooCommercePastOrdersTasks = $this->getTasksCount([
-      'type' => WooCommercePastOrders::TASK_TYPE,
-      'scheduled_in' => [self::SCHEDULED_IN_THE_PAST],
-      'status' => ['null', ScheduledTaskEntity::STATUS_SCHEDULED],
-    ]);
-
-    // subscriber engagement score
-    $subscriberEngagementScoreTasks = $this->getTasksCount([
-      'type' => SubscribersEngagementScore::TASK_TYPE,
-      'scheduled_in' => [self::SCHEDULED_IN_THE_PAST],
-      'status' => ['null', ScheduledTaskEntity::STATUS_SCHEDULED],
-    ]);
-
-    // subscriber counts cache recalculation
-    $subscribersCountCacheRecalculationTasks = $this->getTasksCount([
-      'type' => SubscribersCountCacheRecalculation::TASK_TYPE,
-      'scheduled_in' => [self::SCHEDULED_IN_THE_PAST],
-      'status' => ['null', ScheduledTaskEntity::STATUS_SCHEDULED],
-    ]);
-
-    // subscriber last engagement
-    $subscribersLastEngagementTasks = $this->getTasksCount([
-      'type' => SubscribersLastEngagement::TASK_TYPE,
-      'scheduled_in' => [self::SCHEDULED_IN_THE_PAST],
-      'status' => ['null', ScheduledTaskEntity::STATUS_SCHEDULED],
-    ]);
-
-    // re-engagement emails scheduling;
-    $subscribersReEngagementSchedulingTasks = $this->getTasksCount([
-      'type' => ReEngagementEmailsScheduler::TASK_TYPE,
-      'scheduled_in' => [self::SCHEDULED_IN_THE_PAST],
-      'status' => ['null', ScheduledTaskEntity::STATUS_SCHEDULED],
-    ]);
-
-    // newsletter template thumbnails
-    $newsletterTemplateThumbnailsTasks = $this->getTasksCount([
-      'type' => NewsletterTemplateThumbnails::TASK_TYPE,
-      'scheduled_in' => [self::SCHEDULED_IN_THE_PAST],
-      'status' => ['null', ScheduledTaskEntity::STATUS_SCHEDULED],
-    ]);
-
     // check requirements for each worker
     $sendingQueueActive = (($scheduledQueues || $runningQueues) && !$sendingLimitReached && !$sendingIsPaused && !$sendingWaitingForRetry);
     $bounceSyncActive = ($mpSendingEnabled && ($bounceDueTasks || !$bounceFutureTasks));
@@ -301,6 +197,20 @@ class WordPress {
     $migrationActive = !$migrationDisabled && ($migrationDueTasks || (!$migrationCompletedTasks && !$migrationFutureTasks));
     $beamerActive = $beamerDueChecks || !$beamerFutureChecks;
 
+    // Because a lot of workers has the same pattern for check if it's active we can use a loop here
+    $isSimpleWorkerActive = false;
+    foreach (WorkersFactory::SIMPLE_WORKER_TYPES as $simpleWorkerType) {
+      $tasksCount = $this->getTasksCount([
+        'type' => $simpleWorkerType,
+        'scheduled_in' => [self::SCHEDULED_IN_THE_PAST],
+        'status' => ['null', ScheduledTaskEntity::STATUS_SCHEDULED],
+      ]);
+      if ($tasksCount) {
+        $isSimpleWorkerActive = true;
+        break;
+      }
+    }
+
     return (
       $migrationActive
       || $sendingQueueActive
@@ -308,21 +218,8 @@ class WordPress {
       || $sendingServiceKeyCheckActive
       || $premiumKeyCheckActive
       || $subscribersStatsReportActive
-      || $statsNotificationsTasks
-      || $autoStatsNotificationsTasks
-      || $subscribersEmailsCount
-      || $inactiveSubscribersTasks
-      || $wooCommerceSyncTasks
-      || $authorizedEmailAddressesTasks
       || $beamerActive
-      || $wooCommercePastOrdersTasks
-      || $unsubscribeTokensTasks
-      || $subscriberLinkTokensTasks
-      || $subscriberEngagementScoreTasks
-      || $subscribersCountCacheRecalculationTasks
-      || $subscribersLastEngagementTasks
-      || $subscribersReEngagementSchedulingTasks
-      || $newsletterTemplateThumbnailsTasks
+      || $isSimpleWorkerActive
     );
   }
 
