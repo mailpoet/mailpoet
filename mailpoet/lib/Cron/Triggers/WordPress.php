@@ -105,97 +105,14 @@ class WordPress {
   public function checkExecutionRequirements() {
     $this->loadTasksCounts();
 
-    // migration
-    $migrationDisabled = $this->settings->get('cron_trigger.method') === 'none';
-    $migrationDueTasks = $this->getTasksCount([
-      'type' => MigrationWorker::TASK_TYPE,
-      'scheduled_in' => [self::SCHEDULED_IN_THE_PAST],
-      'status' => ['null', ScheduledTaskEntity::STATUS_SCHEDULED],
-    ]);
-    $migrationCompletedTasks = $this->getTasksCount([
-      'type' => MigrationWorker::TASK_TYPE,
-      'scheduled_in' => [self::SCHEDULED_IN_THE_PAST, self::SCHEDULED_IN_THE_FUTURE],
-      'status' => [ScheduledTaskEntity::STATUS_COMPLETED],
-    ]);
-    $migrationFutureTasks = $this->getTasksCount([
-      'type' => MigrationWorker::TASK_TYPE,
-      'scheduled_in' => [self::SCHEDULED_IN_THE_FUTURE],
-      'status' => [ScheduledTaskEntity::STATUS_SCHEDULED],
-    ]);
-    // sending queue
-    $scheduledQueues = $this->scheduledTasksRepository->findScheduledSendingTasks(SchedulerWorker::TASK_BATCH_SIZE);
-    $runningQueues = $this->scheduledTasksRepository->findRunningSendingTasks(SendingQueueWorker::TASK_BATCH_SIZE);
-    $sendingLimitReached = MailerLog::isSendingLimitReached();
-    $sendingIsPaused = MailerLog::isSendingPaused();
-    $sendingWaitingForRetry = MailerLog::isSendingWaitingForRetry();
-    // sending service
-    $mpSendingEnabled = Bridge::isMPSendingServiceEnabled();
-    // bounce sync
-    $bounceDueTasks = $this->getTasksCount([
-      'type' => BounceWorker::TASK_TYPE,
-      'scheduled_in' => [self::SCHEDULED_IN_THE_PAST],
-      'status' => ['null', ScheduledTaskEntity::STATUS_SCHEDULED],
-    ]);
-    $bounceFutureTasks = $this->getTasksCount([
-      'type' => BounceWorker::TASK_TYPE,
-      'scheduled_in' => [self::SCHEDULED_IN_THE_FUTURE],
-      'status' => [ScheduledTaskEntity::STATUS_SCHEDULED],
-    ]);
-    // sending service key check
-    $msskeycheckDueTasks = $this->getTasksCount([
-      'type' => SendingServiceKeyCheckWorker::TASK_TYPE,
-      'scheduled_in' => [self::SCHEDULED_IN_THE_PAST],
-      'status' => ['null', ScheduledTaskEntity::STATUS_SCHEDULED],
-    ]);
-    $msskeycheckFutureTasks = $this->getTasksCount([
-      'type' => SendingServiceKeyCheckWorker::TASK_TYPE,
-      'scheduled_in' => [self::SCHEDULED_IN_THE_FUTURE],
-      'status' => [ScheduledTaskEntity::STATUS_SCHEDULED],
-    ]);
-    // premium key check
-    $premiumKeySpecified = Bridge::isPremiumKeySpecified();
-    $premiumKeycheckDueTasks = $this->getTasksCount([
-      'type' => PremiumKeyCheckWorker::TASK_TYPE,
-      'scheduled_in' => [self::SCHEDULED_IN_THE_PAST],
-      'status' => ['null', ScheduledTaskEntity::STATUS_SCHEDULED],
-    ]);
-    $premiumKeycheckFutureTasks = $this->getTasksCount([
-      'type' => PremiumKeyCheckWorker::TASK_TYPE,
-      'scheduled_in' => [self::SCHEDULED_IN_THE_FUTURE],
-      'status' => [ScheduledTaskEntity::STATUS_SCHEDULED],
-    ]);
-    // subscriber stats
-    $isAnyKeyValid = $this->serviceChecker->getAnyValidKey();
-    $statsReportDueTasks = $this->getTasksCount([
-      'type' => SubscribersStatsReport::TASK_TYPE,
-      'scheduled_in' => [self::SCHEDULED_IN_THE_PAST],
-      'status' => ['null', ScheduledTaskEntity::STATUS_SCHEDULED],
-    ]);
-    $statsReportFutureTasks = $this->getTasksCount([
-      'type' => SubscribersStatsReport::TASK_TYPE,
-      'scheduled_in' => [self::SCHEDULED_IN_THE_FUTURE],
-      'status' => [ScheduledTaskEntity::STATUS_SCHEDULED],
-    ]);
-    // Beamer
-    $beamerDueChecks = $this->getTasksCount([
-      'type' => BeamerWorker::TASK_TYPE,
-      'scheduled_in' => [self::SCHEDULED_IN_THE_PAST],
-      'status' => ['null', ScheduledTaskEntity::STATUS_SCHEDULED],
-    ]);
-    $beamerFutureChecks = $this->getTasksCount([
-      'type' => BeamerWorker::TASK_TYPE,
-      'scheduled_in' => [self::SCHEDULED_IN_THE_FUTURE],
-      'status' => [ScheduledTaskEntity::STATUS_SCHEDULED],
-    ]);
-
     // check requirements for each worker
-    $sendingQueueActive = (($scheduledQueues || $runningQueues) && !$sendingLimitReached && !$sendingIsPaused && !$sendingWaitingForRetry);
-    $bounceSyncActive = ($mpSendingEnabled && ($bounceDueTasks || !$bounceFutureTasks));
-    $sendingServiceKeyCheckActive = ($mpSendingEnabled && ($msskeycheckDueTasks || !$msskeycheckFutureTasks));
-    $premiumKeyCheckActive = ($premiumKeySpecified && ($premiumKeycheckDueTasks || !$premiumKeycheckFutureTasks));
-    $subscribersStatsReportActive = ($isAnyKeyValid && ($statsReportDueTasks || !$statsReportFutureTasks));
-    $migrationActive = !$migrationDisabled && ($migrationDueTasks || (!$migrationCompletedTasks && !$migrationFutureTasks));
-    $beamerActive = $beamerDueChecks || !$beamerFutureChecks;
+    $sendingQueueActive = $this->isSendingQueueActive();
+    $bounceSyncActive = $this->isBounceActive();
+    $sendingServiceKeyCheckActive = $this->isSendingServiceKeyCheckActive();
+    $premiumKeyCheckActive = $this->isPremiumKeyCheckActive();
+    $subscribersStatsReportActive = $this->isSubscriberStatsReportActive();
+    $migrationActive = $this->isMigrationActive();
+    $beamerActive = $this->isBeamerCheckActive();
 
     // Because a lot of workers has the same pattern for check if it's active we can use a loop here
     $isSimpleWorkerActive = false;
@@ -228,6 +145,115 @@ class WordPress {
     if ($cronDaemon) {
       $this->cronHelper->deactivateDaemon($cronDaemon);
     }
+  }
+
+  private function isMigrationActive(): bool {
+    $migrationDisabled = $this->settings->get('cron_trigger.method') === 'none';
+    $migrationDueTasks = $this->getTasksCount([
+      'type' => MigrationWorker::TASK_TYPE,
+      'scheduled_in' => [self::SCHEDULED_IN_THE_PAST],
+      'status' => ['null', ScheduledTaskEntity::STATUS_SCHEDULED],
+    ]);
+    $migrationCompletedTasks = $this->getTasksCount([
+      'type' => MigrationWorker::TASK_TYPE,
+      'scheduled_in' => [self::SCHEDULED_IN_THE_PAST, self::SCHEDULED_IN_THE_FUTURE],
+      'status' => [ScheduledTaskEntity::STATUS_COMPLETED],
+    ]);
+    $migrationFutureTasks = $this->getTasksCount([
+      'type' => MigrationWorker::TASK_TYPE,
+      'scheduled_in' => [self::SCHEDULED_IN_THE_FUTURE],
+      'status' => [ScheduledTaskEntity::STATUS_SCHEDULED],
+    ]);
+    return !$migrationDisabled && ($migrationDueTasks || (!$migrationCompletedTasks && !$migrationFutureTasks));
+  }
+
+  private function isSendingQueueActive(): bool {
+    $scheduledQueues = $this->scheduledTasksRepository->findScheduledSendingTasks(SchedulerWorker::TASK_BATCH_SIZE);
+    $runningQueues = $this->scheduledTasksRepository->findRunningSendingTasks(SendingQueueWorker::TASK_BATCH_SIZE);
+    $sendingLimitReached = MailerLog::isSendingLimitReached();
+    $sendingIsPaused = MailerLog::isSendingPaused();
+    $sendingWaitingForRetry = MailerLog::isSendingWaitingForRetry();
+
+    return (($scheduledQueues || $runningQueues) && !$sendingLimitReached && !$sendingIsPaused && !$sendingWaitingForRetry);
+  }
+
+  private function isBounceActive(): bool {
+    $mpSendingEnabled = Bridge::isMPSendingServiceEnabled();
+    $bounceDueTasks = $this->getTasksCount([
+      'type' => BounceWorker::TASK_TYPE,
+      'scheduled_in' => [self::SCHEDULED_IN_THE_PAST],
+      'status' => ['null', ScheduledTaskEntity::STATUS_SCHEDULED],
+    ]);
+    $bounceFutureTasks = $this->getTasksCount([
+      'type' => BounceWorker::TASK_TYPE,
+      'scheduled_in' => [self::SCHEDULED_IN_THE_FUTURE],
+      'status' => [ScheduledTaskEntity::STATUS_SCHEDULED],
+    ]);
+
+    return ($mpSendingEnabled && ($bounceDueTasks || !$bounceFutureTasks));
+  }
+
+  private function isSendingServiceKeyCheckActive(): bool {
+    $mpSendingEnabled = Bridge::isMPSendingServiceEnabled();
+    $msskeycheckDueTasks = $this->getTasksCount([
+      'type' => SendingServiceKeyCheckWorker::TASK_TYPE,
+      'scheduled_in' => [self::SCHEDULED_IN_THE_PAST],
+      'status' => ['null', ScheduledTaskEntity::STATUS_SCHEDULED],
+    ]);
+    $msskeycheckFutureTasks = $this->getTasksCount([
+      'type' => SendingServiceKeyCheckWorker::TASK_TYPE,
+      'scheduled_in' => [self::SCHEDULED_IN_THE_FUTURE],
+      'status' => [ScheduledTaskEntity::STATUS_SCHEDULED],
+    ]);
+
+    return ($mpSendingEnabled && ($msskeycheckDueTasks || !$msskeycheckFutureTasks));
+  }
+
+  private function isPremiumKeyCheckActive(): bool {
+    $premiumKeySpecified = Bridge::isPremiumKeySpecified();
+    $premiumKeycheckDueTasks = $this->getTasksCount([
+      'type' => PremiumKeyCheckWorker::TASK_TYPE,
+      'scheduled_in' => [self::SCHEDULED_IN_THE_PAST],
+      'status' => ['null', ScheduledTaskEntity::STATUS_SCHEDULED],
+    ]);
+    $premiumKeycheckFutureTasks = $this->getTasksCount([
+      'type' => PremiumKeyCheckWorker::TASK_TYPE,
+      'scheduled_in' => [self::SCHEDULED_IN_THE_FUTURE],
+      'status' => [ScheduledTaskEntity::STATUS_SCHEDULED],
+    ]);
+
+    return ($premiumKeySpecified && ($premiumKeycheckDueTasks || !$premiumKeycheckFutureTasks));
+  }
+
+  private function isSubscriberStatsReportActive(): bool {
+    $isAnyKeyValid = $this->serviceChecker->getAnyValidKey();
+    $statsReportDueTasks = $this->getTasksCount([
+      'type' => SubscribersStatsReport::TASK_TYPE,
+      'scheduled_in' => [self::SCHEDULED_IN_THE_PAST],
+      'status' => ['null', ScheduledTaskEntity::STATUS_SCHEDULED],
+    ]);
+    $statsReportFutureTasks = $this->getTasksCount([
+      'type' => SubscribersStatsReport::TASK_TYPE,
+      'scheduled_in' => [self::SCHEDULED_IN_THE_FUTURE],
+      'status' => [ScheduledTaskEntity::STATUS_SCHEDULED],
+    ]);
+
+    return ($isAnyKeyValid && ($statsReportDueTasks || !$statsReportFutureTasks));
+  }
+
+  private function isBeamerCheckActive(): bool {
+    $beamerDueChecks = $this->getTasksCount([
+      'type' => BeamerWorker::TASK_TYPE,
+      'scheduled_in' => [self::SCHEDULED_IN_THE_PAST],
+      'status' => ['null', ScheduledTaskEntity::STATUS_SCHEDULED],
+    ]);
+    $beamerFutureChecks = $this->getTasksCount([
+      'type' => BeamerWorker::TASK_TYPE,
+      'scheduled_in' => [self::SCHEDULED_IN_THE_FUTURE],
+      'status' => [ScheduledTaskEntity::STATUS_SCHEDULED],
+    ]);
+
+    return $beamerDueChecks || !$beamerFutureChecks;
   }
 
   private function loadTasksCounts() {
