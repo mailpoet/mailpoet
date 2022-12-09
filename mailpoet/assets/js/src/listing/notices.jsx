@@ -1,9 +1,10 @@
+import { useState } from 'react';
 import { MailPoet } from 'mailpoet';
 import PropTypes from 'prop-types';
 import ReactStringReplace from 'react-string-replace';
 import classnames from 'classnames';
 
-const resumeMailerSending = () => {
+const resumeMailerSending = () =>
   MailPoet.Ajax.post({
     api_version: window.mailpoet_api_version,
     endpoint: 'mailer',
@@ -23,10 +24,11 @@ const resumeMailerSending = () => {
         );
       }
     });
-};
 
 export function MailerError(props) {
+  const [isSendingResumed, setIsSendingResumed] = useState(false);
   if (
+    isSendingResumed ||
     !props.mta_log?.error ||
     props.mta_log.status !== 'paused' ||
     props.mta_log.error.operation === 'authorization'
@@ -141,7 +143,7 @@ export function MailerError(props) {
             className="button button-primary"
             onClick={(event) => {
               event.preventDefault();
-              resumeMailerSending(event);
+              resumeMailerSending(event).then(() => setIsSendingResumed(true));
             }}
           >
             {MailPoet.I18n.t('mailerResumeSendingAfterUpgradeButton')}
@@ -173,7 +175,7 @@ export function MailerError(props) {
           className="button button-primary"
           onClick={(event) => {
             event.preventDefault();
-            resumeMailerSending(event);
+            resumeMailerSending(event).then(() => setIsSendingResumed(true));
           }}
         >
           {MailPoet.I18n.t('mailerResumeSendingButton')}
