@@ -4,7 +4,7 @@ import { SubscribersLimitNotice } from 'notices/subscribers_limit_notice';
 import { EmailVolumeLimitNotice } from 'notices/email_volume_limit_notice';
 import { InvalidMssKeyNotice } from 'notices/invalid_mss_key_notice';
 import { TransactionalEmailsProposeOptInNotice } from 'notices/transactional_emails_propose_opt_in_notice';
-import { MailerError } from 'listing/notices.jsx';
+import { MailerError } from 'listing/notices';
 
 export function HomepageNotices(): JSX.Element {
   return (
