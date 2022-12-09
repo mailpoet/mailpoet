@@ -24,9 +24,9 @@ export function HomepageNotices(): JSX.Element {
         noticeDismissed={MailPoet.transactionalEmailsOptInNoticeDismissed}
       />
       <MailerError
-        mta_log={MailPoet.mtaLog}
-        mta_method={MailPoet.mtaMethod}
-        is_inline
+        mtaLog={MailPoet.mtaLog}
+        mtaMethod={MailPoet.mtaMethod}
+        isInline
       />
     </>
   );

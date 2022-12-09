@@ -71,56 +71,56 @@ function MailerCheckSettingsNotice() {
 }
 
 type MailerErrorPropType = {
-  mta_log: MtaLog;
-  mta_method: string;
-  is_inline?: boolean;
+  mtaLog: MtaLog;
+  mtaMethod: string;
+  isInline?: boolean;
 };
 
 export function MailerError({
-  mta_method,
-  mta_log,
-  is_inline = false,
+  mtaLog,
+  mtaMethod,
+  isInline = false,
 }: MailerErrorPropType): JSX.Element {
   const [isSendingResumed, setIsSendingResumed] = useState(false);
   if (
     isSendingResumed ||
-    !mta_log?.error ||
-    mta_log.status !== 'paused' ||
-    mta_log.error.operation === 'authorization'
+    !mtaLog?.error ||
+    mtaLog.status !== 'paused' ||
+    mtaLog.error.operation === 'authorization'
   ) {
     return null;
   }
   // do not display MailPoet API Key error twice
   if (
-    mta_log.error.operation === 'send' &&
-    mta_method === 'MailPoet' &&
+    mtaLog.error.operation === 'send' &&
+    mtaMethod === 'MailPoet' &&
     MailPoet.hasInvalidMssApiKey
   ) {
     return null;
   }
   // do not display Email Volume Limit reached error twice
   if (
-    mta_method === 'MailPoet' &&
-    mta_log.error.operation === 'email_limit_reached'
+    mtaMethod === 'MailPoet' &&
+    mtaLog.error.operation === 'email_limit_reached'
   ) {
     return null;
   }
 
-  if (mta_log.error.operation === 'migration') {
+  if (mtaLog.error.operation === 'migration') {
     const className = classnames('mailpoet_notice notice notice-warning', {
-      inline: is_inline,
+      inline: isInline,
     });
     return (
       <div className={className}>
-        <p>{mta_log.error.error_message}</p>
+        <p>{mtaLog.error.error_message}</p>
       </div>
     );
   }
 
-  let message: string | ReactNodeArray = mta_log.error.error_message;
-  const code = mta_log.error.error_code;
+  let message: string | ReactNodeArray = mtaLog.error.error_message;
+  const code = mtaLog.error.error_code;
   const className = classnames('mailpoet_notice notice notice-error', {
-    inline: is_inline,
+    inline: isInline,
   });
   if (code) {
     message += message ? ', ' : '';
@@ -179,7 +179,7 @@ export function MailerError({
     () => <br key={`br-${brKey++}`} />, // eslint-disable-line no-plusplus
   );
 
-  if (mta_log.error.operation === 'pending_approval') {
+  if (mtaLog.error.operation === 'pending_approval') {
     return (
       <div className={className}>
         <p>{message}</p>
@@ -187,7 +187,7 @@ export function MailerError({
     );
   }
 
-  if (mta_log.error.operation === 'insufficient_privileges') {
+  if (mtaLog.error.operation === 'insufficient_privileges') {
     return (
       <div className={className}>
         <p>{message}</p>
@@ -212,12 +212,12 @@ export function MailerError({
   return (
     <div className={className}>
       <p>
-        {mta_log.error.operation === 'send'
-          ? MailPoet.I18n.t('mailerSendErrorNotice').replace('%1$s', mta_method)
+        {mtaLog.error.operation === 'send'
+          ? MailPoet.I18n.t('mailerSendErrorNotice').replace('%1$s', mtaMethod)
           : MailPoet.I18n.t('mailerConnectionErrorNotice')}
         : <i>{message}</i>
       </p>
-      {mta_method === 'PHPMail' ? (
+      {mtaMethod === 'PHPMail' ? (
         <PHPMailerCheckSettingsNotice />
       ) : (
         <MailerCheckSettingsNotice />
