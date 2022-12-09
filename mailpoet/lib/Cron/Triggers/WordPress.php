@@ -1,4 +1,4 @@
-<?php // phpcs:ignore SlevomatCodingStandard.TypeHints.DeclareStrictTypes.DeclareStrictTypesMissing
+<?php declare(strict_types = 1);
 
 namespace MailPoet\Cron\Triggers;
 
@@ -105,15 +105,6 @@ class WordPress {
   public function checkExecutionRequirements(): bool {
     $this->loadTasksCounts();
 
-    // check requirements for each worker
-    $sendingQueueActive = $this->isSendingQueueActive();
-    $bounceSyncActive = $this->isBounceActive();
-    $sendingServiceKeyCheckActive = $this->isSendingServiceKeyCheckActive();
-    $premiumKeyCheckActive = $this->isPremiumKeyCheckActive();
-    $subscribersStatsReportActive = $this->isSubscriberStatsReportActive();
-    $migrationActive = $this->isMigrationActive();
-    $beamerActive = $this->isBeamerCheckActive();
-
     // Because a lot of workers has the same pattern for check if it's active we can use a loop here
     $isSimpleWorkerActive = false;
     foreach (WorkersFactory::SIMPLE_WORKER_TYPES as $simpleWorkerType) {
@@ -129,13 +120,13 @@ class WordPress {
     }
 
     return (
-      $migrationActive
-      || $sendingQueueActive
-      || $bounceSyncActive
-      || $sendingServiceKeyCheckActive
-      || $premiumKeyCheckActive
-      || $subscribersStatsReportActive
-      || $beamerActive
+      $this->isMigrationActive()
+      || $this->isSendingQueueActive()
+      || $this->isBounceActive()
+      || $this->isSendingServiceKeyCheckActive()
+      || $this->isPremiumKeyCheckActive()
+      || $this->isSubscriberStatsReportActive()
+      || $this->isBeamerCheckActive()
       || $isSimpleWorkerActive
     );
   }
