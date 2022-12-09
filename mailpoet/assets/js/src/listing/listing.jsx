@@ -10,7 +10,7 @@ import { ListingPages } from 'listing/pages.jsx';
 import { ListingSearch } from 'listing/search.jsx';
 import { ListingFilters } from 'listing/filters.jsx';
 import { ListingItems } from 'listing/listing_items.jsx';
-import { MailerError } from 'listing/notices.jsx';
+import { MailerError } from 'listing/notices';
 import { withRouter } from 'react-router-dom';
 import { GlobalContext } from 'context/index.jsx';
 import { withBoundary } from '../common';
