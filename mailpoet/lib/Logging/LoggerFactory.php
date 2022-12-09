@@ -65,15 +65,15 @@ class LoggerFactory {
 
   /**
    * @param string $name
-   * @param bool $attachProcessors
+   * @param bool $attachOptionalProcessors
    *
    * @return \MailPoetVendor\Monolog\Logger
    */
-  public function getLogger($name = 'MailPoet', $attachProcessors = WP_DEBUG) {
+  public function getLogger($name = 'MailPoet', $attachOptionalProcessors = WP_DEBUG) {
     if (!isset($this->loggerInstances[$name])) {
       $this->loggerInstances[$name] = new \MailPoetVendor\Monolog\Logger($name);
 
-      if ($attachProcessors) {
+      if ($attachOptionalProcessors) {
         // Adds the line/file/class/method from which the log call originated
         $this->loggerInstances[$name]->pushProcessor(new IntrospectionProcessor());
         // Adds the current request URI, request method and client IP to a log record
