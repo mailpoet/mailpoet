@@ -646,7 +646,12 @@ class ListingComponent extends Component {
 
     return (
       <>
-        {this.state.meta.mta_method && <MailerError {...this.state.meta} />}
+        {this.state.meta.mta_method && (
+          <MailerError
+            mtaMethod={this.state.meta.mta_method}
+            mtaLog={this.state.meta.mta_log}
+          />
+        )}
         <div className={listingClassName}>
           <div className="mailpoet-listing-header">
             {groups}
