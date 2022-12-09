@@ -307,6 +307,14 @@ class WordPressTest extends \MailPoetTest {
     expect($this->wordpressTrigger->checkExecutionRequirements())->true();
   }
 
+  public function testItDoesNotExecuteWhenTasksAreScheduledInFuture() {
+    $future = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp') + 600);
+    $this->addScheduledTask(NewsletterTemplateThumbnails::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED, $future);
+    $this->addScheduledTask(SubscribersLastEngagement::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED, $future);
+    $this->addScheduledTask(SubscribersCountCacheRecalculation::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED, $future);
+    expect($this->wordpressTrigger->checkExecutionRequirements())->false();
+  }
+
   private function addMTAConfigAndLog($sent, $status = null, int $retryAt = null) {
     $mtaConfig = [
       'frequency' => [
