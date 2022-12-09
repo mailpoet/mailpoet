@@ -78,6 +78,12 @@ parameters:
       message: '/^Call to an undefined method Codeception\\TestInterface::getName()./'
       count: 1
       path: ../../tests/_support/CheckSkippedTestsExtension.php
+    - message: '/Parameter \$record of method MailPoet\\Logging\\PluginVersionProcessor::__invoke\(\) has invalid type MailPoetVendor\\Monolog\\Processor\\Record/'
+      count: 1
+      path: ../../lib/Logging/PluginVersionProcessor.php
+    - message: '/Return type \(array\) of method MailPoet\\Logging\\PluginVersionProcessor::__invoke\(\) should be compatible with return type \(MailPoetVendor\\Monolog\\Processor\\Record\) of method MailPoetVendor\\Monolog\\Processor\\ProcessorInterface::__invoke\(\)/'
+      count: 1
+      path: ../../lib/Logging/PluginVersionProcessor.php
   reportUnmatchedIgnoredErrors: true
   dynamicConstantNames:
     - MAILPOET_PREMIUM_INITIALIZED
