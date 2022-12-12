@@ -3,7 +3,7 @@ Contributors: mailpoet
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 5.8
 Tested up to: 6.1
-Stable tag: 4.1.1
+Stable tag: 4.2.0
 Requires PHP: 7.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -218,6 +218,13 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 4.2.0 - 2022-12-12 =
+* Added: link to purchase a MailPoet plan from Key Activation page;
+* Improved: support for ANSI_QUOTES sql mode;
+* Improved: 1-click unsubscribe is also tracked as a click;
+* Improved: "Maximum execution time" error is now more descriptive in MailPoet > Help > System Status;
+* Changed: email language in HTML is set to site's language (Settings > General) instead of English.
 
 = 4.1.1 - 2022-12-05 =
 * Improved: the 3rd-party libraries description in Welcome Wizard;
