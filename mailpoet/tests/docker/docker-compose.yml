@@ -99,7 +99,7 @@ services:
           - test.local
 
   mysql:
-    image: cimg/mysql:${MYSQL_IMAGE_VERSION:-5.7.38}
+    image: ${MYSQL_IMAGE:-cimg/mysql:5.7.38}
     container_name: mysql_${CIRCLE_NODE_INDEX:-default}
     # Command used for MySQL 8+ because it needs default-authentication-plugin
     # parameter and there needs to be some fallback for other MySQL versions.
