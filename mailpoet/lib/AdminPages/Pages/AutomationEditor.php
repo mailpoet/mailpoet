@@ -89,6 +89,9 @@ class AutomationEditor {
         'root' => rtrim($this->wp->escUrlRaw($this->wp->restUrl()), '/'),
         'nonce' => $this->wp->wpCreateNonce('wp_rest'),
       ],
+      'jsonapi' => [
+        'root' => rtrim($this->wp->escUrlRaw(admin_url('admin-ajax.php')), '/'),
+      ],
       'user_roles' => $roles->get_names(),
       'segments' => $segments,
     ]);
