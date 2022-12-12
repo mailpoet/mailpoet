@@ -7,7 +7,6 @@ import { WelcomeWizardStepLayout } from './layout/step_layout.jsx';
 
 function WooCommerceController({
   isWizardStep = false,
-  currentStep = null,
   redirectToNextStep = null,
 }) {
   const [loading, setLoading] = useState(false);
@@ -54,7 +53,7 @@ function WooCommerceController({
       .then(scheduleImport)
       .then(() => {
         if (isWizardStep) {
-          redirectToNextStep(currentStep);
+          redirectToNextStep();
         } else {
           finishWizard();
         }
@@ -83,13 +82,11 @@ function WooCommerceController({
 
 WooCommerceController.propTypes = {
   isWizardStep: PropTypes.bool,
-  currentStep: PropTypes.number,
   redirectToNextStep: PropTypes.shape,
 };
 
 WooCommerceController.defaultProps = {
   isWizardStep: false,
-  currentStep: null,
   redirectToNextStep: null,
 };
 
