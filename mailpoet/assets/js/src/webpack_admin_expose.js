@@ -18,6 +18,7 @@ export * as WordPressData from '@wordpress/data';
 export * as WordPressUrl from '@wordpress/url';
 export * as WordPressI18n from '@wordpress/i18n';
 export * as WordPressIcons from '@wordpress/icons';
+export * as WordPressDataControls from '@wordpress/data-controls';
 
 // assets
 export * as Automation from 'automation';
