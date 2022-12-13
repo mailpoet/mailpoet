@@ -17,7 +17,7 @@ class Tags extends APIEndpoint {
     $this->repository = $repository;
   }
 
-  public function save($data = []) {
+  public function create($data = []) {
     if (!isset($data['name'])) {
       throw InvalidStateException::create()->withError(
         'tag_without_name',

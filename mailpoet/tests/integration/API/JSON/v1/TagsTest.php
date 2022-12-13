@@ -39,7 +39,7 @@ class TagsTest extends \MailPoetTest {
 
     $entity = $this->repository->findOneBy(['name' => 'test']);
     $this->assertNull($entity);
-    $response = $this->testee->save(['name' => 'test']);
+    $response = $this->testee->create(['name' => 'test']);
     $entity = $this->repository->findOneBy(['name' => 'test']);
     $this->assertNotNull($entity);
     $this->assertSame('test', $response->data['name']);
@@ -48,7 +48,7 @@ class TagsTest extends \MailPoetTest {
   public function testItCanNotCreateTagsWithoutNames() {
 
     $this->expectException(InvalidStateException::class);
-    $this->testee->save([]);
+    $this->testee->create([]);
   }
 
   public function _after() {
