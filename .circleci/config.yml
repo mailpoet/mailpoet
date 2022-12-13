@@ -487,6 +487,8 @@ jobs:
       docker_layer_caching: false
     environment:
       CODECEPTION_IMAGE_VERSION: << parameters.codeception_image_version >>
+      MYSQL_COMMAND: << parameters.mysql_command >>
+      MYSQL_IMAGE: << parameters.mysql_image >>
     parameters:
       codeception_image_version:
         type: string
@@ -509,6 +511,12 @@ jobs:
       multisite:
         type: integer
         default: 0
+      mysql_command:
+        type: string
+        default: ''
+      mysql_image:
+        type: string
+        default: ''
     steps:
       - attach_workspace:
           at: /home/circleci
@@ -780,6 +788,8 @@ workflows:
           <<: *slack-fail-post-step
           name: integration_oldest
           codeception_image_version: 7.2-cli_20220605.0
+          mysql_command: --max_allowed_packet=100M --default-storage-engine=MYISAM
+          mysql_image: mysql:5.5
           requires:
             - build
       - build_premium:
