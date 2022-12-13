@@ -74,7 +74,7 @@ BehaviorsLookup.TextEditorBehavior = Marionette.Behavior.extend({
 
           return this.documentBaseURI.toAbsolute(
             url,
-            this.settings.remove_script_host,
+            this.options.get('remove_script_host'),
           );
         },
 
