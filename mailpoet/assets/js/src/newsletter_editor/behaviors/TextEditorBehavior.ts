@@ -14,7 +14,6 @@ import 'tinymce/themes/silver';
 import 'tinymce/plugins/code';
 import 'tinymce/plugins/link';
 import 'tinymce/plugins/lists';
-import 'tinymce/plugins/paste';
 
 import './tinymce_icons';
 
