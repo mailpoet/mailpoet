@@ -47,8 +47,8 @@ class Tags extends APIEndpoint {
       'id' => $tag->getId(),
       'name' => $tag->getName(),
       'description' => $tag->getDescription(),
-      'created' => $tag->getCreatedAt(),
-      'updated' => $tag->getUpdatedAt(),
+      'created_at' => $tag->getCreatedAt(),
+      'updated_at' => $tag->getUpdatedAt(),
     ];
   }
 }
