@@ -5,6 +5,7 @@ import { step as WpUserRegisteredTrigger } from './steps/wp-user-registered';
 import { step as AddTagsAction } from './steps/add_tags';
 import { step as RemoveTagsAction } from './steps/remove_tags';
 import { step as AddToListStep } from './steps/add_to_list';
+import { step as RemoveFromListStep } from './steps/remove_from_list';
 import { registerStepControls } from './step-controls';
 
 export const initialize = (): void => {
@@ -14,5 +15,6 @@ export const initialize = (): void => {
   registerStepType(AddTagsAction);
   registerStepType(RemoveTagsAction);
   registerStepType(AddToListStep);
+  registerStepType(RemoveFromListStep);
   registerStepControls();
 };
