@@ -10,6 +10,7 @@ export * as ReactRouter from 'react-router-dom';
 export * as ReactTooltip from 'react-tooltip';
 export * as ReactStringReplace from 'react-string-replace';
 export * as Slugify from 'slugify';
+export { CheckboxControl as WordpressComponentsCheckboxControl } from '@wordpress/components';
 export { TextControl as WordpressComponentsTextControl } from '@wordpress/components';
 export { __experimentalConfirmDialog as WordpressComponentsConfirmDialog } from '@wordpress/components';
 export { MenuItem as WordpressComponentsMenuItem } from '@wordpress/components';
