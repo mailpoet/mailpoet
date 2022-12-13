@@ -2,9 +2,7 @@
 
 <% block container %>
 <div id="mailpoet_automation_editor" class="edit-site"></div>
-<% endblock %>
 
-<% block after_javascript %>
 <script type="text/javascript">
   var mailpoet_automation_api = <%= json_encode(api) %>;
   var mailpoet_json_api = <%= json_encode(jsonapi) %>;
