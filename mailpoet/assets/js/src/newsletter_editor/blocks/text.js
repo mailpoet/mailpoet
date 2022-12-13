@@ -30,7 +30,7 @@ Module.TextBlockView = base.BlockView.extend({
   modelEvents: _.omit(base.BlockView.prototype.modelEvents, 'change'), // Prevent rerendering on model change due to text editor redrawing
   behaviors: _.extend({}, base.BlockView.prototype.behaviors, {
     TextEditorBehavior: {
-      toolbar1: 'formatselect bold italic forecolor | link unlink',
+      toolbar1: 'blocks bold italic forecolor | link unlink',
       toolbar2:
         'alignleft aligncenter alignright alignjustify | bullist numlist blockquote | code mailpoet_shortcodes',
       validElements:
