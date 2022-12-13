@@ -1,11 +1,27 @@
-import PropTypes from 'prop-types';
 import { MailPoet } from 'mailpoet';
 import jQuery from 'jquery';
 import { Grid } from '../../common/grid';
 import { Heading } from '../../common/typography/heading/heading';
 import { Button, Input } from '../../common';
 
-function WelcomeWizardSenderStep(props) {
+type WelcomeWizardSenderStepPropType = {
+  skipStep: (event: React.MouseEvent<HTMLButtonElement>) => void;
+  loading: boolean;
+  update_sender: (data: Record<string, string>) => void;
+  submit_sender: () => void;
+  sender: {
+    name: string;
+    address: string;
+  };
+};
+
+function WelcomeWizardSenderStep({
+  skipStep,
+  loading,
+  update_sender,
+  submit_sender,
+  sender = null,
+}: WelcomeWizardSenderStepPropType): JSX.Element {
   return (
     <>
       <Heading level={1}>
@@ -27,7 +43,7 @@ function WelcomeWizardSenderStep(props) {
           if (!jQuery('#mailpoet_sender_form').parsley().validate()) {
             return;
           }
-          props.submit_sender();
+          submit_sender();
         }}
       >
         <Grid.TwoColumns>
@@ -40,9 +56,9 @@ function WelcomeWizardSenderStep(props) {
               name="senderName"
               type="text"
               placeholder="John Doe"
-              value={props.sender ? props.sender.name : ''}
+              value={sender ? sender.name : ''}
               data-parsley-required
-              onChange={(e) => props.update_sender({ name: e.target.value })}
+              onChange={(e) => update_sender({ name: e.target.value })}
             />
           </label>
 
@@ -55,10 +71,10 @@ function WelcomeWizardSenderStep(props) {
               name="senderAddress"
               type="text"
               placeholder="john@doe.com"
-              value={props.sender ? props.sender.address : ''}
+              value={sender ? sender.address : ''}
               data-parsley-required
               data-parsley-type="email"
-              onChange={(e) => props.update_sender({ address: e.target.value })}
+              onChange={(e) => update_sender({ address: e.target.value })}
             />
           </label>
         </Grid.TwoColumns>
@@ -66,14 +82,14 @@ function WelcomeWizardSenderStep(props) {
         <div className="mailpoet-gap" />
         <div className="mailpoet-gap" />
 
-        <Button isFullWidth type="submit" withSpinner={props.loading}>
+        <Button isFullWidth type="submit" withSpinner={loading}>
           {MailPoet.I18n.t('continue')}
         </Button>
         <Button
           href="#skipStep"
-          isDisabled={props.loading}
+          isDisabled={loading}
           isFullWidth
-          onClick={props.skipStep}
+          onClick={skipStep}
           variant="tertiary"
         >
           {MailPoet.I18n.t('skipStep')}
@@ -82,21 +98,6 @@ function WelcomeWizardSenderStep(props) {
     </>
   );
 }
-
-WelcomeWizardSenderStep.propTypes = {
-  skipStep: PropTypes.func.isRequired,
-  loading: PropTypes.bool.isRequired,
-  update_sender: PropTypes.func.isRequired,
-  submit_sender: PropTypes.func.isRequired,
-  sender: PropTypes.shape({
-    name: PropTypes.string,
-    address: PropTypes.string,
-  }),
-};
-
-WelcomeWizardSenderStep.defaultProps = {
-  sender: null,
-};
 
 WelcomeWizardSenderStep.displayName = 'WelcomeWizardSenderStep';
 

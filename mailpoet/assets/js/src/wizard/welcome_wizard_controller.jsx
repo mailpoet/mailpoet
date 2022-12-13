@@ -3,7 +3,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { partial } from 'underscore';
 
 import { MailPoet } from 'mailpoet';
-import { WelcomeWizardSenderStep } from './steps/sender_step.jsx';
+import { WelcomeWizardSenderStep } from './steps/sender_step';
 import { WelcomeWizardUsageTrackingStep } from './steps/usage_tracking_step.jsx';
 import { WelcomeWizardPitchMSSStep } from './steps/pitch_mss_step.jsx';
 import { WooCommerceController } from './woocommerce_controller';
