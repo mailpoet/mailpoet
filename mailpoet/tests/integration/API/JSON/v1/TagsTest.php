@@ -4,7 +4,6 @@ namespace MailPoet\Test\API\JSON\v1;
 
 use MailPoet\API\JSON\v1\Tags;
 use MailPoet\Entities\TagEntity;
-use MailPoet\InvalidStateException;
 use MailPoet\Tags\TagRepository;
 
 class TagsTest extends \MailPoetTest {
@@ -47,8 +46,8 @@ class TagsTest extends \MailPoetTest {
 
   public function testItCanNotCreateTagsWithoutNames() {
 
-    $this->expectException(InvalidStateException::class);
-    $this->testee->create([]);
+    $result = $this->testee->create([]);
+    $this->assertEquals(400, $result->status);
   }
 
   public function _after() {

@@ -3,8 +3,8 @@
 namespace MailPoet\API\JSON\v1;
 
 use MailPoet\API\JSON\Endpoint as APIEndpoint;
+use MailPoet\API\JSON\Error as APIError;
 use MailPoet\Entities\TagEntity;
-use MailPoet\InvalidStateException;
 use MailPoet\Tags\TagRepository;
 
 class Tags extends APIEndpoint {
@@ -19,10 +19,9 @@ class Tags extends APIEndpoint {
 
   public function create($data = []) {
     if (!isset($data['name'])) {
-      throw InvalidStateException::create()->withError(
-        'tag_without_name',
-        __('A tag needs to have a name.', 'mailpoet')
-      );
+      return $this->badRequest([
+        APIError::BAD_REQUEST => __('A tag needs to have a name.', 'mailpoet'),
+      ]);
     }
 
     $data['name'] = sanitize_text_field(wp_unslash($data['name']));
