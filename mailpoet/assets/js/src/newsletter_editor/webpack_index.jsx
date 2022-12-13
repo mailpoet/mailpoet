@@ -32,7 +32,7 @@ import 'newsletter_editor/behaviors/MediaManagerBehavior.js'; // side effect - a
 import 'newsletter_editor/behaviors/ResizableBehavior.js'; // side effect - assigns to BehaviorsLookup
 import 'newsletter_editor/behaviors/SortableBehavior.js'; // side effect - assigns to BehaviorsLookup
 import 'newsletter_editor/behaviors/ShowSettingsBehavior.js'; // side effect - assigns to BehaviorsLookup
-import 'newsletter_editor/behaviors/TextEditorBehavior.js'; // side effect - assigns to BehaviorsLookup
+import 'newsletter_editor/behaviors/TextEditorBehavior'; // side effect - assigns to BehaviorsLookup
 import 'newsletter_editor/behaviors/WooCommerceStylesBehavior.js'; // side effect - assigns to BehaviorsLookup
 
 // blocks
