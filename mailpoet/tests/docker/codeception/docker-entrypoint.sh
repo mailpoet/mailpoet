@@ -36,9 +36,6 @@ wp config set WP_AUTO_UPDATE_CORE false --raw
 mysqladmin --host=mysql --user=root --password=wordpress drop wordpress --force
 mysqladmin --host=mysql --user=root --password=wordpress create wordpress --force
 
-# print sql_mode
-mysql -u wordpress -pwordpress wordpress -h mysql -e "SELECT @@global.sql_mode"
-
 # install WordPress
 WP_CORE_INSTALL_PARAMS="--url=$HTTP_HOST --title=tests --admin_user=admin --admin_email=test@test.com --admin_password=password --skip-email"
 if [[ -z "$MULTISITE" || "$MULTISITE" -eq "0" ]]; then
@@ -199,6 +196,12 @@ if [[ $CIRCLE_JOB == *"_with_premium_"* ]]; then
   # Activate MailPoet Premium
   wp plugin activate mailpoet-premium || { echo "MailPoet Premium plugin activation failed!" ; exit 1; }
 fi
+
+echo "MySQL Configuration";
+# print sql_mode
+mysql -u wordpress -pwordpress wordpress -h mysql -e "SELECT @@global.sql_mode"
+# print tables info
+mysql -u wordpress -pwordpress wordpress -h mysql -e "SELECT TABLE_NAME, ENGINE, TABLE_COLLATION FROM information_schema.TABLES WHERE TABLE_SCHEMA = 'wordpress'"
 
 cd /wp-core/wp-content/plugins/mailpoet
 /project/vendor/bin/codecept run $TEST_TYPE $@
