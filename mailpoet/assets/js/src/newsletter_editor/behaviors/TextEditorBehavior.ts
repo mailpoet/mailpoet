@@ -4,23 +4,24 @@
  * Adds TinyMCE text editing capabilities to a view
  */
 import Marionette from 'backbone.marionette';
-import tinymce from 'tinymce/tinymce';
+import tinymce, { RawEditorOptions } from 'tinymce/tinymce';
 import { BehaviorsLookup } from 'newsletter_editor/behaviors/BehaviorsLookup';
 import { App } from 'newsletter_editor/App';
 import { tinyMceAdd } from 'newsletter_editor/tinymce/mailpoet_shortcodes.js';
-
 
 // TinyMCE theme and plugins
 import 'tinymce/themes/silver';
 import 'tinymce/plugins/code';
 import 'tinymce/plugins/link';
 import 'tinymce/plugins/lists';
+import 'tinymce/plugins/paste';
 
 import './tinymce_icons';
 
-var BL = BehaviorsLookup;
+const configurationFilter = (originalConfig: RawEditorOptions) =>
+  originalConfig;
 
-BL.TextEditorBehavior = Marionette.Behavior.extend({
+BehaviorsLookup.TextEditorBehavior = Marionette.Behavior.extend({
   defaults: {
     selector: '.mailpoet_content',
     toolbar1: 'bold italic link unlink forecolor mailpoet_shortcodes',
@@ -30,9 +31,7 @@ BL.TextEditorBehavior = Marionette.Behavior.extend({
     invalidElements: 'script',
     blockFormats: 'Paragraph=p',
     plugins: 'link mailpoet_shortcodes',
-    configurationFilter: function configurationFilter(originalConfig) {
-      return originalConfig;
-    },
+    configurationFilter,
   },
   initialize: function initialize() {
     this.listenTo(App.getChannel(), 'dragStart', this.hideEditor);
@@ -42,16 +41,15 @@ BL.TextEditorBehavior = Marionette.Behavior.extend({
       this.tinymceEditor.fire('blur');
     }
   },
-  onDomRefresh: function onDomRefresh() {
-    var that = this;
+  onDomRefresh: async function onDomRefresh() {
     if (this.view.disableTextEditor === true) {
       return;
     }
 
     tinymce.PluginManager.add('mailpoet_shortcodes', tinyMceAdd);
 
-    tinymce.init(
-      this.options.configurationFilter({
+    await tinymce.init(
+      (this.options.configurationFilter as typeof configurationFilter)({
         target: this.el.querySelector(this.options.selector),
         inline: true,
         contextmenu: false,
@@ -82,14 +80,14 @@ BL.TextEditorBehavior = Marionette.Behavior.extend({
 
         plugins: this.options.plugins,
 
-        setup: function setup(editor) {
+        setup: (editor) => {
           // Store the editor instance
-          that.tinymceEditor = editor;
-          editor.on('change', function onChange() {
-            that.view.triggerMethod('text:editor:change', editor.getContent());
+          this.tinymceEditor = editor;
+          editor.on('change', () => {
+            this.view.triggerMethod('text:editor:change', editor.getContent());
           });
 
-          editor.on('click', function onClick(e) {
+          editor.on('click', (e) => {
             if (App.getDisplayedSettingsId()) {
               App.getChannel().trigger('hideSettings');
             }
@@ -99,12 +97,12 @@ BL.TextEditorBehavior = Marionette.Behavior.extend({
             }
           });
 
-          editor.on('focus', function onFocus() {
-            that.view.triggerMethod('text:editor:focus');
+          editor.on('focus', () => {
+            this.view.triggerMethod('text:editor:focus');
           });
 
-          editor.on('blur', function onBlur() {
-            that.view.triggerMethod('text:editor:blur');
+          editor.on('blur', () => {
+            this.view.triggerMethod('text:editor:blur');
           });
         },
       }),
