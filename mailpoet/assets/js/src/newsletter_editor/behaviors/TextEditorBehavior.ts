@@ -9,11 +9,12 @@ import { BehaviorsLookup } from 'newsletter_editor/behaviors/BehaviorsLookup';
 import { App } from 'newsletter_editor/App';
 import { tinyMceAdd } from 'newsletter_editor/tinymce/mailpoet_shortcodes.js';
 
-// TinyMCE theme and plugins
+// TinyMCE additions
 import 'tinymce/themes/silver';
 import 'tinymce/plugins/code';
 import 'tinymce/plugins/link';
 import 'tinymce/plugins/lists';
+import 'tinymce/models/dom';
 
 import './tinymce_icons';
 
