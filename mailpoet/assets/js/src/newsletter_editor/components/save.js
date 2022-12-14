@@ -14,6 +14,34 @@ var Module = {};
 var saveTimeout;
 var skipNextAutoSave;
 
+Module.isConfirmationEmailValid = function () {
+  var json = App.toJSON();
+  var body =
+    json && json.body && json.body.content
+      ? JSON.stringify(json.body.content)
+      : '';
+
+  if (
+    App.getConfig().get('validation.validateActivationLinkIsPresent') &&
+    body.indexOf('[activation_link]') < 0
+  ) {
+    $('.mailpoet_save_error')
+      .html(MailPoet.I18n.t('activationLinkIsMissing'))
+      .removeClass('mailpoet_hidden');
+
+    $('.mailpoet_save_button')
+      .attr('disabled', 'disabled')
+      .addClass('button-disabled');
+    $('.mailpoet_editor_last_saved .mailpoet_autosaved_message').addClass(
+      'mailpoet_hidden',
+    ); // remove the Autosaved text
+
+    return false;
+  }
+
+  return true;
+};
+
 // Save editor contents to server
 Module.save = function () {
   var json = App.toJSON();
@@ -29,22 +57,7 @@ Module.save = function () {
     json.body = JSON.stringify(json.body);
   }
 
-  if (
-    App.getConfig().get('validation.validateActivationLinkIsPresent') &&
-    json.body &&
-    json.body.indexOf('[activation_link]') < 0
-  ) {
-    $('.mailpoet_save_error')
-      .html(MailPoet.I18n.t('activationLinkIsMissing'))
-      .removeClass('mailpoet_hidden');
-
-    $('.mailpoet_save_button')
-      .attr('disabled', 'disabled')
-      .addClass('button-disabled');
-    $('.mailpoet_editor_last_saved .mailpoet_autosaved_message').addClass(
-      'mailpoet_hidden',
-    ); // remove the Autosaved text
-
+  if (!Module.isConfirmationEmailValid()) {
     return deferredFunc.resolve(); // continue the chain
   }
 
@@ -509,6 +522,10 @@ Module.autoSave = function () {
   saveTimeout = setTimeout(function () {
     if (skipNextAutoSave) {
       skipNextAutoSave = false;
+      Module._cancelAutosave();
+      return;
+    }
+    if (!Module.isConfirmationEmailValid()) {
       Module._cancelAutosave();
       return;
     }
