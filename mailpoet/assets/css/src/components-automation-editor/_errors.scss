@@ -36,7 +36,8 @@
 
   input,
   select,
-  textarea {
+  textarea,
+  input[type='text'].components-form-token-field__input {
     background: right top/26px no-repeat url('../../img/icons/alert.svg');
     padding-right: 26px;
   }
