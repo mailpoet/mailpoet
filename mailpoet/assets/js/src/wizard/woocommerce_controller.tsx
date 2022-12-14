@@ -1,14 +1,18 @@
-import PropTypes from 'prop-types';
 import { useState } from 'react';
 import { MailPoet } from 'mailpoet';
-import { StepsContent } from 'common/steps/steps_content.tsx';
+import { StepsContent } from 'common/steps/steps_content';
 import { WizardWooCommerceStep } from './steps/woocommerce_step';
 import { WelcomeWizardStepLayout } from './layout/step_layout.jsx';
+
+type WooCommerceControllerPropType = {
+  isWizardStep: boolean;
+  redirectToNextStep: () => void;
+};
 
 function WooCommerceController({
   isWizardStep = false,
   redirectToNextStep = null,
-}) {
+}: WooCommerceControllerPropType): JSX.Element {
   const [loading, setLoading] = useState(false);
 
   const handleApiError = (response) => {
@@ -32,7 +36,7 @@ function WooCommerceController({
     }).fail(handleApiError);
 
   const finishWizard = () => {
-    window.location = window.finish_wizard_url;
+    window.location.href = window.finish_wizard_url;
   };
 
   const submit = (importType, allowed) => {
@@ -49,7 +53,7 @@ function WooCommerceController({
       'tracking.level': newTrackingLevel,
       'woocommerce.accept_cookie_revenue_tracking.set': 1,
     };
-    updateSettings(settings)
+    void updateSettings(settings)
       .then(scheduleImport)
       .then(() => {
         if (isWizardStep) {
@@ -79,15 +83,5 @@ function WooCommerceController({
 
   return result;
 }
-
-WooCommerceController.propTypes = {
-  isWizardStep: PropTypes.bool,
-  redirectToNextStep: PropTypes.shape,
-};
-
-WooCommerceController.defaultProps = {
-  isWizardStep: false,
-  redirectToNextStep: null,
-};
 
 export { WooCommerceController };
