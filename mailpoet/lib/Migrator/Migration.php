@@ -43,10 +43,12 @@ abstract class Migration {
   }
 
   protected function columnExists(string $tableName, string $columnName): bool {
+    // We had a problem with the dbName value in ENV for some customers, because it doesn't match DB name in information schema.
+    // So we decided to use the DATABASE() value instead.
     return $this->connection->executeQuery("
       SELECT 1
       FROM information_schema.columns
-      WHERE table_schema = ?
+      WHERE table_schema = COALESCE(DATABASE(), ?)
       AND table_name = ?
       AND column_name = ?
     ", [Env::$dbName, $tableName, $columnName])->fetchOne() !== false;
