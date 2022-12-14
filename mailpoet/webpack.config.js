@@ -182,7 +182,7 @@ const adminConfig = {
     vendor: 'webpack_vendor_index.jsx',
     mailpoet: 'webpack_mailpoet_index.jsx',
     admin_vendor: ['prop-types', 'lodash', 'webpack_admin_expose.js'], // libraries shared between free and premium plugin
-    admin: 'webpack_admin_index.jsx',
+    admin: 'webpack_admin_index.tsx',
     automation: 'automation/automation.tsx',
     automation_editor: 'automation/editor/index.tsx',
     automation_templates: 'automation/templates/index.tsx',
