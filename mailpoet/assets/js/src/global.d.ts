@@ -144,4 +144,7 @@ interface Window {
   }[];
   mailpoet_cdn_url: string;
   mailpoet_main_page_slug: string;
+  finish_wizard_url: string;
+  wizard_woocommerce_illustration_url: string;
+  mailpoet_show_customers_import: boolean;
 }
