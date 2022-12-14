@@ -6,7 +6,7 @@ import { WooCommerceController } from './woocommerce_controller';
 import { withBoundary } from '../common';
 import { WelcomeWizardStepsController } from './welcome_wizard_controller';
 
-function App() {
+function App(): JSX.Element {
   let basePath = '/steps/1';
   if (window.location.search.includes('woocommerce-setup')) {
     basePath = '/woocommerce';
