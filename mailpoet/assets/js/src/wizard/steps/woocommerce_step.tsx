@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 import { useState } from 'react';
 import { MailPoet } from 'mailpoet';
 import ReactStringReplace from 'react-string-replace';
@@ -6,10 +5,22 @@ import ReactStringReplace from 'react-string-replace';
 import { Button, TypographyHeading } from '../../common';
 import { YesNo } from '../../common/form/yesno/yesno';
 
-function WizardWooCommerceStep(props) {
+type WizardWooCommerceStepPropType = {
+  submitForm: (string, boolean) => void;
+  loading: boolean;
+  showCustomersImportSetting: boolean;
+  isWizardStep: boolean;
+};
+
+function WizardWooCommerceStep({
+  submitForm,
+  loading,
+  showCustomersImportSetting,
+  isWizardStep = false,
+}: WizardWooCommerceStepPropType): JSX.Element {
   const [allowed, setAllowed] = useState(null);
   const [importType, setImportType] = useState(
-    props.showCustomersImportSetting === false ? 'unsubscribed' : null,
+    showCustomersImportSetting === false ? 'unsubscribed' : null,
   );
   const [submitted, setSubmitted] = useState(false);
 
@@ -19,11 +30,11 @@ function WizardWooCommerceStep(props) {
     if (importType === null || allowed === null) {
       return false;
     }
-    props.submitForm(importType, allowed === 'true');
+    submitForm(importType, allowed === 'true');
     return false;
   };
 
-  const buttonText = props.isWizardStep
+  const buttonText = isWizardStep
     ? MailPoet.I18n.t('continue')
     : MailPoet.I18n.t('wooCommerceSetupFinishButtonTextStandalone');
 
@@ -42,7 +53,7 @@ function WizardWooCommerceStep(props) {
       <div className="mailpoet-gap" />
       <form onSubmit={submit}>
         <div>
-          {props.showCustomersImportSetting ? (
+          {showCustomersImportSetting ? (
             <div className="mailpoet-wizard-woocommerce-option">
               <div className="mailpoet-wizard-woocommerce-toggle">
                 <YesNo
@@ -120,8 +131,8 @@ function WizardWooCommerceStep(props) {
         <Button
           isFullWidth
           type="submit"
-          withSpinner={props.loading}
-          disabled={props.loading}
+          withSpinner={loading}
+          disabled={loading}
           automationId="submit_woocommerce_setup"
         >
           {buttonText}
@@ -130,16 +141,5 @@ function WizardWooCommerceStep(props) {
     </>
   );
 }
-
-WizardWooCommerceStep.propTypes = {
-  submitForm: PropTypes.func.isRequired,
-  loading: PropTypes.bool.isRequired,
-  showCustomersImportSetting: PropTypes.bool.isRequired,
-  isWizardStep: PropTypes.bool,
-};
-
-WizardWooCommerceStep.defaultProps = {
-  isWizardStep: false,
-};
 
 export { WizardWooCommerceStep };

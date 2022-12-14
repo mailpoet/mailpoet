@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import { useState } from 'react';
 import { MailPoet } from 'mailpoet';
 import { StepsContent } from 'common/steps/steps_content.tsx';
-import { WizardWooCommerceStep } from './steps/woo_commerce_step.jsx';
+import { WizardWooCommerceStep } from './steps/woocommerce_step';
 import { WelcomeWizardStepLayout } from './layout/step_layout.jsx';
 
 function WooCommerceController({
