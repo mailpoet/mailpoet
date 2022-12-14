@@ -22,10 +22,10 @@ export const step: StepType = {
     <PremiumModalForStepEdit
       tracking={{
         utm_medium: 'upsell_modal',
-        utm_campaign: 'create_automation_editor_add_tag',
+        utm_campaign: 'create_automation_editor_remove_tag',
       }}
     >
-      {__('Adding tags is a premium feature.', 'mailpoet')}
+      {__('Removing tags is a premium feature.', 'mailpoet')}
     </PremiumModalForStepEdit>
   ),
 } as const;
