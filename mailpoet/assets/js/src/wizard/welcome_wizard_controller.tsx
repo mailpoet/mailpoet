@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 import { useCallback, useEffect, useState } from 'react';
 import { partial } from 'underscore';
 
@@ -20,18 +19,26 @@ import { StepsContent } from '../common/steps/steps_content';
 import { TopBar } from '../common/top_bar/top_bar';
 import { ErrorBoundary } from '../common';
 
-function WelcomeWizardStepsController(props) {
+type WelcomeWizardStepsControllerPropType = {
+  match: { params: { step: string } };
+  history: { push: (string) => void };
+};
+
+function WelcomeWizardStepsController({
+  match,
+  history,
+}: WelcomeWizardStepsControllerPropType): JSX.Element {
   const stepsCount = getStepsCount();
-  const step = parseInt(props.match.params.step, 10);
+  const step = parseInt(match.params.step, 10);
 
   const [loading, setLoading] = useState(false);
   const [sender, setSender] = useState(window.sender_data);
 
   useEffect(() => {
     if (step > stepsCount || step < 1) {
-      props.history.push('/steps/1');
+      history.push('/steps/1');
     }
-  }, [step, stepsCount, props.history]);
+  }, [step, stepsCount, history]);
 
   function updateSettings(data) {
     setLoading(true);
@@ -42,7 +49,7 @@ function WelcomeWizardStepsController(props) {
       data,
     })
       .then(() => setLoading(false))
-      .fail((response) => {
+      .fail((response: ErrorResponse) => {
         setLoading(false);
         if (response.errors.length > 0) {
           MailPoet.Notice.error(
@@ -54,19 +61,19 @@ function WelcomeWizardStepsController(props) {
   }
 
   function finishWizard() {
-    updateSettings({
+    void updateSettings({
       version: window.mailpoet_version,
     }).then(() => {
-      window.location = window.finish_wizard_url;
+      window.location.href = window.finish_wizard_url;
     });
   }
 
-  const redirect = partial(redirectToNextStep, props.history, finishWizard);
+  const redirect = partial(redirectToNextStep, history, finishWizard);
 
   const submitTracking = useCallback(
     (tracking, libs3rdParty) => {
       setLoading(true);
-      updateSettings({
+      void updateSettings({
         analytics: { enabled: tracking ? '1' : '' },
         '3rd_party_libs': { enabled: libs3rdParty ? '1' : '' },
       }).then(() => redirect(step));
@@ -75,21 +82,23 @@ function WelcomeWizardStepsController(props) {
   );
 
   const updateSender = useCallback(
-    (data) => {
+    (data: { address: string }) => {
       setSender({ ...sender, ...data });
     },
     [sender],
   );
 
   const submitSender = useCallback(() => {
-    updateSettings(createSenderSettings(sender)).then(() => redirect(step));
+    void updateSettings(createSenderSettings(sender)).then(() =>
+      redirect(step),
+    );
   }, [redirect, sender, step]);
 
   const skipSenderStep = useCallback(
     (e) => {
       e.preventDefault();
       setLoading(true);
-      updateSettings(
+      void updateSettings(
         createSenderSettings({ address: window.admin_email, name: '' }),
       ).then(() => {
         redirect(step);
@@ -168,15 +177,6 @@ function WelcomeWizardStepsController(props) {
   );
 }
 
-WelcomeWizardStepsController.propTypes = {
-  match: PropTypes.shape({
-    params: PropTypes.shape({
-      step: PropTypes.string,
-    }).isRequired,
-  }).isRequired,
-  history: PropTypes.shape({
-    push: PropTypes.func.isRequired,
-  }).isRequired,
-};
 WelcomeWizardStepsController.displayName = 'WelcomeWizardStepsController';
+
 export { WelcomeWizardStepsController };
