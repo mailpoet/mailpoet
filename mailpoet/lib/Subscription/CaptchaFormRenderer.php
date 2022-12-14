@@ -125,8 +125,8 @@ class CaptchaFormRenderer {
     $formHtml .= '<p class="mailpoet_paragraph">';
     $formHtml .= '<img class="mailpoet_captcha" src="' . $captchaUrl . '" width="' . $width . '" height="' . $height . '" title="' . esc_attr__('Click to refresh the CAPTCHA', 'mailpoet') . '" />';
     $formHtml .= '</p>';
-    $formHtml .= '<button type="button" class="mailpoet_icon_button mailpoet_captcha_update" title="' . esc_attr(__('Reload captcha', 'mailpoet')) . '"><img src="' . $reloadIcon . '" alt="" /></button>';
-    $formHtml .= '<button type="button" class="mailpoet_icon_button mailpoet_captcha_audio" title="' . esc_attr(__('Play captcha', 'mailpoet')) . '"><img src="' . $playIcon . '" alt="" /></button>';
+    $formHtml .= '<button type="button" class="mailpoet_icon_button mailpoet_captcha_update" title="' . esc_attr(__('Reload CAPTCHA', 'mailpoet')) . '"><img src="' . $reloadIcon . '" alt="" /></button>';
+    $formHtml .= '<button type="button" class="mailpoet_icon_button mailpoet_captcha_audio" title="' . esc_attr(__('Play CAPTCHA', 'mailpoet')) . '"><img src="' . $playIcon . '" alt="" /></button>';
     $formHtml .= '<audio class="mailpoet_captcha_player">';
     $formHtml .= '<source src="' . $mp3CaptchaUrl . '" type="audio/mpeg">';
     $formHtml .= '</audio>';
