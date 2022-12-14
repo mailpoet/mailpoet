@@ -51,7 +51,7 @@ class ConfirmationEmailCustomizer {
 
     $newsletter = new NewsletterEntity;
     $newsletter->setType(NewsletterEntity::TYPE_CONFIRMATION_EMAIL_CUSTOMIZER);
-    $newsletter->setSubject($this->settings->get('signup_confirmation.subject', 'Confirm your subscription'));
+    $newsletter->setSubject($this->settings->get('signup_confirmation.subject', 'Confirm your subscription to [site:title]'));
     $newsletter->setBody($emailTemplate);
     $this->newslettersRepository->persist($newsletter);
     $this->newslettersRepository->flush();

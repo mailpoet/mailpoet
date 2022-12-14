@@ -106,7 +106,7 @@ class NewsletterEditor {
       $woocommerceData = array_merge($wcEmailSettings, $woocommerceData);
     }
 
-    $welcomeEmailTemplateId = (int)$this->settings->get(ConfirmationEmailCustomizer::SETTING_EMAIL_ID, null);
+    $confirmationEmailTemplateId = (int)$this->settings->get(ConfirmationEmailCustomizer::SETTING_EMAIL_ID, null);
 
     $data = [
       'customFontsEnabled' => $this->customFonts->displayCustomFonts(),
@@ -117,7 +117,7 @@ class NewsletterEditor {
       'sub_menu' => Menu::EMAILS_PAGE_SLUG,
       'woocommerce' => $woocommerceData,
       'is_wc_transactional_email' => $newsletterId === $woocommerceTemplateId,
-      'is_confirmation_email_template' => $newsletterId === $welcomeEmailTemplateId,
+      'is_confirmation_email_template' => $newsletterId === $confirmationEmailTemplateId,
       'is_confirmation_email_customizer_enabled' => (bool)$this->settings->get('signup_confirmation.use_mailpoet_editor', false),
     ];
     $this->wp->wpEnqueueMedia();

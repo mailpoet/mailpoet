@@ -18,6 +18,7 @@ var skipNextAutoSave;
 Module.save = function () {
   var json = App.toJSON();
   var editorTop = $('#mailpoet_editor_top');
+  var deferredFunc = $.Deferred();
 
   // Stringify to enable transmission of primitive non-string value types
   if (!_.isUndefined(json.body)) {
@@ -26,6 +27,25 @@ Module.save = function () {
       delete json.body.blockDefaults.woocommerceContent;
     }
     json.body = JSON.stringify(json.body);
+  }
+
+  if (
+    App.getConfig().get('validation.validateActivationLinkIsPresent') &&
+    json.body &&
+    json.body.indexOf('[activation_link]') < 0
+  ) {
+    $('.mailpoet_save_error')
+      .html(MailPoet.I18n.t('activationLinkIsMissing'))
+      .removeClass('mailpoet_hidden');
+
+    $('.mailpoet_save_button')
+      .attr('disabled', 'disabled')
+      .addClass('button-disabled');
+    $('.mailpoet_editor_last_saved .mailpoet_autosaved_message').addClass(
+      'mailpoet_hidden',
+    ); // remove the Autosaved text
+
+    return deferredFunc.resolve(); // continue the chain
   }
 
   App.getChannel().trigger('beforeEditorSave', json);
@@ -428,14 +448,18 @@ Module.SaveView = Marionette.View.extend({
     this.$('.mailpoet_save_next').addClass('button-disabled');
 
     if (this.model.isConfirmationEmailTemplate()) {
-      this.$('.mailpoet_save_button').addClass('button-disabled');
+      this.$('.mailpoet_save_button')
+        .attr('disabled', 'disabled')
+        .addClass('button-disabled');
     }
   },
   hideValidationError: function () {
     this.hideError();
     this.$('.mailpoet_save_next').removeClass('button-disabled');
     if (this.model.isConfirmationEmailTemplate()) {
-      this.$('.mailpoet_save_button').removeClass('button-disabled');
+      this.$('.mailpoet_save_button')
+        .removeAttr('disabled')
+        .removeClass('button-disabled');
     }
   },
   activateWooCommerceCustomizer: function () {
