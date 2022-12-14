@@ -646,18 +646,6 @@ Module.NewsletterPreviewView = Marionette.View.extend({
       return false;
     }
 
-    // don't send preview if activation_link is missing
-    if (
-      App.getConfig().get('validation.validateActivationLinkIsPresent') &&
-      $('.mailpoet_save_button').hasClass('button-disabled')
-    ) {
-      MailPoet.Notice.error(MailPoet.I18n.t('activationLinkIsMissing'), {
-        positionAfter: $emailField,
-        scroll: true,
-      });
-      return false;
-    }
-
     this.model.set('previewSendingError', false);
     this.model.set('previewSendingSuccess', false);
     this.model.set('sendingPreview', true);
