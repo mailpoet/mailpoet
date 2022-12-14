@@ -1,3 +1,5 @@
+import { MailPoet } from 'mailpoet';
+
 export function* openEmailCustomizer(newsletterId?: string) {
   let id = newsletterId;
   if (!id) {
@@ -11,7 +13,9 @@ export function* openEmailCustomizer(newsletterId?: string) {
       return { type: 'SAVE_FAILED', error };
     }
     id = res.data.signup_confirmation.transactional_email_id;
+    MailPoet.trackEvent('Editor > Confirmation email customizer enabled');
   }
+  MailPoet.trackEvent('User Open confirmation email customizer');
   window.location.href = `?page=mailpoet-newsletter-editor&id=${id}`;
   return null;
 }
