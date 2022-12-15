@@ -13,7 +13,7 @@ import { Listings } from 'newsletters/automatic_emails/listings.jsx';
 import { MailPoet } from 'mailpoet';
 import { NewsletterTypes } from 'newsletters/types';
 import { NewsletterTemplates } from 'newsletters/templates.jsx';
-import { NewsletterSend } from 'newsletters/send.jsx';
+import { NewsletterSend } from 'newsletters/send';
 import { Congratulate } from 'newsletters/send/congratulate/congratulate.jsx';
 import { NewsletterTypeStandard } from 'newsletters/types/standard.jsx';
 import { NewsletterNotification } from 'newsletters/types/notification/notification.jsx';

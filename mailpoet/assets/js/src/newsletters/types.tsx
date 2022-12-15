@@ -20,15 +20,6 @@ interface Props {
   hideClosingButton?: boolean;
 }
 
-interface NewsletterTypesWindow extends Window {
-  mailpoet_woocommerce_transactional_email_id: string;
-  mailpoet_is_new_user: boolean;
-  mailpoet_editor_javascript_url: string;
-  mailpoet_woocommerce_automatic_emails: Record<string, unknown>;
-}
-
-declare let window: NewsletterTypesWindow;
-
 function NewsletterTypesComponent({
   filter,
   history,

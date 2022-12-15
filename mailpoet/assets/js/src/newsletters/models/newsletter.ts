@@ -6,6 +6,7 @@ export enum NewsletterType {
   NotificationHistory = 'notification_history',
   WCTransactional = 'wc_transactional',
   ReEngagement = 're_engagement',
+  Automation = 'automation',
 }
 
 export enum NewsletterStatus {
@@ -14,6 +15,10 @@ export enum NewsletterStatus {
   Sending = 'sending',
   Sent = 'sent',
   Active = 'active',
+}
+
+export enum NewsletterOptionGroup {
+  WooCommerce = 'woocommerce',
 }
 
 export type NewsLetter = {
@@ -39,13 +44,19 @@ export type NewsLetter = {
     isScheduled: string;
     scheduledAt: string;
     disabled?: string;
+    group: NewsletterOptionGroup;
+    intervalType?: string;
+    event: string;
+    automationId?: string;
+    afterTimeNumber: number | string;
+    afterTimeType: string;
   };
   parent_id: null | string;
   preheader: string;
-  queue: boolean;
+  queue: Record<string, unknown>;
   reply_to_address: string;
   reply_to_name: string;
-  segments: Array<unknown>;
+  segments: Array<{ filters: unknown[] }>;
   sender_address: string;
   sender_name: string;
   sent_at: null | string;
