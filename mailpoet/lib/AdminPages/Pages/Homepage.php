@@ -23,6 +23,9 @@ class Homepage {
   public function render() {
     $data = [
       'mta_log' => $this->settingsController->get('mta_log'),
+      'homepage' => [
+        'task_list_dismissed' => (bool)$this->settingsController->get('homepage.task_list_dismissed', false),
+      ],
     ];
     $this->pageRenderer->displayPage('homepage.html', $data);
   }
