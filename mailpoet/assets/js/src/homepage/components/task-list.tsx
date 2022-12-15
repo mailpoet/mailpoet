@@ -5,11 +5,42 @@ import { moreVertical } from '@wordpress/icons';
 import { storeName } from 'homepage/store/store';
 
 export function TaskList(): JSX.Element {
-  const isTaskListHidden = useSelect(
-    (select) => select(storeName).getIsTaskListHidden(),
+  const { isTaskListHidden, tasksStatus } = useSelect(
+    (select) => ({
+      isTaskListHidden: select(storeName).getIsTaskListHidden(),
+      tasksStatus: select(storeName).getTasksStatus(),
+    }),
     [],
   );
   const { hideTaskList } = useDispatch(storeName);
+
+  const taskListItems = [];
+  taskListItems.push(
+    <div key="senderSet">
+      {MailPoet.I18n.t('senderSetTask')}{' '}
+      {tasksStatus.senderSet ? '[done]' : '[not_done]'}
+    </div>,
+  );
+  taskListItems.push(
+    <div key="mssConnected">
+      {MailPoet.I18n.t('mssConnectedTask')}{' '}
+      {tasksStatus.mssConnected ? '[done]' : '[not_done]'}
+    </div>,
+  );
+  if (MailPoet.isWoocommerceActive) {
+    taskListItems.push(
+      <div key="wooSubscribersImported">
+        {MailPoet.I18n.t('wooSubscribersImportedTask')}{' '}
+        {tasksStatus.wooSubscribersImported ? '[done]' : '[not_done]'}
+      </div>,
+    );
+  }
+  taskListItems.push(
+    <div key="subscribersAdded">
+      {MailPoet.I18n.t('subscribersAddedTask')}{' '}
+      {tasksStatus.subscribersAdded ? '[done]' : '[not_done]'}
+    </div>,
+  );
 
   return isTaskListHidden ? null : (
     <>
@@ -26,6 +57,7 @@ export function TaskList(): JSX.Element {
           },
         ]}
       />
+      {taskListItems.map((item) => item)}
     </>
   );
 }
