@@ -1,9 +1,17 @@
 import { MailPoet } from 'mailpoet';
+import { useSelect, useDispatch } from '@wordpress/data';
 import { DropdownMenu } from '@wordpress/components';
 import { moreVertical } from '@wordpress/icons';
+import { storeName } from 'homepage/store/store';
 
 export function TaskList(): JSX.Element {
-  return (
+  const isTaskListHidden = useSelect(
+    (select) => select(storeName).getIsTaskListHidden(),
+    [],
+  );
+  const { hideTaskList } = useDispatch(storeName);
+
+  return isTaskListHidden ? null : (
     <>
       <h1>{MailPoet.I18n.t('welcomeToMailPoet')}</h1>
       <h2>{MailPoet.I18n.t('beginByCompletingSetup')}</h2>
@@ -13,7 +21,7 @@ export function TaskList(): JSX.Element {
         controls={[
           {
             title: MailPoet.I18n.t('hideList'),
-            onClick: () => {},
+            onClick: hideTaskList,
             icon: null,
           },
         ]}

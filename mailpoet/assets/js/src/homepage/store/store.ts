@@ -5,31 +5,27 @@ import {
   StoreDescriptor,
 } from '@wordpress/data';
 import { OmitFirstArgs } from 'types';
+import { getInitialState } from './initial-state';
+import * as actions from './actions';
+import * as selectors from './selectors';
+import { reducer } from './reducer';
+import { State } from './types';
 
-const storeName = 'mailpoet/homepage';
-const actions = {};
-const selectors = {};
+export const storeName = 'mailpoet/homepage';
 const controls = {};
-const reducer = (state) => state;
-const initialState = {};
 
 type StoreType = Omit<StoreDescriptor, 'name'> & {
   name: typeof storeName;
 };
-type State = {
-  [K in string]: never;
-};
 type EditorStoreConfigType = StoreConfig<State>;
-
 export const createStore = (): StoreType => {
   const storeConfig = {
     actions,
     controls,
     selectors,
     reducer,
-    initialState,
+    initialState: getInitialState(),
   } as EditorStoreConfigType;
-
   const store = createReduxStore<State>(storeName, storeConfig) as StoreType;
   register(store);
   return store;
