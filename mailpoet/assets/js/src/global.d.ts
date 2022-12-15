@@ -171,4 +171,7 @@ interface Window {
     forceUpdate: () => void;
   };
   mailpoet_welcome_wizard_url: string;
+  mailpoet_homepage_data: {
+    task_list_dismissed: boolean;
+  };
 }
