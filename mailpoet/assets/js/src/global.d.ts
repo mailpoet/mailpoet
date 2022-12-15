@@ -28,7 +28,7 @@ type MtaLog = {
 };
 
 interface JQuery {
-  parsley: () => any;
+  parsley: (options?: { successClass?: string }) => any;
   mailpoetSerializeObject: () => {
     recaptchaWidgetId: number;
     token: string;
@@ -113,11 +113,11 @@ interface Window {
   mailpoet_wp_week_starts_on: number;
   mailpoet_subscribers_counts_cache_created_at: string;
   mailpoet_shortcode_links: string[];
-  mailpoet_tracking_config: {
+  mailpoet_tracking_config: Partial<{
     level: 'full' | 'partial' | 'basic';
     cookieTrackingEnabled: boolean;
     emailTrackingEnabled: boolean;
-  };
+  }>;
   mailpoet_display_detailed_stats: boolean;
   mailpoet_premium_plugin_installed: boolean;
   mailpoet_premium_plugin_download_url: string;
@@ -196,4 +196,19 @@ interface Window {
   is_wc_active?: boolean;
   systemInfoData?: Record<string, string>;
   mailpoet_mail_function_enabled: boolean;
+  mailpoet_mss_key_pending_approval: boolean;
+  mailpoet_show_congratulate_after_first_newsletter?: boolean;
+  mailpoet_sender_address_field_blur?: () => void;
+  mailpoet_woocommerce_transactional_email_id?: string;
+  mailpoet_is_new_user?: boolean;
+  mailpoet_editor_javascript_url?: string;
+  mailpoet_woocommerce_automatic_emails?: Record<
+    string,
+    {
+      slug: string;
+      title: string;
+      description: string;
+      events: string[];
+    }
+  >;
 }

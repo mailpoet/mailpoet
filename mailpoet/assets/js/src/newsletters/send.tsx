@@ -1,10 +1,10 @@
 import _ from 'lodash';
-import { Component } from 'react';
+import { ChangeEvent, Component } from 'react';
 import jQuery from 'jquery';
-import PropTypes from 'prop-types';
+import { History, Location } from 'history';
 import ReactStringReplace from 'react-string-replace';
 import slugify from 'slugify';
-import { withRouter } from 'react-router-dom';
+import { match as RouterMatch, withRouter } from 'react-router-dom';
 
 import { Background } from 'common/background/background';
 import { Button, ErrorBoundary } from 'common';
@@ -18,27 +18,45 @@ import { WelcomeNewsletterFields } from 'newsletters/send/welcome.jsx';
 import { AutomaticEmailFields } from 'newsletters/send/automatic.jsx';
 import { ReEngagementNewsletterFields } from 'newsletters/send/re_engagement';
 import { Tooltip } from 'help-tooltip.jsx';
-import { fromUrl } from 'common/thumbnail.ts';
-
+import { fromUrl } from 'common/thumbnail';
 import { GlobalContext } from 'context/index.jsx';
 
 import { extractEmailDomain } from 'common/functions';
 import { mapFilterType } from '../analytics';
 import { PremiumModal } from '../common/premium_modal';
+import { NewsLetter, NewsletterType } from './models';
 
-const automaticEmails = window.mailpoet_woocommerce_automatic_emails || [];
+const automaticEmails = window.mailpoet_woocommerce_automatic_emails || {};
 
-const generateGaTrackingCampaignName = (id, subject) => {
+const generateGaTrackingCampaignName = (
+  id: NewsLetter['id'],
+  subject: NewsLetter['subject'],
+): string => {
   const name = slugify(subject, { strict: true, lower: true });
   return `${name || 'email'}-${id}`;
 };
 
-const getTimingValueForTracking = (emailOpts) =>
+type NewsletterSendComponentProps = {
+  match: RouterMatch<{
+    id: string;
+  }>;
+  history: History;
+  location: Location;
+};
+type NewsletterSendComponentState = {
+  fields: Record<string, unknown>[] | boolean;
+  item: NewsLetter;
+  loading: boolean;
+  thumbnailPromise?: Promise<unknown>;
+  showPremiumModal: boolean;
+  validationError?: string | JSX.Element;
+};
+const getTimingValueForTracking = (emailOpts: NewsLetter['options']) =>
   emailOpts.afterTimeType === 'immediate'
     ? 'immediate'
     : `${emailOpts.afterTimeNumber} ${emailOpts.afterTimeType}`;
 
-function validateNewsletter(newsletter) {
+function validateNewsletter(newsletter: NewsLetter) {
   let body;
   let content;
 
@@ -106,20 +124,26 @@ function validateNewsletter(newsletter) {
   return undefined;
 }
 
-class NewsletterSendComponent extends Component {
-  constructor(props) {
+class NewsletterSendComponent extends Component<
+  NewsletterSendComponentProps,
+  NewsletterSendComponentState
+> {
+  constructor(props: Readonly<NewsletterSendComponentProps>) {
     super(props);
     this.state = {
       fields: [],
-      item: {},
+      item: {} as NewsLetter,
       loading: true,
       thumbnailPromise: null,
       showPremiumModal: false,
     };
   }
 
+  displayName: 'NewsletterSend';
+
   componentDidMount() {
-    this.loadItem(this.props.match.params.id).always(() => {
+    // safe to ignore since even on rejection the state is updated
+    void this.loadItem(this.props.match.params.id).always(() => {
       this.setState({ loading: false });
     });
     jQuery('#mailpoet_newsletter').parsley({
@@ -129,13 +153,14 @@ class NewsletterSendComponent extends Component {
 
   componentDidUpdate(prevProps) {
     if (this.props.match.params.id !== prevProps.match.params.id) {
-      this.loadItem(this.props.match.params.id).always(() => {
+      // safe to ignore since even on rejection the state is updated
+      void this.loadItem(this.props.match.params.id).always(() => {
         this.setState({ loading: false });
       });
     }
   }
 
-  getFieldsByNewsletter = (newsletter) => {
+  getFieldsByNewsletter = (newsletter: NewsLetter) => {
     const type = this.getSubtype(newsletter);
     return type.getFields(newsletter);
   };
@@ -145,7 +170,14 @@ class NewsletterSendComponent extends Component {
     return type.getSendButtonOptions(this.state.item);
   };
 
-  getSubtype = (newsletter) => {
+  getSubtype = (newsletter: NewsLetter) => {
+    if (
+      newsletter.type === NewsletterType.Automatic &&
+      automaticEmails[newsletter.options.group]
+    ) {
+      return AutomaticEmailFields;
+    }
+
     switch (newsletter.type) {
       case 'notification':
         return NotificationNewsletterFields;
@@ -153,18 +185,13 @@ class NewsletterSendComponent extends Component {
         return WelcomeNewsletterFields;
       case 're_engagement':
         return ReEngagementNewsletterFields;
-      case 'automatic':
-        if (automaticEmails[newsletter.options.group]) {
-          return AutomaticEmailFields;
-        }
       // fall through
       default:
         return StandardNewsletterFields;
     }
   };
 
-  getThumbnailPromise = (url) =>
-    this.state.thumbnailPromise ? this.state.thumbnailPromise : fromUrl(url);
+  getThumbnailPromise = (url) => this.state?.thumbnailPromise ?? fromUrl(url);
 
   isValid = () => jQuery('#mailpoet_newsletter').parsley().isValid();
 
@@ -196,7 +223,7 @@ class NewsletterSendComponent extends Component {
         id,
       },
     })
-      .done((response) => {
+      .done((response: { data: NewsLetter; meta: { preview_url: string } }) => {
         const thumbnailPromise =
           response.data.status === 'draft'
             ? this.getThumbnailPromise(response.meta.preview_url)
@@ -204,14 +231,14 @@ class NewsletterSendComponent extends Component {
         const item = response.data;
         // Automation type emails should redirect
         // to an associated automation from the send page
-        if (item.type === 'automation') {
+        if (item.type === NewsletterType.Automation) {
           const automationId = item.options?.automationId;
           const goToUrl = automationId
             ? `admin.php?page=mailpoet-automation-editor&id=${automationId}`
             : '/new';
           return this.setState(
             {
-              item: {},
+              item: {} as NewsLetter,
             },
             () => {
               this.props.history.push(goToUrl);
@@ -235,7 +262,7 @@ class NewsletterSendComponent extends Component {
       .fail(() => {
         this.setState(
           {
-            item: {},
+            item: {} as NewsLetter,
           },
           () => {
             this.props.history.push('/new');
@@ -250,7 +277,7 @@ class NewsletterSendComponent extends Component {
     );
     thumbnailPromise
       .then((thumbnailData) => {
-        MailPoet.Ajax.post({
+        void MailPoet.Ajax.post({
           api_version: window.mailpoet_api_version,
           endpoint: 'newsletterTemplates',
           action: 'save',
@@ -312,32 +339,35 @@ class NewsletterSendComponent extends Component {
       if (!valid) {
         // handling invalid error message is handled in sender_address_field component
         window.mailpoet_sender_address_field_blur();
-        return MailPoet.Modal.loading(false);
+        MailPoet.Modal.loading(false);
+      } else {
+        void this.saveNewsletter()
+          .done(() => {
+            this.setState({ loading: true });
+          })
+          .done((response) => {
+            switch (response.data.type) {
+              case 'notification':
+              case 'welcome':
+              case 'automatic':
+              case 're_engagement':
+                void this.activateNewsletter(response);
+                break;
+              default:
+                void this.sendNewsletter(response);
+                break;
+            }
+          })
+          .fail((err) => {
+            this.showError(err);
+            this.setState({ loading: false });
+            MailPoet.Modal.loading(false);
+          });
       }
-      return this.saveNewsletter(e)
-        .done(() => {
-          this.setState({ loading: true });
-        })
-        .done((response) => {
-          switch (response.data.type) {
-            case 'notification':
-            case 'welcome':
-            case 'automatic':
-            case 're_engagement':
-              return this.activateNewsletter(response);
-            default:
-              return this.sendNewsletter(response);
-          }
-        })
-        .fail((err) => {
-          this.showError(err);
-          this.setState({ loading: false });
-          MailPoet.Modal.loading(false);
-        });
     });
   };
 
-  sendNewsletter = (newsletter) =>
+  sendNewsletter = (saveResponse: { data: NewsLetter }) =>
     MailPoet.Ajax.post({
       api_version: window.mailpoet_api_version,
       endpoint: 'sendingQueue',
@@ -348,7 +378,7 @@ class NewsletterSendComponent extends Component {
     })
       .done((response) => {
         // save template in recently sent category
-        this.saveTemplate(newsletter, () => {
+        this.saveTemplate(saveResponse, () => {
           if (window.mailpoet_show_congratulate_after_first_newsletter) {
             MailPoet.Modal.loading(false);
             this.props.history.push(`/send/congratulate/${this.state.item.id}`);
@@ -358,7 +388,7 @@ class NewsletterSendComponent extends Component {
           this.props.history.push(`/${this.state.item.type || ''}`);
           // prepare segments
           let filters = [];
-          newsletter.data.segments.map((segment) =>
+          saveResponse.data.segments.map((segment) =>
             filters.push(...segment.filters),
           );
           filters = _.uniqWith(
@@ -397,7 +427,7 @@ class NewsletterSendComponent extends Component {
         MailPoet.Modal.loading(false);
       });
 
-  activateNewsletter = (newsletter) =>
+  activateNewsletter = (saveResponse: { data: NewsLetter }) =>
     MailPoet.Ajax.post({
       api_version: window.mailpoet_api_version,
       endpoint: 'newsletters',
@@ -409,7 +439,7 @@ class NewsletterSendComponent extends Component {
     })
       .done((response) => {
         // save template in recently sent category
-        this.saveTemplate(newsletter, () => {
+        this.saveTemplate(saveResponse, () => {
           if (window.mailpoet_show_congratulate_after_first_newsletter) {
             MailPoet.Modal.loading(false);
             this.props.history.push(`/send/congratulate/${this.state.item.id}`);
@@ -431,7 +461,7 @@ class NewsletterSendComponent extends Component {
               <p>
                 {MailPoet.I18n.t('automaticEmailActivated').replace(
                   '%1s',
-                  automaticEmails[opts.group].title,
+                  automaticEmails[opts.group]?.title ?? '',
                 )}
               </p>,
             );
@@ -476,12 +506,12 @@ class NewsletterSendComponent extends Component {
     if (!this.isValid()) {
       jQuery('#mailpoet_newsletter').parsley().validate();
     } else {
-      this.saveNewsletter(e)
+      void this.saveNewsletter()
         .done(() => {
           this.setState({ loading: true });
         })
         .done(() => {
-          MailPoet.Ajax.post({
+          void MailPoet.Ajax.post({
             api_version: window.mailpoet_api_version,
             endpoint: 'sendingQueue',
             action: 'resume',
@@ -512,7 +542,7 @@ class NewsletterSendComponent extends Component {
   handleSave = (e) => {
     e.preventDefault();
 
-    this.saveNewsletter(e)
+    void this.saveNewsletter()
       .done(() => {
         this.context.notices.success(
           <p>{MailPoet.I18n.t('newsletterUpdated')}</p>,
@@ -534,7 +564,7 @@ class NewsletterSendComponent extends Component {
     e.preventDefault();
     const redirectTo = e.target.href;
 
-    this.saveNewsletter(e)
+    void this.saveNewsletter()
       .done(() => {
         this.context.notices.success(
           <p>{MailPoet.I18n.t('newsletterUpdated')}</p>,
@@ -565,7 +595,7 @@ class NewsletterSendComponent extends Component {
     ];
     const newsletterData = _.omit(data, IGNORED_NEWSLETTER_PROPERTIES);
 
-    return MailPoet.Ajax.post({
+    return MailPoet.Ajax.post<{ data: NewsLetter }>({
       api_version: window.mailpoet_api_version,
       endpoint: 'newsletters',
       action: 'save',
@@ -587,10 +617,10 @@ class NewsletterSendComponent extends Component {
     }
   };
 
-  handleFormChange = (e) => {
+  handleFormChange = (e: ChangeEvent<HTMLFormElement & { value: string }>) => {
     const name = e.target.name;
     const value = e.target.value;
-    this.setState((prevState) => {
+    this.setState((prevState: NewsletterSendComponentState) => {
       const item = prevState.item;
       const oldSubject = item.subject;
       const oldGaCampaign = item.ga_campaign;
@@ -646,10 +676,14 @@ class NewsletterSendComponent extends Component {
     return field;
   };
 
-  getPreparedFields = (isPaused, gaFieldDisabled) =>
-    this.state.fields
+  getPreparedFields = (isPaused, gaFieldDisabled) => {
+    if (!Array.isArray(this.state.fields)) {
+      return [];
+    }
+    return this.state.fields
       .map(this.disableSegmentsSelectorWhenPaused(isPaused))
       .map(this.disableGAIfPremiumInactive(gaFieldDisabled));
+  };
 
   closePremiumModal = () => this.setState({ showPremiumModal: false });
 
@@ -668,8 +702,8 @@ class NewsletterSendComponent extends Component {
       this.state.validationError !== undefined
     );
 
-    let emailType = type;
-    if (emailType === 'automatic') {
+    let emailType: string = type;
+    if (emailType === NewsletterType.Automatic) {
       emailType = options.group || emailType;
     }
 
@@ -771,18 +805,4 @@ class NewsletterSendComponent extends Component {
 }
 
 NewsletterSendComponent.contextType = GlobalContext;
-
-NewsletterSendComponent.propTypes = {
-  match: PropTypes.shape({
-    params: PropTypes.shape({
-      id: PropTypes.string,
-    }).isRequired,
-  }).isRequired,
-  history: PropTypes.shape({
-    push: PropTypes.func.isRequired,
-  }).isRequired,
-};
-
-NewsletterSendComponent.displayName = 'NewsletterSend';
-
 export const NewsletterSend = withRouter(NewsletterSendComponent);
