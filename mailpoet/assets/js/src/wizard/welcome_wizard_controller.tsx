@@ -60,8 +60,8 @@ function WelcomeWizardStepsController({
       });
   }
 
-  function finishWizard() {
-    void updateSettings({
+  async function finishWizard() {
+    await updateSettings({
       version: window.mailpoet_version,
     }).then(() => {
       window.location.href = window.finish_wizard_url;
@@ -71,9 +71,9 @@ function WelcomeWizardStepsController({
   const redirect = partial(redirectToNextStep, history, finishWizard);
 
   const submitTracking = useCallback(
-    (tracking, libs3rdParty) => {
+    async (tracking, libs3rdParty) => {
       setLoading(true);
-      void updateSettings({
+      await updateSettings({
         analytics: { enabled: tracking ? '1' : '' },
         '3rd_party_libs': { enabled: libs3rdParty ? '1' : '' },
       }).then(() => redirect(step));
@@ -88,17 +88,17 @@ function WelcomeWizardStepsController({
     [sender],
   );
 
-  const submitSender = useCallback(() => {
-    void updateSettings(createSenderSettings(sender)).then(() =>
+  const submitSender = useCallback(async () => {
+    await updateSettings(createSenderSettings(sender)).then(() =>
       redirect(step),
     );
   }, [redirect, sender, step]);
 
   const skipSenderStep = useCallback(
-    (e) => {
+    async (e) => {
       e.preventDefault();
       setLoading(true);
-      void updateSettings(
+      await updateSettings(
         createSenderSettings({ address: window.admin_email, name: '' }),
       ).then(() => {
         redirect(step);
