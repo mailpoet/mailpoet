@@ -9,6 +9,7 @@ $task-icon-size: 32px;
   grid-template-columns: $grid-gap-xl auto $grid-gap-xl;
   margin: 0;
   padding: $grid-gap $grid-gap-medium;
+  position: relative;
   width: 100%;
 
   &:hover {
@@ -52,5 +53,21 @@ $task-icon-size: 32px;
     svg {
       fill: $color-white;
     }
+  }
+}
+
+.mailpoet-task-list__task--active {
+  box-shadow: inset 5px 0 0 0 var(--wp-admin-theme-color);
+
+  &:after {
+    background-color: var(--wp-admin-theme-color);
+    content: '';
+    height: 100%;
+    left: 0;
+    opacity: .1;
+    pointer-events: none;
+    position: absolute;
+    top: 0;
+    width: 100%;
   }
 }

@@ -6,10 +6,11 @@ import { storeName } from 'homepage/store/store';
 import { Task } from './task';
 
 export function TaskList(): JSX.Element {
-  const { isTaskListHidden, tasksStatus } = useSelect(
+  const { isTaskListHidden, tasksStatus, currentTask } = useSelect(
     (select) => ({
       isTaskListHidden: select(storeName).getIsTaskListHidden(),
       tasksStatus: select(storeName).getTasksStatus(),
+      currentTask: select(storeName).getCurrentTask(),
     }),
     [],
   );
@@ -23,6 +24,7 @@ export function TaskList(): JSX.Element {
       link="admin.php?page=mailpoet-settings#/basics"
       order={1}
       status={tasksStatus.senderSet}
+      isActive={currentTask === 'senderSet'}
     />,
   );
   taskListItems.push(
@@ -32,6 +34,7 @@ export function TaskList(): JSX.Element {
       link="admin.php?page=mailpoet-settings#/premium"
       order={2}
       status={tasksStatus.mssConnected}
+      isActive={currentTask === 'mssConnected'}
     />,
   );
   if (MailPoet.isWoocommerceActive) {
@@ -42,6 +45,7 @@ export function TaskList(): JSX.Element {
         link="admin.php?page=mailpoet-woocommerce-setup"
         order={3}
         status={tasksStatus.wooSubscribersImported}
+        isActive={currentTask === 'wooSubscribersImported'}
       />,
     );
   }
@@ -52,6 +56,7 @@ export function TaskList(): JSX.Element {
       link="admin.php?page=mailpoet-import"
       order={MailPoet.isWoocommerceActive ? 4 : 3}
       status={tasksStatus.subscribersAdded}
+      isActive={currentTask === 'subscribersAdded'}
     />,
   );
 

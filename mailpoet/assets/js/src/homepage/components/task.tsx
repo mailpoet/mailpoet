@@ -7,11 +7,19 @@ type Props = {
   link: string;
   order: number;
   status: boolean;
+  isActive: boolean;
 };
 
-export function Task({ title, link, order, status }: Props): JSX.Element {
+export function Task({
+  title,
+  link,
+  order,
+  status,
+  isActive,
+}: Props): JSX.Element {
   const className = classnames('mailpoet-task-list__task', {
     'mailpoet-task-list__task--completed': status,
+    'mailpoet-task-list__task--active': isActive,
   });
   const handleTaskClick = () => {
     window.location.href = link;
