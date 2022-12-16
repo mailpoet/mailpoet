@@ -1,0 +1,56 @@
+$task-icon-size: 32px;
+
+.mailpoet-task-list__task {
+  background-color: $color-white;
+  border-bottom: 1px solid $color-homepage-borders;
+  box-sizing: border-box;
+  cursor: pointer;
+  display: grid;
+  grid-template-columns: $grid-gap-xl auto $grid-gap-xl;
+  margin: 0;
+  padding: $grid-gap $grid-gap-medium;
+  width: 100%;
+
+  &:hover {
+    background-color: $color-grey-0;
+  }
+}
+
+.mailpoet-task-list__task-title {
+  align-content: center;
+  color: var(--wp-admin-theme-color);
+  display: flex;
+  flex-direction: column;
+  font-size: 14px;
+  justify-content: center;
+  line-height: 20px;
+}
+
+.mailpoet-task-list__task-before {
+  color: var(--wp-admin-theme-color);
+}
+
+.mailpoet-task-list__task-icon {
+  border: 1px solid var(--wp-admin-theme-color);
+  border-radius: 50%;
+  box-sizing: border-box;
+  height: $task-icon-size;
+  line-height: $task-icon-size;
+  text-align: center;
+  width: $task-icon-size;
+
+  svg {
+    fill: var(--wp-admin-theme-color);
+    margin: 3px;
+  }
+}
+
+.mailpoet-task-list__task--completed {
+  .mailpoet-task-list__task-icon {
+    background-color: var(--wp-admin-theme-color);
+
+    svg {
+      fill: $color-white;
+    }
+  }
+}

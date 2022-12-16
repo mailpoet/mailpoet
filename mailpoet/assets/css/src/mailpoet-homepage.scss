@@ -1,0 +1,15 @@
+
+@import '../../../node_modules/@woocommerce/components/build-style/style'; // Needed to load WP admin themes color variables
+
+// Settings
+// Global variables, config switches. Not producing any CSS.
+
+@import 'settings/breakpoints';
+@import 'settings/colors';
+@import 'settings/grid';
+
+// Components
+// Actual UI components.
+
+@import 'components-homepage/_layout';
+@import 'components-homepage/_task-list';

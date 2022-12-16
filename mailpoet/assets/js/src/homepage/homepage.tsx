@@ -4,6 +4,7 @@ import { GlobalContext, useGlobalContextValue } from 'context/index.jsx';
 import { TopBarWithBeamer } from 'common/top_bar/top_bar';
 import { HomepageNotices } from 'homepage/notices';
 import { TaskList } from './components/task-list';
+import { Layout } from './components/layout';
 import { createStore } from './store/store';
 
 function App(): JSX.Element {
@@ -16,7 +17,11 @@ function App(): JSX.Element {
     <GlobalContext.Provider value={useGlobalContextValue(window)}>
       <TopBarWithBeamer />
       <HomepageNotices />
-      {isStoreInitialized ? <TaskList /> : null}
+      {isStoreInitialized ? (
+        <Layout>
+          <TaskList />
+        </Layout>
+      ) : null}
     </GlobalContext.Provider>
   );
 }
