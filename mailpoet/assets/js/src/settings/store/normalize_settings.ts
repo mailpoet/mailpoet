@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { t } from 'common/functions';
+import { t, isTruthy } from 'common';
 import { Settings } from './types';
 
 function asString(defaultValue: string) {
@@ -50,7 +50,6 @@ function asObject<T extends Schema>(schema: T) {
 function asIs<T>(value: T): T {
   return value;
 }
-
 export function normalizeSettings(data: Record<string, unknown>): Settings {
   const text = asString('');
   const disabledCheckbox = asBoolean('1', '0', '0');
@@ -159,7 +158,9 @@ export function normalizeSettings(data: Record<string, unknown>): Settings {
           ],
           'check_error',
         ),
-        data: asIs,
+        data: asObject({
+          is_approved: isTruthy,
+        }),
         code: asIs,
       }),
     }),
