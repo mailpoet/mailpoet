@@ -504,7 +504,7 @@ class RoboFile extends \Robo\Tasks {
       './tasks/code_sniffer/vendor/bin/phpcs',
       '--extensions=php',
       $severityFlag,
-      '--standard=tasks/code_sniffer/MailPoet',
+      '--standard=tasks/code_sniffer/MailPoet/free-ruleset.xml',
       '-s',
     ]);
 
