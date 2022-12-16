@@ -71,3 +71,25 @@ $task-icon-size: 32px;
     width: 100%;
   }
 }
+
+.mailpoet-task-list__heading {
+  margin-bottom: $grid-gap-large;
+  position: relative;
+
+  h1 {
+    margin: 0;
+  }
+
+  p {
+    color: $color-text-light;
+    font-size: $heading-font-size-h4;
+    line-height: 1.5;
+    margin-top: $grid-gap-half;
+  }
+
+  .components-dropdown {
+    position: absolute;
+    right: 0;
+    top: 6px;
+  }
+}
