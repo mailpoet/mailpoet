@@ -69,19 +69,21 @@ export function TaskList(): JSX.Element {
 
   return isTaskListHidden ? null : (
     <>
-      <h1>{MailPoet.I18n.t('welcomeToMailPoet')}</h1>
-      <h2>{MailPoet.I18n.t('beginByCompletingSetup')}</h2>
-      <DropdownMenu
-        label={MailPoet.I18n.t('hideList')}
-        icon={moreVertical}
-        controls={[
-          {
-            title: MailPoet.I18n.t('hideList'),
-            onClick: hideTaskList,
-            icon: null,
-          },
-        ]}
-      />
+      <div className="mailpoet-task-list__heading">
+        <h1>{MailPoet.I18n.t('welcomeToMailPoet')}</h1>
+        <p>{MailPoet.I18n.t('beginByCompletingSetup')}</p>
+        <DropdownMenu
+          label={MailPoet.I18n.t('hideList')}
+          icon={moreVertical}
+          controls={[
+            {
+              title: MailPoet.I18n.t('hideList'),
+              onClick: hideTaskList,
+              icon: null,
+            },
+          ]}
+        />
+      </div>
       <ul>{taskListItems.map((item) => item)}</ul>
     </>
   );
