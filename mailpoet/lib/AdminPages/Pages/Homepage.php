@@ -7,6 +7,7 @@ use MailPoet\Form\FormsRepository;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\SubscribersRepository;
+use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 
 class Homepage {
   /** @var PageRenderer */
@@ -21,16 +22,21 @@ class Homepage {
   /** @var FormsRepository */
   private $formsRepository;
 
+  /** @var WooCommerceHelper */
+  private $wooCommerceHelper;
+
   public function __construct(
     PageRenderer $pageRenderer,
     SettingsController $settingsController,
     SubscribersRepository $subscribersRepository,
-    FormsRepository $formsRepository
+    FormsRepository $formsRepository,
+    WooCommerceHelper $wooCommerceHelper
   ) {
     $this->pageRenderer = $pageRenderer;
     $this->settingsController = $settingsController;
     $this->subscribersRepository = $subscribersRepository;
     $this->formsRepository = $formsRepository;
+    $this->wooCommerceHelper = $wooCommerceHelper;
   }
 
   public function render() {
@@ -39,6 +45,7 @@ class Homepage {
       'homepage' => [
         'task_list_dismissed' => (bool)$this->settingsController->get('homepage.task_list_dismissed', false),
         'task_list_status' => $this->getTaskListStatus(),
+        'woo_customers_count' => $this->wooCommerceHelper->getCustomersCount(),
       ],
     ];
     $this->pageRenderer->displayPage('homepage.html', $data);

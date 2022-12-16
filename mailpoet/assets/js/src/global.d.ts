@@ -179,5 +179,6 @@ interface Window {
       subscribersAdded: boolean;
       wooSubscribersImported: boolean;
     };
+    woo_customers_count: number;
   };
 }
