@@ -3,6 +3,7 @@ import { useSelect, useDispatch } from '@wordpress/data';
 import { DropdownMenu } from '@wordpress/components';
 import { moreVertical } from '@wordpress/icons';
 import { storeName } from 'homepage/store/store';
+import { Task } from './task';
 
 export function TaskList(): JSX.Element {
   const { isTaskListHidden, tasksStatus } = useSelect(
@@ -16,30 +17,42 @@ export function TaskList(): JSX.Element {
 
   const taskListItems = [];
   taskListItems.push(
-    <div key="senderSet">
-      {MailPoet.I18n.t('senderSetTask')}{' '}
-      {tasksStatus.senderSet ? '[done]' : '[not_done]'}
-    </div>,
+    <Task
+      key="senderSet"
+      title={MailPoet.I18n.t('senderSetTask')}
+      link="admin.php?page=mailpoet-settings#/basics"
+      order={1}
+      status={tasksStatus.senderSet}
+    />,
   );
   taskListItems.push(
-    <div key="mssConnected">
-      {MailPoet.I18n.t('mssConnectedTask')}{' '}
-      {tasksStatus.mssConnected ? '[done]' : '[not_done]'}
-    </div>,
+    <Task
+      key="mssConnected"
+      title={MailPoet.I18n.t('mssConnectedTask')}
+      link="admin.php?page=mailpoet-settings#/premium"
+      order={2}
+      status={tasksStatus.mssConnected}
+    />,
   );
   if (MailPoet.isWoocommerceActive) {
     taskListItems.push(
-      <div key="wooSubscribersImported">
-        {MailPoet.I18n.t('wooSubscribersImportedTask')}{' '}
-        {tasksStatus.wooSubscribersImported ? '[done]' : '[not_done]'}
-      </div>,
+      <Task
+        key="wooSubscribersImported"
+        title={MailPoet.I18n.t('wooSubscribersImportedTask')}
+        link="admin.php?page=mailpoet-woocommerce-setup"
+        order={3}
+        status={tasksStatus.wooSubscribersImported}
+      />,
     );
   }
   taskListItems.push(
-    <div key="subscribersAdded">
-      {MailPoet.I18n.t('subscribersAddedTask')}{' '}
-      {tasksStatus.subscribersAdded ? '[done]' : '[not_done]'}
-    </div>,
+    <Task
+      key="subscribersAdded"
+      title={MailPoet.I18n.t('subscribersAddedTask')}
+      link="admin.php?page=mailpoet-import"
+      order={MailPoet.isWoocommerceActive ? 4 : 3}
+      status={tasksStatus.subscribersAdded}
+    />,
   );
 
   return isTaskListHidden ? null : (
@@ -57,7 +70,7 @@ export function TaskList(): JSX.Element {
           },
         ]}
       />
-      {taskListItems.map((item) => item)}
+      <ul>{taskListItems.map((item) => item)}</ul>
     </>
   );
 }
