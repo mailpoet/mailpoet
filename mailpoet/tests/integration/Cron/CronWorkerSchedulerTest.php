@@ -65,8 +65,7 @@ class CronWorkerSchedulerTest extends \MailPoetTest {
     expect($tasks)->count(1);
     expect($tasks[0]->getType())->same('test');
     expect($tasks[0]->getStatus())->same(ScheduledTaskEntity::STATUS_SCHEDULED);
-    expect($tasks[0]->getScheduledAt())->greaterOrEquals(Carbon::now()->subSecond());
-    expect($tasks[0]->getScheduledAt())->lessOrEquals(Carbon::now()->addSecond());
+    $this->tester->assertEqualDateTimes($tasks[0]->getScheduledAt(), Carbon::now(), 1);
   }
 
   public function testItScheduleTaskImmediatelyIfNotRunning() {
@@ -75,8 +74,7 @@ class CronWorkerSchedulerTest extends \MailPoetTest {
     expect($tasks)->count(1);
     expect($tasks[0]->getType())->equals('test');
     expect($tasks[0]->getStatus())->equals(ScheduledTaskEntity::STATUS_SCHEDULED);
-    expect($tasks[0]->getScheduledAt())->greaterOrEquals(Carbon::now()->subSecond());
-    expect($tasks[0]->getScheduledAt())->lessOrEquals(Carbon::now()->addSecond());
+    $this->tester->assertEqualDateTimes($tasks[0]->getScheduledAt(), Carbon::now(), 1);
   }
 
   public function testItReschedulesTask() {
