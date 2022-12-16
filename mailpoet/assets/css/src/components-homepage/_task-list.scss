@@ -6,6 +6,7 @@ $task-icon-size: 32px;
   box-sizing: border-box;
   cursor: pointer;
   display: grid;
+  font-weight: 600;
   grid-template-columns: $grid-gap-xl auto $grid-gap-xl;
   margin: 0;
   padding: $grid-gap $grid-gap-medium;
@@ -72,6 +73,15 @@ $task-icon-size: 32px;
   }
 }
 
+.mailpoet-task-list__heading p,
+.mailpoet-task-list__all-set {
+  color: $color-text-light;
+  font-size: $heading-font-size-h4;
+  line-height: 1.5;
+  margin-top: $grid-gap-large;
+  text-align: center;
+}
+
 .mailpoet-task-list__heading {
   margin-bottom: $grid-gap-large;
   position: relative;
@@ -81,10 +91,8 @@ $task-icon-size: 32px;
   }
 
   p {
-    color: $color-text-light;
-    font-size: $heading-font-size-h4;
-    line-height: 1.5;
     margin-top: $grid-gap-half;
+    text-align: left;
   }
 
   .components-dropdown {
