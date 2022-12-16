@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<ruleset name="MailPoet Free">
+  <description>MailPoet free plugin specific rule set</description>
+  <rule ref="./shared-ruleset.xml"/>
+  <rule ref="WordPress.WP.I18n">
+    <properties>
+      <property name="text_domain" type="array">
+        <element value="mailpoet"/>
+        <element value="woocommerce"/>
+      </property>
+    </properties>
+  </rule>
+</ruleset>
