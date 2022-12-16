@@ -85,6 +85,20 @@ export function TaskList(): JSX.Element {
         />
       </div>
       <ul>{taskListItems.map((item) => item)}</ul>
+      {!currentTask ? (
+        <p className="mailpoet-task-list__all-set">
+          {MailPoet.I18n.t('youAreSet')}{' '}
+          <a
+            href="#"
+            onClick={(e) => {
+              e.preventDefault();
+              hideTaskList();
+            }}
+          >
+            {MailPoet.I18n.t('dismissList')}
+          </a>
+        </p>
+      ) : null}
     </>
   );
 }
