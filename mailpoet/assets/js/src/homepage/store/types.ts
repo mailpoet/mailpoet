@@ -10,6 +10,8 @@ export type TaskListTasksStatus = {
   wooSubscribersImported: boolean;
 };
 
+export type TaskType = keyof TaskListTasksStatus;
+
 export type State = {
   taskList: TaskListState;
 };
