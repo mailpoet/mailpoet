@@ -1,3 +1,4 @@
+import { cloneDeep, set } from 'lodash';
 import { select } from '@wordpress/data';
 
 import { MailPoet } from 'mailpoet';
@@ -19,6 +20,7 @@ export function* verifyMssKey(key: string) {
     action: 'checkMSSKey',
     data: { key },
   };
+
   if (!success) {
     return updateKeyActivationState({
       mssStatus: MssStatus.INVALID,
@@ -34,9 +36,20 @@ export function* verifyMssKey(key: string) {
     return updateKeyActivationState(fields);
   }
 
-  const data = select(STORE_NAME).getSettings();
+  const data = cloneDeep(select(STORE_NAME).getSettings());
+
   data.mta_group = 'mailpoet';
-  data.mta = { ...data.mta, method: 'MailPoet', mailpoet_api_key: key };
+  data.mta = {
+    ...data.mta,
+    method: 'MailPoet',
+    mailpoet_api_key: key,
+  };
+
+  data.mta = set(
+    data.mta,
+    'mailpoet_api_key_state.data.is_approved',
+    res.data.result.data.is_approved,
+  );
   data.signup_confirmation.enabled = '1';
 
   const call = yield {

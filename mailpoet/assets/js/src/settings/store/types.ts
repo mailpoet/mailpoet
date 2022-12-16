@@ -92,7 +92,15 @@ export type Settings = {
         | 'already_used'
         | 'check_error'
         | 'valid_underprivileged';
-      data: Record<string, unknown>;
+      data: Record<string, unknown> & {
+        subscriber_limit: number;
+        email_volume_limit: number;
+        emails_sent: number;
+        public_id: string;
+        support_tier: string;
+        site_active_subscriber_limit: number;
+        is_approved: boolean;
+      };
       code: number;
     };
   };

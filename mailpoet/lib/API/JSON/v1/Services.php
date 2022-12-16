@@ -126,7 +126,7 @@ class Services extends APIEndpoint {
     }
 
     if ($successMessage) {
-      return $this->successResponse(['message' => $successMessage, 'state' => $state]);
+      return $this->successResponse(['message' => $successMessage, 'state' => $state, 'result' => $result]);
     }
 
     switch ($state) {
