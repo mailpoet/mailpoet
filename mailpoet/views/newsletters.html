@@ -49,6 +49,7 @@
       var mailpoet_authorized_emails = <%= json_encode(authorized_emails) %>;
       var mailpoet_verified_sender_domains = <%= json_encode(verified_sender_domains) %>;
       var mailpoet_all_sender_domains = <%= json_encode(all_sender_domains) %>;
+      var mailpoet_settings = <%= json_encode(settings) %>;
     <% endautoescape %>
     var mailpoet_beacon_articles = [
       '57fdc312c697911f2d324fd7',
@@ -59,6 +60,7 @@
     ];
 
     var mailpoet_newsletters_templates_recently_sent_count = <%= json_decode(newsletters_templates_recently_sent_count) %>;
+
   </script>
 <% endblock %>
 
@@ -306,6 +308,7 @@
     'finalNewsletterStep': __('Final Step: Last Details'),
     'saveDraftAndClose': __('Save as draft and close'),
     'pendingKeyApprovalNotice': __('You’ll soon be able to send once our team reviews your account. In the meantime, you can send previews to [link]your authorized emails[/link].'),
+    'pendingKeyApprovalNoticeRefresh': __('If you have already received approval email, click [link]here[/link] to update the status.'),
     'orSimply': __('or simply'),
     'goBackToDesign': __('go back to the Design page'),
     'websiteTimeIs': __("Your website’s time is"),

@@ -25,6 +25,8 @@ import { extractEmailDomain } from 'common/functions';
 import { mapFilterType } from '../analytics';
 import { PremiumModal } from '../common/premium_modal';
 import { NewsLetter, NewsletterType } from './models';
+import { initStore as initSettingsStore } from '../settings/store';
+import { PendingNewsletterMessage } from './send/pending_newsletter_message';
 
 const automaticEmails = window.mailpoet_woocommerce_automatic_emails || {};
 
@@ -50,6 +52,7 @@ type NewsletterSendComponentState = {
   thumbnailPromise?: Promise<unknown>;
   showPremiumModal: boolean;
   validationError?: string | JSX.Element;
+  mssKeyPendingApproval: boolean;
 };
 const getTimingValueForTracking = (emailOpts: NewsLetter['options']) =>
   emailOpts.afterTimeType === 'immediate'
@@ -136,10 +139,9 @@ class NewsletterSendComponent extends Component<
       loading: true,
       thumbnailPromise: null,
       showPremiumModal: false,
+      mssKeyPendingApproval: window.mailpoet_mss_key_pending_approval,
     };
   }
-
-  displayName: 'NewsletterSend';
 
   componentDidMount() {
     // safe to ignore since even on rejection the state is updated
@@ -687,10 +689,16 @@ class NewsletterSendComponent extends Component<
 
   closePremiumModal = () => this.setState({ showPremiumModal: false });
 
+  toggleLoadingState = (loading: boolean): void => this.setState({ loading });
+
+  updatePendingApprovalState = (mssKeyPendingApproval: boolean): void =>
+    this.setState({ mssKeyPendingApproval });
+
   render() {
     const {
       showPremiumModal,
       item: { status, queue, type, options },
+      mssKeyPendingApproval,
     } = this.state;
     const isPaused = status === 'sending' && queue && queue.status === 'paused';
     const sendButtonOptions = this.getSendButtonOptions();
@@ -698,7 +706,7 @@ class NewsletterSendComponent extends Component<
 
     const sendingDisabled = !!(
       window.mailpoet_subscribers_limit_reached ||
-      window.mailpoet_mss_key_pending_approval ||
+      mssKeyPendingApproval ||
       this.state.validationError !== undefined
     );
 
@@ -773,23 +781,12 @@ class NewsletterSendComponent extends Component<
               </a>
               .
             </p>
-            {window.mailpoet_mss_key_pending_approval && (
-              <div className="mailpoet_error">
-                {ReactStringReplace(
-                  MailPoet.I18n.t('pendingKeyApprovalNotice'),
-                  /\[link\](.*?)\[\/link\]/g,
-                  (match) => (
-                    <a
-                      key="pendingKeyApprovalNoticeLink"
-                      href="https://account.mailpoet.com/authorization"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      {match}
-                    </a>
-                  ),
-                )}
-              </div>
+
+            {mssKeyPendingApproval && (
+              <PendingNewsletterMessage
+                toggleLoadingState={this.toggleLoadingState}
+                updatePendingState={this.updatePendingApprovalState}
+              />
             )}
 
             {showPremiumModal && (
@@ -805,4 +802,6 @@ class NewsletterSendComponent extends Component<
 }
 
 NewsletterSendComponent.contextType = GlobalContext;
+initSettingsStore(window);
+
 export const NewsletterSend = withRouter(NewsletterSendComponent);

@@ -1,21 +1,23 @@
-import { useAction, useSelector } from '../../settings/store/hooks';
+import { MouseEvent, useState } from 'react';
 import ReactStringReplace from 'react-string-replace';
-import { getLinkRegex, t } from 'common';
-import { useState } from '@wordpress/element';
+import { getLinkRegex, t, withBoundary } from 'common';
+import { useAction, useSelector } from '../../settings/store/hooks';
 
-export const PendingNewsletterMessage = ({
+function PendingNewsletterMessage({
   toggleLoadingState,
   updatePendingState,
 }: {
   toggleLoadingState: (loading: boolean) => void;
   updatePendingState: (approved: boolean) => void;
-}) => {
+}) {
   const getKeyActivationState = useSelector('getKeyActivationState');
   const getSettings = useSelector('getSettings');
   const [showRefreshButton, keepShowingRefresh] = useState(true);
   //
-  const verifyMssKey = useAction('verifyMssKey');
-  const recheckKey = async (e) => {
+  const verifyMssKey = useAction('verifyMssKey') as unknown as (
+    key: string,
+  ) => PromiseLike<void>;
+  const recheckKey = async (e: MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
     const state = getKeyActivationState();
     toggleLoadingState(true);
@@ -54,4 +56,11 @@ export const PendingNewsletterMessage = ({
         )}
     </div>
   );
-};
+}
+
+PendingNewsletterMessage.displayName = 'PendingNewsletterMessage';
+
+const PendingNewsletterMessageWithBoundary = withBoundary(
+  PendingNewsletterMessage,
+);
+export { PendingNewsletterMessageWithBoundary as PendingNewsletterMessage };
