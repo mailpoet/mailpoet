@@ -31,4 +31,18 @@ class HomepageBasicsCest {
     $i->waitForText('Sending has been resumed');
     $i->dontSee('Sending is broken!');
   }
+
+  public function homepageTaskListRenders(\AcceptanceTester $i) {
+    $i->wantTo('Check homepage renders task list');
+    $i->login();
+    $i->amOnMailpoetPage('Homepage');
+    $i->waitForText('Welcome to MailPoet');
+    $i->see('Begin by completing your setup');
+    $i->see('Sender information added');
+    $i->see('Connect MailPoet sending service');
+    $i->click('button', '.mailpoet-task-list__heading');
+    $i->waitForText('Hide setup list', 5, '.mailpoet-task-list__heading .components-popover__content');
+    $i->click('.components-popover__content button', '.mailpoet-task-list__heading');
+    $i->dontSee('Begin by completing your setup');
+  }
 }
