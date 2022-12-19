@@ -180,5 +180,6 @@ interface Window {
       wooSubscribersImported: boolean;
     };
     woo_customers_count: number;
+    subscribers_count: number;
   };
 }

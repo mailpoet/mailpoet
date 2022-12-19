@@ -4,18 +4,22 @@ import classnames from 'classnames';
 
 type Props = {
   title: string;
+  titleCompleted?: string;
   link: string;
   order: number;
   status: boolean;
   isActive: boolean;
+  children?: React.ReactNode;
 };
 
 export function Task({
   title,
+  titleCompleted = '',
   link,
   order,
   status,
   isActive,
+  children = null,
 }: Props): JSX.Element {
   const className = classnames('mailpoet-task-list__task', {
     'mailpoet-task-list__task--completed': status,
@@ -37,7 +41,12 @@ export function Task({
           {status ? <Icon icon={check} /> : order}
         </div>
       </div>
-      <div className="mailpoet-task-list__task-title">{title}</div>
+      <div className="mailpoet-task-list__task-content">
+        <div className="mailpoet-task-list__task-title">
+          {status && titleCompleted ? titleCompleted : title}
+        </div>
+        {children}
+      </div>
     </li>
   );
 }

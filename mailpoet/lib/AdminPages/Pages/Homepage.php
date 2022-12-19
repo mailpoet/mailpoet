@@ -46,6 +46,7 @@ class Homepage {
         'task_list_dismissed' => (bool)$this->settingsController->get('homepage.task_list_dismissed', false),
         'task_list_status' => $this->getTaskListStatus(),
         'woo_customers_count' => $this->wooCommerceHelper->getCustomersCount(),
+        'subscribers_count' => $this->subscribersRepository->getTotalSubscribers(),
       ],
     ];
     $this->pageRenderer->displayPage('homepage.html', $data);

@@ -7,6 +7,8 @@ export function getInitialState(): State {
       tasksStatus: window.mailpoet_homepage_data.task_list_status,
       canImportWooCommerceSubscribers:
         window.mailpoet_homepage_data.woo_customers_count > 0,
+      hasImportedSubscribers:
+        window.mailpoet_homepage_data.subscribers_count > 10,
     },
   };
 }

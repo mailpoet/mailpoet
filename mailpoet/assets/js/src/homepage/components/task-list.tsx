@@ -10,12 +10,14 @@ export function TaskList(): JSX.Element {
     isTaskListHidden,
     tasksStatus,
     currentTask,
+    hasImportedSubscribers,
     canImportWooCommerceSubscribers,
   } = useSelect(
     (select) => ({
       isTaskListHidden: select(storeName).getIsTaskListHidden(),
       tasksStatus: select(storeName).getTasksStatus(),
       currentTask: select(storeName).getCurrentTask(),
+      hasImportedSubscribers: select(storeName).getHasImportedSubscribers(),
       canImportWooCommerceSubscribers:
         select(storeName).getCanImportWooCommerceSubscribers(),
     }),
@@ -28,6 +30,7 @@ export function TaskList(): JSX.Element {
     <Task
       key="senderSet"
       title={MailPoet.I18n.t('senderSetTask')}
+      titleCompleted={MailPoet.I18n.t('senderSetTaskDone')}
       link="admin.php?page=mailpoet-settings#/basics"
       order={1}
       status={tasksStatus.senderSet}
@@ -38,6 +41,7 @@ export function TaskList(): JSX.Element {
     <Task
       key="mssConnected"
       title={MailPoet.I18n.t('mssConnectedTask')}
+      titleCompleted={MailPoet.I18n.t('mssConnectedTaskDone')}
       link="admin.php?page=mailpoet-settings#/premium"
       order={2}
       status={tasksStatus.mssConnected}
@@ -49,6 +53,7 @@ export function TaskList(): JSX.Element {
       <Task
         key="wooSubscribersImported"
         title={MailPoet.I18n.t('wooSubscribersImportedTask')}
+        titleCompleted={MailPoet.I18n.t('wooSubscribersImportedTaskDone')}
         link="admin.php?page=mailpoet-woocommerce-setup"
         order={3}
         status={tasksStatus.wooSubscribersImported}
@@ -60,11 +65,33 @@ export function TaskList(): JSX.Element {
     <Task
       key="subscribersAdded"
       title={MailPoet.I18n.t('subscribersAddedTask')}
+      titleCompleted={
+        hasImportedSubscribers
+          ? MailPoet.I18n.t('subscribersAddedTaskDoneByImport')
+          : MailPoet.I18n.t('subscribersAddedTaskDoneByForm')
+      }
       link="admin.php?page=mailpoet-import"
       order={canImportWooCommerceSubscribers ? 4 : 3}
       status={tasksStatus.subscribersAdded}
       isActive={currentTask === 'subscribersAdded'}
-    />,
+    >
+      {!tasksStatus.subscribersAdded ? (
+        <p>
+          {MailPoet.I18n.t('noSubscribersQuestion')}{' '}
+          <a href="admin.php?page=mailpoet-form-editor-template-selection">
+            {MailPoet.I18n.t('setUpForm')}
+          </a>
+        </p>
+      ) : null}
+      {tasksStatus.subscribersAdded && !hasImportedSubscribers ? (
+        <p>
+          {MailPoet.I18n.t('haveSubscribersQuestion')}{' '}
+          <a href="admin.php?page=mailpoet-import">
+            {MailPoet.I18n.t('import')}
+          </a>
+        </p>
+      ) : null}
+    </Task>,
   );
 
   return isTaskListHidden ? null : (

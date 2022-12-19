@@ -12,6 +12,10 @@ export function getCanImportWooCommerceSubscribers(state: State): boolean {
   return state.taskList.canImportWooCommerceSubscribers;
 }
 
+export function getHasImportedSubscribers(state: State): boolean {
+  return state.taskList.hasImportedSubscribers;
+}
+
 export function getCurrentTask(state: State): TaskType | null {
   if (!state.taskList.tasksStatus.senderSet) return 'senderSet';
   if (!state.taskList.tasksStatus.mssConnected) return 'mssConnected';
