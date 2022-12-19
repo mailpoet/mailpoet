@@ -36,9 +36,9 @@ function WooCommerceController({
       action: 'setupWooCommerceInitialImport',
     }).fail(handleApiError);
 
-  const finishWizard = () => {
+  const finishWizard = async () => {
     if (isWizardStep) {
-      updateSettings({
+      await updateSettings({
         version: window.mailpoet_version,
       }).then(() => {
         window.location.href = window.finish_wizard_url;
@@ -48,7 +48,7 @@ function WooCommerceController({
     }
   };
 
-  const submit = (importType, allowed) => {
+  const submit = async (importType, allowed) => {
     setLoading(true);
     const trackingLevelForDisabledCookies =
       MailPoet.trackingConfig.level === 'basic' ? 'basic' : 'partial';
@@ -62,13 +62,13 @@ function WooCommerceController({
       'tracking.level': newTrackingLevel,
       'woocommerce.accept_cookie_revenue_tracking.set': 1,
     };
-    void updateSettings(settings)
+    await updateSettings(settings)
       .then(scheduleImport)
-      .then(() => {
+      .then(async () => {
         if (isWizardStep) {
           redirectToNextStep();
         } else {
-          finishWizard();
+          await finishWizard();
         }
       });
   };
