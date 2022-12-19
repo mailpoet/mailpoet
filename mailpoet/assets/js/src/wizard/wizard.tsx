@@ -19,11 +19,11 @@ function App(): JSX.Element {
         <Switch>
           <Route
             path="/steps/:step"
-            render={withBoundary(WelcomeWizardStepsController)}
+            component={withBoundary(WelcomeWizardStepsController)}
           />
           <Route
             path="/woocommerce"
-            render={withBoundary(WooCommerceController)}
+            component={withBoundary(WooCommerceController)}
           />
           <Route render={() => <Redirect to={basePath} />} />
         </Switch>
