@@ -2,10 +2,13 @@
 
 namespace MailPoet\Config;
 
+use Automattic\WooCommerce\Admin\Features\OnboardingTasks\Task;
+use Automattic\WooCommerce\Admin\Features\OnboardingTasks\TaskLists;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Segments\WooCommerce as WooCommerceSegment;
 use MailPoet\Statistics\Track\WooCommercePurchases;
 use MailPoet\Subscription\Registration;
+use MailPoet\WooCommerce\MailPoetTask;
 use MailPoet\WooCommerce\Settings as WooCommerceSettings;
 use MailPoet\WooCommerce\SubscriberEngagement;
 use MailPoet\WooCommerce\Subscription as WooCommerceSubscription;
@@ -154,6 +157,16 @@ class HooksWooCommerce {
       return $data;
     }
     return $this->tracker->addTrackingData($data);
+  }
+
+  public function addMailPoetTaskToWooHomePage() {
+    try {
+      if (class_exists(TaskLists::class) && class_exists(Task::class)) {
+        TaskLists::add_task('extended', new MailPoetTask());
+      }
+    } catch (\Throwable $e) {
+      $this->logError($e, 'Unable to add MailPoet task to WooCommerce homepage');
+    }
   }
 
   private function logError(\Throwable $e, $name) {
