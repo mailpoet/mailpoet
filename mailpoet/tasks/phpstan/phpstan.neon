@@ -84,6 +84,11 @@ parameters:
     - message: '/Return type \(array\) of method MailPoet\\Logging\\PluginVersionProcessor::__invoke\(\) should be compatible with return type \(MailPoetVendor\\Monolog\\Processor\\Record\) of method MailPoetVendor\\Monolog\\Processor\\ProcessorInterface::__invoke\(\)/'
       count: 1
       path: ../../lib/Logging/PluginVersionProcessor.php
+    - # Can be removed once https://github.com/woocommerce/woocommerce/pull/36104 is merged. WooCommerce docblock for this method is outdated.
+      message: '/^Parameter #2 \$args of static method Automattic\\WooCommerce\\Admin\\Features\\OnboardingTasks\\TaskLists::add_task\(\) expects array, MailPoet\\WooCommerce\\MailPoetTask given.$/'
+      count: 1
+      path: ../../lib/Config/HooksWooCommerce.php
+
   reportUnmatchedIgnoredErrors: true
   dynamicConstantNames:
     - MAILPOET_PREMIUM_INITIALIZED

@@ -318,6 +318,11 @@ class Hooks {
       $this->hooksWooCommerce,
       'declareHposCompatibility',
     ]);
+
+    $this->wp->addAction('init', [
+      $this->hooksWooCommerce,
+      'addMailPoetTaskToWooHomePage',
+    ]);
   }
 
   public function setupWooCommerceUsers() {
