@@ -243,4 +243,9 @@ class Settings {
   public function withTransactionEmailsViaMailPoet() {
     $this->settings->set('send_transactional_emails', true);
   }
+
+  public function withApprovedMssKey() {
+    $this->settings->set(Bridge::API_KEY_STATE_SETTING_NAME . '.data.is_approved', true);
+    return $this;
+  }
 }
