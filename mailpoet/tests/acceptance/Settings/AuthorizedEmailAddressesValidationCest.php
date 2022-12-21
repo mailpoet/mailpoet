@@ -58,6 +58,8 @@ class AuthorizedEmailAddressesValidationCest {
       ->withSenderAddress('unauthorized1@email.com')
       ->create();
     $this->settingsFactory->withSendingMethodMailPoet();
+    $this->settingsFactory->withApprovedMssKey();
+
     $this->settingsFactory->withInstalledAt(new Carbon('2019-03-07'));
     $i->wantTo('Check that emails are validated on setting change');
     $i->login();
