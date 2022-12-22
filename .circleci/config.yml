@@ -672,6 +672,7 @@ workflows:
           enable_cot: 1
           enable_cot_sync: 1
           name: integration_test_woo_cot_sync
+          codeception_image_version: 8.2RC6-cli_20221128.1
           requires:
             - unit_tests
             - static_analysis_php8
@@ -683,6 +684,7 @@ workflows:
           enable_cot: 1
           enable_cot_sync: 0
           name: integration_test_woo_cot_no_sync
+          codeception_image_version: 8.2RC6-cli_20221128.1
           requires:
             - unit_tests
             - static_analysis_php8
@@ -692,6 +694,7 @@ workflows:
           <<: *slack-fail-post-step
           group: woo
           name: integration_test_woo_cot_off
+          codeception_image_version: 8.2RC6-cli_20221128.1
           requires:
             - unit_tests
             - static_analysis_php8
@@ -702,6 +705,7 @@ workflows:
           skip_group: woo
           skip_plugins: 1
           name: integration_test_base
+          codeception_image_version: 8.2RC6-cli_20221128.1
           requires:
             - unit_tests
             - static_analysis_php8
