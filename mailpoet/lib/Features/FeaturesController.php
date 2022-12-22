@@ -7,10 +7,13 @@ use MailPoetVendor\Doctrine\DBAL\Exception\TableNotFoundException;
 class FeaturesController {
   const FEATURE_HOMEPAGE = 'homepage';
 
+  const FEATURE_LANDINGPAGE = 'landingpage';
+
   // Define feature defaults in the array below in the following form:
   //   self::FEATURE_NAME_OF_FEATURE => true,
   private $defaults = [
     self::FEATURE_HOMEPAGE => false,
+    self::FEATURE_LANDINGPAGE => false,
   ];
 
   /** @var array|null */
