@@ -115,6 +115,8 @@ class Initializer {
 
   const INITIALIZED = 'MAILPOET_INITIALIZED';
 
+  const PLUGIN_ACTIVATED = 'mailpoet_plugin_activated';
+
   public function __construct(
     RendererFactory $rendererFactory,
     AccessControl $accessControl,
@@ -253,11 +255,17 @@ class Initializer {
       'register',
     ]);
 
+    WPFunctions::get()->addAction('admin_init', [
+      $this,
+      'afterPluginActivation',
+    ]);
+
     $this->hooks->initEarlyHooks();
   }
 
   public function runActivator() {
     try {
+      $this->wpFunctions->addOption(self::PLUGIN_ACTIVATED, true);
       $this->activator->activate();
     } catch (InvalidStateException $e) {
       return $this->handleRunningMigration($e);
@@ -317,6 +325,17 @@ class Initializer {
     }
 
     define(self::INITIALIZED, true);
+  }
+
+  public function afterPluginActivation() {
+    if (!$this->wpFunctions->isAdmin() || !defined(self::INITIALIZED) || !$this->wpFunctions->getOption(self::PLUGIN_ACTIVATED)) return;
+
+    if ($this->changelog->shouldShowLandingPage()) {
+       $this->changelog->redirectToLandingPage();
+    }
+
+    // done with afterPluginActivation actions
+    $this->wpFunctions->deleteOption(self::PLUGIN_ACTIVATED);
   }
 
   public function maybeDbUpdate() {

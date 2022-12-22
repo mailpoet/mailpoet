@@ -120,6 +120,10 @@ class Functions {
     return delete_comment_meta($commentId, $metaKey, $metaValue);
   }
 
+  public function addOption($option, $value) {
+    return add_option($option, $value);
+  }
+
   public function deleteOption($option) {
     return delete_option($option);
   }
