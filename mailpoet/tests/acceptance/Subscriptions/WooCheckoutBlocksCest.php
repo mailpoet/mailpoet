@@ -219,8 +219,12 @@ class WooCheckoutBlocksCest {
 
     // Enable registration during the checkout
     $i->click('[aria-label="Block: Contact Information"]');
-    $i->click('[aria-label="Settings"]');
-    $i->click(Locator::contains('label', 'Allow shoppers to sign up for a user account during checkout'));
+
+    if (version_compare($i->getWooCommerceVersion(), '7.2', '<')) {
+      $i->click('[aria-label="Settings"]');
+      // Starting from WC 7.2 this option is removed and only controlled from the settings page -> Accounts & Privacy tab
+      $i->click(Locator::contains('label', 'Allow shoppers to sign up for a user account during checkout'));
+    }
 
     $i->click('Update');
     $i->waitForText('Page updated.');
