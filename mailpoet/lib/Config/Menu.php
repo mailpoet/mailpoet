@@ -10,6 +10,7 @@ use MailPoet\AdminPages\Pages\FormEditor;
 use MailPoet\AdminPages\Pages\Forms;
 use MailPoet\AdminPages\Pages\Help;
 use MailPoet\AdminPages\Pages\Homepage;
+use MailPoet\AdminPages\Pages\Landingpage;
 use MailPoet\AdminPages\Pages\Logs;
 use MailPoet\AdminPages\Pages\NewsletterEditor;
 use MailPoet\AdminPages\Pages\Newsletters;
@@ -51,6 +52,8 @@ class Menu {
   const AUTOMATIONS_PAGE_SLUG = 'mailpoet-automation';
   const AUTOMATION_EDITOR_PAGE_SLUG = 'mailpoet-automation-editor';
   const AUTOMATION_TEMPLATES_PAGE_SLUG = 'mailpoet-automation-templates';
+
+  const LANDINGPAGE_PAGE_SLUG = 'mailpoet-landingpage';
 
   const ICON_BASE64_SVG = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNTIuMDIgMTU2LjQiPjx0aXRsZT5NYWlsUG9ldCBpY29uPC90aXRsZT48ZyBpZD0iTGF5ZXJfMiIgZGF0YS1uYW1lPSJMYXllciAyIj48ZyBpZD0iTGF5ZXJfMS0yIiBkYXRhLW5hbWU9IkxheWVyIDEiPjxwYXRoIGZpbGw9ImN1cnJlbnRDb2xvciIgZD0iTTM3LjcxLDg5LjFjMy41LDAsNS45LS44LDcuMi0yLjNhOCw4LDAsMCwwLDItNS40VjM1LjdsMTcsNDUuMWExMi42OCwxMi42OCwwLDAsMCwzLjcsNS40YzEuNiwxLjMsNCwyLDcuMiwyYTEyLjU0LDEyLjU0LDAsMCwwLDUuOS0xLjQsOC40MSw4LjQxLDAsMCwwLDMuOS01bDE4LjEtNTBWODFhOC41Myw4LjUzLDAsMCwwLDIuMSw2LjFjMS40LDEuNCwzLjcsMi4yLDYuOSwyLjIsMy41LDAsNS45LS44LDcuMi0yLjNhOCw4LDAsMCwwLDItNS40VjguN2E3LjQ4LDcuNDgsMCwwLDAtMy4zLTYuNmMtMi4xLTEuNC01LTIuMS04LjYtMi4xYTE5LjMsMTkuMywwLDAsMC05LjQsMiwxMS42MywxMS42MywwLDAsMC01LjEsNi44TDc0LjkxLDY3LjEsNTQuNDEsOC40YTEyLjQsMTIuNCwwLDAsMC00LjUtNi4yYy0yLjEtMS41LTUtMi4yLTguOC0yLjJhMTYuNTEsMTYuNTEsMCwwLDAtOC45LDIuMWMtMi4zLDEuNS0zLjUsMy45LTMuNSw3LjJWODAuOGMwLDIuOC43LDQuOCwyLDYuMkMzMi4yMSw4OC40LDM0LjQxLDg5LjEsMzcuNzEsODkuMVoiLz48cGF0aCBmaWxsPSJjdXJyZW50Q29sb3IiIGQ9Ik0xNDksMTE2LjZsLTIuNC0xLjlhNy40LDcuNCwwLDAsMC05LjQuMywxOS42NSwxOS42NSwwLDAsMS0xMi41LDQuNmgtMjEuNEEzNy4wOCwzNy4wOCwwLDAsMCw3NywxMzAuNWwtMS4xLDEuMi0xLjEtMS4xYTM3LjI1LDM3LjI1LDAsMCwwLTI2LjMtMTAuOUgyN2ExOS41OSwxOS41OSwwLDAsMS0xMi40LTQuNiw3LjI4LDcuMjgsMCwwLDAtOS40LS4zbC0yLjQsMS45QTcuNDMsNy40MywwLDAsMCwwLDEyMi4yYTcuMTQsNy4xNCwwLDAsMCwyLjQsNS43QTM3LjI4LDM3LjI4LDAsMCwwLDI3LDEzNy40aDIxLjZhMTkuNTksMTkuNTksMCwwLDEsMTguOSwxNC40di4yYy4xLjcsMS4yLDQuNCw4LjUsNC40czguNC0zLjcsOC41LTQuNHYtLjJhMTkuNTksMTkuNTksMCwwLDEsMTguOS0xNC40SDEyNWEzNy4yOCwzNy4yOCwwLDAsMCwyNC42LTkuNSw3LjQyLDcuNDIsMCwwLDAsMi40LTUuN0E3Ljg2LDcuODYsMCwwLDAsMTQ5LDExNi42WiIvPjwvZz48L2c+PC9zdmc+';
 
@@ -201,6 +204,21 @@ class Menu {
         'welcomeWizard',
       ]
     );
+
+    // Landingpage
+    if ($this->featuresController->isSupported(FeaturesController::FEATURE_LANDINGPAGE)) {
+      $this->wp->addSubmenuPage(
+        true,
+        $this->setPageTitle(__('MailPoet', 'mailpoet')),
+        esc_html__('MailPoet', 'mailpoet'),
+        AccessControl::PERMISSION_ACCESS_PLUGIN_ADMIN,
+        self::LANDINGPAGE_PAGE_SLUG,
+        [
+          $this,
+          'landingPage',
+        ]
+      );
+    }
 
     // Hide sub-menu entries if the user still needs to complete the Welcome Wizard
     if (!$this->changelog->shouldShowWelcomeWizard()) {
@@ -531,6 +549,10 @@ class Menu {
 
   public function welcomeWizard() {
     $this->container->get(WelcomeWizard::class)->render();
+  }
+
+  public function landingPage() {
+    $this->container->get(Landingpage::class)->render();
   }
 
   public function wooCommerceSetup() {
