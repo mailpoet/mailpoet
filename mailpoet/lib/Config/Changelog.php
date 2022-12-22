@@ -109,6 +109,8 @@ class Changelog {
   }
 
   public function redirectToLandingPage() {
+    if (isset($_GET['activate-multi'])) return; // do not redirect when activated with bulk activation mode
+
     if ($this->shouldShowLandingPage() && !$this->isLandingPage()) {
       $this->urlHelper->redirectTo(
         $this->wp->adminUrl('admin.php?page=mailpoet-landingpage')
