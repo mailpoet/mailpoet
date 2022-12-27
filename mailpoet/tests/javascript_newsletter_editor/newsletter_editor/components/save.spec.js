@@ -278,7 +278,7 @@ describe('Save', function () {
             },
           },
           'newsletter_editor/App': { App },
-          'common/thumbnail.ts': {
+          common: {
             fromNewsletter: function () {
               return promiseMock;
             },

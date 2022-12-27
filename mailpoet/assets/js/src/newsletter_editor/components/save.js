@@ -6,7 +6,7 @@ import Marionette from 'backbone.marionette';
 import $ from 'jquery';
 import Blob from 'blob';
 import FileSaver from 'file-saver';
-import * as Thumbnail from 'common/thumbnail.ts';
+import { isTruthy, fromNewsletter } from 'common';
 import _ from 'underscore';
 import SuperModel from 'backbone.supermodel/build/backbone.supermodel';
 
@@ -99,7 +99,7 @@ Module.save = function () {
 };
 
 Module.saveTemplate = function (options) {
-  return Thumbnail.fromNewsletter(App.toJSON()).then(function (thumbnail) {
+  return fromNewsletter(App.toJSON()).then(function (thumbnail) {
     var data = _.extend(options || {}, {
       thumbnail_data: thumbnail,
       body: JSON.stringify(App.getBody()),
@@ -116,7 +116,7 @@ Module.saveTemplate = function (options) {
 };
 
 Module.exportTemplate = function (options) {
-  return Thumbnail.fromNewsletter(App.toJSON()).then(function (thumbnail) {
+  return fromNewsletter(App.toJSON()).then(function (thumbnail) {
     var data = _.extend(options || {}, {
       thumbnail_data: thumbnail,
       body: App.getBody(),
@@ -573,6 +573,9 @@ Module.NewsletterPreviewModel = SuperModel.extend({
     previewSendingError: false,
     previewSendingSuccess: false,
     sendingPreview: false,
+    mssPendingApproval: window.mailpoet_mss_key_pending_approval,
+    mssKeyPendingApprovalRefreshMessage: true,
+    awaitingKeyCheck: false,
   },
 });
 
@@ -588,6 +591,7 @@ Module.NewsletterPreviewView = Marionette.View.extend({
     return {
       'change .mailpoet_browser_preview_type': 'changeBrowserPreviewType',
       'click #mailpoet_send_preview': 'sendPreview',
+      'click #refresh-mss-key-status': 'refreshMssKeyStatus',
     };
   },
   initialize: function (options) {
@@ -606,7 +610,11 @@ Module.NewsletterPreviewView = Marionette.View.extend({
         this.$('#mailpoet_preview_to_email').val() || window.currentUserEmail,
       previewSendingError: this.model.get('previewSendingError'),
       sendingPreview: this.model.get('sendingPreview'),
-      mssKeyPendingApproval: window.mailpoet_mss_key_pending_approval,
+      mssKeyPendingApproval: this.model.get('mssPendingApproval'),
+      mssKeyPendingApprovalRefreshMessage: this.model.get(
+        'mssKeyPendingApprovalRefreshMessage',
+      ),
+      awaitingKeyCheck: this.model.get('awaitingKeyCheck'),
     };
   },
   changeBrowserPreviewType: function (event) {
@@ -712,11 +720,11 @@ Module.NewsletterPreviewView = Marionette.View.extend({
                 )}</p>
                 <p>
                   <a
-                    href=${MailPoet.MailPoetComUrlFactory.getFreePlanUrl({
+                    href='${MailPoet.MailPoetComUrlFactory.getFreePlanUrl({
                       utm_campaign: 'sending-error',
-                    })}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                    })}'
+                    target='_blank'
+                    rel='noopener noreferrer'
                   >
                     ${MailPoet.I18n.t(
                       'newsletterPreviewErrorSignUpForSendingService',
@@ -743,6 +751,31 @@ Module.NewsletterPreviewView = Marionette.View.extend({
           });
       });
     return undefined;
+  },
+  refreshMssKeyStatus: function () {
+    this.model.set('awaitingKeyCheck', true);
+
+    return MailPoet.Ajax.post({
+      api_version: window.mailpoet_api_version,
+      endpoint: 'services',
+      action: 'checkMSSKey',
+      data: {
+        key: window.mailpoet_api_key,
+      },
+    })
+      .done((response) => {
+        this.model.set('awaitingKeyCheck', false);
+        if (response.data && response.data.result.code === 200) {
+          this.model.set(
+            'mssPendingApproval',
+            !isTruthy(response.data.result.data.is_approved),
+          );
+          this.model.set('mssKeyPendingApprovalRefreshMessage', false);
+        }
+      })
+      .fail(() => {
+        this.model.set('awaitingKeyCheck', false);
+      });
   },
 });
 

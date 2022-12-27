@@ -11,3 +11,4 @@ export * from './listings';
 export * from './error_boundary';
 export * from './functions';
 export * from './utils';
+export * from './thumbnail';
