@@ -9,7 +9,7 @@ export const step: StepType = {
   group: 'actions',
   title: __('Remove tag', 'mailpoet'),
   description: __(
-    'Remove a tag or multiple tags from a subscriber',
+    'Remove a tag or multiple tags from a subscriber.',
     'mailpoet',
   ),
   subtitle: () => <LockedBadge text={__('Premium', 'mailpoet')} />,
