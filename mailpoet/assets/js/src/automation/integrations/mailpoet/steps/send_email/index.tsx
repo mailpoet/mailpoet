@@ -9,7 +9,7 @@ export const step: StepType = {
   key: 'mailpoet:send-email',
   group: 'actions',
   title: __('Send email', 'mailpoet'),
-  description: __('An email will be sent to subscriber', 'mailpoet'),
+  description: __('An email will be sent to subscriber.', 'mailpoet'),
   subtitle: (data) =>
     (data.args.name as string) ?? __('Send email', 'mailpoet'),
   foreground: '#996800',
