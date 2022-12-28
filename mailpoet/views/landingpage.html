@@ -1,6 +1,13 @@
 <% extends 'layout.html' %>
 
 <% block content %>
-<h1>Better email — without leaving WordPress</h1>
-<h3>Whether you’re just starting out or have already established your business, we’ve got what you need to reach customers where they are</h3>
+<div id="mailpoet_landingpage_container"></div>
 <% endblock %>
+
+<% block translations %>
+<%= localize({
+  'betterEmailWithoutLeavingWordPress': __('Better email — without leaving WordPress'),
+  'startingOutOrEstablished': __('Whether you’re just starting out or have already established your business, we’ve got what you need to reach customers where they are'),
+}) %>
+<% endblock %>
+
