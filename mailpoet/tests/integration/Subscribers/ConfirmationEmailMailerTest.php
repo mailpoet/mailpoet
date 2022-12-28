@@ -167,7 +167,8 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
       $this->diContainer->get(WPFunctions::class),
       $this->diContainer->get(SettingsController::class),
       $this->diContainer->get(SubscribersRepository::class),
-      $this->diContainer->get(SubscriptionUrlFactory::class)
+      $this->diContainer->get(SubscriptionUrlFactory::class),
+      $this->diContainer->get(ConfirmationEmailCustomizer::class)
     );
     $exceptionMessage = '';
     try {
