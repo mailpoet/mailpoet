@@ -170,4 +170,5 @@ interface Window {
   mailpoet_listing: {
     forceUpdate: () => void;
   };
+  mailpoet_welcome_wizard_url: string;
 }

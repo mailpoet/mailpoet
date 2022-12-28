@@ -2,12 +2,20 @@
 
 <% block content %>
 <div id="mailpoet_landingpage_container"></div>
+
+<script type="text/javascript">
+  <% autoescape 'js' %>
+    var mailpoet_welcome_wizard_url = <%= json_encode(welcome_wizard_url) %>;
+  <% endautoescape %>
+</script>
 <% endblock %>
 
 <% block translations %>
 <%= localize({
   'betterEmailWithoutLeavingWordPress': __('Better email — without leaving WordPress'),
   'startingOutOrEstablished': __('Whether you’re just starting out or have already established your business, we’ve got what you need to reach customers where they are'),
+  'beginSetup': __('Begin setup'),
+  'readyToUseMailPoet': __('Ready to use MailPoet?'),
 }) %>
 <% endblock %>
 
