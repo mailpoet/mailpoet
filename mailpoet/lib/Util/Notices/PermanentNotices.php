@@ -71,9 +71,10 @@ class PermanentNotices {
   }
 
   public function init() {
-    $excludeWizard = [
+    $excludeSetupWizard = [
       'mailpoet-welcome-wizard',
       'mailpoet-woocommerce-setup',
+      'mailpoet-landingpage',
     ];
     $this->wp->addAction('wp_ajax_dismissed_notice_handler', [
       $this,
@@ -82,37 +83,37 @@ class PermanentNotices {
 
     $this->phpVersionWarnings->init(
       phpversion(),
-      Menu::isOnMailPoetAdminPage($excludeWizard)
+      Menu::isOnMailPoetAdminPage($excludeSetupWizard)
     );
     $this->afterMigrationNotice->init(
-      Menu::isOnMailPoetAdminPage($excludeWizard)
+      Menu::isOnMailPoetAdminPage($excludeSetupWizard)
     );
     $this->unauthorizedEmailsNotice->init(
-      Menu::isOnMailPoetAdminPage($excludeWizard)
+      Menu::isOnMailPoetAdminPage($excludeSetupWizard)
     );
     $this->unauthorizedEmailsInNewslettersNotice->init(
-      Menu::isOnMailPoetAdminPage($excludeWizard)
+      Menu::isOnMailPoetAdminPage($excludeSetupWizard)
     );
     $this->inactiveSubscribersNotice->init(
-      Menu::isOnMailPoetAdminPage($excludeWizard)
+      Menu::isOnMailPoetAdminPage($excludeSetupWizard)
     );
     $this->blackFridayNotice->init(
-      Menu::isOnMailPoetAdminPage($excludeWizard)
+      Menu::isOnMailPoetAdminPage($excludeSetupWizard)
     );
     $this->headersAlreadySentNotice->init(
-      Menu::isOnMailPoetAdminPage($excludeWizard)
+      Menu::isOnMailPoetAdminPage($excludeSetupWizard)
     );
     $this->emailWithInvalidListNotice->init(
-      Menu::isOnMailPoetAdminPage($excludeWizard)
+      Menu::isOnMailPoetAdminPage($excludeSetupWizard)
     );
     $this->changedTrackingNotice->init(
-      Menu::isOnMailPoetAdminPage($excludeWizard)
+      Menu::isOnMailPoetAdminPage($excludeSetupWizard)
     );
     $this->deprecatedFilterNotice->init(
-      Menu::isOnMailPoetAdminPage($excludeWizard)
+      Menu::isOnMailPoetAdminPage($excludeSetupWizard)
     );
     $this->disabledMailFunctionNotice->init(
-      Menu::isOnMailPoetAdminPage($excludeWizard)
+      Menu::isOnMailPoetAdminPage($excludeSetupWizard)
     );
   }
 
