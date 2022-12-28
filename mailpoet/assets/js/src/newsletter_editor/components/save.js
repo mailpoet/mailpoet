@@ -773,8 +773,13 @@ Module.NewsletterPreviewView = Marionette.View.extend({
           this.model.set('mssKeyPendingApprovalRefreshMessage', false);
         }
       })
-      .fail(() => {
+      .fail((response) => {
         this.model.set('awaitingKeyCheck', false);
+        if (response.errors && Array.isArray(response.errors)) {
+          const messages = response.errors.map((e) => e.message);
+          const errorEl = document.querySelector('.pendindig_approval_error');
+          errorEl.innerHTML = messages.join('\n');
+        }
       });
   },
 });
