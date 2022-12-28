@@ -265,7 +265,7 @@ class Initializer {
 
   public function runActivator() {
     try {
-      $this->wpFunctions->addOption(self::PLUGIN_ACTIVATED, true);
+      $this->wpFunctions->addOption(self::PLUGIN_ACTIVATED, true); // used in afterPluginActivation
       $this->activator->activate();
     } catch (InvalidStateException $e) {
       return $this->handleRunningMigration($e);
@@ -327,12 +327,17 @@ class Initializer {
     define(self::INITIALIZED, true);
   }
 
+  /**
+   * Walk around for getting this to work correctly
+   *
+   * Read more here: https://developer.wordpress.org/reference/functions/register_activation_hook/
+   * and https://github.com/mailpoet/mailpoet/pull/4620#discussion_r1058210174
+   * @return void
+   */
   public function afterPluginActivation() {
     if (!$this->wpFunctions->isAdmin() || !defined(self::INITIALIZED) || !$this->wpFunctions->getOption(self::PLUGIN_ACTIVATED)) return;
 
-    if ($this->changelog->shouldShowLandingPage()) {
-       $this->changelog->redirectToLandingPage();
-    }
+    $this->changelog->redirectToLandingPage();
 
     // done with afterPluginActivation actions
     $this->wpFunctions->deleteOption(self::PLUGIN_ACTIVATED);
