@@ -1,16 +1,13 @@
 import { MailPoet } from 'mailpoet';
 import { Button } from 'common';
 import { Heading } from 'common/typography/heading/heading';
+import { redirectToWelcomeWizard } from './util';
 
-function Footer(): JSX.Element {
+function Footer() {
   return (
     <div className="mailpoet-content-center landing-footer">
       <Heading level={4}> {MailPoet.I18n.t('readyToUseMailPoet')} </Heading>
-      <Button
-        onClick={() => {
-          window.location.href = window.mailpoet_welcome_wizard_url;
-        }}
-      >
+      <Button onClick={redirectToWelcomeWizard}>
         {' '}
         {MailPoet.I18n.t('beginSetup')}{' '}
       </Button>
