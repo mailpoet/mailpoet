@@ -12,10 +12,10 @@ import { BaseBlock } from 'newsletter_editor/blocks/base';
 import { ButtonBlock } from 'newsletter_editor/blocks/button';
 import { DividerBlock } from 'newsletter_editor/blocks/divider';
 import { CommunicationComponent } from 'newsletter_editor/components/communication';
-import { MailPoet } from 'mailpoet';
 import SuperModel from 'backbone.supermodel';
 import _ from 'underscore';
 import jQuery from 'jquery';
+import { __ } from '@wordpress/i18n';
 
 var Module = {};
 var base = BaseBlock;
@@ -157,7 +157,7 @@ Module.AutomatedLatestContentBlockView = base.BlockView.extend({
     var renderOptions = {
       disableTextEditor: true,
       disableDragAndDrop: true,
-      emptyContainerMessage: MailPoet.I18n.t('noPostsToDisplay'),
+      emptyContainerMessage: __('There is no content to display.', 'mailpoet'),
     };
     this.toolsView = new Module.AutomatedLatestContentBlockToolsView({
       model: this.model,
@@ -269,7 +269,7 @@ Module.AutomatedLatestContentBlockSettingsView = base.BlockSettingsView.extend({
       .select2({
         multiple: true,
         allowClear: true,
-        placeholder: MailPoet.I18n.t('categoriesAndTags'),
+        placeholder: __('Categories & tags', 'mailpoet'),
         ajax: {
           data: function (params) {
             return {

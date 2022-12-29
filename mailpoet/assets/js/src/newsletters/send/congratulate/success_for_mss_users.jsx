@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
+import { __ } from '@wordpress/i18n';
 import { MailPoet } from 'mailpoet';
 import { Heading } from 'common/typography/heading/heading';
 import { Button } from 'common';
@@ -41,7 +42,7 @@ function MSSUserSuccess(props) {
         }}
         withSpinner={isClosing}
       >
-        {MailPoet.I18n.t('close')}
+        {__('Close', 'mailpoet')}
       </Button>
     </>
   );

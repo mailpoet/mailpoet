@@ -7,6 +7,7 @@ import { BaseBlock } from 'newsletter_editor/blocks/base';
 import _ from 'underscore';
 import { MailPoet } from 'mailpoet';
 import jQuery from 'jquery';
+import { __ } from '@wordpress/i18n';
 
 var Module = {};
 var base = BaseBlock;
@@ -107,7 +108,10 @@ Module.ImageBlockSettingsView = base.BlockSettingsView.extend({
       document.getElementById('tooltip-designer-full-width'),
       {
         tooltipId: 'tooltip-editor-full-width',
-        tooltip: MailPoet.I18n.t('helpTooltipDesignerFullWidth'),
+        tooltip: __(
+          'This option eliminates padding around the image.',
+          'mailpoet',
+        ),
         place: 'top',
       },
     );
@@ -115,7 +119,10 @@ Module.ImageBlockSettingsView = base.BlockSettingsView.extend({
       document.getElementById('tooltip-designer-ideal-width'),
       {
         tooltipId: 'tooltip-editor-ideal-width',
-        tooltip: MailPoet.I18n.t('helpTooltipDesignerIdealWidth'),
+        tooltip: __(
+          'Use images with widths of at least 1,000 pixels to ensure sharp display on high density screens, like mobile devices.',
+          'mailpoet',
+        ),
         place: 'bottom',
       },
     );

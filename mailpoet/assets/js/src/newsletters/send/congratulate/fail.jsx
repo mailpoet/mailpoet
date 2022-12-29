@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
 import ReactStringReplace from 'react-string-replace';
+import { __ } from '@wordpress/i18n';
 import { MailPoet } from 'mailpoet';
 
 import { Button } from 'common';
@@ -47,7 +48,7 @@ function Fail(props) {
         }}
         withSpinner={isClosing}
       >
-        {MailPoet.I18n.t('close')}
+        {__('Close', 'mailpoet')}
       </Button>
     </div>
   );

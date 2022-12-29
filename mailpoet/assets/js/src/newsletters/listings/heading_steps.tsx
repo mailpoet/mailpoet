@@ -2,6 +2,7 @@ import { ReactNode } from 'react';
 import { Location } from 'history';
 import { MailPoet } from 'mailpoet';
 import { Icon, video } from '@wordpress/icons';
+import { __ } from '@wordpress/i18n';
 import { HideScreenOptions } from '../../common/hide_screen_options/hide_screen_options';
 import { MailPoetLogoResponsive } from '../../common/top_bar/mailpoet_logo_responsive';
 import { Steps } from '../../common/steps/steps';
@@ -37,26 +38,26 @@ export const mapPathToSteps = (
 
 const getEmailTypeTitle = (emailType: string): string => {
   const typeMap = {
-    standard: MailPoet.I18n.t('stepNameTypeStandard'),
-    welcome: MailPoet.I18n.t('stepNameTypeWelcome'),
-    notification: MailPoet.I18n.t('stepNameTypeNotification'),
-    woocommerce: MailPoet.I18n.t('stepNameTypeWooCommerce'),
-    re_engagement: MailPoet.I18n.t('stepNameTypeReEngagement'),
+    standard: __('Newsletter', 'mailpoet'),
+    welcome: __('Welcome Email', 'mailpoet'),
+    notification: __('Post Notification', 'mailpoet'),
+    woocommerce: __('WooCommerce', 'mailpoet'),
+    re_engagement: __('Re-engagement', 'mailpoet'),
   };
 
-  return typeMap[emailType] || MailPoet.I18n.t('stepNameTypeStandard');
+  return typeMap[emailType] || __('Newsletter', 'mailpoet');
 };
 
 const getEmailSendTitle = (emailType: string): string => {
   const typeMap = {
-    standard: MailPoet.I18n.t('stepNameSend'),
-    welcome: MailPoet.I18n.t('stepNameActivate'),
-    notification: MailPoet.I18n.t('stepNameActivate'),
-    woocommerce: MailPoet.I18n.t('stepNameActivate'),
-    re_engagement: MailPoet.I18n.t('stepNameActivate'),
+    standard: __('Send', 'mailpoet'),
+    welcome: __('Activate', 'mailpoet'),
+    notification: __('Activate', 'mailpoet'),
+    woocommerce: __('Activate', 'mailpoet'),
+    re_engagement: __('Activate', 'mailpoet'),
   };
 
-  return typeMap[emailType] || MailPoet.I18n.t('stepNameSend');
+  return typeMap[emailType] || __('Send', 'mailpoet');
 };
 
 function TutorialIcon(): JSX.Element {
@@ -96,16 +97,13 @@ const stepsListingHeading = (
   const emailTypeTitle = getEmailTypeTitle(emailType);
   let stepTitles = [
     emailTypeTitle,
-    MailPoet.I18n.t('stepNameTemplate'),
-    MailPoet.I18n.t('stepNameDesign'),
+    __('Template', 'mailpoet'),
+    __('Design', 'mailpoet'),
     getEmailSendTitle(emailType),
   ];
   // Automation email has only 2 steps
   if (emailType === 'automation') {
-    stepTitles = [
-      MailPoet.I18n.t('stepNameTemplate'),
-      MailPoet.I18n.t('stepNameDesign'),
-    ];
+    stepTitles = [__('Template', 'mailpoet'), __('Design', 'mailpoet')];
   }
 
   return (

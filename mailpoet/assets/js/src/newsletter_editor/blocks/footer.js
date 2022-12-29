@@ -4,7 +4,7 @@
 import { App } from 'newsletter_editor/App';
 import { BaseBlock } from 'newsletter_editor/blocks/base';
 import _ from 'underscore';
-import { MailPoet } from 'mailpoet';
+import { __ } from '@wordpress/i18n';
 
 var Module = {};
 var base = BaseBlock;
@@ -56,8 +56,9 @@ Module.FooterBlockView = base.BlockView.extend({
       configurationFilter: function configurationFilter(originalSettings) {
         return _.extend({}, originalSettings, {
           mailpoet_shortcodes: App.getConfig().get('shortcodes').toJSON(),
-          mailpoet_shortcodes_window_title: MailPoet.I18n.t(
-            'shortcodesWindowTitle',
+          mailpoet_shortcodes_window_title: __(
+            'Select a shortcode',
+            'mailpoet',
           ),
         });
       },

@@ -1,6 +1,7 @@
 import _ from 'underscore';
 import { Component } from 'react';
 import PropTypes from 'prop-types';
+import { __ } from '@wordpress/i18n';
 
 import { Background } from 'common/background/background';
 import { Categories } from 'common/categories/categories';
@@ -27,7 +28,7 @@ templatesCategories.push(
   ...[
     {
       name: 'standard',
-      label: MailPoet.I18n.t('tabStandardTitle'),
+      label: __('Newsletters', 'mailpoet'),
     },
     {
       name: 'welcome',

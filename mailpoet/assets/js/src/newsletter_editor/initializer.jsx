@@ -1,5 +1,6 @@
 import { Hooks } from 'wp-js-hooks';
 import { MailPoet } from 'mailpoet';
+import { __ } from '@wordpress/i18n';
 import ReactDOM from 'react-dom';
 import { ListingHeadingSteps } from 'newsletters/listings/heading_steps';
 import { newsletterTypesWithActivation } from 'newsletters/listings/utils';
@@ -124,7 +125,9 @@ const initializeEditor = (config) => {
           },
         })
           .done(() =>
-            MailPoet.Notice.success(MailPoet.I18n.t('newsletterIsPaused')),
+            MailPoet.Notice.success(
+              __('Email sending has been paused.', 'mailpoet'),
+            ),
           )
           .fail((pauseFailResponse) => {
             if (pauseFailResponse.errors.length > 0) {
@@ -149,7 +152,9 @@ const initializeEditor = (config) => {
         })
           .done((setStatusResponse) => {
             if (setStatusResponse.data.status === 'draft') {
-              MailPoet.Notice.success(MailPoet.I18n.t('emailWasDeactivated'));
+              MailPoet.Notice.success(
+                __('This email was deactivated.', 'mailpoet'),
+              );
             }
           })
           .fail((pauseFailResponse) => {

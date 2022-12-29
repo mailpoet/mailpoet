@@ -1,9 +1,13 @@
 import { MailPoet } from 'mailpoet';
 import moment from 'moment';
+import { __ } from '@wordpress/i18n';
 
 export const displayTutorial = (onInit?) => {
   MailPoet.Modal.popup({
-    title: MailPoet.I18n.t('tutorialVideoTitle'),
+    title: __(
+      'Before you start, this is how you drag and drop in MailPoet',
+      'mailpoet',
+    ),
     template: `<div class="mailpoet_drag_and_drop_tutorial"><video style="height:640px;" src="${MailPoet.emailEditorTutorialUrl}" controls autoplay></video></div>`,
     onInit,
   });

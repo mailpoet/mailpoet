@@ -6,7 +6,7 @@
 import Marionette from 'backbone.marionette';
 import 'spectrum'; // eslint-disable-line func-names
 import { BehaviorsLookup } from 'newsletter_editor/behaviors/BehaviorsLookup';
-import { MailPoet } from 'mailpoet';
+import { _x } from '@wordpress/i18n';
 
 var BL = BehaviorsLookup;
 
@@ -37,8 +37,8 @@ BL.ColorPickerBehavior = Marionette.Behavior.extend({
         localStorageKey: 'newsletter_editor.spectrum.palette',
         preferredFormat: preferredFormat,
         allowEmpty: true,
-        chooseText: MailPoet.I18n.t('selectColor'),
-        cancelText: MailPoet.I18n.t('cancelColorSelection'),
+        chooseText: _x('Select', 'select color', 'mailpoet'),
+        cancelText: _x('Cancel', 'cancel color selection', 'mailpoet'),
         change: updateColorInput,
         move: updateColorInput,
         hide: updateColorInput,

@@ -1,7 +1,7 @@
 import { App } from 'newsletter_editor/App';
-import { MailPoet } from 'mailpoet';
 import Marionette from 'backbone.marionette';
 import Mousetrap from 'mousetrap';
+import { _x } from '@wordpress/i18n';
 
 var Module = {};
 
@@ -113,11 +113,31 @@ Module.HistoryView = Marionette.View.extend({
     );
     this.elements.undo.setAttribute(
       'title',
-      MailPoet.I18n.t(this.canUndo() ? 'canUndo' : 'canNotUndo'),
+      this.canUndo()
+        ? _x(
+            'Undo',
+            'A button title when user can undo the change in editor',
+            'mailpoet',
+          )
+        : _x(
+            'No actions available to undo.',
+            "A button title when user can't undo the change in editor",
+            'mailpoet',
+          ),
     );
     this.elements.redo.setAttribute(
       'title',
-      MailPoet.I18n.t(this.canRedo() ? 'canRedo' : 'canNotRedo'),
+      this.canRedo()
+        ? _x(
+            'Redo',
+            'A button title when user can redo the change in editor',
+            'mailpoet',
+          )
+        : _x(
+            'No actions available to redo.',
+            "A button title when user can't redo the change in editor",
+            'mailpoet',
+          ),
     );
   },
 

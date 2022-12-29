@@ -8,6 +8,7 @@ import {
   useParams,
 } from 'react-router-dom';
 import PropTypes from 'prop-types';
+import { __ } from '@wordpress/i18n';
 
 import { Listings } from 'newsletters/automatic_emails/listings.jsx';
 import { MailPoet } from 'mailpoet';
@@ -65,8 +66,8 @@ const Tabs = withNpsPoll(() => {
         <Tab
           key="standard"
           route="standard/(.*)?"
-          title={MailPoet.I18n.t('tabStandardTitle')}
-          automationId={`tab-${MailPoet.I18n.t('tabStandardTitle')}`}
+          title={__('Newsletters', 'mailpoet')}
+          automationId={`tab-${__('Newsletters', 'mailpoet')}`}
         >
           <NewsletterListStandard />
         </Tab>
