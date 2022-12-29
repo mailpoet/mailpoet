@@ -5,7 +5,7 @@ import { Background } from 'common/background/background';
 import { Header } from './header';
 import { Footer } from './footer';
 
-function Landingpage(): JSX.Element {
+function Landingpage() {
   return (
     <GlobalContext.Provider value={useGlobalContextValue(window)}>
       <Background color="#fff" />
