@@ -22,6 +22,7 @@ import { BaseBlock } from 'newsletter_editor/blocks/base';
 import { ButtonBlock } from 'newsletter_editor/blocks/button';
 import { DividerBlock } from 'newsletter_editor/blocks/divider';
 import 'select2';
+import { __ } from '@wordpress/i18n';
 
 var Module = {};
 var base = BaseBlock;
@@ -129,7 +130,9 @@ Module.ProductsBlockModel = base.BlockModel.extend({
         that.trigger('change:_availableProducts');
       })
       .fail(function getProductsFail() {
-        MailPoet.Notice.error(MailPoet.I18n.t('failedToFetchAvailablePosts'));
+        MailPoet.Notice.error(
+          __('Failed to fetch available posts', 'mailpoet'),
+        );
       });
   },
   _loadMoreProducts: function loadMoreProducts() {
@@ -150,7 +153,9 @@ Module.ProductsBlockModel = base.BlockModel.extend({
         that.trigger('change:_availableProducts');
       })
       .fail(function getProductsFail() {
-        MailPoet.Notice.error(MailPoet.I18n.t('failedToFetchAvailablePosts'));
+        MailPoet.Notice.error(
+          __('Failed to fetch available posts', 'mailpoet'),
+        );
       })
       .always(function getProductsAlways() {
         that.trigger('moreProductsLoaded');
@@ -176,7 +181,7 @@ Module.ProductsBlockModel = base.BlockModel.extend({
           .reset(products, { parse: true });
       })
       .fail(function getTransformedProductsFail() {
-        MailPoet.Notice.error(MailPoet.I18n.t('failedToFetchRenderedPosts'));
+        MailPoet.Notice.error(__('Failed to fetch rendered posts', 'mailpoet'));
       });
   },
   _insertSelectedProducts: function insertSelectedProducts() {
@@ -193,7 +198,7 @@ Module.ProductsBlockModel = base.BlockModel.extend({
         collection.add(JSON.parse(JSON.stringify(proucts)), { at: index });
       })
       .fail(function getTransformedProductsFail() {
-        MailPoet.Notice.error(MailPoet.I18n.t('failedToFetchRenderedPosts'));
+        MailPoet.Notice.error(__('Failed to fetch rendered posts', 'mailpoet'));
       });
   },
 });
@@ -231,7 +236,7 @@ Module.ProductsBlockView = base.BlockView.extend({
     renderOptions = {
       disableTextEditor: true,
       disableDragAndDrop: true,
-      emptyContainerMessage: MailPoet.I18n.t('noPostsToDisplay'),
+      emptyContainerMessage: __('There is no content to display.', 'mailpoet'),
     };
     this.showChildView(
       'productsRegion',
@@ -435,7 +440,7 @@ ProductSelectionSettingsView = Marionette.View.extend({
       .select2({
         multiple: true,
         allowClear: true,
-        placeholder: MailPoet.I18n.t('categoriesAndTags'),
+        placeholder: __('Categories & tags', 'mailpoet'),
         ajax: {
           data: function data(params) {
             return {

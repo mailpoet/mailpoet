@@ -14,6 +14,7 @@ import { CommunicationComponent } from 'newsletter_editor/components/communicati
 import { BaseBlock } from 'newsletter_editor/blocks/base';
 import { DividerBlock } from 'newsletter_editor/blocks/divider';
 import 'select2';
+import { __ } from '@wordpress/i18n';
 
 var Module = {};
 var base = BaseBlock;
@@ -96,7 +97,7 @@ Module.AbandonedCartContentBlockModel = base.BlockModel.extend({
           .reset(products, { parse: true });
       })
       .fail(function getTransformedProductsFail() {
-        MailPoet.Notice.error(MailPoet.I18n.t('failedToFetchRenderedPosts'));
+        MailPoet.Notice.error(__('Failed to fetch rendered posts', 'mailpoet'));
       });
   },
 });
@@ -142,7 +143,7 @@ Module.AbandonedCartContentBlockView = base.BlockView.extend({
     renderOptions = {
       disableTextEditor: true,
       disableDragAndDrop: true,
-      emptyContainerMessage: MailPoet.I18n.t('noPostsToDisplay'),
+      emptyContainerMessage: __('There is no content to display.', 'mailpoet'),
     };
     this.showChildView(
       'productsRegion',

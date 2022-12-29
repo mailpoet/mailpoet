@@ -3,6 +3,7 @@ import Marionette from 'backbone.marionette';
 import _ from 'underscore';
 import jQuery from 'jquery';
 import { MailPoet } from 'mailpoet'; // eslint-disable-line func-names
+import { __ } from '@wordpress/i18n';
 
 var Module = {};
 
@@ -54,7 +55,10 @@ App.on('start', function (StartApp) {
     if (subjectToolTip) {
       MailPoet.helpTooltip.show(subjectToolTip, {
         tooltipId: 'tooltip-designer-subject-line-ti',
-        tooltip: MailPoet.I18n.t('helpTooltipDesignerSubjectLine'),
+        tooltip: __(
+          "You can add MailPoet shortcodes here. For example, you can add your subscribers' first names by using this shortcode: [subscriber:firstname | default:reader]. Simply copy and paste the shortcode into the field.",
+          'mailpoet',
+        ),
         place: 'right',
       });
     }
@@ -63,9 +67,15 @@ App.on('start', function (StartApp) {
       MailPoet.helpTooltip.show(preheaderToolTip, {
         tooltipId: 'tooltip-designer-preheader-ti',
         tooltip:
-          MailPoet.I18n.t('helpTooltipDesignerPreheader') +
+          __(
+            "This optional text will appear in your subscribers' inboxes, beside the subject line. Write something enticing!",
+            'mailpoet',
+          ) +
           ' ' +
-          MailPoet.I18n.t('helpTooltipDesignerPreheaderWarning'),
+          __(
+            'Max length is 250 characters, however, we recommend 80 characters.',
+            'mailpoet',
+          ),
       });
     }
   }

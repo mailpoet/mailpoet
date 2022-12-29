@@ -8,6 +8,7 @@ import Blob from 'blob';
 import FileSaver from 'file-saver';
 import { isTruthy, fromNewsletter } from 'common';
 import _ from 'underscore';
+import { __, _x } from '@wordpress/i18n';
 import SuperModel from 'backbone.supermodel/build/backbone.supermodel';
 
 var Module = {};
@@ -26,7 +27,12 @@ Module.isConfirmationEmailValid = function () {
     body.indexOf('[activation_link]') < 0
   ) {
     $('.mailpoet_save_error')
-      .html(MailPoet.I18n.t('activationLinkIsMissing'))
+      .html(
+        __(
+          "Don't forget to include the [activation_link] shortcode in the email",
+          'mailpoet',
+        ),
+      )
       .removeClass('mailpoet_hidden');
 
     $('.mailpoet_save_button')
@@ -75,10 +81,13 @@ Module.save = function () {
         // MailPoet.Notice.success("<?php _e('Newsletter has been saved.'); ?>");
       } else if (response.error !== undefined) {
         if (response.error.length === 0) {
-          MailPoet.Notice.error(MailPoet.I18n.t('templateSaveFailed'), {
-            positionAfter: editorTop,
-            scroll: true,
-          });
+          MailPoet.Notice.error(
+            __('Template has not been saved, please try again', 'mailpoet'),
+            {
+              positionAfter: editorTop,
+              scroll: true,
+            },
+          );
         } else {
           $(response.error).each(function (i, error) {
             MailPoet.Notice.error(error, {
@@ -198,7 +207,7 @@ Module.SaveView = Marionette.View.extend({
   },
   beforeSave: function () {
     // TODO: Add a loading animation instead
-    this.$('.mailpoet_autosaved_at').text(MailPoet.I18n.t('saving'));
+    this.$('.mailpoet_autosaved_at').text(__('Saving...', 'mailpoet'));
   },
   afterSave: function (json) {
     this.validateNewsletter(json);
@@ -209,7 +218,12 @@ Module.SaveView = Marionette.View.extend({
     this.$('.mailpoet_autosaved_at').text('');
   },
   handleSavingErrors: function () {
-    this.showError(MailPoet.I18n.t('newsletterSavingError'));
+    this.showError(
+      __(
+        'The email could not be saved. Please, clear browser cache and reload the page. If the problem persists, duplicate the email and try again.',
+        'mailpoet',
+      ),
+    );
   },
   showSaveOptions: function () {
     this.$('.mailpoet_save_show_options').addClass(
@@ -251,7 +265,7 @@ Module.SaveView = Marionette.View.extend({
     var editorTop = $('#mailpoet_editor_top');
 
     if (templateName === '') {
-      MailPoet.Notice.error(MailPoet.I18n.t('templateNameMissing'), {
+      MailPoet.Notice.error(__('Please add a template name', 'mailpoet'), {
         positionAfter: editorTop,
         scroll: true,
       });
@@ -260,17 +274,20 @@ Module.SaveView = Marionette.View.extend({
         name: templateName,
       })
         .then(function () {
-          MailPoet.Notice.success(MailPoet.I18n.t('templateSaved'), {
+          MailPoet.Notice.success(__('Template has been saved.', 'mailpoet'), {
             positionAfter: editorTop,
             scroll: true,
           });
           MailPoet.trackEvent('Editor > Template saved');
         })
         .catch(function () {
-          MailPoet.Notice.error(MailPoet.I18n.t('templateSaveFailed'), {
-            positionAfter: editorTop,
-            scroll: true,
-          });
+          MailPoet.Notice.error(
+            __('Template has not been saved, please try again', 'mailpoet'),
+            {
+              positionAfter: editorTop,
+              scroll: true,
+            },
+          );
         });
       this.hideSaveOptions();
     }
@@ -288,7 +305,7 @@ Module.SaveView = Marionette.View.extend({
     var editorTop = $('#mailpoet_editor_top');
 
     if (templateName === '') {
-      MailPoet.Notice.error(MailPoet.I18n.t('templateNameMissing'), {
+      MailPoet.Notice.error(__('Please add a template name', 'mailpoet'), {
         positionAfter: editorTop,
         scroll: true,
       });
@@ -337,7 +354,7 @@ Module.SaveView = Marionette.View.extend({
             element: this.previewView.$el,
             minWidth: '95%',
             height: '100%',
-            title: MailPoet.I18n.t('newsletterPreview'),
+            title: __('Newsletter Preview', 'mailpoet'),
             onCancel: function () {
               this.previewView.destroy();
               this.previewView = null;
@@ -394,7 +411,12 @@ Module.SaveView = Marionette.View.extend({
         !Array.isArray(content.blocks) ||
         content.blocks.length === 0
       ) {
-        this.showValidationError(MailPoet.I18n.t('newsletterIsEmpty'));
+        this.showValidationError(
+          __(
+            'Poet, please add prose to your masterpiece before you send it to your followers.',
+            'mailpoet',
+          ),
+        );
         return;
       }
     } else {
@@ -411,7 +433,12 @@ Module.SaveView = Marionette.View.extend({
       body.indexOf('[link:subscription_unsubscribe]') < 0 &&
       newsletter.get('status') !== 'sent'
     ) {
-      this.showValidationError(MailPoet.I18n.t('unsubscribeLinkMissing'));
+      this.showValidationError(
+        __(
+          'All emails must include an "Unsubscribe" link. Add a footer widget to your email to continue.',
+          'mailpoet',
+        ),
+      );
       return;
     }
 
@@ -419,7 +446,12 @@ Module.SaveView = Marionette.View.extend({
       App.getConfig().get('validation.validateActivationLinkIsPresent') &&
       body.indexOf('[activation_link]') < 0
     ) {
-      this.showValidationError(MailPoet.I18n.t('activationLinkIsMissing'));
+      this.showValidationError(
+        __(
+          "Don't forget to include the [activation_link] shortcode in the email",
+          'mailpoet',
+        ),
+      );
       return;
     }
 
@@ -427,7 +459,12 @@ Module.SaveView = Marionette.View.extend({
       newsletter.get('type') === 're_engagement' &&
       body.indexOf('[link:subscription_re_engage_url]') < 0
     ) {
-      this.showValidationError(MailPoet.I18n.t('reEngageLinkMissing'));
+      this.showValidationError(
+        __(
+          'A re-engagement email must include a link with [link:subscription_re_engage_url] shortcode.',
+          'mailpoet',
+        ),
+      );
       return;
     }
 
@@ -437,7 +474,11 @@ Module.SaveView = Marionette.View.extend({
       body.indexOf('"type":"automatedLatestContentLayout"') < 0
     ) {
       this.showValidationError(
-        MailPoet.I18n.t('automatedLatestContentMissing'),
+        _x(
+          'Please add an “Automatic Latest Content” widget to the email from the right sidebar.',
+          '(Please reuse the current translation used for the string “Automatic Latest Content”) This Error message is displayed when a user tries to send a “Post Notification” email without any “Automatic Latest Content” widget inside',
+          'mailpoet',
+        ),
       );
       return;
     }
@@ -446,7 +487,12 @@ Module.SaveView = Marionette.View.extend({
       newsletter.get('type') === 'standard' &&
       newsletter.get('status') === 'sent'
     ) {
-      this.showValidationError(MailPoet.I18n.t('emailAlreadySent'));
+      this.showValidationError(
+        __(
+          'This email has already been sent. It can be edited, but not sent again. Duplicate this email if you want to send it again.',
+          'mailpoet',
+        ),
+      );
       return;
     }
 
@@ -556,7 +602,10 @@ Module.beforeExitWithUnsavedChanges = function (e) {
   var message;
   var event;
   if (saveTimeout) {
-    message = MailPoet.I18n.t('unsavedChangesWillBeLost');
+    message = __(
+      'There are unsaved changes which will be lost if you leave this page.',
+      'mailpoet',
+    );
     event = e || window.event;
 
     if (event) {
@@ -668,10 +717,16 @@ Module.NewsletterPreviewView = Marionette.View.extend({
     };
 
     if (data.subscriber.length <= 0) {
-      MailPoet.Notice.error(MailPoet.I18n.t('newsletterPreviewEmailMissing'), {
-        positionAfter: $emailField,
-        scroll: true,
-      });
+      MailPoet.Notice.error(
+        __(
+          'Enter an email address to send the preview newsletter to.',
+          'mailpoet',
+        ),
+        {
+          positionAfter: $emailField,
+          scroll: true,
+        },
+      );
       return false;
     }
 
@@ -695,28 +750,31 @@ Module.NewsletterPreviewView = Marionette.View.extend({
           .fail(function (response) {
             that.model.set('sendingPreview', false);
             that.model.set('previewSendingError', true);
-            let errorHtml = `<p>${MailPoet.I18n.t(
-              'newsletterPreviewError',
+            let errorHtml = `<p>${__(
+              'Sorry, there was an error, please try again later.',
+              'mailpoet',
             )}</p>`;
             if (response.errors.length > 0) {
               const errors = response.errors.map(function (error) {
                 let errorMessage = `
               <p>
-                ${MailPoet.I18n.t('newsletterPreviewErrorNotice').replace(
-                  '%1$s',
-                  window.config.mtaMethod,
-                )}:
+                ${__(
+                  'The email could not be sent due to a technical issue with %1$s',
+                  'mailpoet',
+                ).replace('%1$s', window.config.mtaMethod)}:
                 <i>${error.message}</i>
               </p>
             `;
                 if (window.config.mtaMethod === 'PHPMail') {
                   errorMessage += `
-                <p>${MailPoet.I18n.t(
-                  'newsletterPreviewErrorCheckConfiguration',
+                <p>${__(
+                  'Please check your sending method configuration, you may need to consult with your hosting company.',
+                  'mailpoet',
                 )}</p>
                 <br />
-                <p>${MailPoet.I18n.t(
-                  'newsletterPreviewErrorUseSendingService',
+                <p>${__(
+                  'The easy alternative is to <b>send emails with MailPoet Sending Service</b> instead, like thousands of other users do.',
+                  'mailpoet',
                 )}</p>
                 <p>
                   <a
@@ -726,15 +784,14 @@ Module.NewsletterPreviewView = Marionette.View.extend({
                     target='_blank'
                     rel='noopener noreferrer'
                   >
-                    ${MailPoet.I18n.t(
-                      'newsletterPreviewErrorSignUpForSendingService',
-                    )}
+                    ${__('Sign up for free in minutes', 'mailpoet')}
                   </a>
                 </p>
               `;
                 } else {
-                  const checkSettingsNotice = MailPoet.I18n.t(
-                    'newsletterPreviewErrorCheckSettingsNotice',
+                  const checkSettingsNotice = __(
+                    'Check your [link]sending method settings[/link].',
+                    'mailpoet',
                   ).replace(
                     /\[link\](.*?)\[\/link\]/g,
                     '<a href="?page=mailpoet-settings#mta" key="check-sending">$1</a>',

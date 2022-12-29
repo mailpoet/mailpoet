@@ -2,6 +2,7 @@ import { App } from 'newsletter_editor/App';
 import SuperModel from 'backbone.supermodel';
 import _ from 'underscore';
 import { MailPoet } from 'mailpoet';
+import { __ } from '@wordpress/i18n';
 
 var Module = {};
 
@@ -121,9 +122,15 @@ App.on('start', function appOnStart(Application, options) {
     !_.has(options.newsletter, 'body') ||
     !_.isObject(options.newsletter.body)
   ) {
-    MailPoet.Notice.error(MailPoet.I18n.t('newsletterBodyIsCorrupted'), {
-      static: true,
-    });
+    MailPoet.Notice.error(
+      __(
+        'Contents of this newsletter are corrupted and may be lost, you may need to add new content to this newsletter, or create a new one. If possible, please contact us and report this issue.',
+        'mailpoet',
+      ),
+      {
+        static: true,
+      },
+    );
   }
   Module.renderContent(bodyContent);
 
