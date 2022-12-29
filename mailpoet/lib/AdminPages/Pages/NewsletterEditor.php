@@ -5,6 +5,7 @@ namespace MailPoet\AdminPages\Pages;
 use MailPoet\AdminPages\PageRenderer;
 use MailPoet\Config\Menu;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Form\AssetsController;
 use MailPoet\Form\Util\CustomFonts;
 use MailPoet\Newsletter\Renderer\Blocks\Coupon;
 use MailPoet\Newsletter\Shortcodes\ShortcodesHelper;
@@ -54,6 +55,9 @@ class NewsletterEditor {
   /** @var CustomFonts  */
   private $customFonts;
 
+  /*** @var AssetsController */
+  private $assetsController;
+
   public function __construct(
     PageRenderer $pageRenderer,
     SettingsController $settings,
@@ -65,7 +69,8 @@ class NewsletterEditor {
     SubscribersRepository $subscribersRepository,
     TransactionalEmailHooks $wooEmailHooks,
     WPPostListLoader $wpPostListLoader,
-    CustomFonts $customFonts
+    CustomFonts $customFonts,
+    AssetsController $assetsController
   ) {
     $this->pageRenderer = $pageRenderer;
     $this->settings = $settings;
@@ -78,9 +83,11 @@ class NewsletterEditor {
     $this->wooEmailHooks = $wooEmailHooks;
     $this->wpPostListLoader = $wpPostListLoader;
     $this->customFonts = $customFonts;
+    $this->assetsController = $assetsController;
   }
 
   public function render() {
+    $this->assetsController->setupNewsletterEditorDependencies();
     $newsletterId = (isset($_GET['id']) ? (int)$_GET['id'] : 0);
     $woocommerceTemplateId = (int)$this->settings->get(TransactionalEmails::SETTING_EMAIL_ID, null);
     if (
@@ -149,7 +156,6 @@ class NewsletterEditor {
     ];
     $this->wp->wpEnqueueMedia();
     $this->wp->wpEnqueueStyle('editor', $this->wp->includesUrl('css/editor.css'));
-
     $this->pageRenderer->displayPage('newsletter/editor.html', $data);
   }
 
