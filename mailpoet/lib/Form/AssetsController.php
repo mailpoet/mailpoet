@@ -160,4 +160,22 @@ EOL;
     );
     $this->wp->wpSetScriptTranslations('automation_templates', 'mailpoet');
   }
+
+  public function setupNewsletterEditorDependencies(): void {
+
+    $this->wp->wpEnqueueScript(
+      'newsletter_editor',
+      Env::$assetsUrl . '/dist/js/' . $this->renderer->getJsAsset('newsletter_editor.js'),
+      [],
+      Env::$version,
+      true
+    );
+
+    /**
+     * The js file needs to be added immediately since the mailpoet_newsletters_editor_initialize hook is dispatched in template files
+     * Update and remove this line in MAILPOET-4930
+     */
+    \wp_scripts()->do_item('newsletter_editor');
+    $this->wp->wpDequeueScript('newsletter_editor');
+  }
 }
