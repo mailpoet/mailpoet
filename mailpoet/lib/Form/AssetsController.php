@@ -177,5 +177,7 @@ EOL;
      */
     \wp_scripts()->do_item('newsletter_editor');
     $this->wp->wpDequeueScript('newsletter_editor');
+
+    $this->wp->wpSetScriptTranslations('newsletter_editor', 'mailpoet');
   }
 }

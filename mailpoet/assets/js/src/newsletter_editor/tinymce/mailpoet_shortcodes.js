@@ -7,8 +7,7 @@
  * available dynamic data placeholder buttons. On click each button inserts
  * its placeholder into editor text.
  */
-
-import { MailPoet } from 'mailpoet';
+import { __ } from '@wordpress/i18n';
 
 export function tinyMceAdd(editor) {
   editor.options.register('mailpoet_shortcodes', {
@@ -65,7 +64,7 @@ export function tinyMceAdd(editor) {
         buttons: [
           {
             type: 'cancel',
-            text: MailPoet.I18n.t('close'),
+            text: __('Close', 'mailpoet'),
             primary: true,
           },
         ],

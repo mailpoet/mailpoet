@@ -23,6 +23,7 @@ import { BaseBlock } from 'newsletter_editor/blocks/base';
 import { ButtonBlock } from 'newsletter_editor/blocks/button';
 import { DividerBlock } from 'newsletter_editor/blocks/divider';
 import 'select2';
+import { __ } from '@wordpress/i18n';
 
 var Module = {};
 var base = BaseBlock;
@@ -165,7 +166,9 @@ Module.PostsBlockModel = base.BlockModel.extend({
         that.trigger('change:_availablePosts');
       })
       .fail(function () {
-        MailPoet.Notice.error(MailPoet.I18n.t('failedToFetchAvailablePosts'));
+        MailPoet.Notice.error(
+          __('Failed to fetch available posts', 'mailpoet'),
+        );
       });
   },
   _loadMorePosts: function () {
@@ -186,7 +189,9 @@ Module.PostsBlockModel = base.BlockModel.extend({
         that.trigger('change:_availablePosts');
       })
       .fail(function () {
-        MailPoet.Notice.error(MailPoet.I18n.t('failedToFetchAvailablePosts'));
+        MailPoet.Notice.error(
+          __('Failed to fetch available posts', 'mailpoet'),
+        );
       })
       .always(function () {
         that.trigger('morePostsLoaded');
@@ -212,7 +217,7 @@ Module.PostsBlockModel = base.BlockModel.extend({
           .reset(posts, { parse: true });
       })
       .fail(function () {
-        MailPoet.Notice.error(MailPoet.I18n.t('failedToFetchRenderedPosts'));
+        MailPoet.Notice.error(__('Failed to fetch rendered posts', 'mailpoet'));
       });
   },
   _insertSelectedPosts: function () {
@@ -229,7 +234,7 @@ Module.PostsBlockModel = base.BlockModel.extend({
         collection.add(JSON.parse(JSON.stringify(posts)), { at: index });
       })
       .fail(function () {
-        MailPoet.Notice.error(MailPoet.I18n.t('failedToFetchRenderedPosts'));
+        MailPoet.Notice.error(__('Failed to fetch rendered posts', 'mailpoet'));
       });
   },
 });
@@ -267,7 +272,7 @@ Module.PostsBlockView = base.BlockView.extend({
     renderOptions = {
       disableTextEditor: true,
       disableDragAndDrop: true,
-      emptyContainerMessage: MailPoet.I18n.t('noPostsToDisplay'),
+      emptyContainerMessage: __('There is no content to display.', 'mailpoet'),
     };
     this.showChildView(
       'postsRegion',
@@ -471,7 +476,7 @@ PostSelectionSettingsView = Marionette.View.extend({
       .select2({
         multiple: true,
         allowClear: true,
-        placeholder: MailPoet.I18n.t('categoriesAndTags'),
+        placeholder: __('Categories & tags', 'mailpoet'),
         ajax: {
           data: function (params) {
             return {
