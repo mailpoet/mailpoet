@@ -97,6 +97,10 @@ class Settings {
     $this->settings->set('version', Env::$version);
   }
 
+  public function withWelcomeWizard() {
+    $this->settings->set('version', null);
+  }
+
   public function withSendingMethod($sendingMethod) {
     $this->settings->set('mta.method', $sendingMethod);
     $this->settings->set('mta_group', $sendingMethod === Mailer::METHOD_SMTP ? 'smtp' : 'website');
