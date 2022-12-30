@@ -5,7 +5,7 @@ import { redirectToWelcomeWizard } from './util';
 
 function Header() {
   return (
-    <div className="mailpoet-content-center">
+    <div className="mailpoet-content-center mailpoet-content-padding">
       <Heading level={1}>
         {' '}
         {MailPoet.I18n.t('betterEmailWithoutLeavingWordPress')}{' '}

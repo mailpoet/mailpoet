@@ -5,12 +5,14 @@ import { redirectToWelcomeWizard } from './util';
 
 function Footer() {
   return (
-    <div className="mailpoet-content-center landing-footer">
-      <Heading level={4}> {MailPoet.I18n.t('readyToUseMailPoet')} </Heading>
-      <Button onClick={redirectToWelcomeWizard}>
-        {' '}
-        {MailPoet.I18n.t('beginSetup')}{' '}
-      </Button>
+    <div className="mailpoet-content-padding">
+      <div className="mailpoet-content-center landing-footer">
+        <Heading level={4}> {MailPoet.I18n.t('readyToUseMailPoet')} </Heading>
+        <Button onClick={redirectToWelcomeWizard}>
+          {' '}
+          {MailPoet.I18n.t('beginSetup')}{' '}
+        </Button>
+      </div>
     </div>
   );
 }
