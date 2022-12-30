@@ -758,10 +758,7 @@ Module.NewsletterPreviewView = Marionette.View.extend({
     return MailPoet.Ajax.post({
       api_version: window.mailpoet_api_version,
       endpoint: 'services',
-      action: 'checkMSSKey',
-      data: {
-        key: window.mailpoet_api_key,
-      },
+      action: 'refreshMSSKeyStatus',
     })
       .done((response) => {
         this.model.set('awaitingKeyCheck', false);
