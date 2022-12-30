@@ -1,32 +1,42 @@
-import { MouseEvent, useState } from 'react';
+import { MouseEvent, useCallback, useState } from 'react';
 import ReactStringReplace from 'react-string-replace';
-import { getLinkRegex, t, withBoundary } from 'common';
-import { useAction, useSelector } from '../../settings/store/hooks';
+import { callApi, getLinkRegex, isTruthy, t, withBoundary } from 'common';
+import { MailPoet } from 'mailpoet';
 
 function PendingNewsletterMessage({
   toggleLoadingState,
   updatePendingState,
 }: {
   toggleLoadingState: (loading: boolean) => void;
-  updatePendingState: (approved: boolean) => void;
+  updatePendingState: (isPending: boolean) => void;
 }) {
-  const getKeyActivationState = useSelector('getKeyActivationState');
-  const getSettings = useSelector('getSettings');
+  const refreshMssKeyState = useCallback(async () => {
+    try {
+      const { success, res } = await callApi<{
+        result: { data: { is_approved: boolean | string | number } };
+      }>({
+        endpoint: 'services',
+        action: 'refreshMSSKeyStatus',
+      });
+
+      if (success === true) {
+        updatePendingState(!isTruthy(res.data.result.data.is_approved));
+      } else {
+        MailPoet.Notice.showApiErrorNotice(res);
+      }
+    } catch (error) {
+      MailPoet.Notice.showApiErrorNotice(error);
+    }
+  }, [updatePendingState]);
+
   const [showRefreshButton, keepShowingRefresh] = useState(true);
-  //
-  const verifyMssKey = useAction('verifyMssKey') as unknown as (
-    key: string,
-  ) => PromiseLike<void>;
+
   const recheckKey = async (e: MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
-    const state = getKeyActivationState();
     toggleLoadingState(true);
-    await verifyMssKey(state.key);
+    await refreshMssKeyState();
     keepShowingRefresh(false);
     toggleLoadingState(false);
-    updatePendingState(
-      !getSettings().mta.mailpoet_api_key_state.data.is_approved,
-    );
   };
 
   return (
