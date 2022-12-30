@@ -121,11 +121,26 @@ class Changelog {
   public function maybeRedirectToLandingPage() {
     if ($this->isWelcomeWizardPage()) return; // do not redirect when on welcome wizard page
 
-    $this->redirectToLandingPage();
+    if ($this->shouldShowLandingPage()) {
+      $this->redirectToLandingPage();
+      return;
+    }
+
+    $this->maybeRedirectToWelcomeWizard(); //TODO: Remove when landing page is out of experimental
   }
 
   private function setupNewInstallation() {
     $this->settings->set('show_congratulate_after_first_newsletter', true);
+  }
+
+  private function maybeRedirectToWelcomeWizard() {
+    if ($this->shouldShowWelcomeWizard() && !$this->isWelcomeWizardPage()) {
+      if ($this->isLandingPage()) return; // do not redirect when on landing page
+
+      $this->urlHelper->redirectWithReferer(
+        $this->wp->adminUrl('admin.php?page=mailpoet-welcome-wizard')
+      );
+    }
   }
 
   private function isWelcomeWizardPage() {
