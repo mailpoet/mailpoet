@@ -1,16 +1,18 @@
-import { MailPoet } from 'mailpoet';
+import { __ } from '@wordpress/i18n';
 import { Button } from 'common';
 import { Heading } from 'common/typography/heading/heading';
 import { redirectToWelcomeWizard } from './util';
 
 function Footer() {
   return (
-    <div className="mailpoet-content-padding">
-      <div className="mailpoet-content-center landing-footer">
-        <Heading level={4}> {MailPoet.I18n.t('readyToUseMailPoet')} </Heading>
-        <Button onClick={redirectToWelcomeWizard}>
+    <div className="landing-footer">
+      <div className="landing-footer-content mailpoet-content-center">
+        <Heading level={4}>
           {' '}
-          {MailPoet.I18n.t('beginSetup')}{' '}
+          {__('Ready to start using MailPoet?', 'mailpoet')}{' '}
+        </Heading>
+        <Button onClick={redirectToWelcomeWizard}>
+          {__('Begin setup', 'mailpoet')}
         </Button>
       </div>
     </div>

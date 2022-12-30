@@ -1,4 +1,3 @@
-import { MailPoet } from 'mailpoet';
 import ReactStringReplace from 'react-string-replace';
 import { __ } from '@wordpress/i18n';
 import { Heading } from 'common/typography/heading/heading';
@@ -72,12 +71,18 @@ function Faq() {
   ];
 
   return (
-    <div className="landing-faq mailpoet-content-padding">
+    <div className="landing-faq">
       <div className="mailpoet-content-center">
-        <Heading level={2}> {MailPoet.I18n.t('faqHeader')} </Heading>
+        <Heading level={2}>
+          {' '}
+          {__('Frequently asked questions', 'mailpoet')}{' '}
+        </Heading>
         <p>
           {ReactStringReplace(
-            MailPoet.I18n.t('faqHeaderSubText'),
+            __(
+              "Here are some common questions on getting started. Can't find what you're looking for? [link]View all resources[/link]",
+              'mailpoet',
+            ),
             /\[link\](.*?)\[\/link\]/,
             (text) => (
               <a
