@@ -74,7 +74,7 @@ class Changelog {
     $version = $this->settings->get('version');
     if ($version === null) {
       $this->setupNewInstallation();
-      $this->maybeRedirectToWelcomeWizard();
+      $this->maybeRedirectToLandingPage();
     }
     $this->checkWooCommerceListImportPage();
     $this->checkRevenueTrackingPermissionPage();
@@ -118,26 +118,22 @@ class Changelog {
     }
   }
 
+  public function maybeRedirectToLandingPage() {
+    if ($this->isWelcomeWizardPage()) return; // do not redirect when on welcome wizard page
+
+    $this->redirectToLandingPage();
+  }
+
   private function setupNewInstallation() {
     $this->settings->set('show_congratulate_after_first_newsletter', true);
   }
 
-  private function maybeRedirectToWelcomeWizard() {
-    if ($this->shouldShowWelcomeWizard() && !$this->isWelcomeWizardPage()) {
-      if ($this->isLandingPage()) return; // do not redirect when on landing page
-
-      $this->urlHelper->redirectWithReferer(
-        $this->wp->adminUrl('admin.php?page=mailpoet-welcome-wizard')
-      );
-    }
-  }
-
   private function isWelcomeWizardPage() {
-    return isset($_GET['page']) && $_GET['page'] === Menu::WELCOME_WIZARD_PAGE_SLUG;
+    return isset($_GET['page']) && sanitize_text_field(wp_unslash($_GET['page'])) === Menu::WELCOME_WIZARD_PAGE_SLUG;
   }
 
   private function isLandingPage() {
-    return isset($_GET['page']) && $_GET['page'] === Menu::LANDINGPAGE_PAGE_SLUG;
+    return isset($_GET['page']) && sanitize_text_field(wp_unslash($_GET['page'])) === Menu::LANDINGPAGE_PAGE_SLUG;
   }
 
   private function checkWooCommerceListImportPage() {
