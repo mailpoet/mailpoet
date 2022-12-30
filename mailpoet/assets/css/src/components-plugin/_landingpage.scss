@@ -16,4 +16,65 @@
   .landing-faq {
     background-color: #fbfbfb;
   }
+
+  .mailpoet-faq-accordion {
+    margin: 40px 0;
+  }
+}
+
+.mailpoet-faq-accordion {
+  details {
+    overflow: hidden;
+
+    &:not(:first-child) {
+      border-top: 1px solid $color-editor-border-structure;
+    }
+
+    summary {
+      cursor: pointer;
+      padding: 20px 5px;
+      position: relative;
+
+      &::-webkit-details-marker {   // remove default marker
+        content: '';
+        display: none;
+      }
+
+      &::marker {                   // remove default marker
+        content: '';
+        display: none;
+      }
+
+      &:after {
+        content: '›';
+        font-size: 30px;
+        position: absolute;
+        right: 20px;
+        top: 0;
+        transform: rotate(90deg);
+        transform-origin: center;
+        transition: .2s transform ease;
+      }
+    }
+
+    .content {
+      max-height: 0;
+      overflow: hidden;
+      padding: 10px 5px;
+      transition: max-height .3s ease;
+    }
+
+    // when accordion is opened
+    &[open] {
+      summary:after {
+        transform: rotate(-90deg);
+        transition: .5s transform ease;
+      }
+
+      .content {
+        max-height: 400px;
+        transition: max-height .5s ease-in;
+      }
+    }
+  }
 }
