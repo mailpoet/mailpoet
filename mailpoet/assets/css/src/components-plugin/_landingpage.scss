@@ -1,24 +1,35 @@
 #mailpoet_landingpage_container {
+  $content-padding: 32px 65px;
+
   .mailpoet-content-center {
     text-align: center;
   }
 
   .mailpoet-content-padding {
-    padding: 32px 40px
+    padding: $content-padding;
+  }
+
+  .landing-header {
+    padding: $content-padding;
   }
 
   .landing-footer {
-    box-shadow: 0 -1px 0 0 $color-tertiary-light;
-    padding-bottom: 1px;
-    padding-top: 25px;
+    background-color: $color-landingpage-background-light;
+    padding: $content-padding;
+
+    .landing-footer-content {
+      box-shadow: 0 -1px 0 0 $color-tertiary-light;
+      padding: 25px 0;
+    }
   }
 
   .landing-faq {
-    background-color: #fbfbfb;
-  }
+    background-color: $color-landingpage-background-light;
+    padding: $content-padding;
 
-  .mailpoet-faq-accordion {
-    margin: 40px 0;
+    .mailpoet-faq-accordion {
+      margin: 25px 0;
+    }
   }
 }
 
