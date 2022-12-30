@@ -25,7 +25,6 @@ import { extractEmailDomain } from 'common/functions';
 import { mapFilterType } from '../analytics';
 import { PremiumModal } from '../common/premium_modal';
 import { NewsLetter, NewsletterType } from './models';
-import { initStore as initSettingsStore } from '../settings/store';
 import { PendingNewsletterMessage } from './send/pending_newsletter_message';
 
 const automaticEmails = window.mailpoet_woocommerce_automatic_emails || {};
@@ -802,6 +801,4 @@ class NewsletterSendComponent extends Component<
 }
 
 NewsletterSendComponent.contextType = GlobalContext;
-initSettingsStore(window);
-
 export const NewsletterSend = withRouter(NewsletterSendComponent);
