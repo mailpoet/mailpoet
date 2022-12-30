@@ -4,6 +4,7 @@ import { ErrorBoundary } from 'common';
 import { Background } from 'common/background/background';
 import { Header } from './header';
 import { Footer } from './footer';
+import { Faq } from './faq';
 
 function Landingpage() {
   return (
@@ -21,6 +22,8 @@ function Landingpage() {
       <br />
 
       <div className="mailpoet-gap" />
+
+      <Faq />
 
       <Footer />
     </GlobalContext.Provider>

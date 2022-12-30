@@ -3,9 +3,17 @@
     text-align: center;
   }
 
+  .mailpoet-content-padding {
+    padding: 32px 40px
+  }
+
   .landing-footer {
     box-shadow: 0 -1px 0 0 $color-tertiary-light;
     padding-bottom: 1px;
     padding-top: 25px;
+  }
+
+  .landing-faq {
+    background-color: #fbfbfb;
   }
 }
