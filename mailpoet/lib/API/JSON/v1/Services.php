@@ -278,6 +278,11 @@ class Services extends APIEndpoint {
     ]);
   }
 
+  public function refreshMSSKeyStatus() {
+    $key = $this->settings->get('mta.mailpoet_api_key');
+    return $this->checkMSSKey(['key' => $key]);
+  }
+
   private function isItemInArray($item, $array): bool {
     return in_array($item, $array, true);
   }
