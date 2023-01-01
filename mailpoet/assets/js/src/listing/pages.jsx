@@ -1,6 +1,6 @@
 import { Component } from 'react';
 import classnames from 'classnames';
-import { MailPoet } from 'mailpoet';
+import { __ } from '@wordpress/i18n';
 import PropTypes from 'prop-types';
 
 class ListingPages extends Component {
@@ -99,7 +99,7 @@ class ListingPages extends Component {
             className="mailpoet-listing-pages-previous"
           >
             <span className="screen-reader-text">
-              {MailPoet.I18n.t('previousPage')}
+              {__('Previous page', 'mailpoet')}
             </span>
             <span aria-hidden="true">
               <Arrow direction="left" />
@@ -119,7 +119,7 @@ class ListingPages extends Component {
             className="mailpoet-listing-pages-first"
           >
             <span className="screen-reader-text">
-              {MailPoet.I18n.t('firstPage')}
+              {__('First page', 'mailpoet')}
             </span>
             <span aria-hidden="true">
               <Arrow direction="left" />
@@ -140,7 +140,7 @@ class ListingPages extends Component {
             className="mailpoet-listing-pages-next"
           >
             <span className="screen-reader-text">
-              {MailPoet.I18n.t('nextPage')}
+              {__('Next page', 'mailpoet')}
             </span>
             <span aria-hidden="true">
               <Arrow />
@@ -160,7 +160,7 @@ class ListingPages extends Component {
             className="mailpoet-listing-pages-last"
           >
             <span className="screen-reader-text">
-              {MailPoet.I18n.t('lastPage')}
+              {__('Last page', 'mailpoet')}
             </span>
             <span aria-hidden="true">
               <Arrow />
@@ -186,7 +186,7 @@ class ListingPages extends Component {
               className="screen-reader-text"
               htmlFor={`current-page-selector-${this.props.position}`}
             >
-              {MailPoet.I18n.t('currentPage')}
+              {__('Current page', 'mailpoet')}
             </label>
             <input
               type="text"
@@ -200,7 +200,7 @@ class ListingPages extends Component {
               id={`current-page-selector-${this.props.position}`}
               className="mailpoet-listing-current-page"
             />
-            {MailPoet.I18n.t('pageOutOf')}
+            {__('of', 'mailpoet')}
             &nbsp;
             <span className="mailpoet-listing-total-pages">
               {Math.ceil(this.props.count / this.props.limit).toLocaleString()}
@@ -220,9 +220,9 @@ class ListingPages extends Component {
 
     let numberOfItemsLabel;
     if (Number(this.props.count) === 1) {
-      numberOfItemsLabel = MailPoet.I18n.t('numberOfItemsSingular');
+      numberOfItemsLabel = __('1 item', 'mailpoet');
     } else {
-      numberOfItemsLabel = MailPoet.I18n.t('numberOfItemsMultiple').replace(
+      numberOfItemsLabel = __('%1$d items', 'mailpoet').replace(
         '%1$d',
         parseInt(this.props.count, 10).toLocaleString(),
       );

@@ -1,33 +1,30 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
 import { __ } from '@wordpress/i18n';
-import { MailPoet } from 'mailpoet';
 import { Heading } from 'common/typography/heading/heading';
 import { Button } from 'common';
 
 function getSuccessMessage(newsletter) {
   if (newsletter.type === 'welcome') {
-    return MailPoet.I18n.t('congratulationsWelcomeEmailSuccessBody');
+    return __('Your Welcome Email is now active.', 'mailpoet');
   }
   if (newsletter.type === 'notification') {
-    return MailPoet.I18n.t('congratulationsPostNotificationSuccessBody');
+    return __('Your Post Notification is now active.', 'mailpoet');
   }
   if (newsletter.type === 'automatic') {
-    return MailPoet.I18n.t('congratulationsWooSuccessBody');
+    return __('Your WooCommerce email has been activated.', 'mailpoet');
   }
   if (newsletter.status === 'scheduled') {
-    return MailPoet.I18n.t('congratulationsScheduleSuccessBody');
+    return __('Your newsletter is scheduled to be sent.', 'mailpoet');
   }
-  return MailPoet.I18n.t('congratulationsSendSuccessBody');
+  return __('Your newsletter is being sent!', 'mailpoet');
 }
 
 function MSSUserSuccess(props) {
   const [isClosing, setIsClosing] = useState(false);
   return (
     <>
-      <Heading level={0}>
-        {MailPoet.I18n.t('congratulationsSuccessHeader')}
-      </Heading>
+      <Heading level={0}>{__('Congratulations!', 'mailpoet')}</Heading>
       <Heading level={3}>{getSuccessMessage(props.newsletter)}</Heading>
       <div className="mailpoet-gap-large" />
       <div className="mailpoet-gap-large" />

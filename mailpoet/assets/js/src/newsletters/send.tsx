@@ -1,6 +1,7 @@
 import _ from 'lodash';
 import { ChangeEvent, Component, ContextType } from 'react';
 import jQuery from 'jquery';
+import { __, _x, sprintf } from '@wordpress/i18n';
 import { History, Location } from 'history';
 import ReactStringReplace from 'react-string-replace';
 import slugify from 'slugify';
@@ -70,7 +71,10 @@ function validateNewsletter(newsletter: NewsLetter) {
       !Array.isArray(content.blocks) ||
       content.blocks.length === 0
     ) {
-      return MailPoet.I18n.t('newsletterIsEmpty');
+      return __(
+        'Poet, please add prose to your masterpiece before you send it to your followers.',
+        'mailpoet',
+      );
     }
   }
 
@@ -79,14 +83,20 @@ function validateNewsletter(newsletter: NewsLetter) {
     body.indexOf('[link:subscription_unsubscribe_url]') < 0 &&
     body.indexOf('[link:subscription_unsubscribe]') < 0
   ) {
-    return MailPoet.I18n.t('unsubscribeLinkMissing');
+    return __(
+      'All emails must include an "Unsubscribe" link. Add a footer widget to your email to continue.',
+      'mailpoet',
+    );
   }
 
   if (
     newsletter.type === 're_engagement' &&
     body.indexOf('[link:subscription_re_engage_url]') < 0
   ) {
-    return MailPoet.I18n.t('reEngageLinkMissing');
+    return __(
+      'A re-engagement email must include a link with [link:subscription_re_engage_url] shortcode.',
+      'mailpoet',
+    );
   }
 
   if (
@@ -94,11 +104,18 @@ function validateNewsletter(newsletter: NewsLetter) {
     body.indexOf('"type":"automatedLatestContent"') < 0 &&
     body.indexOf('"type":"automatedLatestContentLayout"') < 0
   ) {
-    return MailPoet.I18n.t('automatedLatestContentMissing');
+    return _x(
+      'Please add an “Automatic Latest Content” widget to the email from the right sidebar.',
+      '(Please reuse the current translation used for the string “Automatic Latest Content”) This Error message is displayed when a user tries to send a “Post Notification” email without any “Automatic Latest Content” widget inside',
+      'mailpoet',
+    );
   }
 
   if (newsletter.type === 'standard' && newsletter.status === 'sent') {
-    return MailPoet.I18n.t('emailAlreadySent');
+    return __(
+      'This email has already been sent. It can be edited, but not sent again. Duplicate this email if you want to send it again.',
+      'mailpoet',
+    );
   }
 
   if (
@@ -108,7 +125,10 @@ function validateNewsletter(newsletter: NewsLetter) {
     return (
       <span style={{ pointerEvents: 'all' }}>
         {ReactStringReplace(
-          MailPoet.I18n.t('reEngagementEmailsDisableIfTrackingIs'),
+          __(
+            'Re-engagement emails are disabled because [link]open and click tracking[/link] is disabled.',
+            'mailpoet',
+          ),
           /\[link\](.*?)\[\/link\]/g,
           (match) => (
             <a
@@ -406,7 +426,7 @@ class NewsletterSendComponent extends Component<
             .join(', ');
           if (response.data.status === 'scheduled') {
             this.context.notices.success(
-              <p>{MailPoet.I18n.t('newsletterHasBeenScheduled')}</p>,
+              <p>{__('The newsletter has been scheduled.', 'mailpoet')}</p>,
             );
             MailPoet.trackEvent('Emails > Newsletter sent', {
               scheduled: true,
@@ -414,7 +434,7 @@ class NewsletterSendComponent extends Component<
             });
           } else {
             this.context.notices.success(
-              <p>{MailPoet.I18n.t('newsletterBeingSent')}</p>,
+              <p>{__('The newsletter is being sent...', 'mailpoet')}</p>,
               { id: 'mailpoet_notice_being_sent' },
             );
             MailPoet.trackEvent('Emails > Newsletter sent', {
@@ -463,8 +483,8 @@ class NewsletterSendComponent extends Component<
           ) {
             this.context.notices.success(
               <p>
-                {MailPoet.I18n.t('automaticEmailActivated').replace(
-                  '%1s',
+                {sprintf(
+                  __('Your %1s Automatic Email is now activated!', 'mailpoet'),
                   automaticEmails[opts.group]?.title ?? '',
                 )}
               </p>,
@@ -475,7 +495,7 @@ class NewsletterSendComponent extends Component<
             });
           } else if (response.data.type === 'welcome') {
             this.context.notices.success(
-              <p>{MailPoet.I18n.t('welcomeEmailActivated')}</p>,
+              <p>{__('Your Welcome Email is now activated!', 'mailpoet')}</p>,
             );
             MailPoet.trackEvent('Emails > Welcome email activated', {
               'List type': opts.event,
@@ -483,14 +503,16 @@ class NewsletterSendComponent extends Component<
             });
           } else if (response.data.type === 're_engagement') {
             this.context.notices.success(
-              <p>{MailPoet.I18n.t('reEngagementEmailActivated')}</p>,
+              <p>
+                {__('Your Re-engagement Email is now activated!', 'mailpoet')}
+              </p>,
             );
             MailPoet.trackEvent('Emails > Re-engagement email activated', {
               Inactivity: getTimingValueForTracking(opts),
             });
           } else if (response.data.type === 'notification') {
             this.context.notices.success(
-              <p>{MailPoet.I18n.t('postNotificationActivated')}</p>,
+              <p>{__('Your post notification is now active!', 'mailpoet')}</p>,
             );
             MailPoet.trackEvent('Emails > Post notifications activated', {
               Frequency: opts.intervalType,
@@ -526,7 +548,9 @@ class NewsletterSendComponent extends Component<
             .done(() => {
               this.props.history.push(`/${this.state.item.type || ''}`);
               this.context.notices.success(
-                <p>{MailPoet.I18n.t('newsletterSendingHasBeenResumed')}</p>,
+                <p>
+                  {__('The newsletter sending has been resumed.', 'mailpoet')}
+                </p>,
               );
             })
             .fail((response) => {
@@ -549,7 +573,7 @@ class NewsletterSendComponent extends Component<
     void this.saveNewsletter()
       .done(() => {
         this.context.notices.success(
-          <p>{MailPoet.I18n.t('newsletterUpdated')}</p>,
+          <p>{__('Email was updated successfully!', 'mailpoet')}</p>,
         );
       })
       .done(() => {
@@ -571,7 +595,7 @@ class NewsletterSendComponent extends Component<
     void this.saveNewsletter()
       .done(() => {
         this.context.notices.success(
-          <p>{MailPoet.I18n.t('newsletterUpdated')}</p>,
+          <p>{__('Email was updated successfully!', 'mailpoet')}</p>,
         );
       })
       .done(() => {
@@ -742,7 +766,7 @@ class NewsletterSendComponent extends Component<
                 onClick={this.handleSaveDraft}
                 isDisabled={this.state.loading}
               >
-                {MailPoet.I18n.t('saveDraftAndClose')}
+                {__('Save as draft and close', 'mailpoet')}
               </Button>
               {isPaused ? (
                 <Button
@@ -751,7 +775,7 @@ class NewsletterSendComponent extends Component<
                   isDisabled={sendingDisabled || this.state.loading}
                   automationId="email-resume"
                 >
-                  {MailPoet.I18n.t('resume')}
+                  {__('Resume', 'mailpoet')}
                 </Button>
               ) : (
                 <Button
@@ -761,7 +785,7 @@ class NewsletterSendComponent extends Component<
                   isDisabled={sendingDisabled || this.state.loading}
                   automationId="email-submit"
                 >
-                  {sendButtonOptions.value || MailPoet.I18n.t('send')}
+                  {sendButtonOptions.value || __('Send', 'mailpoet')}
                 </Button>
               )}
               {this.state.validationError !== undefined && (
@@ -772,14 +796,14 @@ class NewsletterSendComponent extends Component<
               )}
             </Grid.CenteredRow>
             <p>
-              {MailPoet.I18n.t('orSimply')}
+              {__('or simply', 'mailpoet')}
               &nbsp;
               <a
                 className="mailpoet-link"
                 href={`?page=mailpoet-newsletter-editor&id=${this.props.match.params.id}`}
                 onClick={this.handleRedirectToDesign}
               >
-                {MailPoet.I18n.t('goBackToDesign')}
+                {__('go back to the Design page', 'mailpoet')}
               </a>
               .
             </p>
@@ -793,7 +817,10 @@ class NewsletterSendComponent extends Component<
 
             {showPremiumModal && (
               <PremiumModal onRequestClose={this.closePremiumModal}>
-                {MailPoet.I18n.t('gaOnlyAvailableForPremium')}
+                {__(
+                  'Google Analytics tracking is not available in the free version of the MailPoet plugin.',
+                  'mailpoet',
+                )}
               </PremiumModal>
             )}
           </Form>

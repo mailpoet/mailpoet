@@ -1,8 +1,8 @@
 import { Component } from 'react';
 import PropTypes from 'prop-types';
 import _ from 'underscore';
+import { __ } from '@wordpress/i18n';
 
-import { MailPoet } from 'mailpoet';
 import { Selection } from 'form/fields/selection.jsx';
 import { FormFieldText } from 'form/fields/text.jsx';
 import { timeDelayValues } from 'newsletters/scheduling/common.jsx';
@@ -114,8 +114,9 @@ class EventScheduling extends Component {
         validation: {
           'data-parsley-required': true,
           'data-parsley-errors-container': '.mailpoet-form-errors',
-          'data-parsley-scheduled-at': MailPoet.I18n.t(
-            'emailCanBeScheduledUpToFiveYears',
+          'data-parsley-scheduled-at': __(
+            'An email can only be scheduled up to 5 years in the future. Please choose a shorter period.',
+            'mailpoet',
           ),
         },
       },
@@ -143,7 +144,7 @@ class EventScheduling extends Component {
     const { event } = this.props;
     return (
       <>
-        <h4> {MailPoet.I18n.t('whenToSendMail')} </h4>
+        <h4> {__('When to send this email?', 'mailpoet')} </h4>
 
         <Grid.CenteredRow className="mailpoet-re-engagement-scheduling">
           {this.displayAfterTimeNumberField()}

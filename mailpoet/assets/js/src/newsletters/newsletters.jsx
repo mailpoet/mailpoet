@@ -74,16 +74,16 @@ const Tabs = withNpsPoll(() => {
         <Tab
           key="welcome"
           route="welcome/(.*)?"
-          title={MailPoet.I18n.t('tabWelcomeTitle')}
-          automationId={`tab-${MailPoet.I18n.t('tabWelcomeTitle')}`}
+          title={__('Welcome Emails', 'mailpoet')}
+          automationId={`tab-${__('Welcome Emails', 'mailpoet')}`}
         >
           <NewsletterListWelcome />
         </Tab>
         <Tab
           key="notification"
           route="notification/(.*)?"
-          title={MailPoet.I18n.t('tabNotificationTitle')}
-          automationId={`tab-${MailPoet.I18n.t('tabNotificationTitle')}`}
+          title={__('Post Notifications', 'mailpoet')}
+          automationId={`tab-${__('Post Notifications', 'mailpoet')}`}
         >
           {parentId ? (
             <NewsletterListNotificationHistory parentId={parentId} />
@@ -94,8 +94,8 @@ const Tabs = withNpsPoll(() => {
         <Tab
           key="re_engagement"
           route="re_engagement/(.*)?"
-          title={MailPoet.I18n.t('tabReEngagementTitle')}
-          automationId={`tab-${MailPoet.I18n.t('tabReEngagementTitle')}`}
+          title={__('Re-engagement Emails', 'mailpoet')}
+          automationId={`tab-${__('Re-engagement Emails', 'mailpoet')}`}
         >
           <NewsletterListReEngagement />
         </Tab>

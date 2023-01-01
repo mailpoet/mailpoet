@@ -1,4 +1,5 @@
 import ReactDOM from 'react-dom';
+import { __ } from '@wordpress/i18n';
 import { Link } from 'react-router-dom';
 import ReactStringReplace from 'react-string-replace';
 import { Hooks } from 'wp-js-hooks';
@@ -22,7 +23,7 @@ export const addStatsCTAAction = (actions) => {
             trackStatsCTAClicked,
           )}
         >
-          {MailPoet.I18n.t('statsListingActionTitle')}
+          {__('Statistics', 'mailpoet')}
         </Link>
       );
     },
@@ -63,7 +64,10 @@ export const checkCronStatus = (state) => {
   }
 
   const cronPingCheckNotice = ReactStringReplace(
-    MailPoet.I18n.t('cronNotAccessibleNotice'),
+    __(
+      'Oops! There seems to be an issue with the sending on your website. [link]See our guide[/link] to solve this yourself.',
+      'mailpoet',
+    ),
     /\[link\](.*?)\[\/link\]/g,
     (match) => (
       <a
@@ -105,7 +109,10 @@ export const confirmEdit = (newsletter) => {
     newsletter.status === 'active'
   ) {
     confirmAlert({
-      message: MailPoet.I18n.t('confirmAutomaticNewsletterEdit'),
+      message: __(
+        'To edit this email, it needs to be deactivated. You can activate it again after you make the changes.',
+        'mailpoet',
+      ),
       onConfirm: redirectToEditing,
     });
   } else {

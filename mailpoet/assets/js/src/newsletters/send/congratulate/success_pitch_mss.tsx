@@ -1,3 +1,4 @@
+import { __ } from '@wordpress/i18n';
 import { useState } from 'react';
 import { MailPoet } from 'mailpoet';
 import ReactStringReplace from 'react-string-replace';
@@ -29,15 +30,15 @@ type Props = {
 
 function getHeader(newsletterType: string): string {
   const typeMap = {
-    standard: MailPoet.I18n.t('congratulationsMSSPitchHeader'),
-    welcome: MailPoet.I18n.t('congratulationsMSSPitchHeaderAutomated'),
-    notification: MailPoet.I18n.t('congratulationsMSSPitchHeaderAutomated'),
-    woocommerce: MailPoet.I18n.t('congratulationsMSSPitchHeaderAutomated'),
+    standard: __('Your email has been sent!', 'mailpoet'),
+    welcome: __('You are all set up and ready to go!', 'mailpoet'),
+    notification: __('You are all set up and ready to go!', 'mailpoet'),
+    woocommerce: __('You are all set up and ready to go!', 'mailpoet'),
   };
 
   return (
     typeMap[newsletterType] ||
-    MailPoet.I18n.t('congratulationsMSSPitchHeaderAutomated')
+    __('You are all set up and ready to go!', 'mailpoet')
   );
 }
 
@@ -56,7 +57,10 @@ export function PitchMss(props: Props): JSX.Element {
       >
         <div className="mailpoet-welcome-wizard-step-content">
           <Heading level={4}>
-            {MailPoet.I18n.t('congratulationsMSSPitchSubHeader')}
+            {__(
+              'What’s next? Sign up to the MailPoet Starter plan for fast and reliable email delivery',
+              'mailpoet',
+            )}
           </Heading>
           <p>
             {MailPoet.I18n.t(

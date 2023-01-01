@@ -1,4 +1,5 @@
 import { Component } from 'react';
+import { __ } from '@wordpress/i18n';
 import { MailPoet } from 'mailpoet';
 import PropTypes from 'prop-types';
 
@@ -49,7 +50,10 @@ class TemplateBox extends Component {
         });
     };
     confirmAlert({
-      message: MailPoet.I18n.t('confirmTemplateDeletion').replace('%1$s', name),
+      message: __(
+        'You are about to delete the template named "%1$s".',
+        'mailpoet',
+      ).replace('%1$s', name),
       onConfirm,
     });
   }
@@ -114,7 +118,7 @@ class TemplateBox extends Component {
             {thumbnail ? (
               <img
                 src={thumbnail}
-                alt={MailPoet.I18n.t('templatePreview')}
+                alt={__('Template preview', 'mailpoet')}
                 loading="lazy"
               />
             ) : (
@@ -122,7 +126,7 @@ class TemplateBox extends Component {
             )}
           </div>
           <div className="mailpoet-template-preview-overlay">
-            <Button>{MailPoet.I18n.t('zoom')}</Button>
+            <Button>{__('Preview', 'mailpoet')}</Button>
           </div>
         </a>
       );

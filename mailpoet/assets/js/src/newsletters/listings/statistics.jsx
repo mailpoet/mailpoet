@@ -1,5 +1,5 @@
 import moment from 'moment';
-import { MailPoet } from 'mailpoet';
+import { __ } from '@wordpress/i18n';
 import { Hooks } from 'wp-js-hooks';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
@@ -123,10 +123,10 @@ function Statistics({ newsletter, isSent, currentTime }) {
             variant="excellent"
             isInverted
           >
-            {MailPoet.I18n.t('checkBackInHours').replace(
-              '%1$d',
-              showStatsTimeout - sentHoursAgo,
-            )}
+            {__(
+              'Nice job! Check back in %1$d hour(s) for more stats.',
+              'mailpoet',
+            ).replace('%1$d', showStatsTimeout - sentHoursAgo)}
           </Tag>,
           'check-back',
         )}
@@ -155,7 +155,7 @@ function Statistics({ newsletter, isSent, currentTime }) {
           rel="noopener noreferrer"
           className="mailpoet_stat_link_small"
         >
-          {MailPoet.I18n.t('improveThisLinkText')}
+          {__('What can I do to improve this?', 'mailpoet')}
         </a>
       </div>
     );

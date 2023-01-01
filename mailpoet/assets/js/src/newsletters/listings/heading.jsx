@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { __ } from '@wordpress/i18n';
 import { MailPoet } from 'mailpoet';
 import { TopBarWithBeamer } from 'common/top_bar/top_bar';
 import { plusIcon } from 'common/button/icon/plus';
@@ -14,7 +15,7 @@ export function ListingHeading() {
         data-automation-id="new_email"
       >
         {plusIcon}
-        <span>{MailPoet.I18n.t('new')}</span>
+        <span>{__('New email', 'mailpoet')}</span>
       </Link>
     </TopBarWithBeamer>
   );

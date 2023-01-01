@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { __ } from '@wordpress/i18n';
 import { MailPoet } from 'mailpoet';
 import { Link } from 'react-router-dom';
 import parseDate from 'date-fns/parse';
@@ -70,12 +71,12 @@ function QueueSending({ newsletter }: QueueSendingProps) {
               : resumeSending
           }
         >
-          {MailPoet.I18n.t('resume')}
+          {__('Resume', 'mailpoet')}
         </Button>
       )}
       {!paused && (
         <Button dimension="small" onClick={pauseSending}>
-          {MailPoet.I18n.t('pause')}
+          {__('Pause', 'mailpoet')}
         </Button>
       )}
     </>

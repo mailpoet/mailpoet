@@ -1,7 +1,8 @@
 import { PureComponent } from 'react';
-import { MailPoet } from 'mailpoet';
+import { __ } from '@wordpress/i18n';
 import _ from 'underscore';
 import PropTypes from 'prop-types';
+
 import { Badge } from 'common/badge/badge';
 import { Button } from 'common/button/button';
 import { Heading } from 'common/typography/heading/heading';
@@ -15,7 +16,7 @@ class AutomaticEmailEvent extends PureComponent {
     if (this.props.premium) {
       action = (
         <a href="?page=mailpoet-premium" target="_blank">
-          {MailPoet.I18n.t('premiumFeatureLink')}
+          {__('This is a Premium feature', 'mailpoet')}
         </a>
       );
     } else if (event.actionButtonLink && event.actionButtonTitle) {
@@ -48,7 +49,7 @@ class AutomaticEmailEvent extends PureComponent {
             }
           }}
         >
-          {event.actionButtonTitle || MailPoet.I18n.t('setUp')}
+          {event.actionButtonTitle || __('Set up', 'mailpoet')}
         </Button>
       );
     }
@@ -60,7 +61,7 @@ class AutomaticEmailEvent extends PureComponent {
         </div>
         <div className="mailpoet-newsletter-type-content">
           <Heading level={4}>
-            {event.title} {event.soon && `(${MailPoet.I18n.t('soon')})`}
+            {event.title} {event.soon && `(${__('Soon', 'mailpoet')})`}
           </Heading>
           <p>{event.description}</p>
           <div className="mailpoet-flex-grow" />

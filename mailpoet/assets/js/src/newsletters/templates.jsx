@@ -1,7 +1,7 @@
 import _ from 'underscore';
 import { Component } from 'react';
 import PropTypes from 'prop-types';
-import { __ } from '@wordpress/i18n';
+import { __, _x } from '@wordpress/i18n';
 
 import { Background } from 'common/background/background';
 import { Categories } from 'common/categories/categories';
@@ -20,7 +20,7 @@ const templatesCategories = [];
 if (window.mailpoet_newsletters_templates_recently_sent_count) {
   templatesCategories.push({
     name: 'recent',
-    label: MailPoet.I18n.t('recentlySent'),
+    label: __('Recently sent', 'mailpoet'),
   });
 }
 
@@ -32,19 +32,19 @@ templatesCategories.push(
     },
     {
       name: 'welcome',
-      label: MailPoet.I18n.t('tabWelcomeTitle'),
+      label: __('Welcome Emails', 'mailpoet'),
     },
     {
       name: 'notification',
-      label: MailPoet.I18n.t('tabNotificationTitle'),
+      label: __('Post Notifications', 'mailpoet'),
     },
     {
       name: 're_engagement',
-      label: MailPoet.I18n.t('tabReEngagementTitle'),
+      label: __('Re-engagement Emails', 'mailpoet'),
     },
     {
       name: 'blank',
-      label: MailPoet.I18n.t('tabBlankTitle'),
+      label: __('Simple text', 'mailpoet'),
     },
   ],
 );
@@ -52,7 +52,7 @@ templatesCategories.push(
 if (window.mailpoet_woocommerce_active) {
   templatesCategories.push({
     name: 'woocommerce',
-    label: MailPoet.I18n.t('tabWoocommerceTitle'),
+    label: __('WooCommerce Emails', 'mailpoet'),
   });
 }
 
@@ -60,7 +60,7 @@ templatesCategories.push(
   ...[
     {
       name: 'saved',
-      label: MailPoet.I18n.t('savedTemplates'),
+      label: __('Your saved templates', 'mailpoet'),
     },
   ],
 );
@@ -93,7 +93,7 @@ class NewsletterTemplates extends Component {
         if (response.data.length === 0) {
           response.data = [
             {
-              name: MailPoet.I18n.t('mailpoetGuideTemplateTitle'),
+              name: __("MailPoet's Guide", 'mailpoet'),
               categories:
                 '["welcome", "notification", "standard", "woocommerce"]',
               readonly: true,
@@ -269,7 +269,7 @@ class NewsletterTemplates extends Component {
     const categories = templatesCategories
       .concat({
         name: 'import',
-        label: MailPoet.I18n.t('tabImportTitle'),
+        label: _x('Import', 'Importing template tab title', 'mailpoet'),
       })
       .map((category) =>
         Object.assign(category, {
@@ -294,7 +294,14 @@ class NewsletterTemplates extends Component {
         if (this.state.loading) {
           templates = null;
         } else {
-          templates = <p>{MailPoet.I18n.t('noTemplates')}</p>;
+          templates = (
+            <p>
+              {__(
+                'This category does not contain any template yet!',
+                'mailpoet',
+              )}
+            </p>
+          );
         }
       } else {
         templates = templates.map((template, index) => (

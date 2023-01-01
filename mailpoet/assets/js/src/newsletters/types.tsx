@@ -1,4 +1,5 @@
 import { ComponentType, Fragment, useState } from 'react';
+import { __ } from '@wordpress/i18n';
 import { MailPoet } from 'mailpoet';
 import { Hooks } from 'wp-js-hooks';
 import _ from 'underscore';
@@ -80,7 +81,7 @@ function NewsletterTypesComponent({
         <div className="mailpoet-newsletter-type-image" />
         <div className="mailpoet-newsletter-type-content">
           <Heading level={4}>
-            {type.title} {type.beta ? `(${MailPoet.I18n.t('beta')})` : ''}
+            {type.title} {type.beta ? `(${__('Beta', 'mailpoet')})` : ''}
           </Heading>
           <p>{type.description}</p>
           {type.videoGuide && (
@@ -92,7 +93,7 @@ function NewsletterTypesComponent({
               rel="noopener noreferrer"
             >
               <span className="dashicons dashicons-format-video" />
-              {MailPoet.I18n.t('seeVideoGuide')}
+              {__('See video guide', 'mailpoet')}
             </a>
           )}
           <div className="mailpoet-flex-grow" />
@@ -110,8 +111,11 @@ function NewsletterTypesComponent({
     return [
       {
         slug: 'wc_transactional',
-        title: MailPoet.I18n.t('wooCommerceCustomizerTypeTitle'),
-        description: MailPoet.I18n.t('wooCommerceCustomizerTypeDescription'),
+        title: __('WooCommerce Emails Customizer', 'mailpoet'),
+        description: __(
+          "Customize the template used for your WooCommerce emails using MailPoet's editor. Example of WooCommerce email: Order processing notification, Order failed notification, ...",
+          'mailpoet',
+        ),
         action: (
           <Button
             automationId="customize_woocommerce"
@@ -127,7 +131,7 @@ function NewsletterTypesComponent({
               }
             }}
           >
-            {MailPoet.I18n.t('customize')}
+            {__('Customize', 'mailpoet')}
           </Button>
         ),
       },
@@ -175,7 +179,7 @@ function NewsletterTypesComponent({
       action: 'create',
       data: {
         type,
-        subject: MailPoet.I18n.t('draftNewsletterTitle'),
+        subject: __('Subject', 'mailpoet'),
       },
     })
       .done((response) => {
@@ -204,8 +208,11 @@ function NewsletterTypesComponent({
   const defaultTypes = [
     {
       slug: 'standard',
-      title: MailPoet.I18n.t('regularNewsletterTypeTitle'),
-      description: MailPoet.I18n.t('regularNewsletterTypeDescription'),
+      title: __('Newsletter', 'mailpoet'),
+      description: __(
+        'Send a newsletter with images, buttons, dividers, and social bookmarks. Or, just send a basic text email.',
+        'mailpoet',
+      ),
       action: (
         <Button
           automationId="create_standard"
@@ -222,14 +229,17 @@ function NewsletterTypesComponent({
             }
           }}
         >
-          {MailPoet.I18n.t('create')}
+          {__('Create', 'mailpoet')}
         </Button>
       ),
     },
     {
       slug: 'welcome',
-      title: MailPoet.I18n.t('welcomeNewsletterTypeTitle'),
-      description: MailPoet.I18n.t('welcomeNewsletterTypeDescription'),
+      title: __('Welcome Email', 'mailpoet'),
+      description: __(
+        'Automatically send an email (or series of emails) to new subscribers or WordPress users. Send a day, a week, or a month after they sign up.',
+        'mailpoet',
+      ),
       videoGuide:
         'https://kb.mailpoet.com/article/254-video-guide-to-welcome-emails',
       videoGuideBeacon: '5b05ebf20428635ba8b2aa53',
@@ -249,14 +259,17 @@ function NewsletterTypesComponent({
           }}
           tabIndex={0}
         >
-          {MailPoet.I18n.t('setUp')}
+          {__('Set up', 'mailpoet')}
         </Button>
       ),
     },
     {
       slug: 'notification',
-      title: MailPoet.I18n.t('postNotificationNewsletterTypeTitle'),
-      description: MailPoet.I18n.t('postNotificationNewsletterTypeDescription'),
+      title: __('Latest Post Notifications', 'mailpoet'),
+      description: __(
+        'Let MailPoet email your subscribers with your latest content. You can send daily, weekly, monthly, or even immediately after publication.',
+        'mailpoet',
+      ),
       videoGuide:
         'https://kb.mailpoet.com/article/210-video-guide-to-post-notifications',
       videoGuideBeacon: '59ba6fb3042863033a1cd5a5',
@@ -276,14 +289,17 @@ function NewsletterTypesComponent({
             }
           }}
         >
-          {MailPoet.I18n.t('setUp')}
+          {__('Set up', 'mailpoet')}
         </Button>
       ),
     },
     {
       slug: 're_engagement',
-      title: MailPoet.I18n.t('tabReEngagementTitle'),
-      description: MailPoet.I18n.t('reEngagementDescription'),
+      title: __('Re-engagement Emails', 'mailpoet'),
+      description: __(
+        'Automatically email and win back subscribers who have recently lost interest and stopped engaging with your emails.',
+        'mailpoet',
+      ),
       action: (
         <Button
           automationId="create_notification"
@@ -300,7 +316,7 @@ function NewsletterTypesComponent({
             }
           }}
         >
-          {MailPoet.I18n.t('setUp')}
+          {__('Set up', 'mailpoet')}
         </Button>
       ),
     },

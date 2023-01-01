@@ -1,11 +1,11 @@
 import { Component } from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
+import { __ } from '@wordpress/i18n';
 
 import { Grid } from 'common/grid';
 import { ListingBulkActions } from 'listing/bulk_actions.jsx';
 import { ListingItem } from 'listing/listing_item.jsx';
-import { MailPoet } from 'mailpoet';
 
 // eslint-disable-next-line react/prefer-stateless-function, max-len
 class ListingItems extends Component {
@@ -16,7 +16,7 @@ class ListingItems extends Component {
         message =
           (this.props.messages.onLoadingItems &&
             this.props.messages.onLoadingItems(this.props.group)) ||
-          MailPoet.I18n.t('loadingItems');
+          __('Loading ...', 'mailpoet');
       } else {
         message =
           (this.props.messages.onNoItemsFound &&
@@ -24,7 +24,7 @@ class ListingItems extends Component {
               this.props.group,
               this.props.search,
             )) ||
-          MailPoet.I18n.t('noItemsFound');
+          __('No emails found.', 'mailpoet');
       }
 
       return (
@@ -81,8 +81,8 @@ class ListingItems extends Component {
               </div>
               <div className={selectAllClasses}>
                 {this.props.selection !== 'all'
-                  ? MailPoet.I18n.t('selectAllLabel')
-                  : MailPoet.I18n.t('selectedAllLabel').replace(
+                  ? __('All emails on this page are selected.', 'mailpoet')
+                  : __('All %d emails are selected.', 'mailpoet').replace(
                       '%d',
                       this.props.count.toLocaleString(),
                     )}
@@ -95,8 +95,8 @@ class ListingItems extends Component {
                   }}
                 >
                   {this.props.selection !== 'all'
-                    ? MailPoet.I18n.t('selectAllLink')
-                    : MailPoet.I18n.t('clearSelection')}
+                    ? __('Select all emails on all pages', 'mailpoet')
+                    : __('Clear selection', 'mailpoet')}
                 </a>
                 .
               </div>

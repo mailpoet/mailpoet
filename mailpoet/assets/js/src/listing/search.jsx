@@ -1,5 +1,5 @@
 import { Component } from 'react';
-import { MailPoet } from 'mailpoet';
+import { __ } from '@wordpress/i18n';
 import _ from 'underscore';
 import PropTypes from 'prop-types';
 import { Input } from 'common/form/input/input.tsx';
@@ -65,7 +65,7 @@ class ListingSearch extends Component {
           }}
         >
           <label htmlFor="search_input" className="screen-reader-text">
-            {MailPoet.I18n.t('searchLabel')}
+            {__('Search', 'mailpoet')}
           </label>
           <Input
             dimension="small"
@@ -75,7 +75,7 @@ class ListingSearch extends Component {
             name="s"
             onChange={this.onChange}
             value={this.state.search}
-            placeholder={MailPoet.I18n.t('searchLabel')}
+            placeholder={__('Search', 'mailpoet')}
           />
         </form>
       </div>

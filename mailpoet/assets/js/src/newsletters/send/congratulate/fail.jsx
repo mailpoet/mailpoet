@@ -2,7 +2,6 @@ import { useState } from 'react';
 import PropTypes from 'prop-types';
 import ReactStringReplace from 'react-string-replace';
 import { __ } from '@wordpress/i18n';
-import { MailPoet } from 'mailpoet';
 
 import { Button } from 'common';
 import { Heading } from 'common/typography/heading/heading';
@@ -12,11 +11,14 @@ function Fail(props) {
   return (
     <div>
       <Heading level={1}>
-        {MailPoet.I18n.t('congratulationsSendFailHeader')}
+        {__('Oops! We can’t send your newsletter', 'mailpoet')}
       </Heading>
       <Heading level={3}>
         {ReactStringReplace(
-          MailPoet.I18n.t('congratulationsSendFailExplain'),
+          __(
+            'Rest assured, this is fairly common and is usually fixed quickly. [link]See our quick guide[/link] to help you solve this and get your website sending.',
+            'mailpoet',
+          ),
           /\[link\](.*?)\[\/link\]/g,
           (match, i) => (
             <a

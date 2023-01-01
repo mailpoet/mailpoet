@@ -1,6 +1,6 @@
 import _ from 'underscore';
 import { Component } from 'react';
-import { MailPoet } from 'mailpoet';
+import { __ } from '@wordpress/i18n';
 import PropTypes from 'prop-types';
 import { FormFieldSelect as Select } from 'form/fields/select.jsx';
 import {
@@ -134,9 +134,7 @@ class NotificationScheduling extends Component {
           />
           {value.intervalType === 'immediately' && (
             <div>
-              <p>
-                {MailPoet.I18n.t('postNotificationNewsletterAfterValueText')}
-              </p>
+              <p>{__('after publishing a post', 'mailpoet')}</p>
             </div>
           )}
         </Grid.CenteredRow>
