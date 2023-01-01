@@ -1,6 +1,7 @@
 import classnames from 'classnames';
 import { memo, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
+import { __, _x } from '@wordpress/i18n';
 
 import { Link } from 'react-router-dom';
 import { Listing } from 'listing/listing.jsx';
@@ -13,21 +14,25 @@ import { MailPoet } from 'mailpoet';
 const columns = [
   {
     name: 'subscriber_id',
-    label: MailPoet.I18n.t('subscriber'),
+    label: __('Subscriber', 'mailpoet'),
     sortable: true,
   },
   {
     name: 'status',
-    label: MailPoet.I18n.t('sendingStatus'),
+    label: _x(
+      'Sending status',
+      'an email sending status: unprocessed, sent or failed.',
+      'mailpoet',
+    ),
   },
   {
     name: 'failureReason',
-    label: MailPoet.I18n.t('failureReason'),
+    label: __('Failure reason (if applicable)', 'mailpoet'),
   },
 ];
 
 const messages = {
-  onNoItemsFound: () => MailPoet.I18n.t('noSendingTaskFound'),
+  onNoItemsFound: () => __('No sending task found.', 'mailpoet'),
 };
 
 function SendingStatus(props) {
@@ -58,7 +63,13 @@ function SendingStatus(props) {
 
   return (
     <>
-      <h1>{MailPoet.I18n.t('sendingStatusTitle')}</h1>
+      <h1>
+        {_x(
+          'Sending status',
+          'Page title. This page displays a list of emails along with their sending status: unprocessed, sent or failed.',
+          'mailpoet',
+        )}
+      </h1>
       <StatsLink newsletter={newsletter} />
       <SendingStatusListing
         location={props.location}
@@ -173,12 +184,20 @@ function ListingItem({
     'column-primary',
     'has-row-actions',
   );
-  let status = MailPoet.I18n.t('unprocessed');
+  let status = _x(
+    'Unprocessed',
+    'status when the sending of a newsletter has not been processed',
+    'mailpoet',
+  );
   if (processed) {
     if (failed) {
       status = (
         <span>
-          {MailPoet.I18n.t('failed')}
+          {_x(
+            'Failed',
+            'status when the sending of a newsletter has failed',
+            'mailpoet',
+          )}
           <br />
           <a
             className="button"
@@ -188,12 +207,12 @@ function ListingItem({
               resend();
             }}
           >
-            {MailPoet.I18n.t('resend')}
+            {__('Resend', 'mailpoet')}
           </a>
         </span>
       );
     } else {
-      status = MailPoet.I18n.t('sent');
+      status = _x('Sent', 'status when a newsletter has been sent', 'mailpoet');
     }
   }
   return (
@@ -215,14 +234,18 @@ function ListingItem({
       <td
         className="column"
         data-automation-id={`status_${taskId}_${subscriberId}`}
-        data-colname={MailPoet.I18n.t('sendingStatus')}
+        data-colname={_x(
+          'Sending status',
+          'an email sending status: unprocessed, sent or failed.',
+          'mailpoet',
+        )}
       >
         {status}
       </td>
       <td
         className="column"
         data-automation-id={`error_${taskId}_${subscriberId}`}
-        data-colname={MailPoet.I18n.t('failureReason')}
+        data-colname={__('Failure reason (if applicable)', 'mailpoet')}
       >
         {error}
       </td>

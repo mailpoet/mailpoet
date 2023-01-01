@@ -1,3 +1,4 @@
+import { __ } from '@wordpress/i18n';
 import { MailPoet } from 'mailpoet';
 import { Heading } from 'common/typography/heading/heading';
 import { Grid } from 'common/grid';
@@ -25,7 +26,7 @@ function NewsletterStatsInfo({ newsletter }: Props) {
         {Array.isArray(newsletter.segments) && newsletter.segments.length && (
           <div>
             <span className="mailpoet-stats-info-key">
-              {MailPoet.I18n.t('statsToSegments')}
+              {__('To', 'mailpoet')}
             </span>
             {': '}
             <SegmentTags dimension="large" segments={newsletter.segments} />
@@ -36,21 +37,21 @@ function NewsletterStatsInfo({ newsletter }: Props) {
         <div>
           <div className="mailpoet-stats-info-key-value">
             <span className="mailpoet-stats-info-key">
-              {MailPoet.I18n.t('statsFromAddress')}
+              {__('From', 'mailpoet')}
               {': '}
             </span>
             {newsletter.sender_address ? newsletter.sender_address : '-'}
           </div>
           <div className="mailpoet-stats-info-key-value">
             <span className="mailpoet-stats-info-key">
-              {MailPoet.I18n.t('statsReplyToAddress')}
+              {__('Reply-to', 'mailpoet')}
               {': '}
             </span>
             {newsletter.reply_to_address ? newsletter.reply_to_address : '-'}
           </div>
           <div className="mailpoet-stats-info-key-value">
             <span className="mailpoet-stats-info-key">
-              {MailPoet.I18n.t('googleAnalytics')}
+              {__('GA campaign', 'mailpoet')}
               {': '}
             </span>
             {newsletter.ga_campaign ? newsletter.ga_campaign : '-'}
@@ -62,7 +63,7 @@ function NewsletterStatsInfo({ newsletter }: Props) {
             target="_blank"
             rel="noopener noreferrer"
           >
-            {MailPoet.I18n.t('statsPreviewNewsletter')}
+            {__('Preview', 'mailpoet')}
           </Button>
         </div>
       </div>

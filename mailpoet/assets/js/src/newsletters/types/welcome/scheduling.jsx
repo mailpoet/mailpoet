@@ -1,6 +1,6 @@
 import _ from 'underscore';
 import { Component } from 'react';
-import { MailPoet } from 'mailpoet';
+import { __ } from '@wordpress/i18n';
 import { FormFieldSelect as Select } from 'form/fields/select.jsx';
 import { Selection } from 'form/fields/selection.jsx';
 import { FormFieldText } from 'form/fields/text.jsx';
@@ -17,14 +17,14 @@ const availableSegments = _.filter(
 const events = {
   name: 'event',
   values: {
-    segment: MailPoet.I18n.t('onSubscriptionToList'),
-    user: MailPoet.I18n.t('onWPUserRegistration'),
+    segment: __('When someone subscribes to the list...', 'mailpoet'),
+    user: __('When a new WordPress user is added to your site...', 'mailpoet'),
   },
 };
 
 const segmentField = {
   name: 'segment',
-  placeholder: MailPoet.I18n.t('selectSegmentPlaceholder'),
+  placeholder: __('Select a list', 'mailpoet'),
   forceSelect2: true,
   values: availableSegments,
   getCount: (segment) => parseInt(segment.subscribers, 10).toLocaleString(),
@@ -43,8 +43,9 @@ const afterTimeNumberField = {
   validation: {
     'data-parsley-required': true,
     'data-parsley-errors-container': '.mailpoet-form-errors',
-    'data-parsley-scheduled-at': MailPoet.I18n.t(
-      'emailCanBeScheduledUpToFiveYears',
+    'data-parsley-scheduled-at': __(
+      'An email can only be scheduled up to 5 years in the future. Please choose a shorter period.',
+      'mailpoet',
     ),
   },
 };

@@ -1,4 +1,5 @@
 import { Component } from 'react';
+import { __ } from '@wordpress/i18n';
 import PropTypes from 'prop-types';
 import { registerLocale } from 'react-datepicker';
 import locale from 'date-fns/locale/en-US';
@@ -58,13 +59,13 @@ const dayValues = {
     MailPoet.I18n.t('saturdayShort'),
   ],
   wide: [
-    MailPoet.I18n.t('sunday'),
-    MailPoet.I18n.t('monday'),
-    MailPoet.I18n.t('tuesday'),
-    MailPoet.I18n.t('wednesday'),
-    MailPoet.I18n.t('thursday'),
-    MailPoet.I18n.t('friday'),
-    MailPoet.I18n.t('saturday'),
+    __('Sunday', 'mailpoet'),
+    __('Monday', 'mailpoet'),
+    __('Tuesday', 'mailpoet'),
+    __('Wednesday', 'mailpoet'),
+    __('Thursday', 'mailpoet'),
+    __('Friday', 'mailpoet'),
+    __('Saturday', 'mailpoet'),
   ],
 };
 

@@ -1,6 +1,6 @@
 import { Component } from 'react';
 import PropTypes from 'prop-types';
-import { MailPoet } from 'mailpoet';
+import { __ } from '@wordpress/i18n';
 import { Link } from 'react-router-dom';
 import classnames from 'classnames';
 import { Checkbox } from 'common/form/checkbox/checkbox.tsx';
@@ -79,8 +79,8 @@ class ListingItem extends Component {
                   }}
                 >
                   {this.props.isItemToggleable(this.props.item)
-                    ? MailPoet.I18n.t('trashAndDisable')
-                    : MailPoet.I18n.t('moveToTrash')}
+                    ? __('Trash and disable', 'mailpoet')
+                    : __('Move to trash', 'mailpoet')}
                 </a>
               </span>
             );
@@ -150,7 +150,7 @@ class ListingItem extends Component {
               },
             }}
           >
-            {MailPoet.I18n.t('edit')}
+            {__('Edit', 'mailpoet')}
           </Link>
         </span>
       );
@@ -171,8 +171,8 @@ class ListingItem extends Component {
                 }}
               >
                 {this.props.isItemToggleable(this.props.item)
-                  ? MailPoet.I18n.t('restoreAndEnable')
-                  : MailPoet.I18n.t('restore')}
+                  ? __('Restore and enable', 'mailpoet')
+                  : __('Restore', 'mailpoet')}
               </a>
             </span>
             {this.props.isItemDeletable(this.props.item) && (
@@ -185,7 +185,7 @@ class ListingItem extends Component {
                     this.handleDeleteItem(this.props.item.id);
                   }}
                 >
-                  {MailPoet.I18n.t('deletePermanently')}
+                  {__('Delete permanently', 'mailpoet')}
                 </a>
               </span>
             )}

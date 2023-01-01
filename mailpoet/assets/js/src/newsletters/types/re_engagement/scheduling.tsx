@@ -1,6 +1,6 @@
 import ReactStringReplace from 'react-string-replace';
+import { __ } from '@wordpress/i18n';
 
-import { MailPoet } from 'mailpoet';
 import { Heading } from 'common/typography/heading/heading';
 import { Input } from 'common/form/input/input';
 import { Select } from 'common/form/select/select';
@@ -35,13 +35,13 @@ export function Scheduling({
   return (
     <>
       <Heading level={4}>
-        {MailPoet.I18n.t('selectEventToSendReEngagementEmail')}
+        {__('When to send this re-engagement email?', 'mailpoet')}
       </Heading>
       <Grid.CenteredRow className="mailpoet-re-engagement-scheduling">
-        <p>{MailPoet.I18n.t('reEngagementTextPre')}</p>
+        <p>{__('After no activity for', 'mailpoet')}</p>
         <Input
           type="text"
-          placeholder={MailPoet.I18n.t('reEngagementAterTimeNumberPlaceholder')}
+          placeholder={__('count', 'mailpoet')}
           value={afterTimeNumber}
           onChange={onChange(updateAfterTimeNumber)}
         />
@@ -53,7 +53,10 @@ export function Scheduling({
       {!!inactiveSubscribersPeriod && inactivePeriod <= daysSelected && (
         <p className="mailpoet-re-engagement-scheduling-note">
           {ReactStringReplace(
-            MailPoet.I18n.t('reEngagementEmailWarning').replace(
+            __(
+              'Disengaged subscribers will [link]become inactive[/link] after {$months} months and won’t receive this email. Please select a shorter period.',
+              'mailpoet',
+            ).replace(
               '{$months}',
               `${Math.floor(inactiveSubscribersPeriod / 30)}`,
             ),

@@ -1,4 +1,5 @@
 import classnames from 'classnames';
+import { __, _x } from '@wordpress/i18n';
 import { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Link, withRouter } from 'react-router-dom';
@@ -23,15 +24,20 @@ const mailpoetTrackingEnabled = MailPoet.trackingConfig.emailTrackingEnabled;
 
 const messages = {
   onNoItemsFound: (group, search) =>
-    MailPoet.I18n.t(search ? 'noItemsFound' : 'emptyListing'),
+    search
+      ? __('No emails found.', 'mailpoet')
+      : __(
+          "Nothing here yet! But, don't fret - there's no reason to get upset. Pretty soon, you’ll be sending emails faster than a turbo-jet.",
+          'mailpoet',
+        ),
   onTrash: (response) => {
     const count = Number(response.meta.count);
     let message = null;
 
     if (count === 1) {
-      message = MailPoet.I18n.t('oneNewsletterTrashed');
+      message = __('1 email was moved to the trash.', 'mailpoet');
     } else {
-      message = MailPoet.I18n.t('multipleNewslettersTrashed').replace(
+      message = __('%1$d emails were moved to the trash.', 'mailpoet').replace(
         '%1$d',
         count.toLocaleString(),
       );
@@ -43,9 +49,9 @@ const messages = {
     let message = null;
 
     if (count === 1) {
-      message = MailPoet.I18n.t('oneNewsletterDeleted');
+      message = __('1 email was permanently deleted.', 'mailpoet');
     } else {
-      message = MailPoet.I18n.t('multipleNewslettersDeleted').replace(
+      message = __('%1$d emails were permanently deleted.', 'mailpoet').replace(
         '%1$d',
         count.toLocaleString(),
       );
@@ -57,12 +63,12 @@ const messages = {
     let message = null;
 
     if (count === 1) {
-      message = MailPoet.I18n.t('oneNewsletterRestored');
+      message = __('1 email has been restored from the Trash.', 'mailpoet');
     } else {
-      message = MailPoet.I18n.t('multipleNewslettersRestored').replace(
-        '%1$d',
-        count.toLocaleString(),
-      );
+      message = __(
+        '%1$d emails have been restored from the Trash.',
+        'mailpoet',
+      ).replace('%1$d', count.toLocaleString());
     }
     MailPoet.Notice.success(message);
   },
@@ -71,26 +77,26 @@ const messages = {
 const columns = [
   {
     name: 'subject',
-    label: MailPoet.I18n.t('subject'),
+    label: __('Subject', 'mailpoet'),
     sortable: true,
   },
   {
     name: 'settings',
-    label: MailPoet.I18n.t('settings'),
+    label: __('Settings', 'mailpoet'),
   },
   {
     name: 'statistics',
-    label: MailPoet.I18n.t('statistics'),
+    label: __('Clicked, Opened', 'mailpoet'),
     display: mailpoetTrackingEnabled,
   },
   {
     name: 'status',
-    label: MailPoet.I18n.t('status'),
+    label: __('Status', 'mailpoet'),
     width: 145,
   },
   {
     name: 'updated_at',
-    label: MailPoet.I18n.t('lastModifiedOn'),
+    label: __('Last modified on', 'mailpoet'),
     sortable: true,
   },
 ];
@@ -98,7 +104,7 @@ const columns = [
 const bulkActions = [
   {
     name: 'trash',
-    label: MailPoet.I18n.t('moveToTrash'),
+    label: __('Move to trash', 'mailpoet'),
     onSuccess: messages.onTrash,
   },
 ];
@@ -113,7 +119,7 @@ let newsletterActions = [
           target="_blank"
           rel="noopener noreferrer"
         >
-          {MailPoet.I18n.t('preview')}
+          {__('Preview', 'mailpoet')}
         </a>
       );
     },
@@ -121,7 +127,7 @@ let newsletterActions = [
   {
     name: 'duplicate',
     className: 'mailpoet-hide-on-mobile',
-    label: MailPoet.I18n.t('duplicate'),
+    label: __('Duplicate', 'mailpoet'),
     onClick: (newsletter, refresh) =>
       MailPoet.Ajax.post({
         api_version: window.mailpoet_api_version,
@@ -133,7 +139,7 @@ let newsletterActions = [
       })
         .done((response) => {
           MailPoet.Notice.success(
-            MailPoet.I18n.t('newsletterDuplicated').replace(
+            __('Email "%1$s" has been duplicated.', 'mailpoet').replace(
               '%1$s',
               response.data.subject,
             ),
@@ -152,7 +158,7 @@ let newsletterActions = [
   {
     name: 'edit',
     className: 'mailpoet-hide-on-mobile',
-    label: MailPoet.I18n.t('edit'),
+    label: __('Edit', 'mailpoet'),
     onClick: confirmEdit,
   },
   {
@@ -187,7 +193,7 @@ class NewsletterListReEngagementComponent extends Component {
       .done((response) => {
         if (response.data.status === 'active') {
           MailPoet.Notice.success(
-            MailPoet.I18n.t('reEngagementEmailActivated'),
+            __('Your Re-engagement Email is now activated!', 'mailpoet'),
           );
         }
         // force refresh of listing so that groups are updated
@@ -202,10 +208,11 @@ class NewsletterListReEngagementComponent extends Component {
   };
 
   renderStatus = (newsletter) => {
-    const totalSentMessage = MailPoet.I18n.t('sentToXSubscribers').replace(
-      '%1$d',
-      newsletter.total_sent.toLocaleString(),
-    );
+    const totalSentMessage = _x(
+      '%1$d sent',
+      'number of welcome emails sent',
+      'mailpoet',
+    ).replace('%1$d', newsletter.total_sent.toLocaleString());
 
     return (
       <div>
@@ -232,12 +239,12 @@ class NewsletterListReEngagementComponent extends Component {
     if (newsletter.segments.length === 0) {
       return (
         <Link className="mailpoet-listing-error" to={`/send/${newsletter.id}`}>
-          {MailPoet.I18n.t('sendingToSegmentsNotSpecified')}
+          {__('You need to select a list to send to.', 'mailpoet')}
         </Link>
       );
     }
     const sendingToSegments = ReactStringReplace(
-      MailPoet.I18n.t('sendTo'),
+      __('Send to %1$s', 'mailpoet'),
       '%1$s',
       (match, i) => <SegmentTags segments={newsletter.segments} key={i} />,
     );
@@ -260,9 +267,13 @@ class NewsletterListReEngagementComponent extends Component {
       frequencyKey = 'reEngagementFrequencyWeek';
     }
 
-    const sendingFrequency = MailPoet.I18n.t('reEngagementSettings')
+    const sendingFrequency = _x(
+      '{$count} {$frequency} after inactivity',
+      'example: "5 months after inactivity"',
+      'mailpoet',
+    )
       .replace('{$count}', newsletter.options.afterTimeNumber)
-      .replace('{$frequency}', MailPoet.I18n.t(frequencyKey));
+      .replace('{$frequency}', __(frequencyKey, 'mailpoet'));
 
     return (
       <span>
@@ -297,14 +308,14 @@ class NewsletterListReEngagementComponent extends Component {
         </td>
         <td
           className="column mailpoet-hide-on-mobile"
-          data-colname={MailPoet.I18n.t('settings')}
+          data-colname={__('Settings', 'mailpoet')}
         >
           {this.renderSettings(newsletter)}
         </td>
         {mailpoetTrackingEnabled === true ? (
           <td
             className="column mailpoet-listing-stats-column"
-            data-colname={MailPoet.I18n.t('statistics')}
+            data-colname={__('Clicked, Opened', 'mailpoet')}
           >
             <Statistics
               newsletter={newsletter}
@@ -312,12 +323,12 @@ class NewsletterListReEngagementComponent extends Component {
             />
           </td>
         ) : null}
-        <td className="column" data-colname={MailPoet.I18n.t('status')}>
+        <td className="column" data-colname={__('Status', 'mailpoet')}>
           {this.renderStatus(newsletter)}
         </td>
         <td
           className="column-date mailpoet-hide-on-mobile"
-          data-colname={MailPoet.I18n.t('lastModifiedOn')}
+          data-colname={__('Last modified on', 'mailpoet')}
         >
           {MailPoet.Date.short(newsletter.updated_at)}
           <br />

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { __, assoc, compose } from 'lodash/fp';
 import { useHistory } from 'react-router-dom';
+import { __ as t } from '@wordpress/i18n';
 
 import { MailPoet } from 'mailpoet';
 import { Background } from 'common/background/background';
@@ -41,7 +42,7 @@ export function NewsletterTypeReEngagement(): JSX.Element {
       action: 'create',
       data: {
         type: 're_engagement',
-        subject: MailPoet.I18n.t('draftNewsletterTitle'),
+        subject: t('Subject', 'mailpoet'),
         options,
       },
     })
@@ -91,7 +92,7 @@ export function NewsletterTypeReEngagement(): JSX.Element {
           isDisabled={!options.afterTimeNumber || loading}
           withSpinner={loading}
         >
-          {MailPoet.I18n.t('next')}
+          {t('Next', 'mailpoet')}
         </Button>
       </Grid.Column>
     </div>

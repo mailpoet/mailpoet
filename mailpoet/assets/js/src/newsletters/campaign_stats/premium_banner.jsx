@@ -1,3 +1,4 @@
+import { __ } from '@wordpress/i18n';
 import { MailPoet } from 'mailpoet';
 import { Button } from 'common/button/button';
 import { PremiumRequired } from 'common/premium_required/premium_required';
@@ -15,15 +16,18 @@ function SkipDisplayingDetailedStats() {
       target="_blank"
       rel="noopener noreferrer"
     >
-      {MailPoet.I18n.t('premiumBannerCtaFree')}
+      {__('Upgrade', 'mailpoet')}
     </Button>
   );
 
   const description = (
     <p>
-      {MailPoet.I18n.t('premiumBannerDescription')}{' '}
+      {__(
+        'Learn more about your subscribers and optimize your campaigns. See who opened your emails, which links they clicked, and then use the data to make your emails even better. And if you run a WooCommerce store, you’ll also see the revenue earned per email. All starting $10 per month.',
+        'mailpoet',
+      )}{' '}
       <a href="admin.php?page=mailpoet-upgrade">
-        {MailPoet.I18n.t('learnMore')}
+        {__('Learn more', 'mailpoet')}
       </a>
       .
     </p>
@@ -32,7 +36,7 @@ function SkipDisplayingDetailedStats() {
   return (
     <div className="mailpoet-stats-premium-required">
       <PremiumRequired
-        title={MailPoet.I18n.t('premiumFeature')}
+        title={__('This is a Premium feature', 'mailpoet')}
         message={description}
         actionButton={ctaButton}
       />
@@ -46,12 +50,18 @@ function PremiumBanner() {
   }
   if (window.mailpoet_subscribers_limit_reached) {
     const hasValidApiKey = window.mailpoet_has_valid_api_key;
-    const title = MailPoet.I18n.t('upgradeRequired');
-    const youReachedTheLimit = MailPoet.I18n.t(
-      hasValidApiKey ? 'newsletterYourPlanLimit' : 'newsletterFreeVersionLimit',
-    )
-      .replace('[subscribersLimit]', window.mailpoet_subscribers_limit)
-      .replace('[subscribersCount]', window.mailpoet_subscribers_count);
+    const title = __('Upgrade required', 'mailpoet');
+    const youReachedTheLimit = hasValidApiKey
+      ? __(
+          'Congratulations, you now have [subscribersCount] subscribers! Your plan is limited to [subscribersLimit] subscribers. You need to upgrade now to be able to continue using MailPoet.',
+          'mailpoet',
+        )
+      : __(
+          'Congratulations, you now have [subscribersCount] subscribers! Our free version is limited to [subscribersLimit] subscribers. You need to upgrade now to be able to continue using MailPoet.',
+          'mailpoet',
+        )
+          .replace('[subscribersLimit]', window.mailpoet_subscribers_limit)
+          .replace('[subscribersCount]', window.mailpoet_subscribers_count);
     const upgradeLink = hasValidApiKey
       ? MailPoet.MailPoetComUrlFactory.getUpgradeUrl(MailPoet.pluginPartialKey)
       : MailPoet.MailPoetComUrlFactory.getPurchasePlanUrl(
@@ -69,7 +79,7 @@ function PremiumBanner() {
               rel="noopener noreferrer"
               href={upgradeLink}
             >
-              {MailPoet.I18n.t('upgradeNow')}
+              {__('Upgrade Now', 'mailpoet')}
             </Button>
           }
         />
