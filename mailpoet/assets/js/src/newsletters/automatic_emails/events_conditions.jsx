@@ -1,4 +1,5 @@
 import _ from 'underscore';
+import { __, _x } from '@wordpress/i18n';
 import { Component } from 'react';
 import jQuery from 'jquery';
 import PropTypes from 'prop-types';
@@ -129,7 +130,7 @@ class EventsConditions extends Component {
       action: 'create',
       data: {
         type: 'automatic',
-        subject: MailPoet.I18n.t('draftNewsletterTitle'),
+        subject: __('Subject', 'mailpoet'),
         options,
       },
     })
@@ -255,7 +256,7 @@ class EventsConditions extends Component {
     const { event } = this.state;
     return event.tip ? (
       <p className="description">
-        <strong>{MailPoet.I18n.t('tip')}</strong> {event.tip}
+        <strong>{__('Tip:', 'mailpoet')}</strong> {event.tip}
       </p>
     ) : null;
   }
@@ -278,7 +279,7 @@ class EventsConditions extends Component {
             <div>{this.displayScheduling()}</div>
 
             <Button isFullWidth onClick={this.handleNextStep} type="submit">
-              {MailPoet.I18n.t('next')}
+              {_x('Next', 'Button label: Next step', 'mailpoet')}
             </Button>
           </form>
         </Grid.Column>

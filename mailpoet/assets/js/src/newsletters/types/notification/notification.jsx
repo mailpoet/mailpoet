@@ -1,5 +1,7 @@
 import PropTypes from 'prop-types';
 import { Component } from 'react';
+import { __ } from '@wordpress/i18n';
+
 import { MailPoet } from 'mailpoet';
 import { ListingHeadingStepsRoute } from 'newsletters/listings/heading_steps_route';
 import _ from 'underscore';
@@ -44,7 +46,10 @@ class NewsletterNotificationComponent extends Component {
       action: 'create',
       data: _.extend({}, this.state, {
         type: 'notification',
-        subject: MailPoet.I18n.t('draftPostNotificationTitle'),
+        subject: __(
+          'The last [newsletter:total] posts from our blog',
+          'mailpoet',
+        ),
       }),
     })
       .done((response) => {
@@ -78,7 +83,7 @@ class NewsletterNotificationComponent extends Component {
 
         <Grid.Column align="center" className="mailpoet-schedule-email">
           <Heading level={4}>
-            {MailPoet.I18n.t('selectEventToSendPostNotificationEmail')}
+            {__('When to send this post notification email?', 'mailpoet')}
           </Heading>
 
           <NotificationScheduling
@@ -88,7 +93,7 @@ class NewsletterNotificationComponent extends Component {
           />
 
           <Button isFullWidth onClick={this.handleNext} type="button">
-            {MailPoet.I18n.t('next')}
+            {__('Next', 'mailpoet')}
           </Button>
         </Grid.Column>
       </div>

@@ -1,4 +1,4 @@
-import { MailPoet } from 'mailpoet';
+import { __ } from '@wordpress/i18n';
 import { Hooks } from 'wp-js-hooks';
 import { WelcomeScheduling } from 'newsletters/types/welcome/scheduling.jsx';
 import { SenderField } from 'newsletters/send/sender_address_field.jsx';
@@ -13,26 +13,37 @@ let fields = [
     fields: [
       {
         name: 'subject',
-        customLabel: MailPoet.I18n.t('subjectLabel'),
+        customLabel: __('Subject', 'mailpoet'),
         className: 'mailpoet-form-field-subject',
-        placeholder: MailPoet.I18n.t('subjectLine'),
-        tooltip: MailPoet.I18n.t('subjectLineTip'),
+        placeholder: __('Type newsletter subject', 'mailpoet'),
+        tooltip: __(
+          "Be creative! It's the first thing that your subscribers see. Tempt them to open your email.",
+          'mailpoet',
+        ),
         type: 'text',
         validation: {
           'data-parsley-required': true,
-          'data-parsley-required-message': MailPoet.I18n.t(
-            'emptySubjectLineError',
+          'data-parsley-required-message': __(
+            'Please specify a subject',
+            'mailpoet',
           ),
           maxLength: 250,
         },
       },
       {
         name: 'preheader',
-        customLabel: MailPoet.I18n.t('preheaderLabel'),
+        customLabel: __('Preview text', 'mailpoet'),
         className: 'mailpoet-form-field-preheader',
-        placeholder: MailPoet.I18n.t('preheaderLine'),
-        tooltip: `${MailPoet.I18n.t('preheaderLineTip1')} ${MailPoet.I18n.t(
-          'preheaderLineTip2',
+        placeholder: __(
+          'Type preview text (usually displayed underneath the subject line in the inbox)',
+          'mailpoet',
+        ),
+        tooltip: `${__(
+          "This optional text will appear in your subscribers' inboxes, beside the subject line. Write something enticing!",
+          'mailpoet',
+        )} ${__(
+          'Max length is 250 characters, however, we recommend 80 characters on a single line.',
+          'mailpoet',
         )}`,
         type: 'textarea',
         validation: {
@@ -43,20 +54,20 @@ let fields = [
   },
   {
     name: 'options',
-    label: MailPoet.I18n.t('selectEventToSendWelcomeEmail'),
+    label: __('When to send this welcome email?', 'mailpoet'),
     type: 'reactComponent',
     component: withBoundary(WelcomeScheduling),
   },
   GATrackingField,
   {
     name: 'sender',
-    label: MailPoet.I18n.t('sender'),
-    tip: MailPoet.I18n.t('senderTip'),
+    label: __('Sender', 'mailpoet'),
+    tip: __('Your name and email', 'mailpoet'),
     fields: [
       {
         name: 'sender_name',
         type: 'text',
-        placeholder: MailPoet.I18n.t('senderNamePlaceholder'),
+        placeholder: __('John Doe', 'mailpoet'),
         validation: {
           'data-parsley-required': true,
         },
@@ -65,7 +76,7 @@ let fields = [
         name: 'sender_address',
         type: 'reactComponent',
         component: withBoundary(SenderField),
-        placeholder: MailPoet.I18n.t('senderAddressPlaceholder'),
+        placeholder: __('john.doe@email.com', 'mailpoet'),
         validation: {
           'data-parsley-required': true,
           'data-parsley-type': 'email',
@@ -79,19 +90,22 @@ let fields = [
   },
   {
     name: 'reply-to',
-    label: MailPoet.I18n.t('replyTo'),
-    tip: MailPoet.I18n.t('replyToTip'),
+    label: __('Reply-to', 'mailpoet'),
+    tip: __(
+      'When your subscribers reply to your emails, their emails will go to this address.',
+      'mailpoet',
+    ),
     inline: true,
     fields: [
       {
         name: 'reply_to_name',
         type: 'text',
-        placeholder: MailPoet.I18n.t('replyToNamePlaceholder'),
+        placeholder: __('John Doe', 'mailpoet'),
       },
       {
         name: 'reply_to_address',
         type: 'text',
-        placeholder: MailPoet.I18n.t('replyToAddressPlaceholder'),
+        placeholder: __('john.doe@email.com', 'mailpoet'),
         validation: {
           'data-parsley-type': 'email',
         },
@@ -108,7 +122,7 @@ export const WelcomeNewsletterFields = {
   },
   getSendButtonOptions: function getSendButtonOptions() {
     return {
-      value: MailPoet.I18n.t('activate'),
+      value: __('Activate', 'mailpoet'),
     };
   },
 };

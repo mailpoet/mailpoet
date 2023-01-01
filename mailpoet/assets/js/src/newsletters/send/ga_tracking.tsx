@@ -1,5 +1,6 @@
 import _ from 'underscore';
 import { MailPoet } from 'mailpoet';
+import { __ } from '@wordpress/i18n';
 import ReactStringReplace from 'react-string-replace';
 import { Field } from '../../form/types';
 
@@ -10,7 +11,7 @@ const trackCampaignNameTyped = _.once(() =>
 const tipLink =
   'https://kb.mailpoet.com/article/187-track-your-newsletters-subscribers-in-google-analytics';
 const tip = ReactStringReplace(
-  MailPoet.I18n.t('gaCampaignTip'),
+  __('For example, “Spring email”. [link]Read the guide.[/link]', 'mailpoet'),
   /\[link\](.*?)\[\/link\]/g,
   (match, i) => (
     <span key={i}>
@@ -30,7 +31,7 @@ const tip = ReactStringReplace(
 
 export const GATrackingField: Field = {
   name: 'ga_campaign',
-  label: MailPoet.I18n.t('gaCampaignLine'),
+  label: __('Google Analytics Campaign', 'mailpoet'),
   tip,
   type: 'text',
   onBeforeChange: trackCampaignNameTyped,

@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
-import { MailPoet } from 'mailpoet';
+import { __ } from '@wordpress/i18n';
+
 import { Loader } from 'common/loader/loader';
 import { Heading } from 'common/typography/heading/heading';
 
@@ -8,11 +9,12 @@ function Loading(props) {
     <div className="mailpoet-congratulate-loading">
       {props.showRichLoadingScreen && (
         <div>
-          <Heading level={0}>
-            {MailPoet.I18n.t('congratulationsLoadingHeader')}
-          </Heading>
+          <Heading level={0}>{__('Verification', 'mailpoet')}</Heading>
           <Heading level={3}>
-            {MailPoet.I18n.t('congratulationsLoadingBody')}
+            {__(
+              'Congrats, you’re sending your first newsletter! We’re doing a quick verification to make sure everything works fine.',
+              'mailpoet',
+            )}
           </Heading>
           <div className="mailpoet-gap-large" />
           <div className="mailpoet-gap-large" />

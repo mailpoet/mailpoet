@@ -1,5 +1,6 @@
 import { createRef, Component } from 'react';
 import _ from 'underscore';
+import { __ } from '@wordpress/i18n';
 import { MailPoet } from 'mailpoet';
 import { Tooltip } from 'help-tooltip.jsx';
 import PropTypes from 'prop-types';
@@ -28,7 +29,12 @@ class ImportTemplate extends Component {
         MailPoet.trackEvent('Emails > Template imported');
       } catch (err) {
         this.context.notices.error(
-          <p>{MailPoet.I18n.t('templateFileMalformedError')}</p>,
+          <p>
+            {__(
+              'This template file appears to be damaged. Please try another one.',
+              'mailpoet',
+            )}
+          </p>,
         );
       }
     };
@@ -93,9 +99,12 @@ class ImportTemplate extends Component {
     return (
       <div className="mailpoet-template-import">
         <h4>
-          {MailPoet.I18n.t('importTemplateTitle')}
+          {__('Import a template', 'mailpoet')}
           <Tooltip
-            tooltip={MailPoet.I18n.t('helpTooltipTemplateUpload')}
+            tooltip={__(
+              'You can only upload .json templates that were originally created with MailPoet.',
+              'mailpoet',
+            )}
             place="right"
             className="tooltip-help-import-template"
           />
@@ -103,14 +112,14 @@ class ImportTemplate extends Component {
         <form onSubmit={this.handleSubmit}>
           <input
             type="file"
-            placeholder={MailPoet.I18n.t('selectJsonFileToUpload')}
+            placeholder={__('Select a .json file to upload', 'mailpoet')}
             ref={this.fileRef}
           />
           <p className="submit">
             <input
               className="button button-primary"
               type="submit"
-              value={MailPoet.I18n.t('upload')}
+              value={__('Upload', 'mailpoet')}
             />
           </p>
         </form>

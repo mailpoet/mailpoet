@@ -1,4 +1,5 @@
 import _ from 'underscore';
+import { __ } from '@wordpress/i18n';
 import classnames from 'classnames';
 import { Component } from 'react';
 import ReactStringReplace from 'react-string-replace';
@@ -24,10 +25,11 @@ const messages = {
     const count = Number(response.meta.count);
     let message = null;
 
+    // Todo: adjust per MAILPOET-5117
     if (count === 1) {
-      message = MailPoet.I18n.t('oneNewsletterTrashed');
+      message = __('1 email was moved to the trash.', 'mailpoet');
     } else {
-      message = MailPoet.I18n.t('multipleNewslettersTrashed').replace(
+      message = __('%1$d emails were moved to the trash.', 'mailpoet').replace(
         '%1$d',
         count.toLocaleString(),
       );
@@ -39,9 +41,9 @@ const messages = {
     let message = null;
 
     if (count === 1) {
-      message = MailPoet.I18n.t('oneNewsletterDeleted');
+      message = __('1 email was permanently deleted.', 'mailpoet');
     } else {
-      message = MailPoet.I18n.t('multipleNewslettersDeleted').replace(
+      message = __('%1$d emails were permanently deleted.', 'mailpoet').replace(
         '%1$d',
         count.toLocaleString(),
       );
@@ -53,12 +55,12 @@ const messages = {
     let message = null;
 
     if (count === 1) {
-      message = MailPoet.I18n.t('oneNewsletterRestored');
+      message = __('1 email has been restored from the Trash.', 'mailpoet');
     } else {
-      message = MailPoet.I18n.t('multipleNewslettersRestored').replace(
-        '%1$d',
-        count.toLocaleString(),
-      );
+      message = __(
+        '%1$d emails have been restored from the Trash.',
+        'mailpoet',
+      ).replace('%1$d', count.toLocaleString());
     }
     MailPoet.Notice.success(message);
   },
@@ -67,26 +69,26 @@ const messages = {
 const columns = [
   {
     name: 'subject',
-    label: MailPoet.I18n.t('subject'),
+    label: __('Subject', 'mailpoet'),
     sortable: true,
   },
   {
     name: 'settings',
-    label: MailPoet.I18n.t('settings'),
+    label: __('Settings', 'mailpoet'),
   },
   {
     name: 'statistics',
-    label: MailPoet.I18n.t('statistics'),
+    label: __('Clicked, Opened', 'mailpoet'),
     display: mailpoetTrackingEnabled,
   },
   {
     name: 'status',
-    label: MailPoet.I18n.t('status'),
+    label: __('Status', 'mailpoet'),
     width: 145,
   },
   {
     name: 'updated_at',
-    label: MailPoet.I18n.t('lastModifiedOn'),
+    label: __('Last modified on', 'mailpoet'),
     sortable: true,
   },
 ];
@@ -94,7 +96,7 @@ const columns = [
 const bulkActions = [
   {
     name: 'trash',
-    label: MailPoet.I18n.t('moveToTrash'),
+    label: __('Move to trash', 'mailpoet'),
     onSuccess: messages.onTrash,
   },
 ];
@@ -109,7 +111,7 @@ let newsletterActions = [
           target="_blank"
           rel="noopener noreferrer"
         >
-          {MailPoet.I18n.t('preview')}
+          {__('Preview', 'mailpoet')}
         </a>
       );
     },
@@ -117,13 +119,13 @@ let newsletterActions = [
   {
     name: 'edit',
     className: 'mailpoet-hide-on-mobile',
-    label: MailPoet.I18n.t('edit'),
+    label: __('Edit', 'mailpoet'),
     onClick: confirmEdit,
   },
   {
     name: 'duplicate',
     className: 'mailpoet-hide-on-mobile',
-    label: MailPoet.I18n.t('duplicate'),
+    label: __('Duplicate', 'mailpoet'),
     onClick: (newsletter, refresh) =>
       MailPoet.Ajax.post({
         api_version: window.mailpoet_api_version,
@@ -135,7 +137,7 @@ let newsletterActions = [
       })
         .done((response) => {
           MailPoet.Notice.success(
-            MailPoet.I18n.t('newsletterDuplicated').replace(
+            __('Email "%1$s" has been duplicated.', 'mailpoet').replace(
               '%1$s',
               response.data.subject,
             ),
@@ -188,10 +190,10 @@ class ListingsComponent extends Component {
           const newsletterGroup = e.target.getAttribute('data-group');
           const email = automaticEmails[newsletterGroup];
           MailPoet.Notice.success(
-            MailPoet.I18n.t('automaticEmailActivated').replace(
-              '%1s',
-              email.title,
-            ),
+            __(
+              'Your %1s Automatic Email is now activated!',
+              'mailpoet',
+            ).replace('%1s', email.title),
           );
         }
         // force refresh of listing so that groups are updated
@@ -208,7 +210,7 @@ class ListingsComponent extends Component {
   renderStatus = (newsletter) => {
     const totalSent =
       parseInt(newsletter.total_sent, 10) > -1
-        ? MailPoet.I18n.t('sentToXCustomers').replace(
+        ? __('Sent to %1$d customers', 'mailpoet').replace(
             '%1$d',
             newsletter.total_sent.toLocaleString(),
           )
@@ -230,7 +232,7 @@ class ListingsComponent extends Component {
           )}
           {!totalSent && (
             <span className="mailpoet-listing-status-unknown mailpoet-font-extra-small">
-              {MailPoet.I18n.t('notSentYet')}
+              {__('Not sent yet', 'mailpoet')}
             </span>
           )}
         </p>
@@ -255,7 +257,10 @@ class ListingsComponent extends Component {
     if (meta && _.isEmpty(metaOptionValues)) {
       return (
         <span className="mailpoet-listing-error">
-          {MailPoet.I18n.t('automaticEmailEventOptionsNotConfigured')}
+          {__(
+            'You need to configure email options before this email can be sent.',
+            'mailpoet',
+          )}
         </span>
       );
     }
@@ -284,35 +289,35 @@ class ListingsComponent extends Component {
     if (displayText && newsletter.options.afterTimeType !== 'immediate') {
       switch (newsletter.options.afterTimeType) {
         case 'minutes':
-          sendingDelay = MailPoet.I18n.t('sendingDelayMinutes').replace(
+          sendingDelay = __('%1$d minute(s) later', 'mailpoet').replace(
             '%1$d',
             newsletter.options.afterTimeNumber,
           );
           break;
 
         case 'hours':
-          sendingDelay = MailPoet.I18n.t('sendingDelayHours').replace(
+          sendingDelay = __('%1$d hour(s) later', 'mailpoet').replace(
             '%1$d',
             newsletter.options.afterTimeNumber,
           );
           break;
 
         case 'days':
-          sendingDelay = MailPoet.I18n.t('sendingDelayDays').replace(
+          sendingDelay = __('%1$d day(s) later', 'mailpoet').replace(
             '%1$d',
             newsletter.options.afterTimeNumber,
           );
           break;
 
         case 'weeks':
-          sendingDelay = MailPoet.I18n.t('sendingDelayWeeks').replace(
+          sendingDelay = __('%1$d week(s) later', 'mailpoet').replace(
             '%1$d',
             newsletter.options.afterTimeNumber,
           );
           break;
 
         default:
-          sendingDelay = MailPoet.I18n.t('sendingDelayInvalid');
+          sendingDelay = __('Invalid sending delay.', 'mailpoet');
           break;
       }
     }
@@ -352,14 +357,14 @@ class ListingsComponent extends Component {
         </td>
         <td
           className="column mailpoet-hide-on-mobile"
-          data-colname={MailPoet.I18n.t('settings')}
+          data-colname={__('Settings', 'mailpoet')}
         >
           {this.renderSettings(newsletter)}
         </td>
         {mailpoetTrackingEnabled === true ? (
           <td
             className="column mailpoet-listing-stats-column"
-            data-colname={MailPoet.I18n.t('statistics')}
+            data-colname={__('Clicked, Opened', 'mailpoet')}
           >
             <Statistics
               newsletter={newsletter}
@@ -367,12 +372,12 @@ class ListingsComponent extends Component {
             />
           </td>
         ) : null}
-        <td className="column" data-colname={MailPoet.I18n.t('status')}>
+        <td className="column" data-colname={__('Status', 'mailpoet')}>
           {this.renderStatus(newsletter)}
         </td>
         <td
           className="column-date mailpoet-hide-on-mobile"
-          data-colname={MailPoet.I18n.t('lastModifiedOn')}
+          data-colname={__('Last modified on', 'mailpoet')}
         >
           {MailPoet.Date.short(newsletter.updated_at)}
           <br />
@@ -422,10 +427,15 @@ class ListingsComponent extends Component {
 
     return (
       <div className="notice error">
-        <p>{MailPoet.I18n.t('wooCommerceEmailsWarning')}</p>
+        <p>
+          {__(
+            'WooCommerce emails won’t be sent to new customers because the opt-in on checkout is disabled. Enable it so they can immediately get your emails after their first purchase.',
+            'mailpoet',
+          )}
+        </p>
         <p>
           <a href="?page=mailpoet-settings#woocommerce">
-            {MailPoet.I18n.t('wooCommerceEmailsWarningLink')}
+            {__('Edit WooCommerce settings', 'mailpoet')}
           </a>
         </p>
       </div>

@@ -1,4 +1,5 @@
 import classnames from 'classnames';
+import { __ } from '@wordpress/i18n';
 import { Link, withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
@@ -19,39 +20,44 @@ const mailpoetTrackingEnabled = MailPoet.trackingConfig.emailTrackingEnabled;
 const columns = [
   {
     name: 'subject',
-    label: MailPoet.I18n.t('subject'),
+    label: __('Subject', 'mailpoet'),
   },
   {
     name: 'status',
-    label: MailPoet.I18n.t('status'),
+    label: __('Status', 'mailpoet'),
   },
   {
     name: 'segments',
-    label: MailPoet.I18n.t('lists'),
+    label: __('Lists', 'mailpoet'),
   },
   {
     name: 'statistics',
-    label: MailPoet.I18n.t('statistics'),
+    label: __('Clicked, Opened', 'mailpoet'),
     display: mailpoetTrackingEnabled,
   },
   {
     name: 'sent_at',
-    label: MailPoet.I18n.t('sentOn'),
+    label: __('Sent on', 'mailpoet'),
     sortable: true,
   },
 ];
 
 const messages = {
   onNoItemsFound: (group, search) =>
-    MailPoet.I18n.t(search ? 'noItemsFound' : 'emptyListing'),
+    search
+      ? __('No emails found.', 'mailpoet')
+      : __(
+          "Nothing here yet! But, don't fret - there's no reason to get upset. Pretty soon, you’ll be sending emails faster than a turbo-jet.",
+          'mailpoet',
+        ),
   onTrash: (response) => {
     const count = Number(response.meta.count);
     let message = null;
 
     if (count === 1) {
-      message = MailPoet.I18n.t('oneNewsletterTrashed');
+      message = __('1 email was moved to the trash.', 'mailpoet');
     } else {
-      message = MailPoet.I18n.t('multipleNewslettersTrashed').replace(
+      message = __('%1$d emails were moved to the trash.', 'mailpoet').replace(
         '%1$d',
         count.toLocaleString(),
       );
@@ -63,9 +69,9 @@ const messages = {
     let message = null;
 
     if (count === 1) {
-      message = MailPoet.I18n.t('oneNewsletterDeleted');
+      message = __('1 email was permanently deleted.', 'mailpoet');
     } else {
-      message = MailPoet.I18n.t('multipleNewslettersDeleted').replace(
+      message = __('%1$d emails were permanently deleted.', 'mailpoet').replace(
         '%1$d',
         count.toLocaleString(),
       );
@@ -77,12 +83,12 @@ const messages = {
     let message = null;
 
     if (count === 1) {
-      message = MailPoet.I18n.t('oneNewsletterRestored');
+      message = __('1 email has been restored from the Trash.', 'mailpoet');
     } else {
-      message = MailPoet.I18n.t('multipleNewslettersRestored').replace(
-        '%1$d',
-        count.toLocaleString(),
-      );
+      message = __(
+        '%1$d emails have been restored from the Trash.',
+        'mailpoet',
+      ).replace('%1$d', count.toLocaleString());
     }
     MailPoet.Notice.success(message);
   },
@@ -91,7 +97,7 @@ const messages = {
 const bulkActions = [
   {
     name: 'trash',
-    label: MailPoet.I18n.t('moveToTrash'),
+    label: __('Move to trash', 'mailpoet'),
     onSuccess: messages.onTrash,
   },
 ];
@@ -106,7 +112,7 @@ const newsletterActions = addStatsCTAAction([
           target="_blank"
           rel="noopener noreferrer"
         >
-          {MailPoet.I18n.t('preview')}
+          {__('Preview', 'mailpoet')}
         </a>
       );
     },
@@ -140,27 +146,27 @@ const renderItem = (newsletter, actions, meta) => {
       </td>
       <td
         className="column mailpoet-listing-status-column"
-        data-colname={MailPoet.I18n.t('status')}
+        data-colname={__('Status', 'mailpoet')}
       >
         <QueueStatus newsletter={newsletter} mailerLog={meta.mta_log} />
       </td>
       <td
         className="column mailpoet-hide-on-mobile"
-        data-colname={MailPoet.I18n.t('lists')}
+        data-colname={__('Lists', 'mailpoet')}
       >
         <SegmentTags segments={newsletter.segments} dimension="large" />
       </td>
       {mailpoetTrackingEnabled === true ? (
         <td
           className="column mailpoet-listing-stats-column"
-          data-colname={MailPoet.I18n.t('statistics')}
+          data-colname={__('Clicked, Opened', 'mailpoet')}
         >
           <Statistics newsletter={newsletter} currentTime={meta.current_time} />
         </td>
       ) : null}
       <td
         className="column-date mailpoet-hide-on-mobile"
-        data-colname={MailPoet.I18n.t('sentOn')}
+        data-colname={__('Sent on', 'mailpoet')}
       >
         {newsletter.sent_at ? (
           <>
@@ -181,7 +187,7 @@ function NewsletterListNotificationHistoryComponent(props) {
         className="mailpoet-button button button-secondary button-small"
         to="/notification"
       >
-        {MailPoet.I18n.t('backToPostNotifications')}
+        {__('Back to Post notifications', 'mailpoet')}
       </Link>
 
       <Listing

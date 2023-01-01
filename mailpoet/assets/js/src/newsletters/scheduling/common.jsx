@@ -1,22 +1,23 @@
 import _ from 'underscore';
+import { __, _x } from '@wordpress/i18n';
 import { MailPoet } from 'mailpoet';
 
 const timeFormat = window.mailpoet_time_format || 'H:i';
 
 // welcome emails
 const timeDelayValues = {
-  immediate: MailPoet.I18n.t('delayImmediately'),
-  hours: MailPoet.I18n.t('delayHoursAfter'),
-  days: MailPoet.I18n.t('delayDaysAfter'),
-  weeks: MailPoet.I18n.t('delayWeeksAfter'),
+  immediate: __('immediately', 'mailpoet'),
+  hours: __('hour(s) later', 'mailpoet'),
+  days: __('day(s) later', 'mailpoet'),
+  weeks: __('week(s) later', 'mailpoet'),
 };
 
 const intervalValues = {
-  daily: MailPoet.I18n.t('daily'),
-  weekly: MailPoet.I18n.t('weekly'),
-  monthly: MailPoet.I18n.t('monthly'),
-  nthWeekDay: MailPoet.I18n.t('monthlyEvery'),
-  immediately: MailPoet.I18n.t('immediately'),
+  daily: __('Once a day at...', 'mailpoet'),
+  weekly: __('Weekly on...', 'mailpoet'),
+  monthly: __('Monthly on the...', 'mailpoet'),
+  nthWeekDay: __('Monthly every...', 'mailpoet'),
+  immediately: __('Immediately', 'mailpoet'),
 };
 
 // notification emails
@@ -40,13 +41,13 @@ const timeOfDayValues = _.object(
 );
 
 const weekDayValues = {
-  0: MailPoet.I18n.t('sunday'),
-  1: MailPoet.I18n.t('monday'),
-  2: MailPoet.I18n.t('tuesday'),
-  3: MailPoet.I18n.t('wednesday'),
-  4: MailPoet.I18n.t('thursday'),
-  5: MailPoet.I18n.t('friday'),
-  6: MailPoet.I18n.t('saturday'),
+  0: __('Sunday', 'mailpoet'),
+  1: __('Monday', 'mailpoet'),
+  2: __('Tuesday', 'mailpoet'),
+  3: __('Wednesday', 'mailpoet'),
+  4: __('Thursday', 'mailpoet'),
+  5: __('Friday', 'mailpoet'),
+  6: __('Saturday', 'mailpoet'),
 };
 
 const NUMBER_OF_DAYS_IN_MONTH = 28;
@@ -55,15 +56,15 @@ const monthDayValues = _.object(
     _.times(NUMBER_OF_DAYS_IN_MONTH, (day) => day),
     (day) => {
       const labels = {
-        0: MailPoet.I18n.t('first'),
-        1: MailPoet.I18n.t('second'),
-        2: MailPoet.I18n.t('third'),
+        0: __('1st', 'mailpoet'),
+        1: __('2nd', 'mailpoet'),
+        2: __('3rd', 'mailpoet'),
       };
       let label;
       if (labels[day] !== undefined) {
         label = labels[day];
       } else {
-        label = MailPoet.I18n.t('nth').replace('%1$d', day + 1);
+        label = __('%1$dth', 'mailpoet').replace('%1$d', day + 1);
       }
       return [day + 1, label];
     },
@@ -71,10 +72,10 @@ const monthDayValues = _.object(
 );
 
 const nthWeekDayValues = {
-  1: MailPoet.I18n.t('first'),
-  2: MailPoet.I18n.t('second'),
-  3: MailPoet.I18n.t('third'),
-  L: MailPoet.I18n.t('last'),
+  1: __('1st', 'mailpoet'),
+  2: __('2nd', 'mailpoet'),
+  3: __('3rd', 'mailpoet'),
+  L: _x('last', 'e.g. monthly every last Monday', 'mailpoet'),
 };
 
 export { timeDelayValues };

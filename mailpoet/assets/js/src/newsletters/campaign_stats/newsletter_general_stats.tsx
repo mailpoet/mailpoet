@@ -1,10 +1,11 @@
 import ReactStringReplace from 'react-string-replace';
+import { __, _x } from '@wordpress/i18n';
 import { MailPoet } from 'mailpoet';
 import { Hooks } from 'wp-js-hooks';
 import { Grid } from 'common/grid';
 import {
-  StatsBadge,
   getBadgeType,
+  StatsBadge,
 } from 'common/listings/newsletter_stats/stats';
 import { Tooltip } from 'help-tooltip';
 
@@ -88,7 +89,11 @@ function NewsletterGeneralStats({ newsletter, isWoocommerceActive }: Props) {
           {percentageOpenedDisplay}
           {'% '}
         </span>
-        {MailPoet.I18n.t('percentageOpened')}
+        {_x(
+          'opened',
+          'Percentage of subscribers that opened a newsletter link',
+          'mailpoet',
+        )}
       </div>
       {displayBadges && (
         <StatsBadge
@@ -108,10 +113,17 @@ function NewsletterGeneralStats({ newsletter, isWoocommerceActive }: Props) {
         {percentageMachineOpenedDisplay}
         {'% '}
       </span>
-      {MailPoet.I18n.t('percentageMachineOpened')}
+      {_x(
+        'machine-opened',
+        'Percentage of newsletters that were opened by a machine',
+        'mailpoet',
+      )}
       <Tooltip
         tooltip={ReactStringReplace(
-          MailPoet.I18n.t('percentageMachineOpenedTooltip'),
+          __(
+            'A machine-opened email is an email opened by a computer in the background without the user’s explicit request or knowledge. [link]Read more[/link]',
+            'mailpoet',
+          ),
           /\[link](.*?)\[\/link]/,
           (match) => (
             <span style={{ pointerEvents: 'all' }} key="machine-opened-tooltip">
@@ -146,7 +158,11 @@ function NewsletterGeneralStats({ newsletter, isWoocommerceActive }: Props) {
           {percentageUnsubscribedDisplay}
           {'% '}
         </span>
-        {MailPoet.I18n.t('percentageUnsubscribed')}
+        {_x(
+          'unsubscribed',
+          'Percentage of subscribers that unsubscribed from a newsletter',
+          'mailpoet',
+        )}
       </div>
       {displayUnsubscribedBadge && (
         <StatsBadge
@@ -173,7 +189,11 @@ function NewsletterGeneralStats({ newsletter, isWoocommerceActive }: Props) {
           {percentageBouncedDisplay}
           {'% '}
         </span>
-        {MailPoet.I18n.t('percentageBounced')}
+        {_x(
+          'bounced',
+          'Percentage of subscribers that bounced from a newsletter',
+          'mailpoet',
+        )}
       </div>
       {displayBouncedBadge && (
         <StatsBadge
@@ -197,7 +217,11 @@ function NewsletterGeneralStats({ newsletter, isWoocommerceActive }: Props) {
           {percentageClickedDisplay}
           {'% '}
         </span>
-        {MailPoet.I18n.t('percentageClicked')}
+        {_x(
+          'clicked',
+          'Percentage of subscribers that clicked a newsletter link',
+          'mailpoet',
+        )}
       </div>
       {displayBadges && (
         <StatsBadge
@@ -216,7 +240,7 @@ function NewsletterGeneralStats({ newsletter, isWoocommerceActive }: Props) {
       <Grid.ThreeColumns className="mailpoet-stats-general-top-row">
         <div>
           <div className="mailpoet-statistics-value-small">
-            {MailPoet.I18n.t('statsTotalSent')}
+            {__('Sent to', 'mailpoet')}
             {': '}
             <span className="mailpoet-statistics-value-number">
               {totalSent.toLocaleString()}
@@ -252,7 +276,7 @@ function NewsletterGeneralStats({ newsletter, isWoocommerceActive }: Props) {
           rel="noopener noreferrer"
           data-beacon-article="58f671152c7d3a057f8858e8"
         >
-          {MailPoet.I18n.t('readMoreOnStats')}
+          {__('Read more on stats.', 'mailpoet')}
         </a>
       </p>
     </div>

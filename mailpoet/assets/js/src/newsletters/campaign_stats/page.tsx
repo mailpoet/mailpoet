@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { __, _x } from '@wordpress/i18n';
 import { Hooks } from 'wp-js-hooks';
 import { MailPoet } from 'mailpoet';
 import { withRouter } from 'react-router-dom';
@@ -100,7 +101,7 @@ function CampaignStatsPageComponent({ match, history, location }: Props) {
   }
 
   if (!newsletter) {
-    return <h3> {MailPoet.I18n.t('emailDoesNotExist')} </h3>;
+    return <h3> {__('This email does not exist.', 'mailpoet')} </h3>;
   }
 
   return (
@@ -127,7 +128,7 @@ function CampaignStatsPageComponent({ match, history, location }: Props) {
         </ErrorBoundary>
 
         <Tabs activeKey="clicked">
-          <Tab key="clicked" title={MailPoet.I18n.t('clickedLinks')}>
+          <Tab key="clicked" title={__('Clicked Links', 'mailpoet')}>
             {Hooks.applyFilters(
               'mailpoet_newsletters_clicked_links_table',
               <PremiumBanner />,
@@ -141,7 +142,7 @@ function CampaignStatsPageComponent({ match, history, location }: Props) {
             newsletter,
           )}
 
-          <Tab key="engagement" title={MailPoet.I18n.t('subscriberEngagement')}>
+          <Tab key="engagement" title={__('Subscriber Engagement', 'mailpoet')}>
             {Hooks.applyFilters(
               'mailpoet_newsletters_subscriber_engagement',
               <PremiumBanner />,
@@ -153,7 +154,11 @@ function CampaignStatsPageComponent({ match, history, location }: Props) {
 
           <Tab
             key="bounces"
-            title={MailPoet.I18n.t('bounces')}
+            title={_x(
+              'Bounces',
+              'A tab title for the list of bounces (w.wiki/45Qc)',
+              'mailpoet',
+            )}
             automationId="bounces-tab"
           >
             {Hooks.applyFilters(

@@ -2,6 +2,8 @@ import { Component } from 'react';
 import _ from 'underscore';
 import jQuery from 'jquery';
 import PropTypes from 'prop-types';
+import { __ } from '@wordpress/i18n';
+
 import { Background } from 'common/background/background';
 import { Button } from 'common/button/button';
 import { Heading } from 'common/typography/heading/heading';
@@ -62,7 +64,7 @@ class NewsletterWelcome extends Component {
       action: 'create',
       data: _.extend({}, this.state, {
         type: 'welcome',
-        subject: MailPoet.I18n.t('draftNewsletterTitle'),
+        subject: __('Subject', 'mailpoet'),
       }),
     })
       .done((response) => {
@@ -98,7 +100,7 @@ class NewsletterWelcome extends Component {
 
         <Grid.Column align="center" className="mailpoet-schedule-email">
           <Heading level={4}>
-            {MailPoet.I18n.t('selectEventToSendWelcomeEmail')}
+            {__('When to send this welcome email?', 'mailpoet')}
           </Heading>
           <form id="welcome_scheduling">
             <WelcomeScheduling
@@ -108,7 +110,7 @@ class NewsletterWelcome extends Component {
             />
 
             <Button isFullWidth type="submit" onClick={this.handleNext}>
-              {MailPoet.I18n.t('next')}
+              {__('Next', 'mailpoet')}
             </Button>
           </form>
         </Grid.Column>
