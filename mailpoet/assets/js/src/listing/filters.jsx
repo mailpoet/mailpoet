@@ -1,9 +1,9 @@
 import { Component } from 'react';
+import { __ } from '@wordpress/i18n';
 import jQuery from 'jquery';
 import PropTypes from 'prop-types';
 
 import { Button } from 'common/button/button.tsx';
-import { MailPoet } from 'mailpoet';
 import { Select } from 'common/form/select/select.tsx';
 import { withBoundary } from '../common';
 
@@ -74,7 +74,7 @@ class ListingFilters extends Component {
             onClick={this.handleEmptyTrash}
             automationId="empty_trash"
           >
-            {MailPoet.I18n.t('emptyTrash')}
+            {__('Empty Trash', 'mailpoet')}
           </Button>
         </span>
       );

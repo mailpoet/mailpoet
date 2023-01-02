@@ -1,6 +1,8 @@
-import { MailPoet } from 'mailpoet';
+import { __ } from '@wordpress/i18n';
 import PropTypes from 'prop-types';
 import ReactDOMServer from 'react-dom/server';
+
+import { MailPoet } from 'mailpoet';
 
 function ConfirmAlert(props) {
   MailPoet.Modal.popup({
@@ -49,9 +51,9 @@ ConfirmAlert.propTypes = {
 };
 
 ConfirmAlert.defaultProps = {
-  title: MailPoet.I18n.t('confirmTitle'),
-  cancelLabel: MailPoet.I18n.t('cancelLabel'),
-  confirmLabel: MailPoet.I18n.t('confirmLabel'),
+  title: __('Confirm to proceed', 'mailpoet'),
+  cancelLabel: __('Cancel', 'mailpoet'),
+  confirmLabel: __('Confirm', 'mailpoet'),
 };
 
 export function confirmAlert(props) {

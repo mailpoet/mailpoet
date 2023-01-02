@@ -1,5 +1,6 @@
 import jQuery from 'jquery';
 import { Component } from 'react';
+import { __ } from '@wordpress/i18n';
 import _ from 'underscore';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
@@ -579,12 +580,12 @@ class ListingComponent extends Component {
       bulkActions = [
         {
           name: 'restore',
-          label: MailPoet.I18n.t('restore'),
+          label: __('Restore', 'mailpoet'),
           onSuccess: this.props.messages.onRestore,
         },
         {
           name: 'delete',
-          label: MailPoet.I18n.t('deletePermanently'),
+          label: __('Delete permanently', 'mailpoet'),
           onSuccess: this.props.messages.onDelete,
         },
       ];
