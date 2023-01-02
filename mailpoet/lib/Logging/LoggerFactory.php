@@ -32,6 +32,7 @@ class LoggerFactory {
   const TOPIC_BRIDGE = 'bridge-api';
   const TOPIC_SENDING = 'sending';
   const TOPIC_CRON = 'cron';
+  const TOPIC_API = 'api';
 
   /** @var LoggerFactory */
   private static $instance;
