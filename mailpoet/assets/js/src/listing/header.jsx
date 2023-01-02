@@ -1,8 +1,8 @@
 import { Component } from 'react';
 import PropTypes from 'prop-types';
+import { __ } from '@wordpress/i18n';
 
 import { Checkbox } from 'common/form/checkbox/checkbox.tsx';
-import { MailPoet } from 'mailpoet';
 import { ListingColumn } from './listing_column.jsx';
 
 class ListingHeader extends Component {
@@ -37,7 +37,7 @@ class ListingHeader extends Component {
       checkbox = (
         <th className="manage-column column-cb mailpoet-listing-check-column">
           <label className="screen-reader-text" htmlFor="select_all">
-            {MailPoet.I18n.t('selectAll')}
+            {__('Select All', 'mailpoet')}
           </label>
           <Checkbox
             name="select_all"

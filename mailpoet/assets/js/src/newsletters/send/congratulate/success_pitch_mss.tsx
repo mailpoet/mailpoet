@@ -1,6 +1,5 @@
-import { __ } from '@wordpress/i18n';
+import { __, _x } from '@wordpress/i18n';
 import { useState } from 'react';
-import { MailPoet } from 'mailpoet';
 import ReactStringReplace from 'react-string-replace';
 
 import { WelcomeWizardStepLayoutBody } from 'wizard/layout/step_layout_body.jsx';
@@ -63,14 +62,25 @@ export function PitchMss(props: Props): JSX.Element {
             )}
           </Heading>
           <p>
-            {MailPoet.I18n.t(
-              props.subscribersCount < 1000
-                ? 'congratulationsMSSPitchFreeSubtitle'
-                : 'congratulationsMSSPitchNotFreeSubtitle',
-            )}
+            {props.subscribersCount < 1000
+              ? _x(
+                  'Did you know? Users with 1,000 subscribers or less get the Starter plan for free.',
+                  'Promotion for our email sending service: Paragraph',
+                  'mailpoet',
+                )
+              : _x(
+                  'Starting at only $10 per month, MailPoet Business offers the following features',
+                  'Promotion for our email sending service: Paragraph',
+                  'mailpoet',
+                )}
           </p>
           <Heading level={5}>
-            {MailPoet.I18n.t('congratulationsMSSPitchFreeListTitle')}:
+            {_x(
+              'You’ll get',
+              'Promotion for our email sending service: Paragraph',
+              'mailpoet',
+            )}
+            :
           </Heading>
           <FreeBenefitsList />
 
@@ -98,25 +108,13 @@ export function PitchMss(props: Props): JSX.Element {
               window.open(props.purchaseUrl);
               next();
             }}
-          >
-            {MailPoet.I18n.t('congratulationsMSSPitchFreeButton')}
-          </Button>
-          <Button
-            isFullWidth
-            variant="tertiary"
-            onClick={next}
-            onKeyDown={(event) => {
-              if (
-                ['keydown', 'keypress'].includes(event.type) &&
-                ['Enter', ' '].includes(event.key)
-              ) {
-                event.preventDefault();
-                next();
-              }
-            }}
             withSpinner={isClosing}
           >
-            {MailPoet.I18n.t('congratulationsMSSPitchNoThanks')}
+            {_x(
+              'Sign up for free',
+              'Promotion for our email sending service: Button',
+              'mailpoet',
+            )}
           </Button>
         </div>
       </WelcomeWizardStepLayoutBody>

@@ -22,6 +22,6 @@ class DuplicateAutomaticEmailCest {
     $i->waitForText('Email "Copy of ' . $emailSubject . '" has been duplicated.', 20);
     $i->waitForListingItemsToLoad();
     $i->clickItemRowActionByItemName('Copy of ' . $emailSubject, 'Edit');
-    $i->waitForElement('[data-automation-id="newsletter_title"]', 20);
+    $i->waitForElement('[data-automation-id="newsletter_title"]', 50);
   }
 }

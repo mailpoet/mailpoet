@@ -1,6 +1,5 @@
 import { ReactNode } from 'react';
 import { Location } from 'history';
-import { MailPoet } from 'mailpoet';
 import { Icon, video } from '@wordpress/icons';
 import { __ } from '@wordpress/i18n';
 import { HideScreenOptions } from '../../common/hide_screen_options/hide_screen_options';
@@ -67,7 +66,7 @@ function TutorialIcon(): JSX.Element {
         role="button"
         onClick={displayTutorial}
         className="mailpoet-top-bar-beamer"
-        title={MailPoet.I18n.t('topBarTutorial')}
+        title={__('Tutorial', 'mailpoet')}
         tabIndex={0}
         onKeyDown={(event) => {
           if (
@@ -80,7 +79,7 @@ function TutorialIcon(): JSX.Element {
         }}
       >
         <Icon icon={video} />
-        <span>{MailPoet.I18n.t('topBarTutorial')}</span>
+        <span>{__('Tutorial', 'mailpoet')}</span>
       </a>
       <span id="beamer-empty-element" />
     </div>
