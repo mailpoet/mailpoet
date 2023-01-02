@@ -1,5 +1,6 @@
 import ReactDOM from 'react-dom';
 import { useEffect, useState } from 'react';
+import { ErrorBoundary } from 'common';
 import { GlobalContext, useGlobalContextValue } from 'context/index.jsx';
 import { TopBarWithBeamer } from 'common/top_bar/top_bar';
 import { HomepageNotices } from 'homepage/notices';
@@ -19,7 +20,9 @@ function App(): JSX.Element {
       <HomepageNotices />
       {isStoreInitialized ? (
         <Layout>
-          <TaskList />
+          <ErrorBoundary>
+            <TaskList />
+          </ErrorBoundary>
         </Layout>
       ) : null}
     </GlobalContext.Provider>
@@ -28,5 +31,10 @@ function App(): JSX.Element {
 
 const container = document.getElementById('mailpoet_homepage_container');
 if (container) {
-  ReactDOM.render(<App />, container);
+  ReactDOM.render(
+    <ErrorBoundary>
+      <App />
+    </ErrorBoundary>,
+    container,
+  );
 }
