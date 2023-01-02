@@ -26,4 +26,8 @@ class APITestNamespacedEndpointStubV1 extends APIEndpoint {
   public function restricted($data) {
     return $this->successResponse($data);
   }
+
+  public function testError($data) {
+    throw new \Exception('Some Error');
+  }
 }

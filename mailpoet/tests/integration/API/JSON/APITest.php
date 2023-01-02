@@ -15,8 +15,10 @@ use MailPoet\API\JSON\v2\APITestNamespacedEndpointStubV2;
 use MailPoet\Config\AccessControl;
 use MailPoet\DI\ContainerConfigurator;
 use MailPoet\DI\ContainerFactory;
+use MailPoet\Entities\LogEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Logging\LoggerFactory;
+use MailPoet\Logging\LogRepository;
 use MailPoet\Settings\SettingsController;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Symfony\Component\DependencyInjection\Container;
@@ -60,7 +62,7 @@ class APITest extends \MailPoetTest {
     $this->container->compile();
     $this->errorHandler = $this->container->get(ErrorHandler::class);
     $this->settings = $this->container->get(SettingsController::class);
-    $this->loggerFactory = $this->container->get(LoggerFactory::class);
+    $this->loggerFactory = $this->diContainer->get(LoggerFactory::class);
     $this->api = new JSONAPI(
       $this->container,
       $this->container->get(AccessControl::class),
@@ -340,9 +342,37 @@ class APITest extends \MailPoetTest {
     expect($response->errors[0]['message'])->equals('Invalid API endpoint method.');
   }
 
+  public function testItLogsExceptionToLogTable() {
+    $namespace = [
+      'name' => 'MailPoet\API\JSON\v1',
+      'version' => 'v1',
+    ];
+    $this->api->addEndpointNamespace($namespace['name'], $namespace['version']);
+
+    $data = [
+      'endpoint' => 'a_p_i_test_namespaced_endpoint_stub_v1',
+      'method' => 'testError',
+      'api_version' => 'v1',
+      'data' => ['test' => 'data'],
+    ];
+    $this->api->setRequestData($data, Endpoint::TYPE_POST);
+    $response = $this->api->processRoute();
+
+    /** @var LogRepository $logRepository */
+    $logRepository = $this->container->get(LogRepository::class);
+    $logs = $logRepository->findAll();
+    expect($logs)->count(1);
+    $log = reset($logs);
+    $this->assertInstanceOf(LogEntity::class, $log);
+    expect($log->getMessage())->stringContainsString('Some Error');
+    expect($log->getName())->equals(LoggerFactory::TOPIC_API);
+    expect($response->errors)->equals([['error' => 'bad_request', 'message' => 'Some Error']]);
+  }
+
   public function _after() {
     wp_delete_user($this->wpUserId);
     // we need to trucate wp_mailpoet_subscriber_segment manually while https://mailpoet.atlassian.net/browse/MAILPOET-4580 is not fixed.
     $this->truncateEntity(SubscriberSegmentEntity::class);
+    $this->truncateEntity(LogEntity::class);
   }
 }
