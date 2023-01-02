@@ -4,6 +4,7 @@ namespace MailPoet\API\JSON;
 
 use MailPoet\Config\AccessControl;
 use MailPoet\Exception;
+use MailPoet\Logging\LoggerFactory;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscription\Captcha\CaptchaConstants;
 use MailPoet\Tracy\ApiPanel\ApiPanel;
@@ -42,6 +43,9 @@ class API {
   /** @var SettingsController */
   private $settings;
 
+  /** @var LoggerFactory */
+  private $loggerFactory;
+
   const CURRENT_VERSION = 'v1';
 
   public function __construct(
@@ -49,6 +53,7 @@ class API {
     AccessControl $accessControl,
     ErrorHandler $errorHandler,
     SettingsController $settings,
+    LoggerFactory $loggerFactory,
     WPFunctions $wp
   ) {
     $this->container = $container;
@@ -62,6 +67,7 @@ class API {
         $availableApiVersion
       );
     }
+    $this->loggerFactory = $loggerFactory;
   }
 
   public function init() {
@@ -209,11 +215,13 @@ class API {
       $response = $endpoint->{$this->requestMethod}($this->requestData);
       return $response;
     } catch (Exception $e) {
+      $this->logError($e);
       return $this->errorHandler->convertToResponse($e);
     } catch (Throwable $e) {
       if (class_exists(Debugger::class) && Debugger::$logDirectory) {
         Debugger::log($e, ILogger::EXCEPTION);
       }
+      $this->logError($e);
       $errorMessage = $e->getMessage();
       $errorResponse = $this->createErrorResponse(Error::BAD_REQUEST, $errorMessage, Response::STATUS_BAD_REQUEST);
       return $errorResponse;
@@ -269,5 +277,15 @@ class API {
       $responseStatus
     );
     return $errorResponse;
+  }
+
+  private function logError(Throwable $e): void {
+    $this->loggerFactory->getLogger(LoggerFactory::TOPIC_API)->error($e->getMessage(), [
+      'requestMethod' => $this->requestMethod,
+      'requestData' => $this->requestData,
+      'requestEndpoint' => $this->requestEndpoint,
+      'exceptionMessage' => $e->getMessage(),
+      'exceptionTrace' => $e->getTrace(),
+    ]);
   }
 }
