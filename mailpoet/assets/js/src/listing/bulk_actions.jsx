@@ -1,6 +1,6 @@
 import { Component } from 'react';
+import { __ } from '@wordpress/i18n';
 
-import { MailPoet } from 'mailpoet';
 import PropTypes from 'prop-types';
 import { withBoundary } from '../common';
 
@@ -79,7 +79,7 @@ class ListingBulkActions extends Component {
         data-automation-id="listing-bulk-actions"
       >
         <span className="screen-reader-text">
-          {MailPoet.I18n.t('selectBulkAction')}
+          {__('Select bulk action', 'mailpoet')}
         </span>
 
         <div>

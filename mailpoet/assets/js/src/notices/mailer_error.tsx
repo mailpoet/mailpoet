@@ -1,7 +1,9 @@
 import { ReactNodeArray, useState } from 'react';
-import { MailPoet } from 'mailpoet';
+import { __ } from '@wordpress/i18n';
 import ReactStringReplace from 'react-string-replace';
 import classnames from 'classnames';
+
+import { MailPoet } from 'mailpoet';
 
 const resumeMailerSending = () =>
   MailPoet.Ajax.post({
@@ -10,7 +12,7 @@ const resumeMailerSending = () =>
     action: 'resumeSending',
   })
     .done(() => {
-      MailPoet.Notice.success(MailPoet.I18n.t('mailerSendingResumedNotice'));
+      MailPoet.Notice.success(__('Sending has been resumed.', 'mailpoet'));
       if (window.mailpoet_listing) {
         window.mailpoet_listing.forceUpdate();
       }
@@ -124,7 +126,7 @@ export function MailerError({
   });
   if (code) {
     message += message ? ', ' : '';
-    message += MailPoet.I18n.t('mailerErrorCode').replace('%1$s', code);
+    message += __('Error code: %1$s', 'mailpoet').replace('%1$s', code);
   }
 
   // allow <a> tags with some attributes
@@ -202,7 +204,7 @@ export function MailerError({
                 .catch(() => {});
             }}
           >
-            {MailPoet.I18n.t('mailerResumeSendingAfterUpgradeButton')}
+            {__('I have upgraded my subscription, resume sending', 'mailpoet')}
           </a>
         </p>
       </div>
@@ -213,8 +215,14 @@ export function MailerError({
     <div className={className}>
       <p>
         {mtaLog.error.operation === 'send'
-          ? MailPoet.I18n.t('mailerSendErrorNotice').replace('%1$s', mtaMethod)
-          : MailPoet.I18n.t('mailerConnectionErrorNotice')}
+          ? __(
+              'Sending has been paused due to a technical issue with %1$s',
+              'mailpoet',
+            ).replace('%1$s', mtaMethod)
+          : __(
+              'Sending is paused because the following connection issue prevents MailPoet from delivering emails',
+              'mailpoet',
+            )}
         : <i>{message}</i>
       </p>
       {mtaMethod === 'PHPMail' ? (
@@ -233,7 +241,7 @@ export function MailerError({
               .catch(() => {});
           }}
         >
-          {MailPoet.I18n.t('mailerResumeSendingButton')}
+          {__('Resume sending', 'mailpoet')}
         </a>
       </p>
     </div>
