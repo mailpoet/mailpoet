@@ -62,7 +62,7 @@ class DeleteNotificationCest {
     // step 3 - goodbye forever, notification
     $i->changeGroupInListingFilter('trash');
     $i->waitForText($newsletterName);
-    $i->clickItemRowActionByItemName($newsletterName, 'Delete Permanently');
+    $i->clickItemRowActionByItemName($newsletterName, 'Delete permanently');
     $i->waitForText('permanently deleted.');
     $i->waitForElementNotVisible($newsletterName);
   }
