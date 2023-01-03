@@ -3,7 +3,7 @@ Contributors: mailpoet
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 5.8
 Tested up to: 6.1
-Stable tag: 4.3.0
+Stable tag: 4.3.1
 Requires PHP: 7.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -218,6 +218,12 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 4.3.1 - 2023-01-03 =
+* Improved: welcome wizard first step design;
+* Improved: error handling for confirmation emails;
+* Fixed: occasional error on column detection during plugin update;
+* Fixed: occasional call to undefined function error during plugin update.
 
 = 4.3.0 - 2022-12-19 =
 * Added: confirmation email can be designed in email editor;
