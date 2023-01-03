@@ -5,6 +5,7 @@ import { GlobalContext, useGlobalContextValue } from 'context/index.jsx';
 import { TopBarWithBeamer } from 'common/top_bar/top_bar';
 import { HomepageNotices } from 'homepage/notices';
 import { TaskList } from './components/task-list';
+import { ProductDiscovery } from './components/product-discovery';
 import { Layout } from './components/layout';
 import { createStore } from './store/store';
 
@@ -22,6 +23,9 @@ function App(): JSX.Element {
         <Layout>
           <ErrorBoundary>
             <TaskList />
+          </ErrorBoundary>
+          <ErrorBoundary>
+            <ProductDiscovery />
           </ErrorBoundary>
         </Layout>
       ) : null}
