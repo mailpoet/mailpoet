@@ -280,6 +280,9 @@ class API {
   }
 
   private function logError(Throwable $e): void {
+    // logging to the php log
+    error_log((string)$e); // phpcs:ignore Squiz.PHP.DiscouragedFunctions
+    // logging to the MailPoet table
     $this->loggerFactory->getLogger(LoggerFactory::TOPIC_API)->error($e->getMessage(), [
       'requestMethod' => $this->requestMethod,
       'requestData' => $this->requestData,
