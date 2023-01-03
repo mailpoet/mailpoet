@@ -76,7 +76,7 @@ class DeleteAutomaticWooCommerceEmailCest {
     $i->click('[data-automation-id="tab-WooCommerce"]');
     $i->changeGroupInListingFilter('trash');
     $i->waitForText($newsletterName);
-    $i->clickItemRowActionByItemName($newsletterName, 'Delete Permanently');
+    $i->clickItemRowActionByItemName($newsletterName, 'Delete permanently');
     $i->waitForText('permanently deleted.');
     $i->waitForElementNotVisible($newsletterName);
     $i->waitForText($newsletterName . '2');

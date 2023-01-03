@@ -59,14 +59,14 @@ class DeleteNewsletterCest {
     $i->amOnMailpoetPage('Emails');
     $i->changeGroupInListingFilter('trash');
     $i->waitForText($newsletterName);
-    $i->clickItemRowActionByItemName($newsletterName, 'Delete Permanently');
+    $i->clickItemRowActionByItemName($newsletterName, 'Delete permanently');
     $i->waitForText('1 email was permanently deleted.');
     $i->waitForElementNotVisible($newsletterName);
     $i->waitForText($newsletterName . '2');
     $i->waitForText($newsletterName . '3');
     // click to select all newsletters
     $i->click('[data-automation-id="select_all"]');
-    $i->click('Delete Permanently');
+    $i->click('Delete permanently');
     $i->waitForText('2 emails were permanently deleted.');
     $i->waitForElement('[data-automation-id="filters_all"]');
     $i->waitForText($newsletterName . '4');
@@ -115,7 +115,7 @@ class DeleteNewsletterCest {
     $i->waitForText('All emails on this page are selected.');
     $i->click('Select all emails on all pages');
     $i->waitForText('All 22 emails are selected.');
-    $i->click('Delete Permanently');
+    $i->click('Delete permanently');
     $i->waitForText('22 emails were permanently deleted.');
   }
 }

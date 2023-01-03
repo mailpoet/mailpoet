@@ -37,7 +37,7 @@ class DeleteNotificationHistoryCest {
     $i->clickItemRowActionByItemName($newsletterName, 'Move to trash');
     $i->changeGroupInListingFilter('trash');
     $i->waitForText($newsletterName);
-    $i->clickItemRowActionByItemName($newsletterName, 'Delete Permanently');
+    $i->clickItemRowActionByItemName($newsletterName, 'Delete permanently');
     $i->waitForText('permanently deleted.');
     $i->waitForElementNotVisible($newsletterName);
   }
