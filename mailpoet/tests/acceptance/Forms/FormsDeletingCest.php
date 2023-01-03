@@ -56,7 +56,7 @@ class FormsDeletingCest {
     $i->changeGroupInListingFilter('trash');
     $i->waitForText($formName);
 
-    $i->clickItemRowActionByItemName($formName, 'Delete Permanently');
+    $i->clickItemRowActionByItemName($formName, 'Delete permanently');
 
     $i->waitForText('1 form was permanently deleted.');
     $i->waitForElementNotVisible($formName);
