@@ -10,5 +10,8 @@ export function getInitialState(): State {
       hasImportedSubscribers:
         window.mailpoet_homepage_data.subscribers_count > 10,
     },
+    productDiscovery: {
+      isHidden: window.mailpoet_homepage_data.product_discovery_dismissed,
+    },
   };
 }

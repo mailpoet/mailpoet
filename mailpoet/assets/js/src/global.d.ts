@@ -173,6 +173,7 @@ interface Window {
   mailpoet_welcome_wizard_url: string;
   mailpoet_homepage_data: {
     task_list_dismissed: boolean;
+    product_discovery_dismissed: boolean;
     task_list_status: {
       senderSet: boolean;
       mssConnected: boolean;

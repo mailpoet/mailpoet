@@ -44,6 +44,7 @@ class Homepage {
       'mta_log' => $this->settingsController->get('mta_log'),
       'homepage' => [
         'task_list_dismissed' => (bool)$this->settingsController->get('homepage.task_list_dismissed', false),
+        'product_discovery_dismissed' => (bool)$this->settingsController->get('homepage.product_discovery_dismissed', false),
         'task_list_status' => $this->getTaskListStatus(),
         'woo_customers_count' => $this->wooCommerceHelper->getCustomersCount(),
         'subscribers_count' => $this->subscribersRepository->getTotalSubscribers(),

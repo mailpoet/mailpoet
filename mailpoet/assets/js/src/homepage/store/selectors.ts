@@ -16,6 +16,10 @@ export function getHasImportedSubscribers(state: State): boolean {
   return state.taskList.hasImportedSubscribers;
 }
 
+export function getIsProductDiscoveryHidden(state: State): boolean {
+  return state.productDiscovery.isHidden;
+}
+
 export function getCurrentTask(state: State): TaskType | null {
   if (!state.taskList.tasksStatus.senderSet) return 'senderSet';
   if (!state.taskList.tasksStatus.mssConnected) return 'mssConnected';
