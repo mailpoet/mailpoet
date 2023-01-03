@@ -10,3 +10,14 @@ export function saveTaskListDismissed() {
     },
   });
 }
+
+export function saveProductDiscoveryDismissed() {
+  return callApi({
+    endpoint: 'settings',
+    action: 'set',
+    method: 'POST',
+    data: {
+      'homepage.product_discovery_dismissed': true,
+    },
+  });
+}

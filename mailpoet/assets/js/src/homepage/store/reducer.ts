@@ -11,6 +11,14 @@ export function reducer(state: State, action: Action): State {
           isTaskListHidden: true,
         },
       };
+    case 'SET_PRODUCT_DISCOVERY_HIDDEN':
+      return {
+        ...state,
+        productDiscovery: {
+          ...state.productDiscovery,
+          isHidden: true,
+        },
+      };
     default:
       return state;
   }
