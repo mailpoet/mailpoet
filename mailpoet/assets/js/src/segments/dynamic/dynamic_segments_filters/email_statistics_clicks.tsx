@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { __ } from '@wordpress/i18n';
 import { MailPoet } from 'mailpoet';
 import { find, filter } from 'lodash/fp';
 import { useSelect, useDispatch } from '@wordpress/data';
@@ -46,7 +47,7 @@ export function EmailClickStatisticsFields({
   const newsletterOptions = newslettersList?.map((newsletter) => {
     const sentAt = newsletter.sent_at
       ? MailPoet.Date.format(newsletter.sent_at)
-      : MailPoet.I18n.t('notSentYet');
+      : __('Not sent yet', 'mailpoet');
     return {
       label: newsletter.subject,
       tag: sentAt,

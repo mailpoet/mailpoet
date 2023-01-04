@@ -31,7 +31,7 @@ import { SendingStatus } from 'newsletters/sending_status.jsx';
 import { GlobalContext, useGlobalContextValue } from 'context/index.jsx';
 import { Notices } from 'notices/notices.jsx';
 import { RoutedTabs } from 'common/tabs/routed_tabs';
-import { ErrorBoundary, Tab, withBoundary } from 'common';
+import { ErrorBoundary, registerTranslations, Tab, withBoundary } from 'common';
 import { withNpsPoll } from 'nps_poll.jsx';
 import { ListingHeading } from 'newsletters/listings/heading.jsx';
 import { ListingHeadingDisplay } from 'newsletters/listings/heading_display.jsx';
@@ -298,6 +298,7 @@ function App() {
 
 const container = document.getElementById('newsletters_container');
 if (container) {
+  registerTranslations();
   // eslint-disable-next-line react/no-render-return-value
   window.mailpoet_listing = ReactDOM.render(<App />, container);
 }
