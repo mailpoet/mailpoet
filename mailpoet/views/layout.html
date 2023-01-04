@@ -220,11 +220,6 @@ jQuery('#adminmenu #toplevel_page_mailpoet-newsletters')
   'admin_vendor.js'
 )%>
 
-<%= do_action('mailpoet_scripts_admin_before') %>
-
-<%= javascript(
-  'admin.js'
-)%>
 
 <%if is_loading_3rd_party_enabled() and not is_dotcom_ecommerce_plan() %>
   <%= javascript('lib/analytics.js') %>
