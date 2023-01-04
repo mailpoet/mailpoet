@@ -13,6 +13,7 @@ import {
 import { ShortcutProvider } from '@wordpress/keyboard-shortcuts';
 import { __ } from '@wordpress/i18n';
 import { addQueryArgs } from '@wordpress/url';
+import { registerTranslations } from 'common';
 import { Header } from './components/header';
 import { InserterSidebar } from './components/inserter-sidebar';
 import { KeyboardShortcuts } from './components/keyboard-shortcuts';
@@ -27,7 +28,6 @@ import { MailPoet } from '../../mailpoet';
 import { LISTING_NOTICE_PARAMETERS } from '../listing/automation-listing-notices';
 import { registerApiErrorHandler } from './api-error-handler';
 import { ActivatePanel } from './components/panel/activate-panel';
-import { registerTranslations } from '../i18n';
 import { AutomationStatus } from '../listing/automation';
 
 // See:
