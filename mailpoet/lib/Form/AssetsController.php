@@ -180,4 +180,16 @@ EOL;
      */
     \wp_scripts()->do_item('newsletter_editor');
   }
+
+  public function setupAdminPagesDependencies(): void {
+
+    $this->wp->wpEnqueueScript(
+      'mailpoet_admin_pages',
+      Env::$assetsUrl . '/dist/js/' . $this->renderer->getJsAsset('admin.js'),
+      [],
+      Env::$version,
+      true
+    );
+    $this->wp->wpSetScriptTranslations('mailpoet_admin_pages', 'mailpoet');
+  }
 }
