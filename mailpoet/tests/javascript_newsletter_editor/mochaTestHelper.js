@@ -36,6 +36,11 @@ global.$ = jQuery;
 global.jQuery = jQuery;
 global.window.jQuery = jQuery;
 global._ = _;
+global.window.wp = global.window.wp || {
+  i18n: {
+    getLocaleData: () => {},
+  },
+};
 
 testHelpers.loadScript(
   'tests/javascript_newsletter_editor/testBundles/vendor.js',
