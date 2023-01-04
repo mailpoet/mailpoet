@@ -1,3 +1,4 @@
+import { __ } from '@wordpress/i18n';
 import { MailPoet } from 'mailpoet';
 import classnames from 'classnames';
 import { addDays, differenceInMinutes, isFuture, isPast } from 'date-fns';
@@ -84,7 +85,7 @@ function NewsletterStatus({
   const sent = (!scheduledFor || isPast(scheduledFor)) && processed >= total;
   const sentWithoutQueue = status === 'sent' && total === undefined;
   let percentage = 0;
-  let label: string | JSX.Element = t('notSentYet');
+  let label: string | JSX.Element = __('Not sent yet!', 'mailpoet');
   if (scheduled) {
     const scheduledDate = MailPoet.Date.short(scheduledFor);
     const scheduledTime = MailPoet.Date.time(scheduledFor);
@@ -135,11 +136,11 @@ function NewsletterStatus({
     )} / ${MailPoet.Num.toLocaleFixed(total)}`;
     percentage = 100;
   } else if (sentWithoutQueue) {
-    label = t('sent');
+    label = __('Sent', 'mailpoet');
     percentage = 100;
   }
   if (isPaused && !sent && !sentWithoutQueue) {
-    label = t('paused');
+    label = __('Paused', 'mailpoet');
   }
 
   if (isCorrupt) {
