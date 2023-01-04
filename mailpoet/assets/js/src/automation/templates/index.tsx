@@ -1,10 +1,10 @@
 import ReactDOM from 'react-dom';
 import { __ } from '@wordpress/i18n';
 import { Flex } from '@wordpress/components';
+import { registerTranslations } from 'common';
 import { automationTemplates } from './config';
 import { TemplateListItem } from './components/template-list-item';
 import { initializeApi } from '../api';
-import { registerTranslations } from '../i18n';
 import { TopBarWithBeamer } from '../../common/top_bar/top_bar';
 import {
   FromScratchButton,
