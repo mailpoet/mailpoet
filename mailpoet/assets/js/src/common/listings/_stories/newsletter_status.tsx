@@ -1,12 +1,7 @@
 import { addHours, subHours } from 'date-fns';
-import { MailPoet } from 'mailpoet';
-import { NewsletterStatus as NewsletterStatusEnum } from 'common/newsletter';
 import { NewsletterStatus } from '../newsletter_status';
+import { NewsletterStatus as NewsletterStatusEnum } from 'common/newsletter';
 import { Heading } from '../../typography';
-
-MailPoet.I18n.add('notSentYet', 'Not sent yet!');
-MailPoet.I18n.add('sent', 'Sent');
-MailPoet.I18n.add('paused', 'Paused');
 
 export default {
   title: 'Listing',
