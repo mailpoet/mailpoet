@@ -54,3 +54,8 @@ import 'newsletter_editor/blocks/woocommerceContent.js'; // side effect - calls 
 import 'newsletter_editor/blocks/woocommerceHeading.js'; // side effect - calls App.on()
 import 'newsletter_editor/blocks/unknownBlockFallback.js'; // side effect - calls App.on()
 import 'newsletter_editor/blocks/coupon'; // side effect - calls App.on()
+
+// register strings for native translation with @wordpress/i18n
+import { registerTranslations } from 'common';
+
+registerTranslations();
