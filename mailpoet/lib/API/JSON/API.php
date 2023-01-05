@@ -283,7 +283,7 @@ class API {
     // logging to the php log
     error_log((string)$e); // phpcs:ignore Squiz.PHP.DiscouragedFunctions
     // logging to the MailPoet table
-    $this->loggerFactory->getLogger(LoggerFactory::TOPIC_API)->error($e->getMessage(), [
+    $this->loggerFactory->getLogger(LoggerFactory::TOPIC_API)->warning($e->getMessage(), [
       'requestMethod' => $this->requestMethod,
       'requestData' => $this->requestData,
       'requestEndpoint' => $this->requestEndpoint,
