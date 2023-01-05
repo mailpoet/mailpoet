@@ -1,20 +1,22 @@
 import { MailPoet } from 'mailpoet';
-import { useSelect, useDispatch } from '@wordpress/data';
+import { useSelect } from '@wordpress/data';
 import { DropdownMenu } from '@wordpress/components';
 import { moreVertical } from '@wordpress/icons';
 import { storeName } from 'homepage/store/store';
 import { Task } from './task';
 
-export function TaskList(): JSX.Element {
+type Props = {
+  onHide: () => void;
+};
+
+export function TaskList({ onHide }: Props): JSX.Element {
   const {
-    isTaskListHidden,
     tasksStatus,
     currentTask,
     hasImportedSubscribers,
     canImportWooCommerceSubscribers,
   } = useSelect(
     (select) => ({
-      isTaskListHidden: select(storeName).getIsTaskListHidden(),
       tasksStatus: select(storeName).getTasksStatus(),
       currentTask: select(storeName).getCurrentTask(),
       hasImportedSubscribers: select(storeName).getHasImportedSubscribers(),
@@ -23,7 +25,6 @@ export function TaskList(): JSX.Element {
     }),
     [],
   );
-  const { hideTaskList } = useDispatch(storeName);
 
   const taskListItems = [];
   taskListItems.push(
@@ -94,7 +95,7 @@ export function TaskList(): JSX.Element {
     </Task>,
   );
 
-  return isTaskListHidden ? null : (
+  return (
     <>
       <div className="mailpoet-task-list__heading">
         <h1>{MailPoet.I18n.t('welcomeToMailPoet')}</h1>
@@ -105,7 +106,7 @@ export function TaskList(): JSX.Element {
           controls={[
             {
               title: MailPoet.I18n.t('hideList'),
-              onClick: hideTaskList,
+              onClick: onHide,
               icon: null,
             },
           ]}
@@ -119,7 +120,7 @@ export function TaskList(): JSX.Element {
             href="#"
             onClick={(e) => {
               e.preventDefault();
-              hideTaskList();
+              onHide();
             }}
           >
             {MailPoet.I18n.t('dismissList')}
