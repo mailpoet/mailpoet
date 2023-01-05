@@ -62,7 +62,7 @@ class APITest extends \MailPoetTest {
     $this->container->compile();
     $this->errorHandler = $this->container->get(ErrorHandler::class);
     $this->settings = $this->container->get(SettingsController::class);
-    $this->loggerFactory = $this->diContainer->get(LoggerFactory::class);
+    $this->loggerFactory = $this->container->get(LoggerFactory::class);
     $this->api = new JSONAPI(
       $this->container,
       $this->container->get(AccessControl::class),
@@ -343,6 +343,7 @@ class APITest extends \MailPoetTest {
   }
 
   public function testItLogsExceptionToLogTable() {
+    $this->settings->set('logging', 'everything');
     $namespace = [
       'name' => 'MailPoet\API\JSON\v1',
       'version' => 'v1',
@@ -367,6 +368,7 @@ class APITest extends \MailPoetTest {
     expect($log->getMessage())->stringContainsString('Some Error');
     expect($log->getName())->equals(LoggerFactory::TOPIC_API);
     expect($response->errors)->equals([['error' => 'bad_request', 'message' => 'Some Error']]);
+    $this->diContainer->get(SettingsController::class)->set('logging', 'errors');
   }
 
   public function _after() {
