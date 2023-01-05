@@ -45,7 +45,7 @@ export function InserterPopover(): JSX.Element | null {
           }
         }}
       >
-        <Inserter onInsert={onInsert} />
+        <Inserter onInsert={onInsert} showInserterHelpPanel={false} />
       </Popover>
 
       {showModal && (
