@@ -5,6 +5,7 @@ namespace MailPoet\Homepage;
 use MailPoet\Entities\FormEntity;
 use MailPoet\Entities\SettingEntity;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Settings\SettingsController;
 use MailPoet\Test\DataFactories\Form;
 use MailPoet\Test\DataFactories\Subscriber;
 
@@ -30,7 +31,7 @@ class HomepageDataControllerTest extends \MailPoetTest {
   }
 
   public function testItFetchesSenderTaskListStatus(): void {
-    $settings = $this->diContainer->get(\MailPoet\Settings\SettingsController::class);
+    $settings = $this->diContainer->get(SettingsController::class);
 
     $settings->set('sender', null);
     $data = $this->homepageDataController->getPageData();
@@ -46,6 +47,13 @@ class HomepageDataControllerTest extends \MailPoetTest {
     $data = $this->homepageDataController->getPageData();
     $taskListStatus = $data['task_list_status'];
     expect($taskListStatus['senderSet'])->true();
+  }
+
+  public function testItDoesntFetchTaskListStatusWhenTaskListDismissed(): void {
+    $settings = $this->diContainer->get(SettingsController::class);
+    $settings->set('homepage.task_list_dismissed', true);
+    $data = $this->homepageDataController->getPageData();
+    expect($data['task_list_status'])->null();
   }
 
   public function testItFetchesSubscribersAddedTaskListStatus(): void {

@@ -179,7 +179,7 @@ interface Window {
       mssConnected: boolean;
       subscribersAdded: boolean;
       wooSubscribersImported: boolean;
-    };
+    } | null;
     woo_customers_count: number;
     subscribers_count: number;
   };

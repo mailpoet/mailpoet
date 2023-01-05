@@ -1,6 +1,6 @@
 export type TaskListState = {
   isTaskListHidden: boolean;
-  tasksStatus: TaskListTasksStatus;
+  tasksStatus: TaskListTasksStatus | null;
   canImportWooCommerceSubscribers: boolean;
   hasImportedSubscribers: boolean;
 };
