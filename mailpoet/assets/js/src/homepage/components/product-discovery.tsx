@@ -1,20 +1,13 @@
 import { MailPoet } from 'mailpoet';
-import { useDispatch, useSelect } from '@wordpress/data';
-import { storeName } from 'homepage/store/store';
 import { moreVertical } from '@wordpress/icons';
 import { DropdownMenu } from '@wordpress/components';
 import { DiscoveryTask } from './discovery-task';
 
-export function ProductDiscovery() {
-  const { isHidden } = useSelect(
-    (select) => ({
-      isHidden: select(storeName).getIsProductDiscoveryHidden(),
-    }),
-    [],
-  );
-  const { hideProductDiscovery } = useDispatch(storeName);
-  if (isHidden) return null;
+type Props = {
+  onHide: () => void;
+};
 
+export function ProductDiscovery({ onHide }: Props): JSX.Element {
   const tasks = [];
   tasks.push(
     <DiscoveryTask
@@ -64,7 +57,7 @@ export function ProductDiscovery() {
           controls={[
             {
               title: MailPoet.I18n.t('hideList'),
-              onClick: hideProductDiscovery,
+              onClick: onHide,
               icon: null,
             },
           ]}
