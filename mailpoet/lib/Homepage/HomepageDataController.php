@@ -36,10 +36,11 @@ class HomepageDataController {
   public function getPageData(): array {
     $subscribersCount = $this->subscribersRepository->getTotalSubscribers();
     $formsCount = $this->formsRepository->count();
+    $showTaskList = !$this->settingsController->get('homepage.task_list_dismissed', false);
     return [
-      'task_list_dismissed' => (bool)$this->settingsController->get('homepage.task_list_dismissed', false),
+      'task_list_dismissed' => !$showTaskList,
       'product_discovery_dismissed' => (bool)$this->settingsController->get('homepage.product_discovery_dismissed', false),
-      'task_list_status' => $this->getTaskListStatus($subscribersCount, $formsCount),
+      'task_list_status' => $showTaskList ? $this->getTaskListStatus($subscribersCount, $formsCount) : null,
       'woo_customers_count' => $this->wooCommerceHelper->getCustomersCount(),
       'subscribers_count' => $subscribersCount,
     ];
