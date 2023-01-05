@@ -285,7 +285,6 @@ class API {
     // logging to the MailPoet table
     $this->loggerFactory->getLogger(LoggerFactory::TOPIC_API)->warning($e->getMessage(), [
       'requestMethod' => $this->requestMethod,
-      'requestData' => $this->requestData,
       'requestEndpoint' => $this->requestEndpoint,
       'exceptionMessage' => $e->getMessage(),
       'exceptionTrace' => $e->getTrace(),
