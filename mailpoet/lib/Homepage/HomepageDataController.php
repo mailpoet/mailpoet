@@ -50,7 +50,7 @@ class HomepageDataController {
    */
   private function getTaskListStatus(int $subscribersCount, int $formsCount): array {
     return [
-      'senderSet' => (bool)$this->settingsController->get('sender.address', false),
+      'senderSet' => $this->settingsController->get('sender.address', false) && $this->settingsController->get('sender.name', false),
       'mssConnected' => Bridge::isMSSKeySpecified(),
       'wooSubscribersImported' => (bool)$this->settingsController->get('woocommerce_import_screen_displayed', false),
       'subscribersAdded' => $formsCount || ($subscribersCount > 10),
