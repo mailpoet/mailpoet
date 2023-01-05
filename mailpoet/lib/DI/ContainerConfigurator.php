@@ -302,6 +302,8 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Form\Util\CustomFonts::class)->setPublic(true);
     // Helpscout
     $container->autowire(\MailPoet\Helpscout\Beacon::class)->setPublic(true);
+    // Homepage
+    $container->autowire(\MailPoet\Homepage\HomepageDataController::class)->setPublic(true);
     // Listing
     $container->autowire(\MailPoet\Listing\Handler::class)->setPublic(true);
     $container->autowire(\MailPoet\Listing\PageLimit::class)->setPublic(true);
