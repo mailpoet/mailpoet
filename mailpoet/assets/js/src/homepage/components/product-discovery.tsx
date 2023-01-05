@@ -22,30 +22,35 @@ export function ProductDiscovery() {
       title={MailPoet.I18n.t('setUpWelcomeCampaign')}
       description={MailPoet.I18n.t('setUpWelcomeCampaignDesc')}
       link="admin.php?page=mailpoet-automation-templates"
+      imgSrc={`${MailPoet.cdnUrl}homepage/welcome-email-illustration.png`}
     />,
     <DiscoveryTask
       key="addSubscriptionForm"
       title={MailPoet.I18n.t('addSubscriptionForm')}
       description={MailPoet.I18n.t('addSubscriptionFormDesc')}
       link="admin.php?page=mailpoet-form-editor-template-selection"
+      imgSrc={`${MailPoet.cdnUrl}homepage/subscription-form-illustration.png`}
     />,
     <DiscoveryTask
       key="sendFirstNewsletter"
       title={MailPoet.I18n.t('sendFirstNewsletter')}
       description={MailPoet.I18n.t('sendFirstNewsletterDesc')}
       link="admin.php?page=mailpoet-newsletters#/new"
+      imgSrc={`${MailPoet.cdnUrl}homepage/newsletter-illustration.png`}
     />,
     <DiscoveryTask
       key="setUpAbandonedCartEmail"
       title={MailPoet.I18n.t('setUpAbandonedCartEmail')}
       description={MailPoet.I18n.t('setUpAbandonedCartEmailDesc')}
       link="admin.php?page=mailpoet-newsletters#/new/woocommerce/woocommerce_abandoned_shopping_cart/conditions"
+      imgSrc={`${MailPoet.cdnUrl}homepage/woo-cart-email-illustration.png`}
     />,
     <DiscoveryTask
       key="brandWooEmails"
       title={MailPoet.I18n.t('brandWooEmails')}
       description={MailPoet.I18n.t('brandWooEmailsDesc')}
       link="admin.php?page=mailpoet-settings#/woocommerce"
+      imgSrc={`${MailPoet.cdnUrl}homepage/woo-transactional-email-illustration.png`}
     />,
   );
 
