@@ -4,9 +4,7 @@ import { ErrorBoundary } from 'common';
 import { GlobalContext, useGlobalContextValue } from 'context/index.jsx';
 import { TopBarWithBeamer } from 'common/top_bar/top_bar';
 import { HomepageNotices } from 'homepage/notices';
-import { TaskList } from './components/task-list';
-import { ProductDiscovery } from './components/product-discovery';
-import { Layout } from './components/layout';
+import { HomepageSections } from './components/homepage-sections';
 import { createStore } from './store/store';
 
 function App(): JSX.Element {
@@ -19,16 +17,7 @@ function App(): JSX.Element {
     <GlobalContext.Provider value={useGlobalContextValue(window)}>
       <TopBarWithBeamer />
       <HomepageNotices />
-      {isStoreInitialized ? (
-        <Layout>
-          <ErrorBoundary>
-            <TaskList />
-          </ErrorBoundary>
-          <ErrorBoundary>
-            <ProductDiscovery />
-          </ErrorBoundary>
-        </Layout>
-      ) : null}
+      {isStoreInitialized ? <HomepageSections /> : null}
     </GlobalContext.Provider>
   );
 }
