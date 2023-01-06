@@ -6,7 +6,7 @@ import { WelcomeWizardStepLayoutBody } from '../../../wizard/layout/step_layout_
 import {
   Controls,
   FreeBenefitsList,
-} from '../../../wizard/steps/pitch_mss_step.jsx';
+} from '../../../wizard/steps/pitch_mss_step';
 
 type Props = {
   MSSPitchIllustrationUrl: string;

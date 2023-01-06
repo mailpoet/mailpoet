@@ -4,7 +4,7 @@ import { partial } from 'underscore';
 import { MailPoet } from 'mailpoet';
 import { WelcomeWizardSenderStep } from './steps/sender_step';
 import { WelcomeWizardUsageTrackingStep } from './steps/usage_tracking_step.jsx';
-import { WelcomeWizardPitchMSSStep } from './steps/pitch_mss_step.jsx';
+import { WelcomeWizardPitchMSSStep } from './steps/pitch_mss_step';
 import { WooCommerceController } from './woocommerce_controller';
 import { WelcomeWizardStepLayout } from './layout/step_layout.jsx';
 
@@ -154,7 +154,6 @@ function WelcomeWizardStepsController({
               <WelcomeWizardPitchMSSStep
                 next={() => redirect(step)}
                 subscribersCount={window.mailpoet_subscribers_count}
-                mailpoetAccountUrl={window.mailpoet_account_url}
                 purchaseUrl={MailPoet.MailPoetComUrlFactory.getPurchasePlanUrl(
                   MailPoet.subscribersCount,
                   MailPoet.currentWpUserEmail,
