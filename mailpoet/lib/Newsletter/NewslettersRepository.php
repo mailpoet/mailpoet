@@ -65,6 +65,37 @@ class NewslettersRepository extends Repository {
       ->getResult();
   }
 
+  public function getCountForStatusAndTypes(string $status, array $types): int {
+    return intval($this->entityManager
+      ->createQueryBuilder()
+      ->select('COUNT(n.id)')
+      ->from(NewsletterEntity::class, 'n')
+      ->where('n.status = :status')
+      ->andWhere('n.deletedAt is null')
+      ->andWhere('n.type IN (:types)')
+      ->setParameter('status', $status)
+      ->setParameter('types', $types)
+      ->getQuery()
+      ->getSingleScalarResult());
+  }
+
+  public function getCountOfActiveAutomaticEmailsForEvent(string $event): int {
+    return intval($this->entityManager->createQueryBuilder()
+      ->select('COUNT(n.id)')
+      ->from(NewsletterEntity::class, 'n')
+      ->where('n.status = :status')
+      ->andWhere('n.deletedAt IS NULL')
+      ->andWhere('n.type = :type')
+      ->join('n.options', 'o', Join::WITH, 'o.value = :event')
+      ->join('o.optionField', 'f', Join::WITH, 'f.name = :nameEvent AND f.newsletterType = :type')
+      ->setParameter('status', NewsletterEntity::STATUS_ACTIVE)
+      ->setParameter('nameEvent', NewsletterOptionFieldEntity::NAME_EVENT)
+      ->setParameter('type', NewsletterEntity::TYPE_AUTOMATIC)
+      ->setParameter('event', $event)
+      ->getQuery()
+      ->getSingleScalarResult());
+  }
+
   /**
    * @return NewsletterEntity[]
    */
