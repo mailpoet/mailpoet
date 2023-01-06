@@ -26,6 +26,9 @@ class TranslationUpdater {
   /** @var string|null */
   private $premiumVersion;
 
+  /** @var array  */
+  private $requestCache = [];
+
   public function __construct(
     WPFunctions $wpFunctions,
     string $freeSlug,
@@ -85,11 +88,15 @@ class TranslationUpdater {
 
     // Ten seconds, plus one extra second for every 10 locales.
     $timeout = 10 + (int)(count($locales) / 10);
-    $rawResponse = $this->wpFunctions->wpRemotePost(self::API_UPDATES_BASE_URI, [
-      'body' => json_encode($requestBody),
-      'headers' => ['Content-Type: application/json'],
-      'timeout' => $timeout,
-    ]);
+    $requestHash = md5(serialize($requestBody));
+    if (!isset($this->requestCache[$requestHash])) {
+      $this->requestCache[$requestHash] = $this->wpFunctions->wpRemotePost(self::API_UPDATES_BASE_URI, [
+        'body' => json_encode($requestBody),
+        'headers' => ['Content-Type: application/json'],
+        'timeout' => $timeout,
+      ]);
+    }
+    $rawResponse = $this->requestCache[$requestHash];
 
     // Don't continue when API request failed.
     $responseCode = $this->wpFunctions->wpRemoteRetrieveResponseCode($rawResponse);
