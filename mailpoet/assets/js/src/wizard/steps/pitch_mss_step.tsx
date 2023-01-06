@@ -1,10 +1,9 @@
-import PropTypes from 'prop-types';
 import { MailPoet } from 'mailpoet';
 import { Button } from '../../common';
 import { Heading } from '../../common/typography/heading/heading';
 import { List } from '../../common/typography/list/list';
 
-export function FreeBenefitsList() {
+export function FreeBenefitsList(): JSX.Element {
   return (
     <List>
       <li>{MailPoet.I18n.t('welcomeWizardMSSList1')}</li>
@@ -15,7 +14,7 @@ export function FreeBenefitsList() {
   );
 }
 
-export function NotFreeBenefitsList() {
+export function NotFreeBenefitsList(): JSX.Element {
   return (
     <List>
       <li>{MailPoet.I18n.t('welcomeWizardMSSNotFreeList1')}</li>
@@ -27,7 +26,19 @@ export function NotFreeBenefitsList() {
   );
 }
 
-export function Controls(props) {
+type ControlsPropType = {
+  mailpoetAccountUrl: string;
+  next: () => void;
+  nextButtonText: string;
+  nextWithSpinner?: boolean;
+};
+
+export function Controls({
+  mailpoetAccountUrl,
+  next,
+  nextButtonText,
+  nextWithSpinner = false,
+}: ControlsPropType): JSX.Element {
   return (
     <>
       <div className="mailpoet-gap" />
@@ -35,31 +46,31 @@ export function Controls(props) {
 
       <Button
         isFullWidth
-        href={props.mailpoetAccountUrl}
+        href={mailpoetAccountUrl}
         target="_blank"
         rel="noopener noreferrer"
         onClick={(event) => {
           event.preventDefault();
-          window.open(props.mailpoetAccountUrl);
-          props.next();
+          window.open(mailpoetAccountUrl);
+          next();
         }}
       >
-        {props.nextButtonText}
+        {nextButtonText}
       </Button>
       <Button
         isFullWidth
         variant="tertiary"
-        onClick={props.next}
+        onClick={next}
         onKeyDown={(event) => {
           if (
             ['keydown', 'keypress'].includes(event.type) &&
             ['Enter', ' '].includes(event.key)
           ) {
             event.preventDefault();
-            props.next();
+            next();
           }
         }}
-        withSpinner={props.nextWithSpinner}
+        withSpinner={nextWithSpinner}
       >
         {MailPoet.I18n.t('welcomeWizardMSSNoThanks')}
       </Button>
@@ -67,18 +78,13 @@ export function Controls(props) {
   );
 }
 
-Controls.propTypes = {
-  mailpoetAccountUrl: PropTypes.string.isRequired,
-  next: PropTypes.func.isRequired,
-  nextButtonText: PropTypes.string.isRequired,
-  nextWithSpinner: PropTypes.bool,
+type FreePlanSubscribersPropType = {
+  next: () => void;
 };
 
-Controls.defaultProps = {
-  nextWithSpinner: false,
-};
-
-function FreePlanSubscribers(props) {
+function FreePlanSubscribers({
+  next,
+}: FreePlanSubscribersPropType): JSX.Element {
   return (
     <>
       <Heading level={1}>
@@ -101,19 +107,24 @@ function FreePlanSubscribers(props) {
           'starter',
           { utm_medium: 'onboarding', utm_campaign: 'purchase' },
         )}
-        next={props.next}
+        next={next}
         nextButtonText={MailPoet.I18n.t('welcomeWizardMSSFreeButton')}
       />
     </>
   );
 }
 
-FreePlanSubscribers.propTypes = {
-  next: PropTypes.func.isRequired,
-};
 FreePlanSubscribers.displayName = 'FreePlanSubscribers';
 
-function NotFreePlanSubscribers(props) {
+type NotFreePlanSubscribersPropType = {
+  mailpoetAccountUrl: string;
+  next: () => void;
+};
+
+function NotFreePlanSubscribers({
+  mailpoetAccountUrl,
+  next,
+}: NotFreePlanSubscribersPropType): JSX.Element {
   return (
     <>
       <Heading level={1}>
@@ -125,39 +136,32 @@ function NotFreePlanSubscribers(props) {
       <NotFreeBenefitsList />
 
       <Controls
-        mailpoetAccountUrl={props.mailpoetAccountUrl}
-        next={props.next}
+        mailpoetAccountUrl={mailpoetAccountUrl}
+        next={next}
         nextButtonText={MailPoet.I18n.t('welcomeWizardMSSNotFreeButton')}
       />
     </>
   );
 }
 
-NotFreePlanSubscribers.propTypes = {
-  mailpoetAccountUrl: PropTypes.string.isRequired,
-  next: PropTypes.func.isRequired,
-};
 NotFreePlanSubscribers.displayName = 'NotFreePlanSubscribers';
 
-function WelcomeWizardPitchMSSStep(props) {
-  return props.subscribersCount < 1000 ? (
-    <FreePlanSubscribers
-      mailpoetAccountUrl={props.mailpoetAccountUrl}
-      next={props.next}
-    />
+type WelcomeWizardPitchMSSStepPropType = {
+  subscribersCount: number;
+  next: () => void;
+  purchaseUrl: string;
+};
+
+function WelcomeWizardPitchMSSStep({
+  subscribersCount,
+  next,
+  purchaseUrl,
+}: WelcomeWizardPitchMSSStepPropType): JSX.Element {
+  return subscribersCount < 1000 ? (
+    <FreePlanSubscribers next={next} />
   ) : (
-    <NotFreePlanSubscribers
-      mailpoetAccountUrl={props.purchaseUrl}
-      next={props.next}
-    />
+    <NotFreePlanSubscribers mailpoetAccountUrl={purchaseUrl} next={next} />
   );
 }
-
-WelcomeWizardPitchMSSStep.propTypes = {
-  next: PropTypes.func.isRequired,
-  subscribersCount: PropTypes.number.isRequired,
-  mailpoetAccountUrl: PropTypes.string.isRequired,
-  purchaseUrl: PropTypes.string.isRequired,
-};
 
 export { WelcomeWizardPitchMSSStep };
