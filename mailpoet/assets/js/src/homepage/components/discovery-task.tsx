@@ -6,6 +6,7 @@ type Props = {
   link: string;
   imgSrc: string;
   isDone: boolean;
+  doneMessage: string;
   description?: string;
 };
 
@@ -13,6 +14,7 @@ export function DiscoveryTask({
   title,
   link,
   description,
+  doneMessage,
   imgSrc,
   isDone,
 }: Props): JSX.Element {
@@ -28,9 +30,16 @@ export function DiscoveryTask({
       onKeyDown={(e) => e.key === 'Enter' && handleTaskClick()}
     >
       <img src={imgSrc} alt={title} width={124} height={72} />
-      <h3>{`${title} →`}</h3>
+      {isDone ? (
+        <h3>{doneMessage}</h3>
+      ) : (
+        <>
+          <h3>{`${title} →`}</h3>
+          {description ? <p>{description}</p> : null}
+        </>
+      )}
+
       {isDone ? <Icon icon={check} /> : null}
-      {description ? <p>{description}</p> : null}
     </li>
   );
 }
