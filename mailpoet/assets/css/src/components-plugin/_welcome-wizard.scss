@@ -153,3 +153,11 @@
 .mailpoet-wizard-woocommerce-toggle {
   margin-left: $grid-gap;
 }
+
+.mailpoet-welcome-wizard-confirmation-modal {
+  width: 25%;
+
+  .mailpoet-welcome-wizard-confirmation-modal-buttons {
+    text-align: right;
+  }
+}
