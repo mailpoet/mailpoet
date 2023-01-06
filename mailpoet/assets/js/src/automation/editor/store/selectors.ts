@@ -43,6 +43,13 @@ export function getRegistryStep(
   return state.registry.steps[key];
 }
 
+export function getContext<T = unknown>(
+  state: State,
+  key: string,
+): T | undefined {
+  return state.context[key] as T | undefined;
+}
+
 export function getSteps(state: State): StepType[] {
   return Object.values(state.stepTypes);
 }
