@@ -11,9 +11,9 @@ type ReplyToArgs = {
 };
 
 export function ReplyToPanel(): JSX.Element {
-  const { context, selectedStep, errors } = useSelect(
+  const { registry, selectedStep, errors } = useSelect(
     (select) => ({
-      context: select(storeName).getContext(),
+      registry: select(storeName).getRegistry(),
       selectedStep: select(storeName).getSelectedStep(),
       errors: select(storeName).getStepError(
         select(storeName).getSelectedStep().id,
@@ -30,10 +30,10 @@ export function ReplyToPanel(): JSX.Element {
   const prevValue = useRef<{ name?: string; address?: string }>();
 
   // defaults
-  const argsContext =
-    context.steps['mailpoet:send-email']?.args_schema?.properties ?? {};
-  const defaultName = argsContext.reply_to_name?.default;
-  const defaultAddress = argsContext.reply_to_address?.default;
+  const argsSchema =
+    registry.steps['mailpoet:send-email']?.args_schema?.properties ?? {};
+  const defaultName = argsSchema.reply_to_name?.default;
+  const defaultAddress = argsSchema.reply_to_address?.default;
 
   const errorFields = errors?.fields ?? {};
   const replyToNameError = errorFields?.reply_to_name ?? '';

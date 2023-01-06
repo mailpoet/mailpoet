@@ -2,11 +2,11 @@ import { ComponentType } from 'react';
 import { Step, Automation } from '../components/automation/types';
 
 export interface AutomationEditorWindow extends Window {
-  mailpoet_automation_context: Context;
+  mailpoet_automation_registry: Registry;
   mailpoet_automation: Automation;
 }
 
-export type Context = {
+export type Registry = {
   steps: Record<
     string,
     {
@@ -46,7 +46,7 @@ export type Errors = {
 };
 
 export type State = {
-  context: Context;
+  registry: Registry;
   stepTypes: Record<string, StepType>;
   automationData: Automation;
   automationSaved: boolean;
