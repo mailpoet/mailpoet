@@ -321,6 +321,18 @@
     'newsletter_editor_template_unknown_block_fallback_widget',
     'newsletter/templates/blocks/unknownBlockFallback/widget.hbs'
   ) %>
+  <%= partial(
+  'newsletter_editor_template_coupon_block',
+  'newsletter/templates/blocks/coupon/block.hbs'
+  ) %>
+  <%= partial(
+  'newsletter_editor_template_coupon_widget',
+  'newsletter/templates/blocks/coupon/widget.hbs'
+  ) %>
+  <%= partial(
+  'newsletter_editor_template_coupon_settings',
+  'newsletter/templates/blocks/coupon/settings.hbs'
+  ) %>
 <% endblock %>
 
 <% block content %>
@@ -713,6 +725,15 @@
       ),
       unknownBlockFallbackInsertion: Handlebars.compile(
         jQuery('#newsletter_editor_template_unknown_block_fallback_widget').html()
+      ),
+      couponBlock: Handlebars.compile(
+        jQuery('#newsletter_editor_template_coupon_block').html()
+      ),
+      couponInsertion: Handlebars.compile(
+        jQuery('#newsletter_editor_template_coupon_widget').html()
+      ),
+      couponBlockSettings: Handlebars.compile(
+        jQuery('#newsletter_editor_template_coupon_settings').html()
       ),
     };
 
