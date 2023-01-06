@@ -348,7 +348,7 @@ class Settings extends APIEndpoint {
     if (!$response['ok']) {
       // sender domain verification error. probably an improper setup
       return $this->badRequest([
-        APIError::BAD_REQUEST => $response['error'] ?? __('Sender domain verification failed.', 'mailpoet'),
+        APIError::BAD_REQUEST => $response['message'] ?? __('Sender domain verification failed.', 'mailpoet'),
       ], $response);
     }
 
