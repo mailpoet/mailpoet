@@ -154,12 +154,6 @@ function WelcomeWizardStepsController({
               <WelcomeWizardPitchMSSStep
                 next={() => redirect(step)}
                 subscribersCount={window.mailpoet_subscribers_count}
-                purchaseUrl={MailPoet.MailPoetComUrlFactory.getPurchasePlanUrl(
-                  MailPoet.subscribersCount,
-                  MailPoet.currentWpUserEmail,
-                  'business',
-                  { utm_medium: 'onboarding', utm_campaign: 'purchase' },
-                )}
               />
             </ErrorBoundary>
           </WelcomeWizardStepLayout>
