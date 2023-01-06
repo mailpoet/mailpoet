@@ -25,6 +25,16 @@ class API {
   const RESPONSE_CODE_PAYLOAD_ERROR = 400;
   const RESPONSE_CODE_CAN_NOT_SEND = 403;
 
+  // Bridge messages from https://github.com/mailpoet/services-bridge/blob/master/api/messages.rb
+  public const ERROR_MESSAGE_BANNED = 'Key is valid, but the action is forbidden';
+  public const ERROR_MESSAGE_INVALID_FROM = 'The email address is not authorized';
+  public const ERROR_MESSAGE_PENDING_APPROVAL = 'Key is valid, but not approved yet; you can send only to authorized email addresses at the moment';
+  public const ERROR_MESSAGE_DMRAC = "Email violates Sender Domain's DMARC policy. Please set up sender authentication.";
+  // Bridge message from https://github.com/mailpoet/services-bridge/blob/master/extensions/authentication/basic_strategy.rb
+  public const ERROR_MESSAGE_UNAUTHORIZED = 'No valid API key provided';
+  public const ERROR_MESSAGE_INSUFFICIENT_PRIVILEGES = 'Insufficient privileges';
+  public const ERROR_MESSAGE_EMAIL_VOLUME_LIMIT_REACHED = 'Email volume limit reached';
+
   private $apiKey;
   private $wp;
   /** @var LoggerFactory */
@@ -133,7 +143,8 @@ class API {
         $this->wp->wpRemoteRetrieveResponseMessage($result);
       return [
         'status' => self::SENDING_STATUS_SEND_ERROR,
-        'message' => $response,
+        'error' => $response,
+        'message' => $this->getTranslatedErrorMessage($response),
         'code' => $responseCode,
       ];
     }
@@ -331,6 +342,28 @@ class API {
 
   public function getKey() {
     return $this->apiKey;
+  }
+
+  public function getTranslatedErrorMessage(string $errorMessage): string {
+    switch ($errorMessage) {
+      case self::ERROR_MESSAGE_BANNED:
+        return __('Key is valid, but the action is forbidden.', 'mailpoet');
+      case self::ERROR_MESSAGE_INVALID_FROM:
+        return __('The email address is not authorized.', 'mailpoet');
+      case self::ERROR_MESSAGE_PENDING_APPROVAL:
+        return __('Key is valid, but not approved yet; you can send only to authorized email addresses at the moment.', 'mailpoet');
+      case self::ERROR_MESSAGE_DMRAC:
+        return __("Email violates Sender Domain's DMARC policy. Please set up sender authentication.", 'mailpoet');
+      case self::ERROR_MESSAGE_UNAUTHORIZED:
+        return __('No valid API key provided.', 'mailpoet');
+      case self::ERROR_MESSAGE_INSUFFICIENT_PRIVILEGES:
+        return __('Insufficient privileges.', 'mailpoet');
+      case self::ERROR_MESSAGE_EMAIL_VOLUME_LIMIT_REACHED:
+        return __('Email volume limit reached.', 'mailpoet');
+      // when we don't match translation we return the origin
+      default:
+        return $errorMessage;
+    }
   }
 
   private function auth() {

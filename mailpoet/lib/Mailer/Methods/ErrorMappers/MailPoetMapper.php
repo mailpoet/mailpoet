@@ -23,8 +23,6 @@ class MailPoetMapper {
   const METHOD = Mailer::METHOD_MAILPOET;
 
   const TEMPORARY_UNAVAILABLE_RETRY_INTERVAL = 300; // seconds
-  // Bridge message from https://github.com/mailpoet/services-bridge/blob/a3fbf0c1a88abc77840f9ec9f3965e632ce7d8b5/api/messages.rb#L16
-  const MAILPOET_BRIDGE_DMRAC_ERROR = "Email violates Sender Domain's DMARC policy. Please set up sender authentication.";
 
   /** @var Bridge */
   private $bridge;
@@ -78,7 +76,7 @@ class MailPoetMapper {
         $resultParsed = json_decode($result['message'], true);
         $message = __('Error while sending.', 'mailpoet');
         if (!is_array($resultParsed)) {
-          if ($result['message'] === self::MAILPOET_BRIDGE_DMRAC_ERROR) {
+          if ($result['error'] === API::ERROR_MESSAGE_DMRAC) {
             $message .= $this->getDmarcMessage($result, $sender);
           } else {
             $message .= ' ' . $result['message'];
@@ -244,19 +242,19 @@ class MailPoetMapper {
    * Returns error $message and $operation for API::RESPONSE_CODE_CAN_NOT_SEND
    */
   private function getCanNotSendError(array $result, $sender): array {
-    if ($result['message'] === MailerError::MESSAGE_PENDING_APPROVAL) {
+    if ($result['error'] === API::ERROR_MESSAGE_PENDING_APPROVAL) {
       $operation = MailerError::OPERATION_PENDING_APPROVAL;
       $message = $this->getPendingApprovalMessage();
       return [$operation, $message];
     }
 
-    if ($result['message'] === MailerError::MESSAGE_EMAIL_INSUFFICIENT_PRIVILEGES) {
+    if ($result['error'] === API::ERROR_MESSAGE_INSUFFICIENT_PRIVILEGES) {
       $operation = MailerError::OPERATION_INSUFFICIENT_PRIVILEGES;
       $message = $this->getInsufficientPrivilegesMessage();
       return [$operation, $message];
     }
 
-    if ($result['message'] === MailerError::MESSAGE_EMAIL_VOLUME_LIMIT_REACHED) {
+    if ($result['error'] === API::ERROR_MESSAGE_EMAIL_VOLUME_LIMIT_REACHED) {
       // Update the current email volume limit from MSS
       $premiumKey = $this->settings->get(Bridge::PREMIUM_KEY_SETTING_NAME);
       $result = $this->bridge->checkPremiumKey($premiumKey);
@@ -267,7 +265,7 @@ class MailPoetMapper {
       return [$operation, $message];
     }
 
-    if ($result['message'] === MailerError::MESSAGE_EMAIL_NOT_AUTHORIZED) {
+    if ($result['error'] === API::ERROR_MESSAGE_INVALID_FROM) {
       $operation = MailerError::OPERATION_AUTHORIZATION;
       $message = $this->getUnauthorizedEmailMessage($sender);
       return [$operation, $message];
