@@ -4,6 +4,7 @@ import { DropdownMenu } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 import { storeName } from 'homepage/store/store';
 import { DiscoveryTask } from './discovery-task';
+import { ContentSection } from './content-section';
 
 type Props = {
   onHide: () => void;
@@ -73,9 +74,10 @@ export function ProductDiscovery({ onHide }: Props): JSX.Element {
     );
   }
   return (
-    <div className="mailpoet-homepage-section__container">
-      <div className="mailpoet-homepage-section__heading">
-        <h2>{MailPoet.I18n.t('startEngagingWithYourCustomers')}</h2>
+    <ContentSection
+      className="mailpoet-homepage-product-discovery"
+      heading={MailPoet.I18n.t('startEngagingWithYourCustomers')}
+      headingAfter={
         <DropdownMenu
           label={MailPoet.I18n.t('hideList')}
           icon={moreVertical}
@@ -87,8 +89,9 @@ export function ProductDiscovery({ onHide }: Props): JSX.Element {
             },
           ]}
         />
-      </div>
-      <ul>{tasks.map((item) => item)}</ul>
-    </div>
+      }
+    >
+      <ul className="mceProgress">{tasks.map((item) => item)}</ul>
+    </ContentSection>
   );
 }

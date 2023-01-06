@@ -1,0 +1,22 @@
+.mailpoet-homepage-section__container {
+  background-color: $color-white;
+  box-shadow: rgb(0 0 0 / 10%) 0 0 0 1px;
+  margin: $grid-gap-xl 0;
+}
+
+.mailpoet-homepage-section__heading {
+  align-items: center;
+  border-bottom: 1px solid $color-homepage-borders;
+  display: grid;
+  grid-template-columns: auto $grid-gap-medium;
+  height: 60px;
+  padding: 0 $grid-gap-medium;
+  position: relative;
+
+  h2 {
+    font-size: 20px;
+    font-weight: normal;
+    line-height: 28px;
+    margin: 0;
+  }
+}
