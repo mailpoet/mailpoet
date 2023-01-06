@@ -10,9 +10,10 @@ type Props = {
 };
 
 export function ProductDiscovery({ onHide }: Props): JSX.Element {
-  const { tasksStatus } = useSelect(
+  const { tasksStatus, isWooCommerceActive } = useSelect(
     (select) => ({
       tasksStatus: select(storeName).getProductDiscoveryTasksStatus(),
+      isWooCommerceActive: select(storeName).getIsWooCommerceActive(),
     }),
     [],
   );
@@ -36,35 +37,41 @@ export function ProductDiscovery({ onHide }: Props): JSX.Element {
       isDone={tasksStatus.addSubscriptionForm}
       doneMessage={MailPoet.I18n.t('addSubscriptionFormDone')}
     />,
-    <DiscoveryTask
-      key="sendFirstNewsletter"
-      title={MailPoet.I18n.t('sendFirstNewsletter')}
-      description={MailPoet.I18n.t('sendFirstNewsletterDesc')}
-      link="admin.php?page=mailpoet-newsletters#/new"
-      imgSrc={`${MailPoet.cdnUrl}homepage/newsletter-illustration.png`}
-      isDone={tasksStatus.sendFirstNewsletter}
-      doneMessage={MailPoet.I18n.t('sendFirstNewsletterDone')}
-    />,
-    <DiscoveryTask
-      key="setUpAbandonedCartEmail"
-      title={MailPoet.I18n.t('setUpAbandonedCartEmail')}
-      description={MailPoet.I18n.t('setUpAbandonedCartEmailDesc')}
-      link="admin.php?page=mailpoet-newsletters#/new/woocommerce/woocommerce_abandoned_shopping_cart/conditions"
-      imgSrc={`${MailPoet.cdnUrl}homepage/woo-cart-email-illustration.png`}
-      isDone={tasksStatus.setUpAbandonedCartEmail}
-      doneMessage={MailPoet.I18n.t('setUpAbandonedCartEmailDone')}
-    />,
-    <DiscoveryTask
-      key="brandWooEmails"
-      title={MailPoet.I18n.t('brandWooEmails')}
-      description={MailPoet.I18n.t('brandWooEmailsDesc')}
-      link="admin.php?page=mailpoet-settings#/woocommerce"
-      imgSrc={`${MailPoet.cdnUrl}homepage/woo-transactional-email-illustration.png`}
-      isDone={tasksStatus.brandWooEmails}
-      doneMessage={MailPoet.I18n.t('brandWooEmailsDone')}
-    />,
   );
-
+  if (!isWooCommerceActive) {
+    tasks.push(
+      <DiscoveryTask
+        key="sendFirstNewsletter"
+        title={MailPoet.I18n.t('sendFirstNewsletter')}
+        description={MailPoet.I18n.t('sendFirstNewsletterDesc')}
+        link="admin.php?page=mailpoet-newsletters#/new"
+        imgSrc={`${MailPoet.cdnUrl}homepage/newsletter-illustration.png`}
+        isDone={tasksStatus.sendFirstNewsletter}
+        doneMessage={MailPoet.I18n.t('sendFirstNewsletterDone')}
+      />,
+    );
+  } else {
+    tasks.push(
+      <DiscoveryTask
+        key="setUpAbandonedCartEmail"
+        title={MailPoet.I18n.t('setUpAbandonedCartEmail')}
+        description={MailPoet.I18n.t('setUpAbandonedCartEmailDesc')}
+        link="admin.php?page=mailpoet-newsletters#/new/woocommerce/woocommerce_abandoned_shopping_cart/conditions"
+        imgSrc={`${MailPoet.cdnUrl}homepage/woo-cart-email-illustration.png`}
+        isDone={tasksStatus.setUpAbandonedCartEmail}
+        doneMessage={MailPoet.I18n.t('setUpAbandonedCartEmailDone')}
+      />,
+      <DiscoveryTask
+        key="brandWooEmails"
+        title={MailPoet.I18n.t('brandWooEmails')}
+        description={MailPoet.I18n.t('brandWooEmailsDesc')}
+        link="admin.php?page=mailpoet-settings#/woocommerce"
+        imgSrc={`${MailPoet.cdnUrl}homepage/woo-transactional-email-illustration.png`}
+        isDone={tasksStatus.brandWooEmails}
+        doneMessage={MailPoet.I18n.t('brandWooEmailsDone')}
+      />,
+    );
+  }
   return (
     <div className="mailpoet-homepage-section__container">
       <div className="mailpoet-homepage-section__heading">
