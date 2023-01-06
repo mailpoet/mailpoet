@@ -12,6 +12,7 @@ export function getInitialState(): State {
     },
     productDiscovery: {
       isHidden: window.mailpoet_homepage_data.product_discovery_dismissed,
+      tasksStatus: window.mailpoet_homepage_data.product_discovery_status,
     },
   };
 }

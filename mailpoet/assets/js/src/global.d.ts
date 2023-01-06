@@ -180,6 +180,13 @@ interface Window {
       subscribersAdded: boolean;
       wooSubscribersImported: boolean;
     } | null;
+    product_discovery_status: {
+      setUpWelcomeCampaign: boolean;
+      addSubscriptionForm: boolean;
+      sendFirstNewsletter: boolean;
+      setUpAbandonedCartEmail: boolean;
+      brandWooEmails: boolean;
+    } | null;
     woo_customers_count: number;
     subscribers_count: number;
   };

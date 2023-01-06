@@ -7,6 +7,7 @@ export type TaskListState = {
 
 export type ProductDiscoveryState = {
   isHidden: boolean;
+  tasksStatus: ProductDiscoveryTasksStatus | null;
 };
 
 export type TaskListTasksStatus = {
@@ -14,6 +15,14 @@ export type TaskListTasksStatus = {
   mssConnected: boolean;
   subscribersAdded: boolean;
   wooSubscribersImported: boolean;
+};
+
+export type ProductDiscoveryTasksStatus = {
+  setUpWelcomeCampaign: boolean;
+  addSubscriptionForm: boolean;
+  sendFirstNewsletter: boolean;
+  setUpAbandonedCartEmail: boolean;
+  brandWooEmails: boolean;
 };
 
 export type TaskType = keyof TaskListTasksStatus;
