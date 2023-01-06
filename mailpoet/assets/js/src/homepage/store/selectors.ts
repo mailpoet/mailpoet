@@ -31,6 +31,23 @@ export function getIsProductDiscoveryHidden(state: State): boolean {
   return state.productDiscovery.isHidden;
 }
 
+export function getIsProductDiscoveryDone(state: State): boolean {
+  const status = state.productDiscovery.tasksStatus;
+  if (state.isWooCommerceActive) {
+    return (
+      status.addSubscriptionForm &&
+      status.setUpWelcomeCampaign &&
+      status.setUpAbandonedCartEmail &&
+      status.brandWooEmails
+    );
+  }
+  return (
+    status.setUpWelcomeCampaign &&
+    status.addSubscriptionForm &&
+    status.sendFirstNewsletter
+  );
+}
+
 export function getIsWooCommerceActive(state: State): boolean {
   return state.isWooCommerceActive;
 }
