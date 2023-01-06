@@ -19,7 +19,7 @@ export const step: StepType = {
   foreground: '#7F54B3',
   background: '#f7edf7',
   description: __(
-    'Wait some time before proceeding with the steps below',
+    'Wait some time before proceeding with the steps below.',
     'mailpoet',
   ),
   subtitle: (data): string => {
