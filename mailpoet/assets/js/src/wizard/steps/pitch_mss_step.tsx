@@ -1,43 +1,20 @@
 import { MailPoet } from 'mailpoet';
+import { Icon, external } from '@wordpress/icons';
+import ReactStringReplace from 'react-string-replace';
 import { Button } from '../../common';
 import { Heading } from '../../common/typography/heading/heading';
 import { List } from '../../common/typography/list/list';
-
-function FreeBenefitsList(): JSX.Element {
-  return (
-    <List>
-      <li>{MailPoet.I18n.t('welcomeWizardMSSList1')}</li>
-      <li>{MailPoet.I18n.t('welcomeWizardMSSList2')}</li>
-      <li>{MailPoet.I18n.t('welcomeWizardMSSList4')}</li>
-      <li>{MailPoet.I18n.t('welcomeWizardMSSList5')}</li>
-    </List>
-  );
-}
-
-function NotFreeBenefitsList(): JSX.Element {
-  return (
-    <List>
-      <li>{MailPoet.I18n.t('welcomeWizardMSSNotFreeList1')}</li>
-      <li>{MailPoet.I18n.t('welcomeWizardMSSNotFreeList2')}</li>
-      <li>{MailPoet.I18n.t('welcomeWizardMSSNotFreeList3')}</li>
-      <li>{MailPoet.I18n.t('welcomeWizardMSSNotFreeList4')}</li>
-      <li>{MailPoet.I18n.t('welcomeWizardMSSNotFreeList5')}</li>
-    </List>
-  );
-}
 
 type ControlsPropType = {
   mailpoetAccountUrl: string;
   next: () => void;
   nextButtonText: string;
-  nextWithSpinner?: boolean;
 };
 
 function Controls({
   mailpoetAccountUrl,
   next,
   nextButtonText,
-  nextWithSpinner = false,
 }: ControlsPropType): JSX.Element {
   return (
     <>
@@ -54,37 +31,26 @@ function Controls({
           window.open(mailpoetAccountUrl);
           next();
         }}
+        iconEnd={<Icon icon={external} />}
       >
         {nextButtonText}
       </Button>
-      <Button
-        isFullWidth
-        variant="tertiary"
-        onClick={next}
-        onKeyDown={(event) => {
-          if (
-            ['keydown', 'keypress'].includes(event.type) &&
-            ['Enter', ' '].includes(event.key)
-          ) {
-            event.preventDefault();
-            next();
-          }
-        }}
-        withSpinner={nextWithSpinner}
-      >
-        {MailPoet.I18n.t('welcomeWizardMSSNoThanks')}
-      </Button>
+
+      <div className="mailpoet-gap" />
+      <div className="mailpoet-gap" />
     </>
   );
 }
 
-type FreePlanSubscribersPropType = {
+type WelcomeWizardPitchMSSStepPropType = {
+  subscribersCount: number;
   next: () => void;
 };
 
-function FreePlanSubscribers({
+function WelcomeWizardPitchMSSStep({
+  subscribersCount,
   next,
-}: FreePlanSubscribersPropType): JSX.Element {
+}: WelcomeWizardPitchMSSStepPropType): JSX.Element {
   return (
     <>
       <Heading level={1}>
@@ -95,10 +61,15 @@ function FreePlanSubscribers({
       <p>{MailPoet.I18n.t('welcomeWizardMSSFreeSubtitle')}</p>
       <div className="mailpoet-gap" />
 
-      <Heading level={5}>
-        {MailPoet.I18n.t('welcomeWizardMSSFreeListTitle')}:
-      </Heading>
-      <FreeBenefitsList />
+      <List>
+        <li>{MailPoet.I18n.t('welcomeWizardMSSList1')}</li>
+        <li>{MailPoet.I18n.t('welcomeWizardMSSList2')}</li>
+        {subscribersCount < 1000 ? (
+          <li>{MailPoet.I18n.t('welcomeWizardMSSList3Free')}</li>
+        ) : (
+          <li>{MailPoet.I18n.t('welcomeWizardMSSList3Paid')}</li>
+        )}
+      </List>
 
       <Controls
         mailpoetAccountUrl={MailPoet.MailPoetComUrlFactory.getPurchasePlanUrl(
@@ -110,57 +81,22 @@ function FreePlanSubscribers({
         next={next}
         nextButtonText={MailPoet.I18n.t('welcomeWizardMSSFreeButton')}
       />
+
+      <p>
+        {ReactStringReplace(
+          MailPoet.I18n.t('welcomeWizardMSSAdvancedUsers'),
+          /\[link](.*?)\[\/link]/g,
+          (match) => (
+            <a
+              className="mailpoet-link"
+              href="admin.php?page=mailpoet-settings#/mta/other"
+            >
+              {match}
+            </a>
+          ),
+        )}
+      </p>
     </>
-  );
-}
-
-FreePlanSubscribers.displayName = 'FreePlanSubscribers';
-
-type NotFreePlanSubscribersPropType = {
-  mailpoetAccountUrl: string;
-  next: () => void;
-};
-
-function NotFreePlanSubscribers({
-  mailpoetAccountUrl,
-  next,
-}: NotFreePlanSubscribersPropType): JSX.Element {
-  return (
-    <>
-      <Heading level={1}>
-        {MailPoet.I18n.t('welcomeWizardMSSNotFreeTitle')}
-      </Heading>
-
-      <div className="mailpoet-gap" />
-      <p>{MailPoet.I18n.t('welcomeWizardMSSNotFreeSubtitle')}:</p>
-      <NotFreeBenefitsList />
-
-      <Controls
-        mailpoetAccountUrl={mailpoetAccountUrl}
-        next={next}
-        nextButtonText={MailPoet.I18n.t('welcomeWizardMSSNotFreeButton')}
-      />
-    </>
-  );
-}
-
-NotFreePlanSubscribers.displayName = 'NotFreePlanSubscribers';
-
-type WelcomeWizardPitchMSSStepPropType = {
-  subscribersCount: number;
-  next: () => void;
-  purchaseUrl: string;
-};
-
-function WelcomeWizardPitchMSSStep({
-  subscribersCount,
-  next,
-  purchaseUrl,
-}: WelcomeWizardPitchMSSStepPropType): JSX.Element {
-  return subscribersCount < 1000 ? (
-    <FreePlanSubscribers next={next} />
-  ) : (
-    <NotFreePlanSubscribers mailpoetAccountUrl={purchaseUrl} next={next} />
   );
 }
 
