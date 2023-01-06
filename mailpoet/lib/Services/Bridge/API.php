@@ -45,6 +45,9 @@ class API {
   // Proxy request `sender_domain_verify` from shop https://github.com/mailpoet/shop/blob/master/routes/hooks/sending/v1/index.js#L137
   public const ERROR_MESSAGE_AUTHORIZED_DOMAIN_VERIFY_NOT_FOUND = 'Domain not found';
   public const ERROR_MESSAGE_AUTHORIZED_DOMAIN_VERIFY_FAILED = 'Some DNS records were not set up correctly. Please check the records again. You may need to wait up to 24 hours for DNS changes to propagate.';
+  // Proxy request `sender_domain` from shop https://github.com/mailpoet/shop/blob/master/routes/hooks/sending/v1/index.js#L65
+  public const ERROR_MESSAGE_SENDER_DOMAIN_INVALID = 'Invalid domain. Please enter a valid domain name.';
+  public const ERROR_MESSAGE_SENDER_DOMAIN_ALREADY_ADDED = 'This domain was already added to the list.';
 
   private $apiKey;
   private $wp;
@@ -277,24 +280,27 @@ class API {
       $body
     );
 
-    $code = $this->wp->wpRemoteRetrieveResponseCode($result);
+    $responseCode = $this->wp->wpRemoteRetrieveResponseCode($result);
     $rawResponseBody = $this->wp->wpRemoteRetrieveBody($result);
 
     $responseBody = json_decode($rawResponseBody, true);
-    $isSuccess = $code === self::RESPONSE_CODE_CREATED;
 
-    if (!$isSuccess) {
+    if ($responseCode !== self::RESPONSE_CODE_CREATED) {
       $logData = [
-        'code' => $code,
+        'code' => $responseCode,
         'error' => is_wp_error($result) ? $result->get_error_message() : $rawResponseBody,
       ];
       $this->loggerFactory->getLogger(LoggerFactory::TOPIC_BRIDGE)->error('createAuthorizedSenderDomain API call failed.', $logData);
 
       // translators: %d will be replaced by an error code
-      $fallbackError = sprintf(__('An error has happened while performing a request, the server has responded with response code %d', 'mailpoet'), $code);
+      $fallbackError = sprintf(__('An error has happened while performing a request, the server has responded with response code %d', 'mailpoet'), $responseCode);
 
-      $errorData = is_array($responseBody) && isset($responseBody['error']) ? $responseBody['error'] : $fallbackError;
-      return ['error' => $errorData, 'status' => false];
+      return [
+        'status' => self::AUTHORIZED_DOMAIN_STATUS_ERROR,
+        'code' => $responseCode,
+        'error' => is_array($responseBody) && isset($responseBody['error']) ? $responseBody['error'] : $fallbackError,
+        'message' => is_array($responseBody) && isset($responseBody['error']) ? $this->getTranslatedErrorMessage($responseBody['error']) : $fallbackError,
+      ];
     }
 
     if (!is_array($responseBody)) {
@@ -302,6 +308,7 @@ class API {
       return [];
     }
 
+    $responseBody['status'] = self::AUTHORIZED_DOMAIN_STATUS_OK;
     return $responseBody;
   }
 
@@ -389,6 +396,10 @@ class API {
         return __('Domain not found.', 'mailpoet');
       case self::ERROR_MESSAGE_AUTHORIZED_DOMAIN_VERIFY_FAILED:
         return __('Some DNS records were not set up correctly. Please check the records again. You may need to wait up to 24 hours for DNS changes to propagate.', 'mailpoet');
+      case self::ERROR_MESSAGE_SENDER_DOMAIN_INVALID:
+        return __('Invalid domain. Please enter a valid domain name.', 'mailpoet');
+      case self::ERROR_MESSAGE_SENDER_DOMAIN_ALREADY_ADDED:
+        return __('This domain was already added to the list.', 'mailpoet');
       // when we don't match translation we return the origin
       default:
         return $errorMessage;
