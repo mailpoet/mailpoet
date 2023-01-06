@@ -1,0 +1,52 @@
+.mailpoet-homepage-product-discovery {
+  ul {
+    margin: 0;
+  }
+}
+
+.mailpoet-product-discovery__task {
+  align-items: center;
+  border-bottom: 1px solid $color-homepage-borders;
+  box-sizing: border-box;
+  cursor: pointer;
+  display: grid;
+  font-weight: 600;
+  grid-template-columns: (124px + $grid-gap-medium) auto $grid-gap-xl;
+  margin: 0;
+  padding: $grid-gap-medium;
+  position: relative;
+  width: 100%;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &:hover {
+    box-shadow: inset 5px 0 0 0 var(--wp-admin-theme-color);
+  }
+}
+
+.mailpoet-product-discovery__task-content {
+  h3 {
+    color: var(--wp-admin-theme-color);
+    font-size: 14px;
+    line-height: 20px;
+    margin: 0;
+  }
+
+  p {
+    color: $color-text-light;
+    font-weight: normal;
+    margin: 3px 0 0;
+  }
+}
+
+.mailpoet-product-discovery__task-after {
+  .mailpoet-task-list__task-icon {
+    background-color: var(--wp-admin-theme-color);
+
+    svg {
+      fill: $color-white;
+    }
+  }
+}

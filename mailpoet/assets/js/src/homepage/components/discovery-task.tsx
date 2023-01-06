@@ -30,16 +30,23 @@ export function DiscoveryTask({
       onKeyDown={(e) => e.key === 'Enter' && handleTaskClick()}
     >
       <img src={imgSrc} alt={title} width={124} height={72} />
-      {isDone ? (
-        <h3>{doneMessage}</h3>
-      ) : (
-        <>
-          <h3>{`${title} →`}</h3>
-          {description ? <p>{description}</p> : null}
-        </>
-      )}
-
-      {isDone ? <Icon icon={check} /> : null}
+      <div className="mailpoet-product-discovery__task-content">
+        {isDone ? (
+          <h3>{doneMessage}</h3>
+        ) : (
+          <>
+            <h3>{`${title} →`}</h3>
+            {description ? <p>{description}</p> : null}
+          </>
+        )}
+      </div>
+      <div className="mailpoet-product-discovery__task-after">
+        {isDone ? (
+          <div className="mailpoet-task-list__task-icon">
+            <Icon icon={check} />
+          </div>
+        ) : null}
+      </div>
     </li>
   );
 }
