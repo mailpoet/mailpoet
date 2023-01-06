@@ -19,4 +19,8 @@
     line-height: 28px;
     margin: 0;
   }
+
+  @include respond-to(small-screen) {
+    padding: $grid-gap-half $grid-gap-medium;
+  }
 }
