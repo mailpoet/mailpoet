@@ -134,12 +134,10 @@ class Bridge {
   /**
    * Create Authorized Email Address
    */
-  public function createAuthorizedEmailAddress(string $emailAdress) {
-    $data = $this
+  public function createAuthorizedEmailAddress(string $emailAddress) {
+    return $this
       ->getApi($this->settings->get(self::API_KEY_SETTING_NAME))
-      ->createAuthorizedEmailAddress($emailAdress);
-
-    return $data;
+      ->createAuthorizedEmailAddress($emailAddress);
   }
 
   /**
@@ -179,8 +177,8 @@ class Bridge {
    */
   public function createAuthorizedSenderDomain(string $domain): array {
     $data = $this
-    ->getApi($this->settings->get(self::API_KEY_SETTING_NAME))
-    ->createAuthorizedSenderDomain($domain);
+      ->getApi($this->settings->get(self::API_KEY_SETTING_NAME))
+      ->createAuthorizedSenderDomain($domain);
 
     return $data['dns'] ?? $data;
   }
