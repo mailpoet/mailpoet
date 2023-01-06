@@ -153,7 +153,7 @@ class MailPoetAPITest extends \MailPoetTest {
       $url = $hasHttps ? $extraParams['one_click_unsubscribe'][$i] : $extraParams['unsubscribe_url'][$i];
       expect($body[$i]['unsubscribe'])->equals(['url' => $url, 'post' => $hasHttps]);
     }
-    
+
     expect($body[0]['meta'])->equals($extraParams['meta'][0]);
     expect($body[9]['meta'])->equals($extraParams['meta'][9]);
   }
@@ -304,7 +304,8 @@ class MailPoetAPITest extends \MailPoetTest {
       ['sendMessages' => [
         'code' => API::RESPONSE_CODE_CAN_NOT_SEND,
         'status' => API::SENDING_STATUS_SEND_ERROR,
-        'message' => MailerError::MESSAGE_EMAIL_NOT_AUTHORIZED,
+        'message' => API::ERROR_MESSAGE_INVALID_FROM,
+        'error' => API::ERROR_MESSAGE_INVALID_FROM,
       ]]
     );
     $mailer->send([$this->newsletter], [$this->subscriber]);

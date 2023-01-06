@@ -74,7 +74,8 @@ class MailPoetMapperTest extends \MailPoetUnitTest {
     $apiResult = [
       'code' => API::RESPONSE_CODE_CAN_NOT_SEND,
       'status' => API::SENDING_STATUS_SEND_ERROR,
-      'message' => MailerError::MESSAGE_EMAIL_FORBIDDEN_ACTION,
+      'message' => API::ERROR_MESSAGE_BANNED,
+      'error' => API::ERROR_MESSAGE_BANNED,
     ];
     $error = $this->mapper->getErrorForResult($apiResult, $this->subscribers);
 
@@ -88,7 +89,8 @@ class MailPoetMapperTest extends \MailPoetUnitTest {
     $apiResult = [
       'code' => API::RESPONSE_CODE_CAN_NOT_SEND,
       'status' => API::SENDING_STATUS_SEND_ERROR,
-      'message' => MailerError::MESSAGE_EMAIL_INSUFFICIENT_PRIVILEGES,
+      'message' => API::ERROR_MESSAGE_INSUFFICIENT_PRIVILEGES,
+      'error' => API::ERROR_MESSAGE_INSUFFICIENT_PRIVILEGES,
     ];
     $error = $this->mapper->getErrorForResult($apiResult, $this->subscribers);
 
@@ -102,7 +104,8 @@ class MailPoetMapperTest extends \MailPoetUnitTest {
     $apiResult = [
       'code' => API::RESPONSE_CODE_CAN_NOT_SEND,
       'status' => API::SENDING_STATUS_SEND_ERROR,
-      'message' => MailerError::MESSAGE_EMAIL_NOT_AUTHORIZED,
+      'message' => API::ERROR_MESSAGE_INVALID_FROM,
+      'error' => API::ERROR_MESSAGE_INVALID_FROM,
     ];
     $error = $this->mapper->getErrorForResult($apiResult, $this->subscribers);
 
@@ -174,7 +177,8 @@ class MailPoetMapperTest extends \MailPoetUnitTest {
     $apiResult = [
       'code' => API::RESPONSE_CODE_CAN_NOT_SEND,
       'status' => API::SENDING_STATUS_SEND_ERROR,
-      'message' => MailerError::MESSAGE_PENDING_APPROVAL,
+      'message' => API::ERROR_MESSAGE_PENDING_APPROVAL,
+      'error' => API::ERROR_MESSAGE_PENDING_APPROVAL,
     ];
     $error = $this->mapper->getErrorForResult($apiResult, $this->subscribers);
     expect($error)->isInstanceOf(MailerError::class);
