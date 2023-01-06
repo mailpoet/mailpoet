@@ -3,7 +3,7 @@ import { Button } from '../../common';
 import { Heading } from '../../common/typography/heading/heading';
 import { List } from '../../common/typography/list/list';
 
-export function FreeBenefitsList(): JSX.Element {
+function FreeBenefitsList(): JSX.Element {
   return (
     <List>
       <li>{MailPoet.I18n.t('welcomeWizardMSSList1')}</li>
@@ -14,7 +14,7 @@ export function FreeBenefitsList(): JSX.Element {
   );
 }
 
-export function NotFreeBenefitsList(): JSX.Element {
+function NotFreeBenefitsList(): JSX.Element {
   return (
     <List>
       <li>{MailPoet.I18n.t('welcomeWizardMSSNotFreeList1')}</li>
@@ -33,7 +33,7 @@ type ControlsPropType = {
   nextWithSpinner?: boolean;
 };
 
-export function Controls({
+function Controls({
   mailpoetAccountUrl,
   next,
   nextButtonText,

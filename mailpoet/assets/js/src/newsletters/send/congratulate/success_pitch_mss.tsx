@@ -2,11 +2,20 @@ import { useState } from 'react';
 import { MailPoet } from 'mailpoet';
 
 import { Heading } from 'common/typography/heading/heading';
-import { WelcomeWizardStepLayoutBody } from '../../../wizard/layout/step_layout_body.jsx';
-import {
-  Controls,
-  FreeBenefitsList,
-} from '../../../wizard/steps/pitch_mss_step';
+import { WelcomeWizardStepLayoutBody } from 'wizard/layout/step_layout_body.jsx';
+import { List } from 'common/typography/list/list';
+import { Button } from 'common';
+
+function FreeBenefitsList(): JSX.Element {
+  return (
+    <List>
+      <li>{MailPoet.I18n.t('congratulationsMSSPitchList1')}</li>
+      <li>{MailPoet.I18n.t('congratulationsMSSPitchList2')}</li>
+      <li>{MailPoet.I18n.t('congratulationsMSSPitchList3')}</li>
+      <li>{MailPoet.I18n.t('congratulationsMSSPitchList4')}</li>
+    </List>
+  );
+}
 
 type Props = {
   MSSPitchIllustrationUrl: string;
@@ -35,6 +44,11 @@ function getHeader(newsletterType: string): string {
 
 export function PitchMss(props: Props): JSX.Element {
   const [isClosing, setIsClosing] = useState(false);
+  const next = (): void => {
+    props.onFinish();
+    setIsClosing(true);
+  };
+
   return (
     <>
       <Heading level={1}>{getHeader(props.newsletter.type)}</Heading>
@@ -48,23 +62,48 @@ export function PitchMss(props: Props): JSX.Element {
           <p>
             {MailPoet.I18n.t(
               props.subscribersCount < 1000
-                ? 'welcomeWizardMSSFreeSubtitle'
-                : 'welcomeWizardMSSNotFreeSubtitle',
+                ? 'congratulationsMSSPitchFreeSubtitle'
+                : 'congratulationsMSSPitchNotFreeSubtitle',
             )}
           </p>
           <Heading level={5}>
-            {MailPoet.I18n.t('welcomeWizardMSSFreeListTitle')}:
+            {MailPoet.I18n.t('congratulationsMSSPitchFreeListTitle')}:
           </Heading>
           <FreeBenefitsList />
-          <Controls
-            mailpoetAccountUrl={props.purchaseUrl}
-            next={(): void => {
-              props.onFinish();
-              setIsClosing(true);
+
+          <div className="mailpoet-gap" />
+          <div className="mailpoet-gap" />
+
+          <Button
+            isFullWidth
+            href={props.purchaseUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={(event) => {
+              event.preventDefault();
+              window.open(props.purchaseUrl);
+              next();
             }}
-            nextButtonText={MailPoet.I18n.t('welcomeWizardMSSFreeButton')}
-            nextWithSpinner={isClosing}
-          />
+          >
+            {MailPoet.I18n.t('congratulationsMSSPitchFreeButton')}
+          </Button>
+          <Button
+            isFullWidth
+            variant="tertiary"
+            onClick={next}
+            onKeyDown={(event) => {
+              if (
+                ['keydown', 'keypress'].includes(event.type) &&
+                ['Enter', ' '].includes(event.key)
+              ) {
+                event.preventDefault();
+                next();
+              }
+            }}
+            withSpinner={isClosing}
+          >
+            {MailPoet.I18n.t('congratulationsMSSPitchNoThanks')}
+          </Button>
         </div>
       </WelcomeWizardStepLayoutBody>
     </>
