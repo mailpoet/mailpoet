@@ -1,6 +1,8 @@
 import { MailPoet } from 'mailpoet';
 import { moreVertical } from '@wordpress/icons';
 import { DropdownMenu } from '@wordpress/components';
+import { useSelect } from '@wordpress/data';
+import { storeName } from 'homepage/store/store';
 import { DiscoveryTask } from './discovery-task';
 
 type Props = {
@@ -8,6 +10,12 @@ type Props = {
 };
 
 export function ProductDiscovery({ onHide }: Props): JSX.Element {
+  const { tasksStatus } = useSelect(
+    (select) => ({
+      tasksStatus: select(storeName).getProductDiscoveryTasksStatus(),
+    }),
+    [],
+  );
   const tasks = [];
   tasks.push(
     <DiscoveryTask
@@ -16,6 +24,7 @@ export function ProductDiscovery({ onHide }: Props): JSX.Element {
       description={MailPoet.I18n.t('setUpWelcomeCampaignDesc')}
       link="admin.php?page=mailpoet-automation-templates"
       imgSrc={`${MailPoet.cdnUrl}homepage/welcome-email-illustration.png`}
+      isDone={tasksStatus.setUpWelcomeCampaign}
     />,
     <DiscoveryTask
       key="addSubscriptionForm"
@@ -23,6 +32,7 @@ export function ProductDiscovery({ onHide }: Props): JSX.Element {
       description={MailPoet.I18n.t('addSubscriptionFormDesc')}
       link="admin.php?page=mailpoet-form-editor-template-selection"
       imgSrc={`${MailPoet.cdnUrl}homepage/subscription-form-illustration.png`}
+      isDone={tasksStatus.addSubscriptionForm}
     />,
     <DiscoveryTask
       key="sendFirstNewsletter"
@@ -30,6 +40,7 @@ export function ProductDiscovery({ onHide }: Props): JSX.Element {
       description={MailPoet.I18n.t('sendFirstNewsletterDesc')}
       link="admin.php?page=mailpoet-newsletters#/new"
       imgSrc={`${MailPoet.cdnUrl}homepage/newsletter-illustration.png`}
+      isDone={tasksStatus.sendFirstNewsletter}
     />,
     <DiscoveryTask
       key="setUpAbandonedCartEmail"
@@ -37,6 +48,7 @@ export function ProductDiscovery({ onHide }: Props): JSX.Element {
       description={MailPoet.I18n.t('setUpAbandonedCartEmailDesc')}
       link="admin.php?page=mailpoet-newsletters#/new/woocommerce/woocommerce_abandoned_shopping_cart/conditions"
       imgSrc={`${MailPoet.cdnUrl}homepage/woo-cart-email-illustration.png`}
+      isDone={tasksStatus.setUpAbandonedCartEmail}
     />,
     <DiscoveryTask
       key="brandWooEmails"
@@ -44,6 +56,7 @@ export function ProductDiscovery({ onHide }: Props): JSX.Element {
       description={MailPoet.I18n.t('brandWooEmailsDesc')}
       link="admin.php?page=mailpoet-settings#/woocommerce"
       imgSrc={`${MailPoet.cdnUrl}homepage/woo-transactional-email-illustration.png`}
+      isDone={tasksStatus.brandWooEmails}
     />,
   );
 

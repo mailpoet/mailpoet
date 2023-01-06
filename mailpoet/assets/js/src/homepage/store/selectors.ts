@@ -1,4 +1,9 @@
-import { State, TaskListTasksStatus, TaskType } from './types';
+import {
+  ProductDiscoveryTasksStatus,
+  State,
+  TaskListTasksStatus,
+  TaskType,
+} from './types';
 
 export function getIsTaskListHidden(state: State): boolean {
   return state.taskList.isTaskListHidden;
@@ -6,6 +11,12 @@ export function getIsTaskListHidden(state: State): boolean {
 
 export function getTasksStatus(state: State): TaskListTasksStatus {
   return state.taskList.tasksStatus;
+}
+
+export function getProductDiscoveryTasksStatus(
+  state: State,
+): ProductDiscoveryTasksStatus {
+  return state.productDiscovery.tasksStatus;
 }
 
 export function getCanImportWooCommerceSubscribers(state: State): boolean {
