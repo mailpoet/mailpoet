@@ -12,6 +12,7 @@ use MailPoet\Cron\Workers\SubscribersCountCacheRecalculation;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\TagEntity;
 use MailPoet\Features\FeaturesController;
+use MailPoet\Form\AssetsController;
 use MailPoet\Referrals\ReferralDetector;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Services\Bridge;
@@ -70,6 +71,9 @@ class PageRenderer {
   /** @var WPFunctions */
   private $wp;
 
+  /*** @var AssetsController */
+  private $assetsController;
+
   public function __construct(
     Bridge $bridge,
     Renderer $renderer,
@@ -84,7 +88,8 @@ class PageRenderer {
     SubscribersFeature $subscribersFeature,
     TrackingConfig $trackingConfig,
     TransientCache $transientCache,
-    WPFunctions $wp
+    WPFunctions $wp,
+    AssetsController $assetsController
   ) {
     $this->bridge = $bridge;
     $this->renderer = $renderer;
@@ -100,6 +105,7 @@ class PageRenderer {
     $this->trackingConfig = $trackingConfig;
     $this->transientCache = $transientCache;
     $this->wp = $wp;
+    $this->assetsController = $assetsController;
   }
 
   /**
@@ -193,6 +199,7 @@ class PageRenderer {
         $this->subscribersCountCacheRecalculation->schedule();
       }
 
+      $this->assetsController->setupAdminPagesDependencies();
       // We are in control of the template and the data can be considered safe at this point
       // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped, WordPressDotOrg.sniffs.OutputEscaping.UnescapedOutputParameter
       echo $this->renderer->render($template, $data + $defaults);
