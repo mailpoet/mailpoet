@@ -83,6 +83,7 @@ class AutomationEditor {
     $roles = new \WP_Roles();
     $this->pageRenderer->displayPage('automation/editor.html', [
       'registry' => $this->buildRegistry(),
+      'context' => $this->buildContext(),
       'automation' => $this->automationMapper->buildAutomation($automation),
       'sub_menu' => 'mailpoet-automation',
       'api' => [
@@ -107,5 +108,13 @@ class AutomationEditor {
       ];
     }
     return ['steps' => $steps];
+  }
+
+  private function buildContext(): array {
+    $data = [];
+    foreach ($this->registry->getContextFactories() as $key => $factory) {
+      $data[$key] = $factory();
+    }
+    return $data;
   }
 }

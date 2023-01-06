@@ -3,6 +3,7 @@ import { Step, Automation } from '../components/automation/types';
 
 export interface AutomationEditorWindow extends Window {
   mailpoet_automation_registry: Registry;
+  mailpoet_automation_context: Context;
   mailpoet_automation: Automation;
 }
 
@@ -19,6 +20,8 @@ export type Registry = {
     }
   >;
 };
+
+export type Context = Record<string, unknown>;
 
 export type StepGroup = 'actions' | 'logical' | 'triggers';
 
@@ -47,6 +50,7 @@ export type Errors = {
 
 export type State = {
   registry: Registry;
+  context: Context;
   stepTypes: Record<string, StepType>;
   automationData: Automation;
   automationSaved: boolean;

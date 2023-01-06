@@ -22,6 +22,9 @@ class Registry {
   /** @var array<string, Action> */
   private $actions = [];
 
+  /** @var array<string, callable> */
+  private $contextFactories = [];
+
   /** @var WordPress */
   private $wordPress;
 
@@ -105,6 +108,15 @@ class Registry {
   /** @return array<string, Action> */
   public function getActions(): array {
     return $this->actions;
+  }
+
+  public function addContextFactory(string $key, callable $factory): void {
+    $this->contextFactories[$key] = $factory;
+  }
+
+  /** @return callable[] */
+  public function getContextFactories(): array {
+    return $this->contextFactories;
   }
 
   public function onBeforeAutomationSave(callable $callback, int $priority = 10): void {
