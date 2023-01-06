@@ -2,6 +2,7 @@
 
 namespace MailPoet\Services;
 
+use MailPoet\Services\Bridge\API;
 use MailPoet\Util\DmarcPolicyChecker;
 
 class AuthorizedSenderDomainController {
@@ -125,18 +126,14 @@ class AuthorizedSenderDomainController {
       throw new \InvalidArgumentException(self::AUTHORIZED_SENDER_DOMAIN_ERROR_ALREADY_VERIFIED);
     }
 
-    $finalData = $this->bridge->verifyAuthorizedSenderDomain($domain);
+    $response = $this->bridge->verifyAuthorizedSenderDomain($domain);
 
-    if ($finalData && isset($finalData['error']) && !isset($finalData['dns'])) {
-      // verify api response returns
-      // ok: bool,
-      // error:  string,
-      // dns: array
-      // due to this, we need to make sure this is an actual server (or other user) error and not a verification error
-      throw new \InvalidArgumentException($finalData['error']);
+    // API response contains status, but we need to check that dns array is not included
+    if ($response['status'] === API::AUTHORIZED_DOMAIN_STATUS_ERROR && !isset($response['dns'])) {
+      throw new \InvalidArgumentException($response['message']);
     }
 
-    return $finalData;
+    return $response;
   }
 
   /**

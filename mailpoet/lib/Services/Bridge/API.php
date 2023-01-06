@@ -9,6 +9,8 @@ use WP_Error;
 class API {
   const AUTHORIZED_EMAIL_STATUS_OK = 'ok';
   const AUTHORIZED_EMAIL_STATUS_ERROR = 'authorized_email_error';
+  const AUTHORIZED_DOMAIN_STATUS_OK = 'ok';
+  const AUTHORIZED_DOMAIN_STATUS_ERROR = 'authorized_domain_error';
   const SENDING_STATUS_OK = 'ok';
   const SENDING_STATUS_CONNECTION_ERROR = 'connection_error';
   const SENDING_STATUS_SEND_ERROR = 'send_error';
@@ -40,6 +42,9 @@ class API {
   public const ERROR_MESSAGE_AUTHORIZED_EMAIL_NO_FREE = 'You cannot use a free email address. Please use an address from your website’s domain, for example.';
   public const ERROR_MESSAGE_AUTHORIZED_EMAIL_INVALID = 'Invalid email.';
   public const ERROR_MESSAGE_AUTHORIZED_EMAIL_ALREADY_ADDED = 'This email was already added to the list.';
+  // Proxy request `sender_domain_verify` from shop https://github.com/mailpoet/shop/blob/master/routes/hooks/sending/v1/index.js#L137
+  public const ERROR_MESSAGE_AUTHORIZED_DOMAIN_VERIFY_NOT_FOUND = 'Domain not found';
+  public const ERROR_MESSAGE_AUTHORIZED_DOMAIN_VERIFY_FAILED = 'Some DNS records were not set up correctly. Please check the records again. You may need to wait up to 24 hours for DNS changes to propagate.';
 
   private $apiKey;
   private $wp;
@@ -312,28 +317,33 @@ class API {
       null
     );
 
-    $code = $this->wp->wpRemoteRetrieveResponseCode($result);
+    $responseCode = $this->wp->wpRemoteRetrieveResponseCode($result);
     $rawResponseBody = $this->wp->wpRemoteRetrieveBody($result);
 
     $responseBody = json_decode($rawResponseBody, true);
-    $isSuccess = $code === 200;
-
-    if (!$isSuccess) {
-      if ($code === 400) {
-        // we need to return the body as it is
-        return is_array($responseBody) ? $responseBody : [];
+    if ($responseCode !== 200) {
+      if ($responseCode === 400) {
+        // we need to return the body as it is, but for consistency we add status and translated error message
+        $response = is_array($responseBody) ? $responseBody : [];
+        $response['status'] = self::AUTHORIZED_DOMAIN_STATUS_ERROR;
+        $response['message'] = $this->getTranslatedErrorMessage($response['error']);
+        return $response;
       }
       $logData = [
-        'code' => $code,
+        'code' => $responseCode,
         'error' => is_wp_error($result) ? $result->get_error_message() : $rawResponseBody,
       ];
       $this->loggerFactory->getLogger(LoggerFactory::TOPIC_BRIDGE)->error('verifyAuthorizedSenderDomain API call failed.', $logData);
 
       // translators: %d will be replaced by an error code
-      $fallbackError = sprintf(__('An error has happened while performing a request, the server has responded with response code %d', 'mailpoet'), $code);
+      $fallbackError = sprintf(__('An error has happened while performing a request, the server has responded with response code %d', 'mailpoet'), $responseCode);
 
-      $errorData = is_array($responseBody) && isset($responseBody['error']) ? $responseBody['error'] : $fallbackError;
-      return ['error' => $errorData, 'status' => false];
+      return [
+        'status' => self::AUTHORIZED_DOMAIN_STATUS_ERROR,
+        'code' => $responseCode,
+        'error' => is_array($responseBody) && isset($responseBody['error']) ? $responseBody['error'] : $fallbackError,
+        'message' => is_array($responseBody) && isset($responseBody['error']) ? $this->getTranslatedErrorMessage($responseBody['error']) : $fallbackError,
+      ];
     }
 
     if (!is_array($responseBody)) {
@@ -341,6 +351,7 @@ class API {
       return [];
     }
 
+    $responseBody['status'] = self::AUTHORIZED_DOMAIN_STATUS_OK;
     return $responseBody;
   }
 
@@ -374,6 +385,10 @@ class API {
         return __('Invalid email.', 'mailpoet');
       case self::ERROR_MESSAGE_AUTHORIZED_EMAIL_ALREADY_ADDED:
         return __('This email was already added to the list.', 'mailpoet');
+      case self::ERROR_MESSAGE_AUTHORIZED_DOMAIN_VERIFY_NOT_FOUND:
+        return __('Domain not found.', 'mailpoet');
+      case self::ERROR_MESSAGE_AUTHORIZED_DOMAIN_VERIFY_FAILED:
+        return __('Some DNS records were not set up correctly. Please check the records again. You may need to wait up to 24 hours for DNS changes to propagate.', 'mailpoet');
       // when we don't match translation we return the origin
       default:
         return $errorMessage;

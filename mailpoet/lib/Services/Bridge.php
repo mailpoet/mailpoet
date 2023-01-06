@@ -189,11 +189,9 @@ class Bridge {
    * @see https://github.com/mailpoet/services-bridge#verify-a-sender-domain
    */
   public function verifyAuthorizedSenderDomain(string $domain): array {
-    $data = $this
-    ->getApi($this->settings->get(self::API_KEY_SETTING_NAME))
-    ->verifyAuthorizedSenderDomain($domain);
-
-    return $data;
+    return $this
+      ->getApi($this->settings->get(self::API_KEY_SETTING_NAME))
+      ->verifyAuthorizedSenderDomain($domain);
   }
 
   public function checkMSSKey($apiKey) {
