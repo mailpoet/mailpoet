@@ -182,4 +182,5 @@ interface Window {
     woo_customers_count: number;
     subscribers_count: number;
   };
+  templates?: Record<string, string>;
 }
