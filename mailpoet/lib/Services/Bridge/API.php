@@ -7,6 +7,8 @@ use MailPoet\WP\Functions as WPFunctions;
 use WP_Error;
 
 class API {
+  const AUTHORIZED_EMAIL_STATUS_OK = 'ok';
+  const AUTHORIZED_EMAIL_STATUS_ERROR = 'authorized_email_error';
   const SENDING_STATUS_OK = 'ok';
   const SENDING_STATUS_CONNECTION_ERROR = 'connection_error';
   const SENDING_STATUS_SEND_ERROR = 'send_error';
@@ -34,6 +36,10 @@ class API {
   public const ERROR_MESSAGE_UNAUTHORIZED = 'No valid API key provided';
   public const ERROR_MESSAGE_INSUFFICIENT_PRIVILEGES = 'Insufficient privileges';
   public const ERROR_MESSAGE_EMAIL_VOLUME_LIMIT_REACHED = 'Email volume limit reached';
+  // Proxy request `authorized_email_address` from shop https://github.com/mailpoet/shop/blob/master/routes/hooks/sending/v1/index.js#L65
+  public const ERROR_MESSAGE_AUTHORIZED_EMAIL_NO_FREE = 'You cannot use a free email address. Please use an address from your website’s domain, for example.';
+  public const ERROR_MESSAGE_AUTHORIZED_EMAIL_INVALID = 'Invalid email.';
+  public const ERROR_MESSAGE_AUTHORIZED_EMAIL_ALREADY_ADDED = 'This email was already added to the list.';
 
   private $apiKey;
   private $wp;
@@ -196,9 +202,8 @@ class API {
   /**
    * Create Authorized Email Address
    *
-   * returns ['status' => true] if done or an array of error messages ['error' => $errorBody, 'status' => false]
    * @param string $emailAddress
-   * @return array
+   * @return array{status: string, code?: int, error?: string, message?: string}
    */
   public function createAuthorizedEmailAddress(string $emailAddress): array {
     $body = ['email' => $emailAddress];
@@ -207,26 +212,29 @@ class API {
       $body
     );
 
-    $code = $this->wp->wpRemoteRetrieveResponseCode($result);
-    $isSuccess = $code === self::RESPONSE_CODE_CREATED;
+    $responseCode = $this->wp->wpRemoteRetrieveResponseCode($result);
 
-    if (!$isSuccess) {
+    if ($responseCode !== self::RESPONSE_CODE_CREATED) {
       $errorBody = $this->wp->wpRemoteRetrieveBody($result);
       $logData = [
-        'code' => $code,
+        'code' => $responseCode,
         'error' => is_wp_error($result) ? $result->get_error_message() : $errorBody,
       ];
       $this->loggerFactory->getLogger(LoggerFactory::TOPIC_BRIDGE)->error('CreateAuthorizedEmailAddress API call failed.', $logData);
 
       $errorResponseData = json_decode($errorBody, true);
       // translators: %d is the error code.
-      $fallbackError = sprintf(__('An error has happened while performing a request, the server has responded with response code %d', 'mailpoet'), $code);
+      $fallbackError = sprintf(__('An error has happened while performing a request, the server has responded with response code %d', 'mailpoet'), $responseCode);
 
-      $errorData = is_array($errorResponseData) && isset($errorResponseData['error']) ? $errorResponseData['error'] : $fallbackError;
-      return ['error' => $errorData, 'status' => false];
+      return [
+        'status' => self::AUTHORIZED_EMAIL_STATUS_ERROR,
+        'code' => $responseCode,
+        'error' => is_array($errorResponseData) && isset($errorResponseData['error']) ? $errorResponseData['error'] : $fallbackError,
+        'message' => is_array($errorResponseData) && isset($errorResponseData['error']) ? $this->getTranslatedErrorMessage($errorResponseData['error']) : $fallbackError,
+      ];
     }
 
-    return ['status' => $isSuccess];
+    return ['status' => self::AUTHORIZED_EMAIL_STATUS_OK];
   }
 
   /**
@@ -360,6 +368,12 @@ class API {
         return __('Insufficient privileges.', 'mailpoet');
       case self::ERROR_MESSAGE_EMAIL_VOLUME_LIMIT_REACHED:
         return __('Email volume limit reached.', 'mailpoet');
+      case self::ERROR_MESSAGE_AUTHORIZED_EMAIL_NO_FREE:
+        return __('You cannot use a free email address. Please use an address from your website’s domain, for example.', 'mailpoet');
+      case self::ERROR_MESSAGE_AUTHORIZED_EMAIL_INVALID:
+        return __('Invalid email.', 'mailpoet');
+      case self::ERROR_MESSAGE_AUTHORIZED_EMAIL_ALREADY_ADDED:
+        return __('This email was already added to the list.', 'mailpoet');
       // when we don't match translation we return the origin
       default:
         return $errorMessage;
