@@ -85,16 +85,16 @@ class AuthorizedSenderDomainController {
       throw new \InvalidArgumentException(self::AUTHORIZED_SENDER_DOMAIN_ERROR_ALREADY_CREATED);
     }
 
-    $finalData = $this->bridge->createAuthorizedSenderDomain($domain);
+    $response = $this->bridge->createAuthorizedSenderDomain($domain);
 
-    if ($finalData && isset($finalData['error'])) {
-      throw new \InvalidArgumentException($finalData['error']);
+    if ($response['status'] === API::AUTHORIZED_DOMAIN_STATUS_ERROR) {
+      throw new \InvalidArgumentException($response['message']);
     }
 
     // Reset cached value since a new domain was added
     $this->currentRecords = null;
 
-    return $finalData;
+    return $response;
   }
 
   /**
