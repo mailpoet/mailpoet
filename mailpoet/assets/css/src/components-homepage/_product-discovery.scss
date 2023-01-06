@@ -17,6 +17,14 @@
   position: relative;
   width: 100%;
 
+  @include respond-to(small-screen) {
+    grid-template-columns: auto $grid-gap-xl;
+
+    img {
+      display: none;
+    }
+  }
+
   &:last-child {
     border-bottom: none;
   }
