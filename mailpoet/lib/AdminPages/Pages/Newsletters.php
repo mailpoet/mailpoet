@@ -8,7 +8,6 @@ use MailPoet\Config\Env;
 use MailPoet\Config\Installer;
 use MailPoet\Config\Menu;
 use MailPoet\Entities\NewsletterEntity;
-use MailPoet\Form\AssetsController;
 use MailPoet\Listing\PageLimit;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\NewsletterTemplates\NewsletterTemplatesRepository;
@@ -55,9 +54,6 @@ class Newsletters {
   /** @var AuthorizedSenderDomainController */
   private $senderDomainController;
 
-  /*** @var AssetsController */
-  private $assetsController;
-
   public function __construct(
     PageRenderer $pageRenderer,
     PageLimit $listingPageLimit,
@@ -69,8 +65,7 @@ class Newsletters {
     SegmentsSimpleListRepository $segmentsListRepository,
     NewslettersRepository $newslettersRepository,
     Bridge $bridge,
-    AuthorizedSenderDomainController $senderDomainController,
-    AssetsController $assetsController
+    AuthorizedSenderDomainController $senderDomainController
   ) {
     $this->pageRenderer = $pageRenderer;
     $this->listingPageLimit = $listingPageLimit;
@@ -83,13 +78,11 @@ class Newsletters {
     $this->newslettersRepository = $newslettersRepository;
     $this->bridge = $bridge;
     $this->senderDomainController = $senderDomainController;
-    $this->assetsController = $assetsController;
   }
 
   public function render() {
     global $wp_roles; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
 
-    $this->assetsController->setupAdminPagesDependencies();
     $data = [];
 
     $data['items_per_page'] = $this->listingPageLimit->getLimitPerPage('newsletters');
