@@ -1,3 +1,4 @@
+import { MailPoet } from 'mailpoet';
 import { State } from './types';
 
 export function getInitialState(): State {
@@ -14,5 +15,6 @@ export function getInitialState(): State {
       isHidden: window.mailpoet_homepage_data.product_discovery_dismissed,
       tasksStatus: window.mailpoet_homepage_data.product_discovery_status,
     },
+    isWooCommerceActive: MailPoet.isWoocommerceActive,
   };
 }
