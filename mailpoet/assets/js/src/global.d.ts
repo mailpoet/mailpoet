@@ -195,4 +195,5 @@ interface Window {
   templates?: Record<string, string>;
   is_wc_active?: boolean;
   systemInfoData?: Record<string, string>;
+  mailpoet_mail_function_enabled: boolean;
 }

@@ -61,13 +61,17 @@ function WelcomeWizardStepsController({
       });
   }
 
-  async function finishWizard() {
+  const finishWizard = useCallback(async (redirect_url = null) => {
     await updateSettings({
       version: window.mailpoet_version,
     }).then(() => {
-      window.location.href = window.finish_wizard_url;
+      if (redirect_url) {
+        window.location.href = redirect_url;
+      } else {
+        window.location.href = window.finish_wizard_url;
+      }
     });
-  }
+  }, []);
 
   const redirect = partial(redirectToNextStep, history, finishWizard);
 
@@ -154,6 +158,7 @@ function WelcomeWizardStepsController({
               <WelcomeWizardPitchMSSStep
                 next={() => redirect(step)}
                 subscribersCount={window.mailpoet_subscribers_count}
+                finishWizard={finishWizard}
               />
             </ErrorBoundary>
           </WelcomeWizardStepLayout>
