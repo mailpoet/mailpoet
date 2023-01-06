@@ -76,7 +76,7 @@ class MailPoetMapper {
         $resultParsed = json_decode($result['message'], true);
         $message = __('Error while sending.', 'mailpoet');
         if (!is_array($resultParsed)) {
-          if ($result['error'] === API::ERROR_MESSAGE_DMRAC) {
+          if (isset($result['error']) && $result['error'] === API::ERROR_MESSAGE_DMRAC) {
             $message .= $this->getDmarcMessage($result, $sender);
           } else {
             $message .= ' ' . $result['message'];
