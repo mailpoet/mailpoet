@@ -2,7 +2,14 @@ import { createRegistrySelector } from '@wordpress/data';
 import { store as interfaceStore } from '@wordpress/interface';
 import { store as preferencesStore } from '@wordpress/preferences';
 import { storeName } from './constants';
-import { Context, Errors, Feature, State, StepErrors, StepType } from './types';
+import {
+  Registry,
+  Errors,
+  Feature,
+  State,
+  StepErrors,
+  StepType,
+} from './types';
 import { Item } from '../components/inserter/item';
 import { Step, Automation } from '../components/automation/types';
 
@@ -25,15 +32,15 @@ export function isActivationPanelOpened(state: State): boolean {
   return state.activationPanel.isOpened;
 }
 
-export function getContext(state: State): Context {
-  return state.context;
+export function getRegistry(state: State): Registry {
+  return state.registry;
 }
 
-export function getContextStep(
+export function getRegistryStep(
   state: State,
   key: string,
-): Context['steps'][number] | undefined {
-  return state.context.steps[key];
+): Registry['steps'][number] | undefined {
+  return state.registry.steps[key];
 }
 
 export function getSteps(state: State): StepType[] {

@@ -82,7 +82,7 @@ class AutomationEditor {
     }
     $roles = new \WP_Roles();
     $this->pageRenderer->displayPage('automation/editor.html', [
-      'context' => $this->buildContext(),
+      'registry' => $this->buildRegistry(),
       'automation' => $this->automationMapper->buildAutomation($automation),
       'sub_menu' => 'mailpoet-automation',
       'api' => [
@@ -97,7 +97,7 @@ class AutomationEditor {
     ]);
   }
 
-  private function buildContext(): array {
+  private function buildRegistry(): array {
     $steps = [];
     foreach ($this->registry->getSteps() as $key => $step) {
       $steps[$key] = [
