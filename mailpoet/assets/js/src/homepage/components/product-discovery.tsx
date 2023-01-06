@@ -11,10 +11,11 @@ type Props = {
 };
 
 export function ProductDiscovery({ onHide }: Props): JSX.Element {
-  const { tasksStatus, isWooCommerceActive } = useSelect(
+  const { tasksStatus, isWooCommerceActive, isDiscoveryDone } = useSelect(
     (select) => ({
       tasksStatus: select(storeName).getProductDiscoveryTasksStatus(),
       isWooCommerceActive: select(storeName).getIsWooCommerceActive(),
+      isDiscoveryDone: select(storeName).getIsProductDiscoveryDone(),
     }),
     [],
   );
@@ -74,24 +75,40 @@ export function ProductDiscovery({ onHide }: Props): JSX.Element {
     );
   }
   return (
-    <ContentSection
-      className="mailpoet-homepage-product-discovery"
-      heading={MailPoet.I18n.t('startEngagingWithYourCustomers')}
-      headingAfter={
-        <DropdownMenu
-          label={MailPoet.I18n.t('hideList')}
-          icon={moreVertical}
-          controls={[
-            {
-              title: MailPoet.I18n.t('hideList'),
-              onClick: onHide,
-              icon: null,
-            },
-          ]}
-        />
-      }
-    >
-      <ul className="mceProgress">{tasks.map((item) => item)}</ul>
-    </ContentSection>
+    <>
+      <ContentSection
+        className="mailpoet-homepage-product-discovery"
+        heading={MailPoet.I18n.t('startEngagingWithYourCustomers')}
+        headingAfter={
+          <DropdownMenu
+            label={MailPoet.I18n.t('hideList')}
+            icon={moreVertical}
+            controls={[
+              {
+                title: MailPoet.I18n.t('hideList'),
+                onClick: onHide,
+                icon: null,
+              },
+            ]}
+          />
+        }
+      >
+        <ul className="mceProgress">{tasks.map((item) => item)}</ul>
+      </ContentSection>
+      {isDiscoveryDone ? (
+        <p className="mailpoet-task-list__all-set">
+          {MailPoet.I18n.t('allDone')}{' '}
+          <a
+            href="#"
+            onClick={(e) => {
+              e.preventDefault();
+              onHide();
+            }}
+          >
+            {MailPoet.I18n.t('dismissTasks')}
+          </a>
+        </p>
+      ) : null}
+    </>
   );
 }
