@@ -99,9 +99,19 @@ class NewsletterEditor {
         $this->wooEmailHooks->overrideStylesForWooEmails();
       }
       $wcEmailSettings = $this->wcTransactionalEmails->getWCEmailSettings();
+      $discountTypes = $this->woocommerceHelper->wcGetCouponTypes();
       $woocommerceData = [
         'email_headings' => $this->wcTransactionalEmails->getEmailHeadings(),
         'customizer_enabled' => (bool)$this->settings->get('woocommerce.use_mailpoet_editor'),
+        'coupon' => [
+          'config' => [
+            'discount_types' => $discountTypes,
+          ],
+          'defaults' => [
+            'code' => 'XXXX-XXXXXXX-XXXX',
+            'discountType' => current(array_keys($discountTypes)),
+          ],
+        ],
       ];
       $woocommerceData = array_merge($wcEmailSettings, $woocommerceData);
     }

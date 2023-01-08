@@ -1562,6 +1562,27 @@
         woocommerceHeading: {
           contents: <%= json_encode(woocommerce.email_headings) %>,
         },
+        coupon: {
+            type: 'coupon',
+            discountType: <%= json_encode(woocommerce.coupon.defaults.discountType) %>,
+            code: <%= json_encode(woocommerce.coupon.defaults.code) %>,
+            styles: {
+              block: {
+                backgroundColor: '#ffffff',
+                borderColor: '#000000',
+                borderWidth: '1px',
+                borderRadius: '5px',
+                borderStyle: 'solid',
+                width: '200px',
+                lineHeight: '40px',
+                fontColor: '#000000',
+                fontFamily: 'Verdana',
+                fontSize: '18px',
+                fontWeight: 'normal',
+                textAlign: 'center',
+              },
+          },
+        },
       },
       shortcodes: <%= json_encode(shortcodes) %>,
       sidepanelWidth: '331px',
@@ -1618,7 +1639,9 @@
       <% if is_confirmation_email_template %>
       hiddenWidgets: ['automatedLatestContentLayout', 'header', 'footer', 'posts', 'products'],
       <% endif %>
+      coupon: <%= json_encode(woocommerce.coupon.config) %>,
     };
+
     wp.hooks.doAction('mailpoet_newsletters_editor_initialize', config);
 
   </script>

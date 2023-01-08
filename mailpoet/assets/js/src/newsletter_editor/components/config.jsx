@@ -12,6 +12,7 @@ ConfigComponent.ConfigModel = SuperModel.extend({
     sidepanelWidth: '331px',
     validation: {},
     urls: {},
+    availableDiscountTypes: {},
   },
 });
 

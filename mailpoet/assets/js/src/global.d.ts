@@ -183,4 +183,5 @@ interface Window {
     subscribers_count: number;
   };
   templates?: Record<string, string>;
+  is_wc_active?: boolean;
 }
