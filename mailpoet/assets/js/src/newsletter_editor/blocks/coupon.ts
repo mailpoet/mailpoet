@@ -52,8 +52,19 @@ Module.CouponBlockSettingsView = base.BlockSettingsView.extend({
   getTemplate: () => window.templates.couponBlockSettings,
   events() {
     return {
-      'input .mailpoet_field_coupon_text': _.partial(this.changeField, 'text'),
-      'input .mailpoet_field_coupon_url': _.partial(this.changeField, 'url'),
+      'input .mailpoet_field_coupon_code': _.partial(this.changeField, 'code'),
+      'change .mailpoet_field_coupon_discount_type': _.partial(
+        this.changeField,
+        'discountType',
+      ),
+      'input .mailpoet_field_coupon_amount': _.partial(
+        this.changeField,
+        'amount',
+      ),
+      'input .mailpoet_field_coupon_expiry_day': _.partial(
+        this.changeField,
+        'expiryDay',
+      ),
       'change .mailpoet_field_coupon_alignment': _.partial(
         this.changeField,
         'styles.block.textAlign',
@@ -161,6 +172,9 @@ Module.CouponBlockSettingsView = base.BlockSettingsView.extend({
       {
         availableStyles: App.getAvailableStyles().toJSON(),
         renderOptions: this.renderOptions,
+        availableDiscountTypes: App.getConfig()
+          .get('coupon.discount_types')
+          .toJSON(),
       },
     );
   },
