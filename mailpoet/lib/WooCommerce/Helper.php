@@ -154,4 +154,8 @@ class Helper {
 
     return \Automattic\WooCommerce\Internal\DataStores\Orders\OrdersTableDataStore::get_addresses_table_name();
   }
+
+  public function wcGetCouponTypes(): array {
+    return wc_get_coupon_types();
+  }
 }
