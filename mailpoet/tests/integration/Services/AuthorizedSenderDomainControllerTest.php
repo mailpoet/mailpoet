@@ -153,7 +153,11 @@ class AuthorizedSenderDomainControllerTest extends \MailPoetTest {
 
     $domains = ['testdomain.com' => []];
     $getSenderDomainsExpectation = Expected::once($domains);
-    $verifySenderDomainsExpectation = Expected::once(['error' => $errorMessage, 'status' => false]);
+    $verifySenderDomainsExpectation = Expected::once([
+      'error' => $errorMessage,
+      'message' => $errorMessage,
+      'status' => API::AUTHORIZED_DOMAIN_STATUS_ERROR,
+    ]);
 
     $bridgeMock = $this->make(Bridge::class, [
       'getAuthorizedSenderDomains' => $getSenderDomainsExpectation,

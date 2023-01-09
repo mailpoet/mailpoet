@@ -183,7 +183,7 @@ class BridgeApiTest extends \MailPoetTest {
       ->method('wpRemoteRetrieveBody')
       ->willReturn(json_encode(['error' => 'This domain was already added to the list.']));
     $result = $this->api->createAuthorizedSenderDomain('existing.com');
-    expect($result['status'])->equals(false);
+    expect($result['status'])->equals(API::AUTHORIZED_DOMAIN_STATUS_ERROR);
     expect($result['error'])->equals('This domain was already added to the list.');
   }
 

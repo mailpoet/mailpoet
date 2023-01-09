@@ -351,7 +351,11 @@ class AuthorizedEmailsControllerTest extends \MailPoetTest {
 
     $bridgeMock = $this->make(Bridge::class, [
       'getAuthorizedEmailAddresses' => Expected::once([]),
-      'createAuthorizedEmailAddress' => Expected::once(['error' => $errorMessage]),
+      'createAuthorizedEmailAddress' => Expected::once([
+        'error' => $errorMessage,
+        'message' => $errorMessage,
+        'status' => Bridge\API::AUTHORIZED_EMAIL_STATUS_ERROR,
+      ]),
     ]);
     $mocks = [
       'Bridge' => $bridgeMock,
