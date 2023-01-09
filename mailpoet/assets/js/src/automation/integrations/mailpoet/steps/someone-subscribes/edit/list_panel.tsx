@@ -1,8 +1,8 @@
 import { PanelBody } from '@wordpress/components';
 import { dispatch, useSelect } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
+import { getContext } from '../../../context';
 import { storeName } from '../../../../../editor/store';
-import { segments } from './segment';
 import {
   PlainBodyTitle,
   FormTokenField,
@@ -20,7 +20,7 @@ export function ListPanel(): JSX.Element {
     ? (selectedStep.args.segment_ids as number[])
     : [];
 
-  const validSegments = segments.filter(
+  const validSegments = getContext().segments.filter(
     (segment) => segment.type === 'default',
   );
   const selected = validSegments.filter((segment): boolean =>
