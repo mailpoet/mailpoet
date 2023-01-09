@@ -179,19 +179,26 @@ class ConfirmationEmailMailer {
     $extraParams = [
       'meta' => $this->mailerMetaInfo->getConfirmationMetaInfo($subscriber),
     ];
+
+    // Don't attempt to send confirmation email when sending is paused
+    $confirmationEmailErrorMessage = __('There was an error when sending a confirmation email for your subscription. Please contact the website owner.', 'mailpoet');
+    if (MailerLog::isSendingPaused()) {
+      throw new \Exception($confirmationEmailErrorMessage);
+    }
+
     try {
       $defaultMailer = $this->mailerFactory->getDefaultMailer();
       $result = $defaultMailer->send($email, $subscriber, $extraParams);
     } catch (\Exception $e) {
       MailerLog::processTransactionalEmailError(MailerError::OPERATION_CONNECT, $e->getMessage(), $e->getCode());
-      throw new \Exception(__('There was an error when sending a confirmation email for your subscription. Please contact the website owner.', 'mailpoet'));
+      throw new \Exception($confirmationEmailErrorMessage);
     }
 
     if ($result['response'] === false) {
       if ($result['error'] instanceof MailerError && $result['error']->getLevel() === MailerError::LEVEL_HARD) {
         MailerLog::processTransactionalEmailError($result['error']->getOperation(), (string)$result['error']->getMessage());
       }
-      throw new \Exception(__('There was an error when sending a confirmation email for your subscription. Please contact the website owner.', 'mailpoet'));
+      throw new \Exception($confirmationEmailErrorMessage);
     };
 
     // E-mail was successfully sent we need to update the MailerLog
