@@ -2,6 +2,7 @@
 
 namespace MailPoet\Test\Mailer;
 
+use MailPoet\Entities\LogEntity;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\MailerLog;
@@ -265,6 +266,9 @@ class MailerLogTest extends \MailPoetTest {
         'error_message' => $error,
       ]
     );
+    $logs = $this->entityManager->getRepository(LogEntity::class)->findAll();
+    $this->assertInstanceOf(LogEntity::class, $logs[0]);
+    expect($logs[0]->getMessage())->stringContainsString('Email sending was paused due an error');
   }
 
   public function testItProcessesTransactionalEmailSendingError() {
@@ -318,6 +322,9 @@ class MailerLogTest extends \MailPoetTest {
     expect($mailerLog['transactional_email_last_error_at'])->null();
     expect($mailerLog['transactional_email_error_count'])->null();
     expect(MailerLog::isSendingPaused())->true();
+    $logs = $this->entityManager->getRepository(LogEntity::class)->findAll();
+    $this->assertInstanceOf(LogEntity::class, $logs[0]);
+    expect($logs[0]->getMessage())->stringContainsString('Email sending was paused due a transactional email error');
   }
 
   public function testItEnforcesSendingLimit() {
@@ -448,5 +455,6 @@ class MailerLogTest extends \MailPoetTest {
 
   public function _after() {
     $this->diContainer->get(SettingsRepository::class)->truncate();
+    $this->truncateEntity(LogEntity::class);
   }
 }
