@@ -2,6 +2,7 @@
 
 namespace MailPoet\Mailer;
 
+use MailPoet\Logging\LoggerFactory;
 use MailPoet\Settings\SettingsController;
 
 /**
@@ -173,6 +174,13 @@ class MailerLog {
     $mailerLog = self::setError($mailerLog, $operation, $errorMessage, $errorCode);
     self::updateMailerLog($mailerLog);
     if ($pauseSending) {
+      LoggerFactory::getInstance()->getLogger(LoggerFactory::TOPIC_SENDING)->error(
+        'Email sending was paused due an error',
+        [
+          'error_message' => $errorMessage,
+          'error_code' => $errorCode,
+        ]
+      );
       self::pauseSending($mailerLog);
     }
     self::enforceExecutionRequirements();
@@ -202,6 +210,13 @@ class MailerLog {
     $mailerLog['transactional_email_error_count'] = ($mailerLog['transactional_email_error_count'] ?? 0) + 1;
     self::updateMailerLog($mailerLog);
     if ($mailerLog['transactional_email_error_count'] >= self::RETRY_ATTEMPTS_LIMIT) {
+      LoggerFactory::getInstance()->getLogger(LoggerFactory::TOPIC_SENDING)->error(
+        'Email sending was paused due a transactional email error',
+        [
+          'error_message' => $errorMessage,
+          'error_code' => $errorCode,
+        ]
+      );
       self::pauseSending($mailerLog);
     }
   }
