@@ -6,29 +6,31 @@ use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 
 class BridgeTestMockAPI extends API {
-  const VERIFIED_DOMAIN_RESPONSE = [ 'dns' => [
-    [
-      'host' => 'mailpoet1._domainkey.example.com',
-      'value' => 'dkim1.sendingservice.net',
-      'type' => 'CNAME',
-      'status' => 'valid',
-      'message' => '',
+  const VERIFIED_DOMAIN_RESPONSE = [
+    'dns' => [
+      [
+        'host' => 'mailpoet1._domainkey.example.com',
+        'value' => 'dkim1.sendingservice.net',
+        'type' => 'CNAME',
+        'status' => 'valid',
+        'message' => '',
+      ],
+      [
+        'host' => 'mailpoet2._domainkey.example.com',
+        'value' => 'dkim2.sendingservice.net',
+        'type' => 'CNAME',
+        'status' => 'valid',
+        'message' => '',
+      ],
+      [
+        'host' => '_mailpoet.example.com',
+        'value' => '34567abc876556abc8754',
+        'type' => 'TXT',
+        'status' => 'valid',
+        'message' => '',
+      ],
     ],
-    [
-      'host' => 'mailpoet2._domainkey.example.com',
-      'value' => 'dkim2.sendingservice.net',
-      'type' => 'CNAME',
-      'status' => 'valid',
-      'message' => '',
-    ],
-    [
-      'host' => '_mailpoet.example.com',
-      'value' => '34567abc876556abc8754',
-      'type' => 'TXT',
-      'status' => 'valid',
-      'message' => '',
-    ],
-  ],
+    'status' => API::AUTHORIZED_DOMAIN_STATUS_OK,
   ];
 
   public $apiKey;
