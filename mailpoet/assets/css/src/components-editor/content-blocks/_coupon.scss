@@ -2,4 +2,27 @@
   .mailpoet_editor_coupon {
     text-align: center;
   }
+
+  .mailpoet_editor_coupon_overlay {
+    background: rgba(255, 255, 255, .5);
+    color: #000;
+    cursor: pointer;
+    display: none;
+    font-size: 18px;
+    height: 100%;
+    position: absolute;
+    text-align: center;
+    top: 0;
+    width: 100%;
+  }
+
+  :hover {
+    .mailpoet_editor_coupon {
+      opacity: .5;
+    }
+
+    .mailpoet_editor_coupon_overlay {
+      display: block;
+    }
+  }
 }
