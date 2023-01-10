@@ -70,7 +70,7 @@ class MailPoet implements MailerMethod {
       case API::SENDING_STATUS_SEND_ERROR:
         $error = $this->processSendError($result, $subscriber, $newsletter);
         return Mailer::formatMailerErrorResult($error);
-      case API::SENDING_STATUS_OK:
+      case API::RESPONSE_STATUS_OK:
       default:
         return Mailer::formatMailerSendSuccessResult();
     }

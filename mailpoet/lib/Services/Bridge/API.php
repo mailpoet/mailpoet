@@ -7,11 +7,8 @@ use MailPoet\WP\Functions as WPFunctions;
 use WP_Error;
 
 class API {
-  const AUTHORIZED_EMAIL_STATUS_OK = 'ok';
-  const AUTHORIZED_EMAIL_STATUS_ERROR = 'authorized_email_error';
-  const AUTHORIZED_DOMAIN_STATUS_OK = 'ok';
-  const AUTHORIZED_DOMAIN_STATUS_ERROR = 'authorized_domain_error';
-  const SENDING_STATUS_OK = 'ok';
+  const RESPONSE_STATUS_OK = 'ok';
+  const RESPONSE_STATUS_ERROR = 'error';
   const SENDING_STATUS_CONNECTION_ERROR = 'connection_error';
   const SENDING_STATUS_SEND_ERROR = 'send_error';
 
@@ -162,7 +159,7 @@ class API {
         'code' => $responseCode,
       ];
     }
-    return ['status' => self::SENDING_STATUS_OK];
+    return ['status' => self::RESPONSE_STATUS_OK];
   }
 
   public function checkBounces(array $emails) {
@@ -235,14 +232,14 @@ class API {
       $fallbackError = sprintf(__('An error has happened while performing a request, the server has responded with response code %d', 'mailpoet'), $responseCode);
 
       return [
-        'status' => self::AUTHORIZED_EMAIL_STATUS_ERROR,
+        'status' => self::RESPONSE_STATUS_ERROR,
         'code' => $responseCode,
         'error' => is_array($errorResponseData) && isset($errorResponseData['error']) ? $errorResponseData['error'] : $fallbackError,
         'message' => is_array($errorResponseData) && isset($errorResponseData['error']) ? $this->getTranslatedErrorMessage($errorResponseData['error']) : $fallbackError,
       ];
     }
 
-    return ['status' => self::AUTHORIZED_EMAIL_STATUS_OK];
+    return ['status' => self::RESPONSE_STATUS_OK];
   }
 
   /**
@@ -296,7 +293,7 @@ class API {
       $fallbackError = sprintf(__('An error has happened while performing a request, the server has responded with response code %d', 'mailpoet'), $responseCode);
 
       return [
-        'status' => self::AUTHORIZED_DOMAIN_STATUS_ERROR,
+        'status' => self::RESPONSE_STATUS_ERROR,
         'code' => $responseCode,
         'error' => is_array($responseBody) && isset($responseBody['error']) ? $responseBody['error'] : $fallbackError,
         'message' => is_array($responseBody) && isset($responseBody['error']) ? $this->getTranslatedErrorMessage($responseBody['error']) : $fallbackError,
@@ -308,7 +305,7 @@ class API {
       return [];
     }
 
-    $responseBody['status'] = self::AUTHORIZED_DOMAIN_STATUS_OK;
+    $responseBody['status'] = self::RESPONSE_STATUS_OK;
     return $responseBody;
   }
 
@@ -332,7 +329,7 @@ class API {
       if ($responseCode === 400) {
         // we need to return the body as it is, but for consistency we add status and translated error message
         $response = is_array($responseBody) ? $responseBody : [];
-        $response['status'] = self::AUTHORIZED_DOMAIN_STATUS_ERROR;
+        $response['status'] = self::RESPONSE_STATUS_ERROR;
         $response['message'] = $this->getTranslatedErrorMessage($response['error']);
         return $response;
       }
@@ -346,7 +343,7 @@ class API {
       $fallbackError = sprintf(__('An error has happened while performing a request, the server has responded with response code %d', 'mailpoet'), $responseCode);
 
       return [
-        'status' => self::AUTHORIZED_DOMAIN_STATUS_ERROR,
+        'status' => self::RESPONSE_STATUS_ERROR,
         'code' => $responseCode,
         'error' => is_array($responseBody) && isset($responseBody['error']) ? $responseBody['error'] : $fallbackError,
         'message' => is_array($responseBody) && isset($responseBody['error']) ? $this->getTranslatedErrorMessage($responseBody['error']) : $fallbackError,
@@ -358,7 +355,7 @@ class API {
       return [];
     }
 
-    $responseBody['status'] = self::AUTHORIZED_DOMAIN_STATUS_OK;
+    $responseBody['status'] = self::RESPONSE_STATUS_OK;
     return $responseBody;
   }
 

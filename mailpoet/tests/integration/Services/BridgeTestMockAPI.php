@@ -30,7 +30,7 @@ class BridgeTestMockAPI extends API {
         'message' => '',
       ],
     ],
-    'status' => API::AUTHORIZED_DOMAIN_STATUS_OK,
+    'status' => API::RESPONSE_STATUS_OK,
   ];
 
   public $apiKey;
