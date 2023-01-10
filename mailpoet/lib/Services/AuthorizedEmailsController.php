@@ -96,7 +96,7 @@ class AuthorizedEmailsController {
     }
 
     $response = $this->bridge->createAuthorizedEmailAddress($email);
-    if ($response['status'] === API::AUTHORIZED_EMAIL_STATUS_ERROR) {
+    if ($response['status'] === API::RESPONSE_STATUS_ERROR) {
       throw new \InvalidArgumentException($response['message']);
     }
 

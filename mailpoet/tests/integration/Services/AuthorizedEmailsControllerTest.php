@@ -354,7 +354,7 @@ class AuthorizedEmailsControllerTest extends \MailPoetTest {
       'createAuthorizedEmailAddress' => Expected::once([
         'error' => $errorMessage,
         'message' => $errorMessage,
-        'status' => Bridge\API::AUTHORIZED_EMAIL_STATUS_ERROR,
+        'status' => Bridge\API::RESPONSE_STATUS_ERROR,
       ]),
     ]);
     $mocks = [

@@ -87,7 +87,7 @@ class AuthorizedSenderDomainController {
 
     $response = $this->bridge->createAuthorizedSenderDomain($domain);
 
-    if ($response['status'] === API::AUTHORIZED_DOMAIN_STATUS_ERROR) {
+    if ($response['status'] === API::RESPONSE_STATUS_ERROR) {
       throw new \InvalidArgumentException($response['message']);
     }
 
@@ -129,7 +129,7 @@ class AuthorizedSenderDomainController {
     $response = $this->bridge->verifyAuthorizedSenderDomain($domain);
 
     // API response contains status, but we need to check that dns array is not included
-    if ($response['status'] === API::AUTHORIZED_DOMAIN_STATUS_ERROR && !isset($response['dns'])) {
+    if ($response['status'] === API::RESPONSE_STATUS_ERROR && !isset($response['dns'])) {
       throw new \InvalidArgumentException($response['message']);
     }
 
