@@ -42,7 +42,9 @@ class Segments {
     $this->validateSegmentName($data);
 
     try {
-      $segment = $this->segmentsRepository->createOrUpdate($data['name'], $data['description'] ?? '');
+      $name = sanitize_text_field($data['name']);
+      $description = isset($data['description']) ? sanitize_textarea_field($data['description']) : '';
+      $segment = $this->segmentsRepository->createOrUpdate($name, $description);
     } catch (\Exception $e) {
       throw new APIException(
         __('The list couldn’t be created in the database', 'mailpoet'),
