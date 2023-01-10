@@ -71,6 +71,7 @@
 
 .mailpoet-wizard-step-content {
   max-width: 480px;
+  min-height: 300px;
   width: 100%;
 
   @include respond-to(medium-screen) {
