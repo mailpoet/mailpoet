@@ -152,12 +152,7 @@ class API {
       $response = ($this->wp->wpRemoteRetrieveBody($result)) ?
         $this->wp->wpRemoteRetrieveBody($result) :
         $this->wp->wpRemoteRetrieveResponseMessage($result);
-      return [
-        'status' => self::SENDING_STATUS_SEND_ERROR,
-        'error' => $response,
-        'message' => $this->getTranslatedErrorMessage($response),
-        'code' => $responseCode,
-      ];
+      return $this->createErrorResponse((int)$responseCode, $response, self::SENDING_STATUS_SEND_ERROR);
     }
     return ['status' => self::RESPONSE_STATUS_OK];
   }
@@ -231,12 +226,8 @@ class API {
       // translators: %d is the error code.
       $fallbackError = sprintf(__('An error has happened while performing a request, the server has responded with response code %d', 'mailpoet'), $responseCode);
 
-      return [
-        'status' => self::RESPONSE_STATUS_ERROR,
-        'code' => $responseCode,
-        'error' => is_array($errorResponseData) && isset($errorResponseData['error']) ? $errorResponseData['error'] : $fallbackError,
-        'message' => is_array($errorResponseData) && isset($errorResponseData['error']) ? $this->getTranslatedErrorMessage($errorResponseData['error']) : $fallbackError,
-      ];
+      $error = is_array($errorResponseData) && isset($errorResponseData['error']) ? $errorResponseData['error'] : $fallbackError;
+      return $this->createErrorResponse((int)$responseCode, $error);
     }
 
     return ['status' => self::RESPONSE_STATUS_OK];
@@ -292,12 +283,8 @@ class API {
       // translators: %d will be replaced by an error code
       $fallbackError = sprintf(__('An error has happened while performing a request, the server has responded with response code %d', 'mailpoet'), $responseCode);
 
-      return [
-        'status' => self::RESPONSE_STATUS_ERROR,
-        'code' => $responseCode,
-        'error' => is_array($responseBody) && isset($responseBody['error']) ? $responseBody['error'] : $fallbackError,
-        'message' => is_array($responseBody) && isset($responseBody['error']) ? $this->getTranslatedErrorMessage($responseBody['error']) : $fallbackError,
-      ];
+      $error = is_array($responseBody) && isset($responseBody['error']) ? $responseBody['error'] : $fallbackError;
+      return $this->createErrorResponse((int)$responseCode, $error);
     }
 
     if (!is_array($responseBody)) {
@@ -342,12 +329,8 @@ class API {
       // translators: %d will be replaced by an error code
       $fallbackError = sprintf(__('An error has happened while performing a request, the server has responded with response code %d', 'mailpoet'), $responseCode);
 
-      return [
-        'status' => self::RESPONSE_STATUS_ERROR,
-        'code' => $responseCode,
-        'error' => is_array($responseBody) && isset($responseBody['error']) ? $responseBody['error'] : $fallbackError,
-        'message' => is_array($responseBody) && isset($responseBody['error']) ? $this->getTranslatedErrorMessage($responseBody['error']) : $fallbackError,
-      ];
+      $error = is_array($responseBody) && isset($responseBody['error']) ? $responseBody['error'] : $fallbackError;
+      return $this->createErrorResponse((int)$responseCode, $error);
     }
 
     if (!is_array($responseBody)) {
@@ -445,5 +428,17 @@ class API {
       'response' => $response,
     ];
     $this->loggerFactory->getLogger(LoggerFactory::TOPIC_BRIDGE)->error($method . ' API response was not in expected format.', $logData);
+  }
+
+  /**
+   * @return array{status: string, code: int, error: string, message: string}
+   */
+  private function createErrorResponse(int $responseCode, string $error, string $errorStatus = self::RESPONSE_STATUS_ERROR): array {
+    return [
+      'status' => $errorStatus,
+      'code' => $responseCode,
+      'error' => $error,
+      'message' => $this->getTranslatedErrorMessage($error),
+    ];
   }
 }
