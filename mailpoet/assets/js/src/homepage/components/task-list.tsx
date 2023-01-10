@@ -33,7 +33,7 @@ export function TaskList(): JSX.Element {
       titleCompleted={MailPoet.I18n.t('senderSetTaskDone')}
       link="admin.php?page=mailpoet-settings#/basics"
       order={1}
-      status={tasksStatus.senderSet}
+      isCompleted={tasksStatus.senderSet}
       isActive={currentTask === 'senderSet'}
     />,
   );
@@ -44,7 +44,7 @@ export function TaskList(): JSX.Element {
       titleCompleted={MailPoet.I18n.t('mssConnectedTaskDone')}
       link="admin.php?page=mailpoet-settings#/premium"
       order={2}
-      status={tasksStatus.mssConnected}
+      isCompleted={tasksStatus.mssConnected}
       isActive={currentTask === 'mssConnected'}
     />,
   );
@@ -56,7 +56,7 @@ export function TaskList(): JSX.Element {
         titleCompleted={MailPoet.I18n.t('wooSubscribersImportedTaskDone')}
         link="admin.php?page=mailpoet-woocommerce-setup"
         order={3}
-        status={tasksStatus.wooSubscribersImported}
+        isCompleted={tasksStatus.wooSubscribersImported}
         isActive={currentTask === 'wooSubscribersImported'}
       />,
     );
@@ -72,7 +72,7 @@ export function TaskList(): JSX.Element {
       }
       link="admin.php?page=mailpoet-import"
       order={canImportWooCommerceSubscribers ? 4 : 3}
-      status={tasksStatus.subscribersAdded}
+      isCompleted={tasksStatus.subscribersAdded}
       isActive={currentTask === 'subscribersAdded'}
     >
       {!tasksStatus.subscribersAdded ? (

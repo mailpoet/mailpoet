@@ -7,7 +7,7 @@ type Props = {
   titleCompleted?: string;
   link: string;
   order: number;
-  status: boolean;
+  isCompleted: boolean;
   isActive: boolean;
   children?: React.ReactNode;
 };
@@ -17,12 +17,12 @@ export function Task({
   titleCompleted = '',
   link,
   order,
-  status,
+  isCompleted,
   isActive,
   children = null,
 }: Props): JSX.Element {
   const className = classnames('mailpoet-task-list__task', {
-    'mailpoet-task-list__task--completed': status,
+    'mailpoet-task-list__task--completed': isCompleted,
     'mailpoet-task-list__task--active': isActive,
   });
   const handleTaskClick = () => {
@@ -38,12 +38,12 @@ export function Task({
     >
       <div className="mailpoet-task-list__task-before">
         <div className="mailpoet-task-list__task-icon">
-          {status ? <Icon icon={check} /> : order}
+          {isCompleted ? <Icon icon={check} /> : order}
         </div>
       </div>
       <div className="mailpoet-task-list__task-content">
         <div className="mailpoet-task-list__task-title">
-          {status && titleCompleted ? titleCompleted : title}
+          {isCompleted && titleCompleted ? titleCompleted : title}
         </div>
         {children}
       </div>
