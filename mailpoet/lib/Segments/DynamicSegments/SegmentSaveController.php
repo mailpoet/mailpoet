@@ -31,8 +31,8 @@ class SegmentSaveController {
    */
   public function save(array $data = []): SegmentEntity {
     $id = isset($data['id']) ? (int)$data['id'] : null;
-    $name = $data['name'] ?? '';
-    $description = $data['description'] ?? '';
+    $name = isset($data['name']) ? sanitize_text_field($data['name']) : '';
+    $description = isset($data['description']) ? sanitize_textarea_field($data['description']) : '';
     $filtersData = $this->filterDataMapper->map($data);
 
     return $this->segmentsRepository->createOrUpdate($name, $description, SegmentEntity::TYPE_DYNAMIC, $filtersData, $id);
