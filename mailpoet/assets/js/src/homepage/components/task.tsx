@@ -32,9 +32,11 @@ export function Task({
     <li
       className={className}
       role="row"
-      onClick={handleTaskClick}
-      tabIndex={0}
-      onKeyDown={(e) => e.key === 'Enter' && handleTaskClick()}
+      onClick={isCompleted ? undefined : handleTaskClick}
+      tabIndex={isCompleted ? undefined : 0}
+      onKeyDown={
+        isCompleted ? undefined : (e) => e.key === 'Enter' && handleTaskClick()
+      }
     >
       <div className="mailpoet-task-list__task-before">
         <div className="mailpoet-task-list__task-icon">
