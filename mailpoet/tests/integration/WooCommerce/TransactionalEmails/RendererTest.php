@@ -109,7 +109,8 @@ class RendererTest extends \MailPoetTest {
       new Preprocessor(
         $this->diContainer->get(\MailPoet\Newsletter\Renderer\Blocks\AbandonedCartContent::class),
         $this->diContainer->get(\MailPoet\Newsletter\Renderer\Blocks\AutomatedLatestContentBlock::class),
-        $wooPreprocessor
+        $wooPreprocessor,
+        $this->diContainer->get(\MailPoet\WooCommerce\CouponPreProcessor::class)
       ),
       $this->diContainer->get(\MailPoetVendor\CSS::class),
       $this->diContainer->get(ServicesChecker::class),
