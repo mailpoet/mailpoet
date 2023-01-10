@@ -5,7 +5,13 @@ import { Heading } from 'common/typography/heading/heading';
 import { MailPoet } from 'mailpoet';
 import { Button, Input } from 'common';
 
-function MSSStepSecondPart(): JSX.Element {
+type MSSStepSecondPartPropType = {
+  setStepPart: (newPart: string) => void;
+};
+
+function MSSStepSecondPart({
+  setStepPart,
+}: MSSStepSecondPartPropType): JSX.Element {
   const [verifyButtonDisabled, setVerifyButtonDisabled] = useState(true);
 
   const maybeEnableVerifyButton = useCallback((event) => {
@@ -62,7 +68,12 @@ function MSSStepSecondPart(): JSX.Element {
       <div className="mailpoet-gap" />
       <div className="mailpoet-gap" />
 
-      <Button type="button" isFullWidth isDisabled={verifyButtonDisabled}>
+      <Button
+        type="button"
+        isFullWidth
+        isDisabled={verifyButtonDisabled}
+        onClick={() => setStepPart('third')}
+      >
         {MailPoet.I18n.t('welcomeWizardMSSSecondPartButton')}
       </Button>
     </>

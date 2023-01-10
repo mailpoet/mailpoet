@@ -1,30 +1,33 @@
+import { useState } from 'react';
 import { MSSStepFirstPart } from './pitch_mss_step/first_part';
 import { MSSStepSecondPart } from './pitch_mss_step/second_part';
+import { MSSStepThirdPart } from './pitch_mss_step/third_part';
 
 type WelcomeWizardPitchMSSStepPropType = {
   subscribersCount: number;
-  next: () => void;
   finishWizard: (redirect_url?: string) => void;
 };
 
 function WelcomeWizardPitchMSSStep({
   subscribersCount,
-  next,
   finishWizard,
 }: WelcomeWizardPitchMSSStepPropType): JSX.Element {
-  const part = 'first';
+  const [stepPart, setStepPart] = useState('first');
 
-  if (part === 'first') {
-    return (
-      <MSSStepFirstPart
-        subscribersCount={subscribersCount}
-        next={next}
-        finishWizard={finishWizard}
-      />
-    );
+  switch (stepPart) {
+    case 'first':
+      return (
+        <MSSStepFirstPart
+          subscribersCount={subscribersCount}
+          finishWizard={finishWizard}
+          setStepPart={setStepPart}
+        />
+      );
+    case 'second':
+      return <MSSStepSecondPart setStepPart={setStepPart} />;
+    default:
+      return <MSSStepThirdPart />;
   }
-
-  return <MSSStepSecondPart />;
 }
 
 export { WelcomeWizardPitchMSSStep };

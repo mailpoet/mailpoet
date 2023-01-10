@@ -89,14 +89,14 @@ const mailpoetAccountUrl = MailPoet.MailPoetComUrlFactory.getPurchasePlanUrl(
 
 type MSSStepFirstPartPropType = {
   subscribersCount: number;
-  next: () => void;
   finishWizard: (redirect_url?: string) => void;
+  setStepPart: (newPart: string) => void;
 };
 
 function MSSStepFirstPart({
   subscribersCount,
-  next,
   finishWizard,
+  setStepPart,
 }: MSSStepFirstPartPropType): JSX.Element {
   return (
     <>
@@ -129,7 +129,7 @@ function MSSStepFirstPart({
         onClick={(event) => {
           event.preventDefault();
           window.open(mailpoetAccountUrl);
-          next();
+          setStepPart('second');
         }}
         iconEnd={<Icon icon={external} />}
       >
