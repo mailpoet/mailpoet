@@ -206,11 +206,11 @@ class Hooks {
     );
     $this->wp->addFilter(
       'the_content',
-      [$this->displayFormInWPContent, 'display']
+      [$this->displayFormInWPContent, 'contentDisplay']
     );
     $this->wp->addFilter(
       'woocommerce_product_loop_end',
-      [$this->displayFormInWPContent, 'display']
+      [$this->displayFormInWPContent, 'wooProductListDisplay']
     );
   }
 
