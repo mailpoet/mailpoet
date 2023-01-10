@@ -24,7 +24,12 @@ function WelcomeWizardPitchMSSStep({
         />
       );
     case 'second':
-      return <MSSStepSecondPart setStepPart={setStepPart} />;
+      return (
+        <MSSStepSecondPart
+          setStepPart={setStepPart}
+          finishWizard={finishWizard}
+        />
+      );
     default:
       return <MSSStepThirdPart finishWizard={finishWizard} />;
   }

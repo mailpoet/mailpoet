@@ -4,13 +4,16 @@ import ReactStringReplace from 'react-string-replace';
 import { Heading } from 'common/typography/heading/heading';
 import { MailPoet } from 'mailpoet';
 import { Button, Input } from 'common';
+import { OwnEmailServiceNote } from './own_email_service_note';
 
 type MSSStepSecondPartPropType = {
   setStepPart: (newPart: string) => void;
+  finishWizard: (redirect_url?: string) => void;
 };
 
 function MSSStepSecondPart({
   setStepPart,
+  finishWizard,
 }: MSSStepSecondPartPropType): JSX.Element {
   const [verifyButtonDisabled, setVerifyButtonDisabled] = useState(true);
 
@@ -76,6 +79,11 @@ function MSSStepSecondPart({
       >
         {MailPoet.I18n.t('welcomeWizardMSSSecondPartButton')}
       </Button>
+
+      <div className="mailpoet-gap" />
+      <div className="mailpoet-gap" />
+
+      <OwnEmailServiceNote finishWizard={finishWizard} />
     </>
   );
 }
