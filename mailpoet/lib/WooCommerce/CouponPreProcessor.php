@@ -3,37 +3,58 @@
 namespace MailPoet\WooCommerce;
 
 use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Renderer\Blocks\Coupon;
 
 class CouponPreProcessor {
-  public function processCoupons(NewsletterEntity $newsletter, array $block, bool $preview = false): array {
-    if ($preview) {
-      return $block;
-    }
 
-    $couponBlocks = $this->findCouponBlocks($block);
-    foreach ($couponBlocks as $couponBlock) {
-      if (empty($couponBlock['couponId'])) {
-        $couponBlock['couponId'] = $this->generateCoupon();
-      }
-    }
+  /** @var NewslettersRepository */
+  private $newslettersRepository;
 
-    return $block;
+  public function __construct(
+    NewslettersRepository $newslettersRepository
+  ) {
+    $this->newslettersRepository = $newslettersRepository;
   }
 
-  private function findCouponBlocks(array $block): array {
-    $coupons = [];
+  public function processCoupons(NewsletterEntity $newsletter, array $blocks, bool $preview = false): array {
+    if ($preview) {
+      return $blocks;
+    }
 
-    foreach ($block['blocks'] as $innerBlock) {
+    $generated = $this->ensureCouponForBlocks($blocks);
+    $body = $newsletter->getBody();
+
+    if ($generated && $body) {
+      $updatedBody = array_merge(
+        $body,
+        [
+          'content' => array_merge(
+            $body['content'],
+            ['blocks' => $blocks]
+          ),
+        ]
+      );
+      $newsletter->setBody($updatedBody);
+      $this->newslettersRepository->flush();
+    }
+    return $blocks;
+  }
+
+  private function ensureCouponForBlocks(array &$blocks): bool {
+
+    static $generated = false;
+    foreach ($blocks as &$innerBlock) {
       if (isset($innerBlock['blocks']) && !empty($innerBlock['blocks'])) {
-        $coupons = array_merge($coupons, $this->findCouponBlocks($innerBlock));
+        $this->ensureCouponForBlocks($innerBlock['blocks']);
       }
-      if ($innerBlock['type'] === Coupon::TYPE) {
-        $coupons[] = $innerBlock;
+      if (isset($innerBlock['type']) && $innerBlock['type'] === Coupon::TYPE && $this->shouldGenerateCoupon($innerBlock)) {
+        $innerBlock['couponId'] = $this->generateCoupon();
+        $generated = true;
       }
     }
 
-    return $coupons;
+    return $generated;
   }
 
   private function generateCoupon(string $couponCode = null): int {
@@ -56,5 +77,9 @@ class CouponPreProcessor {
       substr($chars, rand(0, $length - 8), 7),
       substr($chars, rand(0, $length - 5), 4)
     );
+  }
+
+  private function shouldGenerateCoupon(array $block): bool {
+    return empty($block['couponId']);
   }
 }

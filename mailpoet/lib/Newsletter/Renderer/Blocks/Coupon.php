@@ -4,11 +4,27 @@ namespace MailPoet\Newsletter\Renderer\Blocks;
 
 use MailPoet\Newsletter\Renderer\EscapeHelper as EHelper;
 use MailPoet\Newsletter\Renderer\StylesHelper;
+use MailPoet\WooCommerce\Helper;
 
 class Coupon {
   const TYPE = 'coupon';
 
+  const CODE_PLACEHOLDER = 'XXXX-XXXXXXX-XXXX';
+
+  /*** @var Helper */
+  private $helper;
+
+  public function __construct(
+    Helper $helper
+  ) {
+    $this->helper = $helper;
+  }
+
   public function render($element, $columnBaseWidth) {
+    $couponCode = self::CODE_PLACEHOLDER;
+    if (!empty($element['couponId'])) {
+      $couponCode = $this->helper->wcGetCouponCodeById($element['couponId']);
+    }
     $element['styles']['block']['width'] = $this->calculateWidth($element, $columnBaseWidth);
     $styles = 'display:inline-block;-webkit-text-size-adjust:none;mso-hide:all;text-decoration:none;text-align:center;' . StylesHelper::getBlockStyles($element, $exclude = ['textAlign']);
     $styles = EHelper::escapeHtmlStyleAttr($styles);
@@ -36,7 +52,7 @@ class Coupon {
                   </v:roundrect>
                   <![endif]-->
                   <!--[if !mso]><!-- -->
-                  <div class="mailpoet_coupon" style="' . $styles . '"> ' . EHelper::escapeHtmlText($element['code']) . '</div>
+                  <div class="mailpoet_coupon" style="' . $styles . '"> ' . EHelper::escapeHtmlText($couponCode) . '</div>
                   <!--<![endif]-->
                 </td>
               </tr>
