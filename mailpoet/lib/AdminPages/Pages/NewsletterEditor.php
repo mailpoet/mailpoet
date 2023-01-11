@@ -6,6 +6,7 @@ use MailPoet\AdminPages\PageRenderer;
 use MailPoet\Config\Menu;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Form\Util\CustomFonts;
+use MailPoet\Newsletter\Renderer\Blocks\Coupon;
 use MailPoet\Newsletter\Shortcodes\ShortcodesHelper;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\UserFlagsController;
@@ -108,7 +109,7 @@ class NewsletterEditor {
             'discount_types' => $discountTypes,
           ],
           'defaults' => [
-            'code' => 'XXXX-XXXXXXX-XXXX',
+            'code' => Coupon::CODE_PLACEHOLDER,
             'discountType' => current(array_keys($discountTypes)),
           ],
         ],
