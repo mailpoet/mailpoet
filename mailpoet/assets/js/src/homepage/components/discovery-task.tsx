@@ -1,5 +1,6 @@
 import { Icon } from '@wordpress/components';
 import { check } from '@wordpress/icons';
+import { MailPoet } from 'mailpoet';
 
 type Props = {
   title: string;
@@ -19,7 +20,16 @@ export function DiscoveryTask({
   isDone,
 }: Props): JSX.Element {
   const handleTaskClick = () => {
-    window.location.href = link;
+    MailPoet.trackEvent(
+      'Home Page Task',
+      {
+        ctaLabel: title,
+      },
+      { send_immediately: true },
+      () => {
+        window.location.href = link;
+      },
+    );
   };
   return (
     <li
