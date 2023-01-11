@@ -36,15 +36,17 @@ function MSSStepFirstPart({
       <p>{MailPoet.I18n.t('welcomeWizardMSSFirstPartSubtitle')}</p>
       <div className="mailpoet-gap" />
 
-      <List>
-        <li>{MailPoet.I18n.t('welcomeWizardMSSList1')}</li>
-        <li>{MailPoet.I18n.t('welcomeWizardMSSList2')}</li>
-        {subscribersCount < 1000 ? (
-          <li>{MailPoet.I18n.t('welcomeWizardMSSList3Free')}</li>
-        ) : (
-          <li>{MailPoet.I18n.t('welcomeWizardMSSList3Paid')}</li>
-        )}
-      </List>
+      <div className="mailpoet-welcome-wizard-mss-list">
+        <List>
+          <li>{MailPoet.I18n.t('welcomeWizardMSSList1')}</li>
+          <li>{MailPoet.I18n.t('welcomeWizardMSSList2')}</li>
+          {subscribersCount < 1000 ? (
+            <li>{MailPoet.I18n.t('welcomeWizardMSSList3Free')}</li>
+          ) : (
+            <li>{MailPoet.I18n.t('welcomeWizardMSSList3Paid')}</li>
+          )}
+        </List>
+      </div>
 
       <div className="mailpoet-gap" />
       <div className="mailpoet-gap" />
