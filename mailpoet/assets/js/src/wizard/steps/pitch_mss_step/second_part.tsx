@@ -40,7 +40,6 @@ function MSSStepSecondPart({
           (match, index) => (
             <a
               key={index}
-              className="mailpoet-link"
               target="_blank"
               rel="noreferrer"
               href="https://account.mailpoet.com/"
