@@ -29,12 +29,7 @@ function OwnEmailServiceNote({
           MailPoet.I18n.t('welcomeWizardMSSAdvancedUsers'),
           /\[link](.*?)\[\/link]/g,
           (match, index) => (
-            <a
-              key={index}
-              className="mailpoet-link"
-              onClick={openConfirmationModal}
-              href="#"
-            >
+            <a key={index} onClick={openConfirmationModal} href="#">
               {match}
             </a>
           ),
