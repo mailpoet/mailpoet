@@ -7,7 +7,7 @@ use MailPoet\Migrator\Migration;
 use MailPoet\Settings\SettingsController;
 use MailPoetVendor\Doctrine\DBAL\Connection;
 
-class Migration_20221124_131445 extends Migration {
+class Migration_20230111_120000 extends Migration {
   public function run(): void {
     $segmentsTable = $this->getTableName(SegmentEntity::class);
     $columnName = 'display_in_manage_subscription_page';

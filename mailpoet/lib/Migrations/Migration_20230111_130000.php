@@ -5,7 +5,7 @@ namespace MailPoet\Migrations;
 use MailPoet\Entities\StatisticsUnsubscribeEntity;
 use MailPoet\Migrator\Migration;
 
-class Migration_20221124_160356 extends Migration {
+class Migration_20230111_130000 extends Migration {
   public function run(): void {
     $tableName = $this->getTableName(StatisticsUnsubscribeEntity::class);
     if (!$this->columnExists($tableName, 'method')) {
