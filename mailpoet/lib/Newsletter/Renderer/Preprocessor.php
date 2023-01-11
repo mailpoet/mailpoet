@@ -53,7 +53,9 @@ class Preprocessor {
       return $content;
     }
     $blocks = [];
-    foreach ($content['blocks'] as $block) {
+    $contentBlocks = $content['blocks'];
+    $contentBlocks = $this->couponPreProcessor->processCoupons($newsletter, $contentBlocks, $preview);
+    foreach ($contentBlocks as $block) {
       $processedBlock = $this->processBlock($newsletter, $block, $preview, $sendingTask);
       if (!empty($processedBlock)) {
         $blocks = array_merge($blocks, $processedBlock);
@@ -73,8 +75,6 @@ class Preprocessor {
         return $this->wooCommerceContentPreprocessor->preprocessHeader();
       case 'woocommerceContent':
         return $this->wooCommerceContentPreprocessor->preprocessContent();
-      default:
-        $block = $this->couponPreProcessor->processCoupons($newsletter, $block, $preview);
     }
     return [$block];
   }
