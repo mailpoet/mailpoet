@@ -60,7 +60,7 @@ class CouponPreProcessor {
   private function addOrUpdateCoupon(array $couponBlock, NewsletterEntity $newsletter): int {
     $coupon = new \WC_Coupon($couponBlock['couponId'] ?? '');
     if (empty($couponBlock['couponId'])) {
-      $code = $couponBlock['code'] ?? $this->generateRandomCode();
+      $code = $couponBlock['code'] && $couponBlock['code'] !== Coupon::CODE_PLACEHOLDER ? $couponBlock['code'] : $this->generateRandomCode();
       $coupon->set_code($code);
     }
     $coupon->set_discount_type($couponBlock['discountType']);
