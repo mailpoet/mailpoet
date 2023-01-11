@@ -2,6 +2,7 @@
 
 namespace MailPoet\Test\Acceptance;
 
+use Facebook\WebDriver\WebDriverKeys;
 use MailPoet\Test\DataFactories\Settings;
 
 class LandingpageBasicsCest {
@@ -30,6 +31,8 @@ class LandingpageBasicsCest {
     $settings->withWelcomeWizard();
 
     $i->click('#deactivate-mailpoet');
+    $i->wantTo('Close the poll about MailPoet deactivation.');
+    $i->pressKey('body', WebDriverKeys::ESCAPE);
     $i->waitForText('Plugin deactivated.');
     $i->click('#activate-mailpoet');
     $i->waitForText('Better email — without leaving WordPress');
