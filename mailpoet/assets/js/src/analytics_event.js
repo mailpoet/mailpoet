@@ -18,7 +18,7 @@ import _ from 'underscore';
  */
 var eventsCache = [];
 
-function track(name, data = []) {
+function track(name, data = [], options = {}, callback = null) {
   let trackedData = data;
 
   if (typeof window.mixpanel.track !== 'function') {
@@ -33,7 +33,7 @@ function track(name, data = []) {
     trackedData['MailPoet Premium version'] = window.mailpoet_premium_version;
   }
 
-  window.mixpanel.track(name, trackedData);
+  window.mixpanel.track(name, trackedData, options, callback);
 }
 
 function exportMixpanel() {
@@ -45,24 +45,37 @@ function exportMixpanel() {
   ) {
     window.MailPoet.trackEvent = track;
   } else {
-    window.MailPoet.trackEvent = function emptyFunction() {};
+    window.MailPoet.trackEvent = function emptyFunction(
+      name,
+      data,
+      options,
+      callback,
+    ) {
+      if (typeof callback === 'function') {
+        callback();
+      }
+    };
   }
 }
 
 function trackCachedEvents() {
   eventsCache.forEach(function trackIfEnabled(event) {
     if (window.mailpoet_analytics_enabled || event.forced) {
-      track(event.name, event.data);
+      track(event.name, event.data, event.options);
     }
   });
 }
 
-function cacheEvent(forced, name, data) {
+function cacheEvent(forced, name, data, options, callback) {
   eventsCache.push({
     name: name,
     data: data,
+    options: options,
     forced: forced,
   });
+  if (typeof callback === 'function') {
+    callback();
+  }
 }
 
 function initializeMixpanelWhenLoaded() {
