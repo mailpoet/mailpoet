@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useCallback, useState } from 'react';
+import { Dispatch, useCallback, useState } from 'react';
 import { __ } from '@wordpress/i18n';
 import { Button } from '@wordpress/components';
 import { Hooks } from 'wp-js-hooks';
@@ -9,21 +9,19 @@ import { FromScratchHookType } from '../../types/filters';
 
 type FromScratchPremiumModalProps = {
   showModal: boolean;
-  setShowModal: Dispatch<SetStateAction<boolean>>;
+  onClose: () => void;
 };
 
 function FromScratchPremiumModal({
   showModal,
-  setShowModal,
+  onClose,
 }: FromScratchPremiumModalProps): JSX.Element | null {
   if (!showModal) {
     return null;
   }
   return (
     <PremiumModal
-      onRequestClose={() => {
-        setShowModal(false);
-      }}
+      onRequestClose={onClose}
       tracking={{
         utm_medium: 'upsell_modal',
         utm_campaign: 'create_automation_from_scratch',
@@ -47,11 +45,17 @@ function fromScratchHook(callback: () => void, errorHandler: Dispatch<string>) {
 export function FromScratchButton(): JSX.Element {
   const [showModal, setShowModal] = useState(false);
   const [error, errorHandler] = useState(null);
+  const [isBusy, setIsBusy] = useState(false);
   const onClickScratchButton = useCallback(() => {
     fromScratchHook(() => {
       setShowModal(true);
     }, errorHandler);
   }, []);
+
+  const premiumClose = () => {
+    setShowModal(false);
+    setIsBusy(false);
+  };
   return (
     <>
       {error && (
@@ -59,25 +63,37 @@ export function FromScratchButton(): JSX.Element {
           <p>{error}</p>
         </Notice>
       )}
-      <Button variant="secondary" onClick={() => onClickScratchButton()}>
+      <Button
+        variant="secondary"
+        isBusy={isBusy}
+        disabled={isBusy}
+        onClick={() => {
+          setIsBusy(true);
+          onClickScratchButton();
+        }}
+      >
         {__('From scratch', 'mailpoet')}
       </Button>
-      <FromScratchPremiumModal
-        showModal={showModal}
-        setShowModal={setShowModal}
-      />
+      <FromScratchPremiumModal showModal={showModal} onClose={premiumClose} />
     </>
   );
 }
 
 export function FromScratchListItem(): JSX.Element {
   const [showModal, setShowModal] = useState(false);
+  const [isBusy, setIsBusy] = useState(false);
   const [error, errorHandler] = useState(null);
   const onClickScratchButton = useCallback(() => {
     fromScratchHook(() => {
       setShowModal(true);
     }, errorHandler);
   }, []);
+
+  const premiumClose = () => {
+    setShowModal(false);
+    setIsBusy(false);
+  };
+
   return (
     <li className="mailpoet-automation-template-list-item mailpoet-automation-from-scratch">
       {error && (
@@ -85,14 +101,18 @@ export function FromScratchListItem(): JSX.Element {
           <p>{error}</p>
         </Notice>
       )}
-      <Button onClick={() => onClickScratchButton()}>
+      <Button
+        isBusy={isBusy}
+        disabled={isBusy}
+        onClick={() => {
+          setIsBusy(true);
+          onClickScratchButton();
+        }}
+      >
         <Icon width="50px" height="50px" icon={plusCircleFilled} />
         {__('Create from scratch', 'mailpoet')}
       </Button>
-      <FromScratchPremiumModal
-        showModal={showModal}
-        setShowModal={setShowModal}
-      />
+      <FromScratchPremiumModal showModal={showModal} onClose={premiumClose} />
     </li>
   );
 }
