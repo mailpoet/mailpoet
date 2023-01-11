@@ -22,7 +22,7 @@ class CouponPreProcessor {
       return $blocks;
     }
 
-    $generated = $this->ensureCouponForBlocks($blocks);
+    $generated = $this->ensureCouponForBlocks($blocks, $newsletter);
     $body = $newsletter->getBody();
 
     if ($generated && $body) {
@@ -41,15 +41,15 @@ class CouponPreProcessor {
     return $blocks;
   }
 
-  private function ensureCouponForBlocks(array &$blocks): bool {
+  private function ensureCouponForBlocks(array &$blocks, NewsletterEntity $newsletter): bool {
 
     static $generated = false;
     foreach ($blocks as &$innerBlock) {
       if (isset($innerBlock['blocks']) && !empty($innerBlock['blocks'])) {
-        $this->ensureCouponForBlocks($innerBlock['blocks']);
+        $this->ensureCouponForBlocks($innerBlock['blocks'], $newsletter);
       }
       if (isset($innerBlock['type']) && $innerBlock['type'] === Coupon::TYPE && $this->shouldGenerateCoupon($innerBlock)) {
-        $innerBlock['couponId'] = $this->generateCoupon();
+        $innerBlock['couponId'] = $this->generateCoupon($innerBlock, $newsletter);
         $generated = true;
       }
     }
@@ -57,10 +57,14 @@ class CouponPreProcessor {
     return $generated;
   }
 
-  private function generateCoupon(string $couponCode = null): int {
+  private function generateCoupon(array $couponBlock, NewsletterEntity $newsletter): int {
     $coupon = new \WC_Coupon();
-    $code = $couponCode ?? $this->generateRandomCode();
+    $code = $couponBlock['code'] ?? $this->generateRandomCode();
     $coupon->set_code($code);
+    $coupon->set_discount_type($couponBlock['discountType']);
+    $coupon->set_amount($couponBlock['amount']);
+    // translators: %s is newsletter subject.
+    $coupon->set_description(sprintf(_x('Auto Generated coupon by MailPoet for email: %s', 'Coupon block code generation', 'mailpoet'), $newsletter->getSubject()));
 
     return $coupon->save();
   }
