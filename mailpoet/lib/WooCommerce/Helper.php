@@ -158,4 +158,8 @@ class Helper {
   public function wcGetCouponTypes(): array {
     return wc_get_coupon_types();
   }
+
+  public function wcGetCouponCodeById(int $id): string {
+    return wc_get_coupon_code_by_id($id);
+  }
 }
