@@ -5,6 +5,10 @@
 .components-panel__body-title.mailpoet-automation-panel-plain-body-title {
   display: grid;
   grid-template-columns: 1fr auto;
+
+  &:hover {
+    background: none;
+  }
 }
 
 .mailpoet-automation-panel-plain-body-title-text {
