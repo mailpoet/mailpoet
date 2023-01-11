@@ -23,3 +23,11 @@
   transform: scale(-1, -1);
   transform-origin: center 12.5px;
 }
+
+.mailpoet-option-button-opener.is-busy {
+  animation: components-button__busy-animation 2500ms infinite linear;
+  background-color: var(--wp-admin-theme-color);
+  background-image: linear-gradient(-45deg, var(--wp-admin-theme-color) 33%, var(--wp-admin-theme-color-darker-20) 33%, var(--wp-admin-theme-color-darker-20) 70%, var(--wp-admin-theme-color) 70%);
+  background-size: 100px 100%;
+  border-color: var(--wp-admin-theme-color);
+}
