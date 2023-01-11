@@ -48,19 +48,21 @@ class CouponPreProcessor {
       if (isset($innerBlock['blocks']) && !empty($innerBlock['blocks'])) {
         $this->ensureCouponForBlocks($innerBlock['blocks'], $newsletter);
       }
-      if (isset($innerBlock['type']) && $innerBlock['type'] === Coupon::TYPE && $this->shouldGenerateCoupon($innerBlock)) {
-        $innerBlock['couponId'] = $this->generateCoupon($innerBlock, $newsletter);
-        $generated = true;
+      if (isset($innerBlock['type']) && $innerBlock['type'] === Coupon::TYPE) {
+        $innerBlock['couponId'] = $this->addOrUpdateCoupon($innerBlock, $newsletter);
+        $generated = $this->shouldGenerateCoupon($innerBlock);
       }
     }
 
     return $generated;
   }
 
-  private function generateCoupon(array $couponBlock, NewsletterEntity $newsletter): int {
-    $coupon = new \WC_Coupon();
-    $code = $couponBlock['code'] ?? $this->generateRandomCode();
-    $coupon->set_code($code);
+  private function addOrUpdateCoupon(array $couponBlock, NewsletterEntity $newsletter): int {
+    $coupon = new \WC_Coupon($couponBlock['couponId'] ?? '');
+    if (empty($couponBlock['couponId'])) {
+      $code = $couponBlock['code'] ?? $this->generateRandomCode();
+      $coupon->set_code($code);
+    }
     $coupon->set_discount_type($couponBlock['discountType']);
     $coupon->set_amount($couponBlock['amount']);
     // translators: %s is newsletter subject.
