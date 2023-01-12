@@ -66,6 +66,7 @@ class SettingsController {
         ],
         'signup_confirmation' => [
           'enabled' => true,
+          'use_mailpoet_editor' => true,
           'subject' => __('Confirm your subscription to [site:title]', 'mailpoet'),
           'body' => __("Hello [subscriber:firstname | default:there],\n\nYou've received this message because you subscribed to [site:title]. Please confirm your subscription to receive emails from us:\n\n[activation_link]Click here to confirm your subscription.[/activation_link] \n\nIf you received this email by mistake, simply delete it. You won't receive any more emails from us unless you confirm your subscription using the link above.\n\nThank you,\n\n<a target=\"_blank\" href=\"[site:homepage_link]\">[site:title]</a>", 'mailpoet'),
         ],
