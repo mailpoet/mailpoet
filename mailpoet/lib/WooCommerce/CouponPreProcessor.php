@@ -5,6 +5,7 @@ namespace MailPoet\WooCommerce;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Renderer\Blocks\Coupon;
+use MailPoet\WP\DateTime;
 
 class CouponPreProcessor {
 
@@ -65,6 +66,8 @@ class CouponPreProcessor {
     }
     $coupon->set_discount_type($couponBlock['discountType']);
     $coupon->set_amount($couponBlock['amount']);
+    $expiration = (new DateTime())->getCurrentDateTime()->modify("+{$couponBlock['expiryDay']} day")->getTimestamp();
+    $coupon->set_date_expires($expiration);
     // translators: %s is newsletter subject.
     $coupon->set_description(sprintf(_x('Auto Generated coupon by MailPoet for email: %s', 'Coupon block code generation', 'mailpoet'), $newsletter->getSubject()));
 
