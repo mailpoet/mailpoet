@@ -72,6 +72,11 @@ class Settings {
     return $this;
   }
 
+  public function withConfirmationVisualEditorDisabled() {
+    $this->settings->set('signup_confirmation.use_mailpoet_editor', false);
+    return $this;
+  }
+
   public function withTrackingDisabled() {
     $this->settings->set('tracking.level', 'basic');
     return $this;
