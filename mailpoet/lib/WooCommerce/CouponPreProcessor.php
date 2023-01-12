@@ -26,7 +26,7 @@ class CouponPreProcessor {
     $generated = $this->ensureCouponForBlocks($blocks, $newsletter);
     $body = $newsletter->getBody();
 
-    if ($generated && $body) {
+    if ($generated && $body && $this->shouldPersist($newsletter)) {
       $updatedBody = array_merge(
         $body,
         [
@@ -90,5 +90,12 @@ class CouponPreProcessor {
 
   private function shouldGenerateCoupon(array $block): bool {
     return empty($block['couponId']);
+  }
+  
+  /**
+   * For some renders/send outs the coupon id shouldn't be persisted along the coupon block
+   */
+  private function shouldPersist(NewsletterEntity $newsletter): bool {
+    return $newsletter->getType() !== NewsletterEntity::TYPE_AUTOMATIC;
   }
 }
