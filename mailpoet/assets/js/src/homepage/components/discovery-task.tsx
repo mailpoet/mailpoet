@@ -1,6 +1,7 @@
 import { Icon } from '@wordpress/components';
 import { check } from '@wordpress/icons';
 import { MailPoet } from 'mailpoet';
+import classnames from 'classnames';
 
 type Props = {
   title: string;
@@ -33,11 +34,15 @@ export function DiscoveryTask({
   };
   return (
     <li
-      className="mailpoet-product-discovery__task"
+      className={classnames('mailpoet-product-discovery__task', {
+        'mailpoet-product-discovery__task--completed': isDone,
+      })}
       role="row"
-      onClick={handleTaskClick}
-      tabIndex={0}
-      onKeyDown={(e) => e.key === 'Enter' && handleTaskClick()}
+      onClick={isDone ? undefined : handleTaskClick}
+      tabIndex={isDone ? undefined : 0}
+      onKeyDown={
+        isDone ? undefined : (e) => e.key === 'Enter' && handleTaskClick()
+      }
     >
       <img src={imgSrc} alt={title} width={124} height={72} />
       <div className="mailpoet-product-discovery__task-content">
