@@ -172,23 +172,23 @@ interface Window {
   };
   mailpoet_welcome_wizard_url: string;
   mailpoet_homepage_data: {
-    task_list_dismissed: boolean;
-    product_discovery_dismissed: boolean;
-    task_list_status: {
+    taskListDismissed: boolean;
+    productDiscoveryDismissed: boolean;
+    taskListStatus: {
       senderSet: boolean;
       mssConnected: boolean;
       subscribersAdded: boolean;
       wooSubscribersImported: boolean;
     } | null;
-    product_discovery_status: {
+    productDiscoveryStatus: {
       setUpWelcomeCampaign: boolean;
       addSubscriptionForm: boolean;
       sendFirstNewsletter: boolean;
       setUpAbandonedCartEmail: boolean;
       brandWooEmails: boolean;
     } | null;
-    woo_customers_count: number;
-    subscribers_count: number;
+    wooCustomersCount: number;
+    subscribersCount: number;
   };
   templates?: Record<string, string>;
   is_wc_active?: boolean;

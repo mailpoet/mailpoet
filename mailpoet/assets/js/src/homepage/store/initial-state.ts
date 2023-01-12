@@ -4,16 +4,16 @@ import { State } from './types';
 export function getInitialState(): State {
   return {
     taskList: {
-      isTaskListHidden: window.mailpoet_homepage_data.task_list_dismissed,
-      tasksStatus: window.mailpoet_homepage_data.task_list_status,
+      isTaskListHidden: window.mailpoet_homepage_data.taskListDismissed,
+      tasksStatus: window.mailpoet_homepage_data.taskListStatus,
       canImportWooCommerceSubscribers:
-        window.mailpoet_homepage_data.woo_customers_count > 0,
+        window.mailpoet_homepage_data.wooCustomersCount > 0,
       hasImportedSubscribers:
-        window.mailpoet_homepage_data.subscribers_count > 10,
+        window.mailpoet_homepage_data.subscribersCount > 10,
     },
     productDiscovery: {
-      isHidden: window.mailpoet_homepage_data.product_discovery_dismissed,
-      tasksStatus: window.mailpoet_homepage_data.product_discovery_status,
+      isHidden: window.mailpoet_homepage_data.productDiscoveryDismissed,
+      tasksStatus: window.mailpoet_homepage_data.productDiscoveryStatus,
     },
     isWooCommerceActive: MailPoet.isWoocommerceActive,
   };

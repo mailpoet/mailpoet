@@ -56,12 +56,12 @@ class HomepageDataController {
     $showTaskList = !$this->settingsController->get('homepage.task_list_dismissed', false);
     $showProductDiscovery = !$this->settingsController->get('homepage.product_discovery_dismissed', false);
     return [
-      'task_list_dismissed' => !$showTaskList,
-      'product_discovery_dismissed' => !$showProductDiscovery,
-      'task_list_status' => $showTaskList ? $this->getTaskListStatus($subscribersCount, $formsCount) : null,
-      'product_discovery_status' => $showProductDiscovery ? $this->getProductDiscoveryStatus($formsCount) : null,
-      'woo_customers_count' => $this->wooCommerceHelper->getCustomersCount(),
-      'subscribers_count' => $subscribersCount,
+      'taskListDismissed' => !$showTaskList,
+      'productDiscoveryDismissed' => !$showProductDiscovery,
+      'taskListStatus' => $showTaskList ? $this->getTaskListStatus($subscribersCount, $formsCount) : null,
+      'productDiscoveryStatus' => $showProductDiscovery ? $this->getProductDiscoveryStatus($formsCount) : null,
+      'wooCustomersCount' => $this->wooCommerceHelper->getCustomersCount(),
+      'subscribersCount' => $subscribersCount,
     ];
   }
 
