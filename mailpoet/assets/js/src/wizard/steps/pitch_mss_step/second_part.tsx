@@ -1,3 +1,4 @@
+import { useHistory, useParams } from 'react-router-dom';
 import { useState } from '@wordpress/element';
 import { useCallback } from 'react';
 import ReactStringReplace from 'react-string-replace';
@@ -7,15 +8,15 @@ import { Button, Input } from 'common';
 import { OwnEmailServiceNote } from './own_email_service_note';
 
 type MSSStepSecondPartPropType = {
-  setStepPart: (newPart: string) => void;
   finishWizard: (redirect_url?: string) => void;
 };
 
 function MSSStepSecondPart({
-  setStepPart,
   finishWizard,
 }: MSSStepSecondPartPropType): JSX.Element {
   const [verifyButtonDisabled, setVerifyButtonDisabled] = useState(true);
+  const history = useHistory();
+  const { step } = useParams<{ step: string }>();
 
   const maybeEnableVerifyButton = useCallback((event) => {
     if (event.target.value) {
@@ -74,7 +75,7 @@ function MSSStepSecondPart({
         type="button"
         isFullWidth
         isDisabled={verifyButtonDisabled}
-        onClick={() => setStepPart('third')}
+        onClick={() => history.push(`/steps/${step}/part/3`)}
       >
         {MailPoet.I18n.t('welcomeWizardMSSSecondPartButton')}
       </Button>
