@@ -13,6 +13,7 @@ class EditSignUpConfirmationEmailCest {
     $settings = new Settings();
     $settings->withSender('Confirmation Test From', 'from-confirmation-test@example.com');
     $settings->withConfirmationEmailEnabled();
+    $settings->withConfirmationVisualEditorDisabled();
     $forms = new Form();
     $forms->withDefaultSuccessMessage();
     $confirmationEmailSubject = 'Confirmation email subject';
