@@ -10,7 +10,6 @@ use MailPoet\Cron\Workers\Bounce as BounceWorker;
 use MailPoet\Cron\Workers\KeyCheck\PremiumKeyCheck as PremiumKeyCheckWorker;
 use MailPoet\Cron\Workers\KeyCheck\SendingServiceKeyCheck as SendingServiceKeyCheckWorker;
 use MailPoet\Cron\Workers\Scheduler as SchedulerWorker;
-use MailPoet\Cron\Workers\SendingQueue\Migration as MigrationWorker;
 use MailPoet\Cron\Workers\SendingQueue\SendingQueue as SendingQueueWorker;
 use MailPoet\Cron\Workers\SubscribersStatsReport;
 use MailPoet\Cron\Workers\WorkersFactory;
@@ -120,8 +119,7 @@ class WordPress {
     }
 
     return (
-      $this->isMigrationActive()
-      || $this->isSendingQueueActive()
+      $this->isSendingQueueActive()
       || $this->isBounceActive()
       || $this->isSendingServiceKeyCheckActive()
       || $this->isPremiumKeyCheckActive()
@@ -136,26 +134,6 @@ class WordPress {
     if ($cronDaemon) {
       $this->cronHelper->deactivateDaemon($cronDaemon);
     }
-  }
-
-  private function isMigrationActive(): bool {
-    $migrationDisabled = $this->settings->get('cron_trigger.method') === 'none';
-    $migrationDueTasks = $this->getTasksCount([
-      'type' => MigrationWorker::TASK_TYPE,
-      'scheduled_in' => [self::SCHEDULED_IN_THE_PAST],
-      'status' => ['null', ScheduledTaskEntity::STATUS_SCHEDULED],
-    ]);
-    $migrationCompletedTasks = $this->getTasksCount([
-      'type' => MigrationWorker::TASK_TYPE,
-      'scheduled_in' => [self::SCHEDULED_IN_THE_PAST, self::SCHEDULED_IN_THE_FUTURE],
-      'status' => [ScheduledTaskEntity::STATUS_COMPLETED],
-    ]);
-    $migrationFutureTasks = $this->getTasksCount([
-      'type' => MigrationWorker::TASK_TYPE,
-      'scheduled_in' => [self::SCHEDULED_IN_THE_FUTURE],
-      'status' => [ScheduledTaskEntity::STATUS_SCHEDULED],
-    ]);
-    return !$migrationDisabled && ($migrationDueTasks || (!$migrationCompletedTasks && !$migrationFutureTasks));
   }
 
   private function isSendingQueueActive(): bool {
@@ -256,7 +234,7 @@ class WordPress {
         count(*) AS count,
         CASE WHEN scheduled_at <= :now THEN :past ELSE :future END AS scheduled_in
       FROM $scheduledTasksTableName
-      WHERE deleted_at IS NULL AND (status != :statusCompleted OR status IS NULL OR `type` = :typeMigration)
+      WHERE deleted_at IS NULL AND (status != :statusCompleted OR status IS NULL)
       GROUP BY type, status, scheduled_in";
 
     $stmt = $this->entityManager->getConnection()->prepare($sql);
@@ -264,7 +242,6 @@ class WordPress {
     $stmt->bindValue('past', self::SCHEDULED_IN_THE_PAST);
     $stmt->bindValue('future', self::SCHEDULED_IN_THE_FUTURE);
     $stmt->bindValue('statusCompleted', ScheduledTaskEntity::STATUS_COMPLETED);
-    $stmt->bindValue('typeMigration', MigrationWorker::TASK_TYPE);
     $rows = $stmt->executeQuery()->fetchAllAssociative();
 
     $this->tasksCounts = [];
