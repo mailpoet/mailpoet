@@ -9,7 +9,6 @@ use MailPoet\Cron\Workers\Bounce as BounceWorker;
 use MailPoet\Cron\Workers\InactiveSubscribers;
 use MailPoet\Cron\Workers\NewsletterTemplateThumbnails;
 use MailPoet\Cron\Workers\ReEngagementEmailsScheduler;
-use MailPoet\Cron\Workers\SendingQueue\Migration as MigrationWorker;
 use MailPoet\Cron\Workers\StatsNotifications\AutomatedEmails;
 use MailPoet\Cron\Workers\StatsNotifications\Worker as StatsNotificationsWorker;
 use MailPoet\Cron\Workers\SubscriberLinkTokens;
@@ -140,19 +139,7 @@ class WordPressTest extends \MailPoetTest {
     expect($this->wordpressTrigger->checkExecutionRequirements())->false();
   }
 
-  public function testItExecutesWhenMigrationIsNotPresent() {
-    $this->enableMigration();
-    expect($this->wordpressTrigger->checkExecutionRequirements())->true();
-  }
-
-  public function testItExecutesWhenMigrationIsDue() {
-    $this->enableMigration();
-    $this->addScheduledTask(MigrationWorker::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED);
-    expect($this->wordpressTrigger->checkExecutionRequirements())->true();
-  }
-
   public function testItExecutesWhenAuthorizedEmailsCheckIsDue() {
-    $this->enableMigration();
     $this->addScheduledTask(AuthorizedSendingEmailsCheck::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED);
     expect($this->wordpressTrigger->checkExecutionRequirements())->true();
   }
@@ -160,12 +147,6 @@ class WordPressTest extends \MailPoetTest {
   public function testItExecutesWhenBeamerTaskIsDue() {
     $this->addScheduledTask(Beamer::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED);
     expect($this->wordpressTrigger->checkExecutionRequirements())->true();
-  }
-
-  public function testItDoesNotExecuteWhenMigrationIsCompleted() {
-    $this->enableMigration();
-    $this->addScheduledTask(MigrationWorker::TASK_TYPE, ScheduledTaskEntity::STATUS_COMPLETED);
-    expect($this->wordpressTrigger->checkExecutionRequirements())->false();
   }
 
   public function testItExecutesWhenBounceIsActive() {
@@ -361,14 +342,6 @@ class WordPressTest extends \MailPoetTest {
     $task->setScheduledAt($scheduledAt);
     $this->entityManager->persist($task);
     $this->entityManager->flush();
-  }
-
-  private function enableMigration() {
-    // Migration can be triggered only if cron execution method is selected
-    // and is not "none"
-    $this->settings->set('cron_trigger', [
-      'method' => 'WordPress',
-    ]);
   }
 
   public function _after() {
