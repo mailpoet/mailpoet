@@ -234,7 +234,6 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Cron\Workers\StatsNotifications\Scheduler::class);
     $container->autowire(\MailPoet\Cron\Workers\StatsNotifications\StatsNotificationsRepository::class)->setPublic(true);
     $container->autowire(\MailPoet\Cron\Workers\StatsNotifications\NewsletterLinkRepository::class)->setPublic(true);
-    $container->autowire(\MailPoet\Cron\Workers\SendingQueue\Migration::class)->setPublic(true);
     $container->autowire(\MailPoet\Cron\Workers\SendingQueue\Tasks\Mailer::class)->setPublic(true);
     // Cron workers
     $container->autowire(\MailPoet\Cron\Workers\Scheduler::class)->setPublic(true);
@@ -245,7 +244,6 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Cron\Workers\KeyCheck\SendingServiceKeyCheck::class)->setPublic(true);
     $container->autowire(\MailPoet\Cron\Workers\KeyCheck\PremiumKeyCheck::class)->setPublic(true);
     $container->autowire(\MailPoet\Cron\Workers\Bounce::class)->setPublic(true);
-    $container->autowire(\MailPoet\Cron\Workers\SendingQueue\Migration::class)->setPublic(true);
     $container->autowire(\MailPoet\Cron\Workers\WooCommerceSync::class)->setPublic(true);
     $container->autowire(\MailPoet\Cron\Workers\ExportFilesCleanup::class)->setPublic(true);
     $container->autowire(\MailPoet\Cron\Workers\Beamer::class)->setPublic(true);

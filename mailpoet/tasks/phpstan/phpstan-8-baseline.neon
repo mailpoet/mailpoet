@@ -186,21 +186,6 @@ parameters:
 			path: ../../lib/Cron/Workers/Beamer.php
 
 		-
-			message: "#^Cannot access offset 'processed' on mixed\\.$#"
-			count: 2
-			path: ../../lib/Cron/Workers/SendingQueue/Migration.php
-
-		-
-			message: "#^Cannot access offset 'to_process' on mixed\\.$#"
-			count: 2
-			path: ../../lib/Cron/Workers/SendingQueue/Migration.php
-
-		-
-			message: "#^Parameter \\#1 \\$array of function array_slice expects array, mixed given\\.$#"
-			count: 2
-			path: ../../lib/Cron/Workers/SendingQueue/Migration.php
-
-		-
 			message: "#^Method MailPoet\\\\Cron\\\\Workers\\\\SendingQueue\\\\SendingThrottlingHandler\\:\\:getMaxBatchSize\\(\\) should return int but returns mixed\\.$#"
 			count: 1
 			path: ../../lib/Cron/Workers/SendingQueue/SendingThrottlingHandler.php

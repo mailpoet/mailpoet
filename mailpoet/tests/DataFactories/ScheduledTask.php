@@ -7,7 +7,6 @@ use MailPoet\Cron\Workers\Bounce;
 use MailPoet\Cron\Workers\InactiveSubscribers;
 use MailPoet\Cron\Workers\KeyCheck\PremiumKeyCheck;
 use MailPoet\Cron\Workers\KeyCheck\SendingServiceKeyCheck;
-use MailPoet\Cron\Workers\SendingQueue\Migration;
 use MailPoet\Cron\Workers\SubscriberLinkTokens;
 use MailPoet\Cron\Workers\SubscribersStatsReport;
 use MailPoet\Cron\Workers\UnsubscribeTokens;
@@ -80,7 +79,6 @@ class ScheduledTask {
     $this->scheduleTask(SubscriberLinkTokens::TASK_TYPE, $datetime);
     $this->scheduleTask(Beamer::TASK_TYPE, $datetime);
     $this->scheduleTask(InactiveSubscribers::TASK_TYPE, $datetime);
-    $this->scheduleTask(Migration::TASK_TYPE, $datetime);
     $this->scheduleTask(PremiumKeyCheck::TASK_TYPE, $datetime);
     $this->scheduleTask(SendingServiceKeyCheck::TASK_TYPE, $datetime);
     $this->scheduleTask(Bounce::TASK_TYPE, $datetime);
