@@ -2,7 +2,7 @@
 
 namespace MailPoet\Newsletter\Sending;
 
-use MailPoet\Cron\Workers\SendingQueue\Migration;
+use MailPoet\Cron\Workers\Bounce;
 use MailPoet\Cron\Workers\SendingQueue\SendingQueue as SendingQueueWorker;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
@@ -115,7 +115,7 @@ class ScheduledTasksRepositoryTest extends \MailPoetTest {
 
   public function testItCanFetchBasicTasksData() {
     $this->scheduledTaskFactory->create(SendingTask::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED, Carbon::now()->addDay());
-    $this->scheduledTaskFactory->create(Migration::TASK_TYPE, ScheduledTaskEntity::VIRTUAL_STATUS_RUNNING, Carbon::now()->addDay());
+    $this->scheduledTaskFactory->create(Bounce::TASK_TYPE, ScheduledTaskEntity::VIRTUAL_STATUS_RUNNING, Carbon::now()->addDay());
     $data = $this->repository->getLatestTasks();
     expect(count($data))->equals(2);
     $ids = array_map(function ($d){ return $d->getId();
@@ -127,7 +127,7 @@ class ScheduledTasksRepositoryTest extends \MailPoetTest {
     $this->assertContains(1, $ids);
     $this->assertContains(2, $ids);
     $this->assertContains(SendingTask::TASK_TYPE, $types);
-    $this->assertContains(Migration::TASK_TYPE, $types);
+    $this->assertContains(Bounce::TASK_TYPE, $types);
     expect(is_int($data[1]->getPriority()))->true();
     expect($data[1]->getUpdatedAt())->isInstanceOf(\DateTimeInterface::class);
     expect($data[1]->getStatus())->notEmpty();
@@ -137,10 +137,10 @@ class ScheduledTasksRepositoryTest extends \MailPoetTest {
 
   public function testItCanFilterTasksByType() {
     $this->scheduledTaskFactory->create(SendingTask::TASK_TYPE, ScheduledTaskEntity::STATUS_COMPLETED, Carbon::now()->addDay());
-    $this->scheduledTaskFactory->create(Migration::TASK_TYPE, ScheduledTaskEntity::STATUS_COMPLETED, Carbon::now()->addDay());
-    $data = $this->repository->getLatestTasks(Migration::TASK_TYPE);
+    $this->scheduledTaskFactory->create(Bounce::TASK_TYPE, ScheduledTaskEntity::STATUS_COMPLETED, Carbon::now()->addDay());
+    $data = $this->repository->getLatestTasks(Bounce::TASK_TYPE);
     expect(count($data))->equals(1);
-    expect($data[0]->getType())->equals(Migration::TASK_TYPE);
+    expect($data[0]->getType())->equals(Bounce::TASK_TYPE);
   }
 
   public function testItCanFilterTasksByStatus() {
