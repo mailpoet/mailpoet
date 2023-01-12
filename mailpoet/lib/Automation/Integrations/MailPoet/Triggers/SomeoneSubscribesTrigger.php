@@ -19,6 +19,7 @@ use MailPoet\Validator\Schema\ObjectSchema;
 use MailPoet\WP\Functions as WPFunctions;
 
 class SomeoneSubscribesTrigger implements Trigger {
+  const KEY = 'mailpoet:someone-subscribes';
 
   /** @var WPFunctions */
   private $wp;

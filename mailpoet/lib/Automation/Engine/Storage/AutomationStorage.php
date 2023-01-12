@@ -167,6 +167,35 @@ class AutomationStorage {
     }, (array)$data);
   }
 
+  public function getCountOfActiveByTriggerKeysAndAction(array $triggerKeys, string $actionKey): int {
+    $automationsTable = esc_sql($this->automationsTable);
+    $versionsTable = esc_sql($this->versionsTable);
+    $triggersTable = esc_sql($this->triggersTable);
+
+    $triggerKeysPlaceholders = implode(',', array_fill(0, count($triggerKeys), '%s'));
+    $queryArgs = array_merge(
+      $triggerKeys,
+      [
+        Automation::STATUS_ACTIVE,
+        '%"' . $this->wpdb->esc_like($actionKey) . '"%',
+      ]
+    );
+    // Using the phpcs:ignore because the query arguments count is dynamic and passed via an array but the code sniffer sees only one argument
+    $query = (string)$this->wpdb->prepare( // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber
+      "
+        SELECT count(*)
+        FROM $automationsTable AS a
+        INNER JOIN $triggersTable as t ON (t.automation_id = a.id) AND t.trigger_key IN ({$triggerKeysPlaceholders})
+        INNER JOIN $versionsTable as v ON v.id = (SELECT MAX(id) FROM $versionsTable WHERE automation_id = a.id)
+        WHERE a.status = %s
+        AND v.steps LIKE %s
+      ",
+      $queryArgs
+    );
+
+    return (int)$this->wpdb->get_var($query);
+  }
+
   public function deleteAutomation(Automation $automation): void {
     $automationRunsTable = esc_sql($this->runsTable);
     $automationRunLogsTable = esc_sql($this->wpdb->prefix . 'mailpoet_automation_run_logs');
