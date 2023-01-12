@@ -6,7 +6,6 @@ use MailPoet\Cron\Workers\Bounce as BounceWorker;
 use MailPoet\Cron\Workers\KeyCheck\PremiumKeyCheck as PremiumKeyCheckWorker;
 use MailPoet\Cron\Workers\KeyCheck\SendingServiceKeyCheck as SendingServiceKeyCheckWorker;
 use MailPoet\Cron\Workers\Scheduler as SchedulerWorker;
-use MailPoet\Cron\Workers\SendingQueue\Migration as MigrationWorker;
 use MailPoet\Cron\Workers\SendingQueue\SendingQueue as SendingQueueWorker;
 use MailPoet\Cron\Workers\StatsNotifications\AutomatedEmails as StatsNotificationsWorkerForAutomatedEmails;
 use MailPoet\Cron\Workers\StatsNotifications\Worker as StatsNotificationsWorker;
@@ -73,11 +72,6 @@ class WorkersFactory {
   /** @return BounceWorker */
   public function createBounceWorker() {
     return $this->container->get(BounceWorker::class);
-  }
-
-  /** @return MigrationWorker */
-  public function createMigrationWorker() {
-    return $this->container->get(MigrationWorker::class);
   }
 
   /** @return WooCommerceSyncWorker */

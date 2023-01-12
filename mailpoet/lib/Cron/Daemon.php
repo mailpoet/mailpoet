@@ -70,7 +70,6 @@ class Daemon {
   }
 
   private function getWorkers() {
-    yield $this->workersFactory->createMigrationWorker();
     yield $this->workersFactory->createStatsNotificationsWorker(); // not CronWorkerInterface compatible
     yield $this->workersFactory->createScheduleWorker(); // not CronWorkerInterface compatible
     yield $this->workersFactory->createQueueWorker(); // not CronWorkerInterface compatible
