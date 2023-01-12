@@ -3,6 +3,10 @@
 namespace MailPoet\Homepage;
 
 use MailPoet\AutomaticEmails\WooCommerce\Events\AbandonedCart;
+use MailPoet\Automation\Engine\Storage\AutomationStorage;
+use MailPoet\Automation\Integrations\MailPoet\Actions\SendEmailAction;
+use MailPoet\Automation\Integrations\MailPoet\Triggers\SomeoneSubscribesTrigger;
+use MailPoet\Automation\Integrations\MailPoet\Triggers\UserRegistrationTrigger;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Form\FormsRepository;
 use MailPoet\Newsletter\NewslettersRepository;
@@ -27,17 +31,22 @@ class HomepageDataController {
   /** @var NewslettersRepository */
   private $newslettersRepository;
 
+  /** @var AutomationStorage */
+  private $automationStorage;
+
   public function __construct(
     SettingsController $settingsController,
     SubscribersRepository $subscribersRepository,
     FormsRepository $formsRepository,
     NewslettersRepository $newslettersRepository,
+    AutomationStorage $automationStorage,
     WooCommerceHelper $wooCommerceHelper
   ) {
     $this->settingsController = $settingsController;
     $this->subscribersRepository = $subscribersRepository;
     $this->formsRepository = $formsRepository;
     $this->newslettersRepository = $newslettersRepository;
+    $this->automationStorage = $automationStorage;
     $this->wooCommerceHelper = $wooCommerceHelper;
   }
 
@@ -85,9 +94,13 @@ class HomepageDataController {
       [NewsletterEntity::TYPE_NOTIFICATION, NewsletterEntity::TYPE_AUTOMATIC]
     );
     $abandonedCartEmailsCount = $this->newslettersRepository->getCountOfActiveAutomaticEmailsForEvent(AbandonedCart::SLUG);
-    // @todo In setUpWelcomeCampaign check also for Automations that have welcome email
+    $welcomeEmailsCount = $this->newslettersRepository->getCountForStatusAndTypes( NewsletterEntity::STATUS_ACTIVE, [NewsletterEntity::TYPE_WELCOME]);
+    $welcomeEmailLikeAutomationsCount = $this->automationStorage->getCountOfActiveByTriggerKeysAndAction(
+      [UserRegistrationTrigger::KEY, SomeoneSubscribesTrigger::KEY],
+      SendEmailAction::KEY
+    );
     return [
-      'setUpWelcomeCampaign' => $this->newslettersRepository->getCountForStatusAndTypes( NewsletterEntity::STATUS_ACTIVE, [NewsletterEntity::TYPE_WELCOME]) > 0,
+      'setUpWelcomeCampaign' => ($welcomeEmailsCount + $welcomeEmailLikeAutomationsCount) > 0,
       'addSubscriptionForm' => $formsCount > 0,
       'sendFirstNewsletter' => ($sentStandard + $scheduledStandard + $activePostNotificationsAndAutomaticEmails) > 0,
       'setUpAbandonedCartEmail' => $abandonedCartEmailsCount > 0,

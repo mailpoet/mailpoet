@@ -22,6 +22,8 @@ use MailPoet\Validator\Schema\ObjectSchema;
 use Throwable;
 
 class SendEmailAction implements Action {
+  const KEY = 'mailpoet:send-email';
+
   /** @var SettingsController */
   private $settings;
 
@@ -52,7 +54,7 @@ class SendEmailAction implements Action {
   }
 
   public function getKey(): string {
-    return 'mailpoet:send-email';
+    return self::KEY;
   }
 
   public function getName(): string {
