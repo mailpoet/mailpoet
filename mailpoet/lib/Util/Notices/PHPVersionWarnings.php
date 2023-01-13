@@ -23,7 +23,7 @@ class PHPVersionWarnings {
 
   public function display($phpVersion) {
     // translators: %s is the PHP version
-    $errorString = __('Your website is running on PHP %s which MailPoet does not officially support. Read our [link]simple PHP upgrade guide.[/link]', 'mailpoet');
+    $errorString = __('Your website is running an outdated version of PHP (%s), on which MailPoet might stop working in the future. We recommend upgrading to 7.4 or greater. Read our [link]simple PHP upgrade guide.[/link]', 'mailpoet');
     $errorString = sprintf($errorString, $phpVersion);
     $error = Helpers::replaceLinkTags($errorString, 'https://kb.mailpoet.com/article/251-upgrading-the-websites-php-version', [
       'target' => '_blank',
