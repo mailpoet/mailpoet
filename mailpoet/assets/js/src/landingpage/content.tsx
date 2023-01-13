@@ -1,24 +1,21 @@
 import { __ } from '@wordpress/i18n';
+import { MailPoet } from 'mailpoet';
 import { Heading } from 'common/typography/heading/heading';
 import { Grid } from 'common/grid';
 
-type LandingpageImages = {
-  heroImage: string;
+const Images = {
+  heroImage: `${MailPoet.cdnUrl}landingpage/landingpage-hero-image.png`,
   featureImages: {
-    icon_1: string;
-    icon_2: string;
-    icon_3: string;
-  };
+    icon_1: `${MailPoet.cdnUrl}landingpage/feature_icon_1.png`,
+    icon_2: `${MailPoet.cdnUrl}landingpage/feature_icon_2.png`,
+    icon_3: `${MailPoet.cdnUrl}landingpage/feature_icon_3.png`,
+  },
   wooCommerceFeatureImages: {
-    feature_1: string;
-    feature_2: string;
-    feature_3: string;
-  };
+    feature_1: `${MailPoet.cdnUrl}landingpage/woo_feature_automate_your_marketing.png`,
+    feature_2: `${MailPoet.cdnUrl}landingpage/woo_feature_measure_revenue_per_email.png`,
+    feature_3: `${MailPoet.cdnUrl}landingpage/woo_feature_let_your_brand_shine.png`,
+  },
 };
-
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-const Images: LandingpageImages = window.mailpoet_landingpage_images;
 
 function Content() {
   return (
