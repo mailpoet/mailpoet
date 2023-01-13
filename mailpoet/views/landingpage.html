@@ -1,11 +1,37 @@
-<% extends 'layout.html' %>
-
-<% block content %>
+<% extends 'layout.html' %> <% block content %>
 <div id="mailpoet_landingpage_container"></div>
 
 <script type="text/javascript">
   <% autoescape 'js' %>
     var mailpoet_welcome_wizard_url = <%= json_encode(welcome_wizard_url) %>;
+
+    var mailpoet_landingpage_images = {
+      'heroImage': '<%= image_url(
+        'landingpage/landingpage-hero-image.png'
+      ) %>',
+      'featureImages': {
+        'icon_1': '<%= image_url(
+          'landingpage/feature_icon_1.png'
+        ) %>',
+        'icon_2': '<%= image_url(
+          'landingpage/feature_icon_2.png'
+        ) %>',
+        'icon_3': '<%= image_url(
+          'landingpage/feature_icon_3.png'
+        ) %>',
+      },
+      'wooCommerceFeatureImages': {
+        'feature_1': '<%= image_url(
+          'landingpage/woo_feature_automate_your_marketing.png'
+        ) %>',
+        'feature_2': '<%= image_url(
+          'landingpage/woo_feature_measure_revenue_per_email.png'
+        ) %>',
+        'feature_3': '<%= image_url(
+          'landingpage/woo_feature_let_your_brand_shine.png'
+        ) %>',
+      }
+    }
   <% endautoescape %>
 </script>
 <% endblock %>

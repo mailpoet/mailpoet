@@ -31,6 +31,76 @@
       margin: 25px 0;
     }
   }
+
+  .landing-content {
+    .hero-section {
+      $hero-image-offset: 6rem;
+      background-color: $color-landingpage-background-light;
+      margin-top: $hero-image-offset;
+      padding: $content-padding;
+
+      .hero-image {
+        margin-top: -($hero-image-offset + 2rem);
+      }
+    }
+
+    .landingpage-images {
+      @include respond-to(medium-screen) {
+        width: 100%;
+      }
+    }
+
+    .landingpage-general-features {
+      p:last-child {
+        margin: 10px auto;
+        width: 60%;
+      }
+
+      .landingpage-feature-icon {
+        display: block;
+        margin: 0 auto;
+        padding: 20px;
+        text-align: center;
+      }
+
+      @include respond-to(medium-screen) {
+        p:last-child {
+          width: 100%;
+        }
+      }
+    }
+
+    .landingpage-wooCommerce-features {
+      margin-top: 30px;
+      padding: 2rem 10rem;
+
+      .landingpage-wooCommerce-feature-item {
+        padding: 30px;
+
+        @media screen and (min-width: 960px) and (max-width: 1390px) {
+          .landingpage-images {
+            width: 100%;
+          }
+        }
+
+        div:last-child {
+          margin: auto;
+        }
+      }
+
+      @include respond-to(small-screen) {
+        padding: $content-padding;
+
+        .landingpage-wooCommerce-feature-item {
+          padding: 25px 0;
+
+          div:last-child {
+            text-align: center;
+          }
+        }
+      }
+    }
+  }
 }
 
 .mailpoet-faq-accordion {

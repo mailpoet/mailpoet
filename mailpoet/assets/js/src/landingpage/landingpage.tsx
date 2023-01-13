@@ -5,6 +5,7 @@ import { Background } from 'common/background/background';
 import { Header } from './header';
 import { Footer } from './footer';
 import { Faq } from './faq';
+import { Content } from './content';
 
 function Landingpage() {
   return (
@@ -15,11 +16,7 @@ function Landingpage() {
 
       <div className="mailpoet-gap" />
 
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
+      <Content />
 
       <div className="mailpoet-gap" />
 
