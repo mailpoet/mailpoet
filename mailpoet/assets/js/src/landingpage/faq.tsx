@@ -72,7 +72,7 @@ function Faq() {
 
   return (
     <div className="landing-faq">
-      <div className="mailpoet-content-center">
+      <div className="mailpoet-content-center landing-faq-header">
         <Heading level={2}>
           {' '}
           {__('Frequently asked questions', 'mailpoet')}{' '}
@@ -98,6 +98,10 @@ function Faq() {
         </p>
       </div>
 
+      <div className="mailpoet-content-center landing-faq-mobile">
+        <Heading level={2}>{__('FAQ', 'mailpoet')}</Heading>
+      </div>
+
       <div className="mailpoet-faq-accordion">
         {list.map((item) => (
           <details key={item.slug}>
@@ -119,6 +123,26 @@ function Faq() {
             </div>
           </details>
         ))}
+      </div>
+
+      <div className="mailpoet-content-center landing-faq-mobile">
+        <p>{__('Can’t find what you’re looking for?', 'mailpoet')}</p>
+        <p>
+          {ReactStringReplace(
+            __('[link]View all resources[/link]', 'mailpoet'),
+            /\[link\](.*?)\[\/link\]/,
+            (text) => (
+              <a
+                key={text}
+                href="https://kb.mailpoet.com/"
+                rel="noopener noreferrer"
+                target="_blank"
+              >
+                {text}
+              </a>
+            ),
+          )}
+        </p>
       </div>
     </div>
   );
