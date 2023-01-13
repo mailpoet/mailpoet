@@ -35,7 +35,7 @@ class ReinstallFromScratchCest {
     $i->waitForElement('[data-automation-id="reinstall-button"]');
     $i->click('Reinstall now...');
     $i->acceptPopup();
-    $i->waitForText('Start by configuring your sender information'); //TODO: Update when landing page is out of experimental
+    $i->waitForText('Better email — without leaving WordPress');
 
     // Step 3 - skip all tutorials, which could interfere with other tests
     $settings = new Settings();

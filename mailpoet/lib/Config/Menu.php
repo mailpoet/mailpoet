@@ -206,19 +206,17 @@ class Menu {
     );
 
     // Landingpage
-    if ($this->featuresController->isSupported(FeaturesController::FEATURE_LANDINGPAGE)) {
-      $this->wp->addSubmenuPage(
-        true,
-        $this->setPageTitle(__('MailPoet', 'mailpoet')),
-        esc_html__('MailPoet', 'mailpoet'),
-        AccessControl::PERMISSION_ACCESS_PLUGIN_ADMIN,
-        self::LANDINGPAGE_PAGE_SLUG,
-        [
-          $this,
-          'landingPage',
-        ]
-      );
-    }
+    $this->wp->addSubmenuPage(
+      true,
+      $this->setPageTitle(__('MailPoet', 'mailpoet')),
+      esc_html__('MailPoet', 'mailpoet'),
+      AccessControl::PERMISSION_ACCESS_PLUGIN_ADMIN,
+      self::LANDINGPAGE_PAGE_SLUG,
+      [
+        $this,
+        'landingPage',
+      ]
+    );
 
     // Hide sub-menu entries if the user still needs to complete the Welcome Wizard
     if (!$this->changelog->shouldShowWelcomeWizard()) {
