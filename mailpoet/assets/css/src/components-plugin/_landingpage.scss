@@ -30,6 +30,20 @@
     .mailpoet-faq-accordion {
       margin: 25px 0;
     }
+
+    .landing-faq-mobile {
+      display: none;
+    }
+
+    @include respond-to(small-screen) {
+      .landing-faq-header {
+        display: none;
+      }
+
+      .landing-faq-mobile {
+        display: block;
+      }
+    }
   }
 
   .landing-content {
@@ -135,6 +149,12 @@
         transform: rotate(90deg);
         transform-origin: center;
         transition: .2s transform ease;
+      }
+
+      @include respond-to(small-screen) {
+        &:after {
+          right: 0;
+        }
       }
     }
 
