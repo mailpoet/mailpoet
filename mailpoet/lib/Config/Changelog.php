@@ -2,7 +2,6 @@
 
 namespace MailPoet\Config;
 
-use MailPoet\Features\FeaturesController;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\TrackingConfig;
 use MailPoet\Util\Url;
@@ -25,23 +24,18 @@ class Changelog {
   /** @var TrackingConfig */
   private $trackingConfig;
 
-  /** @var FeaturesController */
-  private $featuresController;
-
   public function __construct(
     SettingsController $settings,
     WPFunctions $wp,
     Helper $wooCommerceHelper,
     Url $urlHelper,
-    TrackingConfig $trackingConfig,
-    FeaturesController $featuresController
+    TrackingConfig $trackingConfig
   ) {
     $this->wooCommerceHelper = $wooCommerceHelper;
     $this->settings = $settings;
     $this->wp = $wp;
     $this->urlHelper = $urlHelper;
     $this->trackingConfig = $trackingConfig;
-    $this->featuresController = $featuresController;
   }
 
   public function init() {
@@ -88,7 +82,7 @@ class Changelog {
   }
 
   public function shouldShowLandingPage(): bool {
-    return $this->shouldShowWelcomeWizard() && $this->featuresController->isSupported(FeaturesController::FEATURE_LANDINGPAGE);
+    return $this->shouldShowWelcomeWizard();
   }
 
   public function shouldShowWooCommerceListImportPage() {
@@ -121,26 +115,11 @@ class Changelog {
   public function maybeRedirectToLandingPage() {
     if ($this->isWelcomeWizardPage()) return; // do not redirect when on welcome wizard page
 
-    if ($this->shouldShowLandingPage()) {
-      $this->redirectToLandingPage();
-      return;
-    }
-
-    $this->maybeRedirectToWelcomeWizard(); //TODO: Remove when landing page is out of experimental
+    $this->redirectToLandingPage();
   }
 
   private function setupNewInstallation() {
     $this->settings->set('show_congratulate_after_first_newsletter', true);
-  }
-
-  private function maybeRedirectToWelcomeWizard() {
-    if ($this->shouldShowWelcomeWizard() && !$this->isWelcomeWizardPage()) {
-      if ($this->isLandingPage()) return; // do not redirect when on landing page
-
-      $this->urlHelper->redirectWithReferer(
-        $this->wp->adminUrl('admin.php?page=mailpoet-welcome-wizard')
-      );
-    }
   }
 
   private function isWelcomeWizardPage() {
