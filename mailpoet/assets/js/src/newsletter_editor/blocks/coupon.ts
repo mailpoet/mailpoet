@@ -28,7 +28,7 @@ Module.CouponBlockView = base.BlockView.extend({
   initialize(...args) {
     base.BlockView.prototype.initialize.apply(this, args);
 
-    // Listen for attempts to change all dividers in one go
+    // Listen for attempts to change all coupon blocks in one go
     this.replaceCouponStylesHandler = (data) => {
       this.model.set(data);
     };
