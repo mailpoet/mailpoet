@@ -19,7 +19,7 @@ const Images = {
 
 function Content() {
   return (
-    <div className="landing-content">
+    <section className="landing-content">
       <div className="hero-section mailpoet-content-center">
         <img
           src={Images.heroImage}
@@ -153,7 +153,7 @@ function Content() {
           </div>
         </Grid.TwoColumns>
       </div>
-    </div>
+    </section>
   );
 }
 Content.displayName = 'Landingpage Content';

@@ -71,7 +71,7 @@ function Faq() {
   ];
 
   return (
-    <div className="landing-faq">
+    <section className="landing-faq">
       <div className="mailpoet-content-center landing-faq-header">
         <Heading level={2}>
           {' '}
@@ -144,7 +144,7 @@ function Faq() {
           )}
         </p>
       </div>
-    </div>
+    </section>
   );
 }
 Faq.displayName = 'Landingpage FAQ';

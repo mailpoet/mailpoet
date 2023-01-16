@@ -5,7 +5,7 @@ import { redirectToWelcomeWizard } from './util';
 
 function Header() {
   return (
-    <div className="landing-header">
+    <section className="landing-header">
       <div className="mailpoet-content-center">
         <Heading level={0}>
           {__('Better email — without leaving WordPress', 'mailpoet')}
@@ -20,7 +20,7 @@ function Header() {
           {__('Begin setup', 'mailpoet')}
         </Button>
       </div>
-    </div>
+    </section>
   );
 }
 Header.displayName = 'Landingpage Header';
