@@ -83,3 +83,7 @@ function wp_remote_get() {
 function current_time() {
   return override(__FUNCTION__, func_get_args());
 }
+
+function wp_timezone() {
+  return override(__FUNCTION__, func_get_args());
+}
