@@ -27,7 +27,7 @@ class Functions extends AbstractExtension {
 
   private function getWooCommerceHelper(): WooCommerceHelper {
     if ($this->woocommerceHelper === null) {
-      $this->woocommerceHelper = new WooCommerceHelper();
+      $this->woocommerceHelper = new WooCommerceHelper($this->getWp());
     }
     return $this->woocommerceHelper;
   }

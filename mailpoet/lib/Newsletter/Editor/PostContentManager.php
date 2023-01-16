@@ -22,7 +22,7 @@ class PostContentManager {
   ) {
     $this->wp = new WPFunctions;
     $this->maxExcerptLength = $this->wp->applyFilters('mailpoet_newsletter_post_excerpt_length', $this->maxExcerptLength);
-    $this->woocommerceHelper = $woocommerceHelper ?: new WooCommerceHelper();
+    $this->woocommerceHelper = $woocommerceHelper ?: new WooCommerceHelper($this->wp);
   }
 
   public function getContent($post, $displayType) {

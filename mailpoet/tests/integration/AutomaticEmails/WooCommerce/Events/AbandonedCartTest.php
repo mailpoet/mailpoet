@@ -114,7 +114,7 @@ class AbandonedCartTest extends \MailPoetTest {
   public function testItGetsEventDetails() {
     $settings = $this->diContainer->get(SettingsController::class);
     $wp = new WPFunctions();
-    $wcHelper = new WooCommerceHelper();
+    $wcHelper = new WooCommerceHelper($wp);
     $cookies = new Cookies();
     $subscriberCookie = new SubscriberCookie($cookies, new TrackingConfig($settings));
     $event = new AbandonedCart(

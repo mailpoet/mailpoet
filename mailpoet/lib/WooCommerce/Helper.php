@@ -8,6 +8,15 @@ use MailPoet\RuntimeException;
 use MailPoet\WP\Functions as WPFunctions;
 
 class Helper {
+  /** @var WPFunctions */
+  private $wp;
+
+  public function __construct(
+    WPFunctions $wp
+  ) {
+    $this->wp = $wp;
+  }
+
   public function isWooCommerceActive() {
     return class_exists('WooCommerce');
   }
@@ -168,5 +177,19 @@ class Helper {
    */
   public function createWcCoupon($data) {
     return new \WC_Coupon($data);
+  }
+
+  public function getCouponList(): array {
+    $couponPosts = $this->wp->getPosts([
+      'posts_per_page' => -1,
+      'orderby' => 'name',
+      'order' => 'asc',
+      'post_type' => 'shop_coupon',
+      'post_status' => 'publish',
+    ]);
+
+    return array_map(function(\WP_Post $post): string {
+      return $post->post_title; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    }, $couponPosts);
   }
 }

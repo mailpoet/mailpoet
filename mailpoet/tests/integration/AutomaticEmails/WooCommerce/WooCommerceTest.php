@@ -22,9 +22,10 @@ class WooCommerceTest extends \MailPoetTest {
   private $automaticEmailFactory;
 
   public function _before() {
+    $wp = new WPFunctions();
     $this->wooCommerceEventFactory = $this->diContainer->get(WooCommerceEventFactory::class);
     $this->automaticEmailFactory = $this->makeEmpty(AutomaticEmailFactory::class, [
-      'createWooCommerceEmail' => new WooCommerce(new WPFunctions(), new Helper(), $this->wooCommerceEventFactory),
+      'createWooCommerceEmail' => new WooCommerce($wp, new Helper($wp), $this->wooCommerceEventFactory),
     ]);
   }
 
@@ -109,8 +110,9 @@ class WooCommerceTest extends \MailPoetTest {
   }
 
   private function createWooCommerceEmailMock(bool $isWoocommerceEnabled = true): WooCommerce {
+    $wp = new WPFunctions();
     $mock = $this->make(WooCommerce::class, ['isWoocommerceEnabled' => $isWoocommerceEnabled]);
-    $mock->__construct(new WPFunctions(), new Helper(), $this->wooCommerceEventFactory);
+    $mock->__construct($wp, new Helper($wp), $this->wooCommerceEventFactory);
     return $mock;
   }
 }
