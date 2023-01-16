@@ -28,6 +28,8 @@ class SwitchingLanguagesCest {
         $i->wait($attemtps);
         $i->amOnAdminPage('update-core.php');
         $i->waitForText('WordPress-Aktualisierungen');
+        // Wait before clicking the update button to prevent triggering too many requests too translate.wordpress.com within one second
+        $i->wait(1);
         $i->click('Übersetzungen aktualisieren');
         $i->waitForText('Weiter zur WordPress-Aktualisierungs-Seite');
         break;
@@ -37,6 +39,8 @@ class SwitchingLanguagesCest {
     }
 
     $i->wantTo('Check menu strings (translated in PHP)');
+    // The page load after updating languages also triggers a WP check that calls translate.wordpress.com so we wait a bit to prevent triggering too many requests error
+    $i->wait(1);
     $i->amOnMailpoetPage('newsletters');
     $i->waitForText('E-Mails');
     $i->waitForText('Automatisierungen');
