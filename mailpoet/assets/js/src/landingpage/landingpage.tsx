@@ -10,19 +10,21 @@ import { Content } from './content';
 function Landingpage() {
   return (
     <GlobalContext.Provider value={useGlobalContextValue(window)}>
-      <Background color="#fff" />
+      <main>
+        <Background color="#fff" />
 
-      <Header />
+        <Header />
 
-      <div className="mailpoet-gap" />
+        <div className="mailpoet-gap" />
 
-      <Content />
+        <Content />
 
-      <div className="mailpoet-gap" />
+        <div className="mailpoet-gap" />
 
-      <Faq />
+        <Faq />
 
-      <Footer />
+        <Footer />
+      </main>
     </GlobalContext.Provider>
   );
 }

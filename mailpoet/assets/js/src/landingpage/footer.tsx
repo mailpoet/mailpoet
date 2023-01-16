@@ -5,7 +5,7 @@ import { redirectToWelcomeWizard } from './util';
 
 function Footer() {
   return (
-    <div className="landing-footer">
+    <section className="landing-footer">
       <div className="landing-footer-content mailpoet-content-center">
         <Heading level={4}>
           {' '}
@@ -15,7 +15,7 @@ function Footer() {
           {__('Begin setup', 'mailpoet')}
         </Button>
       </div>
-    </div>
+    </section>
   );
 }
 Footer.displayName = 'Landingpage Footer';
