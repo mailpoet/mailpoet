@@ -38,6 +38,12 @@ class DateConverterTest extends \MailPoetUnitTest {
     }
   }
 
+  public function testItCanConvertDayToDatetime() {
+    $currentYear = date('Y');
+    expect($this->dateConverter->convertDateToDatetime('23', 'DD'))
+      ->equals(sprintf('%s-01-23 00:00:00', $currentYear));
+  }
+
   public function testItCanConvertMonthToDatetime() {
     $currentYear = date('Y');
     expect($this->dateConverter->convertDateToDatetime('05', 'MM'))
