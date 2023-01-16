@@ -8,6 +8,7 @@ import _ from 'underscore';
 import jQuery from 'jquery';
 import 'backbone.marionette';
 import { MailPoet } from '../../mailpoet';
+import 'select2';
 
 export const FEATURE_COUPON_BLOCK = 'Coupon block';
 
@@ -176,6 +177,7 @@ Module.CouponBlockSettingsView = base.BlockSettingsView.extend({
         availableDiscountTypes: App.getConfig()
           .get('coupon.discount_types')
           .toJSON(),
+        availableCoupons: App.getConfig().get('coupon.available_coupons'),
       },
     );
   },
@@ -227,17 +229,37 @@ Module.CouponBlockSettingsView = base.BlockSettingsView.extend({
           instance.validate();
         }
       });
+
+    const model = this.model;
+    this.$('.mailpoet_field_coupon_existing_coupon')
+      .select2({
+        multiple: false,
+        allowClear: false,
+      })
+      .on({
+        'select2:select': function (event) {
+          const coupon = event.params.data.text;
+          model.set('existingCoupon', coupon);
+        },
+      })
+      .trigger('change');
   },
   changeSource(event) {
     const value = jQuery(event.target).val();
     this.model.set('source', value);
 
     if (value === 'createNew') {
+      this.$('.mailpoet_field_coupon_source_use_existing').addClass(
+        'mailpoet_hidden',
+      );
       this.$('.mailpoet_field_coupon_source_create_new').removeClass(
         'mailpoet_hidden',
       );
     } else if (value === 'useExisting') {
       this.$('.mailpoet_field_coupon_source_create_new').addClass(
+        'mailpoet_hidden',
+      );
+      this.$('.mailpoet_field_coupon_source_use_existing').removeClass(
         'mailpoet_hidden',
       );
     }
