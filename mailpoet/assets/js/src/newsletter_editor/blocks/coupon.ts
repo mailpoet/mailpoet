@@ -56,6 +56,7 @@ Module.CouponBlockSettingsView = base.BlockSettingsView.extend({
   events() {
     return {
       'input .mailpoet_field_coupon_code': _.partial(this.changeField, 'code'),
+      'change .mailpoet_field_coupon_source': 'changeSource',
       'change .mailpoet_field_coupon_discount_type': 'changeDiscountType',
       'input .mailpoet_field_coupon_amount': _.partial(
         this.changeField,
@@ -226,6 +227,20 @@ Module.CouponBlockSettingsView = base.BlockSettingsView.extend({
           instance.validate();
         }
       });
+  },
+  changeSource(event) {
+    const value = jQuery(event.target).val();
+    this.model.set('source', value);
+
+    if (value === 'createNew') {
+      this.$('.mailpoet_field_coupon_source_create_new').removeClass(
+        'mailpoet_hidden',
+      );
+    } else if (value === 'useExisting') {
+      this.$('.mailpoet_field_coupon_source_create_new').addClass(
+        'mailpoet_hidden',
+      );
+    }
   },
 });
 

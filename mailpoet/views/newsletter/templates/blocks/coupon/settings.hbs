@@ -1,5 +1,20 @@
 <h3><%= __('Coupon') %></h3>
 <div class="mailpoet_form_field">
+  <div class="mailpoet_form_field_radio_option">
+    <label>
+      <input type="radio" name="source" class="mailpoet_field_coupon_source" value="createNew" {{#ifCond model.source '!==' 'useExisting'}}CHECKED{{/ifCond}}/>
+      <%= _x('Create new') %>
+    </label>
+  </div>
+  <div class="mailpoet_form_field_radio_option">
+    <label>
+      <input type="radio" name="source" class="mailpoet_field_coupon_source" value="useExisting" {{#ifCond model.source '===' 'useExisting'}}CHECKED{{/ifCond}}/>
+      <%= _x('Use existing') %>
+    </label>
+  </div>
+</div>
+
+<div class="mailpoet_form_field mailpoet_field_coupon_source_create_new {{#ifCond model.source '===' 'useExisting'}}mailpoet_hidden{{/ifCond}}">
     <div class="mailpoet_form_field_type"><%= __('Discount type') %></div>
     <div class="mailpoet_form_field_input_option mailpoet_form_field_input_nowrap">
         <select id="mailpoet_field_coupon_discount_type" name="discount-type" class="mailpoet_select mailpoet_select_full mailpoet_field_coupon_discount_type">
@@ -9,7 +24,7 @@
         </select>
     </div>
 </div>
-<div class="mailpoet_form_field">
+<div class="mailpoet_form_field mailpoet_field_coupon_source_create_new {{#ifCond model.source '===' 'useExisting'}}mailpoet_hidden{{/ifCond}}">
     <label>
         <div class="mailpoet_form_field_title mailpoet_form_field_title_inline"><%= __('Coupon amount') %></div>
         <div class="coupon_amount_wrapper">
@@ -20,8 +35,7 @@
         </div>
     </label>
 </div>
-
-<div class="mailpoet_form_field">
+<div class="mailpoet_form_field mailpoet_field_coupon_source_create_new {{#ifCond model.source '===' 'useExisting'}}mailpoet_hidden{{/ifCond}}">
     <label>
         <div class="mailpoet_form_field_title mailpoet_form_field_title_inline"><%= __('Coupon expiry days') %></div>
         <div class="mailpoet_form_field_input_option">
@@ -30,6 +44,7 @@
         </div>
     </label>
 </div>
+
 <hr />
 <div class="mailpoet_form_field">
     <div class="mailpoet_form_field_title"><%= __('Alignment') %></div>
