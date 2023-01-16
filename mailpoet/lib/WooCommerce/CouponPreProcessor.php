@@ -12,9 +12,14 @@ class CouponPreProcessor {
   /** @var NewslettersRepository */
   private $newslettersRepository;
 
+  /** @var Helper */
+  private $wcHelper;
+
   public function __construct(
+    Helper $wcHelper,
     NewslettersRepository $newslettersRepository
   ) {
+    $this->wcHelper = $wcHelper;
     $this->newslettersRepository = $newslettersRepository;
   }
 
@@ -59,7 +64,7 @@ class CouponPreProcessor {
   }
 
   private function addOrUpdateCoupon(array $couponBlock, NewsletterEntity $newsletter): int {
-    $coupon = new \WC_Coupon($couponBlock['couponId'] ?? '');
+    $coupon = $this->wcHelper->createWcCoupon($couponBlock['couponId'] ?? '');
     if (empty($couponBlock['couponId'])) {
       $code = $couponBlock['code'] && $couponBlock['code'] !== Coupon::CODE_PLACEHOLDER ? $couponBlock['code'] : $this->generateRandomCode();
       $coupon->set_code($code);

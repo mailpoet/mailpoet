@@ -162,4 +162,11 @@ class Helper {
   public function wcGetCouponCodeById(int $id): string {
     return wc_get_coupon_code_by_id($id);
   }
+
+  /**
+   * @param mixed $data Coupon data, object, ID or code.
+   */
+  public function createWcCoupon($data) {
+    return new \WC_Coupon($data);
+  }
 }
