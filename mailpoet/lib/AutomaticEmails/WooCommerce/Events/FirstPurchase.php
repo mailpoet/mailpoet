@@ -39,7 +39,7 @@ class FirstPurchase {
     WCHelper $helper = null
   ) {
     if ($helper === null) {
-      $helper = new WCHelper();
+      $helper = ContainerWrapper::getInstance()->get(WCHelper::class);
     }
     $this->helper = $helper;
     $this->scheduler = ContainerWrapper::getInstance()->get(AutomaticEmailScheduler::class);

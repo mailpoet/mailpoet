@@ -20,7 +20,7 @@ class AutomaticEmailsTest extends \MailPoetTest {
 
     $wooCommerceEventFactory = $this->diContainer->get(WooCommerceEventFactory::class);
     $automaticEmailFactory = $this->makeEmpty(AutomaticEmailFactory::class, [
-      'createWooCommerceEmail' => new WooCommerce($this->wp, new Helper(), $wooCommerceEventFactory),
+      'createWooCommerceEmail' => new WooCommerce($this->wp, new Helper($this->wp), $wooCommerceEventFactory),
     ]);
     $this->api = new AutomaticEmails(new AutomaticEmailsController($this->wp, $automaticEmailFactory), $this->wp);
   }

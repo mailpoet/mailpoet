@@ -4,6 +4,7 @@ namespace MailPoet\Models;
 
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\WooCommerce\Helper as WCHelper;
+use MailPoet\WP\Functions;
 
 /**
  * @property array $subscribersCount
@@ -170,7 +171,7 @@ class Segment extends Model {
    * @deprecated Use the non static implementation in \MailPoet\Segments\WooCommerce::shouldShowWooCommerceSegment instead
    */
   public static function shouldShowWooCommerceSegment() {
-    $woocommerceHelper = new WCHelper();
+    $woocommerceHelper = new WCHelper(Functions::get());
     $isWoocommerceActive = $woocommerceHelper->isWooCommerceActive();
     $woocommerceUserExists = Segment::tableAlias('segment')
       ->where('segment.type', Segment::TYPE_WC_USERS)

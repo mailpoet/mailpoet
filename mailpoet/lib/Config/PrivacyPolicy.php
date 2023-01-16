@@ -38,7 +38,7 @@ class PrivacyPolicy {
         __('No identifiable information is otherwise tracked outside this website except for the email address.', 'mailpoet') .
       '</p>'
     );
-    $helper = new WooCommerceHelper();
+    $helper = new WooCommerceHelper(WPFunctions::get());
     if ($helper->isWooCommerceActive()) {
       $content .= (
         '<p> ' .
