@@ -2,6 +2,7 @@
 
 namespace MailPoet\AdminPages;
 
+use MailPoet\AdminPages\Pages\WelcomeWizard;
 use MailPoet\Cache\TransientCache;
 use MailPoet\Config\Installer;
 use MailPoet\Config\Menu;
@@ -140,6 +141,7 @@ class PageRenderer {
       'deactivate_subscriber_after_inactive_days' => $this->settings->get('deactivate_subscriber_after_inactive_days'),
       'send_transactional_emails' => (bool)$this->settings->get('send_transactional_emails'),
       'transactional_emails_opt_in_notice_dismissed' => (bool)$this->userFlags->get('transactional_emails_opt_in_notice_dismissed'),
+      'track_wizard_loaded_via_woocommerce' => (bool)$this->settings->get(WelcomeWizard::TRACK_LOADDED_VIA_WOOCOMMERCE_SETTING_NAME),
 
       // Premium & plan upgrade info
       'current_wp_user_email' => $this->wp->wpGetCurrentUser()->user_email,

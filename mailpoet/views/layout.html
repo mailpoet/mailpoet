@@ -79,6 +79,8 @@ jQuery('#adminmenu #toplevel_page_mailpoet-newsletters')
   var mailpoet_send_transactional_emails = <%= json_encode(send_transactional_emails) %>;
   var mailpoet_transactional_emails_opt_in_notice_dismissed = <%= json_encode(transactional_emails_opt_in_notice_dismissed) %>;
   var mailpoet_deactivate_subscriber_after_inactive_days = <%= json_encode(deactivate_subscriber_after_inactive_days) %>;
+  var mailpoet_woocommerce_version = <%= json_encode(get_woocommerce_version()) %>;
+  var mailpoet_track_wizard_loaded_via_woocommerce = <%= json_encode(track_wizard_loaded_via_woocommerce) %>;
 
   var mailpoet_site_name = '<%= site_name %>';
   var mailpoet_site_url = "<%= site_url %>";

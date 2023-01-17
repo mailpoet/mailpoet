@@ -55,7 +55,7 @@ class MailPoetTask extends Task {
       return admin_url('admin.php?page=' . Menu::MAIN_PAGE_SLUG);
     }
 
-    return admin_url('admin.php?page=' . Menu::WELCOME_WIZARD_PAGE_SLUG);
+    return admin_url('admin.php?page=' . Menu::WELCOME_WIZARD_PAGE_SLUG . '&mailpoet_wizard_loaded_via_woocommerce');
   }
 
   /**

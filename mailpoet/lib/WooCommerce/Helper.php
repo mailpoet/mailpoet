@@ -21,6 +21,10 @@ class Helper {
     return class_exists('WooCommerce');
   }
 
+  public function getWooCommerceVersion() {
+    return $this->isWooCommerceActive() ? get_plugin_data(WP_PLUGIN_DIR . '/woocommerce/woocommerce.php')['Version'] : null;
+  }
+
   public function isWooCommerceBlocksActive($min_version = '') {
     if (!class_exists('\Automattic\WooCommerce\Blocks\Package')) {
       return false;
