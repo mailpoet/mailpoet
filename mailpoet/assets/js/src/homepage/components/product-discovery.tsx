@@ -93,7 +93,7 @@ export function ProductDiscovery({ onHide }: Props): JSX.Element {
           />
         }
       >
-        <ul className="mceProgress">{tasks.map((item) => item)}</ul>
+        <ul>{tasks.map((item) => item)}</ul>
       </ContentSection>
       {isDiscoveryDone ? (
         <p className="mailpoet-task-list__all-set">
