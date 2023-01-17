@@ -9,6 +9,8 @@ use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 use MailPoet\WP\Functions as WPFunctions;
 
 class WelcomeWizard {
+  const TRACK_LOADDED_VIA_WOOCOMMERCE_SETTING_NAME = 'send_event_that_wizard_was_loaded_via_woocommerce';
+
   /** @var PageRenderer */
   private $pageRenderer;
 
@@ -35,6 +37,14 @@ class WelcomeWizard {
 
   public function render() {
     if ((bool)(defined('DOING_AJAX') && DOING_AJAX)) return;
+
+    $loadedViaWooCommerce = $this->settings->get(WelcomeWizard::TRACK_LOADDED_VIA_WOOCOMMERCE_SETTING_NAME, false);
+
+    if (!$loadedViaWooCommerce && isset($_GET['mailpoet_wizard_loaded_via_woocommerce'])) {
+      // This setting is used to send an event to Mixpanel in another request as, before completing the wizard, Mixpanel is not enabled.
+      $this->settings->set(WelcomeWizard::TRACK_LOADDED_VIA_WOOCOMMERCE_SETTING_NAME, 1);
+    }
+
     $data = [
       'finish_wizard_url' => $this->wp->adminUrl('admin.php?page=' . Menu::$mainPageSlug),
       'sender' => $this->settings->get('sender'),
