@@ -23,7 +23,7 @@ class Coupon {
   public function render($element, $columnBaseWidth) {
     $couponCode = self::CODE_PLACEHOLDER;
     if (!empty($element['couponId'])) {
-      $couponCode = $this->helper->wcGetCouponCodeById($element['couponId']);
+      $couponCode = $this->helper->wcGetCouponCodeById((int)$element['couponId']);
     }
     $element['styles']['block']['width'] = $this->calculateWidth($element, $columnBaseWidth);
     $styles = 'display:inline-block;-webkit-text-size-adjust:none;mso-hide:all;text-decoration:none;text-align:center;' . StylesHelper::getBlockStyles($element, $exclude = ['textAlign']);

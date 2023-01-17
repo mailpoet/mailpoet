@@ -50,7 +50,7 @@
   <div class="mailpoet_form_field_select_option mailpoet_form_field_input_nowrap">
     <select name="existing_coupon" class="mailpoet_select mailpoet_select_large mailpoet_field_coupon_existing_coupon">
       {{#each availableCoupons}}
-        <option value="{{ this }}" {{#ifCond ../model.existingCoupon '==' this}}selected="selected"{{/ifCond}}>{{ this }}</option>
+        <option value="{{ id }}" {{#ifCond ../model.couponId '==' id}}selected="selected"{{/ifCond}}>{{ text }}</option>
       {{/each}}
     </select>
   </div>
