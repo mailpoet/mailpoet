@@ -297,6 +297,29 @@ class RoboFile extends \Robo\Tasks {
     return $this->runTestsInContainer($opts);
   }
 
+  public function testPerformance($path = null, $opts = ['url' => null, 'head' => false, 'scenario' => null]) {
+    // run WordPress setup
+    $this->taskExec('COMPOSE_HTTP_TIMEOUT=200 docker-compose run --rm -it setup')
+      ->dir(__DIR__ . '/tests/performance')
+      ->run();
+
+    // run performance tests
+    $dir = __DIR__;
+    return $this->taskExec("php $dir/tools/xk6browser.php")
+      ->arg('run')
+      ->option('env', 'URL=' . $opts['url'])
+      ->option('env', 'HEADLESS=' . ($opts['head'] ? 'false' : 'true'))
+      ->option('env', 'SCENARIO=' . $opts['scenario'])
+      ->arg($path ?? "$dir/tests/performance/tests/scenarios.js")
+      ->dir($dir)->run();
+  }
+
+  public function testPerformanceClean() {
+    $this->taskExec('COMPOSE_HTTP_TIMEOUT=200 docker-compose down --remove-orphans -v')
+      ->dir(__DIR__ . '/tests/performance')
+      ->run();
+  }
+
   public function testAcceptanceMultisite($opts = ['file' => null, 'skip-deps' => false, 'group' => null, 'timeout' => null, 'enable-cot' => false, 'enable-cot-sync' => false]) {
     return $this->runTestsInContainer(array_merge($opts, ['multisite' => true]));
   }

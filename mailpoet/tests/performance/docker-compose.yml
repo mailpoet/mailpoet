@@ -1,0 +1,77 @@
+version: '3.9'
+
+services:
+  setup:
+    image: wordpress:cli-2.7-php8.2
+    container_name: performance_setup
+    depends_on:
+      wordpress: { condition: service_started }
+    user: 33:33
+    command:
+      - /bin/sh
+      - -c
+      - |
+        wp core install --path=/var/www/html --url=localhost:9500 --title=Performance --admin_user=admin --admin_email=test@test.com --admin_password=password --skip-email
+        wp plugin activate mailpoet
+    volumes:
+      - performance-wordpress-data:/var/www/html
+      - ../..:/var/www/html/wp-content/plugins/mailpoet
+      - ../../../mailpoet-premium:/project/mailpoet-premium
+    environment:
+      WORDPRESS_DB_PASSWORD: wordpress
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_NAME: wordpress
+
+  wordpress:
+    image: mailpoet/wordpress:wp-6.1_php8.1_20201122.1
+    container_name: performance_wordpress
+    depends_on:
+      mysql: { condition: service_healthy }
+      mailhog: { condition: service_started }
+    user: 33:33
+    volumes:
+      - performance-wordpress-data:/var/www/html
+      - ../..:/var/www/html/wp-content/plugins/mailpoet
+      - ../../../mailpoet-premium:/var/www/html/wp-content/plugins/mailpoet-premium
+    ports:
+      - 9500:80
+    environment:
+      WORDPRESS_DB_PASSWORD: wordpress
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_NAME: wordpress
+      MAILPOET_TRACY_PRODUCTION_MODE: 1
+      MAILPOET_TRACY_LOG_DIR: /var/www/html/wp-content/plugins/mailpoet/tests/_output/exceptions
+
+  mysql:
+    image: mysql:8.0
+    container_name: performance_mysql
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wordpress
+      MYSQL_PASSWORD: wordpress
+    volumes:
+      - /dev/shm:/dev/shm
+    healthcheck:
+      test: ['CMD-SHELL', 'mysqladmin ping -hmysql --silent']
+      interval: 2s
+      timeout: 30s
+      retries: 10
+
+  mailhog:
+    image: mailhog/mailhog:v1.0.0
+    container_name: performance_mailhog
+    hostname: mailhog
+    ports:
+      - 9501:8025
+    user: ${UID:-1000}:${GID:-1000}
+    environment:
+      MH_STORAGE: maildir
+      MH_MAILDIR_PATH: /mailhog-data
+    volumes:
+      - performance-mailhog-data:/mailhog-data
+
+volumes:
+  performance-wordpress-data:
+  performance-mailhog-data:
