@@ -240,6 +240,7 @@ Module.CouponBlockSettingsView = base.BlockSettingsView.extend({
         'select2:select': function (event) {
           const coupon = event.params.data.text;
           model.set('existingCoupon', coupon);
+          model.set('code', coupon);
         },
       })
       .trigger('change');
@@ -255,12 +256,21 @@ Module.CouponBlockSettingsView = base.BlockSettingsView.extend({
       this.$('.mailpoet_field_coupon_source_create_new').removeClass(
         'mailpoet_hidden',
       );
+      // reset code placeholder
+      this.model.set('code', App.getConfig().get('coupon.code_placeholder'));
     } else if (value === 'useExisting') {
       this.$('.mailpoet_field_coupon_source_create_new').addClass(
         'mailpoet_hidden',
       );
       this.$('.mailpoet_field_coupon_source_use_existing').removeClass(
         'mailpoet_hidden',
+      );
+      // set selected code from available
+      this.model.set(
+        'code',
+        this.$('.mailpoet_field_coupon_existing_coupon')
+          .find(':selected')
+          .val(),
       );
     }
   },
