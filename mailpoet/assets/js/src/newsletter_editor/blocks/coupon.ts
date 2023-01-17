@@ -66,6 +66,10 @@ Module.CouponBlockSettingsView = base.BlockSettingsView.extend({
         this.changeField,
         'expiryDay',
       ),
+      'change .mailpoet_field_coupon_free_shipping': _.partial(
+        this.changeBoolCheckboxField,
+        'freeShipping',
+      ),
       'change .mailpoet_field_coupon_alignment': _.partial(
         this.changeField,
         'styles.block.textAlign',
