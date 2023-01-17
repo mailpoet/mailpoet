@@ -55,8 +55,10 @@ class CouponPreProcessor {
         $this->ensureCouponForBlocks($innerBlock['blocks'], $newsletter);
       }
       if (isset($innerBlock['type']) && $innerBlock['type'] === Coupon::TYPE) {
-        $generated = $this->shouldGenerateCoupon($innerBlock);
-        $innerBlock['couponId'] = $this->addOrUpdateCoupon($innerBlock, $newsletter);
+        if ($this->shouldGenerateCoupon($innerBlock)) {
+          $innerBlock['couponId'] = $this->addOrUpdateCoupon($innerBlock, $newsletter);
+          $generated = true;
+        }
       }
     }
 
@@ -102,7 +104,7 @@ class CouponPreProcessor {
   private function shouldGenerateCoupon(array $block): bool {
     return empty($block['couponId']);
   }
-  
+
   /**
    * For some renders/send outs the coupon id shouldn't be persisted along the coupon block
    * This is a placeholder method and should be augmented with more newsletter types that should dynamically get coupons
