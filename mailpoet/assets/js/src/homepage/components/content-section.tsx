@@ -15,16 +15,16 @@ export function ContentSection({
   className = '',
 }: Props): JSX.Element {
   return (
-    <div
+    <section
       className={classnames('mailpoet-homepage-section__container', className)}
     >
-      <div className="mailpoet-homepage-section__heading">
+      <header className="mailpoet-homepage-section__heading">
         <h2>{heading}</h2>
         <div className="mailpoet-homepage-section__heading-after">
           {headingAfter}
         </div>
-      </div>
+      </header>
       {children}
-    </div>
+    </section>
   );
 }
