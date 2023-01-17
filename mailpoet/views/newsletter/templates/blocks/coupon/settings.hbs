@@ -70,7 +70,53 @@
     </summary>
     <div className="content">
 
-      Content here
+      <div class="mailpoet_form_field">
+        <label>
+          <div class="mailpoet_form_field_title mailpoet_form_field_title_inline"><%= __('Minimum spend') %></div>
+          <div class="mailpoet_form_field_input_option">
+            <input type="text" name="minimum-amount" class="mailpoet_input mailpoet_field_coupon_minimum_amount" value="{{ model.minimumAmount }}" placeholder="<%= __('No minimum')%>" />
+          </div>
+        </label>
+      </div>
+
+      <div class="mailpoet_form_field">
+        <label>
+          <div class="mailpoet_form_field_title mailpoet_form_field_title_inline"><%= __('Maximum spend') %></div>
+          <div class="mailpoet_form_field_input_option">
+            <input type="text" name="maximum-amount" class="mailpoet_input mailpoet_field_coupon_maximum_amount" value="{{ model.maximumAmount }}" placeholder="<%= __('No Maximum')%>" />
+          </div>
+        </label>
+      </div>
+
+      <div class="mailpoet_form_field">
+        <div class="mailpoet_form_field_checkbox_option">
+          <label>
+            <input type="checkbox" name="individual-use" class="mailpoet_field_coupon_individual_use"  {{#ifCond model.individualUse '===' true }}CHECKED{{/ifCond}}/>
+            <%= __('Individual use only') %>
+          </label>
+        </div>
+      </div>
+
+      <div class="mailpoet_form_field">
+        <div class="mailpoet_form_field_checkbox_option">
+          <label>
+            <input type="checkbox" name="exclude-sale-items" class="mailpoet_field_coupon_exclude_sale_items"  {{#ifCond model.excludeSaleItems '===' true }}CHECKED{{/ifCond}}/>
+            <%= __('Exclude sale items') %>
+          </label>
+        </div>
+      </div>
+
+      <!--  More items here    -->
+
+      <hr />
+      <div class="mailpoet_form_field">
+        <label>
+          <div class="mailpoet_form_field_title mailpoet_form_field_title_inline"><%= __('Allowed emails') %></div>
+          <div class="mailpoet_form_field_input_option">
+            <input type="email" name="email-restrictions" class="mailpoet_input mailpoet_field_coupon_email_restrictions" value="{{ model.emailRestrictions }}" placeholder="<%= __('No restrictions')%>" multiple="multiple" />
+          </div>
+        </label>
+      </div>
 
     </div>
   </details>
@@ -81,7 +127,23 @@
     </summary>
     <div className="content">
 
-      Content here
+      <div class="mailpoet_form_field">
+        <label>
+          <div class="mailpoet_form_field_title mailpoet_form_field_title_inline"><%= __('Usage limit per coupon') %></div>
+          <div class="mailpoet_form_field_input_option">
+            <input type="number" name="usage-limit" class="mailpoet_input mailpoet_field_coupon_usage_limit" value="{{ model.usageLimit }}" placeholder="<%= __('Unlimited usage')%>" step="1" min="0" />
+          </div>
+        </label>
+      </div>
+
+      <div class="mailpoet_form_field">
+        <label>
+          <div class="mailpoet_form_field_title mailpoet_form_field_title_inline"><%= __('Usage limit per user') %></div>
+          <div class="mailpoet_form_field_input_option">
+            <input type="number" name="usage-limit-per-user" class="mailpoet_input mailpoet_field_coupon_usage_limit_per_user" value="{{ model.usageLimitPerUser }}" placeholder="<%= __('Unlimited usage')%>" step="1" min="0" />
+          </div>
+        </label>
+      </div>
 
     </div>
   </details>
