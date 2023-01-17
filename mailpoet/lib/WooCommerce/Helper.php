@@ -188,8 +188,11 @@ class Helper {
       'post_status' => 'publish',
     ]);
 
-    return array_map(function(\WP_Post $post): string {
-      return $post->post_title; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    return array_map(function(\WP_Post $post): array {
+      return [
+        'id' => $post->ID,
+        'text' => $post->post_title, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+      ];
     }, $couponPosts);
   }
 }

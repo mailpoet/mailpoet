@@ -177,7 +177,9 @@ Module.CouponBlockSettingsView = base.BlockSettingsView.extend({
         availableDiscountTypes: App.getConfig()
           .get('coupon.discount_types')
           .toJSON(),
-        availableCoupons: App.getConfig().get('coupon.available_coupons'),
+        availableCoupons: App.getConfig()
+          .get('coupon.available_coupons')
+          .toJSON(),
       },
     );
   },
@@ -238,9 +240,10 @@ Module.CouponBlockSettingsView = base.BlockSettingsView.extend({
       })
       .on({
         'select2:select': function (event) {
-          const coupon = event.params.data.text;
-          model.set('existingCoupon', coupon);
-          model.set('code', coupon);
+          const couponId = event.params.data.id;
+          const couponCode = event.params.data.text;
+          model.set('couponId', couponId);
+          model.set('code', couponCode);
         },
       })
       .trigger('change');
@@ -258,6 +261,7 @@ Module.CouponBlockSettingsView = base.BlockSettingsView.extend({
       );
       // reset code placeholder
       this.model.set('code', App.getConfig().get('coupon.code_placeholder'));
+      this.model.set('couponId', null);
     } else if (value === 'useExisting') {
       this.$('.mailpoet_field_coupon_source_create_new').addClass(
         'mailpoet_hidden',
@@ -268,6 +272,12 @@ Module.CouponBlockSettingsView = base.BlockSettingsView.extend({
       // set selected code from available
       this.model.set(
         'code',
+        this.$('.mailpoet_field_coupon_existing_coupon')
+          .find(':selected')
+          .html(),
+      );
+      this.model.set(
+        'couponId',
         this.$('.mailpoet_field_coupon_existing_coupon')
           .find(':selected')
           .val(),
