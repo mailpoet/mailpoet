@@ -101,6 +101,8 @@ class NewsletterEditor {
       }
       $wcEmailSettings = $this->wcTransactionalEmails->getWCEmailSettings();
       $discountTypes = $this->woocommerceHelper->wcGetCouponTypes();
+      $discountType = (string)current(array_keys($discountTypes));
+      $amountMax = strpos($discountType, 'percent') !== false ? 100 : null;
       $woocommerceData = [
         'email_headings' => $this->wcTransactionalEmails->getEmailHeadings(),
         'customizer_enabled' => (bool)$this->settings->get('woocommerce.use_mailpoet_editor'),
@@ -110,7 +112,8 @@ class NewsletterEditor {
           ],
           'defaults' => [
             'code' => Coupon::CODE_PLACEHOLDER,
-            'discountType' => current(array_keys($discountTypes)),
+            'discountType' => $discountType,
+            'amountMax' => $amountMax,
           ],
         ],
       ];

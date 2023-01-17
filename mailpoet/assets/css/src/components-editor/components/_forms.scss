@@ -55,4 +55,9 @@
   .mailpoet_form_field_input_nowrap {
     white-space: nowrap;
   }
+
+  .mailpoet_form_field_input_flex {
+    display: flex;
+    line-height: 30px;
+  }
 }
