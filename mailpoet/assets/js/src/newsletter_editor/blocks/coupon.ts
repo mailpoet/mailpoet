@@ -70,6 +70,35 @@ Module.CouponBlockSettingsView = base.BlockSettingsView.extend({
         this.changeBoolCheckboxField,
         'freeShipping',
       ),
+      'input .mailpoet_field_coupon_minimum_amount': _.partial(
+        this.changeField,
+        'minimumAmount',
+      ),
+      'input .mailpoet_field_coupon_maximum_amount': _.partial(
+        this.changeField,
+        'maximumAmount',
+      ),
+      'change .mailpoet_field_coupon_individual_use': _.partial(
+        this.changeBoolCheckboxField,
+        'individualUse',
+      ),
+      'change .mailpoet_field_coupon_exclude_sale_items': _.partial(
+        this.changeBoolCheckboxField,
+        'excludeSaleItems',
+      ),
+      // more items here
+      'input .mailpoet_field_coupon_email_restrictions': _.partial(
+        this.changeField,
+        'emailRestrictions',
+      ),
+      'input .mailpoet_field_coupon_usage_limit': _.partial(
+        this.changeField,
+        'usageLimit',
+      ),
+      'input .mailpoet_field_coupon_usage_limit_per_user': _.partial(
+        this.changeField,
+        'usageLimitPerUser',
+      ),
       'change .mailpoet_field_coupon_alignment': _.partial(
         this.changeField,
         'styles.block.textAlign',
