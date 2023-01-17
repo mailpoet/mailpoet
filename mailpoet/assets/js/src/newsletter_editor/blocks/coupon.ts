@@ -53,10 +53,7 @@ Module.CouponBlockSettingsView = base.BlockSettingsView.extend({
   events() {
     return {
       'input .mailpoet_field_coupon_code': _.partial(this.changeField, 'code'),
-      'change .mailpoet_field_coupon_discount_type': _.partial(
-        this.changeField,
-        'discountType',
-      ),
+      'change .mailpoet_field_coupon_discount_type': 'changeDiscountType',
       'input .mailpoet_field_coupon_amount': _.partial(
         this.changeField,
         'amount',
@@ -194,6 +191,19 @@ Module.CouponBlockSettingsView = base.BlockSettingsView.extend({
       'styles.block.fontWeight',
       checked ? jQuery(event.target).val() : 'normal',
     );
+  },
+  changeDiscountType(event) {
+    const amountMax = this.model.get('amountMax');
+    if (event.target.value && event.target.value.includes('percent')) {
+      this.model.set('amountMax', 100);
+    } else {
+      this.model.set('amountMax', null);
+    }
+
+    this.changeField('discountType', event);
+    if (amountMax !== this.model.get('amountMax')) {
+      this.render();
+    }
   },
 });
 
