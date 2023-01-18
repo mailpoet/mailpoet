@@ -1,4 +1,5 @@
 import { Fragment } from '@wordpress/element';
+import { locale } from '../../config';
 
 type Item = {
   key: string;
@@ -15,7 +16,7 @@ export function Statistics({
   items,
   labelPosition = 'before',
 }: Props): JSX.Element {
-  const intl = new Intl.NumberFormat();
+  const intl = new Intl.NumberFormat(locale.toString());
   return (
     <div className="mailpoet-automation-stats">
       {items.map((item, i) => (
