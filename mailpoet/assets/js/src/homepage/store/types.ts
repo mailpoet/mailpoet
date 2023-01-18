@@ -10,6 +10,11 @@ export type ProductDiscoveryState = {
   tasksStatus: ProductDiscoveryTasksStatus | null;
 };
 
+export type SubscribersCountChange = {
+  subscribed: number;
+  unsubscribed: number;
+};
+
 export type TaskListTasksStatus = {
   senderSet: boolean;
   mssConnected: boolean;
@@ -41,4 +46,7 @@ export type State = {
   productDiscovery: ProductDiscoveryState;
   upsell: UpsellState;
   isWooCommerceActive: boolean;
+  subscribersStats: {
+    global: SubscribersCountChange;
+  };
 };

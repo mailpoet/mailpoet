@@ -192,6 +192,12 @@ interface Window {
     upsellStatus: {
       canDisplay: boolean;
     } | null;
+    subscribersStats: {
+      global: {
+        subscribed: number;
+        unsubscribed: number;
+      };
+    };
     wooCustomersCount: number;
     subscribersCount: number;
   };
