@@ -40,6 +40,7 @@ class AutomationTemplates {
       'automation/templates.html',
       [
         'sub_menu' => 'mailpoet-automation',
+        'locale_full' => $this->wp->getLocale(),
         'api' => [
           'root' => rtrim($this->wp->escUrlRaw($this->wp->restUrl()), '/'),
           'nonce' => $this->wp->wpCreateNonce('wp_rest'),
