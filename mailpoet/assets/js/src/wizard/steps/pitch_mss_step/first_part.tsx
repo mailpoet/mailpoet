@@ -17,6 +17,12 @@ const mailpoetAccountUrl = MailPoet.MailPoetComUrlFactory.getPurchasePlanUrl(
   },
 );
 
+function openMailPoetShopAndGoToTheNextPart(event, history, step: string) {
+  event.preventDefault();
+  window.open(mailpoetAccountUrl);
+  history.push(`/steps/${step}/part/2`);
+}
+
 type MSSStepFirstPartPropType = {
   subscribersCount: number;
   finishWizard: (redirect_url?: string) => void;
@@ -59,11 +65,9 @@ function MSSStepFirstPart({
         href={mailpoetAccountUrl}
         target="_blank"
         rel="noopener noreferrer"
-        onClick={(event) => {
-          event.preventDefault();
-          window.open(mailpoetAccountUrl);
-          history.push(`/steps/${step}/part/2`);
-        }}
+        onClick={(event) =>
+          openMailPoetShopAndGoToTheNextPart(event, history, step)
+        }
         iconEnd={<Icon icon={external} />}
       >
         {MailPoet.I18n.t('welcomeWizardMSSFirstPartButton')}
