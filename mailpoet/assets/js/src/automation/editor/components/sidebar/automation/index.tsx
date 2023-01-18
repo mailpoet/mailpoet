@@ -3,6 +3,7 @@ import { useSelect } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
 import { storeName } from '../../../store';
 import { TrashButton } from '../../actions/trash-button';
+import { locale } from '../../../../config';
 
 export function AutomationSidebar(): JSX.Element {
   const { automationData } = useSelect(
@@ -23,7 +24,7 @@ export function AutomationSidebar(): JSX.Element {
       <PanelRow>
         <strong>Date added</strong>{' '}
         {new Date(Date.parse(automationData.created_at)).toLocaleDateString(
-          undefined,
+          locale.toString(),
           dateOptions,
         )}
       </PanelRow>
@@ -31,13 +32,13 @@ export function AutomationSidebar(): JSX.Element {
         <strong>Activated</strong>{' '}
         {automationData.status === 'active' &&
           new Date(Date.parse(automationData.updated_at)).toLocaleDateString(
-            undefined,
+            locale.toString(),
             dateOptions,
           )}
         {automationData.status !== 'active' &&
           automationData.activated_at &&
           new Date(Date.parse(automationData.activated_at)).toLocaleDateString(
-            undefined,
+            locale.toString(),
             dateOptions,
           )}
         {automationData.status !== 'active' && !automationData.activated_at && (
