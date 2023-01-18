@@ -1,10 +1,8 @@
 import { useState } from 'react';
 import { MailPoet } from 'mailpoet';
 
-import { Heading } from 'common/typography/heading/heading';
 import { WelcomeWizardStepLayoutBody } from 'wizard/layout/step_layout_body.jsx';
-import { List } from 'common/typography/list/list';
-import { Button } from 'common';
+import { Button, Heading, List } from 'common';
 
 function FreeBenefitsList(): JSX.Element {
   return (

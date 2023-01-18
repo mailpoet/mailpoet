@@ -2,9 +2,8 @@ import { useHistory, useParams } from 'react-router-dom';
 import { useState } from '@wordpress/element';
 import { useCallback } from 'react';
 import ReactStringReplace from 'react-string-replace';
-import { Heading } from 'common/typography/heading/heading';
 import { MailPoet } from 'mailpoet';
-import { Button, Input } from 'common';
+import { Button, Input, Heading } from 'common';
 import { OwnEmailServiceNote } from './own_email_service_note';
 
 type MSSStepSecondPartPropType = {

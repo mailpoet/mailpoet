@@ -2,8 +2,7 @@ import { useHistory, useParams } from 'react-router-dom';
 import { external, Icon } from '@wordpress/icons';
 import { Heading } from 'common/typography/heading/heading';
 import { MailPoet } from 'mailpoet';
-import { List } from 'common/typography/list/list';
-import { Button } from 'common';
+import { Button, List } from 'common';
 import { OwnEmailServiceNote } from './own_email_service_note';
 
 const mailpoetAccountUrl = MailPoet.MailPoetComUrlFactory.getPurchasePlanUrl(
