@@ -7,7 +7,8 @@ import { BaseBlock } from 'newsletter_editor/blocks/base';
 import _ from 'underscore';
 import jQuery from 'jquery';
 import 'backbone.marionette';
-import { MailPoet } from '../../mailpoet';
+import { MailPoet } from 'mailpoet';
+import { CommunicationComponent } from 'newsletter_editor/components/communication';
 
 export const FEATURE_COUPON_BLOCK = 'Coupon block';
 
@@ -17,7 +18,16 @@ const base = BaseBlock;
 Module.CouponBlockModel = base.BlockModel.extend({
   defaults() {
     // eslint-disable-next-line no-underscore-dangle
-    return this._getDefaults({}, App.getConfig().get('blockDefaults.coupon'));
+    return this._getDefaults(
+      {
+        productIds: [], // selected product ids,
+        excludedProductIds: [],
+        productCategories: [], // selected categories id
+        excludedProductCategories: [],
+        emailRestrictions: [],
+      },
+      App.getConfig().get('blockDefaults.coupon'),
+    );
   },
 });
 
@@ -279,6 +289,21 @@ Module.CouponBlockSettingsView = base.BlockSettingsView.extend({
         },
       })
       .trigger('change');
+
+    const fieldKeys = {
+      productCategories: 'productCategories',
+      excludedProductCategories: 'excludedProductCategories',
+    };
+
+    this.$('#mailpoet_field_coupon_product_categories')
+      .select2(this.categoriesSelect2Options())
+      .on(this.select2OnEventOptions(fieldKeys.productCategories))
+      .trigger('change');
+
+    this.$('#mailpoet_field_coupon_excluded_product_categories')
+      .select2(this.categoriesSelect2Options())
+      .on(this.select2OnEventOptions(fieldKeys.excludedProductCategories))
+      .trigger('change');
   },
   changeSource(event) {
     const value = jQuery(event.target).val();
@@ -315,6 +340,60 @@ Module.CouponBlockSettingsView = base.BlockSettingsView.extend({
           .val(),
       );
     }
+  },
+  categoriesSelect2Options() {
+    return {
+      multiple: true,
+      allowClear: true,
+      ajax: {
+        delay: 250, // wait 250 milliseconds before triggering the request
+        data: (params) => ({
+          search: params.term,
+          page: params.page || 1,
+        }),
+        transport: (options, success, failure) => {
+          // Fetch available product categories
+          const termsPromise = CommunicationComponent.getTerms({
+            search: options.data.search,
+            page: options.data.page,
+            taxonomies: ['product_cat'],
+          });
+          termsPromise.then(success);
+          termsPromise.fail(failure);
+          return termsPromise;
+        },
+        processResults: (data) => ({
+          results: _.map(data, (item) =>
+            _.defaults(
+              {
+                text: item.name,
+                id: item.term_id,
+              },
+              item,
+            ),
+          ),
+          pagination: {
+            more: data.length === 100,
+          },
+        }),
+      },
+    };
+  },
+  select2OnEventOptions(fieldName) {
+    return {
+      'select2:select': (event) => {
+        const modelItem = this.model.get(fieldName);
+        modelItem.add(event.params.data);
+        // Reset whole model in order for change events to propagate properly
+        this.model.set(fieldName, modelItem.toJSON());
+      },
+      'select2:unselect': (event) => {
+        const modelItem = this.model.get(fieldName);
+        modelItem.remove(event.params.data);
+        // Reset whole model in order for change events to propagate properly
+        this.model.set(fieldName, modelItem.toJSON());
+      },
+    };
   },
 });
 
