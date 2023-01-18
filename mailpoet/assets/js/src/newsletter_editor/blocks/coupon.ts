@@ -194,16 +194,29 @@ Module.CouponBlockSettingsView = base.BlockSettingsView.extend({
   },
   changeDiscountType(event) {
     const amountMax = this.model.get('amountMax');
+    const $input = this.$('.mailpoet_field_coupon_amount');
+    let newAmountMax;
     if (event.target.value && event.target.value.includes('percent')) {
-      this.model.set('amountMax', 100);
+      newAmountMax = 100;
     } else {
-      this.model.set('amountMax', null);
+      newAmountMax = null;
     }
 
+    this.$('.mailpoet_field_coupon_amount').parsley().destroy();
+    $input.prop('data-parsley-maxlength', newAmountMax);
+
     this.changeField('discountType', event);
+    this.model.set('amountMax', newAmountMax);
+
     if (amountMax !== this.model.get('amountMax')) {
       this.render();
     }
+
+    // It's a new element after the re-render
+    this.$('.mailpoet_field_coupon_amount').parsley().validate();
+  },
+  onRender() {
+    this.$('[data-parsley-validate]').parsley().validate();
   },
 });
 
