@@ -4,6 +4,7 @@ import { ProductDiscovery } from 'homepage/components/product-discovery';
 import { Upsell } from 'homepage/components/upsell';
 import { useDispatch, useSelect } from '@wordpress/data';
 import { storeName } from 'homepage/store/store';
+import { SubscribersStats } from 'homepage/components/subscribers-stats';
 
 export function HomepageSections(): JSX.Element {
   const {
@@ -43,6 +44,9 @@ export function HomepageSections(): JSX.Element {
           <Upsell closable onHide={hideUpsell} />
         </ErrorBoundary>
       ) : null}
+      <ErrorBoundary>
+        <SubscribersStats />
+      </ErrorBoundary>
     </div>
   );
 }
