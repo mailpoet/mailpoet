@@ -102,8 +102,9 @@ class CouponPreProcessor {
     $coupon->set_maximum_amount($couponBlock['maximumAmount'] ?? '');
     $coupon->set_individual_use($couponBlock['individualUse'] ?? false);
     $coupon->set_exclude_sale_items($couponBlock['excludeSaleItems'] ?? false);
-    $coupon->set_product_ids($couponBlock['productIds'] ?? []);
-    $coupon->set_excluded_product_ids($couponBlock['excludedProductIds'] ?? []);
+
+    $coupon->set_product_ids($this->getProductIds($couponBlock['productIds']));
+    $coupon->set_excluded_product_ids($this->getProductIds($couponBlock['excludedProductIds']));
 
     $coupon->set_product_categories($this->getCategoryItemIds($couponBlock['productCategories']));
     $coupon->set_excluded_product_categories($this->getCategoryItemIds($couponBlock['excludedProductCategories']));
@@ -118,12 +119,20 @@ class CouponPreProcessor {
   }
 
   private function getCategoryItemIds(array $items): array {
+    return $this->getItemIds($items, 'term_id');
+  }
+
+  private function getProductIds(array $items): array {
+    return $this->getItemIds($items, 'ID');
+  }
+
+  private function getItemIds(array $items, $field = ''): array {
     if (empty($items)) {
       return [];
     }
 
-    return array_map(function ($item){
-      return $item['term_id'];
+    return array_map(function ($item) use ($field) {
+      return $item[$field];
     }, $items);
   }
 
