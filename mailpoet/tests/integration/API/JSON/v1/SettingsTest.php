@@ -5,7 +5,9 @@ namespace MailPoet\Test\API\JSON\v1;
 use Codeception\Stub\Expected;
 use Codeception\Util\Fixtures;
 use MailPoet\API\JSON\Error as APIError;
+use MailPoet\API\JSON\ErrorResponse;
 use MailPoet\API\JSON\Response as APIResponse;
+use MailPoet\API\JSON\SuccessResponse;
 use MailPoet\API\JSON\v1\Settings;
 use MailPoet\Config\ServicesChecker;
 use MailPoet\Cron\Workers\InactiveSubscribers;
@@ -294,6 +296,21 @@ class SettingsTest extends \MailPoetTest {
     expect($response->meta['showNotice'])->equals(false);
     $response = $this->endpoint->set(['tracking' => ['level' => TrackingConfig::LEVEL_BASIC]]);
     expect($response->meta['showNotice'])->equals(false);
+  }
+
+  public function testItCanDeleteSetting() {
+    $this->settings->set('setting_to_be_deleted', true);
+    $response = $this->endpoint->delete('setting_to_be_deleted');
+    expect($response)->isInstanceOf(SuccessResponse::class);
+    expect($this->settings->get('setting_to_be_deleted'))->null();
+  }
+
+  public function testDeleteReturnErrorForEmptySettingName() {
+    expect($this->endpoint->delete(''))->isInstanceOf(ErrorResponse::class);
+  }
+
+  public function testDeleteReturnErrorIfSettingDoesntExist() {
+    expect($this->endpoint->delete('unexistent_setting'))->isInstanceOf(ErrorResponse::class);
   }
 
   private function createNewsletter(string $type, string $status = NewsletterEntity::STATUS_DRAFT, $parent = null): NewsletterEntity {
