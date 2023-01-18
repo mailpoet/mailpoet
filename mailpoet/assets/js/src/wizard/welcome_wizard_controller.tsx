@@ -155,10 +155,7 @@ function WelcomeWizardStepsController({
             illustrationUrl={window.wizard_MSS_pitch_illustration_url}
           >
             <ErrorBoundary>
-              <WelcomeWizardPitchMSSStep
-                subscribersCount={window.mailpoet_subscribers_count}
-                finishWizard={finishWizard}
-              />
+              <WelcomeWizardPitchMSSStep finishWizard={finishWizard} />
             </ErrorBoundary>
           </WelcomeWizardStepLayout>
         ) : null}
