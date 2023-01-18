@@ -34,7 +34,7 @@
 .mailpoet-automation-field__error {
   position: relative;
 
-  input,
+  input:not([type='radio'])
   select,
   textarea,
   input[type='text'].components-form-token-field__input {
