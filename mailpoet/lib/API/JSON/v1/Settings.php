@@ -4,6 +4,7 @@ namespace MailPoet\API\JSON\v1;
 
 use MailPoet\API\JSON\Endpoint as APIEndpoint;
 use MailPoet\API\JSON\Error as APIError;
+use MailPoet\API\JSON\Response;
 use MailPoet\Config\AccessControl;
 use MailPoet\Config\ServicesChecker;
 use MailPoet\Cron\Workers\SubscribersEngagementScore;
@@ -167,6 +168,32 @@ class Settings extends APIEndpoint {
 
       return $this->successResponse($this->settings->getAll(), $meta);
     }
+  }
+
+  public function delete(string $settingName): Response {
+    if (empty($settingName)) {
+      return $this->badRequest(
+        [
+          APIError::BAD_REQUEST =>
+            __('You have not specified any setting to be deleted.', 'mailpoet'),
+        ]
+      );
+    }
+
+    $setting = $this->settings->get($settingName);
+
+    if (is_null($setting)) {
+      return $this->badRequest(
+        [
+          APIError::BAD_REQUEST =>
+            __('Setting doesn\'t exist.', 'mailpoet'),
+        ]
+      );
+    }
+
+    $this->settings->delete($settingName);
+
+    return $this->successResponse();
   }
 
   public function recalculateSubscribersScore() {
