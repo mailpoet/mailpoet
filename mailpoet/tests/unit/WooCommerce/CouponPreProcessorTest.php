@@ -164,7 +164,26 @@ class CouponPreProcessorTest extends \MailPoetUnitTest {
   private function createCouponMock() {
     /* @phpstan-ignore-next-line ignoring usage of string instead of class-string */
     return $this->getMockBuilder('MaybeMissingWC_Coupon')
-      ->setMethods(['set_code', 'set_discount_type', 'set_amount', 'set_description', 'set_date_expires', 'save'])
+      ->setMethods([
+        'set_code',
+        'set_discount_type',
+        'set_amount',
+        'set_description',
+        'set_date_expires',
+        'set_free_shipping',
+        'set_minimum_amount',
+        'set_maximum_amount',
+        'set_individual_use',
+        'set_exclude_sale_items',
+        'set_product_ids',
+        'set_excluded_product_ids',
+        'set_product_categories',
+        'set_excluded_product_categories',
+        'set_email_restrictions',
+        'set_usage_limit',
+        'set_usage_limit_per_user',
+        'save',
+      ])
       ->getMock();
   }
 }

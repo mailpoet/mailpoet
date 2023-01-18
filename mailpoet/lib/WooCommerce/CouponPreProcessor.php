@@ -103,13 +103,13 @@ class CouponPreProcessor {
     $coupon->set_individual_use($couponBlock['individualUse'] ?? false);
     $coupon->set_exclude_sale_items($couponBlock['excludeSaleItems'] ?? false);
 
-    $coupon->set_product_ids($this->getProductIds($couponBlock['productIds']));
-    $coupon->set_excluded_product_ids($this->getProductIds($couponBlock['excludedProductIds']));
+    $coupon->set_product_ids($this->getProductIds($couponBlock['productIds'] ?? []));
+    $coupon->set_excluded_product_ids($this->getProductIds($couponBlock['excludedProductIds'] ?? []));
 
-    $coupon->set_product_categories($this->getCategoryItemIds($couponBlock['productCategories']));
-    $coupon->set_excluded_product_categories($this->getCategoryItemIds($couponBlock['excludedProductCategories']));
+    $coupon->set_product_categories($this->getCategoryItemIds($couponBlock['productCategories'] ?? []));
+    $coupon->set_excluded_product_categories($this->getCategoryItemIds($couponBlock['excludedProductCategories'] ?? []));
 
-    $coupon->set_email_restrictions(explode(',', $couponBlock['emailRestrictions']));
+    $coupon->set_email_restrictions(explode(',', $couponBlock['emailRestrictions'] ?? ''));
 
     // usage limit
     $coupon->set_usage_limit($couponBlock['usageLimit'] ?? 0);
