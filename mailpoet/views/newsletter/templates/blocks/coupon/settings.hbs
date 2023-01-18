@@ -107,6 +107,28 @@
       </div>
 
       <!--  More items here    -->
+      <hr />
+      <div class="mailpoet_product_selection_filter_row">
+        <label for="mailpoet_field_coupon_product_categories">
+          <%= __('Product categories') %>
+        </label>
+        <select id="mailpoet_field_coupon_product_categories" class="mailpoet_select" data-placeholder="<%= __('Any category')%>" multiple="multiple">
+          {{#each model.productCategories}}
+            <option value="{{ id }}" selected="selected">{{ text }}</option>
+          {{/each}}
+        </select>
+      </div>
+
+      <div class="mailpoet_product_selection_filter_row">
+        <label for="mailpoet_field_coupon_excluded_product_categories">
+          <%= __('Exclude categories') %>
+        </label>
+        <select id="mailpoet_field_coupon_excluded_product_categories" class="mailpoet_select" data-placeholder="<%= __('No categories')%>" multiple="multiple">
+          {{#each model.excludedProductCategories}}
+            <option value="{{ id }}" selected="selected">{{ text }}</option>
+          {{/each}}
+        </select>
+      </div>
 
       <hr />
       <div class="mailpoet_form_field">

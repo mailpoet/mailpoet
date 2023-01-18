@@ -85,29 +85,46 @@ class CouponPreProcessor {
 
     // general
     $coupon->set_discount_type($couponBlock['discountType']);
-    $coupon->set_amount($couponBlock['amount']);
+
+    if (isset($couponBlock['amount'])) {
+      $coupon->set_amount($couponBlock['amount']);
+    }
+
     if (isset($couponBlock['expiryDay'])) {
       $expiration = (new DateTime())->getCurrentDateTime()->modify("+{$couponBlock['expiryDay']} day")->getTimestamp();
       $coupon->set_date_expires($expiration);
     }
-    $coupon->set_free_shipping($couponBlock['freeShipping'] ?: false);
+
+    $coupon->set_free_shipping($couponBlock['freeShipping'] ?? false);
 
     // usage restriction
-    $coupon->set_minimum_amount($couponBlock['minimumAmount'] ?: '');
-    $coupon->set_maximum_amount($couponBlock['maximumAmount'] ?: '');
-    $coupon->set_individual_use($couponBlock['individualUse'] ?: false);
-    $coupon->set_exclude_sale_items($couponBlock['excludeSaleItems'] ?: false);
-    $coupon->set_product_ids($couponBlock['productIds'] ?: []);
-    $coupon->set_excluded_product_ids($couponBlock['excludedProductIds'] ?: []);
-    $coupon->set_product_categories($couponBlock['productCategories'] ?: []);
-    $coupon->set_excluded_product_categories($couponBlock['excludedProductCategories'] ?: []);
-    $coupon->set_email_restrictions($couponBlock['emailRestrictions'] ?: []);
+    $coupon->set_minimum_amount($couponBlock['minimumAmount'] ?? '');
+    $coupon->set_maximum_amount($couponBlock['maximumAmount'] ?? '');
+    $coupon->set_individual_use($couponBlock['individualUse'] ?? false);
+    $coupon->set_exclude_sale_items($couponBlock['excludeSaleItems'] ?? false);
+    $coupon->set_product_ids($couponBlock['productIds'] ?? []);
+    $coupon->set_excluded_product_ids($couponBlock['excludedProductIds'] ?? []);
+
+    $coupon->set_product_categories($this->getCategoryItemIds($couponBlock['productCategories']));
+    $coupon->set_excluded_product_categories($this->getCategoryItemIds($couponBlock['excludedProductCategories']));
+
+    $coupon->set_email_restrictions(explode(',', $couponBlock['emailRestrictions']));
 
     // usage limit
-    $coupon->set_usage_limit($couponBlock['usageLimit'] ?: 0);
-    $coupon->set_usage_limit_per_user($couponBlock['usageLimitPerUser'] ?: 0);
+    $coupon->set_usage_limit($couponBlock['usageLimit'] ?? 0);
+    $coupon->set_usage_limit_per_user($couponBlock['usageLimitPerUser'] ?? 0);
 
     return $coupon->save();
+  }
+
+  private function getCategoryItemIds(array $items): array {
+    if (empty($items)) {
+      return [];
+    }
+
+    return array_map(function ($item){
+      return $item['term_id'];
+    }, $items);
   }
 
   /**
