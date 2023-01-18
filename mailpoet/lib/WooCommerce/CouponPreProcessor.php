@@ -73,8 +73,14 @@ class CouponPreProcessor {
     $coupon->set_amount($couponBlock['amount']);
     $expiration = (new DateTime())->getCurrentDateTime()->modify("+{$couponBlock['expiryDay']} day")->getTimestamp();
     $coupon->set_date_expires($expiration);
-    // translators: %s is newsletter subject.
-    $coupon->set_description(sprintf(_x('Auto Generated coupon by MailPoet for email: %s', 'Coupon block code generation', 'mailpoet'), $newsletter->getSubject()));
+    $coupon->set_description(
+      sprintf(
+      // translators: %s is newsletter subject.
+        _x('Auto Generated coupon by MailPoet for email: %1$s: %2$s', 'Coupon block code generation', 'mailpoet'),
+        $newsletter->getId(),
+        $newsletter->getSubject()
+      )
+    );
 
     return $coupon->save();
   }
