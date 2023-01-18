@@ -7,6 +7,9 @@ import { BaseBlock } from 'newsletter_editor/blocks/base';
 import _ from 'underscore';
 import jQuery from 'jquery';
 import 'backbone.marionette';
+import { MailPoet } from '../../mailpoet';
+
+export const FEATURE_COUPON_BLOCK = 'Coupon block';
 
 const Module: Record<string, (...args: unknown[]) => void> = {};
 const base = BaseBlock;
@@ -232,7 +235,10 @@ Module.CouponWidgetView = base.WidgetView.extend({
 });
 
 App.on('before:start', (BeforeStartApp) => {
-  if (!window.MailPoet.isWoocommerceActive) {
+  if (
+    !MailPoet.FeaturesController.isSupported(FEATURE_COUPON_BLOCK) ||
+    !window.MailPoet.isWoocommerceActive
+  ) {
     return;
   }
   BeforeStartApp.registerBlockType('coupon', {
