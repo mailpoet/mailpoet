@@ -99,6 +99,8 @@ class CouponPreProcessor {
   
   /**
    * For some renders/send outs the coupon id shouldn't be persisted along the coupon block
+   * This is a placeholder method and should be augmented with more newsletter types that should dynamically get coupons
+   * and not have one single coupon saved along with the block's settings
    */
   private function shouldPersist(NewsletterEntity $newsletter): bool {
     return $newsletter->getType() !== NewsletterEntity::TYPE_AUTOMATIC;
