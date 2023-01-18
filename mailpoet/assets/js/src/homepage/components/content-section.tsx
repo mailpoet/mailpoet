@@ -6,10 +6,12 @@ type Props = {
   children: ReactNode;
   headingAfter?: ReactNode;
   className?: string;
+  description?: string;
 };
 
 export function ContentSection({
   heading,
+  description,
   children,
   headingAfter,
   className = '',
@@ -19,7 +21,11 @@ export function ContentSection({
       className={classnames('mailpoet-homepage-section__container', className)}
     >
       <header className="mailpoet-homepage-section__heading">
-        <h2>{heading}</h2>
+        <h2>
+          {heading}
+          {description && <span>{description}</span>}
+        </h2>
+
         <div className="mailpoet-homepage-section__heading-after">
           {headingAfter}
         </div>
