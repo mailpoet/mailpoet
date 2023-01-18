@@ -90,6 +90,8 @@ interface Window {
   mailpoet_premium_version: string;
   mailpoet_premium_link: string;
   mailpoet_woocommerce_active: boolean;
+  mailpoet_woocommerce_version: string;
+  mailpoet_track_wizard_loaded_via_woocommerce: boolean;
   mailpoet_premium_active: boolean;
   mailpoet_subscribers_limit: number;
   mailpoet_subscribers_limit_reached: boolean;
