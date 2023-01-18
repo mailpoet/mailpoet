@@ -11,6 +11,7 @@ export * as ReactTooltip from 'react-tooltip';
 export * as ReactStringReplace from 'react-string-replace';
 export * as Slugify from 'slugify';
 export { CheckboxControl as WordpressComponentsCheckboxControl } from '@wordpress/components';
+export { ExternalLink as WordpressComponentsExternalLink } from '@wordpress/components';
 export { RadioControl as WordpressComponentsRadioControl } from '@wordpress/components';
 export { SelectControl as WordpressComponentsSelectControl } from '@wordpress/components';
 export { TextControl as WordpressComponentsTextControl } from '@wordpress/components';
