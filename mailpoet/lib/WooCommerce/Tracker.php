@@ -2,7 +2,19 @@
 
 namespace MailPoet\WooCommerce;
 
+use MailPoet\Statistics\StatisticsWooCommercePurchasesRepository;
+
 class Tracker {
+
+  /** @var StatisticsWooCommercePurchasesRepository */
+  private $wooPurchasesRepository;
+
+  public function __construct(
+    StatisticsWooCommercePurchasesRepository $wooPurchasesRepository
+  ) {
+    $this->wooPurchasesRepository = $wooPurchasesRepository;
+  }
+
   /**
    * @param array $data
    * @return array
@@ -11,7 +23,8 @@ class Tracker {
     if (!is_array($data)) {
       return $data;
     }
-    $data['extensions']['mailpoet']['campaign_revenues'] = [];
+    $campaignData = $this->wooPurchasesRepository->getRevenuesByCampaigns();
+    $data['extensions']['mailpoet']['campaign_revenues'] = $campaignData;
     return $data;
   }
 }

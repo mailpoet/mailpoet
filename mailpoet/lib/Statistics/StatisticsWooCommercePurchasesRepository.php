@@ -46,4 +46,25 @@ class StatisticsWooCommercePurchasesRepository extends Repository {
     $statistics->setSubscriber($click->getSubscriber());
     $this->flush();
   }
+
+  public function getRevenuesByCampaigns() {
+    $revenueStatsTable = $this->entityManager->getClassMetadata(StatisticsWooCommercePurchaseEntity::class)->getTableName();
+    $newsletterTable = $this->entityManager->getClassMetadata(NewsletterEntity::class)->getTableName();
+
+    return $this->entityManager->getConnection()->executeQuery('
+      SELECT
+        SUM(swp.order_price_total) AS revenue,
+        COALESCE(n.parent_id, n.id) AS campaign_id,
+        (CASE WHEN n.type = :notification_history_type THEN :notification_type ELSE n.type END) AS campaign_type,
+        COUNT(order_id) as orders_count
+      FROM ' . $revenueStatsTable . ' swp
+        JOIN ' . $newsletterTable . ' n ON
+          n.id = swp.newsletter_id
+          AND swp.click_id IN (SELECT MIN(click_id) FROM ' . $revenueStatsTable . ' ss GROUP BY order_id)
+      GROUP BY campaign_id, n.type;
+    ', [
+      'notification_history_type' => NewsletterEntity::TYPE_NOTIFICATION_HISTORY,
+      'notification_type' => NewsletterEntity::TYPE_NOTIFICATION,
+    ])->fetchAllAssociative();
+  }
 }
