@@ -5,6 +5,7 @@ namespace MailPoet\Subscribers;
 use MailPoet\Config\SubscriberChangesNotifier;
 use MailPoet\Doctrine\Repository;
 use MailPoet\Entities\SegmentEntity;
+use MailPoet\Entities\StatisticsUnsubscribeEntity;
 use MailPoet\Entities\SubscriberCustomFieldEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
@@ -368,6 +369,35 @@ class SubscribersRepository extends Repository {
       ->getSingleScalarResult();
 
     return is_int($maxSubscriberId) ? $maxSubscriberId : 0;
+  }
+
+  public function getCountOfCreatedAfterWithStatues(\DateTimeInterface $createdAfter, array $statuses): int {
+    $result = $this->entityManager->createQueryBuilder()
+      ->select('COUNT(s.id)')
+      ->from(SubscriberEntity::class, 's')
+      ->where('s.createdAt > :createdAfter')
+      ->andWhere('s.status IN (:statuses)')
+      ->andWhere('s.deletedAt IS NULL')
+      ->setParameter('createdAfter', $createdAfter)
+      ->setParameter('statuses', $statuses)
+      ->getQuery()
+      ->getSingleScalarResult();
+    return intval($result);
+  }
+
+  public function getCountOfUnsubscribedAfter(\DateTimeInterface $unsubscribedAfter): int {
+    $result = $this->entityManager->createQueryBuilder()
+      ->select('COUNT(s.id)')
+      ->from(StatisticsUnsubscribeEntity::class, 'su')
+      ->join('su.subscriber', 's')
+      ->where('s.createdAt > :unsubscribedAfter')
+      ->andWhere('s.status = :status')
+      ->andWhere('s.deletedAt IS NULL')
+      ->setParameter('unsubscribedAfter', $unsubscribedAfter)
+      ->setParameter('status', SubscriberEntity::STATUS_UNSUBSCRIBED)
+      ->getQuery()
+      ->getSingleScalarResult();
+    return intval($result);
   }
 
   /**

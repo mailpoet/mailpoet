@@ -136,7 +136,7 @@ class Subscriber {
    * @return $this
    */
   public function withCreatedAt(DateTimeInterface $createdAt) {
-    $this->data['setCreatedAt'] = $createdAt;
+    $this->data['createdAt'] = $createdAt;
     return $this;
   }
 
@@ -208,6 +208,7 @@ class Subscriber {
     if (isset($this->data['subscribedIp'])) $subscriber->setSubscribedIp($this->data['subscribedIp']);
     if (isset($this->data['confirmedIp'])) $subscriber->setConfirmedIp($this->data['confirmedIp']);
     if (isset($this->data['unconfirmedData'])) $subscriber->setUnconfirmedData($this->data['unconfirmedData']);
+    if (isset($this->data['createdAt'])) $subscriber->setCreatedAt($this->data['createdAt']);
     if (isset($this->data['source'])) {
       $subscriber->setSource($this->data['source']);
     }

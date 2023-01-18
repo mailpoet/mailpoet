@@ -8,6 +8,7 @@ use MailPoet\Automation\Integrations\MailPoet\Actions\SendEmailAction;
 use MailPoet\Automation\Integrations\MailPoet\Triggers\SomeoneSubscribesTrigger;
 use MailPoet\Automation\Integrations\MailPoet\Triggers\UserRegistrationTrigger;
 use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Form\FormsRepository;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Services\Bridge;
@@ -15,6 +16,8 @@ use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Util\License\Features\Subscribers;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
+use MailPoet\WP\Functions as WPFunctions;
+use MailPoetVendor\Carbon\Carbon;
 
 class HomepageDataController {
   public const UPSELL_SUBSCRIBERS_COUNT_REQUIRED = 600;
@@ -40,6 +43,9 @@ class HomepageDataController {
   /** @var Subscribers */
   private $subscribers;
 
+  /** @var WPFunctions */
+  private $wp;
+
   public function __construct(
     SettingsController $settingsController,
     SubscribersRepository $subscribersRepository,
@@ -47,6 +53,7 @@ class HomepageDataController {
     NewslettersRepository $newslettersRepository,
     AutomationStorage $automationStorage,
     Subscribers $subscribers,
+    WPFunctions $wp,
     WooCommerceHelper $wooCommerceHelper
   ) {
     $this->settingsController = $settingsController;
@@ -54,6 +61,7 @@ class HomepageDataController {
     $this->formsRepository = $formsRepository;
     $this->newslettersRepository = $newslettersRepository;
     $this->automationStorage = $automationStorage;
+    $this->wp = $wp;
     $this->wooCommerceHelper = $wooCommerceHelper;
     $this->subscribers = $subscribers;
   }
@@ -73,6 +81,7 @@ class HomepageDataController {
       'upsellStatus' => $showUpsell ? $this->getUpsellStatus($subscribersCount) : null,
       'wooCustomersCount' => $this->wooCommerceHelper->getCustomersCount(),
       'subscribersCount' => $subscribersCount,
+      'subscribersStats' => $this->getSubscribersStats(),
     ];
   }
 
@@ -127,6 +136,19 @@ class HomepageDataController {
 
     return [
       'canDisplay' => !$hasValidMssKey && $subscribersCount > self::UPSELL_SUBSCRIBERS_COUNT_REQUIRED,
+    ];
+  }
+
+  /**
+   * @return array{global:array{subscribed:int, unsubscribed:int}}
+   */
+  private function getSubscribersStats(): array {
+    $thirtyDaysAgo = Carbon::createFromTimestamp($this->wp->currentTime('timestamp'))->subDays(30);
+    return [
+      'global' => [
+        'subscribed' => $this->subscribersRepository->getCountOfCreatedAfterWithStatues($thirtyDaysAgo, [SubscriberEntity::STATUS_SUBSCRIBED]),
+        'unsubscribed' => $this->subscribersRepository->getCountOfUnsubscribedAfter($thirtyDaysAgo),
+      ],
     ];
   }
 }

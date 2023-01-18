@@ -7,11 +7,13 @@ use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterOptionEntity;
 use MailPoet\Entities\NewsletterOptionFieldEntity;
 use MailPoet\Entities\SettingEntity;
+use MailPoet\Entities\StatisticsUnsubscribeEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Test\DataFactories\Form;
 use MailPoet\Test\DataFactories\Newsletter;
 use MailPoet\Test\DataFactories\Subscriber;
+use MailPoetVendor\Carbon\Carbon;
 
 class HomepageDataControllerTest extends \MailPoetTest {
   /** @var HomepageDataController */
@@ -34,6 +36,8 @@ class HomepageDataControllerTest extends \MailPoetTest {
     expect($data['productDiscoveryStatus'])->notEmpty();
     expect($data['wooCustomersCount'])->int();
     expect($data['subscribersCount'])->int();
+    expect($data['subscribersStats'])->array();
+    expect($data['taskListStatus'])->notEmpty();
   }
 
   public function testItFetchesSenderTaskListStatus(): void {
@@ -167,6 +171,37 @@ class HomepageDataControllerTest extends \MailPoetTest {
     $this->entityManager->flush();
     $productDiscoveryStatus = $this->homepageDataController->getPageData()['productDiscoveryStatus'];
     expect($productDiscoveryStatus['setUpAbandonedCartEmail'])->true();
+  }
+
+  public function testItFetchesSubscriberStatsForZeroSubscribers(): void {
+    $subscribersStats = $this->homepageDataController->getPageData()['subscribersStats'];
+    expect($subscribersStats['global']['subscribed'])->equals(0);
+    expect($subscribersStats['global']['unsubscribed'])->equals(0);
+  }
+
+  public function testItFetchesCorrectGlobalSubscriberStats(): void {
+    $thirtyOneDaysAgo = Carbon::now()->subDays(31);
+    $twentyNineDaysAgo = Carbon::now()->subDays(29);
+    // Old subscribed
+    (new Subscriber())->withCreatedAt($thirtyOneDaysAgo)->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)->create();
+    // New subscribed
+    (new Subscriber())->withCreatedAt($twentyNineDaysAgo)->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)->create();
+    // Unsubscribed long time ago
+    $oldUnsubscribed = (new Subscriber())->withCreatedAt($thirtyOneDaysAgo)->withStatus(SubscriberEntity::STATUS_UNSUBSCRIBED)->create();
+    $oldUnsubscribedStats = new StatisticsUnsubscribeEntity(null, null, $oldUnsubscribed);
+    $oldUnsubscribedStats->setCreatedAt($thirtyOneDaysAgo);
+    $this->entityManager->persist($oldUnsubscribedStats);
+    $this->entityManager->flush();
+    // Freshly unsubscribed
+    $newUnsubscribed = (new Subscriber())->withCreatedAt($twentyNineDaysAgo)->withStatus(SubscriberEntity::STATUS_UNSUBSCRIBED)->create();
+    $newUnsubscribedStats = new StatisticsUnsubscribeEntity(null, null, $newUnsubscribed);
+    $newUnsubscribedStats->setCreatedAt($twentyNineDaysAgo);
+    $this->entityManager->persist($newUnsubscribedStats);
+    $this->entityManager->flush();
+
+    $subscribersStats = $this->homepageDataController->getPageData()['subscribersStats'];
+    expect($subscribersStats['global']['subscribed'])->equals(1);
+    expect($subscribersStats['global']['unsubscribed'])->equals(1);
   }
 
   private function cleanup(): void {
