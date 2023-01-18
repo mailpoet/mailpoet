@@ -10,12 +10,10 @@ import { MSSStepSecondPart } from './pitch_mss_step/second_part';
 import { MSSStepThirdPart } from './pitch_mss_step/third_part';
 
 type WelcomeWizardPitchMSSStepPropType = {
-  subscribersCount: number;
   finishWizard: (redirect_url?: string) => void;
 };
 
 function WelcomeWizardPitchMSSStep({
-  subscribersCount,
   finishWizard,
 }: WelcomeWizardPitchMSSStepPropType): JSX.Element {
   const { path } = useRouteMatch();
@@ -27,10 +25,7 @@ function WelcomeWizardPitchMSSStep({
         <Redirect to={`/steps/${step}/part/1`} />
       </Route>
       <Route path={`${path}/part/1`}>
-        <MSSStepFirstPart
-          subscribersCount={subscribersCount}
-          finishWizard={finishWizard}
-        />
+        <MSSStepFirstPart finishWizard={finishWizard} />
       </Route>
       <Route path={`${path}/part/2`}>
         <MSSStepSecondPart finishWizard={finishWizard} />
