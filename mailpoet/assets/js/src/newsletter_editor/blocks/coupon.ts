@@ -96,7 +96,6 @@ Module.CouponBlockSettingsView = base.BlockSettingsView.extend({
         this.changeBoolCheckboxField,
         'excludeSaleItems',
       ),
-      // more items here
       'input .mailpoet_field_coupon_email_restrictions': _.partial(
         this.changeField,
         'emailRestrictions',
@@ -290,20 +289,32 @@ Module.CouponBlockSettingsView = base.BlockSettingsView.extend({
       })
       .trigger('change');
 
-    const fieldKeys = {
-      productCategories: 'productCategories',
-      excludedProductCategories: 'excludedProductCategories',
-    };
+      const fieldKeys = {
+        productIds: 'productIds',
+        excludedProductIds: 'excludedProductIds',
+        productCategories: 'productCategories',
+        excludedProductCategories: 'excludedProductCategories',
+      };
 
-    this.$('#mailpoet_field_coupon_product_categories')
-      .select2(this.categoriesSelect2Options())
-      .on(this.select2OnEventOptions(fieldKeys.productCategories))
-      .trigger('change');
+      this.$('#mailpoet_field_coupon_product_ids')
+        .select2(this.productSelect2Options())
+        .on(this.select2OnEventOptions(fieldKeys.productIds))
+        .trigger('change');
 
-    this.$('#mailpoet_field_coupon_excluded_product_categories')
-      .select2(this.categoriesSelect2Options())
-      .on(this.select2OnEventOptions(fieldKeys.excludedProductCategories))
-      .trigger('change');
+      this.$('#mailpoet_field_coupon_excluded_product_ids')
+        .select2(this.productSelect2Options())
+        .on(this.select2OnEventOptions(fieldKeys.excludedProductIds))
+        .trigger('change');
+
+      this.$('#mailpoet_field_coupon_product_categories')
+        .select2(this.categoriesSelect2Options())
+        .on(this.select2OnEventOptions(fieldKeys.productCategories))
+        .trigger('change');
+
+      this.$('#mailpoet_field_coupon_excluded_product_categories')
+        .select2(this.categoriesSelect2Options())
+        .on(this.select2OnEventOptions(fieldKeys.excludedProductCategories))
+        .trigger('change');
   },
   changeSource(event) {
     const value = jQuery(event.target).val();
@@ -340,6 +351,66 @@ Module.CouponBlockSettingsView = base.BlockSettingsView.extend({
           .val(),
       );
     }
+  },
+  productSelect2Options() {
+    const productOptions = {
+      type: 'products',
+      amount: '10', // number of fetched products
+      offset: 0,
+      contentType: 'product',
+      postStatus: 'publish', // 'draft'|'pending'|'publish'
+      search: '', // Search keyword term
+
+      sortBy: 'newest', // 'newest'|'oldest',
+    };
+
+    return {
+      multiple: true,
+      allowClear: true,
+      ajax: {
+        delay: 250, // wait 250 milliseconds before triggering the request
+
+        data: (params) => {
+          const currentPage = params.page || 1;
+          return {
+            search: params.term,
+            page: currentPage,
+            // page starts from 1, offset starts from 0. we need to perform some calc to make sure it retrieve the right number of results
+            // 'query:append' is added during pagination
+            offset:
+              params._type === 'query:append' // eslint-disable-line no-underscore-dangle
+                ? (currentPage - 1) * Number(productOptions.amount)
+                : 0,
+          };
+        },
+        transport: (options, success, failure) => {
+          // Fetch available products
+          const productPromise = CommunicationComponent.getPosts({
+            ...productOptions,
+            search: options.data.search,
+            offset: options.data.offset,
+          });
+
+          productPromise.then(success);
+          productPromise.fail(failure);
+          return productPromise;
+        },
+        processResults: (data) => ({
+          results: _.map(data, (item) =>
+            _.defaults(
+              {
+                text: item.post_title,
+                id: item.ID,
+              },
+              item,
+            ),
+          ),
+          pagination: {
+            more: data.length >= Number(productOptions.amount),
+          },
+        }),
+      },
+    };
   },
   categoriesSelect2Options() {
     return {
