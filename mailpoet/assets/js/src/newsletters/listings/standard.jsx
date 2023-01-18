@@ -200,8 +200,8 @@ class NewsletterListStandardComponent extends Component {
       MailPoet.Ajax.post({
         api_version: window.mailpoet_api_version,
         endpoint: 'settings',
-        action: 'set',
-        data: { send_event_that_wizard_was_loaded_via_woocommerce: 0 },
+        action: 'delete',
+        data: 'send_event_that_wizard_was_loaded_via_woocommerce',
       });
     }
   }
