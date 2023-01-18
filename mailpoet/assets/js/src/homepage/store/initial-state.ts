@@ -20,5 +20,6 @@ export function getInitialState(): State {
       upsellStatus: window.mailpoet_homepage_data.upsellStatus,
     },
     isWooCommerceActive: MailPoet.isWoocommerceActive,
+    subscribersStats: window.mailpoet_homepage_data.subscribersStats,
   };
 }
