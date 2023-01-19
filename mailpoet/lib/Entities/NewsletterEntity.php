@@ -38,6 +38,14 @@ class NewsletterEntity {
   const STATUS_SENDING = 'sending';
   const STATUS_SENT = 'sent';
 
+  /**
+   * Newsletters that their body HTML can get re-generated
+   * @see NewsletterSaveController::updateQueue
+   */
+  const TYPES_WITH_RESETTABLE_BODY = [
+    NewsletterEntity::TYPE_STANDARD,
+  ];
+
   // automatic newsletters status
   const STATUS_ACTIVE = 'active';
 
