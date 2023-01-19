@@ -1,5 +1,5 @@
 import { MailPoet } from 'mailpoet';
-import { useSelector } from 'settings/store/hooks/index';
+import { useSelector } from 'settings/store/hooks';
 import { PremiumStatus } from 'settings/store/types';
 import { Button } from 'common/button/button';
 
