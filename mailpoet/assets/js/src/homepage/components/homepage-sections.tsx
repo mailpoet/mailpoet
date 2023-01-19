@@ -6,15 +6,19 @@ import { useDispatch, useSelect } from '@wordpress/data';
 import { storeName } from 'homepage/store/store';
 
 export function HomepageSections(): JSX.Element {
-  const { isTaskListHidden, isProductDiscoveryHidden } = useSelect(
-    (select) => ({
-      isTaskListHidden: select(storeName).getIsTaskListHidden(),
-      isProductDiscoveryHidden: select(storeName).getIsProductDiscoveryHidden(),
-    }),
-    [],
-  );
+  const { isTaskListHidden, isProductDiscoveryHidden, isUpsellHidden } =
+    useSelect(
+      (select) => ({
+        isTaskListHidden: select(storeName).getIsTaskListHidden(),
+        isProductDiscoveryHidden:
+          select(storeName).getIsProductDiscoveryHidden(),
+        isUpsellHidden: select(storeName).getIsUpsellHidden(),
+      }),
+      [],
+    );
   const { hideTaskList } = useDispatch(storeName);
   const { hideProductDiscovery } = useDispatch(storeName);
+  const { hideUpsell } = useDispatch(storeName);
   return (
     <div className="mailpoet-homepage__container">
       {!isTaskListHidden ? (
@@ -27,9 +31,9 @@ export function HomepageSections(): JSX.Element {
           <ProductDiscovery onHide={hideProductDiscovery} />
         </ErrorBoundary>
       ) : null}
-      {isTaskListHidden && isProductDiscoveryHidden ? (
+      {isTaskListHidden && isProductDiscoveryHidden && !isUpsellHidden ? (
         <ErrorBoundary>
-          <Upsell onHide={() => {}} />
+          <Upsell onHide={hideUpsell} />
         </ErrorBoundary>
       ) : null}
     </div>

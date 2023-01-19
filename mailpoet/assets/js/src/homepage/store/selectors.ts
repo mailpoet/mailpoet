@@ -63,3 +63,7 @@ export function getCurrentTask(state: State): TaskType | null {
   if (!state.taskList.tasksStatus.subscribersAdded) return 'subscribersAdded';
   return null;
 }
+
+export function getIsUpsellHidden(state: State): boolean {
+  return state.upsell.isHidden;
+}

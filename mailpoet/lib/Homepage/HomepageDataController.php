@@ -55,9 +55,11 @@ class HomepageDataController {
     $formsCount = $this->formsRepository->count();
     $showTaskList = !$this->settingsController->get('homepage.task_list_dismissed', false);
     $showProductDiscovery = !$this->settingsController->get('homepage.product_discovery_dismissed', false);
+    $showUpsell = !$this->settingsController->get('homepage.upsell_dismissed', false);
     return [
       'taskListDismissed' => !$showTaskList,
       'productDiscoveryDismissed' => !$showProductDiscovery,
+      'upsellDismissed' => !$showUpsell,
       'taskListStatus' => $showTaskList ? $this->getTaskListStatus($subscribersCount, $formsCount) : null,
       'productDiscoveryStatus' => $showProductDiscovery ? $this->getProductDiscoveryStatus($formsCount) : null,
       'wooCustomersCount' => $this->wooCommerceHelper->getCustomersCount(),

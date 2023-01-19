@@ -19,6 +19,14 @@ export function reducer(state: State, action: Action): State {
           isHidden: true,
         },
       };
+    case 'SET_UPSELL_HIDDEN':
+      return {
+        ...state,
+        upsell: {
+          ...state.upsell,
+          isHidden: true,
+        },
+      };
     default:
       return state;
   }

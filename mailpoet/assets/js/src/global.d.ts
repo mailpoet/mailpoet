@@ -175,6 +175,7 @@ interface Window {
   mailpoet_homepage_data: {
     taskListDismissed: boolean;
     productDiscoveryDismissed: boolean;
+    upsellDismissed: boolean;
     taskListStatus: {
       senderSet: boolean;
       mssConnected: boolean;
