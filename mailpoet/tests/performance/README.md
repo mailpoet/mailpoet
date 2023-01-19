@@ -1,6 +1,6 @@
 # MailPoet Performance Tests
 
-Automated k6 performance tests for MailPoet. To be used for benchmarking performance (both single user and under load) by simulating and measuring the response time of browser-level and protocol-lever tests (protocol-level to be added later).
+Automated k6 performance tests for MailPoet. To be used for benchmarking performance (both single user and under load) by simulating and measuring the response time of browser-level and protocol-lever tests (protocol-level yet to be implemented).
 
 ## Table of contents
 
@@ -28,7 +28,7 @@ Automated k6 performance tests for MailPoet. To be used for benchmarking perform
 
 ### Installing k6
 
-You don't need to install it - it's automatic!
+You don't need to install it - it's Automattic! :)
 
 To execute the tests, use the following command:
 
@@ -54,15 +54,21 @@ TBD
 
 When refering to running k6 tests usually this means executing the test scenario. The test scenario file in turn determines which requests we run and how much load will be applied to them. It is also possible to execute individual test files containing requests and pass in scenario config as a CLI flag but scenario files allow for more configuration options.
 
-### Running Individual Tests (to be updated)
+### Running Individual Tests
 
 To execute an individual test file (for example `requests/wp-admin/newsletter-listing.js`):
 
-`./do test:performance --file requests/wp-admin/newsletter-listing.js`
+`./do test:performance requests/wp-admin/newsletter-listing.js`
 
 This will run the individual test for 1 iteration.
 
-### Running Scenarios (to be updated)
+### Running Scenarios
+
+To execute a test scenario for pull requests, as an example:
+
+`./do test:performance --scenario pullrequests`
+
+This will run scenario with associated tests and options specificed inside `scenarios.js`.
 
 Included in the `tests` folder is a single test script which includes all scenarios and that can be ran or used as a starting point to be modified to suit the context in which tests are being ran.
 
@@ -72,10 +78,6 @@ To do this a sleep step is included between each request `` sleep(randomIntBetwe
 The amount of think time can be controlled from `config.js`.
 
 > **_Note for Protocol-level tests: It’s important to note to be very careful when adding load to a scenario. By accident a dangerous amount of load could be ran aginst the test environment that could effectively be like a denial-of-service attack on the test environment. Also important to consider any other consequences of running large load such as triggering of emails._**
-
-To execute a test scenario for pull requests, as an example:
-
-`./do test:performance --scenario tests/scenarios.js`
 
 ### Debugging Tests
 
