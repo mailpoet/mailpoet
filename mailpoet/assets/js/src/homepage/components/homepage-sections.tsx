@@ -1,6 +1,7 @@
 import { ErrorBoundary } from 'common';
 import { TaskList } from 'homepage/components/task-list';
 import { ProductDiscovery } from 'homepage/components/product-discovery';
+import { Upsell } from 'homepage/components/upsell';
 import { useDispatch, useSelect } from '@wordpress/data';
 import { storeName } from 'homepage/store/store';
 
@@ -24,6 +25,11 @@ export function HomepageSections(): JSX.Element {
       {!isProductDiscoveryHidden ? (
         <ErrorBoundary>
           <ProductDiscovery onHide={hideProductDiscovery} />
+        </ErrorBoundary>
+      ) : null}
+      {isTaskListHidden && isProductDiscoveryHidden ? (
+        <ErrorBoundary>
+          <Upsell onHide={() => {}} />
         </ErrorBoundary>
       ) : null}
     </div>
