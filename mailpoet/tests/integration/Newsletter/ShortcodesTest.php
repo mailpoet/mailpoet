@@ -417,13 +417,13 @@ class ShortcodesTest extends \MailPoetTest {
   }
 
   public function testItCanProcessSiteHomepageLinkShortcode() {
-    $optionName = 'home';
-    $siteUrl = get_option($optionName);
+    $siteUrl = strval(get_option('home'));
+    $siteName = strval(get_option('blogname'));
 
     $shortcode = '[site:homepage_link]';
     $shortcodesObject = $this->shortcodesObject;
     $result = $shortcodesObject->process([$shortcode]);
-    expect($result[0])->equals($siteUrl);
+    expect($result[0])->equals("<a target=\"_blank\" href=\"{$siteUrl}\">{$siteName}</a>");
   }
 
   public function testItCanProcessSiteHomepageUrlShortcode() {

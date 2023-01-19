@@ -30,8 +30,14 @@ class Site implements CategoryInterface {
         return $this->wp->getBloginfo('name');
 
       case 'homepage_url':
-      case 'homepage_link':
         return $this->wp->getBloginfo('url');
+
+      case 'homepage_link':
+        return sprintf(
+          '<a target="_blank" href="%s">%s</a>',
+          $this->wp->getBloginfo('url'),
+          $this->wp->getBloginfo('name')
+        );
 
       default:
         return null;
