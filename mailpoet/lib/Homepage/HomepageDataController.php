@@ -144,11 +144,28 @@ class HomepageDataController {
    */
   private function getSubscribersStats(): array {
     $thirtyDaysAgo = Carbon::createFromTimestamp($this->wp->currentTime('timestamp'))->subDays(30);
+    $listData = [];
+    $listsDataSubscribed = $this->subscribersRepository->getListLevelCountsOfSubscribedAfter($thirtyDaysAgo);
+    foreach ($listsDataSubscribed as $list) {
+      $listData[$list['id']] = array_intersect_key($list, array_flip(['name', 'id', 'type', 'averageEngagementScore']));
+      $listData[$list['id']]['subscribed'] = $list['count'];
+      $listData[$list['id']]['unsubscribed'] = 0;
+    }
+    $listsDataUnsubscribed = $this->subscribersRepository->getListLevelCountsOfUnsubscribedAfter($thirtyDaysAgo);
+    foreach ($listsDataUnsubscribed as $list) {
+      if (!isset($listData[$list['id']])) {
+        $listData[$list['id']] = array_intersect_key($list, array_flip(['name', 'id', 'type', 'averageEngagementScore']));
+        $listData[$list['id']]['subscribed'] = 0;
+      }
+      $listData[$list['id']]['unsubscribed'] = $list['count'];
+    }
+
     return [
       'global' => [
         'subscribed' => $this->subscribersRepository->getCountOfCreatedAfterWithStatues($thirtyDaysAgo, [SubscriberEntity::STATUS_SUBSCRIBED]),
         'unsubscribed' => $this->subscribersRepository->getCountOfUnsubscribedAfter($thirtyDaysAgo),
       ],
+      'lists' => array_values($listData),
     ];
   }
 }

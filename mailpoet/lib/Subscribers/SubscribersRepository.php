@@ -400,6 +400,45 @@ class SubscribersRepository extends Repository {
     return intval($result);
   }
 
+  public function getListLevelCountsOfSubscribedAfter(\DateTimeInterface $date): array {
+    $data = $this->entityManager->createQueryBuilder()
+      ->select('seg.id, seg.name, seg.type, COUNT(ss.id) as count')
+      ->from(SubscriberSegmentEntity::class, 'ss')
+      ->join('ss.subscriber', 's')
+      ->join('ss.segment', 'seg')
+      ->where('ss.createdAt > :date')
+      ->andWhere('s.status = :status')
+      ->andWhere('ss.status = :segment_status')
+      ->andWhere('s.deletedAt IS NULL')
+      ->andWhere('seg.deletedAt IS NULL') // no trashed lists and disabled WP Users list
+      ->setParameter('date', $date)
+      ->setParameter('status', SubscriberEntity::STATUS_SUBSCRIBED)
+      ->setParameter('segment_status', SubscriberEntity::STATUS_SUBSCRIBED)
+      ->groupBy('ss.segment')
+      ->getQuery()
+      ->getArrayResult();
+    return $data;
+  }
+
+  public function getListLevelCountsOfUnsubscribedAfter(\DateTimeInterface $date): array {
+    return $this->entityManager->createQueryBuilder()
+      ->select('seg.id, seg.name, seg.type, COUNT(ss.id) as count')
+      ->from(SubscriberSegmentEntity::class, 'ss')
+      ->join('ss.subscriber', 's')
+      ->join('ss.segment', 'seg')
+      ->where('ss.updatedAt > :date')
+      ->andWhere('s.status = :status')
+      ->andWhere('ss.status = :segment_status')
+      ->andWhere('s.deletedAt IS NULL')
+      ->andWhere('seg.deletedAt IS NULL') // no trashed lists and disabled WP Users list
+      ->setParameter('date', $date)
+      ->setParameter('status', SubscriberEntity::STATUS_UNSUBSCRIBED)
+      ->setParameter('segment_status', SubscriberEntity::STATUS_UNSUBSCRIBED)
+      ->groupBy('ss.segment')
+      ->getQuery()
+      ->getArrayResult();
+  }
+
   /**
    * @return int - number of processed ids
    */
