@@ -81,7 +81,8 @@ The amount of think time can be controlled from `config.js`.
 
 ### Debugging Tests
 
-Browser-level tests: the easiest way is to turn off headless mode by going to `config.js` file and renaming `headless_set` variable to `false` and then running the individual test.
+Browser-level tests: the easiest way is to turn off headless mode by running individual or scenario with this argument `--head` and it will execute test with browser. The example command would be:
+`./do test:performance --head`
 
 Protocol-level tests: to help with getting a test working, the `--http-debug="full"` flag prints to console the full log of requests and their responses. It is also useful to use `console.log()` to print messages when debugging.
 
