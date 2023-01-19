@@ -3,23 +3,18 @@ import { Modal } from '@wordpress/components';
 import ReactStringReplace from 'react-string-replace';
 import { MailPoet } from 'mailpoet';
 import { Button } from 'common';
+import { finishWizard } from 'wizard/finishWizard';
 
-type OwnEmailDeliveryServicePropType = {
-  finishWizard: (redirect_url?: string) => void;
-};
-
-function OwnEmailServiceNote({
-  finishWizard,
-}: OwnEmailDeliveryServicePropType): JSX.Element {
+function OwnEmailServiceNote(): JSX.Element {
   const [confirmationModalIsOpen, setConfirmationModalOpen] = useState(false);
   const openConfirmationModal = (e) => {
     e.preventDefault();
     setConfirmationModalOpen(true);
   };
   const closeConfirmationModal = () => setConfirmationModalOpen(false);
-  const finishWithOwnService = (e) => {
+  const finishWithOwnService = async (e) => {
     e.preventDefault();
-    finishWizard('admin.php?page=mailpoet-settings#/mta/other');
+    await finishWizard('admin.php?page=mailpoet-settings#/mta/other');
   };
 
   return (
