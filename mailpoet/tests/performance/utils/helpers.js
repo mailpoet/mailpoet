@@ -3,7 +3,7 @@
 /**
  * Internal dependencies
  */
-import { adminUsername, adminPassword } from '../../config.js';
+import { adminUsername, adminPassword } from '../config.js';
 /* global Promise */
 
 // WordPress login authorization
