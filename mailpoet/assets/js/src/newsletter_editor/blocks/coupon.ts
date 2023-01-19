@@ -81,11 +81,11 @@ Module.CouponBlockSettingsView = base.BlockSettingsView.extend({
         'freeShipping',
       ),
       'input .mailpoet_field_coupon_minimum_amount': _.partial(
-        this.changeField,
+        this.validateMinAndMaxAmountFields,
         'minimumAmount',
       ),
       'input .mailpoet_field_coupon_maximum_amount': _.partial(
-        this.changeField,
+        this.validateMinAndMaxAmountFields,
         'maximumAmount',
       ),
       'change .mailpoet_field_coupon_individual_use': _.partial(
@@ -97,7 +97,7 @@ Module.CouponBlockSettingsView = base.BlockSettingsView.extend({
         'excludeSaleItems',
       ),
       'input .mailpoet_field_coupon_email_restrictions': _.partial(
-        this.changeField,
+        this.validateEmailRestrictionsField,
         'emailRestrictions',
       ),
       'input .mailpoet_field_coupon_usage_limit': _.partial(
@@ -465,6 +465,49 @@ Module.CouponBlockSettingsView = base.BlockSettingsView.extend({
         this.model.set(fieldName, modelItem.toJSON());
       },
     };
+  },
+  validateMinAndMaxAmountFields(field, event) {
+    const element = event.target;
+    const errorElem = element.nextElementSibling;
+
+    const value = element.value
+      ? Number.parseFloat(String(element.value))
+      : element.value;
+
+    if (Number.isNaN(value)) {
+      if (errorElem && errorElem.classList.contains('mailpoet_hidden')) {
+        errorElem.classList.remove('mailpoet_hidden'); // show error message
+      }
+      return;
+    }
+
+    if (errorElem && !errorElem.classList.contains('mailpoet_hidden')) {
+      errorElem.classList.add('mailpoet_hidden'); // hide error message
+    }
+
+    this.model.set(field, value);
+  },
+  validateEmailRestrictionsField(field, event) {
+    const element = event.target;
+    const errorElem = element.nextElementSibling;
+
+    const isValid = element.checkValidity();
+
+    if (!isValid) {
+      errorElem.textContent = element.validationMessage;
+
+      if (errorElem.classList.contains('mailpoet_hidden')) {
+        errorElem.classList.remove('mailpoet_hidden');
+      }
+
+      return;
+    }
+
+    if (errorElem && !errorElem.classList.contains('mailpoet_hidden')) {
+      errorElem.classList.add('mailpoet_hidden');
+    }
+
+    this.model.set(field, element.value);
   },
 });
 
