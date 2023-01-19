@@ -172,7 +172,8 @@ class ManageSegmentsCest {
     $i->wantTo('Empty trash from other segments');
     $i->waitForElementClickable('[data-automation-id="empty_trash"]');
     $i->click('[data-automation-id="empty_trash"]');
-    $i->waitForText('1 segment was permanently deleted.');
+    $i->waitForNoticeAndClose('1 segment was permanently deleted.');
+    $i->wait(10); // wait a moment for redirect loading
     $listingAutomationSelector = '[data-automation-id="listing_item_' . $segment1->getId() . '"]';
     $i->dontSeeElement($listingAutomationSelector);
     $i->seeInCurrentURL(urlencode('group[all]'));
