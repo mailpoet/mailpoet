@@ -56,9 +56,9 @@ When refering to running k6 tests usually this means executing the test scenario
 
 ### Running Individual Tests
 
-To execute an individual test file (for example `requests/wp-admin/newsletter-listing.js`):
+To execute an individual test file (for example `newsletter-listing.js`):
 
-`./do test:performance requests/wp-admin/newsletter-listing.js`
+`./do test:performance tests/performance/tests/newsletter-listing.js`
 
 This will run the individual test for 1 iteration.
 
@@ -119,7 +119,7 @@ If you don't see `headers.js` inside `performance` folder, that means we don't h
 
 ### Groups
 
-Groups are used to organize common logic in the test scripts and can help with the test result analysis. For example the `group` `"Proceed to checkout"` groups together multiple requests triggered by this action.
+Groups are used to organize common logic in the test scripts and can help with the test result analysis. For example the `group` `"Proceed through the newsletter creation flow until Send step"` groups together multiple requests triggered by this action.
 
 ### Checks
 

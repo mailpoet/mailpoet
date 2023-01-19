@@ -1,12 +1,12 @@
 /**
  * Internal dependencies
  */
-import { wpLogin } from '../requests/wp-admin/wp-login.js';
-import { newsletterListing } from '../requests/wp-admin/newsletter-listing.js';
-import { subscribersListing } from '../requests/wp-admin/subscribers-listing.js';
+import { wpLogin } from './tests/wp-login.js';
+import { newsletterListing } from './tests/newsletter-listing.js';
+import { subscribersListing } from './tests/subscribers-listing.js';
 import { htmlReport } from 'https://raw.githubusercontent.com/benc-uk/k6-reporter/main/dist/bundle.js';
 import { textSummary } from 'https://jslib.k6.io/k6-summary/0.0.1/index.js';
-import { scenario } from '../config.js';
+import { scenario } from './config.js';
 
 // Scenarios, Thresholds and Tags
 export let options = {
@@ -68,7 +68,7 @@ export function nightly() {
 // HTML report data saved in performance folder
 export function handleSummary(data) {
   return {
-    'tests/performance/k6report.html': htmlReport(data),
+    'tests/performance/_output/k6report.html': htmlReport(data),
     stdout: textSummary(data, { indent: ' ', enableColors: true }),
   };
 }

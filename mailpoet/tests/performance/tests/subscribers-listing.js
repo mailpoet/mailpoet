@@ -10,12 +10,7 @@ import { randomIntBetween } from 'https://jslib.k6.io/k6-utils/1.1.0/index.js';
 /**
  * Internal dependencies
  */
-import {
-  baseURL,
-  thinkTimeMin,
-  thinkTimeMax,
-  headlessSet,
-} from '../../config.js';
+import { baseURL, thinkTimeMin, thinkTimeMax, headlessSet } from '../config.js';
 import { login } from '../utils/helpers.js';
 /* global Promise */
 

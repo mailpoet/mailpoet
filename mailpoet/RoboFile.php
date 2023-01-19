@@ -310,7 +310,7 @@ class RoboFile extends \Robo\Tasks {
       ->option('env', 'URL=' . $opts['url'])
       ->option('env', 'HEADLESS=' . ($opts['head'] ? 'false' : 'true'))
       ->option('env', 'SCENARIO=' . $opts['scenario'])
-      ->arg($path ?? "$dir/tests/performance/tests/scenarios.js")
+      ->arg($path ?? "$dir/tests/performance/scenarios.js")
       ->dir($dir)->run();
   }
 
