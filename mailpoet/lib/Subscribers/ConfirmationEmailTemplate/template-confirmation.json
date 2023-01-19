@@ -99,7 +99,7 @@
                 },
                 {
                   "type": "text",
-                  "text": "<p><span>Thank you,</span></p>\n<p><span></span></p>\n<p><span>[site:homepage_link]</span></p>\n<p>&nbsp;</p>"
+                  "text": "<p><span>Thank you,</span></p>\n<p><span></span></p>\n<p><span><a href=\"[site:homepage_url]\">[site:title]</a></span></p>\n<p>&nbsp;</p>"
                 },
                 {
                   "type": "footer",
