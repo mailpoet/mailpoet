@@ -6,13 +6,7 @@ import { MailPoet } from 'mailpoet';
 import { Button, Input, Heading } from 'common';
 import { OwnEmailServiceNote } from './own_email_service_note';
 
-type MSSStepSecondPartPropType = {
-  finishWizard: (redirect_url?: string) => void;
-};
-
-function MSSStepSecondPart({
-  finishWizard,
-}: MSSStepSecondPartPropType): JSX.Element {
+function MSSStepSecondPart(): JSX.Element {
   const [verifyButtonDisabled, setVerifyButtonDisabled] = useState(true);
   const history = useHistory();
   const { step } = useParams<{ step: string }>();
@@ -82,7 +76,7 @@ function MSSStepSecondPart({
       <div className="mailpoet-gap" />
       <div className="mailpoet-gap" />
 
-      <OwnEmailServiceNote finishWizard={finishWizard} />
+      <OwnEmailServiceNote />
     </>
   );
 }

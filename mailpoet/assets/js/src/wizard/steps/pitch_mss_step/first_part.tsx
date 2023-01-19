@@ -23,13 +23,7 @@ function openMailPoetShopAndGoToTheNextPart(event, history, step: string) {
   history.push(`/steps/${step}/part/2`);
 }
 
-type MSSStepFirstPartPropType = {
-  finishWizard: (redirect_url?: string) => void;
-};
-
-function MSSStepFirstPart({
-  finishWizard,
-}: MSSStepFirstPartPropType): JSX.Element {
+function MSSStepFirstPart(): JSX.Element {
   const history = useHistory();
   const { step } = useParams<{ step: string }>();
 
@@ -74,7 +68,7 @@ function MSSStepFirstPart({
       <div className="mailpoet-gap" />
       <div className="mailpoet-gap" />
 
-      <OwnEmailServiceNote finishWizard={finishWizard} />
+      <OwnEmailServiceNote />
     </>
   );
 }

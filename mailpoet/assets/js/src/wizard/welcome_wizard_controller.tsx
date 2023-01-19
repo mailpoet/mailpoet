@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { partial } from 'underscore';
 
-import { MailPoet } from 'mailpoet';
 import { WelcomeWizardSenderStep } from './steps/sender_step';
 import { WelcomeWizardUsageTrackingStep } from './steps/usage_tracking_step.jsx';
 import { WelcomeWizardPitchMSSStep } from './steps/pitch_mss_step';
@@ -19,6 +18,8 @@ import { StepsContent } from '../common/steps/steps_content';
 import { TopBar } from '../common/top_bar/top_bar';
 import { ErrorBoundary } from '../common';
 import { HideScreenOptions } from '../common/hide_screen_options/hide_screen_options';
+import { finishWizard } from './finishWizard';
+import { updateSettings } from './updateSettings';
 
 type WelcomeWizardStepsControllerPropType = {
   match: { params: { step: string } };
@@ -41,38 +42,6 @@ function WelcomeWizardStepsController({
     }
   }, [step, stepsCount, history]);
 
-  function updateSettings(data) {
-    setLoading(true);
-    return MailPoet.Ajax.post({
-      api_version: window.mailpoet_api_version,
-      endpoint: 'settings',
-      action: 'set',
-      data,
-    })
-      .then(() => setLoading(false))
-      .fail((response: ErrorResponse) => {
-        setLoading(false);
-        if (response.errors.length > 0) {
-          MailPoet.Notice.error(
-            response.errors.map((error) => error.message),
-            { scroll: true },
-          );
-        }
-      });
-  }
-
-  const finishWizard = useCallback(async (redirect_url = null) => {
-    await updateSettings({
-      version: window.mailpoet_version,
-    }).then(() => {
-      if (redirect_url) {
-        window.location.href = redirect_url;
-      } else {
-        window.location.href = window.finish_wizard_url;
-      }
-    });
-  }, []);
-
   const redirect = partial(redirectToNextStep, history, finishWizard);
 
   const submitTracking = useCallback(
@@ -82,6 +51,7 @@ function WelcomeWizardStepsController({
         analytics: { enabled: tracking ? '1' : '' },
         '3rd_party_libs': { enabled: libs3rdParty ? '1' : '' },
       }).then(() => redirect(step));
+      setLoading(false);
     },
     [redirect, step],
   );
@@ -94,9 +64,11 @@ function WelcomeWizardStepsController({
   );
 
   const submitSender = useCallback(async () => {
+    setLoading(true);
     await updateSettings(createSenderSettings(sender)).then(() =>
       redirect(step),
     );
+    setLoading(false);
   }, [redirect, sender, step]);
 
   const skipSenderStep = useCallback(
@@ -108,6 +80,7 @@ function WelcomeWizardStepsController({
       ).then(() => {
         redirect(step);
       });
+      setLoading(false);
     },
     [redirect, step],
   );
@@ -155,7 +128,7 @@ function WelcomeWizardStepsController({
             illustrationUrl={window.wizard_MSS_pitch_illustration_url}
           >
             <ErrorBoundary>
-              <WelcomeWizardPitchMSSStep finishWizard={finishWizard} />
+              <WelcomeWizardPitchMSSStep />
             </ErrorBoundary>
           </WelcomeWizardStepLayout>
         ) : null}

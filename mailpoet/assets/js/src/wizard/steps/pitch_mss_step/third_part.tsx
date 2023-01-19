@@ -1,14 +1,9 @@
 import { Heading } from 'common/typography/heading/heading';
 import { MailPoet } from 'mailpoet';
 import { Button } from 'common';
+import { finishWizard } from '../../finishWizard';
 
-type MSSStepThirdPartPropType = {
-  finishWizard: () => void;
-};
-
-function MSSStepThirdPart({
-  finishWizard,
-}: MSSStepThirdPartPropType): JSX.Element {
+function MSSStepThirdPart(): JSX.Element {
   return (
     <>
       <Heading level={1}>
