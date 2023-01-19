@@ -7,80 +7,15 @@ import { GlobalContext } from 'context';
 import { Button } from 'common/button/button';
 import { t } from 'common/functions';
 import { Input } from 'common/form/input/input';
-import { KeyActivationState, MssStatus } from 'settings/store/types';
+import { MssStatus } from 'settings/store/types';
 import { Inputs, Label } from 'settings/components';
 import { SetFromAddressModal } from 'common/set_from_address_modal';
 import ReactStringReplace from 'react-string-replace';
-import {
-  KeyMessages,
-  MssMessages,
-  PremiumMessages,
-  ServiceUnavailableMessage,
-} from './messages';
+import { Messages } from 'common/premium_key/messages';
 
 type KeyState = {
   is_approved: boolean;
 };
-
-function Messages(
-  state: KeyActivationState,
-  showPendingApprovalNotice: boolean,
-  activationCallback: () => Promise<void>,
-) {
-  if (state.code === 503) {
-    return (
-      <div className="key-activation-messages">
-        <ServiceUnavailableMessage />
-      </div>
-    );
-  }
-
-  return (
-    <div className="key-activation-messages">
-      <KeyMessages />
-      {state.mssStatus !== null && (
-        <MssMessages
-          keyMessage={state.mssMessage}
-          activationCallback={activationCallback}
-        />
-      )}
-      {state.congratulatoryMssEmailSentTo && (
-        <div className="mailpoet_success_item mailpoet_success">
-          {t('premiumTabCongratulatoryMssEmailSent').replace(
-            '[email_address]',
-            state.congratulatoryMssEmailSentTo,
-          )}
-        </div>
-      )}
-      {state.premiumStatus !== null && (
-        <PremiumMessages keyMessage={state.premiumMessage} />
-      )}
-
-      {showPendingApprovalNotice && (
-        <div className="mailpoet_success">
-          <div className="pending_approval_heading">
-            {t('premiumTabPendingApprovalHeading')}
-          </div>
-          <div>{t('premiumTabPendingApprovalMessage')}</div>
-        </div>
-      )}
-
-      {!state.isKeyValid && (
-        <p>
-          <a
-            href="https://kb.mailpoet.com/article/319-known-errors-when-validating-a-mailpoet-key"
-            target="_blank"
-            rel="noopener noreferrer"
-            data-beacon-article="5ef1da9d2c7d3a10cba966c5"
-            className="mailpoet_error"
-          >
-            {MailPoet.I18n.t('learnMore')}
-          </a>
-        </p>
-      )}
-    </div>
-  );
-}
 
 type Props = {
   subscribersCount: number;
