@@ -6,12 +6,15 @@ use MailPoet\Entities\FormEntity;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterOptionEntity;
 use MailPoet\Entities\NewsletterOptionFieldEntity;
+use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SettingEntity;
 use MailPoet\Entities\StatisticsUnsubscribeEntity;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Test\DataFactories\Form;
 use MailPoet\Test\DataFactories\Newsletter;
+use MailPoet\Test\DataFactories\Segment;
 use MailPoet\Test\DataFactories\Subscriber;
 use MailPoetVendor\Carbon\Carbon;
 
@@ -204,6 +207,76 @@ class HomepageDataControllerTest extends \MailPoetTest {
     expect($subscribersStats['global']['unsubscribed'])->equals(1);
   }
 
+  public function testItFetchesCorrectListLevelSubscribedStats(): void {
+    $thirtyOneDaysAgo = Carbon::now()->subDays(31);
+    $twentyNineDaysAgo = Carbon::now()->subDays(29);
+    $segment = (new Segment())->withName('Segment')->create();
+    // Subscribed 29 days ago - only this one counts as subscribed on list level
+    $newSubscribed = (new Subscriber())
+      ->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)
+      ->withSegments([$segment])
+      ->create();
+    $subscriberSegment = $newSubscribed->getSubscriberSegments()->first();
+    $this->assertInstanceOf(SubscriberSegmentEntity::class, $subscriberSegment);
+    $subscriberSegment->setCreatedAt($twentyNineDaysAgo);
+    // Old subscribed - ignored because subscribed too far in the past
+    $oldSubscribed = (new Subscriber())
+      ->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)
+      ->withSegments([$segment])
+      ->create();
+    $subscriberSegment = $oldSubscribed->getSubscriberSegments()->first();
+    $this->assertInstanceOf(SubscriberSegmentEntity::class, $subscriberSegment);
+    $subscriberSegment->setCreatedAt($thirtyOneDaysAgo);
+    // Subscribed only on list level - ignored because not subscribed globally
+    (new Subscriber())
+      ->withStatus(SubscriberEntity::STATUS_UNCONFIRMED)
+      ->withSegments([$segment])
+      ->create();
+    // Subscribed only on top level - ignored because not subscribed on list level
+    (new Subscriber())
+      ->withStatus(SubscriberEntity::STATUS_UNCONFIRMED)
+      ->withSegments([$segment])
+      ->create();
+    $this->entityManager->flush();
+    $subscribersStats = $this->homepageDataController->getPageData()['subscribersStats'];
+    expect($subscribersStats['lists'][0]['id'])->equals($segment->getId());
+    expect($subscribersStats['lists'][0]['name'])->equals($segment->getName());
+    expect($subscribersStats['lists'][0]['subscribed'])->equals(1);
+    expect($subscribersStats['lists'][0]['unsubscribed'])->equals(0);
+  }
+
+  public function testItFetchesCorrectListLevelUnsubscribedStats(): void {
+    $thirtyOneDaysAgo = Carbon::now()->subDays(31);
+    $twentyNineDaysAgo = Carbon::now()->subDays(29);
+    $segment = (new Segment())->withName('Segment')->create();
+    // Unsubscribed 29 days ago - only this one counts as unsubscribed on list level
+    $newUnsubscribed = (new Subscriber())
+      ->withCreatedAt($twentyNineDaysAgo)
+      ->withStatus(SubscriberEntity::STATUS_UNSUBSCRIBED)
+      ->withSegments([$segment])
+      ->create();
+    $subscriberSegment = $newUnsubscribed->getSubscriberSegments()->first();
+    $this->assertInstanceOf(SubscriberSegmentEntity::class, $subscriberSegment);
+    $subscriberSegment->setUpdatedAt($twentyNineDaysAgo);
+    $subscriberSegment->setStatus(SubscriberEntity::STATUS_UNSUBSCRIBED);
+    // Unsubscribed 31 days ago - ignored because unsubscribed too far in the past
+    $newUnsubscribed = (new Subscriber())
+      ->withCreatedAt($twentyNineDaysAgo)
+      ->withStatus(SubscriberEntity::STATUS_UNSUBSCRIBED)
+      ->withSegments([$segment])
+      ->create();
+    $subscriberSegment = $newUnsubscribed->getSubscriberSegments()->first();
+    $this->assertInstanceOf(SubscriberSegmentEntity::class, $subscriberSegment);
+    $subscriberSegment->setUpdatedAt($thirtyOneDaysAgo);
+    $subscriberSegment->setStatus(SubscriberEntity::STATUS_UNSUBSCRIBED);
+
+    $subscribersStats = $this->homepageDataController->getPageData()['subscribersStats'];
+    expect($subscribersStats['lists'][0]['id'])->equals($segment->getId());
+    expect($subscribersStats['lists'][0]['name'])->equals($segment->getName());
+    expect($subscribersStats['lists'][0]['unsubscribed'])->equals(1);
+    expect($subscribersStats['lists'][0]['subscribed'])->equals(0);
+  }
+
   private function cleanup(): void {
     $this->truncateEntity(SettingEntity::class);
     $this->truncateEntity(SubscriberEntity::class);
@@ -211,5 +284,7 @@ class HomepageDataControllerTest extends \MailPoetTest {
     $this->truncateEntity(NewsletterEntity::class);
     $this->truncateEntity(NewsletterOptionFieldEntity::class);
     $this->truncateEntity(NewsletterOptionEntity::class);
+    $this->truncateEntity(SegmentEntity::class);
+    $this->truncateEntity(SubscriberSegmentEntity::class);
   }
 }
