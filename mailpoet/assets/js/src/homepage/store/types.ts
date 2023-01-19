@@ -27,8 +27,13 @@ export type ProductDiscoveryTasksStatus = {
 
 export type TaskType = keyof TaskListTasksStatus;
 
+export type UpsellState = {
+  isHidden: boolean;
+};
+
 export type State = {
   taskList: TaskListState;
   productDiscovery: ProductDiscoveryState;
+  upsell: UpsellState;
   isWooCommerceActive: boolean;
 };

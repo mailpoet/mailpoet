@@ -21,3 +21,14 @@ export function saveProductDiscoveryDismissed() {
     },
   });
 }
+
+export function saveUpsellDismissed() {
+  return callApi({
+    endpoint: 'settings',
+    action: 'set',
+    method: 'POST',
+    data: {
+      'homepage.upsell_dismissed': true,
+    },
+  });
+}
