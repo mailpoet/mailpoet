@@ -75,6 +75,7 @@
           <div class="mailpoet_form_field_title mailpoet_form_field_title_inline"><%= __('Minimum spend') %></div>
           <div class="mailpoet_form_field_input_option">
             <input type="text" name="minimum-amount" class="mailpoet_input mailpoet_field_coupon_minimum_amount" value="{{ model.minimumAmount }}" placeholder="<%= __('No minimum')%>" />
+            <span class="mailpoet_error mailpoet_hidden"> <%= __('Please enter with one monetary decimal point (.) without thousand separators and currency symbols.') %> </span>
           </div>
         </label>
       </div>
@@ -84,6 +85,7 @@
           <div class="mailpoet_form_field_title mailpoet_form_field_title_inline"><%= __('Maximum spend') %></div>
           <div class="mailpoet_form_field_input_option">
             <input type="text" name="maximum-amount" class="mailpoet_input mailpoet_field_coupon_maximum_amount" value="{{ model.maximumAmount }}" placeholder="<%= __('No Maximum')%>" />
+            <span class="mailpoet_error mailpoet_hidden"> <%= __('Please enter with one monetary decimal point (.) without thousand separators and currency symbols.') %> </span>
           </div>
         </label>
       </div>
@@ -158,6 +160,7 @@
           <div class="mailpoet_form_field_title mailpoet_form_field_title_inline"><%= __('Allowed emails') %></div>
           <div class="mailpoet_form_field_input_option">
             <input type="email" name="email-restrictions" class="mailpoet_input mailpoet_field_coupon_email_restrictions" value="{{ model.emailRestrictions }}" placeholder="<%= __('No restrictions')%>" multiple="multiple" />
+            <span class="mailpoet_error mailpoet_hidden"> </span>
           </div>
         </label>
       </div>
