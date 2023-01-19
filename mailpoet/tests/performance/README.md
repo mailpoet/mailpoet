@@ -38,9 +38,15 @@ There k6 installation is automatic. It will download the binary file in `/tools/
 
 ## Configuration
 
-### Test Environment (to be added)
+### Test Environment
 
-TBD
+This test suite uses original MailPoet's environment with installed WordPress, MySQL and stuff like that.
+
+The local url for the performance test site is: `https://localhost:9500`
+
+When you're done with testing, please make sure to stop the environment by the following command:
+
+`./do test:performance-clean`
 
 ### Config Variables
 
