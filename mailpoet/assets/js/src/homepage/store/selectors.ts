@@ -4,6 +4,7 @@ import {
   TaskListTasksStatus,
   TaskType,
   SubscribersCountChange,
+  ListSubscribersCountChange,
 } from './types';
 
 export function getIsTaskListHidden(state: State): boolean {
@@ -36,6 +37,12 @@ export function getGlobalSubscriberStatsChange(
   state: State,
 ): SubscribersCountChange {
   return state.subscribersStats.global;
+}
+
+export function getListsSubscriberStatsChange(
+  state: State,
+): ListSubscribersCountChange[] {
+  return state.subscribersStats.lists;
 }
 
 export function getIsProductDiscoveryDone(state: State): boolean {

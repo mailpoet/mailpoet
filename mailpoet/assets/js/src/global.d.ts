@@ -197,6 +197,13 @@ interface Window {
         subscribed: number;
         unsubscribed: number;
       };
+      lists: {
+        subscribed: number;
+        unsubscribed: number;
+        name: string;
+        id: number;
+        type: string;
+      }[];
     };
     wooCustomersCount: number;
     subscribersCount: number;
