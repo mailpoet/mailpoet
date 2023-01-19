@@ -29,6 +29,7 @@ class Site implements CategoryInterface {
       case 'title':
         return $this->wp->getBloginfo('name');
 
+      case 'homepage_url':
       case 'homepage_link':
         return $this->wp->getBloginfo('url');
 

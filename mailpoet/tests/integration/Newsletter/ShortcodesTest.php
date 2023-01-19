@@ -426,6 +426,16 @@ class ShortcodesTest extends \MailPoetTest {
     expect($result[0])->equals($siteUrl);
   }
 
+  public function testItCanProcessSiteHomepageUrlShortcode() {
+    $optionName = 'home';
+    $siteUrl = get_option($optionName);
+
+    $shortcode = '[site:homepage_url]';
+    $shortcodesObject = $this->shortcodesObject;
+    $result = $shortcodesObject->process([$shortcode]);
+    expect($result[0])->equals($siteUrl);
+  }
+
   public function _createWPPost() {
     $data = [
       'post_title' => 'Sample Post',
