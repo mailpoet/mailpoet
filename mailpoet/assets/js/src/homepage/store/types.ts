@@ -15,6 +15,14 @@ export type SubscribersCountChange = {
   unsubscribed: number;
 };
 
+export type ListSubscribersCountChange = {
+  subscribed: number;
+  unsubscribed: number;
+  name: string;
+  id: number;
+  type: string;
+};
+
 export type TaskListTasksStatus = {
   senderSet: boolean;
   mssConnected: boolean;
@@ -48,5 +56,6 @@ export type State = {
   isWooCommerceActive: boolean;
   subscribersStats: {
     global: SubscribersCountChange;
+    lists: ListSubscribersCountChange[];
   };
 };
