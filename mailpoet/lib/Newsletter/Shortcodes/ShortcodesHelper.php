@@ -124,6 +124,10 @@ class ShortcodesHelper {
             '[site:title]'
           ),
         ],
+        [
+          'text' => __('Homepage URL', 'mailpoet'),
+          'shortcode' => '[site:homepage_url]',
+        ],
       ],
     ];
     $customFields = $this->getCustomFields();
