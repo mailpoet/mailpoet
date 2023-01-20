@@ -1,8 +1,5 @@
 export const getStepsCount = () => {
-  let stepsCount = 2;
-  if (!window.has_mss_key_specified) {
-    stepsCount += 1;
-  }
+  let stepsCount = 3;
   if (window.mailpoet_woocommerce_active) {
     stepsCount += 1;
   }
