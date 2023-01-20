@@ -26,25 +26,27 @@ export function Upsell({ onHide }: Props): JSX.Element {
         />
       }
     >
-      <ul>
-        <li>
-          <Icon icon={trendingUp} />
-          {MailPoet.I18n.t('detailedAnalytics')}
-        </li>
-        <li>
-          <Icon icon={people} />
-          {MailPoet.I18n.t('advancedSubscriberSegmentation')}
-        </li>
-        <li>
-          <Icon icon={megaphone} />
-          {MailPoet.I18n.t('emailMarketingAutomations')}
-        </li>
-        <li>
-          <Icon icon={lifesaver} />
-          {MailPoet.I18n.t('prioritySupport')}
-        </li>
-      </ul>
-      <Button variant="primary">{MailPoet.I18n.t('upgradePlan')}</Button>
+      <div className="mailpoet-homepage-upsell__content">
+        <ul>
+          <li>
+            <Icon icon={trendingUp} />
+            <span>{MailPoet.I18n.t('detailedAnalytics')}</span>
+          </li>
+          <li>
+            <Icon icon={people} />
+            <span>{MailPoet.I18n.t('advancedSubscriberSegmentation')}</span>
+          </li>
+          <li>
+            <Icon icon={megaphone} />
+            <span>{MailPoet.I18n.t('emailMarketingAutomations')}</span>
+          </li>
+          <li>
+            <Icon icon={lifesaver} />
+            <span>{MailPoet.I18n.t('prioritySupport')}</span>
+          </li>
+        </ul>
+        <Button variant="primary">{MailPoet.I18n.t('upgradePlan')}</Button>
+      </div>
     </ContentSection>
   );
 }
