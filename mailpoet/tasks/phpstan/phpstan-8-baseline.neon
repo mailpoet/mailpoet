@@ -816,11 +816,6 @@ parameters:
 			path: ../../lib/Subscribers/SubscribersRepository.php
 
 		-
-			message: "#^Cannot cast mixed to int\\.$#"
-			count: 1
-			path: ../../lib/Subscribers/SubscribersRepository.php
-
-		-
 			message: "#^Method MailPoet\\\\Subscribers\\\\SubscribersRepository\\:\\:findIdsOfDeletedByEmails\\(\\) should return array\\<int\\> but returns array\\<array\\<string, int\\>\\>\\.$#"
 			count: 1
 			path: ../../lib/Subscribers/SubscribersRepository.php

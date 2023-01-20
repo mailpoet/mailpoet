@@ -161,10 +161,24 @@ class HomepageDataController {
       $listData[$list['id']]['unsubscribed'] = $list['count'];
     }
 
+    $subscribedCount = $this->subscribersRepository->getCountOfCreatedAfterWithStatues($thirtyDaysAgo, [SubscriberEntity::STATUS_SUBSCRIBED]);
+    $unsubscribedCount = $this->subscribersRepository->getCountOfUnsubscribedAfter($thirtyDaysAgo);
+    $subscribedSubscribersCount = $this->subscribersRepository->getCountOfSubscribersForStates([SubscriberEntity::STATUS_SUBSCRIBED]);
+    $subscribedSubscribers30DaysAgo = $subscribedSubscribersCount - $subscribedCount + $unsubscribedCount;
+    if ($subscribedSubscribers30DaysAgo > 0) {
+      $globalChangePercent = (($subscribedSubscribersCount - $subscribedSubscribers30DaysAgo) / $subscribedSubscribers30DaysAgo) * 100;
+      if (floor($globalChangePercent) !== (float)$globalChangePercent) {
+        $globalChangePercent = round($globalChangePercent, 1);
+      }
+    } else {
+      $globalChangePercent = $subscribedSubscribersCount * 100;
+    }
+
     return [
       'global' => [
-        'subscribed' => $this->subscribersRepository->getCountOfCreatedAfterWithStatues($thirtyDaysAgo, [SubscriberEntity::STATUS_SUBSCRIBED]),
-        'unsubscribed' => $this->subscribersRepository->getCountOfUnsubscribedAfter($thirtyDaysAgo),
+        'subscribed' => $subscribedCount,
+        'unsubscribed' => $unsubscribedCount,
+        'change' => $globalChangePercent,
       ],
       'lists' => array_values($listData),
     ];

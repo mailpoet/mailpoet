@@ -51,18 +51,22 @@ class SubscribersRepository extends Repository {
   }
 
   public function getTotalSubscribers(): int {
+    return $this->getCountOfSubscribersForStates([
+      SubscriberEntity::STATUS_SUBSCRIBED,
+      SubscriberEntity::STATUS_UNCONFIRMED,
+      SubscriberEntity::STATUS_INACTIVE,
+    ]);
+  }
+
+  public function getCountOfSubscribersForStates(array $states): int {
     $query = $this->entityManager
       ->createQueryBuilder()
       ->select('count(n.id)')
       ->from(SubscriberEntity::class, 'n')
       ->where('n.deletedAt IS NULL AND n.status IN (:statuses)')
-      ->setParameter('statuses', [
-        SubscriberEntity::STATUS_SUBSCRIBED,
-        SubscriberEntity::STATUS_UNCONFIRMED,
-        SubscriberEntity::STATUS_INACTIVE,
-      ])
+      ->setParameter('statuses', $states)
       ->getQuery();
-    return (int)$query->getSingleScalarResult();
+    return intval($query->getSingleScalarResult());
   }
 
   public function invalidateTotalSubscribersCache(): void {
@@ -390,7 +394,8 @@ class SubscribersRepository extends Repository {
       ->select('COUNT(s.id)')
       ->from(StatisticsUnsubscribeEntity::class, 'su')
       ->join('su.subscriber', 's')
-      ->where('s.createdAt > :unsubscribedAfter')
+      ->where('s.createdAt <= :unsubscribedAfter')
+      ->andWhere('su.createdAt > :unsubscribedAfter')
       ->andWhere('s.status = :status')
       ->andWhere('s.deletedAt IS NULL')
       ->setParameter('unsubscribedAfter', $unsubscribedAfter)
