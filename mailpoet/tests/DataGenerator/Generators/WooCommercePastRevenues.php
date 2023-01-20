@@ -237,7 +237,7 @@ class WooCommercePastRevenues implements Generator {
       $openedCount = floor(count($subscriberReceivedEmails) / rand(2, 5));
       $emailsToClick = array_intersect_key(
         $subscriberReceivedEmails,
-        array_flip(array_rand($subscriberReceivedEmails, $openedCount))
+        array_flip(array_rand($subscriberReceivedEmails, intval($openedCount)))
       );
       // Click and open selected emails
       foreach ($emailsToClick as $email) {
