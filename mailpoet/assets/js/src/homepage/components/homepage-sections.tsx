@@ -33,7 +33,7 @@ export function HomepageSections(): JSX.Element {
       ) : null}
       {isTaskListHidden && isProductDiscoveryHidden && !isUpsellHidden ? (
         <ErrorBoundary>
-          <Upsell onHide={hideUpsell} />
+          <Upsell closable onHide={hideUpsell} />
         </ErrorBoundary>
       ) : null}
     </div>
