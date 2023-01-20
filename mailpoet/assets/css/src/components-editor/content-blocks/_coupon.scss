@@ -27,10 +27,14 @@
   }
 }
 
+.coupon_amount_wrapper {
+  position: relative;
+}
+
 .amount_percentage_sign {
   font-size: 18px;
   font-weight: bold;
-  left: 140px;
+  left: 160px; // .mailpoet_input_medium width + 10px
   line-height: 30px;
   position: absolute;
 }
