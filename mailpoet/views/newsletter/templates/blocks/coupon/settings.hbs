@@ -12,9 +12,9 @@
 <div class="mailpoet_form_field">
     <label>
         <div class="mailpoet_form_field_title mailpoet_form_field_title_inline"><%= __('Coupon amount') %></div>
-        <div>
+        <div class="coupon_amount_wrapper">
             {{#ifCond model.amountMax '===' 100}}
-                <span class="amount_percentage_sign">%</div>
+                <span class="amount_percentage_sign">%</span>
             {{/ifCond}}
             <input type="text" name="amount"  data-parsley-validate data-parsley-validation-threshold="0" data-parsley-required data-parsley-trigger="input"  data-parsley-type="digits" {{#ifCond model.amountMax '!==' null }} data-parsley-maxlength="{{ model.amountMax }}" max="{{ model.amountMax }}" {{/ifCond}}   class="mailpoet_input mailpoet_field_coupon_amount mailpoet_input_medium" value="{{ model.amount }}" min="0" />
         </div>
