@@ -29,6 +29,10 @@ export function getHasImportedSubscribers(state: State): boolean {
   return state.taskList.hasImportedSubscribers;
 }
 
+export function getHasForms(state: State): boolean {
+  return state.formsCount > 0;
+}
+
 export function getIsProductDiscoveryHidden(state: State): boolean {
   return state.productDiscovery.isHidden;
 }

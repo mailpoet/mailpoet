@@ -81,6 +81,7 @@ class HomepageDataController {
       'upsellStatus' => $showUpsell ? $this->getUpsellStatus($subscribersCount) : null,
       'wooCustomersCount' => $this->wooCommerceHelper->getCustomersCount(),
       'subscribersCount' => $subscribersCount,
+      'formsCount' => $formsCount,
       'subscribersStats' => $this->getSubscribersStats(),
     ];
   }
