@@ -211,6 +211,7 @@ class HomepageDataControllerTest extends \MailPoetTest {
     $thirtyOneDaysAgo = Carbon::now()->subDays(31);
     $twentyNineDaysAgo = Carbon::now()->subDays(29);
     $segment = (new Segment())->withName('Segment')->create();
+    $segment->setAverageEngagementScore(0.5);
     // Subscribed 29 days ago - only this one counts as subscribed on list level
     $newSubscribed = (new Subscriber())
       ->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)
@@ -243,6 +244,7 @@ class HomepageDataControllerTest extends \MailPoetTest {
     expect($subscribersStats['lists'][0]['name'])->equals($segment->getName());
     expect($subscribersStats['lists'][0]['subscribed'])->equals(1);
     expect($subscribersStats['lists'][0]['unsubscribed'])->equals(0);
+    expect($subscribersStats['lists'][0]['averageEngagementScore'])->equals(0.5);
   }
 
   public function testItFetchesCorrectListLevelUnsubscribedStats(): void {
