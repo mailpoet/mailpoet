@@ -74,6 +74,9 @@ class NewsletterSaveController {
   /** @var Scheduler */
   private $scheduler;
 
+  /*** @var NewsletterCoupon */
+  private $newsletterCoupon;
+  
   public function __construct(
     AuthorizedEmailsController $authorizedEmailsController,
     Emoji $emoji,
@@ -89,7 +92,8 @@ class NewsletterSaveController {
     Security $security,
     WPFunctions $wp,
     ApiDataSanitizer $dataSanitizer,
-    Scheduler $scheduler
+    Scheduler $scheduler,
+    NewsletterCoupon $newsletterCoupon
   ) {
     $this->authorizedEmailsController = $authorizedEmailsController;
     $this->emoji = $emoji;
@@ -106,6 +110,7 @@ class NewsletterSaveController {
     $this->wp = $wp;
     $this->dataSanitizer = $dataSanitizer;
     $this->scheduler = $scheduler;
+    $this->newsletterCoupon = $newsletterCoupon;
   }
 
   public function save(array $data = []): NewsletterEntity {
@@ -182,6 +187,7 @@ class NewsletterSaveController {
     // reset sent at date
     $duplicate->setSentAt(null);
 
+    $duplicate = $this->newsletterCoupon->cleanupSensitiveData($duplicate);
     $this->newslettersRepository->persist($duplicate);
     $this->newslettersRepository->flush();
 
