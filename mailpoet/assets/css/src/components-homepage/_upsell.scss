@@ -1,0 +1,68 @@
+.mailpoet-homepage-upsell {
+  background: bottom right/290px no-repeat url('../../img/homepage/upsell-illustration.png') #fffaf2;
+  min-height: 288px;
+
+  .mailpoet-homepage-section__heading {
+    border: none;
+    height: auto;
+    padding: 0;
+
+    h2 {
+      background-color: $color-white;
+      max-width: 330px;
+      padding: 32px 20px 0 40px;
+    }
+  }
+
+  .mailpoet-homepage-section__heading-after {
+    bottom: 20px;
+    position: relative;
+    right: 20px;
+  }
+
+  .mailpoet-homepage-upsell__content {
+    background-color: $color-white;
+    max-width: 330px;
+    padding: 8px 20px 32px 40px;
+
+    ul {
+      margin: 0;
+      padding: 0 0 8px;
+
+      li {
+        line-height: 16px;
+        margin: 4px 0;
+
+        svg {
+          fill: $color-secondary-middle;
+          vertical-align: middle;
+        }
+
+        span {
+          line-height: 18px;
+          padding-left: 12px;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 700px) {
+  .mailpoet-homepage-upsell {
+    .mailpoet-homepage-section__heading {
+      h2 {
+        max-width: 270px;
+      }
+    }
+
+    .mailpoet-homepage-upsell__content {
+      max-width: 270px;
+    }
+  }
+}
+
+@media (max-width: 600px) {
+  .mailpoet-homepage-upsell {
+    background: $color-white;
+  }
+}
