@@ -34,7 +34,7 @@ class NewsletterCoupon {
 
       if (isset($block['type']) && $block['type'] === Coupon::TYPE) {
         $block['code'] = Coupon::CODE_PLACEHOLDER;
-        
+
         if(isset($block['couponId']))
           unset($block['couponId']);
       }
