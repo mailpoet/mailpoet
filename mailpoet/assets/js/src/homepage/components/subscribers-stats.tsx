@@ -1,6 +1,7 @@
 import { MailPoet } from 'mailpoet';
 import { useSelect } from '@wordpress/data';
 import { storeName } from 'homepage/store/store';
+import { ListingsEngagementScore } from 'subscribers/listings_engagement_score';
 import { ContentSection } from './content-section';
 
 export function SubscribersStats(): JSX.Element {
@@ -33,6 +34,7 @@ export function SubscribersStats(): JSX.Element {
           <thead>
             <tr>
               <th>{MailPoet.I18n.t('listName')}</th>
+              <th>{MailPoet.I18n.t('listScore')}</th>
               <th>{MailPoet.I18n.t('subscribedSubscribers')}</th>
               <th>{MailPoet.I18n.t('unsubscribedSubscribers')}</th>
             </tr>
@@ -46,6 +48,14 @@ export function SubscribersStats(): JSX.Element {
                   >
                     {list.name}
                   </a>
+                </td>
+                <td>
+                  <div className="mailpoet-listing-stats">
+                    <ListingsEngagementScore
+                      id={list.id}
+                      engagementScore={list.averageEngagementScore}
+                    />
+                  </div>
                 </td>
                 <td>{list.subscribed}</td>
                 <td>{list.unsubscribed}</td>

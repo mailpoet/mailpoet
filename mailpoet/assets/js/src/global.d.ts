@@ -203,6 +203,7 @@ interface Window {
         name: string;
         id: number;
         type: string;
+        averageEngagementScore: number;
       }[];
     };
     wooCustomersCount: number;

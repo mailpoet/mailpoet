@@ -402,7 +402,7 @@ class SubscribersRepository extends Repository {
 
   public function getListLevelCountsOfSubscribedAfter(\DateTimeInterface $date): array {
     $data = $this->entityManager->createQueryBuilder()
-      ->select('seg.id, seg.name, seg.type, COUNT(ss.id) as count')
+      ->select('seg.id, seg.name, seg.type, seg.averageEngagementScore, COUNT(ss.id) as count')
       ->from(SubscriberSegmentEntity::class, 'ss')
       ->join('ss.subscriber', 's')
       ->join('ss.segment', 'seg')
@@ -422,7 +422,7 @@ class SubscribersRepository extends Repository {
 
   public function getListLevelCountsOfUnsubscribedAfter(\DateTimeInterface $date): array {
     return $this->entityManager->createQueryBuilder()
-      ->select('seg.id, seg.name, seg.type, COUNT(ss.id) as count')
+      ->select('seg.id, seg.name, seg.type, seg.averageEngagementScore, COUNT(ss.id) as count')
       ->from(SubscriberSegmentEntity::class, 'ss')
       ->join('ss.subscriber', 's')
       ->join('ss.segment', 'seg')

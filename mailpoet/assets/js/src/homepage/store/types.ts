@@ -21,6 +21,7 @@ export type ListSubscribersCountChange = {
   name: string;
   id: number;
   type: string;
+  averageEngagementScore: number;
 };
 
 export type TaskListTasksStatus = {
