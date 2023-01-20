@@ -178,7 +178,7 @@ class HomepageDataController {
       'global' => [
         'subscribed' => $subscribedCount,
         'unsubscribed' => $unsubscribedCount,
-        'change' => $globalChangePercent,
+        'changePercent' => $globalChangePercent,
       ],
       'lists' => array_values($listData),
     ];

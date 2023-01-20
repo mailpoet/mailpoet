@@ -216,19 +216,19 @@ class HomepageDataControllerTest extends \MailPoetTest {
       (new Subscriber())->withCreatedAt($twentyNineDaysAgo)->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)->create();
     }
     $subscribersStats = $this->homepageDataController->getPageData()['subscribersStats'];
-    expect($subscribersStats['global']['change'])->equals(1000);
+    expect($subscribersStats['global']['changePercent'])->equals(1000);
 
     // 10 New Subscribers + 5 Old Subscribers
     for ($i = 0; $i < 5; $i++) {
       (new Subscriber())->withCreatedAt($thirtyOneDaysAgo)->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)->create();
     }
     $subscribersStats = $this->homepageDataController->getPageData()['subscribersStats'];
-    expect($subscribersStats['global']['change'])->equals(200);
+    expect($subscribersStats['global']['changePercent'])->equals(200);
 
     // 10 New Subscribers + 6 Old Subscribers
     (new Subscriber())->withCreatedAt($thirtyOneDaysAgo)->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)->create();
     $subscribersStats = $this->homepageDataController->getPageData()['subscribersStats'];
-    expect($subscribersStats['global']['change'])->equals( 166.7);
+    expect($subscribersStats['global']['changePercent'])->equals( 166.7);
 
     // 10 New Subscribers + 6 Old Subscribers + 10 New Unsubscribed
     for ($i = 0; $i < 10; $i++) {
@@ -237,14 +237,14 @@ class HomepageDataControllerTest extends \MailPoetTest {
       $this->entityManager->flush();
     }
     $subscribersStats = $this->homepageDataController->getPageData()['subscribersStats'];
-    expect($subscribersStats['global']['change'])->equals( 0);
+    expect($subscribersStats['global']['changePercent'])->equals( 0);
 
     // 10 New Subscribers + 6 Old Subscribers + 11 New Unsubscribed
     $unsubscribed = (new Subscriber())->withCreatedAt($thirtyOneDaysAgo)->withStatus(SubscriberEntity::STATUS_UNSUBSCRIBED)->create();
     $this->entityManager->persist(new StatisticsUnsubscribeEntity(null, null, $unsubscribed));
     $this->entityManager->flush();
     $subscribersStats = $this->homepageDataController->getPageData()['subscribersStats'];
-    expect($subscribersStats['global']['change'])->equals( -5.9);
+    expect($subscribersStats['global']['changePercent'])->equals( -5.9);
   }
 
   public function testItFetchesCorrectListLevelSubscribedStats(): void {
