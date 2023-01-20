@@ -219,7 +219,13 @@ Module.CouponBlockSettingsView = base.BlockSettingsView.extend({
     this.$('.mailpoet_field_coupon_amount').parsley().validate();
   },
   onRender() {
-    this.$('[data-parsley-validate]').parsley().validate();
+    this.$('[data-parsley-validate]')
+      .parsley()
+      .forEach((instance) => {
+        if (instance.element.value) {
+          instance.validate();
+        }
+      });
   },
 });
 
