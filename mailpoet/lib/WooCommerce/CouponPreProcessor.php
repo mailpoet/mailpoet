@@ -75,7 +75,7 @@ class CouponPreProcessor {
     $coupon->set_date_expires($expiration);
     $coupon->set_description(
       sprintf(
-      // translators: %s is newsletter subject.
+      // translators: %1$s is newsletter id and %2$s is the subject.
         _x('Auto Generated coupon by MailPoet for email: %1$s: %2$s', 'Coupon block code generation', 'mailpoet'),
         $newsletter->getId(),
         $newsletter->getSubject()
