@@ -40,8 +40,9 @@ class NewsletterCouponTest extends \MailPoetUnitTest {
     $newsletter->setBody(['content' => ['blocks' => $blocks]]);
     $result = $newsletterCoupon->cleanupSensitiveData($newsletter);
     $body = (array)$result->getBody();
-    expect($body['content']['blocks'][0]['blocks'][0])->equals(['type' => Coupon::TYPE]);
-    expect($body['content']['blocks'][0]['blocks'][1]['blocks'][0])->equals(['type' => Coupon::TYPE]);
-    expect($body['content']['blocks'][1])->equals(['type' => Coupon::TYPE]);
+    $cleanBlock = ['type' => Coupon::TYPE, 'code' => Coupon::CODE_PLACEHOLDER];
+    expect($body['content']['blocks'][0]['blocks'][0])->equals($cleanBlock);
+    expect($body['content']['blocks'][0]['blocks'][1]['blocks'][0])->equals($cleanBlock);
+    expect($body['content']['blocks'][1])->equals($cleanBlock);
   }
 }
