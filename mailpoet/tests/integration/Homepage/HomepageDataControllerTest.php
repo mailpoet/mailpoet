@@ -195,8 +195,8 @@ class HomepageDataControllerTest extends \MailPoetTest {
     $oldUnsubscribedStats->setCreatedAt($thirtyOneDaysAgo);
     $this->entityManager->persist($oldUnsubscribedStats);
     $this->entityManager->flush();
-    // Freshly unsubscribed
-    $newUnsubscribed = (new Subscriber())->withCreatedAt($twentyNineDaysAgo)->withStatus(SubscriberEntity::STATUS_UNSUBSCRIBED)->create();
+    // Freshly unsubscribed (but created before the period)
+    $newUnsubscribed = (new Subscriber())->withCreatedAt($thirtyOneDaysAgo)->withStatus(SubscriberEntity::STATUS_UNSUBSCRIBED)->create();
     $newUnsubscribedStats = new StatisticsUnsubscribeEntity(null, null, $newUnsubscribed);
     $newUnsubscribedStats->setCreatedAt($twentyNineDaysAgo);
     $this->entityManager->persist($newUnsubscribedStats);
@@ -205,6 +205,46 @@ class HomepageDataControllerTest extends \MailPoetTest {
     $subscribersStats = $this->homepageDataController->getPageData()['subscribersStats'];
     expect($subscribersStats['global']['subscribed'])->equals(1);
     expect($subscribersStats['global']['unsubscribed'])->equals(1);
+  }
+
+  public function testItFetchesCorrectGlobalSubscriberChange(): void {
+    $thirtyOneDaysAgo = Carbon::now()->subDays(31);
+    $twentyNineDaysAgo = Carbon::now()->subDays(29);
+
+    // 10 New Subscribers
+    for ($i = 0; $i < 10; $i++) {
+      (new Subscriber())->withCreatedAt($twentyNineDaysAgo)->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)->create();
+    }
+    $subscribersStats = $this->homepageDataController->getPageData()['subscribersStats'];
+    expect($subscribersStats['global']['change'])->equals(1000);
+
+    // 10 New Subscribers + 5 Old Subscribers
+    for ($i = 0; $i < 5; $i++) {
+      (new Subscriber())->withCreatedAt($thirtyOneDaysAgo)->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)->create();
+    }
+    $subscribersStats = $this->homepageDataController->getPageData()['subscribersStats'];
+    expect($subscribersStats['global']['change'])->equals(200);
+
+    // 10 New Subscribers + 6 Old Subscribers
+    (new Subscriber())->withCreatedAt($thirtyOneDaysAgo)->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)->create();
+    $subscribersStats = $this->homepageDataController->getPageData()['subscribersStats'];
+    expect($subscribersStats['global']['change'])->equals( 166.7);
+
+    // 10 New Subscribers + 6 Old Subscribers + 10 New Unsubscribed
+    for ($i = 0; $i < 10; $i++) {
+      $unsubscribed = (new Subscriber())->withCreatedAt($thirtyOneDaysAgo)->withStatus(SubscriberEntity::STATUS_UNSUBSCRIBED)->create();
+      $this->entityManager->persist(new StatisticsUnsubscribeEntity(null, null, $unsubscribed));
+      $this->entityManager->flush();
+    }
+    $subscribersStats = $this->homepageDataController->getPageData()['subscribersStats'];
+    expect($subscribersStats['global']['change'])->equals( 0);
+
+    // 10 New Subscribers + 6 Old Subscribers + 11 New Unsubscribed
+    $unsubscribed = (new Subscriber())->withCreatedAt($thirtyOneDaysAgo)->withStatus(SubscriberEntity::STATUS_UNSUBSCRIBED)->create();
+    $this->entityManager->persist(new StatisticsUnsubscribeEntity(null, null, $unsubscribed));
+    $this->entityManager->flush();
+    $subscribersStats = $this->homepageDataController->getPageData()['subscribersStats'];
+    expect($subscribersStats['global']['change'])->equals( -5.9);
   }
 
   public function testItFetchesCorrectListLevelSubscribedStats(): void {
