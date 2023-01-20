@@ -21,5 +21,6 @@ export function getInitialState(): State {
     },
     isWooCommerceActive: MailPoet.isWoocommerceActive,
     subscribersStats: window.mailpoet_homepage_data.subscribersStats,
+    formsCount: window.mailpoet_homepage_data.formsCount,
   };
 }

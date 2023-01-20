@@ -208,6 +208,7 @@ interface Window {
     };
     wooCustomersCount: number;
     subscribersCount: number;
+    formsCount: number;
   };
   templates?: Record<string, string>;
   is_wc_active?: boolean;

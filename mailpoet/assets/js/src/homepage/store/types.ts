@@ -54,9 +54,10 @@ export type State = {
   taskList: TaskListState;
   productDiscovery: ProductDiscoveryState;
   upsell: UpsellState;
-  isWooCommerceActive: boolean;
   subscribersStats: {
     global: SubscribersCountChange;
     lists: ListSubscribersCountChange[];
   };
+  isWooCommerceActive: boolean;
+  formsCount: number;
 };
