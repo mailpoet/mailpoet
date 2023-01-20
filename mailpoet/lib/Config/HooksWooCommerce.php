@@ -9,6 +9,7 @@ use MailPoet\Subscription\Registration;
 use MailPoet\WooCommerce\Settings as WooCommerceSettings;
 use MailPoet\WooCommerce\SubscriberEngagement;
 use MailPoet\WooCommerce\Subscription as WooCommerceSubscription;
+use MailPoet\WooCommerce\Tracker;
 
 class HooksWooCommerce {
   /** @var WooCommerceSubscription */
@@ -32,6 +33,9 @@ class HooksWooCommerce {
   /** @var SubscriberEngagement */
   private $subscriberEngagement;
 
+  /** @var Tracker */
+  private $tracker;
+
   public function __construct(
     WooCommerceSubscription $woocommerceSubscription,
     WooCommerceSegment $woocommerceSegment,
@@ -39,6 +43,7 @@ class HooksWooCommerce {
     WooCommercePurchases $woocommercePurchases,
     Registration $subscriberRegistration,
     LoggerFactory $loggerFactory,
+    Tracker $tracker,
     SubscriberEngagement $subscriberEngagement
   ) {
     $this->woocommerceSubscription = $woocommerceSubscription;
@@ -47,6 +52,7 @@ class HooksWooCommerce {
     $this->woocommercePurchases = $woocommercePurchases;
     $this->loggerFactory = $loggerFactory;
     $this->subscriberRegistration = $subscriberRegistration;
+    $this->tracker = $tracker;
     $this->subscriberEngagement = $subscriberEngagement;
   }
 
@@ -141,6 +147,10 @@ class HooksWooCommerce {
     } catch (\Throwable $e) {
       $this->logError($e, 'WooCommerce HPOS Compatibility');
     }
+  }
+
+  public function addTrackingData($data) {
+    return $this->tracker->addTrackingData($data);
   }
 
   private function logError(\Throwable $e, $name) {
