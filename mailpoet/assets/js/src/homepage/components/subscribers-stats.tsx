@@ -2,6 +2,7 @@ import { MouseEvent } from 'react';
 import { Icon } from '@wordpress/components';
 import { trendingUp } from '@wordpress/icons';
 import { useSelect } from '@wordpress/data';
+import classnames from 'classnames';
 import { MailPoet } from 'mailpoet';
 import { storeName } from 'homepage/store/store';
 import { ListingsEngagementScore } from 'subscribers/listings_engagement_score';
@@ -34,6 +35,19 @@ export function SubscribersStats(): JSX.Element {
     <ContentSection
       heading={MailPoet.I18n.t('subscribersHeading')}
       description={MailPoet.I18n.t('subscribersSectionDescription')}
+      headingAfter={
+        <span
+          className={classnames({
+            'mailpoet-decrease': globalChange.changePercent < 0,
+          })}
+        >
+          <Icon icon={trendingUp} />
+          {globalChange.changePercent < 0 ? '-' : ''}
+          {Math.abs(globalChange.changePercent) > 1000
+            ? '∞%'
+            : `${Math.abs(globalChange.changePercent)}%`}
+        </span>
+      }
     >
       {listsChange.length === 0 &&
       globalChange.subscribed === 0 &&

@@ -196,6 +196,7 @@ interface Window {
       global: {
         subscribed: number;
         unsubscribed: number;
+        changePercent: number;
       };
       lists: {
         subscribed: number;

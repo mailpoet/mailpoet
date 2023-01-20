@@ -13,6 +13,7 @@ export type ProductDiscoveryState = {
 export type SubscribersCountChange = {
   subscribed: number;
   unsubscribed: number;
+  changePercent: number;
 };
 
 export type ListSubscribersCountChange = {
