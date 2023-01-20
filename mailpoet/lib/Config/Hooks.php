@@ -89,6 +89,7 @@ class Hooks {
     $this->setupWooCommerceUsers();
     $this->setupWooCommercePurchases();
     $this->setupWooCommerceSubscriberEngagement();
+    $this->setupWooCommerceTracking();
     $this->setupImageSize();
     $this->setupListing();
     $this->setupSubscriptionEvents();
@@ -377,6 +378,16 @@ class Hooks {
       [$this->hooksWooCommerce, 'updateSubscriberEngagement'],
       7
     );
+  }
+
+  public function setupWooCommerceTracking() {
+    if ($this->wp->getOption('woocommerce_allow_tracking', 'no') === 'yes') {
+      $this->wp->addFilter(
+        'woocommerce_tracker_data',
+        [$this->hooksWooCommerce, 'addTrackingData'],
+        10
+      );
+    }
   }
 
   public function setupImageSize() {
