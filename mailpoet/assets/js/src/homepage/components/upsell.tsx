@@ -10,20 +10,23 @@ import { Button, Icon } from '@wordpress/components';
 import { ContentSection } from './content-section';
 
 type Props = {
-  onHide: () => void;
+  closable: boolean;
+  onHide?: () => void;
 };
 
-export function Upsell({ onHide }: Props): JSX.Element {
+export function Upsell({ closable, onHide }: Props): JSX.Element {
   return (
     <ContentSection
       className="mailpoet-homepage-upsell"
       heading={MailPoet.I18n.t('accelerateYourGrowth')}
       headingAfter={
-        <Button
-          icon={closeSmall}
-          onClick={onHide}
-          label={MailPoet.I18n.t('close')}
-        />
+        closable && onHide ? (
+          <Button
+            icon={closeSmall}
+            onClick={onHide}
+            label={MailPoet.I18n.t('close')}
+          />
+        ) : null
       }
     >
       <div className="mailpoet-homepage-upsell__content">
