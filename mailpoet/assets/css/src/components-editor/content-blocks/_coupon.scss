@@ -34,7 +34,7 @@
 .amount_percentage_sign {
   font-size: 18px;
   font-weight: bold;
-  left: 160px; // .mailpoet_input_medium width + 10px
+  left: 176px; // .mailpoet_input_medium width + 10px + 2 * field padding
   line-height: 30px;
   position: absolute;
 }
