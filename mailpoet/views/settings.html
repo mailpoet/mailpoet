@@ -186,33 +186,8 @@
     'premiumTabDescription': __('Activate your [link]MailPoet plan[/link] to access advanced features like detailed analytics or subscriber segmentation, faster customer support and more.', 'mailpoet'),
     'premiumTabGetKey': __('Already have a MailPoet plan? [link]Get your activation key[/link].', 'mailpoet'),
     'premiumTabGetPlan': __('Don\'t yet have a plan? [link]Sign up for one[/link].', 'mailpoet'),
-    'premiumTabNoKeyNotice': __('Please specify a license key before validating it.', 'mailpoet'),
     'premiumTabVerifyButton': __('Verify', 'mailpoet'),
-    'premiumTabKeyValidMessage': __('Your key is valid', 'mailpoet'),
-    'premiumTabKeyNotValidMessage': __('Your key is not valid', 'mailpoet'),
-    'premiumTabKeyCannotValidate': __('Yikes, we can’t validate your key because:'),
-    'premiumTabKeyCannotValidateLocalhost': __('You’re on localhost or using an IP address instead of a domain. Not allowed for security reasons!'),
-    'premiumTabKeyCannotValidateBlockingHost': __('Your host is blocking the activation, e.g. Altervista'),
-    'premiumTabKeyCannotValidateIntranet': __('This website is on an Intranet. Activating MailPoet will not be possible.'),
-    'learnMore': __('Learn more'),
-    'premiumTabPremiumActiveMessage': __('MailPoet Premium is active', 'mailpoet'),
-    'premiumTabPremiumNotInstalledMessage': __('MailPoet Premium is not installed.', 'mailpoet'),
-    'premiumTabPremiumNotActivatedMessage': __('MailPoet Premium is installed but not activated.', 'mailpoet'),
-    'premiumTabPremiumDownloadMessage': __('Download MailPoet Premium plugin', 'mailpoet'),
-    'premiumTabPremiumActivateMessage': __('Activate MailPoet Premium plugin', 'mailpoet'),
-    'premiumTabPremiumInstallationInstallingMessage': __('downloading MailPoet Premium…', 'mailpoet'),
-    'premiumTabPremiumInstallationActivatingMessage': __('activating MailPoet Premium…', 'mailpoet'),
-    'premiumTabPremiumInstallationActiveMessage': __('MailPoet Premium is active!', 'mailpoet'),
-    'premiumTabPremiumInstallationErrorMessage': __('Something went wrong. Please [link]download the Premium plugin from your account[/link] and [link]contact our support team[/link].', 'mailpoet'),
-    'premiumTabPremiumKeyNotValidMessage': __('Your key is not valid for MailPoet Premium', 'mailpoet'),
-    'premiumTabMssActiveMessage': __('MailPoet Sending Service is active', 'mailpoet'),
-    'premiumTabMssNotActiveMessage': __('MailPoet Sending Service is not active.', 'mailpoet'),
-    'premiumTabMssActivateMessage': __('Activate MailPoet Sending Service', 'mailpoet'),
-    'premiumTabMssKeyNotValidMessage': __('Your key is not valid for the MailPoet Sending Service', 'mailpoet'),
-    'premiumTabPendingApprovalHeading': __('Note: your account is pending approval by MailPoet.', 'mailpoet'),
-    'premiumTabPendingApprovalMessage': __('Rest assured, this only takes just a couple of hours. Until then, you can still send email previews to yourself. Any active automatic emails, like Welcome Emails, will be paused.', 'mailpoet'),
-    'premiumTabCongratulatoryMssEmailSent': __('A test email was sent to [email_address]', 'mailpoet'),
-
+  
     'wcCustomizerTitle': _x('Use MailPoet to customize WooCommerce emails', "Setting for using our editor for WooCommerce email"),
     'wcCustomizerDescription': _x('You can use the MailPoet editor to customize the template used to send WooCommerce emails (notification for order processing, completed, ...).', "Setting for using our editor for WooCommerce email"),
     'openTemplateEditor': _x('Open template editor', 'Settings button to go to WooCommerce email editor'),
@@ -302,6 +277,8 @@
     'engagementTrackingPartial': __('Partial – additionally track email engagement (opens, clicks). Disable cookie-based tracking.'),
     'engagementTrackingBasic': __('Basic – only use data your site already has about your subscribers. Disable email engagement and cookie-based tracking, and re-engagement emails.'),
   }) %>
+
+  <% include 'premium_key_validation_strings.html' %>
 <% endblock %>
 
 <% block after_javascript %>

@@ -33,6 +33,7 @@ class EditSignUpConfirmationEmailCest {
     // when we performed Verify button at Activation Tab and also performed some savings across the plugin.
     $i->amOnMailpoetPage('Settings');
     $i->click('[data-automation-id="activation_settings_tab"]');
+    $i->fillField('[id="mailpoet_premium_key"]', 'Any key');
     $i->click('Verify');
     $i->amOnMailpoetPage('Emails');
     $i->waitForText('Emails');
