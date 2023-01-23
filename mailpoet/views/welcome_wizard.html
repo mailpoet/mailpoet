@@ -13,6 +13,9 @@
   var hide_mailpoet_beacon = true;
   var mailpoet_show_customers_import = <%= json_encode(show_customers_import) %>;
   var mailpoet_account_url = '<%= add_referral_id("https://account.mailpoet.com/?s=" ~ subscriber_count ~ "&email=" ~ current_wp_user.user_email|escape('js')) %>';
+  var mailpoet_settings = <%= json_encode(settings) %>;
+  var mailpoet_premium_key_valid = <%= json_encode(premium_key_valid) %>;
+  var mailpoet_mss_key_valid = <%= json_encode(mss_key_valid) %>;
 </script>
 
 <div id="mailpoet-wizard-container"></div>
@@ -44,6 +47,7 @@
 'next': _x('Next', 'A label on a button'),
 'continue': _x('Continue', 'A label on a button'),
 }) %>
-<% include('mss_pitch_translations.html') %>
-<% include('woocommerce_setup_translations.html') %>
+<% include 'mss_pitch_translations.html' %>
+<% include 'woocommerce_setup_translations.html' %>
+<% include 'premium_key_validation_strings.html' %>
 <% endblock %>
