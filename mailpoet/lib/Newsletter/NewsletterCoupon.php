@@ -2,28 +2,24 @@
 
 namespace MailPoet\Newsletter;
 
-use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Newsletter\Renderer\Blocks\Coupon;
 
 class NewsletterCoupon {
-  public function cleanupSensitiveData(NewsletterEntity $newsletter): NewsletterEntity {
-    $body = $newsletter->getBody();
-    if (!is_array($body) || empty($body['content'])) {
-      return $newsletter;
+  public function cleanupBodySensitiveData(array $newsletterBody): array {
+
+    if (!is_array($newsletterBody) || empty($newsletterBody['content'])) {
+      return $newsletterBody;
     }
-    $cleanBlocks = $this->cleanupCouponBlocks($body['content']['blocks']);
-    $updatedBody = array_merge(
-      $body,
+    $cleanBlocks = $this->cleanupCouponBlocks($newsletterBody['content']['blocks']);
+    return array_merge(
+      $newsletterBody,
       [
         'content' => array_merge(
-          $body['content'],
+          $newsletterBody['content'],
           ['blocks' => $cleanBlocks]
         ),
       ]
     );
-
-    $newsletter->setBody($updatedBody);
-    return $newsletter;
   }
 
   private function cleanupCouponBlocks(array &$blocks): array {
