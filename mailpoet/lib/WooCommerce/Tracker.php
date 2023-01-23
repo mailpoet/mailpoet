@@ -3,6 +3,7 @@
 namespace MailPoet\WooCommerce;
 
 use MailPoet\Logging\LoggerFactory;
+use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Statistics\StatisticsWooCommercePurchasesRepository;
 
 class Tracker {
@@ -13,11 +14,16 @@ class Tracker {
   /** @var LoggerFactory */
   private $loggerFactory;
 
+  /** @var NewslettersRepository */
+  private $newslettersRepository;
+
   public function __construct(
     StatisticsWooCommercePurchasesRepository $wooPurchasesRepository,
+    NewslettersRepository $newslettersRepository,
     LoggerFactory $loggerFactory
   ) {
     $this->wooPurchasesRepository = $wooPurchasesRepository;
+    $this->newslettersRepository = $newslettersRepository;
     $this->loggerFactory = $loggerFactory;
   }
 
@@ -30,6 +36,10 @@ class Tracker {
       return $data;
     }
     try {
+      $analyticsData = $this->newslettersRepository->getAnalytics();
+      $data['extensions']['mailpoet'] = [
+        'campaigns_count' => $analyticsData['campaigns_count'],
+      ];
       $campaignData = $this->wooPurchasesRepository->getRevenuesByCampaigns();
       $data['extensions']['mailpoet']['campaign_revenues'] = $campaignData;
     } catch (\Throwable $e) {
