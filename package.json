@@ -7,7 +7,7 @@
     "lint-staged": "^12.3.7",
     "prettier": "2.6.2"
   },
-  "packageManager": "pnpm@7.6.0",
+  "packageManager": "pnpm@7.25.1",
   "volta": {
     "node": "17.9.1"
   },
