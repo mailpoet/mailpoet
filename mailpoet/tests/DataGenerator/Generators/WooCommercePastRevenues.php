@@ -13,6 +13,7 @@ use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\StatisticsClickEntity;
 use MailPoet\Entities\StatisticsNewsletterEntity;
 use MailPoet\Entities\StatisticsOpenEntity;
+use MailPoet\Entities\StatisticsWooCommercePurchaseEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Newsletter\Segment\NewsletterSegmentRepository;
@@ -224,6 +225,7 @@ class WooCommercePastRevenues implements Generator {
       array_flip(array_rand($subscribersIds, self::SUBSCRIBERS_WITH_ORDERS_COUNT))
     ));
     $i = 0;
+    $clicks = [];
     foreach ($subscribersIds as $subscriberId) {
       $i++;
       $subscriberClickTimes = [];
@@ -239,12 +241,18 @@ class WooCommercePastRevenues implements Generator {
         $subscriberReceivedEmails,
         array_flip(array_rand($subscriberReceivedEmails, intval($openedCount)))
       );
+      $clicks[$subscriberId] = [];
+
       // Click and open selected emails
       foreach ($emailsToClick as $email) {
         $clickCreatedAt = (new Carbon())->setTimestamp($email['sent_at'])->addHours(1)->toDateTimeString();
         $this->openSentNewsletter($email, $subscriberId, $clickCreatedAt);
-        $this->clickSentNewsletter($email, $subscriberId, $clickCreatedAt);
-        $subscriberClickTimes[] = $clickCreatedAt;
+        $clicks[$subscriberId][] = [
+          'click_id' => $this->clickSentNewsletter($email, $subscriberId, $clickCreatedAt),
+          'newsletter_id' => $email['newsletter_id'],
+          'queue_id' => $email['queue_id'],
+          'time' => $clickCreatedAt,
+        ];
       }
       // Create order
       if (isset($subscribersWithOrders[$subscriberId])) {
@@ -254,15 +262,20 @@ class WooCommercePastRevenues implements Generator {
         $orderCount = rand(1, 5);
         for ($i = 1; $i <= $orderCount; $i++) {
           // Pick a random logged click time and generate an order day after the click
-          $clickTime = $subscriberClickTimes[array_rand($subscriberClickTimes)];
+          $clickData = $clicks[$subscriberId][array_rand($clicks[$subscriberId], 1)];
+          $clickTime = $clickData['time'];
           $orderCompletedAt = (new Carbon($clickTime))->addDay();
-          $this->createCompletedWooCommerceOrder(
+          $order = $this->createCompletedWooCommerceOrder(
             $subscriberId,
             $subscriberEmails[$subscriberId],
             $customerId,
             [$products[array_rand($products)]],
             $orderCompletedAt
           );
+          // Maybe track revenue
+          if (rand(1, 10) <= 8 && $order instanceof \WC_Order) {
+            $this->trackOrderRevenue($subscriberId, $clickData, $order);
+          }
         }
       }
       $batchLog = $this->getBatchLog('Subscriber clicks and orders', $i);
@@ -466,7 +479,7 @@ class WooCommercePastRevenues implements Generator {
     $this->entityManager->flush();
   }
 
-  private function clickSentNewsletter(array $sentNewsletterData, $subscriberId, $createdAt) {
+  private function clickSentNewsletter(array $sentNewsletterData, $subscriberId, $createdAt): int {
     $newsletterEntity = $this->entityManager->getReference(NewsletterEntity::class, $sentNewsletterData['newsletter_id']);
     $sendingQueueEntity = $this->entityManager->getReference(SendingQueueEntity::class, $sentNewsletterData['queue_id']);
     $subscriberEntity = $this->entityManager->getReference(SubscriberEntity::class, $subscriberId);
@@ -478,6 +491,7 @@ class WooCommercePastRevenues implements Generator {
 
     $this->entityManager->persist($statisticsClick);
     $this->entityManager->flush();
+    return $statisticsClick->getId();
   }
 
   /**
@@ -495,7 +509,7 @@ class WooCommercePastRevenues implements Generator {
   /**
    * @return \WC_Order|\WP_Error
    */
-  private function createCompletedWooCommerceOrder($subscriberId, $email, $customerId = null, $products = [], Carbon $completedAt = null) {
+  private function createCompletedWooCommerceOrder($subscriberId, $email, $customerId = null, $products = [], Carbon $completedAt = null): \WC_Order {
     $random = $this->getRandomString();
     $countries = ['FR', 'GB', 'US', 'IE', 'IT'];
     $address = [
@@ -526,15 +540,29 @@ class WooCommercePastRevenues implements Generator {
     if ($completedAt) {
       $order->set_date_completed($completedAt->toDateTimeString());
       $order->set_date_paid($completedAt->toDateTimeString());
-      $order->save();
       $orderCreatedTime = $completedAt->subMinute()->toDateTimeString();
-      wp_update_post([
-        'ID' => $order->get_id(),
-        'post_date' => $orderCreatedTime,
-        'post_date_gmt' => get_gmt_from_date( $orderCreatedTime ),
-      ]);
+      $order->set_date_created(get_gmt_from_date( $orderCreatedTime ));
+      $order->save();
     }
     return $order;
+  }
+
+  /**
+   * @param int $subscriberId
+   * @param array{newsletter_id: int, queue_id: int, click_id: int} $clickData
+   * @param \WC_Order $order
+   * @return void
+   */
+  private function trackOrderRevenue(int $subscriberId, array $clickData, \WC_Order $order): void {
+    $newsletter = $this->entityManager->getReference(NewsletterEntity::class, $clickData['newsletter_id']);
+    $queue = $this->entityManager->getReference(SendingQueueEntity::class, $clickData['queue_id']);
+    $subscriber = $this->entityManager->getReference(SubscriberEntity::class, $subscriberId);
+    $click = $this->entityManager->getReference(StatisticsClickEntity::class, $clickData['click_id']);
+    $statisticsClick = new StatisticsWooCommercePurchaseEntity($newsletter, $queue, $click, $order->get_id(), $order->get_currency(), floatval($order->get_total()));
+    $statisticsClick->setSubscriber($subscriber);
+    $statisticsClick->setCreatedAt(new Carbon($order->get_date_modified()));
+    $this->entityManager->persist($statisticsClick);
+    $this->entityManager->flush();
   }
 
   private function getRandomString($length = 5) {
