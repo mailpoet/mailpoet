@@ -51,7 +51,7 @@ class StatisticsWooCommercePurchasesRepository extends Repository {
     $revenueStatsTable = $this->entityManager->getClassMetadata(StatisticsWooCommercePurchaseEntity::class)->getTableName();
     $newsletterTable = $this->entityManager->getClassMetadata(NewsletterEntity::class)->getTableName();
 
-    return $this->entityManager->getConnection()->executeQuery('
+    $data = $this->entityManager->getConnection()->executeQuery('
       SELECT
         SUM(swp.order_price_total) AS revenue,
         COALESCE(n.parent_id, n.id) AS campaign_id,
@@ -66,5 +66,12 @@ class StatisticsWooCommercePurchasesRepository extends Repository {
       'notification_history_type' => NewsletterEntity::TYPE_NOTIFICATION_HISTORY,
       'notification_type' => NewsletterEntity::TYPE_NOTIFICATION,
     ])->fetchAllAssociative();
+
+    $data = array_map(function($row) {
+      $row['revenue'] = round(floatval($row['revenue']), 2);
+      $row['orders_count'] = intval($row['orders_count']);
+      return $row;
+    }, $data);
+    return $data;
   }
 }
