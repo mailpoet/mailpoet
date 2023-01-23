@@ -33,6 +33,7 @@ class LoggerFactory {
   const TOPIC_SENDING = 'sending';
   const TOPIC_CRON = 'cron';
   const TOPIC_API = 'api';
+  const TOPIC_TRACKING = 'tracking';
 
   /** @var LoggerFactory */
   private static $instance;
