@@ -187,7 +187,10 @@ class NewsletterSaveController {
     // reset sent at date
     $duplicate->setSentAt(null);
 
-    $duplicate = $this->newsletterCoupon->cleanupSensitiveData($duplicate);
+    $body = $duplicate->getBody();
+    if ($body) {
+      $duplicate->setBody($this->newsletterCoupon->cleanupBodySensitiveData($body));
+    }
     $this->newslettersRepository->persist($duplicate);
     $this->newslettersRepository->flush();
 
