@@ -1,23 +1,23 @@
 import { useHistory, useParams } from 'react-router-dom';
-import { useState } from '@wordpress/element';
-import { useCallback } from 'react';
 import ReactStringReplace from 'react-string-replace';
 import { MailPoet } from 'mailpoet';
-import { Button, Input, Heading } from 'common';
+import { Heading } from 'common';
+import { KeyActivationButton } from 'common/premium_key/key_activation_button';
+import { KeyInput } from 'common/premium_key/key_input';
+import { useEffect } from 'react';
+import { useSelector } from 'settings/store/hooks';
 import { OwnEmailServiceNote } from './own_email_service_note';
 
 function MSSStepSecondPart(): JSX.Element {
-  const [verifyButtonDisabled, setVerifyButtonDisabled] = useState(true);
   const history = useHistory();
   const { step } = useParams<{ step: string }>();
+  const state = useSelector('getKeyActivationState')();
 
-  const maybeEnableVerifyButton = useCallback((event) => {
-    if (event.target.value) {
-      setVerifyButtonDisabled(false);
-    } else {
-      setVerifyButtonDisabled(true);
+  useEffect(() => {
+    if (state.isKeyValid === true) {
+      history.push(`/steps/${step}/part/3`);
     }
-  }, []);
+  }, [state.isKeyValid, history, step]);
 
   return (
     <>
@@ -45,18 +45,14 @@ function MSSStepSecondPart(): JSX.Element {
       </p>
       <div className="mailpoet-gap" />
 
-      <label htmlFor="mailpoet-premium-key">
+      <label htmlFor="mailpoet_premium_key">
         <span className="mailpoet-wizard-label">
           {MailPoet.I18n.t('welcomeWizardMSSSecondPartInputLabel')}
         </span>
-        <Input
-          id="mailpoet-premium-key"
-          name="mailpoet-premium-key"
-          type="text"
+        <KeyInput
           placeholder={MailPoet.I18n.t(
             'welcomeWizardMSSSecondPartInputPlaceholder',
           )}
-          onChange={maybeEnableVerifyButton}
           isFullWidth
         />
       </label>
@@ -64,14 +60,10 @@ function MSSStepSecondPart(): JSX.Element {
       <div className="mailpoet-gap" />
       <div className="mailpoet-gap" />
 
-      <Button
-        type="button"
+      <KeyActivationButton
+        label={MailPoet.I18n.t('welcomeWizardMSSSecondPartButton')}
         isFullWidth
-        isDisabled={verifyButtonDisabled}
-        onClick={() => history.push(`/steps/${step}/part/3`)}
-      >
-        {MailPoet.I18n.t('welcomeWizardMSSSecondPartButton')}
-      </Button>
+      />
 
       <div className="mailpoet-gap" />
       <div className="mailpoet-gap" />

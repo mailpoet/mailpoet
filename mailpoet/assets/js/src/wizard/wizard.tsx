@@ -2,6 +2,7 @@ import ReactDOM from 'react-dom';
 import { HashRouter, Redirect, Route, Switch } from 'react-router-dom';
 import { GlobalContext, useGlobalContextValue } from 'context/index.jsx';
 import { Notices } from 'notices/notices.jsx';
+import { initStore as initSettingsStore } from 'settings/store';
 import { WooCommerceController } from './woocommerce_controller';
 import { withBoundary } from '../common';
 import { WelcomeWizardStepsController } from './welcome_wizard_controller';
@@ -35,5 +36,6 @@ function App(): JSX.Element {
 const container = document.getElementById('mailpoet-wizard-container');
 
 if (container) {
+  initSettingsStore(window);
   ReactDOM.render(<App />, container);
 }
