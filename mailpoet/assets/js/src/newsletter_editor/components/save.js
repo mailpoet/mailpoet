@@ -53,8 +53,10 @@ Module.save = function () {
     if (json.body.blockDefaults) {
       delete json.body.blockDefaults.woocommerceHeading;
       delete json.body.blockDefaults.woocommerceContent;
-      delete json.body.blockDefaults?.coupon.couponId;
-      delete json.body.blockDefaults?.coupon.code;
+      if (json.body.blockDefaults && json.body.blockDefaults.coupon) {
+        delete json.body.blockDefaults.coupon?.couponId;
+        delete json.body.blockDefaults.coupon?.code;
+      }
     }
     json.body = JSON.stringify(json.body);
   }
