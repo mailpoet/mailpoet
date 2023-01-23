@@ -67,3 +67,7 @@ export function getCurrentTask(state: State): TaskType | null {
 export function getIsUpsellHidden(state: State): boolean {
   return state.upsell.isHidden;
 }
+
+export function getCanDisplayUpsell(state: State): boolean {
+  return state.upsell.upsellStatus?.canDisplay;
+}

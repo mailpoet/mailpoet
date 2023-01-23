@@ -27,8 +27,13 @@ export type ProductDiscoveryTasksStatus = {
 
 export type TaskType = keyof TaskListTasksStatus;
 
+export type UpsellStatus = {
+  canDisplay: boolean;
+};
+
 export type UpsellState = {
   isHidden: boolean;
+  upsellStatus: UpsellStatus;
 };
 
 export type State = {

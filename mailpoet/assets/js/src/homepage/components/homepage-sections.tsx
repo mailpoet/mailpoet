@@ -6,16 +6,20 @@ import { useDispatch, useSelect } from '@wordpress/data';
 import { storeName } from 'homepage/store/store';
 
 export function HomepageSections(): JSX.Element {
-  const { isTaskListHidden, isProductDiscoveryHidden, isUpsellHidden } =
-    useSelect(
-      (select) => ({
-        isTaskListHidden: select(storeName).getIsTaskListHidden(),
-        isProductDiscoveryHidden:
-          select(storeName).getIsProductDiscoveryHidden(),
-        isUpsellHidden: select(storeName).getIsUpsellHidden(),
-      }),
-      [],
-    );
+  const {
+    isTaskListHidden,
+    isProductDiscoveryHidden,
+    isUpsellHidden,
+    canDisplayUpsell,
+  } = useSelect(
+    (select) => ({
+      isTaskListHidden: select(storeName).getIsTaskListHidden(),
+      isProductDiscoveryHidden: select(storeName).getIsProductDiscoveryHidden(),
+      isUpsellHidden: select(storeName).getIsUpsellHidden(),
+      canDisplayUpsell: select(storeName).getCanDisplayUpsell(),
+    }),
+    [],
+  );
   const { hideTaskList } = useDispatch(storeName);
   const { hideProductDiscovery } = useDispatch(storeName);
   const { hideUpsell } = useDispatch(storeName);
@@ -31,7 +35,10 @@ export function HomepageSections(): JSX.Element {
           <ProductDiscovery onHide={hideProductDiscovery} />
         </ErrorBoundary>
       ) : null}
-      {isTaskListHidden && isProductDiscoveryHidden && !isUpsellHidden ? (
+      {isTaskListHidden &&
+      isProductDiscoveryHidden &&
+      canDisplayUpsell &&
+      !isUpsellHidden ? (
         <ErrorBoundary>
           <Upsell closable onHide={hideUpsell} />
         </ErrorBoundary>
