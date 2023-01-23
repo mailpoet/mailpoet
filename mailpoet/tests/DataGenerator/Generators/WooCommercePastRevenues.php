@@ -39,6 +39,7 @@ class WooCommercePastRevenues implements Generator {
   const POST_NOTIFICATIONS_HISTORY = 30;
   const STANDARD_NEWSLETTER = 30;
 
+
   /** @var EntityManager */
   private $entityManager;
 

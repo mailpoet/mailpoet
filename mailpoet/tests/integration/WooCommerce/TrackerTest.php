@@ -4,6 +4,7 @@ namespace MailPoet\WooCommerce;
 
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterLinkEntity;
+use MailPoet\Entities\NewsletterOptionFieldEntity;
 use MailPoet\Entities\StatisticsClickEntity;
 use MailPoet\Entities\StatisticsWooCommercePurchaseEntity;
 use MailPoet\Entities\SubscriberEntity;
@@ -25,6 +26,12 @@ class TrackerTest extends \MailPoetTest {
     $this->cleanUp();
     $this->subscriber = (new Subscriber())->create();
     $this->tracker = $this->diContainer->get(Tracker::class);
+    // Add dummy option field. This is needed for AUTOMATIC emails analytics
+    $newsletterOptionField = new NewsletterOptionFieldEntity();
+    $newsletterOptionField->setNewsletterType(NewsletterEntity::TYPE_AUTOMATIC);
+    $newsletterOptionField->setName('event');
+    $this->entityManager->persist($newsletterOptionField);
+    $this->entityManager->flush();
   }
 
   public function testItAddsTrackingData() {
@@ -75,6 +82,22 @@ class TrackerTest extends \MailPoetTest {
     expect($campaignRevenues[2]['campaign_id'])->equals($newsletter3->getId());
     expect($campaignRevenues[2]['revenue'])->equals(30);
     expect($campaignRevenues[2]['campaign_type'])->equals($newsletter3->getType());
+  }
+
+  public function testItAddsTotalCampaigns() {
+    (new Newsletter())->withSendingQueue()->withType(NewsletterEntity::TYPE_WELCOME)->withStatus(NewsletterEntity::STATUS_ACTIVE)->create();
+    (new Newsletter())->withSendingQueue()->withType(NewsletterEntity::TYPE_AUTOMATIC)->withStatus(NewsletterEntity::STATUS_ACTIVE)->create();
+    (new Newsletter())->withSendingQueue()->withType(NewsletterEntity::TYPE_AUTOMATION)->withStatus(NewsletterEntity::STATUS_ACTIVE)->create();
+    (new Newsletter())->withSendingQueue()->withType(NewsletterEntity::TYPE_NOTIFICATION)->withStatus(NewsletterEntity::STATUS_ACTIVE)->create();
+    (new Newsletter())->withSendingQueue()->withType(NewsletterEntity::TYPE_STANDARD)->withStatus(NewsletterEntity::STATUS_ACTIVE)->create();
+    (new Newsletter())->withSendingQueue()->withType(NewsletterEntity::TYPE_RE_ENGAGEMENT)->withStatus(NewsletterEntity::STATUS_ACTIVE)->create();
+    // Is not counted as a campaign
+    (new Newsletter())->withSendingQueue()->withType(NewsletterEntity::TYPE_STANDARD)->withStatus(NewsletterEntity::STATUS_DRAFT)->create();
+    (new Newsletter())->withSendingQueue()->withType(NewsletterEntity::TYPE_WELCOME)->withStatus(NewsletterEntity::STATUS_DRAFT)->create();
+    (new Newsletter())->withSendingQueue()->withType(NewsletterEntity::TYPE_NOTIFICATION_HISTORY)->create();
+    $tracker = $this->diContainer->get(Tracker::class);
+    $campaignsCount = $tracker->addTrackingData(['extensions' => []])['extensions']['mailpoet']['campaigns_count'];
+    expect($campaignsCount)->equals(6);
   }
 
   public function testItAddsCampaignRevenuesPostNotificationsUnderTheParentId() {
@@ -144,5 +167,6 @@ class TrackerTest extends \MailPoetTest {
     $this->truncateEntity(SubscriberEntity::class);
     $this->truncateEntity(StatisticsWooCommercePurchaseEntity::class);
     $this->truncateEntity(StatisticsClickEntity::class);
+    $this->truncateEntity(NewsletterOptionFieldEntity::class);
   }
 }
