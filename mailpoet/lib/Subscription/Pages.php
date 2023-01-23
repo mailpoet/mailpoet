@@ -427,6 +427,8 @@ class Pages {
       $subscriber->setLinkToken('bfd0889dbc7f081e171fa0cee7401df2');
     } else if ($this->subscriber !== null) {
       $subscriber = $this->subscriber;
+    } else if ($this->wp->getCurrentUserId() && $this->subscribersRepository->findOneBy(['wpUserId' => $this->wp->getCurrentUserId()])) {
+      $subscriber = $this->subscribersRepository->findOneBy(['wpUserId' => $this->wp->getCurrentUserId()]);
     } else {
       return __('Subscription management form is only available to mailing lists subscribers.', 'mailpoet');
     }
@@ -476,7 +478,11 @@ class Pages {
   }
 
   public function getManageLink($params) {
-    if (!$this->subscriber instanceof SubscriberEntity) return __('Link to subscription management page is only available to mailing lists subscribers.', 'mailpoet');
+    $subscriber = $this->subscriber;
+    if (!$subscriber && $this->subscribersRepository->findOneBy(['wpUserId' => $this->wp->getCurrentUserId()])) {
+      $subscriber = $this->subscribersRepository->findOneBy(['wpUserId' => $this->wp->getCurrentUserId()]);
+    }
+    if (!$subscriber instanceof SubscriberEntity) return __('Link to subscription management page is only available to mailing lists subscribers.', 'mailpoet');
 
     // get label or display default label
     $text = (
@@ -485,7 +491,7 @@ class Pages {
       : __('Manage your subscription', 'mailpoet')
     );
 
-    return '<a href="' . $this->subscriptionUrlFactory->getManageUrl($this->subscriber) . '">' . $text . '</a>';
+    return '<a href="' . $this->subscriptionUrlFactory->getManageUrl($subscriber) . '">' . $text . '</a>';
   }
 
   private function updateClickStatistics(int $queueId): void {
