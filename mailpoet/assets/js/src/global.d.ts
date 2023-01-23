@@ -188,6 +188,9 @@ interface Window {
       setUpAbandonedCartEmail: boolean;
       brandWooEmails: boolean;
     } | null;
+    upsellStatus: {
+      canDisplay: boolean;
+    } | null;
     wooCustomersCount: number;
     subscribersCount: number;
   };

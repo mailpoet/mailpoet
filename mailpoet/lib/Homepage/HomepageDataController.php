@@ -13,9 +13,12 @@ use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\SubscribersRepository;
+use MailPoet\Util\License\Features\Subscribers;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 
 class HomepageDataController {
+  public const UPSELL_SUBSCRIBERS_COUNT_REQUIRED = 600;
+
   /** @var SettingsController */
   private $settingsController;
 
@@ -34,12 +37,16 @@ class HomepageDataController {
   /** @var AutomationStorage */
   private $automationStorage;
 
+  /** @var Subscribers */
+  private $subscribers;
+
   public function __construct(
     SettingsController $settingsController,
     SubscribersRepository $subscribersRepository,
     FormsRepository $formsRepository,
     NewslettersRepository $newslettersRepository,
     AutomationStorage $automationStorage,
+    Subscribers $subscribers,
     WooCommerceHelper $wooCommerceHelper
   ) {
     $this->settingsController = $settingsController;
@@ -48,6 +55,7 @@ class HomepageDataController {
     $this->newslettersRepository = $newslettersRepository;
     $this->automationStorage = $automationStorage;
     $this->wooCommerceHelper = $wooCommerceHelper;
+    $this->subscribers = $subscribers;
   }
 
   public function getPageData(): array {
@@ -62,6 +70,7 @@ class HomepageDataController {
       'upsellDismissed' => !$showUpsell,
       'taskListStatus' => $showTaskList ? $this->getTaskListStatus($subscribersCount, $formsCount) : null,
       'productDiscoveryStatus' => $showProductDiscovery ? $this->getProductDiscoveryStatus($formsCount) : null,
+      'upsellStatus' => $showUpsell ? $this->getUpsellStatus($subscribersCount) : null,
       'wooCustomersCount' => $this->wooCommerceHelper->getCustomersCount(),
       'subscribersCount' => $subscribersCount,
     ];
@@ -107,6 +116,17 @@ class HomepageDataController {
       'sendFirstNewsletter' => ($sentStandard + $scheduledStandard + $activePostNotificationsAndAutomaticEmails) > 0,
       'setUpAbandonedCartEmail' => $abandonedCartEmailsCount > 0,
       'brandWooEmails' => (bool)$this->settingsController->get('woocommerce.use_mailpoet_editor', false),
+    ];
+  }
+
+  /**
+   * @return array{canDisplay:bool}
+   */
+  private function getUpsellStatus(int $subscribersCount): array {
+    $hasValidMssKey = $this->subscribers->hasValidMssKey();
+
+    return [
+      'canDisplay' => !$hasValidMssKey && $subscribersCount > self::UPSELL_SUBSCRIBERS_COUNT_REQUIRED,
     ];
   }
 }

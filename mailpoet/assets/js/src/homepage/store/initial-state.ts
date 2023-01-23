@@ -17,6 +17,7 @@ export function getInitialState(): State {
     },
     upsell: {
       isHidden: window.mailpoet_homepage_data.upsellDismissed,
+      upsellStatus: window.mailpoet_homepage_data.upsellStatus,
     },
     isWooCommerceActive: MailPoet.isWoocommerceActive,
   };
