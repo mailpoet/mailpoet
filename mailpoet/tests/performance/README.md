@@ -52,7 +52,7 @@ When you're done with testing, please make sure to stop the environment by the f
 
 `config.js` comes with some example values for using with the suggested local test environment. If using a different environment be sure to update the values.
 
-#### Config Variables List (to be added)
+#### Config Variables List
 
 TBD
 
@@ -104,9 +104,35 @@ The k6 reporter should have already been implemented. There's generated file cal
 
 [See this guide for more details](https://github.com/benc-uk/k6-reporter)
 
-## Writing Tests (to be added)
+## Writing Tests
 
-TBD
+Start by adding a new file under `tests` folder and make sure it follows the name order with the other tests.
+
+Then, you can see andy copy/paste the imports from the other tests, as they might be the same... along with the comments on the top.
+
+Then, begin with adding a new function called with your new test, for example:
+
+`export function yourNewTest() {`
+
+and make sure to add browser and page constants.
+
+Then you're ready to start your first group. Check below [Groups](#groups) to see what it is about.
+
+You will need to add `goto()` and `then()` in your group/s and eding it with `finally()`. You can see how other tests look like.
+
+You might want to add some waits in between steps like I did with `Promise` and inside `.waitForNavigation`, that's helpful to avoid flakiness. Also, feel free to use or make helpers, like I added `login()`.
+
+To make assertions, feel free to use [Checks](#checks).
+
+There's required `sleep` at the end, above is explanation in [Running Scenarios](#running-scenarios) section.
+
+To complete and export the test to `scenarios.js`, you need to end it with `export function yourNewTest() {`.
+
+After doing that, make sure to add the test in `scenarios.js` in appropriate section by pasting `yourNewTest()` function.
+
+Finally, you need to check if your new test require any change to the existing options, tresholds, tags or maxDuration in `scenarios.js`.
+
+That's it, running the tests now through scenarios will include also your test.
 
 ### Capturing Requests
 
