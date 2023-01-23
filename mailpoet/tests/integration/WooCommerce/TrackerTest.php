@@ -14,6 +14,9 @@ use MailPoet\Test\DataFactories\StatisticsClicks;
 use MailPoet\Test\DataFactories\StatisticsWooCommercePurchases;
 use MailPoet\Test\DataFactories\Subscriber;
 
+/**
+ * @group woo
+ */
 class TrackerTest extends \MailPoetTest {
   /** @var SubscriberEntity */
   private $subscriber;
