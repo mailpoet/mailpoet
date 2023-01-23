@@ -358,7 +358,8 @@ class NewsletterSaveControllerTest extends \MailPoetTest {
     $newsletter = new NewsletterEntity();
     $newsletter->setType($type);
     $newsletter->setSubject('My Standard Newsletter');
-    $newsletter->setBody(Fixtures::get('newsletter_body_template'));
+    $body = (array)\json_decode(Fixtures::get('newsletter_body_template'), true);
+    $newsletter->setBody($body);
     $newsletter->setStatus($status);
     $this->entityManager->persist($newsletter);
     $this->entityManager->flush();
