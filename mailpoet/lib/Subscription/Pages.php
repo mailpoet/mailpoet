@@ -174,12 +174,6 @@ class Pages {
 
     $token = (isset($this->data['token'])) ? $this->data['token'] : null;
     $email = (isset($this->data['email'])) ? $this->data['email'] : null;
-    $wpUser = $this->wp->wpGetCurrentUser();
-
-    if (!$email && $wpUser->exists()) {
-      $subscriber = $this->subscribersRepository->findOneBy(['wpUserId' => $wpUser->ID]);
-      return $subscriber instanceof SubscriberEntity ? $subscriber : null;
-    }
 
     if (!$email) {
       return null;
