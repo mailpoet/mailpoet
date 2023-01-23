@@ -14,16 +14,21 @@ class Tracker {
   /** @var LoggerFactory */
   private $loggerFactory;
 
+  /** @var Helper */
+  private $wooHelper;
+
   /** @var NewslettersRepository */
   private $newslettersRepository;
 
   public function __construct(
     StatisticsWooCommercePurchasesRepository $wooPurchasesRepository,
     NewslettersRepository $newslettersRepository,
+    Helper $wooHelper,
     LoggerFactory $loggerFactory
   ) {
     $this->wooPurchasesRepository = $wooPurchasesRepository;
     $this->newslettersRepository = $newslettersRepository;
+    $this->wooHelper = $wooHelper;
     $this->loggerFactory = $loggerFactory;
   }
 
@@ -39,6 +44,7 @@ class Tracker {
       $analyticsData = $this->newslettersRepository->getAnalytics();
       $data['extensions']['mailpoet'] = [
         'campaigns_count' => $analyticsData['campaigns_count'],
+        'currency' => $this->wooHelper->getWoocommerceCurrency(),
       ];
       $campaignData = $this->wooPurchasesRepository->getRevenuesByCampaigns();
       $data['extensions']['mailpoet']['campaign_revenues'] = $campaignData;

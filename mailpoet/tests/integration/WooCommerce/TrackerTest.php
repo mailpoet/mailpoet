@@ -40,6 +40,9 @@ class TrackerTest extends \MailPoetTest {
   public function testItAddsTrackingData() {
     $data = $this->tracker->addTrackingData(['extensions' => []]);
     expect($data['extensions']['mailpoet'])->notEmpty();
+    expect($data['extensions']['mailpoet']['campaigns_count'])->notNull();
+    expect($data['extensions']['mailpoet']['currency'])->notNull();
+    expect($data['extensions']['mailpoet']['campaign_revenues'])->notNull();
   }
 
   public function testItAddsCampaignRevenuesForStandardNewsletters() {
