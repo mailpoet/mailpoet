@@ -18,6 +18,7 @@ import { Steps } from '../common/steps/steps';
 import { StepsContent } from '../common/steps/steps_content';
 import { TopBar } from '../common/top_bar/top_bar';
 import { ErrorBoundary } from '../common';
+import { HideScreenOptions } from '../common/hide_screen_options/hide_screen_options';
 
 type WelcomeWizardStepsControllerPropType = {
   match: { params: { step: string } };
@@ -111,6 +112,7 @@ function WelcomeWizardStepsController({
 
   return (
     <>
+      <HideScreenOptions />
       <TopBar logoWithLink={false}>
         <Steps count={stepsCount} current={step} />
       </TopBar>
