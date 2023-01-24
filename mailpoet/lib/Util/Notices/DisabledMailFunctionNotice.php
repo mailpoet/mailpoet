@@ -57,7 +57,7 @@ class DisabledMailFunctionNotice {
       $this->settings->set(self::QUEUE_DISABLED_MAIL_FUNCTION_CHECK, false);
     }
 
-    $sendingMethod = $this->settings->get('mta.method', false);
+    $sendingMethod = $this->settings->get('mta.method', SettingsController::DEFAULT_SENDING_METHOD);
     $isPhpMailSendingMethod = $sendingMethod === Mailer::METHOD_PHPMAIL;
 
     if (!$isPhpMailSendingMethod) {
