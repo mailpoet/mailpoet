@@ -1,7 +1,98 @@
-.mailpoet-homepage-section__container {
-  .mailpoet-decrease {
+.mailpoet-subscribers-stats {
+  .mailpoet-homepage-section__heading-after span {
+    color: darken($color-stats-excellent, 10%);
+    display: grid;
+    font-size: 20px;
+    grid-template-columns: 1fr 1fr;
+    justify-items: end;
+    line-height: 28px;
+
     svg {
-      transform: scale(1, -1);
+      fill: darken($color-stats-excellent, 10%);
+      height: 28px;
+      width: 28px;
     }
+
+    &.mailpoet-decrease {
+      color: darken($color-stats-critical, 10%);
+
+      svg {
+        fill: darken($color-stats-critical, 10%);
+        transform: scale(1, -1);
+      }
+    }
+  }
+}
+
+.mailpoet-subscribers-stats-global-change {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  width: 100%;
+
+  div {
+    color: $color-text-light;
+    padding: $grid-gap-medium;
+    text-transform: uppercase;
+
+    &:first-child {
+      border-right: 1px solid $color-homepage-borders;
+    }
+
+    span {
+      color: $color-homepage-dark-grey;
+      font-size: 20px;
+      line-height: 1.4;
+    }
+  }
+}
+
+.mailpoet-subscribers-stats-list-change-table {
+  border-collapse: collapse;
+  width: 100%;
+
+  thead {
+    background: $color-homepage-light-grey;
+    text-transform: capitalize;
+  }
+
+  a {
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  td,
+  th {
+    border: none;
+    border-top: 1px solid $color-homepage-borders;
+    color: $color-homepage-dark-grey;
+    padding: $grid-gap $grid-gap-medium;
+    text-align: left;
+  }
+}
+
+.mailpoet-subscribers-stats-empty {
+  align-items: center;
+  color: $color-text-light;
+  display: flex;
+  flex-direction: column;
+  font-size: 13px;
+  justify-content: center;
+  padding: $grid-gap-large;
+
+  svg {
+    background: $color-homepage-light-grey;
+    border-radius: 50%;
+    fill: $color-secondary;
+    height: 32px;
+    width: 32px;
+  }
+
+  a {
+    text-decoration: none;
+  }
+
+  p {
+    max-width: 340px;
+    text-align: center;
   }
 }
