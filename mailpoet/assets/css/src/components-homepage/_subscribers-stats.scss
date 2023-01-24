@@ -67,6 +67,25 @@
     color: $color-homepage-dark-grey;
     padding: $grid-gap $grid-gap-medium;
     text-align: left;
+
+    @include respond-to(small-screen) {
+      padding: $grid-gap $grid-gap-half;
+
+      &:first-child {
+        padding-left: $grid-gap-medium;
+      }
+
+      &:last-child {
+        padding-right: $grid-gap-medium;
+      }
+    }
+  }
+
+  @include respond-to(small-screen) {
+    td:nth-child(2),
+    th:nth-child(2) {
+      display: none;
+    }
   }
 }
 
