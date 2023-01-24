@@ -48,7 +48,21 @@ export function Upsell({ closable, onHide }: Props): JSX.Element {
             <span>{MailPoet.I18n.t('prioritySupport')}</span>
           </li>
         </ul>
-        <Button variant="primary">{MailPoet.I18n.t('upgradePlan')}</Button>
+        <Button
+          variant="primary"
+          href={MailPoet.MailPoetComUrlFactory.getPurchasePlanUrl(
+            MailPoet.subscribersCount,
+            MailPoet.currentWpUserEmail,
+            'business',
+            {
+              utm_source: 'plugin',
+              utm_medium: 'homepage',
+              utm_campaign: 'upsell',
+            },
+          )}
+        >
+          {MailPoet.I18n.t('upgradePlan')}
+        </Button>
       </div>
     </ContentSection>
   );
