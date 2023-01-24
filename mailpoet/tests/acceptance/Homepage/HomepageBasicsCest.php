@@ -2,9 +2,11 @@
 
 namespace MailPoet\Test\Acceptance;
 
+use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Features\FeaturesController;
 use MailPoet\Test\DataFactories\Features;
 use MailPoet\Test\DataFactories\Settings;
+use MailPoet\Test\DataFactories\Subscriber;
 
 class HomepageBasicsCest {
   public function _before() {
@@ -33,6 +35,10 @@ class HomepageBasicsCest {
   }
 
   public function homepageSectionsRender(\AcceptanceTester $i) {
+    // this big count of subscribers is needed for the upsell component
+    $subscriberFactory = new Subscriber();
+    $subscriberFactory->createBatch(600, SubscriberEntity::STATUS_SUBSCRIBED);
+
     $i->wantTo('Check homepage renders all sections');
     $i->login();
     $i->amOnMailpoetPage('Homepage');
@@ -58,5 +64,17 @@ class HomepageBasicsCest {
     $i->waitForText('Hide setup list', 5, '.mailpoet-homepage-product-discovery .components-popover__content');
     $i->click('.components-popover__content button', $productDiscoveryHeadingContext);
     $i->dontSee('Start engaging with your customers');
+
+    // The upsell section should be visible when task list and product discovery are closed
+    // Another condition is 600 subscribers
+    $i->wantTo('Check homepage renders upsell section');
+    $i->see('Accelerate your growth with our Business plan');
+    $i->see('Detailed analytics');
+    $i->see('Advanced subscriber segmentation');
+    $i->see('Email marketing automations');
+    $i->see('Priority support');
+    $i->see('Upgrade plan');
+    $i->click('.components-button', '.mailpoet-homepage-section__heading-after');
+    $i->dontSee('Accelerate your growth with our Business plan');
   }
 }
