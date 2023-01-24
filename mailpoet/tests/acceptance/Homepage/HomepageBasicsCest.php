@@ -5,6 +5,7 @@ namespace MailPoet\Test\Acceptance;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Features\FeaturesController;
 use MailPoet\Test\DataFactories\Features;
+use MailPoet\Test\DataFactories\Segment;
 use MailPoet\Test\DataFactories\Settings;
 use MailPoet\Test\DataFactories\Subscriber;
 
@@ -76,5 +77,23 @@ class HomepageBasicsCest {
     $i->see('Upgrade plan');
     $i->click('.components-button', '.mailpoet-homepage-section__heading-after');
     $i->dontSee('Accelerate your growth with our Business plan');
+
+    $i->wantTo('Check homepage subscribers stats section');
+    $subscribersSection = '.mailpoet-subscribers-stats';
+    $i->see('Subscribers', $subscribersSection);
+    $i->see('Changes in the last 30 days', $subscribersSection);
+    $i->see('Changes to your audience will appear here.', $subscribersSection);
+    $i->wantTo('Check homepage subscribers stats section after adding a subscriber');
+    $segment = (new Segment())->withName('Hello segment')->create();
+    (new Subscriber())
+      ->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)
+      ->withSegments([$segment])
+      ->create();
+    $i->reloadPage();
+    $i->waitForText('Subscribers', 10, $subscribersSection);
+    $i->see('New 1', $subscribersSection);
+    $i->see('Unsubscribed 0', $subscribersSection);
+    $i->see('List name', $subscribersSection);
+    $i->see('Hello segment', $subscribersSection);
   }
 }
