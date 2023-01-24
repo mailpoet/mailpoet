@@ -2,6 +2,7 @@
 
 namespace MailPoet\Util\Notices;
 
+use MailPoet\Cron\Workers\SendingQueue\Tasks\Shortcodes;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\MailerFactory;
 use MailPoet\Settings\SettingsController;
@@ -141,17 +142,28 @@ class DisabledMailFunctionNotice {
       return false; // skip sending mail again
     }
 
-    $mailBody = 'Yup, it works! You can start blasting away emails to the moon.';
+    $replyToAddress = $this->settings->get('reply_to.address');
+    $senderAddress = $this->settings->get('sender.address');
+
+    $mailBody = "Hi there! \n
+
+Your website ([site:homepage_link]) sent you this email to confirm that it can send emails.
+If you're reading this email, then it works! You can now continue sending marketing emails with MailPoet! \n
+
+MailPoet on [site:homepage_link]";
+
+    $body = Shortcodes::process($mailBody, null, null, null, null);
+
     $sendTestMailData = [
       'mailer' => $this->settings->get('mta'),
       'newsletter' => [
-        'subject' => 'This is a Sending Method Test',
+        'subject' => 'MailPoet can deliver your marketing emails!',
         'body' => [
-          'html' => "<p>$mailBody</p>",
-          'text' => $mailBody,
+          'html' => nl2br($body),
+          'text' => $body,
         ],
       ],
-      'subscriber' => 'blackhole@mailpoet.com',
+      'subscriber' => empty($replyToAddress) ? $senderAddress : $replyToAddress,
     ];
 
     $sendMailResult = $this->sendTestMail($sendTestMailData);
