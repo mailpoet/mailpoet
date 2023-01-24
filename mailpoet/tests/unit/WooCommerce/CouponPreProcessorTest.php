@@ -49,11 +49,7 @@ class CouponPreProcessorTest extends \MailPoetUnitTest {
   }
 
   public function testEnsureCouponForBlocks() {
-
-    /* @phpstan-ignore-next-line ignoring usage of string instead of class-string */
-    $mockedWCCoupon = $this->getMockBuilder('MaybeMissingWC_Coupon')
-      ->setMethods(['set_code', 'set_discount_type', 'set_amount', 'set_description', 'set_date_expires', 'save'])
-      ->getMock();
+    $mockedWCCoupon = $this->createCouponMock();
 
     $wcHelper = $this->make(Helper::class, [
       'createWcCoupon' => $mockedWCCoupon,
@@ -78,11 +74,7 @@ class CouponPreProcessorTest extends \MailPoetUnitTest {
   }
 
   public function testEnsureCouponForBlocksSaves() {
-
-    /* @phpstan-ignore-next-line ignoring usage of string instead of class-string */
-    $mockedWCCoupon = $this->getMockBuilder('MaybeMissingWC_Coupon')
-      ->setMethods(['set_code', 'set_discount_type', 'set_amount', 'set_description', 'set_date_expires', 'save'])
-      ->getMock();
+    $mockedWCCoupon = $this->createCouponMock();
 
     $wcHelper = $this->make(Helper::class, [
       'createWcCoupon' => $mockedWCCoupon,
@@ -107,6 +99,35 @@ class CouponPreProcessorTest extends \MailPoetUnitTest {
     expect($result[0]['blocks'][0]['couponId'])->equals(self::$updatingCouponId);
   }
 
+  public function testEnsureCouponIsNotGeneratedWhenIsSet(): void {
+    $mockedWCCoupon = $this->createCouponMock();
+
+    $wcHelper = $this->make(Helper::class, [
+      'createWcCoupon' => $mockedWCCoupon,
+    ]);
+
+    $processor = new CouponPreProcessor(
+      $wcHelper,
+      Stub::make(NewslettersRepository::class, [
+        'flush' => Stub\Expected::never(),
+      ], $this)
+    );
+
+    $newsletter = (new NewsletterEntity());
+    $newsletter->setType(NewsletterEntity::TYPE_STANDARD);
+    [$newsletter, $blocks] = $this->createNewsletterAndBlockForType(
+      NewsletterEntity::TYPE_STANDARD,
+      null,
+      self::$saveCouponId
+    );
+
+    $mockedWCCoupon->expects($this->never())->method('set_code');
+    $mockedWCCoupon->expects($this->never())->method('set_description');
+    $mockedWCCoupon->expects($this->never())->method('save');
+    $result = $processor->processCoupons($newsletter, $blocks);
+    expect($result[0]['blocks'][0]['couponId'])->equals(self::$saveCouponId);
+  }
+
   private function assertWCCouponReceivesCorrectValues($mockedWCCoupon, $expectedCouponId, $expiryDay) {
     $mockedWCCoupon->method('save')->willReturn($expectedCouponId);
 
@@ -119,7 +140,7 @@ class CouponPreProcessorTest extends \MailPoetUnitTest {
     });
   }
 
-  private function createNewsletterAndBlockForType($newsletterType, $expiryDay): array {
+  private function createNewsletterAndBlockForType($newsletterType, ?int $expiryDay, ?int $couponId = null): array {
     $newsletter = (new NewsletterEntity());
     $newsletter->setType($newsletterType);
     $blocks = [
@@ -131,11 +152,19 @@ class CouponPreProcessorTest extends \MailPoetUnitTest {
             'discountType' => 'percent',
             'amount' => '100',
             'expiryDay' => $expiryDay,
+            'couponId' => $couponId,
           ],
         ],
       ],
     ];
     $newsletter->setBody(['blocks' => $blocks, 'content' => []]);
     return [$newsletter, $blocks];
+  }
+
+  private function createCouponMock() {
+    /* @phpstan-ignore-next-line ignoring usage of string instead of class-string */
+    return $this->getMockBuilder('MaybeMissingWC_Coupon')
+      ->setMethods(['set_code', 'set_discount_type', 'set_amount', 'set_description', 'set_date_expires', 'save'])
+      ->getMock();
   }
 }
