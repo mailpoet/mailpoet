@@ -85,11 +85,18 @@ class DisabledMailFunctionNotice {
    * disabled_mail_function_check === true
    * or
    * queue_disabled_mail_function_check === true
+   * or
+   * Totally disabled when wp filter `mailpoet_display_disabled_mail_function_notice` === false
    *
    */
   public function shouldCheckMisconfiguredFunction(): bool {
+    $shouldCheck = $this->wp->applyFilters('mailpoet_display_disabled_mail_function_notice', true);
     $this->isInQueueForChecking = $this->settings->get(self::QUEUE_DISABLED_MAIL_FUNCTION_CHECK, false);
-    return $this->settings->get(self::DISABLED_MAIL_FUNCTION_CHECK, false) || $this->isInQueueForChecking;
+
+    return $shouldCheck && (
+      $this->settings->get(self::DISABLED_MAIL_FUNCTION_CHECK, false) ||
+      $this->isInQueueForChecking
+      );
   }
 
   public function isFunctionDisabled(string $function): bool {
