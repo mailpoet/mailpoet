@@ -180,6 +180,11 @@ class Functions extends AbstractExtension {
         [$this, 'libs3rdPartyEnabled'],
         ['is_safe' => ['all']]
       ),
+      new TwigFunction(
+        'is_dotcom_ecommerce_plan',
+        [$this, 'isDotcomEcommercePlan'],
+        ['is_safe' => ['all']]
+      ),
     ];
   }
 
@@ -319,5 +324,12 @@ class Functions extends AbstractExtension {
 
   public function libs3rdPartyEnabled(): bool {
     return $this->getSettings()->get('3rd_party_libs.enabled') === '1';
+  }
+
+  public function isDotcomEcommercePlan(): bool {
+    if (function_exists('wc_calypso_bridge_is_ecommerce_plan')) {
+      return wc_calypso_bridge_is_ecommerce_plan();
+    }
+    return false;
   }
 }
