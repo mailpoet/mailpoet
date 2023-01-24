@@ -24,7 +24,7 @@ class Subscriber {
 
   public function __construct() {
     $this->data = [
-      'email' => bin2hex(random_bytes(7)) . '@example.com', // phpcs:ignore
+      'email' => $this->generateEmail(),
       'status' => SubscriberEntity::STATUS_SUBSCRIBED,
     ];
     $this->segments = [];
@@ -247,5 +247,20 @@ class Subscriber {
     }
 
     return $subscriber;
+  }
+
+  public function createBatch(int $count, string $status) {
+    $entityManager = ContainerWrapper::getInstance()->get(EntityManager::class);
+    for ($i = 0; $i < $count; $i++) {
+      $subscriber = new SubscriberEntity();
+      $subscriber->setStatus($status);
+      $subscriber->setEmail($this->generateEmail());
+      $entityManager->persist($subscriber);
+    }
+    $entityManager->flush();
+  }
+
+  private function generateEmail(): string {
+    return bin2hex(random_bytes(7)) . '@example.com'; // phpcs:ignore
   }
 }
