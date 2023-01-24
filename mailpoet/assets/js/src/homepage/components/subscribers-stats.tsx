@@ -31,29 +31,34 @@ export function SubscribersStats(): JSX.Element {
     }),
     [],
   );
+  const missingStats =
+    listsChange.length === 0 &&
+    globalChange.subscribed === 0 &&
+    globalChange.unsubscribed === 0;
   return (
     <ContentSection
+      className="mailpoet-subscribers-stats"
       heading={MailPoet.I18n.t('subscribersHeading')}
       description={MailPoet.I18n.t('subscribersSectionDescription')}
       headingAfter={
-        <span
-          className={classnames({
-            'mailpoet-decrease': globalChange.changePercent < 0,
-          })}
-        >
-          <Icon icon={trendingUp} />
-          {globalChange.changePercent < 0 ? '-' : ''}
-          {Math.abs(globalChange.changePercent) > 1000
-            ? '∞%'
-            : `${Math.abs(globalChange.changePercent)}%`}
-        </span>
+        !missingStats ? (
+          <span
+            className={classnames({
+              'mailpoet-decrease': globalChange.changePercent < 0,
+            })}
+          >
+            <Icon icon={trendingUp} />
+            {globalChange.changePercent < 0 ? '-' : ''}
+            {Math.abs(globalChange.changePercent) > 1000
+              ? '∞%'
+              : `${Math.abs(globalChange.changePercent)}%`}
+          </span>
+        ) : null
       }
     >
-      {listsChange.length === 0 &&
-      globalChange.subscribed === 0 &&
-      globalChange.unsubscribed === 0 ? (
-        <div>
-          <Icon icon={trendingUp} />
+      {missingStats ? (
+        <div className="mailpoet-subscribers-stats-empty">
+          <Icon icon={trendingUp} viewBox="-4 -4 32 32" />
           {!hasForms ? (
             <>
               <p>
@@ -94,20 +99,20 @@ export function SubscribersStats(): JSX.Element {
         </div>
       ) : (
         <>
-          <div>
+          <div className="mailpoet-subscribers-stats-global-change">
             <div>
               {MailPoet.I18n.t('newSubscribers')}
               <br />
-              {globalChange.subscribed}
+              <span>{globalChange.subscribed}</span>
             </div>
             <div>
               {MailPoet.I18n.t('unsubscribedSubscribers')}
               <br />
-              {globalChange.unsubscribed}
+              <span>{globalChange.unsubscribed}</span>
             </div>
           </div>
           {listsChange.length ? (
-            <table>
+            <table className="mailpoet-subscribers-stats-list-change-table">
               <thead>
                 <tr>
                   <th>{MailPoet.I18n.t('listName')}</th>
