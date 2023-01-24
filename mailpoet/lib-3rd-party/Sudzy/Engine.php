@@ -34,7 +34,7 @@ class Engine
   }
 
   public function executeOne($check, $val, $params=[]) {
-    $callback = __NAMESPACE__ . '\Engine::' . $check;
+    $callback = [$this, $check];
     if (is_callable($callback)) {
       return call_user_func($callback, $val, $params);
     }
