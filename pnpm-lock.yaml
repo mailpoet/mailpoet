@@ -363,6 +363,18 @@ importers:
       webpack-manifest-plugin: 5.0.0_webpack@5.74.0
       wp-types: 3.59.1
 
+  packages/js/components:
+    specifiers:
+      '@types/react': 18.0.28
+      '@types/react-dom': 18.0.11
+      react: 18.2.0
+      react-dom: 18.2.0
+    devDependencies:
+      '@types/react': 18.0.28
+      '@types/react-dom': 18.0.11
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
+
   packages/js/eslint-config:
     specifiers:
       '@babel/eslint-parser': ^7.17.0
