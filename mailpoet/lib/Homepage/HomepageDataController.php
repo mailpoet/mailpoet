@@ -141,7 +141,22 @@ class HomepageDataController {
   }
 
   /**
-   * @return array{global:array{subscribed:int, unsubscribed:int}}
+   * This method returns data for subscribers stats statistics section.
+   *
+   * global:
+   *  - subscribed:    int number of subscribers who were added in last 30 days and have global status "subscribed"
+   *  - unsubscribed:  int number of subscribers have global status "unsubscribed", have a record in statistics_unsubscribes table
+   *                   and were added more than 30 days. Subscribers added in last 30 days and unsubscribed are not counted.
+   *  - changePercent: float ($subscribedSubscribersCount - $subscribedSubscribers30DaysAgo) / $subscribedSubscribers30DaysAgo) * 100
+   *
+   * lists:
+   *  - id:                     int id of the list
+   *  - name:                   string name of the list
+   *  - subscribed:             int number of subscribers who were added to a list in last 30 days and have both list and global statuses "subscribed"
+   *  - unsubscribed:           int number of subscribers who were removed from a list in last 30 days and have global status "unsubscribed"
+   *  - averageEngagementScore: float engagement score of the list
+   *
+   * @return array{global:array{subscribed:int, unsubscribed:int, changePercent:float|int}, lists:array<int, array>}
    */
   private function getSubscribersStats(): array {
     $thirtyDaysAgo = Carbon::createFromTimestamp($this->wp->currentTime('timestamp'))->subDays(30);
