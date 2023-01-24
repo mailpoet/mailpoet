@@ -467,7 +467,6 @@ jobs:
     environment:
       MYSQL_COMMAND: << parameters.mysql_command >>
       MYSQL_IMAGE: << parameters.mysql_image >>
-      CODECEPTION_IMAGE_VERSION: << parameters.codeception_image_version >>
       WORDPRESS_IMAGE_VERSION: << parameters.wordpress_image_version >>
     steps:
       - attach_workspace:
@@ -832,6 +831,11 @@ workflows:
           mysql_image: mysql:5.5
           codeception_image_version: 7.4-cli_20220605.0
           wordpress_image_version: wp-5.9_php7.3_20230213.1
+          requires:
+            - build
+      - performance_tests:
+          <<: *slack-fail-post-step
+          name: performance_latest
           requires:
             - build
       - unit_tests:
