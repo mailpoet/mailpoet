@@ -449,6 +449,57 @@ jobs:
           path: tests/_output
       - store_test_results:
           path: tests/_output
+  performance_tests:
+    working_directory: /home/circleci/mailpoet/mailpoet
+    machine:
+      image: ubuntu-2204:2022.10.2
+      docker_layer_caching: false
+    parameters:
+      mysql_command:
+        type: string
+        default: ''
+      mysql_image:
+        type: string
+        default: ''
+      wordpress_image_version:
+        type: string
+        default: ''
+    environment:
+      MYSQL_COMMAND: << parameters.mysql_command >>
+      MYSQL_IMAGE: << parameters.mysql_image >>
+      CODECEPTION_IMAGE_VERSION: << parameters.codeception_image_version >>
+      WORDPRESS_IMAGE_VERSION: << parameters.wordpress_image_version >>
+    steps:
+      - attach_workspace:
+          at: /home/circleci
+      - run:
+          name: 'Set up virtual host'
+          command: echo 127.0.0.1 mailpoet.loc | sudo tee -a /etc/hosts
+      - run:
+          name: 'Pull test docker images'
+          # Pull docker images with 3 retries
+          command: i='0';while ! docker-compose -f tests/performance/docker-compose.yml pull && ((i < 3)); do sleep 3 && i=$[$i+1]; done
+      - run:
+          name: Create docker containers for test
+          # We experienced some failures when creating containers so we do it explicitly with one retry
+          command: |
+            cd tests/performance
+            docker-compose create || docker-compose create
+      - run:
+          name: Run performance tests
+          command: |
+            ./do test:performance
+      - run:
+          name: Check exceptions
+          command: |
+            if [ "$(ls tests/performance/_output/exceptions/*.html)" ]; then
+              echo "There were some exceptions during the tests run"
+              exit 1
+            fi
+      - store_artifacts:
+          path: tests/performance/_output
+      - store_test_results:
+          path: tests/performance/_output
   unit_tests:
     working_directory: /home/circleci/mailpoet/mailpoet
     parameters:
