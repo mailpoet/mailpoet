@@ -132,6 +132,10 @@ class Activator {
   }
 
   private function checkForDisabledMailFunction() {
+    $version = $this->settings->get('version');
+
+    if (!is_null($version)) return; // not a new user
+
     $sendingMethodSet = $this->settings->get('mta.method', false);
 
     if ($sendingMethodSet === 'PHPMail') {
