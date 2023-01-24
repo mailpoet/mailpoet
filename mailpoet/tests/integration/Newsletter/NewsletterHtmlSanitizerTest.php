@@ -23,6 +23,7 @@ class NewsletterHtmlSanitizerTest extends \MailPoetTest {
     expect($this->sanitizer->sanitize('<table><tr><th>Head</th></tr><tr><td>Cell</td></tr></table>'))->equals('<table><tr><th>Head</th></tr><tr><td>Cell</td></tr></table>');
     expect($this->sanitizer->sanitize('<a href="http://example.com/" target="_blank" class="some-class">link</a>'))->equals('<a href="http://example.com/" target="_blank" class="some-class">link</a>');
     expect($this->sanitizer->sanitize('<a href="[link:subscribe]" target="_blank" style="color: blue;font-size: 12px">Subscribe</a>'))->equals('<a href="[link:subscribe]" target="_blank" style="color: blue;font-size: 12px">Subscribe</a>');
+    expect($this->sanitizer->sanitize('<span style="color:rgb(0,0,0)">Does not sanitize RGB</span>'))->equals('<span style="color:rgb(0,0,0)">Does not sanitize RGB</span>');
   }
 
   public function testItRemovesUnwantedHtml() {
