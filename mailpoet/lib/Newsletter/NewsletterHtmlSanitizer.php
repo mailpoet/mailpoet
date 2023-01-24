@@ -95,8 +95,27 @@ class NewsletterHtmlSanitizer {
   public function sanitize(string $html): string {
     // Because wpKses break shortcodes we prefix shortcodes with http protocol
     $html = str_replace('href="[', 'href="http://[', $html);
+    $this->wp->addFilter('safecss_filter_attr_allow_css', [$this, 'allowRgbInCss'], 10, 2);
     $html = $this->wp->wpKses($html, $this->allowedHtml);
+    $this->wp->removeFilter('safecss_filter_attr_allow_css', [$this, 'allowRgbInCss'], 10);
     $html = str_replace('href="http://[', 'href="[', $html);
     return $html;
+  }
+
+  /**
+   * At the moment rgb() is not allowed to use in the style attribute. `style="color:rgb(0,0,0);"` gets
+   * sanitized if you use wp_kses. We hook into safecss_filter_attr_allow_css to allow for rgb. The code
+   * follows the precedent WordPress sets for the usage of var(), calc() etc. in safecss_filter_attr()
+   */
+  public function allowRgbInCss($allowed, $cssString): bool {
+    if ($allowed) {
+      return (bool)$allowed;
+    }
+    $cssString = preg_replace(
+      '/\b(?:rgb)(\((?:[^()]|(?1))*\))/',
+      '',
+      $cssString
+    );
+    return !preg_match( '%[\\\(&=}]|/\*%', $cssString );
   }
 }
