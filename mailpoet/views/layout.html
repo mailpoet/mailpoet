@@ -262,7 +262,7 @@ jQuery('#adminmenu #toplevel_page_mailpoet-newsletters')
   'admin.js'
 )%>
 
-<%if is_loading_3rd_party_enabled() %>
+<%if is_loading_3rd_party_enabled() and not is_dotcom_ecommerce_plan() %>
   <%= javascript('lib/analytics.js') %>
 
   <% set helpscout_form_id = '1c666cab-c0f6-4614-bc06-e5d0ad78db2b' %>
@@ -274,8 +274,6 @@ jQuery('#adminmenu #toplevel_page_mailpoet-newsletters')
   <% endif %>
 
   <script type="text/javascript">!function(e,t,n){function a(){var e=t.getElementsByTagName("script")[0],n=t.createElement("script");n.type="text/javascript",n.async=!0,n.src="https://beacon-v2.helpscout.net",e.parentNode.insertBefore(n,e)}if(e.Beacon=n=function(t,n,a){e.Beacon.readyQueue.push({method:t,options:n,data:a})},n.readyQueue=[],"complete"===t.readyState)return a();e.attachEvent?e.attachEvent("onload",a):e.addEventListener("load",a,!1)}(window,document,window.Beacon||function(){});</script>
-
-  <script type="text/javascript"></script>
 
   <script type="text/javascript">
     if(window['Beacon'] !== undefined && window.hide_mailpoet_beacon !== true) {
