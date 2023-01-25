@@ -43,4 +43,45 @@ class AutomatedLatestContentTest extends \MailPoetTest {
     $this->assertCount(1, $response->data);
     $this->assertSame('Uncategorized', $response->data['0']->name);
   }
+
+  public function testItGetsTransformedPostsWithDifferentStatus() {
+    $currentUserId = wp_get_current_user()->ID;
+    wp_set_current_user(1);
+
+    $stati = ['future', 'draft', 'publish', 'pending', 'private'];
+    $types = ['posts', 'products'];
+    foreach ($types as $type) {
+      foreach ($stati as $status) {
+        $title = "testItGetsTransformedPosts test $status";
+        $id = wp_insert_post([
+          'post_title' => $title,
+          'post_status' => $status,
+          'post_author' => 1,
+          'post_content' => 'This is a post to test something.',
+          'post_date' => $status === 'future' ? gmdate('Y-m-d H:i:s', time() + 3600) : gmdate('Y-m-d H:i:s'),
+        ]);
+        $this->assertIsNumeric($id);
+
+        $response = $this->endpoint->getTransformedPosts([
+          'posts' => [$id],
+          'postStatus' => $status,
+          'type' => $type,
+          'displayType' => 'excerpt',
+          'titleFormat' => 'ul',
+          'showDivider' => false,
+          'imageFullWidth' => false,
+          'readMoreType' => 'none',
+          'titleIsLink' => false,
+          'titleAlignment' => 'center',
+          'featuredImagePosition' => 'belowTitle',
+        ]);
+
+        $this->assertCount(1, $response->data, "Post \"$id\" with status  \"$status\" was not fetched properly.");
+        $this->assertStringContainsString($title, $response->data[0]['text'], "Response for Post \"$id\" with status  \"$status\" did not contain the title.");
+
+        wp_delete_post($id, true);
+      }
+    }
+    wp_set_current_user($currentUserId);
+  }
 }
