@@ -221,6 +221,12 @@ Module.CouponBlockSettingsView = base.BlockSettingsView.extend({
         availableCoupons: App.getConfig()
           .get('coupon.available_coupons')
           .toJSON(),
+        minAndMaxAmountFieldsErrorMessage: MailPoet.I18n.t(
+          'couponMinAndMaxAmountFieldsErrorMessage',
+        ).replace(
+          '%s',
+          String(App.getConfig().get('coupon.price_decimal_separator')),
+        ),
       },
     );
   },
@@ -289,32 +295,32 @@ Module.CouponBlockSettingsView = base.BlockSettingsView.extend({
       })
       .trigger('change');
 
-      const fieldKeys = {
-        productIds: 'productIds',
-        excludedProductIds: 'excludedProductIds',
-        productCategories: 'productCategories',
-        excludedProductCategories: 'excludedProductCategories',
-      };
+    const fieldKeys = {
+      productIds: 'productIds',
+      excludedProductIds: 'excludedProductIds',
+      productCategories: 'productCategories',
+      excludedProductCategories: 'excludedProductCategories',
+    };
 
-      this.$('#mailpoet_field_coupon_product_ids')
-        .select2(this.productSelect2Options())
-        .on(this.select2OnEventOptions(fieldKeys.productIds))
-        .trigger('change');
+    this.$('#mailpoet_field_coupon_product_ids')
+      .select2(this.productSelect2Options())
+      .on(this.select2OnEventOptions(fieldKeys.productIds))
+      .trigger('change');
 
-      this.$('#mailpoet_field_coupon_excluded_product_ids')
-        .select2(this.productSelect2Options())
-        .on(this.select2OnEventOptions(fieldKeys.excludedProductIds))
-        .trigger('change');
+    this.$('#mailpoet_field_coupon_excluded_product_ids')
+      .select2(this.productSelect2Options())
+      .on(this.select2OnEventOptions(fieldKeys.excludedProductIds))
+      .trigger('change');
 
-      this.$('#mailpoet_field_coupon_product_categories')
-        .select2(this.categoriesSelect2Options())
-        .on(this.select2OnEventOptions(fieldKeys.productCategories))
-        .trigger('change');
+    this.$('#mailpoet_field_coupon_product_categories')
+      .select2(this.categoriesSelect2Options())
+      .on(this.select2OnEventOptions(fieldKeys.productCategories))
+      .trigger('change');
 
-      this.$('#mailpoet_field_coupon_excluded_product_categories')
-        .select2(this.categoriesSelect2Options())
-        .on(this.select2OnEventOptions(fieldKeys.excludedProductCategories))
-        .trigger('change');
+    this.$('#mailpoet_field_coupon_excluded_product_categories')
+      .select2(this.categoriesSelect2Options())
+      .on(this.select2OnEventOptions(fieldKeys.excludedProductCategories))
+      .trigger('change');
   },
   changeSource(event) {
     const value = jQuery(event.target).val();
@@ -470,13 +476,28 @@ Module.CouponBlockSettingsView = base.BlockSettingsView.extend({
     const element = event.target;
     const errorElem = element.nextElementSibling;
 
-    const value = element.value
-      ? Number.parseFloat(String(element.value))
-      : element.value;
+    // this validation code was gotten from https://github.com/woocommerce/woocommerce/blob/trunk/plugins/woocommerce/client/legacy/js/admin/woocommerce_admin.js#L150-L212
+    // used by /wp-admin/edit.php?post_type=shop_coupon :- when adding/editing a coupon
 
-    if (Number.isNaN(value)) {
+    const priceDecimalSeparator = String(
+      App.getConfig().get('coupon.price_decimal_separator'),
+    );
+
+    const regex = new RegExp(`[^-0-9%\\${priceDecimalSeparator}]+`, 'gi');
+    const decimalRegex = new RegExp(`[^\\${priceDecimalSeparator}]`, 'gi');
+
+    const value = element.value;
+    let newvalue = value.replace(regex, '');
+
+    // Check if newvalue have more than one decimal point.
+    if (newvalue.replace(decimalRegex, '').length > 1) {
+      newvalue = newvalue.replace(decimalRegex, '');
+    }
+
+    if (value !== newvalue) {
+      // show error message
       if (errorElem && errorElem.classList.contains('mailpoet_hidden')) {
-        errorElem.classList.remove('mailpoet_hidden'); // show error message
+        errorElem.classList.remove('mailpoet_hidden');
       }
       return;
     }
