@@ -68,11 +68,11 @@ Module.CouponBlockSettingsView = base.BlockSettingsView.extend({
       'change .mailpoet_field_coupon_source': 'changeSource',
       'change .mailpoet_field_coupon_discount_type': 'changeDiscountType',
       'input .mailpoet_field_coupon_amount': _.partial(
-        this.changeField,
+        this.validateChangeField,
         'amount',
       ),
       'input .mailpoet_field_coupon_expiry_day': _.partial(
-        this.changeField,
+        this.validateChangeField,
         'expiryDay',
       ),
       'change .mailpoet_field_coupon_free_shipping': _.partial(
@@ -268,6 +268,16 @@ Module.CouponBlockSettingsView = base.BlockSettingsView.extend({
 
     // It's a new element after the re-render
     this.$('.mailpoet_field_coupon_amount').parsley().validate();
+  },
+  validateChangeField(field, event) {
+    const element = this.$(event.target);
+    const value = element.val();
+
+    if (!element.parsley().isValid()) {
+      return; // input invalid. not saving
+    }
+
+    this.model.set(field, value);
   },
   onRender() {
     this.$('[data-parsley-validate]')
