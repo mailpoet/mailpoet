@@ -195,4 +195,8 @@ class Helper {
       ];
     }, $couponPosts);
   }
+
+  public function wcGetPriceDecimalSeparator() {
+    return wc_get_price_decimal_separator();
+  }
 }
