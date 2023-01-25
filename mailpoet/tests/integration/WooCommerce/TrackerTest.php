@@ -42,7 +42,6 @@ class TrackerTest extends \MailPoetTest {
     expect($data['extensions']['mailpoet'])->notEmpty();
     expect($data['extensions']['mailpoet']['campaigns_count'])->notNull();
     expect($data['extensions']['mailpoet']['currency'])->notNull();
-    expect($data['extensions']['mailpoet']['campaign_revenues'])->notNull();
   }
 
   public function testItAddsCampaignRevenuesForStandardNewsletters() {
@@ -53,17 +52,15 @@ class TrackerTest extends \MailPoetTest {
     $this->createRevenueRecord($newsletter2, $this->createOrderData(2, 'USD', 20));
 
     $tracker = $this->diContainer->get(Tracker::class);
-    $campaignRevenues = $tracker->addTrackingData(['extensions' => []])['extensions']['mailpoet']['campaign_revenues'];
-    expect($campaignRevenues)->count(2);
-    expect($campaignRevenues[0]['campaign_id'])->equals($newsletter1->getId());
-    expect($campaignRevenues[0]['revenue'])->equals(30);
-    expect($campaignRevenues[0]['campaign_type'])->equals($newsletter1->getType());
-    expect($campaignRevenues[0]['orders_count'])->equals(2);
+    $mailPoetData = $tracker->addTrackingData(['extensions' => []])['extensions']['mailpoet'];
 
-    expect($campaignRevenues[1]['campaign_id'])->equals($newsletter2->getId());
-    expect($campaignRevenues[1]['revenue'])->equals(20);
-    expect($campaignRevenues[1]['campaign_type'])->equals($newsletter2->getType());
-    expect($campaignRevenues[1]['orders_count'])->equals(1);
+    expect($mailPoetData['campaign_' . $newsletter1->getId() . '_revenue'])->equals(30);
+    expect($mailPoetData['campaign_' . $newsletter1->getId() . '_type'])->equals($newsletter1->getType());
+    expect($mailPoetData['campaign_' . $newsletter1->getId() . '_orders_count'])->equals(2);
+
+    expect($mailPoetData['campaign_' . $newsletter2->getId() . '_revenue'])->equals(20);
+    expect($mailPoetData['campaign_' . $newsletter2->getId() . '_type'])->equals($newsletter2->getType());
+    expect($mailPoetData['campaign_' . $newsletter2->getId() . '_orders_count'])->equals(1);
   }
 
   public function testItAddsCampaignRevenuesForAutomaticCampaigns() {
@@ -75,19 +72,19 @@ class TrackerTest extends \MailPoetTest {
     $this->createRevenueRecord($newsletter3, $this->createOrderData(3, 'USD', 30));
 
     $tracker = $this->diContainer->get(Tracker::class);
-    $campaignRevenues = $tracker->addTrackingData(['extensions' => []])['extensions']['mailpoet']['campaign_revenues'];
-    expect($campaignRevenues)->count(3);
-    expect($campaignRevenues[0]['campaign_id'])->equals($newsletter1->getId());
-    expect($campaignRevenues[0]['revenue'])->equals(10);
-    expect($campaignRevenues[0]['campaign_type'])->equals($newsletter1->getType());
+    $mailPoetData = $tracker->addTrackingData(['extensions' => []])['extensions']['mailpoet'];
 
-    expect($campaignRevenues[1]['campaign_id'])->equals($newsletter2->getId());
-    expect($campaignRevenues[1]['revenue'])->equals(20);
-    expect($campaignRevenues[1]['campaign_type'])->equals($newsletter2->getType());
+    expect($mailPoetData['campaign_' . $newsletter1->getId() . '_revenue'])->equals(10);
+    expect($mailPoetData['campaign_' . $newsletter1->getId() . '_type'])->equals($newsletter1->getType());
+    expect($mailPoetData['campaign_' . $newsletter1->getId() . '_orders_count'])->equals(1);
 
-    expect($campaignRevenues[2]['campaign_id'])->equals($newsletter3->getId());
-    expect($campaignRevenues[2]['revenue'])->equals(30);
-    expect($campaignRevenues[2]['campaign_type'])->equals($newsletter3->getType());
+    expect($mailPoetData['campaign_' . $newsletter2->getId() . '_revenue'])->equals(20);
+    expect($mailPoetData['campaign_' . $newsletter2->getId() . '_type'])->equals($newsletter2->getType());
+    expect($mailPoetData['campaign_' . $newsletter2->getId() . '_orders_count'])->equals(1);
+
+    expect($mailPoetData['campaign_' . $newsletter3->getId() . '_revenue'])->equals(30);
+    expect($mailPoetData['campaign_' . $newsletter3->getId() . '_type'])->equals($newsletter3->getType());
+    expect($mailPoetData['campaign_' . $newsletter3->getId() . '_orders_count'])->equals(1);
   }
 
   public function testItAddsTotalCampaigns() {
@@ -116,11 +113,14 @@ class TrackerTest extends \MailPoetTest {
     $this->createRevenueRecord($notificationHistory2, $this->createOrderData(2, 'USD', 20));
 
     $tracker = $this->diContainer->get(Tracker::class);
-    $campaignRevenues = $tracker->addTrackingData(['extensions' => []])['extensions']['mailpoet']['campaign_revenues'];
-    expect($campaignRevenues)->count(1);
-    expect($campaignRevenues[0]['campaign_id'])->equals($notificationParent->getId());
-    expect($campaignRevenues[0]['revenue'])->equals(30);
-    expect($campaignRevenues[0]['campaign_type'])->equals($notificationParent->getType());
+    $mailPoetData = $tracker->addTrackingData(['extensions' => []])['extensions']['mailpoet'];
+
+    expect($mailPoetData['campaign_' . $notificationParent->getId() . '_revenue'])->equals(30);
+    expect($mailPoetData['campaign_' . $notificationParent->getId() . '_type'])->equals($notificationParent->getType());
+    expect($mailPoetData['campaign_' . $notificationParent->getId() . '_orders_count'])->equals(2);
+
+    expect($mailPoetData)->hasNotKey('campaign_' . $notificationHistory1->getId() . '_revenue');
+    expect($mailPoetData)->hasNotKey('campaign_' . $notificationHistory2->getId() . '_revenue');
   }
 
   /**
@@ -137,17 +137,17 @@ class TrackerTest extends \MailPoetTest {
     $this->createRevenueRecord($newsletter3, $this->createOrderData(1, 'USD', 10));
 
     $tracker = $this->diContainer->get(Tracker::class);
-    $campaignRevenues = $tracker->addTrackingData(['extensions' => []])['extensions']['mailpoet']['campaign_revenues'];
-    expect($campaignRevenues)->count(2);
-    expect($campaignRevenues[0]['campaign_id'])->equals($newsletter1->getId());
-    expect($campaignRevenues[0]['revenue'])->equals(10);
-    expect($campaignRevenues[0]['campaign_type'])->equals($newsletter1->getType());
-    expect($campaignRevenues[0]['orders_count'])->equals(1);
+    $mailPoetData = $tracker->addTrackingData(['extensions' => []])['extensions']['mailpoet'];
 
-    expect($campaignRevenues[1]['campaign_id'])->equals($newsletter2->getId());
-    expect($campaignRevenues[1]['revenue'])->equals(15);
-    expect($campaignRevenues[1]['campaign_type'])->equals($newsletter2->getType());
-    expect($campaignRevenues[1]['orders_count'])->equals(1);
+    expect($mailPoetData['campaign_' . $newsletter1->getId() . '_revenue'])->equals(10);
+    expect($mailPoetData['campaign_' . $newsletter1->getId() . '_type'])->equals($newsletter1->getType());
+    expect($mailPoetData['campaign_' . $newsletter1->getId() . '_orders_count'])->equals(1);
+
+    expect($mailPoetData['campaign_' . $newsletter2->getId() . '_revenue'])->equals(15);
+    expect($mailPoetData['campaign_' . $newsletter2->getId() . '_type'])->equals($newsletter2->getType());
+    expect($mailPoetData['campaign_' . $newsletter2->getId() . '_orders_count'])->equals(1);
+
+    expect($mailPoetData)->hasNotKey('campaign_' . $newsletter3->getId() . '_revenue');
   }
 
   /**

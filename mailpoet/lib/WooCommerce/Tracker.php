@@ -46,12 +46,26 @@ class Tracker {
         'campaigns_count' => $analyticsData['campaigns_count'],
         'currency' => $this->wooHelper->getWoocommerceCurrency(),
       ];
-      $campaignData = $this->wooPurchasesRepository->getRevenuesByCampaigns();
-      $data['extensions']['mailpoet']['campaign_revenues'] = $campaignData;
+      $campaignData = $this->formatCampaignsData($this->wooPurchasesRepository->getRevenuesByCampaigns());
+      $data['extensions']['mailpoet'] = array_merge($data['extensions']['mailpoet'], $campaignData);
     } catch (\Throwable $e) {
       $this->loggerFactory->getLogger(LoggerFactory::TOPIC_TRACKING)->error($e->getMessage());
       return $data;
     }
     return $data;
+  }
+
+  /**
+   * @param array<int, array{revenue: float, campaign_id: string, campaign_type: string, orders_count: int}> $campaignsData
+   * @return array<string, string|int|float>
+   */
+  private function formatCampaignsData(array $campaignsData): array {
+    return array_reduce($campaignsData, function($result, array $campaign): array {
+      $keyPrefix = 'campaign_' . $campaign['campaign_id'];
+      $result[$keyPrefix . '_revenue'] = $campaign['revenue'];
+      $result[$keyPrefix . '_orders_count'] = $campaign['orders_count'];
+      $result[$keyPrefix . '_type'] = $campaign['campaign_type'];
+      return $result;
+    }, []);
   }
 }
