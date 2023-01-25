@@ -118,3 +118,14 @@ h2 {
 .wp-block-columns.has-background {
   padding: 10px;
 }
+
+// Close button animation
+.edit-post-header-toolbar.edit-post-header-toolbar__left > .edit-post-header-toolbar__inserter-toggle {
+  svg {
+    transition: transform cubic-bezier(.165, .84, .44, 1) .2s;
+  }
+
+  &.is-pressed svg {
+    transform: rotate(45deg);
+  }
+}
