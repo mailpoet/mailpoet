@@ -24,7 +24,6 @@ Module.CouponBlockModel = base.BlockModel.extend({
         excludedProductIds: [],
         productCategories: [], // selected categories id
         excludedProductCategories: [],
-        emailRestrictions: [],
       },
       App.getConfig().get('blockDefaults.coupon'),
     );
