@@ -47,8 +47,10 @@
   }
 }
 
-@media (max-width: 700px) {
+@include respond-to(small-screen) {
   .mailpoet-homepage-upsell {
+    background: $color-white;
+
     .mailpoet-homepage-section__heading {
       h2 {
         max-width: 270px;
@@ -58,11 +60,5 @@
     .mailpoet-homepage-upsell__content {
       max-width: 270px;
     }
-  }
-}
-
-@media (max-width: 600px) {
-  .mailpoet-homepage-upsell {
-    background: $color-white;
   }
 }
