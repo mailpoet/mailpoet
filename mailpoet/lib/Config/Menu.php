@@ -275,7 +275,7 @@ class Menu {
       ]
     );
 
-    $this->registerAutomationMenu();
+    $this->registerAutomationMenu($showEntries);
 
     // Forms page
     $formsPage = $this->wp->addSubmenuPage(
@@ -448,7 +448,7 @@ class Menu {
     // Upgrade page
     // Only show this page in menu if the Premium plugin is not activated
     $this->wp->addSubmenuPage(
-      License::getLicense() ? true : self::$mainPageSlug,
+      License::getLicense() || !$showEntries ? true : self::$mainPageSlug,
       $this->setPageTitle(__('Upgrade', 'mailpoet')),
       esc_html__('Upgrade', 'mailpoet'),
       AccessControl::PERMISSION_ACCESS_PLUGIN_ADMIN,
@@ -493,9 +493,9 @@ class Menu {
     );
   }
 
-  private function registerAutomationMenu() {
+  private function registerAutomationMenu(bool $showEntries) {
     $automationPage = $this->wp->addSubmenuPage(
-      self::$mainPageSlug,
+      $showEntries ? self::$mainPageSlug : true,
       $this->setPageTitle(__('Automations', 'mailpoet')),
       // @ToDo Remove Beta once Automation is no longer beta.
       '<span>' . esc_html__('Automations', 'mailpoet') . '</span><span class="mailpoet-beta-badge">Beta</span>',
