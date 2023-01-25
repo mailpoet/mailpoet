@@ -93,7 +93,7 @@ class AutomatedLatestContent extends APIEndpoint {
     $posts = $this->getPermittedPosts($this->ALC->getPosts(new BlockPostQuery([
       'args' => $data,
       // If the request is for Posts block then we are fetching data for a static block
-      'dynamic' => !(isset($data['type']) && $data['type'] === "posts"),
+      'dynamic' => !(isset($data['type']) && in_array($data['type'], ["posts", "products"])),
     ]
     )));
     return $this->successResponse(
