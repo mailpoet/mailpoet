@@ -139,6 +139,7 @@ class Changelog {
           'mailpoet-woocommerce-setup',
           'mailpoet-welcome-wizard',
           'mailpoet-migration',
+          'mailpoet-landingpage',
         ]
       )
       && $this->shouldShowWooCommerceListImportPage()
@@ -156,6 +157,7 @@ class Changelog {
           'mailpoet-woocommerce-setup',
           'mailpoet-welcome-wizard',
           'mailpoet-migration',
+          'mailpoet-landingpage',
         ]
       )
       && $this->shouldShowRevenueTrackingPermissionPage()
