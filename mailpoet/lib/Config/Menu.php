@@ -218,17 +218,14 @@ class Menu {
       ]
     );
 
-    // Hide sub-menu entries if the user still needs to complete the Welcome Wizard
-    if (!$this->changelog->shouldShowWelcomeWizard()) {
-      $this->registerMailPoetSubMenuEntries();
-    }
+    $this->registerMailPoetSubMenuEntries(!$this->changelog->shouldShowWelcomeWizard());
   }
 
-  private function registerMailPoetSubMenuEntries() {
+  private function registerMailPoetSubMenuEntries(bool $showEntries) {
     // Homepage
     if ($this->featuresController->isSupported(FeaturesController::FEATURE_HOMEPAGE)) {
       $this->wp->addSubmenuPage(
-        self::$mainPageSlug,
+        $showEntries ? self::$mainPageSlug : true,
         $this->setPageTitle(__('Home', 'mailpoet')),
         esc_html__('Home', 'mailpoet'),
         AccessControl::PERMISSION_ACCESS_PLUGIN_ADMIN,
@@ -242,7 +239,7 @@ class Menu {
 
     // Emails page
     $newslettersPage = $this->wp->addSubmenuPage(
-      self::$mainPageSlug,
+      $showEntries ? self::$mainPageSlug : true,
       $this->setPageTitle(__('Emails', 'mailpoet')),
       esc_html__('Emails', 'mailpoet'),
       AccessControl::PERMISSION_MANAGE_EMAILS,
@@ -282,7 +279,7 @@ class Menu {
 
     // Forms page
     $formsPage = $this->wp->addSubmenuPage(
-      self::$mainPageSlug,
+      $showEntries ? self::$mainPageSlug : true,
       $this->setPageTitle(__('Forms', 'mailpoet')),
       esc_html__('Forms', 'mailpoet'),
       AccessControl::PERMISSION_MANAGE_FORMS,
@@ -348,7 +345,7 @@ class Menu {
 
     // Subscribers page
     $subscribersPage = $this->wp->addSubmenuPage(
-      self::$mainPageSlug,
+      $showEntries ? self::$mainPageSlug : true,
       $this->setPageTitle(__('Subscribers', 'mailpoet')),
       esc_html__('Subscribers', 'mailpoet'),
       AccessControl::PERMISSION_MANAGE_SUBSCRIBERS,
@@ -386,7 +383,7 @@ class Menu {
 
     // export
     $this->wp->addSubmenuPage(
-      true,
+      $showEntries ? self::$mainPageSlug : true,
       $this->setPageTitle(__('Export', 'mailpoet')),
       esc_html__('Export', 'mailpoet'),
       AccessControl::PERMISSION_MANAGE_SUBSCRIBERS,
@@ -399,7 +396,7 @@ class Menu {
 
     // Segments page
     $segmentsPage = $this->wp->addSubmenuPage(
-      self::$mainPageSlug,
+      $showEntries ? self::$mainPageSlug : true,
       $this->setPageTitle(__('Lists', 'mailpoet')),
       esc_html__('Lists', 'mailpoet'),
       AccessControl::PERMISSION_MANAGE_SEGMENTS,
@@ -424,7 +421,7 @@ class Menu {
 
     // Settings page
     $this->wp->addSubmenuPage(
-      self::$mainPageSlug,
+      $showEntries ? self::$mainPageSlug : true,
       $this->setPageTitle(__('Settings', 'mailpoet')),
       esc_html__('Settings', 'mailpoet'),
       AccessControl::PERMISSION_MANAGE_SETTINGS,
@@ -437,7 +434,7 @@ class Menu {
 
     // Help page
     $this->wp->addSubmenuPage(
-      self::$mainPageSlug,
+      $showEntries ? self::$mainPageSlug : true,
       $this->setPageTitle(__('Help', 'mailpoet')),
       esc_html__('Help', 'mailpoet'),
       AccessControl::PERMISSION_ACCESS_PLUGIN_ADMIN,
