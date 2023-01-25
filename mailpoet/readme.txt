@@ -3,7 +3,7 @@ Contributors: mailpoet
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 5.8
 Tested up to: 6.1
-Stable tag: 4.5.1
+Stable tag: 4.5.2
 Requires PHP: 7.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -218,6 +218,9 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 4.5.2 - 2023-01-25 =
+* Improved: minor changes and fixes.
 
 = 4.5.1 - 2023-01-23 =
 * Added: a new landing page to explain MailPoet to new users;
