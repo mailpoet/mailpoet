@@ -9,6 +9,9 @@ use MailPoet\WP\DateTime;
 
 class CouponPreProcessor {
 
+  /** @var bool */
+  private $generated = false;
+
   /** @var NewslettersRepository */
   private $newslettersRepository;
 
@@ -49,7 +52,6 @@ class CouponPreProcessor {
 
   private function ensureCouponForBlocks(array &$blocks, NewsletterEntity $newsletter): bool {
 
-    static $generated = false;
     foreach ($blocks as &$innerBlock) {
       if (isset($innerBlock['blocks']) && !empty($innerBlock['blocks'])) {
         $this->ensureCouponForBlocks($innerBlock['blocks'], $newsletter);
@@ -57,12 +59,12 @@ class CouponPreProcessor {
       if (isset($innerBlock['type']) && $innerBlock['type'] === Coupon::TYPE) {
         if ($this->shouldGenerateCoupon($innerBlock)) {
           $innerBlock['couponId'] = $this->addOrUpdateCoupon($innerBlock, $newsletter);
-          $generated = true;
+          $this->generated = true;
         }
       }
     }
 
-    return $generated;
+    return $this->generated;
   }
 
   private function addOrUpdateCoupon(array $couponBlock, NewsletterEntity $newsletter): int {
