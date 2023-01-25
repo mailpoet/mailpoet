@@ -74,7 +74,7 @@
         <label>
           <div class="mailpoet_form_field_title mailpoet_form_field_title_inline"><%= __('Minimum spend') %></div>
           <div class="mailpoet_form_field_input_option">
-            <input type="text" name="minimum-amount" class="mailpoet_input mailpoet_field_coupon_minimum_amount" value="{{ model.minimumAmount }}" placeholder="<%= __('No minimum')%>" />
+            <input type="text" name="minimum-amount" class="mailpoet_input mailpoet_field_coupon_minimum_amount" value="{{ model.minimumAmount }}" placeholder="<%= __('No minimum') | escape('html_attr') %>" />
             <span class="mailpoet_error mailpoet_hidden"> {{ minAndMaxAmountFieldsErrorMessage }} </span>
           </div>
         </label>
@@ -84,7 +84,7 @@
         <label>
           <div class="mailpoet_form_field_title mailpoet_form_field_title_inline"><%= __('Maximum spend') %></div>
           <div class="mailpoet_form_field_input_option">
-            <input type="text" name="maximum-amount" class="mailpoet_input mailpoet_field_coupon_maximum_amount" value="{{ model.maximumAmount }}" placeholder="<%= __('No Maximum')%>" />
+            <input type="text" name="maximum-amount" class="mailpoet_input mailpoet_field_coupon_maximum_amount" value="{{ model.maximumAmount }}" placeholder="<%= __('No Maximum') | escape('html_attr') %>" />
             <span class="mailpoet_error mailpoet_hidden"> {{ minAndMaxAmountFieldsErrorMessage }} </span>
           </div>
         </label>
@@ -113,7 +113,7 @@
         <label for="mailpoet_field_coupon_product_ids">
           <%= __('Products') %>
         </label>
-        <select id="mailpoet_field_coupon_product_ids" class="mailpoet_select" data-placeholder="<%= __('Search for a product…')%>" multiple="multiple">
+        <select id="mailpoet_field_coupon_product_ids" class="mailpoet_select" data-placeholder="<%= __('Search for a product…') | escape('html_attr') %>" multiple="multiple">
           {{#each model.productIds}}
             <option value="{{ id }}" selected="selected">{{ text }}</option>
           {{/each}}
@@ -124,7 +124,7 @@
         <label for="mailpoet_field_coupon_excluded_product_ids">
           <%= __('Exclude products') %>
         </label>
-        <select id="mailpoet_field_coupon_excluded_product_ids" class="mailpoet_select" data-placeholder="<%= __('Search for a product…')%>" multiple="multiple">
+        <select id="mailpoet_field_coupon_excluded_product_ids" class="mailpoet_select" data-placeholder="<%= __('Search for a product…') | escape('html_attr') %>" multiple="multiple">
           {{#each model.excludedProductIds}}
             <option value="{{ id }}" selected="selected">{{ text }}</option>
           {{/each}}
@@ -136,7 +136,7 @@
         <label for="mailpoet_field_coupon_product_categories">
           <%= __('Product categories') %>
         </label>
-        <select id="mailpoet_field_coupon_product_categories" class="mailpoet_select" data-placeholder="<%= __('Any category')%>" multiple="multiple">
+        <select id="mailpoet_field_coupon_product_categories" class="mailpoet_select" data-placeholder="<%= __('Any category') | escape('html_attr') %>" multiple="multiple">
           {{#each model.productCategories}}
             <option value="{{ id }}" selected="selected">{{ text }}</option>
           {{/each}}
@@ -147,7 +147,7 @@
         <label for="mailpoet_field_coupon_excluded_product_categories">
           <%= __('Exclude categories') %>
         </label>
-        <select id="mailpoet_field_coupon_excluded_product_categories" class="mailpoet_select" data-placeholder="<%= __('No categories')%>" multiple="multiple">
+        <select id="mailpoet_field_coupon_excluded_product_categories" class="mailpoet_select" data-placeholder="<%= __('No categories') | escape('html_attr') %>" multiple="multiple">
           {{#each model.excludedProductCategories}}
             <option value="{{ id }}" selected="selected">{{ text }}</option>
           {{/each}}
@@ -159,7 +159,7 @@
         <label>
           <div class="mailpoet_form_field_title mailpoet_form_field_title_inline"><%= __('Allowed emails') %></div>
           <div class="mailpoet_form_field_input_option">
-            <input type="email" name="email-restrictions" class="mailpoet_input mailpoet_field_coupon_email_restrictions" value="{{ model.emailRestrictions }}" placeholder="<%= __('No restrictions')%>" multiple="multiple" />
+            <input type="email" name="email-restrictions" class="mailpoet_input mailpoet_field_coupon_email_restrictions" value="{{ model.emailRestrictions }}" placeholder="<%= __('No restrictions') | escape('html_attr') %>" multiple="multiple" />
             <span class="mailpoet_error mailpoet_hidden"> </span>
           </div>
         </label>
@@ -178,7 +178,7 @@
         <label>
           <div class="mailpoet_form_field_title mailpoet_form_field_title_inline"><%= __('Usage limit per coupon') %></div>
           <div class="mailpoet_form_field_input_option">
-            <input type="number" name="usage-limit" class="mailpoet_input mailpoet_field_coupon_usage_limit" value="{{ model.usageLimit }}" placeholder="<%= __('Unlimited usage')%>" step="1" min="0" />
+            <input type="number" name="usage-limit" class="mailpoet_input mailpoet_field_coupon_usage_limit" value="{{ model.usageLimit }}" placeholder="<%= __('Unlimited usage') | escape('html_attr') %>" step="1" min="0" />
           </div>
         </label>
       </div>
@@ -187,7 +187,7 @@
         <label>
           <div class="mailpoet_form_field_title mailpoet_form_field_title_inline"><%= __('Usage limit per user') %></div>
           <div class="mailpoet_form_field_input_option">
-            <input type="number" name="usage-limit-per-user" class="mailpoet_input mailpoet_field_coupon_usage_limit_per_user" value="{{ model.usageLimitPerUser }}" placeholder="<%= __('Unlimited usage')%>" step="1" min="0" />
+            <input type="number" name="usage-limit-per-user" class="mailpoet_input mailpoet_field_coupon_usage_limit_per_user" value="{{ model.usageLimitPerUser }}" placeholder="<%= __('Unlimited usage') | escape('html_attr') %>" step="1" min="0" />
           </div>
         </label>
       </div>
