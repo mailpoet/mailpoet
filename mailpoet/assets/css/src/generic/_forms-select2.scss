@@ -50,7 +50,11 @@
     border: 0 !important;
     height: auto !important;
     outline: none;
-    padding: 10px 5px 5px 16px !important;
+    padding: 5px 5px 2px 16px !important;
+
+    &.select2-selection--multiple {
+      padding: 7px 5px 0 16px !important;
+    }
   }
 
   .select2-selection__arrow {
@@ -62,10 +66,6 @@
     line-height: 22px !important;
     padding: 7px 0 9px !important;
     vertical-align: top;
-  }
-
-  .select2-selection--multiple .select2-selection__rendered {
-    padding-bottom: 0 !important;
   }
 
   .select2-selection__choice {
