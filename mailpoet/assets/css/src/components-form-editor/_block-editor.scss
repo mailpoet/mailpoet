@@ -129,3 +129,11 @@ h2 {
     transform: rotate(45deg);
   }
 }
+
+// Hide block selector header with close button on desktops
+
+@include respond-to(not-small-screen) {
+  .edit-post-editor__inserter-panel-header {
+    display: none;
+  }
+}
