@@ -27,10 +27,6 @@ input.select2-search__field:-ms-input-placeholder {
   color: $color-placeholder-select2;
 }
 
-.select2-container--default.select2-container--focus .select2-selection--multiple {
-  border: 1px solid #aaa; /* default Select2 border for single dropdown */
-}
-
 textarea.regular-text {
   width: 25em !important;
 }
