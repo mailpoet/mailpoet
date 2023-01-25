@@ -5,6 +5,7 @@ import { Upsell } from 'homepage/components/upsell';
 import { useDispatch, useSelect } from '@wordpress/data';
 import { storeName } from 'homepage/store/store';
 import { SubscribersStats } from 'homepage/components/subscribers-stats';
+import { Resources } from 'homepage/components/resources';
 
 export function HomepageSections(): JSX.Element {
   const {
@@ -46,6 +47,9 @@ export function HomepageSections(): JSX.Element {
         )}
       <ErrorBoundary>
         <SubscribersStats />
+      </ErrorBoundary>
+      <ErrorBoundary>
+        <Resources />
       </ErrorBoundary>
     </div>
   );
