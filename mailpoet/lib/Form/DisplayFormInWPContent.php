@@ -59,6 +59,8 @@ class DisplayFormInWPContent {
 
   private $wooShopPageId = null;
 
+  private $inWooProductLoop = false;
+
   public function __construct(
     WPFunctions $wp,
     FormsRepository $formsRepository,
@@ -85,7 +87,7 @@ class DisplayFormInWPContent {
    * @param mixed $content
    * @return string|mixed
    */
-  public function display($content = null) {
+  private function display($content = null) {
     if (!is_string($content) || !$this->shouldDisplay()) return $content;
 
     $forms = $this->getForms();
@@ -101,6 +103,16 @@ class DisplayFormInWPContent {
     return $result;
   }
 
+  public function contentDisplay($content = null) {
+    $this->inWooProductLoop = false;
+    return $this->display($content);
+  }
+
+  public function wooProductListDisplay($content = null) {
+    $this->inWooProductLoop = true;
+    return $this->display($content);
+  }
+
   private function shouldDisplay(): bool {
     $result = true;
     // This is a fix Yoast plugin and Shapely theme compatibility
@@ -113,7 +125,8 @@ class DisplayFormInWPContent {
     // this code ensures that we display the form only on a page which is related to single post
     if (!$this->wp->isSingle() && !$this->wp->isPage()) $result = $this->wp->applyFilters('mailpoet_display_form_is_single', false);
 
-    if ($this->displayFormInProductListPage()) $result = true;
+    // Ensure form does not show up multiple times when called from the woocommerce_product_loop_end filter
+    if ($this->inWooProductLoop) $result = $this->displayFormInProductListPage();
 
     $noFormsCache = $this->wp->getTransient(DisplayFormInWPContent::NO_FORM_TRANSIENT_KEY);
     if ($noFormsCache === '1') $result = false;

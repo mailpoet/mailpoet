@@ -89,7 +89,7 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     ]);
     $form->setBody([['type' => 'submit', 'params' => ['label' => 'Subscribe!'], 'id' => 'submit', 'name' => 'Submit']]);
     $this->repository->expects($this->once())->method('findBy')->willReturn([$form]);
-    $result = $this->hook->display('content');
+    $result = $this->hook->contentDisplay('content');
     expect($result)->notEquals('content');
     expect($result)->endsWith($renderedForm);
   }
@@ -110,7 +110,7 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     ]);
     $form->setBody([['type' => 'submit', 'params' => ['label' => 'Subscribe!'], 'id' => 'submit', 'name' => 'Submit']]);
     $this->repository->expects($this->once())->method('findBy')->willReturn([$form]);
-    $result = $this->hook->display('content');
+    $result = $this->hook->contentDisplay('content');
     expect($result)->notEquals('content');
     expect($result)->endsWith($renderedForm);
   }
@@ -137,7 +137,7 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     ]);
     $form->setBody([['type' => 'submit', 'params' => ['label' => 'Subscribe!'], 'id' => 'submit', 'name' => 'Submit']]);
     $this->repository->expects($this->once())->method('findBy')->willReturn([$form]);
-    $result = $this->hook->display('content');
+    $result = $this->hook->contentDisplay('content');
     expect($result)->notEquals('content');
     expect($result)->endsWith($renderedForm);
   }
@@ -165,7 +165,7 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     ]);
     $form->setBody([['type' => 'submit', 'params' => ['label' => 'Subscribe!'], 'id' => 'submit', 'name' => 'Submit']]);
     $this->repository->expects($this->once())->method('findBy')->willReturn([$form]);
-    $result = $this->hook->display('content');
+    $result = $this->hook->contentDisplay('content');
     expect($result)->notEquals('content');
     expect($result)->endsWith($renderedForm);
   }
@@ -194,7 +194,7 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     ]);
     $form->setBody([['type' => 'submit', 'params' => ['label' => 'Subscribe!'], 'id' => 'submit', 'name' => 'Submit']]);
     $this->repository->expects($this->once())->method('findBy')->willReturn([$form]);
-    $result = $this->hook->display('content');
+    $result = $this->hook->contentDisplay('content');
     expect($result)->notEquals('content');
     expect($result)->endsWith($renderedForm);
   }
@@ -223,7 +223,7 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     ]);
     $form->setBody([['type' => 'submit', 'params' => ['label' => 'Subscribe!'], 'id' => 'submit', 'name' => 'Submit']]);
     $this->repository->expects($this->once())->method('findBy')->willReturn([$form]);
-    $result = $this->hook->display('content');
+    $result = $this->hook->contentDisplay('content');
     expect($result)->notEquals('content');
     expect($result)->endsWith($renderedForm);
   }
@@ -245,7 +245,7 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     ]);
     $form->setBody([['type' => 'submit', 'params' => ['label' => 'Subscribe!'], 'id' => 'submit', 'name' => 'Submit']]);
     $this->repository->expects($this->once())->method('findBy')->willReturn([$form]);
-    $result = $this->hook->display('content');
+    $result = $this->hook->contentDisplay('content');
     expect($result)->notEquals('content');
     expect($result)->endsWith($renderedForm);
   }
@@ -254,10 +254,10 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     $this->wp->expects($this->never())->method('isSingle');
     $this->wp->expects($this->never())->method('isSingular');
     $this->repository->expects($this->never())->method('findAll');
-    expect($this->hook->display(null))->null();
-    expect($this->hook->display([1,2,3]))->equals([1,2,3]);
-    expect($this->hook->display(1))->equals(1);
-    expect($this->hook->display(1.1))->equals(1.1);
+    expect($this->hook->contentDisplay(null))->null();
+    expect($this->hook->contentDisplay([1,2,3]))->equals([1,2,3]);
+    expect($this->hook->contentDisplay(1))->equals(1);
+    expect($this->hook->contentDisplay(1.1))->equals(1.1);
   }
 
   public function testDoesNotAppendFormIfDisabled() {
@@ -274,7 +274,7 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     ]);
     $form->setBody([['type' => 'submit', 'params' => ['label' => 'Subscribe!'], 'id' => 'submit', 'name' => 'Submit']]);
     $this->repository->expects($this->once())->method('findBy')->willReturn([$form]);
-    $result = $this->hook->display('content');
+    $result = $this->hook->contentDisplay('content');
     expect($result)->equals('content');
   }
 
@@ -290,14 +290,14 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     ]);
     $form->setBody([['type' => 'submit', 'params' => ['label' => 'Subscribe!'], 'id' => 'submit', 'name' => 'Submit']]);
     $this->repository->expects($this->once())->method('findBy')->willReturn([$form]);
-    $result = $this->hook->display('content');
+    $result = $this->hook->contentDisplay('content');
     expect($result)->equals('content');
   }
 
   public function testDoesNotAppendFormIfNotOnSinglePage() {
     $this->wp->expects($this->once())->method('isSingle')->willReturn(false);
     $this->repository->expects($this->never())->method('findBy');
-    $result = $this->hook->display('content');
+    $result = $this->hook->contentDisplay('content');
     expect($result)->equals('content');
   }
 
@@ -314,7 +314,7 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     $form->setBody([['type' => 'submit', 'params' => ['label' => 'Subscribe!'], 'id' => 'submit', 'name' => 'Submit']]);
     $this->repository->expects($this->once())->method('findBy')->willReturn([$form]);
 
-    $result = $this->hook->display('content');
+    $result = $this->hook->contentDisplay('content');
     expect($result)->equals('content');
   }
 
@@ -344,7 +344,7 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     ]);
     $form->setBody([['type' => 'submit', 'params' => ['label' => 'Subscribe!'], 'id' => 'submit', 'name' => 'Submit']]);
     $this->repository->expects($this->once())->method('findBy')->willReturn([$form]);
-    $result = $this->hook->display('content');
+    $result = $this->hook->contentDisplay('content');
     expect($result)->notEquals('content');
     expect($result)->endsWith($renderedForm);
   }
@@ -375,7 +375,7 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     ]);
     $form->setBody([['type' => 'submit', 'params' => ['label' => 'Subscribe!'], 'id' => 'submit', 'name' => 'Submit']]);
     $this->repository->expects($this->once())->method('findBy')->willReturn([$form]);
-    $result = $this->hook->display('content');
+    $result = $this->hook->contentDisplay('content');
     expect($result)->notEquals('content');
     expect($result)->endsWith($renderedForm);
   }
@@ -406,7 +406,43 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     ]);
     $form->setBody([['type' => 'submit', 'params' => ['label' => 'Subscribe!'], 'id' => 'submit', 'name' => 'Submit']]);
     $this->repository->expects($this->once())->method('findBy')->willReturn([$form]);
-    $result = $this->hook->display('content');
+    $result = $this->hook->contentDisplay('content');
+    expect($result)->equals('content');
+  }
+
+  public function testItDoesNotAppendFormOnOtherWoocommercePageWhenNotOnListingPage() {
+    $renderedForm = '<form class="form"></form>';
+
+    $wooShopPageId = 25; // random id
+
+    $this->applyFiltersValue = true;
+    $this->wp->expects($this->once())->method('isSingle')->willReturn(false);
+    $this->wp->expects($this->any())->method('isSingular')->willReturn(false);
+    $this->wp->expects($this->exactly(2))->method('isPage')
+      ->withConsecutive([''], [$wooShopPageId])
+      ->willReturnOnConsecutiveCalls(true, false);
+
+    $this->wp->expects($this->any())->method('isArchive')->willReturn(false);
+    $this->wp->expects($this->any())->method('isPostTypeArchive')->willReturn(false);
+    $this->wp->expects($this->any())->method('getPost')->willReturn(['ID' => 40]); // random id
+    $this->woocommerceHelper->expects($this->any())->method('wcGetPageId')->willReturn($wooShopPageId);
+    $this->assetsController->expects($this->never())->method('setupFrontEndDependencies');
+    $this->templateRenderer->expects($this->never())->method('render')->willReturn($renderedForm);
+
+    $form = new FormEntity('My Form');
+    $form->setSettings([
+      'segments' => ['3'],
+      'form_placement' => [
+        'below_posts' => [
+          'enabled' => '1',
+          'pages' => ['all' => '1'],
+          'posts' => ['all' => '1'],
+        ],
+      ],
+    ]);
+    $form->setBody([['type' => 'submit', 'params' => ['label' => 'Subscribe!'], 'id' => 'submit', 'name' => 'Submit']]);
+    $this->repository->expects($this->never())->method('findBy')->willReturn([$form]);
+    $result = $this->hook->wooProductListDisplay('content');
     expect($result)->equals('content');
   }
 
@@ -430,7 +466,7 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     $form->setBody([['type' => 'submit', 'params' => ['label' => 'Subscribe!'], 'id' => 'submit', 'name' => 'Submit']]);
     $this->repository->expects($this->once())->method('findBy')->willReturn([$form]);
 
-    $result = $this->hook->display('content');
+    $result = $this->hook->contentDisplay('content');
     expect($result)->notEquals('content');
     expect($result)->endsWith($formHtml);
   }
@@ -444,7 +480,7 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
 
     $this->repository->expects($this->once())->method('findBy')->willReturn([]);
 
-    $this->hook->display('content');
+    $this->hook->contentDisplay('content');
   }
 
   public function testDoesNotQueryDatabaseIfTransientIsSet() {
@@ -457,7 +493,7 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
       ->willReturn('1');
     $this->repository->expects($this->never())->method('findBy');
 
-    $this->hook->display('content');
+    $this->hook->contentDisplay('content');
   }
 
   public function testAppendsRenderedPopupForm() {
@@ -481,7 +517,7 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     $form->setBody([['type' => 'submit', 'params' => ['label' => 'Subscribe!'], 'id' => 'submit', 'name' => 'Submit']]);
     $this->repository->expects($this->once())->method('findBy')->willReturn([$form]);
 
-    $result = $this->hook->display('content');
+    $result = $this->hook->contentDisplay('content');
     expect($result)->notEquals('content');
     expect($result)->endsWith($formHtml);
   }
@@ -510,7 +546,7 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     $form->setBody([['type' => 'submit', 'params' => ['label' => 'Subscribe!'], 'id' => 'submit', 'name' => 'Submit']]);
     $this->repository->expects($this->once())->method('findBy')->willReturn([$form]);
 
-    $result = $this->hook->display('content');
+    $result = $this->hook->contentDisplay('content');
     expect($result)->equals('content');
   }
 
@@ -538,7 +574,7 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     $form->setBody([['type' => 'submit', 'params' => ['label' => 'Subscribe!'], 'id' => 'submit', 'name' => 'Submit']]);
     $this->repository->expects($this->once())->method('findBy')->willReturn([$form]);
 
-    $result = $this->hook->display('content');
+    $result = $this->hook->contentDisplay('content');
     expect($result)->endsWith($formHtml);
   }
 
@@ -563,7 +599,7 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     $form->setBody([['type' => 'submit', 'params' => ['label' => 'Subscribe!'], 'id' => 'submit', 'name' => 'Submit']]);
     $this->repository->expects($this->once())->method('findBy')->willReturn([$form]);
 
-    $result = $this->hook->display('content');
+    $result = $this->hook->contentDisplay('content');
     expect($result)->notEquals('content');
     expect($result)->endsWith($formHtml);
   }
@@ -589,7 +625,7 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     $form2->setBody([['type' => 'submit', 'params' => ['label' => 'Subscribe!'], 'id' => 'submit', 'name' => 'Submit']]);
     $this->repository->expects($this->once())->method('findBy')->willReturn([$form1, $form2]);
 
-    $result = $this->hook->display('content');
+    $result = $this->hook->contentDisplay('content');
     expect($result)->notEquals('content');
     expect($result)->endsWith($formHtml);
   }
