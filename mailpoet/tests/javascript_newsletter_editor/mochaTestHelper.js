@@ -344,6 +344,16 @@ testHelpers.loadTemplate('components/sidebar/styles.hbs', window, {
   id: 'newsletter_editor_template_sidebar_styles',
 });
 
+testHelpers.loadTemplate('blocks/coupon/block.hbs', window, {
+  id: 'newsletter_editor_template_coupon_block',
+});
+testHelpers.loadTemplate('blocks/coupon/widget.hbs', window, {
+  id: 'newsletter_editor_template_coupon_widget',
+});
+testHelpers.loadTemplate('blocks/coupon/settings.hbs', window, {
+  id: 'newsletter_editor_template_coupon_settings',
+});
+
 global.templates = {
   styles: Handlebars.compile(
     jQuery('#newsletter_editor_template_styles').html(),
@@ -555,6 +565,16 @@ global.templates = {
   ),
   textBlockSettings: Handlebars.compile(
     jQuery('#newsletter_editor_template_text_settings').html(),
+  ),
+
+  couponBlock: Handlebars.compile(
+    jQuery('#newsletter_editor_template_coupon_block').html(),
+  ),
+  couponInsertion: Handlebars.compile(
+    jQuery('#newsletter_editor_template_coupon_widget').html(),
+  ),
+  couponBlockSettings: Handlebars.compile(
+    jQuery('#newsletter_editor_template_coupon_settings').html(),
   ),
 };
 global.window.templates = global.templates;
