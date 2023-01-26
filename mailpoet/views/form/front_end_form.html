@@ -27,15 +27,6 @@
       data-editor-url="<%= editor_url %>"
     <% endif %>
   >
-    <% if form_type == 'popup' or form_type == 'fixed_bar' or form_type == 'slide_in' %>
-      <img
-        class="mailpoet_form_close_icon"
-        alt="close"
-        width=20
-        height=20
-        src='<%= image_url("form_close_icon/" ~ close_button_icon ~ ".svg") %>'
-      >
-    <% endif %>
 
     <style type="text/css">
      <%= styles|raw %>
@@ -76,6 +67,14 @@
         </p>
       </div>
     </form>
+
+    <% if form_type == 'popup' or form_type == 'fixed_bar' or form_type == 'slide_in' %>
+      <input type="image"
+        class="mailpoet_form_close_icon"
+        alt="<%= __('Close') %>"
+        src='<%= image_url("form_close_icon/" ~ close_button_icon ~ ".svg") %>'
+      />
+    <% endif %>
   </div>
 
   <% if(after_widget) %>
