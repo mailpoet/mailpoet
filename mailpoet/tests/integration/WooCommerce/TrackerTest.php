@@ -123,6 +123,19 @@ class TrackerTest extends \MailPoetTest {
     expect($mailPoetData)->hasNotKey('campaign_' . $notificationHistory2->getId() . '_revenue');
   }
 
+  public function testItTracksOnlyTheMainShopCurrency(): void {
+    $newsletter1 = (new Newsletter())->withSendingQueue()->create();
+    $this->createRevenueRecord($newsletter1, $this->createOrderData(1, 'USD', 20));
+    $this->createRevenueRecord($newsletter1, $this->createOrderData(1, 'CZK', 10));
+
+    $tracker = $this->diContainer->get(Tracker::class);
+    $mailPoetData = $tracker->addTrackingData(['extensions' => []])['extensions']['mailpoet'];
+
+    expect($mailPoetData['campaign_' . $newsletter1->getId() . '_revenue'])->equals(20);
+    expect($mailPoetData['campaign_' . $newsletter1->getId() . '_type'])->equals($newsletter1->getType());
+    expect($mailPoetData['campaign_' . $newsletter1->getId() . '_orders_count'])->equals(1);
+  }
+
   /**
    * Because we save the revenue for every recent click, we need to make sure we count the order only once (for the first click)
    */
