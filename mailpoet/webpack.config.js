@@ -263,6 +263,7 @@ const testConfig = {
       'blocks/automatedLatestContentLayout.spec.js',
       'blocks/button.spec.js',
       'blocks/container.spec.js',
+      'blocks/coupon.spec.js',
       'blocks/divider.spec.js',
       'blocks/footer.spec.js',
       'blocks/header.spec.js',
