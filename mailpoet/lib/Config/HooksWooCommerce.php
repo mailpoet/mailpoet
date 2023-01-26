@@ -150,6 +150,9 @@ class HooksWooCommerce {
   }
 
   public function addTrackingData($data) {
+    if (!is_array($data)) {
+      return $data;
+    }
     return $this->tracker->addTrackingData($data);
   }
 

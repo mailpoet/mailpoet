@@ -32,14 +32,7 @@ class Tracker {
     $this->loggerFactory = $loggerFactory;
   }
 
-  /**
-   * @param array $data
-   * @return array
-   */
-  public function addTrackingData($data): array {
-    if (!is_array($data)) {
-      return $data;
-    }
+  public function addTrackingData(array $data): array {
     try {
       $analyticsData = $this->newslettersRepository->getAnalytics();
       $data['extensions']['mailpoet'] = [
