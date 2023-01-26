@@ -47,7 +47,7 @@ class StatisticsWooCommercePurchasesRepository extends Repository {
     $this->flush();
   }
 
-  public function getRevenuesByCampaigns(): array {
+  public function getRevenuesByCampaigns(string $currency): array {
     $revenueStatsTable = $this->entityManager->getClassMetadata(StatisticsWooCommercePurchaseEntity::class)->getTableName();
     $newsletterTable = $this->entityManager->getClassMetadata(NewsletterEntity::class)->getTableName();
 
@@ -63,10 +63,12 @@ class StatisticsWooCommercePurchasesRepository extends Repository {
         JOIN ' . $newsletterTable . ' n ON
           n.id = swp.newsletter_id
           AND swp.click_id IN (SELECT MIN(click_id) FROM ' . $revenueStatsTable . ' ss GROUP BY order_id)
+      WHERE swp.order_currency = :currency
       GROUP BY campaign_id, n.type;
     ', [
       'notification_history_type' => NewsletterEntity::TYPE_NOTIFICATION_HISTORY,
       'notification_type' => NewsletterEntity::TYPE_NOTIFICATION,
+      'currency' => $currency,
     ])->fetchAllAssociative();
 
     $data = array_map(function($row) {

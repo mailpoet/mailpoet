@@ -34,12 +34,13 @@ class Tracker {
 
   public function addTrackingData(array $data): array {
     try {
+      $currency = $this->wooHelper->getWoocommerceCurrency();
       $analyticsData = $this->newslettersRepository->getAnalytics();
       $data['extensions']['mailpoet'] = [
         'campaigns_count' => $analyticsData['campaigns_count'],
-        'currency' => $this->wooHelper->getWoocommerceCurrency(),
+        'currency' => $currency,
       ];
-      $campaignData = $this->formatCampaignsData($this->wooPurchasesRepository->getRevenuesByCampaigns());
+      $campaignData = $this->formatCampaignsData($this->wooPurchasesRepository->getRevenuesByCampaigns($currency));
       $data['extensions']['mailpoet'] = array_merge($data['extensions']['mailpoet'], $campaignData);
     } catch (\Throwable $e) {
       $this->loggerFactory->getLogger(LoggerFactory::TOPIC_TRACKING)->error($e->getMessage());
