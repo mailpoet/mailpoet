@@ -24,6 +24,27 @@ Module.CouponBlockModel = base.BlockModel.extend({
         excludedProductIds: [],
         productCategories: [], // selected categories id
         excludedProductCategories: [],
+        type: 'coupon',
+        amount: 10,
+        amountMax: 100,
+        discountType: 'percent',
+        expiryDay: 10,
+        styles: {
+          block: {
+            backgroundColor: '#ffffff',
+            borderColor: '#000000',
+            borderRadius: '5px',
+            borderStyle: 'solid',
+            borderWidth: '1px',
+            fontColor: '#000000',
+            fontFamily: 'Verdan',
+            fontSize: '18px',
+            fontWeight: 'normal',
+            lineHeight: '40px',
+            textAlign: 'center',
+            width: '200px',
+          },
+        },
       },
       App.getConfig().get('blockDefaults.coupon'),
     );
