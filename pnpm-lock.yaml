@@ -7,12 +7,12 @@ overrides:
   '@types/react-dom': 18.0.11
 
 patchedDependencies:
-  spectrum-colorpicker@1.8.1:
-    hash: km5kmldrym63lx54pzrt7a3qq4
-    path: patches/spectrum-colorpicker@1.8.1.patch
   '@woocommerce/components@10.0.0':
     hash: prtmohnt73dk73q3vnzuiaioji
     path: patches/@woocommerce__components@10.0.0.patch
+  spectrum-colorpicker@1.8.1:
+    hash: km5kmldrym63lx54pzrt7a3qq4
+    path: patches/spectrum-colorpicker@1.8.1.patch
   backbone.supermodel@1.2.0:
     hash: hhsvgimsfhfs4itf7ipk47fane
     path: patches/backbone.supermodel@1.2.0.patch
@@ -367,11 +367,13 @@ importers:
     specifiers:
       '@types/react': 18.0.28
       '@types/react-dom': 18.0.11
+      fork-ts-checker-webpack-plugin: ^7.2.1
       react: 18.2.0
       react-dom: 18.2.0
     devDependencies:
       '@types/react': 18.0.28
       '@types/react-dom': 18.0.11
+      fork-ts-checker-webpack-plugin: 7.2.1_typescript@4.6.3
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
 
@@ -4754,7 +4756,7 @@ packages:
     resolution: {integrity: sha512-I8j/x8kHUrbYRTUxXrrMbfCa7jxkE7tZre39x3kjr9hvI82cK1FfqLygotcWN5kdPGWcLdWMHpSBavse5tWw3w==}
     engines: {node: '>=6.9.0'}
     dependencies:
-      '@babel/code-frame': 7.16.7
+      '@babel/code-frame': 7.18.6
       '@babel/parser': 7.17.8
       '@babel/types': 7.17.0
 
@@ -4779,7 +4781,7 @@ packages:
     resolution: {integrity: sha512-5irClVky7TxRWIRtxlh2WPUUOLhcPN06AGgaQSB8AEwuyEBgJVuJ5imdHm5zxk8w0QS5T+tDfnDxAlhWjpb7cw==}
     engines: {node: '>=6.9.0'}
     dependencies:
-      '@babel/code-frame': 7.16.7
+      '@babel/code-frame': 7.18.6
       '@babel/generator': 7.17.7
       '@babel/helper-environment-visitor': 7.16.7
       '@babel/helper-function-name': 7.16.7
@@ -4796,7 +4798,7 @@ packages:
     resolution: {integrity: sha512-5irClVky7TxRWIRtxlh2WPUUOLhcPN06AGgaQSB8AEwuyEBgJVuJ5imdHm5zxk8w0QS5T+tDfnDxAlhWjpb7cw==}
     engines: {node: '>=6.9.0'}
     dependencies:
-      '@babel/code-frame': 7.16.7
+      '@babel/code-frame': 7.18.6
       '@babel/generator': 7.17.7
       '@babel/helper-environment-visitor': 7.16.7
       '@babel/helper-function-name': 7.16.7
@@ -4850,7 +4852,7 @@ packages:
     resolution: {integrity: sha512-TmKSNO4D5rzhL5bjWFcVHHLETzfQ/AmbKpKPOSjlP0WoHZ6L911fgoOKY4Alp/emzG4cHJdyN49zpgkbXFEHHw==}
     engines: {node: '>=6.9.0'}
     dependencies:
-      '@babel/helper-validator-identifier': 7.16.7
+      '@babel/helper-validator-identifier': 7.18.6
       to-fast-properties: 2.0.0
 
   /@babel/types/7.18.9:
@@ -14514,7 +14516,7 @@ packages:
       deepmerge: 4.2.2
       fs-extra: 9.1.0
       glob: 7.2.3
-      memfs: 3.4.1
+      memfs: 3.4.13
       minimatch: 3.1.2
       schema-utils: 2.7.0
       semver: 7.3.7
@@ -14545,13 +14547,38 @@ packages:
       deepmerge: 4.2.2
       fs-extra: 9.1.0
       glob: 7.2.3
-      memfs: 3.4.1
+      memfs: 3.4.13
       minimatch: 3.1.2
       schema-utils: 2.7.0
       semver: 7.3.7
       tapable: 1.1.3
       typescript: 4.6.3
       webpack: 5.74.0_webpack-cli@4.9.2
+    dev: true
+
+  /fork-ts-checker-webpack-plugin/7.2.1_typescript@4.6.3:
+    resolution: {integrity: sha512-uOfQdg/iQ8iokQ64qcbu8iZb114rOmaKLQFu7hU14/eJaKgsP91cQ7ts7v2iiDld6TzDe84Meksha8/MkWiCyw==}
+    engines: {node: '>=12.13.0', yarn: '>=1.0.0'}
+    peerDependencies:
+      typescript: '>3.6.0'
+      vue-template-compiler: '*'
+      webpack: ^5.11.0
+    peerDependenciesMeta:
+      vue-template-compiler:
+        optional: true
+    dependencies:
+      '@babel/code-frame': 7.18.6
+      chalk: 4.1.2
+      chokidar: 3.5.3
+      cosmiconfig: 7.0.1
+      deepmerge: 4.2.2
+      fs-extra: 10.0.0
+      memfs: 3.4.13
+      minimatch: 3.1.2
+      schema-utils: 4.0.0
+      semver: 7.3.7
+      tapable: 2.2.1
+      typescript: 4.6.3
     dev: true
 
   /fork-ts-checker-webpack-plugin/7.2.1_xjnbks7tshgiwpviuok4cpy6s4:
@@ -14565,13 +14592,13 @@ packages:
       vue-template-compiler:
         optional: true
     dependencies:
-      '@babel/code-frame': 7.16.7
+      '@babel/code-frame': 7.18.6
       chalk: 4.1.2
       chokidar: 3.5.3
       cosmiconfig: 7.0.1
       deepmerge: 4.2.2
       fs-extra: 10.0.0
-      memfs: 3.4.1
+      memfs: 3.4.13
       minimatch: 3.1.2
       schema-utils: 4.0.0
       semver: 7.3.7
@@ -17752,13 +17779,6 @@ packages:
     dependencies:
       map-age-cleaner: 0.1.3
       mimic-fn: 3.1.0
-    dev: true
-
-  /memfs/3.4.1:
-    resolution: {integrity: sha512-1c9VPVvW5P7I85c35zAdEr1TD5+F11IToIHIlrVIcflfnzPkJa0ZoYEoEdYDP8KgPFoSZ/opDrUsAoZWym3mtw==}
-    engines: {node: '>= 4.0.0'}
-    dependencies:
-      fs-monkey: 1.0.3
     dev: true
 
   /memfs/3.4.13:
@@ -23646,7 +23666,7 @@ packages:
     dependencies:
       colorette: 1.4.0
       mem: 8.1.1
-      memfs: 3.4.1
+      memfs: 3.4.13
       mime-types: 2.1.32
       range-parser: 1.2.1
       schema-utils: 3.1.1
