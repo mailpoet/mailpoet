@@ -13,6 +13,7 @@
 // Default mixins and functions. Still not producing any CSS.
 
 @import 'mixins/breakpoints';
+@import 'mixins/animations';
 
 // Components
 // Actual UI components.
@@ -23,3 +24,4 @@
 @import 'components-homepage/_product-discovery';
 @import 'components-homepage/_upsell';
 @import 'components-homepage/_subscribers-stats';
+@import 'components-homepage/_resources';

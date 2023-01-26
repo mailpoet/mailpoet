@@ -1,8 +1,12 @@
+import { useState } from 'react';
 import { MailPoet } from 'mailpoet';
+import { Icon } from '@wordpress/components';
+import { chevronLeft, chevronRight } from '@wordpress/icons';
 import { ContentSection } from './content-section';
 import { ResourcePost } from './resource-post';
 
 export function Resources(): JSX.Element {
+  const [activePage, setActivePage] = useState(1);
   const posts = [
     <ResourcePost
       key="createAnEmail"
@@ -52,7 +56,48 @@ export function Resources(): JSX.Element {
       className="mailpoet-homepage-resources"
       heading={MailPoet.I18n.t('learnMoreAboutEmailMarketing')}
     >
-      {posts.map((post) => post)}
+      <div className="mailpoet-homepage-resources__posts">
+        {posts
+          .filter(
+            (_post, index) =>
+              index + 1 === activePage * 2 || index + 1 === activePage * 2 - 1,
+          )
+          .map((post) => post)}
+      </div>
+      <div className="mailpoet-homepage-resources__pagination">
+        {MailPoet.I18n.t('pageOf')
+          .replace('%1$d', activePage.toString())
+          .replace('%2$d', Math.ceil(posts.length / 2).toString())}
+        {activePage > 1 ? (
+          <a
+            href="#"
+            onClick={(e) => {
+              e.preventDefault();
+              setActivePage(activePage - 1);
+            }}
+            title={MailPoet.I18n.t('previousPostsPage')}
+          >
+            <Icon icon={chevronLeft} />
+          </a>
+        ) : (
+          <Icon icon={chevronLeft} />
+        )}
+
+        {activePage < Math.ceil(posts.length / 2) ? (
+          <a
+            href="#"
+            onClick={(e) => {
+              e.preventDefault();
+              setActivePage(activePage + 1);
+            }}
+            title={MailPoet.I18n.t('nextPostsPage')}
+          >
+            <Icon icon={chevronRight} />
+          </a>
+        ) : (
+          <Icon icon={chevronRight} />
+        )}
+      </div>
     </ContentSection>
   );
 }
