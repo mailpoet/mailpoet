@@ -47,7 +47,7 @@ class StatisticsWooCommercePurchasesRepository extends Repository {
     $this->flush();
   }
 
-  public function getRevenuesByCampaigns() {
+  public function getRevenuesByCampaigns(): array {
     $revenueStatsTable = $this->entityManager->getClassMetadata(StatisticsWooCommercePurchaseEntity::class)->getTableName();
     $newsletterTable = $this->entityManager->getClassMetadata(NewsletterEntity::class)->getTableName();
 

@@ -24,7 +24,7 @@ class TrackerTest extends \MailPoetTest {
   /** @var Tracker */
   private $tracker;
 
-  public function _before() {
+  public function _before(): void {
     parent::_before();
     $this->cleanUp();
     $this->subscriber = (new Subscriber())->create();
@@ -37,14 +37,14 @@ class TrackerTest extends \MailPoetTest {
     $this->entityManager->flush();
   }
 
-  public function testItAddsTrackingData() {
+  public function testItAddsTrackingData(): void {
     $data = $this->tracker->addTrackingData(['extensions' => []]);
     expect($data['extensions']['mailpoet'])->notEmpty();
     expect($data['extensions']['mailpoet']['campaigns_count'])->notNull();
     expect($data['extensions']['mailpoet']['currency'])->notNull();
   }
 
-  public function testItAddsCampaignRevenuesForStandardNewsletters() {
+  public function testItAddsCampaignRevenuesForStandardNewsletters(): void {
     $newsletter1 = (new Newsletter())->withSendingQueue()->withType(NewsletterEntity::TYPE_STANDARD)->create();
     $newsletter2 = (new Newsletter())->withSendingQueue()->withType(NewsletterEntity::TYPE_STANDARD)->create();
     $this->createRevenueRecord($newsletter1, $this->createOrderData(1, 'USD', 10));
@@ -63,7 +63,7 @@ class TrackerTest extends \MailPoetTest {
     expect($mailPoetData['campaign_' . $newsletter2->getId() . '_orders_count'])->equals(1);
   }
 
-  public function testItAddsCampaignRevenuesForAutomaticCampaigns() {
+  public function testItAddsCampaignRevenuesForAutomaticCampaigns(): void {
     $newsletter1 = (new Newsletter())->withSendingQueue()->withType(NewsletterEntity::TYPE_WELCOME)->create();
     $newsletter2 = (new Newsletter())->withSendingQueue()->withType(NewsletterEntity::TYPE_AUTOMATIC)->create();
     $newsletter3 = (new Newsletter())->withSendingQueue()->withType(NewsletterEntity::TYPE_AUTOMATION)->create();
@@ -87,7 +87,7 @@ class TrackerTest extends \MailPoetTest {
     expect($mailPoetData['campaign_' . $newsletter3->getId() . '_orders_count'])->equals(1);
   }
 
-  public function testItAddsTotalCampaigns() {
+  public function testItAddsTotalCampaigns(): void {
     (new Newsletter())->withSendingQueue()->withType(NewsletterEntity::TYPE_WELCOME)->withStatus(NewsletterEntity::STATUS_ACTIVE)->create();
     (new Newsletter())->withSendingQueue()->withType(NewsletterEntity::TYPE_AUTOMATIC)->withStatus(NewsletterEntity::STATUS_ACTIVE)->create();
     (new Newsletter())->withSendingQueue()->withType(NewsletterEntity::TYPE_AUTOMATION)->withStatus(NewsletterEntity::STATUS_ACTIVE)->create();
@@ -103,7 +103,7 @@ class TrackerTest extends \MailPoetTest {
     expect($campaignsCount)->equals(6);
   }
 
-  public function testItAddsCampaignRevenuesPostNotificationsUnderTheParentId() {
+  public function testItAddsCampaignRevenuesPostNotificationsUnderTheParentId(): void {
     $notificationParent = (new Newsletter())->withSendingQueue()->withType(NewsletterEntity::TYPE_NOTIFICATION)->create();
     $notificationHistory1 = (new Newsletter())->withSendingQueue()->withType(NewsletterEntity::TYPE_NOTIFICATION_HISTORY)->create();
     $notificationHistory1->setParent($notificationParent);
@@ -126,7 +126,7 @@ class TrackerTest extends \MailPoetTest {
   /**
    * Because we save the revenue for every recent click, we need to make sure we count the order only once (for the first click)
    */
-  public function testItTracksTheRevenueOncePerOrder() {
+  public function testItTracksTheRevenueOncePerOrder(): void {
     $newsletter1 = (new Newsletter())->withSendingQueue()->create();
     $newsletter2 = (new Newsletter())->withSendingQueue()->create();
     $newsletter3 = (new Newsletter())->withSendingQueue()->create();
@@ -167,7 +167,7 @@ class TrackerTest extends \MailPoetTest {
     return (new StatisticsWooCommercePurchases($click, $orderData))->create();
   }
 
-  private function cleanUp() {
+  private function cleanUp(): void {
     $this->truncateEntity(NewsletterLinkEntity::class);
     $this->truncateEntity(NewsletterEntity::class);
     $this->truncateEntity(SubscriberEntity::class);
