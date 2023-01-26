@@ -316,10 +316,7 @@ BL.MediaManagerBehavior = Marionette.Behavior.extend({
             width: mainSize.width + 'px',
             src: mainSize.url,
             alt:
-              attachment.get('alt') !== '' &&
-              attachment.get('alt') !== undefined
-                ? attachment.get('alt')
-                : attachment.get('title'),
+              attachment.get('alt') !== undefined ? attachment.get('alt') : '',
           });
         }
       });
