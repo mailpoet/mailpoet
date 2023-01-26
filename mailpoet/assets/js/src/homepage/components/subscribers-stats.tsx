@@ -123,7 +123,7 @@ export function SubscribersStats(): JSX.Element {
               </thead>
               <tbody>
                 {listsChange.map((list) => (
-                  <tr>
+                  <tr key={list.id}>
                     <td>
                       <a
                         href={`admin.php?page=mailpoet-subscribers#/page[1]/sort_by[created_at]/sort_order[desc]/group[all]/filter[segment=${list.id}]`}
