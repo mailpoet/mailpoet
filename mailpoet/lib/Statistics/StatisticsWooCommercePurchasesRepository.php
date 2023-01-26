@@ -51,6 +51,8 @@ class StatisticsWooCommercePurchasesRepository extends Repository {
     $revenueStatsTable = $this->entityManager->getClassMetadata(StatisticsWooCommercePurchaseEntity::class)->getTableName();
     $newsletterTable = $this->entityManager->getClassMetadata(NewsletterEntity::class)->getTableName();
 
+    // The "SELECT MIN(click_id)..." sub-query is used to count each purchase only once.
+    // In the data we track a purchase to multiple newsletters if clicks from multiple newsletters occurred.
     $data = $this->entityManager->getConnection()->executeQuery('
       SELECT
         SUM(swp.order_price_total) AS revenue,
