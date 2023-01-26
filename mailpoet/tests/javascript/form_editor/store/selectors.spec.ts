@@ -1,12 +1,14 @@
 import { expect } from 'chai';
 import { selectors } from '../../../../assets/js/src/form_editor/store/selectors';
+import { State } from '../../../../assets/js/src/form_editor/store/state_types';
 
 describe('Selectors', () => {
   describe('getClosestParentAttribute', () => {
     it('Should return null for empty blocks', () => {
       const state = {
         formBlocks: [],
-      };
+      } as State;
+
       expect(selectors.getClosestParentAttribute(state, 'id', 'attr')).to.equal(
         null,
       );
@@ -14,7 +16,7 @@ describe('Selectors', () => {
 
     it('Should return null if block is found on top level', () => {
       const formBlocks = [{ clientId: 'id' }];
-      const state = { formBlocks };
+      const state = { formBlocks } as State;
       expect(selectors.getClosestParentAttribute(state, 'id', 'attr')).to.equal(
         null,
       );
@@ -35,7 +37,7 @@ describe('Selectors', () => {
           ],
         },
       ];
-      const state = { formBlocks };
+      const state = { formBlocks } as unknown as State;
       const result = selectors.getClosestParentAttribute(state, 'id', 'attr');
       expect(result).to.equal('Hello');
     });
@@ -58,7 +60,7 @@ describe('Selectors', () => {
           ],
         },
       ];
-      const state = { formBlocks };
+      const state = { formBlocks } as unknown as State;
       const result = selectors.getClosestParentAttribute(state, 'id', 'attr');
       expect(result).to.equal('Hello 2');
     });
@@ -69,7 +71,7 @@ describe('Selectors', () => {
       const state = {
         editorHistory: [],
         editorHistoryOffset: 0,
-      };
+      } as State;
       expect(selectors.hasEditorUndo(state)).to.equal(false);
     });
 
@@ -77,7 +79,7 @@ describe('Selectors', () => {
       const state = {
         editorHistory: [{ data: 'some data' }],
         editorHistoryOffset: 0,
-      };
+      } as State;
       expect(selectors.hasEditorUndo(state)).to.equal(true);
     });
 
@@ -85,7 +87,7 @@ describe('Selectors', () => {
       const state = {
         editorHistory: [{ data: 'some data 1' }, { data: 'some data 2' }],
         editorHistoryOffset: 1,
-      };
+      } as State;
       expect(selectors.hasEditorUndo(state)).to.equal(false);
     });
 
@@ -97,7 +99,7 @@ describe('Selectors', () => {
           { data: 'some data 3' },
         ],
         editorHistoryOffset: 1,
-      };
+      } as State;
       expect(selectors.hasEditorUndo(state)).to.equal(true);
     });
   });
@@ -107,7 +109,7 @@ describe('Selectors', () => {
       const state = {
         editorHistory: [],
         editorHistoryOffset: 0,
-      };
+      } as State;
       expect(selectors.hasEditorRedo(state)).to.equal(false);
     });
 
@@ -115,7 +117,7 @@ describe('Selectors', () => {
       const state = {
         editorHistory: [{ data: 'some data 1' }, { data: 'some data 2' }],
         editorHistoryOffset: 1,
-      };
+      } as State;
       expect(selectors.hasEditorRedo(state)).to.equal(true);
     });
   });
