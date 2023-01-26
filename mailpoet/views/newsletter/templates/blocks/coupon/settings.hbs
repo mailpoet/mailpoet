@@ -14,35 +14,37 @@
   </div>
 </div>
 
-<div class="mailpoet_form_field mailpoet_field_coupon_source_create_new {{#ifCond model.source '===' 'useExisting'}}mailpoet_hidden{{/ifCond}}">
-    <div class="mailpoet_form_field_type"><%= __('Discount type') %></div>
-    <div class="mailpoet_form_field_input_option mailpoet_form_field_input_nowrap">
-        <select id="mailpoet_field_coupon_discount_type" name="discount-type" class="mailpoet_select mailpoet_select_full mailpoet_field_coupon_discount_type">
-        {{#each availableDiscountTypes}}
-            <option value="{{@key}}" {{#ifCond @key '==' ../model.discountType}}SELECTED{{/ifCond}}>{{ this }}</option>
-        {{/each}}
-        </select>
-    </div>
-</div>
-<div class="mailpoet_form_field mailpoet_field_coupon_source_create_new {{#ifCond model.source '===' 'useExisting'}}mailpoet_hidden{{/ifCond}}">
-    <label>
-        <div class="mailpoet_form_field_title mailpoet_form_field_title_inline"><%= __('Coupon amount') %></div>
-        <div class="coupon_amount_wrapper">
-            {{#ifCond model.amountMax '===' 100}}
-                <span class="amount_percentage_sign">%</span>
-            {{/ifCond}}
-            <input type="text" name="amount"  data-parsley-validate data-parsley-validation-threshold="0" data-parsley-required data-parsley-trigger="input"  data-parsley-type="digits" {{#ifCond model.amountMax '!==' null }} data-parsley-maxlength="{{ model.amountMax }}" max="{{ model.amountMax }}" {{/ifCond}}   class="mailpoet_input mailpoet_field_coupon_amount mailpoet_input_medium" value="{{ model.amount }}" min="0" />
-        </div>
-    </label>
-</div>
-<div class="mailpoet_form_field mailpoet_field_coupon_source_create_new {{#ifCond model.source '===' 'useExisting'}}mailpoet_hidden{{/ifCond}}">
-    <label>
-        <div class="mailpoet_form_field_title mailpoet_form_field_title_inline"><%= __('Coupon expiry days') %></div>
-        <div class="mailpoet_form_field_input_option">
-            <input type="text" data-parsley-validate data-parsley-required data-parsley-validation-threshold="0"  name="expiry-day" data-parsley-trigger="input"  data-parsley-type="digits" class="mailpoet_input mailpoet_input_small mailpoet_field_coupon_expiry_day" value="{{ model.expiryDay }}" />
-            <p class='description'><%= __('Number of days the coupon is valid after the email is sent') %></p>
-        </div>
-    </label>
+<div class="mailpoet_field_coupon_source_create_new {{#ifCond model.source '===' 'useExisting'}}mailpoet_hidden{{/ifCond}}">
+  <div class="mailpoet_form_field">
+      <div class="mailpoet_form_field_type"><%= __('Discount type') %></div>
+      <div class="mailpoet_form_field_input_option mailpoet_form_field_input_nowrap">
+          <select id="mailpoet_field_coupon_discount_type" name="discount-type" class="mailpoet_select mailpoet_select_full mailpoet_field_coupon_discount_type">
+          {{#each availableDiscountTypes}}
+              <option value="{{@key}}" {{#ifCond @key '==' ../model.discountType}}SELECTED{{/ifCond}}>{{ this }}</option>
+          {{/each}}
+          </select>
+      </div>
+  </div>
+  <div class="mailpoet_form_field">
+      <label>
+          <div class="mailpoet_form_field_title mailpoet_form_field_title_inline"><%= __('Coupon amount') %></div>
+          <div class="coupon_amount_wrapper">
+              {{#ifCond model.amountMax '===' 100}}
+                  <span class="amount_percentage_sign">%</span>
+              {{/ifCond}}
+              <input type="text" name="amount"  data-parsley-validate data-parsley-validation-threshold="0" data-parsley-required data-parsley-trigger="input"  data-parsley-type="digits" {{#ifCond model.amountMax '!==' null }} data-parsley-maxlength="{{ model.amountMax }}" max="{{ model.amountMax }}" {{/ifCond}}   class="mailpoet_input mailpoet_field_coupon_amount mailpoet_input_medium" value="{{ model.amount }}" min="0" />
+          </div>
+      </label>
+  </div>
+  <div class="mailpoet_form_field">
+      <label>
+          <div class="mailpoet_form_field_title mailpoet_form_field_title_inline"><%= __('Coupon expiry days') %></div>
+          <div class="mailpoet_form_field_input_option">
+              <input type="text" data-parsley-validate data-parsley-required data-parsley-validation-threshold="0"  name="expiry-day" data-parsley-trigger="input"  data-parsley-type="digits" class="mailpoet_input mailpoet_input_small mailpoet_field_coupon_expiry_day" value="{{ model.expiryDay }}" />
+              <p class='description'><%= __('Number of days the coupon is valid after the email is sent') %></p>
+          </div>
+      </label>
+  </div>
 </div>
 
 <div class="mailpoet_form_field mailpoet_field_coupon_source_use_existing {{#ifCond model.source '!==' 'useExisting'}}mailpoet_hidden{{/ifCond}}">
