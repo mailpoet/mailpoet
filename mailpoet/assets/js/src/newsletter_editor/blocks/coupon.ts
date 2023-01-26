@@ -8,7 +8,6 @@ import _ from 'underscore';
 import jQuery from 'jquery';
 import 'backbone.marionette';
 import { MailPoet } from '../../mailpoet';
-import 'select2';
 
 export const FEATURE_COUPON_BLOCK = 'Coupon block';
 
@@ -274,7 +273,7 @@ Module.CouponBlockSettingsView = base.BlockSettingsView.extend({
         'code',
         this.$('.mailpoet_field_coupon_existing_coupon')
           .find(':selected')
-          .html(),
+          .text(),
       );
       this.model.set(
         'couponId',
