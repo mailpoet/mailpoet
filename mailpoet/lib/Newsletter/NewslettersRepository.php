@@ -203,7 +203,11 @@ class NewslettersRepository extends Repository {
       'product_purchased_in_category_emails_count' => $analyticsMap[NewsletterEntity::TYPE_AUTOMATIC][PurchasedInCategory::SLUG] ?? 0,
       'abandoned_cart_emails_count' => $analyticsMap[NewsletterEntity::TYPE_AUTOMATIC][AbandonedCart::SLUG] ?? 0,
     ];
-    $data['campaigns_count'] = $data['welcome_newsletters_count'] + $data['notifications_count'] + $data['automatic_emails_count'] + $data['automation_emails_count'] + $data['re-engagement_emails_count'] + $data['sent_newsletters_count'];
+    // Count all campaigns
+    $analyticsMap[NewsletterEntity::TYPE_AUTOMATIC] = array_sum($analyticsMap[NewsletterEntity::TYPE_AUTOMATIC] ?? []);
+    // Post notification history is not a campaign, we count only the parent notification
+    unset($analyticsMap[NewsletterEntity::TYPE_NOTIFICATION_HISTORY]);
+    $data['campaigns_count'] = array_sum($analyticsMap);
     return $data;
   }
 
