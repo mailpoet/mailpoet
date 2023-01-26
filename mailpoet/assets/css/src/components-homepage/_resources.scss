@@ -1,0 +1,8 @@
+.mailpoet-homepage-resources__posts {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.mailpoet-resource-post {
+  @include animation-fade-in();
+}
