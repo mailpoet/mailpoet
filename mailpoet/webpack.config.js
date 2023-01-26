@@ -107,6 +107,9 @@ const baseConfig = {
         test: /\.(j|t)sx?$/,
         exclude: /(node_modules|src\/vendor)/,
         loader: 'babel-loader',
+        resolve: {
+          fullySpecified: false,
+        },
       },
       {
         include: path.resolve(
