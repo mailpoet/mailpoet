@@ -17,6 +17,13 @@ class AutomationTemplatesGetEndpointTest extends AutomationTest {
     $this->assertEquals('subscriber-welcome-email', $result['data'][0]['slug']);
   }
 
+  public function testEditorIsAllowed(): void {
+    wp_set_current_user($this->editorUserId);
+    $data = $this->get(self::ENDPOINT_PATH, []);
+
+    $this->assertCount(7, $data['data']);
+  }
+
   public function testGuestNotAllowed(): void {
     wp_set_current_user(0);
     $data = $this->get(self::ENDPOINT_PATH, []);

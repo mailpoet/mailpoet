@@ -36,6 +36,14 @@ class AutomationsDuplicateEndpointTest extends AutomationTest {
     $this->automation = $automation;
   }
 
+  public function testEditorIsAllowed(): void {
+    wp_set_current_user($this->editorUserId);
+    $data = $this->post(sprintf(self::ENDPOINT_PATH, $this->automation->getId()));
+
+    $this->assertSame('Copy of Testing automation', $data['data']['name']);
+    $this->assertNotNull($this->automationStorage->getAutomation($this->automation->getId() + 1));
+  }
+
   public function testGuestNotAllowed(): void {
     wp_set_current_user(0);
     $data = $this->post(sprintf(self::ENDPOINT_PATH, $this->automation->getId()));
