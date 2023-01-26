@@ -31,6 +31,20 @@ class AutomationsCreateFromTemplateTest extends AutomationTest {
     expect($countAfter)->equals($countBefore + 1);
   }
 
+  public function testEditorIsAllowed(): void {
+    wp_set_current_user($this->editorUserId);
+    $countBefore = count($this->automationStorage->getAutomations());
+    $data = $this->post(self::ENDPOINT_PATH, [
+      'json' => [
+        'slug' => 'subscriber-welcome-email',
+      ],
+    ]);
+    $countAfter = count($this->automationStorage->getAutomations());
+    $this->assertEquals($countBefore + 1, $countAfter);
+
+    $this->assertSame("Welcome new subscribers", $data['data']['name']);
+  }
+
   public function testGuestNotAllowed(): void {
     wp_set_current_user(0);
     $countBefore = count($this->automationStorage->getAutomations());

@@ -32,6 +32,13 @@ class AutomationsGetTest extends AutomationTest {
     $this->userIds[] = $userId;
   }
 
+  public function testEditorIsAllowed(): void {
+    wp_set_current_user($this->editorUserId);
+    $data = $this->get(self::ENDPOINT_PATH);
+
+    $this->assertCount(0, $data['data']);
+  }
+
   public function testGuestNotAllowed(): void {
     wp_set_current_user(0);
     $data = $this->get(self::ENDPOINT_PATH);

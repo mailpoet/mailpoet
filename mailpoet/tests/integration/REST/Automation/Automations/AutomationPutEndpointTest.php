@@ -31,6 +31,24 @@ class AutomationPutEndpointTest extends AutomationTest {
     $this->assertInstanceOf(Automation::class, $this->automation);
   }
 
+  public function testEditorIsAllowed(): void {
+    wp_set_current_user($this->editorUserId);
+    $data = $this->put(
+      sprintf(self::ENDPOINT_PATH, $this->automation->getId()),
+      [
+        'json' => [
+          'name' => 'Test',
+        ],
+      ]
+    );
+
+    $this->assertSame("Test", $data['data']['name']);
+
+    $automation = $this->automationStorage->getAutomation($this->automation->getId());
+    $this->assertInstanceOf(Automation::class, $automation);
+    $this->assertSame('Test', $automation->getName());
+  }
+
   public function testGuestNotAllowed(): void {
     wp_set_current_user(0);
     $data = $this->put(

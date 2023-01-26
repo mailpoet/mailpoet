@@ -33,6 +33,14 @@ class AutomationsDeleteEndpointTest extends AutomationTest {
     $this->automation = $automation;
   }
 
+  public function testEditorIsAllowed(): void {
+    wp_set_current_user($this->editorUserId);
+    $data = $this->delete(sprintf(self::ENDPOINT_PATH, $this->automation->getId()));
+
+    $this->assertSame("mailpoet_automation_not_trashed", $data['code']);
+
+  }
+
   public function testGuestNotAllowed(): void {
     wp_set_current_user(0);
     $data = $this->delete(sprintf(self::ENDPOINT_PATH, $this->automation->getId()));
