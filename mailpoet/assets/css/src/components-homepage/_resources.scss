@@ -1,8 +1,55 @@
 .mailpoet-homepage-resources__posts {
   display: grid;
   grid-template-columns: 1fr 1fr;
+
+  @include respond-to(small-screen) {
+    display: block;
+  }
 }
 
 .mailpoet-resource-post {
   @include animation-fade-in();
+  display: block;
+  padding: $grid-gap-medium;
+  text-decoration: none;
+
+  h3 {
+    font-size: 14px;
+  }
+
+  p {
+    color: $color-text-light;
+    font-size: 13px;
+    margin-bottom: 0;
+  }
+
+  img {
+    border-radius: 4px;
+  }
+}
+
+.mailpoet-homepage-resources__pagination {
+  border-top: 1px solid $color-homepage-borders;
+  color: $color-text-light;
+  display: flex;
+  font-size: 13px;
+  padding: $grid-gap-medium;
+
+  a {
+    height: 20px;
+    margin-left: $grid-gap;
+
+    svg {
+      margin: 0;
+      opacity: 1;
+    }
+  }
+
+  svg {
+    fill: $color-text-light;
+    height: 20px;
+    margin-left: $grid-gap;
+    opacity: .4;
+    width: 20px;
+  }
 }

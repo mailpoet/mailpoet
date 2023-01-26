@@ -12,16 +12,15 @@ export function ResourcePost({
   imgSrc,
 }: Props): JSX.Element {
   return (
-    <div className="mailpoet-resource-post">
-      <a href={link} target="_blank" rel="noreferrer">
-        <img src={imgSrc} alt={title} width="292" height="166" />
-      </a>
-      <a href={link} target="_blank" rel="noreferrer">
-        <h3>{title}</h3>
-      </a>
-      <a href={link} target="_blank" rel="noreferrer">
-        {abstract}
-      </a>
-    </div>
+    <a
+      className="mailpoet-resource-post"
+      href={link}
+      target="_blank"
+      rel="noreferrer"
+    >
+      <img src={imgSrc} alt={title} width="292" height="166" />
+      <h3>{title}</h3>
+      <p>{abstract}</p>
+    </a>
   );
 }
