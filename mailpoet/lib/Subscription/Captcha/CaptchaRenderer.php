@@ -23,7 +23,7 @@ class CaptchaRenderer {
   public function renderAudio($sessionId, $return = false) {
 
     $audioPath = Env::$assetsPath . '/audio/';
-    $phrase = $this->phrase->getPhraseForType('audio', $sessionId);
+    $phrase = $this->phrase->getPhraseForType($this->determineAudioType(), $sessionId);
     $audio = null;
     foreach (str_split($phrase) as $character) {
       $file = $audioPath . strtolower($character) . '.mp3';
@@ -43,6 +43,14 @@ class CaptchaRenderer {
     //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped, WordPressDotOrg.sniffs.OutputEscaping.UnescapedOutputParameter
     echo $audio;
     exit;
+  }
+
+  private function determineAudioType(): string {
+    $type = 'audio';
+    if (isset($_SERVER['HTTP_RANGE'])) {
+      $type .= '-range-' . sanitize_text_field(wp_unslash($_SERVER['HTTP_RANGE']));
+    }
+    return $type;
   }
 
   public function renderImage($width = null, $height = null, $sessionId = null, $return = false) {
