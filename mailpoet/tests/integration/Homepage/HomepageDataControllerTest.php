@@ -207,6 +207,25 @@ class HomepageDataControllerTest extends \MailPoetTest {
     expect($subscribersStats['global']['unsubscribed'])->equals(1);
   }
 
+  public function testCountMultipleGlobalUnsubscribesOfTheSameSubscriberOnlyOnce(): void {
+    $thirtyOneDaysAgo = Carbon::now()->subDays(31);
+    $twentyNineDaysAgo = Carbon::now()->subDays(29);
+    // New subscribed
+    (new Subscriber())->withCreatedAt($twentyNineDaysAgo)->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)->create();
+    // Freshly unsubscribed (but created before the period)
+    $newUnsubscribed = (new Subscriber())->withCreatedAt($thirtyOneDaysAgo)->withStatus(SubscriberEntity::STATUS_UNSUBSCRIBED)->create();
+    $newUnsubscribedStats = new StatisticsUnsubscribeEntity(null, null, $newUnsubscribed);
+    $newUnsubscribedStats->setCreatedAt($twentyNineDaysAgo);
+    $this->entityManager->persist($newUnsubscribedStats);
+    $newUnsubscribedStats = new StatisticsUnsubscribeEntity(null, null, $newUnsubscribed);
+    $newUnsubscribedStats->setCreatedAt($twentyNineDaysAgo);
+    $this->entityManager->persist($newUnsubscribedStats);
+    $this->entityManager->flush();
+
+    $subscribersStats = $this->homepageDataController->getPageData()['subscribersStats'];
+    expect($subscribersStats['global']['unsubscribed'])->equals(1);
+  }
+
   public function testItFetchesCorrectGlobalSubscriberChange(): void {
     $thirtyOneDaysAgo = Carbon::now()->subDays(31);
     $twentyNineDaysAgo = Carbon::now()->subDays(29);

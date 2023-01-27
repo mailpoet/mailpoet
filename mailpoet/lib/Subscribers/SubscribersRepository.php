@@ -391,7 +391,7 @@ class SubscribersRepository extends Repository {
 
   public function getCountOfUnsubscribedAfter(\DateTimeInterface $unsubscribedAfter): int {
     $result = $this->entityManager->createQueryBuilder()
-      ->select('COUNT(s.id)')
+      ->select('COUNT(DISTINCT s.id)')
       ->from(StatisticsUnsubscribeEntity::class, 'su')
       ->join('su.subscriber', 's')
       ->where('s.createdAt <= :unsubscribedAfter')
