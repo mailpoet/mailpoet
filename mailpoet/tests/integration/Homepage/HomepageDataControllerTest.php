@@ -312,12 +312,13 @@ class HomepageDataControllerTest extends \MailPoetTest {
     $segment = (new Segment())->withName('Segment')->create();
     // Unsubscribed 29 days ago - only this one counts as unsubscribed on list level
     $newUnsubscribed = (new Subscriber())
-      ->withCreatedAt($twentyNineDaysAgo)
+      ->withCreatedAt($thirtyOneDaysAgo)
       ->withStatus(SubscriberEntity::STATUS_UNSUBSCRIBED)
       ->withSegments([$segment])
       ->create();
     $subscriberSegment = $newUnsubscribed->getSubscriberSegments()->first();
     $this->assertInstanceOf(SubscriberSegmentEntity::class, $subscriberSegment);
+    $subscriberSegment->setCreatedAt($thirtyOneDaysAgo);
     $subscriberSegment->setUpdatedAt($twentyNineDaysAgo);
     $subscriberSegment->setStatus(SubscriberEntity::STATUS_UNSUBSCRIBED);
     // Unsubscribed 31 days ago - ignored because unsubscribed too far in the past
@@ -328,6 +329,7 @@ class HomepageDataControllerTest extends \MailPoetTest {
       ->create();
     $subscriberSegment = $newUnsubscribed->getSubscriberSegments()->first();
     $this->assertInstanceOf(SubscriberSegmentEntity::class, $subscriberSegment);
+    $subscriberSegment->setCreatedAt($thirtyOneDaysAgo);
     $subscriberSegment->setUpdatedAt($thirtyOneDaysAgo);
     $subscriberSegment->setStatus(SubscriberEntity::STATUS_UNSUBSCRIBED);
 

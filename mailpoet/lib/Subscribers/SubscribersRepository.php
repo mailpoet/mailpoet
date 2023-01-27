@@ -432,6 +432,7 @@ class SubscribersRepository extends Repository {
       ->join('ss.subscriber', 's')
       ->join('ss.segment', 'seg')
       ->where('ss.updatedAt > :date')
+      ->where('ss.createdAt < :date') // ignore those who subscribed and unsubscribed within the date range
       ->andWhere('s.status = :status')
       ->andWhere('ss.status = :segment_status')
       ->andWhere('s.deletedAt IS NULL')
