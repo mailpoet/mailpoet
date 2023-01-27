@@ -27,28 +27,28 @@ export function Resources(): JSX.Element {
       link="https://www.mailpoet.com/blog/email-segmentation/?utm_source=plugin&utm_medium=homepage&utm_campaign=resources"
       abstract={MailPoet.I18n.t('segmentationGuideAbstract')}
       title={MailPoet.I18n.t('segmentationGuideTitle')}
-      imgSrc={`${MailPoet.cdnUrl}homepage/resources/add_form.png`}
+      imgSrc={`${MailPoet.cdnUrl}homepage/resources/segmentation.png`}
     />,
     <ResourcePost
       key="reEngagement"
       link="https://www.mailpoet.com/blog/re-engagement-emails/?utm_source=plugin&utm_medium=homepage&utm_campaign=resources"
       abstract={MailPoet.I18n.t('reEngagementAbstract')}
       title={MailPoet.I18n.t('reEngagementTitle')}
-      imgSrc={`${MailPoet.cdnUrl}homepage/resources/add_email.png`}
+      imgSrc={`${MailPoet.cdnUrl}homepage/resources/reengagement.png`}
     />,
     <ResourcePost
       key="marketingStrategy"
       link="https://www.mailpoet.com/blog/newsletter-marketing-strategy/?utm_source=plugin&utm_medium=homepage&utm_campaign=resources"
       abstract={MailPoet.I18n.t('marketingStrategyAbstract')}
       title={MailPoet.I18n.t('marketingStrategyTitle')}
-      imgSrc={`${MailPoet.cdnUrl}homepage/resources/add_form.png`}
+      imgSrc={`${MailPoet.cdnUrl}homepage/resources/marketing.png`}
     />,
     <ResourcePost
       key="promotingSales"
       link="https://www.mailpoet.com/blog/how-to-promote-your-sales-with-email-marketing-mailpoet-woocommerce-segmentation/?utm_source=plugin&utm_medium=homepage&utm_campaign=resources"
       abstract={MailPoet.I18n.t('promotingSalesAbstract')}
       title={MailPoet.I18n.t('promotingSalesTitle')}
-      imgSrc={`${MailPoet.cdnUrl}homepage/resources/add_email.png`}
+      imgSrc={`${MailPoet.cdnUrl}homepage/resources/sales.png`}
     />,
   ];
   return (
