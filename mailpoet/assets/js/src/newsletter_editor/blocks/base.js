@@ -11,6 +11,7 @@ import _ from 'underscore';
 import jQuery from 'jquery';
 import { MailPoet } from 'mailpoet';
 import 'modal';
+import { validateField } from '../utils';
 
 var Module = {};
 var AugmentedView = Marionette.View.extend({});
@@ -306,6 +307,9 @@ Module.BlockSettingsView = Marionette.View.extend({
     this.destroy();
   },
   changeField: function changeField(field, event) {
+    if (!validateField(event.target)) {
+      return;
+    }
     this.model.set(field, jQuery(event.target).val());
   },
   changePixelField: function changePixelField(field, event) {

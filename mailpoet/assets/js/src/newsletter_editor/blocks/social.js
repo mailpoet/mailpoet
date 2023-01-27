@@ -9,6 +9,7 @@ import Marionette from 'backbone.marionette';
 import SuperModel from 'backbone.supermodel';
 import _ from 'underscore';
 import jQuery from 'jquery';
+import { validateField } from '../utils';
 
 var Module = {};
 var base = BaseBlock;
@@ -246,14 +247,19 @@ SocialBlockSettingsIconView = Marionette.View.extend({
     this.model.destroy();
   },
   changeLink: function (event) {
+    if (!validateField(event.target)) {
+      return;
+    }
     if (this.model.get('iconType') === 'email') {
       this.model.set('link', 'mailto:' + jQuery(event.target).val());
     } else {
-      return this.changeField('link', event);
+      this.changeField('link', event);
     }
-    return undefined;
   },
   changeField: function (field, event) {
+    if (!validateField(event.target)) {
+      return;
+    }
     this.model.set(field, jQuery(event.target).val());
   },
 });
