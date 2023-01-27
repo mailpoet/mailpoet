@@ -1,4 +1,3 @@
-import { MailPoet } from 'mailpoet';
 import { Notices } from 'notices/notices.jsx';
 import { Loading } from 'common/loading';
 import { t } from 'common/functions';
@@ -16,12 +15,6 @@ import {
 } from './pages';
 import { useSelector } from './store/hooks';
 
-const trackTabSwitched = (tabKey: string) => {
-  MailPoet.trackEvent('User has clicked a tab in Settings', {
-    'Tab ID': tabKey,
-  });
-};
-
 export function Settings() {
   const isSaving = useSelector('isSaving')();
   const hasWooCommerce = useSelector('hasWooCommerce')();
@@ -31,10 +24,7 @@ export function Settings() {
       {isSaving && <Loading />}
       <Notices />
       <UnsavedChangesNotice storeName="mailpoet-settings" />
-      <RoutedTabs
-        activeKey="basics"
-        onSwitch={(tabKey: string) => trackTabSwitched(tabKey)}
-      >
+      <RoutedTabs activeKey="basics">
         <Tab
           key="basics"
           title={t('basicsTab')}
