@@ -27,6 +27,21 @@ select.mailpoet_font-size {
   width: 283px;
 }
 
+input {
+  &.mailpoet_error {
+    border: 1px solid #900;
+
+    ~ .mailpoet_text_on_error {
+      display: block;
+    }
+  }
+}
+
+.mailpoet_text_on_error {
+  color: #900;
+  display: none;
+}
+
 .mailpoet_input_small {
   width: 58px;
 }
