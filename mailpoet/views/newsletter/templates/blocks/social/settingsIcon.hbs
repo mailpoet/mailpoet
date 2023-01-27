@@ -40,9 +40,11 @@
         </div>
         <div class="mailpoet_social_icon_settings_form_element">
             {{#ifCond iconType '==' 'email'}}
-            <input type="text" name="link" class="mailpoet_social_icon_field_link" value="{{emailFromMailto model.link }}" placeholder="example@example.org" /><br />
+            <input type="email" name="link" class="mailpoet_social_icon_field_link" value="{{emailFromMailto model.link }}" placeholder="example@example.org" />
+            <p class="mailpoet_text_on_error"><%= __('This is not a valid email.') %></p>
             {{else}}
-            <input type="text" name="link" class="mailpoet_social_icon_field_link" value="{{ model.link }}" placeholder="http://" /><br />
+            <input type="url" name="link" class="mailpoet_social_icon_field_link" value="{{ model.link }}" placeholder="http://" />
+            <p class="mailpoet_text_on_error"><%= __('This is not a valid URL.') %></p>
             {{/ifCond}}
         </div>
         </label>
