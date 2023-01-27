@@ -15,3 +15,9 @@ export type CustomFieldStartedAction = {
   type: 'CREATE_CUSTOM_FIELD_STARTED';
   customField: CustomField;
 };
+
+export type ToggleSidebarPanelAction = {
+  type: 'TOGGLE_SIDEBAR_PANEL';
+  id: string;
+  toggleTo?: boolean;
+};

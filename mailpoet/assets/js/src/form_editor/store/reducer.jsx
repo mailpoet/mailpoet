@@ -23,7 +23,7 @@ import {
   toggleInserterSidebar,
   toggleSidebar,
 } from './reducers/toggle_sidebar.ts';
-import { toggleSidebarPanel } from './reducers/toggle_sidebar_panel.jsx';
+import { toggleSidebarPanel } from './reducers/toggle_sidebar_panel.ts';
 import { changeFormBlocks } from './reducers/change_form_blocks.jsx';
 import { saveCustomFieldDone } from './reducers/save_custom_field_done.jsx';
 import { saveCustomFieldFailed } from './reducers/save_custom_field_failed.jsx';
