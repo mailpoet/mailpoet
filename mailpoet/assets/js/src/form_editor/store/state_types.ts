@@ -1,5 +1,5 @@
 import { BlockInstance } from '@wordpress/blocks';
-import { FormSettingsType, CustomFields } from './form_data_types';
+import { FormData, CustomFields } from './form_data_types';
 
 export type BlockInsertionPoint = {
   rootClientId: string | undefined;
@@ -8,27 +8,13 @@ export type BlockInsertionPoint = {
 
 export type HistoryRecord = {
   blocks: BlockInstance[];
-  data: unknown;
+  data: FormData;
   time: number;
 };
 
 export interface FormEditorWindow extends Window {
   mailpoet_custom_fields: CustomFields[];
-  mailpoet_form_data: {
-    id: number | null;
-    name: string;
-    body: unknown[] | null;
-    settings: FormSettingsType | null;
-    styles: string | null;
-    status: 'enabled' | 'disabled';
-    created_at: { date: string; timezone_type: number; timezone: string };
-    updated_at: { date: string; timezone_type: number; timezone: string };
-    deleted_at: {
-      date: string;
-      timezone_type: number;
-      timezone: string;
-    } | null;
-  };
+  mailpoet_form_data: FormData;
   mailpoet_date_types: {
     label: string;
     value: string;

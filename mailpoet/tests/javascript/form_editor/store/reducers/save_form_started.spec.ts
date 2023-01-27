@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import { identity } from 'lodash';
 import { saveFormStartedFactory } from '../../../../../assets/js/src/form_editor/store/reducers/save_form_started';
-import { State } from '../../../../../assets/js/src/form_editor/store/state_types';
+import { createStateMock } from '../mocks/partialMocks';
 
 const MailPoetStub = {
   I18n: {
@@ -11,21 +11,22 @@ const MailPoetStub = {
 const reducer = saveFormStartedFactory(MailPoetStub);
 
 describe('Save Form Started Reducer', () => {
-  let initialState = null;
+  let initialState = createStateMock(null);
   beforeEach(() => {
-    initialState = {
+    initialState = createStateMock({
       notices: [],
       formErrors: [],
       isFormSaving: false,
       sidebar: {
+        activeSidebar: 'default',
         activeTab: 'block',
         openedPanels: [],
       },
-    };
+    });
   });
 
   it('Should set isFormSaving when there are no errors', () => {
-    const finalState = reducer(initialState as State);
+    const finalState = reducer(initialState);
     expect(finalState.isFormSaving).to.equal(true);
   });
 
@@ -36,26 +37,30 @@ describe('Save Form Started Reducer', () => {
         {
           id: 'missing-lists',
           content: 'message',
+          isDismissible: true,
           status: 'error',
         },
         {
           id: 'save-form',
           content: 'message',
+          isDismissible: true,
           status: 'error',
         },
         {
           id: 'missing-block',
           content: 'message',
+          isDismissible: true,
           status: 'error',
         },
         {
           id: 'some-notice',
           content: 'message',
+          isDismissible: true,
           status: 'error',
         },
       ],
     };
-    const finalState = reducer(state as State);
+    const finalState = reducer(state);
     expect(finalState.notices.length).to.equal(1);
     expect(finalState.notices[0].id).to.equal('some-notice');
   });
@@ -64,7 +69,7 @@ describe('Save Form Started Reducer', () => {
     const state = {
       ...initialState,
       formErrors: ['missing-lists'],
-    } as State;
+    };
     const finalState = reducer(state);
     expect(finalState.sidebar.activeTab).to.equal('form');
     expect(finalState.sidebar.openedPanels).to.contain('basic-settings');
@@ -80,7 +85,7 @@ describe('Save Form Started Reducer', () => {
     const state = {
       ...initialState,
       formErrors: ['missing-email-input'],
-    } as State;
+    };
     const finalState = reducer(state);
     const listsNotice = finalState.notices.find(
       (notice) => notice.id === 'missing-block',
