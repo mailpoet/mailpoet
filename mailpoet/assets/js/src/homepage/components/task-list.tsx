@@ -76,22 +76,22 @@ export function TaskList({ onHide }: Props): JSX.Element {
       isCompleted={tasksStatus.subscribersAdded}
       isActive={currentTask === 'subscribersAdded'}
     >
-      {!tasksStatus.subscribersAdded ? (
+      {!tasksStatus.subscribersAdded && (
         <p>
           {MailPoet.I18n.t('noSubscribersQuestion')}{' '}
           <a href="admin.php?page=mailpoet-form-editor-template-selection">
             {MailPoet.I18n.t('setUpForm')}
           </a>
         </p>
-      ) : null}
-      {tasksStatus.subscribersAdded && !hasImportedSubscribers ? (
+      )}
+      {tasksStatus.subscribersAdded && !hasImportedSubscribers && (
         <p>
           {MailPoet.I18n.t('haveSubscribersQuestion')}{' '}
           <a href="admin.php?page=mailpoet-import">
             {MailPoet.I18n.t('import')}
           </a>
         </p>
-      ) : null}
+      )}
     </Task>,
   );
 
@@ -113,7 +113,7 @@ export function TaskList({ onHide }: Props): JSX.Element {
         />
       </div>
       <ul>{taskListItems.map((item) => item)}</ul>
-      {!currentTask ? (
+      {!currentTask && (
         <p className="mailpoet-task-list__all-set">
           {MailPoet.I18n.t('youAreSet')}{' '}
           <a
@@ -126,7 +126,7 @@ export function TaskList({ onHide }: Props): JSX.Element {
             {MailPoet.I18n.t('dismissList')}
           </a>
         </p>
-      ) : null}
+      )}
     </>
   );
 }

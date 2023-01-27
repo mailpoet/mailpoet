@@ -26,24 +26,24 @@ export function HomepageSections(): JSX.Element {
   const { hideUpsell } = useDispatch(storeName);
   return (
     <div className="mailpoet-homepage__container">
-      {!isTaskListHidden ? (
+      {!isTaskListHidden && (
         <ErrorBoundary>
           <TaskList onHide={hideTaskList} />
         </ErrorBoundary>
-      ) : null}
-      {!isProductDiscoveryHidden ? (
+      )}
+      {!isProductDiscoveryHidden && (
         <ErrorBoundary>
           <ProductDiscovery onHide={hideProductDiscovery} />
         </ErrorBoundary>
-      ) : null}
+      )}
       {isTaskListHidden &&
-      isProductDiscoveryHidden &&
-      canDisplayUpsell &&
-      !isUpsellHidden ? (
-        <ErrorBoundary>
-          <Upsell closable onHide={hideUpsell} />
-        </ErrorBoundary>
-      ) : null}
+        isProductDiscoveryHidden &&
+        canDisplayUpsell &&
+        !isUpsellHidden && (
+          <ErrorBoundary>
+            <Upsell closable onHide={hideUpsell} />
+          </ErrorBoundary>
+        )}
       <ErrorBoundary>
         <SubscribersStats />
       </ErrorBoundary>
