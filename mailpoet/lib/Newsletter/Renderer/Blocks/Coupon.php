@@ -47,7 +47,7 @@ class Coupon {
                   <center style="color:' . EHelper::escapeHtmlStyleAttr($element['styles']['block']['fontColor']) . ';
                     font-family:' . EHelper::escapeHtmlStyleAttr($element['styles']['block']['fontFamily']) . ';
                     font-size:' . EHelper::escapeHtmlStyleAttr($element['styles']['block']['fontSize']) . ';
-                    font-weight:bold;">' . EHelper::escapeHtmlText($element['code']) . '
+                    font-weight:bold;">' . EHelper::escapeHtmlText($couponCode) . '
                   </center>
                   </v:roundrect>
                   <![endif]-->
