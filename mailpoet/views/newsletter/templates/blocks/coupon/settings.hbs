@@ -1,4 +1,4 @@
-<h3><%= __('Coupon') %></h3>
+<h3 data-automation-id="coupon_settings_heading"><%= __('Coupon') %></h3>
 <div class="mailpoet_form_field">
   <div class="mailpoet_form_field_radio_option">
     <label>
@@ -310,7 +310,7 @@
 {{/ifCond}}
 
 <div class="mailpoet_form_field">
-    <input type="button" class="button button-primary mailpoet_done_editing" value="<%= __('Done') | escape('html_attr') %>" />
+    <input type="button" class="button button-primary mailpoet_done_editing" data-automation-id="coupon_done_button" value="<%= __('Done') | escape('html_attr') %>" />
 </div>
 
 <script type="text/javascript">
