@@ -1,6 +1,7 @@
 import { expect } from 'chai';
 import { identity } from 'lodash';
-import { saveFormStartedFactory } from '../../../../../assets/js/src/form_editor/store/reducers/save_form_started.jsx';
+import { saveFormStartedFactory } from '../../../../../assets/js/src/form_editor/store/reducers/save_form_started';
+import { State } from '../../../../../assets/js/src/form_editor/store/state_types';
 
 const MailPoetStub = {
   I18n: {
@@ -24,17 +25,11 @@ describe('Save Form Started Reducer', () => {
   });
 
   it('Should set isFormSaving when there are no errors', () => {
-    const action = {
-      type: 'SAVE_FORM_STARTED',
-    };
-    const finalState = reducer(initialState, action);
+    const finalState = reducer(initialState as State);
     expect(finalState.isFormSaving).to.equal(true);
   });
 
   it('Should clean all form related notices', () => {
-    const action = {
-      type: 'SAVE_FORM_STARTED',
-    };
     const state = {
       ...initialState,
       notices: [
@@ -60,20 +55,17 @@ describe('Save Form Started Reducer', () => {
         },
       ],
     };
-    const finalState = reducer(state, action);
+    const finalState = reducer(state as State);
     expect(finalState.notices.length).to.equal(1);
     expect(finalState.notices[0].id).to.equal('some-notice');
   });
 
   it('Should set proper state for missing-lists error', () => {
-    const action = {
-      type: 'SAVE_FORM_STARTED',
-    };
     const state = {
       ...initialState,
       formErrors: ['missing-lists'],
-    };
-    const finalState = reducer(state, action);
+    } as State;
+    const finalState = reducer(state);
     expect(finalState.sidebar.activeTab).to.equal('form');
     expect(finalState.sidebar.openedPanels).to.contain('basic-settings');
     const listsNotice = finalState.notices.find(
@@ -85,14 +77,11 @@ describe('Save Form Started Reducer', () => {
   });
 
   it('Should set proper state for missing email input error', () => {
-    const action = {
-      type: 'SAVE_FORM_STARTED',
-    };
     const state = {
       ...initialState,
       formErrors: ['missing-email-input'],
-    };
-    const finalState = reducer(state, action);
+    } as State;
+    const finalState = reducer(state);
     const listsNotice = finalState.notices.find(
       (notice) => notice.id === 'missing-block',
     );
