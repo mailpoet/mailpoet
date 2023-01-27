@@ -1,4 +1,5 @@
 import { expect } from 'chai';
+import { isEmpty } from 'lodash';
 import { validateForm as validate } from '../../../../assets/js/src/form_editor/store/form_validator.jsx';
 
 const emailBlock = {
@@ -61,7 +62,7 @@ describe('Form validator', () => {
     };
     const blocks = [emailBlock, submitBlock];
     const result = validate(formData, blocks);
-    expect(result).to.be.empty;
+    expect(isEmpty(result)).to.be.equal(true);
   });
 
   it('Should validate form data with nested email and submit', () => {
@@ -72,7 +73,7 @@ describe('Form validator', () => {
     };
     const blocks = [columns];
     const result = validate(formData, blocks);
-    expect(result).to.be.empty;
+    expect(isEmpty(result)).to.be.equal(true);
   });
 
   it('Should return error for missing lists', () => {
@@ -96,7 +97,7 @@ describe('Form validator', () => {
     };
     const blocks = [emailBlock, submitBlock, filledSegmentsBlock];
     const result = validate(formData, blocks);
-    expect(result).to.be.empty;
+    expect(isEmpty(result)).to.be.equal(true);
   });
 
   it('Should return error for when segments block is empty', () => {
@@ -109,7 +110,7 @@ describe('Form validator', () => {
     };
     const blocks = [emailBlock, submitBlock, filledSegmentsBlock];
     const result = validate(formData, blocks);
-    expect(result).to.not.be.empty;
+    expect(isEmpty(result)).to.be.equal(false);
     expect(result).to.contain('missing-lists-in-custom-segments-block');
   });
 
