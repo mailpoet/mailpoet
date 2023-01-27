@@ -44,12 +44,10 @@ describe('Blocks to Form Body', () => {
   it('Should throw an error for wrong input', () => {
     const error = 'Mapper expects blocks to be an array.';
     expect(() => formBlocksToBody(null)).to.throw(error);
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore - testing wrong input
+    // @ts-expect-error - testing wrong input
     expect(() => formBlocksToBody('hello')).to.throw(error);
     expect(() => formBlocksToBody(undefined)).to.throw(error);
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore - testing wrong input
+    // @ts-expect-error - testing wrong input
     expect(() => formBlocksToBody(1)).to.throw(error);
   });
 
