@@ -5,6 +5,16 @@ import { WebpackEmitAllPlugin } from '../../../tools/webpack/webpack-emit-all-pl
 
 const dirname = new URL('.', import.meta.url).pathname;
 
+const miniCssExtractPlugin = defaultConfig.plugins.find(
+  (plugin) => plugin.constructor.name === 'MiniCssExtractPlugin',
+);
+
+miniCssExtractPlugin.options = {
+  ...miniCssExtractPlugin.options,
+  filename: path.join('../build-style', 'style.css'),
+  experimentalUseImportModule: false,
+};
+
 const plugins = [
   ...defaultConfig.plugins.filter(
     (plugin) => plugin.constructor.name !== 'DependencyExtractionWebpackPlugin',
