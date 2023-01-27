@@ -1,4 +1,6 @@
 import { remove } from 'lodash';
+import { ToggleSidebarPanelAction } from '../actions_types';
+import { State } from '../state_types';
 
 const getRequiredAction = (openedPanels, panelId, toggleTo) => {
   const isPanelOpened = openedPanels.includes(panelId);
@@ -20,7 +22,10 @@ const getRequiredAction = (openedPanels, panelId, toggleTo) => {
  * @param {{toggleTo: string|undefined, id: string, type: string}} action
  * @return {object} Modified state object
  */
-export const toggleSidebarPanel = (state, action) => {
+export const toggleSidebarPanel = (
+  state: State,
+  action: ToggleSidebarPanelAction,
+): State => {
   let toggleTo;
   if (action.toggleTo === true) toggleTo = 'opened';
   if (action.toggleTo === false) toggleTo = 'closed';

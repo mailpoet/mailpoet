@@ -1,30 +1,33 @@
 import { expect } from 'chai';
-import { toggleSidebarPanel as reducer } from '../../../../../assets/js/src/form_editor/store/reducers/toggle_sidebar_panel.jsx';
+import { toggleSidebarPanel as reducer } from '../../../../../assets/js/src/form_editor/store/reducers/toggle_sidebar_panel';
+import { ToggleSidebarPanelAction } from '../../../../../assets/js/src/form_editor/store/actions_types';
+import { createStateMock } from '../mocks/partialMocks';
 
 describe('Toggle Sidebar Panel Reducer', () => {
-  let initialState = null;
+  let initialState = createStateMock(null);
   beforeEach(() => {
-    initialState = {
-      something: 'value',
+    initialState = createStateMock({
+      isPreviewShown: false, // another unrelated State property
       sidebar: {
+        activeSidebar: 'settings',
         activeTab: 'form',
         openedPanels: [],
       },
-    };
+    });
   });
 
   it('Should keep unrelated state properties untouched', () => {
-    const action = {
+    const action: ToggleSidebarPanelAction = {
       type: 'TOGGLE_SIDEBAR_PANEL',
       id: 'nice-panel',
     };
     const finalState = reducer(initialState, action);
-    expect(finalState.something).to.equal('value');
+    expect(finalState.isPreviewShown).to.equal(false);
     expect(finalState.sidebar.activeTab).to.equal('form');
   });
 
   it('Should open closed panel', () => {
-    const action = {
+    const action: ToggleSidebarPanelAction = {
       type: 'TOGGLE_SIDEBAR_PANEL',
       id: 'nice-panel',
     };
@@ -33,7 +36,7 @@ describe('Toggle Sidebar Panel Reducer', () => {
   });
 
   it('Should close opened panel', () => {
-    const action = {
+    const action: ToggleSidebarPanelAction = {
       type: 'TOGGLE_SIDEBAR_PANEL',
       id: 'nice-panel',
     };
@@ -43,7 +46,7 @@ describe('Toggle Sidebar Panel Reducer', () => {
   });
 
   it('Should toggle panel to required state', () => {
-    const action = {
+    const action: ToggleSidebarPanelAction = {
       type: 'TOGGLE_SIDEBAR_PANEL',
       id: 'nice-panel',
       toggleTo: true,
