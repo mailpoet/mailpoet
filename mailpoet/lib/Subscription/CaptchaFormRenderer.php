@@ -123,7 +123,7 @@ class CaptchaFormRenderer {
     $playIcon = Env::$assetsUrl . '/img/icons/controls-volumeon.svg';
     $formHtml .= '<div class="mailpoet_form_hide_on_success">';
     $formHtml .= '<p class="mailpoet_paragraph">';
-    $formHtml .= '<img class="mailpoet_captcha" src="' . $captchaUrl . '" width="' . $width . '" height="' . $height . '" title="' . esc_attr__('Click to refresh the CAPTCHA', 'mailpoet') . '" />';
+    $formHtml .= '<img class="mailpoet_captcha" src="' . $captchaUrl . '" width="' . $width . '" height="' . $height . '" title="' . esc_attr__('CAPTCHA', 'mailpoet') . '" />';
     $formHtml .= '</p>';
     $formHtml .= '<button type="button" class="mailpoet_icon_button mailpoet_captcha_update" title="' . esc_attr(__('Reload CAPTCHA', 'mailpoet')) . '"><img src="' . $reloadIcon . '" alt="" /></button>';
     $formHtml .= '<button type="button" class="mailpoet_icon_button mailpoet_captcha_audio" title="' . esc_attr(__('Play CAPTCHA', 'mailpoet')) . '"><img src="' . $playIcon . '" alt="" /></button>';
