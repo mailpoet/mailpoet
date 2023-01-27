@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { partial } from 'lodash';
+import { partial, isEmpty, isUndefined } from 'lodash';
 import { formBodyToBlocksFactory } from '../../../../assets/js/src/form_editor/store/form_body_to_blocks.jsx';
 
 import {
@@ -48,16 +48,21 @@ describe('Form Body To Blocks', () => {
   it('Should throw an error for wrong input', () => {
     const error = 'Mapper expects form body to be an array.';
     expect(() => formBodyToBlocks(null)).to.throw(error);
+    // @ts-expect-error Passing wrong type on purpose
     expect(() => formBodyToBlocks('hello')).to.throw(error);
     expect(() => formBodyToBlocks(undefined)).to.throw(error);
+    // @ts-expect-error Passing wrong type on purpose
     expect(() => formBodyToBlocks(1)).to.throw(error);
   });
 
   it('Should throw an error for wrong custom fields input', () => {
     const error = 'Mapper expects customFields to be an array.';
     expect(() => getMapper(null)).to.throw(error);
+    // @ts-expect-error Passing wrong type on purpose
     expect(() => getMapper('hello')).to.throw(error);
+    // @ts-expect-error Passing wrong type on purpose
     expect(() => getMapper(() => {})).to.throw(error);
+    // @ts-expect-error Passing wrong type on purpose
     expect(() => getMapper(1)).to.throw(error);
   });
 
@@ -319,12 +324,12 @@ describe('Form Body To Blocks', () => {
     expect(block1.clientId).to.be.include('html_');
     expect(block1.name).to.be.equal('mailpoet-form/html');
     expect(block1.attributes.content).to.be.equal('123');
-    expect(block1.attributes.nl2br).to.be.true;
+    expect(block1.attributes.nl2br).to.be.equal(true);
     checkBlockBasics(block2);
     expect(block2.clientId).to.be.include('html_');
     expect(block2.name).to.be.equal('mailpoet-form/html');
     expect(block2.attributes.content).to.be.equal('nice one');
-    expect(block2.attributes.nl2br).to.be.false;
+    expect(block2.attributes.nl2br).to.be.equal(false);
   });
 
   it('Should map custom text input to block', () => {
@@ -457,15 +462,15 @@ describe('Form Body To Blocks', () => {
     expect(block.clientId).to.be.include('6_');
     expect(block.name).to.be.equal('mailpoet-form/custom-date-customdate');
     expect(block.attributes.label).to.be.equal('Date');
-    expect(block.attributes.mandatory).to.be.true;
+    expect(block.attributes.mandatory).to.be.equal(true);
     expect(block.attributes.dateFormat).to.be.equal('MM/YYYY');
     expect(block.attributes.dateType).to.be.equal('month_year');
-    expect(block.attributes.defaultToday).to.be.true;
+    expect(block.attributes.defaultToday).to.be.equal(true);
   });
 
   it('Should ignore unknown input type', () => {
     const blocks = formBodyToBlocks([{ ...submitInput, id: 'some-nonsense' }]);
-    expect(blocks).to.be.empty;
+    expect(isEmpty(blocks)).to.be.equal(true);
   });
 
   it('Should map more inputs at once', () => {
@@ -525,54 +530,61 @@ describe('Form Body To Blocks', () => {
   });
 
   it('Should map columns colors', () => {
-    const nested = { ...nestedColumns };
-    nested.params = {
+    const params = {
       text_color: '#ffffff',
       background_color: '#000000',
     };
+    const nested = { ...nestedColumns, params };
+
     const [block] = formBodyToBlocks([nested]);
     expect(block.attributes.textColor).to.be.equal('white');
     expect(block.attributes.backgroundColor).to.be.equal('black');
-    expect(block.attributes.style.color.text).to.be.undefined;
-    expect(block.attributes.style.color.background).to.be.undefined;
+    expect(isUndefined(block.attributes.style.color.text)).to.be.equal(true);
+    expect(isUndefined(block.attributes.style.color.background)).to.be.equal(
+      true,
+    );
 
     nested.params = {
       text_color: '#aaaaaa',
       background_color: '#bbbbbb',
     };
     const [block2] = formBodyToBlocks([nested]);
-    expect(block2.attributes.textColor).to.be.undefined;
-    expect(block2.attributes.backgroundColor).to.be.undefined;
+    expect(isUndefined(block2.attributes.textColor)).to.be.equal(true);
+    expect(isUndefined(block2.attributes.backgroundColor)).to.be.equal(true);
     expect(block2.attributes.style.color.text).to.be.equal('#aaaaaa');
     expect(block2.attributes.style.color.background).to.be.equal('#bbbbbb');
   });
 
   it('Should map columns gradient', () => {
-    const nested = { ...nestedColumns };
-    nested.params = {
+    const params = {
       gradient:
         'linear-gradient(90deg, rgba(0,0,0,1) 0%, rgba(255,255,255,1) 100%)',
     };
+    const nested = { ...nestedColumns, params };
+
     const [block] = formBodyToBlocks([nested]);
     expect(block.attributes.gradient).to.be.equal('black-white');
-    expect(block.attributes.style.color.gradient).to.be.undefined;
+    expect(isUndefined(block.attributes.style.color.gradient)).to.be.equal(
+      true,
+    );
 
     nested.params = {
       gradient:
         'linear-gradient(95deg, rgba(0,0,0,1) 0%, rgba(255,255,255,1) 100%)',
     };
     const [block2] = formBodyToBlocks([nested]);
-    expect(block2.attributes.gradient).to.be.undefined;
+    expect(isUndefined(block2.attributes.gradient)).to.be.equal(true);
     expect(block2.attributes.style.color.gradient).to.be.equal(
       'linear-gradient(95deg, rgba(0,0,0,1) 0%, rgba(255,255,255,1) 100%)',
     );
   });
 
   it('Should map class name', () => {
-    const nested = { ...nestedColumns };
-    nested.params = {
+    const params = {
       class_name: 'custom-class',
     };
+    const nested = { ...nestedColumns, params };
+
     const [block] = formBodyToBlocks([nested]);
     expect(block.attributes.className).to.be.equal('custom-class');
 
@@ -608,7 +620,7 @@ describe('Form Body To Blocks', () => {
     const [block] = formBodyToBlocks([heading]);
     expect(block.attributes.content).to.be.equal('');
     expect(block.attributes.level).to.be.equal(2);
-    expect(block.attributes.align).to.be.undefined;
+    expect(isUndefined(block.attributes.align)).to.be.equal(true);
   });
 
   it('It should map heading font size', () => {
@@ -625,7 +637,7 @@ describe('Form Body To Blocks', () => {
     };
 
     const [block] = formBodyToBlocks([heading]);
-    expect(block.attributes.fontSize).to.be.undefined;
+    expect(isUndefined(block.attributes.fontSize)).to.be.equal(true);
     expect(block.attributes.style.typography.fontSize).to.eq(34);
     expect(block.attributes.style.typography.lineHeight).to.eq('1.5');
   });
@@ -655,7 +667,7 @@ describe('Form Body To Blocks', () => {
     };
 
     const [block] = formBodyToBlocks([heading]);
-    expect(block.attributes.fontSize).to.be.undefined;
+    expect(isUndefined(block.attributes.fontSize)).to.be.equal(true);
     expect(block.attributes.style.typography.fontSize).to.eq(34);
     expect(block.attributes.style.typography.lineHeight).to.eq('1.5');
   });
