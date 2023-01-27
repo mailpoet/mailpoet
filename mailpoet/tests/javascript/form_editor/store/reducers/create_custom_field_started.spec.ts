@@ -1,5 +1,7 @@
 import { expect } from 'chai';
-import { createCustomFieldStartedFactory } from '../../../../../assets/js/src/form_editor/store/reducers/create_custom_field_started.jsx';
+import { createCustomFieldStartedFactory } from '../../../../../assets/js/src/form_editor/store/reducers/create_custom_field_started';
+import { CustomFieldStartedAction } from '../../../../../assets/js/src/form_editor/store/actions_types';
+import { createCustomFieldMock, createStateMock } from '../mocks/partialMocks';
 
 const MailPoetStub = {
   I18n: {
@@ -8,23 +10,23 @@ const MailPoetStub = {
 };
 const reducer = createCustomFieldStartedFactory(MailPoetStub);
 
-const dummyCustomField = {
+const dummyCustomField = createCustomFieldMock({
   name: 'My custom field',
-};
+});
 
 describe('Create Custom Field Started Reducer', () => {
-  let initialState = null;
+  let initialState = createStateMock(null);
   beforeEach(() => {
-    initialState = {
+    initialState = createStateMock({
       notices: [],
       isCustomFieldCreating: false,
       customFields: [dummyCustomField],
-    };
+    });
   });
 
   it('Should set isCustomFieldCreating when there are no errors', () => {
     const customField = { ...dummyCustomField, name: 'Unique custom field' };
-    const action = {
+    const action: CustomFieldStartedAction = {
       type: 'CREATE_CUSTOM_FIELD_STARTED',
       customField,
     };
@@ -34,7 +36,7 @@ describe('Create Custom Field Started Reducer', () => {
 
   it('Should create error notice and stop creation process', () => {
     const customField = { ...dummyCustomField };
-    const action = {
+    const action: CustomFieldStartedAction = {
       type: 'CREATE_CUSTOM_FIELD_STARTED',
       customField,
     };

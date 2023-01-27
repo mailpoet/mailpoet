@@ -1,7 +1,10 @@
 import { trim } from 'lodash';
+import { State } from '../state_types';
+import { CustomFieldStartedAction } from '../actions_types';
 
 export const createCustomFieldStartedFactory =
-  (MailPoet) => (state, action) => {
+  (MailPoet) =>
+  (state: State, action: CustomFieldStartedAction): State => {
     const notices = state.notices.filter(
       (notice) => notice.id !== 'custom-field',
     );
