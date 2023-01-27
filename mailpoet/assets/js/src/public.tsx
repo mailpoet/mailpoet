@@ -74,9 +74,9 @@ jQuery(($) => {
     }
     const audioCaptchaSource = audioCaptcha.querySelector('source');
     let captchaSrc = captcha.getAttribute('src');
-    let hashPos = captchaSrc.indexOf('#');
+    let hashPos = captchaSrc.indexOf('&cachebust=');
     let newSrc = hashPos > 0 ? captchaSrc.substring(0, hashPos) : captchaSrc;
-    captcha.setAttribute('src', `${newSrc}#${new Date().getTime()}`);
+    captcha.setAttribute('src', `${newSrc}&cachebust=${new Date().getTime()}`);
 
     captchaSrc = audioCaptchaSource.getAttribute('src');
     hashPos = captchaSrc.indexOf('&cachebust=');
