@@ -40,7 +40,7 @@ class HomepageBasicsCest {
     $i->waitForText('Welcome to MailPoet');
     $i->see('Begin by completing your setup');
     $i->see('Sender information added');
-    $i->see('Connect MailPoet sending service');
+    $i->see('Connect MailPoet Sending Service');
     $i->wantTo('Hide task list');
     $i->click('button', '.mailpoet-task-list__heading');
     $i->waitForText('Hide setup list', 5, '.mailpoet-task-list__heading .components-popover__content');
