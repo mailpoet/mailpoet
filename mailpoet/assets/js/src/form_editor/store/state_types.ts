@@ -1,5 +1,5 @@
 import { BlockInstance } from '@wordpress/blocks';
-import { FormSettingsType } from './form_data_types';
+import { FormSettingsType, CustomFields } from './form_data_types';
 
 export type BlockInsertionPoint = {
   rootClientId: string | undefined;
@@ -7,14 +7,7 @@ export type BlockInsertionPoint = {
 };
 
 export interface FormEditorWindow extends Window {
-  mailpoet_custom_fields: {
-    id: number;
-    name: string;
-    type: string;
-    params: unknown;
-    created_at: string;
-    updated_at: string;
-  }[];
+  mailpoet_custom_fields: CustomFields[];
   mailpoet_form_data: {
     id: number | null;
     name: string;

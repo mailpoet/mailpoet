@@ -1,4 +1,12 @@
 import { has } from 'lodash';
+import { BlockInstance } from '@wordpress/blocks';
+import {
+  FontSizeDefinition,
+  ColorDefinition,
+  GradientDefinition,
+  CustomFields,
+  InputBlockStyles,
+} from 'form_editor/store/form_data_types';
 import {
   mapInputBlockStyles,
   mapColorSlugToValue,
@@ -6,7 +14,11 @@ import {
   mapGradientSlugToValue,
 } from './mapping/from_blocks/styles_mapper';
 
-const mapCustomField = (block, customFields, mappedCommonProperties) => {
+const mapCustomField = (
+  block: BlockInstance,
+  customFields: CustomFields[],
+  mappedCommonProperties,
+) => {
   const customField = customFields.find(
     (cf) => cf.id === block.attributes.customFieldId,
   );
@@ -21,11 +33,15 @@ const mapCustomField = (block, customFields, mappedCommonProperties) => {
   }
   if (block.name.startsWith('mailpoet-form/custom-text')) {
     mapped.type = 'text';
-    mapped.styles = mapInputBlockStyles(block.attributes.styles);
+    mapped.styles = mapInputBlockStyles(
+      block.attributes.styles as unknown as InputBlockStyles,
+    );
   }
   if (block.name.startsWith('mailpoet-form/custom-textarea')) {
     mapped.type = 'textarea';
-    mapped.styles = mapInputBlockStyles(block.attributes.styles);
+    mapped.styles = mapInputBlockStyles(
+      block.attributes.styles as unknown as InputBlockStyles,
+    );
   }
   if (block.name.startsWith('mailpoet-form/custom-radio')) {
     mapped.type = 'radio';
@@ -56,7 +72,7 @@ const mapCustomField = (block, customFields, mappedCommonProperties) => {
   }
   if (has(block.attributes, 'values')) {
     mapped.params.values = block.attributes.values.map((value) => {
-      const mappedValue = {
+      const mappedValue: Record<string, unknown> = {
         value: value.name,
       };
       if (has(value, 'isChecked') && value.isChecked) {
@@ -76,10 +92,10 @@ const mapCustomField = (block, customFields, mappedCommonProperties) => {
  * @param customFields - list of all custom Fields
  */
 export const blocksToFormBodyFactory = (
-  fontSizeDefinitions,
-  colorDefinitions,
-  gradientDefinitions,
-  customFields,
+  fontSizeDefinitions: FontSizeDefinition[],
+  colorDefinitions: ColorDefinition[],
+  gradientDefinitions: GradientDefinition[],
+  customFields: CustomFields[],
 ) => {
   if (!Array.isArray(customFields)) {
     throw new Error('Mapper expects customFields to be an array.');
@@ -89,7 +105,7 @@ export const blocksToFormBodyFactory = (
    * @param blocks
    * @returns {*}
    */
-  const mapBlocks = (blocks) => {
+  const mapBlocks = (blocks: BlockInstance[]) => {
     if (!Array.isArray(blocks)) {
       throw new Error('Mapper expects blocks to be an array.');
     }
@@ -101,7 +117,7 @@ export const blocksToFormBodyFactory = (
           params: {
             label: block.attributes.label,
             class_name: block.attributes.className || null,
-          },
+          } as Record<string, unknown>,
         };
         if (block.attributes.mandatory) {
           mapped.params.required = '1';
@@ -120,19 +136,22 @@ export const blocksToFormBodyFactory = (
                 align: block.attributes.textAlign || 'left',
                 font_size: mapFontSizeSlugToValue(
                   fontSizeDefinitions,
-                  block.attributes.fontSize,
-                  block.attributes.style?.typography?.fontSize,
+                  block.attributes.fontSize as unknown as string,
+                  (block.attributes.style?.typography
+                    ?.fontSize as unknown as number) || null,
                 ),
                 text_color: mapColorSlugToValue(
                   colorDefinitions,
-                  block.attributes.textColor,
-                  block.attributes.style?.color?.text,
+                  block.attributes.textColor as unknown as string,
+                  (block.attributes.style?.color?.text as unknown as string) ||
+                    null,
                 ),
                 line_height: block.attributes.style?.typography?.lineHeight,
                 background_color: mapColorSlugToValue(
                   colorDefinitions,
-                  block.attributes.backgroundColor,
-                  block.attributes.style?.color?.background,
+                  block.attributes.backgroundColor as unknown as string,
+                  (block.attributes.style?.color
+                    ?.background as unknown as string) || null,
                 ),
                 anchor: block.attributes.anchor || null,
                 class_name: block.attributes.className || null,
@@ -148,19 +167,22 @@ export const blocksToFormBodyFactory = (
                 align: block.attributes.align || 'left',
                 font_size: mapFontSizeSlugToValue(
                   fontSizeDefinitions,
-                  block.attributes.fontSize,
-                  block.attributes.style?.typography?.fontSize,
+                  block.attributes.fontSize as unknown as string,
+                  (block.attributes.style?.typography
+                    ?.fontSize as unknown as number) || null,
                 ),
                 line_height: block.attributes.style?.typography?.lineHeight,
                 text_color: mapColorSlugToValue(
                   colorDefinitions,
-                  block.attributes.textColor,
-                  block.attributes.style?.color?.text,
+                  block.attributes.textColor as unknown as string,
+                  (block.attributes.style?.color?.text as unknown as string) ||
+                    null,
                 ),
                 background_color: mapColorSlugToValue(
                   colorDefinitions,
-                  block.attributes.backgroundColor,
-                  block.attributes.style?.color?.background,
+                  block.attributes.backgroundColor as unknown as string,
+                  (block.attributes.style?.color
+                    ?.background as unknown as string) || null,
                 ),
                 class_name: block.attributes.className || null,
               },
@@ -199,18 +221,21 @@ export const blocksToFormBodyFactory = (
                 padding: block.attributes.style?.spacing?.padding || null,
                 text_color: mapColorSlugToValue(
                   colorDefinitions,
-                  block.attributes.textColor,
-                  block.attributes.style?.color?.text,
+                  block.attributes.textColor as unknown as string,
+                  (block.attributes.style?.color?.text as unknown as string) ||
+                    null,
                 ),
                 background_color: mapColorSlugToValue(
                   colorDefinitions,
-                  block.attributes.backgroundColor,
-                  block.attributes.style?.color?.background,
+                  block.attributes.backgroundColor as unknown as string,
+                  (block.attributes.style?.color
+                    ?.background as unknown as string) || null,
                 ),
                 gradient: mapGradientSlugToValue(
                   gradientDefinitions,
-                  block.attributes.gradient,
-                  block.attributes.style?.color?.gradient,
+                  block.attributes.gradient as unknown as string,
+                  (block.attributes.style?.color
+                    ?.gradient as unknown as string) || null,
                 ),
               },
             };
@@ -229,18 +254,21 @@ export const blocksToFormBodyFactory = (
                 padding: block.attributes.style?.spacing?.padding || null,
                 text_color: mapColorSlugToValue(
                   colorDefinitions,
-                  block.attributes.textColor,
-                  block.attributes.style?.color?.text,
+                  block.attributes.textColor as unknown as string,
+                  (block.attributes.style?.color?.text as unknown as string) ||
+                    null,
                 ),
                 background_color: mapColorSlugToValue(
                   colorDefinitions,
-                  block.attributes.backgroundColor,
-                  block.attributes.style?.color?.background,
+                  block.attributes.backgroundColor as unknown as string,
+                  (block.attributes.style?.color
+                    ?.background as unknown as string) || null,
                 ),
                 gradient: mapGradientSlugToValue(
                   gradientDefinitions,
-                  block.attributes.gradient,
-                  block.attributes.style?.color?.gradient,
+                  block.attributes.gradient as unknown as string,
+                  (block.attributes.style?.color
+                    ?.gradient as unknown as string) || null,
                 ),
               },
             };
@@ -253,21 +281,27 @@ export const blocksToFormBodyFactory = (
                 ...mapped.params,
                 required: '1',
               },
-              styles: mapInputBlockStyles(block.attributes.styles),
+              styles: mapInputBlockStyles(
+                block.attributes.styles as unknown as InputBlockStyles,
+              ),
             };
           case 'mailpoet-form/first-name-input':
             return {
               ...mapped,
               id: 'first_name',
               name: 'First name',
-              styles: mapInputBlockStyles(block.attributes.styles),
+              styles: mapInputBlockStyles(
+                block.attributes.styles as unknown as InputBlockStyles,
+              ),
             };
           case 'mailpoet-form/last-name-input':
             return {
               ...mapped,
               id: 'last_name',
               name: 'Last name',
-              styles: mapInputBlockStyles(block.attributes.styles),
+              styles: mapInputBlockStyles(
+                block.attributes.styles as unknown as InputBlockStyles,
+              ),
             };
           case 'mailpoet-form/segment-select':
             return {
@@ -289,7 +323,9 @@ export const blocksToFormBodyFactory = (
               id: 'submit',
               type: 'submit',
               name: 'Submit',
-              styles: mapInputBlockStyles(block.attributes.styles),
+              styles: mapInputBlockStyles(
+                block.attributes.styles as unknown as InputBlockStyles,
+              ),
             };
           case 'mailpoet-form/divider':
             return {

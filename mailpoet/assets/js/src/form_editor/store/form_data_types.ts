@@ -108,6 +108,15 @@ export type InputBlockStylesServerData = {
   font_family?: string;
 };
 
+export type CustomFields = {
+  id: number;
+  name: string;
+  type: string;
+  params: Record<string, unknown>;
+  created_at: string;
+  updated_at: string;
+};
+
 export type ColorDefinition = {
   name: string;
   slug: string;

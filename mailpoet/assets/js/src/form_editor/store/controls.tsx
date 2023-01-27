@@ -10,7 +10,7 @@ import {
 } from '@wordpress/blocks';
 import { callApi as CALL_API } from 'common/controls/call_api';
 import { SETTINGS_DEFAULTS } from '@wordpress/block-editor';
-import { blocksToFormBodyFactory } from './blocks_to_form_body.jsx';
+import { blocksToFormBodyFactory } from './blocks_to_form_body';
 import { registerCustomFieldBlock } from '../blocks/blocks.jsx';
 import { mapFormDataBeforeSaving } from './map_form_data_before_saving.jsx';
 import { findBlock } from './find_block';
