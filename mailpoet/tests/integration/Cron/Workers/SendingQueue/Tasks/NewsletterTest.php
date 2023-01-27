@@ -16,16 +16,20 @@ use MailPoet\Entities\NewsletterPostEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Features\FeaturesController;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Newsletter\NewsletterPostsRepository;
 use MailPoet\Newsletter\NewslettersRepository;
+use MailPoet\Newsletter\Renderer\Blocks\Coupon;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Router\Router;
 use MailPoet\Settings\SettingsRepository;
 use MailPoet\Tasks\Sending as SendingTask;
+use MailPoet\Test\DataFactories\Features;
 use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
+use MailPoet\WooCommerce\Helper;
 use MailPoet\WP\Emoji;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
@@ -477,6 +481,39 @@ class NewsletterTest extends \MailPoetTest {
     );
     $newsletterTask = new NewsletterTask(null, null, null, $emoji);
     expect($newsletterTask->preProcessNewsletter($this->newsletter, $sendingTaskMock))->equals($this->newsletter);
+  }
+
+  /**
+   * @group woo
+   */
+  public function testItGeneratesWooCommerceCouponForCouponBlock(): void {
+    (new Features())->withFeatureEnabled(FeaturesController::FEATURE_COUPON_BLOCK);
+
+    $newsletter = (new NewsletterFactory())
+      ->loadBodyFrom('newsletterWithCoupon.json')
+      ->withType(NewsletterEntity::TYPE_STANDARD)
+      ->withStatus(NewsletterEntity::STATUS_ACTIVE)
+      ->create();
+    $newsletterTask = $this->newsletterTask;
+    // set newsletter with coupon
+    $this->sendingTask->newsletterId = $newsletter->getId();
+    $this->sendingTask->save();
+
+    $newsletter = $newsletterTask->preProcessNewsletter($newsletter, $this->sendingTask);
+    $newsletterEntity = $this->newslettersRepository->findOneById($newsletter->getId());
+    $this->assertInstanceOf(NewsletterEntity::class, $newsletterEntity);
+    $result = $newsletterTask->prepareNewsletterForSending(
+      $newsletterEntity,
+      $this->subscriber,
+      $this->sendingTask
+    );
+    $wooCommerceHelper = $this->diContainer->get(Helper::class);
+    $coupon = (string)$wooCommerceHelper->getLatestCoupon();
+
+    expect($result['body']['html'])->stringNotContainsString(Coupon::CODE_PLACEHOLDER);
+    expect($result['body']['html'])->stringContainsString($coupon);
+    expect($result['body']['text'])->stringNotContainsString(Coupon::CODE_PLACEHOLDER);
+    expect($result['body']['text'])->stringContainsString($coupon);
   }
 
   public function _after() {
