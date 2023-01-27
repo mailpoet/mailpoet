@@ -525,6 +525,12 @@ jobs:
           # Pull docker images with 3 retries
           command: i='0';while ! docker-compose -f tests/docker/docker-compose.yml pull && ((i < 3)); do sleep 3 && i=$[$i+1]; done
       - run:
+          name: Create docker containers for test
+          # We experienced some failures when creating containers so we do it explicitly with one retry
+          command: |
+            cd tests/docker
+            docker-compose create || docker-compose create
+      - run:
           name: 'PHP Integration tests'
           command: |
             mkdir -m 777 -p tests/_output/exceptions
