@@ -1,3 +1,5 @@
+import styles from './style.module.scss';
+
 export function Dummy(): JSX.Element {
-  return <div>Dummy component</div>;
+  return <div className={styles.dummy}>Dummy component</div>;
 }

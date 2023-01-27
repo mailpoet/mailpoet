@@ -1,7 +1,10 @@
 {
   "name": "@mailpoet/components",
   "private": true,
-  "sideEffects": false,
+  "sideEffects": [
+    "build-style/**",
+    "src/**/*.scss"
+  ],
   "version": "0.1.0",
   "type": "module",
   "module": "build-module/index.js",
