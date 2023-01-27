@@ -1,5 +1,5 @@
 import { BlockInstance } from '@wordpress/blocks';
-import { FormData, CustomFields } from './form_data_types';
+import { FormData, CustomField } from './form_data_types';
 
 export type BlockInsertionPoint = {
   rootClientId: string | undefined;
@@ -13,7 +13,7 @@ export type HistoryRecord = {
 };
 
 export interface FormEditorWindow extends Window {
-  mailpoet_custom_fields: CustomFields[];
+  mailpoet_custom_fields: CustomField[];
   mailpoet_form_data: FormData;
   mailpoet_date_types: {
     label: string;

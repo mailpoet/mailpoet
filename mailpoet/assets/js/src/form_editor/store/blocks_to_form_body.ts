@@ -4,7 +4,7 @@ import {
   FontSizeDefinition,
   ColorDefinition,
   GradientDefinition,
-  CustomFields,
+  CustomField,
   InputBlockStyles,
 } from 'form_editor/store/form_data_types';
 import {
@@ -16,7 +16,7 @@ import {
 
 const mapCustomField = (
   block: BlockInstance,
-  customFields: CustomFields[],
+  customFields: CustomField[],
   mappedCommonProperties,
 ) => {
   const customField = customFields.find(
@@ -95,7 +95,7 @@ export const blocksToFormBodyFactory = (
   fontSizeDefinitions: FontSizeDefinition[],
   colorDefinitions: ColorDefinition[],
   gradientDefinitions: GradientDefinition[],
-  customFields: CustomFields[],
+  customFields: CustomField[],
 ) => {
   if (!Array.isArray(customFields)) {
     throw new Error('Mapper expects customFields to be an array.');

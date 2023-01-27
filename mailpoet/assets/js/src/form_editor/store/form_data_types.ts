@@ -124,7 +124,7 @@ export type InputBlockStylesServerData = {
   font_family?: string;
 };
 
-export type CustomFields = {
+export type CustomField = {
   id: number;
   name: string;
   type: string;
