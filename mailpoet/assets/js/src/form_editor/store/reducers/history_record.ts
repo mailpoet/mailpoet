@@ -1,15 +1,13 @@
 import { isEqual } from 'lodash';
+import { HistoryRecord, State } from '../state_types';
 
 const HISTORY_LENGTH = 100;
 const HISTORY_DEBOUNCE = 1000; // 1 second
 
-type HistoryRecord = {
-  blocks: unknown[];
-  data: unknown[];
-  time: number;
-};
-
-const createRecord = (editorHistory: HistoryRecord[], state): HistoryRecord => {
+const createRecord = (
+  editorHistory: HistoryRecord[],
+  state: State,
+): HistoryRecord => {
   const lastHistoryRecord = editorHistory[editorHistory.length - 1];
   const time = Date.now();
 
@@ -47,7 +45,7 @@ const createRecord = (editorHistory: HistoryRecord[], state): HistoryRecord => {
   return newHistoryRecord;
 };
 
-export const createHistoryRecord = (state) => {
+export const createHistoryRecord = (state: State): State => {
   let editorHistory: HistoryRecord[] = state.editorHistory;
   let editorHistoryOffset: number = state.editorHistoryOffset;
 
@@ -59,8 +57,7 @@ export const createHistoryRecord = (state) => {
   // When we want to create a history record, and we aren't at the end,
   // then we have to drop the rest of the history stack
   if (state.editorHistoryOffset !== 0) {
-    const offset =
-      state.editorHistory.length - ((state.editorHistoryOffset as number) + 1);
+    const offset = state.editorHistory.length - (state.editorHistoryOffset + 1);
     editorHistoryOffset = 0;
     editorHistory = editorHistory.slice(0, offset);
   }
@@ -78,7 +75,7 @@ export const createHistoryRecord = (state) => {
   };
 };
 
-const historyMove = (state, increment: number) => {
+const historyMove = (state: State, increment: number): State => {
   let offset: number = state.editorHistoryOffset;
 
   // When we move undo, then we need save current state as last record in history
@@ -107,6 +104,6 @@ const historyMove = (state, increment: number) => {
   };
 };
 
-export const historyUndo = (state) => historyMove(state, 1);
+export const historyUndo = (state: State): State => historyMove(state, 1);
 
-export const historyRedo = (state) => historyMove(state, -1);
+export const historyRedo = (state: State): State => historyMove(state, -1);
