@@ -4,27 +4,34 @@ import {
   historyRedo,
   historyUndo,
 } from '../../../../../assets/js/src/form_editor/store/reducers/history_record';
-import { State } from '../../../../../assets/js/src/form_editor/store/state_types';
+import {
+  createBlocksMock,
+  createFormDataMock,
+  createFormSettingsMock,
+  createStateMock,
+} from '../mocks/partialMocks';
 
 describe('History Record Reducer', () => {
-  let initialState = null;
+  let initialState = createStateMock(null);
   beforeEach(() => {
-    initialState = {
+    initialState = createStateMock({
       editorHistory: [],
       editorHistoryOffset: 0,
-      formBlocks: [{ name: 'Name of block' }],
-      formData: [{ backgroundColor: 'red' }],
-    };
+      formBlocks: createBlocksMock([{ name: 'Name of block' }]),
+      formData: createFormDataMock({
+        settings: createFormSettingsMock({ backgroundColor: 'red' }),
+      }),
+    });
   });
 
   it('Should add history record into history', () => {
-    const finalState = createHistoryRecord(initialState as State);
+    const finalState = createHistoryRecord(initialState);
 
     const history = finalState.editorHistory;
     expect(history.length).to.equal(1);
     const historyRecord = history[0];
     expect(historyRecord.blocks[0].name).to.equal('Name of block');
-    expect(historyRecord.data[0].backgroundColor).to.equal('red');
+    expect(historyRecord.data.settings.backgroundColor).to.equal('red');
   });
 
   it('Should restore history corectly after undo', () => {
@@ -34,16 +41,19 @@ describe('History Record Reducer', () => {
       ...initialState,
       editorHistory: [
         {
-          blocks: [{ name }],
-          data: [{ backgroundColor }],
+          time: 0,
+          blocks: createBlocksMock([{ name }]),
+          data: createFormDataMock({
+            settings: createFormSettingsMock({ backgroundColor }),
+          }),
         },
       ],
-    } as State;
+    };
 
     const finalState = historyUndo(state);
     expect(finalState.editorHistoryOffset).to.equal(1);
     expect(finalState.formBlocks[0].name).to.equal(name);
-    expect(finalState.formData[0].backgroundColor).to.equal('blue');
+    expect(finalState.formData.settings.backgroundColor).to.equal('blue');
   });
 
   it('Should restore history corectly after redo', () => {
@@ -54,16 +64,21 @@ describe('History Record Reducer', () => {
       editorHistoryOffset: 1,
       editorHistory: [
         {
-          blocks: [{ name }],
-          data: [{ backgroundColor }],
+          time: 0,
+          blocks: createBlocksMock([{ name }]),
+          data: createFormDataMock({
+            settings: createFormSettingsMock({ backgroundColor }),
+          }),
         },
       ],
-    } as State;
+    };
 
     const finalState = historyRedo(state);
     expect(finalState.editorHistoryOffset).to.equal(0);
     expect(finalState.formBlocks[0].name).to.equal(name);
-    expect(finalState.formData[0].backgroundColor).to.equal(backgroundColor);
+    expect(finalState.formData.settings.backgroundColor).to.equal(
+      backgroundColor,
+    );
   });
 
   it('Should create record at end of the history when offset is zero', () => {
@@ -72,11 +87,14 @@ describe('History Record Reducer', () => {
       editorHistoryOffset: 0,
       editorHistory: [
         {
-          blocks: [{ name: 'Name' }],
-          data: [{ backgroundColor: 'green' }],
+          time: 0,
+          blocks: createBlocksMock([{ name: 'name' }]),
+          data: createFormDataMock({
+            settings: createFormSettingsMock({ backgroundColor: 'green' }),
+          }),
         },
       ],
-    } as State;
+    };
 
     const finalState = historyUndo(state);
     expect(finalState.editorHistory.length).to.equal(2);

@@ -79,6 +79,22 @@ export type FormSettingsType = {
   tags: string[];
 };
 
+export type FormData = {
+  id: number | null;
+  name: string;
+  body: unknown[] | null;
+  settings: FormSettingsType | null;
+  styles: string | null;
+  status: 'enabled' | 'disabled';
+  created_at: { date: string; timezone_type: number; timezone: string };
+  updated_at: { date: string; timezone_type: number; timezone: string };
+  deleted_at: {
+    date: string;
+    timezone_type: number;
+    timezone: string;
+  } | null;
+};
+
 export type InputBlockStyles = {
   fullWidth: boolean;
   inheritFromTheme: boolean;
