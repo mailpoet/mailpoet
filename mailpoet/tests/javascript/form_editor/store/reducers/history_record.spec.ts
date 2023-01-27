@@ -4,6 +4,7 @@ import {
   historyRedo,
   historyUndo,
 } from '../../../../../assets/js/src/form_editor/store/reducers/history_record';
+import { State } from '../../../../../assets/js/src/form_editor/store/state_types';
 
 describe('History Record Reducer', () => {
   let initialState = null;
@@ -17,7 +18,7 @@ describe('History Record Reducer', () => {
   });
 
   it('Should add history record into history', () => {
-    const finalState = createHistoryRecord(initialState);
+    const finalState = createHistoryRecord(initialState as State);
 
     const history = finalState.editorHistory;
     expect(history.length).to.equal(1);
@@ -37,7 +38,7 @@ describe('History Record Reducer', () => {
           data: [{ backgroundColor }],
         },
       ],
-    };
+    } as State;
 
     const finalState = historyUndo(state);
     expect(finalState.editorHistoryOffset).to.equal(1);
@@ -57,7 +58,7 @@ describe('History Record Reducer', () => {
           data: [{ backgroundColor }],
         },
       ],
-    };
+    } as State;
 
     const finalState = historyRedo(state);
     expect(finalState.editorHistoryOffset).to.equal(0);
@@ -75,7 +76,7 @@ describe('History Record Reducer', () => {
           data: [{ backgroundColor: 'green' }],
         },
       ],
-    };
+    } as State;
 
     const finalState = historyUndo(state);
     expect(finalState.editorHistory.length).to.equal(2);

@@ -6,6 +6,12 @@ export type BlockInsertionPoint = {
   insertionIndex: number | undefined;
 };
 
+export type HistoryRecord = {
+  blocks: BlockInstance[];
+  data: unknown;
+  time: number;
+};
+
 export interface FormEditorWindow extends Window {
   mailpoet_custom_fields: CustomFields[];
   mailpoet_form_data: {
@@ -64,7 +70,7 @@ export interface FormEditorWindow extends Window {
 declare let window: FormEditorWindow;
 
 export type State = {
-  editorHistory: unknown[];
+  editorHistory: HistoryRecord[];
   editorHistoryOffset: number;
   formBlocks: BlockInstance[];
   formData: typeof window.mailpoet_form_data;
