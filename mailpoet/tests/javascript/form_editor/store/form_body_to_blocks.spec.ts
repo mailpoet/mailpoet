@@ -20,7 +20,7 @@ import {
   headingInput,
   paragraphInput,
   image,
-} from './form_to_block_test_data.js';
+} from './form_to_block_test_data';
 
 import {
   fontSizeDefinitions,
@@ -210,8 +210,9 @@ describe('Form Body To Blocks', () => {
   });
 
   it('Should map email with label within correctly', () => {
-    const email = { ...emailInput };
-    email.params.label_within = '1';
+    const params = { label_within: '1' };
+    const email = { ...emailInput, params };
+
     const [block] = formBodyToBlocks([email]);
     expect(block.attributes.labelWithinInput).to.be.equal(true);
   });
@@ -235,9 +236,11 @@ describe('Form Body To Blocks', () => {
   });
 
   it('Should map first name with label within correctly', () => {
-    const input = { ...firstNameInput };
-    input.params.label_within = '1';
-    input.params.required = '1';
+    const params = {
+      label_within: '1',
+      required: '1',
+    };
+    const input = { ...firstNameInput, params };
     const [block] = formBodyToBlocks([input]);
     expect(block.attributes.labelWithinInput).to.be.equal(true);
     expect(block.attributes.mandatory).to.be.equal(true);
@@ -254,9 +257,11 @@ describe('Form Body To Blocks', () => {
   });
 
   it('Should map last name with label within correctly', () => {
-    const input = { ...lastNameInput };
-    input.params.label_within = '1';
-    input.params.required = '1';
+    const params = {
+      label_within: '1',
+      required: '1',
+    };
+    const input = { ...lastNameInput, params };
     const [block] = formBodyToBlocks([input]);
     expect(block.attributes.labelWithinInput).to.be.equal(true);
     expect(block.attributes.mandatory).to.be.equal(true);
@@ -588,8 +593,10 @@ describe('Form Body To Blocks', () => {
     const [block] = formBodyToBlocks([nested]);
     expect(block.attributes.className).to.be.equal('custom-class');
 
-    const email = { ...emailInput, position: '1' };
-    email.params.class_name = 'custom-class-2';
+    const params2 = {
+      class_name: 'custom-class-2',
+    };
+    const email = { ...emailInput, position: '1', params: params2 };
     const [mappedEmail] = formBodyToBlocks([email]);
     expect(mappedEmail.attributes.className).to.be.equal('custom-class-2');
 
@@ -605,8 +612,10 @@ describe('Form Body To Blocks', () => {
       type: 'text',
       updated_at: '2019-12-10T15:05:06+00:00',
     };
-    const customText = { ...customTextInput, position: '1' };
-    customText.params.class_name = 'custom-class-3 custom-class-4';
+    const params3 = {
+      class_name: 'custom-class-3 custom-class-4',
+    };
+    const customText = { ...customTextInput, position: '1', params: params3 };
     const map = getMapper([customField]);
     const [mappedCustomText] = map([customText]);
     expect(mappedCustomText.attributes.className).to.be.equal(
