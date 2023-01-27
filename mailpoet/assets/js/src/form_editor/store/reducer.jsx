@@ -17,7 +17,7 @@ import {
 } from './reducers/preview.jsx';
 import { saveFormDone } from './reducers/save_form_done.jsx';
 import { saveFormFailed } from './reducers/save_form_failed.jsx';
-import { saveFormStartedFactory } from './reducers/save_form_started.jsx';
+import { saveFormStartedFactory } from './reducers/save_form_started';
 import { switchDefaultSidebarTab } from './reducers/switch_sidebar_tab.jsx';
 import {
   toggleInserterSidebar,
