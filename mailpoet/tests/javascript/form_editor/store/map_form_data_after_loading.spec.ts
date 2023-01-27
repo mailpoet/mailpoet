@@ -53,7 +53,7 @@ describe('Form Data Load Mapper', () => {
   it('Returns dates', () => {
     expect(map(data)).to.have.property('created_at', '2020-01-15 07:39:15');
     expect(map(data)).to.have.property('updated_at', '2020-01-28 10:28:02');
-    expect(map(data)).to.have.property('deleted_at').that.is.null;
+    expect(map(data)).to.have.property('deleted_at').to.be.equal(null);
   });
 
   describe('Settings', () => {
@@ -217,17 +217,35 @@ describe('Form Data Load Mapper', () => {
       };
       expect(map(mapData).settings.fontSize).to.equal(23);
 
-      mapData.settings.fontSize = undefined;
-      expect(map(mapData).settings.fontSize).to.be.undefined;
+      const mapData2 = {
+        ...data,
+        settings: {
+          ...data.settings,
+          fontSize: undefined,
+        },
+      };
+      expect(map(mapData2).settings.fontSize).to.be.equal(undefined);
 
-      mapData.settings.fontSize = 13;
-      expect(map(mapData).settings.fontSize).to.equal(13);
+      const mapData3 = {
+        ...data,
+        settings: {
+          ...data.settings,
+          fontSize: 13,
+        },
+      };
+      expect(map(mapData3).settings.fontSize).to.equal(13);
 
-      mapData.settings.fontSize = 13.5;
-      expect(map(mapData).settings.fontSize).to.equal(13);
+      const mapData4 = {
+        ...data,
+        settings: {
+          ...data.settings,
+          fontSize: 13.5,
+        },
+      };
+      expect(map(mapData4).settings.fontSize).to.equal(13);
 
       mapData.settings.fontSize = 'hello';
-      expect(map(mapData).settings.fontSize).to.be.undefined;
+      expect(map(mapData).settings.fontSize).to.be.equal(undefined);
     });
   });
 });
