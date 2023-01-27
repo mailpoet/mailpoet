@@ -187,6 +187,7 @@ export const headingBlock = {
     content: '',
     level: 2,
   },
+  innerBlocks: [],
 };
 
 export const paragraphBlock = {
@@ -198,6 +199,7 @@ export const paragraphBlock = {
     dropCap: true,
     align: 'center',
   },
+  innerBlocks: [],
 };
 
 export const imageBlock = {
@@ -222,6 +224,7 @@ export const imageBlock = {
     width: 100,
     height: 200,
   },
+  innerBlocks: [],
 };
 
 export const nestedColumns = {

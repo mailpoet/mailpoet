@@ -1,6 +1,6 @@
 import { expect } from 'chai';
-import { partial } from 'lodash';
-import { blocksToFormBodyFactory } from '../../../../assets/js/src/form_editor/store/blocks_to_form_body.jsx';
+import { partial, isEmpty, isUndefined } from 'lodash';
+import { blocksToFormBodyFactory } from '../../../../assets/js/src/form_editor/store/blocks_to_form_body';
 import {
   emailBlock,
   lastNameBlock,
@@ -18,7 +18,7 @@ import {
   headingBlock,
   paragraphBlock,
   imageBlock,
-} from './block_to_form_test_data.js';
+} from './block_to_form_test_data';
 
 import {
   fontSizeDefinitions,
@@ -29,7 +29,7 @@ import {
 const checkBodyInputBasics = (input) => {
   expect(input.id).to.be.a('string');
   expect(input.type).to.be.a('string');
-  expect(input.type).to.be.not.empty;
+  expect(isEmpty(input.type)).to.be.equal(false);
 };
 
 const getMapper = partial(
@@ -44,8 +44,12 @@ describe('Blocks to Form Body', () => {
   it('Should throw an error for wrong input', () => {
     const error = 'Mapper expects blocks to be an array.';
     expect(() => formBlocksToBody(null)).to.throw(error);
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore - testing wrong input
     expect(() => formBlocksToBody('hello')).to.throw(error);
     expect(() => formBlocksToBody(undefined)).to.throw(error);
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore - testing wrong input
     expect(() => formBlocksToBody(1)).to.throw(error);
   });
 
@@ -57,7 +61,7 @@ describe('Blocks to Form Body', () => {
     expect(input.type).to.be.equal('text');
     expect(input.params.label).to.be.equal('Email Address');
     expect(input.params.required).to.be.equal('1');
-    expect(input.params.label_within).to.be.undefined;
+    expect(isUndefined(input.params.label_within)).to.be.equal(true);
   });
 
   it('Should map email block with label within', () => {
@@ -165,12 +169,13 @@ describe('Blocks to Form Body', () => {
   it('Should map last name block to input data', () => {
     const [input] = formBlocksToBody([lastNameBlock]);
     checkBodyInputBasics(input);
-    expect(input.id).to.be.equal('last_name');
+    const id = input.id;
+    expect(id).to.be.equal('last_name');
     expect(input.name).to.be.equal('Last name');
     expect(input.type).to.be.equal('text');
     expect(input.params.label).to.be.equal('Last Name');
-    expect(input.params.required).to.be.undefined;
-    expect(input.params.label_within).to.be.undefined;
+    expect(isUndefined(input.params.required)).to.be.equal(true);
+    expect(isUndefined(input.params.label_within)).to.be.equal(true);
   });
 
   it('Should map last name block with mandatory and label', () => {
@@ -190,8 +195,8 @@ describe('Blocks to Form Body', () => {
     expect(input.name).to.be.equal('First name');
     expect(input.type).to.be.equal('text');
     expect(input.params.label).to.be.equal('First Name');
-    expect(input.params.required).to.be.undefined;
-    expect(input.params.label_within).to.be.undefined;
+    expect(isUndefined(input.params.required)).to.be.equal(true);
+    expect(isUndefined(input.params.label_within)).to.be.equal(true);
   });
 
   it('Should map first name block with mandatory and label', () => {
@@ -282,8 +287,8 @@ describe('Blocks to Form Body', () => {
     expect(input.name).to.be.equal('Custom Field name');
     expect(input.type).to.be.equal('text');
     expect(input.params.label).to.be.equal('Name of the street');
-    expect(input.params.required).to.be.undefined;
-    expect(input.params.label_within).to.be.undefined;
+    expect(isUndefined(input.params.required)).to.be.equal(true);
+    expect(isUndefined(input.params.label_within)).to.be.equal(true);
     expect(input.params.validate).to.eq('alphanum');
   });
 
@@ -387,8 +392,8 @@ describe('Blocks to Form Body', () => {
     expect(input.params.content).to.be.equal('');
     expect(input.params.level).to.be.equal(2);
     expect(input.params.align).to.be.equal('left');
-    expect(input.params.anchor).to.be.be.null;
-    expect(input.params.class_name).to.be.null;
+    expect(input.params.anchor === null).to.be.equal(true);
+    expect(input.params.class_name === null).to.be.equal(true);
   });
 
   it('Should map full heading block', () => {
@@ -410,6 +415,7 @@ describe('Blocks to Form Body', () => {
             },
           },
         },
+        innerBlocks: [],
       },
     ]);
     expect(input.type).to.be.equal('heading');
@@ -463,6 +469,7 @@ describe('Blocks to Form Body', () => {
           alt: '',
           linkDestination: 'none',
         },
+        innerBlocks: [],
       },
     ]);
     expect(input.type).to.be.equal('image');
@@ -522,8 +529,8 @@ describe('Blocks to Form Body', () => {
     expect(input.name).to.be.equal('Custom Checkbox');
     expect(input.type).to.be.equal('checkbox');
     expect(input.params.label).to.be.equal('Checkbox');
-    expect(input.params.required).to.be.be.undefined;
-    expect(input.params.hide_label).to.be.undefined;
+    expect(isUndefined(input.params.required)).to.be.equal(true);
+    expect(isUndefined(input.params.hide_label)).to.be.equal(true);
     expect(input.params.values).to.be.an('Array').that.has.length(1);
     expect(input.params.values[0]).to.have.property('value', 'Check this');
     expect(input.params.values[0]).to.have.property('is_checked', '1');
@@ -551,7 +558,7 @@ describe('Blocks to Form Body', () => {
     expect(input.name).to.be.equal('Custom Date');
     expect(input.type).to.be.equal('date');
     expect(input.params.label).to.be.equal('Date');
-    expect(input.params.required).to.be.undefined;
+    expect(isUndefined(input.params.required)).to.be.equal(true);
     expect(input.params.date_type).to.be.equal('month_year');
     expect(input.params.date_format).to.be.equal('MM/YYYY');
     expect(input.params.is_default_today).to.be.equal('1');
@@ -599,7 +606,7 @@ describe('Blocks to Form Body', () => {
     const column11 = columns11.body[0];
     const column12 = columns11.body[1];
     expect(column11.type).to.be.equal('column');
-    expect(column11.params.width).to.be.null;
+    expect(column11.params.width === null).to.be.equal(true);
     expect(column11.body.length).to.be.equal(1);
     expect(column12.type).to.be.equal('column');
     expect(column12.body.length).to.be.equal(0);
@@ -609,16 +616,16 @@ describe('Blocks to Form Body', () => {
   });
 
   it('Should map colors for columns', () => {
-    const columns = { ...nestedColumns };
-    columns.attributes = {
+    const attributes = {
       textColor: 'black',
       backgroundColor: 'white',
     };
-    const [mapped] = formBlocksToBody([columns]);
+
+    const [mapped] = formBlocksToBody([{ ...nestedColumns, attributes }]);
     expect(mapped.params.text_color).to.be.equal('#000000');
     expect(mapped.params.background_color).to.be.equal('#ffffff');
 
-    columns.attributes = {
+    const attributesWithStyles = {
       style: {
         color: {
           text: '#aaaaaa',
@@ -626,23 +633,29 @@ describe('Blocks to Form Body', () => {
         },
       },
     };
-    const [mapped2] = formBlocksToBody([columns]);
+    const [mapped2] = formBlocksToBody([
+      { ...nestedColumns, attributes: attributesWithStyles },
+    ]);
     expect(mapped2.params.text_color).to.be.equal('#aaaaaa');
     expect(mapped2.params.background_color).to.be.equal('#bbbbbb');
   });
 
   it('Should map colors for single column', () => {
-    const columns = { ...nestedColumns };
-    const column = columns.innerBlocks[0];
-    column.attributes = {
+    const attributes = {
       textColor: 'black',
       backgroundColor: 'white',
     };
-    const [mapped] = formBlocksToBody([columns]);
+    const innerBlockWithColors = {
+      ...nestedColumns.innerBlocks[0],
+      attributes,
+    };
+    const innerBlocks = [innerBlockWithColors, nestedColumns.innerBlocks[1]];
+
+    const [mapped] = formBlocksToBody([{ ...nestedColumns, innerBlocks }]);
     expect(mapped.body[0].params.text_color).to.be.equal('#000000');
     expect(mapped.body[0].params.background_color).to.be.equal('#ffffff');
 
-    column.attributes = {
+    const attributesWithStyles = {
       style: {
         color: {
           text: '#aaaaaa',
@@ -650,22 +663,27 @@ describe('Blocks to Form Body', () => {
         },
       },
     };
-    const [mapped2] = formBlocksToBody([columns]);
+    const innerBlocksWithStyles = [
+      { ...nestedColumns.innerBlocks[0], attributes: attributesWithStyles },
+      nestedColumns.innerBlocks[1],
+    ];
+    const [mapped2] = formBlocksToBody([
+      { ...nestedColumns, innerBlocks: innerBlocksWithStyles },
+    ]);
     expect(mapped2.body[0].params.text_color).to.be.equal('#aaaaaa');
     expect(mapped2.body[0].params.background_color).to.be.equal('#bbbbbb');
   });
 
   it('Should map gradient for columns', () => {
-    const columns = { ...nestedColumns };
-    columns.attributes = {
+    const attributes = {
       gradient: 'black-white',
     };
-    const [mapped] = formBlocksToBody([columns]);
+    const [mapped] = formBlocksToBody([{ ...nestedColumns, attributes }]);
     expect(mapped.params.gradient).to.be.equal(
       'linear-gradient(90deg, rgba(0,0,0,1) 0%, rgba(255,255,255,1) 100%)',
     );
 
-    columns.attributes = {
+    const attributesWithStyles = {
       style: {
         color: {
           gradient:
@@ -673,24 +691,26 @@ describe('Blocks to Form Body', () => {
         },
       },
     };
-    const [mapped2] = formBlocksToBody([columns]);
+    const [mapped2] = formBlocksToBody([
+      { ...nestedColumns, attributes: attributesWithStyles },
+    ]);
     expect(mapped2.params.gradient).to.be.equal(
       'linear-gradient(95deg, rgba(0,0,0,1) 0%, rgba(255,255,255,1) 100%)',
     );
   });
 
   it('Should map gradient for single column', () => {
-    const columns = { ...nestedColumns };
-    const column = columns.innerBlocks[0];
-    column.attributes = {
+    const attributes = {
       gradient: 'black-white',
     };
-    const [mapped] = formBlocksToBody([columns]);
+    const innerBlock = { ...nestedColumns.innerBlocks[0], attributes };
+    const innerBlocks = [innerBlock, nestedColumns.innerBlocks[1]];
+    const [mapped] = formBlocksToBody([{ ...nestedColumns, innerBlocks }]);
     expect(mapped.body[0].params.gradient).to.be.equal(
       'linear-gradient(90deg, rgba(0,0,0,1) 0%, rgba(255,255,255,1) 100%)',
     );
 
-    column.attributes = {
+    const attributesWithStyle = {
       style: {
         color: {
           gradient:
@@ -698,30 +718,47 @@ describe('Blocks to Form Body', () => {
         },
       },
     };
-    const [mapped2] = formBlocksToBody([columns]);
+    const innerBlockWithStyles = {
+      ...nestedColumns.innerBlocks[0],
+      attributes: attributesWithStyle,
+    };
+    const innerBlocksWithStyles = [
+      innerBlockWithStyles,
+      nestedColumns.innerBlocks[1],
+    ];
+    const [mapped2] = formBlocksToBody([
+      { ...nestedColumns, innerBlocks: innerBlocksWithStyles },
+    ]);
     expect(mapped2.body[0].params.gradient).to.be.equal(
       'linear-gradient(95deg, rgba(0,0,0,1) 0%, rgba(255,255,255,1) 100%)',
     );
   });
 
   it('Should map class names', () => {
-    const columns = { ...nestedColumns };
-    columns.attributes = {
+    const attributes = {
       className: 'my-class',
     };
-    const [mapped] = formBlocksToBody([columns]);
+    const [mapped] = formBlocksToBody([{ ...nestedColumns, attributes }]);
     expect(mapped.params.class_name).to.be.equal('my-class');
 
-    const column = { ...nestedColumns.innerBlocks[0] };
-    column.attributes = {
+    const columnAttributes = {
       className: 'my-class-2',
     };
+    const column = {
+      ...nestedColumns.innerBlocks[0],
+      attributes: columnAttributes,
+    };
+
     const [mappedColumn] = formBlocksToBody([column]);
     expect(mappedColumn.params.class_name).to.be.equal('my-class-2');
 
-    const email = { ...emailBlock };
-    email.attributes.className = 'my-class-3';
-    const [mappedEmail] = formBlocksToBody([email]);
+    const emailAttributes = {
+      ...emailBlock.attributes,
+      className: 'my-class-3',
+    };
+    const [mappedEmail] = formBlocksToBody([
+      { ...emailBlock, attributes: emailAttributes },
+    ]);
     expect(mappedEmail.params.class_name).to.be.equal('my-class-3');
 
     const divider = { ...dividerBlock };
@@ -729,7 +766,11 @@ describe('Blocks to Form Body', () => {
     const [mappedDivider] = formBlocksToBody([divider]);
     expect(mappedDivider.params.class_name).to.be.equal('my-class-4');
 
-    const html = { ...customHtmlBlock };
+    const htmlAttributes = {
+      ...customHtmlBlock.attributes,
+      className: 'my-class-5',
+    };
+    const html = { ...customHtmlBlock, attributes: htmlAttributes };
     html.attributes.className = 'my-class-5';
     const [mappedHtml] = formBlocksToBody([html]);
     expect(mappedHtml.params.class_name).to.be.equal('my-class-5');
@@ -746,10 +787,14 @@ describe('Blocks to Form Body', () => {
       type: 'text',
       updated_at: '2019-12-10T15:05:06+00:00',
     };
-    const customText = { ...customTextBlock };
-    customText.attributes.className = 'my-class-4';
+    const customTextAttributes = {
+      ...customTextBlock.attributes,
+      className: 'my-class-4',
+    };
     const map = getMapper([customField]);
-    const [mappedCustomText] = map([customText]);
+    const [mappedCustomText] = map([
+      { ...customTextBlock, attributes: customTextAttributes },
+    ]);
     expect(mappedCustomText.params.class_name).to.be.equal('my-class-4');
   });
 });
