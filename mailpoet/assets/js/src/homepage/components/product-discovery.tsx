@@ -95,7 +95,7 @@ export function ProductDiscovery({ onHide }: Props): JSX.Element {
       >
         <ul>{tasks.map((item) => item)}</ul>
       </ContentSection>
-      {isDiscoveryDone ? (
+      {isDiscoveryDone && (
         <p className="mailpoet-task-list__all-set">
           {MailPoet.I18n.t('allDone')}{' '}
           <a
@@ -108,7 +108,7 @@ export function ProductDiscovery({ onHide }: Props): JSX.Element {
             {MailPoet.I18n.t('dismissTasks')}
           </a>
         </p>
-      ) : null}
+      )}
     </>
   );
 }

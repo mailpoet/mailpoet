@@ -41,19 +41,19 @@ export function SubscribersStats(): JSX.Element {
       heading={MailPoet.I18n.t('subscribersHeading')}
       description={MailPoet.I18n.t('subscribersSectionDescription')}
       headingAfter={
-        !missingStats ? (
+        !missingStats && (
           <span
             className={classnames({
               'mailpoet-decrease': globalChange.changePercent < 0,
             })}
           >
             <Icon icon={trendingUp} />
-            {globalChange.changePercent < 0 ? '-' : ''}
+            {globalChange.changePercent < 0 && '-'}
             {Math.abs(globalChange.changePercent) > 1000
               ? '∞%'
               : `${Math.abs(globalChange.changePercent)}%`}
           </span>
-        ) : null
+        )
       }
     >
       {missingStats ? (
@@ -111,7 +111,7 @@ export function SubscribersStats(): JSX.Element {
               <span>{globalChange.unsubscribed}</span>
             </div>
           </div>
-          {listsChange.length ? (
+          {listsChange.length && (
             <table className="mailpoet-subscribers-stats-list-change-table">
               <thead>
                 <tr>
@@ -145,7 +145,7 @@ export function SubscribersStats(): JSX.Element {
                 ))}
               </tbody>
             </table>
-          ) : null}
+          )}
         </>
       )}
     </ContentSection>

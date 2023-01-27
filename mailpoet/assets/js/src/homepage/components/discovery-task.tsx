@@ -51,16 +51,16 @@ export function DiscoveryTask({
         ) : (
           <>
             <h3>{`${title} →`}</h3>
-            {description ? <p>{description}</p> : null}
+            {description && <p>{description}</p>}
           </>
         )}
       </div>
       <div className="mailpoet-product-discovery__task-after">
-        {isDone ? (
+        {isDone && (
           <div className="mailpoet-task-list__task-icon">
             <Icon icon={check} />
           </div>
-        ) : null}
+        )}
       </div>
     </li>
   );
