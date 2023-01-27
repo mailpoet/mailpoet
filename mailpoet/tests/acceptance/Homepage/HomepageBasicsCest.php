@@ -82,6 +82,15 @@ class HomepageBasicsCest {
     $i->see('List name', $subscribersSection);
     $i->see('Hello segment', $subscribersSection);
 
+    $i->wantTo('Check homepage resources section');
+    $resourcesSection = '.mailpoet-homepage-resources';
+    $i->see('Learn more about email marketing', $resourcesSection);
+    $i->see('Create an Email: Types of Campaigns', $resourcesSection);
+    $i->see('Create a Subscription form', $resourcesSection);
+    $i->see('Page 1 of 3', $resourcesSection);
+    $i->click('a', '.mailpoet-homepage-resources__pagination');
+    $i->waitForText('Page 2 of 3', 10, $resourcesSection);
+
     // The upsell section should be visible when task list and product discovery are closed
     // Another condition is 600 subscribers
     $subscriberFactory->createBatch(600, SubscriberEntity::STATUS_SUBSCRIBED);
