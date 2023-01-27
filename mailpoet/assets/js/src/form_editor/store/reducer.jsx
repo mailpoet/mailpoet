@@ -2,7 +2,7 @@ import { MailPoet } from 'mailpoet';
 import { createCustomFieldDone } from './reducers/create_custom_field_done.jsx';
 import { createCustomFieldFailed } from './reducers/create_custom_field_failed.jsx';
 import { customFieldEdited } from './reducers/custom_field_edited.jsx';
-import { createCustomFieldStartedFactory } from './reducers/create_custom_field_started.jsx';
+import { createCustomFieldStartedFactory } from './reducers/create_custom_field_started.ts';
 import { changeFormName } from './reducers/change_form_name.jsx';
 import { changeFormSettings } from './reducers/change_form_settings.jsx';
 import { changeFormStyles } from './reducers/change_form_styles.jsx';
