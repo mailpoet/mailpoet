@@ -109,12 +109,13 @@ class MailerLogTest extends \MailPoetTest {
         'interval' => 1,
       ],
     ];
-    $inCurrenTimeFrame = time() - 60;
-    $outdated = $inCurrenTimeFrame - 1;
+    $currentTimeframeBorder = time() - 60;
+    $outdated = $currentTimeframeBorder - 1;
+    $notOutdated = $currentTimeframeBorder + 1;
     $mailerLog = [
       'sent' => [
         date('Y-m-d H:i:s', $outdated) => 2,
-        date('Y-m-d H:i:s', $inCurrenTimeFrame) => 10,
+        date('Y-m-d H:i:s', $notOutdated) => 10,
       ],
       'started' => $outdated,
       'error' => null,
