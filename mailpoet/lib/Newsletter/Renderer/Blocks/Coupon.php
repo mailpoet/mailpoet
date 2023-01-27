@@ -52,7 +52,7 @@ class Coupon {
                   </v:roundrect>
                   <![endif]-->
                   <!--[if !mso]><!-- -->
-                  <div class="mailpoet_coupon" style="' . $styles . '"> ' . EHelper::escapeHtmlText($couponCode) . '</div>
+                  <div class="mailpoet_coupon" style="' . $styles . '">' . EHelper::escapeHtmlText($couponCode) . '</div>
                   <!--<![endif]-->
                 </td>
               </tr>
