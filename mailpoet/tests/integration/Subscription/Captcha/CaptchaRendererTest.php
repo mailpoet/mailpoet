@@ -69,6 +69,22 @@ class CaptchaRendererTest extends \MailPoetTest {
   }
 
   /**
+   * We need to ensure that a new captcha phrase is created when reloading
+   */
+  public function testItDoesNotChangeCaptchaWhenAudioRangeHeaderChanges() {
+    $this->session->init();
+    $sessionId = $this->session->getId();
+    $fistAudio = $this->testee->renderAudio($sessionId, true);
+    $firstCaptcha = $this->session->getCaptchaHash();
+    $_SERVER['HTTP_RANGE'] = 'bytes:0-1';
+    $secondAudio = $this->testee->renderAudio($sessionId, true);
+    $secondCaptcha = $this->session->getCaptchaHash();
+    unset($_SERVER['HTTP_RANGE']);
+    expect($fistAudio)->Equals($secondAudio);
+    expect($firstCaptcha['phrase'])->Equals($secondCaptcha['phrase']);
+  }
+
+  /**
    * We need to make sure that the audio presented to a listener plays the same captcha
    * the image shows.
    */
