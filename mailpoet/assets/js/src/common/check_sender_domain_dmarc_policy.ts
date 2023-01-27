@@ -19,7 +19,7 @@ const makeApiRequest = (domain: string) =>
  *
  * returns `false` if not required, `true` if DMARC policy is Restricted
  * @param {string} email Email address
- * @param {boolean} isMssActive Is MailPoet sending service active?
+ * @param {boolean} isMssActive Is MailPoet Sending Service active?
  * @returns {Promise<boolean>} false if not required, `true` if DMARC policy is Restricted
  */
 const checkSenderEmailDomainDmarcPolicy = async (
