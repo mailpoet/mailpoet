@@ -19,11 +19,6 @@ class DmarcPolicyCheckerTest extends \MailPoetTest {
   }
 
   public function testItReturnsQuarantineStatus() {
-    $domain = 'automattic.com'; // quarantine
-    $result = $this->dmarcPolicyChecker->getDomainDmarcPolicy($domain);
-    expect($result)->equals(DmarcPolicyChecker::POLICY_QUARANTINE);
-
-    // testing with mailpoet.com
     $domain = 'mailpoet.com'; // quarantine
     $result = $this->dmarcPolicyChecker->getDomainDmarcPolicy($domain);
     expect($result)->equals(DmarcPolicyChecker::POLICY_QUARANTINE);
@@ -31,6 +26,10 @@ class DmarcPolicyCheckerTest extends \MailPoetTest {
 
   public function testItReturnsRejectStatus() {
     $domain = 'google.com'; // reject
+    $result = $this->dmarcPolicyChecker->getDomainDmarcPolicy($domain);
+    expect($result)->equals(DmarcPolicyChecker::POLICY_REJECT);
+
+    $domain = 'automattic.com'; // reject
     $result = $this->dmarcPolicyChecker->getDomainDmarcPolicy($domain);
     expect($result)->equals(DmarcPolicyChecker::POLICY_REJECT);
   }
