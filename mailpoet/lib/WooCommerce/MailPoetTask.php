@@ -39,7 +39,7 @@ class MailPoetTask extends Task {
    */
   public function get_action_url(): string { // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps
     if ($this->is_complete()) {
-      return admin_url('admin.php?page=' . Menu::MAIN_PAGE_SLUG);
+      return admin_url('admin.php?page=' . Menu::$mainPageSlug);
     }
 
     return admin_url('admin.php?page=' . Menu::WELCOME_WIZARD_PAGE_SLUG . '&mailpoet_wizard_loaded_via_woocommerce');
