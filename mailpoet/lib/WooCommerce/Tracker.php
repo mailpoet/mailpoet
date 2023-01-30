@@ -38,7 +38,6 @@ class Tracker {
       $analyticsData = $this->newslettersRepository->getAnalytics();
       $data['extensions']['mailpoet'] = [
         'campaigns_count' => $analyticsData['campaigns_count'],
-        'currency' => $currency,
       ];
       $campaignData = $this->formatCampaignsData($this->wooPurchasesRepository->getRevenuesByCampaigns($currency));
       $data['extensions']['mailpoet'] = array_merge($data['extensions']['mailpoet'], $campaignData);
