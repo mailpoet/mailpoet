@@ -1,5 +1,6 @@
 /* eslint-disable no-shadow */
 /* eslint-disable import/no-unresolved */
+/* eslint-disable import/no-default-export */
 /**
  * External dependencies
  */
@@ -11,7 +12,7 @@ import { randomIntBetween } from 'https://jslib.k6.io/k6-utils/1.1.0/index.js';
  * Internal dependencies
  */
 import { baseURL, thinkTimeMin, thinkTimeMax, headlessSet } from '../config.js';
-import { login } from '../utils/helpers.js';
+import { authenticate } from '../utils/helpers.js';
 /* global Promise */
 
 export function wpLogin() {
@@ -23,7 +24,7 @@ export function wpLogin() {
       .goto(`${baseURL}/wp-login.php`, { waitUntil: 'networkidle' })
 
       .then(() => {
-        login(page);
+        authenticate(page);
       })
 
       .then(() => {
@@ -48,6 +49,6 @@ export function wpLogin() {
   sleep(randomIntBetween(`${thinkTimeMin}`, `${thinkTimeMax}`));
 }
 
-export function wpLoginTest() {
+export default function wpLoginTest() {
   wpLogin();
 }

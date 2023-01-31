@@ -15,15 +15,15 @@ import { baseURL, thinkTimeMin, thinkTimeMax, headlessSet } from '../config.js';
 import { authenticate } from '../utils/helpers.js';
 /* global Promise */
 
-export function subscribersListing() {
+export function settingsBasic() {
   const browser = chromium.launch({ headless: headlessSet });
   const page = browser.newPage();
 
   group(
-    'Subscribers - Load all subscribers',
-    function subscribersLoadAllSusbcribers() {
+    'Settings - Load and save the basics tab',
+    function settingsBasicTabSaving() {
       page
-        .goto(`${baseURL}/wp-admin/admin.php?page=mailpoet-subscribers`, {
+        .goto(`${baseURL}/wp-admin/admin.php?page=mailpoet-settings#/basics`, {
           waitUntil: 'networkidle',
         })
 
@@ -39,15 +39,24 @@ export function subscribersListing() {
 
         .then(() => {
           check(page, {
-            'subscribers filter is visible': page
-              .locator('[data-automation-id="listing_filter_segment"]')
+            'basics tab is visible': page
+              .locator('[data-automation-id="basic_settings_tab"]')
               .isVisible(),
-            'subscribers tag is visible': page
-              .locator('[data-automation-id="listing_filter_tag"]')
-              .isVisible(),
-            'subscribers listing is visible': page
-              .locator('table.mailpoet-listing-table')
-              .isVisible(),
+          });
+        })
+
+        .then(() => {
+          return Promise.all([
+            page.waitForNavigation(),
+            page
+              .locator('[data-automation-id="settings-submit-button"]')
+              .click(),
+          ]);
+        })
+
+        .then(() => {
+          check(page, {
+            'settings saved is visible': page.locator('div.notice').isVisible(),
           });
         })
 
@@ -61,6 +70,6 @@ export function subscribersListing() {
   sleep(randomIntBetween(`${thinkTimeMin}`, `${thinkTimeMax}`));
 }
 
-export default function subscribersListingTest() {
-  subscribersListing();
+export default function settingsBasicTest() {
+  settingsBasic();
 }
