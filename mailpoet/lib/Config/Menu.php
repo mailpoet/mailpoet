@@ -23,7 +23,6 @@ use MailPoet\AdminPages\Pages\Upgrade;
 use MailPoet\AdminPages\Pages\WelcomeWizard;
 use MailPoet\AdminPages\Pages\WooCommerceSetup;
 use MailPoet\DI\ContainerWrapper;
-use MailPoet\Features\FeaturesController;
 use MailPoet\Form\Util\CustomFonts;
 use MailPoet\Util\License\License;
 use MailPoet\WP\Functions as WPFunctions;
@@ -78,9 +77,6 @@ class Menu {
   /** @var CustomFonts  */
   private $customFonts;
 
-  /** @var FeaturesController */
-  private $featuresController;
-
   /** @var Changelog */
   private $changelog;
 
@@ -91,7 +87,6 @@ class Menu {
     ContainerWrapper $container,
     Router $router,
     CustomFonts $customFonts,
-    FeaturesController $featuresController,
     Changelog $changelog
   ) {
     $this->accessControl = $accessControl;
@@ -100,14 +95,11 @@ class Menu {
     $this->container = $container;
     $this->router = $router;
     $this->customFonts = $customFonts;
-    $this->featuresController = $featuresController;
     $this->changelog = $changelog;
   }
 
   public function init() {
-    if ($this->featuresController->isSupported(FeaturesController::FEATURE_HOMEPAGE)) {
-      self::$mainPageSlug = self::HOMEPAGE_PAGE_SLUG;
-    }
+    self::$mainPageSlug = self::HOMEPAGE_PAGE_SLUG;
     $this->checkPremiumKey();
 
     $this->wp->addAction(
@@ -223,19 +215,17 @@ class Menu {
 
   private function registerMailPoetSubMenuEntries(bool $showEntries) {
     // Homepage
-    if ($this->featuresController->isSupported(FeaturesController::FEATURE_HOMEPAGE)) {
-      $this->wp->addSubmenuPage(
-        $showEntries ? self::$mainPageSlug : true,
-        $this->setPageTitle(__('Home', 'mailpoet')),
-        esc_html__('Home', 'mailpoet'),
-        AccessControl::PERMISSION_ACCESS_PLUGIN_ADMIN,
-        self::HOMEPAGE_PAGE_SLUG,
-        [
-          $this,
-          'homepage',
-        ]
-      );
-    }
+    $this->wp->addSubmenuPage(
+      $showEntries ? self::$mainPageSlug : true,
+      $this->setPageTitle(__('Home', 'mailpoet')),
+      esc_html__('Home', 'mailpoet'),
+      AccessControl::PERMISSION_ACCESS_PLUGIN_ADMIN,
+      self::HOMEPAGE_PAGE_SLUG,
+      [
+        $this,
+        'homepage',
+      ]
+    );
 
     // Emails page
     $newslettersPage = $this->wp->addSubmenuPage(
