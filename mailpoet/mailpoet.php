@@ -7,7 +7,7 @@
  * Description: Create and send newsletters, post notifications and welcome emails from your WordPress.
  * Author: MailPoet
  * Author URI: https://www.mailpoet.com
- * Requires at least: 5.8
+ * Requires at least: 5.9
  * Text Domain: mailpoet
  * Domain Path: /lang
  *
@@ -27,6 +27,8 @@ $mailpoetPlugin = [
   'initializer' => dirname(__FILE__) . '/mailpoet_initializer.php',
 ];
 
+const MAILPOET_MINIMUM_REQUIRED_WP_VERSION = '5.9';
+
 function mailpoet_deactivate_plugin() {
   deactivate_plugins(plugin_basename(__FILE__));
   if (!empty($_GET['activate'])) {
@@ -35,7 +37,7 @@ function mailpoet_deactivate_plugin() {
 }
 
 // Check for minimum supported WP version
-if (version_compare(get_bloginfo('version'), '5.8', '<')) {
+if (version_compare(get_bloginfo('version'), MAILPOET_MINIMUM_REQUIRED_WP_VERSION, '<')) {
   add_action('admin_notices', 'mailpoet_wp_version_notice');
   // deactivate the plugin
   add_action('admin_init', 'mailpoet_deactivate_plugin');
@@ -55,7 +57,11 @@ function mailpoet_wp_version_notice() {
   $notice = str_replace(
     '[link]',
     '<a href="https://kb.mailpoet.com/article/152-minimum-requirements-for-mailpoet-3#wp_version" target="_blank">',
-    __('MailPoet plugin requires WordPress version 5.8 or newer. Please read our [link]instructions[/link] on how to resolve this issue.', 'mailpoet')
+    sprintf(
+      // translators: %s is the number of minimum WordPress version that MailPoet requires
+      __('MailPoet plugin requires WordPress version %s or newer. Please read our [link]instructions[/link] on how to resolve this issue.', 'mailpoet'),
+      MAILPOET_MINIMUM_REQUIRED_WP_VERSION
+    )
   );
   $notice = str_replace('[/link]', '</a>', $notice);
   printf(
