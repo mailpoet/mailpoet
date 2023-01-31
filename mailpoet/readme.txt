@@ -3,7 +3,7 @@ Contributors: mailpoet
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 5.8
 Tested up to: 6.1
-Stable tag: 4.5.2
+Stable tag: 4.6.0
 Requires PHP: 7.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -218,6 +218,19 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 4.6.0 - 2023-01-31 =
+* Added: anonymized and opt-in tracking of revenue per email campaign;
+* Added: subscription confirmation emails can be previewed during editing;
+* Added: a new item in WooCommerce Task List to finish MailPoet setup;
+* Improved: list visibility explanation when editing a list;
+* Changed: added option to rerun two specific migrations if they failed in the past;
+* Changed: [site:homepage_link] now renders as link in email editor, introduced new [site:homepage_url] shortcode to get just the URL;
+* Fixed: UI issues on WordPress.com;
+* Fixed: multiple popup signup forms when products are added via shortcode;
+* Fixed: multiple signup form on WooCommerce Products page;
+* Fixed: multiple vertical scrollbars in Form editor;
+* Fixed: custom field block hidden behind help icon in Form editor.
 
 = 4.5.2 - 2023-01-25 =
 * Fixed: issue with new installations of MailPoet on websites with WooCommerce.
