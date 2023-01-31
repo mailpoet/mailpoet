@@ -71,6 +71,7 @@ export const MailPoet = {
   transactionalEmailsEnabled: window.mailpoet_send_transactional_emails,
   transactionalEmailsOptInNoticeDismissed:
     window.mailpoet_transactional_emails_opt_in_notice_dismissed,
+  mailFunctionEnabled: window.mailpoet_mail_function_enabled,
 } as const;
 
 declare global {

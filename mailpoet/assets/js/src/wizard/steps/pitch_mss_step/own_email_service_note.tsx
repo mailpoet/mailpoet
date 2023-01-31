@@ -37,7 +37,7 @@ function OwnEmailServiceNote(): JSX.Element {
           onRequestClose={closeConfirmationModal}
         >
           <p>
-            {window.mailpoet_mail_function_enabled
+            {MailPoet.mailFunctionEnabled
               ? MailPoet.I18n.t(
                   'welcomeWizardMSSConfirmationModalFirstParagraph',
                 )
