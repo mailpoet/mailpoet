@@ -3,17 +3,11 @@
 namespace MailPoet\Test\Acceptance;
 
 use MailPoet\Entities\SubscriberEntity;
-use MailPoet\Features\FeaturesController;
-use MailPoet\Test\DataFactories\Features;
 use MailPoet\Test\DataFactories\Segment;
 use MailPoet\Test\DataFactories\Settings;
 use MailPoet\Test\DataFactories\Subscriber;
 
 class HomepageBasicsCest {
-  public function _before() {
-    (new Features())->withFeatureEnabled(FeaturesController::FEATURE_HOMEPAGE);
-  }
-
   public function homepageRenders(\AcceptanceTester $i) {
     $i->wantTo('Check homepage renders and is present in menu');
     $i->login();
