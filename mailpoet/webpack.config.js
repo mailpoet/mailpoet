@@ -159,6 +159,11 @@ const baseConfig = {
               flags: 'g',
             },
             {
+              search: 'window\\.tinyMCE',
+              replace: 'window.mailpoetTinyMCE',
+              flags: 'g',
+            },
+            {
               search: 'tinymce\\.util',
               replace: 'window.mailpoetTinymce.util',
               flags: 'g',
