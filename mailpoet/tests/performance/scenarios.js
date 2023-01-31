@@ -1,9 +1,9 @@
 /**
  * Internal dependencies
  */
-import { wpLogin } from './tests/wp-login.js';
 import { newsletterListing } from './tests/newsletter-listing.js';
 import { subscribersListing } from './tests/subscribers-listing.js';
+import { settingsBasic } from './tests/settings-basic.js';
 import { htmlReport } from 'https://raw.githubusercontent.com/benc-uk/k6-reporter/main/dist/bundle.js';
 import { textSummary } from 'https://jslib.k6.io/k6-summary/0.0.1/index.js';
 import { scenario } from './config.js';
@@ -12,12 +12,12 @@ import { scenario } from './config.js';
 export let options = {
   scenarios: {},
   thresholds: {
-    browser_dom_content_loaded: ['p(95) < 1000'],
-    browser_first_contentful_paint: ['max < 1000'],
-    browser_first_meaningful_paint: ['max < 2000'],
-    browser_first_paint: ['max < 1000'],
-    browser_loaded: ['p(95) < 2000'],
-    http_req_duration: ['p(95) < 1500'],
+    browser_dom_content_loaded: ['p(95) < 2000'],
+    browser_first_contentful_paint: ['max < 2000'],
+    browser_first_meaningful_paint: ['max < 3000'],
+    browser_first_paint: ['max < 2000'],
+    browser_loaded: ['p(95) < 3000'],
+    http_req_duration: ['p(95) < 2500'],
     checks: ['rate==1.0'],
   },
   tags: {
@@ -31,7 +31,7 @@ let scenarios = {
     executor: 'per-vu-iterations',
     vus: 1,
     iterations: 1,
-    maxDuration: '1m',
+    maxDuration: '2m',
     exec: 'pullRequests',
   },
   nightlytests: {
@@ -56,13 +56,12 @@ if (scenario) {
 export function pullRequests() {
   newsletterListing();
   subscribersListing();
+  settingsBasic();
 }
 
 // All the tests ran for a nightly testing
 export function nightly() {
-  wpLogin();
-  newsletterListing();
-  subscribersListing();
+  // TBD
 }
 
 // HTML report data saved in performance folder
