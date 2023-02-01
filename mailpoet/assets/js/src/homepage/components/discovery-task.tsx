@@ -5,6 +5,7 @@ import classnames from 'classnames';
 
 type Props = {
   title: string;
+  slug: string;
   link: string;
   imgSrc: string;
   isDone: boolean;
@@ -14,6 +15,7 @@ type Props = {
 
 export function DiscoveryTask({
   title,
+  slug,
   link,
   description,
   doneMessage,
@@ -24,7 +26,7 @@ export function DiscoveryTask({
     MailPoet.trackEvent(
       'Home Page Task',
       {
-        ctaLabel: title,
+        ctaLabel: slug,
       },
       { send_immediately: true },
       () => {
