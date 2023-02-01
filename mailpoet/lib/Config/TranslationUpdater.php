@@ -85,16 +85,10 @@ class TranslationUpdater {
       $requestBody['plugins'][$this->premiumSlug] = ['version' => $this->premiumVersion];
     }
 
-    // Ten seconds, plus one extra second for every 10 locales.
-    $timeout = 10 + (int)(count($locales) / 10);
     $cacheKey = self::TRANSIENT_KEY_PREFIX . md5(serialize($requestBody));
     $rawResponse = $this->wpFunctions->getTransient($cacheKey);
     if (!$rawResponse) {
-      $rawResponse = $this->wpFunctions->wpRemotePost(self::API_UPDATES_BASE_URI, [
-        'body' => json_encode($requestBody),
-        'headers' => ['Content-Type: application/json'],
-        'timeout' => $timeout,
-      ]);
+      $rawResponse = $this->fetchApiResponse($requestBody);
       $this->wpFunctions->setTransient($cacheKey, $rawResponse, self::TRANSIENT_EXPIRATION);
     }
 
@@ -168,5 +162,19 @@ class TranslationUpdater {
       Debugger::log($message, ILogger::ERROR);
     }
     error_log($message); // phpcs:ignore Squiz.PHP.DiscouragedFunctions.Discouraged
+  }
+
+  /**
+   * @return array|\WP_Error
+   */
+  private function fetchApiResponse(array $requestBody) {
+    // Ten seconds, plus one extra second for every 10 locales.
+    $timeout = 10 + (int)(count($requestBody['locales']) / 10);
+    $response = $this->wpFunctions->wpRemotePost(self::API_UPDATES_BASE_URI, [
+      'body' => json_encode($requestBody),
+      'headers' => ['Content-Type: application/json'],
+      'timeout' => $timeout,
+    ]);
+    return $response;
   }
 }
