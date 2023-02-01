@@ -30,6 +30,7 @@ export function TaskList({ onHide }: Props): JSX.Element {
   taskListItems.push(
     <Task
       key="senderSet"
+      slug="set sender"
       title={MailPoet.I18n.t('senderSetTask')}
       titleCompleted={MailPoet.I18n.t('senderSetTaskDone')}
       link="admin.php?page=mailpoet-settings#/basics"
@@ -41,6 +42,7 @@ export function TaskList({ onHide }: Props): JSX.Element {
   taskListItems.push(
     <Task
       key="mssConnected"
+      slug="connect mss"
       title={MailPoet.I18n.t('mssConnectedTask')}
       titleCompleted={MailPoet.I18n.t('mssConnectedTaskDone')}
       link="admin.php?page=mailpoet-settings#/premium"
@@ -53,6 +55,7 @@ export function TaskList({ onHide }: Props): JSX.Element {
     taskListItems.push(
       <Task
         key="wooSubscribersImported"
+        slug="import woocommerce subscribers"
         title={MailPoet.I18n.t('wooSubscribersImportedTask')}
         titleCompleted={MailPoet.I18n.t('wooSubscribersImportedTaskDone')}
         link="admin.php?page=mailpoet-woocommerce-setup"
@@ -65,6 +68,7 @@ export function TaskList({ onHide }: Props): JSX.Element {
   taskListItems.push(
     <Task
       key="subscribersAdded"
+      slug="add subscribers"
       title={MailPoet.I18n.t('subscribersAddedTask')}
       titleCompleted={
         hasImportedSubscribers

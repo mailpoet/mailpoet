@@ -1,10 +1,12 @@
 import { Icon } from '@wordpress/components';
 import { check } from '@wordpress/icons';
 import classnames from 'classnames';
+import { trackCtaAndRedirect } from 'homepage/tracking';
 
 type Props = {
   title: string;
   titleCompleted?: string;
+  slug: string;
   link: string;
   order: number;
   isCompleted: boolean;
@@ -15,6 +17,7 @@ type Props = {
 export function Task({
   title,
   titleCompleted = '',
+  slug,
   link,
   order,
   isCompleted,
@@ -26,7 +29,7 @@ export function Task({
     'mailpoet-task-list__task--active': isActive,
   });
   const handleTaskClick = () => {
-    window.location.href = link;
+    trackCtaAndRedirect('Home Page Task', slug, link);
   };
   return (
     <li
