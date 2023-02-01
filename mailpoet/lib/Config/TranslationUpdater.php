@@ -89,8 +89,14 @@ class TranslationUpdater {
     $rawResponse = $this->wpFunctions->getTransient($cacheKey);
     if (!$rawResponse) {
       $rawResponse = $this->fetchApiResponse($requestBody);
-      // Don't continue when API request failed.
       $responseCode = $this->wpFunctions->wpRemoteRetrieveResponseCode($rawResponse);
+      // Wait a couple of seconds and retry when 429 is returned.
+      if ($responseCode === 429) {
+        sleep(2);
+        $rawResponse = $this->fetchApiResponse($requestBody);
+        $responseCode = $this->wpFunctions->wpRemoteRetrieveResponseCode($rawResponse);
+      }
+      // Don't continue when API request failed.
       if ($responseCode !== 200) {
         $this->logError("MailPoet: Failed to fetch translations from WordPress.com API with $responseCode and response message: " . $this->wpFunctions->wpRemoteRetrieveResponseMessage($rawResponse));
         return [];
