@@ -23,6 +23,7 @@ export function ProductDiscovery({ onHide }: Props): JSX.Element {
   tasks.push(
     <DiscoveryTask
       key="setUpWelcomeCampaign"
+      slug="set up welcome campaign"
       title={MailPoet.I18n.t('setUpWelcomeCampaign')}
       description={MailPoet.I18n.t('setUpWelcomeCampaignDesc')}
       link="admin.php?page=mailpoet-automation-templates"
@@ -32,6 +33,7 @@ export function ProductDiscovery({ onHide }: Props): JSX.Element {
     />,
     <DiscoveryTask
       key="addSubscriptionForm"
+      slug="add subscription form"
       title={MailPoet.I18n.t('addSubscriptionForm')}
       description={MailPoet.I18n.t('addSubscriptionFormDesc')}
       link="admin.php?page=mailpoet-form-editor-template-selection"
@@ -44,6 +46,7 @@ export function ProductDiscovery({ onHide }: Props): JSX.Element {
     tasks.push(
       <DiscoveryTask
         key="sendFirstNewsletter"
+        slug="send first newsletter"
         title={MailPoet.I18n.t('sendFirstNewsletter')}
         description={MailPoet.I18n.t('sendFirstNewsletterDesc')}
         link="admin.php?page=mailpoet-newsletters#/new"
@@ -56,6 +59,7 @@ export function ProductDiscovery({ onHide }: Props): JSX.Element {
     tasks.push(
       <DiscoveryTask
         key="setUpAbandonedCartEmail"
+        slug="set up abandoned cart email"
         title={MailPoet.I18n.t('setUpAbandonedCartEmail')}
         description={MailPoet.I18n.t('setUpAbandonedCartEmailDesc')}
         link="admin.php?page=mailpoet-newsletters#/new/woocommerce/woocommerce_abandoned_shopping_cart/conditions"
@@ -65,6 +69,7 @@ export function ProductDiscovery({ onHide }: Props): JSX.Element {
       />,
       <DiscoveryTask
         key="brandWooEmails"
+        slug="brand woocommerce emails"
         title={MailPoet.I18n.t('brandWooEmails')}
         description={MailPoet.I18n.t('brandWooEmailsDesc')}
         link="admin.php?page=mailpoet-settings#/woocommerce"
