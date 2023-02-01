@@ -28,6 +28,13 @@ class AutomationRunStorage {
     return $this->wpdb->insert_id;
   }
 
+  public function getAutomationRunByAutomationIdAndSubjectHash(int $automationId, string $hash): ?AutomationRun {
+    $table = esc_sql($this->table);
+    $query = (string)$this->wpdb->prepare("SELECT * FROM $table WHERE automation_id = %d AND subject_hash = %s", $automationId, $hash);
+    $result = $this->wpdb->get_row($query, ARRAY_A);
+    return $result ? AutomationRun::fromArray((array)$result) : null;
+  }
+
   public function getAutomationRun(int $id): ?AutomationRun {
     $table = esc_sql($this->table);
     $query = (string)$this->wpdb->prepare("SELECT * FROM $table WHERE id = %d", $id);
