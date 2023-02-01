@@ -5,21 +5,13 @@ import { useSelect } from '@wordpress/data';
 import classnames from 'classnames';
 import { MailPoet } from 'mailpoet';
 import { storeName } from 'homepage/store/store';
+import { trackCtaAndRedirect } from 'homepage/tracking';
 import { ListingsEngagementScore } from 'subscribers/listings_engagement_score';
 import { ContentSection } from './content-section';
 
 const handleCtaClick = (event: MouseEvent, cta: string, link: string) => {
   event.preventDefault();
-  MailPoet.trackEvent(
-    'Home Page Statistics Click',
-    {
-      ctaLabel: cta,
-    },
-    { send_immediately: true },
-    () => {
-      window.location.href = link;
-    },
-  );
+  trackCtaAndRedirect('Home Page Statistics Click', cta, link);
 };
 
 export function SubscribersStats(): JSX.Element {

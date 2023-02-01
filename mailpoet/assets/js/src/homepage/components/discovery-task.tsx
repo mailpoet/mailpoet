@@ -1,7 +1,7 @@
 import { Icon } from '@wordpress/components';
 import { check } from '@wordpress/icons';
-import { MailPoet } from 'mailpoet';
 import classnames from 'classnames';
+import { trackCtaAndRedirect } from 'homepage/tracking';
 
 type Props = {
   title: string;
@@ -23,16 +23,7 @@ export function DiscoveryTask({
   isDone,
 }: Props): JSX.Element {
   const handleTaskClick = () => {
-    MailPoet.trackEvent(
-      'Home Page Task',
-      {
-        ctaLabel: slug,
-      },
-      { send_immediately: true },
-      () => {
-        window.location.href = link;
-      },
-    );
+    trackCtaAndRedirect('Home Page Task', slug, link);
   };
   return (
     <li
