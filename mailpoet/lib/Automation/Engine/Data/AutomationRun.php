@@ -35,6 +35,8 @@ class AutomationRun {
   /** @var Subject[] */
   private $subjects;
 
+  private $subjectHash;
+
   /**
    * @param Subject[] $subjects
    */
@@ -43,12 +45,14 @@ class AutomationRun {
     int $versionId,
     string $triggerKey,
     array $subjects,
+    string $subjectHash = '',
     int $id = null
   ) {
     $this->automationId = $automationId;
     $this->versionId = $versionId;
     $this->triggerKey = $triggerKey;
     $this->subjects = $subjects;
+    $this->subjectHash = $subjectHash;
 
     if ($id) {
       $this->id = $id;
@@ -87,6 +91,10 @@ class AutomationRun {
     return $this->updatedAt;
   }
 
+  public function getSubjectHash(): string {
+    return $this->subjectHash;
+  }
+
   /** @return Subject[] */
   public function getSubjects(string $key = null): array {
     if ($key) {
@@ -112,6 +120,7 @@ class AutomationRun {
           return $subject->toArray();
         }, $this->subjects)
       ),
+      'subject_hash' => $this->subjectHash,
     ];
   }
 
@@ -126,6 +135,7 @@ class AutomationRun {
     );
     $automationRun->id = (int)$data['id'];
     $automationRun->status = $data['status'];
+    $automationRun->subjectHash = $data['subject_hash'];
     $automationRun->createdAt = new DateTimeImmutable($data['created_at']);
     $automationRun->updatedAt = new DateTimeImmutable($data['updated_at']);
     return $automationRun;
