@@ -98,4 +98,14 @@ class UserRegistrationTrigger implements Trigger {
     $roles = $triggerArgs['roles'] ?? [];
     return !is_array($roles) || !$roles || count(array_intersect($user->roles, $roles)) > 0;
   }
+
+  public function getSubjectHash(array $subjectEntries): string {
+    foreach ($subjectEntries as $entry) {
+      $payload = $entry->getPayload();
+      if ($payload instanceof SubscriberPayload) {
+        return SubscriberSubject::KEY . ':' . $payload->getId();
+      }
+    }
+    return '';
+  }
 }

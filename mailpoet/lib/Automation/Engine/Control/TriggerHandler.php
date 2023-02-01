@@ -61,7 +61,13 @@ class TriggerHandler {
         $entry->getPayload();
       }
 
-      $automationRun = new AutomationRun($automation->getId(), $automation->getVersionId(), $trigger->getKey(), $subjects);
+      $automationRun = new AutomationRun(
+        $automation->getId(),
+        $automation->getVersionId(),
+        $trigger->getKey(),
+        $subjects,
+        $trigger->getSubjectHash($subjectEntries)
+      );
       if (!$trigger->isTriggeredBy(new StepRunArgs($automation, $automationRun, $step, $subjectEntries))) {
         continue;
       }

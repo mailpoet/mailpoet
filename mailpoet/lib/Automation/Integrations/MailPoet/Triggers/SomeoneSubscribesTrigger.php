@@ -8,6 +8,7 @@ use MailPoet\Automation\Engine\Data\Subject;
 use MailPoet\Automation\Engine\Hooks;
 use MailPoet\Automation\Engine\Integration\Trigger;
 use MailPoet\Automation\Integrations\MailPoet\Payloads\SegmentPayload;
+use MailPoet\Automation\Integrations\MailPoet\Payloads\SubscriberPayload;
 use MailPoet\Automation\Integrations\MailPoet\Subjects\SegmentSubject;
 use MailPoet\Automation\Integrations\MailPoet\Subjects\SubscriberSubject;
 use MailPoet\Entities\SegmentEntity;
@@ -88,5 +89,15 @@ class SomeoneSubscribesTrigger implements Trigger {
     $triggerArgs = $args->getStep()->getArgs();
     $segmentIds = $triggerArgs['segment_ids'] ?? [];
     return !is_array($segmentIds) || !$segmentIds || in_array($segmentId, $segmentIds, true);
+  }
+
+  public function getSubjectHash(array $subjectEntries): string {
+    foreach ($subjectEntries as $entry) {
+      $payload = $entry->getPayload();
+      if ($payload instanceof SubscriberPayload) {
+        return SubscriberSubject::KEY . ':' . $payload->getId();
+      }
+    }
+    return '';
   }
 }

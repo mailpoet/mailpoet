@@ -10,8 +10,11 @@ use MailPoet\Automation\Engine\Data\NextStep;
 use MailPoet\Automation\Engine\Data\Step;
 use MailPoet\Automation\Engine\Data\StepRunArgs;
 use MailPoet\Automation\Engine\Data\StepValidationArgs;
+use MailPoet\Automation\Engine\Data\SubjectEntry;
 use MailPoet\Automation\Engine\Exceptions\UnexpectedValueException;
 use MailPoet\Automation\Engine\Integration\Action;
+use MailPoet\Automation\Engine\Integration\Payload;
+use MailPoet\Automation\Engine\Integration\Subject;
 use MailPoet\Automation\Engine\Integration\Trigger;
 use MailPoet\Automation\Engine\Registry;
 use MailPoet\Automation\Engine\Validation\AutomationGraph\AutomationWalker;
@@ -142,6 +145,14 @@ class ValidStepOrderRuleTest extends AutomationRuleTest {
 
       public function getArgsSchema(): ObjectSchema {
         return new ObjectSchema();
+      }
+
+      /**
+       * @param SubjectEntry<Subject<Payload>>[] $subjectEntries
+       * @return string
+       */
+      public function getSubjectHash(array $subjectEntries): string {
+        return '';
       }
 
       public function getSubjectKeys(): array {
