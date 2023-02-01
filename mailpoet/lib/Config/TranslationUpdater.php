@@ -10,6 +10,8 @@ use Tracy\ILogger;
 class TranslationUpdater {
   const API_UPDATES_BASE_URI = 'https://translate.wordpress.com/api/translations-updates/mailpoet/';
   const MAILPOET_FREE_DOT_COM_PROJECT_ID = 'MailPoet - MailPoet';
+  const TRANSIENT_KEY_PREFIX = 'mailpoet_translation_updates_';
+  const TRANSIENT_EXPIRATION = 300; // 5 minutes
 
   /** @var WPFunctions */
   private $wpFunctions;
@@ -25,9 +27,6 @@ class TranslationUpdater {
 
   /** @var string|null */
   private $premiumVersion;
-
-  /** @var array  */
-  private $requestCache = [];
 
   public function __construct(
     WPFunctions $wpFunctions,
@@ -88,15 +87,16 @@ class TranslationUpdater {
 
     // Ten seconds, plus one extra second for every 10 locales.
     $timeout = 10 + (int)(count($locales) / 10);
-    $requestHash = md5(serialize($requestBody));
-    if (!isset($this->requestCache[$requestHash])) {
-      $this->requestCache[$requestHash] = $this->wpFunctions->wpRemotePost(self::API_UPDATES_BASE_URI, [
+    $cacheKey = self::TRANSIENT_KEY_PREFIX . md5(serialize($requestBody));
+    $rawResponse = $this->wpFunctions->getTransient($cacheKey);
+    if (!$rawResponse) {
+      $rawResponse = $this->wpFunctions->wpRemotePost(self::API_UPDATES_BASE_URI, [
         'body' => json_encode($requestBody),
         'headers' => ['Content-Type: application/json'],
         'timeout' => $timeout,
       ]);
+      $this->wpFunctions->setTransient($cacheKey, $rawResponse, self::TRANSIENT_EXPIRATION);
     }
-    $rawResponse = $this->requestCache[$requestHash];
 
     // Don't continue when API request failed.
     $responseCode = $this->wpFunctions->wpRemoteRetrieveResponseCode($rawResponse);
