@@ -5,17 +5,8 @@ import { MailPoet } from 'mailpoet';
 import { Button, List } from 'common';
 import { OwnEmailServiceNote } from './own_email_service_note';
 
-const mailpoetAccountUrl = MailPoet.MailPoetComUrlFactory.getPurchasePlanUrl(
-  MailPoet.subscribersCount,
-  MailPoet.currentWpUserEmail,
-  'starter',
-  {
-    ref: 'plugin-wizard',
-    utm_source: 'plugin',
-    utm_medium: 'onboarding',
-    utm_campaign: 'purchase',
-  },
-);
+const mailpoetAccountUrl =
+  'https://account.mailpoet.com/?ref=plugin-wizard&utm_source=plugin&utm_medium=onboarding&utm_campaign=purchase';
 
 function openMailPoetShopAndGoToTheNextPart(event, history, step: string) {
   event.preventDefault();
