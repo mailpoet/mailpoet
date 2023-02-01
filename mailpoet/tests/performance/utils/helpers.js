@@ -10,11 +10,9 @@ import { adminUsername, adminPassword } from '../config.js';
 // WordPress login authorization
 export function authenticate(page) {
   // Enter login credentials and login
-  Promise.all([
-    page.waitForNavigation({ waitUntil: 'networkidle' }),
-    page.locator('input[name="log"]').type(`${adminUsername}`),
-    page.locator('input[name="pwd"]').type(`${adminPassword}`),
-  ]);
+  page.waitForNavigation({ waitUntil: 'networkidle' });
+  page.locator('input[name="log"]').type(`${adminUsername}`);
+  page.locator('input[name="pwd"]').type(`${adminPassword}`);
   // Wait for asynchronous operations to complete
   return Promise.all([
     page.waitForNavigation(),
