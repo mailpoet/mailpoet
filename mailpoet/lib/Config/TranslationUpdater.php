@@ -89,21 +89,19 @@ class TranslationUpdater {
     $rawResponse = $this->wpFunctions->getTransient($cacheKey);
     if (!$rawResponse) {
       $rawResponse = $this->fetchApiResponse($requestBody);
+      // Don't continue when API request failed.
+      $responseCode = $this->wpFunctions->wpRemoteRetrieveResponseCode($rawResponse);
+      if ($responseCode !== 200) {
+        $this->logError("MailPoet: Failed to fetch translations from WordPress.com API with $responseCode and response message: " . $this->wpFunctions->wpRemoteRetrieveResponseMessage($rawResponse));
+        return [];
+      }
       $this->wpFunctions->setTransient($cacheKey, $rawResponse, self::TRANSIENT_EXPIRATION);
-    }
-
-    // Don't continue when API request failed.
-    $responseCode = $this->wpFunctions->wpRemoteRetrieveResponseCode($rawResponse);
-    if ($responseCode !== 200) {
-      $this->logError("MailPoet: Failed to fetch translations from WordPress.com API with $responseCode and response message: " . $this->wpFunctions->wpRemoteRetrieveResponseMessage($rawResponse));
-      return [];
     }
     $response = json_decode($this->wpFunctions->wpRemoteRetrieveBody($rawResponse), true);
     if (!is_array($response) || (array_key_exists('success', $response) && $response['success'] === false)) {
-      $this->logError("MailPoet: Failed to fetch translations from WordPress.com API with $responseCode and response: " . json_encode($response));
+      $this->logError("MailPoet: Failed to fetch translations from WordPress.com API with code 200 and response: " . json_encode($response));
       return [];
     }
-
     return $response['data'];
   }
 
