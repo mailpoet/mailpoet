@@ -34,6 +34,11 @@ class AssetsLoader {
       $this->enqueueStyle('mailpoet-form-editor', ['mailpoet-plugin']);
       $this->enqueueStyle('mailpoet-public');
     }
+    // We reuse a part of CSS in the newsletter editor
+    if ($page === 'mailpoet-newsletter-editor') {
+      // Newsletter-editor CSS has to be loaded after plugin style because it contains @wordpress/components dependency
+      $this->enqueueStyle('mailpoet-form-editor', ['mailpoet-plugin']);
+    }
   }
 
   private function enqueueStyle(string $name, array $deps = []): void {
