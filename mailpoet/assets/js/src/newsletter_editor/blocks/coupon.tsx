@@ -4,11 +4,13 @@
  */
 import { App } from 'newsletter_editor/App';
 import { BaseBlock } from 'newsletter_editor/blocks/base';
+import ReactDOM from 'react-dom';
 import _ from 'underscore';
 import jQuery from 'jquery';
 import 'backbone.marionette';
 import { MailPoet } from 'mailpoet';
 import { CommunicationComponent } from 'newsletter_editor/components/communication';
+import { SettingsHeader } from './coupon/settings_header';
 
 export const FEATURE_COUPON_BLOCK = 'Coupon block';
 
@@ -45,6 +47,7 @@ Module.CouponBlockModel = base.BlockModel.extend({
             width: '200px',
           },
         },
+        source: 'createNew',
       },
       App.getConfig().get('blockDefaults.coupon'),
     );
@@ -301,13 +304,13 @@ Module.CouponBlockSettingsView = base.BlockSettingsView.extend({
     this.model.set(field, value);
   },
   onRender() {
-    this.$('[data-parsley-validate]')
-      .parsley()
-      .forEach((instance) => {
-        if (instance.element.value) {
-          instance.validate();
-        }
-      });
+    ReactDOM.render(
+      <SettingsHeader
+        source={this.model.get('source')}
+        onClick={(source) => this.model.set('source', source)}
+      />,
+      jQuery('#coupon-settings')[0],
+    );
 
     const model = this.model;
     this.$('.mailpoet_field_coupon_existing_coupon')

@@ -1,18 +1,6 @@
 <h3 data-automation-id="coupon_settings_heading"><%= __('Coupon') %></h3>
-<div class="mailpoet_form_field">
-  <div class="mailpoet_form_field_radio_option">
-    <label>
-      <input type="radio" name="source" class="mailpoet_field_coupon_source" value="createNew" {{#ifCond model.source '!==' 'useExisting'}}CHECKED{{/ifCond}}/>
-      <%= _x('Create new') %>
-    </label>
-  </div>
-  <div class="mailpoet_form_field_radio_option">
-    <label>
-      <input type="radio" name="source" class="mailpoet_field_coupon_source" value="useExisting" {{#ifCond model.source '===' 'useExisting'}}CHECKED{{/ifCond}}/>
-      <%= _x('Use existing') %>
-    </label>
-  </div>
-</div>
+
+<div id="coupon-settings"></div>
 
 <div class="mailpoet_field_coupon_source_create_new {{#ifCond model.source '===' 'useExisting'}}mailpoet_hidden{{/ifCond}}">
   <details open>
