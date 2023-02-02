@@ -108,7 +108,9 @@ class NewsletterEditor {
         'customizer_enabled' => (bool)$this->settings->get('woocommerce.use_mailpoet_editor'),
         'coupon' => [
           'config' => [
-            'discount_types' => $discountTypes,
+            'discount_types' => array_map(function($label, $value): array {
+              return ['label' => $label, 'value' => $value];
+            }, $discountTypes, array_keys($discountTypes)),
             'available_coupons' => $this->woocommerceHelper->getCouponList(),
             'code_placeholder' => Coupon::CODE_PLACEHOLDER,
             'price_decimal_separator' => $this->woocommerceHelper->wcGetPriceDecimalSeparator(),

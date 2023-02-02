@@ -10,6 +10,7 @@ import jQuery from 'jquery';
 import 'backbone.marionette';
 import { MailPoet } from 'mailpoet';
 import { CommunicationComponent } from 'newsletter_editor/components/communication';
+import { CreateCouponTab } from './coupon/create_coupon_tab';
 import { SettingsHeader } from './coupon/settings_header';
 
 export const FEATURE_COUPON_BLOCK = 'Coupon block';
@@ -90,19 +91,6 @@ Module.CouponBlockSettingsView = base.BlockSettingsView.extend({
     return {
       'input .mailpoet_field_coupon_code': _.partial(this.changeField, 'code'),
       'change .mailpoet_field_coupon_source': 'changeSource',
-      'change .mailpoet_field_coupon_discount_type': 'changeDiscountType',
-      'input .mailpoet_field_coupon_amount': _.partial(
-        this.validateChangeField,
-        'amount',
-      ),
-      'input .mailpoet_field_coupon_expiry_day': _.partial(
-        this.validateChangeField,
-        'expiryDay',
-      ),
-      'change .mailpoet_field_coupon_free_shipping': _.partial(
-        this.changeBoolCheckboxField,
-        'freeShipping',
-      ),
       'input .mailpoet_field_coupon_minimum_amount': _.partial(
         this.validateMinAndMaxAmountFields,
         'minimumAmount',
@@ -238,9 +226,6 @@ Module.CouponBlockSettingsView = base.BlockSettingsView.extend({
       {
         availableStyles: App.getAvailableStyles().toJSON(),
         renderOptions: this.renderOptions,
-        availableDiscountTypes: App.getConfig()
-          .get('coupon.discount_types')
-          .toJSON(),
         availableCoupons: App.getConfig()
           .get('coupon.available_coupons')
           .toJSON(),
@@ -270,45 +255,21 @@ Module.CouponBlockSettingsView = base.BlockSettingsView.extend({
       checked ? jQuery(event.target).val() : 'normal',
     );
   },
-  changeDiscountType(event) {
-    const amountMax = this.model.get('amountMax');
-    const $input = this.$('.mailpoet_field_coupon_amount');
-    let newAmountMax;
-    if (event.target.value && event.target.value.includes('percent')) {
-      newAmountMax = 100;
-    } else {
-      newAmountMax = null;
-    }
-
-    this.$('.mailpoet_field_coupon_amount').parsley().destroy();
-    $input.prop('data-parsley-maxlength', newAmountMax);
-
-    this.changeField('discountType', event);
-    this.model.set('amountMax', newAmountMax);
-
-    if (amountMax !== this.model.get('amountMax')) {
-      this.render();
-    }
-
-    // It's a new element after the re-render
-    this.$('.mailpoet_field_coupon_amount').parsley().validate();
-  },
-  validateChangeField(field, event) {
-    const element = this.$(event.target);
-    const value = element.val();
-
-    if (!element.parsley().isValid()) {
-      return; // input invalid. not saving
-    }
-
-    this.model.set(field, value);
-  },
   onRender() {
     ReactDOM.render(
-      <SettingsHeader
-        source={this.model.get('source')}
-        onClick={(source) => this.model.set('source', source)}
-      />,
+      <>
+        <SettingsHeader
+          source={this.model.get('source')}
+          onClick={(source) => this.model.set('source', source)}
+        />
+        <CreateCouponTab
+          availableDiscountTypes={App.getConfig()
+            .get('coupon.discount_types')
+            .toJSON()}
+          setValueCallback={(name, value) => this.model.set(name, value)}
+          getValueCallback={(name) => this.model.get(name)}
+        />
+      </>,
       jQuery('#coupon-settings')[0],
     );
 
