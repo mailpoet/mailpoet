@@ -67,7 +67,7 @@ export function SubscribersStats(): JSX.Element {
                 {MailPoet.I18n.t('starBySettingUpForm')}
               </p>
               <a
-                href="#"
+                href="admin.php?page=mailpoet-form-editor-template-selection"
                 onClick={(event) =>
                   handleCtaClick(
                     event,
@@ -83,7 +83,7 @@ export function SubscribersStats(): JSX.Element {
             <>
               <p>{MailPoet.I18n.t('subscriberCountHasNotChangeLongTime')}</p>
               <a
-                href="#"
+                href="admin.php?page=mailpoet-newsletters#/new"
                 onClick={(event) =>
                   handleCtaClick(
                     event,
