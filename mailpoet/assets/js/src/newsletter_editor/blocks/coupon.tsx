@@ -10,8 +10,7 @@ import jQuery from 'jquery';
 import 'backbone.marionette';
 import { MailPoet } from 'mailpoet';
 import { CommunicationComponent } from 'newsletter_editor/components/communication';
-import { CreateCouponTab } from './coupon/create_coupon_tab';
-import { SettingsHeader } from './coupon/settings_header';
+import { Settings } from './coupon/settings';
 
 export const FEATURE_COUPON_BLOCK = 'Coupon block';
 
@@ -257,20 +256,14 @@ Module.CouponBlockSettingsView = base.BlockSettingsView.extend({
   },
   onRender() {
     ReactDOM.render(
-      <>
-        <SettingsHeader
-          source={this.model.get('source')}
-          onClick={(source) => this.model.set('source', source)}
-        />
-        <CreateCouponTab
-          availableDiscountTypes={App.getConfig()
-            .get('coupon.discount_types')
-            .toJSON()}
-          setValueCallback={(name, value) => this.model.set(name, value)}
-          getValueCallback={(name) => this.model.get(name)}
-        />
-      </>,
-      jQuery('#coupon-settings')[0],
+      <Settings
+        availableDiscountTypes={App.getConfig()
+          .get('coupon.discount_types')
+          .toJSON()}
+        setValueCallback={(name, value) => this.model.set(name, value)}
+        getValueCallback={(name) => this.model.get(name)}
+      />,
+      document.getElementById('mailpoet_coupon_block_settings'),
     );
 
     const model = this.model;
