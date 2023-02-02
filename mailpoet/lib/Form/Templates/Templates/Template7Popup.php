@@ -79,74 +79,42 @@ class Template7Popup extends FormTemplate {
         'name' => 'Divider',
       ],
       [
-        'type' => 'columns',
-        'body' => [
-          [
-            'type' => 'column',
-            'params' => [
-              'class_name' => '',
-              'vertical_alignment' => '',
-              'width' => '50',
-            ],
-            'body' => [
-              [
-                'type' => 'text',
-                'params' => [
-                  'label' => _x('Email Address', 'Form label', 'mailpoet'),
-                  'class_name' => '',
-                  'required' => '1',
-                  'label_within' => '1',
-                ],
-                'id' => 'email',
-                'name' => 'Email',
-                'styles' => [
-                  'full_width' => '1',
-                  'bold' => '0',
-                  'background_color' => '#ffffff',
-                  'font_color' => '#abb8c3',
-                  'border_size' => '0',
-                  'border_radius' => '6',
-                ],
-              ],
-            ],
-          ],
-          [
-            'type' => 'column',
-            'params' => [
-              'class_name' => '',
-              'vertical_alignment' => '',
-              'width' => '50',
-            ],
-            'body' => [
-              [
-                'type' => 'submit',
-                'params' => [
-                  'label' => _x('Get the latest deals', 'Form label', 'mailpoet'),
-                  'class_name' => '',
-                ],
-                'id' => 'submit',
-                'name' => 'Submit',
-                'styles' => [
-                  'full_width' => '1',
-                  'bold' => '1',
-                  'gradient' => 'linear-gradient(180deg,rgb(0,159,251) 0%,rgb(29,123,164) 100%)',
-                  'font_size' => '24',
-                  'font_color' => '#ffffff',
-                  'border_size' => '1',
-                  'border_radius' => '6',
-                  'padding' => '12',
-                  'font_family' => 'Cairo',
-                ],
-              ],
-            ],
-          ],
-        ],
+        'type' => 'text',
         'params' => [
-          'vertical_alignment' => '',
+          'label' => _x('Email Address', 'Form label', 'mailpoet'),
           'class_name' => '',
-          'text_color' => '',
-          'background_color' => '',
-          'gradient' => '',
+          'required' => '1',
+          'label_within' => '1',
+        ],
+        'id' => 'email',
+        'name' => 'Email',
+        'styles' => [
+          'full_width' => '1',
+          'bold' => '0',
+          'background_color' => '#ffffff',
+          'font_color' => '#abb8c3',
+          'border_size' => '0',
+          'border_radius' => '6',
+        ],
+      ],
+      [
+        'type' => 'submit',
+        'params' => [
+          'label' => _x('Get the latest deals', 'Form label', 'mailpoet'),
+          'class_name' => '',
+        ],
+        'id' => 'submit',
+        'name' => 'Submit',
+        'styles' => [
+          'full_width' => '1',
+          'bold' => '1',
+          'gradient' => 'linear-gradient(180deg,rgb(0,159,251) 0%,rgb(29,123,164) 100%)',
+          'font_size' => '24',
+          'font_color' => '#ffffff',
+          'border_size' => '1',
+          'border_radius' => '6',
+          'padding' => '12',
+          'font_family' => 'Cairo',
         ],
       ],
       [
