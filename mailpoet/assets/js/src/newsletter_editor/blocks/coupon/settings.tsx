@@ -1,6 +1,7 @@
 import { SelectControl } from '@wordpress/components';
 import { ErrorBoundary } from 'common';
 import { GlobalContext, useGlobalContextValue } from 'context/index.jsx';
+import { useState } from 'react';
 import { CreateCouponTab } from './create_coupon_tab';
 import { SettingsHeader } from './settings_header';
 
@@ -15,18 +16,25 @@ function Settings({
   getValueCallback,
   setValueCallback,
 }: Props): JSX.Element {
+  const [activeTab, setActiveTab] = useState(getValueCallback('source'));
+
   return (
     <ErrorBoundary>
       <GlobalContext.Provider value={useGlobalContextValue(window)}>
         <SettingsHeader
-          source={getValueCallback('source')}
-          onClick={(source) => setValueCallback('source', source as string)}
+          activeTab={activeTab}
+          onClick={(value: string) => {
+            setValueCallback('source', value);
+            setActiveTab(value);
+          }}
         />
-        <CreateCouponTab
-          availableDiscountTypes={availableDiscountTypes}
-          getValueCallback={getValueCallback}
-          setValueCallback={setValueCallback}
-        />
+        {activeTab === 'createNew' ? (
+          <CreateCouponTab
+            availableDiscountTypes={availableDiscountTypes}
+            getValueCallback={getValueCallback}
+            setValueCallback={setValueCallback}
+          />
+        ) : null}
       </GlobalContext.Provider>
     </ErrorBoundary>
   );
