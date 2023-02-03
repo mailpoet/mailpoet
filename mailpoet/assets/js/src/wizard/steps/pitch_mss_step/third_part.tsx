@@ -17,7 +17,12 @@ function MSSStepThirdPart(): JSX.Element {
       <div className="mailpoet-gap" />
       <div className="mailpoet-gap" />
 
-      <Button type="button" onClick={() => finishWizard()} isFullWidth>
+      <Button
+        className="mailpoet-wizard-continue-button"
+        type="button"
+        onClick={() => finishWizard()}
+        isFullWidth
+      >
         {MailPoet.I18n.t('welcomeWizardMSSThirdPartButton')}
       </Button>
     </>

@@ -39,7 +39,10 @@ function WelcomeWizardUsageTrackingStep({ loading, submitForm }) {
 
       <form onSubmit={submit}>
         <div>
-          <div className="mailpoet-wizard-woocommerce-option">
+          <div
+            id="mailpoet-wizard-3rd-party-libs"
+            className="mailpoet-wizard-woocommerce-option"
+          >
             <div className="mailpoet-wizard-woocommerce-toggle">
               <YesNo
                 showError={submitted && isNullOrUndefined(state.libs3rdParty)}
@@ -89,7 +92,10 @@ function WelcomeWizardUsageTrackingStep({ loading, submitForm }) {
 
           <div className="mailpoet-gap" />
 
-          <div className="mailpoet-wizard-woocommerce-option">
+          <div
+            id="mailpoet-wizard-tracking"
+            className="mailpoet-wizard-woocommerce-option"
+          >
             <div className="mailpoet-wizard-woocommerce-toggle">
               <YesNo
                 showError={submitted && isNullOrUndefined(state.tracking)}
@@ -138,6 +144,7 @@ function WelcomeWizardUsageTrackingStep({ loading, submitForm }) {
 
         <div className="mailpoet-gap" />
         <Button
+          className="mailpoet-wizard-continue-button"
           isFullWidth
           type="submit"
           withSpinner={loading}

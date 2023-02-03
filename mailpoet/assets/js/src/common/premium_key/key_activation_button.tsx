@@ -75,6 +75,7 @@ export function KeyActivationButton({
   return (
     <>
       <Button
+        className="mailpoet-verify-key-button"
         type="button"
         onClick={verifyKey}
         isFullWidth={isFullWidth}
