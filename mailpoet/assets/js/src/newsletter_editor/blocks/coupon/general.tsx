@@ -10,13 +10,13 @@ import { Component } from '@wordpress/element';
 import jQuery from 'jquery';
 import { MailPoet } from 'mailpoet';
 
-export type CreateCouponTabProps = {
+type Props = {
   availableDiscountTypes: SelectControl.Option[];
   getValueCallback: (name: string) => string | boolean;
   setValueCallback: (name: string, value: string | boolean) => void;
 };
 
-export type CreateCouponTabState = {
+type State = {
   amount: string;
   amountMax: string;
   discountType: string;
@@ -24,10 +24,7 @@ export type CreateCouponTabState = {
   freeShipping: boolean;
 };
 
-class CreateCouponTab extends Component<
-  CreateCouponTabProps,
-  CreateCouponTabState
-> {
+class General extends Component<Props, State> {
   private readonly availableDiscountTypes: SelectControl.Option[];
 
   private readonly getValueCallback: (name: string) => string | boolean;
@@ -37,7 +34,7 @@ class CreateCouponTab extends Component<
     value: string | boolean,
   ) => void;
 
-  constructor(props: CreateCouponTabProps) {
+  constructor(props: Props) {
     super(props);
     this.availableDiscountTypes = props.availableDiscountTypes;
     this.getValueCallback = props.getValueCallback;
@@ -139,4 +136,4 @@ class CreateCouponTab extends Component<
   }
 }
 
-export { CreateCouponTab };
+export { General };

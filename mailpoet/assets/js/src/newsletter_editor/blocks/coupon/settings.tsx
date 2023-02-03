@@ -2,7 +2,7 @@ import { SelectControl } from '@wordpress/components';
 import { ErrorBoundary } from 'common';
 import { GlobalContext, useGlobalContextValue } from 'context/index.jsx';
 import { useState } from 'react';
-import { CreateCouponTab } from './create_coupon_tab';
+import { General } from './general';
 import { SettingsHeader } from './settings_header';
 
 type Props = {
@@ -29,7 +29,7 @@ function Settings({
           }}
         />
         {activeTab === 'createNew' ? (
-          <CreateCouponTab
+          <General
             availableDiscountTypes={availableDiscountTypes}
             getValueCallback={getValueCallback}
             setValueCallback={setValueCallback}
