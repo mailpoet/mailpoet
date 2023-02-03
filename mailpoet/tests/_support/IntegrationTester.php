@@ -154,7 +154,7 @@ class IntegrationTester extends \Codeception\Actor {
     return $automation;
   }
 
-  public function createAutomationRun(Automation $automation, $subjects = []): ?AutomationRun {
+  public function createAutomationRun(Automation $automation, $subjects = []): AutomationRun {
     $trigger = array_filter($automation->getSteps(), function(Step $step): bool { return $step->getType() === Step::TYPE_TRIGGER;
 
     });
@@ -170,6 +170,11 @@ class IntegrationTester extends \Codeception\Actor {
       $subjects
     );
     $automationRunStorage = ContainerWrapper::getInstance()->get(AutomationRunStorage::class);
-    return $automationRunStorage->getAutomationRun($automationRunStorage->createAutomationRun($automationRun));
+    $id = $automationRunStorage->createAutomationRun($automationRun);
+    $automationRun = $automationRunStorage->getAutomationRun($id);
+    if (!$automationRun instanceof AutomationRun) {
+      throw new \Exception("Automation run could not be created.");
+    }
+    return $automationRun;
   }
 }

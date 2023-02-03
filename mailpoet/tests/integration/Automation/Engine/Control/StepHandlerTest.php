@@ -44,7 +44,6 @@ class StepHandlerTest extends \MailPoetTest {
     $automation = $this->createAutomation();
     $steps = $automation->getSteps();
     $automationRun = $this->tester->createAutomationRun($automation);
-    $this->assertInstanceOf(AutomationRun::class, $automationRun);
 
     $currentStep = current($steps);
     $this->assertInstanceOf(Step::class, $currentStep);
@@ -79,7 +78,6 @@ class StepHandlerTest extends \MailPoetTest {
       $automation->setStatus($status);
       $this->automationStorage->updateAutomation($automation);
       $automationRun = $this->tester->createAutomationRun($automation);
-      $this->assertInstanceOf(AutomationRun::class, $automationRun);
       $error = null;
       try {
         $this->testee->handle(['automation_run_id' => $automationRun->getId(), 'step_id' => $currentStep->getId()]);
@@ -98,9 +96,7 @@ class StepHandlerTest extends \MailPoetTest {
   public function testAnDeactivatingAutomationBecomesDraftAfterLastRunIsExecuted() {
     $automation = $this->createAutomation();
     $automationRun1 = $this->tester->createAutomationRun($automation);
-    $this->assertInstanceOf(AutomationRun::class, $automationRun1);
     $automationRun2 = $this->tester->createAutomationRun($automation);
-    $this->assertInstanceOf(AutomationRun::class, $automationRun2);
     $automation->setStatus(Automation::STATUS_DEACTIVATING);
     $this->automationStorage->updateAutomation($automation);
 
