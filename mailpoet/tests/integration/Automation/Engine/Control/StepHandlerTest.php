@@ -44,7 +44,7 @@ class StepHandlerTest extends \MailPoetTest {
     $automation = $this->createAutomation();
     $this->assertInstanceOf(Automation::class, $automation);
     $steps = $automation->getSteps();
-    $automationRun = $this->createAutomationRun($automation);
+    $automationRun = $this->tester->createAutomationRun($automation);
     $this->assertInstanceOf(AutomationRun::class, $automationRun);
 
     $currentStep = current($steps);
@@ -79,7 +79,7 @@ class StepHandlerTest extends \MailPoetTest {
     foreach ($invalidStati as $status) {
       $automation->setStatus($status);
       $this->automationStorage->updateAutomation($automation);
-      $automationRun = $this->createAutomationRun($automation);
+      $automationRun = $this->tester->createAutomationRun($automation);
       $this->assertInstanceOf(AutomationRun::class, $automationRun);
       $error = null;
       try {
@@ -99,9 +99,9 @@ class StepHandlerTest extends \MailPoetTest {
   public function testAnDeactivatingAutomationBecomesDraftAfterLastRunIsExecuted() {
     $automation = $this->createAutomation();
     $this->assertInstanceOf(Automation::class, $automation);
-    $automationRun1 = $this->createAutomationRun($automation);
+    $automationRun1 = $this->tester->createAutomationRun($automation);
     $this->assertInstanceOf(AutomationRun::class, $automationRun1);
-    $automationRun2 = $this->createAutomationRun($automation);
+    $automationRun2 = $this->tester->createAutomationRun($automation);
     $this->assertInstanceOf(AutomationRun::class, $automationRun2);
     $automation->setStatus(Automation::STATUS_DEACTIVATING);
     $this->automationStorage->updateAutomation($automation);
@@ -137,24 +137,6 @@ class StepHandlerTest extends \MailPoetTest {
       new Step('someone-subscribes', Step::TYPE_TRIGGER, $trigger->getKey(), [], [new NextStep('a')]),
       new Step('delay', Step::TYPE_ACTION, $delay->getKey(), [], [])
     );
-  }
-
-  private function createAutomationRun(Automation $automation, $subjects = []): ?AutomationRun {
-    $trigger = array_filter($automation->getSteps(), function(Step $step): bool { return $step->getType() === Step::TYPE_TRIGGER;
-
-    });
-    $triggerKeys = array_map(function(Step $step): string { return $step->getKey();
-
-    }, $trigger);
-    $triggerKey = count($triggerKeys) > 0 ? current($triggerKeys) : '';
-
-    $automationRun = new AutomationRun(
-      $automation->getId(),
-      $automation->getVersionId(),
-      $triggerKey,
-      $subjects
-    );
-    return $this->automationRunStorage->getAutomationRun($this->automationRunStorage->createAutomationRun($automationRun));
   }
 
   public function _after() {
