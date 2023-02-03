@@ -44,6 +44,7 @@ function MSSStepFirstPart(): JSX.Element {
       <div className="mailpoet-gap" />
 
       <Button
+        className="mailpoet-wizard-continue-button"
         isFullWidth
         href={mailpoetAccountUrl}
         target="_blank"

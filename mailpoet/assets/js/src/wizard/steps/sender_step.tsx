@@ -82,7 +82,12 @@ function WelcomeWizardSenderStep({
         <div className="mailpoet-gap" />
         <div className="mailpoet-gap" />
 
-        <Button isFullWidth type="submit" withSpinner={loading}>
+        <Button
+          className="mailpoet-wizard-continue-button"
+          isFullWidth
+          type="submit"
+          withSpinner={loading}
+        >
           {MailPoet.I18n.t('continue')}
         </Button>
         <Button

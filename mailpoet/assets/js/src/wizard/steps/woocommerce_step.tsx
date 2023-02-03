@@ -129,6 +129,7 @@ function WizardWooCommerceStep({
 
         <div className="mailpoet-gap" />
         <Button
+          className="mailpoet-wizard-continue-button"
           isFullWidth
           type="submit"
           withSpinner={loading}
