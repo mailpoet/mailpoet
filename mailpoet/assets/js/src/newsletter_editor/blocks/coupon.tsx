@@ -90,22 +90,6 @@ Module.CouponBlockSettingsView = base.BlockSettingsView.extend({
     return {
       'input .mailpoet_field_coupon_code': _.partial(this.changeField, 'code'),
       'change .mailpoet_field_coupon_source': 'changeSource',
-      'input .mailpoet_field_coupon_minimum_amount': _.partial(
-        this.validateMinAndMaxAmountFields,
-        'minimumAmount',
-      ),
-      'input .mailpoet_field_coupon_maximum_amount': _.partial(
-        this.validateMinAndMaxAmountFields,
-        'maximumAmount',
-      ),
-      'change .mailpoet_field_coupon_individual_use': _.partial(
-        this.changeBoolCheckboxField,
-        'individualUse',
-      ),
-      'change .mailpoet_field_coupon_exclude_sale_items': _.partial(
-        this.changeBoolCheckboxField,
-        'excludeSaleItems',
-      ),
       'input .mailpoet_field_coupon_email_restrictions': _.partial(
         this.validateEmailRestrictionsField,
         'emailRestrictions',
@@ -260,6 +244,9 @@ Module.CouponBlockSettingsView = base.BlockSettingsView.extend({
         availableDiscountTypes={App.getConfig()
           .get('coupon.discount_types')
           .toJSON()}
+        priceDecimalSeparator={App.getConfig().get(
+          'coupon.price_decimal_separator',
+        )}
         setValueCallback={(name, value) => this.model.set(name, value)}
         getValueCallback={(name) => this.model.get(name)}
       />,
@@ -458,42 +445,6 @@ Module.CouponBlockSettingsView = base.BlockSettingsView.extend({
         this.model.set(fieldName, modelItem.toJSON());
       },
     };
-  },
-  validateMinAndMaxAmountFields(field, event) {
-    const element = event.target;
-    const errorElem = element.nextElementSibling;
-
-    // this validation code was gotten from https://github.com/woocommerce/woocommerce/blob/trunk/plugins/woocommerce/client/legacy/js/admin/woocommerce_admin.js#L150-L212
-    // used by /wp-admin/edit.php?post_type=shop_coupon :- when adding/editing a coupon
-
-    const priceDecimalSeparator = String(
-      App.getConfig().get('coupon.price_decimal_separator'),
-    );
-
-    const regex = new RegExp(`[^-0-9%\\${priceDecimalSeparator}]+`, 'gi');
-    const decimalRegex = new RegExp(`[^\\${priceDecimalSeparator}]`, 'gi');
-
-    const value = element.value;
-    let newvalue = value.replace(regex, '');
-
-    // Check if newvalue have more than one decimal point.
-    if (newvalue.replace(decimalRegex, '').length > 1) {
-      newvalue = newvalue.replace(decimalRegex, '');
-    }
-
-    if (value !== newvalue) {
-      // show error message
-      if (errorElem && errorElem.classList.contains('mailpoet_hidden')) {
-        errorElem.classList.remove('mailpoet_hidden');
-      }
-      return;
-    }
-
-    if (errorElem && !errorElem.classList.contains('mailpoet_hidden')) {
-      errorElem.classList.add('mailpoet_hidden'); // hide error message
-    }
-
-    this.model.set(field, value);
   },
   validateEmailRestrictionsField(field, event) {
     const element = event.target;
