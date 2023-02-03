@@ -14,7 +14,6 @@ use MailPoet\Entities\SubscriberEntity;
 use MailPoet\InvalidStateException;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Scheduler\AutomationEmailScheduler;
-use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\SubscriberSegmentRepository;
 use MailPoet\Validator\Builder;
@@ -30,9 +29,6 @@ class SendEmailAction implements Action {
   /** @var NewslettersRepository */
   private $newslettersRepository;
 
-  /** @var ScheduledTasksRepository */
-  private $scheduledTasksRepository;
-
   /** @var SubscriberSegmentRepository */
   private $subscriberSegmentRepository;
 
@@ -42,13 +38,11 @@ class SendEmailAction implements Action {
   public function __construct(
     SettingsController $settings,
     NewslettersRepository $newslettersRepository,
-    ScheduledTasksRepository $scheduledTasksRepository,
     SubscriberSegmentRepository $subscriberSegmentRepository,
     AutomationEmailScheduler $automationEmailScheduler
   ) {
     $this->settings = $settings;
     $this->newslettersRepository = $newslettersRepository;
-    $this->scheduledTasksRepository = $scheduledTasksRepository;
     $this->subscriberSegmentRepository = $subscriberSegmentRepository;
     $this->automationEmailScheduler = $automationEmailScheduler;
   }
@@ -136,11 +130,6 @@ class SendEmailAction implements Action {
     $subscriberStatus = $subscriber->getStatus();
     if ($subscriberStatus !== SubscriberEntity::STATUS_SUBSCRIBED) {
       throw InvalidStateException::create()->withMessage(sprintf("Cannot schedule a newsletter for subscriber ID '%s' because their status is '%s'.", $subscriberId, $subscriberStatus));
-    }
-
-    $previouslyScheduledNotification = $this->scheduledTasksRepository->findByNewsletterAndSubscriberId($newsletter, $subscriberId);
-    if (!empty($previouslyScheduledNotification)) {
-      throw InvalidStateException::create()->withMessage(sprintf("Subscriber ID '%s' was already scheduled to receive newsletter ID '%s'.", $subscriberId, $newsletter->getId()));
     }
 
     try {

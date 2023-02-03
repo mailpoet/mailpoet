@@ -22,7 +22,6 @@ use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Exception;
-use MailPoet\InvalidStateException;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Subscribers\SubscribersRepository;
@@ -114,38 +113,6 @@ class SendEmailActionTest extends \MailPoetTest {
     expect($scheduled)->count(0);
 
     $this->action->run(new StepRunArgs($automation, $run, $step, $this->getSubjectEntries($subjects)));
-
-    $scheduled = $this->scheduledTasksRepository->findByNewsletterAndSubscriberId($email, (int)$subscriber->getId());
-    expect($scheduled)->count(1);
-  }
-
-  public function testItDoesNotScheduleDuplicates(): void {
-    $segment = (new Segment())->create();
-    $subscriber = (new Subscriber())
-      ->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)
-      ->withSegments([$segment])
-      ->create();
-    $subjects = $this->getSubjectData($subscriber, $segment);
-    $email = (new Newsletter())->withAutomationType()->create();
-
-    $step = new Step('step-id', Step::TYPE_ACTION, 'step-key', ['email_id' => $email->getId()], []);
-    $automation = new Automation('some-automation', [$step->getId() => $step], new \WP_User());
-    $run = new AutomationRun(1, 1, 'trigger-key', $subjects);
-
-    $scheduled = $this->scheduledTasksRepository->findByNewsletterAndSubscriberId($email, (int)$subscriber->getId());
-    expect($scheduled)->count(0);
-
-    $action = ContainerWrapper::getInstance()->get(SendEmailAction::class);
-    $action->run(new StepRunArgs($automation, $run, $step, $this->getSubjectEntries($subjects)));
-
-    $scheduled = $this->scheduledTasksRepository->findByNewsletterAndSubscriberId($email, (int)$subscriber->getId());
-    expect($scheduled)->count(1);
-
-    try {
-      $action->run(new StepRunArgs($automation, $run, $step, $this->getSubjectEntries($subjects)));
-    } catch (InvalidStateException $exception) {
-      // The exception itself isn't as important as the outcome
-    }
 
     $scheduled = $this->scheduledTasksRepository->findByNewsletterAndSubscriberId($email, (int)$subscriber->getId());
     expect($scheduled)->count(1);
