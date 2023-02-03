@@ -37,8 +37,18 @@ class SomeoneSubscribesTriggerTest extends \MailPoetTest {
 
     $testee = $this->diContainer->get(SomeoneSubscribesTrigger::class);
     $stepRunArgs = new StepRunArgs(
-      $this->make(Automation::class),
-      $this->make(AutomationRun::class),
+      $this->make(
+        Automation::class,
+        [
+          'getId' => 1,
+        ]
+      ),
+      $this->make(
+        AutomationRun::class,
+        [
+          'getSubjectHash' => 'hash',
+        ]
+      ),
       new Step('test-id', 'trigger', 'test:trigger', ['segment_ids' => $segmentIds], []),
       [
         new SubjectEntry(

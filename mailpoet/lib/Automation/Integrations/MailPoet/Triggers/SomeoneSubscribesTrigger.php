@@ -7,6 +7,7 @@ use MailPoet\Automation\Engine\Data\StepValidationArgs;
 use MailPoet\Automation\Engine\Data\Subject;
 use MailPoet\Automation\Engine\Hooks;
 use MailPoet\Automation\Engine\Integration\Trigger;
+use MailPoet\Automation\Engine\Storage\AutomationRunStorage;
 use MailPoet\Automation\Integrations\MailPoet\Payloads\SegmentPayload;
 use MailPoet\Automation\Integrations\MailPoet\Payloads\SubscriberPayload;
 use MailPoet\Automation\Integrations\MailPoet\Subjects\SegmentSubject;
@@ -28,12 +29,17 @@ class SomeoneSubscribesTrigger implements Trigger {
   /** @var SegmentsRepository  */
   private $segmentsRepository;
 
+  /** @var AutomationRunStorage */
+  private $automationRunStorage;
+
   public function __construct(
     WPFunctions $wp,
-    SegmentsRepository $segmentsRepository
+    SegmentsRepository $segmentsRepository,
+    AutomationRunStorage $automationRunStorage
   ) {
     $this->wp = $wp;
     $this->segmentsRepository = $segmentsRepository;
+    $this->automationRunStorage = $automationRunStorage;
   }
 
   public function getKey(): string {
@@ -47,6 +53,7 @@ class SomeoneSubscribesTrigger implements Trigger {
   public function getArgsSchema(): ObjectSchema {
     return Builder::object([
       'segment_ids' => Builder::array(Builder::number()),
+      'run_multiple_times' => Builder::boolean()->default(false),
     ]);
   }
 
@@ -85,8 +92,20 @@ class SomeoneSubscribesTrigger implements Trigger {
       return false;
     }
 
-    // Triggers when no segment IDs defined (= any segment) or the current segment paylo.
     $triggerArgs = $args->getStep()->getArgs();
+
+    $runMultipleTimes = $triggerArgs['run_multiple_times'] ?? false;
+    if (
+      !$runMultipleTimes
+      && $this->automationRunStorage->getAutomationRunByAutomationIdAndSubjectHash(
+        $args->getAutomation()->getId(),
+        $args->getAutomationRun()->getSubjectHash()
+      ) !== null
+    ) {
+      return false;
+    }
+
+    // Triggers when no segment IDs defined (= any segment) or the current payloads segment is part of the defined segments.
     $segmentIds = $triggerArgs['segment_ids'] ?? [];
     return !is_array($segmentIds) || !$segmentIds || in_array($segmentId, $segmentIds, true);
   }
@@ -95,7 +114,7 @@ class SomeoneSubscribesTrigger implements Trigger {
     foreach ($subjectEntries as $entry) {
       $payload = $entry->getPayload();
       if ($payload instanceof SubscriberPayload) {
-        return SubscriberSubject::KEY . ':' . $payload->getId();
+        return SubscriberSubject::KEY . ':' . $payload->getSubscriber()->getEmail();
       }
     }
     return '';

@@ -9,6 +9,7 @@ use MailPoet\Automation\Engine\Data\StepRunArgs;
 use MailPoet\Automation\Engine\Data\Subject;
 use MailPoet\Automation\Engine\Data\SubjectEntry;
 use MailPoet\Automation\Engine\Hooks;
+use MailPoet\Automation\Engine\Storage\AutomationRunStorage;
 use MailPoet\Automation\Integrations\MailPoet\Subjects\SegmentSubject;
 use MailPoet\Automation\Integrations\MailPoet\Subjects\SubscriberSubject;
 use MailPoet\Automation\Integrations\MailPoet\Triggers\UserRegistrationTrigger;
@@ -63,7 +64,8 @@ class UserRegistrationTriggerTest extends \MailPoetTest {
     $wpMock = $this->createMock(Functions::class);
     $testee = new UserRegistrationTrigger(
       $wpMock,
-      $this->diContainer->get(SubscribersRepository::class)
+      $this->diContainer->get(SubscribersRepository::class),
+      $this->diContainer->get(AutomationRunStorage::class)
     );
 
     $subscriber = $this->subscribersRepository->findOneBy(['wpUserId' => $this->userId]);
@@ -107,8 +109,18 @@ class UserRegistrationTriggerTest extends \MailPoetTest {
     $this->assertInstanceOf(SegmentEntity::class, $segment);
 
     $stepRunArgs = new StepRunArgs(
-      $this->make(Automation::class),
-      $this->make(AutomationRun::class),
+      $this->make(
+        Automation::class,
+        [
+          'getId' => 1,
+        ]
+      ),
+      $this->make(
+        AutomationRun::class,
+        [
+          'getSubjectHash' => 'hash',
+        ]
+      ),
       new Step('test-id', 'trigger', 'test:trigger', ['roles' => $roleSetting], []),
       [
         new SubjectEntry(

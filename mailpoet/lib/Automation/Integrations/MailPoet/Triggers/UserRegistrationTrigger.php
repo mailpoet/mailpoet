@@ -7,6 +7,7 @@ use MailPoet\Automation\Engine\Data\StepValidationArgs;
 use MailPoet\Automation\Engine\Data\Subject;
 use MailPoet\Automation\Engine\Hooks;
 use MailPoet\Automation\Engine\Integration\Trigger;
+use MailPoet\Automation\Engine\Storage\AutomationRunStorage;
 use MailPoet\Automation\Integrations\MailPoet\Payloads\SegmentPayload;
 use MailPoet\Automation\Integrations\MailPoet\Payloads\SubscriberPayload;
 use MailPoet\Automation\Integrations\MailPoet\Subjects\SegmentSubject;
@@ -27,12 +28,17 @@ class UserRegistrationTrigger implements Trigger {
 
   private $subscribersRepository;
 
+  /** @var AutomationRunStorage */
+  private $automationRunStorage;
+
   public function __construct(
     WPFunctions $wp,
-    SubscribersRepository $subscribersRepository
+    SubscribersRepository $subscribersRepository,
+    AutomationRunStorage $automationRunStorage
   ) {
     $this->wp = $wp;
     $this->subscribersRepository = $subscribersRepository;
+    $this->automationRunStorage = $automationRunStorage;
   }
 
   public function getKey(): string {
@@ -46,6 +52,7 @@ class UserRegistrationTrigger implements Trigger {
   public function getArgsSchema(): ObjectSchema {
     return Builder::object([
       'roles' => Builder::array(Builder::string()),
+      'run_multiple_times' => Builder::boolean()->default(false),
     ]);
   }
 
@@ -95,6 +102,18 @@ class UserRegistrationTrigger implements Trigger {
     }
 
     $triggerArgs = $args->getStep()->getArgs();
+
+    $runMultipleTimes = $triggerArgs['run_multiple_times'] ?? false;
+    if (
+      !$runMultipleTimes
+      && $this->automationRunStorage->getAutomationRunByAutomationIdAndSubjectHash(
+        $args->getAutomation()->getId(),
+        $args->getAutomationRun()->getSubjectHash()
+      ) !== null
+    ) {
+      return false;
+    }
+
     $roles = $triggerArgs['roles'] ?? [];
     return !is_array($roles) || !$roles || count(array_intersect($user->roles, $roles)) > 0;
   }
@@ -103,7 +122,7 @@ class UserRegistrationTrigger implements Trigger {
     foreach ($subjectEntries as $entry) {
       $payload = $entry->getPayload();
       if ($payload instanceof SubscriberPayload) {
-        return SubscriberSubject::KEY . ':' . $payload->getId();
+        return SubscriberSubject::KEY . ':' . $payload->getSubscriber()->getEmail();
       }
     }
     return '';
