@@ -3,6 +3,7 @@ import { GlobalContext, useGlobalContextValue } from 'context/index.jsx';
 import { ErrorBoundary } from 'common';
 import { Background } from 'common/background/background';
 import { HideScreenOptions } from 'common/hide_screen_options/hide_screen_options';
+import { TopBarWithBeamer } from 'common/top_bar/top_bar';
 import { Header } from './header';
 import { Footer } from './footer';
 import { Faq } from './faq';
@@ -13,6 +14,7 @@ function Landingpage() {
     <GlobalContext.Provider value={useGlobalContextValue(window)}>
       <main>
         <HideScreenOptions />
+        <TopBarWithBeamer />
 
         <Background color="#fff" />
 

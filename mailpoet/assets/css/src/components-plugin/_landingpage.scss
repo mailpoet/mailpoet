@@ -1,6 +1,7 @@
 #mailpoet_landingpage_container {
   $content-padding: 32px 65px;
   $mobile-content-padding: 25px;
+  $landingpage-max-width: 1460px;
 
   .mailpoet-content-center {
     text-align: center;
@@ -129,6 +130,11 @@
         }
       }
     }
+  }
+
+  main {
+    margin: 0 auto;
+    max-width: $landingpage-max-width;
   }
 }
 
