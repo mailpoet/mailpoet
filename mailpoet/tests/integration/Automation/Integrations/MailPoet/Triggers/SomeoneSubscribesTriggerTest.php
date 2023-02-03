@@ -114,7 +114,6 @@ class SomeoneSubscribesTriggerTest extends \MailPoetTest {
         []
       )
     );
-    $this->assertInstanceOf(Automation::class, $automation);
 
     /** @var SomeoneSubscribesTrigger $testee */
     $testee = $this->diContainer->get(SomeoneSubscribesTrigger::class);

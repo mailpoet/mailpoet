@@ -42,7 +42,6 @@ class StepHandlerTest extends \MailPoetTest {
 
   public function testItDoesOnlyProcessActiveAndDeactivatingAutomations() {
     $automation = $this->createAutomation();
-    $this->assertInstanceOf(Automation::class, $automation);
     $steps = $automation->getSteps();
     $automationRun = $this->tester->createAutomationRun($automation);
     $this->assertInstanceOf(AutomationRun::class, $automationRun);
@@ -98,7 +97,6 @@ class StepHandlerTest extends \MailPoetTest {
 
   public function testAnDeactivatingAutomationBecomesDraftAfterLastRunIsExecuted() {
     $automation = $this->createAutomation();
-    $this->assertInstanceOf(Automation::class, $automation);
     $automationRun1 = $this->tester->createAutomationRun($automation);
     $this->assertInstanceOf(AutomationRun::class, $automationRun1);
     $automationRun2 = $this->tester->createAutomationRun($automation);
@@ -129,7 +127,7 @@ class StepHandlerTest extends \MailPoetTest {
     $this->assertSame(AutomationRun::STATUS_COMPLETE, $updatedautomationRun->getStatus());
   }
 
-  private function createAutomation(): ?Automation {
+  private function createAutomation(): Automation {
     $trigger = $this->diContainer->get(SomeoneSubscribesTrigger::class);
     $delay = $this->diContainer->get(DelayAction::class);
     return $this->tester->createAutomation(

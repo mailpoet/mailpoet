@@ -21,7 +21,6 @@ class AutomationsDeleteEndpointTest extends AutomationTest {
     parent::_before();
     $this->automationStorage = $this->diContainer->get(AutomationStorage::class);
     $automation = $this->tester->createAutomation('Testing automation');
-    $this->assertInstanceOf(Automation::class, $automation);
     $this->automation = $automation;
   }
 

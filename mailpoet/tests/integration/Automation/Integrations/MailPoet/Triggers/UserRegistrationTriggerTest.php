@@ -177,7 +177,6 @@ class UserRegistrationTriggerTest extends \MailPoetTest {
         ],
         []
       ));
-    $this->assertInstanceOf(Automation::class, $automation);
     $subscriber = $this->subscribersRepository->findOneBy(['wpUserId' => $this->userId]);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
     $subscriberSegment = $this->subscriberSegmentRepository->findOneBy(['subscriber' => $subscriber]);

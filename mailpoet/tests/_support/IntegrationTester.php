@@ -120,7 +120,7 @@ class IntegrationTester extends \Codeception\Actor {
     expect($date1->getTimestamp())->equals($date2->getTimestamp(), $delta);
   }
 
-  public function createAutomation(string $name, Step ...$steps): ?Automation {
+  public function createAutomation(string $name, Step ...$steps): Automation {
     $automationStorage = ContainerWrapper::getInstance()->get(AutomationStorage::class);
 
     if (!$steps) {
@@ -146,7 +146,12 @@ class IntegrationTester extends \Codeception\Actor {
     }
     $automation = new Automation($name, $stepsWithIds, wp_get_current_user());
     $automation->setStatus(Automation::STATUS_ACTIVE);
-    return $automationStorage->getAutomation($automationStorage->createAutomation($automation));
+    $id = $automationStorage->createAutomation($automation);
+    $automation = $automationStorage->getAutomation($id);
+    if (!$automation instanceof Automation) {
+      throw new \Exception("Automation could not be created.");
+    }
+    return $automation;
   }
 
   public function createAutomationRun(Automation $automation, $subjects = []): ?AutomationRun {
