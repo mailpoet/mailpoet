@@ -1,6 +1,11 @@
 <?php declare(strict_types = 1);
 
 use Automattic\WooCommerce\Admin\API\Reports\Orders\Stats\DataStore;
+use MailPoet\Automation\Engine\Data\Automation;
+use MailPoet\Automation\Engine\Data\NextStep;
+use MailPoet\Automation\Engine\Data\Step;
+use MailPoet\Automation\Engine\Storage\AutomationStorage;
+use MailPoet\Automation\Integrations\Core\Actions\DelayAction;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Util\Security;
 use MailPoet\WooCommerce\Helper;
@@ -111,5 +116,34 @@ class IntegrationTester extends \Codeception\Actor {
       throw new \Exception('$date2 is not DateTimeInterface');
     }
     expect($date1->getTimestamp())->equals($date2->getTimestamp(), $delta);
+  }
+
+  public function createAutomation(string $name, Step ...$steps): ?Automation {
+    $automationStorage = ContainerWrapper::getInstance()->get(AutomationStorage::class);
+
+    if (!$steps) {
+      $steps[] = new Step('trigger', Step::TYPE_TRIGGER, \MailPoet\Automation\Integrations\MailPoet\Triggers\SomeoneSubscribesTrigger::KEY, [], []);
+    }
+    //If we only have a trigger, add a delay step to make the automation valid.
+    if (count($steps) === 1) {
+      $delay = ContainerWrapper::getInstance()->get(DelayAction::class);
+      $delayStep = new Step('delay', Step::TYPE_ACTION, $delay->getKey(), [], []);
+      $steps[0]->setNextSteps([new NextStep($delayStep->getId())]);
+      $steps[] = $delayStep;
+    }
+    $steps = array_merge(
+      [
+        'root' => new Step('root', Step::TYPE_ROOT, 'root', [], [new NextStep($steps[0]->getId())]),
+      ],
+      $steps
+    );
+
+    $stepsWithIds = [];
+    foreach ($steps as $step) {
+      $stepsWithIds[$step->getId()] = $step;
+    }
+    $automation = new Automation($name, $stepsWithIds, wp_get_current_user());
+    $automation->setStatus(Automation::STATUS_ACTIVE);
+    return $automationStorage->getAutomation($automationStorage->createAutomation($automation));
   }
 }

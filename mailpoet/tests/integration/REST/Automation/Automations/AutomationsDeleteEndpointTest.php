@@ -3,7 +3,6 @@
 namespace MailPoet\REST\Automation\Automations;
 
 use MailPoet\Automation\Engine\Data\Automation;
-use MailPoet\Automation\Engine\Data\Step;
 use MailPoet\Automation\Engine\Storage\AutomationStorage;
 use MailPoet\REST\Automation\AutomationTest;
 
@@ -21,14 +20,7 @@ class AutomationsDeleteEndpointTest extends AutomationTest {
   public function _before() {
     parent::_before();
     $this->automationStorage = $this->diContainer->get(AutomationStorage::class);
-    $id = $this->automationStorage->createAutomation(
-      new Automation(
-        'Testing automation',
-        ['root' => new Step('root', Step::TYPE_ROOT, 'core:root', [], [])],
-        wp_get_current_user()
-      )
-    );
-    $automation = $this->automationStorage->getAutomation($id);
+    $automation = $this->tester->createAutomation('Testing automation');
     $this->assertInstanceOf(Automation::class, $automation);
     $this->automation = $automation;
   }
