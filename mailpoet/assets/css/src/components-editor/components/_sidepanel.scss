@@ -12,6 +12,12 @@
     font-size: 1.4em;
     text-transform: uppercase;
   }
+
+  .components-panel__row {
+    align-items: flex-start;
+    flex-direction: column;
+    justify-content: flex-start;
+  }
 }
 
 .mailpoet_sidepanel_field {

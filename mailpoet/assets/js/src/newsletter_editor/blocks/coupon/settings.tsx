@@ -1,4 +1,5 @@
 import { SelectControl } from '@wordpress/components';
+import Backbone from 'backbone';
 import { ErrorBoundary } from 'common';
 import { GlobalContext, useGlobalContextValue } from 'context/index.jsx';
 import { useState } from 'react';
@@ -8,8 +9,11 @@ import { UsageRestriction } from './usage_restriction';
 
 type Props = {
   availableDiscountTypes: SelectControl.Option[];
-  getValueCallback: (name: string) => string | boolean;
-  setValueCallback: (name: string, value: string | boolean) => void;
+  getValueCallback: (name: string) => string | boolean | Backbone.Collection;
+  setValueCallback: (
+    name: string,
+    value: string | boolean | Backbone.Collection,
+  ) => void;
   priceDecimalSeparator: string;
 };
 

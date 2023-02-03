@@ -6,14 +6,18 @@ import {
   TextControl,
   ToggleControl,
 } from '@wordpress/components';
+import Backbone from 'backbone';
 import { Component } from '@wordpress/element';
 import jQuery from 'jquery';
 import { MailPoet } from 'mailpoet';
 
 type Props = {
   availableDiscountTypes: SelectControl.Option[];
-  getValueCallback: (name: string) => string | boolean;
-  setValueCallback: (name: string, value: string | boolean) => void;
+  getValueCallback: (name: string) => string | boolean | Backbone.Collection;
+  setValueCallback: (
+    name: string,
+    value: string | boolean | Backbone.Collection,
+  ) => void;
 };
 
 type State = {
@@ -27,11 +31,13 @@ type State = {
 class General extends Component<Props, State> {
   private readonly availableDiscountTypes: SelectControl.Option[];
 
-  private readonly getValueCallback: (name: string) => string | boolean;
+  private readonly getValueCallback: (
+    name: string,
+  ) => string | boolean | Backbone.Collection;
 
   private readonly setValueCallback: (
     name: string,
-    value: string | boolean,
+    value: string | boolean | Backbone.Collection,
   ) => void;
 
   constructor(props: Props) {
@@ -51,7 +57,10 @@ class General extends Component<Props, State> {
   }
 
   componentDidMount() {
-    jQuery('.mailpoet_field_coupon_amount input').parsley().validate();
+    const $input = jQuery('.mailpoet_field_coupon_amount input');
+    if ($input.length) {
+      $input.parsley().validate();
+    }
   }
 
   public discountTypeChange = (discountType: string) => {

@@ -455,6 +455,9 @@
     'individualUseHelp': __('Coupon cannot be used in conjunction with other coupons.'),
     'excludeSaleItems': __('Exclude sale items'),
     'excludeSaleItemsHelp': __('Coupon does not apply to items on sale.'),
+    'products': __('Products'),
+    'excludedProducts': __('Excluded products'),
+    'searchForProduct': __('Search for a product…'),
   }) %>
 <% endblock %>
 
@@ -755,6 +758,8 @@
     };
 
     var currentUserEmail = '<%= current_wp_user.user_email %>';
+    var mailpoet_product_categories = <%= json_encode(product_categories)  %>;
+    var mailpoet_products = <%= json_encode(products) %>;
 
     var config = {
       availableStyles: {

@@ -5,13 +5,22 @@ import {
   TextControl,
   ToggleControl,
 } from '@wordpress/components';
+import Backbone from 'backbone';
 import { Component } from '@wordpress/element';
 import jQuery from 'jquery';
 import { MailPoet } from 'mailpoet';
+import { Selection } from '../../../form/fields/selection';
+
+type Post = {
+  id: number;
+};
 
 type Props = {
-  getValueCallback: (name: string) => string | boolean;
-  setValueCallback: (name: string, value: string | boolean) => void;
+  getValueCallback: (name: string) => string | boolean | Backbone.Collection;
+  setValueCallback: (
+    name: string,
+    value: string | boolean | Backbone.Collection,
+  ) => void;
   priceDecimalSeparator: string;
 };
 
@@ -20,17 +29,21 @@ type State = {
   maximumAmount: string;
   individualUse: boolean;
   excludeSaleItems: boolean;
+  productIds: Post[];
+  excludedProductIds: Post[];
 };
 
 class UsageRestriction extends Component<Props, State> {
-  private readonly getValueCallback: (name: string) => string | boolean;
+  private readonly getValueCallback: (
+    name: string,
+  ) => string | boolean | Backbone.Collection;
 
   private readonly setValueCallback: (
     name: string,
-    value: string | boolean,
+    value: string | boolean | Backbone.Collection,
   ) => void;
 
-  private priceDecimalSeparator: string;
+  private readonly priceDecimalSeparator: string;
 
   constructor(props: Props) {
     super(props);
@@ -43,6 +56,10 @@ class UsageRestriction extends Component<Props, State> {
       maximumAmount: this.getValueCallback('maximumAmount') as string,
       individualUse: this.getValueCallback('individualUse') as boolean,
       excludeSaleItems: this.getValueCallback('excludeSaleItems') as boolean,
+      productIds: this.getValueCallback('productIds').toJSON() as Post[],
+      excludedProductIds: this.getValueCallback(
+        'excludedProductIds',
+      ).toJSON() as Post[],
     };
   }
 
@@ -57,7 +74,24 @@ class UsageRestriction extends Component<Props, State> {
     }
   }
 
+  public handleSelection = (e): void => {
+    const model = this.getValueCallback(e.target.name as string);
+    model.reset(e.target.value.map((id) => ({ id })));
+    this.setValueCallback(e.target.name as string, model);
+    const newState = {};
+    newState[e.target.name] = e.target.value;
+    this.setState(newState);
+  };
+
   render() {
+    const productsField = {
+      forceSelect2: true,
+      endpoint: 'products',
+      resetSelect2OnUpdate: true,
+      multiple: true,
+      placeholder: MailPoet.I18n.t('searchForProduct'),
+    };
+
     return (
       <Panel>
         <PanelBody
@@ -122,6 +156,34 @@ class UsageRestriction extends Component<Props, State> {
                 this.setState({ excludeSaleItems });
               }}
               help={MailPoet.I18n.t('excludeSaleItemsHelp')}
+            />
+          </PanelRow>
+          <PanelRow>
+            <label htmlFor="productIds">{MailPoet.I18n.t('products')}</label>
+            <Selection
+              field={{
+                ...productsField,
+                name: 'productIds',
+                selected: () =>
+                  this.state.productIds.map((product: Post) => product.id),
+              }}
+              onValueChange={this.handleSelection}
+            />
+          </PanelRow>
+          <PanelRow>
+            <label htmlFor="excludedProductIds">
+              {MailPoet.I18n.t('excludedProducts')}
+            </label>
+            <Selection
+              field={{
+                ...productsField,
+                name: 'excludedProductIds',
+                selected: () =>
+                  this.state.excludedProductIds.map(
+                    (product: Post) => product.id,
+                  ),
+              }}
+              onValueChange={this.handleSelection}
             />
           </PanelRow>
         </PanelBody>
