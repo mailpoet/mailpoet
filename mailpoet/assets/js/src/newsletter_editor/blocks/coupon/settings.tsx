@@ -4,17 +4,20 @@ import { GlobalContext, useGlobalContextValue } from 'context/index.jsx';
 import { useState } from 'react';
 import { General } from './general';
 import { SettingsHeader } from './settings_header';
+import { UsageRestriction } from './usage_restriction';
 
 type Props = {
   availableDiscountTypes: SelectControl.Option[];
   getValueCallback: (name: string) => string | boolean;
   setValueCallback: (name: string, value: string | boolean) => void;
+  priceDecimalSeparator: string;
 };
 
 function Settings({
   availableDiscountTypes,
   getValueCallback,
   setValueCallback,
+  priceDecimalSeparator,
 }: Props): JSX.Element {
   const [activeTab, setActiveTab] = useState(getValueCallback('source'));
 
@@ -29,11 +32,18 @@ function Settings({
           }}
         />
         {activeTab === 'createNew' ? (
-          <General
-            availableDiscountTypes={availableDiscountTypes}
-            getValueCallback={getValueCallback}
-            setValueCallback={setValueCallback}
-          />
+          <>
+            <General
+              availableDiscountTypes={availableDiscountTypes}
+              getValueCallback={getValueCallback}
+              setValueCallback={setValueCallback}
+            />
+            <UsageRestriction
+              getValueCallback={getValueCallback}
+              setValueCallback={setValueCallback}
+              priceDecimalSeparator={priceDecimalSeparator}
+            />
+          </>
         ) : null}
       </GlobalContext.Provider>
     </ErrorBoundary>
