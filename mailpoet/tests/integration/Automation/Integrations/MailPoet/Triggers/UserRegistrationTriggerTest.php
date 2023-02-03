@@ -10,6 +10,7 @@ use MailPoet\Automation\Engine\Data\Subject;
 use MailPoet\Automation\Engine\Data\SubjectEntry;
 use MailPoet\Automation\Engine\Hooks;
 use MailPoet\Automation\Engine\Storage\AutomationRunStorage;
+use MailPoet\Automation\Engine\Storage\AutomationStorage;
 use MailPoet\Automation\Integrations\MailPoet\Subjects\SegmentSubject;
 use MailPoet\Automation\Integrations\MailPoet\Subjects\SubscriberSubject;
 use MailPoet\Automation\Integrations\MailPoet\Triggers\UserRegistrationTrigger;
@@ -26,6 +27,12 @@ class UserRegistrationTriggerTest extends \MailPoetTest {
   const USER_NAME = 'user-name--x';
   const USER_EMAIL = 'user-name--x@mailpoet.com';
   const USER_ROLE = 'subscriber';
+
+  /** @var AutomationStorage */
+  private $automationStorage;
+
+  /** @var AutomationRunStorage */
+  private $automationRunStorage;
 
   /** @var SegmentsRepository */
   private $segmentRepository;
@@ -44,6 +51,8 @@ class UserRegistrationTriggerTest extends \MailPoetTest {
 
   public function _before() {
     $this->wpSegment = $this->diContainer->get(WP::class);
+    $this->automationStorage = $this->diContainer->get(AutomationStorage::class);
+    $this->automationRunStorage = $this->diContainer->get(AutomationRunStorage::class);
     $this->segmentRepository = $this->diContainer->get(SegmentsRepository::class);
     $this->subscribersRepository = $this->diContainer->get(SubscribersRepository::class);
     $this->subscriberSegmentRepository = $this->diContainer->get(SubscriberSegmentRepository::class);
@@ -153,6 +162,43 @@ class UserRegistrationTriggerTest extends \MailPoetTest {
     ];
   }
 
+  /**
+   * @dataProvider dataForTestItObeysMultipleRunsSetting
+   */
+  public function testItObeysMultipleRunsSetting(bool $runMultipleTimes, int $expectedRuns) {
+    $automation = $this->tester->createAutomation('test',
+      new Step(
+        'trigger',
+        Step::TYPE_TRIGGER,
+        UserRegistrationTrigger::KEY,
+        [
+          'roles' => [],
+          'run_multiple_times' => $runMultipleTimes,
+        ],
+        []
+      ));
+    $this->assertInstanceOf(Automation::class, $automation);
+    $subscriber = $this->subscribersRepository->findOneBy(['wpUserId' => $this->userId]);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
+    $subscriberSegment = $this->subscriberSegmentRepository->findOneBy(['subscriber' => $subscriber]);
+    $this->assertInstanceOf(SubscriberSegmentEntity::class, $subscriberSegment);
+
+    /** @var UserRegistrationTrigger $testee */
+    $testee = $this->diContainer->get(UserRegistrationTrigger::class);
+    $this->assertCount(0, $this->automationRunStorage->getAutomationRunsForAutomation($automation));
+    $testee->handleSubscription($subscriberSegment);
+    $this->assertCount(1, $this->automationRunStorage->getAutomationRunsForAutomation($automation));
+    $testee->handleSubscription($subscriberSegment);
+    $this->assertCount($expectedRuns, $this->automationRunStorage->getAutomationRunsForAutomation($automation));
+  }
+
+  public function dataForTestItObeysMultipleRunsSetting(): array {
+    return [
+      'run_only_once' => [false, 1],
+      'run_more_often' => [true, 2],
+    ];
+  }
+
   public function _after() {
     if (!$this->userId) {
       return;
@@ -161,5 +207,7 @@ class UserRegistrationTriggerTest extends \MailPoetTest {
     $this->userId = null;
     $this->wpSegment->synchronizeUsers();
     $this->subscriberSegmentRepository->truncate();
+    $this->automationStorage->truncate();
+    $this->automationRunStorage->truncate();
   }
 }
