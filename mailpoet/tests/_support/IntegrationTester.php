@@ -2,8 +2,10 @@
 
 use Automattic\WooCommerce\Admin\API\Reports\Orders\Stats\DataStore;
 use MailPoet\Automation\Engine\Data\Automation;
+use MailPoet\Automation\Engine\Data\AutomationRun;
 use MailPoet\Automation\Engine\Data\NextStep;
 use MailPoet\Automation\Engine\Data\Step;
+use MailPoet\Automation\Engine\Storage\AutomationRunStorage;
 use MailPoet\Automation\Engine\Storage\AutomationStorage;
 use MailPoet\Automation\Integrations\Core\Actions\DelayAction;
 use MailPoet\DI\ContainerWrapper;
@@ -145,5 +147,24 @@ class IntegrationTester extends \Codeception\Actor {
     $automation = new Automation($name, $stepsWithIds, wp_get_current_user());
     $automation->setStatus(Automation::STATUS_ACTIVE);
     return $automationStorage->getAutomation($automationStorage->createAutomation($automation));
+  }
+
+  public function createAutomationRun(Automation $automation, $subjects = []): ?AutomationRun {
+    $trigger = array_filter($automation->getSteps(), function(Step $step): bool { return $step->getType() === Step::TYPE_TRIGGER;
+
+    });
+    $triggerKeys = array_map(function(Step $step): string { return $step->getKey();
+
+    }, $trigger);
+    $triggerKey = count($triggerKeys) > 0 ? current($triggerKeys) : '';
+
+    $automationRun = new AutomationRun(
+      $automation->getId(),
+      $automation->getVersionId(),
+      $triggerKey,
+      $subjects
+    );
+    $automationRunStorage = ContainerWrapper::getInstance()->get(AutomationRunStorage::class);
+    return $automationRunStorage->getAutomationRun($automationRunStorage->createAutomationRun($automationRun));
   }
 }
