@@ -270,21 +270,9 @@ Module.CouponBlockSettingsView = base.BlockSettingsView.extend({
       .trigger('change');
 
     const fieldKeys = {
-      productIds: 'productIds',
-      excludedProductIds: 'excludedProductIds',
       productCategories: 'productCategories',
       excludedProductCategories: 'excludedProductCategories',
     };
-
-    this.$('#mailpoet_field_coupon_product_ids')
-      .select2(this.productSelect2Options())
-      .on(this.select2OnEventOptions(fieldKeys.productIds))
-      .trigger('change');
-
-    this.$('#mailpoet_field_coupon_excluded_product_ids')
-      .select2(this.productSelect2Options())
-      .on(this.select2OnEventOptions(fieldKeys.excludedProductIds))
-      .trigger('change');
 
     this.$('#mailpoet_field_coupon_product_categories')
       .select2(this.categoriesSelect2Options())
