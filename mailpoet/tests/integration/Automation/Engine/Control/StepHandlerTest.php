@@ -132,14 +132,11 @@ class StepHandlerTest extends \MailPoetTest {
   private function createAutomation(): ?Automation {
     $trigger = $this->diContainer->get(SomeoneSubscribesTrigger::class);
     $delay = $this->diContainer->get(DelayAction::class);
-    $steps = [
-      'root' => new Step('root', Step::TYPE_ROOT, 'root', [], [new NextStep('someone-subscribes')]),
-      'someone-subscribes' => new Step('someone-subscribes', Step::TYPE_TRIGGER, $trigger->getKey(), [], [new NextStep('a')]),
-      'delay' => new Step('delay', Step::TYPE_ACTION, $delay->getKey(), [], []),
-    ];
-    $automation = new Automation('test', $steps, wp_get_current_user());
-    $automation->setStatus(Automation::STATUS_ACTIVE);
-    return $this->automationStorage->getAutomation($this->automationStorage->createAutomation($automation));
+    return $this->tester->createAutomation(
+      'test',
+      new Step('someone-subscribes', Step::TYPE_TRIGGER, $trigger->getKey(), [], [new NextStep('a')]),
+      new Step('delay', Step::TYPE_ACTION, $delay->getKey(), [], [])
+    );
   }
 
   private function createAutomationRun(Automation $automation, $subjects = []): ?AutomationRun {

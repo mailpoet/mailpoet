@@ -4,12 +4,10 @@ namespace MailPoet\Test\Automation\Engine\Control;
 
 use MailPoet\Automation\Engine\Control\TriggerHandler;
 use MailPoet\Automation\Engine\Data\Automation;
-use MailPoet\Automation\Engine\Data\NextStep;
 use MailPoet\Automation\Engine\Data\Step;
 use MailPoet\Automation\Engine\Data\Subject;
 use MailPoet\Automation\Engine\Storage\AutomationRunStorage;
 use MailPoet\Automation\Engine\Storage\AutomationStorage;
-use MailPoet\Automation\Integrations\Core\Actions\DelayAction;
 use MailPoet\Automation\Integrations\MailPoet\Subjects\SegmentSubject;
 use MailPoet\Automation\Integrations\MailPoet\Triggers\SomeoneSubscribesTrigger;
 use MailPoet\Automation\Integrations\MailPoet\Triggers\UserRegistrationTrigger;
@@ -54,7 +52,7 @@ class TriggerHandlerTest extends \MailPoetTest {
   public function testItCreatesRunForTheCorrectAutomationWhenTwoAutomationsHaveTheSameTrigger() {
 
     $trigger = $this->diContainer->get(SomeoneSubscribesTrigger::class);
-    $automation1 = $this->createAutomation(
+    $automation1 = $this->tester->createAutomation(
       'automation-1',
       new Step(
         'trigger',
@@ -66,7 +64,7 @@ class TriggerHandlerTest extends \MailPoetTest {
         []
       )
     );
-    $automation2 = $this->createAutomation(
+    $automation2 = $this->tester->createAutomation(
       'automation-2',
       new Step(
         'trigger',
@@ -101,7 +99,7 @@ class TriggerHandlerTest extends \MailPoetTest {
   public function testItCreatesTwoRunsWhenTwoAutomationsWithSameTriggerAreTriggered() {
 
     $trigger = $this->diContainer->get(SomeoneSubscribesTrigger::class);
-    $automation1 = $this->createAutomation(
+    $automation1 = $this->tester->createAutomation(
       'automation-1',
       new Step(
         'trigger',
@@ -113,7 +111,7 @@ class TriggerHandlerTest extends \MailPoetTest {
         []
       )
     );
-    $automation2 = $this->createAutomation(
+    $automation2 = $this->tester->createAutomation(
       'automation-2',
       new Step(
         'trigger',
@@ -144,7 +142,7 @@ class TriggerHandlerTest extends \MailPoetTest {
 
     $trigger = $this->diContainer->get(SomeoneSubscribesTrigger::class);
     $anotherTrigger = $this->diContainer->get(UserRegistrationTrigger::class);
-    $automation1 = $this->createAutomation(
+    $automation1 = $this->tester->createAutomation(
       'automation-1',
       new Step(
         'trigger',
@@ -161,28 +159,6 @@ class TriggerHandlerTest extends \MailPoetTest {
     $segmentSubject = new Subject(SegmentSubject::KEY, ['segment_id' => $this->segments['segment_1']->getId()]);
     $this->testee->processTrigger($trigger, [$segmentSubject]);
     $this->assertEmpty($this->automationRunStorage->getAutomationRunsForAutomation($automation1));
-  }
-
-  private function createAutomation(string $name, Step ...$steps): ?Automation {
-    if (count($steps) === 1) {
-      $delay = $this->diContainer->get(DelayAction::class);
-      $delayStep = new Step('delay', Step::TYPE_ACTION, $delay->getKey(), [], []);
-      $steps[0]->setNextSteps([new NextStep($delayStep->getId())]);
-    }
-    $steps = array_merge(
-      [
-        'root' => new Step('root', Step::TYPE_ROOT, 'root', [], [new NextStep($steps[0]->getId())]),
-      ],
-      $steps
-    );
-
-    $stepsWithIds = [];
-    foreach ($steps as $step) {
-      $stepsWithIds[$step->getId()] = $step;
-    }
-    $automation = new Automation($name, $stepsWithIds, wp_get_current_user());
-    $automation->setStatus(Automation::STATUS_ACTIVE);
-    return $this->automationStorage->getAutomation($this->automationStorage->createAutomation($automation));
   }
 
   public function _after() {
