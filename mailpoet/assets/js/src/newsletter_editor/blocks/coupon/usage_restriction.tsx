@@ -31,6 +31,8 @@ type State = {
   excludeSaleItems: boolean;
   productIds: Post[];
   excludedProductIds: Post[];
+  productCategoryIds: Post[];
+  excludedProductCategoryIds: Post[];
 };
 
 class UsageRestriction extends Component<Props, State> {
@@ -59,6 +61,12 @@ class UsageRestriction extends Component<Props, State> {
       productIds: this.getValueCallback('productIds').toJSON() as Post[],
       excludedProductIds: this.getValueCallback(
         'excludedProductIds',
+      ).toJSON() as Post[],
+      productCategoryIds: this.getValueCallback(
+        'productCategoryIds',
+      ).toJSON() as Post[],
+      excludedProductCategoryIds: this.getValueCallback(
+        'excludedProductCategoryIds',
       ).toJSON() as Post[],
     };
   }
@@ -90,6 +98,12 @@ class UsageRestriction extends Component<Props, State> {
       resetSelect2OnUpdate: true,
       multiple: true,
       placeholder: MailPoet.I18n.t('searchForProduct'),
+    };
+    const productCategoriesField = {
+      forceSelect2: true,
+      endpoint: 'product_categories',
+      resetSelect2OnUpdate: true,
+      multiple: true,
     };
 
     return (
@@ -181,6 +195,40 @@ class UsageRestriction extends Component<Props, State> {
                 selected: () =>
                   this.state.excludedProductIds.map(
                     (product: Post) => product.id,
+                  ),
+              }}
+              onValueChange={this.handleSelection}
+            />
+          </PanelRow>
+          <PanelRow>
+            <label htmlFor="productCategoriesIds">
+              {MailPoet.I18n.t('productCategories')}
+            </label>
+            <Selection
+              field={{
+                ...productCategoriesField,
+                name: 'productCategoryIds',
+                placeholder: MailPoet.I18n.t('anyCategory'),
+                selected: () =>
+                  this.state.productCategoryIds.map(
+                    (category: Post) => category.id,
+                  ),
+              }}
+              onValueChange={this.handleSelection}
+            />
+          </PanelRow>
+          <PanelRow>
+            <label htmlFor="excludedProductCategoryIds">
+              {MailPoet.I18n.t('excludeProductCategories')}
+            </label>
+            <Selection
+              field={{
+                ...productCategoriesField,
+                name: 'excludedProductCategoryIds',
+                placeholder: MailPoet.I18n.t('noCategories'),
+                selected: () =>
+                  this.state.excludedProductCategoryIds.map(
+                    (category: Post) => category.id,
                   ),
               }}
               onValueChange={this.handleSelection}

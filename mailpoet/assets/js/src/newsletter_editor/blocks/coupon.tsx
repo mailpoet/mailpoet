@@ -9,7 +9,6 @@ import _ from 'underscore';
 import jQuery from 'jquery';
 import 'backbone.marionette';
 import { MailPoet } from 'mailpoet';
-import { CommunicationComponent } from 'newsletter_editor/components/communication';
 import { Settings } from './coupon/settings';
 
 export const FEATURE_COUPON_BLOCK = 'Coupon block';
@@ -24,8 +23,8 @@ Module.CouponBlockModel = base.BlockModel.extend({
       {
         productIds: [], // selected product ids,
         excludedProductIds: [],
-        productCategories: [], // selected categories id
-        excludedProductCategories: [],
+        productCategoryIds: [], // selected categories id
+        excludedProductCategoryIds: [],
         type: 'coupon',
         amount: 10,
         amountMax: 100,
@@ -268,21 +267,6 @@ Module.CouponBlockSettingsView = base.BlockSettingsView.extend({
         },
       })
       .trigger('change');
-
-    const fieldKeys = {
-      productCategories: 'productCategories',
-      excludedProductCategories: 'excludedProductCategories',
-    };
-
-    this.$('#mailpoet_field_coupon_product_categories')
-      .select2(this.categoriesSelect2Options())
-      .on(this.select2OnEventOptions(fieldKeys.productCategories))
-      .trigger('change');
-
-    this.$('#mailpoet_field_coupon_excluded_product_categories')
-      .select2(this.categoriesSelect2Options())
-      .on(this.select2OnEventOptions(fieldKeys.excludedProductCategories))
-      .trigger('change');
   },
   changeSource(event) {
     const value = jQuery(event.target).val();
@@ -319,120 +303,6 @@ Module.CouponBlockSettingsView = base.BlockSettingsView.extend({
           .val(),
       );
     }
-  },
-  productSelect2Options() {
-    const productOptions = {
-      type: 'products',
-      amount: '10', // number of fetched products
-      offset: 0,
-      contentType: 'product',
-      postStatus: 'publish', // 'draft'|'pending'|'publish'
-      search: '', // Search keyword term
-
-      sortBy: 'newest', // 'newest'|'oldest',
-    };
-
-    return {
-      multiple: true,
-      allowClear: true,
-      ajax: {
-        delay: 250, // wait 250 milliseconds before triggering the request
-
-        data: (params) => {
-          const currentPage = params.page || 1;
-          return {
-            search: params.term,
-            page: currentPage,
-            // page starts from 1, offset starts from 0. we need to perform some calc to make sure it retrieve the right number of results
-            // 'query:append' is added during pagination
-            offset:
-              params._type === 'query:append' // eslint-disable-line no-underscore-dangle
-                ? (currentPage - 1) * Number(productOptions.amount)
-                : 0,
-          };
-        },
-        transport: (options, success, failure) => {
-          // Fetch available products
-          const productPromise = CommunicationComponent.getPosts({
-            ...productOptions,
-            search: options.data.search,
-            offset: options.data.offset,
-          });
-
-          productPromise.then(success);
-          productPromise.fail(failure);
-          return productPromise;
-        },
-        processResults: (data) => ({
-          results: _.map(data, (item) =>
-            _.defaults(
-              {
-                text: item.post_title,
-                id: item.ID,
-              },
-              item,
-            ),
-          ),
-          pagination: {
-            more: data.length >= Number(productOptions.amount),
-          },
-        }),
-      },
-    };
-  },
-  categoriesSelect2Options() {
-    return {
-      multiple: true,
-      allowClear: true,
-      ajax: {
-        delay: 250, // wait 250 milliseconds before triggering the request
-        data: (params) => ({
-          search: params.term,
-          page: params.page || 1,
-        }),
-        transport: (options, success, failure) => {
-          // Fetch available product categories
-          const termsPromise = CommunicationComponent.getTerms({
-            search: options.data.search,
-            page: options.data.page,
-            taxonomies: ['product_cat'],
-          });
-          termsPromise.then(success);
-          termsPromise.fail(failure);
-          return termsPromise;
-        },
-        processResults: (data) => ({
-          results: _.map(data, (item) =>
-            _.defaults(
-              {
-                text: item.name,
-                id: item.term_id,
-              },
-              item,
-            ),
-          ),
-          pagination: {
-            more: data.length === 100,
-          },
-        }),
-      },
-    };
-  },
-  select2OnEventOptions(fieldName) {
-    return {
-      'select2:select': (event) => {
-        const modelItem = this.model.get(fieldName);
-        modelItem.add(event.params.data);
-        // Reset whole model in order for change events to propagate properly
-        this.model.set(fieldName, modelItem.toJSON());
-      },
-      'select2:unselect': (event) => {
-        const modelItem = this.model.get(fieldName);
-        modelItem.remove(event.params.data);
-        // Reset whole model in order for change events to propagate properly
-        this.model.set(fieldName, modelItem.toJSON());
-      },
-    };
   },
   validateEmailRestrictionsField(field, event) {
     const element = event.target;
