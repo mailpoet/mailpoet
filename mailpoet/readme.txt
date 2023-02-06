@@ -3,7 +3,7 @@ Contributors: mailpoet
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 5.8
 Tested up to: 6.1
-Stable tag: 4.6.0
+Stable tag: 4.6.1
 Requires PHP: 7.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -218,6 +218,15 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 4.6.1 - 2023-02-06 =
+* Added: "Copy to clipboard" button next to System Info;
+* Improved: warn users on PHP 7.3 about outdated PHP version;
+* Improved: MailPoet now uses a from address to test sending emails instead of "blackhole@mailpoet.com";
+* Improved: post images will now use image attachments' alt text for improved accessibility;
+* Changed: now even logged in user requires a valid token to unsubscribe;
+* Changed: Editor role now has access to Automations;
+* Fixed: color setting in email editor is not saved.
 
 = 4.6.0 - 2023-01-31 =
 * Added: anonymized and opt-in tracking of revenue per email campaign;
