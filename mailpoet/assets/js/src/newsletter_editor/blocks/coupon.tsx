@@ -89,10 +89,6 @@ Module.CouponBlockSettingsView = base.BlockSettingsView.extend({
     return {
       'input .mailpoet_field_coupon_code': _.partial(this.changeField, 'code'),
       'change .mailpoet_field_coupon_source': 'changeSource',
-      'input .mailpoet_field_coupon_email_restrictions': _.partial(
-        this.validateEmailRestrictionsField,
-        'emailRestrictions',
-      ),
       'input .mailpoet_field_coupon_usage_limit': _.partial(
         this.changeField,
         'usageLimit',
@@ -303,28 +299,6 @@ Module.CouponBlockSettingsView = base.BlockSettingsView.extend({
           .val(),
       );
     }
-  },
-  validateEmailRestrictionsField(field, event) {
-    const element = event.target;
-    const errorElem = element.nextElementSibling;
-
-    const isValid = element.checkValidity();
-
-    if (!isValid) {
-      errorElem.textContent = element.validationMessage;
-
-      if (errorElem.classList.contains('mailpoet_hidden')) {
-        errorElem.classList.remove('mailpoet_hidden');
-      }
-
-      return;
-    }
-
-    if (errorElem && !errorElem.classList.contains('mailpoet_hidden')) {
-      errorElem.classList.add('mailpoet_hidden');
-    }
-
-    this.model.set(field, element.value);
   },
 });
 

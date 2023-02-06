@@ -33,6 +33,7 @@ type State = {
   excludedProductIds: Post[];
   productCategoryIds: Post[];
   excludedProductCategoryIds: Post[];
+  emailRestrictions: string;
 };
 
 class UsageRestriction extends Component<Props, State> {
@@ -68,6 +69,7 @@ class UsageRestriction extends Component<Props, State> {
       excludedProductCategoryIds: this.getValueCallback(
         'excludedProductCategoryIds',
       ).toJSON() as Post[],
+      emailRestrictions: this.getValueCallback('emailRestrictions') as string,
     };
   }
 
@@ -232,6 +234,18 @@ class UsageRestriction extends Component<Props, State> {
                   ),
               }}
               onValueChange={this.handleSelection}
+            />
+          </PanelRow>
+          <PanelRow>
+            <TextControl
+              className="mailpoet_field_coupon_email_restrictions"
+              label={MailPoet.I18n.t('allowedEmails')}
+              value={this.state.emailRestrictions}
+              placeholder={MailPoet.I18n.t('noRestrictions')}
+              onChange={(emailRestrictions) => {
+                this.setValueCallback('emailRestrictions', emailRestrictions);
+                this.setState({ emailRestrictions });
+              }}
             />
           </PanelRow>
         </PanelBody>
