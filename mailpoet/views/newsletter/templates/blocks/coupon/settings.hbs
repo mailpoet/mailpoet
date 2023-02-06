@@ -2,27 +2,6 @@
 
 <div id="mailpoet_coupon_block_settings"></div>
 
-<div class="mailpoet_field_coupon_source_create_new {{#ifCond model.source '===' 'useExisting'}}mailpoet_hidden{{/ifCond}}">
-  <details open>
-    <summary>
-      <strong> <%= __('Usage restriction') %> </strong>
-    </summary>
-    <div className="content">
-
-      <hr />
-      <div class="mailpoet_form_field">
-        <label>
-          <div class="mailpoet_form_field_title mailpoet_form_field_title_inline"><%= __('Allowed emails') %></div>
-          <div class="mailpoet_form_field_input_option">
-            <input type="email" name="email-restrictions" class="mailpoet_input mailpoet_field_coupon_email_restrictions" value="{{ model.emailRestrictions }}" placeholder="<%= __('No restrictions') | escape('html_attr') %>" multiple="multiple" />
-            <span class="mailpoet_error mailpoet_hidden"> </span>
-          </div>
-        </label>
-      </div>
-
-    </div>
-  </details>
-
   <details>
     <summary>
       <strong> <%= __('Usage limits') %> </strong>
