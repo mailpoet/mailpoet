@@ -18,8 +18,13 @@ import _ from 'underscore';
  */
 var eventsCache = [];
 
+const LOCALSTORAGE_KEY = 'mailpoet-track-events-cache';
+export const CacheEventOptionSaveInStorage = 'saveInStorage';
+
 function track(name, data = [], options = {}, callback = null) {
   let trackedData = data;
+
+  const optionsData = options === CacheEventOptionSaveInStorage ? {} : options;
 
   if (typeof window.mixpanel.track !== 'function') {
     window.mixpanel.init(window.mixpanelTrackingId);
@@ -33,7 +38,7 @@ function track(name, data = [], options = {}, callback = null) {
     trackedData['MailPoet Premium version'] = window.mailpoet_premium_version;
   }
 
-  window.mixpanel.track(name, trackedData, options, callback);
+  window.mixpanel.track(name, trackedData, optionsData, callback);
 }
 
 function exportMixpanel() {
@@ -58,12 +63,22 @@ function exportMixpanel() {
   }
 }
 
+function trackIfEnabled(event) {
+  if (window.mailpoet_analytics_enabled || event.forced) {
+    track(event.name, event.data, event.options);
+  }
+}
+
 function trackCachedEvents() {
-  eventsCache.forEach(function trackIfEnabled(event) {
-    if (window.mailpoet_analytics_enabled || event.forced) {
-      track(event.name, event.data, event.options);
-    }
-  });
+  const storageItem = localStorage.getItem(LOCALSTORAGE_KEY);
+  if (storageItem && window.mailpoet_analytics_enabled) {
+    const localEventsCache = JSON.parse(storageItem);
+    localEventsCache.forEach(trackIfEnabled);
+    localStorage.removeItem(LOCALSTORAGE_KEY);
+    return;
+  }
+
+  eventsCache.forEach(trackIfEnabled);
 }
 
 function cacheEvent(forced, name, data, options, callback) {
@@ -73,6 +88,9 @@ function cacheEvent(forced, name, data, options, callback) {
     options: options,
     forced: forced,
   });
+  if (options === CacheEventOptionSaveInStorage) {
+    localStorage.setItem(LOCALSTORAGE_KEY, JSON.stringify(eventsCache));
+  }
   if (typeof callback === 'function') {
     callback();
   }
