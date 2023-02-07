@@ -1,5 +1,11 @@
 import { __ } from '@wordpress/i18n';
-import { Experiment, Variant, emitter } from '@marvelapp/react-ab-test';
+import { MailPoet } from 'mailpoet';
+import {
+  Experiment,
+  Variant,
+  emitter,
+  experimentDebugger,
+} from '@marvelapp/react-ab-test';
 import { Button } from 'common';
 import {
   MailPoetTrackEvent,
@@ -47,6 +53,11 @@ emitter.defineVariants(
   [VARIANT_BEGIN_SETUP, VARIANT_GET_STARTED_FOR_FREE],
   [50, 50],
 );
+
+experimentDebugger.setDebuggerAvailable(
+  MailPoet.FeaturesController.isSupported('landingpage_ab_test_debugger'),
+);
+experimentDebugger.enable();
 
 function AbTestButton() {
   return (
