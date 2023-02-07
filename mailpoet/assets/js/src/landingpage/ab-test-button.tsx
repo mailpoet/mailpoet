@@ -1,12 +1,45 @@
 import { __ } from '@wordpress/i18n';
 import { Experiment, Variant, emitter } from '@marvelapp/react-ab-test';
 import { Button } from 'common';
+import {
+  MailPoetTrackEvent,
+  CacheEventOptionSaveInStorage,
+} from '../analytics_event';
 import { redirectToWelcomeWizard } from './util';
 
 const EXPERIMENT_NAME = 'landing_page_cta_display';
 const VARIANT_BEGIN_SETUP = 'landing_page_cta_display_variant_begin_setup';
 const VARIANT_GET_STARTED_FOR_FREE =
   'landing_page_cta_display_variant_get_started_for_free';
+
+// analytics permission is currently unavailable at this point
+// we will save the event data and send them to mixpanel later
+// details in MAILPOET-4972
+
+// Called when the experiment is displayed to the user.
+emitter.addPlayListener((experimentName, variantName) => {
+  MailPoetTrackEvent(
+    'Experiment Display',
+    {
+      experiment: experimentName,
+      variant: variantName,
+    },
+    CacheEventOptionSaveInStorage, // persist in local storage
+  );
+});
+
+// Called when a 'win' is emitted
+emitter.addWinListener((experimentName, variantName) => {
+  MailPoetTrackEvent(
+    'Experiment Win',
+    {
+      experiment: experimentName,
+      variant: variantName,
+    },
+    CacheEventOptionSaveInStorage, // persist in local storage
+    redirectToWelcomeWizard, // callback
+  );
+});
 
 // Define variants in advance.
 emitter.defineVariants(
@@ -22,7 +55,6 @@ function AbTestButton() {
         <Button
           onClick={() => {
             emitter.emitWin(EXPERIMENT_NAME);
-            redirectToWelcomeWizard();
           }}
         >
           {__('Begin setup', 'mailpoet')}
@@ -32,7 +64,6 @@ function AbTestButton() {
         <Button
           onClick={() => {
             emitter.emitWin(EXPERIMENT_NAME);
-            redirectToWelcomeWizard();
           }}
         >
           {__('Get started for free', 'mailpoet')}
