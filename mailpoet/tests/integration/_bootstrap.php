@@ -82,6 +82,8 @@ abstract class MailPoetTest extends \Codeception\TestCase\Test { // phpcs:ignore
 
   protected static $savedGlobals;
 
+  protected $tester;
+
   /** @var ContainerWrapper */
   protected $diContainer;
 
