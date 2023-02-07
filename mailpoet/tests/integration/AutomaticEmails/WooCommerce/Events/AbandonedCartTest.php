@@ -98,7 +98,7 @@ class AbandonedCartTest extends \MailPoetTest {
     $this->wp = $wp;
     WPFunctions::set($this->wp);
 
-    $this->automaticEmailScheduler = $this->getServiceWithOverrides(AutomaticEmailScheduler::class, ['wp' => $this->wp]);
+    $this->automaticEmailScheduler = $this->diContainer->get(AutomaticEmailScheduler::class);
 
     $this->wooCommerceCartMock = $this->mockWooCommerceClass(WC_Cart::class, ['is_empty', 'get_cart']);
     $this->cartBackup = $this->wooCommerce->cart;
