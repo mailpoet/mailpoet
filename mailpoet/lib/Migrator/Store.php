@@ -54,8 +54,16 @@ class Store {
   }
 
   public function getAll(): array {
+    // Some backup plugins may convert NULL values to empty strings,
+    // in which case we need to cast the error column value to NULL.
     return $this->connection->fetchAllAssociative("
-      SELECT *
+      SELECT
+        id,
+        name,
+        started_at,
+        completed_at,
+        retries,
+        IF(error = '', NULL, error) AS error
       FROM {$this->table}
       ORDER BY id ASC
     ");
