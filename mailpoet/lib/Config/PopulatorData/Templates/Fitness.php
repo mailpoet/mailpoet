@@ -549,29 +549,34 @@ class Fitness {
 <p style="text-align: center;"><strong>Here\'s 20% off your order if you complete it right now. We\'re nice like that.</strong></p>',
                                 ],
                               2 =>
-                                 [
-                                  'type' => 'button',
-                                  'text' => 'COUPONCODE',
-                                  'url' => '',
-                                  'styles' =>
-                                     [
-                                      'block' =>
-                                         [
-                                          'backgroundColor' => '#afd147',
-                                          'borderColor' => '#56741d',
-                                          'borderWidth' => '3px',
-                                          'borderRadius' => '5px',
-                                          'borderStyle' => 'solid',
-                                          'width' => '219px',
-                                          'lineHeight' => '50px',
-                                          'fontColor' => '#56741d',
-                                          'fontFamily' => 'Courier New',
-                                          'fontSize' => '26px',
-                                          'fontWeight' => 'bold',
-                                          'textAlign' => 'center',
-                                        ],
-                                    ],
-                                ],
+                                [
+                                 'productIds' => [],
+                                 'excludedProductIds' => [],
+                                 'productCategories' => [],
+                                 'excludedProductCategories' => [],
+                                 'type' => 'coupon',
+                                 'amount' => 10,
+                                 'amountMax' => 100,
+                                 'discountType' => 'percent',
+                                 'expiryDay' => 10,
+                                 'styles' => [
+                                   'block' => [
+                                     'backgroundColor' => '#afd147',
+                                     'borderColor' => '#56741d',
+                                     'borderWidth' => '3px',
+                                     'borderRadius' => '5px',
+                                     'borderStyle' => 'solid',
+                                     'width' => '219px',
+                                     'lineHeight' => '50px',
+                                     'fontColor' => '#56741d',
+                                     'fontFamily' => 'Courier New',
+                                     'fontSize' => '26px',
+                                     'fontWeight' => 'bold',
+                                     'textAlign' => 'center',
+                                   ],
+                                 ],
+                                 'code' => 'XXXX-XXXXXXX-XXXX'
+                               ],
                               3 =>
                                  [
                                   'type' => 'spacer',
