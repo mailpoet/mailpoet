@@ -512,29 +512,34 @@ class Avocado {
                                   'text' => '<p style="text-align: center;">Send them your exclusive coupon code now and they\'ll receive 50% off their next order, and you\'ll get your next box for free!&nbsp;</p>',
                                  ],
                               1 =>
-                                 [
-                                  'type' => 'button',
-                                  'text' => 'AVOCADOSRULE',
-                                  'url' => '',
-                                  'styles' =>
-                                     [
-                                      'block' =>
-                                         [
-                                          'backgroundColor' => '#dbefb4',
-                                          'borderColor' => '#3d3d3d',
-                                          'borderWidth' => '3px',
-                                          'borderRadius' => '0px',
-                                          'borderStyle' => 'solid',
-                                          'width' => '254px',
-                                          'lineHeight' => '50px',
-                                          'fontColor' => '#3d3d3d',
-                                          'fontFamily' => 'Arial',
-                                          'fontSize' => '26px',
-                                          'fontWeight' => 'bold',
-                                          'textAlign' => 'center',
-                                         ],
-                                     ],
+                                [
+                                 'productIds' => [],
+                                 'excludedProductIds' => [],
+                                 'productCategories' => [],
+                                 'excludedProductCategories' => [],
+                                 'type' => 'coupon',
+                                 'amount' => 10,
+                                 'amountMax' => 100,
+                                 'discountType' => 'percent',
+                                 'expiryDay' => 10,
+                                 'styles' => [
+                                   'block' => [
+                                     'backgroundColor' => '#dbefb4',
+                                     'borderColor' => '#3d3d3d',
+                                     'borderWidth' => '3px',
+                                     'borderRadius' => '0px',
+                                     'borderStyle' => 'solid',
+                                     'width' => '254px',
+                                     'lineHeight' => '50px',
+                                     'fontColor' => '#3d3d3d',
+                                     'fontFamily' => 'Arial',
+                                     'fontSize' => '26px',
+                                     'fontWeight' => 'bold',
+                                     'textAlign' => 'center',
+                                   ],
                                  ],
+                                 'code' => 'XXXX-XXXXXXX-XXXX'
+                               ],
                               2 =>
                                  [
                                   'type' => 'spacer',
@@ -831,30 +836,6 @@ class Avocado {
                  ],
               'backgroundColor' => '#ffffff',
               'backgroundColorAlternate' => '#eeeeee',
-             ],
-          'button' =>
-             [
-              'text' => 'AVOCADOSRULE',
-              'url' => '',
-              'styles' =>
-                 [
-                  'block' =>
-                     [
-                      'backgroundColor' => '#dbefb4',
-                      'borderColor' => '#3d3d3d',
-                      'borderWidth' => '3px',
-                      'borderRadius' => '0px',
-                      'borderStyle' => 'solid',
-                      'width' => '254px',
-                      'lineHeight' => '50px',
-                      'fontColor' => '#3d3d3d',
-                      'fontFamily' => 'Arial',
-                      'fontSize' => '26px',
-                      'fontWeight' => 'bold',
-                      'textAlign' => 'center',
-                     ],
-                 ],
-              'type' => 'button',
              ],
           'divider' =>
              [
