@@ -112,6 +112,20 @@ class StoreTest extends MailPoetTest {
     $this->assertSame($data['error'], 'test-error');
   }
 
+  /**
+   * Some backup plugins may convert NULL values to empty strings,
+   * in which case we need to cast the error column value to NULL.
+   */
+  public function testItCastsEmptyErrorToNull(): void {
+    $this->store->ensureMigrationsTable();
+    $this->store->startMigration('Failed');
+    $this->connection->executeStatement("UPDATE {$this->table} SET error = '' WHERE name = 'Failed'");
+
+    $migrations = $this->store->getAll();
+    $this->assertCount(1, $migrations);
+    $this->assertNull($migrations[0]['error']);
+  }
+
   public function _after() {
     parent::_after();
     $this->connection->executeStatement("DROP TABLE IF EXISTS {$this->table}");
