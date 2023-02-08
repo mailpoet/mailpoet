@@ -249,7 +249,7 @@ class FormListComponent extends Component {
         </td>
         <td className="column" data-colname={MailPoet.I18n.t('segments')}>
           <SegmentTags segments={segments} dimension="large">
-            {form.settings.segments_selected_by === 'user' && (
+            {form.settings?.segments_selected_by === 'user' && (
               <span className="mailpoet-tags-prefix">
                 {MailPoet.I18n.t('userChoice')}
               </span>
