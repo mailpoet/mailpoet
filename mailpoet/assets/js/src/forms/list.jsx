@@ -224,6 +224,11 @@ class FormListComponent extends Component {
   }
 
   renderItem = (form, actions) => {
+    if (form.settings === null) {
+      MailPoet.Notice.error(
+        MailPoet.I18n.t('formSettingsCorrupted').replace('%1$s', form.name),
+      );
+    }
     const rowClasses = classnames(
       'manage-column',
       'column-primary',
