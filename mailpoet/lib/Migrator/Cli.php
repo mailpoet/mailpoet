@@ -109,6 +109,8 @@ class Cli {
 
       WP_CLI::log("MIGRATIONS:\n");
       $table = array_map(function (array $data): array {
+        $data['name'] .= $data['unknown'] ? ' (unknown)' : '';
+        unset($data['unknown']);
         return array_map(function ($field) {
           return $field === null ? '' : $field;
         }, $data);
