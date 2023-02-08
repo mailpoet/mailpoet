@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "829fb513393da98642eb7047f6bf054d",
+    "content-hash": "9de35e2715d7d62d549a6456cd03990c",
     "packages": [
         {
             "name": "mtdowling/cron-expression",
@@ -9640,16 +9640,16 @@
         },
         {
             "name": "wp-cli/wp-cli",
-            "version": "v2.7.1",
+            "version": "dev-main",
             "source": {
                 "type": "git",
                 "url": "https://github.com/wp-cli/wp-cli.git",
-                "reference": "1ddc754f1c15e56fb2cdd1a4e82bd0ec6ca32a76"
+                "reference": "89be15b87bb3c496841b2362975fe0d8ddd8ed21"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/wp-cli/wp-cli/zipball/1ddc754f1c15e56fb2cdd1a4e82bd0ec6ca32a76",
-                "reference": "1ddc754f1c15e56fb2cdd1a4e82bd0ec6ca32a76",
+                "url": "https://api.github.com/repos/wp-cli/wp-cli/zipball/89be15b87bb3c496841b2362975fe0d8ddd8ed21",
+                "reference": "89be15b87bb3c496841b2362975fe0d8ddd8ed21",
                 "shasum": ""
             },
             "require": {
@@ -9680,7 +9680,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.8.x-dev"
+                    "dev-main": "2.8.x-dev"
                 }
             },
             "autoload": {
@@ -9702,20 +9702,20 @@
                 "cli",
                 "wordpress"
             ],
-            "time": "2022-10-17T23:10:42+00:00"
+            "time": "2023-02-08T12:32:02+00:00"
         },
         {
             "name": "wp-cli/wp-cli-bundle",
-            "version": "v2.7.1",
+            "version": "dev-main",
             "source": {
                 "type": "git",
                 "url": "https://github.com/wp-cli/wp-cli-bundle.git",
-                "reference": "08765f2bbd1308247050fc8efef63df3a0c9616f"
+                "reference": "471e02d077c8413ca5c88ea0588dfc9c361dbc6d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/wp-cli/wp-cli-bundle/zipball/08765f2bbd1308247050fc8efef63df3a0c9616f",
-                "reference": "08765f2bbd1308247050fc8efef63df3a0c9616f",
+                "url": "https://api.github.com/repos/wp-cli/wp-cli-bundle/zipball/471e02d077c8413ca5c88ea0588dfc9c361dbc6d",
+                "reference": "471e02d077c8413ca5c88ea0588dfc9c361dbc6d",
                 "shasum": ""
             },
             "require": {
@@ -9746,7 +9746,7 @@
                 "wp-cli/shell-command": "^2",
                 "wp-cli/super-admin-command": "^2",
                 "wp-cli/widget-command": "^2",
-                "wp-cli/wp-cli": "^2.7.1"
+                "wp-cli/wp-cli": "dev-main"
             },
             "require-dev": {
                 "roave/security-advisories": "dev-latest",
@@ -9771,7 +9771,7 @@
                 "cli",
                 "wordpress"
             ],
-            "time": "2022-10-17T23:55:22+00:00"
+            "time": "2023-02-07T21:29:32+00:00"
         },
         {
             "name": "wp-cli/wp-config-transformer",
@@ -9873,7 +9873,9 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "soundasleep/html2text": 20
+        "soundasleep/html2text": 20,
+        "wp-cli/wp-cli": 20,
+        "wp-cli/wp-cli-bundle": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,
