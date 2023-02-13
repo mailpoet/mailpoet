@@ -155,7 +155,6 @@ interface Window {
   }[];
   mailpoet_cdn_url: string;
   mailpoet_main_page_slug: string;
-  sender_data: { name: string; address: string };
   finish_wizard_url: string;
   admin_email: string;
   wizard_sender_illustration_url: string;
