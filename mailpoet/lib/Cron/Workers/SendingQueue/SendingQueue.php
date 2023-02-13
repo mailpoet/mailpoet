@@ -301,6 +301,9 @@ class SendingQueue {
     $statistics = [];
     $metas = [];
     $oneClickUnsubscribeUrls = [];
+    $sendingQueueEntity = $queue->getSendingQueueEntity();
+    $sendingQueueMeta = $sendingQueueEntity->getMeta() ?? [];
+    $campaignId = $sendingQueueMeta['campaignId'] ?? null;
 
     $newsletterEntity = $this->newslettersRepository->findOneById($newsletter->id);
 
@@ -331,7 +334,11 @@ class SendingQueue {
       $unsubscribeUrls[] = $this->links->getUnsubscribeUrl($queue->id, $subscriberEntity);
       $oneClickUnsubscribeUrls[] = $this->links->getOneClickUnsubscribeUrl($queue->id, $subscriberEntity);
 
-      $metas[] = $this->mailerMetaInfo->getNewsletterMetaInfo($newsletter, $subscriberEntity);
+      $metasForSubscriber = $this->mailerMetaInfo->getNewsletterMetaInfo($newsletter, $subscriberEntity);
+      if ($campaignId) {
+        $metasForSubscriber['campaign_id'] = $campaignId;
+      }
+      $metas[] = $metasForSubscriber;
 
       // keep track of values for statistics purposes
       $statistics[] = [
@@ -370,7 +377,11 @@ class SendingQueue {
         $preparedSubscribers,
         $statistics,
         $timer,
-        ['unsubscribe_url' => $unsubscribeUrls, 'meta' => $metas, 'one_click_unsubscribe' => $oneClickUnsubscribeUrls]
+        [
+          'unsubscribe_url' => $unsubscribeUrls,
+          'meta' => $metas,
+          'one_click_unsubscribe' => $oneClickUnsubscribeUrls,
+        ]
       );
     }
     return $queue;
