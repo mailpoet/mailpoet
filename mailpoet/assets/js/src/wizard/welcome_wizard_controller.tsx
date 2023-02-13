@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
+import { useSetting } from 'settings/store/hooks';
 import { partial } from 'underscore';
 
 import { WelcomeWizardSenderStep } from './steps/sender_step';
@@ -34,7 +35,7 @@ function WelcomeWizardStepsController({
   const step = parseInt(match.params.step, 10);
 
   const [loading, setLoading] = useState(false);
-  const [sender, setSender] = useState(window.sender_data);
+  const [sender, setSender] = useSetting('sender');
 
   useEffect(() => {
     if (step > stepsCount || step < 1) {
@@ -60,7 +61,7 @@ function WelcomeWizardStepsController({
     (data: { address: string }) => {
       setSender({ ...sender, ...data });
     },
-    [sender],
+    [sender, setSender],
   );
 
   const submitSender = useCallback(async () => {
@@ -75,14 +76,15 @@ function WelcomeWizardStepsController({
     async (e) => {
       e.preventDefault();
       setLoading(true);
-      await updateSettings(
-        createSenderSettings({ address: window.admin_email, name: '' }),
-      ).then(() => {
+      const defaultSenderInfo = { address: window.admin_email, name: '' };
+
+      await updateSettings(createSenderSettings(defaultSenderInfo)).then(() => {
+        setSender(defaultSenderInfo);
         redirect(step);
       });
       setLoading(false);
     },
-    [redirect, step],
+    [redirect, step, setSender],
   );
 
   const stepName = mapStepNumberToStepName(step);
