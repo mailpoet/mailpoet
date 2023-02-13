@@ -226,7 +226,16 @@ class FormListComponent extends Component {
   renderItem = (form, actions) => {
     if (form.settings === null) {
       MailPoet.Notice.error(
-        MailPoet.I18n.t('formSettingsCorrupted').replace('%1$s', form.name),
+        MailPoet.I18n.t('formSettingsCorrupted')
+          .replace('%1$s', form.name)
+          .replace(
+            '[link]',
+            `<a class="mailpoet-link" href="admin.php?page=mailpoet-form-editor&id=${parseInt(
+              form.id,
+              10,
+            )}">`,
+          )
+          .replace('[/link]', '</a>'),
       );
     }
     const rowClasses = classnames(
