@@ -75,7 +75,9 @@ class UsageRestriction extends Component<Props, State> {
 
   componentDidMount() {
     const $inputs = jQuery(
-      '.mailpoet_field_coupon_minimum_amount input, .mailpoet_field_coupon_maximum_amount input',
+      '.mailpoet_field_coupon_minimum_amount input,' +
+        '.mailpoet_field_coupon_maximum_amount input,' +
+        '.mailpoet_field_coupon_email_restrictions input',
     );
     if ($inputs.length) {
       $inputs.each((_index, input) => {
@@ -113,6 +115,7 @@ class UsageRestriction extends Component<Props, State> {
         <PanelBody
           title={MailPoet.I18n.t('usageRestriction')}
           className="mailpoet-coupon-block-usage-restriction"
+          initialOpen={false}
         >
           <PanelRow>
             <TextControl
@@ -246,6 +249,13 @@ class UsageRestriction extends Component<Props, State> {
                 this.setValueCallback('emailRestrictions', emailRestrictions);
                 this.setState({ emailRestrictions });
               }}
+              type="text"
+              pattern="^[-\w+.%\*]+@[\w-.\*]+\.[A-Za-z\*]{2,4}(?:,[-\w+.%\*]+@[\w-.\*]+\.[A-Za-z\*]{2,4})*$"
+              data-parsley-validate
+              data-parsley-trigger="input"
+              data-parsley-error-message={MailPoet.I18n.t(
+                'emailRestrictionsFieldsErrorMessage',
+              )}
             />
           </PanelRow>
         </PanelBody>
