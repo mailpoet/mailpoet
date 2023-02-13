@@ -89,14 +89,6 @@ Module.CouponBlockSettingsView = base.BlockSettingsView.extend({
     return {
       'input .mailpoet_field_coupon_code': _.partial(this.changeField, 'code'),
       'change .mailpoet_field_coupon_source': 'changeSource',
-      'input .mailpoet_field_coupon_usage_limit': _.partial(
-        this.changeField,
-        'usageLimit',
-      ),
-      'input .mailpoet_field_coupon_usage_limit_per_user': _.partial(
-        this.changeField,
-        'usageLimitPerUser',
-      ),
       'change .mailpoet_field_coupon_alignment': _.partial(
         this.changeField,
         'styles.block.textAlign',
