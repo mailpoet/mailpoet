@@ -2,6 +2,7 @@ import classnames from 'classnames';
 import { Component } from 'react';
 import jQuery from 'jquery';
 import PropTypes from 'prop-types';
+import { escapeHTML } from '@wordpress/escape-html';
 
 import { Button } from 'common';
 import { Listing } from 'listing/listing.jsx';
@@ -155,7 +156,10 @@ const itemActions = [
             ? response.data.name
             : MailPoet.I18n.t('noName');
           MailPoet.Notice.success(
-            MailPoet.I18n.t('formDuplicated').replace('%1$s', formName),
+            MailPoet.I18n.t('formDuplicated').replace(
+              '%1$s',
+              escapeHTML(formName),
+            ),
           );
           refresh();
         })
@@ -227,7 +231,7 @@ class FormListComponent extends Component {
     if (form.settings === null) {
       MailPoet.Notice.error(
         MailPoet.I18n.t('formSettingsCorrupted')
-          .replace('%1$s', form.name)
+          .replace('%1$s', escapeHTML(form.name))
           .replace(
             '[link]',
             `<a class="mailpoet-link" href="admin.php?page=mailpoet-form-editor&id=${parseInt(
