@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { General } from './general';
 import { SettingsHeader } from './settings_header';
 import { UsageRestriction } from './usage_restriction';
+import { UsageLimits } from './usage_limits';
 
 type Props = {
   availableDiscountTypes: SelectControl.Option[];
@@ -46,6 +47,10 @@ function Settings({
               getValueCallback={getValueCallback}
               setValueCallback={setValueCallback}
               priceDecimalSeparator={priceDecimalSeparator}
+            />
+            <UsageLimits
+              getValueCallback={getValueCallback}
+              setValueCallback={setValueCallback}
             />
           </>
         ) : null}
