@@ -1,16 +1,21 @@
+import { MouseEvent } from 'react';
+import ReactStringReplace from 'react-string-replace';
 import { KeyActivationState } from 'settings/store/types';
 import { MailPoet } from 'mailpoet';
 import {
-  ServiceUnavailableMessage,
   KeyMessages,
   MssMessages,
   PremiumMessages,
+  ServiceUnavailableMessage,
 } from './key_messages';
+import { getLinkRegex } from '../utils';
 
 export function Messages(
   state: KeyActivationState,
   showPendingApprovalNotice: boolean,
   activationCallback: () => Promise<void>,
+  verifyKey: () => Promise<void>,
+  showRefreshMessage: boolean,
 ) {
   if (state.code === 503) {
     return (
@@ -19,6 +24,10 @@ export function Messages(
       </div>
     );
   }
+  const onRefreshClick = async (e: MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    await verifyKey();
+  };
 
   return (
     <div className="key-activation-messages">
@@ -46,7 +55,19 @@ export function Messages(
           <div className="pending_approval_heading">
             {MailPoet.I18n.t('premiumTabPendingApprovalHeading')}
           </div>
-          <div>{MailPoet.I18n.t('premiumTabPendingApprovalMessage')}</div>
+          <div>
+            {MailPoet.I18n.t('premiumTabPendingApprovalMessage')}{' '}
+            {showRefreshMessage &&
+              ReactStringReplace(
+                MailPoet.I18n.t('premiumTabPendingApprovalMessageRefresh'),
+                getLinkRegex(),
+                (match) => (
+                  <a onClick={onRefreshClick} href="#">
+                    {match}
+                  </a>
+                ),
+              )}
+          </div>
         </div>
       )}
 
