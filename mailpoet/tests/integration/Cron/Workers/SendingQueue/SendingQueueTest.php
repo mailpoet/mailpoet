@@ -44,6 +44,7 @@ use MailPoet\Models\SubscriberSegment;
 use MailPoet\Newsletter\Links\Links;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
+use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Router\Endpoints\Track;
 use MailPoet\Router\Router;
 use MailPoet\Segments\SegmentsRepository;
@@ -96,6 +97,8 @@ class SendingQueueTest extends \MailPoetTest {
   private $scheduledTasksRepository;
   /** @var SubscribersRepository */
   private $subscribersRepository;
+  /** @var SendingQueuesRepository */
+  private $sendingQueuesRepository;
 
   public function _before() {
     parent::_before();
@@ -154,6 +157,7 @@ class SendingQueueTest extends \MailPoetTest {
     $this->tasksLinks = $this->diContainer->get(TasksLinks::class);
     $this->scheduledTasksRepository = $this->diContainer->get(ScheduledTasksRepository::class);
     $this->subscribersRepository = $this->diContainer->get(SubscribersRepository::class);
+    $this->sendingQueuesRepository = $this->diContainer->get(SendingQueuesRepository::class);
     $this->sendingQueueWorker = $this->getSendingQueueWorker();
   }
 
@@ -209,7 +213,8 @@ class SendingQueueTest extends \MailPoetTest {
       $this->tasksLinks,
       $this->scheduledTasksRepository,
       $this->diContainer->get(MailerTask::class),
-      $this->subscribersRepository
+      $this->subscribersRepository,
+      $this->sendingQueuesRepository
     );
     try {
       $sendingQueueWorker->process();
@@ -243,7 +248,8 @@ class SendingQueueTest extends \MailPoetTest {
           'sendBulk' => $this->mailerTaskDummyResponse,
         ]
       ),
-      $this->subscribersRepository
+      $this->subscribersRepository,
+      $this->sendingQueuesRepository
     );
     $sendingQueueWorker->sendNewsletters(
       $this->queue,
@@ -288,7 +294,8 @@ class SendingQueueTest extends \MailPoetTest {
           'sendBulk' => $this->mailerTaskDummyResponse,
         ]
       ),
-      $this->subscribersRepository
+      $this->subscribersRepository,
+      $this->sendingQueuesRepository
     );
     $sendingQueueWorker->sendNewsletters(
       $queue,
@@ -327,7 +334,8 @@ class SendingQueueTest extends \MailPoetTest {
       $this->tasksLinks,
       $this->scheduledTasksRepository,
       $this->diContainer->get(MailerTask::class),
-      $this->subscribersRepository
+      $this->subscribersRepository,
+      $this->sendingQueuesRepository
     );
     $sendingQueueWorker->process();
   }
@@ -650,7 +658,8 @@ class SendingQueueTest extends \MailPoetTest {
           'sendBulk' => Stub::consecutive(['response' => false, 'error' => $mailerError], $this->mailerTaskDummyResponse),
         ]
       ),
-      $this->subscribersRepository
+      $this->subscribersRepository,
+      $this->sendingQueuesRepository
     );
 
     $sendingQueueWorker->sendNewsletters(
@@ -1049,7 +1058,8 @@ class SendingQueueTest extends \MailPoetTest {
           'sendBulk' => $this->mailerTaskDummyResponse,
         ]
       ),
-      $this->subscribersRepository
+      $this->subscribersRepository,
+      $this->sendingQueuesRepository
     );
     try {
       $sendingQueueWorker->sendNewsletters(
@@ -1271,7 +1281,8 @@ class SendingQueueTest extends \MailPoetTest {
       $this->tasksLinks,
       $this->scheduledTasksRepository,
       $mailerMock ?? $this->diContainer->get(MailerTask::class),
-      $this->subscribersRepository
+      $this->subscribersRepository,
+      $this->sendingQueuesRepository
     );
   }
 }
