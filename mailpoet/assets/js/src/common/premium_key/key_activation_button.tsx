@@ -5,7 +5,7 @@ import { MssStatus } from 'settings/store/types';
 import { MailPoet } from 'mailpoet';
 import { select } from '@wordpress/data';
 import { STORE_NAME } from 'settings/store/store_name';
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import { GlobalContext } from 'context';
 import { useAction, useSelector, useSetting } from 'settings/store/hooks';
 
@@ -44,6 +44,7 @@ export function KeyActivationButton({
     (apiKeyState as KeyState).is_approved === false;
 
   const buttonIsDisabled = state.key === '' || state.key === null;
+  const [showRefreshMessage, setShowRefreshMessage] = useState(true);
 
   const verifyKey = async () => {
     if (!state.key) {
@@ -67,6 +68,8 @@ export function KeyActivationButton({
     setState({ inProgress: false });
     MailPoet.Modal.loading(false);
     setState({ fromAddressModalCanBeShown: true });
+    // pending approval refresh link should only show on refresh of the page and should get hidden after the refresh button is clicked
+    setShowRefreshMessage(false);
   };
 
   return (
@@ -80,7 +83,13 @@ export function KeyActivationButton({
         {label}
       </Button>
       {state.isKeyValid !== null &&
-        Messages(state, showPendingApprovalNotice, activationCallback)}
+        Messages(
+          state,
+          showPendingApprovalNotice,
+          activationCallback,
+          verifyKey,
+          showRefreshMessage,
+        )}
     </>
   );
 }
