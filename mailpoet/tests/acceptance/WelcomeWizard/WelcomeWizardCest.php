@@ -51,7 +51,7 @@ class WelcomeWizardCest {
 
     // Third step of the wizard
     $i->waitForText('Power up your WooCommerce store');
-    $i->click('.mailpoet-form-yesno-no');
+    $i->click('.mailpoet-form-yesno-yes');
     $i->click('.mailpoet-wizard-continue-button');
 
     // Fourth step of the wizard
