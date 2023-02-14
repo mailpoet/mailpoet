@@ -5,7 +5,7 @@ import { GlobalContext, useGlobalContextValue } from 'context/index.jsx';
 import { useState } from 'react';
 import { ExistingCoupons, Coupon } from './existingCoupons';
 import { General } from './general';
-import { SettingsHeader } from './settings_header';
+import { SettingsHeader, SettingsTabs } from './settings_header';
 import { UsageRestriction } from './usage_restriction';
 import { UsageLimits } from './usage_limits';
 
@@ -18,6 +18,7 @@ type Props = {
     value: string | boolean | Backbone.Collection,
   ) => void;
   priceDecimalSeparator: string;
+  codePlaceholder: string;
 };
 
 function Settings({
@@ -26,6 +27,7 @@ function Settings({
   getValueCallback,
   setValueCallback,
   priceDecimalSeparator,
+  codePlaceholder,
 }: Props): JSX.Element {
   const [activeTab, setActiveTab] = useState(getValueCallback('source'));
   return (
@@ -36,9 +38,22 @@ function Settings({
           onClick={(value: string) => {
             setValueCallback('source', value);
             setActiveTab(value);
+
+            // reset code placeholder and restoring existing coupon code
+            if (value === SettingsTabs.createNew) {
+              setValueCallback('code', codePlaceholder);
+              setValueCallback('couponId', null);
+            } else if (value === SettingsTabs.allCoupons) {
+              const existingCoupon = availableCoupons.find(
+                (coupon) => coupon.id === getValueCallback('couponId'),
+              );
+              if (existingCoupon) {
+                setValueCallback('code', existingCoupon.text);
+              }
+            }
           }}
         />
-        {activeTab === 'createNew' ? (
+        {activeTab === SettingsTabs.createNew ? (
           <>
             <General
               availableDiscountTypes={availableDiscountTypes}

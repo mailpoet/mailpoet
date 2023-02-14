@@ -2,15 +2,20 @@ import { Button } from '@wordpress/components';
 import classnames from 'classnames';
 import { MailPoet } from 'mailpoet';
 
+export enum SettingsTabs {
+  allCoupons = 'allCoupons',
+  createNew = 'createNew',
+}
+
 function SettingsHeader({ activeTab, onClick }) {
   return (
     <div className="components-panel__header interface-complementary-area-header edit-post-sidebar__panel-tabs">
       <ul>
         <li>
           <Button
-            onClick={() => onClick('allCoupons')}
+            onClick={() => onClick(SettingsTabs.allCoupons)}
             className={classnames('edit-post-sidebar__panel-tab', {
-              'is-active': activeTab === 'allCoupons',
+              'is-active': activeTab === SettingsTabs.allCoupons,
             })}
             data-label={MailPoet.I18n.t('allCoupons')}
           >
@@ -19,9 +24,9 @@ function SettingsHeader({ activeTab, onClick }) {
         </li>
         <li>
           <Button
-            onClick={() => onClick('createNew')}
+            onClick={() => onClick(SettingsTabs.createNew)}
             className={classnames('edit-post-sidebar__panel-tab', {
-              'is-active': activeTab === 'createNew',
+              'is-active': activeTab === SettingsTabs.createNew,
             })}
             data-label={MailPoet.I18n.t('createNew')}
           >
