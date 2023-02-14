@@ -39,3 +39,24 @@
   margin-left: 10px;
   position: absolute;
 }
+
+.mailpoet_coupon_block_coupon {
+  font-size: 13px;
+  height: auto;
+  line-height: 21px;
+  margin-bottom: 16px;
+  padding: 16px 0;
+  width: 100%;
+
+  input[type='radio'] {
+    margin-left: 16px;
+  }
+
+  div {
+    padding: 0 16px 0 40px;
+
+    &.discount_type {
+      font-style: italic;
+    }
+  }
+}

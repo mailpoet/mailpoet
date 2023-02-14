@@ -87,8 +87,6 @@ Module.CouponBlockSettingsView = base.BlockSettingsView.extend({
   getTemplate: () => window.templates.couponBlockSettings,
   events() {
     return {
-      'input .mailpoet_field_coupon_code': _.partial(this.changeField, 'code'),
-      'change .mailpoet_field_coupon_source': 'changeSource',
       'change .mailpoet_field_coupon_alignment': _.partial(
         this.changeField,
         'styles.block.textAlign',
@@ -231,6 +229,9 @@ Module.CouponBlockSettingsView = base.BlockSettingsView.extend({
         availableDiscountTypes={App.getConfig()
           .get('coupon.discount_types')
           .toJSON()}
+        availableCoupons={App.getConfig()
+          .get('coupon.available_coupons')
+          .toJSON()}
         priceDecimalSeparator={App.getConfig().get(
           'coupon.price_decimal_separator',
         )}
@@ -239,58 +240,6 @@ Module.CouponBlockSettingsView = base.BlockSettingsView.extend({
       />,
       document.getElementById('mailpoet_coupon_block_settings'),
     );
-
-    const model = this.model;
-    this.$('.mailpoet_field_coupon_existing_coupon')
-      .select2({
-        multiple: false,
-        allowClear: false,
-      })
-      .on({
-        'select2:select': function (event) {
-          const couponId = event.params.data.id;
-          const couponCode = event.params.data.text;
-          model.set('couponId', couponId);
-          model.set('code', couponCode);
-        },
-      })
-      .trigger('change');
-  },
-  changeSource(event) {
-    const value = jQuery(event.target).val();
-    this.model.set('source', value);
-
-    if (value === 'createNew') {
-      this.$('.mailpoet_field_coupon_source_use_existing').addClass(
-        'mailpoet_hidden',
-      );
-      this.$('.mailpoet_field_coupon_source_create_new').removeClass(
-        'mailpoet_hidden',
-      );
-      // reset code placeholder
-      this.model.set('code', App.getConfig().get('coupon.code_placeholder'));
-      this.model.set('couponId', null);
-    } else if (value === 'useExisting') {
-      this.$('.mailpoet_field_coupon_source_create_new').addClass(
-        'mailpoet_hidden',
-      );
-      this.$('.mailpoet_field_coupon_source_use_existing').removeClass(
-        'mailpoet_hidden',
-      );
-      // set selected code from available
-      this.model.set(
-        'code',
-        this.$('.mailpoet_field_coupon_existing_coupon')
-          .find(':selected')
-          .text(),
-      );
-      this.model.set(
-        'couponId',
-        this.$('.mailpoet_field_coupon_existing_coupon')
-          .find(':selected')
-          .val(),
-      );
-    }
   },
 });
 

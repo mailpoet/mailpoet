@@ -2,17 +2,6 @@
 
 <div id="mailpoet_coupon_block_settings"></div>
 
-<div class="mailpoet_form_field mailpoet_field_coupon_source_use_existing {{#ifCond model.source '!==' 'useExisting'}}mailpoet_hidden{{/ifCond}}">
-  <div class="mailpoet_form_field_type"><%= __('Existing coupon') %></div>
-  <div class="mailpoet_form_field_select_option mailpoet_form_field_input_nowrap">
-    <select name="existing_coupon" class="mailpoet_select mailpoet_select_large mailpoet_field_coupon_existing_coupon">
-      {{#each availableCoupons}}
-        <option value="{{ id }}" {{#ifCond ../model.couponId '==' id}}selected="selected"{{/ifCond}}>{{ text }}</option>
-      {{/each}}
-    </select>
-  </div>
-</div>
-
 <hr />
 <div class="mailpoet_form_field">
     <div class="mailpoet_form_field_title"><%= __('Alignment') %></div>
