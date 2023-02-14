@@ -366,11 +366,9 @@ class SendingQueueTest extends \MailPoetTest {
             expect(isset($extraParams['unsubscribe_url']))->true();
             expect($extraParams['unsubscribe_url'])->equals($directUnsubscribeURL);
             expect(isset($extraParams['meta']))->true();
-            expect($extraParams['meta'])->equals([
-              'email_type' => 'newsletter',
-              'subscriber_status' => 'subscribed',
-              'subscriber_source' => 'administrator',
-            ]);
+            expect($extraParams['meta']['email_type'])->equals('newsletter');
+            expect($extraParams['meta']['subscriber_status'])->equals('subscribed');
+            expect($extraParams['meta']['subscriber_source'])->equals('administrator');
             return $this->mailerTaskDummyResponse;
           }),
         ]
@@ -391,11 +389,9 @@ class SendingQueueTest extends \MailPoetTest {
             expect(isset($extraParams['unsubscribe_url']))->true();
             expect($extraParams['unsubscribe_url'])->equals($trackedUnsubscribeURL);
             expect(isset($extraParams['meta']))->true();
-            expect($extraParams['meta'])->equals([
-              'email_type' => 'newsletter',
-              'subscriber_status' => 'subscribed',
-              'subscriber_source' => 'administrator',
-            ]);
+            expect($extraParams['meta']['email_type'])->equals('newsletter');
+            expect($extraParams['meta']['subscriber_status'])->equals('subscribed');
+            expect($extraParams['meta']['subscriber_source'])->equals('administrator');
             return $this->mailerTaskDummyResponse;
           }),
         ]
@@ -1194,6 +1190,87 @@ class SendingQueueTest extends \MailPoetTest {
     expect($task->getStatus())->equals(ScheduledTaskEntity::STATUS_PAUSED);
     expect($newsletter->getStatus())->equals(NewsletterEntity::STATUS_SENDING);
     expect($this->wp->getTransient(SendingQueueWorker::EMAIL_WITH_INVALID_SEGMENT_OPTION))->equals('Subject With Deleted');
+  }
+
+  public function testItGeneratesPartOfAnMD5CampaignIdStoredAsSendingQueueMeta() {
+    $sendingQueueWorker = $this->getSendingQueueWorker(
+      $this->construct(
+        MailerTask::class,
+        [$this->diContainer->get(MailerFactory::class)],
+        [
+          'send' => Expected::exactly(1, function($newsletter, $subscriber) {
+            // newsletter body should not be empty
+            expect(!empty($newsletter['body']['html']))->true();
+            expect(!empty($newsletter['body']['text']))->true();
+            return $this->mailerTaskDummyResponse;
+          }),
+        ]
+      )
+    );
+    $sendingQueueWorker->process();
+    $meta = $this->queue->getSendingQueueEntity()->getMeta();
+    expect(isset($meta['campaignId']))->true();
+    $campaignId = $meta['campaignId'];
+    expect(strlen($campaignId))->equals(16);
+  }
+
+  public function testItPassesCampaignIdToMailerViaExtraParamsMeta() {
+    $mailerTaskExtraParams = [];
+    $sendingQueueWorker = $this->getSendingQueueWorker(
+      $this->construct(
+        MailerTask::class,
+        [$this->diContainer->get(MailerFactory::class)],
+        [
+          'send' => Expected::exactly(1, function($newsletter, $subscriber, $extraParams = []) use (&$mailerTaskExtraParams) {
+            // newsletter body should not be empty
+            expect(!empty($newsletter['body']['html']))->true();
+            expect(!empty($newsletter['body']['text']))->true();
+            $mailerTaskExtraParams = $extraParams;
+            return $this->mailerTaskDummyResponse;
+          }),
+        ]
+      )
+    );
+    $sendingQueueWorker->process();
+    $meta = $this->queue->getSendingQueueEntity()->getMeta();
+    expect(isset($meta['campaignId']))->true();
+    $campaignId = $meta['campaignId'];
+    expect($mailerTaskExtraParams['meta']['campaign_id'])->equals($campaignId);
+  }
+
+  public function testCampaignIdsAreTheSameForDifferentSubscribers() {
+    $mailerTaskCampaignIds = [];
+    $secondSubscriber = $this->createSubscriber('sub2@example.com', 'Subscriber', 'Two');
+    $segment2 = SubscriberSegment::create();
+    $segment2->subscriberId = (int)$secondSubscriber->getId();
+    $segment2->segmentId = (int)$this->segment->id;
+    $segment2->save();
+    $this->queue->setSubscribers([$this->subscriber->getId(), $secondSubscriber->getId()]);
+    $this->queue->countTotal = 2;
+    $this->queue->save();
+    $sendingQueueWorker = $this->getSendingQueueWorker(
+      $this->construct(
+        MailerTask::class,
+        [$this->diContainer->get(MailerFactory::class)],
+        [
+          'send' => Expected::exactly(2, function($newsletter, $subscriber, $extraParams = []) use (&$mailerTaskCampaignIds) {
+            // newsletter body should not be empty
+            expect(!empty($newsletter['body']['html']))->true();
+            expect(!empty($newsletter['body']['text']))->true();
+            $mailerTaskCampaignIds[$subscriber] = $extraParams['meta']['campaign_id'];
+            return $this->mailerTaskDummyResponse;
+          }),
+        ]
+      )
+    );
+    $sendingQueueWorker->process();
+    $meta = $this->queue->getSendingQueueEntity()->getMeta();
+    expect(isset($meta['campaignId']))->true();
+    $campaignId = $meta['campaignId'];
+    expect(count($mailerTaskCampaignIds))->equals(2);
+    foreach (array_values($mailerTaskCampaignIds) as $mailerTaskCampaignId) {
+      expect($mailerTaskCampaignId)->equals($campaignId);
+    }
   }
 
   public function _after() {
