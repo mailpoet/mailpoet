@@ -145,6 +145,7 @@ export type Settings = {
       newsletter_id: number | string;
     }>;
   };
+  woocommerce_import_screen_displayed: '1' | '';
 };
 type Segment = {
   id: string;

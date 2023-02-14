@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { MailPoet } from 'mailpoet';
+import { useSetting } from 'settings/store/hooks';
+import { Settings } from 'settings/store/types';
 import { StepsContent } from 'common/steps/steps_content';
 import { WizardWooCommerceStep } from './steps/woocommerce_step';
 import { WelcomeWizardStepLayout } from './layout/step_layout.jsx';
@@ -15,6 +17,14 @@ function WooCommerceController({
   redirectToNextStep = null,
 }: WooCommerceControllerPropType): JSX.Element {
   const [loading, setLoading] = useState(false);
+  const [woocommerce, setWoocommerce] = useSetting('woocommerce');
+  const setTracking = useSetting('tracking')[1];
+  const setImportScreenDisplayed = useSetting(
+    'woocommerce_import_screen_displayed',
+  )[1];
+  const setSubsrcibeOldCustomers = useSetting(
+    'mailpoet_subscribe_old_woocommerce_customers',
+  )[1];
 
   const handleApiError = (response) => {
     setLoading(false);
@@ -52,25 +62,39 @@ function WooCommerceController({
     setLoading(true);
     const trackingLevelForDisabledCookies =
       MailPoet.trackingConfig.level === 'basic' ? 'basic' : 'partial';
-    const newTrackingLevel = allowed ? 'full' : trackingLevelForDisabledCookies;
+    const trackingData: Settings['tracking'] = {
+      level: allowed ? 'full' : trackingLevelForDisabledCookies,
+    };
+    const subscribeOldCustomersData: Settings['mailpoet_subscribe_old_woocommerce_customers'] =
+      {
+        enabled: importType === 'subscribed' ? '1' : '',
+      };
     const settings = {
       // importType
       woocommerce_import_screen_displayed: 1,
       'mailpoet_subscribe_old_woocommerce_customers.enabled':
-        importType === 'subscribed' ? 1 : 0,
+        subscribeOldCustomersData.enabled,
       // cookies allowed
-      'tracking.level': newTrackingLevel,
-      'woocommerce.accept_cookie_revenue_tracking.set': 1,
+      'tracking.level': trackingData.level,
+      'woocommerce.accept_cookie_revenue_tracking.set': '1',
     };
-    await updateSettings(settings)
-      .then(scheduleImport)
-      .then(async () => {
-        if (isWizardStep) {
-          redirectToNextStep();
-        } else {
-          await finishWizard();
-        }
-      });
+    await updateSettings(settings);
+    setTracking(trackingData);
+    setSubsrcibeOldCustomers(subscribeOldCustomersData);
+    setWoocommerce({
+      ...woocommerce,
+      accept_cookie_revenue_tracking: {
+        ...(woocommerce.accept_cookie_revenue_tracking || {}),
+        set: '1',
+      },
+    });
+    setImportScreenDisplayed('1');
+    await scheduleImport();
+    if (isWizardStep) {
+      redirectToNextStep();
+    } else {
+      await finishWizard();
+    }
   };
 
   const result = (
