@@ -30,7 +30,7 @@ function WizardWooCommerceStep({
     if (importType === null || allowed === null) {
       return false;
     }
-    submitForm(importType, allowed === true);
+    submitForm(importType, allowed);
     return false;
   };
 
