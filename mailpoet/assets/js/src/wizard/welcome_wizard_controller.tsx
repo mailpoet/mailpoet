@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useSetting } from 'settings/store/hooks';
+import { Settings } from 'settings/store/types';
 import { partial } from 'underscore';
 
 import { WelcomeWizardSenderStep } from './steps/sender_step';
@@ -50,10 +51,10 @@ function WelcomeWizardStepsController({
   const submitTracking = useCallback(
     async (tracking, libs3rdParty) => {
       setLoading(true);
-      const analyticsData: { enabled: '1' | '' } = {
+      const analyticsData: Settings['analytics'] = {
         enabled: tracking ? '1' : '',
       };
-      const thirdPartyLibsData: { enabled: '1' | '' } = {
+      const thirdPartyLibsData: Settings['3rd_party_libs'] = {
         enabled: libs3rdParty ? '1' : '',
       };
       const updateData = {
