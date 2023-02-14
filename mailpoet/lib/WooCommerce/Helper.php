@@ -193,9 +193,12 @@ class Helper {
     ]);
 
     return array_map(function(\WP_Post $post): array {
+      $discountType = $this->wp->getPostMeta($post->ID, 'discount_type', true);
       return [
         'id' => $post->ID,
         'text' => $post->post_title, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+        'excerpt' => $post->post_excerpt, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+        'discountType' => $discountType,
       ];
     }, $couponPosts);
   }
