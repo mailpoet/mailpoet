@@ -3,7 +3,7 @@ Contributors: mailpoet
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 5.8
 Tested up to: 6.1
-Stable tag: 4.6.1
+Stable tag: 4.6.2
 Requires PHP: 7.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -218,6 +218,15 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 4.6.2 - 2023-02-14 =
+* Improved: explain MailPoet Sending Service during onboarding;
+* Improved: when a subscription is pending approval, you can now recheck the status directly from the notice;
+* Changed: removed "Export" item from the main MailPoet menu;
+* Fixed: after finishing WooCommerce onboarding, the user is redirected to MailPoet;
+* Fixed: migration class not found when data corrupted by another plugin;
+* Fixed: misaligned buttons in "Relax" form template;
+* Fixed: broken built-in CAPTCHA in Safari on macOS.
 
 = 4.6.1 - 2023-02-06 =
 * Added: "Copy to clipboard" button next to System Info;
