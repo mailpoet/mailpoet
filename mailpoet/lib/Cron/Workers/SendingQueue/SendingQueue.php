@@ -427,6 +427,14 @@ class SendingQueue {
     );
   }
 
+  /**
+   * @param NewsletterEntity $newsletter
+   * @param string $textBody - The pre-processed text body of the newsletter, before any shortcodes have been processed.
+   * Leaving the shortcodes unprocessed ensures that we get the same campaignId for different subscribers, as well as
+   * for different sends of the same automatic email when link tracking is enabled.
+   *
+   * @return string
+   */
   public function calculateCampaignId(NewsletterEntity $newsletter, string $textBody): string {
     return substr(md5(implode('|', [$newsletter->getId(), $textBody, $newsletter->getSubject()])), 0, 16);
   }

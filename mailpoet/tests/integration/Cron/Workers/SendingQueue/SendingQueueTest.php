@@ -1273,6 +1273,47 @@ class SendingQueueTest extends \MailPoetTest {
     }
   }
 
+  public function testCampaignIdDoesNotChangeIfContentStaysTheSame() {
+    $newsletter = (new \MailPoet\Test\DataFactories\Newsletter())->withSubject('Subject')->create();
+    $campaignId = $this->sendingQueueWorker->calculateCampaignId($newsletter, 'text body');
+    expect($campaignId)->equals($this->sendingQueueWorker->calculateCampaignId($newsletter, 'text body'));
+  }
+
+  public function testCampaignIdChangesIfSubjectChanges() {
+    $newsletter = (new \MailPoet\Test\DataFactories\Newsletter())->withSubject('Subject')->create();
+    $originalCampaignId = $this->sendingQueueWorker->calculateCampaignId($newsletter, 'text body');
+    $newsletter->setSubject('Subject 2');
+    $this->entityManager->persist($newsletter);
+    $this->entityManager->flush();
+    expect($originalCampaignId)->notEquals($this->sendingQueueWorker->calculateCampaignId($newsletter, 'text body'));
+  }
+
+  public function testCampaignIdRevertsIfContentReverts() {
+    $newsletter = (new \MailPoet\Test\DataFactories\Newsletter())->withSubject('Subject')->create();
+    $originalCampaignId = $this->sendingQueueWorker->calculateCampaignId($newsletter, 'text body');
+    $newsletter->setSubject('Subject 2');
+    $this->entityManager->persist($newsletter);
+    $this->entityManager->flush();
+    expect($originalCampaignId)->notEquals($this->sendingQueueWorker->calculateCampaignId($newsletter, 'text body changed'));
+    $newsletter->setSubject('Subject');
+    $this->entityManager->persist($newsletter);
+    $this->entityManager->flush();
+    expect($originalCampaignId)->equals($this->sendingQueueWorker->calculateCampaignId($newsletter, 'text body'));
+  }
+
+  public function testCampaignIdDependsOnNewsletterId() {
+    $newsletter1 = (new \MailPoet\Test\DataFactories\Newsletter())->withSubject('Subject')->create();
+    $newsletter2 = (new \MailPoet\Test\DataFactories\Newsletter())->withSubject('Subject')->create();
+    $sameContent = 'content';
+    expect($this->sendingQueueWorker->calculateCampaignId($newsletter1, $sameContent))->notEquals($this->sendingQueueWorker->calculateCampaignId($newsletter2, $sameContent));
+  }
+
+  public function testCampaignIdChangesIfContentChanges() {
+     $newsletter = (new \MailPoet\Test\DataFactories\Newsletter())->withSubject('Subject')->create();
+    $originalCampaignId = $this->sendingQueueWorker->calculateCampaignId($newsletter, 'text body');
+    expect($originalCampaignId)->notEquals($this->sendingQueueWorker->calculateCampaignId($newsletter, 'different text body'));
+  }
+
   public function _after() {
     $this->truncateEntity(SubscriberEntity::class);
     $this->truncateEntity(SubscriberSegmentEntity::class);
