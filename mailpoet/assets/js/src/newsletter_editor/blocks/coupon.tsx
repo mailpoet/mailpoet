@@ -232,6 +232,7 @@ Module.CouponBlockSettingsView = base.BlockSettingsView.extend({
         availableCoupons={App.getConfig()
           .get('coupon.available_coupons')
           .toJSON()}
+        codePlaceholder={App.getConfig().get('coupon.code_placeholder')}
         priceDecimalSeparator={App.getConfig().get(
           'coupon.price_decimal_separator',
         )}
