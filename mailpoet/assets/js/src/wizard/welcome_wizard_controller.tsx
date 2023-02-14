@@ -36,6 +36,8 @@ function WelcomeWizardStepsController({
 
   const [loading, setLoading] = useState(false);
   const [sender, setSender] = useSetting('sender');
+  const setAnalytics = useSetting('analytics')[1];
+  const setThirdPartyLibs = useSetting('3rd_party_libs')[1];
 
   useEffect(() => {
     if (step > stepsCount || step < 1) {
@@ -48,13 +50,23 @@ function WelcomeWizardStepsController({
   const submitTracking = useCallback(
     async (tracking, libs3rdParty) => {
       setLoading(true);
-      await updateSettings({
-        analytics: { enabled: tracking ? '1' : '' },
-        '3rd_party_libs': { enabled: libs3rdParty ? '1' : '' },
-      }).then(() => redirect(step));
+      const analyticsData: { enabled: '1' | '' } = {
+        enabled: tracking ? '1' : '',
+      };
+      const thirdPartyLibsData: { enabled: '1' | '' } = {
+        enabled: libs3rdParty ? '1' : '',
+      };
+      const updateData = {
+        analytics: analyticsData,
+        '3rd_party_libs': thirdPartyLibsData,
+      };
+      await updateSettings(updateData);
+      setAnalytics(analyticsData);
+      setThirdPartyLibs(thirdPartyLibsData);
+      redirect(step);
       setLoading(false);
     },
-    [redirect, step],
+    [redirect, step, setAnalytics, setThirdPartyLibs],
   );
 
   const updateSender = useCallback(
