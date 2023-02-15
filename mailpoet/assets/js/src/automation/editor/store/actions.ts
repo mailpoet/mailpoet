@@ -235,6 +235,14 @@ export function updateStepArgs(stepId, name, value) {
   };
 }
 
+export function updateAutomationMeta(key, value) {
+  return {
+    type: 'UPDATE_AUTOMATION_META',
+    key,
+    value,
+  };
+}
+
 export function setErrors(errors) {
   trackErrors(errors);
   return {
