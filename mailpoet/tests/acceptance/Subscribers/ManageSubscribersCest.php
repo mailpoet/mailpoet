@@ -113,9 +113,9 @@ class ManageSubscribersCest {
     $i->waitForText($newSubscriberEmail);
     $i->clickItemRowActionByItemName($newSubscriberEmail, 'Delete Permanently');
     $i->waitForText('1 subscriber was permanently deleted.');
+    $i->waitForText($newSubscriberEmail2, 20);
     $i->dontSee($newSubscriberEmail);
 
-    $i->waitForText($newSubscriberEmail2, 20);
     $i->seeNoJSErrors();
   }
 
