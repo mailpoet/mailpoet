@@ -41,3 +41,6 @@ export type EditorStoreConfigType = StoreConfig<State>;
 
 // mailpoet.automation.templates.from_scratch_button
 export type FromScratchHookType = (errorHandler: Dispatch<string>) => void;
+
+// mailpoet.automation.settings.render
+export type AutomationSettingElements = Record<string, JSX.Element>;
