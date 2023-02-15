@@ -113,6 +113,7 @@ class ManageSubscribersCest {
     $i->waitForText($newSubscriberEmail);
     $i->clickItemRowActionByItemName($newSubscriberEmail, 'Delete Permanently');
     $i->waitForText('1 subscriber was permanently deleted.');
+    $i->waitForElementNotVisible('.mailpoet-listing-loading');
     $i->waitForText($newSubscriberEmail2, 20);
     $i->dontSee($newSubscriberEmail);
 
@@ -211,6 +212,7 @@ class ManageSubscribersCest {
     $i->waitForElementVisible('[data-automation-id="listing_item_1"]');
     $i->clickItemRowActionByItemName($newSubscriberEmail, 'Edit');
     $i->waitForText('Subscriber');
+    $i->waitForElementNotVisible('.mailpoet_form_loading');
     $i->seeSelectedInSelect2('Cooking');
     $i->seeSelectedInSelect2('Camping');
     $i->seeOptionIsSelected('[data-automation-id="subscriber-status"]', 'Subscribed');

@@ -85,7 +85,7 @@ class ManageSubscriptionLinkCest {
     $link = $i->grabTextFrom('//div[@class="row headers"]//th[text()="List-Unsubscribe"]/following-sibling::td');
     $link = trim($link, '<>');
     $i->amOnUrl($link);
-    $i->waitForText('You are now unsubscribed');
+    $i->waitForText('You are now unsubscribed', 15);
     $i->click('Manage your subscription');
     $i->seeOptionIsSelected($formStatusElement, 'Unsubscribed');
 
