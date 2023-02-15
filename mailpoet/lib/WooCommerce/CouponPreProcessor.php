@@ -106,8 +106,8 @@ class CouponPreProcessor {
     $coupon->set_product_ids($this->getProductIds($couponBlock['productIds'] ?? []));
     $coupon->set_excluded_product_ids($this->getProductIds($couponBlock['excludedProductIds'] ?? []));
 
-    $coupon->set_product_categories($this->getCategoryItemIds($couponBlock['productCategories'] ?? []));
-    $coupon->set_excluded_product_categories($this->getCategoryItemIds($couponBlock['excludedProductCategories'] ?? []));
+    $coupon->set_product_categories($this->getCategoryItemIds($couponBlock['productCategoryIds'] ?? []));
+    $coupon->set_excluded_product_categories($this->getCategoryItemIds($couponBlock['excludedProductCategoryIds'] ?? []));
 
     $coupon->set_email_restrictions(explode(',', $couponBlock['emailRestrictions'] ?? ''));
 
