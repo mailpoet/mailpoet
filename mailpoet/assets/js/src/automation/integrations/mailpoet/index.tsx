@@ -8,6 +8,7 @@ import { step as AddToListStep } from './steps/add_to_list';
 import { step as RemoveFromListStep } from './steps/remove_from_list';
 import { step as UpdateSubscriberStep } from './steps/update-subscriber';
 import { registerStepControls } from './step-controls';
+import { registerAutomationSidebar } from './automation-sidebar';
 
 export const initialize = (): void => {
   registerStepType(SendEmailStep);
@@ -19,4 +20,5 @@ export const initialize = (): void => {
   registerStepType(RemoveFromListStep);
   registerStepType(UpdateSubscriberStep);
   registerStepControls();
+  registerAutomationSidebar();
 };
