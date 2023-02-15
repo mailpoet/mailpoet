@@ -45,6 +45,15 @@ class AutomationTest extends \MailPoetTest {
     $this->assertEmpty($automation->getMetas());
   }
 
+  public function testAutomationComparisonWorks() {
+    $automation = $this->tester->createAutomation('test');
+    $automation2 = clone $automation;
+    $automation2->setMeta('foo', 'bar');
+    $this->assertFalse($automation->equals($automation2));
+    $automation2->deleteMeta('foo');
+    $this->assertTrue($automation->equals($automation2));
+  }
+
   public function _after() {
     $this->storage->truncate();
   }
