@@ -29,6 +29,8 @@ class Hooks {
 
   public const AUTOMATION_RUN_LOG_AFTER_STEP_RUN = 'mailpoet/automation/step/after_run';
 
+  public const AUTOMATION_RUN_CREATE = 'mailpoet/automation/run/create';
+
   public const AUTOMATION_TEMPLATES = 'mailpoet/automation/templates';
 
   public function doAutomationBeforeSave(Automation $automation): void {
