@@ -54,6 +54,27 @@ class AutomationTest extends \MailPoetTest {
     $this->assertTrue($automation->equals($automation2));
   }
 
+  /**
+   * @dataProvider dataForTestFullValidationWorks
+   */
+  public function testFullValidationWorks($status, $expected) {
+    $automation = $this->tester->createAutomation('test');
+    $automation->setStatus($status);
+    $this->assertEquals($expected, $automation->needsFullValidation());
+  }
+
+  public function dataForTestFullValidationWorks(): array {
+    return array_map(
+      function(string $status): array {
+        return [
+          'status' => $status,
+          'expected' => in_array($status, [Automation::STATUS_ACTIVE, Automation::STATUS_DEACTIVATING], true),
+        ];
+      },
+      Automation::STATUS_ALL
+    );
+  }
+
   public function _after() {
     $this->storage->truncate();
   }
