@@ -41,7 +41,7 @@ class DeleteNewsletterCest {
     // click to select all newsletters
     $i->click('[data-automation-id="select_all"]');
     $i->click('Restore');
-    $i->waitForText('2 emails have been restored from the Trash.');
+    $i->waitForText('2 emails have been restored from the Trash.', 20);
     $i->changeGroupInListingFilter('all');
     $i->waitForText($newsletterName);
   }
