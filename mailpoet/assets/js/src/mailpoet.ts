@@ -5,8 +5,11 @@ import { MailPoetDate } from './date';
 import { MailPoetAjax } from './ajax';
 import { MailPoetModal } from './modal';
 import { MailPoetNotice } from './notice';
-// side effect - extends MailPoet object in initializeMixpanelWhenLoaded
-import { MailPoetForceTrackEvent, MailPoetTrackEvent } from './analytics_event';
+import {
+  MailPoetForceTrackEvent,
+  MailPoetTrackEvent,
+  initializeMixpanelWhenLoaded,
+} from './analytics_event';
 import { MailPoetNum } from './num';
 import { MailPoetHelpTooltip } from './help-tooltip-helper';
 import { MailPoetIframe } from './iframe';
@@ -82,3 +85,6 @@ declare global {
 
 // Expose MailPoet globally
 window.MailPoet = MailPoet;
+
+// initializeMixpanelWhenLoaded needs to be called after window.MailPoet is defined.
+initializeMixpanelWhenLoaded();

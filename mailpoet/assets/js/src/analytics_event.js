@@ -78,7 +78,7 @@ function cacheEvent(forced, name, data, options, callback) {
   }
 }
 
-function initializeMixpanelWhenLoaded() {
+export function initializeMixpanelWhenLoaded() {
   if (typeof window.mixpanel === 'object') {
     exportMixpanel();
     trackCachedEvents();
@@ -89,5 +89,3 @@ function initializeMixpanelWhenLoaded() {
 
 export const MailPoetTrackEvent = _.partial(cacheEvent, false);
 export const MailPoetForceTrackEvent = _.partial(cacheEvent, true);
-
-initializeMixpanelWhenLoaded();
