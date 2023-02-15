@@ -21,6 +21,7 @@ class SendPageSenderDomainCheckCest {
 
     $dmarcError = 'Email violates Sender Domain’s DMARC policy.';
     $i->cantSee($dmarcError);
+    $i->waitForElement('[id="field_sender_address"]');
     $i->clearField('[id="field_sender_address"]');
     $i->fillField('[id="field_sender_address"]', 'something@automattic.com');
     $i->click('[id="field_sender_name"]'); // Go to different field to trigger blur
