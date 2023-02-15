@@ -11,28 +11,60 @@ class AutomationRunStorage {
   /** @var string */
   private $table;
 
+  /** @var string */
+  private $subjectTable;
+
   /** @var wpdb */
   private $wpdb;
 
   public function __construct() {
     global $wpdb;
     $this->table = $wpdb->prefix . 'mailpoet_automation_runs';
+    $this->subjectTable = $wpdb->prefix . 'mailpoet_automation_run_subjects';
     $this->wpdb = $wpdb;
   }
 
   public function createAutomationRun(AutomationRun $automationRun): int {
-    $result = $this->wpdb->insert($this->table, $automationRun->toArray());
+    $automationTableData = $automationRun->toArray();
+    unset($automationTableData['subjects']);
+    $result = $this->wpdb->insert($this->table, $automationTableData);
     if ($result === false) {
       throw Exceptions::databaseError($this->wpdb->last_error);
     }
-    return $this->wpdb->insert_id;
+    $automationRunId = $this->wpdb->insert_id;
+    $subjectTableData = $automationRun->toArray()['subjects'];
+
+    if (!$subjectTableData) {
+      //We allow for AutomationRuns with no subjects.
+      return $automationRunId;
+    }
+
+    $sql = 'insert into ' . esc_sql($this->subjectTable) . ' (`automation_run_id`, `key`, `args`) values %s';
+    $values = [];
+    foreach ($subjectTableData as $entry) {
+      $values[] = (string)$this->wpdb->prepare("(%d,%s,%s)", $automationRunId, $entry['key'], $entry['args']);
+    }
+    $sql = sprintf($sql, implode(',', $values));
+    $result = $this->wpdb->query($sql);
+    if ($result === false) {
+      throw Exceptions::databaseError($this->wpdb->last_error);
+    }
+
+    return $automationRunId;
   }
 
   public function getAutomationRun(int $id): ?AutomationRun {
     $table = esc_sql($this->table);
-    $query = (string)$this->wpdb->prepare("SELECT * FROM $table WHERE id = %d", $id);
-    $result = $this->wpdb->get_row($query, ARRAY_A);
-    return $result ? AutomationRun::fromArray((array)$result) : null;
+    $subjectTable = esc_sql($this->subjectTable);
+    $query = (string)$this->wpdb->prepare("SELECT * FROM $table  WHERE id = %d", $id);
+    $data = $this->wpdb->get_row($query, ARRAY_A);
+    if (!is_array($data) || !$data) {
+      return null;
+    }
+    $query = (string)$this->wpdb->prepare("SELECT * FROM $subjectTable WHERE automation_run_id = %d", $id);
+    $subjects = $this->wpdb->get_results($query, ARRAY_A);
+    $data['subjects'] = is_array($subjects) ? $subjects : [];
+    return AutomationRun::fromArray((array)$data);
   }
 
   /**
@@ -41,14 +73,39 @@ class AutomationRunStorage {
    */
   public function getAutomationRunsForAutomation(Automation $automation): array {
     $table = esc_sql($this->table);
-    $query = (string)$this->wpdb->prepare("SELECT * FROM $table WHERE automation_id = %d", $automation->getId());
-    $result = $this->wpdb->get_results($query, ARRAY_A);
-    return is_array($result) ? array_map(
-      function(array $runData): AutomationRun {
+    $subjectTable = esc_sql($this->subjectTable);
+    $query = (string)$this->wpdb->prepare("SELECT * FROM $table WHERE automation_id = %d order by id", $automation->getId());
+    $automationRuns = $this->wpdb->get_results($query, ARRAY_A);
+    if (!is_array($automationRuns) || !$automationRuns) {
+      return [];
+    }
+
+    $automationRunIds = array_map(
+      function(array $runData): int {
+        return (int)$runData['id'];
+      },
+      $automationRuns
+    );
+
+    $sql = sprintf("SELECT * FROM $subjectTable WHERE automation_run_id in (%s) order by automation_run_id", implode(',', array_map(function() {return '%d';
+
+    }, $automationRunIds)));
+
+    $query = (string)$this->wpdb->prepare($sql, ...$automationRunIds);
+    $subjects = $this->wpdb->get_results($query, ARRAY_A);
+
+    return array_map(
+      function(array $runData) use ($subjects): AutomationRun {
+        $runData['subjects'] = array_filter(
+          is_array($subjects) ? $subjects : [],
+          function(array $subjectData) use ($runData): bool {
+            return (int)$subjectData['automation_run_id'] === (int)$runData['id'];
+          }
+        );
         return AutomationRun::fromArray($runData);
       },
-      $result
-    ) : [];
+      $automationRuns
+    );
   }
 
   public function getCountForAutomation(Automation $automation, string ...$status): int {
@@ -96,6 +153,8 @@ class AutomationRunStorage {
 
   public function truncate(): void {
     $table = esc_sql($this->table);
+    $this->wpdb->query("TRUNCATE $table");
+    $table = esc_sql($this->subjectTable);
     $this->wpdb->query("TRUNCATE $table");
   }
 }

@@ -2,6 +2,8 @@
 
 namespace MailPoet\Automation\Engine\Data;
 
+use MailPoet\Automation\Engine\Utils\Json;
+
 class Subject {
   /** @var string */
   private $key;
@@ -28,11 +30,11 @@ class Subject {
   public function toArray(): array {
     return [
       'key' => $this->getKey(),
-      'args' => $this->getArgs(),
+      'args' => Json::encode($this->getArgs()),
     ];
   }
 
   public static function fromArray(array $data): self {
-    return new self($data['key'], $data['args']);
+    return new self($data['key'], Json::decode($data['args']));
   }
 }

@@ -187,7 +187,7 @@ class AutomationStatisticsStorageTest extends \MailPoetTest {
       'automation_id' => $automation->getId(),
       'version_id' => $automation->getVersionId(),
       'trigger_key' => '',
-      'subjects' => "[]",
+      'subjects' => [],
       'id' => 0,
       'status' => $status,
       'created_at' => (new \DateTimeImmutable())->format(\DateTimeImmutable::W3C),
