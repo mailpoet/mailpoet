@@ -54,6 +54,7 @@ class CreateNewWordPressUserCest {
     $i->waitForText('Subscribers');
     $i->clickItemRowActionByItemName('newuser@test.com', 'Edit');
     $i->waitForText('Subscribed');
+    $i->waitForElementNotVisible('.mailpoet_form_loading');
     $i->seeSelectedInSelect2($secondListName);
   }
 }
