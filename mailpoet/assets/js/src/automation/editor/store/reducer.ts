@@ -110,6 +110,18 @@ export function reducer(state: State, action: Action): State {
             : undefined,
       };
     }
+    case 'UPDATE_AUTOMATION_META':
+      return {
+        ...state,
+        automationData: {
+          ...state.automationData,
+          meta: {
+            ...state.automationData.meta,
+            [action.key]: action.value,
+          },
+        },
+        automationSaved: false,
+      };
     case 'SET_ERRORS':
       return {
         ...state,
