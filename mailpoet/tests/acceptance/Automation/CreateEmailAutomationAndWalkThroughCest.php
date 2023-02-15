@@ -64,7 +64,7 @@ class CreateEmailAutomationAndWalkThroughCest {
     $i->waitForText('Name');
     $i->see('Welcome new subscribers');
     $i->see('Active');
-    $i->see('Entered 0'); //Actually I see "0 Entered", but this CSS switch is not caught by the test
+    $i->see('Entered 0', ['css' => '.mailpoet-automation-stats-item']); //Actually I see "0 Entered", but this CSS switch is not caught by the test
     $i->dontSeeInDatabase('mp_actionscheduler_actions', ['hook' => 'mailpoet/automation/step']);
 
     $i->wantTo('Check a new subscriber gets the automation email.');
@@ -77,8 +77,8 @@ class CreateEmailAutomationAndWalkThroughCest {
     $i->amOnMailpoetPage('Automation');
     $i->seeInDatabase('mp_actionscheduler_actions', ['hook' => 'mailpoet/automation/step', 'status' => 'pending']);
     $i->waitForText('Welcome new subscribers');
-    $i->see('Entered 1'); //Actually I see "0 Entered", but this CSS switch is not caught by the test
-    $i->see('Processing 1');
+    $i->see('Entered 1', ['css' => '.mailpoet-automation-stats-item']); //Actually I see "1 Entered", but this CSS switch is not caught by the test
+    $i->see('Processing 1', ['css' => '.mailpoet-automation-stats-item']);
     $i->see('Exited 0');
     $i->amOnMailboxAppPage();
     $i->see('Inbox (0)');
@@ -91,9 +91,9 @@ class CreateEmailAutomationAndWalkThroughCest {
     $i->amOnUrl('http://test.local/wp-admin/');
     $i->amOnMailpoetPage('Automation');
     $i->waitForText('Welcome new subscribers');
-    $i->see('Entered 1'); //Actually I see "0 Entered", but this CSS switch is not caught by the test
-    $i->see('Processing 0');
-    $i->see('Exited 1');
+    $i->see('Entered 1', ['css' => '.mailpoet-automation-stats-item']); //Actually I see "1 Entered", but this CSS switch is not caught by the test
+    $i->see('Processing 0', ['css' => '.mailpoet-automation-stats-item']);
+    $i->see('Exited 1', ['css' => '.mailpoet-automation-stats-item']);
     $i->amOnMailboxAppPage();
     $i->see('Inbox (1)');
     $i->see('Automation-Test-Subject');
