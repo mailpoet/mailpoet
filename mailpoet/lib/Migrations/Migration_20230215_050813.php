@@ -7,6 +7,17 @@ use MailPoet\Migrator\Migration;
 class Migration_20230215_050813 extends Migration {
   public function run(): void {
     $this->subjectsMigration();
+    $this->addMetaColumnToAutomations();
+  }
+
+  private function addMetaColumnToAutomations(): void {
+
+    global $wpdb;
+    $tableName = esc_sql($wpdb->prefix . 'mailpoet_automations');
+    if ($this->columnExists($tableName, 'meta')) {
+      return;
+    }
+    $this->connection->executeQuery("ALTER TABLE $tableName ADD COLUMN `meta` LONGTEXT DEFAULT NULL AFTER `status`");
   }
 
   private function subjectsMigration(): void {

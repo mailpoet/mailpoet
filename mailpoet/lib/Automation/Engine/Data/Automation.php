@@ -45,6 +45,9 @@ class Automation {
   /** @var array<string, Step> */
   private $steps;
 
+  /** @var array<string, Mixed> */
+  private $meta = [];
+
   /** @param array<string, Step> $steps */
   public function __construct(
     string $name,
@@ -171,11 +174,44 @@ class Automation {
           return $step->toArray();
         }, $this->steps)
       ),
+      'meta' => Json::encode($this->meta),
     ];
   }
 
   private function setUpdatedAt(): void {
     $this->updatedAt = new DateTimeImmutable();
+  }
+
+  /**
+   * @param string $key
+   * @return mixed|null
+   */
+  public function getMeta(string $key) {
+    return $this->meta[$key] ?? null;
+  }
+
+  public function getMetas(): array {
+    return $this->meta;
+  }
+
+  /**
+   * @param string $key
+   * @param mixed $value
+   * @return void
+   */
+  public function setMeta(string $key, $value): void {
+    $this->meta[$key] = $value;
+    $this->setUpdatedAt();
+  }
+
+  public function deleteMeta(string $key): void {
+    unset($this->meta[$key]);
+    $this->setUpdatedAt();
+  }
+
+  public function deleteMetas(): void {
+    $this->meta = [];
+    $this->setUpdatedAt();
   }
 
   public static function fromArray(array $data): self {
@@ -193,6 +229,8 @@ class Automation {
     $automation->createdAt = new DateTimeImmutable($data['created_at']);
     $automation->updatedAt = new DateTimeImmutable($data['updated_at']);
     $automation->activatedAt = $data['activated_at'] !== null ? new DateTimeImmutable($data['activated_at']) : null;
+
+    $automation->meta = $data['meta'] ? Json::decode($data['meta']) : [];
     return $automation;
   }
 }
