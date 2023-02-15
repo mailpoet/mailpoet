@@ -43,6 +43,7 @@ class AutomationMapper {
           }, $step->getNextSteps()),
         ];
       }, $automation->getSteps()),
+      'meta' => (object)$automation->getMetas(),
     ];
   }
 

@@ -32,4 +32,5 @@ export type Automation = {
     };
   };
   steps: Record<string, Step> & { root: Step };
+  meta: Record<string, unknown>;
 };
