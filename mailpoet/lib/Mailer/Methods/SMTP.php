@@ -3,6 +3,7 @@
 namespace MailPoet\Mailer\Methods;
 
 use MailPoet\Mailer\Methods\ErrorMappers\SMTPMapper;
+use MailPoet\RuntimeException;
 use MailPoet\WP\Functions as WPFunctions;
 use PHPMailer\PHPMailer\PHPMailer;
 
@@ -79,6 +80,10 @@ class SMTP extends PHPMailerMethod {
       $mailer->Password = $filterPassword; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     }
 
+    $mailer = $this->wp->applyFilters('mailpoet_mailer_smtp_instance', $mailer);
+    if (!$mailer instanceof PHPMailer) {
+      throw new RuntimeException(__('Filter "mailpoet_mailer_smtp_instance" must return an instance of PHPMailer.', 'mailpoet'));
+    }
     return $mailer;
   }
 }
