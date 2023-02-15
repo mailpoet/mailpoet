@@ -85,70 +85,78 @@ class ExistingCoupons extends Component<Props, State> {
 
   render() {
     return (
-      <Panel>
-        <PanelBody className="mailpoet-coupon-block-existing-coupons">
-          <PanelRow>
-            <SearchControl
-              value={this.state.couponSearch}
-              onChange={(couponSearch): void => {
-                this.setState({ couponSearch });
-              }}
-            />
-          </PanelRow>
-          <PanelRow>
-            <SelectControl
-              className="mailpoet_field_coupon_filter_discount_type"
-              label={MailPoet.I18n.t('discountType')}
-              onChange={(couponFilterDiscountType) =>
-                this.setState({ couponFilterDiscountType })
-              }
-              options={this.availableDiscountTypes}
-              value={this.state.couponFilterDiscountType}
-            />
-          </PanelRow>
-          <PanelRow>
-            {this.filterCoupons().length > 0 ? (
-              this.filterCoupons()
-                .slice(0, 10)
-                .map((coupon) => {
-                  const discountType = this.availableDiscountTypes.find(
-                    (option) => option.value === coupon.discountType,
-                  );
-                  return (
-                    <div
-                      key={`coupon-${coupon.id}`}
-                      className="mailpoet_coupon_block_coupon"
-                    >
-                      <input
-                        id={`coupon-${coupon.id}`}
-                        className="components-radio-control__input"
-                        name="coupon"
-                        type="radio"
-                        value={coupon.id}
-                        checked={coupon.id === this.state.couponId}
-                        onChange={(event) => {
-                          const couponId = Number(event.target.value);
-                          this.setState({ couponId });
-                          this.setValueCallback('couponId', couponId);
-                          this.setValueCallback('code', coupon.text);
-                        }}
-                      />
-                      <label htmlFor={`coupon-${coupon.id}`}>
-                        {coupon.text}
-                      </label>
-                      <div className="discount_type">{discountType.label}</div>
-                      {coupon.excerpt ? <div>{coupon.excerpt}</div> : null}
-                    </div>
-                  );
-                })
-            ) : (
-              <div className="mailpoet_coupon_block_coupon">
-                {MailPoet.I18n.t('noCouponsFound')}
-              </div>
-            )}
-          </PanelRow>
-        </PanelBody>
-      </Panel>
+      <>
+        <Panel>
+          <PanelBody>
+            <PanelRow>
+              <SearchControl
+                value={this.state.couponSearch}
+                onChange={(couponSearch): void => {
+                  this.setState({ couponSearch });
+                }}
+              />
+            </PanelRow>
+            <PanelRow>
+              <SelectControl
+                className="mailpoet_field_coupon_filter_discount_type"
+                label={MailPoet.I18n.t('discountType')}
+                onChange={(couponFilterDiscountType) =>
+                  this.setState({ couponFilterDiscountType })
+                }
+                options={this.availableDiscountTypes}
+                value={this.state.couponFilterDiscountType}
+              />
+            </PanelRow>
+          </PanelBody>
+        </Panel>
+        <Panel>
+          <PanelBody className="mailpoet-coupon-block-existing-coupons">
+            <PanelRow>
+              {this.filterCoupons().length > 0 ? (
+                this.filterCoupons()
+                  .slice(0, 10)
+                  .map((coupon) => {
+                    const discountType = this.availableDiscountTypes.find(
+                      (option) => option.value === coupon.discountType,
+                    );
+                    return (
+                      <div
+                        key={`coupon-${coupon.id}`}
+                        className="mailpoet_coupon_block_coupon"
+                      >
+                        <input
+                          id={`coupon-${coupon.id}`}
+                          className="components-radio-control__input"
+                          name="coupon"
+                          type="radio"
+                          value={coupon.id}
+                          checked={coupon.id === this.state.couponId}
+                          onChange={(event) => {
+                            const couponId = Number(event.target.value);
+                            this.setState({ couponId });
+                            this.setValueCallback('couponId', couponId);
+                            this.setValueCallback('code', coupon.text);
+                          }}
+                        />
+                        <label htmlFor={`coupon-${coupon.id}`}>
+                          {coupon.text}
+                        </label>
+                        <div className="discount_type">
+                          {discountType.label}
+                        </div>
+                        {coupon.excerpt ? <div>{coupon.excerpt}</div> : null}
+                      </div>
+                    );
+                  })
+              ) : (
+                <div className="mailpoet_coupon_block_coupon">
+                  {MailPoet.I18n.t('noCouponsFound')}
+                </div>
+              )}
+            </PanelRow>
+          </PanelBody>
+        </Panel>
+      </>
     );
   }
 }
