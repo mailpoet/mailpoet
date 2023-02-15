@@ -56,13 +56,6 @@ class General extends Component<Props, State> {
     this.discountTypeChange = this.discountTypeChange.bind(this);
   }
 
-  componentDidMount() {
-    const $input = jQuery('.mailpoet_field_coupon_amount input');
-    if ($input.length) {
-      $input.parsley().validate();
-    }
-  }
-
   public discountTypeChange = (discountType: string) => {
     const $amountField = jQuery('.mailpoet_field_coupon_amount input');
     $amountField.parsley().destroy();
@@ -103,8 +96,15 @@ class General extends Component<Props, State> {
               className="mailpoet_field_coupon_amount"
               label={MailPoet.I18n.t('couponAmount')}
               onChange={(amount: string) => {
-                this.setValueCallback('amount', amount);
                 this.setState({ amount });
+                // the model is changed only when the value is valid
+                if (
+                  jQuery('.mailpoet_field_coupon_amount input')
+                    .parsley()
+                    .isValid()
+                ) {
+                  this.setValueCallback('amount', amount);
+                }
               }}
               type="number"
               min="0"
@@ -112,6 +112,7 @@ class General extends Component<Props, State> {
               value={this.state.amount}
               data-parsley-validate
               data-parsley-required
+              data-parsley-validation-threshold="0"
               data-parsley-trigger="input"
             />
           </PanelRow>
@@ -120,12 +121,21 @@ class General extends Component<Props, State> {
               className="mailpoet_field_coupon_expiry_day"
               label={MailPoet.I18n.t('expireIn')}
               onChange={(expiryDay) => {
-                this.setValueCallback('expiryDay', expiryDay);
                 this.setState({ expiryDay });
+                if (
+                  jQuery('.mailpoet_field_coupon_expiry_day input')
+                    .parsley()
+                    .isValid()
+                ) {
+                  this.setValueCallback('expiryDay', expiryDay);
+                }
               }}
               min="0"
               type="number"
               value={this.state.expiryDay}
+              data-parsley-required
+              data-parsley-validation-threshold="0"
+              data-parsley-trigger="input"
             />
           </PanelRow>
           <PanelRow>

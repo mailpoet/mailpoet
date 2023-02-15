@@ -73,19 +73,6 @@ class UsageRestriction extends Component<Props, State> {
     };
   }
 
-  componentDidMount() {
-    const $inputs = jQuery(
-      '.mailpoet_field_coupon_minimum_amount input,' +
-        '.mailpoet_field_coupon_maximum_amount input,' +
-        '.mailpoet_field_coupon_email_restrictions input',
-    );
-    if ($inputs.length) {
-      $inputs.each((_index, input) => {
-        jQuery(input).parsley().validate();
-      });
-    }
-  }
-
   public handleSelection = (e): void => {
     const model = this.getValueCallback(e.target.name as string);
     model.reset(e.target.value.map((id) => ({ id })));
@@ -124,12 +111,19 @@ class UsageRestriction extends Component<Props, State> {
               value={this.state.minimumAmount}
               placeholder={MailPoet.I18n.t('noMinimum')}
               onChange={(minimumAmount) => {
-                this.setValueCallback('minimumAmount', minimumAmount);
                 this.setState({ minimumAmount });
+                if (
+                  jQuery('.mailpoet_field_coupon_minimum_amount input')
+                    .parsley()
+                    .isValid()
+                ) {
+                  this.setValueCallback('minimumAmount', minimumAmount);
+                }
               }}
               pattern={`[0-9]+([${this.priceDecimalSeparator}][0-9]+)?`}
               data-parsley-validate
               data-parsley-trigger="input"
+              data-parsley-validation-threshold="1"
               data-parsley-error-message={MailPoet.I18n.t(
                 'couponMinAndMaxAmountFieldsErrorMessage',
               ).replace('%s', this.priceDecimalSeparator)}
@@ -142,12 +136,19 @@ class UsageRestriction extends Component<Props, State> {
               value={this.state.maximumAmount}
               placeholder={MailPoet.I18n.t('noMaximum')}
               onChange={(maximumAmount) => {
-                this.setValueCallback('maximumAmount', maximumAmount);
                 this.setState({ maximumAmount });
+                if (
+                  jQuery('.mailpoet_field_coupon_maximum_amount input')
+                    .parsley()
+                    .isValid()
+                ) {
+                  this.setValueCallback('maximumAmount', maximumAmount);
+                }
               }}
               pattern={`[0-9]+([${this.priceDecimalSeparator}][0-9]+)?`}
               data-parsley-validate
               data-parsley-trigger="input"
+              data-parsley-validation-threshold="1"
               data-parsley-error-message={MailPoet.I18n.t(
                 'couponMinAndMaxAmountFieldsErrorMessage',
               ).replace('%s', this.priceDecimalSeparator)}
@@ -246,12 +247,19 @@ class UsageRestriction extends Component<Props, State> {
               value={this.state.emailRestrictions}
               placeholder={MailPoet.I18n.t('noRestrictions')}
               onChange={(emailRestrictions) => {
-                this.setValueCallback('emailRestrictions', emailRestrictions);
                 this.setState({ emailRestrictions });
+                if (
+                  jQuery('.mailpoet_field_coupon_email_restrictions input')
+                    .parsley()
+                    .isValid()
+                ) {
+                  this.setValueCallback('emailRestrictions', emailRestrictions);
+                }
               }}
               type="text"
-              pattern="^[-\w+.%\*]+@[\w-.\*]+\.[A-Za-z\*]{2,4}(?:,[-\w+.%\*]+@[\w-.\*]+\.[A-Za-z\*]{2,4})*$"
+              pattern="/^([\w\d._\-#\*])+@([\w\d._\-#\*]+[.][\w\d._\-#\*]+)+(,([\w\d._\-#\*])+@([\w\d._\-#\*]+[.][\w\d._\-#\*]+))*$/"
               data-parsley-validate
+              data-parsley-validation-threshold="1"
               data-parsley-trigger="input"
               data-parsley-error-message={MailPoet.I18n.t(
                 'emailRestrictionsFieldsErrorMessage',
