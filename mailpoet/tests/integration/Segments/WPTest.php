@@ -9,12 +9,13 @@ use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Models\Segment;
-use MailPoet\Models\SubscriberSegment;
+use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Segments\WP;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\ConfirmationEmailMailer;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Subscription\Registration;
+use MailPoet\Test\DataFactories\Segment as SegmentFactory;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 use MailPoet\WooCommerce\Helper;
 use MailPoet\WooCommerce\Subscription;
@@ -38,6 +39,12 @@ class WPTest extends \MailPoetTest {
   /** @var SubscribersRepository */
   private $subscribersRepository;
 
+  /** @var SegmentsRepository */
+  private $segmentsRepository;
+
+  /** @var SegmentFactory */
+  private $segmentFactory;
+
   public function _before(): void {
     parent::_before();
     $this->settings = $this->diContainer->get(SettingsController::class);
@@ -46,6 +53,8 @@ class WPTest extends \MailPoetTest {
     Carbon::setTestNow($currentTime);
     $this->cleanData();
 
+    $this->segmentFactory = new SegmentFactory();
+    $this->segmentsRepository = $this->diContainer->get(SegmentsRepository::class);
     $this->subscriberFactory = new SubscriberFactory();
     $this->subscribersRepository = $this->diContainer->get(SubscribersRepository::class);
   }
@@ -399,18 +408,17 @@ class WPTest extends \MailPoetTest {
   }
 
   public function testItRemovesSubscribersInWPSegmentWithoutWPId(): void {
+    $wpSegment = $this->segmentsRepository->getWPUsersSegment();
+    $this->assertInstanceOf(SegmentEntity::class, $wpSegment);
+
     $subscriber = $this->subscriberFactory
       ->withFirstName('Mike')
       ->withLastName('Mike')
       ->withEmail('user-sync-test' . rand() . '@example.com')
       ->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)
+      ->withSegments([$wpSegment])
       ->create();
 
-    $wpSegment = Segment::getWPSegment();
-    $association = SubscriberSegment::create();
-    $association->subscriberId = (int)$subscriber->getId();
-    $association->segmentId = $wpSegment->id;
-    $association->save();
     $subscribersCount = $this->getSubscribersCount();
     verify($subscribersCount)->equals(1);
     $this->wpSegment->synchronizeUsers();
@@ -421,6 +429,8 @@ class WPTest extends \MailPoetTest {
   public function testItRemovesSubscribersInWPSegmentWithoutEmail(): void {
     $id = $this->insertUser();
     $this->updateWPUserEmail($id, '');
+    $wpSegment = $this->segmentsRepository->getWPUsersSegment();
+    $this->assertInstanceOf(SegmentEntity::class, $wpSegment);
 
     $subscriber = $this->subscriberFactory
       ->withFirstName('Mike')
@@ -428,14 +438,10 @@ class WPTest extends \MailPoetTest {
       ->withEmail('user-sync-test' . rand() . '@example.com')
       ->withWpUserId($id)
       ->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)
+      ->withSegments([$wpSegment])
       ->create();
 
     $this->clearEmail($subscriber);
-    $wpSegment = Segment::getWPSegment();
-    $association = SubscriberSegment::create();
-    $association->subscriberId = (int)$subscriber->getId();
-    $association->segmentId = $wpSegment->id;
-    $association->save();
     $dbSubscriber = $this->subscribersRepository->findOneById($subscriber->getId());
     verify($dbSubscriber)->notEmpty();
     $this->wpSegment->synchronizeUsers();
@@ -551,15 +557,12 @@ class WPTest extends \MailPoetTest {
     $this->disableWpSegment();
     $randomNumber = rand();
     $id = $this->insertUser($randomNumber);
+    $segment = $this->segmentFactory->create();
     $subscriber = $this->subscriberFactory
       ->withEmail('user-sync-test' . $randomNumber . '@example.com')
       ->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)
+      ->withSegments([$segment])
       ->create();
-    $segment = Segment::createOrUpdate(['name' => 'Test Segment', 'description' => '']);
-    $subscriberSegment = SubscriberSegment::create();
-    $subscriberSegment->subscriberId = (int)$subscriber->getId();
-    $subscriberSegment->segmentId = $segment->id;
-    $subscriberSegment->save();
 
     $wp = $worker = Stub::make(
       $this->diContainer->get(Functions::class),
