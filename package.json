@@ -1,6 +1,10 @@
 {
   "private": true,
   "type": "module",
+  "scripts": {
+    "build": "pnpm -r build",
+    "start": "pnpm --reporter append-only -r start"
+  },
   "lint-staged": {
     "**/*": "prettier --write --ignore-unknown"
   },
