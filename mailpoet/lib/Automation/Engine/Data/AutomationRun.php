@@ -3,7 +3,6 @@
 namespace MailPoet\Automation\Engine\Data;
 
 use DateTimeImmutable;
-use MailPoet\Automation\Engine\Utils\Json;
 
 class AutomationRun {
   public const STATUS_RUNNING = 'running';
@@ -107,11 +106,9 @@ class AutomationRun {
       'status' => $this->status,
       'created_at' => $this->createdAt->format(DateTimeImmutable::W3C),
       'updated_at' => $this->updatedAt->format(DateTimeImmutable::W3C),
-      'subjects' => Json::encode(
-        array_map(function (Subject $subject): array {
+      'subjects' => array_map(function (Subject $subject): array {
           return $subject->toArray();
-        }, $this->subjects)
-      ),
+      }, $this->subjects),
     ];
   }
 
@@ -122,7 +119,7 @@ class AutomationRun {
       $data['trigger_key'],
       array_map(function (array $subject) {
         return Subject::fromArray($subject);
-      }, Json::decode($data['subjects']))
+      }, $data['subjects'])
     );
     $automationRun->id = (int)$data['id'];
     $automationRun->status = $data['status'];
