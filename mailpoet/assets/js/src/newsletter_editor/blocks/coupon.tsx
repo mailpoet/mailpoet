@@ -185,6 +185,10 @@ Module.CouponBlockSettingsView = base.BlockSettingsView.extend({
 
       'click .mailpoet_field_coupon_replace_all_styles': 'applyToAll',
       'click .mailpoet_done_editing': 'close',
+      'click .mailpoet_settings_coupon_show_coupon_configuration':
+        'switchToCouponConfiguration',
+      'click .mailpoet_settings_coupon_show_display_options':
+        'switchToDisplayOptions',
     };
   },
   templateContext(...args) {
@@ -194,15 +198,6 @@ Module.CouponBlockSettingsView = base.BlockSettingsView.extend({
       {
         availableStyles: App.getAvailableStyles().toJSON(),
         renderOptions: this.renderOptions,
-        availableCoupons: App.getConfig()
-          .get('coupon.available_coupons')
-          .toJSON(),
-        minAndMaxAmountFieldsErrorMessage: MailPoet.I18n.t(
-          'couponMinAndMaxAmountFieldsErrorMessage',
-        ).replace(
-          '%s',
-          String(App.getConfig().get('coupon.price_decimal_separator')),
-        ),
       },
     );
   },
@@ -221,6 +216,36 @@ Module.CouponBlockSettingsView = base.BlockSettingsView.extend({
     this.model.set(
       'styles.block.fontWeight',
       checked ? jQuery(event.target).val() : 'normal',
+    );
+  },
+  switchToDisplayOptions(): void {
+    // Switch content view
+    jQuery('.mailpoet_coupon_block_settings').addClass('mailpoet_closed');
+    jQuery('.mailpoet_coupon_block_display_options').removeClass(
+      'mailpoet_closed',
+    );
+
+    // Switch controls
+    jQuery('.mailpoet_settings_coupon_show_display_options').addClass(
+      'mailpoet_hidden',
+    );
+    jQuery('.mailpoet_settings_coupon_show_coupon_configuration').removeClass(
+      'mailpoet_hidden',
+    );
+  },
+  switchToCouponConfiguration(): void {
+    // Switch content view
+    jQuery('.mailpoet_coupon_block_display_options').addClass(
+      'mailpoet_closed',
+    );
+    jQuery('.mailpoet_coupon_block_settings').removeClass('mailpoet_closed');
+
+    // Switch controls
+    jQuery('.mailpoet_settings_coupon_show_coupon_configuration').addClass(
+      'mailpoet_hidden',
+    );
+    jQuery('.mailpoet_settings_coupon_show_display_options').removeClass(
+      'mailpoet_hidden',
     );
   },
   onRender() {

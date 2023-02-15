@@ -60,3 +60,9 @@
     }
   }
 }
+
+.mailpoet_coupon_block_settings,
+.mailpoet_coupon_block_display_options {
+  @include animation-slide-open-downwards();
+  overflow-x: hidden;
+}
