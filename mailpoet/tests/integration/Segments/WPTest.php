@@ -8,7 +8,6 @@ use Codeception\Stub;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
-use MailPoet\Models\Segment;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Segments\WP;
 use MailPoet\Settings\SettingsController;
@@ -91,8 +90,9 @@ class WPTest extends \MailPoetTest {
     $randomNumber = rand();
     $id = $this->insertUser($randomNumber);
     $this->wpSegment->synchronizeUser($id);
-    $wpSubscriber = Segment::getWPSegment()->subscribers()->where('wp_user_id', $id)->findOne();
-    verify($wpSubscriber->status)->equals(SubscriberEntity::STATUS_SUBSCRIBED);
+    $wpSubscriber = $this->subscribersRepository->findOneBy(['wpUserId' => $id]);
+    $this->assertInstanceOf(SubscriberEntity::class, $wpSubscriber);
+    verify($wpSubscriber->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
   }
 
   public function testSynchronizeUserStatusIsUnconfirmedForNewUserWithSignUpConfirmationEnabled(): void {
@@ -100,8 +100,9 @@ class WPTest extends \MailPoetTest {
     $randomNumber = rand();
     $id = $this->insertUser($randomNumber);
     $this->wpSegment->synchronizeUser($id);
-    $wpSubscriber = Segment::getWPSegment()->subscribers()->where('wp_user_id', $id)->findOne();
-    verify($wpSubscriber->status)->equals(SubscriberEntity::STATUS_UNCONFIRMED);
+    $wpSubscriber = $this->subscribersRepository->findOneBy(['wpUserId' => $id]);
+    $this->assertInstanceOf(SubscriberEntity::class, $wpSubscriber);
+    verify($wpSubscriber->getStatus())->equals(SubscriberEntity::STATUS_UNCONFIRMED);
   }
 
   public function testSynchronizeUsersStatusIsSubscribedForNewUsersWithSignUpConfirmationDisabled(): void {
@@ -158,9 +159,10 @@ class WPTest extends \MailPoetTest {
     $user = $this->getUser((int)$id);
     $registration->onRegister([], $user['user_login'], $user['user_email']);
     $this->wpSegment->synchronizeUser($id);
-    $wpSubscriber = Segment::getWPSegment()->subscribers()->where('wp_user_id', $id)->findOne();
-    verify($wpSubscriber->countConfirmations)->equals(1);
-    verify($wpSubscriber->status)->equals(SubscriberEntity::STATUS_UNCONFIRMED);
+    $wpSubscriber = $this->subscribersRepository->findOneBy(['wpUserId' => $id]);
+    $this->assertInstanceOf(SubscriberEntity::class, $wpSubscriber);
+    verify($wpSubscriber->getConfirmationsCount())->equals(1);
+    verify($wpSubscriber->getStatus())->equals(SubscriberEntity::STATUS_UNCONFIRMED);
     unset($_POST['mailpoet']);
 
     // signup confirmation enabled, subscribe on-register enabled, checkbox in form is unchecked
@@ -172,9 +174,10 @@ class WPTest extends \MailPoetTest {
     $user = $this->getUser((int)$id);
     $registration->onRegister([], $user['user_login'], $user['user_email']);
     $this->wpSegment->synchronizeUser($id);
-    $wpSubscriber = Segment::getWPSegment()->subscribers()->where('wp_user_id', $id)->findOne();
-    verify($wpSubscriber->countConfirmations)->equals(0);
-    verify($wpSubscriber->status)->equals(SubscriberEntity::STATUS_UNSUBSCRIBED);
+    $wpSubscriber = $this->subscribersRepository->findOneBy(['wpUserId' => $id]);
+    $this->assertInstanceOf(SubscriberEntity::class, $wpSubscriber);
+    verify($wpSubscriber->getConfirmationsCount())->equals(0);
+    verify($wpSubscriber->getStatus())->equals(SubscriberEntity::STATUS_UNSUBSCRIBED);
     unset($_POST['mailpoet']);
 
     // signup confirmation disabled, subscribe on-register enabled
@@ -185,9 +188,10 @@ class WPTest extends \MailPoetTest {
     $this->wpSegment->synchronizeUser($id);
     $user = $this->getUser((int)$id);
     $registration->onRegister([], $user['user_login'], $user['user_email']);
-    $wpSubscriber = Segment::getWPSegment()->subscribers()->where('wp_user_id', $id)->findOne();
-    verify($wpSubscriber->countConfirmations)->equals(0);
-    verify($wpSubscriber->status)->equals(SubscriberEntity::STATUS_SUBSCRIBED);
+    $wpSubscriber = $this->subscribersRepository->findOneBy(['wpUserId' => $id]);
+    $this->assertInstanceOf(SubscriberEntity::class, $wpSubscriber);
+    verify($wpSubscriber->getConfirmationsCount())->equals(0);
+    verify($wpSubscriber->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
 
     // signup confirmation enabled, subscribe on-register disabled
     $this->settings->set('signup_confirmation.enabled', '1');
@@ -195,9 +199,10 @@ class WPTest extends \MailPoetTest {
     $randomNumber = rand();
     $id = $this->insertUser($randomNumber);
     $this->wpSegment->synchronizeUser($id);
-    $wpSubscriber = Segment::getWPSegment()->subscribers()->where('wp_user_id', $id)->findOne();
-    verify($wpSubscriber->countConfirmations)->equals(0);
-    verify($wpSubscriber->status)->equals(SubscriberEntity::STATUS_UNCONFIRMED);
+    $wpSubscriber = $this->subscribersRepository->findOneBy(['wpUserId' => $id]);
+    $this->assertInstanceOf(SubscriberEntity::class, $wpSubscriber);
+    verify($wpSubscriber->getConfirmationsCount())->equals(0);
+    verify($wpSubscriber->getStatus())->equals(SubscriberEntity::STATUS_UNCONFIRMED);
   }
 
   public function testItSynchronizeNewUsers(): void {
@@ -218,10 +223,11 @@ class WPTest extends \MailPoetTest {
       ->create();
     $id = $this->insertUser($randomNumber);
     $this->wpSegment->synchronizeUsers();
-    $wpSubscriber = Segment::getWPSegment()->subscribers()->where('wp_user_id', $id)->findOne();
+    $wpSubscriber = $this->subscribersRepository->findOneBy(['wpUserId' => $id]);
+    $this->assertInstanceOf(SubscriberEntity::class, $wpSubscriber);
     verify($wpSubscriber)->notEmpty();
-    verify($wpSubscriber->id)->equals($subscriber->getId());
-    verify($wpSubscriber->status)->equals(SubscriberEntity::STATUS_SUBSCRIBED);
+    verify($wpSubscriber->getId())->equals($subscriber->getId());
+    verify($wpSubscriber->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
   }
 
   public function testItSynchronizeEmails(): void {
@@ -311,8 +317,8 @@ class WPTest extends \MailPoetTest {
     $this->insertUser();
     $this->insertUser();
     $this->wpSegment->synchronizeUsers();
-    $subscribers = Segment::getWPSegment()->subscribers()->whereIn('wp_user_id', $this->userIds);
-    verify($subscribers->count())->equals(3);
+    $subscribers = $this->subscribersRepository->findBy(['wpUserId' => $this->userIds]);
+    verify(count($subscribers))->equals(3);
   }
 
   public function testItDoesntRemoveUsersFromTrash(): void {
@@ -368,8 +374,8 @@ class WPTest extends \MailPoetTest {
     $this->wpSegment->synchronizeUsers();
     $this->deleteWPUser($id);
     $this->wpSegment->synchronizeUsers();
-    $subscribers = Segment::getWPSegment()->subscribers()->whereIn('wp_user_id', $this->userIds);
-    verify($subscribers->count())->equals(1);
+    $subscribers = $this->subscribersRepository->findBy(['wpUserId' => $this->userIds]);
+    verify(count($subscribers))->equals(1);
   }
 
   public function testItDoesntDeleteNonWPData(): void {
@@ -507,8 +513,9 @@ class WPTest extends \MailPoetTest {
     );
     $wpSegment = $this->getServiceWithOverrides(WP::class, ['wp' => $wp]);
     $wpSegment->synchronizeUser($id);
-    $wpSubscriber = Segment::getWPSegment()->subscribers()->where('wp_user_id', $id)->findOne();
-    verify($wpSubscriber->countConfirmations)->equals(0);
+    $wpSubscriber = $this->subscribersRepository->findOneBy(['wpUserId' => $id]);
+    $this->assertInstanceOf(SubscriberEntity::class, $wpSubscriber);
+    verify($wpSubscriber->getConfirmationsCount())->equals(0);
   }
 
   public function testItDecodesHtmlEntitesInFirstAndLastName(): void {
@@ -734,8 +741,10 @@ class WPTest extends \MailPoetTest {
   }
 
   private function disableWpSegment(): void {
-    $segment = Segment::getWPSegment();
-    $segment->deletedAt = Carbon::now();
-    $segment->save();
+    $segment = $this->segmentsRepository->getWPUsersSegment();
+    $this->assertInstanceOf(SegmentEntity::class, $segment);
+    $segment->setDeletedAt(Carbon::now());
+    $this->segmentsRepository->persist($segment);
+    $this->segmentsRepository->flush();
   }
 }
