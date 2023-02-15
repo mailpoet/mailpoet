@@ -41,6 +41,7 @@
 }
 
 .mailpoet_coupon_block_coupon {
+  background: $color-white;
   font-size: 13px;
   height: auto;
   line-height: 21px;
@@ -65,4 +66,25 @@
 .mailpoet_coupon_block_display_options {
   @include animation-slide-open-downwards();
   overflow-x: hidden;
+}
+
+.mailpoet_editor_settings {
+  .components-panel__header.edit-post-sidebar__panel-tabs {
+    background: $color-primary-background;
+    border-bottom: none;
+  }
+
+  .components-base-control {
+    width: 100%;
+  }
+
+  .components-panel {
+    background: $color-primary-background;
+    border-left: none;
+    border-right: none;
+  }
+
+  .components-search-control input[type=search].components-search-control__input {
+    background: $color-white;
+  }
 }
