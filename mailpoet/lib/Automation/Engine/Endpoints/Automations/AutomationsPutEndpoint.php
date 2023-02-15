@@ -37,6 +37,7 @@ class AutomationsPutEndpoint extends Endpoint {
       'name' => Builder::string()->minLength(1),
       'status' => Builder::string(),
       'steps' => AutomationSchema::getStepsSchema(),
+      'meta' => Builder::object(),
     ];
   }
 }

@@ -66,6 +66,13 @@ class UpdateAutomationController {
       }
     }
 
+    $automation->deleteMetas();
+    if (array_key_exists('meta', $data)) {
+      foreach ($data['meta'] as $key => $value) {
+        $automation->setMeta($key, $value);
+      }
+    }
+
     $this->hooks->doAutomationBeforeSave($automation);
 
     $this->automationValidator->validate($automation);
