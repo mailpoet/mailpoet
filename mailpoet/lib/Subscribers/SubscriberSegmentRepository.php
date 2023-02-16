@@ -111,6 +111,7 @@ class SubscriberSegmentRepository extends Repository {
       $subscriber->getSubscriberSegments()->add($subscriberSegment);
       $this->entityManager->persist($subscriberSegment);
     }
+    $this->entityManager->flush();
 
     // fire subscribed hook for new subscriptions
     if (
@@ -122,7 +123,6 @@ class SubscriberSegmentRepository extends Repository {
       $this->wp->doAction('mailpoet_segment_subscribed', $subscriberSegment);
     }
 
-    $this->entityManager->flush();
     return $subscriberSegment;
   }
 }
