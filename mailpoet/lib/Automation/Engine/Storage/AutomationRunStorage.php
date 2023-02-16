@@ -39,10 +39,10 @@ class AutomationRunStorage {
       return $automationRunId;
     }
 
-    $sql = 'insert into ' . esc_sql($this->subjectTable) . ' (`automation_run_id`, `key`, `args`) values %s';
+    $sql = 'insert into ' . esc_sql($this->subjectTable) . ' (`automation_run_id`, `key`, `args`, `hash`) values %s';
     $values = [];
     foreach ($subjectTableData as $entry) {
-      $values[] = (string)$this->wpdb->prepare("(%d,%s,%s)", $automationRunId, $entry['key'], $entry['args']);
+      $values[] = (string)$this->wpdb->prepare("(%d,%s,%s,%s)", $automationRunId, $entry['key'], $entry['args'], $entry['hash']);
     }
     $sql = sprintf($sql, implode(',', $values));
     $result = $this->wpdb->query($sql);
