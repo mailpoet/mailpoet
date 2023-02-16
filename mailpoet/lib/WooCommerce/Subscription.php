@@ -92,6 +92,7 @@ class Subscription {
   }
 
   public function extendWooCommerceCheckoutForm() {
+    $this->hideAutomateWooOptinCheckbox();
     $inputName = self::CHECKOUT_OPTIN_INPUT_NAME;
     $checked = $this->isCurrentUserSubscribed();
     if (!empty($_POST[self::CHECKOUT_OPTIN_INPUT_NAME])) {
@@ -183,6 +184,7 @@ class Subscription {
   }
 
   public function subscribeOnCheckout($orderId, $data) {
+    $this->triggerAutomateWooOptin();
     if (empty($data['billing_email'])) {
       // no email in posted order data
       return null;
@@ -250,6 +252,28 @@ class Subscription {
     $this->subscriberSegmentRepository->subscribeToSegments($subscriber, array_merge([$wcSegment], $moreSegmentsToSubscribe));
 
     return true;
+  }
+
+  private function hideAutomateWooOptinCheckbox(): void {
+    if (!$this->wp->isPluginActive('automatewoo/automatewoo.php')) {
+      return;
+    }
+    // Hide AutomateWoo checkout opt-in so we won't end up with two opt-ins
+    $this->wp->removeAction(
+      'woocommerce_checkout_after_terms_and_conditions',
+      [ 'AutomateWoo\Frontend', 'output_checkout_optin_checkbox' ]
+    );
+  }
+
+  private function triggerAutomateWooOptin(): void {
+    if (
+      !$this->wp->isPluginActive('automatewoo/automatewoo.php')
+      || empty($_POST[self::CHECKOUT_OPTIN_INPUT_NAME])
+    ) {
+      return;
+    }
+    // Emulate checkout opt-in triggering for AutomateWoo
+    $_POST['automatewoo_optin'] = 'On';
   }
 
   private function subscribe(SubscriberEntity $subscriber) {
