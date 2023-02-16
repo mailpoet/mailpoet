@@ -4,6 +4,7 @@ namespace MailPoet\Automation\Engine\Storage;
 
 use MailPoet\Automation\Engine\Data\Automation;
 use MailPoet\Automation\Engine\Data\AutomationRun;
+use MailPoet\Automation\Engine\Data\Subject;
 use MailPoet\Automation\Engine\Exceptions;
 use wpdb;
 
@@ -106,6 +107,26 @@ class AutomationRunStorage {
       },
       $automationRuns
     );
+  }
+
+  /**
+   * @param Automation $automation
+   * @return int
+   */
+  public function countRunsForAutomationAndSubject(Automation $automation, Subject $subject): int {
+    $table = esc_sql($this->table);
+    $subjectTable = esc_sql($this->subjectTable);
+
+    $sql = "SELECT count(runs.id) as count from $table as runs
+      JOIN $subjectTable as subjects on runs.id = subjects.automation_run_id
+      WHERE runs.automation_id = %d
+      AND subjects.hash = %s";
+
+    $result = $this->wpdb->get_col(
+      (string)$this->wpdb->prepare($sql, $automation->getId(), $subject->hash())
+    );
+
+    return $result ? (int)current($result) : 0;
   }
 
   public function getCountForAutomation(Automation $automation, string ...$status): int {
