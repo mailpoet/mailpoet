@@ -24,6 +24,7 @@
 .mailpoet_settings_posts_selection {
   @include animation-slide-open-downwards();
   overflow-x: hidden;
+  padding: 0 19px;
 }
 
 .mailpoet_settings_posts_show_display_options,
