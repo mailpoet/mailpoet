@@ -7,19 +7,26 @@ use MailPoet\Automation\Engine\Data\Automation;
 use MailPoet\Automation\Engine\Data\AutomationStatistics;
 use MailPoet\Automation\Engine\Data\NextStep;
 use MailPoet\Automation\Engine\Data\Step;
+use MailPoet\Automation\Engine\Registry;
 use MailPoet\Automation\Engine\Storage\AutomationStatisticsStorage;
 
 class AutomationMapper {
   /** @var AutomationStatisticsStorage */
   private $statisticsStorage;
 
+  /** @var Registry */
+  private $registry;
+
   public function __construct(
-    AutomationStatisticsStorage $statisticsStorage
+    AutomationStatisticsStorage $statisticsStorage,
+    Registry $registry
   ) {
     $this->statisticsStorage = $statisticsStorage;
+    $this->registry = $registry;
   }
 
   public function buildAutomation(Automation $automation): array {
+
     return [
       'id' => $automation->getId(),
       'name' => $automation->getName(),
@@ -33,10 +40,12 @@ class AutomationMapper {
       ],
       'stats' => $this->statisticsStorage->getAutomationStats($automation->getId())->toArray(),
       'steps' => array_map(function (Step $step) {
+        $stepDefinition = $this->registry->getStep($step->getKey());
         return [
           'id' => $step->getId(),
           'type' => $step->getType(),
           'key' => $step->getKey(),
+          'subject_keys' => $stepDefinition ? $stepDefinition->getSubjectKeys() : [],
           'args' => $step->getArgs(),
           'next_steps' => array_map(function (NextStep $nextStep) {
             return $nextStep->toArray();

@@ -12,6 +12,7 @@ export type Registry = {
     string,
     {
       key: string;
+      subject_keys: string[];
       name: string;
       args_schema: {
         type: 'object';
