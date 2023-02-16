@@ -60,7 +60,7 @@ class AutomationsDuplicateEndpointTest extends AutomationTest {
     $this->assertNull($this->automationStorage->getAutomation($this->automation->getId() + 1));
   }
 
-  public function testItDuplicatesAAutomation(): void {
+  public function testItDuplicatesAnAutomation(): void {
     $data = $this->post(sprintf(self::ENDPOINT_PATH, $this->automation->getId()));
 
     $id = $this->automation->getId() + 1;
@@ -96,10 +96,12 @@ class AutomationsDuplicateEndpointTest extends AutomationTest {
           'id' => 'root',
           'type' => 'root',
           'key' => 'core:root',
+          'subject_keys' => [],
           'args' => [],
           'next_steps' => [],
         ],
       ],
+      'meta' => [],
     ];
     $this->assertSame(['data' => $expected], $data);
 
