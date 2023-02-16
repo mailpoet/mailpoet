@@ -25,7 +25,9 @@ class Migration_20230215_050813 extends Migration {
       '`automation_run_id` int(11) unsigned NOT NULL',
       '`key` varchar(191)',
       '`args` longtext',
+      '`hash` varchar(191)',
       'index (automation_run_id)',
+      'index (hash)',
     ]);
     $this->moveSubjectData();
     $this->dropSubjectColumn();

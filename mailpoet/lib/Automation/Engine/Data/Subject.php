@@ -27,10 +27,15 @@ class Subject {
     return $this->args;
   }
 
+  public function hash(): string {
+    return md5($this->getKey() . Json::encode($this->getArgs()));
+  }
+
   public function toArray(): array {
     return [
       'key' => $this->getKey(),
       'args' => Json::encode($this->getArgs()),
+      'hash' => $this->hash(),
     ];
   }
 
