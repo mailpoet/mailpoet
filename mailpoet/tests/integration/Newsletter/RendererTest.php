@@ -38,9 +38,11 @@ class RendererTest extends \MailPoetTest {
   public function _before() {
     parent::_before();
     $this->newsletter = new NewsletterEntity();
-    $this->newsletter->setBody(json_decode(
+    $body = json_decode(
       (string)file_get_contents(dirname(__FILE__) . '/RendererTestData.json'), true
-    ));
+    );
+    $this->assertIsArray($body);
+    $this->newsletter->setBody($body);
     $this->newsletter->setSubject('Some subject');
     $this->newsletter->setPreheader('Some preheader');
     $this->newsletter->setType('standard');
@@ -568,7 +570,9 @@ class RendererTest extends \MailPoetTest {
   }
 
   public function testItSetsSubject() {
-    $this->newsletter->setBody(json_decode(Fixtures::get('newsletter_body_template'), true));
+    $body = json_decode(Fixtures::get('newsletter_body_template'), true);
+    $this->assertIsArray($body);
+    $this->newsletter->setBody($body);
     $template = $this->renderer->render($this->newsletter);
     $DOM = $this->dOMParser->parseStr($template['html']);
     $subject = trim($DOM('title')->text());
@@ -576,7 +580,9 @@ class RendererTest extends \MailPoetTest {
   }
 
   public function testItSetsPreheader() {
-    $this->newsletter->setBody(json_decode(Fixtures::get('newsletter_body_template'), true));
+    $body = json_decode(Fixtures::get('newsletter_body_template'), true);
+    $this->assertIsArray($body);
+    $this->newsletter->setBody($body);
     $template = $this->renderer->render($this->newsletter);
     $DOM = $this->dOMParser->parseStr($template['html']);
     $preheader = trim($DOM('td.mailpoet_preheader')->text());
@@ -586,7 +592,9 @@ class RendererTest extends \MailPoetTest {
   public function testItDoesNotAddMailpoetLogoWhenUserIsPaying() {
     $this->servicesChecker->method('isUserActivelyPaying')->willReturn(true);
 
-    $this->newsletter->setBody(json_decode(Fixtures::get('newsletter_body_template'), true));
+    $body = json_decode(Fixtures::get('newsletter_body_template'), true);
+    $this->assertIsArray($body);
+    $this->newsletter->setBody($body);
     $template = $this->renderer->render($this->newsletter);
     expect($template['html'])->stringNotContainsString('mailpoet_logo_newsletter.png');
   }
@@ -594,21 +602,27 @@ class RendererTest extends \MailPoetTest {
   public function testItDoesNotAddMailpoetLogoWhenPreviewIsEnabled() {
     $this->servicesChecker->method('isUserActivelyPaying')->willReturn(false);
 
-    $this->newsletter->setBody(json_decode(Fixtures::get('newsletter_body_template'), true));
+    $body = json_decode(Fixtures::get('newsletter_body_template'), true);
+    $this->assertIsArray($body);
+    $this->newsletter->setBody($body);
     $template = $this->renderer->renderAsPreview($this->newsletter);
     expect($template['html'])->stringNotContainsString('mailpoet_logo_newsletter.png');
   }
 
   public function testItAddsMailpoetLogo() {
     $this->servicesChecker->method('isUserActivelyPaying')->willReturn(false);
-    $this->newsletter->setBody(json_decode(Fixtures::get('newsletter_body_template'), true));
+    $body = json_decode(Fixtures::get('newsletter_body_template'), true);
+    $this->assertIsArray($body);
+    $this->newsletter->setBody($body);
 
     $template = $this->renderer->render($this->newsletter);
     expect($template['html'])->stringContainsString('mailpoet_logo_newsletter.png');
   }
 
   public function testItPostProcessesTemplate() {
-    $this->newsletter->setBody(json_decode(Fixtures::get('newsletter_body_template'), true));
+    $body = json_decode(Fixtures::get('newsletter_body_template'), true);
+    $this->assertIsArray($body);
+    $this->newsletter->setBody($body);
     $template = $this->renderer->render($this->newsletter);
     // !important should be stripped from everywhere except from with the <style> tag
     expect(preg_match('/<style.*?important/s', $template['html']))->equals(1);
@@ -644,9 +658,11 @@ class RendererTest extends \MailPoetTest {
     $attachmentId = $this->makeAttachment($upload);
     set_post_thumbnail($postId, $attachmentId);
 
-    $this->newsletter->setBody(json_decode(
+    $body = json_decode(
       (string)file_get_contents(dirname(__FILE__) . '/RendererTestALCdata.json'), true
-    ));
+    );
+    $this->assertIsArray($body);
+    $this->newsletter->setBody($body);
 
     $template = $this->renderer->render($this->newsletter);
     expect($template['html'])->stringContainsString('This is the post content');

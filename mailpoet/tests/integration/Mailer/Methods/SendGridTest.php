@@ -63,6 +63,7 @@ class SendGridTest extends \MailPoetTest {
     expect($body['replyto'])->equals($this->replyTo['reply_to_email']);
     expect($body['subject'])->equals($this->newsletter['subject']);
     $headers = json_decode($body['headers'], true);
+    $this->assertIsArray($headers);
     expect($headers['List-Unsubscribe'])
       ->equals('<' . $this->extraParams['unsubscribe_url'] . '>');
     expect($body['html'])->equals($this->newsletter['body']['html']);

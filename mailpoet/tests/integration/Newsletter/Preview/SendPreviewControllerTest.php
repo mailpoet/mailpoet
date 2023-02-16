@@ -38,7 +38,9 @@ class SendPreviewControllerTest extends \MailPoetTest {
     $newsletter->setType(NewsletterEntity::TYPE_STANDARD);
     $newsletter->setSubject('My Standard Newsletter SendPreviewControllerTest');
     $newsletter->setPreheader('preheader');
-    $newsletter->setBody(json_decode(Fixtures::get('newsletter_body_template'), true));
+    $body = json_decode(Fixtures::get('newsletter_body_template'), true);
+    $this->assertIsArray($body);
+    $newsletter->setBody($body);
     $newsletter->setHash(Security::generateHash());
     $this->entityManager->persist($newsletter);
 

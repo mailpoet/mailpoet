@@ -97,11 +97,11 @@ class ServicesTest extends \MailPoetTest {
     $servicesEndpoint = $this->createServicesEndpointWithMocks(['bridge' => $bridge]);
     $response = $servicesEndpoint->checkMSSKey($this->data);
     expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
-    expect($response->errors[0]['message'])->stringContainsString(
-      $this->invokeMethod(
-        $servicesEndpoint, 'getErrorDescriptionByCode', [Bridge::CHECK_ERROR_UNAVAILABLE]
-      )
+    $errorMessage = $this->invokeMethod(
+      $servicesEndpoint, 'getErrorDescriptionByCode', [Bridge::CHECK_ERROR_UNAVAILABLE]
     );
+    $this->assertIsString($errorMessage);
+    expect($response->errors[0]['message'])->stringContainsString($errorMessage);
   }
 
   public function testItRespondsWithErrorIfServiceDidNotReturnAResponseCodeDuringMSSCheck() {
@@ -116,11 +116,11 @@ class ServicesTest extends \MailPoetTest {
     $servicesEndpoint = $this->createServicesEndpointWithMocks(['bridge' => $bridge]);
     $response = $servicesEndpoint->checkMSSKey($this->data);
     expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
-    expect($response->errors[0]['message'])->stringContainsString(
-      $this->invokeMethod(
-        $servicesEndpoint, 'getErrorDescriptionByCode', [Bridge::CHECK_ERROR_UNKNOWN]
-      )
+    $errorMessage = $this->invokeMethod(
+      $servicesEndpoint, 'getErrorDescriptionByCode', [Bridge::CHECK_ERROR_UNKNOWN]
     );
+    $this->assertIsString($errorMessage);
+    expect($response->errors[0]['message'])->stringContainsString($errorMessage);
   }
 
   public function testItPrintsErrorCodeIfServiceReturnedAnUnexpectedResponseCodeDuringMSSCheck() {
@@ -307,11 +307,11 @@ class ServicesTest extends \MailPoetTest {
     $servicesEndpoint = $this->createServicesEndpointWithMocks(['bridge' => $bridge]);
     $response = $servicesEndpoint->checkPremiumKey($this->data);
     expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
-    expect($response->errors[0]['message'])->stringContainsString(
-      $this->invokeMethod(
-        $servicesEndpoint, 'getErrorDescriptionByCode', [Bridge::CHECK_ERROR_UNAVAILABLE]
-      )
+    $errorMessage = $this->invokeMethod(
+      $servicesEndpoint, 'getErrorDescriptionByCode', [Bridge::CHECK_ERROR_UNAVAILABLE]
     );
+    $this->assertIsString($errorMessage);
+    expect($response->errors[0]['message'])->stringContainsString($errorMessage);
   }
 
   public function testItRespondsWithErrorIfServiceDidNotReturnAResponseCodeDuringPremiumCheck() {
@@ -326,11 +326,11 @@ class ServicesTest extends \MailPoetTest {
     $servicesEndpoint = $this->createServicesEndpointWithMocks(['bridge' => $bridge]);
     $response = $servicesEndpoint->checkPremiumKey($this->data);
     expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
-    expect($response->errors[0]['message'])->stringContainsString(
-      $this->invokeMethod(
-        $servicesEndpoint, 'getErrorDescriptionByCode', [Bridge::CHECK_ERROR_UNKNOWN]
-      )
+    $errorMessage = $this->invokeMethod(
+      $servicesEndpoint, 'getErrorDescriptionByCode', [Bridge::CHECK_ERROR_UNKNOWN]
     );
+    $this->assertIsString($errorMessage);
+    expect($response->errors[0]['message'])->stringContainsString($errorMessage);
   }
 
   public function testItPrintsErrorCodeIfServiceReturnedAnUnexpectedResponseCodeDuringPremiumCheck() {
