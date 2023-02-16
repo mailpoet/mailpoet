@@ -18,6 +18,7 @@ class Migration_20230215_050813 extends Migration {
       return;
     }
     $this->connection->executeQuery("ALTER TABLE $tableName ADD COLUMN `meta` LONGTEXT DEFAULT NULL AFTER `status`");
+    $this->connection->executeQuery("UPDATE $tableName SET `meta` = '{\"run_automation_once\":true}'");
   }
 
   private function subjectsMigration(): void {
