@@ -54,6 +54,7 @@ class SubscriberSubscribedDateTest extends \MailPoetTest {
     $this->assertInstanceOf(Statement::class, $statement);
     $result = $statement->fetchAll();
     expect(count($result))->equals(1);
+    $this->assertIsArray($result[0]);
     $subscriber = $this->entityManager->find(SubscriberEntity::class, $result[0]['id']);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
     expect($subscriber->getEmail())->equals('e12345@example.com');
@@ -68,10 +69,12 @@ class SubscriberSubscribedDateTest extends \MailPoetTest {
     $result = $statement->fetchAll();
     expect(count($result))->equals(2);
 
+    $this->assertIsArray($result[0]);
     $subscriber = $this->entityManager->find(SubscriberEntity::class, $result[0]['id']);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
     expect($subscriber->getEmail())->equals('e1@example.com');
 
+    $this->assertIsArray($result[1]);
     $subscriber = $this->entityManager->find(SubscriberEntity::class, $result[1]['id']);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
     expect($subscriber->getEmail())->equals('e12@example.com');
@@ -87,6 +90,7 @@ class SubscriberSubscribedDateTest extends \MailPoetTest {
 
     $this->assertCount(1, $result);
 
+    $this->assertIsArray($result[0]);
     $subscriber = $this->entityManager->find(SubscriberEntity::class, $result[0]['id']);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
     $this->assertSame('e123@example.com', $subscriber->getEmail());
@@ -102,18 +106,22 @@ class SubscriberSubscribedDateTest extends \MailPoetTest {
 
     $this->assertCount(4, $result);
 
+    $this->assertIsArray($result[0]);
     $subscriber1 = $this->entityManager->find(SubscriberEntity::class, $result[0]['id']);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
     $this->assertSame('e1@example.com', $subscriber1->getEmail());
 
+    $this->assertIsArray($result[1]);
     $subscriber2 = $this->entityManager->find(SubscriberEntity::class, $result[1]['id']);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber2);
     $this->assertSame('e12@example.com', $subscriber2->getEmail());
 
+    $this->assertIsArray($result[2]);
     $subscriber3 = $this->entityManager->find(SubscriberEntity::class, $result[2]['id']);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber3);
     $this->assertSame('e1234@example.com', $subscriber3->getEmail());
 
+    $this->assertIsArray($result[3]);
     $subscriber4 = $this->entityManager->find(SubscriberEntity::class, $result[3]['id']);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber4);
     $this->assertSame('e12345@example.com', $subscriber4->getEmail());
@@ -128,10 +136,12 @@ class SubscriberSubscribedDateTest extends \MailPoetTest {
     $result = $statement->fetchAll();
     expect(count($result))->equals(2);
 
+    $this->assertIsArray($result[0]);
     $subscriber = $this->entityManager->find(SubscriberEntity::class, $result[0]['id']);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
     expect($subscriber->getEmail())->equals('e1@example.com');
 
+    $this->assertIsArray($result[1]);
     $subscriber = $this->entityManager->find(SubscriberEntity::class, $result[1]['id']);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
     expect($subscriber->getEmail())->equals('e12@example.com');
@@ -146,10 +156,12 @@ class SubscriberSubscribedDateTest extends \MailPoetTest {
     $result = $statement->fetchAll();
     expect(count($result))->equals(2);
 
+    $this->assertIsArray($result[0]);
     $subscriber = $this->entityManager->find(SubscriberEntity::class, $result[0]['id']);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
     expect($subscriber->getEmail())->equals('e1234@example.com');
 
+    $this->assertIsArray($result[1]);
     $subscriber = $this->entityManager->find(SubscriberEntity::class, $result[1]['id']);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
     expect($subscriber->getEmail())->equals('e12345@example.com');

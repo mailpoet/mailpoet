@@ -78,6 +78,7 @@ class EmailActionClickAnyTest extends \MailPoetTest {
     $this->assertInstanceOf(Statement::class, $statement);
     $result = $statement->fetchAll();
     expect(count($result))->equals(1);
+    $this->assertIsArray($result[0]);
     $subscriber1 = $this->entityManager->find(SubscriberEntity::class, $result[0]['id']);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
     expect($subscriber1->getEmail())->equals('opened_clicked@example.com');
