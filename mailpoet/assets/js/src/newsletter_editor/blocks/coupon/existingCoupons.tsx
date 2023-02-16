@@ -90,7 +90,6 @@ class ExistingCoupons extends Component<Props, State> {
             </PanelRow>
             <PanelRow>
               <SelectControl
-                className="mailpoet_field_coupon_filter_discount_type"
                 label={MailPoet.I18n.t('discountType')}
                 onChange={(couponFilterDiscountType) =>
                   this.setState({ couponFilterDiscountType })
