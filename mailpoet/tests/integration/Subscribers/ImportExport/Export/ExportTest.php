@@ -61,7 +61,7 @@ class ExportTest extends \MailPoetTest {
     $this->subscriberSegmentRepository = $this->diContainer->get(SubscriberSegmentRepository::class);
     $this->subscriberCustomFieldRepository = $this->diContainer->get(SubscriberCustomFieldRepository::class);
 
-    $this->jSONData = json_decode((string)file_get_contents(dirname(__FILE__) . '/ExportTestData.json'), true);
+    $this->jSONData = (array)json_decode((string)file_get_contents(dirname(__FILE__) . '/ExportTestData.json'), true);
     $this->subscriberFields = [
       'first_name' => 'First name',
       'last_name' => 'Last name',

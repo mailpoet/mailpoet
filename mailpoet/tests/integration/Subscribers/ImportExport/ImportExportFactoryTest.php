@@ -283,13 +283,13 @@ class ImportExportFactoryTest extends \MailPoetTest {
   public function testItCanBootStrapImport() {
     $import = clone($this->importFactory);
     $importMenu = $import->bootstrap();
-    expect(count(json_decode($importMenu['segments'], true)))
+    expect(count((array)json_decode($importMenu['segments'], true)))
       ->equals(2);
     // email, first_name, last_name, subscribed_ip, created_at, confirmed_ip, confirmed_at + 1 custom field
-    expect(count(json_decode($importMenu['subscriberFields'], true)))
+    expect(count((array)json_decode($importMenu['subscriberFields'], true)))
       ->equals(8);
     // action, system fields, user fields
-    expect(count(json_decode($importMenu['subscriberFieldsSelect2'], true)))
+    expect(count((array)json_decode($importMenu['subscriberFieldsSelect2'], true)))
       ->equals(3);
     expect($importMenu['maxPostSize'])->equals(ini_get('post_max_size'));
     expect($importMenu['maxPostSizeBytes'])->equals(
@@ -300,10 +300,10 @@ class ImportExportFactoryTest extends \MailPoetTest {
   public function testItCanBootStrapExport() {
     $export = clone($this->importFactory);
     $exportMenu = $export->bootstrap();
-    expect(count(json_decode($exportMenu['segments'], true)))
+    expect(count((array)json_decode($exportMenu['segments'], true)))
       ->equals(2);
     // action, system fields, user fields
-    expect(count(json_decode($exportMenu['subscriberFieldsSelect2'], true)))
+    expect(count((array)json_decode($exportMenu['subscriberFieldsSelect2'], true)))
       ->equals(3);
   }
 
