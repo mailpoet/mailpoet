@@ -47,6 +47,7 @@ class WooCommerceCountryTest extends \MailPoetTest {
     $this->assertInstanceOf(DriverStatement::class, $statement);
     $result = $statement->fetchAll();
     expect(count($result))->equals(1);
+    $this->assertIsArray($result[0]);
     $subscriber1 = $this->subscribersRepository->findOneById($result[0]['inner_subscriber_id']);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
     expect($subscriber1)->isInstanceOf(SubscriberEntity::class);
@@ -60,14 +61,17 @@ class WooCommerceCountryTest extends \MailPoetTest {
     $this->assertInstanceOf(DriverStatement::class, $statement);
     $result = $statement->fetchAll();
     expect(count($result))->equals(3);
+    $this->assertIsArray($result[0]);
     $subscriber1 = $this->subscribersRepository->findOneById($result[0]['inner_subscriber_id']);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
     expect($subscriber1->getEmail())->equals('customer1@example.com');
+    $this->assertIsArray($result[1]);
     $subscriber2 = $this->subscribersRepository->findOneById($result[1]['inner_subscriber_id']);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber2);
     expect($subscriber2)->isInstanceOf(SubscriberEntity::class);
     expect($subscriber2->getEmail())->equals('customer2@example.com');
+    $this->assertIsArray($result[2]);
     $subscriber3 = $this->subscribersRepository->findOneById($result[2]['inner_subscriber_id']);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber3);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber3);
@@ -81,6 +85,7 @@ class WooCommerceCountryTest extends \MailPoetTest {
     $this->assertInstanceOf(DriverStatement::class, $statement);
     $result = $statement->fetchAll();
     expect(count($result))->equals(1);
+    $this->assertIsArray($result[0]);
     $subscriber1 = $this->subscribersRepository->findOneById($result[0]['inner_subscriber_id']);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
     expect($subscriber1->getEmail())->equals('customer4@example.com');

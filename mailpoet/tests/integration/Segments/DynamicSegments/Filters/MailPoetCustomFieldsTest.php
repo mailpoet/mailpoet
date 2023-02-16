@@ -49,6 +49,7 @@ class MailPoetCustomFieldsTest extends \MailPoetTest {
     $result = $statement->fetchAll();
 
     expect(count($result))->equals(1);
+    $this->assertIsArray($result[0]);
     $filteredSubscriber = $this->entityManager->find(SubscriberEntity::class, $result[0]['id']);
     $this->assertInstanceOf(SubscriberEntity::class, $filteredSubscriber);
     expect($filteredSubscriber->getEmail())->equals($subscriber->getEmail());
@@ -74,6 +75,7 @@ class MailPoetCustomFieldsTest extends \MailPoetTest {
     $result = $statement->fetchAll();
 
     expect(count($result))->equals(1);
+    $this->assertIsArray($result[0]);
     $filteredSubscriber = $this->entityManager->find(SubscriberEntity::class, $result[0]['id']);
     $this->assertInstanceOf(SubscriberEntity::class, $filteredSubscriber);
     expect($filteredSubscriber->getEmail())->equals($subscriber->getEmail());
@@ -100,6 +102,7 @@ class MailPoetCustomFieldsTest extends \MailPoetTest {
     $result = $statement->fetchAll();
 
     expect(count($result))->equals(2);
+    $this->assertIsArray($result[0]);
     $filteredSubscriber = $this->entityManager->find(SubscriberEntity::class, $result[0]['id']);
     $this->assertInstanceOf(SubscriberEntity::class, $filteredSubscriber);
     expect($filteredSubscriber->getEmail())->equals($subscriber->getEmail());
@@ -126,6 +129,7 @@ class MailPoetCustomFieldsTest extends \MailPoetTest {
     $result = $statement->fetchAll();
 
     expect(count($result))->equals(1);
+    $this->assertIsArray($result[0]);
     $filteredSubscriber = $this->entityManager->find(SubscriberEntity::class, $result[0]['id']);
     $this->assertInstanceOf(SubscriberEntity::class, $filteredSubscriber);
     expect($filteredSubscriber->getEmail())->equals($subscriber->getEmail());
@@ -152,6 +156,7 @@ class MailPoetCustomFieldsTest extends \MailPoetTest {
     $result = $statement->fetchAll();
 
     expect(count($result))->equals(1);
+    $this->assertIsArray($result[0]);
     $filteredSubscriber = $this->entityManager->find(SubscriberEntity::class, $result[0]['id']);
     $this->assertInstanceOf(SubscriberEntity::class, $filteredSubscriber);
     expect($filteredSubscriber->getEmail())->equals($subscriber->getEmail());
@@ -177,6 +182,7 @@ class MailPoetCustomFieldsTest extends \MailPoetTest {
     $result = $statement->fetchAll();
 
     expect(count($result))->equals(1);
+    $this->assertIsArray($result[0]);
     $filteredSubscriber = $this->entityManager->find(SubscriberEntity::class, $result[0]['id']);
     $this->assertInstanceOf(SubscriberEntity::class, $filteredSubscriber);
     expect($filteredSubscriber->getEmail())->equals($subscriber->getEmail());
@@ -202,6 +208,7 @@ class MailPoetCustomFieldsTest extends \MailPoetTest {
     $result = $statement->fetchAll();
 
     expect(count($result))->equals(1);
+    $this->assertIsArray($result[0]);
     $filteredSubscriber = $this->entityManager->find(SubscriberEntity::class, $result[0]['id']);
     $this->assertInstanceOf(SubscriberEntity::class, $filteredSubscriber);
     expect($filteredSubscriber->getEmail())->equals($subscriber->getEmail());
@@ -227,6 +234,7 @@ class MailPoetCustomFieldsTest extends \MailPoetTest {
     $result = $statement->fetchAll();
 
     expect(count($result))->equals(1);
+    $this->assertIsArray($result[0]);
     $filteredSubscriber = $this->entityManager->find(SubscriberEntity::class, $result[0]['id']);
     $this->assertInstanceOf(SubscriberEntity::class, $filteredSubscriber);
     expect($filteredSubscriber->getEmail())->equals($this->subscribers[1]->getEmail());
@@ -253,6 +261,7 @@ class MailPoetCustomFieldsTest extends \MailPoetTest {
     $result = $statement->fetchAll();
 
     expect(count($result))->equals(2);
+    $this->assertIsArray($result[0]);
     $filteredSubscriber = $this->entityManager->find(SubscriberEntity::class, $result[0]['id']);
     $this->assertInstanceOf(SubscriberEntity::class, $filteredSubscriber);
     expect($filteredSubscriber->getEmail())->equals($this->subscribers[0]->getEmail());
@@ -279,6 +288,7 @@ class MailPoetCustomFieldsTest extends \MailPoetTest {
     $result = $statement->fetchAll();
 
     expect(count($result))->equals(2);
+    $this->assertIsArray($result[0]);
     $filteredSubscriber = $this->entityManager->find(SubscriberEntity::class, $result[0]['id']);
     $this->assertInstanceOf(SubscriberEntity::class, $filteredSubscriber);
     expect($filteredSubscriber->getEmail())->equals($this->subscribers[0]->getEmail());
@@ -306,6 +316,7 @@ class MailPoetCustomFieldsTest extends \MailPoetTest {
     $result = $statement->fetchAll();
 
     expect(count($result))->equals(1);
+    $this->assertIsArray($result[0]);
     $filteredSubscriber = $this->entityManager->find(SubscriberEntity::class, $result[0]['id']);
     $this->assertInstanceOf(SubscriberEntity::class, $filteredSubscriber);
     expect($filteredSubscriber->getEmail())->equals($this->subscribers[0]->getEmail());
@@ -332,6 +343,7 @@ class MailPoetCustomFieldsTest extends \MailPoetTest {
     $result = $statement->fetchAll();
 
     expect(count($result))->equals(1);
+    $this->assertIsArray($result[0]);
     $filteredSubscriber = $this->entityManager->find(SubscriberEntity::class, $result[0]['id']);
     $this->assertInstanceOf(SubscriberEntity::class, $filteredSubscriber);
     expect($filteredSubscriber->getEmail())->equals($this->subscribers[1]->getEmail());
@@ -359,6 +371,7 @@ class MailPoetCustomFieldsTest extends \MailPoetTest {
     $result = $statement->fetchAll();
 
     expect(count($result))->equals(1);
+    $this->assertIsArray($result[0]);
     $filteredSubscriber = $this->entityManager->find(SubscriberEntity::class, $result[0]['id']);
     $this->assertInstanceOf(SubscriberEntity::class, $filteredSubscriber);
     expect($filteredSubscriber->getEmail())->equals($this->subscribers[0]->getEmail());
@@ -385,6 +398,7 @@ class MailPoetCustomFieldsTest extends \MailPoetTest {
     $result = $statement->fetchAll();
 
     expect(count($result))->equals(1);
+    $this->assertIsArray($result[0]);
     $filteredSubscriber = $this->entityManager->find(SubscriberEntity::class, $result[0]['id']);
     $this->assertInstanceOf(SubscriberEntity::class, $filteredSubscriber);
     expect($filteredSubscriber->getEmail())->equals($this->subscribers[1]->getEmail());
@@ -412,6 +426,7 @@ class MailPoetCustomFieldsTest extends \MailPoetTest {
     $result = $statement->fetchAll();
 
     expect(count($result))->equals(2);
+    $this->assertIsArray($result[0]);
     $filteredSubscriber = $this->entityManager->find(SubscriberEntity::class, $result[0]['id']);
     $this->assertInstanceOf(SubscriberEntity::class, $filteredSubscriber);
     expect($filteredSubscriber->getEmail())->equals($this->subscribers[1]->getEmail());

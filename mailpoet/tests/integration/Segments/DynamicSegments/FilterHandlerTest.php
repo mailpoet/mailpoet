@@ -21,12 +21,6 @@ class FilterHandlerTest extends \MailPoetTest {
   /** @var FilterHandler */
   private $filterHandler;
 
-  /** @var SubscriberEntity */
-  private $subscriber1;
-
-  /** @var SubscriberEntity */
-  private $subscriber2;
-
   public function _before(): void {
     $this->cleanWpUsers();
     $this->filterHandler = $this->diContainer->get(FilterHandler::class);
@@ -41,12 +35,10 @@ class FilterHandlerTest extends \MailPoetTest {
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
     $subscriber1->setStatus(SubscriberEntity::STATUS_SUBSCRIBED);
     $subscriber1->setLastSubscribedAt(new Carbon());
-    $this->subscriber1 = $subscriber1;
     $subscriber2 = $subscribersRepository->findOneBy(['email' => 'user-role-test2@example.com']);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber2);
     $subscriber2->setStatus(SubscriberEntity::STATUS_SUBSCRIBED);
     $subscriber2->setLastSubscribedAt(new Carbon());
-    $this->subscriber2 = $subscriber2;
     $subscriber3 = $subscribersRepository->findOneBy(['email' => 'user-role-test3@example.com']);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber3);
     $subscriber3->setStatus(SubscriberEntity::STATUS_SUBSCRIBED);
@@ -60,8 +52,10 @@ class FilterHandlerTest extends \MailPoetTest {
     $this->assertInstanceOf(Statement::class, $statement);
     $result = $statement->fetchAll();
     expect($result)->count(2);
+    $this->assertIsArray($result[0]);
     $subscriber1 = $this->entityManager->find(SubscriberEntity::class, $result[0]['id']);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
+    $this->assertIsArray($result[1]);
     $subscriber2 = $this->entityManager->find(SubscriberEntity::class, $result[1]['id']);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber2);
     expect($subscriber1->getEmail())->equals('user-role-test1@example.com');

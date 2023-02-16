@@ -50,6 +50,7 @@ class WooCommerceTotalSpentTest extends \MailPoetTest {
     $statement = $queryBuilder->execute();
     $result = $statement instanceof Statement ? $statement->fetchAll() : [];
     expect($result)->count(1);
+    $this->assertIsArray($result[0]);
     $subscriber1 = $this->subscribersRepository->findOneById($result[0]['inner_subscriber_id']);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
     expect($subscriber1)->isInstanceOf(SubscriberEntity::class);
@@ -62,10 +63,12 @@ class WooCommerceTotalSpentTest extends \MailPoetTest {
     $statement = $queryBuilder->execute();
     $result = $statement instanceof Statement ? $statement->fetchAll() : [];
     expect($result)->count(2);
+    $this->assertIsArray($result[0]);
     $subscriber1 = $this->subscribersRepository->findOneById($result[0]['inner_subscriber_id']);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
     expect($subscriber1)->isInstanceOf(SubscriberEntity::class);
     expect($subscriber1->getEmail())->equals('customer1@example.com');
+    $this->assertIsArray($result[1]);
     $subscriber2 = $this->subscribersRepository->findOneById($result[1]['inner_subscriber_id']);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber2);
     expect($subscriber2)->isInstanceOf(SubscriberEntity::class);
@@ -78,10 +81,12 @@ class WooCommerceTotalSpentTest extends \MailPoetTest {
     $statement = $queryBuilder->execute();
     $result = $statement instanceof Statement ? $statement->fetchAll() : [];
     expect($result)->count(2);
+    $this->assertIsArray($result[0]);
     $subscriber1 = $this->subscribersRepository->findOneById($result[0]['inner_subscriber_id']);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
     expect($subscriber1)->isInstanceOf(SubscriberEntity::class);
     expect($subscriber1->getEmail())->equals('customer1@example.com');
+    $this->assertIsArray($result[1]);
     $subscriber2 = $this->subscribersRepository->findOneById($result[1]['inner_subscriber_id']);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber2);
     expect($subscriber2)->isInstanceOf(SubscriberEntity::class);
@@ -94,6 +99,7 @@ class WooCommerceTotalSpentTest extends \MailPoetTest {
     $statement = $queryBuilder->execute();
     $result = $statement instanceof Statement ? $statement->fetchAll() : [];
     expect($result)->count(1);
+    $this->assertIsArray($result[0]);
     $subscriber1 = $this->subscribersRepository->findOneById($result[0]['inner_subscriber_id']);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
     expect($subscriber1)->isInstanceOf(SubscriberEntity::class);
@@ -106,6 +112,7 @@ class WooCommerceTotalSpentTest extends \MailPoetTest {
     $statement = $queryBuilder->execute();
     $result = $statement instanceof Statement ? $statement->fetchAll() : [];
     expect($result)->count(1);
+    $this->assertIsArray($result[0]);
     $subscriber1 = $this->subscribersRepository->findOneById($result[0]['inner_subscriber_id']);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
     expect($subscriber1)->isInstanceOf(SubscriberEntity::class);
@@ -179,9 +186,12 @@ class WooCommerceTotalSpentTest extends \MailPoetTest {
       $this->tester->deleteWordPressUser($email);
     }
 
-    foreach ($this->orders ?? [] as $orderId) {
-      $this->wp->wpDeletePost($orderId);
+    if (is_array($this->orders)) {
+      foreach ($this->orders as $orderId) {
+        $this->wp->wpDeletePost($orderId);
+      }
     }
+
     $this->connection->executeQuery("TRUNCATE TABLE {$wpdb->prefix}wc_customer_lookup");
     $this->connection->executeQuery("TRUNCATE TABLE {$wpdb->prefix}wc_order_stats");
   }

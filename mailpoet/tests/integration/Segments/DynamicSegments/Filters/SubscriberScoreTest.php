@@ -59,6 +59,7 @@ class SubscriberScoreTest extends \MailPoetTest {
     $this->assertInstanceOf(Statement::class, $statement);
     $result = $statement->fetchAll();
     expect(count($result))->equals(1);
+    $this->assertIsArray($result[0]);
     $subscriber = $this->entityManager->find(SubscriberEntity::class, $result[0]['id']);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
     expect($subscriber->getEmail())->equals('e12345@example.com');
@@ -73,10 +74,12 @@ class SubscriberScoreTest extends \MailPoetTest {
     $result = $statement->fetchAll();
     expect(count($result))->equals(2);
 
+    $this->assertIsArray($result[0]);
     $subscriber = $this->entityManager->find(SubscriberEntity::class, $result[0]['id']);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
     expect($subscriber->getEmail())->equals('e1@example.com');
 
+    $this->assertIsArray($result[1]);
     $subscriber = $this->entityManager->find(SubscriberEntity::class, $result[1]['id']);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
     expect($subscriber->getEmail())->equals('e12@example.com');
@@ -90,6 +93,7 @@ class SubscriberScoreTest extends \MailPoetTest {
     $this->assertInstanceOf(Statement::class, $statement);
     $result = $statement->fetchAll();
     expect(count($result))->equals(1);
+    $this->assertIsArray($result[0]);
     $subscriber = $this->entityManager->find(SubscriberEntity::class, $result[0]['id']);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
     expect($subscriber->getEmail())->equals('e123@example.com');
@@ -104,18 +108,22 @@ class SubscriberScoreTest extends \MailPoetTest {
     $result = $statement->fetchAll();
     expect(count($result))->equals(4);
 
+    $this->assertIsArray($result[0]);
     $subscriber = $this->entityManager->find(SubscriberEntity::class, $result[0]['id']);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
     expect($subscriber->getEmail())->equals('e1@example.com');
 
+    $this->assertIsArray($result[1]);
     $subscriber = $this->entityManager->find(SubscriberEntity::class, $result[1]['id']);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
     expect($subscriber->getEmail())->equals('e12@example.com');
 
+    $this->assertIsArray($result[2]);
     $subscriber = $this->entityManager->find(SubscriberEntity::class, $result[2]['id']);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
     expect($subscriber->getEmail())->equals('e1234@example.com');
 
+    $this->assertIsArray($result[3]);
     $subscriber = $this->entityManager->find(SubscriberEntity::class, $result[3]['id']);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
     expect($subscriber->getEmail())->equals('e12345@example.com');
@@ -130,6 +138,7 @@ class SubscriberScoreTest extends \MailPoetTest {
     $result = $statement->fetchAll();
     expect(count($result))->equals(1);
 
+    $this->assertIsArray($result[0]);
     $subscriber = $this->entityManager->find(SubscriberEntity::class, $result[0]['id']);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
     expect($subscriber->getEmail())->equals('e123456@example.com');
@@ -144,22 +153,27 @@ class SubscriberScoreTest extends \MailPoetTest {
     $result = $statement->fetchAll();
     expect(count($result))->equals(5);
 
+    $this->assertIsArray($result[0]);
     $subscriber = $this->entityManager->find(SubscriberEntity::class, $result[0]['id']);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
     expect($subscriber->getEmail())->equals('e1@example.com');
 
+    $this->assertIsArray($result[1]);
     $subscriber = $this->entityManager->find(SubscriberEntity::class, $result[1]['id']);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
     expect($subscriber->getEmail())->equals('e12@example.com');
 
+    $this->assertIsArray($result[2]);
     $subscriber = $this->entityManager->find(SubscriberEntity::class, $result[2]['id']);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
     expect($subscriber->getEmail())->equals('e123@example.com');
 
+    $this->assertIsArray($result[3]);
     $subscriber = $this->entityManager->find(SubscriberEntity::class, $result[3]['id']);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
     expect($subscriber->getEmail())->equals('e1234@example.com');
 
+    $this->assertIsArray($result[4]);
     $subscriber = $this->entityManager->find(SubscriberEntity::class, $result[4]['id']);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
     expect($subscriber->getEmail())->equals('e12345@example.com');
