@@ -5,9 +5,9 @@ import {
   SearchControl,
   SelectControl,
 } from '@wordpress/components';
-import Backbone from 'backbone';
 import { Component } from '@wordpress/element';
 import { MailPoet } from 'mailpoet';
+import { GetValueCallback, SetValueCallback } from './types';
 
 export type Coupon = {
   id: number;
@@ -19,11 +19,8 @@ export type Coupon = {
 type Props = {
   availableDiscountTypes: SelectControl.Option[];
   availableCoupons: Coupon[];
-  getValueCallback: (name: string) => string | boolean | Backbone.Collection;
-  setValueCallback: (
-    name: string,
-    value: string | boolean | Backbone.Collection,
-  ) => void;
+  getValueCallback: GetValueCallback;
+  setValueCallback: SetValueCallback;
 };
 
 type State = {
@@ -37,14 +34,9 @@ class ExistingCoupons extends Component<Props, State> {
 
   private readonly availableCoupons: Coupon[];
 
-  private readonly getValueCallback: (
-    name: string,
-  ) => string | boolean | Backbone.Collection;
+  private readonly getValueCallback: GetValueCallback;
 
-  private readonly setValueCallback: (
-    name: string,
-    value: string | boolean | Backbone.Collection,
-  ) => void;
+  private readonly setValueCallback: SetValueCallback;
 
   constructor(props: Props) {
     super(props);

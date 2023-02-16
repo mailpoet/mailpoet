@@ -5,22 +5,19 @@ import {
   TextControl,
   ToggleControl,
 } from '@wordpress/components';
-import Backbone from 'backbone';
 import { Component } from '@wordpress/element';
 import jQuery from 'jquery';
 import { MailPoet } from 'mailpoet';
 import { Selection } from '../../../form/fields/selection';
+import { GetValueCallback, SetValueCallback } from './types';
 
 type Post = {
   id: number;
 };
 
 type Props = {
-  getValueCallback: (name: string) => string | boolean | Backbone.Collection;
-  setValueCallback: (
-    name: string,
-    value: string | boolean | Backbone.Collection,
-  ) => void;
+  getValueCallback: GetValueCallback;
+  setValueCallback: SetValueCallback;
   priceDecimalSeparator: string;
 };
 
@@ -37,14 +34,9 @@ type State = {
 };
 
 class UsageRestriction extends Component<Props, State> {
-  private readonly getValueCallback: (
-    name: string,
-  ) => string | boolean | Backbone.Collection;
+  private readonly getValueCallback: GetValueCallback;
 
-  private readonly setValueCallback: (
-    name: string,
-    value: string | boolean | Backbone.Collection,
-  ) => void;
+  private readonly setValueCallback: SetValueCallback;
 
   private readonly priceDecimalSeparator: string;
 
