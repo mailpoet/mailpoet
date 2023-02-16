@@ -399,7 +399,7 @@ class Functions {
 
     /**
    * @param string $tag
-   * @param callable $functionToRemove
+   * @param callable|string|array $functionToRemove
    * @param int $priority
    */
   public function removeAction($tag, $functionToRemove, $priority = 10) {
