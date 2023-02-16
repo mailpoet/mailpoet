@@ -8,10 +8,30 @@ import { Button, Heading, List } from 'common';
 function FreeBenefitsList(): JSX.Element {
   return (
     <List>
-      <li>{MailPoet.I18n.t('congratulationsMSSPitchList1')}</li>
-      <li>{MailPoet.I18n.t('congratulationsMSSPitchList2')}</li>
-      <li>{MailPoet.I18n.t('congratulationsMSSPitchList3')}</li>
-      <li>{MailPoet.I18n.t('congratulationsMSSPitchList4')}</li>
+      <li>
+        {__(
+          'Reliable marketing and transactional email delivery. Reach inboxes, not spam boxes',
+          'mailpoet',
+        )}
+      </li>
+      <li>
+        {__(
+          'Send your emails super fast (up to 50,000 emails per hour)',
+          'mailpoet',
+        )}
+      </li>
+      <li>
+        {__(
+          'Maintain your sender reputation and improve engagement levels with automated bounce and complaint handling. Stop sending to non-deliverable and complaining addresses, automatically',
+          'mailpoet',
+        )}
+      </li>
+      <li>
+        {__(
+          'Authenticate your emails (with SPF and DKIM) to improve deliverability and avoid spam boxes',
+          'mailpoet',
+        )}
+      </li>
     </List>
   );
 }
