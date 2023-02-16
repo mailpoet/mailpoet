@@ -105,7 +105,9 @@ class BeaconTest extends \MailPoetTest {
   }
 
   public function testItReturnsActivePlugins() {
-    expect($this->beaconData['Active Plugin names'])->equals(join(", ", get_option('active_plugins')));
+    $activePlugins = get_option('active_plugins');
+    $this->assertIsArray($activePlugins);
+    expect($this->beaconData['Active Plugin names'])->equals(join(", ", $activePlugins));
   }
 
   public function testItReturnsSendingMethodDetails() {

@@ -1110,11 +1110,6 @@ parameters:
 			path: ../../tests/acceptance/Subscribers/SubscriberCookieCest.php
 
 		-
-			message: "#^Parameter \\#1 \\$needle of method Codeception\\\\Verify\\\\Verify\\:\\:stringContainsString\\(\\) expects string, mixed given\\.$#"
-			count: 4
-			path: ../../tests/integration/API/JSON/v1/ServicesTest.php
-
-		-
 			message: "#^Property MailPoet\\\\Test\\\\Doctrine\\\\EventListeners\\\\TimestampEntity\\:\\:\\$id is never written, only read\\.$#"
 			count: 1
 			path: ../../tests/integration/Doctrine/EventListeners/TimestampEntity.php
@@ -1133,31 +1128,6 @@ parameters:
 			message: "#^Property MailPoet\\\\Test\\\\Doctrine\\\\Types\\\\JsonEntity\\:\\:\\$id is never written, only read\\.$#"
 			count: 1
 			path: ../../tests/integration/Doctrine/Types/JsonEntity.php
-
-		-
-			message: "#^Parameter \\#2 \\$array of function join expects array\\<string\\>, mixed given\\.$#"
-			count: 1
-			path: ../../tests/integration/Helpscout/BeaconTest.php
-
-		-
-			message: "#^Parameter \\#2 \\$pieces of function join expects array, mixed given\\.$#"
-			count: 1
-			path: ../../tests/integration/Helpscout/BeaconTest.php
-
-		-
-			message: "#^Cannot access offset 'List\\-Unsubscribe' on mixed\\.$#"
-			count: 1
-			path: ../../tests/integration/Mailer/Methods/SendGridTest.php
-
-		-
-			message: "#^Parameter \\#1 \\$body of method MailPoet\\\\Entities\\\\NewsletterEntity\\:\\:setBody\\(\\) expects array\\|null, mixed given\\.$#"
-			count: 1
-			path: ../../tests/integration/Newsletter/Preview/SendPreviewControllerTest.php
-
-		-
-			message: "#^Parameter \\#1 \\$body of method MailPoet\\\\Entities\\\\NewsletterEntity\\:\\:setBody\\(\\) expects array\\|null, mixed given\\.$#"
-			count: 8
-			path: ../../tests/integration/Newsletter/RendererTest.php
 
 		-
 			message: "#^Method MailPoet\\\\Newsletter\\\\NewslettersRepository\\:\\:getStandardNewsletterList\\(\\) should return array\\<MailPoet\\\\Entities\\\\NewsletterEntity\\> but returns mixed\\.$#"
