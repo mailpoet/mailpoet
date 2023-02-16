@@ -382,7 +382,7 @@ class WPTest extends \MailPoetTest {
     $subscribersCount = $this->getSubscribersCount();
     expect($subscribersCount)->equals(1);
     $this->wpSegment->synchronizeUsers();
-    $subscribersCount = $this->getSubscribersCount(0);
+    $subscribersCount = $this->getSubscribersCount();
     expect($subscribersCount)->equals(0);
   }
 
@@ -614,7 +614,7 @@ class WPTest extends \MailPoetTest {
     ', Subscriber::$_table));
   }
 
-  private function getSubscribersCount($a = null): int {
+  private function getSubscribersCount(): int {
     return Subscriber::whereLike("email", "user-sync-test%")->count();
   }
 
