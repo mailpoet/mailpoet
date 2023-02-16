@@ -148,7 +148,6 @@ class UsageRestriction extends Component<Props, State> {
           </PanelRow>
           <PanelRow>
             <ToggleControl
-              className="mailpoet_field_coupon_individual_use"
               checked={this.state.individualUse}
               label={MailPoet.I18n.t('individualUseOnly')}
               onChange={(individualUse) => {
@@ -160,7 +159,6 @@ class UsageRestriction extends Component<Props, State> {
           </PanelRow>
           <PanelRow>
             <ToggleControl
-              className="mailpoet_field_coupon_exclude_sale_items"
               checked={this.state.excludeSaleItems}
               label={MailPoet.I18n.t('excludeSaleItems')}
               onChange={(excludeSaleItems) => {

@@ -39,7 +39,6 @@ class UsageLimits extends Component<Props, State> {
         >
           <PanelRow>
             <TextControl
-              className="mailpoet_field_coupon_usage_limits_per_coupon"
               label={MailPoet.I18n.t('usageLimitPerCoupon')}
               value={this.state.usageLimit}
               placeholder={MailPoet.I18n.t('unlimitedUsage')}
@@ -52,7 +51,6 @@ class UsageLimits extends Component<Props, State> {
           </PanelRow>
           <PanelRow>
             <TextControl
-              className="mailpoet_field_coupon_usage_limits_per_user"
               label={MailPoet.I18n.t('usageLimitPerUser')}
               value={this.state.usageLimitPerUser}
               placeholder={MailPoet.I18n.t('unlimitedUsage')}

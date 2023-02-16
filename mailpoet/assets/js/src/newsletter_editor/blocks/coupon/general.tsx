@@ -76,7 +76,6 @@ class General extends Component<Props, State> {
         <PanelBody title={MailPoet.I18n.t('generalSettings')}>
           <PanelRow>
             <SelectControl
-              className="mailpoet_field_coupon_discount_type"
               label={MailPoet.I18n.t('discountType')}
               onChange={this.discountTypeChange}
               options={this.availableDiscountTypes}
@@ -132,7 +131,6 @@ class General extends Component<Props, State> {
           </PanelRow>
           <PanelRow>
             <ToggleControl
-              className="mailpoet_field_coupon_free_shipping"
               checked={this.state.freeShipping}
               label={MailPoet.I18n.t('freeShipping')}
               onChange={(freeShipping) => {
