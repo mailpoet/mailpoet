@@ -33,7 +33,7 @@ class Automation {
         [],
         []
       ),
-      ], new \WP_User());
+      ], new \WP_User(1));
   }
 
   public function withName($name) {

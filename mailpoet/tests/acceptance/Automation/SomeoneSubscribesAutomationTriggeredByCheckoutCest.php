@@ -2,15 +2,13 @@
 
 namespace MailPoet\Test\Acceptance;
 
-use MailPoet\Automation\Engine\Data\Automation;
-use MailPoet\Automation\Engine\Data\NextStep;
 use MailPoet\Automation\Engine\Data\Step;
 use MailPoet\Automation\Engine\Storage\AutomationRunLogStorage;
 use MailPoet\Automation\Engine\Storage\AutomationRunStorage;
 use MailPoet\Automation\Engine\Storage\AutomationStorage;
-use MailPoet\Automation\Integrations\Core\Actions\DelayAction;
 use MailPoet\Automation\Integrations\MailPoet\Triggers\SomeoneSubscribesTrigger;
 use MailPoet\DI\ContainerWrapper;
+use MailPoet\Test\DataFactories\Automation as AutomationFactory;
 use MailPoet\Test\DataFactories\Settings;
 use MailPoet\Test\DataFactories\WooCommerceProduct;
 
@@ -49,7 +47,14 @@ class SomeoneSubscribesAutomationTriggeredByCheckoutCest {
     $i->wantTo("Activate a trigger by going through the Woocommerce checkout.");
 
     $this->settingsFactory->withConfirmationEmailDisabled(); // Just so we do not have to check our mailbox first.
-    $this->createAutomation();
+
+    $someoneSubscribesTrigger = $this->container->get(SomeoneSubscribesTrigger::class);
+    (new AutomationFactory())
+      ->withName('test')
+      ->addStep(new Step('t', Step::TYPE_TRIGGER, $someoneSubscribesTrigger->getKey(), ['segment_ids' => []], []))
+      ->withDelayAction()
+      ->withStatusActive()
+      ->create();
 
     $i->login();
     $i->amOnMailpoetPage('settings');
@@ -73,28 +78,6 @@ class SomeoneSubscribesAutomationTriggeredByCheckoutCest {
     $i->waitForText('Entered');
     $i->see('Entered 1'); //The visible text is 1 Entered, but in the DOM it's the other way around.
     $i->dontSee('Entered 0');
-  }
-
-  private function createAutomation(): Automation {
-    $someoneSubscribesTrigger = $this->container->get(SomeoneSubscribesTrigger::class);
-    $delayStep = $this->container->get(DelayAction::class);
-    $steps = [
-      'root' => new Step('root', Step::TYPE_ROOT, 'root', [], [new NextStep('t')]),
-      't' => new Step('t', Step::TYPE_TRIGGER, $someoneSubscribesTrigger->getKey(), ['segment_ids' => []], [new NextStep('a1')]),
-      'a1' => new Step('a1', Step::TYPE_ACTION, $delayStep->getKey(), ['delay' => 1, 'delay_type' => 'HOURS'], []),
-    ];
-    $automation = new Automation(
-      'test',
-      $steps,
-      new \WP_User(1)
-    );
-    $automation->setStatus(Automation::STATUS_ACTIVE);
-    $id = $this->automationStorage->createAutomation($automation);
-    $storedAutomation = $this->automationStorage->getAutomation($id);
-    if (!$storedAutomation) {
-      throw new \Exception("Automation not found.");
-    }
-    return $storedAutomation;
   }
 
   public function _after() {

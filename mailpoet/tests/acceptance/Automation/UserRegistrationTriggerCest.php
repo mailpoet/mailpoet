@@ -3,15 +3,13 @@
 namespace MailPoet\Test\Acceptance;
 
 use Codeception\Util\Locator;
-use MailPoet\Automation\Engine\Data\Automation;
-use MailPoet\Automation\Engine\Data\NextStep;
 use MailPoet\Automation\Engine\Data\Step;
 use MailPoet\Automation\Engine\Storage\AutomationRunLogStorage;
 use MailPoet\Automation\Engine\Storage\AutomationRunStorage;
 use MailPoet\Automation\Engine\Storage\AutomationStorage;
-use MailPoet\Automation\Integrations\Core\Actions\DelayAction;
 use MailPoet\Automation\Integrations\MailPoet\Triggers\UserRegistrationTrigger;
 use MailPoet\DI\ContainerWrapper;
+use MailPoet\Test\DataFactories\Automation as AutomationFactory;
 use MailPoet\Test\DataFactories\Settings;
 
 class UserRegistrationTriggerCest {
@@ -46,6 +44,7 @@ class UserRegistrationTriggerCest {
     $this->settingsFactory
       ->withSubscribeOnRegisterEnabled()
       ->withConfirmationEmailDisabled();
+
     $this->createAutomation();
 
     $i->login();
@@ -120,26 +119,14 @@ class UserRegistrationTriggerCest {
     }
   }
 
-  private function createAutomation(): Automation {
-    $someoneSubscribesTrigger = $this->container->get(UserRegistrationTrigger::class);
-    $delayStep = $this->container->get(DelayAction::class);
-    $steps = [
-      'root' => new Step('root', Step::TYPE_ROOT, 'root', [], [new NextStep('t')]),
-      't' => new Step('t', Step::TYPE_TRIGGER, $someoneSubscribesTrigger->getKey(), ['roles' => []], [new NextStep('a1')]),
-      'a1' => new Step('a1', Step::TYPE_ACTION, $delayStep->getKey(), ['delay' => 1, 'delay_type' => 'HOURS'], []),
-    ];
-    $automation = new Automation(
-      'test',
-      $steps,
-      new \WP_User(1)
-    );
-    $automation->setStatus(Automation::STATUS_ACTIVE);
-    $id = $this->automationStorage->createAutomation($automation);
-    $storedAutomation = $this->automationStorage->getAutomation($id);
-    if (!$storedAutomation) {
-      throw new \Exception("Automation not found.");
-    }
-    return $storedAutomation;
+  private function createAutomation() {
+    $userRegistrationTrigger = $this->container->get(UserRegistrationTrigger::class);
+    (new AutomationFactory())
+      ->withName('test')
+      ->addStep(new Step('t', Step::TYPE_TRIGGER, $userRegistrationTrigger->getKey(), ['roles' => []], []))
+      ->withDelayAction()
+      ->withStatusActive()
+      ->create();
   }
 
   public function _after() {
