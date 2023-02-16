@@ -1,22 +1,19 @@
 import { SelectControl } from '@wordpress/components';
-import Backbone from 'backbone';
 import { ErrorBoundary } from 'common';
 import { GlobalContext, useGlobalContextValue } from 'context/index.jsx';
 import { useState } from 'react';
 import { ExistingCoupons, Coupon } from './existingCoupons';
 import { General } from './general';
 import { SettingsHeader, SettingsTabs } from './settings_header';
+import { GetValueCallback, SetValueCallback } from './types';
 import { UsageRestriction } from './usage_restriction';
 import { UsageLimits } from './usage_limits';
 
 type Props = {
   availableDiscountTypes: SelectControl.Option[];
   availableCoupons: Coupon[];
-  getValueCallback: (name: string) => string | boolean | Backbone.Collection;
-  setValueCallback: (
-    name: string,
-    value: string | boolean | Backbone.Collection,
-  ) => void;
+  getValueCallback: GetValueCallback;
+  setValueCallback: SetValueCallback;
   priceDecimalSeparator: string;
   codePlaceholder: string;
 };

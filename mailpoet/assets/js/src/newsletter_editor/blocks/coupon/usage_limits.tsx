@@ -1,14 +1,11 @@
 import { Panel, PanelRow, PanelBody, TextControl } from '@wordpress/components';
-import Backbone from 'backbone';
 import { Component } from '@wordpress/element';
 import { MailPoet } from 'mailpoet';
+import { GetValueCallback, SetValueCallback } from './types';
 
 type Props = {
-  getValueCallback: (name: string) => string | boolean | Backbone.Collection;
-  setValueCallback: (
-    name: string,
-    value: string | boolean | Backbone.Collection,
-  ) => void;
+  getValueCallback: GetValueCallback;
+  setValueCallback: SetValueCallback;
 };
 
 type State = {
@@ -17,14 +14,9 @@ type State = {
 };
 
 class UsageLimits extends Component<Props, State> {
-  private readonly getValueCallback: (
-    name: string,
-  ) => string | boolean | Backbone.Collection;
+  private readonly getValueCallback: GetValueCallback;
 
-  private readonly setValueCallback: (
-    name: string,
-    value: string | boolean | Backbone.Collection,
-  ) => void;
+  private readonly setValueCallback: SetValueCallback;
 
   constructor(props: Props) {
     super(props);
