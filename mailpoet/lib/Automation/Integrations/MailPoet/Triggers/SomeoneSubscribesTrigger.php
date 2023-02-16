@@ -8,15 +8,19 @@ use MailPoet\Automation\Engine\Data\Subject;
 use MailPoet\Automation\Engine\Hooks;
 use MailPoet\Automation\Engine\Integration\Trigger;
 use MailPoet\Automation\Integrations\MailPoet\Payloads\SegmentPayload;
+use MailPoet\Automation\Integrations\MailPoet\Payloads\SubscriberPayload;
 use MailPoet\Automation\Integrations\MailPoet\Subjects\SegmentSubject;
 use MailPoet\Automation\Integrations\MailPoet\Subjects\SubscriberSubject;
 use MailPoet\Entities\SegmentEntity;
+use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\InvalidStateException;
+use MailPoet\Segments\DynamicSegments\FilterHandler;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Validator\Builder;
 use MailPoet\Validator\Schema\ObjectSchema;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoetVendor\Doctrine\ORM\EntityManager;
 
 class SomeoneSubscribesTrigger implements Trigger {
   const KEY = 'mailpoet:someone-subscribes';
@@ -24,15 +28,25 @@ class SomeoneSubscribesTrigger implements Trigger {
   /** @var WPFunctions */
   private $wp;
 
+  /** @var EntityManager */
+  private $entityManager;
+
   /** @var SegmentsRepository  */
   private $segmentsRepository;
 
+  /** @var FilterHandler */
+  private $filterHandler;
+
   public function __construct(
     WPFunctions $wp,
-    SegmentsRepository $segmentsRepository
+    EntityManager $entityManager,
+    SegmentsRepository $segmentsRepository,
+    FilterHandler $filterHandler
   ) {
     $this->wp = $wp;
+    $this->entityManager = $entityManager;
     $this->segmentsRepository = $segmentsRepository;
+    $this->filterHandler = $filterHandler;
   }
 
   public function getKey(): string {
@@ -84,9 +98,34 @@ class SomeoneSubscribesTrigger implements Trigger {
       return false;
     }
 
-    // Triggers when no segment IDs defined (= any segment) or the current segment paylo.
+    // Triggers when no segment IDs defined (= any segment) or the current segment payload exists in defined segment IDs.
     $triggerArgs = $args->getStep()->getArgs();
     $segmentIds = $triggerArgs['segment_ids'] ?? [];
-    return !is_array($segmentIds) || !$segmentIds || in_array($segmentId, $segmentIds, true);
+    if (is_array($segmentIds) && $segmentIds && !in_array($segmentId, $segmentIds, true)) {
+      return false;
+    }
+
+    // Dynamic segments.
+    $dynamicSegmentIds = [6];
+    foreach ($dynamicSegmentIds as $id) {
+      $dynamicSegment = $this->segmentsRepository->findOneById($id);
+      if (!$dynamicSegment || !$this->matchesDynamicSegments($args, $dynamicSegment)) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  private function matchesDynamicSegments(StepRunArgs $args, SegmentEntity $segment): bool {
+    $subscriberId = $args->getSinglePayloadByClass(SubscriberPayload::class)->getId();
+    var_dump($subscriberId);
+    $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
+    $qb = $this->entityManager->getConnection()->createQueryBuilder()
+      ->select('id')
+      ->from($subscribersTable)
+      ->where('id = :subscriberId')
+      ->setParameter('subscriberId', $subscriberId);
+    return (bool)$this->filterHandler->apply($qb, $segment)->execute()->fetchOne();
   }
 }
