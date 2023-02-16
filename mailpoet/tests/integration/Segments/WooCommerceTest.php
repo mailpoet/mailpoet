@@ -658,13 +658,19 @@ class WooCommerceTest extends \MailPoetTest {
   }
 
   private function getSubscribersCount(): int {
-    return (int)$this->entityManager->createQueryBuilder()
+    $subscribersCount = $this->entityManager->createQueryBuilder()
       ->select('COUNT(s.id)')
       ->from(SubscriberEntity::class, 's')
       ->where('s.email LIKE :prefix')
       ->setParameter('prefix', 'user-sync-test%')
       ->getQuery()
       ->getSingleScalarResult();
+
+    if (is_string($subscribersCount)) {
+      return (int)$subscribersCount;
+    }
+
+    return 0;
   }
 
   /**

@@ -1216,31 +1216,6 @@ parameters:
 			path: ../../tests/integration/Segments/WPTest.php
 
 		-
-			message: "#^Cannot cast mixed to int\\.$#"
-			count: 1
-			path: ../../tests/integration/Segments/WooCommerceTest.php
-
-		-
-			message: "#^Cannot access offset 'key1' on mixed\\.$#"
-			count: 3
-			path: ../../tests/integration/Settings/SettingsControllerTest.php
-
-		-
-			message: "#^Cannot access offset 'key2' on mixed\\.$#"
-			count: 3
-			path: ../../tests/integration/Settings/SettingsControllerTest.php
-
-		-
-			message: "#^Property MailPoet\\\\Subscribers\\\\ImportExport\\\\Export\\\\ExportTest\\:\\:\\$jSONData \\(array\\) does not accept mixed\\.$#"
-			count: 1
-			path: ../../tests/integration/Subscribers/ImportExport/Export/ExportTest.php
-
-		-
-			message: "#^Parameter \\#1 \\$var of function count expects array\\|Countable, mixed given\\.$#"
-			count: 5
-			path: ../../tests/integration/Subscribers/ImportExport/ImportExportFactoryTest.php
-
-		-
 			message: "#^Method MailPoet\\\\Newsletter\\\\NewslettersRepository\\:\\:getStandardNewsletterList\\(\\) should return array\\<MailPoet\\\\Entities\\\\NewsletterEntity\\> but returns mixed\\.$#"
 			count: 1
 			path: ../../lib/Newsletter/NewslettersRepository.php
