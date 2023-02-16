@@ -103,11 +103,11 @@ class CouponPreProcessor {
     $coupon->set_individual_use($couponBlock['individualUse'] ?? false);
     $coupon->set_exclude_sale_items($couponBlock['excludeSaleItems'] ?? false);
 
-    $coupon->set_product_ids($this->getProductIds($couponBlock['productIds'] ?? []));
-    $coupon->set_excluded_product_ids($this->getProductIds($couponBlock['excludedProductIds'] ?? []));
+    $coupon->set_product_ids($this->getItemIds($couponBlock['productIds'] ?? []));
+    $coupon->set_excluded_product_ids($this->getItemIds($couponBlock['excludedProductIds'] ?? []));
 
-    $coupon->set_product_categories($this->getCategoryItemIds($couponBlock['productCategoryIds'] ?? []));
-    $coupon->set_excluded_product_categories($this->getCategoryItemIds($couponBlock['excludedProductCategoryIds'] ?? []));
+    $coupon->set_product_categories($this->getItemIds($couponBlock['productCategoryIds'] ?? []));
+    $coupon->set_excluded_product_categories($this->getItemIds($couponBlock['excludedProductCategoryIds'] ?? []));
 
     $coupon->set_email_restrictions(explode(',', $couponBlock['emailRestrictions'] ?? ''));
 
@@ -118,21 +118,13 @@ class CouponPreProcessor {
     return $coupon->save();
   }
 
-  private function getCategoryItemIds(array $items): array {
-    return $this->getItemIds($items, 'term_id');
-  }
-
-  private function getProductIds(array $items): array {
-    return $this->getItemIds($items, 'ID');
-  }
-
-  private function getItemIds(array $items, $field = ''): array {
+  private function getItemIds(array $items): array {
     if (empty($items)) {
       return [];
     }
 
-    return array_map(function ($item) use ($field) {
-      return $item[$field];
+    return array_map(function ($item) {
+      return $item['id'];
     }, $items);
   }
 
