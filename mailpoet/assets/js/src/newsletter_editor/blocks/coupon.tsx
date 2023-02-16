@@ -30,6 +30,11 @@ Module.CouponBlockModel = base.BlockModel.extend({
         amountMax: 100,
         discountType: 'percent',
         expiryDay: 10,
+        usageLimit: '',
+        usageLimitPerUser: '',
+        minimumAmount: '',
+        maximumAmount: '',
+        emailRestrictions: '',
         styles: {
           block: {
             backgroundColor: '#ffffff',
