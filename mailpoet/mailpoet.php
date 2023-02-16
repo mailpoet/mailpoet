@@ -11,7 +11,7 @@
  * Text Domain: mailpoet
  * Domain Path: /lang
  *
- * WC requires at least: 6.9.0
+ * WC requires at least: 7.2.0
  * WC tested up to: 7.4.0
  *
  * @package WordPress
