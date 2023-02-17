@@ -121,6 +121,19 @@ if [[ $SKIP_PLUGINS != "1" ]]; then
     unzip -q -o "$WOOCOMMERCE_BLOCKS_ZIP" -d /wp-core/wp-content/plugins/
   fi
 
+  # Install AutomateWoo
+  if [[ ! -d "/wp-core/wp-content/plugins/automatewoo" ]]; then
+    AUTOMATEWOO_ZIP="/wp-core/wp-content/plugins/mailpoet/tests/plugins/automatewoo.zip"
+    if [ ! -f "$AUTOMATEWOO_ZIP" ]; then
+      echo "AutomateWoo plugin zip not found. Downloading AutomateWoo plugin latest zip"
+      cd /project
+      ./do download:automate-woo-zip latest
+      cd /wp-core/wp-content/plugins
+    fi
+    echo "Unzip AutomateWoo plugin from $AUTOMATEWOO_ZIP"
+    unzip -q -o "$AUTOMATEWOO_ZIP" -d /wp-core/wp-content/plugins/
+  fi
+
   # Install WooCommerce COT helper plugin
   mkdir -p /wp-core/wp-content/plugins/woo_cot_helper_plugin
   cp /wp-core/wp-content/plugins/mailpoet/tests/_support/woo_cot_helper_plugin.php /wp-core/wp-content/plugins/woo_cot_helper_plugin.php
@@ -138,12 +151,14 @@ if [[ $SKIP_PLUGINS != "1" ]]; then
   wp plugin activate woocommerce-subscriptions --url=$ACTIVATION_CONTEXT
   wp plugin activate woocommerce-memberships --url=$ACTIVATION_CONTEXT
   wp plugin activate woo-gutenberg-products-block --url=$ACTIVATION_CONTEXT
+  wp plugin activate automatewoo --url=$ACTIVATION_CONTEXT
 
   # print info about activated plugins
   wp plugin get woocommerce --url=$ACTIVATION_CONTEXT
   wp plugin get woocommerce-subscriptions --url=$ACTIVATION_CONTEXT
   wp plugin get woocommerce-memberships --url=$ACTIVATION_CONTEXT
   wp plugin get woo-gutenberg-products-block --url=$ACTIVATION_CONTEXT
+  wp plugin get automatewoo --url=$ACTIVATION_CONTEXT
 
    # Activate helper plugin for WooCommerce COT and create tables in DB
    if [[ $ENABLE_COT == "1" ]]; then
