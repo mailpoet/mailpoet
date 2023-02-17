@@ -4,6 +4,7 @@ namespace MailPoet\Test\Acceptance;
 
 use Codeception\Util\Locator;
 use MailPoet\Test\DataFactories\Settings;
+use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\Exception;
 
 class ManageSubscriptionLinkCest {
@@ -83,6 +84,7 @@ class ManageSubscriptionLinkCest {
     $i->click('#show-headers');
     $i->waitForText('List-Unsubscribe');
     $link = $i->grabTextFrom('//div[@class="row headers"]//th[text()="List-Unsubscribe"]/following-sibling::td');
+    Assert::assertIsString($link);
     $link = trim($link, '<>');
     $i->amOnUrl($link);
     $i->waitForText('You are now unsubscribed');

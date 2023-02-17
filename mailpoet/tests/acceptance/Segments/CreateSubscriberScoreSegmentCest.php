@@ -3,6 +3,7 @@
 namespace MailPoet\Test\Acceptance;
 
 use MailPoet\Test\DataFactories\Subscriber;
+use PHPUnit\Framework\Assert;
 
 class CreateSubscriberScoreSegmentCest {
   public function _before() {
@@ -103,6 +104,7 @@ class CreateSubscriberScoreSegmentCest {
   private function checkSubscriberCountGreaterThanZero(\AcceptanceTester $i) {
     $i->dontSee('This segment has 0 subscribers.');
     $subscribersCountText = $i->grabTextFrom('.mailpoet-segments-counter-section');
+    Assert::assertIsString($subscribersCountText);
     preg_match('/has (\d+) subscribers/i', $subscribersCountText, $matches);
     expect((int)$matches[1])->greaterThan(0);
   }

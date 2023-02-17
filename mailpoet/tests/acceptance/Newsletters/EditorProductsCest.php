@@ -6,6 +6,7 @@ use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Test\DataFactories\Newsletter;
 use MailPoet\Test\DataFactories\WooCommerceProduct;
 use MailPoet\Util\Security;
+use PHPUnit\Framework\Assert;
 
 /**
  * @group woo
@@ -242,6 +243,7 @@ class EditorProductsCest {
 
   private function waitForChange(\AcceptanceTester $i) {
     $productClass = $i->grabAttributeFrom(self::EDITOR_PRODUCT_SELECTOR, 'class');
+    Assert::assertIsString($productClass);
     $i->waitForElementNotVisible('.' . implode('.', explode(' ', $productClass)));
     $i->waitForElementVisible(self::EDITOR_PRODUCT_SELECTOR);
     $i->waitForElementNotVisible('.velocity-animating');

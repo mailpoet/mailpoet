@@ -43,7 +43,7 @@ class SendingStatusCest {
     $this->checkSubscriber($i, $taskId, $unluckySubscriber, 'Failed', 'Oh no!');
   }
 
-  private function checkSubscriber($i, $taskId, $subscriber, $status, $error = false) {
+  private function checkSubscriber(\AcceptanceTester $i, $taskId, $subscriber, $status, $error = false) {
     $nameSelector = '[data-automation-id="name_' . $taskId . '_' . $subscriber->id . '"]';
     $statusSelector = '[data-automation-id="status_' . $taskId . '_' . $subscriber->id . '"]';
     $fullName = $subscriber->firstName . ' ' . $subscriber->lastName;

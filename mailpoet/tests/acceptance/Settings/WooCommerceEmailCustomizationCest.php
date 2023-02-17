@@ -3,6 +3,7 @@
 namespace MailPoet\Test\Acceptance;
 
 use MailPoet\Test\DataFactories\Settings;
+use PHPUnit\Framework\Assert;
 
 /**
  * @group woo
@@ -75,7 +76,9 @@ class WooCommerceEmailCustomizationCest {
 
   private function getWooCommerceEmailTemplateId(\AcceptanceTester $i) {
     $woocommerceSettings = $i->grabFromDatabase(MP_SETTINGS_TABLE, 'value', ['name' => 'woocommerce']);
+    Assert::assertIsString($woocommerceSettings);
     $woocommerceSettings = unserialize($woocommerceSettings);
+    Assert::assertIsArray($woocommerceSettings);
     return $woocommerceSettings['transactional_email_id'];
   }
 }
