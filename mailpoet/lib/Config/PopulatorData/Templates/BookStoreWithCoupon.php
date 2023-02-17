@@ -453,13 +453,18 @@ class BookStoreWithCoupon {
                     [
                       'productIds' => [],
                       'excludedProductIds' => [],
-                      'productCategories' => [],
-                      'excludedProductCategories' => [],
+                      'productCategoryIds' => [],
+                      'excludedProductCategoryIds' => [],
                       'type' => 'coupon',
                       'amount' => 10,
                       'amountMax' => 100,
                       'discountType' => 'percent',
                       'expiryDay' => 10,
+                      'usageLimit' => '',
+                      'usageLimitPerUser' => '',
+                      'minimumAmount' => '',
+                      'maximumAmount' => '',
+                      'emailRestrictions' => '',
                       'styles' => [
                         'block' => [
                           'backgroundColor' => '#ffffff',
@@ -476,7 +481,8 @@ class BookStoreWithCoupon {
                           'textAlign' => 'center',
                         ],
                       ],
-                      'code' => 'XXXX-XXXXXXX-XXXX'
+                      'source' => 'createNew',
+                      'code' => 'XXXX-XXXXXXX-XXXX',
                     ],
                   4 =>
                    [

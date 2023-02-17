@@ -461,16 +461,21 @@ class WineCity {
                                  ],
                               2 =>
                                 [
-                                 'productIds' => [],
-                                 'excludedProductIds' => [],
-                                 'productCategories' => [],
-                                 'excludedProductCategories' => [],
-                                 'type' => 'coupon',
-                                 'amount' => 10,
-                                 'amountMax' => 100,
-                                 'discountType' => 'percent',
-                                 'expiryDay' => 10,
-                                 'styles' => [
+                                  'productIds' => [],
+                                  'excludedProductIds' => [],
+                                  'productCategoryIds' => [],
+                                  'excludedProductCategoryIds' => [],
+                                  'type' => 'coupon',
+                                  'amount' => 10,
+                                  'amountMax' => 100,
+                                  'discountType' => 'percent',
+                                  'expiryDay' => 10,
+                                  'usageLimit' => '',
+                                  'usageLimitPerUser' => '',
+                                  'minimumAmount' => '',
+                                  'maximumAmount' => '',
+                                  'emailRestrictions' => '',
+                                  'styles' => [
                                    'block' => [
                                      'backgroundColor' => '#ffffff',
                                      'borderColor' => '#6d6d6d',
@@ -485,8 +490,9 @@ class WineCity {
                                      'fontWeight' => 'bold',
                                      'textAlign' => 'center',
                                    ],
-                                 ],
-                                 'code' => 'XXXX-XXXXXXX-XXXX'
+                                  ],
+                                  'source' => 'createNew',
+                                  'code' => 'XXXX-XXXXXXX-XXXX',
                                ],
                               3 =>
                                  [
