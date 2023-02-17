@@ -16,7 +16,6 @@ use MailPoet\Entities\NewsletterPostEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
-use MailPoet\Features\FeaturesController;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Newsletter\NewsletterPostsRepository;
@@ -26,7 +25,6 @@ use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Router\Router;
 use MailPoet\Settings\SettingsRepository;
 use MailPoet\Tasks\Sending as SendingTask;
-use MailPoet\Test\DataFactories\Features;
 use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 use MailPoet\WooCommerce\Helper;
@@ -487,8 +485,6 @@ class NewsletterTest extends \MailPoetTest {
    * @group woo
    */
   public function testItGeneratesWooCommerceCouponForCouponBlock(): void {
-    (new Features())->withFeatureEnabled(FeaturesController::FEATURE_COUPON_BLOCK);
-
     $newsletter = (new NewsletterFactory())
       ->loadBodyFrom('newsletterWithCoupon.json')
       ->withType(NewsletterEntity::TYPE_STANDARD)
