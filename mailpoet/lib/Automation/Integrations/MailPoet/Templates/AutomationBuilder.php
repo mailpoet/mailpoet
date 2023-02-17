@@ -21,7 +21,7 @@ class AutomationBuilder {
     $this->registry = $registry;
   }
 
-  public function createFromSequence(string $name, array $sequence, array $sequenceArgs = []): Automation {
+  public function createFromSequence(string $name, array $sequence, array $sequenceArgs = [], array $meta = []): Automation {
     $steps = [];
     $nextSteps = [];
     foreach (array_reverse($sequence) as $index => $stepKey) {
@@ -42,11 +42,15 @@ class AutomationBuilder {
     }
     $steps['root'] = new Step('root', 'root', 'core:root', [], $nextSteps);
     $steps = array_reverse($steps);
-    return new Automation(
+    $automation = new Automation(
       $name,
       $steps,
       wp_get_current_user()
     );
+    foreach ($meta as $key => $value) {
+      $automation->setMeta($key, $value);
+    }
+    return $automation;
   }
 
   private function uniqueId(): string {
