@@ -1244,6 +1244,15 @@ class RoboFile extends \Robo\Tasks {
       ->downloadReleaseZip('woocommerce-subscriptions.zip', __DIR__ . '/tests/plugins/', $tag);
   }
 
+  public function downloadAutomateWooZip($tag = null) {
+    if (!getenv('WP_GITHUB_USERNAME') && !getenv('WP_GITHUB_TOKEN')) {
+      $this->yell("Skipping download of Automate Woo", 40, 'red');
+      exit(0); // Exit with 0 since it is a valid state for some environments
+    }
+    $this->createGithubClient('woocommerce/automatewoo')
+      ->downloadReleaseZip('automatewoo.zip', __DIR__ . '/tests/plugins/', $tag);
+  }
+
   public function downloadWooCommerceZip($tag = null) {
     $this->createWpOrgDownloader('woocommerce')
     ->downloadPluginZip('woocommerce.zip', __DIR__ . '/tests/plugins/', $tag);

@@ -52,6 +52,7 @@ class AcceptanceTester extends \Codeception\Actor {
   const WOO_COMMERCE_BLOCKS_PLUGIN = 'woo-gutenberg-products-block';
   const WOO_COMMERCE_MEMBERSHIPS_PLUGIN = 'woocommerce-memberships';
   const WOO_COMMERCE_SUBSCRIPTIONS_PLUGIN = 'woocommerce-subscriptions';
+  const AUTOMATE_WOO_PLUGIN = 'automatewoo';
 
   /**
    * Define custom actions here
@@ -406,6 +407,16 @@ class AcceptanceTester extends \Codeception\Actor {
   public function deactivateWooCommerceSubscriptions() {
     $i = $this;
     $i->cli(['plugin', 'deactivate', self::WOO_COMMERCE_SUBSCRIPTIONS_PLUGIN]);
+  }
+
+  public function activateAutomateWoo() {
+    $i = $this;
+    $i->cli(['plugin', 'activate', self::AUTOMATE_WOO_PLUGIN]);
+  }
+
+  public function deactivateAutomateWoo() {
+    $i = $this;
+    $i->cli(['plugin', 'deactivate', self::AUTOMATE_WOO_PLUGIN]);
   }
 
   public function checkPluginIsActive(string $plugin): bool {
