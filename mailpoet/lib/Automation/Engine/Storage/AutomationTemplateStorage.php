@@ -79,6 +79,9 @@ class AutomationTemplateStorage {
             'delay_type' => 'MINUTES',
           ],
           [],
+        ],
+        [
+          'run_automation_once' => true,
         ]
       ),
       AutomationTemplate::TYPE_FREE_ONLY
@@ -105,6 +108,9 @@ class AutomationTemplateStorage {
             'delay_type' => 'MINUTES',
           ],
           [],
+        ],
+        [
+          'run_automation_once' => true,
         ]
       ),
       AutomationTemplate::TYPE_FREE_ONLY
