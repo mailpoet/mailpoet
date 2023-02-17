@@ -8,6 +8,7 @@ use MailPoet\Mailer\Mailer;
 use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
+use MailPoet\UnexpectedValueException;
 
 class Settings {
   /** @var SettingsController */
@@ -48,7 +49,12 @@ class Settings {
 
   public function withConfirmationEmailSubject($subject = null) {
     if ($subject === null) {
-      $subject = sprintf('Confirm your subscription to %1$s', get_option('blogname'));
+      $blogName = get_option('blogname');
+      if (is_string($blogName)) {
+        $subject = sprintf('Confirm your subscription to %1$s', $blogName);
+      } else {
+        throw new UnexpectedValueException('Blog name value is invalid. It should be a string.');
+      }
     }
     $this->settings->set('signup_confirmation.subject', $subject);
     return $this;

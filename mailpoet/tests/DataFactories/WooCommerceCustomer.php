@@ -70,8 +70,12 @@ class WooCommerceCustomer {
 
   public function deleteAll() {
     $list = $this->tester->cliToArray(['wc', 'customer', 'list', '--format=json', '--user=admin', '--fields=id']);
-    foreach (json_decode($list[0], true) as $item) {
-      $this->delete($item['id']);
+    $items = json_decode($list[0], true);
+
+    if (is_array($items)) {
+      foreach ($items as $item) {
+        $this->delete($item['id']);
+      }
     }
   }
 

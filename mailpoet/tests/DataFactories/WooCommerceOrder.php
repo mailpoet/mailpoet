@@ -94,7 +94,7 @@ class WooCommerceOrder {
     $createOutput = $this->tester->cliToString($cmd);
     $orderOut = $this->tester->cliToString(['wc', 'shop_order', 'get', $createOutput, '--format=json', '--user=admin']);
     $order = json_decode($orderOut, true);
-    if (isset($this->data['date_created'])) {
+    if (isset($this->data['date_created']) && is_array($order) && is_int($order['id'])) {
       $wcOrder = wc_get_order($order['id']);
       if ($wcOrder instanceof \WC_Order) {
         $wcOrder->set_date_created(get_gmt_from_date($this->data['date_created']));
@@ -114,8 +114,14 @@ class WooCommerceOrder {
 
   public function deleteAll() {
     $list = $this->tester->cliToArray(['wc', 'shop_order', 'list', '--format=json', '--user=admin', '--fields=id']);
-    foreach (json_decode($list[0], true) as $item) {
-      $this->delete($item['id']);
+    $items = json_decode($list[0], true);
+
+    if (is_array($items)) {
+      foreach ($items as $item) {
+        if (is_int($item['id'])) {
+          $this->delete($item['id']);
+        }
+      }
     }
   }
 
