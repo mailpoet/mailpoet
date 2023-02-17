@@ -4,6 +4,7 @@ namespace MailPoet\Test\Acceptance;
 
 use MailPoet\Test\DataFactories\Form;
 use MailPoet\Test\DataFactories\Segment;
+use PHPUnit\Framework\Assert;
 
 class EditorPlaceFormOnSpecifiedPageCest {
   public function testFormPlacement(\AcceptanceTester $i) {
@@ -20,10 +21,12 @@ class EditorPlaceFormOnSpecifiedPageCest {
     $page = $i->cliToString(['post', 'create', '--format=json', '--porcelain', '--post_status=publish', '--post_type=page', "--post_title='$pageTitle'", "--post_content='$pageContent'"]);
     $pageData = $i->cliToString(['post', 'get', $page, '--format=json']);
     $pageData = json_decode($pageData, true);
+    Assert::assertIsArray($pageData);
     $pageUrl = $pageData['guid'];
     $post = $i->cliToString(['post', 'create', '--format=json', '--porcelain', '--post_status=publish', '--post_type=post', "--post_title='$pageTitle'", "--post_content='$pageContent'"]);
     $postData = $i->cliToString(['post', 'get', $post, '--format=json']);
     $postData = json_decode($postData, true);
+    Assert::assertIsArray($postData);
     $postUrl = $postData['guid'];
 
     $i->wantTo('Set popup form to display on the created page');

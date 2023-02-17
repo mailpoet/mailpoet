@@ -16,7 +16,7 @@ class EditorCreateCustomFieldCest {
     $form->withName($formName)->withSegments([$segment])->withDisplayBelowPosts()->create();
   }
 
-  private function openFormInEditor($i) {
+  private function openFormInEditor(\AcceptanceTester $i) {
     $formName = 'My fancy form';
     $i->login();
     $i->amOnMailPoetPage('Forms');
@@ -243,20 +243,20 @@ class EditorCreateCustomFieldCest {
     $i->assertAttributeContains('[data-automation-id="form_date_month"]', 'placeholder', 'Month');
   }
 
-  private function checkCustomDateInForm($i) {
+  private function checkCustomDateInForm(\AcceptanceTester $i) {
     $i->waitForElement('[data-automation-id="editor_custom_date_label"]');
     $i->click('[data-automation-id="editor_custom_date_label"]');
     $i->seeOptionIsSelected('[data-automation-id="settings_custom_date_type"]', 'Year, month');
     $i->seeOptionIsSelected('[data-automation-id="settings_custom_date_format"]', 'YYYY/MM');
   }
 
-  private function checkCustomCheckboxInForm($i, $name) {
+  private function checkCustomCheckboxInForm(\AcceptanceTester $i, $name) {
     $i->waitForElement('[data-automation-id="editor_custom_field_checkbox_block"]');
     $i->click('[data-automation-id="editor_custom_field_checkbox_block"]');
     $i->waitForElement('[data-automation-id="settings_custom_checkbox_value"][value="' . $name . '"]');
   }
 
-  private function checkCustomRadioButtonsInForm($i, $name) {
+  private function checkCustomRadioButtonsInForm(\AcceptanceTester $i, $name) {
     $i->waitForElement('[data-automation-id="editor_custom_field_radio_buttons_block"]');
     $i->click('[data-automation-id="editor_custom_field_radio_buttons_block"]');
     $i->waitForElement('[data-automation-id="custom_field_settings"]');
@@ -264,21 +264,21 @@ class EditorCreateCustomFieldCest {
     $i->waitForElement('[data-automation-id="custom_field_value_settings_value"][value="Option 2"]');
   }
 
-  private function checkCustomTextAreaInForm($i) {
+  private function checkCustomTextAreaInForm(\AcceptanceTester $i) {
     $i->waitForElement('[data-automation-id="editor_custom_textarea_input"]');
     $i->assertAttributeContains('[data-automation-id="editor_custom_textarea_input"]', 'placeholder', 'My custom text area');
     $i->click('[data-automation-id="editor_custom_textarea_input"]');
     $i->seeOptionIsSelected('[data-automation-id="settings_custom_text_input_validation_type"]', 'Numbers only');
   }
 
-  private function checkCustomTextInputInForm($i) {
+  private function checkCustomTextInputInForm(\AcceptanceTester $i) {
     $i->waitForElement('[data-automation-id="editor_custom_text_input"]');
     $i->assertAttributeContains('[data-automation-id="editor_custom_text_input"]', 'placeholder', 'My custom text input');
     $i->click('[data-automation-id="editor_custom_text_input"]');
     $i->seeOptionIsSelected('[data-automation-id="settings_custom_text_input_validation_type"]', 'Numbers only');
   }
 
-  private function checkCustomSelectInForm($i) {
+  private function checkCustomSelectInForm(\AcceptanceTester $i) {
     $i->waitForElement('[data-automation-id="custom_select_block"]');
     $i->click('[data-automation-id="custom_select_block"]');
     $i->waitForElement('[data-automation-id="custom_field_settings"]');
@@ -286,7 +286,7 @@ class EditorCreateCustomFieldCest {
     $i->waitForElement('[data-automation-id="custom_field_value_settings_value"][value="Option 2"]');
   }
 
-  private function saveCustomFieldBlock($i) {
+  private function saveCustomFieldBlock(\AcceptanceTester $i) {
     $i->click('[data-automation-id="create_custom_field_submit"]');
     $i->waitForText('Custom field saved', 10, '.automation-dismissible-notices');
     $i->seeNoJSErrors();

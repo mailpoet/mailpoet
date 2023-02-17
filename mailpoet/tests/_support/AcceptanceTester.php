@@ -9,6 +9,7 @@ use MailPoet\Form\FormMessageController;
 use MailPoet\Test\DataFactories\Form;
 use MailPoet\Test\DataFactories\Segment;
 use MailPoet\Test\DataFactories\Subscriber;
+use PHPUnit\Framework\Assert;
 
 /**
  * Inherited Methods
@@ -147,6 +148,7 @@ class AcceptanceTester extends \Codeception\Actor {
         $i->waitForElement($element);
         $i->fillField($element, $value);
         $optionsContainer = $i->grabAttributeFrom($element, 'aria-controls');
+        Assert::assertIsString($optionsContainer);
         // Wait until the searched value is in select options. There might be some delay on API
         $i->waitForText($value, 5, "#$optionsContainer");
         $i->pressKey($element, WebDriverKeys::ENTER);
@@ -408,7 +410,9 @@ class AcceptanceTester extends \Codeception\Actor {
 
   public function checkPluginIsActive(string $plugin): bool {
     $i = $this;
-    return in_array($plugin, $i->grabOptionFromDatabase('active_plugins', true));
+    $activePlugins = $i->grabOptionFromDatabase('active_plugins', true);
+    Assert::assertIsArray($activePlugins);
+    return in_array($plugin, $activePlugins);
   }
 
   public function getWooCommerceVersion(): string {
@@ -592,6 +596,8 @@ class AcceptanceTester extends \Codeception\Actor {
     $post = $this->cliToString(['post', 'create', '--format=json', '--porcelain', '--post_status=publish', '--post_type=post', '--post_title="' . $title . '"', '--post_content="' . $body . '"']);
     $postData = $this->cliToString(['post', 'get', $post, '--format=json']);
     $postData = json_decode($postData, true);
+    Assert::assertIsArray($postData);
+    Assert::assertIsString($postData['guid']);
     return $postData['guid'];
   }
 
@@ -693,6 +699,7 @@ class AcceptanceTester extends \Codeception\Actor {
     $i = $this;
     $i->click($selector); // Focus in the field
     $value = $i->grabAttributeFrom($selector, 'value');
+    Assert::assertIsString($value);
 
     for ($j = 0; $j < mb_strlen($value); $j++) {
       $i->pressKey($selector, WebDriverKeys::BACKSPACE);// delete the field
