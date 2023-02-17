@@ -7,8 +7,15 @@ import {
   PlainBodyTitle,
   FormTokenField,
 } from '../../../../../editor/components';
+import { Form } from '../../../../../../segments/dynamic/form';
+import { useEffect } from 'react';
+import { createStore } from '../../../../../../segments/dynamic/store/store';
 
 export function ListPanel(): JSX.Element {
+  //useEffect(() => {
+  createStore();
+  //}, []);
+
   const { selectedStep } = useSelect(
     (select) => ({
       selectedStep: select(storeName).getSelectedStep(),
@@ -46,6 +53,8 @@ export function ListPanel(): JSX.Element {
           );
         }}
       />
+
+      <Form />
     </PanelBody>
   );
 }

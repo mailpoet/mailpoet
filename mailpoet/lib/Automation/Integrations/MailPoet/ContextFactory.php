@@ -5,12 +5,17 @@ namespace MailPoet\Automation\Integrations\MailPoet;
 use MailPoet\Segments\SegmentsRepository;
 
 class ContextFactory {
+  /** @var DynamicSegmentsContextFactory */
+  private $dynamicSegmentsContextFactory;
+
   /** @var SegmentsRepository */
   private $segmentsRepository;
 
   public function __construct(
+    DynamicSegmentsContextFactory $dynamicSegmentsContextFactory,
     SegmentsRepository $segmentsRepository
   ) {
+    $this->dynamicSegmentsContextFactory = $dynamicSegmentsContextFactory;
     $this->segmentsRepository = $segmentsRepository;
   }
 
@@ -18,6 +23,7 @@ class ContextFactory {
   public function getContextData(): array {
     return [
       'segments' => $this->getSegments(),
+      'dynamic_segments' => $this->dynamicSegmentsContextFactory->getContextData()
     ];
   }
 
