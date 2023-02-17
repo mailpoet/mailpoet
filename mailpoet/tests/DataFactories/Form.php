@@ -92,7 +92,9 @@ class Form {
   private function addFormBlock(array $block) {
     if (is_string($this->data['body'])) {
       $body = unserialize($this->data['body']);
-      $body = array_merge([$block], $body);
+      if (is_array($body)) {
+        $body = array_merge([$block], $body);
+      }
       $this->data['body'] = serialize($body);
     }
     return $this;
@@ -167,7 +169,11 @@ class Form {
     }
 
     if (is_string($this->data['body'])) {
-      $form->setBody(unserialize($this->data['body']));
+      $body = unserialize($this->data['body']);
+
+      if (is_array($body)) {
+        $form->setBody($body);
+      }
     }
 
     $this->formsRepository->persist($form);
