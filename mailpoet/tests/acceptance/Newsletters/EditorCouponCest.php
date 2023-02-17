@@ -2,19 +2,13 @@
 
 namespace MailPoet\Test\Acceptance;
 
-use MailPoet\Features\FeaturesController;
 use MailPoet\Newsletter\Renderer\Blocks\Coupon;
-use MailPoet\Test\DataFactories\Features;
 use MailPoet\Test\DataFactories\Newsletter;
 
 /**
  * @group woo
  */
 class EditorCouponCest {
-  public function _before() {
-    (new Features())->withFeatureEnabled(FeaturesController::FEATURE_COUPON_BLOCK);
-  }
-
   public function addCoupon(\AcceptanceTester $i) {
     $couponInEditor = '[data-automation-id="coupon_block"]';
     $couponSettingsHeading = '[data-automation-id="coupon_settings_heading"]';

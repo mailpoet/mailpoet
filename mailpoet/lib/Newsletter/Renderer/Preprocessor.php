@@ -3,7 +3,6 @@
 namespace MailPoet\Newsletter\Renderer;
 
 use MailPoet\Entities\NewsletterEntity;
-use MailPoet\Features\FeaturesController;
 use MailPoet\Newsletter\Renderer\Blocks\AbandonedCartContent;
 use MailPoet\Newsletter\Renderer\Blocks\AutomatedLatestContentBlock;
 use MailPoet\Tasks\Sending as SendingTask;
@@ -32,21 +31,16 @@ class Preprocessor {
   /*** @var CouponPreProcessor */
   private $couponPreProcessor;
 
-  /*** @var FeaturesController */
-  private $featuresController;
-
   public function __construct(
     AbandonedCartContent $abandonedCartContent,
     AutomatedLatestContentBlock $automatedLatestContent,
     ContentPreprocessor $wooCommerceContentPreprocessor,
-    CouponPreProcessor $couponPreProcessor,
-    FeaturesController $featuresController
+    CouponPreProcessor $couponPreProcessor
   ) {
     $this->abandonedCartContent = $abandonedCartContent;
     $this->automatedLatestContent = $automatedLatestContent;
     $this->wooCommerceContentPreprocessor = $wooCommerceContentPreprocessor;
     $this->couponPreProcessor = $couponPreProcessor;
-    $this->featuresController = $featuresController;
   }
 
   /**
@@ -60,9 +54,9 @@ class Preprocessor {
     }
     $blocks = [];
     $contentBlocks = $content['blocks'];
-    if ($this->featuresController->isSupported(FeaturesController::FEATURE_COUPON_BLOCK)) {
-      $contentBlocks = $this->couponPreProcessor->processCoupons($newsletter, $contentBlocks, $preview);
-    }
+
+    $contentBlocks = $this->couponPreProcessor->processCoupons($newsletter, $contentBlocks, $preview);
+
     foreach ($contentBlocks as $block) {
       $processedBlock = $this->processBlock($newsletter, $block, $preview, $sendingTask);
       if (!empty($processedBlock)) {

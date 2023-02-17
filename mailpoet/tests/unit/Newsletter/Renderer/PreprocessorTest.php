@@ -4,7 +4,6 @@ namespace MailPoet\Test\Newsletter;
 
 use Codeception\Stub;
 use MailPoet\Entities\NewsletterEntity;
-use MailPoet\Features\FeaturesController;
 use MailPoet\Newsletter\Renderer\Blocks\AbandonedCartContent;
 use MailPoet\Newsletter\Renderer\Blocks\AutomatedLatestContentBlock;
 use MailPoet\Newsletter\Renderer\Preprocessor;
@@ -23,8 +22,7 @@ class PreprocessorTest extends \MailPoetUnitTest {
       ],
     ]);
     $wooPreprocessor = new TransactionalEmails\ContentPreprocessor($transactionalEmails);
-    $featuresController = Stub::make(FeaturesController::class);
-    $preprocessor = new Preprocessor($acc, $alc, $wooPreprocessor, $couponPreProcessor, $featuresController);
+    $preprocessor = new Preprocessor($acc, $alc, $wooPreprocessor, $couponPreProcessor);
     expect($preprocessor->processBlock(new NewsletterEntity(), ['type' => 'woocommerceHeading']))->equals([[
       'type' => 'container',
       'orientation' => 'horizontal',
@@ -52,8 +50,7 @@ class PreprocessorTest extends \MailPoetUnitTest {
     $alc = Stub::make(AutomatedLatestContentBlock::class);
     $couponPreProcessor = Stub::make(CouponPreProcessor::class);
     $wooPreprocessor = new TransactionalEmails\ContentPreprocessor(Stub::make(TransactionalEmails::class));
-    $featuresController = Stub::make(FeaturesController::class);
-    $preprocessor = new Preprocessor($acc, $alc, $wooPreprocessor, $couponPreProcessor, $featuresController);
+    $preprocessor = new Preprocessor($acc, $alc, $wooPreprocessor, $couponPreProcessor);
     expect($preprocessor->processBlock(new NewsletterEntity(), ['type' => 'woocommerceContent']))->equals([[
       'type' => 'container',
       'orientation' => 'horizontal',
