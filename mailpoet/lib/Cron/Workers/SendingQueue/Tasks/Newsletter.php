@@ -20,6 +20,8 @@ use MailPoet\Settings\TrackingConfig;
 use MailPoet\Statistics\GATracking;
 use MailPoet\Tasks\Sending;
 use MailPoet\Util\Helpers;
+use MailPoet\Util\pQuery\DomNode;
+use MailPoet\Util\pQuery\pQuery;
 use MailPoet\WP\Emoji;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
@@ -301,13 +303,28 @@ class Newsletter {
    * @return string
    */
   public function calculateCampaignId(NewsletterEntity $newsletter, array $renderedNewsletters): string {
-    $pieces = [
+    $relevantContent = [
       $newsletter->getId(),
       $newsletter->getSubject(),
     ];
+
     if (isset($renderedNewsletters['text'])) {
-      $pieces[] = $renderedNewsletters['text'];
+      $relevantContent[] = $renderedNewsletters['text'];
     }
-    return substr(md5(implode('|', $pieces)), 0, 16);
+
+    // The text version of emails contains just the alt text of images, which could be the same for multiple images. In order to ensure
+    // campaign IDs change when images change, we should consider all image URLs.
+    if (isset($renderedNewsletters['html'])) {
+      $html = pQuery::parseStr($renderedNewsletters['html']);
+      if ($html instanceof DomNode) {
+        foreach ($html->query('img') as $imageNode) {
+          $src = $imageNode->getAttribute('src');
+          if (is_string($src)) {
+            $relevantContent[] = $src;
+          }
+        }
+      }
+    }
+    return substr(md5(implode('|', $relevantContent)), 0, 16);
   }
 }

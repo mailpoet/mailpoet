@@ -561,6 +561,20 @@ class NewsletterTest extends \MailPoetTest {
     expect($this->newsletterTask->calculateCampaignId($newsletter1, $renderedNewsletters))->notEquals($this->newsletterTask->calculateCampaignId($newsletter2, $renderedNewsletters));
   }
 
+  public function testCampaignIdChangesIfImageChanges() {
+    $newsletter = (new NewsletterFactory())->withSubject('Subject')->create();
+    $renderedNewsletters = [
+      'text' => '[alt text] Text',
+      'html' => '<img src="http://example.com/image.jpg" alt="alt text"><p>Text</p>',
+    ];
+    $originalCampaignId = $this->newsletterTask->calculateCampaignId($newsletter, $renderedNewsletters);
+    $renderedNewslettersDifferentImageSrc = [
+      'text' => '[alt text] Text',
+      'html' => '<img src="http://example.com/different-image-same-alt.jpg" alt="alt text"><p>Text</p>',
+    ];
+    expect($originalCampaignId)->notEquals($this->newsletterTask->calculateCampaignId($newsletter, $renderedNewslettersDifferentImageSrc));
+  }
+
   public function _after() {
     $this->diContainer->get(SettingsRepository::class)->truncate();
     $this->truncateEntity(SubscriberEntity::class);
