@@ -81,12 +81,7 @@ class AutomationRunStorage {
       return [];
     }
 
-    $automationRunIds = array_map(
-      function(array $runData): int {
-        return (int)$runData['id'];
-      },
-      $automationRuns
-    );
+    $automationRunIds = array_column($automationRuns, 'id');
 
     $sql = sprintf("SELECT * FROM $subjectTable WHERE automation_run_id in (%s) order by automation_run_id", implode(',', array_map(function() {return '%d';
 
