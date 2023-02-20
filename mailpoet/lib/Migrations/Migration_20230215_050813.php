@@ -23,10 +23,12 @@ class Migration_20230215_050813 extends Migration {
 
   private function subjectsMigration(): void {
     $this->createTable('automation_run_subjects', [
+      '`id` int(11) unsigned NOT NULL AUTO_INCREMENT',
       '`automation_run_id` int(11) unsigned NOT NULL',
       '`key` varchar(191)',
       '`args` longtext',
       '`hash` varchar(191)',
+      'PRIMARY KEY  (id)',
       'index (automation_run_id)',
       'index (hash)',
     ]);
