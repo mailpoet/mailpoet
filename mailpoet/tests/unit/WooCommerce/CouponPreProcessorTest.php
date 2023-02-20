@@ -25,7 +25,7 @@ class CouponPreProcessorTest extends \MailPoetUnitTest {
 
   /*** @var LoggerFactory */
   private $loggerFactory;
-  
+
   public function __construct(
     $name = null,
     array $data = [],
@@ -144,6 +144,28 @@ class CouponPreProcessorTest extends \MailPoetUnitTest {
     expect($result[0]['blocks'][0]['couponId'])->equals(self::$saveCouponId);
   }
 
+  public function testLogsWhenWCIsNotActiveAndReturnsIntactBlocks() {
+    $wcHelper = $this->make(Helper::class, [
+      'createWcCoupon' => $this->createCouponMock(),
+      'isWooCommerceActive' => false,
+    ]);
+
+    $loggerFactory = $this->getLoggerFactory(Stub\Expected::once());
+
+    $processor = new CouponPreProcessor(
+      $wcHelper,
+      Stub::make(NewslettersRepository::class, [
+        'flush' => Stub\Expected::never(),
+      ], $this),
+      $loggerFactory
+    );
+    $newsletter = (new NewsletterEntity());
+
+    $blocks = ['some' => true, 'random' => false];
+    $result = $processor->processCoupons($newsletter, $blocks, false);
+    expect($result)->equals($blocks);
+  }
+
   private function assertWCCouponReceivesCorrectValues($mockedWCCoupon, $expectedCouponId, $expiryDay) {
     $mockedWCCoupon->method('save')->willReturn($expectedCouponId);
 
@@ -205,9 +227,14 @@ class CouponPreProcessorTest extends \MailPoetUnitTest {
 
   private function getLoggerFactory(Stub\StubMarshaler $expectedPersistence): LoggerFactory {
     $settings = $this->make(SettingsController::class, ['get' => 'errors']);
-    $repository = $this->createMock(LogRepository::class);
-    $entityManager = $this->make(EntityManager::class, ['persist' => $expectedPersistence]);
+    $repository = $this->makeEmpty(LogRepository::class, ['persist' => $expectedPersistence]);
+    $entityManager = $this->make(EntityManager::class);
     $entityManagerFactory = $this->make(EntityManagerFactory::class, ['createEntityManager' => $entityManager]);
-    return new LoggerFactory($repository, $entityManager, $entityManagerFactory, $settings);
+    return $this->make(LoggerFactory::class, [
+      'logRepository' => $repository,
+      'entityManager' => $entityManager,
+      'entityManagerFactory' => $entityManagerFactory,
+      'settings' => $settings,
+    ]);
   }
 }
