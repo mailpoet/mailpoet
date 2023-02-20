@@ -28,7 +28,7 @@ Automated k6 performance tests for MailPoet. To be used for benchmarking perform
 
 ### Installing k6
 
-You don't need to install it - it's Automattic! :)
+You don't need to install it - it's automatic!
 
 To execute the tests, use the following command:
 
