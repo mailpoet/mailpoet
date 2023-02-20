@@ -3,7 +3,7 @@ Contributors: mailpoet
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 5.9
 Tested up to: 6.1
-Stable tag: 4.6.2
+Stable tag: 4.7.0
 Requires PHP: 7.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -218,6 +218,16 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 4.7.0 - 2023-02-20 =
+* Updated: minimum required WordPress version to 5.9;
+* Updated: minimum required WooCommerce version to 7.2;
+* Improved: more explanatory MailPoet task in WooCommerce onboarding;
+* Improved: prevent form listing from crashing when form settings data are missing or malformed;
+* Improved: close button of form popup is focus-able to improve accessibility;
+* Fixed: conflict when loading mixpanel library;
+* Fixed: choices from first steps of welcome wizard are forgotten when MailPoet Sending Service is activated;
+* Fixed: draft products are not showing in email editor.
 
 = 4.6.2 - 2023-02-14 =
 * Improved: explain MailPoet Sending Service during onboarding;
