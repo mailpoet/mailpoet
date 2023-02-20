@@ -79,6 +79,3 @@ class AutomationTest extends \MailPoetTest {
     $this->storage->truncate();
   }
 }
-{
-
-}
