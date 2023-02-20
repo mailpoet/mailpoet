@@ -28,7 +28,7 @@ class Subject {
   }
 
   public function hash(): string {
-    return md5($this->getKey() . Json::encode($this->getArgs()));
+    return md5($this->getKey() . serialize($this->getArgs()));
   }
 
   public function toArray(): array {
