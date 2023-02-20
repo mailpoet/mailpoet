@@ -1013,6 +1013,9 @@ class RoboFile extends \Robo\Tasks {
       ->addCode(function () use ($version) {
         return $this->releasePublishSlack($version);
       })
+      ->addCode(function () {
+        return $this->releaseMergePullRequest(\MailPoetTasks\Release\GitHubController::RELEASE_SOURCE_BRANCH);
+      })
       ->run();
   }
 
