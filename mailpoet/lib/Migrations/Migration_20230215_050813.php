@@ -79,11 +79,6 @@ class Migration_20230215_050813 extends Migration {
       return;
     }
 
-    $sql = "SELECT id,subjects FROM $tableName where subjects is not null";
-    $results = $wpdb->get_results($sql, ARRAY_A);
-    if (is_array($results) && $results) {
-      return;
-    }
     $wpdb->query("ALTER TABLE $tableName DROP COLUMN subjects");
   }
 }
