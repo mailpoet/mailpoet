@@ -19,7 +19,7 @@ class AutomationTest extends \MailPoetTest {
 
     $automation->setMeta('foo', 'bar');
     $this->assertEquals('bar', $automation->getMeta('foo'));
-    $this->assertEquals(['foo' => 'bar'], $automation->getMetas());
+    $this->assertEquals(['foo' => 'bar'], $automation->getAllMetas());
     $this->storage->updateAutomation($automation);
 
     $storedAutomation = $this->storage->getAutomation($automation->getId());
@@ -41,8 +41,8 @@ class AutomationTest extends \MailPoetTest {
 
     $automation->setMeta('foo', 'bar');
     $automation->setMeta('bar', 'baz');
-    $automation->deleteMetas();
-    $this->assertEmpty($automation->getMetas());
+    $automation->deleteAllMetas();
+    $this->assertEmpty($automation->getAllMetas());
   }
 
   public function testAutomationComparisonWorks() {

@@ -52,7 +52,7 @@ class AutomationMapper {
           }, $step->getNextSteps()),
         ];
       }, $automation->getSteps()),
-      'meta' => (object)$automation->getMetas(),
+      'meta' => (object)$automation->getAllMetas(),
     ];
   }
 

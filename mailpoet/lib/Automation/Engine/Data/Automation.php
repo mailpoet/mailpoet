@@ -190,7 +190,7 @@ class Automation {
     return $this->meta[$key] ?? null;
   }
 
-  public function getMetas(): array {
+  public function getAllMetas(): array {
     return $this->meta;
   }
 
@@ -209,7 +209,7 @@ class Automation {
     $this->setUpdatedAt();
   }
 
-  public function deleteMetas(): void {
+  public function deleteAllMetas(): void {
     $this->meta = [];
     $this->setUpdatedAt();
   }
