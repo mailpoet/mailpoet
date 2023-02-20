@@ -1016,6 +1016,17 @@ class RoboFile extends \Robo\Tasks {
       ->run();
   }
 
+  public function releaseMergePullRequest(string $branch) {
+    try {
+      $this->createGitHubController()
+        ->mergePullRequest(\MailPoetTasks\Release\CircleCiController::PROJECT_MAILPOET, $branch);
+    } catch (\Exception $e) {
+      $this->yell($e->getMessage(), 40, 'red');
+      exit(1);
+    }
+    $this->say("Pull request for branch: '{$branch}' was successfully merged");
+  }
+
   /**
    * This command displays how many pull request each person did recently
    */
