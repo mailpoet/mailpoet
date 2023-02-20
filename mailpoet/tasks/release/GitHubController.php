@@ -19,6 +19,7 @@ class GitHubController {
   const QA_GITHUB_LOGIN = 'veljkho';
 
   private const API_BASE_URI = 'https://api.github.com/repos/mailpoet';
+  private const API_SEARCH_URI = 'https://api.github.com/search/issues';
 
   /** @var string */
   private $zipFilename;
@@ -253,6 +254,43 @@ class GitHubController {
       throw $e;
     }
     return true;
+  }
+
+  public function mergePullRequest(string $project, string $branch): void {
+    $githubProject = $this->getGithubPathByProject($project);
+    $pullRequest = $this->findPullRequest($githubProject, $branch);
+
+    if (!$pullRequest) {
+      throw new \Exception('Pull Request not found');
+    }
+
+    $response = $this->httpClient->put(
+      "pulls/{$pullRequest['number']}/merge",
+      ['http_errors' => false]
+    );
+
+    if ($response->getStatusCode() !== 200) {
+      $data = json_decode($response->getBody()->getContents(), true);
+      throw new \Exception($data['message']);
+    }
+  }
+
+  /**
+   * Returns a record from API. See doc for more: https://docs.github.com/en/rest/search?apiVersion=2022-11-28#search-issues-and-pull-requests
+   * @param string $githubProject
+   * @param string $branch
+   * @return array|null
+   */
+  private function findPullRequest(string $githubProject, string $branch): ?array {
+    $query = urlencode("repo:mailpoet/{$githubProject} type:pr head:{$branch} state:open");
+    $response = $this->httpClient->get(
+      self::API_SEARCH_URI . "?q={$query}"
+    );
+    $data = json_decode($response->getBody()->getContents(), true);
+    $pullRequests = $data['items'] ?? [];
+    $pullRequest = reset($pullRequests);
+
+    return $pullRequest ?: null;
   }
 
   private function ensureNoDraftReleaseExists() {
