@@ -45,7 +45,7 @@ class Automation {
   /** @var array<string, Step> */
   private $steps;
 
-  /** @var array<string, Mixed> */
+  /** @var array<string, mixed> */
   private $meta = [];
 
   /** @param array<string, Step> $steps */
