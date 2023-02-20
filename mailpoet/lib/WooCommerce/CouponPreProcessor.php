@@ -3,6 +3,7 @@
 namespace MailPoet\WooCommerce;
 
 use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Logging\LoggerFactory;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Renderer\Blocks\Coupon;
 use MailPoet\WP\DateTime;
@@ -18,12 +19,17 @@ class CouponPreProcessor {
   /** @var Helper */
   private $wcHelper;
 
+  /*** @var LoggerFactory */
+  private $loggerFactory;
+
   public function __construct(
     Helper $wcHelper,
-    NewslettersRepository $newslettersRepository
+    NewslettersRepository $newslettersRepository,
+    LoggerFactory $loggerFactory
   ) {
     $this->wcHelper = $wcHelper;
     $this->newslettersRepository = $newslettersRepository;
+    $this->loggerFactory = $loggerFactory;
   }
 
   public function processCoupons(NewsletterEntity $newsletter, array $blocks, bool $preview = false): array {
@@ -31,6 +37,13 @@ class CouponPreProcessor {
       return $blocks;
     }
 
+    if (!$this->wcHelper->isWooCommerceActive()) {
+      $this->loggerFactory->getLogger(LoggerFactory::TOPIC_COUPONS)->error(
+        'Woocommerce is not active', ['WC Coupons', 'Process coupons']
+      );
+      return $blocks;
+    }
+    
     $generated = $this->ensureCouponForBlocks($blocks, $newsletter);
     $body = $newsletter->getBody();
 

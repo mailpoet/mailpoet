@@ -4,11 +4,16 @@ namespace unit\WooCommerce;
 
 use Codeception\Stub;
 use Helper\WordPress;
+use MailPoet\Doctrine\EntityManagerFactory;
 use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Logging\LoggerFactory;
+use MailPoet\Logging\LogRepository;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Renderer\Blocks\Coupon;
+use MailPoet\Settings\SettingsController;
 use MailPoet\WooCommerce\CouponPreProcessor;
 use MailPoet\WooCommerce\Helper;
+use MailPoetVendor\Doctrine\ORM\EntityManager;
 
 class CouponPreProcessorTest extends \MailPoetUnitTest {
 
@@ -18,6 +23,9 @@ class CouponPreProcessorTest extends \MailPoetUnitTest {
   private static $saveCouponId = 100;
   private static $updatingCouponId = 5;
 
+  /*** @var LoggerFactory */
+  private $loggerFactory;
+  
   public function __construct(
     $name = null,
     array $data = [],
@@ -29,9 +37,11 @@ class CouponPreProcessorTest extends \MailPoetUnitTest {
       new \DateTimeZone('UTC');
     });
 
+    $this->loggerFactory = $this->getLoggerFactory(Stub\Expected::never());
     $this->processor = new CouponPreProcessor(
       Stub::make(Helper::class),
-      Stub::make(NewslettersRepository::class)
+      Stub::make(NewslettersRepository::class),
+      $this->loggerFactory
     );
 
   }
@@ -53,13 +63,15 @@ class CouponPreProcessorTest extends \MailPoetUnitTest {
 
     $wcHelper = $this->make(Helper::class, [
       'createWcCoupon' => $mockedWCCoupon,
+      'isWooCommerceActive' => true,
     ]);
 
     $processor = new CouponPreProcessor(
       $wcHelper,
       Stub::make(NewslettersRepository::class, [
         'flush' => Stub\Expected::never(), // for type = NewsletterEntity::TYPE_AUTOMATIC, the $newsletter->body shouldn't update
-      ], $this)
+      ], $this),
+      $this->loggerFactory
     );
 
     $newsletter = (new NewsletterEntity());
@@ -78,13 +90,15 @@ class CouponPreProcessorTest extends \MailPoetUnitTest {
 
     $wcHelper = $this->make(Helper::class, [
       'createWcCoupon' => $mockedWCCoupon,
+      'isWooCommerceActive' => true,
     ]);
 
     $processor = new CouponPreProcessor(
       $wcHelper,
       Stub::make(NewslettersRepository::class, [
         'flush' => Stub\Expected::once(), // for type != NewsletterEntity::TYPE_AUTOMATIC, the $newsletter->body should update
-      ], $this)
+      ], $this),
+      $this->loggerFactory
     );
 
     $newsletter = (new NewsletterEntity());
@@ -104,13 +118,15 @@ class CouponPreProcessorTest extends \MailPoetUnitTest {
 
     $wcHelper = $this->make(Helper::class, [
       'createWcCoupon' => $mockedWCCoupon,
+      'isWooCommerceActive' => true,
     ]);
 
     $processor = new CouponPreProcessor(
       $wcHelper,
       Stub::make(NewslettersRepository::class, [
         'flush' => Stub\Expected::never(),
-      ], $this)
+      ], $this),
+      $this->loggerFactory
     );
 
     $newsletter = (new NewsletterEntity());
@@ -185,5 +201,13 @@ class CouponPreProcessorTest extends \MailPoetUnitTest {
         'save',
       ])
       ->getMock();
+  }
+
+  private function getLoggerFactory(Stub\StubMarshaler $expectedPersistence): LoggerFactory {
+    $settings = $this->make(SettingsController::class, ['get' => 'errors']);
+    $repository = $this->createMock(LogRepository::class);
+    $entityManager = $this->make(EntityManager::class, ['persist' => $expectedPersistence]);
+    $entityManagerFactory = $this->make(EntityManagerFactory::class, ['createEntityManager' => $entityManager]);
+    return new LoggerFactory($repository, $entityManager, $entityManagerFactory, $settings);
   }
 }
