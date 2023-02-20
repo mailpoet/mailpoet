@@ -27,13 +27,13 @@ class AutomationRunStorage {
 
   public function createAutomationRun(AutomationRun $automationRun): int {
     $automationTableData = $automationRun->toArray();
+    $subjectTableData = $automationTableData['subjects'];
     unset($automationTableData['subjects']);
     $result = $this->wpdb->insert($this->table, $automationTableData);
     if ($result === false) {
       throw Exceptions::databaseError($this->wpdb->last_error);
     }
     $automationRunId = $this->wpdb->insert_id;
-    $subjectTableData = $automationRun->toArray()['subjects'];
 
     if (!$subjectTableData) {
       //We allow for AutomationRuns with no subjects.
