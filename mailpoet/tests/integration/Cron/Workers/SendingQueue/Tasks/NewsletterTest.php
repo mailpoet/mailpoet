@@ -512,6 +512,55 @@ class NewsletterTest extends \MailPoetTest {
     expect($result['body']['text'])->stringContainsString($coupon);
   }
 
+  public function testCampaignIdDoesNotChangeIfContentStaysTheSame() {
+    $newsletter = (new NewsletterFactory())->withSubject('Subject')->create();
+    $renderedNewsletters = [
+      'text' => 'text body',
+    ];
+    $campaignId = $this->newsletterTask->calculateCampaignId($newsletter, $renderedNewsletters);
+    expect($campaignId)->equals($this->newsletterTask->calculateCampaignId($newsletter, $renderedNewsletters));
+  }
+
+  public function testCampaignIdChangesIfSubjectChanges() {
+    $newsletter = (new NewsletterFactory())->withSubject('Subject')->create();
+    $renderedNewsletters = [
+      'text' => 'text body',
+    ];
+    $originalCampaignId = $this->newsletterTask->calculateCampaignId($newsletter, $renderedNewsletters);
+    $newsletter->setSubject('Subject 2');
+    $this->entityManager->persist($newsletter);
+    $this->entityManager->flush();
+    expect($originalCampaignId)->notEquals($this->newsletterTask->calculateCampaignId($newsletter, $renderedNewsletters));
+  }
+
+  public function testCampaignIdRevertsIfContentReverts() {
+    $newsletter = (new NewsletterFactory())->withSubject('Subject')->create();
+    $renderedNewsletters = [
+      'text' => 'text body',
+    ];
+    $originalCampaignId = $this->newsletterTask->calculateCampaignId($newsletter, $renderedNewsletters);
+    $newsletter->setSubject('Subject 2');
+    $this->entityManager->persist($newsletter);
+    $this->entityManager->flush();
+    $updatedRenderedNewsletters = [
+      'text' => 'text body updated',
+    ];
+    expect($originalCampaignId)->notEquals($this->newsletterTask->calculateCampaignId($newsletter, $updatedRenderedNewsletters));
+    $newsletter->setSubject('Subject');
+    $this->entityManager->persist($newsletter);
+    $this->entityManager->flush();
+    expect($originalCampaignId)->equals($this->newsletterTask->calculateCampaignId($newsletter, $renderedNewsletters));
+  }
+
+  public function testCampaignIdDependsOnNewsletterId() {
+    $newsletter1 = (new NewsletterFactory())->withSubject('Subject')->create();
+    $newsletter2 = (new NewsletterFactory())->withSubject('Subject')->create();
+    $renderedNewsletters = [
+      'text' => 'text body',
+    ];
+    expect($this->newsletterTask->calculateCampaignId($newsletter1, $renderedNewsletters))->notEquals($this->newsletterTask->calculateCampaignId($newsletter2, $renderedNewsletters));
+  }
+
   public function _after() {
     $this->diContainer->get(SettingsRepository::class)->truncate();
     $this->truncateEntity(SubscriberEntity::class);
