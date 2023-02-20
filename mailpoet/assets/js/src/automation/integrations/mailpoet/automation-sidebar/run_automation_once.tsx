@@ -27,14 +27,18 @@ export function RunAutomationOnce(): JSX.Element {
   );
 
   const checked =
-    (automationData.meta?.run_automation_once as boolean) || false;
+    (automationData.meta?.['mailpoet:run-once-per-subscriber'] as boolean) ||
+    false;
   return (
     <ToggleControl
       className="mailpoet-automation-run-only-once"
       label={__('Run this automation only once per subscriber.', 'mailpoet')}
       checked={checked}
       onChange={(value) => {
-        dispatch(storeName).updateAutomationMeta('run_automation_once', value);
+        dispatch(storeName).updateAutomationMeta(
+          'mailpoet:run-once-per-subscriber',
+          value,
+        );
       }}
     />
   );

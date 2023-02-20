@@ -81,7 +81,7 @@ class AutomationTemplateStorage {
           [],
         ],
         [
-          'run_automation_once' => true,
+          'mailpoet:run-once-per-subscriber' => true,
         ]
       ),
       AutomationTemplate::TYPE_FREE_ONLY
@@ -110,7 +110,7 @@ class AutomationTemplateStorage {
           [],
         ],
         [
-          'run_automation_once' => true,
+          'mailpoet:run-once-per-subscriber' => true,
         ]
       ),
       AutomationTemplate::TYPE_FREE_ONLY
