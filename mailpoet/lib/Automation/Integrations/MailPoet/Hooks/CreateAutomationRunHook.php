@@ -44,6 +44,6 @@ class CreateAutomationRunHook {
       return true;
     }
 
-    return $this->automationRunStorage->countRunsForAutomationAndSubject($automation, current($subscriberSubject)) === 0;
+    return $this->automationRunStorage->getCountByAutomationAndSubject($automation, current($subscriberSubject)) === 0;
   }
 }

@@ -117,7 +117,7 @@ class AutomationRunStorage {
    * @param Automation $automation
    * @return int
    */
-  public function countRunsForAutomationAndSubject(Automation $automation, Subject $subject): int {
+  public function getCountByAutomationAndSubject(Automation $automation, Subject $subject): int {
     $table = esc_sql($this->table);
     $subjectTable = esc_sql($this->subjectTable);
 
