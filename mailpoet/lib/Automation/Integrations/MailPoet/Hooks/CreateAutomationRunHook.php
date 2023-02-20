@@ -34,7 +34,7 @@ class CreateAutomationRunHook {
     }
 
     $automation = $args->getAutomation();
-    $runOnlyOnce = $automation->getMeta('run_automation_once');
+    $runOnlyOnce = $automation->getMeta('mailpoet:run-once-per-subscriber');
     if (!$runOnlyOnce) {
       return true;
     }

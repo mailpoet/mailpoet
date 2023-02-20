@@ -44,7 +44,7 @@ class RunAutomationOnlyOnceSettingCest {
       ->withName('runAutomationOnlyOnce Automation')
       ->withSomeoneSubscribesTrigger()
       ->withDelayAction()
-      ->withMeta('run_automation_once', false)
+      ->withMeta('mailpoet:run-once-per-subscriber', false)
       ->withStatusActive()
       ->create();
     $this->segment = (new DataFactories\Segment())->withName('runAutomationOnlyOnce-segment')->create();
