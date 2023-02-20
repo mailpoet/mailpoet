@@ -66,8 +66,8 @@ class UpdateAutomationController {
       }
     }
 
-    $automation->deleteAllMetas();
     if (array_key_exists('meta', $data)) {
+      $automation->deleteAllMetas();
       foreach ($data['meta'] as $key => $value) {
         $automation->setMeta($key, $value);
       }
