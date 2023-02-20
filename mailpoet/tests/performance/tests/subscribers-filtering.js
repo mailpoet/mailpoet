@@ -42,6 +42,16 @@ export function subscribersFiltering() {
       })
 
       .then(() => {
+        page.locator('[data-automation-id="filters_subscribed"]').click();
+        page.waitForSelector('[data-automation-id="filters_subscribed"]');
+        check(page, {
+          'subscribers filter is visible': page
+            .locator('[data-automation-id="listing_filter_segment"]')
+            .isVisible(),
+        });
+      })
+
+      .then(() => {
         page
           .locator('[data-automation-id="listing_filter_segment"]')
           .selectOption('3');
@@ -56,7 +66,7 @@ export function subscribersFiltering() {
 
       .then(() => {
         page.waitForNavigation({ waitUntil: 'networkidle' });
-        page.locator('#search_input').type(adminEmail);
+        page.locator('#search_input').type(adminEmail, { delay: 50 });
         sleep(2);
         page.waitForSelector('[data-automation-id="filters_subscribed"]');
         check(page, {
