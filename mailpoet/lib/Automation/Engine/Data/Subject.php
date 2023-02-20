@@ -27,7 +27,7 @@ class Subject {
     return $this->args;
   }
 
-  public function hash(): string {
+  public function getHash(): string {
     return md5($this->getKey() . serialize($this->getArgs()));
   }
 
@@ -35,7 +35,7 @@ class Subject {
     return [
       'key' => $this->getKey(),
       'args' => Json::encode($this->getArgs()),
-      'hash' => $this->hash(),
+      'hash' => $this->getHash(),
     ];
   }
 

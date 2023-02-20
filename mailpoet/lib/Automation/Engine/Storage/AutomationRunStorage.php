@@ -127,7 +127,7 @@ class AutomationRunStorage {
       AND subjects.hash = %s";
 
     $result = $this->wpdb->get_col(
-      (string)$this->wpdb->prepare($sql, $automation->getId(), $subject->hash())
+      (string)$this->wpdb->prepare($sql, $automation->getId(), $subject->getHash())
     );
 
     return $result ? (int)current($result) : 0;
