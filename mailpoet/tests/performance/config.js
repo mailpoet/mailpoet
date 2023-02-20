@@ -5,7 +5,7 @@ export const headlessSet = ['true', '1'].includes(
 export const scenario = __ENV.SCENARIO; // eslint-disable-line
 
 export const adminUsername = 'admin';
-export const adminPassword = 'uYNOVMJVd@!';
+export const adminPassword = 'password';
 export const adminEmail = 'test@test.com';
 
 export const thinkTimeMin = '1';
