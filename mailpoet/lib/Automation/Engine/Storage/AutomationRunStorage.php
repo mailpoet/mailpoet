@@ -121,7 +121,7 @@ class AutomationRunStorage {
     $table = esc_sql($this->table);
     $subjectTable = esc_sql($this->subjectTable);
 
-    $sql = "SELECT count(runs.id) as count from $table as runs
+    $sql = "SELECT count(DISTINCT runs.id) as count from $table as runs
       JOIN $subjectTable as subjects on runs.id = subjects.automation_run_id
       WHERE runs.automation_id = %d
       AND subjects.hash = %s";
