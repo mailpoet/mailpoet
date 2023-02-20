@@ -44,7 +44,6 @@ use MailPoet\Models\SubscriberSegment;
 use MailPoet\Newsletter\Links\Links;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
-use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Router\Endpoints\Track;
 use MailPoet\Router\Router;
 use MailPoet\Segments\SegmentsRepository;
@@ -97,8 +96,6 @@ class SendingQueueTest extends \MailPoetTest {
   private $scheduledTasksRepository;
   /** @var SubscribersRepository */
   private $subscribersRepository;
-  /** @var SendingQueuesRepository */
-  private $sendingQueuesRepository;
 
   public function _before() {
     parent::_before();
@@ -157,7 +154,6 @@ class SendingQueueTest extends \MailPoetTest {
     $this->tasksLinks = $this->diContainer->get(TasksLinks::class);
     $this->scheduledTasksRepository = $this->diContainer->get(ScheduledTasksRepository::class);
     $this->subscribersRepository = $this->diContainer->get(SubscribersRepository::class);
-    $this->sendingQueuesRepository = $this->diContainer->get(SendingQueuesRepository::class);
     $this->sendingQueueWorker = $this->getSendingQueueWorker();
   }
 
@@ -213,8 +209,7 @@ class SendingQueueTest extends \MailPoetTest {
       $this->tasksLinks,
       $this->scheduledTasksRepository,
       $this->diContainer->get(MailerTask::class),
-      $this->subscribersRepository,
-      $this->sendingQueuesRepository
+      $this->subscribersRepository
     );
     try {
       $sendingQueueWorker->process();
@@ -248,8 +243,7 @@ class SendingQueueTest extends \MailPoetTest {
           'sendBulk' => $this->mailerTaskDummyResponse,
         ]
       ),
-      $this->subscribersRepository,
-      $this->sendingQueuesRepository
+      $this->subscribersRepository
     );
     $sendingQueueWorker->sendNewsletters(
       $this->queue,
@@ -294,8 +288,7 @@ class SendingQueueTest extends \MailPoetTest {
           'sendBulk' => $this->mailerTaskDummyResponse,
         ]
       ),
-      $this->subscribersRepository,
-      $this->sendingQueuesRepository
+      $this->subscribersRepository
     );
     $sendingQueueWorker->sendNewsletters(
       $queue,
@@ -334,8 +327,7 @@ class SendingQueueTest extends \MailPoetTest {
       $this->tasksLinks,
       $this->scheduledTasksRepository,
       $this->diContainer->get(MailerTask::class),
-      $this->subscribersRepository,
-      $this->sendingQueuesRepository
+      $this->subscribersRepository
     );
     $sendingQueueWorker->process();
   }
@@ -654,8 +646,7 @@ class SendingQueueTest extends \MailPoetTest {
           'sendBulk' => Stub::consecutive(['response' => false, 'error' => $mailerError], $this->mailerTaskDummyResponse),
         ]
       ),
-      $this->subscribersRepository,
-      $this->sendingQueuesRepository
+      $this->subscribersRepository
     );
 
     $sendingQueueWorker->sendNewsletters(
@@ -1054,8 +1045,7 @@ class SendingQueueTest extends \MailPoetTest {
           'sendBulk' => $this->mailerTaskDummyResponse,
         ]
       ),
-      $this->subscribersRepository,
-      $this->sendingQueuesRepository
+      $this->subscribersRepository
     );
     try {
       $sendingQueueWorker->sendNewsletters(
@@ -1273,47 +1263,6 @@ class SendingQueueTest extends \MailPoetTest {
     }
   }
 
-  public function testCampaignIdDoesNotChangeIfContentStaysTheSame() {
-    $newsletter = (new \MailPoet\Test\DataFactories\Newsletter())->withSubject('Subject')->create();
-    $campaignId = $this->sendingQueueWorker->calculateCampaignId($newsletter, 'text body');
-    expect($campaignId)->equals($this->sendingQueueWorker->calculateCampaignId($newsletter, 'text body'));
-  }
-
-  public function testCampaignIdChangesIfSubjectChanges() {
-    $newsletter = (new \MailPoet\Test\DataFactories\Newsletter())->withSubject('Subject')->create();
-    $originalCampaignId = $this->sendingQueueWorker->calculateCampaignId($newsletter, 'text body');
-    $newsletter->setSubject('Subject 2');
-    $this->entityManager->persist($newsletter);
-    $this->entityManager->flush();
-    expect($originalCampaignId)->notEquals($this->sendingQueueWorker->calculateCampaignId($newsletter, 'text body'));
-  }
-
-  public function testCampaignIdRevertsIfContentReverts() {
-    $newsletter = (new \MailPoet\Test\DataFactories\Newsletter())->withSubject('Subject')->create();
-    $originalCampaignId = $this->sendingQueueWorker->calculateCampaignId($newsletter, 'text body');
-    $newsletter->setSubject('Subject 2');
-    $this->entityManager->persist($newsletter);
-    $this->entityManager->flush();
-    expect($originalCampaignId)->notEquals($this->sendingQueueWorker->calculateCampaignId($newsletter, 'text body changed'));
-    $newsletter->setSubject('Subject');
-    $this->entityManager->persist($newsletter);
-    $this->entityManager->flush();
-    expect($originalCampaignId)->equals($this->sendingQueueWorker->calculateCampaignId($newsletter, 'text body'));
-  }
-
-  public function testCampaignIdDependsOnNewsletterId() {
-    $newsletter1 = (new \MailPoet\Test\DataFactories\Newsletter())->withSubject('Subject')->create();
-    $newsletter2 = (new \MailPoet\Test\DataFactories\Newsletter())->withSubject('Subject')->create();
-    $sameContent = 'content';
-    expect($this->sendingQueueWorker->calculateCampaignId($newsletter1, $sameContent))->notEquals($this->sendingQueueWorker->calculateCampaignId($newsletter2, $sameContent));
-  }
-
-  public function testCampaignIdChangesIfContentChanges() {
-     $newsletter = (new \MailPoet\Test\DataFactories\Newsletter())->withSubject('Subject')->create();
-    $originalCampaignId = $this->sendingQueueWorker->calculateCampaignId($newsletter, 'text body');
-    expect($originalCampaignId)->notEquals($this->sendingQueueWorker->calculateCampaignId($newsletter, 'different text body'));
-  }
-
   public function _after() {
     $this->truncateEntity(SubscriberEntity::class);
     $this->truncateEntity(SubscriberSegmentEntity::class);
@@ -1399,8 +1348,7 @@ class SendingQueueTest extends \MailPoetTest {
       $this->tasksLinks,
       $this->scheduledTasksRepository,
       $mailerMock ?? $this->diContainer->get(MailerTask::class),
-      $this->subscribersRepository,
-      $this->sendingQueuesRepository
+      $this->subscribersRepository
     );
   }
 }

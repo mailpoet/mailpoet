@@ -20,7 +20,6 @@ use MailPoet\Models\StatisticsNewsletters as StatisticsNewslettersModel;
 use MailPoet\Models\Subscriber as SubscriberModel;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
-use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Segments\SubscribersFinder;
 use MailPoet\Subscribers\SubscribersRepository;
@@ -79,9 +78,6 @@ class SendingQueue {
   /** @var SubscribersRepository */
   private $subscribersRepository;
 
-  /** @var SendingQueuesRepository */
-  private $sendingQueueRepository;
-
   public function __construct(
     SendingErrorHandler $errorHandler,
     SendingThrottlingHandler $throttlingHandler,
@@ -96,7 +92,6 @@ class SendingQueue {
     ScheduledTasksRepository $scheduledTasksRepository,
     MailerTask $mailerTask,
     SubscribersRepository $subscribersRepository,
-    SendingQueuesRepository $sendingQueuesRepository,
     $newsletterTask = false
   ) {
     $this->errorHandler = $errorHandler;
@@ -114,7 +109,6 @@ class SendingQueue {
     $this->links = $links;
     $this->scheduledTasksRepository = $scheduledTasksRepository;
     $this->subscribersRepository = $subscribersRepository;
-    $this->sendingQueueRepository = $sendingQueuesRepository;
   }
 
   public function process($timer = false) {
@@ -166,32 +160,12 @@ class SendingQueue {
       return;
     }
 
-    $campaignId = null;
-
-    $afterPreProcessFilter = function(array $renderedNewsletters, NewsletterEntity $renderedNewsletterEntity) use ($newsletterEntity, &$campaignId) {
-      if ($newsletterEntity !== $renderedNewsletterEntity || !isset($renderedNewsletters['text'])) {
-        return;
-      }
-      $textVersion = $renderedNewsletters['text'];
-      $campaignId = $this->calculateCampaignId($newsletterEntity, $textVersion);
-      return $renderedNewsletters;
-    };
-
-    // This filter fires during preProcessNewsletter, after some initial rendering but before any shortcodes are replaced.
-    $this->wp->addFilter('mailpoet_sending_newsletter_render_after_pre_process', $afterPreProcessFilter, 10, 2);
-
     // pre-process newsletter (render, replace shortcodes/links, etc.)
     $newsletterEntity = $this->newsletterTask->preProcessNewsletter($newsletterEntity, $queue);
-
-    $this->wp->removeFilter('mailpoet_sending_newsletter_render_after_pre_process', $afterPreProcessFilter);
 
     if (!$newsletterEntity) {
       $this->deleteTask($queue);
       return;
-    }
-
-    if ($campaignId) {
-      $this->sendingQueueRepository->addCampaignId($queue->getSendingQueueEntity(), $campaignId);
     }
 
     $newsletter = Newsletter::findOne($newsletterEntity->getId());
@@ -425,18 +399,6 @@ class SendingQueue {
       $statistics,
       $timer
     );
-  }
-
-  /**
-   * @param NewsletterEntity $newsletter
-   * @param string $textBody - The pre-processed text body of the newsletter, before any shortcodes have been processed.
-   * Leaving the shortcodes unprocessed ensures that we get the same campaignId for different subscribers, as well as
-   * for different sends of the same automatic email when link tracking is enabled.
-   *
-   * @return string
-   */
-  public function calculateCampaignId(NewsletterEntity $newsletter, string $textBody): string {
-    return substr(md5(implode('|', [$newsletter->getId(), $textBody, $newsletter->getSubject()])), 0, 16);
   }
 
   /**

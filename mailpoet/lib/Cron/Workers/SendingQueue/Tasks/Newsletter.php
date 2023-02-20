@@ -15,6 +15,7 @@ use MailPoet\Newsletter\Links\Links as NewsletterLinks;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Renderer\PostProcess\OpenTracking;
 use MailPoet\Newsletter\Renderer\Renderer;
+use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Settings\TrackingConfig;
 use MailPoet\Statistics\GATracking;
 use MailPoet\Tasks\Sending;
@@ -54,6 +55,9 @@ class Newsletter {
   /** @var NewsletterLinks */
   private $newsletterLinks;
 
+  /** @var SendingQueuesRepository */
+  private $sendingQueuesRepository;
+
   public function __construct(
     WPFunctions $wp = null,
     PostsTask $postsTask = null,
@@ -83,6 +87,7 @@ class Newsletter {
     $this->newslettersRepository = ContainerWrapper::getInstance()->get(NewslettersRepository::class);
     $this->linksTask = ContainerWrapper::getInstance()->get(LinksTask::class);
     $this->newsletterLinks = ContainerWrapper::getInstance()->get(NewsletterLinks::class);
+    $this->sendingQueuesRepository = ContainerWrapper::getInstance()->get(SendingQueuesRepository::class);
   }
 
   public function getNewsletterFromQueue(Sending $sendingTask): ?NewsletterEntity {
@@ -127,6 +132,8 @@ class Newsletter {
       ['newsletter_id' => $newsletter->getId(), 'task_id' => $sendingTask->taskId]
     );
 
+    $campaignId = null;
+
     // if tracking is enabled, do additional processing
     if ($this->trackingEnabled) {
       // hook to the newsletter post-processing filter and add tracking image
@@ -138,6 +145,9 @@ class Newsletter {
         $renderedNewsletter,
         $newsletter
       );
+      if (is_array($renderedNewsletter)) {
+        $campaignId = $this->calculateCampaignId($newsletter, $renderedNewsletter);
+      }
       $renderedNewsletter = $this->gaTracking->applyGATracking($renderedNewsletter, $newsletter);
       // hash and save all links
       $renderedNewsletter = $this->linksTask->process($renderedNewsletter, $newsletter, $sendingTask);
@@ -149,6 +159,9 @@ class Newsletter {
         $renderedNewsletter,
         $newsletter
       );
+      if (is_array($renderedNewsletter)) {
+        $campaignId = $this->calculateCampaignId($newsletter, $renderedNewsletter);
+      }
       $renderedNewsletter = $this->gaTracking->applyGATracking($renderedNewsletter, $newsletter);
     }
 
@@ -180,6 +193,10 @@ class Newsletter {
 
     $sendingQueueEntity = $sendingTask->getSendingQueueEntity();
 
+    if ($campaignId !== null) {
+      $this->sendingQueuesRepository->saveCampaignId($sendingQueueEntity, $campaignId);
+    }
+
     // update queue with the rendered and pre-processed newsletter
     $sendingTask->newsletterRenderedSubject = ShortcodesTask::process(
       $newsletter->getSubject(),
@@ -188,6 +205,7 @@ class Newsletter {
       null,
       $sendingQueueEntity
     );
+
     // if the rendered subject is empty, use a default subject,
     // having no subject in a newsletter is considered spammy
     if (empty(trim((string)$sendingTask->newsletterRenderedSubject))) {
@@ -274,5 +292,22 @@ class Newsletter {
       __('There was an error processing your newsletter during sending. If possible, please contact us and report this issue.', 'mailpoet'),
       $errorCode
     );
+  }
+
+  /**
+   * @param NewsletterEntity $newsletter
+   * @param array $renderedNewsletters - The pre-processed renderered newsletters, before link tracking has been added or shortcodes have been processed.
+   *
+   * @return string
+   */
+  public function calculateCampaignId(NewsletterEntity $newsletter, array $renderedNewsletters): string {
+    $pieces = [
+      $newsletter->getId(),
+      $newsletter->getSubject(),
+    ];
+    if (isset($renderedNewsletters['text'])) {
+      $pieces[] = $renderedNewsletters['text'];
+    }
+    return substr(md5(implode('|', $pieces)), 0, 16);
   }
 }
