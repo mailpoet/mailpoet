@@ -101,12 +101,12 @@ class AutomationRunStorage {
 
     return array_map(
       function(array $runData) use ($subjects): AutomationRun {
-        $runData['subjects'] = array_filter(
+        $runData['subjects'] = array_values(array_filter(
           is_array($subjects) ? $subjects : [],
           function(array $subjectData) use ($runData): bool {
             return (int)$subjectData['automation_run_id'] === (int)$runData['id'];
           }
-        );
+        ));
         return AutomationRun::fromArray($runData);
       },
       $automationRuns
