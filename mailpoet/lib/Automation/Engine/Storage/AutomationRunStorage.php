@@ -83,9 +83,18 @@ class AutomationRunStorage {
 
     $automationRunIds = array_column($automationRuns, 'id');
 
-    $sql = sprintf("SELECT * FROM $subjectTable WHERE automation_run_id in (%s) order by automation_run_id", implode(',', array_map(function() {return '%d';
-
-    }, $automationRunIds)));
+    $sql = sprintf(
+      "SELECT * FROM $subjectTable WHERE automation_run_id in (%s) order by automation_run_id",
+      implode(
+        ',',
+        array_map(
+          function() {
+            return '%d';
+          },
+          $automationRunIds
+        )
+      )
+    );
 
     $query = (string)$this->wpdb->prepare($sql, ...$automationRunIds);
     $subjects = $this->wpdb->get_results($query, ARRAY_A);
