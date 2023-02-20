@@ -4,6 +4,7 @@
 import { newsletterListing } from './tests/newsletter-listing.js';
 import { subscribersListing } from './tests/subscribers-listing.js';
 import { settingsBasic } from './tests/settings-basic.js';
+import { subscribersFiltering } from './tests/subscribers-filtering.js';
 import { htmlReport } from 'https://raw.githubusercontent.com/benc-uk/k6-reporter/main/dist/bundle.js';
 import { textSummary } from 'https://jslib.k6.io/k6-summary/0.0.1/index.js';
 import { scenario } from './config.js';
@@ -18,6 +19,7 @@ export let options = {
     browser_first_paint: ['max < 2000'],
     browser_loaded: ['p(95) < 3000'],
     http_req_duration: ['p(95) < 2500'],
+    http_req_receiving: ['p(95) < 2500'],
     checks: ['rate==1.0'],
   },
   tags: {
@@ -57,6 +59,7 @@ export function pullRequests() {
   newsletterListing();
   subscribersListing();
   settingsBasic();
+  subscribersFiltering();
 }
 
 // All the tests ran for a nightly testing

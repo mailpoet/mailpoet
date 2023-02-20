@@ -1,11 +1,12 @@
-export const baseURL = __ENV.URL || 'http://localhost:9500';
+export const baseURL = __ENV.URL || 'http://localhost:9500'; // eslint-disable-line
 export const headlessSet = ['true', '1'].includes(
-  `${__ENV.HEADLESS || 'true'}`.toLowerCase(),
+  `${__ENV.HEADLESS || 'true'}`.toLowerCase(), // eslint-disable-line
 );
-export const scenario = __ENV.SCENARIO;
+export const scenario = __ENV.SCENARIO; // eslint-disable-line
 
 export const adminUsername = 'admin';
-export const adminPassword = 'password';
+export const adminPassword = 'uYNOVMJVd@!';
+export const adminEmail = 'test@test.com';
 
 export const thinkTimeMin = '1';
 export const thinkTimeMax = '4';
