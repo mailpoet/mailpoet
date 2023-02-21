@@ -13,7 +13,9 @@ export function showRunOnlyOnce(): boolean {
   }
 
   const subscriberTriggers = triggers.filter((trigger) =>
-    trigger.subject_keys.includes('mailpoet:subscriber'),
+    select(storeName)
+      .getStepSubjectKeys(trigger.key)
+      .includes('mailpoet:subscriber'),
   );
   return subscriberTriggers.length > 0;
 }

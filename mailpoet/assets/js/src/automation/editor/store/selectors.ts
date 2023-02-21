@@ -103,3 +103,9 @@ export function getErrors(state: State): Errors | undefined {
 export function getStepError(state: State, id: string): StepErrors | undefined {
   return state.errors?.steps[id] ?? undefined;
 }
+
+export const getStepSubjectKeys = (state: State, key: string): string[] => {
+  const step = state.registry.steps[key];
+  if (!step) return [];
+  return step.subject_keys;
+};
