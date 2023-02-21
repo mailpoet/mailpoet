@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { MailPoet } from 'mailpoet';
+import ReactStringReplace from 'react-string-replace';
 
 import { WelcomeWizardStepLayoutBody } from 'wizard/layout/step_layout_body.jsx';
 import { Button, Heading, List } from 'common';
@@ -69,6 +70,17 @@ export function PitchMss(props: Props): JSX.Element {
           </Heading>
           <FreeBenefitsList />
 
+          <p>
+            {ReactStringReplace(
+              MailPoet.I18n.t('congratulationsMSSEnterYourKey'),
+              /\[link\](.*?)\[\/link\]/g,
+              (match, i) => (
+                <a href="admin.php?page=mailpoet-settings#/premium" key={i}>
+                  {match}
+                </a>
+              ),
+            )}
+          </p>
           <div className="mailpoet-gap" />
           <div className="mailpoet-gap" />
 
