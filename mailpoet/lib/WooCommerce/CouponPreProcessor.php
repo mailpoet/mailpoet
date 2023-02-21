@@ -3,7 +3,6 @@
 namespace MailPoet\WooCommerce;
 
 use MailPoet\Entities\NewsletterEntity;
-use MailPoet\Logging\LoggerFactory;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Renderer\Blocks\Coupon;
 use MailPoet\NewsletterProcessingException;
@@ -20,28 +19,19 @@ class CouponPreProcessor {
   /** @var Helper */
   private $wcHelper;
 
-  /*** @var LoggerFactory */
-  private $loggerFactory;
-
   public function __construct(
     Helper $wcHelper,
-    NewslettersRepository $newslettersRepository,
-    LoggerFactory $loggerFactory
+    NewslettersRepository $newslettersRepository
   ) {
     $this->wcHelper = $wcHelper;
     $this->newslettersRepository = $newslettersRepository;
-    $this->loggerFactory = $loggerFactory;
   }
 
+  /**
+   * @throws NewsletterProcessingException
+   */
   public function processCoupons(NewsletterEntity $newsletter, array $blocks, bool $preview = false): array {
     if ($preview) {
-      return $blocks;
-    }
-
-    if (!$this->wcHelper->isWooCommerceActive()) {
-      $this->loggerFactory->getLogger(LoggerFactory::TOPIC_COUPONS)->error(
-        'Woocommerce is not active', ['WC Coupons', 'Process coupons', 'newsletter_id']
-      );
       return $blocks;
     }
     
@@ -71,6 +61,9 @@ class CouponPreProcessor {
         $this->ensureCouponForBlocks($innerBlock['blocks'], $newsletter);
       }
       if (isset($innerBlock['type']) && $innerBlock['type'] === Coupon::TYPE) {
+        if (!$this->wcHelper->isWooCommerceActive()) {
+          throw NewsletterProcessingException::create()->withMessage(__('Woocommerce is not active', 'mailpoet'));
+        }
         if ($this->shouldGenerateCoupon($innerBlock)) {
           try {
             $innerBlock['couponId'] = $this->addOrUpdateCoupon($innerBlock, $newsletter);
