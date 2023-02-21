@@ -113,3 +113,5 @@ class ConflictException extends UnexpectedValueException implements HttpAwareExc
  * API: 500 Server Error (not HTTP-aware)
  */
 class InvalidStateException extends RuntimeException {}
+
+class NewsletterProcessingException extends Exception {}

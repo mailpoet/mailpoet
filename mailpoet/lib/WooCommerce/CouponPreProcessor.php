@@ -6,6 +6,7 @@ use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Renderer\Blocks\Coupon;
+use MailPoet\NewsletterProcessingException;
 use MailPoet\WP\DateTime;
 
 class CouponPreProcessor {
@@ -71,8 +72,12 @@ class CouponPreProcessor {
       }
       if (isset($innerBlock['type']) && $innerBlock['type'] === Coupon::TYPE) {
         if ($this->shouldGenerateCoupon($innerBlock)) {
-          $innerBlock['couponId'] = $this->addOrUpdateCoupon($innerBlock, $newsletter);
-          $this->generated = true;
+          try {
+            $innerBlock['couponId'] = $this->addOrUpdateCoupon($innerBlock, $newsletter);
+            $this->generated = true;
+          } catch (\Exception $e) {
+            throw NewsletterProcessingException::create()->withMessage($e->getMessage())->withCode($e->getCode());
+          }
         }
       }
     }
@@ -80,7 +85,13 @@ class CouponPreProcessor {
     return $this->generated;
   }
 
-  private function addOrUpdateCoupon(array $couponBlock, NewsletterEntity $newsletter): int {
+  /**
+   * @param array $couponBlock
+   * @param NewsletterEntity $newsletter
+   * @return int
+   * @throws \WC_Data_Exception|\Exception
+   */
+  private function addOrUpdateCoupon(array $couponBlock, NewsletterEntity $newsletter) {
     $coupon = $this->wcHelper->createWcCoupon($couponBlock['couponId'] ?? '');
     if ($this->shouldGenerateCoupon($couponBlock)) {
       $code = isset($couponBlock['code']) && $couponBlock['code'] !== Coupon::CODE_PLACEHOLDER ? $couponBlock['code'] : $this->generateRandomCode();
@@ -104,7 +115,9 @@ class CouponPreProcessor {
     }
 
     if (isset($couponBlock['expiryDay'])) {
-      $expiration = (new DateTime())->getCurrentDateTime()->modify("+{$couponBlock['expiryDay']} day")->getTimestamp();
+      $expiration = (new DateTime())->getCurrentDateTime()
+        ->modify("+{$couponBlock['expiryDay']} day")
+        ->getTimestamp();
       $coupon->set_date_expires($expiration);
     }
 
@@ -127,7 +140,6 @@ class CouponPreProcessor {
     // usage limit
     $coupon->set_usage_limit($couponBlock['usageLimit'] ?? 0);
     $coupon->set_usage_limit_per_user($couponBlock['usageLimitPerUser'] ?? 0);
-
     return $coupon->save();
   }
 
