@@ -70,4 +70,5 @@ export type NewsLetter = {
   type: NewsletterType;
   unsubscribe_token: string;
   updated_at: string;
+  logs: string[];
 };

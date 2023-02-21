@@ -203,11 +203,15 @@ h1.title.mailpoet-newsletter-listing-heading {
 }
 
 .mailpoet-listing-status-corrupt {
-  color: $color-destructive;
+  flex-direction: column;
   padding-left: 0;
 
   .mailpoet-listing-status-label {
     padding-left: 0;
+  }
+
+  .mailpoet-listing-status-message {
+    color: $color-destructive;
   }
 }
 

@@ -90,6 +90,7 @@ function QueueStatus({ newsletter, mailerLog }: QueueStatusProps) {
           total={parseInt(newsletter.queue.count_total, 10)}
           isPaused={isMtaPaused}
           status={newsletter.status}
+          logs={newsletter.logs}
         />
       </Link>
       {newsletter.queue.status !== 'completed' && !isMtaPaused && (
@@ -103,6 +104,7 @@ function QueueStatus({ newsletter, mailerLog }: QueueStatusProps) {
       scheduledFor={newsletterDate}
       isPaused={newsletter.queue.status === 'scheduled' && isMtaPaused}
       status={newsletter.status}
+      logs={newsletter.logs}
     />
   );
 

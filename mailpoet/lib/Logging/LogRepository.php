@@ -4,6 +4,7 @@ namespace MailPoet\Logging;
 
 use MailPoet\Doctrine\Repository;
 use MailPoet\Entities\LogEntity;
+use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Util\Helpers;
 use MailPoetVendor\Carbon\Carbon;
 
@@ -70,5 +71,18 @@ class LogRepository extends Repository {
       ->where('l.createdAt < :days')
       ->setParameter('days', Carbon::now()->subDays($daysToKeepLogs)->toDateTimeString())
       ->getQuery()->execute();
+  }
+
+  public function getRawMessagesForNewsletter(NewsletterEntity $newsletter, string $topic): array {
+    return $this->entityManager->createQueryBuilder()
+      ->select('DISTINCT logs.rawMessage message')
+      ->from(LogEntity::class, 'logs')
+      ->where('logs.name = :topic')
+      ->andWhere('logs.context LIKE :context')
+      ->orderBy('logs.createdAt')
+      ->setParameter('context', json_encode(['newsletter_id' => $newsletter->getId()]))
+      ->setParameter('topic', $topic)
+      ->getQuery()
+      ->getSingleColumnResult();
   }
 }
