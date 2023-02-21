@@ -7,7 +7,7 @@ import { withRouter } from 'react-router-dom';
 import { confirmAlert } from 'common/confirm_alert.jsx';
 import { SegmentTags } from 'common/tag/tags';
 import { Listing } from 'listing/listing.jsx';
-import { QueueStatus } from 'newsletters/listings/queue_status.jsx';
+import { QueueStatus } from 'newsletters/listings/queue_status';
 import { Statistics } from 'newsletters/listings/statistics.jsx';
 import {
   addStatsCTAAction,
