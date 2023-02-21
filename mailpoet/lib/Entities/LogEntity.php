@@ -34,6 +34,19 @@ class LogEntity {
   private $message;
 
   /**
+   * @ORM\Column(type="string", nullable=true)
+   * @var string|null
+   */
+  private $rawMessage;
+
+
+  /**
+   * @ORM\Column(type="string", nullable=true)
+   * @var string|null
+   */
+  private $context;
+
+  /**
    * @return string|null
    */
   public function getName(): ?string {
@@ -54,6 +67,14 @@ class LogEntity {
     return $this->message;
   }
 
+  public function getRawMessage(): ?string {
+    return $this->rawMessage;
+  }
+
+  public function getContext(): ?array {
+    return (array)json_decode($this->context ?? '{}', true);
+  }
+
   public function setName(?string $name): void {
     $this->name = $name;
   }
@@ -68,5 +89,16 @@ class LogEntity {
 
   public function setCreatedAt(DateTimeInterface $createdAt): void {
     $this->createdAt = $createdAt;
+  }
+
+  public function setRawMessage(string $message): void {
+    $this->rawMessage = $message;
+  }
+
+  public function setContext(array $context): void {
+    $str = json_encode($context);
+    if ($str) {
+      $this->context = $str;
+    }
   }
 }

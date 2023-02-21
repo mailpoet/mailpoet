@@ -53,6 +53,8 @@ class LogHandler extends AbstractProcessingHandler {
     $entity->setLevel((int)$record['level']);
     $entity->setMessage($message);
     $entity->setCreatedAt($record['datetime']);
+    $entity->setRawMessage($record['message']);
+    $entity->setContext($record['context']);
 
     if (!$this->entityManager->isOpen()) {
       $this->entityManager = $this->entityManagerFactory->createEntityManager();
