@@ -40,7 +40,7 @@ class CouponPreProcessor {
 
     if (!$this->wcHelper->isWooCommerceActive()) {
       $this->loggerFactory->getLogger(LoggerFactory::TOPIC_COUPONS)->error(
-        'Woocommerce is not active', ['WC Coupons', 'Process coupons']
+        'Woocommerce is not active', ['WC Coupons', 'Process coupons', 'newsletter_id']
       );
       return $blocks;
     }

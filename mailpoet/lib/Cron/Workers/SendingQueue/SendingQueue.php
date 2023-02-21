@@ -239,25 +239,32 @@ class SendingQueue {
       // reschedule bounce task to run sooner, if needed
       $this->reScheduleBounceTask();
 
-      $queue = $this->processQueue(
-        $queue,
-        $_newsletter,
-        $foundSubscribers,
-        $timer
-      );
-      $this->loggerFactory->getLogger(LoggerFactory::TOPIC_NEWSLETTERS)->info(
-        'after queue chunk processing',
-        ['newsletter_id' => $newsletter->id, 'task_id' => $queue->taskId]
-      );
-      if ($queue->status === ScheduledTaskEntity::STATUS_COMPLETED) {
+      if ($newsletterEntity->getStatus() !== NewsletterEntity::STATUS_CORRUPT) {
+        $queue = $this->processQueue(
+          $queue,
+          $_newsletter,
+          $foundSubscribers,
+          $timer
+        );
         $this->loggerFactory->getLogger(LoggerFactory::TOPIC_NEWSLETTERS)->info(
-          'completed newsletter sending',
+          'after queue chunk processing',
           ['newsletter_id' => $newsletter->id, 'task_id' => $queue->taskId]
         );
-        $this->newsletterTask->markNewsletterAsSent($newsletterEntity, $queue);
-        $this->statsNotificationsScheduler->schedule($newsletterEntity);
+        if ($queue->status === ScheduledTaskEntity::STATUS_COMPLETED) {
+          $this->loggerFactory->getLogger(LoggerFactory::TOPIC_NEWSLETTERS)->info(
+            'completed newsletter sending',
+            ['newsletter_id' => $newsletter->id, 'task_id' => $queue->taskId]
+          );
+          $this->newsletterTask->markNewsletterAsSent($newsletterEntity, $queue);
+          $this->statsNotificationsScheduler->schedule($newsletterEntity);
+        }
+        $this->enforceSendingAndExecutionLimits($timer);
+      } else {
+        $this->loggerFactory->getLogger(LoggerFactory::TOPIC_NEWSLETTERS)->error(
+          'Can\'t send corrupt newsletter',
+          ['newsletter_id' => $newsletter->id, 'task_id' => $queue->taskId]
+        );
       }
-      $this->enforceSendingAndExecutionLimits($timer);
     }
   }
 
