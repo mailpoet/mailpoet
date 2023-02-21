@@ -10,13 +10,11 @@ use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
-use MailPoet\Models\ScheduledTask;
-use MailPoet\Models\SendingQueue;
+use MailPoet\Newsletter\Sending\ScheduledTaskSubscribersRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Router\Endpoints\Track;
 use MailPoet\Subscribers\LinkTokens;
 use MailPoet\Tasks\Sending;
-use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
 use MailPoet\Test\DataFactories\NewsletterLink as NewsletterLinkFactory;
 
@@ -75,10 +73,8 @@ class TrackTest extends \MailPoetTest {
       'link_hash' => $link->getHash(),
       'preview' => false,
     ];
-    $queue = SendingQueue::findOne($queue->getId());
-    $this->assertInstanceOf(SendingQueue::class, $queue);
-    $queue = SendingTask::createFromQueue($queue);
-    $queue->updateProcessedSubscribers([$subscriber->getId()]);
+    $scheduledTaskSubscribersRepository = $this->diContainer->get(ScheduledTaskSubscribersRepository::class);
+    $scheduledTaskSubscribersRepository->updateProcessedSubscribers($task, [(int)$subscriber->getId()]);
     // instantiate class
     $this->track = $this->diContainer->get(Track::class);
   }
@@ -187,21 +183,18 @@ class TrackTest extends \MailPoetTest {
     $scheduledTaskEntity = $newsletter->getLatestQueue()->getTask();
     $scheduledTaskEntity->setType(Sending::TASK_TYPE);
     $this->entityManager->persist($scheduledTaskEntity);
+
+    $scheduledTaskSubscriber = new ScheduledTaskSubscriberEntity($scheduledTaskEntity, $this->subscriber, 1);
+    $this->entityManager->persist($scheduledTaskSubscriber);
     $this->entityManager->flush();
+    $scheduledTaskEntity->getSubscribers()->add($scheduledTaskSubscriber);
 
-    $scheduledTask = ScheduledTask::where('id', $scheduledTaskEntity->getId())->findOne();
-    $sendingQueue = SendingQueue::where('newsletter_id', $newsletter->getId())->findOne();
+    $scheduledTaskSubscribersRepository = $this->diContainer->get(ScheduledTaskSubscribersRepository::class);
+    $scheduledTaskSubscribersRepository->updateProcessedSubscribers($scheduledTaskEntity, [$this->subscriber->getId()]);
 
-    $this->assertInstanceOf(ScheduledTask::class, $scheduledTask);
-    $this->assertInstanceOf(SendingQueue::class, $sendingQueue);
-
-    $sendingTask = SendingTask::create($scheduledTask, $sendingQueue);
-    $sendingTask->newsletterId = $newsletter->getId();
-    $sendingTask->setSubscribers([$this->subscriber->getId()]);
-    $sendingTask->updateProcessedSubscribers([$this->subscriber->getId()]);
-    $sendingTask->save();
+    $queue = $newsletter->getLatestQueue();
     $trackData = $this->trackData;
-    $trackData['queue_id'] = $sendingTask->id;
+    $trackData['queue_id'] = $queue->getId();
     $trackData['newsletter_id'] = $newsletter->getId();
 
     // create another link with the same hash but different queue ID
