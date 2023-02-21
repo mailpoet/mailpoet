@@ -150,6 +150,15 @@ class Subscriber {
   }
 
   /**
+   * @param DateTimeInterface $deletedAt
+   * @return $this
+   */
+  public function withLastSubscribedAt(DateTimeInterface $deletedAt) {
+    $this->data['lastSubscribedAt'] = $deletedAt;
+    return $this;
+  }
+
+  /**
    * @return $this
    */
   public function withSubscribedIp(string $subscribedIp) {
@@ -236,7 +245,9 @@ class Subscriber {
 
     $entityManager->flush();
 
-    // workaround for storing updatedAt because it's set in TimestampListener
+    // workaround for storing updatedAt and lastSubscribedAt because it's set in TimestampListener and on save
+    if (isset($this->data['lastSubscribedAt'])) $subscriber->setLastSubscribedAt($this->data['lastSubscribedAt']);
+    $entityManager->flush();
     if (isset($this->data['updatedAt'])) {
       $subscribersTable = $entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
       $entityManager->getConnection()->executeQuery("

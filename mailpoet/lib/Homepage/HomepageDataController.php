@@ -144,16 +144,15 @@ class HomepageDataController {
    * This method returns data for subscribers stats statistics section.
    *
    * global:
-   *  - subscribed:    int number of subscribers who were added in last 30 days and have global status "subscribed"
-   *  - unsubscribed:  int number of subscribers have global status "unsubscribed", have a record in statistics_unsubscribes table
-   *                   and were added more than 30 days. Subscribers added in last 30 days and unsubscribed are not counted.
+   *  - subscribed:    int number of subscribers who were added in last 30 days by checking lastSubscribedAt column and ignoring current global status
+   *  - unsubscribed:  int number of subscribers who have a record in statistics_unsubscribes table in last 30 days
    *  - changePercent: float ($subscribedSubscribersCount - $subscribedSubscribers30DaysAgo) / $subscribedSubscribers30DaysAgo) * 100
    *
    * lists:
    *  - id:                     int id of the list
    *  - name:                   string name of the list
-   *  - subscribed:             int number of subscribers who were added to a list in last 30 days and have both list and global statuses "subscribed"
-   *  - unsubscribed:           int number of subscribers who were removed from a list in last 30 days and have global status "unsubscribed"
+   *  - subscribed:             int number of subscribers who were added to a list in last 30 days and have both list statuse "subscribed"
+   *  - unsubscribed:           int number of subscribers who were removed from a list in last 30 (list status is unsubscribed and updated_at is in last 30 days)
    *  - averageEngagementScore: float engagement score of the list
    *
    * @return array{global:array{subscribed:int, unsubscribed:int, changePercent:float|int}, lists:array<int, array>}
@@ -176,7 +175,7 @@ class HomepageDataController {
       $listData[$list['id']]['unsubscribed'] = $list['count'];
     }
 
-    $subscribedCount = $this->subscribersRepository->getCountOfCreatedAfterWithStatues($thirtyDaysAgo, [SubscriberEntity::STATUS_SUBSCRIBED]);
+    $subscribedCount = $this->subscribersRepository->getCountOfLastSubscribedAfter($thirtyDaysAgo);
     $unsubscribedCount = $this->subscribersRepository->getCountOfUnsubscribedAfter($thirtyDaysAgo);
     $subscribedSubscribersCount = $this->subscribersRepository->getCountOfSubscribersForStates([SubscriberEntity::STATUS_SUBSCRIBED]);
     $subscribedSubscribers30DaysAgo = $subscribedSubscribersCount - $subscribedCount + $unsubscribedCount;

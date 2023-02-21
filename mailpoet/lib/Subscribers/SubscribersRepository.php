@@ -375,49 +375,54 @@ class SubscribersRepository extends Repository {
     return is_int($maxSubscriberId) ? $maxSubscriberId : 0;
   }
 
-  public function getCountOfCreatedAfterWithStatues(\DateTimeInterface $createdAfter, array $statuses): int {
+  /**
+   * Returns count of subscribers who subscribed after given date regardless of their current status.
+   * @return int
+   */
+  public function getCountOfLastSubscribedAfter(\DateTimeInterface $subscribedAfter): int {
     $result = $this->entityManager->createQueryBuilder()
       ->select('COUNT(s.id)')
       ->from(SubscriberEntity::class, 's')
-      ->where('s.createdAt > :createdAfter')
-      ->andWhere('s.status IN (:statuses)')
+      ->where('s.lastSubscribedAt > :lastSubscribedAt')
       ->andWhere('s.deletedAt IS NULL')
-      ->setParameter('createdAfter', $createdAfter)
-      ->setParameter('statuses', $statuses)
+      ->setParameter('lastSubscribedAt', $subscribedAfter)
       ->getQuery()
       ->getSingleScalarResult();
     return intval($result);
   }
 
+  /**
+   * Returns count of subscribers who unsubscribed after given date regardless of their current status.
+   * @return int
+   */
   public function getCountOfUnsubscribedAfter(\DateTimeInterface $unsubscribedAfter): int {
     $result = $this->entityManager->createQueryBuilder()
       ->select('COUNT(DISTINCT s.id)')
       ->from(StatisticsUnsubscribeEntity::class, 'su')
       ->join('su.subscriber', 's')
-      ->where('s.createdAt <= :unsubscribedAfter')
       ->andWhere('su.createdAt > :unsubscribedAfter')
-      ->andWhere('s.status = :status')
       ->andWhere('s.deletedAt IS NULL')
       ->setParameter('unsubscribedAfter', $unsubscribedAfter)
-      ->setParameter('status', SubscriberEntity::STATUS_UNSUBSCRIBED)
       ->getQuery()
       ->getSingleScalarResult();
     return intval($result);
   }
 
+  /**
+   * Returns count of subscribers who subscribed to a list after given date regardless of their current global status.
+   */
   public function getListLevelCountsOfSubscribedAfter(\DateTimeInterface $date): array {
     $data = $this->entityManager->createQueryBuilder()
       ->select('seg.id, seg.name, seg.type, seg.averageEngagementScore, COUNT(ss.id) as count')
       ->from(SubscriberSegmentEntity::class, 'ss')
       ->join('ss.subscriber', 's')
       ->join('ss.segment', 'seg')
-      ->where('ss.createdAt > :date')
-      ->andWhere('s.status = :status')
+      ->where('ss.updatedAt > :date')
       ->andWhere('ss.status = :segment_status')
+      ->andWhere('s.lastSubscribedAt > :date') // subscriber subscribed at some point after the date
       ->andWhere('s.deletedAt IS NULL')
       ->andWhere('seg.deletedAt IS NULL') // no trashed lists and disabled WP Users list
       ->setParameter('date', $date)
-      ->setParameter('status', SubscriberEntity::STATUS_SUBSCRIBED)
       ->setParameter('segment_status', SubscriberEntity::STATUS_SUBSCRIBED)
       ->groupBy('ss.segment')
       ->getQuery()
@@ -425,6 +430,9 @@ class SubscribersRepository extends Repository {
     return $data;
   }
 
+  /**
+   * Returns count of subscribers who unsubscribed from a list after given date regardless of their current global status.
+   */
   public function getListLevelCountsOfUnsubscribedAfter(\DateTimeInterface $date): array {
     return $this->entityManager->createQueryBuilder()
       ->select('seg.id, seg.name, seg.type, seg.averageEngagementScore, COUNT(ss.id) as count')
@@ -432,13 +440,10 @@ class SubscribersRepository extends Repository {
       ->join('ss.subscriber', 's')
       ->join('ss.segment', 'seg')
       ->where('ss.updatedAt > :date')
-      ->where('ss.createdAt < :date') // ignore those who subscribed and unsubscribed within the date range
-      ->andWhere('s.status = :status')
       ->andWhere('ss.status = :segment_status')
       ->andWhere('s.deletedAt IS NULL')
       ->andWhere('seg.deletedAt IS NULL') // no trashed lists and disabled WP Users list
       ->setParameter('date', $date)
-      ->setParameter('status', SubscriberEntity::STATUS_UNSUBSCRIBED)
       ->setParameter('segment_status', SubscriberEntity::STATUS_UNSUBSCRIBED)
       ->groupBy('ss.segment')
       ->getQuery()

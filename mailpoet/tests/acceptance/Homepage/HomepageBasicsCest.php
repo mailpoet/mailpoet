@@ -36,9 +36,7 @@ class HomepageBasicsCest {
   }
 
   public function homepageSectionsRender(\AcceptanceTester $i) {
-    // this big count of subscribers is needed for the upsell component
     $subscriberFactory = new Subscriber();
-    $subscriberFactory->createBatch(600, SubscriberEntity::STATUS_SUBSCRIBED);
 
     $i->wantTo('Check homepage renders all sections');
     $i->login();
@@ -66,18 +64,6 @@ class HomepageBasicsCest {
     $i->click('.components-popover__content button', $productDiscoveryHeadingContext);
     $i->dontSee('Start engaging with your customers');
 
-    // The upsell section should be visible when task list and product discovery are closed
-    // Another condition is 600 subscribers
-    $i->wantTo('Check homepage renders upsell section');
-    $i->see('Accelerate your growth with our Business plan');
-    $i->see('Detailed analytics');
-    $i->see('Advanced subscriber segmentation');
-    $i->see('Email marketing automations');
-    $i->see('Priority support');
-    $i->see('Upgrade plan');
-    $i->click('.components-button', '.mailpoet-homepage-section__heading-after');
-    $i->dontSee('Accelerate your growth with our Business plan');
-
     $i->wantTo('Check homepage subscribers stats section');
     $subscribersSection = '.mailpoet-subscribers-stats';
     $i->see('Subscribers', $subscribersSection);
@@ -85,7 +71,7 @@ class HomepageBasicsCest {
     $i->see('Changes to your audience will appear here.', $subscribersSection);
     $i->wantTo('Check homepage subscribers stats section after adding a subscriber');
     $segment = (new Segment())->withName('Hello segment')->create();
-    (new Subscriber())
+    $subscriberFactory
       ->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)
       ->withSegments([$segment])
       ->create();
@@ -95,5 +81,19 @@ class HomepageBasicsCest {
     $i->see('Unsubscribed 0', $subscribersSection);
     $i->see('List name', $subscribersSection);
     $i->see('Hello segment', $subscribersSection);
+
+    // The upsell section should be visible when task list and product discovery are closed
+    // Another condition is 600 subscribers
+    $subscriberFactory->createBatch(600, SubscriberEntity::STATUS_SUBSCRIBED);
+    $i->reloadPage();
+    $i->wantTo('Check homepage renders upsell section');
+    $i->see('Accelerate your growth with our Business plan');
+    $i->see('Detailed analytics');
+    $i->see('Advanced subscriber segmentation');
+    $i->see('Email marketing automations');
+    $i->see('Priority support');
+    $i->see('Upgrade plan');
+    $i->click('.components-button', '.mailpoet-homepage-section__heading-after');
+    $i->dontSee('Accelerate your growth with our Business plan');
   }
 }
