@@ -7,7 +7,6 @@ export type NextStep = {
 export type Step = {
   id: string;
   type: 'root' | 'trigger' | 'action';
-  subject_keys: string[];
   key: string;
   args: Record<string, unknown>;
   next_steps: NextStep[];
