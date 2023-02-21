@@ -186,34 +186,40 @@ class HomepageDataControllerTest extends \MailPoetTest {
     $thirtyOneDaysAgo = Carbon::now()->subDays(31);
     $twentyNineDaysAgo = Carbon::now()->subDays(29);
     // Old subscribed
-    (new Subscriber())->withCreatedAt($thirtyOneDaysAgo)->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)->create();
+    (new Subscriber())->withLastSubscribedAt($thirtyOneDaysAgo)->create();
     // New subscribed
-    (new Subscriber())->withCreatedAt($twentyNineDaysAgo)->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)->create();
+    (new Subscriber())->withLastSubscribedAt($twentyNineDaysAgo)->create();
     // Unsubscribed long time ago
-    $oldUnsubscribed = (new Subscriber())->withCreatedAt($thirtyOneDaysAgo)->withStatus(SubscriberEntity::STATUS_UNSUBSCRIBED)->create();
+    $oldUnsubscribed = (new Subscriber())->withLastSubscribedAt($thirtyOneDaysAgo)->create();
     $oldUnsubscribedStats = new StatisticsUnsubscribeEntity(null, null, $oldUnsubscribed);
     $oldUnsubscribedStats->setCreatedAt($thirtyOneDaysAgo);
     $this->entityManager->persist($oldUnsubscribedStats);
     $this->entityManager->flush();
-    // Freshly unsubscribed (but created before the period)
-    $newUnsubscribed = (new Subscriber())->withCreatedAt($thirtyOneDaysAgo)->withStatus(SubscriberEntity::STATUS_UNSUBSCRIBED)->create();
+    // Freshly unsubscribed (but subscribed before the period)
+    $newUnsubscribed = (new Subscriber())->withLastSubscribedAt($thirtyOneDaysAgo)->create();
     $newUnsubscribedStats = new StatisticsUnsubscribeEntity(null, null, $newUnsubscribed);
     $newUnsubscribedStats->setCreatedAt($twentyNineDaysAgo);
     $this->entityManager->persist($newUnsubscribedStats);
     $this->entityManager->flush();
 
+    // Subscriber who subscribed and unsubscribed in the period
+    $subscribedAndUnsubscribed = (new Subscriber())->withLastSubscribedAt($twentyNineDaysAgo)->create();
+    // Freshly unsubscribed (but created before the period)
+    $subscribedAndUnsubscribed = new StatisticsUnsubscribeEntity(null, null, $subscribedAndUnsubscribed);
+    $subscribedAndUnsubscribed->setCreatedAt($twentyNineDaysAgo);
+    $this->entityManager->persist($subscribedAndUnsubscribed);
+    $this->entityManager->flush();
+
     $subscribersStats = $this->homepageDataController->getPageData()['subscribersStats'];
-    expect($subscribersStats['global']['subscribed'])->equals(1);
-    expect($subscribersStats['global']['unsubscribed'])->equals(1);
+    expect($subscribersStats['global']['subscribed'])->equals(2);
+    expect($subscribersStats['global']['unsubscribed'])->equals(2);
   }
 
   public function testCountMultipleGlobalUnsubscribesOfTheSameSubscriberOnlyOnce(): void {
     $thirtyOneDaysAgo = Carbon::now()->subDays(31);
     $twentyNineDaysAgo = Carbon::now()->subDays(29);
-    // New subscribed
-    (new Subscriber())->withCreatedAt($twentyNineDaysAgo)->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)->create();
     // Freshly unsubscribed (but created before the period)
-    $newUnsubscribed = (new Subscriber())->withCreatedAt($thirtyOneDaysAgo)->withStatus(SubscriberEntity::STATUS_UNSUBSCRIBED)->create();
+    $newUnsubscribed = (new Subscriber())->withCreatedAt($thirtyOneDaysAgo)->create();
     $newUnsubscribedStats = new StatisticsUnsubscribeEntity(null, null, $newUnsubscribed);
     $newUnsubscribedStats->setCreatedAt($twentyNineDaysAgo);
     $this->entityManager->persist($newUnsubscribedStats);
@@ -228,30 +234,24 @@ class HomepageDataControllerTest extends \MailPoetTest {
 
   public function testItFetchesCorrectGlobalSubscriberChange(): void {
     $thirtyOneDaysAgo = Carbon::now()->subDays(31);
-    $twentyNineDaysAgo = Carbon::now()->subDays(29);
 
     // 10 New Subscribers
     for ($i = 0; $i < 10; $i++) {
-      (new Subscriber())->withCreatedAt($twentyNineDaysAgo)->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)->create();
+      (new Subscriber())->create();
     }
     $subscribersStats = $this->homepageDataController->getPageData()['subscribersStats'];
     expect($subscribersStats['global']['changePercent'])->equals(1000);
 
-    // 10 New Subscribers + 5 Old Subscribers
-    for ($i = 0; $i < 5; $i++) {
-      (new Subscriber())->withCreatedAt($thirtyOneDaysAgo)->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)->create();
+    // 10 New Subscribers + 6 Old Subscribers
+    for ($i = 0; $i < 6; $i++) {
+      (new Subscriber())->withLastSubscribedAt($thirtyOneDaysAgo)->create();
     }
     $subscribersStats = $this->homepageDataController->getPageData()['subscribersStats'];
-    expect($subscribersStats['global']['changePercent'])->equals(200);
-
-    // 10 New Subscribers + 6 Old Subscribers
-    (new Subscriber())->withCreatedAt($thirtyOneDaysAgo)->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)->create();
-    $subscribersStats = $this->homepageDataController->getPageData()['subscribersStats'];
-    expect($subscribersStats['global']['changePercent'])->equals( 166.7);
+    expect($subscribersStats['global']['changePercent'])->equals(166.7);
 
     // 10 New Subscribers + 6 Old Subscribers + 10 New Unsubscribed
     for ($i = 0; $i < 10; $i++) {
-      $unsubscribed = (new Subscriber())->withCreatedAt($thirtyOneDaysAgo)->withStatus(SubscriberEntity::STATUS_UNSUBSCRIBED)->create();
+      $unsubscribed = (new Subscriber())->withLastSubscribedAt($thirtyOneDaysAgo)->withStatus(SubscriberEntity::STATUS_UNSUBSCRIBED)->create();
       $this->entityManager->persist(new StatisticsUnsubscribeEntity(null, null, $unsubscribed));
       $this->entityManager->flush();
     }
@@ -259,7 +259,7 @@ class HomepageDataControllerTest extends \MailPoetTest {
     expect($subscribersStats['global']['changePercent'])->equals( 0);
 
     // 10 New Subscribers + 6 Old Subscribers + 11 New Unsubscribed
-    $unsubscribed = (new Subscriber())->withCreatedAt($thirtyOneDaysAgo)->withStatus(SubscriberEntity::STATUS_UNSUBSCRIBED)->create();
+    $unsubscribed = (new Subscriber())->withLastSubscribedAt($thirtyOneDaysAgo)->withStatus(SubscriberEntity::STATUS_UNSUBSCRIBED)->create();
     $this->entityManager->persist(new StatisticsUnsubscribeEntity(null, null, $unsubscribed));
     $this->entityManager->flush();
     $subscribersStats = $this->homepageDataController->getPageData()['subscribersStats'];
@@ -286,18 +286,7 @@ class HomepageDataControllerTest extends \MailPoetTest {
       ->create();
     $subscriberSegment = $oldSubscribed->getSubscriberSegments()->first();
     $this->assertInstanceOf(SubscriberSegmentEntity::class, $subscriberSegment);
-    $subscriberSegment->setCreatedAt($thirtyOneDaysAgo);
-    // Subscribed only on list level - ignored because not subscribed globally
-    (new Subscriber())
-      ->withStatus(SubscriberEntity::STATUS_UNCONFIRMED)
-      ->withSegments([$segment])
-      ->create();
-    // Subscribed only on top level - ignored because not subscribed on list level
-    (new Subscriber())
-      ->withStatus(SubscriberEntity::STATUS_UNCONFIRMED)
-      ->withSegments([$segment])
-      ->create();
-    $this->entityManager->flush();
+    $this->setUpdatedAtForEntity($subscriberSegment, $thirtyOneDaysAgo);
     $subscribersStats = $this->homepageDataController->getPageData()['subscribersStats'];
     expect($subscribersStats['lists'][0]['id'])->equals($segment->getId());
     expect($subscribersStats['lists'][0]['name'])->equals($segment->getName());
@@ -319,19 +308,21 @@ class HomepageDataControllerTest extends \MailPoetTest {
     $subscriberSegment = $newUnsubscribed->getSubscriberSegments()->first();
     $this->assertInstanceOf(SubscriberSegmentEntity::class, $subscriberSegment);
     $subscriberSegment->setCreatedAt($thirtyOneDaysAgo);
-    $subscriberSegment->setUpdatedAt($twentyNineDaysAgo);
     $subscriberSegment->setStatus(SubscriberEntity::STATUS_UNSUBSCRIBED);
+    $this->entityManager->flush();
+    $this->setUpdatedAtForEntity($subscriberSegment, $twentyNineDaysAgo);
     // Unsubscribed 31 days ago - ignored because unsubscribed too far in the past
-    $newUnsubscribed = (new Subscriber())
-      ->withCreatedAt($twentyNineDaysAgo)
+    $oldUnsubscribed = (new Subscriber())
+      ->withCreatedAt($thirtyOneDaysAgo)
       ->withStatus(SubscriberEntity::STATUS_UNSUBSCRIBED)
       ->withSegments([$segment])
       ->create();
-    $subscriberSegment = $newUnsubscribed->getSubscriberSegments()->first();
+    $subscriberSegment = $oldUnsubscribed->getSubscriberSegments()->first();
     $this->assertInstanceOf(SubscriberSegmentEntity::class, $subscriberSegment);
     $subscriberSegment->setCreatedAt($thirtyOneDaysAgo);
-    $subscriberSegment->setUpdatedAt($thirtyOneDaysAgo);
     $subscriberSegment->setStatus(SubscriberEntity::STATUS_UNSUBSCRIBED);
+    $this->entityManager->flush();
+    $this->setUpdatedAtForEntity($subscriberSegment, $thirtyOneDaysAgo);
 
     $subscribersStats = $this->homepageDataController->getPageData()['subscribersStats'];
     expect($subscribersStats['lists'][0]['id'])->equals($segment->getId());
@@ -343,6 +334,7 @@ class HomepageDataControllerTest extends \MailPoetTest {
   private function cleanup(): void {
     $this->truncateEntity(SettingEntity::class);
     $this->truncateEntity(SubscriberEntity::class);
+    $this->truncateEntity(StatisticsUnsubscribeEntity::class);
     $this->truncateEntity(FormEntity::class);
     $this->truncateEntity(NewsletterEntity::class);
     $this->truncateEntity(NewsletterOptionFieldEntity::class);
