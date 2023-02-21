@@ -37,6 +37,7 @@ class NewsletterEntity {
   const STATUS_SCHEDULED = 'scheduled';
   const STATUS_SENDING = 'sending';
   const STATUS_SENT = 'sent';
+  const STATUS_CORRUPT = 'corrupt';
 
   /**
    * Newsletters that their body HTML can get re-generated

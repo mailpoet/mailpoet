@@ -3,8 +3,10 @@
 namespace MailPoet\Newsletter\Renderer;
 
 use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Renderer\Blocks\AbandonedCartContent;
 use MailPoet\Newsletter\Renderer\Blocks\AutomatedLatestContentBlock;
+use MailPoet\NewsletterProcessingException;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\WooCommerce\CouponPreProcessor;
 use MailPoet\WooCommerce\TransactionalEmails\ContentPreprocessor;
@@ -31,16 +33,21 @@ class Preprocessor {
   /*** @var CouponPreProcessor */
   private $couponPreProcessor;
 
+  /*** @var NewslettersRepository */
+  private $newslettersRepository;
+
   public function __construct(
     AbandonedCartContent $abandonedCartContent,
     AutomatedLatestContentBlock $automatedLatestContent,
     ContentPreprocessor $wooCommerceContentPreprocessor,
-    CouponPreProcessor $couponPreProcessor
+    CouponPreProcessor $couponPreProcessor,
+    NewslettersRepository $newslettersRepository
   ) {
     $this->abandonedCartContent = $abandonedCartContent;
     $this->automatedLatestContent = $automatedLatestContent;
     $this->wooCommerceContentPreprocessor = $wooCommerceContentPreprocessor;
     $this->couponPreProcessor = $couponPreProcessor;
+    $this->newslettersRepository = $newslettersRepository;
   }
 
   /**
@@ -57,6 +64,13 @@ class Preprocessor {
 
     $contentBlocks = $this->couponPreProcessor->processCoupons($newsletter, $contentBlocks, $preview);
 
+    try {
+      $contentBlocks = $this->couponPreProcessor->processCoupons($newsletter, $contentBlocks, $preview);
+    } catch (NewsletterProcessingException $e) {
+      $newsletter->setStatus(NewsletterEntity::STATUS_CORRUPT);
+      $this->newslettersRepository->persist($newsletter);
+      $this->newslettersRepository->flush();
+    }
     foreach ($contentBlocks as $block) {
       $processedBlock = $this->processBlock($newsletter, $block, $preview, $sendingTask);
       if (!empty($processedBlock)) {

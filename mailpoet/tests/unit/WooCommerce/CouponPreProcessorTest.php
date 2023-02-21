@@ -10,6 +10,7 @@ use MailPoet\Logging\LoggerFactory;
 use MailPoet\Logging\LogRepository;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Renderer\Blocks\Coupon;
+use MailPoet\NewsletterProcessingException;
 use MailPoet\Settings\SettingsController;
 use MailPoet\WooCommerce\CouponPreProcessor;
 use MailPoet\WooCommerce\Helper;
@@ -164,6 +165,32 @@ class CouponPreProcessorTest extends \MailPoetUnitTest {
     $blocks = ['some' => true, 'random' => false];
     $result = $processor->processCoupons($newsletter, $blocks, false);
     expect($result)->equals($blocks);
+  }
+
+  public function testItThrowsWhenCouponClassThrows() {
+    $exceptionMessage = 'Invalid discount type';
+    $wcHelper = $this->make(Helper::class, [
+      /* @phpstan-ignore-next-line Unable to resolve the template type RealInstanceType in call to method Codeception\Test\Unit::make() */
+      'createWcCoupon' => $this->make($this->createCouponMock(), ['set_discount_type' => function() use($exceptionMessage) {
+        throw new \Exception($exceptionMessage);
+      }]),
+      'isWooCommerceActive' => true,
+    ]);
+
+    $loggerFactory = $this->getLoggerFactory(Stub\Expected::never());
+
+    $processor = new CouponPreProcessor(
+      $wcHelper,
+      Stub::make(NewslettersRepository::class, [
+        'flush' => Stub\Expected::never(),
+      ], $this),
+      $loggerFactory
+    );
+
+    [$newsletter, $blocks] = $this->createNewsletterAndBlockForType(NewsletterEntity::TYPE_STANDARD, 5);
+    $this->expectException(NewsletterProcessingException::class);
+    $this->expectExceptionMessage($exceptionMessage);
+    $processor->processCoupons($newsletter, $blocks, false);
   }
 
   private function assertWCCouponReceivesCorrectValues($mockedWCCoupon, $expectedCouponId, $expiryDay) {
