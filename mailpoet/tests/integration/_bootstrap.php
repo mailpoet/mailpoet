@@ -9,6 +9,7 @@ use MailPoet\Features\FeaturesController;
 use MailPoet\Settings\SettingsController;
 use MailPoetVendor\Doctrine\DBAL\Connection;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
+use MailPoetVendor\Doctrine\Persistence\Mapping\ClassMetadata;
 
 if ((boolean)getenv('MULTISITE') === true) {
   // REQUEST_URI needs to be set for WP to load the proper subsite where MailPoet is activated
@@ -161,6 +162,27 @@ abstract class MailPoetTest extends \Codeception\TestCase\Test { // phpcs:ignore
     $connection->executeQuery('SET FOREIGN_KEY_CHECKS=0');
     $connection->executeStatement("TRUNCATE $tableName");
     $connection->executeQuery('SET FOREIGN_KEY_CHECKS=1');
+  }
+
+  /**
+   * This is a helper function to update the updated_at column of an entity.
+   * The updatedAt column is automatically updated in MailPoet\Doctrine\EventListeners\TimestampListener
+   * so it is not possible to set it manually using a setter.
+   */
+  public function setUpdatedAtForEntity($entity, DateTimeInterface $updatedAt) {
+    $className = (string)get_class($entity);
+    $classMetadata = $this->entityManager->getClassMetadata($className);
+    if (!$classMetadata instanceof ClassMetadata) {
+      throw new \Exception("Entity $className not found");
+    }
+    $tableName = $classMetadata->getTableName();
+    $connection = $this->entityManager->getConnection();
+    $connection->executeQuery("
+        UPDATE $tableName
+        SET updated_at = '{$updatedAt->format('Y-m-d H:i:s')}'
+        WHERE id = {$entity->getId()}
+      ");
+    $this->entityManager->refresh($entity);
   }
 
   public function clearSubscribersCountCache() {
