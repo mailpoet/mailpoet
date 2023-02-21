@@ -5,6 +5,7 @@ namespace MailPoet\WooCommerce\TransactionalEmails;
 use Codeception\Stub;
 use MailPoet\Config\ServicesChecker;
 use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Logging\LoggerFactory;
 use MailPoet\Models\Newsletter;
 use MailPoet\Newsletter\Editor\LayoutHelper as L;
 use MailPoet\Newsletter\NewslettersRepository;
@@ -111,7 +112,8 @@ class RendererTest extends \MailPoetTest {
         $this->diContainer->get(\MailPoet\Newsletter\Renderer\Blocks\AutomatedLatestContentBlock::class),
         $wooPreprocessor,
         $this->diContainer->get(\MailPoet\WooCommerce\CouponPreProcessor::class),
-        $this->diContainer->get(NewslettersRepository::class)
+        $this->diContainer->get(NewslettersRepository::class),
+        $this->diContainer->get(LoggerFactory::class)
       ),
       $this->diContainer->get(\MailPoetVendor\CSS::class),
       $this->diContainer->get(ServicesChecker::class),

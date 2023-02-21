@@ -4,6 +4,7 @@ namespace MailPoet\Test\Newsletter;
 
 use Codeception\Stub;
 use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Logging\LoggerFactory;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Renderer\Blocks\AbandonedCartContent;
 use MailPoet\Newsletter\Renderer\Blocks\AutomatedLatestContentBlock;
@@ -24,7 +25,15 @@ class PreprocessorTest extends \MailPoetUnitTest {
     ]);
     $wooPreprocessor = new TransactionalEmails\ContentPreprocessor($transactionalEmails);
     $newsletterRepository = Stub::make(NewslettersRepository::class);
-    $preprocessor = new Preprocessor($acc, $alc, $wooPreprocessor, $couponPreProcessor, $newsletterRepository);
+    $loggerFactory = Stub::make(LoggerFactory::class);
+    $preprocessor = new Preprocessor(
+      $acc,
+      $alc,
+      $wooPreprocessor,
+      $couponPreProcessor,
+      $newsletterRepository,
+      $loggerFactory
+    );
     expect($preprocessor->processBlock(new NewsletterEntity(), ['type' => 'woocommerceHeading']))->equals([[
       'type' => 'container',
       'orientation' => 'horizontal',
@@ -53,7 +62,15 @@ class PreprocessorTest extends \MailPoetUnitTest {
     $couponPreProcessor = Stub::make(CouponPreProcessor::class);
     $wooPreprocessor = new TransactionalEmails\ContentPreprocessor(Stub::make(TransactionalEmails::class));
     $newsletterRepository = Stub::make(NewslettersRepository::class);
-    $preprocessor = new Preprocessor($acc, $alc, $wooPreprocessor, $couponPreProcessor, $newsletterRepository);
+    $loggerFactory = Stub::make(LoggerFactory::class);
+    $preprocessor = new Preprocessor(
+      $acc,
+      $alc,
+      $wooPreprocessor,
+      $couponPreProcessor,
+      $newsletterRepository,
+      $loggerFactory
+    );
     expect($preprocessor->processBlock(new NewsletterEntity(), ['type' => 'woocommerceContent']))->equals([[
       'type' => 'container',
       'orientation' => 'horizontal',
