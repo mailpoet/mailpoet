@@ -202,6 +202,15 @@ h1.title.mailpoet-newsletter-listing-heading {
   }
 }
 
+.mailpoet-listing-status-corrupt {
+  color: $color-destructive;
+  padding-left: 0;
+
+  .mailpoet-listing-status-label {
+    padding-left: 0;
+  }
+}
+
 .mailpoet-listing-status-percentage {
   stroke-width: 2px;
 }

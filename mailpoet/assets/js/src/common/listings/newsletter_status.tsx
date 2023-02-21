@@ -3,6 +3,7 @@ import classnames from 'classnames';
 import { addDays, differenceInMinutes, isFuture, isPast } from 'date-fns';
 import { t } from 'common/functions/t';
 import { Tooltip } from '../tooltip/tooltip';
+import { NewsletterStatus as NewsletterStatusEnum } from '../../newsletters/models';
 
 type CircularProgressProps = {
   percentage: number;
@@ -60,7 +61,7 @@ type NewsletterStatusProps = {
   processed?: number;
   total?: number;
   isPaused?: boolean;
-  status?: string;
+  status?: NewsletterStatusEnum;
 };
 
 function NewsletterStatus({
@@ -70,10 +71,11 @@ function NewsletterStatus({
   isPaused,
   status,
 }: NewsletterStatusProps) {
+  const isCorrupt = status === 'corrupt';
   const unknown = !scheduledFor && !processed && !total;
   const scheduled = scheduledFor && isFuture(scheduledFor);
   const inProgress =
-    (!scheduledFor || isPast(scheduledFor)) && processed < total;
+    (!scheduledFor || isPast(scheduledFor)) && processed < total && !isCorrupt;
   const sent = (!scheduledFor || isPast(scheduledFor)) && processed >= total;
   const sentWithoutQueue = status === 'sent' && total === undefined;
   let percentage = 0;
@@ -134,6 +136,11 @@ function NewsletterStatus({
   if (isPaused && !sent && !sentWithoutQueue) {
     label = t('paused');
   }
+
+  if (isCorrupt) {
+    label = t('renderingProblem');
+  }
+
   return (
     <div
       className={classnames({
@@ -142,10 +149,11 @@ function NewsletterStatus({
         'mailpoet-listing-status-scheduled': scheduled,
         'mailpoet-listing-status-in-progress': inProgress,
         'mailpoet-listing-status-sent': sent || sentWithoutQueue,
+        'mailpoet-listing-status-corrupt': isCorrupt,
       })}
     >
       {scheduled && <ScheduledIcon />}
-      <CircularProgress percentage={percentage} />
+      {!isCorrupt && <CircularProgress percentage={percentage} />}
       <div className="mailpoet-listing-status-label">{label}</div>
     </div>
   );
