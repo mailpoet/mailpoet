@@ -24,9 +24,6 @@ class CouponPreProcessorTest extends \MailPoetUnitTest {
   private static $saveCouponId = 100;
   private static $updatingCouponId = 5;
 
-  /*** @var LoggerFactory */
-  private $loggerFactory;
-
   public function __construct(
     $name = null,
     array $data = [],
@@ -38,11 +35,9 @@ class CouponPreProcessorTest extends \MailPoetUnitTest {
       new \DateTimeZone('UTC');
     });
 
-    $this->loggerFactory = $this->getLoggerFactory(Stub\Expected::never());
     $this->processor = new CouponPreProcessor(
       Stub::make(Helper::class),
-      Stub::make(NewslettersRepository::class),
-      $this->loggerFactory
+      Stub::make(NewslettersRepository::class)
     );
 
   }
@@ -71,8 +66,7 @@ class CouponPreProcessorTest extends \MailPoetUnitTest {
       $wcHelper,
       Stub::make(NewslettersRepository::class, [
         'flush' => Stub\Expected::never(), // for type = NewsletterEntity::TYPE_AUTOMATIC, the $newsletter->body shouldn't update
-      ], $this),
-      $this->loggerFactory
+      ], $this)
     );
 
     $newsletter = (new NewsletterEntity());
@@ -98,8 +92,7 @@ class CouponPreProcessorTest extends \MailPoetUnitTest {
       $wcHelper,
       Stub::make(NewslettersRepository::class, [
         'flush' => Stub\Expected::once(), // for type != NewsletterEntity::TYPE_AUTOMATIC, the $newsletter->body should update
-      ], $this),
-      $this->loggerFactory
+      ], $this)
     );
 
     $newsletter = (new NewsletterEntity());
@@ -126,8 +119,7 @@ class CouponPreProcessorTest extends \MailPoetUnitTest {
       $wcHelper,
       Stub::make(NewslettersRepository::class, [
         'flush' => Stub\Expected::never(),
-      ], $this),
-      $this->loggerFactory
+      ], $this)
     );
 
     $newsletter = (new NewsletterEntity());
@@ -145,24 +137,25 @@ class CouponPreProcessorTest extends \MailPoetUnitTest {
     expect($result[0]['blocks'][0]['couponId'])->equals(self::$saveCouponId);
   }
 
-  public function testLogsWhenWCIsNotActiveAndReturnsIntactBlocks() {
+  public function testItThrowsWhenWCIsNotActive() {
     $wcHelper = $this->make(Helper::class, [
       'createWcCoupon' => $this->createCouponMock(),
       'isWooCommerceActive' => false,
     ]);
 
-    $loggerFactory = $this->getLoggerFactory(Stub\Expected::once());
+    $loggerFactory = $this->getLoggerFactory(Stub\Expected::never());
 
     $processor = new CouponPreProcessor(
       $wcHelper,
       Stub::make(NewslettersRepository::class, [
         'flush' => Stub\Expected::never(),
-      ], $this),
-      $loggerFactory
+      ], $this)
     );
     $newsletter = (new NewsletterEntity());
 
     $blocks = ['some' => true, 'random' => false];
+    $this->expectException(NewsletterProcessingException::class);
+    $this->expectExceptionMessage('Woocommerce is not active');
     $result = $processor->processCoupons($newsletter, $blocks, false);
     expect($result)->equals($blocks);
   }
@@ -177,14 +170,11 @@ class CouponPreProcessorTest extends \MailPoetUnitTest {
       'isWooCommerceActive' => true,
     ]);
 
-    $loggerFactory = $this->getLoggerFactory(Stub\Expected::never());
-
     $processor = new CouponPreProcessor(
       $wcHelper,
       Stub::make(NewslettersRepository::class, [
         'flush' => Stub\Expected::never(),
-      ], $this),
-      $loggerFactory
+      ], $this)
     );
 
     [$newsletter, $blocks] = $this->createNewsletterAndBlockForType(NewsletterEntity::TYPE_STANDARD, 5);
