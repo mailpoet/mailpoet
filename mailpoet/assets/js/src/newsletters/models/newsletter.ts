@@ -15,6 +15,7 @@ export enum NewsletterStatus {
   Sending = 'sending',
   Sent = 'sent',
   Active = 'active',
+  Corrupt = 'corrupt',
 }
 
 export enum NewsletterOptionGroup {
@@ -53,7 +54,11 @@ export type NewsLetter = {
   };
   parent_id: null | string;
   preheader: string;
-  queue: Record<string, unknown>;
+  queue: Record<string, unknown> & {
+    scheduled_at: string;
+    count_processed: string;
+    count_total: string;
+  };
   reply_to_address: string;
   reply_to_name: string;
   segments: Array<{ filters: unknown[] }>;

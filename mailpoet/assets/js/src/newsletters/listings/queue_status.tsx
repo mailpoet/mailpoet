@@ -1,34 +1,24 @@
 import { useState } from 'react';
 import { MailPoet } from 'mailpoet';
-import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import parseDate from 'date-fns/parse';
-import { APIErrorsNotice } from 'notices/api_errors_notice.tsx';
+import { APIErrorsNotice } from 'notices/api_errors_notice';
 import { Button } from 'common/button/button';
 import { NewsletterStatus } from 'common/listings/newsletter_status';
 import { withBoundary } from '../../common';
+import { NewsLetter } from '../models';
 
-const QueuePropType = PropTypes.shape({
-  status: PropTypes.string,
-  count_processed: PropTypes.string.isRequired,
-  count_total: PropTypes.string.isRequired,
-  scheduled_at: PropTypes.string,
-});
+type QueueSendingProps = {
+  newsletter: NewsLetter;
+};
 
-const NewsletterPropType = PropTypes.shape({
-  id: PropTypes.number.isRequired,
-  sent_at: PropTypes.string,
-  status: PropTypes.string.isRequired,
-  queue: PropTypes.oneOfType([QueuePropType, PropTypes.bool]),
-});
-
-function QueueSending({ newsletter }) {
+function QueueSending({ newsletter }: QueueSendingProps) {
   const [paused, setPaused] = useState(newsletter.queue.status === 'paused');
   const [errors, setErrors] = useState([]);
 
-  const pauseSending = () => {
+  const pauseSending = async () => {
     setErrors([]);
-    MailPoet.Ajax.post({
+    await MailPoet.Ajax.post({
       api_version: window.mailpoet_api_version,
       endpoint: 'sendingQueue',
       action: 'pause',
@@ -40,9 +30,9 @@ function QueueSending({ newsletter }) {
       .fail((response) => setErrors(response.errors));
   };
 
-  const resumeSending = () => {
+  const resumeSending = async () => {
     setErrors([]);
-    MailPoet.Ajax.post({
+    await MailPoet.Ajax.post({
       api_version: window.mailpoet_api_version,
       endpoint: 'sendingQueue',
       action: 'resume',
@@ -71,19 +61,19 @@ function QueueSending({ newsletter }) {
   );
 }
 
-QueueSending.propTypes = {
-  newsletter: NewsletterPropType.isRequired,
+type QueueStatusProps = {
+  newsletter: NewsLetter;
+  mailerLog: {
+    status: string;
+  };
 };
 
-function QueueStatus({ newsletter, mailerLog }) {
-  let newsletterDate = newsletter.sent_at || newsletter.queue.scheduled_at;
-  if (newsletterDate) {
-    newsletterDate = parseDate(
-      newsletterDate,
-      'yyyy-MM-dd HH:mm:ss',
-      new Date(),
-    );
-  }
+function QueueStatus({ newsletter, mailerLog }: QueueStatusProps) {
+  const rawNewsletterDate = newsletter.sent_at || newsletter.queue.scheduled_at;
+  const newsletterDate = rawNewsletterDate
+    ? parseDate(rawNewsletterDate, 'yyyy-MM-dd HH:mm:ss', new Date())
+    : undefined;
+
   const isNewsletterSending =
     newsletter.queue && newsletter.queue.status !== 'scheduled';
   const isMtaPaused = mailerLog.status === 'paused';
@@ -124,12 +114,6 @@ function QueueStatus({ newsletter, mailerLog }) {
   );
 }
 
-QueueStatus.propTypes = {
-  newsletter: NewsletterPropType.isRequired,
-  mailerLog: PropTypes.shape({
-    status: PropTypes.string,
-  }).isRequired,
-};
 QueueStatus.displayName = 'QueueStatus';
 const QueueStatusWithBoundary = withBoundary(QueueStatus);
 export { QueueStatusWithBoundary as QueueStatus };

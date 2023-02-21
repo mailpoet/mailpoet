@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 
 import { Listing } from 'listing/listing.jsx';
 import { MailPoet } from 'mailpoet';
-import { QueueStatus } from 'newsletters/listings/queue_status.jsx';
+import { QueueStatus } from 'newsletters/listings/queue_status';
 import { Statistics } from 'newsletters/listings/statistics.jsx';
 import {
   addStatsCTAAction,
