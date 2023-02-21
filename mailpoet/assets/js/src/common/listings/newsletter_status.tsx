@@ -3,7 +3,10 @@ import classnames from 'classnames';
 import { addDays, differenceInMinutes, isFuture, isPast } from 'date-fns';
 import { t } from 'common/functions/t';
 import { Tooltip } from '../tooltip/tooltip';
-import { NewsletterStatus as NewsletterStatusEnum } from '../../newsletters/models';
+import {
+  NewsLetter,
+  NewsletterStatus as NewsletterStatusEnum,
+} from '../../newsletters/models';
 
 type CircularProgressProps = {
   percentage: number;
@@ -62,6 +65,7 @@ type NewsletterStatusProps = {
   total?: number;
   isPaused?: boolean;
   status?: NewsletterStatusEnum;
+  logs?: NewsLetter['logs'];
 };
 
 function NewsletterStatus({
@@ -70,6 +74,7 @@ function NewsletterStatus({
   total,
   isPaused,
   status,
+  logs = [],
 }: NewsletterStatusProps) {
   const isCorrupt = status === 'corrupt';
   const unknown = !scheduledFor && !processed && !total;
@@ -155,6 +160,9 @@ function NewsletterStatus({
       {scheduled && <ScheduledIcon />}
       {!isCorrupt && <CircularProgress percentage={percentage} />}
       <div className="mailpoet-listing-status-label">{label}</div>
+      {isCorrupt && logs.length > 0 && (
+        <div className="mailpoet-listing-status-message">{logs.join('\n')}</div>
+      )}
     </div>
   );
 }

@@ -19,6 +19,7 @@ use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
+use MailPoet\Logging\LogRepository;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Preview\SendPreviewController;
 use MailPoet\Newsletter\Preview\SendPreviewException;
@@ -97,7 +98,8 @@ class NewslettersTest extends \MailPoetTest {
             $this->makeEmpty(WCHelper::class)
           ),
           $this->diContainer->get(Url::class),
-          $this->diContainer->get(SendingQueuesRepository::class)
+          $this->diContainer->get(SendingQueuesRepository::class),
+          $this->diContainer->get(LogRepository::class)
         ),
       ]
     );

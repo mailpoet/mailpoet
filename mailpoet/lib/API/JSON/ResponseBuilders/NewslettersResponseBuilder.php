@@ -6,6 +6,8 @@ use MailPoet\Entities\DynamicSegmentFilterEntity;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SendingQueueEntity;
+use MailPoet\Logging\LoggerFactory;
+use MailPoet\Logging\LogRepository;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Newsletter\Statistics\NewsletterStatistics;
@@ -39,18 +41,23 @@ class NewslettersResponseBuilder {
   /** @var SendingQueuesRepository */
   private $sendingQueuesRepository;
 
+  /*** @var LogRepository */
+  private $logRepository;
+
   public function __construct(
     EntityManager $entityManager,
     NewslettersRepository $newslettersRepository,
     NewsletterStatisticsRepository $newslettersStatsRepository,
     NewsletterUrl $newsletterUrl,
-    SendingQueuesRepository $sendingQueuesRepository
+    SendingQueuesRepository $sendingQueuesRepository,
+    LogRepository $logRepository
   ) {
     $this->newslettersStatsRepository = $newslettersStatsRepository;
     $this->newslettersRepository = $newslettersRepository;
     $this->entityManager = $entityManager;
     $this->newsletterUrl = $newsletterUrl;
     $this->sendingQueuesRepository = $sendingQueuesRepository;
+    $this->logRepository = $logRepository;
   }
 
   public function build(NewsletterEntity $newsletter, $relations = []) {
@@ -124,6 +131,10 @@ class NewslettersResponseBuilder {
   }
 
   private function buildListingItem(NewsletterEntity $newsletter, NewsletterStatistics $statistics = null, SendingQueueEntity $latestQueue = null): array {
+    $couponBlockLogs = array_map(function ($item) {
+      return "Coupon block: $item";
+    }, $this->logRepository->getRawMessagesForNewsletter($newsletter, LoggerFactory::TOPIC_COUPONS));
+    
     $data = [
       'id' => (string)$newsletter->getId(), // (string) for BC
       'hash' => $newsletter->getHash(),
@@ -145,6 +156,7 @@ class NewslettersResponseBuilder {
           ? $latestQueue
           : null
       ),
+      'logs' => $couponBlockLogs,
     ];
 
     if ($newsletter->getType() === NewsletterEntity::TYPE_STANDARD) {
