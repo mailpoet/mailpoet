@@ -266,7 +266,10 @@ class GitHubController {
 
     $response = $this->httpClient->put(
       "pulls/{$pullRequest['number']}/merge",
-      ['http_errors' => false]
+      [
+        'http_errors' => false,
+        'json' => ['merge_method' => 'rebase'],
+      ]
     );
 
     if ($response->getStatusCode() !== 200) {
