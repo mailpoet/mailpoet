@@ -15,6 +15,7 @@ import {
   WindowWooCommerceCountries,
   WooCommerceFormItem,
 } from '../types';
+import { SubscribedDateFields } from './subscriber_subscribed_date';
 import { storeName } from '../store';
 import {
   WooCommerceActionTypes,
@@ -284,6 +285,8 @@ export const WooCommerceFields: FunctionComponent<Props> = ({
         </Grid.CenteredRow>
       </>
     );
+  } else if (segment.action === WooCommerceActionTypes.PURCHASE_DATE) {
+    optionFields = SubscribedDateFields({ filterIndex });
   } else if (segment.action === WooCommerceActionTypes.NUMBER_OF_ORDERS) {
     optionFields = (
       <>

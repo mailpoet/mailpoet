@@ -61,6 +61,11 @@ export interface FormItem {
   action?: string;
 }
 
+export interface DateFormItem extends FormItem {
+  operator: string;
+  value: string;
+}
+
 export interface WordpressRoleFormItem extends FormItem {
   wordpressRole?: string[];
   operator?: string;

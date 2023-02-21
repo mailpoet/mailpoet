@@ -8,7 +8,7 @@ import { Datepicker } from 'common/datepicker/datepicker';
 import { Grid } from 'common/grid';
 import { Input } from 'common/form/input/input';
 
-import { WordpressRoleFormItem } from '../types';
+import { DateFormItem } from '../types';
 import { storeName } from '../store';
 
 export enum SubscribedDateOperator {
@@ -54,8 +54,9 @@ type Props = {
 };
 
 export function SubscribedDateFields({ filterIndex }: Props): JSX.Element {
-  const segment: WordpressRoleFormItem = useSelect(
-    (select) => select(storeName).getSegmentFilter(filterIndex),
+  const segment: DateFormItem = useSelect(
+    (select) =>
+      select(storeName).getSegmentFilter(filterIndex),
     [filterIndex],
   );
 
