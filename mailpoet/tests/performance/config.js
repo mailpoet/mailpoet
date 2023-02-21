@@ -3,6 +3,7 @@ export const headlessSet = ['true', '1'].includes(
   `${__ENV.HEADLESS || 'true'}`.toLowerCase(), // eslint-disable-line
 );
 export const scenario = __ENV.SCENARIO; // eslint-disable-line
+export const timeoutSet = '2m';
 
 export const adminUsername = 'admin';
 export const adminPassword = 'password';

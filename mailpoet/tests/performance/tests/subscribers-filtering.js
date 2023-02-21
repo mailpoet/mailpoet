@@ -16,13 +16,17 @@ import {
   thinkTimeMin,
   thinkTimeMax,
   headlessSet,
+  timeoutSet,
   adminEmail,
 } from '../config.js';
 import { authenticate } from '../utils/helpers.js';
 /* global Promise */
 
 export function subscribersFiltering() {
-  const browser = chromium.launch({ headless: headlessSet });
+  const browser = chromium.launch({
+    headless: headlessSet,
+    timeout: timeoutSet,
+  });
   const page = browser.newPage();
 
   group('Subscribers - Filter subscribers', function subscribersFiltering() {
@@ -55,7 +59,7 @@ export function subscribersFiltering() {
         page
           .locator('[data-automation-id="listing_filter_segment"]')
           .selectOption('3');
-        sleep(2);
+        page.waitForSelector('.mailpoet-listing-no-items');
         page.waitForSelector('[data-automation-id="filters_subscribed"]');
         check(page, {
           'subscribers filter is visible': page
@@ -67,7 +71,7 @@ export function subscribersFiltering() {
       .then(() => {
         page.waitForNavigation({ waitUntil: 'networkidle' });
         page.locator('#search_input').type(adminEmail, { delay: 50 });
-        sleep(2);
+        page.waitForSelector('.mailpoet-listing-no-items');
         page.waitForSelector('[data-automation-id="filters_subscribed"]');
         check(page, {
           'subscribers filter is visible': page
@@ -82,7 +86,7 @@ export function subscribersFiltering() {
       });
   });
 
-  sleep(randomIntBetween(`${thinkTimeMin}`, `${thinkTimeMax}`));
+  sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
 }
 
 export default function subscribersFilteringTest() {

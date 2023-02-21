@@ -11,12 +11,21 @@ import { randomIntBetween } from 'https://jslib.k6.io/k6-utils/1.1.0/index.js';
 /**
  * Internal dependencies
  */
-import { baseURL, thinkTimeMin, thinkTimeMax, headlessSet } from '../config.js';
+import {
+  baseURL,
+  thinkTimeMin,
+  thinkTimeMax,
+  headlessSet,
+  timeoutSet,
+} from '../config.js';
 import { authenticate } from '../utils/helpers.js';
 /* global Promise */
 
 export function wpLogin() {
-  const browser = chromium.launch({ headless: headlessSet });
+  const browser = chromium.launch({
+    headless: headlessSet,
+    timeout: timeoutSet,
+  });
   const page = browser.newPage();
 
   group('Login to WP Admin', function LoginToWPAdmin() {
@@ -46,7 +55,7 @@ export function wpLogin() {
       });
   });
 
-  sleep(randomIntBetween(`${thinkTimeMin}`, `${thinkTimeMax}`));
+  sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
 }
 
 export default function wpLoginTest() {
