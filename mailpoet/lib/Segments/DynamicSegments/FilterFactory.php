@@ -20,6 +20,7 @@ use MailPoet\Segments\DynamicSegments\Filters\WooCommerceCountry;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceMembership;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceNumberOfOrders;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceProduct;
+use MailPoet\Segments\DynamicSegments\Filters\WooCommercePurchaseDate;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceSingleOrderValue;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceSubscription;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceTotalSpent;
@@ -42,6 +43,9 @@ class FilterFactory {
 
   /** @var WooCommerceNumberOfOrders */
   private $wooCommerceNumberOfOrders;
+
+  /** @var WooCommercePurchaseDate */
+  private $wooCommercePurchaseDate;
 
   /** @var WooCommerceSingleOrderValue */
   private $wooCommerceSingleOrderValue;
@@ -88,6 +92,7 @@ class FilterFactory {
     WooCommerceNumberOfOrders $wooCommerceNumberOfOrders,
     WooCommerceTotalSpent $wooCommerceTotalSpent,
     WooCommerceMembership $wooCommerceMembership,
+    WooCommercePurchaseDate $wooCommercePurchaseDate,
     WooCommerceSubscription $wooCommerceSubscription,
     SubscriberSubscribedDate $subscriberSubscribedDate,
     SubscriberScore $subscriberScore,
@@ -102,6 +107,7 @@ class FilterFactory {
     $this->wooCommerceCountry = $wooCommerceCountry;
     $this->wooCommerceNumberOfOrders = $wooCommerceNumberOfOrders;
     $this->wooCommerceMembership = $wooCommerceMembership;
+    $this->wooCommercePurchaseDate = $wooCommercePurchaseDate;
     $this->wooCommerceSubscription = $wooCommerceSubscription;
     $this->emailOpensAbsoluteCount = $emailOpensAbsoluteCount;
     $this->wooCommerceTotalSpent = $wooCommerceTotalSpent;
@@ -190,6 +196,8 @@ class FilterFactory {
       return $this->wooCommerceCountry;
     } elseif ($action === WooCommerceSingleOrderValue::ACTION_SINGLE_ORDER_VALUE) {
       return $this->wooCommerceSingleOrderValue;
+    } elseif ($action === WooCommercePurchaseDate::ACTION) {
+      return $this->wooCommercePurchaseDate;
     }
     return $this->wooCommerceCategory;
   }

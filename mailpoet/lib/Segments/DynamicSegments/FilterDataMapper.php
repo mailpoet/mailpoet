@@ -17,6 +17,7 @@ use MailPoet\Segments\DynamicSegments\Filters\WooCommerceCountry;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceMembership;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceNumberOfOrders;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceProduct;
+use MailPoet\Segments\DynamicSegments\Filters\WooCommercePurchaseDate;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceSingleOrderValue;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceSubscription;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceTotalSpent;
@@ -262,6 +263,9 @@ class FilterDataMapper {
       $filterData['single_order_value_type'] = $data['single_order_value_type'];
       $filterData['single_order_value_amount'] = $data['single_order_value_amount'];
       $filterData['single_order_value_days'] = $data['single_order_value_days'];
+    } elseif ($data['action'] === WooCommercePurchaseDate::ACTION) {
+      $filterData['operator'] = $data['operator'];
+      $filterData['value'] = $data['value'];
     } else {
       throw new InvalidFilterException("Unknown action " . $data['action'], InvalidFilterException::MISSING_ACTION);
     }
