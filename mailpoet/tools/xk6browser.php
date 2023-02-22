@@ -22,7 +22,7 @@ if (!file_exists($vendorDir)) {
 }
 
 // paths
-$version = 'v0.7.0';
+$version = 'v0.8.1';
 $extension = $os === 'macos' || $os === 'windows' ? 'zip' : 'tar.gz';
 $name = "xk6-browser-$version-$os-$arch";
 $url = "https://github.com/grafana/xk6-browser/releases/download/$version/$name.$extension";
