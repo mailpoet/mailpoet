@@ -299,6 +299,10 @@ class NewsletterSaveController {
     if (array_key_exists('reply_to_address', $data)) {
       $newsletter->setReplyToAddress($data['reply_to_address'] ?? '');
     }
+
+    if ($newsletter->getStatus() === NewsletterEntity::STATUS_CORRUPT) {
+      $newsletter->setStatus(NewsletterEntity::STATUS_SENDING);
+    }
   }
 
   private function updateSegments(NewsletterEntity $newsletter, array $segments) {
