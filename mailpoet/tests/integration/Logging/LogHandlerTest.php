@@ -34,6 +34,7 @@ class LogHandlerTest extends \MailPoetTest {
       'context' => [],
       'channel' => 'name',
       'datetime' => $time,
+      'message' => 'some log message',
     ]);
 
     $log = $this->repository->findOneBy(['name' => 'name'], ['id' => 'desc']);
@@ -71,6 +72,7 @@ class LogHandlerTest extends \MailPoetTest {
       'context' => [],
       'channel' => 'name',
       'datetime' => new \DateTime(),
+      'message' => 'some log message',
     ]);
 
     $log = $this->repository->findBy(['name' => 'old name']);
@@ -105,6 +107,7 @@ class LogHandlerTest extends \MailPoetTest {
       'context' => [],
       'channel' => 'name',
       'datetime' => new \DateTime(),
+      'message' => 'some log message',
     ]);
 
     $log = $this->repository->findBy(['name' => 'old name keep']);
@@ -130,6 +133,7 @@ class LogHandlerTest extends \MailPoetTest {
         'context' => [],
         'channel' => 'name',
         'datetime' => $time,
+        'message' => 'some log message',
       ]);
     }
 
