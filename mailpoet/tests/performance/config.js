@@ -9,5 +9,9 @@ export const adminUsername = 'admin';
 export const adminPassword = 'password';
 export const adminEmail = 'test@test.com';
 
+export const firstName = 'John';
+export const lastName = 'Doe';
+export const defaultListName = 'Newsletter mailing list';
+
 export const thinkTimeMin = '1';
 export const thinkTimeMax = '4';
