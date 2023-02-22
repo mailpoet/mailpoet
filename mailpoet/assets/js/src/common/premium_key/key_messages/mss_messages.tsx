@@ -1,10 +1,16 @@
+import classnames from 'classnames';
 import { MailPoet } from 'mailpoet';
 import { useSelector } from 'settings/store/hooks';
 import { MssStatus } from 'settings/store/types';
 
-function MssActiveMessage() {
+type MssActiveMessageProps = { canUseSuccessClass: boolean };
+function MssActiveMessage({ canUseSuccessClass }: MssActiveMessageProps) {
   return (
-    <div className="mailpoet_success_item mailpoet_success mailpoet_mss_key_valid">
+    <div
+      className={classnames('mailpoet_success_item mailpoet_mss_key_valid', {
+        mailpoet_success: canUseSuccessClass,
+      })}
+    >
       {MailPoet.I18n.t('premiumTabMssActiveMessage')}
     </div>
   );
@@ -41,12 +47,13 @@ function MssNotActiveMessage({ activationCallback }: MssNotActiveMessageProps) {
 type Props = {
   keyMessage?: string;
   activationCallback: () => void;
+  canUseSuccessClass: boolean;
 };
 export function MssMessages(props: Props) {
   const { mssStatus } = useSelector('getKeyActivationState')();
   switch (mssStatus) {
     case MssStatus.VALID_MSS_ACTIVE:
-      return <MssActiveMessage />;
+      return <MssActiveMessage canUseSuccessClass={props.canUseSuccessClass} />;
     case MssStatus.VALID_MSS_NOT_ACTIVE:
       return (
         <MssNotActiveMessage activationCallback={props.activationCallback} />

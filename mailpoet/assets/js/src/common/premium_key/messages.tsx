@@ -31,11 +31,12 @@ export function Messages(
 
   return (
     <div className="key-activation-messages">
-      <KeyMessages />
+      <KeyMessages canUseSuccessClass={!showPendingApprovalNotice} />
       {state.mssStatus !== null && (
         <MssMessages
           keyMessage={state.mssMessage}
           activationCallback={activationCallback}
+          canUseSuccessClass={!showPendingApprovalNotice}
         />
       )}
       {state.congratulatoryMssEmailSentTo && (
@@ -47,18 +48,21 @@ export function Messages(
         </div>
       )}
       {state.premiumStatus !== null && (
-        <PremiumMessages keyMessage={state.premiumMessage} />
+        <PremiumMessages
+          keyMessage={state.premiumMessage}
+          canUseSuccessClass={!showPendingApprovalNotice}
+        />
       )}
 
       {showPendingApprovalNotice && (
-        <div className="mailpoet_success">
-          <div className="pending_approval_heading">
+        <div>
+          <div className="pending_approval_heading mailpoet_error">
             {MailPoet.I18n.t('premiumTabPendingApprovalHeading')}
           </div>
-          <div>
-            {MailPoet.I18n.t('premiumTabPendingApprovalMessage')}{' '}
-            {showRefreshMessage &&
-              ReactStringReplace(
+          <div>{MailPoet.I18n.t('premiumTabPendingApprovalMessage')}</div>
+          {showRefreshMessage ? (
+            <div>
+              {ReactStringReplace(
                 MailPoet.I18n.t('premiumTabPendingApprovalMessageRefresh'),
                 getLinkRegex(),
                 (match) => (
@@ -67,7 +71,8 @@ export function Messages(
                   </a>
                 ),
               )}
-          </div>
+            </div>
+          ) : null}
         </div>
       )}
 
