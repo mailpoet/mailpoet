@@ -25,3 +25,10 @@ export function selectInSelect2(page, listName) {
   page.locator('.select2-selection').type(listName);
   page.keyboard.press('Enter');
 }
+
+// Wait and click the element with waiting for navigation
+export function waitAndClick(page, elementName) {
+  page.waitForSelector(elementName);
+  page.locator(elementName).click();
+  page.waitForNavigation({ waitUntil: 'networkidle' });
+}
