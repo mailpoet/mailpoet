@@ -133,6 +133,17 @@ class Newsletters {
       $data['all_sender_domains'] = $this->senderDomainController->getAllSenderDomains();
     }
 
+    $data['corrupt_newsletters'] = $this->getCorruptNewsletterSubjects();
+
     $this->pageRenderer->displayPage('newsletters.html', $data);
+  }
+
+  private function getCorruptNewsletterSubjects(): array {
+    return array_map(function ($newsletter) {
+      return [
+        'id' => $newsletter->getId(),
+        'subject' => $newsletter->getSubject(),
+      ];
+    }, $this->newslettersRepository->getCorruptNewsletters());
   }
 }
