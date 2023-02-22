@@ -6,7 +6,11 @@ import { APIErrorsNotice } from 'notices/api_errors_notice';
 import { Button } from 'common/button/button';
 import { NewsletterStatus } from 'common/listings/newsletter_status';
 import { withBoundary } from '../../common';
-import { NewsLetter } from '../models';
+import {
+  NewsLetter,
+  NewsletterStatus as NewsletterStatusEnum,
+} from '../models';
+import { confirmAlert } from '../../common/confirm_alert';
 
 type QueueSendingProps = {
   newsletter: NewsLetter;
@@ -30,8 +34,7 @@ function QueueSending({ newsletter }: QueueSendingProps) {
       .fail((response) => setErrors(response.errors));
   };
 
-  const resumeSending = async () => {
-    setErrors([]);
+  const requestResume = async () => {
     await MailPoet.Ajax.post({
       api_version: window.mailpoet_api_version,
       endpoint: 'sendingQueue',
@@ -44,11 +47,31 @@ function QueueSending({ newsletter }: QueueSendingProps) {
       .fail((response) => setErrors(response.errors));
   };
 
+  const resumeSending = async () => {
+    setErrors([]);
+    await requestResume();
+  };
+
+  const confirmAndResumeSending = async () => {
+    setErrors([]);
+    confirmAlert({
+      message: MailPoet.I18n.t('confirmResumingCorruptNewsletter'),
+      onConfirm: requestResume,
+    });
+  };
+
   return (
     <>
       <APIErrorsNotice errors={errors} />
       {paused && (
-        <Button dimension="small" onClick={resumeSending}>
+        <Button
+          dimension="small"
+          onClick={
+            newsletter.status === NewsletterStatusEnum.Corrupt
+              ? confirmAndResumeSending
+              : resumeSending
+          }
+        >
           {MailPoet.I18n.t('resume')}
         </Button>
       )}
