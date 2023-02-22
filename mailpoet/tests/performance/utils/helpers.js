@@ -18,3 +18,11 @@ export function authenticate(page) {
     page.locator('input[name="wp-submit"]').click(),
   ]);
 }
+
+// Select a segment or a list from a select2 search field
+export function selectInSelect2(page, listName) {
+  // Click and write a list name from a dropdown
+  page.locator('.select2-selection').click();
+  page.locator('.select2-selection').type(listName);
+  page.keyboard.press('Enter');
+}
