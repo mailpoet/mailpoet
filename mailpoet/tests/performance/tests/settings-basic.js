@@ -1,4 +1,3 @@
-/* eslint-disable no-shadow */
 /* eslint-disable import/no-unresolved */
 /* eslint-disable import/no-default-export */
 /**
@@ -28,53 +27,48 @@ export function settingsBasic() {
   });
   const page = browser.newPage();
 
-  group(
-    'Settings - Load and save the basics tab',
-    function settingsBasicTabSaving() {
-      page
-        .goto(`${baseURL}/wp-admin/admin.php?page=mailpoet-settings#/basics`, {
-          waitUntil: 'networkidle',
-        })
+  group('Settings - Load and save the basics tab', () => {
+    page
+      .goto(`${baseURL}/wp-admin/admin.php?page=mailpoet-settings#/basics`, {
+        waitUntil: 'networkidle',
+      })
 
-        .then(() => {
-          authenticate(page);
-        })
+      .then(() => {
+        authenticate(page);
+      })
 
-        .then(() => {
-          return Promise.all([
-            page.waitForNavigation({ waitUntil: 'networkidle' }),
-          ]);
-        })
+      .then(() => {
+        return Promise.all([
+          page.waitForNavigation({ waitUntil: 'networkidle' }),
+        ]);
+      })
 
-        .then(() => {
-          check(page, {
-            'basics tab is visible': page
-              .locator('[data-automation-id="basic_settings_tab"]')
-              .isVisible(),
-          });
-        })
-
-        .then(() => {
-          return Promise.all([
-            page.waitForNavigation(),
-            page
-              .locator('[data-automation-id="settings-submit-button"]')
-              .click(),
-          ]);
-        })
-
-        .then(() => {
-          check(page, {
-            'settings saved is visible': page.locator('div.notice').isVisible(),
-          });
-        })
-
-        .finally(() => {
-          page.close();
-          browser.close();
+      .then(() => {
+        check(page, {
+          'basics tab is visible': page
+            .locator('[data-automation-id="basic_settings_tab"]')
+            .isVisible(),
         });
-    },
-  );
+      })
+
+      .then(() => {
+        return Promise.all([
+          page.waitForNavigation(),
+          page.locator('[data-automation-id="settings-submit-button"]').click(),
+        ]);
+      })
+
+      .then(() => {
+        check(page, {
+          'settings saved is visible': page.locator('div.notice').isVisible(),
+        });
+      })
+
+      .finally(() => {
+        page.close();
+        browser.close();
+      });
+  });
 
   sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
 }

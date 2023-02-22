@@ -1,4 +1,3 @@
-/* eslint-disable no-shadow */
 /* eslint-disable import/no-unresolved */
 /* eslint-disable import/no-default-export */
 /**
@@ -28,7 +27,7 @@ export function wpLogin() {
   });
   const page = browser.newPage();
 
-  group('Login to WP Admin', function LoginToWPAdmin() {
+  group('Login to WP Admin', () => {
     page
       .goto(`${baseURL}/wp-login.php`, { waitUntil: 'networkidle' })
 

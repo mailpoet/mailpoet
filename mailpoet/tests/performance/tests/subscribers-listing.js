@@ -1,4 +1,3 @@
-/* eslint-disable no-shadow */
 /* eslint-disable import/no-unresolved */
 /* eslint-disable import/no-default-export */
 /**
@@ -28,44 +27,41 @@ export function subscribersListing() {
   });
   const page = browser.newPage();
 
-  group(
-    'Subscribers - Load all subscribers',
-    function subscribersLoadAllSusbcribers() {
-      page
-        .goto(`${baseURL}/wp-admin/admin.php?page=mailpoet-subscribers`, {
-          waitUntil: 'networkidle',
-        })
+  group('Subscribers - Load all subscribers', () => {
+    page
+      .goto(`${baseURL}/wp-admin/admin.php?page=mailpoet-subscribers`, {
+        waitUntil: 'networkidle',
+      })
 
-        .then(() => {
-          authenticate(page);
-        })
+      .then(() => {
+        authenticate(page);
+      })
 
-        .then(() => {
-          return Promise.all([
-            page.waitForNavigation({ waitUntil: 'networkidle' }),
-          ]);
-        })
+      .then(() => {
+        return Promise.all([
+          page.waitForNavigation({ waitUntil: 'networkidle' }),
+        ]);
+      })
 
-        .then(() => {
-          check(page, {
-            'subscribers filter is visible': page
-              .locator('[data-automation-id="listing_filter_segment"]')
-              .isVisible(),
-            'subscribers tag is visible': page
-              .locator('[data-automation-id="listing_filter_tag"]')
-              .isVisible(),
-            'subscribers listing is visible': page
-              .locator('table.mailpoet-listing-table')
-              .isVisible(),
-          });
-        })
-
-        .finally(() => {
-          page.close();
-          browser.close();
+      .then(() => {
+        check(page, {
+          'subscribers filter is visible': page
+            .locator('[data-automation-id="listing_filter_segment"]')
+            .isVisible(),
+          'subscribers tag is visible': page
+            .locator('[data-automation-id="listing_filter_tag"]')
+            .isVisible(),
+          'subscribers listing is visible': page
+            .locator('table.mailpoet-listing-table')
+            .isVisible(),
         });
-    },
-  );
+      })
+
+      .finally(() => {
+        page.close();
+        browser.close();
+      });
+  });
 
   sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
 }
