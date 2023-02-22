@@ -543,6 +543,12 @@ class NewslettersRepository extends Repository {
     return $this->findBy(['status' => NewsletterEntity::STATUS_CORRUPT, 'deletedAt' => null]);
   }
 
+  public function setAsCorrupt(NewsletterEntity $entity): void {
+    $entity->setStatus(NewsletterEntity::STATUS_CORRUPT);
+    $this->persist($entity);
+    $this->flush();
+  }
+
   private function fetchChildrenIds(array $parentIds) {
     $ids = $this->entityManager->createQueryBuilder()->select('n.id')
       ->from(NewsletterEntity::class, 'n')

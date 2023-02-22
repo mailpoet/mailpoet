@@ -5,7 +5,10 @@ namespace MailPoet\Newsletter\Renderer;
 use MailPoet\Config\Env;
 use MailPoet\Config\ServicesChecker;
 use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Logging\LoggerFactory;
+use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Renderer\EscapeHelper as EHelper;
+use MailPoet\NewsletterProcessingException;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\Util\pQuery\DomNode;
 use MailPoet\WP\Functions as WPFunctions;
@@ -32,13 +35,21 @@ class Renderer {
   /** @var WPFunctions */
   private $wp;
 
+  /*** @var LoggerFactory */
+  private $loggerFactory;
+
+  /*** @var NewslettersRepository */
+  private $newslettersRepository;
+
   public function __construct(
     Blocks\Renderer $blocksRenderer,
     Columns\Renderer $columnsRenderer,
     Preprocessor $preprocessor,
     \MailPoetVendor\CSS $cSSInliner,
     ServicesChecker $servicesChecker,
-    WPFunctions $wp
+    WPFunctions $wp,
+    LoggerFactory $loggerFactory,
+    NewslettersRepository $newslettersRepository
   ) {
     $this->blocksRenderer = $blocksRenderer;
     $this->columnsRenderer = $columnsRenderer;
@@ -46,6 +57,8 @@ class Renderer {
     $this->cSSInliner = $cSSInliner;
     $this->servicesChecker = $servicesChecker;
     $this->wp = $wp;
+    $this->loggerFactory = $loggerFactory;
+    $this->newslettersRepository = $newslettersRepository;
   }
 
   public function render(NewsletterEntity $newsletter, SendingTask $sendingTask = null, $type = false) {
@@ -75,8 +88,17 @@ class Renderer {
 
     $language = $this->wp->getBloginfo('language');
     $metaRobots = $preview ? '<meta name="robots" content="noindex, nofollow" />' : '';
-    $content = $this->preprocessor->process($newsletter, $content, $preview, $sendingTask);
-    $renderedBody = $this->renderBody($newsletter, $content);
+    $renderedBody = "";
+    try {
+      $content = $this->preprocessor->process($newsletter, $content, $preview, $sendingTask);
+      $renderedBody = $this->renderBody($newsletter, $content);
+    } catch (NewsletterProcessingException $e) {
+      $this->loggerFactory->getLogger(LoggerFactory::TOPIC_COUPONS)->error(
+        $e->getMessage(),
+        ['newsletter_id' => $newsletter->getId()]
+      );
+      $this->newslettersRepository->setAsCorrupt($newsletter);
+    }
     $renderedStyles = $this->renderStyles($styles);
     $customFontsLinks = StylesHelper::getCustomFontsLinks($styles);
 

@@ -7,7 +7,6 @@ use MailPoet\Logging\LoggerFactory;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Renderer\Blocks\AbandonedCartContent;
 use MailPoet\Newsletter\Renderer\Blocks\AutomatedLatestContentBlock;
-use MailPoet\NewsletterProcessingException;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\WooCommerce\CouponPreProcessor;
 use MailPoet\WooCommerce\TransactionalEmails\ContentPreprocessor;

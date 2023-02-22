@@ -117,7 +117,9 @@ class RendererTest extends \MailPoetTest {
       ),
       $this->diContainer->get(\MailPoetVendor\CSS::class),
       $this->diContainer->get(ServicesChecker::class),
-      $this->diContainer->get(WPFunctions::class)
+      $this->diContainer->get(WPFunctions::class),
+      $this->diContainer->get(LoggerFactory::class),
+      $this->diContainer->get(NewslettersRepository::class)
     );
   }
 }
