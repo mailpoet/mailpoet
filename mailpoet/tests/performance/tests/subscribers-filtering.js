@@ -1,4 +1,3 @@
-/* eslint-disable no-shadow */
 /* eslint-disable import/no-unresolved */
 /* eslint-disable import/no-default-export */
 /**
@@ -29,7 +28,7 @@ export function subscribersFiltering() {
   });
   const page = browser.newPage();
 
-  group('Subscribers - Filter subscribers', function subscribersFiltering() {
+  group('Subscribers - Filter subscribers', () => {
     page
       .goto(`${baseURL}/wp-admin/admin.php?page=mailpoet-subscribers`, {
         waitUntil: 'networkidle',

@@ -1,4 +1,3 @@
-/* eslint-disable no-shadow */
 /* eslint-disable import/no-unresolved */
 /* eslint-disable import/no-default-export */
 /**
@@ -28,7 +27,7 @@ export function newsletterListing() {
   });
   const page = browser.newPage();
 
-  group('Emails - Load all newsletters', function EmailsLoadAllNewsletters() {
+  group('Emails - Load all newsletters', () => {
     page
       .goto(`${baseURL}/wp-admin/admin.php?page=mailpoet-newsletters`, {
         waitUntil: 'networkidle',
