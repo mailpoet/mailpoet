@@ -1,4 +1,3 @@
-/* eslint-disable no-shadow */
 /* eslint-disable import/no-unresolved */
 /* eslint-disable import/no-default-export */
 /**
@@ -31,7 +30,10 @@ export function subscribersAdding() {
   });
   const page = browser.newPage();
 
-  group('Subscribers - Add a new subscriber', function subscribersAdding() {
+  group('Subscribers - Add a new subscriber', () => {
+    let subscriberEmail =
+      'test+' + Math.floor(Math.random() * 9999 + 1) + '@test.com';
+
     page
       .goto(`${baseURL}/wp-admin/admin.php?page=mailpoet-subscribers`, {
         waitUntil: 'networkidle',
@@ -51,9 +53,7 @@ export function subscribersAdding() {
         page
           .locator('[data-automation-id="add-new-subscribers-button"]')
           .click();
-        page
-          .locator('input[name="email"]')
-          .type('test+' + Math.floor(Math.random() * 9999 + 1) + '@test.com');
+        page.locator('input[name="email"]').type(subscriberEmail);
         page.locator('input[name="first_name"]').type(firstName);
         page.locator('input[name="last_name"]').type(lastName);
         selectInSelect2(page, defaultListName);
@@ -68,7 +68,15 @@ export function subscribersAdding() {
       })
 
       .then(() => {
-        // search for added subscriber
+        page.waitForNavigation({ waitUntil: 'networkidle' });
+        page.locator('#search_input').type(subscriberEmail, { delay: 50 });
+        page.waitForSelector('.mailpoet-listing-no-items');
+        page.waitForSelector('[data-automation-id="filters_subscribed"]');
+        check(page, {
+          'newly added subscriber is present in the listing':
+            page.locator('.mailpoet-listing-title').textContent() ===
+            subscriberEmail,
+        });
       })
 
       .finally(() => {
