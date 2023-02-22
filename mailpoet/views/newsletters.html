@@ -59,6 +59,7 @@
     ];
 
     var mailpoet_newsletters_templates_recently_sent_count = <%= json_decode(newsletters_templates_recently_sent_count) %>;
+    var corrupt_newsletters = <%= json_encode(corrupt_newsletters) %>;
 
   </script>
 <% endblock %>
@@ -444,6 +445,8 @@
     'automatedLatestContentMissing': _x('Please add an “Automatic Latest Content” widget to the email from the right sidebar.', '(Please reuse the current translation used for the string “Automatic Latest Content”) This Error message is displayed when a user tries to send a “Post Notification” email without any “Automatic Latest Content” widget inside'),
     'emailAlreadySent': __('This email has already been sent. It can be edited, but not sent again. Duplicate this email if you want to send it again.'),
     'emailCanBeScheduledUpToFiveYears': __('An email can only be scheduled up to 5 years in the future. Please choose a shorter period.'),
+    'problemRenderingNewsletter': __('There was problem sending the following email(s), please fix the issues described for each email and resume.', 'mailpoet'),
+    'pausedEmails': __('Paused emails', 'mailpoet'),
   }) %>
   <% include('mss_pitch_translations.html') %>
 <% endblock %>

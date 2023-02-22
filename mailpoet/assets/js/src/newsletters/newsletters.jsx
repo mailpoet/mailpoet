@@ -39,6 +39,7 @@ import { InvalidMssKeyNotice } from 'notices/invalid_mss_key_notice';
 import { TransactionalEmailsProposeOptInNotice } from 'notices/transactional_emails_propose_opt_in_notice';
 import { EmailVolumeLimitNotice } from 'notices/email_volume_limit_notice';
 import { CampaignStatsPage } from './campaign_stats/page';
+import { CorruptEmailNotice } from '../notices/corrupt_email_notice';
 
 const automaticEmails = window.mailpoet_woocommerce_automatic_emails || [];
 
@@ -52,7 +53,9 @@ const Tabs = withNpsPoll(() => {
       <ListingHeadingDisplay>
         <ListingHeading />
       </ListingHeadingDisplay>
-
+      {MailPoet.corrupt_newsletters.length > 0 && (
+        <CorruptEmailNotice newsletters={MailPoet.corrupt_newsletters} />
+      )}
       <RoutedTabs
         activeKey="standard"
         routerType="switch-only"

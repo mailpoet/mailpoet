@@ -230,4 +230,8 @@ interface Window {
       events: string[];
     }
   >;
+  corrupt_newsletters: Array<{
+    id: string;
+    subject: string;
+  }>;
 }

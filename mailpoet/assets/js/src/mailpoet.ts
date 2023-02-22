@@ -6,9 +6,9 @@ import { MailPoetAjax } from './ajax';
 import { MailPoetModal } from './modal';
 import { MailPoetNotice } from './notice';
 import {
+  initializeMixpanelWhenLoaded,
   MailPoetForceTrackEvent,
   MailPoetTrackEvent,
-  initializeMixpanelWhenLoaded,
 } from './analytics_event';
 import { MailPoetNum } from './num';
 import { MailPoetHelpTooltip } from './help-tooltip-helper';
@@ -75,6 +75,7 @@ export const MailPoet = {
   transactionalEmailsOptInNoticeDismissed:
     window.mailpoet_transactional_emails_opt_in_notice_dismissed,
   mailFunctionEnabled: window.mailpoet_mail_function_enabled,
+  corrupt_newsletters: window.corrupt_newsletters ?? [],
 } as const;
 
 declare global {
