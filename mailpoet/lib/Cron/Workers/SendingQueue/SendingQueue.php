@@ -20,6 +20,7 @@ use MailPoet\Models\StatisticsNewsletters as StatisticsNewslettersModel;
 use MailPoet\Models\Subscriber as SubscriberModel;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
+use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Segments\SubscribersFinder;
 use MailPoet\Subscribers\SubscribersRepository;
@@ -78,6 +79,9 @@ class SendingQueue {
   /** @var SubscribersRepository */
   private $subscribersRepository;
 
+  /*** @var SendingQueuesRepository */
+  private $sendingQueuesRepository;
+
   public function __construct(
     SendingErrorHandler $errorHandler,
     SendingThrottlingHandler $throttlingHandler,
@@ -92,6 +96,7 @@ class SendingQueue {
     ScheduledTasksRepository $scheduledTasksRepository,
     MailerTask $mailerTask,
     SubscribersRepository $subscribersRepository,
+    SendingQueuesRepository $sendingQueuesRepository,
     $newsletterTask = false
   ) {
     $this->errorHandler = $errorHandler;
@@ -109,6 +114,7 @@ class SendingQueue {
     $this->links = $links;
     $this->scheduledTasksRepository = $scheduledTasksRepository;
     $this->subscribersRepository = $subscribersRepository;
+    $this->sendingQueuesRepository = $sendingQueuesRepository;
   }
 
   public function process($timer = false) {
@@ -260,6 +266,7 @@ class SendingQueue {
         }
         $this->enforceSendingAndExecutionLimits($timer);
       } else {
+        $this->sendingQueuesRepository->pause($queue->getSendingQueueEntity());
         $this->loggerFactory->getLogger(LoggerFactory::TOPIC_NEWSLETTERS)->error(
           'Can\'t send corrupt newsletter',
           ['newsletter_id' => $newsletter->id, 'task_id' => $queue->taskId]
