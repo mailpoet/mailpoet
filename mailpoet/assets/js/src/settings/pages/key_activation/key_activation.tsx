@@ -16,6 +16,7 @@ const premiumTabDescription = ReactStringReplace(
   /\[link\](.*?)\[\/link\]/g,
   (text) => (
     <a
+      key="premium-tab-description"
       href="https://account.mailpoet.com/account?utm_source=plugin&utm_medium=settings&utm_campaign=activate-existing-plan&ref=settings-key-activation"
       target="_blank"
       rel="noopener noreferrer"
@@ -30,6 +31,7 @@ const premiumTabGetKey = ReactStringReplace(
   /\[link\](.*?)\[\/link\]/g,
   (text) => (
     <a
+      key="premium-tab-get-key"
       href="https://account.mailpoet.com/account?utm_source=plugin&utm_medium=settings&utm_campaign=activate-existing-plan&ref=settings-key-activation"
       target="_blank"
       rel="noopener noreferrer"
@@ -77,6 +79,7 @@ export function KeyActivation({ subscribersCount }: Props) {
               /\[link\](.*?)\[\/link\]/g,
               (text) => (
                 <a
+                  key="premium-tab-get-plan"
                   href={`https://account.mailpoet.com/?s=${subscribersCount}&utm_source=plugin&utm_medium=settings&utm_campaign=create-new-plan&ref=settings-key-activation`}
                   target="_blank"
                   rel="noopener noreferrer"
