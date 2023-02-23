@@ -7,6 +7,7 @@ use MailPoet\Entities\DynamicSegmentFilterEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Subscribers\SubscribersRepository;
+use MailPoet\Test\DataFactories\WooCommerceSubscription as WooCommerceSubscriptionFactory;
 use MailPoet\WooCommerce\Helper;
 use MailPoetVendor\Doctrine\DBAL\ForwardCompatibility\DriverStatement;
 use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
@@ -33,6 +34,8 @@ class WooCommerceSubscriptionTest extends \MailPoetTest {
   private $subscriptions = [];
   /** @var array */
   private $products = [];
+  /** @var WooCommerceSubscriptionFactory */
+  private $subscriptionsFactory;
 
   public function _before(): void {
     $wooCommerceHelper = $this->diContainer->get(Helper::class);
@@ -43,16 +46,12 @@ class WooCommerceSubscriptionTest extends \MailPoetTest {
 
     $this->cleanup();
     $productId = $this->createProduct('Premium Newsletter');
+    $this->subscriptionsFactory = new WooCommerceSubscriptionFactory();
     foreach (self::SUBSCRIBER_EMAILS as $email) {
       $userId = $this->tester->createWordPressUser($email, 'subscriber');
-      $status = 'wc-' . explode('_', $email)[0];
-      $this->createSubscription(
-        [
-          'post_status' => $status,
-        ],
-        $userId,
-        $productId
-      );
+
+      $status = explode('_', $email)[0];
+      $this->subscriptionsFactory ->createSubscription($userId, $productId, $status);
     }
   }
 
@@ -73,23 +72,17 @@ class WooCommerceSubscriptionTest extends \MailPoetTest {
   }
 
   public function testAllSubscribersFoundWithOperatorNoneOf(): void {
-    $product = $this->createProduct("Another newsletter");
+    $productId = $this->createProduct("Another newsletter");
     $notToBeFoundEmail = "not-to-be-found@example.com";
     $subscriberId = $this->tester->createWordPressUser($notToBeFoundEmail, "subscriber");
     $this->assertTrue(!is_wp_error($subscriberId), "User could not be created $notToBeFoundEmail");
-
-    $this->createSubscription(
-      [],
-      (int)$subscriberId,
-      $product
-    );
+    $this->subscriptionsFactory->createSubscription($subscriberId, $productId);
     $testee = $this->diContainer->get(WooCommerceSubscription::class);
     $queryBuilder = $this->getQueryBuilder();
     $filter = $this->getSegmentFilter(
       DynamicSegmentFilterData::OPERATOR_NONE,
-      [$product]
+      [$productId]
     );
-
 
     $resultQuery = $testee->apply($queryBuilder, $filter);
 
@@ -111,11 +104,9 @@ class WooCommerceSubscriptionTest extends \MailPoetTest {
     $this->assertTrue(!is_wp_error($toBeFoundSubscriberId), "Could not create user $toBeFoundEmail");
     $this->assertTrue(!is_wp_error($notToBeFoundSubscriberId), "Could not create user $notToBeFoundEmail");
 
-    $this->createSubscription(
-      [],
-      (int)$toBeFoundSubscriberId,
-      ...$this->products
-    );
+    foreach ($this->products as $productId) {
+      $this->subscriptionsFactory->createSubscription($toBeFoundSubscriberId, $productId);
+    }
     $testee = $this->diContainer->get(WooCommerceSubscription::class);
     $queryBuilder = $this->getQueryBuilder();
     $filter = $this->getSegmentFilter(
@@ -162,32 +153,6 @@ class WooCommerceSubscriptionTest extends \MailPoetTest {
     $productId = wp_insert_post($productData);
     $this->products[] = (int)$productId;
     return (int)$productId;
-  }
-
-  private function createSubscription(array $args, int $user, int ...$productIds): int {
-    global $wpdb;
-    $defaults = [
-      'post_status' => 'wc-active',
-      'post_type' => 'shop_subscription',
-      'post_author' => 1,
-    ];
-
-    $args = wp_parse_args($args, $defaults);
-    $orderId = wp_insert_post($args);
-    $orderId = (int)$orderId;
-    update_post_meta( $orderId, '_customer_user', $user );
-
-    foreach ($productIds as $productId) {
-      $sql = "insert into " . $wpdb->prefix . "woocommerce_order_items (order_id,order_item_type) values (" . $orderId . ", 'line_item')";
-      $wpdb->query($sql);
-      $sql = 'select LAST_INSERT_ID() as id';
-      $lineItemId = $wpdb->get_col($sql)[0];
-      $sql = "insert into " . $wpdb->prefix . "woocommerce_order_itemmeta (order_item_id, meta_key, meta_value) values (" . $lineItemId . ", '_product_id', '" . $productId . "')";
-      $wpdb->query($sql);
-    }
-
-    $this->subscriptions[] = $orderId;
-    return $orderId;
   }
 
   private function getSegmentFilter(string $operator, array $productIds = null): DynamicSegmentFilterEntity {
