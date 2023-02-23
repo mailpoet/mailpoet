@@ -33,7 +33,6 @@ export function formsAdding() {
   const page = browser.newPage();
 
   group('Forms - Add a new form', () => {
-    let formName = 'Test Form';
     page
       .goto(`${baseURL}/wp-admin/admin.php?page=mailpoet-forms`, {
         waitUntil: 'networkidle',
@@ -52,12 +51,13 @@ export function formsAdding() {
       .then(() => {
         waitAndClick(page, '[data-automation-id="create_new_form"]');
         sleep(1);
-        waitAndClick(page, '[data-automation-id="create_blank_form"]');
+        page.waitForLoadState('networkidle');
+        waitAndClick(
+          page,
+          '[data-automation-id="select_template_template_1_popup"]',
+        );
         sleep(1);
         page.waitForSelector('[data-automation-id="form_title_input"]');
-        page
-          .locator('[data-automation-id="form_title_input"]')
-          .type(formName, { delay: 50 });
         selectInSelect2(page, defaultListName);
         page.waitForSelector('[data-automation-id="form_save_button"]');
         page.locator('[data-automation-id="form_save_button"]').click();
