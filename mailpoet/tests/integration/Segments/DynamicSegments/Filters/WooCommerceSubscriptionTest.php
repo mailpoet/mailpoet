@@ -8,7 +8,7 @@ use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Test\DataFactories\WooCommerceSubscription as WooCommerceSubscriptionFactory;
-use MailPoet\WooCommerce\Helper;
+use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Doctrine\DBAL\ForwardCompatibility\DriverStatement;
 use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
 
@@ -38,11 +38,14 @@ class WooCommerceSubscriptionTest extends \MailPoetTest {
   private $subscriptionsFactory;
 
   public function _before(): void {
-    $wooCommerceHelper = $this->diContainer->get(Helper::class);
-
-    if ($wooCommerceHelper->isWooCommerceCustomOrdersTableEnabled()) {
-      $this->markTestSkipped('WooCommerce Subscriptions does not work with WooCommerce Custom Orders Table.');
-    }
+    // Temporarily disable the check for incompatible plugins and features in Woo
+    // because WooSubscriptions is still officially not compatible with Woo HPOS
+    $this->diContainer->get(WPFunctions::class)->addAction('woocommerce_init', function () {
+      if (class_exists('\Automattic\WooCommerce\Utilities\FeaturesUtil')) {
+        \Automattic\WooCommerce\Utilities\FeaturesUtil::allow_enabling_features_with_incompatible_plugins();
+        \Automattic\WooCommerce\Utilities\FeaturesUtil::allow_activating_plugins_with_incompatible_features();
+      }
+    });
 
     $this->cleanup();
     $productId = $this->createProduct('Premium Newsletter');
