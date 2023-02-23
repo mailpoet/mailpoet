@@ -3,7 +3,7 @@
 namespace MailPoet\Test\DataFactories;
 
 class WooCommerceSubscription {
-  public function createSubscription(int $userId, int $subscriptionProductId): \WC_Subscription {
+  public function createSubscription(int $userId, int $subscriptionProductId, string $status = 'active'): \WC_Subscription {
     $args = [
       'status' => 'active',
       'customer_id' => $userId,
