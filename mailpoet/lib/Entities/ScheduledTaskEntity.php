@@ -10,6 +10,7 @@ use MailPoet\Doctrine\EntityTraits\SafeToOneAssociationLoadTrait;
 use MailPoet\Doctrine\EntityTraits\UpdatedAtTrait;
 use MailPoetVendor\Doctrine\Common\Collections\ArrayCollection;
 use MailPoetVendor\Doctrine\Common\Collections\Collection;
+use MailPoetVendor\Doctrine\Common\Collections\Criteria;
 use MailPoetVendor\Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -209,6 +210,19 @@ class ScheduledTaskEntity {
    */
   public function getSubscribers(): Collection {
     return $this->subscribers;
+  }
+
+  /**
+   * @param int $processed ScheduledTaskSubscriberEntity::PROCESSED_* constant
+   * @return SubscriberEntity[]
+   */
+  public function getSubscribersByProcessed(int $processed): array {
+    $criteria = Criteria::create()
+      ->where(Criteria::expr()->eq('processed', $processed));
+    $subscribers = $this->subscribers->matching($criteria)->map(function (ScheduledTaskSubscriberEntity $taskSubscriber): ?SubscriberEntity {
+      return $taskSubscriber->getSubscriber();
+    });
+    return array_filter($subscribers->toArray());
   }
 
   public function getSendingQueue(): ?SendingQueueEntity {

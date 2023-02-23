@@ -64,6 +64,18 @@ class ScheduledTasksRepository extends Repository {
     return ($scheduledTask instanceof ScheduledTaskEntity) ? $scheduledTask : null;
   }
 
+  public function findOneBySendingQueue(SendingQueueEntity $sendingQueue): ?ScheduledTaskEntity {
+    $scheduledTask = $this->doctrineRepository->createQueryBuilder('st')
+      ->join(SendingQueueEntity::class, 'sq', Join::WITH, 'st = sq.task')
+      ->andWhere('sq.id = :sendingQueue')
+      ->setMaxResults(1)
+      ->setParameter('sendingQueue', $sendingQueue)
+      ->getQuery()
+      ->getOneOrNullResult();
+    // for phpstan because it detects mixed instead of entity
+    return ($scheduledTask instanceof ScheduledTaskEntity) ? $scheduledTask : null;
+  }
+
   /**
    * @param NewsletterEntity $newsletter
    * @return ScheduledTaskEntity[]
