@@ -6,6 +6,7 @@ use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Entities\DynamicSegmentFilterEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Util\Security;
+use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 use MailPoetVendor\Doctrine\DBAL\Connection;
 use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
@@ -16,10 +17,15 @@ class WooCommerceSubscription implements Filter {
   /** @var EntityManager */
   private $entityManager;
 
+  /** @var WooCommerceHelper */
+  private $woocommerceHelper;
+
   public function __construct(
-    EntityManager $entityManager
+    EntityManager $entityManager,
+    WooCommerceHelper $woocommerceHelper
   ) {
     $this->entityManager = $entityManager;
+    $this->woocommerceHelper = $woocommerceHelper;
   }
 
   public function apply(QueryBuilder $queryBuilder, DynamicSegmentFilterEntity $filter): QueryBuilder {
@@ -69,6 +75,15 @@ class WooCommerceSubscription implements Filter {
   private function applyPostmetaAndPostJoin(QueryBuilder $queryBuilder): QueryBuilder {
     global $wpdb;
     $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
+    if ($this->woocommerceHelper->isWooCommerceCustomOrdersTableEnabled()) {
+      return $queryBuilder->innerJoin(
+        $subscribersTable,
+        $wpdb->prefix . 'wc_orders',
+        'wc_orders',
+        "wc_orders.billing_email = {$subscribersTable}.email AND wc_orders.status IN(\"wc-active\", \"wc-pending-cancel\")"
+      );
+    }
+
     return $queryBuilder->innerJoin(
       $subscribersTable,
       $wpdb->postmeta,
@@ -84,6 +99,15 @@ class WooCommerceSubscription implements Filter {
 
   private function applyOrderItemsJoin(QueryBuilder $queryBuilder): QueryBuilder {
     global $wpdb;
+    if ($this->woocommerceHelper->isWooCommerceCustomOrdersTableEnabled()) {
+      return $queryBuilder->innerJoin(
+        'wc_orders',
+        $wpdb->prefix . 'woocommerce_order_items',
+        'items',
+        'wc_orders.id = items.order_id AND order_item_type = "line_item"'
+      );
+    }
+
     return $queryBuilder->innerJoin(
       'postmeta',
       $wpdb->prefix . 'woocommerce_order_items',
