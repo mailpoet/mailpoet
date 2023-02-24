@@ -8,6 +8,7 @@ use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Renderer\EscapeHelper as EHelper;
+use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\NewsletterProcessingException;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\Util\pQuery\DomNode;
@@ -41,6 +42,9 @@ class Renderer {
   /*** @var NewslettersRepository */
   private $newslettersRepository;
 
+  /*** @var SendingQueuesRepository */
+  private $sendingQueuesRepository;
+
   public function __construct(
     Blocks\Renderer $blocksRenderer,
     Columns\Renderer $columnsRenderer,
@@ -49,7 +53,8 @@ class Renderer {
     ServicesChecker $servicesChecker,
     WPFunctions $wp,
     LoggerFactory $loggerFactory,
-    NewslettersRepository $newslettersRepository
+    NewslettersRepository $newslettersRepository,
+    SendingQueuesRepository $sendingQueuesRepository
   ) {
     $this->blocksRenderer = $blocksRenderer;
     $this->columnsRenderer = $columnsRenderer;
@@ -59,6 +64,7 @@ class Renderer {
     $this->wp = $wp;
     $this->loggerFactory = $loggerFactory;
     $this->newslettersRepository = $newslettersRepository;
+    $this->sendingQueuesRepository = $sendingQueuesRepository;
   }
 
   public function render(NewsletterEntity $newsletter, SendingTask $sendingTask = null, $type = false) {
@@ -98,6 +104,9 @@ class Renderer {
         ['newsletter_id' => $newsletter->getId()]
       );
       $this->newslettersRepository->setAsCorrupt($newsletter);
+      if ($newsletter->getLatestQueue()) {
+        $this->sendingQueuesRepository->pause($newsletter->getLatestQueue());
+      }
     }
     $renderedStyles = $this->renderStyles($styles);
     $customFontsLinks = StylesHelper::getCustomFontsLinks($styles);

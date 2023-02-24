@@ -18,6 +18,7 @@ use MailPoet\Newsletter\Renderer\Blocks\Text;
 use MailPoet\Newsletter\Renderer\Columns\Renderer as ColumnRenderer;
 use MailPoet\Newsletter\Renderer\Preprocessor;
 use MailPoet\Newsletter\Renderer\Renderer;
+use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Util\pQuery\pQuery;
 use MailPoet\WP\Functions as WPFunctions;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -58,7 +59,8 @@ class RendererTest extends \MailPoetTest {
       $this->servicesChecker,
       $this->diContainer->get(WPFunctions::class),
       $this->diContainer->get(LoggerFactory::class),
-      $this->diContainer->get(NewslettersRepository::class)
+      $this->diContainer->get(NewslettersRepository::class),
+      $this->diContainer->get(SendingQueuesRepository::class)
     );
     $this->columnRenderer = new ColumnRenderer();
     $this->dOMParser = new pQuery();

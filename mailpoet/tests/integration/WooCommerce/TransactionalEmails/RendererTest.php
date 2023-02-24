@@ -11,6 +11,7 @@ use MailPoet\Newsletter\Editor\LayoutHelper as L;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Renderer\Preprocessor;
 use MailPoet\Newsletter\Renderer\Renderer as NewsletterRenderer;
+use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\csstidy;
 
@@ -119,7 +120,8 @@ class RendererTest extends \MailPoetTest {
       $this->diContainer->get(ServicesChecker::class),
       $this->diContainer->get(WPFunctions::class),
       $this->diContainer->get(LoggerFactory::class),
-      $this->diContainer->get(NewslettersRepository::class)
+      $this->diContainer->get(NewslettersRepository::class),
+      $this->diContainer->get(SendingQueuesRepository::class)
     );
   }
 }
