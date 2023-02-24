@@ -165,7 +165,9 @@ class TranslationUpdater {
     if (class_exists(Debugger::class)) {
       Debugger::log($message, ILogger::ERROR);
     }
-    error_log($message); // phpcs:ignore Squiz.PHP.DiscouragedFunctions.Discouraged
+    if (function_exists('error_log')) {
+      error_log($message); // phpcs:ignore Squiz.PHP.DiscouragedFunctions.Discouraged
+    }
   }
 
   /**
