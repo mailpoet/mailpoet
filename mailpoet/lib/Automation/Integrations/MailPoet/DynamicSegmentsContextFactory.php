@@ -2,21 +2,36 @@
 
 namespace MailPoet\Automation\Integrations\MailPoet;
 
+use MailPoet\API\JSON\ResponseBuilders\CustomFieldsResponseBuilder;
 use MailPoet\CustomFields\CustomFieldsRepository;
+use MailPoet\Entities\DynamicSegmentFilterData;
+use MailPoet\Entities\SegmentEntity;
+use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Segments\SegmentDependencyValidator;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\WooCommerce\Helper;
+use MailPoet\WP\AutocompletePostListLoader as WPPostListLoader;
 use MailPoet\WP\Functions;
+use MailPoetVendor\Doctrine\Common\Collections\Criteria;
 
 class DynamicSegmentsContextFactory {
   /** @var CustomFieldsRepository */
   private $customFieldsRepository;
+
+  /** @var CustomFieldsResponseBuilder */
+  private $customFieldsResponseBuilder;
+
+  /** @var NewslettersRepository */
+  private $newslettersRepository;
 
   /** @var SegmentsRepository */
   private $segmentsRepository;
 
   /** @var SegmentDependencyValidator */
   private $segmentDependencyValidator;
+
+  /** @var WPPostListLoader */
+  private $wpPostListLoader;
 
   /** @var Helper */
   private $woocommerceHelper;
@@ -26,14 +41,20 @@ class DynamicSegmentsContextFactory {
 
   public function __construct(
     CustomFieldsRepository $customFieldsRepository,
+    CustomFieldsResponseBuilder $customFieldsResponseBuilder,
+    NewslettersRepository $newslettersRepository,
     SegmentsRepository $segmentsRepository,
     SegmentDependencyValidator $segmentDependencyValidator,
+    WPPostListLoader $wpPostListLoader,
     Helper $woocommerceHelper,
     Functions $wp
   ) {
     $this->customFieldsRepository = $customFieldsRepository;
+    $this->customFieldsResponseBuilder = $customFieldsResponseBuilder;
+    $this->newslettersRepository = $newslettersRepository;
     $this->segmentsRepository = $segmentsRepository;
     $this->segmentDependencyValidator = $segmentDependencyValidator;
+    $this->wpPostListLoader = $wpPostListLoader;
     $this->woocommerceHelper = $woocommerceHelper;
     $this->wp = $wp;
   }

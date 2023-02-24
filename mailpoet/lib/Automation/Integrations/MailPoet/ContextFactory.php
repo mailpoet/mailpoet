@@ -23,7 +23,7 @@ class ContextFactory {
   public function getContextData(): array {
     return [
       'segments' => $this->getSegments(),
-      'dynamic_segments' => $this->dynamicSegmentsContextFactory->getContextData()
+      'dynamic_segments' => $this->dynamicSegmentsContextFactory->getDynamicSegmentContext()
     ];
   }
 

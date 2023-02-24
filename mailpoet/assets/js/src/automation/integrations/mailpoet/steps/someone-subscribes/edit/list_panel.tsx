@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { PanelBody } from '@wordpress/components';
 import { dispatch, useSelect } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
@@ -8,13 +9,37 @@ import {
   FormTokenField,
 } from '../../../../../editor/components';
 import { Form } from '../../../../../../segments/dynamic/form';
-import { useEffect } from 'react';
 import { createStore } from '../../../../../../segments/dynamic/store/store';
 
 export function ListPanel(): JSX.Element {
-  //useEffect(() => {
-  createStore();
-  //}, []);
+  const [storeLoaded, setStoreLoaded] = useState(false);
+
+  useEffect(() => {
+    const context = (getContext() as any).dynamic_segments;
+    const w = window as any;
+    w.mailpoet_products = context.mailpoet_products;
+    w.mailpoet_static_segments_list = context.mailpoet_static_segments_list;
+    w.mailpoet_membership_plans = context.mailpoet_membership_plans;
+    w.mailpoet_subscription_products = context.mailpoet_subscription_products;
+    w.mailpoet_product_categories = context.mailpoet_product_categories;
+    w.mailpoet_newsletters_list = context.mailpoet_newsletters_list;
+    w.wordpress_editable_roles_list = context.wordpress_editable_roles_list;
+    w.mailpoet_can_use_woocommerce_memberships =
+      context.mailpoet_can_use_woocommerce_memberships;
+    w.mailpoet_can_use_woocommerce_subscriptions =
+      context.mailpoet_can_use_woocommerce_subscriptions;
+    w.mailpoet_woocommerce_currency_symbol =
+      context.mailpoet_woocommerce_currency_symbol;
+    w.mailpoet_woocommerce_countries = context.mailpoet_woocommerce_countries;
+    w.mailpoet_custom_fields = context.mailpoet_custom_fields;
+    w.mailpoet_tags = context.mailpoet_tags;
+    w.mailpoet_can_use_woocommerce_subscriptions =
+      context.mailpoet_can_use_woocommerce_subscriptions;
+    w.mailpoet_can_use_woocommerce_memberships =
+      context.mailpoet_can_use_woocommerce_memberships;
+    createStore();
+    setStoreLoaded(true);
+  }, []);
 
   const { selectedStep } = useSelect(
     (select) => ({
@@ -54,7 +79,7 @@ export function ListPanel(): JSX.Element {
         }}
       />
 
-      <Form />
+      {storeLoaded && <Form />}
     </PanelBody>
   );
 }
