@@ -15,9 +15,6 @@ class WooCommerceSubscriptionsSegmentCest {
     if (!$i->canTestWithPlugin(\AcceptanceTester::WOO_COMMERCE_SUBSCRIPTIONS_PLUGIN)) {
       $scenario->skip('Can‘t test without woocommerce-subscriptions');
     }
-    if ($i->isWooCustomOrdersTableEnabled()) {
-      $scenario->skip('Can‘t test when WooCommerce Custom Orders Table is enabled.');
-    }
     (new Settings())->withWooCommerceListImportPageDisplayed(true);
     (new Settings())->withCookieRevenueTrackingDisabled();
     $i->activateWooCommerce();
