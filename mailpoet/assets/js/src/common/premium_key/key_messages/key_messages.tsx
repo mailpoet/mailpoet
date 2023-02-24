@@ -6,7 +6,7 @@ type KeyValidMessageProps = { canUseSuccessClass: boolean };
 function KeyValidMessage({ canUseSuccessClass }: KeyValidMessageProps) {
   return (
     <div
-      className={classnames('mailpoet_success_item mailpoet_success_item', {
+      className={classnames('mailpoet_success_item', {
         mailpoet_success: canUseSuccessClass,
       })}
     >
