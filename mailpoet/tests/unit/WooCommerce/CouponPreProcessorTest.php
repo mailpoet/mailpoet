@@ -143,8 +143,6 @@ class CouponPreProcessorTest extends \MailPoetUnitTest {
       'isWooCommerceActive' => false,
     ]);
 
-    $loggerFactory = $this->getLoggerFactory(Stub\Expected::never());
-
     $processor = new CouponPreProcessor(
       $wcHelper,
       Stub::make(NewslettersRepository::class, [
@@ -153,7 +151,7 @@ class CouponPreProcessorTest extends \MailPoetUnitTest {
     );
     $newsletter = (new NewsletterEntity());
 
-    $blocks = ['some' => true, 'random' => false];
+    $blocks = ['blocks' => ['type' => Coupon::TYPE]];
     $this->expectException(NewsletterProcessingException::class);
     $this->expectExceptionMessage('Woocommerce is not active');
     $result = $processor->processCoupons($newsletter, $blocks, false);
