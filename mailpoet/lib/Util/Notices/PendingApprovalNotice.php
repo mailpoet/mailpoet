@@ -9,7 +9,7 @@ use MailPoet\WP\Notice as WPNotice;
 
 class PendingApprovalNotice {
 
-  const OPTION_NAME = 'dismissed-pending-approval-notice';
+  const OPTION_NAME = 'mailpoet-pending-approval-notice';
 
   /** @var SettingsController */
   private $settings;
