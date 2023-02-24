@@ -72,7 +72,7 @@ class PendingApprovalNotice {
       'link4'
     );
 
-    WPNotice::displayError($message, '', self::OPTION_NAME, true, false);
+    WPNotice::displayWarning($message, '', self::OPTION_NAME);
     return $message;
   }
 }
