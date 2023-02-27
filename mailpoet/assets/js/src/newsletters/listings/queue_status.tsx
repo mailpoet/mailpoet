@@ -52,10 +52,9 @@ function QueueSending({ newsletter }: QueueSendingProps) {
   };
 
   const confirmAndResumeSending = async () => {
-    setErrors([]);
     confirmAlert({
       message: MailPoet.I18n.t('confirmResumingCorruptNewsletter'),
-      onConfirm: requestResume,
+      onConfirm: resumeSending,
     });
   };
 
