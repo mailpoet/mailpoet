@@ -7,10 +7,7 @@ import {
   SubscriberScoreFields,
   validateSubscriberScore,
 } from './subscriber_score';
-import {
-  SubscribedDateFields,
-  SubscribedDateOperator,
-} from './subscriber_subscribed_date';
+import { DateFields, DateOperator } from './date_fields';
 import {
   MailPoetCustomFields,
   validateMailPoetCustomField,
@@ -47,17 +44,17 @@ export function validateSubscriber(formItems: WordpressRoleFormItem): boolean {
     return false;
   }
   if (
-    formItems.operator === SubscribedDateOperator.BEFORE ||
-    formItems.operator === SubscribedDateOperator.AFTER ||
-    formItems.operator === SubscribedDateOperator.ON ||
-    formItems.operator === SubscribedDateOperator.NOT_ON
+    formItems.operator === DateOperator.BEFORE ||
+    formItems.operator === DateOperator.AFTER ||
+    formItems.operator === DateOperator.ON ||
+    formItems.operator === DateOperator.NOT_ON
   ) {
     const re = /^\d+-\d+-\d+$/;
     return re.test(formItems.value);
   }
   if (
-    formItems.operator === SubscribedDateOperator.IN_THE_LAST ||
-    formItems.operator === SubscribedDateOperator.NOT_IN_THE_LAST
+    formItems.operator === DateOperator.IN_THE_LAST ||
+    formItems.operator === DateOperator.NOT_IN_THE_LAST
   ) {
     const re = /^\d+$/;
     return re.test(formItems.value) && Number(formItems.value) > 0;
@@ -68,7 +65,7 @@ export function validateSubscriber(formItems: WordpressRoleFormItem): boolean {
 const componentsMap = {
   [SubscriberActionTypes.WORDPRESS_ROLE]: WordpressRoleFields,
   [SubscriberActionTypes.SUBSCRIBER_SCORE]: SubscriberScoreFields,
-  [SubscriberActionTypes.SUBSCRIBED_DATE]: SubscribedDateFields,
+  [SubscriberActionTypes.SUBSCRIBED_DATE]: DateFields,
   [SubscriberActionTypes.MAILPOET_CUSTOM_FIELD]: MailPoetCustomFields,
   [SubscriberActionTypes.SUBSCRIBED_TO_LIST]: SubscribedToList,
   [SubscriberActionTypes.SUBSCRIBER_TAG]: SubscriberTag,

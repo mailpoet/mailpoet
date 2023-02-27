@@ -1,4 +1,4 @@
-<?php // phpcs:ignore SlevomatCodingStandard.TypeHints.DeclareStrictTypes.DeclareStrictTypesMissing
+<?php declare(strict_types = 1);
 
 namespace MailPoet\Segments\DynamicSegments\Filters;
 
@@ -8,15 +8,8 @@ use MailPoet\Util\Security;
 use MailPoetVendor\Carbon\CarbonImmutable;
 use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
 
-class SubscriberSubscribedDate implements Filter {
+class SubscriberSubscribedDate extends DateFilter {
   const TYPE = 'subscribedDate';
-
-  const BEFORE = 'before';
-  const AFTER = 'after';
-  const ON = 'on';
-  const NOT_ON = 'notOn';
-  const IN_THE_LAST = 'inTheLast';
-  const NOT_IN_THE_LAST = 'notInTheLast';
 
   public function apply(QueryBuilder $queryBuilder, DynamicSegmentFilterEntity $filter): QueryBuilder {
     $filterData = $filter->getFilterData();

@@ -47,7 +47,7 @@ class SubscriberSubscribedDateTest extends \MailPoetTest {
   }
 
   public function testGetBefore(): void {
-    $segmentFilter = $this->getSegmentFilter(SubscriberSubscribedDate::BEFORE, CarbonImmutable::now()->subDays(3)->format('Y-m-d'));
+    $segmentFilter = $this->getSegmentFilter('before', CarbonImmutable::now()->subDays(3)->format('Y-m-d'));
     $statement = $this->filter->apply($this->getQueryBuilder(), $segmentFilter)
       ->orderBy('email')
       ->execute();
@@ -61,7 +61,7 @@ class SubscriberSubscribedDateTest extends \MailPoetTest {
   }
 
   public function testGetAfter(): void {
-    $segmentFilter = $this->getSegmentFilter(SubscriberSubscribedDate::AFTER, CarbonImmutable::now()->subDays(2)->format('Y-m-d'));
+    $segmentFilter = $this->getSegmentFilter('after', CarbonImmutable::now()->subDays(2)->format('Y-m-d'));
     $statement = $this->filter->apply($this->getQueryBuilder(), $segmentFilter)
       ->orderBy('email')
       ->execute();
@@ -81,7 +81,7 @@ class SubscriberSubscribedDateTest extends \MailPoetTest {
   }
 
   public function testGetOn(): void {
-    $segmentFilter = $this->getSegmentFilter(SubscriberSubscribedDate::ON, CarbonImmutable::now()->subDays(2)->format('Y-m-d'));
+    $segmentFilter = $this->getSegmentFilter('on', CarbonImmutable::now()->subDays(2)->format('Y-m-d'));
     $statement = $this->filter->apply($this->getQueryBuilder(), $segmentFilter)
       ->orderBy('email')
       ->execute();
@@ -97,7 +97,7 @@ class SubscriberSubscribedDateTest extends \MailPoetTest {
   }
 
   public function testGetNotOn(): void {
-    $segmentFilter = $this->getSegmentFilter(SubscriberSubscribedDate::NOT_ON, CarbonImmutable::now()->subDays(2)->format('Y-m-d'));
+    $segmentFilter = $this->getSegmentFilter('notOn', CarbonImmutable::now()->subDays(2)->format('Y-m-d'));
     $statement = $this->filter->apply($this->getQueryBuilder(), $segmentFilter)
       ->orderBy('email')
       ->execute();
@@ -128,7 +128,7 @@ class SubscriberSubscribedDateTest extends \MailPoetTest {
   }
 
   public function testGetInTheLast(): void {
-    $segmentFilter = $this->getSegmentFilter(SubscriberSubscribedDate::IN_THE_LAST, '2');
+    $segmentFilter = $this->getSegmentFilter('inTheLast', '2');
     $statement = $this->filter->apply($this->getQueryBuilder(), $segmentFilter)
       ->orderBy('email')
       ->execute();
@@ -148,7 +148,7 @@ class SubscriberSubscribedDateTest extends \MailPoetTest {
   }
 
   public function testGetNotInTheLast(): void {
-    $segmentFilter = $this->getSegmentFilter(SubscriberSubscribedDate::NOT_IN_THE_LAST, '3');
+    $segmentFilter = $this->getSegmentFilter('notInTheLast', '3');
     $statement = $this->filter->apply($this->getQueryBuilder(), $segmentFilter)
       ->orderBy('email')
       ->execute();

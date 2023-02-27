@@ -7,11 +7,10 @@ use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Segments\DynamicSegments\Exceptions\InvalidFilterException;
 use MailPoet\Util\DBCollationChecker;
 use MailPoet\Util\Security;
-use MailPoetVendor\Carbon\CarbonImmutable;
 use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 
-class WooCommercePurchaseDate implements Filter {
+class WooCommercePurchaseDate extends DateFilter {
   const ACTION = 'purchaseDate';
 
   /** @var EntityManager */
@@ -19,13 +18,6 @@ class WooCommercePurchaseDate implements Filter {
 
   /** @var DBCollationChecker */
   private $collationChecker;
-
-  const BEFORE = 'before';
-  const AFTER = 'after';
-  const ON = 'on';
-  const NOT_ON = 'notOn';
-  const IN_THE_LAST = 'inTheLast';
-  const NOT_IN_THE_LAST = 'notInTheLast';
 
   public function __construct(
     EntityManager $entityManager,
@@ -43,11 +35,11 @@ class WooCommercePurchaseDate implements Filter {
       throw new InvalidFilterException('Incorrect value for operator', InvalidFilterException::MISSING_VALUE);
     }
 
-    $rawDate = $filterData->getParam('value');
-    if (!is_string($rawDate)) {
+    $dateValue = $filterData->getParam('value');
+    if (!is_string($dateValue)) {
       throw new InvalidFilterException('Incorrect value for date', InvalidFilterException::INVALID_DATE_VALUE);
     }
-    $date = $this->getDate($operator, $rawDate);
+    $date = $this->getDateForOperator($operator, $dateValue);
     $parameterSuffix = $filter->getId() ?? Security::generateRandomString();
     $dateParameter = sprintf('date_%s', $parameterSuffix);
 
@@ -60,48 +52,6 @@ class WooCommercePurchaseDate implements Filter {
     $queryBuilder->setParameter($dateParameter, $date);
 
     return $queryBuilder;
-  }
-
-  private function getDate(string $operator, string $value): string {
-    if (in_array($operator, $this->getDateOperators())) {
-      $carbon = CarbonImmutable::createFromFormat('Y-m-d', $value);
-      if (!$carbon instanceof CarbonImmutable) {
-        throw new InvalidFilterException('Invalid date value', InvalidFilterException::INVALID_DATE_VALUE);
-      }
-    } else if (in_array($operator, $this->getRelativeDateOperators())) {
-      $carbon = CarbonImmutable::now()->subDays(intval($value));
-    } else {
-      throw new InvalidFilterException('Incorrect value for operator', InvalidFilterException::MISSING_VALUE);
-    }
-
-    return $carbon->toDateString();
-  }
-
-  private function getValidOperators(): array {
-    return [
-      self::BEFORE,
-      self::AFTER,
-      self::ON,
-      self::NOT_ON,
-      self::IN_THE_LAST,
-      self::NOT_IN_THE_LAST,
-    ];
-  }
-
-  private function getDateOperators() {
-    return [
-      self::BEFORE,
-      self::AFTER,
-      self::ON,
-      self::NOT_ON,
-    ];
-  }
-
-  private function getRelativeDateOperators() {
-    return [
-      self::IN_THE_LAST,
-      self::NOT_IN_THE_LAST,
-    ];
   }
 
   private function getSubQuery(string $operator, string $dateParameter): QueryBuilder {
