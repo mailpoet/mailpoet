@@ -28,17 +28,8 @@ class WooCommercePurchaseDate extends DateFilter {
   }
 
   public function apply(QueryBuilder $queryBuilder, DynamicSegmentFilterEntity $filter): QueryBuilder {
-    $filterData = $filter->getFilterData();
-    $operator = $filterData->getParam('operator');
-
-    if (!is_string($operator) || !in_array($operator, $this->getValidOperators())) {
-      throw new InvalidFilterException('Incorrect value for operator', InvalidFilterException::MISSING_VALUE);
-    }
-
-    $dateValue = $filterData->getParam('value');
-    if (!is_string($dateValue)) {
-      throw new InvalidFilterException('Incorrect value for date', InvalidFilterException::INVALID_DATE_VALUE);
-    }
+    $operator = $this->getOperatorFromFilter($filter);
+    $dateValue = $this->getDateValueFromFilter($filter);
     $date = $this->getDateForOperator($operator, $dateValue);
     $parameterSuffix = $filter->getId() ?? Security::generateRandomString();
     $dateParameter = sprintf('date_%s', $parameterSuffix);
