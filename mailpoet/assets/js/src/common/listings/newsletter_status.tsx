@@ -6,7 +6,7 @@ import { Tooltip } from '../tooltip/tooltip';
 import {
   NewsLetter,
   NewsletterStatus as NewsletterStatusEnum,
-} from '../../newsletters/models';
+} from 'newsletters/models';
 
 type CircularProgressProps = {
   percentage: number;

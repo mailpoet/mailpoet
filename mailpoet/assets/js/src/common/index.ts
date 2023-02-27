@@ -13,3 +13,4 @@ export * from './functions';
 export * from './utils';
 export * from './thumbnail';
 export * from './controls';
+export * from './confirm_alert';

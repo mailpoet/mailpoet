@@ -4,13 +4,12 @@ import { Link } from 'react-router-dom';
 import parseDate from 'date-fns/parse';
 import { APIErrorsNotice } from 'notices/api_errors_notice';
 import { Button } from 'common/button/button';
-import { NewsletterStatus } from 'common/listings/newsletter_status';
-import { withBoundary } from '../../common';
+import { NewsletterStatus } from 'common/listings';
+import { confirmAlert, withBoundary } from 'common';
 import {
   NewsLetter,
   NewsletterStatus as NewsletterStatusEnum,
 } from '../models';
-import { confirmAlert } from '../../common/confirm_alert';
 
 type QueueSendingProps = {
   newsletter: NewsLetter;
