@@ -8,7 +8,6 @@ use MailPoetVendor\Carbon\CarbonImmutable;
 use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
 
 abstract class DateFilter implements Filter {
-
   const BEFORE = 'before';
   const AFTER = 'after';
   const ON = 'on';
@@ -19,34 +18,30 @@ abstract class DateFilter implements Filter {
   abstract public function apply(QueryBuilder $queryBuilder, DynamicSegmentFilterEntity $filter): QueryBuilder;
 
   protected function getValidOperators(): array {
+    return array_merge(
+      $this->getAbsoluteDateOperators(),
+      $this->getRelativeDateOperators()
+    );
+  }
+
+  protected function getAbsoluteDateOperators(): array {
     return [
       self::BEFORE,
       self::AFTER,
       self::ON,
       self::NOT_ON,
-      self::IN_THE_LAST,
-      self::NOT_IN_THE_LAST,
     ];
   }
 
-  protected function getDateOperators() {
-    return [
-      self::BEFORE,
-      self::AFTER,
-      self::ON,
-      self::NOT_ON,
-    ];
-  }
-
-  protected function getRelativeDateOperators() {
+  protected function getRelativeDateOperators(): array {
     return [
       self::IN_THE_LAST,
       self::NOT_IN_THE_LAST,
     ];
   }
 
-  protected function getDateForOperator(string $operator, string $value): string {
-    if (in_array($operator, $this->getDateOperators())) {
+  protected function getDateStringForOperator(string $operator, string $value): string {
+    if (in_array($operator, $this->getAbsoluteDateOperators())) {
       $carbon = CarbonImmutable::createFromFormat('Y-m-d', $value);
       if (!$carbon instanceof CarbonImmutable) {
         throw new InvalidFilterException('Invalid date value', InvalidFilterException::INVALID_DATE_VALUE);

@@ -15,7 +15,7 @@ class SubscriberSubscribedDate extends DateFilter {
     $value = $this->getDateValueFromFilter($filter);
     $parameterSuffix = $filter->getId() ?: Security::generateRandomString();
     $parameter = 'date' . $parameterSuffix;
-    $date = $this->getDateForOperator($operator, $value);
+    $date = $this->getDateStringForOperator($operator, $value);
 
     if ($operator === self::BEFORE) {
       $queryBuilder->andWhere("DATE(last_subscribed_at) < :$parameter");

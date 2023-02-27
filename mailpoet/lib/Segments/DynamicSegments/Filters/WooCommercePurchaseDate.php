@@ -29,7 +29,7 @@ class WooCommercePurchaseDate extends DateFilter {
   public function apply(QueryBuilder $queryBuilder, DynamicSegmentFilterEntity $filter): QueryBuilder {
     $operator = $this->getOperatorFromFilter($filter);
     $dateValue = $this->getDateValueFromFilter($filter);
-    $date = $this->getDateForOperator($operator, $dateValue);
+    $date = $this->getDateStringForOperator($operator, $dateValue);
     $subQuery = $this->getSubQuery($operator, $date);
 
     if (in_array($operator, [self::NOT_ON, self::NOT_IN_THE_LAST])) {
