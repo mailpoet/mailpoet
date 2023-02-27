@@ -372,7 +372,7 @@ class SubscribersRepository extends Repository {
       ->getQuery()
       ->getSingleScalarResult();
 
-    return is_int($maxSubscriberId) ? $maxSubscriberId : 0;
+    return intval($maxSubscriberId);
   }
 
   /**
