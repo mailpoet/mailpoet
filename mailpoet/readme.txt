@@ -3,7 +3,7 @@ Contributors: mailpoet
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 5.9
 Tested up to: 6.1
-Stable tag: 4.7.0
+Stable tag: 4.7.1
 Requires PHP: 7.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -218,6 +218,14 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 4.7.1 - 2023-02-27 =
+* Added: filter allowing to configure PHPMailer when sending via SMTP;
+* Added: a coupon block in email editor;
+* Added: notice when a MailPoet subscription is pending approval;
+* Improved: Starter plan users are directed to upgrade their plan from the Upgrade page;
+* Improved: email templates now include coupon block;
+* Fixed: inactive subscribers weren't recalculated since August 2022. They'll be again recalculated within one week after updating. Sorry about this bug.
 
 = 4.7.0 - 2023-02-20 =
 * Updated: minimum required WordPress version to 5.9;
