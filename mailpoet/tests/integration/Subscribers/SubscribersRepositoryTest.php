@@ -305,6 +305,15 @@ class SubscribersRepositoryTest extends \MailPoetTest {
     expect($this->repository->findOneById($subscriberId))->notNull();
   }
 
+  public function testItGetsMaxSubscriberId(): void {
+    // check if equals to zero when no subscribers
+    expect($this->repository->getMaxSubscriberId())->equals(0);
+    // check if equals to max subscriber id
+    $this->createSubscriber('sub1@test.com');
+    $subscriberTwo = $this->createSubscriber('sub2@test.com');
+    expect($this->repository->getMaxSubscriberId())->equals($subscriberTwo->getId());
+  }
+
   private function createSubscriber(string $email, ?DateTimeImmutable $deletedAt = null): SubscriberEntity {
     $subscriber = new SubscriberEntity();
     $subscriber->setEmail($email);
