@@ -575,16 +575,6 @@ parameters:
 			path: ../../lib/Segments/DynamicSegments/Filters/SubscriberSegment.php
 
 		-
-			message: "#^Parameter \\#1 \\$operator of method MailPoet\\\\Segments\\\\DynamicSegments\\\\Filters\\\\SubscriberSubscribedDate\\:\\:getDate\\(\\) expects string, mixed given\\.$#"
-			count: 1
-			path: ../../lib/Segments/DynamicSegments/Filters/SubscriberSubscribedDate.php
-
-		-
-			message: "#^Parameter \\#2 \\$value of method MailPoet\\\\Segments\\\\DynamicSegments\\\\Filters\\\\SubscriberSubscribedDate\\:\\:getDate\\(\\) expects string, mixed given\\.$#"
-			count: 1
-			path: ../../lib/Segments/DynamicSegments/Filters/SubscriberSubscribedDate.php
-
-		-
 			message: "#^Parameter \\#2 \\$operator of method MailPoet\\\\Segments\\\\DynamicSegments\\\\Filters\\\\UserRole\\:\\:createCondition\\(\\) expects string, mixed given\\.$#"
 			count: 1
 			path: ../../lib/Segments/DynamicSegments/Filters/UserRole.php
