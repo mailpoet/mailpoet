@@ -68,8 +68,6 @@ class Preprocessor {
     $blocks = [];
     $contentBlocks = $content['blocks'];
 
-    $contentBlocks = $this->couponPreProcessor->processCoupons($newsletter, $contentBlocks, $preview);
-
     try {
       $contentBlocks = $this->couponPreProcessor->processCoupons($newsletter, $contentBlocks, $preview);
     } catch (NewsletterProcessingException $e) {
