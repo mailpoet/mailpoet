@@ -2,11 +2,11 @@ import { MailPoet } from 'mailpoet';
 import classnames from 'classnames';
 import { addDays, differenceInMinutes, isFuture, isPast } from 'date-fns';
 import { t } from 'common/functions/t';
-import { Tooltip } from '../tooltip/tooltip';
 import {
   NewsLetter,
   NewsletterStatus as NewsletterStatusEnum,
 } from 'newsletters/models';
+import { Tooltip } from '../tooltip/tooltip';
 
 type CircularProgressProps = {
   percentage: number;
