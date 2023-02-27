@@ -6,7 +6,6 @@ use MailPoet\Entities\DynamicSegmentFilterEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Segments\DynamicSegments\Exceptions\InvalidFilterException;
 use MailPoet\Util\DBCollationChecker;
-use MailPoet\Util\Security;
 use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 
@@ -31,40 +30,38 @@ class WooCommercePurchaseDate extends DateFilter {
     $operator = $this->getOperatorFromFilter($filter);
     $dateValue = $this->getDateValueFromFilter($filter);
     $date = $this->getDateForOperator($operator, $dateValue);
-    $parameterSuffix = $filter->getId() ?? Security::generateRandomString();
-    $dateParameter = sprintf('date_%s', $parameterSuffix);
+    $subQuery = $this->getSubQuery($operator, $date);
 
-    $subQuery = $this->getSubQuery($operator, $dateParameter);
-
-    $isNegatedOperator = in_array($operator, [self::NOT_ON, self::NOT_IN_THE_LAST]);
-    $subQueryOperator = $isNegatedOperator ? 'NOT IN' : 'IN';
-
-    $queryBuilder->andWhere("{$this->getSubscribersTable()}.id {$subQueryOperator} ({$subQuery->getSQL()})");
-    $queryBuilder->setParameter($dateParameter, $date);
+    if (in_array($operator, [self::NOT_ON, self::NOT_IN_THE_LAST])) {
+      $queryBuilder->andWhere($queryBuilder->expr()->notIn("{$this->getSubscribersTable()}.id", $subQuery->getSQL()));
+    } else {
+      $queryBuilder->andWhere($queryBuilder->expr()->in("{$this->getSubscribersTable()}.id", $subQuery->getSQL()));
+    }
 
     return $queryBuilder;
   }
 
-  private function getSubQuery(string $operator, string $dateParameter): QueryBuilder {
+  private function getSubQuery(string $operator, string $date): QueryBuilder {
     $queryBuilder = $this->getNewSubscribersQueryBuilder();
     $this->applyCustomerLookupJoin($queryBuilder);
     $this->applyCustomerOrderJoin($queryBuilder);
     $this->applyOrderStatusFilter($queryBuilder, ['wc-processing', 'wc-completed']);
+    $quotedDate = $queryBuilder->expr()->literal($date);
 
     switch ($operator) {
       case self::BEFORE:
-        $queryBuilder->andWhere("DATE(orderStats.date_created) < :$dateParameter");
+        $queryBuilder->andWhere("DATE(orderStats.date_created) < $quotedDate");
         break;
       case self::AFTER:
-        $queryBuilder->andWhere("DATE(orderStats.date_created) > :$dateParameter");
+        $queryBuilder->andWhere("DATE(orderStats.date_created) > $quotedDate");
         break;
       case self::IN_THE_LAST:
       case self::NOT_IN_THE_LAST:
-        $queryBuilder->andWhere("DATE(orderStats.date_created) >= :$dateParameter");
+        $queryBuilder->andWhere("DATE(orderStats.date_created) >= $quotedDate");
         break;
       case self::ON:
       case self::NOT_ON:
-        $queryBuilder->andWhere("DATE(orderStats.date_created) = :$dateParameter");
+        $queryBuilder->andWhere("DATE(orderStats.date_created) = $quotedDate");
         break;
       default:
         throw new InvalidFilterException('Incorrect value for operator', InvalidFilterException::MISSING_VALUE);
