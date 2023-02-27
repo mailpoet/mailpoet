@@ -52,11 +52,29 @@ abstract class DateFilter implements Filter {
         throw new InvalidFilterException('Invalid date value', InvalidFilterException::INVALID_DATE_VALUE);
       }
     } else if (in_array($operator, $this->getRelativeDateOperators())) {
-      $carbon = CarbonImmutable::now()->subDays(intval($value));
+      $carbon = CarbonImmutable::now()->subDays(intval($value) - 1);
     } else {
       throw new InvalidFilterException('Incorrect value for operator', InvalidFilterException::MISSING_VALUE);
     }
 
     return $carbon->toDateString();
+  }
+
+  protected function getDateValueFromFilter(DynamicSegmentFilterEntity $filter): string {
+    $filterData = $filter->getFilterData();
+    $dateValue = $filterData->getParam('value');
+    if (!is_string($dateValue)) {
+      throw new InvalidFilterException('Incorrect value for date', InvalidFilterException::INVALID_DATE_VALUE);
+    }
+    return $dateValue;
+  }
+
+  protected function getOperatorFromFilter(DynamicSegmentFilterEntity $filter): string {
+    $filterData = $filter->getFilterData();
+    $operator = $filterData->getParam('operator');
+    if (!is_string($operator) || !in_array($operator, $this->getValidOperators())) {
+      throw new InvalidFilterException('Incorrect value for operator', InvalidFilterException::MISSING_VALUE);
+    }
+    return $operator;
   }
 }

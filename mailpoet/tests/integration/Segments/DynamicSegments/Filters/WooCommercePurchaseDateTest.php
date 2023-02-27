@@ -52,9 +52,9 @@ class WooCommercePurchaseDateTest extends \MailPoetTest {
     $customerId1 = $this->createCustomer('c1@example.com');
     $customerId2 = $this->createCustomer('c2@example.com');
     $customerId3 = $this->createCustomer('c3@example.com');
-    $this->createOrder($customerId1, Carbon::now()->subDays(4));
-    $this->createOrder($customerId2, Carbon::now()->subDays(5));
-    $this->createOrder($customerId3, Carbon::now()->subDays(6));
+    $this->createOrder($customerId1, Carbon::now()->subDays(3));
+    $this->createOrder($customerId2, Carbon::now()->subDays(4));
+    $this->createOrder($customerId3, Carbon::now()->subDays(5));
     $emails = $this->getSubscriberEmailsMatchingFilter('inTheLast', '5');
     expect(count($emails))->equals(2);
     $this->assertEqualsCanonicalizing(['c1@example.com', 'c2@example.com'], $emails);
@@ -64,9 +64,9 @@ class WooCommercePurchaseDateTest extends \MailPoetTest {
     $customerId1 = $this->createCustomer('c1@example.com');
     $customerId2 = $this->createCustomer('c2@example.com');
     $customerId3 = $this->createCustomer('c3@example.com');
-    $this->createOrder($customerId1, Carbon::now()->subDays(4));
-    $this->createOrder($customerId2, Carbon::now()->subDays(5));
-    $this->createOrder($customerId3, Carbon::now()->subDays(6));
+    $this->createOrder($customerId1, Carbon::now()->subDays(3));
+    $this->createOrder($customerId2, Carbon::now()->subDays(4));
+    $this->createOrder($customerId3, Carbon::now()->subDays(5));
     $emails = $this->getSubscriberEmailsMatchingFilter('notInTheLast', '5');
     expect(count($emails))->equals(1);
     expect($emails)->equals(['c3@example.com']);
