@@ -11,7 +11,7 @@ import { Input } from 'common/form/input/input';
 import { DateFormItem } from '../types';
 import { storeName } from '../store';
 
-export enum SubscribedDateOperator {
+export enum DateOperator {
   BEFORE = 'before',
   AFTER = 'after',
   ON = 'on',
@@ -21,12 +21,12 @@ export enum SubscribedDateOperator {
 }
 
 const availableOperators = [
-  SubscribedDateOperator.BEFORE,
-  SubscribedDateOperator.AFTER,
-  SubscribedDateOperator.ON,
-  SubscribedDateOperator.NOT_ON,
-  SubscribedDateOperator.IN_THE_LAST,
-  SubscribedDateOperator.NOT_IN_THE_LAST,
+  DateOperator.BEFORE,
+  DateOperator.AFTER,
+  DateOperator.ON,
+  DateOperator.NOT_ON,
+  DateOperator.IN_THE_LAST,
+  DateOperator.NOT_IN_THE_LAST,
 ];
 
 const convertDateToString = (
@@ -53,7 +53,7 @@ type Props = {
   filterIndex: number;
 };
 
-export function SubscribedDateFields({ filterIndex }: Props): JSX.Element {
+export function DateFields({ filterIndex }: Props): JSX.Element {
   const segment: DateFormItem = useSelect(
     (select) =>
       select(storeName).getSegmentFilter(filterIndex),
@@ -64,19 +64,14 @@ export function SubscribedDateFields({ filterIndex }: Props): JSX.Element {
     useDispatch(storeName);
 
   useEffect(() => {
-    if (
-      !availableOperators.includes(segment.operator as SubscribedDateOperator)
-    ) {
-      void updateSegmentFilter(
-        { operator: SubscribedDateOperator.BEFORE },
-        filterIndex,
-      );
+    if (!availableOperators.includes(segment.operator as DateOperator)) {
+      void updateSegmentFilter({ operator: DateOperator.BEFORE }, filterIndex);
     }
     if (
-      (segment.operator === SubscribedDateOperator.BEFORE ||
-        segment.operator === SubscribedDateOperator.AFTER ||
-        segment.operator === SubscribedDateOperator.ON ||
-        segment.operator === SubscribedDateOperator.NOT_ON) &&
+      (segment.operator === DateOperator.BEFORE ||
+        segment.operator === DateOperator.AFTER ||
+        segment.operator === DateOperator.ON ||
+        segment.operator === DateOperator.NOT_ON) &&
       (parseDate(segment.value) === undefined ||
         !/^\d+-\d+-\d+$/.test(segment.value))
     ) {
@@ -86,8 +81,8 @@ export function SubscribedDateFields({ filterIndex }: Props): JSX.Element {
       );
     }
     if (
-      (segment.operator === SubscribedDateOperator.IN_THE_LAST ||
-        segment.operator === SubscribedDateOperator.NOT_IN_THE_LAST) &&
+      (segment.operator === DateOperator.IN_THE_LAST ||
+        segment.operator === DateOperator.NOT_IN_THE_LAST) &&
       typeof segment.value === 'string' &&
       !/^\d*$/.exec(segment.value)
     ) {
@@ -104,29 +99,21 @@ export function SubscribedDateFields({ filterIndex }: Props): JSX.Element {
           void updateSegmentFilterFromEvent('operator', filterIndex, e);
         }}
       >
-        <option value={SubscribedDateOperator.BEFORE}>
-          {MailPoet.I18n.t('before')}
-        </option>
-        <option value={SubscribedDateOperator.AFTER}>
-          {MailPoet.I18n.t('after')}
-        </option>
-        <option value={SubscribedDateOperator.ON}>
-          {MailPoet.I18n.t('on')}
-        </option>
-        <option value={SubscribedDateOperator.NOT_ON}>
-          {MailPoet.I18n.t('notOn')}
-        </option>
-        <option value={SubscribedDateOperator.IN_THE_LAST}>
+        <option value={DateOperator.BEFORE}>{MailPoet.I18n.t('before')}</option>
+        <option value={DateOperator.AFTER}>{MailPoet.I18n.t('after')}</option>
+        <option value={DateOperator.ON}>{MailPoet.I18n.t('on')}</option>
+        <option value={DateOperator.NOT_ON}>{MailPoet.I18n.t('notOn')}</option>
+        <option value={DateOperator.IN_THE_LAST}>
           {MailPoet.I18n.t('inTheLast')}
         </option>
-        <option value={SubscribedDateOperator.NOT_IN_THE_LAST}>
+        <option value={DateOperator.NOT_IN_THE_LAST}>
           {MailPoet.I18n.t('notInTheLast')}
         </option>
       </Select>
-      {(segment.operator === SubscribedDateOperator.BEFORE ||
-        segment.operator === SubscribedDateOperator.AFTER ||
-        segment.operator === SubscribedDateOperator.ON ||
-        segment.operator === SubscribedDateOperator.NOT_ON) && (
+      {(segment.operator === DateOperator.BEFORE ||
+        segment.operator === DateOperator.AFTER ||
+        segment.operator === DateOperator.ON ||
+        segment.operator === DateOperator.NOT_ON) && (
         <Datepicker
           dateFormat="MMM d, yyyy"
           onChange={(value): void => {
@@ -138,8 +125,8 @@ export function SubscribedDateFields({ filterIndex }: Props): JSX.Element {
           selected={segment.value ? parseDate(segment.value) : undefined}
         />
       )}
-      {(segment.operator === SubscribedDateOperator.IN_THE_LAST ||
-        segment.operator === SubscribedDateOperator.NOT_IN_THE_LAST) && (
+      {(segment.operator === DateOperator.IN_THE_LAST ||
+        segment.operator === DateOperator.NOT_IN_THE_LAST) && (
         <>
           <Input
             key="input"
