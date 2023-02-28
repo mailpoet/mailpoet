@@ -28,7 +28,7 @@ export function listsViewSubscribers() {
   });
   const page = browser.newPage();
 
-  group('Subscribers - Filter subscribers', () => {
+  group('Lists - View subscribers of a list', () => {
     page
       .goto(`${baseURL}/wp-admin/admin.php?page=mailpoet-segments#/lists`, {
         waitUntil: 'networkidle',
