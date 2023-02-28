@@ -5,9 +5,8 @@ namespace MailPoet\Segments\DynamicSegments\Filters;
 use MailPoet\Entities\DynamicSegmentFilterEntity;
 use MailPoet\Segments\DynamicSegments\Exceptions\InvalidFilterException;
 use MailPoetVendor\Carbon\CarbonImmutable;
-use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
 
-abstract class DateFilter implements Filter {
+class DateFilterHelper {
   const BEFORE = 'before';
   const AFTER = 'after';
   const ON = 'on';
@@ -15,16 +14,14 @@ abstract class DateFilter implements Filter {
   const IN_THE_LAST = 'inTheLast';
   const NOT_IN_THE_LAST = 'notInTheLast';
 
-  abstract public function apply(QueryBuilder $queryBuilder, DynamicSegmentFilterEntity $filter): QueryBuilder;
-
-  protected function getValidOperators(): array {
+  public function getValidOperators(): array {
     return array_merge(
       $this->getAbsoluteDateOperators(),
       $this->getRelativeDateOperators()
     );
   }
 
-  protected function getAbsoluteDateOperators(): array {
+  public function getAbsoluteDateOperators(): array {
     return [
       self::BEFORE,
       self::AFTER,
@@ -33,14 +30,14 @@ abstract class DateFilter implements Filter {
     ];
   }
 
-  protected function getRelativeDateOperators(): array {
+  public function getRelativeDateOperators(): array {
     return [
       self::IN_THE_LAST,
       self::NOT_IN_THE_LAST,
     ];
   }
 
-  protected function getDateStringForOperator(string $operator, string $value): string {
+  public function getDateStringForOperator(string $operator, string $value): string {
     if (in_array($operator, $this->getAbsoluteDateOperators())) {
       $carbon = CarbonImmutable::createFromFormat('Y-m-d', $value);
       if (!$carbon instanceof CarbonImmutable) {
@@ -55,7 +52,7 @@ abstract class DateFilter implements Filter {
     return $carbon->toDateString();
   }
 
-  protected function getDateValueFromFilter(DynamicSegmentFilterEntity $filter): string {
+  public function getDateValueFromFilter(DynamicSegmentFilterEntity $filter): string {
     $filterData = $filter->getFilterData();
     $dateValue = $filterData->getParam('value');
     if (!is_string($dateValue)) {
@@ -64,7 +61,7 @@ abstract class DateFilter implements Filter {
     return $dateValue;
   }
 
-  protected function getOperatorFromFilter(DynamicSegmentFilterEntity $filter): string {
+  public function getOperatorFromFilter(DynamicSegmentFilterEntity $filter): string {
     $filterData = $filter->getFilterData();
     $operator = $filterData->getParam('operator');
     if (!is_string($operator) || !in_array($operator, $this->getValidOperators())) {

@@ -4,6 +4,7 @@ namespace MailPoet\Segments\DynamicSegments;
 
 use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Segments\DynamicSegments\Exceptions\InvalidFilterException;
+use MailPoet\Segments\DynamicSegments\Filters\DateFilterHelper;
 use MailPoet\Segments\DynamicSegments\Filters\EmailAction;
 use MailPoet\Segments\DynamicSegments\Filters\EmailActionClickAny;
 use MailPoet\Segments\DynamicSegments\Filters\EmailOpensAbsoluteCountAction;
@@ -92,7 +93,7 @@ class FilterDataMapper {
       if (empty($data['value'])) throw new InvalidFilterException('Missing number of days', InvalidFilterException::MISSING_VALUE);
       return new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_USER_ROLE, $data['action'], [
         'value' => $data['value'],
-        'operator' => $data['operator'] ?? SubscriberSubscribedDate::BEFORE,
+        'operator' => $data['operator'] ?? DateFilterHelper::BEFORE,
         'connect' => $data['connect'],
       ]);
     }
