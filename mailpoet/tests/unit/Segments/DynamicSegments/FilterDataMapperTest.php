@@ -212,7 +212,7 @@ class FilterDataMapperTest extends \MailPoetUnitTest {
       'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
       'action' => SubscriberSubscribedDate::TYPE,
       'value' => 2,
-      'operator' => SubscriberSubscribedDate::AFTER,
+      'operator' => 'after',
     ]]]);
     expect($filters)->array();
     expect($filters)->count(1);
@@ -223,7 +223,7 @@ class FilterDataMapperTest extends \MailPoetUnitTest {
     expect($filter->getAction())->equals(SubscriberSubscribedDate::TYPE);
     expect($filter->getData())->equals([
       'value' => 2,
-      'operator' => SubscriberSubscribedDate::AFTER,
+      'operator' => 'after',
       'connect' => DynamicSegmentFilterData::CONNECT_TYPE_AND,
     ]);
   }

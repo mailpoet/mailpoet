@@ -7,27 +7,36 @@ use MailPoet\Segments\DynamicSegments\Exceptions\InvalidFilterException;
 use MailPoet\Util\Security;
 use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
 
-class SubscriberSubscribedDate extends DateFilter {
+class SubscriberSubscribedDate implements Filter {
   const TYPE = 'subscribedDate';
 
+  /** @var DateFilterHelper */
+  private $dateFilterHelper;
+
+  public function __construct(
+    DateFilterHelper $dateFilterHelper
+  ) {
+    $this->dateFilterHelper = $dateFilterHelper;
+  }
+
   public function apply(QueryBuilder $queryBuilder, DynamicSegmentFilterEntity $filter): QueryBuilder {
-    $operator = $this->getOperatorFromFilter($filter);
-    $value = $this->getDateValueFromFilter($filter);
+    $operator = $this->dateFilterHelper->getOperatorFromFilter($filter);
+    $value = $this->dateFilterHelper->getDateValueFromFilter($filter);
     $parameterSuffix = $filter->getId() ?: Security::generateRandomString();
     $parameter = 'date' . $parameterSuffix;
-    $date = $this->getDateStringForOperator($operator, $value);
+    $date = $this->dateFilterHelper->getDateStringForOperator($operator, $value);
 
-    if ($operator === self::BEFORE) {
+    if ($operator === DateFilterHelper::BEFORE) {
       $queryBuilder->andWhere("DATE(last_subscribed_at) < :$parameter");
-    } elseif ($operator === self::AFTER) {
+    } elseif ($operator === DateFilterHelper::AFTER) {
       $queryBuilder->andWhere("DATE(last_subscribed_at) > :$parameter");
-    } elseif ($operator === self::ON) {
+    } elseif ($operator === DateFilterHelper::ON) {
       $queryBuilder->andWhere("DATE(last_subscribed_at) = :$parameter");
-    } elseif ($operator === self::NOT_ON) {
+    } elseif ($operator === DateFilterHelper::NOT_ON) {
       $queryBuilder->andWhere("DATE(last_subscribed_at) != :$parameter");
-    } elseif ($operator === self::IN_THE_LAST) {
+    } elseif ($operator === DateFilterHelper::IN_THE_LAST) {
       $queryBuilder->andWhere("DATE(last_subscribed_at) >= :$parameter");
-    } elseif ($operator === self::NOT_IN_THE_LAST) {
+    } elseif ($operator === DateFilterHelper::NOT_IN_THE_LAST) {
       $queryBuilder->andWhere("DATE(last_subscribed_at) < :$parameter");
     } else {
       throw new InvalidFilterException('Incorrect value for operator', InvalidFilterException::MISSING_VALUE);

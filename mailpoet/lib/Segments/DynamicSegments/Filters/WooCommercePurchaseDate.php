@@ -9,7 +9,7 @@ use MailPoet\Util\DBCollationChecker;
 use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 
-class WooCommercePurchaseDate extends DateFilter {
+class WooCommercePurchaseDate implements Filter {
   const ACTION = 'purchaseDate';
 
   /** @var EntityManager */
@@ -18,21 +18,26 @@ class WooCommercePurchaseDate extends DateFilter {
   /** @var DBCollationChecker */
   private $collationChecker;
 
+  /** @var DateFilterHelper */
+  private $dateFilterHelper;
+
   public function __construct(
     EntityManager $entityManager,
-    DBCollationChecker $collationChecker
+    DBCollationChecker $collationChecker,
+    DateFilterHelper $dateFilterHelper
   ) {
     $this->entityManager = $entityManager;
     $this->collationChecker = $collationChecker;
+    $this->dateFilterHelper = $dateFilterHelper;
   }
 
   public function apply(QueryBuilder $queryBuilder, DynamicSegmentFilterEntity $filter): QueryBuilder {
-    $operator = $this->getOperatorFromFilter($filter);
-    $dateValue = $this->getDateValueFromFilter($filter);
-    $date = $this->getDateStringForOperator($operator, $dateValue);
+    $operator = $this->dateFilterHelper->getOperatorFromFilter($filter);
+    $dateValue = $this->dateFilterHelper->getDateValueFromFilter($filter);
+    $date = $this->dateFilterHelper->getDateStringForOperator($operator, $dateValue);
     $subQuery = $this->getSubQuery($operator, $date);
 
-    if (in_array($operator, [self::NOT_ON, self::NOT_IN_THE_LAST])) {
+    if (in_array($operator, [DateFilterHelper::NOT_ON, DateFilterHelper::NOT_IN_THE_LAST])) {
       $queryBuilder->andWhere($queryBuilder->expr()->notIn("{$this->getSubscribersTable()}.id", $subQuery->getSQL()));
     } else {
       $queryBuilder->andWhere($queryBuilder->expr()->in("{$this->getSubscribersTable()}.id", $subQuery->getSQL()));
@@ -49,18 +54,18 @@ class WooCommercePurchaseDate extends DateFilter {
     $quotedDate = $queryBuilder->expr()->literal($date);
 
     switch ($operator) {
-      case self::BEFORE:
+      case DateFilterHelper::BEFORE:
         $queryBuilder->andWhere("DATE(orderStats.date_created) < $quotedDate");
         break;
-      case self::AFTER:
+      case DateFilterHelper::AFTER:
         $queryBuilder->andWhere("DATE(orderStats.date_created) > $quotedDate");
         break;
-      case self::IN_THE_LAST:
-      case self::NOT_IN_THE_LAST:
+      case DateFilterHelper::IN_THE_LAST:
+      case DateFilterHelper::NOT_IN_THE_LAST:
         $queryBuilder->andWhere("DATE(orderStats.date_created) >= $quotedDate");
         break;
-      case self::ON:
-      case self::NOT_ON:
+      case DateFilterHelper::ON:
+      case DateFilterHelper::NOT_ON:
         $queryBuilder->andWhere("DATE(orderStats.date_created) = $quotedDate");
         break;
       default:
