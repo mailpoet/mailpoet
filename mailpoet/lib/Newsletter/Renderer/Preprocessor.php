@@ -3,11 +3,8 @@
 namespace MailPoet\Newsletter\Renderer;
 
 use MailPoet\Entities\NewsletterEntity;
-use MailPoet\Logging\LoggerFactory;
-use MailPoet\Newsletter\NewslettersRepository;
-use MailPoet\Newsletter\Renderer\Blocks\AbandonedCartContent;
+  use MailPoet\Newsletter\Renderer\Blocks\AbandonedCartContent;
 use MailPoet\Newsletter\Renderer\Blocks\AutomatedLatestContentBlock;
-use MailPoet\NewsletterProcessingException;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\WooCommerce\CouponPreProcessor;
 use MailPoet\WooCommerce\TransactionalEmails\ContentPreprocessor;
@@ -34,26 +31,16 @@ class Preprocessor {
   /*** @var CouponPreProcessor */
   private $couponPreProcessor;
 
-  /*** @var NewslettersRepository */
-  private $newslettersRepository;
-
-  /*** @var LoggerFactory */
-  private $loggerFactory;
-
   public function __construct(
     AbandonedCartContent $abandonedCartContent,
     AutomatedLatestContentBlock $automatedLatestContent,
     ContentPreprocessor $wooCommerceContentPreprocessor,
-    CouponPreProcessor $couponPreProcessor,
-    NewslettersRepository $newslettersRepository,
-    LoggerFactory $loggerFactory
+    CouponPreProcessor $couponPreProcessor
   ) {
     $this->abandonedCartContent = $abandonedCartContent;
     $this->automatedLatestContent = $automatedLatestContent;
     $this->wooCommerceContentPreprocessor = $wooCommerceContentPreprocessor;
     $this->couponPreProcessor = $couponPreProcessor;
-    $this->newslettersRepository = $newslettersRepository;
-    $this->loggerFactory = $loggerFactory;
   }
 
   /**
@@ -67,18 +54,7 @@ class Preprocessor {
     }
     $blocks = [];
     $contentBlocks = $content['blocks'];
-
-    try {
-      $contentBlocks = $this->couponPreProcessor->processCoupons($newsletter, $contentBlocks, $preview);
-    } catch (NewsletterProcessingException $e) {
-      $this->loggerFactory->getLogger(LoggerFactory::TOPIC_COUPONS)->error(
-          $e->getMessage(),
-          ['newsletter_id' => $newsletter->getId()]
-        );
-        $newsletter->setStatus(NewsletterEntity::STATUS_CORRUPT);
-      $this->newslettersRepository->persist($newsletter);
-      $this->newslettersRepository->flush();
-    }
+    $contentBlocks = $this->couponPreProcessor->processCoupons($newsletter, $contentBlocks, $preview);
     foreach ($contentBlocks as $block) {
       $processedBlock = $this->processBlock($newsletter, $block, $preview, $sendingTask);
       if (!empty($processedBlock)) {
