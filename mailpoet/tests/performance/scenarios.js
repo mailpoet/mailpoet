@@ -12,6 +12,7 @@ import { subscribersAdding } from './tests/subscribers-adding.js';
 import { formsAdding } from './tests/forms-adding.js';
 import { newsletterSearching } from './tests/newsletter-searching.js';
 import { newsletterSending } from './tests/newsletter-sending.js';
+import { listsViewSubscribers } from './tests/lists-view-subscribers.js';
 
 // Scenarios, Thresholds and Tags
 export let options = {
@@ -68,6 +69,7 @@ export function pullRequests() {
   formsAdding();
   newsletterSearching();
   newsletterSending();
+  listsViewSubscribers();
 }
 
 // All the tests ran for a nightly testing
