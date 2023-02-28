@@ -1,0 +1,22 @@
+$color-input-error: #f00;
+
+.mailpoet-segments-grid {
+  grid-template-columns: auto;
+}
+
+.mailpoet-form-segment-delete {
+  align-items: center;
+  border: 1px solid $color-input-error;
+  border-radius: 12px;
+  color: $color-input-error;
+  cursor: pointer;
+  display: flex;
+  height: 20px;
+  justify-content: center;
+  margin-top: -11px;
+  position: absolute;
+  right: 0;
+  top: 50%;
+  width: 20px;
+}
+

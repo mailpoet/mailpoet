@@ -8,8 +8,8 @@ import {
   PlainBodyTitle,
   FormTokenField,
 } from '../../../../../editor/components';
-import { Form } from '../../../../../../segments/dynamic/form';
 import { createStore } from '../../../../../../segments/dynamic/store/store';
+import { FormBody } from '../../../../../../segments/dynamic/form_body';
 
 export function ListPanel(): JSX.Element {
   const [storeLoaded, setStoreLoaded] = useState(false);
@@ -17,27 +17,32 @@ export function ListPanel(): JSX.Element {
   useEffect(() => {
     const context = (getContext() as any).dynamic_segments;
     const w = window as any;
-    w.mailpoet_products = context.mailpoet_products;
-    w.mailpoet_static_segments_list = context.mailpoet_static_segments_list;
-    w.mailpoet_membership_plans = context.mailpoet_membership_plans;
-    w.mailpoet_subscription_products = context.mailpoet_subscription_products;
-    w.mailpoet_product_categories = context.mailpoet_product_categories;
-    w.mailpoet_newsletters_list = context.mailpoet_newsletters_list;
+    w.mailpoet_products = context.products;
+    w.mailpoet_static_segments_list = context.static_segments_list;
+    w.mailpoet_membership_plans = context.membership_plans;
+    w.mailpoet_subscription_products = context.subscription_products;
+    w.mailpoet_product_categories = context.product_categories;
+    w.mailpoet_newsletters_list = context.newsletters_list;
     w.wordpress_editable_roles_list = context.wordpress_editable_roles_list;
     w.mailpoet_can_use_woocommerce_memberships =
-      context.mailpoet_can_use_woocommerce_memberships;
+      context.can_use_woocommerce_memberships;
     w.mailpoet_can_use_woocommerce_subscriptions =
-      context.mailpoet_can_use_woocommerce_subscriptions;
+      context.can_use_woocommerce_subscriptions;
     w.mailpoet_woocommerce_currency_symbol =
-      context.mailpoet_woocommerce_currency_symbol;
-    w.mailpoet_woocommerce_countries = context.mailpoet_woocommerce_countries;
-    w.mailpoet_custom_fields = context.mailpoet_custom_fields;
-    w.mailpoet_tags = context.mailpoet_tags;
+      context.woocommerce_currency_symbol;
+    w.mailpoet_woocommerce_countries = context.woocommerce_countries;
+    w.mailpoet_custom_fields = context.custom_fields;
+    w.mailpoet_tags = context.tags;
     w.mailpoet_can_use_woocommerce_subscriptions =
-      context.mailpoet_can_use_woocommerce_subscriptions;
+      context.can_use_woocommerce_subscriptions;
     w.mailpoet_can_use_woocommerce_memberships =
-      context.mailpoet_can_use_woocommerce_memberships;
+      context.can_use_woocommerce_memberships;
     createStore();
+    //document
+    //  .getElementById('wp-i18n-js-after')
+    //  .insertAdjacentHTML('afterend', context.translations);
+    //eval(context.translations);
+    console.log(context.translations);
     setStoreLoaded(true);
   }, []);
 
@@ -79,7 +84,14 @@ export function ListPanel(): JSX.Element {
         }}
       />
 
-      {storeLoaded && <Form />}
+      {storeLoaded && (
+        <FormBody
+          onSubmit={(s) => {
+            console.log(s);
+            //setSegment(s);
+          }}
+        />
+      )}
     </PanelBody>
   );
 }

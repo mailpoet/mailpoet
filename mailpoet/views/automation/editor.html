@@ -15,6 +15,10 @@
 </script>
 <% endblock %>
 
+<% block translations %>
+  <% include 'automation/dynamic-segments-i18n.html' %>
+<% endblock %>
+
 <% block after_css %>
 <%= stylesheet('mailpoet-automation-editor.css') %>
 <% endblock %>

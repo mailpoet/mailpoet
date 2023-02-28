@@ -3,6 +3,7 @@
 namespace MailPoet\Automation\Integrations\MailPoet;
 
 use MailPoet\API\JSON\ResponseBuilders\CustomFieldsResponseBuilder;
+use MailPoet\Config\Renderer;
 use MailPoet\CustomFields\CustomFieldsRepository;
 use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Entities\SegmentEntity;
@@ -33,6 +34,9 @@ class DynamicSegmentsContextFactory {
   /** @var WPPostListLoader */
   private $wpPostListLoader;
 
+  /** @var Renderer */
+  private $renderer;
+
   /** @var Helper */
   private $woocommerceHelper;
 
@@ -46,6 +50,7 @@ class DynamicSegmentsContextFactory {
     SegmentsRepository $segmentsRepository,
     SegmentDependencyValidator $segmentDependencyValidator,
     WPPostListLoader $wpPostListLoader,
+    Renderer $renderer,
     Helper $woocommerceHelper,
     Functions $wp
   ) {
@@ -55,6 +60,7 @@ class DynamicSegmentsContextFactory {
     $this->segmentsRepository = $segmentsRepository;
     $this->segmentDependencyValidator = $segmentDependencyValidator;
     $this->wpPostListLoader = $wpPostListLoader;
+    $this->renderer = $renderer;
     $this->woocommerceHelper = $woocommerceHelper;
     $this->wp = $wp;
   }
