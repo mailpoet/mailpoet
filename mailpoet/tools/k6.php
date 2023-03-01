@@ -22,14 +22,14 @@ if (!file_exists($vendorDir)) {
 }
 
 // paths
-$version = 'v0.8.1';
+$version = 'v0.43.1';
 $extension = $os === 'macos' || $os === 'windows' ? 'zip' : 'tar.gz';
-$name = "xk6-browser-$version-$os-$arch";
-$url = "https://github.com/grafana/xk6-browser/releases/download/$version/$name.$extension";
-$filePath = __DIR__ . "/vendor/$name/xk6-browser";
+$name = "k6-$version-$os-$arch";
+$url = "https://github.com/grafana/k6/releases/download/$version/$name.$extension";
+$filePath = __DIR__ . "/vendor/$name/k6";
 $fileInfoPath = __DIR__ . "/vendor/$name.info";
 
-// download xk6-browser CLI if it doesn't exist
+// download k6 CLI if it doesn't exist
 if (!file_exists($filePath) || !file_exists($fileInfoPath) || file_get_contents($fileInfoPath) !== $url) {
   fwrite(STDERR, "Downloading '$url'...");
   $resource = fopen($url, 'r');
@@ -46,7 +46,7 @@ if (!file_exists($filePath) || !file_exists($fileInfoPath) || file_get_contents(
   fwrite(STDERR, " done.\n");
 }
 
-// run xk6-browser CLI
+// run k6 CLI
 $args = array_map(function ($arg) {
   return escapeshellarg($arg);
 }, array_slice($argv, 1));

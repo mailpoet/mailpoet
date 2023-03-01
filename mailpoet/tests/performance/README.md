@@ -34,7 +34,7 @@ To execute the tests, use the following command:
 
 `./do test:performance`
 
-There k6 installation is automatic. It will download the binary file in `/tools/vendor/` folder. Associated file for auto installing is `/tools/xk6browser.php`.
+There k6 installation is automatic. It will download the binary file in `/tools/vendor/` folder. Associated file for auto installing is `/tools/k6.php`.
 
 ## Configuration
 

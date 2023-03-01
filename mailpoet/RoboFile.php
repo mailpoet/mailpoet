@@ -305,8 +305,9 @@ class RoboFile extends \Robo\Tasks {
 
     // run performance tests
     $dir = __DIR__;
-    return $this->taskExec("php $dir/tools/xk6browser.php")
+    return $this->taskExec("php $dir/tools/k6.php")
       ->arg('run')
+      ->option('env', 'K6_BROWSER_ENABLED=1')
       ->option('env', 'URL=' . $opts['url'])
       ->option('env', 'HEADLESS=' . ($opts['head'] ? 'false' : 'true'))
       ->option('env', 'SCENARIO=' . $opts['scenario'])
