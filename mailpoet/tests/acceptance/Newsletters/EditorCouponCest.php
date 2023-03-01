@@ -135,4 +135,42 @@ class EditorCouponCest {
     $i->waitForElementVisible('.mailpoet_coupon');
     $i->see($couponCode);
   }
+
+  public function seeNoticeWhenCouponCantGenerate(\AcceptanceTester $i) {
+    $couponInEditor = '[data-automation-id="coupon_block"]';
+    $sendFormElement = '[data-automation-id="newsletter_send_form"]';
+    $emailSubject = 'Newsletter with Coupon';
+    $this->settings->withCronTriggerMethod('Action Scheduler');
+
+    $i->activateWooCommerce();
+
+    $i->wantTo('Add coupon block to newsletter');
+    $newsletter = (new Newsletter())
+      ->loadBodyFrom('newsletterWithText.json')
+      ->withSubject($emailSubject)
+      ->create();
+    $i->login();
+    $i->amEditingNewsletter($newsletter->getId());
+    $i->dragAndDrop('#automation_editor_block_coupon', '#mce_1');
+    $i->waitForElementVisible($couponInEditor);
+    $i->see(Coupon::CODE_PLACEHOLDER);
+
+    $i->wantTo('Send the email with coupon');
+    $i->click('Next');
+    $segmentName = $i->createListWithSubscriber();
+
+    $i->wantTo('Choose list and send');
+    $i->waitForElement($sendFormElement);
+    $i->selectOptionInSelect2($segmentName);
+    $i->deactivateWooCommerce();
+    $i->click('Send');
+    $i->waitForEmailSendingOrSent();
+    $i->triggerMailPoetActionScheduler();
+    $i->waitForText('Woocommerce is not active');
+    $i->canSee('Resume', 'button');
+    $i->reloadPage();
+    $i->waitForListingItemsToLoad();
+    $i->waitForText($emailSubject, 10, '.mailpoet-listing-title');
+    $i->canSee($emailSubject, '.notice.error.notice-error');
+  }
 }
