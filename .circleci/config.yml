@@ -492,6 +492,7 @@ jobs:
       - run:
           name: Run performance tests
           command: |
+            mkdir -p tests/performance/_output
             ./do test:performance --url=https://qawp.net --scenario pullrequests
       - run:
           name: Check exceptions
