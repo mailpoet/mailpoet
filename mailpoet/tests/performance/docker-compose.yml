@@ -2,7 +2,7 @@ version: '3.9'
 
 services:
   setup:
-    image: mailpoet/wordpress:8.2RC6-cli_20230209.1
+    image: wordpress:cli-2.7-php8.2
     container_name: performance_setup
     depends_on:
       wordpress: { condition: service_started }

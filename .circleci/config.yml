@@ -475,6 +475,11 @@ jobs:
           name: 'Set up virtual host'
           command: echo 127.0.0.1 mailpoet.loc | sudo tee -a /etc/hosts
       - run:
+          name: 'Set up PHP'
+          command: |
+            sudo apt update
+            sudo apt install -y php8.1-cli
+      - run:
           name: 'Pull test docker images'
           # Pull docker images with 3 retries
           command: i='0';while ! docker-compose -f tests/performance/docker-compose.yml pull && ((i < 3)); do sleep 3 && i=$[$i+1]; done
@@ -487,8 +492,7 @@ jobs:
       - run:
           name: Run performance tests
           command: |
-            cd tests/performance
-            docker-compose run -u 0 --workdir="/var/www/html/wp-content/plugins/mailpoet" setup /var/www/html/wp-content/plugins/mailpoet/do test:performance --url=https://qawp.net --scenario pullrequests
+            ./do test:performance --url=https://qawp.net --scenario pullrequests
       - run:
           name: Check exceptions
           command: |
