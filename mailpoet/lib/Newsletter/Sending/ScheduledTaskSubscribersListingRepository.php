@@ -94,9 +94,13 @@ class ScheduledTaskSubscribersListingRepository extends ListingRepository {
     // ScheduledTaskSubscriber doesn't have id column so the default fallback value 'id'
     // generated in MailPoet\Listing\Handler needs to be changed to something else
     if ($sortBy === 'id') {
-      $sortBy = 'subscriber';
+      $sortBy = 'sts.subscriber';
+    } elseif ($sortBy === 'subscriberId') { // Ordering by subscriberId is mapped to email for consistency with Subscriber listing
+      $sortBy = 's.email';
+    } else {
+      $sortBy = "sts.{$sortBy}";
     }
-    $queryBuilder->addOrderBy("sts.$sortBy", $sortOrder);
+    $queryBuilder->addOrderBy($sortBy, $sortOrder);
   }
 
   protected function applySearch(QueryBuilder $queryBuilder, string $search) {
