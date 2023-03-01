@@ -3,9 +3,11 @@
 namespace MailPoet\Test\Acceptance;
 
 use Codeception\Util\Locator;
+use MailPoet\DI\ContainerWrapper;
 use MailPoet\Newsletter\Renderer\Blocks\Coupon;
 use MailPoet\Test\DataFactories\Newsletter;
 use MailPoet\Test\DataFactories\Settings;
+use MailPoet\WooCommerce\Helper;
 
 /**
  * @group woo
@@ -16,8 +18,12 @@ class EditorCouponCest {
   /** @var Settings */
   private $settings;
 
+  /** @var Helper */
+  private $wcHelper;
+
   public function _before() {
     $this->settings = new Settings();
+    $this->wcHelper = ContainerWrapper::getInstance()->get(Helper::class);
   }
 
   public function addCoupon(\AcceptanceTester $i) {
@@ -69,5 +75,64 @@ class EditorCouponCest {
     $i->switchToIFrame("#preview-html");
     $i->waitForElementVisible('.mailpoet_coupon');
     $i->dontSee(Locator::contains('.mailpoet_coupon', Coupon::CODE_PLACEHOLDER));
+  }
+
+  public function addCouponAndSelectPredefinedCoupon(\AcceptanceTester $i) {
+    $couponInEditor = '[data-automation-id="coupon_block"]';
+    $couponSettingsHeading = '[data-automation-id="coupon_settings_heading"]';
+    $couponSettingsDone = '[data-automation-id="coupon_done_button"]';
+    $sendFormElement = '[data-automation-id="newsletter_send_form"]';
+    $emailSubject = 'Newsletter with Coupon';
+    $couponCode = 'some-coupon-code';
+    $this->settings->withCronTriggerMethod('Action Scheduler');
+
+    $i->activateWooCommerce();
+
+    $i->wantTo('Add coupon block to newsletter');
+    $newsletter = (new Newsletter())
+      ->loadBodyFrom('newsletterWithText.json')
+      ->withSubject($emailSubject)
+      ->create();
+
+    $coupon = $this->wcHelper->createWcCoupon('');
+    $coupon->set_code($couponCode);
+    $coupon->set_amount(100);
+    $discountType = current(array_keys($this->wcHelper->wcGetCouponTypes()));
+    $coupon->set_discount_type($discountType);
+    $coupon->save();
+
+    $i->login();
+    $i->amEditingNewsletter($newsletter->getId());
+    $i->dragAndDrop('#automation_editor_block_coupon', '#mce_1');
+    $i->waitForElementVisible($couponInEditor);
+    $i->see(Coupon::CODE_PLACEHOLDER);
+    $i->wantTo('Open coupon settings panel');
+    $i->click($couponInEditor);
+    $i->waitForElement($couponSettingsHeading);
+    $i->wantTo('Select predefined coupon');
+    $i->click(Locator::contains('button', 'All coupons'));
+    $i->click(Locator::contains('label', $couponCode));
+    $i->wantTo('Close coupon settings panel');
+    $i->click($couponSettingsDone);
+    $i->seeNoJSErrors();
+    $i->canSee($couponCode);
+
+    $i->wantTo('Send the email with coupon');
+    $i->click('Next');
+    $segmentName = $i->createListWithSubscriber();
+
+    $i->wantTo('Choose list and send');
+    $i->waitForElement($sendFormElement);
+    $i->selectOptionInSelect2($segmentName);
+    $i->click('Send');
+    $i->waitForEmailSendingOrSent();
+    $i->triggerMailPoetActionScheduler();
+
+    $i->wantTo('Verify newsletter with generated coupon is received');
+    $i->checkEmailWasReceived($emailSubject);
+    $i->click('.msglist-message');
+    $i->switchToIFrame("#preview-html");
+    $i->waitForElementVisible('.mailpoet_coupon');
+    $i->see($couponCode);
   }
 }
