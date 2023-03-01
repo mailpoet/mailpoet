@@ -488,7 +488,7 @@ jobs:
           name: Run performance tests
           command: |
             cd tests/performance
-            docker-compose run -u 0 --workdir="/var/www/html/wp-content/plugins/mailpoet" setup /var/www/html/wp-content/plugins/mailpoet/do test:performance
+            docker-compose run -u 0 --workdir="/var/www/html/wp-content/plugins/mailpoet" setup /var/www/html/wp-content/plugins/mailpoet/do test:performance --url=https://qawp.net --scenario pullrequests
       - run:
           name: Check exceptions
           command: |
