@@ -58,7 +58,7 @@ class Automation {
     }
     $lastStep->setNextSteps([new NextStep($step->getId())]);
     $steps[$step->getId()] = $step;
-    return $this->withSteps(...$steps);
+    return $this->withSteps(...array_values($steps));
   }
 
   public function withDelayAction() {
