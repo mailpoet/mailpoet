@@ -49,6 +49,7 @@ Module.CouponBlockModel = base.BlockModel.extend({
           },
         },
         source: 'createNew',
+        code: App.getConfig().get('coupon.code_placeholder'),
       },
       App.getConfig().get('blockDefaults.coupon'),
     );
