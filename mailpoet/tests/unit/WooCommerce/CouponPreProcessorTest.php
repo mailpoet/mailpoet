@@ -153,7 +153,7 @@ class CouponPreProcessorTest extends \MailPoetUnitTest {
 
     $blocks = ['blocks' => ['type' => Coupon::TYPE]];
     $this->expectException(NewsletterProcessingException::class);
-    $this->expectExceptionMessage('Woocommerce is not active');
+    $this->expectExceptionMessage('WooCommerce is not active');
     $result = $processor->processCoupons($newsletter, $blocks, false);
     expect($result)->equals($blocks);
   }
