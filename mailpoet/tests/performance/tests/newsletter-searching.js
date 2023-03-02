@@ -55,6 +55,20 @@ export function newsletterSearching() {
         });
       })
 
+      .then(() => {
+        page
+          .locator('[data-automation-id="listing_filter_segment"]')
+          .selectOption('3');
+        page.waitForSelector('.mailpoet-listing-no-items');
+        page.waitForSelector('[data-automation-id="listing_filter_segment"]');
+        page.waitForLoadState('networkidle');
+        check(page, {
+          'lists filter is visible': page
+            .locator('[data-automation-id="listing_filter_segment"]')
+            .isVisible(),
+        });
+      })
+
       .finally(() => {
         page.close();
         browser.close();
