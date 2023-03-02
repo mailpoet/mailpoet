@@ -32,20 +32,20 @@ class WooCommercePurchaseDate implements Filter {
     $operator = $this->dateFilterHelper->getOperatorFromFilter($filter);
     $dateValue = $this->dateFilterHelper->getDateValueFromFilter($filter);
     $date = $this->dateFilterHelper->getDateStringForOperator($operator, $dateValue);
-    $subQuery = $this->getSubQuery($operator, $date);
     $subscribersTable = $this->filterHelper->getSubscribersTable();
 
     if (in_array($operator, [DateFilterHelper::NOT_ON, DateFilterHelper::NOT_IN_THE_LAST])) {
+      $subQuery = $this->filterHelper->getNewSubscribersQueryBuilder();
+      $this->applyConditionsToQueryBuilder($operator, $date, $subQuery);
       $queryBuilder->andWhere($queryBuilder->expr()->notIn("{$subscribersTable}.id", $subQuery->getSQL()));
     } else {
-      $queryBuilder->andWhere($queryBuilder->expr()->in("{$subscribersTable}.id", $subQuery->getSQL()));
+      $this->applyConditionsToQueryBuilder($operator, $date, $queryBuilder);
     }
 
     return $queryBuilder;
   }
 
-  private function getSubQuery(string $operator, string $date): QueryBuilder {
-    $queryBuilder = $this->filterHelper->getNewSubscribersQueryBuilder();
+  private function applyConditionsToQueryBuilder(string $operator, string $date, QueryBuilder $queryBuilder): QueryBuilder {
     $orderStatsAlias = $this->wooFilterHelper->applyOrderStatusFilter($queryBuilder);
     $quotedDate = $queryBuilder->expr()->literal($date);
 
