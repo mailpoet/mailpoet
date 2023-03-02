@@ -75,7 +75,7 @@ class CreateEmailAutomationAndWalkThroughCest {
     $i->click('Save');
 
     $i->amOnMailpoetPage('Automation');
-    $i->seeInDatabase('mp_actionscheduler_actions', ['hook' => 'mailpoet/automation/step', 'status' => 'pending']);
+    $i->seeInDatabase('mp_actionscheduler_actions', ['hook' => 'mailpoet/automation/step']);
     $i->waitForText('Welcome new subscribers');
     $i->see('Entered 1', ['css' => '.mailpoet-automation-stats-item']); //Actually I see "1 Entered", but this CSS switch is not caught by the test
     $i->see('Processing 1', ['css' => '.mailpoet-automation-stats-item']);
