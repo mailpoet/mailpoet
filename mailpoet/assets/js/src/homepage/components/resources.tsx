@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { MailPoet } from 'mailpoet';
 import { Icon } from '@wordpress/components';
 import { chevronLeft, chevronRight } from '@wordpress/icons';
@@ -51,6 +51,20 @@ export function Resources(): JSX.Element {
       imgSrc={`${MailPoet.cdnUrl}homepage/resources/sales.png`}
     />,
   ];
+  const goToNextPage = useCallback(
+    (e) => {
+      e.preventDefault();
+      setActivePage(activePage + 1);
+    },
+    [activePage],
+  );
+  const goToPreviousPage = useCallback(
+    (e) => {
+      e.preventDefault();
+      setActivePage(activePage - 1);
+    },
+    [activePage],
+  );
   return (
     <ContentSection
       className="mailpoet-homepage-resources"
@@ -71,10 +85,7 @@ export function Resources(): JSX.Element {
         {activePage > 1 ? (
           <a
             href="#"
-            onClick={(e) => {
-              e.preventDefault();
-              setActivePage(activePage - 1);
-            }}
+            onClick={goToPreviousPage}
             title={MailPoet.I18n.t('previousPostsPage')}
           >
             <Icon icon={chevronLeft} />
@@ -86,10 +97,7 @@ export function Resources(): JSX.Element {
         {activePage < Math.ceil(posts.length / 2) ? (
           <a
             href="#"
-            onClick={(e) => {
-              e.preventDefault();
-              setActivePage(activePage + 1);
-            }}
+            onClick={goToNextPage}
             title={MailPoet.I18n.t('nextPostsPage')}
           >
             <Icon icon={chevronRight} />
