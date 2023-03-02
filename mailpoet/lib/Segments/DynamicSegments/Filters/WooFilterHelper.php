@@ -84,10 +84,10 @@ class WooFilterHelper {
   }
 
   private function customerLookupTable(): string {
-    return $this->filterHelper->prefixedTable('wc_customer_lookup');
+    return $this->filterHelper->getPrefixedTable('wc_customer_lookup');
   }
 
   private function orderStatsTable(): string {
-    return $this->filterHelper->prefixedTable('wc_order_stats');
+    return $this->filterHelper->getPrefixedTable('wc_order_stats');
   }
 }
