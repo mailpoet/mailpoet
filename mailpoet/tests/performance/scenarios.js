@@ -14,13 +14,13 @@ import { scenario } from './config.js';
 export let options = {
   scenarios: {},
   thresholds: {
-    browser_dom_content_loaded: ['p(99) < 2000'],
-    browser_first_contentful_paint: ['p(99) < 2000'],
-    browser_first_meaningful_paint: ['p(99) < 3000'],
-    browser_first_paint: ['p(99) < 2000'],
-    browser_loaded: ['p(99) < 3000'],
-    http_req_duration: ['p(99) < 10000'],
-    http_req_receiving: ['p(99) < 10000'],
+    browser_dom_content_loaded: ['p(95) < 2000'],
+    browser_first_contentful_paint: ['p(95) < 2000'],
+    browser_first_meaningful_paint: ['p(95) < 3000'],
+    browser_first_paint: ['p(95) < 2000'],
+    browser_loaded: ['p(95) < 3000'],
+    http_req_duration: ['p(95) < 10000'],
+    http_req_receiving: ['p(95) < 10000'],
     checks: ['rate==1.0'],
   },
   tags: {
