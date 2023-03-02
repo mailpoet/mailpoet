@@ -464,16 +464,9 @@ jobs:
       wordpress_image_version:
         type: string
         default: ''
-    environment:
-      MYSQL_COMMAND: << parameters.mysql_command >>
-      MYSQL_IMAGE: << parameters.mysql_image >>
-      WORDPRESS_IMAGE_VERSION: << parameters.wordpress_image_version >>
     steps:
       - attach_workspace:
           at: /home/circleci
-      - run:
-          name: 'Set up virtual host'
-          command: echo 127.0.0.1 mailpoet.loc | sudo tee -a /etc/hosts
       - run:
           name: 'Set up PHP'
           command: |
