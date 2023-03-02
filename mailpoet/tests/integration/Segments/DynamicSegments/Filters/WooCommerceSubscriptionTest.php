@@ -44,7 +44,7 @@ class WooCommerceSubscriptionTest extends \MailPoetTest {
       $userId = $this->tester->createWordPressUser($email, 'subscriber');
 
       $status = explode('_', $email)[0];
-      $this->subscriptionsFactory ->createSubscription($userId, $productId, $status);
+      $this->subscriptionsFactory->createSubscription($userId, $productId, $status);
     }
   }
 
