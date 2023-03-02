@@ -62,7 +62,7 @@ class CouponPreProcessor {
       }
       if (isset($innerBlock['type']) && $innerBlock['type'] === Coupon::TYPE) {
         if (!$this->wcHelper->isWooCommerceActive()) {
-          throw NewsletterProcessingException::create()->withMessage(__('Woocommerce is not active', 'mailpoet'));
+          throw NewsletterProcessingException::create()->withMessage(__('WooCommerce is not active', 'mailpoet'));
         }
         if ($this->shouldGenerateCoupon($innerBlock)) {
           try {

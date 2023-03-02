@@ -28,7 +28,7 @@ class Coupon {
         $couponCode = $this->helper->wcGetCouponCodeById((int)$element['couponId']);
       } catch (\Exception $e) {
         if (!$this->helper->isWooCommerceActive()) {
-          throw NewsletterProcessingException::create()->withMessage(__('Woocommerce is not active', 'mailpoet'));
+          throw NewsletterProcessingException::create()->withMessage(__('WooCommerce is not active', 'mailpoet'));
         } else {
           throw NewsletterProcessingException::create()->withMessage($e->getMessage())->withCode($e->getCode());
         }
