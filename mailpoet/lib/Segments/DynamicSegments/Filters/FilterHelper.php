@@ -16,7 +16,7 @@ class FilterHelper {
     $this->entityManager = $entityManager;
   }
 
-  public function prefixedTable(string $table): string {
+  public function getPrefixedTable(string $table): string {
     global $wpdb;
     return sprintf('%s%s', $wpdb->prefix, $table);
   }
