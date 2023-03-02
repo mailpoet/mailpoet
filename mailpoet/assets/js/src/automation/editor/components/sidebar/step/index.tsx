@@ -1,6 +1,7 @@
 import { Notice, PanelBody } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 import { storeName } from '../../../store';
+import { FiltersPanel } from '../../filters';
 import { StepCard } from '../../step-card';
 
 function StepSidebarGeneralError(): JSX.Element {
@@ -61,6 +62,8 @@ export function StepSidebar(): JSX.Element {
         // This can happen e.g. when having "useState" or "useRef" internally.
         key={selectedStep.id}
       />
+
+      {selectedStep.type === 'trigger' && <FiltersPanel />}
     </div>
   );
 }

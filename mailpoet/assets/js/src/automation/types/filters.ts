@@ -53,3 +53,6 @@ export type OrderStatusOptions = Map<
     isDisabled: boolean;
   }
 >;
+
+// mailpoet.automation.filters.panel.content
+export type FiltersPanelContentType = (step: Step) => JSX.Element;
