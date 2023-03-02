@@ -18,8 +18,12 @@ function SettingsInfoText(): JSX.Element {
           'mailpoet',
         ),
         /\[link\](.*?)\[\/link\]/g,
-        (match) => (
-          <a href="admin.php?page=mailpoet-settings#/basics" target="_blank">
+        (match, i) => (
+          <a
+            key={i}
+            href="admin.php?page=mailpoet-settings#/basics"
+            target="_blank"
+          >
             {match}
           </a>
         ),
