@@ -4,7 +4,7 @@
  * External dependencies
  */
 import { sleep, check, group } from 'k6';
-import { chromium } from 'k6/x/browser';
+import { chromium } from 'k6/experimental/browser';
 import { randomIntBetween } from 'https://jslib.k6.io/k6-utils/1.1.0/index.js';
 
 /**
