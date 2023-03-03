@@ -49,4 +49,8 @@ class OrderSubject implements Subject {
   public function getKey(): string {
     return self::KEY;
   }
+
+  public function getFields(): array {
+    return [];
+  }
 }
