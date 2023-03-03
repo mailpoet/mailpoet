@@ -124,7 +124,7 @@ class PageRenderer {
     $defaults = [
       'current_page' => sanitize_text_field(wp_unslash($_GET['page'] ?? '')),
       'site_name' => $this->wp->wpSpecialcharsDecode($this->wp->getOption('blogname'), ENT_QUOTES),
-      'main_page' => Menu::$mainPageSlug,
+      'main_page' => Menu::MAIN_PAGE_SLUG,
       'site_url' => $this->wp->siteUrl(),
       'site_address' => $this->wp->wpParseUrl($this->wp->homeUrl(), PHP_URL_HOST),
       'feature_flags' => $this->featuresController->getAllFlags(),

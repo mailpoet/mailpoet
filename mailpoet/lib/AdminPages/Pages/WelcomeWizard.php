@@ -57,7 +57,7 @@ class WelcomeWizard {
     $mpApiKeyValid = $this->servicesChecker->isMailPoetAPIKeyValid(false, true);
 
     $data = [
-      'finish_wizard_url' => $this->wp->adminUrl('admin.php?page=' . Menu::$mainPageSlug),
+      'finish_wizard_url' => $this->wp->adminUrl('admin.php?page=' . Menu::MAIN_PAGE_SLUG),
       'admin_email' => $this->wp->getOption('admin_email'),
       'current_wp_user' => $this->wp->wpGetCurrentUser()->to_array(),
       'show_customers_import' => $this->wooCommerceHelper->getCustomersCount() > 0,
