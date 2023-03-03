@@ -136,7 +136,7 @@ class EditorCouponCest {
     $i->see($couponCode);
   }
 
-  public function seeNoticeWhenCouponCantGenerate(\AcceptanceTester $i) {
+  public function seeNoticeWhenCouponCantGenerateAndResumeSending(\AcceptanceTester $i) {
     $couponInEditor = '[data-automation-id="coupon_block"]';
     $sendFormElement = '[data-automation-id="newsletter_send_form"]';
     $emailSubject = 'Newsletter with Coupon';
@@ -157,6 +157,7 @@ class EditorCouponCest {
 
     $i->wantTo('Send the email with coupon');
     $i->click('Next');
+
     $segmentName = $i->createListWithSubscriber();
 
     $i->wantTo('Choose list and send');
@@ -166,11 +167,25 @@ class EditorCouponCest {
     $i->click('Send');
     $i->waitForEmailSendingOrSent();
     $i->triggerMailPoetActionScheduler();
-    $i->waitForText('Woocommerce is not active');
+    $i->waitForText('WooCommerce is not active');
     $i->canSee('Resume', 'button');
     $i->reloadPage();
     $i->waitForListingItemsToLoad();
     $i->waitForText($emailSubject, 10, '.mailpoet-listing-title');
     $i->canSee($emailSubject, '.notice.error.notice-error');
+
+
+    $i->wantTo('Resume sending and verify coupon is sent');
+    $i->activateWooCommerce();
+    $i->click(Locator::contains('button', 'Resume'));
+    $i->waitForText('Confirm to proceed');
+    $i->click('#mailpoet_alert_confirm');
+    $i->triggerMailPoetActionScheduler();
+    $i->wantTo('Verify newsletter with generated coupon is received');
+    $i->checkEmailWasReceived($emailSubject);
+    $i->click(Locator::contains('.msglist-message', $emailSubject));
+    $i->switchToIFrame("#preview-html");
+    $i->waitForElementVisible('.mailpoet_coupon');
+    $i->dontSee(Locator::contains('.mailpoet_coupon', Coupon::CODE_PLACEHOLDER));
   }
 }
