@@ -48,7 +48,7 @@ class WooCommerceSetupPageCest {
     $i->clickToggleYes($trackingToggle);
     $i->click($submitButton);
     $i->seeNoJSErrors();
-    $i->waitForElement('[data-automation-id="create_standard"]');
+    $i->waitForText('Welcome to MailPoet', 10, '.mailpoet-homepage__container');
     $i->amOnMailpoetPage('Lists');
     $i->waitForText('WooCommerce Customers');
     $i->moveMouseOver('[data-automation-id="segment_name_WooCommerce Customers"]');
@@ -116,7 +116,7 @@ class WooCommerceSetupPageCest {
     $i->click($submitButton);
     $i->dontSeeElement($errorClass);
     $i->seeNoJSErrors();
-    $i->waitForElement('[data-automation-id="create_standard"]');
+    $i->waitForText('Welcome to MailPoet', 10, '.mailpoet-homepage__container');
   }
 
   /**
