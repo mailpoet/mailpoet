@@ -334,6 +334,10 @@ class NewsletterListNotificationComponent extends Component {
           <a
             className="mailpoet-listing-title"
             href={`?page=mailpoet-newsletter-editor&id=${newsletter.id}`}
+            onClick={(event) => {
+              event.preventDefault();
+              confirmEdit(newsletter);
+            }}
           >
             {newsletter.subject}
           </a>
