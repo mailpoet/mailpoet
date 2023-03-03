@@ -13,14 +13,14 @@ export function Resources(): JSX.Element {
       link="https://kb.mailpoet.com/article/141-create-an-email-types-of-campaigns?utm_source=plugin&utm_medium=homepage&utm_campaign=resources"
       abstract={MailPoet.I18n.t('createAnEmailAbstract')}
       title={MailPoet.I18n.t('createAnEmailTitle')}
-      imgSrc={`${MailPoet.cdnUrl}homepage/resources/add_form.png`}
+      imgSrc={`${MailPoet.cdnUrl}homepage/resources/add_email.png`}
     />,
     <ResourcePost
       key="createAForm"
       link="https://kb.mailpoet.com/article/297-create-a-form-with-our-new-editor?utm_source=plugin&utm_medium=homepage&utm_campaign=resources"
       abstract={MailPoet.I18n.t('createAFormAbstract')}
       title={MailPoet.I18n.t('createAFormTitle')}
-      imgSrc={`${MailPoet.cdnUrl}homepage/resources/add_email.png`}
+      imgSrc={`${MailPoet.cdnUrl}homepage/resources/add_form.png`}
     />,
     <ResourcePost
       key="segmentationGuide"
