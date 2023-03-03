@@ -95,6 +95,7 @@ class HomepageBasicsCest {
     // Another condition is 600 subscribers
     $subscriberFactory->createBatch(600, SubscriberEntity::STATUS_SUBSCRIBED);
     $i->reloadPage();
+    $i->scrollToTop();
     $i->wantTo('Check homepage renders upsell section');
     $i->see('Accelerate your growth with our Business plan');
     $i->see('Detailed analytics');
