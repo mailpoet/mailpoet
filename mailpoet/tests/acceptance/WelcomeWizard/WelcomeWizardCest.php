@@ -66,8 +66,8 @@ class WelcomeWizardCest {
     $i->waitForText('MailPoet account connected', 20);
     $i->click('.mailpoet-wizard-continue-button');
 
-    // wizard finished and the user was redirect to the newsletter page
-    $i->waitForElement('#newsletters_container');
+    // wizard finished and the user was redirect to the home page
+    $i->waitForText('Welcome to MailPoet', 10, '.mailpoet-homepage__container');
 
     Assert::assertSame($senderName, $this->settingsRepository->findOneByName('sender')->getValue()['name']);
     Assert::assertSame($senderAddress, $this->settingsRepository->findOneByName('sender')->getValue()['address']);
