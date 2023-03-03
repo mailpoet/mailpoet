@@ -105,7 +105,34 @@ class AutomationEditor {
         'args_schema' => $step->getArgsSchema()->toArray(),
       ];
     }
-    return ['steps' => $steps];
+
+    $subjects = [];
+    foreach ($this->registry->getSubjects() as $key => $subject) {
+      $subjects[$key] = [
+        'key' => $subject->getKey(),
+        'name' => $subject->getName(),
+        'args_schema' => $subject->getArgsSchema()->toArray(),
+        'field_keys' => array_map(function ($field) {
+          return $field->getKey();
+        }, $subject->getFields()),
+      ];
+    }
+
+    $fields = [];
+    foreach ($this->registry->getFields() as $key => $field) {
+      $fields[$key] = [
+        'key' => $field->getKey(),
+        'type' => $field->getType(),
+        'name' => $field->getName(),
+        'args' => $field->getArgs(),
+      ];
+    }
+
+    return [
+      'steps' => $steps,
+      'subjects' => $subjects,
+      'fields' => $fields,
+    ];
   }
 
   private function buildContext(): array {

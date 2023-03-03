@@ -20,6 +20,27 @@ export type Registry = {
       };
     }
   >;
+  subjects: Record<
+    string,
+    {
+      key: string;
+      name: string;
+      args_schema: {
+        type: 'object';
+        properties?: Record<string, { type: string; default?: unknown }>;
+      };
+      field_keys: string[];
+    }
+  >;
+  fields: Record<
+    string,
+    {
+      key: string;
+      type: 'string' | 'enum_array';
+      name: string;
+      args: Record<string, unknown>;
+    }
+  >;
 };
 
 export type Context = Record<string, unknown>;
