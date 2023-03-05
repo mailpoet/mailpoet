@@ -110,16 +110,16 @@
         },
         {
             "name": "woocommerce/action-scheduler",
-            "version": "3.5.2",
+            "version": "3.5.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/woocommerce/action-scheduler.git",
-                "reference": "519cfa20db89eb85511cad08301d3fa33522ed8b"
+                "reference": "9533e71b0eba4a519721dde84a34dfb161f11eb8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/woocommerce/action-scheduler/zipball/519cfa20db89eb85511cad08301d3fa33522ed8b",
-                "reference": "519cfa20db89eb85511cad08301d3fa33522ed8b",
+                "url": "https://api.github.com/repos/woocommerce/action-scheduler/zipball/9533e71b0eba4a519721dde84a34dfb161f11eb8",
+                "reference": "9533e71b0eba4a519721dde84a34dfb161f11eb8",
                 "shasum": ""
             },
             "require-dev": {
@@ -142,11 +142,7 @@
             ],
             "description": "Action Scheduler for WordPress and WooCommerce",
             "homepage": "https://actionscheduler.org/",
-            "support": {
-                "issues": "https://github.com/woocommerce/action-scheduler/issues",
-                "source": "https://github.com/woocommerce/action-scheduler/tree/3.5.2"
-            },
-            "time": "2022-09-16T15:31:00+00:00"
+            "time": "2023-01-17T20:20:43+00:00"
         }
     ],
     "packages-dev": [
@@ -2059,10 +2055,6 @@
                 "templating",
                 "view"
             ],
-            "support": {
-                "issues": "https://github.com/EFTEC/BladeOne/issues",
-                "source": "https://github.com/EFTEC/BladeOne/tree/3.52"
-            },
             "time": "2021-04-17T13:49:01+00:00"
         },
         {
@@ -3954,10 +3946,6 @@
             "keywords": [
                 "xml"
             ],
-            "support": {
-                "issues": "https://github.com/nb/oxymel/issues",
-                "source": "https://github.com/nb/oxymel/tree/master"
-            },
             "time": "2013-02-24T15:01:54+00:00"
         },
         {
@@ -7980,10 +7968,6 @@
             ],
             "description": "Verifies file integrity by comparing to published checksums.",
             "homepage": "https://github.com/wp-cli/checksum-command",
-            "support": {
-                "issues": "https://github.com/wp-cli/checksum-command/issues",
-                "source": "https://github.com/wp-cli/checksum-command/tree/v2.1.2"
-            },
             "time": "2022-01-13T03:47:56+00:00"
         },
         {
@@ -8333,10 +8317,6 @@
             ],
             "description": "Inspects oEmbed providers, clears embed cache, and more.",
             "homepage": "https://github.com/wp-cli/embed-command",
-            "support": {
-                "issues": "https://github.com/wp-cli/embed-command/issues",
-                "source": "https://github.com/wp-cli/embed-command/tree/v2.0.11"
-            },
             "time": "2022-01-13T01:19:27+00:00"
         },
         {
@@ -9027,10 +9007,6 @@
             ],
             "description": "Activates, deactivates or checks the status of the maintenance mode of a site.",
             "homepage": "https://github.com/wp-cli/maintenance-mode-command",
-            "support": {
-                "issues": "https://github.com/wp-cli/maintenance-mode-command/issues",
-                "source": "https://github.com/wp-cli/maintenance-mode-command/tree/v2.0.8"
-            },
             "time": "2022-01-13T01:25:44+00:00"
         },
         {
@@ -9386,10 +9362,6 @@
             ],
             "description": "Adds, removes, lists, and resets roles and capabilities.",
             "homepage": "https://github.com/wp-cli/role-command",
-            "support": {
-                "issues": "https://github.com/wp-cli/role-command/issues",
-                "source": "https://github.com/wp-cli/role-command/tree/v2.0.9"
-            },
             "time": "2022-01-13T01:31:23+00:00"
         },
         {
@@ -9627,10 +9599,6 @@
             ],
             "description": "Opens an interactive PHP console for running and testing PHP code.",
             "homepage": "https://github.com/wp-cli/shell-command",
-            "support": {
-                "issues": "https://github.com/wp-cli/shell-command/issues",
-                "source": "https://github.com/wp-cli/shell-command/tree/v2.0.11"
-            },
             "time": "2022-01-13T01:34:02+00:00"
         },
         {
@@ -9688,10 +9656,6 @@
             ],
             "description": "Lists, adds, or removes super admin users on a multisite installation.",
             "homepage": "https://github.com/wp-cli/super-admin-command",
-            "support": {
-                "issues": "https://github.com/wp-cli/super-admin-command/issues",
-                "source": "https://github.com/wp-cli/super-admin-command/tree/v2.0.10"
-            },
             "time": "2022-01-13T01:40:54+00:00"
         },
         {
@@ -9755,10 +9719,6 @@
             ],
             "description": "Adds, moves, and removes widgets; lists sidebars.",
             "homepage": "https://github.com/wp-cli/widget-command",
-            "support": {
-                "issues": "https://github.com/wp-cli/widget-command/issues",
-                "source": "https://github.com/wp-cli/widget-command/tree/v2.1.7"
-            },
             "time": "2022-01-13T01:41:02+00:00"
         },
         {
