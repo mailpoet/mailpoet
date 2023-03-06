@@ -47,13 +47,14 @@ class BounceTest extends \MailPoetTest {
       'soft_bounce@example.com',
       'hard_bounce@example.com',
       'good_address@example.com',
+      'unconfirmed@example.com',
     ];
     $this->subscribersRepository = $this->diContainer->get(SubscribersRepository::class);
     $this->scheduledTaskFactory = new ScheduledTaskFactory();
 
     foreach ($this->emails as $email) {
       $subscriber = new SubscriberEntity();
-      $subscriber->setStatus(SubscriberEntity::STATUS_SUBSCRIBED);
+      $subscriber->setStatus(strpos($email, 'unconfirmed') !== false ? SubscriberEntity::STATUS_UNCONFIRMED : SubscriberEntity::STATUS_SUBSCRIBED);
       $subscriber->setEmail($email);
       $this->subscribersRepository->persist($subscriber);
     }
@@ -111,6 +112,7 @@ class BounceTest extends \MailPoetTest {
     $task = $this->createScheduledTask();
     expect(ScheduledTaskSubscriber::getUnprocessedCount($task->getId()))->isEmpty();
     $result = $this->worker->prepareTaskStrategy($task, microtime(true));
+    expect($this->emails)->count(ScheduledTaskSubscriber::count());
     expect($result)->true();
     expect(ScheduledTaskSubscriber::getUnprocessedCount($task->getId()))->notEmpty();
   }
@@ -145,6 +147,7 @@ class BounceTest extends \MailPoetTest {
     expect($subscribers[0]->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
     expect($subscribers[1]->getStatus())->equals(SubscriberEntity::STATUS_BOUNCED);
     expect($subscribers[2]->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
+    expect($subscribers[3]->getStatus())->equals(SubscriberEntity::STATUS_UNCONFIRMED);
   }
 
   public function testItCreatesStatistics() {
