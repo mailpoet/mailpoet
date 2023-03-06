@@ -1,16 +1,17 @@
 /**
  * Internal dependencies
  */
+import { htmlReport } from 'https://raw.githubusercontent.com/benc-uk/k6-reporter/main/dist/bundle.js';
+import { textSummary } from 'https://jslib.k6.io/k6-summary/0.0.1/index.js';
+import { scenario } from './config.js';
 import { newsletterListing } from './tests/newsletter-listing.js';
 import { subscribersListing } from './tests/subscribers-listing.js';
 import { settingsBasic } from './tests/settings-basic.js';
 import { subscribersFiltering } from './tests/subscribers-filtering.js';
 import { subscribersAdding } from './tests/subscribers-adding.js';
 import { formsAdding } from './tests/forms-adding.js';
-import { htmlReport } from 'https://raw.githubusercontent.com/benc-uk/k6-reporter/main/dist/bundle.js';
-import { textSummary } from 'https://jslib.k6.io/k6-summary/0.0.1/index.js';
-import { scenario } from './config.js';
 import { newsletterSearching } from './tests/newsletter-searching.js';
+import { newsletterSending } from './tests/newsletter-sending.js';
 
 // Scenarios, Thresholds and Tags
 export let options = {
@@ -66,6 +67,7 @@ export function pullRequests() {
   subscribersAdding();
   formsAdding();
   newsletterSearching();
+  newsletterSending();
 }
 
 // All the tests ran for a nightly testing
