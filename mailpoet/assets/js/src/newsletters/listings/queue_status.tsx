@@ -9,7 +9,7 @@ import { confirmAlert, withBoundary } from 'common';
 import {
   NewsLetter,
   NewsletterStatus as NewsletterStatusEnum,
-} from '../models';
+} from 'common/newsletter';
 
 type QueueSendingProps = {
   newsletter: NewsLetter;
