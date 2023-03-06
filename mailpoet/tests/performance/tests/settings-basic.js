@@ -3,7 +3,7 @@
 /**
  * External dependencies
  */
-import { sleep, check, group } from 'k6';
+import { sleep, check } from 'k6';
 import { chromium } from 'k6/experimental/browser';
 import { randomIntBetween } from 'https://jslib.k6.io/k6-utils/1.1.0/index.js';
 
@@ -20,56 +20,48 @@ import {
 import { authenticate } from '../utils/helpers.js';
 /* global Promise */
 
-export function settingsBasic() {
+export async function settingsBasic() {
   const browser = chromium.launch({
     headless: headlessSet,
     timeout: timeoutSet,
   });
   const page = browser.newPage();
 
-  group('Settings - Load and save the basics tab', () => {
-    page
-      .goto(`${baseURL}/wp-admin/admin.php?page=mailpoet-settings#/basics`, {
+  try {
+    // Go to the page
+    await page.goto(
+      `${baseURL}/wp-admin/admin.php?page=mailpoet-settings#/basics`,
+      {
         waitUntil: 'networkidle',
-      })
+      },
+    );
 
-      .then(() => {
-        authenticate(page);
-      })
+    // Log in to WP Admin
+    authenticate(page);
 
-      .then(() => {
-        return Promise.all([
-          page.waitForNavigation({ waitUntil: 'networkidle' }),
-        ]);
-      })
+    // Wait for async actions
+    await Promise.all([page.waitForNavigation({ waitUntil: 'networkidle' })]);
 
-      .then(() => {
-        check(page, {
-          'basics tab is visible': page
-            .locator('[data-automation-id="basic_settings_tab"]')
-            .isVisible(),
-        });
-      })
+    // Check if the basics tab is present and visible
+    check(page, {
+      'basics tab is visible': page
+        .locator('[data-automation-id="basic_settings_tab"]')
+        .isVisible(),
+    });
 
-      .then(() => {
-        return Promise.all([
-          page.waitForNavigation(),
-          page.locator('[data-automation-id="settings-submit-button"]').click(),
-        ]);
-      })
+    // Click to save the settings
+    page.locator('[data-automation-id="settings-submit-button"]').click();
+    page.waitForSelector('div.notice');
+    page.waitForLoadState('networkidle');
 
-      .then(() => {
-        check(page, {
-          'settings saved is visible': page.locator('div.notice').isVisible(),
-        });
-      })
-
-      .finally(() => {
-        page.close();
-        browser.close();
-      });
-  });
-
+    // Check if there's notice about saved settings
+    check(page, {
+      'settings saved is visible': page.locator('div.notice').isVisible(),
+    });
+  } finally {
+    page.close();
+    browser.close();
+  }
   sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
 }
 

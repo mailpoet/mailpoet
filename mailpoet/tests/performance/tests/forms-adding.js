@@ -25,7 +25,7 @@ import {
 } from '../utils/helpers.js';
 /* global Promise */
 
-export default async function formsAdding() {
+export async function formsAdding() {
   const browser = chromium.launch({
     headless: headlessSet,
     timeout: timeoutSet,
@@ -72,4 +72,8 @@ export default async function formsAdding() {
     browser.close();
   }
   sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
+}
+
+export default function formsAddingTest() {
+  formsAdding();
 }
