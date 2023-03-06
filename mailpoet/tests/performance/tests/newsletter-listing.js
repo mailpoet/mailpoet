@@ -3,7 +3,7 @@
 /**
  * External dependencies
  */
-import { sleep, check, group } from 'k6';
+import { sleep, check } from 'k6';
 import { chromium } from 'k6/experimental/browser';
 import { randomIntBetween } from 'https://jslib.k6.io/k6-utils/1.1.0/index.js';
 
@@ -20,42 +20,37 @@ import {
 import { authenticate } from '../utils/helpers.js';
 /* global Promise */
 
-export function newsletterListing() {
+export async function newsletterListing() {
   const browser = chromium.launch({
     headless: headlessSet,
     timeout: timeoutSet,
   });
   const page = browser.newPage();
 
-  group('Emails - Load all newsletters', () => {
-    page
-      .goto(`${baseURL}/wp-admin/admin.php?page=mailpoet-newsletters`, {
-        waitUntil: 'networkidle',
-      })
+  try {
+    // Go to the page
+    await page.goto(`${baseURL}/wp-admin/admin.php?page=mailpoet-newsletters`, {
+      waitUntil: 'networkidle',
+    });
 
-      .then(() => {
-        authenticate(page);
-      })
+    // Log in to WP Admin
+    authenticate(page);
 
-      .then(() => {
-        return Promise.all([
-          page.waitForNavigation({ waitUntil: 'networkidle' }),
-        ]);
-      })
+    // Wait for async actions
+    await Promise.all([page.waitForNavigation({ waitUntil: 'networkidle' })]);
 
-      .then(() => {
-        check(page, {
-          'newsletter filter is visible': page
-            .locator('[data-automation-id="listing_filter_segment"]')
-            .isVisible(),
-        });
-      })
-
-      .finally(() => {
-        page.close();
-        browser.close();
-      });
-  });
+    // Check if there is element present and visible
+    page.waitForSelector('[data-automation-id="listing_filter_segment"]');
+    page.waitForLoadState('networkidle');
+    check(page, {
+      'newsletter filter is visible': page
+        .locator('[data-automation-id="listing_filter_segment"]')
+        .isVisible(),
+    });
+  } finally {
+    page.close();
+    browser.close();
+  }
 
   sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
 }
