@@ -5,7 +5,7 @@ import { t } from 'common/functions/t';
 import {
   NewsLetter,
   NewsletterStatus as NewsletterStatusEnum,
-} from 'newsletters/models';
+} from 'common/newsletter';
 import { Tooltip } from '../tooltip/tooltip';
 
 type CircularProgressProps = {

@@ -8,7 +8,7 @@ import { SenderField } from 'newsletters/send/sender_address_field.jsx';
 import { GATrackingField } from 'newsletters/send/ga_tracking';
 import { Toggle } from 'common/form/toggle/toggle';
 import { withBoundary } from 'common';
-import { NewsLetter, NewsletterStatus } from '../models';
+import { NewsLetter, NewsletterStatus } from 'common/newsletter';
 import { Field } from '../../form/types';
 
 const currentTime = window.mailpoet_current_time || '00:00';

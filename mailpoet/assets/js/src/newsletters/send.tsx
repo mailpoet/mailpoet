@@ -22,9 +22,9 @@ import { fromUrl } from 'common/thumbnail';
 import { GlobalContext } from 'context/index.jsx';
 
 import { extractEmailDomain } from 'common/functions';
+import { NewsLetter, NewsletterType } from 'common/newsletter';
 import { mapFilterType } from '../analytics';
 import { PremiumModal } from '../common/premium_modal';
-import { NewsLetter, NewsletterType } from './models';
 import { PendingNewsletterMessage } from './send/pending_newsletter_message';
 
 const automaticEmails = window.mailpoet_woocommerce_automatic_emails || {};
