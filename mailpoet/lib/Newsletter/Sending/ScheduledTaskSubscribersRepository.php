@@ -125,6 +125,15 @@ class ScheduledTaskSubscribersRepository extends Repository {
     $stmt->executeQuery();
   }
 
+  public function deleteByScheduledTask(ScheduledTaskEntity $scheduledTask): void {
+    $this->entityManager->createQueryBuilder()
+      ->delete(ScheduledTaskSubscriberEntity::class, 'sts')
+      ->where('sts.task = :task')
+      ->setParameter('task', $scheduledTask)
+      ->getQuery()
+      ->execute();
+  }
+
   private function checkCompleted(ScheduledTaskEntity $task): void {
     $count = $this->countBy(['task' => $task, 'processed' => ScheduledTaskSubscriberEntity::STATUS_UNPROCESSED]);
     if ($count === 0) {
