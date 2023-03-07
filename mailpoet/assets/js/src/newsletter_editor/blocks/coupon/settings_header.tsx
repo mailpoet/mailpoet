@@ -1,6 +1,6 @@
 import { Button } from '@wordpress/components';
+import { __ } from '@wordpress/i18n';
 import classnames from 'classnames';
-import { MailPoet } from 'mailpoet';
 
 export enum SettingsTabs {
   allCoupons = 'allCoupons',
@@ -17,9 +17,9 @@ function SettingsHeader({ activeTab, onClick }) {
             className={classnames('edit-post-sidebar__panel-tab', {
               'is-active': activeTab === SettingsTabs.allCoupons,
             })}
-            data-label={MailPoet.I18n.t('allCoupons')}
+            data-label={__('All coupons', 'mailpoet')}
           >
-            {MailPoet.I18n.t('allCoupons')}
+            {__('All coupons', 'mailpoet')}
           </Button>
         </li>
         <li>
@@ -28,9 +28,9 @@ function SettingsHeader({ activeTab, onClick }) {
             className={classnames('edit-post-sidebar__panel-tab', {
               'is-active': activeTab === SettingsTabs.createNew,
             })}
-            data-label={MailPoet.I18n.t('createNew')}
+            data-label={__('Create new', 'mailpoet')}
           >
-            {MailPoet.I18n.t('createNew')}
+            {__('Create new', 'mailpoet')}
           </Button>
         </li>
       </ul>

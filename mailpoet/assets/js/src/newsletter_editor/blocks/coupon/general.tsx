@@ -1,14 +1,14 @@
 import {
   Panel,
-  PanelRow,
   PanelBody,
+  PanelRow,
   SelectControl,
   TextControl,
   ToggleControl,
 } from '@wordpress/components';
 import { Component } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 import jQuery from 'jquery';
-import { MailPoet } from 'mailpoet';
 import { GetValueCallback, SetValueCallback } from './types';
 
 type Props = {
@@ -73,10 +73,10 @@ class General extends Component<Props, State> {
   render() {
     return (
       <Panel>
-        <PanelBody title={MailPoet.I18n.t('generalSettings')}>
+        <PanelBody title={__('General settings', 'mailpoet')}>
           <PanelRow>
             <SelectControl
-              label={MailPoet.I18n.t('discountType')}
+              label={__('Discount type', 'mailpoet')}
               onChange={this.discountTypeChange}
               options={this.availableDiscountTypes}
               value={this.state.discountType}
@@ -85,7 +85,7 @@ class General extends Component<Props, State> {
           <PanelRow>
             <TextControl
               className="mailpoet_field_coupon_amount"
-              label={MailPoet.I18n.t('couponAmount')}
+              label={__('Coupon amount', 'mailpoet')}
               onChange={(amount: string) => {
                 this.setState({ amount });
                 // the model is changed only when the value is valid
@@ -110,7 +110,7 @@ class General extends Component<Props, State> {
           <PanelRow>
             <TextControl
               className="mailpoet_field_coupon_expiry_day"
-              label={MailPoet.I18n.t('expireIn')}
+              label={__('Expires in', 'mailpoet')}
               onChange={(expiryDay) => {
                 this.setState({ expiryDay });
                 if (
@@ -132,7 +132,7 @@ class General extends Component<Props, State> {
           <PanelRow>
             <ToggleControl
               checked={this.state.freeShipping}
-              label={MailPoet.I18n.t('freeShipping')}
+              label={__('Free shipping', 'mailpoet')}
               onChange={(freeShipping) => {
                 this.setValueCallback('freeShipping', freeShipping);
                 this.setState({ freeShipping });
