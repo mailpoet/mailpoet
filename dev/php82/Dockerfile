@@ -8,7 +8,7 @@ RUN apt-get update \
 	&& apt-get install -y git zlib1g-dev libzip-dev zip wget gnupg msmtp libpng-dev gettext subversion \
 	&& \
     # Install NodeJS, enable Corepack
-    curl -sL https://deb.nodesource.com/setup_17.x | bash - && \
+    curl -sL https://deb.nodesource.com/setup_19.x | bash - && \
     apt-get install -y nodejs build-essential && \
     corepack enable && \
 	\

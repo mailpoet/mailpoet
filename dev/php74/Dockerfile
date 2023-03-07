@@ -10,7 +10,7 @@ RUN apt-get update \
 	&& pecl install xdebug-2.9.8 && \
 	\
     # Install NodeJS, enable Corepack
-    curl -sL https://deb.nodesource.com/setup_17.x | bash - && \
+    curl -sL https://deb.nodesource.com/setup_19.x | bash - && \
     apt-get install -y nodejs build-essential && \
     corepack enable && \
 	\
