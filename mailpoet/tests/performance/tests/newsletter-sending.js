@@ -58,31 +58,31 @@ export async function newsletterSending() {
     page.waitForLoadState('networkidle');
 
     // Click to proceed to the next step (the last one)
-    page.locator('//input[text()="Next"]').click();
-    page.waitForSelector('.mailpoet_loading');
+    await Promise.all([
+      page.waitForNavigation(),
+      page
+        .locator('#mailpoet_editor_top > div > div > .mailpoet_save_next')
+        .click(),
+    ]);
     page.waitForSelector('[data-automation-id="newsletter_send_heading"]');
     page.waitForLoadState('networkidle');
 
     // Select the default list and send the newsletter
-    selectInSelect2(defaultListName);
-    page.locator('[data-automation-id="email-submit"]').click();
-    page.waitForSelector('.mailpoet_loading');
-    page.waitForSelector('.mailpoet-h0');
-    page.waitForLoadState('networkidle');
-    check(page, {
-      'title congratulations is present':
-        page.locator('h1').textContent() === 'Congratulations!',
-    });
+    selectInSelect2(page, defaultListName);
+    await Promise.all([
+      page.waitForNavigation(),
+      page.locator('[data-automation-id="email-submit"]').click(),
+    ]);
+    sleep(1);
 
-    // Click close button to get back to Emails page
-    page.locator('button[type="button"]').click();
-    page.waitForSelector('[data-automation-id="tab-Newsletters"]');
-    page.waitForLoadState('networkidle');
+    // Wait for the success notice message and confirm it
+    page.waitForSelector('#mailpoet_notices');
     check(page, {
-      'newsletter filter is visible': page
-        .locator('[data-automation-id="listing_filter_segment"]')
-        .isVisible(),
+      'newsletter is being sent notice has shown up':
+        page.locator('div > .notice-success > p').textContent() ===
+        'The newsletter is being sent...',
     });
+    page.waitForLoadState('networkidle');
   } finally {
     page.close();
     browser.close();
