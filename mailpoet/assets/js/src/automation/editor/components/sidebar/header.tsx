@@ -31,7 +31,7 @@ export function Header({ sidebarKey }: Props): JSX.Element {
       <li>
         <Button
           onClick={openAutomationSettings}
-          className={`edit-site-sidebar__panel-tab ${automationActiveClass}`}
+          className={`edit-site-sidebar-edit-mode__panel-tab ${automationActiveClass}`}
           aria-label={automationAriaLabel}
           data-label={__('Automation', 'mailpoet')}
         >
@@ -41,7 +41,7 @@ export function Header({ sidebarKey }: Props): JSX.Element {
       <li>
         <Button
           onClick={openStepSettings}
-          className={`edit-site-sidebar__panel-tab ${stepActiveClass}`}
+          className={`edit-site-sidebar-edit-mode__panel-tab ${stepActiveClass}`}
           aria-label={stepAriaLabel}
           data-label={__('Step', 'mailpoet')}
         >

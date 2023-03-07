@@ -48,7 +48,7 @@ export function Sidebar(props: Props): JSX.Element {
       identifier={sidebarKey}
       header={<Header sidebarKey={sidebarKey} />}
       closeLabel={__('Close settings', 'mailpoet')}
-      headerClassName="edit-site-sidebar__panel-tabs"
+      headerClassName="edit-site-sidebar-edit-mode__panel-tabs"
       title={__('Settings', 'mailpoet')}
       icon={cog}
       className="edit-site-sidebar mailpoet-automation-sidebar"
