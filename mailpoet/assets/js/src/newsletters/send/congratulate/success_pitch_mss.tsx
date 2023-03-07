@@ -106,7 +106,10 @@ export function PitchMss(props: Props): JSX.Element {
 
           <p>
             {ReactStringReplace(
-              MailPoet.I18n.t('congratulationsMSSEnterYourKey'),
+              __(
+                'Please enter your key in [link]the Settings[/link] if you have already purchased it.',
+                'mailpoet',
+              ),
               /\[link\](.*?)\[\/link\]/g,
               (match, i) => (
                 <a href="admin.php?page=mailpoet-settings#/premium" key={i}>
