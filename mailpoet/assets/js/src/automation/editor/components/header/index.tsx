@@ -216,10 +216,10 @@ export function Header({ showInserterToggle }: Props): JSX.Element {
   );
 
   return (
-    <div className="edit-site-header">
-      <div className="edit-site-header_start">
+    <div className="edit-site-header-edit-mode">
+      <div className="edit-site-header-edit-mode_start">
         <NavigableMenu
-          className="edit-site-header__toolbar"
+          className="edit-site-header-edit-mode__toolbar"
           orientation="horizontal"
           role="toolbar"
         >
@@ -227,7 +227,7 @@ export function Header({ showInserterToggle }: Props): JSX.Element {
         </NavigableMenu>
       </div>
 
-      <div className="edit-site-header_center">
+      <div className="edit-site-header-edit-mode_center">
         <ErrorBoundary>
           <DocumentActions>
             {() => (
@@ -249,8 +249,8 @@ export function Header({ showInserterToggle }: Props): JSX.Element {
         </ErrorBoundary>
       </div>
 
-      <div className="edit-site-header_end">
-        <div className="edit-site-header__actions">
+      <div className="edit-site-header-edit-mode_end">
+        <div className="edit-site-header-edit-mode__actions">
           <ErrorBoundary>
             <Errors />
           </ErrorBoundary>
