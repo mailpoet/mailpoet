@@ -68,6 +68,7 @@ class BlockRendererHelper {
         $rules['error-message'] = __('Please specify a valid phone number.', 'mailpoet');
       } else {
         $rules['type'] = $this->wp->escAttr($block['params']['validate']);
+        $rules['error-message'] = $this->translateValidationErrorMessage($block['params']['validate']);
       }
     }
 
@@ -255,5 +256,24 @@ class BlockRendererHelper {
       $modifiers[] = 'disabled';
     }
     return join(' ', $modifiers);
+  }
+
+  private function translateValidationErrorMessage(string $validate): string {
+    switch ($validate) {
+      case 'email':
+        return __('This value should be a valid email.', 'mailpoet');
+      case 'url':
+        return __('This value should be a valid url.', 'mailpoet');
+      case 'number':
+        return __('This value should be a valid number.', 'mailpoet');
+      case 'integer':
+        return __('This value should be a valid integer.', 'mailpoet');
+      case 'digits':
+        return __('This value should be digits.', 'mailpoet');
+      case 'alphanum':
+        return __('This value should be alphanumeric.', 'mailpoet');
+      default:
+        return __('This value seems to be invalid.', 'mailpoet');
+    }
   }
 }
