@@ -30,8 +30,13 @@
   }
 }
 
-.components-base-control.mailpoet-form-success-types__control {
-  margin-bottom: 0;
+.components-base-control.mailpoet-form-inline-radios__control {
+  .components-flex {
+    flex-direction: row;
+    gap: $grid-gap-half;
+    justify-content: flex-start;
+    margin-bottom: $grid-gap-half;
+  }
 
   .components-base-control__label {
     display: block;
@@ -39,7 +44,6 @@
 
   .components-radio-control__option {
     display: inline-block;
-    margin-right: 1em;
 
     input {
       margin-right: 6px;
