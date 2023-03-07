@@ -63,9 +63,9 @@ export function formsAdding() {
         page.locator('[data-automation-id="form_save_button"]').click();
         page.waitForSelector('.components-notice');
         check(page, {
-          'form has been saved notice is visible': page
-            .locator('.components-notice__content')
-            .isVisible(),
+          'form has been saved notice is present':
+            page.locator('.components-notice__content').textContent() ===
+            'Form saved. Cookies reset — you will see all your dismissed popup forms again.',
         });
       })
 
