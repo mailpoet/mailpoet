@@ -1,13 +1,13 @@
 import {
   Panel,
-  PanelRow,
   PanelBody,
+  PanelRow,
   TextControl,
   ToggleControl,
 } from '@wordpress/components';
 import { Component } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 import jQuery from 'jquery';
-import { MailPoet } from 'mailpoet';
 import { Selection } from '../../../form/fields/selection';
 import { GetValueCallback, SetValueCallback } from './types';
 
@@ -80,7 +80,7 @@ class UsageRestriction extends Component<Props, State> {
       endpoint: 'products',
       resetSelect2OnUpdate: true,
       multiple: true,
-      placeholder: MailPoet.I18n.t('searchForProduct'),
+      placeholder: __('Search for a product…', 'mailpoet'),
     };
     const productCategoriesField = {
       forceSelect2: true,
@@ -92,16 +92,16 @@ class UsageRestriction extends Component<Props, State> {
     return (
       <Panel>
         <PanelBody
-          title={MailPoet.I18n.t('usageRestriction')}
+          title={__('Usage restriction', 'mailpoet')}
           className="mailpoet-coupon-block-usage-restriction"
           initialOpen={false}
         >
           <PanelRow>
             <TextControl
               className="mailpoet_field_coupon_minimum_amount"
-              label={MailPoet.I18n.t('minimumSpend')}
+              label={__('Minimum spend', 'mailpoet')}
               value={this.state.minimumAmount}
-              placeholder={MailPoet.I18n.t('noMinimum')}
+              placeholder={__('No minimum', 'mailpoet')}
               onChange={(minimumAmount) => {
                 this.setState({ minimumAmount });
                 if (
@@ -116,17 +116,18 @@ class UsageRestriction extends Component<Props, State> {
               data-parsley-validate
               data-parsley-trigger="input"
               data-parsley-validation-threshold="1"
-              data-parsley-error-message={MailPoet.I18n.t(
-                'couponMinAndMaxAmountFieldsErrorMessage',
+              data-parsley-error-message={__(
+                'Please enter a value with one monetary decimal point (%s) without thousand separators and currency symbols.',
+                'mailpoet',
               ).replace('%s', this.priceDecimalSeparator)}
             />
           </PanelRow>
           <PanelRow>
             <TextControl
               className="mailpoet_field_coupon_maximum_amount"
-              label={MailPoet.I18n.t('maximumSpend')}
+              label={__('Maximum spend', 'mailpoet')}
               value={this.state.maximumAmount}
-              placeholder={MailPoet.I18n.t('noMaximum')}
+              placeholder={__('No maximum', 'mailpoet')}
               onChange={(maximumAmount) => {
                 this.setState({ maximumAmount });
                 if (
@@ -141,35 +142,39 @@ class UsageRestriction extends Component<Props, State> {
               data-parsley-validate
               data-parsley-trigger="input"
               data-parsley-validation-threshold="1"
-              data-parsley-error-message={MailPoet.I18n.t(
-                'couponMinAndMaxAmountFieldsErrorMessage',
+              data-parsley-error-message={__(
+                'Please enter a value with one monetary decimal point (%s) without thousand separators and currency symbols.',
+                'mailpoet',
               ).replace('%s', this.priceDecimalSeparator)}
             />
           </PanelRow>
           <PanelRow>
             <ToggleControl
               checked={this.state.individualUse}
-              label={MailPoet.I18n.t('individualUseOnly')}
+              label={__('Individual use only', 'mailpoet')}
               onChange={(individualUse) => {
                 this.setValueCallback('individualUse', individualUse);
                 this.setState({ individualUse });
               }}
-              help={MailPoet.I18n.t('individualUseHelp')}
+              help={__(
+                'Coupon cannot be used in conjunction with other coupons.',
+                'mailpoet',
+              )}
             />
           </PanelRow>
           <PanelRow>
             <ToggleControl
               checked={this.state.excludeSaleItems}
-              label={MailPoet.I18n.t('excludeSaleItems')}
+              label={__('Exclude sale items', 'mailpoet')}
               onChange={(excludeSaleItems) => {
                 this.setValueCallback('excludeSaleItems', excludeSaleItems);
                 this.setState({ excludeSaleItems });
               }}
-              help={MailPoet.I18n.t('excludeSaleItemsHelp')}
+              help={__('Coupon does not apply to items on sale.', 'mailpoet')}
             />
           </PanelRow>
           <PanelRow>
-            <label htmlFor="productIds">{MailPoet.I18n.t('products')}</label>
+            <label htmlFor="productIds">{__('Products', 'mailpoet')}</label>
             <Selection
               field={{
                 ...productsField,
@@ -182,7 +187,7 @@ class UsageRestriction extends Component<Props, State> {
           </PanelRow>
           <PanelRow>
             <label htmlFor="excludedProductIds">
-              {MailPoet.I18n.t('excludedProducts')}
+              {__('Excluded products', 'mailpoet')}
             </label>
             <Selection
               field={{
@@ -198,13 +203,13 @@ class UsageRestriction extends Component<Props, State> {
           </PanelRow>
           <PanelRow>
             <label htmlFor="productCategoriesIds">
-              {MailPoet.I18n.t('productCategories')}
+              {__('Product categories', 'mailpoet')}
             </label>
             <Selection
               field={{
                 ...productCategoriesField,
                 name: 'productCategoryIds',
-                placeholder: MailPoet.I18n.t('anyCategory'),
+                placeholder: __('Any category', 'mailpoet'),
                 selected: () =>
                   this.state.productCategoryIds.map(
                     (category: Post) => category.id,
@@ -215,13 +220,13 @@ class UsageRestriction extends Component<Props, State> {
           </PanelRow>
           <PanelRow>
             <label htmlFor="excludedProductCategoryIds">
-              {MailPoet.I18n.t('excludeProductCategories')}
+              {__('Exclude product categories', 'mailpoet')}
             </label>
             <Selection
               field={{
                 ...productCategoriesField,
                 name: 'excludedProductCategoryIds',
-                placeholder: MailPoet.I18n.t('noCategories'),
+                placeholder: __('No categories', 'mailpoet'),
                 selected: () =>
                   this.state.excludedProductCategoryIds.map(
                     (category: Post) => category.id,
@@ -233,9 +238,9 @@ class UsageRestriction extends Component<Props, State> {
           <PanelRow>
             <TextControl
               className="mailpoet_field_coupon_email_restrictions"
-              label={MailPoet.I18n.t('allowedEmails')}
+              label={__('Allowed emails', 'mailpoet')}
               value={this.state.emailRestrictions}
-              placeholder={MailPoet.I18n.t('noRestrictions')}
+              placeholder={__('No restrictions', 'mailpoet')}
               onChange={(emailRestrictions) => {
                 this.setState({ emailRestrictions });
                 if (
@@ -251,8 +256,9 @@ class UsageRestriction extends Component<Props, State> {
               data-parsley-validate
               data-parsley-validation-threshold="1"
               data-parsley-trigger="input"
-              data-parsley-error-message={MailPoet.I18n.t(
-                'emailRestrictionsFieldsErrorMessage',
+              data-parsley-error-message={__(
+                'Separate email addresses with commas. You can also use an asterisk (*) to match parts of an email. For example "*@gmail.com" would match all gmail addresses.',
+                'mailpoet',
               )}
             />
           </PanelRow>
