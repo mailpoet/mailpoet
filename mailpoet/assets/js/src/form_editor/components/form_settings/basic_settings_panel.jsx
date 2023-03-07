@@ -128,7 +128,7 @@ function BasicSettingsPanel({ onToggle, isOpened }) {
           />
         </BaseControl>
         <RadioControl
-          className="mailpoet-form-success-types__control"
+          className="mailpoet-form-inline-radios__control"
           onChange={onSuccessTypeChange}
           selected={settings.on_success || 'message'}
           label={MailPoet.I18n.t('settingsAfterSubmit')}

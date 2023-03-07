@@ -42,6 +42,7 @@ function SizeSettings({
     <div className="mailpoet-size-settings-control">
       <BaseControl.VisualLabel>{label}</BaseControl.VisualLabel>
       <RadioControl
+        className="mailpoet-form-inline-radios__control"
         selected={localValue.unit || 'pixel'}
         options={[
           { label: 'px', value: 'pixel' },
