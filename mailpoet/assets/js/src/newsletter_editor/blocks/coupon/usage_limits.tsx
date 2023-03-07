@@ -1,6 +1,6 @@
 import { Panel, PanelRow, PanelBody, TextControl } from '@wordpress/components';
 import { Component } from '@wordpress/element';
-import { MailPoet } from 'mailpoet';
+import { __ } from '@wordpress/i18n';
 import { GetValueCallback, SetValueCallback } from './types';
 
 type Props = {
@@ -33,15 +33,15 @@ class UsageLimits extends Component<Props, State> {
     return (
       <Panel>
         <PanelBody
-          title={MailPoet.I18n.t('usageLimits')}
+          title={__('Usage limits', 'mailpoet')}
           className="mailpoet-coupon-block-usage-limits"
           initialOpen={false}
         >
           <PanelRow>
             <TextControl
-              label={MailPoet.I18n.t('usageLimitPerCoupon')}
+              label={__('Usage limit per coupon', 'mailpoet')}
               value={this.state.usageLimit}
-              placeholder={MailPoet.I18n.t('unlimitedUsage')}
+              placeholder={__('Unlimited usage', 'mailpoet')}
               type="number"
               onChange={(usageLimit) => {
                 this.setValueCallback('usageLimit', usageLimit);
@@ -51,9 +51,9 @@ class UsageLimits extends Component<Props, State> {
           </PanelRow>
           <PanelRow>
             <TextControl
-              label={MailPoet.I18n.t('usageLimitPerUser')}
+              label={__('Usage limit per user', 'mailpoet')}
               value={this.state.usageLimitPerUser}
-              placeholder={MailPoet.I18n.t('unlimitedUsage')}
+              placeholder={__('Unlimited usage', 'mailpoet')}
               type="number"
               onChange={(usageLimitPerUser) => {
                 this.setValueCallback('usageLimitPerUser', usageLimitPerUser);

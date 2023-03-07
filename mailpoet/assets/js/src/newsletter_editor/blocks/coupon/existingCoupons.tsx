@@ -6,7 +6,7 @@ import {
   SelectControl,
 } from '@wordpress/components';
 import { Component } from '@wordpress/element';
-import { MailPoet } from 'mailpoet';
+import { __ } from '@wordpress/i18n';
 import { GetValueCallback, SetValueCallback } from './types';
 
 export type Coupon = {
@@ -45,7 +45,7 @@ class ExistingCoupons extends Component<Props, State> {
     this.setValueCallback = props.setValueCallback;
     this.availableDiscountTypes = [
       {
-        label: MailPoet.I18n.t('allTypes'),
+        label: __('All types', 'mailpoet'),
         value: '',
       },
     ].concat(props.availableDiscountTypes);
@@ -90,7 +90,7 @@ class ExistingCoupons extends Component<Props, State> {
             </PanelRow>
             <PanelRow>
               <SelectControl
-                label={MailPoet.I18n.t('discountType')}
+                label={__('Discount type', 'mailpoet')}
                 onChange={(couponFilterDiscountType) =>
                   this.setState({ couponFilterDiscountType })
                 }
@@ -141,7 +141,7 @@ class ExistingCoupons extends Component<Props, State> {
                   })
               ) : (
                 <div className="mailpoet_coupon_block_coupon">
-                  {MailPoet.I18n.t('noCouponsFound')}
+                  {__('No coupons found', 'mailpoet')}
                 </div>
               )}
             </PanelRow>
