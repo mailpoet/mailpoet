@@ -1,11 +1,7 @@
-import { MailPoet } from 'mailpoet';
 import { useSelect } from '@wordpress/data';
 
-import {
-  SegmentTypes,
-  WordpressRoleFormItem,
-  SubscriberActionTypes,
-} from '../types';
+import { WordpressRoleFormItem, SubscriberActionTypes } from '../types';
+import { store } from '../store/store';
 import { WordpressRoleFields } from './subscriber_wordpress_role';
 import {
   SubscriberScoreFields,
@@ -69,39 +65,6 @@ export function validateSubscriber(formItems: WordpressRoleFormItem): boolean {
   return false;
 }
 
-export const SubscriberSegmentOptions = [
-  {
-    value: SubscriberActionTypes.MAILPOET_CUSTOM_FIELD,
-    label: MailPoet.I18n.t('mailpoetCustomField'),
-    group: SegmentTypes.WordPressRole,
-  },
-  {
-    value: SubscriberActionTypes.SUBSCRIBER_SCORE,
-    label: MailPoet.I18n.t('subscriberScore'),
-    group: SegmentTypes.WordPressRole,
-  },
-  {
-    value: SubscriberActionTypes.SUBSCRIBED_DATE,
-    label: MailPoet.I18n.t('subscribedDate'),
-    group: SegmentTypes.WordPressRole,
-  },
-  {
-    value: SubscriberActionTypes.SUBSCRIBED_TO_LIST,
-    label: MailPoet.I18n.t('subscribedToList'),
-    group: SegmentTypes.WordPressRole,
-  },
-  {
-    value: SubscriberActionTypes.SUBSCRIBER_TAG,
-    label: MailPoet.I18n.t('subscriberTag'),
-    group: SegmentTypes.WordPressRole,
-  },
-  {
-    value: SubscriberActionTypes.WORDPRESS_ROLE,
-    label: MailPoet.I18n.t('segmentsSubscriber'),
-    group: SegmentTypes.WordPressRole,
-  },
-];
-
 const componentsMap = {
   [SubscriberActionTypes.WORDPRESS_ROLE]: WordpressRoleFields,
   [SubscriberActionTypes.SUBSCRIBER_SCORE]: SubscriberScoreFields,
@@ -117,8 +80,7 @@ type Props = {
 
 export function SubscriberFields({ filterIndex }: Props): JSX.Element {
   const segment: WordpressRoleFormItem = useSelect(
-    (select) =>
-      select('mailpoet-dynamic-segments-form').getSegmentFilter(filterIndex),
+    (select) => select(store).getSegmentFilter(filterIndex),
     [filterIndex],
   );
 

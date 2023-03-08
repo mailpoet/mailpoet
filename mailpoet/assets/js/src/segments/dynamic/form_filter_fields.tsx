@@ -7,6 +7,7 @@ import { SubscriberFields } from './dynamic_segments_filters/subscriber';
 import { WooCommerceFields } from './dynamic_segments_filters/woocommerce';
 import { WooCommerceMembershipFields } from './dynamic_segments_filters/woocommerce_membership';
 import { WooCommerceSubscriptionFields } from './dynamic_segments_filters/woocommerce_subscription';
+import { store } from './store/store';
 
 const filterFieldsMap = {
   [SegmentTypes.Email]: EmailFields,
@@ -22,8 +23,7 @@ type Props = {
 
 export function FormFilterFields({ filterIndex }: Props): JSX.Element {
   const filter: WordpressRoleFormItem = useSelect(
-    (select) =>
-      select('mailpoet-dynamic-segments-form').getSegmentFilter(filterIndex),
+    (select) => select(store).getSegmentFilter(filterIndex),
     [filterIndex],
   );
 

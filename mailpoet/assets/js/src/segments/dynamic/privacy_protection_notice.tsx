@@ -2,10 +2,11 @@ import { MailPoet } from 'mailpoet';
 import { useSelect } from '@wordpress/data';
 
 import { EmailActionTypes, Segment } from './types';
+import { store } from './store/store';
 
 function PrivacyProtectionNotice(): JSX.Element {
   const segment: Segment = useSelect(
-    (select) => select('mailpoet-dynamic-segments-form').getSegment(),
+    (select) => select(store).getSegment(),
     [],
   );
 

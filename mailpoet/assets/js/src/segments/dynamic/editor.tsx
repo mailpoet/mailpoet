@@ -8,14 +8,14 @@ import { Heading } from 'common/typography/heading/heading';
 import { HideScreenOptions } from 'common/hide_screen_options/hide_screen_options';
 import { Form } from './form';
 
-import { createStore } from './store/store';
+import { createStore, store } from './store/store';
 
 export function Editor(): JSX.Element {
   const match = useRouteMatch<{ id: string }>();
 
   createStore();
 
-  const { pageLoaded } = useDispatch('mailpoet-dynamic-segments-form');
+  const { pageLoaded } = useDispatch(store);
 
   useEffect(() => {
     void pageLoaded(match.params.id);

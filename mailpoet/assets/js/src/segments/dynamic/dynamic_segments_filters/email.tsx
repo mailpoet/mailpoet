@@ -1,49 +1,15 @@
-import { MailPoet } from 'mailpoet';
 import { useSelect } from '@wordpress/data';
 
 import {
   EmailActionTypes,
   EmailFormItem,
-  SegmentTypes,
   WordpressRoleFormItem,
 } from '../types';
+import { store } from '../store/store';
 
 import { EmailOpenStatisticsFields } from './email_statistics_opens';
 import { EmailClickStatisticsFields } from './email_statistics_clicks';
 import { EmailOpensAbsoluteCountFields } from './email_opens_absolute_count';
-
-export const EmailSegmentOptions = [
-  {
-    value: EmailActionTypes.OPENS_ABSOLUTE_COUNT,
-    label: MailPoet.I18n.t('emailActionOpensAbsoluteCount'),
-    group: SegmentTypes.Email,
-  },
-  {
-    value: EmailActionTypes.MACHINE_OPENS_ABSOLUTE_COUNT,
-    label: MailPoet.I18n.t('emailActionMachineOpensAbsoluteCount'),
-    group: SegmentTypes.Email,
-  },
-  {
-    value: EmailActionTypes.OPENED,
-    label: MailPoet.I18n.t('emailActionOpened'),
-    group: SegmentTypes.Email,
-  },
-  {
-    value: EmailActionTypes.MACHINE_OPENED,
-    label: MailPoet.I18n.t('emailActionMachineOpened'),
-    group: SegmentTypes.Email,
-  },
-  {
-    value: EmailActionTypes.CLICKED,
-    label: MailPoet.I18n.t('emailActionClicked'),
-    group: SegmentTypes.Email,
-  },
-  {
-    value: EmailActionTypes.CLICKED_ANY,
-    label: MailPoet.I18n.t('emailActionClickedAnyEmail'),
-    group: SegmentTypes.Email,
-  },
-];
 
 export function validateEmail(formItems: EmailFormItem): boolean {
   // check if the action has the right type
@@ -87,8 +53,7 @@ type Props = {
 
 export function EmailFields({ filterIndex }: Props): JSX.Element {
   const segment: WordpressRoleFormItem = useSelect(
-    (select) =>
-      select('mailpoet-dynamic-segments-form').getSegmentFilter(filterIndex),
+    (select) => select(store).getSegmentFilter(filterIndex),
     [filterIndex],
   );
 

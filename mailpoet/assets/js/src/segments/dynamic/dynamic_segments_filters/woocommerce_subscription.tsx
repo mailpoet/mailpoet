@@ -9,23 +9,12 @@ import { Grid } from 'common/grid';
 
 import {
   AnyValueTypes,
-  SegmentTypes,
   SelectOption,
   WindowSubscriptionProducts,
   WooCommerceSubscriptionFormItem,
 } from '../types';
-
-enum WooCommerceSubscriptionsActionTypes {
-  ACTIVE_SUBSCRIPTIONS = 'hasActiveSubscription',
-}
-
-export const WooCommerceSubscriptionOptions = [
-  {
-    value: WooCommerceSubscriptionsActionTypes.ACTIVE_SUBSCRIPTIONS,
-    label: MailPoet.I18n.t('segmentsActiveSubscription'),
-    group: SegmentTypes.WooCommerceSubscription,
-  },
-];
+import { store } from '../store/store';
+import { WooCommerceSubscriptionsActionTypes } from './woocommerce_options';
 
 export function validateWooCommerceSubscription(
   formItem: WooCommerceSubscriptionFormItem,
@@ -50,18 +39,15 @@ export function WooCommerceSubscriptionFields({
   filterIndex,
 }: Props): JSX.Element {
   const segment: WooCommerceSubscriptionFormItem = useSelect(
-    (select) =>
-      select('mailpoet-dynamic-segments-form').getSegmentFilter(filterIndex),
+    (select) => select(store).getSegmentFilter(filterIndex),
     [filterIndex],
   );
 
-  const { updateSegmentFilter, updateSegmentFilterFromEvent } = useDispatch(
-    'mailpoet-dynamic-segments-form',
-  );
+  const { updateSegmentFilter, updateSegmentFilterFromEvent } =
+    useDispatch(store);
 
   const subscriptionProducts: WindowSubscriptionProducts = useSelect(
-    (select) =>
-      select('mailpoet-dynamic-segments-form').getSubscriptionProducts(),
+    (select) => select(store).getSubscriptionProducts(),
     [],
   );
   const productOptions = subscriptionProducts.map((product) => ({

@@ -9,23 +9,12 @@ import { Grid } from 'common/grid';
 
 import {
   AnyValueTypes,
-  SegmentTypes,
   SelectOption,
   WindowMembershipPlans,
   WooCommerceMembershipFormItem,
 } from '../types';
-
-enum WooCommerceMembershipsActionTypes {
-  MEMBER_OF = 'isMemberOf',
-}
-
-export const WooCommerceMembershipOptions = [
-  {
-    value: WooCommerceMembershipsActionTypes.MEMBER_OF,
-    label: MailPoet.I18n.t('segmentsActiveMembership'),
-    group: SegmentTypes.WooCommerceMembership,
-  },
-];
+import { store } from '../store/store';
+import { WooCommerceMembershipsActionTypes } from './woocommerce_options';
 
 export function validateWooCommerceMembership(
   formItem: WooCommerceMembershipFormItem,
@@ -49,17 +38,15 @@ export function WooCommerceMembershipFields({
   filterIndex,
 }: Props): JSX.Element {
   const segment: WooCommerceMembershipFormItem = useSelect(
-    (select) =>
-      select('mailpoet-dynamic-segments-form').getSegmentFilter(filterIndex),
+    (select) => select(store).getSegmentFilter(filterIndex),
     [filterIndex],
   );
 
-  const { updateSegmentFilter, updateSegmentFilterFromEvent } = useDispatch(
-    'mailpoet-dynamic-segments-form',
-  );
+  const { updateSegmentFilter, updateSegmentFilterFromEvent } =
+    useDispatch(store);
 
   const membershipPlans: WindowMembershipPlans = useSelect(
-    (select) => select('mailpoet-dynamic-segments-form').getMembershipPlans(),
+    (select) => select(store).getMembershipPlans(),
     [],
   );
   const planOptions = membershipPlans.map((plan) => ({

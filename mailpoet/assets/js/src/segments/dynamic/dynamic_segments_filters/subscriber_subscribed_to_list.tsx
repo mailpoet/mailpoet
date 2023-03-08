@@ -13,6 +13,7 @@ import {
   StaticSegment,
   WordpressRoleFormItem,
 } from '../types';
+import { store } from '../store/store';
 
 export function validateSubscribedToList(
   formItems: WordpressRoleFormItem,
@@ -32,19 +33,16 @@ type Props = {
 
 export function SubscribedToList({ filterIndex }: Props): JSX.Element {
   const segment: WordpressRoleFormItem = useSelect(
-    (select) =>
-      select('mailpoet-dynamic-segments-form').getSegmentFilter(filterIndex),
+    (select) => select(store).getSegmentFilter(filterIndex),
     [filterIndex],
   );
   const staticSegmentsList: StaticSegment[] = useSelect(
-    (select) =>
-      select('mailpoet-dynamic-segments-form').getStaticSegmentsList(),
+    (select) => select(store).getStaticSegmentsList(),
     [],
   );
 
-  const { updateSegmentFilter, updateSegmentFilterFromEvent } = useDispatch(
-    'mailpoet-dynamic-segments-form',
-  );
+  const { updateSegmentFilter, updateSegmentFilterFromEvent } =
+    useDispatch(store);
 
   useEffect(() => {
     if (
