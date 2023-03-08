@@ -5,6 +5,7 @@ import { MailPoet } from 'mailpoet';
 import { Select } from 'common/form/select/select';
 
 import { WordpressRoleFormItem } from '../../types';
+import { store } from '../../store/store';
 
 export function validateCheckbox(item: WordpressRoleFormItem): boolean {
   return item.value === '1' || item.value === '0';
@@ -16,14 +17,12 @@ type Props = {
 
 export function Checkbox({ filterIndex }: Props): JSX.Element {
   const segment: WordpressRoleFormItem = useSelect(
-    (select) =>
-      select('mailpoet-dynamic-segments-form').getSegmentFilter(filterIndex),
+    (select) => select(store).getSegmentFilter(filterIndex),
     [filterIndex],
   );
 
-  const { updateSegmentFilterFromEvent, updateSegmentFilter } = useDispatch(
-    'mailpoet-dynamic-segments-form',
-  );
+  const { updateSegmentFilterFromEvent, updateSegmentFilter } =
+    useDispatch(store);
 
   useEffect(() => {
     if (segment.value !== '1' && segment.value !== '0') {

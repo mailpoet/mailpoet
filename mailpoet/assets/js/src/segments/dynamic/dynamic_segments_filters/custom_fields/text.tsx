@@ -7,6 +7,7 @@ import { Input } from 'common/form/input/input';
 import { Grid } from 'common/grid';
 
 import { WordpressRoleFormItem } from '../../types';
+import { store } from '../../store/store';
 
 export function validateText(item: WordpressRoleFormItem): boolean {
   return (
@@ -26,14 +27,12 @@ type Props = {
 
 export function Text({ filterIndex }: Props): JSX.Element {
   const segment: WordpressRoleFormItem = useSelect(
-    (select) =>
-      select('mailpoet-dynamic-segments-form').getSegmentFilter(filterIndex),
+    (select) => select(store).getSegmentFilter(filterIndex),
     [filterIndex],
   );
 
-  const { updateSegmentFilterFromEvent, updateSegmentFilter } = useDispatch(
-    'mailpoet-dynamic-segments-form',
-  );
+  const { updateSegmentFilterFromEvent, updateSegmentFilter } =
+    useDispatch(store);
 
   useEffect(() => {
     if (segment.operator === undefined) {

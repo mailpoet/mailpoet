@@ -4,18 +4,19 @@ import { useDispatch, useSelect } from '@wordpress/data';
 import { Hooks } from 'wp-js-hooks';
 import { MailPoet } from 'mailpoet';
 import { Button } from 'common/button/button';
+import { plusIcon } from 'common/button/icon/plus';
 import { Heading } from 'common/typography/heading/heading';
 import { Input } from 'common/form/input/input';
 import { ReactSelect } from 'common/form/react_select/react_select';
 import { Textarea } from 'common/form/textarea/textarea';
 import { Grid } from 'common/grid';
+import { APIErrorsNotice } from 'notices/api_errors_notice';
 import { SubscribersCounter } from './subscribers_counter';
 import { FormFilterFields } from './form_filter_fields';
 import { isFormValid } from './validator';
-import { plusIcon } from '../../common/button/icon/plus';
-import { APIErrorsNotice } from '../../notices/api_errors_notice';
 import { PrivacyProtectionNotice } from './privacy_protection_notice';
 import { DynamicSegmentsPremiumBanner } from './premium_banner';
+import { store } from './store/store';
 
 import {
   FilterRow,
@@ -44,36 +45,28 @@ const FilterAfter = Hooks.applyFilters(
 
 export function Form({ segmentId }: Props): JSX.Element {
   const segment: Segment = useSelect(
-    (select) => select('mailpoet-dynamic-segments-form').getSegment(),
+    (select) => select(store).getSegment(),
     [],
   );
 
   const segmentFilters: GroupFilterValue[] = useSelect(
-    (select) => select('mailpoet-dynamic-segments-form').getAvailableFilters(),
+    (select) => select(store).getAvailableFilters(),
     [],
   );
 
   const filterRows: FilterRow[] = useSelect(
-    (select) =>
-      select('mailpoet-dynamic-segments-form').findFiltersValueForSegment(
-        segment,
-      ),
+    (select) => select(store).findFiltersValueForSegment(segment),
     [segment],
   );
 
   const subscriberCount: SubscriberCount = useSelect(
-    (select) => select('mailpoet-dynamic-segments-form').getSubscriberCount(),
+    (select) => select(store).getSubscriberCount(),
     [],
   );
 
-  const errors: string[] = useSelect(
-    (select) => select('mailpoet-dynamic-segments-form').getErrors(),
-    [],
-  );
+  const errors: string[] = useSelect((select) => select(store).getErrors(), []);
 
-  const { updateSegment, updateSegmentFilter, handleSave } = useDispatch(
-    'mailpoet-dynamic-segments-form',
-  );
+  const { updateSegment, updateSegmentFilter, handleSave } = useDispatch(store);
 
   const [premiumBannerVisible, setPremiumBannerVisible] = useState(false);
   const showPremiumBanner = (): void => {

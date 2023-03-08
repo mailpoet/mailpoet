@@ -9,6 +9,7 @@ import { Grid } from 'common/grid';
 import { Input } from 'common/form/input/input';
 
 import { WordpressRoleFormItem } from '../types';
+import { store } from '../store/store';
 
 export enum SubscribedDateOperator {
   BEFORE = 'before',
@@ -54,14 +55,12 @@ type Props = {
 
 export function SubscribedDateFields({ filterIndex }: Props): JSX.Element {
   const segment: WordpressRoleFormItem = useSelect(
-    (select) =>
-      select('mailpoet-dynamic-segments-form').getSegmentFilter(filterIndex),
+    (select) => select(store).getSegmentFilter(filterIndex),
     [filterIndex],
   );
 
-  const { updateSegmentFilter, updateSegmentFilterFromEvent } = useDispatch(
-    'mailpoet-dynamic-segments-form',
-  );
+  const { updateSegmentFilter, updateSegmentFilterFromEvent } =
+    useDispatch(store);
 
   useEffect(() => {
     if (

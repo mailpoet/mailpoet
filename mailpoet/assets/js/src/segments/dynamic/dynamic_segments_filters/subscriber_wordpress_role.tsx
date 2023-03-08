@@ -14,6 +14,7 @@ import {
   AnyValueTypes,
   SubscriberActionTypes,
 } from '../types';
+import { store } from '../store/store';
 
 type Props = {
   filterIndex: number;
@@ -21,14 +22,12 @@ type Props = {
 
 export function WordpressRoleFields({ filterIndex }: Props): JSX.Element {
   const segment: WordpressRoleFormItem = useSelect(
-    (select) =>
-      select('mailpoet-dynamic-segments-form').getSegmentFilter(filterIndex),
+    (select) => select(store).getSegmentFilter(filterIndex),
     [filterIndex],
   );
 
-  const { updateSegmentFilter, updateSegmentFilterFromEvent } = useDispatch(
-    'mailpoet-dynamic-segments-form',
-  );
+  const { updateSegmentFilter, updateSegmentFilterFromEvent } =
+    useDispatch(store);
 
   useEffect(() => {
     if (
@@ -42,7 +41,7 @@ export function WordpressRoleFields({ filterIndex }: Props): JSX.Element {
   }, [updateSegmentFilter, segment, filterIndex]);
 
   const wordpressRoles: WindowEditableRoles = useSelect(
-    (select) => select('mailpoet-dynamic-segments-form').getWordpressRoles(),
+    (select) => select(store).getWordpressRoles(),
     [],
   );
   const options = wordpressRoles.map((currentValue) => ({

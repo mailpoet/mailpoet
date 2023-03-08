@@ -13,6 +13,7 @@ import {
   SelectOption,
   WindowNewslettersList,
 } from '../types';
+import { store } from '../store/store';
 
 const shouldDisplayLinks = (itemNewsletterId?: string): boolean =>
   !!itemNewsletterId;
@@ -25,17 +26,15 @@ export function EmailClickStatisticsFields({
   filterIndex,
 }: Props): JSX.Element {
   const segment: EmailFormItem = useSelect(
-    (select) =>
-      select('mailpoet-dynamic-segments-form').getSegmentFilter(filterIndex),
+    (select) => select(store).getSegmentFilter(filterIndex),
     [filterIndex],
   );
 
-  const { updateSegmentFilter, updateSegmentFilterFromEvent } = useDispatch(
-    'mailpoet-dynamic-segments-form',
-  );
+  const { updateSegmentFilter, updateSegmentFilterFromEvent } =
+    useDispatch(store);
 
   const newslettersList: WindowNewslettersList = useSelect(
-    (select) => select('mailpoet-dynamic-segments-form').getNewslettersList(),
+    (select) => select(store).getNewslettersList(),
     [],
   );
 

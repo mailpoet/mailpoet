@@ -6,21 +6,20 @@ import { isFormValid } from './validator';
 import { loadCount } from './subscribers_calculator';
 
 import { Segment, SubscriberCount } from './types';
+import { store } from './store/store';
 
 function SubscribersCounter(): JSX.Element {
   const segment: Segment = useSelect(
-    (select) => select('mailpoet-dynamic-segments-form').getSegment(),
+    (select) => select(store).getSegment(),
     [],
   );
 
   const subscribersCount: SubscriberCount = useSelect(
-    (select) => select('mailpoet-dynamic-segments-form').getSubscriberCount(),
+    (select) => select(store).getSubscriberCount(),
     [],
   );
 
-  const { updateSubscriberCount } = useDispatch(
-    'mailpoet-dynamic-segments-form',
-  );
+  const { updateSubscriberCount } = useDispatch(store);
 
   const serializedSegment = JSON.stringify(segment);
   const latestRequestIdRef = useRef(1);

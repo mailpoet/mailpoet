@@ -7,6 +7,7 @@ import { Input } from 'common/form/input/input';
 import { MailPoet } from 'mailpoet';
 
 import { EmailFormItem } from '../types';
+import { store } from '../store/store';
 
 function replaceElementsInDaysSentence(
   fn: (value) => JSX.Element,
@@ -32,14 +33,12 @@ export function EmailOpensAbsoluteCountFields({
   filterIndex,
 }: Props): JSX.Element {
   const segment: EmailFormItem = useSelect(
-    (select) =>
-      select('mailpoet-dynamic-segments-form').getSegmentFilter(filterIndex),
+    (select) => select(store).getSegmentFilter(filterIndex),
     [filterIndex],
   );
 
-  const { updateSegmentFilter, updateSegmentFilterFromEvent } = useDispatch(
-    'mailpoet-dynamic-segments-form',
-  );
+  const { updateSegmentFilter, updateSegmentFilterFromEvent } =
+    useDispatch(store);
   useEffect(() => {
     if (segment.operator === undefined) {
       void updateSegmentFilter({ operator: 'more' }, filterIndex);

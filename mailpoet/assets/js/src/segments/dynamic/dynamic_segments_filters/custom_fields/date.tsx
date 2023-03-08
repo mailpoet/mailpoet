@@ -9,6 +9,7 @@ import { Grid } from 'common/grid';
 import { Datepicker } from 'common/datepicker/datepicker';
 
 import { WordpressRoleFormItem, OnFilterChange } from '../../types';
+import { store } from '../../store/store';
 
 interface ComponentProps {
   onChange: OnFilterChange;
@@ -228,12 +229,11 @@ export function CustomFieldDate({
   filterIndex,
 }: Props): JSX.Element {
   const segment: WordpressRoleFormItem = useSelect(
-    (select) =>
-      select('mailpoet-dynamic-segments-form').getSegmentFilter(filterIndex),
+    (select) => select(store).getSegmentFilter(filterIndex),
     [filterIndex],
   );
 
-  const { updateSegmentFilter } = useDispatch('mailpoet-dynamic-segments-form');
+  const { updateSegmentFilter } = useDispatch(store);
 
   useEffect(() => {
     if (segment.date_type !== customField.params.date_type) {

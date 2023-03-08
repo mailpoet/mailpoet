@@ -9,54 +9,17 @@ import { Grid } from 'common/grid';
 import { Input } from 'common/form/input/input';
 import {
   AnyValueTypes,
-  SegmentTypes,
   SelectOption,
   WindowProductCategories,
   WindowProducts,
   WindowWooCommerceCountries,
   WooCommerceFormItem,
 } from '../types';
-
-enum WooCommerceActionTypes {
-  NUMBER_OF_ORDERS = 'numberOfOrders',
-  PURCHASED_CATEGORY = 'purchasedCategory',
-  PURCHASED_PRODUCT = 'purchasedProduct',
-  TOTAL_SPENT = 'totalSpent',
-  CUSTOMER_IN_COUNTRY = 'customerInCountry',
-}
-
-export const WooCommerceOptions = [
-  {
-    value: WooCommerceActionTypes.CUSTOMER_IN_COUNTRY,
-    label: MailPoet.I18n.t('wooCustomerInCountry'),
-    group: SegmentTypes.WooCommerce,
-  },
-  {
-    value: WooCommerceActionTypes.NUMBER_OF_ORDERS,
-    label: MailPoet.I18n.t('wooNumberOfOrders'),
-    group: SegmentTypes.WooCommerce,
-  },
-  {
-    value: WooCommerceActionTypes.PURCHASED_CATEGORY,
-    label: MailPoet.I18n.t('wooPurchasedCategory'),
-    group: SegmentTypes.WooCommerce,
-  },
-  {
-    value: WooCommerceActionTypes.PURCHASED_PRODUCT,
-    label: MailPoet.I18n.t('wooPurchasedProduct'),
-    group: SegmentTypes.WooCommerce,
-  },
-  {
-    value: WooCommerceActionTypes.TOTAL_SPENT,
-    label: MailPoet.I18n.t('wooTotalSpent'),
-    group: SegmentTypes.WooCommerce,
-  },
-];
-
-const actionTypesWithDefaultTypeAny: Array<string> = [
-  WooCommerceActionTypes.PURCHASED_PRODUCT,
-  WooCommerceActionTypes.PURCHASED_CATEGORY,
-];
+import { store } from '../store/store';
+import {
+  WooCommerceActionTypes,
+  actionTypesWithDefaultTypeAny,
+} from './woocommerce_options';
 
 export function validateWooCommerce(formItems: WooCommerceFormItem): boolean {
   if (
@@ -121,31 +84,27 @@ export const WooCommerceFields: FunctionComponent<Props> = ({
   filterIndex,
 }) => {
   const segment: WooCommerceFormItem = useSelect(
-    (select) =>
-      select('mailpoet-dynamic-segments-form').getSegmentFilter(filterIndex),
+    (select) => select(store).getSegmentFilter(filterIndex),
     [filterIndex],
   );
 
-  const { updateSegmentFilter, updateSegmentFilterFromEvent } = useDispatch(
-    'mailpoet-dynamic-segments-form',
-  );
+  const { updateSegmentFilter, updateSegmentFilterFromEvent } =
+    useDispatch(store);
 
   const productCategories: WindowProductCategories = useSelect(
-    (select) => select('mailpoet-dynamic-segments-form').getProductCategories(),
+    (select) => select(store).getProductCategories(),
     [],
   );
   const woocommerceCountries: WindowWooCommerceCountries = useSelect(
-    (select) =>
-      select('mailpoet-dynamic-segments-form').getWooCommerceCountries(),
+    (select) => select(store).getWooCommerceCountries(),
     [],
   );
   const products: WindowProducts = useSelect(
-    (select) => select('mailpoet-dynamic-segments-form').getProducts(),
+    (select) => select(store).getProducts(),
     [],
   );
   const wooCurrencySymbol: string = useSelect(
-    (select) =>
-      select('mailpoet-dynamic-segments-form').getWooCommerceCurrencySymbol(),
+    (select) => select(store).getWooCommerceCurrencySymbol(),
     [],
   );
   const productOptions = products.map((product) => ({
