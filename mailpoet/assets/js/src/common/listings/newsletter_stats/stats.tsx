@@ -1,4 +1,4 @@
-import { MailPoet } from 'mailpoet';
+import { __, _x } from '@wordpress/i18n';
 import { Place } from 'react-tooltip';
 import { Badge } from './badge';
 
@@ -15,36 +15,36 @@ const stats = {
     badgeRanges: [30, 10, 0],
     badgeTypes: ['excellent', 'good', 'critical'],
     tooltipText: {
-      excellent: MailPoet.I18n.t('openedStatTooltipExcellent'),
-      good: MailPoet.I18n.t('openedStatTooltipGood'),
-      critical: MailPoet.I18n.t('openedStatTooltipCritical'),
+      excellent: _x('above 30%', 'Excellent open rate', 'mailpoet'),
+      good: _x('between 10 and 30%', 'Good open rate', 'mailpoet'),
+      critical: _x('under 10%', 'Critical open rate', 'mailpoet'),
     },
   },
   clicked: {
     badgeRanges: [3, 1, 0],
     badgeTypes: ['excellent', 'good', 'critical'],
     tooltipText: {
-      excellent: MailPoet.I18n.t('clickedStatTooltipExcellent'),
-      good: MailPoet.I18n.t('clickedStatTooltipGood'),
-      critical: MailPoet.I18n.t('clickedStatTooltipCritical'),
+      excellent: _x('above 3%', 'Excellent click rate', 'mailpoet'),
+      good: _x('between 1 and 3%', 'Good click rate', 'mailpoet'),
+      critical: _x('under 1%', 'Critical click rate', 'mailpoet'),
     },
   },
   bounced: {
     badgeRanges: [1.5, 0.5, 0],
     badgeTypes: ['critical', 'good', 'excellent'],
     tooltipText: {
-      excellent: MailPoet.I18n.t('bouncedStatTooltipExcellent'),
-      good: MailPoet.I18n.t('bouncedStatTooltipGood'),
-      critical: MailPoet.I18n.t('bouncedStatTooltipCritical'),
+      excellent: _x('below 0.5%', 'Excellent bounce rate', 'mailpoet'),
+      good: _x('between 0.5% and 1.5%', 'Good bounce rate', 'mailpoet'),
+      critical: _x('above 1.5%', 'Critical bounce rate', 'mailpoet'),
     },
   },
   unsubscribed: {
     badgeRanges: [0.7, 0.3, 0],
     badgeTypes: ['critical', 'good', 'excellent'],
     tooltipText: {
-      excellent: MailPoet.I18n.t('unsubscribeStatTooltipExcellent'),
-      good: MailPoet.I18n.t('unsubscribeStatTooltipGood'),
-      critical: MailPoet.I18n.t('unsubscribeStatTooltipCritical'),
+      excellent: _x('Below 0.3%', 'Excellent unsubscribe rate', 'mailpoet'),
+      good: _x('between 0.3% and 0.7%', 'Good unsubscribe rate', 'mailpoet'),
+      critical: _x('above 0.7%', 'Critical unsubscribe rate', 'mailpoet'),
     },
   },
 };
@@ -71,16 +71,16 @@ export const getBadgeType = (statName, rate) => {
 function StatsBadge(props: StatsBadgeProps) {
   const badges = {
     excellent: {
-      name: MailPoet.I18n.t('excellentBadgeName'),
-      tooltipTitle: MailPoet.I18n.t('excellentBadgeTooltip'),
+      name: __('Excellent', 'mailpoet'),
+      tooltipTitle: __('Congrats!', 'mailpoet'),
     },
     good: {
-      name: MailPoet.I18n.t('goodBadgeName'),
-      tooltipTitle: MailPoet.I18n.t('goodBadgeTooltip'),
+      name: __('Good', 'mailpoet'),
+      tooltipTitle: __('Good stuff.', 'mailpoet'),
     },
     critical: {
-      name: MailPoet.I18n.t('criticalBadgeName'),
-      tooltipTitle: MailPoet.I18n.t('criticalBadgeTooltip'),
+      name: __('Critical', 'mailpoet'),
+      tooltipTitle: __('Something to improve.', 'mailpoet'),
     },
   };
 

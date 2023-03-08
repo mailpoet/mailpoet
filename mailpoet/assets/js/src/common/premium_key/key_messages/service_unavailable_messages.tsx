@@ -1,13 +1,28 @@
-import { MailPoet } from 'mailpoet';
+import { __ } from '@wordpress/i18n';
 
 export function ServiceUnavailableMessage() {
   return (
     <div className="mailpoet_error_item mailpoet_error">
-      {MailPoet.I18n.t('premiumTabKeyCannotValidate')}
+      {__('Yikes, we can’t validate your key because:')}
       <ul className="disc-inside-list">
-        <li>{MailPoet.I18n.t('premiumTabKeyCannotValidateLocalhost')}</li>
-        <li>{MailPoet.I18n.t('premiumTabKeyCannotValidateBlockingHost')}</li>
-        <li>{MailPoet.I18n.t('premiumTabKeyCannotValidateIntranet')}</li>
+        <li>
+          {__(
+            'You’re on localhost or using an IP address instead of a domain. Not allowed for security reasons!',
+            'mailpoet',
+          )}
+        </li>
+        <li>
+          {__(
+            'Your host is blocking the activation, e.g. Altervista',
+            'mailpoet',
+          )}
+        </li>
+        <li>
+          {__(
+            'This website is on an Intranet. Activating MailPoet will not be possible.',
+            'mailpoet',
+          )}
+        </li>
       </ul>
       <p>
         <a
@@ -17,7 +32,7 @@ export function ServiceUnavailableMessage() {
           data-beacon-article="5ef1da9d2c7d3a10cba966c5"
           className="mailpoet_error"
         >
-          {MailPoet.I18n.t('learnMore')}
+          {__('Learn more', 'mailpoet')}
         </a>
       </p>
     </div>

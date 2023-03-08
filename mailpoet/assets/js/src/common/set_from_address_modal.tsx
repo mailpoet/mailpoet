@@ -1,4 +1,5 @@
 import { useContext, useState } from 'react';
+import { __ } from '@wordpress/i18n';
 import ReactStringReplace from 'react-string-replace';
 import jQuery from 'jquery';
 import { MailPoet } from 'mailpoet';
@@ -27,20 +28,26 @@ const getErrorMessage = (
   error: ErrorResponse['errors'][number] | null,
 ): string => {
   if (!error) {
-    return MailPoet.I18n.t('setFromAddressEmailUnknownError');
+    return __('An error occured when saving FROM email address.', 'mailpoet');
   }
 
   if (error.error === 'unauthorized') {
     return '';
   }
 
-  return error.message || MailPoet.I18n.t('setFromAddressEmailUnknownError');
+  return (
+    error.message ||
+    __('An error occured when saving FROM email address.', 'mailpoet')
+  );
 };
 
 const getSuccessMessage = (): JSX.Element => (
   <p>
     {ReactStringReplace(
-      MailPoet.I18n.t('setFromAddressEmailSuccess'),
+      __(
+        'Excellent. Your authorized email was saved. You can change it in the [link]Basics tab of the MailPoet settings[/link].',
+        'mailpoet',
+      ),
       /\[link\](.*?)\[\/link\]/g,
       (match) => (
         <a
@@ -93,7 +100,7 @@ function SetFromAddressModal({ onRequestClose, setAuthorizedAddress }: Props) {
 
   return (
     <Modal
-      title={MailPoet.I18n.t('setFromAddressModalTitle')}
+      title={__('It’s time to set your default FROM address!', 'mailpoet')}
       onRequestClose={onRequestClose}
       contentClassName="set-from-address-modal"
     >
@@ -119,7 +126,10 @@ function SetFromAddressModal({ onRequestClose, setAuthorizedAddress }: Props) {
 
       <p>
         {ReactStringReplace(
-          MailPoet.I18n.t('setFromAddressModalDescription'),
+          __(
+            'Set one of [link]your authorized email addresses[/link] as the default FROM email for your MailPoet emails.',
+            'mailpoet',
+          ),
           /\[link\](.*?)\[\/link\]/g,
           (match) => (
             <a
@@ -151,7 +161,10 @@ function SetFromAddressModal({ onRequestClose, setAuthorizedAddress }: Props) {
       <p className="sender_email_address_warning">
         {showAuthorizedEmailErrorMessage &&
           ReactStringReplace(
-            MailPoet.I18n.t('setFromAddressEmailNotAuthorized'),
+            __(
+              'Can’t use this email yet! [link]Please authorize it first[/link].',
+              'mailpoet',
+            ),
             /\[link\](.*?)\[\/link\]/g,
             (string, index) => (
               <a
@@ -211,7 +224,7 @@ function SetFromAddressModal({ onRequestClose, setAuthorizedAddress }: Props) {
           }
         }}
       >
-        {MailPoet.I18n.t('setFromAddressModalSave')}
+        {__('Save', 'mailpoet')}
       </Button>
     </Modal>
   );

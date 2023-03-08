@@ -1,7 +1,8 @@
 import { useState } from 'react';
+import { __, _x } from '@wordpress/i18n';
+import { MailPoet } from 'mailpoet';
 import PropTypes from 'prop-types';
 import { noop } from 'lodash';
-import { MailPoet } from 'mailpoet';
 import ReactStringReplace from 'react-string-replace';
 import { AuthorizeSenderEmailAndDomainModal } from 'common/authorize_sender_email_and_domain_modal';
 
@@ -40,7 +41,10 @@ function SenderEmailAddressWarning({
         <div key="authorizeMyEmail">
           <p className="sender_email_address_warning">
             {ReactStringReplace(
-              MailPoet.I18n.t('youNeedToAuthorizeTheEmail'),
+              __(
+                'Not an authorized sender email address. [link]Authorize it now.[/link]',
+                'mailpoet',
+              ),
               /\[link\](.*?)\[\/link\]/g,
               (match) => (
                 <a
@@ -64,7 +68,9 @@ function SenderEmailAddressWarning({
         <div key="authorizeSenderDomain">
           <p className="sender_email_address_warning">
             {ReactStringReplace(
-              MailPoet.I18n.t('authorizeSenderDomain'),
+              __(
+                'Email violates Sender Domain’s DMARC policy. Please set up [link]sender authentication[/link].',
+              ),
               /\[link](.*?)\[\/link]/g,
               (match) => (
                 <a
@@ -120,11 +126,19 @@ function SenderEmailAddressWarning({
           className="sender_email_address_warning"
           data-acceptance-id="freemail-sender-warning-old-installation"
         >
-          {MailPoet.I18n.t('senderEmailAddressWarning1')}
+          {_x(
+            'You might not reach the inbox of your subscribers if you use this email address.',
+            'In the last step, before sending a newsletter. URL: ?page=mailpoet-newsletters#/send/2',
+            'mailpoet',
+          )}
         </p>
         <p className="sender_email_address_warning">
           {ReactStringReplace(
-            MailPoet.I18n.t('senderEmailAddressWarning2'),
+            _x(
+              'Use an address like %1$s for the Sender and put %2$s in the <em>Reply-to</em> field below.',
+              'In the last step, before sending a newsletter. URL: ?page=mailpoet-newsletters#/send/2',
+              'mailpoet',
+            ),
             /(%1\$s|%2\$s|<em>.*<\/em>)/,
             (match) => {
               if (match === '%1$s') return suggestedEmailAddress;
@@ -141,7 +155,7 @@ function SenderEmailAddressWarning({
             target="_blank"
             rel="noopener noreferrer"
           >
-            {MailPoet.I18n.t('senderEmailAddressWarning3')}
+            {__('Read more', 'mailpoet')}
           </a>
         </p>
       </>

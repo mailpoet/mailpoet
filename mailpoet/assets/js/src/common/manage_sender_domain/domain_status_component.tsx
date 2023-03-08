@@ -1,5 +1,5 @@
+import { __ } from '@wordpress/i18n';
 import { Tooltip } from 'common/tooltip/tooltip';
-import { MailPoet } from 'mailpoet';
 
 const DomainStatus = {
   pending: 'pending',
@@ -12,6 +12,7 @@ type Props = {
   message: string;
   index: number;
 };
+
 function DomainStatusComponent({ status, message, index }: Props) {
   let content = null;
 
@@ -20,7 +21,7 @@ function DomainStatusComponent({ status, message, index }: Props) {
       <div>
         <span className="dashicons dashicons-update-alt" />
         {'  '}
-        {MailPoet.I18n.t('manageSenderDomainStatusPending')}
+        {__('Pending', 'mailpoet')}
       </div>
     );
   }
@@ -30,7 +31,7 @@ function DomainStatusComponent({ status, message, index }: Props) {
       <div>
         <span className="dashicons dashicons-yes-alt mailpoet_success" />
         {'  '}
-        {MailPoet.I18n.t('manageSenderDomainStatusVerified')}
+        {__('Verified', 'mailpoet')}
       </div>
     );
   }
@@ -40,7 +41,7 @@ function DomainStatusComponent({ status, message, index }: Props) {
       <div className="relative-holder">
         <span className="dashicons dashicons-no-alt mailpoet_error" />
         {'  '}
-        {MailPoet.I18n.t('manageSenderDomainStatusInvalid')}
+        {__('Invalid', 'mailpoet')}
         {'    '}
         <span
           className="mailpoet-form-tooltip-without-icon"

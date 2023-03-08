@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useSelect } from '@wordpress/data';
-import { MailPoet } from 'mailpoet';
+import { __ } from '@wordpress/i18n';
 import { withBoundary } from '../error_boundary';
 
 function UnsavedChangesNotice({ storeName }) {
@@ -11,7 +11,11 @@ function UnsavedChangesNotice({ storeName }) {
 
   function onUnload(event) {
     if (hasUnsavedChanges) {
-      event.returnValue = MailPoet.I18n.t('changesNotSaved'); // eslint-disable-line no-param-reassign
+      // eslint-disable-next-line no-param-reassign
+      event.returnValue = __(
+        'The changes you made may not be saved',
+        'mailpoet',
+      );
       return event.returnValue;
     }
     return '';

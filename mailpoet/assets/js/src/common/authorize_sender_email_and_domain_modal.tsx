@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { __ } from '@wordpress/i18n';
 import { MailPoet } from 'mailpoet';
 import classnames from 'classnames';
 import { extractEmailDomain, extractPageNameFromUrl } from 'common/functions';
@@ -100,9 +101,7 @@ function AuthorizeSenderEmailAndDomainModal({
           className={classnames({
             mailpoet_hidden: !showSenderEmailTab,
           })}
-          title={MailPoet.I18n.t(
-            'authorizeSenderEmailAndDomainModalSenderEmailTabTitle',
-          )}
+          title={__('Authorized emails', 'mailpoet')}
         >
           {showSenderEmailTab && (
             <AuthorizeSenderEmailModal
@@ -123,9 +122,7 @@ function AuthorizeSenderEmailAndDomainModal({
           className={classnames({
             mailpoet_hidden: !showSenderDomainTab,
           })}
-          title={MailPoet.I18n.t(
-            'authorizeSenderEmailAndDomainModalSenderDomainTabTitle',
-          )}
+          title={__('Sender Domains', 'mailpoet')}
         >
           {showSenderDomainTab && (
             <AuthorizeSenderDomainModal

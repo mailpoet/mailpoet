@@ -1,4 +1,5 @@
 import { ReactNode } from 'react';
+import { __ } from '@wordpress/i18n';
 import { MailPoet } from 'mailpoet';
 import { PremiumRequired } from 'common/premium_required/premium_required';
 import { Button } from 'common/button/button';
@@ -88,7 +89,7 @@ export function PremiumBannerWithUpgrade({
 
   return (
     <PremiumRequired
-      title={MailPoet.I18n.t('premiumFeature')}
+      title={__('This is a Premium feature', 'mailpoet')}
       message={bannerMessage}
       actionButton={ctaButton}
     />
