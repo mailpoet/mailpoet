@@ -1,8 +1,9 @@
 import classnames from 'classnames';
-import { MailPoet } from 'mailpoet';
+import { __ } from '@wordpress/i18n';
 import { useSelector } from 'settings/store/hooks';
 
 type KeyValidMessageProps = { canUseSuccessClass: boolean };
+
 function KeyValidMessage({ canUseSuccessClass }: KeyValidMessageProps) {
   return (
     <div
@@ -10,7 +11,7 @@ function KeyValidMessage({ canUseSuccessClass }: KeyValidMessageProps) {
         mailpoet_success: canUseSuccessClass,
       })}
     >
-      {MailPoet.I18n.t('premiumTabKeyValidMessage')}
+      {__('Your key is valid', 'mailpoet')}
     </div>
   );
 }
@@ -18,12 +19,13 @@ function KeyValidMessage({ canUseSuccessClass }: KeyValidMessageProps) {
 function KeyNotValidMessage() {
   return (
     <div className="mailpoet_error_item mailpoet_error">
-      {MailPoet.I18n.t('premiumTabKeyNotValidMessage')}
+      {__('Your key is not valid', 'mailpoet')}
     </div>
   );
 }
 
 type KeyMessagesProps = { canUseSuccessClass: boolean };
+
 export function KeyMessages({ canUseSuccessClass }: KeyMessagesProps) {
   const { isKeyValid } = useSelector('getKeyActivationState')();
   return isKeyValid ? (

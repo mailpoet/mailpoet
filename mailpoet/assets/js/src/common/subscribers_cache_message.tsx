@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { __ } from '@wordpress/i18n';
 import { MailPoet } from 'mailpoet';
 import { Button } from 'common/button/button';
 import ReactStringReplace from 'react-string-replace';
@@ -36,7 +37,10 @@ export function SubscribersCacheMessage({
   return (
     <div className="mailpoet-subscribers-cache-notice">
       {ReactStringReplace(
-        MailPoet.I18n.t('subscribersCountWereCalculatedWithMinutesAgo'),
+        __(
+          'Lists and Segments subscribers counts were calculated <abbr>{$mins} minutes ago</abbr>',
+          'mailpoet',
+        ),
         /<abbr>(.*?)<\/abbr>/,
         (match, i) => (
           <abbr key={i} title={cacheCalculation}>
@@ -53,7 +57,7 @@ export function SubscribersCacheMessage({
         onClick={handleRecalculate}
         withSpinner={loading}
       >
-        {MailPoet.I18n.t('recalculateNow')}
+        {__('Recalculate now', 'mailpoet')}
       </Button>
       <div className="mailpoet-gap" />
       {errors.length > 0 && (

@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { MailPoet } from 'mailpoet';
+import { __ } from '@wordpress/i18n';
 
 function PrintBoolean(props) {
   return (
@@ -19,9 +19,9 @@ PrintBoolean.propTypes = {
 };
 
 PrintBoolean.defaultProps = {
-  truthy: MailPoet.I18n.t('yes'),
-  falsy: MailPoet.I18n.t('no'),
-  unknown: MailPoet.I18n.t('unknown'),
+  truthy: __('Yes', 'mailpoet'),
+  falsy: __('No', 'mailpoet'),
+  unknown: __('Unknown', 'mailpoet'),
   children: null,
 };
 

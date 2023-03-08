@@ -1,7 +1,7 @@
 import { MouseEvent } from 'react';
 import ReactStringReplace from 'react-string-replace';
+import { __ } from '@wordpress/i18n';
 import { KeyActivationState } from 'settings/store/types';
-import { MailPoet } from 'mailpoet';
 import {
   KeyMessages,
   MssMessages,
@@ -41,7 +41,7 @@ export function Messages(
       )}
       {state.congratulatoryMssEmailSentTo && (
         <div className="mailpoet_success_item mailpoet_success">
-          {MailPoet.I18n.t('premiumTabCongratulatoryMssEmailSent').replace(
+          {__('A test email was sent to [email_address]', 'mailpoet').replace(
             '[email_address]',
             state.congratulatoryMssEmailSentTo,
           )}
@@ -57,13 +57,24 @@ export function Messages(
       {showPendingApprovalNotice && (
         <div>
           <div className="pending_approval_heading mailpoet_error">
-            {MailPoet.I18n.t('premiumTabPendingApprovalHeading')}
+            {__(
+              'Note: this subscription is currently pending approval by MailPoet.',
+              'mailpoet',
+            )}
           </div>
-          <div>{MailPoet.I18n.t('premiumTabPendingApprovalMessage')}</div>
+          <div>
+            {__(
+              'You should receive an email from us about it within 48h. Sending will be paused in the meantime, but you can still send email previews to yourself and explore the plugin features.',
+              'mailpoet',
+            )}
+          </div>
           {showRefreshMessage ? (
             <div>
               {ReactStringReplace(
-                MailPoet.I18n.t('premiumTabPendingApprovalMessageRefresh'),
+                __(
+                  'If you have already received approval email, click [link]here[/link] to update the status.',
+                  'mailpoet',
+                ),
                 getLinkRegex(),
                 (match) => (
                   <a onClick={onRefreshClick} href="#">
@@ -85,7 +96,7 @@ export function Messages(
             data-beacon-article="5ef1da9d2c7d3a10cba966c5"
             className="mailpoet_error"
           >
-            {MailPoet.I18n.t('learnMore')}
+            {__('Learn more', 'mailpoet')}
           </a>
         </p>
       )}

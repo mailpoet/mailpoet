@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
 import ReactStringReplace from 'react-string-replace';
 import moment from 'moment';
+import { __ } from '@wordpress/i18n';
 import { MailPoet } from 'mailpoet';
 import { Modal } from 'common/modal/modal';
 import { Button, Loader } from 'common';
-import { isErrorResponse, ErrorResponse } from 'ajax';
+import { ErrorResponse, isErrorResponse } from 'ajax';
 import { Grid } from 'common/grid';
 
 const SET_INTERVAL_PERFORM_REQUEST_EVERY_SECONDS = 15;
@@ -187,7 +188,10 @@ function AuthorizeSenderEmailModal({
       {createEmailApiResponse && (
         <p>
           {ReactStringReplace(
-            MailPoet.I18n.t('authorizeSenderEmailModalDescription'),
+            __(
+              'Check your inbox now to confirm your email address. Please find the email with the subject: [bold]"email address to authorize"[/bold]',
+              'mailpoet',
+            ),
             /\[bold\](.*?)\[\/bold\]/g,
             (match, i) => (
               <strong key={i}>{match}</strong>
@@ -198,7 +202,12 @@ function AuthorizeSenderEmailModal({
       {createEmailApiResponse === false && (
         <>
           <strong> {createEmailApiError} </strong>
-          <p>{MailPoet.I18n.t('authorizeSenderEmailMessageError')}</p>
+          <p>
+            {__(
+              'An error occured when performing the request. Please try again later',
+              'mailpoet',
+            )}
+          </p>
         </>
       )}
 
@@ -210,10 +219,15 @@ function AuthorizeSenderEmailModal({
 
       {confirmEmailApiResponse && (
         <>
-          <p>{MailPoet.I18n.t('authorizeSenderEmailMessageSuccess')}</p>
+          <p>
+            {__(
+              'The email address has been authorized. You can now send emails using this address with MailPoet.',
+              'mailpoet',
+            )}
+          </p>
           <Button onClick={onRequestClose} className="button-on-top">
             {' '}
-            {MailPoet.I18n.t('close')}{' '}
+            {__('Close', 'mailpoet')}{' '}
           </Button>
         </>
       )}
@@ -222,10 +236,10 @@ function AuthorizeSenderEmailModal({
 
   return useModal ? (
     <Modal
-      title={MailPoet.I18n.t('authorizeSenderEmailModalTitle').replace(
-        '[senderEmail]',
-        senderEmailAddress,
-      )}
+      title={__(
+        'Authorizing your email address: [senderEmail]',
+        'mailpoet',
+      ).replace('[senderEmail]', senderEmailAddress)}
       onRequestClose={onRequestClose}
       contentClassName="authorize-sender-email-modal"
     >
