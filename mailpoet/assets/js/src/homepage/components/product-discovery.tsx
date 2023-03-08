@@ -2,7 +2,7 @@ import { MailPoet } from 'mailpoet';
 import { moreVertical } from '@wordpress/icons';
 import { DropdownMenu } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
-import { storeName } from 'homepage/store/store';
+import { store } from 'homepage/store/store';
 import { DiscoveryTask } from './discovery-task';
 import { ContentSection } from './content-section';
 
@@ -13,9 +13,9 @@ type Props = {
 export function ProductDiscovery({ onHide }: Props): JSX.Element {
   const { tasksStatus, isWooCommerceActive, isDiscoveryDone } = useSelect(
     (select) => ({
-      tasksStatus: select(storeName).getProductDiscoveryTasksStatus(),
-      isWooCommerceActive: select(storeName).getIsWooCommerceActive(),
-      isDiscoveryDone: select(storeName).getIsProductDiscoveryDone(),
+      tasksStatus: select(store).getProductDiscoveryTasksStatus(),
+      isWooCommerceActive: select(store).getIsWooCommerceActive(),
+      isDiscoveryDone: select(store).getIsProductDiscoveryDone(),
     }),
     [],
   );
