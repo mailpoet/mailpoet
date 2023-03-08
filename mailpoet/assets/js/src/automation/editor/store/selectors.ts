@@ -16,7 +16,7 @@ import { Step, Automation } from '../components/automation/types';
 export const isFeatureActive = createRegistrySelector(
   (select) =>
     (_, feature: Feature): boolean =>
-      select(preferencesStore).get(storeName, feature),
+      !!select(preferencesStore).get(storeName, feature),
 );
 
 export const isSidebarOpened = createRegistrySelector(
