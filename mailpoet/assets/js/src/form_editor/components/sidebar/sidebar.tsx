@@ -2,14 +2,13 @@ import { useEffect } from 'react';
 import { useDispatch, useSelect } from '@wordpress/data';
 import { DefaultSidebar } from './default_sidebar';
 import { PlacementSettingsSidebar } from './placement_settings_sidebar';
+import { store } from '../../store';
 
 function Sidebar(): JSX.Element {
-  const { toggleSidebar, changeActiveSidebar } = useDispatch(
-    'mailpoet-form-editor',
-  );
+  const { toggleSidebar, changeActiveSidebar } = useDispatch(store);
 
   const activeSidebar = useSelect(
-    (select) => select('mailpoet-form-editor').getActiveSidebar(),
+    (select) => select(store).getActiveSidebar(),
     [],
   );
 

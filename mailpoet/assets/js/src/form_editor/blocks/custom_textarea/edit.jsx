@@ -19,29 +19,23 @@ import {
 } from '../input_styles_settings';
 import { mapCustomFieldFormData } from '../map_custom_field_form_data.jsx';
 import { ParagraphEdit } from '../paragraph_edit.jsx';
+import { store } from '../../store';
 
 function CustomTextAreaEdit({ name, attributes, setAttributes, clientId }) {
   const id = `${name.replace(/[^a-zA-Z]/g, '')}_${Math.random()
     .toString(36)
     .substring(2, 15)}`;
-  const settings = useSelect(
-    (select) => select('mailpoet-form-editor').getFormSettings(),
-    [],
-  );
-  const isSaving = useSelect(
-    (sel) => sel('mailpoet-form-editor').getIsCustomFieldSaving(),
-    [],
-  );
+  const settings = useSelect((select) => select(store).getFormSettings(), []);
+  const isSaving = useSelect((sel) => sel(store).getIsCustomFieldSaving(), []);
   const isDeleting = useSelect(
-    (sel) => sel('mailpoet-form-editor').getIsCustomFieldDeleting(),
+    (sel) => sel(store).getIsCustomFieldDeleting(),
     [],
   );
 
   const [inputValue, setInputValue] = useState('');
 
-  const { saveCustomField, deleteCustomField, customFieldEdited } = useDispatch(
-    'mailpoet-form-editor',
-  );
+  const { saveCustomField, deleteCustomField, customFieldEdited } =
+    useDispatch(store);
   const inspectorControls = (
     <InspectorControls>
       <Panel>

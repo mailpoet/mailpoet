@@ -4,6 +4,7 @@ import { useSelect } from '@wordpress/data';
 import { MailPoet } from 'mailpoet';
 import { SettingsPanel } from 'form_editor/components/form_settings/form_placement_options/settings_panel';
 import { SidebarHeader } from './sidebar_header';
+import { store } from '../../store';
 
 type Props = {
   onClose: () => void;
@@ -11,7 +12,7 @@ type Props = {
 
 export function PlacementSettingsSidebar({ onClose }: Props): JSX.Element {
   const previewSettings = useSelect(
-    (select) => select('mailpoet-form-editor').getPreviewSettings(),
+    (select) => select(store).getPreviewSettings(),
     [],
   );
   return (

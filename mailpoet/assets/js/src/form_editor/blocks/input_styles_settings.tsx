@@ -11,6 +11,7 @@ import { useDispatch } from '@wordpress/data';
 import { partial } from 'lodash';
 import PropTypes from 'prop-types';
 import { ColorGradientSettings } from '../components/color_gradient_settings';
+import { store } from '../store';
 
 type InputStyles = {
   fullWidth: boolean;
@@ -32,7 +33,7 @@ function InputStylesSettings({ styles, onChange }: InputStylesSettingsProps) {
   const localStylesRef = useRef(styles);
   const localStyles = localStylesRef.current;
 
-  const { applyStylesToAllTextInputs } = useDispatch('mailpoet-form-editor');
+  const { applyStylesToAllTextInputs } = useDispatch(store);
 
   const updateStyles = (property, value) => {
     const updated = { ...localStylesRef.current };

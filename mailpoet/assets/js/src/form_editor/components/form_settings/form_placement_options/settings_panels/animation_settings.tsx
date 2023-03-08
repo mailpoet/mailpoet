@@ -3,6 +3,7 @@ import { __, assocPath, compose } from 'lodash/fp';
 import { useDispatch, useSelect } from '@wordpress/data';
 import { SelectControl } from '@wordpress/components';
 import { withBoundary } from 'common';
+import { store } from '../../../../store';
 
 type Props = {
   settingsPlacementKey: string;
@@ -10,10 +11,10 @@ type Props = {
 
 function AnimationSettings({ settingsPlacementKey }: Props): JSX.Element {
   const formSettings = useSelect(
-    (select) => select('mailpoet-form-editor').getFormSettings(),
+    (select) => select(store).getFormSettings(),
     [],
   );
-  const { changeFormSettings } = useDispatch('mailpoet-form-editor');
+  const { changeFormSettings } = useDispatch(store);
 
   return (
     <SelectControl

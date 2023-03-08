@@ -11,6 +11,7 @@ import { useSelect } from '@wordpress/data';
 
 import { MailPoet } from 'mailpoet';
 import { Preview } from './settings_preview.jsx';
+import { store } from '../../store';
 
 const findSegment = (segments, segmentId) =>
   segments.find((s) => s.id === segmentId);
@@ -23,7 +24,7 @@ function SegmentSelectSettings({
   setNewSelection,
 }) {
   const allSegments = useSelect(
-    (select) => select('mailpoet-form-editor').getAllAvailableSegments(),
+    (select) => select(store).getAllAvailableSegments(),
     [],
   );
 

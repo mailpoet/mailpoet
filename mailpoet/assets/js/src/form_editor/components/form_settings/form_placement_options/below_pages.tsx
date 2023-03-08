@@ -3,14 +3,15 @@ import { useDispatch, useSelect } from '@wordpress/data';
 
 import { BelowPageIcon } from './icons/below_pages_icon';
 import { FormPlacementOption } from './form_placement_option';
+import { store } from '../../../store';
 
 export function BelowPages(): JSX.Element {
   const formSettings = useSelect(
-    (select) => select('mailpoet-form-editor').getFormSettings(),
+    (select) => select(store).getFormSettings(),
     [],
   );
 
-  const { showPlacementSettings } = useDispatch('mailpoet-form-editor');
+  const { showPlacementSettings } = useDispatch(store);
 
   return (
     <FormPlacementOption

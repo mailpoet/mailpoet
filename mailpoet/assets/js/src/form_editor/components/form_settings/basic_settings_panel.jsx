@@ -14,35 +14,28 @@ import PropTypes from 'prop-types';
 import { isEqual } from 'lodash';
 import { Selection } from './selection.jsx';
 import { FormTitle } from '../form_title';
+import { store } from '../../store';
 
 function BasicSettingsPanel({ onToggle, isOpened }) {
-  const settings = useSelect(
-    (select) => select('mailpoet-form-editor').getFormSettings(),
-    [],
-  );
+  const settings = useSelect((select) => select(store).getFormSettings(), []);
   const segments = useSelect(
-    (select) => select('mailpoet-form-editor').getAllAvailableSegments(),
+    (select) => select(store).getAllAvailableSegments(),
     [],
   );
 
-  const pages = useSelect(
-    (select) => select('mailpoet-form-editor').getAllAvailablePages(),
-    [],
-  );
+  const pages = useSelect((select) => select(store).getAllAvailablePages(), []);
 
   const missingListError = useSelect(
-    (select) => select('mailpoet-form-editor').getNotice('missing-lists'),
+    (select) => select(store).getNotice('missing-lists'),
     [],
   );
 
   const isFormEnabled = useSelect(
-    (select) => select('mailpoet-form-editor').isFormEnabled(),
+    (select) => select(store).isFormEnabled(),
     [],
   );
 
-  const { changeFormSettings, toggleForm } = useDispatch(
-    'mailpoet-form-editor',
-  );
+  const { changeFormSettings, toggleForm } = useDispatch(store);
 
   const onSegmentsChange = (e) => {
     // We don't want to update state when is same

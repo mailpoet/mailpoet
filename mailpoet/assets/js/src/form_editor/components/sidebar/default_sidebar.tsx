@@ -6,6 +6,7 @@ import { MailPoet } from 'mailpoet';
 import { FormSettings } from 'form_editor/components/form_settings/form_settings';
 import { BlockSettings } from './block_settings.jsx';
 import { SidebarHeader } from './sidebar_header';
+import { store } from '../../store';
 
 type Props = {
   onClose: () => void;
@@ -13,7 +14,7 @@ type Props = {
 
 export function DefaultSidebar({ onClose }: Props): JSX.Element {
   const activeTab = useSelect(
-    (select) => select('mailpoet-form-editor').getDefaultSidebarActiveTab(),
+    (select) => select(store).getDefaultSidebarActiveTab(),
     [],
   );
 
@@ -22,7 +23,7 @@ export function DefaultSidebar({ onClose }: Props): JSX.Element {
     [],
   );
 
-  const { switchDefaultSidebarTab } = useDispatch('mailpoet-form-editor');
+  const { switchDefaultSidebarTab } = useDispatch(store);
 
   useEffect(() => {
     if (selectedBlockId) {

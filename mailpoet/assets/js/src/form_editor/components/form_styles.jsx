@@ -2,14 +2,12 @@ import ReactDOM from 'react-dom';
 import { useSelect } from '@wordpress/data';
 import { transformStyles } from '@wordpress/block-editor';
 import css from 'css';
+import { store } from '../store';
 
 const FormStyles = () => {
   const element = document.getElementById('mailpoet-form-editor-form-styles');
 
-  const formStyles = useSelect(
-    (select) => select('mailpoet-form-editor').getFormStyles(),
-    [],
-  );
+  const formStyles = useSelect((select) => select(store).getFormStyles(), []);
 
   try {
     css.parse(formStyles);

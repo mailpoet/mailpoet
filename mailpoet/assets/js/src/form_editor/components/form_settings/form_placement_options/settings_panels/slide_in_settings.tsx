@@ -10,15 +10,16 @@ import { SizeSettings } from 'form_editor/components/size_settings';
 import { AnimationSettings } from './animation_settings';
 import { PlacementSettings } from './placement_settings';
 import { CookieSettings } from './cookie_settings';
+import { store } from '../../../../store';
 
 const delayValues = [0, 2, 5, 10, 15, 30, 45, 60, 120, 180, 240];
 
 export function SlideInSettings(): JSX.Element {
   const formSettings = useSelect(
-    (select) => select('mailpoet-form-editor').getFormSettings(),
+    (select) => select(store).getFormSettings(),
     [],
   );
-  const { changeFormSettings } = useDispatch('mailpoet-form-editor');
+  const { changeFormSettings } = useDispatch(store);
 
   const isActive = formSettings.formPlacement.slideIn.enabled;
 

@@ -4,13 +4,14 @@ import { ToggleControl } from '@wordpress/components';
 import { __, assocPath, compose } from 'lodash/fp';
 import { SizeSettings } from 'form_editor/components/size_settings';
 import { PlacementSettings } from './placement_settings';
+import { store } from '../../../../store';
 
 export function BelowPostsSettings(): JSX.Element {
   const formSettings = useSelect(
-    (select) => select('mailpoet-form-editor').getFormSettings(),
+    (select) => select(store).getFormSettings(),
     [],
   );
-  const { changeFormSettings } = useDispatch('mailpoet-form-editor');
+  const { changeFormSettings } = useDispatch(store);
 
   const isActive = formSettings.formPlacement.belowPosts.enabled;
 

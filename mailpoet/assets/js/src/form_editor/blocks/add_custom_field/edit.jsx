@@ -6,17 +6,15 @@ import { useSelect, useDispatch } from '@wordpress/data';
 import { MailPoet } from 'mailpoet';
 import { Icon } from './icon.jsx';
 import { AddCustomFieldForm } from './add_custom_field_form.jsx';
+import { store } from '../../store';
 
 function AddCustomField({ clientId }) {
-  const { createCustomField } = useDispatch('mailpoet-form-editor');
+  const { createCustomField } = useDispatch(store);
 
-  const dateSettings = useSelect(
-    (sel) => sel('mailpoet-form-editor').getDateSettingsData(),
-    [],
-  );
+  const dateSettings = useSelect((sel) => sel(store).getDateSettingsData(), []);
 
   const isCreating = useSelect(
-    (sel) => sel('mailpoet-form-editor').getIsCustomFieldCreating(),
+    (sel) => sel(store).getIsCustomFieldCreating(),
     [],
   );
 

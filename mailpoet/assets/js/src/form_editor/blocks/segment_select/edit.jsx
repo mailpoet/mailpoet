@@ -5,12 +5,10 @@ import { useSelect } from '@wordpress/data';
 import { MailPoet } from 'mailpoet';
 import { ParagraphEdit } from '../paragraph_edit.jsx';
 import { SegmentSelectSettings } from './settings.jsx';
+import { store } from '../../store';
 
 function SegmentSelectEdit({ attributes, setAttributes }) {
-  const segments = useSelect(
-    (sel) => sel('mailpoet-form-editor').getAllAvailableSegments(),
-    [],
-  );
+  const segments = useSelect((sel) => sel(store).getAllAvailableSegments(), []);
   const valuesWithNames = useMemo(
     () =>
       attributes.values.map((value) => {

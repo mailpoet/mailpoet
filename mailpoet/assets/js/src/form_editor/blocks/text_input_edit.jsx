@@ -6,6 +6,7 @@ import { ParagraphEdit } from './paragraph_edit.jsx';
 import { formatLabel } from './label_formatter.jsx';
 import { inputStylesPropTypes } from './input_styles_settings';
 import { convertAlignmentToMargin } from './convert_alignment_to_margin';
+import { store } from '../store';
 
 function TextInputEdit({
   label,
@@ -15,10 +16,7 @@ function TextInputEdit({
   styles,
   className,
 }) {
-  const settings = useSelect(
-    (select) => select('mailpoet-form-editor').getFormSettings(),
-    [],
-  );
+  const settings = useSelect((select) => select(store).getFormSettings(), []);
   const input = useRef(null);
   const id = `${name}_${Math.random().toString(36).substring(2, 15)}`;
   const [value, setValue] = useState('');

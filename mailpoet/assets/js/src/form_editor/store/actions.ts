@@ -1,5 +1,9 @@
 import { select, dispatch } from '@wordpress/data';
 import { SETTINGS_DEFAULTS } from '@wordpress/block-editor';
+import {
+  ReduxStoreConfig,
+  StoreDescriptor,
+} from '@wordpress/data/build-types/types';
 import { blocksToFormBodyFactory } from './blocks_to_form_body';
 import { mapFormDataBeforeSaving } from './map_form_data_before_saving';
 import {
@@ -7,7 +11,13 @@ import {
   ToggleAction,
   ToggleBlockInserterAction,
 } from './actions_types';
-import { BlockInsertionPoint } from './state_types';
+import { selectors } from './selectors';
+import { BlockInsertionPoint, State } from './state_types';
+
+// workaround to avoid import cycles
+const store = { name: 'mailpoet-form-editor' } as StoreDescriptor<
+  ReduxStoreConfig<State, null, typeof selectors>
+>;
 
 export function toggleSidebar(toggleTo): ToggleAction {
   return {
@@ -190,7 +200,7 @@ export function changeActiveSidebar(
 }
 
 export function* changePreviewSettings(settings) {
-  const formData = select('mailpoet-form-editor').getFormData();
+  const formData = select(store).getFormData();
   // We don't need or want to save preview settings for unsaved forms. These stored settings
   // are only ever used when reloading previously-edited forms.
   if (formData.id !== null) {
@@ -207,7 +217,7 @@ export function* changePreviewSettings(settings) {
 }
 
 export function* showPlacementSettings(formType: string) {
-  const previewSettings = select('mailpoet-form-editor').getPreviewSettings();
+  const previewSettings = select(store).getPreviewSettings();
   const updatedPreviewSettings = {
     ...previewSettings,
     formType,
@@ -221,11 +231,9 @@ export function* showPreview() {
     type: 'SHOW_PREVIEW',
   };
   yield changeActiveSidebar('default');
-  const customFields = select(
-    'mailpoet-form-editor',
-  ).getAllAvailableCustomFields();
-  const formData = select('mailpoet-form-editor').getFormData();
-  const formBlocks = select('mailpoet-form-editor').getFormBlocks();
+  const customFields = select(store).getAllAvailableCustomFields();
+  const formData = select(store).getFormData();
+  const formBlocks = select(store).getFormBlocks();
   const blocksToFormBody = blocksToFormBodyFactory(
     SETTINGS_DEFAULTS.fontSizes,
     SETTINGS_DEFAULTS.colors,

@@ -7,44 +7,37 @@ import { Modal } from 'common/modal/modal';
 import { Preview } from 'common/preview/preview.jsx';
 import { SettingsPanel } from 'form_editor/components/form_settings/form_placement_options/settings_panel';
 import { ErrorBoundary } from 'common';
+import { store } from '../../store';
 
 function FormPreview(): JSX.Element {
   const iframeElement = useRef(null);
   const [iframeLoaded, setIframeLoaded] = useState(false);
-  const { hidePreview, changePreviewSettings } = useDispatch(
-    'mailpoet-form-editor',
-  );
+  const { hidePreview, changePreviewSettings } = useDispatch(store);
   const isPreview = useSelect(
-    (select) => select('mailpoet-form-editor').getIsPreviewShown(),
+    (select) => select(store).getIsPreviewShown(),
     [],
   );
   const isPreviewReady = useSelect(
-    (select) => select('mailpoet-form-editor').getIsPreviewReady(),
+    (select) => select(store).getIsPreviewReady(),
     [],
   );
 
   const previewSettings = useSelect(
-    (select) => select('mailpoet-form-editor').getPreviewSettings(),
+    (select) => select(store).getPreviewSettings(),
     [],
   );
 
   const formSettings = useSelect(
-    (select) => select('mailpoet-form-editor').getFormSettings(),
+    (select) => select(store).getFormSettings(),
     [],
   );
 
-  const formId = useSelect(
-    (select) => select('mailpoet-form-editor').getFormData().id,
-    [],
-  );
+  const formId = useSelect((select) => select(store).getFormData().id, []);
 
-  const editorUrl = useSelect(
-    (select) => select('mailpoet-form-editor').getEditorUrl(),
-    [],
-  );
+  const editorUrl = useSelect((select) => select(store).getEditorUrl(), []);
 
   const previewPageUrl = useSelect(
-    (select) => select('mailpoet-form-editor').getPreviewPageUrl(),
+    (select) => select(store).getPreviewPageUrl(),
     [],
   );
 

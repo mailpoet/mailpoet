@@ -1,18 +1,19 @@
 import { memoize } from 'lodash';
 import { NoticeList } from '@wordpress/components';
 import { useDispatch, useSelect } from '@wordpress/data';
+import { store } from '../store';
 
 function Notices() {
   const dismissibleNotices = useSelect(
-    (select) => select('mailpoet-form-editor').getDismissibleNotices(),
+    (select) => select(store).getDismissibleNotices(),
     [],
   );
   const nonDismissibleNotices = useSelect(
-    (select) => select('mailpoet-form-editor').getNonDismissibleNotices(),
+    (select) => select(store).getNonDismissibleNotices(),
     [],
   );
 
-  const { removeNotice } = useDispatch('mailpoet-form-editor');
+  const { removeNotice } = useDispatch(store);
   const timedRemove = memoize((noticeId) => {
     setTimeout(() => removeNotice(noticeId), 5000);
   });

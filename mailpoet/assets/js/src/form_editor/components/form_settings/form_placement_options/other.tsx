@@ -2,9 +2,10 @@ import { MailPoet } from 'mailpoet';
 import { useDispatch } from '@wordpress/data';
 import { SidebarIcon } from './icons/sidebar_icon';
 import { FormPlacementOption } from './form_placement_option';
+import { store } from '../../../store';
 
 export function Other(): JSX.Element {
-  const { showPlacementSettings } = useDispatch('mailpoet-form-editor');
+  const { showPlacementSettings } = useDispatch(store);
 
   return (
     <FormPlacementOption

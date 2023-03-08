@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import { useSelect } from '@wordpress/data';
+import { store } from '../store';
 
 function FormStylingBackground({ children }) {
   const {
@@ -15,19 +16,15 @@ function FormStylingBackground({ children }) {
     backgroundImageUrl,
     backgroundImageDisplay,
     fontFamily,
-  } = useSelect(
-    (select) => select('mailpoet-form-editor').getFormSettings(),
-    [],
-  );
+  } = useSelect((select) => select(store).getFormSettings(), []);
 
   const previewSettings = useSelect(
-    (select) => select('mailpoet-form-editor').getPreviewSettings(),
+    (select) => select(store).getPreviewSettings(),
     [],
   );
 
   const formWidth = useSelect(
-    (select) =>
-      select('mailpoet-form-editor').getFormWidth(previewSettings.formType),
+    (select) => select(store).getFormWidth(previewSettings.formType),
     [previewSettings.formType],
   );
 

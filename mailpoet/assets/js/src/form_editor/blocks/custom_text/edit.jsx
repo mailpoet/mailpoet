@@ -11,20 +11,17 @@ import {
   inputStylesPropTypes,
 } from '../input_styles_settings';
 import { TextInputEdit } from '../text_input_edit.jsx';
+import { store } from '../../store';
 
 function CustomTextEdit({ attributes, setAttributes, clientId }) {
-  const isSaving = useSelect(
-    (sel) => sel('mailpoet-form-editor').getIsCustomFieldSaving(),
-    [],
-  );
+  const isSaving = useSelect((sel) => sel(store).getIsCustomFieldSaving(), []);
   const isDeleting = useSelect(
-    (sel) => sel('mailpoet-form-editor').getIsCustomFieldDeleting(),
+    (sel) => sel(store).getIsCustomFieldDeleting(),
     [],
   );
 
-  const { saveCustomField, deleteCustomField, customFieldEdited } = useDispatch(
-    'mailpoet-form-editor',
-  );
+  const { saveCustomField, deleteCustomField, customFieldEdited } =
+    useDispatch(store);
 
   const inspectorControls = (
     <InspectorControls>

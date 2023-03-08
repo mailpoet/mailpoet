@@ -5,13 +5,11 @@ import { useDispatch, useSelect } from '@wordpress/data';
 import { undo as undoIcon } from '@wordpress/icons';
 import { displayShortcut } from '@wordpress/keycodes';
 import { useShortcut } from '@wordpress/keyboard-shortcuts';
+import { store } from '../store';
 
 export function HistoryUndo(props: Record<string, unknown>): JSX.Element {
-  const hasUndo = useSelect(
-    (select) => select('mailpoet-form-editor').hasEditorUndo(),
-    [],
-  );
-  const { historyUndo } = useDispatch('mailpoet-form-editor');
+  const hasUndo = useSelect((select) => select(store).hasEditorUndo(), []);
+  const { historyUndo } = useDispatch(store);
   const { registerShortcut } = useDispatch('core/keyboard-shortcuts');
 
   const undoAction = (): void => {

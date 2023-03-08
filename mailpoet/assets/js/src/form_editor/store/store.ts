@@ -1,9 +1,5 @@
 import '@wordpress/notices';
-/**
- * The store is implemented using @wordpress/data module
- * @see https://developer.wordpress.org/block-editor/packages/packages-data/
- */
-import { registerStore } from '@wordpress/data';
+import { createReduxStore, register, useDispatch } from '@wordpress/data';
 import { SETTINGS_DEFAULTS } from '@wordpress/block-editor';
 import * as actions from './actions';
 import { createReducer } from './reducer.jsx';
@@ -13,15 +9,14 @@ import { validateForm } from './form_validator.jsx';
 import { formBodyToBlocksFactory } from './form_body_to_blocks.jsx';
 import { mapFormDataAfterLoading } from './map_form_data_after_loading.jsx';
 import { FormEditorWindow, State } from './state_types';
-import { OmitFirstArgs } from '../../types';
+import {
+  ReduxStoreConfig,
+  StoreDescriptor,
+} from '@wordpress/data/build-types/types';
 
 const storeName = 'mailpoet-form-editor';
 
 declare let window: FormEditorWindow;
-
-declare module '@wordpress/data' {
-  function select(key: typeof storeName): OmitFirstArgs<typeof selectors>;
-}
 
 export const initStore = () => {
   const customFields = window.mailpoet_custom_fields.map((field) => ({
@@ -121,7 +116,7 @@ export const initStore = () => {
     user: {
       isAdministrator: window.mailpoet_is_administrator,
     },
-  };
+  } as const;
 
   const config = {
     reducer: createReducer(defaultState),
@@ -129,7 +124,16 @@ export const initStore = () => {
     selectors,
     controls,
     resolvers: {},
-  };
+  } as const;
 
-  registerStore<State>('mailpoet-form-editor', config);
+  const store = createReduxStore(storeName, config);
+  register(store);
+  return store as StoreDescriptor<
+    ReduxStoreConfig<State, typeof actions, typeof selectors>
+  >;
+};
+
+export const store: ReturnType<typeof initStore> = {
+  name: storeName,
+  instantiate: (registry) => initStore().instantiate(registry),
 };
