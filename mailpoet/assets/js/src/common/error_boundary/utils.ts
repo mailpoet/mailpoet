@@ -1,4 +1,2 @@
-import { ComponentType } from 'react';
-
-export const getComponentDisplayName = (component: ComponentType): string =>
+export const getComponentDisplayName = (component): string =>
   component.displayName || component.name || 'Unknown application/component';
