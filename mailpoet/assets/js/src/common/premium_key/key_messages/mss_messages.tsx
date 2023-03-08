@@ -1,9 +1,10 @@
 import classnames from 'classnames';
-import { MailPoet } from 'mailpoet';
+import { __ } from '@wordpress/i18n';
 import { useSelector } from 'settings/store/hooks';
 import { MssStatus } from 'settings/store/types';
 
 type MssActiveMessageProps = { canUseSuccessClass: boolean };
+
 function MssActiveMessage({ canUseSuccessClass }: MssActiveMessageProps) {
   return (
     <div
@@ -11,34 +12,41 @@ function MssActiveMessage({ canUseSuccessClass }: MssActiveMessageProps) {
         mailpoet_success: canUseSuccessClass,
       })}
     >
-      {MailPoet.I18n.t('premiumTabMssActiveMessage')}
+      {__('MailPoet Sending Service is active', 'mailpoet')}
     </div>
   );
 }
 
 type NotValidMessageProps = { message?: string };
+
 function NotValidMessage({ message }: NotValidMessageProps) {
   return (
     <div className="mailpoet_error">
-      {message || MailPoet.I18n.t('premiumTabMssKeyNotValidMessage')}
+      {message ||
+        __(
+          'Your key is not valid for the MailPoet Sending Service',
+          'mailpoet',
+        )}
     </div>
   );
 }
+
 NotValidMessage.defaultProps = {
   message: '',
 };
 
 type MssNotActiveMessageProps = { activationCallback: () => void };
+
 function MssNotActiveMessage({ activationCallback }: MssNotActiveMessageProps) {
   return (
     <div className="mailpoet_error">
-      {MailPoet.I18n.t('premiumTabMssNotActiveMessage')}{' '}
+      {__('MailPoet Sending Service is not active.', 'mailpoet')}{' '}
       <button
         type="button"
         className="mailpoet-button button button-primary button-small"
         onClick={activationCallback}
       >
-        {MailPoet.I18n.t('premiumTabMssActivateMessage')}
+        {__('Activate MailPoet Sending Service', 'mailpoet')}
       </button>
     </div>
   );
@@ -49,6 +57,7 @@ type Props = {
   activationCallback: () => void;
   canUseSuccessClass: boolean;
 };
+
 export function MssMessages(props: Props) {
   const { mssStatus } = useSelector('getKeyActivationState')();
   switch (mssStatus) {
@@ -66,6 +75,7 @@ export function MssMessages(props: Props) {
       return null;
   }
 }
+
 MssMessages.defaultProps = {
   keyMessage: '',
 };

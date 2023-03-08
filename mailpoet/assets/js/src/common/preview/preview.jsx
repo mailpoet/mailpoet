@@ -1,6 +1,6 @@
 import { useState } from 'react';
+import { __, _x } from '@wordpress/i18n';
 import PropTypes from 'prop-types';
-import { MailPoet } from 'mailpoet';
 import classnames from 'classnames';
 import { MobileIcon } from './mobile_icon';
 import { DesktopIcon } from './desktop_icon';
@@ -22,7 +22,7 @@ function Preview({ children, onDisplayTypeChange, selectedDisplayType }) {
             e.preventDefault();
             changeType('desktop');
           }}
-          title={MailPoet.I18n.t('formPreviewDesktop')}
+          title={_x('Desktop', 'Desktop browser preview mode', 'mailpoet')}
           href="#"
           data-automation-id="preview_type_desktop"
         >
@@ -36,7 +36,7 @@ function Preview({ children, onDisplayTypeChange, selectedDisplayType }) {
             e.preventDefault();
             changeType('mobile');
           }}
-          title={MailPoet.I18n.t('formPreviewMobile')}
+          title={_x('Mobile', 'Mobile browser preview mode', 'mailpoet')}
           href="#"
           data-automation-id="preview_type_mobile"
         >
@@ -60,7 +60,10 @@ function Preview({ children, onDisplayTypeChange, selectedDisplayType }) {
       </div>
       {displayType !== 'desktop' && (
         <p className="mailpoet_form_preview_disclaimer">
-          {MailPoet.I18n.t('formPreviewMobileDisclaimer')}
+          {__(
+            'Psssst. Forms on mobile appear smaller automatically because it’s better for SEO.',
+            'mailpoet',
+          )}
         </p>
       )}
     </div>

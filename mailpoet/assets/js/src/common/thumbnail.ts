@@ -1,4 +1,5 @@
 import _ from 'underscore';
+import { __ } from '@wordpress/i18n';
 import { MailPoet } from 'mailpoet';
 import html2canvas from 'html2canvas';
 
@@ -44,12 +45,22 @@ export const fromUrl = (url) =>
         resolve(image);
       } catch (err) {
         document.body.removeChild(iframe);
-        reject(MailPoet.I18n.t('errorWhileTakingScreenshot'));
+        reject(
+          __(
+            'An error occurred while saving the template in "Recently sent"',
+            'mailpoet',
+          ),
+        );
       }
     };
     const onError = () => {
       document.body.removeChild(iframe);
-      reject(MailPoet.I18n.t('errorWhileTakingScreenshot'));
+      reject(
+        __(
+          'An error occurred while saving the template in "Recently sent"',
+          'mailpoet',
+        ),
+      );
     };
     iframe.onerror = onError;
     iframe.onError = onError;

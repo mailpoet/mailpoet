@@ -1,6 +1,6 @@
 import ReactStringReplace from 'react-string-replace';
 import { Button, Loader, TypographyHeading as Heading } from 'common';
-import { MailPoet } from 'mailpoet';
+import { __ } from '@wordpress/i18n';
 import { Grid } from 'common/grid';
 import { SenderDomainEntity } from './manage_sender_domain_types';
 import { DomainKeyComponent } from './domain_key_component';
@@ -11,6 +11,7 @@ type Props = {
   loadingButton: boolean;
   verifyDnsButtonClicked: () => void;
 };
+
 function ManageSenderDomain({
   rows,
   loadingButton,
@@ -27,13 +28,13 @@ function ManageSenderDomain({
 
   return (
     <div>
-      <Heading level={2}>
-        {' '}
-        {MailPoet.I18n.t('manageSenderDomainHeaderTitle')}{' '}
-      </Heading>
+      <Heading level={2}> {__('Manage Sender Domain ', 'mailpoet')} </Heading>
       <p>
         {ReactStringReplace(
-          MailPoet.I18n.t('manageSenderDomainHeaderSubtitle'),
+          __(
+            'To help your audience and MailPoet authenticate you as the domain owner, please add the following DNS records to your domain’s DNS and click “Verify the DNS records”. Please note that it may take up to 24 hours for DNS changes to propagate after you make the change. [link]Read the guide[/link].',
+            'mailpoet',
+          ),
           /\[link](.*?)\[\/link]/g,
           (match) => (
             <a
@@ -54,19 +55,19 @@ function ManageSenderDomain({
           <tr>
             <th className="mailpoet_table_header">
               {' '}
-              {MailPoet.I18n.t('manageSenderDomainTableHeaderType')}{' '}
+              {__('Type', 'mailpoet')}{' '}
             </th>
             <th className="mailpoet_table_header">
               {' '}
-              {MailPoet.I18n.t('manageSenderDomainTableHeaderHost')}{' '}
+              {__('Host', 'mailpoet')}{' '}
             </th>
             <th className="mailpoet_table_header">
               {' '}
-              {MailPoet.I18n.t('manageSenderDomainTableHeaderValue')}{' '}
+              {__('Value', 'mailpoet')}{' '}
             </th>
             <th className="mailpoet_table_header">
               {' '}
-              {MailPoet.I18n.t('manageSenderDomainTableHeaderStatus')}{' '}
+              {__('Status', 'mailpoet')}{' '}
             </th>
           </tr>
         </thead>
@@ -79,7 +80,7 @@ function ManageSenderDomain({
                   name={`dkim_host_${index}`}
                   value={dnsRecord.host}
                   readOnly
-                  tooltip={MailPoet.I18n.t('manageSenderDomainTooltipText')}
+                  tooltip={__('Click here to copy', 'mailpoet')}
                 />
               </td>
               <td>
@@ -87,7 +88,7 @@ function ManageSenderDomain({
                   name={`dkim_value_${index}`}
                   value={dnsRecord.value}
                   readOnly
-                  tooltip={MailPoet.I18n.t('manageSenderDomainTooltipText')}
+                  tooltip={__('Click here to copy', 'mailpoet')}
                 />
               </td>
               <td className="dns_record_type_column">
@@ -102,7 +103,7 @@ function ManageSenderDomain({
         </tbody>
       </table>
       <Button withSpinner={loadingButton} onClick={verifyDnsButtonClicked}>
-        {MailPoet.I18n.t('manageSenderDomainVerifyButton')}
+        {__('Verify the DNS records', 'mailpoet')}
       </Button>
     </div>
   );

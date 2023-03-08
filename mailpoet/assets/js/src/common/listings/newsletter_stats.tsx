@@ -1,4 +1,5 @@
 import { ReactNode } from 'react';
+import { __ } from '@wordpress/i18n';
 import { MailPoet } from 'mailpoet';
 import { StatsBadge } from './newsletter_stats/stats';
 import { Tooltip } from '../tooltip/tooltip';
@@ -63,7 +64,10 @@ export function NewsletterStats({
         </Tag>
         <Tooltip place="top" multiline id={revenuesTooltipId}>
           <div className="mailpoet-listing-stats-tooltip-content">
-            {MailPoet.I18n.t('revenueStatsTooltipShort')}
+            {__(
+              'Revenues by customers who clicked on this email in the last 2 weeks.',
+              'mailpoet',
+            )}
           </div>
         </Tooltip>
       </div>

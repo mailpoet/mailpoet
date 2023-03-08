@@ -1,10 +1,11 @@
 import classnames from 'classnames';
-import { MailPoet } from 'mailpoet';
+import { __ } from '@wordpress/i18n';
 import { useSelector } from 'settings/store/hooks';
 import { PremiumStatus } from 'settings/store/types';
 import { Button } from 'common/button/button';
 
 type ActiveMessageProps = { canUseSuccessClass: boolean };
+
 function ActiveMessage(props: ActiveMessageProps) {
   return (
     <div
@@ -12,7 +13,7 @@ function ActiveMessage(props: ActiveMessageProps) {
         mailpoet_success: props.canUseSuccessClass,
       })}
     >
-      {MailPoet.I18n.t('premiumTabPremiumActiveMessage')}
+      {__('MailPoet Premium is active', 'mailpoet')}
     </div>
   );
 }
@@ -25,11 +26,11 @@ function PremiumNotActiveMessage(props: PremiumNotActiveMessageProps) {
   return (
     <>
       <div className="mailpoet_error mailpoet_install_premium_message">
-        {MailPoet.I18n.t('premiumTabPremiumNotActivatedMessage')}
+        {__('MailPoet Premium is installed but not activated.', 'mailpoet')}
       </div>
       {props.url && (
         <Button href={props.url}>
-          {MailPoet.I18n.t('premiumTabPremiumActivateMessage')}
+          {__('Activate MailPoet Premium plugin', 'mailpoet')}
         </Button>
       )}
     </>
@@ -40,11 +41,11 @@ function PremiumNotInstalledMessage(props: PremiumNotActiveMessageProps) {
   return (
     <>
       <div className="mailpoet_error mailpoet_install_premium_message">
-        {MailPoet.I18n.t('premiumTabPremiumNotInstalledMessage')}
+        {__('MailPoet Premium is not installed.', 'mailpoet')}
       </div>
       {props.url && (
         <Button href={props.url}>
-          {MailPoet.I18n.t('premiumTabPremiumDownloadMessage')}
+          {__('Download MailPoet Premium plugin', 'mailpoet')}
         </Button>
       )}
     </>
@@ -56,7 +57,7 @@ type NotValidMessageProps = { message?: string };
 function NotValidMessage({ message }: NotValidMessageProps) {
   return (
     <div className="mailpoet_error">
-      {message || MailPoet.I18n.t('premiumTabPremiumKeyNotValidMessage')}
+      {message || __('Your key is not valid for MailPoet Premium', 'mailpoet')}
     </div>
   );
 }

@@ -1,5 +1,5 @@
+import { __ } from '@wordpress/i18n';
 import { Button } from 'common/index';
-import { t } from 'common/functions';
 import { Messages } from 'common/premium_key/messages';
 import { MssStatus } from 'settings/store/types';
 import { MailPoet } from 'mailpoet';
@@ -48,7 +48,12 @@ export function KeyActivationButton({
 
   const verifyKey = async () => {
     if (!state.key) {
-      notices.error(<p>{t('premiumTabNoKeyNotice')}</p>, { scroll: true });
+      notices.error(
+        <p>
+          {__('Please specify a license key before validating it.', 'mailpoet')}
+        </p>,
+        { scroll: true },
+      );
       return;
     }
     await setState({

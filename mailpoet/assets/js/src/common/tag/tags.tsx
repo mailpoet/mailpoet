@@ -1,7 +1,7 @@
 import { ReactNode } from 'react';
+import { __ } from '@wordpress/i18n';
 import { Tag, TagVariant } from './tag';
 import { Tooltip } from '../tooltip/tooltip';
-import { MailPoet } from '../../mailpoet';
 
 type SharedTagProps = {
   children?: ReactNode;
@@ -69,7 +69,7 @@ function Tags({ children, tags, dimension, variant, isInverted }: TagProps) {
           <div key={randomId}>
             {item.tooltip && (
               <Tooltip id={tooltipId} place="top">
-                {MailPoet.I18n.t('viewFilteredSubscribersMessage')}
+                {__('View subscribers', 'mailpoet')}
               </Tooltip>
             )}
             <a data-tip="" data-for={tooltipId} href={item.target}>
@@ -103,7 +103,7 @@ function SegmentTags({ children, segments, ...props }: SegmentTagsProps) {
     target: segment.id
       ? `admin.php?page=mailpoet-subscribers#/filter[segment=${segment.id}]`
       : undefined,
-    tooltip: MailPoet.I18n.t('viewFilteredSubscribersMessage'),
+    tooltip: __('View subscribers', 'mailpoet'),
   }));
   return (
     <Tags tags={tags} {...props}>
@@ -122,7 +122,7 @@ function SubscriberTags({
   const tags: TagData[] = subscribers.map((item) => ({
     name: item.name,
     target: `admin.php?page=mailpoet-subscribers#/filter[tag=${item.tag_id}]`,
-    tooltip: MailPoet.I18n.t('viewFilteredSubscribersMessage'),
+    tooltip: __('View subscribers', 'mailpoet'),
   }));
   return (
     <Tags tags={tags} {...props}>
