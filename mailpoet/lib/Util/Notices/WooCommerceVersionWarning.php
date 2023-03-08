@@ -24,7 +24,7 @@ class WooCommerceVersionWarning {
     if (!is_plugin_active('woocommerce/woocommerce.php')) {
       return;
     }
-    $woocommerceVersion = get_plugin_data(WP_PLUGIN_DIR . '/woocommerce/woocommerce.php')['Version'];
+    $woocommerceVersion = $this->wp->getPluginData(WP_PLUGIN_DIR . '/woocommerce/woocommerce.php')['Version'];
     $requiredWooCommerceVersion = $this->getRequiredWooCommerceVersion();
     if ($shouldDisplay && $this->isOutdatedWooCommerceVersion($woocommerceVersion, $requiredWooCommerceVersion)) {
       $this->display($requiredWooCommerceVersion);
