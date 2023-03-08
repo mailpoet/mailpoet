@@ -56,6 +56,7 @@ class EditorCouponCest {
     $i->waitForElement($couponSettingsHeading);
     $i->wantTo('Close coupon settings panel');
     $i->click($couponSettingsDone);
+    $i->waitForElementNotVisible($couponSettingsHeading);
     $i->seeNoJSErrors();
 
     $i->wantTo('Send the email with coupon');
