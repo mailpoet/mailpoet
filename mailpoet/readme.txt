@@ -3,7 +3,7 @@ Contributors: mailpoet
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 5.9
 Tested up to: 6.1
-Stable tag: 4.8.0
+Stable tag: 4.8.1-beta.1
 Requires PHP: 7.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -218,6 +218,8 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+= 4.8.1-beta.1 - 2023-03-08 =
+* Improved: use @wordpress/i18n for for newsletter editor js/ts files
 
 = 4.8.0 - 2023-03-06 =
 * Added: option to run an automation multiple times for the same subscriber;
