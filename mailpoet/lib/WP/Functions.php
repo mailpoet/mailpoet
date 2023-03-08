@@ -867,4 +867,8 @@ class Functions {
   public function getPostMeta(int $postId, string $key, bool $single = false) {
     return get_post_meta($postId, $key, $single);
   }
+
+  public function getFileData(string $file, array $default_headers, string $context = 'plugin'): array {
+    return get_file_data($file, $default_headers, $context);
+  }
 }
