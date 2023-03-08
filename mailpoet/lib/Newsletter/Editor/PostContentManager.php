@@ -63,7 +63,7 @@ class PostContentManager {
       '<a>', '<ul>', '<ol>', '<li>', '<br>', '<blockquote>',
     ];
     if ($displayType === 'full') {
-      $tagsNotBeingStripped = array_merge($tagsNotBeingStripped, ['<figure>', '<img>', '<h1>', '<h2>', '<h3>']);
+      $tagsNotBeingStripped = array_merge($tagsNotBeingStripped, ['<figure>', '<img>', '<h1>', '<h2>', '<h3>', '<hr>']);
     }
 
     if (is_array($content)) {
