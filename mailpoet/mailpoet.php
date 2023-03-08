@@ -28,6 +28,7 @@ $mailpoetPlugin = [
 ];
 
 const MAILPOET_MINIMUM_REQUIRED_WP_VERSION = '5.9';
+const MAILPOET_MINIMUM_REQUIRED_WOOCOMMERCE_VERSION = '6.4';// Older versions lead to fatal errors
 
 function mailpoet_deactivate_plugin() {
   deactivate_plugins(plugin_basename(__FILE__));
@@ -52,6 +53,17 @@ if (version_compare(phpversion(), '7.2.0', '<')) {
   return;
 }
 
+// Check for minimum supported WooCommerce version
+if (function_exists('is_plugin_active') && is_plugin_active('woocommerce/woocommerce.php')) {
+  $woocommerceVersion = get_plugin_data(WP_PLUGIN_DIR . '/woocommerce/woocommerce.php')['Version'];
+  if (version_compare($woocommerceVersion, MAILPOET_MINIMUM_REQUIRED_WOOCOMMERCE_VERSION, '<')) {
+    add_action('admin_notices', 'mailpoet_woocommerce_version_notice');
+    // deactivate the plugin
+    add_action('admin_init', 'mailpoet_deactivate_plugin');
+    return;
+  }
+}
+
 // Display WP version error notice
 function mailpoet_wp_version_notice() {
   $notice = str_replace(
@@ -61,6 +73,32 @@ function mailpoet_wp_version_notice() {
       // translators: %s is the number of minimum WordPress version that MailPoet requires
       __('MailPoet plugin requires WordPress version %s or newer. Please read our [link]instructions[/link] on how to resolve this issue.', 'mailpoet'),
       MAILPOET_MINIMUM_REQUIRED_WP_VERSION
+    )
+  );
+  $notice = str_replace('[/link]', '</a>', $notice);
+  printf(
+    '<div class="error"><p>%1$s</p></div>',
+    wp_kses(
+      $notice,
+      [
+        'a' => [
+          'href' => true,
+          'target' => true,
+        ],
+      ]
+    )
+  );
+}
+
+// Display WooCommerce version error notice
+function mailpoet_woocommerce_version_notice() {
+  $notice = str_replace(
+    '[link]',
+    '<a href="https://kb.mailpoet.com/article/152-minimum-requirements-for-mailpoet-3#woocommerce-version" target="_blank">',
+    sprintf(
+      // translators: %s is the number of minimum WooCommerce version that MailPoet requires
+      __('MailPoet plugin requires WooCommerce version %s or newer. Please update your WooCommerce plugin version, or read our [link]instructions[/link] for additional options on how to resolve this issue.', 'mailpoet'),
+      MAILPOET_MINIMUM_REQUIRED_WOOCOMMERCE_VERSION
     )
   );
   $notice = str_replace('[/link]', '</a>', $notice);
