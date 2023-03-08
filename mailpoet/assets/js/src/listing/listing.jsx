@@ -12,7 +12,7 @@ import { ListingFilters } from 'listing/filters.jsx';
 import { ListingItems } from 'listing/listing_items.jsx';
 import { MailerError } from 'notices/mailer_error';
 import { withRouter } from 'react-router-dom';
-import { GlobalContext } from 'context/index.jsx';
+import { GlobalContext } from 'context';
 import { withBoundary } from '../common';
 
 class ListingComponent extends Component {

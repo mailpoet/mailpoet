@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import { Button } from 'common/button/button';
 import { TemplateBox as TemplateBoxWrap } from 'common/template_box/template_box';
 import { confirmAlert } from 'common/confirm_alert.jsx';
-import { GlobalContext } from 'context/index.jsx';
+import { GlobalContext } from 'context';
 
 /**
  * props = {

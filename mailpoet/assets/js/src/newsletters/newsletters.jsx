@@ -27,7 +27,7 @@ import { NewsletterListNotification } from 'newsletters/listings/notification.js
 import { NewsletterListReEngagement } from 'newsletters/listings/re_engagement.jsx';
 import { NewsletterListNotificationHistory } from 'newsletters/listings/notification_history.jsx';
 import { SendingStatus } from 'newsletters/sending_status.jsx';
-import { GlobalContext, useGlobalContextValue } from 'context/index.jsx';
+import { GlobalContext, useGlobalContextValue } from 'context';
 import { Notices } from 'notices/notices.jsx';
 import { RoutedTabs } from 'common/tabs/routed_tabs';
 import { ErrorBoundary, Tab, withBoundary } from 'common';

@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import { GlobalContext } from 'context/index.jsx';
+import { GlobalContext } from 'context';
 import { withBoundary } from 'common';
 import { Notice } from './notice.tsx';
 

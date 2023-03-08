@@ -9,7 +9,7 @@ import { Button } from 'common/button/button';
 import { Heading } from 'common/typography/heading/heading';
 import { Grid } from 'common/grid';
 import { withRouter } from 'react-router-dom';
-import { GlobalContext } from 'context/index.jsx';
+import { GlobalContext } from 'context';
 
 const field = {
   name: 'options',

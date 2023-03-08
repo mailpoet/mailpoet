@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 import { Background } from 'common/background/background';
 import { Button } from 'common/button/button';
 import { Heading } from 'common/typography/heading/heading';
-import { GlobalContext } from 'context/index.jsx';
+import { GlobalContext } from 'context';
 import { Grid } from 'common/grid';
 import { ListingHeadingStepsRoute } from 'newsletters/listings/heading_steps_route';
 import { EventScheduling } from 'newsletters/automatic_emails/events/event_scheduling.jsx';

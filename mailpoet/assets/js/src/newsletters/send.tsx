@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { ChangeEvent, Component } from 'react';
+import { ChangeEvent, Component, ContextType } from 'react';
 import jQuery from 'jquery';
 import { History, Location } from 'history';
 import ReactStringReplace from 'react-string-replace';
@@ -19,7 +19,7 @@ import { AutomaticEmailFields } from 'newsletters/send/automatic.jsx';
 import { ReEngagementNewsletterFields } from 'newsletters/send/re_engagement';
 import { Tooltip } from 'help-tooltip.jsx';
 import { fromUrl } from 'common/thumbnail';
-import { GlobalContext } from 'context/index.jsx';
+import { GlobalContext } from 'context';
 
 import { extractEmailDomain } from 'common/functions';
 import { NewsLetter, NewsletterType } from 'common/newsletter';
@@ -130,6 +130,9 @@ class NewsletterSendComponent extends Component<
   NewsletterSendComponentProps,
   NewsletterSendComponentState
 > {
+  // eslint-disable-next-line react/static-property-placement
+  declare context: ContextType<typeof GlobalContext>;
+
   constructor(props: Readonly<NewsletterSendComponentProps>) {
     super(props);
     this.state = {

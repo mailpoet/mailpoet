@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 
 import { Background } from 'common/background/background';
 import { Categories } from 'common/categories/categories';
-import { GlobalContext } from 'context/index.jsx';
+import { GlobalContext } from 'context';
 import { ListingHeadingStepsRoute } from 'newsletters/listings/heading_steps_route';
 import { Loading } from 'common/loading.jsx';
 import { MailPoet } from 'mailpoet';

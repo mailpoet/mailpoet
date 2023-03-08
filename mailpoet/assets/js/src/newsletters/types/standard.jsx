@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { ListingHeadingStepsRoute } from 'newsletters/listings/heading_steps_route';
 import { MailPoet } from 'mailpoet';
 import { withRouter } from 'react-router-dom';
-import { GlobalContext } from 'context/index.jsx';
+import { GlobalContext } from 'context';
 
 class NewsletterStandardComponent extends Component {
   componentDidMount() {

@@ -1,6 +1,6 @@
 import ReactDOM from 'react-dom';
 import { HashRouter, Route } from 'react-router-dom';
-import { GlobalContext, useGlobalContextValue } from 'context/index.jsx';
+import { GlobalContext, useGlobalContextValue } from 'context';
 import { Notices } from 'notices/notices.jsx';
 import { withBoundary } from 'common';
 import { FormList } from './list.jsx';

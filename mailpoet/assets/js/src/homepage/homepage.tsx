@@ -1,7 +1,7 @@
 import ReactDOM from 'react-dom';
 import { useEffect, useState } from 'react';
 import { ErrorBoundary } from 'common';
-import { GlobalContext, useGlobalContextValue } from 'context/index.jsx';
+import { GlobalContext, useGlobalContextValue } from 'context';
 import { TopBarWithBeamer } from 'common/top_bar/top_bar';
 import { HomepageNotices } from 'homepage/notices';
 import { HomepageSections } from './components/homepage-sections';

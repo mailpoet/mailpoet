@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import { HashRouter, Redirect, Route, Switch } from 'react-router-dom';
 import { ScrollToTop } from 'common/scroll_to_top.jsx';
 
-import { GlobalContext, useGlobalContextValue } from 'context/index.jsx';
+import { GlobalContext, useGlobalContextValue } from 'context';
 import { Notices } from 'notices/notices.jsx';
 import { withBoundary } from 'common';
 import { StepMethodSelection } from './import/step_method_selection.jsx';

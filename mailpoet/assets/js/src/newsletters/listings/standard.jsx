@@ -15,7 +15,7 @@ import {
   checkMailerStatus,
 } from 'newsletters/listings/utils.jsx';
 import { NewsletterTypes } from 'newsletters/types';
-import { GlobalContext } from 'context/index.jsx';
+import { GlobalContext } from 'context';
 import { ErrorBoundary, withBoundary } from '../../common';
 
 const mailpoetTrackingEnabled = MailPoet.trackingConfig.emailTrackingEnabled;

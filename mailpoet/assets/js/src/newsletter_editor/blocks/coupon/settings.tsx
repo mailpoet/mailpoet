@@ -1,6 +1,6 @@
 import { SelectControl } from '@wordpress/components';
 import { ErrorBoundary } from 'common';
-import { GlobalContext, useGlobalContextValue } from 'context/index.jsx';
+import { GlobalContext, useGlobalContextValue } from 'context';
 import { useState } from 'react';
 import { ExistingCoupons, Coupon } from './existingCoupons';
 import { General } from './general';
