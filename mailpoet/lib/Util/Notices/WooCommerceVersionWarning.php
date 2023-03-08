@@ -8,7 +8,7 @@ use MailPoet\WP\Functions as WPFunctions;
 use MailPoet\WP\Notice;
 
 class WooCommerceVersionWarning {
-  const OPTION_NAME = 'dismissed-woo-version-outdated-notice';
+  const OPTION_NAME = 'mailpoet-dismissed-woo-version-outdated-notice';
   const DISMISS_NOTICE_TIMEOUT_SECONDS = 2592000; // 30 days
 
   /** @var WPFunctions */
@@ -32,7 +32,7 @@ class WooCommerceVersionWarning {
   }
 
   public function isOutdatedWooCommerceVersion($woocommerceVersion, $requiredWooCommerceVersion): bool {
-    return version_compare($woocommerceVersion, $requiredWooCommerceVersion, '<') && !get_transient(self::OPTION_NAME);
+    return version_compare($woocommerceVersion, $requiredWooCommerceVersion, '<') && !$this->wp->getTransient($this->getTransientKey());
   }
 
   private function display($requiredWooCommerceVersion) {
@@ -49,7 +49,12 @@ class WooCommerceVersionWarning {
   }
 
   public function disable() {
-    $this->wp->setTransient(self::OPTION_NAME, true, self::DISMISS_NOTICE_TIMEOUT_SECONDS);
+    $this->wp->setTransient($this->getTransientKey(), true, self::DISMISS_NOTICE_TIMEOUT_SECONDS);
+  }
+
+  private function getTransientKey() {
+    $woocommerceVersion = $this->wp->getPluginData(WP_PLUGIN_DIR . '/woocommerce/woocommerce.php')['Version'];
+    return self::OPTION_NAME . '_' . $this->getRequiredWooCommerceVersion() . '_' . $woocommerceVersion;
   }
 
   private function getRequiredWooCommerceVersion(): string {
