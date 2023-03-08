@@ -102,8 +102,8 @@ class Newsletters {
     $data['current_date_time'] = $dateTime->getCurrentDateTime()->format(DateTime::DEFAULT_DATE_TIME_FORMAT);
     $data['schedule_time_of_day'] = $dateTime->getTimeInterval(
       '00:00:00',
-      '+1 hour',
-      24
+      '+15 minutes',
+      96
     );
     $data['mailpoet_emails_page'] = $this->wp->adminUrl('admin.php?page=' . Menu::EMAILS_PAGE_SLUG);
     $data['show_congratulate_after_first_newsletter'] = isset($data['settings']['show_congratulate_after_first_newsletter']) ? $data['settings']['show_congratulate_after_first_newsletter'] : 'false';
