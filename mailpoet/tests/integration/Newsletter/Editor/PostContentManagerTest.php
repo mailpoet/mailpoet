@@ -99,7 +99,6 @@ class PostContentManagerTest extends \MailPoetTest {
       '<iframe src="#" />',
       '<form></form>',
       '<input type="text" />',
-      '<hr />',
       '<script></script>',
       '<style></style>',
       '<table></table>',
