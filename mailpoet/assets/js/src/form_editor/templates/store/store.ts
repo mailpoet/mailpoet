@@ -2,7 +2,7 @@
  * The store is implemented using @wordpress/data module
  * @see https://developer.wordpress.org/block-editor/packages/packages-data/
  */
-import { registerStore } from '@wordpress/data';
+import { createReduxStore, register } from '@wordpress/data';
 import { selectors } from './selectors';
 import { createReducer } from './reducer';
 import * as actions from './actions';
@@ -17,7 +17,9 @@ interface StoreWindow extends Window {
 
 declare let window: StoreWindow;
 
-export const initStore = (): void => {
+const storeName = 'mailpoet-form-editor-templates';
+
+export const createStore = () => {
   const defaultState: StateType = {
     templates: window.mailpoet_templates,
     formEditorUrl: window.mailpoet_form_edit_url,
@@ -34,5 +36,12 @@ export const initStore = (): void => {
     resolvers: {},
   };
 
-  registerStore('mailpoet-form-editor-templates', config);
+  const store = createReduxStore(storeName, config);
+  register(store);
+  return store;
+};
+
+export const store: ReturnType<typeof createStore> = {
+  name: storeName,
+  instantiate: (registry) => createStore().instantiate(registry),
 };

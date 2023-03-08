@@ -8,6 +8,7 @@ import { Heading } from 'common/typography/heading/heading';
 import { Button } from 'common';
 import { Notice } from 'notices/notice';
 import { TemplateData } from './store/types';
+import { store } from './store/store';
 
 export function Selection(): JSX.Element {
   const categories = [
@@ -34,29 +35,26 @@ export function Selection(): JSX.Element {
   ];
 
   const selectedCategory: string = useSelect(
-    (select) => select('mailpoet-form-editor-templates').getSelectedCategory(),
+    (select) => select(store).getSelectedCategory(),
     [],
   );
 
   const templates: TemplateData = useSelect(
-    (select) => select('mailpoet-form-editor-templates').getTemplates(),
+    (select) => select(store).getTemplates(),
     [],
   );
 
   const loading: boolean = useSelect(
-    (select) => select('mailpoet-form-editor-templates').getLoading(),
+    (select) => select(store).getLoading(),
     [],
   );
 
   const selectTemplateFailed: boolean = useSelect(
-    (select) =>
-      select('mailpoet-form-editor-templates').getSelectTemplateFailed(),
+    (select) => select(store).getSelectTemplateFailed(),
     [],
   );
 
-  const { selectTemplate, selectCategory } = useDispatch(
-    'mailpoet-form-editor-templates',
-  );
+  const { selectTemplate, selectCategory } = useDispatch(store);
   return (
     <>
       {categories.map((category) =>
