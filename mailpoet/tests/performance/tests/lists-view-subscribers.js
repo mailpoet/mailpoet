@@ -3,7 +3,7 @@
 /**
  * External dependencies
  */
-import { sleep, check, group } from 'k6';
+import { sleep, check } from 'k6';
 import { chromium } from 'k6/experimental/browser';
 import { randomIntBetween } from 'https://jslib.k6.io/k6-utils/1.1.0/index.js';
 
@@ -21,64 +21,57 @@ import {
 import { authenticate } from '../utils/helpers.js';
 /* global Promise */
 
-export function listsViewSubscribers() {
+export async function listsViewSubscribers() {
   const browser = chromium.launch({
     headless: headlessSet,
     timeout: timeoutSet,
   });
   const page = browser.newPage();
 
-  group('Lists - View subscribers of a list', () => {
-    page
-      .goto(`${baseURL}/wp-admin/admin.php?page=mailpoet-segments#/lists`, {
+  try {
+    // Go to the page
+    await page.goto(
+      `${baseURL}/wp-admin/admin.php?page=mailpoet-segments#/lists`,
+      {
         waitUntil: 'networkidle',
-      })
+      },
+    );
 
-      .then(() => {
-        authenticate(page);
-      })
+    // Log in to WP Admin
+    authenticate(page);
 
-      .then(() => {
-        return Promise.all([
-          page.waitForNavigation({ waitUntil: 'networkidle' }),
-        ]);
-      })
+    // Wait for async actions
+    await Promise.all([page.waitForNavigation({ waitUntil: 'networkidle' })]);
 
-      .then(() => {
-        page.waitForSelector('[data-automation-id="dynamic-segments-tab"]');
-        check(page, {
-          'segments tab is visible': page
-            .locator('[data-automation-id="dynamic-segments-tab"]')
-            .isVisible(),
-        });
-      })
+    // Click to view subscribers of the default list "Newsletter mailing list"
+    page.waitForSelector('[data-automation-id="dynamic-segments-tab"]');
+    check(page, {
+      'segments tab is visible': page
+        .locator('[data-automation-id="dynamic-segments-tab"]')
+        .isVisible(),
+    });
+    page
+      .locator('[data-automation-id="segment_name_' + defaultListName + '"]')
+      .hover();
+    page
+      .locator(
+        '[data-automation-id="view_subscribers_' + defaultListName + '"]',
+      )
+      .click();
 
-      .then(() => {
-        page
-          .locator(
-            '[data-automation-id="segment_name_' + defaultListName + '"]',
-          )
-          .hover();
-        page
-          .locator(
-            '[data-automation-id="view_subscribers_' + defaultListName + '"]',
-          )
-          .click();
-        page.waitForSelector('.mailpoet-listing-no-items');
-        page.waitForSelector('[data-automation-id="filters_subscribed"]');
-        check(page, {
-          'subscribers filter is visible': page
-            .locator('[data-automation-id="listing_filter_segment"]')
-            .isVisible(),
-        });
-        page.waitForLoadState('networkidle');
-      })
-
-      .finally(() => {
-        page.close();
-        browser.close();
-      });
-  });
+    // Wait for the page to load
+    page.waitForSelector('.mailpoet-listing-no-items');
+    page.waitForSelector('[data-automation-id="filters_subscribed"]');
+    check(page, {
+      'subscribers filter is visible': page
+        .locator('[data-automation-id="listing_filter_segment"]')
+        .isVisible(),
+    });
+    page.waitForLoadState('networkidle');
+  } finally {
+    page.close();
+    browser.close();
+  }
 
   sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
 }
