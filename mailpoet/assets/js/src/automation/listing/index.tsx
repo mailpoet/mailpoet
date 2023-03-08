@@ -6,7 +6,7 @@ import { useCallback, useEffect, useLayoutEffect, useMemo } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import { plusIcon } from 'common/button/icon/plus';
 import { getRow } from './get-row';
-import { storeName } from './store';
+import { store } from './store';
 import { Automation, AutomationStatus } from './automation';
 import { MailPoet } from '../../mailpoet';
 
@@ -68,8 +68,8 @@ export function AutomationListing(): JSX.Element {
     [location],
   );
 
-  const automations = useSelect((select) => select(storeName).getAutomations());
-  const { loadAutomations } = useDispatch(storeName);
+  const automations = useSelect((select) => select(store).getAutomations());
+  const { loadAutomations } = useDispatch(store);
 
   const status = pageSearch.get('status');
 

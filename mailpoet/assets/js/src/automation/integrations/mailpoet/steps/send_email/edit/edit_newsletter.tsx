@@ -3,7 +3,7 @@ import { __ } from '@wordpress/i18n';
 import { plus } from '@wordpress/icons';
 import { useCallback, useEffect, useState } from 'react';
 import { Button } from '../../../components/button';
-import { storeName } from '../../../../../editor/store';
+import { store } from '../../../../../editor/store';
 import { MailPoet } from '../../../../../../mailpoet';
 
 const emailPreviewLinkCache = {};
@@ -33,12 +33,10 @@ export function EditNewsletter(): JSX.Element {
 
   const { selectedStep, automationId, automationSaved, errors } = useSelect(
     (select) => ({
-      selectedStep: select(storeName).getSelectedStep(),
-      automationId: select(storeName).getAutomationData().id,
-      automationSaved: select(storeName).getAutomationSaved(),
-      errors: select(storeName).getStepError(
-        select(storeName).getSelectedStep().id,
-      ),
+      selectedStep: select(store).getSelectedStep(),
+      automationId: select(store).getAutomationData().id,
+      automationSaved: select(store).getAutomationSaved(),
+      errors: select(store).getStepError(select(store).getSelectedStep().id),
     }),
     [],
   );
@@ -64,13 +62,13 @@ export function EditNewsletter(): JSX.Element {
       },
     });
 
-    dispatch(storeName).updateStepArgs(
+    dispatch(store).updateStepArgs(
       automationStepId,
       'email_id',
       parseInt(response.data.id as string, 10),
     );
 
-    dispatch(storeName).save();
+    dispatch(store).save();
   }, [automationId, automationStepId]);
 
   // This component is rendered only when no email ID is set. Once we have the ID

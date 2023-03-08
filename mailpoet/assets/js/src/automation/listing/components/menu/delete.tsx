@@ -3,12 +3,12 @@ import { __experimentalConfirmDialog as ConfirmDialog } from '@wordpress/compone
 import { useDispatch } from '@wordpress/data';
 import { __, sprintf } from '@wordpress/i18n';
 import { Item } from './item';
-import { storeName } from '../../store';
+import { store } from '../../store';
 import { Automation, AutomationStatus } from '../../automation';
 
 export const useDeleteButton = (automation: Automation): Item | undefined => {
   const [showDialog, setShowDialog] = useState(false);
-  const { deleteAutomation } = useDispatch(storeName);
+  const { deleteAutomation } = useDispatch(store);
 
   if (automation.status !== AutomationStatus.TRASH) {
     return undefined;

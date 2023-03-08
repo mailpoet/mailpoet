@@ -1,13 +1,13 @@
 import { PanelBody } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
-import { storeName } from '../../../store';
+import { store } from '../../../store';
 import { StepCard } from '../../step-card';
 
 export function StepSidebar(): JSX.Element {
   const { selectedStep, selectedStepType } = useSelect(
     (select) => ({
-      selectedStep: select(storeName).getSelectedStep(),
-      selectedStepType: select(storeName).getSelectedStepType(),
+      selectedStep: select(store).getSelectedStep(),
+      selectedStepType: select(store).getSelectedStepType(),
     }),
     [],
   );

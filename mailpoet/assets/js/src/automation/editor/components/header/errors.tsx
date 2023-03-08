@@ -15,7 +15,7 @@ import { ColoredIcon } from '../icons';
 import {
   StepErrors as StepErrorType,
   stepSidebarKey,
-  storeName,
+  store,
 } from '../../store';
 
 // properties "offset" and "placement" are missing in WpPopover type definition
@@ -38,13 +38,13 @@ function StepError({ stepId }: StepErrorProps): JSX.Element {
 
   const { steps, automationData } = useSelect(
     (select) => ({
-      steps: select(storeName).getSteps(),
-      automationData: select(storeName).getAutomationData(),
+      steps: select(store).getSteps(),
+      automationData: select(store).getAutomationData(),
     }),
     [],
   );
 
-  const { openSidebar, selectStep } = useDispatch(storeName);
+  const { openSidebar, selectStep } = useDispatch(store);
 
   const stepData = automationData.steps[stepId];
   const step = steps.find(({ key }) => key === stepData.key);
@@ -83,8 +83,8 @@ export function Errors(): JSX.Element | null {
 
   const { errors, automationData } = useSelect(
     (select) => ({
-      errors: select(storeName).getErrors(),
-      automationData: select(storeName).getAutomationData(),
+      errors: select(store).getErrors(),
+      automationData: select(store).getAutomationData(),
     }),
     [],
   );

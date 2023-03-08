@@ -4,22 +4,21 @@ import { useDispatch, useSelect } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
 import { PremiumModal } from 'common/premium_modal';
 import { Hooks } from 'wp-js-hooks';
-import { storeName } from '../../../../../editor/store';
+import { store } from '../../../../../editor/store';
 import { GoogleAnalyticsPanelBodyType } from '../../../types/filters';
 import { PanelBody } from '../../../../../editor/components/panel/panel-body';
 
 export function GoogleAnalyticsPanel(): JSX.Element {
   const { selectedStep, errors } = useSelect(
     (select) => ({
-      selectedStep: select(storeName).getSelectedStep(),
-      errors: select(storeName).getStepError(
-        select(storeName).getSelectedStep().id,
-      )?.fields?.ga_campaign,
+      selectedStep: select(store).getSelectedStep(),
+      errors: select(store).getStepError(select(store).getSelectedStep().id)
+        ?.fields?.ga_campaign,
     }),
     [],
   );
 
-  const { updateStepArgs } = useDispatch(storeName);
+  const { updateStepArgs } = useDispatch(store);
 
   const hasValue = typeof selectedStep.args?.ga_campaign !== 'undefined';
   const [enabled, setEnabled] = useState(hasValue);

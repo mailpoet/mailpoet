@@ -5,10 +5,9 @@
 
 import { Dispatch, SetStateAction } from 'react';
 import { DropdownMenu } from '@wordpress/components';
-import { StoreConfig } from '@wordpress/data';
 import { Item } from '../editor/components/inserter/item';
 import { Step } from '../editor/components/automation/types';
-import { State } from '../editor/store/types';
+import { EditorStoreConfig } from '../editor/store';
 
 interface ControlWithSetIsBusy extends Omit<DropdownMenu.Control, 'onClick'> {
   onClick: (setIsBusy?: Dispatch<SetStateAction<boolean>>) => void;
@@ -37,7 +36,7 @@ export type RenderStepType = (step: Step) => JSX.Element;
 export type RenderStepSeparatorType = (step: Step) => JSX.Element;
 
 // mailpoet.automation.editor.create_store
-export type EditorStoreConfigType = StoreConfig<State>;
+export type EditorStoreConfigType = EditorStoreConfig;
 
 // mailpoet.automation.templates.from_scratch_button
 export type FromScratchHookType = (errorHandler: Dispatch<string>) => void;

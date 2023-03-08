@@ -3,13 +3,13 @@ import { useDispatch, useSelect } from '@wordpress/data';
 import { Button, Spinner } from '@wordpress/components';
 import { closeSmall } from '@wordpress/icons';
 import { __, sprintf } from '@wordpress/i18n';
-import { storeName } from '../../store';
+import { store } from '../../store';
 import { AutomationStatus } from '../../../listing/automation';
 import { MailPoet } from '../../../../mailpoet';
 
 function PreStep({ onClose }): JSX.Element {
   const [isActivating, setIsActivating] = useState(false);
-  const { activate } = useDispatch(storeName);
+  const { activate } = useDispatch(store);
 
   return (
     <>
@@ -60,7 +60,7 @@ function PreStep({ onClose }): JSX.Element {
 function PostStep({ onClose }): JSX.Element {
   const { automation } = useSelect(
     (select) => ({
-      automation: select(storeName).getAutomationData(),
+      automation: select(store).getAutomationData(),
     }),
     [],
   );
@@ -103,13 +103,13 @@ function PostStep({ onClose }): JSX.Element {
 export function ActivatePanel(): JSX.Element {
   const { automation, errors } = useSelect(
     (select) => ({
-      errors: select(storeName).getErrors(),
-      automation: select(storeName).getAutomationData(),
+      errors: select(store).getErrors(),
+      automation: select(store).getAutomationData(),
     }),
     [],
   );
 
-  const { closeActivationPanel } = useDispatch(storeName);
+  const { closeActivationPanel } = useDispatch(store);
 
   useEffect(() => {
     if (errors) {

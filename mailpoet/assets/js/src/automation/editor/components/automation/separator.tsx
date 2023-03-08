@@ -1,13 +1,13 @@
 import { dispatch } from '@wordpress/data';
 import { AddStepButton } from './add-step-button';
-import { storeName } from '../../store';
+import { store } from '../../store';
 
 type Props = {
   previousStepId: string;
 };
 
 export function Separator({ previousStepId }: Props): JSX.Element {
-  const { setInserterPopover } = dispatch(storeName);
+  const { setInserterPopover } = dispatch(store);
 
   return (
     <div className="mailpoet-automation-editor-separator">

@@ -3,7 +3,7 @@ import { displayShortcut } from '@wordpress/keycodes';
 import { __, _x } from '@wordpress/i18n';
 import { MoreMenuDropdown } from '@wordpress/interface';
 import { PreferenceToggleMenuItem } from '@wordpress/preferences';
-import { storeName } from '../../store';
+import { store } from '../../store';
 import { MailPoet } from '../../../../mailpoet';
 
 // See:
@@ -22,7 +22,7 @@ export function MoreMenu(): JSX.Element {
         <>
           <MenuGroup label={_x('View', 'noun', 'mailpoet')}>
             <PreferenceToggleMenuItem
-              scope={storeName}
+              scope={store.name}
               name="fullscreenMode"
               label={__('Fullscreen mode', 'mailpoet')}
               info={__('Work without distraction', 'mailpoet')}

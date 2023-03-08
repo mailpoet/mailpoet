@@ -2,7 +2,7 @@ import apiFetch, { APIFetchOptions } from '@wordpress/api-fetch';
 import { dispatch, StoreDescriptor } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
 import { store as noticesStore } from '@wordpress/notices';
-import { storeName } from './store';
+import { store } from './store';
 import { ApiError } from '../api';
 
 export const registerApiErrorHandler = (): void =>
@@ -20,7 +20,7 @@ export const registerApiErrorHandler = (): void =>
         const code = errorObject.code;
 
         if (code === 'mailpoet_automation_not_valid') {
-          dispatch(storeName).setErrors({ steps: errorObject.data.errors });
+          dispatch(store).setErrors({ steps: errorObject.data.errors });
           return undefined;
         }
 
@@ -30,7 +30,7 @@ export const registerApiErrorHandler = (): void =>
             message ?? __('An unknown error occurred.', 'mailpoet'),
             { explicitDismiss: true },
           );
-          dispatch(storeName).setErrors({ steps: [] });
+          dispatch(store).setErrors({ steps: [] });
           return undefined;
         }
 

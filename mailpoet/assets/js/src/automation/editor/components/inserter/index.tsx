@@ -9,7 +9,7 @@ import { Item } from './item';
 import { StepInfoPanel } from './step_info_panel';
 import { StepList } from './step_list';
 import { InserterListbox } from '../inserter-listbox';
-import { storeName } from '../../store';
+import { store } from '../../store';
 
 // See: https://github.com/WordPress/gutenberg/blob/628ae68152f572d0b395bb15c0f71b8821e7f130/packages/block-editor/src/components/inserter/menu.js
 
@@ -30,8 +30,8 @@ export const Inserter = forwardRef(
 
     const { steps, type } = useSelect(
       (select) => ({
-        steps: select(storeName).getSteps(),
-        type: select(storeName).getInserterPopover().type,
+        steps: select(store).getSteps(),
+        type: select(store).getInserterPopover().type,
       }),
       [],
     );
