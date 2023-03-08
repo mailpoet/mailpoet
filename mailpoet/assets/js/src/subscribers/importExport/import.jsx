@@ -5,7 +5,7 @@ import { ScrollToTop } from 'common/scroll_to_top.jsx';
 
 import { GlobalContext, useGlobalContextValue } from 'context';
 import { Notices } from 'notices/notices.jsx';
-import { withBoundary } from 'common';
+import { registerTranslations, withBoundary } from 'common';
 import { StepMethodSelection } from './import/step_method_selection.jsx';
 import { StepInputValidation } from './import/step_input_validation.jsx';
 import { StepDataManipulation } from './import/step_data_manipulation.jsx';
@@ -85,5 +85,6 @@ function ImportSubscribers() {
 }
 
 if (container) {
+  registerTranslations();
   ReactDOM.render(<ImportSubscribers />, container);
 }

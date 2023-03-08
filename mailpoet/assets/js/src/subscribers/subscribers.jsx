@@ -6,7 +6,7 @@ import { SubscriberForm } from 'subscribers/form.jsx';
 import { SubscriberStats } from 'subscribers/stats';
 import { GlobalContext, useGlobalContextValue } from 'context';
 import { Notices } from 'notices/notices.jsx';
-import { withBoundary } from 'common';
+import { registerTranslations, withBoundary } from 'common';
 
 function App() {
   return (
@@ -30,5 +30,6 @@ function App() {
 const container = document.getElementById('subscribers_container');
 
 if (container) {
+  registerTranslations();
   ReactDOM.render(<App />, container);
 }

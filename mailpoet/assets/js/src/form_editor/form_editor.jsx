@@ -10,6 +10,7 @@ import { initHooks } from './hooks';
 import { initTranslations } from './translations';
 import { initRichText } from './rich_text/init.ts';
 import './template_selection';
+import { registerTranslations } from '../common';
 
 function App() {
   return (
@@ -33,6 +34,7 @@ window.addEventListener('DOMContentLoaded', () => {
     initBlocks();
     initRichText();
     initTranslations(window.mailpoet_translations);
+    registerTranslations();
     ReactDOM.render(
       <StrictMode>
         <App />
