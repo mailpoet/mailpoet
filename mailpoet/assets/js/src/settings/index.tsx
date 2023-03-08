@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import { GlobalContext, useGlobalContextValue } from 'context';
 import { initStore } from './store';
 import { Settings } from './settings';
+import { registerTranslations } from '../common';
 
 function Entry() {
   return (
@@ -14,6 +15,7 @@ function Entry() {
 
 const container = document.getElementById('settings_container');
 if (container) {
+  registerTranslations();
   initStore();
   ReactDOM.render(<Entry />, container);
 }

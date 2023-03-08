@@ -1,6 +1,6 @@
 import ReactDOM from 'react-dom';
 import { useEffect, useState } from 'react';
-import { ErrorBoundary } from 'common';
+import { ErrorBoundary, registerTranslations } from 'common';
 import { GlobalContext, useGlobalContextValue } from 'context';
 import { TopBarWithBeamer } from 'common/top_bar/top_bar';
 import { HomepageNotices } from 'homepage/notices';
@@ -24,6 +24,7 @@ function App(): JSX.Element {
 
 const container = document.getElementById('mailpoet_homepage_container');
 if (container) {
+  registerTranslations();
   ReactDOM.render(
     <ErrorBoundary>
       <App />

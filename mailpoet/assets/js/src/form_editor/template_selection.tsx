@@ -4,6 +4,7 @@ import { GlobalContext, useGlobalContextValue } from 'context';
 import { Notices } from 'notices/notices.jsx';
 import { Selection } from './templates/selection';
 import { createStore } from './templates/store/store';
+import { registerTranslations } from '../common';
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
 
 const appElement = document.querySelector('#mailpoet_form_edit_templates');
 if (appElement) {
+  registerTranslations();
   createStore();
   ReactDOM.render(
     <StrictMode>

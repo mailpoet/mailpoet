@@ -7,7 +7,7 @@ import { YourPrivacy } from 'help/your_privacy.jsx';
 import { GlobalContext, useGlobalContextValue } from 'context';
 import { Notices } from 'notices/notices.jsx';
 import { RoutedTabs } from '../common/tabs/routed_tabs';
-import { Tab } from '../common';
+import { registerTranslations, Tab } from '../common';
 import { TopBar } from '../common/top_bar/top_bar';
 
 function App() {
@@ -39,5 +39,6 @@ function App() {
 const container = document.getElementById('help_container');
 
 if (container) {
+  registerTranslations();
   ReactDOM.render(<App />, container);
 }
