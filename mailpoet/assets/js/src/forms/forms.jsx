@@ -2,7 +2,7 @@ import ReactDOM from 'react-dom';
 import { HashRouter, Route } from 'react-router-dom';
 import { GlobalContext, useGlobalContextValue } from 'context/index.jsx';
 import { Notices } from 'notices/notices.jsx';
-import { withBoundary } from 'common';
+import { registerTranslations, withBoundary } from 'common';
 import { FormList } from './list.jsx';
 
 function App() {
@@ -19,5 +19,6 @@ function App() {
 const container = document.getElementById('forms_container');
 
 if (container) {
+  registerTranslations();
   ReactDOM.render(<App />, container);
 }

@@ -1,6 +1,6 @@
 import ReactDOM from 'react-dom';
 import { GlobalContext, useGlobalContextValue } from 'context/index.jsx';
-import { ErrorBoundary } from 'common';
+import { ErrorBoundary, registerTranslations } from 'common';
 import { Background } from 'common/background/background';
 import { HideScreenOptions } from 'common/hide_screen_options/hide_screen_options';
 import { TopBarWithBeamer } from 'common/top_bar/top_bar';
@@ -33,6 +33,7 @@ function Landingpage() {
     </GlobalContext.Provider>
   );
 }
+
 Landingpage.displayName = 'Landingpage';
 
 const landingpageContainer = document.getElementById(
@@ -40,6 +41,7 @@ const landingpageContainer = document.getElementById(
 );
 
 if (landingpageContainer) {
+  registerTranslations();
   ReactDOM.render(
     <ErrorBoundary>
       <Landingpage />

@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import { MailPoet } from 'mailpoet';
 import { GlobalContext, useGlobalContextValue } from 'context/index.jsx';
 import { Notices } from 'notices/notices.jsx';
-import { ErrorBoundary } from 'common';
+import { ErrorBoundary, registerTranslations } from 'common';
 
 function ExperimentalFeatures() {
   const [flags, setFlags] = useState(null);
@@ -111,6 +111,7 @@ const experimentalFeaturesContainer = document.getElementById(
 ExperimentalFeatures.displayName = 'ExperimentalFeatures';
 
 if (experimentalFeaturesContainer) {
+  registerTranslations();
   ReactDOM.render(
     <ErrorBoundary>
       <ExperimentalFeatures />

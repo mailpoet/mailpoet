@@ -182,7 +182,8 @@ EOL;
   }
 
   public function setupAdminPagesDependencies(): void {
-
+    $this->wp->wpPrintScripts('wp-i18n');
+    $this->addAdminCommons();
     $this->wp->wpEnqueueScript(
       'mailpoet_admin_pages',
       Env::$assetsUrl . '/dist/js/' . $this->renderer->getJsAsset('admin.js'),
@@ -191,5 +192,23 @@ EOL;
       true
     );
     $this->wp->wpSetScriptTranslations('mailpoet_admin_pages', 'mailpoet');
+  }
+
+  private function addAdminCommons(): void {
+    $this->wp->wpRegisterScript(
+      'mailpoet_admin_commons',
+      Env::$assetsUrl . '/dist/js/' . $this->renderer->getJsAsset('commons.js'),
+      [],
+      Env::$version,
+      true
+    );
+    $this->wp->wpSetScriptTranslations('mailpoet_admin_commons', 'mailpoet');
+
+
+    /**
+     * The js file needs to be added immediately since the mailpoet_newsletters_editor_initialize hook is dispatched in template files
+     * Update and remove this line in MAILPOET-4930
+     */
+    \wp_scripts()->do_item('mailpoet_admin_commons');
   }
 }

@@ -8,7 +8,7 @@ import { SegmentList } from 'segments/list.jsx';
 import { SegmentForm } from 'segments/form.jsx';
 import { GlobalContext, useGlobalContextValue } from 'context/index.jsx';
 import { Notices } from 'notices/notices.jsx';
-import { withBoundary } from 'common';
+import { registerTranslations, withBoundary } from 'common';
 import { Editor } from './dynamic/editor';
 import { DynamicSegmentList } from './dynamic/list.jsx';
 import { ListHeading } from './heading';
@@ -62,5 +62,6 @@ function App() {
 }
 
 if (container) {
+  registerTranslations();
   ReactDOM.render(<App />, container);
 }
