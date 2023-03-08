@@ -1,9 +1,15 @@
 import { ComponentProps, ComponentType } from 'react';
 import { ColorPalette, FontSizePicker } from '@wordpress/components';
 import { ConfirmDialog } from '@wordpress/components/build-types/confirm-dialog';
-import { store as interfaceStore } from '@wordpress/interface';
-import { store as keyboardShortcutsStore } from '@wordpress/keyboard-shortcuts';
-import { store as preferencesStore } from '@wordpress/preferences';
+import {
+  ActionCreatorsOf,
+  AnyConfig,
+  ConfigOf,
+  CurriedSelectorsOf,
+  MapSelect,
+  StoreDescriptor as GenericStoreDescriptor,
+  UseSelectReturn,
+} from '@wordpress/data/build-types/types';
 
 /* eslint-disable-next-line import/no-extraneous-dependencies -- we're only defining types here  */
 import {
@@ -67,39 +73,26 @@ declare module '@wordpress/components' {
   export const ToolbarItem: any;
 }
 
+// fix and improve some @wordpress/data types
 declare module '@wordpress/data' {
-  type InterfaceStore = 'core/interface' | typeof interfaceStore;
+  export function select<T extends GenericStoreDescriptor<AnyConfig>>(
+    store: T,
+  ): CurriedSelectorsOf<T>;
 
-  type KeyboardShortcutsStore =
-    | 'core/keyboard-shortcuts'
-    | typeof keyboardShortcutsStore.name;
+  export function dispatch<T extends GenericStoreDescriptor<any>>(
+    store: T,
+  ): ActionCreatorsOf<ConfigOf<T>>;
 
-  type PreferencesStore = 'core/preferences' | typeof preferencesStore;
-
-  // there are no @types/wordpress__interface yet
-  function select(key: InterfaceStore): {
-    getActiveComplementaryArea: (scope: string) => string | undefined | null;
-  };
-
-  // there are no @types/wordpress__keyboard-shortcuts yet
-  function select(key: KeyboardShortcutsStore): {
-    getShortcutRepresentation: (scope: string) => unknown;
-  };
-
-  // there are no @types/wordpress__preferences yet
-  function select(key: PreferencesStore): {
-    get: <T>(scope: string, name: string) => T;
-  };
-
-  // there are no @types/wordpress__keyboard-shortcuts yet
-  function dispatch(key: KeyboardShortcutsStore): {
-    registerShortcut: (options: any) => object;
-  };
+  // in @wordpress/data, the "deps" is not optional (while in reality it is)
+  export function useSelect<T extends MapSelect | GenericStoreDescriptor<any>>(
+    mapSelect: T,
+    deps?: unknown[],
+  ): UseSelectReturn<T>;
 
   // function "batch" is missing in data registry
-  interface DataRegistry {
+  export function useRegistry(): {
     batch: (callback: () => void) => void;
-  }
+  };
 
   // types for "createRegistrySelector" are not correct
   export function createRegistrySelector<

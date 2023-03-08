@@ -3,9 +3,17 @@
 
 // there are no @types/wordpress__interface yet
 declare module '@wordpress/interface' {
-  import { StoreDescriptor } from '@wordpress/data';
+  import { StoreDescriptor } from '@wordpress/data/build-types/types';
 
-  export const store: { name: 'core/interface' } & StoreDescriptor;
+  export const store: { name: 'core/interface' } & StoreDescriptor<{
+    reducer: () => unknown;
+    selectors: {
+      getActiveComplementaryArea: (
+        state: unknown,
+        scope: string,
+      ) => string | undefined | null;
+    };
+  }>;
   export const ComplementaryArea: any;
   export const FullscreenMode: any;
   export const MoreMenuDropdown: any;
@@ -15,17 +23,30 @@ declare module '@wordpress/interface' {
 
 // there are no @types/wordpress__keyboard-shortcuts yet
 declare module '@wordpress/keyboard-shortcuts' {
-  import { StoreDescriptor } from '@wordpress/data';
+  import { StoreDescriptor } from '@wordpress/data/build-types/types';
 
-  export const store: { name: 'core/keyboard-shortcuts' } & StoreDescriptor;
+  export const store: { name: 'core/keyboard-shortcuts' } & StoreDescriptor<{
+    reducer: () => unknown;
+    selectors: {
+      getShortcutRepresentation: (state: unknown, scope: string) => unknown;
+    };
+    actions: {
+      registerShortcut: (options: any) => object;
+    };
+  }>;
   export const ShortcutProvider: any;
   export const useShortcut: any;
 }
 
 // there are no @types/wordpress__preferences yet
 declare module '@wordpress/preferences' {
-  import { StoreDescriptor } from '@wordpress/data';
+  import { StoreDescriptor } from '@wordpress/data/build-types/types';
 
-  export const store: { name: 'core/preferences' } & StoreDescriptor;
+  export const store: { name: 'core/preferences' } & StoreDescriptor<{
+    reducer: () => unknown;
+    selectors: {
+      get: <T>(state: unknown, scope: string, name: string) => T;
+    };
+  }>;
   export const PreferenceToggleMenuItem: any;
 }
