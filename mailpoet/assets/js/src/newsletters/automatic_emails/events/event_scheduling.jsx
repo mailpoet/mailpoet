@@ -109,6 +109,7 @@ class EventScheduling extends Component {
       field: {
         id: 'scheduling_time_duration',
         name: 'scheduling_time_duration',
+        className: 'mailpoet-form-input-small',
         defaultValue: afterTimeNumber ? afterTimeNumber.toString() : '',
         size: afterTimeNumberSize,
         validation: {
