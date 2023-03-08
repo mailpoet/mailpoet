@@ -3,7 +3,7 @@ import _ from 'underscore';
 import { MailPoet } from 'mailpoet';
 import { Tooltip } from 'help-tooltip.jsx';
 import PropTypes from 'prop-types';
-import { GlobalContext } from 'context/index.jsx';
+import { GlobalContext } from 'context';
 
 class ImportTemplate extends Component {
   constructor(props) {

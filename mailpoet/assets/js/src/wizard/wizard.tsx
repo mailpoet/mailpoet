@@ -1,6 +1,6 @@
 import ReactDOM from 'react-dom';
 import { HashRouter, Redirect, Route, Switch } from 'react-router-dom';
-import { GlobalContext, useGlobalContextValue } from 'context/index.jsx';
+import { GlobalContext, useGlobalContextValue } from 'context';
 import { Notices } from 'notices/notices.jsx';
 import { initStore as initSettingsStore } from 'settings/store';
 import { WooCommerceController } from './woocommerce_controller';

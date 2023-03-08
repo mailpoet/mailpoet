@@ -1,5 +1,5 @@
 import ReactDOM from 'react-dom';
-import { GlobalContext, useGlobalContextValue } from 'context/index.jsx';
+import { GlobalContext, useGlobalContextValue } from 'context';
 import { ErrorBoundary } from 'common';
 import { Background } from 'common/background/background';
 import { HideScreenOptions } from 'common/hide_screen_options/hide_screen_options';

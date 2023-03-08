@@ -6,7 +6,7 @@ import { RoutedTabs } from 'common/tabs/routed_tabs';
 import { Tab } from 'common/tabs/tab';
 import { SegmentList } from 'segments/list.jsx';
 import { SegmentForm } from 'segments/form.jsx';
-import { GlobalContext, useGlobalContextValue } from 'context/index.jsx';
+import { GlobalContext, useGlobalContextValue } from 'context';
 import { Notices } from 'notices/notices.jsx';
 import { withBoundary } from 'common';
 import { Editor } from './dynamic/editor';

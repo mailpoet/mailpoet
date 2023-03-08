@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
 import { MailPoet } from 'mailpoet';
-import { GlobalContext, useGlobalContextValue } from 'context/index.jsx';
+import { GlobalContext, useGlobalContextValue } from 'context';
 import { Notices } from 'notices/notices.jsx';
 import { ErrorBoundary } from 'common';
 

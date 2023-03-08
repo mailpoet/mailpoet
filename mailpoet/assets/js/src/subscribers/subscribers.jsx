@@ -4,7 +4,7 @@ import { HashRouter, Route, Switch } from 'react-router-dom';
 import { SubscriberList } from 'subscribers/list.jsx';
 import { SubscriberForm } from 'subscribers/form.jsx';
 import { SubscriberStats } from 'subscribers/stats';
-import { GlobalContext, useGlobalContextValue } from 'context/index.jsx';
+import { GlobalContext, useGlobalContextValue } from 'context';
 import { Notices } from 'notices/notices.jsx';
 import { withBoundary } from 'common';
 

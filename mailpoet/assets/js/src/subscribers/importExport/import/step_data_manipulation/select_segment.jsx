@@ -2,7 +2,7 @@ import { useContext, useLayoutEffect, useState } from 'react';
 import { MailPoet } from 'mailpoet';
 import PropTypes from 'prop-types';
 
-import { GlobalContext } from 'context/index.jsx';
+import { GlobalContext } from 'context';
 
 import { Button } from 'common/button/button';
 import {
