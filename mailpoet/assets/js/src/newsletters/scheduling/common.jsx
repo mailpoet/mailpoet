@@ -7,6 +7,7 @@ const timeFormat = window.mailpoet_time_format || 'H:i';
 // welcome emails
 const timeDelayValues = {
   immediate: __('immediately', 'mailpoet'),
+  minutes: __('minute(s) later', 'mailpoet'),
   hours: __('hour(s) later', 'mailpoet'),
   days: __('day(s) later', 'mailpoet'),
   weeks: __('week(s) later', 'mailpoet'),
