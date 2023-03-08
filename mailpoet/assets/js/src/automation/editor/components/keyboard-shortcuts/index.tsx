@@ -5,7 +5,7 @@ import {
   store as keyboardShortcutsStore,
 } from '@wordpress/keyboard-shortcuts';
 import { __ } from '@wordpress/i18n';
-import { stepSidebarKey, storeName, automationSidebarKey } from '../../store';
+import { stepSidebarKey, store, automationSidebarKey } from '../../store';
 
 // See:
 //    https://github.com/WordPress/gutenberg/blob/9601a33e30ba41bac98579c8d822af63dd961488/packages/edit-post/src/components/keyboard-shortcuts/index.js
@@ -13,11 +13,11 @@ import { stepSidebarKey, storeName, automationSidebarKey } from '../../store';
 
 export function KeyboardShortcuts(): null {
   const { isSidebarOpened, selectedStep } = useSelect((select) => ({
-    isSidebarOpened: select(storeName).isSidebarOpened,
-    selectedStep: select(storeName).getSelectedStep,
+    isSidebarOpened: select(store).isSidebarOpened,
+    selectedStep: select(store).getSelectedStep,
   }));
 
-  const { openSidebar, closeSidebar, toggleFeature } = useDispatch(storeName);
+  const { openSidebar, closeSidebar, toggleFeature } = useDispatch(store);
 
   const { registerShortcut } = useDispatch(keyboardShortcutsStore);
 

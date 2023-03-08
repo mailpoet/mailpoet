@@ -2,7 +2,7 @@ import { PanelBody } from '@wordpress/components';
 import { dispatch, useSelect } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
 import ReactStringReplace from 'react-string-replace';
-import { storeName } from '../../../../../editor/store';
+import { store } from '../../../../../editor/store';
 import {
   PlainBodyTitle,
   FormTokenField,
@@ -31,7 +31,7 @@ function SettingsInfoText(): JSX.Element {
 export function RolePanel(): JSX.Element {
   const { selectedStep } = useSelect(
     (select) => ({
-      selectedStep: select(storeName).getSelectedStep(),
+      selectedStep: select(store).getSelectedStep(),
     }),
     [],
   );
@@ -56,7 +56,7 @@ export function RolePanel(): JSX.Element {
         suggestions={userRoles}
         placeholder={__('Any user role', 'mailpoet')}
         onChange={(items) => {
-          dispatch(storeName).updateStepArgs(
+          dispatch(store).updateStepArgs(
             selectedStep.id,
             'roles',
             items.map((item) => item.id),

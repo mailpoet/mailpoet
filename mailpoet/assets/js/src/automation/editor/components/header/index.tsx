@@ -13,7 +13,7 @@ import { DocumentActions } from './document_actions';
 import { Errors } from './errors';
 import { InserterToggle } from './inserter_toggle';
 import { MoreMenu } from './more_menu';
-import { storeName } from '../../store';
+import { store } from '../../store';
 import { AutomationStatus } from '../../../listing/automation';
 import {
   DeactivateImmediatelyModal,
@@ -27,14 +27,14 @@ import {
 function ActivateButton({ label }): JSX.Element {
   const { errors, isDeactivating } = useSelect(
     (select) => ({
-      errors: select(storeName).getErrors(),
+      errors: select(store).getErrors(),
       isDeactivating:
-        select(storeName).getAutomationData().status ===
+        select(store).getAutomationData().status ===
         AutomationStatus.DEACTIVATING,
     }),
     [],
   );
-  const { openActivationPanel } = useDispatch(storeName);
+  const { openActivationPanel } = useDispatch(store);
 
   const button = (
     <Button
@@ -68,11 +68,11 @@ function ActivateButton({ label }): JSX.Element {
 }
 
 function UpdateButton(): JSX.Element {
-  const { save } = useDispatch(storeName);
+  const { save } = useDispatch(store);
 
   const { automation } = useSelect(
     (select) => ({
-      automation: select(storeName).getAutomationData(),
+      automation: select(store).getAutomationData(),
     }),
     [],
   );
@@ -112,7 +112,7 @@ function UpdateButton(): JSX.Element {
 }
 
 function SaveDraftButton(): JSX.Element {
-  const { save } = useDispatch(storeName);
+  const { save } = useDispatch(store);
 
   return (
     <Button variant="tertiary" onClick={save}>
@@ -127,7 +127,7 @@ function DeactivateButton(): JSX.Element {
   const { hasUsersInProgress } = useSelect(
     (select) => ({
       hasUsersInProgress:
-        select(storeName).getAutomationData().stats.totals.in_progress > 0,
+        select(store).getAutomationData().stats.totals.in_progress > 0,
     }),
     [],
   );
@@ -138,7 +138,7 @@ function DeactivateButton(): JSX.Element {
       return;
     }
     setIsBusy(true);
-    void dispatch(storeName).deactivate();
+    void dispatch(store).deactivate();
   };
 
   return (
@@ -167,7 +167,7 @@ function DeactivateNowButton(): JSX.Element {
   const { hasUsersInProgress } = useSelect(
     (select) => ({
       hasUsersInProgress:
-        select(storeName).getAutomationData().stats.totals.in_progress > 0,
+        select(store).getAutomationData().stats.totals.in_progress > 0,
     }),
     [],
   );
@@ -178,7 +178,7 @@ function DeactivateNowButton(): JSX.Element {
       return;
     }
     setIsBusy(true);
-    void dispatch(storeName).deactivate();
+    void dispatch(store).deactivate();
   };
 
   return (
@@ -206,11 +206,11 @@ type Props = {
 };
 
 export function Header({ showInserterToggle }: Props): JSX.Element {
-  const { setAutomationName } = useDispatch(storeName);
+  const { setAutomationName } = useDispatch(store);
   const { automationName, automationStatus } = useSelect(
     (select) => ({
-      automationName: select(storeName).getAutomationData().name,
-      automationStatus: select(storeName).getAutomationData().status,
+      automationName: select(store).getAutomationData().name,
+      automationStatus: select(store).getAutomationData().status,
     }),
     [],
   );
@@ -272,7 +272,7 @@ export function Header({ showInserterToggle }: Props): JSX.Element {
               <ActivateButton label={__('Update & Activate', 'mailpoet')} />
             </>
           )}
-          <PinnedItems.Slot scope={storeName} />
+          <PinnedItems.Slot scope={store.name} />
           <MoreMenu />
         </div>
       </div>

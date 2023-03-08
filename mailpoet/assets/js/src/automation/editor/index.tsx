@@ -24,7 +24,7 @@ import { KeyboardShortcuts } from './components/keyboard-shortcuts';
 import { EditorNotices } from './components/notices';
 import { Sidebar } from './components/sidebar';
 import { Automation } from './components/automation';
-import { createStore, storeName } from './store';
+import { createStore, store } from './store';
 import { initializeApi } from '../api';
 import { initialize as initializeCoreIntegration } from '../integrations/core';
 import { initialize as initializeMailPoetIntegration } from '../integrations/mailpoet';
@@ -48,7 +48,7 @@ const showInserterSidebar = false;
  * see MAILPOET-4744
  */
 function updatingActiveAutomationNotPossible() {
-  const automation = globalSelect(storeName).getAutomationData();
+  const automation = globalSelect(store).getAutomationData();
   if (
     ![AutomationStatus.ACTIVE, AutomationStatus.DEACTIVATING].includes(
       automation.status,
@@ -73,7 +73,7 @@ function updatingActiveAutomationNotPossible() {
 }
 
 function onUnload(event) {
-  if (!globalSelect(storeName).getAutomationSaved()) {
+  if (!globalSelect(store).getAutomationSaved()) {
     // eslint-disable-next-line no-param-reassign
     event.returnValue = __(
       'There are unsaved changes that will be lost. Do you want to continue?',
@@ -101,12 +101,12 @@ function Editor(): JSX.Element {
     automation,
   } = useSelect(
     (select) => ({
-      isFullscreenActive: select(storeName).isFeatureActive('fullscreenMode'),
-      isInserterOpened: select(storeName).isInserterSidebarOpened(),
-      isSidebarOpened: select(storeName).isSidebarOpened(),
-      isActivationPanelOpened: select(storeName).isActivationPanelOpened(),
-      showIconLabels: select(storeName).isFeatureActive('showIconLabels'),
-      automation: select(storeName).getAutomationData(),
+      isFullscreenActive: select(store).isFeatureActive('fullscreenMode'),
+      isInserterOpened: select(store).isInserterSidebarOpened(),
+      isSidebarOpened: select(store).isSidebarOpened(),
+      isActivationPanelOpened: select(store).isActivationPanelOpened(),
+      showIconLabels: select(store).isFeatureActive('showIconLabels'),
+      automation: select(store).getAutomationData(),
     }),
     [],
   );
@@ -160,7 +160,7 @@ function Editor(): JSX.Element {
               <Automation />
             </>
           }
-          sidebar={<ComplementaryArea.Slot scope={storeName} />}
+          sidebar={<ComplementaryArea.Slot scope={store} />}
           secondarySidebar={
             showInserterSidebar && isInserterOpened ? <InserterSidebar /> : null
           }

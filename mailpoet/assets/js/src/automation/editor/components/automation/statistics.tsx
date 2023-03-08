@@ -1,12 +1,12 @@
 import { useSelect } from '@wordpress/data';
 import { _x } from '@wordpress/i18n';
-import { storeName } from '../../store';
+import { store } from '../../store';
 import { Statistics as BaseStatistics } from '../../../components/statistics';
 
 export function Statistics(): JSX.Element {
   const { automation } = useSelect(
     (select) => ({
-      automation: select(storeName).getAutomationData(),
+      automation: select(store).getAutomationData(),
     }),
     [],
   );

@@ -1,10 +1,10 @@
 import { ToggleControl } from '@wordpress/components';
 import { dispatch, select, useSelect } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
-import { storeName } from '../../../editor/store';
+import { store } from '../../../editor/store';
 
 export function showRunOnlyOnce(): boolean {
-  const automation = select(storeName).getAutomationData();
+  const automation = select(store).getAutomationData();
   const triggers = Object.values(automation.steps).filter(
     (step) => step.type === 'trigger',
   );
@@ -13,7 +13,7 @@ export function showRunOnlyOnce(): boolean {
   }
 
   const subscriberTriggers = triggers.filter((trigger) =>
-    select(storeName)
+    select(store)
       .getStepSubjectKeys(trigger.key)
       .includes('mailpoet:subscriber'),
   );
@@ -23,7 +23,7 @@ export function showRunOnlyOnce(): boolean {
 export function RunAutomationOnce(): JSX.Element {
   const { automationData } = useSelect(
     (s) => ({
-      automationData: s(storeName).getAutomationData(),
+      automationData: s(store).getAutomationData(),
     }),
     [],
   );
@@ -37,7 +37,7 @@ export function RunAutomationOnce(): JSX.Element {
       label={__('Run this automation only once per subscriber.', 'mailpoet')}
       checked={checked}
       onChange={(value) => {
-        dispatch(storeName).updateAutomationMeta(
+        dispatch(store).updateAutomationMeta(
           'mailpoet:run-once-per-subscriber',
           value,
         );

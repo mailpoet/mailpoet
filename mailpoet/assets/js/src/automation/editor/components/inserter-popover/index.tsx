@@ -6,7 +6,7 @@ import { Hooks } from 'wp-js-hooks';
 import { PremiumModal } from 'common/premium_modal';
 import { Inserter } from '../inserter';
 import { Item } from '../inserter/item';
-import { storeName } from '../../store';
+import { store } from '../../store';
 import { AddStepCallbackType } from '../../../types/filters';
 
 export function InserterPopover(): JSX.Element | null {
@@ -14,11 +14,11 @@ export function InserterPopover(): JSX.Element | null {
   const [showModal, setShowModal] = useState(false);
   const { inserterPopover } = useSelect(
     (select) => ({
-      inserterPopover: select(storeName).getInserterPopover(),
+      inserterPopover: select(store).getInserterPopover(),
     }),
     [],
   );
-  const { setInserterPopover } = useDispatch(storeName);
+  const { setInserterPopover } = useDispatch(store);
 
   const onInsert = useCallback((item: Item) => {
     const addStepCallback: AddStepCallbackType = Hooks.applyFilters(

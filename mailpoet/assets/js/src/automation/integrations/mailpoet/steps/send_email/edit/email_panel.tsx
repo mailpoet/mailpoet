@@ -4,7 +4,7 @@ import { dispatch, useSelect } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
 import { ShortcodeHelpText } from './shortcode_help_text';
 import { PlainBodyTitle } from '../../../../../editor/components/panel';
-import { storeName } from '../../../../../editor/store';
+import { store } from '../../../../../editor/store';
 import { StepName } from '../../../../../editor/components/panel/step-name';
 import { EditNewsletter } from './edit_newsletter';
 
@@ -34,11 +34,9 @@ function SingleLineTextareaControl(
 export function EmailPanel(): JSX.Element {
   const { selectedStep, selectedStepType, errors } = useSelect(
     (select) => ({
-      selectedStep: select(storeName).getSelectedStep(),
-      selectedStepType: select(storeName).getSelectedStepType(),
-      errors: select(storeName).getStepError(
-        select(storeName).getSelectedStep().id,
-      ),
+      selectedStep: select(store).getSelectedStep(),
+      selectedStepType: select(store).getSelectedStepType(),
+      errors: select(store).getStepError(select(store).getSelectedStep().id),
     }),
     [],
   );
@@ -53,7 +51,7 @@ export function EmailPanel(): JSX.Element {
         currentName={(selectedStep.args.name as string) ?? ''}
         defaultName={selectedStepType.title}
         update={(value) => {
-          dispatch(storeName).updateStepArgs(selectedStep.id, 'name', value);
+          dispatch(store).updateStepArgs(selectedStep.id, 'name', value);
         }}
       />
       <TextControl
@@ -68,11 +66,7 @@ export function EmailPanel(): JSX.Element {
         }
         value={(selectedStep.args.sender_name as string) ?? ''}
         onChange={(value) =>
-          dispatch(storeName).updateStepArgs(
-            selectedStep.id,
-            'sender_name',
-            value,
-          )
+          dispatch(store).updateStepArgs(selectedStep.id, 'sender_name', value)
         }
       />
       <TextControl
@@ -88,7 +82,7 @@ export function EmailPanel(): JSX.Element {
         }
         value={(selectedStep.args.sender_address as string) ?? ''}
         onChange={(value) =>
-          dispatch(storeName).updateStepArgs(
+          dispatch(store).updateStepArgs(
             selectedStep.id,
             'sender_address',
             value,
@@ -103,7 +97,7 @@ export function EmailPanel(): JSX.Element {
         placeholder={__('Type in subject…', 'mailpoet')}
         value={(selectedStep.args.subject as string) ?? ''}
         onChange={(value) =>
-          dispatch(storeName).updateStepArgs(selectedStep.id, 'subject', value)
+          dispatch(store).updateStepArgs(selectedStep.id, 'subject', value)
         }
         help={
           <>
@@ -117,11 +111,7 @@ export function EmailPanel(): JSX.Element {
         placeholder={__('Type in preheader…', 'mailpoet')}
         value={(selectedStep.args.preheader as string) ?? ''}
         onChange={(value) =>
-          dispatch(storeName).updateStepArgs(
-            selectedStep.id,
-            'preheader',
-            value,
-          )
+          dispatch(store).updateStepArgs(selectedStep.id, 'preheader', value)
         }
         help={<ShortcodeHelpText />}
       />

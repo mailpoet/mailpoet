@@ -6,7 +6,7 @@ import { Popover, SlotFillProvider } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 import { initializeApi } from './api';
 import { registerTranslations } from './i18n';
-import { createStore, storeName } from './listing/store';
+import { createStore, store } from './listing/store';
 import { AutomationListing, AutomationListingHeader } from './listing';
 import { registerApiErrorHandler } from './listing/api-error-handler';
 import { Notices } from './listing/components/notices';
@@ -19,7 +19,7 @@ const trackOpenEvent = () => {
 
 function Content(): JSX.Element {
   const [isBooting, setIsBooting] = useState(true);
-  const count = useSelect((select) => select(storeName).getAutomationCount());
+  const count = useSelect((select) => select(store).getAutomationCount());
 
   useEffect(() => {
     if (!isBooting || count === 0) {
