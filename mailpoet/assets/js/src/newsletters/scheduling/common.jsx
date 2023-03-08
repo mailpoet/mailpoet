@@ -23,7 +23,7 @@ const intervalValues = {
 
 // notification emails
 const SECONDS_IN_DAY = 86400;
-const TIME_STEP_SECONDS = 3600;
+const TIME_STEP_SECONDS = 900; // 15 minutes
 const numberOfTimeSteps = SECONDS_IN_DAY / TIME_STEP_SECONDS;
 
 const timeOfDayValues = _.object(
