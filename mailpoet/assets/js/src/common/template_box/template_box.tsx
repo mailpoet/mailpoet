@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import { MailPoet } from 'mailpoet';
+import { __ } from '@wordpress/i18n';
 import { Heading } from 'common/typography/heading/heading';
 import { Button } from 'common/button/button';
 
@@ -33,11 +33,11 @@ export function TemplateBox({
         <div>
           {onDelete && (
             <Button variant="destructive" onClick={onDelete}>
-              {MailPoet.I18n.t('delete')}
+              {__('Delete', 'mailpoet')}
             </Button>
           )}
           <Button automationId={automationId} onClick={onSelect}>
-            {MailPoet.I18n.t('select')}
+            {__('Select', 'mailpoet')}
           </Button>
         </div>
       </div>
