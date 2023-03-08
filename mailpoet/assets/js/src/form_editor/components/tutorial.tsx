@@ -4,17 +4,15 @@ import { useSelect, useDispatch } from '@wordpress/data';
 import { Modal } from 'common/modal/modal';
 import { Heading } from 'common/typography/heading/heading';
 import { MailPoet } from 'mailpoet';
+import { store } from '../store';
 
 export function Tutorial(): JSX.Element {
-  const url = useSelect(
-    (select) => select('mailpoet-form-editor').getTutorialUrl(),
-    [],
-  );
+  const url = useSelect((select) => select(store).getTutorialUrl(), []);
   const tutorialSeen = useSelect(
-    (select) => select('mailpoet-form-editor').getTutorialSeen(),
+    (select) => select(store).getTutorialSeen(),
     [],
   );
-  const { tutorialDismissed } = useDispatch('mailpoet-form-editor');
+  const { tutorialDismissed } = useDispatch(store);
 
   const onClose = useCallback((): void => {
     void tutorialDismissed();

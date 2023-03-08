@@ -8,6 +8,7 @@ import { MailPoet } from 'mailpoet';
 import { ParagraphEdit } from '../paragraph_edit.jsx';
 import { StylesSettings } from './styles_settings';
 import { InputBlockStyles } from '../../store/form_data_types';
+import { store } from '../../store';
 
 type Props = {
   attributes: {
@@ -19,10 +20,7 @@ type Props = {
 };
 
 function SubmitEdit({ attributes, setAttributes }: Props): JSX.Element {
-  const settings = useSelect(
-    (select) => select('mailpoet-form-editor').getFormSettings(),
-    [],
-  );
+  const settings = useSelect((select) => select(store).getFormSettings(), []);
 
   const inspectorControls = (
     <InspectorControls>

@@ -16,6 +16,7 @@ import { ImageSettings } from 'form_editor/components/image_settings';
 import { CloseButtonsSettings } from 'form_editor/components/close_button_settings';
 import { formStyles as defaultFormStyles } from 'form_editor/store/defaults';
 import { FontFamilySettings } from '../font_family_settings';
+import { store } from '../../store';
 
 type StylesSettingsPanelProps = {
   onToggle: PanelBody.Props['onToggle'];
@@ -23,11 +24,8 @@ type StylesSettingsPanelProps = {
 };
 
 function StylesSettingsPanel({ onToggle, isOpened }: StylesSettingsPanelProps) {
-  const { changeFormSettings } = useDispatch('mailpoet-form-editor');
-  const settings = useSelect(
-    (select) => select('mailpoet-form-editor').getFormSettings(),
-    [],
-  );
+  const { changeFormSettings } = useDispatch(store);
+  const settings = useSelect((select) => select(store).getFormSettings(), []);
   const settingsRef = useRef(settings);
   useEffect(() => {
     settingsRef.current = settings;

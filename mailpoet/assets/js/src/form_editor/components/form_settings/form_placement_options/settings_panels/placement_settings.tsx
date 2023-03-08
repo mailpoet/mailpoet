@@ -4,6 +4,7 @@ import { ToggleControl } from '@wordpress/components';
 import { assocPath, compose, cond, identity, isEqual, sortBy } from 'lodash/fp';
 import { withBoundary } from 'common';
 import { Selection } from '../../selection';
+import { store } from '../../../../store';
 
 type Props = {
   settingsPlacementKey: string;
@@ -11,16 +12,16 @@ type Props = {
 
 function PlacementSettings({ settingsPlacementKey }: Props): JSX.Element {
   const formSettings = useSelect(
-    (select) => select('mailpoet-form-editor').getFormSettings(),
+    (select) => select(store).getFormSettings(),
     [],
   );
   const tags = useSelect(
     (select) =>
       sortBy(
         'name',
-        select('mailpoet-form-editor')
+        select(store)
           .getAllWPTags()
-          .concat(select('mailpoet-form-editor').getAllWooCommerceTags()),
+          .concat(select(store).getAllWooCommerceTags()),
       ),
     [],
   );
@@ -28,31 +29,28 @@ function PlacementSettings({ settingsPlacementKey }: Props): JSX.Element {
     (select) =>
       sortBy(
         'name',
-        select('mailpoet-form-editor')
+        select(store)
           .getAllWPCategories()
-          .concat(select('mailpoet-form-editor').getAllWooCommerceCategories()),
+          .concat(select(store).getAllWooCommerceCategories()),
       ),
     [],
   );
-  const pages = useSelect(
-    (select) => select('mailpoet-form-editor').getAllWPPages(),
-    [],
-  );
+  const pages = useSelect((select) => select(store).getAllWPPages(), []);
   const posts = useSelect(
     (select) =>
       sortBy(
         'name',
-        select('mailpoet-form-editor')
+        select(store)
           .getAllWPPosts()
-          .concat(select('mailpoet-form-editor').getAllWooCommerceProducts()),
+          .concat(select(store).getAllWooCommerceProducts()),
       ),
     [],
   );
   const isPreviewShown = useSelect(
-    (select) => select('mailpoet-form-editor').getIsPreviewShown(),
+    (select) => select(store).getIsPreviewShown(),
     [],
   );
-  const { changeFormSettings } = useDispatch('mailpoet-form-editor');
+  const { changeFormSettings } = useDispatch(store);
 
   let prefix = 'no-preview';
   if (isPreviewShown) {

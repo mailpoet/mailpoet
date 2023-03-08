@@ -6,25 +6,20 @@ import { curry } from 'lodash';
 import { assocPath } from 'lodash/fp';
 import { TextareaControl } from '@wordpress/components';
 import { SizeSettings } from 'form_editor/components/size_settings';
+import { store } from '../../../../store';
 
 function OtherSettings(): JSX.Element {
   const [copyAreaContent, setCopyAreaContent] = useState(null);
 
-  const formExports = useSelect(
-    (select) => select('mailpoet-form-editor').getFormExports(),
-    [],
-  );
+  const formExports = useSelect((select) => select(store).getFormExports(), []);
 
   const formSettings = useSelect(
-    (select) => select('mailpoet-form-editor').getFormSettings(),
+    (select) => select(store).getFormSettings(),
     [],
   );
 
-  const isFormSaved = useSelect(
-    (select) => select('mailpoet-form-editor').isFormSaved(),
-    [],
-  );
-  const { changeFormSettings } = useDispatch('mailpoet-form-editor');
+  const isFormSaved = useSelect((select) => select(store).isFormSaved(), []);
+  const { changeFormSettings } = useDispatch(store);
 
   const addFormWidgetHint = ReactStringReplace(
     MailPoet.I18n.t('addFormWidgetHint'),

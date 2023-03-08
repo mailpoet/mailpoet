@@ -1,16 +1,14 @@
 import { Panel, PanelBody } from '@wordpress/components';
 import { useDispatch, useSelect } from '@wordpress/data';
 import { isEqual } from 'lodash';
+import { store } from '../../store';
 import { TokenField } from '../../../common/form/tokenField/tokenField';
 import { MailPoet } from '../../../mailpoet';
 
 export function TagsPanel({ onToggle, isOpened }) {
-  const settings = useSelect(
-    (select) => select('mailpoet-form-editor').getFormSettings(),
-    [],
-  );
+  const settings = useSelect((select) => select(store).getFormSettings(), []);
 
-  const { changeFormSettings } = useDispatch('mailpoet-form-editor');
+  const { changeFormSettings } = useDispatch(store);
 
   const onSegmentsChange = (e) => {
     if (isEqual(settings.tags, e.value)) {

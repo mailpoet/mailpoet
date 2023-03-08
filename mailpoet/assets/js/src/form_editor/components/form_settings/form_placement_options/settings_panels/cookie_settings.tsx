@@ -3,6 +3,7 @@ import { __, assocPath, compose } from 'lodash/fp';
 import { useDispatch, useSelect } from '@wordpress/data';
 import { SelectControl } from '@wordpress/components';
 import { withBoundary } from 'common';
+import { store } from '../../../../store';
 
 type Props = {
   settingsPlacementKey: string;
@@ -11,10 +12,10 @@ type Props = {
 function CookieSettings({ settingsPlacementKey }: Props): JSX.Element {
   const cookieExpirationValues = [3, 7, 14, 30, 60, 90];
   const formSettings = useSelect(
-    (select) => select('mailpoet-form-editor').getFormSettings(),
+    (select) => select(store).getFormSettings(),
     [],
   );
-  const { changeFormSettings } = useDispatch('mailpoet-form-editor');
+  const { changeFormSettings } = useDispatch(store);
 
   return (
     <SelectControl

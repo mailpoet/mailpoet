@@ -2,6 +2,7 @@ import { useSelect } from '@wordpress/data';
 import { BaseControl } from '@wordpress/components';
 
 import { SelectionItem } from './form_settings/selection_item';
+import { store } from '../store';
 
 type CloseButtonProps = {
   label: string;
@@ -41,10 +42,7 @@ type Props = {
 };
 
 function CloseButtonsSettings({ name, value, onChange }: Props): JSX.Element {
-  const closeIconsUrl = useSelect(
-    (sel) => sel('mailpoet-form-editor').getCloseIconsUrl(),
-    [],
-  );
+  const closeIconsUrl = useSelect((sel) => sel(store).getCloseIconsUrl(), []);
 
   return (
     <div>

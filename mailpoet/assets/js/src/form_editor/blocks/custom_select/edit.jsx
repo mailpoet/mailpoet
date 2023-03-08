@@ -9,23 +9,17 @@ import { CustomFieldSettings } from '../custom_radio/custom_field_settings.jsx';
 import { formatLabel } from '../label_formatter.jsx';
 import { ParagraphEdit } from '../paragraph_edit.jsx';
 import { mapCustomFieldFormData } from '../map_custom_field_form_data.jsx';
+import { store } from '../../store';
 
 function CustomSelectEdit({ attributes, setAttributes, clientId }) {
-  const settings = useSelect(
-    (select) => select('mailpoet-form-editor').getFormSettings(),
-    [],
-  );
-  const isSaving = useSelect(
-    (sel) => sel('mailpoet-form-editor').getIsCustomFieldSaving(),
-    [],
-  );
+  const settings = useSelect((select) => select(store).getFormSettings(), []);
+  const isSaving = useSelect((sel) => sel(store).getIsCustomFieldSaving(), []);
   const isDeleting = useSelect(
-    (sel) => sel('mailpoet-form-editor').getIsCustomFieldDeleting(),
+    (sel) => sel(store).getIsCustomFieldDeleting(),
     [],
   );
-  const { saveCustomField, deleteCustomField, customFieldEdited } = useDispatch(
-    'mailpoet-form-editor',
-  );
+  const { saveCustomField, deleteCustomField, customFieldEdited } =
+    useDispatch(store);
 
   const inspectorControls = (
     <InspectorControls>

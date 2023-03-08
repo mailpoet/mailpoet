@@ -8,19 +8,16 @@ import { useDispatch, useSelect } from '@wordpress/data';
 import { ParagraphEdit } from '../paragraph_edit.jsx';
 import { CustomFieldSettings } from './custom_field_settings.jsx';
 import { mapCustomFieldFormData } from '../map_custom_field_form_data.jsx';
+import { store } from '../../store';
 
 function CustomCheckboxEdit({ attributes, setAttributes, clientId }) {
-  const isSaving = useSelect(
-    (sel) => sel('mailpoet-form-editor').getIsCustomFieldSaving(),
-    [],
-  );
+  const isSaving = useSelect((sel) => sel(store).getIsCustomFieldSaving(), []);
   const isDeleting = useSelect(
-    (sel) => sel('mailpoet-form-editor').getIsCustomFieldDeleting(),
+    (sel) => sel(store).getIsCustomFieldDeleting(),
     [],
   );
-  const { saveCustomField, deleteCustomField, customFieldEdited } = useDispatch(
-    'mailpoet-form-editor',
-  );
+  const { saveCustomField, deleteCustomField, customFieldEdited } =
+    useDispatch(store);
 
   const getCheckboxLabel = () => {
     if (Array.isArray(attributes.values)) {

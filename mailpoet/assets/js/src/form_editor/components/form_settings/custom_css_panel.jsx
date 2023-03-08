@@ -4,14 +4,12 @@ import PropTypes from 'prop-types';
 
 import { MailPoet } from 'mailpoet';
 import { CodemirrorWrap } from './codemirror_wrap.jsx';
+import { store } from '../../store';
 
 function CustomCssPanel({ onToggle, isOpened }) {
-  const styles = useSelect(
-    (select) => select('mailpoet-form-editor').getFormStyles(),
-    [],
-  );
+  const styles = useSelect((select) => select(store).getFormStyles(), []);
 
-  const { changeFormStyles } = useDispatch('mailpoet-form-editor');
+  const { changeFormStyles } = useDispatch(store);
 
   return (
     <Panel>

@@ -28,6 +28,7 @@ import { FormPreview } from './preview/preview';
 import { FormStylingBackground } from './form_styling_background.jsx';
 import { CustomFontsStyleSheetLink } from './font_family_settings';
 import { Fullscreen } from './fullscreen';
+import { store } from '../store';
 
 /**
  * This component renders the form editor app.
@@ -39,20 +40,14 @@ import { Fullscreen } from './fullscreen';
  * https://developer.wordpress.org/block-editor/packages/packages-block-editor/
  */
 export function Editor() {
-  const sidebarOpened = useSelect(
-    (sel) => sel('mailpoet-form-editor').getSidebarOpened(),
-    [],
-  );
+  const sidebarOpened = useSelect((sel) => sel(store).getSidebarOpened(), []);
 
   const isInserterOpened = useSelect(
-    (sel) => sel('mailpoet-form-editor').isInserterOpened(),
+    (sel) => sel(store).isInserterOpened(),
     [],
   );
 
-  const formBlocks = useSelect(
-    (sel) => sel('mailpoet-form-editor').getFormBlocks(),
-    [],
-  );
+  const formBlocks = useSelect((sel) => sel(store).getFormBlocks(), []);
 
   const canUserUpload = useSelect(
     (sel) => sel('core').canUser('create', 'media'),
@@ -72,9 +67,7 @@ export function Editor() {
     },
   );
 
-  const { blocksChangedInBlockEditor, toggleInserter } = useDispatch(
-    'mailpoet-form-editor',
-  );
+  const { blocksChangedInBlockEditor, toggleInserter } = useDispatch(store);
 
   // Editor settings - see @wordpress/block-editor/src/store/defaults.js
   const editorSettings = {
