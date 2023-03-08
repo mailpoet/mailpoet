@@ -1,5 +1,4 @@
-import { Children, Component } from '@wordpress/element';
-import { ComponentType } from 'react';
+import { Component, Children, ReactNode } from 'react';
 import { getComponentDisplayName } from './utils';
 
 type ErrorBoundaryState = {
@@ -8,7 +7,8 @@ type ErrorBoundaryState = {
 };
 
 export type ErrorBoundaryProps = {
-  onError?: (Error_Boundary_State) => ComponentType;
+  onError?: (Error_Boundary_State) => ReactNode;
+  children?: ReactNode;
 };
 
 export class ErrorBoundary extends Component<
@@ -50,7 +50,7 @@ export class ErrorBoundary extends Component<
             The application{' '}
             <strong>
               {Children.map(this.props.children, (child) =>
-                getComponentDisplayName(child as ComponentType),
+                getComponentDisplayName(child),
               ).join(', ')}{' '}
             </strong>
             encountered an error
