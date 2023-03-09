@@ -36,6 +36,6 @@ function App(): JSX.Element {
 const container = document.getElementById('mailpoet-wizard-container');
 
 if (container) {
-  initSettingsStore(window);
+  initSettingsStore();
   ReactDOM.render(<App />, container);
 }

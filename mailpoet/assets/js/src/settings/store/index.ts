@@ -1,4 +1,4 @@
-import { registerStore } from '@wordpress/data';
+import { createReduxStore, register } from '@wordpress/data';
 import * as actions from './actions';
 import * as selectors from './selectors';
 import * as controls from './controls';
@@ -13,11 +13,19 @@ declare module '@wordpress/data' {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const initStore = (window: any) =>
-  registerStore(STORE_NAME, {
-    reducer: createReducer(makeDefaultState(window)),
+export const initStore = () => {
+  const store = createReduxStore(STORE_NAME, {
+    reducer: createReducer(makeDefaultState()),
     actions,
     selectors,
     controls,
     resolvers: {},
   });
+  register(store);
+  return store;
+};
+
+export const store: ReturnType<typeof initStore> = {
+  name: STORE_NAME,
+  instantiate: (registry) => initStore().instantiate(registry),
+};

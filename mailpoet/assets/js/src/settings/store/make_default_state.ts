@@ -1,6 +1,14 @@
 import { MailPoet } from 'mailpoet';
-import { MssStatus, PremiumStatus, State, TestEmailState } from './types';
+import {
+  MssStatus,
+  PremiumStatus,
+  State,
+  TestEmailState,
+  SettingsWindow,
+} from './types';
 import { normalizeSettings } from './normalize_settings';
+
+declare let window: SettingsWindow;
 
 function getPremiumStatus(keyValid, premiumInstalled): PremiumStatus {
   const pluginActive = !!MailPoet.premiumVersion;
@@ -28,15 +36,13 @@ export function getMssStatus(keyValid, data): MssStatus {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function makeDefaultState(window: any): State {
+export function makeDefaultState(): State {
   const pages = window.mailpoet_pages;
   const paths = window.mailpoet_paths;
   const segments = window.mailpoet_segments;
   const hosts = window.mailpoet_hosts;
   const save = { inProgress: false, error: null, hasUnsavedChanges: false };
-  const data = normalizeSettings(
-    window.mailpoet_settings as Record<string, unknown>,
-  );
+  const data = normalizeSettings(window.mailpoet_settings);
   const originalData = data;
   const flags = {
     error: false,
