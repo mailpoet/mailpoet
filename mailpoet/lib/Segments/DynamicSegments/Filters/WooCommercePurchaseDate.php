@@ -37,7 +37,7 @@ class WooCommercePurchaseDate implements Filter {
     if (in_array($operator, [DateFilterHelper::NOT_ON, DateFilterHelper::NOT_IN_THE_LAST])) {
       $subQuery = $this->filterHelper->getNewSubscribersQueryBuilder();
       $this->applyConditionsToQueryBuilder($operator, $date, $subQuery);
-      $queryBuilder->andWhere($queryBuilder->expr()->notIn("{$subscribersTable}.id", $subQuery->getSQL()));
+      $queryBuilder->andWhere($queryBuilder->expr()->notIn("{$subscribersTable}.id", $this->filterHelper->getInterpolatedSQL($subQuery)));
     } else {
       $this->applyConditionsToQueryBuilder($operator, $date, $queryBuilder);
     }
@@ -47,26 +47,28 @@ class WooCommercePurchaseDate implements Filter {
 
   private function applyConditionsToQueryBuilder(string $operator, string $date, QueryBuilder $queryBuilder): QueryBuilder {
     $orderStatsAlias = $this->wooFilterHelper->applyOrderStatusFilter($queryBuilder);
-    $quotedDate = $queryBuilder->expr()->literal($date);
+    $dateParam = $this->filterHelper->getUniqueParameterName('date');
 
     switch ($operator) {
       case DateFilterHelper::BEFORE:
-        $queryBuilder->andWhere("DATE($orderStatsAlias.date_created) < $quotedDate");
+        $queryBuilder->andWhere("DATE($orderStatsAlias.date_created) < :$dateParam");
         break;
       case DateFilterHelper::AFTER:
-        $queryBuilder->andWhere("DATE($orderStatsAlias.date_created) > $quotedDate");
+        $queryBuilder->andWhere("DATE($orderStatsAlias.date_created) > :$dateParam");
         break;
       case DateFilterHelper::IN_THE_LAST:
       case DateFilterHelper::NOT_IN_THE_LAST:
-        $queryBuilder->andWhere("DATE($orderStatsAlias.date_created) >= $quotedDate");
+        $queryBuilder->andWhere("DATE($orderStatsAlias.date_created) >= :$dateParam");
         break;
       case DateFilterHelper::ON:
       case DateFilterHelper::NOT_ON:
-        $queryBuilder->andWhere("DATE($orderStatsAlias.date_created) = $quotedDate");
+        $queryBuilder->andWhere("DATE($orderStatsAlias.date_created) = :$dateParam");
         break;
       default:
         throw new InvalidFilterException('Incorrect value for operator', InvalidFilterException::MISSING_VALUE);
     }
+
+    $queryBuilder->setParameter($dateParam, $date);
 
     return $queryBuilder;
   }
