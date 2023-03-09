@@ -19,7 +19,6 @@ import {
   adminEmail,
 } from '../config.js';
 import { authenticate } from '../utils/helpers.js';
-/* global Promise */
 
 export async function subscribersFiltering() {
   const browser = chromium.launch({
@@ -38,7 +37,7 @@ export async function subscribersFiltering() {
     authenticate(page);
 
     // Wait for async actions
-    await Promise.all([page.waitForNavigation({ waitUntil: 'networkidle' })]);
+    await page.waitForNavigation({ waitUntil: 'networkidle' });
 
     // Check the subscribers filter is present
     page.locator('[data-automation-id="filters_subscribed"]').click();

@@ -21,7 +21,6 @@ import {
   defaultListName,
 } from '../config.js';
 import { authenticate, selectInSelect2 } from '../utils/helpers.js';
-/* global Promise */
 
 export async function subscribersAdding() {
   const browser = chromium.launch({
@@ -43,7 +42,7 @@ export async function subscribersAdding() {
     authenticate(page);
 
     // Wait for async actions
-    await Promise.all([page.waitForNavigation({ waitUntil: 'networkidle' })]);
+    await page.waitForNavigation({ waitUntil: 'networkidle' });
 
     // Add a new subscriber
     page.locator('[data-automation-id="add-new-subscribers-button"]').click();

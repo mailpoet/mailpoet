@@ -19,7 +19,6 @@ import {
   defaultListName,
 } from '../config.js';
 import { authenticate } from '../utils/helpers.js';
-/* global Promise */
 
 export async function listsViewSubscribers() {
   const browser = chromium.launch({
@@ -41,7 +40,7 @@ export async function listsViewSubscribers() {
     authenticate(page);
 
     // Wait for async actions
-    await Promise.all([page.waitForNavigation({ waitUntil: 'networkidle' })]);
+    await page.waitForNavigation({ waitUntil: 'networkidle' });
 
     // Click to view subscribers of the default list "Newsletter mailing list"
     page.waitForSelector('[data-automation-id="dynamic-segments-tab"]');

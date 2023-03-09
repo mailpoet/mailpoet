@@ -23,7 +23,6 @@ import {
   selectInSelect2,
   waitAndClick,
 } from '../utils/helpers.js';
-/* global Promise */
 
 export async function formsAdding() {
   const browser = chromium.launch({
@@ -42,7 +41,7 @@ export async function formsAdding() {
     authenticate(page);
 
     // Wait for async actions
-    await Promise.all([page.waitForNavigation({ waitUntil: 'networkidle' })]);
+    await page.waitForNavigation({ waitUntil: 'networkidle' });
 
     // Wait and click the Add New Form button
     waitAndClick(page, '[data-automation-id="create_new_form"]');
@@ -63,9 +62,9 @@ export async function formsAdding() {
     page.locator('[data-automation-id="form_save_button"]').click();
     page.waitForSelector('.components-notice');
     check(page, {
-      'form has been saved notice is visible': page
-        .locator('.components-notice__content')
-        .isVisible(),
+      'form has been saved notice is present':
+        page.locator('.components-notice__content').textContent() ===
+        'Form saved. Cookies reset — you will see all your dismissed popup forms again.',
     });
   } finally {
     page.close();

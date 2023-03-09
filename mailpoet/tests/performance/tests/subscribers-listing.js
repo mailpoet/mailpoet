@@ -18,7 +18,6 @@ import {
   timeoutSet,
 } from '../config.js';
 import { authenticate } from '../utils/helpers.js';
-/* global Promise */
 
 export async function subscribersListing() {
   const browser = chromium.launch({
@@ -37,7 +36,7 @@ export async function subscribersListing() {
     authenticate(page);
 
     // Wait for async actions
-    await Promise.all([page.waitForNavigation({ waitUntil: 'networkidle' })]);
+    await page.waitForNavigation({ waitUntil: 'networkidle' });
 
     // Verify filter, tag and listing are loaded and visible
     page.waitForLoadState('networkidle');
