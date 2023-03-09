@@ -1,16 +1,16 @@
-import { StoreDescriptor, useSelect, useDispatch } from '@wordpress/data';
+import { useSelect, useDispatch } from '@wordpress/data';
 import { store as noticesStore } from '@wordpress/notices';
 import { Notice } from '../../../../notices/notice';
 
 export function Notices(): JSX.Element {
   const { notices } = useSelect(
     (select) => ({
-      notices: select(noticesStore as StoreDescriptor).getNotices(),
+      notices: select(noticesStore).getNotices(),
     }),
     [],
   );
 
-  const { removeNotice } = useDispatch(noticesStore as StoreDescriptor);
+  const { removeNotice } = useDispatch(noticesStore);
 
   const dismissibleNotices = notices.filter(
     ({ isDismissible, type }) => isDismissible && type === 'default',
