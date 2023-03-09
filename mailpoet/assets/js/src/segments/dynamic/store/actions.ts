@@ -1,10 +1,6 @@
 import { ChangeEvent } from 'react';
 import { select } from '@wordpress/data';
 import { MailPoet } from 'mailpoet';
-import {
-  ReduxStoreConfig,
-  StoreDescriptor,
-} from '@wordpress/data/build-types/types';
 
 import {
   Actions,
@@ -12,16 +8,10 @@ import {
   SetSegmentActionType,
   SetErrorsActionType,
   SetSegmentFilerActionType,
-  StateType,
   SubscriberCount,
   SetSubscriberCountActionType,
 } from '../types';
-import * as selectors from './selectors';
-
-// workaround to avoid import cycles
-const store = { name: 'mailpoet-dynamic-segments-form' } as StoreDescriptor<
-  ReduxStoreConfig<StateType, null, typeof selectors>
->;
+import { storeName } from './constants';
 
 export function setSegment(segment: AnyFormItem): SetSegmentActionType {
   return {
@@ -90,7 +80,7 @@ export function updateSubscriberCount(
   };
 }
 
-export function* pageLoaded(segmentId?: number): Generator<{
+export function* pageLoaded(segmentId?: number | string): Generator<{
   type: string;
   segmentId?: number;
 }> {
@@ -127,7 +117,7 @@ export function* handleSave(segmentId?: number): Generator<{
   type: string;
   segment?: AnyFormItem;
 }> {
-  const segment = select(store).getSegment();
+  const segment = select(storeName).getSegment();
   yield setErrors([]);
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore -- I don't know how to configure typescript to understand this

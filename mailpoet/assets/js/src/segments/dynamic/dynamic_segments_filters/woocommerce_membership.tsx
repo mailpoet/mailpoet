@@ -13,7 +13,7 @@ import {
   WindowMembershipPlans,
   WooCommerceMembershipFormItem,
 } from '../types';
-import { store } from '../store/store';
+import { storeName } from '../store';
 import { WooCommerceMembershipsActionTypes } from './woocommerce_options';
 
 export function validateWooCommerceMembership(
@@ -38,15 +38,15 @@ export function WooCommerceMembershipFields({
   filterIndex,
 }: Props): JSX.Element {
   const segment: WooCommerceMembershipFormItem = useSelect(
-    (select) => select(store).getSegmentFilter(filterIndex),
+    (select) => select(storeName).getSegmentFilter(filterIndex),
     [filterIndex],
   );
 
   const { updateSegmentFilter, updateSegmentFilterFromEvent } =
-    useDispatch(store);
+    useDispatch(storeName);
 
   const membershipPlans: WindowMembershipPlans = useSelect(
-    (select) => select(store).getMembershipPlans(),
+    (select) => select(storeName).getMembershipPlans(),
     [],
   );
   const planOptions = membershipPlans.map((plan) => ({

@@ -5,7 +5,7 @@ import {
   EmailFormItem,
   WordpressRoleFormItem,
 } from '../types';
-import { store } from '../store/store';
+import { storeName } from '../store';
 
 import { EmailOpenStatisticsFields } from './email_statistics_opens';
 import { EmailClickStatisticsFields } from './email_statistics_clicks';
@@ -53,7 +53,7 @@ type Props = {
 
 export function EmailFields({ filterIndex }: Props): JSX.Element {
   const segment: WordpressRoleFormItem = useSelect(
-    (select) => select(store).getSegmentFilter(filterIndex),
+    (select) => select(storeName).getSegmentFilter(filterIndex),
     [filterIndex],
   );
 

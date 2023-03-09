@@ -8,8 +8,8 @@ import { createReducer } from './reducer';
 import * as actions from './actions';
 import * as controls from './controls';
 import { getInitialState } from './initial_state';
+import { storeName } from './constants';
 
-const storeName = 'mailpoet-dynamic-segments-form';
 export const createStore = () => {
   const defaultState = getInitialState();
   const config = {
@@ -25,7 +25,8 @@ export const createStore = () => {
   return store;
 };
 
-export const store: ReturnType<typeof createStore> = {
-  name: storeName,
-  instantiate: (registry) => createStore().instantiate(registry),
-};
+declare module '@wordpress/data' {
+  interface StoreMap {
+    [storeName]: ReturnType<typeof createStore>;
+  }
+}

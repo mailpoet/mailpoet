@@ -9,7 +9,7 @@ import { Grid } from 'common/grid';
 import { Input } from 'common/form/input/input';
 
 import { WordpressRoleFormItem } from '../types';
-import { store } from '../store/store';
+import { storeName } from '../store';
 
 export enum SubscribedDateOperator {
   BEFORE = 'before',
@@ -55,12 +55,12 @@ type Props = {
 
 export function SubscribedDateFields({ filterIndex }: Props): JSX.Element {
   const segment: WordpressRoleFormItem = useSelect(
-    (select) => select(store).getSegmentFilter(filterIndex),
+    (select) => select(storeName).getSegmentFilter(filterIndex),
     [filterIndex],
   );
 
   const { updateSegmentFilter, updateSegmentFilterFromEvent } =
-    useDispatch(store);
+    useDispatch(storeName);
 
   useEffect(() => {
     if (

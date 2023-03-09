@@ -7,7 +7,7 @@ import { Grid } from 'common/grid';
 import { Input } from 'common/form/input/input';
 
 import { WordpressRoleFormItem } from '../types';
-import { store } from '../store/store';
+import { storeName } from '../store';
 
 export enum SubscriberScoreOperator {
   HIGHER_THAN = 'higherThan',
@@ -68,12 +68,12 @@ function replaceSubscriberScoreSentence(
 
 export function SubscriberScoreFields({ filterIndex }: Props): JSX.Element {
   const segment: WordpressRoleFormItem = useSelect(
-    (select) => select(store).getSegmentFilter(filterIndex),
+    (select) => select(storeName).getSegmentFilter(filterIndex),
     [filterIndex],
   );
 
   const { updateSegmentFilter, updateSegmentFilterFromEvent } =
-    useDispatch(store);
+    useDispatch(storeName);
 
   useEffect(() => {
     if (

@@ -14,7 +14,7 @@ import {
   AnyValueTypes,
   SubscriberActionTypes,
 } from '../types';
-import { store } from '../store/store';
+import { storeName } from '../store';
 
 type Props = {
   filterIndex: number;
@@ -22,12 +22,12 @@ type Props = {
 
 export function WordpressRoleFields({ filterIndex }: Props): JSX.Element {
   const segment: WordpressRoleFormItem = useSelect(
-    (select) => select(store).getSegmentFilter(filterIndex),
+    (select) => select(storeName).getSegmentFilter(filterIndex),
     [filterIndex],
   );
 
   const { updateSegmentFilter, updateSegmentFilterFromEvent } =
-    useDispatch(store);
+    useDispatch(storeName);
 
   useEffect(() => {
     if (
@@ -41,7 +41,7 @@ export function WordpressRoleFields({ filterIndex }: Props): JSX.Element {
   }, [updateSegmentFilter, segment, filterIndex]);
 
   const wordpressRoles: WindowEditableRoles = useSelect(
-    (select) => select(store).getWordpressRoles(),
+    (select) => select(storeName).getWordpressRoles(),
     [],
   );
   const options = wordpressRoles.map((currentValue) => ({

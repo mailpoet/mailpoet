@@ -14,7 +14,7 @@ import {
   SelectOption,
   WindowCustomFields,
 } from '../types';
-import { store } from '../store/store';
+import { storeName } from '../store';
 
 enum CustomFieldsTypes {
   DATE = 'date',
@@ -59,14 +59,14 @@ type Props = {
 
 export function MailPoetCustomFields({ filterIndex }: Props): JSX.Element {
   const segment: WordpressRoleFormItem = useSelect(
-    (select) => select(store).getSegmentFilter(filterIndex),
+    (select) => select(storeName).getSegmentFilter(filterIndex),
     [filterIndex],
   );
 
-  const { updateSegmentFilter } = useDispatch(store);
+  const { updateSegmentFilter } = useDispatch(storeName);
 
   const customFieldsList: WindowCustomFields = useSelect(
-    (select) => select(store).getCustomFieldsList(),
+    (select) => select(storeName).getCustomFieldsList(),
     [],
   );
   const selectedCustomField = find(

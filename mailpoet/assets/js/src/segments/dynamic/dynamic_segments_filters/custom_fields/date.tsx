@@ -9,7 +9,7 @@ import { Grid } from 'common/grid';
 import { Datepicker } from 'common/datepicker/datepicker';
 
 import { WordpressRoleFormItem, OnFilterChange } from '../../types';
-import { store } from '../../store/store';
+import { storeName } from '../../store';
 
 interface ComponentProps {
   onChange: OnFilterChange;
@@ -229,11 +229,11 @@ export function CustomFieldDate({
   filterIndex,
 }: Props): JSX.Element {
   const segment: WordpressRoleFormItem = useSelect(
-    (select) => select(store).getSegmentFilter(filterIndex),
+    (select) => select(storeName).getSegmentFilter(filterIndex),
     [filterIndex],
   );
 
-  const { updateSegmentFilter } = useDispatch(store);
+  const { updateSegmentFilter } = useDispatch(storeName);
 
   useEffect(() => {
     if (segment.date_type !== customField.params.date_type) {
