@@ -18,6 +18,7 @@ class BlockStylesRenderer {
     $rules = [];
     if (isset($styles['full_width']) && intval($styles['full_width'])) {
       $rules[] = 'width:100%;';
+      $rules[] = 'box-sizing:border-box;'; // to avoid a larger width increased by padding
     }
     if (isset($styles['background_color']) && empty($styles['gradient'])) {
       $rules[] = "background-color:{$styles['background_color']};";
