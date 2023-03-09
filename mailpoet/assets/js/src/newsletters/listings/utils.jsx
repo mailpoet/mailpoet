@@ -100,9 +100,7 @@ export const newsletterTypesWithActivation = [
 ];
 
 export const confirmEdit = (newsletter) => {
-  const redirectToEditing = () => {
-    window.location.href = `?page=mailpoet-newsletter-editor&id=${newsletter.id}`;
-  };
+  const editorHref = `?page=mailpoet-newsletter-editor&id=${newsletter.id}`;
 
   if (
     newsletterTypesWithActivation.includes(newsletter.type) &&
@@ -113,9 +111,11 @@ export const confirmEdit = (newsletter) => {
         'To edit this email, it needs to be deactivated. You can activate it again after you make the changes.',
         'mailpoet',
       ),
-      onConfirm: redirectToEditing,
+      onConfirm: () => {
+        window.location.href = `${editorHref}&deactivationConfirmed=yes`;
+      },
     });
   } else {
-    redirectToEditing();
+    window.location.href = editorHref;
   }
 };

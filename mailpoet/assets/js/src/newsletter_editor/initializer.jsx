@@ -86,6 +86,72 @@ const initializeEditor = (config) => {
     .done((response) => {
       const newsletter = response.data;
 
+      if (
+        newsletter.status === 'sending' &&
+        newsletter.queue &&
+        newsletter.queue.status === null
+      ) {
+        MailPoet.Ajax.post({
+          api_version: window.mailpoet_api_version,
+          endpoint: 'sending_queue',
+          action: 'pause',
+          data: {
+            newsletter_id: newsletter.id,
+          },
+        })
+          .done(() =>
+            MailPoet.Notice.system(
+              __('Email sending has been paused.', 'mailpoet'),
+            ),
+          )
+          .fail((pauseFailResponse) => {
+            if (pauseFailResponse.errors.length > 0) {
+              MailPoet.Notice.error(
+                pauseFailResponse.errors.map((error) => error.message),
+                { scroll: true, static: true },
+              );
+            }
+          });
+      } else if (
+        newsletterTypesWithActivation.includes(newsletter.type) &&
+        newsletter.status === 'active'
+      ) {
+        // Users can confirm deactivation before visiting the page
+        let deactivationConfirmed =
+          getUrlParam('deactivationConfirmed') === 'yes';
+        if (!deactivationConfirmed) {
+          // eslint-disable-next-line no-alert
+          deactivationConfirmed = window.confirm(
+            MailPoet.I18n.t('confirmAutomaticNewsletterEdit'),
+          );
+        }
+        if (!deactivationConfirmed) {
+          window.location = `admin.php?page=mailpoet-newsletters#/${newsletter.type}`;
+          return;
+        }
+        MailPoet.Ajax.post({
+          api_version: window.mailpoet_api_version,
+          endpoint: 'newsletters',
+          action: 'setStatus',
+          data: {
+            id: newsletter.id,
+            status: 'draft',
+          },
+        })
+          .done((setStatusResponse) => {
+            if (setStatusResponse.data.status === 'draft') {
+              MailPoet.Notice.system(
+                __('This email was deactivated.', 'mailpoet'),
+              );
+            }
+          })
+          .fail((pauseFailResponse) => {
+            MailPoet.Notice.error(
+              pauseFailResponse.errors.map((error) => error.message),
+              { scroll: true, static: true },
+            );
+          });
+      }
       Promise.resolve(fetchAutomaticEmailShortcodes(config, newsletter))
         .then((extendedConfig) => {
           const blockDefaults = {
@@ -110,60 +176,6 @@ const initializeEditor = (config) => {
           : newsletter.type,
         newsletter.options,
       );
-
-      if (
-        newsletter.status === 'sending' &&
-        newsletter.queue &&
-        newsletter.queue.status === null
-      ) {
-        MailPoet.Ajax.post({
-          api_version: window.mailpoet_api_version,
-          endpoint: 'sending_queue',
-          action: 'pause',
-          data: {
-            newsletter_id: newsletter.id,
-          },
-        })
-          .done(() =>
-            MailPoet.Notice.success(
-              __('Email sending has been paused.', 'mailpoet'),
-            ),
-          )
-          .fail((pauseFailResponse) => {
-            if (pauseFailResponse.errors.length > 0) {
-              MailPoet.Notice.error(
-                pauseFailResponse.errors.map((error) => error.message),
-                { scroll: true, static: true },
-              );
-            }
-          });
-      } else if (
-        newsletterTypesWithActivation.includes(newsletter.type) &&
-        newsletter.status === 'active'
-      ) {
-        MailPoet.Ajax.post({
-          api_version: window.mailpoet_api_version,
-          endpoint: 'newsletters',
-          action: 'setStatus',
-          data: {
-            id: newsletter.id,
-            status: 'draft',
-          },
-        })
-          .done((setStatusResponse) => {
-            if (setStatusResponse.data.status === 'draft') {
-              MailPoet.Notice.success(
-                __('This email was deactivated.', 'mailpoet'),
-              );
-            }
-          })
-          .fail((pauseFailResponse) => {
-            MailPoet.Notice.error(
-              pauseFailResponse.errors.map((error) => error.message),
-              { scroll: true, static: true },
-            );
-          });
-      }
     })
     .fail((response) => {
       if (response.errors.length > 0) {
