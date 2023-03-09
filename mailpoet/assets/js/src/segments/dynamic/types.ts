@@ -116,6 +116,7 @@ export type AnyFormItem =
   | WordpressRoleFormItem
   | WooCommerceFormItem
   | WooCommerceSubscriptionFormItem
+  | WooCommerceMembershipFormItem
   | EmailFormItem;
 
 export interface SubscriberCount {
@@ -226,8 +227,13 @@ export interface ActionType {
   type: Actions;
 }
 
+export type UpdateSegmentActionData =
+  | AnyFormItem
+  | { name: string }
+  | { description: string };
+
 export interface SetSegmentActionType extends ActionType {
-  segment: AnyFormItem;
+  segment: UpdateSegmentActionData;
 }
 
 export interface SetSegmentFilerActionType extends ActionType {

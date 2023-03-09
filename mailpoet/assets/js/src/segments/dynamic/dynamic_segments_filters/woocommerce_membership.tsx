@@ -37,8 +37,11 @@ type Props = {
 export function WooCommerceMembershipFields({
   filterIndex,
 }: Props): JSX.Element {
-  const segment: WooCommerceMembershipFormItem = useSelect(
-    (select) => select(storeName).getSegmentFilter(filterIndex),
+  const segment = useSelect(
+    (select) =>
+      select(storeName).getSegmentFilter(
+        filterIndex,
+      ) as WooCommerceMembershipFormItem,
     [filterIndex],
   );
 

@@ -38,8 +38,11 @@ type Props = {
 export function WooCommerceSubscriptionFields({
   filterIndex,
 }: Props): JSX.Element {
-  const segment: WooCommerceSubscriptionFormItem = useSelect(
-    (select) => select(storeName).getSegmentFilter(filterIndex),
+  const segment = useSelect(
+    (select) =>
+      select(storeName).getSegmentFilter(
+        filterIndex,
+      ) as WooCommerceSubscriptionFormItem,
     [filterIndex],
   );
 
