@@ -6,8 +6,13 @@ import PropTypes from 'prop-types';
 
 import { MailPoet } from 'mailpoet';
 import { FormField } from 'form/fields/field.jsx';
-import { Button } from 'common';
+import { Button, registerTranslations } from 'common';
 
+/**
+ * Translations need to be registered before any form rendering starts to make sure
+ * they exist prior to any rendering
+ */
+registerTranslations();
 class FormComponent extends Component {
   constructor(props) {
     super(props);

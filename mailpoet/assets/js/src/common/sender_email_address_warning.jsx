@@ -70,6 +70,7 @@ function SenderEmailAddressWarning({
             {ReactStringReplace(
               __(
                 'Email violates Sender Domain’s DMARC policy. Please set up [link]sender authentication[/link].',
+                'mailpoet',
               ),
               /\[link](.*?)\[\/link]/g,
               (match) => (
