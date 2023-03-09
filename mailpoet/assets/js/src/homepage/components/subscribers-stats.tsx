@@ -4,7 +4,7 @@ import { trendingUp } from '@wordpress/icons';
 import { useSelect } from '@wordpress/data';
 import classnames from 'classnames';
 import { MailPoet } from 'mailpoet';
-import { store } from 'homepage/store/store';
+import { storeName } from 'homepage/store/store';
 import { trackCtaAndRedirect } from 'homepage/tracking';
 import { ListingsEngagementScore } from 'subscribers/listings_engagement_score';
 import { ContentSection } from './content-section';
@@ -17,9 +17,9 @@ const handleCtaClick = (event: MouseEvent, cta: string, link: string) => {
 export function SubscribersStats(): JSX.Element {
   const { globalChange, listsChange, hasForms } = useSelect(
     (select) => ({
-      globalChange: select(store).getGlobalSubscriberStatsChange(),
-      listsChange: select(store).getListsSubscriberStatsChange(),
-      hasForms: select(store).getHasForms(),
+      globalChange: select(storeName).getGlobalSubscriberStatsChange(),
+      listsChange: select(storeName).getListsSubscriberStatsChange(),
+      hasForms: select(storeName).getHasForms(),
     }),
     [],
   );
