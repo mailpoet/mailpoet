@@ -1,5 +1,8 @@
 import { select, dispatch } from '@wordpress/data';
-import { SETTINGS_DEFAULTS } from '@wordpress/block-editor';
+import {
+  SETTINGS_DEFAULTS,
+  store as blockEditorStore,
+} from '@wordpress/block-editor';
 import {
   ReduxStoreConfig,
   StoreDescriptor,
@@ -191,7 +194,7 @@ export function changeActiveSidebar(
 ): CHANGE_ACTIVE_SIDEBAR {
   // Ensure no blocks are selected
   if (sidebar === 'placement_settings') {
-    dispatch('core/block-editor').clearSelectedBlock();
+    dispatch(blockEditorStore).clearSelectedBlock();
   }
   return {
     type: 'CHANGE_ACTIVE_SIDEBAR',

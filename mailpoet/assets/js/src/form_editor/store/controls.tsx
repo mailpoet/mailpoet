@@ -9,17 +9,21 @@ import {
   getBlockType,
 } from '@wordpress/blocks';
 import { callApi as CALL_API } from 'common/controls/call_api';
-import { SETTINGS_DEFAULTS } from '@wordpress/block-editor';
+import {
+  SETTINGS_DEFAULTS,
+  store as blockEditorStore,
+} from '@wordpress/block-editor';
+import {
+  ReduxStoreConfig,
+  StoreDescriptor,
+} from '@wordpress/data/build-types/types';
+
 import { blocksToFormBodyFactory } from './blocks_to_form_body';
 import { registerCustomFieldBlock } from '../blocks/blocks.jsx';
 import { mapFormDataBeforeSaving } from './map_form_data_before_saving.jsx';
 import { findBlock } from './find_block';
 import { formatCustomFieldBlockName } from '../blocks/format_custom_field_block_name';
 import { getCustomFieldBlockSettings } from '../blocks/custom_fields_blocks';
-import {
-  ReduxStoreConfig,
-  StoreDescriptor,
-} from '@wordpress/data/build-types/types';
 import { State } from './state_types';
 import * as actions from './actions';
 import { selectors } from './selectors';
@@ -145,7 +149,7 @@ export const controls = {
         });
         const blockName = registerCustomFieldBlock(customField);
         const customFieldBlock = createBlock(blockName);
-        dispatch('core/block-editor').replaceBlock(clientId, customFieldBlock);
+        dispatch(blockEditorStore).replaceBlock(clientId, customFieldBlock);
         void dispatch(store).createCustomFieldDone(response.data);
       })
       .fail((response) => {
@@ -185,7 +189,7 @@ export const controls = {
         if (customFieldBlock) {
           unregisterBlockType(customFieldBlockName);
         }
-        dispatch('core/block-editor').removeBlock(clientId);
+        dispatch(blockEditorStore).removeBlock(clientId);
       })
       .fail((response) => {
         void dispatch(store).deleteCustomFieldFailed(
@@ -216,7 +220,7 @@ export const controls = {
       }
       return updatedBlock;
     });
-    dispatch('core/block-editor').resetBlocks(updatedBlocks);
+    dispatch(blockEditorStore).resetBlocks(updatedBlocks);
   },
 
   async TUTORIAL_DISMISS() {
@@ -265,7 +269,7 @@ export const controls = {
       }
       fixedBlocks.push(currentSubmit);
     }
-    dispatch('core/block-editor').resetBlocks(fixedBlocks);
+    dispatch(blockEditorStore).resetBlocks(fixedBlocks);
   },
 
   STORE_LOCALLY(actionData) {

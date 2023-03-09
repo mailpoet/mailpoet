@@ -1,5 +1,9 @@
 import { useEffect } from 'react';
 import { useDispatch, useSelect } from '@wordpress/data';
+import {
+  ReduxStoreConfig,
+  StoreDescriptor,
+} from '@wordpress/data/build-types/types';
 import { __ } from '@wordpress/i18n';
 import classnames from 'classnames';
 import { MailPoet } from 'mailpoet';
@@ -7,6 +11,14 @@ import { FormSettings } from 'form_editor/components/form_settings/form_settings
 import { BlockSettings } from './block_settings.jsx';
 import { SidebarHeader } from './sidebar_header';
 import { store } from '../../store';
+
+// workaround for block editor store useSelect
+interface BlockEditorStoreSelectors {
+  getSelectedBlockClientId: () => string;
+}
+const blockEditorStore = { name: 'core/block-editor' } as StoreDescriptor<
+  ReduxStoreConfig<null, null, BlockEditorStoreSelectors>
+>;
 
 type Props = {
   onClose: () => void;
@@ -19,7 +31,7 @@ export function DefaultSidebar({ onClose }: Props): JSX.Element {
   );
 
   const selectedBlockId = useSelect(
-    (select) => select('core/block-editor').getSelectedBlockClientId(),
+    (select) => select(blockEditorStore).getSelectedBlockClientId(),
     [],
   );
 
