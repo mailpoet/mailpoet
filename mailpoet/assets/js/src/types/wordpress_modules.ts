@@ -68,14 +68,9 @@ declare module '@wordpress/preferences' {
 // Types in @types/wordpress__notices are outdated and build on top of @types/wordpress__data
 declare module '@wordpress/notices' {
   import { StoreDescriptor } from '@wordpress/data/build-types/types';
+  import { Notice } from '@wordpress/notices/index';
 
-  interface Notice {
-    id: string;
-    isDismissible: boolean;
-    type: 'snackbar' | 'default';
-    status: string;
-    content: string;
-  }
+  export * from '@wordpress/notices/index';
 
   // We don't want to use the types from @types/wordpress__notices but the package
   // is installed anyway as a subdependency of @types/wordpress__components
