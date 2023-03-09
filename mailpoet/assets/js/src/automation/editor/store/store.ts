@@ -29,6 +29,12 @@ export const createStore = () => {
   return store;
 };
 
+declare module '@wordpress/data' {
+  interface StoreMap {
+    [storeName]: ReturnType<typeof createStore>;
+  }
+}
+
 export const store: ReturnType<typeof createStore> = {
   name: storeName,
   instantiate: (registry) => createStore().instantiate(registry),
