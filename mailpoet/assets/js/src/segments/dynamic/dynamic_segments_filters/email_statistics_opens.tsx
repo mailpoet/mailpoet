@@ -13,7 +13,7 @@ import {
   SelectOption,
   WindowNewslettersList,
 } from '../types';
-import { store } from '../store/store';
+import { storeName } from '../store';
 
 type Props = {
   filterIndex: number;
@@ -21,15 +21,15 @@ type Props = {
 
 export function EmailOpenStatisticsFields({ filterIndex }: Props): JSX.Element {
   const segment: EmailFormItem = useSelect(
-    (select) => select(store).getSegmentFilter(filterIndex),
+    (select) => select(storeName).getSegmentFilter(filterIndex),
     [filterIndex],
   );
 
   const { updateSegmentFilter, updateSegmentFilterFromEvent } =
-    useDispatch(store);
+    useDispatch(storeName);
 
   const newslettersList: WindowNewslettersList = useSelect(
-    (select) => select(store).getNewslettersList(),
+    (select) => select(storeName).getNewslettersList(),
     [],
   );
 

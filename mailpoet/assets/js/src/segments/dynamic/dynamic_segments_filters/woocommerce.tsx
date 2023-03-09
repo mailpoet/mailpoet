@@ -15,7 +15,7 @@ import {
   WindowWooCommerceCountries,
   WooCommerceFormItem,
 } from '../types';
-import { store } from '../store/store';
+import { storeName } from '../store';
 import {
   WooCommerceActionTypes,
   actionTypesWithDefaultTypeAny,
@@ -84,27 +84,27 @@ export const WooCommerceFields: FunctionComponent<Props> = ({
   filterIndex,
 }) => {
   const segment: WooCommerceFormItem = useSelect(
-    (select) => select(store).getSegmentFilter(filterIndex),
+    (select) => select(storeName).getSegmentFilter(filterIndex),
     [filterIndex],
   );
 
   const { updateSegmentFilter, updateSegmentFilterFromEvent } =
-    useDispatch(store);
+    useDispatch(storeName);
 
   const productCategories: WindowProductCategories = useSelect(
-    (select) => select(store).getProductCategories(),
+    (select) => select(storeName).getProductCategories(),
     [],
   );
   const woocommerceCountries: WindowWooCommerceCountries = useSelect(
-    (select) => select(store).getWooCommerceCountries(),
+    (select) => select(storeName).getWooCommerceCountries(),
     [],
   );
   const products: WindowProducts = useSelect(
-    (select) => select(store).getProducts(),
+    (select) => select(storeName).getProducts(),
     [],
   );
   const wooCurrencySymbol: string = useSelect(
-    (select) => select(store).getWooCommerceCurrencySymbol(),
+    (select) => select(storeName).getWooCommerceCurrencySymbol(),
     [],
   );
   const productOptions = products.map((product) => ({

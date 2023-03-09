@@ -13,7 +13,7 @@ import {
   StaticSegment,
   WordpressRoleFormItem,
 } from '../types';
-import { store } from '../store/store';
+import { storeName } from '../store';
 
 export function validateSubscribedToList(
   formItems: WordpressRoleFormItem,
@@ -33,16 +33,16 @@ type Props = {
 
 export function SubscribedToList({ filterIndex }: Props): JSX.Element {
   const segment: WordpressRoleFormItem = useSelect(
-    (select) => select(store).getSegmentFilter(filterIndex),
+    (select) => select(storeName).getSegmentFilter(filterIndex),
     [filterIndex],
   );
   const staticSegmentsList: StaticSegment[] = useSelect(
-    (select) => select(store).getStaticSegmentsList(),
+    (select) => select(storeName).getStaticSegmentsList(),
     [],
   );
 
   const { updateSegmentFilter, updateSegmentFilterFromEvent } =
-    useDispatch(store);
+    useDispatch(storeName);
 
   useEffect(() => {
     if (

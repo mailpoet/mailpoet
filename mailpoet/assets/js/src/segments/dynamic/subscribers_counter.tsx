@@ -6,20 +6,20 @@ import { isFormValid } from './validator';
 import { loadCount } from './subscribers_calculator';
 
 import { Segment, SubscriberCount } from './types';
-import { store } from './store/store';
+import { storeName } from './store';
 
 function SubscribersCounter(): JSX.Element {
   const segment: Segment = useSelect(
-    (select) => select(store).getSegment(),
+    (select) => select(storeName).getSegment(),
     [],
   );
 
   const subscribersCount: SubscriberCount = useSelect(
-    (select) => select(store).getSubscriberCount(),
+    (select) => select(storeName).getSubscriberCount(),
     [],
   );
 
-  const { updateSubscriberCount } = useDispatch(store);
+  const { updateSubscriberCount } = useDispatch(storeName);
 
   const serializedSegment = JSON.stringify(segment);
   const latestRequestIdRef = useRef(1);

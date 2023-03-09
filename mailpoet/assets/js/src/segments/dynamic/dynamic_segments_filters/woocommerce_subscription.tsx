@@ -13,7 +13,7 @@ import {
   WindowSubscriptionProducts,
   WooCommerceSubscriptionFormItem,
 } from '../types';
-import { store } from '../store/store';
+import { storeName } from '../store';
 import { WooCommerceSubscriptionsActionTypes } from './woocommerce_options';
 
 export function validateWooCommerceSubscription(
@@ -39,15 +39,15 @@ export function WooCommerceSubscriptionFields({
   filterIndex,
 }: Props): JSX.Element {
   const segment: WooCommerceSubscriptionFormItem = useSelect(
-    (select) => select(store).getSegmentFilter(filterIndex),
+    (select) => select(storeName).getSegmentFilter(filterIndex),
     [filterIndex],
   );
 
   const { updateSegmentFilter, updateSegmentFilterFromEvent } =
-    useDispatch(store);
+    useDispatch(storeName);
 
   const subscriptionProducts: WindowSubscriptionProducts = useSelect(
-    (select) => select(store).getSubscriptionProducts(),
+    (select) => select(storeName).getSubscriptionProducts(),
     [],
   );
   const productOptions = subscriptionProducts.map((product) => ({

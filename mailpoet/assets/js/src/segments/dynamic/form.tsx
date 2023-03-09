@@ -16,7 +16,7 @@ import { FormFilterFields } from './form_filter_fields';
 import { isFormValid } from './validator';
 import { PrivacyProtectionNotice } from './privacy_protection_notice';
 import { DynamicSegmentsPremiumBanner } from './premium_banner';
-import { store } from './store/store';
+import { storeName } from './store';
 
 import {
   FilterRow,
@@ -45,28 +45,32 @@ const FilterAfter = Hooks.applyFilters(
 
 export function Form({ segmentId }: Props): JSX.Element {
   const segment: Segment = useSelect(
-    (select) => select(store).getSegment(),
+    (select) => select(storeName).getSegment(),
     [],
   );
 
   const segmentFilters: GroupFilterValue[] = useSelect(
-    (select) => select(store).getAvailableFilters(),
+    (select) => select(storeName).getAvailableFilters(),
     [],
   );
 
   const filterRows: FilterRow[] = useSelect(
-    (select) => select(store).findFiltersValueForSegment(segment),
+    (select) => select(storeName).findFiltersValueForSegment(segment),
     [segment],
   );
 
   const subscriberCount: SubscriberCount = useSelect(
-    (select) => select(store).getSubscriberCount(),
+    (select) => select(storeName).getSubscriberCount(),
     [],
   );
 
-  const errors: string[] = useSelect((select) => select(store).getErrors(), []);
+  const errors: string[] = useSelect(
+    (select) => select(storeName).getErrors(),
+    [],
+  );
 
-  const { updateSegment, updateSegmentFilter, handleSave } = useDispatch(store);
+  const { updateSegment, updateSegmentFilter, handleSave } =
+    useDispatch(storeName);
 
   const [premiumBannerVisible, setPremiumBannerVisible] = useState(false);
   const showPremiumBanner = (): void => {

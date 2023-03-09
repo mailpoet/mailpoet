@@ -1,7 +1,7 @@
 import { useSelect } from '@wordpress/data';
 
 import { WordpressRoleFormItem, SubscriberActionTypes } from '../types';
-import { store } from '../store/store';
+import { storeName } from '../store';
 import { WordpressRoleFields } from './subscriber_wordpress_role';
 import {
   SubscriberScoreFields,
@@ -80,7 +80,7 @@ type Props = {
 
 export function SubscriberFields({ filterIndex }: Props): JSX.Element {
   const segment: WordpressRoleFormItem = useSelect(
-    (select) => select(store).getSegmentFilter(filterIndex),
+    (select) => select(storeName).getSegmentFilter(filterIndex),
     [filterIndex],
   );
 

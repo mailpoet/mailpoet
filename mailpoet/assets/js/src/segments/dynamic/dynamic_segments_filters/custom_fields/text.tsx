@@ -7,7 +7,7 @@ import { Input } from 'common/form/input/input';
 import { Grid } from 'common/grid';
 
 import { WordpressRoleFormItem } from '../../types';
-import { store } from '../../store/store';
+import { storeName } from '../../store';
 
 export function validateText(item: WordpressRoleFormItem): boolean {
   return (
@@ -27,12 +27,12 @@ type Props = {
 
 export function Text({ filterIndex }: Props): JSX.Element {
   const segment: WordpressRoleFormItem = useSelect(
-    (select) => select(store).getSegmentFilter(filterIndex),
+    (select) => select(storeName).getSegmentFilter(filterIndex),
     [filterIndex],
   );
 
   const { updateSegmentFilterFromEvent, updateSegmentFilter } =
-    useDispatch(store);
+    useDispatch(storeName);
 
   useEffect(() => {
     if (segment.operator === undefined) {
