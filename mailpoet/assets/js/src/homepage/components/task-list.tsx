@@ -3,7 +3,7 @@ import { useSelect } from '@wordpress/data';
 import { DropdownMenu } from '@wordpress/components';
 import { moreVertical } from '@wordpress/icons';
 import { stopLinkPropagation } from 'common';
-import { store } from 'homepage/store/store';
+import { storeName } from 'homepage/store/store';
 import { Task } from './task';
 
 type Props = {
@@ -18,11 +18,11 @@ export function TaskList({ onHide }: Props): JSX.Element {
     canImportWooCommerceSubscribers,
   } = useSelect(
     (select) => ({
-      tasksStatus: select(store).getTasksStatus(),
-      currentTask: select(store).getCurrentTask(),
-      hasImportedSubscribers: select(store).getHasImportedSubscribers(),
+      tasksStatus: select(storeName).getTasksStatus(),
+      currentTask: select(storeName).getCurrentTask(),
+      hasImportedSubscribers: select(storeName).getHasImportedSubscribers(),
       canImportWooCommerceSubscribers:
-        select(store).getCanImportWooCommerceSubscribers(),
+        select(storeName).getCanImportWooCommerceSubscribers(),
     }),
     [],
   );
