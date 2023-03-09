@@ -1,7 +1,7 @@
 import { Button } from '@wordpress/components';
 import { useDispatch } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
-import { stepSidebarKey, store, automationSidebarKey } from '../../store';
+import { stepSidebarKey, storeName, automationSidebarKey } from '../../store';
 
 // See:
 //   https://github.com/WordPress/gutenberg/blob/9601a33e30ba41bac98579c8d822af63dd961488/packages/edit-post/src/components/sidebar/settings-header/index.js
@@ -12,7 +12,7 @@ type Props = {
 };
 
 export function Header({ sidebarKey }: Props): JSX.Element {
-  const { openSidebar } = useDispatch(store);
+  const { openSidebar } = useDispatch(storeName);
   const openAutomationSettings = () => openSidebar(automationSidebarKey);
   const openStepSettings = () => openSidebar(stepSidebarKey);
 

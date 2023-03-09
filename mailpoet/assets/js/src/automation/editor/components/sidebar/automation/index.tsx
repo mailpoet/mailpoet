@@ -1,7 +1,7 @@
 import { PanelBody, PanelRow } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
-import { store } from '../../../store';
+import { storeName } from '../../../store';
 import { TrashButton } from '../../actions/trash-button';
 import { locale } from '../../../../config';
 import { Hooks } from '../../../../../hooks';
@@ -29,7 +29,7 @@ function AutomationSettings(): JSX.Element {
 export function AutomationSidebar(): JSX.Element {
   const { automationData } = useSelect(
     (select) => ({
-      automationData: select(store).getAutomationData(),
+      automationData: select(storeName).getAutomationData(),
     }),
     [],
   );

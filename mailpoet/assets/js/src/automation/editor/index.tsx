@@ -3,12 +3,7 @@ import ReactDOM from 'react-dom';
 import { useEffect, useState } from 'react';
 import { Button, Icon, Popover, SlotFillProvider } from '@wordpress/components';
 import { store as noticesStore } from '@wordpress/notices';
-import {
-  dispatch,
-  select as globalSelect,
-  StoreDescriptor,
-  useSelect,
-} from '@wordpress/data';
+import { dispatch, select as globalSelect, useSelect } from '@wordpress/data';
 import { wordpress } from '@wordpress/icons';
 import {
   ComplementaryArea,
@@ -24,7 +19,7 @@ import { KeyboardShortcuts } from './components/keyboard-shortcuts';
 import { EditorNotices } from './components/notices';
 import { Sidebar } from './components/sidebar';
 import { Automation } from './components/automation';
-import { createStore, store } from './store';
+import { createStore, storeName } from './store';
 import { initializeApi } from '../api';
 import { initialize as initializeCoreIntegration } from '../integrations/core';
 import { initialize as initializeMailPoetIntegration } from '../integrations/mailpoet';
@@ -48,7 +43,7 @@ const showInserterSidebar = false;
  * see MAILPOET-4744
  */
 function updatingActiveAutomationNotPossible() {
-  const automation = globalSelect(store).getAutomationData();
+  const automation = globalSelect(storeName).getAutomationData();
   if (
     ![AutomationStatus.ACTIVE, AutomationStatus.DEACTIVATING].includes(
       automation.status,
@@ -59,7 +54,7 @@ function updatingActiveAutomationNotPossible() {
   if (automation.stats.totals.in_progress === 0) {
     return;
   }
-  const { createNotice } = dispatch(noticesStore as StoreDescriptor);
+  const { createNotice } = dispatch(noticesStore);
   void createNotice(
     'success',
     __(
@@ -73,7 +68,7 @@ function updatingActiveAutomationNotPossible() {
 }
 
 function onUnload(event) {
-  if (!globalSelect(store).getAutomationSaved()) {
+  if (!globalSelect(storeName).getAutomationSaved()) {
     // eslint-disable-next-line no-param-reassign
     event.returnValue = __(
       'There are unsaved changes that will be lost. Do you want to continue?',
@@ -101,12 +96,12 @@ function Editor(): JSX.Element {
     automation,
   } = useSelect(
     (select) => ({
-      isFullscreenActive: select(store).isFeatureActive('fullscreenMode'),
-      isInserterOpened: select(store).isInserterSidebarOpened(),
-      isSidebarOpened: select(store).isSidebarOpened(),
-      isActivationPanelOpened: select(store).isActivationPanelOpened(),
-      showIconLabels: select(store).isFeatureActive('showIconLabels'),
-      automation: select(store).getAutomationData(),
+      isFullscreenActive: select(storeName).isFeatureActive('fullscreenMode'),
+      isInserterOpened: select(storeName).isInserterSidebarOpened(),
+      isSidebarOpened: select(storeName).isSidebarOpened(),
+      isActivationPanelOpened: select(storeName).isActivationPanelOpened(),
+      showIconLabels: select(storeName).isFeatureActive('showIconLabels'),
+      automation: select(storeName).getAutomationData(),
     }),
     [],
   );
@@ -160,7 +155,7 @@ function Editor(): JSX.Element {
               <Automation />
             </>
           }
-          sidebar={<ComplementaryArea.Slot scope={store} />}
+          sidebar={<ComplementaryArea.Slot scope={storeName} />}
           secondarySidebar={
             showInserterSidebar && isInserterOpened ? <InserterSidebar /> : null
           }

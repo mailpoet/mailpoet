@@ -1,8 +1,4 @@
 import { dispatch, select } from '@wordpress/data';
-import {
-  ReduxStoreConfig,
-  StoreDescriptor,
-} from '@wordpress/data/build-types/types';
 import { apiFetch } from '@wordpress/data-controls';
 import { store as noticesStore } from '@wordpress/notices';
 import { __ } from '@wordpress/i18n';
@@ -14,16 +10,6 @@ import { Feature, State } from './types';
 import { LISTING_NOTICE_PARAMETERS } from '../../listing/automation-listing-notices';
 import { MailPoet } from '../../../mailpoet';
 import { AutomationStatus } from '../../listing/automation';
-import * as selectors from './selectors';
-
-// workaround to avoid import cycles
-const store = { name: storeName } as StoreDescriptor<
-  ReduxStoreConfig<
-    State,
-    { closeActivationPanel: () => null },
-    typeof selectors
-  >
->;
 
 const trackErrors = (errors) => {
   if (!errors?.steps) {
@@ -31,7 +17,7 @@ const trackErrors = (errors) => {
   }
   const payload = Object.keys(errors.steps as object).map((stepId) => {
     const error = errors.steps[stepId];
-    const stepKey = select(store).getStepById(stepId)?.key;
+    const stepKey = select(storeName).getStepById(stepId)?.key;
     const fields = Object.keys(error.fields as object)
       .map((field) => `${stepKey}/${field}`)
       .reduce((prev, next) => prev.concat(next));
@@ -53,20 +39,20 @@ export const closeActivationPanel = () => ({
 });
 
 export const openSidebar = (key) => {
-  dispatch(store).closeActivationPanel();
+  dispatch(storeName).closeActivationPanel();
   return ({ registry }) =>
-    registry.dispatch(interfaceStore).enableComplementaryArea(store, key);
+    registry.dispatch(interfaceStore).enableComplementaryArea(storeName, key);
 };
 
 export const closeSidebar =
   () =>
   ({ registry }) =>
-    registry.dispatch(interfaceStore).disableComplementaryArea(store);
+    registry.dispatch(interfaceStore).disableComplementaryArea(storeName);
 
 export const toggleFeature =
   (feature: Feature) =>
   ({ registry }) =>
-    registry.dispatch(preferencesStore).toggle(store, feature);
+    registry.dispatch(preferencesStore).toggle(storeName, feature);
 
 export function toggleInserterSidebar() {
   return {
@@ -89,7 +75,7 @@ export function selectStep(value) {
 }
 
 export function setAutomationName(name) {
-  const automation = select(store).getAutomationData();
+  const automation = select(storeName).getAutomationData();
   return {
     type: 'UPDATE_AUTOMATION',
     automation: {
@@ -100,7 +86,7 @@ export function setAutomationName(name) {
 }
 
 export function* save() {
-  const automation = select(store).getAutomationData();
+  const automation = select(storeName).getAutomationData();
   const data = yield apiFetch({
     path: `/automations/${automation.id}`,
     method: 'PUT',
@@ -125,7 +111,7 @@ export function* save() {
 }
 
 export function* activate() {
-  const automation = select(store).getAutomationData();
+  const automation = select(storeName).getAutomationData();
   const data = yield apiFetch({
     path: `/automations/${automation.id}`,
     method: 'PUT',
@@ -154,7 +140,7 @@ export function* activate() {
 }
 
 export function* deactivate(deactivateAutomationRuns = true) {
-  const automation = select(store).getAutomationData();
+  const automation = select(storeName).getAutomationData();
   const data = yield apiFetch({
     path: `/automations/${automation.id}`,
     method: 'PUT',
@@ -209,7 +195,7 @@ export function* deactivate(deactivateAutomationRuns = true) {
 }
 
 export function* trash(onTrashed: () => void = undefined) {
-  const automation = select(store).getAutomationData();
+  const automation = select(storeName).getAutomationData();
   const data = yield apiFetch({
     path: `/automations/${automation.id}`,
     method: 'PUT',
