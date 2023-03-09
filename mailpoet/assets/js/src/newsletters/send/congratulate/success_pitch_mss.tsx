@@ -131,11 +131,31 @@ export function PitchMss(props: Props): JSX.Element {
               window.open(props.purchaseUrl);
               next();
             }}
-            withSpinner={isClosing}
           >
             {_x(
               'Sign up for free',
               'Promotion for our email sending service: Button',
+              'mailpoet',
+            )}
+          </Button>
+          <Button
+            isFullWidth
+            variant="tertiary"
+            onClick={next}
+            onKeyDown={(event) => {
+              if (
+                ['keydown', 'keypress'].includes(event.type) &&
+                ['Enter', ' '].includes(event.key)
+              ) {
+                event.preventDefault();
+                next();
+              }
+            }}
+            withSpinner={isClosing}
+          >
+            {_x(
+              'No thanks!',
+              'Promotion for our email sending service: Skip link',
               'mailpoet',
             )}
           </Button>
