@@ -10,6 +10,7 @@ import {
   SetSegmentFilerActionType,
   SubscriberCount,
   SetSubscriberCountActionType,
+  UpdateSegmentActionData,
 } from '../types';
 import { storeName } from './constants';
 
@@ -27,7 +28,9 @@ export function setErrors(errors: string[]): SetErrorsActionType {
   };
 }
 
-export function updateSegment(data: AnyFormItem): SetSegmentActionType {
+export function updateSegment(
+  data: UpdateSegmentActionData,
+): SetSegmentActionType {
   return {
     type: Actions.UPDATE_SEGMENT,
     segment: data,
@@ -91,7 +94,7 @@ export function* pageLoaded(segmentId?: number | string): Generator<{
   // @ts-ignore -- I don't know how to configure typescript to understand this
   const { res, success } = yield {
     type: 'LOAD_SEGMENT',
-    segmentId,
+    segmentId: Number(segmentId),
   };
   if (!success || res.is_plugin_missing) {
     window.location.href = 'admin.php?page=mailpoet-segments#/segments';

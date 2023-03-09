@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { MailPoet } from 'mailpoet';
-import { filter, map } from 'lodash/fp';
+import { filter, map, parseInt } from 'lodash/fp';
 import { useSelect, useDispatch } from '@wordpress/data';
 
 import { ReactSelect } from 'common/form/react_select/react_select';
@@ -96,7 +96,7 @@ export function EmailOpenStatisticsFields({ filterIndex }: Props): JSX.Element {
           }, newsletterOptions)}
           onChange={(options: SelectOption[]): void => {
             void updateSegmentFilter(
-              { newsletters: map('value', options) },
+              { newsletters: map(parseInt(10), map('value', options)) },
               filterIndex,
             );
           }}

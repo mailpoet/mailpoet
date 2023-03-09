@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { map, filter } from 'lodash/fp';
+import { map, filter, parseInt } from 'lodash/fp';
 import { useDispatch, useSelect } from '@wordpress/data';
 
 import { MailPoet } from 'mailpoet';
@@ -90,7 +90,7 @@ export function SubscribedToList({ filterIndex }: Props): JSX.Element {
           }, options)}
           onChange={(selectOptions: SelectOption[]): void => {
             void updateSegmentFilter(
-              { segments: map('value', selectOptions) },
+              { segments: map(parseInt(10), map('value', selectOptions)) },
               filterIndex,
             );
           }}
