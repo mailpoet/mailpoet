@@ -50,3 +50,38 @@ declare module '@wordpress/preferences' {
   }>;
   export const PreferenceToggleMenuItem: any;
 }
+
+// Types in @types/wordpress__notices are outdated and build on top of @types/wordpress__data
+declare module '@wordpress/notices' {
+  import { StoreDescriptor } from '@wordpress/data/build-types/types';
+
+  interface Notice {
+    id: string;
+    isDismissible: boolean;
+    type: 'snackbar' | 'default';
+    status: string;
+    content: string;
+  }
+
+  // We don't want to use the types from @types/wordpress__notices but the package
+  // is installed anyway as a subdependency of @types/wordpress__components
+  // The ignore comment is needed to allow overriding the store
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  export const store: { name: 'core/notices' } & StoreDescriptor<{
+    reducer: () => unknown;
+    actions: {
+      createSuccessNotice: (content: string, options?: unknown) => void;
+      createErrorNotice: (content: string, options?: unknown) => void;
+      removeNotice: (id: string, context?: string) => void;
+      createNotice: (
+        status: 'error' | 'info' | 'success' | 'warning' | undefined,
+        content: string,
+        options?: unknown,
+      ) => void;
+    };
+    selectors: {
+      getNotices(state: unknown, context?: string): Notice[];
+    };
+  }>;
+}

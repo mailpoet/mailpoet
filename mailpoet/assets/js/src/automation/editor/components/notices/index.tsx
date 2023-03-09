@@ -1,5 +1,5 @@
 import { NoticeList, SnackbarList } from '@wordpress/components';
-import { StoreDescriptor, useSelect, useDispatch } from '@wordpress/data';
+import { useSelect, useDispatch } from '@wordpress/data';
 import { store as noticesStore } from '@wordpress/notices';
 
 // See: https://github.com/WordPress/gutenberg/blob/5be0ec4153c3adf9f0f2513239f4f7a358ba7948/packages/editor/src/components/editor-notices/index.js
@@ -7,12 +7,12 @@ import { store as noticesStore } from '@wordpress/notices';
 export function EditorNotices(): JSX.Element {
   const { notices } = useSelect(
     (select) => ({
-      notices: select(noticesStore as StoreDescriptor).getNotices(),
+      notices: select(noticesStore).getNotices(),
     }),
     [],
   );
 
-  const { removeNotice } = useDispatch(noticesStore as StoreDescriptor);
+  const { removeNotice } = useDispatch(noticesStore);
 
   const dismissibleNotices = notices.filter(
     ({ isDismissible, type }) => isDismissible && type === 'default',
