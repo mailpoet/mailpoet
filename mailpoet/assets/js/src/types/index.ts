@@ -3,10 +3,9 @@ import { ColorPalette, FontSizePicker } from '@wordpress/components';
 import { ConfirmDialog } from '@wordpress/components/build-types/confirm-dialog';
 import {
   ActionCreatorsOf,
-  AnyConfig,
   ConfigOf,
   CurriedSelectorsOf,
-  MapSelect,
+  DataRegistry,
   StoreDescriptor as GenericStoreDescriptor,
   UseSelectReturn,
 } from '@wordpress/data/build-types/types';
@@ -75,24 +74,63 @@ declare module '@wordpress/components' {
 
 // fix and improve some @wordpress/data types
 declare module '@wordpress/data' {
-  export function select<T extends GenericStoreDescriptor<AnyConfig>>(
+  // Derive typings for select(), dispatch(), useSelect(), and useDispatch()calls
+  // by store name. The StoreMap interface can be augmented to add custom stores.
+  interface StoreMap {
+    [key: string]: StoreDescriptor;
+  }
+
+  type TKey = keyof StoreMap;
+  type TStore<T> = T extends keyof StoreMap ? StoreMap[T] : never;
+  type TSelectors<T> = CurriedSelectorsOf<TStore<T>>;
+  type TActions<T> = ActionCreatorsOf<ConfigOf<TStore<T>>>;
+  type TSelectFunction = <T extends TKey | StoreDescriptor>(
+    store: T,
+  ) => T extends TKey ? TSelectors<T> : CurriedSelectorsOf<T>;
+  type TMapSelect = (select: TSelectFunction, registry: DataRegistry) => any;
+
+  // select('store-name')
+  function select<T extends string>(store: T): TSelectors<T>;
+
+  // fix return type for select(storeDescriptor)
+  export function select<T extends GenericStoreDescriptor<any>>(
     store: T,
   ): CurriedSelectorsOf<T>;
 
+  // dispatch('store-name')
+  function dispatch<T extends string>(store: T): TActions<T>;
+
+  // fix return type for dispatch(storeDescriptor)
   export function dispatch<T extends GenericStoreDescriptor<any>>(
     store: T,
   ): ActionCreatorsOf<ConfigOf<T>>;
-
-  // in @wordpress/data, the "deps" is not optional (while in reality it is)
-  export function useSelect<T extends MapSelect | GenericStoreDescriptor<any>>(
-    mapSelect: T,
-    deps?: unknown[],
-  ): UseSelectReturn<T>;
 
   // function "batch" is missing in data registry
   export function useRegistry(): {
     batch: (callback: () => void) => void;
   };
+
+  // useSelect((select) => select('store-name') => ...)
+  // useSelect((select) => select(storeDescriptor) => ...)
+  export function useSelect<T extends TMapSelect>(
+    mapSelect: T,
+    deps?: unknown[],
+  ): ReturnType<T>;
+
+  // useSelect(storeDescriptor)
+  export function useSelect<T extends StoreDescriptor>(
+    store: T,
+    deps?: unknown[],
+  ): UseSelectReturn<T>;
+
+  // useSelect('store-name')
+  export function useSelect<T extends string>(
+    store: T,
+    deps?: unknown[],
+  ): UseSelectReturn<TStore<T>>;
+
+  // useDispatch('store-name')
+  export function useDispatch<T extends string>(store: T): TActions<T>;
 
   // types for "createRegistrySelector" are not correct
   export function createRegistrySelector<
