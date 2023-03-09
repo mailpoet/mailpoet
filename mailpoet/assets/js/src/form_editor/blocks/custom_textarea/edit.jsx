@@ -19,23 +19,29 @@ import {
 } from '../input_styles_settings';
 import { mapCustomFieldFormData } from '../map_custom_field_form_data.jsx';
 import { ParagraphEdit } from '../paragraph_edit.jsx';
-import { store } from '../../store';
+import { storeName } from '../../store/constants';
 
 function CustomTextAreaEdit({ name, attributes, setAttributes, clientId }) {
   const id = `${name.replace(/[^a-zA-Z]/g, '')}_${Math.random()
     .toString(36)
     .substring(2, 15)}`;
-  const settings = useSelect((select) => select(store).getFormSettings(), []);
-  const isSaving = useSelect((sel) => sel(store).getIsCustomFieldSaving(), []);
+  const settings = useSelect(
+    (select) => select(storeName).getFormSettings(),
+    [],
+  );
+  const isSaving = useSelect(
+    (sel) => sel(storeName).getIsCustomFieldSaving(),
+    [],
+  );
   const isDeleting = useSelect(
-    (sel) => sel(store).getIsCustomFieldDeleting(),
+    (sel) => sel(storeName).getIsCustomFieldDeleting(),
     [],
   );
 
   const [inputValue, setInputValue] = useState('');
 
   const { saveCustomField, deleteCustomField, customFieldEdited } =
-    useDispatch(store);
+    useDispatch(storeName);
   const inspectorControls = (
     <InspectorControls>
       <Panel>

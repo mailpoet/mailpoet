@@ -8,7 +8,7 @@ import { Heading } from 'common/typography/heading/heading';
 import { Button } from 'common';
 import { Notice } from 'notices/notice';
 import { TemplateData } from './store/types';
-import { store } from './store/store';
+import { storeName } from './store/constants';
 
 export function Selection(): JSX.Element {
   const categories = [
@@ -35,26 +35,26 @@ export function Selection(): JSX.Element {
   ];
 
   const selectedCategory: string = useSelect(
-    (select) => select(store).getSelectedCategory(),
+    (select) => select(storeName).getSelectedCategory(),
     [],
   );
 
   const templates: TemplateData = useSelect(
-    (select) => select(store).getTemplates(),
+    (select) => select(storeName).getTemplates(),
     [],
   );
 
   const loading: boolean = useSelect(
-    (select) => select(store).getLoading(),
+    (select) => select(storeName).getLoading(),
     [],
   );
 
   const selectTemplateFailed: boolean = useSelect(
-    (select) => select(store).getSelectTemplateFailed(),
+    (select) => select(storeName).getSelectTemplateFailed(),
     [],
   );
 
-  const { selectTemplate, selectCategory } = useDispatch(store);
+  const { selectTemplate, selectCategory } = useDispatch(storeName);
   return (
     <>
       {categories.map((category) =>

@@ -10,7 +10,7 @@ import { MailPoet } from 'mailpoet';
 import { FormSettings } from 'form_editor/components/form_settings/form_settings';
 import { BlockSettings } from './block_settings.jsx';
 import { SidebarHeader } from './sidebar_header';
-import { store } from '../../store';
+import { storeName } from '../../store';
 
 // workaround for block editor store useSelect
 interface BlockEditorStoreSelectors {
@@ -26,7 +26,7 @@ type Props = {
 
 export function DefaultSidebar({ onClose }: Props): JSX.Element {
   const activeTab = useSelect(
-    (select) => select(store).getDefaultSidebarActiveTab(),
+    (select) => select(storeName).getDefaultSidebarActiveTab(),
     [],
   );
 
@@ -35,7 +35,7 @@ export function DefaultSidebar({ onClose }: Props): JSX.Element {
     [],
   );
 
-  const { switchDefaultSidebarTab } = useDispatch(store);
+  const { switchDefaultSidebarTab } = useDispatch(storeName);
 
   useEffect(() => {
     if (selectedBlockId) {

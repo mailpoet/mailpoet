@@ -6,14 +6,14 @@ import { StylesSettingsPanel } from './styles_settings_panel';
 import { FormPlacementPanel } from './form_placement_panel';
 import { CustomCssPanel } from './custom_css_panel';
 import { TagsPanel } from './tags_panel';
-import { store } from '../../store';
+import { storeName } from '../../store';
 
 export function FormSettings(): JSX.Element {
-  const dispatchResult = useDispatch(store);
+  const dispatchResult = useDispatch(storeName);
   const toggleSidebarPanel: (t1: string, ...ts: []) => void =
     dispatchResult.toggleSidebarPanel;
   const openedPanels = useSelect(
-    (select) => select(store).getSidebarOpenedPanels(),
+    (select) => select(storeName).getSidebarOpenedPanels(),
     [],
   );
 

@@ -2,7 +2,7 @@ import { CSSProperties } from 'react';
 import { CustomSelectControl } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 import { MailPoet } from 'mailpoet';
-import { store } from '../store';
+import { storeName } from '../store/constants';
 
 const standardFonts = [
   'Arial',
@@ -38,7 +38,7 @@ export function FontFamilySettings({
   hideLabelFromVision = false,
 }: Props): JSX.Element {
   const customFonts = useSelect(
-    (select) => select(store).getAllCustomFonts(),
+    (select) => select(storeName).getAllCustomFonts(),
     [],
   );
   const disabledStyle = {
@@ -115,7 +115,7 @@ export function FontFamilySettings({
 
 export function CustomFontsStyleSheetLink(): JSX.Element {
   const customFonts = useSelect(
-    (select) => select(store).getAllCustomFonts(),
+    (select) => select(storeName).getAllCustomFonts(),
     [],
   );
   if (!MailPoet.libs3rdPartyEnabled) {

@@ -11,17 +11,20 @@ import {
   inputStylesPropTypes,
 } from '../input_styles_settings';
 import { TextInputEdit } from '../text_input_edit.jsx';
-import { store } from '../../store';
+import { storeName } from '../../store/constants';
 
 function CustomTextEdit({ attributes, setAttributes, clientId }) {
-  const isSaving = useSelect((sel) => sel(store).getIsCustomFieldSaving(), []);
+  const isSaving = useSelect(
+    (sel) => sel(storeName).getIsCustomFieldSaving(),
+    [],
+  );
   const isDeleting = useSelect(
-    (sel) => sel(store).getIsCustomFieldDeleting(),
+    (sel) => sel(storeName).getIsCustomFieldDeleting(),
     [],
   );
 
   const { saveCustomField, deleteCustomField, customFieldEdited } =
-    useDispatch(store);
+    useDispatch(storeName);
 
   const inspectorControls = (
     <InspectorControls>

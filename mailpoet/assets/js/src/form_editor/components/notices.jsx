@@ -1,19 +1,19 @@
 import { memoize } from 'lodash';
 import { NoticeList } from '@wordpress/components';
 import { useDispatch, useSelect } from '@wordpress/data';
-import { store } from '../store';
+import { storeName } from '../store';
 
 function Notices() {
   const dismissibleNotices = useSelect(
-    (select) => select(store).getDismissibleNotices(),
+    (select) => select(storeName).getDismissibleNotices(),
     [],
   );
   const nonDismissibleNotices = useSelect(
-    (select) => select(store).getNonDismissibleNotices(),
+    (select) => select(storeName).getNonDismissibleNotices(),
     [],
   );
 
-  const { removeNotice } = useDispatch(store);
+  const { removeNotice } = useDispatch(storeName);
   const timedRemove = memoize((noticeId) => {
     setTimeout(() => removeNotice(noticeId), 5000);
   });

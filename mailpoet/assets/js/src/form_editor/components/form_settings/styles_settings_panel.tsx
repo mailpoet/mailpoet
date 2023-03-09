@@ -16,7 +16,7 @@ import { ImageSettings } from 'form_editor/components/image_settings';
 import { CloseButtonsSettings } from 'form_editor/components/close_button_settings';
 import { formStyles as defaultFormStyles } from 'form_editor/store/defaults';
 import { FontFamilySettings } from '../font_family_settings';
-import { store } from '../../store';
+import { storeName } from '../../store';
 
 type StylesSettingsPanelProps = {
   onToggle: PanelBody.Props['onToggle'];
@@ -24,8 +24,11 @@ type StylesSettingsPanelProps = {
 };
 
 function StylesSettingsPanel({ onToggle, isOpened }: StylesSettingsPanelProps) {
-  const { changeFormSettings } = useDispatch(store);
-  const settings = useSelect((select) => select(store).getFormSettings(), []);
+  const { changeFormSettings } = useDispatch(storeName);
+  const settings = useSelect(
+    (select) => select(storeName).getFormSettings(),
+    [],
+  );
   const settingsRef = useRef(settings);
   useEffect(() => {
     settingsRef.current = settings;

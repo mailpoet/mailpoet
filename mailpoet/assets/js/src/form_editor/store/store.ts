@@ -1,10 +1,6 @@
 import '@wordpress/notices';
 import { createReduxStore, register } from '@wordpress/data';
 import { SETTINGS_DEFAULTS } from '@wordpress/block-editor';
-import {
-  ReduxStoreConfig,
-  StoreDescriptor,
-} from '@wordpress/data/build-types/types';
 
 import * as actions from './actions';
 import { createReducer } from './reducer.jsx';
@@ -13,9 +9,8 @@ import { controls } from './controls';
 import { validateForm } from './form_validator.jsx';
 import { formBodyToBlocksFactory } from './form_body_to_blocks.jsx';
 import { mapFormDataAfterLoading } from './map_form_data_after_loading.jsx';
-import { FormEditorWindow, State } from './state_types';
-
-const storeName = 'mailpoet-form-editor';
+import { FormEditorWindow } from './state_types';
+import { storeName } from './constants';
 
 declare let window: FormEditorWindow;
 
@@ -129,7 +124,11 @@ export const initStore = () => {
 
   const store = createReduxStore(storeName, config);
   register(store);
-  return store as StoreDescriptor<
-    ReduxStoreConfig<State, typeof actions, typeof selectors>
-  >;
+  return store;
 };
+
+declare module '@wordpress/data' {
+  interface StoreMap {
+    [storeName]: ReturnType<typeof initStore>;
+  }
+}

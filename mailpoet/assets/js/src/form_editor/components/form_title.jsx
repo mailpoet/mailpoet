@@ -2,15 +2,15 @@ import { useState } from 'react';
 import { useDispatch, useSelect } from '@wordpress/data';
 import classnames from 'classnames';
 import { MailPoet } from 'mailpoet';
-import { store } from '../store';
+import { storeName } from '../store';
 
 export function FormTitle() {
   const [isSelected, setIsSelected] = useState(false);
-  const title = useSelect((select) => select(store).getFormName(), []);
+  const title = useSelect((select) => select(storeName).getFormName(), []);
   const titleClass = classnames({
     'is-selected': isSelected,
   });
-  const { changeFormName } = useDispatch(store);
+  const { changeFormName } = useDispatch(storeName);
 
   return (
     <div className={titleClass}>

@@ -5,11 +5,11 @@ import { useDispatch, useSelect } from '@wordpress/data';
 import { redo as redoIcon } from '@wordpress/icons';
 import { displayShortcut } from '@wordpress/keycodes';
 import { useShortcut } from '@wordpress/keyboard-shortcuts';
-import { store } from '../store';
+import { storeName } from '../store';
 
 export function HistoryRedo(props: Record<string, unknown>): JSX.Element {
-  const hasRedo = useSelect((select) => select(store).hasEditorRedo(), []);
-  const { historyRedo } = useDispatch(store);
+  const hasRedo = useSelect((select) => select(storeName).hasEditorRedo(), []);
+  const { historyRedo } = useDispatch(storeName);
   const { registerShortcut } = useDispatch('core/keyboard-shortcuts');
 
   const redoAction = (): void => {

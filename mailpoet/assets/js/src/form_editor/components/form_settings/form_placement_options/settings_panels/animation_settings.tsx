@@ -3,7 +3,7 @@ import { __, assocPath, compose } from 'lodash/fp';
 import { useDispatch, useSelect } from '@wordpress/data';
 import { SelectControl } from '@wordpress/components';
 import { withBoundary } from 'common';
-import { store } from '../../../../store';
+import { storeName } from '../../../../store';
 
 type Props = {
   settingsPlacementKey: string;
@@ -11,10 +11,10 @@ type Props = {
 
 function AnimationSettings({ settingsPlacementKey }: Props): JSX.Element {
   const formSettings = useSelect(
-    (select) => select(store).getFormSettings(),
+    (select) => select(storeName).getFormSettings(),
     [],
   );
-  const { changeFormSettings } = useDispatch(store);
+  const { changeFormSettings } = useDispatch(storeName);
 
   return (
     <SelectControl

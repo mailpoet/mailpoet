@@ -13,10 +13,6 @@ import {
   SETTINGS_DEFAULTS,
   store as blockEditorStore,
 } from '@wordpress/block-editor';
-import {
-  ReduxStoreConfig,
-  StoreDescriptor,
-} from '@wordpress/data/build-types/types';
 
 import { blocksToFormBodyFactory } from './blocks_to_form_body';
 import { registerCustomFieldBlock } from '../blocks/blocks.jsx';
@@ -24,14 +20,7 @@ import { mapFormDataBeforeSaving } from './map_form_data_before_saving.jsx';
 import { findBlock } from './find_block';
 import { formatCustomFieldBlockName } from '../blocks/format_custom_field_block_name';
 import { getCustomFieldBlockSettings } from '../blocks/custom_fields_blocks';
-import { State } from './state_types';
-import * as actions from './actions';
-import { selectors } from './selectors';
-
-// workaround to avoid import cycles
-const store = { name: 'mailpoet-form-editor' } as StoreDescriptor<
-  ReduxStoreConfig<State, typeof actions, typeof selectors>
->;
+import { storeName } from './constants';
 
 const formatApiErrorMessage = (response) => {
   let errorMessage = null;
@@ -60,17 +49,17 @@ const mapBlocks = (
 
 export const controls = {
   async SAVE_FORM() {
-    if (select(store).getIsFormSaving()) {
+    if (select(storeName).getIsFormSaving()) {
       return;
     }
-    void dispatch(store).saveFormStarted();
-    const formErrors = select(store).getFormErrors();
+    void dispatch(storeName).saveFormStarted();
+    const formErrors = select(storeName).getFormErrors();
     if (formErrors.length) {
       return;
     }
-    const formData = select(store).getFormData();
-    const formBlocks = select(store).getFormBlocks();
-    const customFields = select(store).getAllAvailableCustomFields();
+    const formData = select(storeName).getFormData();
+    const formBlocks = select(storeName).getFormBlocks();
+    const customFields = select(storeName).getAllAvailableCustomFields();
     const blocksToFormBody = blocksToFormBodyFactory(
       SETTINGS_DEFAULTS.fontSizes,
       SETTINGS_DEFAULTS.colors,
@@ -89,17 +78,19 @@ export const controls = {
       data: requestData,
     })
       .done((result) => {
-        void dispatch(store).saveFormDone(result.data.id);
+        void dispatch(storeName).saveFormDone(result.data.id);
         Cookies.remove(`popup_form_dismissed_${result.data.id}`, { path: '/' });
       })
       .fail((response) => {
-        void dispatch(store).saveFormFailed(formatApiErrorMessage(response));
+        void dispatch(storeName).saveFormFailed(
+          formatApiErrorMessage(response),
+        );
       });
   },
 
   async SAVE_CUSTOM_FIELD(actionData) {
-    void dispatch(store).saveCustomFieldStarted();
-    const customFields = select(store).getAllAvailableCustomFields();
+    void dispatch(storeName).saveCustomFieldStarted();
+    const customFields = select(storeName).getAllAvailableCustomFields();
     const customField = customFields.find(
       (cf) => cf.id === actionData.customFieldId,
     );
@@ -112,12 +103,15 @@ export const controls = {
       data: requestData,
     })
       .then((response) => {
-        void dispatch(store).saveCustomFieldDone(customField.id, response.data);
+        void dispatch(storeName).saveCustomFieldDone(
+          customField.id,
+          response.data,
+        );
         if (typeof actionData.onFinish === 'function') actionData.onFinish();
       })
-      .then(() => void dispatch(store).saveForm())
+      .then(() => void dispatch(storeName).saveForm())
       .fail((response) => {
-        void dispatch(store).saveCustomFieldFailed(
+        void dispatch(storeName).saveCustomFieldFailed(
           formatApiErrorMessage(response),
         );
       });
@@ -128,12 +122,12 @@ export const controls = {
       clientId,
       data,
     }: { clientId: string; data: Record<string, unknown> } = action;
-    if (select(store).getIsCustomFieldCreating()) {
+    if (select(storeName).getIsCustomFieldCreating()) {
       return;
     }
-    void dispatch(store).createCustomFieldStarted(action.data);
+    void dispatch(storeName).createCustomFieldStarted(action.data);
     // Check if it really started. Could been blocked by an error.
-    if (!select(store).getIsCustomFieldCreating()) {
+    if (!select(storeName).getIsCustomFieldCreating()) {
       return;
     }
     await MailPoet.Ajax.post<{ data: { type: string } }>({
@@ -150,10 +144,10 @@ export const controls = {
         const blockName = registerCustomFieldBlock(customField);
         const customFieldBlock = createBlock(blockName);
         dispatch(blockEditorStore).replaceBlock(clientId, customFieldBlock);
-        void dispatch(store).createCustomFieldDone(response.data);
+        void dispatch(storeName).createCustomFieldDone(response.data);
       })
       .fail((response) => {
-        void dispatch(store).createCustomFieldFailed(
+        void dispatch(storeName).createCustomFieldFailed(
           formatApiErrorMessage(response),
         );
       });
@@ -164,8 +158,8 @@ export const controls = {
       customFieldId,
       clientId,
     }: { customFieldId: number; clientId: string } = actionData;
-    void dispatch(store).deleteCustomFieldStarted();
-    const customFields = select(store).getAllAvailableCustomFields();
+    void dispatch(storeName).deleteCustomFieldStarted();
+    const customFields = select(storeName).getAllAvailableCustomFields();
     const customField = customFields.find((cf) => cf.id === customFieldId);
     const namesMap = getCustomFieldBlockSettings(customField);
     await MailPoet.Ajax.post({
@@ -180,7 +174,7 @@ export const controls = {
         MailPoet.trackEvent('Forms > Delete custom field', {
           'Field type': customField.type,
         });
-        void dispatch(store).deleteCustomFieldDone(customFieldId, clientId);
+        void dispatch(storeName).deleteCustomFieldDone(customFieldId, clientId);
         const customFieldBlockName = formatCustomFieldBlockName(
           namesMap[customField.type].name,
           customField,
@@ -192,14 +186,14 @@ export const controls = {
         dispatch(blockEditorStore).removeBlock(clientId);
       })
       .fail((response) => {
-        void dispatch(store).deleteCustomFieldFailed(
+        void dispatch(storeName).deleteCustomFieldFailed(
           formatApiErrorMessage(response),
         );
       });
   },
 
   APPLY_STYLES_TO_ALL_TEXT_INPUTS(actionData) {
-    const currentBlocks = select(store).getFormBlocks();
+    const currentBlocks = select(storeName).getFormBlocks();
     const updatedBlocks = mapBlocks(currentBlocks, (block) => {
       const updatedBlock = { ...block };
       if (
@@ -242,12 +236,12 @@ export const controls = {
     const emailInput = findBlock(newBlocks, 'mailpoet-form/email-input');
     const submitInput = findBlock(newBlocks, 'mailpoet-form/submit-button');
     if (emailInput && submitInput) {
-      void dispatch(store).changeFormBlocks(newBlocks);
+      void dispatch(storeName).changeFormBlocks(newBlocks);
       return;
     }
 
     // In case that some of them is missing we restore it from previous state or insert new one
-    const currentBlocks = select(store).getFormBlocks();
+    const currentBlocks = select(storeName).getFormBlocks();
     const fixedBlocks = [...newBlocks];
     if (!emailInput) {
       let currentEmailInput = findBlock(
@@ -281,7 +275,7 @@ export const controls = {
 
   ENSURE_BROWSER_URL(actionData) {
     const { formId } = actionData as Record<string, string>;
-    let url = select(store).getFormEditorUrl();
+    let url = select(storeName).getFormEditorUrl();
     url = `${url}${formId}`;
     if (window.location.href !== url) {
       window.history.replaceState(null, '', url);

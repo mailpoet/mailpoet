@@ -2,7 +2,7 @@ import { useSelect } from '@wordpress/data';
 import { close } from '@wordpress/icons';
 import { Button } from '@wordpress/components';
 import { __experimentalLibrary as Library } from '@wordpress/block-editor';
-import { store } from '../store';
+import { storeName } from '../store';
 
 type Props = {
   setIsInserterOpened: (boolean) => void;
@@ -10,7 +10,7 @@ type Props = {
 
 export function Inserter({ setIsInserterOpened }: Props): JSX.Element {
   const insertPoint = useSelect(
-    (sel) => sel(store).getInserterPanelInsertPoint(),
+    (sel) => sel(storeName).getInserterPanelInsertPoint(),
     [],
   );
   return (

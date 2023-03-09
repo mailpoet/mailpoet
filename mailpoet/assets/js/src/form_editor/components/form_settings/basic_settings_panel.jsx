@@ -14,28 +14,34 @@ import PropTypes from 'prop-types';
 import { isEqual } from 'lodash';
 import { Selection } from './selection.jsx';
 import { FormTitle } from '../form_title';
-import { store } from '../../store';
+import { storeName } from '../../store';
 
 function BasicSettingsPanel({ onToggle, isOpened }) {
-  const settings = useSelect((select) => select(store).getFormSettings(), []);
+  const settings = useSelect(
+    (select) => select(storeName).getFormSettings(),
+    [],
+  );
   const segments = useSelect(
-    (select) => select(store).getAllAvailableSegments(),
+    (select) => select(storeName).getAllAvailableSegments(),
     [],
   );
 
-  const pages = useSelect((select) => select(store).getAllAvailablePages(), []);
+  const pages = useSelect(
+    (select) => select(storeName).getAllAvailablePages(),
+    [],
+  );
 
   const missingListError = useSelect(
-    (select) => select(store).getNotice('missing-lists'),
+    (select) => select(storeName).getNotice('missing-lists'),
     [],
   );
 
   const isFormEnabled = useSelect(
-    (select) => select(store).isFormEnabled(),
+    (select) => select(storeName).isFormEnabled(),
     [],
   );
 
-  const { changeFormSettings, toggleForm } = useDispatch(store);
+  const { changeFormSettings, toggleForm } = useDispatch(storeName);
 
   const onSegmentsChange = (e) => {
     // We don't want to update state when is same
