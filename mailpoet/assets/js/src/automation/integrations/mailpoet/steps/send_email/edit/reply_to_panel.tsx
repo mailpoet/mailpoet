@@ -2,7 +2,7 @@ import { useRef, useState } from 'react';
 import { TextControl, ToggleControl } from '@wordpress/components';
 import { useDispatch, useSelect } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
-import { store } from '../../../../../editor/store';
+import { storeName } from '../../../../../editor/store';
 import { PanelBody } from '../../../../../editor/components/panel/panel-body';
 
 type ReplyToArgs = {
@@ -13,14 +13,16 @@ type ReplyToArgs = {
 export function ReplyToPanel(): JSX.Element {
   const { registry, selectedStep, errors } = useSelect(
     (select) => ({
-      registry: select(store).getRegistry(),
-      selectedStep: select(store).getSelectedStep(),
-      errors: select(store).getStepError(select(store).getSelectedStep().id),
+      registry: select(storeName).getRegistry(),
+      selectedStep: select(storeName).getSelectedStep(),
+      errors: select(storeName).getStepError(
+        select(storeName).getSelectedStep().id,
+      ),
     }),
     [],
   );
 
-  const { updateStepArgs } = useDispatch(store);
+  const { updateStepArgs } = useDispatch(storeName);
 
   const args = selectedStep.args as ReplyToArgs;
   const hasValue = !!args.reply_to_name || !!args.reply_to_address;

@@ -8,14 +8,16 @@ import {
 import { dispatch, useSelect } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
 import { PlainBodyTitle } from '../../../../editor/components/panel';
-import { store } from '../../../../editor/store';
+import { storeName } from '../../../../editor/store';
 import { DelayTypeOptions } from './types/delayTypes';
 
 export function Edit(): JSX.Element {
   const { selectedStep, errors } = useSelect(
     (select) => ({
-      selectedStep: select(store).getSelectedStep(),
-      errors: select(store).getStepError(select(store).getSelectedStep().id),
+      selectedStep: select(storeName).getSelectedStep(),
+      errors: select(storeName).getStepError(
+        select(storeName).getSelectedStep().id,
+      ),
     }),
     [],
   );
@@ -52,7 +54,11 @@ export function Edit(): JSX.Element {
                 rawValue.length === 0 || parseInt(rawValue, 10) < 1
                   ? 1
                   : parseInt(rawValue, 10);
-              dispatch(store).updateStepArgs(selectedStep.id, 'delay', value);
+              dispatch(storeName).updateStepArgs(
+                selectedStep.id,
+                'delay',
+                value,
+              );
             }}
           />
         </FlexItem>
@@ -68,7 +74,7 @@ export function Edit(): JSX.Element {
             value={(selectedStep.args.delay_type as string) ?? 'HOURS'}
             options={DelayTypeOptions}
             onChange={(value) =>
-              dispatch(store).updateStepArgs(
+              dispatch(storeName).updateStepArgs(
                 selectedStep.id,
                 'delay_type',
                 value,

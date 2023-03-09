@@ -2,7 +2,7 @@ import { PanelBody } from '@wordpress/components';
 import { dispatch, useSelect } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
 import { getContext } from '../../../context';
-import { store } from '../../../../../editor/store';
+import { storeName } from '../../../../../editor/store';
 import {
   PlainBodyTitle,
   FormTokenField,
@@ -11,7 +11,7 @@ import {
 export function ListPanel(): JSX.Element {
   const { selectedStep } = useSelect(
     (select) => ({
-      selectedStep: select(store).getSelectedStep(),
+      selectedStep: select(storeName).getSelectedStep(),
     }),
     [],
   );
@@ -39,7 +39,7 @@ export function ListPanel(): JSX.Element {
         value={selected}
         suggestions={validSegments}
         onChange={(values) => {
-          dispatch(store).updateStepArgs(
+          dispatch(storeName).updateStepArgs(
             selectedStep.id,
             'segment_ids',
             values.map((item) => item.id),

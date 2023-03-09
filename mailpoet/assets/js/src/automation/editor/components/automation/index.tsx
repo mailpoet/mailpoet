@@ -13,7 +13,7 @@ import { Separator } from './separator';
 import { Step } from './step';
 import { Step as StepData } from './types';
 import { InserterPopover } from '../inserter-popover';
-import { store } from '../../store';
+import { storeName } from '../../store';
 import { AddTrigger } from './add-trigger';
 import { Statistics } from './statistics';
 import {
@@ -24,8 +24,8 @@ import {
 export function Automation(): JSX.Element {
   const { automationData, selectedStep } = useSelect(
     (select) => ({
-      automationData: select(store).getAutomationData(),
-      selectedStep: select(store).getSelectedStep(),
+      automationData: select(storeName).getAutomationData(),
+      selectedStep: select(storeName).getSelectedStep(),
     }),
     [],
   );

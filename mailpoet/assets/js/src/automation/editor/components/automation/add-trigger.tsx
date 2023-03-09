@@ -5,7 +5,7 @@ import { __ } from '@wordpress/i18n';
 import { useDispatch } from '@wordpress/data';
 import { AutomationCompositeContext } from './context';
 import { Step } from './types';
-import { store } from '../../store';
+import { storeName } from '../../store';
 
 type Props = {
   step: Step;
@@ -13,7 +13,7 @@ type Props = {
 
 export function AddTrigger({ step }: Props): JSX.Element {
   const compositeState = useContext(AutomationCompositeContext);
-  const { setInserterPopover } = useDispatch(store);
+  const { setInserterPopover } = useDispatch(storeName);
 
   return (
     <CompositeItem

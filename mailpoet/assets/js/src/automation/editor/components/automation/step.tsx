@@ -9,7 +9,7 @@ import { StepMoreMenu } from './step-more-menu';
 import { Step as StepData } from './types';
 import { Chip } from '../chip';
 import { ColoredIcon } from '../icons';
-import { stepSidebarKey, store } from '../../store';
+import { stepSidebarKey, storeName } from '../../store';
 import { StepType } from '../../store/types';
 
 const getUnknownStepType = (step: StepData): StepType => {
@@ -42,12 +42,12 @@ type Props = {
 export function Step({ step, isSelected }: Props): JSX.Element {
   const { stepType, error } = useSelect(
     (select) => ({
-      stepType: select(store).getStepType(step.key),
-      error: select(store).getStepError(step.id),
+      stepType: select(storeName).getStepType(step.key),
+      error: select(storeName).getStepError(step.id),
     }),
     [step],
   );
-  const { openSidebar, selectStep } = useDispatch(store);
+  const { openSidebar, selectStep } = useDispatch(storeName);
   const compositeState = useContext(AutomationCompositeContext);
   const { batch } = useRegistry();
 

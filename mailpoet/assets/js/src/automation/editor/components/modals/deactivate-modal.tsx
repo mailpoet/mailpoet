@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Button, Modal } from '@wordpress/components';
 import { __, sprintf } from '@wordpress/i18n';
 import { dispatch, useSelect } from '@wordpress/data';
-import { store } from '../../store';
+import { storeName } from '../../store';
 import { AutomationStatus } from '../../../listing/automation';
 
 type DeactivateImmediatelyModalProps = {
@@ -30,7 +30,7 @@ export function DeactivateImmediatelyModal({
         variant="primary"
         onClick={() => {
           setIsBusy(true);
-          dispatch(store).deactivate(true);
+          dispatch(storeName).deactivate(true);
         }}
       >
         {__('Deactivate now', 'mailpoet')}
@@ -51,7 +51,7 @@ export function DeactivateModal({
 }: DeactivateModalProps): JSX.Element {
   const { automationName } = useSelect(
     (select) => ({
-      automationName: select(store).getAutomationData().name,
+      automationName: select(storeName).getAutomationData().name,
     }),
     [],
   );
@@ -139,7 +139,7 @@ export function DeactivateModal({
         variant="primary"
         onClick={() => {
           setIsBusy(true);
-          dispatch(store).deactivate(
+          dispatch(storeName).deactivate(
             selected !== AutomationStatus.DEACTIVATING,
           );
         }}

@@ -35,9 +35,4 @@ declare module '@wordpress/data' {
   }
 }
 
-export const store: ReturnType<typeof createStore> = {
-  name: storeName,
-  instantiate: (registry) => createStore().instantiate(registry),
-};
-
 export { actions, selectors };

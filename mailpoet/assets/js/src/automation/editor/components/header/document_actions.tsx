@@ -9,7 +9,7 @@ import { useSelect } from '@wordpress/data';
 import { useRef } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { chevronDown } from '@wordpress/icons';
-import { store } from '../../store';
+import { storeName } from '../../store';
 import { AutomationStatus } from '../../../listing/automation';
 
 // See: https://github.com/WordPress/gutenberg/blob/eff0cab2b3181c004dbd15398e570ecec28a3726/packages/edit-site/src/components/header/document-actions/index.js
@@ -24,9 +24,9 @@ const Dropdown: ComponentType<
 function DocumentActions({ children }): JSX.Element {
   const { automationName, automationStatus, showIconLabels } = useSelect(
     (select) => ({
-      automationName: select(store).getAutomationData().name,
-      automationStatus: select(store).getAutomationData().status,
-      showIconLabels: select(store).isFeatureActive('showIconLabels'),
+      automationName: select(storeName).getAutomationData().name,
+      automationStatus: select(storeName).getAutomationData().status,
+      showIconLabels: select(storeName).isFeatureActive('showIconLabels'),
     }),
     [],
   );

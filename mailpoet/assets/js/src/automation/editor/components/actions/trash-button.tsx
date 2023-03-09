@@ -5,17 +5,17 @@ import {
 } from '@wordpress/components';
 import { useDispatch, useSelect } from '@wordpress/data';
 import { __, sprintf } from '@wordpress/i18n';
-import { store } from '../../store';
+import { storeName } from '../../store';
 
 export function TrashButton(): JSX.Element {
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const { automation } = useSelect(
     (select) => ({
-      automation: select(store).getAutomationData(),
+      automation: select(storeName).getAutomationData(),
     }),
     [],
   );
-  const { trash } = useDispatch(store);
+  const { trash } = useDispatch(storeName);
 
   return (
     <>
