@@ -14,6 +14,6 @@ function Entry() {
 
 const container = document.getElementById('settings_container');
 if (container) {
-  initStore(window);
+  initStore();
   ReactDOM.render(<Entry />, container);
 }

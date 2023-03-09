@@ -270,6 +270,26 @@ export type State = {
   reEngagement: ReEngagement;
 };
 
+export type SettingsWindow = {
+  mailpoet_pages: Page[];
+  mailpoet_paths: {
+    root: string;
+    plugin: string;
+  };
+  mailpoet_segments: Segment[];
+  mailpoet_hosts: Hosts;
+  mailpoet_settings: Record<string, unknown>;
+  mailpoet_is_new_user: string;
+  mailpoet_woocommerce_active: string;
+  mailpoet_members_plugin_active: string;
+  mailpoet_built_in_captcha_supported: boolean;
+  mailpoet_mss_key_valid: string;
+  mailpoet_premium_key_valid: string;
+  mailpoet_premium_plugin_installed: string;
+  mailpoet_premium_plugin_download_url: string;
+  mailpoet_premium_plugin_activation_url: string;
+};
+
 export type Action =
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   | { type: 'SET_SETTING'; value: any; path: string[] }
