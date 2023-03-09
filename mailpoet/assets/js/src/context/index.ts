@@ -22,4 +22,11 @@ export function useGlobalContextValue(data) {
   };
 }
 
-export const GlobalContext = createContext({});
+export const GlobalContext = createContext<
+  ReturnType<typeof useGlobalContextValue>
+>({
+  features: null,
+  segments: null,
+  users: null,
+  notices: null,
+});

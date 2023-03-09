@@ -1,4 +1,4 @@
-import { dispatch, StoreDescriptor } from '@wordpress/data';
+import { dispatch } from '@wordpress/data';
 import { apiFetch } from '@wordpress/data-controls';
 import { __, sprintf } from '@wordpress/i18n';
 import { store as noticesStore } from '@wordpress/notices';
@@ -6,13 +6,9 @@ import { Automation, AutomationStatus } from '../automation';
 import { EditAutomation, UndoTrashButton } from '../components/actions';
 
 const createSuccessNotice = (content: string, options?: unknown) =>
-  dispatch(noticesStore as StoreDescriptor).createSuccessNotice(
-    content,
-    options,
-  );
+  dispatch(noticesStore).createSuccessNotice(content, options);
 
-const removeNotice = (id: string) =>
-  dispatch(noticesStore as StoreDescriptor).removeNotice(id);
+const removeNotice = (id: string) => dispatch(noticesStore).removeNotice(id);
 
 export function* loadAutomations() {
   const data = yield apiFetch({

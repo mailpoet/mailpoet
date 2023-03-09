@@ -1,5 +1,5 @@
 import apiFetch, { APIFetchOptions } from '@wordpress/api-fetch';
-import { dispatch, StoreDescriptor } from '@wordpress/data';
+import { dispatch } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
 import { store as noticesStore } from '@wordpress/notices';
 import { store } from './store';
@@ -26,7 +26,7 @@ export const registerApiErrorHandler = (): void =>
 
         if (status && status >= 400 && status < 500) {
           const message = errorObject.message;
-          void dispatch(noticesStore as StoreDescriptor).createErrorNotice(
+          void dispatch(noticesStore).createErrorNotice(
             message ?? __('An unknown error occurred.', 'mailpoet'),
             { explicitDismiss: true },
           );
@@ -34,7 +34,7 @@ export const registerApiErrorHandler = (): void =>
           return undefined;
         }
 
-        void dispatch(noticesStore as StoreDescriptor).createErrorNotice(
+        void dispatch(noticesStore).createErrorNotice(
           __('An unknown error occurred.', 'mailpoet'),
           { explicitDismiss: true },
         );
