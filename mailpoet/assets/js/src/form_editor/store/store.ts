@@ -1,5 +1,5 @@
 import '@wordpress/notices';
-import { createReduxStore, register, useDispatch } from '@wordpress/data';
+import { createReduxStore, register } from '@wordpress/data';
 import { SETTINGS_DEFAULTS } from '@wordpress/block-editor';
 import {
   ReduxStoreConfig,
@@ -132,9 +132,4 @@ export const initStore = () => {
   return store as StoreDescriptor<
     ReduxStoreConfig<State, typeof actions, typeof selectors>
   >;
-};
-
-export const store: ReturnType<typeof initStore> = {
-  name: storeName,
-  instantiate: (registry) => initStore().instantiate(registry),
 };
