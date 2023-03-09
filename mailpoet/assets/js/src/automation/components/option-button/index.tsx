@@ -38,7 +38,7 @@ export function OptionButton({
       </Button>
       {slots.length > 0 &&
         slots.map(({ key, slot }) => (
-          <Fragment key={`slot-${key}`}>{slot}</Fragment>
+          <Fragment key={`slot-${key}`}>{slot()}</Fragment>
         ))}
       {Object.values(controls).length > 0 && (
         <DropdownMenu
