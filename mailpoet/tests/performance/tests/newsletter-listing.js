@@ -18,7 +18,6 @@ import {
   timeoutSet,
 } from '../config.js';
 import { authenticate } from '../utils/helpers.js';
-/* global Promise */
 
 export async function newsletterListing() {
   const browser = chromium.launch({
@@ -37,7 +36,7 @@ export async function newsletterListing() {
     authenticate(page);
 
     // Wait for async actions
-    await Promise.all([page.waitForNavigation({ waitUntil: 'networkidle' })]);
+    await page.waitForNavigation({ waitUntil: 'networkidle' });
 
     // Check if there is element present and visible
     page.waitForSelector('[data-automation-id="listing_filter_segment"]');
