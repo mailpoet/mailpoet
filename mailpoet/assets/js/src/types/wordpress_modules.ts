@@ -1,6 +1,20 @@
 /* eslint-disable @typescript-eslint/no-explicit-any -- some general types in this file need to use "any"  */
 /* eslint-disable import/no-duplicates -- importing within multiple "declare module" blocks is OK  */
 
+declare module '@wordpress/block-editor' {
+  import * as blockEditorActions from '@wordpress/block-editor/store/actions';
+  import * as blockEditorSelectors from '@wordpress/block-editor/store/selectors';
+  import { StoreDescriptor as GenericStoreDescriptor } from '@wordpress/data/build-types/types';
+
+  export * from '@wordpress/block-editor/index';
+
+  export const store: { name: 'core/block-editor' } & GenericStoreDescriptor<{
+    reducer: () => unknown;
+    actions: typeof blockEditorActions;
+    selectors: typeof blockEditorSelectors;
+  }>;
+}
+
 // there are no @types/wordpress__interface yet
 declare module '@wordpress/interface' {
   import { StoreDescriptor } from '@wordpress/data/build-types/types';

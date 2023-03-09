@@ -19,7 +19,7 @@ type Props = {
 };
 
 function Edit({ value, onChange, activeAttributes }: Props): JSX.Element {
-  const selectedBlock = useSelect<{ name: string }>(
+  const selectedBlock = useSelect(
     (sel) => sel('core/block-editor').getSelectedBlock(),
     [],
   );

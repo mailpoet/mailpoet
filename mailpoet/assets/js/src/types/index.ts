@@ -1,6 +1,11 @@
 import { ComponentProps, ComponentType } from 'react';
 import { ColorPalette, FontSizePicker } from '@wordpress/components';
 import { ConfirmDialog } from '@wordpress/components/build-types/confirm-dialog';
+import { store as blockEditorStore } from '@wordpress/block-editor';
+import { store as keyboardShortutsStore } from '@wordpress/keyboard-shortcuts';
+import { store as interfaceStore } from '@wordpress/interface';
+import { store as preferencesStore } from '@wordpress/preferences';
+import { store as noticesStore } from '@wordpress/notices';
 import {
   ActionCreatorsOf,
   ConfigOf,
@@ -37,26 +42,6 @@ export type OmitFirstArg<F> = F extends (
 export type OmitFirstArgs<O extends object> = {
   [K in keyof O]: OmitFirstArg<O[K]>;
 };
-
-declare module '@wordpress/block-editor' {
-  export const __experimentalLibrary: any;
-
-  // types for 'useSetting' are missing in @types/wordpress__block-editor
-  export function useSetting(path: string): unknown;
-  export function useSetting(path: 'color.palette'): ColorPalette.Color[];
-  export function useSetting(
-    path: 'typography.fontSizes',
-  ): FontSizePicker.FontSize[];
-
-  // types for 'gradients' are missing in @types/wordpress__block-editor
-  export interface EditorSettings {
-    gradients: {
-      name: string;
-      slug: string;
-      gradient: string;
-    }[];
-  }
-}
 
 declare module '@wordpress/components' {
   export const __experimentalConfirmDialog: ComponentType<
@@ -137,4 +122,32 @@ declare module '@wordpress/data' {
     S extends typeof select,
     T extends (state: any, ...args: any) => any,
   >(registrySelector: (select: S) => T): T;
+
+  interface StoreMap {
+    [blockEditorStore.name]: typeof blockEditorStore;
+    [keyboardShortutsStore.name]: typeof keyboardShortutsStore;
+    [interfaceStore.name]: typeof interfaceStore;
+    [preferencesStore.name]: typeof preferencesStore;
+    [noticesStore.name]: typeof noticesStore;
+  }
+}
+
+declare module '@wordpress/block-editor' {
+  export const __experimentalLibrary: any;
+
+  // types for 'useSetting' are missing in @types/wordpress__block-editor
+  export function useSetting(path: string): unknown;
+  export function useSetting(path: 'color.palette'): ColorPalette.Color[];
+  export function useSetting(
+    path: 'typography.fontSizes',
+  ): FontSizePicker.FontSize[];
+
+  // types for 'gradients' are missing in @types/wordpress__block-editor
+  export interface EditorSettings {
+    gradients: {
+      name: string;
+      slug: string;
+      gradient: string;
+    }[];
+  }
 }
