@@ -3,10 +3,6 @@ import {
   SETTINGS_DEFAULTS,
   store as blockEditorStore,
 } from '@wordpress/block-editor';
-import {
-  ReduxStoreConfig,
-  StoreDescriptor,
-} from '@wordpress/data/build-types/types';
 import { blocksToFormBodyFactory } from './blocks_to_form_body';
 import { mapFormDataBeforeSaving } from './map_form_data_before_saving';
 import {
@@ -14,13 +10,8 @@ import {
   ToggleAction,
   ToggleBlockInserterAction,
 } from './actions_types';
-import { selectors } from './selectors';
-import { BlockInsertionPoint, State } from './state_types';
-
-// workaround to avoid import cycles
-const store = { name: 'mailpoet-form-editor' } as StoreDescriptor<
-  ReduxStoreConfig<State, null, typeof selectors>
->;
+import { BlockInsertionPoint } from './state_types';
+import { storeName } from './constants';
 
 export function toggleSidebar(toggleTo): ToggleAction {
   return {
@@ -203,7 +194,7 @@ export function changeActiveSidebar(
 }
 
 export function* changePreviewSettings(settings) {
-  const formData = select(store).getFormData();
+  const formData = select(storeName).getFormData();
   // We don't need or want to save preview settings for unsaved forms. These stored settings
   // are only ever used when reloading previously-edited forms.
   if (formData.id !== null) {
@@ -220,7 +211,7 @@ export function* changePreviewSettings(settings) {
 }
 
 export function* showPlacementSettings(formType: string) {
-  const previewSettings = select(store).getPreviewSettings();
+  const previewSettings = select(storeName).getPreviewSettings();
   const updatedPreviewSettings = {
     ...previewSettings,
     formType,
@@ -234,9 +225,9 @@ export function* showPreview() {
     type: 'SHOW_PREVIEW',
   };
   yield changeActiveSidebar('default');
-  const customFields = select(store).getAllAvailableCustomFields();
-  const formData = select(store).getFormData();
-  const formBlocks = select(store).getFormBlocks();
+  const customFields = select(storeName).getAllAvailableCustomFields();
+  const formData = select(storeName).getFormData();
+  const formBlocks = select(storeName).getFormBlocks();
   const blocksToFormBody = blocksToFormBodyFactory(
     SETTINGS_DEFAULTS.fontSizes,
     SETTINGS_DEFAULTS.colors,

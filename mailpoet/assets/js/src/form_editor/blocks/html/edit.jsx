@@ -14,24 +14,24 @@ import { useSelect } from '@wordpress/data';
 import { MailPoet } from 'mailpoet';
 import { mapColorSlugToValue } from 'form_editor/store/mapping/from_blocks/styles_mapper';
 import { ParagraphEdit } from '../paragraph_edit.jsx';
-import { store } from '../../store';
+import { storeName } from '../../store/constants';
 
 function CustomHtmlEdit({ attributes, setAttributes, clientId }) {
   const colorDefinitions = useSetting('color.palette');
   const { fontColor, fontSize, alignment, fontFamily } = useSelect((select) => {
-    const settings = select(store).getFormSettings();
+    const settings = select(storeName).getFormSettings();
     const parentBackgroundColor = mapColorSlugToValue(
       colorDefinitions,
-      select(store).getClosestParentAttribute(clientId, 'backgroundColor'),
-      select(store).getClosestParentAttribute(
+      select(storeName).getClosestParentAttribute(clientId, 'backgroundColor'),
+      select(storeName).getClosestParentAttribute(
         clientId,
         'customBackgroundColor',
       ),
     );
     const parentTextColor = mapColorSlugToValue(
       colorDefinitions,
-      select(store).getClosestParentAttribute(clientId, 'textColor'),
-      select(store).getClosestParentAttribute(clientId, 'customTextColor'),
+      select(storeName).getClosestParentAttribute(clientId, 'textColor'),
+      select(storeName).getClosestParentAttribute(clientId, 'customTextColor'),
     );
     return {
       backgroundColor: parentBackgroundColor || settings.backgroundColor,

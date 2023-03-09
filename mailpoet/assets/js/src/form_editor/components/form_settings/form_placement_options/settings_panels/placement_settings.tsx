@@ -4,7 +4,7 @@ import { ToggleControl } from '@wordpress/components';
 import { assocPath, compose, cond, identity, isEqual, sortBy } from 'lodash/fp';
 import { withBoundary } from 'common';
 import { Selection } from '../../selection';
-import { store } from '../../../../store';
+import { storeName } from '../../../../store';
 
 type Props = {
   settingsPlacementKey: string;
@@ -12,16 +12,16 @@ type Props = {
 
 function PlacementSettings({ settingsPlacementKey }: Props): JSX.Element {
   const formSettings = useSelect(
-    (select) => select(store).getFormSettings(),
+    (select) => select(storeName).getFormSettings(),
     [],
   );
   const tags = useSelect(
     (select) =>
       sortBy(
         'name',
-        select(store)
+        select(storeName)
           .getAllWPTags()
-          .concat(select(store).getAllWooCommerceTags()),
+          .concat(select(storeName).getAllWooCommerceTags()),
       ),
     [],
   );
@@ -29,28 +29,28 @@ function PlacementSettings({ settingsPlacementKey }: Props): JSX.Element {
     (select) =>
       sortBy(
         'name',
-        select(store)
+        select(storeName)
           .getAllWPCategories()
-          .concat(select(store).getAllWooCommerceCategories()),
+          .concat(select(storeName).getAllWooCommerceCategories()),
       ),
     [],
   );
-  const pages = useSelect((select) => select(store).getAllWPPages(), []);
+  const pages = useSelect((select) => select(storeName).getAllWPPages(), []);
   const posts = useSelect(
     (select) =>
       sortBy(
         'name',
-        select(store)
+        select(storeName)
           .getAllWPPosts()
-          .concat(select(store).getAllWooCommerceProducts()),
+          .concat(select(storeName).getAllWooCommerceProducts()),
       ),
     [],
   );
   const isPreviewShown = useSelect(
-    (select) => select(store).getIsPreviewShown(),
+    (select) => select(storeName).getIsPreviewShown(),
     [],
   );
-  const { changeFormSettings } = useDispatch(store);
+  const { changeFormSettings } = useDispatch(storeName);
 
   let prefix = 'no-preview';
   if (isPreviewShown) {

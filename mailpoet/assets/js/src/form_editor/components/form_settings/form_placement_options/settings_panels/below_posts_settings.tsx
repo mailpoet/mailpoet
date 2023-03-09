@@ -4,14 +4,14 @@ import { ToggleControl } from '@wordpress/components';
 import { __, assocPath, compose } from 'lodash/fp';
 import { SizeSettings } from 'form_editor/components/size_settings';
 import { PlacementSettings } from './placement_settings';
-import { store } from '../../../../store';
+import { storeName } from '../../../../store';
 
 export function BelowPostsSettings(): JSX.Element {
   const formSettings = useSelect(
-    (select) => select(store).getFormSettings(),
+    (select) => select(storeName).getFormSettings(),
     [],
   );
-  const { changeFormSettings } = useDispatch(store);
+  const { changeFormSettings } = useDispatch(storeName);
 
   const isActive = formSettings.formPlacement.belowPosts.enabled;
 

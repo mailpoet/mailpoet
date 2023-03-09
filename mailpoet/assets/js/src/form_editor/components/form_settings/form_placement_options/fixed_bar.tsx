@@ -3,14 +3,14 @@ import { useDispatch, useSelect } from '@wordpress/data';
 
 import { FormPlacementOption } from './form_placement_option';
 import { FixedBarIcon } from './icons/fixed_bar_icon';
-import { store } from '../../../store';
+import { storeName } from '../../../store';
 
 export function FixedBar(): JSX.Element {
   const formSettings = useSelect(
-    (select) => select(store).getFormSettings(),
+    (select) => select(storeName).getFormSettings(),
     [],
   );
-  const { showPlacementSettings } = useDispatch(store);
+  const { showPlacementSettings } = useDispatch(storeName);
 
   return (
     <FormPlacementOption

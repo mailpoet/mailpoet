@@ -12,27 +12,27 @@ import { MailPoet } from 'mailpoet';
 import { FeatureToggle } from './feature_toggle';
 import { HistoryUndo } from './history_undo';
 import { HistoryRedo } from './history_redo';
-import { store } from '../store';
+import { storeName } from '../store';
 
 function Header({ isInserterOpened, setIsInserterOpened }) {
   const sidebarOpened = useSelect(
-    (select) => select(store).getSidebarOpened(),
+    (select) => select(storeName).getSidebarOpened(),
     [],
   );
   const isFormSaving = useSelect(
-    (select) => select(store).getIsFormSaving(),
+    (select) => select(storeName).getIsFormSaving(),
     [],
   );
   const isPreview = useSelect(
-    (select) => select(store).getIsPreviewShown(),
+    (select) => select(storeName).getIsPreviewShown(),
     [],
   );
   const isFullscreen = useSelect(
-    (select) => select(store).isFullscreenEnabled(),
+    (select) => select(storeName).isFullscreenEnabled(),
     [],
   );
   const { toggleSidebar, saveForm, showPreview, toggleFullscreen } =
-    useDispatch(store);
+    useDispatch(storeName);
 
   return (
     <div className="edit-post-header">

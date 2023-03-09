@@ -28,7 +28,7 @@ import { FormPreview } from './preview/preview';
 import { FormStylingBackground } from './form_styling_background.jsx';
 import { CustomFontsStyleSheetLink } from './font_family_settings';
 import { Fullscreen } from './fullscreen';
-import { store } from '../store';
+import { storeName } from '../store';
 
 /**
  * This component renders the form editor app.
@@ -40,14 +40,17 @@ import { store } from '../store';
  * https://developer.wordpress.org/block-editor/packages/packages-block-editor/
  */
 export function Editor() {
-  const sidebarOpened = useSelect((sel) => sel(store).getSidebarOpened(), []);
-
-  const isInserterOpened = useSelect(
-    (sel) => sel(store).isInserterOpened(),
+  const sidebarOpened = useSelect(
+    (sel) => sel(storeName).getSidebarOpened(),
     [],
   );
 
-  const formBlocks = useSelect((sel) => sel(store).getFormBlocks(), []);
+  const isInserterOpened = useSelect(
+    (sel) => sel(storeName).isInserterOpened(),
+    [],
+  );
+
+  const formBlocks = useSelect((sel) => sel(storeName).getFormBlocks(), []);
 
   const canUserUpload = useSelect(
     (sel) => sel('core').canUser('create', 'media'),
@@ -67,7 +70,7 @@ export function Editor() {
     },
   );
 
-  const { blocksChangedInBlockEditor, toggleInserter } = useDispatch(store);
+  const { blocksChangedInBlockEditor, toggleInserter } = useDispatch(storeName);
 
   // Editor settings - see @wordpress/block-editor/src/store/defaults.js
   const editorSettings = {

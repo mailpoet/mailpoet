@@ -10,18 +10,24 @@ import { formatLabel } from '../label_formatter.jsx';
 import { FormFieldDate } from './date.jsx';
 import { ParagraphEdit } from '../paragraph_edit.jsx';
 import { mapCustomFieldFormData } from '../map_custom_field_form_data.jsx';
-import { store } from '../../store';
+import { storeName } from '../../store/constants';
 
 function CustomDateEdit({ attributes, setAttributes, clientId }) {
-  const isSaving = useSelect((sel) => sel(store).getIsCustomFieldSaving(), []);
-  const dateSettings = useSelect((sel) => sel(store).getDateSettingsData(), []);
+  const isSaving = useSelect(
+    (sel) => sel(storeName).getIsCustomFieldSaving(),
+    [],
+  );
+  const dateSettings = useSelect(
+    (sel) => sel(storeName).getDateSettingsData(),
+    [],
+  );
   const isDeleting = useSelect(
-    (sel) => sel(store).getIsCustomFieldDeleting(),
+    (sel) => sel(storeName).getIsCustomFieldDeleting(),
     [],
   );
 
   const { saveCustomField, deleteCustomField, customFieldEdited } =
-    useDispatch(store);
+    useDispatch(storeName);
   const inspectorControls = (
     <InspectorControls>
       <Panel>

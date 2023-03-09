@@ -1,16 +1,6 @@
 import { select } from '@wordpress/data';
-import {
-  ReduxStoreConfig,
-  StoreDescriptor,
-} from '@wordpress/data/build-types/types';
-
-import { CategoryActionType, CategoryType, StateType } from './types';
-import { selectors } from './selectors';
-
-// workaround to avoid import cycles
-const store = { name: 'mailpoet-form-editor-templates' } as StoreDescriptor<
-  ReduxStoreConfig<StateType, null, typeof selectors>
->;
+import { CategoryActionType, CategoryType } from './types';
+import { storeName } from './constants';
 
 // eslint-disable-next-line @typescript-eslint/ban-types -- IDK what else could be the return value
 export function* selectTemplate(templateId: string, templateName: string) {
@@ -24,7 +14,7 @@ export function* selectTemplate(templateId: string, templateName: string) {
     },
     timeout: 200,
   };
-  const url = select(store).getFormEditorUrl();
+  const url = select(storeName).getFormEditorUrl();
 
   window.location.href = `${url}${templateId}`;
   return {};

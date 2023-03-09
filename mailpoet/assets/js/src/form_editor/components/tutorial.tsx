@@ -4,15 +4,15 @@ import { useSelect, useDispatch } from '@wordpress/data';
 import { Modal } from 'common/modal/modal';
 import { Heading } from 'common/typography/heading/heading';
 import { MailPoet } from 'mailpoet';
-import { store } from '../store';
+import { storeName } from '../store';
 
 export function Tutorial(): JSX.Element {
-  const url = useSelect((select) => select(store).getTutorialUrl(), []);
+  const url = useSelect((select) => select(storeName).getTutorialUrl(), []);
   const tutorialSeen = useSelect(
-    (select) => select(store).getTutorialSeen(),
+    (select) => select(storeName).getTutorialSeen(),
     [],
   );
-  const { tutorialDismissed } = useDispatch(store);
+  const { tutorialDismissed } = useDispatch(storeName);
 
   const onClose = useCallback((): void => {
     void tutorialDismissed();

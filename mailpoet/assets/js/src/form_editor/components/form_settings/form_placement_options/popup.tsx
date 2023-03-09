@@ -3,14 +3,14 @@ import { useDispatch, useSelect } from '@wordpress/data';
 
 import { FormPlacementOption } from './form_placement_option';
 import { PopupIcon } from './icons/popup_icon';
-import { store } from '../../../store';
+import { storeName } from '../../../store';
 
 export function Popup(): JSX.Element {
   const formSettings = useSelect(
-    (select) => select(store).getFormSettings(),
+    (select) => select(storeName).getFormSettings(),
     [],
   );
-  const { showPlacementSettings } = useDispatch(store);
+  const { showPlacementSettings } = useDispatch(storeName);
 
   return (
     <FormPlacementOption

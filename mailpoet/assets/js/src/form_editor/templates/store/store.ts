@@ -7,6 +7,7 @@ import { selectors } from './selectors';
 import { createReducer } from './reducer';
 import * as actions from './actions';
 import * as controls from './controls';
+import { storeName } from './constants';
 
 import { TemplateData, StateType, CategoryType } from './types';
 
@@ -16,8 +17,6 @@ interface StoreWindow extends Window {
 }
 
 declare let window: StoreWindow;
-
-const storeName = 'mailpoet-form-editor-templates';
 
 export const createStore = () => {
   const defaultState: StateType = {
@@ -41,7 +40,8 @@ export const createStore = () => {
   return store;
 };
 
-export const store: ReturnType<typeof createStore> = {
-  name: storeName,
-  instantiate: (registry) => createStore().instantiate(registry),
-};
+declare module '@wordpress/data' {
+  interface StoreMap {
+    [storeName]: ReturnType<typeof createStore>;
+  }
+}

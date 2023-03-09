@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import { useSelect } from '@wordpress/data';
-import { store } from '../store';
+import { storeName } from '../store';
 
 function FormStylingBackground({ children }) {
   const {
@@ -16,15 +16,15 @@ function FormStylingBackground({ children }) {
     backgroundImageUrl,
     backgroundImageDisplay,
     fontFamily,
-  } = useSelect((select) => select(store).getFormSettings(), []);
+  } = useSelect((select) => select(storeName).getFormSettings(), []);
 
   const previewSettings = useSelect(
-    (select) => select(store).getPreviewSettings(),
+    (select) => select(storeName).getPreviewSettings(),
     [],
   );
 
   const formWidth = useSelect(
-    (select) => select(store).getFormWidth(previewSettings.formType),
+    (select) => select(storeName).getFormWidth(previewSettings.formType),
     [previewSettings.formType],
   );
 

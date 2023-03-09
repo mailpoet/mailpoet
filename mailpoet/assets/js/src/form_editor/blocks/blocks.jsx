@@ -17,7 +17,7 @@ import * as column from './columns/column.jsx';
 import * as heading from './heading/heading.jsx';
 import * as paragraph from './paragraph/paragraph';
 import * as image from './image/image';
-import { store } from '../store';
+import { storeName } from '../store/constants';
 
 export const registerCustomFieldBlock = (customField) => {
   const namesMap = getCustomFieldBlockSettings(customField);
@@ -33,10 +33,10 @@ export const registerCustomFieldBlock = (customField) => {
 };
 
 export const initBlocks = () => {
-  const customFields = select(store).getAllAvailableCustomFields();
+  const customFields = select(storeName).getAllAvailableCustomFields();
 
   // Configure Custom HTML block to be available in inserter only for admins
-  html.settings.supports.inserter = select(store).isUserAdministrator();
+  html.settings.supports.inserter = select(storeName).isUserAdministrator();
 
   const categories = [
     { slug: 'obligatory', title: '' }, // Blocks from this category are not in block insert popup

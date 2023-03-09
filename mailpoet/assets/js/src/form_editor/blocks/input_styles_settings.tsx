@@ -11,7 +11,7 @@ import { useDispatch } from '@wordpress/data';
 import { partial } from 'lodash';
 import PropTypes from 'prop-types';
 import { ColorGradientSettings } from '../components/color_gradient_settings';
-import { store } from '../store';
+import { storeName } from '../store/constants';
 
 type InputStyles = {
   fullWidth: boolean;
@@ -33,7 +33,7 @@ function InputStylesSettings({ styles, onChange }: InputStylesSettingsProps) {
   const localStylesRef = useRef(styles);
   const localStyles = localStylesRef.current;
 
-  const { applyStylesToAllTextInputs } = useDispatch(store);
+  const { applyStylesToAllTextInputs } = useDispatch(storeName);
 
   const updateStyles = (property, value) => {
     const updated = { ...localStylesRef.current };

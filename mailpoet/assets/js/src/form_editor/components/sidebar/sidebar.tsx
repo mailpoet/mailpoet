@@ -6,7 +6,7 @@ import {
 } from '@wordpress/data/build-types/types';
 import { DefaultSidebar } from './default_sidebar';
 import { PlacementSettingsSidebar } from './placement_settings_sidebar';
-import { store } from '../../store';
+import { storeName } from '../../store';
 
 // workaround for block editor store useSelect
 interface BlockEditorStoreSelectors {
@@ -17,10 +17,10 @@ const blockEditorStore = { name: 'core/block-editor' } as StoreDescriptor<
 >;
 
 function Sidebar(): JSX.Element {
-  const { toggleSidebar, changeActiveSidebar } = useDispatch(store);
+  const { toggleSidebar, changeActiveSidebar } = useDispatch(storeName);
 
   const activeSidebar = useSelect(
-    (select) => select(store).getActiveSidebar(),
+    (select) => select(storeName).getActiveSidebar(),
     [],
   );
 

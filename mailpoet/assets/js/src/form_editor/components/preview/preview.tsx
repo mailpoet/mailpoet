@@ -7,37 +7,37 @@ import { Modal } from 'common/modal/modal';
 import { Preview } from 'common/preview/preview.jsx';
 import { SettingsPanel } from 'form_editor/components/form_settings/form_placement_options/settings_panel';
 import { ErrorBoundary } from 'common';
-import { store } from '../../store';
+import { storeName } from '../../store';
 
 function FormPreview(): JSX.Element {
   const iframeElement = useRef(null);
   const [iframeLoaded, setIframeLoaded] = useState(false);
-  const { hidePreview, changePreviewSettings } = useDispatch(store);
+  const { hidePreview, changePreviewSettings } = useDispatch(storeName);
   const isPreview = useSelect(
-    (select) => select(store).getIsPreviewShown(),
+    (select) => select(storeName).getIsPreviewShown(),
     [],
   );
   const isPreviewReady = useSelect(
-    (select) => select(store).getIsPreviewReady(),
+    (select) => select(storeName).getIsPreviewReady(),
     [],
   );
 
   const previewSettings = useSelect(
-    (select) => select(store).getPreviewSettings(),
+    (select) => select(storeName).getPreviewSettings(),
     [],
   );
 
   const formSettings = useSelect(
-    (select) => select(store).getFormSettings(),
+    (select) => select(storeName).getFormSettings(),
     [],
   );
 
-  const formId = useSelect((select) => select(store).getFormData().id, []);
+  const formId = useSelect((select) => select(storeName).getFormData().id, []);
 
-  const editorUrl = useSelect((select) => select(store).getEditorUrl(), []);
+  const editorUrl = useSelect((select) => select(storeName).getEditorUrl(), []);
 
   const previewPageUrl = useSelect(
-    (select) => select(store).getPreviewPageUrl(),
+    (select) => select(storeName).getPreviewPageUrl(),
     [],
   );
 

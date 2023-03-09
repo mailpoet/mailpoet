@@ -1,10 +1,10 @@
 import { useEffect } from 'react';
 import { useSelect } from '@wordpress/data';
-import { store } from '../store';
+import { storeName } from '../store';
 
 function Fullscreen(): null {
   const isFullscreen = useSelect(
-    (select) => select(store).isFullscreenEnabled(),
+    (select) => select(storeName).isFullscreenEnabled(),
     [],
   );
 
