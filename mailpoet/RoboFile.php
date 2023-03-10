@@ -300,7 +300,30 @@ class RoboFile extends \Robo\Tasks {
     return $this->runTestsInContainer($opts);
   }
 
-  public function testPerformance($path = null, $opts = ['url' => null, 'pw' => null, 'head' => false, 'scenario' => null]) {
+  public function testPerformance($path = null, $opts = ['url' => null, 'head' => false, 'scenario' => null]) {
+    // get data file URL
+    $url = getenv('WP_TEST_PERFORMANCE_DATA_URL');
+    if (!$url) {
+      $this->yell("Please set 'WP_TEST_PERFORMANCE_DATA_URL'. You'll find it in the secret store.", 40, 'red');
+      exit(1);
+    }
+
+    // download data
+    $dataFile = __DIR__ . '/tests/performance/data.sql';
+    if (file_exists($dataFile)) {
+      $this->say('Data file already exists, skipping download.');
+    } else {
+      $this->say('Downloading data file...');
+      $source = gzopen($url, 'rb');
+      $destination = fopen($dataFile, 'wb');
+      while (!gzeof($source)) {
+        fwrite($destination, gzread($source, 4096));
+      }
+      fclose($destination);
+      gzclose($source);
+      $this->say("Data file downloaded to: $dataFile");
+    }
+
     // run WordPress setup
     $this->taskExec('COMPOSE_HTTP_TIMEOUT=200 docker-compose run --rm -it setup')
       ->dir(__DIR__ . '/tests/performance')
