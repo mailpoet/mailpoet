@@ -153,7 +153,7 @@ class RoboFile extends \Robo\Tasks {
       ->taskExec("php -d memory_limit=-1 tasks/makepot/makepot-views.php . > lang/mailpoet.pot")
 
       // PHP, JS/TS
-      ->taskExec("php -d memory_limit=-1 $(which wp) i18n make-pot --merge --slug=mailpoet --domain=mailpoet --exclude=$exclude --headers=$headers . lang/mailpoet.pot")
+      ->taskExec("php -d memory_limit=-1 vendor/wp-cli/wp-cli/php/boot-fs.php i18n make-pot --merge --slug=mailpoet --domain=mailpoet --exclude=$exclude --headers=$headers . lang/mailpoet.pot")
 
       ->run();
   }
