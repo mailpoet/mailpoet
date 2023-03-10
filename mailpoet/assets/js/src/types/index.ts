@@ -1,6 +1,9 @@
-import { ComponentProps, ComponentType } from 'react';
+import { ComponentProps, ComponentPropsWithoutRef, ComponentType } from 'react';
 import { ColorPalette, FontSizePicker } from '@wordpress/components';
 import { ConfirmDialog } from '@wordpress/components/build-types/confirm-dialog';
+import { FormTokenFieldProps } from '@wordpress/components/build-types/form-token-field/types';
+// eslint-disable-next-line import/no-named-default
+import { default as WPPopover } from '@wordpress/components/build-types/popover';
 import { store as blockEditorStore } from '@wordpress/block-editor';
 import { store as keyboardShortutsStore } from '@wordpress/keyboard-shortcuts';
 import { store as interfaceStore } from '@wordpress/interface';
@@ -47,6 +50,33 @@ declare module '@wordpress/components' {
   export const __experimentalConfirmDialog: ComponentType<
     ComponentProps<typeof ConfirmDialog>
   >;
+
+  // New property for declaring forward compatibility is not set on types
+  // eslint-disable-next-line @typescript-eslint/no-shadow,@typescript-eslint/no-namespace
+  export namespace CustomSelectControl {
+    interface Props {
+      __nextUnconstrainedWidth: boolean;
+    }
+  }
+
+  // New property on Dropdown is not set in @types/wordpress__components
+  // eslint-disable-next-line @typescript-eslint/no-shadow,@typescript-eslint/no-namespace
+  export namespace Dropdown {
+    interface Props {
+      popoverProps?: Omit<
+        ComponentPropsWithoutRef<typeof WPPopover>,
+        'children'
+      >;
+    }
+  }
+
+  // New properties on FormTokenField is not set in @types/wordpress__components
+  // eslint-disable-next-line @typescript-eslint/no-namespace
+  export namespace FormTokenField {
+    // eslint-disable-next-line @typescript-eslint/no-empty-interface -- There is no other usable way hot to tell define interface using other interface
+    export interface Props extends FormTokenFieldProps {}
+  }
+
   export const __experimentalText: any;
   export const __unstableComposite: typeof Composite;
   export const __unstableCompositeGroup: typeof CompositeGroup;
