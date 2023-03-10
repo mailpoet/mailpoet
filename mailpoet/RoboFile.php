@@ -135,6 +135,9 @@ class RoboFile extends \Robo\Tasks {
       'tools',
       'vendor',
       'vendor-prefixed',
+      'RoboFile.php',
+      '.storybook',
+      'storybook-static',
     ]);
 
     $headers = escapeshellarg(
