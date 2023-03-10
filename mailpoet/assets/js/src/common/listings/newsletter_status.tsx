@@ -2,7 +2,6 @@ import { __ } from '@wordpress/i18n';
 import { MailPoet } from 'mailpoet';
 import classnames from 'classnames';
 import { addDays, differenceInMinutes, isFuture, isPast } from 'date-fns';
-import { t } from 'common/functions/t';
 import {
   NewsLetter,
   NewsletterStatus as NewsletterStatusEnum,
@@ -96,7 +95,9 @@ function NewsletterStatus({
       MailPoet.Date.short(tomorrow) === scheduledDate;
     if (isScheduledForToday || isScheduledForTomorrow) {
       const randomId = Math.random().toString(36).substring(2, 15);
-      const dateWord = isScheduledForToday ? t('today') : t('tomorrow');
+      const dateWord = isScheduledForToday
+        ? __('Today', 'mailpoet')
+        : __('Tomorrow', 'mailpoet');
       label = (
         <>
           <span data-tip data-for={randomId}>
@@ -144,7 +145,7 @@ function NewsletterStatus({
   }
 
   if (isCorrupt) {
-    label = t('renderingProblem');
+    label = __('There was a problem with rendering!', 'mailpoet');
   }
 
   return (
