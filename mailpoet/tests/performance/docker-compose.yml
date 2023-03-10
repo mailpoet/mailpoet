@@ -53,6 +53,7 @@ services:
       MYSQL_PASSWORD: wordpress
     volumes:
       - /dev/shm:/dev/shm
+      - ./data.sql:/docker-entrypoint-initdb.d/data.sql
     healthcheck:
       test: ['CMD-SHELL', 'mysqladmin ping -hmysql --silent']
       interval: 2s
