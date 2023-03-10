@@ -1,12 +1,11 @@
+import { getAvailableFilters } from './all_available_filters';
 import {
   SegmentConnectTypes,
   SegmentFormDataWindow,
   SegmentTypes,
   StateType,
   SubscriberActionTypes,
-} from 'segments/dynamic/types';
-
-import { getAvailableFilters } from 'segments/dynamic/store/all_available_filters';
+} from '../types';
 
 declare let window: SegmentFormDataWindow;
 

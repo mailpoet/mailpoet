@@ -1,5 +1,5 @@
-import { EmailActionTypes, SegmentTypes } from 'segments/dynamic/types';
 import { MailPoet } from 'mailpoet';
+import { EmailActionTypes, SegmentTypes } from '../types';
 
 export const EmailSegmentOptions = [
   {
