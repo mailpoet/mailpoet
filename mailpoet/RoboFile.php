@@ -301,6 +301,20 @@ class RoboFile extends \Robo\Tasks {
   }
 
   public function testPerformance($path = null, $opts = ['url' => null, 'head' => false, 'scenario' => null]) {
+    $dir = __DIR__;
+    return $this->collectionBuilder()
+      ->addCode([$this, 'testPerformanceSetup'])
+      ->taskExec("php $dir/tools/k6.php")
+      ->arg('run')
+      ->option('env', 'K6_BROWSER_ENABLED=1')
+      ->option('env', 'URL=' . $opts['url'])
+      ->option('env', 'HEADLESS=' . ($opts['head'] ? 'false' : 'true'))
+      ->option('env', 'SCENARIO=' . $opts['scenario'])
+      ->arg($path ?? "$dir/tests/performance/scenarios.js")
+      ->dir($dir)->run();
+  }
+
+  public function testPerformanceSetup() {
     // get data file URL
     $url = getenv('WP_TEST_PERFORMANCE_DATA_URL');
     if (!$url) {
@@ -309,11 +323,12 @@ class RoboFile extends \Robo\Tasks {
     }
 
     // download data
-    $dataFile = __DIR__ . '/tests/performance/data.sql';
-    if (file_exists($dataFile)) {
-      $this->say('Data file already exists, skipping download.');
-    } else {
+    $dataFile = __DIR__ . '/tests/performance/_data/data.sql';
+    if (!file_exists($dataFile)) {
       $this->say('Downloading data file...');
+      if (!is_dir(dirname($dataFile))) {
+        mkdir(dirname($dataFile), 0777, true);
+      }
       $source = gzopen($url, 'rb');
       $destination = fopen($dataFile, 'wb');
       while (!gzeof($source)) {
@@ -322,12 +337,16 @@ class RoboFile extends \Robo\Tasks {
       fclose($destination);
       gzclose($source);
       $this->say("Data file downloaded to: $dataFile");
+    } else {
+      $this->say("Data file already exists: $dataFile");
     }
 
-    // run WordPress setup
+    // import data & run WordPress setup
+    $this->say('Importing data and running a WordPress setup...');
     $this->taskExec('COMPOSE_HTTP_TIMEOUT=200 docker-compose run --rm -it setup')
       ->dir(__DIR__ . '/tests/performance')
       ->run();
+    $this->say('Data imported, WordPress set up.');
 
     // run performance tests
     $dir = __DIR__;

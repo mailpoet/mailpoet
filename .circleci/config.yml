@@ -504,6 +504,19 @@ jobs:
             cd tests/performance
             docker-compose create || docker-compose create
       - run:
+          name: Get data file size (for MySQL volume cache key)
+          command: wget --spider $WP_TEST_PERFORMANCE_DATA_URL 2>&1 | grep "Length:" > data-file-size.txt
+      - restore_cache:
+          key: performance-test-mysql-data-{{ checksum "data-file-size.txt" }}
+      - run:
+          name: Setup performance tests
+          command: |
+            ./do test:performance-setup
+      - save_cache:
+          key: performance-test-mysql-data-{{ checksum "data-file-size.txt" }}
+          paths:
+            - tests/performance/_data/mysql
+      - run:
           name: Run performance tests
           command: |
             mkdir -p tests/performance/_output
