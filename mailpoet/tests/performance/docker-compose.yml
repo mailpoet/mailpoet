@@ -56,9 +56,9 @@ services:
       - ./data.sql:/docker-entrypoint-initdb.d/data.sql
     healthcheck:
       test: ['CMD-SHELL', 'mysqladmin ping -hmysql --silent']
-      interval: 2s
-      timeout: 30s
-      retries: 10
+      interval: 3s
+      timeout: 600s
+      retries: 200
 
   mailhog:
     image: mailhog/mailhog:v1.0.0
