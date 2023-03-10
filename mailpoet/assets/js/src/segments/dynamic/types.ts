@@ -230,7 +230,9 @@ export interface ActionType {
 export type UpdateSegmentActionData =
   | AnyFormItem
   | { name: string }
-  | { description: string };
+  | { description: string }
+  | { filters: AnyFormItem[] }
+  | { filters_connect: SegmentConnectTypes };
 
 export interface SetSegmentActionType extends ActionType {
   segment: UpdateSegmentActionData;
