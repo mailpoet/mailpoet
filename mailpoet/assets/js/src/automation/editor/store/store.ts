@@ -1,4 +1,8 @@
 import { createReduxStore, register } from '@wordpress/data';
+import {
+  ReduxStoreConfig,
+  StoreDescriptor as GenericStoreDescriptor,
+} from '@wordpress/data/build-types/types';
 import { controls } from '@wordpress/data-controls';
 import { Hooks } from 'wp-js-hooks';
 import * as actions from './actions';
@@ -29,9 +33,20 @@ export const createStore = () => {
   return store;
 };
 
+export interface AutomationsEditorStore {
+  getActions(): EditorStoreConfig['actions'];
+  getSelectors(): EditorStoreConfig['selectors'];
+}
+
 declare module '@wordpress/data' {
   interface StoreMap {
-    [storeName]: ReturnType<typeof createStore>;
+    [storeName]: GenericStoreDescriptor<
+      ReduxStoreConfig<
+        unknown,
+        ReturnType<AutomationsEditorStore['getActions']>,
+        ReturnType<AutomationsEditorStore['getSelectors']>
+      >
+    >;
   }
 }
 
