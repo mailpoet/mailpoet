@@ -25,27 +25,20 @@ const {
 
 const anyValidKey = hasValidApiKey || hasValidPremiumKey;
 
-const getBannerMessage = (translationKey: string) => {
-  const message = MailPoet.I18n.t(translationKey);
-  return (
-    <p>
-      {ReactStringReplace(
-        message,
-        /(\[subscribersCount]|\[subscribersLimit])/g,
-        (match) =>
-          match === '[subscribersCount]' ? subscribersCount : subscribersLimit,
-      )}
-    </p>
-  );
-};
+const getBannerMessage = (message: string) => (
+  <p>
+    {ReactStringReplace(
+      message,
+      /(\[subscribersCount]|\[subscribersLimit])/g,
+      (match) =>
+        match === '[subscribersCount]' ? subscribersCount : subscribersLimit,
+    )}
+  </p>
+);
 
-const getCtaButton = (
-  translationKey: string,
-  link: string,
-  target = '_blank',
-) => (
+const getCtaButton = (message: string, link: string, target = '_blank') => (
   <Button href={link} target={target} rel="noopener noreferrer">
-    {MailPoet.I18n.t(translationKey)}
+    {message}
   </Button>
 );
 
@@ -57,21 +50,29 @@ export function PremiumBannerWithUpgrade({
   let ctaButton: ReactNode;
 
   if (anyValidKey && !premiumActive) {
-    bannerMessage = getBannerMessage('premiumFeatureDescription');
+    bannerMessage = getBannerMessage(
+      __(
+        'Your current MailPoet plan includes advanced features, but they require the MailPoet Premium plugin to be installed and activated.',
+        'mailpoet',
+      ),
+    );
 
     ctaButton = isPremiumPluginInstalled
       ? getCtaButton(
-          'premiumFeatureButtonActivatePremium',
+          __('Activate MailPoet Premium plugin', 'mailpoet'),
           premiumPluginActivationUrl,
           '_self',
         )
       : getCtaButton(
-          'premiumFeatureButtonDownloadPremium',
+          __('Download MailPoet Premium plugin', 'mailpoet'),
           premiumPluginDownloadUrl,
         );
   } else if (subscribersLimitReached) {
     bannerMessage = getBannerMessage(
-      'premiumFeatureDescriptionSubscribersLimitReached',
+      __(
+        'Congratulations, you now have [subscribersCount] subscribers! Your plan is limited to [subscribersLimit] subscribers. You need to upgrade now to be able to continue using MailPoet.',
+        'mailpoet',
+      ),
     );
 
     const link: string = anyValidKey
@@ -80,7 +81,7 @@ export function PremiumBannerWithUpgrade({
           +subscribersCount + 1,
         );
 
-    ctaButton = getCtaButton('premiumFeatureButtonUpgradePlan', link);
+    ctaButton = getCtaButton(__('Upgrade your plan', 'mailpoet'), link);
   } else {
     // use the provided information
     bannerMessage = message;

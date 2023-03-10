@@ -1,5 +1,6 @@
 import classnames from 'classnames';
-import { createRef, Component } from 'react';
+import { __ } from '@wordpress/i18n';
+import { Component, createRef } from 'react';
 import { withRouter } from 'react-router-dom';
 import jQuery from 'jquery';
 import PropTypes from 'prop-types';
@@ -13,6 +14,7 @@ import { Button, registerTranslations } from 'common';
  * they exist prior to any rendering
  */
 registerTranslations();
+
 class FormComponent extends Component {
   constructor(props) {
     super(props);
@@ -235,7 +237,7 @@ class FormComponent extends Component {
     } else {
       actions = (
         <Button type="submit" isDisabled={this.state.loading}>
-          {MailPoet.I18n.t('save')}
+          {__('Save', 'mailpoet')}
         </Button>
       );
     }

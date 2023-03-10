@@ -54,7 +54,9 @@ function QueueSending({ newsletter }: QueueSendingProps) {
 
   const confirmAndResumeSending = async () => {
     confirmAlert({
-      message: MailPoet.I18n.t('confirmResumingCorruptNewsletter'),
+      message: __(
+        'The was an issue sending this email before, please confirm the issues are fixed to proceed.',
+      ),
       onConfirm: resumeSending,
     });
   };
