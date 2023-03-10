@@ -1,5 +1,5 @@
 import { useHistory } from 'react-router-dom';
-import { t } from 'common/functions/t';
+import { __ } from '@wordpress/i18n';
 import { MailPoetLogo } from './mailpoet_logo';
 import { MailPoetLogoMobile } from './mailpoet_logo_mobile';
 
@@ -7,6 +7,7 @@ type Props = {
   onClick?: () => void;
   withLink?: boolean;
 };
+
 export function MailPoetLogoResponsive({ onClick, withLink = true }: Props) {
   const history = useHistory();
   let logo;
@@ -20,7 +21,7 @@ export function MailPoetLogoResponsive({ onClick, withLink = true }: Props) {
       <a
         role="button"
         className="mailpoet-top-bar-logo"
-        title={t('topBarLogoTitle')}
+        title={__('Back to section root', 'mailpoet')}
         onClick={onLogoClick}
         tabIndex={0}
         onKeyDown={(event) => {

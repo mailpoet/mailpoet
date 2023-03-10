@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
+import { __ } from '@wordpress/i18n';
 import classnames from 'classnames';
-import { t } from 'common/functions/t';
 import { withFeatureAnnouncement } from 'announcements/with_feature_announcement';
 import { MailPoetLogoResponsive } from './mailpoet_logo_responsive';
 import { BeamerIcon } from './beamer_icon';
@@ -35,7 +35,7 @@ export function TopBar({
             role="button"
             onClick={onBeamerClick}
             className={buttonClasses}
-            title={t('whatsNew')}
+            title={__('What’s new', 'mailpoet')}
             tabIndex={0}
             onKeyDown={(event) => {
               if (
@@ -48,7 +48,7 @@ export function TopBar({
             }}
           >
             <BeamerIcon />
-            <span>{t('topBarUpdates')}</span>
+            <span>{__('Updates', 'mailpoet')}</span>
           </a>
           <span id="beamer-empty-element" />
         </div>
