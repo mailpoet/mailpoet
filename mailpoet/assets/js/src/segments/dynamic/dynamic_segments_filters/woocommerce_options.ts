@@ -1,5 +1,5 @@
 import { MailPoet } from 'mailpoet';
-import { SegmentTypes } from 'segments/dynamic/types';
+import { SegmentTypes } from '../types';
 
 // WooCommerce
 export enum WooCommerceActionTypes {
