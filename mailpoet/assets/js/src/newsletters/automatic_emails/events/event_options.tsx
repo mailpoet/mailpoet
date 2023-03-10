@@ -43,7 +43,7 @@ function EventOptions({
   }
 
   function displayEventOptions() {
-    if (!eventOptions) return eventOptions;
+    if (!eventOptions) return null;
 
     const fieldProps = {
       field: {
