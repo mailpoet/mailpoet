@@ -35,5 +35,5 @@ export * as CommonGrid from 'common/grid';
 export * as HelpTooltip from 'help-tooltip';
 export * as Hooks from 'hooks.js';
 export * as Listing from 'listing';
-export * as DynamicSegmentsTypes from 'segments/dynamic/types';
+export * as DynamicSegments from 'segments/dynamic';
 export * as AutomationEditorComponents from 'automation/editor/components';
