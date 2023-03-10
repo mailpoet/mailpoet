@@ -19,6 +19,9 @@ export function StepName({
       className="mailpoet-step-name-dropdown"
       contentClassName="mailpoet-step-name-popover"
       position="bottom left"
+      popoverProps={{
+        placement: 'bottom-start',
+      }}
       renderToggle={({ isOpen, onToggle }) => (
         <PlainBodyTitle
           title={currentName.length > 0 ? currentName : defaultName}

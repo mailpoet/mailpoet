@@ -1,8 +1,7 @@
-import { ComponentProps, ComponentType, Ref } from 'react';
 import {
   __experimentalText as Text,
   Button,
-  Dropdown as WpDropdown,
+  Dropdown,
   VisuallyHidden,
 } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
@@ -13,13 +12,6 @@ import { storeName } from '../../store';
 import { AutomationStatus } from '../../../listing/automation';
 
 // See: https://github.com/WordPress/gutenberg/blob/eff0cab2b3181c004dbd15398e570ecec28a3726/packages/edit-site/src/components/header/document-actions/index.js
-
-// property "popoverProps" is missing in WpDropdown type definition
-const Dropdown: ComponentType<
-  ComponentProps<typeof WpDropdown> & {
-    popoverProps?: { anchorRef?: Ref<HTMLElement> };
-  }
-> = WpDropdown;
 
 function DocumentActions({ children }): JSX.Element {
   const { automationName, automationStatus, showIconLabels } = useSelect(
@@ -48,9 +40,9 @@ function DocumentActions({ children }): JSX.Element {
         {children && (
           <Dropdown
             popoverProps={{
-              anchorRef: titleRef.current,
+              placement: 'bottom-start',
+              anchor: titleRef.current,
             }}
-            position="bottom center"
             renderToggle={({ isOpen, onToggle }) => (
               <>
                 <a
