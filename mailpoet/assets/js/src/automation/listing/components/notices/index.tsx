@@ -39,7 +39,7 @@ export function Notices(): JSX.Element {
             renderInPlace
             timeout={false}
             closable
-            onClose={removeNotice}
+            onClose={() => removeNotice(id)}
           >
             {__unstableHTML ?? <p>{content}</p>}
           </Notice>

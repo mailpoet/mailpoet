@@ -1,8 +1,7 @@
-import { Action } from '@wordpress/data';
 import { State } from './types';
 import { Automation } from '../automation';
 
-export function reducer(state: State, action: Action): State {
+export function reducer(state: State, action): State {
   switch (action.type) {
     case 'SET_AUTOMATIONS':
       return {
