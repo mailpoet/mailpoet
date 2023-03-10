@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { filter, map } from 'lodash/fp';
-import { MailPoet } from 'mailpoet';
+import { __ } from '@wordpress/i18n';
 import { useSelect, useDispatch } from '@wordpress/data';
 
 import { ReactSelect } from 'common/form/react_select/react_select';
@@ -61,10 +61,10 @@ export function WordpressRoleFields({ filterIndex }: Props): JSX.Element {
             void updateSegmentFilterFromEvent('operator', filterIndex, e);
           }}
         >
-          <option value={AnyValueTypes.ANY}>{MailPoet.I18n.t('anyOf')}</option>
-          <option value={AnyValueTypes.ALL}>{MailPoet.I18n.t('allOf')}</option>
+          <option value={AnyValueTypes.ANY}>{__('any of', 'mailpoet')}</option>
+          <option value={AnyValueTypes.ALL}>{__('all of', 'mailpoet')}</option>
           <option value={AnyValueTypes.NONE}>
-            {MailPoet.I18n.t('noneOf')}
+            {__('none of', 'mailpoet')}
           </option>
         </Select>
       </Grid.CenteredRow>
@@ -74,7 +74,7 @@ export function WordpressRoleFields({ filterIndex }: Props): JSX.Element {
           isFullWidth
           isMulti
           automationId="segment-wordpress-role"
-          placeholder={MailPoet.I18n.t('selectUserRolePlaceholder')}
+          placeholder={__('Search user roles', 'mailpoet')}
           options={options}
           value={filter((option) => {
             if (!segment.wordpressRole) return undefined;

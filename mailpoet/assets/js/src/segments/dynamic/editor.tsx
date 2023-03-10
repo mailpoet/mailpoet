@@ -1,8 +1,7 @@
 import { useEffect } from 'react';
+import { __ } from '@wordpress/i18n';
 import { useDispatch } from '@wordpress/data';
 import { Link, useRouteMatch } from 'react-router-dom';
-
-import { MailPoet } from 'mailpoet';
 import { Background } from 'common/background/background';
 import { Heading } from 'common/typography/heading/heading';
 import { HideScreenOptions } from 'common/hide_screen_options/hide_screen_options';
@@ -27,12 +26,12 @@ export function Editor(): JSX.Element {
       <HideScreenOptions />
 
       <Heading level={1} className="mailpoet-title">
-        <span>{MailPoet.I18n.t('formPageTitle')}</span>
+        <span>{__('Segment', 'mailpoet')}</span>
         <Link
           className="mailpoet-button button button-secondary button-small"
           to="/segments"
         >
-          {MailPoet.I18n.t('backToList')}
+          {__('Back', 'mailpoet')}
         </Link>
       </Heading>
 
@@ -40,4 +39,5 @@ export function Editor(): JSX.Element {
     </>
   );
 }
+
 Editor.displayName = 'SegmentEditor';

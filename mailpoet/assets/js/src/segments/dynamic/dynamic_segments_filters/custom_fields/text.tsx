@@ -1,7 +1,6 @@
 import { useEffect } from 'react';
-import { useSelect, useDispatch } from '@wordpress/data';
-
-import { MailPoet } from 'mailpoet';
+import { __ } from '@wordpress/i18n';
+import { useDispatch, useSelect } from '@wordpress/data';
 import { Select } from 'common/form/select/select';
 import { Input } from 'common/form/input/input';
 import { Grid } from 'common/grid';
@@ -51,11 +50,11 @@ export function Text({ filterIndex }: Props): JSX.Element {
           void updateSegmentFilterFromEvent('operator', filterIndex, e);
         }}
       >
-        <option value="equals">{MailPoet.I18n.t('equals')}</option>
-        <option value="not_equals">{MailPoet.I18n.t('notEquals')}</option>
-        <option value="contains">{MailPoet.I18n.t('contains')}</option>
-        <option value="more_than">{MailPoet.I18n.t('moreThan')}</option>
-        <option value="less_than">{MailPoet.I18n.t('lessThan')}</option>
+        <option value="equals">{__('equals', 'mailpoet')}</option>
+        <option value="not_equals">{__('not equals', 'mailpoet')}</option>
+        <option value="contains">{__('contains', 'mailpoet')}</option>
+        <option value="more_than">{__('more than', 'mailpoet')}</option>
+        <option value="less_than">{__('less than', 'mailpoet')}</option>
       </Select>
       <Input
         key="input"
@@ -64,7 +63,7 @@ export function Text({ filterIndex }: Props): JSX.Element {
         onChange={(e) => {
           void updateSegmentFilterFromEvent('value', filterIndex, e);
         }}
-        placeholder={MailPoet.I18n.t('value')}
+        placeholder={__('value', 'mailpoet')}
       />
     </Grid.CenteredRow>
   );

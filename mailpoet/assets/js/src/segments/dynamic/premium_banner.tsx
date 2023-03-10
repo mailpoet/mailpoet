@@ -1,4 +1,5 @@
 import { FunctionComponent } from 'react';
+import { __ } from '@wordpress/i18n';
 import { MailPoet } from 'mailpoet';
 import { PremiumBannerWithUpgrade } from 'common/premium_banner_with_upgrade/premium_banner_with_upgrade';
 import { Button } from 'common/button/button';
@@ -6,7 +7,10 @@ import ReactStringReplace from 'react-string-replace';
 
 export function DynamicSegmentsPremiumBanner(): JSX.Element {
   const getBannerMessage: FunctionComponent = () => {
-    const message = MailPoet.I18n.t('premiumFeatureMultipleConditions');
+    const message = __(
+      'Your current MailPoet plan does not support advanced segments with multiple conditions. Upgrade to the MailPoet Business plan to more precisely target your emails based on how people engage with your business. [link]Learn more.[/link]',
+      'mailpoet',
+    );
     return (
       <p>
         {ReactStringReplace(message, /\[link](.*?)\[\/link]/g, (match) => (
@@ -34,7 +38,7 @@ export function DynamicSegmentsPremiumBanner(): JSX.Element {
       target="_blank"
       rel="noopener noreferrer"
     >
-      {MailPoet.I18n.t('premiumBannerCtaFree')}
+      {__('Upgrade', 'mailpoet')}
     </Button>
   );
 

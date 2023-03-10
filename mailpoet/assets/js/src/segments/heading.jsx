@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { __ } from '@wordpress/i18n';
 import { MailPoet } from 'mailpoet';
 import { TopBarWithBeamer } from 'common/top_bar/top_bar';
 import { plusIcon } from 'common/button/icon/plus';
@@ -14,7 +15,7 @@ function ListHeading() {
       <TopBarWithBeamer>
         <Link className="mailpoet-button button-secondary" to="/new">
           {plusIcon}
-          <span>{MailPoet.I18n.t('new')}</span>
+          <span>{__('New List', 'mailpoet')}</span>
         </Link>
         <Link
           className="mailpoet-button button-secondary"
@@ -22,7 +23,7 @@ function ListHeading() {
           data-automation-id="new-segment"
         >
           {plusIcon}
-          <span>{MailPoet.I18n.t('newSegment')}</span>
+          <span>{__('New Segment', 'mailpoet')}</span>
         </Link>
       </TopBarWithBeamer>
 

@@ -1,9 +1,10 @@
 import { FunctionComponent, useEffect } from 'react';
-import { MailPoet } from 'mailpoet';
+import { __, _x } from '@wordpress/i18n';
 import { filter } from 'lodash/fp';
+
 import { ReactSelect } from 'common/form/react_select/react_select';
 import { Select } from 'common/form/select/select';
-import { useSelect, useDispatch } from '@wordpress/data';
+import { useDispatch, useSelect } from '@wordpress/data';
 
 import { Grid } from 'common/grid';
 import { Input } from 'common/form/input/input';
@@ -28,27 +29,27 @@ enum WooCommerceActionTypes {
 export const WooCommerceOptions = [
   {
     value: WooCommerceActionTypes.CUSTOMER_IN_COUNTRY,
-    label: MailPoet.I18n.t('wooCustomerInCountry'),
+    label: __('is in country', 'mailpoet'),
     group: SegmentTypes.WooCommerce,
   },
   {
     value: WooCommerceActionTypes.NUMBER_OF_ORDERS,
-    label: MailPoet.I18n.t('wooNumberOfOrders'),
+    label: __('# of orders', 'mailpoet'),
     group: SegmentTypes.WooCommerce,
   },
   {
     value: WooCommerceActionTypes.PURCHASED_CATEGORY,
-    label: MailPoet.I18n.t('wooPurchasedCategory'),
+    label: __('purchased in category', 'mailpoet'),
     group: SegmentTypes.WooCommerce,
   },
   {
     value: WooCommerceActionTypes.PURCHASED_PRODUCT,
-    label: MailPoet.I18n.t('wooPurchasedProduct'),
+    label: __('purchased product', 'mailpoet'),
     group: SegmentTypes.WooCommerce,
   },
   {
     value: WooCommerceActionTypes.TOTAL_SPENT,
-    label: MailPoet.I18n.t('wooTotalSpent'),
+    label: __('total spent', 'mailpoet'),
     group: SegmentTypes.WooCommerce,
   },
 ];
@@ -211,13 +212,13 @@ export const WooCommerceFields: FunctionComponent<Props> = ({
             automationId="select-operator"
           >
             <option value={AnyValueTypes.ANY}>
-              {MailPoet.I18n.t('anyOf')}
+              {__('any of', 'mailpoet')}
             </option>
             <option value={AnyValueTypes.ALL}>
-              {MailPoet.I18n.t('allOf')}
+              {__('all of', 'mailpoet')}
             </option>
             <option value={AnyValueTypes.NONE}>
-              {MailPoet.I18n.t('noneOf')}
+              {__('none of', 'mailpoet')}
             </option>
           </Select>
         </Grid.CenteredRow>
@@ -227,7 +228,7 @@ export const WooCommerceFields: FunctionComponent<Props> = ({
             dimension="small"
             key="select-segment-products"
             isFullWidth
-            placeholder={MailPoet.I18n.t('selectWooPurchasedProduct')}
+            placeholder={__('Search products', 'mailpoet')}
             options={productOptions}
             value={filter((productOption) => {
               if (
@@ -269,13 +270,13 @@ export const WooCommerceFields: FunctionComponent<Props> = ({
             automationId="select-operator"
           >
             <option value={AnyValueTypes.ANY}>
-              {MailPoet.I18n.t('anyOf')}
+              {__('any of', 'mailpoet')}
             </option>
             <option value={AnyValueTypes.ALL}>
-              {MailPoet.I18n.t('allOf')}
+              {__('all of', 'mailpoet')}
             </option>
             <option value={AnyValueTypes.NONE}>
-              {MailPoet.I18n.t('noneOf')}
+              {__('none of', 'mailpoet')}
             </option>
           </Select>
         </Grid.CenteredRow>
@@ -285,7 +286,7 @@ export const WooCommerceFields: FunctionComponent<Props> = ({
             dimension="small"
             key="select-segment-category"
             isFullWidth
-            placeholder={MailPoet.I18n.t('selectWooPurchasedCategory')}
+            placeholder={__('Search categories', 'mailpoet')}
             options={categoryOptions}
             value={filter((categoryOption) => {
               if (
@@ -327,17 +328,17 @@ export const WooCommerceFields: FunctionComponent<Props> = ({
             }}
             automationId="select-number-of-orders-type"
           >
-            <option value="=">{MailPoet.I18n.t('equals')}</option>
-            <option value="!=">{MailPoet.I18n.t('notEquals')}</option>
-            <option value=">">{MailPoet.I18n.t('moreThan')}</option>
-            <option value="<">{MailPoet.I18n.t('lessThan')}</option>
+            <option value="=">{__('equals', 'mailpoet')}</option>
+            <option value="!=">{__('not equals', 'mailpoet')}</option>
+            <option value=">">{__('more than', 'mailpoet')}</option>
+            <option value="<">{__('less than', 'mailpoet')}</option>
           </Select>
           <Input
             data-automation-id="input-number-of-orders-count"
             type="number"
             min={0}
             value={segment.number_of_orders_count || ''}
-            placeholder={MailPoet.I18n.t('wooNumberOfOrdersCount')}
+            placeholder={__('count', 'mailpoet')}
             onChange={(e): void => {
               void updateSegmentFilterFromEvent(
                 'number_of_orders_count',
@@ -346,16 +347,22 @@ export const WooCommerceFields: FunctionComponent<Props> = ({
               );
             }}
           />
-          <div>{MailPoet.I18n.t('wooNumberOfOrdersOrders')}</div>
+          <div>{__('orders', 'mailpoet')}</div>
         </Grid.CenteredRow>
         <Grid.CenteredRow>
-          <div>{MailPoet.I18n.t('inTheLast')}</div>
+          <div>
+            {_x(
+              'in the last',
+              'Meaning: "Subscriber subscribed in the last 3 days"',
+              'mailpoet',
+            )}
+          </div>
           <Input
             data-automation-id="input-number-of-orders-days"
             type="number"
             min={1}
             value={segment.number_of_orders_days || ''}
-            placeholder={MailPoet.I18n.t('daysPlaceholder')}
+            placeholder={__('days', 'mailpoet')}
             onChange={(e): void => {
               void updateSegmentFilterFromEvent(
                 'number_of_orders_days',
@@ -364,7 +371,13 @@ export const WooCommerceFields: FunctionComponent<Props> = ({
               );
             }}
           />
-          <div>{MailPoet.I18n.t('days')}</div>
+          <div>
+            {_x(
+              'days',
+              'Appears together with `inTheLast` when creating a new WooCommerce segment based on the number of orders.',
+              'mailpoet',
+            )}
+          </div>
         </Grid.CenteredRow>
       </>
     );
@@ -384,10 +397,10 @@ export const WooCommerceFields: FunctionComponent<Props> = ({
             }}
             automationId="select-total-spent-type"
           >
-            <option value="=">{MailPoet.I18n.t('equals')}</option>
-            <option value="!=">{MailPoet.I18n.t('notEquals')}</option>
-            <option value=">">{MailPoet.I18n.t('moreThan')}</option>
-            <option value="<">{MailPoet.I18n.t('lessThan')}</option>
+            <option value="=">{__('equals', 'mailpoet')}</option>
+            <option value="!=">{__('not equals', 'mailpoet')}</option>
+            <option value=">">{__('more than', 'mailpoet')}</option>
+            <option value="<">{__('less than', 'mailpoet')}</option>
           </Select>
           <Input
             data-automation-id="input-total-spent-amount"
@@ -395,7 +408,7 @@ export const WooCommerceFields: FunctionComponent<Props> = ({
             min={0}
             step={0.01}
             value={segment.total_spent_amount || ''}
-            placeholder={MailPoet.I18n.t('wooTotalSpentAmount')}
+            placeholder={__('amount', 'mailpoet')}
             onChange={(e): void => {
               void updateSegmentFilterFromEvent(
                 'total_spent_amount',
@@ -407,13 +420,19 @@ export const WooCommerceFields: FunctionComponent<Props> = ({
           <div>{wooCurrencySymbol}</div>
         </Grid.CenteredRow>
         <Grid.CenteredRow>
-          <div>{MailPoet.I18n.t('inTheLast')}</div>
+          <div>
+            {_x(
+              'in the last',
+              'Meaning: "Subscriber subscribed in the last 3 days"',
+              'mailpoet',
+            )}
+          </div>
           <Input
             data-automation-id="input-total-spent-days"
             type="number"
             min={1}
             value={segment.total_spent_days || ''}
-            placeholder={MailPoet.I18n.t('daysPlaceholder')}
+            placeholder={__('days', 'mailpoet')}
             onChange={(e): void => {
               void updateSegmentFilterFromEvent(
                 'total_spent_days',
@@ -422,7 +441,13 @@ export const WooCommerceFields: FunctionComponent<Props> = ({
               );
             }}
           />
-          <div>{MailPoet.I18n.t('days')}</div>
+          <div>
+            {_x(
+              'days',
+              'Appears together with `inTheLast` when creating a new WooCommerce segment based on the number of orders.',
+              'mailpoet',
+            )}
+          </div>
         </Grid.CenteredRow>
       </>
     );
@@ -442,10 +467,10 @@ export const WooCommerceFields: FunctionComponent<Props> = ({
             automationId="select-operator-country"
           >
             <option value={AnyValueTypes.ANY}>
-              {MailPoet.I18n.t('anyOf')}
+              {__('any of', 'mailpoet')}
             </option>
             <option value={AnyValueTypes.NONE}>
-              {MailPoet.I18n.t('noneOf')}
+              {__('none of', 'mailpoet')}
             </option>
           </Select>
         </Grid.CenteredRow>
@@ -455,7 +480,7 @@ export const WooCommerceFields: FunctionComponent<Props> = ({
             key="select-segment-country"
             isFullWidth
             isMulti
-            placeholder={MailPoet.I18n.t('selectWooCountry')}
+            placeholder={__('Search countries', 'mailpoet')}
             options={countryOptions}
             value={filter((option) => {
               if (!segment.country_code) return undefined;

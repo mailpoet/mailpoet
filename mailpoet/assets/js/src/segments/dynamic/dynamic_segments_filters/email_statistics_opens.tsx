@@ -1,7 +1,8 @@
 import { useEffect } from 'react';
+import { __ } from '@wordpress/i18n';
 import { MailPoet } from 'mailpoet';
 import { filter, map } from 'lodash/fp';
-import { useSelect, useDispatch } from '@wordpress/data';
+import { useDispatch, useSelect } from '@wordpress/data';
 
 import { ReactSelect } from 'common/form/react_select/react_select';
 import { Select } from 'common/form/select/select';
@@ -37,7 +38,7 @@ export function EmailOpenStatisticsFields({ filterIndex }: Props): JSX.Element {
   const newsletterOptions = newslettersList?.map((newsletter) => {
     const sentAt = newsletter.sent_at
       ? MailPoet.Date.format(newsletter.sent_at)
-      : MailPoet.I18n.t('notSentYet');
+      : __('Not sent yet', 'mailpoet');
     return {
       label: newsletter.subject,
       tag: sentAt,
@@ -73,11 +74,11 @@ export function EmailOpenStatisticsFields({ filterIndex }: Props): JSX.Element {
             void updateSegmentFilterFromEvent('operator', filterIndex, e);
           }}
         >
-          <option value={AnyValueTypes.ANY}>{MailPoet.I18n.t('anyOf')}</option>
-          <option value={AnyValueTypes.ALL}>{MailPoet.I18n.t('allOf')}</option>
+          <option value={AnyValueTypes.ANY}>{__('any of', 'mailpoet')}</option>
+          <option value={AnyValueTypes.ALL}>{__('all of', 'mailpoet')}</option>
           {segment.action !== EmailActionTypes.MACHINE_OPENED ? (
             <option value={AnyValueTypes.NONE}>
-              {MailPoet.I18n.t('noneOf')}
+              {__('none of', 'mailpoet')}
             </option>
           ) : null}
         </Select>
@@ -87,7 +88,7 @@ export function EmailOpenStatisticsFields({ filterIndex }: Props): JSX.Element {
           dimension="small"
           isFullWidth
           isMulti
-          placeholder={MailPoet.I18n.t('selectNewsletterPlaceholder')}
+          placeholder={__('Search emails', 'mailpoet')}
           options={newsletterOptions}
           automationId="segment-email"
           value={filter((option) => {

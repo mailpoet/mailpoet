@@ -1,5 +1,5 @@
-import { MailPoet } from 'mailpoet';
 import { useSelect } from '@wordpress/data';
+import { __, _x } from '@wordpress/i18n';
 
 import {
   EmailActionTypes,
@@ -15,32 +15,48 @@ import { EmailOpensAbsoluteCountFields } from './email_opens_absolute_count';
 export const EmailSegmentOptions = [
   {
     value: EmailActionTypes.OPENS_ABSOLUTE_COUNT,
-    label: MailPoet.I18n.t('emailActionOpensAbsoluteCount'),
+    label: __('# of opens', 'mailpoet'),
     group: SegmentTypes.Email,
   },
   {
     value: EmailActionTypes.MACHINE_OPENS_ABSOLUTE_COUNT,
-    label: MailPoet.I18n.t('emailActionMachineOpensAbsoluteCount'),
+    label: __('# of machine-opens', 'mailpoet'),
     group: SegmentTypes.Email,
   },
   {
     value: EmailActionTypes.OPENED,
-    label: MailPoet.I18n.t('emailActionOpened'),
+    label: _x(
+      'opened',
+      'Dynamic segment creation: when newsletter was opened',
+      'mailpoet',
+    ),
     group: SegmentTypes.Email,
   },
   {
     value: EmailActionTypes.MACHINE_OPENED,
-    label: MailPoet.I18n.t('emailActionMachineOpened'),
+    label: _x(
+      'machine-opened',
+      'Dynamic segment creation: list of all subscribers that opened the newsletter automatically in the background',
+      'mailpoet',
+    ),
     group: SegmentTypes.Email,
   },
   {
     value: EmailActionTypes.CLICKED,
-    label: MailPoet.I18n.t('emailActionClicked'),
+    label: _x(
+      'clicked',
+      'Dynamic segment creation: when a newsletter link was clicked',
+      'mailpoet',
+    ),
     group: SegmentTypes.Email,
   },
   {
     value: EmailActionTypes.CLICKED_ANY,
-    label: MailPoet.I18n.t('emailActionClickedAnyEmail'),
+    label: _x(
+      'clicked any email',
+      'Dynamic segment creation: when a newsletter link in any email was clicked',
+      'mailpoet',
+    ),
     group: SegmentTypes.Email,
   },
 ];

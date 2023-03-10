@@ -1,4 +1,5 @@
 import { Component } from 'react';
+import { __ } from '@wordpress/i18n';
 import { Link, withRouter } from 'react-router-dom';
 import { MailPoet } from 'mailpoet';
 import classnames from 'classnames';
@@ -17,46 +18,46 @@ const mailpoetTrackingEnabled = MailPoet.trackingConfig.emailTrackingEnabled;
 const columns = [
   {
     name: 'name',
-    label: MailPoet.I18n.t('name'),
+    label: __('Name', 'mailpoet'),
     sortable: true,
   },
   {
     name: 'description',
-    label: MailPoet.I18n.t('description'),
+    label: __('Description', 'mailpoet'),
   },
   {
     name: 'average_subscriber_score',
-    label: MailPoet.I18n.t('listScore'),
+    label: __('List score', 'mailpoet'),
     display: mailpoetTrackingEnabled,
   },
   {
     name: 'subscribed',
-    label: MailPoet.I18n.t('subscribed'),
+    label: __('Subscribed', 'mailpoet'),
     className: 'mailpoet-listing-column-narrow',
   },
   {
     name: 'unconfirmed',
-    label: MailPoet.I18n.t('unconfirmed'),
+    label: __('Unconfirmed', 'mailpoet'),
     className: 'mailpoet-listing-column-narrow',
   },
   {
     name: 'unsubscribed',
-    label: MailPoet.I18n.t('unsubscribed'),
+    label: __('Unsubscribed', 'mailpoet'),
     className: 'mailpoet-listing-column-narrow',
   },
   {
     name: 'inactive',
-    label: MailPoet.I18n.t('inactive'),
+    label: __('Inactive', 'mailpoet'),
     className: 'mailpoet-listing-column-narrow',
   },
   {
     name: 'bounced',
-    label: MailPoet.I18n.t('bounced'),
+    label: __('Bounced', 'mailpoet'),
     className: 'mailpoet-listing-column-narrow',
   },
   {
     name: 'created_at',
-    label: MailPoet.I18n.t('createdOn'),
+    label: __('Created on', 'mailpoet'),
     sortable: true,
   },
 ];
@@ -67,12 +68,15 @@ const messages = {
     let message = null;
 
     if (count === 1) {
-      message = MailPoet.I18n.t('oneSegmentTrashed');
-    } else {
-      message = MailPoet.I18n.t('multipleSegmentsTrashed').replace(
-        '%1$d',
-        count.toLocaleString(),
+      message = __(
+        '1 list was moved to the trash. Note that deleting a list does not delete its subscribers.',
+        'mailpoet',
       );
+    } else {
+      message = __(
+        '%1$d lists were moved to the trash. Note that deleting a list does not delete its subscribers.',
+        'mailpoet',
+      ).replace('%1$d', count.toLocaleString());
     }
     MailPoet.Notice.success(message);
   },
@@ -81,12 +85,15 @@ const messages = {
     let message = null;
 
     if (count === 1) {
-      message = MailPoet.I18n.t('oneSegmentDeleted');
-    } else {
-      message = MailPoet.I18n.t('multipleSegmentsDeleted').replace(
-        '%1$d',
-        count.toLocaleString(),
+      message = __(
+        '1 list was permanently deleted. Note that deleting a list does not delete its subscribers.',
+        'mailpoet',
       );
+    } else {
+      message = __(
+        '%1$d lists were permanently deleted. Note that deleting a list does not delete its subscribers.',
+        'mailpoet',
+      ).replace('%1$d', count.toLocaleString());
     }
     MailPoet.Notice.success(message);
   },
@@ -95,12 +102,12 @@ const messages = {
     let message = null;
 
     if (count === 1) {
-      message = MailPoet.I18n.t('oneSegmentRestored');
+      message = __('1 list has been restored from the Trash.', 'mailpoet');
     } else {
-      message = MailPoet.I18n.t('multipleSegmentsRestored').replace(
-        '%1$d',
-        count.toLocaleString(),
-      );
+      message = __(
+        '%1$d lists have been restored from the Trash.',
+        'mailpoet',
+      ).replace('%1$d', count.toLocaleString());
     }
     MailPoet.Notice.success(message);
   },
@@ -109,7 +116,7 @@ const messages = {
 const bulkActions = [
   {
     name: 'trash',
-    label: MailPoet.I18n.t('moveToTrash'),
+    label: __('Move to trash', 'mailpoet'),
     onSuccess: messages.onTrash,
   },
 ];
@@ -124,7 +131,7 @@ const itemActions = [
     name: 'edit',
     className: 'mailpoet-hide-on-mobile',
     link: function link(item) {
-      return <Link to={`/edit/${item.id}`}>{MailPoet.I18n.t('edit')}</Link>;
+      return <Link to={`/edit/${item.id}`}>{__('Edit', 'mailpoet')}</Link>;
     },
     display: function display(segment) {
       return !isSpecialSegment(segment);
@@ -133,7 +140,7 @@ const itemActions = [
   {
     name: 'duplicate_segment',
     className: 'mailpoet-hide-on-mobile',
-    label: MailPoet.I18n.t('duplicate'),
+    label: __('Duplicate', 'mailpoet'),
     onClick: (item, refresh) =>
       MailPoet.Ajax.post({
         api_version: window.mailpoet_api_version,
@@ -145,7 +152,7 @@ const itemActions = [
       })
         .done((response) => {
           MailPoet.Notice.success(
-            MailPoet.I18n.t('listDuplicated').replace(
+            __('List "%1$s" has been duplicated.', 'mailpoet').replace(
               '%1$s',
               response.data.name,
             ),
@@ -172,7 +179,7 @@ const itemActions = [
           target="_blank"
           rel="noopener noreferrer"
         >
-          {MailPoet.I18n.t('readMore')}
+          {__('Read More', 'mailpoet')}
         </a>
       );
     },
@@ -182,7 +189,7 @@ const itemActions = [
   },
   {
     name: 'synchronize_segment',
-    label: MailPoet.I18n.t('forceSync'),
+    label: __('Force Sync', 'mailpoet'),
     onClick: function onClick(item, refresh) {
       MailPoet.Modal.loading(true);
       MailPoet.Ajax.post({
@@ -194,13 +201,14 @@ const itemActions = [
         },
       })
         .done(() => {
-          let message = MailPoet.I18n.t('listSynchronized').replace(
-            '%1$s',
-            item.name,
-          );
+          let message = __(
+            'List "%1$s" has been synchronized.',
+            'mailpoet',
+          ).replace('%1$s', item.name);
           if (item.type === 'woocommerce_users') {
-            message = MailPoet.I18n.t(
-              'listSynchronizationWasScheduled',
+            message = __(
+              'Synchronization of the "%1$s" list started. It can take several minutes to finish.',
+              'mailpoet',
             ).replace('%1$s', item.name);
           }
           MailPoet.Modal.loading(false);
@@ -231,7 +239,7 @@ const itemActions = [
           href={item.subscribers_url}
           data-automation-id={`view_subscribers_${item.name}`}
         >
-          {MailPoet.I18n.t('viewSubscribers')}
+          {__('View Subscribers', 'mailpoet')}
         </a>
       );
     },
@@ -284,13 +292,13 @@ class SegmentListComponent extends Component {
           {segmentName}
           {actions}
         </td>
-        <td data-colname={MailPoet.I18n.t('description')}>
+        <td data-colname={__('Description', 'mailpoet')}>
           <abbr>{segment.description}</abbr>
         </td>
         {mailpoetTrackingEnabled ? (
           <td
             className="column mailpoet-listing-stats-column"
-            data-colname={MailPoet.I18n.t('averageScore')}
+            data-colname={__('Score', 'mailpoet')}
           >
             <div className="mailpoet-listing-stats">
               <ListingsEngagementScore
@@ -302,37 +310,37 @@ class SegmentListComponent extends Component {
         ) : null}
         <td
           className="mailpoet-hide-on-mobile"
-          data-colname={MailPoet.I18n.t('subscribed')}
+          data-colname={__('Subscribed', 'mailpoet')}
         >
           <abbr>{subscribed.toLocaleString()}</abbr>
         </td>
         <td
           className="mailpoet-hide-on-mobile"
-          data-colname={MailPoet.I18n.t('unconfirmed')}
+          data-colname={__('Unconfirmed', 'mailpoet')}
         >
           <abbr>{unconfirmed.toLocaleString()}</abbr>
         </td>
         <td
           className="mailpoet-hide-on-mobile"
-          data-colname={MailPoet.I18n.t('unsubscribed')}
+          data-colname={__('Unsubscribed', 'mailpoet')}
         >
           <abbr>{unsubscribed.toLocaleString()}</abbr>
         </td>
         <td
           className="mailpoet-hide-on-mobile"
-          data-colname={MailPoet.I18n.t('inactive')}
+          data-colname={__('Inactive', 'mailpoet')}
         >
           <abbr>{inactive.toLocaleString()}</abbr>
         </td>
         <td
           className="mailpoet-hide-on-mobile"
-          data-colname={MailPoet.I18n.t('bounced')}
+          data-colname={__('Bounced', 'mailpoet')}
         >
           <abbr>{bounced.toLocaleString()}</abbr>
         </td>
         <td
           className="column-date mailpoet-hide-on-mobile"
-          data-colname={MailPoet.I18n.t('createdOn')}
+          data-colname={__('Created on', 'mailpoet')}
         >
           {MailPoet.Date.short(segment.created_at)}
           <br />

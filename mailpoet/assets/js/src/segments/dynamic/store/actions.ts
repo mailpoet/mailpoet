@@ -1,15 +1,16 @@
 import { ChangeEvent } from 'react';
 import { select } from '@wordpress/data';
+import { __ } from '@wordpress/i18n';
 import { MailPoet } from 'mailpoet';
 
 import {
   Actions,
   AnyFormItem,
-  SetSegmentActionType,
   SetErrorsActionType,
+  SetSegmentActionType,
   SetSegmentFilerActionType,
-  SubscriberCount,
   SetSubscriberCountActionType,
+  SubscriberCount,
 } from '../types';
 
 export function setSegment(segment: AnyFormItem): SetSegmentActionType {
@@ -101,10 +102,10 @@ export function* pageLoaded(segmentId?: number): Generator<{
 
 const messages = {
   onUpdate: (): void => {
-    MailPoet.Notice.success(MailPoet.I18n.t('dynamicSegmentUpdated'));
+    MailPoet.Notice.success(__('Segment successfully updated!', 'mailpoet'));
   },
   onCreate: (data): void => {
-    MailPoet.Notice.success(MailPoet.I18n.t('dynamicSegmentAdded'));
+    MailPoet.Notice.success(__('Segment successfully added!', 'mailpoet'));
     MailPoet.trackEvent('Segments > Add new', {
       type: data.segmentType || 'unknown type',
       subtype: data.action || data.wordpressRole || 'unknown subtype',

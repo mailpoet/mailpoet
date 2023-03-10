@@ -1,18 +1,17 @@
 import { find } from 'lodash/fp';
-import { useSelect, useDispatch } from '@wordpress/data';
+import { useDispatch, useSelect } from '@wordpress/data';
+import { __ } from '@wordpress/i18n';
 
-import { MailPoet } from 'mailpoet';
 import { ReactSelect } from 'common/form/react_select/react_select';
-
 import { Text, validateText } from './custom_fields/text';
 import { RadioSelect, validateRadioSelect } from './custom_fields/select';
 import { Checkbox, validateCheckbox } from './custom_fields/checkbox';
 import { CustomFieldDate, validateDate } from './custom_fields/date';
 
 import {
-  WordpressRoleFormItem,
   SelectOption,
   WindowCustomFields,
+  WordpressRoleFormItem,
 } from '../types';
 
 enum CustomFieldsTypes {
@@ -86,7 +85,7 @@ export function MailPoetCustomFields({ filterIndex }: Props): JSX.Element {
         <ReactSelect
           dimension="small"
           isFullWidth
-          placeholder={MailPoet.I18n.t('selectCustomFieldPlaceholder')}
+          placeholder={__('Select custom field', 'mailpoet')}
           options={options}
           automationId="select-custom-field"
           value={find((option) => {

@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
-import { MailPoet } from 'mailpoet';
+import { __ } from '@wordpress/i18n';
 import { filter } from 'lodash/fp';
-import { useSelect, useDispatch } from '@wordpress/data';
+import { useDispatch, useSelect } from '@wordpress/data';
 
 import { ReactSelect } from 'common/form/react_select/react_select';
 import { Select } from 'common/form/select/select';
@@ -22,7 +22,7 @@ enum WooCommerceSubscriptionsActionTypes {
 export const WooCommerceSubscriptionOptions = [
   {
     value: WooCommerceSubscriptionsActionTypes.ACTIVE_SUBSCRIPTIONS,
-    label: MailPoet.I18n.t('segmentsActiveSubscription'),
+    label: __('has active subscription', 'mailpoet'),
     group: SegmentTypes.WooCommerceSubscription,
   },
 ];
@@ -92,10 +92,10 @@ export function WooCommerceSubscriptionFields({
           }
           automationId="select-operator"
         >
-          <option value={AnyValueTypes.ANY}>{MailPoet.I18n.t('anyOf')}</option>
-          <option value={AnyValueTypes.ALL}>{MailPoet.I18n.t('allOf')}</option>
+          <option value={AnyValueTypes.ANY}>{__('any of', 'mailpoet')}</option>
+          <option value={AnyValueTypes.ALL}>{__('all of', 'mailpoet')}</option>
           <option value={AnyValueTypes.NONE}>
-            {MailPoet.I18n.t('noneOf')}
+            {__('none of', 'mailpoet')}
           </option>
         </Select>
       </Grid.CenteredRow>
@@ -105,7 +105,7 @@ export function WooCommerceSubscriptionFields({
           dimension="small"
           key="select-segment-category"
           isFullWidth
-          placeholder={MailPoet.I18n.t('selectWooSubscription')}
+          placeholder={__('Search subscriptions', 'mailpoet')}
           options={productOptions}
           value={filter((option) => {
             if (!segment.product_ids) return false;

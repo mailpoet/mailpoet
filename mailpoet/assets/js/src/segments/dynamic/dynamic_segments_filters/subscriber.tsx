@@ -1,10 +1,10 @@
-import { MailPoet } from 'mailpoet';
+import { __, _x } from '@wordpress/i18n';
 import { useSelect } from '@wordpress/data';
 
 import {
   SegmentTypes,
-  WordpressRoleFormItem,
   SubscriberActionTypes,
+  WordpressRoleFormItem,
 } from '../types';
 import { WordpressRoleFields } from './subscriber_wordpress_role';
 import {
@@ -72,32 +72,32 @@ export function validateSubscriber(formItems: WordpressRoleFormItem): boolean {
 export const SubscriberSegmentOptions = [
   {
     value: SubscriberActionTypes.MAILPOET_CUSTOM_FIELD,
-    label: MailPoet.I18n.t('mailpoetCustomField'),
+    label: __('MailPoet custom field', 'mailpoet'),
     group: SegmentTypes.WordPressRole,
   },
   {
     value: SubscriberActionTypes.SUBSCRIBER_SCORE,
-    label: MailPoet.I18n.t('subscriberScore'),
+    label: _x('score', 'Subscriber engagement score', 'mailpoet'),
     group: SegmentTypes.WordPressRole,
   },
   {
     value: SubscriberActionTypes.SUBSCRIBED_DATE,
-    label: MailPoet.I18n.t('subscribedDate'),
+    label: __('subscribed date', 'mailpoet'),
     group: SegmentTypes.WordPressRole,
   },
   {
     value: SubscriberActionTypes.SUBSCRIBED_TO_LIST,
-    label: MailPoet.I18n.t('subscribedToList'),
+    label: __('subscribed to list', 'mailpoet'),
     group: SegmentTypes.WordPressRole,
   },
   {
     value: SubscriberActionTypes.SUBSCRIBER_TAG,
-    label: MailPoet.I18n.t('subscriberTag'),
+    label: _x('tag', 'Subscriber tag', 'mailpoet'),
     group: SegmentTypes.WordPressRole,
   },
   {
     value: SubscriberActionTypes.WORDPRESS_ROLE,
-    label: MailPoet.I18n.t('segmentsSubscriber'),
+    label: __('WordPress user role', 'mailpoet'),
     group: SegmentTypes.WordPressRole,
   },
 ];

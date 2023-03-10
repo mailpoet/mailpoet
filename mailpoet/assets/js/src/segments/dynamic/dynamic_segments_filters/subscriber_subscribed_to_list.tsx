@@ -1,8 +1,8 @@
 import { useEffect } from 'react';
-import { map, filter } from 'lodash/fp';
+import { filter, map } from 'lodash/fp';
 import { useDispatch, useSelect } from '@wordpress/data';
+import { __ } from '@wordpress/i18n';
 
-import { MailPoet } from 'mailpoet';
 import { Select } from 'common/form/select/select';
 import { Grid } from 'common/grid';
 import { ReactSelect } from 'common/form/react_select/react_select';
@@ -71,10 +71,10 @@ export function SubscribedToList({ filterIndex }: Props): JSX.Element {
             void updateSegmentFilterFromEvent('operator', filterIndex, e);
           }}
         >
-          <option value={AnyValueTypes.ANY}>{MailPoet.I18n.t('anyOf')}</option>
-          <option value={AnyValueTypes.ALL}>{MailPoet.I18n.t('allOf')}</option>
+          <option value={AnyValueTypes.ANY}>{__('any of', 'mailpoet')}</option>
+          <option value={AnyValueTypes.ALL}>{__('all of', 'mailpoet')}</option>
           <option value={AnyValueTypes.NONE}>
-            {MailPoet.I18n.t('noneOf')}
+            {__('none of', 'mailpoet')}
           </option>
         </Select>
       </Grid.CenteredRow>
@@ -83,7 +83,7 @@ export function SubscribedToList({ filterIndex }: Props): JSX.Element {
           dimension="small"
           isFullWidth
           isMulti
-          placeholder={MailPoet.I18n.t('searchLists')}
+          placeholder={__('Search lists', 'mailpoet')}
           options={options}
           value={filter((option) => {
             if (!segment.segments) return undefined;

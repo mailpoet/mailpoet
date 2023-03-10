@@ -1,5 +1,5 @@
-import { MailPoet } from 'mailpoet';
 import { useSelect } from '@wordpress/data';
+import { __ } from '@wordpress/i18n';
 
 import { EmailActionTypes, Segment } from './types';
 
@@ -30,7 +30,10 @@ function PrivacyProtectionNotice(): JSX.Element {
   return (
     <div className="mailpoet-form-field">
       <span className="mailpoet-form-notice-message">
-        {MailPoet.I18n.t('privacyProtectionNotice')}
+        {__(
+          'Due to email privacy protections, some opens may not be tracked. Consider using a different engagement metric.',
+          'mailpoet',
+        )}
       </span>
     </div>
   );

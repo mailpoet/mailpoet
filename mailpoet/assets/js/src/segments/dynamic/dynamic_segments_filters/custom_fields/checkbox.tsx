@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
-import { useSelect, useDispatch } from '@wordpress/data';
+import { useDispatch, useSelect } from '@wordpress/data';
+import { __ } from '@wordpress/i18n';
 
-import { MailPoet } from 'mailpoet';
 import { Select } from 'common/form/select/select';
 
 import { WordpressRoleFormItem } from '../../types';
@@ -37,8 +37,8 @@ export function Checkbox({ filterIndex }: Props): JSX.Element {
       value={segment.value}
       onChange={(e) => updateSegmentFilterFromEvent('value', filterIndex, e)}
     >
-      <option value="1">{MailPoet.I18n.t('checked')}</option>
-      <option value="0">{MailPoet.I18n.t('unchecked')}</option>
+      <option value="1">{__('checked', 'mailpoet')}</option>
+      <option value="0">{__('unchecked', 'mailpoet')}</option>
     </Select>
   );
 }

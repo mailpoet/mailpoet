@@ -1,13 +1,13 @@
 import { find } from 'lodash/fp';
-import { useSelect, useDispatch } from '@wordpress/data';
+import { useDispatch, useSelect } from '@wordpress/data';
+import { __ } from '@wordpress/i18n';
 
-import { MailPoet } from 'mailpoet';
 import { ReactSelect } from 'common/form/react_select/react_select';
 
 import {
-  WordpressRoleFormItem,
   SelectOption,
   WindowCustomFields,
+  WordpressRoleFormItem,
 } from '../../types';
 
 interface ParamsType {
@@ -54,7 +54,7 @@ export function RadioSelect({ filterIndex }: Props): JSX.Element {
     <ReactSelect
       dimension="small"
       isFullWidth
-      placeholder={MailPoet.I18n.t('selectValue')}
+      placeholder={__('Select value', 'mailpoet')}
       options={options}
       value={
         segment.value ? { value: segment.value, label: segment.value } : null

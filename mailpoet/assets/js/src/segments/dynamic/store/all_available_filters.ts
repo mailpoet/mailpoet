@@ -1,3 +1,4 @@
+import { __, _x } from '@wordpress/i18n';
 import { MailPoet } from 'mailpoet';
 
 import { GroupFilterValue } from '../types';
@@ -13,29 +14,41 @@ export function getAvailableFilters(
 ): GroupFilterValue[] {
   const filters: GroupFilterValue[] = [
     {
-      label: MailPoet.I18n.t('email'),
+      label: __('Email', 'mailpoet'),
       options: EmailSegmentOptions,
     },
     {
-      label: MailPoet.I18n.t('wpUserRole'),
+      label: __('Subscriber', 'mailpoet'),
       options: SubscriberSegmentOptions,
     },
   ];
   if (MailPoet.isWoocommerceActive) {
     filters.push({
-      label: MailPoet.I18n.t('woocommerce'),
+      label: _x(
+        'WooCommerce',
+        'Dynamic segment creation: User selects this to use any woocommerce filters',
+        'mailpoet',
+      ),
       options: WooCommerceOptions,
     });
   }
   if (MailPoet.isWoocommerceActive && canUseWooMembership) {
     filters.push({
-      label: MailPoet.I18n.t('woocommerceMemberships'),
+      label: _x(
+        'WooCommerce Memberships',
+        'Dynamic segment creation: User selects this to use any WooCommerce Memberships filters',
+        'mailpoet',
+      ),
       options: WooCommerceMembershipOptions,
     });
   }
   if (MailPoet.isWoocommerceActive && canUseWooSubscriptions) {
     filters.push({
-      label: MailPoet.I18n.t('woocommerceSubscriptions'),
+      label: _x(
+        'WooCommerce Subscriptions',
+        'Dynamic segment creation: User selects this to use any WooCommerce Subscriptions filters',
+        'mailpoet',
+      ),
       options: WooCommerceSubscriptionOptions,
     });
   }

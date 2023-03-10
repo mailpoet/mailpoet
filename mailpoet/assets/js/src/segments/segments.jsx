@@ -1,7 +1,7 @@
 import ReactDOM from 'react-dom';
 import { HashRouter, Redirect, Route, Switch } from 'react-router-dom';
+import { __ } from '@wordpress/i18n';
 
-import { MailPoet } from 'mailpoet';
 import { RoutedTabs } from 'common/tabs/routed_tabs';
 import { Tab } from 'common/tabs/tab';
 import { SegmentList } from 'segments/list.jsx';
@@ -20,17 +20,13 @@ function Tabs() {
     <>
       <ListHeading />
       <RoutedTabs activeKey="lists" routerType="switch-only">
-        <Tab
-          key="lists"
-          route="lists/(.*)?"
-          title={MailPoet.I18n.t('pageTitle')}
-        >
+        <Tab key="lists" route="lists/(.*)?" title={__('Lists', 'mailpoet')}>
           <SegmentList />
         </Tab>
         <Tab
           key="segments"
           route="segments/(.*)?"
-          title={MailPoet.I18n.t('pageTitleSegments')}
+          title={__('Segments', 'mailpoet')}
           automationId="dynamic-segments-tab"
         >
           <DynamicSegmentList />

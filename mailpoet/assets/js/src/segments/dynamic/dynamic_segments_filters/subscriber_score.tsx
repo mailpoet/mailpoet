@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
-import { useSelect, useDispatch } from '@wordpress/data';
+import { useDispatch, useSelect } from '@wordpress/data';
+import { __, _x } from '@wordpress/i18n';
 
-import { MailPoet } from 'mailpoet';
 import { Select } from 'common/form/select/select';
 import { Grid } from 'common/grid';
 import { Input } from 'common/form/input/input';
@@ -60,7 +60,11 @@ export function validateSubscriberScore(
 function replaceSubscriberScoreSentence(
   fn: (value) => JSX.Element,
 ): JSX.Element[] {
-  return MailPoet.I18n.t('subscriberScoreSentence')
+  return _x(
+    '{condition} {score} %',
+    'The result will be "higher than 20 %"',
+    'mailpoet',
+  )
     .split(/({condition})|({score})|(\b%\b)/gim)
     .map(fn);
 }
@@ -116,22 +120,22 @@ export function SubscriberScoreFields({ filterIndex }: Props): JSX.Element {
               }}
             >
               <option value={SubscriberScoreOperator.HIGHER_THAN}>
-                {MailPoet.I18n.t('higherThan')}
+                {__('higher than', 'mailpoet')}
               </option>
               <option value={SubscriberScoreOperator.LOWER_THAN}>
-                {MailPoet.I18n.t('lowerThan')}
+                {__('lower than', 'mailpoet')}
               </option>
               <option value={SubscriberScoreOperator.EQUALS}>
-                {MailPoet.I18n.t('equals')}
+                {__('equals', 'mailpoet')}
               </option>
               <option value={SubscriberScoreOperator.NOT_EQUALS}>
-                {MailPoet.I18n.t('notEquals')}
+                {__('not equals', 'mailpoet')}
               </option>
               <option value={SubscriberScoreOperator.UNKNOWN}>
-                {MailPoet.I18n.t('unknown')}
+                {__('unknown', 'mailpoet')}
               </option>
               <option value={SubscriberScoreOperator.NOT_UNKNOWN}>
-                {MailPoet.I18n.t('notUnknown')}
+                {__('not unknown', 'mailpoet')}
               </option>
             </Select>
           );
@@ -151,7 +155,11 @@ export function SubscriberScoreFields({ filterIndex }: Props): JSX.Element {
                   void updateSegmentFilterFromEvent('value', filterIndex, e);
                 }}
                 min="0"
-                placeholder={MailPoet.I18n.t('subscriberScorePlaceholder')}
+                placeholder={_x(
+                  'score',
+                  'Placeholder for input: subscriber engagement score',
+                  'mailpoet',
+                )}
               />
             )
           );

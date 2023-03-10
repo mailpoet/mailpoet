@@ -1,17 +1,21 @@
 import { useEffect } from 'react';
+import { __, _x } from '@wordpress/i18n';
 import { useSelect, useDispatch } from '@wordpress/data';
 
 import { Grid } from 'common/grid';
 import { Select } from 'common/form/select/select';
 import { Input } from 'common/form/input/input';
-import { MailPoet } from 'mailpoet';
 
 import { EmailFormItem } from '../types';
 
 function replaceElementsInDaysSentence(
   fn: (value) => JSX.Element,
 ): JSX.Element[] {
-  return MailPoet.I18n.t('emailActionOpensDaysSentence')
+  return _x(
+    'in the last {days} days',
+    'The result will be "in the last 5 days"',
+    'mailpoet',
+  )
     .split(/({days})/gim)
     .map(fn);
 }
@@ -19,7 +23,11 @@ function replaceElementsInDaysSentence(
 function replaceEmailActionOpensSentence(
   fn: (value) => JSX.Element,
 ): JSX.Element[] {
-  return MailPoet.I18n.t('emailActionOpensSentence')
+  return _x(
+    '{condition} {opens} opens',
+    'The result will be "more than 20 opens"',
+    'mailpoet',
+  )
     .split(/({condition})|({opens})|(\b[a-zA-Z]+\b)/gim)
     .map(fn);
 }
@@ -59,11 +67,11 @@ export function EmailOpensAbsoluteCountFields({
                   void updateSegmentFilterFromEvent('operator', filterIndex, e);
                 }}
               >
-                <option value="more">{MailPoet.I18n.t('moreThan')}</option>
-                <option value="less">{MailPoet.I18n.t('lessThan')}</option>
-                <option value="equals">{MailPoet.I18n.t('equals')}</option>
+                <option value="more">{__('more than', 'mailpoet')}</option>
+                <option value="less">{__('less than', 'mailpoet')}</option>
+                <option value="equals">{__('equals', 'mailpoet')}</option>
                 <option value="not_equals">
-                  {MailPoet.I18n.t('notEquals')}
+                  {__('no equals', 'mailpoet')}
                 </option>
               </Select>
             );
@@ -79,7 +87,7 @@ export function EmailOpensAbsoluteCountFields({
                   void updateSegmentFilterFromEvent('opens', filterIndex, e);
                 }}
                 min="0"
-                placeholder={MailPoet.I18n.t('emailActionOpens')}
+                placeholder={__('opens', 'mailpoet')}
               />
             );
           }
@@ -102,7 +110,7 @@ export function EmailOpensAbsoluteCountFields({
                   void updateSegmentFilterFromEvent('days', filterIndex, e);
                 }}
                 min="0"
-                placeholder={MailPoet.I18n.t('emailActionDays')}
+                placeholder={__('days', 'mailpoet')}
               />
             );
           }

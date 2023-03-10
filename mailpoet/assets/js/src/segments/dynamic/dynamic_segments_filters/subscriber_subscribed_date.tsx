@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { isValid, parseISO } from 'date-fns';
-import { useSelect, useDispatch } from '@wordpress/data';
+import { useDispatch, useSelect } from '@wordpress/data';
+import { __, _x } from '@wordpress/i18n';
 
 import { MailPoet } from 'mailpoet';
 import { Select } from 'common/form/select/select';
@@ -105,22 +106,46 @@ export function SubscribedDateFields({ filterIndex }: Props): JSX.Element {
         }}
       >
         <option value={SubscribedDateOperator.BEFORE}>
-          {MailPoet.I18n.t('before')}
+          {_x(
+            'before',
+            'Meaning: "Subscriber subscribed before April"',
+            'mailpoet',
+          )}
         </option>
         <option value={SubscribedDateOperator.AFTER}>
-          {MailPoet.I18n.t('after')}
+          {_x(
+            'after',
+            'Meaning: "Subscriber subscribed after April',
+            'mailpoet',
+          )}
         </option>
         <option value={SubscribedDateOperator.ON}>
-          {MailPoet.I18n.t('on')}
+          {_x(
+            'on',
+            'Meaning: "Subscriber subscribed on a given date"',
+            'mailpoet',
+          )}
         </option>
         <option value={SubscribedDateOperator.NOT_ON}>
-          {MailPoet.I18n.t('notOn')}
+          {_x(
+            'not on',
+            'Meaning: "Subscriber subscribed on a date other than the given date"',
+            'mailpoet',
+          )}
         </option>
         <option value={SubscribedDateOperator.IN_THE_LAST}>
-          {MailPoet.I18n.t('inTheLast')}
+          {_x(
+            'in the last',
+            'Appears together with `days` when creating a new WooCommerce segment based on the number of orders.',
+            'mailpoet',
+          )}
         </option>
         <option value={SubscribedDateOperator.NOT_IN_THE_LAST}>
-          {MailPoet.I18n.t('notInTheLast')}
+          {_x(
+            'not in the last',
+            'Meaning: "Subscriber subscribed not in the last 3 days"',
+            'mailpoet',
+          )}
         </option>
       </Select>
       {(segment.operator === SubscribedDateOperator.BEFORE ||
@@ -149,9 +174,9 @@ export function SubscribedDateFields({ filterIndex }: Props): JSX.Element {
               void updateSegmentFilterFromEvent('value', filterIndex, e);
             }}
             min="1"
-            placeholder={MailPoet.I18n.t('daysPlaceholder')}
+            placeholder={__('days', 'mailpoet')}
           />
-          <span>{MailPoet.I18n.t('daysPlaceholder')}</span>
+          <span>{__('days', 'mailpoet')}</span>
         </>
       )}
     </Grid.CenteredRow>

@@ -105,7 +105,7 @@ export function EmailClickStatisticsFields({
         <ReactSelect
           dimension="small"
           isFullWidth
-          placeholder={MailPoet.I18n.t('selectNewsletterPlaceholder')}
+          placeholder={__('Search emails', 'mailpoet')}
           options={newsletterOptions}
           value={find(['value', segment.newsletter_id], newsletterOptions)}
           onChange={(option: SelectOption): void => {
@@ -127,29 +127,27 @@ export function EmailClickStatisticsFields({
           }
           automationId="select-operator"
         >
-          <option value={AnyValueTypes.ANY}>{MailPoet.I18n.t('anyOf')}</option>
-          <option value={AnyValueTypes.ALL}>{MailPoet.I18n.t('allOf')}</option>
+          <option value={AnyValueTypes.ANY}>{__('any of', 'mailpoet')}</option>
+          <option value={AnyValueTypes.ALL}>{__('all of', 'mailpoet')}</option>
           <option value={AnyValueTypes.NONE}>
-            {MailPoet.I18n.t('noneOf')}
+            {__('none of', 'mailpoet')}
           </option>
         </Select>
-        {loadingLinks && (
-          <span>{MailPoet.I18n.t('loadingDynamicSegmentItems')}</span>
-        )}
+        {loadingLinks && <span>{__('Loading data…', 'mailpoet')}</span>}
         {!loadingLinks && shouldDisplayLinks(segment.newsletter_id) && (
           <ReactSelect
             isMulti
             dimension="small"
             isFullWidth
             automationId="segment-link-select"
-            placeholder={MailPoet.I18n.t('allLinksPlaceholder')}
+            placeholder={__('All links', 'mailpoet')}
             options={
               links.length
                 ? links
                 : [
                     {
                       value: 0,
-                      label: MailPoet.I18n.t('noLinksHint'),
+                      label: __('Email not sent yet!', 'mailpoet'),
                       isDisabled: true,
                     },
                   ]

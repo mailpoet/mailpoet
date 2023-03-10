@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { __ } from '@wordpress/i18n';
 import PropTypes from 'prop-types';
 import { Background } from 'common/background/background';
 import { Form } from 'form/form.jsx';
@@ -10,22 +11,26 @@ import { MailPoet } from 'mailpoet';
 const fields = [
   {
     name: 'name',
-    label: MailPoet.I18n.t('name'),
+    label: __('Name', 'mailpoet'),
     type: 'text',
   },
   {
     name: 'description',
-    label: MailPoet.I18n.t('description'),
+    label: __('Description', 'mailpoet'),
     type: 'textarea',
-    tip: MailPoet.I18n.t('segmentDescriptionTip'),
+    tip: __(
+      'This text box is for your own use and is never shown to your subscribers.',
+      'mailpoet',
+    ),
   },
   {
     name: 'showInManageSubscriptionPage',
-    label: MailPoet.I18n.t('showInManageSubscriptionPage'),
+    label: __('List visibility', 'mailpoet'),
     type: 'checkbox',
     values: {
-      showInManageSubscriptionPage: MailPoet.I18n.t(
-        'showInManageSubscriptionPageTip',
+      showInManageSubscriptionPage: __(
+        'Show this list on the "Manage Subscription" page',
+        'mailpoet',
       ),
     },
     isChecked: true, // default checked state
@@ -34,10 +39,10 @@ const fields = [
 
 const messages = {
   onUpdate: function onUpdate() {
-    MailPoet.Notice.success(MailPoet.I18n.t('segmentUpdated'));
+    MailPoet.Notice.success(__('List successfully updated!', 'mailpoet'));
   },
   onCreate: function onCreate() {
-    MailPoet.Notice.success(MailPoet.I18n.t('segmentAdded'));
+    MailPoet.Notice.success(__('List successfully added!', 'mailpoet'));
     MailPoet.trackEvent('Lists > Add new');
   },
 };
@@ -49,12 +54,12 @@ function SegmentForm(props) {
       <HideScreenOptions />
 
       <Heading level={1} className="mailpoet-title">
-        <span>{MailPoet.I18n.t('segment')}</span>
+        <span>{__('List', 'mailpoet')}</span>
         <Link
           className="mailpoet-button button button-secondary button-small"
           to="/"
         >
-          {MailPoet.I18n.t('backToList')}
+          {__('Back', 'mailpoet')}
         </Link>
       </Heading>
 

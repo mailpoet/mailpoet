@@ -1,8 +1,8 @@
 import { Fragment, FunctionComponent, useState } from 'react';
 import { useDispatch, useSelect } from '@wordpress/data';
-
+import { __ } from '@wordpress/i18n';
 import { Hooks } from 'wp-js-hooks';
-import { MailPoet } from 'mailpoet';
+
 import { Button } from 'common/button/button';
 import { Heading } from 'common/typography/heading/heading';
 import { Input } from 'common/form/input/input';
@@ -92,7 +92,7 @@ export function Form({ segmentId }: Props): JSX.Element {
       <div className="mailpoet-form-grid">
         <div className="mailpoet-form-field-name form-field-row-name mailpoet-segments-name-section">
           <Heading level={4}>
-            <label htmlFor="field_name">{MailPoet.I18n.t('name')}</label>
+            <label htmlFor="field_name">{__('Name', 'mailpoet')}</label>
           </Heading>
           <div className="mailpoet-form-field">
             <Input
@@ -111,11 +111,14 @@ export function Form({ segmentId }: Props): JSX.Element {
         <div className="mailpoet-form-field-description form-field-row-description mailpoet-segments-description-section">
           <Heading level={4}>
             <label htmlFor="field_description">
-              {MailPoet.I18n.t('description')}
+              {__('Description', 'mailpoet')}
             </label>
           </Heading>
           <p className="mailpoet-form-description">
-            {MailPoet.I18n.t('segmentDescriptionTip')}
+            {__(
+              'This text box is for your own use and is never shown to your subscribers.',
+              'mailpoet',
+            )}
           </p>
           <div className="mailpoet-form-field">
             <Textarea
@@ -132,9 +135,7 @@ export function Form({ segmentId }: Props): JSX.Element {
         </div>
         <div className="mailpoet-segments-segments-section">
           <Heading level={4}>
-            <label htmlFor="field_filters">
-              {MailPoet.I18n.t('formPageTitle')}
-            </label>
+            <label htmlFor="field_filters">{__('Segment', 'mailpoet')}</label>
           </Heading>
           <FiltersBefore />
           {Array.isArray(filterRows) &&
@@ -148,7 +149,7 @@ export function Form({ segmentId }: Props): JSX.Element {
                   <Grid.CenteredRow>
                     <ReactSelect
                       dimension="small"
-                      placeholder={MailPoet.I18n.t('selectActionPlaceholder')}
+                      placeholder={__('Select action', 'mailpoet')}
                       options={segmentFilters}
                       value={filterRow.filterValue}
                       onChange={(newValue: FilterValue): void => {
@@ -180,7 +181,7 @@ export function Form({ segmentId }: Props): JSX.Element {
               addConditionAction(segment, updateSegment);
             }}
           >
-            {MailPoet.I18n.t('addCondition')}
+            {__('Add a condition', 'mailpoet')}
           </Button>
         </div>
         {premiumBannerVisible && (
@@ -204,7 +205,7 @@ export function Form({ segmentId }: Props): JSX.Element {
               subscriberCount.count === undefined
             }
           >
-            {MailPoet.I18n.t('save')}
+            {__('Save', 'mailpoet')}
           </Button>
         </div>
       </div>

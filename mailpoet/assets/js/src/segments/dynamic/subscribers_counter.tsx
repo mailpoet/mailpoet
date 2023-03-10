@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
-import { MailPoet } from 'mailpoet';
-import { useSelect, useDispatch } from '@wordpress/data';
+import { useDispatch, useSelect } from '@wordpress/data';
+import { __ } from '@wordpress/i18n';
 import { debounce } from 'lodash';
 import { isFormValid } from './validator';
 import { loadCount } from './subscribers_calculator';
@@ -94,7 +94,9 @@ function SubscribersCounter(): JSX.Element {
     return (
       <div className="mailpoet-form-field">
         <span className="mailpoet-form-error-message">
-          {MailPoet.I18n.t('dynamicSegmentSizeCalculatingTimeout')}{' '}
+          {__(
+            "It's taking longer than usual to generate the segment, which may be due to a complex configuration. Try using fewer or simpler conditions.",
+          )}{' '}
           <a
             href="https://kb.mailpoet.com/article/237-guide-to-subscriber-segmentation?utm_source=plugin&utm_medium=segments"
             data-beacon-article="5a574bd92c7d3a194368233e"
@@ -102,7 +104,7 @@ function SubscribersCounter(): JSX.Element {
             className="mailpoet-form-error-message"
             rel="noopener noreferrer"
           >
-            {MailPoet.I18n.t('learnMore')}
+            {__('Learn more.', 'mailpoet')}
           </a>
         </span>
       </div>
@@ -117,7 +119,7 @@ function SubscribersCounter(): JSX.Element {
     return (
       <div className="mailpoet-form-field">
         <span className="mailpoet-form-notice-message">
-          {MailPoet.I18n.t('dynamicSegmentSizeIsCalculated')}
+          {__('Calculating segment size…', 'mailpoet')}
         </span>
       </div>
     );
@@ -126,7 +128,7 @@ function SubscribersCounter(): JSX.Element {
   return (
     <div className="mailpoet-form-field">
       <span className="mailpoet-form-notice-message">
-        {MailPoet.I18n.t('dynamicSegmentSize').replace(
+        {__('Calculating segment size…', 'mailpoet').replace(
           '%1$d',
           subscribersCount.count.toLocaleString(),
         )}
