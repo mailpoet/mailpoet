@@ -24,7 +24,7 @@ export const step: StepType = {
   ),
   subtitle: (data): string => {
     if (!data.args.delay || !data.args.delay_type) {
-      return __('Not set up yet.', 'mailpoet');
+      return __('Not set up yet', 'mailpoet');
     }
 
     return getDelayInformation(
