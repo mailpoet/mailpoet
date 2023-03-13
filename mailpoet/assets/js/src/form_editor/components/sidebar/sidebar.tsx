@@ -1,20 +1,8 @@
 import { useEffect } from 'react';
 import { useDispatch, useSelect } from '@wordpress/data';
-import {
-  ReduxStoreConfig,
-  StoreDescriptor,
-} from '@wordpress/data/build-types/types';
 import { DefaultSidebar } from './default_sidebar';
 import { PlacementSettingsSidebar } from './placement_settings_sidebar';
 import { storeName } from '../../store';
-
-// workaround for block editor store useSelect
-interface BlockEditorStoreSelectors {
-  getSelectedBlockClientId: () => string;
-}
-const blockEditorStore = { name: 'core/block-editor' } as StoreDescriptor<
-  ReduxStoreConfig<null, null, BlockEditorStoreSelectors>
->;
 
 function Sidebar(): JSX.Element {
   const { toggleSidebar, changeActiveSidebar } = useDispatch(storeName);
@@ -29,7 +17,7 @@ function Sidebar(): JSX.Element {
   };
 
   const selectedBlockId = useSelect(
-    (select) => select(blockEditorStore).getSelectedBlockClientId(),
+    (select) => select('core/block-editor').getSelectedBlockClientId(),
     [],
   );
 
