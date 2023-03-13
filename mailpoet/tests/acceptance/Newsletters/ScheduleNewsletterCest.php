@@ -51,9 +51,14 @@ class ScheduleNewsletterCest {
     $i->selectOptionInSelect2($segmentName);
     $i->click('[data-automation-id="email-schedule-checkbox"]');
 
-    // step 3 - Pick today's date
-    $i->wantTo('Pick today‘s date');
+    $i->wantTo('Wait for datetime picker');
     $i->waitForElement('form input[name=date]');
+
+    // `Schedule` caption
+    $i->selectOption('form select[name=time]', $currentDateTime->modify("+1 hour")->format('g:00 a'));
+    $i->see("Schedule", "button span");
+
+    $i->wantTo('Pick today‘s date');
     $i->click('form input[name=date]');
     // The calendar preselects tomorrow's date, making today's date not clickable on the last day of a month.
     // In case it is not clickable try switching to previous month
@@ -64,10 +69,6 @@ class ScheduleNewsletterCest {
       $i->waitForElementClickable(['class' => 'react-datepicker__day--today']);
     }
     $i->click(['class' => "react-datepicker__day--today"]);
-
-    // `Schedule` caption - change time to 1 hour after now
-    $i->selectOption('form select[name=time]', $currentDateTime->modify("+1 hour")->format('g:00 a'));
-    $i->see("Schedule", "button span");
 
     // `Send` caption - change time to 1 hour before now
     $i->selectOption('form select[name=time]', $currentDateTime->modify("-1 hour")->format('g:00 a'));
