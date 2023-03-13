@@ -1,4 +1,4 @@
-import { useState, Fragment } from 'react';
+import { useState } from 'react';
 import { DropdownMenu } from '@wordpress/components';
 import { moreVertical, trash } from '@wordpress/icons';
 import { __ } from '@wordpress/i18n';
@@ -53,8 +53,8 @@ export function StepMoreMenu({ step }: Props): JSX.Element {
   const controls = Object.values(moreControls).map((item) => item.control);
   return (
     <div className="mailpoet-automation-step-more-menu">
-      {slots.map(({ key, slot }) => (
-        <Fragment key={key}>{slot()}</Fragment>
+      {slots.map(({ key, slot: Slot }) => (
+        <Slot key={key} />
       ))}
       <DropdownMenu
         label={__('More', 'mailpoet')}

@@ -2,7 +2,6 @@ import { Dispatch, SetStateAction, useState } from 'react';
 import { Button, DropdownMenu } from '@wordpress/components';
 import { chevronDown } from '@wordpress/icons';
 import { __ } from '@wordpress/i18n';
-import { Fragment } from '@wordpress/element';
 import { StepMoreControlsType } from '../../types/filters';
 
 type OptionButtonPropType = {
@@ -36,10 +35,10 @@ export function OptionButton({
       >
         {title}
       </Button>
+
       {slots.length > 0 &&
-        slots.map(({ key, slot }) => (
-          <Fragment key={`slot-${key}`}>{slot()}</Fragment>
-        ))}
+        slots.map(({ key, slot: Slot }) => <Slot key={key} />)}
+
       {Object.values(controls).length > 0 && (
         <DropdownMenu
           className={dropDownMenuClassNames}
