@@ -80,6 +80,6 @@ export async function subscribersAdding() {
   sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
 }
 
-export default function subscribersAddingTest() {
-  subscribersAdding();
+export default async function subscribersAddingTest() {
+  await subscribersAdding();
 }

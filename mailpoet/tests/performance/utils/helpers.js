@@ -10,6 +10,7 @@ import { adminUsername, adminPassword } from '../config.js';
 export function authenticate(page) {
   // Enter login credentials and login
   page.waitForNavigation({ waitUntil: 'networkidle' });
+  page.waitForLoadState('networkidle');
   page.locator('input[name="log"]').type(`${adminUsername}`);
   page.locator('input[name="pwd"]').type(`${adminPassword}`);
   // Wait for asynchronous operations to complete
@@ -23,6 +24,14 @@ export function authenticate(page) {
 export function selectInSelect2(page, listName) {
   // Click and write a list name from a dropdown
   page.locator('.select2-selection').type(listName);
+  page.keyboard.press('Enter');
+}
+
+// Select a segment or a list from a react search field
+export function selectInReact(page, reactSelector, reactValue) {
+  // Click to write a list name from a dropdown
+  page.locator(reactSelector).click();
+  page.locator(reactSelector).type(reactValue);
   page.keyboard.press('Enter');
 }
 

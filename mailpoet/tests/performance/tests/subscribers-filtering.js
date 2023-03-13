@@ -78,6 +78,6 @@ export async function subscribersFiltering() {
   sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
 }
 
-export default function subscribersFilteringTest() {
-  subscribersFiltering();
+export default async function subscribersFilteringTest() {
+  await subscribersFiltering();
 }

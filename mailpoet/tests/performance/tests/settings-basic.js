@@ -64,6 +64,6 @@ export async function settingsBasic() {
   sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
 }
 
-export default function settingsBasicTest() {
-  settingsBasic();
+export default async function settingsBasicTest() {
+  await settingsBasic();
 }
