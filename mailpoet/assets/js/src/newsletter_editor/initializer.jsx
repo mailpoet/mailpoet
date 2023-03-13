@@ -91,6 +91,16 @@ const initializeEditor = (config) => {
         newsletter.queue &&
         newsletter.queue.status === null
       ) {
+        // Users can confirm before visiting the page
+        let pauseConfirmed = getUrlParam('pauseConfirmed') === 'yes';
+        if (!pauseConfirmed) {
+          // eslint-disable-next-line no-alert
+          pauseConfirmed = window.confirm(MailPoet.I18n.t('confirmEdit'));
+        }
+        if (!pauseConfirmed) {
+          window.location = `admin.php?page=mailpoet-newsletters#/${newsletter.type}`;
+          return;
+        }
         MailPoet.Ajax.post({
           api_version: window.mailpoet_api_version,
           endpoint: 'sending_queue',
@@ -116,7 +126,7 @@ const initializeEditor = (config) => {
         newsletterTypesWithActivation.includes(newsletter.type) &&
         newsletter.status === 'active'
       ) {
-        // Users can confirm deactivation before visiting the page
+        // Users can confirm before visiting the page
         let deactivationConfirmed =
           getUrlParam('deactivationConfirmed') === 'yes';
         if (!deactivationConfirmed) {
