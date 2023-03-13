@@ -8,6 +8,9 @@ type Segment = FormTokenItem & {
 
 export type Context = {
   segments?: Segment[];
+  woocommerce: {
+    order_statuses?: Record<string, string> | undefined;
+  };
 };
 
 export const getContext = (): Context =>
