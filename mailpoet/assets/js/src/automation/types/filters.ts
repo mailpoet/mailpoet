@@ -44,3 +44,13 @@ export type FromScratchHookType = (errorHandler: Dispatch<string>) => void;
 
 // mailpoet.automation.settings.render
 export type AutomationSettingElements = Record<string, JSX.Element>;
+
+// mailpoet.automation.trigger.order_status_changed.order_status_options
+export type OrderStatusOptions = Record<
+  string,
+  {
+    value: string;
+    label: string;
+    isDisabled: boolean;
+  }
+>;
