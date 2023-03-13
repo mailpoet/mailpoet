@@ -59,6 +59,6 @@ export async function subscribersListing() {
   sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
 }
 
-export default function subscribersListingTest() {
-  subscribersListing();
+export default async function subscribersListingTest() {
+  await subscribersListing();
 }

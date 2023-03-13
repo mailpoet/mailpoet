@@ -60,20 +60,20 @@ if (scenario) {
 }
 
 // All the tests ran for pull requests
-export function pullRequests() {
-  newsletterListing();
-  subscribersListing();
-  settingsBasic();
-  subscribersFiltering();
-  subscribersAdding();
-  formsAdding();
-  newsletterSearching();
-  newsletterSending();
-  listsViewSubscribers();
+export async function pullRequests() {
+  await newsletterListing();
+  await subscribersListing();
+  await settingsBasic();
+  await subscribersFiltering();
+  await subscribersAdding();
+  await formsAdding();
+  await newsletterSearching();
+  await newsletterSending();
+  await listsViewSubscribers();
 }
 
 // All the tests ran for a nightly testing
-export function nightly() {
+export async function nightly() {
   // TBD
 }
 

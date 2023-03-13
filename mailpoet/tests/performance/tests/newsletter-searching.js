@@ -69,6 +69,6 @@ export async function newsletterSearching() {
   sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
 }
 
-export default function newsletterSearchingTest() {
-  newsletterSearching();
+export default async function newsletterSearchingTest() {
+  await newsletterSearching();
 }
