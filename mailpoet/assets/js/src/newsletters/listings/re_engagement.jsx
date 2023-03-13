@@ -249,22 +249,31 @@ class NewsletterListReEngagementComponent extends Component {
       (match, i) => <SegmentTags segments={newsletter.segments} key={i} />,
     );
 
-    let frequencyKey = 'reEngagementFrequencyMonth';
+    let frequency = _x(
+      'month',
+      'month in the sentence "1 month after inactivity"',
+    );
     if (
       newsletter.options.afterTimeNumber > 1 &&
       newsletter.options.afterTimeType === 'months'
     ) {
-      frequencyKey = 'reEngagementFrequencyMonths';
+      frequency = _x(
+        'months',
+        'months in the sentence "5 months after inactivity"',
+      );
     } else if (
       newsletter.options.afterTimeNumber > 1 &&
       newsletter.options.afterTimeType === 'weeks'
     ) {
-      frequencyKey = 'reEngagementFrequencyWeeks';
+      frequency = _x(
+        'weeks',
+        'weeks in the sentence "5 weeks after inactivity"',
+      );
     } else if (
       newsletter.options.afterTimeNumber === 1 &&
       newsletter.options.afterTimeType === 'weeks'
     ) {
-      frequencyKey = 'reEngagementFrequencyWeek';
+      frequency = _x('week', 'week in the sentence "1 week after inactivity"');
     }
 
     const sendingFrequency = _x(
@@ -273,7 +282,7 @@ class NewsletterListReEngagementComponent extends Component {
       'mailpoet',
     )
       .replace('{$count}', newsletter.options.afterTimeNumber)
-      .replace('{$frequency}', __(frequencyKey, 'mailpoet'));
+      .replace('{$frequency}', frequency);
 
     return (
       <span>
