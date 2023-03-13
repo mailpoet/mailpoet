@@ -20,7 +20,7 @@ import { mapFormDataBeforeSaving } from './map_form_data_before_saving.jsx';
 import { findBlock } from './find_block';
 import { formatCustomFieldBlockName } from '../blocks/format_custom_field_block_name';
 import { getCustomFieldBlockSettings } from '../blocks/custom_fields_blocks';
-import { storeName } from './constants';
+import { FONT_SIZES, storeName } from './constants';
 
 const formatApiErrorMessage = (response) => {
   let errorMessage = null;
@@ -61,7 +61,7 @@ export const controls = {
     const formBlocks = select(storeName).getFormBlocks();
     const customFields = select(storeName).getAllAvailableCustomFields();
     const blocksToFormBody = blocksToFormBodyFactory(
-      SETTINGS_DEFAULTS.fontSizes,
+      FONT_SIZES,
       SETTINGS_DEFAULTS.colors,
       SETTINGS_DEFAULTS.gradients,
       customFields,

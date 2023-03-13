@@ -137,8 +137,8 @@ export const blocksToFormBodyFactory = (
                 font_size: mapFontSizeSlugToValue(
                   fontSizeDefinitions,
                   block.attributes.fontSize as unknown as string,
-                  (block.attributes.style?.typography
-                    ?.fontSize as unknown as number) || null,
+                  (block.attributes.style?.typography?.fontSize as string) ||
+                    null,
                 ),
                 text_color: mapColorSlugToValue(
                   colorDefinitions,
@@ -168,8 +168,8 @@ export const blocksToFormBodyFactory = (
                 font_size: mapFontSizeSlugToValue(
                   fontSizeDefinitions,
                   block.attributes.fontSize as unknown as string,
-                  (block.attributes.style?.typography
-                    ?.fontSize as unknown as number) || null,
+                  (block.attributes.style?.typography?.fontSize as string) ||
+                    null,
                 ),
                 line_height: block.attributes.style?.typography?.lineHeight,
                 text_color: mapColorSlugToValue(

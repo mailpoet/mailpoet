@@ -647,7 +647,7 @@ describe('Form Body To Blocks', () => {
 
     const [block] = formBodyToBlocks([heading]);
     expect(isUndefined(block.attributes.fontSize)).to.be.equal(true);
-    expect(block.attributes.style.typography.fontSize).to.eq(34);
+    expect(block.attributes.style.typography.fontSize).to.eq('34px');
     expect(block.attributes.style.typography.lineHeight).to.eq('1.5');
   });
 
@@ -677,7 +677,7 @@ describe('Form Body To Blocks', () => {
 
     const [block] = formBodyToBlocks([heading]);
     expect(isUndefined(block.attributes.fontSize)).to.be.equal(true);
-    expect(block.attributes.style.typography.fontSize).to.eq(34);
+    expect(block.attributes.style.typography.fontSize).to.eq('34px');
     expect(block.attributes.style.typography.lineHeight).to.eq('1.5');
   });
 

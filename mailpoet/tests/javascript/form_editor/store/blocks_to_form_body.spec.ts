@@ -361,7 +361,7 @@ describe('Blocks to Form Body', () => {
         },
       },
     ]);
-    expect(input.params.font_size).to.be.equal(13);
+    expect(input.params.font_size).to.be.equal('13px');
   });
 
   it('Should map custom font size and line height in paragraph block', () => {
@@ -435,7 +435,7 @@ describe('Blocks to Form Body', () => {
         },
       },
     ]);
-    expect(input.params.font_size).to.be.equal(13);
+    expect(input.params.font_size).to.be.equal('13px');
   });
 
   it('Should map custom font size in heading block', () => {

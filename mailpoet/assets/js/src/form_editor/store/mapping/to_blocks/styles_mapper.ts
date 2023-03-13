@@ -6,7 +6,6 @@ import {
   InputBlockStyles,
   InputBlockStylesServerData,
 } from 'form_editor/store/form_data_types';
-import { asNum } from '../../server_value_as_num';
 
 export const defaultBlockStyles: InputBlockStyles = {
   fullWidth: true,
@@ -76,16 +75,9 @@ export const mapGradientSlug = (definitions: GradientDefinition[], value) => {
 export const mapFontSizeSlug = (
   fontSizeDefinitions: FontSizeDefinition[],
   fontSizeValue: string,
-) => {
-  let value = 0;
-  if (fontSizeValue) {
-    value = asNum(fontSizeValue);
-    if (value === undefined) {
-      value = 2;
-    }
-  }
+): string | undefined => {
   const result = fontSizeDefinitions.find(
-    (fontSize) => fontSize.size === value,
+    (fontSize) => fontSize.size === fontSizeValue,
   );
   return result ? result.slug : undefined;
 };

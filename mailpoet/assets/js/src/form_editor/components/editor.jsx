@@ -28,7 +28,7 @@ import { FormPreview } from './preview/preview';
 import { FormStylingBackground } from './form_styling_background.jsx';
 import { CustomFontsStyleSheetLink } from './font_family_settings';
 import { Fullscreen } from './fullscreen';
-import { storeName } from '../store';
+import { FONT_SIZES, storeName } from '../store';
 
 /**
  * This component renders the form editor app.
@@ -77,6 +77,7 @@ export function Editor() {
     mediaUpload: canUserUpload ? uploadMedia : null,
     supportsLayout: false, // Disable layout settings for columns because the wide configuration doesn't work properly
     maxWidth: 580,
+    fontSizes: FONT_SIZES,
     enableCustomSpacing: true,
     enableCustomLineHeight: true,
     disableCustomFontSizes: false,
