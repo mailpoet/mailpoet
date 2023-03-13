@@ -40,7 +40,7 @@ function DocumentActions({ children }): JSX.Element {
         {children && (
           <Dropdown
             popoverProps={{
-              placement: 'bottom-start',
+              placement: 'bottom',
               anchor: titleRef.current,
             }}
             renderToggle={({ isOpen, onToggle }) => (
