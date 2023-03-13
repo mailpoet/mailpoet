@@ -108,22 +108,23 @@ const bulkActions = [
 ];
 
 const confirmEdit = (newsletter) => {
-  const redirectToEditing = () => {
-    window.location.href = `?page=mailpoet-newsletter-editor&id=${newsletter.id}`;
-  };
+  const editorHref = `?page=mailpoet-newsletter-editor&id=${newsletter.id}`;
+
   if (
     !newsletter.queue ||
     newsletter.status !== 'sending' ||
     newsletter.queue.status !== null
   ) {
-    redirectToEditing();
+    window.location.href = editorHref;
   } else {
     confirmAlert({
       message: __(
         'Sending is in progress. Do you want to pause sending and edit the newsletter?',
         'mailpoet',
       ),
-      onConfirm: redirectToEditing,
+      onConfirm: () => {
+        window.location.href = `${editorHref}&pauseConfirmed=yes`;
+      },
     });
   }
 };
