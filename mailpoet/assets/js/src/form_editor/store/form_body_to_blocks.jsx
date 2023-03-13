@@ -162,7 +162,7 @@ const mapColumnBlocks = (
 
 /**
  * Factory for form data to blocks mapper
- * @param {Array.<{name: string, slug: string, size: number}>} fontSizeDefinitions
+ * @param {Array.<{name: string, slug: string, size: string}>} fontSizeDefinitions
  * @param {Array.<{name: string, slug: string, color: string}>} colorDefinitions
  * @param {Array.<{name: string, slug: string, gradient: string}>} gradientsDefinitions
  * @param customFields - list of all custom Fields
@@ -258,13 +258,14 @@ export const formBodyToBlocksFactory = (
           }
         }
         if (item.params && has(item.params, 'font_size')) {
-          const slug = mapFontSizeSlug(
-            fontSizeDefinitions,
-            item.params.font_size,
-          );
+          const fontSize = `${item.params.font_size}${
+            Number.isNaN(Number(`${item.params.font_size}` || NaN)) ? '' : 'px'
+          }`;
+
+          const slug = mapFontSizeSlug(fontSizeDefinitions, fontSize);
           mapped.attributes.fontSize = slug;
           mapped.attributes.style.typography.fontSize = !slug
-            ? asNum(item.params.font_size)
+            ? fontSize
             : undefined;
         }
         if (item.params && has(item.params, 'line_height')) {

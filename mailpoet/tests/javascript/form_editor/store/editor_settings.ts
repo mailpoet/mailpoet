@@ -33,6 +33,6 @@ export const gradientDefinitions: GradientDefinition[] = [
 ];
 
 export const fontSizeDefinitions: FontSizeDefinition[] = [
-  { name: 'Small', size: 13, slug: 'small' },
-  { name: 'Normal', size: 16, slug: 'normal' },
+  { name: 'Small', size: '13px', slug: 'small' },
+  { name: 'Normal', size: '16px', slug: 'normal' },
 ];

@@ -66,8 +66,8 @@ export const mapGradientSlugToValue = (
 export const mapFontSizeSlugToValue = (
   fontSizeDefinitions: FontSizeDefinition[],
   sizeSlug: string,
-  sizeValue: number = null,
-): number => {
+  sizeValue: string = null,
+): string => {
   const result = fontSizeDefinitions.find((size) => size.slug === sizeSlug);
   return result ? result.size : sizeValue;
 };

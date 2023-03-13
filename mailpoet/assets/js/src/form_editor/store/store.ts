@@ -10,7 +10,7 @@ import { validateForm } from './form_validator.jsx';
 import { formBodyToBlocksFactory } from './form_body_to_blocks.jsx';
 import { mapFormDataAfterLoading } from './map_form_data_after_loading.jsx';
 import { FormEditorWindow } from './state_types';
-import { storeName } from './constants';
+import { FONT_SIZES, storeName } from './constants';
 
 declare let window: FormEditorWindow;
 
@@ -21,7 +21,7 @@ export const initStore = () => {
   }));
 
   const formBodyToBlocks = formBodyToBlocksFactory(
-    SETTINGS_DEFAULTS.fontSizes,
+    FONT_SIZES,
     SETTINGS_DEFAULTS.colors,
     SETTINGS_DEFAULTS.gradients,
     customFields,

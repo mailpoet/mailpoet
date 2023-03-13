@@ -148,5 +148,5 @@ export type GradientDefinition = {
 export type FontSizeDefinition = {
   name: string;
   slug: string;
-  size: number;
+  size: string;
 };
