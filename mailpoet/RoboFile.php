@@ -479,7 +479,6 @@ class RoboFile extends \Robo\Tasks {
       'lib-3rd-party/',
       'vendor/composer',
       'vendor/mtdowling',
-      'vendor/soundasleep',
       'vendor-prefixed/',
       'mailpoet.php',
     ]);
@@ -498,7 +497,7 @@ class RoboFile extends \Robo\Tasks {
       'vendor/phpmailer/phpmailer/test',
       'vendor-prefixed/psr/log/Psr/Log/Test',
       'vendor-prefixed/sabberworm/php-css-parser/tests',
-      'vendor/soundasleep/html2text/tests',
+      'vendor-prefixed/soundasleep/html2text/tests',
       'vendor-prefixed/swiftmailer/swiftmailer/tests',
       'vendor-prefixed/symfony/service-contracts/Tests',
       'vendor-prefixed/symfony/translation/Tests',
