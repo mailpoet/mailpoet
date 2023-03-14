@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7a34a5172600fafa2576101182e68c39",
+    "content-hash": "7c0ca19019bebbcf06274aef9456bbac",
     "packages": [
         {
             "name": "mtdowling/cron-expression",
@@ -54,59 +54,6 @@
             },
             "abandoned": "dragonmantank/cron-expression",
             "time": "2019-12-28T04:23:06+00:00"
-        },
-        {
-            "name": "soundasleep/html2text",
-            "version": "dev-master",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/mailpoet/html2text.git",
-                "reference": "d907c8fc20605135b4ac29b7a2f43d8c1c6cddb8"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/mailpoet/html2text/zipball/d907c8fc20605135b4ac29b7a2f43d8c1c6cddb8",
-                "reference": "d907c8fc20605135b4ac29b7a2f43d8c1c6cddb8",
-                "shasum": ""
-            },
-            "require": {
-                "ext-dom": "*",
-                "ext-libxml": "*",
-                "php": ">=5.3.2"
-            },
-            "require-dev": {
-                "phpunit/phpunit": ">=4.0",
-                "soundasleep/component-tests": "dev-master"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Html2Text\\": "src"
-                }
-            },
-            "license": [
-                "EPL-1.0"
-            ],
-            "authors": [
-                {
-                    "name": "Jevon Wright",
-                    "homepage": "https://jevon.org",
-                    "role": "Developer"
-                }
-            ],
-            "description": "A PHP script to convert HTML into a plain text format",
-            "homepage": "https://github.com/soundasleep/html2text",
-            "keywords": [
-                "email",
-                "html",
-                "php",
-                "text"
-            ],
-            "support": {
-                "email": "support@jevon.org",
-                "source": "https://github.com/mailpoet/html2text/tree/master"
-            },
-            "time": "2019-04-24T12:03:33+00:00"
         },
         {
             "name": "woocommerce/action-scheduler",
@@ -9969,9 +9916,7 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "soundasleep/html2text": 20
-    },
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
@@ -9990,5 +9935,5 @@
     "platform-overrides": {
         "php": "7.2.0"
     },
-    "plugin-api-version": "1.1.0"
+    "plugin-api-version": "2.3.0"
 }

@@ -19,7 +19,7 @@ $replacements = [
     ],
   ],
   [
-    'file' => __DIR__ . '/../vendor/soundasleep/html2text/src/Html2Text.php',
+    'file' => __DIR__ . '/../vendor-prefixed/soundasleep/html2text/src/Html2Text.php',
     'find' => [
       '$html = mb_convert_encoding($html, "HTML-ENTITIES", "UTF-8");',
     ],

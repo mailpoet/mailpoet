@@ -1,4 +1,10 @@
 {
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "https://github.com/mailpoet/html2text"
+    }
+  ],
   "require": {
     "php": ">=7.2",
     "cerdic/css-tidy": "2.0.3",
@@ -10,6 +16,7 @@
     "nesbot/carbon": "2.63.0",
     "psr/cache": "^1.0",
     "sabberworm/php-css-parser": "^8.1",
+    "soundasleep/html2text": "dev-master",
     "symfony/dependency-injection": "5.4.7",
     "symfony/polyfill-ctype": "1.18.1",
     "symfony/polyfill-iconv": "1.18.1",
