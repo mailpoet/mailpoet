@@ -62,11 +62,10 @@ export async function newsletterSearching() {
         .isVisible(),
     });
   } finally {
+    sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
     page.close();
     browser.close();
   }
-
-  sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
 }
 
 export default async function newsletterSearchingTest() {

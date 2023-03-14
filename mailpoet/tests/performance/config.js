@@ -14,4 +14,4 @@ export const lastName = 'Doe';
 export const defaultListName = 'Newsletter mailing list';
 
 export const thinkTimeMin = '1';
-export const thinkTimeMax = '4';
+export const thinkTimeMax = '3';

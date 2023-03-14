@@ -67,10 +67,10 @@ export async function formsAdding() {
         'Form saved. Cookies reset — you will see all your dismissed popup forms again.',
     });
   } finally {
+    sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
     page.close();
     browser.close();
   }
-  sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
 }
 
 export default function formsAddingTest() {

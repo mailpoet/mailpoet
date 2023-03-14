@@ -73,11 +73,10 @@ export async function subscribersAdding() {
         subscriberEmail,
     });
   } finally {
+    sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
     page.close();
     browser.close();
   }
-
-  sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
 }
 
 export default async function subscribersAddingTest() {
