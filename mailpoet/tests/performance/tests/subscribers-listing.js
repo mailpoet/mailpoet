@@ -52,11 +52,10 @@ export async function subscribersListing() {
         .isVisible(),
     });
   } finally {
+    sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
     page.close();
     browser.close();
   }
-
-  sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
 }
 
 export default async function subscribersListingTest() {

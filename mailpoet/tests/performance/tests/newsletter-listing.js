@@ -47,11 +47,10 @@ export async function newsletterListing() {
         .isVisible(),
     });
   } finally {
+    sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
     page.close();
     browser.close();
   }
-
-  sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
 }
 
 export default async function newsletterListingTest() {

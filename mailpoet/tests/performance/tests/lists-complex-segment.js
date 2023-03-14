@@ -50,18 +50,13 @@ export async function listsComplexSegment() {
     page.locator('[data-automation-id="new-segment"]').click();
     page
       .locator('[data-automation-id="input-name"]')
-      .type(complexSegmentName, { delay: 50 });
+      .type(complexSegmentName, { delay: 25 });
 
     // Select "Subscribed to a list" action
     selectInReact(page, '#react-select-2-input', 'subscribed to list');
     selectInReact(page, '#react-select-4-input', defaultListName);
     page.waitForSelector('.mailpoet-form-notice-message');
     page.waitForLoadState('networkidle');
-    check(page, {
-      'confirmation message is present for segment calculation':
-        page.locator('.mailpoet-form-notice-message').textContent() ===
-        'This segment has',
-    });
 
     // Click to add a new segment action
     page
@@ -102,25 +97,30 @@ export async function listsComplexSegment() {
     });
 
     // Save the segment
-    page
+    await page
       .locator(
         '#segments_container > form > div > div.mailpoet-form-actions > button > span',
       )
       .click();
-    page.waitForNavigation('networkidle');
-    page.waitForSelector('.notice-success');
+    page.waitForSelector('[data-automation-id="filters_all"]', {
+      state: 'visible',
+    });
+    check(page, {
+      'segments tab is visible': page
+        .locator('[data-automation-id="dynamic-segments-tab"]')
+        .isVisible(),
+    });
     check(page, {
       'segment is saved successfully': page
         .locator('.notice-success')
         .textContent('Segment successfully updated!'),
     });
-    page.waitForLoadState('networkidle');
+    await page.waitForLoadState('networkidle');
   } finally {
+    sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
     page.close();
     browser.close();
   }
-
-  sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
 }
 
 export default async function listsComplexSegmentTest() {

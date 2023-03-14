@@ -84,11 +84,10 @@ export async function newsletterSending() {
     });
     page.waitForLoadState('networkidle');
   } finally {
+    sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
     page.close();
     browser.close();
   }
-
-  sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
 }
 
 export default async function newsletterSendingTest() {

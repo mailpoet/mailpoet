@@ -58,10 +58,10 @@ export async function settingsBasic() {
       'settings saved is visible': page.locator('div.notice').isVisible(),
     });
   } finally {
+    sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
     page.close();
     browser.close();
   }
-  sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
 }
 
 export default async function settingsBasicTest() {
