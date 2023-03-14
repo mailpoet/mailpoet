@@ -13,6 +13,7 @@ use MailPoet\NewsletterProcessingException;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\Util\pQuery\DomNode;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoetVendor\Html2Text\Html2Text;
 
 class Renderer {
   const NEWSLETTER_TEMPLATE = 'Template.html';
@@ -217,7 +218,7 @@ class Renderer {
    */
   private function renderTextVersion($template) {
     $template = (mb_detect_encoding($template, 'UTF-8', true)) ? $template : utf8_encode($template);
-    return @\Html2Text\Html2Text::convert($template);
+    return @Html2Text::convert($template);
   }
 
   /**
