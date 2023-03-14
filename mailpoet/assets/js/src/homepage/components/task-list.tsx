@@ -3,6 +3,7 @@ import { useSelect } from '@wordpress/data';
 import { DropdownMenu } from '@wordpress/components';
 import { moreVertical } from '@wordpress/icons';
 import { storeName } from 'homepage/store/store';
+import { stopLinkPropagation } from 'common';
 import { Task } from './task';
 
 type Props = {
@@ -83,7 +84,10 @@ export function TaskList({ onHide }: Props): JSX.Element {
       {!tasksStatus.subscribersAdded && (
         <p>
           {MailPoet.I18n.t('noSubscribersQuestion')}{' '}
-          <a href="admin.php?page=mailpoet-form-editor-template-selection">
+          <a
+            href="admin.php?page=mailpoet-form-editor-template-selection"
+            onClick={stopLinkPropagation}
+          >
             {MailPoet.I18n.t('setUpForm')}
           </a>
         </p>
