@@ -252,6 +252,7 @@ class NewsletterListReEngagementComponent extends Component {
     let frequency = _x(
       'month',
       'month in the sentence "1 month after inactivity"',
+      'mailpoet',
     );
     if (
       newsletter.options.afterTimeNumber > 1 &&
@@ -260,6 +261,7 @@ class NewsletterListReEngagementComponent extends Component {
       frequency = _x(
         'months',
         'months in the sentence "5 months after inactivity"',
+        'mailpoet',
       );
     } else if (
       newsletter.options.afterTimeNumber > 1 &&
@@ -268,12 +270,17 @@ class NewsletterListReEngagementComponent extends Component {
       frequency = _x(
         'weeks',
         'weeks in the sentence "5 weeks after inactivity"',
+        'mailpoet',
       );
     } else if (
       newsletter.options.afterTimeNumber === 1 &&
       newsletter.options.afterTimeType === 'weeks'
     ) {
-      frequency = _x('week', 'week in the sentence "1 week after inactivity"');
+      frequency = _x(
+        'week',
+        'week in the sentence "1 week after inactivity"',
+        'mailpoet',
+      );
     }
 
     const sendingFrequency = _x(
