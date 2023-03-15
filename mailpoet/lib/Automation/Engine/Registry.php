@@ -7,6 +7,7 @@ use MailPoet\Automation\Engine\Integration\Action;
 use MailPoet\Automation\Engine\Integration\Payload;
 use MailPoet\Automation\Engine\Integration\Step;
 use MailPoet\Automation\Engine\Integration\Subject;
+use MailPoet\Automation\Engine\Integration\SubjectTransformer;
 use MailPoet\Automation\Engine\Integration\Trigger;
 
 class Registry {
@@ -15,6 +16,9 @@ class Registry {
 
   /** @var array<string, Subject<Payload>> */
   private $subjects = [];
+
+  /** @var SubjectTransformer[] */
+  private $subjectTransformer = [];
 
   /** @var array<string, Trigger> */
   private $triggers = [];
@@ -53,6 +57,14 @@ class Registry {
   /** @return array<string, Subject<Payload>> */
   public function getSubjects(): array {
     return $this->subjects;
+  }
+
+  public function addSubjectTransformer(SubjectTransformer $transformer): void {
+    $this->subjectTransformer[] = $transformer;
+  }
+
+  public function getSubjectTransformer(): array {
+    return $this->subjectTransformer;
   }
 
   public function addStep(Step $step): void {
