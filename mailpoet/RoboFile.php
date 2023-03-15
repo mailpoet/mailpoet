@@ -480,6 +480,7 @@ class RoboFile extends \Robo\Tasks {
       'vendor/composer',
       'vendor/mtdowling',
       'vendor-prefixed/',
+      'vendor-prefixed/soundasleep',
       'mailpoet.php',
     ]);
     // The list of files and folders to exclude is coming from build.sh
