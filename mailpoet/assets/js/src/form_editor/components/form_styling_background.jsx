@@ -33,8 +33,6 @@ function FormStylingBackground({ children }) {
     borderStyle = 'solid';
   }
 
-  let fontNum = '';
-  if (fontSize) fontNum = Number(fontSize);
   let radius;
   if (borderRadius) radius = Number(borderRadius);
   let padding;
@@ -47,7 +45,9 @@ function FormStylingBackground({ children }) {
 
   const style = {
     color: fontColor,
-    fontSize: fontNum,
+    fontSize: `${fontSize}${
+      Number.isNaN(Number(`${fontSize}` || NaN)) ? '' : 'px'
+    }`,
     fontFamily,
     lineHeight: 1.2,
     borderRadius: radius,
