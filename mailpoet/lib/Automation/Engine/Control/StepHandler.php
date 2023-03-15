@@ -10,6 +10,7 @@ use MailPoet\Automation\Engine\Data\AutomationRunLog;
 use MailPoet\Automation\Engine\Data\Step;
 use MailPoet\Automation\Engine\Data\StepRunArgs;
 use MailPoet\Automation\Engine\Data\StepValidationArgs;
+use MailPoet\Automation\Engine\Data\Subject as SubjectData;
 use MailPoet\Automation\Engine\Data\SubjectEntry;
 use MailPoet\Automation\Engine\Exceptions;
 use MailPoet\Automation\Engine\Exceptions\InvalidStateException;
@@ -55,6 +56,9 @@ class StepHandler {
   /** @var Registry */
   private $registry;
 
+  /** @var SubjectTransformerHandler */
+  private $subjectTransformerHandler;
+
   public function __construct(
     ActionScheduler $actionScheduler,
     ActionStepRunner $actionStepRunner,
@@ -64,7 +68,8 @@ class StepHandler {
     AutomationRunStorage $automationRunStorage,
     AutomationRunLogStorage $automationRunLogStorage,
     AutomationStorage $automationStorage,
-    Registry $registry
+    Registry $registry,
+    SubjectTransformerHandler $subjectTransformerHandler
   ) {
     $this->actionScheduler = $actionScheduler;
     $this->actionStepRunner = $actionStepRunner;
@@ -75,6 +80,7 @@ class StepHandler {
     $this->automationRunLogStorage = $automationRunLogStorage;
     $this->automationStorage = $automationStorage;
     $this->registry = $registry;
+    $this->subjectTransformerHandler = $subjectTransformerHandler;
   }
 
   public function initialize(): void {
@@ -217,6 +223,7 @@ class StepHandler {
     $subjectEntries = [];
     foreach ($requiredSubjectKeys as $key) {
       $subjectData = $subjectDataMap[$key] ?? null;
+      $subjectData = $subjectData ?? $this->transformSubject($key, $automationRun);
       if (!$subjectData) {
         throw Exceptions::subjectDataNotFound($key, $automationRun->getId());
       }
@@ -225,6 +232,13 @@ class StepHandler {
       }
     }
     return $subjectEntries;
+  }
+
+  /**
+   * @return SubjectData[]|null
+   */
+  private function transformSubject(string $target, AutomationRun $automationRun): ?array {
+    return $this->subjectTransformerHandler->transformSubjectData($target, $automationRun);
   }
 
   private function postProcessAutomationRun(int $automationRunId): void {
