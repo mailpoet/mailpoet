@@ -3,18 +3,17 @@
   grid-auto-flow: row;
   grid-row-gap: 20px;
 
-  .components-base-control {
-    margin-bottom: 0;
-  }
+  .components-radio-control {
+    .components-flex {
+      flex-direction: row;
+    }
 
-  .components-base-control__label {
-    display: block;
-  }
-
-  .components-radio-control__option {
-    display: inline-block;
-    margin-right: 1em;
-    width: auto;
+    .components-radio-control__option {
+      display: inline-block;
+      justify-content: flex-start;
+      margin-right: 1em;
+      width: auto;
+    }
   }
 
   .mailpoet-size-settings-control .components-range-control__number {
