@@ -24,6 +24,7 @@ import { createStore, storeName } from './store';
 import { initializeApi } from '../api';
 import { initialize as initializeCoreIntegration } from '../integrations/core';
 import { initialize as initializeMailPoetIntegration } from '../integrations/mailpoet';
+import { initialize as initializeWooCommerceIntegration } from '../integrations/woocommerce';
 import { MailPoet } from '../../mailpoet';
 import { LISTING_NOTICE_PARAMETERS } from '../listing/automation-listing-notices';
 import { registerApiErrorHandler } from './api-error-handler';
@@ -177,6 +178,7 @@ window.addEventListener('DOMContentLoaded', () => {
     initializeApi();
     initializeCoreIntegration();
     initializeMailPoetIntegration();
+    initializeWooCommerceIntegration();
     ReactDOM.render(<Editor />, root);
   }
 });
