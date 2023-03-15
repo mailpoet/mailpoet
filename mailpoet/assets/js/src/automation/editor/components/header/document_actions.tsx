@@ -45,9 +45,8 @@ function DocumentActions({ children }): JSX.Element {
             }}
             renderToggle={({ isOpen, onToggle }) => (
               <>
-                <a
+                <Button
                   className="mailpoet-automation-editor-dropdown-toggle-link"
-                  href="#"
                   onClick={onToggle}
                 >
                   <Text
@@ -72,7 +71,7 @@ function DocumentActions({ children }): JSX.Element {
                     {automationStatus === AutomationStatus.DRAFT &&
                       __('Draft', 'mailpoet')}
                   </Text>
-                </a>
+                </Button>
                 <Button
                   className="edit-site-document-actions__get-info"
                   icon={chevronDown}
