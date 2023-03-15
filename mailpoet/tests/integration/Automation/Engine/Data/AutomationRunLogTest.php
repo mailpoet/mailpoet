@@ -7,20 +7,16 @@ use MailPoet\Automation\Engine\Data\Automation;
 use MailPoet\Automation\Engine\Data\AutomationRun;
 use MailPoet\Automation\Engine\Data\AutomationRunLog;
 use MailPoet\Automation\Engine\Data\Step;
-use MailPoet\Automation\Engine\Data\StepRunArgs;
-use MailPoet\Automation\Engine\Data\StepValidationArgs;
 use MailPoet\Automation\Engine\Hooks;
-use MailPoet\Automation\Engine\Integration\Action;
 use MailPoet\Automation\Engine\Registry;
 use MailPoet\Automation\Engine\Storage\AutomationRunLogStorage;
 use MailPoet\Automation\Engine\Storage\AutomationRunStorage;
 use MailPoet\Automation\Engine\Storage\AutomationStorage;
-use MailPoet\Util\Security;
-use MailPoet\Validator\Builder;
-use MailPoet\Validator\Schema\ObjectSchema;
+use MailPoet\Test\Automation\Stubs\TestAction;
 use MailPoet\WP\Functions as WPFunctions;
 use stdClass;
 
+require_once __DIR__ . '/../../Stubs/TestAction.php';
 //phpcs:disable Squiz.Classes.ClassFileName.NoMatch, Generic.Files.OneClassPerFile.MultipleFound, PSR1.Classes.ClassDeclaration.MultipleClasses
 
 class AutomationRunLogTest extends \MailPoetTest {
@@ -269,44 +265,5 @@ class AutomationRunLogTest extends \MailPoetTest {
     $this->registry->addAction($action);
 
     return $action;
-  }
-}
-
-class TestAction implements Action {
-
-  private $callback;
-  private $key;
-
-  public function __construct() {
-    $this->key = Security::generateRandomString(10);
-  }
-
-  public function setCallback($callback) {
-    $this->callback = $callback;
-  }
-
-  public function getSubjectKeys(): array {
-    return [];
-  }
-
-  public function validate(StepValidationArgs $args): void {
-  }
-
-  public function run(StepRunArgs $args): void {
-    if ($this->callback) {
-      ($this->callback)($args);
-    }
-  }
-
-  public function getKey(): string {
-    return $this->key;
-  }
-
-  public function getName(): string {
-    return 'Test Action';
-  }
-
-  public function getArgsSchema(): ObjectSchema {
-    return Builder::object();
   }
 }
