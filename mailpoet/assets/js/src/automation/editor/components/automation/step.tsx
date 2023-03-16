@@ -92,13 +92,13 @@ export function Step({ step, isSelected }: Props): JSX.Element {
             className="mailpoet-automation-editor-step-title"
           >
             {step.type !== 'trigger'
-              ? stepTypeData.title(step)
+              ? stepTypeData.title(step, 'automation')
               : _x('Trigger', 'noun', 'mailpoet')}
           </label>
           <div className="mailpoet-automation-editor-step-subtitle">
             {step.type !== 'trigger'
-              ? stepTypeData.subtitle(step)
-              : stepTypeData.title(step)}
+              ? stepTypeData.subtitle(step, 'automation')
+              : stepTypeData.title(step, 'automation')}
           </div>
         </div>
         {error && (
