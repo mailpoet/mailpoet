@@ -17,6 +17,7 @@ use MailPoet\Segments\DynamicSegments\Filters\WooCommerceCategory;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceCountry;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceNumberOfOrders;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceProduct;
+use MailPoet\Segments\DynamicSegments\Filters\WooCommerceSingleOrderValue;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceSubscription;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -436,6 +437,43 @@ class FilterDataMapperTest extends \MailPoetUnitTest {
     $this->mapper->map(['filters' => [[
       'segmentType' => DynamicSegmentFilterData::TYPE_WOOCOMMERCE,
       'action' => WooCommerceNumberOfOrders::ACTION_NUMBER_OF_ORDERS,
+    ]]]);
+  }
+
+  public function testItMapsWooCommerceSingleOrderValue(): void {
+    $data = ['filters' => [[
+      'segmentType' => DynamicSegmentFilterData::TYPE_WOOCOMMERCE,
+      'action' => WooCommerceSingleOrderValue::ACTION_SINGLE_ORDER_VALUE,
+      'single_order_value_type' => '=',
+      'single_order_value_amount' => 20,
+      'single_order_value_days' => 7,
+      'some_mess' => 'mess',
+    ]]];
+
+    $filters = $this->mapper->map($data);
+    expect($filters)->array();
+    expect($filters)->count(1);
+    $filter = reset($filters);
+    $this->assertInstanceOf(DynamicSegmentFilterData::class, $filter);
+
+    $expectedResult = reset($data['filters']);
+    unset($expectedResult['some_mess'], $expectedResult['segmentType'], $expectedResult['action']);
+    $expectedResult['connect'] = DynamicSegmentFilterData::CONNECT_TYPE_AND;
+
+    expect($filter)->isInstanceOf(DynamicSegmentFilterData::class);
+    expect($filter->getFilterType())->equals(DynamicSegmentFilterData::TYPE_WOOCOMMERCE);
+    expect($filter->getAction())->equals(WooCommerceSingleOrderValue::ACTION_SINGLE_ORDER_VALUE);
+    expect($filter->getData())->equals($expectedResult);
+  }
+
+  public function testItRaisesExceptionWhenMappingWooCommerceSingleOrderValue(): void {
+    $this->expectException(InvalidFilterException::class);
+    $this->expectExceptionMessage('Missing required fields');
+    $this->expectExceptionCode(InvalidFilterException::MISSING_SINGLE_ORDER_VALUE_FIELDS);
+
+    $this->mapper->map(['filters' => [[
+      'segmentType' => DynamicSegmentFilterData::TYPE_WOOCOMMERCE,
+      'action' => WooCommerceSingleOrderValue::ACTION_SINGLE_ORDER_VALUE,
     ]]]);
   }
 
