@@ -61,6 +61,15 @@ class DynamicSegment extends Segment {
     return $this;
   }
 
+  public function withWooCommerceSingleOrderValueFilter(float $amount = 10, int $days = 1) {
+    $this->filterData['segmentType'] = 'woocommerce';
+    $this->filterData['action'] = 'singleOrderValue';
+    $this->filterData['single_order_value_type'] = '>';
+    $this->filterData['single_order_value_amount'] = $amount;
+    $this->filterData['single_order_value_days'] = $days;
+    return $this;
+  }
+
   public function withWooCommerceCustomerCountryFilter(array $countryCode = ['FR']) {
     $this->filterData['segmentType'] = 'woocommerce';
     $this->filterData['action'] = 'customerInCountry';

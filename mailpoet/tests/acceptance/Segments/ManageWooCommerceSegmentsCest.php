@@ -285,4 +285,75 @@ class ManageWooCommerceSegmentsCest {
     $i->seeInField($totalSpentAmountElement, '4');
     $i->seeInField($totalSpentDaysElement, '20');
   }
+
+  public function createAndEditWooCommerceSingleOrderValueSegment(\AcceptanceTester $i) {
+    $segmentNameField = '[data-automation-id="input-name"]';
+    $segmentDescriptionField = '[data-automation-id="input-description"]';
+    $actionSelectElement = '[data-automation-id="select-segment-action"]';
+    $singleOrderValueTypeElement = '[data-automation-id="select-single-order-value-type"]';
+    $singleOrderValueAmountElement = '[data-automation-id="input-single-order-value-amount"]';
+    $singleOrderValueDaysElement = '[data-automation-id="input-single-order-value-days"]';
+
+    $i->wantTo('Create a new WooCommerce Single Order Value segment');
+    $segmentTitle = 'Segment Single Order Value Test';
+    $segmentDesc = 'Segment description';
+    $i->login();
+    $i->amOnMailpoetPage('Lists');
+    $i->click('[data-automation-id="new-segment"]');
+    $i->fillField($segmentNameField, $segmentTitle);
+    $i->fillField(['name' => 'description'], $segmentDesc);
+    $i->selectOptionInReactSelect('single order value', $actionSelectElement);
+    $i->waitForElement($singleOrderValueTypeElement);
+    $i->selectOption($singleOrderValueTypeElement, '>');
+    $i->fillField($singleOrderValueAmountElement, 2);
+    $i->fillField($singleOrderValueDaysElement, 10);
+
+    $i->waitForElementClickable('button[type="submit"]');
+    $i->click('Save');
+    $i->waitForElement('[data-automation-id="dynamic-segments-tab"]');
+    $i->waitForText($segmentTitle);
+    $i->seeNoJSErrors();
+
+    $i->wantTo('Open edit form and check that all values were saved correctly');
+    $i->clickItemRowActionByItemName($segmentTitle, 'Edit');
+    $i->waitForElement($singleOrderValueTypeElement);
+    $i->seeInField($segmentNameField, $segmentTitle);
+    $i->seeInField($segmentDescriptionField, $segmentDesc);
+    $i->see('single order value', $actionSelectElement);
+    $i->see('more than', $singleOrderValueTypeElement);
+    $i->seeInField($singleOrderValueAmountElement, '2');
+    $i->seeInField($singleOrderValueDaysElement, '10');
+
+    $i->wantTo('Edit segment and save');
+    $editedTitle = 'Segment Woo Single Order Value Test Edited';
+    $editedDesc = 'Segment description Edited';
+    $i->clearFormField($singleOrderValueAmountElement);
+    $i->clearFormField($singleOrderValueDaysElement);
+    $i->clearFormField($segmentNameField);
+    $i->clearFormField($segmentDescriptionField);
+    $i->waitForElementVisible('input[value=""]' . $segmentNameField);
+    $i->waitForElementVisible($segmentDescriptionField . ':empty');
+    $i->fillField($segmentNameField, $editedTitle);
+    $i->fillField($segmentDescriptionField, $editedDesc);
+    $i->waitForElementVisible('input[value=""]' . $singleOrderValueAmountElement);
+    $i->waitForElementVisible('input[value=""]' . $singleOrderValueDaysElement);
+    $i->selectOption($singleOrderValueTypeElement, '<');
+    $i->fillField($singleOrderValueAmountElement, 4);
+    $i->fillField($singleOrderValueDaysElement, 20);
+    $i->waitForElementClickable('button[type="submit"]');
+    $i->click('Save');
+    $i->waitForElement('[data-automation-id="dynamic-segments-tab"]');
+    $i->waitForText($editedTitle);
+    $i->seeNoJSErrors();
+
+    $i->wantTo('Open edit form and check that all values were saved correctly');
+    $i->clickItemRowActionByItemName($editedTitle, 'Edit');
+    $i->waitForElement($singleOrderValueTypeElement);
+    $i->seeInField($segmentNameField, $editedTitle);
+    $i->seeInField($segmentDescriptionField, $editedDesc);
+    $i->see('single order value', $actionSelectElement);
+    $i->see('less than', $singleOrderValueTypeElement);
+    $i->seeInField($singleOrderValueAmountElement, '4');
+    $i->seeInField($singleOrderValueDaysElement, '20');
+  }
 }

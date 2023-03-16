@@ -14,6 +14,7 @@ class WooCommerceDynamicSegmentsCest {
   const CATEGORY_SEGMENT = 'Purchase in category segment';
   const PRODUCT_SEGMENT = 'Purchased product segment';
   const NUMBER_OF_ORDERS_SEGMENT = 'Number of orders segment';
+  const SINGLE_ORDER_VALUE_SEGMENT = 'Single order value segment';
   const TOTAL_SPENT_SEGMENT = 'Total spent segment';
   const CUSTOMER_IN_COUNTRY = 'Customer in country segment';
 
@@ -37,6 +38,9 @@ class WooCommerceDynamicSegmentsCest {
 
   /** @var SegmentEntity */
   private $numberOfOrdersSegment;
+
+  /** @var SegmentEntity */
+  private $singleOrderValueSegment;
 
   /** @var SegmentEntity */
   private $totalSpentSegment;
@@ -68,6 +72,10 @@ class WooCommerceDynamicSegmentsCest {
     $this->numberOfOrdersSegment = $segmentFactory
       ->withName(self::NUMBER_OF_ORDERS_SEGMENT)
       ->withWooCommerceNumberOfOrdersFilter()
+      ->create();
+    $this->singleOrderValueSegment = $segmentFactory
+      ->withName(self::SINGLE_ORDER_VALUE_SEGMENT)
+      ->withWooCommerceSingleOrderValueFilter()
       ->create();
     $this->totalSpentSegment = $segmentFactory
       ->withName(self::TOTAL_SPENT_SEGMENT)
@@ -165,6 +173,33 @@ class WooCommerceDynamicSegmentsCest {
     $i->see('1', $numberOfOrdersSegmentRow . " [data-colname='Number of subscribers']");
     $i->clickItemRowActionByItemName(self::NUMBER_OF_ORDERS_SEGMENT, 'View Subscribers');
     $i->waitForText($customer1Email);
+  }
+
+  public function checkThatCustomersAreAddedToSingleOrderValueSegment(\AcceptanceTester $i) {
+    $i->wantTo('Check that customers are added to the single order value segment when the value of at least one order they placed matches what is expected');
+    $customerEmail1 = 'customer_1@example.com';
+    $anyProduct = $this->productInCategory;
+    $i->orderProduct($anyProduct, $customerEmail1);
+
+    $customerEmail2 = 'customer_2@example.com';
+    $anotherProduct = $this->productFactory->withPrice(20)->create();
+    $i->orderProduct($anotherProduct, $customerEmail2);
+
+    $i->login();
+
+    // run action scheduler to sync customer and order data to lookup tables
+    $i->wait(2);
+    $i->cli(['action-scheduler', 'run', '--hooks=wc-admin_import_orders,wc-admin_import_customers --force']);
+
+    $i->wantTo('Check that there is one subscriber in the single order value segment');
+    $i->amOnMailpoetPage('Lists');
+    $i->click('[data-automation-id="dynamic-segments-tab"]');
+    $i->waitForText(self::SINGLE_ORDER_VALUE_SEGMENT);
+    $singleOrderValueSegmentRow = "[data-automation-id='listing_item_{$this->singleOrderValueSegment->getId()}']";
+    $i->see('1', $singleOrderValueSegmentRow . " [data-colname='Number of subscribers']");
+    $i->clickItemRowActionByItemName(self::SINGLE_ORDER_VALUE_SEGMENT, 'View Subscribers');
+    $i->waitForText($customerEmail2);
+    $i->dontSee($customerEmail1);
   }
 
   public function checkThatCustomersAreAddedToTotalSpentSegment(\AcceptanceTester $i) {
