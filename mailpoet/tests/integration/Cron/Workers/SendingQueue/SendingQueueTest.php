@@ -55,6 +55,9 @@ use MailPoet\Subscribers\LinkTokens;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Subscription\SubscriptionUrlFactory;
 use MailPoet\Tasks\Sending as SendingTask;
+use MailPoet\Test\DataFactories\Segment as SegmentFactory;
+use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
+use MailPoet\Util\Security;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 
@@ -1300,6 +1303,25 @@ class SendingQueueTest extends \MailPoetTest {
     }
   }
 
+  public function testSendingGetsStuckWhenSubscribersAreUnsubscribed() {
+    $newsletter = $this->createNewsletter(NewsletterEntity::TYPE_STANDARD, 'Subject With Deleted', NewsletterEntity::STATUS_SENDING);
+    [$segment, $subscriber] = $this->createListWithSubscriber();
+    $this->addSegmentToNewsletter($newsletter, $segment);
+    $queue = $this->createQueueWithTaskAndSegment($newsletter, null, ['html' => 'Hello', 'text' => 'Hello']);
+    $subscriber->setStatus(SubscriberEntity::STATUS_UNSUBSCRIBED);
+    $this->entityManager->persist($subscriber);
+    $this->entityManager->flush();
+
+    $sendingQueueWorker = $this->getSendingQueueWorker();
+    $sendingQueueWorker->process();
+
+    $task = $queue->getTask();
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
+
+    expect($task->getStatus())->equals(ScheduledTaskEntity::STATUS_INVALID);
+    expect($newsletter->getStatus())->equals(NewsletterEntity::STATUS_SENDING);
+  }
+
   public function _after() {
     $this->truncateEntity(SubscriberEntity::class);
     $this->truncateEntity(SubscriberSegmentEntity::class);
@@ -1388,5 +1410,22 @@ class SendingQueueTest extends \MailPoetTest {
       $this->subscribersRepository,
       $this->sendingQueuesRepository
     );
+  }
+
+  private function createListWithSubscriber(): array {
+    $segmentFactory = new SegmentFactory();
+    $segmentName = 'List ' . Security::generateRandomString();
+    $segment = $segmentFactory->withName($segmentName)->create();
+
+    $subscriberFactory = new SubscriberFactory();
+    $subscriberEmail = Security::generateRandomString() . '@domain.com';
+    $subscriberFirstName = 'John';
+    $subscriberLastName = 'Doe';
+    $subscriber = $subscriberFactory->withSegments([$segment])
+      ->withEmail($subscriberEmail)
+      ->withFirstName($subscriberFirstName)
+      ->withLastName($subscriberLastName)
+      ->create();
+    return [$segment, $subscriber];
   }
 }
