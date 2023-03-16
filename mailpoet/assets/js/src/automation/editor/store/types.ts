@@ -26,12 +26,17 @@ export type Context = Record<string, unknown>;
 
 export type StepGroup = 'actions' | 'logical' | 'triggers';
 
+export type StepRenderContext = 'inserter' | 'automation' | 'sidebar' | 'other';
+
 export type StepType = {
   key: string;
   group: StepGroup;
-  title: (step?: Step) => JSX.Element | string;
-  description: (step: Step) => JSX.Element | string;
-  subtitle: (step: Step) => JSX.Element | string;
+  title: (
+    step: Step | null,
+    context: StepRenderContext,
+  ) => JSX.Element | string;
+  description: (step: Step, context: StepRenderContext) => JSX.Element | string;
+  subtitle: (step: Step, context: StepRenderContext) => JSX.Element | string;
   keywords: string[];
   icon: ComponentType;
   edit: ComponentType;
