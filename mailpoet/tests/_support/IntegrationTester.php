@@ -57,6 +57,9 @@ class IntegrationTester extends Actor {
   /** @var Connection */
   private $connection;
 
+  /** @var bool - whether WooCommerce data needs to be cleaned up after a test */
+  private $isWooCleanupRequired;
+
   use _generated\IntegrationTesterActions;
 
   public function __construct(
@@ -66,6 +69,7 @@ class IntegrationTester extends Actor {
     $this->diContainer = ContainerWrapper::getInstance(WP_DEBUG);
     $this->entityManager = $this->diContainer->get(EntityManager::class);
     $this->connection = $this->diContainer->get(Connection::class);
+    $this->isWooCleanupRequired = false;
   }
 
   public function createWordPressUser(string $email, string $role) {
@@ -101,7 +105,8 @@ class IntegrationTester extends Actor {
     $this->createdUserEmails = [];
   }
 
-  public function createCustomer(string $email, string $role): int {
+  public function createCustomer(string $email, string $role = 'customer'): int {
+    $this->isWooCleanupRequired = true;
     global $wpdb;
     $userId = $this->createWordPressUser($email, $role);
     $this->connection->executeQuery("
@@ -112,6 +117,7 @@ class IntegrationTester extends Actor {
   }
 
   public function createWooCommerceOrder(array $data = []): \WC_Order {
+    $this->isWooCleanupRequired = true;
     $helper = ContainerWrapper::getInstance()->get(Helper::class);
     $order = $helper->wcCreateOrder([]);
 
@@ -253,7 +259,16 @@ class IntegrationTester extends Actor {
   }
 
   public function deleteTestData(): void {
+    global $wpdb;
     $this->deleteTestWooOrders();
     $this->deleteCreatedWordpressUsers();
+    if ($this->isWooCleanupRequired) {
+      $this->connection->executeQuery("TRUNCATE TABLE {$wpdb->prefix}wc_customer_lookup");
+      $this->connection->executeQuery("TRUNCATE TABLE {$wpdb->prefix}wc_order_stats");
+      $this->connection->executeQuery("TRUNCATE TABLE {$wpdb->prefix}wc_order_product_lookup");
+      $this->connection->executeQuery("TRUNCATE TABLE {$wpdb->prefix}woocommerce_order_itemmeta");
+      $this->connection->executeQuery("TRUNCATE TABLE {$wpdb->prefix}woocommerce_order_items");
+      $this->isWooCleanupRequired = false;
+    }
   }
 }

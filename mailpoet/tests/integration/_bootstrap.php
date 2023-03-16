@@ -191,6 +191,11 @@ abstract class MailPoetTest extends \Codeception\TestCase\Test { // phpcs:ignore
     $cache->invalidateItems(TransientCache::SUBSCRIBERS_GLOBAL_STATUS_STATISTICS_COUNT_KEY);
   }
 
+  public function _after() {
+    parent::_after();
+    $this->tester->cleanUpTestData();
+  }
+
   protected function backupGlobals(): void {
     self::$savedGlobals = [];
     foreach (self::BACKUP_GLOBALS_NAMES as $globalName) {

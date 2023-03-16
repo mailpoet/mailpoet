@@ -136,33 +136,14 @@ class WooCommerceProductTest extends \MailPoetTest {
   }
 
   private function cleanUp(): void {
-    global $wpdb;
     $this->truncateEntity(SegmentEntity::class);
     $this->truncateEntity(SubscriberEntity::class);
-    $emails = [
-      'customer1@example.com',
-      'customer2@example.com',
-      'customer-on-hold@example.com',
-      'customer-pending-payment@example.com',
-    ];
-    foreach ($emails as $email) {
-      $this->tester->deleteWordPressUser($email);
-    }
 
-    if (!empty($this->orders)) {
-      foreach ($this->orders as $orderId) {
-        wp_delete_post($orderId);
-      }
-    }
 
-    if (!empty($this->products)) {
-      foreach ($this->products as $productId) {
+    if (!empty($this->productIds)) {
+      foreach ($this->productIds as $productId) {
         wp_delete_post($productId);
       }
     }
-
-    $this->connection->executeQuery("TRUNCATE TABLE {$wpdb->prefix}wc_customer_lookup");
-    $this->connection->executeQuery("TRUNCATE TABLE {$wpdb->prefix}wc_order_stats");
-    $this->connection->executeQuery("TRUNCATE TABLE {$wpdb->prefix}wc_order_product_lookup");
   }
 }

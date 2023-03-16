@@ -17,16 +17,14 @@ class WooCommercePurchaseDateTest extends \MailPoetTest {
   /** @var WooCommercePurchaseDate */
   private $wooCommercePurchaseDate;
 
-  private $createdCustomerEmails = [];
-
   public function _before(): void {
     parent::_before();
     $this->wooCommercePurchaseDate = $this->diContainer->get(WooCommercePurchaseDate::class);
   }
 
   public function testGetSubscribersWithOrderBeforeDate(): void {
-    $customerId1 = $this->createCustomer('c1@example.com');
-    $customerId2 = $this->createCustomer('c2@example.com');
+    $customerId1 = $this->tester->createCustomer('c1@example.com');
+    $customerId2 = $this->tester->createCustomer('c2@example.com');
     $this->createOrder($customerId1, new Carbon('2023-02-20'));
     $this->createOrder($customerId2, new Carbon('2023-02-22'));
     $emails = $this->getSubscriberEmailsMatchingFilter('before', '2023-02-21');
@@ -35,9 +33,9 @@ class WooCommercePurchaseDateTest extends \MailPoetTest {
   }
 
   public function testGetSubscribersWithOrderAfterDate(): void {
-    $customerId1 = $this->createCustomer('c1@example.com');
-    $customerId2 = $this->createCustomer('c2@example.com');
-    $customerId3 = $this->createCustomer('c3@example.com');
+    $customerId1 = $this->tester->createCustomer('c1@example.com');
+    $customerId2 = $this->tester->createCustomer('c2@example.com');
+    $customerId3 = $this->tester->createCustomer('c3@example.com');
     $this->createOrder($customerId1, new Carbon('2023-02-02'));
     $this->createOrder($customerId2, new Carbon('2023-02-01'));
     $this->createOrder($customerId3, new Carbon('1993-01-01'));
@@ -47,9 +45,9 @@ class WooCommercePurchaseDateTest extends \MailPoetTest {
   }
 
   public function testInTheLast(): void {
-    $customerId1 = $this->createCustomer('c1@example.com');
-    $customerId2 = $this->createCustomer('c2@example.com');
-    $customerId3 = $this->createCustomer('c3@example.com');
+    $customerId1 = $this->tester->createCustomer('c1@example.com');
+    $customerId2 = $this->tester->createCustomer('c2@example.com');
+    $customerId3 = $this->tester->createCustomer('c3@example.com');
     $this->createOrder($customerId1, Carbon::now()->subDays(3));
     $this->createOrder($customerId2, Carbon::now()->subDays(4));
     $this->createOrder($customerId3, Carbon::now()->subDays(5));
@@ -59,9 +57,9 @@ class WooCommercePurchaseDateTest extends \MailPoetTest {
   }
 
   public function testNotInTheLast(): void {
-    $customerId1 = $this->createCustomer('c1@example.com');
-    $customerId2 = $this->createCustomer('c2@example.com');
-    $customerId3 = $this->createCustomer('c3@example.com');
+    $customerId1 = $this->tester->createCustomer('c1@example.com');
+    $customerId2 = $this->tester->createCustomer('c2@example.com');
+    $customerId3 = $this->tester->createCustomer('c3@example.com');
     $this->createOrder($customerId1, Carbon::now()->subDays(3));
     $this->createOrder($customerId2, Carbon::now()->subDays(4));
     $this->createOrder($customerId3, Carbon::now()->subDays(5));
@@ -71,8 +69,8 @@ class WooCommercePurchaseDateTest extends \MailPoetTest {
   }
 
   public function testNotInTheLastIncludesNonCustomers(): void {
-    $this->createCustomer('c1@example.com');
-    $customerId2 = $this->createCustomer('c2@example.com');
+    $this->tester->createCustomer('c1@example.com');
+    $customerId2 = $this->tester->createCustomer('c2@example.com');
     $subscriber = (new Subscriber())->create();
     $this->createOrder($customerId2, (new Carbon())->subDays(3));
     $emails = $this->getSubscriberEmailsMatchingFilter('notInTheLast', '4');
@@ -80,9 +78,9 @@ class WooCommercePurchaseDateTest extends \MailPoetTest {
   }
 
   public function testOnDate(): void {
-    $customerId1 = $this->createCustomer('c1@example.com');
-    $customerId2 = $this->createCustomer('c2@example.com');
-    $customerId3 = $this->createCustomer('c3@example.com');
+    $customerId1 = $this->tester->createCustomer('c1@example.com');
+    $customerId2 = $this->tester->createCustomer('c2@example.com');
+    $customerId3 = $this->tester->createCustomer('c3@example.com');
     $this->createOrder($customerId1, new Carbon('2023-01-01'));
     $this->createOrder($customerId2, new Carbon('2023-01-02'));
     $this->createOrder($customerId3, new Carbon('2023-01-03'));
@@ -92,9 +90,9 @@ class WooCommercePurchaseDateTest extends \MailPoetTest {
   }
 
   public function testNotOn(): void {
-    $customerId1 = $this->createCustomer('c1@example.com');
-    $customerId2 = $this->createCustomer('c2@example.com');
-    $customerId3 = $this->createCustomer('c3@example.com');
+    $customerId1 = $this->tester->createCustomer('c1@example.com');
+    $customerId2 = $this->tester->createCustomer('c2@example.com');
+    $customerId3 = $this->tester->createCustomer('c3@example.com');
     $this->createOrder($customerId1, new Carbon('2023-01-01'));
     $this->createOrder($customerId2, new Carbon('2023-01-02'));
     $this->createOrder($customerId3, new Carbon('2023-01-03'));
@@ -104,8 +102,8 @@ class WooCommercePurchaseDateTest extends \MailPoetTest {
   }
 
   public function testNotOnReturnsNonCustomersToo() {
-    $this->createCustomer('c1@example.com');
-    $customerId2 = $this->createCustomer('c2@example.com');
+    $this->tester->createCustomer('c1@example.com');
+    $customerId2 = $this->tester->createCustomer('c2@example.com');
     $subscriber = (new Subscriber())->create();
     $this->createOrder($customerId2, new Carbon('2023-02-22'));
     $emails = $this->getSubscriberEmailsMatchingFilter('notOn', '2023-02-22');
@@ -117,11 +115,11 @@ class WooCommercePurchaseDateTest extends \MailPoetTest {
     $invalidstatuses = ['wc-pending', 'wc-refunded', 'wc-on-hold', 'wc-cancelled', 'wc-failed', 'any-custom-status'];
     $date = '2023-02-24';
     foreach ($validStatuses as $validStatus) {
-      $customerId = $this->createCustomer("$validStatus@example.com");
+      $customerId = $this->tester->createCustomer("$validStatus@example.com");
       $this->createOrder($customerId, new Carbon($date), $validStatus);
     }
     foreach ($invalidstatuses as $invalidStatus) {
-      $customerId = $this->createCustomer("$invalidStatus@example.com");
+      $customerId = $this->tester->createCustomer("$invalidStatus@example.com");
       $this->createOrder($customerId, new Carbon($date), $invalidStatus);
     }
     $emails = $this->getSubscriberEmailsMatchingFilter('on', $date);
@@ -141,17 +139,6 @@ class WooCommercePurchaseDateTest extends \MailPoetTest {
     return $this->tester->getSubscriberEmailsMatchingDynamicFilter($data, $this->wooCommercePurchaseDate);
   }
 
-  private function createCustomer(string $email): int {
-    global $wpdb;
-    $userId = $this->tester->createWordPressUser($email, 'customer');
-    $this->connection->executeQuery("
-      INSERT INTO {$wpdb->prefix}wc_customer_lookup (customer_id, user_id, first_name, last_name, email)
-      VALUES ({$userId}, {$userId}, 'First Name', 'Last Name', '{$email}')
-    ");
-    $this->createdCustomerEmails[] = $email;
-    return $userId;
-  }
-
   private function createOrder(int $customerId, Carbon $createdAt, string $status = 'wc-completed'): int {
     $order = $this->tester->createWooCommerceOrder();
     $order->set_customer_id($customerId);
@@ -169,21 +156,9 @@ class WooCommercePurchaseDateTest extends \MailPoetTest {
   }
 
   private function cleanUp(): void {
-    global $wpdb;
     $this->truncateEntity(SubscriberEntity::class);
     $this->truncateEntity(SegmentEntity::class);
     $this->truncateEntity(DynamicSegmentFilterEntity::class);
     $this->truncateEntity(SubscriberEntity::class);
-
-    foreach ($this->createdCustomerEmails as $email) {
-      $this->tester->deleteWordPressUser($email);
-    }
-
-    $this->tester->deleteTestWooOrders();
-
-    $this->createdCustomerEmails = [];
-
-    $this->connection->executeQuery("TRUNCATE TABLE {$wpdb->prefix}wc_customer_lookup");
-    $this->connection->executeQuery("TRUNCATE TABLE {$wpdb->prefix}wc_order_stats");
   }
 }

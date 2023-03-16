@@ -16,9 +16,6 @@ class WooCommerceNumberOfOrdersTest extends \MailPoetTest {
   /** @var WooCommerceNumberOfOrders */
   private $numberOfOrdersFilter;
 
-  /** @var array */
-  private $orders;
-
   /**
    * @var SubscriberFactory
    */
@@ -29,14 +26,14 @@ class WooCommerceNumberOfOrdersTest extends \MailPoetTest {
     $this->numberOfOrdersFilter = $this->diContainer->get(WooCommerceNumberOfOrders::class);
     $this->cleanUp();
 
-    $customerId1 = $this->tester->createCustomer('customer1@example.com', 'customer');
-    $customerId2 = $this->tester->createCustomer('customer2@example.com', 'customer');
-    $customerId3 = $this->tester->createCustomer('customer3@example.com', 'customer');
+    $customerId1 = $this->tester->createCustomer('customer1@example.com');
+    $customerId2 = $this->tester->createCustomer('customer2@example.com');
+    $customerId3 = $this->tester->createCustomer('customer3@example.com');
 
-    $this->orders[] = $this->createOrder($customerId1, Carbon::now()->subDays(3));
-    $this->orders[] = $this->createOrder($customerId2, Carbon::now());
-    $this->orders[] = $this->createOrder($customerId2, Carbon::now());
-    $this->orders[] = $this->createOrder($customerId3, Carbon::now());
+    $this->createOrder($customerId1, Carbon::now()->subDays(3));
+    $this->createOrder($customerId2, Carbon::now());
+    $this->createOrder($customerId2, Carbon::now());
+    $this->createOrder($customerId3, Carbon::now());
   }
 
   public function testItGetsCustomersThatPlacedTwoOrdersInTheLastDay(): void {
@@ -97,16 +94,7 @@ class WooCommerceNumberOfOrdersTest extends \MailPoetTest {
   }
 
   private function cleanUp(): void {
-    global $wpdb;
     $this->truncateEntity(SegmentEntity::class);
     $this->truncateEntity(SubscriberEntity::class);
-
-    if (!empty($this->orders)) {
-      foreach ($this->orders as $orderId) {
-        wp_delete_post($orderId);
-      }
-    }
-    $this->connection->executeQuery("TRUNCATE TABLE {$wpdb->prefix}wc_customer_lookup");
-    $this->connection->executeQuery("TRUNCATE TABLE {$wpdb->prefix}wc_order_stats");
   }
 }

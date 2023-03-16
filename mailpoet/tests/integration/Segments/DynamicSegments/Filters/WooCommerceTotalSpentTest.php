@@ -5,7 +5,6 @@ namespace MailPoet\Segments\DynamicSegments\Filters;
 use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
-use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 
 /**
@@ -15,25 +14,17 @@ class WooCommerceTotalSpentTest extends \MailPoetTest {
   /** @var WooCommerceTotalSpent */
   private $totalSpentFilter;
 
-  /** @var WPFunctions */
-  private $wp;
-
-  /** @var int[] */
-  private $orders;
-
   public function _before(): void {
     $this->totalSpentFilter = $this->diContainer->get(WooCommerceTotalSpent::class);
-    $this->wp = $this->diContainer->get(WPFunctions::class);
-    $this->cleanUp();
 
     $customerId1 = $this->tester->createCustomer('customer1@example.com', 'customer');
     $customerId2 = $this->tester->createCustomer('customer2@example.com', 'customer');
     $customerId3 = $this->tester->createCustomer('customer3@example.com', 'customer');
 
-    $this->orders[] = $this->createOrder($customerId1, Carbon::now()->subDays(3), 10);
-    $this->orders[] = $this->createOrder($customerId1, Carbon::now(), 5);
-    $this->orders[] = $this->createOrder($customerId2, Carbon::now(), 15);
-    $this->orders[] = $this->createOrder($customerId3, Carbon::now(), 25);
+    $this->createOrder($customerId1, Carbon::now()->subDays(3), 10);
+    $this->createOrder($customerId1, Carbon::now(), 5);
+    $this->createOrder($customerId2, Carbon::now(), 15);
+    $this->createOrder($customerId3, Carbon::now(), 25);
   }
 
   public function testItGetsCustomersThatSpentFifteenInTheLastDay(): void {
@@ -97,21 +88,7 @@ class WooCommerceTotalSpentTest extends \MailPoetTest {
   }
 
   private function cleanUp(): void {
-    global $wpdb;
     $this->truncateEntity(SegmentEntity::class);
     $this->truncateEntity(SubscriberEntity::class);
-    $emails = ['customer1@example.com', 'customer2@example.com', 'customer3@example.com'];
-    foreach ($emails as $email) {
-      $this->tester->deleteWordPressUser($email);
-    }
-
-    if (is_array($this->orders)) {
-      foreach ($this->orders as $orderId) {
-        $this->wp->wpDeletePost($orderId);
-      }
-    }
-
-    $this->connection->executeQuery("TRUNCATE TABLE {$wpdb->prefix}wc_customer_lookup");
-    $this->connection->executeQuery("TRUNCATE TABLE {$wpdb->prefix}wc_order_stats");
   }
 }

@@ -122,19 +122,11 @@ class WooCommerceSubscriptionTest extends \MailPoetTest {
   }
 
   public function cleanUp(): void {
-    global $wpdb;
-    foreach (self::SUBSCRIBER_EMAILS as $email) {
-      $this->tester->deleteWordPressUser($email);
-    }
-
     foreach ($this->products as $productId) {
       wp_delete_post($productId);
     }
     foreach ($this->subscriptions as $productId) {
       wp_delete_post($productId);
     }
-
-    $this->connection->executeQuery("TRUNCATE {$wpdb->prefix}woocommerce_order_itemmeta");
-    $this->connection->executeQuery("TRUNCATE {$wpdb->prefix}woocommerce_order_items");
   }
 }

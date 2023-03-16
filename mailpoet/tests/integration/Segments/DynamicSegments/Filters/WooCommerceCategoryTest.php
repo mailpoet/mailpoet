@@ -24,9 +24,6 @@ class WooCommerceCategoryTest extends \MailPoetTest {
   private $productIds;
 
   /** @var int[] */
-  private $orderIds;
-
-  /** @var int[] */
   private $categoryIds;
 
   public function _before(): void {
@@ -47,14 +44,14 @@ class WooCommerceCategoryTest extends \MailPoetTest {
     $this->productIds[] = $this->createProduct('testProduct1', [$this->categoryIds[0]]);
     $this->productIds[] = $this->createProduct('testProduct2', [$this->categoryIds[1]]);
 
-    $this->orderIds[] = $this->createOrder($customerId1, Carbon::now());
-    $this->addToOrder(1, $this->orderIds[0], $this->productIds[0], $customerId1);
-    $this->orderIds[] = $this->createOrder($customerId2, Carbon::now());
-    $this->addToOrder(2, $this->orderIds[1], $this->productIds[1], $customerId2);
-    $this->orderIds[] = $this->createOrder($customerId3OnHold, Carbon::now(), 'wc-on-hold');
-    $this->addToOrder(3, $this->orderIds[2], $this->productIds[1], $customerId3OnHold);
-    $this->orderIds[] = $this->createOrder($customerId4PendingPayment, Carbon::now(), 'wc-pending');
-    $this->addToOrder(4, $this->orderIds[3], $this->productIds[1], $customerId4PendingPayment);
+    $orderId1 = $this->createOrder($customerId1, Carbon::now());
+    $this->addToOrder(1, $orderId1, $this->productIds[0], $customerId1);
+    $orderId2 = $this->createOrder($customerId2, Carbon::now());
+    $this->addToOrder(2, $orderId2, $this->productIds[1], $customerId2);
+    $orderId3 = $this->createOrder($customerId3OnHold, Carbon::now(), 'wc-on-hold');
+    $this->addToOrder(3, $orderId3, $this->productIds[1], $customerId3OnHold);
+    $orderId4 = $this->createOrder($customerId4PendingPayment, Carbon::now(), 'wc-pending');
+    $this->addToOrder(4, $orderId4, $this->productIds[1], $customerId4PendingPayment);
   }
 
   public function testItGetsSubscribersThatPurchasedProductsInAnyCategory(): void {
@@ -151,24 +148,8 @@ class WooCommerceCategoryTest extends \MailPoetTest {
   }
 
   private function cleanUp(): void {
-    global $wpdb;
     $this->truncateEntity(SegmentEntity::class);
     $this->truncateEntity(SubscriberEntity::class);
-    $emails = [
-      'customer1@example.com',
-      'customer2@example.com',
-      'customer-on-hold@example.com',
-      'customer-pending-payment@example.com',
-    ];
-    foreach ($emails as $email) {
-      $this->tester->deleteWordPressUser($email);
-    }
-
-    if (!empty($this->orders)) {
-      foreach ($this->orders as $orderId) {
-        wp_delete_post($orderId);
-      }
-    }
 
     if (!empty($this->products)) {
       foreach ($this->products as $productId) {
@@ -181,9 +162,5 @@ class WooCommerceCategoryTest extends \MailPoetTest {
         wp_delete_category($categoryId);
       }
     }
-
-    $this->connection->executeQuery("TRUNCATE TABLE {$wpdb->prefix}wc_customer_lookup");
-    $this->connection->executeQuery("TRUNCATE TABLE {$wpdb->prefix}wc_order_stats");
-    $this->connection->executeQuery("TRUNCATE TABLE {$wpdb->prefix}wc_order_product_lookup");
   }
 }

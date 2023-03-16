@@ -18,8 +18,6 @@ class WooCommerceCountryTest extends \MailPoetTest {
   public function _before(): void {
     $this->wooCommerceCountryFilter = $this->diContainer->get(WooCommerceCountry::class);
 
-    $this->cleanup();
-
     $userId1 = $this->tester->createWordPressUser('customer1@example.com', 'customer');
     $userId2 = $this->tester->createWordPressUser('customer2@example.com', 'customer');
     $userId3 = $this->tester->createWordPressUser('customer3@example.com', 'customer');
@@ -29,7 +27,6 @@ class WooCommerceCountryTest extends \MailPoetTest {
     $this->createCustomerLookupData(['user_id' => $userId2, 'email' => 'customer2@example.com', 'country' => 'US']);
     $this->createCustomerLookupData(['user_id' => $userId3, 'email' => 'customer3@example.com', 'country' => 'US']);
     $this->createCustomerLookupData(['user_id' => $userId4, 'email' => 'customer4@example.com', 'country' => 'ES']);
-
   }
 
   public function testItAppliesFilter(): void {
@@ -79,15 +76,6 @@ class WooCommerceCountryTest extends \MailPoetTest {
     OrdersStatsDataStore::sync_order($order->get_id());
   }
 
-  private function cleanUpLookUpTables(): void {
-    global $wpdb;
-    $connection = $this->entityManager->getConnection();
-    $lookupTable = $wpdb->prefix . 'wc_customer_lookup';
-    $orderLookupTable = $wpdb->prefix . 'wc_order_stats';
-    $connection->executeStatement("TRUNCATE $lookupTable");
-    $connection->executeStatement("TRUNCATE $orderLookupTable");
-  }
-
   public function _after(): void {
     $this->cleanUp();
   }
@@ -95,12 +83,5 @@ class WooCommerceCountryTest extends \MailPoetTest {
   private function cleanup(): void {
     $this->truncateEntity(SegmentEntity::class);
     $this->truncateEntity(SubscriberEntity::class);
-
-    $emails = ['customer1@example.com', 'customer2@example.com', 'customer3@example.com', 'customer4@example.com'];
-    foreach ($emails as $email) {
-      $this->tester->deleteWordPressUser($email);
-    }
-    $this->tester->deleteTestWooOrders();
-    $this->cleanUpLookUpTables();
   }
 }
