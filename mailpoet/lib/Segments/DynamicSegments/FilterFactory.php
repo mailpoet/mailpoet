@@ -20,6 +20,7 @@ use MailPoet\Segments\DynamicSegments\Filters\WooCommerceCountry;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceMembership;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceNumberOfOrders;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceProduct;
+use MailPoet\Segments\DynamicSegments\Filters\WooCommerceSingleOrderValue;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceSubscription;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceTotalSpent;
 
@@ -41,6 +42,9 @@ class FilterFactory {
 
   /** @var WooCommerceNumberOfOrders */
   private $wooCommerceNumberOfOrders;
+
+  /** @var WooCommerceSingleOrderValue */
+  private $wooCommerceSingleOrderValue;
 
   /** @var WooCommerceTotalSpent */
   private $wooCommerceTotalSpent;
@@ -88,7 +92,8 @@ class FilterFactory {
     SubscriberSubscribedDate $subscriberSubscribedDate,
     SubscriberScore $subscriberScore,
     SubscriberTag $subscriberTag,
-    SubscriberSegment $subscriberSegment
+    SubscriberSegment $subscriberSegment,
+    WooCommerceSingleOrderValue $wooCommerceSingleOrderValue
   ) {
     $this->emailAction = $emailAction;
     $this->userRole = $userRole;
@@ -106,6 +111,7 @@ class FilterFactory {
     $this->mailPoetCustomFields = $mailPoetCustomFields;
     $this->subscriberSegment = $subscriberSegment;
     $this->emailActionClickAny = $emailActionClickAny;
+    $this->wooCommerceSingleOrderValue = $wooCommerceSingleOrderValue;
   }
 
   public function getFilterForFilterEntity(DynamicSegmentFilterEntity $filter): Filter {
@@ -182,6 +188,8 @@ class FilterFactory {
       return $this->wooCommerceTotalSpent;
     } elseif ($action === WooCommerceCountry::ACTION_CUSTOMER_COUNTRY) {
       return $this->wooCommerceCountry;
+    } elseif ($action === WooCommerceSingleOrderValue::ACTION_SINGLE_ORDER_VALUE) {
+      return $this->wooCommerceSingleOrderValue;
     }
     return $this->wooCommerceCategory;
   }

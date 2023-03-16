@@ -17,6 +17,7 @@ use MailPoet\Segments\DynamicSegments\Filters\WooCommerceCountry;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceMembership;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceNumberOfOrders;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceProduct;
+use MailPoet\Segments\DynamicSegments\Filters\WooCommerceSingleOrderValue;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceSubscription;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceTotalSpent;
 use MailPoet\WP\Functions as WPFunctions;
@@ -250,6 +251,17 @@ class FilterDataMapper {
       $filterData['total_spent_type'] = $data['total_spent_type'];
       $filterData['total_spent_amount'] = $data['total_spent_amount'];
       $filterData['total_spent_days'] = $data['total_spent_days'];
+    } elseif ($data['action'] === WooCommerceSingleOrderValue::ACTION_SINGLE_ORDER_VALUE) {
+      if (
+        !isset($data['single_order_value_type'])
+        || !isset($data['single_order_value_amount']) || $data['single_order_value_amount'] < 0
+        || !isset($data['single_order_value_days']) || $data['single_order_value_days'] < 1
+      ) {
+        throw new InvalidFilterException('Missing required fields', InvalidFilterException::MISSING_SINGLE_ORDER_VALUE_FIELDS);
+      }
+      $filterData['single_order_value_type'] = $data['single_order_value_type'];
+      $filterData['single_order_value_amount'] = $data['single_order_value_amount'];
+      $filterData['single_order_value_days'] = $data['single_order_value_days'];
     } else {
       throw new InvalidFilterException("Unknown action " . $data['action'], InvalidFilterException::MISSING_ACTION);
     }
