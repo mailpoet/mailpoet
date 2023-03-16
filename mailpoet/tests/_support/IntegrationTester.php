@@ -1,6 +1,7 @@
 <?php declare(strict_types = 1);
 
 use Automattic\WooCommerce\Admin\API\Reports\Orders\Stats\DataStore;
+use Codeception\Actor;
 use Codeception\Scenario;
 use MailPoet\Automation\Engine\Data\Automation;
 use MailPoet\Automation\Engine\Data\AutomationRun;
@@ -17,6 +18,7 @@ use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Segments\DynamicSegments\Filters\Filter;
 use MailPoet\Util\Security;
 use MailPoet\WooCommerce\Helper;
+use MailPoetVendor\Doctrine\DBAL\Connection;
 use MailPoetVendor\Doctrine\DBAL\Driver\Statement;
 use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
@@ -40,12 +42,20 @@ require_once(ABSPATH . 'wp-admin/includes/ms.php');
  * @SuppressWarnings(PHPMD)
 */
 // phpcs:ignore PSR1.Classes.ClassDeclaration
-class IntegrationTester extends \Codeception\Actor {
+class IntegrationTester extends Actor {
+
+  /** @var ContainerWrapper */
+  protected $diContainer;
 
   /** @var EntityManager */
   private $entityManager;
 
   private $wooOrderIds = [];
+
+  private $createdUserEmails = [];
+
+  /** @var Connection */
+  private $connection;
 
   use _generated\IntegrationTesterActions;
 
@@ -53,16 +63,23 @@ class IntegrationTester extends \Codeception\Actor {
     Scenario $scenario
   ) {
     parent::__construct($scenario);
-    $this->entityManager = ContainerWrapper::getInstance()->get(EntityManager::class);
+    $this->diContainer = ContainerWrapper::getInstance(WP_DEBUG);
+    $this->entityManager = $this->diContainer->get(EntityManager::class);
+    $this->connection = $this->diContainer->get(Connection::class);
   }
 
   public function createWordPressUser(string $email, string $role) {
-    return wp_insert_user([
+    $userId = wp_insert_user([
       'user_login' => explode('@', $email)[0],
       'user_email' => $email,
       'role' => $role,
       'user_pass' => '12123154',
     ]);
+    if ($userId instanceof \WP_Error) {
+      throw new \MailPoet\RuntimeException('Could not create WordPress user: ' . $userId->get_error_message());
+    }
+    $this->createdUserEmails[] = $email;
+    return $userId;
   }
 
   public function deleteWordPressUser(string $email) {
@@ -75,6 +92,23 @@ class IntegrationTester extends \Codeception\Actor {
     } else {
       wp_delete_user($user->ID);
     }
+  }
+
+  public function deleteCreatedWordpressUsers(): void {
+    foreach ($this->createdUserEmails as $email) {
+      $this->deleteWordPressUser($email);
+    }
+    $this->createdUserEmails = [];
+  }
+
+  public function createCustomer(string $email, string $role): int {
+    global $wpdb;
+    $userId = $this->createWordPressUser($email, $role);
+    $this->connection->executeQuery("
+      INSERT INTO {$wpdb->prefix}wc_customer_lookup (customer_id, user_id, first_name, last_name, email)
+      VALUES ({$userId}, {$userId}, 'First Name', 'Last Name', '{$email}')
+    ");
+    return $userId;
   }
 
   public function createWooCommerceOrder(array $data = []): \WC_Order {
@@ -216,5 +250,10 @@ class IntegrationTester extends \Codeception\Actor {
     );
     $automationRunStorage = ContainerWrapper::getInstance()->get(AutomationRunStorage::class);
     return $automationRunStorage->getAutomationRun($automationRunStorage->createAutomationRun($automationRun));
+  }
+
+  public function deleteTestData(): void {
+    $this->deleteTestWooOrders();
+    $this->deleteCreatedWordpressUsers();
   }
 }

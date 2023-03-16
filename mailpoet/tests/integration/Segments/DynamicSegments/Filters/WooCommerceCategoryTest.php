@@ -33,12 +33,10 @@ class WooCommerceCategoryTest extends \MailPoetTest {
     $this->wooCommerceCategoryFilter = $this->diContainer->get(WooCommerceCategory::class);
     $this->subscribersRepository = $this->diContainer->get(SubscribersRepository::class);
 
-    $this->cleanUp();
-
-    $customerId1 = $this->createCustomer('customer1@example.com', 'customer');
-    $customerId2 = $this->createCustomer('customer2@example.com', 'customer');
-    $customerId3OnHold = $this->createCustomer('customer-on-hold@example.com', 'customer');
-    $customerId4PendingPayment = $this->createCustomer('customer-pending-payment@example.com', 'customer');
+    $customerId1 = $this->tester->createCustomer('customer1@example.com', 'customer');
+    $customerId2 = $this->tester->createCustomer('customer2@example.com', 'customer');
+    $customerId3OnHold = $this->tester->createCustomer('customer-on-hold@example.com', 'customer');
+    $customerId4PendingPayment = $this->tester->createCustomer('customer-pending-payment@example.com', 'customer');
 
     $this->createSubscriber('a1@example.com');
     $this->createSubscriber('a2@example.com');
@@ -100,16 +98,6 @@ class WooCommerceCategoryTest extends \MailPoetTest {
       WooCommerceCategory::ACTION_CATEGORY,
       $filterData
     );
-  }
-
-  private function createCustomer(string $email, string $role): int {
-    global $wpdb;
-    $userId = $this->tester->createWordPressUser($email, $role);
-    $this->connection->executeQuery("
-      INSERT INTO {$wpdb->prefix}wc_customer_lookup (customer_id, user_id, first_name, last_name, email)
-      VALUES ({$userId}, {$userId}, 'First Name', 'Last Name', '{$email}')
-    ");
-    return $userId;
   }
 
   private function createOrder(int $customerId, Carbon $createdAt, string $status = 'wc-completed'): int {
