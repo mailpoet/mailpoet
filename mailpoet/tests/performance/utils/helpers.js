@@ -41,3 +41,8 @@ export function waitAndClick(page, elementName) {
   page.locator(elementName).click();
   page.waitForNavigation({ waitUntil: 'networkidle' });
 }
+
+// Wait for selector to be visible
+export async function waitForSelectorToBeVisible(page, element) {
+  await page.locator(element).waitFor({ state: 'visible' });
+}
