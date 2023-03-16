@@ -8,6 +8,7 @@ export enum WooCommerceActionTypes {
   PURCHASED_PRODUCT = 'purchasedProduct',
   TOTAL_SPENT = 'totalSpent',
   CUSTOMER_IN_COUNTRY = 'customerInCountry',
+  SINGLE_ORDER_VALUE = 'singleOrderValue',
 }
 
 export const WooCommerceOptions = [
@@ -29,6 +30,11 @@ export const WooCommerceOptions = [
   {
     value: WooCommerceActionTypes.PURCHASED_PRODUCT,
     label: MailPoet.I18n.t('wooPurchasedProduct'),
+    group: SegmentTypes.WooCommerce,
+  },
+  {
+    value: WooCommerceActionTypes.SINGLE_ORDER_VALUE,
+    label: MailPoet.I18n.t('wooSingleOrderValue'),
     group: SegmentTypes.WooCommerce,
   },
   {

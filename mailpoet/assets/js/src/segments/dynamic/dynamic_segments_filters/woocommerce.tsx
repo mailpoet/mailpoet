@@ -73,6 +73,14 @@ export function validateWooCommerce(formItems: WooCommerceFormItem): boolean {
   ) {
     return false;
   }
+  if (
+    formItems.action === WooCommerceActionTypes.SINGLE_ORDER_VALUE &&
+    (!formItems.single_order_value_amount ||
+      !formItems.single_order_value_days ||
+      !formItems.single_order_value_type)
+  ) {
+    return false;
+  }
   return true;
 }
 
@@ -130,6 +138,12 @@ export const WooCommerceFields: FunctionComponent<Props> = ({
       segment.action === WooCommerceActionTypes.NUMBER_OF_ORDERS
     ) {
       void updateSegmentFilter({ number_of_orders_type: '=' }, filterIndex);
+    }
+    if (
+      segment.single_order_value_type === undefined &&
+      segment.action === WooCommerceActionTypes.SINGLE_ORDER_VALUE
+    ) {
+      void updateSegmentFilter({ single_order_value_type: '>' }, filterIndex);
     }
     if (
       segment.total_spent_type === undefined &&
@@ -354,7 +368,7 @@ export const WooCommerceFields: FunctionComponent<Props> = ({
             min={0}
             step={0.01}
             value={segment.total_spent_amount || ''}
-            placeholder={MailPoet.I18n.t('wooTotalSpentAmount')}
+            placeholder={MailPoet.I18n.t('wooSpentAmount')}
             onChange={(e): void => {
               void updateSegmentFilterFromEvent(
                 'total_spent_amount',
@@ -376,6 +390,66 @@ export const WooCommerceFields: FunctionComponent<Props> = ({
             onChange={(e): void => {
               void updateSegmentFilterFromEvent(
                 'total_spent_days',
+                filterIndex,
+                e,
+              );
+            }}
+          />
+          <div>{MailPoet.I18n.t('days')}</div>
+        </Grid.CenteredRow>
+      </>
+    );
+  } else if (segment.action === WooCommerceActionTypes.SINGLE_ORDER_VALUE) {
+    optionFields = (
+      <>
+        <Grid.CenteredRow>
+          <Select
+            key="select"
+            value={segment.single_order_value_type}
+            onChange={(e): void => {
+              void updateSegmentFilterFromEvent(
+                'single_order_value_type',
+                filterIndex,
+                e,
+              );
+            }}
+            automationId="select-single-order-value-type"
+          >
+            <option value=">">{MailPoet.I18n.t('moreThan')}</option>
+            <option value=">=">{MailPoet.I18n.t('moreThanOrEqual')}</option>
+            <option value="=">{MailPoet.I18n.t('equals')}</option>
+            <option value="!=">{MailPoet.I18n.t('notEquals')}</option>
+            <option value="<">{MailPoet.I18n.t('lessThanOrEqual')}</option>
+            <option value="<">{MailPoet.I18n.t('lessThan')}</option>
+          </Select>
+          <Input
+            data-automation-id="input-single-order-value-amount"
+            type="number"
+            min={0}
+            step={0.01}
+            value={segment.single_order_value_amount || ''}
+            placeholder={MailPoet.I18n.t('wooSpentAmount')}
+            onChange={(e): void => {
+              void updateSegmentFilterFromEvent(
+                'single_order_value_amount',
+                filterIndex,
+                e,
+              );
+            }}
+          />
+          <div>{wooCurrencySymbol}</div>
+        </Grid.CenteredRow>
+        <Grid.CenteredRow>
+          <div>{MailPoet.I18n.t('inTheLast')}</div>
+          <Input
+            data-automation-id="input-single-order-value-days"
+            type="number"
+            min={1}
+            value={segment.single_order_value_days || ''}
+            placeholder={MailPoet.I18n.t('daysPlaceholder')}
+            onChange={(e): void => {
+              void updateSegmentFilterFromEvent(
+                'single_order_value_days',
                 filterIndex,
                 e,
               );

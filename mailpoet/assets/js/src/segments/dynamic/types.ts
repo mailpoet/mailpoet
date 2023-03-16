@@ -83,6 +83,9 @@ export interface WooCommerceFormItem extends FormItem {
   total_spent_amount?: number;
   total_spent_days?: number;
   country_code?: string[];
+  single_order_value_type?: string;
+  single_order_value_amount?: number;
+  single_order_value_days?: number;
 }
 
 export interface WooCommerceMembershipFormItem extends FormItem {
