@@ -309,6 +309,12 @@ class ScheduledTasksRepository extends Repository {
       ->getResult();
   }
 
+  public function invalidateTask(ScheduledTaskEntity $task): void {
+    $task->setStatus( ScheduledTaskEntity::STATUS_INVALID);
+    $this->persist($task);
+    $this->flush();
+  }
+
   protected function findByTypeAndStatus($type, $status, $limit = null, $future = false) {
     $queryBuilder = $this->doctrineRepository->createQueryBuilder('st')
       ->select('st')

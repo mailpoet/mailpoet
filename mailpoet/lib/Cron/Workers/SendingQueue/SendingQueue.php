@@ -200,6 +200,17 @@ class SendingQueue {
 
     // get subscribers
     $subscriberBatches = new BatchIterator($queue->taskId, $this->getBatchSize());
+    if ($subscriberBatches->count() === 0) {
+      $this->loggerFactory->getLogger(LoggerFactory::TOPIC_NEWSLETTERS)->info(
+        'no subscribers to process',
+        ['task_id' => $queue->taskId]
+      );
+      $task = $queue->getSendingQueueEntity()->getTask();
+      if ($task) {
+        $this->scheduledTasksRepository->invalidateTask($task);
+      }
+      return;
+    }
     /** @var int[] $subscribersToProcessIds - it's required for PHPStan */
     foreach ($subscriberBatches as $subscribersToProcessIds) {
       $this->loggerFactory->getLogger(LoggerFactory::TOPIC_NEWSLETTERS)->info(
