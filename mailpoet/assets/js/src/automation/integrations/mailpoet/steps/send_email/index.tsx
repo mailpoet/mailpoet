@@ -13,7 +13,10 @@ const keywords = ['email', 'send email', 'send'];
 export const step: StepType = {
   key: 'mailpoet:send-email',
   group: 'actions',
-  title: (data) => {
+  title: (data, context) => {
+    if (context !== 'automation') {
+      return __('Send email', 'mailpoet');
+    }
     const Icon =
       data && isTransactional(data) ? TransactionalIcon : MarketingIcon;
     return (
