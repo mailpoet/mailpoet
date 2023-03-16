@@ -3,17 +3,20 @@ import { commentAuthorAvatar } from '@wordpress/icons';
 import { StepType } from '../../../../editor/store';
 import { Edit } from './edit';
 
+const keywords = ['subscribe', 'new subscriber', 'subscription'];
 export const step: StepType = {
   key: 'mailpoet:someone-subscribes',
   group: 'triggers',
-  title: __('Someone subscribes', 'mailpoet'),
+  title: () => __('Someone subscribes', 'mailpoet'),
+  description: () =>
+    __(
+      'Starts the automation when a new subscriber is added to MailPoet.',
+      'mailpoet',
+    ),
+  subtitle: () => _x('Trigger', 'noun', 'mailpoet'),
+  keywords,
   foreground: '#2271b1',
   background: '#f0f6fc',
-  description: __(
-    'Starts the automation when a new subscriber is added to MailPoet.',
-    'mailpoet',
-  ),
-  subtitle: () => _x('Trigger', 'noun', 'mailpoet'),
   icon: () => (
     <div style={{ width: '100%', height: '100%', scale: '1.4' }}>
       {commentAuthorAvatar}

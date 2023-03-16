@@ -4,8 +4,8 @@ import { StepIcon } from '../step-icon';
 // See: https://github.com/WordPress/gutenberg/blob/af7da80dd54d7fe52772890e2cc1b65073db9655/packages/block-editor/src/components/block-card/index.js
 
 type Props = {
-  title: string;
-  description: string;
+  title: JSX.Element | string;
+  description: JSX.Element | string;
   icon: JSX.Element | ComponentType;
 };
 

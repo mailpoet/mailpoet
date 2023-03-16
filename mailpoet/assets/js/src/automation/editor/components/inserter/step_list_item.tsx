@@ -78,7 +78,7 @@ export const InserterListItem = memo(
             <StepIcon icon={item.icon} />
           </span>
           <span className="block-editor-block-types-list__item-title">
-            {item.title}
+            {item.title()}
           </span>
         </InserterListboxItem>
       </div>
