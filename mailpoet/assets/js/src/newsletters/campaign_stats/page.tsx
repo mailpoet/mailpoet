@@ -142,7 +142,11 @@ function CampaignStatsPageComponent({ match, history, location }: Props) {
             newsletter,
           )}
 
-          <Tab key="engagement" title={__('Subscriber Engagement', 'mailpoet')}>
+          <Tab
+            key="engagement"
+            title={__('Subscriber Engagement', 'mailpoet')}
+            automationId="engagement-tab"
+          >
             {Hooks.applyFilters(
               'mailpoet_newsletters_subscriber_engagement',
               <PremiumBanner />,
