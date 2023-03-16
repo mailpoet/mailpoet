@@ -14,6 +14,7 @@ import { newsletterSearching } from './tests/newsletter-searching.js';
 import { newsletterSending } from './tests/newsletter-sending.js';
 import { listsViewSubscribers } from './tests/lists-view-subscribers.js';
 import { listsComplexSegment } from './tests/lists-complex-segment.js';
+import { newsletterStatistics } from './tests/newsletter-statistics.js';
 
 // Scenarios, Thresholds and Tags
 export let options = {
@@ -72,6 +73,7 @@ export async function pullRequests() {
   await newsletterSending();
   await listsViewSubscribers();
   await listsComplexSegment();
+  await newsletterStatistics();
 }
 
 // All the tests ran for a nightly testing
