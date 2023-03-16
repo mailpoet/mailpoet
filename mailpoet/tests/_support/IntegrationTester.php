@@ -1,6 +1,7 @@
 <?php declare(strict_types = 1);
 
 use Automattic\WooCommerce\Admin\API\Reports\Orders\Stats\DataStore;
+use Codeception\Scenario;
 use MailPoet\Automation\Engine\Data\Automation;
 use MailPoet\Automation\Engine\Data\AutomationRun;
 use MailPoet\Automation\Engine\Data\NextStep;
@@ -9,8 +10,16 @@ use MailPoet\Automation\Engine\Storage\AutomationRunStorage;
 use MailPoet\Automation\Engine\Storage\AutomationStorage;
 use MailPoet\Automation\Integrations\Core\Actions\DelayAction;
 use MailPoet\DI\ContainerWrapper;
+use MailPoet\Entities\DynamicSegmentFilterData;
+use MailPoet\Entities\DynamicSegmentFilterEntity;
+use MailPoet\Entities\SegmentEntity;
+use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Segments\DynamicSegments\Filters\Filter;
 use MailPoet\Util\Security;
 use MailPoet\WooCommerce\Helper;
+use MailPoetVendor\Doctrine\DBAL\Driver\Statement;
+use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
+use MailPoetVendor\Doctrine\ORM\EntityManager;
 
 require_once(ABSPATH . 'wp-admin/includes/user.php');
 require_once(ABSPATH . 'wp-admin/includes/ms.php');
@@ -32,9 +41,20 @@ require_once(ABSPATH . 'wp-admin/includes/ms.php');
 */
 // phpcs:ignore PSR1.Classes.ClassDeclaration
 class IntegrationTester extends \Codeception\Actor {
-  use _generated\IntegrationTesterActions;
+
+  /** @var EntityManager */
+  private $entityManager;
 
   private $wooOrderIds = [];
+
+  use _generated\IntegrationTesterActions;
+
+  public function __construct(
+    Scenario $scenario
+  ) {
+    parent::__construct($scenario);
+    $this->entityManager = ContainerWrapper::getInstance()->get(EntityManager::class);
+  }
 
   public function createWordPressUser(string $email, string $role) {
     return wp_insert_user([
@@ -118,6 +138,36 @@ class IntegrationTester extends \Codeception\Actor {
       throw new \Exception('$date2 is not DateTimeInterface');
     }
     expect($date1->getTimestamp())->equals($date2->getTimestamp(), $delta);
+  }
+
+  public function getSubscriberEmailsMatchingDynamicFilter(DynamicSegmentFilterData $data, Filter $filter): array {
+    $segment = new SegmentEntity('temporary segment', SegmentEntity::TYPE_DYNAMIC, 'description');
+    $this->entityManager->persist($segment);
+    $filterEntity = new DynamicSegmentFilterEntity($segment, $data);
+    $this->entityManager->persist($filterEntity);
+    $segment->addDynamicFilter($filterEntity);
+
+    $queryBuilder = $filter->apply($this->getSubscribersQueryBuilder(), $filterEntity);
+    $statement = $queryBuilder->execute();
+    $results = $statement instanceof Statement ? $statement->fetchAllAssociative() : [];
+    $emails = array_map(function($row) {
+      $subscriber = $this->entityManager->find(SubscriberEntity::class, $row['inner_subscriber_id']);
+      if (!$subscriber instanceof SubscriberEntity) {
+        throw new \Exception('this is for PhpStan');
+      }
+      return $subscriber->getEmail();
+    }, $results);
+
+    return $emails;
+  }
+
+  public function getSubscribersQueryBuilder(): QueryBuilder {
+    $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
+    return $this->entityManager
+      ->getConnection()
+      ->createQueryBuilder()
+      ->select("DISTINCT $subscribersTable.id as inner_subscriber_id")
+      ->from($subscribersTable);
   }
 
   public function createAutomation(string $name, Step ...$steps): ?Automation {
