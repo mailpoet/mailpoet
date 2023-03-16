@@ -26,6 +26,7 @@ export const step: StepType = {
     );
   },
   description: (data) => {
+    const beacon = '63cfbc82f544d52e61429a02';
     const text = (
       <span className="mailpoet-sendemail-description-main">
         {__('An email will be sent to subscriber.', 'mailpoet')}
@@ -43,6 +44,7 @@ export const step: StepType = {
             rel="noreferrer"
             href="https://kb.mailpoet.com/article/397-how-to-set-up-an-automation"
             target="_blank"
+            data-beacon-article={beacon}
           >
             {match}
           </a>
@@ -69,6 +71,7 @@ export const step: StepType = {
           rel="noreferrer"
           href="https://kb.mailpoet.com/article/397-how-to-set-up-an-automation"
           target="_blank"
+          data-beacon-article={beacon}
         >
           {match}
         </a>
