@@ -12,16 +12,13 @@ const getDelayInformation = (delayTypeValue: string, value: number): string =>
     return current.subtitle(value);
   }, '');
 
+const keywords = ['wait', 'pause', 'delay', 'time'];
 export const step: StepType = {
   key: 'core:delay',
   group: 'actions',
-  title: _x('Delay', 'noun', 'mailpoet'),
-  foreground: '#7F54B3',
-  background: '#f7edf7',
-  description: __(
-    'Wait some time before proceeding with the steps below.',
-    'mailpoet',
-  ),
+  title: () => _x('Delay', 'noun', 'mailpoet'),
+  description: () =>
+    __('Wait some time before proceeding with the steps below.', 'mailpoet'),
   subtitle: (data): string => {
     if (!data.args.delay || !data.args.delay_type) {
       return __('Not set up yet', 'mailpoet');
@@ -32,6 +29,9 @@ export const step: StepType = {
       data.args.delay as number,
     );
   },
+  keywords,
+  foreground: '#7F54B3',
+  background: '#f7edf7',
   icon: Icon,
   edit: Edit,
 } as const;

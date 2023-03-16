@@ -52,8 +52,8 @@ export function StepSidebar(): JSX.Element {
     <div className="block-editor-block-inspector">
       <StepSidebarGeneralError />
       <StepCard
-        title={selectedStepType.title}
-        description={selectedStepType.description}
+        title={selectedStepType.title(selectedStep)}
+        description={selectedStepType.description(selectedStep)}
         icon={selectedStepType.icon}
       />
       <Edit

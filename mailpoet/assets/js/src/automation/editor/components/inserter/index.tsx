@@ -14,9 +14,12 @@ import { storeName } from '../../store';
 // See: https://github.com/WordPress/gutenberg/blob/628ae68152f572d0b395bb15c0f71b8821e7f130/packages/block-editor/src/components/inserter/menu.js
 
 const filterItems = (value: string, item: Item[]): Item[] =>
-  item.filter((step) =>
-    step.title.toLowerCase().includes(value.trim().toLowerCase()),
-  );
+  item.filter((step) => {
+    const keywords = step.keywords
+      .map((keyword) => keyword.toLowerCase())
+      .join(' ');
+    return keywords.includes(value.trim().toLowerCase());
+  });
 
 type Props = {
   onInsert?: (item: Item) => void;

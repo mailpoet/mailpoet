@@ -15,16 +15,19 @@ import { StepType } from '../../store/types';
 const getUnknownStepType = (step: StepData): StepType => {
   const isTrigger = step.type === 'trigger';
   return {
-    title: isTrigger
-      ? __('Unknown trigger', 'mailpoet')
-      : __('Unknown step', 'mailpoet'),
+    title: () =>
+      isTrigger
+        ? __('Unknown trigger', 'mailpoet')
+        : __('Unknown step', 'mailpoet'),
     subtitle: () =>
       isTrigger
         ? __('Trigger type not registered', 'mailpoet')
         : __('Step type not registered', 'mailpoet'),
-    description: isTrigger
-      ? __('Unknown trigger', 'mailpoet')
-      : __('Unknown step', 'mailpoet'),
+    description: () =>
+      isTrigger
+        ? __('Unknown trigger', 'mailpoet')
+        : __('Unknown step', 'mailpoet'),
+    keywords: [],
     group: step.type === 'trigger' ? 'triggers' : 'actions',
     key: step.key,
     foreground: '#8c8f94',
@@ -89,13 +92,13 @@ export function Step({ step, isSelected }: Props): JSX.Element {
             className="mailpoet-automation-editor-step-title"
           >
             {step.type !== 'trigger'
-              ? stepTypeData.title
+              ? stepTypeData.title(step)
               : _x('Trigger', 'noun', 'mailpoet')}
           </label>
           <div className="mailpoet-automation-editor-step-subtitle">
             {step.type !== 'trigger'
               ? stepTypeData.subtitle(step)
-              : stepTypeData.title}
+              : stepTypeData.title(step)}
           </div>
         </div>
         {error && (

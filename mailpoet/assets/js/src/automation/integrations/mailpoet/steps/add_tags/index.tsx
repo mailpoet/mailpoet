@@ -4,12 +4,15 @@ import { StepType } from '../../../../editor/store';
 import { LockedBadge } from '../../../../../common/premium_modal/locked_badge';
 import { PremiumModalForStepEdit } from '../../../../../common/premium_modal';
 
+const keywords = ['tag', 'tags', 'label', 'labels', 'add tag', 'add tags'];
 export const step: StepType = {
   key: 'mailpoet:add-tag',
   group: 'actions',
-  title: __('Add tag', 'mailpoet'),
-  description: __('Add a tag or multiple tags to a subscriber.', 'mailpoet'),
+  title: () => __('Add tag', 'mailpoet'),
+  description: () =>
+    __('Add a tag or multiple tags to a subscriber.', 'mailpoet'),
   subtitle: () => <LockedBadge text={__('Premium', 'mailpoet')} />,
+  keywords,
   foreground: '#00A32A',
   background: '#EDFAEF',
   icon: () => (

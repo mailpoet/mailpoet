@@ -29,9 +29,10 @@ export type StepGroup = 'actions' | 'logical' | 'triggers';
 export type StepType = {
   key: string;
   group: StepGroup;
-  title: string;
-  description: string;
+  title: (step?: Step) => JSX.Element | string;
+  description: (step: Step) => JSX.Element | string;
   subtitle: (step: Step) => JSX.Element | string;
+  keywords: string[];
   icon: ComponentType;
   edit: ComponentType;
   foreground: string;

@@ -5,11 +5,13 @@ import { Edit } from './edit';
 import { State, StepType } from '../../../../editor/store/types';
 import { Step } from '../../../../editor/components/automation/types';
 
+const keywords = ['email', 'send email', 'send'];
 export const step: StepType = {
   key: 'mailpoet:send-email',
   group: 'actions',
-  title: __('Send email', 'mailpoet'),
-  description: __('An email will be sent to subscriber.', 'mailpoet'),
+  title: () => __('Send email', 'mailpoet'),
+  description: () => __('An email will be sent to subscriber.', 'mailpoet'),
+  keywords,
   subtitle: (data) =>
     (data.args.name as string) ?? __('Send email', 'mailpoet'),
   foreground: '#996800',
