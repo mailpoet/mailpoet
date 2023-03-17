@@ -51,6 +51,9 @@ class Registry {
       throw new \Exception(); // TODO
     }
     $this->subjects[$key] = $subject;
+    foreach ($subject->getFields() as $field) {
+      $this->addField($field);
+    }
   }
 
   /** @return Subject<Payload>|null */
