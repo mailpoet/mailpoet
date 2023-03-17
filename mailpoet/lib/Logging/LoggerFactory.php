@@ -35,6 +35,7 @@ class LoggerFactory {
   const TOPIC_API = 'api';
   const TOPIC_TRACKING = 'tracking';
   const TOPIC_COUPONS = 'coupons';
+  const TOPIC_PROVISIONING = 'provisioning';
 
   /** @var LoggerFactory */
   private static $instance;

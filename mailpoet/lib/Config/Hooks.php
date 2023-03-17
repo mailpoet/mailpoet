@@ -13,6 +13,7 @@ use MailPoet\Subscription\Form;
 use MailPoet\Subscription\Manage;
 use MailPoet\Subscription\Registration;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoet\WPCOM\DotcomLicenseProvisioner;
 
 class Hooks {
   /** @var Form */
@@ -54,6 +55,9 @@ class Hooks {
   /** @var SubscriberChangesNotifier */
   private $subscriberChangesNotifier;
 
+  /** @var DotcomLicenseProvisioner */
+  private $dotcomLicenseProvisioner;
+
   public function __construct(
     Form $subscriptionForm,
     Comment $subscriptionComment,
@@ -67,7 +71,8 @@ class Hooks {
     HooksWooCommerce $hooksWooCommerce,
     SubscriberHandler $subscriberHandler,
     SubscriberChangesNotifier $subscriberChangesNotifier,
-    WP $wpSegment
+    WP $wpSegment,
+    DotcomLicenseProvisioner $dotcomLicenseProvisioner
   ) {
     $this->subscriptionForm = $subscriptionForm;
     $this->subscriptionComment = $subscriptionComment;
@@ -82,6 +87,7 @@ class Hooks {
     $this->subscriberHandler = $subscriberHandler;
     $this->hooksWooCommerce = $hooksWooCommerce;
     $this->subscriberChangesNotifier = $subscriberChangesNotifier;
+    $this->dotcomLicenseProvisioner = $dotcomLicenseProvisioner;
   }
 
   public function init() {
@@ -99,6 +105,7 @@ class Hooks {
     $this->setupFooter();
     $this->setupSettingsLinkInPluginPage();
     $this->setupChangeNotifications();
+    $this->setupLicenseProvisioning();
   }
 
   public function initEarlyHooks() {
@@ -473,6 +480,15 @@ class Hooks {
     $this->wp->addAction(
       'shutdown',
       [$this->subscriberChangesNotifier, 'notify']
+    );
+  }
+
+  public function setupLicenseProvisioning(): void {
+    $this->wp->addFilter(
+      'wpcom_marketplace_webhook_response_mailpoet-business',
+      [$this->dotcomLicenseProvisioner, 'provisionLicense'],
+      10,
+      3
     );
   }
 }
