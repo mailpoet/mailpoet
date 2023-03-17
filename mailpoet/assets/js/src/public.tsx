@@ -6,6 +6,7 @@ import { Hooks } from 'wp-js-hooks';
 import { Response } from './ajax';
 
 const exitIntentEvent = 'mouseleave.mailpoet.form-exit-intent';
+const startingClassName = 'starting-to-show';
 
 jQuery(($) => {
   Parsley.addValidator('names', {
@@ -324,7 +325,20 @@ jQuery(($) => {
     });
   }
 
-  function showForm(formDiv, showOverlay = false) {
+  const isFormAlreadyEnqueued = (formDiv: JQuery<HTMLElement>) => {
+    const id = formDiv.attr('id');
+    return id
+      ? Array.from(document.querySelectorAll(`#${id}`)).find((el) =>
+          el.classList.contains(startingClassName),
+        )
+      : false;
+  };
+
+  function showForm(formDiv: JQuery<HTMLElement>, showOverlay = false) {
+    if (isFormAlreadyEnqueued(formDiv)) {
+      return;
+    }
+    formDiv.addClass(startingClassName);
     const form = formDiv.find('form');
     let delay = form.data('delay');
     delay = parseInt(delay as string, 10);
