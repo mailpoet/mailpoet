@@ -4,7 +4,9 @@ namespace MailPoet\API\JSON\v1;
 
 use MailPoet\API\JSON\Endpoint as APIEndpoint;
 use MailPoet\API\JSON\Error as APIError;
+use MailPoet\API\JSON\ErrorResponse;
 use MailPoet\API\JSON\Response;
+use MailPoet\API\JSON\SuccessResponse;
 use MailPoet\Config\AccessControl;
 use MailPoet\Config\ServicesChecker;
 use MailPoet\Cron\Workers\SubscribersEngagementScore;
@@ -492,5 +494,25 @@ class Settings extends APIEndpoint {
       'showNotice' => !!$draftReEngagementEmails,
       'action' => 'reactivate',
     ];
+  }
+
+  /**
+   * Prepares the settings to set up MSS with the given key and calls the set method.
+   *
+   * @param string $apiKey
+   * @return ErrorResponse|SuccessResponse
+   */
+  public function setupMSS(string $apiKey) {
+    $new_settings = [
+      'mta_group' => 'mailpoet',
+      'mta' => [
+        'method' => 'MailPoet',
+        'mailpoet_api_key' => $apiKey,
+      ],
+      'signup_confirmation' => [
+        'enabled' => '1',
+      ],
+    ];
+    return $this->set($new_settings);
   }
 }
