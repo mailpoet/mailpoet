@@ -62,8 +62,8 @@ export interface FormItem {
 }
 
 export interface DateFormItem extends FormItem {
-  operator: string;
-  value: string;
+  operator?: string;
+  value?: string;
 }
 
 export interface WordpressRoleFormItem extends FormItem {
@@ -121,6 +121,7 @@ export type Segment = {
 };
 
 export type AnyFormItem =
+  | DateFormItem
   | WordpressRoleFormItem
   | WooCommerceFormItem
   | WooCommerceSubscriptionFormItem
