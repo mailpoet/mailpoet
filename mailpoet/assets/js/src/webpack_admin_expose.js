@@ -13,6 +13,7 @@ export * as Slugify from 'slugify';
 export { Button as WordpressComponentsButton } from '@wordpress/components';
 export { CheckboxControl as WordpressComponentsCheckboxControl } from '@wordpress/components';
 export { ExternalLink as WordpressComponentsExternalLink } from '@wordpress/components';
+export { FormTokenField as WordpressComponentsFormTokenField } from '@wordpress/components';
 export { RadioControl as WordpressComponentsRadioControl } from '@wordpress/components';
 export { SelectControl as WordpressComponentsSelectControl } from '@wordpress/components';
 export { TextControl as WordpressComponentsTextControl } from '@wordpress/components';
