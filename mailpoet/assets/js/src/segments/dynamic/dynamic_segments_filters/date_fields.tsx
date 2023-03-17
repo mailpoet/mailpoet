@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { isValid, parseISO } from 'date-fns';
-import { useSelect, useDispatch } from '@wordpress/data';
+import { useDispatch, useSelect } from '@wordpress/data';
 
 import { MailPoet } from 'mailpoet';
 import { Select } from 'common/form/select/select';
@@ -55,8 +55,7 @@ type Props = {
 
 export function DateFields({ filterIndex }: Props): JSX.Element {
   const segment: DateFormItem = useSelect(
-    (select) =>
-      select(storeName).getSegmentFilter(filterIndex),
+    (select) => select(storeName).getSegmentFilter(filterIndex),
     [filterIndex],
   );
 
