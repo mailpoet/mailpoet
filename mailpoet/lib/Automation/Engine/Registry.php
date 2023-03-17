@@ -3,6 +3,7 @@
 namespace MailPoet\Automation\Engine;
 
 use MailPoet\Automation\Engine\Control\RootStep;
+use MailPoet\Automation\Engine\Data\Field;
 use MailPoet\Automation\Engine\Integration\Action;
 use MailPoet\Automation\Engine\Integration\Payload;
 use MailPoet\Automation\Engine\Integration\Step;
@@ -19,6 +20,9 @@ class Registry {
 
   /** @var SubjectTransformer[] */
   private $subjectTransformers = [];
+
+  /** @var array<string, Field> */
+  private $fields = [];
 
   /** @var array<string, Trigger> */
   private $triggers = [];
@@ -65,6 +69,23 @@ class Registry {
 
   public function getSubjectTransformers(): array {
     return $this->subjectTransformers;
+  }
+
+  public function addField(Field $field): void {
+    $key = $field->getKey();
+    if (isset($this->fields[$key])) {
+      throw new \Exception(); // TODO
+    }
+    $this->fields[$key] = $field;
+  }
+
+  public function getField(string $key): ?Field {
+    return $this->fields[$key] ?? null;
+  }
+
+  /** @return array<string, Field> */
+  public function getFields(): array {
+    return $this->fields;
   }
 
   public function addStep(Step $step): void {
