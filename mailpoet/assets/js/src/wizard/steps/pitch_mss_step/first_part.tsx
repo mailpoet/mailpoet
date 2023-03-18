@@ -1,9 +1,11 @@
+import { useEffect } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import { external, Icon } from '@wordpress/icons';
 import { Heading } from 'common/typography/heading/heading';
 import { MailPoet } from 'mailpoet';
 import { Button, List } from 'common';
 import { OwnEmailServiceNote } from './own_email_service_note';
+import { useSelector } from '../../../settings/store/hooks';
 
 const mailpoetAccountUrl =
   'https://account.mailpoet.com/?ref=plugin-wizard&utm_source=plugin&utm_medium=onboarding&utm_campaign=purchase';
@@ -17,6 +19,13 @@ function openMailPoetShopAndGoToTheNextPart(event, history, step: string) {
 function MSSStepFirstPart(): JSX.Element {
   const history = useHistory();
   const { step } = useParams<{ step: string }>();
+  const state = useSelector('getKeyActivationState')();
+
+  useEffect(() => {
+    if (state.isKeyValid === true) {
+      history.push(`/steps/${step}/part/3`);
+    }
+  }, [state.isKeyValid, history, step]);
 
   return (
     <>
