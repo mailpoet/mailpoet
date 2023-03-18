@@ -38,7 +38,7 @@ class DotcomLicenseProvisioner {
    *
    * @return bool
    */
-  private function isAtomicPlatform(): bool {
+  public function isAtomicPlatform(): bool {
     return defined('IS_ATOMIC') && IS_ATOMIC && defined('ATOMIC_CLIENT_ID') && (ATOMIC_CLIENT_ID === '2');
   }
 
@@ -83,7 +83,7 @@ class DotcomLicenseProvisioner {
    * @param string $apiKey
    * @return true|WP_Error
    */
-  private function activateMSS(string $apiKey) {
+  public function activateMSS(string $apiKey) {
     $response = $this->settings->setupMSS($apiKey);
     if ($response instanceof ErrorResponse) {
       $this->loggerFactory->getLogger(LoggerFactory::TOPIC_PROVISIONING)->error(

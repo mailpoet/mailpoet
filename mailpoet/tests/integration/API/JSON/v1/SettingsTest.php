@@ -313,6 +313,35 @@ class SettingsTest extends \MailPoetTest {
     expect($this->endpoint->delete('unexistent_setting'))->isInstanceOf(ErrorResponse::class);
   }
 
+  public function testItSetsUpMSSWithProvidedKey() {
+    $newKey = 'some-new-key';
+    $this->endpoint = new Settings(
+      $this->settings,
+      $this->make(Bridge::class, ['onSettingsSave' => Expected::once()]),
+      $this->make(AuthorizedEmailsController::class, ['onSettingsSave' => Expected::once()]),
+      $this->diContainer->get(AuthorizedSenderDomainController::class),
+      $this->make(TransactionalEmails::class),
+      WPFunctions::get(),
+      $this->diContainer->get(EntityManager::class),
+      $this->diContainer->get(NewslettersRepository::class),
+      $this->diContainer->get(StatisticsOpensRepository::class),
+      $this->diContainer->get(ScheduledTasksRepository::class),
+      $this->diContainer->get(FormMessageController::class),
+      $this->make(ServicesChecker::class, ['isMailPoetAPIKeyPendingApproval' => false]),
+      $this->diContainer->get(SegmentsRepository::class),
+      $this->diContainer->get(SettingsChangeHandler::class),
+      $this->diContainer->get(SubscribersCountsController::class),
+      $this->diContainer->get(TrackingConfig::class),
+      $this->diContainer->get(ConfirmationEmailCustomizer::class)
+    );
+
+    expect($this->endpoint->setupMSS($newKey))->isInstanceOf(SuccessResponse::class);
+    expect($this->settings->get('mta.mailpoet_api_key'))->equals($newKey);
+    expect($this->settings->get('mta_group'))->equals('mailpoet');
+    expect($this->settings->get('mta.method'))->equals('MailPoet');
+    expect($this->settings->get('signup_confirmation.enabled'))->equals(1);
+  }
+
   private function createNewsletter(string $type, string $status = NewsletterEntity::STATUS_DRAFT, $parent = null): NewsletterEntity {
     $newsletter = new NewsletterEntity();
     $newsletter->setType($type);
