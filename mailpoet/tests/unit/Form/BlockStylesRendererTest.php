@@ -123,4 +123,23 @@ class BlockStylesRendererTest extends \MailPoetUnitTest {
     $result = $this->renderer->renderForButton(['font_family' => 'font2'], $settings);
     expect($result)->stringContainsString("font-family:'font2'");
   }
+
+  public function testItShouldSupportFontSizesWithUnits() {
+    $settings = [
+      'input_padding' => '40',
+      'fontSize' => '1.5rem',
+    ];
+    $result = $this->renderer->renderForButton([], $settings);
+    expect($result)->stringContainsString('font-size:1.5rem;');
+    $styles = [
+      'font_size' => '2.4em',
+    ];
+    $result = $this->renderer->renderForButton($styles, $settings);
+    expect($result)->stringContainsString('font-size:2.4em;');
+    $styles = [
+      'font_size' => '23',
+    ];
+    $result = $this->renderer->renderForButton($styles, $settings);
+    expect($result)->stringContainsString('font-size:23px;');
+  }
 }

@@ -93,7 +93,7 @@ class Heading {
       $styles[] = 'color: ' . $block['params']['text_color'];
     }
     if (!empty($block['params']['font_size'])) {
-      $styles[] = 'font-size: ' . $block['params']['font_size'] . 'px';
+      $styles[] = 'font-size: ' . $block['params']['font_size'] . (is_numeric($block['params']['font_size']) ? 'px' : '');
     }
     if (!empty($block['params']['line_height'])) {
       $styles[] = 'line-height: ' . $block['params']['line_height'];

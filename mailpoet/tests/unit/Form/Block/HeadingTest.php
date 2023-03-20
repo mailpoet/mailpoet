@@ -105,6 +105,16 @@ class HeadingTest extends \MailPoetUnitTest {
     expect($html)->equals('<h2 class="mailpoet-heading mailpoet-has-font-size" style="font-size: 33px">Header</h2>');
   }
 
+  public function testItShouldRenderFontSizeWithUnit() {
+    $html = $this->heading->render([
+      'params' => [
+        'content' => 'Header',
+        'font_size' => '2.2em',
+      ],
+    ]);
+    expect($html)->equals('<h2 class="mailpoet-heading mailpoet-has-font-size" style="font-size: 2.2em">Header</h2>');
+  }
+
   public function testItShouldRenderLineHeight() {
     $html = $this->heading->render([
       'params' => [
