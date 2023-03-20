@@ -1,7 +1,7 @@
 import { ComponentType, JSXElementConstructor } from 'react';
 import { ErrorBoundary, ErrorBoundaryProps } from './error_boundary';
 
-export const withBoundary = <P extends Record<string, unknown> | unknown>(
+export const withBoundary = <P extends Record<string, unknown> | object>(
   Bound: JSXElementConstructor<P>,
   props?: ErrorBoundaryProps,
 ): ComponentType<P> =>
