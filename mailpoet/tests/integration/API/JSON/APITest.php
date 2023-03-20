@@ -373,7 +373,7 @@ class APITest extends \MailPoetTest {
 
   public function _after() {
     wp_delete_user($this->wpUserId);
-    // we need to trucate wp_mailpoet_subscriber_segment manually while https://mailpoet.atlassian.net/browse/MAILPOET-4580 is not fixed.
+    // we need to truncate wp_mailpoet_subscriber_segment manually while https://mailpoet.atlassian.net/browse/MAILPOET-4580 is not fixed.
     $this->truncateEntity(SubscriberSegmentEntity::class);
     $this->truncateEntity(LogEntity::class);
   }

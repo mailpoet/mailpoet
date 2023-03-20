@@ -2,6 +2,7 @@
 
 namespace MailPoet\Subscribers\ImportExport\PersonalDataExporters;
 
+use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Subscribers\SubscribersRepository;
@@ -103,5 +104,12 @@ class SegmentsExporterTest extends \MailPoetTest {
     expect($result['data'][1])->hasKey('item_id');
     expect($result['data'][1])->hasKey('data');
     expect($result['data'])->equals($expected);
+  }
+
+  public function _after() {
+    parent::_after();
+    $this->truncateEntity(SubscriberSegmentEntity::class);
+    $this->truncateEntity(SegmentEntity::class);
+    $this->truncateEntity(SubscriberEntity::class);
   }
 }

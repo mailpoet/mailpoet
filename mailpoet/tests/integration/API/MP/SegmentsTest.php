@@ -13,6 +13,7 @@ use MailPoet\Entities\NewsletterOptionEntity;
 use MailPoet\Entities\NewsletterOptionFieldEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Subscribers\SubscriberSegmentRepository;
 use MailPoet\Test\DataFactories\Form;
@@ -285,6 +286,7 @@ class SegmentsTest extends \MailPoetTest {
   public function _after() {
     $this->truncateEntity(SegmentEntity::class);
     $this->truncateEntity(SubscriberEntity::class);
+    $this->truncateEntity(SubscriberSegmentEntity::class);
     $this->truncateEntity(FormEntity::class);
     $this->truncateEntity(NewsletterOptionFieldEntity::class);
     $this->truncateEntity(NewsletterOptionEntity::class);

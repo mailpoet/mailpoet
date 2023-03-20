@@ -35,7 +35,7 @@ class StatisticsOpensRepositoryTest extends \MailPoetTest {
     $this->segmentsRepository = $this->diContainer->get(SegmentsRepository::class);
   }
 
-  protected function _after() {
+  public function _after() {
     parent::_after();
     $this->cleanup();
   }

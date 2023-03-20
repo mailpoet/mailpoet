@@ -99,7 +99,7 @@ class HelpTest extends \MailPoetTest {
     $this->truncateEntity(SendingQueueEntity::class);
   }
 
-  protected function _after() {
+  public function _after() {
     parent::_after();
     $this->cleanup();
   }

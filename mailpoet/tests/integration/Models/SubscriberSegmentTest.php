@@ -2,6 +2,9 @@
 
 namespace MailPoet\Test\Models;
 
+use MailPoet\Entities\SegmentEntity;
+use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
@@ -336,8 +339,9 @@ class SubscriberSegmentTest extends \MailPoetTest {
   }
 
   public function _after() {
-    Segment::deleteMany();
-    Subscriber::deleteMany();
-    SubscriberSegment::deleteMany();
+    parent::_after();
+    $this->truncateEntity(SubscriberSegmentEntity::class);
+    $this->truncateEntity(SegmentEntity::class);
+    $this->truncateEntity(SubscriberEntity::class);
   }
 }

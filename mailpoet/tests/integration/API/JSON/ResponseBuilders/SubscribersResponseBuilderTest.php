@@ -141,7 +141,8 @@ class SubscribersResponseBuilderTest extends \MailPoetTest {
     $this->assertArrayHasKey('updated_at', $tag);
   }
 
-  protected function _after() {
+  public function _after() {
+    parent::_after();
     $this->truncateEntity(SegmentEntity::class);
     $this->truncateEntity(SubscriberEntity::class);
     $this->truncateEntity(SubscriberSegmentEntity::class);

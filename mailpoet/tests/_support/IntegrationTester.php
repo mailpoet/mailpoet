@@ -99,6 +99,12 @@ class IntegrationTester extends Actor {
   }
 
   public function deleteCreatedWordpressUsers(): void {
+    global $wpdb;
+    // Creating WP users automatically subscribes them, so we know we'll need to clean up
+    // the subscriber segment table
+    if (count($this->createdUserEmails) > 0) {
+      $this->connection->executeQuery("TRUNCATE TABLE {$wpdb->prefix}mailpoet_subscriber_segment");
+    }
     foreach ($this->createdUserEmails as $email) {
       $this->deleteWordPressUser($email);
     }
@@ -258,7 +264,7 @@ class IntegrationTester extends Actor {
     return $automationRunStorage->getAutomationRun($automationRunStorage->createAutomationRun($automationRun));
   }
 
-  public function deleteTestData(): void {
+  public function cleanUpTestData(): void {
     global $wpdb;
     $this->deleteTestWooOrders();
     $this->deleteCreatedWordpressUsers();

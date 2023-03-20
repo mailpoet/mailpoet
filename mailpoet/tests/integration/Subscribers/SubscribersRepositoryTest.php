@@ -352,7 +352,6 @@ class SubscribersRepositoryTest extends \MailPoetTest {
   private function cleanup() {
     $this->truncateEntity(SubscriberEntity::class);
     $this->truncateEntity(SubscriberSegmentEntity::class);
-    $this->truncateEntity(SubscriberSegmentEntity::class);
     $this->truncateEntity(CustomFieldEntity::class);
     $this->truncateEntity(SubscriberCustomFieldEntity::class);
   }

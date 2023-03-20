@@ -57,4 +57,10 @@ class SegmentsResponseBuilderTest extends \MailPoetTest {
     expect($response[0]['subscribers_url'])->startsWith('http');
     expect($response[0]['subscribers_count']['subscribed'])->equals('1');
   }
+
+  public function _after() {
+    $this->truncateEntity(SubscriberSegmentEntity::class);
+    $this->truncateEntity(SegmentEntity::class);
+    $this->truncateEntity(SubscriberEntity::class);
+  }
 }

@@ -3,6 +3,7 @@
 namespace MailPoet\Test\Newsletter;
 
 use MailPoet\API\JSON\v1\AutomatedLatestContent as ALCAPI;
+use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Newsletter\AutomatedLatestContent;
 use MailPoet\Util\APIPermissionHelper;
@@ -116,6 +117,7 @@ class AutomatedLatestContentAPITest extends \MailPoetTest {
       wp_delete_user($user->ID);
     }
 
+    $this->truncateEntity(SubscriberSegmentEntity::class);
     $this->deleteAllPosts();
   }
 

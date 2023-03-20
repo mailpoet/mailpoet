@@ -3,7 +3,9 @@
 namespace MailPoet\Segments\DynamicSegments\Filters;
 
 use MailPoet\Entities\DynamicSegmentFilterData;
+use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Entities\SubscriberSegmentEntity;
 
 class UserRoleTest extends \MailPoetTest {
 
@@ -81,6 +83,8 @@ class UserRoleTest extends \MailPoetTest {
 
   private function cleanup(): void {
     $this->cleanWpUsers();
+    $this->truncateEntity(SubscriberSegmentEntity::class);
+    $this->truncateEntity(SegmentEntity::class);
     $this->truncateEntity(SubscriberEntity::class);
   }
 

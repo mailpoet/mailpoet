@@ -48,7 +48,7 @@ class SubscriberEntityIntegrationTest extends \MailPoetTest {
     $this->assertSame([1 => $subscriberSegment2], $this->subscriber->getSubscriberSegments(SubscriberEntity::STATUS_SUBSCRIBED)->toArray());
   }
 
-  protected function _after() {
+  public function _after() {
     parent::_after();
     $this->cleanup();
   }

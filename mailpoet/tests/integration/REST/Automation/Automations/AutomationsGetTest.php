@@ -7,6 +7,7 @@ require_once __DIR__ . '/../AutomationTest.php';
 use MailPoet\Automation\Engine\Data\Automation;
 use MailPoet\Automation\Engine\Data\Step;
 use MailPoet\Automation\Engine\Storage\AutomationStorage;
+use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\REST\Automation\AutomationTest;
 
 class AutomationsGetTest extends AutomationTest {
@@ -175,6 +176,7 @@ class AutomationsGetTest extends AutomationTest {
 
   public function _after() {
     $this->automationStorage->truncate();
+    $this->truncateEntity(SubscriberSegmentEntity::class);
     foreach ($this->userIds as $userId) {
       is_multisite() ? wpmu_delete_user($userId) : wp_delete_user($userId);
     }

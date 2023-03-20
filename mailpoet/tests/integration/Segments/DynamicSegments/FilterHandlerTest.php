@@ -10,6 +10,7 @@ use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\StatisticsOpenEntity;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Segments\DynamicSegments\Filters\UserRole;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoetVendor\Carbon\Carbon;
@@ -22,7 +23,6 @@ class FilterHandlerTest extends \MailPoetTest {
   private $filterHandler;
 
   public function _before(): void {
-    $this->cleanWpUsers();
     $this->filterHandler = $this->diContainer->get(FilterHandler::class);
     $this->tester->createWordPressUser('user-role-test1@example.com', 'editor');
     $this->tester->createWordPressUser('user-role-test2@example.com', 'administrator');
@@ -85,20 +85,14 @@ class FilterHandlerTest extends \MailPoetTest {
   }
 
   public function _after(): void {
-    $this->cleanWpUsers();
+    parent::_after();
     $this->truncateEntity(SubscriberEntity::class);
     $this->truncateEntity(SegmentEntity::class);
+    $this->truncateEntity(SubscriberSegmentEntity::class);
     $this->truncateEntity(DynamicSegmentFilterEntity::class);
     $this->truncateEntity(NewsletterEntity::class);
     $this->truncateEntity(StatisticsOpenEntity::class);
     $this->truncateEntity(SendingQueueEntity::class);
     $this->truncateEntity(ScheduledTaskEntity::class);
-  }
-
-  private function cleanWpUsers(): void {
-    $emails = ['user-role-test1@example.com', 'user-role-test2@example.com', 'user-role-test3@example.com'];
-    foreach ($emails as $email) {
-      $this->tester->deleteWordPressUser($email);
-    }
   }
 }
