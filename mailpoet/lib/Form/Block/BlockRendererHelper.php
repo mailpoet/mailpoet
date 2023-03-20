@@ -191,7 +191,7 @@ class BlockRendererHelper {
       $rules[] = 'font-size: ' . $formSettings['fontSize'] . (is_numeric($formSettings['fontSize']) ? "px;" : ";");
       $rules[] = 'line-height: 1.2;';
     }
-    if (isset($styles['bold'])) {
+    if (isset($styles['bold']) && $styles['bold']) {
       $rules[] = 'font-weight: bold;';
     }
     return $rules ? 'style="' . $this->wp->escAttr(implode("", $rules)) . '"' : '';
