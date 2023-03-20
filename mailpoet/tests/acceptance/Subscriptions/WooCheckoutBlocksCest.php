@@ -226,6 +226,9 @@ class WooCheckoutBlocksCest {
       $i->click(Locator::contains('label', 'Allow shoppers to sign up for a user account during checkout'));
     }
 
+    // Close dialog if any
+    $this->closeDialog($i);
+
     $i->click('Update');
     $i->waitForText('Page updated.');
     $i->logOut();
@@ -236,9 +239,18 @@ class WooCheckoutBlocksCest {
    * Close dialog when is visible.
    */
   private function closeDialog(\AcceptanceTester $i): void {
-    $closeButton = $i->executeJS('return document.querySelectorAll("button[aria-label=\'Close dialog\']");');
+    // Todo: [MAILPOET-5164] Remove when testing with WC 6.2
+    $oldCloseButton = $i->executeJS('return document.querySelectorAll("button[aria-label=\'Close dialog\']");');
+    $closeButton = $i->executeJS('return document.querySelectorAll("button[aria-label=\'Close\']");');
+
     if ($closeButton) {
+      $i->click('button[aria-label="Close"]');
+      $i->waitForElementNotVisible('button[aria-label="Close"]');
+    }
+    // Todo: [MAILPOET-5164] Remove when testing with WC 6.2 MAILPOET-5164
+    if ($oldCloseButton) {
       $i->click('button[aria-label="Close dialog"]');
+      $i->waitForElementNotVisible('button[aria-label="Close dialog"]');
     }
   }
 
