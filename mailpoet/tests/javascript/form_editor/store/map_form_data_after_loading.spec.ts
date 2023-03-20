@@ -207,7 +207,7 @@ describe('Form Data Load Mapper', () => {
       );
     });
 
-    it('It ensures fontSize is an integer', () => {
+    it('It maps font size', () => {
       const mapData = {
         ...data,
         settings: {
@@ -215,7 +215,7 @@ describe('Form Data Load Mapper', () => {
           fontSize: '23',
         },
       };
-      expect(map(mapData).settings.fontSize).to.equal(23);
+      expect(map(mapData).settings.fontSize).to.equal('23');
 
       const mapData2 = {
         ...data,
@@ -239,13 +239,10 @@ describe('Form Data Load Mapper', () => {
         ...data,
         settings: {
           ...data.settings,
-          fontSize: 13.5,
+          fontSize: '1.3em',
         },
       };
-      expect(map(mapData4).settings.fontSize).to.equal(13);
-
-      mapData.settings.fontSize = 'hello';
-      expect(map(mapData).settings.fontSize).to.be.equal(undefined);
+      expect(map(mapData4).settings.fontSize).to.equal('1.3em');
     });
   });
 });
