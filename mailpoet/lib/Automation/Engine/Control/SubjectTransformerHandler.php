@@ -8,6 +8,7 @@ use MailPoet\Automation\Engine\Data\Step as StepData;
 use MailPoet\Automation\Engine\Data\Subject as SubjectData;
 use MailPoet\Automation\Engine\Integration\Step;
 use MailPoet\Automation\Engine\Integration\SubjectTransformer;
+use MailPoet\Automation\Engine\Integration\Trigger;
 use MailPoet\Automation\Engine\Registry;
 use MailPoet\Automation\Engine\Storage\AutomationStorage;
 
@@ -25,6 +26,15 @@ class SubjectTransformerHandler {
   ) {
     $this->registry = $registry;
     $this->automationStorage = $automationStorage;
+  }
+
+  public function subjectKeysForTrigger(Trigger $trigger): array {
+    $subjectKeys = $trigger->getSubjectKeys();
+    $possibleKeys = [];
+    foreach ($subjectKeys as $key) {
+      $possibleKeys = array_merge($possibleKeys, $this->getPossibleTransformations($key));
+    }
+    return array_unique(array_values(array_merge($subjectKeys, $possibleKeys)));
   }
 
   /** @return string[] */
