@@ -29,7 +29,11 @@ class TriggerHandler {
   /** @var AutomationRunStorage */
   private $automationRunStorage;
 
+  /** @var Functions  */
   private $wp;
+
+  /** @var SubjectTransformerHandler */
+  private $subjectTransformerHandler;
 
   public function __construct(
     ActionScheduler $actionScheduler,
@@ -37,7 +41,8 @@ class TriggerHandler {
     WordPress $wordPress,
     AutomationStorage $automationStorage,
     AutomationRunStorage $automationRunStorage,
-    Functions $wp
+    Functions $wp,
+    SubjectTransformerHandler $subjectTransformerHandler
   ) {
     $this->actionScheduler = $actionScheduler;
     $this->wordPress = $wordPress;
@@ -45,6 +50,7 @@ class TriggerHandler {
     $this->automationRunStorage = $automationRunStorage;
     $this->subjectLoader = $subjectLoader;
     $this->wp = $wp;
+    $this->subjectTransformerHandler = $subjectTransformerHandler;
   }
 
   public function initialize(): void {
@@ -53,6 +59,7 @@ class TriggerHandler {
 
   /** @param Subject[] $subjects */
   public function processTrigger(Trigger $trigger, array $subjects): void {
+    $subjects = $this->subjectTransformerHandler->provideAllSubjects($trigger, ...$subjects);
     $automations = $this->automationStorage->getActiveAutomationsByTrigger($trigger);
     foreach ($automations as $automation) {
       $step = $automation->getTrigger($trigger->getKey());
