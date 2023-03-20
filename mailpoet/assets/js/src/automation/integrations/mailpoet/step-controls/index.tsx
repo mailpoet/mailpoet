@@ -5,7 +5,7 @@ import { MoreControlType, StepMoreControlsType } from '../../../types/filters';
 import { Step } from '../../../editor/components/automation/types';
 
 const emailStatisticsControl = (step: Step): MoreControlType => {
-  const hasEmail = step.args?.email_id > 0;
+  const hasEmail = (step.args?.email_id as number) > 0;
   return {
     key: 'statistics',
     control: {
