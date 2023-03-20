@@ -36,7 +36,7 @@ export function CategoriesItem({
       <span className="mailpoet-categories-title" data-title={label}>
         {label}
       </span>
-      {count > 0 && (
+      {Number(count) > 0 && (
         <span className="mailpoet-categories-count">
           {parseInt(count.toString(), 10).toLocaleString()}
         </span>
