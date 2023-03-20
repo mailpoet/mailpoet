@@ -3,13 +3,11 @@
 namespace MailPoet\Automation\Engine\Control;
 
 use MailPoet\Automation\Engine\Data\Automation;
-use MailPoet\Automation\Engine\Data\AutomationRun;
 use MailPoet\Automation\Engine\Data\Step;
 use MailPoet\Automation\Engine\Data\Subject;
 use MailPoet\Automation\Engine\Integration\SubjectTransformer;
 use MailPoet\Automation\Engine\Integration\Trigger;
 use MailPoet\Automation\Engine\Registry;
-use MailPoet\Automation\Engine\Storage\AutomationStorage;
 use MailPoetUnitTest;
 
 class SubjectTransformerHandlerTest extends MailPoetUnitTest {
@@ -45,8 +43,7 @@ class SubjectTransformerHandlerTest extends MailPoetUnitTest {
     $registry->expects($this->any())->method('getStep')->willReturnCallback(function($key) use ($trigger){
       return $key === 'trigger' ? $trigger : null;
     });
-    $storage = $this->createMock(AutomationStorage::class);
-    $testee = new SubjectTransformerHandler($registry, $storage);
+    $testee = new SubjectTransformerHandler($registry);
 
     $triggerData = $this->createMock(Step::class);
     $triggerData->expects($this->any())->method('getType')->willReturn(Step::TYPE_TRIGGER);
@@ -81,8 +78,7 @@ class SubjectTransformerHandlerTest extends MailPoetUnitTest {
     $registry->expects($this->any())->method('getStep')->willReturnCallback(function($key) use ($trigger){
       return $key === 'trigger' ? $trigger : null;
     });
-    $storage = $this->createMock(AutomationStorage::class);
-    $testee = new SubjectTransformerHandler($registry, $storage);
+    $testee = new SubjectTransformerHandler($registry);
 
     $triggerData = $this->createMock(Step::class);
     $triggerData->expects($this->any())->method('getType')->willReturn(Step::TYPE_TRIGGER);
@@ -115,8 +111,7 @@ class SubjectTransformerHandlerTest extends MailPoetUnitTest {
       }
       return null;
     });
-    $storage = $this->createMock(AutomationStorage::class);
-    $testee = new SubjectTransformerHandler($registry, $storage);
+    $testee = new SubjectTransformerHandler($registry);
 
     $trigger1Data = $this->createMock(Step::class);
     $trigger1Data->expects($this->any())->method('getType')->willReturn(Step::TYPE_TRIGGER);
@@ -132,7 +127,7 @@ class SubjectTransformerHandlerTest extends MailPoetUnitTest {
     $this->assertEquals(['b', 'c'], $result);
   }
 
-  public function testItTransformsSubjects(): void {
+  public function testItProvidesAllSubjects(): void {
 
     $subjectTransformerStart = $this->createMock(SubjectTransformer::class);
     $subjectTransformerStart->expects($this->any())->method('accepts')->willReturn('from');
@@ -154,15 +149,19 @@ class SubjectTransformerHandlerTest extends MailPoetUnitTest {
       return $subject;
     });
 
+    $unrelatedTransformer = $this->createMock(SubjectTransformer::class);
+    $unrelatedTransformer->expects($this->any())->method('accepts')->willReturn('unrelated');
+    $unrelatedTransformer->expects($this->never())->method('returns')->willReturn('some-other-unrelated');
+    $unrelatedTransformer->expects($this->never())->method('transform');
+
+
     $transformer = [
       $subjectTransformerEnd,
       $subjectTransformerStart,
+      $unrelatedTransformer,
     ];
-    $automation = $this->createMock(Automation::class);
-    $triggerStep = $this->createMock(Step::class);
-    $triggerStep->expects($this->any())->method('getType')->willReturn(Step::TYPE_TRIGGER);
-    $triggerStep->expects($this->any())->method('getKey')->willReturn('trigger');
-    $automation->expects($this->any())->method('getSteps')->willReturn([$triggerStep]);
+    $trigger = $this->createMock(Trigger::class);
+    $trigger->expects($this->any())->method('getSubjectKeys')->willReturn(['from']);
 
     $registry = $this->createMock(Registry::class);
     $registry->expects($this->any())->method('getStep')->willReturnCallback(
@@ -178,22 +177,14 @@ class SubjectTransformerHandlerTest extends MailPoetUnitTest {
       }
     );
     $registry->expects($this->any())->method('getSubjectTransformer')->willReturn($transformer);
-    $storage = $this->createMock(AutomationStorage::class);
-    $storage->expects($this->any())->method('getAutomation')->willReturnCallback(function($id) use ($automation) {
-      return $id === 1 ? $automation : null;
-    });
-    $testee = new SubjectTransformerHandler($registry, $storage);
+    $testee = new SubjectTransformerHandler($registry);
 
     $subject = new Subject('from', ['key' => 'value']);
-    $automationRun = $this->createMock(AutomationRun::class);
-    $automationRun->expects($this->any())->method('getAutomationId')->willReturn(1);
-    $automationRun->expects($this->any())->method('getVersionId')->willReturn(1);
-    $automationRun->expects($this->any())->method('getSubjects')->willReturn([$subject]);
-    $subjects = $testee->transformSubjectData('to', $automationRun);
+    $subjects = $testee->provideAllSubjects($trigger, $subject);
     $this->assertNotNull($subjects);
-    $this->assertCount(1, $subjects);
-    $subject = current($subjects);
-    $this->assertInstanceOf(Subject::class, $subject);
-    $this->assertEquals('to', $subject->getKey());
+    $this->assertCount(3, $subjects);
+    $this->assertSame(['from', 'middle', 'to'], array_map(function(Subject $subject): string { return $subject->getKey();
+
+    }, $subjects));
   }
 }
