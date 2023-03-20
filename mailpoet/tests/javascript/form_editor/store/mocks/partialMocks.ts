@@ -11,7 +11,7 @@ export const createStateMock = (data: Partial<State>): State => data as State;
 export const createBlockMock = (
   data: Partial<BlockInstance>,
 ): BlockInstance => {
-  if (!data.innerBlocks || data.innerBlocks === []) {
+  if (!data.innerBlocks || data.innerBlocks.length === 0) {
     return data as BlockInstance;
   }
   const innerBlocks = data.innerBlocks.map((block) => createBlockMock(block));
