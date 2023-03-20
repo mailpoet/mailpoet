@@ -213,7 +213,8 @@ class WooCheckoutBlocksCest {
     $this->closeDialog($i);
     $i->click('button[aria-label="Toggle block inserter"]');
     $i->fillField('[placeholder="Search"]', 'Checkout');
-    $i->click('Checkout');
+    $i->waitForElement(Locator::contains('button', 'Checkout'));
+    $i->click(Locator::contains('button', 'Checkout')); // Select Checkout block
     // Close dialog with Compatibility notice
     $this->closeDialog($i);
 
