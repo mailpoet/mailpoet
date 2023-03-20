@@ -80,6 +80,16 @@ class ParagraphTest extends \MailPoetUnitTest {
     expect($html)->equals('<p class="mailpoet_form_paragraph mailpoet-has-font-size" style="font-size: 33px">Paragraph</p>');
   }
 
+  public function testItShouldRenderFontSizeWithUnit() {
+    $html = $this->paragraph->render([
+      'params' => [
+        'content' => 'Paragraph',
+        'font_size' => '2.3em',
+      ],
+    ]);
+    expect($html)->equals('<p class="mailpoet_form_paragraph mailpoet-has-font-size" style="font-size: 2.3em">Paragraph</p>');
+  }
+
   public function testItShouldRenderLineHeight() {
     $html = $this->paragraph->render([
       'params' => [

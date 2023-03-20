@@ -58,6 +58,12 @@ class BlockRendererHelperTest extends \MailPoetUnitTest {
     $block['params']['hide_label'] = '1';
     $label = $this->rendererHelper->renderLabel($block, []);
     expect($label)->equals('');
+
+    $label = $this->rendererHelper->renderLabel($this->block, ['fontSize' => 10]);
+    expect($label)->stringContainsString('style="font-size: 10px;');
+
+    $label = $this->rendererHelper->renderLabel($this->block, ['fontSize' => '1.2em']);
+    expect($label)->stringContainsString('style="font-size: 1.2em;');
   }
 
   public function testItShouldRenderLegend() {
