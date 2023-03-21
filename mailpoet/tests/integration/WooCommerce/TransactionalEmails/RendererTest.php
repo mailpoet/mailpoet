@@ -95,6 +95,37 @@ class RendererTest extends \MailPoetTest {
     expect($css)->stringContainsString("#mailpoet_woocommerce_container h1 {\nfont-weight:700\n}");
   }
 
+  public function testItReplaceShortcodes() {
+    $this->newsletter->setBody([
+      'content' => L::col([
+        L::row([L::col([['type' => 'text', 'text' => 'Some text before heading']])]),
+        L::row([L::col([['type' => 'text', 'text' => 'Some text between heading and content']])]),
+        ['type' => 'woocommerceContent'],
+        ['type' => 'woocommerceHeading'],
+        L::row([L::col([['type' => 'text', 'text' => 'Some text after content']])]),
+        L::row([L::col([
+          ['type' => 'text', 'text' => '[site:title]'],
+          ['type' => 'text', 'text' => '[site:homepage_url]'],
+          ['type' => 'text', 'text' => '[date:mtext]'],
+          ['type' => 'text', 'text' => '[date:y]'],
+        ])]),
+      ]),
+    ]);
+    $this->newslettersRepository->persist($this->newsletter);
+    $renderer = new Renderer(new csstidy, $this->getNewsletterRenderer());
+    $renderer->render($this->newsletter, 'Heading Text');
+    $html = $renderer->getHTMLAfterContent();
+
+    $siteName = strval(get_option('blogname'));
+    expect($html)->stringContainsString($siteName); // [site:title]
+
+    $siteUrl = strval(get_option('home'));
+    expect($html)->stringContainsString($siteUrl); // [site:homepage_url]
+
+    expect($html)->stringContainsString(date_i18n('F', WPFunctions::get()->currentTime('timestamp'))); // [date:mtext]
+    expect($html)->stringContainsString(date_i18n('Y', WPFunctions::get()->currentTime('timestamp'))); // [date:y]
+  }
+
   private function getNewsletterRenderer(): NewsletterRenderer {
     $wooPreprocessor = new ContentPreprocessor(Stub::make(
       \MailPoet\WooCommerce\TransactionalEmails::class,

@@ -2,6 +2,7 @@
 
 namespace MailPoet\WooCommerce\TransactionalEmails;
 
+use MailPoet\Cron\Workers\SendingQueue\Tasks\Shortcodes;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Newsletter\Renderer\Renderer as NewsletterRenderer;
 use MailPoetVendor\csstidy;
@@ -33,8 +34,11 @@ class Renderer {
   }
 
   public function render(NewsletterEntity $newsletter, ?string $subject = null) {
-    $renderedHtml = $this->renderer->renderAsPreview($newsletter, 'html', $subject);
+    $renderedNewsletter = $this->renderer->renderAsPreview($newsletter, 'html', $subject);
     $headingText = $subject ?? '';
+
+    $renderedHtml = Shortcodes::process($renderedNewsletter, null, $newsletter, null, null);
+
     $renderedHtml = str_replace(ContentPreprocessor::WC_HEADING_PLACEHOLDER, $headingText, $renderedHtml);
     $html = explode(ContentPreprocessor::WC_CONTENT_PLACEHOLDER, $renderedHtml);
     $this->htmlBeforeContent = $html[0];
