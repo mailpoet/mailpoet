@@ -3,7 +3,7 @@ import { MailPoet } from 'mailpoet';
 import { filter } from 'lodash/fp';
 import { ReactSelect } from 'common/form/react_select/react_select';
 import { Select } from 'common/form/select/select';
-import { useSelect, useDispatch } from '@wordpress/data';
+import { useDispatch, useSelect } from '@wordpress/data';
 
 import { Grid } from 'common/grid';
 import { Input } from 'common/form/input/input';
@@ -15,11 +15,11 @@ import {
   WindowWooCommerceCountries,
   WooCommerceFormItem,
 } from '../types';
-import { DateFields } from './date_fields';
+import { DateFields, dateFieldValidator, DateOperator } from './date_fields';
 import { storeName } from '../store';
 import {
-  WooCommerceActionTypes,
   actionTypesWithDefaultTypeAny,
+  WooCommerceActionTypes,
 } from './woocommerce_options';
 
 export function validateWooCommerce(formItems: WooCommerceFormItem): boolean {
@@ -73,6 +73,11 @@ export function validateWooCommerce(formItems: WooCommerceFormItem): boolean {
       !formItems.total_spent_type)
   ) {
     return false;
+  }
+  if (
+    Object.values(DateOperator).includes(formItems.operator as DateOperator)
+  ) {
+    return dateFieldValidator(formItems);
   }
   if (
     formItems.action === WooCommerceActionTypes.SINGLE_ORDER_VALUE &&

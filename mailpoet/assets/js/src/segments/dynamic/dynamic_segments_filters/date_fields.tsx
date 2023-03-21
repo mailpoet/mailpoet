@@ -143,3 +143,32 @@ export function DateFields({ filterIndex }: Props): JSX.Element {
     </Grid.CenteredRow>
   );
 }
+
+export function dateFieldValidator(formItems: DateFormItem): boolean {
+  if (!formItems.operator || !formItems.value) {
+    return false;
+  }
+
+  if (
+    [
+      DateOperator.BEFORE,
+      DateOperator.AFTER,
+      DateOperator.ON,
+      DateOperator.NOT_ON,
+    ].includes(formItems.operator as DateOperator)
+  ) {
+    const re = /^\d+-\d+-\d+$/;
+    return re.test(formItems.value);
+  }
+
+  if (
+    [DateOperator.IN_THE_LAST, DateOperator.NOT_IN_THE_LAST].includes(
+      formItems.operator as DateOperator,
+    )
+  ) {
+    const re = /^\d+$/;
+    return re.test(formItems.value) && Number(formItems.value) > 0;
+  }
+
+  return false;
+}

@@ -1,13 +1,13 @@
 import { useSelect } from '@wordpress/data';
 
-import { WordpressRoleFormItem, SubscriberActionTypes } from '../types';
+import { SubscriberActionTypes, WordpressRoleFormItem } from '../types';
 import { storeName } from '../store';
 import { WordpressRoleFields } from './subscriber_wordpress_role';
 import {
   SubscriberScoreFields,
   validateSubscriberScore,
 } from './subscriber_score';
-import { DateFields, DateOperator } from './date_fields';
+import { DateFields, dateFieldValidator, DateOperator } from './date_fields';
 import {
   MailPoetCustomFields,
   validateMailPoetCustomField,
@@ -44,20 +44,9 @@ export function validateSubscriber(formItems: WordpressRoleFormItem): boolean {
     return false;
   }
   if (
-    formItems.operator === DateOperator.BEFORE ||
-    formItems.operator === DateOperator.AFTER ||
-    formItems.operator === DateOperator.ON ||
-    formItems.operator === DateOperator.NOT_ON
+    Object.values(DateOperator).includes(formItems.operator as DateOperator)
   ) {
-    const re = /^\d+-\d+-\d+$/;
-    return re.test(formItems.value);
-  }
-  if (
-    formItems.operator === DateOperator.IN_THE_LAST ||
-    formItems.operator === DateOperator.NOT_IN_THE_LAST
-  ) {
-    const re = /^\d+$/;
-    return re.test(formItems.value) && Number(formItems.value) > 0;
+    return dateFieldValidator(formItems);
   }
   return false;
 }
