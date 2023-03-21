@@ -192,6 +192,7 @@ jQuery('#adminmenu #toplevel_page_mailpoet-newsletters')
   'admin_vendor.js'
 )%>
 
+<%= do_action('mailpoet_scripts_admin_before') %>
 
 <%if is_loading_3rd_party_enabled() and not is_dotcom_ecommerce_plan() %>
   <%= javascript('lib/analytics.js') %>
@@ -234,6 +235,7 @@ jQuery('#adminmenu #toplevel_page_mailpoet-newsletters')
     }
   </script>
 <% endif %>
+
 <script>
   Parsley.addMessages('mailpoet', {
     defaultMessage: '<%= __("This value seems to be invalid.") %>',
