@@ -2,7 +2,7 @@
 
 /*
  * Plugin Name: MailPoet
- * Version: 4.8.2-beta.3
+ * Version: 4.9.0-beta.3
  * Plugin URI: https://www.mailpoet.com
  * Description: Create and send newsletters, post notifications and welcome emails from your WordPress.
  * Author: MailPoet
