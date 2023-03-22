@@ -65,6 +65,14 @@ declare module '@wordpress/components' {
     export interface Props extends FormTokenFieldProps {}
   }
 
+  // Property "delay" is missing in Tooltip props
+  // eslint-disable-next-line @typescript-eslint/no-namespace
+  export namespace Tooltip {
+    export interface Props {
+      delay?: number;
+    }
+  }
+
   export const __experimentalText: any;
   export const __unstableComposite: typeof Composite;
   export const __unstableCompositeGroup: typeof CompositeGroup;
