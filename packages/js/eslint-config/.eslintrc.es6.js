@@ -1,0 +1,55 @@
+module.exports = {
+  extends: ['airbnb', 'plugin:react/jsx-runtime', 'prettier'],
+  env: {
+    amd: true,
+    browser: true,
+    mocha: true,
+  },
+  parser: '@babel/eslint-parser',
+  parserOptions: {
+    ecmaVersion: 6,
+    ecmaFeatures: {
+      jsx: true,
+    },
+  },
+  plugins: ['react-hooks', 'no-only-tests'],
+  settings: {
+    'import/resolver': 'webpack',
+  },
+  rules: {
+    // Hooks
+    'react-hooks/rules-of-hooks': 'error',
+    'react-hooks/exhaustive-deps': 'warn',
+    // Exceptions
+    'no-only-tests/no-only-tests': 2,
+    'no-script-url': 0,
+    'class-methods-use-this': 0,
+    'react/jsx-props-no-spreading': 0,
+    'import/extensions': 0, // we wouldn't be able to import jQuery without this line
+    'import/prefer-default-export': 0, // we want to stop using default exports and start using named exports
+    'react/destructuring-assignment': 0, // that would be too many changes to fix this one
+    'prefer-destructuring': 0, // that would be too many changes to fix this one
+    'jsx-a11y/label-has-for': [
+      2,
+      {
+        required: { some: ['nesting', 'id'] }, // some of our labels are hidden and we cannot nest those
+      },
+    ],
+    'jsx-a11y/anchor-is-valid': 0, // cannot fix this one, it would break wprdpress themes
+    'jsx-a11y/label-has-associated-control': [
+      2,
+      {
+        either: 'either', // control has to be either nested or associated via htmlFor
+      },
+    ],
+    'import/no-default-export': 1, // no default exports
+  },
+  overrides: [
+    {
+      files: ['*.spec.js'],
+      rules: {
+        'no-unused-expressions': 'off',
+      },
+    },
+  ],
+};
