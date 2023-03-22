@@ -13,6 +13,8 @@ import { formsAdding } from './tests/forms-adding.js';
 import { newsletterSearching } from './tests/newsletter-searching.js';
 import { newsletterSending } from './tests/newsletter-sending.js';
 import { listsViewSubscribers } from './tests/lists-view-subscribers.js';
+import { listsComplexSegment } from './tests/lists-complex-segment.js';
+import { newsletterStatistics } from './tests/newsletter-statistics.js';
 
 // Scenarios, Thresholds and Tags
 export let options = {
@@ -59,7 +61,7 @@ if (scenario) {
   options.scenarios = scenarios;
 }
 
-// All the tests ran for pull requests
+// Run those tests against a pull request build
 export async function pullRequests() {
   await newsletterListing();
   await subscribersListing();
@@ -72,9 +74,19 @@ export async function pullRequests() {
   await listsViewSubscribers();
 }
 
-// All the tests ran for a nightly testing
+// Run those tests against trunk in a nightly build
 export async function nightly() {
-  // TBD
+  await newsletterListing();
+  await subscribersListing();
+  await settingsBasic();
+  await subscribersFiltering();
+  await subscribersAdding();
+  await formsAdding();
+  await newsletterSearching();
+  await newsletterSending();
+  await listsViewSubscribers();
+  await listsComplexSegment();
+  await newsletterStatistics();
 }
 
 // HTML report data saved in performance folder
