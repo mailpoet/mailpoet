@@ -229,7 +229,7 @@ FormField.propTypes = {
     values: PropTypes.objectOf(PropTypes.string),
     tip: PropTypes.oneOfType([PropTypes.array, PropTypes.string]),
     label: PropTypes.string,
-    fields: PropTypes.arrayOf(PropTypes.object),
+    fields: PropTypes.arrayOf(PropTypes.object), // eslint-disable-line react/forbid-prop-types
     description: PropTypes.string,
     onWrapperClick: PropTypes.func,
     disabled: PropTypes.oneOfType([PropTypes.func, PropTypes.bool]),

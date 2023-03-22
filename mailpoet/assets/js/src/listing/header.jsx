@@ -63,7 +63,7 @@ class ListingHeader extends Component {
 ListingHeader.propTypes = {
   onSelectItems: PropTypes.func.isRequired,
   onSort: PropTypes.func.isRequired,
-  columns: PropTypes.arrayOf(PropTypes.object),
+  columns: PropTypes.arrayOf(PropTypes.object), // eslint-disable-line react/forbid-prop-types
   sort_by: PropTypes.string,
   sort_order: PropTypes.string,
   is_selectable: PropTypes.bool.isRequired,

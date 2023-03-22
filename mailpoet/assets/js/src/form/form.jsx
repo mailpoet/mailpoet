@@ -278,9 +278,9 @@ FormComponent.propTypes = {
     pathname: PropTypes.string,
   }),
   item: PropTypes.object, // eslint-disable-line react/forbid-prop-types
-  errors: PropTypes.arrayOf(PropTypes.object),
+  errors: PropTypes.arrayOf(PropTypes.object), // eslint-disable-line react/forbid-prop-types
   endpoint: PropTypes.string,
-  fields: PropTypes.arrayOf(PropTypes.object),
+  fields: PropTypes.arrayOf(PropTypes.object), // eslint-disable-line react/forbid-prop-types
   messages: PropTypes.shape({
     onUpdate: PropTypes.func,
     onCreate: PropTypes.func,

@@ -756,9 +756,9 @@ ListingComponent.propTypes = {
   }),
   onRenderItem: PropTypes.func.isRequired,
   isItemInactive: PropTypes.func,
-  columns: PropTypes.arrayOf(PropTypes.object),
-  bulk_actions: PropTypes.arrayOf(PropTypes.object),
-  item_actions: PropTypes.arrayOf(PropTypes.object),
+  columns: PropTypes.arrayOf(PropTypes.object), // eslint-disable-line react/forbid-prop-types
+  bulk_actions: PropTypes.arrayOf(PropTypes.object), // eslint-disable-line react/forbid-prop-types
+  item_actions: PropTypes.arrayOf(PropTypes.object), // eslint-disable-line react/forbid-prop-types
   search: PropTypes.bool,
   groups: PropTypes.bool,
   renderExtraActions: PropTypes.func,
