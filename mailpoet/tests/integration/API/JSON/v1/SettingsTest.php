@@ -335,11 +335,12 @@ class SettingsTest extends \MailPoetTest {
       $this->diContainer->get(ConfirmationEmailCustomizer::class)
     );
 
-    expect($this->endpoint->setupMSS($newKey))->isInstanceOf(SuccessResponse::class);
+    expect($this->endpoint->setKeyAndSetupMss($newKey))->isInstanceOf(SuccessResponse::class);
     expect($this->settings->get('mta.mailpoet_api_key'))->equals($newKey);
     expect($this->settings->get('mta_group'))->equals('mailpoet');
     expect($this->settings->get('mta.method'))->equals('MailPoet');
     expect($this->settings->get('signup_confirmation.enabled'))->equals(1);
+    expect($this->settings->get('premium.premium_key'))->equals($newKey);
   }
 
   private function createNewsletter(string $type, string $status = NewsletterEntity::STATUS_DRAFT, $parent = null): NewsletterEntity {
