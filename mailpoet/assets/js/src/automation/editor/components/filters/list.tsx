@@ -4,6 +4,7 @@ import { Button } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 import { __, sprintf } from '@wordpress/i18n';
 import { Icon, closeSmall } from '@wordpress/icons';
+import { Value } from './value';
 import { Filter } from '../automation/types';
 import { storeName } from '../../store';
 import { PremiumModal } from '../../../../common/premium_modal';
@@ -65,9 +66,7 @@ export function FiltersList(): JSX.Element | null {
               <span className="mailpoet-automation-filters-list-item-condition">
                 {filter.condition}
               </span>{' '}
-              <span className="mailpoet-automation-filters-list-item-value">
-                {filter.args.value as string}
-              </span>
+              <Value filter={filter} />
             </div>
             <Button
               className="mailpoet-automation-filters-list-item-remove"
