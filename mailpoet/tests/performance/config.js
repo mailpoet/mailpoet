@@ -6,7 +6,7 @@ export const scenario = __ENV.SCENARIO; // eslint-disable-line
 export const timeoutSet = '2m';
 
 export const adminUsername = 'admin';
-export const adminPassword = 'password';
+export const adminPassword = __ENV.PW || 'password'; // eslint-disable-line
 export const adminEmail = 'test@test.com';
 
 export const firstName = 'John';

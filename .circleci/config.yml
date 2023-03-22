@@ -476,6 +476,15 @@ jobs:
       wordpress_image_version:
         type: string
         default: ''
+      url:
+        type: string
+        default: 'http://localhost:9500'
+      pw:
+        type: string
+        default: 'password'
+      scenario:
+        type: string
+        default: 'pullrequests'
     steps:
       - attach_workspace:
           at: /home/circleci
@@ -498,7 +507,7 @@ jobs:
           name: Run performance tests
           command: |
             mkdir -p tests/performance/_output
-            ./do test:performance --url=https://qawp.net --scenario pullrequests
+            ./do test:performance --url=<< parameters.url >> --pw=<< parameters.pw >> --scenario=<< parameters.scenario >>
       - run:
           name: Check exceptions
           command: |
@@ -849,6 +858,9 @@ workflows:
       - performance_tests:
           <<: *slack-fail-post-step
           name: performance_latest
+          url: https://qawp.net
+          pw: $WP_TEST_PERFORMANCE_PW
+          scenario: nightlytests
           requires:
             - build
       - unit_tests:
