@@ -283,6 +283,11 @@ class Services extends APIEndpoint {
     return $this->checkMSSKey(['key' => $key]);
   }
 
+  public function refreshPremiumKeyStatus() {
+    $key = $this->settings->get('premium.premium_key');
+    return $this->checkPremiumKey(['key' => $key]);
+  }
+
   private function isItemInArray($item, $array): bool {
     return in_array($item, $array, true);
   }

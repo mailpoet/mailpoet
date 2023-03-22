@@ -512,6 +512,7 @@ class Settings extends APIEndpoint {
       'signup_confirmation' => [
         'enabled' => '1',
       ],
+      'premium.premium_key' => $apiKey,
     ];
     return $this->set($new_settings);
   }

@@ -103,6 +103,14 @@ class DotcomLicenseProvisioner {
       return new WP_Error('Provisioning failed activating the data', $this->concatMessages($response));
     }
 
+    $response = $this->services->refreshPremiumKeyStatus();
+    if ($response instanceof ErrorResponse) {
+      $this->loggerFactory->getLogger(LoggerFactory::TOPIC_PROVISIONING)->error(
+        'Refreshing Premium key failed',
+        ['$response' => $response]
+      );
+      return new WP_Error('Provisioning failed activating the data', $this->concatMessages($response));
+    }
 
     $this->loggerFactory->getLogger(LoggerFactory::TOPIC_PROVISIONING)->info(
       'License was provisioned'
