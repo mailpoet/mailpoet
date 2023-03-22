@@ -4,12 +4,20 @@ export type NextStep = {
   id: string;
 };
 
+export type Filter = {
+  field_type: string;
+  field_key: string;
+  condition: string;
+  args: Record<string, unknown>;
+};
+
 export type Step = {
   id: string;
   type: 'root' | 'trigger' | 'action';
   key: string;
   args: Record<string, unknown>;
   next_steps: NextStep[];
+  filters: Filter[];
 };
 
 export type Automation = {

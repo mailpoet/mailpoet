@@ -7,6 +7,7 @@ import { __ } from '@wordpress/i18n';
 import { storeName } from '../../store';
 import { FiltersPanelContentType } from '../../../types/filters';
 import { PremiumModal } from '../../../../common/premium_modal';
+import { FiltersList } from './list';
 
 function FiltersPanelContent(): JSX.Element {
   const [showPremiumModal, setShowPremiumModal] = useState(false);
@@ -60,6 +61,7 @@ export function FiltersPanel(): JSX.Element {
           'mailpoet',
         )}
       </div>
+      <FiltersList />
       {content(selectedStep)}
     </PanelBody>
   );
