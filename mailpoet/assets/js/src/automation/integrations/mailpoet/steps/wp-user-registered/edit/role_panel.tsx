@@ -48,9 +48,6 @@ export function RolePanel(): JSX.Element {
       <PlainBodyTitle title={__('Trigger settings', 'mailpoet')} />
       <SettingsInfoText />
       <FormTokenField
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        // The following error seems to be a mismatch. It claims the 'label' prop does not exist, but it does.
         label={__('When WordPress user role is:', 'mailpoet')}
         value={selected}
         suggestions={userRoles}
