@@ -638,7 +638,7 @@ class RoboFile extends \Robo\Tasks {
       // fix ESLint using ES6 rules
       return $this->collectionBuilder()
         ->taskExec(
-          'npx ../eslint-config/node_modules/.bin/eslint -c ../eslint-config/.eslintrc.es6.json ' .
+          'npx ../eslint-config/node_modules/.bin/eslint -c ../eslint-config/.eslintrc.es6.js ' .
             '--max-warnings 0 ' .
             '--fix ' .
             $filePath
@@ -649,7 +649,7 @@ class RoboFile extends \Robo\Tasks {
       // fix ESLint using TS rules
       return $this->collectionBuilder()
         ->taskExec(
-          'npx ../eslint-config/node_modules/.bin/eslint -c ../eslint-config/.eslintrc.ts.json ' .
+          'npx ../eslint-config/node_modules/.bin/eslint -c ../eslint-config/.eslintrc.ts.js ' .
             '--max-warnings 0 ' .
             '--fix ' .
             $filePath
@@ -660,7 +660,7 @@ class RoboFile extends \Robo\Tasks {
       // fix ESLint using tests rules
       return $this->collectionBuilder()
         ->taskExec(
-          'npx ../eslint-config/node_modules/.bin/eslint -c ../eslint-config/.eslintrc.tests_newsletter_editor.json ' .
+          'npx ../eslint-config/node_modules/.bin/eslint -c ../eslint-config/.eslintrc.tests_newsletter_editor.js ' .
             '--max-warnings 0 ' .
             '--fix ' .
             $filePath
@@ -671,7 +671,7 @@ class RoboFile extends \Robo\Tasks {
       // fix ESLint using ES5 rules
       return $this->collectionBuilder()
         ->taskExec(
-          'npx ../eslint-config/node_modules/.bin/eslint -c ../eslint-config/.eslintrc.es5.json ' .
+          'npx ../eslint-config/node_modules/.bin/eslint -c ../eslint-config/.eslintrc.es5.js ' .
             '--max-warnings 0 ' .
             '--fix ' .
             $filePath
