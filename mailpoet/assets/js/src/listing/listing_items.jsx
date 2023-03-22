@@ -142,14 +142,14 @@ class ListingItems extends Component {
 }
 
 ListingItems.propTypes = {
-  items: PropTypes.arrayOf(PropTypes.object).isRequired,
+  items: PropTypes.arrayOf(PropTypes.object).isRequired, // eslint-disable-line react/forbid-prop-types
   loading: PropTypes.bool.isRequired,
   messages: PropTypes.shape({
     onLoadingItems: PropTypes.func,
     onNoItemsFound: PropTypes.func,
   }).isRequired,
   group: PropTypes.string.isRequired,
-  columns: PropTypes.arrayOf(PropTypes.object).isRequired,
+  columns: PropTypes.arrayOf(PropTypes.object).isRequired, // eslint-disable-line react/forbid-prop-types
   is_selectable: PropTypes.bool.isRequired,
   selection: PropTypes.oneOfType([
     PropTypes.string,
@@ -168,8 +168,8 @@ ListingItems.propTypes = {
   onTrashItem: PropTypes.func.isRequired,
   onRefreshItems: PropTypes.func.isRequired,
   isItemInactive: PropTypes.func.isRequired,
-  item_actions: PropTypes.arrayOf(PropTypes.object).isRequired,
-  bulk_actions: PropTypes.arrayOf(PropTypes.object).isRequired,
+  item_actions: PropTypes.arrayOf(PropTypes.object).isRequired, // eslint-disable-line react/forbid-prop-types
+  bulk_actions: PropTypes.arrayOf(PropTypes.object).isRequired, // eslint-disable-line react/forbid-prop-types
   onBulkAction: PropTypes.func.isRequired,
   search: PropTypes.string,
   location: PropTypes.shape({

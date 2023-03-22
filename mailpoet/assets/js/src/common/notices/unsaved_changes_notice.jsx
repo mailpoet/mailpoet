@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import { useEffect } from 'react';
 import { useSelect } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
@@ -29,6 +30,10 @@ function UnsavedChangesNotice({ storeName }) {
 
   return null;
 }
+
+UnsavedChangesNotice.propTypes = {
+  storeName: PropTypes.string.isRequired,
+};
 
 UnsavedChangesNotice.displayName = 'UnsavedChangesNotice';
 const UnsavedChangesNoticeWithBoundary = withBoundary(UnsavedChangesNotice);

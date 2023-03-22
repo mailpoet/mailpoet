@@ -105,7 +105,7 @@ class ListingBulkActions extends Component {
 }
 
 ListingBulkActions.propTypes = {
-  bulk_actions: PropTypes.arrayOf(PropTypes.object).isRequired,
+  bulk_actions: PropTypes.arrayOf(PropTypes.object).isRequired, // eslint-disable-line react/forbid-prop-types
   selection: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]).isRequired,
   selected_ids: PropTypes.arrayOf(PropTypes.number).isRequired,
   onBulkAction: PropTypes.func.isRequired,

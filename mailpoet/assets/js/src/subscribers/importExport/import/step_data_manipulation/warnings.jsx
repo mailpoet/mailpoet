@@ -1,10 +1,10 @@
-import { useState } from 'react';
 import PropTypes from 'prop-types';
+import { useState } from 'react';
 import { MailPoet } from 'mailpoet';
 import ReactStringReplace from 'react-string-replace';
 import classnames from 'classnames';
 
-const SingleWarning = ({ translation, subscribers }) => {
+function SingleWarning({ translation, subscribers }) {
   let warning = '';
   if (subscribers.length) {
     warning = ReactStringReplace(
@@ -17,7 +17,7 @@ const SingleWarning = ({ translation, subscribers }) => {
     warning = <p>{warning}</p>;
   }
   return warning;
-};
+}
 
 SingleWarning.propTypes = {
   translation: PropTypes.string.isRequired,

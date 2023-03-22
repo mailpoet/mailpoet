@@ -227,13 +227,13 @@ ListingItem.propTypes = {
   onDeleteItem: PropTypes.func.isRequired,
   is_selectable: PropTypes.bool.isRequired,
   item: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
-  columns: PropTypes.arrayOf(PropTypes.object).isRequired,
+  columns: PropTypes.arrayOf(PropTypes.object).isRequired, // eslint-disable-line react/forbid-prop-types
   selection: PropTypes.oneOfType([
     PropTypes.string,
     PropTypes.number,
     PropTypes.bool,
   ]).isRequired,
-  item_actions: PropTypes.arrayOf(PropTypes.object).isRequired,
+  item_actions: PropTypes.arrayOf(PropTypes.object).isRequired, // eslint-disable-line react/forbid-prop-types
   onRefreshItems: PropTypes.func.isRequired,
   onRenderItem: PropTypes.func.isRequired,
   isItemInactive: PropTypes.func.isRequired,
