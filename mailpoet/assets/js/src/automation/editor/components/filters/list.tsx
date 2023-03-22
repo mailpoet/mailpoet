@@ -13,10 +13,11 @@ import { DeleteStepFilterType } from '../../../types/filters';
 export function FiltersList(): JSX.Element | null {
   const [showPremiumModal, setShowPremiumModal] = useState(false);
 
-  const { step, fields } = useSelect(
+  const { step, fields, filters } = useSelect(
     (select) => ({
       step: select(storeName).getSelectedStep(),
       fields: select(storeName).getRegistry().fields,
+      filters: select(storeName).getRegistry().filters,
     }),
     [],
   );
@@ -64,7 +65,9 @@ export function FiltersList(): JSX.Element | null {
                   )}
               </span>{' '}
               <span className="mailpoet-automation-filters-list-item-condition">
-                {filter.condition}
+                {filters[filter.field_type]?.conditions.find(
+                  ({ key }) => key === filter.condition,
+                )?.label ?? __('unknown condition', 'mailpoet')}
               </span>{' '}
               <Value filter={filter} />
             </div>
