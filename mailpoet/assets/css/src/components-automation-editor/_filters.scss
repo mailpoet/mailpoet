@@ -5,3 +5,31 @@ button.components-button.mailpoet-automation-filters-panel-add-filter {
     margin-right: 4px;
   }
 }
+
+.mailpoet-automation-filters-list {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.mailpoet-automation-filters-list-item {
+  align-items: center;
+  background: #f0f0f0;
+  display: grid;
+  grid-template-columns: 1fr auto;
+
+  .mailpoet-automation-filters-list-item-content {
+    padding: 8px 12px;
+  }
+
+  .mailpoet-automation-filters-list-item-remove {
+    color: #757575;
+    margin: 4px;
+    padding: 0;
+  }
+}
+
+.mailpoet-automation-filters-list-item-field,
+.mailpoet-automation-filters-list-item-value {
+  font-weight: 600;
+}
