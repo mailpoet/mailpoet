@@ -6,7 +6,7 @@
 import { Dispatch, SetStateAction } from 'react';
 import { DropdownMenu } from '@wordpress/components';
 import { Item } from '../editor/components/inserter/item';
-import { Step } from '../editor/components/automation/types';
+import { Filter, Step } from '../editor/components/automation/types';
 import { EditorStoreConfig } from '../editor/store';
 
 interface ControlWithSetIsBusy extends Omit<DropdownMenu.Control, 'onClick'> {
@@ -56,3 +56,6 @@ export type OrderStatusOptions = Map<
 
 // mailpoet.automation.filters.panel.content
 export type FiltersPanelContentType = (step: Step) => JSX.Element;
+
+// mailpoet.automation.filters.delete_step_filter_callback
+export type DeleteStepFilterType = (stepId: string, filter: Filter) => void;
