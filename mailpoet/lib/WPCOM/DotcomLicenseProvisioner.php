@@ -39,6 +39,7 @@ class DotcomLicenseProvisioner {
    * @return bool
    */
   public function isAtomicPlatform(): bool {
+    // ATOMIC_CLIENT_ID === '2' corresponds to WordPress.com client on the Atomic platform
     return defined('IS_ATOMIC') && IS_ATOMIC && defined('ATOMIC_CLIENT_ID') && (ATOMIC_CLIENT_ID === '2');
   }
 
@@ -84,7 +85,7 @@ class DotcomLicenseProvisioner {
    * @return true|WP_Error
    */
   public function activateMSS(string $apiKey) {
-    $response = $this->settings->setupMSS($apiKey);
+    $response = $this->settings->setKeyAndSetupMss($apiKey);
     if ($response instanceof ErrorResponse) {
       $this->loggerFactory->getLogger(LoggerFactory::TOPIC_PROVISIONING)->error(
         'Setting sending method and key failed',
@@ -109,7 +110,7 @@ class DotcomLicenseProvisioner {
         'Refreshing Premium key failed',
         ['$response' => $response]
       );
-      return new WP_Error('Provisioning failed activating the data', $this->concatMessages($response));
+      return new WP_Error('Provisioning failed to verify api key access for MSS/premium', $this->concatMessages($response));
     }
 
     $this->loggerFactory->getLogger(LoggerFactory::TOPIC_PROVISIONING)->info(

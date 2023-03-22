@@ -13,6 +13,7 @@ use MailPoet\Cron\Workers\SubscribersEngagementScore;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Form\FormMessageController;
+use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
@@ -502,11 +503,11 @@ class Settings extends APIEndpoint {
    * @param string $apiKey
    * @return ErrorResponse|SuccessResponse
    */
-  public function setupMSS(string $apiKey) {
+  public function setKeyAndSetupMss(string $apiKey) {
     $new_settings = [
       'mta_group' => 'mailpoet',
       'mta' => [
-        'method' => 'MailPoet',
+        'method' => Mailer::METHOD_MAILPOET,
         'mailpoet_api_key' => $apiKey,
       ],
       'signup_confirmation' => [

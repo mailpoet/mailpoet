@@ -64,7 +64,7 @@ class DotcomLicenseProvisionerTest extends \MailPoetTest {
       DotcomLicenseProvisioner::class,
       [
         $this->diContainer->get(LoggerFactory::class),
-        $this->make(Settings::class, ['setupMSS' => new ErrorResponse(['error' => 'some-error'])]),
+        $this->make(Settings::class, ['setKeyAndSetupMss' => new ErrorResponse(['error' => 'some-error'])]),
         $this->make(Services::class, ['refreshMSSKeyStatus' => new SuccessResponse()]),
       ],
       ['isAtomicPlatform' => true]);
@@ -81,7 +81,7 @@ class DotcomLicenseProvisionerTest extends \MailPoetTest {
       DotcomLicenseProvisioner::class,
       [
         $this->diContainer->get(LoggerFactory::class),
-        $this->make(Settings::class, ['setupMSS' => new SuccessResponse()]),
+        $this->make(Settings::class, ['setKeyAndSetupMss' => new SuccessResponse()]),
         $this->make(Services::class, ['refreshMSSKeyStatus' => new ErrorResponse(['error' => 'some-error'])]),
       ],
       ['isAtomicPlatform' => true]);
@@ -98,7 +98,7 @@ class DotcomLicenseProvisionerTest extends \MailPoetTest {
       DotcomLicenseProvisioner::class,
       [
         $this->diContainer->get(LoggerFactory::class),
-        $this->make(Settings::class, ['setupMSS' => new SuccessResponse()]),
+        $this->make(Settings::class, ['setKeyAndSetupMss' => new SuccessResponse()]),
         $this->make(Services::class,
           [
             'refreshMSSKeyStatus' => new SuccessResponse(),
@@ -119,7 +119,7 @@ class DotcomLicenseProvisionerTest extends \MailPoetTest {
       DotcomLicenseProvisioner::class,
       [
         $this->diContainer->get(LoggerFactory::class),
-        $this->make(Settings::class, ['setupMSS' => new SuccessResponse()]),
+        $this->make(Settings::class, ['setKeyAndSetupMss' => new SuccessResponse()]),
         $this->make(Services::class,
           [
             'refreshMSSKeyStatus' => new SuccessResponse(),
