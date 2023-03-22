@@ -73,7 +73,7 @@ class DotcomLicenseProvisionerTest extends \MailPoetTest {
     expect($error->get_error_message())->equals('some-error ');
   }
 
-  public function testItReturnsTrueIfCouldNotRefreshKey() {
+  public function testItReturnsErrorIfCouldNotRefreshKey() {
     $result = false;
     $payload = ['apiKey' => 'some-key'];
     $eventType = DotcomLicenseProvisioner::EVENT_TYPE_PROVISION_LICENSE;
@@ -90,6 +90,27 @@ class DotcomLicenseProvisionerTest extends \MailPoetTest {
     expect($error->get_error_message())->equals('some-error ');
   }
 
+  public function testItReturnsErrorIfCouldNotVerifyPremiumKey() {
+    $result = false;
+    $payload = ['apiKey' => 'some-key'];
+    $eventType = DotcomLicenseProvisioner::EVENT_TYPE_PROVISION_LICENSE;
+    $provisioner = $this->construct(
+      DotcomLicenseProvisioner::class,
+      [
+        $this->diContainer->get(LoggerFactory::class),
+        $this->make(Settings::class, ['setupMSS' => new SuccessResponse()]),
+        $this->make(Services::class,
+          [
+            'refreshMSSKeyStatus' => new SuccessResponse(),
+            'refreshPremiumKeyStatus' => new ErrorResponse(['error' => 'some-error']),
+          ]),
+      ],
+      ['isAtomicPlatform' => true]);
+    $error = $provisioner->provisionLicense($result, $payload, $eventType);
+    $this->assertInstanceOf(\WP_Error::class, $error);
+    expect($error->get_error_message())->equals('some-error ');
+  }
+
   public function testItReturnsTrueIfKeyProvidedMSSActivatedAndRefreshed() {
     $result = false;
     $payload = ['apiKey' => 'some-key'];
@@ -99,7 +120,11 @@ class DotcomLicenseProvisionerTest extends \MailPoetTest {
       [
         $this->diContainer->get(LoggerFactory::class),
         $this->make(Settings::class, ['setupMSS' => new SuccessResponse()]),
-        $this->make(Services::class, ['refreshMSSKeyStatus' => new SuccessResponse()]),
+        $this->make(Services::class,
+          [
+            'refreshMSSKeyStatus' => new SuccessResponse(),
+            'refreshPremiumKeyStatus' => new SuccessResponse(),
+          ]),
       ],
       ['isAtomicPlatform' => true]);
     $result = $provisioner->provisionLicense($result, $payload, $eventType);
