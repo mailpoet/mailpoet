@@ -387,7 +387,7 @@ importers:
       '@typescript-eslint/parser': ^5.56.0
       eslint: ^8.36.0
       eslint-config-airbnb: ^19.0.4
-      eslint-config-airbnb-typescript: ^16.1.2
+      eslint-config-airbnb-typescript: ^17.0.0
       eslint-config-prettier: ^8.5.0
       eslint-import-resolver-webpack: ^0.13.2
       eslint-plugin-import: ^2.25.4
@@ -401,7 +401,7 @@ importers:
       '@typescript-eslint/parser': 5.56.0_j4766f7ecgqbon3u7zlxn5zszu
       eslint: 8.36.0
       eslint-config-airbnb: 19.0.4_yy3rvzv4hhuqalcp6crqvkfamy
-      eslint-config-airbnb-typescript: 16.1.2_kht3p5c444dgqjhmyef63o5r4i
+      eslint-config-airbnb-typescript: 17.0.0_kht3p5c444dgqjhmyef63o5r4i
       eslint-config-prettier: 8.5.0_eslint@8.36.0
       eslint-import-resolver-webpack: 0.13.2_t6pef3jrjg2rjejjp7kevcbc34
       eslint-plugin-import: 2.25.4_joldvpx7lohpzljt6obm6gr4ma
@@ -14832,7 +14832,7 @@ packages:
       is-weakref: 1.0.2
       object-inspect: 1.12.3
       object-keys: 1.1.1
-      object.assign: 4.1.2
+      object.assign: 4.1.4
       regexp.prototype.flags: 1.4.3
       string.prototype.trimend: 1.0.5
       string.prototype.trimstart: 1.0.5
@@ -15024,15 +15024,15 @@ packages:
       confusing-browser-globals: 1.0.11
       eslint: 8.36.0
       eslint-plugin-import: 2.25.4_joldvpx7lohpzljt6obm6gr4ma
-      object.assign: 4.1.2
-      object.entries: 1.1.5
+      object.assign: 4.1.4
+      object.entries: 1.1.6
       semver: 6.3.0
     dev: true
 
-  /eslint-config-airbnb-typescript/16.1.2_kht3p5c444dgqjhmyef63o5r4i:
-    resolution: {integrity: sha512-IZnWyJXCYGpWvEmGQ9eyxQUnuH/NTmw4E6pI+NNGNxu4weWclZstaDGjzD+lrld81sP4BKshaigLbqFWBB9QPg==}
+  /eslint-config-airbnb-typescript/17.0.0_kht3p5c444dgqjhmyef63o5r4i:
+    resolution: {integrity: sha512-elNiuzD0kPAPTXjFWg+lE24nMdHMtuxgYoD30OyMD6yrW1AhFZPAg27VX7d3tzOErw+dgJTNWfRSDqEcXb4V0g==}
     peerDependencies:
-      '@typescript-eslint/eslint-plugin': ^5.0.0
+      '@typescript-eslint/eslint-plugin': ^5.13.0
       '@typescript-eslint/parser': ^5.0.0
       eslint: ^7.32.0 || ^8.2.0
       eslint-plugin-import: ^2.25.3
@@ -15060,8 +15060,8 @@ packages:
       eslint-plugin-jsx-a11y: 6.5.1_eslint@8.36.0
       eslint-plugin-react: 7.32.2_eslint@8.36.0
       eslint-plugin-react-hooks: 4.6.0_eslint@8.36.0
-      object.assign: 4.1.2
-      object.entries: 1.1.5
+      object.assign: 4.1.4
+      object.entries: 1.1.6
     dev: true
 
   /eslint-config-prettier/8.5.0_eslint@8.36.0:
@@ -20394,13 +20394,14 @@ packages:
       define-properties: 1.1.4
       has-symbols: 1.0.3
       object-keys: 1.1.1
+    dev: true
 
   /object.assign/4.1.4:
     resolution: {integrity: sha512-1mxKf0e58bvyjSCtKYY4sRe9itRk3PJpquJOjeIkz885CczcI4IvJJDLPS72oowuSh+pBxUFROpX+TU++hxhZQ==}
     engines: {node: '>= 0.4'}
     dependencies:
       call-bind: 1.0.2
-      define-properties: 1.1.4
+      define-properties: 1.2.0
       has-symbols: 1.0.3
       object-keys: 1.1.1
 
