@@ -86,7 +86,7 @@ class FirstPurchase {
           'displayAfterTimeNumberField' => false,
         ],
         'minutes' => [
-          'text' => __('minutes(s)', 'mailpoet'),
+          'text' => __('minute(s)', 'mailpoet'),
           'displayAfterTimeNumberField' => true,
         ],
         'hours' => [
