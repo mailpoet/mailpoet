@@ -4,11 +4,10 @@
     "extends @wordpress/browserslist-config"
   ],
   "scripts": {
-    "lint": "pnpm run lint6 && pnpm run lint-ts && pnpm run lint5 && pnpm run lint-tests",
-    "lint6": "eslint -c ../packages/js/eslint-config/.eslintrc.es6.js --max-warnings 0 'assets/js/src/**/*.jsx' 'tests/javascript/**/*.js'",
-    "lint-ts": "eslint -c ../packages/js/eslint-config/.eslintrc.ts.js --max-warnings 0 'assets/js/src/**/*.tsx' 'assets/js/src/**/*.ts'",
-    "lint5": "eslint -c ../packages/js/eslint-config/.eslintrc.es5.js --max-warnings 0 'assets/js/src/**/*.js' 'webpack.config.js'",
-    "lint-tests": "eslint -c ../packages/js/eslint-config/.eslintrc.tests_newsletter_editor.js --max-warnings 0 'tests/javascript_newsletter_editor'",
+    "lint": "eslint --max-warnings 0 'assets/js/src/**' && pnpm run lint6 && pnpm run lint-ts && pnpm run lint-tests",
+    "lint6": "ESLINT_USE_FLAT_CONFIG=false eslint -c ../packages/js/eslint-config/.eslintrc.es6.js --max-warnings 0 'assets/js/src/**/*.jsx' 'tests/javascript/**/*.js'",
+    "lint-ts": "ESLINT_USE_FLAT_CONFIG=false eslint -c ../packages/js/eslint-config/.eslintrc.ts.js --max-warnings 0 'assets/js/src/**/*.tsx' 'assets/js/src/**/*.ts'",
+    "lint-tests": "ESLINT_USE_FLAT_CONFIG=false eslint -c ../packages/js/eslint-config/.eslintrc.tests_newsletter_editor.js --max-warnings 0 'tests/javascript_newsletter_editor'",
     "autoprefixer": "postcss assets/dist/css/*.css --use autoprefixer --no-map --replace",
     "scss": "sass assets/css/src/:assets/dist/css/ --style compressed",
     "stylelint": "stylelint --fix",
@@ -22,10 +21,10 @@
   },
   "lint-staged": {
     "*.{scss,css}": "pnpm run stylelint",
-    "!(*spec).js": "eslint -c ../packages/js/eslint-config/.eslintrc.es5.js --max-warnings 0",
-    "*.jsx": "eslint -c ../packages/js/eslint-config/.eslintrc.es6.js --max-warnings 0",
-    "*.{tsx,ts}": "eslint -c ../packages/js/eslint-config/.eslintrc.ts.js --max-warnings 0",
-    "**/newsletter_editor/**/*spec.js": "eslint -c ../packages/js/eslint-config/.eslintrc.tests_newsletter_editor.js --max-warnings 0",
+    "!(*spec).js": "eslint --max-warnings 0",
+    "*.jsx": "ESLINT_USE_FLAT_CONFIG=false eslint -c ../packages/js/eslint-config/.eslintrc.es6.js --max-warnings 0",
+    "*.{tsx,ts}": "ESLINT_USE_FLAT_CONFIG=false eslint -c ../packages/js/eslint-config/.eslintrc.ts.js --max-warnings 0",
+    "**/newsletter_editor/**/*spec.js": "ESLINT_USE_FLAT_CONFIG=false eslint -c ../packages/js/eslint-config/.eslintrc.tests_newsletter_editor.js --max-warnings 0",
     "*.php": [
       "phplint",
       "./do qa:code-sniffer",
