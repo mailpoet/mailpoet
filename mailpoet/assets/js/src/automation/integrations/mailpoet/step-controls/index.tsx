@@ -15,7 +15,7 @@ const emailStatisticsControl = (step: Step): MoreControlType => {
       onClick: () => {
         window.open(
           `admin.php?page=mailpoet-newsletters#/stats/${
-            step.args.email_id as string
+            step.args.email_id as number
           }`,
           '_blank',
         );
