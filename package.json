@@ -10,7 +10,7 @@
   },
   "devDependencies": {
     "@wordpress/scripts": "^25.5.1",
-    "lint-staged": "^12.3.7",
+    "lint-staged": "^12.5.0",
     "prettier": "2.6.2",
     "typescript": "^5.0.2"
   },
