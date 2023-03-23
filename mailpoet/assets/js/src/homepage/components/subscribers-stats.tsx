@@ -103,7 +103,7 @@ export function SubscribersStats(): JSX.Element {
               <span>{globalChange.unsubscribed}</span>
             </div>
           </div>
-          {listsChange.length && (
+          {!!listsChange.length && (
             <table className="mailpoet-subscribers-stats-list-change-table">
               <thead>
                 <tr>
