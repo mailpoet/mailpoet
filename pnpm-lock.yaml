@@ -395,6 +395,7 @@ importers:
       eslint-plugin-no-only-tests: ^3.1.0
       eslint-plugin-react: ^7.32.2
       eslint-plugin-react-hooks: ^4.6.0
+      globals: ^13.20.0
     devDependencies:
       '@babel/eslint-parser': 7.21.3_eslint@8.36.0
       '@typescript-eslint/eslint-plugin': 5.56.0_2hcjazgfnbtq42tcc73br2vup4
@@ -409,6 +410,7 @@ importers:
       eslint-plugin-no-only-tests: 3.1.0
       eslint-plugin-react: 7.32.2_eslint@8.36.0
       eslint-plugin-react-hooks: 4.6.0_eslint@8.36.0
+      globals: 13.20.0
 
 packages:
 
