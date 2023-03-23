@@ -83,6 +83,14 @@ module.exports = {
       },
     ],
     'import/no-default-export': 1, // no default exports
+    '@typescript-eslint/no-misused-promises': [
+      'error',
+      {
+        checksVoidReturn: {
+          attributes: false, // it is OK to pass an async function to JSX attributes
+        },
+      },
+    ],
   },
   overrides: [
     {
