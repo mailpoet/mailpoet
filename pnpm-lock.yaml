@@ -391,7 +391,7 @@ importers:
       eslint-config-prettier: ^8.8.0
       eslint-import-resolver-webpack: ^0.13.2
       eslint-plugin-import: ^2.25.4
-      eslint-plugin-jsx-a11y: ^6.5.1
+      eslint-plugin-jsx-a11y: ^6.7.1
       eslint-plugin-no-only-tests: ^3.1.0
       eslint-plugin-react: ^7.32.2
       eslint-plugin-react-hooks: ^4.6.0
@@ -400,12 +400,12 @@ importers:
       '@typescript-eslint/eslint-plugin': 5.56.0_2hcjazgfnbtq42tcc73br2vup4
       '@typescript-eslint/parser': 5.56.0_j4766f7ecgqbon3u7zlxn5zszu
       eslint: 8.36.0
-      eslint-config-airbnb: 19.0.4_yy3rvzv4hhuqalcp6crqvkfamy
+      eslint-config-airbnb: 19.0.4_y37utenjvokzwelqifwtgk37wm
       eslint-config-airbnb-typescript: 17.0.0_kht3p5c444dgqjhmyef63o5r4i
       eslint-config-prettier: 8.8.0_eslint@8.36.0
       eslint-import-resolver-webpack: 0.13.2_t6pef3jrjg2rjejjp7kevcbc34
       eslint-plugin-import: 2.25.4_joldvpx7lohpzljt6obm6gr4ma
-      eslint-plugin-jsx-a11y: 6.5.1_eslint@8.36.0
+      eslint-plugin-jsx-a11y: 6.7.1_eslint@8.36.0
       eslint-plugin-no-only-tests: 3.1.0
       eslint-plugin-react: 7.32.2_eslint@8.36.0
       eslint-plugin-react-hooks: 4.6.0_eslint@8.36.0
@@ -11715,11 +11715,6 @@ packages:
     resolution: {integrity: sha512-DMD0KiN46eipeziST1LPP/STfDU0sufISXmjSgvVsoU2tqxctQeASejWcfNtxYKqETM1UxQ8sp2OrSBWpHY6sw==}
     engines: {node: '>= 0.4'}
 
-  /axe-core/4.4.2:
-    resolution: {integrity: sha512-LVAaGp/wkkgYJcjmHsoKx4juT1aQvJyPcW09MLCjVTh3V2cc6PnyempiLMNH5iMdfIX/zdbjUx2KDjMLCTdPeA==}
-    engines: {node: '>=12'}
-    dev: true
-
   /axe-core/4.6.3:
     resolution: {integrity: sha512-/BQzOX780JhsxDnPpH4ZiyrJAzcd8AfzFPkv+89veFSr1rcMjuq2JDCwypKaPeB6ljHp9KjXhPpjgCvQlWYuqg==}
     engines: {node: '>=4'}
@@ -11731,10 +11726,6 @@ packages:
       follow-redirects: 1.15.2
     transitivePeerDependencies:
       - debug
-    dev: true
-
-  /axobject-query/2.2.0:
-    resolution: {integrity: sha512-Td525n+iPOOyUQIeBfcASuG6uJsDOITl7Mds5gFyerkWiX7qhUTdYUBlSgNMyVqtSJqwpt1kXGLdUt6SykLMRA==}
     dev: true
 
   /axobject-query/3.1.1:
@@ -15044,7 +15035,7 @@ packages:
       eslint-plugin-import: 2.25.4_joldvpx7lohpzljt6obm6gr4ma
     dev: true
 
-  /eslint-config-airbnb/19.0.4_yy3rvzv4hhuqalcp6crqvkfamy:
+  /eslint-config-airbnb/19.0.4_y37utenjvokzwelqifwtgk37wm:
     resolution: {integrity: sha512-T75QYQVQX57jiNgpF9r1KegMICE94VYwoFQyMGhrvc+lB8YF2E/M/PYDaQe1AJcWaEgqLE+ErXV1Og/+6Vyzew==}
     engines: {node: ^10.12.0 || ^12.22.0 || ^14.17.0 || >=16.0.0}
     peerDependencies:
@@ -15057,7 +15048,7 @@ packages:
       eslint: 8.36.0
       eslint-config-airbnb-base: 15.0.0_e4ki2fb7ewdvkpbogoziq5zq3a
       eslint-plugin-import: 2.25.4_joldvpx7lohpzljt6obm6gr4ma
-      eslint-plugin-jsx-a11y: 6.5.1_eslint@8.36.0
+      eslint-plugin-jsx-a11y: 6.7.1_eslint@8.36.0
       eslint-plugin-react: 7.32.2_eslint@8.36.0
       eslint-plugin-react-hooks: 4.6.0_eslint@8.36.0
       object.assign: 4.1.4
@@ -15273,27 +15264,6 @@ packages:
       spdx-expression-parse: 3.0.1
     transitivePeerDependencies:
       - supports-color
-    dev: true
-
-  /eslint-plugin-jsx-a11y/6.5.1_eslint@8.36.0:
-    resolution: {integrity: sha512-sVCFKX9fllURnXT2JwLN5Qgo24Ug5NF6dxhkmxsMEUZhXRcGg+X3e1JbJ84YePQKBl5E0ZjAH5Q4rkdcGY99+g==}
-    engines: {node: '>=4.0'}
-    peerDependencies:
-      eslint: ^3 || ^4 || ^5 || ^6 || ^7 || ^8
-    dependencies:
-      '@babel/runtime': 7.20.6
-      aria-query: 4.2.2
-      array-includes: 3.1.5
-      ast-types-flow: 0.0.7
-      axe-core: 4.4.2
-      axobject-query: 2.2.0
-      damerau-levenshtein: 1.0.8
-      emoji-regex: 9.2.2
-      eslint: 8.36.0
-      has: 1.0.3
-      jsx-ast-utils: 3.3.2
-      language-tags: 1.0.5
-      minimatch: 3.1.2
     dev: true
 
   /eslint-plugin-jsx-a11y/6.7.1_eslint@8.36.0:
@@ -18945,14 +18915,6 @@ packages:
       graceful-fs: 4.2.9
     dev: true
 
-  /jsx-ast-utils/3.3.2:
-    resolution: {integrity: sha512-4ZCADZHRkno244xlNnn4AOG6sRQ7iBZ5BbgZ4vW4y5IZw7cVUD1PPeblm1xx/nfmMxPdt/LHsXZW8z/j58+l9Q==}
-    engines: {node: '>=4.0'}
-    dependencies:
-      array-includes: 3.1.5
-      object.assign: 4.1.4
-    dev: true
-
   /jsx-ast-utils/3.3.3:
     resolution: {integrity: sha512-fYQHZTZ8jSfmWZ0iyzfwiU4WDX4HpHbMCZ3gPlWYiCl3BoeOTsqKBqnTVfH2rYT7eP5c3sVbeSPHnnJOaTrWiw==}
     engines: {node: '>=4.0'}
@@ -19864,7 +19826,7 @@ packages:
   /minimatch/3.1.2:
     resolution: {integrity: sha512-J7p63hRiAjw1NDEww1W7i37+ByIrOWO5XQQAzZ3VOcL0PNybwpfmV/N05zFAzwQ9USyEcX6t3UO+K5aqBQOIHw==}
     dependencies:
-      brace-expansion: 1.1.8
+      brace-expansion: 1.1.11
     dev: true
 
   /minimatch/4.2.1:
