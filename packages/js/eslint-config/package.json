@@ -7,6 +7,7 @@
   "scripts": {},
   "devDependencies": {
     "@babel/eslint-parser": "^7.21.3",
+    "@eslint/eslintrc": "^2.0.1",
     "@typescript-eslint/eslint-plugin": "^5.56.0",
     "@typescript-eslint/parser": "^5.56.0",
     "eslint": "^8.36.0",
