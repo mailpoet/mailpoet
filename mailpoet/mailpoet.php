@@ -54,7 +54,10 @@ if (version_compare(phpversion(), '7.2.0', '<')) {
 }
 
 // Check for minimum supported WooCommerce version
-if (function_exists('is_plugin_active') && is_plugin_active('woocommerce/woocommerce.php')) {
+if (!function_exists('is_plugin_active')) {
+  require_once ABSPATH . 'wp-admin/includes/plugin.php';
+}
+if (is_plugin_active('woocommerce/woocommerce.php')) {
   $woocommerceVersion = get_plugin_data(WP_PLUGIN_DIR . '/woocommerce/woocommerce.php')['Version'];
   if (version_compare($woocommerceVersion, MAILPOET_MINIMUM_REQUIRED_WOOCOMMERCE_VERSION, '<')) {
     add_action('admin_notices', 'mailpoet_woocommerce_version_notice');
