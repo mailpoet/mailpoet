@@ -623,7 +623,8 @@ class RoboFile extends \Robo\Tasks {
   }
 
   public function qaFixFile($filePath) {
-    if (substr($filePath, -4) === '.php') {
+    $extension = pathinfo($filePath, PATHINFO_EXTENSION);
+    if ($extension === 'php') {
       // fix PHPCS rules
       return $this->collectionBuilder()
         ->taskExec(
@@ -634,48 +635,10 @@ class RoboFile extends \Robo\Tasks {
         )
         ->run();
     }
-    if (substr($filePath, -4) === '.jsx') {
-      // fix ESLint using ES6 rules
+    if (in_array($extension, ['js', 'jsx', 'ts', 'tsx'], true)) {
+      // fix ESLint rules
       return $this->collectionBuilder()
-        ->taskExec(
-          'npx ../eslint-config/node_modules/.bin/eslint -c ../eslint-config/.eslintrc.es6.js ' .
-            '--max-warnings 0 ' .
-            '--fix ' .
-            $filePath
-        )
-        ->run();
-    }
-    if (substr($filePath, -4) === '.tsx' || substr($filePath, -3) === '.ts') {
-      // fix ESLint using TS rules
-      return $this->collectionBuilder()
-        ->taskExec(
-          'npx ../eslint-config/node_modules/.bin/eslint -c ../eslint-config/.eslintrc.ts.js ' .
-            '--max-warnings 0 ' .
-            '--fix ' .
-            $filePath
-        )
-        ->run();
-    }
-    if (substr($filePath, -8) === '.spec.js') {
-      // fix ESLint using tests rules
-      return $this->collectionBuilder()
-        ->taskExec(
-          'npx ../eslint-config/node_modules/.bin/eslint -c ../eslint-config/.eslintrc.tests_newsletter_editor.js ' .
-            '--max-warnings 0 ' .
-            '--fix ' .
-            $filePath
-        )
-        ->run();
-    }
-    if (substr($filePath, -3) === '.js') {
-      // fix ESLint using ES5 rules
-      return $this->collectionBuilder()
-        ->taskExec(
-          'npx ../eslint-config/node_modules/.bin/eslint -c ../eslint-config/.eslintrc.es5.js ' .
-            '--max-warnings 0 ' .
-            '--fix ' .
-            $filePath
-        )
+        ->taskExec("pnpm eslint --max-warnings 0 --fix $filePath")
         ->run();
     }
   }
