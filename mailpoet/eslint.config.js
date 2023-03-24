@@ -1,5 +1,6 @@
 const es5Config = require('@mailpoet/eslint-config/eslint-es5.config');
 const es6Config = require('@mailpoet/eslint-config/eslint-es6.config');
+const esTsConfig = require('@mailpoet/eslint-config/eslint-ts.config');
 
 module.exports = [
   {
@@ -12,5 +13,9 @@ module.exports = [
   ...es6Config.map((config) => ({
     ...config,
     files: ['assets/js/src/**/*.jsx', 'tests/javascript/**/*.js'],
+  })),
+  ...esTsConfig.map((config) => ({
+    ...config,
+    files: ['assets/js/src/**/*.{ts,tsx}'],
   })),
 ];
