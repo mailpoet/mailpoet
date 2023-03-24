@@ -5,7 +5,10 @@ const esTestsNewsletterEditorConfig = require('@mailpoet/eslint-config/eslint-te
 
 module.exports = [
   {
-    ignores: ['assets/js/src/vendor/**'],
+    ignores: [
+      'assets/js/src/vendor/**',
+      'tests/javascript_newsletter_editor/testBundles/**',
+    ],
   },
   ...es5Config.map((config) => ({
     ...config,
@@ -22,6 +25,5 @@ module.exports = [
   ...esTestsNewsletterEditorConfig.map((config) => ({
     ...config,
     files: ['tests/javascript_newsletter_editor/**/*.js'],
-    ignores: ['tests/javascript_newsletter_editor/testBundles/**'],
   })),
 ];
