@@ -23,7 +23,7 @@ function MSSStepFirstPart(): JSX.Element {
 
   useEffect(() => {
     if (state.isKeyValid === true) {
-      history.push(`/steps/${step}/part/3`);
+      history.replace(`/steps/${step}/part/3`);
     }
   }, [state.isKeyValid, history, step]);
 
