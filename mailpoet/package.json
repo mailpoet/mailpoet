@@ -4,7 +4,7 @@
     "extends @wordpress/browserslist-config"
   ],
   "scripts": {
-    "lint": "eslint --max-warnings 0 'assets/js/src/**/*.{js,jsx,ts,tsx}' 'tests/javascript_newsletter_editor/**/*.js'",
+    "lint": "NODE_OPTIONS=--max_old_space_size=2048 eslint --max-warnings 0 'assets/js/src/**/*.{js,jsx,ts,tsx}' 'tests/javascript_newsletter_editor/**/*.js'",
     "autoprefixer": "postcss assets/dist/css/*.css --use autoprefixer --no-map --replace",
     "scss": "sass assets/css/src/:assets/dist/css/ --style compressed",
     "stylelint": "stylelint --fix",
