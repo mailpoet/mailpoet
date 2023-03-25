@@ -84,7 +84,6 @@ module.exports = [
       'no-void': 0, // can conflict with @typescript-eslint/no-floating-promises
       'react/jsx-filename-extension': 0,
       'class-methods-use-this': 0,
-      '@typescript-eslint/no-unsafe-return': 2, // we need to disable it for wordpress select :(
       '@typescript-eslint/no-unsafe-member-access': 0, // this needs to be off until we have typed assignments :(
       '@typescript-eslint/no-unsafe-call': 0, // this needs to be off until we have typed assignments :(
       '@typescript-eslint/no-unsafe-assignment': 0, // this needs to be off until we have typed assignments :(
