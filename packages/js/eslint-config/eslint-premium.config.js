@@ -41,13 +41,6 @@ module.exports = [
       'import/prefer-default-export': 0, // we want to stop using default exports and start using named exports
       // Exceptions
       'import/extensions': 0, // we wouldn't be able to import jQuery without this line
-      'jsx-a11y/anchor-is-valid': [
-        'error',
-        {
-          components: ['Link'],
-          specialLink: ['to'],
-        },
-      ],
       'import/no-default-export': 1, // no default exports
     },
   },
