@@ -1,7 +1,7 @@
 const es5Config = require('@mailpoet/eslint-config/eslint-es5.config');
 const es6Config = require('@mailpoet/eslint-config/eslint-es6.config');
 const esTsConfig = require('@mailpoet/eslint-config/eslint-ts.config');
-const esTestsNewsletterEditorConfig = require('@mailpoet/eslint-config/eslint-tests-newsletter-editor.config');
+const globals = require('@mailpoet/eslint-config/globals');
 
 module.exports = [
   {
@@ -12,7 +12,10 @@ module.exports = [
   },
   ...es5Config.map((config) => ({
     ...config,
-    files: ['assets/js/src/**/*.js'],
+    files: [
+      'assets/js/src/**/*.js',
+      'tests/javascript_newsletter_editor/**/*.js',
+    ],
   })),
   ...es6Config.map((config) => ({
     ...config,
@@ -22,10 +25,19 @@ module.exports = [
     ...config,
     files: ['assets/js/src/**/*.{ts,tsx}'],
   })),
-  ...esTestsNewsletterEditorConfig.map((config) => ({
-    ...config,
+
+  // ES5 config overrides
+  {
     files: ['tests/javascript_newsletter_editor/**/*.js'],
-  })),
+    languageOptions: {
+      globals: {
+        ...globals.mocha,
+      },
+    },
+    rules: {
+      'func-names': 0,
+    },
+  },
 
   // ES6 config overrides
   {
