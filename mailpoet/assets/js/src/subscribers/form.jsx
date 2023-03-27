@@ -213,6 +213,8 @@ function afterFormContent(values) {
               </a>
             ),
           );
+        } else if (unsubscribe.source === 'mp_api') {
+          message = MailPoet.I18n.t('unsubscribedMpApi').replace('%1$d', date);
         } else {
           message = MailPoet.I18n.t('unsubscribedUnknown').replace(
             '%1$d',
