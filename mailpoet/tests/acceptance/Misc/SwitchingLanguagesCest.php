@@ -19,6 +19,7 @@ class SwitchingLanguagesCest {
     $i->amOnAdminPage('/options-general.php');
     $i->selectOption('WPLANG', ['value' => 'de_DE']);
     $i->click('[name="submit"]');
+    $i->waitForText('Die Einstellungen wurden gespeichert.');
 
     $i->wantTo('Update translations to make sure strings are downloaded');
 
@@ -66,6 +67,7 @@ class SwitchingLanguagesCest {
   public function _after(AcceptanceTester $i) {
     try {
       $i->cli(['language', 'core', 'uninstall', 'de_DE']);
+      $i->cli(['language', 'plugin', 'uninstall', 'mailpoet', 'de_DE']);
     } catch (Throwable $e) {
       // language already uninstalled
     }
