@@ -3,7 +3,7 @@ Contributors: mailpoet
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 5.9
 Tested up to: 6.1
-Stable tag: 4.9.0
+Stable tag: 4.10.0
 Requires PHP: 7.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -218,6 +218,15 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 4.10.0 - 2023-03-27 =
+* Added: WooCommerce version check and notice when using an old version;
+* Added: Emails can now be scheduled to be sent at minute granularity, not only one or more hours later;
+* Improved: prevent forms from showing multiple times when other plugins call the same hooks multiple times;
+* Improved: added HPOS support for WooCommerce Subscription segment;
+* Improved: when editing active email, a warning is shown that it will be deactivated;
+* Fixed: rendering error on home page when there is no change in lists size;
+* Fixed: occasional horizontal scrollbar in popup forms.
 
 = 4.9.0 - 2023-03-21 =
 * Updated: Gutenberg dependencies.
