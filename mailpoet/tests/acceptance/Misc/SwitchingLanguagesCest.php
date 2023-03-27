@@ -7,6 +7,21 @@ use Codeception\Exception\ElementNotFound;
 use Throwable;
 
 class SwitchingLanguagesCest {
+  public function _before(AcceptanceTester $i) {
+    // We don't want to run the test on release branch because in our release process
+    // the language packs are not prepared at the time we crate the branch
+    if (getenv('CIRCLE_BRANCH') === 'release') {
+      return;
+    }
+
+    try {
+      $i->cli(['language', 'core', 'uninstall', 'de_DE']);
+      $i->cli(['language', 'plugin', 'uninstall', 'mailpoet', 'de_DE']);
+    } catch (Throwable $e) {
+      // language already uninstalled
+    }
+  }
+  
   public function switchLanguage(AcceptanceTester $i): void {
     // We don't want to run the test on release branch because in our release process
     // the language packs are not prepared at the time we crate the branch
