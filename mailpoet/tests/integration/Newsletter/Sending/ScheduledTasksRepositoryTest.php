@@ -114,8 +114,8 @@ class ScheduledTasksRepositoryTest extends \MailPoetTest {
   }
 
   public function testItCanFetchBasicTasksData() {
-    $this->scheduledTaskFactory->create(SendingTask::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED, Carbon::now()->addDay());
-    $this->scheduledTaskFactory->create(Bounce::TASK_TYPE, ScheduledTaskEntity::VIRTUAL_STATUS_RUNNING, Carbon::now()->addDay());
+    $task1 = $this->scheduledTaskFactory->create(SendingTask::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED, Carbon::now()->addDay());
+    $task2 = $this->scheduledTaskFactory->create(Bounce::TASK_TYPE, ScheduledTaskEntity::VIRTUAL_STATUS_RUNNING, Carbon::now()->addDay());
     $data = $this->repository->getLatestTasks();
     expect(count($data))->equals(2);
     $ids = array_map(function ($d){ return $d->getId();
@@ -124,8 +124,8 @@ class ScheduledTasksRepositoryTest extends \MailPoetTest {
     $types = array_map(function ($d){ return $d->getType();
 
     }, $data);
-    $this->assertContains(1, $ids);
-    $this->assertContains(2, $ids);
+    $this->assertContains($task1->getId(), $ids);
+    $this->assertContains($task2->getId(), $ids);
     $this->assertContains(SendingTask::TASK_TYPE, $types);
     $this->assertContains(Bounce::TASK_TYPE, $types);
     expect(is_int($data[1]->getPriority()))->true();

@@ -1,5 +1,0 @@
-{
-  "export_format_option": "csv",
-  "segments": ["1", "2"],
-  "subscriber_fields": ["email", "first_name", "1"]
-}

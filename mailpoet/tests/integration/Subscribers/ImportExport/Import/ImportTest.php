@@ -6,7 +6,6 @@ use Codeception\Stub;
 use MailPoet\CustomFields\CustomFieldsRepository;
 use MailPoet\Entities\CustomFieldEntity;
 use MailPoet\Entities\SegmentEntity;
-use MailPoet\Entities\SubscriberCustomFieldEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Entities\SubscriberTagEntity;
@@ -880,12 +879,6 @@ class ImportTest extends \MailPoetTest {
   }
 
   public function _after(): void {
-    $this->truncateEntity(SubscriberEntity::class);
-    $this->truncateEntity(SegmentEntity::class);
-    $this->truncateEntity(SubscriberSegmentEntity::class);
-    $this->truncateEntity(CustomFieldEntity::class);
-    $this->truncateEntity(SubscriberCustomFieldEntity::class);
-    $this->truncateEntity(SubscriberTagEntity::class);
-    $this->truncateEntity(TagEntity::class);
+    $this->truncateEntityBackup(CustomFieldEntity::class);
   }
 }

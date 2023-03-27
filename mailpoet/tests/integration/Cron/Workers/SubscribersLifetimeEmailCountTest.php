@@ -84,7 +84,7 @@ class SubscribersLifetimeEmailCountTest extends \MailPoetTest {
     $this->createCompletedSendingTasksForSubscriber($subscriber2, 8, 80);
 
     $task = new ScheduledTaskEntity();
-    $meta = ['highest_subscriber_id' => 2, 'last_subscriber_id' => 2];
+    $meta = ['highest_subscriber_id' => $subscriber2->getId(), 'last_subscriber_id' => $subscriber2->getId()];
     $task->setMeta($meta);
     $this->worker->processTaskStrategy($task, microtime(true));
 
@@ -105,7 +105,7 @@ class SubscribersLifetimeEmailCountTest extends \MailPoetTest {
     $this->createCompletedSendingTasksForSubscriber($subscriber2, 8, 80);
 
     $task = new ScheduledTaskEntity();
-    $meta = ['highest_subscriber_id' => 2, 'last_subscriber_id' => "2"];
+    $meta = ['highest_subscriber_id' => $subscriber2->getId(), 'last_subscriber_id' => $subscriber2->getId()];
     $task->setMeta($meta);
     $this->worker->processTaskStrategy($task, microtime(true));
 

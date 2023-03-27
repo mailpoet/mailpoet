@@ -196,14 +196,19 @@ class LinksTest extends \MailPoetTest {
         'hash' => '123',
       ],
     ];
+    $newsletterId = $this->newsletter->getId();
+    $latestQueue = $this->newsletter->getLatestQueue();
+    $this->assertInstanceOf(SendingQueueEntity::class, $latestQueue);
+    $queueId = $latestQueue->getId();
+
     $this->links->save(
       $links,
-      $newsletterId = 1,
-      $queueId = 1
+      $newsletterId,
+      $queueId
     );
 
     // 1 database record was created
-    $newsletterLink = $this->newsletterLinkRepository->findOneBy(['newsletter' => 1, 'queue' => 1]);
+    $newsletterLink = $this->newsletterLinkRepository->findOneBy(['newsletter' => $newsletterId, 'queue' => $queueId]);
     $this->assertInstanceOf(NewsletterLinkEntity::class, $newsletterLink);
     expect($newsletterLink->getHash())->equals('123');
     expect($newsletterLink->getUrl())->equals('http://example.com');
@@ -225,7 +230,7 @@ class LinksTest extends \MailPoetTest {
       ->withUrl('http://demo.com')
       ->create();
 
-    list($content, $links) = $this->links->process('<a href="http://example.com">x</a>', 1, 2);
+    list($content, $links) = $this->links->process('<a href="http://example.com">x</a>', $this->newsletter->getId(), 2);
     expect(is_array($links))->true();
     expect(count($links))->equals(1);
     expect($links[0]['hash'])->equals('123');

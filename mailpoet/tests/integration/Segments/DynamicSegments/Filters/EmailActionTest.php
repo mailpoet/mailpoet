@@ -196,12 +196,12 @@ class EmailActionTest extends \MailPoetTest {
 
   public function testGetClickedWithAnyOfLinks(): void {
     // 2 Links each clicked by a different subscriber
-    $this->createClickedLink('http://example.com', $this->newsletter, $this->subscriberOpenedClicked); // id 1
+    $link1 = $this->createClickedLink('http://example.com', $this->newsletter, $this->subscriberOpenedClicked); // id 1
     $subscriberClickedOther = $this->createSubscriber('second_click@example.com');
-    $this->createClickedLink('http://example2.com', $this->newsletter, $subscriberClickedOther); // id 2
+    $link2 = $this->createClickedLink('http://example2.com', $this->newsletter, $subscriberClickedOther); // id 2
     $segmentFilter = $this->getSegmentFilter(EmailAction::ACTION_CLICKED, [
       'newsletter_id' => (int)$this->newsletter->getId(),
-      'link_ids' => [1, 2],
+      'link_ids' => [$link1->getId(), $link2->getId()],
       'operator' => DynamicSegmentFilterData::OPERATOR_ANY,
     ]);
     $statement = $this->emailAction->apply($this->getQueryBuilder(), $segmentFilter)->execute();
@@ -215,14 +215,14 @@ class EmailActionTest extends \MailPoetTest {
 
   public function testGetClickedWithAllOfLinks(): void {
     // 2 Links both clicked by $this->subscriberOpenedClicked and second one clicked only by other subscriber
-    $this->createClickedLink('http://example.com', $this->newsletter, $this->subscriberOpenedClicked); // id 1
-    $link2 = $this->createClickedLink('http://example2.com', $this->newsletter, $this->subscriberOpenedClicked); // id 2
+    $link1 = $this->createClickedLink('http://example.com', $this->newsletter, $this->subscriberOpenedClicked);
+    $link2 = $this->createClickedLink('http://example2.com', $this->newsletter, $this->subscriberOpenedClicked);
     $subscriberClickedOther = $this->createSubscriber('second_click@example.com');
     $this->addClickToLink($link2, $subscriberClickedOther);
 
     $segmentFilter = $this->getSegmentFilter(EmailAction::ACTION_CLICKED, [
       'newsletter_id' => (int)$this->newsletter->getId(),
-      'link_ids' => [1, 2],
+      'link_ids' => [$link1->getId(), $link2->getId()],
       'operator' => DynamicSegmentFilterData::OPERATOR_ALL,
     ]);
     $statement = $this->emailAction->apply($this->getQueryBuilder(), $segmentFilter)->execute();
@@ -236,8 +236,8 @@ class EmailActionTest extends \MailPoetTest {
 
   public function testGetClickedWithAllOfAndNoSavedLinks(): void {
     // 2 Links both clicked by $this->subscriberOpenedClicked and second one clicked only by other subscriber
-    $this->createClickedLink('http://example.com', $this->newsletter, $this->subscriberOpenedClicked); // id 1
-    $link2 = $this->createClickedLink('http://example2.com', $this->newsletter, $this->subscriberOpenedClicked); // id 2
+    $this->createClickedLink('http://example.com', $this->newsletter, $this->subscriberOpenedClicked);
+    $link2 = $this->createClickedLink('http://example2.com', $this->newsletter, $this->subscriberOpenedClicked);
     $subscriberClickedOther = $this->createSubscriber('second_click@example.com');
     $this->addClickToLink($link2, $subscriberClickedOther);
 
@@ -268,10 +268,10 @@ class EmailActionTest extends \MailPoetTest {
   }
 
   public function testGetClickedWithNoneOfLinks(): void {
-    $this->createClickedLink('http://example.com', $this->newsletter, $this->subscriberOpenedClicked); // id 1
+    $link = $this->createClickedLink('http://example.com', $this->newsletter, $this->subscriberOpenedClicked);
     $segmentFilter = $this->getSegmentFilter(EmailAction::ACTION_CLICKED, [
       'newsletter_id' => (int)$this->newsletter->getId(),
-      'link_ids' => [1, 2],
+      'link_ids' => [$link->getId(), 2],
       'operator' => DynamicSegmentFilterData::OPERATOR_NONE,
     ]);
     $statement = $this->emailAction->apply($this->getQueryBuilder(), $segmentFilter)->execute();
@@ -287,7 +287,7 @@ class EmailActionTest extends \MailPoetTest {
   }
 
   public function testGetClickedWithNoneAndNoSavedLinks(): void {
-    $this->createClickedLink('http://example.com', $this->newsletter, $this->subscriberOpenedClicked); // id 1
+    $this->createClickedLink('http://example.com', $this->newsletter, $this->subscriberOpenedClicked);
     $segmentFilter = $this->getSegmentFilter(EmailAction::ACTION_CLICKED, [
       'newsletter_id' => (int)$this->newsletter->getId(),
       'link_ids' => [],

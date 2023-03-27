@@ -156,6 +156,16 @@ abstract class MailPoetTest extends \Codeception\TestCase\Test { // phpcs:ignore
   }
 
   public function truncateEntity(string $entityName) {
+    return;
+    $classMetadata = $this->entityManager->getClassMetadata($entityName);
+    $tableName = $classMetadata->getTableName();
+    $connection = $this->entityManager->getConnection();
+    $connection->executeQuery('SET FOREIGN_KEY_CHECKS=0');
+    $connection->executeStatement("TRUNCATE $tableName");
+    $connection->executeQuery('SET FOREIGN_KEY_CHECKS=1');
+  }
+
+  public function truncateEntityBackup(string $entityName) {
     $classMetadata = $this->entityManager->getClassMetadata($entityName);
     $tableName = $classMetadata->getTableName();
     $connection = $this->entityManager->getConnection();

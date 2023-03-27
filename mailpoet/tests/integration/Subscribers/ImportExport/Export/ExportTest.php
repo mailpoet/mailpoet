@@ -52,6 +52,24 @@ class ExportTest extends \MailPoetTest {
   /** @var SubscriberSegmentRepository */
   private $subscriberSegmentRepository;
 
+  /** @var SubscriberEntity */
+  private $subscriber1;
+
+  /** @var SubscriberEntity */
+  private $subscriber2;
+
+  /** @var SubscriberEntity */
+  private $subscriber3;
+
+  /** @var CustomFieldEntity */
+  private $customField;
+
+  /** @var SegmentEntity */
+  private $segment1;
+
+  /** @var SegmentEntity */
+  private $segment2;
+
   public function _before() {
     parent::_before();
     $this->customFieldsRepository = $this->diContainer->get(CustomFieldsRepository::class);
@@ -61,12 +79,12 @@ class ExportTest extends \MailPoetTest {
     $this->subscriberSegmentRepository = $this->diContainer->get(SubscriberSegmentRepository::class);
     $this->subscriberCustomFieldRepository = $this->diContainer->get(SubscriberCustomFieldRepository::class);
 
-    $this->jSONData = (array)json_decode((string)file_get_contents(dirname(__FILE__) . '/ExportTestData.json'), true);
+    $this->customField = $this->createCustomField('Country', CustomFieldEntity::TYPE_TEXT);
     $this->subscriberFields = [
       'first_name' => 'First name',
       'last_name' => 'Last name',
       'email' => 'Email',
-      1 => 'Country',
+      $this->customField->getId() => 'Country',
     ];
     $this->subscribersData = [
       [
@@ -79,7 +97,7 @@ class ExportTest extends \MailPoetTest {
         'last_name' => 'Jane',
         'email' => 'mary@jane.com',
         'status' => SubscriberEntity::STATUS_SUBSCRIBED,
-        1 => 'Brazil',
+        $this->customField->getId() => 'Brazil',
       ],
       [
         'first_name' => 'John',
@@ -92,43 +110,37 @@ class ExportTest extends \MailPoetTest {
         'email' => 'paul@newman.com',
       ],
     ];
-    $this->customFieldsData = [
-      [
-        'name' => 'Country',
-        'type' => CustomFieldEntity::TYPE_TEXT,
-      ],
-    ];
+
     $this->segmentsData = [
       ['name' => 'Newspapers'],
       ['name' => 'Journals'],
     ];
+    $subscribers = [];
     foreach ($this->subscribersData as $subscriber) {
-      $this->createSubscriber($subscriber['first_name'], $subscriber['last_name'], $subscriber['email'], $subscriber['status'] ?? null);
+      $subscribers[] = $this->createSubscriber($subscriber['first_name'], $subscriber['last_name'], $subscriber['email'], $subscriber['status'] ?? null);
     }
+    $segments = [];
     foreach ($this->segmentsData as $segment) {
-      $this->createSegment($segment['name']);
+      $segments[] = $this->createSegment($segment['name']);
     }
-    foreach ($this->customFieldsData as $customField) {
-      $this->createCustomField($customField['name'], $customField['type']);
-    }
-    $subscriber1 = $this->subscribersRepository->findOneById(1);
-    $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
-    $subscriber2 = $this->subscribersRepository->findOneById(2);
-    $this->assertInstanceOf(SubscriberEntity::class, $subscriber2);
-    $subscriber3 = $this->subscribersRepository->findOneById(3);
-    $this->assertInstanceOf(SubscriberEntity::class, $subscriber3);
-    $customField = $this->customFieldsRepository->findOneById(1);
-    $this->assertInstanceOf(CustomFieldEntity::class, $customField);
-    $segment1 = $this->segmentsRepository->findOneById(1);
-    $this->assertInstanceOf(SegmentEntity::class, $segment1);
-    $segment2 = $this->segmentsRepository->findOneById(2);
-    $this->assertInstanceOf(SegmentEntity::class, $segment2);
-    $this->createSubscriberCustomField($subscriber2, $customField, $this->subscribersData[1][1]);
 
-    $this->createSubscriberSegment($subscriber1, $segment1, SubscriberEntity::STATUS_UNSUBSCRIBED);
-    $this->createSubscriberSegment($subscriber1, $segment2, SubscriberEntity::STATUS_SUBSCRIBED);
-    $this->createSubscriberSegment($subscriber2, $segment1, SubscriberEntity::STATUS_SUBSCRIBED);
-    $this->createSubscriberSegment($subscriber3, $segment2, SubscriberEntity::STATUS_SUBSCRIBED);
+
+    $this->subscriber1 = $subscribers[0];
+    $this->subscriber2 = $subscribers[1];
+    $this->subscriber3 = $subscribers[2];
+    $this->segment1 = $segments[0];
+    $this->segment2 = $segments[1];
+    $this->jSONData = [
+      'export_format_option' => 'csv',
+      'segments' => [(string)$this->segment1->getId(), (string)$this->segment2->getId()],
+      'subscriber_fields' => ['email', 'first_name', (string)$this->customField->getId()],
+    ];
+    $this->createSubscriberCustomField($this->subscriber2, $this->customField, $this->subscribersData[1][$this->customField->getId()]);
+
+    $this->createSubscriberSegment($this->subscriber1, $this->segment1, SubscriberEntity::STATUS_UNSUBSCRIBED);
+    $this->createSubscriberSegment($this->subscriber1, $this->segment2, SubscriberEntity::STATUS_SUBSCRIBED);
+    $this->createSubscriberSegment($this->subscriber2, $this->segment1, SubscriberEntity::STATUS_SUBSCRIBED);
+    $this->createSubscriberSegment($this->subscriber3, $this->segment2, SubscriberEntity::STATUS_SUBSCRIBED);
 
     $this->export = $this->createExport($this->jSONData);
   }
@@ -141,7 +153,7 @@ class ExportTest extends \MailPoetTest {
         [
           'email',
           'first_name',
-          '1',
+          $this->customField->getId(),
         ]
       );
     expect($this->export->subscriberCustomFields)
@@ -177,7 +189,7 @@ class ExportTest extends \MailPoetTest {
   }
 
   public function testItCanGetSubscriberCustomFields() {
-    $source = $this->customFieldsRepository->findOneBy(['name' => $this->customFieldsData[0]['name']]);
+    $source = $this->customFieldsRepository->findOneBy(['name' => 'Country']);
     $this->assertInstanceOf(CustomFieldEntity::class, $source);
     $target = $this->export->getSubscriberCustomFields();
     expect($target)->equals([$source->getId() => $source->getName()]);
@@ -197,19 +209,19 @@ class ExportTest extends \MailPoetTest {
     foreach ($subscribers as $subscriber) {
       if ($subscriber['email'] === $this->subscribersData[1]) {
         expect($subscriber['Country'])
-          ->equals($this->subscribersData[1][1]);
+          ->equals($this->subscribersData[1][$this->customField->getId()]);
       }
     }
   }
 
   public function testItCanGetSubscribers() {
     $jsonData = $this->jSONData;
-    $jsonData['segments'] = [1];
+    $jsonData['segments'] = [$this->segment1->getId()];
     $export = $this->createExport($jsonData);
     $subscribers = $export->getSubscribers();
     expect($subscribers)->count(2);
 
-    $jsonData['segments'] = [2];
+    $jsonData['segments'] = [$this->segment2->getId()];
     $export = $this->createExport($jsonData);
     $subscribers = $export->getSubscribers();
     expect($subscribers)->count(2);
@@ -316,13 +328,5 @@ class ExportTest extends \MailPoetTest {
       $this->segmentsRepository,
       $jsonData
     );
-  }
-
-  public function _after() {
-    $this->truncateEntity(SubscriberEntity::class);
-    $this->truncateEntity(SegmentEntity::class);
-    $this->truncateEntity(SubscriberSegmentEntity::class);
-    $this->truncateEntity(CustomFieldEntity::class);
-    $this->truncateEntity(SubscriberCustomFieldEntity::class);
   }
 }
