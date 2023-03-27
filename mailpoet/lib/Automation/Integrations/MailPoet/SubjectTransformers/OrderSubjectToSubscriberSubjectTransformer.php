@@ -34,23 +34,23 @@ class OrderSubjectToSubscriberSubjectTransformer implements SubjectTransformer {
 
   public function transform(Subject $data): Subject {
     if ($this->accepts() !== $data->getKey()) {
-        throw new \InvalidArgumentException('Invalid subject type');
+      throw new \InvalidArgumentException('Invalid subject type');
     }
 
       $subscriber = $this->findOrCreateSubscriber($data);
     if (!$subscriber instanceof SubscriberEntity) {
-        throw new \InvalidArgumentException('Subscriber not found');
+      throw new \InvalidArgumentException('Subscriber not found');
     }
 
-      return new Subject(SubscriberSubject::KEY, ['subscriber_id' => $subscriber->getId()]);
+    return new Subject(SubscriberSubject::KEY, ['subscriber_id' => $subscriber->getId()]);
   }
 
   public function accepts(): string {
-      return OrderSubject::KEY;
+    return OrderSubject::KEY;
   }
 
   public function returns(): string {
-        return SubscriberSubject::KEY;
+    return SubscriberSubject::KEY;
   }
 
   private function findOrCreateSubscriber(Subject $order): ?SubscriberEntity {
@@ -75,6 +75,8 @@ class OrderSubjectToSubscriberSubjectTransformer implements SubjectTransformer {
     }
     $wcOrder = $this->woocommerceHelper->wcGetOrder($orderId);
     $billingEmail = $wcOrder->get_billing_email();
-    return $billingEmail ? $this->subscribersRepository->findOneBy(['email' => $billingEmail]) : $this->subscribersRepository->findOneBy(['wpUserId' => $wcOrder->get_user_id()]);
+    return $billingEmail ?
+      $this->subscribersRepository->findOneBy(['email' => $billingEmail]) :
+      $this->subscribersRepository->findOneBy(['wpUserId' => $wcOrder->get_user_id()]);
   }
 }
