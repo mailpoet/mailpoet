@@ -95,7 +95,12 @@ const initializeEditor = (config) => {
         let pauseConfirmed = getUrlParam('pauseConfirmed') === 'yes';
         if (!pauseConfirmed) {
           // eslint-disable-next-line no-alert
-          pauseConfirmed = window.confirm(MailPoet.I18n.t('confirmEdit'));
+          pauseConfirmed = window.confirm(
+            __(
+              'Sending is in progress. Do you want to pause sending and edit the newsletter?',
+              'mailpoet',
+            ),
+          );
         }
         if (!pauseConfirmed) {
           window.location = `admin.php?page=mailpoet-newsletters#/${newsletter.type}`;
@@ -132,7 +137,10 @@ const initializeEditor = (config) => {
         if (!deactivationConfirmed) {
           // eslint-disable-next-line no-alert
           deactivationConfirmed = window.confirm(
-            MailPoet.I18n.t('confirmAutomaticNewsletterEdit'),
+            __(
+              'To edit this email, it needs to be deactivated. You can activate it again after you make the changes.',
+              'mailpoet',
+            ),
           );
         }
         if (!deactivationConfirmed) {
