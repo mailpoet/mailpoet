@@ -25,7 +25,7 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
   private $newsletter;
 
   const INACTIVITY_DAYS_THRESHOLD = 5;
-  const PROCESS_BATCH_SIZE = 100;
+  const PROCESS_BATCH_SIZE = 1000000000;
   const UNOPENED_EMAILS_THRESHOLD = InactiveSubscribersController::UNOPENED_EMAILS_THRESHOLD;
 
   public function _before() {

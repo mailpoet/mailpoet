@@ -27,8 +27,8 @@ class SegmentsSimpleListRepositoryTest extends \MailPoetTest {
     $populator = $this->diContainer->get(Populator::class);
     $populator->up(); // Prepare WooCommerce and WP Users segments
     // Remove synced WP Users
-    $this->truncateEntity(SubscriberEntity::class);
-    $this->truncateEntity(SubscriberSegmentEntity::class);
+    $this->truncateEntityBackup(SubscriberEntity::class);
+    $this->truncateEntityBackup(SubscriberSegmentEntity::class);
 
     // Prepare Subscribers
     $wpUserEmail = 'user-role-test1@example.com';

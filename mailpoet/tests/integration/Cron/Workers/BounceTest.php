@@ -107,7 +107,7 @@ class BounceTest extends \MailPoetTest {
     expect($this->scheduledTaskSubscribersRepository->findBy(['task' => $task]))->notEmpty();
 
     // 2nd run - nothing more to process, ScheduledTaskSubscriber will be cleaned up
-    $this->truncateEntity(SubscriberEntity::class);
+    $this->truncateEntityBackup(SubscriberEntity::class);
     $task = $this->createScheduledTask();
     $this->worker->prepareTaskStrategy($task, microtime(true));
     expect($this->scheduledTaskSubscribersRepository->findBy(['task' => $task]))->isEmpty();

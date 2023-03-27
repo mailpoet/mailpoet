@@ -57,10 +57,10 @@ class HelpTest extends \MailPoetTest {
     $newsletter = (new Newsletter())
       ->withSubject('Rendered Subject')
       ->create();
-    $this->createNewSendingQueue($task, $newsletter);
+    $queue = $this->createNewSendingQueue($task, $newsletter);
     $data = $this->helpPage->buildTaskData($task);
-    expect($data['newsletter']['newsletter_id'])->equals(1);
-    expect($data['newsletter']['queue_id'])->equals(1);
+    expect($data['newsletter']['newsletter_id'])->equals($newsletter->getId());
+    expect($data['newsletter']['queue_id'])->equals($queue->getId());
     expect($data['newsletter']['subject'])->equals('Rendered Subject');
     expect($data['newsletter']['preview_url'])->notEmpty();
   }
@@ -78,7 +78,7 @@ class HelpTest extends \MailPoetTest {
     expect($data['newsletter']['preview_url'])->equals(null);
   }
 
-  private function createNewSendingQueue(?ScheduledTaskEntity $task, ?NewsletterEntity $newsletter, $renderedSubject = null) {
+  private function createNewSendingQueue(?ScheduledTaskEntity $task, ?NewsletterEntity $newsletter, $renderedSubject = null): SendingQueueEntity {
     $queue = new SendingQueueEntity();
     if ($newsletter instanceof NewsletterEntity) {
       $queue->setNewsletter($newsletter);
@@ -91,6 +91,7 @@ class HelpTest extends \MailPoetTest {
     $queue->setNewsletterRenderedSubject($renderedSubject);
     $this->entityManager->persist($queue);
     $this->entityManager->flush();
+    return $queue;
   }
 
   private function cleanup() {
