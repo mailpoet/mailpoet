@@ -221,7 +221,7 @@ class RoboFile extends \Robo\Tasks {
     return $this->_exec($command);
   }
 
-  public function testIntegration(array $opts = ['file' => null, 'group' => null, 'skip-group' => null, 'xml' => false, 'multisite' => false, 'debug' => false, 'skip-deps' => false, 'skip-plugins' => false, 'enable-cot' => false, 'enable-cot-sync' => false]) {
+  public function testIntegration(array $opts = ['file' => null, 'group' => null, 'skip-group' => null, 'xml' => false, 'multisite' => false, 'debug' => false, 'skip-deps' => false, 'skip-plugins' => false, 'enable-cot' => false, 'enable-cot-sync' => false, 'stop-on-fail' => false]) {
     return $this->runTestsInContainer(array_merge($opts, ['test_type' => 'integration']));
   }
 
@@ -1463,7 +1463,8 @@ class RoboFile extends \Robo\Tasks {
       (isset($opts['xml']) && $opts['xml'] ? '--xml ' : '') .
       (isset($opts['group']) && $opts['group'] ? '--group ' . $opts['group'] . ' ' : '') .
       (isset($opts['skip-group']) && $opts['skip-group'] ? '--skip-group ' . $opts['skip-group'] . ' ' : '') .
-      '-f ' . (isset($opts['file']) && $opts['file'] ? $opts['file'] : '')
+      (isset($opts['stop-on-fail']) && $opts['stop-on-fail'] ? '-f ' : '') .
+      (isset($opts['file']) && $opts['file'] ? $opts['file'] : '')
     )->dir(__DIR__ . '/tests/docker')->run();
   }
 }
