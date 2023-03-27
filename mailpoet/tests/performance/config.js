@@ -15,3 +15,10 @@ export const defaultListName = 'Newsletter mailing list';
 
 export const thinkTimeMin = '1';
 export const thinkTimeMax = '3';
+
+export const emailsPageTitle = 'Emails Page';
+export const automationsPageTitle = 'Automations Page';
+export const formsPageTitle = 'Forms Page';
+export const subscribersPageTitle = 'Subscribers Page';
+export const listsPageTitle = 'Lists Page';
+export const settingsPageTitle = 'Settings Page';

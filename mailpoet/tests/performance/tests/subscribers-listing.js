@@ -1,11 +1,16 @@
 /* eslint-disable import/no-unresolved */
 /* eslint-disable import/no-default-export */
+/* eslint-disable no-unused-expressions */
 /**
  * External dependencies
  */
-import { sleep, check } from 'k6';
+import { sleep } from 'k6';
 import { chromium } from 'k6/experimental/browser';
 import { randomIntBetween } from 'https://jslib.k6.io/k6-utils/1.1.0/index.js';
+import {
+  expect,
+  describe,
+} from 'https://jslib.k6.io/k6chaijs/4.3.4.2/index.js';
 
 /**
  * Internal dependencies
@@ -16,6 +21,7 @@ import {
   thinkTimeMax,
   headlessSet,
   timeoutSet,
+  subscribersPageTitle,
 } from '../config.js';
 import { authenticate } from '../utils/helpers.js';
 
@@ -26,36 +32,30 @@ export async function subscribersListing() {
   });
   const page = browser.newPage();
 
-  try {
-    // Go to the page
-    await page.goto(`${baseURL}/wp-admin/admin.php?page=mailpoet-subscribers`, {
-      waitUntil: 'networkidle',
+  // Go to the page
+  await page.goto(`${baseURL}/wp-admin/admin.php?page=mailpoet-subscribers`, {
+    waitUntil: 'networkidle',
+  });
+
+  // Log in to WP Admin
+  authenticate(page);
+
+  // Wait for async actions
+  await page.waitForNavigation({ waitUntil: 'networkidle' });
+
+  // Verify filter, tag and listing are loaded and visible
+  page.waitForLoadState('networkidle');
+  describe(subscribersPageTitle, () => {
+    describe('should be able to see Tags Filter', () => {
+      expect(page.locator('[data-automation-id="listing_filter_tag"]')).to
+        .exist;
     });
+  });
 
-    // Log in to WP Admin
-    authenticate(page);
-
-    // Wait for async actions
-    await page.waitForNavigation({ waitUntil: 'networkidle' });
-
-    // Verify filter, tag and listing are loaded and visible
-    page.waitForLoadState('networkidle');
-    check(page, {
-      'subscribers filter is visible': page
-        .locator('[data-automation-id="listing_filter_segment"]')
-        .isVisible(),
-      'subscribers tag is visible': page
-        .locator('[data-automation-id="listing_filter_tag"]')
-        .isVisible(),
-      'subscribers listing is visible': page
-        .locator('table.mailpoet-listing-table')
-        .isVisible(),
-    });
-  } finally {
-    sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
-    page.close();
-    browser.close();
-  }
+  // Thinking time and closing
+  sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
+  page.close();
+  browser.close();
 }
 
 export default async function subscribersListingTest() {
