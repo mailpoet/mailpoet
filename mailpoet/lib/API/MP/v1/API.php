@@ -68,6 +68,10 @@ class API {
     return $this->subscribers->unsubscribeFromLists($subscriberId, $listIds);
   }
 
+  public function unsubscribe($subscriberIdOrEmail) {
+    return $this->subscribers->unsubscribe($subscriberIdOrEmail);
+  }
+
   public function getLists(): array {
     return $this->segments->getAll();
   }

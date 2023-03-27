@@ -14,6 +14,7 @@ use MailPoet\Config\Changelog;
 use MailPoet\CustomFields\CustomFieldsRepository;
 use MailPoet\Entities\CustomFieldEntity;
 use MailPoet\Entities\SegmentEntity;
+use MailPoet\Entities\StatisticsUnsubscribeEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Models\ScheduledTask;
@@ -282,6 +283,75 @@ class SubscribersTest extends \MailPoetTest {
 
 
     $API->subscribeToLists($subscriber->getId(), [$segment->getId()], $options);
+  }
+
+  public function testUnsubscribeRaisesExceptionWhenSubscriberIdIsNotPassed() {
+    try {
+      $this->getApi()->unsubscribe(false);
+      $this->fail('Subscriber does not exist exception should have been thrown.');
+    } catch (\Exception $e) {
+      expect($e->getMessage())->equals('A subscriber is required.');
+    }
+  }
+
+  public function testUnsubscribeRaisesExceptionWhenSubscriberDoesNotExist() {
+    try {
+      $this->getApi()->unsubscribe('asdf');
+      $this->fail('Subscriber does not exist exception should have been thrown.');
+    } catch (\Exception $e) {
+      expect($e->getMessage())->equals('This subscriber does not exist.');
+    }
+  }
+
+  public function testUnsubscribeRaisesExceptionIfSubscriberAlreadyUnsubscribed() {
+    $subscriber = $this->subscriberFactory
+      ->withStatus(SubscriberEntity::STATUS_UNSUBSCRIBED)
+      ->create();
+
+    try {
+      $this->getApi()->unsubscribe($subscriber->getId());
+      $this->fail('Subscriber already unsubscribed exception should have been thrown.');
+    } catch (\Exception $e) {
+      expect($e->getMessage())->equals('This subscriber is already unsubscribed.');
+    }
+  }
+
+  public function testUnsubscribesSubscriberFromAllListsAndChangesItsStatus() {
+    $subscriber = $this->subscriberFactory->create();
+    $segment1 = $this->getSegment('Segment 1');
+    $segment2 = $this->getSegment('Segment 2');
+    $this->getApi()->subscribeToLists($subscriber->getId(), [$segment1->getId(), $segment2->getId()]);
+    $this->assertSame(SubscriberEntity::STATUS_SUBSCRIBED, $subscriber->getStatus());
+
+    $result = $this->getApi()->unsubscribe($subscriber->getId());
+    $this->assertSame(SubscriberEntity::STATUS_UNSUBSCRIBED, $subscriber->getStatus());
+
+    foreach ($subscriber->getSubscriberSegments() as $subscriberSegment) {
+      $this->assertSame(SubscriberEntity::STATUS_UNSUBSCRIBED, $subscriberSegment->getStatus());
+    }
+
+    $this->assertSame(SubscriberEntity::STATUS_UNSUBSCRIBED, $result['status']);
+    $this->assertSame(SubscriberEntity::STATUS_UNSUBSCRIBED, $result['subscriptions'][0]['status']);
+    $this->assertSame(SubscriberEntity::STATUS_UNSUBSCRIBED, $result['subscriptions'][1]['status']);
+  }
+
+  public function testUnsubscribesSubscriberFromAllListsAndChangesItsStatusUsingEmailInsteadOfId() {
+    $subscriber = $this->subscriberFactory->create();
+    $segment1 = $this->getSegment('Segment 1');
+    $segment2 = $this->getSegment('Segment 2');
+    $this->getApi()->subscribeToLists($subscriber->getId(), [$segment1->getId(), $segment2->getId()]);
+    $this->assertSame(SubscriberEntity::STATUS_SUBSCRIBED, $subscriber->getStatus());
+
+    $result = $this->getApi()->unsubscribe($subscriber->getEmail());
+    $this->assertSame(SubscriberEntity::STATUS_UNSUBSCRIBED, $subscriber->getStatus());
+
+    foreach ($subscriber->getSubscriberSegments() as $subscriberSegment) {
+      $this->assertSame(SubscriberEntity::STATUS_UNSUBSCRIBED, $subscriberSegment->getStatus());
+    }
+
+    $this->assertSame(SubscriberEntity::STATUS_UNSUBSCRIBED, $result['status']);
+    $this->assertSame(SubscriberEntity::STATUS_UNSUBSCRIBED, $result['subscriptions'][0]['status']);
+    $this->assertSame(SubscriberEntity::STATUS_UNSUBSCRIBED, $result['subscriptions'][1]['status']);
   }
 
   public function testItDoesNotUnsubscribeWhenSubscriberIdNotPassedFromLists() {
@@ -961,6 +1031,7 @@ class SubscribersTest extends \MailPoetTest {
   }
 
   public function _after() {
+    $this->truncateEntity(StatisticsUnsubscribeEntity::class);
     $this->truncateEntity(SubscriberSegmentEntity::class);
     $this->truncateEntity(SubscriberEntity::class);
     $this->truncateEntity(SegmentEntity::class);

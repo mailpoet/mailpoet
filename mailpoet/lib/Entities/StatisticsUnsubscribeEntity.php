@@ -21,6 +21,7 @@ class StatisticsUnsubscribeEntity {
   const SOURCE_ADMINISTRATOR = 'admin';
   const SOURCE_ORDER_CHECKOUT = 'order_checkout';
   const SOURCE_AUTOMATION = 'automation';
+  const SOURCE_MP_API = 'mp_api';
 
   const METHOD_LINK = 'link';
   const METHOD_ONE_CLICK = 'one_click';
