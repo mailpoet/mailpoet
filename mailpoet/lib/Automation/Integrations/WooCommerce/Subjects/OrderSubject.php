@@ -9,6 +9,7 @@ use MailPoet\Automation\Integrations\WooCommerce\Payloads\OrderPayload;
 use MailPoet\NotFoundException;
 use MailPoet\Validator\Builder;
 use MailPoet\Validator\Schema\ObjectSchema;
+use MailPoet\WooCommerce\Helper;
 
 /**
  * @implements Subject<OrderPayload>
@@ -16,6 +17,14 @@ use MailPoet\Validator\Schema\ObjectSchema;
 class OrderSubject implements Subject {
 
   const KEY = 'woocommerce:order';
+
+  private $woocommerce;
+
+  public function __construct(
+    Helper $woocommerce
+  ) {
+    $this->woocommerce = $woocommerce;
+  }
 
   public function getName(): string {
     return __('WooCommerce order', 'mailpoet');
@@ -29,7 +38,7 @@ class OrderSubject implements Subject {
 
   public function getPayload(SubjectData $subjectData): Payload {
     $id = $subjectData->getArgs()['order_id'];
-    $order = wc_get_order($id);
+    $order = $this->woocommerce->wcGetOrder($id);
     if (!$order instanceof \WC_Order) {
       // translators: %d is the order ID.
       throw NotFoundException::create()->withMessage(sprintf(__("Order with ID '%d' not found.", 'mailpoet'), $id));
