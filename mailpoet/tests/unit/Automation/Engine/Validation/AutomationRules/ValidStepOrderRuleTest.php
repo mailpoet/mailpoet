@@ -35,7 +35,7 @@ class ValidStepOrderRuleTest extends AutomationRuleTest {
     ]);
 
     $subjectTransformer = $this->createMock(SubjectTransformerHandler::class);
-    $subjectTransformer->expects($this->any())->method('subjectKeysForAutomation')->willReturnCallback(function($a) use ($automation) {
+    $subjectTransformer->expects($this->any())->method('getSubjectKeysForAutomation')->willReturnCallback(function($a) use ($automation) {
       return $a === $automation ? ['subject-a'] : [];
     });
     $rule = new ValidStepOrderRule($registry, $subjectTransformer);
@@ -63,7 +63,7 @@ class ValidStepOrderRuleTest extends AutomationRuleTest {
     ]);
 
     $subjectTransformer = $this->createMock(SubjectTransformerHandler::class);
-    $subjectTransformer->expects($this->any())->method('subjectKeysForAutomation')->willReturnCallback(function($a) use ($automation) {
+    $subjectTransformer->expects($this->any())->method('getSubjectKeysForAutomation')->willReturnCallback(function($a) use ($automation) {
       return $a === $automation ? ['subject-a'] : [];
     });
 
@@ -90,7 +90,7 @@ class ValidStepOrderRuleTest extends AutomationRuleTest {
     ]);
 
     $subjectTransformer = $this->createMock(SubjectTransformerHandler::class);
-    $subjectTransformer->expects($this->any())->method('subjectKeysForAutomation')->willReturnCallback(function($a) use ($automation) {
+    $subjectTransformer->expects($this->any())->method('getSubjectKeysForAutomation')->willReturnCallback(function($a) use ($automation) {
       return $a === $automation ? ['subject-a'] : [];
     });
     $rule = new ValidStepOrderRule($registry, $subjectTransformer);
@@ -113,7 +113,7 @@ class ValidStepOrderRuleTest extends AutomationRuleTest {
     ]);
 
     $subjectTransformer = $this->createMock(SubjectTransformerHandler::class);
-    $subjectTransformer->expects($this->any())->method('subjectKeysForAutomation')->willReturnCallback(function($a) use ($automation) {
+    $subjectTransformer->expects($this->any())->method('getSubjectKeysForAutomation')->willReturnCallback(function($a) use ($automation) {
       return $a === $automation ? ['subject-a', 'subject-b'] : [];
     });
 
@@ -140,7 +140,7 @@ class ValidStepOrderRuleTest extends AutomationRuleTest {
     ]);
 
     $subjectTransformer = $this->createMock(SubjectTransformerHandler::class);
-    $subjectTransformer->expects($this->any())->method('subjectKeysForAutomation')->willReturnCallback(function($a) use ($automation) {
+    $subjectTransformer->expects($this->any())->method('getSubjectKeysForAutomation')->willReturnCallback(function($a) use ($automation) {
       return $a === $automation ? ['subject-a', 'subject-b'] : [];
     });
     $rule = new ValidStepOrderRule($registry, $subjectTransformer);
