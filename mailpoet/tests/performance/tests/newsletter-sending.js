@@ -3,9 +3,13 @@
 /**
  * External dependencies
  */
-import { sleep, check } from 'k6';
+import { sleep } from 'k6';
 import { chromium } from 'k6/experimental/browser';
 import { randomIntBetween } from 'https://jslib.k6.io/k6-utils/1.1.0/index.js';
+import {
+  expect,
+  describe,
+} from 'https://jslib.k6.io/k6chaijs/4.3.4.2/index.js';
 
 /**
  * Internal dependencies
@@ -17,6 +21,7 @@ import {
   headlessSet,
   timeoutSet,
   defaultListName,
+  emailsPageTitle,
 } from '../config.js';
 import { authenticate, selectInSelect2 } from '../utils/helpers.js';
 /* global Promise */
@@ -28,66 +33,67 @@ export async function newsletterSending() {
   });
   const page = browser.newPage();
 
-  try {
-    // Go to the page
-    await page.goto(`${baseURL}/wp-admin/admin.php?page=mailpoet-newsletters`, {
-      waitUntil: 'networkidle',
-    });
+  // Go to the page
+  await page.goto(`${baseURL}/wp-admin/admin.php?page=mailpoet-newsletters`, {
+    waitUntil: 'networkidle',
+  });
 
-    // Log in to WP Admin
-    authenticate(page);
+  // Log in to WP Admin
+  authenticate(page);
 
-    // Wait for async actions
-    await Promise.all([page.waitForNavigation({ waitUntil: 'networkidle' })]);
+  // Wait for async actions
+  await Promise.all([page.waitForNavigation({ waitUntil: 'networkidle' })]);
 
-    // Click to add a new standard newsletter
-    page.locator('[data-automation-id="new_email"]').click();
-    page.locator('[data-automation-id="create_standard"]').click();
-    page.waitForSelector('.mailpoet_loading');
-    page.waitForSelector('[data-automation-id="templates-standard"]');
-    page.waitForLoadState('networkidle');
+  // Click to add a new standard newsletter
+  page.locator('[data-automation-id="new_email"]').click();
+  page.locator('[data-automation-id="create_standard"]').click();
+  page.waitForSelector('.mailpoet_loading');
+  page.waitForSelector('[data-automation-id="templates-standard"]');
+  page.waitForLoadState('networkidle');
 
-    // Switch to a Standard templates tab and select the 2nd template
-    page.locator('[data-automation-id="templates-standard"]').click();
-    await Promise.all([
-      page.waitForNavigation(),
-      page.locator('[data-automation-id="select_template_1"]').click(),
-    ]);
-    page.waitForSelector('.mailpoet_loading');
-    page.waitForSelector('[data-automation-id="newsletter_title"]');
-    page.waitForLoadState('networkidle');
+  // Switch to a Standard templates tab and select the 2nd template
+  page.locator('[data-automation-id="templates-standard"]').click();
+  await Promise.all([
+    page.waitForNavigation(),
+    page.locator('[data-automation-id="select_template_1"]').click(),
+  ]);
+  page.waitForSelector('.mailpoet_loading');
+  page.waitForSelector('[data-automation-id="newsletter_title"]');
+  page.waitForLoadState('networkidle');
 
-    // Click to proceed to the next step (the last one)
-    await Promise.all([
-      page.waitForNavigation(),
-      page
-        .locator('#mailpoet_editor_top > div > div > .mailpoet_save_next')
-        .click(),
-    ]);
-    page.waitForSelector('[data-automation-id="newsletter_send_heading"]');
-    page.waitForLoadState('networkidle');
+  // Click to proceed to the next step (the last one)
+  await Promise.all([
+    page.waitForNavigation(),
+    page
+      .locator('#mailpoet_editor_top > div > div > .mailpoet_save_next')
+      .click(),
+  ]);
+  page.waitForSelector('[data-automation-id="newsletter_send_heading"]');
+  page.waitForLoadState('networkidle');
 
-    // Select the default list and send the newsletter
-    selectInSelect2(page, defaultListName);
-    await Promise.all([
-      page.waitForNavigation(),
-      page.locator('[data-automation-id="email-submit"]').click(),
-    ]);
-    sleep(1);
+  // Select the default list and send the newsletter
+  selectInSelect2(page, defaultListName);
+  await Promise.all([
+    page.waitForNavigation(),
+    page.locator('[data-automation-id="email-submit"]').click(),
+  ]);
+  sleep(1);
 
-    // Wait for the success notice message and confirm it
-    page.waitForSelector('#mailpoet_notices');
-    check(page, {
-      'newsletter is being sent notice has shown up':
-        page.locator('div > .notice-success > p').textContent() ===
+  // Wait for the success notice message and confirm it
+  page.waitForSelector('#mailpoet_notices');
+  describe(emailsPageTitle, () => {
+    describe('should be able to see Newsletter Sent message', () => {
+      expect(page.locator('div > .notice-success').innerText()).to.contain(
         'The newsletter is being sent...',
+      );
     });
-    page.waitForLoadState('networkidle');
-  } finally {
-    sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
-    page.close();
-    browser.close();
-  }
+  });
+  page.waitForLoadState('networkidle');
+
+  // Thinking time and closing
+  sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
+  page.close();
+  browser.close();
 }
 
 export default async function newsletterSendingTest() {
