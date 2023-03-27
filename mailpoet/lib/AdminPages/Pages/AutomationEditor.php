@@ -101,7 +101,7 @@ class AutomationEditor {
       $steps[$key] = [
         'key' => $step->getKey(),
         'name' => $step->getName(),
-        'subject_keys' => $step instanceof Trigger ? $this->subjectTransformerHandler->subjectKeysForTrigger($step) : $step->getSubjectKeys(),
+        'subject_keys' => $step instanceof Trigger ? $this->subjectTransformerHandler->getSubjectKeysForTrigger($step) : $step->getSubjectKeys(),
         'args_schema' => $step->getArgsSchema()->toArray(),
       ];
     }

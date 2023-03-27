@@ -45,7 +45,7 @@ class ValidStepOrderRule implements AutomationNodeVisitor {
       return;
     }
 
-    $subjectKeys = $this->subjectTransformerHandler->subjectKeysForAutomation($automation);
+    $subjectKeys = $this->subjectTransformerHandler->getSubjectKeysForAutomation($automation);
     $missingSubjectKeys = array_diff($requiredSubjectKeys, $subjectKeys);
     if (count($missingSubjectKeys) > 0) {
       throw Exceptions::missingRequiredSubjects($step, $missingSubjectKeys);
