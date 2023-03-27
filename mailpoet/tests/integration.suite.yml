@@ -13,3 +13,4 @@ error_level: E_ALL
 extensions:
   enabled:
     - CheckSkippedTestsExtension
+    - MailPoet\TestsSupport\IntegrationCleanupExtension
