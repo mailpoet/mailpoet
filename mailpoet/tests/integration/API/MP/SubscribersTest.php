@@ -24,14 +24,12 @@ use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\ConfirmationEmailMailer;
 use MailPoet\Subscribers\NewSubscriberNotificationMailer;
 use MailPoet\Subscribers\RequiredCustomFieldValidator;
-use MailPoet\Subscribers\SubscriberListingRepository;
 use MailPoet\Subscribers\SubscriberSaveController;
 use MailPoet\Subscribers\SubscriberSegmentRepository;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Tasks\Sending;
 use MailPoet\Test\DataFactories\Segment as SegmentFactory;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
-use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 
 class SubscribersTest extends \MailPoetTest {
@@ -56,19 +54,13 @@ class SubscribersTest extends \MailPoetTest {
   }
 
   private function getSubscribers() {
-    return new Subscribers(
-      Stub::makeEmpty(ConfirmationEmailMailer::class, ['sendConfirmationEmail']),
-      Stub::makeEmpty(NewSubscriberNotificationMailer::class, ['send']),
-      $this->diContainer->get(SegmentsRepository::class),
-      SettingsController::getInstance(),
-      $this->diContainer->get(SubscriberSegmentRepository::class),
-      $this->diContainer->get(SubscribersRepository::class),
-      $this->diContainer->get(SubscriberSaveController::class),
-      $this->diContainer->get(SubscribersResponseBuilder::class),
-      Stub::makeEmpty(WelcomeScheduler::class),
-      $this->diContainer->get(RequiredCustomFieldValidator::class),
-      $this->diContainer->get(SubscriberListingRepository::class),
-      $this->diContainer->get(WPFunctions::class)
+    return $this->getServiceWithOverrides(
+      Subscribers::class,
+      [
+        'confirmationEmailMailer' => Stub::makeEmpty(ConfirmationEmailMailer::class, ['sendConfirmationEmail']),
+        'newSubscriberNotificationMailer' => Stub::makeEmpty(NewSubscriberNotificationMailer::class, ['send']),
+        'welcomeScheduler' => Stub::makeEmpty(WelcomeScheduler::class),
+      ]
     );
   }
 
