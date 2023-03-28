@@ -66,7 +66,7 @@ function StepError({ stepId }: StepErrorProps): JSX.Element {
         width="23px"
         height="23px"
       />
-      {step.title}
+      {step.title(stepData, 'other')}
     </CompositeItem>
   );
 }
