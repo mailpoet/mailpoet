@@ -14,9 +14,11 @@ export function StepInfoPanel({ item }: Props): JSX.Element {
       <div className="block-editor-block-card">
         <StepIcon icon={icon} />
         <div className="block-editor-block-card__content">
-          <h2 className="block-editor-block-card__title">{title}</h2>
+          <h2 className="block-editor-block-card__title">
+            {title(null, 'inserter')}
+          </h2>
           <span className="block-editor-block-card__description">
-            {description}
+            {description(null, 'inserter')}
           </span>
         </div>
       </div>
