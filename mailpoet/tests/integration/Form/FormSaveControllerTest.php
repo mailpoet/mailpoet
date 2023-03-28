@@ -23,19 +23,11 @@ class FormSaveControllerTest extends \MailPoetTest {
     expect($duplicate->getStatus())->equals($form->getStatus());
   }
 
-  public function _after() {
-    $this->cleanup();
-  }
-
   private function createForm(): FormEntity {
     $form = new FormEntity('My Form');
     $form->setBody(Fixtures::get('form_body_template'));
     $this->entityManager->persist($form);
     $this->entityManager->flush();
     return $form;
-  }
-
-  private function cleanup() {
-    $this->truncateEntity(FormEntity::class);
   }
 }

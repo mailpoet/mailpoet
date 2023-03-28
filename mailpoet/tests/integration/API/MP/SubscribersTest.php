@@ -14,9 +14,7 @@ use MailPoet\Config\Changelog;
 use MailPoet\CustomFields\CustomFieldsRepository;
 use MailPoet\Entities\CustomFieldEntity;
 use MailPoet\Entities\SegmentEntity;
-use MailPoet\Entities\StatisticsUnsubscribeEntity;
 use MailPoet\Entities\SubscriberEntity;
-use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Newsletter\Scheduler\WelcomeScheduler;
@@ -1028,13 +1026,5 @@ class SubscribersTest extends \MailPoetTest {
       'status' => SubscriberEntity::STATUS_UNSUBSCRIBED,
     ]);
     $this->assertEquals(1, $count);
-  }
-
-  public function _after() {
-    $this->truncateEntity(StatisticsUnsubscribeEntity::class);
-    $this->truncateEntity(SubscriberSegmentEntity::class);
-    $this->truncateEntity(SubscriberEntity::class);
-    $this->truncateEntity(SegmentEntity::class);
-    $this->truncateEntity(CustomFieldEntity::class);
   }
 }

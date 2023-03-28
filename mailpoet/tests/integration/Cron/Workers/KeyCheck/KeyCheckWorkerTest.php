@@ -5,9 +5,7 @@ namespace MailPoet\Test\Cron\Workers\KeyCheck;
 use Codeception\Stub;
 use MailPoet\Cron\CronWorkerScheduler;
 use MailPoet\Cron\Workers\KeyCheck\KeyCheckWorkerMockImplementation as MockKeyCheckWorker;
-use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Services\Bridge;
-use MailPoet\Settings\SettingsRepository;
 use MailPoet\Test\DataFactories\ScheduledTask as ScheduledTaskFactory;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
@@ -118,10 +116,5 @@ class KeyCheckWorkerTest extends \MailPoetTest {
       null,
       $scheduledAt
     );
-  }
-
-  public function _after() {
-    $this->diContainer->get(SettingsRepository::class)->truncate();
-    $this->truncateEntity(ScheduledTaskEntity::class);
   }
 }

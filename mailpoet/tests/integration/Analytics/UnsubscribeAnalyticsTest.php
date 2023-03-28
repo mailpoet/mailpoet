@@ -57,9 +57,4 @@ class UnsubscribeAnalyticsTest extends \MailPoetTest {
     $this->entityManager->flush();
     return $entity;
   }
-
-  public function _after() {
-    parent::_after();
-    $this->truncateEntity(StatisticsUnsubscribeEntity::class);
-  }
 }

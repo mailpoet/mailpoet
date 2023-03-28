@@ -6,7 +6,6 @@ use MailPoet\Cron\Workers\StatsNotifications\NewsletterLinkRepository;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterLinkEntity;
 use MailPoet\Entities\SendingQueueEntity;
-use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Newsletter\Links\Links;
 use MailPoet\Router\Router;
 use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
@@ -300,12 +299,5 @@ class LinksTest extends \MailPoetTest {
     $result = $this->links->convertHashedLinksToShortcodesAndUrls($content, $newsletterLink1->getQueue()->getId(), $convertAll = true);
     expect($result)->stringContainsString($newsletterLink1->getUrl());
     expect($result)->stringContainsString($newsletterLink2->getUrl());
-  }
-
-  public function _after() {
-    $this->truncateEntity(NewsletterEntity::class);
-    $this->truncateEntity(NewsletterLinkEntity::class);
-    $this->truncateEntity(SubscriberEntity::class);
-    $this->truncateEntity(SendingQueueEntity::class);
   }
 }

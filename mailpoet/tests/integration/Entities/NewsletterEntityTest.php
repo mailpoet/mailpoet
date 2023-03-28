@@ -16,7 +16,6 @@ class NewsletterEntityTest extends \MailPoetTest {
   private $segmentRepository;
 
   public function _before() {
-    $this->cleanup();
     $this->newsletterRepository = $this->diContainer->get(NewslettersRepository::class);
     $this->segmentRepository = $this->diContainer->get(SegmentsRepository::class);
   }
@@ -181,10 +180,6 @@ class NewsletterEntityTest extends \MailPoetTest {
     $this->assertSame($processedAt, $newsletter->getProcessedAt());
   }
 
-  public function _after() {
-    $this->cleanup();
-  }
-
   private function createNewsletter(): NewsletterEntity {
     $newsletter = new NewsletterEntity();
     $newsletter->setType(NewsletterEntity::TYPE_STANDARD);
@@ -199,15 +194,5 @@ class NewsletterEntityTest extends \MailPoetTest {
     $newsletterOptionField->setNewsletterType(NewsletterEntity::TYPE_STANDARD);
     $this->entityManager->persist($newsletterOptionField);
     return $newsletterOptionField;
-  }
-
-  private function cleanup() {
-    $this->truncateEntity(NewsletterEntity::class);
-    $this->truncateEntity(NewsletterOptionEntity::class);
-    $this->truncateEntity(NewsletterOptionFieldEntity::class);
-    $this->truncateEntity(NewsletterSegmentEntity::class);
-    $this->truncateEntity(SegmentEntity::class);
-    $this->truncateEntity(ScheduledTaskEntity::class);
-    $this->truncateEntity(SendingQueueEntity::class);
   }
 }

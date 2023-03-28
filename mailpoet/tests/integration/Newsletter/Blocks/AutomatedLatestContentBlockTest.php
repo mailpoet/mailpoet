@@ -188,10 +188,4 @@ class AutomatedLatestContentBlockTest extends \MailPoetTest {
     $this->newslettersRepository->flush();
     return $newsletter;
   }
-
-  public function _after() {
-    parent::_after();
-    $this->truncateEntity(NewsletterPostEntity::class);
-    $this->truncateEntity(NewsletterEntity::class);
-  }
 }

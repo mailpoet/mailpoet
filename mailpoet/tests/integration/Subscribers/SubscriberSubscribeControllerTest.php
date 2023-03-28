@@ -8,8 +8,6 @@ use MailPoet\Entities\FormEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberCustomFieldEntity;
 use MailPoet\Entities\SubscriberEntity;
-use MailPoet\Entities\SubscriberSegmentEntity;
-use MailPoet\Entities\SubscriberTagEntity;
 use MailPoet\Entities\TagEntity;
 use MailPoet\Form\Util\FieldNameObfuscator;
 use MailPoet\Segments\SegmentsRepository;
@@ -43,7 +41,6 @@ class SubscriberSubscribeControllerTest extends \MailPoetTest {
 
   public function _before() {
     parent::_before();
-    $this->cleanup();
     $this->settings = $this->diContainer->get(SettingsController::class);
     $this->obfuscator = $this->diContainer->get(FieldNameObfuscator::class);
     $this->obfuscatedEmail = $this->obfuscator->obfuscate('email');
@@ -161,10 +158,6 @@ class SubscriberSubscribeControllerTest extends \MailPoetTest {
     $this->assertNotNull($subscriber->getSubscriberTag($tag));
   }
 
-  public function _after(): void {
-    $this->cleanup();
-  }
-
   /**
    * @param CustomFieldEntity[] $customFields
    * @param TagEntity[] $tags
@@ -214,14 +207,5 @@ class SubscriberSubscribeControllerTest extends \MailPoetTest {
     $this->entityManager->persist($customField);
     $this->entityManager->flush();
     return $customField;
-  }
-
-  private function cleanup(): void {
-    $this->truncateEntity(FormEntity::class);
-    $this->truncateEntity(SubscriberEntity::class);
-    $this->truncateEntity(SubscriberSegmentEntity::class);
-    $this->truncateEntity(SegmentEntity::class);
-    $this->truncateEntity(TagEntity::class);
-    $this->truncateEntity(SubscriberTagEntity::class);
   }
 }

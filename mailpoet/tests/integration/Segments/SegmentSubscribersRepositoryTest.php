@@ -247,10 +247,6 @@ class SegmentSubscribersRepositoryTest extends \MailPoetTest {
   }
 
   private function cleanup() {
-    $this->truncateEntity(SegmentEntity::class);
-    $this->truncateEntity(SubscriberEntity::class);
-    $this->truncateEntity(SubscriberSegmentEntity::class);
-    $this->truncateEntity(DynamicSegmentFilterEntity::class);
     $this->clearSubscribersCountCache();
   }
 }

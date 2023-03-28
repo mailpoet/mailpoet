@@ -4,9 +4,7 @@ namespace MailPoet\Newsletter\Sending;
 
 use MailPoet\Cron\Workers\Bounce;
 use MailPoet\Cron\Workers\SendingQueue\SendingQueue as SendingQueueWorker;
-use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
-use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\Test\DataFactories\ScheduledTask as ScheduledTaskFactory;
 use MailPoet\Test\DataFactories\SendingQueue;
@@ -204,11 +202,5 @@ class ScheduledTasksRepositoryTest extends \MailPoetTest {
 
     $tasks = $this->repository->findScheduledSendingTasks();
     $this->assertSame($expectedResult, $tasks);
-  }
-
-  public function cleanup() {
-    $this->truncateEntity(ScheduledTaskEntity::class);
-    $this->truncateEntity(NewsletterEntity::class);
-    $this->truncateEntity(SendingQueueEntity::class);
   }
 }

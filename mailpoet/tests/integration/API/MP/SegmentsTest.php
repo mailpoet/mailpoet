@@ -8,11 +8,7 @@ use MailPoet\API\MP\v1\CustomFields;
 use MailPoet\API\MP\v1\Segments;
 use MailPoet\API\MP\v1\Subscribers;
 use MailPoet\Config\Changelog;
-use MailPoet\Entities\FormEntity;
-use MailPoet\Entities\NewsletterOptionEntity;
-use MailPoet\Entities\NewsletterOptionFieldEntity;
 use MailPoet\Entities\SegmentEntity;
-use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Subscribers\SubscriberSegmentRepository;
 use MailPoet\Test\DataFactories\Form;
@@ -280,14 +276,5 @@ class SegmentsTest extends \MailPoetTest {
       ->withType($type)
       ->withDescription($description)
       ->create();
-  }
-
-  public function _after() {
-    $this->truncateEntity(SegmentEntity::class);
-    $this->truncateEntity(SubscriberEntity::class);
-    $this->truncateEntity(FormEntity::class);
-    $this->truncateEntity(NewsletterOptionFieldEntity::class);
-    $this->truncateEntity(NewsletterOptionEntity::class);
-    $this->truncateEntity(NewsletterOptionFieldEntity::class);
   }
 }

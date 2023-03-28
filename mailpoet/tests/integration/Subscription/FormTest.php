@@ -8,8 +8,6 @@ use MailPoet\API\JSON\ErrorResponse;
 use MailPoet\API\JSON\Response;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\FormEntity;
-use MailPoet\Entities\SegmentEntity;
-use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Form\Util\FieldNameObfuscator;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\SettingsRepository;
@@ -147,9 +145,6 @@ class FormTest extends \MailPoetTest {
 
   public function _after() {
     wp_delete_post($this->post);
-    $this->truncateEntity(SegmentEntity::class);
-    $this->truncateEntity(FormEntity::class);
-    $this->truncateEntity(SubscriberEntity::class);
     $this->diContainer->get(SettingsRepository::class)->truncate();
   }
 }

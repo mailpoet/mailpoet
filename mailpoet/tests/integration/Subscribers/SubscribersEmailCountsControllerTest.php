@@ -26,11 +26,11 @@ class SubscribersEmailCountsControllerTest extends \MailPoetTest {
       $this->diContainer->get(EntityManager::class)
     );
     $this->subscribersRepository = $this->diContainer->get(SubscribersRepository::class);
-    $this->truncateEntityBackup(SubscriberEntity::class);
-    $this->truncateEntityBackup(ScheduledTaskEntity::class);
-    $this->truncateEntityBackup(ScheduledTaskSubscriberEntity::class);
-    $this->truncateEntityBackup(SendingQueueEntity::class);
-    $this->truncateEntityBackup(NewsletterEntity::class);
+    $this->truncateEntity(SubscriberEntity::class);
+    $this->truncateEntity(ScheduledTaskEntity::class);
+    $this->truncateEntity(ScheduledTaskSubscriberEntity::class);
+    $this->truncateEntity(SendingQueueEntity::class);
+    $this->truncateEntity(NewsletterEntity::class);
     $this->entityManager->getConnection()->executeQuery('DROP TABLE IF EXISTS processed_task_ids');
     $this->newsletter = new NewsletterEntity();
     $this->newsletter->setSubject('Subject');

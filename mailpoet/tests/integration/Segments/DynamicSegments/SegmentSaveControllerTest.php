@@ -15,7 +15,6 @@ class SegmentSaveControllerTest extends \MailPoetTest {
 
   public function _before(): void {
     parent::_before();
-    $this->cleanup();
     $this->saveController = $this->diContainer->get(SegmentSaveController::class);
   }
 
@@ -130,10 +129,5 @@ class SegmentSaveControllerTest extends \MailPoetTest {
     $this->entityManager->persist($dynamicFilter);
     $this->entityManager->flush();
     return $dynamicFilter;
-  }
-
-  private function cleanup(): void {
-    $this->truncateEntity(SegmentEntity::class);
-    $this->truncateEntity(DynamicSegmentFilterEntity::class);
   }
 }

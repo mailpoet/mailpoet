@@ -486,11 +486,6 @@ class ShortcodesTest extends \MailPoetTest {
   }
 
   public function cleanup() {
-    $this->truncateEntity(NewsletterEntity::class);
-    $this->truncateEntity(SubscriberEntity::class);
-    $this->truncateEntity(SendingQueueEntity::class);
-    $this->truncateEntity(CustomFieldEntity::class);
-    $this->truncateEntity(SubscriberCustomFieldEntity::class);
     if ($this->wPPost) wp_delete_post($this->wPPost, true);
     if ($this->wPUser) wp_delete_user($this->wPUser->ID);
   }

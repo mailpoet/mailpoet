@@ -6,15 +6,9 @@ use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Entities\DynamicSegmentFilterEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
-use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Segments\DynamicSegments\Filters\UserRole;
 
 class DynamicSegmentsResponseBuilderTest extends \MailPoetTest {
-  public function _before() {
-    parent::_before();
-    $this->cleanup();
-  }
-
   public function testItBuildsGetResponse() {
     $name = 'Response Listings Builder Test';
     $description = 'Testing description';
@@ -117,17 +111,5 @@ class DynamicSegmentsResponseBuilderTest extends \MailPoetTest {
     $segment->getDynamicFilters()->add($dynamicFilter);
     $this->entityManager->persist($dynamicFilter);
     return $segment;
-  }
-
-  private function cleanup() {
-    $this->truncateEntity(SegmentEntity::class);
-    $this->truncateEntity(SubscriberEntity::class);
-    $this->truncateEntity(SubscriberSegmentEntity::class);
-    $this->truncateEntity(DynamicSegmentFilterEntity::class);
-  }
-
-  public function _after() {
-    parent::_after();
-    $this->cleanup();
   }
 }

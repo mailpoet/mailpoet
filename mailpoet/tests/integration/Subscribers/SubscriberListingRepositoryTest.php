@@ -47,7 +47,6 @@ class SubscriberListingRepositoryTest extends \MailPoetTest {
       $this->diContainer->get(SegmentSubscribersRepository::class),
       $this->diContainer->get(SubscribersCountsController::class)
     );
-    $this->cleanup();
   }
 
   public function testItBuildsFilters() {
@@ -341,13 +340,6 @@ class SubscriberListingRepositoryTest extends \MailPoetTest {
     return $subscriberSegment;
   }
 
-  private function cleanup() {
-    $this->truncateEntity(SegmentEntity::class);
-    $this->truncateEntity(SubscriberEntity::class);
-    $this->truncateEntity(SubscriberSegmentEntity::class);
-    $this->truncateEntity(DynamicSegmentFilterEntity::class);
-  }
-
   private function getListingDefinition(): ListingDefinition {
     return new ListingDefinition(
       $this->listingData['group'],
@@ -360,9 +352,5 @@ class SubscriberListingRepositoryTest extends \MailPoetTest {
       $this->listingData['limit'],
       $this->listingData['selection']
     );
-  }
-
-  public function _after() {
-    $this->cleanup();
   }
 }

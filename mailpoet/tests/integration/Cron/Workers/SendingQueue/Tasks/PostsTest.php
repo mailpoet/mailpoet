@@ -67,8 +67,4 @@ class PostsTest extends \MailPoetTest {
     $newsletter->setType(NewsletterEntity::TYPE_STANDARD);
     expect($this->postsTask->extractAndSave($renderedNewsletter, $newsletter))->equals(false);
   }
-
-  public function _after() {
-    $this->truncateEntity(NewsletterPostEntity::class);
-  }
 }

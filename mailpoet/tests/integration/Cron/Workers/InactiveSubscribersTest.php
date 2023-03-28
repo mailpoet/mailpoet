@@ -25,7 +25,6 @@ class InactiveSubscribersTest extends \MailPoetTest {
   public function _before() {
     $this->settings = SettingsController::getInstance();
     $this->scheduledTasksRepository = $this->diContainer->get(ScheduledTasksRepository::class);
-    $this->truncateEntity(ScheduledTaskEntity::class);
     $this->settings->set('tracking.level', TrackingConfig::LEVEL_PARTIAL);
     $this->cronHelper = ContainerWrapper::getInstance()->get(CronHelper::class);
     parent::_before();

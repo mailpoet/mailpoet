@@ -10,7 +10,6 @@ use MailPoet\Cron\CronTrigger;
 use MailPoet\Cron\Daemon;
 use MailPoet\Cron\Triggers\WordPress;
 use MailPoet\Entities\LogEntity;
-use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Logging\LogRepository;
 use MailPoet\Settings\SettingsController;
@@ -127,7 +126,5 @@ class DaemonRunTest extends \MailPoetTest {
     $wpdb->query('TRUNCATE ' . $actionsTable);
     $claimsTable = $wpdb->prefix . 'actionscheduler_claims';
     $wpdb->query('TRUNCATE ' . $claimsTable);
-    $this->truncateEntity(ScheduledTaskEntity::class);
-    $this->truncateEntity(LogEntity::class);
   }
 }

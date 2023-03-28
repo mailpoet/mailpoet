@@ -13,7 +13,6 @@ use MailPoet\Entities\StatisticsClickEntity;
 use MailPoet\Entities\StatisticsNewsletterEntity;
 use MailPoet\Entities\StatisticsOpenEntity;
 use MailPoet\Entities\SubscriberEntity;
-use MailPoet\Entities\UserAgentEntity;
 use MailPoetVendor\Doctrine\DBAL\Driver\Statement;
 use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
 
@@ -33,7 +32,6 @@ class EmailActionClickAnyTest extends \MailPoetTest {
   public $subscriberOpenedClicked;
 
   public function _before(): void {
-    $this->cleanData();
     $this->emailAction = $this->diContainer->get(EmailActionClickAny::class);
     $this->newsletter = new NewsletterEntity();
     $task = new ScheduledTaskEntity();
@@ -150,19 +148,5 @@ class EmailActionClickAnyTest extends \MailPoetTest {
     );
     $this->entityManager->persist($click);
     $this->entityManager->flush();
-  }
-
-  public function _after(): void {
-    $this->cleanData();
-  }
-
-  private function cleanData(): void {
-    $this->truncateEntity(NewsletterEntity::class);
-    $this->truncateEntity(SubscriberEntity::class);
-    $this->truncateEntity(StatisticsOpenEntity::class);
-    $this->truncateEntity(StatisticsClickEntity::class);
-    $this->truncateEntity(StatisticsNewsletterEntity::class);
-    $this->truncateEntity(NewsletterLinkEntity::class);
-    $this->truncateEntity(UserAgentEntity::class);
   }
 }

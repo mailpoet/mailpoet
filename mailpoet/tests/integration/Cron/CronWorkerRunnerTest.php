@@ -242,8 +242,4 @@ class CronWorkerRunnerTest extends \MailPoetTest {
       Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'))
     );
   }
-
-  public function _after() {
-    $this->truncateEntity(ScheduledTaskEntity::class);
-  }
 }

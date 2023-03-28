@@ -9,7 +9,6 @@ class NewsletterTemplatesRepositoryTest extends \MailPoetTest {
   private $newsletterTemplatesRepository;
 
   public function _before() {
-    $this->truncateEntity(NewsletterTemplateEntity::class);
     $this->newsletterTemplatesRepository = $this->diContainer->get(NewsletterTemplatesRepository::class);
   }
 
@@ -63,9 +62,5 @@ class NewsletterTemplatesRepositoryTest extends \MailPoetTest {
     expect($createdTemplate->getName())->equals('Another template');
     expect($createdTemplate->getBody())->equals(['content' => [], 'globalStyles' => []]);
     expect($createdTemplate->getThumbnailData())->equals('data:image/gif;base64,R0lGODlhAQABAAAAACw=');
-  }
-
-  public function _after() {
-    $this->truncateEntity(NewsletterTemplateEntity::class);
   }
 }

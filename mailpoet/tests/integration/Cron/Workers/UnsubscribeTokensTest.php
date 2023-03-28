@@ -7,7 +7,6 @@ use MailPoet\Cron\Workers\UnsubscribeTokens;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\Subscriber;
-use MailPoetVendor\Idiorm\ORM;
 
 class UnsubscribeTokensTest extends \MailPoetTest {
 
@@ -17,9 +16,6 @@ class UnsubscribeTokensTest extends \MailPoetTest {
   private $newsletterWithoutToken;
 
   public function _before() {
-    $this->truncateEntity(ScheduledTaskEntity::class);
-    ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
-    ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
     parent::_before();
     $this->subscriberWithToken = Subscriber::createOrUpdate(['email' => 'subscriber1@test.com']);
     $this->subscriberWithToken->set('unsubscribe_token', 'aaabbbcccdddeee');
@@ -64,11 +60,5 @@ class UnsubscribeTokensTest extends \MailPoetTest {
     $this->assertInstanceOf(Newsletter::class, $this->newsletterWithoutToken);
     expect($this->newsletterWithToken->unsubscribeToken)->equals('aaabbbcccdddeee');
     expect(strlen($this->newsletterWithoutToken->unsubscribeToken))->equals(15);
-  }
-
-  public function _after() {
-    $this->truncateEntity(ScheduledTaskEntity::class);
-    ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
-    ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
   }
 }

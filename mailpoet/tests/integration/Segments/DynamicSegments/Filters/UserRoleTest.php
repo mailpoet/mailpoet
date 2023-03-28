@@ -132,7 +132,6 @@ class UserRoleTest extends \MailPoetTest {
 
   private function cleanup(): void {
     $this->cleanWpUsers();
-    $this->truncateEntity(SubscriberEntity::class);
   }
 
   private function cleanWpUsers(): void {

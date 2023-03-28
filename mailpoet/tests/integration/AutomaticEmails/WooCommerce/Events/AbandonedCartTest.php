@@ -4,8 +4,6 @@ namespace MailPoet\AutomaticEmails\WooCommerce\Events;
 
 use MailPoet\AutomaticEmails\WooCommerce\WooCommerce as WooCommerceEmail;
 use MailPoet\Entities\NewsletterEntity;
-use MailPoet\Entities\NewsletterOptionEntity;
-use MailPoet\Entities\NewsletterOptionFieldEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Entities\SendingQueueEntity;
@@ -72,8 +70,6 @@ class AbandonedCartTest extends \MailPoetTest {
   private $cartBackup;
 
   public function _before() {
-    $this->cleanup();
-
     global $woocommerce;
     $this->wooCommerce = $woocommerce;
 
@@ -389,21 +385,10 @@ class AbandonedCartTest extends \MailPoetTest {
       ->getMock();
   }
 
-  private function cleanup() {
-    $this->truncateEntity(SubscriberEntity::class);
-    $this->truncateEntity(NewsletterEntity::class);
-    $this->truncateEntity(NewsletterOptionEntity::class);
-    $this->truncateEntity(NewsletterOptionFieldEntity::class);
-    $this->truncateEntity(SendingQueueEntity::class);
-    $this->truncateEntity(ScheduledTaskEntity::class);
-    $this->truncateEntity(ScheduledTaskSubscriberEntity::class);
-  }
-
   public function _after() {
     WPFunctions::set(new WPFunctions());
     Carbon::setTestNow();
     // Restore original cart object
     $this->wooCommerce->cart = $this->cartBackup;
-    $this->cleanup();
   }
 }

@@ -111,10 +111,4 @@ class ManageTest extends \MailPoetTest {
     });
     return $subscriptions;
   }
-
-  public function _after() {
-    $this->truncateEntity(SubscriberEntity::class);
-    $this->truncateEntity(SegmentEntity::class);
-    $this->truncateEntity(SubscriberSegmentEntity::class);
-  }
 }

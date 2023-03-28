@@ -3,8 +3,6 @@
 namespace MailPoet\Test\Cron\Workers\SendingQueue\Tasks;
 
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Shortcodes;
-use MailPoet\Entities\NewsletterEntity;
-use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 use WP_Post;
@@ -47,8 +45,6 @@ class ShortcodesTest extends \MailPoetTest {
   }
 
   public function _after() {
-    $this->truncateEntity(SendingQueueEntity::class);
-    $this->truncateEntity(NewsletterEntity::class);
     wp_delete_post($this->wPPost, true);
   }
 }

@@ -7,7 +7,6 @@ use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Settings\SettingsController;
-use MailPoet\Settings\SettingsRepository;
 
 class MailerLogTest extends \MailPoetTest {
 
@@ -452,10 +451,5 @@ class MailerLogTest extends \MailPoetTest {
     } catch (\Exception $e) {
       expect($e->getMessage())->equals('Sending has been paused.');
     }
-  }
-
-  public function _after() {
-    $this->diContainer->get(SettingsRepository::class)->truncate();
-    $this->truncateEntity(LogEntity::class);
   }
 }

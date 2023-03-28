@@ -24,7 +24,6 @@ class NewsletterSegmentRepositoryTest extends \MailPoetTest {
 
   public function _before() {
     parent::_before();
-    $this->cleanup();
     $this->repository = $this->diContainer->get(NewsletterSegmentRepository::class);
     $this->welcomeEmailSegmentOption = $this->createNewsletterOptionField(NewsletterEntity::TYPE_WELCOME, NewsletterOptionFieldEntity::NAME_SEGMENT);
     $this->automaticEmailSegmentOption = $this->createNewsletterOptionField(NewsletterEntity::TYPE_AUTOMATIC, NewsletterOptionFieldEntity::NAME_SEGMENT);
@@ -76,10 +75,6 @@ class NewsletterSegmentRepositoryTest extends \MailPoetTest {
     expect($usedSegments[$segmentWithPostNotification->getId()])->equals(['Notification']);
     sort($usedSegments[$segmentWithMultipleActiveEmails->getId()]);
     expect($usedSegments[$segmentWithMultipleActiveEmails->getId()])->equals(['Notification', 'Sending', 'Welcome2']);
-  }
-
-  public function _after() {
-    $this->cleanup();
   }
 
   private function createNewsletter(string $type, $subject, string $status = NewsletterEntity::STATUS_DRAFT): NewsletterEntity {
@@ -146,15 +141,5 @@ class NewsletterSegmentRepositoryTest extends \MailPoetTest {
     $this->entityManager->persist($option);
     $this->entityManager->flush();
     return $option;
-  }
-
-  private function cleanup() {
-    $this->truncateEntity(NewsletterEntity::class);
-    $this->truncateEntity(ScheduledTaskEntity::class);
-    $this->truncateEntity(SendingQueueEntity::class);
-    $this->truncateEntity(NewsletterSegmentEntity::class);
-    $this->truncateEntity(SegmentEntity::class);
-    $this->truncateEntity(NewsletterOptionFieldEntity::class);
-    $this->truncateEntity(NewsletterOptionEntity::class);
   }
 }

@@ -6,7 +6,6 @@ use MailPoet\Config\Populator;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Router\Router;
 use MailPoet\Settings\SettingsController;
-use MailPoet\Settings\SettingsRepository;
 use MailPoet\Subscribers\LinkTokens;
 use MailPoet\Subscription\SubscriptionUrlFactory;
 use MailPoet\WP\Functions as WPFunctions;
@@ -178,10 +177,5 @@ class UrlTest extends \MailPoetTest {
     $this->entityManager->persist($subscriber);
     $this->entityManager->flush();
     return $subscriber;
-  }
-
-  public function _after() {
-    $this->diContainer->get(SettingsRepository::class)->truncate();
-    $this->truncateEntity(SubscriberEntity::class);
   }
 }

@@ -32,7 +32,6 @@ class ScheduledTaskSubscribersListingRepositoryTest extends \MailPoetTest {
 
   public function _before() {
     parent::_before();
-    $this->cleanup();
     $this->listingHandler = $this->diContainer->get(Handler::class);
     $this->repository = $this->diContainer->get(ScheduledTaskSubscribersListingRepository::class);
     $this->scheduledTaskFactory = new ScheduledTaskFactory();
@@ -129,11 +128,5 @@ class ScheduledTaskSubscribersListingRepositoryTest extends \MailPoetTest {
     $this->assertInstanceOf(ScheduledTaskSubscriberEntity::class, $tasksSubscribers[0]);
     $this->assertInstanceOf(SubscriberEntity::class, $tasksSubscribers[0]->getSubscriber());
     expect($tasksSubscribers[0]->getSubscriber()->getEmail())->equals('subscriberProcessed@email.com');
-  }
-
-  public function cleanup() {
-    $this->truncateEntity(ScheduledTaskEntity::class);
-    $this->truncateEntity(SubscriberEntity::class);
-    $this->truncateEntity(ScheduledTaskSubscriberEntity::class);
   }
 }

@@ -23,8 +23,6 @@ class SubscriberSegmentTest extends \MailPoetTest {
   public function _before(): void {
     $this->filter = $this->diContainer->get(SubscriberSegment::class);
 
-    $this->cleanUp();
-
     $subscriber1 = new SubscriberEntity();
     $subscriber1->setLastSubscribedAt(CarbonImmutable::now());
     $subscriber1->setEmail('a1@example.com');
@@ -128,12 +126,5 @@ class SubscriberSegmentTest extends \MailPoetTest {
       ->createQueryBuilder()
       ->select("DISTINCT $subscribersTable.id")
       ->from($subscribersTable);
-  }
-
-  private function cleanUp(): void {
-    $this->truncateEntity(SubscriberEntity::class);
-    $this->truncateEntity(SegmentEntity::class);
-    $this->truncateEntity(DynamicSegmentFilterEntity::class);
-    $this->truncateEntity(SubscriberSegmentEntity::class);
   }
 }

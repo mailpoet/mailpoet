@@ -2,7 +2,6 @@
 
 namespace MailPoet\Test\Subscription;
 
-use MailPoet\Entities\SettingEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscription\SubscriptionUrlFactory;
@@ -39,10 +38,5 @@ class SubscriptionUrlFactoryTest extends \MailPoetTest {
 
     $this->assertIsString($expectedUrl, "Permalink is a valid string");
     $this->assertStringContainsString($expectedUrl, $this->subscriptionUrlFactory->getReEngagementUrl($this->subscriber));
-  }
-
-  public function _after() {
-    parent::_after();
-    $this->truncateEntity(SettingEntity::class);
   }
 }

@@ -179,8 +179,6 @@ class WooCommerceTotalSpentTest extends \MailPoetTest {
 
   private function cleanUp(): void {
     global $wpdb;
-    $this->truncateEntity(SegmentEntity::class);
-    $this->truncateEntity(SubscriberEntity::class);
     $emails = ['customer1@example.com', 'customer2@example.com', 'customer3@example.com'];
     foreach ($emails as $email) {
       $this->tester->deleteWordPressUser($email);

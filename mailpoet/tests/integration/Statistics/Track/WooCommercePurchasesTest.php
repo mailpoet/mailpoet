@@ -45,7 +45,6 @@ class WooCommercePurchasesTest extends \MailPoetTest {
 
   public function _before() {
     parent::_before();
-    $this->cleanup();
 
     $this->subscriber = $this->createSubscriber('test@example.com');
     $this->newsletter = $this->createNewsletter();
@@ -503,14 +502,5 @@ class WooCommercePurchasesTest extends \MailPoetTest {
     $mock->method('get_total')->willReturn((string)$totalPrice);
     $mock->method('get_currency')->willReturn('EUR');
     return $mock;
-  }
-
-  private function cleanup() {
-    $this->truncateEntity(NewsletterEntity::class);
-    $this->truncateEntity(SubscriberEntity::class);
-    $this->truncateEntity(SendingQueueEntity::class);
-    $this->truncateEntity(StatisticsClickEntity::class);
-    $this->truncateEntity(StatisticsWooCommercePurchaseEntity::class);
-    $this->truncateEntity(ScheduledTaskSubscriberEntity::class);
   }
 }

@@ -94,8 +94,4 @@ class FormListingRepositoryTest extends \MailPoetTest {
     ]));
     expect($forms)->count(0);
   }
-
-  public function _after() {
-    $this->truncateEntity(FormEntity::class);
-  }
 }

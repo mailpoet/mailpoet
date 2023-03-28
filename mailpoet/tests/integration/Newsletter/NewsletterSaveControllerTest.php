@@ -26,7 +26,6 @@ class NewsletterSaveControllerTest extends \MailPoetTest {
 
   public function _before() {
     parent::_before();
-    $this->cleanup();
     $this->saveController = $this->diContainer->get(NewsletterSaveController::class);
     $this->scheduler = $this->diContainer->get(Scheduler::class);
   }
@@ -350,10 +349,6 @@ class NewsletterSaveControllerTest extends \MailPoetTest {
     expect($newsletter->getReplyToAddress())->same('reply@test.com');
   }
 
-  public function _after() {
-    $this->cleanup();
-  }
-
   private function createNewsletter(string $type, string $status = NewsletterEntity::STATUS_DRAFT): NewsletterEntity {
     $newsletter = new NewsletterEntity();
     $newsletter->setType($type);
@@ -399,15 +394,5 @@ class NewsletterSaveControllerTest extends \MailPoetTest {
       $this->entityManager->persist($newsletterOptionField);
     }
     $this->entityManager->flush();
-  }
-
-  private function cleanup() {
-    $this->truncateEntity(NewsletterEntity::class);
-    $this->truncateEntity(NewsletterSegmentEntity::class);
-    $this->truncateEntity(NewsletterOptionEntity::class);
-    $this->truncateEntity(NewsletterOptionFieldEntity::class);
-    $this->truncateEntity(ScheduledTaskEntity::class);
-    $this->truncateEntity(SendingQueueEntity::class);
-    $this->truncateEntity(SegmentEntity::class);
   }
 }

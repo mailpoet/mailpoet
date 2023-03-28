@@ -6,11 +6,6 @@ use Codeception\Stub;
 use MailPoet\Config\Renderer;
 use MailPoet\Cron\CronWorkerRunner;
 use MailPoet\Entities\NewsletterEntity;
-use MailPoet\Entities\NewsletterOptionEntity;
-use MailPoet\Entities\ScheduledTaskEntity;
-use MailPoet\Entities\SendingQueueEntity;
-use MailPoet\Entities\StatisticsClickEntity;
-use MailPoet\Entities\StatisticsOpenEntity;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\MailerFactory;
 use MailPoet\Mailer\MetaInfo;
@@ -83,17 +78,6 @@ class AutomatedEmailsTest extends \MailPoetTest {
     $this->settings->set('tracking.level', TrackingConfig::LEVEL_PARTIAL);
 
     $this->newsletterFactory = new NewsletterFactory();
-  }
-
-  public function _after() {
-    parent::_after();
-
-    $this->truncateEntity(NewsletterEntity::class);
-    $this->truncateEntity(NewsletterOptionEntity::class);
-    $this->truncateEntity(ScheduledTaskEntity::class);
-    $this->truncateEntity(SendingQueueEntity::class);
-    $this->truncateEntity(StatisticsClickEntity::class);
-    $this->truncateEntity(StatisticsOpenEntity::class);
   }
 
   public function testItDoesntWorkIfDisabled() {

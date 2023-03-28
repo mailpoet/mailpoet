@@ -6,14 +6,10 @@ use Codeception\Util\Stub;
 use MailPoet\API\JSON\Response as APIResponse;
 use MailPoet\API\JSON\v1\SendingQueue as SendingQueueAPI;
 use MailPoet\Entities\NewsletterEntity;
-use MailPoet\Entities\NewsletterOptionEntity;
-use MailPoet\Entities\NewsletterOptionFieldEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
-use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Newsletter\NewsletterValidator;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Settings\SettingsController;
-use MailPoet\Settings\SettingsRepository;
 use MailPoet\Tasks\Sending;
 use MailPoet\Test\DataFactories\Newsletter;
 use MailPoet\Test\DataFactories\NewsletterOption;
@@ -28,7 +24,6 @@ class SendingQueueTest extends \MailPoetTest {
 
   public function _before() {
     parent::_before();
-    $this->clean();
     $this->newsletterOptionsFactory = new NewsletterOption();
 
     $this->newsletter = (new Newsletter())
@@ -124,14 +119,5 @@ class SendingQueueTest extends \MailPoetTest {
     expect($response['errors'][0])->array();
     expect($response['errors'][0]['message'])->stringContainsString('some error');
     expect($response['errors'][0]['error'])->stringContainsString('bad_request');
-  }
-
-  public function clean() {
-    $this->diContainer->get(SettingsRepository::class)->truncate();
-    $this->truncateEntity(NewsletterEntity::class);
-    $this->truncateEntity(NewsletterOptionEntity::class);
-    $this->truncateEntity(NewsletterOptionFieldEntity::class);
-    $this->truncateEntity(SendingQueueEntity::class);
-    $this->truncateEntity(ScheduledTaskEntity::class);
   }
 }

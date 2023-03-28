@@ -39,11 +39,6 @@ class SubscribersLifetimeEmailCountTest extends \MailPoetTest {
     $this->subscribersRepository = $this->diContainer->get(SubscribersRepository::class);
     $this->scheduledTaskFactory = new ScheduledTaskFactory();
     $this->scheduledTasksRepository = $this->diContainer->get(ScheduledTasksRepository::class);
-    $this->truncateEntity(SubscriberEntity::class);
-    $this->truncateEntity(ScheduledTaskEntity::class);
-    $this->truncateEntity(ScheduledTaskSubscriberEntity::class);
-    $this->truncateEntity(SendingQueueEntity::class);
-    $this->truncateEntity(NewsletterEntity::class);
     $this->newsletter = new NewsletterEntity();
     $this->newsletter->setSubject('Subject');
     $this->newsletter->setType(NewsletterEntity::TYPE_STANDARD);
@@ -216,13 +211,5 @@ class SubscribersLifetimeEmailCountTest extends \MailPoetTest {
     $this->entityManager->persist($taskSubscriber);
     $this->entityManager->flush();
     return $taskSubscriber;
-  }
-
-  public function _after(): void {
-    $this->truncateEntity(SubscriberEntity::class);
-    $this->truncateEntity(ScheduledTaskEntity::class);
-    $this->truncateEntity(ScheduledTaskSubscriberEntity::class);
-    $this->truncateEntity(SendingQueueEntity::class);
-    $this->truncateEntity(NewsletterEntity::class);
   }
 }

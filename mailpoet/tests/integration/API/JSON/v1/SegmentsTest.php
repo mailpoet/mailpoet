@@ -272,13 +272,4 @@ class SegmentsTest extends \MailPoetTest {
     $this->subscriberRepository->flush();
     return $subscriber;
   }
-
-  public function _after() {
-    $this->truncateEntity(SegmentEntity::class);
-    $this->truncateEntity(SubscriberEntity::class);
-    $this->truncateEntity(SubscriberSegmentEntity::class);
-    $this->truncateEntity(NewsletterEntity::class);
-    $this->truncateEntity(NewsletterSegmentEntity::class);
-    $this->truncateEntity(FormEntity::class);
-  }
 }

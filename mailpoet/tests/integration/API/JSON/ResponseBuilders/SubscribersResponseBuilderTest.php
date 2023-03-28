@@ -4,9 +4,6 @@ namespace MailPoet\API\JSON\ResponseBuilders;
 
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
-use MailPoet\Entities\SubscriberSegmentEntity;
-use MailPoet\Entities\SubscriberTagEntity;
-use MailPoet\Entities\TagEntity;
 use MailPoet\Subscribers\Source;
 use MailPoet\Test\DataFactories\Segment as SegmentFactory;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
@@ -139,13 +136,5 @@ class SubscribersResponseBuilderTest extends \MailPoetTest {
     $this->assertEquals($this->tag->getName(), $tag['name']);
     $this->assertArrayHasKey('created_at', $tag);
     $this->assertArrayHasKey('updated_at', $tag);
-  }
-
-  protected function _after() {
-    $this->truncateEntity(SegmentEntity::class);
-    $this->truncateEntity(SubscriberEntity::class);
-    $this->truncateEntity(SubscriberSegmentEntity::class);
-    $this->truncateEntity(TagEntity::class);
-    $this->truncateEntity(SubscriberTagEntity::class);
   }
 }

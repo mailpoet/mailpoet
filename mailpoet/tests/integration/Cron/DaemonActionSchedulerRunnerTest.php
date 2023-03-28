@@ -6,7 +6,6 @@ use MailPoet\Cron\ActionScheduler\Actions\DaemonRun;
 use MailPoet\Cron\ActionScheduler\Actions\DaemonTrigger;
 use MailPoet\Cron\ActionScheduler\ActionScheduler;
 use MailPoet\Cron\ActionScheduler\ActionSchedulerTestHelper;
-use MailPoet\Entities\ScheduledTaskEntity;
 
 require_once __DIR__ . '/ActionScheduler/ActionSchedulerTestHelper.php';
 
@@ -66,6 +65,5 @@ class DaemonActionSchedulerRunnerTest extends \MailPoetTest {
     global $wpdb;
     $actionsTable = $wpdb->prefix . 'actionscheduler_actions';
     $wpdb->query('TRUNCATE ' . $actionsTable);
-    $this->truncateEntity(ScheduledTaskEntity::class);
   }
 }

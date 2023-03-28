@@ -354,10 +354,4 @@ class SettingsTest extends \MailPoetTest {
     $this->entityManager->flush();
     return $newsletter;
   }
-
-  public function _after() {
-    $this->truncateEntity(ScheduledTaskEntity::class);
-    $this->truncateEntity(NewsletterEntity::class);
-    $this->diContainer->get(SettingsRepository::class)->truncate();
-  }
 }

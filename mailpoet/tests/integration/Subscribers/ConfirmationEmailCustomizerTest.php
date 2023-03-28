@@ -3,7 +3,6 @@
 namespace MailPoet\Subscribers;
 
 use MailPoet\Entities\NewsletterEntity;
-use MailPoet\Entities\SettingEntity;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
 
@@ -115,10 +114,5 @@ class ConfirmationEmailCustomizerTest extends \MailPoetTest {
 
   private function generateController(): ConfirmationEmailCustomizer {
     return $this->diContainer->get(ConfirmationEmailCustomizer::class);
-  }
-
-  public function _after() {
-    $this->truncateEntity(NewsletterEntity::class);
-    $this->truncateEntity(SettingEntity::class);
   }
 }

@@ -7,7 +7,6 @@ use MailPoet\Entities\NewsletterOptionEntity;
 use MailPoet\Entities\NewsletterOptionFieldEntity;
 use MailPoet\Entities\NewsletterSegmentEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
-use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\StatisticsNewsletterEntity;
@@ -37,7 +36,6 @@ class ReEngagementSchedulerTest extends \MailPoetTest {
 
   public function _before() {
     parent::_before();
-    $this->cleanup();
     // Prepare Newsletter field options for configuring re-engagement emails
     $this->afterTimeNumberOptionField = new NewsletterOptionFieldEntity();
     $this->afterTimeNumberOptionField->setName(NewsletterOptionFieldEntity::NAME_AFTER_TIME_NUMBER);
@@ -214,23 +212,5 @@ class ReEngagementSchedulerTest extends \MailPoetTest {
     $subscriber->setLastSubscribedAt($lastEngagement);
     $this->entityManager->flush();
     return $subscriber;
-  }
-
-  private function cleanup() {
-    $this->truncateEntity(NewsletterEntity::class);
-    $this->truncateEntity(NewsletterOptionFieldEntity::class);
-    $this->truncateEntity(NewsletterOptionEntity::class);
-    $this->truncateEntity(ScheduledTaskEntity::class);
-    $this->truncateEntity(ScheduledTaskSubscriberEntity::class);
-    $this->truncateEntity(SubscriberEntity::class);
-    $this->truncateEntity(SegmentEntity::class);
-    $this->truncateEntity(SendingQueueEntity::class);
-    $this->truncateEntity(SubscriberSegmentEntity::class);
-    $this->truncateEntity(NewsletterSegmentEntity::class);
-  }
-
-  public function _after() {
-    parent::_after();
-    $this->cleanup();
   }
 }

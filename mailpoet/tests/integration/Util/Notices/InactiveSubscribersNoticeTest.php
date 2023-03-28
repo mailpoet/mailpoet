@@ -4,7 +4,6 @@ namespace MailPoet\Util\Notices;
 
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Settings\SettingsController;
-use MailPoet\Settings\SettingsRepository;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Test\DataFactories\Settings;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
@@ -62,22 +61,11 @@ class InactiveSubscribersNoticeTest extends \MailPoetTest {
 
   public function _before() {
     parent::_before();
-    $this->cleanup();
     $this->notice = new InactiveSubscribersNotice(
       SettingsController::getInstance(),
       $this->diContainer->get(SubscribersRepository::class),
       new WPFunctions()
     );
-  }
-
-  public function _after() {
-    parent::_after();
-    $this->cleanup();
-  }
-
-  private function cleanup() {
-    $this->diContainer->get(SettingsRepository::class)->truncate();
-    $this->truncateEntity(SubscriberEntity::class);
   }
 
   private function createSubscribers($count) {

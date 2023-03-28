@@ -4,7 +4,6 @@ namespace MailPoet\API\JSON\ResponseBuilders;
 
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\FormEntity;
-use MailPoet\Entities\StatisticsFormEntity;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 
 class FormsResponseBuilderTest extends \MailPoetTest {
@@ -52,11 +51,6 @@ class FormsResponseBuilderTest extends \MailPoetTest {
     expect($response)->count(2);
     expect($response[0]['signups'])->equals(0);
     expect($response[0]['segments'])->equals($this->formSettings['segments']);
-  }
-
-  public function _after() {
-    $this->truncateEntity(FormEntity::class);
-    $this->truncateEntity(StatisticsFormEntity::class);
   }
 
   private function createForm($name) {

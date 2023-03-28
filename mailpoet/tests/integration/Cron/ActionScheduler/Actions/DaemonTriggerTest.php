@@ -93,6 +93,5 @@ class DaemonTriggerTest extends \MailPoetTest {
     $wpdb->query('TRUNCATE ' . $actionsTable);
     $claimsTable = $wpdb->prefix . 'actionscheduler_claims';
     $wpdb->query('TRUNCATE ' . $claimsTable);
-    $this->truncateEntity(ScheduledTaskEntity::class);
   }
 }

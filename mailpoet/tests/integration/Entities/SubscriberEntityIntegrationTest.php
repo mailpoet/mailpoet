@@ -20,9 +20,6 @@ class SubscriberEntityIntegrationTest extends \MailPoetTest {
   protected function _before() {
     parent::_before();
 
-    // Calling cleanup() here as some tests from other classes don't remove all SubscriberSegmentEntities causing issues here.
-    $this->cleanup();
-
     $this->subscriberSegmentRepository = $this->diContainer->get(SubscriberSegmentRepository::class);
 
     $segment1 = (new SegmentFactory())->create();
@@ -46,16 +43,5 @@ class SubscriberEntityIntegrationTest extends \MailPoetTest {
     $subscriberSegment2 = $this->subscriberSegmentRepository->findOneBy(['segment' => $this->segment2, 'subscriber' => $this->subscriber]);
 
     $this->assertSame([1 => $subscriberSegment2], $this->subscriber->getSubscriberSegments(SubscriberEntity::STATUS_SUBSCRIBED)->toArray());
-  }
-
-  protected function _after() {
-    parent::_after();
-    $this->cleanup();
-  }
-
-  protected function cleanup() {
-    $this->truncateEntity(SegmentEntity::class);
-    $this->truncateEntity(SubscriberEntity::class);
-    $this->truncateEntity(SubscriberSegmentEntity::class);
   }
 }

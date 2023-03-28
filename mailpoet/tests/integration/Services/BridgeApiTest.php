@@ -26,7 +26,6 @@ class BridgeApiTest extends \MailPoetTest {
     $this->wpMock = $this->createMock(WPFunctions::class);
     $this->api = new API('test-api-key', $this->wpMock);
     $this->logRepository = $this->diContainer->get(LogRepository::class);
-    $this->cleanUp();
   }
 
   public function testItDoesntLogsWhenPremiumKeyCheckPass() {
@@ -205,9 +204,5 @@ class BridgeApiTest extends \MailPoetTest {
     expect($errorLog->getLevel())->equals(Logger::ERROR);
     expect($errorLog->getMessage())->stringContainsString('verifyAuthorizedSenderDomain API response was not in expected format.');
     expect($errorLog->getMessage())->stringContainsString('trololo');
-  }
-
-  private function cleanUp() {
-    $this->truncateEntity(LogEntity::class);
   }
 }

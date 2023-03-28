@@ -171,13 +171,4 @@ class SubscribersLastEngagementTest extends \MailPoetTest {
     $this->entityManager->flush();
     return $newsletter;
   }
-
-  public function _after(): void {
-    $this->truncateEntity(SubscriberEntity::class);
-    $this->truncateEntity(ScheduledTaskEntity::class);
-    $this->truncateEntity(SendingQueueEntity::class);
-    $this->truncateEntity(NewsletterEntity::class);
-    $this->truncateEntity(StatisticsClickEntity::class);
-    $this->truncateEntity(StatisticsOpenEntity::class);
-  }
 }

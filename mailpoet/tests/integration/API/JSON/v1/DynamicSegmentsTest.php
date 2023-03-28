@@ -225,12 +225,4 @@ class DynamicSegmentsTest extends \MailPoetTest {
     $this->entityManager->flush();
     return $segment;
   }
-
-  public function _after() {
-    parent::_after();
-    $this->truncateEntity(SegmentEntity::class);
-    $this->truncateEntity(DynamicSegmentFilterEntity::class);
-    $this->truncateEntity(NewsletterSegmentEntity::class);
-    $this->truncateEntity(NewsletterEntity::class);
-  }
 }

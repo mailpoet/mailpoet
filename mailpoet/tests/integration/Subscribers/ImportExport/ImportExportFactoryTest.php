@@ -3,9 +3,7 @@
 namespace MailPoet\Test\Subscribers\ImportExport;
 
 use MailPoet\Entities\CustomFieldEntity;
-use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
-use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Subscribers\ImportExport\ImportExportFactory;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Test\DataFactories\CustomField as CustomFieldFactory;
@@ -308,10 +306,6 @@ class ImportExportFactoryTest extends \MailPoetTest {
   }
 
   public function _after() {
-    $this->truncateEntity(SubscriberEntity::class);
-    $this->truncateEntity(SegmentEntity::class);
-    $this->truncateEntity(SubscriberSegmentEntity::class);
-    $this->truncateEntity(CustomFieldEntity::class);
     $this->clearSubscribersCountCache();
   }
 }

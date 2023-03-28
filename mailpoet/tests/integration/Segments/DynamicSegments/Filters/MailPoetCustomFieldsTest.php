@@ -20,7 +20,6 @@ class MailPoetCustomFieldsTest extends \MailPoetTest {
   private $subscribers = [];
 
   public function _before(): void {
-    $this->cleanData();
     $this->filter = $this->diContainer->get(MailPoetCustomFields::class);
     $this->subscribers = [];
     $this->subscribers[] = $this->createSubscriber('subscriber1@example.com');
@@ -457,14 +456,6 @@ class MailPoetCustomFieldsTest extends \MailPoetTest {
     $customField->setParams($params);
     $customField->setName('custom field' . rand());
     return $customField;
-  }
-
-  private function cleanData(): void {
-    $this->truncateEntity(SubscriberEntity::class);
-    $this->truncateEntity(CustomFieldEntity::class);
-    $this->truncateEntity(SubscriberCustomFieldEntity::class);
-    $this->truncateEntity(SegmentEntity::class);
-    $this->truncateEntity(DynamicSegmentFilterEntity::class);
   }
 
   private function getQueryBuilder(): QueryBuilder {

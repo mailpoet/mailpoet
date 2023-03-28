@@ -4,7 +4,6 @@ use Codeception\Stub;
 use MailPoet\Cache\TransientCache;
 use MailPoet\Cron\CronTrigger;
 use MailPoet\DI\ContainerWrapper;
-use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Features\FeaturesController;
 use MailPoet\Settings\SettingsController;
 use MailPoetVendor\Doctrine\DBAL\Connection;
@@ -98,8 +97,7 @@ abstract class MailPoetTest extends \Codeception\TestCase\Test { // phpcs:ignore
     $this->diContainer = ContainerWrapper::getInstance(WP_DEBUG);
     $this->connection = $this->diContainer->get(Connection::class);
     $this->entityManager = $this->diContainer->get(EntityManager::class);
-    // Cleanup scheduled tasks from previous tests and switch cron to Linux method
-    $this->truncateEntity(ScheduledTaskEntity::class);
+    // switch cron to Linux method
     $this->diContainer->get(\MailPoet\Cron\DaemonActionSchedulerRunner::class)->deactivate();
     $this->diContainer->get(SettingsController::class)->set('cron_trigger.method', CronTrigger::METHOD_LINUX_CRON);
     // Reset caches
@@ -156,16 +154,6 @@ abstract class MailPoetTest extends \Codeception\TestCase\Test { // phpcs:ignore
   }
 
   public function truncateEntity(string $entityName) {
-    return;
-    $classMetadata = $this->entityManager->getClassMetadata($entityName);
-    $tableName = $classMetadata->getTableName();
-    $connection = $this->entityManager->getConnection();
-    $connection->executeQuery('SET FOREIGN_KEY_CHECKS=0');
-    $connection->executeStatement("TRUNCATE $tableName");
-    $connection->executeQuery('SET FOREIGN_KEY_CHECKS=1');
-  }
-
-  public function truncateEntityBackup(string $entityName) {
     $classMetadata = $this->entityManager->getClassMetadata($entityName);
     $tableName = $classMetadata->getTableName();
     $connection = $this->entityManager->getConnection();

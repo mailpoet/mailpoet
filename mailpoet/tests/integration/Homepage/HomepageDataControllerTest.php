@@ -2,12 +2,7 @@
 
 namespace MailPoet\Homepage;
 
-use MailPoet\Entities\FormEntity;
 use MailPoet\Entities\NewsletterEntity;
-use MailPoet\Entities\NewsletterOptionEntity;
-use MailPoet\Entities\NewsletterOptionFieldEntity;
-use MailPoet\Entities\SegmentEntity;
-use MailPoet\Entities\SettingEntity;
 use MailPoet\Entities\StatisticsUnsubscribeEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
@@ -24,7 +19,6 @@ class HomepageDataControllerTest extends \MailPoetTest {
 
   public function _before() {
     parent::_before();
-    $this->cleanup();
     $this->homepageDataController = $this->diContainer->get(HomepageDataController::class);
   }
 
@@ -256,14 +250,14 @@ class HomepageDataControllerTest extends \MailPoetTest {
       $this->entityManager->flush();
     }
     $subscribersStats = $this->homepageDataController->getPageData()['subscribersStats'];
-    expect($subscribersStats['global']['changePercent'])->equals( 0);
+    expect($subscribersStats['global']['changePercent'])->equals(0);
 
     // 10 New Subscribers + 6 Old Subscribers + 11 New Unsubscribed
     $unsubscribed = (new Subscriber())->withLastSubscribedAt($thirtyOneDaysAgo)->withStatus(SubscriberEntity::STATUS_UNSUBSCRIBED)->create();
     $this->entityManager->persist(new StatisticsUnsubscribeEntity(null, null, $unsubscribed));
     $this->entityManager->flush();
     $subscribersStats = $this->homepageDataController->getPageData()['subscribersStats'];
-    expect($subscribersStats['global']['changePercent'])->equals( -5.9);
+    expect($subscribersStats['global']['changePercent'])->equals(-5.9);
   }
 
   public function testItFetchesCorrectListLevelSubscribedStats(): void {
@@ -329,17 +323,5 @@ class HomepageDataControllerTest extends \MailPoetTest {
     expect($subscribersStats['lists'][0]['name'])->equals($segment->getName());
     expect($subscribersStats['lists'][0]['unsubscribed'])->equals(1);
     expect($subscribersStats['lists'][0]['subscribed'])->equals(0);
-  }
-
-  private function cleanup(): void {
-    $this->truncateEntity(SettingEntity::class);
-    $this->truncateEntity(SubscriberEntity::class);
-    $this->truncateEntity(StatisticsUnsubscribeEntity::class);
-    $this->truncateEntity(FormEntity::class);
-    $this->truncateEntity(NewsletterEntity::class);
-    $this->truncateEntity(NewsletterOptionFieldEntity::class);
-    $this->truncateEntity(NewsletterOptionEntity::class);
-    $this->truncateEntity(SegmentEntity::class);
-    $this->truncateEntity(SubscriberSegmentEntity::class);
   }
 }

@@ -879,6 +879,6 @@ class ImportTest extends \MailPoetTest {
   }
 
   public function _after(): void {
-    $this->truncateEntityBackup(CustomFieldEntity::class);
+    $this->truncateEntity(CustomFieldEntity::class);
   }
 }
