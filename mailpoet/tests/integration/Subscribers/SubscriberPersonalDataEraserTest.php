@@ -2,7 +2,6 @@
 
 namespace MailPoet\Subscribers;
 
-use MailPoet\Entities\CustomFieldEntity;
 use MailPoet\Entities\SubscriberCustomFieldEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Test\DataFactories\CustomField as CustomFieldFactory;
@@ -98,11 +97,5 @@ class SubscriberPersonalDataEraserTest extends \MailPoetTest {
     $subscriberAfter = $this->subscribersRepository->findOneById($subscriber->getId());
     $this->assertInstanceOf(SubscriberEntity::class, $subscriberAfter);
     expect($subscriberAfter->getEmail())->notEquals('subscriber@for.anon.test');
-  }
-
-  public function _after() {
-    $this->truncateEntity(SubscriberEntity::class);
-    $this->truncateEntity(CustomFieldEntity::class);
-    $this->truncateEntity(SubscriberCustomFieldEntity::class);
   }
 }

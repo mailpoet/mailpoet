@@ -39,7 +39,6 @@ class WooCommerceOrdersTest extends \MailPoetTest {
   private $cronWorkerRunner;
 
   public function _before() {
-    $this->cleanup();
     $this->woocommerceHelper = $this->createMock(WooCommerceHelper::class);
     $this->woocommercePurchases = $this->createMock(WooCommercePurchases::class);
 
@@ -181,14 +180,5 @@ class WooCommerceOrdersTest extends \MailPoetTest {
     $click->setCreatedAt($timestamp);
     $click->setUpdatedAt($timestamp);
     $this->entityManager->flush();
-  }
-
-  private function cleanup() {
-    $this->truncateEntity(ScheduledTaskEntity::class);
-    $this->truncateEntity(StatisticsClickEntity::class);
-    $this->truncateEntity(NewsletterEntity::class);
-    $this->truncateEntity(SendingQueueEntity::class);
-    $this->truncateEntity(NewsletterLinkEntity::class);
-    $this->truncateEntity(SubscriberEntity::class);
   }
 }

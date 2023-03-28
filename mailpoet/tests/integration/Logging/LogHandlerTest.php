@@ -16,7 +16,6 @@ class LogHandlerTest extends \MailPoetTest {
   private $entityManagerFactory;
 
   public function _before() {
-    $this->truncateEntity(LogEntity::class);
     $this->repository = $this->diContainer->get(LogRepository::class);
     $this->entityManagerFactory = $this->diContainer->get(EntityManagerFactory::class);
   }
@@ -142,14 +141,6 @@ class LogHandlerTest extends \MailPoetTest {
     $createdAt = $log->getCreatedAt();
     $this->assertInstanceOf(\DateTimeInterface::class, $createdAt);
     expect($createdAt->format('Y-m-d H:i:s'))->equals($time->format('Y-m-d H:i:s'));
-  }
-
-  public function _after() {
-    $this->cleanup();
-  }
-
-  private function cleanup(): void {
-    $this->truncateEntity(SubscriberEntity::class);
   }
 
   /**

@@ -10,7 +10,6 @@ class ThumbnailSaverTest extends \MailPoetTest {
   private $thumbnailSaver;
 
   public function _before() {
-    $this->truncateEntity(NewsletterTemplateEntity::class);
     $this->thumbnailSaver = $this->diContainer->get(ThumbnailSaver::class);
   }
 

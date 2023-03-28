@@ -95,10 +95,4 @@ class LinksTest extends \MailPoetTest {
     );
     expect($unsubscribeCount)->equals(1);
   }
-
-  public function _after() {
-    $this->truncateEntity(NewsletterEntity::class);
-    $this->truncateEntity(NewsletterLinkEntity::class);
-    $this->truncateEntity(SendingQueueEntity::class);
-  }
 }

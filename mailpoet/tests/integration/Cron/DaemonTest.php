@@ -92,7 +92,6 @@ class DaemonTest extends \MailPoetTest {
 
   public function _after() {
     $this->diContainer->get(SettingsRepository::class)->truncate();
-    $this->truncateEntity(LogEntity::class);
   }
 
   private function createWorkersFactoryMock(array $workers = []) {

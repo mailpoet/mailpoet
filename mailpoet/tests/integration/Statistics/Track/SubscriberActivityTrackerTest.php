@@ -217,7 +217,6 @@ class SubscriberActivityTrackerTest extends \MailPoetTest {
     if ($user) {
       wp_delete_user($user->ID);
     }
-    $this->truncateEntity(SubscriberEntity::class);
   }
 
   public function _after() {

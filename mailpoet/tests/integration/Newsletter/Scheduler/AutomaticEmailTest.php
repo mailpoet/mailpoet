@@ -3,13 +3,9 @@
 namespace MailPoet\Newsletter\Scheduler;
 
 use MailPoet\Entities\NewsletterEntity;
-use MailPoet\Entities\NewsletterOptionEntity;
 use MailPoet\Entities\NewsletterOptionFieldEntity;
-use MailPoet\Entities\NewsletterPostEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
-use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Entities\SendingQueueEntity;
-use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
@@ -211,16 +207,5 @@ class AutomaticEmailTest extends \MailPoetTest {
       ]
     );
     return $newsletter;
-  }
-
-  public function _after() {
-    $this->truncateEntity(NewsletterEntity::class);
-    $this->truncateEntity(NewsletterOptionEntity::class);
-    $this->truncateEntity(NewsletterOptionFieldEntity::class);
-    $this->truncateEntity(NewsletterPostEntity::class);
-    $this->truncateEntity(ScheduledTaskEntity::class);
-    $this->truncateEntity(ScheduledTaskSubscriberEntity::class);
-    $this->truncateEntity(SendingQueueEntity::class);
-    $this->truncateEntity(SubscriberEntity::class);
   }
 }

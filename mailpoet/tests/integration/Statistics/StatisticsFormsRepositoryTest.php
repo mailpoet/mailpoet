@@ -12,7 +12,6 @@ class StatisticsFormsRepositoryTest extends \MailPoetTest {
 
   public function _before() {
     parent::_before();
-    $this->cleanup();
     $this->repository = $this->diContainer->get(StatisticsFormsRepository::class);
   }
 
@@ -80,11 +79,5 @@ class StatisticsFormsRepositoryTest extends \MailPoetTest {
     $this->entityManager->persist($form);
     $this->entityManager->flush();
     return $form;
-  }
-
-  private function cleanup(): void {
-    $this->truncateEntity(StatisticsFormEntity::class);
-    $this->truncateEntity(FormEntity::class);
-    $this->truncateEntity(SubscriberEntity::class);
   }
 }

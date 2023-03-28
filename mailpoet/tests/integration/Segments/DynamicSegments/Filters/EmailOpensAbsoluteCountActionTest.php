@@ -21,7 +21,6 @@ class EmailOpensAbsoluteCountActionTest extends \MailPoetTest {
   private $action;
 
   public function _before(): void {
-    $this->cleanData();
     $this->action = $this->diContainer->get(EmailOpensAbsoluteCountAction::class);
     $newsletter1 = $this->createNewsletter();
     $newsletter2 = $this->createNewsletter();
@@ -251,19 +250,5 @@ class EmailOpensAbsoluteCountActionTest extends \MailPoetTest {
     $this->entityManager->persist($open);
     $this->entityManager->flush();
     return $open;
-  }
-
-  public function _after(): void {
-    $this->cleanData();
-  }
-
-  private function cleanData(): void {
-    $this->truncateEntity(NewsletterEntity::class);
-    $this->truncateEntity(ScheduledTaskEntity::class);
-    $this->truncateEntity(SendingQueueEntity::class);
-    $this->truncateEntity(SubscriberEntity::class);
-    $this->truncateEntity(StatisticsOpenEntity::class);
-    $this->truncateEntity(StatisticsNewsletterEntity::class);
-    $this->truncateEntity(UserAgentEntity::class);
   }
 }

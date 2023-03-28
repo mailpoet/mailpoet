@@ -3,10 +3,6 @@
 namespace MailPoet\Test\Models;
 
 use Codeception\Util\Fixtures;
-use MailPoet\Entities\SegmentEntity;
-use MailPoet\Entities\SubscriberCustomFieldEntity;
-use MailPoet\Entities\SubscriberEntity;
-use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Models\CustomField;
 use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
@@ -874,12 +870,5 @@ class SubscriberTest extends \MailPoetTest {
         '2' => 'France',
       ]
     );
-  }
-
-  public function _after() {
-    $this->truncateEntity(SubscriberEntity::class);
-    $this->truncateEntity(SegmentEntity::class);
-    $this->truncateEntity(SubscriberSegmentEntity::class);
-    $this->truncateEntity(SubscriberCustomFieldEntity::class);
   }
 }

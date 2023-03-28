@@ -5,9 +5,7 @@ namespace MailPoet\Config;
 use Helper\WordPress;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\NewsletterEntity;
-use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SendingQueueEntity;
-use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Newsletter\Url;
 use MailPoet\Router\Router;
 use MailPoet\Subscribers\SubscribersRepository;
@@ -230,12 +228,5 @@ class ShortcodesTest extends \MailPoetTest {
     $shortcodes->init();
     $result = do_shortcode('[mailpoet_manage]');
     expect($result)->stringContainsString('Link to subscription management page is only available to mailing lists subscribers.');
-  }
-
-  public function _after() {
-    $this->truncateEntity(NewsletterEntity::class);
-    $this->truncateEntity(ScheduledTaskEntity::class);
-    $this->truncateEntity(SendingQueueEntity::class);
-    $this->truncateEntity(SubscriberEntity::class);
   }
 }

@@ -22,7 +22,6 @@ class SubscriberSaveControllerTest extends \MailPoetTest {
 
   public function _before() {
     parent::_before();
-    $this->cleanup();
     $this->saveController = $this->diContainer->get(SubscriberSaveController::class);
     $this->segmentsRepository = $this->diContainer->get(SegmentsRepository::class);
     $this->subscriberSegmentRepository = $this->diContainer->get(SubscriberSegmentRepository::class);
@@ -163,10 +162,6 @@ class SubscriberSaveControllerTest extends \MailPoetTest {
     expect($subscriberSegments)->count(2);
   }
 
-  public function _after(): void {
-    $this->cleanup();
-  }
-
   private function createSubscriber(string $email, string $status): SubscriberEntity {
     $subscriber = new SubscriberEntity();
     $subscriber->setEmail($email);
@@ -181,11 +176,5 @@ class SubscriberSaveControllerTest extends \MailPoetTest {
     $this->entityManager->persist($subscriberSegment);
     $this->entityManager->flush();
     return $subscriberSegment;
-  }
-
-  private function cleanup(): void {
-    $this->truncateEntity(SegmentEntity::class);
-    $this->truncateEntity(SubscriberSegmentEntity::class);
-    $this->truncateEntity(SubscriberEntity::class);
   }
 }

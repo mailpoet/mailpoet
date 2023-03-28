@@ -2,7 +2,6 @@
 
 namespace MailPoet\Test\Helpscout;
 
-use MailPoet\Entities\SettingEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Helpscout\Beacon;
 use MailPoet\Services\Bridge;
@@ -16,7 +15,6 @@ class BeaconTest extends \MailPoetTest {
 
   public function _before() {
     parent::_before();
-    $this->cleanup();
     // create 4 users (1 confirmed, 1 subscribed, 1 unsubscribed, 1 bounced)
     $subscriberFactory = new SubscriberFactory();
     $subscriberFactory
@@ -179,10 +177,5 @@ class BeaconTest extends \MailPoetTest {
     $beaconData = $this->diContainer->get(Beacon::class)->getData(true);
 
     $this->assertSame($expectedResult, $beaconData['MailPoet Premium/MSS key']);
-  }
-
-  private function cleanup() {
-    $this->truncateEntity(SubscriberEntity::class);
-    $this->truncateEntity(SettingEntity::class);
   }
 }

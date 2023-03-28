@@ -3,9 +3,7 @@
 namespace MailPoet\WooCommerce;
 
 use MailPoet\Entities\NewsletterEntity;
-use MailPoet\Entities\NewsletterLinkEntity;
 use MailPoet\Entities\NewsletterOptionFieldEntity;
-use MailPoet\Entities\StatisticsClickEntity;
 use MailPoet\Entities\StatisticsWooCommercePurchaseEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Test\DataFactories\Newsletter;
@@ -26,7 +24,6 @@ class TrackerTest extends \MailPoetTest {
 
   public function _before(): void {
     parent::_before();
-    $this->cleanUp();
     $this->subscriber = (new Subscriber())->create();
     $this->tracker = $this->diContainer->get(Tracker::class);
     // Add dummy option field. This is needed for AUTOMATIC emails analytics
@@ -177,14 +174,5 @@ class TrackerTest extends \MailPoetTest {
     $link = (new NewsletterLink($newsletter))->create();
     $click = (new StatisticsClicks($link, $this->subscriber))->create();
     return (new StatisticsWooCommercePurchases($click, $orderData))->create();
-  }
-
-  private function cleanUp(): void {
-    $this->truncateEntity(NewsletterLinkEntity::class);
-    $this->truncateEntity(NewsletterEntity::class);
-    $this->truncateEntity(SubscriberEntity::class);
-    $this->truncateEntity(StatisticsWooCommercePurchaseEntity::class);
-    $this->truncateEntity(StatisticsClickEntity::class);
-    $this->truncateEntity(NewsletterOptionFieldEntity::class);
   }
 }

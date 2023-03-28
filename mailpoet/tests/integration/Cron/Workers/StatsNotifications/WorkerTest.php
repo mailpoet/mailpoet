@@ -8,8 +8,6 @@ use MailPoet\Cron\CronHelper;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SendingQueueEntity;
-use MailPoet\Entities\StatisticsClickEntity;
-use MailPoet\Entities\StatisticsOpenEntity;
 use MailPoet\Entities\StatisticsUnsubscribeEntity;
 use MailPoet\Entities\StatsNotificationEntity;
 use MailPoet\Entities\SubscriberEntity;
@@ -77,7 +75,6 @@ class WorkerTest extends \MailPoetTest {
 
   public function _before() {
     parent::_before();
-    $this->cleanup();
     $this->repository = $this->diContainer->get(StatsNotificationsRepository::class);
     $this->newsletterLinkRepository = $this->diContainer->get(NewsletterLinkRepository::class);
     $this->newslettersRepository = $this->diContainer->get(NewslettersRepository::class);
@@ -288,20 +285,5 @@ class WorkerTest extends \MailPoetTest {
     if (isset($data['created_at'])) $entity->setCreatedAt(new Carbon($data['created_at']));
     $this->entityManager->flush();
     return $entity;
-  }
-
-  private function cleanup() {
-    $this->truncateEntity(NewsletterEntity::class);
-    $this->truncateEntity(StatisticsClickEntity::class);
-    $this->truncateEntity(StatisticsOpenEntity::class);
-    $this->truncateEntity(SubscriberEntity::class);
-    $this->truncateEntity(ScheduledTaskEntity::class);
-    $this->truncateEntity(SendingQueueEntity::class);
-    $this->truncateEntity(StatisticsUnsubscribeEntity::class);
-  }
-
-  public function _after() {
-    parent::_after();
-    $this->cleanup();
   }
 }

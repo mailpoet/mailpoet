@@ -22,7 +22,6 @@ use MailPoet\Cron\Workers\WooCommercePastOrders;
 use MailPoet\Cron\Workers\WooCommerceSync as WooCommerceSyncWorker;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SendingQueueEntity;
-use MailPoet\Entities\SettingEntity;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Services\Bridge;
@@ -342,11 +341,5 @@ class WordPressTest extends \MailPoetTest {
     $task->setScheduledAt($scheduledAt);
     $this->entityManager->persist($task);
     $this->entityManager->flush();
-  }
-
-  public function _after() {
-    $this->truncateEntity(SettingEntity::class);
-    $this->truncateEntity(ScheduledTaskEntity::class);
-    $this->truncateEntity(SendingQueueEntity::class);
   }
 }

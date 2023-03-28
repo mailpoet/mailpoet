@@ -4,8 +4,6 @@ namespace MailPoet\Newsletter\ViewInBrowser;
 
 use Codeception\Stub\Expected;
 use MailPoet\Entities\NewsletterEntity;
-use MailPoet\Entities\NewsletterLinkEntity;
-use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Newsletter\Links\Links;
@@ -233,13 +231,5 @@ class ViewInBrowserRendererTest extends \MailPoetTest {
     // open tracking data tag should be removed
     expect($renderedBody)->stringNotContainsString('[mailpoet_open_data]');
     expect($renderedBody)->stringContainsString('<img alt="" class="" src="">');
-  }
-
-  public function _after() {
-    $this->truncateEntity(NewsletterEntity::class);
-    $this->truncateEntity(SubscriberEntity::class);
-    $this->truncateEntity(ScheduledTaskEntity::class);
-    $this->truncateEntity(SendingQueueEntity::class);
-    $this->truncateEntity(NewsletterLinkEntity::class);
   }
 }

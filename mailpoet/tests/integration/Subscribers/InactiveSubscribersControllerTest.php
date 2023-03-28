@@ -33,12 +33,6 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
       $this->diContainer->get(EntityManager::class)
     );
     $this->subscribersRepository = $this->diContainer->get(SubscribersRepository::class);
-    $this->truncateEntity(SubscriberEntity::class);
-    $this->truncateEntity(ScheduledTaskEntity::class);
-    $this->truncateEntity(StatisticsOpenEntity::class);
-    $this->truncateEntity(ScheduledTaskSubscriberEntity::class);
-    $this->truncateEntity(SendingQueueEntity::class);
-    $this->truncateEntity(NewsletterEntity::class);
     $this->entityManager->getConnection()->executeQuery('DROP TABLE IF EXISTS inactive_task_ids');
     $this->newsletter = new NewsletterEntity();
     $this->newsletter->setSubject('Subject');

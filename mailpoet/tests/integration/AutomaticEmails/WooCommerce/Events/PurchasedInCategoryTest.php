@@ -6,8 +6,6 @@ use MailPoet\AutomaticEmails\WooCommerce\WooCommerce;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterOptionEntity;
 use MailPoet\Entities\NewsletterOptionFieldEntity;
-use MailPoet\Entities\ScheduledTaskEntity;
-use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
@@ -38,14 +36,6 @@ class PurchasedInCategoryTest extends \MailPoetTest {
   private $segmentsRepository;
 
   public function _before() {
-    $this->truncateEntity(NewsletterEntity::class);
-    $this->truncateEntity(NewsletterOptionEntity::class);
-    $this->truncateEntity(NewsletterOptionFieldEntity::class);
-    $this->truncateEntity(SubscriberEntity::class);
-    $this->truncateEntity(SubscriberSegmentEntity::class);
-    $this->truncateEntity(SendingQueueEntity::class);
-    $this->truncateEntity(ScheduledTaskEntity::class);
-    $this->truncateEntity(ScheduledTaskSubscriberEntity::class);
     WPFunctions::set(new WPFunctions);
     WPFunctions::get()->removeAllFilters('woocommerce_payment_complete');
     $this->woocommerceHelper = $this->createMock(WCHelper::class);

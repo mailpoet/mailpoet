@@ -29,15 +29,9 @@ class StatisticsOpensRepositoryTest extends \MailPoetTest {
 
   public function _before() {
     parent::_before();
-    $this->cleanup();
     $this->repository = $this->diContainer->get(StatisticsOpensRepository::class);
     $this->subscribersRepository = $this->diContainer->get(SubscribersRepository::class);
     $this->segmentsRepository = $this->diContainer->get(SegmentsRepository::class);
-  }
-
-  protected function _after() {
-    parent::_after();
-    $this->cleanup();
   }
 
   public function testItLeavesScoreWhenNoData() {
@@ -278,17 +272,5 @@ class StatisticsOpensRepositoryTest extends \MailPoetTest {
     $sub = new ScheduledTaskSubscriberEntity($task, $subscriber);
     $this->entityManager->persist($sub);
     return $task;
-  }
-
-  private function cleanup(): void {
-    $this->truncateEntity(ScheduledTaskEntity::class);
-    $this->truncateEntity(ScheduledTaskSubscriberEntity::class);
-    $this->truncateEntity(StatisticsOpenEntity::class);
-    $this->truncateEntity(SubscriberEntity::class);
-    $this->truncateEntity(SubscriberSegmentEntity::class);
-    $this->truncateEntity(SegmentEntity::class);
-    $this->truncateEntity(NewsletterEntity::class);
-    $this->truncateEntity(StatisticsNewsletterEntity::class);
-    $this->truncateEntity(SendingQueueEntity::class);
   }
 }

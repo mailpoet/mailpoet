@@ -3,7 +3,6 @@
 namespace MailPoet\Test\Cron\Workers;
 
 use MailPoet\Cron\Workers\WooCommerceSync;
-use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Segments\WooCommerce as WooCommerceSegment;
 use MailPoet\Test\DataFactories\ScheduledTask as ScheduledTaskFactory;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
@@ -57,7 +56,6 @@ class WooCommerceSyncTest extends \MailPoetTest {
   }
 
   public function _after() {
-    $this->truncateEntity(ScheduledTaskEntity::class);
     $this->tester->deleteTestWooOrders();
   }
 }

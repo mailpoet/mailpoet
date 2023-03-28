@@ -5,11 +5,7 @@ namespace MailPoet\Newsletter\Renderer\Blocks;
 use MailPoet\AutomaticEmails\WooCommerce\Events\AbandonedCart;
 use MailPoet\AutomaticEmails\WooCommerce\WooCommerce as WooCommerceEmail;
 use MailPoet\Entities\NewsletterEntity;
-use MailPoet\Entities\NewsletterOptionEntity;
 use MailPoet\Entities\NewsletterOptionFieldEntity;
-use MailPoet\Entities\NewsletterPostEntity;
-use MailPoet\Entities\ScheduledTaskEntity;
-use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Scheduler\AutomaticEmailScheduler;
@@ -192,15 +188,5 @@ class AbandonedCartContentTest extends \MailPoetTest {
     $parisTask = ScheduledTask::findOne($scheduledTask->getId());
     $this->assertInstanceOf(ScheduledTask::class, $parisTask);
     return Sending::createFromScheduledTask($parisTask);
-  }
-
-  public function _after() {
-    parent::_after();
-    $this->truncateEntity(NewsletterPostEntity::class);
-    $this->truncateEntity(NewsletterOptionEntity::class);
-    $this->truncateEntity(NewsletterOptionFieldEntity::class);
-    $this->truncateEntity(NewsletterEntity::class);
-    $this->truncateEntity(ScheduledTaskEntity::class);
-    $this->truncateEntity(SendingQueueEntity::class);
   }
 }

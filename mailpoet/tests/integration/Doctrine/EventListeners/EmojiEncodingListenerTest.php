@@ -42,9 +42,4 @@ class EmojiEncodingListenerTest extends \MailPoetTest {
       $replacement
     );
   }
-
-  public function _after() {
-    parent::_after();
-    $this->truncateEntity(FormEntity::class);
-  }
 }

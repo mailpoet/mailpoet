@@ -14,13 +14,8 @@ use MailPoet\Automation\Integrations\MailPoet\Actions\SendEmailAction;
 use MailPoet\Automation\Integrations\MailPoet\Subjects\SegmentSubject;
 use MailPoet\Automation\Integrations\MailPoet\Subjects\SubscriberSubject;
 use MailPoet\DI\ContainerWrapper;
-use MailPoet\Entities\NewsletterEntity;
-use MailPoet\Entities\ScheduledTaskEntity;
-use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Entities\SegmentEntity;
-use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
-use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Exception;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Segments\SegmentsRepository;
@@ -54,7 +49,6 @@ class SendEmailActionTest extends \MailPoetTest {
 
   public function _before() {
     parent::_before();
-    $this->cleanup();
 
     $this->scheduledTasksRepository = $this->diContainer->get(ScheduledTasksRepository::class);
     $this->segmentsRepository = $this->diContainer->get(SegmentsRepository::class);
@@ -267,20 +261,5 @@ class SendEmailActionTest extends \MailPoetTest {
       new SubjectEntry($this->segmentSubject, reset($segmentData)),
       new SubjectEntry($this->subscriberSubject, reset($subscriberData)),
     ];
-  }
-
-  public function _after() {
-    parent::_after();
-    $this->cleanup();
-  }
-
-  private function cleanup() {
-    $this->truncateEntity(NewsletterEntity::class);
-    $this->truncateEntity(SubscriberEntity::class);
-    $this->truncateEntity(SegmentEntity::class);
-    $this->truncateEntity(SubscriberSegmentEntity::class);
-    $this->truncateEntity(ScheduledTaskEntity::class);
-    $this->truncateEntity(ScheduledTaskSubscriberEntity::class);
-    $this->truncateEntity(SendingQueueEntity::class);
   }
 }

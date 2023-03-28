@@ -435,11 +435,5 @@ class ImportExportRepositoryTest extends \MailPoetTest {
 
   private function cleanup() {
     $this->cleanWpUsers();
-    $this->truncateEntity(DynamicSegmentFilterEntity::class);
-    $this->truncateEntity(SubscriberEntity::class);
-    $this->truncateEntity(SegmentEntity::class);
-    $this->truncateEntity(SubscriberSegmentEntity::class);
-    $this->truncateEntity(SubscriberCustomFieldEntity::class);
-    $this->truncateEntity(CustomFieldEntity::class);
   }
 }

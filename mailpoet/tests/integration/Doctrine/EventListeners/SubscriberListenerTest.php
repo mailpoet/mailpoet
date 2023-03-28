@@ -6,7 +6,6 @@ use Codeception\Stub\Expected;
 use MailPoet\Config\SubscriberChangesNotifier;
 use MailPoet\Doctrine\EventListeners\SubscriberListener;
 use MailPoet\Doctrine\EventListeners\TimestampListener;
-use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -66,6 +65,5 @@ class SubscriberListenerTest extends EventListenersBaseTest {
     parent::_after();
     $originalListener = $this->diContainer->get(TimestampListener::class);
     $this->replaceEntityListener($originalListener);
-    $this->truncateEntity(SubscriberEntity::class);
   }
 }

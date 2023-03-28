@@ -32,7 +32,6 @@ class NewsletterRepositoryTest extends \MailPoetTest {
 
   public function _before() {
     parent::_before();
-    $this->cleanup();
     $this->repository = $this->diContainer->get(NewslettersRepository::class);
     $this->taskSubscribersRepository = $this->diContainer->get(ScheduledTaskSubscribersRepository::class);
   }
@@ -410,24 +409,5 @@ class NewsletterRepositoryTest extends \MailPoetTest {
     $this->entityManager->persist($statistics);
     $this->entityManager->flush();
     return $statistics;
-  }
-
-  private function cleanup() {
-    $this->truncateEntity(NewsletterEntity::class);
-    $this->truncateEntity(ScheduledTaskEntity::class);
-    $this->truncateEntity(SendingQueueEntity::class);
-    $this->truncateEntity(NewsletterSegmentEntity::class);
-    $this->truncateEntity(SegmentEntity::class);
-    $this->truncateEntity(SubscriberEntity::class);
-    $this->truncateEntity(ScheduledTaskSubscriberEntity::class);
-    $this->truncateEntity(StatsNotificationEntity::class);
-    $this->truncateEntity(NewsletterLinkEntity::class);
-    $this->truncateEntity(NewsletterOptionFieldEntity::class);
-    $this->truncateEntity(NewsletterOptionEntity::class);
-    $this->truncateEntity(NewsletterPostEntity::class);
-    $this->truncateEntity(StatisticsWooCommercePurchaseEntity::class);
-    $this->truncateEntity(StatisticsOpenEntity::class);
-    $this->truncateEntity(StatisticsClickEntity::class);
-    $this->truncateEntity(StatisticsNewsletterEntity::class);
   }
 }

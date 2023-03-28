@@ -28,7 +28,6 @@ class Migration_20221028_105818_Test extends \MailPoetTest {
     parent::_before();
     $this->migration = new Migration_20221028_105818($this->diContainer);
     $this->settings = $this->diContainer->get(SettingsController::class);
-    $this->truncateEntity(DynamicSegmentFilterEntity::class);
   }
 
   public function testItMigratesEmailMachineOpensFiltersCorrectly() {
@@ -254,9 +253,5 @@ class Migration_20221028_105818_Test extends \MailPoetTest {
       ]
     );
     return (int)$this->entityManager->getConnection()->lastInsertId();
-  }
-
-  public function _after() {
-    $this->truncateEntity(DynamicSegmentFilterEntity::class);
   }
 }

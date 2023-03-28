@@ -30,8 +30,6 @@ class SendPreviewControllerTest extends \MailPoetTest {
 
   public function _before() {
     parent::_before();
-    $this->truncateEntity(NewsletterEntity::class);
-    $this->truncateEntity(SubscriberEntity::class);
     $this->newsletterUrl = $this->diContainer->get(Url::class);
     $this->subscriptionUrlFactory = SubscriptionUrlFactory::getInstance();
     $newsletter = new NewsletterEntity();

@@ -3,7 +3,6 @@
 namespace MailPoet\PostEditorBlocks;
 
 use MailPoet\Entities\SubscriberEntity;
-use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Segments\WooCommerce as WooSegment;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\SubscribersRepository;
@@ -44,7 +43,6 @@ class WooCommerceBlocksIntegrationTest extends \MailPoetTest {
       $this->diContainer->get(SubscribersRepository::class),
       $this->diContainer->get(WooHelper::class)
     );
-    $this->cleanup();
   }
 
   public function testItHandlesOptInForGuestCustomer() {
@@ -137,15 +135,5 @@ class WooCommerceBlocksIntegrationTest extends \MailPoetTest {
       ->withStatus($status)
       ->withIsWooCommerceUser(true)
       ->create();
-  }
-
-  public function cleanup() {
-    $this->truncateEntity(SubscriberEntity::class);
-    $this->truncateEntity(SubscriberSegmentEntity::class);
-  }
-
-  public function _after() {
-    parent::_after();
-    $this->cleanup();
   }
 }

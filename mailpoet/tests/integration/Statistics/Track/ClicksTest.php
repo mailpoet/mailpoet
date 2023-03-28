@@ -9,8 +9,6 @@ use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterLinkEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SendingQueueEntity;
-use MailPoet\Entities\StatisticsClickEntity;
-use MailPoet\Entities\StatisticsOpenEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\UserAgentEntity;
 use MailPoet\Newsletter\Shortcodes\Categories\Link as LinkShortcodeCategory;
@@ -55,7 +53,6 @@ class ClicksTest extends \MailPoetTest {
 
   public function _before() {
     parent::_before();
-    $this->cleanup();
     // create newsletter
     $newsletter = new NewsletterEntity();
     $newsletter->setType('type');
@@ -629,15 +626,5 @@ class ClicksTest extends \MailPoetTest {
     ], $this);
     $clicks->track($data);
     expect($this->subscriber->getLastEngagementAt())->equals($lastEngagement);
-  }
-
-  public function cleanup() {
-    $this->truncateEntity(NewsletterEntity::class);
-    $this->truncateEntity(SubscriberEntity::class);
-    $this->truncateEntity(NewsletterLinkEntity::class);
-    $this->truncateEntity(ScheduledTaskEntity::class);
-    $this->truncateEntity(SendingQueueEntity::class);
-    $this->truncateEntity(StatisticsOpenEntity::class);
-    $this->truncateEntity(StatisticsClickEntity::class);
   }
 }

@@ -3,7 +3,6 @@
 namespace MailPoet\Cron\Workers;
 
 use MailPoet\Entities\ScheduledTaskEntity;
-use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 
 class SubscriberLinkTokensTest extends \MailPoetTest {
@@ -33,9 +32,5 @@ class SubscriberLinkTokensTest extends \MailPoetTest {
     $this->assertSame($linkToken, $subscriberWithLinkToken->getLinkToken());
     $this->assertIsString($subscriberWithoutLinkToken1->getLinkToken());
     $this->assertIsString($subscriberWithoutLinkToken2->getLinkToken());
-  }
-
-  public function _after(): void {
-    $this->truncateEntity(SubscriberEntity::class);
   }
 }

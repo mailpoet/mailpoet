@@ -22,7 +22,6 @@ class SubscribersRepositoryTest extends \MailPoetTest {
 
   public function _before() {
     parent::_before();
-    $this->cleanup();
     $this->repository = $this->diContainer->get(SubscribersRepository::class);
     $this->segmentRepository = $this->diContainer->get(SegmentsRepository::class);
     $this->subscriberSegmentRepository = $this->diContainer->get(SubscriberSegmentRepository::class);
@@ -347,13 +346,5 @@ class SubscribersRepositoryTest extends \MailPoetTest {
     $this->entityManager->persist($subscirberCustomField);
     $this->entityManager->flush();
     return $subscirberCustomField;
-  }
-
-  private function cleanup() {
-    $this->truncateEntity(SubscriberEntity::class);
-    $this->truncateEntity(SubscriberSegmentEntity::class);
-    $this->truncateEntity(SubscriberSegmentEntity::class);
-    $this->truncateEntity(CustomFieldEntity::class);
-    $this->truncateEntity(SubscriberCustomFieldEntity::class);
   }
 }

@@ -110,12 +110,4 @@ class NewsletterOpensExporterTest extends \MailPoetTest {
     $this->entityManager->persist($statisticsOpens);
     $this->entityManager->flush();
   }
-
-  public function _after() {
-    $this->truncateEntity(SubscriberEntity::class);
-    $this->truncateEntity(SendingQueueEntity::class);
-    $this->truncateEntity(NewsletterEntity::class);
-    $this->truncateEntity(UserAgentEntity::class);
-    $this->truncateEntity(StatisticsOpenEntity::class);
-  }
 }

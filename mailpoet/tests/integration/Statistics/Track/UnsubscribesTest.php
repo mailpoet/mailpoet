@@ -2,8 +2,6 @@
 
 namespace MailPoet\Test\Statistics\Track;
 
-use MailPoet\Entities\NewsletterEntity;
-use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\StatisticsUnsubscribeEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Statistics\StatisticsUnsubscribesRepository;
@@ -26,7 +24,6 @@ class UnsubscribesTest extends \MailPoetTest {
 
   public function _before() {
     parent::_before();
-    $this->cleanup();
 
     // create newsletter
     $newsletterFactory = new NewsletterFactory();
@@ -78,16 +75,5 @@ class UnsubscribesTest extends \MailPoetTest {
       );
     }
     expect(count($this->statisticsUnsubscribesRepository->findAll()))->equals(1);
-  }
-
-  private function cleanup() {
-    $this->truncateEntity(NewsletterEntity::class);
-    $this->truncateEntity(SubscriberEntity::class);
-    $this->truncateEntity(SendingQueueEntity::class);
-    $this->truncateEntity(StatisticsUnsubscribeEntity::class);
-  }
-
-  public function _after() {
-    $this->cleanup();
   }
 }

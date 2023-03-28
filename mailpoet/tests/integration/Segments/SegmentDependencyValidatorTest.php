@@ -10,11 +10,6 @@ use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 use MailPoet\WP\Functions as WPFunctions;
 
 class SegmentDependencyValidatorTest extends \MailPoetTest {
-  public function _before() {
-    parent::_before();
-    $this->cleanup();
-  }
-
   public function testItMissingPluginsForWooCommerceDynamicSegment(): void {
     $dynamicSegment = $this->createSegment(
       DynamicSegmentFilterData::TYPE_WOOCOMMERCE,
@@ -58,10 +53,5 @@ class SegmentDependencyValidatorTest extends \MailPoetTest {
       'check' => $subscribersLimitReached,
     ]);
     return new SegmentDependencyValidator($subscribersFeature, $wp);
-  }
-
-  private function cleanup(): void {
-    $this->truncateEntity(SegmentEntity::class);
-    $this->truncateEntity(DynamicSegmentFilterEntity::class);
   }
 }

@@ -298,9 +298,6 @@ class SubscriptionTest extends \MailPoetTest {
   }
 
   public function _after() {
-    $this->truncateEntity(SubscriberEntity::class);
-    $this->truncateEntity(SegmentEntity::class);
-    $this->truncateEntity(SubscriberSegmentEntity::class);
     // restore settings
     $this->settings->set('woocommerce', $this->originalSettings);
   }

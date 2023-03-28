@@ -38,7 +38,6 @@ class EmailActionTest extends \MailPoetTest {
   public $subscriberOpenedClicked;
 
   public function _before(): void {
-    $this->cleanData();
     $this->emailAction = $this->diContainer->get(EmailAction::class);
     $this->newsletter = new NewsletterEntity();
     $this->newsletter2 = new NewsletterEntity();
@@ -456,19 +455,5 @@ class EmailActionTest extends \MailPoetTest {
     $this->entityManager->persist($click);
     $this->entityManager->flush();
     return $click;
-  }
-
-  public function _after(): void {
-    $this->cleanData();
-  }
-
-  private function cleanData(): void {
-    $this->truncateEntity(NewsletterEntity::class);
-    $this->truncateEntity(SubscriberEntity::class);
-    $this->truncateEntity(StatisticsOpenEntity::class);
-    $this->truncateEntity(StatisticsClickEntity::class);
-    $this->truncateEntity(StatisticsNewsletterEntity::class);
-    $this->truncateEntity(NewsletterLinkEntity::class);
-    $this->truncateEntity(UserAgentEntity::class);
   }
 }

@@ -317,10 +317,4 @@ class NewsletterListingRepositoryTest extends \MailPoetTest {
     expect($filters['segment'][1]['label'])->equals('Segment 1 (1)');
     expect($filters['segment'][1]['value'])->equals($segment1->getId());
   }
-
-  public function _after() {
-    $this->truncateEntity(NewsletterEntity::class);
-    $this->truncateEntity(SegmentEntity::class);
-    $this->truncateEntity(NewsletterSegmentEntity::class);
-  }
 }

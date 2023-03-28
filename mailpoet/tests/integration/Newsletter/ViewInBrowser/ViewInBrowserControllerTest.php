@@ -4,7 +4,6 @@ namespace MailPoet\Newsletter\ViewInBrowser;
 
 use Codeception\Stub\Expected;
 use MailPoet\Entities\NewsletterEntity;
-use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Newsletter\NewslettersRepository;
@@ -69,7 +68,6 @@ class ViewInBrowserControllerTest extends \MailPoetTest {
     $subscriber->setLastName('Last');
     $this->subscribersRepository->persist($subscriber);
     $this->subscribersRepository->flush();
-    $this->subscriber = $subscriber;
 
     // create task & queue
     $sendingTask = SendingTask::create();
@@ -237,10 +235,6 @@ class ViewInBrowserControllerTest extends \MailPoetTest {
   }
 
   public function _after() {
-    $this->truncateEntity(NewsletterEntity::class);
-    $this->truncateEntity(SubscriberEntity::class);
-    $this->truncateEntity(ScheduledTaskEntity::class);
-    $this->truncateEntity(SendingQueueEntity::class);
     // reset WP user role
     $wpUser = wp_get_current_user();
     $wpUser->add_role('administrator');

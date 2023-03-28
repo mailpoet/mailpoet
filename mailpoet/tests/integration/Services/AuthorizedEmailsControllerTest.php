@@ -5,7 +5,6 @@ namespace MailPoet\Test\Services;
 use Codeception\Stub\Expected;
 use InvalidArgumentException;
 use MailPoet\Entities\NewsletterEntity;
-use MailPoet\Entities\SettingEntity;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\MailerLog;
@@ -414,10 +413,5 @@ class AuthorizedEmailsControllerTest extends \MailPoetTest {
     $senderDomainController = $data['AuthorizedSenderDomainController'] ?? $this->diContainer->get(AuthorizedSenderDomainController::class);
 
     return new AuthorizedEmailsController($this->settings, $bridgeMock, $newslettersRepository, $senderDomainController);
-  }
-
-  public function _after() {
-    $this->truncateEntity(NewsletterEntity::class);
-    $this->truncateEntity(SettingEntity::class);
   }
 }

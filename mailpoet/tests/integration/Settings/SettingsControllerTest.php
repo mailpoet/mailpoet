@@ -15,7 +15,6 @@ class SettingsControllerTest extends \MailPoetTest {
   public function _before() {
     parent::_before();
     $this->controller = $this->diContainer->get(SettingsController::class);
-    $this->clear();
   }
 
   public function testItReturnsStoredValue() {
@@ -119,14 +118,6 @@ class SettingsControllerTest extends \MailPoetTest {
     $this->createOrUpdateSetting('test_key', 2);
     $this->assertEquals(1, $this->controller->get('test_key'));
     $this->assertEquals(true, true);
-  }
-
-  private function clear() {
-    $this->truncateEntity(SettingEntity::class);
-  }
-
-  public function _after() {
-    $this->clear();
   }
 
   private function createOrUpdateSetting($name, $value) {

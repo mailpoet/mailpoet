@@ -8,7 +8,6 @@ use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Entities\SendingQueueEntity;
-use MailPoet\Entities\StatisticsBounceEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Newsletter\Sending\ScheduledTaskSubscribersRepository;
@@ -16,7 +15,6 @@ use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Services\Bridge;
 use MailPoet\Services\Bridge\API;
 use MailPoet\Settings\SettingsController;
-use MailPoet\Settings\SettingsRepository;
 use MailPoet\Statistics\StatisticsBouncesRepository;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Test\DataFactories\ScheduledTask as ScheduledTaskFactory;
@@ -44,7 +42,6 @@ class BounceTest extends \MailPoetTest {
 
   public function _before() {
     parent::_before();
-    $this->cleanup();
     $this->emails = [
       'soft_bounce@example.com',
       'hard_bounce@example.com',
@@ -107,7 +104,7 @@ class BounceTest extends \MailPoetTest {
     expect($this->scheduledTaskSubscribersRepository->findBy(['task' => $task]))->notEmpty();
 
     // 2nd run - nothing more to process, ScheduledTaskSubscriber will be cleaned up
-    $this->truncateEntityBackup(SubscriberEntity::class);
+    $this->truncateEntity(SubscriberEntity::class);
     $task = $this->createScheduledTask();
     $this->worker->prepareTaskStrategy($task, microtime(true));
     expect($this->scheduledTaskSubscribersRepository->findBy(['task' => $task]))->isEmpty();
@@ -135,7 +132,6 @@ class BounceTest extends \MailPoetTest {
     expect($this->scheduledTaskSubscribersRepository->findBy(['task' => $task]))->notEmpty();
 
     // process - no subscribers found, ScheduledTaskSubscriber will be cleaned up
-    $this->truncateEntity(SubscriberEntity::class);
     $task = $this->createScheduledTask();
     $this->worker->processTaskStrategy($task, microtime(true));
     expect($this->scheduledTaskSubscribersRepository->findBy(['task' => $task]))->isEmpty();
@@ -258,15 +254,5 @@ class BounceTest extends \MailPoetTest {
     $entity = new ScheduledTaskSubscriberEntity($task, $subscriber);
     $this->entityManager->persist($entity);
     return $entity;
-  }
-
-  public function cleanup() {
-    $this->diContainer->get(SettingsRepository::class)->truncate();
-    $this->truncateEntity(SubscriberEntity::class);
-    $this->truncateEntity(ScheduledTaskEntity::class);
-    $this->truncateEntity(ScheduledTaskSubscriberEntity::class);
-    $this->truncateEntity(StatisticsBounceEntity::class);
-    $this->truncateEntity(NewsletterEntity::class);
-    $this->truncateEntity(SendingQueueEntity::class);
   }
 }

@@ -4,11 +4,7 @@ namespace MailPoet\Segments\DynamicSegments;
 
 use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Entities\DynamicSegmentFilterEntity;
-use MailPoet\Entities\NewsletterEntity;
-use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SegmentEntity;
-use MailPoet\Entities\SendingQueueEntity;
-use MailPoet\Entities\StatisticsOpenEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Segments\DynamicSegments\Filters\UserRole;
 use MailPoet\Subscribers\SubscribersRepository;
@@ -86,13 +82,6 @@ class FilterHandlerTest extends \MailPoetTest {
 
   public function _after(): void {
     $this->cleanWpUsers();
-    $this->truncateEntity(SubscriberEntity::class);
-    $this->truncateEntity(SegmentEntity::class);
-    $this->truncateEntity(DynamicSegmentFilterEntity::class);
-    $this->truncateEntity(NewsletterEntity::class);
-    $this->truncateEntity(StatisticsOpenEntity::class);
-    $this->truncateEntity(SendingQueueEntity::class);
-    $this->truncateEntity(ScheduledTaskEntity::class);
   }
 
   private function cleanWpUsers(): void {

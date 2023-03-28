@@ -351,9 +351,4 @@ class FormsTest extends \MailPoetTest {
     $this->assertInstanceOf(FormEntity::class, $reloaded);
     return $reloaded;
   }
-
-  public function _after() {
-    $this->truncateEntity(FormEntity::class);
-    $this->truncateEntity(SegmentEntity::class);
-  }
 }

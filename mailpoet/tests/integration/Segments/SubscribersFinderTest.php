@@ -3,12 +3,9 @@
 namespace MailPoet\Segments;
 
 use Codeception\Util\Stub;
-use MailPoet\Entities\DynamicSegmentFilterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
-use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
-use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Newsletter\Sending\ScheduledTaskSubscribersRepository;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\Test\DataFactories\ScheduledTask as ScheduledTaskFactory;
@@ -163,16 +160,6 @@ class SubscribersFinderTest extends \MailPoetTest {
     expect($subscribersCount)->equals(1);
     $subscribersIds = $this->getScheduledTasksSubscribers($this->scheduledTask->getId());
     expect($subscribersIds)->equals([$this->subscriber2->getId()]);
-  }
-
-  public function _after() {
-    parent::_after();
-    $this->truncateEntity(ScheduledTaskEntity::class);
-    $this->truncateEntity(ScheduledTaskSubscriberEntity::class);
-    $this->truncateEntity(SegmentEntity::class);
-    $this->truncateEntity(SubscriberSegmentEntity::class);
-    $this->truncateEntity(DynamicSegmentFilterEntity::class);
-    $this->truncateEntity(SubscriberEntity::class);
   }
 
   private function getScheduledTasksSubscribers(int $taskId): array {

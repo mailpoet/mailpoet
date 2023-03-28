@@ -6,9 +6,7 @@ use Codeception\Stub;
 use Codeception\Stub\Expected;
 use MailPoet\Config\Renderer;
 use MailPoet\Entities\SegmentEntity;
-use MailPoet\Entities\SettingEntity;
 use MailPoet\Entities\SubscriberEntity;
-use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\MailerFactory;
 use MailPoet\Settings\SettingsController;
@@ -136,12 +134,5 @@ class NewSubscriberNotificationMailerTest extends \MailPoetTest {
 
     $service = new NewSubscriberNotificationMailer($mailerFactory, $this->diContainer->get(Renderer::class), $this->diContainer->get(SettingsController::class));
     $service->send($subscriberEntity, $segments);
-  }
-
-  public function _after() {
-    $this->truncateEntity(SettingEntity::class);
-    $this->truncateEntity(SegmentEntity::class);
-    $this->truncateEntity(SubscriberSegmentEntity::class);
-    $this->truncateEntity(SubscriberEntity::class);
   }
 }

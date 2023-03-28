@@ -2,9 +2,7 @@
 
 namespace MailPoet\Subscription;
 
-use MailPoet\Entities\CustomFieldEntity;
 use MailPoet\Entities\SegmentEntity;
-use MailPoet\Entities\SubscriberCustomFieldEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Test\DataFactories\CustomField as CustomFieldFactory;
@@ -21,7 +19,6 @@ class ManageSubscriptionFormRendererTest extends \MailPoetTest {
   private $segment;
 
   public function _before() {
-    $this->cleanup();
     $this->segment = $this->getSegment();
     $this->subscriber = $this->getSubscriber($this->segment);
     $this->formRenderer = $this->diContainer->get(ManageSubscriptionFormRenderer::class);
@@ -34,7 +31,7 @@ class ManageSubscriptionFormRendererTest extends \MailPoetTest {
     expect($form)->stringContainsString('<input type="hidden" name="data[email]" value="subscriber@test.com" />');
     expect($form)->regExp('/<input type="text" autocomplete="given-name" class="mailpoet_text" name="data\[[a-zA-Z0-9=_]+\]" title="First name" value="Fname" data-automation-id="form_first_name" data-parsley-names=\'\[&quot;Please specify a valid name.&quot;,&quot;Addresses in names are not permitted, please add your name instead\.&quot;\]\'\/>/');
     expect($form)->regExp('/<input type="text" autocomplete="family-name" class="mailpoet_text" name="data\[[a-zA-Z0-9=_]+\]" title="Last name" value="Lname" data-automation-id="form_last_name" data-parsley-names=\'\[&quot;Please specify a valid name.&quot;,&quot;Addresses in names are not permitted, please add your name instead\.&quot;\]\'\/>/');
-    expect($form)->regExp('/<input type="checkbox" class="mailpoet_checkbox" name="data\[[a-zA-Z0-9=_]+\]\[\]" value="' . $this->segment->getId() .'" checked="checked"  \/> Test segment/');
+    expect($form)->regExp('/<input type="checkbox" class="mailpoet_checkbox" name="data\[[a-zA-Z0-9=_]+\]\[\]" value="' . $this->segment->getId() . '" checked="checked"  \/> Test segment/');
     expect($form)->regExp('/<input type="text" autocomplete="on" class="mailpoet_text" name="data\[[a-zA-Z0-9=_]+\]" title="custom field 1" value="some value"  \/>/');
     expect($form)->regExp('/<input type="text" autocomplete="on" class="mailpoet_text" name="data\[[a-zA-Z0-9=_]+\]" title="custom field 2" value="another value"  \/>/');
 
@@ -86,17 +83,5 @@ class ManageSubscriptionFormRendererTest extends \MailPoetTest {
     (new CustomFieldFactory())->withName('custom field 2')->withSubscriber($subscriber->getId(), 'another value')->create();
 
     return $subscriber;
-  }
-
-  private function cleanup() {
-    $this->truncateEntity(CustomFieldEntity::class);
-    $this->truncateEntity(SubscriberCustomFieldEntity::class);
-    $this->truncateEntity(SubscriberEntity::class);
-    $this->truncateEntity(SubscriberSegmentEntity::class);
-    $this->truncateEntity(SegmentEntity::class);
-  }
-
-  public function _after() {
-    $this->cleanup();
   }
 }

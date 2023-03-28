@@ -3,9 +3,7 @@
 namespace MailPoet\Subscribers;
 
 use Codeception\Stub;
-use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
-use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\MailerFactory;
@@ -254,11 +252,5 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
       expect($sender->sendConfirmationEmail($this->subscriber))->equals(true);
     }
     expect($sender->sendConfirmationEmail($this->subscriber))->equals(true);
-  }
-
-  public function _after() {
-    $this->truncateEntity(SubscriberEntity::class);
-    $this->truncateEntity(SegmentEntity::class);
-    $this->truncateEntity(SubscriberSegmentEntity::class);
   }
 }

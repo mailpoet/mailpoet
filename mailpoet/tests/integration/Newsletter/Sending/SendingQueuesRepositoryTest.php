@@ -14,7 +14,6 @@ class SendingQueuesRepositoryTest extends \MailPoetTest {
 
   public function _before() {
     parent::_before();
-    $this->cleanup();
     $this->repository = $this->diContainer->get(SendingQueuesRepository::class);
   }
 
@@ -152,13 +151,5 @@ class SendingQueuesRepositoryTest extends \MailPoetTest {
     $subscriber->setEmail('a@example.com');
     $this->entityManager->persist($subscriber);
     return $subscriber;
-  }
-
-  public function cleanup() {
-    $this->truncateEntity(NewsletterEntity::class);
-    $this->truncateEntity(SubscriberEntity::class);
-    $this->truncateEntity(ScheduledTaskEntity::class);
-    $this->truncateEntity(ScheduledTaskSubscriberEntity::class);
-    $this->truncateEntity(SendingQueueEntity::class);
   }
 }

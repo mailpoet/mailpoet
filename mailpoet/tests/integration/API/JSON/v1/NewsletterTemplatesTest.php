@@ -14,8 +14,6 @@ class NewsletterTemplatesTest extends \MailPoetTest {
 
   public function _before() {
     parent::_before();
-    $this->truncateEntity(NewsletterEntity::class);
-    $this->truncateEntity(NewsletterTemplateEntity::class);
     $this->newsletterTemplatesRepository = $this->diContainer->get(NewsletterTemplatesRepository::class);
 
     $template1 = new NewsletterTemplateEntity('Template #1');
@@ -133,10 +131,5 @@ class NewsletterTemplatesTest extends \MailPoetTest {
 
     $deletedTemplate = $this->newsletterTemplatesRepository->findOneById($templateId);
     expect($deletedTemplate)->null();
-  }
-
-  public function _after() {
-    $this->truncateEntity(NewsletterEntity::class);
-    $this->truncateEntity(NewsletterTemplateEntity::class);
   }
 }

@@ -107,9 +107,4 @@ class LastSubscribedAtTest extends EventListenersBaseTest {
 
     $this->assertEquals($this->now, $entity2->getLastSubscribedAt());
   }
-
-  public function _after() {
-    parent::_after();
-    $this->truncateEntity(SubscriberEntity::class);
-  }
 }

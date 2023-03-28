@@ -13,7 +13,6 @@ use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterLinkEntity;
 use MailPoet\Entities\NewsletterPostEntity;
-use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Logging\LoggerFactory;
@@ -23,7 +22,6 @@ use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Renderer\Blocks\Coupon;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Router\Router;
-use MailPoet\Settings\SettingsRepository;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
@@ -573,15 +571,5 @@ class NewsletterTest extends \MailPoetTest {
       'html' => '<img src="http://example.com/different-image-same-alt.jpg" alt="alt text"><p>Text</p>',
     ];
     expect($originalCampaignId)->notEquals($this->newsletterTask->calculateCampaignId($newsletter, $renderedNewslettersDifferentImageSrc));
-  }
-
-  public function _after() {
-    $this->diContainer->get(SettingsRepository::class)->truncate();
-    $this->truncateEntity(SubscriberEntity::class);
-    $this->truncateEntity(NewsletterEntity::class);
-    $this->truncateEntity(ScheduledTaskEntity::class);
-    $this->truncateEntity(SendingQueueEntity::class);
-    $this->truncateEntity(NewsletterLinkEntity::class);
-    $this->truncateEntity(NewsletterPostEntity::class);
   }
 }

@@ -88,8 +88,4 @@ class ThrottlingTest extends \MailPoetTest {
     $this->entityManager->flush();
     return $subscriberIP;
   }
-
-  public function _after() {
-    $this->truncateEntity(SubscriberIPEntity::class);
-  }
 }

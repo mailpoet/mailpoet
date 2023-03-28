@@ -3,8 +3,6 @@
 namespace MailPoet\Test\Tasks\Subscribers;
 
 use MailPoet\Entities\ScheduledTaskEntity;
-use MailPoet\Entities\ScheduledTaskSubscriberEntity;
-use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Tasks\Subscribers\BatchIterator;
 use MailPoet\Test\DataFactories\ScheduledTask as ScheduledTaskFactory;
 use MailPoet\Test\DataFactories\ScheduledTaskSubscriber as ScheduledTaskSubscriberFactory;
@@ -67,11 +65,5 @@ class BatchIteratorTest extends \MailPoetTest {
 
   public function testItCanBeCounted() {
     expect(count($this->iterator))->equals($this->subscriberCount);
-  }
-
-  public function _after() {
-    $this->truncateEntity(ScheduledTaskEntity::class);
-    $this->truncateEntity(ScheduledTaskSubscriberEntity::class);
-    $this->truncateEntity(SubscriberEntity::class);
   }
 }

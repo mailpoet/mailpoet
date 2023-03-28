@@ -33,7 +33,6 @@ class HelpTest extends \MailPoetTest {
 
   public function _before() {
     parent::_before();
-    $this->cleanup();
     $this->scheduledTaskFactory = new ScheduledTaskFactory();
     $this->sendingQueuesRepository = $this->diContainer->get(SendingQueuesRepository::class);
 
@@ -92,16 +91,5 @@ class HelpTest extends \MailPoetTest {
     $this->entityManager->persist($queue);
     $this->entityManager->flush();
     return $queue;
-  }
-
-  private function cleanup() {
-    $this->truncateEntity(ScheduledTaskEntity::class);
-    $this->truncateEntity(NewsletterEntity::class);
-    $this->truncateEntity(SendingQueueEntity::class);
-  }
-
-  protected function _after() {
-    parent::_after();
-    $this->cleanup();
   }
 }

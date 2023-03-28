@@ -41,7 +41,6 @@ class OpensTest extends \MailPoetTest {
 
   public function _before() {
     parent::_before();
-    $this->cleanup();
     // create newsletter
     $newsletter = new NewsletterEntity();
     $newsletter->setType('type');
@@ -419,18 +418,5 @@ class OpensTest extends \MailPoetTest {
     $savedEngagementTime = $this->subscriber->getLastEngagementAt();
     $this->assertInstanceOf(\DateTimeInterface::class, $savedEngagementTime);
     expect($savedEngagementTime->getTimestamp())->equals($now->getTimestamp());
-  }
-
-  public function _after() {
-    $this->cleanup();
-  }
-
-  public function cleanup() {
-    $this->truncateEntity(NewsletterEntity::class);
-    $this->truncateEntity(SubscriberEntity::class);
-    $this->truncateEntity(ScheduledTaskEntity::class);
-    $this->truncateEntity(SendingQueueEntity::class);
-    $this->truncateEntity(StatisticsOpenEntity::class);
-    $this->truncateEntity(UserAgentEntity::class);
   }
 }

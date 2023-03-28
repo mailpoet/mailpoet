@@ -11,23 +11,15 @@ use MailPoet\API\JSON\SuccessResponse;
 use MailPoet\API\JSON\v1\Subscribers;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\CustomFieldEntity;
-use MailPoet\Entities\DynamicSegmentFilterEntity;
 use MailPoet\Entities\FormEntity;
-use MailPoet\Entities\NewsletterEntity;
-use MailPoet\Entities\NewsletterOptionEntity;
-use MailPoet\Entities\NewsletterOptionFieldEntity;
 use MailPoet\Entities\SegmentEntity;
-use MailPoet\Entities\SendingQueueEntity;
-use MailPoet\Entities\SubscriberCustomFieldEntity;
 use MailPoet\Entities\SubscriberEntity;
-use MailPoet\Entities\SubscriberIPEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Form\Util\FieldNameObfuscator;
 use MailPoet\Listing\Handler;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Settings\SettingsController;
-use MailPoet\Settings\SettingsRepository;
 use MailPoet\Subscribers\ConfirmationEmailMailer;
 use MailPoet\Subscribers\Source;
 use MailPoet\Subscribers\SubscriberListingRepository;
@@ -85,7 +77,6 @@ class SubscribersTest extends \MailPoetTest {
 
   public function _before() {
     parent::_before();
-    $this->cleanup();
     $container = ContainerWrapper::getInstance();
     $wp = $container->get(Functions::class);
     $this->captchaSession = new CaptchaSession($container->get(Functions::class));
@@ -1029,24 +1020,5 @@ class SubscribersTest extends \MailPoetTest {
       ->withActiveStatus()
       ->withWelcomeTypeForSegment($this->segment1->getId())
       ->create();
-  }
-
-  public function _after() {
-    $this->cleanup();
-  }
-
-  private function cleanup() {
-    $this->truncateEntity(NewsletterEntity::class);
-    $this->truncateEntity(NewsletterOptionEntity::class);
-    $this->truncateEntity(NewsletterOptionFieldEntity::class);
-    $this->truncateEntity(SegmentEntity::class);
-    $this->truncateEntity(DynamicSegmentFilterEntity::class);
-    $this->truncateEntity(SendingQueueEntity::class);
-    $this->truncateEntity(SubscriberEntity::class);
-    $this->truncateEntity(SubscriberSegmentEntity::class);
-    $this->truncateEntity(CustomFieldEntity::class);
-    $this->truncateEntity(SubscriberCustomFieldEntity::class);
-    $this->diContainer->get(SettingsRepository::class)->truncate();
-    $this->truncateEntity(SubscriberIPEntity::class);
   }
 }

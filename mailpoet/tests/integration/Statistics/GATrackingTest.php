@@ -69,8 +69,4 @@ class GATrackingTest extends \MailPoetTest {
     expect($result['text'])->stringContainsString('email=[subscriber:email]');
     expect($result['html'])->stringContainsString('email=[subscriber:email]');
   }
-
-  public function _after() {
-    $this->truncateEntity(NewsletterEntity::class);
-  }
 }

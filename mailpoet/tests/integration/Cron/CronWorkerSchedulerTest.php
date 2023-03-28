@@ -19,7 +19,6 @@ class CronWorkerSchedulerTest extends \MailPoetTest {
   public function _before() {
     $this->cronWorkerScheduler = $this->diContainer->get(CronWorkerScheduler::class);
     $this->scheduledTaskFactory = new ScheduledTaskFactory();
-    $this->truncateEntity(ScheduledTaskEntity::class);
   }
 
   public function testItSchedulesTask() {
@@ -105,9 +104,5 @@ class CronWorkerSchedulerTest extends \MailPoetTest {
     $task->setRescheduleCount(123456); // too many
     $timeout = $this->cronWorkerScheduler->rescheduleProgressively($task);
     expect($timeout)->equals(ScheduledTaskEntity::MAX_RESCHEDULE_TIMEOUT);
-  }
-
-  public function _after() {
-    $this->truncateEntity(ScheduledTaskEntity::class);
   }
 }

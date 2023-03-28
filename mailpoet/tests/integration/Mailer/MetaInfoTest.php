@@ -201,8 +201,4 @@ class MetaInfoTest extends \MailPoetTest {
       'subscriber_source' => 'form',
     ]);
   }
-
-  public function _after() {
-    $this->truncateEntity(SubscriberEntity::class);
-  }
 }

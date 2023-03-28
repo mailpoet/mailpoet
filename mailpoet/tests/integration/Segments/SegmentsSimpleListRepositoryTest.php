@@ -18,7 +18,6 @@ class SegmentsSimpleListRepositoryTest extends \MailPoetTest {
   public function _before(): void {
     parent::_before();
     $segmentRepository = $this->diContainer->get(SegmentsRepository::class);
-    $this->cleanup();
 
     // Prepare Segments
     $this->createDynamicSegmentEntityForEditorUsers();
@@ -27,8 +26,8 @@ class SegmentsSimpleListRepositoryTest extends \MailPoetTest {
     $populator = $this->diContainer->get(Populator::class);
     $populator->up(); // Prepare WooCommerce and WP Users segments
     // Remove synced WP Users
-    $this->truncateEntityBackup(SubscriberEntity::class);
-    $this->truncateEntityBackup(SubscriberSegmentEntity::class);
+    $this->truncateEntity(SubscriberEntity::class);
+    $this->truncateEntity(SubscriberSegmentEntity::class);
 
     // Prepare Subscribers
     $wpUserEmail = 'user-role-test1@example.com';
@@ -152,17 +151,5 @@ class SegmentsSimpleListRepositoryTest extends \MailPoetTest {
     $this->entityManager->persist($segment);
     $this->entityManager->persist($dynamicFilter);
     return $segment;
-  }
-
-  private function cleanup(): void {
-    $this->truncateEntity(SegmentEntity::class);
-    $this->truncateEntity(SubscriberEntity::class);
-    $this->truncateEntity(SubscriberSegmentEntity::class);
-    $this->truncateEntity(DynamicSegmentFilterEntity::class);
-  }
-
-  public function _after(): void {
-    parent::_after();
-    $this->cleanup();
   }
 }

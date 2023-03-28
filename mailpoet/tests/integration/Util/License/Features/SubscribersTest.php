@@ -122,7 +122,6 @@ class SubscribersTest extends \MailPoetTest {
 
   public function _after() {
     parent::_after();
-    $this->truncateEntity(SubscriberEntity::class);
     $this->wp->deleteTransient(Subscribers::SUBSCRIBERS_COUNT_CACHE_KEY);
   }
 

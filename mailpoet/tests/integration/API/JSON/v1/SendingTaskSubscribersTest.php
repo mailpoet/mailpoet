@@ -9,7 +9,6 @@ use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\ScheduledTaskSubscriberEntity;
-use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
 use MailPoet\Test\DataFactories\ScheduledTaskSubscriber as TaskSubscriberFactory;
@@ -210,13 +209,5 @@ class SendingTaskSubscribersTest extends \MailPoetTest {
 
     $this->entityManager->refresh($this->newsletter);
     expect($this->newsletter->getStatus())->equals(NewsletterEntity::STATUS_SENDING);
-  }
-
-  public function _after() {
-    $this->truncateEntity(ScheduledTaskEntity::class);
-    $this->truncateEntity(ScheduledTaskSubscriberEntity::class);
-    $this->truncateEntity(NewsletterEntity::class);
-    $this->truncateEntity(SendingQueueEntity::class);
-    $this->truncateEntity(SubscriberEntity::class);
   }
 }

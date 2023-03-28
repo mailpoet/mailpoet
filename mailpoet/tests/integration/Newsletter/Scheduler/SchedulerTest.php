@@ -3,13 +3,6 @@
 namespace MailPoet\Test\Newsletter\Scheduler;
 
 use MailPoet\Entities\NewsletterEntity;
-use MailPoet\Entities\NewsletterOptionEntity;
-use MailPoet\Entities\NewsletterOptionFieldEntity;
-use MailPoet\Entities\NewsletterPostEntity;
-use MailPoet\Entities\ScheduledTaskEntity;
-use MailPoet\Entities\ScheduledTaskSubscriberEntity;
-use MailPoet\Entities\SendingQueueEntity;
-use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Newsletter\Scheduler\Scheduler;
 use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
 use MailPoet\Test\DataFactories\NewsletterOption as NewsletterOptionFactory;
@@ -73,13 +66,5 @@ class SchedulerTest extends \MailPoetTest {
 
   public function _after() {
     Carbon::setTestNow();
-    $this->truncateEntity(NewsletterEntity::class);
-    $this->truncateEntity(NewsletterOptionEntity::class);
-    $this->truncateEntity(NewsletterOptionFieldEntity::class);
-    $this->truncateEntity(NewsletterPostEntity::class);
-    $this->truncateEntity(ScheduledTaskEntity::class);
-    $this->truncateEntity(ScheduledTaskSubscriberEntity::class);
-    $this->truncateEntity(SendingQueueEntity::class);
-    $this->truncateEntity(SubscriberEntity::class);
   }
 }

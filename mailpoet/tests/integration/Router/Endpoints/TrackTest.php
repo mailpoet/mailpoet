@@ -31,7 +31,6 @@ class TrackTest extends \MailPoetTest {
 
   public function _before() {
     parent::_before();
-    $this->cleanup();
     // create newsletter
     $newsletter = new NewsletterEntity();
     $newsletter->setType('type');
@@ -212,18 +211,5 @@ class TrackTest extends \MailPoetTest {
     // assert that the fetched link ID belong to the newly created link
     $processedData = $this->track->_processTrackData($trackData);
     expect($processedData->link->getId())->equals($link->getId());
-  }
-
-  public function _after() {
-    $this->cleanup();
-  }
-
-  private function cleanup() {
-    $this->truncateEntity(NewsletterEntity::class);
-    $this->truncateEntity(SubscriberEntity::class);
-    $this->truncateEntity(NewsletterLinkEntity::class);
-    $this->truncateEntity(ScheduledTaskEntity::class);
-    $this->truncateEntity(ScheduledTaskSubscriberEntity::class);
-    $this->truncateEntity(SendingQueueEntity::class);
   }
 }

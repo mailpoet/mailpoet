@@ -21,7 +21,6 @@ class SegmentsRepositoryTest extends \MailPoetTest {
 
   public function _before(): void {
     parent::_before();
-    $this->cleanup();
     $this->segmentsRepository = $this->diContainer->get(SegmentsRepository::class);
     $this->newsletterSegmentRepository = $this->diContainer->get(NewsletterSegmentRepository::class);
   }
@@ -191,17 +190,5 @@ class SegmentsRepositoryTest extends \MailPoetTest {
     $newsletterSegment = new NewsletterSegmentEntity($newsletter, $segmentEntity);
     $this->entityManager->persist($newsletter);
     $this->entityManager->persist($newsletterSegment);
-  }
-
-  private function cleanup(): void {
-    $this->truncateEntity(SegmentEntity::class);
-    $this->truncateEntity(DynamicSegmentFilterEntity::class);
-    $this->truncateEntity(NewsletterEntity::class);
-    $this->truncateEntity(NewsletterSegmentEntity::class);
-  }
-
-  public function _after(): void {
-    parent::_after();
-    $this->cleanup();
   }
 }

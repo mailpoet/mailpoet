@@ -35,10 +35,6 @@ class FormsRepositoryTest extends \MailPoetTest {
     expect($form->getDeletedAt())->null();
   }
 
-  public function _after() {
-    $this->truncateEntity(FormEntity::class);
-  }
-
   private function createForm(string $name): FormEntity {
     $form = new FormEntity($name);
     $this->repository->persist($form);

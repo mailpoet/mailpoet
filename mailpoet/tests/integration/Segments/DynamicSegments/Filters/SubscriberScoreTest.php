@@ -16,7 +16,6 @@ class SubscriberScoreTest extends \MailPoetTest {
 
   public function _before(): void {
     $this->filter = $this->diContainer->get(SubscriberScore::class);
-    $this->cleanUp();
 
     $subscriber = new SubscriberEntity();
     $subscriber->setEngagementScore(0);
@@ -199,11 +198,5 @@ class SubscriberScoreTest extends \MailPoetTest {
     $this->entityManager->persist($dynamicSegmentFilter);
     $segment->addDynamicFilter($dynamicSegmentFilter);
     return $dynamicSegmentFilter;
-  }
-
-  private function cleanUp(): void {
-    $this->truncateEntity(SubscriberEntity::class);
-    $this->truncateEntity(SegmentEntity::class);
-    $this->truncateEntity(DynamicSegmentFilterEntity::class);
   }
 }

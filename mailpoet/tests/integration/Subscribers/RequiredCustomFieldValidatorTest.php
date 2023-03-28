@@ -18,7 +18,6 @@ class RequiredCustomFieldValidatorTest extends \MailPoetTest {
 
   public function _before() {
     parent::_before();
-    $this->cleanup();
     $this->customFieldRepository = $this->diContainer->get(CustomFieldsRepository::class);
     $this->validator = new RequiredCustomFieldValidator($this->customFieldRepository);
     $this->customField = $this->customFieldRepository->createOrUpdate([
@@ -70,10 +69,5 @@ class RequiredCustomFieldValidatorTest extends \MailPoetTest {
     $this->entityManager->persist($form);
     $this->entityManager->flush();
     $this->validator->validate(['cf_' . $this->customField->getId() => 'value'], $form);
-  }
-
-  private function cleanup() {
-    $this->truncateEntity(CustomFieldEntity::class);
-    $this->truncateEntity(FormEntity::class);
   }
 }

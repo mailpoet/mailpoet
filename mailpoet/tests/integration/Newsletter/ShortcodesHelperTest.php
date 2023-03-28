@@ -10,7 +10,6 @@ class ShortcodesHelperTest extends \MailPoetTest {
   private $shortcodesHelper;
 
   public function _before() {
-    $this->truncateEntity(CustomFieldEntity::class);
     $this->shortcodesHelper = $this->diContainer->get(ShortcodesHelper::class);
   }
 

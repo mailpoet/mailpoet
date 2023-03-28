@@ -52,12 +52,4 @@ class FormMessageControllerTest extends \MailPoetTest {
       expect($form->getSettings()['success_message'] ?? null)->equals(__('Check your inbox or spam folder to confirm your subscription.', 'mailpoet'));
     }
   }
-
-  private function clear() {
-    $this->truncateEntity(FormEntity::class);
-  }
-
-  public function _after() {
-    $this->clear();
-  }
 }

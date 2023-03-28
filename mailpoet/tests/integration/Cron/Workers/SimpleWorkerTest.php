@@ -6,8 +6,6 @@ use Codeception\Stub;
 use MailPoet\Cron\CronHelper;
 use MailPoet\Cron\Workers\SimpleWorkerMockImplementation as MockSimpleWorker;
 use MailPoet\DI\ContainerWrapper;
-use MailPoet\Entities\ScheduledTaskEntity;
-use MailPoet\Entities\SettingEntity;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
@@ -67,10 +65,5 @@ class SimpleWorkerTest extends \MailPoetTest {
     $difference -= (Carbon::DAYS_PER_WEEK - (int)$currentDate->format('N'));
     expect($difference)->lessOrEquals(7);
     expect($difference)->greaterOrEquals(0);
-  }
-
-  public function _after() {
-    $this->truncateEntity(SettingEntity::class);
-    $this->truncateEntity(ScheduledTaskEntity::class);
   }
 }

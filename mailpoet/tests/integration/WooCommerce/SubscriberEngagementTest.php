@@ -31,7 +31,6 @@ class SubscriberEngagementTest extends \MailPoetTest {
       $this->wooCommerceHelperMock,
       new SubscribersRepository($this->entityManager, new SubscriberChangesNotifier($this->wpMock), $this->wpMock)
     );
-    $this->truncateEntity(SubscriberEntity::class);
   }
 
   public function testItUpdatesLastEngagementForSubscriberWhoCreatedNewOrder() {
