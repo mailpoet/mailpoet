@@ -212,6 +212,12 @@ if [[ $CIRCLE_JOB == *"_with_premium_"* ]]; then
   wp plugin activate mailpoet-premium || { echo "MailPoet Premium plugin activation failed!" ; exit 1; }
 fi
 
+# WP installs translations into the `lang` folder, and it should be writable, this change has been added in WP 6.2
+chmod -R 755 wp-content/plugins/mailpoet/lang
+chmod -R 755 wp-content/plugins/mailpoet-premium/lang
+chmod -R 755 wp-content/languages
+chmod -R 755 wp-content/upgrade
+
 echo "MySQL Configuration";
 # print sql_mode
 mysql -u wordpress -pwordpress wordpress -h mysql -e "SELECT @@global.sql_mode"
