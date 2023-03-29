@@ -47,6 +47,7 @@ services:
       PHP_IDE_CONFIG: 'serverName=Mailpoet'
       COMPOSER_HOME: '/tmp/.composer'
       NPM_CONFIG_CACHE: '/tmp/.npm'
+      XDG_CACHE_HOME: '/tmp/.cache'
       MAILPOET_DEV_SITE: 1
     volumes:
       - './wordpress:/var/www/html'
