@@ -42,9 +42,17 @@ class SubjectTransformerHandler {
   }
 
   public function getSubjectKeysForTrigger(Trigger $trigger): array {
-    $all = [];
-    foreach ($trigger->getSubjectKeys() as $key) {
-      $all = array_merge($all, $this->getSubjectKeysForSingleKey($key));
+    $transformerMap = $this->getTransformerMap();
+    $all = $trigger->getSubjectKeys();
+    $queue = $all;
+    while ($key = array_shift($queue)) {
+      foreach ($transformerMap[$key] ?? [] as $transformer) {
+        $newKey = $transformer->returns();
+        if (!in_array($newKey, $all, true)) {
+          $all[] = $newKey;
+          $queue[] = $newKey;
+        }
+      }
     }
     return $all;
   }
@@ -79,24 +87,5 @@ class SubjectTransformerHandler {
       $transformerMap[$transformer->accepts()] = array_merge($transformerMap[$transformer->accepts()] ?? [], [$transformer]);
     }
     return $transformerMap;
-  }
-
-  /**
-   * @return string[]
-   */
-  private function getSubjectKeysForSingleKey(string $subjectKey): array {
-    $transformerMap = $this->getTransformerMap();
-    $all = [$subjectKey];
-    $queue = [$subjectKey];
-    while ($key = array_shift($queue)) {
-      foreach ($transformerMap[$key] ?? [] as $transformer) {
-        $newKey = $transformer->returns();
-        if (!in_array($newKey, $all, true)) {
-          $all[] = $newKey;
-          $queue[] = $newKey;
-        }
-      }
-    }
-    return $all;
   }
 }
