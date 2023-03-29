@@ -75,7 +75,7 @@ class SubjectTransformerHandler {
 
   private function getTransformerMap(): array {
     $transformerMap = [];
-    foreach ($this->registry->getSubjectTransformer() as $transformer) {
+    foreach ($this->registry->getSubjectTransformers() as $transformer) {
       $transformerMap[$transformer->accepts()] = array_merge($transformerMap[$transformer->accepts()] ?? [], [$transformer]);
     }
     return $transformerMap;
