@@ -60,12 +60,7 @@ class SubjectTransformerHandler {
       $all[$subject->getKey()] = $subject;
     }
 
-    $queue = array_map(
-      function(Subject $subject): string {
-        return $subject->getKey();
-      },
-      $subjects
-    );
+    $queue = array_keys($all);
     while ($key = array_shift($queue)) {
       foreach ($transformerMap[$key] ?? [] as $transformer) {
           $newKey = $transformer->returns();
