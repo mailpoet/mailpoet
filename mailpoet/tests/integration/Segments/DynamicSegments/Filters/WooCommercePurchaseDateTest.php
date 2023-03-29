@@ -8,8 +8,6 @@ use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Test\DataFactories\Subscriber;
 use MailPoetVendor\Carbon\Carbon;
-use MailPoetVendor\Doctrine\DBAL\Driver\Statement;
-use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
 
 /**
  * @group woo
@@ -140,34 +138,7 @@ class WooCommercePurchaseDateTest extends \MailPoetTest {
         'value' => $value,
       ]
     );
-    $segment = new SegmentEntity('temporary segment', SegmentEntity::TYPE_DYNAMIC, 'description');
-    $this->entityManager->persist($segment);
-    $filter = new DynamicSegmentFilterEntity($segment, $data);
-    $this->entityManager->persist($filter);
-    $segment->addDynamicFilter($filter);
-
-    $queryBuilder = $this->wooCommercePurchaseDate->apply($this->getQueryBuilder(), $filter);
-    $statement = $queryBuilder->execute();
-    $results = $statement instanceof Statement ? $statement->fetchAllAssociative() : [];
-    $emails = array_map(function($row) {
-      $subscriber = $this->entityManager->find(SubscriberEntity::class, $row['id']);
-      if (!$subscriber instanceof SubscriberEntity) {
-        throw new \Exception('this is for PhpStan');
-      }
-      return $subscriber->getEmail();
-    }, $results);
-
-
-    return $emails;
-  }
-
-  private function getQueryBuilder(): QueryBuilder {
-    $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
-    return $this->entityManager
-      ->getConnection()
-      ->createQueryBuilder()
-      ->select("$subscribersTable.id")
-      ->from($subscribersTable);
+    return $this->tester->getSubscriberEmailsMatchingDynamicFilter($data, $this->wooCommercePurchaseDate);
   }
 
   private function createCustomer(string $email): int {

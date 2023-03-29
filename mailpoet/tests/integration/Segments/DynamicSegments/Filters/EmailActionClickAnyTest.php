@@ -3,19 +3,15 @@
 namespace MailPoet\Segments\DynamicSegments\Filters;
 
 use MailPoet\Entities\DynamicSegmentFilterData;
-use MailPoet\Entities\DynamicSegmentFilterEntity;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterLinkEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
-use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\StatisticsClickEntity;
 use MailPoet\Entities\StatisticsNewsletterEntity;
 use MailPoet\Entities\StatisticsOpenEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\UserAgentEntity;
-use MailPoetVendor\Doctrine\DBAL\Driver\Statement;
-use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
 
 class EmailActionClickAnyTest extends \MailPoetTest {
   /** @var EmailActionClickAny */
@@ -73,37 +69,17 @@ class EmailActionClickAnyTest extends \MailPoetTest {
     $this->addClickedToLink('[link:newsletter_view_in_browser_url]', $this->newsletter, $subscriberClickedExcludedLinks);
     $this->addClickedToLink('[link:subscription_manage_url]', $this->newsletter, $subscriberClickedExcludedLinks);
 
-    $segmentFilter = $this->getSegmentFilter(EmailActionClickAny::TYPE);
-    $statement = $this->emailAction->apply($this->getQueryBuilder(), $segmentFilter)->execute();
-    $this->assertInstanceOf(Statement::class, $statement);
-    $result = $statement->fetchAll();
-    expect(count($result))->equals(1);
-    $this->assertIsArray($result[0]);
-    $subscriber1 = $this->entityManager->find(SubscriberEntity::class, $result[0]['id']);
-    $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
-    expect($subscriber1->getEmail())->equals('opened_clicked@example.com');
+    $data = $this->getSegmentFilterData(EmailActionClickAny::TYPE);
+    $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($data, $this->emailAction);
+    expect($emails)->count(1);
+    expect($emails[0])->equals('opened_clicked@example.com');
   }
 
-  private function getQueryBuilder(): QueryBuilder {
-    $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
-    return $this->entityManager
-      ->getConnection()
-      ->createQueryBuilder()
-      ->select("$subscribersTable.id")
-      ->from($subscribersTable);
-  }
-
-  private function getSegmentFilter(string $action, int $newsletterId = null, int $linkId = null): DynamicSegmentFilterEntity {
-    $segmentFilterData = new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_EMAIL, $action, [
+  private function getSegmentFilterData(string $action, int $newsletterId = null, int $linkId = null): DynamicSegmentFilterData {
+    return new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_EMAIL, $action, [
       'newsletter_id' => $newsletterId,
       'link_id' => $linkId,
     ]);
-    $segment = new SegmentEntity('Dynamic Segment', SegmentEntity::TYPE_DYNAMIC, 'description');
-    $this->entityManager->persist($segment);
-    $dynamicSegmentFilter = new DynamicSegmentFilterEntity($segment, $segmentFilterData);
-    $this->entityManager->persist($dynamicSegmentFilter);
-    $segment->addDynamicFilter($dynamicSegmentFilter);
-    return $dynamicSegmentFilter;
   }
 
   private function createSubscriber(string $email): SubscriberEntity {

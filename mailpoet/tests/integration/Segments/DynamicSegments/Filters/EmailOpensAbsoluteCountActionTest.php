@@ -3,18 +3,14 @@
 namespace MailPoet\Segments\DynamicSegments\Filters;
 
 use MailPoet\Entities\DynamicSegmentFilterData;
-use MailPoet\Entities\DynamicSegmentFilterEntity;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
-use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\StatisticsNewsletterEntity;
 use MailPoet\Entities\StatisticsOpenEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\UserAgentEntity;
 use MailPoetVendor\Carbon\CarbonImmutable;
-use MailPoetVendor\Doctrine\DBAL\Driver\Statement;
-use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
 
 class EmailOpensAbsoluteCountActionTest extends \MailPoetTest {
   /** @var EmailOpensAbsoluteCountAction */
@@ -92,120 +88,47 @@ class EmailOpensAbsoluteCountActionTest extends \MailPoetTest {
   }
 
   public function testGetOpened(): void {
-    $segmentFilter = $this->getSegmentFilter(2, 'more', 3);
-    $statement = $this->action->apply($this->getQueryBuilder(), $segmentFilter)->execute();
-    $this->assertInstanceOf(Statement::class, $statement);
-    $result = $statement->fetchAll();
-    expect(count($result))->equals(1);
-    $this->assertIsArray($result[0]);
-    $subscriber1 = $this->entityManager->find(SubscriberEntity::class, $result[0]['id']);
-    $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
-    expect($subscriber1->getEmail())->equals('opened-3-newsletters@example.com');
+    $segmentFilterData = $this->getSegmentFilterData(2, 'more', 3);
+    $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->action);
+    $this->assertEqualsCanonicalizing(['opened-3-newsletters@example.com'], $emails);
   }
 
   public function testGetMachineOpened(): void {
-    $segmentFilter = $this->getSegmentFilter(1, 'more', 5, EmailOpensAbsoluteCountAction::MACHINE_TYPE);
-    $statement = $this->action->apply($this->getQueryBuilder(), $segmentFilter)->execute();
-    $this->assertInstanceOf(Statement::class, $statement);
-    $result = $statement->fetchAll();
-    expect(count($result))->equals(1);
-    $this->assertIsArray($result[0]);
-    $subscriber1 = $this->entityManager->find(SubscriberEntity::class, $result[0]['id']);
-    $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
-    expect($subscriber1->getEmail())->equals('opened-3-newsletters@example.com');
+    $segmentFilterData = $this->getSegmentFilterData(1, 'more', 5, EmailOpensAbsoluteCountAction::MACHINE_TYPE);
+    $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->action);
+    $this->assertEqualsCanonicalizing(['opened-3-newsletters@example.com'], $emails);
   }
 
   public function testGetOpenedOld(): void {
-    $segmentFilter = $this->getSegmentFilter(2, 'more', 7);
-    $statement = $this->action->apply($this->getQueryBuilder(), $segmentFilter)
-      ->orderBy('email')
-      ->execute();
-    $this->assertInstanceOf(Statement::class, $statement);
-    $result = $statement->fetchAll();
-    expect(count($result))->equals(2);
-    $this->assertIsArray($result[0]);
-    $subscriber1 = $this->entityManager->find(SubscriberEntity::class, $result[0]['id']);
-    $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
-    expect($subscriber1->getEmail())->equals('opened-3-newsletters@example.com');
-    $this->assertIsArray($result[1]);
-    $subscriber2 = $this->entityManager->find(SubscriberEntity::class, $result[1]['id']);
-    $this->assertInstanceOf(SubscriberEntity::class, $subscriber2);
-    expect($subscriber2->getEmail())->equals('opened-old-opens@example.com');
+    $segmentFilterData = $this->getSegmentFilterData(2, 'more', 7);
+    $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->action);
+    $this->assertEqualsCanonicalizing(['opened-3-newsletters@example.com', 'opened-old-opens@example.com'], $emails);
   }
 
   public function testGetOpenedLess(): void {
-    $segmentFilter = $this->getSegmentFilter(3, 'less', 3);
-    $statement = $this->action->apply($this->getQueryBuilder(), $segmentFilter)
-      ->orderBy('email')
-      ->execute();
-    $this->assertInstanceOf(Statement::class, $statement);
-    $result = $statement->fetchAll();
-    expect(count($result))->equals(2);
-    $this->assertIsArray($result[0]);
-    $subscriber1 = $this->entityManager->find(SubscriberEntity::class, $result[0]['id']);
-    $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
-    expect($subscriber1->getEmail())->equals('opened-less-opens@example.com');
-    $this->assertIsArray($result[1]);
-    $subscriber2 = $this->entityManager->find(SubscriberEntity::class, $result[1]['id']);
-    $this->assertInstanceOf(SubscriberEntity::class, $subscriber2);
-    expect($subscriber2->getEmail())->equals('opened-old-opens@example.com');
+    $segmentFilterData = $this->getSegmentFilterData(3, 'less', 3);
+    $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->action);
+    $this->assertEqualsCanonicalizing(['opened-less-opens@example.com', 'opened-old-opens@example.com'], $emails);
   }
 
   public function testGetOpenedEquals(): void {
-    $segmentFilter = $this->getSegmentFilter(1, 'equals', 3);
-    $statement = $this->action->apply($this->getQueryBuilder(), $segmentFilter)
-      ->orderBy('email')
-      ->execute();
-    $this->assertInstanceOf(Statement::class, $statement);
-    $result = $statement->fetchAll();
-
-    $this->assertCount(1, $result);
-    $this->assertIsArray($result[0]);
-    $subscriber1 = $this->entityManager->find(SubscriberEntity::class, $result[0]['id']);
-    $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
-    $this->assertSame('opened-old-opens@example.com', $subscriber1->getEmail());
+    $segmentFilterData = $this->getSegmentFilterData(1, 'equals', 3);
+    $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->action);
+    $this->assertEqualsCanonicalizing(['opened-old-opens@example.com'], $emails);
   }
 
   public function testGetOpenedNotEquals(): void {
-    $segmentFilter = $this->getSegmentFilter(2, 'not_equals', 3);
-    $statement = $this->action->apply($this->getQueryBuilder(), $segmentFilter)
-      ->orderBy('email')
-      ->execute();
-    $this->assertInstanceOf(Statement::class, $statement);
-    $result = $statement->fetchAll();
-
-    $this->assertCount(2, $result);
-    $this->assertIsArray($result[0]);
-    $subscriber1 = $this->entityManager->find(SubscriberEntity::class, $result[0]['id']);
-    $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
-    $this->assertSame('opened-3-newsletters@example.com', $subscriber1->getEmail());
-    $this->assertIsArray($result[1]);
-    $subscriber2 = $this->entityManager->find(SubscriberEntity::class, $result[1]['id']);
-    $this->assertInstanceOf(SubscriberEntity::class, $subscriber2);
-    $this->assertSame('opened-old-opens@example.com', $subscriber2->getEmail());
+    $segmentFilterData = $this->getSegmentFilterData(2, 'not_equals', 3);
+    $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->action);
+    $this->assertEqualsCanonicalizing(['opened-3-newsletters@example.com', 'opened-old-opens@example.com'], $emails);
   }
 
-  private function getQueryBuilder(): QueryBuilder {
-    $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
-    return $this->entityManager
-      ->getConnection()
-      ->createQueryBuilder()
-      ->select("$subscribersTable.id")
-      ->from($subscribersTable);
-  }
-
-  private function getSegmentFilter(int $opens, string $operator, int $days, string $action = EmailOpensAbsoluteCountAction::TYPE): DynamicSegmentFilterEntity {
-    $segmentFilterData = new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_EMAIL, $action, [
+  private function getSegmentFilterData(int $opens, string $operator, int $days, string $action = EmailOpensAbsoluteCountAction::TYPE): DynamicSegmentFilterData {
+    return new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_EMAIL, $action, [
       'operator' => $operator,
       'opens' => $opens,
       'days' => $days,
     ]);
-    $segment = new SegmentEntity('Dynamic Segment', SegmentEntity::TYPE_DYNAMIC, 'description');
-    $this->entityManager->persist($segment);
-    $dynamicSegmentFilter = new DynamicSegmentFilterEntity($segment, $segmentFilterData);
-    $this->entityManager->persist($dynamicSegmentFilter);
-    $segment->addDynamicFilter($dynamicSegmentFilter);
-    return $dynamicSegmentFilter;
   }
 
   private function createSubscriber(string $email): SubscriberEntity {

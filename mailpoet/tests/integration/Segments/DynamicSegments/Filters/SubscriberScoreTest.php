@@ -6,8 +6,6 @@ use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Entities\DynamicSegmentFilterEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
-use MailPoetVendor\Doctrine\DBAL\Driver\Statement;
-use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
 
 class SubscriberScoreTest extends \MailPoetTest {
 
@@ -52,153 +50,46 @@ class SubscriberScoreTest extends \MailPoetTest {
   }
 
   public function testGetHigherThan(): void {
-    $segmentFilter = $this->getSegmentFilter(SubscriberScore::HIGHER_THAN, '80');
-    $statement = $this->filter->apply($this->getQueryBuilder(), $segmentFilter)
-      ->orderBy('email')
-      ->execute();
-    $this->assertInstanceOf(Statement::class, $statement);
-    $result = $statement->fetchAll();
-    expect(count($result))->equals(1);
-    $this->assertIsArray($result[0]);
-    $subscriber = $this->entityManager->find(SubscriberEntity::class, $result[0]['id']);
-    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
-    expect($subscriber->getEmail())->equals('e12345@example.com');
+    $segmentFilterData = $this->getSegmentFilterData(SubscriberScore::HIGHER_THAN, '80');
+    $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->filter);
+    $this->assertEqualsCanonicalizing(['e12345@example.com'], $emails);
   }
 
   public function testGetLowerThan(): void {
-    $segmentFilter = $this->getSegmentFilter(SubscriberScore::LOWER_THAN, '30');
-    $statement = $this->filter->apply($this->getQueryBuilder(), $segmentFilter)
-      ->orderBy('email')
-      ->execute();
-    $this->assertInstanceOf(Statement::class, $statement);
-    $result = $statement->fetchAll();
-    expect(count($result))->equals(2);
-
-    $this->assertIsArray($result[0]);
-    $subscriber = $this->entityManager->find(SubscriberEntity::class, $result[0]['id']);
-    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
-    expect($subscriber->getEmail())->equals('e1@example.com');
-
-    $this->assertIsArray($result[1]);
-    $subscriber = $this->entityManager->find(SubscriberEntity::class, $result[1]['id']);
-    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
-    expect($subscriber->getEmail())->equals('e12@example.com');
+    $segmentFilterData = $this->getSegmentFilterData(SubscriberScore::LOWER_THAN, '30');
+    $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->filter);
+    $this->assertEqualsCanonicalizing(['e1@example.com', 'e12@example.com'], $emails);
   }
 
   public function testGetEquals(): void {
-    $segmentFilter = $this->getSegmentFilter(SubscriberScore::EQUALS, '50');
-    $statement = $this->filter->apply($this->getQueryBuilder(), $segmentFilter)
-      ->orderBy('email')
-      ->execute();
-    $this->assertInstanceOf(Statement::class, $statement);
-    $result = $statement->fetchAll();
-    expect(count($result))->equals(1);
-    $this->assertIsArray($result[0]);
-    $subscriber = $this->entityManager->find(SubscriberEntity::class, $result[0]['id']);
-    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
-    expect($subscriber->getEmail())->equals('e123@example.com');
+    $segmentFilterData = $this->getSegmentFilterData(SubscriberScore::EQUALS, '50');
+    $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->filter);
+    $this->assertEqualsCanonicalizing(['e123@example.com'], $emails);
   }
 
   public function testGetNotEquals(): void {
-    $segmentFilter = $this->getSegmentFilter(SubscriberScore::NOT_EQUALS, '50');
-    $statement = $this->filter->apply($this->getQueryBuilder(), $segmentFilter)
-      ->orderBy('email')
-      ->execute();
-    $this->assertInstanceOf(Statement::class, $statement);
-    $result = $statement->fetchAll();
-    expect(count($result))->equals(4);
-
-    $this->assertIsArray($result[0]);
-    $subscriber = $this->entityManager->find(SubscriberEntity::class, $result[0]['id']);
-    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
-    expect($subscriber->getEmail())->equals('e1@example.com');
-
-    $this->assertIsArray($result[1]);
-    $subscriber = $this->entityManager->find(SubscriberEntity::class, $result[1]['id']);
-    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
-    expect($subscriber->getEmail())->equals('e12@example.com');
-
-    $this->assertIsArray($result[2]);
-    $subscriber = $this->entityManager->find(SubscriberEntity::class, $result[2]['id']);
-    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
-    expect($subscriber->getEmail())->equals('e1234@example.com');
-
-    $this->assertIsArray($result[3]);
-    $subscriber = $this->entityManager->find(SubscriberEntity::class, $result[3]['id']);
-    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
-    expect($subscriber->getEmail())->equals('e12345@example.com');
+    $segmentFilterData = $this->getSegmentFilterData(SubscriberScore::NOT_EQUALS, '50');
+    $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->filter);
+    $this->assertEqualsCanonicalizing(['e1@example.com', 'e12@example.com', 'e1234@example.com', 'e12345@example.com'], $emails);
   }
 
   public function testGetUnknown(): void {
-    $segmentFilter = $this->getSegmentFilter(SubscriberScore::UNKNOWN, '');
-    $statement = $this->filter->apply($this->getQueryBuilder(), $segmentFilter)
-      ->orderBy('email')
-      ->execute();
-    $this->assertInstanceOf(Statement::class, $statement);
-    $result = $statement->fetchAll();
-    expect(count($result))->equals(1);
-
-    $this->assertIsArray($result[0]);
-    $subscriber = $this->entityManager->find(SubscriberEntity::class, $result[0]['id']);
-    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
-    expect($subscriber->getEmail())->equals('e123456@example.com');
+    $segmentFilterData = $this->getSegmentFilterData(SubscriberScore::UNKNOWN, '');
+    $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->filter);
+    $this->assertEqualsCanonicalizing(['e123456@example.com'], $emails);
   }
 
   public function testGetNotUnknown(): void {
-    $segmentFilter = $this->getSegmentFilter(SubscriberScore::NOT_UNKNOWN, '');
-    $statement = $this->filter->apply($this->getQueryBuilder(), $segmentFilter)
-      ->orderBy('email')
-      ->execute();
-    $this->assertInstanceOf(Statement::class, $statement);
-    $result = $statement->fetchAll();
-    expect(count($result))->equals(5);
-
-    $this->assertIsArray($result[0]);
-    $subscriber = $this->entityManager->find(SubscriberEntity::class, $result[0]['id']);
-    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
-    expect($subscriber->getEmail())->equals('e1@example.com');
-
-    $this->assertIsArray($result[1]);
-    $subscriber = $this->entityManager->find(SubscriberEntity::class, $result[1]['id']);
-    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
-    expect($subscriber->getEmail())->equals('e12@example.com');
-
-    $this->assertIsArray($result[2]);
-    $subscriber = $this->entityManager->find(SubscriberEntity::class, $result[2]['id']);
-    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
-    expect($subscriber->getEmail())->equals('e123@example.com');
-
-    $this->assertIsArray($result[3]);
-    $subscriber = $this->entityManager->find(SubscriberEntity::class, $result[3]['id']);
-    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
-    expect($subscriber->getEmail())->equals('e1234@example.com');
-
-    $this->assertIsArray($result[4]);
-    $subscriber = $this->entityManager->find(SubscriberEntity::class, $result[4]['id']);
-    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
-    expect($subscriber->getEmail())->equals('e12345@example.com');
+    $segmentFilterData = $this->getSegmentFilterData(SubscriberScore::NOT_UNKNOWN, '');
+    $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->filter);
+    $this->assertEqualsCanonicalizing(['e1@example.com', 'e12@example.com', 'e123@example.com', 'e1234@example.com', 'e12345@example.com'], $emails);
   }
 
-  private function getQueryBuilder(): QueryBuilder {
-    $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
-    return $this->entityManager
-      ->getConnection()
-      ->createQueryBuilder()
-      ->select("$subscribersTable.id")
-      ->from($subscribersTable);
-  }
-
-  private function getSegmentFilter(string $operator, string $value): DynamicSegmentFilterEntity {
-    $segmentFilterData = new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_USER_ROLE, SubscriberScore::TYPE, [
+  private function getSegmentFilterData(string $operator, string $value): DynamicSegmentFilterData {
+    return new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_USER_ROLE, SubscriberScore::TYPE, [
       'operator' => $operator,
       'value' => $value,
     ]);
-    $segment = new SegmentEntity('Dynamic Segment', SegmentEntity::TYPE_DYNAMIC, 'description');
-    $this->entityManager->persist($segment);
-    $dynamicSegmentFilter = new DynamicSegmentFilterEntity($segment, $segmentFilterData);
-    $this->entityManager->persist($dynamicSegmentFilter);
-    $segment->addDynamicFilter($dynamicSegmentFilter);
-    return $dynamicSegmentFilter;
   }
 
   private function cleanUp(): void {

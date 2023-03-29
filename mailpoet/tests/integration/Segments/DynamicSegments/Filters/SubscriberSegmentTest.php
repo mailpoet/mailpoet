@@ -8,8 +8,6 @@ use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoetVendor\Carbon\CarbonImmutable;
-use MailPoetVendor\Doctrine\DBAL\Driver\Statement;
-use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
 
 class SubscriberSegmentTest extends \MailPoetTest {
   /** @var SubscriberSegment */
@@ -53,81 +51,29 @@ class SubscriberSegmentTest extends \MailPoetTest {
   }
 
   public function testSubscribedAnyOf(): void {
-    $segmentFilter = $this->getSegmentFilter(DynamicSegmentFilterData::OPERATOR_ANY, [$this->segment1->getId(), $this->segment2->getId()]);
-    $statement = $this->filter->apply($this->getQueryBuilder(), $segmentFilter)
-      ->orderBy('email')
-      ->execute();
+    $segmentFilterData = $this->getSegmentFilterData(DynamicSegmentFilterData::OPERATOR_ANY, [$this->segment1->getId(), $this->segment2->getId()]);
+    $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->filter);
+    $this->assertEqualsCanonicalizing(['a1@example.com', 'a2@example.com'], $emails);
 
-    $this->assertInstanceOf(Statement::class, $statement);
-    $result = $statement->fetchAll();
-
-    expect(count($result))->equals(2);
-    $this->assertIsArray($result[0]);
-    $subscriber = $this->entityManager->find(SubscriberEntity::class, $result[0]['id']);
-    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
-    expect($subscriber->getEmail())->equals('a1@example.com');
-    $this->assertIsArray($result[1]);
-    $subscriber = $this->entityManager->find(SubscriberEntity::class, $result[1]['id']);
-    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
-    expect($subscriber->getEmail())->equals('a2@example.com');
   }
 
   public function testSubscribedAllOf(): void {
-    $segmentFilter = $this->getSegmentFilter(DynamicSegmentFilterData::OPERATOR_ALL, [$this->segment1->getId(), $this->segment2->getId()]);
-    $statement = $this->filter->apply($this->getQueryBuilder(), $segmentFilter)
-      ->orderBy('email')
-      ->execute();
-
-    $this->assertInstanceOf(Statement::class, $statement);
-    $result = $statement->fetchAll();
-
-    expect(count($result))->equals(1);
-    $this->assertIsArray($result[0]);
-    $subscriber = $this->entityManager->find(SubscriberEntity::class, $result[0]['id']);
-    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
-    expect($subscriber->getEmail())->equals('a1@example.com');
+    $segmentFilterData = $this->getSegmentFilterData(DynamicSegmentFilterData::OPERATOR_ALL, [$this->segment1->getId(), $this->segment2->getId()]);
+    $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->filter);
+    $this->assertEqualsCanonicalizing(['a1@example.com'], $emails);
   }
 
   public function testSubscribedNoneOf(): void {
-    $segmentFilter = $this->getSegmentFilter(DynamicSegmentFilterData::OPERATOR_NONE, [$this->segment1->getId()]);
-    $statement = $this->filter->apply($this->getQueryBuilder(), $segmentFilter)
-      ->orderBy('email')
-      ->execute();
-
-    $this->assertInstanceOf(Statement::class, $statement);
-    $result = $statement->fetchAll();
-
-    expect(count($result))->equals(2);
-    $this->assertIsArray($result[0]);
-    $subscriber = $this->entityManager->find(SubscriberEntity::class, $result[0]['id']);
-    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
-    expect($subscriber->getEmail())->equals('a2@example.com');
-    $this->assertIsArray($result[1]);
-    $subscriber = $this->entityManager->find(SubscriberEntity::class, $result[1]['id']);
-    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
-    expect($subscriber->getEmail())->equals('a3@example.com');
+    $segmentFilterData = $this->getSegmentFilterData(DynamicSegmentFilterData::OPERATOR_NONE, [$this->segment1->getId()]);
+    $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->filter);
+    $this->assertEqualsCanonicalizing(['a2@example.com', 'a3@example.com'], $emails);
   }
 
-  private function getSegmentFilter(string $operator, array $segments): DynamicSegmentFilterEntity {
-    $segmentFilterData = new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_USER_ROLE, SubscriberSegment::TYPE, [
+  private function getSegmentFilterData(string $operator, array $segments): DynamicSegmentFilterData {
+    return new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_USER_ROLE, SubscriberSegment::TYPE, [
       'operator' => $operator,
       'segments' => $segments,
     ]);
-    $segment = new SegmentEntity('Dynamic Segment', SegmentEntity::TYPE_DYNAMIC, 'description');
-    $this->entityManager->persist($segment);
-    $dynamicSegmentFilter = new DynamicSegmentFilterEntity($segment, $segmentFilterData);
-    $this->entityManager->persist($dynamicSegmentFilter);
-    $segment->addDynamicFilter($dynamicSegmentFilter);
-    return $dynamicSegmentFilter;
-  }
-
-  private function getQueryBuilder(): QueryBuilder {
-    $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
-    return $this->entityManager
-      ->getConnection()
-      ->createQueryBuilder()
-      ->select("DISTINCT $subscribersTable.id")
-      ->from($subscribersTable);
   }
 
   private function cleanUp(): void {

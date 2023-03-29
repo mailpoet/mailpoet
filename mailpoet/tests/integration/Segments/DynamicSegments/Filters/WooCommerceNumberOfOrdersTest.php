@@ -3,21 +3,18 @@
 namespace MailPoet\Segments\DynamicSegments\Filters;
 
 use MailPoet\Entities\DynamicSegmentFilterData;
-use MailPoet\Entities\DynamicSegmentFilterEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Subscribers\Source;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 use MailPoetVendor\Carbon\Carbon;
-use MailPoetVendor\Doctrine\DBAL\Driver\Statement;
-use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
 
 /**
  * @group woo
  */
 class WooCommerceNumberOfOrdersTest extends \MailPoetTest {
   /** @var WooCommerceNumberOfOrders */
-  private $numberOfOrders;
+  private $numberOfOrdersFilter;
 
   /** @var array */
   private $orders;
@@ -29,7 +26,7 @@ class WooCommerceNumberOfOrdersTest extends \MailPoetTest {
 
   public function _before(): void {
     $this->subscriberFactory = new SubscriberFactory();
-    $this->numberOfOrders = $this->diContainer->get(WooCommerceNumberOfOrders::class);
+    $this->numberOfOrdersFilter = $this->diContainer->get(WooCommerceNumberOfOrders::class);
     $this->cleanUp();
 
     $customerId1 = $this->createCustomer('customer1@example.com', 'customer');
@@ -43,41 +40,27 @@ class WooCommerceNumberOfOrdersTest extends \MailPoetTest {
   }
 
   public function testItGetsCustomersThatPlacedTwoOrdersInTheLastDay(): void {
-    $segmentFilter = $this->getSegmentFilter('=', 2, 1);
-    $result = $this->applyFilter($this->numberOfOrders, $this->getQueryBuilder(), $segmentFilter);
-    $this->assertSame(1, count($result));
-    $subscriber1 = $this->entityManager->find(SubscriberEntity::class, $result[0]['inner_subscriber_id']);
-    $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
-    $this->assertSame('customer2@example.com', $subscriber1->getEmail());
+    $segmentFilterData = $this->getSegmentFilterData('=', 2, 1);
+    $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->numberOfOrdersFilter);
+    $this->assertEqualsCanonicalizing(['customer2@example.com'], $emails);
   }
 
   public function testItGetsCustomersThatPlacedZeroOrdersInTheLastDay(): void {
-    $segmentFilter = $this->getSegmentFilter('=', 0, 1);
-    $result = $this->applyFilter($this->numberOfOrders, $this->getQueryBuilder(), $segmentFilter);
-
-    $this->assertSame(1, count($result));
-    $subscriber1 = $this->entityManager->find(SubscriberEntity::class, $result[0]['inner_subscriber_id']);
-    $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
-    $this->assertSame('customer1@example.com', $subscriber1->getEmail());
+    $segmentFilterData = $this->getSegmentFilterData('=', 0, 1);
+    $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->numberOfOrdersFilter);
+    $this->assertEqualsCanonicalizing(['customer1@example.com'], $emails);
   }
 
   public function testItGetsCustomersThatDidNotPlaceTwoOrdersInTheLastWeek(): void {
-    $segmentFilter = $this->getSegmentFilter('!=', 2, 7);
-    $result = $this->applyFilter($this->numberOfOrders, $this->getQueryBuilder(), $segmentFilter);
-
-    $this->assertSame(2, count($result));
-    $subscriber1 = $this->entityManager->find(SubscriberEntity::class, $result[0]['inner_subscriber_id']);
-    $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
-    $this->assertSame('customer1@example.com', $subscriber1->getEmail());
-    $subscriber2 = $this->entityManager->find(SubscriberEntity::class, $result[1]['inner_subscriber_id']);
-    $this->assertInstanceOf(SubscriberEntity::class, $subscriber2);
-    $this->assertSame('customer3@example.com', $subscriber2->getEmail());
+    $segmentFilterData = $this->getSegmentFilterData('!=', 2, 7);
+    $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->numberOfOrdersFilter);
+    $this->assertEqualsCanonicalizing(['customer1@example.com', 'customer3@example.com'], $emails);
   }
 
   public function testItGetsCustomersThatPlacedAtLeastOneOrderInTheLastWeek(): void {
-    $segmentFilter = $this->getSegmentFilter('>', 0, 7);
-    $result = $this->applyFilter($this->numberOfOrders, $this->getQueryBuilder(), $segmentFilter);
-    $this->assertSame(3, count($result));
+    $segmentFilterData = $this->getSegmentFilterData('>', 0, 7);
+    $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->numberOfOrdersFilter);
+    $this->assertEqualsCanonicalizing(['customer1@example.com', 'customer2@example.com', 'customer3@example.com'], $emails);
   }
 
   public function testItGetsNoneCustomerSubscriberInLastDays() {
@@ -85,46 +68,17 @@ class WooCommerceNumberOfOrdersTest extends \MailPoetTest {
       ->withSource(Source::API)
       ->withCreatedAt(Carbon::now()->subDays(5))
       ->create();
-    $segmentFilter = $this->getSegmentFilter('=', 0, 30);
-    $queryBuilder = $this->numberOfOrders->apply($this->getQueryBuilder(), $segmentFilter);
-    $compatibilityResult = $queryBuilder->execute();
-    $this->assertInstanceOf(Statement::class, $compatibilityResult);
-    $result = $compatibilityResult->fetchAllAssociative();
-    $this->assertSame(1, count($result));
-    $subscriber1 = $this->entityManager->find(SubscriberEntity::class, $result[0]['inner_subscriber_id']);
-    $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
-    $this->assertSame($createdSub->getEmail(), $subscriber1->getEmail());
+    $segmentFilterData = $this->getSegmentFilterData('=', 0, 30);
+    $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->numberOfOrdersFilter);
+    $this->assertEqualsCanonicalizing([$createdSub->getEmail()], $emails);
   }
 
-  private function getQueryBuilder(): QueryBuilder {
-    $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
-    return $this->entityManager
-      ->getConnection()
-      ->createQueryBuilder()
-      ->select("$subscribersTable.id as inner_subscriber_id")
-      ->from($subscribersTable);
-  }
-
-  private function applyFilter(WooCommerceNumberOfOrders $numberOfOrders, QueryBuilder $queryBuilder, DynamicSegmentFilterEntity $segmentFilter): array {
-    $queryBuilder = $numberOfOrders->apply($queryBuilder, $segmentFilter);
-    $statement = $queryBuilder->execute();
-    $this->assertInstanceOf(Statement::class, $statement);
-    return $statement->fetchAll();
-  }
-
-  private function getSegmentFilter(string $comparisonType, int $ordersCount, int $days): DynamicSegmentFilterEntity {
-    $data = new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_WOOCOMMERCE, WooCommerceNumberOfOrders::ACTION_NUMBER_OF_ORDERS, [
+  private function getSegmentFilterData(string $comparisonType, int $ordersCount, int $days): DynamicSegmentFilterData {
+    return new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_WOOCOMMERCE, WooCommerceNumberOfOrders::ACTION_NUMBER_OF_ORDERS, [
       'number_of_orders_type' => $comparisonType,
       'number_of_orders_count' => $ordersCount,
       'number_of_orders_days' => $days,
     ]);
-
-    $segment = new SegmentEntity('Dynamic Segment', SegmentEntity::TYPE_DYNAMIC, 'description');
-    $this->entityManager->persist($segment);
-    $dynamicSegmentFilter = new DynamicSegmentFilterEntity($segment, $data);
-    $this->entityManager->persist($dynamicSegmentFilter);
-    $segment->addDynamicFilter($dynamicSegmentFilter);
-    return $dynamicSegmentFilter;
   }
 
   private function createCustomer(string $email, string $role): int {

@@ -5,20 +5,17 @@ namespace MailPoet\Segments\DynamicSegments\Filters;
 require_once(ABSPATH . 'wp-admin/includes/taxonomy.php');
 
 use MailPoet\Entities\DynamicSegmentFilterData;
-use MailPoet\Entities\DynamicSegmentFilterEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoetVendor\Carbon\Carbon;
-use MailPoetVendor\Doctrine\DBAL\Driver\Statement;
-use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
 
 /**
  * @group woo
  */
 class WooCommerceCategoryTest extends \MailPoetTest {
   /** @var WooCommerceCategory */
-  private $wooCommerceCategory;
+  private $wooCommerceCategoryFilter;
 
   /** @var SubscribersRepository */
   private $subscribersRepository;
@@ -33,7 +30,7 @@ class WooCommerceCategoryTest extends \MailPoetTest {
   private $categoryIds;
 
   public function _before(): void {
-    $this->wooCommerceCategory = $this->diContainer->get(WooCommerceCategory::class);
+    $this->wooCommerceCategoryFilter = $this->diContainer->get(WooCommerceCategory::class);
     $this->subscribersRepository = $this->diContainer->get(SubscribersRepository::class);
 
     $this->cleanUp();
@@ -64,14 +61,9 @@ class WooCommerceCategoryTest extends \MailPoetTest {
 
   public function testItGetsSubscribersThatPurchasedProductsInAnyCategory(): void {
     $expectedEmails = ['customer1@example.com', 'customer2@example.com'];
-    $segmentFilter = $this->getSegmentFilter($this->categoryIds, DynamicSegmentFilterData::OPERATOR_ANY);
-    $queryBuilder = $this->wooCommerceCategory->apply($this->getQueryBuilder(), $segmentFilter);
-    $statement = $queryBuilder->execute();
-    $result = $statement instanceof Statement ? $statement->fetchAll() : [];
-    $this->assertSame(2, count($result));
-    $emails = array_map([$this, 'getSubscriberEmail'], $result);
-    sort($emails, SORT_STRING);
-    $this->assertSame($expectedEmails, $emails);
+    $segmentFilterData = $this->getSegmentFilterData($this->categoryIds, DynamicSegmentFilterData::OPERATOR_ANY);
+    $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->wooCommerceCategoryFilter);
+    $this->assertEqualsCanonicalizing($expectedEmails, $emails);
   }
 
   public function testItGetsSubscribersThatDidNotPurchasedProducts(): void {
@@ -82,64 +74,32 @@ class WooCommerceCategoryTest extends \MailPoetTest {
       'customer-pending-payment@example.com',
       'customer2@example.com',
     ];
-    $segmentFilter = $this->getSegmentFilter([$this->categoryIds[0]], DynamicSegmentFilterData::OPERATOR_NONE);
-    $queryBuilder = $this->wooCommerceCategory->apply($this->getQueryBuilder(), $segmentFilter);
-    $statement = $queryBuilder->execute();
-    $result = $statement instanceof Statement ? $statement->fetchAll() : [];
-    $this->assertSame(count($expectedEmails), count($result));
-    $emails = array_map([$this, 'getSubscriberEmail'], $result);
-    sort($emails, SORT_STRING);
-    $this->assertSame($expectedEmails, $emails);
+    $segmentFilterData = $this->getSegmentFilterData([$this->categoryIds[0]], DynamicSegmentFilterData::OPERATOR_NONE);
+    $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->wooCommerceCategoryFilter);
+    $this->assertEqualsCanonicalizing($expectedEmails, $emails);
   }
 
   public function testItGetsSubscribersThatPurchasedAllProducts(): void {
-    $segmentFilter = $this->getSegmentFilter($this->categoryIds, DynamicSegmentFilterData::OPERATOR_ALL);
-    $queryBuilder = $this->wooCommerceCategory->apply($this->getQueryBuilder(), $segmentFilter);
-    $statement = $queryBuilder->execute();
-    $result = $statement instanceof Statement ? $statement->fetchAll() : [];
-    $this->assertSame(0, count($result));
-
+    $segmentFilterData = $this->getSegmentFilterData($this->categoryIds, DynamicSegmentFilterData::OPERATOR_ALL);
+    $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->wooCommerceCategoryFilter);
+    expect($emails)->count(0);
     $expectedEmails = ['customer1@example.com'];
-    $segmentFilter = $this->getSegmentFilter([$this->categoryIds[0]], DynamicSegmentFilterData::OPERATOR_ALL);
-    $queryBuilder = $this->wooCommerceCategory->apply($this->getQueryBuilder(), $segmentFilter);
-    $statement = $queryBuilder->execute();
-    $result = $statement instanceof Statement ? $statement->fetchAll() : [];
-    $this->assertSame(1, count($result));
-    $emails = array_map([$this, 'getSubscriberEmail'], $result);
-    $this->assertSame($expectedEmails, $emails);
+    $segmentFilterData = $this->getSegmentFilterData([$this->categoryIds[0]], DynamicSegmentFilterData::OPERATOR_ALL);
+    $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->wooCommerceCategoryFilter);
+    $this->assertEqualsCanonicalizing($expectedEmails, $emails);
   }
 
-  private function getSubscriberEmail(array $value): string {
-    $subscriber = $this->entityManager->find(SubscriberEntity::class, $value['inner_subscriber_id']);
-    return $subscriber instanceof SubscriberEntity ? $subscriber->getEmail() : '';
-  }
-
-  private function getQueryBuilder(): QueryBuilder {
-    $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
-    return $this->entityManager
-      ->getConnection()
-      ->createQueryBuilder()
-      ->select("$subscribersTable.id as inner_subscriber_id")
-      ->from($subscribersTable);
-  }
-
-  private function getSegmentFilter(array $categoryIds, string $operator): DynamicSegmentFilterEntity {
+  private function getSegmentFilterData(array $categoryIds, string $operator): DynamicSegmentFilterData {
     $filterData = [
       'category_ids' => $categoryIds,
       'operator' => $operator,
     ];
 
-    $data = new DynamicSegmentFilterData(
+    return new DynamicSegmentFilterData(
       DynamicSegmentFilterData::TYPE_WOOCOMMERCE,
       WooCommerceCategory::ACTION_CATEGORY,
       $filterData
     );
-    $segment = new SegmentEntity('Dynamic Segment', SegmentEntity::TYPE_DYNAMIC, 'description');
-    $this->entityManager->persist($segment);
-    $dynamicSegmentFilter = new DynamicSegmentFilterEntity($segment, $data);
-    $this->entityManager->persist($dynamicSegmentFilter);
-    $segment->addDynamicFilter($dynamicSegmentFilter);
-    return $dynamicSegmentFilter;
   }
 
   private function createCustomer(string $email, string $role): int {

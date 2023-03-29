@@ -8,8 +8,6 @@ use MailPoet\Entities\DynamicSegmentFilterEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberCustomFieldEntity;
 use MailPoet\Entities\SubscriberEntity;
-use MailPoetVendor\Doctrine\DBAL\Driver\Statement;
-use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
 
 class MailPoetCustomFieldsTest extends \MailPoetTest {
 
@@ -35,24 +33,14 @@ class MailPoetCustomFieldsTest extends \MailPoetTest {
     $this->entityManager->persist(new SubscriberCustomFieldEntity($subscriber, $customField, 'some value'));
     $this->entityManager->persist($customField);
     $this->entityManager->flush();
-    $segmentFilter = $this->getSegmentFilter(new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_USER_ROLE, MailPoetCustomFields::TYPE, [
+    $segmentFilterData = new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_USER_ROLE, MailPoetCustomFields::TYPE, [
       'custom_field_id' => $customField->getId(),
       'custom_field_type' => CustomFieldEntity::TYPE_TEXT,
       'operator' => 'equals',
       'value' => 'some value',
-    ]));
-    $this->entityManager->flush();
-
-    $statement = $this->filter->apply($this->getQueryBuilder(), $segmentFilter)
-      ->execute();
-    $this->assertInstanceOf(Statement::class, $statement);
-    $result = $statement->fetchAll();
-
-    expect(count($result))->equals(1);
-    $this->assertIsArray($result[0]);
-    $filteredSubscriber = $this->entityManager->find(SubscriberEntity::class, $result[0]['id']);
-    $this->assertInstanceOf(SubscriberEntity::class, $filteredSubscriber);
-    expect($filteredSubscriber->getEmail())->equals($subscriber->getEmail());
+    ]);
+    $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->filter);
+    $this->assertEqualsCanonicalizing([$subscriber->getEmail()], $emails);
   }
 
   public function testItFiltersSubscribersWithTextContains(): void {
@@ -61,51 +49,30 @@ class MailPoetCustomFieldsTest extends \MailPoetTest {
     $this->entityManager->persist(new SubscriberCustomFieldEntity($subscriber, $customField, 'some value'));
     $this->entityManager->persist($customField);
     $this->entityManager->flush();
-    $segmentFilter = $this->getSegmentFilter(new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_USER_ROLE, MailPoetCustomFields::TYPE, [
+    $segmentFilterData = new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_USER_ROLE, MailPoetCustomFields::TYPE, [
       'custom_field_id' => $customField->getId(),
       'custom_field_type' => CustomFieldEntity::TYPE_TEXT,
       'operator' => 'contains',
       'value' => 'value',
-    ]));
-    $this->entityManager->flush();
-
-    $statement = $this->filter->apply($this->getQueryBuilder(), $segmentFilter)
-      ->execute();
-    $this->assertInstanceOf(Statement::class, $statement);
-    $result = $statement->fetchAll();
-
-    expect(count($result))->equals(1);
-    $this->assertIsArray($result[0]);
-    $filteredSubscriber = $this->entityManager->find(SubscriberEntity::class, $result[0]['id']);
-    $this->assertInstanceOf(SubscriberEntity::class, $filteredSubscriber);
-    expect($filteredSubscriber->getEmail())->equals($subscriber->getEmail());
+    ]);
+    $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->filter);
+    $this->assertEqualsCanonicalizing([$subscriber->getEmail()], $emails);
   }
 
   public function testItFiltersSubscribersTextNotEquals(): void {
-    $subscriber = $this->subscribers[1];
     $customField = $this->createCustomField(CustomFieldEntity::TYPE_TEXT);
-    $this->entityManager->persist(new SubscriberCustomFieldEntity($subscriber, $customField, 'something else'));
+    $this->entityManager->persist(new SubscriberCustomFieldEntity($this->subscribers[1], $customField, 'something else'));
     $this->entityManager->persist(new SubscriberCustomFieldEntity($this->subscribers[0], $customField, 'some value'));
     $this->entityManager->persist($customField);
     $this->entityManager->flush();
-    $segmentFilter = $this->getSegmentFilter(new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_USER_ROLE, MailPoetCustomFields::TYPE, [
+    $segmentFilterData = new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_USER_ROLE, MailPoetCustomFields::TYPE, [
       'custom_field_id' => $customField->getId(),
       'custom_field_type' => CustomFieldEntity::TYPE_TEXT,
       'operator' => 'not_equals',
       'value' => 'some value',
-    ]));
-    $this->entityManager->flush();
-
-    $statement = $this->filter->apply($this->getQueryBuilder(), $segmentFilter)
-      ->execute();
-    $this->assertInstanceOf(Statement::class, $statement);
-    $result = $statement->fetchAll();
-
-    expect(count($result))->equals(2);
-    $this->assertIsArray($result[0]);
-    $filteredSubscriber = $this->entityManager->find(SubscriberEntity::class, $result[0]['id']);
-    $this->assertInstanceOf(SubscriberEntity::class, $filteredSubscriber);
-    expect($filteredSubscriber->getEmail())->equals($subscriber->getEmail());
+    ]);
+    $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->filter);
+    $this->assertEqualsCanonicalizing([$this->subscribers[1]->getEmail(), $this->subscribers[2]->getEmail()], $emails);
   }
 
   public function testItFiltersSubscribersTextMoreThan(): void {
@@ -115,24 +82,14 @@ class MailPoetCustomFieldsTest extends \MailPoetTest {
     $this->entityManager->persist(new SubscriberCustomFieldEntity($this->subscribers[0], $customField, '1'));
     $this->entityManager->persist($customField);
     $this->entityManager->flush();
-    $segmentFilter = $this->getSegmentFilter(new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_USER_ROLE, MailPoetCustomFields::TYPE, [
+    $segmentFilterData = new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_USER_ROLE, MailPoetCustomFields::TYPE, [
       'custom_field_id' => $customField->getId(),
       'custom_field_type' => CustomFieldEntity::TYPE_TEXT,
       'operator' => 'more_than',
       'value' => '2',
-    ]));
-    $this->entityManager->flush();
-
-    $statement = $this->filter->apply($this->getQueryBuilder(), $segmentFilter)
-      ->execute();
-    $this->assertInstanceOf(Statement::class, $statement);
-    $result = $statement->fetchAll();
-
-    expect(count($result))->equals(1);
-    $this->assertIsArray($result[0]);
-    $filteredSubscriber = $this->entityManager->find(SubscriberEntity::class, $result[0]['id']);
-    $this->assertInstanceOf(SubscriberEntity::class, $filteredSubscriber);
-    expect($filteredSubscriber->getEmail())->equals($subscriber->getEmail());
+    ]);
+    $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->filter);
+    $this->assertEqualsCanonicalizing([$subscriber->getEmail()], $emails);
   }
 
   public function testItFiltersSubscribersTextLessThan(): void {
@@ -142,24 +99,14 @@ class MailPoetCustomFieldsTest extends \MailPoetTest {
     $this->entityManager->persist(new SubscriberCustomFieldEntity($this->subscribers[0], $customField, '3'));
     $this->entityManager->persist($customField);
     $this->entityManager->flush();
-    $segmentFilter = $this->getSegmentFilter(new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_USER_ROLE, MailPoetCustomFields::TYPE, [
+    $segmentFilterData = new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_USER_ROLE, MailPoetCustomFields::TYPE, [
       'custom_field_id' => $customField->getId(),
       'custom_field_type' => CustomFieldEntity::TYPE_TEXT,
       'operator' => 'less_than',
       'value' => '2',
-    ]));
-    $this->entityManager->flush();
-
-    $statement = $this->filter->apply($this->getQueryBuilder(), $segmentFilter)
-      ->execute();
-    $this->assertInstanceOf(Statement::class, $statement);
-    $result = $statement->fetchAll();
-
-    expect(count($result))->equals(1);
-    $this->assertIsArray($result[0]);
-    $filteredSubscriber = $this->entityManager->find(SubscriberEntity::class, $result[0]['id']);
-    $this->assertInstanceOf(SubscriberEntity::class, $filteredSubscriber);
-    expect($filteredSubscriber->getEmail())->equals($subscriber->getEmail());
+    ]);
+    $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->filter);
+    $this->assertEqualsCanonicalizing([$subscriber->getEmail()], $emails);
   }
 
   public function testItFiltersRadio(): void {
@@ -168,24 +115,14 @@ class MailPoetCustomFieldsTest extends \MailPoetTest {
     $this->entityManager->persist(new SubscriberCustomFieldEntity($subscriber, $customField, 'Option 2'));
     $this->entityManager->persist($customField);
     $this->entityManager->flush();
-    $segmentFilter = $this->getSegmentFilter(new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_USER_ROLE, MailPoetCustomFields::TYPE, [
+    $segmentFilterData = new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_USER_ROLE, MailPoetCustomFields::TYPE, [
       'custom_field_id' => $customField->getId(),
       'custom_field_type' => CustomFieldEntity::TYPE_RADIO,
       'operator' => 'equals',
       'value' => 'Option 2',
-    ]));
-    $this->entityManager->flush();
-
-    $statement = $this->filter->apply($this->getQueryBuilder(), $segmentFilter)
-      ->execute();
-    $this->assertInstanceOf(Statement::class, $statement);
-    $result = $statement->fetchAll();
-
-    expect(count($result))->equals(1);
-    $this->assertIsArray($result[0]);
-    $filteredSubscriber = $this->entityManager->find(SubscriberEntity::class, $result[0]['id']);
-    $this->assertInstanceOf(SubscriberEntity::class, $filteredSubscriber);
-    expect($filteredSubscriber->getEmail())->equals($subscriber->getEmail());
+    ]);
+    $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->filter);
+    $this->assertEqualsCanonicalizing([$subscriber->getEmail()], $emails);
   }
 
   public function testItFiltersCheckboxChecked(): void {
@@ -194,24 +131,14 @@ class MailPoetCustomFieldsTest extends \MailPoetTest {
     $this->entityManager->persist(new SubscriberCustomFieldEntity($subscriber, $customField, '1'));
     $this->entityManager->persist($customField);
     $this->entityManager->flush();
-    $segmentFilter = $this->getSegmentFilter(new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_USER_ROLE, MailPoetCustomFields::TYPE, [
+    $segmentFilterData = new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_USER_ROLE, MailPoetCustomFields::TYPE, [
       'custom_field_id' => $customField->getId(),
       'custom_field_type' => CustomFieldEntity::TYPE_CHECKBOX,
       'operator' => 'equals',
       'value' => '1',
-    ]));
-    $this->entityManager->flush();
-
-    $statement = $this->filter->apply($this->getQueryBuilder(), $segmentFilter)
-      ->execute();
-    $this->assertInstanceOf(Statement::class, $statement);
-    $result = $statement->fetchAll();
-
-    expect(count($result))->equals(1);
-    $this->assertIsArray($result[0]);
-    $filteredSubscriber = $this->entityManager->find(SubscriberEntity::class, $result[0]['id']);
-    $this->assertInstanceOf(SubscriberEntity::class, $filteredSubscriber);
-    expect($filteredSubscriber->getEmail())->equals($subscriber->getEmail());
+    ]);
+    $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->filter);
+    $this->assertEqualsCanonicalizing([$subscriber->getEmail()], $emails);
   }
 
   public function testItFiltersCheckboxUnChecked(): void {
@@ -220,24 +147,14 @@ class MailPoetCustomFieldsTest extends \MailPoetTest {
     $this->entityManager->persist(new SubscriberCustomFieldEntity($this->subscribers[0], $customField, '1'));
     $this->entityManager->persist(new SubscriberCustomFieldEntity($this->subscribers[1], $customField, '0'));
     $this->entityManager->flush();
-    $segmentFilter = $this->getSegmentFilter(new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_USER_ROLE, MailPoetCustomFields::TYPE, [
+    $segmentFilterData = new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_USER_ROLE, MailPoetCustomFields::TYPE, [
       'custom_field_id' => $customField->getId(),
       'custom_field_type' => CustomFieldEntity::TYPE_CHECKBOX,
       'operator' => 'equals',
       'value' => '0',
-    ]));
-    $this->entityManager->flush();
-
-    $statement = $this->filter->apply($this->getQueryBuilder(), $segmentFilter)
-      ->execute();
-    $this->assertInstanceOf(Statement::class, $statement);
-    $result = $statement->fetchAll();
-
-    expect(count($result))->equals(1);
-    $this->assertIsArray($result[0]);
-    $filteredSubscriber = $this->entityManager->find(SubscriberEntity::class, $result[0]['id']);
-    $this->assertInstanceOf(SubscriberEntity::class, $filteredSubscriber);
-    expect($filteredSubscriber->getEmail())->equals($this->subscribers[1]->getEmail());
+    ]);
+    $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->filter);
+    $this->assertEqualsCanonicalizing([$this->subscribers[1]->getEmail()], $emails);
   }
 
   public function testItFiltersMonthDate(): void {
@@ -247,24 +164,14 @@ class MailPoetCustomFieldsTest extends \MailPoetTest {
     $this->entityManager->persist(new SubscriberCustomFieldEntity($this->subscribers[1], $customField, '2020-04-01 00:00:00'));
     $this->entityManager->persist(new SubscriberCustomFieldEntity($this->subscribers[2], $customField, '2020-05-01 00:00:00'));
     $this->entityManager->flush();
-    $segmentFilter = $this->getSegmentFilter(new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_USER_ROLE, MailPoetCustomFields::TYPE, [
+    $segmentFilterData = new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_USER_ROLE, MailPoetCustomFields::TYPE, [
       'custom_field_id' => $customField->getId(),
       'custom_field_type' => CustomFieldEntity::TYPE_DATE,
       'date_type' => 'month',
       'value' => '2017-04-01 00:00:00',
-    ]));
-    $this->entityManager->flush();
-
-    $statement = $this->filter->apply($this->getQueryBuilder(), $segmentFilter)
-      ->execute();
-    $this->assertInstanceOf(Statement::class, $statement);
-    $result = $statement->fetchAll();
-
-    expect(count($result))->equals(2);
-    $this->assertIsArray($result[0]);
-    $filteredSubscriber = $this->entityManager->find(SubscriberEntity::class, $result[0]['id']);
-    $this->assertInstanceOf(SubscriberEntity::class, $filteredSubscriber);
-    expect($filteredSubscriber->getEmail())->equals($this->subscribers[0]->getEmail());
+    ]);
+    $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->filter);
+    $this->assertEqualsCanonicalizing([$this->subscribers[0]->getEmail(), $this->subscribers[1]->getEmail()], $emails);
   }
 
   public function testItFiltersDateYear(): void {
@@ -274,24 +181,14 @@ class MailPoetCustomFieldsTest extends \MailPoetTest {
     $this->entityManager->persist(new SubscriberCustomFieldEntity($this->subscribers[1], $customField, '2017-04-01 00:00:00'));
     $this->entityManager->persist(new SubscriberCustomFieldEntity($this->subscribers[2], $customField, '2020-05-01 00:00:00'));
     $this->entityManager->flush();
-    $segmentFilter = $this->getSegmentFilter(new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_USER_ROLE, MailPoetCustomFields::TYPE, [
+    $segmentFilterData = new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_USER_ROLE, MailPoetCustomFields::TYPE, [
       'custom_field_id' => $customField->getId(),
       'custom_field_type' => CustomFieldEntity::TYPE_DATE,
       'date_type' => 'year',
       'value' => '2017-01-01 00:00:00',
-    ]));
-    $this->entityManager->flush();
-
-    $statement = $this->filter->apply($this->getQueryBuilder(), $segmentFilter)
-      ->execute();
-    $this->assertInstanceOf(Statement::class, $statement);
-    $result = $statement->fetchAll();
-
-    expect(count($result))->equals(2);
-    $this->assertIsArray($result[0]);
-    $filteredSubscriber = $this->entityManager->find(SubscriberEntity::class, $result[0]['id']);
-    $this->assertInstanceOf(SubscriberEntity::class, $filteredSubscriber);
-    expect($filteredSubscriber->getEmail())->equals($this->subscribers[0]->getEmail());
+    ]);
+    $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->filter);
+    $this->assertEqualsCanonicalizing([$this->subscribers[0]->getEmail(), $this->subscribers[1]->getEmail()], $emails);
   }
 
   public function testItFiltersDateYearBefore(): void {
@@ -301,25 +198,15 @@ class MailPoetCustomFieldsTest extends \MailPoetTest {
     $this->entityManager->persist(new SubscriberCustomFieldEntity($this->subscribers[1], $customField, '2017-04-01 00:00:00'));
     $this->entityManager->persist(new SubscriberCustomFieldEntity($this->subscribers[2], $customField, '2020-05-01 00:00:00'));
     $this->entityManager->flush();
-    $segmentFilter = $this->getSegmentFilter(new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_USER_ROLE, MailPoetCustomFields::TYPE, [
+    $segmentFilterData = new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_USER_ROLE, MailPoetCustomFields::TYPE, [
       'custom_field_id' => $customField->getId(),
       'custom_field_type' => CustomFieldEntity::TYPE_DATE,
       'date_type' => 'year',
       'operator' => 'before',
       'value' => '2017-01-01 00:00:00',
-    ]));
-    $this->entityManager->flush();
-
-    $statement = $this->filter->apply($this->getQueryBuilder(), $segmentFilter)
-      ->execute();
-    $this->assertInstanceOf(Statement::class, $statement);
-    $result = $statement->fetchAll();
-
-    expect(count($result))->equals(1);
-    $this->assertIsArray($result[0]);
-    $filteredSubscriber = $this->entityManager->find(SubscriberEntity::class, $result[0]['id']);
-    $this->assertInstanceOf(SubscriberEntity::class, $filteredSubscriber);
-    expect($filteredSubscriber->getEmail())->equals($this->subscribers[0]->getEmail());
+    ]);
+    $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->filter);
+    $this->assertEqualsCanonicalizing([$this->subscribers[0]->getEmail()], $emails);
   }
 
   public function testItFiltersDateMonthYear(): void {
@@ -329,24 +216,14 @@ class MailPoetCustomFieldsTest extends \MailPoetTest {
     $this->entityManager->persist(new SubscriberCustomFieldEntity($this->subscribers[1], $customField, '2017-04-01 00:00:00'));
     $this->entityManager->persist(new SubscriberCustomFieldEntity($this->subscribers[2], $customField, '2020-05-01 00:00:00'));
     $this->entityManager->flush();
-    $segmentFilter = $this->getSegmentFilter(new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_USER_ROLE, MailPoetCustomFields::TYPE, [
+    $segmentFilterData = new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_USER_ROLE, MailPoetCustomFields::TYPE, [
       'custom_field_id' => $customField->getId(),
       'custom_field_type' => CustomFieldEntity::TYPE_DATE,
       'date_type' => 'year_month',
       'value' => '2017-04-01 00:00:00',
-    ]));
-    $this->entityManager->flush();
-
-    $statement = $this->filter->apply($this->getQueryBuilder(), $segmentFilter)
-      ->execute();
-    $this->assertInstanceOf(Statement::class, $statement);
-    $result = $statement->fetchAll();
-
-    expect(count($result))->equals(1);
-    $this->assertIsArray($result[0]);
-    $filteredSubscriber = $this->entityManager->find(SubscriberEntity::class, $result[0]['id']);
-    $this->assertInstanceOf(SubscriberEntity::class, $filteredSubscriber);
-    expect($filteredSubscriber->getEmail())->equals($this->subscribers[1]->getEmail());
+    ]);
+    $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->filter);
+    $this->assertEqualsCanonicalizing([$this->subscribers[1]->getEmail()], $emails);
   }
 
   public function testItFiltersDateMonthYearBefore(): void {
@@ -356,25 +233,15 @@ class MailPoetCustomFieldsTest extends \MailPoetTest {
     $this->entityManager->persist(new SubscriberCustomFieldEntity($this->subscribers[1], $customField, '2017-04-01 00:00:00'));
     $this->entityManager->persist(new SubscriberCustomFieldEntity($this->subscribers[2], $customField, '2020-05-01 00:00:00'));
     $this->entityManager->flush();
-    $segmentFilter = $this->getSegmentFilter(new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_USER_ROLE, MailPoetCustomFields::TYPE, [
+    $segmentFilterData = new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_USER_ROLE, MailPoetCustomFields::TYPE, [
       'custom_field_id' => $customField->getId(),
       'custom_field_type' => CustomFieldEntity::TYPE_DATE,
       'date_type' => 'year_month',
       'operator' => 'before',
       'value' => '2017-04-01 00:00:00',
-    ]));
-    $this->entityManager->flush();
-
-    $statement = $this->filter->apply($this->getQueryBuilder(), $segmentFilter)
-      ->execute();
-    $this->assertInstanceOf(Statement::class, $statement);
-    $result = $statement->fetchAll();
-
-    expect(count($result))->equals(1);
-    $this->assertIsArray($result[0]);
-    $filteredSubscriber = $this->entityManager->find(SubscriberEntity::class, $result[0]['id']);
-    $this->assertInstanceOf(SubscriberEntity::class, $filteredSubscriber);
-    expect($filteredSubscriber->getEmail())->equals($this->subscribers[0]->getEmail());
+    ]);
+    $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->filter);
+    $this->assertEqualsCanonicalizing([$this->subscribers[0]->getEmail()], $emails);
   }
 
   public function testItFiltersFullDate(): void {
@@ -384,24 +251,14 @@ class MailPoetCustomFieldsTest extends \MailPoetTest {
     $this->entityManager->persist(new SubscriberCustomFieldEntity($this->subscribers[1], $customField, '2017-04-01 00:00:00'));
     $this->entityManager->persist(new SubscriberCustomFieldEntity($this->subscribers[2], $customField, '2020-05-01 00:00:00'));
     $this->entityManager->flush();
-    $segmentFilter = $this->getSegmentFilter(new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_USER_ROLE, MailPoetCustomFields::TYPE, [
+    $segmentFilterData = new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_USER_ROLE, MailPoetCustomFields::TYPE, [
       'custom_field_id' => $customField->getId(),
       'custom_field_type' => CustomFieldEntity::TYPE_DATE,
       'date_type' => 'year_month_day',
       'value' => '2017-04-01 00:00:00',
-    ]));
-    $this->entityManager->flush();
-
-    $statement = $this->filter->apply($this->getQueryBuilder(), $segmentFilter)
-      ->execute();
-    $this->assertInstanceOf(Statement::class, $statement);
-    $result = $statement->fetchAll();
-
-    expect(count($result))->equals(1);
-    $this->assertIsArray($result[0]);
-    $filteredSubscriber = $this->entityManager->find(SubscriberEntity::class, $result[0]['id']);
-    $this->assertInstanceOf(SubscriberEntity::class, $filteredSubscriber);
-    expect($filteredSubscriber->getEmail())->equals($this->subscribers[1]->getEmail());
+    ]);
+    $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->filter);
+    $this->assertEqualsCanonicalizing([$this->subscribers[1]->getEmail()], $emails);
   }
 
   public function testItFiltersFullDateAfter(): void {
@@ -411,34 +268,15 @@ class MailPoetCustomFieldsTest extends \MailPoetTest {
     $this->entityManager->persist(new SubscriberCustomFieldEntity($this->subscribers[1], $customField, '2017-04-01 00:00:00'));
     $this->entityManager->persist(new SubscriberCustomFieldEntity($this->subscribers[2], $customField, '2020-05-01 00:00:00'));
     $this->entityManager->flush();
-    $segmentFilter = $this->getSegmentFilter(new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_USER_ROLE, MailPoetCustomFields::TYPE, [
+    $segmentFilterData = new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_USER_ROLE, MailPoetCustomFields::TYPE, [
       'custom_field_id' => $customField->getId(),
       'custom_field_type' => CustomFieldEntity::TYPE_DATE,
       'date_type' => 'year_month_day',
       'operator' => 'after',
       'value' => '2017-03-02 00:00:00',
-    ]));
-    $this->entityManager->flush();
-
-    $statement = $this->filter->apply($this->getQueryBuilder(), $segmentFilter)
-      ->execute();
-    $this->assertInstanceOf(Statement::class, $statement);
-    $result = $statement->fetchAll();
-
-    expect(count($result))->equals(2);
-    $this->assertIsArray($result[0]);
-    $filteredSubscriber = $this->entityManager->find(SubscriberEntity::class, $result[0]['id']);
-    $this->assertInstanceOf(SubscriberEntity::class, $filteredSubscriber);
-    expect($filteredSubscriber->getEmail())->equals($this->subscribers[1]->getEmail());
-  }
-
-  private function getSegmentFilter(DynamicSegmentFilterData $segmentFilterData): DynamicSegmentFilterEntity {
-    $segment = new SegmentEntity('Dynamic Segment', SegmentEntity::TYPE_DYNAMIC, 'description');
-    $this->entityManager->persist($segment);
-    $dynamicSegmentFilter = new DynamicSegmentFilterEntity($segment, $segmentFilterData);
-    $this->entityManager->persist($dynamicSegmentFilter);
-    $segment->addDynamicFilter($dynamicSegmentFilter);
-    return $dynamicSegmentFilter;
+    ]);
+    $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->filter);
+    $this->assertEqualsCanonicalizing([$this->subscribers[1]->getEmail(), $this->subscribers[2]->getEmail()], $emails);
   }
 
   private function createSubscriber(string $email): SubscriberEntity {
@@ -465,15 +303,5 @@ class MailPoetCustomFieldsTest extends \MailPoetTest {
     $this->truncateEntity(SubscriberCustomFieldEntity::class);
     $this->truncateEntity(SegmentEntity::class);
     $this->truncateEntity(DynamicSegmentFilterEntity::class);
-  }
-
-  private function getQueryBuilder(): QueryBuilder {
-    $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
-    return $this->entityManager
-      ->getConnection()
-      ->createQueryBuilder()
-      ->select("$subscribersTable.id")
-      ->from($subscribersTable)
-      ->orderBy("$subscribersTable.id");
   }
 }
