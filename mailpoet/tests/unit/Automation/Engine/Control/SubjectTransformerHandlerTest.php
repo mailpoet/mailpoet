@@ -39,7 +39,7 @@ class SubjectTransformerHandlerTest extends MailPoetUnitTest {
     $trigger->expects($this->any())->method('getKey')->willReturn('trigger');
     $trigger->expects($this->any())->method('getSubjectKeys')->willReturn([$triggerSubject]);
     $registry = $this->createMock(Registry::class);
-    $registry->expects($this->any())->method('getSubjectTransformer')->willReturn($transformers);
+    $registry->expects($this->any())->method('getSubjectTransformers')->willReturn($transformers);
     $registry->expects($this->any())->method('getTrigger')->willReturnCallback(function($key) use ($trigger){
       return $key === 'trigger' ? $trigger : null;
     });
@@ -74,7 +74,7 @@ class SubjectTransformerHandlerTest extends MailPoetUnitTest {
     $trigger->expects($this->any())->method('getKey')->willReturn('trigger');
     $trigger->expects($this->any())->method('getSubjectKeys')->willReturn([$triggerSubject]);
     $registry = $this->createMock(Registry::class);
-    $registry->expects($this->any())->method('getSubjectTransformer')->willReturn($transformers);
+    $registry->expects($this->any())->method('getSubjectTransformers')->willReturn($transformers);
     $registry->expects($this->any())->method('getTrigger')->willReturnCallback(function($key) use ($trigger){
       return $key === 'trigger' ? $trigger : null;
     });
@@ -101,7 +101,7 @@ class SubjectTransformerHandlerTest extends MailPoetUnitTest {
     $trigger2->expects($this->any())->method('getSubjectKeys')->willReturn($trigger2Keys);
 
     $registry = $this->createMock(Registry::class);
-    $registry->expects($this->any())->method('getSubjectTransformer')->willReturn([]);
+    $registry->expects($this->any())->method('getSubjectTransformers')->willReturn([]);
     $registry->expects($this->any())->method('getTrigger')->willReturnCallback(function($key) use ($trigger1, $trigger2){
       if ($key === 'trigger1') {
         return $trigger1;
@@ -176,7 +176,7 @@ class SubjectTransformerHandlerTest extends MailPoetUnitTest {
         return $trigger;
       }
     );
-    $registry->expects($this->any())->method('getSubjectTransformer')->willReturn($transformer);
+    $registry->expects($this->any())->method('getSubjectTransformers')->willReturn($transformer);
     $testee = new SubjectTransformerHandler($registry);
 
     $subject = new Subject('from', ['key' => 'value']);
