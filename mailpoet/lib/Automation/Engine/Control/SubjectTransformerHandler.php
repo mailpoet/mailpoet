@@ -49,7 +49,11 @@ class SubjectTransformerHandler {
     return $all;
   }
 
-  public function getAllSubjects(Subject ...$subjects): array {
+  /**
+   * @param Subject[] $subjects
+   * @return Subject[]
+   */
+  public function getAllSubjects(array $subjects): array {
     $transformerMap = $this->getTransformerMap();
     $all = [];
     foreach ($subjects as $subject) {
