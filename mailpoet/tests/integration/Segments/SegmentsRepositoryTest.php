@@ -8,16 +8,22 @@ use MailPoet\Entities\DynamicSegmentFilterEntity;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterSegmentEntity;
 use MailPoet\Entities\SegmentEntity;
+use MailPoet\Newsletter\Segment\NewsletterSegmentRepository;
 use MailPoet\Segments\DynamicSegments\Filters\UserRole;
+use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
 
 class SegmentsRepositoryTest extends \MailPoetTest {
   /** @var SegmentsRepository */
   private $segmentsRepository;
 
+  /** @var NewsletterSegmentRepository */
+  private $newsletterSegmentRepository;
+
   public function _before(): void {
     parent::_before();
     $this->cleanup();
     $this->segmentsRepository = $this->diContainer->get(SegmentsRepository::class);
+    $this->newsletterSegmentRepository = $this->diContainer->get(NewsletterSegmentRepository::class);
   }
 
   public function testItCanBulkTrashDefaultSegments(): void {
@@ -144,6 +150,17 @@ class SegmentsRepositoryTest extends \MailPoetTest {
     $this->expectException(ConflictException::class);
     $this->expectExceptionMessage("Could not create new segment with name [Existing] because a segment with that name already exists.");
     $this->segmentsRepository->createOrUpdate('Existing', $segment->getDescription(), $segment->getType(), [], $segment->getId());
+  }
+
+  public function testItDeletesNewsletterSegmentEntriesWhenDeletingASegment(): void {
+    $segment = $this->createDefaultSegment('Test');
+    $newsletterFactory = new NewsletterFactory();
+    $newsletterFactory->withSegments([$segment])->create();
+
+    $this->segmentsRepository->bulkDelete([$segment->getId()]);
+
+    $newsletterSegments = $this->newsletterSegmentRepository->findBy(['segment' => $segment]);
+    $this->assertEmpty($newsletterSegments);
   }
 
   private function createDefaultSegment(string $name): SegmentEntity {
