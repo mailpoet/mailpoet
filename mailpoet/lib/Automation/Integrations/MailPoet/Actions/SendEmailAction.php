@@ -140,6 +140,10 @@ class SendEmailAction implements Action {
       throw InvalidStateException::create()->withMessage(sprintf("Cannot schedule a newsletter for subscriber ID '%s' because their status is '%s'.", $subscriberId, $subscriberStatus));
     }
 
+    if ($subscriberStatus === SubscriberEntity::STATUS_BOUNCED) {
+      throw InvalidStateException::create()->withMessage(sprintf("Cannot schedule an email for subscriber ID '%s' because their status is '%s'.", $subscriberId, $subscriberStatus));
+    }
+
     try {
       $this->automationEmailScheduler->createSendingTask($newsletter, $subscriber);
     } catch (Throwable $e) {
