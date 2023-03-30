@@ -974,6 +974,7 @@ class SchedulerTest extends \MailPoetTest {
   }
 
   public function _after() {
+    parent::_after();
     Carbon::setTestNow();
   }
 }

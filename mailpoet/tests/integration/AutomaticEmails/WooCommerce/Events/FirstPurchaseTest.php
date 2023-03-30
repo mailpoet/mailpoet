@@ -361,7 +361,7 @@ class FirstPurchaseTest extends \MailPoetTest {
   }
 
   public function _after() {
-    $this->tester->deleteTestWooOrders();
+    parent::_after();
     WPFunctions::set(new WPFunctions);
   }
 }

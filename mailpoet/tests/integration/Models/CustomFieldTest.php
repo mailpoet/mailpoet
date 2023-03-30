@@ -145,6 +145,7 @@ class CustomFieldTest extends \MailPoetTest {
   }
 
   public function _after() {
+    parent::_after();
     CustomField::deleteMany();
     Subscriber::deleteMany();
     SubscriberCustomField::deleteMany();

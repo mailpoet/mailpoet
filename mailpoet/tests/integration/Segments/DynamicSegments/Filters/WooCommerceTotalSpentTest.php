@@ -34,9 +34,9 @@ class WooCommerceTotalSpentTest extends \MailPoetTest {
     $this->wp = $this->diContainer->get(WPFunctions::class);
     $this->cleanUp();
 
-    $customerId1 = $this->createCustomer('customer1@example.com', 'customer');
-    $customerId2 = $this->createCustomer('customer2@example.com', 'customer');
-    $customerId3 = $this->createCustomer('customer3@example.com', 'customer');
+    $customerId1 = $this->tester->createCustomer('customer1@example.com', 'customer');
+    $customerId2 = $this->tester->createCustomer('customer2@example.com', 'customer');
+    $customerId3 = $this->tester->createCustomer('customer3@example.com', 'customer');
 
     $this->orders[] = $this->createOrder($customerId1, Carbon::now()->subDays(3), 10);
     $this->orders[] = $this->createOrder($customerId1, Carbon::now(), 5);
@@ -151,16 +151,6 @@ class WooCommerceTotalSpentTest extends \MailPoetTest {
     return $dynamicSegmentFilter;
   }
 
-  private function createCustomer(string $email, string $role): int {
-    global $wpdb;
-    $userId = $this->tester->createWordPressUser($email, $role);
-    $this->connection->executeQuery("
-      INSERT INTO {$wpdb->prefix}wc_customer_lookup (customer_id, user_id, first_name, last_name, email)
-      VALUES ({$userId}, {$userId}, 'First Name', 'Last Name', '{$email}')
-    ");
-    return $userId;
-  }
-
   private function createOrder(int $customerId, Carbon $createdAt, int $orderTotal): int {
     $order = $this->tester->createWooCommerceOrder();
     $order->set_customer_id($customerId);
@@ -174,15 +164,12 @@ class WooCommerceTotalSpentTest extends \MailPoetTest {
   }
 
   public function _after(): void {
+    parent::_after();
     $this->cleanUp();
   }
 
   private function cleanUp(): void {
     global $wpdb;
-    $emails = ['customer1@example.com', 'customer2@example.com', 'customer3@example.com'];
-    foreach ($emails as $email) {
-      $this->tester->deleteWordPressUser($email);
-    }
 
     if (is_array($this->orders)) {
       foreach ($this->orders as $orderId) {

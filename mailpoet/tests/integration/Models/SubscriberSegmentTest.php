@@ -336,6 +336,7 @@ class SubscriberSegmentTest extends \MailPoetTest {
   }
 
   public function _after() {
+    parent::_after();
     Segment::deleteMany();
     Subscriber::deleteMany();
     SubscriberSegment::deleteMany();

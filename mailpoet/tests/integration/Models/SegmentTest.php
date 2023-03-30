@@ -270,6 +270,7 @@ class SegmentTest extends \MailPoetTest {
   }
 
   public function _after() {
+    parent::_after();
     ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
     ORM::raw_execute('TRUNCATE ' . Segment::$_table);
     ORM::raw_execute('TRUNCATE ' . SubscriberSegment::$_table);

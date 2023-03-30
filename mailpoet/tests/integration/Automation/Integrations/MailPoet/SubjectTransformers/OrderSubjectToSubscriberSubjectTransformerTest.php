@@ -122,6 +122,7 @@ class OrderSubjectToSubscriberSubjectTransformerTest extends \MailPoetTest {
   }
 
   public function _after() {
+    parent::_after();
     $this->expectedSubscriberSubjectEntry = null;
     $this->subscribersRepository->truncate();
     $this->automationStorage->truncate();

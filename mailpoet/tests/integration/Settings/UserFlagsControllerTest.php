@@ -87,6 +87,7 @@ class UserFlagsControllerTest extends \MailPoetTest {
   }
 
   public function _after() {
+    parent::_after();
     $this->cleanup();
     WPFunctions::set(new WPFunctions);
   }

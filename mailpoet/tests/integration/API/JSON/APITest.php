@@ -371,6 +371,7 @@ class APITest extends \MailPoetTest {
   }
 
   public function _after() {
+    parent::_after();
     wp_delete_user($this->wpUserId);
   }
 }

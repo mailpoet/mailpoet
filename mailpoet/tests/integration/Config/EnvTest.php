@@ -89,6 +89,7 @@ class EnvTest extends \MailPoetTest {
   }
 
   public function _after() {
+    parent::_after();
     // Restore the original environment
     Env::init($this->file, $this->version, DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
   }

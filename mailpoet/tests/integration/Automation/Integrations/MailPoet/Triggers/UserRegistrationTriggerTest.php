@@ -142,6 +142,7 @@ class UserRegistrationTriggerTest extends \MailPoetTest {
   }
 
   public function _after() {
+    parent::_after();
     if (!$this->userId) {
       return;
     }

@@ -57,6 +57,7 @@ class SendPreviewControllerTest extends \MailPoetTest {
   }
 
   public function _after() {
+    parent::_after();
     WPFunctions::set(new WPFunctions());
   }
 

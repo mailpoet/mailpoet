@@ -45,6 +45,7 @@ class ShortcodesTest extends \MailPoetTest {
   }
 
   public function _after() {
+    parent::_after();
     wp_delete_post($this->wPPost, true);
   }
 }

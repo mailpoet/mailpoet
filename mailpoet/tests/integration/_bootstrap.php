@@ -216,6 +216,11 @@ abstract class MailPoetTest extends \Codeception\TestCase\Test { // phpcs:ignore
       unregister_post_type('product');
     }
   }
+
+  public function _after() {
+    parent::_after();
+    $this->tester->cleanup();
+  }
 }
 
 function asCallable($fn) {

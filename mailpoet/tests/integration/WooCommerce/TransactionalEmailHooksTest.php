@@ -244,6 +244,7 @@ class TransactionalEmailHooksTest extends \MailPoetTest {
   }
 
   public function _after() {
+    parent::_after();
     $this->entityManager
       ->createQueryBuilder()
       ->delete()

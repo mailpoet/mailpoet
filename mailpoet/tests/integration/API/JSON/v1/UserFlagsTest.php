@@ -57,6 +57,7 @@ class UserFlagsTest extends \MailPoetTest {
   }
 
   public function _after() {
+    parent::_after();
     $this->cleanup();
   }
 

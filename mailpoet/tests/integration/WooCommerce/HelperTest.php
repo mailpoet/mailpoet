@@ -22,7 +22,7 @@ class HelperTest extends \MailPoetTest {
   }
 
   public function _after() {
-    $this->tester->deleteTestWooOrders();
+    parent::_after();
     $this->wp->deleteOption('woocommerce_onboarding_profile');
   }
 

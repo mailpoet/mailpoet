@@ -220,6 +220,7 @@ class SubscriberActivityTrackerTest extends \MailPoetTest {
   }
 
   public function _after() {
+    parent::_after();
     $this->cleanUp();
     $this->wp->wpSetCurrentUser($this->backupUserId);
   }

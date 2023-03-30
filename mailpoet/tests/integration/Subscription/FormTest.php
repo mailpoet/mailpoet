@@ -144,6 +144,7 @@ class FormTest extends \MailPoetTest {
   }
 
   public function _after() {
+    parent::_after();
     wp_delete_post($this->post);
     $this->diContainer->get(SettingsRepository::class)->truncate();
   }

@@ -1,6 +1,7 @@
 <?php declare(strict_types = 1);
 
 use Automattic\WooCommerce\Admin\API\Reports\Orders\Stats\DataStore;
+use Codeception\Scenario;
 use MailPoet\Automation\Engine\Data\Automation;
 use MailPoet\Automation\Engine\Data\AutomationRun;
 use MailPoet\Automation\Engine\Data\NextStep;
@@ -11,6 +12,7 @@ use MailPoet\Automation\Integrations\Core\Actions\DelayAction;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Util\Security;
 use MailPoet\WooCommerce\Helper;
+use MailPoetVendor\Doctrine\DBAL\Connection;
 
 require_once(ABSPATH . 'wp-admin/includes/user.php');
 require_once(ABSPATH . 'wp-admin/includes/ms.php');
@@ -36,13 +38,50 @@ class IntegrationTester extends \Codeception\Actor {
 
   private $wooOrderIds = [];
 
+  private $createdUsers = [];
+
+  /** @var Connection */
+  private $connection;
+
+  public function __construct(
+    Scenario $scenario
+  ) {
+    parent::__construct($scenario);
+    $this->connection = ContainerWrapper::getInstance()->get(Connection::class);
+  }
+
   public function createWordPressUser(string $email, string $role) {
-    return wp_insert_user([
+    $userId = wp_insert_user([
       'user_login' => explode('@', $email)[0],
       'user_email' => $email,
       'role' => $role,
       'user_pass' => '12123154',
     ]);
+
+    if ($userId instanceof WP_Error) {
+      throw new Exception(sprintf("Unable to create WordPress user with email $email: %s", $userId->get_error_message()));
+    }
+
+    $this->createdUsers[] = $email;
+
+    return $userId;
+  }
+
+  public function createCustomer(string $email, string $role = 'customer'): int {
+    global $wpdb;
+    $userId = $this->createWordPressUser($email, $role);
+    $this->connection->executeQuery("
+      INSERT INTO {$wpdb->prefix}wc_customer_lookup (customer_id, user_id, first_name, last_name, email)
+      VALUES ({$userId}, {$userId}, 'First Name', 'Last Name', '{$email}')
+    ");
+    return $userId;
+  }
+
+  public function deleteCreatedUsers() {
+    foreach ($this->createdUsers as $createdUserEmail) {
+      $this->deleteWordPressUser($createdUserEmail);
+    }
+    $this->createdUsers = [];
   }
 
   public function deleteWordPressUser(string $email) {
@@ -166,5 +205,10 @@ class IntegrationTester extends \Codeception\Actor {
     );
     $automationRunStorage = ContainerWrapper::getInstance()->get(AutomationRunStorage::class);
     return $automationRunStorage->getAutomationRun($automationRunStorage->createAutomationRun($automationRun));
+  }
+
+  public function cleanup() {
+    $this->deleteCreatedUsers();
+    $this->deleteTestWooOrders();
   }
 }

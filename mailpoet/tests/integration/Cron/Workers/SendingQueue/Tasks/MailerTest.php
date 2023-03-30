@@ -129,6 +129,7 @@ class MailerTest extends \MailPoetTest {
   }
 
   public function _after() {
+    parent::_after();
     $this->diContainer->get(SettingsRepository::class)->truncate();
     ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
   }
