@@ -183,10 +183,6 @@ class Helper {
     return new \WC_Coupon($data);
   }
 
-  public function getOrderStatuses(): array {
-    return wc_get_order_statuses();
-  }
-
   public function getCouponList(): array {
     $couponPosts = $this->wp->getPosts([
       'posts_per_page' => -1,
