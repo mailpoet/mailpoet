@@ -98,6 +98,7 @@ class AutomationsDuplicateEndpointTest extends AutomationTest {
           'key' => 'core:root',
           'args' => [],
           'next_steps' => [],
+          'filters' => [],
         ],
       ],
       'meta' => [],

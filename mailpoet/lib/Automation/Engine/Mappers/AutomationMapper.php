@@ -5,6 +5,7 @@ namespace MailPoet\Automation\Engine\Mappers;
 use DateTimeImmutable;
 use MailPoet\Automation\Engine\Data\Automation;
 use MailPoet\Automation\Engine\Data\AutomationStatistics;
+use MailPoet\Automation\Engine\Data\Filter;
 use MailPoet\Automation\Engine\Data\NextStep;
 use MailPoet\Automation\Engine\Data\Step;
 use MailPoet\Automation\Engine\Storage\AutomationStatisticsStorage;
@@ -42,6 +43,9 @@ class AutomationMapper {
           'next_steps' => array_map(function (NextStep $nextStep) {
             return $nextStep->toArray();
           }, $step->getNextSteps()),
+          'filters' => array_map(function (Filter $filter) {
+            return $filter->toArray();
+          }, $step->getFilters()),
         ];
       }, $automation->getSteps()),
       'meta' => (object)$automation->getAllMetas(),
