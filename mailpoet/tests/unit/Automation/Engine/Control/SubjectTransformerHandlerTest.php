@@ -40,7 +40,7 @@ class SubjectTransformerHandlerTest extends MailPoetUnitTest {
     $trigger->expects($this->any())->method('getSubjectKeys')->willReturn([$triggerSubject]);
     $registry = $this->createMock(Registry::class);
     $registry->expects($this->any())->method('getSubjectTransformer')->willReturn($transformers);
-    $registry->expects($this->any())->method('getTrigger')->willReturnCallback(function($key) use ($trigger){
+    $registry->expects($this->any())->method('getStep')->willReturnCallback(function($key) use ($trigger){
       return $key === 'trigger' ? $trigger : null;
     });
     $testee = new SubjectTransformerHandler($registry);
@@ -50,8 +50,8 @@ class SubjectTransformerHandlerTest extends MailPoetUnitTest {
     $triggerData->expects($this->any())->method('getKey')->willReturn('trigger');
     $automation = $this->createMock(Automation::class);
     $automation->method('getSteps')->willReturn([$triggerData]);
-    $result = $testee->getSubjectKeysForAutomation($automation);
-    $this->assertEquals(['subject_a', 'subject_b1', 'subject_b2', 'subject_c1', 'subject_c2', 'subject_d1'], $result);
+    $result = $testee->subjectKeysForAutomation($automation);
+    $this->assertEquals(['subject_a', 'subject_b1', 'subject_c1', 'subject_d1', 'subject_b2', 'subject_c2'], $result);
   }
 
   public function testItDoesNotRunInfiniteWhileFindingAllSubjects(): void {
@@ -75,7 +75,7 @@ class SubjectTransformerHandlerTest extends MailPoetUnitTest {
     $trigger->expects($this->any())->method('getSubjectKeys')->willReturn([$triggerSubject]);
     $registry = $this->createMock(Registry::class);
     $registry->expects($this->any())->method('getSubjectTransformer')->willReturn($transformers);
-    $registry->expects($this->any())->method('getTrigger')->willReturnCallback(function($key) use ($trigger){
+    $registry->expects($this->any())->method('getStep')->willReturnCallback(function($key) use ($trigger){
       return $key === 'trigger' ? $trigger : null;
     });
     $testee = new SubjectTransformerHandler($registry);
@@ -85,7 +85,7 @@ class SubjectTransformerHandlerTest extends MailPoetUnitTest {
     $triggerData->expects($this->any())->method('getKey')->willReturn('trigger');
     $automation = $this->createMock(Automation::class);
     $automation->method('getSteps')->willReturn([$triggerData]);
-    $result = $testee->getSubjectKeysForAutomation($automation);
+    $result = $testee->subjectKeysForAutomation($automation);
     $this->assertEquals(['subject_a', 'subject_b', 'subject_c'], $result);
   }
 
@@ -102,7 +102,7 @@ class SubjectTransformerHandlerTest extends MailPoetUnitTest {
 
     $registry = $this->createMock(Registry::class);
     $registry->expects($this->any())->method('getSubjectTransformer')->willReturn([]);
-    $registry->expects($this->any())->method('getTrigger')->willReturnCallback(function($key) use ($trigger1, $trigger2){
+    $registry->expects($this->any())->method('getStep')->willReturnCallback(function($key) use ($trigger1, $trigger2){
       if ($key === 'trigger1') {
         return $trigger1;
       }
@@ -123,7 +123,7 @@ class SubjectTransformerHandlerTest extends MailPoetUnitTest {
 
     $automation = $this->createMock(Automation::class);
     $automation->method('getSteps')->willReturn([$trigger1Data, $trigger2Data]);
-    $result = $testee->getSubjectKeysForAutomation($automation);
+    $result = $testee->subjectKeysForAutomation($automation);
     $this->assertEquals(['b', 'c'], $result);
   }
 
@@ -164,7 +164,7 @@ class SubjectTransformerHandlerTest extends MailPoetUnitTest {
     $trigger->expects($this->any())->method('getSubjectKeys')->willReturn(['from']);
 
     $registry = $this->createMock(Registry::class);
-    $registry->expects($this->any())->method('getTrigger')->willReturnCallback(
+    $registry->expects($this->any())->method('getStep')->willReturnCallback(
       function($key) {
         if ($key !== 'trigger') {
           return null;
@@ -180,7 +180,7 @@ class SubjectTransformerHandlerTest extends MailPoetUnitTest {
     $testee = new SubjectTransformerHandler($registry);
 
     $subject = new Subject('from', ['key' => 'value']);
-    $subjects = $testee->getAllSubjects($subject);
+    $subjects = $testee->provideAllSubjects($trigger, $subject);
     $this->assertNotNull($subjects);
     $this->assertCount(3, $subjects);
     $this->assertSame(['from', 'middle', 'to'], array_map(function(Subject $subject): string { return $subject->getKey();
