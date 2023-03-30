@@ -213,6 +213,9 @@ class Exceptions {
           $step->getId(),
           implode(', ', $missingSubjectKeys)
         )
+      )
+      ->withErrors(
+        ['general' => __('This step can not be used with the selected trigger.', 'mailpoet')]
       );
   }
 
