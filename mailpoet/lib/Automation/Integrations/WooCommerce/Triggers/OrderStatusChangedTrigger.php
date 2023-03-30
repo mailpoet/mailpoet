@@ -84,8 +84,10 @@ class OrderStatusChangedTrigger implements Trigger {
   }
 
   public function isTriggeredBy(StepRunArgs $args): bool {
-    /** @var OrderStatusChangePayload $orderPayload */
     $orderPayload = $args->getSinglePayloadByClass(OrderStatusChangePayload::class);
+    if (!$orderPayload instanceof OrderStatusChangePayload) {
+      return false;
+    }
     $triggerArgs = $args->getStep()->getArgs();
     $configuredFrom = $triggerArgs['from'] ? str_replace('wc-', '', $triggerArgs['from']) : null;
     $configuredTo = $triggerArgs['to'] ? str_replace('wc-', '', $triggerArgs['to']) : null;
