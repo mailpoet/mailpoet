@@ -259,12 +259,6 @@ class Reporter {
         return $automation->getTrigger('mailpoet:someone-subscribes') !== null;
       }
     );
-    $automationsWithOrderStatusChangedTrigger = array_filter(
-      $activeAutomations,
-      function(Automation $automation): bool {
-        return $automation->getTrigger('woocommerce:order-status-changed') !== null;
-      }
-    );
 
     $totalSteps = 0;
     $minSteps = null;
@@ -288,7 +282,6 @@ class Reporter {
       'Automation > Number of draft automations' => count($draftAutomations),
       'Automation > Number of "WordPress user registers" active automations' => count($automationsWithWordPressUserSubscribesTrigger),
       'Automation > Number of "Someone subscribes" active automations ' => count($automationsWithSomeoneSubscribesTrigger),
-      'Automation > Number of "Order status changed" active automations ' => count($automationsWithOrderStatusChangedTrigger),
       'Automation > Number of steps in shortest active automation' => $minSteps,
       'Automation > Number of steps in longest active automation' => $maxSteps,
       'Automation > Average number of steps in active automations' => $averageSteps,
