@@ -195,15 +195,6 @@ class WooCommerceCategoryTest extends \MailPoetTest {
 
   private function cleanUp(): void {
     global $wpdb;
-    $emails = [
-      'customer1@example.com',
-      'customer2@example.com',
-      'customer-on-hold@example.com',
-      'customer-pending-payment@example.com',
-    ];
-    foreach ($emails as $email) {
-      $this->tester->deleteWordPressUser($email);
-    }
 
     if (!empty($this->orders)) {
       foreach ($this->orders as $orderId) {
