@@ -347,18 +347,6 @@ class RoboFile extends \Robo\Tasks {
       ->dir(__DIR__ . '/tests/performance')
       ->run();
     $this->say('Data imported, WordPress set up.');
-
-    // run performance tests
-    $dir = __DIR__;
-    return $this->taskExec("php $dir/tools/k6.php")
-      ->arg('run')
-      ->option('env', 'K6_BROWSER_ENABLED=1')
-      ->option('env', 'URL=' . $opts['url'])
-      ->option('env', 'PW=' . $opts['pw'])
-      ->option('env', 'HEADLESS=' . ($opts['head'] ? 'false' : 'true'))
-      ->option('env', 'SCENARIO=' . $opts['scenario'])
-      ->arg($path ?? "$dir/tests/performance/scenarios.js")
-      ->dir($dir)->run();
   }
 
   public function testPerformanceClean() {
