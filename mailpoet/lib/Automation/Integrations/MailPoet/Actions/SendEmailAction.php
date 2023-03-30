@@ -208,7 +208,6 @@ class SendEmailAction implements Action {
 
     $email = $this->newslettersRepository->findOneBy([
       'id' => $emailId,
-      'type' => NewsletterEntity::TYPE_AUTOMATION,
     ]);
     if (!$email) {
       throw InvalidStateException::create()->withMessage(
