@@ -127,6 +127,8 @@ class Scheduler {
         $this->processReEngagementEmail($queue);
       } elseif ($newsletter->type === NewsletterEntity::TYPE_AUTOMATION) {
         $this->processScheduledAutomationEmail($queue);
+      } elseif ($newsletter->type === NewsletterEntity::TYPE_TRANSACTIONAL) {
+        $this->processScheduledTransactionalEmail($queue);
       }
       $this->cronHelper->enforceExecutionLimit($timer);
     }
@@ -278,6 +280,26 @@ class Scheduler {
     return true;
   }
 
+  public function processScheduledTransactionalEmail($queue): bool {
+    $subscribers = $queue->getSubscribers();
+    $subscriber = (!empty($subscribers) && is_array($subscribers)) ? Subscriber::findOne($subscribers[0]) : null;
+    if (!$subscriber) {
+      $queue->delete();
+      $this->updateScheduledTaskEntity($queue, true);
+      return false;
+    }
+    if (!$this->verifySubscriber($subscriber, $queue)) {
+      $queue->delete();
+      $this->updateScheduledTaskEntity($queue, true);
+      return false;
+    }
+
+    $queue->status = null;
+    $queue->save();
+    $this->updateScheduledTaskEntity($queue);
+    return true;
+  }
+
   public function processScheduledStandardNewsletter($newsletter, SendingTask $task) {
     $newsletterEntity = $this->newslettersRepository->findOneById($newsletter->id);
 
@@ -348,6 +370,10 @@ class Scheduler {
   }
 
   public function verifySubscriber($subscriber, $queue) {
+    $newsletter = $queue->newsletterId ? $this->newslettersRepository->findOneById($queue->newsletterId) : null;
+    if ($newsletter && $newsletter->getType() === NewsletterEntity::TYPE_TRANSACTIONAL) {
+      return $subscriber->status !== Subscriber::STATUS_BOUNCED;
+    }
     if ($subscriber->status === Subscriber::STATUS_UNCONFIRMED) {
       // reschedule delivery
       $task = $this->scheduledTasksRepository->findOneById($queue->task()->id);
