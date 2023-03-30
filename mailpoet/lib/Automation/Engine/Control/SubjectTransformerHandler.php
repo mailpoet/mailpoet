@@ -3,22 +3,29 @@
 namespace MailPoet\Automation\Engine\Control;
 
 use MailPoet\Automation\Engine\Data\Automation;
+use MailPoet\Automation\Engine\Data\AutomationRun;
 use MailPoet\Automation\Engine\Data\Step as StepData;
 use MailPoet\Automation\Engine\Data\Subject;
 use MailPoet\Automation\Engine\Integration\Step;
 use MailPoet\Automation\Engine\Integration\SubjectTransformer;
 use MailPoet\Automation\Engine\Integration\Trigger;
 use MailPoet\Automation\Engine\Registry;
+use MailPoet\Automation\Engine\Storage\AutomationStorage;
 
 class SubjectTransformerHandler {
 
   /* @var Registry */
   private $registry;
 
+  /* @var AutomationStorage */
+  private $automationStorage;
+
   public function __construct(
-    Registry $registry
+    Registry $registry,
+    AutomationStorage $automationStorage
   ) {
     $this->registry = $registry;
+    $this->automationStorage = $automationStorage;
   }
 
   public function subjectKeysForTrigger(Trigger $trigger): array {
@@ -122,6 +129,27 @@ class SubjectTransformerHandler {
       $allSubjects = $this->provideAllSubjects($trigger, ...array_values($allSubjects));
     }
     return array_values($allSubjects);
+  }
+
+  /**
+   * @return Subject[]|null
+   */
+  public function transformSubjectData(string $target, AutomationRun $automationRun): ?array {
+    $automation = $this->automationStorage->getAutomation($automationRun->getAutomationId(), $automationRun->getVersionId());
+    if (!$automation || !in_array($target, $this->subjectKeysForAutomation($automation), true)) {
+      return null;
+    }
+
+    $transformedSubjects = [];
+    $subjects = $automationRun->getSubjects();
+    foreach ($subjects as $subject) {
+      $transformedSubject = $this->transformSubjectTo($subject, $target);
+      if (!$transformedSubject) {
+        continue;
+      }
+      $transformedSubjects[] = $subject;
+    }
+    return count($transformedSubjects) > 0 ? $transformedSubjects : null;
   }
 
   private function transformSubjectTo(Subject $subject, string $target): ?Subject {
