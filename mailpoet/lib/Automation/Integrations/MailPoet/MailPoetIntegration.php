@@ -9,7 +9,6 @@ use MailPoet\Automation\Integrations\MailPoet\Hooks\AutomationEditorLoadingHooks
 use MailPoet\Automation\Integrations\MailPoet\Hooks\CreateAutomationRunHook;
 use MailPoet\Automation\Integrations\MailPoet\Subjects\SegmentSubject;
 use MailPoet\Automation\Integrations\MailPoet\Subjects\SubscriberSubject;
-use MailPoet\Automation\Integrations\MailPoet\SubjectTransformers\OrderSubjectToSubscriberSubjectTransformer;
 use MailPoet\Automation\Integrations\MailPoet\Triggers\SomeoneSubscribesTrigger;
 use MailPoet\Automation\Integrations\MailPoet\Triggers\UserRegistrationTrigger;
 
@@ -38,14 +37,10 @@ class MailPoetIntegration implements Integration {
   /** @var CreateAutomationRunHook */
   private $createAutomationRunHook;
 
-  /** @var OrderSubjectToSubscriberSubjectTransformer */
-  private $orderToSubscriberTransformer;
-
   public function __construct(
     ContextFactory $contextFactory,
     SegmentSubject $segmentSubject,
     SubscriberSubject $subscriberSubject,
-    OrderSubjectToSubscriberSubjectTransformer $orderToSubscriberTransformer,
     SomeoneSubscribesTrigger $someoneSubscribesTrigger,
     UserRegistrationTrigger $userRegistrationTrigger,
     SendEmailAction $sendEmailAction,
@@ -55,7 +50,6 @@ class MailPoetIntegration implements Integration {
     $this->contextFactory = $contextFactory;
     $this->segmentSubject = $segmentSubject;
     $this->subscriberSubject = $subscriberSubject;
-    $this->orderToSubscriberTransformer = $orderToSubscriberTransformer;
     $this->someoneSubscribesTrigger = $someoneSubscribesTrigger;
     $this->userRegistrationTrigger = $userRegistrationTrigger;
     $this->sendEmailAction = $sendEmailAction;
@@ -73,7 +67,6 @@ class MailPoetIntegration implements Integration {
     $registry->addTrigger($this->someoneSubscribesTrigger);
     $registry->addTrigger($this->userRegistrationTrigger);
     $registry->addAction($this->sendEmailAction);
-    $registry->addSubjectTransformer($this->orderToSubscriberTransformer);
 
     // sync step args (subject, preheader, etc.) to email settings
     $registry->onBeforeAutomationStepSave(
