@@ -137,6 +137,6 @@ class Registry {
 
   public function onBeforeAutomationStepSave(callable $callback, string $key = null, int $priority = 10): void {
     $keyPart = $key ? "/key=$key" : '';
-    $this->wordPress->addAction(Hooks::AUTOMATION_STEP_BEFORE_SAVE . $keyPart, $callback, $priority);
+    $this->wordPress->addAction(Hooks::AUTOMATION_STEP_BEFORE_SAVE . $keyPart, $callback, $priority, 2);
   }
 }

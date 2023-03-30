@@ -61,8 +61,8 @@ class UpdateAutomationController {
       $this->validateAutomationSteps($automation, $data['steps']);
       $this->updateStepsController->updateSteps($automation, $data['steps']);
       foreach ($automation->getSteps() as $step) {
-        $this->hooks->doAutomationStepBeforeSave($step);
-        $this->hooks->doAutomationStepByKeyBeforeSave($step);
+        $this->hooks->doAutomationStepBeforeSave($step, $automation);
+        $this->hooks->doAutomationStepByKeyBeforeSave($step, $automation);
       }
     }
 

@@ -37,12 +37,12 @@ class Hooks {
     $this->wordPress->doAction(self::AUTOMATION_BEFORE_SAVE, $automation);
   }
 
-  public function doAutomationStepBeforeSave(Step $step): void {
-    $this->wordPress->doAction(self::AUTOMATION_STEP_BEFORE_SAVE, $step);
+  public function doAutomationStepBeforeSave(Step $step, Automation $automation): void {
+    $this->wordPress->doAction(self::AUTOMATION_STEP_BEFORE_SAVE, $step, $automation);
   }
 
-  public function doAutomationStepByKeyBeforeSave(Step $step): void {
-    $this->wordPress->doAction(self::AUTOMATION_STEP_BEFORE_SAVE . '/key=' . $step->getKey(), $step);
+  public function doAutomationStepByKeyBeforeSave(Step $step, Automation $automation): void {
+    $this->wordPress->doAction(self::AUTOMATION_STEP_BEFORE_SAVE . '/key=' . $step->getKey(), $step, $automation);
   }
 
   public function doAutomationStepAfterRun(AutomationRunLog $automationRunLog): void {
