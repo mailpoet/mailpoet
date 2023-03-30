@@ -1,0 +1,59 @@
+<?php declare(strict_types = 1);
+
+namespace MailPoet\Automation\Integrations\Core\Filters;
+
+use MailPoet\Automation\Engine\Data\Field;
+use MailPoet\Automation\Engine\Data\Filter as FilterData;
+use MailPoet\Automation\Engine\Integration\Filter;
+use MailPoet\Validator\Builder;
+use MailPoet\Validator\Schema\ObjectSchema;
+
+class EnumArrayFilter implements Filter {
+  public const CONDITION_MATCHES_ANY = 'matches-any';
+  public const CONDITION_MATCHES_ALL = 'matches-all';
+  public const CONDITION_MATCHES_NONE = 'matches-none';
+
+  public function getFieldType(): string {
+    return Field::TYPE_ENUM_ARRAY;
+  }
+
+  public function getConditions(): array {
+    return [
+      self::CONDITION_MATCHES_ANY => __('matches any', 'mailpoet'),
+      self::CONDITION_MATCHES_ALL => __('matches all', 'mailpoet'),
+      self::CONDITION_MATCHES_NONE => __('matches none', 'mailpoet'),
+    ];
+  }
+
+  public function getArgsSchema(): ObjectSchema {
+    return Builder::object([
+      'value' => Builder::oneOf([
+        Builder::array(Builder::string())->minItems(1),
+        Builder::array(Builder::integer())->minItems(1),
+      ])->required(),
+    ]);
+  }
+
+  public function matches(FilterData $data, $value): bool {
+    $filterValue = $data->getArgs()['value'] ?? null;
+    if (!is_array($value) || !is_array($filterValue)) {
+      return false;
+    }
+
+    $filterValue = array_unique($filterValue, SORT_REGULAR);
+    $value = array_unique($value, SORT_REGULAR);
+
+    $filterCount = count($filterValue);
+    $matchedCount = count(array_intersect($value, $filterValue));
+    switch ($data->getCondition()) {
+      case self::CONDITION_MATCHES_ANY:
+        return $filterCount > 0 && $matchedCount > 0;
+      case self::CONDITION_MATCHES_ALL:
+        return $filterCount > 0 && $matchedCount === count($filterValue);
+      case self::CONDITION_MATCHES_NONE:
+        return $matchedCount === 0;
+      default:
+        return false;
+    }
+  }
+}

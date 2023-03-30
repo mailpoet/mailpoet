@@ -7,6 +7,7 @@ class Field {
   public const TYPE_INTEGER = 'integer';
   public const TYPE_STRING = 'string';
   public const TYPE_ENUM = 'enum';
+  public const TYPE_ENUM_ARRAY = 'enum_array';
 
   /** @var string */
   private $key;

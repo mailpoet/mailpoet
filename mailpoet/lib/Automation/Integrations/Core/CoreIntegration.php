@@ -20,5 +20,6 @@ class CoreIntegration implements Integration {
     $registry->addAction($this->delayAction);
 
     $registry->addFilter(new Filters\StringFilter());
+    $registry->addFilter(new Filters\EnumArrayFilter());
   }
 }
