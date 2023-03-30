@@ -213,7 +213,7 @@ class SendEmailAction implements Action {
     $email = $this->newslettersRepository->findOneBy([
       'id' => $emailId,
     ]);
-    if (!$email) {
+    if (!$email || !in_array($email->getType(), [NewsletterEntity::TYPE_AUTOMATION, NewsletterEntity::TYPE_TRANSACTIONAL], true)) {
       throw InvalidStateException::create()->withMessage(
         // translators: %s is the ID of email.
         sprintf(__("Automation email with ID '%s' not found.", 'mailpoet'), $emailId)
