@@ -5,7 +5,7 @@ namespace MailPoet\Automation\Engine\Control;
 use MailPoet\Automation\Engine\Data\Automation;
 use MailPoet\Automation\Engine\Data\AutomationRun;
 use MailPoet\Automation\Engine\Data\Step as StepData;
-use MailPoet\Automation\Engine\Data\Subject;
+use MailPoet\Automation\Engine\Data\Subject as SubjectData;
 use MailPoet\Automation\Engine\Integration\Step;
 use MailPoet\Automation\Engine\Integration\SubjectTransformer;
 use MailPoet\Automation\Engine\Integration\Trigger;
@@ -97,42 +97,7 @@ class SubjectTransformerHandler {
   }
 
   /**
-   * @param Trigger $trigger
-   * @param Subject ...$subjects
-   * @return Subject[]
-   */
-  public function provideAllSubjects(Trigger $trigger, Subject ...$subjects): array {
-    $allSubjectsKeys = $this->subjectKeysForTrigger($trigger);
-    $allSubjectKeyTargets = array_diff($allSubjectsKeys, array_map(
-      function(Subject $subject): string {
-        return $subject->getKey();
-      },
-      $subjects
-    ));
-
-    $allSubjects = [];
-    foreach ($subjects as $existingSubject) {
-      $allSubjects[$existingSubject->getKey()] = $existingSubject;
-    }
-    foreach ($allSubjectKeyTargets as $target) {
-      if (isset($allSubjects[$target])) {
-        continue;
-      }
-      foreach ($subjects as $subject) {
-        $transformedSubject = $this->transformSubjectTo($subject, $target);
-        if ($transformedSubject) {
-          $allSubjects[$transformedSubject->getKey()] = $transformedSubject;
-        }
-      }
-    }
-    while (count($allSubjects) < count($allSubjectsKeys)) {
-      $allSubjects = $this->provideAllSubjects($trigger, ...array_values($allSubjects));
-    }
-    return array_values($allSubjects);
-  }
-
-  /**
-   * @return Subject[]|null
+   * @return SubjectData[]|null
    */
   public function transformSubjectData(string $target, AutomationRun $automationRun): ?array {
     $automation = $this->automationStorage->getAutomation($automationRun->getAutomationId(), $automationRun->getVersionId());
@@ -143,24 +108,16 @@ class SubjectTransformerHandler {
     $transformedSubjects = [];
     $subjects = $automationRun->getSubjects();
     foreach ($subjects as $subject) {
-      $transformedSubject = $this->transformSubjectTo($subject, $target);
-      if (!$transformedSubject) {
+      $transformerChain = $this->getTransformerChain($subject->getKey(), $target);
+      if (!$transformerChain) {
         continue;
+      }
+      foreach ($transformerChain as $transformer) {
+        $subject = $transformer->transform($subject);
       }
       $transformedSubjects[] = $subject;
     }
     return count($transformedSubjects) > 0 ? $transformedSubjects : null;
-  }
-
-  private function transformSubjectTo(Subject $subject, string $target): ?Subject {
-    $transformerChain = $this->getTransformerChain($subject->getKey(), $target);
-    if (!$transformerChain) {
-      return null;
-    }
-    foreach ($transformerChain as $transformer) {
-      $subject = $transformer->transform($subject);
-    }
-    return $subject;
   }
 
   /**
