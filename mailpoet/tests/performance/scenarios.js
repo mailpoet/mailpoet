@@ -38,14 +38,14 @@ export let options = {
 // Separate scenarios for separate testing needs
 let scenarios = {
   pullrequests: {
-    executor: 'shared-iterations',
+    executor: 'per-vu-iterations',
     vus: 1,
     iterations: 1,
     maxDuration: '5m',
     exec: 'pullRequests',
   },
   nightlytests: {
-    executor: 'shared-iterations',
+    executor: 'per-vu-iterations',
     vus: 1,
     iterations: 3,
     maxDuration: '15m',
