@@ -96,17 +96,12 @@ class SubjectTransformerHandler {
    */
   public function provideAllSubjects(Trigger $trigger, Subject ...$subjects): array {
     $allSubjectsKeys = $this->subjectKeysForTrigger($trigger);
-    $allSubjectKeyTargets = array_filter(
-      array_diff($allSubjectsKeys, array_map(
+    $allSubjectKeyTargets = array_diff($allSubjectsKeys, array_map(
       function(Subject $subject): string {
         return $subject->getKey();
       },
       $subjects
-      )),
-    function(string $target) use ($subjects): bool {
-      return $this->canSubjectsTransformTo($target, ...$subjects);
-    }
-    );
+    ));
 
     $allSubjects = [];
     foreach ($subjects as $existingSubject) {
@@ -123,17 +118,9 @@ class SubjectTransformerHandler {
         }
       }
     }
-
-    $allSubjectsTransformed = true;
-    do {
-      foreach ($allSubjectKeyTargets as $key) {
-        if (!isset($allSubjects[$key])) {
-          $allSubjectsTransformed = false;
-          break;
-        }
-      }
-      $allSubjects = $allSubjectsTransformed ? $allSubjects : $this->provideAllSubjects($trigger, ...array_values($allSubjects));
-    } while (!$allSubjectsTransformed);
+    while (count($allSubjects) < count($allSubjectsKeys)) {
+      $allSubjects = $this->provideAllSubjects($trigger, ...array_values($allSubjects));
+    }
     return array_values($allSubjects);
   }
 
@@ -176,26 +163,5 @@ class SubjectTransformerHandler {
     }
 
     return $transformerChain;
-  }
-
-  private function canSubjectsTransformTo(string $target, Subject ...$subjects): bool {
-    if (
-      in_array($target, array_map(
-      function(Subject $subject): string {
-        return $subject->getKey();
-      },
-      $subjects
-      ))
-    ) {
-      return true;
-    }
-
-    foreach ($subjects as $subject) {
-      $possibleTransformations = $this->getPossibleTransformations($subject->getKey());
-      if (in_array($target, $possibleTransformations)) {
-        return true;
-      }
-    }
-    return false;
   }
 }
