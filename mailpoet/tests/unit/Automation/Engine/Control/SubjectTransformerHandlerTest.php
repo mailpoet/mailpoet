@@ -180,7 +180,7 @@ class SubjectTransformerHandlerTest extends MailPoetUnitTest {
     $testee = new SubjectTransformerHandler($registry);
 
     $subject = new Subject('from', ['key' => 'value']);
-    $subjects = $testee->getAllSubjects([$subject]);
+    $subjects = $testee->getAllSubjects($subject);
     $this->assertNotNull($subjects);
     $this->assertCount(3, $subjects);
     $this->assertSame(['from', 'middle', 'to'], array_map(function(Subject $subject): string { return $subject->getKey();
