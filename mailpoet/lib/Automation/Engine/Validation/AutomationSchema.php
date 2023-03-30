@@ -29,6 +29,7 @@ class AutomationSchema {
       'key' => Builder::string()->required(),
       'args' => Builder::object()->required(),
       'next_steps' => self::getNextStepsSchema()->required(),
+      'filters' => self::getFiltersSchema()->required(),
     ]);
   }
 
@@ -48,5 +49,16 @@ class AutomationSchema {
         'id' => Builder::string()->required(),
       ])
     )->maxItems(1);
+  }
+
+  public static function getFiltersSchema(): ArraySchema {
+    return Builder::array(
+      Builder::object([
+        'field_type' => Builder::string()->required(),
+        'field_key' => Builder::string()->required(),
+        'condition' => Builder::string()->required(),
+        'args' => Builder::object()->required(),
+      ])
+    );
   }
 }
