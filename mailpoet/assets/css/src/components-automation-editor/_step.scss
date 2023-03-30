@@ -54,7 +54,10 @@
 }
 
 .mailpoet-automation-editor-step-title {
+  align-items: center;
   color: $color-wordpress-grey-dark;
+  display: flex;
+  gap: 8px;
 }
 
 .mailpoet-automation-editor-step-subtitle {
