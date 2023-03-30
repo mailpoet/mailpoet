@@ -2,8 +2,10 @@
 
 namespace MailPoet\Test\Automation\Integrations\MailPoet\Actions;
 
+use MailPoet\Automation\Engine\Builder\UpdateAutomationController;
 use MailPoet\Automation\Engine\Data\Automation;
 use MailPoet\Automation\Engine\Data\AutomationRun;
+use MailPoet\Automation\Engine\Data\NextStep;
 use MailPoet\Automation\Engine\Data\Step;
 use MailPoet\Automation\Engine\Data\StepRunArgs;
 use MailPoet\Automation\Engine\Data\StepValidationArgs;
@@ -14,12 +16,15 @@ use MailPoet\Automation\Integrations\MailPoet\Actions\SendEmailAction;
 use MailPoet\Automation\Integrations\MailPoet\Subjects\SegmentSubject;
 use MailPoet\Automation\Integrations\MailPoet\Subjects\SubscriberSubject;
 use MailPoet\DI\ContainerWrapper;
+use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Exception;
+use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Subscribers\SubscribersRepository;
+use MailPoet\Test\DataFactories\Automation as AutomationFactory;
 use MailPoet\Test\DataFactories\Newsletter;
 use MailPoet\Test\DataFactories\Segment;
 use MailPoet\Test\DataFactories\Subscriber;
@@ -234,6 +239,74 @@ class SendEmailActionTest extends \MailPoetTest {
 
     $scheduled = $this->scheduledTasksRepository->findByNewsletterAndSubscriberId($email, (int)$subscriber->getId());
     expect($scheduled)->count(0);
+  }
+
+  /**
+   * @dataProvider dataForTestItStoresAnTransactionalEmail
+   */
+  public function testItStoresAnTransactionalEmail(NewsletterEntity $newsletter, array $steps, string $expectedEmailType): void {
+
+    $newsletterRepository = $this->diContainer->get(NewslettersRepository::class);
+    $newsletterRepository->persist($newsletter);
+    $newsletterRepository->flush();
+    /** @var UpdateAutomationController $controller */
+    $controller = $this->diContainer->get(UpdateAutomationController::class);
+
+    $automation = (new AutomationFactory())->withSteps(...$steps)->create();
+    $data = [
+        'steps' => array_map(
+          function(Step $step): array {
+            return $step->toArray();
+          },
+          $automation->getSteps()
+
+        ),
+    ];
+
+    $controller->updateAutomation(
+      $automation->getId(),
+      $data
+    );
+
+    $newsletterRepository = $this->diContainer->get(NewslettersRepository::class);
+    $newsletter = $newsletterRepository->findOneById($newsletter->getId());
+    $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
+    $this->assertEquals($expectedEmailType, $newsletter->getType());
+  }
+
+  public function dataForTestItStoresAnTransactionalEmail(): array {
+    $newsletter = (new Newsletter())->withType(NewsletterEntity::TYPE_AUTOMATION)->create();
+    $root = new Step('root', Step::TYPE_ROOT, 'root', [], [new NextStep('trigger')]);
+    $trigger = new Step('trigger', Step::TYPE_TRIGGER, 'woocommerce:order-status-changed', [], [new NextStep('emailstep')]);
+    $emailStep = new Step('emailstep', Step::TYPE_ACTION, SendEmailAction::KEY, ['email_id' => $newsletter->getId()], []);
+
+    $isTransactional = [
+      'newsletter' => $newsletter,
+      'steps' => [$root, $trigger, $emailStep],
+      'expected_type' => NewsletterEntity::TYPE_TRANSACTIONAL,
+    ];
+
+    $nonTransactionalTrigger = new Step('trigger', Step::TYPE_TRIGGER, 'some-other-trigger', [], [new NextStep('emailstep')]);
+
+    $isNotTransactionalBecauseOfTrigger = [
+      'newsletter' => $newsletter,
+      'steps' => [$root, $nonTransactionalTrigger, $emailStep],
+      'expected_type' => NewsletterEntity::TYPE_AUTOMATION,
+    ];
+
+    $positionTrigger = new Step('trigger', Step::TYPE_TRIGGER, 'woocommerce:order-status-changed', [], [new NextStep('action')]);
+    $someAction = new Step('action', Step::TYPE_ACTION, 'some-action', [], [new NextStep('emailstep')]);
+
+    $isNotTransactionalBecauseOfPosition = [
+      'newsletter' => $newsletter,
+      'steps' => [$root, $positionTrigger, $someAction, $emailStep],
+      'expected_type' => NewsletterEntity::TYPE_AUTOMATION,
+    ];
+    return [
+      'is_transactional' => $isTransactional,
+      'is_not_transactional_because_of_trigger' => $isNotTransactionalBecauseOfTrigger,
+      'is_not_transactional_because_of_position' => $isNotTransactionalBecauseOfPosition,
+    ];
   }
 
   private function getSubjects(): array {
