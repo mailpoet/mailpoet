@@ -44,13 +44,18 @@ Module.HeadingView = Marionette.View.extend({
 App.on('start', function (StartApp) {
   var model = StartApp.getNewsletter();
 
-  var subjectToolTip = document.getElementById('tooltip-designer-subject-line');
-  var preheaderToolTip = document.getElementById('tooltip-designer-preheader');
-
   StartApp._appView.showChildView(
     'headingRegion',
     new Module.HeadingView({ model: model }),
   );
+
+  const subjectToolTip = document.getElementById(
+    'tooltip-designer-subject-line',
+  );
+  const preheaderToolTip = document.getElementById(
+    'tooltip-designer-preheader',
+  );
+
   if (!model.isWoocommerceTransactional() && !model.isAutomationEmail()) {
     if (subjectToolTip) {
       MailPoet.helpTooltip.show(subjectToolTip, {
