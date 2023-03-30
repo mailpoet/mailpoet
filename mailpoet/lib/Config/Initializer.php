@@ -8,7 +8,6 @@ use MailPoet\AutomaticEmails\AutomaticEmails;
 use MailPoet\Automation\Engine\Engine;
 use MailPoet\Automation\Engine\Hooks as AutomationHooks;
 use MailPoet\Automation\Integrations\MailPoet\MailPoetIntegration;
-use MailPoet\Automation\Integrations\WooCommerce\WooCommerceIntegration;
 use MailPoet\Cron\CronTrigger;
 use MailPoet\Cron\DaemonActionSchedulerRunner;
 use MailPoet\InvalidStateException;
@@ -109,9 +108,6 @@ class Initializer {
   /** @var MailPoetIntegration */
   private $automationMailPoetIntegration;
 
-  /** @var WooCommerceIntegration */
-  private $woocommerceIntegration;
-
   /** @var PersonalDataExporters */
   private $personalDataExporters;
 
@@ -152,7 +148,6 @@ class Initializer {
     AssetsLoader $assetsLoader,
     Engine $automationEngine,
     MailPoetIntegration $automationMailPoetIntegration,
-    WooCommerceIntegration $woocommerceIntegration,
     PersonalDataExporters $personalDataExporters,
     DaemonActionSchedulerRunner $actionSchedulerRunner,
     Url $urlHelper
@@ -183,7 +178,6 @@ class Initializer {
     $this->assetsLoader = $assetsLoader;
     $this->automationEngine = $automationEngine;
     $this->automationMailPoetIntegration = $automationMailPoetIntegration;
-    $this->woocommerceIntegration = $woocommerceIntegration;
     $this->personalDataExporters = $personalDataExporters;
     $this->actionSchedulerRunner = $actionSchedulerRunner;
     $this->urlHelper = $urlHelper;
@@ -264,10 +258,6 @@ class Initializer {
 
     WPFunctions::get()->addAction(AutomationHooks::INITIALIZE, [
       $this->automationMailPoetIntegration,
-      'register',
-    ]);
-    WPFunctions::get()->addAction(AutomationHooks::INITIALIZE, [
-      $this->woocommerceIntegration,
       'register',
     ]);
 
