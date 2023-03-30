@@ -3,6 +3,7 @@
 namespace MailPoet\Subscribers\ImportExport\PersonalDataExporters;
 
 use MailPoet\CustomFields\CustomFieldsRepository;
+use MailPoet\Entities\CustomFieldEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Subscribers\Source;
 use MailPoet\Subscribers\SubscribersRepository;
@@ -94,11 +95,16 @@ class SubscriberExporter {
         : '',
     ];
 
-    foreach ($subscriber->getSubscriberCustomFields() as $field) {
-      if (isset($this->getCustomFields()[$field->getId()])) {
+    foreach ($subscriber->getSubscriberCustomFields() as $subscriberCustomField) {
+      $customField = $subscriberCustomField->getCustomField();
+      if (!$customField instanceof CustomFieldEntity) {
+        continue;
+      }
+      $customFieldId = $customField->getId();
+      if (isset($this->getCustomFields()[$customFieldId])) {
         $result[] = [
-          'name' => $customFields[$field->getId()],
-          'value' => $field->getValue(),
+          'name' => $customFields[$customFieldId],
+          'value' => $subscriberCustomField->getValue(),
         ];
       }
     }
