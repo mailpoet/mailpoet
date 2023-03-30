@@ -18,5 +18,7 @@ class CoreIntegration implements Integration {
 
   public function register(Registry $registry): void {
     $registry->addAction($this->delayAction);
+
+    $registry->addFilter(new Filters\StringFilter());
   }
 }
