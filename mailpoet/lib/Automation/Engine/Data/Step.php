@@ -22,22 +22,28 @@ class Step {
   /** @var NextStep[] */
   protected $nextSteps;
 
+  /** @var Filter[] */
+  private $filters;
+
   /**
    * @param array<string, mixed> $args
    * @param NextStep[] $nextSteps
+   * @param Filter[] $filters
    */
   public function __construct(
     string $id,
     string $type,
     string $key,
     array $args,
-    array $nextSteps
+    array $nextSteps,
+    array $filters = []
   ) {
     $this->id = $id;
     $this->type = $type;
     $this->key = $key;
     $this->args = $args;
     $this->nextSteps = $nextSteps;
+    $this->filters = $filters;
   }
 
   public function getId(): string {
@@ -66,6 +72,11 @@ class Step {
     return $this->args;
   }
 
+  /** @return Filter[] */
+  public function getFilters(): array {
+    return $this->filters;
+  }
+
   public function toArray(): array {
     return [
       'id' => $this->id,
@@ -75,6 +86,9 @@ class Step {
       'next_steps' => array_map(function (NextStep $nextStep) {
         return $nextStep->toArray();
       }, $this->nextSteps),
+      'filters' => array_map(function (Filter $filter) {
+        return $filter->toArray();
+      }, $this->filters),
     ];
   }
 
@@ -86,7 +100,10 @@ class Step {
       $data['args'],
       array_map(function (array $nextStep) {
         return NextStep::fromArray($nextStep);
-      }, $data['next_steps'])
+      }, $data['next_steps']),
+      array_map(function (array $filter) {
+        return Filter::fromArray($filter);
+      }, $data['filters'] ?? [])
     );
   }
 }
