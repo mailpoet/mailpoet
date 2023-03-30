@@ -2,6 +2,8 @@
 
 namespace MailPoet\Automation\Integrations\MailPoet\Actions;
 
+use MailPoet\Automation\Engine\Data\Automation;
+use MailPoet\Automation\Engine\Data\NextStep;
 use MailPoet\Automation\Engine\Data\Step;
 use MailPoet\Automation\Engine\Data\StepRunArgs;
 use MailPoet\Automation\Engine\Data\StepValidationArgs;
@@ -139,13 +141,14 @@ class SendEmailAction implements Action {
     }
   }
 
-  public function saveEmailSettings(Step $step): void {
+  public function saveEmailSettings(Step $step, Automation $automation): void {
     $args = $step->getArgs();
     if (!isset($args['email_id']) || !$args['email_id']) {
       return;
     }
 
     $email = $this->getEmailForStep($step);
+    $email->setType($this->isTransactional($step, $automation) ? NewsletterEntity::TYPE_TRANSACTIONAL : NewsletterEntity::TYPE_AUTOMATION);
     $email->setStatus(NewsletterEntity::STATUS_ACTIVE);
     $email->setSubject($args['subject'] ?? '');
     $email->setPreheader($args['preheader'] ?? '');
@@ -155,6 +158,40 @@ class SendEmailAction implements Action {
     $email->setReplyToAddress($args['reply_to_address'] ?? '');
     $email->setGaCampaign($args['ga_campaign'] ?? '');
     $this->newslettersRepository->flush();
+  }
+
+  private function isTransactional(Step $step, Automation $automation): bool {
+    $allSteps = $automation->getSteps();
+
+    $triggers = array_filter(
+      $allSteps,
+      function(Step $step): bool {
+        return $step->getType() === Step::TYPE_TRIGGER;
+      }
+    );
+    $transactionalTriggers = array_filter(
+      $triggers,
+      function(Step $step): bool {
+        return in_array($step->getKey(), ['woocommerce:order-status-changed'], true);
+      }
+    );
+
+    if (!$triggers || count($transactionalTriggers) !== count($triggers)) {
+      return false;
+    }
+
+    foreach ($transactionalTriggers as $trigger) {
+      $nextSteps = array_map(
+        function(NextStep $nextStep): string {
+          return $nextStep->getId();
+        },
+        $trigger->getNextSteps()
+      );
+      if (!in_array($step->getId(), $nextSteps, true)) {
+        return false;
+      }
+    }
+    return true;
   }
 
   private function getEmailForStep(Step $step): NewsletterEntity {
