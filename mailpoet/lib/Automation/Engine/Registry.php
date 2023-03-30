@@ -18,7 +18,7 @@ class Registry {
   private $subjects = [];
 
   /** @var SubjectTransformer[] */
-  private $subjectTransformers = [];
+  private $subjectTransformer = [];
 
   /** @var array<string, Trigger> */
   private $triggers = [];
@@ -60,11 +60,11 @@ class Registry {
   }
 
   public function addSubjectTransformer(SubjectTransformer $transformer): void {
-    $this->subjectTransformers[] = $transformer;
+    $this->subjectTransformer[] = $transformer;
   }
 
-  public function getSubjectTransformers(): array {
-    return $this->subjectTransformers;
+  public function getSubjectTransformer(): array {
+    return $this->subjectTransformer;
   }
 
   public function addStep(Step $step): void {
