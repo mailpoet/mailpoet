@@ -699,37 +699,25 @@ class SubscriberTest extends \MailPoetTest {
     expect($total)->equals(1);
   }
 
-  public function testItCanFindSubscribersInSegments() {
-    // create 3 subscribers, segments and subscriber-segment relations
-    $prepareData = function() {
-      $this->_after();
-      $subscriber = [];
-      $segment = [];
-      $subscriberSegment = [];
-      for ($i = 1; $i <= 3; $i++) {
-        $subscriber[$i] = Subscriber::create();
-        $subscriber[$i]->status = Subscriber::STATUS_SUBSCRIBED;
-        $subscriber[$i]->email = $i . '@test.com';
-        $subscriber[$i]->firstName = 'first ' . $i;
-        $subscriber[$i]->lastName = 'last ' . $i;
-        $subscriber[$i]->save();
-        $segment[$i] = Segment::create();
-        $segment[$i]->name = 'segment ' . $i;
-        $segment[$i]->save();
-        $subscriberSegment[$i] = SubscriberSegment::create();
-        $subscriberSegment[$i]->subscriberId = $subscriber[$i]->id;
-        $subscriberSegment[$i]->segmentId = (int)$segment[$i]->id;
-        $subscriberSegment[$i]->save();
-      }
-      return [
-        $subscriber,
-        $segment,
-        $subscriberSegment,
-      ];
-    };
-
-    // it should not find deleted and nonexistent subscribers
-    list($subscriber, $segment,) = $prepareData();
+  public function testItDoesNotFindDeletedOrNonexistentSubscribersInSegments() {
+    $subscriber = [];
+    $segment = [];
+    $subscriberSegment = [];
+    for ($i = 1; $i <= 3; $i++) {
+      $subscriber[$i] = Subscriber::create();
+      $subscriber[$i]->status = Subscriber::STATUS_SUBSCRIBED;
+      $subscriber[$i]->email = $i . '@test.com';
+      $subscriber[$i]->firstName = 'first ' . $i;
+      $subscriber[$i]->lastName = 'last ' . $i;
+      $subscriber[$i]->save();
+      $segment[$i] = Segment::create();
+      $segment[$i]->name = 'segment ' . $i;
+      $segment[$i]->save();
+      $subscriberSegment[$i] = SubscriberSegment::create();
+      $subscriberSegment[$i]->subscriberId = $subscriber[$i]->id;
+      $subscriberSegment[$i]->segmentId = (int)$segment[$i]->id;
+      $subscriberSegment[$i]->save();
+    }
     $subscriber[1]->deletedAt = date("Y-m-d H:i:s");
     $subscriber[1]->save();
     $subscriber[2]->delete();
@@ -748,9 +736,27 @@ class SubscriberTest extends \MailPoetTest {
     expect(Subscriber::extractSubscribersIds($subscribers))->equals(
       [$subscriber[3]->id]
     );
+  }
 
-    // it should not find subscribers with global unsubscribe status
-    list($subscriber, $segment,) = $prepareData();
+  public function testItDoesNotFindGloballyUnsubscribedSubscribersInSegments() {
+    $subscriber = [];
+    $segment = [];
+    $subscriberSegment = [];
+    for ($i = 1; $i <= 3; $i++) {
+      $subscriber[$i] = Subscriber::create();
+      $subscriber[$i]->status = Subscriber::STATUS_SUBSCRIBED;
+      $subscriber[$i]->email = $i . '@test.com';
+      $subscriber[$i]->firstName = 'first ' . $i;
+      $subscriber[$i]->lastName = 'last ' . $i;
+      $subscriber[$i]->save();
+      $segment[$i] = Segment::create();
+      $segment[$i]->name = 'segment ' . $i;
+      $segment[$i]->save();
+      $subscriberSegment[$i] = SubscriberSegment::create();
+      $subscriberSegment[$i]->subscriberId = $subscriber[$i]->id;
+      $subscriberSegment[$i]->segmentId = (int)$segment[$i]->id;
+      $subscriberSegment[$i]->save();
+    }
     $subscriber[2]->status = Subscriber::STATUS_UNSUBSCRIBED;
     $subscriber[2]->save();
     $subscribers = Subscriber::findSubscribersInSegments(
@@ -771,9 +777,27 @@ class SubscriberTest extends \MailPoetTest {
         $subscriber[3]->id,
       ]
     );
+  }
 
-    // it should not find subscribers unsubscribed from segment or when segment doesn't exist
-    list($subscriber, $segment, $subscriberSegment) = $prepareData();
+  public function testItShouldNotFindSubscribersUnsubscribedFromSegmentOrWhenSegmentDoesNotExist() {
+    $subscriber = [];
+    $segment = [];
+    $subscriberSegment = [];
+    for ($i = 1; $i <= 3; $i++) {
+      $subscriber[$i] = Subscriber::create();
+      $subscriber[$i]->status = Subscriber::STATUS_SUBSCRIBED;
+      $subscriber[$i]->email = $i . '@test.com';
+      $subscriber[$i]->firstName = 'first ' . $i;
+      $subscriber[$i]->lastName = 'last ' . $i;
+      $subscriber[$i]->save();
+      $segment[$i] = Segment::create();
+      $segment[$i]->name = 'segment ' . $i;
+      $segment[$i]->save();
+      $subscriberSegment[$i] = SubscriberSegment::create();
+      $subscriberSegment[$i]->subscriberId = $subscriber[$i]->id;
+      $subscriberSegment[$i]->segmentId = (int)$segment[$i]->id;
+      $subscriberSegment[$i]->save();
+    }
     $subscriberSegment[3]->status = Subscriber::STATUS_UNSUBSCRIBED;
     $subscriberSegment[3]->save();
     $subscriberSegment[2]->delete();
