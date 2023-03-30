@@ -61,7 +61,9 @@ export async function newsletterStatistics() {
   );
   describe(emailsPageTitle, () => {
     describe('should be able to see text no products sold', () => {
-      expect(page.locator('.mailpoet-tab-content > p:nth-child(1)').innerText()).to.contain(
+      expect(
+        page.locator('.mailpoet-tab-content > p:nth-child(1)').innerText(),
+      ).to.contain(
         'Unfortunately, no products were sold as a result of this email!',
       );
     });
@@ -82,6 +84,7 @@ export async function newsletterStatistics() {
     });
   });
 
+  // Thinking time and closing
   sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
   page.close();
   browser.close();
