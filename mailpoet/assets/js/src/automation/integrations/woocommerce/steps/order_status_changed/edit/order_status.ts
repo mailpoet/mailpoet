@@ -16,5 +16,5 @@ export function getOrderStatusOptions(): OrderStatusOptions {
   return Hooks.applyFilters(
     'mailpoet.automation.trigger.order_status_changed.order_status_options',
     options,
-  ) as OrderStatusOptions;
+  );
 }
