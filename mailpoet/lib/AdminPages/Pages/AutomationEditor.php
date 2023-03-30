@@ -128,10 +128,27 @@ class AutomationEditor {
       ];
     }
 
+    $filters = [];
+    foreach ($this->registry->getFilters() as $fieldType => $filter) {
+      $conditions = [];
+      foreach ($filter->getConditions() as $key => $label) {
+        $conditions[] = [
+          'key' => $key,
+          'label' => $label,
+        ];
+      }
+      $filters[$fieldType] = [
+        'field_type' => $filter->getFieldType(),
+        'conditions' => $conditions,
+        'args_schema' => $filter->getArgsSchema()->toArray(),
+      ];
+    }
+
     return [
       'steps' => $steps,
       'subjects' => $subjects,
       'fields' => $fields,
+      'filters' => $filters,
     ];
   }
 

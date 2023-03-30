@@ -41,6 +41,14 @@ export type Registry = {
       args: Record<string, unknown>;
     }
   >;
+  filters: Record<
+    string,
+    {
+      field_type: string;
+      conditions: { key: string; label: string }[];
+      args_schema: Record<string, unknown>;
+    }
+  >;
 };
 
 export type Context = Record<string, unknown>;
