@@ -175,6 +175,7 @@ class AutomationStorageTest extends \MailPoetTest {
   }
 
   public function _after() {
+    parent::_after();
     $this->diContainer->get(AutomationStorage::class)->truncate();
     $this->diContainer->get(AutomationRunStorage::class)->truncate();
     $this->diContainer->get(AutomationRunLogStorage::class)->truncate();

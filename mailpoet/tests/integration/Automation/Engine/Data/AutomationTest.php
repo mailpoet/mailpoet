@@ -76,6 +76,7 @@ class AutomationTest extends \MailPoetTest {
   }
 
   public function _after() {
+    parent::_after();
     $this->storage->truncate();
   }
 }

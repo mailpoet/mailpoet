@@ -162,6 +162,7 @@ class TriggerHandlerTest extends \MailPoetTest {
   }
 
   public function _after() {
+    parent::_after();
     $this->automationRunStorage->truncate();
     $this->automationStorage->truncate();
     $this->segmentRepository->truncate();

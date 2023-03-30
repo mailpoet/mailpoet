@@ -306,6 +306,7 @@ class ImportExportFactoryTest extends \MailPoetTest {
   }
 
   public function _after() {
+    parent::_after();
     $this->clearSubscribersCountCache();
   }
 }

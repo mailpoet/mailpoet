@@ -195,7 +195,7 @@ class WordpressMailerTest extends \MailPoetTest {
         'subscribersRepository' => $this->subscribersRepository,
       ],
       [
-        'postSend' => function() { throw new \Exception('Some strange error in mailer'); 
+        'postSend' => function() { throw new \Exception('Some strange error in mailer');
         },
       ]
     );
@@ -342,6 +342,7 @@ class WordpressMailerTest extends \MailPoetTest {
   }
 
   public function _after() {
+    parent::_after();
     $this->subscribersRepository->truncate();
   }
 }

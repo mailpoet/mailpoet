@@ -123,6 +123,7 @@ class SendingQueueTest extends \MailPoetTest {
   }
 
   public function _after() {
+    parent::_after();
     ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
     ORM::raw_execute('TRUNCATE ' . ScheduledTaskSubscriber::$_table);
     ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);

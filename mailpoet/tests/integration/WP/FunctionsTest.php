@@ -96,6 +96,7 @@ class FunctionsTest extends \MailPoetTest {
   }
 
   public function _after() {
+    parent::_after();
     global $content_width; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     $content_width = $this->contentWidth; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
   }

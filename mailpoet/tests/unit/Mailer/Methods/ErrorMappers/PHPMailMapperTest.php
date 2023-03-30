@@ -42,6 +42,7 @@ class PHPMailMapperTest extends \MailPoetUnitTest {
   }
 
   public function _after() {
+    parent::_after();
     WPFunctions::set(new WPFunctions);
   }
 }

@@ -56,6 +56,6 @@ class WooCommerceSyncTest extends \MailPoetTest {
   }
 
   public function _after() {
-    $this->tester->deleteTestWooOrders();
+    parent::_after();
   }
 }

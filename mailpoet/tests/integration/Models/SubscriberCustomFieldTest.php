@@ -77,6 +77,7 @@ class SubscriberCustomFieldTest extends \MailPoetTest {
   }
 
   public function _after() {
+    parent::_after();
     SubscriberCustomField::deleteMany();
   }
 }

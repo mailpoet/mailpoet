@@ -22,6 +22,7 @@ class HeadersAlreadySentNoticeTest extends \MailPoetTest {
   }
 
   public function _after() {
+    parent::_after();
     delete_transient(HeadersAlreadySentNotice::OPTION_NAME);
   }
 

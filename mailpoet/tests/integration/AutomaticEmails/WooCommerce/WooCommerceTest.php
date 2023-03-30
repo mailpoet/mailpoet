@@ -102,6 +102,7 @@ class WooCommerceTest extends \MailPoetTest {
   }
 
   public function _after() {
+    parent::_after();
     $wp = new WPFunctions;
     $wp->removeAllFilters('mailpoet_newsletter_shortcode');
     $wp->removeAllFilters('woocommerce_payment_complete');

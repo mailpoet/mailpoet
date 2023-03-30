@@ -429,7 +429,8 @@ class ImportExportRepositoryTest extends \MailPoetTest {
     }
   }
 
-  protected function _after() {
+  public function _after() {
+    parent::_after();
     $this->cleanup();
   }
 

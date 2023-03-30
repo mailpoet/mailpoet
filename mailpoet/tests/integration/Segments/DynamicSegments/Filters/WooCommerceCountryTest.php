@@ -145,15 +145,11 @@ class WooCommerceCountryTest extends \MailPoetTest {
   }
 
   public function _after(): void {
+    parent::_after();
     $this->cleanUp();
   }
 
   private function cleanup(): void {
-    $emails = ['customer1@example.com', 'customer2@example.com', 'customer3@example.com', 'customer4@example.com'];
-    foreach ($emails as $email) {
-      $this->tester->deleteWordPressUser($email);
-    }
-    $this->tester->deleteTestWooOrders();
     $this->cleanUpLookUpTables();
   }
 }

@@ -104,6 +104,7 @@ class RendererTest extends \MailPoetTest {
   }
 
   public function _after() {
+    parent::_after();
     $this->_removeAssetsManifests();
   }
 

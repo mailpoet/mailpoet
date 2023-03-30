@@ -237,6 +237,7 @@ class ViewInBrowserControllerTest extends \MailPoetTest {
   }
 
   public function _after() {
+    parent::_after();
     // reset WP user role
     $wpUser = wp_get_current_user();
     $wpUser->add_role('administrator');
