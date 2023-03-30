@@ -18,6 +18,7 @@ use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Scheduler\AutomationEmailScheduler;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\SubscriberSegmentRepository;
+use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Validator\Builder;
 use MailPoet\Validator\Schema\ObjectSchema;
 use Throwable;
@@ -34,6 +35,9 @@ class SendEmailAction implements Action {
   /** @var SubscriberSegmentRepository */
   private $subscriberSegmentRepository;
 
+  /** @var SubscribersRepository  */
+  private $subscribersRepository;
+
   /** @var AutomationEmailScheduler */
   private $automationEmailScheduler;
 
@@ -41,11 +45,13 @@ class SendEmailAction implements Action {
     SettingsController $settings,
     NewslettersRepository $newslettersRepository,
     SubscriberSegmentRepository $subscriberSegmentRepository,
+    SubscribersRepository $subscribersRepository,
     AutomationEmailScheduler $automationEmailScheduler
   ) {
     $this->settings = $settings;
     $this->newslettersRepository = $newslettersRepository;
     $this->subscriberSegmentRepository = $subscriberSegmentRepository;
+    $this->subscribersRepository = $subscribersRepository;
     $this->automationEmailScheduler = $automationEmailScheduler;
   }
 
@@ -120,17 +126,17 @@ class SendEmailAction implements Action {
       'status' => SubscriberEntity::STATUS_SUBSCRIBED,
     ]);
 
-    if (!$subscriberSegment) {
+    if ($newsletter->getType() !== NewsletterEntity::TYPE_TRANSACTIONAL && !$subscriberSegment) {
       throw InvalidStateException::create()->withMessage(sprintf("Subscriber ID '%s' is not subscribed to segment ID '%s'.", $subscriberId, $segmentId));
     }
 
-    $subscriber = $subscriberSegment->getSubscriber();
+    $subscriber = $subscriberSegment ? $subscriberSegment->getSubscriber() : $this->subscribersRepository->findOneById($subscriberId);
     if (!$subscriber) {
       throw InvalidStateException::create();
     }
 
     $subscriberStatus = $subscriber->getStatus();
-    if ($subscriberStatus !== SubscriberEntity::STATUS_SUBSCRIBED) {
+    if ($newsletter->getType() !== NewsletterEntity::TYPE_TRANSACTIONAL && $subscriberStatus !== SubscriberEntity::STATUS_SUBSCRIBED) {
       throw InvalidStateException::create()->withMessage(sprintf("Cannot schedule a newsletter for subscriber ID '%s' because their status is '%s'.", $subscriberId, $subscriberStatus));
     }
 
