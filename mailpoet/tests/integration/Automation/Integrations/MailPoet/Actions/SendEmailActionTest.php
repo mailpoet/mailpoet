@@ -272,13 +272,13 @@ class SendEmailActionTest extends \MailPoetTest {
 
     $automation = (new AutomationFactory())->withSteps(...$steps)->create();
     $data = [
-        'steps' => array_map(
-          function(Step $step): array {
-            return $step->toArray();
-          },
-          $automation->getSteps()
+      'steps' => array_map(
+        function(Step $step): array {
+          return $step->toArray();
+        },
+        $automation->getSteps()
 
-        ),
+      ),
     ];
 
     $controller->updateAutomation(
