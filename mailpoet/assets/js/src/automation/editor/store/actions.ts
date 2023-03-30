@@ -18,9 +18,11 @@ const trackErrors = (errors) => {
   const payload = Object.keys(errors.steps as object).map((stepId) => {
     const error = errors.steps[stepId];
     const stepKey = select(storeName).getStepById(stepId)?.key;
-    const fields = Object.keys(error.fields as object)
-      .map((field) => `${stepKey}/${field}`)
-      .reduce((prev, next) => prev.concat(next));
+    const fields = error.fields.length
+      ? Object.keys(error.fields as object)
+          .map((field) => `${stepKey}/${field}`)
+          .reduce((prev, next) => prev.concat(next))
+      : `${stepKey}:no_specific_field`;
     return fields;
   });
 
