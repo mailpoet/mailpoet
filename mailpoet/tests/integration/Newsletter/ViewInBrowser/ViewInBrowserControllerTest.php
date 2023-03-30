@@ -68,6 +68,7 @@ class ViewInBrowserControllerTest extends \MailPoetTest {
     $subscriber->setLastName('Last');
     $this->subscribersRepository->persist($subscriber);
     $this->subscribersRepository->flush();
+    $this->subscriber = $subscriber;
 
     // create task & queue
     $sendingTask = SendingTask::create();
@@ -148,11 +149,12 @@ class ViewInBrowserControllerTest extends \MailPoetTest {
   }
 
   public function testItSetsSubscriberToLoggedInWPUserWhenPreviewIsEnabled() {
+    $subscriberId = $this->subscriber->getId();
     $viewInBrowserRenderer = $this->make(ViewInBrowserRenderer::class, [
-      'render' => Expected::once(function (bool $isPreview, NewsletterEntity $newsletter, SubscriberEntity $subscriber = null, SendingQueueEntity $queue = null) {
+      'render' => Expected::once(function (bool $isPreview, NewsletterEntity $newsletter, SubscriberEntity $subscriber = null, SendingQueueEntity $queue = null) use ($subscriberId) {
         $this->assertNotNull($subscriber); // PHPStan
         expect($subscriber)->notNull();
-        expect($subscriber->getId())->equals(1);
+        expect($subscriber->getId())->equals($subscriberId);
       }),
     ]);
 
