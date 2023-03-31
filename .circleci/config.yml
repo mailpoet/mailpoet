@@ -531,7 +531,7 @@ jobs:
             fi
       - store_artifacts:
           path: tests/performance/_output
-      - store_screenshots:
+      - store_artifacts:
           path: tests/performance/_screenshots
       - store_test_results:
           path: tests/performance/_output
