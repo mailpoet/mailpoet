@@ -721,6 +721,39 @@ class SchedulerTest extends \MailPoetTest {
     expect($refetchedTask->scheduledAt)->lessThan(Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'))->addHours(1));
   }
 
+  /**
+   * @dataProvider dataForTestItSchedulesTransactionalEmails
+   */
+  public function testItSchedulesTransactionalEmails(string $subscriberStatus, bool $isExpectedToBeScheduled) {
+
+    $newsletter = $this->_createNewsletter(NewsletterEntity::TYPE_TRANSACTIONAL, Newsletter::STATUS_SCHEDULED);
+    $subscriber = $this->_createSubscriber(null, $subscriberStatus);
+    $queue = $this->_createQueue($newsletter->id);
+    $queue->setSubscribers([$subscriber->id]);
+    $queue->scheduledAt = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
+    $queue->save();
+
+    $this->assertSame(SendingQueue::STATUS_SCHEDULED, $queue->status);
+    $this->assertSame([$subscriber->id], $queue->getSubscribers());
+    $scheduler = $this->diContainer->get(Scheduler::class);
+    $scheduler->process();
+
+    $queue = SendingTask::getByNewsletterId($newsletter->id);
+    $isExpectedToBeScheduled ?
+      $this->assertSame(null, $queue->status)
+      : $this->assertFalse($queue);
+  }
+
+  public function dataForTestItSchedulesTransactionalEmails(): array {
+    return [
+      SubscriberEntity::STATUS_INACTIVE => [SubscriberEntity::STATUS_INACTIVE, true],
+      SubscriberEntity::STATUS_SUBSCRIBED => [SubscriberEntity::STATUS_SUBSCRIBED, true],
+      SubscriberEntity::STATUS_BOUNCED => [SubscriberEntity::STATUS_BOUNCED, false],
+      SubscriberEntity::STATUS_UNSUBSCRIBED => [SubscriberEntity::STATUS_UNSUBSCRIBED, true],
+      SubscriberEntity::STATUS_UNCONFIRMED => [SubscriberEntity::STATUS_UNCONFIRMED, true],
+    ];
+  }
+
   public function testItProcessesScheduledJobsWhenNewsletterIsScheduled() {
     $newsletter = $this->_createNewsletter(Newsletter::TYPE_STANDARD, Newsletter::STATUS_SCHEDULED);
     $queue = $this->_createQueue($newsletter->id);
