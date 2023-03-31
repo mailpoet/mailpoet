@@ -3,7 +3,11 @@ import { commentAuthorAvatar } from '@wordpress/icons';
 import { StepType } from '../../../../editor/store';
 import { Edit } from './edit';
 
-const keywords = ['subscribe', 'new subscriber', 'subscription'];
+const keywords = [
+  __('subscribe', 'mailpoet'),
+  __('new subscriber', 'mailpoet'),
+  __('subscription', 'mailpoet'),
+];
 export const step: StepType = {
   key: 'mailpoet:someone-subscribes',
   group: 'triggers',

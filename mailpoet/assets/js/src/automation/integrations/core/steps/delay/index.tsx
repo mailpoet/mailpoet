@@ -12,7 +12,12 @@ const getDelayInformation = (delayTypeValue: string, value: number): string =>
     return current.subtitle(value);
   }, '');
 
-const keywords = ['wait', 'pause', 'delay', 'time'];
+const keywords = [
+  __('wait', 'mailpoet'),
+  __('pause', 'mailpoet'),
+  __('delay', 'mailpoet'),
+  __('time', 'mailpoet'),
+];
 export const step: StepType = {
   key: 'core:delay',
   group: 'actions',

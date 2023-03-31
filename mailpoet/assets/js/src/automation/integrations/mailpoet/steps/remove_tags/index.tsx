@@ -5,12 +5,9 @@ import { LockedBadge } from '../../../../../common/premium_modal/locked_badge';
 import { PremiumModalForStepEdit } from '../../../../../common/premium_modal';
 
 const keywords = [
-  'tag',
-  'tags',
-  'label',
-  'labels',
-  'remove tag',
-  'remove tags',
+  __('tag', 'mailpoet'),
+  __('remove tag', 'mailpoet'),
+  __('remove tags', 'mailpoet'),
 ];
 export const step: StepType = {
   key: 'mailpoet:remove-tag',

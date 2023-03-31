@@ -4,7 +4,11 @@ import { StepType } from '../../../../editor/store/types';
 import { PremiumModalForStepEdit } from '../../../../../common/premium_modal';
 import { LockedBadge } from '../../../../../common/premium_modal/locked_badge';
 
-const keywords = ['update', 'update subscriber', 'update custom field'];
+const keywords = [
+  __('update', 'mailpoet'),
+  __('update subscriber', 'mailpoet'),
+  __('update custom field', 'mailpoet'),
+];
 export const step: StepType = {
   key: 'mailpoet:update-subscriber',
   group: 'actions',
