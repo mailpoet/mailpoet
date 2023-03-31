@@ -15,7 +15,7 @@ import { newsletterSending } from './tests/newsletter-sending.js';
 import { listsViewSubscribers } from './tests/lists-view-subscribers.js';
 import { listsComplexSegment } from './tests/lists-complex-segment.js';
 import { newsletterStatistics } from './tests/newsletter-statistics.js';
-import { onboardingWizzard } from './tests/onboarding-wizzard.js';
+import { onboardingWizard } from './tests/onboarding-wizard.js';
 
 // Scenarios, Thresholds and Tags
 export let options = {
@@ -64,7 +64,7 @@ if (scenario) {
 
 // Run those tests against a pull request build
 export async function pullRequests() {
-  await onboardingWizzard();
+  await onboardingWizard();
   await newsletterListing();
   await subscribersListing();
   await settingsBasic();
