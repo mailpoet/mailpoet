@@ -9,7 +9,11 @@ import { SendMailIcon } from './icons/send_mail';
 import { TransactionalIcon } from './icons/transactional';
 import { MarketingIcon } from './icons/marketing';
 
-const keywords = ['email', 'send email', 'send'];
+const keywords = [
+  __('email', 'mailpoet'),
+  __('send email', 'mailpoet'),
+  __('send', 'mailpoet'),
+];
 export const step: StepType = {
   key: 'mailpoet:send-email',
   group: 'actions',

@@ -4,7 +4,11 @@ import { StepType } from '../../../../editor/store/types';
 import { PremiumModalForStepEdit } from '../../../../../common/premium_modal';
 import { LockedBadge } from '../../../../../common/premium_modal/locked_badge';
 
-const keywords = ['list', 'remove list', 'remove from list'];
+const keywords = [
+  __('list', 'mailpoet'),
+  __('remove list', 'mailpoet'),
+  __('remove from list', 'mailpoet'),
+];
 export const step: StepType = {
   key: 'mailpoet:remove-from-list',
   group: 'actions',

@@ -4,7 +4,11 @@ import { StepType } from '../../../../editor/store/types';
 import { PremiumModalForStepEdit } from '../../../../../common/premium_modal';
 import { LockedBadge } from '../../../../../common/premium_modal/locked_badge';
 
-const keywords = ['list', 'add list', 'add to list'];
+const keywords = [
+  __('list', 'mailpoet'),
+  __('add list', 'mailpoet'),
+  __('add to list', 'mailpoet'),
+];
 export const step: StepType = {
   key: 'mailpoet:add-to-list',
   group: 'actions',

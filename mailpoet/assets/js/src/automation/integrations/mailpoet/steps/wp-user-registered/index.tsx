@@ -3,7 +3,11 @@ import { wordpress } from '@wordpress/icons';
 import { StepType } from '../../../../editor/store';
 import { Edit } from './edit';
 
-const keywords = ['wordpress', 'user', 'register'];
+const keywords = [
+  __('wordpress', 'mailpoet'),
+  __('user', 'mailpoet'),
+  __('register', 'mailpoet'),
+];
 export const step: StepType = {
   key: 'mailpoet:wp-user-registered',
   group: 'triggers',

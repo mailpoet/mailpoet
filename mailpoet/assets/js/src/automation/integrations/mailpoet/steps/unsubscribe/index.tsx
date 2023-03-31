@@ -4,7 +4,7 @@ import { LockedBadge } from '../../../../../common/premium_modal/locked_badge';
 import { PremiumModalForStepEdit } from '../../../../../common/premium_modal';
 import { Icon } from './icon';
 
-const keywords = ['unsubscribe'];
+const keywords = [__('unsubscribe', 'mailpoet')];
 export const step: StepType = {
   key: 'mailpoet:unsubscribe',
   group: 'actions',

@@ -3,7 +3,12 @@ import { StepType } from '../../../../editor/store';
 import { Edit } from './edit';
 import { Icon } from './icon';
 
-const keywords = ['woocommerce', 'order', 'status', 'change'];
+const keywords = [
+  __('woocommerce', 'mailpoet'),
+  __('order', 'mailpoet'),
+  __('status', 'mailpoet'),
+  __('change', 'mailpoet'),
+];
 export const step: StepType = {
   key: 'woocommerce:order-status-changed',
   group: 'triggers',
