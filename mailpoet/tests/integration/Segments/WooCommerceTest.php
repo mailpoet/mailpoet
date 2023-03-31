@@ -604,6 +604,7 @@ class WooCommerceTest extends \MailPoetTest {
   }
 
   public function _after(): void {
+    parent::_after();
     $this->cleanData();
     $this->removeCustomerRole();
   }
