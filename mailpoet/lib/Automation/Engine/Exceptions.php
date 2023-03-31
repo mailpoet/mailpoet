@@ -9,7 +9,6 @@ use MailPoet\Automation\Engine\Exceptions\UnexpectedValueException;
 use MailPoet\Automation\Engine\Utils\Json;
 
 class Exceptions {
-  private const MIGRATION_FAILED = 'mailpoet_automation_migration_failed';
   private const DATABASE_ERROR = 'mailpoet_automation_database_error';
   private const JSON_NOT_OBJECT = 'mailpoet_automation_json_not_object';
   private const AUTOMATION_NOT_FOUND = 'mailpoet_automation_not_found';
@@ -41,13 +40,6 @@ class Exceptions {
     throw new InvalidStateException(
       "This is a static factory class. Use it via 'Exception::someError()' factories."
     );
-  }
-
-  public static function migrationFailed(string $error): InvalidStateException {
-    return InvalidStateException::create()
-      ->withErrorCode(self::MIGRATION_FAILED)
-      // translators: %s is the error message.
-      ->withMessage(sprintf(__('Migration failed: %s', 'mailpoet'), $error));
   }
 
   public static function databaseError(string $error): InvalidStateException {
