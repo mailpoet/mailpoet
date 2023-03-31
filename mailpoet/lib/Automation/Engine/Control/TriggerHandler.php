@@ -17,12 +17,6 @@ class TriggerHandler {
   /** @var ActionScheduler */
   private $actionScheduler;
 
-  /** @var SubjectLoader */
-  private $subjectLoader;
-
-  /** @var WordPress */
-  private $wordPress;
-
   /** @var AutomationStorage */
   private $automationStorage;
 
@@ -32,25 +26,31 @@ class TriggerHandler {
   /** @var Functions  */
   private $wp;
 
+  /** @var SubjectLoader */
+  private $subjectLoader;
+
   /** @var SubjectTransformerHandler */
   private $subjectTransformerHandler;
 
+  /** @var WordPress */
+  private $wordPress;
+
   public function __construct(
     ActionScheduler $actionScheduler,
-    SubjectLoader $subjectLoader,
-    WordPress $wordPress,
     AutomationStorage $automationStorage,
     AutomationRunStorage $automationRunStorage,
     Functions $wp,
-    SubjectTransformerHandler $subjectTransformerHandler
+    SubjectLoader $subjectLoader,
+    SubjectTransformerHandler $subjectTransformerHandler,
+    WordPress $wordPress
   ) {
     $this->actionScheduler = $actionScheduler;
-    $this->wordPress = $wordPress;
     $this->automationStorage = $automationStorage;
     $this->automationRunStorage = $automationRunStorage;
-    $this->subjectLoader = $subjectLoader;
     $this->wp = $wp;
+    $this->subjectLoader = $subjectLoader;
     $this->subjectTransformerHandler = $subjectTransformerHandler;
+    $this->wordPress = $wordPress;
   }
 
   public function initialize(): void {
@@ -64,12 +64,9 @@ class TriggerHandler {
       return;
     }
 
-    // ensure subjects are registered and loadable
+    // expand all subject transformations and load subject entries
     $subjects = $this->subjectTransformerHandler->getAllSubjects($subjects);
     $subjectEntries = $this->subjectLoader->getSubjectsEntries($subjects);
-    foreach ($subjectEntries as $entry) {
-      $entry->getPayload();
-    }
 
     foreach ($automations as $automation) {
       $step = $automation->getTrigger($trigger->getKey());
