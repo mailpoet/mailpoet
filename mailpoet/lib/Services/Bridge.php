@@ -310,10 +310,10 @@ class Bridge {
       $premiumState = $this->checkPremiumKey($premiumKey);
       $this->storePremiumKeyAndState($premiumKey, $premiumState);
     }
-    if ($apiKey && !empty($apiKeyState) && $apiKeyState['state'] === self::KEY_VALID) {
+    if ($apiKey && !empty($apiKeyState) && in_array($apiKeyState['state'], [self::KEY_VALID, self::KEY_VALID_UNDERPRIVILEGED], true)) {
       return $this->updateSubscriberCount($apiKey);
     }
-    if ($premiumKey && !empty($premiumState) && $premiumState['state'] === self::KEY_VALID) {
+    if ($premiumKey && !empty($premiumState) && in_array($premiumState['state'], [self::KEY_VALID, self::KEY_VALID_UNDERPRIVILEGED], true)) {
       return $this->updateSubscriberCount($apiKey);
     }
   }
