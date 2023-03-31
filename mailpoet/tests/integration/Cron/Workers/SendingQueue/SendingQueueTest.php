@@ -976,6 +976,42 @@ class SendingQueueTest extends \MailPoetTest {
     expect($sendingQueue->getCountTotal())->equals(0);
   }
 
+  /**
+   * @dataProvider dataForTestItSendsTransactionalEmails
+   */
+  public function testItSendsTransactionalEmails(string $subscriberStatus, bool $expectSending) {
+
+    $this->newsletter->type = NewsletterEntity::TYPE_TRANSACTIONAL;
+    $this->newsletter->save();
+    $this->newsletterSegment->delete();
+    $sendingQueueWorker = $this->sendingQueueWorker;
+    $sendingQueueWorker->mailerTask = $this->construct(
+      MailerTask::class,
+      [$this->diContainer->get(MailerFactory::class)],
+      ['send' => $this->mailerTaskDummyResponse]
+    );
+
+    $subscriber = $this->subscriber;
+    $subscriber->setStatus($subscriberStatus);
+    $this->entityManager->flush();
+    $sendingQueueWorker->process();
+
+    $sendingQueue = $this->sendingQueuesRepository->findOneById($this->queue->id);
+    $this->assertInstanceOf(SendingQueueEntity::class, $sendingQueue);
+    $this->sendingQueuesRepository->refresh($sendingQueue);
+    expect($sendingQueue->getCountTotal())->equals($expectSending ? 1 : 0);
+  }
+
+  public function dataForTestItSendsTransactionalEmails(): array {
+    return [
+      SubscriberEntity::STATUS_UNCONFIRMED => [SubscriberEntity::STATUS_UNCONFIRMED, true],
+      SubscriberEntity::STATUS_SUBSCRIBED => [SubscriberEntity::STATUS_SUBSCRIBED, true],
+      SubscriberEntity::STATUS_UNSUBSCRIBED => [SubscriberEntity::STATUS_UNSUBSCRIBED, true],
+      SubscriberEntity::STATUS_BOUNCED => [SubscriberEntity::STATUS_BOUNCED, false],
+      SubscriberEntity::STATUS_INACTIVE => [SubscriberEntity::STATUS_INACTIVE, true],
+    ];
+  }
+
   public function testItDoesNotSendToGloballyUnsubscribedSubscribers() {
     $sendingQueueWorker = $this->sendingQueueWorker;
     $sendingQueueWorker->mailerTask = $this->construct(
