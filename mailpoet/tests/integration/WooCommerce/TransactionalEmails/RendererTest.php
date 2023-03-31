@@ -12,6 +12,7 @@ use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Renderer\Preprocessor;
 use MailPoet\Newsletter\Renderer\Renderer as NewsletterRenderer;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
+use MailPoet\Newsletter\Shortcodes\Shortcodes as NewsletterShortcodes;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\csstidy;
 
@@ -44,7 +45,7 @@ class RendererTest extends \MailPoetTest {
   }
 
   public function testGetHTMLBeforeContent() {
-    $renderer = new Renderer(new csstidy, $this->getNewsletterRenderer());
+    $renderer = $this->getRenderer();
     $renderer->render($this->newsletter, 'Heading Text');
     $html = $renderer->getHTMLBeforeContent();
     expect($html)->stringContainsString('Some text before heading');
@@ -54,7 +55,7 @@ class RendererTest extends \MailPoetTest {
   }
 
   public function testGetHTMLAfterContent() {
-    $renderer = new Renderer(new csstidy, $this->getNewsletterRenderer());
+    $renderer = $this->getRenderer();
     $renderer->render($this->newsletter, 'Heading Text');
     $html = $renderer->getHTMLAfterContent();
     expect($html)->stringNotContainsString('Some text before heading');
@@ -74,7 +75,7 @@ class RendererTest extends \MailPoetTest {
       ]),
     ]);
     $this->newslettersRepository->persist($this->newsletter);
-    $renderer = new Renderer(new csstidy, $this->getNewsletterRenderer());
+    $renderer = $this->getRenderer();
     $renderer->render($this->newsletter, 'Heading Text');
     $html = $renderer->getHTMLAfterContent();
     expect($html)->stringContainsString('Heading Text');
@@ -82,7 +83,7 @@ class RendererTest extends \MailPoetTest {
   }
 
   public function testPrefixCss() {
-    $renderer = new Renderer(new csstidy, $this->diContainer->get(NewsletterRenderer::class));
+    $renderer = $this->getRenderer(true);
     $css = $renderer->prefixCss('
       #some_id {color: black}
       .some-class {height: 50px; width: 30px}
@@ -112,7 +113,7 @@ class RendererTest extends \MailPoetTest {
       ]),
     ]);
     $this->newslettersRepository->persist($this->newsletter);
-    $renderer = new Renderer(new csstidy, $this->getNewsletterRenderer());
+    $renderer = $this->getRenderer();
     $renderer->render($this->newsletter, 'Heading Text');
     $html = $renderer->getHTMLAfterContent();
 
@@ -151,6 +152,15 @@ class RendererTest extends \MailPoetTest {
       $this->diContainer->get(LoggerFactory::class),
       $this->diContainer->get(NewslettersRepository::class),
       $this->diContainer->get(SendingQueuesRepository::class)
+    );
+  }
+
+  private function getRenderer($useNewsletterDI = false) {
+    $newsletterRenderer = $useNewsletterDI ? $this->diContainer->get(NewsletterRenderer::class) : $this->getNewsletterRenderer();
+    return new Renderer(
+      new csstidy,
+      $newsletterRenderer,
+      $this->diContainer->get(NewsletterShortcodes::class)
     );
   }
 }
