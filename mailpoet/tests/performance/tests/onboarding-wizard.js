@@ -81,6 +81,12 @@ export async function onboardingWizard() {
     });
   });
 
+  // Take a screenshot of the finished test
+  await page.screenshot({
+    path: 'tests/performance/_screenshots/01_Onboarding_Wizard.png',
+    fullPage: 'true',
+  });
+
   // Thinking time and closing
   sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
   page.close();
