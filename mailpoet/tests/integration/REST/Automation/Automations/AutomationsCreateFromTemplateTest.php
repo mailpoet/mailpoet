@@ -88,7 +88,7 @@ class AutomationsCreateFromTemplateTest extends AutomationTest {
   }
 
   public function _after() {
-    $this->automationStorage->truncate();
     parent::_after();
+    $this->automationStorage->truncate();
   }
 }

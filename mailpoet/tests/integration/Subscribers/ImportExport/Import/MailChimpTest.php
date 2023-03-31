@@ -178,6 +178,7 @@ class MailChimpTest extends \MailPoetTest {
   }
 
   public function _after(): void {
+    parent::_after();
     WPFunctions::set(new WPFunctions);
   }
 }
