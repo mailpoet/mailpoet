@@ -27,6 +27,7 @@ class Exceptions {
   private const MULTIPLE_PAYLOADS_FOUND = 'mailpoet_automation_multiple_payloads_found';
   private const FIELD_NOT_FOUND = 'mailpoet_automation_field_not_found';
   private const FIELD_LOAD_FAILED = 'mailpoet_automation_field_load_failed';
+  private const FILTER_NOT_FOUND = 'mailpoet_automation_filter_not_found';
   private const AUTOMATION_STRUCTURE_MODIFICATION_NOT_SUPPORTED = 'mailpoet_automation_structure_modification_not_supported';
   private const AUTOMATION_STRUCTURE_NOT_VALID = 'mailpoet_automation_structure_not_valid';
   private const AUTOMATION_STEP_MODIFIED_WHEN_UNKNOWN = 'mailpoet_automation_step_modified_when_unknown';
@@ -181,6 +182,13 @@ class Exceptions {
       ->withErrorCode(self::FIELD_LOAD_FAILED)
       // translators: %1$s is the key of the field, %2$s its arguments.
       ->withMessage(sprintf(__('Field with key "%1$s" and args "%2$s" failed to load.', 'mailpoet'), $key, Json::encode($args)));
+  }
+
+  public static function filterNotFound(string $fieldType): NotFoundException {
+    return NotFoundException::create()
+      ->withErrorCode(self::FILTER_NOT_FOUND)
+      // translators: %s is the type of the field for which a filter was not found.
+      ->withMessage(sprintf(__("Filter for field of type '%s' not found.", 'mailpoet'), $fieldType));
   }
 
   public static function automationStructureModificationNotSupported(): UnexpectedValueException {

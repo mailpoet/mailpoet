@@ -28,6 +28,9 @@ class TriggerHandler {
   /** @var SubjectTransformerHandler */
   private $subjectTransformerHandler;
 
+  /** @var FilterHandler */
+  private $filterHandler;
+
   /** @var WordPress */
   private $wordPress;
 
@@ -37,6 +40,7 @@ class TriggerHandler {
     AutomationRunStorage $automationRunStorage,
     SubjectLoader $subjectLoader,
     SubjectTransformerHandler $subjectTransformerHandler,
+    FilterHandler $filterHandler,
     WordPress $wordPress
   ) {
     $this->actionScheduler = $actionScheduler;
@@ -44,6 +48,7 @@ class TriggerHandler {
     $this->automationRunStorage = $automationRunStorage;
     $this->subjectLoader = $subjectLoader;
     $this->subjectTransformerHandler = $subjectTransformerHandler;
+    $this->filterHandler = $filterHandler;
     $this->wordPress = $wordPress;
   }
 
@@ -70,6 +75,11 @@ class TriggerHandler {
 
       $automationRun = new AutomationRun($automation->getId(), $automation->getVersionId(), $trigger->getKey(), $subjects);
       $stepRunArgs = new StepRunArgs($automation, $automationRun, $step, $subjectEntries);
+
+      if (!$this->filterHandler->matchesFilters($stepRunArgs)) {
+        continue;
+      }
+
       $createAutomationRun = $trigger->isTriggeredBy($stepRunArgs);
       $createAutomationRun = $this->wordPress->applyFilters(
         Hooks::AUTOMATION_RUN_CREATE,
