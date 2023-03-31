@@ -59,8 +59,12 @@ class TriggerHandler {
 
   /** @param Subject[] $subjects */
   public function processTrigger(Trigger $trigger, array $subjects): void {
-    $subjects = $this->subjectTransformerHandler->getAllSubjects($subjects);
     $automations = $this->automationStorage->getActiveAutomationsByTrigger($trigger);
+    if (!$automations) {
+      return;
+    }
+
+    $subjects = $this->subjectTransformerHandler->getAllSubjects($subjects);
     foreach ($automations as $automation) {
       $step = $automation->getTrigger($trigger->getKey());
       if (!$step) {
