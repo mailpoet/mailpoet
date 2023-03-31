@@ -64,17 +64,17 @@ class TriggerHandler {
       return;
     }
 
+    // ensure subjects are registered and loadable
     $subjects = $this->subjectTransformerHandler->getAllSubjects($subjects);
+    $subjectEntries = $this->subjectLoader->getSubjectsEntries($subjects);
+    foreach ($subjectEntries as $entry) {
+      $entry->getPayload();
+    }
+
     foreach ($automations as $automation) {
       $step = $automation->getTrigger($trigger->getKey());
       if (!$step) {
         throw Exceptions::automationTriggerNotFound($automation->getId(), $trigger->getKey());
-      }
-
-      // ensure subjects are registered and loadable
-      $subjectEntries = $this->subjectLoader->getSubjectsEntries($subjects);
-      foreach ($subjectEntries as $entry) {
-        $entry->getPayload();
       }
 
       $automationRun = new AutomationRun($automation->getId(), $automation->getVersionId(), $trigger->getKey(), $subjects);
