@@ -25,6 +25,8 @@ class Exceptions {
   private const MULTIPLE_SUBJECTS_FOUND = 'mailpoet_automation_multiple_subjects_found';
   private const PAYLOAD_NOT_FOUND = 'mailpoet_automation_payload_not_found';
   private const MULTIPLE_PAYLOADS_FOUND = 'mailpoet_automation_multiple_payloads_found';
+  private const FIELD_NOT_FOUND = 'mailpoet_automation_field_not_found';
+  private const FIELD_LOAD_FAILED = 'mailpoet_automation_field_load_failed';
   private const AUTOMATION_STRUCTURE_MODIFICATION_NOT_SUPPORTED = 'mailpoet_automation_structure_modification_not_supported';
   private const AUTOMATION_STRUCTURE_NOT_VALID = 'mailpoet_automation_structure_not_valid';
   private const AUTOMATION_STEP_MODIFIED_WHEN_UNKNOWN = 'mailpoet_automation_step_modified_when_unknown';
@@ -165,6 +167,20 @@ class Exceptions {
       ->withMessage(
         sprintf(__("Multiple payloads of class '%1\$s' found for automation run with ID '%2\$d'.", 'mailpoet'), $class, $automationRunId)
       );
+  }
+
+  public static function fieldNotFound(string $key): NotFoundException {
+    return NotFoundException::create()
+      ->withErrorCode(self::FIELD_NOT_FOUND)
+      // translators: %s is the key of the field not found.
+      ->withMessage(sprintf(__("Field with key '%s' not found.", 'mailpoet'), $key));
+  }
+
+  public static function fieldLoadFailed(string $key, array $args): InvalidStateException {
+    return InvalidStateException::create()
+      ->withErrorCode(self::FIELD_LOAD_FAILED)
+      // translators: %1$s is the key of the field, %2$s its arguments.
+      ->withMessage(sprintf(__('Field with key "%1$s" and args "%2$s" failed to load.', 'mailpoet'), $key, Json::encode($args)));
   }
 
   public static function automationStructureModificationNotSupported(): UnexpectedValueException {

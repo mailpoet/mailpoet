@@ -6,6 +6,7 @@ use MailPoet\Automation\Engine\Exceptions;
 use MailPoet\Automation\Engine\Exceptions\InvalidStateException;
 use MailPoet\Automation\Engine\Integration\Payload;
 use MailPoet\Automation\Engine\Integration\Subject;
+use Throwable;
 
 class StepRunArgs {
   /** @var Automation */
@@ -23,6 +24,12 @@ class StepRunArgs {
   /** @var array<class-string, string> */
   private $subjectKeyClassMap = [];
 
+  /** @var array<string, Field> */
+  private $fields = [];
+
+  /** @var array<string, string> */
+  private $fieldToSubjectMap = [];
+
   /** @param SubjectEntry<Subject<Payload>>[] $subjectsEntries */
   public function __construct(
     Automation $automation,
@@ -39,6 +46,11 @@ class StepRunArgs {
       $key = $subject->getKey();
       $this->subjectEntries[$key] = array_merge($this->subjectEntries[$key] ?? [], [$entry]);
       $this->subjectKeyClassMap[get_class($subject)] = $key;
+
+      foreach ($subject->getFields() as $field) {
+        $this->fields[$field->getKey()] = $field;
+        $this->fieldToSubjectMap[$field->getKey()] = $key;
+      }
     }
   }
 
@@ -52,6 +64,11 @@ class StepRunArgs {
 
   public function getStep(): Step {
     return $this->step;
+  }
+
+  /** @return array<string, SubjectEntry<Subject<Payload>>[]> */
+  public function getSubjectEntries(): array {
+    return $this->subjectEntries;
   }
 
   /** @return SubjectEntry<Subject<Payload>> */
@@ -115,5 +132,22 @@ class StepRunArgs {
       throw InvalidStateException::create();
     }
     return $payload;
+  }
+
+  /** @return mixed */
+  public function getFieldValue(string $key) {
+    $field = $this->fields[$key] ?? null;
+    $subjectKey = $this->fieldToSubjectMap[$key] ?? null;
+    if (!$field || !$subjectKey) {
+      throw Exceptions::fieldNotFound($key);
+    }
+
+    $entry = $this->getSingleSubjectEntry($subjectKey);
+    try {
+      $value = $field->getValue($entry->getPayload());
+    } catch (Throwable $e) {
+      throw Exceptions::fieldLoadFailed($field->getKey(), $field->getArgs());
+    }
+    return $value;
   }
 }
