@@ -520,6 +520,7 @@ jobs:
           name: Run performance tests
           command: |
             mkdir -p tests/performance/_output
+            mkdir -p tests/performance/_screenshots
             ./do test:performance --url=<< parameters.url >> --pw=<< parameters.pw >> --scenario=<< parameters.scenario >>
       - run:
           name: Check exceptions
@@ -530,6 +531,8 @@ jobs:
             fi
       - store_artifacts:
           path: tests/performance/_output
+      - store_screenshots:
+          path: tests/performance/_screenshots
       - store_test_results:
           path: tests/performance/_output
   unit_tests:

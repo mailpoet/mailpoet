@@ -1,5 +1,3 @@
-/* eslint-disable import/no-unresolved */
-/* eslint-disable import/no-default-export */
 /* eslint-disable no-unused-expressions */
 /**
  * External dependencies
@@ -43,6 +41,11 @@ export async function newsletterListing() {
   // Wait for async actions
   await page.waitForNavigation({ waitUntil: 'networkidle' });
 
+  await page.screenshot({
+    path: 'tests/performance/_screenshots/01_Newsletter_Listing.png',
+    fullPage: 'true',
+  });
+
   // Check if there is element present and visible
   page.waitForSelector('[data-automation-id="listing_filter_segment"]');
   page.waitForLoadState('networkidle');
@@ -51,6 +54,11 @@ export async function newsletterListing() {
       expect(page.locator('[data-automation-id="listing_filter_segment"]')).to
         .exist;
     });
+  });
+
+  await page.screenshot({
+    path: 'tests/performance/_screenshots/02_Newsletter_Listing.png',
+    fullPage: 'true',
   });
 
   // Thinking time and closing
