@@ -34,11 +34,11 @@ class SubscribersStatsReport extends SimpleWorker {
   }
 
   public function checkProcessingRequirements() {
-    return (bool)$this->serviceChecker->getAnyValidKey();
+    return (bool)$this->serviceChecker->getValidAccountKey();
   }
 
   public function processTaskStrategy(ScheduledTaskEntity $task, $timer): bool {
-    $key = $this->serviceChecker->getAnyValidKey();
+    $key = $this->serviceChecker->getValidAccountKey();
     if ($key === null) {
       return false;
     }

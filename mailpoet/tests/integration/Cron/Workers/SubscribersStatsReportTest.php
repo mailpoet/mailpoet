@@ -48,14 +48,14 @@ class SubscribersStatsReportTest extends \MailPoetTest {
 
   public function testItFailsRequirementsCheckIfThereIsNoValidKey() {
     $this->servicesCheckerMock->expects($this->once())
-      ->method('getAnyValidKey')
+      ->method('getValidAccountKey')
       ->willReturn(null);
     expect($this->worker->checkProcessingRequirements())->false();
   }
 
   public function testItSucceedsRequirementsCheckIfThereIsValidKey() {
     $this->servicesCheckerMock->expects($this->once())
-      ->method('getAnyValidKey')
+      ->method('getValidAccountKey')
       ->willReturn('a_valid_key');
     expect($this->worker->checkProcessingRequirements())->true();
   }
@@ -64,7 +64,7 @@ class SubscribersStatsReportTest extends \MailPoetTest {
     $task = new ScheduledTaskEntity();
     $timer = time();
     $this->servicesCheckerMock->expects($this->once())
-      ->method('getAnyValidKey')
+      ->method('getValidAccountKey')
       ->willReturn('a_valid_key');
     $this->bridgeMock->expects($this->once())
       ->method('updateSubscriberCount')
@@ -76,7 +76,7 @@ class SubscribersStatsReportTest extends \MailPoetTest {
     $task = new ScheduledTaskEntity();
     $timer = time();
     $this->servicesCheckerMock->expects($this->once())
-      ->method('getAnyValidKey')
+      ->method('getValidAccountKey')
       ->willReturn(null);
     $this->bridgeMock->expects($this->never())
       ->method('updateSubscriberCount');
@@ -87,7 +87,7 @@ class SubscribersStatsReportTest extends \MailPoetTest {
     $task = new ScheduledTaskEntity();
     $timer = time();
     $this->servicesCheckerMock->expects($this->once())
-      ->method('getAnyValidKey')
+      ->method('getValidAccountKey')
       ->willReturn('a_valid_key');
     $this->bridgeMock->expects($this->once())
       ->method('updateSubscriberCount')
