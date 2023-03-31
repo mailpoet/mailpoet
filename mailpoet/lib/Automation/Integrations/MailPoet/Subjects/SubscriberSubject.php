@@ -7,8 +7,10 @@ use MailPoet\Automation\Engine\Data\Subject as SubjectData;
 use MailPoet\Automation\Engine\Integration\Payload;
 use MailPoet\Automation\Engine\Integration\Subject;
 use MailPoet\Automation\Integrations\MailPoet\Payloads\SubscriberPayload;
-use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Entities\SegmentEntity;
 use MailPoet\NotFoundException;
+use MailPoet\Segments\SegmentsFinder;
+use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Validator\Builder;
 use MailPoet\Validator\Schema\ObjectSchema;
@@ -19,12 +21,22 @@ use MailPoet\Validator\Schema\ObjectSchema;
 class SubscriberSubject implements Subject {
   const KEY = 'mailpoet:subscriber';
 
+  /** @var SegmentsFinder */
+  private $segmentsFinder;
+
+  /** @var SegmentsRepository */
+  private $segmentsRepository;
+
   /** @var SubscribersRepository */
   private $subscribersRepository;
 
   public function __construct(
+    SegmentsFinder $segmentsFinder,
+    SegmentsRepository $segmentsRepository,
     SubscribersRepository $subscribersRepository
   ) {
+    $this->segmentsFinder = $segmentsFinder;
+    $this->segmentsRepository = $segmentsRepository;
     $this->subscribersRepository = $subscribersRepository;
   }
 
@@ -55,6 +67,8 @@ class SubscriberSubject implements Subject {
   /** @return Field[] */
   public function getFields(): array {
     return [
+      // phpcs:disable Squiz.PHP.CommentedOutCode.Found -- temporarily hide those fields
+      /*
       new Field(
         'mailpoet:subscriber:id',
         Field::TYPE_INTEGER,
@@ -79,10 +93,34 @@ class SubscriberSubject implements Subject {
           return $payload->getStatus();
         },
         [
-          SubscriberEntity::STATUS_SUBSCRIBED => __('Subscribed', 'mailpoet'),
-          SubscriberEntity::STATUS_UNCONFIRMED => __('Unconfirmed', 'mailpoet'),
-          SubscriberEntity::STATUS_UNSUBSCRIBED => __('Unsubscribed', 'mailpoet'),
-          SubscriberEntity::STATUS_BOUNCED => __('Bounced', 'mailpoet'),
+          'options' => [
+            SubscriberEntity::STATUS_SUBSCRIBED => __('Subscribed', 'mailpoet'),
+            SubscriberEntity::STATUS_UNCONFIRMED => __('Unconfirmed', 'mailpoet'),
+            SubscriberEntity::STATUS_UNSUBSCRIBED => __('Unsubscribed', 'mailpoet'),
+            SubscriberEntity::STATUS_BOUNCED => __('Bounced', 'mailpoet'),
+          ],
+        ]
+      ),
+      */
+      new Field(
+        'mailpoet:subscriber:segments',
+        Field::TYPE_ENUM_ARRAY,
+        __('Subscriber segments', 'mailpoet'),
+        function (SubscriberPayload $payload) {
+          $segments = $this->segmentsFinder->findDynamicSegments($payload->getSubscriber());
+          $value = [];
+          foreach ($segments as $segment) {
+            $value[] = $segment->getId();
+          }
+          return $value;
+        },
+        [
+          'options' => array_map(function ($segment) {
+            return [
+              'id' => $segment->getId(),
+              'name' => $segment->getName(),
+            ];
+          }, $this->segmentsRepository->findBy(['type' => SegmentEntity::TYPE_DYNAMIC])),
         ]
       ),
     ];
