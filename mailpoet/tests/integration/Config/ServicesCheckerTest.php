@@ -178,7 +178,7 @@ class ServicesCheckerTest extends \MailPoetTest {
         'state' => Bridge::KEY_VALID,
       ]
     );
-    expect($this->servicesChecker->getAnyValidKey())->equals($mssKey);
+    expect($this->servicesChecker->getValidAccountKey())->equals($mssKey);
 
     // Only Premium is Valid
     $this->settings->set(
@@ -193,7 +193,7 @@ class ServicesCheckerTest extends \MailPoetTest {
         'state' => '',
       ]
     );
-    expect($this->servicesChecker->getAnyValidKey())->equals($premiumKey);
+    expect($this->servicesChecker->getValidAccountKey())->equals($premiumKey);
 
     // Both Valid (lets use MSS in that case)
     $this->settings->set(
@@ -202,7 +202,37 @@ class ServicesCheckerTest extends \MailPoetTest {
         'state' => Bridge::KEY_VALID,
       ]
     );
-    expect($this->servicesChecker->getAnyValidKey())->equals($mssKey);
+    expect($this->servicesChecker->getValidAccountKey())->equals($mssKey);
+
+    // MSS is valid but underprivileged premium invalid
+    $this->settings->set(
+      Bridge::API_KEY_STATE_SETTING_NAME,
+      [
+        'state' => Bridge::KEY_VALID_UNDERPRIVILEGED,
+      ]
+    );
+    $this->settings->set(
+      Bridge::PREMIUM_KEY_STATE_SETTING_NAME,
+      [
+        'state' => Bridge::KEY_INVALID,
+      ]
+    );
+    expect($this->servicesChecker->getValidAccountKey())->equals($mssKey);
+
+    // MSS is invalid, premium valid but underprivileged
+    $this->settings->set(
+      Bridge::API_KEY_STATE_SETTING_NAME,
+      [
+        'state' => Bridge::KEY_INVALID,
+      ]
+    );
+    $this->settings->set(
+      Bridge::PREMIUM_KEY_STATE_SETTING_NAME,
+      [
+        'state' => Bridge::KEY_VALID_UNDERPRIVILEGED,
+      ]
+    );
+    expect($this->servicesChecker->getValidAccountKey())->equals($premiumKey);
 
     // None valid
     // Only MSS is Valid
@@ -218,7 +248,7 @@ class ServicesCheckerTest extends \MailPoetTest {
         'state' => '',
       ]
     );
-    expect($this->servicesChecker->getAnyValidKey())->null();
+    expect($this->servicesChecker->getValidAccountKey())->null();
   }
 
   public function testItReturnsTrueIfUserIsActivelyPaying() {

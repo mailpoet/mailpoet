@@ -155,20 +155,31 @@ class ServicesChecker {
   }
 
   /**
-   * Returns MSS or Premium valid key.
+   * Return a key when it can be used for account administration purposes (stats report, auth. addresses or domains administration)
+   * Key can be used when it is valid for MSS or Premium, but also when it is valid but has no privileges for MSS or Premium (API returns 403).
    */
-  public function getAnyValidKey(): ?string {
+  public function getValidAccountKey(): ?string {
     if ($this->isMailPoetAPIKeyValid(false, true)) {
       return $this->settings->get(Bridge::API_KEY_SETTING_NAME);
     }
+    $mssKeyState = $this->settings->get(Bridge::API_KEY_STATE_SETTING_NAME);
+    if (($mssKeyState['state'] ?? null) === Bridge::KEY_VALID_UNDERPRIVILEGED) {
+      return $this->settings->get(Bridge::API_KEY_SETTING_NAME);
+    }
+
     if ($this->isPremiumKeyValid(false)) {
       return $this->settings->get(Bridge::PREMIUM_KEY_SETTING_NAME);
     }
+    $premiumKeyState = $this->settings->get(Bridge::PREMIUM_KEY_STATE_SETTING_NAME);
+    if (($premiumKeyState['state'] ?? null) === Bridge::KEY_VALID_UNDERPRIVILEGED) {
+      return $this->settings->get(Bridge::PREMIUM_KEY_SETTING_NAME);
+    }
+
     return null;
   }
 
   public function generatePartialApiKey(): string {
-    $key = (string)($this->getAnyValidKey());
+    $key = (string)($this->getValidAccountKey());
     if ($key) {
       $halfKeyLength = (int)(strlen($key) / 2);
 
