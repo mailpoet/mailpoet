@@ -2,6 +2,8 @@
 
 namespace MailPoet\Automation\Engine\Data;
 
+use MailPoet\Automation\Engine\Integration\Payload;
+
 class Field {
   public const TYPE_BOOLEAN = 'boolean';
   public const TYPE_INTEGER = 'integer';
@@ -55,11 +57,9 @@ class Field {
     return $this->factory;
   }
 
-  /**
-   * @return mixed
-   */
-  public function getValue() {
-    return $this->getFactory()();
+  /** @return mixed */
+  public function getValue(Payload $payload) {
+    return $this->getFactory()($payload);
   }
 
   public function getArgs(): array {
