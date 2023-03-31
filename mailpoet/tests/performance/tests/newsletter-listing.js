@@ -47,12 +47,11 @@ export async function newsletterListing() {
   });
 
   // Check if there is element present and visible
-  page.waitForSelector('[data-automation-id="listing_filter_segment"]');
+  page.waitForSelector('[data-automation-id="filters_all"]');
   page.waitForLoadState('networkidle');
   describe(emailsPageTitle, () => {
-    describe('should be able to see Lists Filter', () => {
-      expect(page.locator('[data-automation-id="listing_filter_segment"]')).to
-        .exist;
+    describe('should be able to see All Filter', () => {
+      expect(page.locator('[data-automation-id="filters_all"]')).to.exist;
     });
   });
 
