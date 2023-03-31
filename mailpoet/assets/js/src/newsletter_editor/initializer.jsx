@@ -13,13 +13,15 @@ const renderHeading = (newsletterType, newsletterOptions) => {
     const stepsHeadingContainer = document.getElementById(
       'mailpoet_editor_steps_heading',
     );
-    const step = newsletterType === 'automation' ? 2 : 3;
+    const step = ['automation', 'transactional'].includes(newsletterType)
+      ? 2
+      : 3;
 
     let buttons = null;
     let onLogoClick = () => {
       window.location = `admin.php?page=${MailPoet.mainPageSlug}`;
     };
-    if (newsletterType === 'automation') {
+    if (newsletterOptions.automationId) {
       const automationId = newsletterOptions.automationId;
       const goToUrl = `admin.php?page=mailpoet-automation-editor&id=${automationId}`;
       onLogoClick = () => {
