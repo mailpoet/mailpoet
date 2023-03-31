@@ -939,3 +939,9 @@ parameters:
 			message: "#^Method MailPoet\\\\Newsletter\\\\NewslettersRepository\\:\\:getStandardNewsletterList\\(\\) should return array\\<MailPoet\\\\Entities\\\\NewsletterEntity\\> but returns mixed\\.$#"
 			count: 1
 			path: ../../lib/Newsletter/NewslettersRepository.php
+
+		-
+		  # https://github.com/phpstan/phpstan/issues/7732
+			message: "#^Function str_(\\w+) not found.$#"
+			count: 4
+			path: ../../lib/Automation/Integrations/Core/Filters/StringFilter.php
