@@ -14,6 +14,15 @@ class WordPress {
     do_action($hookName, ...$arg);
   }
 
+  /**
+   * @param mixed $value
+   * @param mixed ...$args
+   * @return mixed
+   */
+  public function applyFilters(string $hookName, $value, ...$args) {
+    return apply_filters($hookName, $value, ...$args);
+  }
+
   public function wpGetCurrentUser(): WP_User {
     return wp_get_current_user();
   }

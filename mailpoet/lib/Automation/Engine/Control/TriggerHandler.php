@@ -11,7 +11,6 @@ use MailPoet\Automation\Engine\Integration\Trigger;
 use MailPoet\Automation\Engine\Storage\AutomationRunStorage;
 use MailPoet\Automation\Engine\Storage\AutomationStorage;
 use MailPoet\Automation\Engine\WordPress;
-use MailPoet\WP\Functions;
 
 class TriggerHandler {
   /** @var ActionScheduler */
@@ -22,9 +21,6 @@ class TriggerHandler {
 
   /** @var AutomationRunStorage */
   private $automationRunStorage;
-
-  /** @var Functions  */
-  private $wp;
 
   /** @var SubjectLoader */
   private $subjectLoader;
@@ -39,7 +35,6 @@ class TriggerHandler {
     ActionScheduler $actionScheduler,
     AutomationStorage $automationStorage,
     AutomationRunStorage $automationRunStorage,
-    Functions $wp,
     SubjectLoader $subjectLoader,
     SubjectTransformerHandler $subjectTransformerHandler,
     WordPress $wordPress
@@ -47,7 +42,6 @@ class TriggerHandler {
     $this->actionScheduler = $actionScheduler;
     $this->automationStorage = $automationStorage;
     $this->automationRunStorage = $automationRunStorage;
-    $this->wp = $wp;
     $this->subjectLoader = $subjectLoader;
     $this->subjectTransformerHandler = $subjectTransformerHandler;
     $this->wordPress = $wordPress;
@@ -77,7 +71,7 @@ class TriggerHandler {
       $automationRun = new AutomationRun($automation->getId(), $automation->getVersionId(), $trigger->getKey(), $subjects);
       $stepRunArgs = new StepRunArgs($automation, $automationRun, $step, $subjectEntries);
       $createAutomationRun = $trigger->isTriggeredBy($stepRunArgs);
-      $createAutomationRun = $this->wp->applyFilters(
+      $createAutomationRun = $this->wordPress->applyFilters(
         Hooks::AUTOMATION_RUN_CREATE,
         $createAutomationRun,
         $stepRunArgs
