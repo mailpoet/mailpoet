@@ -462,6 +462,7 @@ jobs:
       - store_test_results:
           path: tests/_output
   performance_tests:
+    cloud: true
     working_directory: /home/circleci/mailpoet/mailpoet
     machine:
       image: ubuntu-2204:2022.10.2
