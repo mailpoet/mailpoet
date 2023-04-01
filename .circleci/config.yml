@@ -2,7 +2,6 @@ version: 2.1
 
 orbs:
   slack: circleci/slack@4.2.0
-  grafana: grafana/k6@1.1.3
 
 slack-fail-post-step: &slack-fail-post-step
   post-steps:
@@ -750,8 +749,6 @@ workflows:
             - static_analysis_php8
             - qa_js
             - qa_php
-      - grafana/k6:
-          cloud: true
       - js_tests:
           <<: *slack-fail-post-step
           requires:
