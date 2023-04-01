@@ -744,7 +744,6 @@ workflows:
       - performance_tests:
           <<: *slack-fail-post-step
           name: performance_tests
-          cloud: true
           requires:
             - unit_tests
             - static_analysis_php8
@@ -864,6 +863,7 @@ workflows:
           name: performance_latest
           url: https://qawp.net
           pw: $WP_TEST_PERFORMANCE_PW
+          cloud: true
           scenario: nightlytests
           requires:
             - build
