@@ -19,6 +19,8 @@ import {
   headlessSet,
   timeoutSet,
   settingsPageTitle,
+  fullPageSet,
+  screenshotPath,
 } from '../config.js';
 import { authenticate } from '../utils/helpers.js';
 
@@ -83,8 +85,8 @@ export async function onboardingWizard() {
 
   // Take a screenshot of the finished test
   await page.screenshot({
-    path: 'tests/performance/_screenshots/01_Onboarding_Wizard.png',
-    fullPage: 'true',
+    path: screenshotPath + '01_Onboarding_Wizard.png',
+    fullPage: fullPageSet,
   });
 
   // Thinking time and closing
