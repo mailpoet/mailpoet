@@ -462,7 +462,6 @@ jobs:
       - store_test_results:
           path: tests/_output
   performance_tests:
-    cloud: true
     working_directory: /home/circleci/mailpoet/mailpoet
     machine:
       image: ubuntu-2204:2022.10.2
@@ -745,6 +744,7 @@ workflows:
       - performance_tests:
           <<: *slack-fail-post-step
           name: performance_tests
+          cloud: true
           requires:
             - unit_tests
             - static_analysis_php8
