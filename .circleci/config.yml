@@ -467,6 +467,7 @@ jobs:
       image: ubuntu-2204:2022.10.2
       docker_layer_caching: false
     parameters:
+      cloud: true
       mysql_command:
         type: string
         default: ''
