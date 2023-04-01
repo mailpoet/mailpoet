@@ -20,6 +20,8 @@ import {
   headlessSet,
   timeoutSet,
   emailsPageTitle,
+  fullPageSet,
+  screenshotPath,
 } from '../config.js';
 import { authenticate } from '../utils/helpers.js';
 
@@ -42,8 +44,8 @@ export async function newsletterListing() {
   await page.waitForNavigation({ waitUntil: 'networkidle' });
 
   await page.screenshot({
-    path: 'tests/performance/_screenshots/01_Newsletter_Listing.png',
-    fullPage: 'true',
+    path: screenshotPath + '01_Newsletter_Listing.png',
+    fullPage: fullPageSet,
   });
 
   // Check if there is element present and visible
@@ -56,8 +58,8 @@ export async function newsletterListing() {
   });
 
   await page.screenshot({
-    path: 'tests/performance/_screenshots/02_Newsletter_Listing.png',
-    fullPage: 'true',
+    path: screenshotPath + '02_Newsletter_Listing.png',
+    fullPage: fullPageSet,
   });
 
   // Thinking time and closing

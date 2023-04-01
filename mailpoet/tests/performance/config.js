@@ -4,6 +4,8 @@ export const headlessSet = ['true', '1'].includes(
 );
 export const scenario = __ENV.SCENARIO; // eslint-disable-line
 export const timeoutSet = '2m';
+export const fullPageSet = 'true';
+export const screenshotPath = 'tests/performance/_screenshots/';
 
 export const adminUsername = 'admin';
 export const adminPassword = __ENV.PW || 'password'; // eslint-disable-line
