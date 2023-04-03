@@ -43,7 +43,7 @@ export async function newsletterStatistics() {
   // Wait for async actions and open newsletter statistics
   await Promise.all([page.waitForNavigation({ waitUntil: 'networkidle' })]);
   await page.goto(
-    `${baseURL}/wp-admin/admin.php?page=mailpoet-newsletters#/stats/1`,
+    `${baseURL}/wp-admin/admin.php?page=mailpoet-newsletters#/stats/2`,
     {
       waitUntil: 'networkidle',
     },
@@ -60,27 +60,23 @@ export async function newsletterStatistics() {
   await page.waitForLoadState('networkidle');
   await page.locator('[data-automation-id="products-sold-tab"]').click();
   await page.waitForLoadState('networkidle');
+
+  // Check if you see the product in the sold tab
   await waitForSelectorToBeVisible(
     page,
-    '.mailpoet-tab-content > p:nth-child(1)',
+    '[data-acceptance-id="purchased-product-Simple Product"]',
   );
   describe(emailsPageTitle, () => {
-    describe('should be able to see text no products sold', () => {
+    describe('should be able to see the product as sold', () => {
       expect(
-        page.locator('.mailpoet-tab-content > p:nth-child(1)').innerText(),
-      ).to.contain(
-        'Unfortunately, no products were sold as a result of this email!',
-      );
+        page.locator('[data-acceptance-id="purchased-product-Simple Product"]'),
+      ).to.exist;
     });
   });
 
   // Click the subscribers engagement tab
-  await page.locator('[data-automation-id="engagement-tab"]');
-  await page.waitForSelector('.mailpoet-listing-table');
-  waitForSelectorToBeVisible(
-    page,
-    '[data-automation-id="filters_all_engaged"]',
-  );
+  await page.locator('[data-automation-id="engagement-tab"]').click();
+  await page.waitForSelector('[data-automation-id="filters_all_engaged"]');
   await page.waitForLoadState('networkidle');
   describe(emailsPageTitle, () => {
     describe('should be able to see Link Clicked filter', () => {
