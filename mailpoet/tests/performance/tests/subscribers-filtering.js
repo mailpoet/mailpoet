@@ -75,7 +75,6 @@ export async function subscribersFiltering() {
         .exist;
     });
   });
-  await page.waitForNavigation({ waitUntil: 'networkidle' });
 
   await page.screenshot({
     path: screenshotPath + 'Subscribers_Filtering_03.png',

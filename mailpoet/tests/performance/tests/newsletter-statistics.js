@@ -41,7 +41,7 @@ export async function newsletterStatistics() {
   authenticate(page);
 
   // Wait for async actions and open newsletter statistics
-  await page.waitForNavigation({ waitUntil: 'networkidle' });
+  await Promise.all([page.waitForNavigation({ waitUntil: 'networkidle' })]);
   await page.goto(
     `${baseURL}/wp-admin/admin.php?page=mailpoet-newsletters#/stats/1`,
     {

@@ -61,6 +61,14 @@ export async function formsAdding() {
   waitAndClick(page, '[data-automation-id="select_template_template_1_popup"]');
   sleep(1);
 
+  // Try to close the tutorial video popup
+  try {
+    await page.waitForSelector('[data-automation-id="mailpoet-modal-close"]');
+    await page.locator('[data-automation-id="mailpoet-modal-close"]').click();
+  } catch (error) {
+    console.log("Tutorial video wasn't present, skipping action.");
+  }
+
   // Select the list and save the form
   await page.waitForSelector('[data-automation-id="form_title_input"]');
   selectInSelect2(page, defaultListName);
