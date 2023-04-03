@@ -55,6 +55,8 @@ class AmazonSESTest extends \MailPoetTest {
       new AmazonSESMapper(),
       new WPFunctions()
     );
+    // Ensure the default validator is in place
+    $this->mailer->mailer::$validator = 'php';
     $this->subscriber = 'Recipient <blackhole@mailpoet.com>';
     $this->newsletter = [
       'subject' => 'testing AmazonSES … © & ěščřžýáíéůėę€żąß∂ 😊👨‍👩‍👧‍👧', // try some special chars
