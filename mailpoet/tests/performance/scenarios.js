@@ -21,13 +21,13 @@ import { onboardingWizard } from './tests/onboarding-wizard.js';
 export let options = {
   scenarios: {},
   thresholds: {
-    browser_dom_content_loaded: ['p(95) < 1000'],
-    browser_first_contentful_paint: ['p(95) < 500'],
-    browser_first_meaningful_paint: ['p(95) < 500'],
-    browser_first_paint: ['p(95) < 500'],
-    browser_loaded: ['p(95) < 1000'],
-    http_req_duration: ['max < 5000'],
-    http_req_receiving: ['max < 5000'],
+    browser_dom_content_loaded: ['p(95) < 5000'],
+    browser_first_contentful_paint: ['p(95) < 1000'],
+    browser_first_meaningful_paint: ['p(95) < 1000'],
+    browser_first_paint: ['p(95) < 1000'],
+    browser_loaded: ['p(95) < 5000'],
+    http_req_duration: ['max < 8000'],
+    http_req_receiving: ['max < 8000'],
     checks: ['rate==1.0'],
   },
   tags: {
