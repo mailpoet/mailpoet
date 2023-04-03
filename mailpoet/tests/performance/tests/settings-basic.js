@@ -1,5 +1,3 @@
-/* eslint-disable import/no-unresolved */
-/* eslint-disable import/no-default-export */
 /**
  * External dependencies
  */
@@ -21,6 +19,8 @@ import {
   headlessSet,
   timeoutSet,
   settingsPageTitle,
+  fullPageSet,
+  screenshotPath,
 } from '../config.js';
 import { authenticate } from '../utils/helpers.js';
 
@@ -44,6 +44,11 @@ export async function settingsBasic() {
 
   // Wait for async actions
   await page.waitForNavigation({ waitUntil: 'networkidle' });
+
+  await page.screenshot({
+    path: screenshotPath + 'Settings_Basic_01.png',
+    fullPage: fullPageSet,
+  });
 
   // Click to save the settings
   page.locator('[data-automation-id="settings-submit-button"]').click();

@@ -1,5 +1,3 @@
-/* eslint-disable import/no-unresolved */
-/* eslint-disable import/no-default-export */
 /**
  * External dependencies
  */
@@ -22,6 +20,8 @@ import {
   timeoutSet,
   defaultListName,
   listsPageTitle,
+  fullPageSet,
+  screenshotPath,
 } from '../config.js';
 import { authenticate, selectInReact } from '../utils/helpers.js';
 
@@ -49,6 +49,11 @@ export async function listsComplexSegment() {
   // Wait for async actions
   await page.waitForNavigation({ waitUntil: 'networkidle' });
 
+  await page.screenshot({
+    path: screenshotPath + 'Lists_Complex_Segment_01.png',
+    fullPage: fullPageSet,
+  });
+
   // Click to add a new segment
   page.waitForSelector('[data-automation-id="new-segment"]');
   page.locator('[data-automation-id="new-segment"]').click();
@@ -69,6 +74,11 @@ export async function listsComplexSegment() {
   });
   page.waitForLoadState('networkidle');
 
+  await page.screenshot({
+    path: screenshotPath + 'Lists_Complex_Segment_02.png',
+    fullPage: fullPageSet,
+  });
+
   // Click to add a new segment action
   page
     .locator(
@@ -85,6 +95,11 @@ export async function listsComplexSegment() {
         page.locator('.mailpoet-form-notice-message').innerText(),
       ).to.contain('Calculating segment size…');
     });
+  });
+
+  await page.screenshot({
+    path: screenshotPath + 'Lists_Complex_Segment_03.png',
+    fullPage: fullPageSet,
   });
 
   // Click to add a new segment action
@@ -111,6 +126,11 @@ export async function listsComplexSegment() {
     .click();
   page.waitForSelector('.mailpoet-form-notice-message');
   page.waitForLoadState('networkidle');
+
+  await page.screenshot({
+    path: screenshotPath + 'Lists_Complex_Segment_04.png',
+    fullPage: fullPageSet,
+  });
 
   // Save the segment
   await page

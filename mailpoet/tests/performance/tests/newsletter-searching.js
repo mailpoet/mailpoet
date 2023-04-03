@@ -1,5 +1,3 @@
-/* eslint-disable import/no-unresolved */
-/* eslint-disable import/no-default-export */
 /* eslint-disable no-unused-expressions */
 /**
  * External dependencies
@@ -22,6 +20,8 @@ import {
   headlessSet,
   timeoutSet,
   emailsPageTitle,
+  fullPageSet,
+  screenshotPath,
 } from '../config.js';
 import { authenticate } from '../utils/helpers.js';
 
@@ -42,6 +42,11 @@ export async function newsletterSearching() {
 
   // Wait for async actions
   await page.waitForNavigation({ waitUntil: 'networkidle' });
+
+  await page.screenshot({
+    path: screenshotPath + 'Newsletter_Searching_01.png',
+    fullPage: fullPageSet,
+  });
 
   // Search for a newsletter
   page.locator('#search_input').type('Newsletter 1st', { delay: 50 });
@@ -68,6 +73,11 @@ export async function newsletterSearching() {
       expect(page.locator('[data-automation-id="listing_filter_segment"]')).to
         .exist;
     });
+  });
+
+  await page.screenshot({
+    path: screenshotPath + 'Newsletter_Searching_02.png',
+    fullPage: fullPageSet,
   });
 
   // Thinking time and closing

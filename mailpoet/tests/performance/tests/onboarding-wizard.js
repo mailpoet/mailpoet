@@ -46,6 +46,12 @@ export async function onboardingWizard() {
   await page.waitForNavigation({ waitUntil: 'networkidle' });
   await page.locator('#mailpoet_sender_form > a').click();
   await page.waitForLoadState('networkidle');
+
+  await page.screenshot({
+    path: screenshotPath + 'Onboarding_Wizard_01.png',
+    fullPage: fullPageSet,
+  });
+
   await page
     .locator(
       '#mailpoet-wizard-3rd-party-libs > div > div > label:nth-child(1) > span',
@@ -64,6 +70,10 @@ export async function onboardingWizard() {
   await page.waitForLoadState('networkidle');
   await page.locator('.mailpoet-wizard-step-content > p > a').click();
   sleep(2);
+  await page.screenshot({
+    path: screenshotPath + 'Onboarding_Wizard_02.png',
+    fullPage: fullPageSet,
+  });
   await page.keyboard.press('Tab');
   await page.keyboard.press('Tab');
   await page.keyboard.press('Tab');
@@ -71,6 +81,11 @@ export async function onboardingWizard() {
   await page.waitForNavigation('networkidle');
   await page.waitForLoadState('networkidle');
   await page.waitForSelector('[data-automation-id="send_with_settings_tab"]');
+
+  await page.screenshot({
+    path: screenshotPath + 'Onboarding_Wizard_03.png',
+    fullPage: fullPageSet,
+  });
 
   // Check if you see Send With tab at the end
   describe(settingsPageTitle, () => {
@@ -83,9 +98,8 @@ export async function onboardingWizard() {
     });
   });
 
-  // Take a screenshot of the finished test
   await page.screenshot({
-    path: screenshotPath + '01_Onboarding_Wizard.png',
+    path: screenshotPath + 'Onboarding_Wizard_04.png',
     fullPage: fullPageSet,
   });
 
