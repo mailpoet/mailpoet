@@ -47,7 +47,7 @@ export async function listsComplexSegment() {
   authenticate(page);
 
   // Wait for async actions
-  await page.waitForNavigation({ waitUntil: 'networkidle' });
+  await Promise.all([page.waitForNavigation({ waitUntil: 'networkidle' })]);
 
   await page.screenshot({
     path: screenshotPath + 'Lists_Complex_Segment_01.png',
