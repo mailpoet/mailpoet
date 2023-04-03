@@ -55,18 +55,18 @@ export async function formsAdding() {
   // Wait and click the Add New Form button
   waitAndClick(page, '[data-automation-id="create_new_form"]');
   sleep(1);
-  page.waitForLoadState('networkidle');
+  await page.waitForLoadState('networkidle');
 
   // Choose the form template
   waitAndClick(page, '[data-automation-id="select_template_template_1_popup"]');
   sleep(1);
 
   // Select the list and save the form
-  page.waitForSelector('[data-automation-id="form_title_input"]');
+  await page.waitForSelector('[data-automation-id="form_title_input"]');
   selectInSelect2(page, defaultListName);
-  page.waitForSelector('[data-automation-id="form_save_button"]');
-  page.locator('[data-automation-id="form_save_button"]').click();
-  page.waitForSelector('.components-notice');
+  await page.waitForSelector('[data-automation-id="form_save_button"]');
+  await page.locator('[data-automation-id="form_save_button"]').click();
+  await page.waitForSelector('.components-notice');
   describe(formsPageTitle, () => {
     describe('should be able to see Forms Saved message', () => {
       expect(

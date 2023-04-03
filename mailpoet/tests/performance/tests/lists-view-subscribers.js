@@ -53,30 +53,30 @@ export async function listsViewSubscribers() {
   });
 
   // Click to view subscribers of the default list "Newsletter mailing list"
-  page.waitForSelector('[data-automation-id="dynamic-segments-tab"]');
+  await page.waitForSelector('[data-automation-id="dynamic-segments-tab"]');
   describe(listsPageTitle, () => {
     describe('should be able to see Segments tab', () => {
       expect(page.locator('[data-automation-id="dynamic-segments-tab"]')).to
         .exist;
     });
   });
-  page
+  await page
     .locator('[data-automation-id="segment_name_' + defaultListName + '"]')
     .hover();
-  page
+  await page
     .locator('[data-automation-id="view_subscribers_' + defaultListName + '"]')
     .click();
 
   // Wait for the page to load
-  page.waitForSelector('.mailpoet-listing-no-items');
-  page.waitForSelector('[data-automation-id="filters_subscribed"]');
+  await page.waitForSelector('.mailpoet-listing-no-items');
+  await page.waitForSelector('[data-automation-id="filters_subscribed"]');
   describe(listsPageTitle, () => {
     describe('should be able to see Lists Filter', () => {
       expect(page.locator('[data-automation-id="listing_filter_segment"]')).to
         .exist;
     });
   });
-  page.waitForLoadState('networkidle');
+  await page.waitForLoadState('networkidle');
 
   await page.screenshot({
     path: screenshotPath + 'Lists_View_Subscribers_02.png',

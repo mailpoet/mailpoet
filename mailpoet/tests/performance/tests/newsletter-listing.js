@@ -49,8 +49,8 @@ export async function newsletterListing() {
   });
 
   // Check if there is element present and visible
-  page.waitForSelector('[data-automation-id="filters_all"]');
-  page.waitForLoadState('networkidle');
+  await page.waitForSelector('[data-automation-id="filters_all"]');
+  await page.waitForLoadState('networkidle');
   describe(emailsPageTitle, () => {
     describe('should be able to see All Filter', () => {
       expect(page.locator('[data-automation-id="filters_all"]')).to.exist;

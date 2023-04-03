@@ -50,21 +50,21 @@ export async function newsletterSending() {
   });
 
   // Click to add a new standard newsletter
-  page.locator('[data-automation-id="new_email"]').click();
-  page.locator('[data-automation-id="create_standard"]').click();
-  page.waitForSelector('.mailpoet_loading');
-  page.waitForSelector('[data-automation-id="templates-standard"]');
-  page.waitForLoadState('networkidle');
+  await page.locator('[data-automation-id="new_email"]').click();
+  await page.locator('[data-automation-id="create_standard"]').click();
+  await page.waitForSelector('.mailpoet_loading');
+  await page.waitForSelector('[data-automation-id="templates-standard"]');
+  await page.waitForLoadState('networkidle');
 
   // Switch to a Standard templates tab and select the 2nd template
-  page.locator('[data-automation-id="templates-standard"]').click();
+  await page.locator('[data-automation-id="templates-standard"]').click();
   await Promise.all([
     page.waitForNavigation(),
     page.locator('[data-automation-id="select_template_1"]').click(),
   ]);
-  page.waitForSelector('.mailpoet_loading');
-  page.waitForSelector('[data-automation-id="newsletter_title"]');
-  page.waitForLoadState('networkidle');
+  await page.waitForSelector('.mailpoet_loading');
+  await page.waitForSelector('[data-automation-id="newsletter_title"]');
+  await page.waitForLoadState('networkidle');
 
   await page.screenshot({
     path: screenshotPath + 'Newsletter_Sending_02.png',
@@ -78,8 +78,8 @@ export async function newsletterSending() {
       .locator('#mailpoet_editor_top > div > div > .mailpoet_save_next')
       .click(),
   ]);
-  page.waitForSelector('[data-automation-id="newsletter_send_heading"]');
-  page.waitForLoadState('networkidle');
+  await page.waitForSelector('[data-automation-id="newsletter_send_heading"]');
+  await page.waitForLoadState('networkidle');
 
   // Select the default list and send the newsletter
   selectInSelect2(page, defaultListName);
@@ -95,7 +95,7 @@ export async function newsletterSending() {
   });
 
   // Wait for the success notice message and confirm it
-  page.waitForSelector('#mailpoet_notices');
+  await page.waitForSelector('#mailpoet_notices');
   describe(emailsPageTitle, () => {
     describe('should be able to see Newsletter Sent message', () => {
       expect(page.locator('div > .notice-success').innerText()).to.contain(
@@ -103,7 +103,7 @@ export async function newsletterSending() {
       );
     });
   });
-  page.waitForLoadState('networkidle');
+  await page.waitForLoadState('networkidle');
 
   await page.screenshot({
     path: screenshotPath + 'Newsletter_Sending_04.png',

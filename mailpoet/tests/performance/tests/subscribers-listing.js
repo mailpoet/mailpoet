@@ -49,7 +49,7 @@ export async function subscribersListing() {
   });
 
   // Verify filter, tag and listing are loaded and visible
-  page.waitForLoadState('networkidle');
+  await page.waitForLoadState('networkidle');
   describe(subscribersPageTitle, () => {
     describe('should be able to see Tags Filter', () => {
       expect(page.locator('[data-automation-id="listing_filter_tag"]')).to

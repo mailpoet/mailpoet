@@ -49,8 +49,8 @@ export async function subscribersFiltering() {
   });
 
   // Check the subscribers filter is present
-  page.locator('[data-automation-id="filters_subscribed"]').click();
-  page.waitForSelector('[data-automation-id="filters_subscribed"]');
+  await page.locator('[data-automation-id="filters_subscribed"]').click();
+  await page.waitForSelector('[data-automation-id="filters_subscribed"]');
   describe(subscribersPageTitle, () => {
     describe('should be able to see Lists Filter', () => {
       expect(page.locator('[data-automation-id="listing_filter_segment"]')).to
@@ -64,18 +64,18 @@ export async function subscribersFiltering() {
   });
 
   // Select option "Newsletter mailing list" in the subscribers filter
-  page
+  await page
     .locator('[data-automation-id="listing_filter_segment"]')
     .selectOption('3');
-  page.waitForSelector('.mailpoet-listing-no-items');
-  page.waitForSelector('[data-automation-id="filters_subscribed"]');
+  await page.waitForSelector('.mailpoet-listing-no-items');
+  await page.waitForSelector('[data-automation-id="filters_subscribed"]');
   describe(subscribersPageTitle, () => {
     describe('should be able to see Lists Filter', () => {
       expect(page.locator('[data-automation-id="listing_filter_segment"]')).to
         .exist;
     });
   });
-  page.waitForNavigation({ waitUntil: 'networkidle' });
+  await page.waitForNavigation({ waitUntil: 'networkidle' });
 
   await page.screenshot({
     path: screenshotPath + 'Subscribers_Filtering_03.png',
@@ -83,9 +83,9 @@ export async function subscribersFiltering() {
   });
 
   // Search for a subscriber in a filtered list
-  page.locator('#search_input').type(adminEmail, { delay: 50 });
-  page.waitForSelector('.mailpoet-listing-no-items');
-  page.waitForSelector('[data-automation-id="filters_subscribed"]');
+  await page.locator('#search_input').type(adminEmail, { delay: 50 });
+  await page.waitForSelector('.mailpoet-listing-no-items');
+  await page.waitForSelector('[data-automation-id="filters_subscribed"]');
   describe(subscribersPageTitle, () => {
     describe('should be able to see Lists Filter', () => {
       expect(page.locator('[data-automation-id="listing_filter_segment"]')).to
