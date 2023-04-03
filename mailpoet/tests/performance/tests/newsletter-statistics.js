@@ -55,11 +55,11 @@ export async function newsletterStatistics() {
   });
 
   // Wait for the page to load and click sold tab
-  page.waitForSelector('.mailpoet-listing-table');
-  page.waitForSelector('[data-automation-id="products-sold-tab"]');
-  page.waitForLoadState('networkidle');
-  page.locator('[data-automation-id="products-sold-tab"]').click();
-  page.waitForLoadState('networkidle');
+  await page.waitForSelector('.mailpoet-listing-table');
+  await page.waitForSelector('[data-automation-id="products-sold-tab"]');
+  await page.waitForLoadState('networkidle');
+  await page.locator('[data-automation-id="products-sold-tab"]').click();
+  await page.waitForLoadState('networkidle');
   await waitForSelectorToBeVisible(
     page,
     '.mailpoet-tab-content > p:nth-child(1)',
@@ -75,13 +75,13 @@ export async function newsletterStatistics() {
   });
 
   // Click the subscribers engagement tab
-  page.locator('[data-automation-id="engagement-tab"]');
-  page.waitForSelector('.mailpoet-listing-table');
+  await page.locator('[data-automation-id="engagement-tab"]');
+  await page.waitForSelector('.mailpoet-listing-table');
   waitForSelectorToBeVisible(
     page,
     '[data-automation-id="filters_all_engaged"]',
   );
-  page.waitForLoadState('networkidle');
+  await page.waitForLoadState('networkidle');
   describe(emailsPageTitle, () => {
     describe('should be able to see Link Clicked filter', () => {
       expect(page.locator('[data-automation-id="filters_all_engaged"]')).to

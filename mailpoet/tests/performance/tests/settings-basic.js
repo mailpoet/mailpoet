@@ -51,9 +51,9 @@ export async function settingsBasic() {
   });
 
   // Click to save the settings
-  page.locator('[data-automation-id="settings-submit-button"]').click();
-  page.waitForSelector('div.notice');
-  page.waitForLoadState('networkidle');
+  await page.locator('[data-automation-id="settings-submit-button"]').click();
+  await page.waitForSelector('div.notice');
+  await page.waitForLoadState('networkidle');
 
   // Check if there's notice about saved settings
   describe(settingsPageTitle, () => {

@@ -67,7 +67,6 @@ export async function pullRequests() {
   await onboardingWizard();
   await newsletterListing();
   await subscribersListing();
-  await settingsBasic();
   await subscribersFiltering();
   await subscribersAdding();
   await formsAdding();
@@ -77,6 +76,7 @@ export async function pullRequests() {
 
 // Run those tests against trunk in a nightly build
 export async function nightly() {
+  await settingsBasic();
   await newsletterListing();
   await subscribersListing();
   await settingsBasic();

@@ -49,10 +49,10 @@ export async function newsletterSearching() {
   });
 
   // Search for a newsletter
-  page.locator('#search_input').type('Newsletter 1st', { delay: 50 });
-  page.waitForSelector('.mailpoet-listing-no-items');
-  page.waitForSelector('[data-automation-id="listing_filter_segment"]');
-  page.waitForLoadState('networkidle');
+  await page.locator('#search_input').type('Newsletter 1st', { delay: 50 });
+  await page.waitForSelector('.mailpoet-listing-no-items');
+  await page.waitForSelector('[data-automation-id="listing_filter_segment"]');
+  await page.waitForLoadState('networkidle');
   describe(emailsPageTitle, () => {
     describe('should be able to search for Newsletter 1st', () => {
       expect(page.locator('.mailpoet-listing-title').innerText()).to.contain(
@@ -62,12 +62,12 @@ export async function newsletterSearching() {
   });
 
   // Filter newsletter results by a default list "Newsletter mailing list"
-  page
+  await page
     .locator('[data-automation-id="listing_filter_segment"]')
     .selectOption('3');
-  page.waitForSelector('.mailpoet-listing-no-items');
-  page.waitForSelector('[data-automation-id="listing_filter_segment"]');
-  page.waitForLoadState('networkidle');
+  await page.waitForSelector('.mailpoet-listing-no-items');
+  await page.waitForSelector('[data-automation-id="listing_filter_segment"]');
+  await page.waitForLoadState('networkidle');
   describe(emailsPageTitle, () => {
     describe('should be able to see Lists Filter', () => {
       expect(page.locator('[data-automation-id="listing_filter_segment"]')).to

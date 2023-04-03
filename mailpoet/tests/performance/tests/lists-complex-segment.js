@@ -55,16 +55,16 @@ export async function listsComplexSegment() {
   });
 
   // Click to add a new segment
-  page.waitForSelector('[data-automation-id="new-segment"]');
-  page.locator('[data-automation-id="new-segment"]').click();
-  page
+  await page.waitForSelector('[data-automation-id="new-segment"]');
+  await page.locator('[data-automation-id="new-segment"]').click();
+  await page
     .locator('[data-automation-id="input-name"]')
     .type(complexSegmentName, { delay: 25 });
 
   // Select "Subscribed to a list" action
   selectInReact(page, '#react-select-2-input', 'subscribed to list');
   selectInReact(page, '#react-select-4-input', defaultListName);
-  page.waitForSelector('.mailpoet-form-notice-message');
+  await page.waitForSelector('.mailpoet-form-notice-message');
   describe(listsPageTitle, () => {
     describe('should be able to see calculating message', () => {
       expect(
@@ -72,7 +72,7 @@ export async function listsComplexSegment() {
       ).to.contain('Calculating segment size…');
     });
   });
-  page.waitForLoadState('networkidle');
+  await page.waitForLoadState('networkidle');
 
   await page.screenshot({
     path: screenshotPath + 'Lists_Complex_Segment_02.png',
@@ -80,7 +80,7 @@ export async function listsComplexSegment() {
   });
 
   // Click to add a new segment action
-  page
+  await page
     .locator(
       '#segments_container > form > div > div.mailpoet-segments-segments-section > button',
     )
@@ -88,7 +88,7 @@ export async function listsComplexSegment() {
 
   // Select "Subscribed date" action
   selectInReact(page, '#react-select-5-input', 'subscribed date');
-  page.waitForSelector('.mailpoet-form-notice-message');
+  await page.waitForSelector('.mailpoet-form-notice-message');
   describe(listsPageTitle, () => {
     describe('should be able to see calculating message', () => {
       expect(
@@ -103,7 +103,7 @@ export async function listsComplexSegment() {
   });
 
   // Click to add a new segment action
-  page
+  await page
     .locator(
       '#segments_container > form > div > div.mailpoet-segments-segments-section > button',
     )
@@ -112,8 +112,8 @@ export async function listsComplexSegment() {
   // WordPress user role action has been automatically added
   // Select a WP user role
   selectInReact(page, '#react-select-8-input', 'Administrator');
-  page.waitForSelector('.mailpoet-form-notice-message');
-  page.waitForLoadState('networkidle');
+  await page.waitForSelector('.mailpoet-form-notice-message');
+  await page.waitForLoadState('networkidle');
   describe(listsPageTitle, () => {
     describe('should be able to see Calculating message', () => {
       expect(
@@ -121,11 +121,11 @@ export async function listsComplexSegment() {
       ).to.contain('Calculating segment size…');
     });
   });
-  page
+  await page
     .locator('[data-automation-id="dynamic-segment-condition-type-or"]')
     .click();
-  page.waitForSelector('.mailpoet-form-notice-message');
-  page.waitForLoadState('networkidle');
+  await page.waitForSelector('.mailpoet-form-notice-message');
+  await page.waitForLoadState('networkidle');
 
   await page.screenshot({
     path: screenshotPath + 'Lists_Complex_Segment_04.png',
@@ -138,7 +138,7 @@ export async function listsComplexSegment() {
       '#segments_container > form > div > div.mailpoet-form-actions > button > span',
     )
     .click();
-  page.waitForSelector('[data-automation-id="filters_all"]', {
+  await page.waitForSelector('[data-automation-id="filters_all"]', {
     state: 'visible',
   });
   describe(listsPageTitle, () => {
