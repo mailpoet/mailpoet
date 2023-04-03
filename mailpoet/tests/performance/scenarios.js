@@ -66,28 +66,27 @@ if (scenario) {
 export async function pullRequests() {
   await onboardingWizard();
   await newsletterListing();
+  await newsletterSearching();
+  await formsAdding();
   await subscribersListing();
   await subscribersFiltering();
   await subscribersAdding();
-  await formsAdding();
-  await newsletterSearching();
   await listsViewSubscribers();
 }
 
 // Run those tests against trunk in a nightly build
 export async function nightly() {
-  await settingsBasic();
   await newsletterListing();
-  await subscribersListing();
-  await settingsBasic();
-  await subscribersFiltering();
-  await subscribersAdding();
-  await formsAdding();
+  await newsletterStatistics();
   await newsletterSearching();
   await newsletterSending();
+  await formsAdding();
+  await subscribersListing();
+  await subscribersFiltering();
+  await subscribersAdding();
   await listsViewSubscribers();
   await listsComplexSegment();
-  await newsletterStatistics();
+  await settingsBasic();
 }
 
 // HTML report data saved in performance folder
