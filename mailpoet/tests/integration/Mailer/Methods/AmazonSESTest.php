@@ -232,7 +232,7 @@ class AmazonSESTest extends \MailPoetTest {
   }
 
   public function testItCatchesSendingErrors() {
-    $invalidSubscriber = 'john.@doe.com';
+    $invalidSubscriber = 'john.@@doe.com';
     $result = $this->mailer->send(
       $this->newsletter,
       $invalidSubscriber
