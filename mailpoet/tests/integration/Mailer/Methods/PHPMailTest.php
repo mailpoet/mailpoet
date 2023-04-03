@@ -155,4 +155,13 @@ class PHPMailTest extends \MailPoetTest {
     );
     expect($result['response'])->true();
   }
+
+  public function testItCanValidateEmailAddresses() {
+    // a call to wp_mail can override PHPMailer's validator to is_email, which is
+    // less strict. This ensures the default of 'php' is set in case a previous test
+    // caused an override.
+    $this->mailer->mailer::$validator = 'php';
+    $result = $this->mailer->mailer::validateAddress('john.@doe.com');
+    expect($result)->false();
+  }
 }
