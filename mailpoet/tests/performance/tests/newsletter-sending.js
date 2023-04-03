@@ -1,5 +1,3 @@
-/* eslint-disable import/no-unresolved */
-/* eslint-disable import/no-default-export */
 /**
  * External dependencies
  */
@@ -22,6 +20,8 @@ import {
   timeoutSet,
   defaultListName,
   emailsPageTitle,
+  fullPageSet,
+  screenshotPath,
 } from '../config.js';
 import { authenticate, selectInSelect2 } from '../utils/helpers.js';
 /* global Promise */
@@ -44,6 +44,11 @@ export async function newsletterSending() {
   // Wait for async actions
   await Promise.all([page.waitForNavigation({ waitUntil: 'networkidle' })]);
 
+  await page.screenshot({
+    path: screenshotPath + 'Newsletter_Sending_01.png',
+    fullPage: fullPageSet,
+  });
+
   // Click to add a new standard newsletter
   page.locator('[data-automation-id="new_email"]').click();
   page.locator('[data-automation-id="create_standard"]').click();
@@ -60,6 +65,11 @@ export async function newsletterSending() {
   page.waitForSelector('.mailpoet_loading');
   page.waitForSelector('[data-automation-id="newsletter_title"]');
   page.waitForLoadState('networkidle');
+
+  await page.screenshot({
+    path: screenshotPath + 'Newsletter_Sending_02.png',
+    fullPage: fullPageSet,
+  });
 
   // Click to proceed to the next step (the last one)
   await Promise.all([
@@ -79,6 +89,11 @@ export async function newsletterSending() {
   ]);
   sleep(1);
 
+  await page.screenshot({
+    path: screenshotPath + 'Newsletter_Sending_03.png',
+    fullPage: fullPageSet,
+  });
+
   // Wait for the success notice message and confirm it
   page.waitForSelector('#mailpoet_notices');
   describe(emailsPageTitle, () => {
@@ -89,6 +104,11 @@ export async function newsletterSending() {
     });
   });
   page.waitForLoadState('networkidle');
+
+  await page.screenshot({
+    path: screenshotPath + 'Newsletter_Sending_04.png',
+    fullPage: fullPageSet,
+  });
 
   // Thinking time and closing
   sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));

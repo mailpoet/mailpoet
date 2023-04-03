@@ -1,5 +1,3 @@
-/* eslint-disable import/no-unresolved */
-/* eslint-disable import/no-default-export */
 /* eslint-disable no-unused-expressions */
 /**
  * External dependencies
@@ -25,6 +23,8 @@ import {
   lastName,
   defaultListName,
   subscribersPageTitle,
+  fullPageSet,
+  screenshotPath,
 } from '../config.js';
 import { authenticate, selectInSelect2 } from '../utils/helpers.js';
 
@@ -48,6 +48,11 @@ export async function subscribersAdding() {
 
   // Wait for async actions
   await page.waitForNavigation({ waitUntil: 'networkidle' });
+
+  await page.screenshot({
+    path: screenshotPath + 'Subscribers_Adding_01.png',
+    fullPage: fullPageSet,
+  });
 
   // Add a new subscriber
   page.locator('[data-automation-id="add-new-subscribers-button"]').click();
@@ -75,6 +80,11 @@ export async function subscribersAdding() {
     });
   });
   page.waitForLoadState('networkidle');
+
+  await page.screenshot({
+    path: screenshotPath + 'Subscribers_Adding_02.png',
+    fullPage: fullPageSet,
+  });
 
   // Search for a newly added subscriber and verify
   page.locator('#search_input').type(subscriberEmail, { delay: 50 });

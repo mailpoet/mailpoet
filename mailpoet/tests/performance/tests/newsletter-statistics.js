@@ -1,5 +1,3 @@
-/* eslint-disable import/no-unresolved */
-/* eslint-disable import/no-default-export */
 /* eslint-disable no-unused-expressions */
 /**
  * External dependencies
@@ -22,6 +20,8 @@ import {
   headlessSet,
   timeoutSet,
   emailsPageTitle,
+  fullPageSet,
+  screenshotPath,
 } from '../config.js';
 import { authenticate, waitForSelectorToBeVisible } from '../utils/helpers.js';
 
@@ -48,6 +48,11 @@ export async function newsletterStatistics() {
       waitUntil: 'networkidle',
     },
   );
+
+  await page.screenshot({
+    path: screenshotPath + 'Newsletter_Statistics_01.png',
+    fullPage: fullPageSet,
+  });
 
   // Wait for the page to load and click sold tab
   page.waitForSelector('.mailpoet-listing-table');
@@ -82,6 +87,11 @@ export async function newsletterStatistics() {
       expect(page.locator('[data-automation-id="filters_all_engaged"]')).to
         .exist;
     });
+  });
+
+  await page.screenshot({
+    path: screenshotPath + 'Newsletter_Statistics_02.png',
+    fullPage: fullPageSet,
   });
 
   // Thinking time and closing

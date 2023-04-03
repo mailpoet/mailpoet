@@ -44,7 +44,7 @@ export async function newsletterListing() {
   await page.waitForNavigation({ waitUntil: 'networkidle' });
 
   await page.screenshot({
-    path: screenshotPath + '01_Newsletter_Listing.png',
+    path: screenshotPath + 'Newsletter_Listing_01.png',
     fullPage: fullPageSet,
   });
 
@@ -58,7 +58,7 @@ export async function newsletterListing() {
   });
 
   await page.screenshot({
-    path: screenshotPath + '02_Newsletter_Listing.png',
+    path: screenshotPath + 'Newsletter_Listing_02.png',
     fullPage: fullPageSet,
   });
 

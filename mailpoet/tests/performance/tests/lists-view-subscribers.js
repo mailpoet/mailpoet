@@ -1,5 +1,3 @@
-/* eslint-disable import/no-unresolved */
-/* eslint-disable import/no-default-export */
 /* eslint-disable no-unused-expressions */
 /**
  * External dependencies
@@ -23,6 +21,8 @@ import {
   timeoutSet,
   defaultListName,
   listsPageTitle,
+  fullPageSet,
+  screenshotPath,
 } from '../config.js';
 import { authenticate } from '../utils/helpers.js';
 
@@ -46,6 +46,11 @@ export async function listsViewSubscribers() {
 
   // Wait for async actions
   await page.waitForNavigation({ waitUntil: 'networkidle' });
+
+  await page.screenshot({
+    path: screenshotPath + 'Lists_View_Subscribers_01.png',
+    fullPage: fullPageSet,
+  });
 
   // Click to view subscribers of the default list "Newsletter mailing list"
   page.waitForSelector('[data-automation-id="dynamic-segments-tab"]');
@@ -72,6 +77,11 @@ export async function listsViewSubscribers() {
     });
   });
   page.waitForLoadState('networkidle');
+
+  await page.screenshot({
+    path: screenshotPath + 'Lists_View_Subscribers_02.png',
+    fullPage: fullPageSet,
+  });
 
   // Thinking time and closing
   sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));

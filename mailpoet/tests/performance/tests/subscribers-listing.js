@@ -1,5 +1,3 @@
-/* eslint-disable import/no-unresolved */
-/* eslint-disable import/no-default-export */
 /* eslint-disable no-unused-expressions */
 /**
  * External dependencies
@@ -22,6 +20,8 @@ import {
   headlessSet,
   timeoutSet,
   subscribersPageTitle,
+  fullPageSet,
+  screenshotPath,
 } from '../config.js';
 import { authenticate } from '../utils/helpers.js';
 
@@ -42,6 +42,11 @@ export async function subscribersListing() {
 
   // Wait for async actions
   await page.waitForNavigation({ waitUntil: 'networkidle' });
+
+  await page.screenshot({
+    path: screenshotPath + 'Subscribers_Listing_01.png',
+    fullPage: fullPageSet,
+  });
 
   // Verify filter, tag and listing are loaded and visible
   page.waitForLoadState('networkidle');

@@ -1,5 +1,3 @@
-/* eslint-disable import/no-unresolved */
-/* eslint-disable import/no-default-export */
 /**
  * External dependencies
  */
@@ -22,6 +20,8 @@ import {
   timeoutSet,
   defaultListName,
   formsPageTitle,
+  fullPageSet,
+  screenshotPath,
 } from '../config.js';
 import {
   authenticate,
@@ -47,6 +47,11 @@ export async function formsAdding() {
   // Wait for async actions
   await page.waitForNavigation({ waitUntil: 'networkidle' });
 
+  await page.screenshot({
+    path: screenshotPath + 'Forms_Adding_01.png',
+    fullPage: fullPageSet,
+  });
+
   // Wait and click the Add New Form button
   waitAndClick(page, '[data-automation-id="create_new_form"]');
   sleep(1);
@@ -70,6 +75,11 @@ export async function formsAdding() {
         'Form saved. Cookies reset — you will see all your dismissed popup forms again.',
       );
     });
+  });
+
+  await page.screenshot({
+    path: screenshotPath + 'Forms_Adding_02.png',
+    fullPage: fullPageSet,
   });
 
   // Thinking time and closing

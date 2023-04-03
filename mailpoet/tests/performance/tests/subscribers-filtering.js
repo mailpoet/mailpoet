@@ -1,6 +1,3 @@
-/* eslint-disable import/no-unresolved */
-/* eslint-disable import/no-default-export */
-/* eslint-disable no-unused-expressions */
 /**
  * External dependencies
  */
@@ -23,6 +20,8 @@ import {
   timeoutSet,
   adminEmail,
   subscribersPageTitle,
+  fullPageSet,
+  screenshotPath,
 } from '../config.js';
 import { authenticate } from '../utils/helpers.js';
 
@@ -44,6 +43,11 @@ export async function subscribersFiltering() {
   // Wait for async actions
   await page.waitForNavigation({ waitUntil: 'networkidle' });
 
+  await page.screenshot({
+    path: screenshotPath + 'Subscribers_Filtering_01.png',
+    fullPage: fullPageSet,
+  });
+
   // Check the subscribers filter is present
   page.locator('[data-automation-id="filters_subscribed"]').click();
   page.waitForSelector('[data-automation-id="filters_subscribed"]');
@@ -52,6 +56,11 @@ export async function subscribersFiltering() {
       expect(page.locator('[data-automation-id="listing_filter_segment"]')).to
         .exist;
     });
+  });
+
+  await page.screenshot({
+    path: screenshotPath + 'Subscribers_Filtering_02.png',
+    fullPage: fullPageSet,
   });
 
   // Select option "Newsletter mailing list" in the subscribers filter
@@ -67,6 +76,11 @@ export async function subscribersFiltering() {
     });
   });
   page.waitForNavigation({ waitUntil: 'networkidle' });
+
+  await page.screenshot({
+    path: screenshotPath + 'Subscribers_Filtering_03.png',
+    fullPage: fullPageSet,
+  });
 
   // Search for a subscriber in a filtered list
   page.locator('#search_input').type(adminEmail, { delay: 50 });
