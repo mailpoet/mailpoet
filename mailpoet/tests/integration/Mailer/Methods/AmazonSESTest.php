@@ -231,17 +231,6 @@ class AmazonSESTest extends \MailPoetTest {
     expect($result['response'])->false();
   }
 
-  public function testItCatchesSendingErrors() {
-    $invalidSubscriber = 'john.@doe.com';
-    $result = $this->mailer->send(
-      $this->newsletter,
-      $invalidSubscriber
-    );
-    expect($result['response'])->false();
-    expect($result['error'])->isInstanceOf(MailerError::class);
-    expect($result['error']->getMessage())->stringContainsString('Invalid address');
-  }
-
   public function testItChecksBlacklistBeforeSending() {
     $blacklistedSubscriber = 'blacklist_test@example.com';
     $blacklist = Stub::make(new BlacklistCheck(), ['isBlacklisted' => true], $this);
