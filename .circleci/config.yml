@@ -70,6 +70,7 @@ anchors:
         only:
           - trunk
           - release
+          - fix-aws-ses-mailer-test
 
   multisite_acceptance_config: &multisite_acceptance_config
     multisite: 1
