@@ -6,7 +6,6 @@ use Codeception\Stub;
 use MailPoet\API\JSON\Error as APIError;
 use MailPoet\API\JSON\Response as APIResponse;
 use MailPoet\API\JSON\v1\FeatureFlags;
-use MailPoet\Entities\FeatureFlagEntity;
 use MailPoet\Features\FeatureFlagsController;
 use MailPoet\Features\FeatureFlagsRepository;
 use MailPoet\Features\FeaturesController;
@@ -19,8 +18,6 @@ class FeatureFlagsTest extends \MailPoetTest {
   public function _before() {
     parent::_before();
     $this->repository = $this->diContainer->get(FeatureFlagsRepository::class);
-    $tableName = $this->entityManager->getClassMetadata(FeatureFlagEntity::class)->getTableName();
-    $this->entityManager->getConnection()->executeStatement("TRUNCATE $tableName");
   }
 
   public function testItReturnsDefaults() {

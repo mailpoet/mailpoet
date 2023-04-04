@@ -12,7 +12,6 @@ use MailPoet\Cron\ActionScheduler\ActionScheduler;
 use MailPoet\Migrator\Migrator;
 use MailPoet\Referrals\ReferralDetector;
 use MailPoet\Settings\SettingsController;
-use MailPoet\Settings\SettingsRepository;
 use MailPoet\Subscription\Captcha\CaptchaConstants;
 use MailPoet\Subscription\Captcha\CaptchaRenderer;
 use MailPoet\WP\Functions as WPFunctions;
@@ -58,6 +57,5 @@ class SetupTest extends \MailPoetTest {
 
   public function _after() {
     parent::_after();
-    $this->diContainer->get(SettingsRepository::class)->truncate();
   }
 }

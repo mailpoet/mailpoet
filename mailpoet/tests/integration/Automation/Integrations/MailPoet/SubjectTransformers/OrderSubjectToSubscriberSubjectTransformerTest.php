@@ -17,7 +17,6 @@ use MailPoet\Automation\Engine\Storage\AutomationStorage;
 use MailPoet\Automation\Integrations\MailPoet\Payloads\SubscriberPayload;
 use MailPoet\Automation\Integrations\MailPoet\Subjects\SubscriberSubject;
 use MailPoet\Automation\Integrations\WooCommerce\Triggers\OrderStatusChangedTrigger;
-use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Test\Automation\Stubs\TestAction;
 
 require_once __DIR__ . '/../../../Stubs/TestAction.php';
@@ -26,9 +25,6 @@ require_once __DIR__ . '/../../../Stubs/TestAction.php';
  * @group woo
  */
 class OrderSubjectToSubscriberSubjectTransformerTest extends \MailPoetTest {
-
-  /** @var SubscribersRepository */
-  private $subscribersRepository;
 
   /** @var AutomationStorage */
   private $automationStorage;
@@ -52,7 +48,6 @@ class OrderSubjectToSubscriberSubjectTransformerTest extends \MailPoetTest {
   private $expectedSubscriberSubjectEntry = null;
 
   public function _before() {
-    $this->subscribersRepository = $this->diContainer->get(SubscribersRepository::class);
     $this->automationRunStorage = $this->diContainer->get(AutomationRunStorage::class);
     $this->automationStorage = $this->diContainer->get(AutomationStorage::class);
     $this->automationRunLogStorage = $this->diContainer->get(AutomationRunLogStorage::class);
@@ -124,7 +119,6 @@ class OrderSubjectToSubscriberSubjectTransformerTest extends \MailPoetTest {
   public function _after() {
     parent::_after();
     $this->expectedSubscriberSubjectEntry = null;
-    $this->subscribersRepository->truncate();
     $this->automationStorage->truncate();
     $this->automationRunStorage->truncate();
     $this->automationRunLogStorage->truncate();

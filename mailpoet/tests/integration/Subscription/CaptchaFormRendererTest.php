@@ -72,7 +72,6 @@ class CaptchaFormRendererTest extends \MailPoetTest {
   }
 
   public function _before() {
-    $this->diContainer->get(FormsRepository::class)->truncate();
     parent::_before();
   }
 }

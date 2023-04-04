@@ -6,7 +6,6 @@ use Codeception\Stub;
 use MailPoet\API\JSON\Error as APIError;
 use MailPoet\API\JSON\Response as APIResponse;
 use MailPoet\API\JSON\v1\UserFlags;
-use MailPoet\Entities\UserFlagEntity;
 use MailPoet\Settings\UserFlagsController;
 use MailPoet\Settings\UserFlagsRepository;
 
@@ -19,7 +18,6 @@ class UserFlagsTest extends \MailPoetTest {
   private $userFlags;
 
   public function _before() {
-    $this->cleanup();
     $this->userFlags = Stub::make(UserFlagsController::class, [
       'userFlagsRepository' => $this->diContainer->get(UserFlagsRepository::class),
       'defaults' => [
@@ -54,15 +52,5 @@ class UserFlagsTest extends \MailPoetTest {
       'flag_2' => 'default_value_2',
       'flag_3' => 'new_value_3',
     ]);
-  }
-
-  public function _after() {
-    parent::_after();
-    $this->cleanup();
-  }
-
-  private function cleanup() {
-    $tableName = $this->entityManager->getClassMetadata(UserFlagEntity::class)->getTableName();
-    $this->entityManager->getConnection()->executeStatement("TRUNCATE $tableName");
   }
 }

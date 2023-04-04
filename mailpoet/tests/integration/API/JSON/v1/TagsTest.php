@@ -52,6 +52,5 @@ class TagsTest extends \MailPoetTest {
 
   public function _after() {
     parent::_after();
-    $this->repository->truncate();
   }
 }

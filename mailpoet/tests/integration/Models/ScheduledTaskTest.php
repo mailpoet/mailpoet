@@ -9,7 +9,6 @@ use MailPoet\Models\SendingQueue;
 use MailPoet\Util\Helpers;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
-use MailPoetVendor\Idiorm\ORM;
 
 class ScheduledTaskTest extends \MailPoetTest {
   public $task;
@@ -161,11 +160,5 @@ class ScheduledTaskTest extends \MailPoetTest {
 
     expect(Helpers::isJson($task->meta))->false();
     expect($task->meta)->equals($meta);
-  }
-
-  public function _after() {
-    parent::_after();
-    ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
-    ORM::raw_execute('TRUNCATE ' . ScheduledTaskSubscriber::$_table);
   }
 }

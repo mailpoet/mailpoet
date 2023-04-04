@@ -7,7 +7,6 @@ use MailPoet\Models\NewsletterSegment;
 use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
-use MailPoetVendor\Idiorm\ORM;
 
 class SegmentTest extends \MailPoetTest {
   public $segment;
@@ -267,14 +266,5 @@ class SegmentTest extends \MailPoetTest {
     expect($segments[1]['subscribers'])->equals(3);
     expect($segments[0]['name'])->equals($this->segmentData['name']);
     expect($segments[0]['subscribers'])->equals(1);
-  }
-
-  public function _after() {
-    parent::_after();
-    ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
-    ORM::raw_execute('TRUNCATE ' . Segment::$_table);
-    ORM::raw_execute('TRUNCATE ' . SubscriberSegment::$_table);
-    ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
-    ORM::raw_execute('TRUNCATE ' . NewsletterSegment::$_table);
   }
 }

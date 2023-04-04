@@ -62,7 +62,6 @@ class CustomFieldsTest extends \MailPoetTest {
   public function _before() {
     parent::_before();
     $this->repository = ContainerWrapper::getInstance(WP_DEBUG)->get(CustomFieldsRepository::class);
-    $this->repository->truncate();
     foreach ($this->customFields as $customField) {
       $this->repository->createOrUpdate($customField);
     }

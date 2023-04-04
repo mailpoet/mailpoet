@@ -10,8 +10,6 @@ use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\MailerFactory;
 use MailPoet\Models\Subscriber;
 use MailPoet\Settings\SettingsController;
-use MailPoet\Settings\SettingsRepository;
-use MailPoetVendor\Idiorm\ORM;
 
 class MailerTest extends \MailPoetTest {
   /** @var SettingsController */
@@ -130,7 +128,5 @@ class MailerTest extends \MailPoetTest {
 
   public function _after() {
     parent::_after();
-    $this->diContainer->get(SettingsRepository::class)->truncate();
-    ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
   }
 }

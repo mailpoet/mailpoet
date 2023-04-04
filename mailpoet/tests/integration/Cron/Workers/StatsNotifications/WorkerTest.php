@@ -79,7 +79,6 @@ class WorkerTest extends \MailPoetTest {
     $this->newsletterLinkRepository = $this->diContainer->get(NewsletterLinkRepository::class);
     $this->newslettersRepository = $this->diContainer->get(NewslettersRepository::class);
     $this->sendingQueuesRepository = $this->diContainer->get(SendingQueuesRepository::class);
-    $this->repository->truncate();
     $this->mailer = $this->createMock(Mailer::class);
     $this->renderer = $this->createMock(Renderer::class);
     $this->settings = SettingsController::getInstance();

@@ -6,7 +6,6 @@ use MailPoet\Cron\CronHelper;
 use MailPoet\Cron\Supervisor;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Settings\SettingsController;
-use MailPoet\Settings\SettingsRepository;
 
 class SupervisorTest extends \MailPoetTest {
   public $supervisor;
@@ -76,6 +75,5 @@ class SupervisorTest extends \MailPoetTest {
 
   public function _after() {
     parent::_after();
-    $this->diContainer->get(SettingsRepository::class)->truncate();
   }
 }

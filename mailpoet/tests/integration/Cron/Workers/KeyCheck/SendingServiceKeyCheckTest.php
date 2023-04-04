@@ -10,7 +10,6 @@ use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
-use MailPoet\Settings\SettingsRepository;
 use MailPoetVendor\Carbon\Carbon;
 use PHPUnit\Framework\MockObject\MockObject;
 
@@ -118,6 +117,5 @@ class SendingServiceKeyCheckTest extends \MailPoetTest {
 
   public function _after() {
     parent::_after();
-    $this->diContainer->get(SettingsRepository::class)->truncate();
   }
 }

@@ -7,7 +7,6 @@ use MailPoet\Cron\CronWorkerScheduler;
 use MailPoet\Cron\Workers\KeyCheck\PremiumKeyCheck;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
-use MailPoet\Settings\SettingsRepository;
 use PHPUnit\Framework\MockObject\MockObject;
 
 class PremiumKeyCheckTest extends \MailPoetTest {
@@ -65,6 +64,5 @@ class PremiumKeyCheckTest extends \MailPoetTest {
 
   public function _after() {
     parent::_after();
-    $this->diContainer->get(SettingsRepository::class)->truncate();
   }
 }

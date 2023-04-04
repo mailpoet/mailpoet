@@ -19,7 +19,6 @@ class WordpressMailerTest extends \MailPoetTest {
 
   public function _before() {
     $this->subscribersRepository = $this->diContainer->get(SubscribersRepository::class);
-    $this->subscribersRepository->truncate();
   }
 
   public function testItDoesNotSendWhenPreSendCheckFails() {
@@ -343,7 +342,6 @@ class WordpressMailerTest extends \MailPoetTest {
 
   public function _after() {
     parent::_after();
-    $this->subscribersRepository->truncate();
   }
 }
 // phpcs:enable

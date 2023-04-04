@@ -8,7 +8,6 @@ use MailPoet\Services\Bridge;
 use MailPoet\Services\Bridge\API;
 use MailPoet\Services\Bridge\BridgeTestMockAPI as MockAPI;
 use MailPoet\Settings\SettingsController;
-use MailPoet\Settings\SettingsRepository;
 use MailPoet\WP\Functions as WPFunctions;
 use PHPUnit\Framework\MockObject\MockObject;
 
@@ -465,6 +464,5 @@ class BridgeTest extends \MailPoetTest {
 
   public function _after() {
     parent::_after();
-    $this->diContainer->get(SettingsRepository::class)->truncate();
   }
 }
