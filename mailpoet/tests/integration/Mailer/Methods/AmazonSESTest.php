@@ -231,6 +231,14 @@ class AmazonSESTest extends \MailPoetTest {
     expect($result['response'])->false();
   }
 
+  public function testItCatchesSendingErrors() {
+    $this->mailer->sender['from_name_email'] = 'invalid';
+    $result = $this->mailer->send($this->newsletter, 'test@example.com');
+    expect($result['response'])->false();
+    expect($result['error'])->isInstanceOf(MailerError::class);
+    expect($result['error']->getMessage())->stringContainsString("Missing final '@domain'");
+  }
+
   public function testItChecksBlacklistBeforeSending() {
     $blacklistedSubscriber = 'blacklist_test@example.com';
     $blacklist = Stub::make(new BlacklistCheck(), ['isBlacklisted' => true], $this);
