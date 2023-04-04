@@ -216,9 +216,9 @@ class SendingTest extends \MailPoetTest {
     $sending3->save();
 
     $tasks = $this->scheduledTaskRepository->findScheduledSendingTasks(3);
-    expect($tasks[0]->getId())->equals($sending1->id());
-    expect($tasks[1]->getId())->equals($sending3->id());
-    expect($tasks[2]->getId())->equals($sending2->id());
+    expect($tasks[0]->getId())->equals($sending1->taskId);
+    expect($tasks[1]->getId())->equals($sending3->taskId);
+    expect($tasks[2]->getId())->equals($sending2->taskId);
   }
 
   public function testItGetsBatchOfScheduledQueuesSortedByUpdatedTime() {
@@ -233,9 +233,9 @@ class SendingTest extends \MailPoetTest {
     $sending3->save();
 
     $tasks = $this->scheduledTaskRepository->findRunningSendingTasks(3);
-    expect($tasks[0]->getId())->equals($sending1->id());
-    expect($tasks[1]->getId())->equals($sending3->id());
-    expect($tasks[2]->getId())->equals($sending2->id());
+    expect($tasks[0]->getId())->equals($sending1->taskId);
+    expect($tasks[1]->getId())->equals($sending3->taskId);
+    expect($tasks[2]->getId())->equals($sending2->taskId);
   }
 
   public function createNewNewsletter() {
