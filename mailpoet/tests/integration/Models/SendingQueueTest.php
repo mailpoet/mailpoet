@@ -2,8 +2,6 @@
 
 namespace MailPoet\Test\Models;
 
-use MailPoet\Models\ScheduledTask;
-use MailPoet\Models\ScheduledTaskSubscriber;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Util\Helpers;
 use MailPoetVendor\Idiorm\ORM;
@@ -120,12 +118,5 @@ class SendingQueueTest extends \MailPoetTest {
     $sendingQueue = SendingQueue::findOne($queue->id);
     $this->assertInstanceOf(SendingQueue::class, $sendingQueue);
     expect($sendingQueue->newsletterRenderedBody)->equals(json_encode($newsletterRenderedBody));
-  }
-
-  public function _after() {
-    parent::_after();
-    ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
-    ORM::raw_execute('TRUNCATE ' . ScheduledTaskSubscriber::$_table);
-    ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
   }
 }

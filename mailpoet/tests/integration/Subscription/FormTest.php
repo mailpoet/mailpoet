@@ -10,7 +10,6 @@ use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\FormEntity;
 use MailPoet\Form\Util\FieldNameObfuscator;
 use MailPoet\Settings\SettingsController;
-use MailPoet\Settings\SettingsRepository;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Subscription\Form;
 use MailPoet\Test\DataFactories\Segment as SegmentFactory;
@@ -146,6 +145,5 @@ class FormTest extends \MailPoetTest {
   public function _after() {
     parent::_after();
     wp_delete_post($this->post);
-    $this->diContainer->get(SettingsRepository::class)->truncate();
   }
 }

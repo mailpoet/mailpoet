@@ -12,7 +12,6 @@ use MailPoet\Entities\LogEntity;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Logging\LogRepository;
 use MailPoet\Settings\SettingsController;
-use MailPoet\Settings\SettingsRepository;
 use MailPoet\WP\Functions as WpFunctions;
 
 class DaemonTest extends \MailPoetTest {
@@ -92,7 +91,6 @@ class DaemonTest extends \MailPoetTest {
 
   public function _after() {
     parent::_after();
-    $this->diContainer->get(SettingsRepository::class)->truncate();
   }
 
   private function createWorkersFactoryMock(array $workers = []) {

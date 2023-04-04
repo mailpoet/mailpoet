@@ -6,7 +6,6 @@ use Codeception\Stub;
 use MailPoet\Cron\CronHelper;
 use MailPoet\Cron\DaemonHttpRunner;
 use MailPoet\Settings\SettingsController;
-use MailPoet\Settings\SettingsRepository;
 use MailPoet\WP\Functions as WPFunctions;
 
 class CronHelperTest extends \MailPoetTest {
@@ -337,7 +336,6 @@ class CronHelperTest extends \MailPoetTest {
 
   public function _after() {
     parent::_after();
-    $this->diContainer->get(SettingsRepository::class)->truncate();
   }
 
   private function getDeamonTestData() {

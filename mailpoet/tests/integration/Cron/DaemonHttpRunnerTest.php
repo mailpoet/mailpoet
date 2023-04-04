@@ -13,7 +13,6 @@ use MailPoet\Cron\Workers\SimpleWorker;
 use MailPoet\Cron\Workers\WorkersFactory;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Settings\SettingsController;
-use MailPoet\Settings\SettingsRepository;
 use MailPoet\WP\Functions as WPFunctions;
 
 class DaemonHttpRunnerTest extends \MailPoetTest {
@@ -279,7 +278,6 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
 
   public function _after() {
     parent::_after();
-    $this->diContainer->get(SettingsRepository::class)->truncate();
   }
 
   private function createWorkersFactoryMock(array $workers = []) {

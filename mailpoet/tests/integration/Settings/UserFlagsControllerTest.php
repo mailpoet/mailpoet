@@ -21,7 +21,6 @@ class UserFlagsControllerTest extends \MailPoetTest {
 
   public function _before() {
     parent::_before();
-    $this->cleanup();
 
     $currentUserId = 1;
     $otherUserId = 2;
@@ -88,7 +87,6 @@ class UserFlagsControllerTest extends \MailPoetTest {
 
   public function _after() {
     parent::_after();
-    $this->cleanup();
     WPFunctions::set(new WPFunctions);
   }
 
@@ -114,10 +112,5 @@ class UserFlagsControllerTest extends \MailPoetTest {
     $flag->setValue($value);
     $this->userFlagsRepository->flush();
     return $flag;
-  }
-
-  private function cleanup() {
-    $tableName = $this->entityManager->getClassMetadata(UserFlagEntity::class)->getTableName();
-    $this->connection->executeStatement("TRUNCATE $tableName");
   }
 }

@@ -16,7 +16,6 @@ use MailPoet\Services\AuthorizedSenderDomainController;
 use MailPoet\Services\Bridge;
 use MailPoet\Services\CongratulatoryMssEmailController;
 use MailPoet\Settings\SettingsController;
-use MailPoet\Settings\SettingsRepository;
 use MailPoet\WP\Functions as WPFunctions;
 
 class ServicesTest extends \MailPoetTest {
@@ -589,7 +588,6 @@ class ServicesTest extends \MailPoetTest {
 
   public function _after() {
     parent::_after();
-    $this->diContainer->get(SettingsRepository::class)->truncate();
   }
 
   public function testItRespondsWithCorrectMessageIfKeyDoesntSupportMSS() {

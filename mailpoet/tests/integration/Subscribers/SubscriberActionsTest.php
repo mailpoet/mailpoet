@@ -11,7 +11,6 @@ use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Settings\SettingsController;
-use MailPoet\Settings\SettingsRepository;
 use MailPoet\Test\DataFactories\NewsletterOption;
 
 class SubscriberActionsTest extends \MailPoetTest {
@@ -266,6 +265,5 @@ class SubscriberActionsTest extends \MailPoetTest {
 
   public function _after() {
     parent::_after();
-    $this->diContainer->get(SettingsRepository::class)->truncate();
   }
 }

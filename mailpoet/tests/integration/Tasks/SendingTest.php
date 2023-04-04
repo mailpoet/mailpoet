@@ -12,7 +12,6 @@ use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\Tasks\Subscribers;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
-use MailPoetVendor\Idiorm\ORM;
 
 class SendingTest extends \MailPoetTest {
   public $sending;
@@ -89,7 +88,6 @@ class SendingTest extends \MailPoetTest {
     $sending = SendingTask::getByNewsletterId($this->newsletter->id);
     $queue = $sending->queue();
     $task = $sending->task();
-    expect($queue->id)->equals($this->newsletter->id);
     expect($task->id)->equals($queue->taskId);
   }
 
@@ -170,7 +168,6 @@ class SendingTest extends \MailPoetTest {
   }
 
   public function testItGetsBatchOfScheduledQueues() {
-    $this->_after();
     $amount = 5;
     for ($i = 0; $i < $amount + 3; $i += 1) {
       $this->createNewSendingTask(['status' => ScheduledTask::STATUS_SCHEDULED]);
@@ -179,7 +176,6 @@ class SendingTest extends \MailPoetTest {
   }
 
   public function testItDoesNotGetPaused() {
-    $this->_after();
     $this->createNewSendingTask(['status' => ScheduledTask::STATUS_PAUSED]);
     expect($this->scheduledTaskRepository->findScheduledSendingTasks())->count(0);
   }
@@ -201,7 +197,6 @@ class SendingTest extends \MailPoetTest {
   }
 
   public function testItGetsBatchOfRunningQueues() {
-    $this->_after();
     $amount = 5;
     for ($i = 0; $i < $amount + 3; $i += 1) {
       $this->createNewSendingTask(['status' => null]);
@@ -210,8 +205,6 @@ class SendingTest extends \MailPoetTest {
   }
 
   public function testItGetsBatchOfRunningQueuesSortedByUpdatedTime() {
-    $this->_after();
-
     $sending1 = $this->createNewSendingTask(['status' => ScheduledTask::STATUS_SCHEDULED]);
     $sending1->updatedAt = '2017-05-04 14:00:00';
     $sending1->save();
@@ -229,8 +222,6 @@ class SendingTest extends \MailPoetTest {
   }
 
   public function testItGetsBatchOfScheduledQueuesSortedByUpdatedTime() {
-    $this->_after();
-
     $sending1 = $this->createNewSendingTask(['status' => null]);
     $sending1->updatedAt = '2017-05-04 14:00:00';
     $sending1->save();
@@ -279,13 +270,5 @@ class SendingTest extends \MailPoetTest {
     $sending->status = $status;
     $sending->scheduledAt = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'))->subHours(1);
     return $sending->save();
-  }
-
-  public function _after() {
-    parent::_after();
-    ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
-    ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
-    ORM::raw_execute('TRUNCATE ' . ScheduledTaskSubscriber::$_table);
-    ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
   }
 }

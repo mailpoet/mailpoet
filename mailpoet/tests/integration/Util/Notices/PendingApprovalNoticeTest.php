@@ -4,7 +4,6 @@ namespace MailPoet\Util\Notices;
 
 use MailPoet\Mailer\Mailer;
 use MailPoet\Settings\SettingsController;
-use MailPoet\Settings\SettingsRepository;
 
 class PendingApprovalNoticeTest extends \MailPoetTest {
   /** @var PendingApprovalNotice */
@@ -51,14 +50,5 @@ class PendingApprovalNoticeTest extends \MailPoetTest {
 
     $result = $this->notice->init(true);
     expect($result)->null();
-  }
-
-  public function _after() {
-    parent::_after();
-    $this->cleanup();
-  }
-
-  private function cleanup() {
-    $this->diContainer->get(SettingsRepository::class)->truncate();
   }
 }
