@@ -24,9 +24,26 @@ class IntegrationCleanupExtension extends Extension {
   private $deleteStatement;
 
   public function beforeSuite(SuiteEvent $event) {
+    global $wpdb;
+
     $this->entityManager = ContainerWrapper::getInstance()->get(EntityManager::class);
 
     $this->deleteStatement = 'SET FOREIGN_KEY_CHECKS=0;';
+
+    $automationTables = [
+      'mailpoet_automation_run_logs',
+      'mailpoet_automation_run_subjects',
+      'mailpoet_automation_runs',
+      'mailpoet_automation_triggers',
+      'mailpoet_automation_versions',
+      'mailpoet_automations',
+    ];
+
+    foreach ($automationTables as $automationTable) {
+      $fullTable = sprintf('%s%s', $wpdb->prefix, $automationTable);
+      $this->deleteStatement .= "DELETE FROM $fullTable;";
+    }
+
     foreach ($this->entityManager->getMetadataFactory()->getAllMetadata() as $metadata) {
       $class = $metadata->getName();
       $table = $metadata->getTableName();

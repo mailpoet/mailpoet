@@ -147,6 +147,5 @@ class AutomationPutEndpointTest extends AutomationTest {
 
   public function _after() {
     parent::_after();
-    $this->automationStorage->truncate();
   }
 }

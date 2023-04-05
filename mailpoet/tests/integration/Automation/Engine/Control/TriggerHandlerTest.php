@@ -7,7 +7,6 @@ use MailPoet\Automation\Engine\Data\Automation;
 use MailPoet\Automation\Engine\Data\Step;
 use MailPoet\Automation\Engine\Data\Subject;
 use MailPoet\Automation\Engine\Storage\AutomationRunStorage;
-use MailPoet\Automation\Engine\Storage\AutomationStorage;
 use MailPoet\Automation\Integrations\MailPoet\Subjects\SegmentSubject;
 use MailPoet\Automation\Integrations\MailPoet\Triggers\SomeoneSubscribesTrigger;
 use MailPoet\Automation\Integrations\MailPoet\Triggers\UserRegistrationTrigger;
@@ -20,9 +19,6 @@ class TriggerHandlerTest extends \MailPoetTest {
   /** @var TriggerHandler */
   private $testee;
 
-  /** @var AutomationStorage */
-  private $automationStorage;
-
   /** @var AutomationRunStorage */
   private $automationRunStorage;
 
@@ -34,7 +30,6 @@ class TriggerHandlerTest extends \MailPoetTest {
 
   public function _before() {
     $this->testee = $this->diContainer->get(TriggerHandler::class);
-    $this->automationStorage = $this->diContainer->get(AutomationStorage::class);
     $this->automationRunStorage = $this->diContainer->get(AutomationRunStorage::class);
 
     $this->segmentRepository = $this->diContainer->get(SegmentsRepository::class);
@@ -163,8 +158,5 @@ class TriggerHandlerTest extends \MailPoetTest {
 
   public function _after() {
     parent::_after();
-    $this->automationRunStorage->truncate();
-    $this->automationStorage->truncate();
-    $this->segmentRepository->truncate();
   }
 }

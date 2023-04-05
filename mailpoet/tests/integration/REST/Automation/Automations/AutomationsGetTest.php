@@ -175,7 +175,6 @@ class AutomationsGetTest extends AutomationTest {
 
   public function _after() {
     parent::_after();
-    $this->automationStorage->truncate();
     foreach ($this->userIds as $userId) {
       is_multisite() ? wpmu_delete_user($userId) : wp_delete_user($userId);
     }
