@@ -112,6 +112,8 @@ services:
       MYSQL_PASSWORD: wordpress
     volumes:
       - /dev/shm:/dev/shm
+    tmpfs:
+      - /var/lib/mysql:rw
     ports:
       - 4401:3306
     healthcheck:
