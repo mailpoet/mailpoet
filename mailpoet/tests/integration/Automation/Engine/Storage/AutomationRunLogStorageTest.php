@@ -45,6 +45,5 @@ class AutomationRunLogStorageTest extends \MailPoetTest {
 
   public function _after() {
     parent::_after();
-    $this->storage->truncate();
   }
 }

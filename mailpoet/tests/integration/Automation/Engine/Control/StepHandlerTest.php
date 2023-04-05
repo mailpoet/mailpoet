@@ -9,7 +9,6 @@ use MailPoet\Automation\Engine\Data\AutomationRun;
 use MailPoet\Automation\Engine\Data\NextStep;
 use MailPoet\Automation\Engine\Data\Step;
 use MailPoet\Automation\Engine\Exceptions\InvalidStateException;
-use MailPoet\Automation\Engine\Storage\AutomationRunLogStorage;
 use MailPoet\Automation\Engine\Storage\AutomationRunStorage;
 use MailPoet\Automation\Engine\Storage\AutomationStorage;
 use MailPoet\Automation\Integrations\Core\Actions\DelayAction;
@@ -23,9 +22,6 @@ class StepHandlerTest extends \MailPoetTest {
   /** @var AutomationRunStorage */
   private $automationRunStorage;
 
-  /** @var AutomationRunLogStorage */
-  private $automationRunLogStorage;
-
   /** @var StepHandler */
   private $testee;
 
@@ -36,7 +32,6 @@ class StepHandlerTest extends \MailPoetTest {
     $this->testee = $this->diContainer->get(StepHandler::class);
     $this->automationStorage = $this->diContainer->get(AutomationStorage::class);
     $this->automationRunStorage = $this->diContainer->get(AutomationRunStorage::class);
-    $this->automationRunLogStorage = $this->diContainer->get(AutomationRunLogStorage::class);
     $this->originalRunners = $this->testee->getStepRunners();
   }
 
@@ -141,9 +136,6 @@ class StepHandlerTest extends \MailPoetTest {
 
   public function _after() {
     parent::_after();
-    $this->automationStorage->truncate();
-    $this->automationRunStorage->truncate();
-    $this->automationRunLogStorage->truncate();
     $this->testee->setStepRunners($this->originalRunners);
   }
 }
