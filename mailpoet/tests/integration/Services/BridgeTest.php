@@ -461,8 +461,4 @@ class BridgeTest extends \MailPoetTest {
   private function getPremiumKeyState() {
     return $this->settings->get(Bridge::PREMIUM_KEY_STATE_SETTING_NAME);
   }
-
-  public function _after() {
-    parent::_after();
-  }
 }

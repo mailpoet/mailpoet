@@ -54,8 +54,4 @@ class WooCommerceSyncTest extends \MailPoetTest {
     );
     expect($worker->processTaskStrategy($task, microtime(true)))->equals(true);
   }
-
-  public function _after() {
-    parent::_after();
-  }
 }

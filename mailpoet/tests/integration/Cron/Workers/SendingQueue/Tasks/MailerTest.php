@@ -125,8 +125,4 @@ class MailerTest extends \MailPoetTest {
     // send method should return true
     expect($mailerTask->send('Newsletter', 'Subscriber'))->equals(['response' => true]);
   }
-
-  public function _after() {
-    parent::_after();
-  }
 }

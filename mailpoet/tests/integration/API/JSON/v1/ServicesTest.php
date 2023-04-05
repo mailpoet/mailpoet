@@ -586,10 +586,6 @@ class ServicesTest extends \MailPoetTest {
     expect($response->errors[0]['message'])->equals('Sending of congratulatory email failed.');
   }
 
-  public function _after() {
-    parent::_after();
-  }
-
   public function testItRespondsWithCorrectMessageIfKeyDoesntSupportMSS() {
     $bridge = $this->make(
       new Bridge(),

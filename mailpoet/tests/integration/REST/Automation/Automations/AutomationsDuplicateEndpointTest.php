@@ -111,8 +111,4 @@ class AutomationsDuplicateEndpointTest extends AutomationTest {
     $this->assertInstanceOf(Automation::class, $automation);
     $this->assertTrue($automation->equals($expectedAutomation));
   }
-
-  public function _after() {
-    parent::_after();
-  }
 }

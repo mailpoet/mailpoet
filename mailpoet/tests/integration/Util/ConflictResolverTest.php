@@ -100,8 +100,4 @@ class ConflictResolverTest extends \MailPoetTest {
     // it should not dequeue select2 script
     expect(in_array('select2', $wp_scripts->queue))->true(); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
   }
-
-  public function _after() {
-    parent::_after();
-  }
 }

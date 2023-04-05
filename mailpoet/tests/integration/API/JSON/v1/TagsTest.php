@@ -49,8 +49,4 @@ class TagsTest extends \MailPoetTest {
     $result = $this->testee->create([]);
     $this->assertEquals(400, $result->status);
   }
-
-  public function _after() {
-    parent::_after();
-  }
 }

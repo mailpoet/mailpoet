@@ -276,10 +276,6 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
     $daemon->ping();
   }
 
-  public function _after() {
-    parent::_after();
-  }
-
   private function createWorkersFactoryMock(array $workers = []) {
     $worker = $this->makeEmpty(SimpleWorker::class, [
       'process' => null,

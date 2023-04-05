@@ -61,8 +61,4 @@ class PremiumKeyCheckTest extends \MailPoetTest {
       $this->premiumKey
     );
   }
-
-  public function _after() {
-    parent::_after();
-  }
 }

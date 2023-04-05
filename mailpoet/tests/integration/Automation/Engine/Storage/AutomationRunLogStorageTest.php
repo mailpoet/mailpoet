@@ -42,8 +42,4 @@ class AutomationRunLogStorageTest extends \MailPoetTest {
     expect($errors['trace'])->array();
     expect(count($errors['trace']))->greaterThan(0);
   }
-
-  public function _after() {
-    parent::_after();
-  }
 }
