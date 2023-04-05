@@ -1,7 +1,6 @@
 <?php declare(strict_types = 1);
 
 use Automattic\WooCommerce\Admin\API\Reports\Orders\Stats\DataStore;
-use Codeception\Scenario;
 use MailPoet\Automation\Engine\Data\Automation;
 use MailPoet\Automation\Engine\Data\AutomationRun;
 use MailPoet\Automation\Engine\Data\NextStep;
@@ -12,7 +11,6 @@ use MailPoet\Automation\Integrations\Core\Actions\DelayAction;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Util\Security;
 use MailPoet\WooCommerce\Helper;
-use MailPoetVendor\Doctrine\DBAL\Connection;
 
 require_once(ABSPATH . 'wp-admin/includes/user.php');
 require_once(ABSPATH . 'wp-admin/includes/ms.php');
@@ -40,16 +38,6 @@ class IntegrationTester extends \Codeception\Actor {
 
   private $createdUsers = [];
 
-  /** @var Connection */
-  private $connection;
-
-  public function __construct(
-    Scenario $scenario
-  ) {
-    parent::__construct($scenario);
-    $this->connection = ContainerWrapper::getInstance()->get(Connection::class);
-  }
-
   public function createWordPressUser(string $email, string $role) {
     $userId = wp_insert_user([
       'user_login' => explode('@', $email)[0],
@@ -68,13 +56,7 @@ class IntegrationTester extends \Codeception\Actor {
   }
 
   public function createCustomer(string $email, string $role = 'customer'): int {
-    global $wpdb;
-    $userId = $this->createWordPressUser($email, $role);
-    $this->connection->executeQuery("
-      INSERT INTO {$wpdb->prefix}wc_customer_lookup (customer_id, user_id, first_name, last_name, email)
-      VALUES ({$userId}, {$userId}, 'First Name', 'Last Name', '{$email}')
-    ");
-    return $userId;
+    return $this->createWordPressUser($email, $role);
   }
 
   public function deleteCreatedUsers() {
