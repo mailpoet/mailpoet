@@ -170,10 +170,6 @@ class AutomationStatisticsStorageTest extends \MailPoetTest {
     $this->assertEquals(1, $stats->getEntered());
   }
 
-  public function _after() {
-    parent::_after();
-  }
-
   private function createRun(Automation $automation, string $status) {
     $run = AutomationRun::fromArray([
       'automation_id' => $automation->getId(),

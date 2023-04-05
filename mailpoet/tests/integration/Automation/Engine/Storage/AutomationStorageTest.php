@@ -173,8 +173,4 @@ class AutomationStorageTest extends \MailPoetTest {
     }
     return $automation;
   }
-
-  public function _after() {
-    parent::_after();
-  }
 }

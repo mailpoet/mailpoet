@@ -74,8 +74,4 @@ class AutomationTest extends \MailPoetTest {
       Automation::STATUS_ALL
     );
   }
-
-  public function _after() {
-    parent::_after();
-  }
 }

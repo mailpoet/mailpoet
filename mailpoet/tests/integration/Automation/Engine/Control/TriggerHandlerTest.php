@@ -155,8 +155,4 @@ class TriggerHandlerTest extends \MailPoetTest {
     $this->testee->processTrigger($trigger, [$segmentSubject]);
     $this->assertEmpty($this->automationRunStorage->getAutomationRunsForAutomation($automation1));
   }
-
-  public function _after() {
-    parent::_after();
-  }
 }

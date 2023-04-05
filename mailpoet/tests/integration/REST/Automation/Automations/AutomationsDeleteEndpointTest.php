@@ -72,8 +72,4 @@ class AutomationsDeleteEndpointTest extends AutomationTest {
     $automation = $this->automationStorage->getAutomation($this->automation->getId());
     $this->assertNull($automation);
   }
-
-  public function _after() {
-    parent::_after();
-  }
 }

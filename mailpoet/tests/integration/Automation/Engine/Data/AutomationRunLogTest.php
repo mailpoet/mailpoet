@@ -220,10 +220,6 @@ class AutomationRunLogTest extends \MailPoetTest {
     expect(count($error['trace']))->greaterThan(0);
   }
 
-  public function _after() {
-    parent::_after();
-  }
-
   private function getLogsForAction($callback = null) {
     if ($callback === null) {
       $callback = function() {

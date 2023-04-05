@@ -262,8 +262,4 @@ class SubscriberActionsTest extends \MailPoetTest {
     $this->entityManager->flush();
     return $newsletter;
   }
-
-  public function _after() {
-    parent::_after();
-  }
 }

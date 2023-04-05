@@ -144,8 +144,4 @@ class AutomationPutEndpointTest extends AutomationTest {
     }
     return $data;
   }
-
-  public function _after() {
-    parent::_after();
-  }
 }

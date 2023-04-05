@@ -334,10 +334,6 @@ class CronHelperTest extends \MailPoetTest {
     expect($this->cronHelper->validatePingResponse('something else'))->false();
   }
 
-  public function _after() {
-    parent::_after();
-  }
-
   private function getDeamonTestData() {
     return [
       'token' => 'some_token',

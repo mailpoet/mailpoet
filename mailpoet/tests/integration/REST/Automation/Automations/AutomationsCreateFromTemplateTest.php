@@ -86,8 +86,4 @@ class AutomationsCreateFromTemplateTest extends AutomationTest {
     $this->assertInstanceOf(Automation::class, $createdAutomation);
     $this->assertSame($createdAutomation->getId(), $response['data']['id']);
   }
-
-  public function _after() {
-    parent::_after();
-  }
 }

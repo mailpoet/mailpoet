@@ -72,8 +72,4 @@ class SupervisorTest extends \MailPoetTest {
     $daemon = $this->supervisor->checkDaemon();
     expect($daemon['status'])->equals(CronHelper::DAEMON_STATUS_ACTIVE);
   }
-
-  public function _after() {
-    parent::_after();
-  }
 }

@@ -89,10 +89,6 @@ class DaemonTest extends \MailPoetTest {
     $this->wp->removeFilter('mailpoet_cron_get_execution_limit', $limitCallback);
   }
 
-  public function _after() {
-    parent::_after();
-  }
-
   private function createWorkersFactoryMock(array $workers = []) {
     return $this->make(WorkersFactory::class, $workers + [
       'createScheduleWorker' => $this->createSimpleWorkerMock(),

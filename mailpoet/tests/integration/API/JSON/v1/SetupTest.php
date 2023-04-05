@@ -54,8 +54,4 @@ class SetupTest extends \MailPoetTest {
     $hookName = 'mailpoet_setup_reset';
     expect(WPHooksHelper::isActionDone($hookName))->true();
   }
-
-  public function _after() {
-    parent::_after();
-  }
 }

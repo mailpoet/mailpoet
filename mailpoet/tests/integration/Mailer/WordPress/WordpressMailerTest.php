@@ -339,9 +339,5 @@ class WordpressMailerTest extends \MailPoetTest {
     $mock->method('buildMailer')->willReturn($mailerMock);
     return $mock;
   }
-
-  public function _after() {
-    parent::_after();
-  }
 }
 // phpcs:enable
