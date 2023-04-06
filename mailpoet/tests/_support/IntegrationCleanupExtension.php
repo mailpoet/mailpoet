@@ -21,7 +21,7 @@ class IntegrationCleanupExtension extends Extension {
   ];
 
   /** @var string */
-  private $deleteStatement;
+  private $cleanupStatements;
 
   public function beforeSuite(SuiteEvent $event) {
     $this->entityManager = ContainerWrapper::getInstance()->get(EntityManager::class);
@@ -34,22 +34,22 @@ class IntegrationCleanupExtension extends Extension {
       AND table_name != '{$mpPrefix}migrations'
     ");
 
-    $this->deleteStatement = 'SET FOREIGN_KEY_CHECKS=0;';
+    $this->cleanupStatements = 'SET FOREIGN_KEY_CHECKS=0;';
     foreach ($tables as $table) {
-      $this->deleteStatement .= "DELETE FROM $table;";
+      $this->cleanupStatements .= "DELETE FROM $table;";
     }
 
     // save plugin version to avoid triggering migrator and populator
     $settingsTable = $this->entityManager->getMetadataFactory()->getMetadataFor(SettingEntity::class)->getTableName();
     $dbVersion = Env::$version;
-    $this->deleteStatement .= "
+    $this->cleanupStatements .= "
       INSERT INTO $settingsTable (name, value, created_at, updated_at)
       VALUES ('db_version', '$dbVersion', NOW(), NOW());
     ";
-    $this->deleteStatement .= 'SET FOREIGN_KEY_CHECKS=1';
+    $this->cleanupStatements .= 'SET FOREIGN_KEY_CHECKS=1';
   }
 
   public function beforeTest(TestEvent $event) {
-    $this->entityManager->getConnection()->executeStatement($this->deleteStatement);
+    $this->entityManager->getConnection()->executeStatement($this->cleanupStatements);
   }
 }
