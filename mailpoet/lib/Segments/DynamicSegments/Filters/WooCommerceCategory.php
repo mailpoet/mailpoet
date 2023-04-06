@@ -5,7 +5,6 @@ namespace MailPoet\Segments\DynamicSegments\Filters;
 use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Entities\DynamicSegmentFilterEntity;
 use MailPoet\Entities\SubscriberEntity;
-use MailPoet\Util\DBCollationChecker;
 use MailPoet\Util\Security;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Doctrine\DBAL\Connection;
@@ -20,20 +19,25 @@ class WooCommerceCategory implements Filter {
   /** @var EntityManager */
   private $entityManager;
 
-  /** @var DBCollationChecker */
-  private $collationChecker;
-
   /** @var WPFunctions */
   private $wp;
 
+  /** @var WooFilterHelper */
+  private $wooFilterHelper;
+
+  /** @var FilterHelper */
+  private $filterHelper;
+
   public function __construct(
     EntityManager $entityManager,
-    DBCollationChecker $collationChecker,
+    FilterHelper $filterHelper,
+    WooFilterHelper $wooFilterHelper,
     WPFunctions $wp
   ) {
     $this->entityManager = $entityManager;
-    $this->collationChecker = $collationChecker;
     $this->wp = $wp;
+    $this->wooFilterHelper = $wooFilterHelper;
+    $this->filterHelper = $filterHelper;
   }
 
   public function apply(QueryBuilder $queryBuilder, DynamicSegmentFilterEntity $filter): QueryBuilder {
@@ -49,74 +53,43 @@ class WooCommerceCategory implements Filter {
     $parameterSuffix = (string)$parameterSuffix;
 
     if ($operator === DynamicSegmentFilterData::OPERATOR_ANY) {
-      $this->applyCustomerJoin($queryBuilder, $subscribersTable);
-      $this->applyOrderStatsJoin($queryBuilder);
-      $this->applyProductJoin($queryBuilder);
+      $orderStatsAlias = $this->wooFilterHelper->applyOrderStatusFilter($queryBuilder);
+      $this->applyProductJoin($queryBuilder, $orderStatsAlias);
       $this->applyTermRelationshipsJoin($queryBuilder);
       $this->applyTermTaxonomyJoin($queryBuilder, $parameterSuffix);
 
     } elseif ($operator === DynamicSegmentFilterData::OPERATOR_ALL) {
-      $this->applyCustomerJoin($queryBuilder, $subscribersTable);
-      $this->applyOrderStatsJoin($queryBuilder);
-      $this->applyProductJoin($queryBuilder);
+      $orderStatsAlias = $this->wooFilterHelper->applyOrderStatusFilter($queryBuilder);
+      $this->applyProductJoin($queryBuilder, $orderStatsAlias);
       $this->applyTermRelationshipsJoin($queryBuilder);
       $this->applyTermTaxonomyJoin($queryBuilder, $parameterSuffix)
-        ->groupBy("{$subscribersTable}.id, orderStats.order_id")
-        ->having('COUNT(orderStats.order_id) = :count_' . $parameterSuffix)
+        ->groupBy("$subscribersTable.id, $orderStatsAlias.order_id")
+        ->having("COUNT($orderStatsAlias.order_id) = :count_" . $parameterSuffix)
         ->setParameter('count_' . $parameterSuffix, count($categoryIds));
 
     } elseif ($operator === DynamicSegmentFilterData::OPERATOR_NONE) {
       // subQuery with subscriber ids that bought products
       $subQuery = $this->createQueryBuilder($subscribersTable);
       $subQuery->select("DISTINCT $subscribersTable.id");
-      $subQuery = $this->applyCustomerJoin($subQuery, $subscribersTable);
-      $subQuery = $this->applyOrderStatsJoin($subQuery);
-      $subQuery = $this->applyProductJoin($subQuery);
+      $orderStatsAlias = $this->wooFilterHelper->applyOrderStatusFilter($subQuery);
+      $subQuery = $this->applyProductJoin($subQuery, $orderStatsAlias);
       $subQuery = $this->applyTermRelationshipsJoin($subQuery);
       $subQuery = $this->applyTermTaxonomyJoin($subQuery, $parameterSuffix);
-      // application subQuery for negation
-      $queryBuilder->where("{$subscribersTable}.id NOT IN ({$subQuery->getSQL()})");
+      // apply subQuery for negation
+      $queryBuilder->where("$subscribersTable.id NOT IN ({$this->filterHelper->getInterpolatedSQL($subQuery)})");
     }
 
     return $queryBuilder
-      ->setParameter("category_{$parameterSuffix}", $categoryIdswithChildrenIds, Connection::PARAM_STR_ARRAY);
+      ->setParameter("category_$parameterSuffix", $categoryIdswithChildrenIds, Connection::PARAM_STR_ARRAY);
   }
 
-  private function applyCustomerJoin(QueryBuilder $queryBuilder, string $subscribersTable): QueryBuilder {
-    global $wpdb;
-    $collation = $this->collationChecker->getCollateIfNeeded(
-      $subscribersTable,
-      'email',
-      $wpdb->prefix . 'wc_customer_lookup',
-      'email'
-    );
-    return $queryBuilder->innerJoin(
-      $subscribersTable,
-      $wpdb->prefix . 'wc_customer_lookup',
-      'customer',
-      "$subscribersTable.email = customer.email $collation"
-    );
-  }
-
-  private function applyOrderStatsJoin(QueryBuilder $queryBuilder): QueryBuilder {
-    global $wpdb;
-    return $queryBuilder
-      ->join(
-        'customer',
-        $wpdb->prefix . 'wc_order_stats',
-        'orderStats',
-        'customer.customer_id = orderStats.customer_id'
-      )
-      ->andWhere("orderStats.status NOT IN ('wc-cancelled', 'wc-on-hold', 'wc-pending', 'wc-failed')");
-  }
-
-  private function applyProductJoin(QueryBuilder $queryBuilder): QueryBuilder {
+  private function applyProductJoin(QueryBuilder $queryBuilder, string $orderStatsAlias): QueryBuilder {
     global $wpdb;
     return $queryBuilder->innerJoin(
-      'orderStats',
+      $orderStatsAlias,
       $wpdb->prefix . 'wc_order_product_lookup',
       'product',
-      'orderStats.order_id = product.order_id'
+      "$orderStatsAlias.order_id = product.order_id"
     );
   }
 
@@ -138,7 +111,7 @@ class WooCommerceCategory implements Filter {
       'term_taxonomy',
       "term_taxonomy.term_taxonomy_id=term_relationships.term_taxonomy_id
       AND
-      term_taxonomy.term_id IN (:category_{$parameterSuffix})"
+      term_taxonomy.term_id IN (:category_$parameterSuffix)"
     );
   }
 
