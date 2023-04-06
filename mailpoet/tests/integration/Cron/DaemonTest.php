@@ -113,6 +113,7 @@ class DaemonTest extends \MailPoetTest {
       'createSubscribersCountCacheRecalculationWorker' => $this->createSimpleWorkerMock(),
       'createReEngagementEmailsSchedulerWorker' => $this->createSimpleWorkerMock(),
       'createNewsletterTemplateThumbnailsWorker' => $this->createSimpleWorkerMock(),
+      'createAbandonedCartWorker' => $this->createSimpleWorkerMock(),
     ]);
   }
 
