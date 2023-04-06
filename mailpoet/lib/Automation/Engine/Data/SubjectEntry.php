@@ -35,6 +35,10 @@ class SubjectEntry {
     return $this->subject;
   }
 
+  public function getSubjectData(): SubjectData {
+    return $this->subjectData;
+  }
+
   /** @return Payload */
   public function getPayload() {
     if ($this->payloadCache === null) {
