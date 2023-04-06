@@ -359,9 +359,4 @@ class FirstPurchaseTest extends \MailPoetTest {
     $this->entityManager->flush();
     return $sendingQueue;
   }
-
-  public function _after() {
-    parent::_after();
-    WPFunctions::set(new WPFunctions);
-  }
 }

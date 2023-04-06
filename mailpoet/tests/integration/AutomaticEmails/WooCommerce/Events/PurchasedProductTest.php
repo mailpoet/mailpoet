@@ -280,9 +280,4 @@ class PurchasedProductTest extends \MailPoetTest {
 
     return $subscriber;
   }
-
-  public function _after() {
-    parent::_after();
-    WPFunctions::set(new WPFunctions);
-  }
 }

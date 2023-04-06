@@ -112,9 +112,4 @@ class AccessControlTest extends \MailPoetTest {
 
     expect($accessControl->validatePermission($capability))->true();
   }
-
-  public function _after() {
-    parent::_after();
-    WPFunctions::set(new WPFunctions);
-  }
 }

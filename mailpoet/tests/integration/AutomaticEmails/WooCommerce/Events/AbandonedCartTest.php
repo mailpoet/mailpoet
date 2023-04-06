@@ -387,7 +387,6 @@ class AbandonedCartTest extends \MailPoetTest {
 
   public function _after() {
     parent::_after();
-    WPFunctions::set(new WPFunctions());
     Carbon::setTestNow();
     // Restore original cart object
     $this->wooCommerce->cart = $this->cartBackup;
