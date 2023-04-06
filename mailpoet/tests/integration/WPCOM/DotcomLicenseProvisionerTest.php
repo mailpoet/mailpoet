@@ -7,8 +7,6 @@ use MailPoet\API\JSON\SuccessResponse;
 use MailPoet\API\JSON\v1\Services;
 use MailPoet\API\JSON\v1\Settings;
 use MailPoet\Logging\LoggerFactory;
-use MailPoet\Logging\LogRepository;
-use MailPoet\Settings\SettingsRepository;
 
 class DotcomLicenseProvisionerTest extends \MailPoetTest {
   /** @var DotcomLicenseProvisioner */
@@ -129,10 +127,5 @@ class DotcomLicenseProvisionerTest extends \MailPoetTest {
       ['isAtomicPlatform' => true]);
     $result = $provisioner->provisionLicense($result, $payload, $eventType);
     expect($result)->equals(true);
-  }
-
-  public function _after() {
-    $this->diContainer->get(SettingsRepository::class)->truncate();
-    $this->diContainer->get(LogRepository::class)->truncate();
   }
 }

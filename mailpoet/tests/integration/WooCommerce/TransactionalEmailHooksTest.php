@@ -32,9 +32,6 @@ class TransactionalEmailHooksTest extends \MailPoetTest {
   /** @var SettingsController */
   private $settings;
 
-  /** @var array */
-  private $originalWcSettings;
-
   /** @var NewslettersRepository */
   private $newslettersRepository;
 
@@ -43,7 +40,6 @@ class TransactionalEmailHooksTest extends \MailPoetTest {
 
   public function _before() {
     $this->settings = $this->diContainer->get(SettingsController::class);
-    $this->originalWcSettings = $this->settings->get('woocommerce');
     $this->newslettersRepository = $this->diContainer->get(NewslettersRepository::class);
     $this->wp = $this->diContainer->get(WPFunctions::class);
   }
@@ -241,16 +237,5 @@ class TransactionalEmailHooksTest extends \MailPoetTest {
       $this->diContainer->get(TransactionalEmails::class)
     );
 
-  }
-
-  public function _after() {
-    parent::_after();
-    $this->entityManager
-      ->createQueryBuilder()
-      ->delete()
-      ->from(NewsletterEntity::class, 'n')
-      ->getQuery()
-      ->execute();
-    $this->settings->set('woocommerce', $this->originalWcSettings);
   }
 }

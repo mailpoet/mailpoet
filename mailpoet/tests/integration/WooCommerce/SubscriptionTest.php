@@ -296,10 +296,4 @@ class SubscriptionTest extends \MailPoetTest {
     $result = ob_get_clean();
     return $result;
   }
-
-  public function _after() {
-    parent::_after();
-    // restore settings
-    $this->settings->set('woocommerce', $this->originalSettings);
-  }
 }

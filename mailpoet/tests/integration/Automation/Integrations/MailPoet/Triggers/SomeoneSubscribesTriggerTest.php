@@ -70,12 +70,6 @@ class SomeoneSubscribesTriggerTest extends \MailPoetTest {
     ];
   }
 
-  public function _after() {
-    parent::_after();
-    $segmentIds = $this->getSegmentIds(array_keys($this->segments));
-    $this->segmentRepository->bulkDelete($segmentIds);
-  }
-
   private function getSegmentId(string $index): int {
     return (int)$this->segments[$index]->getId();
   }
