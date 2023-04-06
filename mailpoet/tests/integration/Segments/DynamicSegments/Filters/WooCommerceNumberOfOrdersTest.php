@@ -73,6 +73,47 @@ class WooCommerceNumberOfOrdersTest extends \MailPoetTest {
     $this->assertEqualsCanonicalizing([$createdSub->getEmail()], $emails);
   }
 
+  /**
+   * @dataProvider allowedStatuses
+   */
+  public function testItIncludesAllowedStatuses($status) {
+    $email = "$status@example.com";
+    $customerId = $this->createCustomer($email, 'customer');
+    $this->createOrder($customerId, Carbon::now(), $status);
+    $segmentFilterData = $this->getSegmentFilterData('=', 1, 1);
+    $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->numberOfOrdersFilter);
+    expect($emails)->contains($email);
+  }
+
+  /**
+   * @dataProvider disallowedStatuses
+   */
+  public function testItExcludesDisallowedOrderStatuses($status) {
+    $email = "$status@example.com";
+    $customerId = $this->createCustomer($email, 'customer');
+    $this->createOrder($customerId, Carbon::now(), $status);
+    $segmentFilterData = $this->getSegmentFilterData('=', 1, 1);
+    $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->numberOfOrdersFilter);
+    expect($emails)->notContains($email);
+  }
+
+  public function allowedStatuses() {
+    return [
+      'completed' => ['wc-completed'],
+      'processing' => ['wc-processing'],
+    ];
+  }
+
+  public function disallowedStatuses() {
+    return [
+      'refunded' => ['wc-refunded'],
+      'cancelled' => ['wc-cancelled'],
+      'on hold' => ['wc-on-hold'],
+      'pending' => ['wc-pending'],
+      'failed' => ['wc-failed'],
+    ];
+  }
+
   private function getSegmentFilterData(string $comparisonType, int $ordersCount, int $days): DynamicSegmentFilterData {
     return new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_WOOCOMMERCE, WooCommerceNumberOfOrders::ACTION_NUMBER_OF_ORDERS, [
       'number_of_orders_type' => $comparisonType,
@@ -99,12 +140,9 @@ class WooCommerceNumberOfOrdersTest extends \MailPoetTest {
 
   private function cleanUp(): void {
     global $wpdb;
+    $this->truncateEntity(SegmentEntity::class);
+    $this->truncateEntity(SubscriberEntity::class);
 
-    if (!empty($this->orders)) {
-      foreach ($this->orders as $orderId) {
-        wp_delete_post($orderId);
-      }
-    }
     $this->connection->executeQuery("TRUNCATE TABLE {$wpdb->prefix}wc_customer_lookup");
     $this->connection->executeQuery("TRUNCATE TABLE {$wpdb->prefix}wc_order_stats");
   }
