@@ -303,6 +303,7 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
       'createSubscribersCountCacheRecalculationWorker' => $worker,
       'createReEngagementEmailsSchedulerWorker' => $worker,
       'createNewsletterTemplateThumbnailsWorker' => $worker,
+      'createAbandonedCartWorker' => $worker,
     ]);
   }
 }
