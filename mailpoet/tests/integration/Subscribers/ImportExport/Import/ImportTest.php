@@ -363,7 +363,7 @@ class ImportTest extends \MailPoetTest {
       $subscribersData['first_name'][] = $existingSubscriber['first_name'];
       $subscribersData['last_name'][] = $existingSubscriber['last_name'];
       $subscribersData['email'][] = strtolower($existingSubscriber['email']); // import emails are always lowercase
-      $subscribersData[1][] = 'custom_field_' . $i;
+      $subscribersData[$this->subscribersCustomFields[0]][] = 'custom_field_' . $i;
       $subscribersData['created_at'][] = $existingSubscriber['created_at'];
       $subscribersData['subscribed_ip'][] = $existingSubscriber['subscribed_ip'];
       $subscribersData['confirmed_at'][] = $existingSubscriber['confirmed_at'];
