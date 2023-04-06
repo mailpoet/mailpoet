@@ -19,12 +19,17 @@ class WooCommerceTotalSpent implements Filter {
   /** @var DBCollationChecker */
   private $collationChecker;
 
+  /** @var WooFilterHelper */
+  private $wooFilterHelper;
+
   public function __construct(
     EntityManager $entityManager,
-    DBCollationChecker $collationChecker
+    DBCollationChecker $collationChecker,
+    WooFilterHelper $wooFilterHelper
   ) {
     $this->entityManager = $entityManager;
     $this->collationChecker = $collationChecker;
+    $this->wooFilterHelper = $wooFilterHelper;
   }
 
   public function apply(QueryBuilder $queryBuilder, DynamicSegmentFilterEntity $filter): QueryBuilder {
@@ -44,28 +49,21 @@ class WooCommerceTotalSpent implements Filter {
       'email'
     );
 
-    $queryBuilder->innerJoin(
-      $subscribersTable,
-      $wpdb->prefix . 'wc_customer_lookup',
-      'customer',
-      "$subscribersTable.email = customer.email $collation"
-    )->leftJoin(
-      'customer',
-      $wpdb->prefix . 'wc_order_stats',
-      'orderStats',
-      'customer.customer_id = orderStats.customer_id AND orderStats.date_created >= :date' . $parameterSuffix
-    )->andWhere('orderStats.status NOT IN ("wc-cancelled", "wc-failed")')
-      ->setParameter('date' . $parameterSuffix, $date->toDateTimeString())
+    $orderStatsAlias = $this->wooFilterHelper->applyOrderStatusFilter($queryBuilder);
+    $dateParam = "date_$parameterSuffix";
+
+    $queryBuilder->andWhere("$orderStatsAlias.date_created >= :$dateParam")
+      ->setParameter($dateParam, $date->toDateTimeString())
       ->groupBy('inner_subscriber_id');
 
     if ($type === '=') {
-      $queryBuilder->having('SUM(orderStats.total_sales) = :amount' . $parameterSuffix);
+      $queryBuilder->having("SUM($orderStatsAlias.total_sales) = :amount" . $parameterSuffix);
     } elseif ($type === '!=') {
-      $queryBuilder->having('SUM(orderStats.total_sales) != :amount' . $parameterSuffix);
+      $queryBuilder->having("SUM($orderStatsAlias.total_sales) != :amount" . $parameterSuffix);
     } elseif ($type === '>') {
-      $queryBuilder->having('SUM(orderStats.total_sales) > :amount' . $parameterSuffix);
+      $queryBuilder->having("SUM($orderStatsAlias.total_sales) > :amount" . $parameterSuffix);
     } elseif ($type === '<') {
-      $queryBuilder->having('SUM(orderStats.total_sales) < :amount' . $parameterSuffix);
+      $queryBuilder->having("SUM($orderStatsAlias.total_sales) < :amount" . $parameterSuffix);
     }
 
     $queryBuilder->setParameter('amount' . $parameterSuffix, $amount);
