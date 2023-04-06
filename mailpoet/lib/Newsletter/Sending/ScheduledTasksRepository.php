@@ -276,6 +276,28 @@ class ScheduledTasksRepository extends Repository {
       ->getResult();
   }
 
+  /**
+   * @param string $type
+   * @param SubscriberEntity $subscriber
+   * @return ScheduledTaskEntity[]
+   * @throws \MailPoetVendor\Doctrine\ORM\NonUniqueResultException
+   */
+  public function findByTypeAndSubscriber(string $type, SubscriberEntity $subscriber): array {
+    $query = $this->doctrineRepository->createQueryBuilder('st')
+      ->select('st')
+      ->join(ScheduledTaskSubscriberEntity::class, 'sts', Join::WITH, 'st = sts.task')
+      ->where('st.type = :type')
+      ->andWhere('sts.subscriber = :subscriber')
+      ->andWhere('st.deletedAt IS NULL')
+      ->andWhere('st.status = :status')
+      ->setParameter('type', $type)
+      ->setParameter('subscriber', $subscriber->getId())
+      ->setParameter('status', ScheduledTaskEntity::STATUS_SCHEDULED)
+      ->getQuery();
+    $tasks = $query->getResult();
+    return $tasks;
+  }
+
   public function touchAllByIds(array $ids): void {
     $now = CarbonImmutable::createFromTimestamp((int)$this->wp->currentTime('timestamp'));
     $this->entityManager->createQueryBuilder()
