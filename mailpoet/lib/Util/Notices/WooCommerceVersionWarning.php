@@ -37,7 +37,7 @@ class WooCommerceVersionWarning {
 
   private function display($requiredWooCommerceVersion) {
     // translators: %s is the PHP version
-    $errorString = __('MailPoet plugin requires WooCommerce version %s or newer. Please update your WooCommerce plugin version, or read our [link]instructions[/link] for additional options on how to resolve this issue. ', 'mailpoet');
+    $errorString = __('MailPoet plugin requires WooCommerce version %s or newer. Please update your WooCommerce plugin version, or read our [link]instructions[/link] for additional options on how to resolve this issue.', 'mailpoet');
     $errorString = sprintf($errorString, $requiredWooCommerceVersion);
     $error = Helpers::replaceLinkTags($errorString, 'https://kb.mailpoet.com/article/152-minimum-requirements-for-mailpoet-3#woocommerce-version', [
       'target' => '_blank',

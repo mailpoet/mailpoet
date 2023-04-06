@@ -34,7 +34,7 @@ class Coupon {
         }
       }
       if (empty($couponCode)) {
-        throw NewsletterProcessingException::create()->withMessage(__('Couldn\'t find coupon, please edit and adjust if coupons is removed.', 'mailpoet'));
+        throw NewsletterProcessingException::create()->withMessage(__('Couldn\'t find the coupon. Please update the email if the coupon was removed.', 'mailpoet'));
       }
     }
     $element['styles']['block']['width'] = $this->calculateWidth($element, $columnBaseWidth);
