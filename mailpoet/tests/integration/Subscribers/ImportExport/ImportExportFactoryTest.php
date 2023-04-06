@@ -304,9 +304,4 @@ class ImportExportFactoryTest extends \MailPoetTest {
     expect(count((array)json_decode($exportMenu['subscriberFieldsSelect2'], true)))
       ->equals(3);
   }
-
-  public function _after() {
-    parent::_after();
-    $this->clearSubscribersCountCache();
-  }
 }

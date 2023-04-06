@@ -143,11 +143,4 @@ class CustomFieldTest extends \MailPoetTest {
     $subscriber = $customField->subscribers()->findOne();
     expect($subscriber->value)->equals($association->value);
   }
-
-  public function _after() {
-    parent::_after();
-    CustomField::deleteMany();
-    Subscriber::deleteMany();
-    SubscriberCustomField::deleteMany();
-  }
 }

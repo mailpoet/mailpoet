@@ -120,11 +120,6 @@ class SubscribersTest extends \MailPoetTest {
     expect($count)->same(999999);
   }
 
-  public function _after() {
-    parent::_after();
-    $this->wp->deleteTransient(Subscribers::SUBSCRIBERS_COUNT_CACHE_KEY);
-  }
-
   private function createSubscriber(string $email, string $status): SubscriberEntity {
     $subscriber = new SubscriberEntity();
     $subscriber->setEmail($email);

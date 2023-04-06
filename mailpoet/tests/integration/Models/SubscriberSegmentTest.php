@@ -334,11 +334,4 @@ class SubscriberSegmentTest extends \MailPoetTest {
     expect($subscribedSegments[0]['name'])->equals($this->wpSegment->name);
     expect($subscribedSegments[1]['name'])->equals($this->wcSegment->name);
   }
-
-  public function _after() {
-    parent::_after();
-    Segment::deleteMany();
-    Subscriber::deleteMany();
-    SubscriberSegment::deleteMany();
-  }
 }

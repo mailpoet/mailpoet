@@ -877,9 +877,4 @@ class ImportTest extends \MailPoetTest {
     $this->subscriberRepository->flush();
     return $subscriber;
   }
-
-  public function _after(): void {
-    parent::_after();
-    $this->truncateEntity(CustomFieldEntity::class);
-  }
 }

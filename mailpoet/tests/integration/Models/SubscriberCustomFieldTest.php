@@ -75,9 +75,4 @@ class SubscriberCustomFieldTest extends \MailPoetTest {
     $records = SubscriberCustomField::findArray();
     expect($records)->count(1);
   }
-
-  public function _after() {
-    parent::_after();
-    SubscriberCustomField::deleteMany();
-  }
 }
