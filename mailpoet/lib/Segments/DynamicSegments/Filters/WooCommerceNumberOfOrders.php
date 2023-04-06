@@ -7,6 +7,7 @@ use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Util\DBCollationChecker;
 use MailPoet\Util\Security;
 use MailPoetVendor\Carbon\Carbon;
+use MailPoetVendor\Doctrine\DBAL\Connection;
 use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 
@@ -19,12 +20,17 @@ class WooCommerceNumberOfOrders implements Filter {
   /** @var DBCollationChecker */
   private $collationChecker;
 
+  /** @var WooFilterHelper */
+  private $wooFilterHelper;
+
   public function __construct(
     EntityManager $entityManager,
-    DBCollationChecker $collationChecker
+    DBCollationChecker $collationChecker,
+    WooFilterHelper $wooFilterHelper
   ) {
     $this->entityManager = $entityManager;
     $this->collationChecker = $collationChecker;
+    $this->wooFilterHelper = $wooFilterHelper;
   }
 
   public function apply(QueryBuilder $queryBuilder, DynamicSegmentFilterEntity $filter): QueryBuilder {
@@ -53,7 +59,7 @@ class WooCommerceNumberOfOrders implements Filter {
         'customer',
         $wpdb->prefix . 'wc_order_stats',
         'orderStats',
-        'customer.customer_id = orderStats.customer_id AND orderStats.date_created >= :date' . $parameterSuffix . ' AND orderStats.status NOT IN ("wc-cancelled", "wc-failed")'
+        'customer.customer_id = orderStats.customer_id AND orderStats.date_created >= :date' . $parameterSuffix . ' AND orderStats.status IN (:allowedStatuses' . $parameterSuffix . ')'
       );
 
     $queryBuilder->add('join', [
@@ -70,6 +76,7 @@ class WooCommerceNumberOfOrders implements Filter {
       ],
     ], \true)
       ->setParameter('date' . $parameterSuffix, $date->toDateTimeString())
+      ->setParameter('allowedStatuses' . $parameterSuffix, $this->wooFilterHelper->defaultIncludedStatuses(), Connection::PARAM_STR_ARRAY)
       ->groupBy('inner_subscriber_id');
 
     if ($type === '=') {
