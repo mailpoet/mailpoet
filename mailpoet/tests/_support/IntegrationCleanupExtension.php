@@ -24,40 +24,28 @@ class IntegrationCleanupExtension extends Extension {
   private $deleteStatement;
 
   public function beforeSuite(SuiteEvent $event) {
-    global $wpdb;
-
     $this->entityManager = ContainerWrapper::getInstance()->get(EntityManager::class);
 
+    $mpPrefix = Env::$dbPrefix;
+    $tables = $this->entityManager->getConnection()->fetchFirstColumn("
+      SELECT table_name
+      FROM information_schema.tables
+      WHERE table_name LIKE '{$mpPrefix}%'
+      AND table_name != '{$mpPrefix}migrations'
+    ");
+
     $this->deleteStatement = 'SET FOREIGN_KEY_CHECKS=0;';
-
-    $automationTables = [
-      'mailpoet_automation_run_logs',
-      'mailpoet_automation_run_subjects',
-      'mailpoet_automation_runs',
-      'mailpoet_automation_triggers',
-      'mailpoet_automation_versions',
-      'mailpoet_automations',
-    ];
-
-    foreach ($automationTables as $automationTable) {
-      $fullTable = sprintf('%s%s', $wpdb->prefix, $automationTable);
-      $this->deleteStatement .= "DELETE FROM $fullTable;";
-    }
-
-    foreach ($this->entityManager->getMetadataFactory()->getAllMetadata() as $metadata) {
-      $class = $metadata->getName();
-      $table = $metadata->getTableName();
+    foreach ($tables as $table) {
       $this->deleteStatement .= "DELETE FROM $table;";
-
-      // save plugin version to avoid triggering migrator and populator
-      if ($class === SettingEntity::class) {
-        $dbVersion = Env::$version;
-        $this->deleteStatement .= "
-          INSERT INTO $table (name, value, created_at, updated_at)
-          VALUES ('db_version', '$dbVersion', NOW(), NOW());
-        ";
-      }
     }
+
+    // save plugin version to avoid triggering migrator and populator
+    $settingsTable = $this->entityManager->getMetadataFactory()->getMetadataFor(SettingEntity::class)->getTableName();
+    $dbVersion = Env::$version;
+    $this->deleteStatement .= "
+      INSERT INTO $settingsTable (name, value, created_at, updated_at)
+      VALUES ('db_version', '$dbVersion', NOW(), NOW());
+    ";
     $this->deleteStatement .= 'SET FOREIGN_KEY_CHECKS=1';
   }
 
