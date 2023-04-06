@@ -797,7 +797,6 @@ class ImportTest extends \MailPoetTest {
       $data['subscribers'][1][2],
     ]]);
     expect($newSubscribers)->count(2);
-    WPFunctions::set(new WPFunctions());
   }
 
   public function testItOnlyAppliesCustomFormatToSitesWithCustomFormat(): void {
@@ -823,7 +822,6 @@ class ImportTest extends \MailPoetTest {
     ]]);
     expect($newSubscribers)->count(1);
     expect($newSubscribers[0]->getEmail())->equals('correctdateformat2@yopmail.com');
-    WPFunctions::set(new WPFunctions());
   }
 
   private function createImportInstance(array $data): Import {

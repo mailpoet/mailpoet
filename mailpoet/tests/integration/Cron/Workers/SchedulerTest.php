@@ -427,7 +427,6 @@ class SchedulerTest extends \MailPoetTest {
     $scheduledTask = $this->scheduledTasksRepository->findOneBySendingQueue($sendingQueue);
     $this->assertInstanceOf(ScheduledTaskEntity::class, $scheduledTask);
     $this->tester->assertEqualDateTimes($scheduledTask->getScheduledAt(), $currentTime->addMinutes(ScheduledTask::BASIC_RESCHEDULE_TIMEOUT), 1);
-    WPFunctions::set(new WPFunctions());
   }
 
   public function testItDoesntRunQueueDeliveryWhenMailpoetSubscriberHasUnsubscribed() {

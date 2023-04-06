@@ -85,11 +85,6 @@ class UserFlagsControllerTest extends \MailPoetTest {
     expect($flag)->null();
   }
 
-  public function _after() {
-    parent::_after();
-    WPFunctions::set(new WPFunctions);
-  }
-
   private function createUserFlag($userId, $name, $value) {
     $flag = new UserFlagEntity();
     $flag->setUserId($userId);

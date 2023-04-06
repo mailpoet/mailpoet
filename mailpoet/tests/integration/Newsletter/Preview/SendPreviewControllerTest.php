@@ -56,11 +56,6 @@ class SendPreviewControllerTest extends \MailPoetTest {
     $this->newsletter = $newsletter;
   }
 
-  public function _after() {
-    parent::_after();
-    WPFunctions::set(new WPFunctions());
-  }
-
   public function testItCanSendAPreview() {
     $mailer = $this->makeEmpty(Mailer::class, [
       'send' => Expected::once(

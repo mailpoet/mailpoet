@@ -176,9 +176,4 @@ class MailChimpTest extends \MailPoetTest {
     ];
     expect($this->mailchimp->isSubscriberAllowed($subscribed))->true();
   }
-
-  public function _after(): void {
-    parent::_after();
-    WPFunctions::set(new WPFunctions);
-  }
 }

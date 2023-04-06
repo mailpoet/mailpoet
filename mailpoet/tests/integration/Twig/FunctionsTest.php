@@ -21,9 +21,4 @@ class FunctionsTest extends \MailPoetTest {
     $resultNoRtl = $twig->render('template');
     expect($resultNoRtl)->isEmpty();
   }
-
-  public function _after() {
-    parent::_after();
-    WPFunctions::set(new WPFunctions);
-  }
 }

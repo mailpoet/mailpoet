@@ -36,7 +36,6 @@ class PurchasedInCategoryTest extends \MailPoetTest {
   private $segmentsRepository;
 
   public function _before() {
-    WPFunctions::set(new WPFunctions);
     WPFunctions::get()->removeAllFilters('woocommerce_payment_complete');
     $this->woocommerceHelper = $this->createMock(WCHelper::class);
     $this->event = new PurchasedInCategory($this->woocommerceHelper);
