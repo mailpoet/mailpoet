@@ -1,5 +1,5 @@
+import { __ } from '@wordpress/i18n';
 import { Notice } from './notice';
-import { MailPoet } from '../mailpoet';
 
 type Props = {
   newsletters: Array<{
@@ -11,8 +11,13 @@ type Props = {
 function CorruptEmailNotice({ newsletters }: Props) {
   return (
     <Notice type="error" timeout={false} closable={false} renderInPlace>
-      <h3>{MailPoet.I18n.t('pausedEmails')}</h3>
-      <p>{MailPoet.I18n.t('problemRenderingNewsletter')}</p>
+      <h3>{__('Paused emails', 'mailpoet')}</h3>
+      <p>
+        {__(
+          'There was problem sending the following email(s), please fix the issues described for each email and resume.',
+          'mailpoet',
+        )}
+      </p>
       <ul>
         {newsletters.map(({ id, subject }) => (
           <li key={id}>{subject}</li>
