@@ -141,6 +141,11 @@ class AutomationStorage {
 
   /** @return Automation[] */
   public function getActiveAutomationsByTrigger(Trigger $trigger): array {
+    return $this->getActiveAutomationsByTriggerKey($trigger->getKey());
+  }
+
+  public function getActiveAutomationsByTriggerKey(string $triggerKey): array {
+
     $automationsTable = esc_sql($this->automationsTable);
     $versionsTable = esc_sql($this->versionsTable);
     $triggersTable = esc_sql($this->triggersTable);
@@ -158,7 +163,7 @@ class AutomationStorage {
         )
       ",
       Automation::STATUS_ACTIVE,
-      $trigger->getKey()
+      $triggerKey
     );
 
     $data = $this->wpdb->get_results($query, ARRAY_A);
