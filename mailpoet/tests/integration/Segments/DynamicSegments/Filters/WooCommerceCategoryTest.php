@@ -66,7 +66,7 @@ class WooCommerceCategoryTest extends \MailPoetTest {
     $this->assertEqualsCanonicalizing($expectedEmails, $emails);
   }
 
-  public function testItGetsSubscribersThatDidNotPurchasedProducts(): void {
+  public function testItGetsSubscribersThatDidNotPurchaseProducts(): void {
     $expectedEmails = [
       'a1@example.com',
       'a2@example.com',
