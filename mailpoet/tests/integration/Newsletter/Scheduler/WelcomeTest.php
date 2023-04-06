@@ -460,9 +460,4 @@ class WelcomeTest extends \MailPoetTest {
       new Scheduler($wpMock, $this->diContainer->get(NewslettersRepository::class))
     );
   }
-
-  public function _after() {
-    parent::_after();
-    Carbon::setTestNow();
-  }
 }

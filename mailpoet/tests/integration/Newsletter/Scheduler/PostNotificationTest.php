@@ -353,9 +353,4 @@ class PostNotificationTest extends \MailPoetTest {
     $this->newsletterPostsRepository->flush();
     return $newsletterPost;
   }
-
-  public function _after() {
-    parent::_after();
-    Carbon::setTestNow();
-  }
 }
