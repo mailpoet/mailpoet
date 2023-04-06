@@ -82,6 +82,49 @@ class WooCommerceProductTest extends \MailPoetTest {
     $this->assertEqualsCanonicalizing($expectedEmails, $emails);
   }
 
+  /**
+   * @dataProvider allowedStatuses
+   */
+  public function testItIncludesAllowedStatuses($status) {
+    $email = "status-customer@example.com";
+    $customerId = $this->createCustomer($email, 'customer');
+    $orderId = $this->createOrder($customerId, Carbon::now(), $status);
+    $this->addToOrder(5, $orderId, $this->productIds[0], $customerId);
+    $segmentFilterData = $this->getSegmentFilterData($this->productIds, DynamicSegmentFilterData::OPERATOR_ANY);
+    $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->wooCommerceProductFilter);
+    expect($emails)->contains($email);
+  }
+
+  /**
+   * @dataProvider disallowedStatuses
+   */
+  public function testItExcludesDisallowedOrderStatuses($status) {
+    $email = "status-customer@example.com";
+    $customerId = $this->createCustomer($email, 'customer');
+    $orderId = $this->createOrder($customerId, Carbon::now(), $status);
+    $this->addToOrder(5, $orderId, $this->productIds[0], $customerId);
+    $segmentFilterData = $this->getSegmentFilterData($this->productIds, DynamicSegmentFilterData::OPERATOR_ANY);
+    $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->wooCommerceProductFilter);
+    expect($emails)->notContains($email);
+  }
+
+  public function allowedStatuses() {
+    return [
+      'completed' => ['wc-completed'],
+      'processing' => ['wc-processing'],
+    ];
+  }
+
+  public function disallowedStatuses() {
+    return [
+      'refunded' => ['wc-refunded'],
+      'cancelled' => ['wc-cancelled'],
+      'on hold' => ['wc-on-hold'],
+      'pending' => ['wc-pending'],
+      'failed' => ['wc-failed'],
+    ];
+  }
+
   private function getSegmentFilterData(array $productIds, string $operator): DynamicSegmentFilterData {
     $filterData = [
       'product_ids' => $productIds,
@@ -140,12 +183,6 @@ class WooCommerceProductTest extends \MailPoetTest {
 
   private function cleanUp(): void {
     global $wpdb;
-
-    if (!empty($this->orders)) {
-      foreach ($this->orders as $orderId) {
-        wp_delete_post($orderId);
-      }
-    }
 
     if (!empty($this->products)) {
       foreach ($this->products as $productId) {
