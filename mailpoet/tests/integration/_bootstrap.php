@@ -7,6 +7,7 @@ use MailPoet\DI\ContainerWrapper;
 use MailPoet\Features\FeaturesController;
 use MailPoet\Settings\SettingsController;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\DBAL\Connection;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 use MailPoetVendor\Doctrine\Persistence\Mapping\ClassMetadata;
@@ -98,6 +99,8 @@ abstract class MailPoetTest extends \Codeception\TestCase\Test { // phpcs:ignore
     $this->diContainer = ContainerWrapper::getInstance(WP_DEBUG);
     $this->connection = $this->diContainer->get(Connection::class);
     $this->entityManager = $this->diContainer->get(EntityManager::class);
+    // Carbon datetime
+    Carbon::setTestNow();
     // Reset WPFunctions
     WPFunctions::set(new WPFunctions());
     // switch cron to Linux method

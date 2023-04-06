@@ -63,9 +63,4 @@ class SchedulerTest extends \MailPoetTest {
     expect($this->testee->formatDatetimeString('April 20, 2016 4pm'))
       ->equals('2016-04-20 16:00:00');
   }
-
-  public function _after() {
-    parent::_after();
-    Carbon::setTestNow();
-  }
 }

@@ -580,7 +580,6 @@ class WPTest extends \MailPoetTest {
   public function _after(): void {
     parent::_after();
     $this->cleanData();
-    Carbon::setTestNow();
   }
 
   private function cleanData(): void {

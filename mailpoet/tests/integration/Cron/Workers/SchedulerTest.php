@@ -971,9 +971,4 @@ class SchedulerTest extends \MailPoetTest {
       ['subscribersFinder' => $finder]
     );
   }
-
-  public function _after() {
-    parent::_after();
-    Carbon::setTestNow();
-  }
 }
