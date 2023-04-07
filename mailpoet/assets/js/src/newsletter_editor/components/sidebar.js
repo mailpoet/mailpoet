@@ -4,8 +4,11 @@ import Marionette from 'backbone.marionette';
 import SuperModel from 'backbone.supermodel';
 import _ from 'underscore';
 import jQuery from 'jquery';
+import { createRoot } from 'react-dom/client';
 
 import { App } from 'newsletter_editor/App';
+import { MailPoet } from 'mailpoet';
+import { BrandStyles } from '../blocks/sidebar/brandStyles';
 
 var Module = {};
 var SidebarView;
@@ -199,6 +202,7 @@ Module.SidebarLayoutWidgetsView = Module.SidebarWidgetsView.extend({
  * Responsible for managing global styles
  */
 Module.SidebarStylesView = Marionette.View.extend({
+  brandStylesRoot: null,
   getTemplate: function () {
     return window.templates.sidebarStyles;
   },
@@ -297,6 +301,22 @@ Module.SidebarStylesView = Marionette.View.extend({
       value = 'transparent';
     }
     this.model.set(field, value);
+  },
+  onRender: function () {
+    const container = this.$el.find('#mailpoet_brand_styles')[0];
+    const isBrandTemplatesEnabled = MailPoet.FeaturesController.isSupported(
+      MailPoet.FeaturesController.FEATURE_BRAND_TEMPLATES,
+    );
+    if (!container || !isBrandTemplatesEnabled) {
+      return;
+    }
+    this.brandStylesRoot = createRoot(container);
+    this.brandStylesRoot.render(<BrandStyles></BrandStyles>);
+  },
+  onDestroy: () => {
+    if (this.brandStylesRoot) {
+      this.brandStylesRoot.unmount();
+    }
   },
 });
 
