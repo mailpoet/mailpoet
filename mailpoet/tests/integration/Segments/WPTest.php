@@ -11,6 +11,7 @@ use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
 use MailPoet\Segments\WP;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Subscribers\ConfirmationEmailMailer;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Subscription\Registration;
 use MailPoet\WooCommerce\Helper;
@@ -106,6 +107,9 @@ class WPTest extends \MailPoetTest {
 
   public function testItSendsConfirmationEmailWhenSignupConfirmationAndSubscribeOnRegisterEnabled(): void {
     $registration = $this->diContainer->get(Registration::class);
+    $confirmationEmailMailer = $this->diContainer->get(ConfirmationEmailMailer::class);
+    // Prevent confirmation emails from previous tests from interfering with this test
+    $confirmationEmailMailer->clearSentEmailsCache();
     $this->settings->set('sender', [
       'address' => 'sender@mailpoet.com',
       'name' => 'Sender',
