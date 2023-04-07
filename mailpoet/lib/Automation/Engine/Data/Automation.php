@@ -123,6 +123,18 @@ class Automation {
     return $this->steps;
   }
 
+  /**
+   * @return array<string|int, Step>
+   */
+  public function getTriggers(): array {
+    return array_filter(
+      $this->steps,
+      function (Step $step) {
+        return $step->getType() === Step::TYPE_TRIGGER;
+      }
+    );
+  }
+
   /** @param array<string|int, Step> $steps */
   public function setSteps(array $steps): void {
     $this->steps = $steps;
