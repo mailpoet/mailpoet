@@ -300,7 +300,7 @@ class RoboFile extends \Robo\Tasks {
     return $this->runTestsInContainer($opts);
   }
 
-  public function testPerformance($path = null, $opts = ['url' => null, 'pw' => null, 'head' => false, 'scenario' => null]) {
+  public function testPerformance($path = null, $opts = ['url' => null, 'pw' => null, 'head' => false, 'scenario' => null, 'name' => null]) {
     $dir = __DIR__;
     return $this->collectionBuilder()
       ->addCode([$this, 'testPerformanceSetup'])
@@ -311,6 +311,10 @@ class RoboFile extends \Robo\Tasks {
       ->option('env', 'PW=' . $opts['pw'])
       ->option('env', 'HEADLESS=' . ($opts['head'] ? 'false' : 'true'))
       ->option('env', 'SCENARIO=' . $opts['scenario'])
+      ->option('env', 'K6_CLOUD_TOKEN=' . getenv('K6_CLOUD_TOKEN'))
+      ->option('env', 'K6_CLOUD_ID=' . getenv('K6_CLOUD_ID'))
+      ->option('env', 'K6_PROJECT_NAME=' . $opts['name'])
+      ->option('out', 'cloud')
       ->arg($path ?? "$dir/tests/performance/scenarios.js")
       ->dir($dir)->run();
   }
