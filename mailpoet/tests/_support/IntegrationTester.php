@@ -214,19 +214,24 @@ class IntegrationTester extends \Codeception\Actor {
     $filterEntity = new DynamicSegmentFilterEntity($segment, $data);
     $this->entityManager->persist($filterEntity);
     $segment->addDynamicFilter($filterEntity);
-
     $queryBuilder = $filter->apply($this->getSubscribersQueryBuilder(), $filterEntity);
+    return $this->getSubscriberEmailsFromQueryBuilder($queryBuilder);
+  }
+
+  /**
+   * @param QueryBuilder $queryBuilder
+   * @return string[] - array of subscriber emails
+   */
+  public function getSubscriberEmailsFromQueryBuilder(QueryBuilder $queryBuilder): array {
     $statement = $queryBuilder->execute();
     $results = $statement instanceof Statement ? $statement->fetchAllAssociative() : [];
-    $emails = array_map(function($row) {
+    return array_map(function($row) {
       $subscriber = $this->entityManager->find(SubscriberEntity::class, $row['inner_subscriber_id']);
       if (!$subscriber instanceof SubscriberEntity) {
         throw new \Exception('this is for PhpStan');
       }
       return $subscriber->getEmail();
     }, $results);
-
-    return $emails;
   }
 
   public function getSubscribersQueryBuilder(): QueryBuilder {
