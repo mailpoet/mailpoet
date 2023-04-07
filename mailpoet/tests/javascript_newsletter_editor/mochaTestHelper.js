@@ -583,3 +583,4 @@ global.templates = {
   ),
 };
 global.window.templates = global.templates;
+global.window.mailpoet_feature_flags = { brand_templates: true };
