@@ -3,7 +3,6 @@
 namespace MailPoet\Segments\DynamicSegments\Filters;
 
 use MailPoet\Entities\DynamicSegmentFilterData;
-use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoetVendor\Carbon\Carbon;
@@ -87,7 +86,7 @@ class WooCommerceProductTest extends \MailPoetTest {
    */
   public function testItIncludesAllowedStatuses($status) {
     $email = "status-customer@example.com";
-    $customerId = $this->createCustomer($email, 'customer');
+    $customerId = $this->tester->createCustomer($email, 'customer');
     $orderId = $this->createOrder($customerId, Carbon::now(), $status);
     $this->addToOrder(5, $orderId, $this->productIds[0], $customerId);
     $segmentFilterData = $this->getSegmentFilterData($this->productIds, DynamicSegmentFilterData::OPERATOR_ANY);
@@ -100,7 +99,7 @@ class WooCommerceProductTest extends \MailPoetTest {
    */
   public function testItExcludesDisallowedOrderStatuses($status) {
     $email = "status-customer@example.com";
-    $customerId = $this->createCustomer($email, 'customer');
+    $customerId = $this->tester->createCustomer($email, 'customer');
     $orderId = $this->createOrder($customerId, Carbon::now(), $status);
     $this->addToOrder(5, $orderId, $this->productIds[0], $customerId);
     $segmentFilterData = $this->getSegmentFilterData($this->productIds, DynamicSegmentFilterData::OPERATOR_ANY);

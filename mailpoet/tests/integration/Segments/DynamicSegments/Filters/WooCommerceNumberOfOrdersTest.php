@@ -16,9 +16,6 @@ class WooCommerceNumberOfOrdersTest extends \MailPoetTest {
   /** @var WooCommerceNumberOfOrders */
   private $numberOfOrdersFilter;
 
-  /** @var array */
-  private $orders;
-
   /**
    * @var SubscriberFactory
    */
@@ -33,10 +30,10 @@ class WooCommerceNumberOfOrdersTest extends \MailPoetTest {
     $customerId2 = $this->tester->createCustomer('customer2@example.com', 'customer');
     $customerId3 = $this->tester->createCustomer('customer3@example.com', 'customer');
 
-    $this->orders[] = $this->createOrder($customerId1, Carbon::now()->subDays(3));
-    $this->orders[] = $this->createOrder($customerId2, Carbon::now());
-    $this->orders[] = $this->createOrder($customerId2, Carbon::now());
-    $this->orders[] = $this->createOrder($customerId3, Carbon::now());
+    $this->createOrder($customerId1, Carbon::now()->subDays(3));
+    $this->createOrder($customerId2, Carbon::now());
+    $this->createOrder($customerId2, Carbon::now());
+    $this->createOrder($customerId3, Carbon::now());
   }
 
   public function testItGetsCustomersThatPlacedTwoOrdersInTheLastDay(): void {
@@ -78,7 +75,7 @@ class WooCommerceNumberOfOrdersTest extends \MailPoetTest {
    */
   public function testItIncludesAllowedStatuses($status) {
     $email = "$status@example.com";
-    $customerId = $this->createCustomer($email, 'customer');
+    $customerId = $this->tester->createCustomer($email, 'customer');
     $this->createOrder($customerId, Carbon::now(), $status);
     $segmentFilterData = $this->getSegmentFilterData('=', 1, 1);
     $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->numberOfOrdersFilter);
@@ -90,7 +87,7 @@ class WooCommerceNumberOfOrdersTest extends \MailPoetTest {
    */
   public function testItExcludesDisallowedOrderStatuses($status) {
     $email = "$status@example.com";
-    $customerId = $this->createCustomer($email, 'customer');
+    $customerId = $this->tester->createCustomer($email, 'customer');
     $this->createOrder($customerId, Carbon::now(), $status);
     $segmentFilterData = $this->getSegmentFilterData('=', 1, 1);
     $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->numberOfOrdersFilter);
