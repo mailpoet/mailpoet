@@ -75,6 +75,10 @@ class ConfirmationEmailMailer {
     return $this->sendConfirmationEmail($subscriber);
   }
 
+  public function clearSentEmailsCache(): void {
+    $this->sentEmails = [];
+  }
+
   public function buildEmailData(string $subject, string $html, string $text): array {
     return [
       'subject' => $subject,
