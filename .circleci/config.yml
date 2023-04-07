@@ -508,7 +508,7 @@ jobs:
           command: |
             mkdir -p tests/performance/_output
             mkdir -p tests/performance/_screenshots
-            ./do test:performance --url=<< parameters.url >> --pw=<< parameters.pw >> --scenario=<< parameters.scenario >> --name=<< parameters.scenario >>
+            ./do test:performance --url=<< parameters.url >> --pw=<< parameters.pw >> --scenario=<< parameters.scenario >>
       - run:
           name: Check exceptions
           command: |
