@@ -2,6 +2,7 @@
 
 namespace MailPoet\Automation\Integrations\MailPoet\Actions;
 
+use MailPoet\AutomaticEmails\WooCommerce\Events\AbandonedCart;
 use MailPoet\Automation\Engine\Data\Automation;
 use MailPoet\Automation\Engine\Data\NextStep;
 use MailPoet\Automation\Engine\Data\Step;
@@ -11,6 +12,7 @@ use MailPoet\Automation\Engine\Integration\Action;
 use MailPoet\Automation\Engine\Integration\ValidationException;
 use MailPoet\Automation\Integrations\MailPoet\Payloads\SegmentPayload;
 use MailPoet\Automation\Integrations\MailPoet\Payloads\SubscriberPayload;
+use MailPoet\Automation\Integrations\WooCommerce\Payloads\ProductsPayload;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterOptionEntity;
 use MailPoet\Entities\NewsletterOptionFieldEntity;
@@ -158,11 +160,28 @@ class SendEmailAction implements Action {
       throw InvalidStateException::create()->withMessage(sprintf("Cannot schedule an email for subscriber ID '%s' because their status is '%s'.", $subscriberId, $subscriberStatus));
     }
 
+    $meta = $this->getNewsletterMeta($args);
     try {
-      $this->automationEmailScheduler->createSendingTask($newsletter, $subscriber);
+      $this->automationEmailScheduler->createSendingTask($newsletter, $subscriber, $meta);
     } catch (Throwable $e) {
       throw InvalidStateException::create()->withMessage('Could not create sending task.');
     }
+  }
+
+  private function getNewsletterMeta(StepRunArgs $args): array {
+    if (!$this->automationHasAbandonedCartTrigger($args->getAutomation())) {
+      return [];
+    }
+
+    $productSubject = $args->getSinglePayloadByClass(ProductsPayload::class);
+    $cartProductIds = array_map(
+      function(\WC_Product $product) {
+        return $product->get_id();
+      },
+      $productSubject->getProducts()
+    );
+
+    return [AbandonedCart::TASK_META_NAME => $cartProductIds];
   }
 
   public function saveEmailSettings(Step $step, Automation $automation): void {
