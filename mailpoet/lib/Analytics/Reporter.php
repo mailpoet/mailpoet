@@ -265,6 +265,12 @@ class Reporter {
         return $automation->getTrigger('woocommerce:order-status-changed') !== null;
       }
     );
+    $automationsWithAbandonedCartTrigger = array_filter(
+      $activeAutomations,
+      function(Automation $automation): bool {
+        return $automation->getTrigger('mailpoet:abandoned-cart') !== null;
+      }
+    );
 
     $totalSteps = 0;
     $minSteps = null;
@@ -289,6 +295,7 @@ class Reporter {
       'Automation > Number of "WordPress user registers" active automations' => count($automationsWithWordPressUserSubscribesTrigger),
       'Automation > Number of "Someone subscribes" active automations ' => count($automationsWithSomeoneSubscribesTrigger),
       'Automation > Number of "Order status changed" active automations ' => count($automationsWithOrderStatusChangedTrigger),
+      'Automation > Number of "Subscriber abandons cart" active automations' => count($automationsWithAbandonedCartTrigger),
       'Automation > Number of steps in shortest active automation' => $minSteps,
       'Automation > Number of steps in longest active automation' => $maxSteps,
       'Automation > Average number of steps in active automations' => $averageSteps,
