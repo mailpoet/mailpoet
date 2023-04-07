@@ -8,7 +8,6 @@ use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceSingleOrderValue;
 use MailPoet\Subscribers\SubscribersRepository;
-use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\DBAL\Driver\Statement;
 use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
@@ -20,29 +19,22 @@ class WooCommerceSingleOrderValueTest extends \MailPoetTest {
   /** @var WooCommerceSingleOrderValue */
   private $singleOrderValue;
 
-  /** @var WPFunctions */
-  private $wp;
-
   /** @var SubscribersRepository */
   private $subscribersRepository;
-
-  /** @var int[] */
-  private $orders;
 
   public function _before(): void {
     $this->singleOrderValue = $this->diContainer->get(WooCommerceSingleOrderValue::class);
     $this->subscribersRepository = $this->diContainer->get(SubscribersRepository::class);
-    $this->wp = $this->diContainer->get(WPFunctions::class);
     $this->cleanUp();
 
-    $customerId1 = $this->tester->createCustomer('customer1@example.com', 'customer');
-    $customerId2 = $this->tester->createCustomer('customer2@example.com', 'customer');
-    $customerId3 = $this->tester->createCustomer('customer3@example.com', 'customer');
+    $customerId1 = $this->tester->createCustomer('customer1@example.com');
+    $customerId2 = $this->tester->createCustomer('customer2@example.com');
+    $customerId3 = $this->tester->createCustomer('customer3@example.com');
 
-    $this->orders[] = $this->createOrder($customerId1, Carbon::now()->subDays(3), 10);
-    $this->orders[] = $this->createOrder($customerId1, Carbon::now(), 5);
-    $this->orders[] = $this->createOrder($customerId2, Carbon::now(), 15);
-    $this->orders[] = $this->createOrder($customerId3, Carbon::now(), 25);
+    $this->createOrder($customerId1, Carbon::now()->subDays(3), 10);
+    $this->createOrder($customerId1, Carbon::now(), 5);
+    $this->createOrder($customerId2, Carbon::now(), 15);
+    $this->createOrder($customerId3, Carbon::now(), 25);
   }
 
   public function testItGetsCustomersThatSpentFifteenInAnOrderInTheLastDay(): void {
@@ -166,15 +158,6 @@ class WooCommerceSingleOrderValueTest extends \MailPoetTest {
 
   private function cleanUp(): void {
     global $wpdb;
-    $this->truncateEntity(SegmentEntity::class);
-    $this->truncateEntity(SubscriberEntity::class);
-
-    if (is_array($this->orders)) {
-      foreach ($this->orders as $orderId) {
-        $this->wp->wpDeletePost($orderId);
-      }
-    }
-
     $this->connection->executeQuery("TRUNCATE TABLE {$wpdb->prefix}wc_customer_lookup");
     $this->connection->executeQuery("TRUNCATE TABLE {$wpdb->prefix}wc_order_stats");
   }
