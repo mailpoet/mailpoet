@@ -46,6 +46,9 @@
       display: none;
 
       &:checked + label {
+        background: $color-homepage-light-grey;
+        border-color: $color-primary;
+
         .radio_checkmark {
           display: inline-block;
         }
