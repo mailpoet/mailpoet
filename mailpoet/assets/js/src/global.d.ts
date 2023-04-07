@@ -37,6 +37,8 @@ interface JQuery {
       recaptchaResponseToken: string;
     };
   };
+  velocity: (selector: string, options?: Record<string, unknown>) => void;
+  stick_in_parent: (options?: { offset_top: number }) => void;
 }
 
 /* Type definitions for components used from external libraries */
@@ -211,7 +213,7 @@ interface Window {
     subscribersCount: number;
     formsCount: number;
   };
-  templates?: Record<string, string>;
+  templates?: Record<string, string> & { sidebar: string };
   is_wc_active?: boolean;
   systemInfoData?: Record<string, string>;
   mailpoet_mail_function_enabled: boolean;

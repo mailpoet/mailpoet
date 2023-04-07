@@ -61,11 +61,15 @@ span.mailpoet-gap-half {
 .small-screen {
   display: none;
 
-  @include respond-to(small-screen) { display: block; }
+  @include respond-to(small-screen) {
+    display: block;
+  }
 }
 
 .not-small-screen {
-  @include respond-to(small-screen) { display: none !important; }
+  @include respond-to(small-screen) {
+    display: none !important;
+  }
 }
 
 .with-spinner {
@@ -85,4 +89,20 @@ span.mailpoet-gap-half {
     top: -1px;
     width: calc(100% + 2px);
   }
+}
+
+.mailpoet_info {
+  background: url('../../img/icons/info.svg') center center no-repeat;
+  cursor: pointer;
+  display: inline-block;
+  height: 18px;
+  margin: 5px 5px -5px;
+  width: 18px;
+}
+
+.mailpoet_checkmark {
+  background: url('../../img/icons/checkmark.svg') center center no-repeat;
+  display: inline-block;
+  height: 6px;
+  width: 8px;
 }
