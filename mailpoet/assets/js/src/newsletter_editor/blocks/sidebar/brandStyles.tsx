@@ -13,6 +13,7 @@ export function BrandStyles() {
             name="style_type"
             id="style_type_brand"
             value="brand"
+            defaultChecked
           />
           <label htmlFor="style_type_brand">
             <i className="mailpoet_checkmark radio_checkmark" />
