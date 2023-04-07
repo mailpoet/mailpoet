@@ -12,9 +12,13 @@ use MailPoet\Automation\Engine\Integration\ValidationException;
 use MailPoet\Automation\Integrations\MailPoet\Payloads\SegmentPayload;
 use MailPoet\Automation\Integrations\MailPoet\Payloads\SubscriberPayload;
 use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\NewsletterOptionEntity;
+use MailPoet\Entities\NewsletterOptionFieldEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\InvalidStateException;
 use MailPoet\Newsletter\NewslettersRepository;
+use MailPoet\Newsletter\Options\NewsletterOptionFieldsRepository;
+use MailPoet\Newsletter\Options\NewsletterOptionsRepository;
 use MailPoet\Newsletter\Scheduler\AutomationEmailScheduler;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\SubscriberSegmentRepository;
@@ -41,18 +45,28 @@ class SendEmailAction implements Action {
   /** @var AutomationEmailScheduler */
   private $automationEmailScheduler;
 
+  /** @var NewsletterOptionsRepository */
+  private $newsletterOptionsRepository;
+
+  /** @var NewsletterOptionFieldsRepository */
+  private $newsletterOptionFieldsRepository;
+
   public function __construct(
     SettingsController $settings,
     NewslettersRepository $newslettersRepository,
     SubscriberSegmentRepository $subscriberSegmentRepository,
     SubscribersRepository $subscribersRepository,
-    AutomationEmailScheduler $automationEmailScheduler
+    AutomationEmailScheduler $automationEmailScheduler,
+    NewsletterOptionsRepository $newsletterOptionsRepository,
+    NewsletterOptionFieldsRepository $newsletterOptionFieldsRepository
   ) {
     $this->settings = $settings;
     $this->newslettersRepository = $newslettersRepository;
     $this->subscriberSegmentRepository = $subscriberSegmentRepository;
     $this->subscribersRepository = $subscribersRepository;
     $this->automationEmailScheduler = $automationEmailScheduler;
+    $this->newsletterOptionsRepository = $newsletterOptionsRepository;
+    $this->newsletterOptionFieldsRepository = $newsletterOptionFieldsRepository;
   }
 
   public function getKey(): string {
@@ -167,18 +181,51 @@ class SendEmailAction implements Action {
     $email->setReplyToName($args['reply_to_name'] ?? '');
     $email->setReplyToAddress($args['reply_to_address'] ?? '');
     $email->setGaCampaign($args['ga_campaign'] ?? '');
+    if ($this->automationHasWooCommerceTrigger($automation)) {
+      $this->storeNewsletterOption($email, NewsletterOptionFieldEntity::NAME_GROUP, 'woocommerce');
+    }
+    if ($this->automationHasAbandonedCartTrigger($automation)) {
+      $this->storeNewsletterOption($email, NewsletterOptionFieldEntity::NAME_EVENT, 'woocommerce_abandoned_shopping_cart');
+    }
+    $this->newslettersRepository->persist($email);
     $this->newslettersRepository->flush();
   }
 
-  private function isTransactional(Step $step, Automation $automation): bool {
-    $allSteps = $automation->getSteps();
-
-    $triggers = array_filter(
-      $allSteps,
-      function(Step $step): bool {
-        return $step->getType() === Step::TYPE_TRIGGER;
+  private function storeNewsletterOption(NewsletterEntity $newsletter, string $optionName, string $optionValue): void {
+    $options = $newsletter->getOptions()->toArray();
+    foreach ($options as $option) {
+      if ($option->getName() === $optionName) {
+        $option->setValue($optionValue);
+        return;
       }
-    );
+    }
+
+    $optionField = $this->newsletterOptionFieldsRepository->findOneBy([
+      'name' => $optionName,
+      'newsletterType' => $newsletter->getType(),
+    ]);
+
+    if (!$optionField) {
+      $optionField = new NewsletterOptionFieldEntity();
+      $optionField->setName($optionName);
+      $optionField->setNewsletterType($newsletter->getType());
+      $this->newsletterOptionFieldsRepository->persist($optionField);
+    }
+    $option = $this->newsletterOptionsRepository->findOneBy([
+      'newsletter' => $newsletter,
+      'optionField' => $optionField,
+    ]);
+    if (!$option instanceof NewsletterOptionEntity) {
+      $option = new NewsletterOptionEntity($newsletter, $optionField);
+      $newsletter->getOptions()->add($option);
+      $this->newsletterOptionsRepository->persist($option);
+    }
+    $option->setValue($optionValue);
+    $newsletter->getOptions()->add($option);
+  }
+
+  private function isTransactional(Step $step, Automation $automation): bool {
+    $triggers = $automation->getTriggers();
     $transactionalTriggers = array_filter(
       $triggers,
       function(Step $step): bool {
@@ -202,6 +249,24 @@ class SendEmailAction implements Action {
       }
     }
     return true;
+  }
+
+  private function automationHasWooCommerceTrigger(Automation $automation): bool {
+    return (bool)array_filter(
+      $automation->getTriggers(),
+      function(Step $step): bool {
+        return in_array($step->getKey(), ['woocommerce:order-status-changed', 'mailpoet:abandoned-cart'], true);
+      }
+    );
+  }
+
+  private function automationHasAbandonedCartTrigger(Automation $automation): bool {
+    return (bool)array_filter(
+      $automation->getTriggers(),
+      function(Step $step): bool {
+        return in_array($step->getKey(), ['mailpoet:abandoned-cart'], true);
+      }
+    );
   }
 
   private function getEmailForStep(Step $step): NewsletterEntity {
