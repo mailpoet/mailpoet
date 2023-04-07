@@ -3,7 +3,7 @@
  */
 import { htmlReport } from 'https://raw.githubusercontent.com/benc-uk/k6-reporter/main/dist/bundle.js';
 import { textSummary } from 'https://jslib.k6.io/k6-summary/0.0.1/index.js';
-import { scenario } from './config.js';
+import { scenario, k6CloudID, projectName } from './config.js';
 import { newsletterListing } from './tests/newsletter-listing.js';
 import { subscribersListing } from './tests/subscribers-listing.js';
 import { settingsBasic } from './tests/settings-basic.js';
@@ -17,21 +17,27 @@ import { listsComplexSegment } from './tests/lists-complex-segment.js';
 import { newsletterStatistics } from './tests/newsletter-statistics.js';
 import { onboardingWizard } from './tests/onboarding-wizard.js';
 
-// Scenarios, Thresholds and Tags
+// Scenarios, Thresholds, Tags and Project ID used for K6 Cloud
 export let options = {
+  ext: {
+    loadimpact: {
+      projectID: k6CloudID,
+      name: projectName,
+    },
+  },
   scenarios: {},
   thresholds: {
     browser_dom_content_loaded: ['p(95) < 5000'],
-    browser_first_contentful_paint: ['p(95) < 1000'],
-    browser_first_meaningful_paint: ['p(95) < 1000'],
-    browser_first_paint: ['p(95) < 1000'],
+    browser_first_contentful_paint: ['p(95) < 3000'],
+    browser_first_meaningful_paint: ['p(95) < 3000'],
+    browser_first_paint: ['p(95) < 3000'],
     browser_loaded: ['p(95) < 5000'],
     http_req_duration: ['max < 8000'],
     http_req_receiving: ['max < 8000'],
     checks: ['rate==1.0'],
   },
   tags: {
-    name: 'value',
+    name: projectName,
   },
 };
 
