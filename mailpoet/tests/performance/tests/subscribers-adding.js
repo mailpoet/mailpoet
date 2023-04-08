@@ -36,7 +36,9 @@ export async function subscribersAdding() {
   const page = browser.newPage();
 
   let subscriberEmail =
-    'test+' + Math.floor(Math.random() * 9999 + 1) + '@test.com';
+    'blackhole+automation' +
+    Math.floor(Math.random() * 9999 + 1) +
+    '@mailpoet.com';
 
   // Go to the page
   await page.goto(`${baseURL}/wp-admin/admin.php?page=mailpoet-subscribers`, {
@@ -58,7 +60,9 @@ export async function subscribersAdding() {
   await page
     .locator('[data-automation-id="add-new-subscribers-button"]')
     .click();
-  await page.locator('input[name="email"]').type(subscriberEmail);
+  await page
+    .locator('input[name="email"]')
+    .type(subscriberEmail, { delay: 25 });
   await page.locator('input[name="first_name"]').type(firstName);
   await page.locator('input[name="last_name"]').type(lastName);
   selectInSelect2(page, defaultListName);
@@ -89,7 +93,7 @@ export async function subscribersAdding() {
   });
 
   // Search for a newly added subscriber and verify
-  await page.locator('#search_input').type(subscriberEmail, { delay: 50 });
+  await page.locator('#search_input').type(subscriberEmail, { delay: 25 });
   await page.waitForSelector('.mailpoet-listing-no-items');
   await page.waitForSelector('[data-automation-id="filters_subscribed"]');
   await page.waitForLoadState('networkidle');

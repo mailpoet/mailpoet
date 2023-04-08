@@ -54,7 +54,7 @@ let scenarios = {
     executor: 'per-vu-iterations',
     vus: 1,
     iterations: 3,
-    maxDuration: '15m',
+    maxDuration: '12m',
     exec: 'nightly',
   },
 };
