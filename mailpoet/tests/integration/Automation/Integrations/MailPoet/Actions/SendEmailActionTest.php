@@ -243,8 +243,26 @@ class SendEmailActionTest extends \MailPoetTest {
 
   /**
    * @dataProvider dataForTestItStoresAnTransactionalEmail
+   *
+   * @param Step[] $steps
    */
-  public function testItStoresAnTransactionalEmail(NewsletterEntity $newsletter, array $steps, string $expectedEmailType): void {
+  public function testItStoresAnTransactionalEmail(array $steps, string $expectedEmailType): void {
+
+
+    $newsletter = new NewsletterEntity();
+    $newsletter->setType(NewsletterEntity::TYPE_AUTOMATION);
+    $newsletter->setSubject('subject');
+    $newsletterRepository = $this->diContainer->get(NewslettersRepository::class);
+    $newsletterRepository->persist($newsletter);
+    $newsletterRepository->flush();
+
+    foreach ($steps as $key => $step) {
+      if ($step->getKey() !== SendEmailAction::KEY) {
+        continue;
+      }
+
+      $steps[$key] = new Step($step->getId(), $step->getType(), $step->getKey(), ['email_id' => $newsletter->getId()], []);
+    }
 
     $newsletterRepository = $this->diContainer->get(NewslettersRepository::class);
     $newsletterRepository->persist($newsletter);
@@ -268,20 +286,18 @@ class SendEmailActionTest extends \MailPoetTest {
       $data
     );
 
-    $newsletterRepository = $this->diContainer->get(NewslettersRepository::class);
     $newsletter = $newsletterRepository->findOneById($newsletter->getId());
     $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
     $this->assertEquals($expectedEmailType, $newsletter->getType());
   }
 
   public function dataForTestItStoresAnTransactionalEmail(): array {
-    $newsletter = (new Newsletter())->withType(NewsletterEntity::TYPE_AUTOMATION)->create();
+
     $root = new Step('root', Step::TYPE_ROOT, 'root', [], [new NextStep('trigger')]);
     $trigger = new Step('trigger', Step::TYPE_TRIGGER, 'woocommerce:order-status-changed', [], [new NextStep('emailstep')]);
-    $emailStep = new Step('emailstep', Step::TYPE_ACTION, SendEmailAction::KEY, ['email_id' => $newsletter->getId()], []);
+    $emailStep = new Step('emailstep', Step::TYPE_ACTION, SendEmailAction::KEY, [], []);
 
     $isTransactional = [
-      'newsletter' => $newsletter,
       'steps' => [$root, $trigger, $emailStep],
       'expected_type' => NewsletterEntity::TYPE_TRANSACTIONAL,
     ];
@@ -289,7 +305,6 @@ class SendEmailActionTest extends \MailPoetTest {
     $nonTransactionalTrigger = new Step('trigger', Step::TYPE_TRIGGER, 'some-other-trigger', [], [new NextStep('emailstep')]);
 
     $isNotTransactionalBecauseOfTrigger = [
-      'newsletter' => $newsletter,
       'steps' => [$root, $nonTransactionalTrigger, $emailStep],
       'expected_type' => NewsletterEntity::TYPE_AUTOMATION,
     ];
@@ -298,7 +313,6 @@ class SendEmailActionTest extends \MailPoetTest {
     $someAction = new Step('action', Step::TYPE_ACTION, 'some-action', [], [new NextStep('emailstep')]);
 
     $isNotTransactionalBecauseOfPosition = [
-      'newsletter' => $newsletter,
       'steps' => [$root, $positionTrigger, $someAction, $emailStep],
       'expected_type' => NewsletterEntity::TYPE_AUTOMATION,
     ];
