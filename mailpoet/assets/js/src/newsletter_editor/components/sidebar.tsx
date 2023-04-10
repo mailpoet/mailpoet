@@ -1,5 +1,5 @@
 /* eslint-disable func-names */
-import Backbone from 'backbone';
+import Backbone, { Collection } from 'backbone';
 import Marionette from 'backbone.marionette';
 import SuperModel from 'backbone.supermodel';
 import _ from 'underscore';
@@ -10,9 +10,19 @@ import { App } from 'newsletter_editor/App';
 import { MailPoet } from 'mailpoet';
 import { BrandStyles } from '../blocks/sidebar/brandStyles';
 
-var Module = {};
-var SidebarView;
+type ModuleType = Record<string, (...args: unknown[]) => void> & {
+  _contentWidgets: Collection;
+  _layoutWidgets: Collection;
+  SidebarWidgetsView: typeof Marionette.View;
+};
+type WidgetType = {
+  name: string;
+  widgetView: typeof Marionette.View;
+  priority: null;
+};
+const Module: ModuleType = {} as ModuleType;
 // Widget handlers for use to create new content blocks via drag&drop
+// eslint-disable-next-line no-underscore-dangle
 Module._contentWidgets = new (Backbone.Collection.extend({
   model: SuperModel.extend({
     defaults: {
@@ -23,18 +33,21 @@ Module._contentWidgets = new (Backbone.Collection.extend({
   }),
   comparator: 'priority',
 }))();
-Module.registerWidget = function (widget) {
-  var hiddenWidgets = App.getConfig().get('hiddenWidgets');
+Module.registerWidget = (widget: WidgetType) => {
+  const hiddenWidgets = App.getConfig().get('hiddenWidgets');
   if (hiddenWidgets && hiddenWidgets.includes(widget.name)) {
     return false;
   }
-  return Module._contentWidgets.add(widget);
+  // eslint-disable-next-line no-underscore-dangle,@typescript-eslint/no-unsafe-return
+  return Module._contentWidgets.add(widget) as Collection;
 };
 Module.getWidgets = function () {
+  // eslint-disable-next-line no-underscore-dangle,@typescript-eslint/no-unsafe-return
   return Module._contentWidgets;
 };
 
 // Layout widget handlers for use to create new layout blocks via drag&drop
+// eslint-disable-next-line no-underscore-dangle
 Module._layoutWidgets = new (Backbone.Collection.extend({
   model: SuperModel.extend({
     defaults: {
@@ -46,16 +59,16 @@ Module._layoutWidgets = new (Backbone.Collection.extend({
   comparator: 'priority',
 }))();
 Module.registerLayoutWidget = function (widget) {
+  // eslint-disable-next-line no-underscore-dangle,@typescript-eslint/no-unsafe-return
   return Module._layoutWidgets.add(widget);
 };
 Module.getLayoutWidgets = function () {
+  // eslint-disable-next-line no-underscore-dangle,@typescript-eslint/no-unsafe-return
   return Module._layoutWidgets;
 };
 
-SidebarView = Marionette.View.extend({
-  getTemplate: function () {
-    return window.templates.sidebar;
-  },
+const SidebarView = Marionette.View.extend({
+  getTemplate: () => window.templates.sidebar,
   regions: {
     contentRegion: '.mailpoet_content_region',
     layoutRegion: '.mailpoet_layout_region',
@@ -65,17 +78,17 @@ SidebarView = Marionette.View.extend({
   events: {
     'click .mailpoet_sidebar_region h3, .mailpoet_sidebar_region .handlediv':
       function (event) {
-        var $openRegion = this.$el.find(
+        const $openRegion: JQuery = this.$el.find(
           '.mailpoet_sidebar_region:not(.closed)',
         );
-        var $targetRegion = this.$el
+        const $targetRegion: JQuery = this.$el
           .find(event.target)
           .closest('.mailpoet_sidebar_region');
 
         $openRegion.find('.mailpoet_region_content').velocity('slideUp', {
           duration: 250,
           easing: 'easeOut',
-          complete: function () {
+          complete: () => {
             $openRegion.addClass('closed');
           },
         });
@@ -84,27 +97,30 @@ SidebarView = Marionette.View.extend({
           $targetRegion.find('.mailpoet_region_content').velocity('slideDown', {
             duration: 250,
             easing: 'easeIn',
-            complete: function () {
+            complete: () => {
               $targetRegion.removeClass('closed');
             },
           });
         }
       },
   },
-  templateContext: function () {
+  templateContext() {
     return {
       isWoocommerceTransactional: this.model.isWoocommerceTransactional(),
     };
   },
-  initialize: function () {
+  initialize(): void {
     jQuery(window)
-      .on('resize', this.updateHorizontalScroll.bind(this))
-      .on('scroll', this.updateHorizontalScroll.bind(this));
+      // a workaround since the views are not correctly typed
+      .on('resize', this.updateHorizontalScroll.bind(this) as () => void)
+      .on('scroll', this.updateHorizontalScroll.bind(this) as () => void);
   },
-  onRender: function () {
+  onRender(): void {
     this.showChildView(
       'contentRegion',
-      new Module.SidebarWidgetsView(App.getWidgets()),
+      new Module.SidebarWidgetsView(
+        App.getWidgets() as Marionette.ViewOptions<Backbone.Model>,
+      ),
     );
     this.showChildView(
       'layoutRegion',
@@ -119,24 +135,23 @@ SidebarView = Marionette.View.extend({
       }),
     );
   },
-  updateHorizontalScroll: function () {
+  updateHorizontalScroll() {
     // Fixes the sidebar so that on narrower screens the horizontal
     // position of the sidebar would be scrollable and not fixed
     // partially out of visible screen
     this.$el.parent().each(function () {
-      var calculatedLeft;
-      var self = jQuery(this);
+      const self = jQuery(this);
 
       if (self.css('position') === 'fixed') {
-        calculatedLeft =
+        const calculatedLeft =
           self.parent().offset().left - jQuery(window).scrollLeft();
-        self.css('left', calculatedLeft + 'px');
+        self.css('left', `${calculatedLeft}px`);
       } else {
         self.css('left', '');
       }
     });
   },
-  onDomRefresh: function () {
+  onDomRefresh() {
     this.$el.parent().stick_in_parent({
       offset_top: 32,
     });
@@ -153,14 +168,16 @@ SidebarView = Marionette.View.extend({
       .parent()
       .on('sticky_kit:unbottom', this.updateHorizontalScroll.bind(this));
   },
-});
+}) as typeof Marionette.View & {
+  updateHorizontalScroll: () => void;
+};
 
 /**
  * Draggable widget collection view
  */
 Module.SidebarWidgetsCollectionView = Marionette.CollectionView.extend({
-  childView: function (item) {
-    return item.get('widgetView');
+  childView(item): typeof Marionette.View {
+    return item.get('widgetView') as typeof Marionette.View;
   },
 });
 
@@ -168,18 +185,16 @@ Module.SidebarWidgetsCollectionView = Marionette.CollectionView.extend({
  * Responsible for rendering draggable content widgets
  */
 Module.SidebarWidgetsView = Marionette.View.extend({
-  getTemplate: function () {
-    return window.templates.sidebarContent;
-  },
+  getTemplate: () => window.templates.sidebarContent,
   regions: {
     widgets: '.mailpoet_region_content',
   },
 
-  initialize: function (widgets) {
+  initialize(widgets: WidgetType[]) {
     this.widgets = widgets;
   },
 
-  onRender: function () {
+  onRender() {
     this.showChildView(
       'widgets',
       new Module.SidebarWidgetsCollectionView({
@@ -193,9 +208,7 @@ Module.SidebarWidgetsView = Marionette.View.extend({
  * Responsible for rendering draggable layout widgets
  */
 Module.SidebarLayoutWidgetsView = Module.SidebarWidgetsView.extend({
-  getTemplate: function () {
-    return window.templates.sidebarLayout;
-  },
+  getTemplate: () => window.templates.sidebarLayout,
 });
 
 /**
@@ -203,14 +216,12 @@ Module.SidebarLayoutWidgetsView = Module.SidebarWidgetsView.extend({
  */
 Module.SidebarStylesView = Marionette.View.extend({
   brandStylesRoot: null,
-  getTemplate: function () {
-    return window.templates.sidebarStyles;
-  },
+  getTemplate: () => window.templates.sidebarStyles,
   behaviors: {
     ColorPickerBehavior: {},
     WooCommerceStylesBehavior: {},
   },
-  events: function () {
+  events() {
     return {
       'change #mailpoet_text_font_color': _.partial(
         this.changeColorField,
@@ -280,30 +291,29 @@ Module.SidebarStylesView = Marionette.View.extend({
       ),
     };
   },
-  templateContext: function () {
+  templateContext() {
     return {
       model: this.model.toJSON(),
       availableStyles: this.availableStyles.toJSON(),
       isWoocommerceTransactional: this.isWoocommerceTransactional,
     };
   },
-  initialize: function (options) {
+  initialize(options) {
     this.availableStyles = options.availableStyles;
     this.isWoocommerceTransactional = options.isWoocommerceTransactional;
     App.getChannel().on('historyUpdate', this.render);
   },
-  changeField: function (field, event) {
+  changeField(field, event) {
     this.model.set(field, jQuery(event.target).val());
   },
-  changeColorField: function (field, event) {
-    var value = jQuery(event.target).val();
-    if (value === '') {
-      value = 'transparent';
-    }
+  changeColorField(field, event) {
+    const value = jQuery(event.target).val() || 'transparent';
     this.model.set(field, value);
   },
-  onRender: function () {
-    const container = this.$el.find('#mailpoet_brand_styles')[0];
+  onRender() {
+    const container: HTMLDivElement = this.$el.find(
+      '#mailpoet_brand_styles',
+    )[0];
     const isBrandTemplatesEnabled = MailPoet.FeaturesController.isSupported(
       MailPoet.FeaturesController.FEATURE_BRAND_TEMPLATES,
     );
@@ -311,28 +321,29 @@ Module.SidebarStylesView = Marionette.View.extend({
       return;
     }
     this.brandStylesRoot = createRoot(container);
-    this.brandStylesRoot.render(<BrandStyles></BrandStyles>);
+    this.brandStylesRoot.render(<BrandStyles />);
   },
-  onDestroy: () => {
+  onDestroy() {
     if (this.brandStylesRoot) {
       this.brandStylesRoot.unmount();
     }
   },
 });
 
-App.on('before:start', function (BeforeStartApp) {
-  var Application = BeforeStartApp;
+App.on('before:start', (BeforeStartApp) => {
+  const Application = BeforeStartApp;
   Application.registerWidget = Module.registerWidget;
   Application.getWidgets = Module.getWidgets;
   Application.registerLayoutWidget = Module.registerLayoutWidget;
   Application.getLayoutWidgets = Module.getLayoutWidgets;
 });
 
-App.on('start', function (StartApp) {
-  var sidebarView = new SidebarView({
+App.on('start', (StartApp) => {
+  const sidebarView = new SidebarView({
     model: StartApp.getNewsletter(),
   });
 
+  // eslint-disable-next-line no-underscore-dangle
   StartApp._appView.showChildView('sidebarRegion', sidebarView);
 });
 

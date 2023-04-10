@@ -15,7 +15,7 @@ import 'newsletter_editor/App'; // side effect - assigns to window
 // components
 import 'newsletter_editor/components/config.jsx'; // side effect - calls App.on()
 import 'newsletter_editor/components/styles.js'; // side effect - calls App.on()
-import 'newsletter_editor/components/sidebar.js'; // side effect - calls App.on()
+import 'newsletter_editor/components/sidebar.tsx'; // side effect - calls App.on()
 import 'newsletter_editor/components/content.js'; // side effect - calls App.on()
 import 'newsletter_editor/components/heading.js'; // side effect - calls App.on()
 import 'newsletter_editor/components/history.js'; // side effect - calls App.on()
