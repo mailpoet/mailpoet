@@ -12,3 +12,9 @@ export const isEventInsideElement = (event, $el: JQuery): boolean => {
   }
   return true;
 };
+
+type BrandStylesSettings = {
+  available: boolean;
+};
+export const getBrandStylesSettings = (): BrandStylesSettings =>
+  window.mailpoet_brand_styles || ({} as BrandStylesSettings);

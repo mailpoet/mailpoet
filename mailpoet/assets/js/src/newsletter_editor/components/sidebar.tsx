@@ -9,6 +9,7 @@ import { createRoot } from 'react-dom/client';
 import { App } from 'newsletter_editor/App';
 import { MailPoet } from 'mailpoet';
 import { BrandStyles } from '../blocks/sidebar/brandStyles';
+import { getBrandStylesSettings } from '../utils';
 
 type ModuleType = Record<string, (...args: unknown[]) => void> & {
   _contentWidgets: Collection;
@@ -317,7 +318,11 @@ Module.SidebarStylesView = Marionette.View.extend({
     const isBrandTemplatesEnabled = MailPoet.FeaturesController.isSupported(
       MailPoet.FeaturesController.FEATURE_BRAND_TEMPLATES,
     );
-    if (!container || !isBrandTemplatesEnabled) {
+    if (
+      !container ||
+      !isBrandTemplatesEnabled ||
+      !getBrandStylesSettings().available
+    ) {
       return;
     }
     this.brandStylesRoot = createRoot(container);
