@@ -24,7 +24,17 @@ class AbandonedCartContent {
     bool $preview = false,
     SendingTask $sendingTask = null
   ): array {
-    if ($newsletter->getType() !== NewsletterEntity::TYPE_AUTOMATIC) {
+    if (
+      !in_array(
+      $newsletter->getType(),
+      [
+        NewsletterEntity::TYPE_AUTOMATIC,
+        NewsletterEntity::TYPE_AUTOMATION_TRANSACTIONAL,
+        NewsletterEntity::TYPE_AUTOMATION,
+      ],
+      true
+      )
+    ) {
       // Do not display the block if not an automatic email
       return [];
     }
