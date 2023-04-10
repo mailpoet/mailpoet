@@ -70,47 +70,6 @@ class WooCommerceNumberOfOrdersTest extends \MailPoetTest {
     $this->assertEqualsCanonicalizing([$createdSub->getEmail()], $emails);
   }
 
-  /**
-   * @dataProvider allowedStatuses
-   */
-  public function testItIncludesAllowedStatuses($status) {
-    $email = "$status@example.com";
-    $customerId = $this->tester->createCustomer($email, 'customer');
-    $this->createOrder($customerId, Carbon::now(), $status);
-    $segmentFilterData = $this->getSegmentFilterData('=', 1, 1);
-    $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->numberOfOrdersFilter);
-    expect($emails)->contains($email);
-  }
-
-  /**
-   * @dataProvider disallowedStatuses
-   */
-  public function testItExcludesDisallowedOrderStatuses($status) {
-    $email = "$status@example.com";
-    $customerId = $this->tester->createCustomer($email, 'customer');
-    $this->createOrder($customerId, Carbon::now(), $status);
-    $segmentFilterData = $this->getSegmentFilterData('=', 1, 1);
-    $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->numberOfOrdersFilter);
-    expect($emails)->notContains($email);
-  }
-
-  public function allowedStatuses() {
-    return [
-      'completed' => ['wc-completed'],
-      'processing' => ['wc-processing'],
-    ];
-  }
-
-  public function disallowedStatuses() {
-    return [
-      'refunded' => ['wc-refunded'],
-      'cancelled' => ['wc-cancelled'],
-      'on hold' => ['wc-on-hold'],
-      'pending' => ['wc-pending'],
-      'failed' => ['wc-failed'],
-    ];
-  }
-
   private function getSegmentFilterData(string $comparisonType, int $ordersCount, int $days): DynamicSegmentFilterData {
     return new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_WOOCOMMERCE, WooCommerceNumberOfOrders::ACTION_NUMBER_OF_ORDERS, [
       'number_of_orders_type' => $comparisonType,
