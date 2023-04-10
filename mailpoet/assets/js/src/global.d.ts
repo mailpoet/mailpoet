@@ -236,4 +236,7 @@ interface Window {
     id: string;
     subject: string;
   }>;
+  mailpoet_brand_styles?: {
+    available: boolean;
+  };
 }
