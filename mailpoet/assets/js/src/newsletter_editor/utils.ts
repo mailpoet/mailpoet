@@ -1,7 +1,7 @@
-export const isEventInsideElement = (event, $el) => {
-  var offset = $el.offset();
-  var height = $el.height();
-  var width = $el.width();
+export const isEventInsideElement = (event, $el: JQuery): boolean => {
+  const offset = $el.offset();
+  const height = $el.height();
+  const width = $el.width();
   if (
     event.pageX < offset.left ||
     event.pageX > offset.left + width ||
