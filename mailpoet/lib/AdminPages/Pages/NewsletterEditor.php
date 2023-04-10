@@ -9,6 +9,7 @@ use MailPoet\Form\AssetsController;
 use MailPoet\Form\Util\CustomFonts;
 use MailPoet\Newsletter\Renderer\Blocks\Coupon;
 use MailPoet\Newsletter\Shortcodes\ShortcodesHelper;
+use MailPoet\NewsletterTemplates\BrandStyles;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\UserFlagsController;
 use MailPoet\Subscribers\ConfirmationEmailCustomizer;
@@ -58,6 +59,9 @@ class NewsletterEditor {
   /*** @var AssetsController */
   private $assetsController;
 
+  /** @var BrandStyles */
+  private $brandStyles;
+
   public function __construct(
     PageRenderer $pageRenderer,
     SettingsController $settings,
@@ -70,7 +74,8 @@ class NewsletterEditor {
     TransactionalEmailHooks $wooEmailHooks,
     WPPostListLoader $wpPostListLoader,
     CustomFonts $customFonts,
-    AssetsController $assetsController
+    AssetsController $assetsController,
+    BrandStyles $brandStyles
   ) {
     $this->pageRenderer = $pageRenderer;
     $this->settings = $settings;
@@ -84,6 +89,7 @@ class NewsletterEditor {
     $this->wpPostListLoader = $wpPostListLoader;
     $this->customFonts = $customFonts;
     $this->assetsController = $assetsController;
+    $this->brandStyles = $brandStyles;
   }
 
   public function render() {
@@ -153,6 +159,9 @@ class NewsletterEditor {
       'is_confirmation_email_customizer_enabled' => (bool)$this->settings->get('signup_confirmation.use_mailpoet_editor', false),
       'product_categories' => $this->wpPostListLoader->getWooCommerceCategories(),
       'products' => $this->wpPostListLoader->getProducts(),
+      'brand_styles' => [
+        'available' => $this->brandStyles->isAvailable(),
+      ],
     ];
     $this->wp->wpEnqueueMedia();
     $this->wp->wpEnqueueStyle('editor', $this->wp->includesUrl('css/editor.css'));

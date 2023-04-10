@@ -376,6 +376,14 @@
   var mailpoet_installed_at = '<%= settings.installed_at %>';
 </script>
 
+<% if brand_styles.available %>
+<script type="text/javascript">
+  var mailpoet_brand_styles = {
+    available: true
+  };
+</script>
+<% endif %>
+
 <% endblock %>
 
 <% block after_css %>
