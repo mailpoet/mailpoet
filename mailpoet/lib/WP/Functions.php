@@ -871,4 +871,13 @@ class Functions {
   public function getPluginData(string $plugin_file, bool $markup = true, bool $translate = true): array {
     return get_plugin_data($plugin_file, $markup, $translate);
   }
+
+  public function wpIsBlockTheme(): bool {
+    // wp_is_block_theme exists only in WP 5.9+
+    if (function_exists('wp_is_block_theme')) {
+      return wp_is_block_theme();
+    }
+
+    return false;
+  }
 }
