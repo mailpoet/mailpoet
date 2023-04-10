@@ -5,7 +5,6 @@ namespace MailPoet\Segments\DynamicSegments\Filters;
 require_once(ABSPATH . 'wp-admin/includes/taxonomy.php');
 
 use MailPoet\Entities\DynamicSegmentFilterData;
-use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoetVendor\Carbon\Carbon;
