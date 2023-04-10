@@ -12,12 +12,12 @@ import { step as UnsubscribeStep } from './steps/unsubscribe';
 import { step as NotificationEmail } from './steps/notification_email';
 import { registerStepControls } from './step-controls';
 import { registerAutomationSidebar } from './automation-sidebar';
+import { MailPoet } from '../../../mailpoet';
 
 export const initialize = (): void => {
   registerStepType(SendEmailStep);
   registerStepType(WpUserRegisteredTrigger);
   registerStepType(SomeoneSubscribesTrigger);
-  registerStepType(AbandonedCartTrigger);
   registerStepType(AddTagsAction);
   registerStepType(RemoveTagsAction);
   registerStepType(AddToListStep);
@@ -27,4 +27,9 @@ export const initialize = (): void => {
   registerStepType(NotificationEmail);
   registerStepControls();
   registerAutomationSidebar();
+
+  if (!MailPoet.isWoocommerceActive) {
+    return;
+  }
+  registerStepType(AbandonedCartTrigger);
 };
