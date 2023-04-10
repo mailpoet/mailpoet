@@ -3,6 +3,7 @@
 namespace integration\Segments\DynamicSegments\Filters;
 
 use MailPoet\Segments\DynamicSegments\Filters\WooFilterHelper;
+use MailPoetVendor\Carbon\Carbon;
 
 /**
  * @group woo
@@ -72,10 +73,19 @@ class WooFilterHelperTest extends \MailPoetTest {
   private function createOrder(int $customerId, string $status): int {
     $order = $this->tester->createWooCommerceOrder();
     $order->set_customer_id($customerId);
+    $order->set_date_created(Carbon::now()->toDateTimeString());
     $order->set_status($status);
     $order->save();
     $this->tester->updateWooOrderStats($order->get_id());
 
     return $order->get_id();
+  }
+
+  public function _after() {
+    parent::_after();
+    global $wpdb;
+    $this->connection->executeQuery("TRUNCATE TABLE {$wpdb->prefix}wc_customer_lookup");
+    $this->connection->executeQuery("TRUNCATE TABLE {$wpdb->prefix}wc_order_stats");
+    $this->connection->executeQuery("TRUNCATE TABLE {$wpdb->prefix}wc_order_product_lookup");
   }
 }
