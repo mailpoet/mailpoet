@@ -13,6 +13,11 @@ export const EmailSegmentOptions = [
     group: SegmentTypes.Email,
   },
   {
+    value: EmailActionTypes.WAS_SENT,
+    label: MailPoet.I18n.t('emailActionWasSent'),
+    group: SegmentTypes.Email,
+  },
+  {
     value: EmailActionTypes.OPENED,
     label: MailPoet.I18n.t('emailActionOpened'),
     group: SegmentTypes.Email,
