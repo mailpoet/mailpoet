@@ -3,8 +3,6 @@
 namespace MailPoet\Segments\DynamicSegments\Filters;
 
 use MailPoet\Entities\DynamicSegmentFilterData;
-use MailPoet\Entities\SegmentEntity;
-use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Subscribers\Source;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 use MailPoetVendor\Carbon\Carbon;
@@ -96,9 +94,6 @@ class WooCommerceNumberOfOrdersTest extends \MailPoetTest {
 
   private function cleanUp(): void {
     global $wpdb;
-    $this->truncateEntity(SegmentEntity::class);
-    $this->truncateEntity(SubscriberEntity::class);
-
     $this->connection->executeQuery("TRUNCATE TABLE {$wpdb->prefix}wc_customer_lookup");
     $this->connection->executeQuery("TRUNCATE TABLE {$wpdb->prefix}wc_order_stats");
   }
