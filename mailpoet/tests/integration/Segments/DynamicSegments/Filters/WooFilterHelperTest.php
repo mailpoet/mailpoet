@@ -4,6 +4,9 @@ namespace integration\Segments\DynamicSegments\Filters;
 
 use MailPoet\Segments\DynamicSegments\Filters\WooFilterHelper;
 
+/**
+ * @group woo
+ */
 class WooFilterHelperTest extends \MailPoetTest {
   /** @var WooFilterHelper */
   private $wooFilterHelper;
