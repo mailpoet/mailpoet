@@ -18,16 +18,18 @@ use MailPoetVendor\Doctrine\ORM\EntityManager;
 class EmailAction implements Filter {
   const ACTION_OPENED = 'opened';
   const ACTION_MACHINE_OPENED = 'machineOpened';
-  /** @deprecated  */
+  /** @deprecated */
   const ACTION_NOT_OPENED = 'notOpened';
   const ACTION_CLICKED = 'clicked';
-  /** @deprecated  */
+  const ACTION_WAS_SENT = 'wasSent';
+  /** @deprecated */
   const ACTION_NOT_CLICKED = 'notClicked';
 
   const ALLOWED_ACTIONS = [
     self::ACTION_OPENED,
     self::ACTION_MACHINE_OPENED,
     self::ACTION_CLICKED,
+    self::ACTION_WAS_SENT,
     EmailActionClickAny::TYPE,
     EmailOpensAbsoluteCountAction::TYPE,
     EmailOpensAbsoluteCountAction::MACHINE_TYPE,
@@ -35,11 +37,15 @@ class EmailAction implements Filter {
 
   /** @var EntityManager */
   private $entityManager;
+  /** @var FilterHelper */
+  private $filterHelper;
 
   public function __construct(
-    EntityManager $entityManager
+    EntityManager $entityManager,
+    FilterHelper $filterHelper
   ) {
     $this->entityManager = $entityManager;
+    $this->filterHelper = $filterHelper;
   }
 
   public function apply(QueryBuilder $queryBuilder, DynamicSegmentFilterEntity $filter): QueryBuilder {
@@ -49,6 +55,8 @@ class EmailAction implements Filter {
 
     if ($action === self::ACTION_CLICKED) {
       return $this->applyForClickedActions($queryBuilder, $filterData, $parameterSuffix);
+    } elseif ($action === self::ACTION_WAS_SENT) {
+      return $this->applyForWasSentAction($queryBuilder, $filterData, $parameterSuffix);
     } else {
       return $this->applyForOpenedActions($queryBuilder, $filterData, $parameterSuffix);
     }
@@ -174,5 +182,37 @@ class EmailAction implements Filter {
       $clause .= ' AND stats.link_id IN (:links' . $parameterSuffix . ')';
     }
     return $clause;
+  }
+
+  private function applyForWasSentAction(QueryBuilder $queryBuilder, DynamicSegmentFilterData $filterData, string $parameterSuffix): QueryBuilder {
+    $newsletters = (array)$filterData->getParam('newsletters');
+    $operator = $filterData->getParam('operator') ?? DynamicSegmentFilterData::OPERATOR_ANY;
+    $subscribersTable = $this->filterHelper->getSubscribersTable();
+    $statisticsNewslettersTable = $this->entityManager->getClassMetadata(StatisticsNewsletterEntity::class)->getTableName();
+
+    if ($operator === DynamicSegmentFilterData::OPERATOR_NONE) {
+      $queryBuilder->leftJoin(
+        $this->filterHelper->getSubscribersTable(),
+        $statisticsNewslettersTable,
+        'statisticsNewsletter',
+        "$subscribersTable.id = statisticsNewsletter.subscriber_id AND statisticsNewsletter.newsletter_id IN (:newsletters" . $parameterSuffix . ')'
+      )
+        ->setParameter('newsletters' . $parameterSuffix, $newsletters, Connection::PARAM_INT_ARRAY)
+        ->andWhere('statisticsNewsletter.subscriber_id IS NULL');
+    } else {
+      $queryBuilder->innerJoin(
+        $subscribersTable,
+        $statisticsNewslettersTable,
+        'statisticsNewsletter',
+        "statisticsNewsletter.subscriber_id = $subscribersTable.id AND statisticsNewsletter.newsletter_id IN (:newsletters" . $parameterSuffix . ')'
+      )->setParameter('newsletters' . $parameterSuffix, $newsletters, Connection::PARAM_INT_ARRAY);
+
+      if ($operator === DynamicSegmentFilterData::OPERATOR_ALL) {
+        $queryBuilder->groupBy('subscriber_id');
+        $queryBuilder->having('COUNT(1) = ' . count($newsletters));
+      }
+    }
+
+    return $queryBuilder;
   }
 }

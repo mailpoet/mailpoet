@@ -43,6 +43,7 @@ const componentsMap = {
     EmailOpensAbsoluteCountFields,
   [EmailActionTypes.CLICKED]: EmailClickStatisticsFields,
   [EmailActionTypes.OPENED]: EmailOpenStatisticsFields,
+  [EmailActionTypes.WAS_SENT]: EmailOpenStatisticsFields,
   [EmailActionTypes.MACHINE_OPENED]: EmailOpenStatisticsFields,
   [EmailActionTypes.CLICKED_ANY]: null,
 };

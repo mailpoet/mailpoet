@@ -12,6 +12,7 @@ export enum EmailActionTypes {
   MACHINE_OPENS_ABSOLUTE_COUNT = 'machineOpensAbsoluteCount',
   OPENED = 'opened',
   MACHINE_OPENED = 'machineOpened',
+  WAS_SENT = 'wasSent',
   CLICKED = 'clicked',
   CLICKED_ANY = 'clickedAny',
 }

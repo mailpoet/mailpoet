@@ -292,6 +292,71 @@ class EmailActionTest extends \MailPoetTest {
     $this->assertEqualsCanonicalizing(['opened_machine@example.com'], $emails);
   }
 
+  public function testSentEmailAny(): void {
+    $subscriber1 = $this->createSubscriber('1@example.com');
+    $subscriber2 = $this->createSubscriber('2@example.com');
+    $this->createSubscriber('3@example.com');
+
+
+    $this->createStatsNewsletter($subscriber1, $this->newsletter);
+    $this->createStatsNewsletter($subscriber2, $this->newsletter2);
+
+    $segmentFilterData = $this->getSegmentFilterData(EmailAction::ACTION_WAS_SENT, [
+      'newsletters' => [$this->newsletter->getId(), $this->newsletter2->getId()],
+      'operator' => DynamicSegmentFilterData::OPERATOR_ANY,
+    ]);
+
+    $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->emailAction);
+
+    expect($emails)->contains('1@example.com');
+    expect($emails)->contains('2@example.com');
+    expect($emails)->notContains('3@example.com');
+  }
+
+  public function testSentEmailAll(): void {
+    $subscriber1 = $this->createSubscriber('1@example.com');
+    $subscriber2 = $this->createSubscriber('2@example.com');
+    $subscriber3 = $this->createSubscriber('3@example.com');
+
+    $this->createStatsNewsletter($subscriber1, $this->newsletter);
+    $this->createStatsNewsletter($subscriber1, $this->newsletter2);
+    $this->createStatsNewsletter($subscriber2, $this->newsletter2);
+    $this->createStatsNewsletter($subscriber3, $this->newsletter2);
+
+    $segmentFilterData = $this->getSegmentFilterData(EmailAction::ACTION_WAS_SENT, [
+      'newsletters' => [$this->newsletter->getId(), $this->newsletter2->getId()],
+      'operator' => DynamicSegmentFilterData::OPERATOR_ALL,
+    ]);
+
+    $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->emailAction);
+
+    expect($emails)->contains('1@example.com');
+    expect($emails)->notContains('2@example.com');
+    expect($emails)->notContains('3@example.com');
+  }
+
+  public function testSentEmailNone(): void {
+    $subscriber1 = $this->createSubscriber('1@example.com');
+    $subscriber2 = $this->createSubscriber('2@example.com');
+    $subscriber3 = $this->createSubscriber('3@example.com');
+
+    $this->createStatsNewsletter($subscriber1, $this->newsletter);
+    $this->createStatsNewsletter($subscriber1, $this->newsletter2);
+    $this->createStatsNewsletter($subscriber2, $this->newsletter2);
+    $this->createStatsNewsletter($subscriber3, $this->newsletter3);
+
+    $segmentFilterData = $this->getSegmentFilterData(EmailAction::ACTION_WAS_SENT, [
+      'newsletters' => [$this->newsletter->getId(), $this->newsletter2->getId()],
+      'operator' => DynamicSegmentFilterData::OPERATOR_NONE,
+    ]);
+
+    $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->emailAction);
+
+    expect($emails)->notContains('1@example.com');
+    expect($emails)->notContains('2@example.com');
+    expect($emails)->contains('3@example.com');
+  }
+
   private function getSegmentFilterData(string $action, array $data): DynamicSegmentFilterData {
     return new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_EMAIL, $action, $data);
   }
