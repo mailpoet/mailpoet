@@ -5,8 +5,6 @@ namespace MailPoet\Segments\DynamicSegments\Filters;
 use Automattic\WooCommerce\Admin\API\Reports\Customers\Stats\DataStore as CustomersStatsDataStore;
 use Automattic\WooCommerce\Admin\API\Reports\Orders\Stats\DataStore as OrdersStatsDataStore;
 use MailPoet\Entities\DynamicSegmentFilterData;
-use MailPoet\Entities\SegmentEntity;
-use MailPoet\Entities\SubscriberEntity;
 
 /**
  * @group woo

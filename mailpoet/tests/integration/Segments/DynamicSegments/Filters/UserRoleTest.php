@@ -3,7 +3,6 @@
 namespace MailPoet\Segments\DynamicSegments\Filters;
 
 use MailPoet\Entities\DynamicSegmentFilterData;
-use MailPoet\Entities\SubscriberEntity;
 
 class UserRoleTest extends \MailPoetTest {
 
