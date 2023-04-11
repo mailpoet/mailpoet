@@ -63,13 +63,6 @@ BL.MediaManagerBehavior = Marionette.Behavior.extend({
 
     MediaManager = window.wp.media.view.MediaFrame.Select.extend({
       initialize: function () {
-        /**
-         * As of importing @wordpress/i18n, and since it's using lodash, we need to reset window._ back to
-         * underscore for the media manage to work.
-         * The media manager is using _.each and changes the context using the 3 parameter, however _.each of
-         * lodash doesn't accept a third parameter.
-         */
-        window._ = _;
         window.wp.media.view.MediaFrame.prototype.initialize.apply(
           this,
           arguments,
