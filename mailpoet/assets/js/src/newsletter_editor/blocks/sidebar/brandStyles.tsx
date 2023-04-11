@@ -42,7 +42,7 @@ export function BrandStyles() {
             id="style_type_brand"
             value={STYLE_TYPES.brand}
             checked={selected === STYLE_TYPES.brand}
-            onClick={selectStyle(STYLE_TYPES.brand)}
+            onChange={selectStyle(STYLE_TYPES.brand)}
           />
           <label htmlFor="style_type_brand">
             <h1
@@ -76,7 +76,7 @@ export function BrandStyles() {
             id="style_type_theme"
             value={STYLE_TYPES.theme}
             checked={selected === STYLE_TYPES.theme}
-            onClick={selectStyle(STYLE_TYPES.theme)}
+            onChange={selectStyle(STYLE_TYPES.theme)}
           />
           <label htmlFor="style_type_theme">
             <h1
