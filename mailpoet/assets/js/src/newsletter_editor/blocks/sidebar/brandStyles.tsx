@@ -32,7 +32,7 @@ export function BrandStyles() {
   return (
     <>
       <h4>
-        {__('Choose a style')} <i className="mailpoet_info" />
+        {__('Choose a style', 'mailpoet')} <i className="mailpoet_info" />
       </h4>
       <div id="mailpoet_style_types">
         <div className="mailpoet_form_field mailpoet_form_style_type_brand">
