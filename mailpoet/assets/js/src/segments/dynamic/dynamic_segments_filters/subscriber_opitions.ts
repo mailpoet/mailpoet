@@ -3,13 +3,13 @@ import { SegmentTypes, SubscriberActionTypes } from '../types';
 
 export const SubscriberSegmentOptions = [
   {
-    value: SubscriberActionTypes.MAILPOET_CUSTOM_FIELD,
-    label: MailPoet.I18n.t('mailpoetCustomField'),
+    value: SubscriberActionTypes.SUBSCRIBER_SCORE,
+    label: MailPoet.I18n.t('subscriberScore'),
     group: SegmentTypes.WordPressRole,
   },
   {
-    value: SubscriberActionTypes.SUBSCRIBER_SCORE,
-    label: MailPoet.I18n.t('subscriberScore'),
+    value: SubscriberActionTypes.MAILPOET_CUSTOM_FIELD,
+    label: MailPoet.I18n.t('mailpoetCustomField'),
     group: SegmentTypes.WordPressRole,
   },
   {
