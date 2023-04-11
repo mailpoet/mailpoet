@@ -15,6 +15,7 @@ use MailPoet\Automation\Engine\Validation\AutomationRules\TriggerNeedsToBeFollow
 use MailPoet\Automation\Engine\Validation\AutomationRules\TriggersUnderRootRule;
 use MailPoet\Automation\Engine\Validation\AutomationRules\UnknownStepRule;
 use MailPoet\Automation\Engine\Validation\AutomationRules\ValidStepArgsRule;
+use MailPoet\Automation\Engine\Validation\AutomationRules\ValidStepFiltersRule;
 use MailPoet\Automation\Engine\Validation\AutomationRules\ValidStepOrderRule;
 use MailPoet\Automation\Engine\Validation\AutomationRules\ValidStepRule;
 use MailPoet\Automation\Engine\Validation\AutomationRules\ValidStepValidationRule;
@@ -25,6 +26,9 @@ class AutomationValidator {
 
   /** @var ValidStepArgsRule */
   private $validStepArgsRule;
+
+  /** @var ValidStepFiltersRule */
+  private $validStepFiltersRule;
 
   /** @var ValidStepOrderRule */
   private $validStepOrderRule;
@@ -38,12 +42,14 @@ class AutomationValidator {
   public function __construct(
     UnknownStepRule $unknownStepRule,
     ValidStepArgsRule $validStepArgsRule,
+    ValidStepFiltersRule $validStepFiltersRule,
     ValidStepOrderRule $validStepOrderRule,
     ValidStepValidationRule $validStepValidationRule,
     AutomationWalker $automationWalker
   ) {
     $this->unknownStepRule = $unknownStepRule;
     $this->validStepArgsRule = $validStepArgsRule;
+    $this->validStepFiltersRule = $validStepFiltersRule;
     $this->validStepOrderRule = $validStepOrderRule;
     $this->validStepValidationRule = $validStepValidationRule;
     $this->automationWalker = $automationWalker;
@@ -63,6 +69,7 @@ class AutomationValidator {
       new TriggerNeedsToBeFollowedByActionRule(),
       new ValidStepRule([
         $this->validStepArgsRule,
+        $this->validStepFiltersRule,
         $this->validStepOrderRule,
         $this->validStepValidationRule,
       ]),

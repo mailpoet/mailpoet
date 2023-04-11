@@ -140,6 +140,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Automation\Engine\Validation\AutomationGraph\AutomationWalker::class)->setPublic(true);
     $container->autowire(\MailPoet\Automation\Engine\Validation\AutomationRules\UnknownStepRule::class)->setPublic(true);
     $container->autowire(\MailPoet\Automation\Engine\Validation\AutomationRules\ValidStepArgsRule::class)->setPublic(true);
+    $container->autowire(\MailPoet\Automation\Engine\Validation\AutomationRules\ValidStepFiltersRule::class)->setPublic(true);
     $container->autowire(\MailPoet\Automation\Engine\Validation\AutomationRules\ValidStepOrderRule::class)->setPublic(true);
     $container->autowire(\MailPoet\Automation\Engine\Validation\AutomationRules\ValidStepValidationRule::class)->setPublic(true);
     $container->autowire(\MailPoet\Automation\Engine\Validation\AutomationValidator::class)->setPublic(true);
