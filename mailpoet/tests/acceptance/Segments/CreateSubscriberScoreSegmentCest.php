@@ -29,7 +29,7 @@ class CreateSubscriberScoreSegmentCest {
     $segmentTitle = 'Subscriber score segment';
     $i->fillField(['name' => 'name'], $segmentTitle);
     $i->fillField(['name' => 'description'], 'description');
-    $i->selectOptionInReactSelect('score', '[data-automation-id="select-segment-action"]');
+    $i->selectOptionInReactSelect('engagement score', '[data-automation-id="select-segment-action"]');
     $i->waitForElementVisible('[data-automation-id="segment-subscriber-score-operator"]');
     $i->selectOption('[data-automation-id="segment-subscriber-score-operator"]', 'lower than');
     $i->fillField('[data-automation-id="segment-subscriber-score-value"]', '20.51');
@@ -69,7 +69,7 @@ class CreateSubscriberScoreSegmentCest {
     $segmentTitle = 'Subscriber unknown score segment';
     $i->fillField(['name' => 'name'], $segmentTitle);
     $i->fillField(['name' => 'description'], 'description');
-    $i->selectOptionInReactSelect('score', '[data-automation-id="select-segment-action"]');
+    $i->selectOptionInReactSelect('engagement score', '[data-automation-id="select-segment-action"]');
     $i->waitForElementVisible('[data-automation-id="segment-subscriber-score-operator"]');
     $i->selectOption('[data-automation-id="segment-subscriber-score-operator"]', 'unknown');
     $i->dontSeeElement('[data-automation-id="segment-subscriber-score-value"]');
