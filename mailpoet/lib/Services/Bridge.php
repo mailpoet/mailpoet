@@ -18,6 +18,10 @@ class Bridge {
   const PREMIUM_KEY_SETTING_NAME = 'premium.premium_key';
   const PREMIUM_KEY_STATE_SETTING_NAME = 'premium.premium_key_state';
 
+  const KEY_ACCESS_INSUFFICIENT_PRIVILEGES = 'insufficient_privileges';
+  const KEY_ACCESS_EMAIL_VOLUME_LIMIT = 'email_volume_limit_reached';
+  const KEY_ACCESS_SUBSCRIBERS_LIMIT = 'subscribers_limit_reached';
+
   const PREMIUM_KEY_VALID = 'valid'; // for backwards compatibility until version 3.0.0
   const KEY_VALID = 'valid';
   const KEY_INVALID = 'invalid';
@@ -250,9 +254,25 @@ class Bridge {
       $keyState = self::KEY_CHECK_ERROR;
     }
 
+    // Map of access error messages.
+    // The message is set by shop when a subscription has limited access to the feature.
+    // Insufficient privileges - is the default state if the plan doesn't include the feature.
+    // If the bridge returns 403 and there is a message set by the shop it returns the message.
+    $accessRestrictionsMap = [
+      'Insufficient privileges' => self::KEY_ACCESS_INSUFFICIENT_PRIVILEGES,
+      'Subscribers limit reached' => self::KEY_ACCESS_SUBSCRIBERS_LIMIT,
+      'Email volume limit reached' => self::KEY_ACCESS_EMAIL_VOLUME_LIMIT,
+    ];
+
+    $accessRestriction = null;
+    if (!empty($result['code']) && $result['code'] === 403 && !empty($result['error_message'])) {
+      $accessRestriction = $accessRestrictionsMap[$result['error_message']] ?? null;
+    }
+
     return $this->buildKeyState(
       $keyState,
-      $result
+      $result,
+      $accessRestriction
     );
   }
 
@@ -277,9 +297,10 @@ class Bridge {
     );
   }
 
-  private function buildKeyState($keyState, $result) {
+  private function buildKeyState($keyState, $result, ?string $accessRestriction) {
     $state = [
       'state' => $keyState,
+      'access_restriction' => $accessRestriction,
       'data' => !empty($result['data']) ? $result['data'] : null,
       'code' => !empty($result['code']) ? $result['code'] : self::CHECK_ERROR_UNKNOWN,
     ];
