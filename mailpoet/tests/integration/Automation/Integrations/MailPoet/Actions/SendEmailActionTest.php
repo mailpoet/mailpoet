@@ -67,7 +67,7 @@ class SendEmailActionTest extends \MailPoetTest {
   }
 
   public function testItReturnsRequiredSubjects() {
-    $this->assertSame(['mailpoet:segment', 'mailpoet:subscriber'], $this->action->getSubjectKeys());
+    $this->assertSame(['mailpoet:subscriber'], $this->action->getSubjectKeys());
   }
 
   public function testItIsNotValidIfStepHasNoEmail(): void {
