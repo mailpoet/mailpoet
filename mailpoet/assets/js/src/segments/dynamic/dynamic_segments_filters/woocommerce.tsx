@@ -15,7 +15,7 @@ import {
   WindowWooCommerceCountries,
   WooCommerceFormItem,
 } from '../types';
-import { DateFields, DateOperator, validateDateField } from './date_fields';
+import { DateFields, validateDateField } from './date_fields';
 import { storeName } from '../store';
 import {
   actionTypesWithDefaultTypeAny,
@@ -75,17 +75,15 @@ export function validateWooCommerce(formItems: WooCommerceFormItem): boolean {
     return false;
   }
   if (
-    Object.values(DateOperator).includes(formItems.operator as DateOperator)
-  ) {
-    return validateDateField(formItems);
-  }
-  if (
     formItems.action === WooCommerceActionTypes.SINGLE_ORDER_VALUE &&
     (!formItems.single_order_value_amount ||
       !formItems.single_order_value_days ||
       !formItems.single_order_value_type)
   ) {
     return false;
+  }
+  if (formItems.action === WooCommerceActionTypes.PURCHASE_DATE) {
+    return validateDateField(formItems);
   }
   return true;
 }
