@@ -102,6 +102,7 @@ export type Settings = {
         is_approved: boolean;
       };
       code: number;
+      access_restriction: AccessRestriction | null;
     };
   };
   mailpoet_smtp_provider: 'server' | 'manual' | 'AmazonSES' | 'SendGrid';
@@ -135,6 +136,7 @@ export type Settings = {
     premium_key_state: {
       state: 'valid' | 'invalid' | 'expiring' | 'already_used' | 'check_error';
       data: Record<string, unknown>;
+      access_restriction: AccessRestriction | null;
     };
   };
   authorized_emails_addresses_check: null | {
@@ -211,13 +213,20 @@ export enum PremiumInstallationStatus {
   ACTIVATE_ERROR,
 }
 
+export type AccessRestriction =
+  | 'email_volume_limit_reached'
+  | 'subscribers_limit_reached'
+  | 'insufficient_privileges'; // Default restriction in case the plan associated with the key doesn't support the feature (MSS or Premium)
+
 export type KeyActivationState = {
   key: string;
   isKeyValid: boolean;
   premiumStatus: PremiumStatus;
+  premiumAccessRestriction: AccessRestriction;
   premiumMessage: string;
   mssStatus: MssStatus;
   mssMessage: string;
+  mssAccessRestriction: AccessRestriction;
   premiumInstallationStatus: PremiumInstallationStatus;
   fromAddressModalCanBeShown: boolean;
   inProgress: boolean;

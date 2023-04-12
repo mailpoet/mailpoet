@@ -33,6 +33,7 @@ export function* verifyMssKey(key: string) {
 
   if (res.data.state === 'valid_underprivileged') {
     fields.mssStatus = MssStatus.VALID_UNDERPRIVILEGED;
+    fields.mssAccessRestriction = res.data?.result?.access_restriction ?? null;
     return updateKeyActivationState(fields);
   }
 
