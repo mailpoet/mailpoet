@@ -46,6 +46,9 @@ class API {
   public const ERROR_MESSAGE_SENDER_DOMAIN_INVALID = 'Invalid domain. Please enter a valid domain name.';
   public const ERROR_MESSAGE_SENDER_DOMAIN_ALREADY_ADDED = 'This domain was already added to the list.';
 
+  private const KEY_CHECK_TYPE_PREMIUM = 'premium';
+  private const KEY_CHECK_TYPE_MSS = 'mss';
+
   private $apiKey;
   private $wp;
   /** @var LoggerFactory */
@@ -76,28 +79,21 @@ class API {
   }
 
   public function checkMSSKey() {
-    $result = $this->request(
-      $this->urlMe,
-      ['site' => strtolower(WPFunctions::get()->homeUrl())]
-    );
-
-    $code = $this->wp->wpRemoteRetrieveResponseCode($result);
-    switch ($code) {
-      case 200:
-        $body = json_decode($this->wp->wpRemoteRetrieveBody($result), true);
-        break;
-      default:
-        $this->logKeyCheckError((int)$code, 'mss');
-        $body = null;
-        break;
-    }
-
-    return ['code' => $code, 'data' => $body];
+    return $this->checkKey(self::KEY_CHECK_TYPE_MSS);
   }
 
   public function checkPremiumKey() {
+    return $this->checkKey(self::KEY_CHECK_TYPE_PREMIUM);
+  }
+
+  private function checkKey(string $keyCheckType): array {
+    if ($keyCheckType === self::KEY_CHECK_TYPE_PREMIUM) {
+      $apiUrl = $this->urlPremium;
+    } else {
+      $apiUrl = $this->urlMe;
+    }
     $result = $this->request(
-      $this->urlPremium,
+      $apiUrl,
       ['site' => strtolower(WPFunctions::get()->homeUrl())]
     );
 
@@ -110,7 +106,7 @@ class API {
         }
         break;
       default:
-        $this->logKeyCheckError((int)$code, 'premium');
+        $this->logKeyCheckError((int)$code, $keyCheckType);
         $body = null;
         break;
     }
