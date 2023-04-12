@@ -61,7 +61,6 @@ class WooCommerceProduct implements Filter {
       // application subQuery for negation
       $queryBuilder->where("{$subscribersTable}.id NOT IN ({$this->filterHelper->getInterpolatedSQL($subQuery)})");
     }
-    codecept_debug($this->filterHelper->getInterpolatedSQL($queryBuilder));
     return $queryBuilder
       ->setParameter("products_{$parameterSuffix}", $productIds, Connection::PARAM_STR_ARRAY);
   }
