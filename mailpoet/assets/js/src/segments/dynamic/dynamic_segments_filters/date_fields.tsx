@@ -144,7 +144,7 @@ export function DateFields({ filterIndex }: Props): JSX.Element {
   );
 }
 
-export function dateFieldValidator(formItems: DateFormItem): boolean {
+export function validateDateField(formItems: DateFormItem): boolean {
   if (!formItems.operator || !formItems.value) {
     return false;
   }
