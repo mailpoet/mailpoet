@@ -1,12 +1,17 @@
 import { MouseEvent } from 'react';
 import ReactStringReplace from 'react-string-replace';
 import { __ } from '@wordpress/i18n';
-import { KeyActivationState } from 'settings/store/types';
+import {
+  KeyActivationState,
+  MssStatus,
+  PremiumStatus,
+} from 'settings/store/types';
 import {
   KeyMessages,
   MssMessages,
   PremiumMessages,
   ServiceUnavailableMessage,
+  AccessRestrictedMessages,
 } from './key_messages';
 import { getLinkRegex } from '../utils';
 
@@ -52,6 +57,11 @@ export function Messages(
           keyMessage={state.premiumMessage}
           canUseSuccessClass={!showPendingApprovalNotice}
         />
+      )}
+
+      {(state.premiumStatus === PremiumStatus.VALID_UNDERPRIVILEGED ||
+        state.mssStatus === MssStatus.VALID_UNDERPRIVILEGED) && (
+        <AccessRestrictedMessages />
       )}
 
       {showPendingApprovalNotice && (
