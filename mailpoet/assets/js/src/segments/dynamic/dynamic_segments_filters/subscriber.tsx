@@ -7,7 +7,7 @@ import {
   SubscriberScoreFields,
   validateSubscriberScore,
 } from './subscriber_score';
-import { DateFields, dateFieldValidator, DateOperator } from './date_fields';
+import { DateFields, DateOperator, validateDateField } from './date_fields';
 import {
   MailPoetCustomFields,
   validateMailPoetCustomField,
@@ -46,7 +46,7 @@ export function validateSubscriber(formItems: WordpressRoleFormItem): boolean {
   if (
     Object.values(DateOperator).includes(formItems.operator as DateOperator)
   ) {
-    return dateFieldValidator(formItems);
+    return validateDateField(formItems);
   }
   return false;
 }
