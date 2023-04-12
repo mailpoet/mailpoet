@@ -50,11 +50,6 @@ export const WooCommerceOptions = [
   },
 ];
 
-export const actionTypesWithDefaultTypeAny: Array<string> = [
-  WooCommerceActionTypes.PURCHASED_PRODUCT,
-  WooCommerceActionTypes.PURCHASED_CATEGORY,
-];
-
 // WooCommerce Memberships
 export enum WooCommerceMembershipsActionTypes {
   MEMBER_OF = 'isMemberOf',
