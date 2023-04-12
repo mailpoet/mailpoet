@@ -10,10 +10,12 @@ import { normalizeSettings } from './normalize_settings';
 
 declare let window: SettingsWindow;
 
-function getPremiumStatus(keyValid, premiumInstalled): PremiumStatus {
+function getPremiumStatus(keyValid, premiumInstalled, data): PremiumStatus {
   const pluginActive = !!MailPoet.premiumVersion;
   if (!keyValid) {
-    return PremiumStatus.INVALID;
+    return data.premium?.premium_key_state?.state === 'valid_underprivileged'
+      ? PremiumStatus.VALID_UNDERPRIVILEGED
+      : PremiumStatus.INVALID;
   }
   if (pluginActive) {
     return PremiumStatus.VALID_PREMIUM_PLUGIN_ACTIVE;
@@ -61,6 +63,7 @@ export function makeDefaultState(): State {
     premiumStatus = getPremiumStatus(
       window.mailpoet_premium_key_valid,
       window.mailpoet_premium_plugin_installed,
+      data,
     );
     isKeyValid =
       mssStatus !== MssStatus.INVALID ||
