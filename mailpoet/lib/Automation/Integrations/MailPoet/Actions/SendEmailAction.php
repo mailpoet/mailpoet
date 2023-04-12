@@ -9,6 +9,7 @@ use MailPoet\Automation\Engine\Data\NextStep;
 use MailPoet\Automation\Engine\Data\Step;
 use MailPoet\Automation\Engine\Data\StepRunArgs;
 use MailPoet\Automation\Engine\Data\StepValidationArgs;
+use MailPoet\Automation\Engine\Exceptions\NotFoundException;
 use MailPoet\Automation\Engine\Integration\Action;
 use MailPoet\Automation\Engine\Integration\ValidationException;
 use MailPoet\Automation\Integrations\MailPoet\Payloads\SegmentPayload;
@@ -109,7 +110,6 @@ class SendEmailAction implements Action {
 
   public function getSubjectKeys(): array {
     return [
-      'mailpoet:segment',
       'mailpoet:subscriber',
     ];
   }
@@ -134,31 +134,16 @@ class SendEmailAction implements Action {
 
   public function run(StepRunArgs $args, StepRunController $controller): void {
     $newsletter = $this->getEmailForStep($args->getStep());
-    $segmentId = $args->getSinglePayloadByClass(SegmentPayload::class)->getId();
-    $subscriberId = $args->getSinglePayloadByClass(SubscriberPayload::class)->getId();
 
-    $subscriberSegment = $this->subscriberSegmentRepository->findOneBy([
-      'subscriber' => $subscriberId,
-      'segment' => $segmentId,
-      'status' => SubscriberEntity::STATUS_SUBSCRIBED,
-    ]);
-
-    if ($newsletter->getType() !== NewsletterEntity::TYPE_AUTOMATION_TRANSACTIONAL && !$subscriberSegment) {
-      throw InvalidStateException::create()->withMessage(sprintf("Subscriber ID '%s' is not subscribed to segment ID '%s'.", $subscriberId, $segmentId));
-    }
-
-    $subscriber = $subscriberSegment ? $subscriberSegment->getSubscriber() : $this->subscribersRepository->findOneById($subscriberId);
-    if (!$subscriber) {
-      throw InvalidStateException::create();
-    }
+    $subscriber = $this->getSubscriber($args);
 
     $subscriberStatus = $subscriber->getStatus();
     if ($newsletter->getType() !== NewsletterEntity::TYPE_AUTOMATION_TRANSACTIONAL && $subscriberStatus !== SubscriberEntity::STATUS_SUBSCRIBED) {
-      throw InvalidStateException::create()->withMessage(sprintf("Cannot schedule a newsletter for subscriber ID '%s' because their status is '%s'.", $subscriberId, $subscriberStatus));
+      throw InvalidStateException::create()->withMessage(sprintf("Cannot schedule a newsletter for subscriber ID '%s' because their status is '%s'.", $subscriber->getId(), $subscriberStatus));
     }
 
     if ($subscriberStatus === SubscriberEntity::STATUS_BOUNCED) {
-      throw InvalidStateException::create()->withMessage(sprintf("Cannot schedule an email for subscriber ID '%s' because their status is '%s'.", $subscriberId, $subscriberStatus));
+      throw InvalidStateException::create()->withMessage(sprintf("Cannot schedule an email for subscriber ID '%s' because their status is '%s'.", $subscriber->getId(), $subscriberStatus));
     }
 
     $meta = $this->getNewsletterMeta($args);
@@ -176,6 +161,34 @@ class SendEmailAction implements Action {
 
     $payload = $args->getSinglePayloadByClass(AbandonedCartPayload::class);
     return [AbandonedCart::TASK_META_NAME => $payload->getProductIds()];
+  }
+
+  private function getSubscriber(StepRunArgs $args): SubscriberEntity {
+    $subscriberId = $args->getSinglePayloadByClass(SubscriberPayload::class)->getId();
+    try {
+      $segmentId = $args->getSinglePayloadByClass(SegmentPayload::class)->getId();
+
+      $subscriberSegment = $this->subscriberSegmentRepository->findOneBy([
+        'subscriber' => $subscriberId,
+        'segment' => $segmentId,
+        'status' => SubscriberEntity::STATUS_SUBSCRIBED,
+      ]);
+
+      if (!$subscriberSegment) {
+        throw InvalidStateException::create()->withMessage(sprintf("Subscriber ID '%s' is not subscribed to segment ID '%s'.", $subscriberId, $segmentId));
+      }
+
+      $subscriber = $subscriberSegment->getSubscriber();
+      if (!$subscriber) {
+        throw InvalidStateException::create();
+      }
+    } catch (NotFoundException $e) {
+      $subscriber = $this->subscribersRepository->findOneById($subscriberId);
+      if (!$subscriber) {
+        throw InvalidStateException::create();
+      }
+    }
+    return $subscriber;
   }
 
   public function saveEmailSettings(Step $step, Automation $automation): void {
