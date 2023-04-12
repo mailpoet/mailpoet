@@ -100,12 +100,18 @@ export function* verifyPremiumKey(key: string) {
     status = PremiumStatus.VALID_PREMIUM_PLUGIN_ACTIVE;
   }
 
-  yield updateKeyActivationState({
+  const fields: Partial<KeyActivationState> = {
     premiumMessage: null,
     premiumStatus: status,
     code: res?.meta?.code,
     downloadUrl: res?.meta?.premium_plugin_info?.download_link,
-  });
+  };
+
+  if (res.data?.state === 'valid_underprivileged') {
+    fields.premiumStatus = PremiumStatus.VALID_UNDERPRIVILEGED;
+  }
+
+  yield updateKeyActivationState(fields);
 
   MailPoet.trackEvent('User has validated a Premium key');
 

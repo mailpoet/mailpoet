@@ -194,7 +194,14 @@ export function normalizeSettings(data: Record<string, unknown>): Settings {
       premium_key: text,
       premium_key_state: asObject({
         state: asEnum(
-          ['valid', 'invalid', 'expiring', 'already_used', 'check_error'],
+          [
+            'valid',
+            'invalid',
+            'expiring',
+            'already_used',
+            'valid_underprivileged',
+            'check_error',
+          ],
           'check_error',
         ),
         data: asIs,

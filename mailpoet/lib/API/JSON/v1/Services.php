@@ -193,7 +193,7 @@ class Services extends APIEndpoint {
 
     if ($successMessage) {
       return $this->successResponse(
-        ['message' => $successMessage],
+        ['message' => $successMessage, 'state' => $state, 'result' => $result],
         Installer::getPremiumStatus()
       );
     }
