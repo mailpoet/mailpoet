@@ -136,6 +136,8 @@ export const WooCommerceFields: FunctionComponent<Props> = ({
     label: country.name,
   }));
 
+  const dateFields = DateFields({ filterIndex });
+
   let optionFields;
 
   useEffect(() => {
@@ -291,7 +293,7 @@ export const WooCommerceFields: FunctionComponent<Props> = ({
       </>
     );
   } else if (segment.action === WooCommerceActionTypes.PURCHASE_DATE) {
-    optionFields = DateFields({ filterIndex });
+    optionFields = dateFields;
   } else if (segment.action === WooCommerceActionTypes.NUMBER_OF_ORDERS) {
     optionFields = (
       <>
