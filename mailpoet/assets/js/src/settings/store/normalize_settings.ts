@@ -61,6 +61,15 @@ export function normalizeSettings(data: Record<string, unknown>): Settings {
     ['server', 'manual', 'AmazonSES', 'SendGrid'],
     'server',
   );
+  const accessRestriction = asEnum(
+    [
+      'email_volume_limit_reached',
+      'subscribers_limit_reached',
+      'insufficient_privileges',
+      null,
+    ],
+    null,
+  );
 
   const settingsSchema = asObject({
     sender: asObject({ name: text, address: text }),
@@ -162,6 +171,7 @@ export function normalizeSettings(data: Record<string, unknown>): Settings {
           is_approved: isTruthy,
         }),
         code: asIs,
+        access_restriction: accessRestriction,
       }),
     }),
     mailpoet_smtp_provider: smtpServer,
@@ -204,6 +214,7 @@ export function normalizeSettings(data: Record<string, unknown>): Settings {
           ],
           'check_error',
         ),
+        access_restriction: accessRestriction,
         data: asIs,
       }),
     }),

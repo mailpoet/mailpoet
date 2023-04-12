@@ -73,7 +73,11 @@ export function makeDefaultState(): State {
   const keyActivation = {
     isKeyValid,
     mssStatus,
+    mssAccessRestriction:
+      data.mta?.mailpoet_api_key_state?.access_restriction ?? null,
     premiumStatus,
+    premiumAccessRestriction:
+      data.premium?.premium_key_state?.access_restriction ?? null,
     mssMessage: null,
     premiumMessage: null,
     fromAddressModalCanBeShown: false,
