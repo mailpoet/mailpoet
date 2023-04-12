@@ -429,6 +429,82 @@ class BridgeTest extends \MailPoetTest {
     expect($result['ok'])->equals(true); // verified
   }
 
+  public function testItSavesAccessRestrictionForUnderprivilegePremiumKeys() {
+    $api = $this->createMock(API::class);
+    // Insufficient privileges
+    $this->checkKeyAccessRestrictionSetProperly(
+      'premium',
+      'Insufficient privileges',
+      Bridge::KEY_ACCESS_INSUFFICIENT_PRIVILEGES
+    );
+
+    // Email volume limit
+    $this->checkKeyAccessRestrictionSetProperly(
+      'premium',
+      'Email volume limit reached',
+      Bridge::KEY_ACCESS_EMAIL_VOLUME_LIMIT
+    );
+
+    // Subscribers limit
+    $this->checkKeyAccessRestrictionSetProperly(
+      'premium',
+      'Subscribers limit reached',
+      Bridge::KEY_ACCESS_SUBSCRIBERS_LIMIT
+    );
+
+    // Unknown value
+    $this->checkKeyAccessRestrictionSetProperly(
+      'premium',
+      'Nonsense message',
+      null
+    );
+  }
+
+  public function testItSavesAccessRestrictionForUnderprivilegeMSSKeys() {
+    $api = $this->createMock(API::class);
+    // Insufficient privileges
+    $this->checkKeyAccessRestrictionSetProperly(
+      'mss',
+      'Insufficient privileges',
+      Bridge::KEY_ACCESS_INSUFFICIENT_PRIVILEGES
+    );
+
+    // Email volume limit
+    $this->checkKeyAccessRestrictionSetProperly(
+      'mss',
+      'Email volume limit reached',
+      Bridge::KEY_ACCESS_EMAIL_VOLUME_LIMIT
+    );
+
+    // Subscribers limit
+    $this->checkKeyAccessRestrictionSetProperly(
+      'mss',
+      'Subscribers limit reached',
+      Bridge::KEY_ACCESS_SUBSCRIBERS_LIMIT
+    );
+
+    // Unknown value
+    $this->checkKeyAccessRestrictionSetProperly(
+      'mss',
+      'Nonsense message',
+      null
+    );
+  }
+
+  private function checkKeyAccessRestrictionSetProperly(string $keyType, string $errorMessage, $expectedAccessRestriction) {
+    $api = $this->createMock(API::class);
+    $method = $keyType === 'premium' ? 'checkPremiumKey' : 'checkMSSKey';
+    $api->method($method)->willReturn([
+      'code' => 403,
+      'error_message' => $errorMessage,
+    ]);
+    $this->bridge->api = $api;
+    $result = $this->bridge->$method('abc');
+    expect($result)->notEmpty();
+    expect($result['data'])->null();
+    expect($result['access_restriction'])->equals($expectedAccessRestriction);
+  }
+
   private function setMailPoetSendingMethod() {
     $this->settings->set(
       Mailer::MAILER_CONFIG_SETTING_NAME,

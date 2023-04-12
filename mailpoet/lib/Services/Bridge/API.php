@@ -97,6 +97,7 @@ class API {
       ['site' => strtolower(WPFunctions::get()->homeUrl())]
     );
 
+    $errorMessage = null;
     $code = $this->wp->wpRemoteRetrieveResponseCode($result);
     switch ($code) {
       case 200:
@@ -108,10 +109,11 @@ class API {
       default:
         $this->logKeyCheckError((int)$code, $keyCheckType);
         $body = null;
+        $errorMessage = $this->wp->wpRemoteRetrieveBody($result);
         break;
     }
 
-    return ['code' => $code, 'data' => $body];
+    return ['code' => $code, 'data' => $body, 'error_message' => $errorMessage];
   }
 
   public function logCurlInformation($headers, $info) {
