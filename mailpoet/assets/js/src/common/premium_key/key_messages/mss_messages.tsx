@@ -35,19 +35,21 @@ NotValidMessage.defaultProps = {
   message: '',
 };
 
-type MssNotActiveMessageProps = { activationCallback: () => void };
+type MssNotActiveMessageProps = { activationCallback?: () => void };
 
 function MssNotActiveMessage({ activationCallback }: MssNotActiveMessageProps) {
   return (
     <div className="mailpoet_error">
       {__('MailPoet Sending Service is not active.', 'mailpoet')}{' '}
-      <button
-        type="button"
-        className="mailpoet-button button button-primary button-small"
-        onClick={activationCallback}
-      >
-        {__('Activate MailPoet Sending Service', 'mailpoet')}
-      </button>
+      {activationCallback && (
+        <button
+          type="button"
+          className="mailpoet-button button button-primary button-small"
+          onClick={activationCallback}
+        >
+          {__('Activate MailPoet Sending Service', 'mailpoet')}
+        </button>
+      )}
     </div>
   );
 }
@@ -59,7 +61,9 @@ type Props = {
 };
 
 export function MssMessages(props: Props) {
-  const { mssStatus } = useSelector('getKeyActivationState')();
+  const { mssStatus, mssAccessRestriction } = useSelector(
+    'getKeyActivationState',
+  )();
   switch (mssStatus) {
     case MssStatus.VALID_MSS_ACTIVE:
       return <MssActiveMessage canUseSuccessClass={props.canUseSuccessClass} />;
@@ -71,6 +75,14 @@ export function MssMessages(props: Props) {
       return <NotValidMessage message={props.keyMessage} />;
 
     case MssStatus.VALID_UNDERPRIVILEGED:
+      if (
+        mssAccessRestriction &&
+        mssAccessRestriction !== 'insufficient_privileges'
+      ) {
+        return <MssNotActiveMessage />;
+      }
+      return null;
+
     default:
       return null;
   }
