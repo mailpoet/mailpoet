@@ -10,6 +10,7 @@ use MailPoet\Automation\Engine\Data\StepRunArgs;
 use MailPoet\Automation\Engine\Data\StepValidationArgs;
 use MailPoet\Automation\Engine\Integration\Action;
 use MailPoet\Automation\Engine\Integration\ValidationException;
+use MailPoet\Automation\Integrations\MailPoet\Payloads\AbandonedCartPayload;
 use MailPoet\Automation\Integrations\MailPoet\Payloads\SegmentPayload;
 use MailPoet\Automation\Integrations\MailPoet\Payloads\SubscriberPayload;
 use MailPoet\Entities\NewsletterEntity;
@@ -172,8 +173,8 @@ class SendEmailAction implements Action {
       return [];
     }
 
-    $cartProductIds = [];
-    return [AbandonedCart::TASK_META_NAME => $cartProductIds];
+    $payload = $args->getSinglePayloadByClass(AbandonedCartPayload::class);
+    return [AbandonedCart::TASK_META_NAME => $payload->getProductIds()];
   }
 
   public function saveEmailSettings(Step $step, Automation $automation): void {
