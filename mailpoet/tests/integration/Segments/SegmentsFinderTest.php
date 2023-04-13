@@ -5,6 +5,7 @@ namespace integration\Segments;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Segments\SegmentsFinder;
+use MailPoet\Test\DataFactories\DynamicSegment;
 use MailPoet\Test\DataFactories\Segment as SegmentFactory;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 use MailPoetTest;
@@ -71,6 +72,19 @@ class SegmentsFinderTest extends MailPoetTest {
     $this->assertSame('Segment dynamic', $segments[1]->getName());
   }
 
+  public function testItFindsMultipleDynamicSegments(): void {
+    (new DynamicSegment())->withUserRoleFilter('unknown-role')->create(); // will not match
+    $this->createSegment(SegmentEntity::TYPE_DYNAMIC, 'Segment 1');
+    $this->createSegment(SegmentEntity::TYPE_DYNAMIC, 'Segment 2');
+    $subscribed = $this->createSubscriber(SubscriberEntity::STATUS_SUBSCRIBED);
+
+    $segmentsFinder = $this->diContainer->get(SegmentsFinder::class);
+    $segments = $segmentsFinder->findDynamicSegments($subscribed);
+    $this->assertCount(2, $segments);
+    $this->assertSame('Segment 1', $segments[0]->getName());
+    $this->assertSame('Segment 2', $segments[1]->getName());
+  }
+
   private function createSubscriber(string $status, array $lists = []): SubscriberEntity {
     $subscriberFactory = new SubscriberFactory();
     return $subscriberFactory
@@ -80,10 +94,11 @@ class SegmentsFinderTest extends MailPoetTest {
       ->create();
   }
 
-  private function createSegment(string $type): SegmentEntity {
+  private function createSegment(string $type, string $name = null): SegmentEntity {
+    $name = $name ?? "Segment $type";
     $segmentFactory = new SegmentFactory();
     return $segmentFactory
-      ->withName("Segment $type")
+      ->withName($name)
       ->withType($type)
       ->create();
   }
