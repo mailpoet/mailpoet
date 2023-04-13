@@ -52,7 +52,7 @@ class ProductsSubject implements Subject {
 
     // Question: What to do when the product was not found?
     if (!$products) {
-      throw InvalidStateException::create()->withMessage(__('Product not found.', 'mailpoet'));
+      throw InvalidStateException::create()->withMessage(__('No products found.', 'mailpoet'));
     }
     return new ProductsPayload($products);
   }
