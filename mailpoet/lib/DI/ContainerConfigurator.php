@@ -176,7 +176,6 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Automation\Integrations\WooCommerce\Subjects\OrderSubject::class)->setPublic(true)->setShared(false);
     $container->autowire(\MailPoet\Automation\Integrations\WooCommerce\Subjects\OrderStatusChangeSubject::class)->setPublic(true)->setShared(false);
     $container->autowire(\MailPoet\Automation\Integrations\WooCommerce\Subjects\CustomerSubject::class)->setPublic(true)->setShared(false);
-    $container->autowire(\MailPoet\Automation\Integrations\WooCommerce\Subjects\ProductsSubject::class)->setPublic(true)->setShared(false);
 
     // Config
     $container->autowire(\MailPoet\Config\AccessControl::class)->setPublic(true);

@@ -12,7 +12,6 @@ use MailPoet\Automation\Engine\Integration\Action;
 use MailPoet\Automation\Engine\Integration\ValidationException;
 use MailPoet\Automation\Integrations\MailPoet\Payloads\SegmentPayload;
 use MailPoet\Automation\Integrations\MailPoet\Payloads\SubscriberPayload;
-use MailPoet\Automation\Integrations\WooCommerce\Payloads\ProductsPayload;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterOptionEntity;
 use MailPoet\Entities\NewsletterOptionFieldEntity;
@@ -173,14 +172,7 @@ class SendEmailAction implements Action {
       return [];
     }
 
-    $productSubject = $args->getSinglePayloadByClass(ProductsPayload::class);
-    $cartProductIds = array_map(
-      function(\WC_Product $product) {
-        return $product->get_id();
-      },
-      $productSubject->getProducts()
-    );
-
+    $cartProductIds = [];
     return [AbandonedCart::TASK_META_NAME => $cartProductIds];
   }
 
