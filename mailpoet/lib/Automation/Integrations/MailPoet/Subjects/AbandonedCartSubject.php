@@ -38,6 +38,7 @@ class AbandonedCartSubject implements Subject {
     return Builder::object([
       'user_id' => Builder::integer()->required(),
       'last_activity_at' => Builder::string()->required()->default(30),
+      'product_ids' => Builder::array(Builder::integer())->required(),
     ]);
   }
 
@@ -52,7 +53,7 @@ class AbandonedCartSubject implements Subject {
 
     $customer = new \WC_Customer($subjectData->getArgs()['user_id']);
 
-    return new AbandonedCartPayload($customer, $lastActivityAt);
+    return new AbandonedCartPayload($customer, $lastActivityAt, $subjectData->getArgs()['product_ids']);
   }
 
   public function getFields(): array {

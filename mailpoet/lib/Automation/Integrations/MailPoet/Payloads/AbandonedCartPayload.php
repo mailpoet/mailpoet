@@ -12,17 +12,23 @@ class AbandonedCartPayload implements Payload {
   /** @var \DateTimeImmutable */
   private $lastActivityAt;
 
+  /** @var int[] */
+  private $productIds;
+
   /**
    * @param \WC_Customer $customer
    * @param \DateTimeImmutable $lastActivityAt
+   * @param int[] $productIds
    */
   public function __construct(
     \WC_Customer $customer,
-    \DateTimeImmutable $lastActivityAt
+    \DateTimeImmutable $lastActivityAt,
+    array $productIds
   ) {
 
     $this->customer = $customer;
     $this->lastActivityAt = $lastActivityAt;
+    $this->productIds = $productIds;
   }
 
   public function getLastActivityAt(): \DateTimeImmutable {
@@ -31,5 +37,12 @@ class AbandonedCartPayload implements Payload {
 
   public function getCustomer(): \WC_Customer {
     return $this->customer;
+  }
+
+  /**
+   * @return int[]
+   */
+  public function getProductIds(): array {
+    return $this->productIds;
   }
 }

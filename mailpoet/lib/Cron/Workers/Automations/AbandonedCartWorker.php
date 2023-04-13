@@ -6,7 +6,6 @@ use MailPoet\Automation\Engine\Data\Automation;
 use MailPoet\Automation\Engine\Storage\AutomationStorage;
 use MailPoet\Cron\Workers\SimpleWorker;
 use MailPoet\Entities\ScheduledTaskEntity;
-use MailPoet\WooCommerce\Helper as WoocommerceHelper;
 use MailPoet\WP\Functions as WPFunctions;
 
 class AbandonedCartWorker extends SimpleWorker {
@@ -17,18 +16,13 @@ class AbandonedCartWorker extends SimpleWorker {
     const AUTOMATIC_SCHEDULING = false;
     const BATCH_SIZE = 1000;
 
-    /** @var WoocommerceHelper */
-    private $woocommerceHelper;
-
     private $automationStorage;
 
   public function __construct(
-    WoocommerceHelper $woocommerceHelper,
     AutomationStorage $automationStorage,
     WPFunctions $wp = null
   ) {
     parent::__construct($wp);
-    $this->woocommerceHelper = $woocommerceHelper;
     $this->automationStorage = $automationStorage;
   }
 
@@ -45,14 +39,7 @@ class AbandonedCartWorker extends SimpleWorker {
       return true;
     }
 
-    $products = array_values(array_filter(array_map(
-      function($productId): ?\WC_Product {
-        $product = $this->woocommerceHelper->wcGetProduct((int)$productId);
-        return $product ?? null;
-      },
-      $productIds
-    )));
-    $abandonedCartTime = $task->getCreatedAt();
+    $lastActivityAt = $task->getCreatedAt();
 
     $subscribers = $task->getSubscribers();
     if ($subscribers->count() !== 1) {
@@ -71,8 +58,8 @@ class AbandonedCartWorker extends SimpleWorker {
     $this->wp->doAction(
       self::ACTION,
       $subscriber,
-      $products,
-      $abandonedCartTime
+      $productIds,
+      $lastActivityAt
     );
     return true;
   }
