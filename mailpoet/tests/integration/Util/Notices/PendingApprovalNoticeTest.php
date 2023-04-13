@@ -3,6 +3,7 @@
 namespace MailPoet\Util\Notices;
 
 use MailPoet\Mailer\Mailer;
+use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
 
 class PendingApprovalNoticeTest extends \MailPoetTest {
@@ -16,6 +17,7 @@ class PendingApprovalNoticeTest extends \MailPoetTest {
     parent::_before();
     $this->settings = SettingsController::getInstance();
     $this->notice = new PendingApprovalNotice($this->settings);
+    $this->settings->set('mta.mailpoet_api_key_state.state', Bridge::KEY_VALID);
   }
 
   public function testItDisplays(): void {
@@ -26,6 +28,15 @@ class PendingApprovalNoticeTest extends \MailPoetTest {
     // check that the notice is displayed. We cannot check the whole string because it contains HTML tags
     expect($result)->stringContainsString('Your subscription is currently');
     expect($result)->stringContainsString('if you haven’t heard from our team about your subscription status in the past 48 hours.');
+  }
+
+  public function testItDoesNotDisplayWhenMSSKeyIsNotValid(): void {
+    $this->settings->set('mta.mailpoet_api_key_state.data.is_approved', false);
+    $this->settings->set('mta.mailpoet_api_key_state.state', Bridge::KEY_VALID_UNDERPRIVILEGED);
+    $this->settings->set('mta.method', Mailer::METHOD_MAILPOET);
+
+    $result = $this->notice->init(true);
+    expect($result)->null();
   }
 
   public function testItDoesNotDisplayWhenDisabled(): void {
