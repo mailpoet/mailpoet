@@ -43,12 +43,12 @@ class ProductsSubject implements Subject {
   }
 
   public function getPayload(SubjectData $subjectData): Payload {
-    $products = array_filter(array_map(
+    $products = array_values(array_filter(array_map(
       function ($productId) {
         return $this->woocommerceHelper->wcGetProduct($productId);
       },
       $subjectData->getArgs()['product_ids']
-    ));
+    )));
 
     // Question: What to do when the product was not found?
     if (!$products) {
