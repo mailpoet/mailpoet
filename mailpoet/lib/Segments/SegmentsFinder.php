@@ -56,7 +56,7 @@ class SegmentsFinder {
 
     $matchingSegments = [];
     foreach ($segments as $segment) {
-      $result = $this->filterHandler->apply($queryBuilder, $segment)->execute();
+      $result = $this->filterHandler->apply(clone $queryBuilder, $segment)->execute();
       if ($result instanceof Result && $result->fetchOne()) {
         $matchingSegments[] = $segment;
       }
