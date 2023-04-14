@@ -2,6 +2,7 @@
 
 namespace MailPoet\Automation\Engine;
 
+use DateTimeZone;
 use WP_User;
 
 class WordPress {
@@ -21,6 +22,10 @@ class WordPress {
    */
   public function applyFilters(string $hookName, $value, ...$args) {
     return apply_filters($hookName, $value, ...$args);
+  }
+
+  public function wpTimezone(): DateTimeZone {
+    return wp_timezone();
   }
 
   public function wpGetCurrentUser(): WP_User {
