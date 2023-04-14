@@ -28,10 +28,13 @@ function SubscribersLimitNotice(): JSX.Element {
   };
 
   const youCanDisableWpSegmentMessage = ReactStringReplace(
-    MailPoet.I18n.t('youCanDisableWPUsersList'),
+    MailPoet.I18n.t('checkHowToManageSubscribers'),
     /\[link](.*?)\[\/link]/g,
     (match) => (
-      <a key="goToSegments" href="?page=mailpoet-segments">
+      <a
+        key="checkManageSubscribers"
+        href="https://kb.mailpoet.com/article/348-subscribers-limit-for-sending-plans"
+      >
         {match}
       </a>
     ),
