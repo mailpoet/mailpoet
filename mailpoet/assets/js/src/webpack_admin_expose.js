@@ -18,6 +18,7 @@ export { RadioControl as WordpressComponentsRadioControl } from '@wordpress/comp
 export { SelectControl as WordpressComponentsSelectControl } from '@wordpress/components';
 export { TextControl as WordpressComponentsTextControl } from '@wordpress/components';
 export { TextareaControl as WordpressComponentsTextareaControl } from '@wordpress/components';
+export { __experimentalNumberControl as WordpressComponentsNumberControl } from '@wordpress/components';
 export { __experimentalConfirmDialog as WordpressComponentsConfirmDialog } from '@wordpress/components';
 export { MenuItem as WordpressComponentsMenuItem } from '@wordpress/components';
 export { PanelBody as WordpressComponentsPanelBody } from '@wordpress/components';

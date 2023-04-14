@@ -1,6 +1,7 @@
 import { ComponentProps, ComponentPropsWithoutRef, ComponentType } from 'react';
 import { ColorPalette, FontSizePicker } from '@wordpress/components';
 import { ConfirmDialog } from '@wordpress/components/build-types/confirm-dialog';
+import { NumberControl } from '@wordpress/components/build-types/number-control';
 import { FormTokenFieldProps } from '@wordpress/components/build-types/form-token-field/types';
 // eslint-disable-next-line import/no-named-default
 import { default as WPPopover } from '@wordpress/components/build-types/popover';
@@ -37,6 +38,10 @@ export * from '../segments/dynamic/types';
 declare module '@wordpress/components' {
   export const __experimentalConfirmDialog: ComponentType<
     ComponentProps<typeof ConfirmDialog>
+  >;
+
+  export const __experimentalNumberControl: ComponentType<
+    ComponentProps<typeof NumberControl>
   >;
 
   // New property for declaring forward compatibility is not set on types
