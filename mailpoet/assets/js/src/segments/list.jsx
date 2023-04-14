@@ -3,6 +3,7 @@ import { Link, withRouter } from 'react-router-dom';
 import { MailPoet } from 'mailpoet';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
+import { escapeHTML, escapeAttribute } from '@wordpress/escape-html';
 
 import { Listing } from 'listing/listing.jsx';
 import { ListingsEngagementScore } from '../subscribers/listings_engagement_score';
@@ -147,7 +148,7 @@ const itemActions = [
           MailPoet.Notice.success(
             MailPoet.I18n.t('listDuplicated').replace(
               '%1$s',
-              response.data.name,
+              escapeHTML(response.data.name),
             ),
           );
           refresh();
@@ -265,12 +266,14 @@ class SegmentListComponent extends Component {
       // the WP users and WooCommerce customers segments
       // are not editable so just display their names
       segmentName = (
-        <span className="mailpoet-listing-title">{segment.name}</span>
+        <span className="mailpoet-listing-title">
+          {escapeHTML(segment.name)}
+        </span>
       );
     } else {
       segmentName = (
         <Link className="mailpoet-listing-title" to={`/edit/${segment.id}`}>
-          {segment.name}
+          {escapeHTML(segment.name)}
         </Link>
       );
     }
@@ -279,13 +282,13 @@ class SegmentListComponent extends Component {
       <div>
         <td
           className={rowClasses}
-          data-automation-id={`segment_name_${segment.name}`}
+          data-automation-id={`segment_name_${escapeAttribute(segment.name)}`}
         >
           {segmentName}
           {actions}
         </td>
         <td data-colname={MailPoet.I18n.t('description')}>
-          <abbr>{segment.description}</abbr>
+          <abbr>{escapeHTML(segment.description)}</abbr>
         </td>
         {mailpoetTrackingEnabled ? (
           <td
