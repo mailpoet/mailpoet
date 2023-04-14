@@ -4,6 +4,7 @@ import _ from 'underscore';
 import 'react-dom';
 import 'select2/dist/js/select2.full';
 import PropTypes from 'prop-types';
+import { escapeHTML } from '@wordpress/escape-html';
 
 class Selection extends Component {
   constructor(props) {
@@ -324,7 +325,7 @@ class Selection extends Component {
           value={value}
           title={searchLabel}
         >
-          {label}
+          {escapeHTML(label)}
         </option>
       );
     });
