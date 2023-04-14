@@ -36,7 +36,7 @@ export type Registry = {
     string,
     {
       key: string;
-      type: 'string' | 'enum_array';
+      type: 'boolean' | 'number' | 'integer' | 'string' | 'enum' | 'enum_array';
       name: string;
       args: Record<string, unknown>;
     }
