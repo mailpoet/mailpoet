@@ -29,12 +29,16 @@ class MailPoet implements MailerMethod {
   /*** @var Url */
   private $url;
 
+  /** @var Bridge */
+  private $bridge;
+
   public function __construct(
     $apiKey,
     $sender,
     $replyTo,
     MailPoetMapper $errorMapper,
     AuthorizedEmailsController $authorizedEmailsController,
+    Bridge $bridge,
     Url $url
   ) {
     $this->api = new API($apiKey);
@@ -42,6 +46,7 @@ class MailPoet implements MailerMethod {
     $this->replyTo = $replyTo;
     $this->servicesChecker = new ServicesChecker();
     $this->errorMapper = $errorMapper;
+    $this->bridge = $bridge;
     $this->authorizedEmailsController = $authorizedEmailsController;
     $this->blacklist = new BlacklistCheck();
     $this->url = $url;
@@ -78,7 +83,7 @@ class MailPoet implements MailerMethod {
 
   public function processSendError($result, $subscriber, $newsletter) {
     if (!empty($result['code']) && $result['code'] === API::RESPONSE_CODE_KEY_INVALID) {
-      Bridge::invalidateKey();
+      $this->bridge->invalidateMssKey();
     } elseif (
       !empty($result['code'])
       && $result['code'] === API::RESPONSE_CODE_CAN_NOT_SEND

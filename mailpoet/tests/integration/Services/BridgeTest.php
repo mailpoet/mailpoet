@@ -203,12 +203,12 @@ class BridgeTest extends \MailPoetTest {
   }
 
   public function testItInvalidatesMSSKey() {
-    $this->settings->set(
-      Bridge::API_KEY_STATE_SETTING_NAME,
-      ['state' => Bridge::KEY_VALID]
-    );
-    Bridge::invalidateKey();
-    expect($this->getMSSKeyState())->equals(['state' => Bridge::KEY_INVALID]);
+    $this->bridge->storeMSSKeyAndState($this->validKey, ['state' => Bridge::KEY_VALID]);
+    $storedState = $this->getMssKeyState() ?? [];
+    expect($storedState['state'])->equals(Bridge::KEY_VALID);
+    $this->bridge->invalidateMssKey();
+    $storedState = $this->getMssKeyState() ?? [];
+    expect($storedState['state'])->equals(Bridge::KEY_INVALID);
   }
 
   public function testItChecksAndStoresKeysOnSettingsSave() {

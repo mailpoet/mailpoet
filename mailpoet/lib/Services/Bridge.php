@@ -305,11 +305,12 @@ class Bridge {
     return $this->getApi($key)->updateSubscriberCount($this->subscribersFeature->getSubscribersCount());
   }
 
-  public static function invalidateKey() {
-    $settings = SettingsController::getInstance();
-    $settings->set(
-      self::API_KEY_STATE_SETTING_NAME,
-      ['state' => self::KEY_INVALID]
+  public function invalidateMssKey() {
+    $key = $this->settings->get(self::API_KEY_SETTING_NAME);
+    $this->storeMSSKeyAndState($key, $this->buildKeyState(
+      self::KEY_INVALID,
+      [ 'code' => API::RESPONSE_CODE_KEY_INVALID ],
+      null)
     );
   }
 

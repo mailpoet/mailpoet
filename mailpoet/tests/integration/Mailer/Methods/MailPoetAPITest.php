@@ -10,6 +10,7 @@ use MailPoet\Mailer\Methods\Common\BlacklistCheck;
 use MailPoet\Mailer\Methods\ErrorMappers\MailPoetMapper;
 use MailPoet\Mailer\Methods\MailPoet;
 use MailPoet\Services\AuthorizedEmailsController;
+use MailPoet\Services\Bridge;
 use MailPoet\Services\Bridge\API;
 use MailPoet\Util\Url;
 
@@ -47,6 +48,7 @@ class MailPoetAPITest extends \MailPoetTest {
       $this->replyTo,
       $this->diContainer->get(MailPoetMapper::class),
       $this->makeEmpty(AuthorizedEmailsController::class),
+      $this->diContainer->get(Bridge::class),
       $this->diContainer->get(Url::class)
     );
     $this->subscriber = 'Recipient <blackhole@mailpoet.com>';
@@ -89,6 +91,7 @@ class MailPoetAPITest extends \MailPoetTest {
       $replyTo,
       $this->diContainer->get(MailPoetMapper::class),
       $this->makeEmpty(AuthorizedEmailsController::class),
+      $this->diContainer->get(Bridge::class),
       $this->diContainer->get(Url::class)
     );
     $body = $mailer->getBody($this->newsletter, $this->subscriber);
@@ -297,6 +300,7 @@ class MailPoetAPITest extends \MailPoetTest {
       $this->replyTo,
       $this->diContainer->get(MailPoetMapper::class),
       $this->makeEmpty(AuthorizedEmailsController::class, ['checkAuthorizedEmailAddresses' => Expected::once()]),
+      $this->diContainer->get(Bridge::class),
       $this->diContainer->get(Url::class)
     );
     $mailer->api = $this->makeEmpty(
