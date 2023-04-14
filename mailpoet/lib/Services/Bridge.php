@@ -259,9 +259,9 @@ class Bridge {
     // Insufficient privileges - is the default state if the plan doesn't include the feature.
     // If the bridge returns 403 and there is a message set by the shop it returns the message.
     $accessRestrictionsMap = [
-      'Insufficient privileges' => self::KEY_ACCESS_INSUFFICIENT_PRIVILEGES,
-      'Subscribers limit reached' => self::KEY_ACCESS_SUBSCRIBERS_LIMIT,
-      'Email volume limit reached' => self::KEY_ACCESS_EMAIL_VOLUME_LIMIT,
+      API::ERROR_MESSAGE_INSUFFICIENT_PRIVILEGES => self::KEY_ACCESS_INSUFFICIENT_PRIVILEGES,
+      API::ERROR_MESSAGE_SUBSCRIBERS_LIMIT_REACHED => self::KEY_ACCESS_SUBSCRIBERS_LIMIT,
+      API::ERROR_MESSAGE_EMAIL_VOLUME_LIMIT_REACHED => self::KEY_ACCESS_EMAIL_VOLUME_LIMIT,
     ];
 
     $accessRestriction = null;
