@@ -47,8 +47,8 @@ class API {
   public const ERROR_MESSAGE_SENDER_DOMAIN_INVALID = 'Invalid domain. Please enter a valid domain name.';
   public const ERROR_MESSAGE_SENDER_DOMAIN_ALREADY_ADDED = 'This domain was already added to the list.';
 
-  private const KEY_CHECK_TYPE_PREMIUM = 'premium';
-  private const KEY_CHECK_TYPE_MSS = 'mss';
+  public const KEY_CHECK_TYPE_PREMIUM = 'premium';
+  public const KEY_CHECK_TYPE_MSS = 'mss';
 
   private $apiKey;
   private $wp;

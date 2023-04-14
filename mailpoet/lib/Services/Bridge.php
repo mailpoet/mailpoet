@@ -206,24 +206,7 @@ class Bridge {
   }
 
   public function storeMSSKeyAndState($key, $state) {
-    if (
-      empty($state['state'])
-      || $state['state'] === self::KEY_CHECK_ERROR
-    ) {
-      return false;
-    }
-
-    // store the key itself
-    $this->settings->set(
-      self::API_KEY_SETTING_NAME,
-      $key
-    );
-
-    // store the key state
-    $this->settings->set(
-      self::API_KEY_STATE_SETTING_NAME,
-      $state
-    );
+    return $this->storeKeyAndState(API::KEY_CHECK_TYPE_MSS, $key, $state);
   }
 
   public function checkPremiumKey($key) {
@@ -277,6 +260,18 @@ class Bridge {
   }
 
   public function storePremiumKeyAndState($key, $state) {
+    return $this->storeKeyAndState(API::KEY_CHECK_TYPE_PREMIUM, $key, $state);
+  }
+
+  private function storeKeyAndState(string $keyType, ?string $key, ?array $state) {
+    if ($keyType === API::KEY_CHECK_TYPE_PREMIUM) {
+      $keySettingName = self::PREMIUM_KEY_SETTING_NAME;
+      $keyStateSettingName = self::PREMIUM_KEY_STATE_SETTING_NAME;
+    } else {
+      $keySettingName = self::API_KEY_SETTING_NAME;
+      $keyStateSettingName = self::API_KEY_STATE_SETTING_NAME;
+    }
+
     if (
       empty($state['state'])
       || $state['state'] === self::KEY_CHECK_ERROR
@@ -286,26 +281,24 @@ class Bridge {
 
     // store the key itself
     $this->settings->set(
-      self::PREMIUM_KEY_SETTING_NAME,
+      $keySettingName,
       $key
     );
 
     // store the key state
     $this->settings->set(
-      self::PREMIUM_KEY_STATE_SETTING_NAME,
+      $keyStateSettingName,
       $state
     );
   }
 
-  private function buildKeyState($keyState, $result, ?string $accessRestriction) {
-    $state = [
+  private function buildKeyState($keyState, $result, ?string $accessRestriction): array {
+    return [
       'state' => $keyState,
       'access_restriction' => $accessRestriction,
       'data' => !empty($result['data']) ? $result['data'] : null,
       'code' => !empty($result['code']) ? $result['code'] : self::CHECK_ERROR_UNKNOWN,
     ];
-
-    return $state;
   }
 
   public function updateSubscriberCount(string $key): bool {
