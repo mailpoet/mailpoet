@@ -35,6 +35,7 @@ class API {
   public const ERROR_MESSAGE_UNAUTHORIZED = 'No valid API key provided';
   public const ERROR_MESSAGE_INSUFFICIENT_PRIVILEGES = 'Insufficient privileges';
   public const ERROR_MESSAGE_EMAIL_VOLUME_LIMIT_REACHED = 'Email volume limit reached';
+  public const ERROR_MESSAGE_SUBSCRIBERS_LIMIT_REACHED = 'Subscribers limit reached';
   // Proxy request `authorized_email_address` from shop https://github.com/mailpoet/shop/blob/master/routes/hooks/sending/v1/index.js#L65
   public const ERROR_MESSAGE_AUTHORIZED_EMAIL_NO_FREE = 'You cannot use a free email address. Please use an address from your website’s domain, for example.';
   public const ERROR_MESSAGE_AUTHORIZED_EMAIL_INVALID = 'Invalid email.';
@@ -364,6 +365,8 @@ class API {
         return __('Insufficient privileges.', 'mailpoet');
       case self::ERROR_MESSAGE_EMAIL_VOLUME_LIMIT_REACHED:
         return __('Email volume limit reached.', 'mailpoet');
+      case self::ERROR_MESSAGE_SUBSCRIBERS_LIMIT_REACHED:
+        return __('Subscribers limit reached.', 'mailpoet');
       case self::ERROR_MESSAGE_AUTHORIZED_EMAIL_NO_FREE:
         return __('You cannot use a free email address. Please use an address from your website’s domain, for example.', 'mailpoet');
       case self::ERROR_MESSAGE_AUTHORIZED_EMAIL_INVALID:
