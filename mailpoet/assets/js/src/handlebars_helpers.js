@@ -159,6 +159,23 @@ Handlebars.registerHelper('getNumber', function getNumberHelper(string) {
   return parseInt(string, 10);
 });
 
+Handlebars.registerHelper('escapeURL', function escapeURLHelper(url) {
+  if (!url) {
+    return '';
+  }
+
+  try {
+    const escapedURL = new URL(url);
+    // eslint-disable-next-line no-script-url
+    if (escapedURL.protocol === 'javascript:') {
+      return '';
+    }
+    return escapedURL.href;
+  } catch (e) {
+    return '';
+  }
+});
+
 Handlebars.registerHelper(
   'fontWithFallback',
   function fontWithFallbackHelper(font) {
