@@ -13,6 +13,7 @@ class ApiDataSanitizer {
     'header' => ['text'],
     'footer' => ['text'],
     'text' => ['text'],
+    'button' => ['url'],
   ];
 
   public function __construct(
@@ -51,6 +52,9 @@ class ApiDataSanitizer {
         continue;
       }
       $block[$property] = $this->htmlSanitizer->sanitize($block[$property]);
+      if ($property === 'url') {
+        $block[$property] = $this->htmlSanitizer->sanitizeURL($block[$property]);
+      }
     }
     return $block;
   }

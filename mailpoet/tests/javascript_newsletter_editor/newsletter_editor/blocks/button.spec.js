@@ -208,7 +208,7 @@ describe('Button', function () {
         global.stubChannel(EditorApplication);
         innerModel = new ButtonBlock.ButtonBlockModel({
           text: 'Some button',
-          url: 'http://example.org',
+          url: 'http://example.org/',
           styles: {
             block: {
               backgroundColor: '#123456',
