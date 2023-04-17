@@ -166,8 +166,12 @@ Handlebars.registerHelper('escapeURL', function escapeURLHelper(url) {
 
   try {
     const escapedURL = new URL(url);
-    // eslint-disable-next-line no-script-url
-    if (escapedURL.protocol === 'javascript:') {
+    if (
+      // eslint-disable-next-line no-script-url
+      escapedURL.protocol === 'javascript:' ||
+      escapedURL.protocol === 'vbscript:' ||
+      escapedURL.protocol === 'data:'
+    ) {
       return '';
     }
     return escapedURL.href;
