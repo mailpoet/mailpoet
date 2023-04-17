@@ -3,7 +3,7 @@ Contributors: mailpoet
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 5.9
 Tested up to: 6.1
-Stable tag: 4.11.1
+Stable tag: 4.12.0
 Requires PHP: 7.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -218,6 +218,11 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 4.12.0 - 2023-04-17 =
+* Added: "Order status change" trigger in Automations;
+* Improved: messaging when subscriber limit is reached;
+* Improved: consistent use of order statuses in segment conditions.
 
 = 4.11.1 - 2023-04-10 =
 * Improved: minor changes and fixes.
