@@ -146,7 +146,7 @@ php "$(dirname "$0")"/tasks/fix-full-path-disclosure.php $plugin_name
 echo '[BUILD] Adding index.php files to all project folders (to avoid directory listing disclosure)'
 find $plugin_name -type d -print0 | while read -d $'\0' dir; do
   if [ ! -f "$dir/Index.php" ]; then
-    touch "$dir/index.php"
+    echo "<?php" > "$dir/index.php"
   fi
 done
 
