@@ -81,11 +81,6 @@ parameters:
 			path: ../../lib/API/JSON/v1/Newsletters.php
 
 		-
-			message: "#^Dead catch \\- MailPoet\\\\Doctrine\\\\Validator\\\\ValidationException is never thrown in the try block\\.$#"
-			count: 1
-			path: ../../lib/API/JSON/v1/Segments.php
-
-		-
 			message: "#^Property MailPoet\\\\API\\\\JSON\\\\v1\\\\Segments\\:\\:\\$wooCommerceSync is never read, only written\\.$#"
 			count: 1
 			path: ../../lib/API/JSON/v1/Segments.php
