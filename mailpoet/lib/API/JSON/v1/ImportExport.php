@@ -108,6 +108,8 @@ class ImportExport extends APIEndpoint {
 
   public function addSegment($data) {
     try {
+      $data['name'] = isset($data['name']) ? sanitize_text_field($data['name']) : '';
+      $data['description'] = isset($data['description']) ? sanitize_textarea_field($data['description']) : '';
       $segment = $this->segmentSavecontroller->save($data);
       $response = $this->segmentsResponseBuilder->build($segment);
       return $this->successResponse($response);

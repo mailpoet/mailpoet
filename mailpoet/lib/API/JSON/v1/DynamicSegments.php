@@ -105,6 +105,8 @@ class DynamicSegments extends APIEndpoint {
 
   public function save($data) {
     try {
+      $data['name'] = isset($data['name']) ? sanitize_text_field($data['name']) : '';
+      $data['description'] = isset($data['description']) ? sanitize_textarea_field($data['description']) : '';
       $segment = $this->saveController->save($data);
       return $this->successResponse($this->segmentsResponseBuilder->build($segment));
     } catch (InvalidFilterException $e) {

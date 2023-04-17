@@ -42,7 +42,7 @@ class Segments {
     $this->validateSegmentName($data);
 
     try {
-      $name = sanitize_text_field($data['name']);
+      $name = isset($data['name']) ? sanitize_text_field($data['name']) : '';
       $description = isset($data['description']) ? sanitize_textarea_field($data['description']) : '';
       $segment = $this->segmentsRepository->createOrUpdate($name, $description);
     } catch (\Exception $e) {
@@ -65,10 +65,13 @@ class Segments {
     // update is supported only for default segment type
     $this->validateSegmentType((string)$data['id']);
 
+    $name = isset($data['name']) ? sanitize_text_field($data['name']) : '';
+    $description = isset($data['description']) ? sanitize_textarea_field($data['description']) : '';
+
     try {
       $segment = $this->segmentsRepository->createOrUpdate(
-        $data['name'],
-        $data['description'] ?? '',
+        $name,
+        $description,
         SegmentEntity::TYPE_DEFAULT,
         [],
         (int)$data['id']
