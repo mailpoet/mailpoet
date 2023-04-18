@@ -145,7 +145,7 @@ php "$(dirname "$0")"/tasks/fix-full-path-disclosure.php $plugin_name
 # Add index.php files if they don't exist to all folders
 echo '[BUILD] Adding index.php files to all project folders (to avoid directory listing disclosure)'
 find $plugin_name -type d -print0 | while read -d $'\0' dir; do
-  if [ ! -f "$dir/Index.php" ]; then
+  if [ ! -f "$dir/index.php" ] && [ ! -f "$dir/Index.php" ]; then
     echo "<?php" > "$dir/index.php"
   fi
 done
