@@ -5,16 +5,14 @@ namespace MailPoet\Form;
 use MailPoet\WP\Functions as WPFunctions;
 
 class FormHtmlSanitizer {
-  /** @var WPFunctions */
-  private $wp;
 
   /**
    * @var array
    * Configuration of allowed tags for form blocks that may contain some html.
-   * Covers all tags available in the form editor's Rich Text component
+   * Covers all tags available in the form editor's Rich Text component and which we allow in checkbox label.
    * This doesn't cover CustomHTML block.
    */
-  private $allowedHtml = [
+  const ALLOWED_HTML = [
     'a' => [
       'href' => true,
       'title' => true,
@@ -47,6 +45,8 @@ class FormHtmlSanitizer {
     'sup' => [],
     's' => [],
   ];
+  /** @var WPFunctions */
+  private $wp;
 
   public function __construct(
     WPFunctions $wp
@@ -55,6 +55,6 @@ class FormHtmlSanitizer {
   }
 
   public function sanitize(string $html): string {
-    return $this->wp->wpKses($html, $this->allowedHtml);
+    return $this->wp->wpKses($html, self::ALLOWED_HTML);
   }
 }

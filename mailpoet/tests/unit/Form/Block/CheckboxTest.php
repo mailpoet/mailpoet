@@ -21,6 +21,9 @@ class CheckboxTest extends \MailPoetUnitTest {
   /** @var MockObject & BlockWrapperRenderer */
   private $wrapperMock;
 
+  /** @var MockObject & WPFunctions */
+  private $wpMock;
+
   /** @var HtmlParser */
   private $htmlParser;
 
@@ -47,10 +50,11 @@ class CheckboxTest extends \MailPoetUnitTest {
     $this->rendererHelperMock = $this->createMock(BlockRendererHelper::class);
     $this->wrapperMock = $this->createMock(BlockWrapperRenderer::class);
     $this->wrapperMock->method('render')->will($this->returnArgument(1));
-    $wpMock = $this->createMock(WPFunctions::class);
-    $wpMock->method('escAttr')->will($this->returnArgument(0));
-    $wpMock->method('escHtml')->will($this->returnArgument(0));
-    $this->checkbox = new Checkbox($this->rendererHelperMock, $this->wrapperMock, $wpMock);
+    $this->wpMock = $this->createMock(WPFunctions::class);
+    $this->wpMock->method('escAttr')->will($this->returnArgument(0));
+    $this->wpMock->method('escHtml')->will($this->returnArgument(0));
+    $this->wpMock->method('wpKses')->will($this->returnArgument(0));
+    $this->checkbox = new Checkbox($this->rendererHelperMock, $this->wrapperMock, $this->wpMock);
     $this->htmlParser = new HtmlParser();
   }
 
@@ -59,6 +63,7 @@ class CheckboxTest extends \MailPoetUnitTest {
     $this->rendererHelperMock->expects($this->once())->method('getFieldName')->willReturn('Field name');
     $this->rendererHelperMock->expects($this->once())->method('getInputValidation')->willReturn('validation="1"');
     $this->rendererHelperMock->expects($this->once())->method('getFieldValue')->willReturn('1');
+    $this->wpMock->expects($this->once())->method('wpKses');
     $html = $this->checkbox->render($this->block, []);
     $checkboxLabel = $this->htmlParser->getElementByXpath($html, "//label[@class='mailpoet_checkbox_label']");
     expect($checkboxLabel->nodeValue)->equals(' Checkbox label');
