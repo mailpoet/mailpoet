@@ -21,6 +21,7 @@ class CoreIntegration implements Integration {
 
     $registry->addFilter(new Filters\BooleanFilter());
     $registry->addFilter(new Filters\NumberFilter());
+    $registry->addFilter(new Filters\IntegerFilter());
     $registry->addFilter(new Filters\StringFilter());
     $registry->addFilter(new Filters\EnumArrayFilter());
   }
