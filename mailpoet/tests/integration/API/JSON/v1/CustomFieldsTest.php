@@ -3,16 +3,17 @@
 namespace MailPoet\Test\API\JSON\v1;
 
 use MailPoet\API\JSON\Response as APIResponse;
-use MailPoet\API\JSON\ResponseBuilders\CustomFieldsResponseBuilder;
 use MailPoet\API\JSON\v1\CustomFields;
 use MailPoet\CustomFields\CustomFieldsRepository;
-use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\CustomFieldEntity;
 
 class CustomFieldsTest extends \MailPoetTest {
 
   /** @var CustomFieldsRepository */
   private $repository;
+
+  /** @var CustomFields */
+  private $endpoint;
 
   private $customFields = [
     [
@@ -61,15 +62,15 @@ class CustomFieldsTest extends \MailPoetTest {
 
   public function _before() {
     parent::_before();
-    $this->repository = ContainerWrapper::getInstance(WP_DEBUG)->get(CustomFieldsRepository::class);
+    $this->repository = $this->diContainer->get(CustomFieldsRepository::class);
     foreach ($this->customFields as $customField) {
       $this->repository->createOrUpdate($customField);
     }
+    $this->endpoint = $this->diContainer->get(CustomFields::class);
   }
 
   public function testItCanGetAllCustomFields() {
-    $router = new CustomFields($this->repository, new CustomFieldsResponseBuilder());
-    $response = $router->getAll();
+    $response = $this->endpoint->getAll();
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->data)->count(count($this->customFields));
 
@@ -85,14 +86,13 @@ class CustomFieldsTest extends \MailPoetTest {
     $this->assertInstanceOf(CustomFieldEntity::class, $customField);
     $customFieldId = $customField->getId();
 
-    $router = new CustomFields($this->repository, new CustomFieldsResponseBuilder());
-    $response = $router->delete(['id' => $customFieldId]);
+    $response = $this->endpoint->delete(['id' => $customFieldId]);
     expect($response->status)->equals(APIResponse::STATUS_OK);
 
     $customField = $this->repository->findOneBy(['type' => 'date']);
     expect($customField)->null();
 
-    $response = $router->delete(['id' => $customFieldId]);
+    $response = $this->endpoint->delete(['id' => $customFieldId]);
     expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
   }
 
@@ -103,35 +103,54 @@ class CustomFieldsTest extends \MailPoetTest {
       'params' => [],
     ];
 
-    $router = new CustomFields($this->repository, new CustomFieldsResponseBuilder());
-    $response = $router->save($newCustomField);
+    $response = $this->endpoint->save($newCustomField);
     expect($response->status)->equals(APIResponse::STATUS_OK);
 
     // missing type
-    $response = $router->save(['name' => 'New custom field1']);
+    $response = $this->endpoint->save(['name' => 'New custom field1']);
     expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
 
     // missing name
-    $response = $router->save(['type' => 'text']);
+    $response = $this->endpoint->save(['type' => 'text']);
     expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
 
     // missing data
-    $response = $router->save();
+    $response = $this->endpoint->save();
     expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
+  }
+
+  public function testItSanitizesCheckboxValueButKeepsAllowedHTML() {
+    $newCustomField = [
+      'name' => 'New custom field',
+      'type' => 'checkbox',
+      'params' => [
+        'values' => [
+          [
+            'label' => 'label',
+            'value' => '"><img src=e onerror=alert(1) <strong>hello</strong><a href="https://example.com">link</a>',
+          ],
+        ],
+      ],
+    ];
+
+    $response = $this->endpoint->save($newCustomField);
+    expect($response->status)->equals(APIResponse::STATUS_OK);
+    expect($response->data['params']['values'][0]['value'])
+      ->equals('"&gt;&lt;img src=e onerror=alert(1) <strong>hello</strong><a href="https://example.com">link</a>');
   }
 
   public function testItCanGetACustomField() {
     $customField = $this->repository->findOneBy(['name' => 'CF: text']);
     $this->assertInstanceOf(CustomFieldEntity::class, $customField);
 
-    $router = new CustomFields($this->repository, new CustomFieldsResponseBuilder());
-    $response = $router->get(['id' => $customField->getId()]);
+
+    $response = $this->endpoint->get(['id' => $customField->getId()]);
 
     expect($response->data['name'])->equals('CF: text');
     expect($response->data['type'])->equals('text');
     expect($response->data['params'])->notEmpty();
 
-    $response = $router->get(['id' => 'not_an_id']);
+    $response = $this->endpoint->get(['id' => 'not_an_id']);
     expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
   }
 }
