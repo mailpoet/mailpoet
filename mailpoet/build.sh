@@ -132,7 +132,6 @@ rm -f $plugin_name/vendor-prefixed/egulias/email-validator/psalm*.xml
 # Copy release files.
 echo '[BUILD] Copying release files'
 cp license.txt $plugin_name
-cp index.php $plugin_name
 cp $plugin_name-cron.php $plugin_name
 cp $plugin_name.php $plugin_name
 cp mailpoet_initializer.php $plugin_name
