@@ -145,7 +145,7 @@ class PostNotificationTest extends \MailPoetTest {
     ]);
 
     // queue is created and scheduled for delivery one day later at 5 a.m.
-    $this->postNotificationScheduler->schedulePostNotification($postId = 10);
+    $this->postNotificationScheduler->schedulePostNotification(10);
     $currentTime = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
     Carbon::setTestNow($currentTime); // mock carbon to return current time
     $nextRunDate = ($currentTime->hour < 5) ?
@@ -154,6 +154,23 @@ class PostNotificationTest extends \MailPoetTest {
     $queue = $this->sendingQueuesRepository->findOneBy(['newsletter' => $newsletter]);
     expect($queue->getTask()->getScheduledAt()->format(DateTime::DEFAULT_DATE_TIME_FORMAT))
       ->equals($nextRunDate->format('Y-m-d 05:00:00'));
+
+    // testing scheduling by minutes
+    $newsletter = $this->createNewsletter();
+    $this->newsletterOptionsFactory->createMultipleOptions($newsletter, [
+      NewsletterOptionFieldEntity::NAME_SCHEDULE => '45 5 * * *',
+    ]);
+
+    // queue is created and scheduled for delivery one day later at 5 a.m.
+    $this->postNotificationScheduler->schedulePostNotification(10);
+    $currentTime = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
+    Carbon::setTestNow($currentTime); // mock carbon to return current time
+    $nextRunDate = ($currentTime->hour < 5) ?
+      $currentTime :
+      $currentTime->addDay();
+    $queue = $this->sendingQueuesRepository->findOneBy(['newsletter' => $newsletter]);
+    expect($queue->getTask()->getScheduledAt()->format(DateTime::DEFAULT_DATE_TIME_FORMAT))
+      ->equals($nextRunDate->format('Y-m-d 05:45:00'));
   }
 
   public function testItProcessesPostNotificationScheduledForDailyDelivery() {
@@ -174,6 +191,25 @@ class PostNotificationTest extends \MailPoetTest {
     $currentTime = 1483275600; // Sunday, 1 January 2017 @ 1:00pm (UTC)
     expect($this->scheduler->getNextRunDate($scheduleOption->getValue(), $currentTime))
       ->equals('2017-01-01 14:00:00');
+
+    // testing scheduling by minutes
+    $newsletter = $this->createNewsletter();
+    $this->newsletterOptionsFactory->createMultipleOptions($newsletter, [
+      NewsletterOptionFieldEntity::NAME_INTERVAL_TYPE => PostNotificationScheduler::INTERVAL_DAILY,
+      NewsletterOptionFieldEntity::NAME_MONTH_DAY => null,
+      NewsletterOptionFieldEntity::NAME_NTH_WEEK_DAY => null,
+      NewsletterOptionFieldEntity::NAME_WEEK_DAY => null,
+      NewsletterOptionFieldEntity::NAME_TIME_OF_DAY => 51300, // 2:15 p.m.
+      NewsletterOptionFieldEntity::NAME_SCHEDULE => '* * * * *',
+    ]);
+
+    $this->postNotificationScheduler->processPostNotificationSchedule($newsletter);
+
+    $scheduleOption = $newsletter->getOption(NewsletterOptionFieldEntity::NAME_SCHEDULE);
+    $this->assertInstanceOf(NewsletterOptionEntity::class, $scheduleOption);
+    $currentTime = 1483275600; // Sunday, 1 January 2017 @ 1:00pm (UTC)
+    expect($this->scheduler->getNextRunDate($scheduleOption->getValue(), $currentTime))
+      ->equals('2017-01-01 14:15:00');
   }
 
   public function testItProcessesPostNotificationScheduledForWeeklyDelivery() {
@@ -196,6 +232,26 @@ class PostNotificationTest extends \MailPoetTest {
     $currentTime = 1483275600; // Sunday, 1 January 2017 @ 1:00pm (UTC)
     expect($this->scheduler->getNextRunDate($scheduleOption->getValue(), $currentTime))
       ->equals('2017-01-03 14:00:00');
+
+    // testing scheduling by minutes
+    $newsletter = $this->createNewsletter();
+    // weekly notification is scheduled every Tuesday at 11:45 p.m.
+    $this->newsletterOptionsFactory->createMultipleOptions($newsletter, [
+      NewsletterOptionFieldEntity::NAME_INTERVAL_TYPE => PostNotificationScheduler::INTERVAL_WEEKLY,
+      NewsletterOptionFieldEntity::NAME_MONTH_DAY => null,
+      NewsletterOptionFieldEntity::NAME_NTH_WEEK_DAY => null,
+      NewsletterOptionFieldEntity::NAME_WEEK_DAY => Carbon::TUESDAY,
+      NewsletterOptionFieldEntity::NAME_TIME_OF_DAY => 85500, // 11:45 p.m.
+      NewsletterOptionFieldEntity::NAME_SCHEDULE => '* * * * *',
+    ]);
+
+    $this->postNotificationScheduler->processPostNotificationSchedule($newsletter);
+
+    $scheduleOption = $newsletter->getOption(NewsletterOptionFieldEntity::NAME_SCHEDULE);
+    $this->assertInstanceOf(NewsletterOptionEntity::class, $scheduleOption);
+    $currentTime = 1483275600; // Sunday, 1 January 2017 @ 1:00pm (UTC)
+    expect($this->scheduler->getNextRunDate($scheduleOption->getValue(), $currentTime))
+      ->equals('2017-01-03 23:45:00');
   }
 
   public function testItProcessesPostNotificationScheduledForMonthlyDeliveryOnSpecificDay() {
@@ -217,6 +273,25 @@ class PostNotificationTest extends \MailPoetTest {
     $currentTime = 1483275600; // Sunday, 1 January 2017 @ 1:00pm (UTC)
     expect($this->scheduler->getNextRunDate($scheduleOption->getValue(), $currentTime))
       ->equals('2017-01-19 14:00:00');
+
+    // testing scheduling by minutes
+    $newsletter = $this->createNewsletter();
+    // monthly notification is scheduled every 20th day at 0:45
+    $this->newsletterOptionsFactory->createMultipleOptions($newsletter, [
+      NewsletterOptionFieldEntity::NAME_INTERVAL_TYPE => PostNotificationScheduler::INTERVAL_MONTHLY,
+      NewsletterOptionFieldEntity::NAME_MONTH_DAY => 19,
+      NewsletterOptionFieldEntity::NAME_NTH_WEEK_DAY => null,
+      NewsletterOptionFieldEntity::NAME_WEEK_DAY => null,
+      NewsletterOptionFieldEntity::NAME_TIME_OF_DAY => 2700, // 0:45 p.m.
+      NewsletterOptionFieldEntity::NAME_SCHEDULE => '* * * * *',
+    ]);
+
+    $this->postNotificationScheduler->processPostNotificationSchedule($newsletter);
+    $scheduleOption = $newsletter->getOption(NewsletterOptionFieldEntity::NAME_SCHEDULE);
+    $this->assertInstanceOf(NewsletterOptionEntity::class, $scheduleOption);
+    $currentTime = 1483275600; // Sunday, 1 January 2017 @ 1:00pm (UTC)
+    expect($this->scheduler->getNextRunDate($scheduleOption->getValue(), $currentTime))
+      ->equals('2017-01-19 00:45:00');
   }
 
   public function testItProcessesPostNotificationScheduledForMonthlyDeliveryOnLastWeekDay() {
@@ -238,6 +313,25 @@ class PostNotificationTest extends \MailPoetTest {
     $currentTime = 1485694800; // Sunday, 29 January 2017 @ 1:00pm (UTC)
     expect($this->scheduler->getNextRunDate($scheduleOption->getValue(), $currentTime))
       ->equals('2017-02-25 14:00:00');
+
+    // testing scheduling by minutes
+    $newsletter = $this->createNewsletter();
+    // monthly notification is scheduled every last Saturday at 14:15
+    $this->newsletterOptionsFactory->createMultipleOptions($newsletter, [
+      NewsletterOptionFieldEntity::NAME_INTERVAL_TYPE => PostNotificationScheduler::INTERVAL_NTHWEEKDAY,
+      NewsletterOptionFieldEntity::NAME_MONTH_DAY => null,
+      NewsletterOptionFieldEntity::NAME_NTH_WEEK_DAY => 'L', // L = last
+      NewsletterOptionFieldEntity::NAME_WEEK_DAY => Carbon::SATURDAY,
+      NewsletterOptionFieldEntity::NAME_TIME_OF_DAY => 51300, // 2:15 p.m.
+      NewsletterOptionFieldEntity::NAME_SCHEDULE => '* * * * *',
+    ]);
+
+    $this->postNotificationScheduler->processPostNotificationSchedule($newsletter);
+    $scheduleOption = $newsletter->getOption(NewsletterOptionFieldEntity::NAME_SCHEDULE);
+    $this->assertInstanceOf(NewsletterOptionEntity::class, $scheduleOption);
+    $currentTime = 1485694800; // Sunday, 29 January 2017 @ 1:00pm (UTC)
+    expect($this->scheduler->getNextRunDate($scheduleOption->getValue(), $currentTime))
+      ->equals('2017-02-25 14:15:00');
   }
 
   public function testItProcessesPostNotificationScheduledForImmediateDelivery() {
