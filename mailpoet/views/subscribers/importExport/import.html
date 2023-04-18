@@ -14,12 +14,12 @@
 <script type="text/javascript">
   var
     maxPostSize = '<%= maxPostSize %>',
-    roleBasedEmails = <%= role_based_emails|raw %>,
+    roleBasedEmails = JSON.parse("<%=role_based_emails|escape('js')%>"),
     maxPostSizeBytes = '<%= maxPostSizeBytes %>',
     importData = {},
-    mailpoetColumnsSelect2 = <%= subscriberFieldsSelect2|raw %>,
-    mailpoetColumns = <%= subscriberFields|raw %>,
-    mailpoetSegments = <%= segments|raw %>;
+    mailpoetColumnsSelect2 = JSON.parse("<%=subscriberFieldsSelect2|escape('js')%>"),
+    mailpoetColumns = JSON.parse("<%=subscriberFields|escape('js')%>"),
+    mailpoetSegments = JSON.parse("<%=segments|escape('js')%>");
     var mailpoet_beacon_articles = [
       '57ce07ffc6979108399a044b',
       '57ce079f903360649f6e56fc',

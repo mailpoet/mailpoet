@@ -84,9 +84,8 @@
 
 <script type="text/javascript">
   var
-    segments = <%= segments|raw %>,
-    subscriberFieldsSelect2 =
-      <%= subscriberFieldsSelect2|raw %>,
+    segments = JSON.parse("<%=segments|escape('js')%>"),
+    subscriberFieldsSelect2 = JSON.parse("<%=subscriberFieldsSelect2|escape('js')%>"),
     exportData = {
      segments: segments.length || null
     };
