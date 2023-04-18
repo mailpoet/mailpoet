@@ -304,10 +304,11 @@
       <%= _x('Upgrade now', 'This text resides in the Upgrade page: /wp-admin/admin.php?page=mailpoet-upgrade') %>
     </a>
     <p>
+      <% set allowedHtml = {'a': {'href': [], 'target': []}} %>
       <%=
         _x('And if you’re not sure which plan is the right one for you, our [link]Customer Support team[/link] are on hand to help you decide.', 'This text resides in the Upgrade page: /wp-admin/admin.php?page=mailpoet-upgrade')
         |replaceLinkTags('https://www.mailpoet.com/support/sales-pre-sales-questions/', {'target': '_blank'})
-        |raw
+        |wpKses(allowedHtml)
       %>
     </p>
   </div>

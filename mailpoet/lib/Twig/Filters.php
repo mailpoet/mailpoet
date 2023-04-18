@@ -2,6 +2,7 @@
 
 namespace MailPoet\Twig;
 
+use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Twig\Extension\AbstractExtension;
 use MailPoetVendor\Twig\TwigFilter;
 
@@ -20,6 +21,16 @@ class Filters extends AbstractExtension {
         'replaceLinkTags',
         'MailPoet\Util\Helpers::replaceLinkTags'
       ),
+      new TwigFilter(
+        'wpKses',
+        [$this, 'wpKses'],
+        ['is_safe' => ['html']]
+      ),
     ];
+  }
+
+  public function wpKses($content, $allowedHtml) {
+    $wp = WPFunctions::get();
+    return $wp->wpKses($content, $allowedHtml);
   }
 }

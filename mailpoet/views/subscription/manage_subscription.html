@@ -8,7 +8,10 @@
   <p class="mailpoet_paragraph">
     <label> <%= __('Email', 'mailpoet') %>*<br /><strong><%= email|escape %></strong></label>
     <br />
-    <span class="mailpoet-change-email-info"><%= editEmailInfo|raw %></span>
+    <span class="mailpoet-change-email-info">
+      <% set allowedHtml = {'a': {'href': [], 'target': []}} %>
+      <%= editEmailInfo|wpKses(allowedHtml) %>
+    </span>
   </p>
   <%= formHtml|raw %>
   <% if formState == 'success' %>

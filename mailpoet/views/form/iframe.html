@@ -61,7 +61,8 @@
         text-align: left;
       }
     </style>
-    <%= fonts_link | raw %>
+    <% set allowedHtml = {'link': {'href': [], 'rel': []}} %>
+    <%= fonts_link | wpKses(allowedHtml) %>
     <%= stylesheet('mailpoet-public.css') %>
     <%= scripts | raw %>
   </head>
