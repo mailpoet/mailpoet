@@ -6,8 +6,16 @@ import { storeName } from '../../store';
 const getValue = ({ field_key, args }: Filter): string => {
   const field = select(storeName).getRegistry().fields[field_key];
   switch (field.type) {
+    case 'boolean':
+      return args.value ? __('Yes', 'mailpoet') : __('No', 'mailpoet');
+    case 'number':
+    case 'integer':
+      return Array.isArray(args.value)
+        ? args.value.join(' and ')
+        : args.value.toString();
     case 'string':
       return args.value as string;
+    case 'enum':
     case 'enum_array': {
       const options = (field.args.options ?? []) as {
         id: string;
