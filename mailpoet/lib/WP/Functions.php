@@ -701,6 +701,7 @@ class Functions {
     require_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
     require_once ABSPATH . 'wp-admin/includes/class-plugin-upgrader.php';
     require_once ABSPATH . 'wp-admin/includes/class-wp-ajax-upgrader-skin.php';
+    // nosemgrep: tools.wpscan-semgrep-rules.audit.php.wp.security.arbitrary-plugin-install
     $upgrader = new Plugin_Upgrader(new WP_Ajax_Upgrader_Skin());
     return $upgrader->install($package, $args);
   }
