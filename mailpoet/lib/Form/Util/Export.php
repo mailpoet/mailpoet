@@ -32,7 +32,7 @@ class Export {
           'height="100%"',
           'scrolling="no"',
           'frameborder="0"',
-          'src="' . esc_url($iframeUrl) . '"',
+          'src="' . WPFunctions::get()->escUrl($iframeUrl) . '"',
           'class="mailpoet_form_iframe"',
           'id="mailpoet_form_iframe"',
           'vspace="0"',

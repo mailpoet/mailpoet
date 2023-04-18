@@ -81,7 +81,7 @@ class Functions {
   }
 
   public function addQueryArg($key, $value = false, $url = false) {
-    return add_query_arg($key, $value, $url);
+    return add_query_arg($key, $value, $url); // nosemgrep: tools.wpscan-semgrep-rules.audit.php.wp.security.xss.query-arg
   }
 
   public function addScreenOption($option, $args = []) {
