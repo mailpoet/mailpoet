@@ -37,10 +37,9 @@
       <label for="export_columns">
         <%= __('List of fields to export') %>
         <p class="description">
-          <%= __('[link]Read about the Global status.[/link]')
-          |replaceLinkTags('https://kb.mailpoet.com/article/245-what-is-global-status', {'target': '_blank', 'data-beacon-article': '5a9548782c7d3a75495122f9'})
-          |raw
-          %>
+          <a href="https://kb.mailpoet.com/article/245-what-is-global-status" target="_blank" data-beacon-article="5a9548782c7d3a75495122f9">
+            <%= _x('Read about the Global status.', 'Link to a documentation page in the knowledge base about what is the subscriber global status') %>
+          </a>
         </p>
       </label>
     </div>
