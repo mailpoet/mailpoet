@@ -78,6 +78,11 @@ anchors:
       - static_analysis_php8
     <<: *only_trunk_and_release
 
+  command_add_github_key: &command_add_github_key
+    command: |
+      # Add GitHub to known_hosts (for jobs without a checkout step that need to clone repos)
+      echo "github.com ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCj7ndNxQowgcQnjshcLrqPEiiphnt+VTTvDP6mHBL9j1aNUkY4Ue1gvwnGLVlOhGeYrnZaMgRK6+PKCUXaDbC7qtbW8gIkhL7aGCsOr/C56SJMy/BCZfxd1nWzAOxSDPgVsmerOBYfNqltV9/hWCqBywINIR+5dIg6JTJ72pcEpEjcYgXkE2YEFXV1JHnsKgbLWNlhScqb2UmyRkQyytRLtL+38TGxkxCflmO+5Z8CSSNY7GidjMIZ7Q4zMjA2n1nGrlTDkzwDCsw+wqFPGQA179cnfGWOWRVruj16z6XyvxvjJwbz0wQZ75XK5tKSb7FNyeIEs4TT4jk+S4dhPeAUC5y+bDYirYgM4GC7uEnztnZyaVWQ7B381AK4Qdrwt51ZqExKbQpTUNn+EjqoTwvqNj4kqx5QUCI0ThS/YkOxJCXmPUWZbhjpCg56i+2aB6CmK2JGhn57K5mj0MNdBXA4/WnwH6XoPWJzK5Nyu2zB3nAZp+S5hpQs+p1vN1/wsjk=" >> ~/.ssh/known_hosts
+
 executors:
   wpcli_php_oldest:
     <<: *default_job_config
@@ -202,10 +207,11 @@ jobs:
           at: /home/circleci
       - add_ssh_keys
       - run:
+          name: 'Add GitHub to known_hosts'
+          <<: *command_add_github_key
+      - run:
           name: 'Install Premium plugin'
           command: |
-            # Add GitHub to known_hosts because there is no checkout step in this job
-            echo "github.com ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCj7ndNxQowgcQnjshcLrqPEiiphnt+VTTvDP6mHBL9j1aNUkY4Ue1gvwnGLVlOhGeYrnZaMgRK6+PKCUXaDbC7qtbW8gIkhL7aGCsOr/C56SJMy/BCZfxd1nWzAOxSDPgVsmerOBYfNqltV9/hWCqBywINIR+5dIg6JTJ72pcEpEjcYgXkE2YEFXV1JHnsKgbLWNlhScqb2UmyRkQyytRLtL+38TGxkxCflmO+5Z8CSSNY7GidjMIZ7Q4zMjA2n1nGrlTDkzwDCsw+wqFPGQA179cnfGWOWRVruj16z6XyvxvjJwbz0wQZ75XK5tKSb7FNyeIEs4TT4jk+S4dhPeAUC5y+bDYirYgM4GC7uEnztnZyaVWQ7B381AK4Qdrwt51ZqExKbQpTUNn+EjqoTwvqNj4kqx5QUCI0ThS/YkOxJCXmPUWZbhjpCg56i+2aB6CmK2JGhn57K5mj0MNdBXA4/WnwH6XoPWJzK5Nyu2zB3nAZp+S5hpQs+p1vN1/wsjk=" >> ~/.ssh/known_hosts
             git clone ${MAILPOET_PREMIUM_REPO_URL} mailpoet-premium
       - restore_cache:
           key: premium-tools-{{ checksum "mailpoet-premium/tools/install.php" }}
@@ -250,6 +256,26 @@ jobs:
       - run:
           name: 'Static analysis'
           command: ./do qa:phpstan --php-version=<< parameters.php_version >>
+  security_analysis:
+    working_directory: /home/circleci/mailpoet/mailpoet
+    machine:
+      image: ubuntu-2204:2022.10.2
+      docker_layer_caching: false
+    steps:
+      - attach_workspace:
+          at: /home/circleci
+      - add_ssh_keys
+      - run:
+          name: 'Add GitHub to known_hosts'
+          <<: *command_add_github_key
+      - run:
+          name: 'Set up PHP'
+          command: |
+            sudo apt update
+            sudo apt install -y php8.1-cli
+      - run:
+          name: 'QA Security'
+          command: ./do qa:semgrep
   qa_js:
     executor: wpcli_php_latest
     working_directory: /home/circleci/mailpoet/mailpoet
@@ -693,6 +719,10 @@ workflows:
           <<: *slack-fail-post-step
           name: static_analysis_php8
           php_version: 80000
+          requires:
+            - build
+      - security_analysis:
+          <<: *slack-fail-post-step
           requires:
             - build
       - qa_js:

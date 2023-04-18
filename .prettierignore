@@ -22,6 +22,7 @@ vendor-prefixed
 /mailpoet/temp
 /mailpoet/tests/javascript_newsletter_editor/testBundles
 /mailpoet/tests/plugins
+/mailpoet/tools/wpscan-semgrep-rules
 /mailpoet/views
 /mailpoet-premium
 /wordpress
