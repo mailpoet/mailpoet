@@ -20,6 +20,7 @@ use MailPoet\WP\Posts;
 
 class PostNotificationScheduler {
 
+  const SECONDS_IN_MINUTE = 60;
   const SECONDS_IN_HOUR = 3600;
   const LAST_WEEKDAY_FORMAT = 'L';
   const INTERVAL_DAILY = 'daily';
@@ -162,7 +163,8 @@ class PostNotificationScheduler {
     $intervalType = $intervalTypeOption ? $intervalTypeOption->getValue() : null;
 
     $timeOfDayOption = $newsletter->getOption(NewsletterOptionFieldEntity::NAME_TIME_OF_DAY);
-    $hour = $timeOfDayOption ? (int)$timeOfDayOption->getValue() / self::SECONDS_IN_HOUR : null;
+    $hour = $timeOfDayOption ? (int)floor((int)$timeOfDayOption->getValue() / self::SECONDS_IN_HOUR) : null;
+    $minute = $timeOfDayOption ? ((int)$timeOfDayOption->getValue() - (int)($hour * self::SECONDS_IN_HOUR)) / self::SECONDS_IN_MINUTE : null;
 
     $weekDayOption = $newsletter->getOption(NewsletterOptionFieldEntity::NAME_WEEK_DAY);
     $weekDay = $weekDayOption ? $weekDayOption->getValue() : null;
@@ -176,16 +178,16 @@ class PostNotificationScheduler {
     switch ($intervalType) {
       case self::INTERVAL_IMMEDIATE:
       case self::INTERVAL_DAILY:
-        $schedule = sprintf('0 %s * * *', $hour);
+        $schedule = sprintf('%s %s * * *', $minute, $hour);
         break;
       case self::INTERVAL_WEEKLY:
-        $schedule = sprintf('0 %s * * %s', $hour, $weekDay);
+        $schedule = sprintf('%s %s * * %s', $minute, $hour, $weekDay);
         break;
       case self::INTERVAL_NTHWEEKDAY:
-        $schedule = sprintf('0 %s ? * %s%s', $hour, $weekDay, $nthWeekDay);
+        $schedule = sprintf('%s %s ? * %s%s', $minute, $hour, $weekDay, $nthWeekDay);
         break;
       case self::INTERVAL_MONTHLY:
-        $schedule = sprintf('0 %s %s * *', $hour, $monthDay);
+        $schedule = sprintf('%s %s %s * *', $minute, $hour, $monthDay);
         break;
       case self::INTERVAL_IMMEDIATELY:
       default:
