@@ -881,4 +881,8 @@ class Functions {
 
     return false;
   }
+
+  public function getShortcodeRegex($tagnames = null): string {
+    return get_shortcode_regex($tagnames);
+  }
 }

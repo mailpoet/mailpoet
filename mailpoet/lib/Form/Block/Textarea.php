@@ -55,7 +55,7 @@ class Textarea {
       $html .= 'style="' . $this->wp->escAttr($styles) . '" ';
     }
 
-    $html .= '>' . $this->rendererHelper->getFieldValue($block) . '</textarea>';
+    $html .= '>' . $this->rendererHelper->escapeShortCodes($this->rendererHelper->getFieldValue($block)) . '</textarea>';
 
     return $this->wrapper->render($block, $html);
   }
