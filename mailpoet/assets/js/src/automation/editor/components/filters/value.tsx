@@ -3,13 +3,16 @@ import { select } from '@wordpress/data';
 import { Filter } from '../automation/types';
 import { storeName } from '../../store';
 
-const getValue = ({ field_key, args }: Filter): string => {
+const getValue = ({ field_key, args }: Filter): string | undefined => {
   const field = select(storeName).getRegistry().fields[field_key];
   switch (field.type) {
     case 'boolean':
       return args.value ? __('Yes', 'mailpoet') : __('No', 'mailpoet');
     case 'number':
     case 'integer':
+      if (args.value === undefined) {
+        return undefined;
+      }
       return Array.isArray(args.value)
         ? args.value.join(' and ')
         : args.value.toString();
@@ -45,10 +48,12 @@ type Props = {
   filter: Filter;
 };
 
-export function Value({ filter }: Props): JSX.Element {
+export function Value({ filter }: Props): JSX.Element | null {
+  const value = getValue(filter);
+  if (value === undefined) {
+    return null;
+  }
   return (
-    <span className="mailpoet-automation-filters-list-item-value">
-      {getValue(filter)}
-    </span>
+    <span className="mailpoet-automation-filters-list-item-value">{value}</span>
   );
 }
