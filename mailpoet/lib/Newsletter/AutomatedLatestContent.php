@@ -49,7 +49,8 @@ class AutomatedLatestContent {
     $this->newsletterId = $query->newsletterId;
     // Get posts as logged out user, so private posts hidden by other plugins (e.g. UAM) are also excluded
     $currentUserId = $this->wp->getCurrentUserId();
-    $this->wp->wpSetCurrentUser(0);
+    // phpcs:ignore Generic.PHP.ForbiddenFunctions.Discouraged
+    wp_set_current_user(0);
 
     $this->loggerFactory->getLogger(LoggerFactory::TOPIC_POST_NOTIFICATIONS)->info(
       'loading automated latest content',
@@ -75,7 +76,8 @@ class AutomatedLatestContent {
 
     $this->wp->removeAction('pre_get_posts', [$this, 'ensureConsistentQueryType'], $filterPriority);
     $this->_detachSentPostsFilter($query->newsletterId);
-    $this->wp->wpSetCurrentUser($currentUserId);
+    // phpcs:ignore Generic.PHP.ForbiddenFunctions.Discouraged
+    wp_set_current_user($currentUserId);
     return $posts;
   }
 

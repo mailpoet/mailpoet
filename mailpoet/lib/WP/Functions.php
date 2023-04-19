@@ -599,10 +599,6 @@ class Functions {
     return wp_safe_redirect($location, $status);
   }
 
-  public function wpSetCurrentUser($id, $name = '') {
-    return wp_set_current_user($id, $name);
-  }
-
   public function wpStaticizeEmoji($text) {
     return wp_staticize_emoji($text);
   }
