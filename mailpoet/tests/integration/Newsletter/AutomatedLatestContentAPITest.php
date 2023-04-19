@@ -137,7 +137,7 @@ class AutomatedLatestContentAPITest extends \MailPoetTest {
 
     $user->add_role($role);
 
-    $this->wp->wpSetCurrentUser($user->ID);
+    wp_set_current_user($user->ID);
     $this->createdUsers[] = $user;
 
     return $user;
