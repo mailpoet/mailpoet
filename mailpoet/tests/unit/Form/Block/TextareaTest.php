@@ -62,6 +62,7 @@ class TextareaTest extends \MailPoetUnitTest {
     $this->rendererHelperMock->expects($this->once())->method('getInputValidation')->willReturn(' validation="1" ');
     $this->rendererHelperMock->expects($this->once())->method('getInputModifiers')->willReturn(' modifiers="mod" ');
     $this->rendererHelperMock->expects($this->once())->method('getFieldValue')->willReturn('val');
+    $this->rendererHelperMock->expects($this->once())->method('escapeShortCodes')->will($this->returnArgument(0));
     $this->stylesRendererMock->expects($this->once())->method('renderForTextInput')->willReturn('border-radius: 10px;');
 
     $html = $this->textarea->render($this->block, []);

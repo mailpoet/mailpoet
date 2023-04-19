@@ -258,6 +258,15 @@ class BlockRendererHelper {
     return join(' ', $modifiers);
   }
 
+  public function escapeShortCodes(?string $value): ?string {
+    if ($value === null) {
+      return null;
+    }
+    return preg_replace_callback('/' . $this->wp->getShortcodeRegex() . '/s', function ($matches) {
+      return str_replace(['[', ']'], ['&#91;', '&#93;'], $matches[0]);
+    }, $value);
+  }
+
   private function translateValidationErrorMessage(string $validate): string {
     switch ($validate) {
       case 'email':
