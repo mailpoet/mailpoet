@@ -389,7 +389,7 @@ class HtmlSelector {
 			$error
 		));
 
-		trigger_error($error);
+		trigger_error(esc_html($error));
 	}
 
 	/**
