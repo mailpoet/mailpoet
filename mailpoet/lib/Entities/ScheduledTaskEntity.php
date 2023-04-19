@@ -87,7 +87,7 @@ class ScheduledTaskEntity {
    * @ORM\OneToMany(targetEntity="MailPoet\Entities\ScheduledTaskSubscriberEntity", mappedBy="task", fetch="EXTRA_LAZY")
    * @var Collection<int, ScheduledTaskSubscriberEntity>
    */
-  public $subscribers;
+  private $subscribers;
 
   /**
    * @ORM\OneToOne(targetEntity="MailPoet\Entities\SendingQueueEntity", mappedBy="task", fetch="EAGER")
