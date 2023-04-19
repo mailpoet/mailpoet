@@ -237,21 +237,6 @@ class RoboFile extends \Robo\Tasks {
     return $this->runTestsInContainer(array_merge($opts, ['test_type' => 'integration', 'skip-group' => 'woo', 'skip-deps' => true, 'skip-plugins' => true]));
   }
 
-  public function testCoverage($opts = ['file' => null, 'xml' => false]) {
-    $command = join(' ', [
-      'vendor/bin/codecept run -s acceptance',
-      (($opts['file']) ? $opts['file'] : ''),
-      '--coverage',
-      ($opts['xml']) ? '--coverage-xml' : '--coverage-html',
-    ]);
-
-    if ($opts['xml']) {
-      $command .= ' --xml';
-    }
-
-    return $this->execWithXDebug($command);
-  }
-
   public function testNewsletterEditor($xmlOutputFile = null) {
     $command = join(' ', [
       './node_modules/.bin/mocha',
