@@ -5,7 +5,7 @@ import { storeName } from '../../store';
 
 const getValue = ({ field_key, args }: Filter): string | undefined => {
   const field = select(storeName).getRegistry().fields[field_key];
-  switch (field.type) {
+  switch (field?.type) {
     case 'boolean':
       return args.value ? __('Yes', 'mailpoet') : __('No', 'mailpoet');
     case 'number':
