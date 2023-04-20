@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { Button, Icon, Popover, SlotFillProvider } from '@wordpress/components';
 import { store as noticesStore } from '@wordpress/notices';
 import { dispatch, select as globalSelect, useSelect } from '@wordpress/data';
+import { getSettings, setSettings } from '@wordpress/date';
 import { wordpress } from '@wordpress/icons';
 import {
   ComplementaryArea,
@@ -11,7 +12,7 @@ import {
   InterfaceSkeleton,
 } from '@wordpress/interface';
 import { ShortcutProvider } from '@wordpress/keyboard-shortcuts';
-import { __ } from '@wordpress/i18n';
+import { __, setLocaleData } from '@wordpress/i18n';
 import { addQueryArgs } from '@wordpress/url';
 import { registerTranslations } from 'common';
 import { Header } from './components/header';
@@ -169,6 +170,13 @@ function Editor(): JSX.Element {
 }
 
 window.addEventListener('DOMContentLoaded', () => {
+  setLocaleData(window.wp.i18n.getLocaleData());
+
+  const dateSettings = window.wp as unknown as {
+    date: { getSettings: typeof getSettings };
+  };
+  setSettings(dateSettings.date.getSettings());
+
   createStore();
 
   const root = document.getElementById('mailpoet_automation_editor');
