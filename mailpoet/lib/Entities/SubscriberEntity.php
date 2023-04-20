@@ -471,6 +471,13 @@ class SubscriberEntity {
     return $this->subscriberCustomFields;
   }
 
+  public function getSubscriberCustomField(CustomFieldEntity $customField): ?SubscriberCustomFieldEntity {
+    $criteria = Criteria::create()
+      ->where(Criteria::expr()->eq('customField', $customField))
+      ->setMaxResults(1);
+    return $this->getSubscriberCustomFields()->matching($criteria)->first() ?: null;
+  }
+
   /**
    * @return Collection<int, SubscriberTagEntity>
    */
