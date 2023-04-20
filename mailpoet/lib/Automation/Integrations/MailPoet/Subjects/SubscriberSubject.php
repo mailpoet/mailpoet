@@ -93,6 +93,14 @@ class SubscriberSubject implements Subject {
         }
       ),
       new Field(
+        'mailpoet:subscriber:last-engaged',
+        Field::TYPE_DATETIME,
+        __('Last engaged', 'mailpoet'),
+        function (SubscriberPayload $payload) {
+          return $payload->getSubscriber()->getLastEngagementAt();
+        }
+      ),
+      new Field(
         'mailpoet:subscriber:status',
         Field::TYPE_ENUM,
         __('Subscriber status', 'mailpoet'),
