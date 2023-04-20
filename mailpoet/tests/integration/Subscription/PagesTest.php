@@ -11,6 +11,7 @@ use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\StatisticsUnsubscribeEntity;
+use MailPoet\Entities\SubscriberCustomFieldEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Form\AssetsController;
@@ -33,6 +34,7 @@ use MailPoet\Subscription\CaptchaFormRenderer;
 use MailPoet\Subscription\ManageSubscriptionFormRenderer;
 use MailPoet\Subscription\Pages;
 use MailPoet\Subscription\SubscriptionUrlFactory;
+use MailPoet\Test\DataFactories\CustomField;
 use MailPoet\Test\DataFactories\Newsletter;
 use MailPoet\Test\DataFactories\NewsletterLink;
 use MailPoet\Test\DataFactories\NewsletterOption as NewsletterOptionFactory;
@@ -101,11 +103,18 @@ class PagesTest extends \MailPoetTest {
   }
 
   public function testItUpdatesUnconfirmedDataWhenConfirmingSubscription() {
+    $customField = (new CustomField())
+      ->withName('nickname')
+      ->create();
+
     $firstName = 'Jane';
     $lastName = 'Doe';
-    $this->subscriber->setUnconfirmedData(
-      (string)json_encode(['first_name' => $firstName, 'last_name' => $lastName, 'email' => 'jane.doe@example.com'])
-    );
+    $this->subscriber->setUnconfirmedData((string)json_encode([
+      'first_name' => $firstName,
+      'last_name' => $lastName,
+      'email' => 'jane.doe@example.com',
+      'cf_' . $customField->getId() => 'Nickname',
+    ]));
     $this->entityManager->persist($this->subscriber);
     $this->entityManager->flush();
 
@@ -121,6 +130,9 @@ class PagesTest extends \MailPoetTest {
     $this->assertSame($firstName, $confirmedSubscriber->getFirstName());
     $this->assertSame($lastName, $confirmedSubscriber->getLastName());
     $this->assertNull($confirmedSubscriber->getUnconfirmedData());
+    $subscriberCustomField = $confirmedSubscriber->getSubscriberCustomField($customField);
+    $this->assertInstanceOf(SubscriberCustomFieldEntity::class, $subscriberCustomField);
+    $this->assertSame('Nickname', $subscriberCustomField->getValue());
   }
 
   public function testItUpdatesSubscriptionOnDuplicateAttemptButDoesntSendNotification() {
