@@ -8,7 +8,7 @@ rulesdirectory='tools/wpscan-semgrep-rules'
 if [ ! -d $scriptdirectory/$rulesdirectory ]
     then
         echo "Cloning WPScan's Semgrep rules repository..."
-        git clone git@github.com:Automattic/wpscan-semgrep-rules.git $scriptdirectory/$rulesdirectory
+        git clone --depth=1 git@github.com:Automattic/wpscan-semgrep-rules.git $scriptdirectory/$rulesdirectory
 fi
 
 # Run Semgrep
