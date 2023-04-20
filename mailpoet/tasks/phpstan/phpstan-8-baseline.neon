@@ -311,11 +311,6 @@ parameters:
 			path: ../../lib/Listing/ListingRepository.php
 
 		-
-			message: "#^Method MailPoet\\\\Models\\\\DynamicSegmentFilter\\:\\:__get\\(\\) should return string\\|null but returns mixed\\.$#"
-			count: 1
-			path: ../../lib/Models/DynamicSegmentFilter.php
-
-		-
 			message: "#^Parameter \\#2 \\$array of function implode expects array\\<string\\>, array\\<array\\<int, mixed\\>\\|string\\> given\\.$#"
 			count: 1
 			path: ../../lib/Models/Subscriber.php
