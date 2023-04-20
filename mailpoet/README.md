@@ -90,7 +90,6 @@ $ ./do test:debug-unit            # alias for ./do test:unit --debug
 $ ./do test:debug-integration     # alias for ./do test:integration --debug
 $ ./do test:failed-unit           # run the last failing unit test.
 $ ./do test:failed-integration    # run the last failing integration test.
-$ ./do test:coverage              # run tests and output coverage information.
 $ ./do test:javascript            # run the JS tests.
 $ ./do test:acceptance [--file=...] [--skip-deps]
   # run acceptances tests into a docker environment.
