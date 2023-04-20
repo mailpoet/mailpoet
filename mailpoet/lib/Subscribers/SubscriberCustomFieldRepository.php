@@ -25,6 +25,7 @@ class SubscriberCustomFieldRepository extends Repository {
     } else {
       $subscriberCustomField = new SubscriberCustomFieldEntity($subscriber, $customField, $value);
       $this->entityManager->persist($subscriberCustomField);
+      $subscriber->getSubscriberCustomFields()->add($subscriberCustomField);
     }
     $this->entityManager->flush();
     return $subscriberCustomField;
