@@ -6,6 +6,7 @@ use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\CarbonImmutable;
 use Tracy\Debugger;
 use Tracy\ILogger;
+use WP_Error;
 
 class TranslationUpdater {
   const API_UPDATES_BASE_URI = 'https://translate.wordpress.com/api/translations-updates/mailpoet/';
@@ -89,11 +90,22 @@ class TranslationUpdater {
     $rawResponse = $this->wpFunctions->getTransient($cacheKey);
     if (!$rawResponse) {
       $rawResponse = $this->fetchApiResponse($requestBody);
+      if ($rawResponse instanceof WP_Error) {
+        // Don't continue if there was an error.
+        $this->logError("MailPoet: Failed to fetch translations from WordPress.com API with error: " . $rawResponse->get_error_message());
+        return [];
+      }
+
       $responseCode = $this->wpFunctions->wpRemoteRetrieveResponseCode($rawResponse);
       // Wait a couple of seconds and retry when 429 is returned.
       if ($responseCode === 429) {
         sleep(2);
         $rawResponse = $this->fetchApiResponse($requestBody);
+        if ($rawResponse instanceof WP_Error) {
+          // Don't continue if there was an error.
+          $this->logError("MailPoet: Failed retrying to fetch translations from WordPress.com API with error: " . $rawResponse->get_error_message());
+          return [];
+        }
         $responseCode = $this->wpFunctions->wpRemoteRetrieveResponseCode($rawResponse);
       }
       // Don't continue when API request failed.
@@ -176,8 +188,14 @@ class TranslationUpdater {
   private function fetchApiResponse(array $requestBody) {
     // Ten seconds, plus one extra second for every 10 locales.
     $timeout = 10 + (int)(count($requestBody['locales']) / 10);
+
+    $body = wp_json_encode($requestBody);
+    if ($body === false) {
+      return new WP_Error('wp_json_encode_error', 'Failed to encode request body to retrieve translations');
+    }
+
     $response = $this->wpFunctions->wpRemotePost(self::API_UPDATES_BASE_URI, [
-      'body' => json_encode($requestBody),
+      'body' => $body,
       'headers' => ['Content-Type: application/json'],
       'timeout' => $timeout,
     ]);

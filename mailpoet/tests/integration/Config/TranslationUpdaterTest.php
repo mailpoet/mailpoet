@@ -5,6 +5,7 @@ namespace MailPoet\Config;
 use Codeception\Stub;
 use Codeception\Stub\Expected;
 use MailPoet\WP\Functions as WPFunctions;
+use WP_Error;
 
 class TranslationUpdaterTest extends \MailPoetTest {
 
@@ -363,6 +364,55 @@ class TranslationUpdaterTest extends \MailPoetTest {
   public function testItReturnsObjectIfPassedNonObjectWhenCheckingForTranslations(): void {
     $result = $this->updater->checkForTranslations(null);
     expect($result instanceof \stdClass)->true();
+  }
+
+  public function testItDoesNotThrowErrorIfWrongEncodingInLocales(): void {
+    $wpFunctions = Stub::construct(
+      $this->wp,
+      [],
+      [
+        'wpRemotePost' => function($url, $args) {
+          if ($args['body'] === false) {
+            return new WP_Error('error', 'error');
+          }
+          return [
+            'response' => [
+              'code' => 200,
+            ],
+            'body' => json_encode([
+              'success' => true,
+              'data' => $this->getResponseData(),
+            ]),
+          ];
+        },
+        'getAvailableLanguages' => function() {
+          return ['fr_FR', "\xB1\x31"];
+        },
+      ],
+      $this
+    );
+    $updateTransient = new \stdClass;
+    $updateTransient->translations = [];
+    $updater = Stub::construct(
+      $this->updater,
+      [
+        $wpFunctions,
+        $this->freeSlug,
+        $this->freeVersion,
+        $this->premiumSlug,
+        $this->premiumVersion,
+      ]
+    );
+    $result = $updater->checkForTranslations($updateTransient);
+
+    expect($result->translations)->notEmpty();
+    $freeTranslation = $result->translations[0];
+    expect($freeTranslation['type'])->equals('plugin');
+    expect($freeTranslation['slug'])->equals($this->freeSlug);
+    expect($freeTranslation['language'])->equals('fr_FR');
+    expect($freeTranslation['version'])->equals($this->freeVersion);
+    expect($freeTranslation['updated'])->equals('2021-08-12 14:28:35');
+    expect($freeTranslation['package'])->equals('https:\/\/translate.files.wordpress.com\/2021\/08\/mailpoet-free-0_1-fr_fr.zip');
   }
 
   private function getResponseData(): array {
