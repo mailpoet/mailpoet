@@ -47,7 +47,7 @@ class Url {
       $newsletterId,
       $newsletterHash,
       $subscriber && $subscriber->getId() ? $subscriber->getId() : 0,
-      $subscriber ? $this->linkTokens->getToken($subscriber) : 0,
+      $subscriber && $subscriber->getId() ? $this->linkTokens->getToken($subscriber) : 0,
       $sendingQueueId,
       (int)$preview,
     ];
