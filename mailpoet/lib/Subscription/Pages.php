@@ -237,6 +237,7 @@ class Pages {
     // Update subscriber from stored data after confirmation
     if (!empty($subscriberData)) {
       $this->subscriberSaveController->createOrUpdate((array)$subscriberData, $this->subscriber);
+      $this->subscriberSaveController->updateCustomFields((array)$subscriberData, $this->subscriber);
     }
   }
 
