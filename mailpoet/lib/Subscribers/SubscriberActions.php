@@ -77,15 +77,14 @@ class SubscriberActions {
     if (!$subscriber || !$signupConfirmationEnabled) {
       // create new subscriber or update if no confirmation is required
       $subscriber = $this->subscriberSaveController->createOrUpdate($subscriberData, $subscriber);
+      // custom fields should use the same approach as the subscriber main data that means to wait on confirmation
+      $this->subscriberSaveController->updateCustomFields($subscriberData, $subscriber);
     } else {
       // store subscriber data to be updated after confirmation
       $unconfirmedData = $this->subscriberSaveController->filterOutReservedColumns($subscriberData);
       $unconfirmedData = json_encode($unconfirmedData);
       $subscriber->setUnconfirmedData($unconfirmedData ?: null);
     }
-
-    // Update custom fields
-    $this->subscriberSaveController->updateCustomFields($subscriberData, $subscriber);
 
     // restore trashed subscriber
     if ($subscriber->getDeletedAt()) {

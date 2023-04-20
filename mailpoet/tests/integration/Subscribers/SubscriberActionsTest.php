@@ -7,10 +7,12 @@ use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterOptionFieldEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SendingQueueEntity;
+use MailPoet\Entities\SubscriberCustomFieldEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Test\DataFactories\CustomField;
 use MailPoet\Test\DataFactories\NewsletterOption;
 
 class SubscriberActionsTest extends \MailPoetTest {
@@ -202,6 +204,8 @@ class SubscriberActionsTest extends \MailPoetTest {
   public function testItStoresUnconfirmedSubscriberDataWhenConfirmationIsEnabled() {
     $originalSettingValue = $this->settings->get('signup_confirmation.enabled');
     $this->settings->set('signup_confirmation.enabled', true);
+    $customField = (new CustomField())->withName('nickname')
+      ->create();
 
     $segment = $this->segmentsRepository->createOrUpdate('List #1');
     $segment2 = $this->segmentsRepository->createOrUpdate('List #2');
@@ -210,6 +214,7 @@ class SubscriberActionsTest extends \MailPoetTest {
       'email' => 'some@example.com',
       'first_name' => 'Some',
       'last_name' => 'Example',
+      'cf_' . $customField->getId() => 'My Nickname',
     ];
 
     [$subscriber] = $this->subscriberActions->subscribe(
@@ -222,12 +227,17 @@ class SubscriberActionsTest extends \MailPoetTest {
     expect($subscriber->getEmail())->equals($data['email']);
     expect($subscriber->getFirstName())->equals($data['first_name']);
     expect($subscriber->getLastName())->equals($data['last_name']);
+    codecept_debug($subscriber->getSubscriberCustomFields()->count());
+    $subscriberCustomField = $subscriber->getSubscriberCustomField($customField);
+    $this->assertInstanceOf(SubscriberCustomFieldEntity::class, $subscriberCustomField);
+    expect($subscriberCustomField->getValue())->equals($data['cf_' . $customField->getId()]);
 
     expect($subscriber->getUnconfirmedData())->isEmpty();
 
     $data2 = $data;
     $data2['first_name'] = 'Aaa';
     $data2['last_name'] = 'Bbb';
+    $data2['cf_' . $customField->getId()] = 'Ccc';
 
     [$subscriber] = $this->subscriberActions->subscribe(
       $data2,
@@ -240,6 +250,9 @@ class SubscriberActionsTest extends \MailPoetTest {
     expect($subscriber->getEmail())->equals($data['email']);
     expect($subscriber->getFirstName())->equals($data['first_name']);
     expect($subscriber->getLastName())->equals($data['last_name']);
+    $subscriberCustomField = $subscriber->getSubscriberCustomField($customField);
+    $this->assertInstanceOf(SubscriberCustomFieldEntity::class, $subscriberCustomField);
+    expect($subscriberCustomField->getValue())->equals($data['cf_' . $customField->getId()]);
 
     expect($subscriber->getUnconfirmedData())->notEmpty();
     expect($subscriber->getUnconfirmedData())->equals(json_encode($data2));
