@@ -399,31 +399,6 @@ class NewsletterTest extends \MailPoetTest {
     expect(SendingQueue::whereNull('deleted_at')->findArray())->count(6);
   }
 
-  public function testItDuplicatesNewsletter() {
-    $originalNewsletter = $this->newsletter;
-    $originalNewsletter->status = Newsletter::STATUS_SENT;
-    $originalNewsletter->sentAt = $originalNewsletter->deletedAt = $originalNewsletter->createdAt = $originalNewsletter->updatedAt = date( '2000-m-d H:i:s');
-    $originalNewsletter->save();
-    $data = ['subject' => 'duplicate newsletter'];
-    $duplicateNewsletter = $this->newsletter->duplicate($data);
-    $duplicateNewsletter = Newsletter::findOne($duplicateNewsletter->id);
-    $this->assertInstanceOf(Newsletter::class, $duplicateNewsletter);
-    // hash is different
-    expect($duplicateNewsletter->hash)->notEquals($this->newsletter->hash);
-    expect(strlen($duplicateNewsletter->hash))->equals(Security::HASH_LENGTH);
-    // status is set to draft
-    expect($duplicateNewsletter->status)->equals(Newsletter::STATUS_DRAFT);
-    // sent at/delete at dates are null
-    expect($duplicateNewsletter->sentAt)->null();
-    expect($duplicateNewsletter->deletedAt)->null();
-    // created at/updated at dates are different
-    expect($duplicateNewsletter->createdAt)->notEquals($originalNewsletter->createdAt);
-    expect($duplicateNewsletter->updatedAt)->notEquals($originalNewsletter->updatedAt);
-    // body and subject are the same
-    expect($duplicateNewsletter->body)->equals($originalNewsletter->body);
-    expect($duplicateNewsletter->subject)->equals($data['subject']);
-  }
-
   public function testItGetsAndDecodesNewsletterOptionMetaField() {
     $newsletter = Newsletter::createOrUpdate(
       [

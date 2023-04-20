@@ -191,81 +191,6 @@ class Newsletter extends Model {
     return $this;
   }
 
-  /**
-   * @deprecated This method can be removed after 2022-11-11. Make sure it is removed together with
-   * \MailPoet\Models\NewsletterOption and \MailPoet\Models\NewsletterOptionField.
-   */
-  public function duplicate($data = []) {
-    self::deprecationError(__METHOD__);
-
-    $newsletterData = $this->asArray();
-
-    // remove id so that it creates a new record
-    unset($newsletterData['id']);
-
-    // merge data with newsletter data (allows override)
-    $data['unsubscribe_token'] = Security::generateUnsubscribeToken(self::class);
-    $data = array_merge($newsletterData, $data);
-
-    $duplicate = self::create();
-    $duplicate->hydrate($data);
-
-    // reset timestamps
-    $duplicate->set_expr('created_at', 'NOW()');
-    $duplicate->set_expr('updated_at', 'NOW()');
-    $duplicate->set_expr('deleted_at', 'NULL');
-
-    // reset status
-    $duplicate->set('status', self::STATUS_DRAFT);
-
-    // reset hash
-    $duplicate->set('hash', null);
-
-    // reset sent at date
-    $duplicate->set('sent_at', null);
-
-    $duplicate->save();
-
-    if ($duplicate->getErrors() === false) {
-      // create relationships between duplicate and segments
-      $segments = $this->segments()->findMany();
-
-      if (!empty($segments)) {
-        foreach ($segments as $segment) {
-          $relation = NewsletterSegment::create();
-          $relation->segmentId = $segment->id;
-          $relation->newsletterId = $duplicate->id;
-          $relation->save();
-        }
-      }
-
-      // duplicate options
-      $options = NewsletterOption::where('newsletter_id', $this->id)
-        ->findMany();
-
-      $ignoredOptionFieldIds = Helpers::flattenArray(
-        NewsletterOptionField::whereIn('name', ['isScheduled', 'scheduledAt'])
-          ->select('id')
-          ->findArray()
-      );
-
-      if (!empty($options)) {
-        foreach ($options as $option) {
-          if (in_array($option->optionFieldId, $ignoredOptionFieldIds)) {
-            continue;
-          }
-          $relation = NewsletterOption::create();
-          $relation->newsletterId = $duplicate->id;
-          $relation->optionFieldId = $option->optionFieldId;
-          $relation->value = $option->value;
-          $relation->save();
-        }
-      }
-    }
-
-    return $duplicate;
-  }
-
   public function asArray() {
     $model = parent::asArray();
 
@@ -385,45 +310,6 @@ class Newsletter extends Model {
     return $orm;
   }
 
-  /**
-   * @deprecated This method can be removed after 2022-11-11. Make sure it is removed together with
-   * \MailPoet\Models\NewsletterOption and \MailPoet\Models\NewsletterOptionField.
-   */
-  public static function filterType($orm, $type = false, $group = false) {
-    self::deprecationError(__METHOD__);
-
-    if (
-      in_array($type, [
-      self::TYPE_STANDARD,
-      self::TYPE_WELCOME,
-      self::TYPE_AUTOMATIC,
-      self::TYPE_NOTIFICATION,
-      self::TYPE_NOTIFICATION_HISTORY,
-      ])
-    ) {
-      if ($type === self::TYPE_AUTOMATIC && $group) {
-        $orm = $orm->join(
-          NewsletterOptionField::$_table,
-          [
-            'option_fields.newsletter_type', '=', self::$_table . '.type',
-          ],
-          'option_fields'
-        )
-        ->join(
-          NewsletterOption::$_table,
-          [
-            'options.newsletter_id', '=', self::$_table . '.id',
-          ],
-          'options'
-        )
-        ->whereRaw('`options`.`option_field_id` = `option_fields`.`id`')
-        ->where('options.value', $group);
-      }
-      $orm = $orm->where(self::$_table . '.type', $type);
-    }
-    return $orm;
-  }
-
   public static function createOrUpdate($data = []) {
     $data['unsubscribe_token'] = Security::generateUnsubscribeToken(self::class);
     return parent::_createOrUpdate($data, false, function($data) {
@@ -462,33 +348,6 @@ class Newsletter extends Model {
     });
   }
 
-  /**
-   * @deprecated This method can be removed after 2022-11-11. Make sure it is removed together with
-   * \MailPoet\Models\NewsletterOption and \MailPoet\Models\NewsletterOptionField.
-   */
-  public static function getWelcomeNotificationsForSegments($segments) {
-    self::deprecationError(__METHOD__);
-
-    return NewsletterOption::tableAlias('options')
-      ->select('options.newsletter_id')
-      ->select('options.value', 'segment_id')
-      ->join(
-        self::$_table,
-        'newsletters.id = options.newsletter_id',
-        'newsletters'
-      )
-      ->join(
-        MP_NEWSLETTER_OPTION_FIELDS_TABLE,
-        'option_fields.id = options.option_field_id',
-        'option_fields'
-      )
-      ->whereNull('newsletters.deleted_at')
-      ->where('newsletters.type', 'welcome')
-      ->where('option_fields.name', 'segment')
-      ->whereIn('options.value', $segments)
-      ->findMany();
-  }
-
   public static function getByHash($hash) {
     return parent::where('hash', $hash)
       ->findOne();
@@ -506,12 +365,5 @@ class Newsletter extends Model {
       return false;
     }
     return self::filter('filterWithOptions', $newsletter->type)->findOne($id);
-  }
-
-  private static function deprecationError($methodName) {
-    trigger_error(
-      'Calling ' . esc_html($methodName) . ' is deprecated and will be removed. Use \MailPoet\Newsletter\NewslettersRepository and \MailPoet\Entities\NewsletterEntity instead.',
-      E_USER_DEPRECATED
-    );
   }
 }
