@@ -5,6 +5,7 @@ export type NextStep = {
 };
 
 export type Filter = {
+  id: string;
   field_type: string;
   field_key: string;
   condition: string;
@@ -12,6 +13,7 @@ export type Filter = {
 };
 
 export type FilterGroup = {
+  id: string;
   operator: 'and' | 'or';
   filters: Filter[];
 };

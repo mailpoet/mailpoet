@@ -55,7 +55,7 @@ export function FiltersList(): JSX.Element | null {
         {groups.map((group) =>
           group.filters.map((filter) => (
             <div
-              key={filter.field_key}
+              key={filter.id}
               className="mailpoet-automation-filters-list-item"
             >
               <div className="mailpoet-automation-filters-list-item-content">

@@ -31,7 +31,7 @@ class ValidStepFiltersRuleTest extends AutomationRuleTest {
       'validate' => Expected::once(),
     ]);
 
-    $filters = [new FilterData('string', 'test:key', 'is', ['value' => 'test'])];
+    $filters = [new FilterData('f1', 'string', 'test:key', 'is', ['value' => 'test'])];
     $rule = new ValidStepFiltersRule($registry, $validator);
     $automation = $this->getAutomation($filters);
     (new AutomationWalker())->walk($automation, [$rule]);
@@ -43,14 +43,14 @@ class ValidStepFiltersRuleTest extends AutomationRuleTest {
       'validate' => Expected::never(),
     ]);
 
-    $filters = [new FilterData('string', 'test:key', 'is', ['value' => 'test'])];
+    $filters = [new FilterData('f1', 'string', 'test:key', 'is', ['value' => 'test'])];
     $rule = new ValidStepFiltersRule($registry, $validator);
     $automation = $this->getAutomation($filters);
     (new AutomationWalker())->walk($automation, [$rule]);
   }
 
   private function getAutomation(array $filters): Automation {
-    $filters = new Filters('and', [new FilterGroup('and', $filters)]);
+    $filters = new Filters('and', [new FilterGroup('g1', 'and', $filters)]);
     return $this->make(Automation::class, [
       'getSteps' => [
         'root' => new Step('root', 'root', 'core:root', [], [], $filters),

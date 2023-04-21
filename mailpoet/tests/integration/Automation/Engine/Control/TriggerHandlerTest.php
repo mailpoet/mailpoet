@@ -173,8 +173,8 @@ class TriggerHandlerTest extends \MailPoetTest {
 
     // automation that doesn't match segments filter
     $unknownId = $segment->getId() + 1;
-    $filter = new Filter('enum_array', 'mailpoet:subscriber:segments', 'matches-any-of', ['value' => [$unknownId]]);
-    $filters = new Filters('and', [new FilterGroup('and', [$filter])]);
+    $filter = new Filter('f1', 'enum_array', 'mailpoet:subscriber:segments', 'matches-any-of', ['value' => [$unknownId]]);
+    $filters = new Filters('and', [new FilterGroup('g1', 'and', [$filter])]);
     $automation = $this->tester->createAutomation(
       'Will not run',
       new Step('trigger', Step::TYPE_TRIGGER, $trigger->getKey(), [], [], $filters)
@@ -185,8 +185,8 @@ class TriggerHandlerTest extends \MailPoetTest {
     $this->assertCount(0, $this->automationRunStorage->getAutomationRunsForAutomation($automation));
 
     // matches segments filter
-    $filter = new Filter('enum_array', 'mailpoet:subscriber:segments', 'matches-any-of', ['value' => [$segment->getId()]]);
-    $filters = new Filters('and', [new FilterGroup('and', [$filter])]);
+    $filter = new Filter('f1', 'enum_array', 'mailpoet:subscriber:segments', 'matches-any-of', ['value' => [$segment->getId()]]);
+    $filters = new Filters('and', [new FilterGroup('g1', 'and', [$filter])]);
     $automation = $this->tester->createAutomation(
       'Will run',
       new Step('trigger', Step::TYPE_TRIGGER, $trigger->getKey(), [], [], $filters)
