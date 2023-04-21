@@ -3,14 +3,17 @@
 namespace MailPoet\Subscribers;
 
 use Codeception\Stub;
+use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\MailerFactory;
 use MailPoet\Mailer\MailerLog;
+use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscription\SubscriptionUrlFactory;
+use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
 use MailPoet\Test\DataFactories\Segment as SegmentFactory;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 use MailPoet\WP\Functions as WPFunctions;
@@ -252,5 +255,105 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
       expect($sender->sendConfirmationEmail($this->subscriber))->equals(true);
     }
     expect($sender->sendConfirmationEmail($this->subscriber))->equals(true);
+  }
+
+  public function testGetMailBodyWithCustomizerReplacesActivationShortcode() {
+    $subcriptionUrlFactoryMock = $this->createMock(SubscriptionUrlFactory::class);
+    $subcriptionUrlFactoryMock->method('getConfirmationUrl')->willReturn('https://example.com');
+
+    $newsletterFactory = new NewsletterFactory();
+    $newsletter = $newsletterFactory
+      ->loadBodyFrom('newsletterThreeCols.json')
+      ->withType(NewsletterEntity::TYPE_CONFIRMATION_EMAIL_CUSTOMIZER)
+      ->create();
+
+    $body = $newsletter->getBody();
+    $newBody = $body;
+    $newBody['content']['blocks'][0]['blocks'][1]['blocks'][] =
+      [
+        'type' => 'button',
+        'url' => '[activation_link]',
+        'text' => 'Click here to confirm your subscription',
+        'styles' => [
+          'block' => [
+            'backgroundColor' => '#2ea1cd',
+            'borderColor' => '#0074a2',
+            'borderWidth' => '1px',
+            'borderRadius' => '5px',
+            'borderStyle' => 'solid',
+            'width' => '100%',
+            'lineHeight' => '40px',
+            'fontColor' => '#ffffff',
+            'fontFamily' => 'Verdana',
+            'fontSize' => '18px',
+            'fontWeight' => 'normal',
+            'textAlign' => 'center',
+          ],
+        ],
+      ];
+
+    $newsletter->setBody($newBody);
+
+    $newsletterRepository = $this->diContainer->get(NewslettersRepository::class);
+    $newsletterRepository->persist($newsletter);
+    $newsletterRepository->flush();
+
+    $settings = SettingsController::getInstance();
+    $settings->set(ConfirmationEmailCustomizer::SETTING_ENABLE_EMAIL_CUSTOMIZER,
+      true
+    );
+    $settings->set(ConfirmationEmailCustomizer::SETTING_EMAIL_ID, $newsletter->getId());
+    $confirmationEmailCustomizer = $this->diContainer->get(ConfirmationEmailCustomizer::class);
+
+    $sender = new ConfirmationEmailMailer(
+      $this->createMock(MailerFactory::class),
+      $this->diContainer->get(WPFunctions::class),
+      $settings,
+      $this->diContainer->get(SubscribersRepository::class),
+      $subcriptionUrlFactoryMock,
+      $confirmationEmailCustomizer
+    );
+
+    $confirmationNewsletter = $confirmationEmailCustomizer->getNewsletter();
+    expect($confirmationNewsletter->getId())->equals($newsletter->getId());
+    $confirmationMailBody = $sender->getMailBodyWithCustomizer($this->subscriber, ['test_segment']);
+    expect($confirmationMailBody['body']['html'])->stringContainsString('<a class="mailpoet_button" href="https://example.com"');
+
+
+    // See MAILPOET-5253
+    $newBody = $body;
+    $newBody['content']['blocks'][0]['blocks'][1]['blocks'][] =
+      [
+        'type' => 'button',
+        'url' => 'http://[activation_link]',
+        'text' => 'Click here to confirm your subscription',
+        'styles' => [
+          'block' => [
+            'backgroundColor' => '#2ea1cd',
+            'borderColor' => '#0074a2',
+            'borderWidth' => '1px',
+            'borderRadius' => '5px',
+            'borderStyle' => 'solid',
+            'width' => '100%',
+            'lineHeight' => '40px',
+            'fontColor' => '#ffffff',
+            'fontFamily' => 'Verdana',
+            'fontSize' => '18px',
+            'fontWeight' => 'normal',
+            'textAlign' => 'center',
+          ],
+        ],
+      ];
+
+    $newsletter->setBody($newBody);
+
+    $newsletterRepository->persist($newsletter);
+    $newsletterRepository->flush();
+
+    $confirmationNewsletter = $confirmationEmailCustomizer->getNewsletter();
+    expect($confirmationNewsletter->getId())->equals($newsletter->getId());
+    $confirmationMailBody = $sender->getMailBodyWithCustomizer($this->subscriber, ['test_segment']);
+    expect($confirmationMailBody['body']['html'])->stringContainsString('<a class="mailpoet_button" href="https://example.com"');
+
   }
 }
