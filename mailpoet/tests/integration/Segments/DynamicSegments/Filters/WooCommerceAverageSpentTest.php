@@ -99,6 +99,38 @@ class WooCommerceAverageSpentTest extends \MailPoetTest {
     $this->assertEqualsCanonicalizing(['1@e.com'], $emails);
   }
 
+  public function testItWorksWithGreaterThanOrEqual() {
+    $this->createCustomerWithOrderValues('1@e.com', [5, 10]);
+    $this->createCustomerWithOrderValues('2@e.com', [5, 15]);
+    $this->createCustomerWithOrderValues('3@e.com', [5, 20]);
+    $matchingEmails = $this->getMatchingEmails('>=', 7.50);
+    $this->assertEqualsCanonicalizing(['1@e.com', '2@e.com', '3@e.com'], $matchingEmails);
+    $matchingEmails = $this->getMatchingEmails('>=', 7.51);
+    $this->assertEqualsCanonicalizing(['2@e.com', '3@e.com'], $matchingEmails);
+    $matchingEmails = $this->getMatchingEmails('>=', 10);
+    $this->assertEqualsCanonicalizing(['2@e.com', '3@e.com'], $matchingEmails);
+    $matchingEmails = $this->getMatchingEmails('>=', 10.01);
+    $this->assertEqualsCanonicalizing(['3@e.com'], $matchingEmails);
+    $matchingEmails = $this->getMatchingEmails('>=', 12.50);
+    $this->assertEqualsCanonicalizing(['3@e.com'], $matchingEmails);
+    $matchingEmails = $this->getMatchingEmails('>=', 12.51);
+    $this->assertEqualsCanonicalizing([], $matchingEmails);
+  }
+
+  public function testItWorksWithLessThanOrEqual() {
+    $this->createCustomerWithOrderValues('1@e.com', [5, 10]);
+    $this->createCustomerWithOrderValues('2@e.com', [5, 15]);
+    $this->createCustomerWithOrderValues('3@e.com', [5, 20]);
+    $matchingEmails = $this->getMatchingEmails('<=', 7.49);
+    $this->assertEqualsCanonicalizing([], $matchingEmails);
+    $matchingEmails = $this->getMatchingEmails('<=', 7.50);
+    $this->assertEqualsCanonicalizing(['1@e.com'], $matchingEmails);
+    $matchingEmails = $this->getMatchingEmails('<=', 10);
+    $this->assertEqualsCanonicalizing(['1@e.com', '2@e.com'], $matchingEmails);
+    $matchingEmails = $this->getMatchingEmails('<=', 12.50);
+    $this->assertEqualsCanonicalizing(['1@e.com', '2@e.com', '3@e.com'], $matchingEmails);
+  }
+
   private function getMatchingEmails(string $operator, float $amount, int $days = 365): array {
     $filterData = new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_WOOCOMMERCE, WooCommerceAverageSpent::ACTION, [
       'operator' => $operator,

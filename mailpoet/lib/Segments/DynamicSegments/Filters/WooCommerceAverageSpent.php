@@ -46,6 +46,10 @@ class WooCommerceAverageSpent implements Filter {
       $queryBuilder->having("AVG($orderStatsAlias.total_sales) > :$amountParam");
     } elseif ($operator === '<') {
       $queryBuilder->having("AVG($orderStatsAlias.total_sales) < :$amountParam");
+    } elseif ($operator === '<=') {
+      $queryBuilder->having("AVG($orderStatsAlias.total_sales) <= :$amountParam");
+    } elseif ($operator === '>=') {
+      $queryBuilder->having("AVG($orderStatsAlias.total_sales) >= :$amountParam");
     }
 
     $queryBuilder->setParameter($amountParam, $amount);

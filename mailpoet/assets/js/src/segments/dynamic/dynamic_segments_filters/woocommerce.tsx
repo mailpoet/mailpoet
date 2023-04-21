@@ -421,9 +421,11 @@ function AverageSpentFields({ filterIndex }: Props): JSX.Element {
           }}
           automationId="select-average-spent-operator"
         >
+          <option value=">">{MailPoet.I18n.t('moreThan')}</option>
+          <option value=">=">{MailPoet.I18n.t('moreThanOrEqual')}</option>
           <option value="=">{MailPoet.I18n.t('equals')}</option>
           <option value="!=">{MailPoet.I18n.t('notEquals')}</option>
-          <option value=">">{MailPoet.I18n.t('moreThan')}</option>
+          <option value="<">{MailPoet.I18n.t('lessThanOrEqual')}</option>
           <option value="<">{MailPoet.I18n.t('lessThan')}</option>
         </Select>
         <Input
