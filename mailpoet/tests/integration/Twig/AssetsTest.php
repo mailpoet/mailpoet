@@ -99,27 +99,6 @@ class AssetsTest extends \MailPoetTest {
   }
 
   public function testItGeneratesImageUrls() {
-    expect($this->assetsExtension->generateImageUrl('image1.png'))->equals(
-      $this->assetsUrl . '/img/image1.png?mailpoet_version=' . $this->version
-    );
-  }
-
-  public function testItAppendsVersionToUrl() {
-    $withoutFile = 'http://url.com/';
-    expect($this->assetsExtension->appendVersionToUrl($withoutFile))->equals(
-      $withoutFile . '?mailpoet_version=' . $this->version
-    );
-    $withFile = 'http://url.com/file.php';
-    expect($this->assetsExtension->appendVersionToUrl($withFile))->equals(
-      $withFile . '?mailpoet_version=' . $this->version
-    );
-    $withFolder = 'http://url.com/folder/file.php';
-    expect($this->assetsExtension->appendVersionToUrl($withFolder))->equals(
-      $withFolder . '?mailpoet_version=' . $this->version
-    );
-    $withQueryString = 'http://url.com/folder/file.php?name=value';
-    expect($this->assetsExtension->appendVersionToUrl($withQueryString))->equals(
-      $withQueryString . '&mailpoet_version=' . $this->version
-    );
+    expect($this->assetsExtension->generateImageUrl('image1.png'))->equals($this->assetsUrl . '/img/image1.png');
   }
 }
