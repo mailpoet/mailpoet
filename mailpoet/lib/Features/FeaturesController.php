@@ -7,12 +7,14 @@ use MailPoetVendor\Doctrine\DBAL\Exception\TableNotFoundException;
 class FeaturesController {
   const LANDINGPAGE_AB_TEST_DEBUGGER = 'landingpage_ab_test_debugger';
   const FEATURE_BRAND_TEMPLATES = 'brand_templates';
+  const AUTOMATION_FILTERS = 'automation_filters';
 
   // Define feature defaults in the array below in the following form:
   //   self::FEATURE_NAME_OF_FEATURE => true,
   private $defaults = [
     self::LANDINGPAGE_AB_TEST_DEBUGGER => false,
     self::FEATURE_BRAND_TEMPLATES => false,
+    self::AUTOMATION_FILTERS => false,
   ];
 
   /** @var array|null */
