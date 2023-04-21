@@ -79,6 +79,9 @@ export function validateWooCommerce(formItems: WooCommerceFormItem): boolean {
   ) {
     return false;
   }
+  if (formItems.action === WooCommerceActionTypes.AVERAGE_SPENT) {
+    return !!formItems.amount && !!formItems.operator && !!formItems.days;
+  }
   if (formItems.action === WooCommerceActionTypes.PURCHASE_DATE) {
     return validateDateField(formItems);
   }
@@ -390,6 +393,71 @@ function TotalSpentFields({ filterIndex }: Props): JSX.Element {
   );
 }
 
+function AverageSpentFields({ filterIndex }: Props): JSX.Element {
+  const segment: WooCommerceFormItem = useSelect(
+    (select) => select(storeName).getSegmentFilter(filterIndex),
+    [filterIndex],
+  );
+  const { updateSegmentFilter, updateSegmentFilterFromEvent } =
+    useDispatch(storeName);
+  const wooCurrencySymbol: string = useSelect(
+    (select) => select(storeName).getWooCommerceCurrencySymbol(),
+    [],
+  );
+  useEffect(() => {
+    const allowedOperators = ['=', '!=', '>', '<'];
+    if (!allowedOperators.includes(segment.operator)) {
+      void updateSegmentFilter({ operator: '>' }, filterIndex);
+    }
+  }, [updateSegmentFilter, segment, filterIndex]);
+  return (
+    <>
+      <Grid.CenteredRow>
+        <Select
+          key="select"
+          value={segment.operator}
+          onChange={(e): void => {
+            void updateSegmentFilterFromEvent('operator', filterIndex, e);
+          }}
+          automationId="select-average-spent-operator"
+        >
+          <option value="=">{MailPoet.I18n.t('equals')}</option>
+          <option value="!=">{MailPoet.I18n.t('notEquals')}</option>
+          <option value=">">{MailPoet.I18n.t('moreThan')}</option>
+          <option value="<">{MailPoet.I18n.t('lessThan')}</option>
+        </Select>
+        <Input
+          data-automation-id="input-average-spent-amount"
+          type="number"
+          min={0}
+          step={0.01}
+          value={segment.amount || ''}
+          placeholder={MailPoet.I18n.t('wooSpentAmount')}
+          onChange={(e): void => {
+            void updateSegmentFilterFromEvent('amount', filterIndex, e);
+          }}
+        />
+        <div>{wooCurrencySymbol}</div>
+      </Grid.CenteredRow>
+      <Grid.CenteredRow>
+        <div>{MailPoet.I18n.t('inTheLast')}</div>
+        <Input
+          data-automation-id="input-average-spent-days"
+          type="number"
+          min={1}
+          step={1}
+          value={segment.days || ''}
+          placeholder={MailPoet.I18n.t('daysPlaceholder')}
+          onChange={(e): void => {
+            void updateSegmentFilterFromEvent('days', filterIndex, e);
+          }}
+        />
+        <div>{MailPoet.I18n.t('days')}</div>
+      </Grid.CenteredRow>
+    </>
+  );
+}
+
 function SingleOrderValueFields({ filterIndex }: Props): JSX.Element {
   const segment: WooCommerceFormItem = useSelect(
     (select) => select(storeName).getSegmentFilter(filterIndex),
@@ -542,6 +610,7 @@ const componentsMap = {
   [WooCommerceActionTypes.PURCHASED_CATEGORY]: PurchasedCategoryFields,
   [WooCommerceActionTypes.SINGLE_ORDER_VALUE]: SingleOrderValueFields,
   [WooCommerceActionTypes.TOTAL_SPENT]: TotalSpentFields,
+  [WooCommerceActionTypes.AVERAGE_SPENT]: AverageSpentFields,
 };
 
 export function WooCommerceFields({ filterIndex }: Props): JSX.Element {
