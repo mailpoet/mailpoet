@@ -7,6 +7,7 @@ use MailPoet\Entities\LogEntity;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Util\Helpers;
 use MailPoetVendor\Carbon\Carbon;
+use MailPoetVendor\Doctrine\DBAL\Driver\PDO\Connection;
 
 /**
  * @extends Repository<LogEntity>
@@ -65,12 +66,19 @@ class LogRepository extends Repository {
     return $query->getQuery()->getResult();
   }
 
-  public function purgeOldLogs(int $daysToKeepLogs) {
-    $queryBuilder = $this->entityManager->createQueryBuilder();
-    return $queryBuilder->delete(LogEntity::class, 'l')
-      ->where('l.createdAt < :days')
-      ->setParameter('days', Carbon::now()->subDays($daysToKeepLogs)->toDateTimeString())
-      ->getQuery()->execute();
+  public function purgeOldLogs(int $daysToKeepLogs, int $limit = 1000) {
+    $logsTable = $this->entityManager->getClassMetadata(LogEntity::class)->getTableName();
+    $this->entityManager->getConnection()->executeStatement("
+      DELETE FROM $logsTable
+      WHERE `created_at` < :date LIMIT :limit
+    ", [
+      'date' => Carbon::now()->subDays($daysToKeepLogs)->toDateTimeString(),
+      'limit' => $limit,
+    ],
+    [
+      'date' => Connection::PARAM_STR,
+      'limit' => Connection::PARAM_INT,
+    ]);
   }
 
   public function getRawMessagesForNewsletter(NewsletterEntity $newsletter, string $topic): array {
