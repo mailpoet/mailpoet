@@ -30,7 +30,8 @@ export function FiltersList(): JSX.Element | null {
     deleteFilterCallback(stepId, filter);
   }, []);
 
-  if (step.filters.length === 0) {
+  const groups = step.filters?.groups ?? [];
+  if (groups.length === 0) {
     return null;
   }
 
@@ -51,35 +52,37 @@ export function FiltersList(): JSX.Element | null {
       )}
 
       <div className="mailpoet-automation-filters-list">
-        {step.filters.map((filter) => (
-          <div
-            key={filter.field_key}
-            className="mailpoet-automation-filters-list-item"
-          >
-            <div className="mailpoet-automation-filters-list-item-content">
-              <span className="mailpoet-automation-filters-list-item-field">
-                {fields[filter.field_key]?.name ??
-                  sprintf(
-                    __('Unknown field "%s"', 'mailpoet'),
-                    filter.field_key,
-                  )}
-              </span>{' '}
-              <span className="mailpoet-automation-filters-list-item-condition">
-                {filters[filter.field_type]?.conditions.find(
-                  ({ key }) => key === filter.condition,
-                )?.label ?? __('unknown condition', 'mailpoet')}
-              </span>{' '}
-              <Value filter={filter} />
-            </div>
-            <Button
-              className="mailpoet-automation-filters-list-item-remove"
-              isSmall
-              onClick={() => onDelete(step.id, filter)}
+        {groups.map((group) =>
+          group.filters.map((filter) => (
+            <div
+              key={filter.field_key}
+              className="mailpoet-automation-filters-list-item"
             >
-              <Icon icon={closeSmall} />
-            </Button>
-          </div>
-        ))}
+              <div className="mailpoet-automation-filters-list-item-content">
+                <span className="mailpoet-automation-filters-list-item-field">
+                  {fields[filter.field_key]?.name ??
+                    sprintf(
+                      __('Unknown field "%s"', 'mailpoet'),
+                      filter.field_key,
+                    )}
+                </span>{' '}
+                <span className="mailpoet-automation-filters-list-item-condition">
+                  {filters[filter.field_type]?.conditions.find(
+                    ({ key }) => key === filter.condition,
+                  )?.label ?? __('unknown condition', 'mailpoet')}
+                </span>{' '}
+                <Value filter={filter} />
+              </div>
+              <Button
+                className="mailpoet-automation-filters-list-item-remove"
+                isSmall
+                onClick={() => onDelete(step.id, filter)}
+              >
+                <Icon icon={closeSmall} />
+              </Button>
+            </div>
+          )),
+        )}
       </div>
     </>
   );

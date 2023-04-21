@@ -8,6 +8,8 @@ use Codeception\Stub\Expected;
 use MailPoet\Automation\Engine\Control\RootStep;
 use MailPoet\Automation\Engine\Data\Automation;
 use MailPoet\Automation\Engine\Data\Filter as FilterData;
+use MailPoet\Automation\Engine\Data\FilterGroup;
+use MailPoet\Automation\Engine\Data\Filters;
 use MailPoet\Automation\Engine\Data\Step;
 use MailPoet\Automation\Engine\Integration\Filter;
 use MailPoet\Automation\Engine\Registry;
@@ -48,6 +50,7 @@ class ValidStepFiltersRuleTest extends AutomationRuleTest {
   }
 
   private function getAutomation(array $filters): Automation {
+    $filters = new Filters('and', [new FilterGroup('and', $filters)]);
     return $this->make(Automation::class, [
       'getSteps' => [
         'root' => new Step('root', 'root', 'core:root', [], [], $filters),

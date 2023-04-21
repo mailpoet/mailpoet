@@ -11,13 +11,23 @@ export type Filter = {
   args: Record<string, unknown>;
 };
 
+export type FilterGroup = {
+  operator: 'and' | 'or';
+  filters: Filter[];
+};
+
+export type Filters = {
+  operator: 'and' | 'or';
+  groups: FilterGroup[];
+};
+
 export type Step = {
   id: string;
   type: 'root' | 'trigger' | 'action';
   key: string;
   args: Record<string, unknown>;
   next_steps: NextStep[];
-  filters: Filter[];
+  filters?: Filters;
 };
 
 export type Automation = {

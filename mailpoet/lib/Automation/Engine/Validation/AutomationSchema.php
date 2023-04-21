@@ -29,7 +29,7 @@ class AutomationSchema {
       'key' => Builder::string()->required(),
       'args' => Builder::object()->required(),
       'next_steps' => self::getNextStepsSchema()->required(),
-      'filters' => self::getFiltersSchema()->required(),
+      'filters' => self::getFiltersSchema()->nullable()->required(),
     ]);
   }
 
@@ -51,14 +51,24 @@ class AutomationSchema {
     )->maxItems(1);
   }
 
-  public static function getFiltersSchema(): ArraySchema {
-    return Builder::array(
-      Builder::object([
-        'field_type' => Builder::string()->required(),
-        'field_key' => Builder::string()->required(),
-        'condition' => Builder::string()->required(),
-        'args' => Builder::object()->required(),
-      ])
-    );
+  public static function getFiltersSchema(): ObjectSchema {
+    $operatorSchema = Builder::string()->pattern('^and|or$')->required();
+
+    $filterSchema = Builder::object([
+      'field_type' => Builder::string()->required(),
+      'field_key' => Builder::string()->required(),
+      'condition' => Builder::string()->required(),
+      'args' => Builder::object()->required(),
+    ]);
+
+    $filterGroupSchema = Builder::object([
+      'operator' => $operatorSchema,
+      'filters' => Builder::array($filterSchema)->minItems(1)->required(),
+    ]);
+
+    return Builder::object([
+      'operator' => $operatorSchema,
+      'groups' => Builder::array($filterGroupSchema)->minItems(1)->required(),
+    ]);
   }
 }

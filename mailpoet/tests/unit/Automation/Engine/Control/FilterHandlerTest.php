@@ -8,6 +8,8 @@ use MailPoet\Automation\Engine\Data\Automation;
 use MailPoet\Automation\Engine\Data\AutomationRun;
 use MailPoet\Automation\Engine\Data\Field;
 use MailPoet\Automation\Engine\Data\Filter as FilterData;
+use MailPoet\Automation\Engine\Data\FilterGroup;
+use MailPoet\Automation\Engine\Data\Filters;
 use MailPoet\Automation\Engine\Data\Step;
 use MailPoet\Automation\Engine\Data\StepRunArgs;
 use MailPoet\Automation\Engine\Data\Subject as SubjectData;
@@ -23,7 +25,8 @@ use MailPoetUnitTest;
 class FilterHandlerTest extends MailPoetUnitTest {
   /** @dataProvider dataForTestItFilters */
   public function testItFilters(array $stepFilters, bool $expectation): void {
-    $step = new Step('step', Step::TYPE_TRIGGER, 'test:step', [], [], $stepFilters);
+    $filters = new Filters('and', [new FilterGroup('and', $stepFilters)]);
+    $step = new Step('step', Step::TYPE_TRIGGER, 'test:step', [], [], $filters);
     $subject = $this->createSubject('subject', [
       new Field('test:field-string', Field::TYPE_STRING, 'Test field string', function () {
         return 'abc';
