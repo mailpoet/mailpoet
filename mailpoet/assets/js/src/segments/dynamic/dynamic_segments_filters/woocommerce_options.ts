@@ -8,11 +8,17 @@ export enum WooCommerceActionTypes {
   PURCHASE_DATE = 'purchaseDate',
   PURCHASED_PRODUCT = 'purchasedProduct',
   TOTAL_SPENT = 'totalSpent',
+  AVERAGE_SPENT = 'averageSpent',
   CUSTOMER_IN_COUNTRY = 'customerInCountry',
   SINGLE_ORDER_VALUE = 'singleOrderValue',
 }
 
 export const WooCommerceOptions = [
+  {
+    value: WooCommerceActionTypes.AVERAGE_SPENT,
+    label: MailPoet.I18n.t('wooAverageSpent'),
+    group: SegmentTypes.WooCommerce,
+  },
   {
     value: WooCommerceActionTypes.CUSTOMER_IN_COUNTRY,
     label: MailPoet.I18n.t('wooCustomerInCountry'),

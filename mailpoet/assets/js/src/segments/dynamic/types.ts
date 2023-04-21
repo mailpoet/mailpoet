@@ -94,6 +94,8 @@ export interface WooCommerceFormItem extends FormItem {
   single_order_value_type?: string;
   single_order_value_amount?: number;
   single_order_value_days?: number;
+  amount?: number;
+  days?: string;
 }
 
 export interface WooCommerceMembershipFormItem extends FormItem {
