@@ -102,6 +102,6 @@ class EnumArrayFilterTest extends MailPoetUnitTest {
 
   private function matchesFilter(string $condition, $filterValue, $value): bool {
     $filter = new EnumArrayFilter();
-    return $filter->matches(new Filter('string', '', $condition, ['value' => $filterValue]), $value);
+    return $filter->matches(new Filter('f1', 'string', '', $condition, ['value' => $filterValue]), $value);
   }
 }

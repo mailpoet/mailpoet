@@ -4,6 +4,9 @@ namespace MailPoet\Automation\Engine\Data;
 
 class Filter {
   /** @var string */
+  private $id;
+
+  /** @var string */
   private $fieldType;
 
   /** @var string */
@@ -16,15 +19,21 @@ class Filter {
   private $args;
 
   public function __construct(
+    string $id,
     string $fieldType,
     string $fieldKey,
     string $condition,
     array $args
   ) {
+    $this->id = $id;
     $this->fieldType = $fieldType;
     $this->fieldKey = $fieldKey;
     $this->condition = $condition;
     $this->args = $args;
+  }
+
+  public function getId(): string {
+    return $this->id;
   }
 
   public function getFieldType(): string {
@@ -45,6 +54,7 @@ class Filter {
 
   public function toArray(): array {
     return [
+      'id' => $this->id,
       'field_type' => $this->fieldType,
       'field_key' => $this->fieldKey,
       'condition' => $this->condition,
@@ -54,6 +64,7 @@ class Filter {
 
   public static function fromArray(array $data): self {
     return new self(
+      $data['id'],
       $data['field_type'],
       $data['field_key'],
       $data['condition'],

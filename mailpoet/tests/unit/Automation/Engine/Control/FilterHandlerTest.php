@@ -25,7 +25,7 @@ use MailPoetUnitTest;
 class FilterHandlerTest extends MailPoetUnitTest {
   /** @dataProvider dataForTestItFilters */
   public function testItFilters(array $stepFilters, bool $expectation): void {
-    $filters = new Filters('and', [new FilterGroup('and', $stepFilters)]);
+    $filters = new Filters('and', [new FilterGroup('g1', 'and', $stepFilters)]);
     $step = new Step('step', Step::TYPE_TRIGGER, 'test:step', [], [], $filters);
     $subject = $this->createSubject('subject', [
       new Field('test:field-string', Field::TYPE_STRING, 'Test field string', function () {
@@ -70,8 +70,8 @@ class FilterHandlerTest extends MailPoetUnitTest {
       // matching
       [
         [
-          new FilterData(Field::TYPE_STRING, 'test:field-string', '', ['value' => 'abc']),
-          new FilterData(Field::TYPE_INTEGER, 'test:field-integer', '', ['value' => 123]),
+          new FilterData('f1', Field::TYPE_STRING, 'test:field-string', '', ['value' => 'abc']),
+          new FilterData('f2', Field::TYPE_INTEGER, 'test:field-integer', '', ['value' => 123]),
         ],
         true,
       ],
@@ -79,15 +79,15 @@ class FilterHandlerTest extends MailPoetUnitTest {
       // not matching
       [
         [
-          new FilterData(Field::TYPE_INTEGER, 'test:field-integer', '', ['value' => 999]),
+          new FilterData('f1', Field::TYPE_INTEGER, 'test:field-integer', '', ['value' => 999]),
         ],
         false,
       ],
       [
         [
-          new FilterData(Field::TYPE_STRING, 'test:field-string', '', ['value' => 'abc']),
-          new FilterData(Field::TYPE_INTEGER, 'test:field-integer', '', ['value' => 999]),
-          new FilterData(Field::TYPE_BOOLEAN, 'test:field-boolean', '', ['value' => true]),
+          new FilterData('f1', Field::TYPE_STRING, 'test:field-string', '', ['value' => 'abc']),
+          new FilterData('f2', Field::TYPE_INTEGER, 'test:field-integer', '', ['value' => 999]),
+          new FilterData('f3', Field::TYPE_BOOLEAN, 'test:field-boolean', '', ['value' => true]),
         ],
         false,
       ],

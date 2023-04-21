@@ -55,6 +55,7 @@ class AutomationSchema {
     $operatorSchema = Builder::string()->pattern('^and|or$')->required();
 
     $filterSchema = Builder::object([
+      'id' => Builder::string()->required(),
       'field_type' => Builder::string()->required(),
       'field_key' => Builder::string()->required(),
       'condition' => Builder::string()->required(),
@@ -62,6 +63,7 @@ class AutomationSchema {
     ]);
 
     $filterGroupSchema = Builder::object([
+      'id' => Builder::string()->required(),
       'operator' => $operatorSchema,
       'filters' => Builder::array($filterSchema)->minItems(1)->required(),
     ]);
