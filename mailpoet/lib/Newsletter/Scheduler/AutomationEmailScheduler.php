@@ -29,10 +29,10 @@ class AutomationEmailScheduler {
   }
 
   public function createSendingTask(NewsletterEntity $email, SubscriberEntity $subscriber): ScheduledTaskEntity {
-    if (!in_array($email->getType(), [NewsletterEntity::TYPE_AUTOMATION, NewsletterEntity::TYPE_TRANSACTIONAL], true)) {
+    if (!in_array($email->getType(), [NewsletterEntity::TYPE_AUTOMATION, NewsletterEntity::TYPE_AUTOMATION_TRANSACTIONAL], true)) {
       throw InvalidStateException::create()->withMessage(
         // translators: %s is the type which was given.
-        sprintf(__("Email with type 'automation' or 'transactional' expected, '%s' given.", 'mailpoet'), $email->getType())
+        sprintf(__("Email with type 'automation' or 'automation_transactional' expected, '%s' given.", 'mailpoet'), $email->getType())
       );
     }
 

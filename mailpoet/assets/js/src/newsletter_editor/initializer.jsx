@@ -13,7 +13,9 @@ const renderHeading = (newsletterType, newsletterOptions) => {
     const stepsHeadingContainer = document.getElementById(
       'mailpoet_editor_steps_heading',
     );
-    const step = ['automation', 'transactional'].includes(newsletterType)
+    const step = ['automation', 'automation_transactional'].includes(
+      newsletterType,
+    )
       ? 2
       : 3;
 

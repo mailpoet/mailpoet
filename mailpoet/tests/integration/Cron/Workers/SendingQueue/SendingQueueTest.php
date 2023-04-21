@@ -981,7 +981,7 @@ class SendingQueueTest extends \MailPoetTest {
    */
   public function testItSendsTransactionalEmails(string $subscriberStatus, bool $expectSending) {
 
-    $this->newsletter->type = NewsletterEntity::TYPE_TRANSACTIONAL;
+    $this->newsletter->type = NewsletterEntity::TYPE_AUTOMATION_TRANSACTIONAL;
     $this->newsletter->save();
     $this->newsletterSegment->delete();
     $sendingQueueWorker = $this->sendingQueueWorker;

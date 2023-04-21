@@ -726,7 +726,7 @@ class SchedulerTest extends \MailPoetTest {
    */
   public function testItSchedulesTransactionalEmails(string $subscriberStatus, bool $isExpectedToBeScheduled) {
 
-    $newsletter = $this->_createNewsletter(NewsletterEntity::TYPE_TRANSACTIONAL, Newsletter::STATUS_SCHEDULED);
+    $newsletter = $this->_createNewsletter(NewsletterEntity::TYPE_AUTOMATION_TRANSACTIONAL, Newsletter::STATUS_SCHEDULED);
     $subscriber = $this->_createSubscriber(null, $subscriberStatus);
     $queue = $this->_createQueue($newsletter->id);
     $queue->setSubscribers([$subscriber->id]);

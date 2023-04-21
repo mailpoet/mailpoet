@@ -126,7 +126,7 @@ class SendEmailAction implements Action {
       'status' => SubscriberEntity::STATUS_SUBSCRIBED,
     ]);
 
-    if ($newsletter->getType() !== NewsletterEntity::TYPE_TRANSACTIONAL && !$subscriberSegment) {
+    if ($newsletter->getType() !== NewsletterEntity::TYPE_AUTOMATION_TRANSACTIONAL && !$subscriberSegment) {
       throw InvalidStateException::create()->withMessage(sprintf("Subscriber ID '%s' is not subscribed to segment ID '%s'.", $subscriberId, $segmentId));
     }
 
@@ -136,7 +136,7 @@ class SendEmailAction implements Action {
     }
 
     $subscriberStatus = $subscriber->getStatus();
-    if ($newsletter->getType() !== NewsletterEntity::TYPE_TRANSACTIONAL && $subscriberStatus !== SubscriberEntity::STATUS_SUBSCRIBED) {
+    if ($newsletter->getType() !== NewsletterEntity::TYPE_AUTOMATION_TRANSACTIONAL && $subscriberStatus !== SubscriberEntity::STATUS_SUBSCRIBED) {
       throw InvalidStateException::create()->withMessage(sprintf("Cannot schedule a newsletter for subscriber ID '%s' because their status is '%s'.", $subscriberId, $subscriberStatus));
     }
 
@@ -158,7 +158,7 @@ class SendEmailAction implements Action {
     }
 
     $email = $this->getEmailForStep($step);
-    $email->setType($this->isTransactional($step, $automation) ? NewsletterEntity::TYPE_TRANSACTIONAL : NewsletterEntity::TYPE_AUTOMATION);
+    $email->setType($this->isTransactional($step, $automation) ? NewsletterEntity::TYPE_AUTOMATION_TRANSACTIONAL : NewsletterEntity::TYPE_AUTOMATION);
     $email->setStatus(NewsletterEntity::STATUS_ACTIVE);
     $email->setSubject($args['subject'] ?? '');
     $email->setPreheader($args['preheader'] ?? '');
@@ -213,7 +213,7 @@ class SendEmailAction implements Action {
     $email = $this->newslettersRepository->findOneBy([
       'id' => $emailId,
     ]);
-    if (!$email || !in_array($email->getType(), [NewsletterEntity::TYPE_AUTOMATION, NewsletterEntity::TYPE_TRANSACTIONAL], true)) {
+    if (!$email || !in_array($email->getType(), [NewsletterEntity::TYPE_AUTOMATION, NewsletterEntity::TYPE_AUTOMATION_TRANSACTIONAL], true)) {
       throw InvalidStateException::create()->withMessage(
         // translators: %s is the ID of email.
         sprintf(__("Automation email with ID '%s' not found.", 'mailpoet'), $emailId)
