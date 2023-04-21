@@ -22,13 +22,12 @@ class Step {
   /** @var NextStep[] */
   protected $nextSteps;
 
-  /** @var Filter[] */
+  /** @var Filters|null */
   private $filters;
 
   /**
    * @param array<string, mixed> $args
    * @param NextStep[] $nextSteps
-   * @param Filter[] $filters
    */
   public function __construct(
     string $id,
@@ -36,7 +35,7 @@ class Step {
     string $key,
     array $args,
     array $nextSteps,
-    array $filters = []
+    Filters $filters = null
   ) {
     $this->id = $id;
     $this->type = $type;
@@ -72,8 +71,7 @@ class Step {
     return $this->args;
   }
 
-  /** @return Filter[] */
-  public function getFilters(): array {
+  public function getFilters(): ?Filters {
     return $this->filters;
   }
 
@@ -86,9 +84,7 @@ class Step {
       'next_steps' => array_map(function (NextStep $nextStep) {
         return $nextStep->toArray();
       }, $this->nextSteps),
-      'filters' => array_map(function (Filter $filter) {
-        return $filter->toArray();
-      }, $this->filters),
+      'filters' => $this->filters ? $this->filters->toArray() : null,
     ];
   }
 
@@ -101,9 +97,7 @@ class Step {
       array_map(function (array $nextStep) {
         return NextStep::fromArray($nextStep);
       }, $data['next_steps']),
-      array_map(function (array $filter) {
-        return Filter::fromArray($filter);
-      }, $data['filters'] ?? [])
+      isset($data['filters']) ? Filters::fromArray($data['filters']) : null
     );
   }
 }

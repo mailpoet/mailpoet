@@ -19,10 +19,13 @@ class FilterHandler {
 
   public function matchesFilters(StepRunArgs $args): bool {
     $filters = $args->getStep()->getFilters();
-    foreach ($filters as $filter) {
-      $value = $args->getFieldValue($filter->getFieldKey());
-      if (!$this->matchesFilter($filter, $value)) {
-        return false;
+    $groups = $filters ? $filters->getGroups() : [];
+    foreach ($groups as $group) {
+      foreach ($group->getFilters() as $filter) {
+        $value = $args->getFieldValue($filter->getFieldKey());
+        if (!$this->matchesFilter($filter, $value)) {
+          return false;
+        }
       }
     }
     return true;

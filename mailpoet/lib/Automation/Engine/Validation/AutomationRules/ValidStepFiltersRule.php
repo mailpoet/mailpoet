@@ -27,13 +27,16 @@ class ValidStepFiltersRule implements AutomationNodeVisitor {
   }
 
   public function visitNode(Automation $automation, AutomationNode $node): void {
-    $step = $node->getStep();
-    foreach ($step->getFilters() as $filter) {
-      $registryFilter = $this->registry->getFilter($filter->getFieldType());
-      if (!$registryFilter) {
-        continue;
+    $filters = $node->getStep()->getFilters();
+    $groups = $filters ? $filters->getGroups() : [];
+    foreach ($groups as $group) {
+      foreach ($group->getFilters() as $filter) {
+        $registryFilter = $this->registry->getFilter($filter->getFieldType());
+        if (!$registryFilter) {
+          continue;
+        }
+        $this->validator->validate($registryFilter->getArgsSchema(), $filter->getArgs());
       }
-      $this->validator->validate($registryFilter->getArgsSchema(), $filter->getArgs());
     }
   }
 
