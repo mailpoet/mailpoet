@@ -13,9 +13,9 @@ class EnumArrayFilterTest extends MailPoetUnitTest {
     $this->assertSame('enum_array', $filter->getFieldType());
 
     $this->assertSame([
-      'matches-any' => 'matches any',
-      'matches-all' => 'matches all',
-      'matches-none' => 'matches none',
+      'matches-any-of' => 'matches any of',
+      'matches-all-of' => 'matches all of',
+      'matches-none-of' => 'matches none of',
     ], $filter->getConditions());
 
     $this->assertSame([
@@ -49,42 +49,42 @@ class EnumArrayFilterTest extends MailPoetUnitTest {
   }
 
   public function testMatchesAnyCondition(): void {
-    $this->assertMatches('matches-any', [1, 2, 3], [1]);
-    $this->assertMatches('matches-any', [1, 2, 3], [1, 3, 9]);
-    $this->assertMatches('matches-any', [1], [1, 1, 1]);
-    $this->assertMatches('matches-any', [1, 1, 1], [1]);
-    $this->assertNotMatches('matches-any', [], []);
-    $this->assertNotMatches('matches-any', [], [1]);
-    $this->assertNotMatches('matches-any', [1, 2, 3], []);
-    $this->assertNotMatches('matches-any', [1, 2, 3], [7, 8, 9]);
+    $this->assertMatches('matches-any-of', [1, 2, 3], [1]);
+    $this->assertMatches('matches-any-of', [1, 2, 3], [1, 3, 9]);
+    $this->assertMatches('matches-any-of', [1], [1, 1, 1]);
+    $this->assertMatches('matches-any-of', [1, 1, 1], [1]);
+    $this->assertNotMatches('matches-any-of', [], []);
+    $this->assertNotMatches('matches-any-of', [], [1]);
+    $this->assertNotMatches('matches-any-of', [1, 2, 3], []);
+    $this->assertNotMatches('matches-any-of', [1, 2, 3], [7, 8, 9]);
   }
 
   public function testMatchesAllCondition(): void {
-    $this->assertMatches('matches-all', [1], [1]);
-    $this->assertMatches('matches-all', [1, 2], [2, 1]);
-    $this->assertMatches('matches-all', [1, 2], [2, 1, 3]);
-    $this->assertMatches('matches-all', [1], [1, 1, 1]);
-    $this->assertMatches('matches-all', [1, 1, 1], [1]);
-    $this->assertNotMatches('matches-all', [], []);
-    $this->assertNotMatches('matches-all', [], [1]);
-    $this->assertNotMatches('matches-all', [1, 2, 3], []);
-    $this->assertNotMatches('matches-all', [1, 2, 3], [2, 3, 4]);
+    $this->assertMatches('matches-all-of', [1], [1]);
+    $this->assertMatches('matches-all-of', [1, 2], [2, 1]);
+    $this->assertMatches('matches-all-of', [1, 2], [2, 1, 3]);
+    $this->assertMatches('matches-all-of', [1], [1, 1, 1]);
+    $this->assertMatches('matches-all-of', [1, 1, 1], [1]);
+    $this->assertNotMatches('matches-all-of', [], []);
+    $this->assertNotMatches('matches-all-of', [], [1]);
+    $this->assertNotMatches('matches-all-of', [1, 2, 3], []);
+    $this->assertNotMatches('matches-all-of', [1, 2, 3], [2, 3, 4]);
   }
 
   public function testMatchesNoneCondition(): void {
-    $this->assertMatches('matches-none', [], []);
-    $this->assertMatches('matches-none', [], [1]);
-    $this->assertMatches('matches-none', [1], []);
-    $this->assertMatches('matches-none', [1], [2]);
-    $this->assertMatches('matches-none', [1, 2, 3], []);
-    $this->assertMatches('matches-none', [1, 2, 3], [4, 5, 6]);
-    $this->assertMatches('matches-none', [1], [2, 2, 2]);
-    $this->assertMatches('matches-none', [1, 1, 1], [2]);
-    $this->assertNotMatches('matches-none', [1], [1]);
-    $this->assertNotMatches('matches-none', [1, 2, 3], [2]);
-    $this->assertNotMatches('matches-none', [1, 2, 3], [3, 4, 5]);
-    $this->assertNotMatches('matches-none', [1], [1, 1, 1]);
-    $this->assertNotMatches('matches-none', [1, 1, 1], [1]);
+    $this->assertMatches('matches-none-of', [], []);
+    $this->assertMatches('matches-none-of', [], [1]);
+    $this->assertMatches('matches-none-of', [1], []);
+    $this->assertMatches('matches-none-of', [1], [2]);
+    $this->assertMatches('matches-none-of', [1, 2, 3], []);
+    $this->assertMatches('matches-none-of', [1, 2, 3], [4, 5, 6]);
+    $this->assertMatches('matches-none-of', [1], [2, 2, 2]);
+    $this->assertMatches('matches-none-of', [1, 1, 1], [2]);
+    $this->assertNotMatches('matches-none-of', [1], [1]);
+    $this->assertNotMatches('matches-none-of', [1, 2, 3], [2]);
+    $this->assertNotMatches('matches-none-of', [1, 2, 3], [3, 4, 5]);
+    $this->assertNotMatches('matches-none-of', [1], [1, 1, 1]);
+    $this->assertNotMatches('matches-none-of', [1, 1, 1], [1]);
   }
 
   public function testUnknownCondition(): void {
