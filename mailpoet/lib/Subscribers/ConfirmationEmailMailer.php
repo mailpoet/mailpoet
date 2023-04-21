@@ -136,7 +136,10 @@ class ConfirmationEmailMailer {
 
     // replace activation link
     $body = (string)str_replace(
-      '[activation_link]',
+      [
+        'http://[activation_link]', // See MAILPOET-5253
+        '[activation_link]',
+      ],
       $this->subscriptionUrlFactory->getConfirmationUrl($subscriber),
       $body
     );
