@@ -116,13 +116,7 @@ class Assets extends AbstractExtension {
   }
 
   public function generateImageUrl($path) {
-    return $this->appendVersionToUrl(
-      $this->globals['assets_url'] . '/img/' . $path
-    );
-  }
-
-  public function appendVersionToUrl($url) {
-    return WPFunctions::get()->addQueryArg('mailpoet_version', $this->globals['version'], $url);
+    return $this->globals['assets_url'] . '/img/' . $path;
   }
 
   public function getAssetFileName($manifest, $asset) {
