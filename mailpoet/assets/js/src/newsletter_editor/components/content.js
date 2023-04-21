@@ -25,7 +25,9 @@ Module.NewsletterModel = SuperModel.extend({
     return this.get('type') === 'wc_transactional';
   },
   isAutomationEmail: function isAutomationEmail() {
-    return ['automation', 'transactional'].includes(this.get('type'));
+    return ['automation', 'automation_transactional'].includes(
+      this.get('type'),
+    );
   },
   isConfirmationEmailTemplate: function isConfirmationEmailTemplate() {
     return this.get('type') === 'confirmation_email';

@@ -299,7 +299,7 @@ class SendEmailActionTest extends \MailPoetTest {
 
     $isTransactional = [
       'steps' => [$root, $trigger, $emailStep],
-      'expected_type' => NewsletterEntity::TYPE_TRANSACTIONAL,
+      'expected_type' => NewsletterEntity::TYPE_AUTOMATION_TRANSACTIONAL,
     ];
 
     $nonTransactionalTrigger = new Step('trigger', Step::TYPE_TRIGGER, 'some-other-trigger', [], [new NextStep('emailstep')]);

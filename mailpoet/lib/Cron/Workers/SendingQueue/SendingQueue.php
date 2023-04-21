@@ -227,7 +227,7 @@ class SendingQueue {
         // No segments = Welcome emails or some Automatic emails.
         // Welcome emails or some Automatic emails use segments only for scheduling and store them as a newsletter option
         $foundSubscribers = SubscriberModel::whereIn('id', $subscribersToProcessIds);
-        $foundSubscribers = $newsletter->type === NewsletterEntity::TYPE_TRANSACTIONAL ?
+        $foundSubscribers = $newsletter->type === NewsletterEntity::TYPE_AUTOMATION_TRANSACTIONAL ?
           $foundSubscribers->whereNotEqual('status', SubscriberModel::STATUS_BOUNCED) :
           $foundSubscribers->where('status', SubscriberModel::STATUS_SUBSCRIBED);
         $foundSubscribers = $foundSubscribers
