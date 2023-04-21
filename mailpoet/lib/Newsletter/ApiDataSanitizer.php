@@ -18,6 +18,8 @@ class ApiDataSanitizer {
     'socialIcon' => ['link'],
   ];
 
+  private const ACTIVATION_LINK_SHORTCODE = '[activation_link]';
+
   public function __construct(
     NewsletterHtmlSanitizer $htmlSanitizer
   ) {
@@ -56,8 +58,13 @@ class ApiDataSanitizer {
         continue;
       }
       $block[$property] = $this->htmlSanitizer->sanitize($block[$property]);
+
       if (in_array($property, ['url', 'link'], true)) {
-        $block[$property] = $this->htmlSanitizer->sanitizeURL($block[$property]);
+        if (strpos($block[$property], self::ACTIVATION_LINK_SHORTCODE) !== false) {
+          $block[$property] = self::ACTIVATION_LINK_SHORTCODE;
+        } else {
+          $block[$property] = $this->htmlSanitizer->sanitizeURL($block[$property]);
+        }
       }
     }
     return $block;

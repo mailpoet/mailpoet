@@ -57,6 +57,16 @@ class ApiDataSanitizerTest extends \MailPoetTest {
             ],
           ],
         ],
+        [
+          'type' => 'button',
+          'url' => 'https://[activation_link]something else',
+          'text' => 'Click here to confirm your subscription',
+        ],
+        [
+          'type' => 'button',
+          'url' => '[activation_link]',
+          'text' => 'Click here to confirm your subscription',
+        ],
       ],
     ],
   ];
@@ -88,5 +98,11 @@ class ApiDataSanitizerTest extends \MailPoetTest {
     expect($socialIcons['icons'][0]['type'])->equals('socialIcon');
     expect($socialIcons['icons'][0]['link'])->equals('');
     expect($socialIcons['icons'][1]['link'])->equals('https://example.com/');
+    $confirmationButton = $result['content']['blocks'][4];
+    expect($confirmationButton['type'])->equals('button');
+    expect($confirmationButton['url'])->equals('[activation_link]');
+    $confirmationButton = $result['content']['blocks'][5];
+    expect($confirmationButton['type'])->equals('button');
+    expect($confirmationButton['url'])->equals('[activation_link]');
   }
 }
