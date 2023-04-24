@@ -70,7 +70,8 @@ class LogRepository extends Repository {
     $logsTable = $this->entityManager->getClassMetadata(LogEntity::class)->getTableName();
     $this->entityManager->getConnection()->executeStatement("
       DELETE FROM $logsTable
-      WHERE `created_at` < :date LIMIT :limit
+      WHERE `created_at` < :date
+      ORDER BY `id` ASC LIMIT :limit
     ", [
       'date' => Carbon::now()->subDays($daysToKeepLogs)->toDateTimeString(),
       'limit' => $limit,
