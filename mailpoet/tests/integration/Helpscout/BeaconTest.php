@@ -143,7 +143,7 @@ class BeaconTest extends \MailPoetTest {
   }
 
   public function testItReturnsServerOSInformation() {
-    expect($this->beaconData['Server OS'])->equals(utf8_encode(php_uname()));
+    expect($this->beaconData['Server OS'])->equals(php_uname());
   }
 
   public function testItReturnsCronPingUrl() {
