@@ -5,15 +5,21 @@ import { LockedBadge } from '../../../../../common/premium_modal/locked_badge';
 import { StepType } from '../../../../editor/store/types';
 import { Icon } from './icon';
 
+const keywords = [
+  __('notification', 'mailpoet-premium'),
+  __('email', 'mailpoet-premium'),
+];
 export const step: StepType = {
   key: 'mailpoet:notification-email',
   group: 'actions',
-  title: __('Send notification email', 'mailpoet'),
-  description: __(
-    'Receive a notification when a contact reaches a specific point in automation.',
-    'mailpoet',
-  ),
+  title: () => __('Send notification email', 'mailpoet'),
+  description: () =>
+    __(
+      'Receive a notification when a contact reaches a specific point in automation.',
+      'mailpoet',
+    ),
   subtitle: () => <LockedBadge text={__('Premium', 'mailpoet')} />,
+  keywords,
   foreground: '#996800',
   background: '#FCF9E8',
   icon: () => <Icon />,
