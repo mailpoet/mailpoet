@@ -431,8 +431,24 @@ class Populator {
         'newsletter_type' => NewsletterEntity::TYPE_AUTOMATIC,
       ],
       [
+        'name' => 'group',
+        'newsletter_type' => NewsletterEntity::TYPE_AUTOMATION,
+      ],
+      [
+        'name' => 'group',
+        'newsletter_type' => NewsletterEntity::TYPE_AUTOMATION_TRANSACTIONAL,
+      ],
+      [
         'name' => 'event',
         'newsletter_type' => NewsletterEntity::TYPE_AUTOMATIC,
+      ],
+      [
+        'name' => 'event',
+        'newsletter_type' => NewsletterEntity::TYPE_AUTOMATION,
+      ],
+      [
+        'name' => 'event',
+        'newsletter_type' => NewsletterEntity::TYPE_AUTOMATION_TRANSACTIONAL,
       ],
       [
         'name' => 'sendTo',

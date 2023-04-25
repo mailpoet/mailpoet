@@ -193,46 +193,49 @@ class SendEmailAction implements Action {
     $email->setReplyToName($args['reply_to_name'] ?? '');
     $email->setReplyToAddress($args['reply_to_address'] ?? '');
     $email->setGaCampaign($args['ga_campaign'] ?? '');
-    if ($this->automationHasWooCommerceTrigger($automation)) {
-      $this->storeNewsletterOption($email, NewsletterOptionFieldEntity::NAME_GROUP, 'woocommerce');
-    }
-    if ($this->automationHasAbandonedCartTrigger($automation)) {
-      $this->storeNewsletterOption($email, NewsletterOptionFieldEntity::NAME_EVENT, 'woocommerce_abandoned_shopping_cart');
-    }
+    $this->storeNewsletterOption(
+      $email,
+      NewsletterOptionFieldEntity::NAME_GROUP,
+      $this->automationHasWooCommerceTrigger($automation) ? 'woocommerce' : null
+    );
+    $this->storeNewsletterOption(
+      $email,
+      NewsletterOptionFieldEntity::NAME_EVENT,
+      $this->automationHasAbandonedCartTrigger($automation) ? 'woocommerce_abandoned_shopping_cart' : null
+    );
+
     $this->newslettersRepository->persist($email);
     $this->newslettersRepository->flush();
   }
 
-  private function storeNewsletterOption(NewsletterEntity $newsletter, string $optionName, string $optionValue): void {
+  private function storeNewsletterOption(NewsletterEntity $newsletter, string $optionName, string $optionValue = null): void {
     $options = $newsletter->getOptions()->toArray();
-    foreach ($options as $option) {
+    foreach ($options as $key => $option) {
       if ($option->getName() === $optionName) {
-        $option->setValue($optionValue);
+        if ($optionValue) {
+          $option->setValue($optionValue);
+          return;
+        }
+        $newsletter->getOptions()->remove($key);
+        $this->newsletterOptionsRepository->remove($option);
         return;
       }
     }
 
-    $optionField = $this->newsletterOptionFieldsRepository->findOneBy([
+    if (!$optionValue) {
+      return;
+    }
+
+    $field = $this->newsletterOptionFieldsRepository->findOneBy([
       'name' => $optionName,
       'newsletterType' => $newsletter->getType(),
     ]);
-
-    if (!$optionField) {
-      $optionField = new NewsletterOptionFieldEntity();
-      $optionField->setName($optionName);
-      $optionField->setNewsletterType($newsletter->getType());
-      $this->newsletterOptionFieldsRepository->persist($optionField);
+    if (!$field) {
+      return;
     }
-    $option = $this->newsletterOptionsRepository->findOneBy([
-      'newsletter' => $newsletter,
-      'optionField' => $optionField,
-    ]);
-    if (!$option instanceof NewsletterOptionEntity) {
-      $option = new NewsletterOptionEntity($newsletter, $optionField);
-      $newsletter->getOptions()->add($option);
-      $this->newsletterOptionsRepository->persist($option);
-    }
+    $option = new NewsletterOptionEntity($newsletter, $field);
     $option->setValue($optionValue);
+    $this->newsletterOptionsRepository->persist($option);
     $newsletter->getOptions()->add($option);
   }
 
