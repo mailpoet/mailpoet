@@ -5,7 +5,10 @@ namespace MailPoet\Settings;
 use MailPoet\Cron\Workers\InactiveSubscribers;
 use MailPoet\Cron\Workers\WooCommerceSync;
 use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Mailer\Mailer;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
+use MailPoet\Services\Bridge;
+use MailPoet\Services\SubscribersCountReporter;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 
@@ -77,6 +80,49 @@ class SettingsChangeHandlerTest extends \MailPoetTest {
     $this->tasksRepository->persist($task);
     $this->tasksRepository->flush();
     return $task;
+  }
+
+  public function testItChecksAndStoresKeysWhenUpdatingBridge() {
+    $key = 'valid-key';
+    $settings = [];
+    $settings[Mailer::MAILER_CONFIG_SETTING_NAME]['mailpoet_api_key'] = $key;
+    $settings['premium']['premium_key'] = $key;
+    $response = ['state' => Bridge::KEY_VALID];
+
+    $bridge = $this->createMock(Bridge::class);
+    $bridge->expects($this->once())
+      ->method('checkMSSKey')
+      ->with($this->equalTo($key))
+      ->willReturn($response);
+    $bridge->expects($this->once())
+      ->method('storeMSSKeyAndState')
+      ->with(
+        $this->equalTo($key),
+        $this->equalTo($response)
+      );
+
+    $bridge->expects($this->once())
+      ->method('checkPremiumKey')
+      ->with($this->equalTo($key))
+      ->willReturn($response);
+    $bridge->expects($this->once())
+      ->method('storePremiumKeyAndState')
+      ->with(
+        $this->equalTo($key),
+        $this->equalTo($response)
+      );
+
+    $countReporterMock = $this->createMock(SubscribersCountReporter::class);
+    $countReporterMock->expects($this->once())
+      ->method('report')
+      ->with($this->equalTo($key));
+
+    $changeHandler = $this->getServiceWithOverrides(SettingsChangeHandler::class, [
+      'bridge' => $bridge,
+      'subscribersCountReporter' => $countReporterMock,
+    ]);
+
+    $changeHandler->updateBridge($settings);
   }
 
   private function getScheduledTaskByType(string $type): ?ScheduledTaskEntity {

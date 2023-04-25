@@ -303,23 +303,4 @@ class Bridge {
       null)
     );
   }
-
-  public function onSettingsSave($settings) {
-    $apiKey = $settings[Mailer::MAILER_CONFIG_SETTING_NAME]['mailpoet_api_key'] ?? null;
-    $premiumKey = $settings['premium']['premium_key'] ?? null;
-    if (!empty($apiKey)) {
-      $apiKeyState = $this->checkMSSKey($apiKey);
-      $this->storeMSSKeyAndState($apiKey, $apiKeyState);
-    }
-    if (!empty($premiumKey)) {
-      $premiumState = $this->checkPremiumKey($premiumKey);
-      $this->storePremiumKeyAndState($premiumKey, $premiumState);
-    }
-    if ($apiKey && !empty($apiKeyState) && in_array($apiKeyState['state'], [self::KEY_VALID, self::KEY_VALID_UNDERPRIVILEGED], true)) {
-      return $this->updateSubscriberCount($apiKey);
-    }
-    if ($premiumKey && !empty($premiumState) && in_array($premiumState['state'], [self::KEY_VALID, self::KEY_VALID_UNDERPRIVILEGED], true)) {
-      return $this->updateSubscriberCount($apiKey);
-    }
-  }
 }

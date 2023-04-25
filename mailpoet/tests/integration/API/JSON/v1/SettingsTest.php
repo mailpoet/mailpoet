@@ -101,7 +101,7 @@ class SettingsTest extends \MailPoetTest {
 
     $this->endpoint = new Settings(
       $this->settings,
-      $this->make(Bridge::class, ['onSettingsSave' => Expected::once()]),
+      $this->diContainer->get(Bridge::class),
       $this->make(AuthorizedEmailsController::class, ['onSettingsSave' => Expected::once()]),
       $this->diContainer->get(AuthorizedSenderDomainController::class),
       $this->make(TransactionalEmails::class),
@@ -113,7 +113,7 @@ class SettingsTest extends \MailPoetTest {
       $this->diContainer->get(FormMessageController::class),
       $this->make(ServicesChecker::class, ['isMailPoetAPIKeyPendingApproval' => false]),
       $this->diContainer->get(SegmentsRepository::class),
-      $this->diContainer->get(SettingsChangeHandler::class),
+      $this->make(SettingsChangeHandler::class, ['updateBridge' => Expected::once()]),
       $this->diContainer->get(SubscribersCountsController::class),
       $this->diContainer->get(TrackingConfig::class),
       $this->diContainer->get(ConfirmationEmailCustomizer::class)
