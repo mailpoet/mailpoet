@@ -14,8 +14,8 @@ export const step: StepType = {
     'mailpoet',
   ),
   subtitle: () => <LockedBadge text={__('Premium', 'mailpoet')} />,
-  foreground: '#00A32A',
-  background: '#EDFAEF',
+  foreground: '#996800',
+  background: '#FCF9E8',
   icon: () => <Icon />,
   edit: () => (
     <PremiumModalForStepEdit
