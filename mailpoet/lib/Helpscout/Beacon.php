@@ -80,7 +80,7 @@ class Beacon {
       'WordPress version' => $this->wp->getBloginfo('version'),
       'Database version' => $dbVersion,
       'Web server' => (!empty($_SERVER["SERVER_SOFTWARE"])) ? sanitize_text_field(wp_unslash($_SERVER["SERVER_SOFTWARE"])) : 'N/A',
-      'Server OS' => (function_exists('php_uname')) ? utf8_encode(php_uname()) : 'N/A',
+      'Server OS' => (function_exists('php_uname')) ? php_uname() : 'N/A',
       'WP info' => 'WP_MEMORY_LIMIT: ' . WP_MEMORY_LIMIT . ' - WP_MAX_MEMORY_LIMIT: ' . WP_MAX_MEMORY_LIMIT . ' - WP_DEBUG: ' . WP_DEBUG .
         ' - WordPress language: ' . $this->wp->getLocale(),
       'PHP info' => 'PHP max_execution_time: ' . ini_get('max_execution_time') . ' - PHP memory_limit: ' . ini_get('memory_limit') .
