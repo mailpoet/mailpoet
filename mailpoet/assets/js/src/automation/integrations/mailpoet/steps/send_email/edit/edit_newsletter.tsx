@@ -50,6 +50,10 @@ export function EditNewsletter(): JSX.Element {
 
   const createEmail = useCallback(async () => {
     setRedirectToTemplateSelection(true);
+    const options = {
+      automationId,
+      automationStepId,
+    };
     const response = await MailPoet.Ajax.post({
       api_version: window.mailpoet_api_version,
       endpoint: 'newsletters',
@@ -57,10 +61,7 @@ export function EditNewsletter(): JSX.Element {
       data: {
         type: 'automation',
         subject: '',
-        options: {
-          automationId,
-          automationStepId,
-        },
+        options,
       },
     });
 
