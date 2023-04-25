@@ -150,7 +150,7 @@ class Settings extends APIEndpoint {
 
       // when pending approval, leave this to cron / Key Activation tab logic
       if (!$this->servicesChecker->isMailPoetAPIKeyPendingApproval()) {
-        $this->bridge->onSettingsSave($settings);
+        $this->settingsChangeHandler->updateBridge($settings);
       }
 
       $meta = $this->authorizedEmailsController->onSettingsSave($settings);

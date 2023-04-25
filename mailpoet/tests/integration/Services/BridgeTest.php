@@ -9,7 +9,6 @@ use MailPoet\Services\Bridge\API;
 use MailPoet\Services\Bridge\BridgeTestMockAPI as MockAPI;
 use MailPoet\Settings\SettingsController;
 use MailPoet\WP\Functions as WPFunctions;
-use PHPUnit\Framework\MockObject\MockObject;
 
 require_once('BridgeTestMockAPI.php');
 
@@ -209,49 +208,6 @@ class BridgeTest extends \MailPoetTest {
     $this->bridge->invalidateMssKey();
     $storedState = $this->getMssKeyState() ?? [];
     expect($storedState['state'])->equals(Bridge::KEY_INVALID);
-  }
-
-  public function testItChecksAndStoresKeysOnSettingsSave() {
-    $response = ['state' => Bridge::KEY_VALID];
-    /** @var Bridge&MockObject $bridge */
-    $bridge = Stub::makeEmptyExcept(
-      Bridge::class,
-      'onSettingsSave',
-      [
-        'checkMSSKey' => $response,
-        'checkPremiumKey' => $response,
-      ],
-      $this
-    );
-    $bridge->expects($this->once())
-      ->method('checkMSSKey')
-      ->with($this->equalTo($this->validKey));
-    $bridge->expects($this->once())
-      ->method('storeMSSKeyAndState')
-      ->with(
-        $this->equalTo($this->validKey),
-        $this->equalTo($response)
-      );
-
-    $bridge->expects($this->once())
-      ->method('checkPremiumKey')
-      ->with($this->equalTo($this->validKey));
-    $bridge->expects($this->once())
-      ->method('storePremiumKeyAndState')
-      ->with(
-        $this->equalTo($this->validKey),
-        $this->equalTo($response)
-      );
-    $bridge->expects($this->once())
-      ->method('updateSubscriberCount')
-      ->with($this->equalTo($this->validKey));
-
-    $settings = [];
-    $settings[Mailer::MAILER_CONFIG_SETTING_NAME]['mailpoet_api_key'] = $this->validKey;
-    $settings['premium']['premium_key'] = $this->validKey;
-
-    $this->setMailPoetSendingMethod();
-    $bridge->onSettingsSave($settings);
   }
 
   public function testItPingsBridge() {
