@@ -2,11 +2,9 @@
 
 namespace MailPoet\Services;
 
-use MailPoet\DI\ContainerWrapper;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Services\Bridge\API;
 use MailPoet\Settings\SettingsController;
-use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 use MailPoet\WP\Functions as WPFunctions;
 
 class Bridge {
@@ -42,21 +40,13 @@ class Bridge {
   /** @var SettingsController */
   private $settings;
 
-  /** @var SubscribersFeature */
-  private $subscribersFeature;
-
   public function __construct(
-    SettingsController $settingsController = null,
-    SubscribersFeature $subscribersFeature = null
+    SettingsController $settingsController = null
   ) {
     if ($settingsController === null) {
       $settingsController = SettingsController::getInstance();
     }
-    if ($subscribersFeature === null) {
-      $subscribersFeature = ContainerWrapper::getInstance()->get(SubscribersFeature::class);
-    }
     $this->settings = $settingsController;
-    $this->subscribersFeature = $subscribersFeature;
   }
 
   /**
@@ -301,8 +291,8 @@ class Bridge {
     ];
   }
 
-  public function updateSubscriberCount(string $key): bool {
-    return $this->getApi($key)->updateSubscriberCount($this->subscribersFeature->getSubscribersCount());
+  public function updateSubscriberCount(string $key, int $count): bool {
+    return $this->getApi($key)->updateSubscriberCount($count);
   }
 
   public function invalidateMssKey() {
