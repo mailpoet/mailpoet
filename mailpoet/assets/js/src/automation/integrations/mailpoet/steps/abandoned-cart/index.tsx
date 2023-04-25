@@ -17,7 +17,7 @@ export const step: StepType = {
   title: () => __('Subscriber abandons cart', 'mailpoet-premium'),
   description: () =>
     __(
-      'Start the automation when a subscriber who has items in the shopping cart leave your website without checking out.',
+      'Start the automation when a subscriber who has items in the shopping cart leaves your website without checking out.',
       'mailpoet-premium',
     ),
   subtitle: () => <LockedBadge text={__('Premium', 'mailpoet')} />,
