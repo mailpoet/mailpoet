@@ -7,6 +7,7 @@ class MailerError {
   const OPERATION_SEND = 'send';
   const OPERATION_AUTHORIZATION = 'authorization';
   const OPERATION_INSUFFICIENT_PRIVILEGES = 'insufficient_privileges';
+  const OPERATION_SUBSCRIBER_LIMIT_REACHED = 'subscriber_limit_reached';
   const OPERATION_EMAIL_LIMIT_REACHED = 'email_limit_reached';
   const OPERATION_PENDING_APPROVAL = 'pending_approval';
 

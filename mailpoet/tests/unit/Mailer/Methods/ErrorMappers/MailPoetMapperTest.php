@@ -100,6 +100,21 @@ class MailPoetMapperTest extends \MailPoetUnitTest {
     expect($error->getMessage())->stringContainsString('You have reached the subscriber limit of your plan.');
   }
 
+  public function testGetErrorSubscribersLimits(): void {
+    $apiResult = [
+      'code' => API::RESPONSE_CODE_CAN_NOT_SEND,
+      'status' => API::SENDING_STATUS_SEND_ERROR,
+      'message' => API::ERROR_MESSAGE_SUBSCRIBERS_LIMIT_REACHED,
+      'error' => API::ERROR_MESSAGE_SUBSCRIBERS_LIMIT_REACHED,
+    ];
+    $error = $this->mapper->getErrorForResult($apiResult, $this->subscribers);
+
+    expect($error)->isInstanceOf(MailerError::class);
+    expect($error->getOperation())->equals(MailerError::OPERATION_SUBSCRIBER_LIMIT_REACHED);
+    expect($error->getLevel())->equals(MailerError::LEVEL_HARD);
+    expect($error->getMessage())->stringContainsString('You have reached the subscriber limit of your plan.');
+  }
+
   public function testGetErrorUnauthorizedEmail() {
     $apiResult = [
       'code' => API::RESPONSE_CODE_CAN_NOT_SEND,

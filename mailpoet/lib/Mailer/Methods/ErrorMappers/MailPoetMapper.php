@@ -134,7 +134,7 @@ class MailPoetMapper {
     return $message;
   }
 
-  private function getInsufficientPrivilegesMessage(): string {
+  private function getSubscribersLimitReachedMessage(): string {
     $message = __('You have reached the subscriber limit of your plan. Please [link1]upgrade your plan[/link1], or [link2]contact our support team[/link2] if you have any questions.', 'mailpoet');
     $message = Helpers::replaceLinkTags(
       $message,
@@ -248,9 +248,18 @@ class MailPoetMapper {
       return [$operation, $message];
     }
 
+    // Backward compatibility for older blocked keys.
+    // Exceeded subscribers limit used to use the same error message as insufficient privileges.
+    // We can change the message to "Insufficient privileges" like wording a couple of months after releasing SHOP-1228
     if ($result['error'] === API::ERROR_MESSAGE_INSUFFICIENT_PRIVILEGES) {
       $operation = MailerError::OPERATION_INSUFFICIENT_PRIVILEGES;
-      $message = $this->getInsufficientPrivilegesMessage();
+      $message = $this->getSubscribersLimitReachedMessage();
+      return [$operation, $message];
+    }
+
+    if ($result['error'] === API::ERROR_MESSAGE_SUBSCRIBERS_LIMIT_REACHED) {
+      $operation = MailerError::OPERATION_SUBSCRIBER_LIMIT_REACHED;
+      $message = $this->getSubscribersLimitReachedMessage();
       return [$operation, $message];
     }
 
