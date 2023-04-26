@@ -12,7 +12,7 @@ class ConsistentStepMapRule implements AutomationNodeVisitor {
 
   public function initialize(Automation $automation): void {
     foreach ($automation->getSteps() as $id => $step) {
-      if ($id !== $step->getId()) {
+      if ((string)$id !== $step->getId()) {
         // translators: %1$s is the ID of the step, %2$s is its index in the steps object.
         throw Exceptions::automationStructureNotValid(
           sprintf(__("Step with ID '%1\$s' stored under a mismatched index '%2\$s'.", 'mailpoet'), $step->getId(), $id),
