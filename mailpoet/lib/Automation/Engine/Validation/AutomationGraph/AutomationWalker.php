@@ -35,11 +35,11 @@ class AutomationWalker {
   }
 
   /**
-   * @param array<string, Step> $steps
-   * @return Generator<array{0: Step, 1: array<string, Step>}>
+   * @param array<string|int, Step> $steps
+   * @return Generator<array{0: Step, 1: array<string|int, Step>}>
    */
   private function walkStepsDepthFirstPreOrder(array $steps, Step $root): Generator {
-    /** @var array{0: Step, 1: array<string, Step>}[] $stack */
+    /** @var array{0: Step, 1: array<string|int, Step>}[] $stack */
     $stack = [
       [$root, []],
     ];
