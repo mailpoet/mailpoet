@@ -89,7 +89,7 @@ class EnumArrayFilterTest extends MailPoetUnitTest {
 
   public function testUnknownCondition(): void {
     $this->assertNotMatches('unknown', [1], [1]);
-    $this->assertNotMatches('unknown', [1], [1]);
+    $this->assertNotMatches('unknown', [1, 2, 3], [1]);
   }
 
   private function assertMatches(string $condition, $filterValue, $value): void {
