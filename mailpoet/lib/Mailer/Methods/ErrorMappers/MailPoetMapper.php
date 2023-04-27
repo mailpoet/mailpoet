@@ -7,9 +7,7 @@ use MailPoet\Config\ServicesChecker;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\SubscriberError;
-use MailPoet\Services\Bridge;
 use MailPoet\Services\Bridge\API;
-use MailPoet\Settings\SettingsController;
 use MailPoet\Util\Helpers;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 use MailPoet\Util\Notices\UnauthorizedEmailNotice;
@@ -24,9 +22,6 @@ class MailPoetMapper {
 
   const TEMPORARY_UNAVAILABLE_RETRY_INTERVAL = 300; // seconds
 
-  /** @var Bridge */
-  private $bridge;
-
   /** @var ServicesChecker */
   private $servicesChecker;
 
@@ -36,21 +31,14 @@ class MailPoetMapper {
   /** @var WPFunctions */
   private $wp;
 
-  /** @var SettingsController */
-  private $settings;
-
   public function __construct(
-    Bridge $bridge,
     ServicesChecker $servicesChecker,
-    SettingsController $settings,
     SubscribersFeature $subscribers,
     WPFunctions $wp
   ) {
     $this->servicesChecker = $servicesChecker;
     $this->subscribersFeature = $subscribers;
     $this->wp = $wp;
-    $this->bridge = $bridge;
-    $this->settings = $settings;
   }
 
   public function getInvalidApiKeyError() {
@@ -264,11 +252,6 @@ class MailPoetMapper {
     }
 
     if ($result['error'] === API::ERROR_MESSAGE_EMAIL_VOLUME_LIMIT_REACHED) {
-      // Update the current email volume limit from MSS
-      $premiumKey = $this->settings->get(Bridge::PREMIUM_KEY_SETTING_NAME);
-      $result = $this->bridge->checkPremiumKey($premiumKey);
-      $this->bridge->storePremiumKeyAndState($premiumKey, $result);
-
       $operation = MailerError::OPERATION_EMAIL_LIMIT_REACHED;
       $message = $this->getEmailVolumeLimitReachedMessage();
       return [$operation, $message];
