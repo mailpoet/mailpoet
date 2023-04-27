@@ -5,7 +5,7 @@ namespace MailPoet\Cron\Workers;
 use MailPoet\Config\ServicesChecker;
 use MailPoet\Cron\CronWorkerScheduler;
 use MailPoet\Entities\ScheduledTaskEntity;
-use MailPoet\Services\Bridge;
+use MailPoet\Services\SubscribersCountReporter;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -20,8 +20,8 @@ class SubscribersStatsReportTest extends \MailPoetTest {
   /** @var SubscribersStatsReport */
   private $worker;
 
-  /** @var Bridge & MockObject */
-  private $bridgeMock;
+  /** @var SubscribersCountReporter & MockObject */
+  private $countReporerMock;
 
   /** @var CronWorkerScheduler & MockObject */
   private $schedulerMock;
@@ -34,12 +34,12 @@ class SubscribersStatsReportTest extends \MailPoetTest {
 
   public function _before() {
     parent::_before();
-    $this->bridgeMock = $this->createMock(Bridge::class);
+    $this->countReporerMock = $this->createMock(SubscribersCountReporter::class);
     $this->schedulerMock = $this->createMock(CronWorkerScheduler::class);
     $this->servicesCheckerMock = $this->createMock(ServicesChecker::class);
     $this->wpMock = $this->createMock(WPFunctions::class);
     $this->worker = new SubscribersStatsReport(
-      $this->bridgeMock,
+      $this->countReporerMock,
       $this->servicesCheckerMock,
       $this->schedulerMock,
       $this->wpMock
@@ -66,8 +66,8 @@ class SubscribersStatsReportTest extends \MailPoetTest {
     $this->servicesCheckerMock->expects($this->once())
       ->method('getValidAccountKey')
       ->willReturn('a_valid_key');
-    $this->bridgeMock->expects($this->once())
-      ->method('updateSubscriberCount')
+    $this->countReporerMock->expects($this->once())
+      ->method('report')
       ->willReturn(true);
     expect($this->worker->processTaskStrategy($task, $timer))->true();
   }
@@ -78,8 +78,8 @@ class SubscribersStatsReportTest extends \MailPoetTest {
     $this->servicesCheckerMock->expects($this->once())
       ->method('getValidAccountKey')
       ->willReturn(null);
-    $this->bridgeMock->expects($this->never())
-      ->method('updateSubscriberCount');
+    $this->countReporerMock->expects($this->never())
+      ->method('report');
     expect($this->worker->processTaskStrategy($task, $timer))->false();
   }
 
@@ -89,8 +89,8 @@ class SubscribersStatsReportTest extends \MailPoetTest {
     $this->servicesCheckerMock->expects($this->once())
       ->method('getValidAccountKey')
       ->willReturn('a_valid_key');
-    $this->bridgeMock->expects($this->once())
-      ->method('updateSubscriberCount')
+    $this->countReporerMock->expects($this->once())
+      ->method('report')
       ->willReturn(false);
     $this->schedulerMock->expects($this->once())
       ->method('rescheduleProgressively');
