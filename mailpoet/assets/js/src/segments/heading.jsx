@@ -3,9 +3,7 @@ import { MailPoet } from 'mailpoet';
 import { TopBarWithBeamer } from 'common/top_bar/top_bar';
 import { plusIcon } from 'common/button/icon/plus';
 import { SubscribersInPlan } from 'common/subscribers_in_plan';
-import { SubscribersLimitNotice } from 'notices/subscribers_limit_notice';
-import { EmailVolumeLimitNotice } from 'notices/email_volume_limit_notice';
-import { InvalidMssKeyNotice } from 'notices/invalid_mss_key_notice';
+import { MssAccessNotices } from 'notices/mss_access_notices';
 import { SubscribersCacheMessage } from 'common/subscribers_cache_message';
 
 function ListHeading() {
@@ -35,12 +33,7 @@ function ListHeading() {
         cacheCalculation={window.mailpoet_subscribers_counts_cache_created_at}
       />
 
-      <SubscribersLimitNotice />
-      <EmailVolumeLimitNotice />
-      <InvalidMssKeyNotice
-        mssKeyInvalid={MailPoet.hasInvalidMssApiKey}
-        subscribersCount={MailPoet.subscribersCount}
-      />
+      <MssAccessNotices />
     </>
   );
 }

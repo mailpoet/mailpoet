@@ -8,9 +8,7 @@ import { Listing } from 'listing/listing.jsx';
 import { MailPoet } from 'mailpoet';
 import { Modal } from 'common/modal/modal.tsx';
 import { Selection } from 'form/fields/selection.jsx';
-import { SubscribersLimitNotice } from 'notices/subscribers_limit_notice';
-import { InvalidMssKeyNotice } from 'notices/invalid_mss_key_notice';
-import { EmailVolumeLimitNotice } from 'notices/email_volume_limit_notice';
+import { MssAccessNotices } from 'notices/mss_access_notices';
 import { SubscribersCacheMessage } from 'common/subscribers_cache_message';
 import { SubscribersInPlan } from 'common/subscribers_in_plan';
 import { ListingsEngagementScore } from './listings_engagement_score';
@@ -487,12 +485,7 @@ function SubscriberList({ match }) {
         subscribersInPlanLimit={MailPoet.subscribersLimit}
       />
 
-      <SubscribersLimitNotice />
-      <EmailVolumeLimitNotice />
-      <InvalidMssKeyNotice
-        mssKeyInvalid={window.mailpoet_mss_key_invalid}
-        subscribersCount={window.mailpoet_subscribers_count}
-      />
+      <MssAccessNotices />
 
       <SubscribersCacheMessage
         cacheCalculation={window.mailpoet_subscribers_counts_cache_created_at}
