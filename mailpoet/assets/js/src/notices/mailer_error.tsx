@@ -193,7 +193,10 @@ export function MailerError({
     );
   }
 
-  if (mtaLog.error.operation === 'insufficient_privileges') {
+  if (
+    mtaLog.error.operation === 'insufficient_privileges' ||
+    mtaLog.error.operation === 'subscriber_limit_reached'
+  ) {
     return (
       <div className={className}>
         <p>{message}</p>
