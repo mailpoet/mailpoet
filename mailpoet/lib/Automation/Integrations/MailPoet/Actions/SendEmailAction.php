@@ -10,9 +10,9 @@ use MailPoet\Automation\Engine\Data\StepRunArgs;
 use MailPoet\Automation\Engine\Data\StepValidationArgs;
 use MailPoet\Automation\Engine\Integration\Action;
 use MailPoet\Automation\Engine\Integration\ValidationException;
-use MailPoet\Automation\Integrations\MailPoet\Payloads\AbandonedCartPayload;
 use MailPoet\Automation\Integrations\MailPoet\Payloads\SegmentPayload;
 use MailPoet\Automation\Integrations\MailPoet\Payloads\SubscriberPayload;
+use MailPoet\Automation\Integrations\WooCommerce\Payloads\AbandonedCartPayload;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterOptionEntity;
 use MailPoet\Entities\NewsletterOptionFieldEntity;
@@ -270,7 +270,7 @@ class SendEmailAction implements Action {
     return (bool)array_filter(
       $automation->getTriggers(),
       function(Step $step): bool {
-        return in_array($step->getKey(), ['woocommerce:order-status-changed', 'mailpoet:abandoned-cart'], true);
+        return in_array($step->getKey(), ['woocommerce:order-status-changed', 'woocommerce:abandoned-cart'], true);
       }
     );
   }
@@ -279,7 +279,7 @@ class SendEmailAction implements Action {
     return (bool)array_filter(
       $automation->getTriggers(),
       function(Step $step): bool {
-        return in_array($step->getKey(), ['mailpoet:abandoned-cart'], true);
+        return in_array($step->getKey(), ['woocommerce:abandoned-cart'], true);
       }
     );
   }
