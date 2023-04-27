@@ -50,12 +50,16 @@ class Subscribers {
   }
 
   public function checkEmailVolumeLimitIsReached(): bool {
+    // We have data from MSS and we can determine based on the data
     $emailVolumeLimit = $this->getEmailVolumeLimit();
-    if (!$emailVolumeLimit) {
-      return false;
-    }
     $emailsSent = $this->getEmailsSent();
-    return $emailsSent > $emailVolumeLimit;
+    if ($emailVolumeLimit && $emailsSent > $emailVolumeLimit) {
+      return true;
+    }
+    // We don't have data from MSS, or they might be outdated so we need to check accessibility restrictions
+    $mssStateData = $this->settings->get(Bridge::API_KEY_STATE_SETTING_NAME);
+    $restriction = $mssStateData['access_restriction'] ?? '';
+    return $restriction === Bridge::KEY_ACCESS_EMAIL_VOLUME_LIMIT;
   }
 
   public function getSubscribersCount(): int {
