@@ -103,16 +103,6 @@ class Shortcodes {
       $this, 'renderArchiveSubject',
     ], 2, 3);
 
-    // This deprecated notice can be removed after 2023-01-11
-    if ($this->wp->hasFilter('mailpoet_archive_email_subject')) {
-      $this->wp->deprecatedHook(
-        'mailpoet_archive_email_subject_line',
-        '3.92.1',
-        'mailpoet_archive_email_subject',
-        __('Please note that mailpoet_archive_email_subject no longer runs and that the list of parameters of the new filter is different.', 'mailpoet')
-      );
-    }
-
     // initialize subscription pages data
     $this->subscriptionPages->init();
     // initialize subscription management shortcodes
