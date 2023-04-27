@@ -72,6 +72,13 @@ class ExistingCoupons extends Component<Props, State> {
           .includes(this.state.couponSearch.toLowerCase()),
       );
     }
+    const allDiscountTypes = this.availableDiscountTypes
+      .map((type) => type.value)
+      .filter((type) => type !== '');
+    // Ensure we only include coupons with a known discount type
+    coupons = coupons.filter((coupon) =>
+      allDiscountTypes.includes(coupon.discountType),
+    );
     return coupons;
   };
 
