@@ -6,9 +6,7 @@ use Codeception\Stub;
 use MailPoet\Config\ServicesChecker;
 use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\Methods\ErrorMappers\MailPoetMapper;
-use MailPoet\Services\Bridge;
 use MailPoet\Services\Bridge\API;
-use MailPoet\Settings\SettingsController;
 use MailPoet\Util\License\Features\Subscribers;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -30,9 +28,7 @@ class MailPoetMapperTest extends \MailPoetUnitTest {
       },
     ]);
     $this->mapper = new MailPoetMapper(
-      Stub::make(Bridge::class),
       Stub::make(ServicesChecker::class),
-      Stub::make(SettingsController::class),
       Stub::make(Subscribers::class),
       $wpFunctions
     );
