@@ -100,10 +100,14 @@ export function MailerError({
   ) {
     return null;
   }
-  // do not display Email Volume Limit reached error twice
+  // When plugin detects that the volume limit has been reached (via regular key check)
+  // it displays a notification on all pages (based on MailPoet.emailVolumeLimitReached).
+  // So in such case we ignore the email volume limit error notification coming from mailer log to avoid duplication.
+  // We still need to display the error in case the plugin doesn't know the limit has been reached from the API key check.
   if (
     mtaMethod === 'MailPoet' &&
-    mtaLog.error.operation === 'email_limit_reached'
+    mtaLog.error.operation === 'email_limit_reached' &&
+    MailPoet.emailVolumeLimitReached
   ) {
     return null;
   }
