@@ -268,7 +268,7 @@ class Reporter {
     $automationsWithAbandonedCartTrigger = array_filter(
       $activeAutomations,
       function(Automation $automation): bool {
-        return $automation->getTrigger('mailpoet:abandoned-cart') !== null;
+        return $automation->getTrigger('woocommerce:abandoned-cart') !== null;
       }
     );
 

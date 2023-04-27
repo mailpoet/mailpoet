@@ -1,12 +1,12 @@
 <?php declare(strict_types = 1);
 
-namespace MailPoet\Automation\Integrations\MailPoet\Subjects;
+namespace MailPoet\Automation\Integrations\WooCommerce\Subjects;
 
 use MailPoet\Automation\Engine\Data\Subject as SubjectData;
 use MailPoet\Automation\Engine\Exceptions\InvalidStateException;
 use MailPoet\Automation\Engine\Integration\Payload;
 use MailPoet\Automation\Engine\Integration\Subject;
-use MailPoet\Automation\Integrations\MailPoet\Payloads\AbandonedCartPayload;
+use MailPoet\Automation\Integrations\WooCommerce\Payloads\AbandonedCartPayload;
 use MailPoet\Validator\Builder;
 use MailPoet\Validator\Schema\ObjectSchema;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
@@ -15,7 +15,7 @@ use MailPoet\WooCommerce\Helper as WooCommerceHelper;
  * @implements Subject<AbandonedCartPayload>
  */
 class AbandonedCartSubject implements Subject {
-  const KEY = 'mailpoet:abandoned_cart';
+  const KEY = 'woocommerce:abandoned_cart';
 
   /** @var WooCommerceHelper */
   private $woocommerceHelper;

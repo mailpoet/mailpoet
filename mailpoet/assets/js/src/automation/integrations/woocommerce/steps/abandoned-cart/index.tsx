@@ -12,7 +12,7 @@ const keywords = [
   'abandon cart',
 ];
 export const step: StepType = {
-  key: 'mailpoet:abandoned-cart',
+  key: 'woocommerce:abandoned-cart',
   group: 'triggers',
   title: () => __('Subscriber abandons cart', 'mailpoet-premium'),
   description: () =>

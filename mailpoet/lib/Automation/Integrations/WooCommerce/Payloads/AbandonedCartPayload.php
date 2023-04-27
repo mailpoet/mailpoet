@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace MailPoet\Automation\Integrations\MailPoet\Payloads;
+namespace MailPoet\Automation\Integrations\WooCommerce\Payloads;
 
 use MailPoet\Automation\Engine\Integration\Payload;
 
