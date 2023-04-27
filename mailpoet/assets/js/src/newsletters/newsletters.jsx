@@ -35,10 +35,8 @@ import { ErrorBoundary, registerTranslations, Tab, withBoundary } from 'common';
 import { withNpsPoll } from 'nps_poll.jsx';
 import { ListingHeading } from 'newsletters/listings/heading.jsx';
 import { ListingHeadingDisplay } from 'newsletters/listings/heading_display.jsx';
-import { SubscribersLimitNotice } from 'notices/subscribers_limit_notice';
-import { InvalidMssKeyNotice } from 'notices/invalid_mss_key_notice';
 import { TransactionalEmailsProposeOptInNotice } from 'notices/transactional_emails_propose_opt_in_notice';
-import { EmailVolumeLimitNotice } from 'notices/email_volume_limit_notice';
+import { MssAccessNotices } from 'notices/mss_access_notices';
 import { CampaignStatsPage } from './campaign_stats/page';
 import { CorruptEmailNotice } from '../notices/corrupt_email_notice';
 
@@ -248,12 +246,6 @@ function App() {
       <HashRouter>
         <Notices />
         <ErrorBoundary>
-          <SubscribersLimitNotice />
-        </ErrorBoundary>
-        <ErrorBoundary>
-          <EmailVolumeLimitNotice />
-        </ErrorBoundary>
-        <ErrorBoundary>
           <TransactionalEmailsProposeOptInNotice
             mailpoetInstalledDaysAgo={MailPoet.installedDaysAgo}
             sendTransactionalEmails={MailPoet.transactionalEmailsEnabled}
@@ -263,10 +255,7 @@ function App() {
           />
         </ErrorBoundary>
         <ErrorBoundary>
-          <InvalidMssKeyNotice
-            mssKeyInvalid={MailPoet.hasInvalidMssApiKey}
-            subscribersCount={MailPoet.subscribersCount}
-          />
+          <MssAccessNotices />
         </ErrorBoundary>
         <Switch>
           <Route

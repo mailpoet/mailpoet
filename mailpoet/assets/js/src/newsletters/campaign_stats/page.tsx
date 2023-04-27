@@ -3,7 +3,7 @@ import { __, _x } from '@wordpress/i18n';
 import { Hooks } from 'wp-js-hooks';
 import { MailPoet } from 'mailpoet';
 import { withRouter } from 'react-router-dom';
-import { InvalidMssKeyNotice } from 'notices/invalid_mss_key_notice';
+import { MssAccessNotices } from 'notices/mss_access_notices';
 import { TopBarWithBeamer } from 'common/top_bar/top_bar';
 import { HideScreenOptions } from 'common/hide_screen_options/hide_screen_options';
 import { RemoveWrapMargin } from 'common/remove_wrap_margin/remove_wrap_margin';
@@ -111,10 +111,7 @@ function CampaignStatsPageComponent({ match, history, location }: Props) {
       <TopBarWithBeamer />
 
       <div className="mailpoet-stats-page">
-        <InvalidMssKeyNotice
-          mssKeyInvalid={window.mailpoet_mss_key_invalid}
-          subscribersCount={window.mailpoet_subscribers_count}
-        />
+        <MssAccessNotices />
 
         <ErrorBoundary>
           <NewsletterStatsInfo newsletter={newsletter} />
