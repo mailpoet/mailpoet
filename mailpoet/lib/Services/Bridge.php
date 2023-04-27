@@ -269,11 +269,23 @@ class Bridge {
       return false;
     }
 
+    $previousKey = $this->settings->get($keySettingName);
+    // If the key remain the same and the new state is not valid we want to preserve the data from the previous state.
+    // The data contain information about state limits. We need those to display the correct information to users.
+    if (empty($state['data']) && $previousKey === $key) {
+      $previousState = $this->settings->get($keyStateSettingName);
+      if (!empty($previousState['data'])) {
+        $state['data'] = $previousState['data'];
+      }
+    }
+
     // store the key itself
-    $this->settings->set(
-      $keySettingName,
-      $key
-    );
+    if ($previousKey !== $key) {
+      $this->settings->set(
+        $keySettingName,
+        $key
+      );
+    }
 
     // store the key state
     $this->settings->set(

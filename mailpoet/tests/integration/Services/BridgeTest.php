@@ -385,8 +385,139 @@ class BridgeTest extends \MailPoetTest {
     expect($result['ok'])->equals(true); // verified
   }
 
+  public function testItPreservesMSSKeyStateDataIfSubsequentCheckFails() {
+    $apiMock = $this->createMock(API::class);
+    $data = ['some_key' => 'some_value'];
+    $okResponse = [
+      'code' => 200,
+      'data' => $data,
+    ];
+    $errorResponse = [
+      'code' => 403,
+      'error_message' => 'Insufficient privileges',
+    ];
+    $apiMock
+      ->expects($this->exactly(2))
+      ->method('checkMSSKey')->willReturnOnConsecutiveCalls($okResponse, $errorResponse);
+    $apiMock
+      ->expects($this->exactly(2))
+      ->method('setKey')->willReturn(null);
+    $this->bridge->api = $apiMock;
+
+    // First check succeeds
+    $result = $this->bridge->checkMSSKey('abc');
+    $this->bridge->storeMSSKeyAndState('abc', $result);
+    $state = $this->getMssKeyState() ?? [];
+    expect($state['state'])->equals(Bridge::KEY_VALID);
+    expect($state['data'])->equals($data);
+    // Second check fails with 403 insufficient privileges simulating that key lost access to MSS
+    $result = $this->bridge->checkMSSKey('abc');
+    $this->bridge->storeMSSKeyAndState('abc', $result);
+    $state = $this->getMssKeyState() ?? [];
+    expect($state['state'])->equals(Bridge::KEY_VALID_UNDERPRIVILEGED);
+    expect($state['data'])->equals($data);
+  }
+
+  public function testItResetsMSSKeyStateDataIfSubsequentCheckFailForADiffrentKey() {
+    $apiMock = $this->createMock(API::class);
+    $data = ['some_key' => 'some_value'];
+    $okResponse = [
+      'code' => 200,
+      'data' => $data,
+    ];
+    $errorResponse = [
+      'code' => 403,
+      'error_message' => 'Insufficient privileges',
+    ];
+    $apiMock
+      ->expects($this->exactly(2))
+      ->method('checkMSSKey')->willReturnOnConsecutiveCalls($okResponse, $errorResponse);
+    $apiMock
+      ->expects($this->exactly(2))
+      ->method('setKey')->willReturn(null);
+    $this->bridge->api = $apiMock;
+
+    // First check succeeds
+    $result = $this->bridge->checkMSSKey('abc');
+    $this->bridge->storeMSSKeyAndState('abc', $result);
+    $state = $this->getMssKeyState() ?? [];
+    expect($state['state'])->equals(Bridge::KEY_VALID);
+    expect($state['data'])->equals($data);
+    // Second check fails with 403 insufficient privileges simulating that key lost access to MSS
+    $result = $this->bridge->checkMSSKey('cba');
+    $this->bridge->storeMSSKeyAndState('cba', $result);
+    $state = $this->getMssKeyState() ?? [];
+    expect($state['state'])->equals(Bridge::KEY_VALID_UNDERPRIVILEGED);
+    expect($state['data'])->null();
+  }
+
+  public function testItPreservesPremiumKeyStateDataIfSubsequentCheckFails() {
+    $apiMock = $this->createMock(API::class);
+    $data = ['some_key' => 'some_value'];
+    $okResponse = [
+      'code' => 200,
+      'data' => $data,
+    ];
+    $errorResponse = [
+      'code' => 403,
+      'error_message' => 'Insufficient privileges',
+    ];
+    $apiMock
+      ->expects($this->exactly(2))
+      ->method('checkPremiumKey')->willReturnOnConsecutiveCalls($okResponse, $errorResponse);
+    $apiMock
+      ->expects($this->exactly(2))
+      ->method('setKey')->willReturn(null);
+    $this->bridge->api = $apiMock;
+
+    // First check succeeds
+    $result = $this->bridge->checkPremiumKey('abc');
+    $this->bridge->storePremiumKeyAndState('abc', $result);
+    $state = $this->getPremiumKeyState() ?? [];
+    expect($state['state'])->equals(Bridge::KEY_VALID);
+    expect($state['data'])->equals($data);
+    // Second check fails with 403 insufficient privileges simulating that key lost access to MSS
+    $result = $this->bridge->checkPremiumKey('abc');
+    $this->bridge->storePremiumKeyAndState('abc', $result);
+    $state = $this->getPremiumKeyState() ?? [];
+    expect($state['state'])->equals(Bridge::KEY_VALID_UNDERPRIVILEGED);
+    expect($state['data'])->equals($data);
+  }
+
+  public function testItResetsPremiumKeyStateDataIfSubsequentCheckFailForADiffrentKey() {
+    $apiMock = $this->createMock(API::class);
+    $data = ['some_key' => 'some_value'];
+    $okResponse = [
+      'code' => 200,
+      'data' => $data,
+    ];
+    $errorResponse = [
+      'code' => 403,
+      'error_message' => 'Insufficient privileges',
+    ];
+    $apiMock
+      ->expects($this->exactly(2))
+      ->method('checkPremiumKey')->willReturnOnConsecutiveCalls($okResponse, $errorResponse);
+    $apiMock
+      ->expects($this->exactly(2))
+      ->method('setKey')->willReturn(null);
+    $this->bridge->api = $apiMock;
+
+    // First check succeeds
+    $result = $this->bridge->checkPremiumKey('abc');
+    $this->bridge->storePremiumKeyAndState('abc', $result);
+    $state = $this->getPremiumKeyState() ?? [];
+    expect($state['state'])->equals(Bridge::KEY_VALID);
+    expect($state['data'])->equals($data);
+    // Second check fails with 403 insufficient privileges simulating that key lost access to MSS
+    $result = $this->bridge->checkPremiumKey('cba');
+    $this->bridge->storePremiumKeyAndState('cba', $result);
+    $state = $this->getPremiumKeyState() ?? [];
+    expect($state['state'])->equals(Bridge::KEY_VALID_UNDERPRIVILEGED);
+    expect($state['data'])->null();
+  }
+
   public function testItSavesAccessRestrictionForUnderprivilegePremiumKeys() {
-    $api = $this->createMock(API::class);
     // Insufficient privileges
     $this->checkKeyAccessRestrictionSetProperly(
       'premium',
