@@ -102,6 +102,7 @@ interface Window {
   mailpoet_has_valid_api_key: boolean;
   mailpoet_has_valid_premium_key: string;
   mailpoet_mss_key_invalid: boolean;
+  mailpoet_mss_key_valid: boolean;
   mailpoet_mta_method: string;
   mailpoet_date_offset: string;
   mailpoet_time_format: string;

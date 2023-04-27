@@ -31,6 +31,8 @@ export const MailPoet = {
   hasValidApiKey: window.mailpoet_has_valid_api_key,
   // The key is valid and has access to premium features
   hasValidPremiumKey: window.mailpoet_has_valid_premium_key,
+  // The key is valid and has access to MSS
+  hasValidMssApiKey: window.mailpoet_mss_key_valid,
   // The key is invalid and has no access to MSS
   hasInvalidMssApiKey: window.mailpoet_mss_key_invalid,
   mtaMethod: window.mailpoet_mta_method,

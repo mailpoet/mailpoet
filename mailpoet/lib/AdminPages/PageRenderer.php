@@ -162,6 +162,7 @@ class PageRenderer {
       'has_premium_support' => $this->subscribersFeature->hasPremiumSupport(),
       'has_mss_key_specified' => Bridge::isMSSKeySpecified(),
       'mss_key_invalid' => $this->servicesChecker->isMailPoetAPIKeyValid() === false,
+      'mss_key_valid' => $this->subscribersFeature->hasValidMssKey(),
       'mss_key_pending_approval' => $this->servicesChecker->isMailPoetAPIKeyPendingApproval(),
       'mss_active' => $this->bridge->isMailpoetSendingServiceEnabled(),
       'plugin_partial_key' => $this->servicesChecker->generatePartialApiKey(),
