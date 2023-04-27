@@ -3,6 +3,7 @@
 namespace MailPoet\Test\Util\License\Features;
 
 use Codeception\Util\Stub;
+use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
@@ -41,6 +42,19 @@ class SubscribersTest extends \MailPoetUnitTest {
       'subscribers_count' => 1500,
       'premium_subscribers_limit' => 500,
       'mss_subscribers_limit' => 500,
+    ]);
+    expect($subscribersFeature->check())->true();
+  }
+
+  public function testCheckReturnsTrueIfNoUserLimitReachedButShotRestrictsAccess() {
+    $subscribersFeature = $this->constructWith([
+      'mss_key_state' => 'invalid',
+      'premium_key_state' => 'invalid',
+      'installed_at' => '2019-11-11',
+      'subscribers_count' => 200,
+      'premium_subscribers_limit' => 500,
+      'mss_subscribers_limit' => 500,
+      'access_restriction' => Bridge::KEY_ACCESS_SUBSCRIBERS_LIMIT,
     ]);
     expect($subscribersFeature->check())->true();
   }
@@ -177,6 +191,7 @@ class SubscribersTest extends \MailPoetUnitTest {
         if ($name === SubscribersFeature::PREMIUM_SUBSCRIBERS_LIMIT_SETTING_KEY) return $specs['premium_subscribers_limit'];
         if ($name === SubscribersFeature::MSS_SUBSCRIBERS_LIMIT_SETTING_KEY) return $specs['mss_subscribers_limit'];
         if ($name === SubscribersFeature::PREMIUM_SUPPORT_SETTING_KEY) return isset($specs['support_tier']) ? $specs['support_tier'] : 'free';
+        if ($name === Bridge::API_KEY_STATE_SETTING_NAME) return ['access_restriction' => $specs['access_restriction'] ?? null];
       },
     ]);
 
