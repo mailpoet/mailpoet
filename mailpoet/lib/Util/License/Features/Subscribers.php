@@ -16,8 +16,8 @@ class Subscribers {
   const MSS_SUPPORT_SETTING_KEY = 'mta.mailpoet_api_key_state.data.support_tier';
   const PREMIUM_KEY_STATE = 'premium.premium_key_state.state';
   const PREMIUM_SUBSCRIBERS_LIMIT_SETTING_KEY = 'premium.premium_key_state.data.site_active_subscriber_limit';
-  const PREMIUM_EMAIL_VOLUME_LIMIT_SETTING_KEY = 'premium.premium_key_state.data.email_volume_limit';
-  const PREMIUM_EMAILS_SENT_SETTING_KEY = 'premium.premium_key_state.data.emails_sent';
+  const MSS_EMAIL_VOLUME_LIMIT_SETTING_KEY = 'mta.mailpoet_api_key_state.data.email_volume_limit';
+  const MSS_EMAILS_SENT_SETTING_KEY = 'mta.mailpoet_api_key_state.data.emails_sent';
   const PREMIUM_SUPPORT_SETTING_KEY = 'premium.premium_key_state.data.support_tier';
   const SUBSCRIBERS_COUNT_CACHE_KEY = 'mailpoet_subscribers_count';
   const SUBSCRIBERS_COUNT_CACHE_EXPIRATION_MINUTES = 60;
@@ -93,11 +93,11 @@ class Subscribers {
   }
 
   public function getEmailVolumeLimit(): int {
-    return (int)$this->settings->get(self::PREMIUM_EMAIL_VOLUME_LIMIT_SETTING_KEY);
+    return (int)$this->settings->get(self::MSS_EMAIL_VOLUME_LIMIT_SETTING_KEY);
   }
 
   public function getEmailsSent(): int {
-    return (int)$this->settings->get(self::PREMIUM_EMAILS_SENT_SETTING_KEY);
+    return (int)$this->settings->get(self::MSS_EMAILS_SENT_SETTING_KEY);
   }
 
   public function hasValidMssKey() {
