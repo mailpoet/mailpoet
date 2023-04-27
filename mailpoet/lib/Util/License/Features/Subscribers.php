@@ -81,8 +81,19 @@ class Subscribers {
     return $count;
   }
 
+  /**
+   * Returns true if key is valid or valid but underprivileged
+   * Do not use the method to check if key is valid for sending emails or premium
+   * This only means that the Bridge can authenticate the key.
+   * @return bool
+   */
   public function hasValidApiKey(): bool {
-    return $this->hasValidMssKey() || $this->hasValidPremiumKey();
+    $mssState = $this->settings->get(self::MSS_KEY_STATE);
+    $premiumState = $this->settings->get(self::PREMIUM_KEY_STATE);
+    return $this->hasValidMssKey()
+      || $this->hasValidPremiumKey()
+      || $mssState === Bridge::KEY_VALID_UNDERPRIVILEGED
+      || $premiumState === Bridge::KEY_VALID_UNDERPRIVILEGED;
   }
 
   public function getSubscribersLimit() {

@@ -27,8 +27,11 @@ export const MailPoet = {
   subscribersLimitReached: window.mailpoet_subscribers_limit_reached,
   subscribersCount: window.mailpoet_subscribers_count,
   hasPremiumSupport: window.mailpoet_has_premium_support,
+  // The key is valid and can be authenticated by the API (but still might not have access to premium or MSS
   hasValidApiKey: window.mailpoet_has_valid_api_key,
+  // The key is valid and has access to premium features
   hasValidPremiumKey: window.mailpoet_has_valid_premium_key,
+  // The key is invalid and has no access to MSS
   hasInvalidMssApiKey: window.mailpoet_mss_key_invalid,
   mtaMethod: window.mailpoet_mta_method,
   mtaLog: window.mailpoet_mta_log,
