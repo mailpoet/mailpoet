@@ -7,13 +7,20 @@ import { withBoundary } from 'common';
 function EmailVolumeLimitNotice(): JSX.Element {
   if (!MailPoet.emailVolumeLimitReached) return null;
 
-  const title = MailPoet.I18n.t('emailVolumeLimitNoticeTitle').replace(
-    '[emailVolumeLimit]',
-    MailPoet.emailVolumeLimit,
+  let title = MailPoet.I18n.t('emailVolumeLimitNoticeTitleUnknownLimit');
+  let youReachedEmailVolumeLimit = MailPoet.I18n.t(
+    'youReachedEmailVolumeLimitUnknownLimit',
   );
-  const youReachedEmailVolumeLimit = MailPoet.I18n.t(
-    'youReachedEmailVolumeLimit',
-  ).replace('[emailVolumeLimit]', MailPoet.emailVolumeLimit);
+  if (MailPoet.emailVolumeLimit) {
+    title = MailPoet.I18n.t('emailVolumeLimitNoticeTitle').replace(
+      '[emailVolumeLimit]',
+      MailPoet.emailVolumeLimit,
+    );
+    youReachedEmailVolumeLimit = MailPoet.I18n.t(
+      'youReachedEmailVolumeLimit',
+    ).replace('[emailVolumeLimit]', MailPoet.emailVolumeLimit);
+  }
+
   const upgradeLink = MailPoet.MailPoetComUrlFactory.getUpgradeUrl(
     MailPoet.pluginPartialKey,
   );
