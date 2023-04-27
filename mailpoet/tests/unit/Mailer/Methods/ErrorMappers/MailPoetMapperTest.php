@@ -213,4 +213,56 @@ class MailPoetMapperTest extends \MailPoetUnitTest {
     expect($error->getLevel())->equals(MailerError::LEVEL_HARD);
     expect($error->getMessage())->equals('Email service is temporarily not available, please try again in a few minutes.');
   }
+
+  public function testGetErrorEmailVolumeLimitWithAndWithoutKnownLimit(): void {
+    $apiResult = [
+      'code' => API::RESPONSE_CODE_CAN_NOT_SEND,
+      'status' => API::SENDING_STATUS_SEND_ERROR,
+      'message' => API::ERROR_MESSAGE_EMAIL_VOLUME_LIMIT_REACHED,
+      'error' => API::ERROR_MESSAGE_EMAIL_VOLUME_LIMIT_REACHED,
+    ];
+
+    $wpFunctions = Stub::make(new WPFunctions, [
+      '_x' => function ($value) {
+        return $value;
+      },
+      'getOption' => '',
+      'dateI18n' => '2023-01-31',
+    ]);
+
+    $subscribersWithLimit = Stub::make(Subscribers::class, [
+      'getEmailVolumeLimit' => 1000,
+    ]);
+
+    $subscribersWithoutKnownLimit = Stub::make(Subscribers::class, [
+      'getEmailVolumeLimit' => 0,
+    ]);
+
+    $serviceChecker = Stub::make(ServicesChecker::class, [
+      'generatePartialApiKey' => 'abc',
+    ]);
+
+    // Check email volume error when the limit is known
+    $this->mapper = new MailPoetMapper(
+      $serviceChecker,
+      $subscribersWithLimit,
+      $wpFunctions
+    );
+    $error = $this->mapper->getErrorForResult($apiResult, $this->subscribers);
+    expect($error)->isInstanceOf(MailerError::class);
+    expect($error->getOperation())->equals(MailerError::OPERATION_EMAIL_LIMIT_REACHED);
+    expect($error->getLevel())->equals(MailerError::LEVEL_HARD);
+    expect($error->getMessage())->stringContainsString('You have sent more emails this month than your MailPoet plan includes (1000),');
+    expect($error->getMessage())->stringContainsString('wait until sending is automatically resumed on 2023-01-31');
+
+    // Check email volume error when the limit is unknown
+    $this->mapper = new MailPoetMapper(
+      $serviceChecker,
+      $subscribersWithoutKnownLimit,
+      $wpFunctions
+    );
+    $error = $this->mapper->getErrorForResult($apiResult, $this->subscribers);
+    expect($error->getMessage())->stringContainsString('You have sent more emails this month than your MailPoet plan includes,');
+    expect($error->getMessage())->stringContainsString('wait until sending is automatically resumed on 2023-01-31');
+  }
 }

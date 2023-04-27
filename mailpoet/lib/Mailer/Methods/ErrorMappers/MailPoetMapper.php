@@ -193,12 +193,21 @@ class MailPoetMapper {
     $partialApiKey = $this->servicesChecker->generatePartialApiKey();
     $emailVolumeLimit = $this->subscribersFeature->getEmailVolumeLimit();
     $date = Carbon::now()->startOfMonth()->addMonth();
-    $message = sprintf(
+    if ($emailVolumeLimit) {
+      $message = sprintf(
       // translators: %1$s is email volume limit and %2$s the date when you can resume sending.
-      __('You have sent more emails this month than your MailPoet plan includes (%1$s), and sending has been temporarily paused. To continue sending with MailPoet Sending Service please [link]upgrade your plan[/link], or wait until sending is automatically resumed on <b>%2$s</b>.', 'mailpoet'),
-      $emailVolumeLimit,
-      $this->wp->dateI18n(get_option('date_format'), $date->getTimestamp())
-    );
+        __('You have sent more emails this month than your MailPoet plan includes (%1$s), and sending has been temporarily paused. To continue sending with MailPoet Sending Service please [link]upgrade your plan[/link], or wait until sending is automatically resumed on %2$s.', 'mailpoet'),
+        $emailVolumeLimit,
+        $this->wp->dateI18n($this->wp->getOption('date_format'), $date->getTimestamp())
+      );
+    } else {
+      $message = sprintf(
+        // translators: %1$s the date when you can resume sending.
+        __('You have sent more emails this month than your MailPoet plan includes, and sending has been temporarily paused. To continue sending with MailPoet Sending Service please [link]upgrade your plan[/link], or wait until sending is automatically resumed on %1$s.', 'mailpoet'),
+        $this->wp->dateI18n($this->wp->getOption('date_format'), $date->getTimestamp())
+      );
+    }
+
     $message = Helpers::replaceLinkTags(
       $message,
       "https://account.mailpoet.com/orders/upgrade/{$partialApiKey}",
