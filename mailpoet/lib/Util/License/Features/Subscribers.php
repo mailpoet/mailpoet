@@ -100,12 +100,13 @@ class Subscribers {
     if (!$this->hasValidApiKey()) {
       return $this->getFreeSubscribersLimit();
     }
-
-    if ($this->hasValidMssKey() && $this->hasMssSubscribersLimit()) {
+    $mssState = $this->settings->get(self::MSS_KEY_STATE);
+    if (($this->hasValidMssKey() || $mssState === Bridge::KEY_VALID_UNDERPRIVILEGED) && $this->hasMssSubscribersLimit()) {
       return $this->getMssSubscribersLimit();
     }
 
-    if ($this->hasValidPremiumKey() && $this->hasPremiumSubscribersLimit()) {
+    $premiumState = $this->settings->get(self::PREMIUM_KEY_STATE);
+    if (($this->hasValidPremiumKey() || $premiumState === Bridge::KEY_VALID_UNDERPRIVILEGED) && $this->hasPremiumSubscribersLimit()) {
       return $this->getPremiumSubscribersLimit();
     }
 
