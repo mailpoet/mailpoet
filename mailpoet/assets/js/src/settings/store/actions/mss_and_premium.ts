@@ -29,6 +29,7 @@ export function* verifyMssKey(key: string) {
   }
   const fields: Partial<KeyActivationState> = {
     mssMessage: res.data.message || null,
+    mssAccessRestriction: null,
   };
 
   if (res.data.state === 'valid_underprivileged') {
@@ -106,10 +107,13 @@ export function* verifyPremiumKey(key: string) {
     premiumStatus: status,
     code: res?.meta?.code,
     downloadUrl: res?.meta?.premium_plugin_info?.download_link,
+    premiumAccessRestriction: null,
   };
 
   if (res.data?.state === 'valid_underprivileged') {
     fields.premiumStatus = PremiumStatus.VALID_UNDERPRIVILEGED;
+    fields.premiumAccessRestriction =
+      res.data?.result?.access_restriction ?? null;
   }
 
   yield updateKeyActivationState(fields);
