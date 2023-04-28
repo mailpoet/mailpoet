@@ -30,12 +30,12 @@ class DateTimeFilter implements Filter {
   public const REGEX_DATE = '^\d{4}-\d{2}-\d{2}$';
 
   /** @var DateTimeZone */
-  private $timezone;
+  private $localTimezone;
 
   public function __construct(
-    DateTimeZone $timeZone
+    DateTimeZone $localTimezone
   ) {
-    $this->timezone = $timeZone;
+    $this->localTimezone = $localTimezone;
   }
 
   public function getFieldType(): string {
@@ -94,13 +94,13 @@ class DateTimeFilter implements Filter {
       return false;
     }
 
-    $datetime = $this->convertToWpTimezone($value);
+    $datetime = $this->convertToLocalTimezone($value);
     switch ($condition) {
       case 'before':
-        $ref = DateTimeImmutable::createFromFormat(self::FORMAT_DATETIME, $filterValue, $this->timezone);
+        $ref = DateTimeImmutable::createFromFormat(self::FORMAT_DATETIME, $filterValue, $this->localTimezone);
         return $ref && $datetime < $ref;
       case 'after':
-        $ref = DateTimeImmutable::createFromFormat(self::FORMAT_DATETIME, $filterValue, $this->timezone);
+        $ref = DateTimeImmutable::createFromFormat(self::FORMAT_DATETIME, $filterValue, $this->localTimezone);
         return $ref && $datetime > $ref;
       case 'on':
         return $datetime->format(self::FORMAT_DATE) === $filterValue;
@@ -138,7 +138,7 @@ class DateTimeFilter implements Filter {
       return false;
     }
 
-    $now = new DateTimeImmutable('now', $this->timezone);
+    $now = new DateTimeImmutable('now', $this->localTimezone);
     $ref = $now->modify("-$number $unit");
     $matches = $ref <= $value && $value <= $now;
     return $condition === self::CONDITION_IN_THE_LAST ? $matches : !$matches;
@@ -158,13 +158,13 @@ class DateTimeFilter implements Filter {
       }
     }
 
-    $date = $this->convertToWpTimezone($value);
+    $date = $this->convertToLocalTimezone($value);
     $day = (int)$date->format('w');
     return in_array($day, $filterValue, true);
   }
 
-  private function convertToWpTimezone(DateTimeInterface $datetime): DateTimeImmutable {
-    $value = DateTimeImmutable::createFromFormat('U', (string)$datetime->getTimestamp(), $this->timezone);
+  private function convertToLocalTimezone(DateTimeInterface $datetime): DateTimeImmutable {
+    $value = DateTimeImmutable::createFromFormat('U', (string)$datetime->getTimestamp(), $this->localTimezone);
     if (!$value) {
       throw new InvalidStateException('Failed to convert datetime to WP timezone');
     }
