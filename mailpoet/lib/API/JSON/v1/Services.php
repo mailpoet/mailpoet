@@ -15,6 +15,7 @@ use MailPoet\Mailer\MailerLog;
 use MailPoet\Services\AuthorizedSenderDomainController;
 use MailPoet\Services\Bridge;
 use MailPoet\Services\CongratulatoryMssEmailController;
+use MailPoet\Services\SubscribersCountReporter;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Util\Helpers;
 use MailPoet\WP\DateTime;
@@ -51,6 +52,9 @@ class Services extends APIEndpoint {
   /** @var AuthorizedSenderDomainController */
   private $senderDomainController;
 
+  /** @var SubscribersCountReporter */
+  private $subscribersCountReporter;
+
   public $permissions = [
     'global' => AccessControl::PERMISSION_MANAGE_SETTINGS,
   ];
@@ -62,6 +66,7 @@ class Services extends APIEndpoint {
     SendingServiceKeyCheck $mssWorker,
     PremiumKeyCheck $premiumWorker,
     ServicesChecker $servicesChecker,
+    SubscribersCountReporter $subscribersCountReporter,
     CongratulatoryMssEmailController $congratulatoryMssEmailController,
     WPFunctions $wp,
     AuthorizedSenderDomainController $senderDomainController
@@ -73,6 +78,7 @@ class Services extends APIEndpoint {
     $this->premiumWorker = $premiumWorker;
     $this->dateTime = new DateTime();
     $this->servicesChecker = $servicesChecker;
+    $this->subscribersCountReporter = $subscribersCountReporter;
     $this->congratulatoryMssEmailController = $congratulatoryMssEmailController;
     $this->wp = $wp;
     $this->senderDomainController = $senderDomainController;
@@ -222,6 +228,12 @@ class Services extends APIEndpoint {
   }
 
   public function recheckKeys() {
+    // Report subscribers count before rechecking keys so that shop can lift access restrictions in case
+    // user deleted subscribers and no longer exceeds the limit.
+    $key = $this->servicesChecker->getValidAccountKey();
+    if ($key) {
+      $this->subscribersCountReporter->report($key);
+    }
     $this->mssWorker->init();
     $mssCheck = $this->mssWorker->checkKey();
     $this->premiumWorker->init();
