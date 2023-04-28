@@ -129,6 +129,21 @@ class Settings {
     return $this;
   }
 
+  public function withSendingMethodMailpoetWithRestrictedAccess(string $restrictedAccess = Bridge::KEY_ACCESS_SUBSCRIBERS_LIMIT, int $planLimit = 0) {
+    $mailPoetSendingKey = getenv('WP_TEST_MAILER_MAILPOET_API');
+    $this->settings->set('mta_group', 'mailpoet');
+    $this->settings->set('mta.method', 'MailPoet');
+    $this->settings->set('mta.mailpoet_api_key', $mailPoetSendingKey);
+    $this->settings->set('mta.mailpoet_api_key_state.state', 'valid_underprivileged');
+    $this->settings->set('mta.mailpoet_api_key_state.access_restriction', $restrictedAccess);
+    $this->settings->set('mta.mailpoet_api_key_state.code', 403);
+    $this->settings->set('mta.mailpoet_api_key_state.data', [
+        'site_active_subscriber_limit' => $planLimit,
+        'email_volume_limit' => $planLimit,
+    ]);
+    return $this;
+  }
+
   public function withValidPremiumKey($key) {
     $this->settings->set(Bridge::PREMIUM_KEY_SETTING_NAME, $key);
     $this->settings->set(Bridge::PREMIUM_KEY_STATE_SETTING_NAME, ['state' => Bridge::PREMIUM_KEY_VALID, 'code' => 200]);
@@ -139,6 +154,19 @@ class Settings {
     $this->settings->set(Bridge::API_KEY_SETTING_NAME, $key);
     $this->settings->set(Bridge::API_KEY_STATE_SETTING_NAME, ['state' => Bridge::KEY_VALID, 'code' => 200]);
     return $this;
+  }
+
+  public function withInvalidMssKey() {
+    $this->settings->set(Bridge::API_KEY_SETTING_NAME, 'ivalid');
+    $this->settings->set(Bridge::API_KEY_STATE_SETTING_NAME, ['state' => Bridge::KEY_INVALID, 'code' => 400]);
+    return $this;
+  }
+
+  public function withBothKeysInvalid() {
+      $this->settings->set(Bridge::API_KEY_SETTING_NAME, 'abc');
+      $this->settings->set(Bridge::API_KEY_STATE_SETTING_NAME, ['state' => Bridge::KEY_INVALID, 'code' => 400]);
+      $this->settings->set(Bridge::PREMIUM_KEY_SETTING_NAME, 'abc');
+      $this->settings->set(Bridge::PREMIUM_KEY_STATE_SETTING_NAME, ['state' => Bridge::KEY_INVALID, 'code' => 400]);
   }
 
   public function withMssKeyPendingApproval() {
