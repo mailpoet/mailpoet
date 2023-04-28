@@ -9,7 +9,7 @@ namespace MailPoet\Models;
  * @property string $updatedAt
  *
  * @deprecated This model is deprecated. Use \MailPoet\Newsletter\Options\NewsletterOptionsRepository and
- * \MailPoet\Entities\NewsletterOptionEntity instead. This class can be removed after 2022-11-11.
+ * \MailPoet\Entities\NewsletterOptionEntity instead. This class can be removed after 2023-10-28.
  */
 class NewsletterOption extends Model {
   public static $_table = MP_NEWSLETTER_OPTION_TABLE; // phpcs:ignore PSR2.Classes.PropertyDeclaration

@@ -7,7 +7,7 @@ namespace MailPoet\Models;
  * @property string $newsletterType
  *
  * @deprecated This model is deprecated. Use \MailPoet\Newsletter\Options\NewsletterOptionFieldsRepository and
- * \MailPoet\Entities\NewsletterOptionFieldEntity instead. This class can be removed after 2022-11-11.
+ * \MailPoet\Entities\NewsletterOptionFieldEntity instead. This class can be removed after 2023-10-28.
  */
 class NewsletterOptionField extends Model {
   public static $_table = MP_NEWSLETTER_OPTION_FIELDS_TABLE; // phpcs:ignore PSR2.Classes.PropertyDeclaration

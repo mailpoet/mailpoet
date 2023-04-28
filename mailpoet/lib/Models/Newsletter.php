@@ -104,7 +104,13 @@ class Newsletter extends Model {
     );
   }
 
+  /**
+   * @deprecated This method can be removed after 2023-10-28. Make sure it is removed together with
+   * \MailPoet\Models\NewsletterOption and \MailPoet\Models\NewsletterOptionField.
+   */
   public function options() {
+    self::deprecationError(__METHOD__);
+
     return $this->hasManyThrough(
       __NAMESPACE__ . '\NewsletterOptionField',
       __NAMESPACE__ . '\NewsletterOption',
@@ -250,7 +256,13 @@ class Newsletter extends Model {
     return $this;
   }
 
+  /**
+   * @deprecated This method can be removed after 2023-10-28. Make sure it is removed together with
+   * \MailPoet\Models\NewsletterOption and \MailPoet\Models\NewsletterOptionField.
+   */
   public function withOptions() {
+    self::deprecationError(__METHOD__);
+
     $options = $this->options()->findArray();
     if (empty($options)) {
       $this->options = [];
@@ -364,5 +376,12 @@ class Newsletter extends Model {
       return false;
     }
     return self::filter('filterWithOptions', $newsletter->type)->findOne($id);
+  }
+
+  private static function deprecationError($methodName) {
+    trigger_error(
+      'Calling ' . esc_html($methodName) . ' is deprecated and will be removed. Use \MailPoet\Newsletter\NewslettersRepository and \MailPoet\Entities\NewsletterEntity instead.',
+      E_USER_DEPRECATED
+    );
   }
 }
