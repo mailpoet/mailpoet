@@ -15,6 +15,7 @@ use MailPoet\Mailer\MailerLog;
 use MailPoet\Services\AuthorizedSenderDomainController;
 use MailPoet\Services\Bridge;
 use MailPoet\Services\CongratulatoryMssEmailController;
+use MailPoet\Services\SubscribersCountReporter;
 use MailPoet\Settings\SettingsController;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -614,6 +615,7 @@ class ServicesTest extends \MailPoetTest {
       $this->diContainer->get(SendingServiceKeyCheck::class),
       $this->diContainer->get(PremiumKeyCheck::class),
       $this->diContainer->get(ServicesChecker::class),
+      $this->diContainer->get(SubscribersCountReporter::class),
       $mocks['congratulatoryEmailController'] ?? $this->diContainer->get(CongratulatoryMssEmailController::class),
       $this->diContainer->get(WPFunctions::class),
       $mocks['senderDomain'] ?? $this->diContainer->get(AuthorizedSenderDomainController::class)
