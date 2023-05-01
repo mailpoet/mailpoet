@@ -81,7 +81,9 @@ export function validateWooCommerce(formItems: WooCommerceFormItem): boolean {
   }
   if (
     formItems.action === WooCommerceActionTypes.AVERAGE_SPENT &&
-    (!formItems.amount || !formItems.operator || !formItems.days)
+    (!formItems.average_spent_amount ||
+      !formItems.average_spent_type ||
+      !formItems.average_spent_days)
   ) {
     return false;
   }
@@ -418,11 +420,15 @@ function AverageSpentFields({ filterIndex }: Props): JSX.Element {
       <Grid.CenteredRow>
         <Select
           key="select"
-          value={segment.operator}
+          value={segment.average_spent_type}
           onChange={(e): void => {
-            void updateSegmentFilterFromEvent('operator', filterIndex, e);
+            void updateSegmentFilterFromEvent(
+              'average_spent_type',
+              filterIndex,
+              e,
+            );
           }}
-          automationId="select-average-spent-operator"
+          automationId="select-average-spent-type"
         >
           <option value=">">{MailPoet.I18n.t('moreThan')}</option>
           <option value=">=">{MailPoet.I18n.t('moreThanOrEqual')}</option>
@@ -436,10 +442,14 @@ function AverageSpentFields({ filterIndex }: Props): JSX.Element {
           type="number"
           min={0}
           step={0.01}
-          value={segment.amount || ''}
+          value={segment.average_spent_amount || ''}
           placeholder={MailPoet.I18n.t('wooSpentAmount')}
           onChange={(e): void => {
-            void updateSegmentFilterFromEvent('amount', filterIndex, e);
+            void updateSegmentFilterFromEvent(
+              'average_spent_amount',
+              filterIndex,
+              e,
+            );
           }}
         />
         <div>{wooCurrencySymbol}</div>
@@ -451,10 +461,14 @@ function AverageSpentFields({ filterIndex }: Props): JSX.Element {
           type="number"
           min={1}
           step={1}
-          value={segment.days || ''}
+          value={segment.average_spent_days || ''}
           placeholder={MailPoet.I18n.t('daysPlaceholder')}
           onChange={(e): void => {
-            void updateSegmentFilterFromEvent('days', filterIndex, e);
+            void updateSegmentFilterFromEvent(
+              'average_spent_days',
+              filterIndex,
+              e,
+            );
           }}
         />
         <div>{MailPoet.I18n.t('days')}</div>
