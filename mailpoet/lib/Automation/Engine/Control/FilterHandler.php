@@ -4,6 +4,7 @@ namespace MailPoet\Automation\Engine\Control;
 
 use MailPoet\Automation\Engine\Data\Filter as FilterData;
 use MailPoet\Automation\Engine\Data\FilterGroup;
+use MailPoet\Automation\Engine\Data\Filters;
 use MailPoet\Automation\Engine\Data\StepRunArgs;
 use MailPoet\Automation\Engine\Exceptions;
 use MailPoet\Automation\Engine\Registry;
@@ -24,12 +25,17 @@ class FilterHandler {
       return true;
     }
 
+    $operator = $filters->getOperator();
     foreach ($filters->getGroups() as $group) {
-      if ($this->matchesGroup($group, $args)) {
+      $matches = $this->matchesGroup($group, $args);
+      if ($operator === Filters::OPERATOR_AND && !$matches) {
         return false;
       }
+      if ($operator === Filters::OPERATOR_OR && $matches) {
+        return true;
+      }
     }
-    return true;
+    return $operator === Filters::OPERATOR_AND;
   }
 
   private function matchesGroup(FilterGroup $group, StepRunArgs $args): bool {
