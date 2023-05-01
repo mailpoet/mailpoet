@@ -27,6 +27,7 @@
     var mailpoet_can_use_woocommerce_subscriptions = <%= json_encode(can_use_woocommerce_subscriptions)  %>;
     var mailpoet_woocommerce_currency_symbol = <%= json_encode(woocommerce_currency_symbol)  %>;
     var mailpoet_woocommerce_countries = <%= json_encode(woocommerce_countries)  %>;
+    var mailpoet_signup_forms = <%= json_encode(signup_forms) %>;
   </script>
 <% endblock %>
 
@@ -179,6 +180,7 @@
     'subscriberScorePlaceholder': _x('score', 'Placeholder for input: subscriber engagement score'),
     'subscriberScoreSentence': _x('{condition} {score} %', 'The result will be "higher than 20 %"'),
     'subscribedToList': __('subscribed to list'),
+    'subscribedViaForm': __('subscribed via form'),
     'segmentsSubscriber': __('WordPress user role'),
     'mailpoetCustomField': __('MailPoet custom field'),
     'segmentsActiveMembership': __('is member of'),
@@ -190,6 +192,7 @@
     'searchLists': __('Search lists'),
     'subscriberTag': _x('tag', 'Subscriber tag'),
     'searchTags': _x('Search tags'),
+    'searchForms': __('Search forms'),
 
     'anyOf': __('any of'),
     'allOf': __('all of'),

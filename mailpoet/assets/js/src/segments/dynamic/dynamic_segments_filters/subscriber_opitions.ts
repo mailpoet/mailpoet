@@ -23,6 +23,11 @@ export const SubscriberSegmentOptions = [
     group: SegmentTypes.WordPressRole,
   },
   {
+    value: SubscriberActionTypes.SUBSCRIBED_VIA_FORM,
+    label: MailPoet.I18n.t('subscribedViaForm'),
+    group: SegmentTypes.WordPressRole,
+  },
+  {
     value: SubscriberActionTypes.SUBSCRIBER_TAG,
     label: MailPoet.I18n.t('subscriberTag'),
     group: SegmentTypes.WordPressRole,

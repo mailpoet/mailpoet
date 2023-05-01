@@ -17,6 +17,10 @@ import {
   validateSubscribedToList,
 } from './subscriber_subscribed_to_list';
 import { SubscriberTag, validateSubscriberTag } from './subscriber_tag';
+import {
+  SubscribedViaForm,
+  validateSubscribedViaForm,
+} from './subscribed_via_form';
 
 export function validateSubscriber(formItems: WordpressRoleFormItem): boolean {
   if (
@@ -40,6 +44,9 @@ export function validateSubscriber(formItems: WordpressRoleFormItem): boolean {
   if (formItems.action === SubscriberActionTypes.SUBSCRIBER_TAG) {
     return validateSubscriberTag(formItems);
   }
+  if (formItems.action === SubscriberActionTypes.SUBSCRIBED_VIA_FORM) {
+    return validateSubscribedViaForm(formItems);
+  }
   if (!formItems.operator || !formItems.value) {
     return false;
   }
@@ -58,6 +65,7 @@ const componentsMap = {
   [SubscriberActionTypes.MAILPOET_CUSTOM_FIELD]: MailPoetCustomFields,
   [SubscriberActionTypes.SUBSCRIBED_TO_LIST]: SubscribedToList,
   [SubscriberActionTypes.SUBSCRIBER_TAG]: SubscriberTag,
+  [SubscriberActionTypes.SUBSCRIBED_VIA_FORM]: SubscribedViaForm,
 };
 
 type Props = {

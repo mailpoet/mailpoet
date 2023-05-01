@@ -4,6 +4,7 @@ import {
   FilterValue,
   GroupFilterValue,
   Segment,
+  SignupForm,
   StateType,
   StaticSegment,
   SubscriberCount,
@@ -46,6 +47,8 @@ export const getStaticSegmentsList = (state: StateType): StaticSegment[] =>
 export const getSubscriberCount = (state: StateType): SubscriberCount =>
   state.subscriberCount;
 export const getTags = (state: StateType): Tag[] => state.tags;
+export const getSignupForms = (state: StateType): SignupForm[] =>
+  state.signupForms;
 export const getSegmentFilter = (
   state: StateType,
   index: number,
