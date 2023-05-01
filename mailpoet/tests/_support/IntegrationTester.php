@@ -97,9 +97,20 @@ class IntegrationTester extends \Codeception\Actor {
     }
   }
 
+  /**
+   * @param array $data - includes default args for wc_create_order plus some extras.
+   * The defaults are currently:
+   *    'status'        => null,
+   *    'customer_id'   => null,
+   *    'customer_note' => null,
+   *    'parent'        => null,
+   *    'created_via'   => null,
+   *    'cart_hash'     => null,
+   * @return WC_Order
+   */
   public function createWooCommerceOrder(array $data = []): \WC_Order {
     $helper = ContainerWrapper::getInstance()->get(Helper::class);
-    $order = $helper->wcCreateOrder([]);
+    $order = $helper->wcCreateOrder($data);
 
     if (isset($data['date_created'])) {
       $order->set_date_created($data['date_created']);
@@ -109,9 +120,15 @@ class IntegrationTester extends \Codeception\Actor {
       $order->set_billing_email($data['billing_email']);
     }
 
+    if (isset($data['total'])) {
+      $order->set_total($data['total']);
+    }
+
     $order->save();
 
-    $this->wooOrderIds[] = $order->get_id();
+    $orderId = $order->get_id();
+    $this->wooOrderIds[] = $orderId;
+    $this->updateWooOrderStats($orderId);
 
     return $order;
   }
