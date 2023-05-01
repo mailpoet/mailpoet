@@ -106,7 +106,7 @@ class SettingsChangeHandler {
       return $this->subscribersCountReporter->report($apiKey);
     }
     if ($premiumKey && !empty($premiumState) && in_array($premiumState['state'], [Bridge::KEY_VALID, Bridge::KEY_VALID_UNDERPRIVILEGED], true)) {
-      return $this->subscribersCountReporter->report($apiKey);
+      return $this->subscribersCountReporter->report($premiumKey);
     }
   }
 }
