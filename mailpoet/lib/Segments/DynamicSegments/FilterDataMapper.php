@@ -285,6 +285,13 @@ class FilterDataMapper {
       $filterData['operator'] = $data['operator'];
       $filterData['value'] = $data['value'];
     } elseif ($data['action'] === WooCommerceAverageSpent::ACTION) {
+      if (
+        !isset($data['average_spent_type'])
+        || !isset($data['average_spent_amount']) || $data['average_spent_amount'] < 0
+        || !isset($data['average_spent_days']) || $data['average_spent_days'] < 1
+      ) {
+        throw new InvalidFilterException('Missing required fields', InvalidFilterException::MISSING_AVERAGE_SPENT_FIELDS);
+      }
       $filterData['average_spent_days'] = $data['average_spent_days'];
       $filterData['average_spent_amount'] = $data['average_spent_amount'];
       $filterData['average_spent_type'] = $data['average_spent_type'];
