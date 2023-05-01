@@ -543,6 +543,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\WP\AutocompletePostListLoader::class)->setPublic(true);
     // WordPress.com
     $container->autowire(\MailPoet\WPCOM\DotcomLicenseProvisioner::class)->setPublic(true);
+    $container->autowire(\MailPoet\WPCOM\DotcomHelperFunctions::class)->setPublic(true);
     // Third party classes
     $container->autowire(\MailPoetVendor\CSS::class)->setClass(\MailPoetVendor\CSS::class)->setPublic(true);
     $container->autowire(\MailPoetVendor\csstidy::class)->setClass(\MailPoetVendor\csstidy::class);
