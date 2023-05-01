@@ -12,6 +12,16 @@ button.components-button.mailpoet-automation-filters-panel-add-filter {
   margin-bottom: 16px;
 }
 
+.mailpoet-automation-filters-list-group-operator {
+  .components-base-control__field > div {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 8px 16px;
+    justify-content: flex-start;
+  }
+}
+
 .mailpoet-automation-filters-list-item {
   align-items: center;
   background: #f0f0f0;

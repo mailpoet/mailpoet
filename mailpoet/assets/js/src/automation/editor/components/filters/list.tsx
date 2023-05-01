@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 import { Hooks } from 'wp-js-hooks';
-import { Button } from '@wordpress/components';
+import { Button, RadioControl } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 import { __, sprintf } from '@wordpress/i18n';
 import { Icon, closeSmall } from '@wordpress/icons';
@@ -8,7 +8,10 @@ import { Value } from './value';
 import { Filter } from '../automation/types';
 import { storeName } from '../../store';
 import { PremiumModal } from '../../../../common/premium_modal';
-import { DeleteStepFilterType } from '../../../types/filters';
+import {
+  DeleteStepFilterType,
+  FilterGroupOperatorChangeType,
+} from '../../../types/filters';
 
 export function FiltersList(): JSX.Element | null {
   const [showPremiumModal, setShowPremiumModal] = useState(false);
@@ -19,6 +22,18 @@ export function FiltersList(): JSX.Element | null {
       fields: select(storeName).getRegistry().fields,
       filters: select(storeName).getRegistry().filters,
     }),
+    [],
+  );
+
+  const onOperatorChange = useCallback(
+    (stepId: string, groupId: string, operator: 'and' | 'or') => {
+      const operatorChangeCallback: FilterGroupOperatorChangeType =
+        Hooks.applyFilters(
+          'mailpoet.automation.filters.group_operator_change_callback',
+          () => setShowPremiumModal(true),
+        );
+      operatorChangeCallback(stepId, groupId, operator);
+    },
     [],
   );
 
@@ -47,43 +62,59 @@ export function FiltersList(): JSX.Element | null {
             utm_campaign: 'automation_premium_filters',
           }}
         >
-          {__('Removing trigger filters is a premium feature.', 'mailpoet')}
+          {__('Managing trigger filters is a premium feature.', 'mailpoet')}
         </PremiumModal>
       )}
 
-      <div className="mailpoet-automation-filters-list">
-        {groups.map((group) =>
-          group.filters.map((filter) => (
-            <div
-              key={filter.id}
-              className="mailpoet-automation-filters-list-item"
-            >
-              <div className="mailpoet-automation-filters-list-item-content">
-                <span className="mailpoet-automation-filters-list-item-field">
-                  {fields[filter.field_key]?.name ??
-                    sprintf(
-                      __('Unknown field "%s"', 'mailpoet'),
-                      filter.field_key,
-                    )}
-                </span>{' '}
-                <span className="mailpoet-automation-filters-list-item-condition">
-                  {filters[filter.field_type]?.conditions.find(
-                    ({ key }) => key === filter.condition,
-                  )?.label ?? __('unknown condition', 'mailpoet')}
-                </span>{' '}
-                <Value filter={filter} />
-              </div>
-              <Button
-                className="mailpoet-automation-filters-list-item-remove"
-                isSmall
-                onClick={() => onDelete(step.id, filter)}
+      {groups.map((group) => (
+        <div key={group.id}>
+          {group.filters.length > 1 && (
+            <RadioControl
+              className="mailpoet-automation-filters-list-group-operator"
+              selected={group.operator}
+              onChange={(value) =>
+                onOperatorChange(step.id, group.id, value as 'and' | 'or')
+              }
+              options={[
+                { label: __('All conditions', 'mailpoet'), value: 'and' },
+                { label: __('Any condition', 'mailpoet'), value: 'or' },
+              ]}
+            />
+          )}
+
+          <div className="mailpoet-automation-filters-list">
+            {group.filters.map((filter) => (
+              <div
+                key={filter.id}
+                className="mailpoet-automation-filters-list-item"
               >
-                <Icon icon={closeSmall} />
-              </Button>
-            </div>
-          )),
-        )}
-      </div>
+                <div className="mailpoet-automation-filters-list-item-content">
+                  <span className="mailpoet-automation-filters-list-item-field">
+                    {fields[filter.field_key]?.name ??
+                      sprintf(
+                        __('Unknown field "%s"', 'mailpoet'),
+                        filter.field_key,
+                      )}
+                  </span>{' '}
+                  <span className="mailpoet-automation-filters-list-item-condition">
+                    {filters[filter.field_type]?.conditions.find(
+                      ({ key }) => key === filter.condition,
+                    )?.label ?? __('unknown condition', 'mailpoet')}
+                  </span>{' '}
+                  <Value filter={filter} />
+                </div>
+                <Button
+                  className="mailpoet-automation-filters-list-item-remove"
+                  isSmall
+                  onClick={() => onDelete(step.id, filter)}
+                >
+                  <Icon icon={closeSmall} />
+                </Button>
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
     </>
   );
 }

@@ -59,3 +59,10 @@ export type FiltersPanelContentType = (step: Step) => JSX.Element;
 
 // mailpoet.automation.filters.delete_step_filter_callback
 export type DeleteStepFilterType = (stepId: string, filter: Filter) => void;
+
+// mailpoet.automation.filters.group_operator_change_callback
+export type FilterGroupOperatorChangeType = (
+  stepId: string,
+  groupId: string,
+  operator: 'and' | 'or',
+) => void;
