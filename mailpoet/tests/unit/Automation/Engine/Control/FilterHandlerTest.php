@@ -59,6 +59,32 @@ class FilterHandlerTest extends MailPoetUnitTest {
     $this->assertSame($expectation, $result);
   }
 
+  /** @dataProvider dataForTestItEvaluatesGroupOperators */
+  public function testItEvaluatesGroupOperators(FilterGroup $group, bool $expectation): void {
+    $filters = new Filters('and', [$group]);
+    $step = new Step('step', Step::TYPE_TRIGGER, 'test:step', [], [], $filters);
+    $subject = $this->createSubject('subject', [
+      new Field('test:field-string', Field::TYPE_STRING, 'Test field string', function () {
+        return 'abc';
+      }),
+    ]);
+
+    $stepRunArgs = new StepRunArgs(
+      $this->createMock(Automation::class),
+      $this->createMock(AutomationRun::class),
+      $step,
+      [new SubjectEntry($subject, new SubjectData($subject->getKey(), []))]
+    );
+
+    $registry = Stub::make(Registry::class, [
+      'filters' => [Field::TYPE_STRING => $this->createFilter(Field::TYPE_STRING)],
+    ]);
+
+    $handler = new FilterHandler($registry);
+    $result = $handler->matchesFilters($stepRunArgs);
+    $this->assertSame($expectation, $result);
+  }
+
   public function dataForTestItFilters(): array {
     return [
       // no filters
@@ -89,6 +115,41 @@ class FilterHandlerTest extends MailPoetUnitTest {
           new FilterData('f2', Field::TYPE_INTEGER, 'test:field-integer', '', ['value' => 999]),
           new FilterData('f3', Field::TYPE_BOOLEAN, 'test:field-boolean', '', ['value' => true]),
         ],
+        false,
+      ],
+    ];
+  }
+
+  public function dataForTestItEvaluatesGroupOperators(): array {
+    return [
+      [
+        new FilterGroup('g1', 'and', [
+          new FilterData('f1', Field::TYPE_STRING, 'test:field-string', '', ['value' => 'abc']),
+          new FilterData('f2', Field::TYPE_STRING, 'test:field-string', '', ['value' => 'abc']),
+          new FilterData('f3', Field::TYPE_STRING, 'test:field-string', '', ['value' => 'abc']),
+        ]),
+        true,
+      ],
+      [
+        new FilterGroup('g2', 'and', [
+          new FilterData('f1', Field::TYPE_STRING, 'test:field-string', '', ['value' => 'abc']),
+          new FilterData('f2', Field::TYPE_STRING, 'test:field-string', '', ['value' => 'xyz']),
+        ]),
+        false,
+      ],
+      [
+        new FilterGroup('g3', 'or', [
+          new FilterData('f1', Field::TYPE_STRING, 'test:field-string', '', ['value' => 'def']),
+          new FilterData('f2', Field::TYPE_STRING, 'test:field-string', '', ['value' => 'abc']),
+          new FilterData('f2', Field::TYPE_STRING, 'test:field-string', '', ['value' => 'xyz']),
+        ]),
+        true,
+      ],
+      [
+        new FilterGroup('g4', 'or', [
+          new FilterData('f1', Field::TYPE_STRING, 'test:field-string', '', ['value' => 'def']),
+          new FilterData('f2', Field::TYPE_STRING, 'test:field-string', '', ['value' => 'xyz']),
+        ]),
         false,
       ],
     ];
