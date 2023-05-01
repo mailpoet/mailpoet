@@ -79,8 +79,11 @@ export function validateWooCommerce(formItems: WooCommerceFormItem): boolean {
   ) {
     return false;
   }
-  if (formItems.action === WooCommerceActionTypes.AVERAGE_SPENT) {
-    return !!formItems.amount && !!formItems.operator && !!formItems.days;
+  if (
+    formItems.action === WooCommerceActionTypes.AVERAGE_SPENT &&
+    (!formItems.amount || !formItems.operator || !formItems.days)
+  ) {
+    return false;
   }
   if (formItems.action === WooCommerceActionTypes.PURCHASE_DATE) {
     return validateDateField(formItems);
