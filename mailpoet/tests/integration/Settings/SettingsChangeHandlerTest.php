@@ -122,7 +122,7 @@ class SettingsChangeHandlerTest extends \MailPoetTest {
       'subscribersCountReporter' => $countReporterMock,
     ]);
 
-    $changeHandler->updateBridge($settings);
+    $changeHandler->updateApiKeyState($settings);
   }
 
   private function getScheduledTaskByType(string $type): ?ScheduledTaskEntity {
