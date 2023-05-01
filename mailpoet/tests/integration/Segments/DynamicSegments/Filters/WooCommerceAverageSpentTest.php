@@ -148,17 +148,14 @@ class WooCommerceAverageSpentTest extends \MailPoetTest {
     }
   }
 
-  private function createOrder(int $customerId, float $orderTotal, int $daysAgo = 0) {
+  private function createOrder(int $customerId, float $orderTotal, int $daysAgo = 0): void {
     $createdAt = Carbon::now();
     $createdAt->subDays($daysAgo)->addMinute();
-    $order = $this->tester->createWooCommerceOrder();
-    $order->set_customer_id($customerId);
-    $order->set_date_created($createdAt->toDateTimeString());
-    $order->set_status('wc-completed');
-    $order->set_total((string)$orderTotal);
-    $order->save();
-    $this->tester->updateWooOrderStats($order->get_id());
-
-    return $order->get_id();
+    $this->tester->createWooCommerceOrder([
+      'date_created' => $createdAt->toDateTimeString(),
+      'status' => 'wc-completed',
+      'customer_id' => $customerId,
+      'total' => (string)$orderTotal,
+    ]);
   }
 }
