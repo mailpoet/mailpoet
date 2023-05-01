@@ -38,6 +38,7 @@ use MailPoet\Tags\TagRepository;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoet\WPCOM\DotcomHelperFunctions;
 use MailPoetVendor\Carbon\Carbon;
 
 class Reporter {
@@ -80,6 +81,9 @@ class Reporter {
   /*** @var UnsubscribeReporter */
   private $unsubscribeReporter;
 
+  /*** @var DotcomHelperFunctions */
+  private $dotcomHelperFunctions;
+
   public function __construct(
     NewslettersRepository $newslettersRepository,
     SegmentsRepository $segmentsRepository,
@@ -93,7 +97,8 @@ class Reporter {
     TrackingConfig $trackingConfig,
     SubscriberListingRepository $subscriberListingRepository,
     AutomationStorage $automationStorage,
-    UnsubscribeReporter $unsubscribeReporter
+    UnsubscribeReporter $unsubscribeReporter,
+    DotcomHelperFunctions $dotcomHelperFunctions
   ) {
     $this->newslettersRepository = $newslettersRepository;
     $this->segmentsRepository = $segmentsRepository;
@@ -108,6 +113,7 @@ class Reporter {
     $this->subscriberListingRepository = $subscriberListingRepository;
     $this->automationStorage = $automationStorage;
     $this->unsubscribeReporter = $unsubscribeReporter;
+    $this->dotcomHelperFunctions = $dotcomHelperFunctions;
   }
 
   public function getData() {
@@ -206,6 +212,8 @@ class Reporter {
       'Support tier' => $this->subscribersFeature->hasPremiumSupport() ? 'premium' : 'free',
       'Unauthorized email notice shown' => !empty($this->settings->get(AuthorizedEmailsController::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING)),
       'Sign-up confirmation: Confirmation Template > using html email editor template' => (boolean)$this->settings->get(ConfirmationEmailCustomizer::SETTING_ENABLE_EMAIL_CUSTOMIZER, false),
+      'Is WordPress.com' => $this->dotcomHelperFunctions->isDotcom() ? 'yes' : 'no',
+      'WordPress.com plan' => $this->dotcomHelperFunctions->getDotcomPlan(),
     ];
 
     $result = array_merge(

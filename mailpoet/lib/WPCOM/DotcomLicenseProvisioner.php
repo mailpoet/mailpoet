@@ -23,24 +23,19 @@ class DotcomLicenseProvisioner {
   /** @var Services */
   private $services;
 
+  /** @var DotcomHelperFunctions */
+  private $dotcomHelperFunctions;
+
   public function __construct(
     LoggerFactory $loggerFactory,
     Settings $settings,
-    Services $services
+    Services $services,
+    DotcomHelperFunctions $dotcomHelperFunctions
   ) {
     $this->loggerFactory = $loggerFactory;
     $this->settings = $settings;
     $this->services = $services;
-  }
-
-  /**
-   * Returns true if in the context of WordPress.com Atomic platform.
-   *
-   * @return bool
-   */
-  public function isAtomicPlatform(): bool {
-    // ATOMIC_CLIENT_ID === '2' corresponds to WordPress.com client on the Atomic platform
-    return defined('IS_ATOMIC') && IS_ATOMIC && defined('ATOMIC_CLIENT_ID') && (ATOMIC_CLIENT_ID === '2');
+    $this->dotcomHelperFunctions = $dotcomHelperFunctions;
   }
 
   /**
@@ -52,7 +47,7 @@ class DotcomLicenseProvisioner {
    * @return bool|WP_Error
    */
   public function provisionLicense(bool $result, array $licensePayload, string $eventType) {
-    if (!$this->isAtomicPlatform() || $eventType !== self::EVENT_TYPE_PROVISION_LICENSE) {
+    if (!$this->dotcomHelperFunctions->isAtomicPlatform() || $eventType !== self::EVENT_TYPE_PROVISION_LICENSE) {
       return $result;
     }
 
