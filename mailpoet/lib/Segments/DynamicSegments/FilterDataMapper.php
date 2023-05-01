@@ -285,9 +285,9 @@ class FilterDataMapper {
       $filterData['operator'] = $data['operator'];
       $filterData['value'] = $data['value'];
     } elseif ($data['action'] === WooCommerceAverageSpent::ACTION) {
-      $filterData['days'] = $data['days'];
-      $filterData['amount'] = $data['amount'];
-      $filterData['operator'] = $data['operator'];
+      $filterData['average_spent_days'] = $data['average_spent_days'];
+      $filterData['average_spent_amount'] = $data['average_spent_amount'];
+      $filterData['average_spent_type'] = $data['average_spent_type'];
     } else {
       throw new InvalidFilterException("Unknown action " . $data['action'], InvalidFilterException::MISSING_ACTION);
     }

@@ -25,9 +25,9 @@ class WooCommerceAverageSpent implements Filter {
 
   public function apply(QueryBuilder $queryBuilder, DynamicSegmentFilterEntity $filter): QueryBuilder {
     $filterData = $filter->getFilterData();
-    $operator = $filterData->getParam('operator');
-    $amount = $filterData->getParam('amount');
-    $days = intval($filterData->getParam('days'));
+    $operator = $filterData->getParam('average_spent_type');
+    $amount = $filterData->getParam('average_spent_amount');
+    $days = intval($filterData->getParam('average_spent_days'));
 
     $date = Carbon::now()->subDays($days);
     $dateParam = $this->filterHelper->getUniqueParameterName('date');
