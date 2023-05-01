@@ -91,7 +91,7 @@ class SettingsChangeHandler {
     return $task;
   }
 
-  public function updateBridge($settings) {
+  public function updateApiKeyState($settings) {
     $apiKey = $settings[Mailer::MAILER_CONFIG_SETTING_NAME]['mailpoet_api_key'] ?? null;
     $premiumKey = $settings['premium']['premium_key'] ?? null;
     if (!empty($apiKey)) {
