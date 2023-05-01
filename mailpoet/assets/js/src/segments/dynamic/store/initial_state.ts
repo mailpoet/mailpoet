@@ -23,6 +23,7 @@ export const getInitialState = (): StateType => ({
   wooCountries: window.mailpoet_woocommerce_countries,
   customFieldsList: window.mailpoet_custom_fields,
   tags: window.mailpoet_tags,
+  signupForms: window.mailpoet_signup_forms,
   segment: {
     filters_connect: SegmentConnectTypes.AND,
     filters: [

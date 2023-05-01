@@ -12,6 +12,7 @@ use MailPoet\Segments\DynamicSegments\Filters\MailPoetCustomFields;
 use MailPoet\Segments\DynamicSegments\Filters\SubscriberScore;
 use MailPoet\Segments\DynamicSegments\Filters\SubscriberSegment;
 use MailPoet\Segments\DynamicSegments\Filters\SubscriberSubscribedDate;
+use MailPoet\Segments\DynamicSegments\Filters\SubscriberSubscribedViaForm;
 use MailPoet\Segments\DynamicSegments\Filters\SubscriberTag;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceCategory;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceCountry;
@@ -723,5 +724,50 @@ class FilterDataMapperTest extends \MailPoetUnitTest {
       'operator' => DynamicSegmentFilterData::OPERATOR_ANY,
       'connect' => DynamicSegmentFilterData::CONNECT_TYPE_AND,
     ]);
+  }
+
+  public function testItMapsSubscriberSubscribedViaForm(): void {
+    $filters = $this->mapper->map(['filters' => [[
+      'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
+      'action' => SubscriberSubscribedViaForm::TYPE,
+      'form_ids' => ['1', '2'],
+      'operator' => DynamicSegmentFilterData::OPERATOR_ANY,
+    ]]]);
+    expect($filters)->array();
+    expect($filters)->count(1);
+    $filter = reset($filters);
+    $this->assertInstanceOf(DynamicSegmentFilterData::class, $filter);
+    expect($filter)->isInstanceOf(DynamicSegmentFilterData::class);
+    expect($filter->getFilterType())->equals(DynamicSegmentFilterData::TYPE_USER_ROLE);
+    expect($filter->getAction())->equals(SubscriberSubscribedViaForm::TYPE);
+    expect($filter->getData())->equals([
+      'form_ids' => [1, 2],
+      'operator' => DynamicSegmentFilterData::OPERATOR_ANY,
+      'connect' => DynamicSegmentFilterData::CONNECT_TYPE_AND,
+    ]);
+  }
+
+  public function testItChecksSubscribedViaFormForFormIds(): void {
+    $this->expectException(InvalidFilterException::class);
+    $this->expectExceptionCode(InvalidFilterException::MISSING_VALUE);
+    $this->expectExceptionMessage('Missing at least one form ID');
+    $this->mapper->map(['filters' => [[
+      'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
+      'action' => SubscriberSubscribedViaForm::TYPE,
+      'form_ids' => [],
+      'operator' => DynamicSegmentFilterData::OPERATOR_ANY,
+    ]]]);
+  }
+
+  public function testItChecksSubscribedViaFormForOperator(): void {
+    $this->expectException(InvalidFilterException::class);
+    $this->expectExceptionCode(InvalidFilterException::MISSING_VALUE);
+    $this->expectExceptionMessage('Missing valid operator');
+    $this->mapper->map(['filters' => [[
+      'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
+      'action' => SubscriberSubscribedViaForm::TYPE,
+      'form_ids' => ['1'],
+      'operator' => 'not a valid operator',
+    ]]]);
   }
 }

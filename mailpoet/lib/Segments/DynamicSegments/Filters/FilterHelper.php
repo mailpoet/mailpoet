@@ -31,9 +31,11 @@ class FilterHelper {
   }
 
   public function getSubscribersTable(): string {
-    return $this->entityManager
-      ->getClassMetadata(SubscriberEntity::class)
-      ->getTableName();
+    return $this->getTableForEntity(SubscriberEntity::class);
+  }
+
+  public function getTableForEntity(string $entityClass): string {
+    return $this->entityManager->getClassMetadata($entityClass)->getTableName();
   }
 
   public function getInterpolatedSQL(QueryBuilder $query): string {

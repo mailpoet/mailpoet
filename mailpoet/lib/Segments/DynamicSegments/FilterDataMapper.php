@@ -12,6 +12,7 @@ use MailPoet\Segments\DynamicSegments\Filters\MailPoetCustomFields;
 use MailPoet\Segments\DynamicSegments\Filters\SubscriberScore;
 use MailPoet\Segments\DynamicSegments\Filters\SubscriberSegment;
 use MailPoet\Segments\DynamicSegments\Filters\SubscriberSubscribedDate;
+use MailPoet\Segments\DynamicSegments\Filters\SubscriberSubscribedViaForm;
 use MailPoet\Segments\DynamicSegments\Filters\SubscriberTag;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceCategory;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceCountry;
@@ -136,6 +137,21 @@ class FilterDataMapper {
           return intval($tagId);
         }, $data['tags']),
         'operator' => $data['operator'] ?? DynamicSegmentFilterData::OPERATOR_ANY,
+        'connect' => $data['connect'],
+      ]);
+    }
+    if ($data['action'] === SubscriberSubscribedViaForm::TYPE) {
+      if (!isset($data['form_ids']) || empty($data['form_ids'])) {
+        throw new InvalidFilterException('Missing at least one form ID', InvalidFilterException::MISSING_VALUE);
+      }
+      if (!isset($data['operator']) || !in_array($data['operator'], [DynamicSegmentFilterData::OPERATOR_ANY, DynamicSegmentFilterData::OPERATOR_NONE])) {
+        throw new InvalidFilterException('Missing valid operator', InvalidFilterException::MISSING_VALUE);
+      }
+      return new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_USER_ROLE, $data['action'], [
+        'form_ids' => array_map(function($formId) {
+          return intval($formId);
+        }, $data['form_ids']),
+        'operator' => $data['operator'],
         'connect' => $data['connect'],
       ]);
     }

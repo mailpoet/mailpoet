@@ -24,6 +24,7 @@ export enum SubscriberActionTypes {
   SUBSCRIBER_SCORE = 'subscriberScore',
   SUBSCRIBED_TO_LIST = 'subscribedToList',
   SUBSCRIBER_TAG = 'subscriberTag',
+  SUBSCRIBED_VIA_FORM = 'subscribedViaForm',
 }
 
 export enum SegmentConnectTypes {
@@ -76,6 +77,7 @@ export interface WordpressRoleFormItem extends FormItem {
   date_type?: string;
   segments?: number[];
   tags?: number[];
+  form_ids?: string[];
 }
 
 export interface WooCommerceFormItem extends FormItem {
@@ -203,6 +205,7 @@ export interface SegmentFormDataWindow extends Window {
   mailpoet_woocommerce_currency_symbol: string;
   mailpoet_static_segments_list: StaticSegment[];
   mailpoet_tags: Tag[];
+  mailpoet_signup_forms: SignupForm[];
 }
 
 export interface StateType {
@@ -223,6 +226,7 @@ export interface StateType {
   allAvailableFilters: GroupFilterValue[];
   staticSegmentsList: StaticSegment[];
   tags: Tag[];
+  signupForms: SignupForm[];
 }
 
 export enum Actions {
@@ -263,5 +267,10 @@ export interface SetErrorsActionType extends ActionType {
 
 export type Tag = {
   id: number;
+  name: string;
+};
+
+export type SignupForm = {
+  id: string;
   name: string;
 };
