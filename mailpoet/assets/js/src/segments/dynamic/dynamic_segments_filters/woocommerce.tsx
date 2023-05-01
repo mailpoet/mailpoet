@@ -428,7 +428,7 @@ function AverageSpentFields({ filterIndex }: Props): JSX.Element {
           <option value=">=">{MailPoet.I18n.t('moreThanOrEqual')}</option>
           <option value="=">{MailPoet.I18n.t('equals')}</option>
           <option value="!=">{MailPoet.I18n.t('notEquals')}</option>
-          <option value="<">{MailPoet.I18n.t('lessThanOrEqual')}</option>
+          <option value="<=">{MailPoet.I18n.t('lessThanOrEqual')}</option>
           <option value="<">{MailPoet.I18n.t('lessThan')}</option>
         </Select>
         <Input
@@ -498,7 +498,7 @@ function SingleOrderValueFields({ filterIndex }: Props): JSX.Element {
           <option value=">=">{MailPoet.I18n.t('moreThanOrEqual')}</option>
           <option value="=">{MailPoet.I18n.t('equals')}</option>
           <option value="!=">{MailPoet.I18n.t('notEquals')}</option>
-          <option value="<">{MailPoet.I18n.t('lessThanOrEqual')}</option>
+          <option value="<=">{MailPoet.I18n.t('lessThanOrEqual')}</option>
           <option value="<">{MailPoet.I18n.t('lessThan')}</option>
         </Select>
         <Input
