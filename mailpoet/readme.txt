@@ -3,7 +3,7 @@ Contributors: mailpoet
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 5.9
 Tested up to: 6.1
-Stable tag: 4.13.0
+Stable tag: 4.14.0
 Requires PHP: 7.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -218,6 +218,12 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 4.14.0 - 2023-05-01 =
+* Added: "was sent email" segment;
+* Improved: SpamAssassin spam filter compliance to reduce spamboxing likelihood;
+* Fixed: rare "Invalid automation structure" error;
+* Fixed: duplicate newsletter URLs for enhanced SEO.
 
 = 4.13.0 - 2023-04-24 =
 * Improved: minor changes and fixes.
