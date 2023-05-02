@@ -395,6 +395,18 @@ jobs:
           name: 'Pull test docker images'
           # Pull docker images with 3 retries
           command: i='0';while ! docker-compose -f tests/docker/docker-compose.yml pull && ((i < 3)); do sleep 3 && i=$[$i+1]; done
+      - run:
+          name: Create docker containers for test
+          # We experienced some failures when creating containers so we do it explicitly with one retry
+          command: |
+            cd tests/docker
+            docker-compose create || docker-compose create
+      - run:
+          # Some tools we use may need different version based on PHP version used in docker
+          name: Ensure correct versions of tools
+          command: |
+            cd tests/docker
+            docker-compose run --rm -w /project -e COMPOSER_DEV_MODE=1 --entrypoint "php tools/install.php" codeception_acceptance
       - when:
           condition: << parameters.woo_core_version >>
           steps:
@@ -450,12 +462,6 @@ jobs:
               circleci tests glob "tests/acceptance/**/*Cest.php" | circleci tests split --split-by=timings > tests/acceptance/_groups/circleci_split_group
             fi
             cat tests/acceptance/_groups/circleci_split_group
-      - run:
-          name: Create docker containers for test
-          # We experienced some failures when creating containers so we do it explicitly with one retry
-          command: |
-            cd tests/docker
-            docker-compose create || docker-compose create
       - run:
           name: Run acceptance tests
           command: |
@@ -565,6 +571,10 @@ jobs:
           name: 'Prepare example.com for testing'
           command: echo 127.0.0.1 example.com | sudo tee -a /etc/hosts
       - run:
+          # Some tools we use may need different version based on PHP version used in docker
+          name: Ensure correct versions of tools
+          command: COMPOSER_DEV_MODE=1 php tools/install.php
+      - run:
           name: 'Set up test environment'
           command: source ../.circleci/setup.bash && setup php7
       - run:
@@ -629,6 +639,12 @@ jobs:
           command: |
             cd tests/docker
             docker-compose create || docker-compose create
+      - run:
+          # Some tools we use may need different version based on PHP version used in docker
+          name: Ensure correct versions of tools
+          command: |
+            cd tests/docker
+            docker-compose run --rm -w /project -e COMPOSER_DEV_MODE=1 --entrypoint "php tools/install.php" codeception_integration
       - run:
           name: 'PHP Integration tests'
           command: |
