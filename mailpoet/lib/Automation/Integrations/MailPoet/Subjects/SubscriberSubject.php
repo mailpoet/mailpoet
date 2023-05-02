@@ -13,6 +13,7 @@ use MailPoet\NotFoundException;
 use MailPoet\Segments\SegmentsFinder;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Subscribers\SubscribersRepository;
+use MailPoet\Tags\TagRepository;
 use MailPoet\Validator\Builder;
 use MailPoet\Validator\Schema\ObjectSchema;
 
@@ -31,14 +32,19 @@ class SubscriberSubject implements Subject {
   /** @var SubscribersRepository */
   private $subscribersRepository;
 
+  /** @var TagRepository */
+  private $tagRepository;
+
   public function __construct(
     SegmentsFinder $segmentsFinder,
     SegmentsRepository $segmentsRepository,
-    SubscribersRepository $subscribersRepository
+    SubscribersRepository $subscribersRepository,
+    TagRepository $tagRepository
   ) {
     $this->segmentsFinder = $segmentsFinder;
     $this->segmentsRepository = $segmentsRepository;
     $this->subscribersRepository = $subscribersRepository;
+    $this->tagRepository = $tagRepository;
   }
 
   public function getKey(): string {
@@ -71,7 +77,7 @@ class SubscriberSubject implements Subject {
       new Field(
         'mailpoet:subscriber:email',
         Field::TYPE_STRING,
-        __('Subscriber email', 'mailpoet'),
+        __('Email address', 'mailpoet'),
         function (SubscriberPayload $payload) {
           return $payload->getEmail();
         }
@@ -85,6 +91,22 @@ class SubscriberSubject implements Subject {
         }
       ),
       new Field(
+        'mailpoet:subscriber:first-name',
+        Field::TYPE_STRING,
+        __('First name', 'mailpoet'),
+        function (SubscriberPayload $payload) {
+          return $payload->getSubscriber()->getFirstName();
+        }
+      ),
+      new Field(
+        'mailpoet:subscriber:last-name',
+        Field::TYPE_STRING,
+        __('Last name', 'mailpoet'),
+        function (SubscriberPayload $payload) {
+          return $payload->getSubscriber()->getLastName();
+        }
+      ),
+      new Field(
         'mailpoet:subscriber:is-globally-subscribed',
         Field::TYPE_BOOLEAN,
         __('Is globally subscribed', 'mailpoet'),
@@ -93,7 +115,7 @@ class SubscriberSubject implements Subject {
         }
       ),
       new Field(
-        'mailpoet:subscriber:last-engaged',
+        'mailpoet:subscriber:last-engagement-at',
         Field::TYPE_DATETIME,
         __('Last engaged', 'mailpoet'),
         function (SubscriberPayload $payload) {
@@ -103,7 +125,7 @@ class SubscriberSubject implements Subject {
       new Field(
         'mailpoet:subscriber:status',
         Field::TYPE_ENUM,
-        __('Subscriber status', 'mailpoet'),
+        __('Status', 'mailpoet'),
         function (SubscriberPayload $payload) {
           return $payload->getStatus();
         },
@@ -133,9 +155,84 @@ class SubscriberSubject implements Subject {
         ]
       ),
       new Field(
+        'mailpoet:subscriber:subscription-source',
+        Field::TYPE_ENUM,
+        __('Subscription source', 'mailpoet'),
+        function (SubscriberPayload $payload) {
+          return $payload->getSubscriber()->getSource();
+        },
+        [
+          'options' => [
+            [
+              'id' => 'api',
+              'name' => __('API', 'mailpoet'),
+            ],
+            [
+              'id' => 'form',
+              'name' => __('Form', 'mailpoet'),
+            ],
+            [
+              'id' => 'unknown',
+              'name' => __('Unknown', 'mailpoet'),
+            ],
+            [
+              'id' => 'imported',
+              'name' => __('Imported', 'mailpoet'),
+            ],
+            [
+              'id' => 'administrator',
+              'name' => __('Administrator', 'mailpoet'),
+            ],
+            [
+              'id' => 'wordpress_user',
+              'name' => __('WordPress user', 'mailpoet'),
+            ],
+            [
+              'id' => 'woocommerce_user',
+              'name' => __('WooCommerce user', 'mailpoet'),
+            ],
+            [
+              'id' => 'woocommerce_checkout',
+              'name' => __('WooCommerce checkout', 'mailpoet'),
+            ],
+          ],
+        ]
+      ),
+      new Field(
+        'mailpoet:subscriber:last-subscribed-at',
+        Field::TYPE_DATETIME,
+        __('Subscribed date', 'mailpoet'),
+        function (SubscriberPayload $payload) {
+          return $payload->getSubscriber()->getLastSubscribedAt();
+        }
+      ),
+      new Field(
+        'mailpoet:subscriber:tags',
+        Field::TYPE_ENUM_ARRAY,
+        __('Tags', 'mailpoet'),
+        function (SubscriberPayload $payload) {
+          $value = [];
+          foreach ($payload->getSubscriber()->getSubscriberTags() as $subscriberTag) {
+            $tag = $subscriberTag->getTag();
+            if ($tag) {
+              $value[] = $tag->getId();
+            }
+          }
+          return $value;
+        },
+        [
+          'options' => array_map(function ($tag) {
+            return [
+              'id' => $tag->getId(),
+              'name' => $tag->getName(),
+            ];
+          }, $this->tagRepository->findAll()),
+        ]
+      ),
+      new Field(
         'mailpoet:subscriber:segments',
         Field::TYPE_ENUM_ARRAY,
-        __('Subscriber segments', 'mailpoet'),
+        __('Segments', 'mailpoet'),
         function (SubscriberPayload $payload) {
           $segments = $this->segmentsFinder->findDynamicSegments($payload->getSubscriber());
           $value = [];
