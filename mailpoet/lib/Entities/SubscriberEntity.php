@@ -25,6 +25,7 @@ class SubscriberEntity {
   public const HOOK_SUBSCRIBER_CREATED = 'mailpoet_subscriber_created';
   public const HOOK_SUBSCRIBER_DELETED = 'mailpoet_subscriber_deleted';
   public const HOOK_SUBSCRIBER_UPDATED = 'mailpoet_subscriber_updated';
+  public const HOOK_SUBSCRIBER_STATUS_CHANGED = 'mailpoet_subscriber_status_changed';
   public const HOOK_MULTIPLE_SUBSCRIBERS_CREATED = 'mailpoet_multiple_subscribers_created';
   public const HOOK_MULTIPLE_SUBSCRIBERS_DELETED = 'mailpoet_multiple_subscribers_deleted';
   public const HOOK_MULTIPLE_SUBSCRIBERS_UPDATED = 'mailpoet_multiple_subscribers_updated';
