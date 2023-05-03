@@ -6,6 +6,7 @@ use Codeception\Stub\Expected;
 use MailPoet\Config\SubscriberChangesNotifier;
 use MailPoet\Doctrine\EventListeners\SubscriberListener;
 use MailPoet\Doctrine\EventListeners\TimestampListener;
+use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -45,6 +46,19 @@ class SubscriberListenerTest extends EventListenersBaseTest {
 
     $subscriber->setFirstName('John');
     $subscriber->setLastName('Doe');
+    $this->entityManager->flush();
+  }
+
+  public function testItNotifiesAboutUpdatedStatusSubscriber(): void {
+    $subscriber = (new SubscriberFactory())->create();
+    $changesNotifier = $this->make(SubscriberChangesNotifier::class, [
+      'wp' => $this->wp,
+      'subscriberStatusChanged' => Expected::once(),
+    ]);
+    $this->subscriberListener = new SubscriberListener($changesNotifier);
+    $this->replaceEntityListener($this->subscriberListener);
+
+    $subscriber->setStatus(SubscriberEntity::STATUS_UNSUBSCRIBED);
     $this->entityManager->flush();
   }
 
