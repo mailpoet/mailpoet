@@ -8,6 +8,21 @@ export const SubscriberSegmentOptions = [
     group: SegmentTypes.WordPressRole,
   },
   {
+    value: SubscriberActionTypes.SUBSCRIBER_EMAIL,
+    label: MailPoet.I18n.t('email'),
+    group: SegmentTypes.WordPressRole,
+  },
+  {
+    value: SubscriberActionTypes.SUBSCRIBER_FIRST_NAME,
+    label: MailPoet.I18n.t('firstName'),
+    group: SegmentTypes.WordPressRole,
+  },
+  {
+    value: SubscriberActionTypes.SUBSCRIBER_LAST_NAME,
+    label: MailPoet.I18n.t('lastName'),
+    group: SegmentTypes.WordPressRole,
+  },
+  {
     value: SubscriberActionTypes.MAILPOET_CUSTOM_FIELD,
     label: MailPoet.I18n.t('mailpoetCustomField'),
     group: SegmentTypes.WordPressRole,

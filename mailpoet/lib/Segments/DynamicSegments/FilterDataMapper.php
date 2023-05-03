@@ -14,6 +14,7 @@ use MailPoet\Segments\DynamicSegments\Filters\SubscriberSegment;
 use MailPoet\Segments\DynamicSegments\Filters\SubscriberSubscribedDate;
 use MailPoet\Segments\DynamicSegments\Filters\SubscriberSubscribedViaForm;
 use MailPoet\Segments\DynamicSegments\Filters\SubscriberTag;
+use MailPoet\Segments\DynamicSegments\Filters\SubscriberTextField;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceAverageSpent;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceCategory;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceCountry;
@@ -153,6 +154,19 @@ class FilterDataMapper {
           return intval($formId);
         }, $data['form_ids']),
         'operator' => $data['operator'],
+        'connect' => $data['connect'],
+      ]);
+    }
+    if (in_array($data['action'], SubscriberTextField::TYPES)) {
+      if (empty($data['value'])) throw new InvalidFilterException('Missing value', InvalidFilterException::MISSING_VALUE);
+      if (empty($data['operator'])) throw new InvalidFilterException('Missing operator', InvalidFilterException::MISSING_VALUE);
+      if (!in_array($data['operator'], SubscriberTextField::OPERATORS)) {
+        throw new InvalidFilterException('Invalid operator', InvalidFilterException::MISSING_VALUE);
+      }
+      return new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_USER_ROLE, $data['action'], [
+        'value' => $data['value'],
+        'operator' => $data['operator'],
+        'action' => $data['action'],
         'connect' => $data['connect'],
       ]);
     }

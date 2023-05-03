@@ -14,6 +14,7 @@ use MailPoet\Segments\DynamicSegments\Filters\SubscriberSegment;
 use MailPoet\Segments\DynamicSegments\Filters\SubscriberSubscribedDate;
 use MailPoet\Segments\DynamicSegments\Filters\SubscriberSubscribedViaForm;
 use MailPoet\Segments\DynamicSegments\Filters\SubscriberTag;
+use MailPoet\Segments\DynamicSegments\Filters\SubscriberTextField;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceCategory;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceCountry;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceNumberOfOrders;
@@ -724,6 +725,42 @@ class FilterDataMapperTest extends \MailPoetUnitTest {
       'operator' => DynamicSegmentFilterData::OPERATOR_ANY,
       'connect' => DynamicSegmentFilterData::CONNECT_TYPE_AND,
     ]);
+  }
+
+  public function testItMapsSubscriberTextField() {
+    $data = ['filters' => [[
+      'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
+      'action' => 'subscriberFirstName',
+      'operator' => 'contains',
+      'field' => 'email',
+      'value' => 'some value',
+    ]]];
+    $filters = $this->mapper->map($data);
+    expect($filters)->array();
+    expect($filters)->count(1);
+    $filter = reset($filters);
+    $this->assertInstanceOf(DynamicSegmentFilterData::class, $filter);
+    expect($filter)->isInstanceOf(DynamicSegmentFilterData::class);
+    expect($filter->getFilterType())->equals(DynamicSegmentFilterData::TYPE_USER_ROLE);
+    expect($filter->getAction())->equals(SubscriberTextField::FIRST_NAME);
+    expect($filter->getData())->equals([
+      'value' => 'some value',
+      'operator' => 'contains',
+      'action' => 'subscriberFirstName',
+      'connect' => DynamicSegmentFilterData::CONNECT_TYPE_AND,
+    ]);
+  }
+
+  public function testSubscriberTextFieldThrowsErrorWithInvalidOperator(): void {
+    $this->expectException(InvalidFilterException::class);
+    $this->expectExceptionMessage('Invalid operator');
+    $data = ['filters' => [[
+      'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
+      'action' => 'subscriberEmail',
+      'operator' => 'invalid_operator',
+      'value' => 'some value',
+    ]]];
+    $this->mapper->map($data);
   }
 
   public function testItMapsSubscriberSubscribedViaForm(): void {

@@ -23,6 +23,9 @@ export enum SubscriberActionTypes {
   SUBSCRIBED_DATE = 'subscribedDate',
   SUBSCRIBER_SCORE = 'subscriberScore',
   SUBSCRIBED_TO_LIST = 'subscribedToList',
+  SUBSCRIBER_FIRST_NAME = 'subscriberFirstName',
+  SUBSCRIBER_LAST_NAME = 'subscriberLastName',
+  SUBSCRIBER_EMAIL = 'subscriberEmail',
   SUBSCRIBER_TAG = 'subscriberTag',
   SUBSCRIBED_VIA_FORM = 'subscribedViaForm',
 }

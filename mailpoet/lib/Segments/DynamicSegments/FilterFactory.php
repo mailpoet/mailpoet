@@ -15,6 +15,7 @@ use MailPoet\Segments\DynamicSegments\Filters\SubscriberSegment;
 use MailPoet\Segments\DynamicSegments\Filters\SubscriberSubscribedDate;
 use MailPoet\Segments\DynamicSegments\Filters\SubscriberSubscribedViaForm;
 use MailPoet\Segments\DynamicSegments\Filters\SubscriberTag;
+use MailPoet\Segments\DynamicSegments\Filters\SubscriberTextField;
 use MailPoet\Segments\DynamicSegments\Filters\UserRole;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceAverageSpent;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceCategory;
@@ -88,6 +89,9 @@ class FilterFactory {
   /** @var SubscriberSubscribedViaForm */
   private $subscribedViaForm;
 
+  /** @var SubscriberTextField */
+  private $subscriberTextField;
+
   public function __construct(
     EmailAction $emailAction,
     EmailActionClickAny $emailActionClickAny,
@@ -108,7 +112,8 @@ class FilterFactory {
     SubscriberSegment $subscriberSegment,
     SubscriberSubscribedViaForm $subscribedViaForm,
     WooCommerceSingleOrderValue $wooCommerceSingleOrderValue,
-    WooCommerceAverageSpent $wooCommerceAverageSpent
+    WooCommerceAverageSpent $wooCommerceAverageSpent,
+    SubscriberTextField $subscriberTextField
   ) {
     $this->emailAction = $emailAction;
     $this->userRole = $userRole;
@@ -128,6 +133,7 @@ class FilterFactory {
     $this->subscriberSegment = $subscriberSegment;
     $this->emailActionClickAny = $emailActionClickAny;
     $this->wooCommerceSingleOrderValue = $wooCommerceSingleOrderValue;
+    $this->subscriberTextField = $subscriberTextField;
     $this->subscribedViaForm = $subscribedViaForm;
     $this->wooCommerceAverageSpent = $wooCommerceAverageSpent;
   }
@@ -154,7 +160,8 @@ class FilterFactory {
 
   /**
    * @param ?string $action
-   * @return MailPoetCustomFields|SubscriberScore|SubscriberSegment|SubscriberSubscribedDate|UserRole|SubscriberTag|SubscriberSubscribedViaForm
+   *
+   * @return MailPoetCustomFields|SubscriberScore|SubscriberSegment|SubscriberSubscribedDate|UserRole|SubscriberTag|SubscriberTextField|SubscriberSubscribedViaForm
    */
   private function userRole(?string $action) {
     if ($action === SubscriberSubscribedDate::TYPE) {
@@ -169,6 +176,8 @@ class FilterFactory {
       return $this->subscriberTag;
     } elseif ($action === SubscriberSubscribedViaForm::TYPE) {
       return $this->subscribedViaForm;
+    } elseif (in_array($action, SubscriberTextField::TYPES)) {
+      return $this->subscriberTextField;
     }
     return $this->userRole;
   }
