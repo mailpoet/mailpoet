@@ -18,6 +18,10 @@ import {
 } from './subscriber_subscribed_to_list';
 import { SubscriberTag, validateSubscriberTag } from './subscriber_tag';
 import {
+  SubscriberTextField,
+  validateSubscriberTextField,
+} from './subscriber_text_field';
+import {
   SubscribedViaForm,
   validateSubscribedViaForm,
 } from './subscribed_via_form';
@@ -44,6 +48,15 @@ export function validateSubscriber(formItems: WordpressRoleFormItem): boolean {
   if (formItems.action === SubscriberActionTypes.SUBSCRIBER_TAG) {
     return validateSubscriberTag(formItems);
   }
+  if (
+    [
+      SubscriberActionTypes.SUBSCRIBER_FIRST_NAME,
+      SubscriberActionTypes.SUBSCRIBER_LAST_NAME,
+      SubscriberActionTypes.SUBSCRIBER_EMAIL,
+    ].includes(formItems.action as SubscriberActionTypes)
+  ) {
+    return validateSubscriberTextField(formItems);
+  }
   if (formItems.action === SubscriberActionTypes.SUBSCRIBED_VIA_FORM) {
     return validateSubscribedViaForm(formItems);
   }
@@ -65,6 +78,9 @@ const componentsMap = {
   [SubscriberActionTypes.MAILPOET_CUSTOM_FIELD]: MailPoetCustomFields,
   [SubscriberActionTypes.SUBSCRIBED_TO_LIST]: SubscribedToList,
   [SubscriberActionTypes.SUBSCRIBER_TAG]: SubscriberTag,
+  [SubscriberActionTypes.SUBSCRIBER_FIRST_NAME]: SubscriberTextField,
+  [SubscriberActionTypes.SUBSCRIBER_LAST_NAME]: SubscriberTextField,
+  [SubscriberActionTypes.SUBSCRIBER_EMAIL]: SubscriberTextField,
   [SubscriberActionTypes.SUBSCRIBED_VIA_FORM]: SubscribedViaForm,
 };
 
