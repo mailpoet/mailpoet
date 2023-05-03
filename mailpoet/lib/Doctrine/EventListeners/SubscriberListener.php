@@ -4,7 +4,7 @@ namespace MailPoet\Doctrine\EventListeners;
 
 use MailPoet\Config\SubscriberChangesNotifier;
 use MailPoet\Entities\SubscriberEntity;
-use MailPoetVendor\Doctrine\Persistence\Event\LifecycleEventArgs;
+use MailPoetVendor\Doctrine\ORM\Event\LifecycleEventArgs;
 
 class SubscriberListener {
 
@@ -17,12 +17,23 @@ class SubscriberListener {
     $this->subscriberChangesNotifier = $subscriberChangesNotifier;
   }
 
+  private function maybeNotifyStatusChanged(SubscriberEntity $subscriber, LifecycleEventArgs $event): void {
+    $entityManager = $event->getEntityManager();
+    $unitOfWork = $entityManager->getUnitOfWork();
+    $changeset = $unitOfWork->getEntityChangeSet($subscriber);
+
+    if (array_key_exists('status', $changeset) && $changeset['status'][0] !== $changeset['status'][1]) {
+      $this->subscriberChangesNotifier->subscriberStatusChanged((int)$subscriber->getId());
+    }
+  }
+
   public function postPersist(SubscriberEntity $subscriber, LifecycleEventArgs $event): void {
     $this->subscriberChangesNotifier->subscriberCreated((int)$subscriber->getId());
   }
 
   public function postUpdate(SubscriberEntity $subscriber, LifecycleEventArgs $event): void {
     $this->subscriberChangesNotifier->subscriberUpdated((int)$subscriber->getId());
+    $this->maybeNotifyStatusChanged($subscriber, $event);
   }
 
   public function postRemove(SubscriberEntity $subscriber, LifecycleEventArgs $event): void {
