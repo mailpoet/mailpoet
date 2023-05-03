@@ -6,6 +6,7 @@ use MailPoet\Automation\Engine\Data\Field;
 use MailPoet\Automation\Engine\Data\Subject as SubjectData;
 use MailPoet\Automation\Engine\Integration\Payload;
 use MailPoet\Automation\Engine\Integration\Subject;
+use MailPoet\Automation\Integrations\MailPoet\Fields\SubscriberCustomFieldsFactory;
 use MailPoet\Automation\Integrations\MailPoet\Payloads\SubscriberPayload;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
@@ -29,6 +30,9 @@ class SubscriberSubject implements Subject {
   /** @var SegmentsRepository */
   private $segmentsRepository;
 
+  /** @var SubscriberCustomFieldsFactory */
+  private $subscriberCustomFieldsFactory;
+
   /** @var SubscribersRepository */
   private $subscribersRepository;
 
@@ -38,11 +42,13 @@ class SubscriberSubject implements Subject {
   public function __construct(
     SegmentsFinder $segmentsFinder,
     SegmentsRepository $segmentsRepository,
+    SubscriberCustomFieldsFactory $subscriberCustomFieldsFactory,
     SubscribersRepository $subscribersRepository,
     TagRepository $tagRepository
   ) {
     $this->segmentsFinder = $segmentsFinder;
     $this->segmentsRepository = $segmentsRepository;
+    $this->subscriberCustomFieldsFactory = $subscriberCustomFieldsFactory;
     $this->subscribersRepository = $subscribersRepository;
     $this->tagRepository = $tagRepository;
   }
@@ -73,7 +79,8 @@ class SubscriberSubject implements Subject {
 
   /** @return Field[] */
   public function getFields(): array {
-    return [
+    $fields = $this->subscriberCustomFieldsFactory->getFields();
+    return array_merge($fields, [
       new Field(
         'mailpoet:subscriber:email',
         Field::TYPE_STRING,
@@ -258,6 +265,6 @@ class SubscriberSubject implements Subject {
           return $payload->getSubscriber()->getEmailCount();
         }
       ),
-    ];
+    ]);
   }
 }
