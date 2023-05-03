@@ -60,6 +60,19 @@ class SubscriberChangesNotifierTest extends \MailPoetUnitTest {
     $notifier->notify();
   }
 
+  public function testItNotifiesUpdatedSubscriberIdWithStatusChange(): void {
+    $this->wpFunctions->method('currentTime')
+      ->willReturn(4567);
+    $this->wpFunctions->expects($this->at(1))
+      ->method('doAction')
+      ->with(SubscriberEntity::HOOK_SUBSCRIBER_STATUS_CHANGED, 2)
+      ->willReturn(true);
+
+    $notifier = new SubscriberChangesNotifier($this->wpFunctions);
+    $notifier->subscriberStatusChanged(2);
+    $notifier->notify();
+  }
+
   public function testItNotifyMultipleSubscribersUpdated(): void {
     $this->wpFunctions->expects($this->at(0))
       ->method('currentTime')

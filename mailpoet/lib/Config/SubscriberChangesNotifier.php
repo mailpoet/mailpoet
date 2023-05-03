@@ -18,6 +18,9 @@ class SubscriberChangesNotifier {
   private $updatedSubscriberIds = [];
 
   /** @var array<int, int> */
+  private $statusChangedSubscriberIds = [];
+
+  /** @var array<int, int> */
   private $createdSubscriberBatches = [];
 
   /** @var array<int, int> */
@@ -63,6 +66,7 @@ class SubscriberChangesNotifier {
     // unset updated subscribers if subscriber is created
     foreach ($this->createdSubscriberIds as $subscriberId => $timestamp) {
       unset($this->updatedSubscriberIds[$subscriberId]);
+      unset($this->statusChangedSubscriberIds[$subscriberId]);
     }
 
     if (count($this->updatedSubscriberIds) > 1) {
@@ -70,11 +74,16 @@ class SubscriberChangesNotifier {
       if ($minTimestamp) {
         $this->updatedSubscriberBatches[] = $minTimestamp;
         $this->updatedSubscriberIds = []; // reset updated subscribers
+        $this->statusChangedSubscriberIds = []; // reset status changed subscribers
       }
     }
 
     foreach ($this->updatedSubscriberIds as $subscriberId => $updatedAt) {
       $this->wp->doAction(SubscriberEntity::HOOK_SUBSCRIBER_UPDATED, $subscriberId);
+    }
+
+    foreach ($this->statusChangedSubscriberIds as $subscriberId => $updatedAt) {
+      $this->wp->doAction(SubscriberEntity::HOOK_SUBSCRIBER_STATUS_CHANGED, $subscriberId);
     }
 
     if ($this->updatedSubscriberBatches) {
@@ -103,6 +112,11 @@ class SubscriberChangesNotifier {
   public function subscriberUpdated(int $subscriberId): void {
     // store id as a key and timestamp change as the value
     $this->updatedSubscriberIds[$subscriberId] = $this->getTimestamp();
+  }
+
+  public function subscriberStatusChanged(int $subscriberId): void {
+    // store id as a key and timestamp change as the value
+    $this->statusChangedSubscriberIds[$subscriberId] = $this->getTimestamp();
   }
 
   public function subscriberDeleted(int $subscriberId): void {
