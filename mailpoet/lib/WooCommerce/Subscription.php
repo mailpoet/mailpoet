@@ -223,6 +223,7 @@ class Subscription {
     $signupConfirmation = $this->settings->get('signup_confirmation');
 
     if (!$checkoutOptin) {
+      $this->wp->doAction('mailpoet_woocommerce_segment_unsubscribed', $subscriber);
       // Opt-in is disabled or checkbox is unchecked
       $this->subscriberSegmentRepository->unsubscribeFromSegments($subscriber, [$wcSegment]);
 

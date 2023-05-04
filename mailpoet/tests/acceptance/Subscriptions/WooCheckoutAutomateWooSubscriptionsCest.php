@@ -77,4 +77,20 @@ class WooCheckoutAutomateWooSubscriptionsCest {
     $i->see($customerEmail, '.automatewoo-content');
     $i->seeConfirmationEmailWasReceived();
   }
+
+  public function checkoutOptInCheckedAndUnchecked(\AcceptanceTester $i) {
+    $this->settingsFactory->withWooCommerceCheckoutOptinEnabled();
+    $this->settingsFactory->withConfirmationEmailEnabled();
+    $customerEmail = 'woo_guest_check@example.com';
+    $i->orderProductWithRegistration($this->product, $customerEmail, true);
+    $i->login();
+    $i->checkSubscriberStatusAndLists($customerEmail, SubscriberEntity::STATUS_UNCONFIRMED, ['WooCommerce Customers']);
+    $i->amOnPage('/wp-admin/admin.php?page=automatewoo-opt-ins');
+    $i->see($customerEmail, '.automatewoo-content');
+    $i->logout();
+    $i->orderProductWithoutRegistration($this->product, $customerEmail, false);
+    $i->login();
+    $i->amOnPage('/wp-admin/admin.php?page=automatewoo-opt-ins');
+    $i->dontSee($customerEmail, '.automatewoo-content');
+  }
 }

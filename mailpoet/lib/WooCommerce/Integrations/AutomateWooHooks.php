@@ -32,7 +32,10 @@ class AutomateWooHooks {
       class_exists('AutomateWoo\Customer') && method_exists('AutomateWoo\Customer', 'opt_out');
   }
 
-  public function getAutomateWooCustomer(string $email): ?\AutomateWoo\Customer {
+  /**
+   * @return \AutomateWoo\Customer|false
+   */
+  public function getAutomateWooCustomer(string $email) {
     // AutomateWoo\Customer_Factory::get_by_email() returns false if customer is not found
     // Second parameter is set to false to prevent creating new customer if not found
     return \AutomateWoo\Customer_Factory::get_by_email($email, false);
@@ -43,15 +46,11 @@ class AutomateWooHooks {
       return;
     }
     $this->wp->addAction(SubscriberEntity::HOOK_SUBSCRIBER_STATUS_CHANGED, [$this, 'maybeOptOutSubscriber'], 10, 1);
+    $this->wp->addAction('mailpoet_woocommerce_segment_unsubscribed', [$this, 'optOutSubscriber'], 10, 1);
   }
 
-  public function maybeOptOutSubscriber(int $subscriberId): void {
+  public function optOutSubscriber($subscriber): void {
     if (!$this->isAutomateWooActive() || !$this->areMethodsAvailable()) {
-      return;
-    }
-
-    $subscriber = $this->subscribersRepository->findOneById($subscriberId);
-    if (!$subscriber || !$subscriber->getEmail() || $subscriber->getStatus() !== SubscriberEntity::STATUS_UNSUBSCRIBED) {
       return;
     }
 
@@ -61,5 +60,14 @@ class AutomateWooHooks {
     }
 
     $automateWooCustomer->opt_out();
+  }
+
+  public function maybeOptOutSubscriber(int $subscriberId): void {
+    $subscriber = $this->subscribersRepository->findOneById($subscriberId);
+    if (!$subscriber || !$subscriber->getEmail() || $subscriber->getStatus() !== SubscriberEntity::STATUS_UNSUBSCRIBED) {
+      return;
+    }
+
+    $this->optOutSubscriber($subscriber);
   }
 }
