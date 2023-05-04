@@ -17,6 +17,9 @@ class SubscriberFieldsFactory {
   /** @var SegmentsRepository */
   private $segmentsRepository;
 
+  /** @var SubscriberAutomationFieldsFactory */
+  private $automationFieldsFactory;
+
   /** @var SubscriberCustomFieldsFactory */
   private $customFieldsFactory;
 
@@ -29,12 +32,14 @@ class SubscriberFieldsFactory {
   public function __construct(
     SegmentsFinder $segmentsFinder,
     SegmentsRepository $segmentsRepository,
+    SubscriberAutomationFieldsFactory $automationFieldsFactory,
     SubscriberCustomFieldsFactory $customFieldsFactory,
     SubscriberStatisticFieldsFactory $statisticFieldsFactory,
     TagRepository $tagRepository
   ) {
     $this->segmentsFinder = $segmentsFinder;
     $this->segmentsRepository = $segmentsRepository;
+    $this->automationFieldsFactory = $automationFieldsFactory;
     $this->customFieldsFactory = $customFieldsFactory;
     $this->statisticFieldsFactory = $statisticFieldsFactory;
     $this->tagRepository = $tagRepository;
@@ -222,7 +227,8 @@ class SubscriberFieldsFactory {
           ]
         ),
       ],
-      $this->statisticFieldsFactory->getFields()
+      $this->statisticFieldsFactory->getFields(),
+      $this->automationFieldsFactory->getFields()
     );
   }
 }
