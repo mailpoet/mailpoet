@@ -42,11 +42,11 @@ class DotcomHelperFunctions {
    */
   public function getDotcomPlan(): string {
     if ($this->isCommerce()) {
-      return 'commerce' ;
+      return 'commerce';
     };
 
     if ($this->isBusiness()) {
-      return 'business' ;
+      return 'business';
     };
 
     return '';
