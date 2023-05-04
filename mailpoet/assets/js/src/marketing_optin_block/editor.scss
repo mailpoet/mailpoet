@@ -11,6 +11,8 @@
 
   .wc-block-components-checkbox {
     margin-top: 0 !important;
+    pointer-events: none;
+    user-select: none;
   }
 }
 
