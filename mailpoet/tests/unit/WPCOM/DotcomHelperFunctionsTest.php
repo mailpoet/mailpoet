@@ -1,8 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace unit\WPCOM;
-
-use MailPoet\WPCOM\DotcomHelperFunctions;
+namespace MailPoet\WPCOM;
 
 class DotcomHelperFunctionsTest extends \MailPoetUnitTest {
   /*** @var DotcomHelperFunctions */
