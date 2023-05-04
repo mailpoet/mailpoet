@@ -5,14 +5,14 @@ namespace MailPoet\Test\DataFactories;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\SendingQueueEntity;
-use MailPoet\Entities\StatisticsOpenEntity;
+use MailPoet\Entities\StatisticsNewsletterEntity;
 use MailPoet\Entities\SubscriberEntity;
-use MailPoet\Entities\UserAgentEntity;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 use PHPUnit\Framework\Assert;
 
-class StatisticsOpens {
-  protected $data;
+class StatisticsNewsletters {
+  /** @var array */
+  protected $data = [];
 
   /** @var NewsletterEntity */
   private $newsletter;
@@ -28,21 +28,15 @@ class StatisticsOpens {
     $this->subscriber = $subscriber;
   }
 
-  public function withMachineUserAgentType(): self {
-    $this->data['userAgentType'] = UserAgentEntity::USER_AGENT_TYPE_MACHINE;
-    return $this;
-  }
-
-  public function create(): StatisticsOpenEntity {
+  public function create(): StatisticsNewsletterEntity {
     $entityManager = ContainerWrapper::getInstance()->get(EntityManager::class);
     $queue = $this->newsletter->getLatestQueue();
     Assert::assertInstanceOf(SendingQueueEntity::class, $queue);
-    $entity = new StatisticsOpenEntity(
+    $entity = new StatisticsNewsletterEntity(
       $this->newsletter,
       $queue,
       $this->subscriber
     );
-    $entity->setUserAgentType($this->data['userAgentType'] ?? UserAgentEntity::USER_AGENT_TYPE_HUMAN);
     $entityManager->persist($entity);
     $entityManager->flush();
     return $entity;
