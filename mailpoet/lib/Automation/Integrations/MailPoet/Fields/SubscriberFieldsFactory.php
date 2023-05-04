@@ -23,15 +23,20 @@ class SubscriberFieldsFactory {
   /** @var TagRepository */
   private $tagRepository;
 
+  /** @var SubscriberStatisticFieldsFactory */
+  private $statisticFieldsFactory;
+
   public function __construct(
     SegmentsFinder $segmentsFinder,
     SegmentsRepository $segmentsRepository,
     SubscriberCustomFieldsFactory $customFieldsFactory,
+    SubscriberStatisticFieldsFactory $statisticFieldsFactory,
     TagRepository $tagRepository
   ) {
     $this->segmentsFinder = $segmentsFinder;
     $this->segmentsRepository = $segmentsRepository;
     $this->customFieldsFactory = $customFieldsFactory;
+    $this->statisticFieldsFactory = $statisticFieldsFactory;
     $this->tagRepository = $tagRepository;
   }
 
@@ -216,7 +221,8 @@ class SubscriberFieldsFactory {
             }, $this->segmentsRepository->findBy(['type' => SegmentEntity::TYPE_DYNAMIC])),
           ]
         ),
-      ]
+      ],
+      $this->statisticFieldsFactory->getFields()
     );
   }
 }
