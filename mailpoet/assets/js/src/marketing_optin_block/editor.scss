@@ -1,16 +1,19 @@
 .wc-block-checkout__marketing {
   align-items: flex-start;
   display: flex;
-  margin: 20px 0;
-  padding-bottom: 4px;
-  padding-top: 4px;
+  margin: 1em 0;
 
   .block-editor-rich-text__editable {
-    line-height: em(24px);
+    font-size: .875em;
+    line-height: inherit;
     vertical-align: middle;
   }
 
   .wc-block-components-checkbox {
-    margin-top: 0;
+    margin-top: 0 !important;
   }
+}
+
+.wc-block-checkout__additional_fields .block-editor-inner-blocks .block-editor-block-list__layout {
+  padding-left: 0;
 }
