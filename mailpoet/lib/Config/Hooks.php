@@ -12,6 +12,7 @@ use MailPoet\Subscription\Comment;
 use MailPoet\Subscription\Form;
 use MailPoet\Subscription\Manage;
 use MailPoet\Subscription\Registration;
+use MailPoet\WooCommerce\Integrations\AutomateWooHooks;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoet\WPCOM\DotcomLicenseProvisioner;
 
@@ -58,6 +59,9 @@ class Hooks {
   /** @var DotcomLicenseProvisioner */
   private $dotcomLicenseProvisioner;
 
+  /** @var AutomateWooHooks */
+  private $automateWooHooks;
+
   public function __construct(
     Form $subscriptionForm,
     Comment $subscriptionComment,
@@ -72,7 +76,8 @@ class Hooks {
     SubscriberHandler $subscriberHandler,
     SubscriberChangesNotifier $subscriberChangesNotifier,
     WP $wpSegment,
-    DotcomLicenseProvisioner $dotcomLicenseProvisioner
+    DotcomLicenseProvisioner $dotcomLicenseProvisioner,
+    AutomateWooHooks $automateWooHooks
   ) {
     $this->subscriptionForm = $subscriptionForm;
     $this->subscriptionComment = $subscriptionComment;
@@ -88,6 +93,7 @@ class Hooks {
     $this->hooksWooCommerce = $hooksWooCommerce;
     $this->subscriberChangesNotifier = $subscriberChangesNotifier;
     $this->dotcomLicenseProvisioner = $dotcomLicenseProvisioner;
+    $this->automateWooHooks = $automateWooHooks;
   }
 
   public function init() {
@@ -100,6 +106,7 @@ class Hooks {
     $this->setupListing();
     $this->setupSubscriptionEvents();
     $this->setupWooCommerceSubscriptionEvents();
+    $this->setupAutomateWooSubscriptionEvents();
     $this->setupPostNotifications();
     $this->setupWooCommerceSettings();
     $this->setupFooter();
@@ -260,6 +267,10 @@ class Hooks {
       10,
       1
     );
+  }
+
+  public function setupAutomateWooSubscriptionEvents() {
+    $this->automateWooHooks->setup();
   }
 
   public function setupWPUsers() {
