@@ -44,3 +44,18 @@ namespace WP_CLI\Utils {
     }
   }
 }
+
+namespace AutomateWoo {
+  if (!class_exists(\AutomateWoo\Customer::class)) {
+    class Customer {
+      public function opt_out() {
+      }
+    }
+  }
+  if (!class_exists(\AutomateWoo\Customer_Factory::class)) {
+    class Customer_Factory {
+      public static function get_by_email(string $customer_email, bool $create_if_not_found = true) {
+      }
+    }
+  }
+}
