@@ -6,11 +6,11 @@ use MailPoet\Config\SubscriberChangesNotifier;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
-use MailPoet\Models\ModelValidator;
 use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
 use MailPoet\Newsletter\Scheduler\WelcomeScheduler;
+use MailPoet\Services\Validator;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\ConfirmationEmailMailer;
 use MailPoet\Subscribers\Source;
@@ -41,13 +41,17 @@ class WP {
 
   private $subscriberSegmentRepository;
 
+  /** @var Validator */
+  private $validator;
+
   public function __construct(
     WPFunctions $wp,
     WelcomeScheduler $welcomeScheduler,
     WooCommerceHelper $wooHelper,
     SubscribersRepository $subscribersRepository,
     SubscriberSegmentRepository $subscriberSegmentRepository,
-    SubscriberChangesNotifier $subscriberChangesNotifier
+    SubscriberChangesNotifier $subscriberChangesNotifier,
+    Validator $validator
   ) {
     $this->wp = $wp;
     $this->welcomeScheduler = $welcomeScheduler;
@@ -55,6 +59,7 @@ class WP {
     $this->subscribersRepository = $subscribersRepository;
     $this->subscriberSegmentRepository = $subscriberSegmentRepository;
     $this->subscriberChangesNotifier = $subscriberChangesNotifier;
+    $this->validator = $validator;
   }
 
   /**
@@ -236,12 +241,11 @@ class WP {
   }
 
   private function removeUpdatedSubscribersWithInvalidEmail(array $updatedEmails): void {
-    $validator = new ModelValidator();
     $invalidWpUserIds = array_map(function($item) {
       return $item['id'];
     },
-    array_filter($updatedEmails, function($updatedEmail) use($validator) {
-      return !$validator->validateEmail($updatedEmail['email']);
+    array_filter($updatedEmails, function($updatedEmail) {
+      return !$this->validator->validateEmail($updatedEmail['email']);
     }));
     if (!$invalidWpUserIds) {
       return;
