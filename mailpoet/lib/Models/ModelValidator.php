@@ -2,49 +2,12 @@
 
 namespace MailPoet\Models;
 
+use MailPoet\DI\ContainerWrapper;
+use MailPoet\Services\Validator;
 use MailPoet\Util\Helpers;
-use MailPoet\WP\Functions as WPFunctions;
 
 class ModelValidator extends \MailPoetVendor\Sudzy\Engine {
   public $validators;
-
-  const EMAIL_MIN_LENGTH = 6;
-  const EMAIL_MAX_LENGTH = 150;
-
-  const ROLE_EMAILS = [
-    'abuse',
-    'compliance',
-    'devnull',
-    'dns',
-    'ftp',
-    'hostmaster',
-    'inoc',
-    'ispfeedback',
-    'ispsupport',
-    'list-request',
-    'list',
-    'maildaemon',
-    'noc',
-    'no-reply',
-    'noreply',
-    'nospam',
-    'null',
-    'phish',
-    'phishing',
-    'postmaster',
-    'privacy',
-    'registrar',
-    'root',
-    'security',
-    'spam',
-    'sysadmin',
-    'undisclosed-recipients',
-    'unsubscribe',
-    'usenet',
-    'uucp',
-    'webmaster',
-    'www',
-  ];
 
   public function __construct() {
     parent::__construct();
@@ -68,15 +31,8 @@ class ModelValidator extends \MailPoetVendor\Sudzy\Engine {
   }
 
   public function validateEmail($email) {
-    $permittedLength = (strlen($email) >= self::EMAIL_MIN_LENGTH && strlen($email) <= self::EMAIL_MAX_LENGTH);
-    $validEmail = WPFunctions::get()->isEmail($email) !== false && parent::_isEmail($email, null);
-    return ($permittedLength && $validEmail);
-  }
-
-  public function validateNonRoleEmail($email) {
-    if (!$this->validateEmail($email)) return false;
-    $firstPart = strtolower(substr($email, 0, (int)strpos($email, '@')));
-    return array_search($firstPart, self::ROLE_EMAILS) === false;
+    $validator = ContainerWrapper::getInstance()->get(Validator::class);
+    return $validator->validateEmail($email);
   }
 
   public function validateRenderedNewsletterBody($newsletterBody) {
