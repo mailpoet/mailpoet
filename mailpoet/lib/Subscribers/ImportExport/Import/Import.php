@@ -8,9 +8,9 @@ use MailPoet\Entities\SubscriberCustomFieldEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Entities\SubscriberTagEntity;
-use MailPoet\Models\ModelValidator;
 use MailPoet\Newsletter\Options\NewsletterOptionsRepository;
 use MailPoet\Segments\WP;
+use MailPoet\Services\Validator;
 use MailPoet\Subscribers\ImportExport\ImportExportFactory;
 use MailPoet\Subscribers\ImportExport\ImportExportRepository;
 use MailPoet\Subscribers\Source;
@@ -71,6 +71,9 @@ class Import {
   /** @var TagRepository */
   private $tagRepository;
 
+  /** @var Validator */
+  private $validator;
+
   public function __construct(
     WP $wpSegment,
     CustomFieldsRepository $customFieldsRepository,
@@ -78,6 +81,7 @@ class Import {
     NewsletterOptionsRepository $newsletterOptionsRepository,
     SubscribersRepository $subscriberRepository,
     TagRepository $tagRepository,
+    Validator $validator,
     array $data
   ) {
     $this->wpSegment = $wpSegment;
@@ -86,6 +90,7 @@ class Import {
     $this->newsletterOptionsRepository = $newsletterOptionsRepository;
     $this->subscriberRepository = $subscriberRepository;
     $this->tagRepository = $tagRepository;
+    $this->validator = $validator;
     $this->validateImportData($data);
     $this->subscribersData = $this->transformSubscribersData(
       $data['subscribers'],
@@ -219,12 +224,11 @@ class Import {
    */
   public function validateSubscribersData(array $subscribersData) {
     $invalidRecords = [];
-    $validator = new ModelValidator();
     foreach ($subscribersData as $column => &$data) {
       if ($column === 'email') {
         $data = array_map(
-          function($index, $email) use(&$invalidRecords, $validator) {
-            if (!$validator->validateNonRoleEmail($email)) {
+          function($index, $email) use(&$invalidRecords) {
+            if (!$this->validator->validateNonRoleEmail($email)) {
               $invalidRecords[] = $index;
             }
             return strtolower($email);
