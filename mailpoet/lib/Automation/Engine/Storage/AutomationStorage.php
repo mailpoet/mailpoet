@@ -94,27 +94,20 @@ class AutomationStorage {
   public function getAutomations(array $status = null): array {
     $automationsTable = esc_sql($this->automationsTable);
     $versionsTable = esc_sql($this->versionsTable);
-    $query = $status ?
-      (string)$this->wpdb->prepare("
-        SELECT a.*, v.id AS version_id, v.steps
-        FROM $automationsTable AS a
-        INNER JOIN $versionsTable as v ON (v.automation_id = a.id)
-        WHERE v.id = (
-          SELECT MAX(id) FROM $versionsTable WHERE automation_id = v.automation_id
-        )
-        AND a.status IN (%s)
-        ORDER BY a.id DESC",
-        implode(",", $status)
-      ) : "
-        SELECT a.*, v.id AS version_id, v.steps
-        FROM $automationsTable AS a
-        INNER JOIN $versionsTable as v ON (v.automation_id = a.id)
-        WHERE v.id = (
-          SELECT MAX(id) FROM $versionsTable WHERE automation_id = v.automation_id
-        )
-        ORDER BY a.id DESC
-      ";
 
+    $statusFilter = $status ? 'AND a.status IN(' . implode(',', array_fill(0, count($status), '%s')) . ')' : '';
+    $sql = "
+      SELECT a.*, v.id AS version_id, v.steps
+      FROM $automationsTable AS a
+      INNER JOIN $versionsTable as v ON (v.automation_id = a.id)
+      WHERE v.id = (
+        SELECT MAX(id) FROM $versionsTable WHERE automation_id = v.automation_id
+      )
+      $statusFilter
+      ORDER BY a.id DESC
+    ";
+
+    $query = $status ? (string)$this->wpdb->prepare($sql, ...$status) : $sql;
     $data = $this->wpdb->get_results($query, ARRAY_A);
     return array_map(function (array $automationData) {
       return Automation::fromArray($automationData);
@@ -141,7 +134,7 @@ class AutomationStorage {
       AND s.hash = %s
       $statusFilter
       ORDER BY a.id DESC
-    ", $subject->getHash(), ...($runStatus ?? []));
+    ", ...array_merge([$subject->getHash()], $runStatus ?? []));
 
     $data = $this->wpdb->get_results($query, ARRAY_A);
     return array_map(function (array $automationData) {
