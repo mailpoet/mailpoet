@@ -457,6 +457,7 @@ class SubscriberEntity {
     return $subscriberSegments;
   }
 
+  /** * @return Collection<int, SegmentEntity> */
   public function getSegments() {
     return $this->subscriberSegments->map(function (SubscriberSegmentEntity $subscriberSegment) {
       return $subscriberSegment->getSegment();

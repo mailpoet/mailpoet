@@ -49,6 +49,19 @@ class SegmentsRepository extends Repository {
     return SegmentEntity::class;
   }
 
+  /**
+   * @param string[] $types
+   * @return SegmentEntity[]
+   */
+  public function findByTypeNotIn(array $types): array {
+    return $this->doctrineRepository->createQueryBuilder('s')
+      ->select('s')
+      ->where('s.type NOT IN (:types)')
+      ->setParameter('types', $types)
+      ->getQuery()
+      ->getResult();
+  }
+
   public function getWPUsersSegment(): ?SegmentEntity {
     $segment = $this->findOneBy(['type' => SegmentEntity::TYPE_WP_USERS]);
 
