@@ -183,6 +183,28 @@ class SubscriberFieldsFactory {
           }
         ),
         new Field(
+          'mailpoet:subscriber:lists',
+          Field::TYPE_ENUM_ARRAY,
+          __('Subscribed lists', 'mailpoet'),
+          function (SubscriberPayload $payload) {
+            $value = [];
+            foreach ($payload->getSubscriber()->getSegments() as $list) {
+              if ($list->getType() !== SegmentEntity::TYPE_DYNAMIC) {
+                $value[] = $list->getId();
+              }
+            }
+            return $value;
+          },
+          [
+            'options' => array_map(function ($segment) {
+              return [
+                'id' => $segment->getId(),
+                'name' => $segment->getName(),
+              ];
+            }, $this->segmentsRepository->findByTypeNotIn([SegmentEntity::TYPE_DYNAMIC])),
+          ]
+        ),
+        new Field(
           'mailpoet:subscriber:tags',
           Field::TYPE_ENUM_ARRAY,
           __('Tags', 'mailpoet'),
