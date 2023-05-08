@@ -9,17 +9,17 @@ export const SubscriberSegmentOptions = [
   },
   {
     value: SubscriberActionTypes.SUBSCRIBER_EMAIL,
-    label: MailPoet.I18n.t('email'),
+    label: MailPoet.I18n.t('email').toLowerCase(),
     group: SegmentTypes.WordPressRole,
   },
   {
     value: SubscriberActionTypes.SUBSCRIBER_FIRST_NAME,
-    label: MailPoet.I18n.t('firstName'),
+    label: MailPoet.I18n.t('firstName').toLowerCase(),
     group: SegmentTypes.WordPressRole,
   },
   {
     value: SubscriberActionTypes.SUBSCRIBER_LAST_NAME,
-    label: MailPoet.I18n.t('lastName'),
+    label: MailPoet.I18n.t('lastName').toLowerCase(),
     group: SegmentTypes.WordPressRole,
   },
   {
