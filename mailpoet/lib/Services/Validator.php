@@ -46,13 +46,13 @@ class Validator {
     'www',
   ];
 
-  public function validateEmail($email) {
+  public function validateEmail($email): bool {
     $permittedLength = (strlen($email) >= self::EMAIL_MIN_LENGTH && strlen($email) <= self::EMAIL_MAX_LENGTH);
     $validEmail = WPFunctions::get()->isEmail($email) !== false && filter_var($email, FILTER_VALIDATE_EMAIL) !== false;
     return ($permittedLength && $validEmail);
   }
 
-  public function validateNonRoleEmail($email) {
+  public function validateNonRoleEmail($email): bool {
     if (!$this->validateEmail($email)) return false;
     $firstPart = strtolower(substr($email, 0, (int)strpos($email, '@')));
     return array_search($firstPart, self::ROLE_EMAILS) === false;
