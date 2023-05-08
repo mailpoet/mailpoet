@@ -10,8 +10,8 @@ class Migration_20230503_210945 extends Migration {
     $subscribersTable = $this->getTableName(SubscriberEntity::class);
     $this->connection->executeQuery(
       "ALTER TABLE `{$subscribersTable}`
-        ADD INDEX `first_name` (`first_name`),
-        ADD INDEX `last_name` (`last_name`)"
+        ADD INDEX `first_name` (`first_name`(10)),
+        ADD INDEX `last_name` (`last_name`(10))"
     );
   }
 }
