@@ -14,7 +14,7 @@ use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\SubscribersRepository;
-use MailPoet\Util\License\Features\Subscribers;
+use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
@@ -40,8 +40,8 @@ class HomepageDataController {
   /** @var AutomationStorage */
   private $automationStorage;
 
-  /** @var Subscribers */
-  private $subscribers;
+  /** @var SubscribersFeature */
+  private $subscribersFeature;
 
   /** @var WPFunctions */
   private $wp;
@@ -52,7 +52,7 @@ class HomepageDataController {
     FormsRepository $formsRepository,
     NewslettersRepository $newslettersRepository,
     AutomationStorage $automationStorage,
-    Subscribers $subscribers,
+    SubscribersFeature $subscribersFeature,
     WPFunctions $wp,
     WooCommerceHelper $wooCommerceHelper
   ) {
@@ -63,11 +63,11 @@ class HomepageDataController {
     $this->automationStorage = $automationStorage;
     $this->wp = $wp;
     $this->wooCommerceHelper = $wooCommerceHelper;
-    $this->subscribers = $subscribers;
+    $this->subscribersFeature = $subscribersFeature;
   }
 
   public function getPageData(): array {
-    $subscribersCount = $this->subscribersRepository->getTotalSubscribers();
+    $subscribersCount = $this->subscribersFeature->getSubscribersCount();
     $formsCount = $this->formsRepository->count();
     $showTaskList = !$this->settingsController->get('homepage.task_list_dismissed', false);
     $showProductDiscovery = !$this->settingsController->get('homepage.product_discovery_dismissed', false);
@@ -133,7 +133,7 @@ class HomepageDataController {
    * @return array{canDisplay:bool}
    */
   private function getUpsellStatus(int $subscribersCount): array {
-    $hasValidMssKey = $this->subscribers->hasValidMssKey();
+    $hasValidMssKey = $this->subscribersFeature->hasValidMssKey();
 
     return [
       'canDisplay' => !$hasValidMssKey && $subscribersCount > self::UPSELL_SUBSCRIBERS_COUNT_REQUIRED,
