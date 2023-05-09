@@ -20,6 +20,7 @@ class HomepageDataControllerTest extends \MailPoetTest {
   public function _before() {
     parent::_before();
     $this->homepageDataController = $this->diContainer->get(HomepageDataController::class);
+    $this->cleanup();
   }
 
   public function testItFetchesBasicData(): void {
@@ -240,6 +241,7 @@ class HomepageDataControllerTest extends \MailPoetTest {
     for ($i = 0; $i < 6; $i++) {
       (new Subscriber())->withLastSubscribedAt($thirtyOneDaysAgo)->create();
     }
+    $this->clearSubscribersCountCache();
     $subscribersStats = $this->homepageDataController->getPageData()['subscribersStats'];
     expect($subscribersStats['global']['changePercent'])->equals(166.7);
 
@@ -249,6 +251,7 @@ class HomepageDataControllerTest extends \MailPoetTest {
       $this->entityManager->persist(new StatisticsUnsubscribeEntity(null, null, $unsubscribed));
       $this->entityManager->flush();
     }
+    $this->clearSubscribersCountCache();
     $subscribersStats = $this->homepageDataController->getPageData()['subscribersStats'];
     expect($subscribersStats['global']['changePercent'])->equals(0);
 
@@ -256,6 +259,7 @@ class HomepageDataControllerTest extends \MailPoetTest {
     $unsubscribed = (new Subscriber())->withLastSubscribedAt($thirtyOneDaysAgo)->withStatus(SubscriberEntity::STATUS_UNSUBSCRIBED)->create();
     $this->entityManager->persist(new StatisticsUnsubscribeEntity(null, null, $unsubscribed));
     $this->entityManager->flush();
+    $this->clearSubscribersCountCache();
     $subscribersStats = $this->homepageDataController->getPageData()['subscribersStats'];
     expect($subscribersStats['global']['changePercent'])->equals(-5.9);
   }
@@ -323,5 +327,9 @@ class HomepageDataControllerTest extends \MailPoetTest {
     expect($subscribersStats['lists'][0]['name'])->equals($segment->getName());
     expect($subscribersStats['lists'][0]['unsubscribed'])->equals(1);
     expect($subscribersStats['lists'][0]['subscribed'])->equals(0);
+  }
+
+  private function cleanup() {
+    $this->clearSubscribersCountCache();
   }
 }

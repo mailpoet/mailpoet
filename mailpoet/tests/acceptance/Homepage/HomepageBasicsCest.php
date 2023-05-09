@@ -69,6 +69,7 @@ class HomepageBasicsCest {
       ->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)
       ->withSegments([$segment])
       ->create();
+    $i->clearTransientCache();
     $i->reloadPage();
     $i->waitForText('Subscribers', 10, $subscribersSection);
     $i->see('New 1', $subscribersSection);
