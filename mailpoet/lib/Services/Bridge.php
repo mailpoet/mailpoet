@@ -10,6 +10,19 @@ use MailPoet\WP\Functions as WPFunctions;
 class Bridge {
   const API_KEY_SETTING_NAME = 'mta.mailpoet_api_key';
   const API_KEY_STATE_SETTING_NAME = 'mta.mailpoet_api_key_state';
+  const SUBSCRIPTION_TYPE_SETTING_NAME = 'mta.mailpoet_subscription_type';
+  const MANUAL_SUBSCRIPTION_TYPE = 'MANUAL';
+  const STRIPE_SUBSCRIPTION_TYPE = 'STRIPE';
+  const WCCOM_SUBSCRIPTION_TYPE = 'WCCOM';
+  const WPCOM_SUBSCRIPTION_TYPE = 'WPCOM';
+  const WPCOM_BUNDLE_SUBSCRIPTION_TYPE = 'WPCOM_BUNDLE';
+  const SUBSCRIPTION_TYPES = [
+    self::MANUAL_SUBSCRIPTION_TYPE,
+    self::STRIPE_SUBSCRIPTION_TYPE,
+    self::WCCOM_SUBSCRIPTION_TYPE,
+    self::WPCOM_SUBSCRIPTION_TYPE,
+    self::WPCOM_BUNDLE_SUBSCRIPTION_TYPE,
+  ];
 
   const AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING_NAME = 'authorized_emails_addresses_check';
 
@@ -195,6 +208,15 @@ class Bridge {
     return $this->processKeyCheckResult($result);
   }
 
+  private function storeSubscriptionType(?string $subscriptionType): void {
+    if (in_array($subscriptionType, self::SUBSCRIPTION_TYPES, true)) {
+      $this->settings->set(
+        self::SUBSCRIPTION_TYPE_SETTING_NAME,
+        $subscriptionType
+      );
+    }
+  }
+
   public function storeMSSKeyAndState($key, $state) {
     return $this->storeKeyAndState(API::KEY_CHECK_TYPE_MSS, $key, $state);
   }
@@ -292,6 +314,11 @@ class Bridge {
       $keyStateSettingName,
       $state
     );
+
+    // store the subscription type
+    if (!empty($state['data']) && !empty($state['data']['subscription_type'])) {
+      $this->storeSubscriptionType($state['data']['subscription_type']);
+    }
   }
 
   private function buildKeyState($keyState, $result, ?string $accessRestriction): array {

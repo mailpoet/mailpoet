@@ -201,6 +201,26 @@ class BridgeTest extends \MailPoetTest {
     }
   }
 
+  public function testItStoresSubscriptionTypeOnPremiumCheck() {
+    $state = ['state' => Bridge::KEY_VALID, 'data' => ['subscription_type' => Bridge::WPCOM_SUBSCRIPTION_TYPE]];
+    $this->bridge->storePremiumKeyAndState($this->validKey, $state);
+    expect($this->getSubscriptionType())->equals(Bridge::WPCOM_SUBSCRIPTION_TYPE);
+  }
+
+  public function testItStoresSubscriptionTypeOnMSSCheck() {
+    $state = ['state' => Bridge::KEY_VALID, 'data' => ['subscription_type' => Bridge::WCCOM_SUBSCRIPTION_TYPE]];
+    $this->bridge->storeMSSKeyAndState($this->validKey, $state);
+    expect($this->getSubscriptionType())->equals(Bridge::WCCOM_SUBSCRIPTION_TYPE);
+  }
+
+  public function testItDoesNotStoreInvalidSubscriptionType() {
+    $state = ['state' => Bridge::KEY_VALID, 'data' => ['subscription_type' => 'INVALID']];
+    $this->bridge->storePremiumKeyAndState($this->validKey, $state);
+    expect($this->getSubscriptionType())->notEquals('INVALID');
+    $this->bridge->storeMSSKeyAndState($this->validKey, $state);
+    expect($this->getSubscriptionType())->notEquals('INVALID');
+  }
+
   public function testItInvalidatesMSSKey() {
     $this->bridge->storeMSSKeyAndState($this->validKey, ['state' => Bridge::KEY_VALID]);
     $storedState = $this->getMssKeyState() ?? [];
@@ -615,6 +635,10 @@ class BridgeTest extends \MailPoetTest {
       Bridge::PREMIUM_KEY_SETTING_NAME,
       '123457890abcdef'
     );
+  }
+
+  private function getSubscriptionType() {
+    return $this->settings->get(Bridge::SUBSCRIPTION_TYPE_SETTING_NAME);
   }
 
   private function getPremiumKey() {
