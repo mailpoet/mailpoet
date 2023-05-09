@@ -3,8 +3,13 @@
 namespace MailPoet\Test\Config;
 
 use Codeception\Util\Stub;
+use MailPoet\Config\AccessControl;
+use MailPoet\Config\Changelog;
 use MailPoet\Config\Menu;
+use MailPoet\Config\Router;
 use MailPoet\Config\ServicesChecker;
+use MailPoet\Form\Util\CustomFonts;
+use MailPoet\WP\Functions as WPFunctions;
 
 class MenuTest extends \MailPoetTest {
   public function testItReturnsTrueIfCurrentPageBelongsToMailpoet() {
@@ -55,5 +60,47 @@ class MenuTest extends \MailPoetTest {
     );
     $menu->checkPremiumKey($checker);
     expect($menu->premiumKeyValid)->false();
+  }
+
+  public function testItHidesAutomationIfBundledSubscriptionAndAutomateWooActive() {
+    $checker = Stub::make(
+      new ServicesChecker(),
+      [
+        'isPremiumKeyValid' => true,
+        'isBundledSubscription' => true,
+      ],
+      $this
+    );
+    $changelog = $this->createMock(Changelog::class);
+    $changelog->method('shouldShowWelcomeWizard')->willReturn(false);
+
+    $wpMock = $this->createMock(WPFunctions::class);
+    $wpMock->method('isPluginActive')->willReturn(true);
+    $wpMock->method('addSubmenuPage')->willReturn(true);
+
+    $accessControlMock = $this->createMock(AccessControl::class);
+    $accessControlMock->method('validatePermission')->willReturn(true);
+
+    $wpMock->expects($this->at(8))->method('addSubmenuPage')->with(
+      null,
+      $this->anything(),
+      $this->anything(),
+      $this->anything(),
+      Menu::AUTOMATIONS_PAGE_SLUG,
+      $this->anything()
+    );
+
+    $menu = new Menu(
+      $accessControlMock,
+      $wpMock,
+      $checker,
+      $this->diContainer,
+      $this->diContainer->get(Router::class),
+      $this->diContainer->get(CustomFonts::class),
+      $changelog
+    );
+
+    $menu->setup();
+
   }
 }
