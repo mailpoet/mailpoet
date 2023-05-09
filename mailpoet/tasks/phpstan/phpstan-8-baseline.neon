@@ -647,16 +647,6 @@ parameters:
 
 		-
 			message: "#^Cannot access offset 'subscribers' on mixed\\.$#"
-			count: 3
-			path: ../../lib/Segments/SegmentsSimpleListRepository.php
-
-		-
-			message: "#^Cannot access offset 'type' on mixed\\.$#"
-			count: 1
-			path: ../../lib/Segments/SegmentsSimpleListRepository.php
-
-		-
-			message: "#^Cannot cast mixed to int\\.$#"
 			count: 1
 			path: ../../lib/Segments/SegmentsSimpleListRepository.php
 
