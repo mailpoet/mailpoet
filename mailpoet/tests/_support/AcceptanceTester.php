@@ -3,6 +3,7 @@
 use Facebook\WebDriver\Exception\UnrecognizedExceptionException;
 use Facebook\WebDriver\Exception\WebDriverException;
 use Facebook\WebDriver\WebDriverKeys;
+use MailPoet\Cache\TransientCache;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\FormEntity;
 use MailPoet\Form\FormMessageController;
@@ -768,5 +769,10 @@ class AcceptanceTester extends \Codeception\Actor {
       }
     }
     $i->seeInCurrentURL(urlencode('group[' . $name . ']'));
+  }
+
+  public function clearTransientCache(): void {
+    $cache = ContainerWrapper::getInstance()->get(TransientCache::class);
+    $cache->invalidateAllItems();
   }
 }

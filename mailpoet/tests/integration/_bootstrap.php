@@ -191,8 +191,7 @@ abstract class MailPoetTest extends \Codeception\TestCase\Test { // phpcs:ignore
 
   public function clearSubscribersCountCache() {
     $cache = $this->diContainer->get(TransientCache::class);
-    $cache->invalidateItems(TransientCache::SUBSCRIBERS_STATISTICS_COUNT_KEY);
-    $cache->invalidateItems(TransientCache::SUBSCRIBERS_GLOBAL_STATUS_STATISTICS_COUNT_KEY);
+    $cache->invalidateAllItems();
   }
 
   protected function backupGlobals(): void {

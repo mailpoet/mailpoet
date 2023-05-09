@@ -54,6 +54,8 @@ class ImportExportFactoryTest extends \MailPoetTest {
     $this->importFactory = new ImportExportFactory('import');
     $this->exportFactory = new ImportExportFactory('export');
     $this->subscribersRepository = $this->diContainer->get(SubscribersRepository::class);
+
+    $this->cleanup();
   }
 
   public function testItCanGetSegmentsWithSubscriberCount() {
@@ -79,6 +81,7 @@ class ImportExportFactoryTest extends \MailPoetTest {
     $subscriber = $this->subscribersRepository->findOneBy(['email' => 'mike@mailpoet.com', 'deletedAt' => null]);
     expect($subscriber)->null();
 
+    $this->clearSubscribersCountCache();
     $segments = $this->importFactory->getSegments();
     expect($segments[0]['count'])->equals(0);
     expect($segments[1]['count'])->equals(0);
@@ -94,6 +97,7 @@ class ImportExportFactoryTest extends \MailPoetTest {
     $this->subscribersRepository->persist($subscriber);
     $this->subscribersRepository->flush();
 
+    $this->clearSubscribersCountCache();
     $segments = $this->exportFactory->getSegments();
     expect(count($segments))->equals(1);
   }
@@ -303,5 +307,9 @@ class ImportExportFactoryTest extends \MailPoetTest {
     // action, system fields, user fields
     expect(count((array)json_decode($exportMenu['subscriberFieldsSelect2'], true)))
       ->equals(3);
+  }
+
+  private function cleanup() {
+    $this->clearSubscribersCountCache();
   }
 }
