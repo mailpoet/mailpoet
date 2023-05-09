@@ -8,25 +8,19 @@ use MailPoet\Automation\Integrations\MailPoet\Actions\SendEmailAction;
 use MailPoet\Automation\Integrations\MailPoet\Triggers\SomeoneSubscribesTrigger;
 use MailPoet\Automation\Integrations\MailPoet\Triggers\UserRegistrationTrigger;
 use MailPoet\Entities\NewsletterEntity;
-use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Form\FormsRepository;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
-use MailPoet\Subscribers\SubscribersRepository;
+use MailPoet\Subscribers\SubscribersCountsController;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
-use MailPoet\WP\Functions as WPFunctions;
-use MailPoetVendor\Carbon\Carbon;
 
 class HomepageDataController {
   public const UPSELL_SUBSCRIBERS_COUNT_REQUIRED = 600;
 
   /** @var SettingsController */
   private $settingsController;
-
-  /** @var SubscribersRepository */
-  private $subscribersRepository;
 
   /** @var FormsRepository */
   private $formsRepository;
@@ -43,27 +37,25 @@ class HomepageDataController {
   /** @var SubscribersFeature */
   private $subscribersFeature;
 
-  /** @var WPFunctions */
-  private $wp;
+  /** @var SubscribersCountsController */
+  private $subscribersCountsController;
 
   public function __construct(
     SettingsController $settingsController,
-    SubscribersRepository $subscribersRepository,
     FormsRepository $formsRepository,
     NewslettersRepository $newslettersRepository,
     AutomationStorage $automationStorage,
     SubscribersFeature $subscribersFeature,
-    WPFunctions $wp,
+    SubscribersCountsController $subscribersCountsController,
     WooCommerceHelper $wooCommerceHelper
   ) {
     $this->settingsController = $settingsController;
-    $this->subscribersRepository = $subscribersRepository;
     $this->formsRepository = $formsRepository;
     $this->newslettersRepository = $newslettersRepository;
     $this->automationStorage = $automationStorage;
-    $this->wp = $wp;
     $this->wooCommerceHelper = $wooCommerceHelper;
     $this->subscribersFeature = $subscribersFeature;
+    $this->subscribersCountsController = $subscribersCountsController;
   }
 
   public function getPageData(): array {
@@ -158,15 +150,15 @@ class HomepageDataController {
    * @return array{global:array{subscribed:int, unsubscribed:int, changePercent:float|int}, lists:array<int, array>}
    */
   private function getSubscribersStats(): array {
-    $thirtyDaysAgo = Carbon::createFromTimestamp($this->wp->currentTime('timestamp'))->subDays(30);
     $listData = [];
-    $listsDataSubscribed = $this->subscribersRepository->getListLevelCountsOfSubscribedAfter($thirtyDaysAgo);
+    $counts = $this->subscribersCountsController->getHomepageStatistics();
+    $listsDataSubscribed = $counts['listsDataSubscribed'] ?? [];
     foreach ($listsDataSubscribed as $list) {
       $listData[$list['id']] = array_intersect_key($list, array_flip(['name', 'id', 'type', 'averageEngagementScore']));
       $listData[$list['id']]['subscribed'] = $list['count'];
       $listData[$list['id']]['unsubscribed'] = 0;
     }
-    $listsDataUnsubscribed = $this->subscribersRepository->getListLevelCountsOfUnsubscribedAfter($thirtyDaysAgo);
+    $listsDataUnsubscribed = $counts['listsDataUnsubscribed'] ?? [];
     foreach ($listsDataUnsubscribed as $list) {
       if (!isset($listData[$list['id']])) {
         $listData[$list['id']] = array_intersect_key($list, array_flip(['name', 'id', 'type', 'averageEngagementScore']));
@@ -175,9 +167,9 @@ class HomepageDataController {
       $listData[$list['id']]['unsubscribed'] = $list['count'];
     }
 
-    $subscribedCount = $this->subscribersRepository->getCountOfLastSubscribedAfter($thirtyDaysAgo);
-    $unsubscribedCount = $this->subscribersRepository->getCountOfUnsubscribedAfter($thirtyDaysAgo);
-    $subscribedSubscribersCount = $this->subscribersRepository->getCountOfSubscribersForStates([SubscriberEntity::STATUS_SUBSCRIBED]);
+    $subscribedCount = intval($counts['subscribedCount'] ?? 0);
+    $unsubscribedCount = intval($counts['unsubscribedCount'] ?? 0);
+    $subscribedSubscribersCount = intval($counts['subscribedSubscribersCount'] ?? 0);
     $subscribedSubscribers30DaysAgo = $subscribedSubscribersCount - $subscribedCount + $unsubscribedCount;
     if ($subscribedSubscribers30DaysAgo > 0) {
       $globalChangePercent = (($subscribedSubscribersCount - $subscribedSubscribers30DaysAgo) / $subscribedSubscribers30DaysAgo) * 100;
