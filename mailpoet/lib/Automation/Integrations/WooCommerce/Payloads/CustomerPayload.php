@@ -22,4 +22,8 @@ class CustomerPayload implements Payload {
   public function getId(): int {
     return $this->customer ? $this->customer->get_id() : 0;
   }
+
+  public function isGuest(): bool {
+    return $this->customer === null;
+  }
 }
