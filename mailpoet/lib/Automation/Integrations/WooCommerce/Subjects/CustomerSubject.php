@@ -33,6 +33,9 @@ class CustomerSubject implements Subject {
 
   public function getPayload(SubjectData $subjectData): Payload {
     $id = $subjectData->getArgs()['customer_id'];
+    if (!$id) {
+      return new CustomerPayload(null);
+    }
     $customer = new \WC_Customer($id);
     if (!$customer->get_id()) {
       // translators: %d is the ID of the customer.
