@@ -6,6 +6,7 @@ type Props = SelectHTMLAttributes<HTMLSelectElement> & {
   dimension?: 'small';
   isFullWidth?: boolean;
   isMinWidth?: boolean;
+  isMaxContentWidth?: boolean;
   iconStart?: JSX.Element;
   automationId?: string;
 };
@@ -17,6 +18,7 @@ export const Select = forwardRef(
       dimension,
       isFullWidth,
       isMinWidth,
+      isMaxContentWidth,
       iconStart,
       automationId,
       ...attributes
@@ -29,6 +31,7 @@ export const Select = forwardRef(
         'mailpoet-disabled': attributes.disabled,
         'mailpoet-full-width': isFullWidth,
         'mailpoet-min-width': isMinWidth,
+        'mailpoet-max-content-width': isMaxContentWidth,
       })}
     >
       {iconStart}

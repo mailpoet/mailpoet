@@ -25,6 +25,7 @@ use MailPoet\Segments\DynamicSegments\Filters\WooCommercePurchaseDate;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceSingleOrderValue;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceSubscription;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceTotalSpent;
+use MailPoet\Segments\DynamicSegments\Filters\WooCommerceUsedPaymentMethod;
 use MailPoet\WP\Functions as WPFunctions;
 
 class FilterDataMapper {
@@ -309,6 +310,19 @@ class FilterDataMapper {
       $filterData['average_spent_days'] = $data['average_spent_days'];
       $filterData['average_spent_amount'] = $data['average_spent_amount'];
       $filterData['average_spent_type'] = $data['average_spent_type'];
+    } elseif ($data['action'] === WooCommerceUsedPaymentMethod::ACTION) {
+      if (!isset($data['operator']) || !in_array($data['operator'], WooCommerceUsedPaymentMethod::VALID_OPERATORS, true)) {
+        throw new InvalidFilterException('Missing operator', InvalidFilterException::MISSING_OPERATOR);
+      }
+      if (!isset($data['payment_methods']) || !is_array($data['payment_methods']) || empty($data['payment_methods'])) {
+        throw new InvalidFilterException('Missing payment gateways', InvalidFilterException::MISSING_VALUE);
+      }
+      if (!isset($data['used_payment_method_days']) || intval($data['used_payment_method_days']) < 1) {
+        throw new InvalidFilterException('Missing days', InvalidFilterException::MISSING_VALUE);
+      }
+      $filterData['operator'] = $data['operator'];
+      $filterData['payment_methods'] = $data['payment_methods'];
+      $filterData['used_payment_method_days'] = intval($data['used_payment_method_days']);
     } else {
       throw new InvalidFilterException("Unknown action " . $data['action'], InvalidFilterException::MISSING_ACTION);
     }

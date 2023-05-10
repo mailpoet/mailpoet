@@ -136,6 +136,18 @@ class Segments {
         'name' => $form->getName(),
       ];
     }, $this->formsRepository->findAll());
+    $data['woocommerce_payment_methods'] = [];
+    if ($this->woocommerceHelper->isWooCommerceActive()) {
+      $allGateways = $this->woocommerceHelper->getPaymentGateways()->payment_gateways();
+      $paymentMethods = [];
+      foreach ($allGateways as $gatewayId => $gateway) {
+        $paymentMethods[] = [
+          'id' => $gatewayId,
+          'name' => $gateway->get_method_title(),
+        ];
+      }
+      $data['woocommerce_payment_methods'] = $paymentMethods;
+    }
     $this->pageRenderer->displayPage('segments.html', $data);
   }
 

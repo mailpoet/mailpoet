@@ -223,4 +223,8 @@ class Helper {
 
     return $coupon ? $coupon->post_title : null; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
   }
+
+  public function getPaymentGateways() {
+    return $this->WC()->payment_gateways();
+  }
 }

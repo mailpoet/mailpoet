@@ -11,6 +11,7 @@ export enum WooCommerceActionTypes {
   AVERAGE_SPENT = 'averageSpent',
   CUSTOMER_IN_COUNTRY = 'customerInCountry',
   SINGLE_ORDER_VALUE = 'singleOrderValue',
+  USED_PAYMENT_METHOD = 'usedPaymentMethod',
 }
 
 export const WooCommerceOptions = [
@@ -52,6 +53,11 @@ export const WooCommerceOptions = [
   {
     value: WooCommerceActionTypes.TOTAL_SPENT,
     label: MailPoet.I18n.t('wooTotalSpent'),
+    group: SegmentTypes.WooCommerce,
+  },
+  {
+    value: WooCommerceActionTypes.USED_PAYMENT_METHOD,
+    label: MailPoet.I18n.t('wooUsedPaymentMethod'),
     group: SegmentTypes.WooCommerce,
   },
 ];
