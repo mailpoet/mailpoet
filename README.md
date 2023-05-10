@@ -146,6 +146,17 @@ To switch the environment to a different PHP version:
 To switch back to the default PHP version remove what was added in 2) and, run `docker-compose build wordpress` for application container and `docker-compose build test_wordpress` for tests container,
 and start the stack using `./do start`.
 
+## Disabling the Tracy panel
+
+To disable the Tracy panel, add the following to `docker-compose.override.yml`:
+
+```yaml
+services:
+  wordpress:
+    environment:
+      MAILPOET_DISABLE_TRACY_PANEL: 1
+```
+
 ## ✅ TODO
 
 - install woo commerce, members and other useful plugins by default

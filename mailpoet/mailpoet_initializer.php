@@ -52,6 +52,10 @@ if (WP_DEBUG && PHP_VERSION_ID >= 70100 && file_exists($tracyPath)) {
     add_action('admin_enqueue_scripts', 'render_tracy', PHP_INT_MAX, 0);
     session_start();
     Debugger::enable(Debugger::DEVELOPMENT);
+
+    if (getenv('MAILPOET_DISABLE_TRACY_PANEL')) {
+      Debugger::$showBar = false;
+    }
   }
   define('MAILPOET_DEVELOPMENT', true);
 }
