@@ -100,6 +100,8 @@ export interface WooCommerceFormItem extends FormItem {
   average_spent_type?: string;
   average_spent_amount?: string;
   average_spent_days?: string;
+  payment_methods?: string[];
+  used_payment_method_days?: string;
 }
 
 export interface WooCommerceMembershipFormItem extends FormItem {
@@ -204,6 +206,7 @@ export interface SegmentFormDataWindow extends Window {
   mailpoet_subscription_products: WindowSubscriptionProducts;
   mailpoet_product_categories: WindowProductCategories;
   mailpoet_woocommerce_countries: WindowWooCommerceCountries;
+  mailpoet_woocommerce_payment_methods: WooPaymentMethod[];
   mailpoet_newsletters_list: WindowNewslettersList;
   mailpoet_custom_fields: WindowCustomFields;
   mailpoet_can_use_woocommerce_memberships: boolean;
@@ -225,6 +228,7 @@ export interface StateType {
   canUseWooSubscriptions: boolean;
   wooCurrencySymbol: string;
   wooCountries: WindowWooCommerceCountries;
+  wooPaymentMethods: WooPaymentMethod[];
   customFieldsList: WindowCustomFields;
   segment: Segment;
   subscriberCount: SubscriberCount;
@@ -277,6 +281,11 @@ export type Tag = {
 };
 
 export type SignupForm = {
+  id: string;
+  name: string;
+};
+
+export type WooPaymentMethod = {
   id: string;
   name: string;
 };

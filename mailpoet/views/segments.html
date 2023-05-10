@@ -27,6 +27,7 @@
     var mailpoet_can_use_woocommerce_subscriptions = <%= json_encode(can_use_woocommerce_subscriptions)  %>;
     var mailpoet_woocommerce_currency_symbol = <%= json_encode(woocommerce_currency_symbol)  %>;
     var mailpoet_woocommerce_countries = <%= json_encode(woocommerce_countries)  %>;
+    var mailpoet_woocommerce_payment_methods = <%= json_encode(woocommerce_payment_methods)  %>;
     var mailpoet_signup_forms = <%= json_encode(signup_forms) %>;
   </script>
 <% endblock %>
@@ -195,6 +196,7 @@
     'selectWooMembership': __('Search membership plans'),
     'segmentsActiveSubscription': __('has active subscription'),
     'woocommerceSubscriptions': _x('WooCommerce Subscriptions', 'Dynamic segment creation: User selects this to use any WooCommerce Subscriptions filters'),
+    'wooUsedPaymentMethod': __('used payment method'),
     'selectWooSubscription': __('Search subscriptions'),
     'searchLists': __('Search lists'),
     'subscriberTag': _x('tag', 'Subscriber tag'),
@@ -233,6 +235,7 @@
     'selectWooPurchasedCategory': __('Search categories'),
     'selectWooPurchasedProduct': __('Search products'),
     'selectWooCountry': __('Search countries'),
+    'selectWooPaymentMethods': __('Search payment methods'),
     'woocommerce': _x('WooCommerce', 'Dynamic segment creation: User selects this to use any woocommerce filters'),
 
     'dynamicSegmentSizeIsCalculated': __('Calculating segment size…'),

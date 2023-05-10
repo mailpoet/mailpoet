@@ -21,6 +21,7 @@ export const getInitialState = (): StateType => ({
   canUseWooSubscriptions: window.mailpoet_can_use_woocommerce_subscriptions,
   wooCurrencySymbol: window.mailpoet_woocommerce_currency_symbol,
   wooCountries: window.mailpoet_woocommerce_countries,
+  wooPaymentMethods: window.mailpoet_woocommerce_payment_methods,
   customFieldsList: window.mailpoet_custom_fields,
   tags: window.mailpoet_tags,
   signupForms: window.mailpoet_signup_forms,
