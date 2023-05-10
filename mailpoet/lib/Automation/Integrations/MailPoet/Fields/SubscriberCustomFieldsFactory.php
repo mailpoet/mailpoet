@@ -122,8 +122,7 @@ class SubscriberCustomFieldsFactory {
     };
     return $this->createField($customField, Field::TYPE_ENUM, $factory, [
       'options' => array_map(function (int $value) {
-        global $wp_locale;
-        return ['id' => $value, 'name' => $wp_locale->get_month($value)];
+        return ['id' => $value, 'name' => $this->wordPress->getWpLocale()->get_month($value)];
       }, range(1, 12)),
     ]);
   }
