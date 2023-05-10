@@ -118,18 +118,12 @@ class Subscription {
   }
 
   private function getSubscriptionField($inputName, $checked, $labelString) {
-    return $this->wcHelper->woocommerceFormField(
-      $this->wp->escAttr($inputName),
-      [
-        'type' => 'checkbox',
-        'label' => $this->wp->escHtml($labelString),
-        'input_class' => ['woocommerce-form__input', 'woocommerce-form__input-checkbox', 'input-checkbox'],
-        'label_class' => ['woocommerce-form__label', 'woocommerce-form__label-for-checkbox', 'checkbox'],
-        'custom_attributes' => ['data-automation-id' => 'woo-commerce-subscription-opt-in'],
-        'return' => true,
-      ],
-      $checked ? '1' : '0'
-    );
+    $checked = checked($checked, true, false);
+
+    return '<label class="woocommerce-form__label woocommerce-form__label-for-checkbox checkbox" data-automation-id="woo-commerce-subscription-opt-in">
+      <input id="mailpoet_woocommerce_checkout_optin" class="woocommerce-form__input woocommerce-form__input-checkbox input-checkbox" ' . $checked . ' type="checkbox" name="' . $this->wp->escAttr($inputName) . '" value="1" />
+      <span>' . $this->wp->escHtml($labelString) . '</span>
+    </label>';
   }
 
   private function getSubscriptionPresenceCheckField() {
