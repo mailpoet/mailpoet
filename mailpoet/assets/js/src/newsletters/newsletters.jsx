@@ -98,6 +98,7 @@ const Tabs = withNpsPoll(() => {
           <NewsletterListReEngagement />
         </Tab>
         {window.mailpoet_woocommerce_active &&
+          !MailPoet.hideAutomations &&
           _.map(automaticEmails, (email) => (
             <Tab
               key={email.slug}

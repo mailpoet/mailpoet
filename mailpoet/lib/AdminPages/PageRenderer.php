@@ -166,6 +166,7 @@ class PageRenderer {
       'mss_key_pending_approval' => $this->servicesChecker->isMailPoetAPIKeyPendingApproval(),
       'mss_active' => $this->bridge->isMailpoetSendingServiceEnabled(),
       'plugin_partial_key' => $this->servicesChecker->generatePartialApiKey(),
+      'mailpoet_hide_automations' => $this->servicesChecker->isBundledSubscription() && $this->wp->isPluginActive('automatewoo/automatewoo.php'),
       'subscriber_count' => $this->subscribersFeature->getSubscribersCount(),
       'subscribers_counts_cache_created_at' => $subscribersCacheCreatedAt->format('Y-m-d\TH:i:sO'),
       'subscribers_limit' => $this->subscribersFeature->getSubscribersLimit(),
