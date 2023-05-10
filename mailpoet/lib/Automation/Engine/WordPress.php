@@ -3,6 +3,7 @@
 namespace MailPoet\Automation\Engine;
 
 use DateTimeZone;
+use WP_Locale;
 use WP_User;
 
 class WordPress {
@@ -39,5 +40,10 @@ class WordPress {
 
   public function registerRestRoute(string $namespace, string $route, array $args = [], bool $override = false): bool {
     return register_rest_route($namespace, $route, $args, $override);
+  }
+
+  public function getWpLocale(): WP_Locale {
+    global $wp_locale;
+    return $wp_locale;
   }
 }
