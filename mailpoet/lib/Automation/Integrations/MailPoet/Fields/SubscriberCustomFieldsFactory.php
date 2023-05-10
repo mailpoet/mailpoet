@@ -151,7 +151,11 @@ class SubscriberCustomFieldsFactory {
 
   private function createField(CustomFieldEntity $customField, string $type, callable $factory, array $args = []): Field {
     $key = 'mailpoet:subscriber:custom-field:' . $customField->getName();
-    $name = __('Custom field', 'mailpoet') . ': ' . ($customField->getParams()['label'] ?? $customField->getName());
+    $name = sprintf(
+      // translators: %s is the name of the custom field
+      __('Custom field: %s', 'mailpoet'),
+      $customField->getParams()['label'] ?? $customField->getName()
+    );
     return new Field($key, $type, $name, $factory, $args);
   }
 
