@@ -410,9 +410,9 @@ function AverageSpentFields({ filterIndex }: Props): JSX.Element {
     [],
   );
   useEffect(() => {
-    const allowedOperators = ['=', '!=', '>', '<'];
-    if (!allowedOperators.includes(segment.operator)) {
-      void updateSegmentFilter({ operator: '>' }, filterIndex);
+    const allowedOperators = ['>', '>=', '=', '!=', '<=', '<'];
+    if (!allowedOperators.includes(segment.average_spent_type)) {
+      void updateSegmentFilter({ average_spent_type: '>' }, filterIndex);
     }
   }, [updateSegmentFilter, segment, filterIndex]);
   return (
