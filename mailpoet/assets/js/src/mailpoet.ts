@@ -63,6 +63,7 @@ export const MailPoet = {
   premiumPluginDownloadUrl: window.mailpoet_premium_plugin_download_url,
   premiumPluginActivationUrl: window.mailpoet_premium_plugin_activation_url,
   pluginPartialKey: window.mailpoet_plugin_partial_key,
+  hideAutomations: window.mailpoet_hide_automations,
   emailVolumeLimit: window.mailpoet_email_volume_limit,
   emailVolumeLimitReached: window.mailpoet_email_volume_limit_reached,
   currentWpUserEmail: window.mailpoet_current_wp_user_email,

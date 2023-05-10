@@ -169,6 +169,11 @@ class Settings {
       $this->settings->set(Bridge::PREMIUM_KEY_STATE_SETTING_NAME, ['state' => Bridge::KEY_INVALID, 'code' => 400]);
   }
 
+  public function withSubscriptionType($type = Bridge::STRIPE_SUBSCRIPTION_TYPE) {
+    $this->settings->set(Bridge::SUBSCRIPTION_TYPE_SETTING_NAME, $type);
+    return $this;
+  }
+
   public function withMssKeyPendingApproval() {
     $this->settings->set(Bridge::API_KEY_STATE_SETTING_NAME . '.data.is_approved', false);
     return $this;
