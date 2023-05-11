@@ -150,6 +150,22 @@ EOL;
     $this->wp->wpSetScriptTranslations('automation_editor', 'mailpoet');
   }
 
+  public function setupAutomationAnalyticsDependencies(): void {
+    $this->wp->wpEnqueueScript(
+      'automation_analytics',
+      Env::$assetsUrl . '/dist/js/' . $this->renderer->getJsAsset('automation_analytics.js'),
+      [],
+      Env::$version,
+      true
+    );
+    $this->wp->wpSetScriptTranslations('automation_analytics', 'mailpoet');
+
+    $this->wp->wpEnqueueStyle(
+      'automation_analytics',
+      Env::$assetsUrl . '/dist/css/' . $this->renderer->getCssAsset('mailpoet-automation-analytics.css')
+    );
+  }
+
   public function setupAutomationTemplatesDependencies(): void {
     $this->wp->wpEnqueueScript(
       'automation_templates',
