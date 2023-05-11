@@ -16,6 +16,7 @@ import { listsViewSubscribers } from './tests/lists-view-subscribers.js';
 import { listsComplexSegment } from './tests/lists-complex-segment.js';
 import { newsletterStatistics } from './tests/newsletter-statistics.js';
 import { onboardingWizard } from './tests/onboarding-wizard.js';
+import { subscribersTrashingRestoring } from './tests/subscribers-trashing-restoring.js';
 
 // Scenarios, Thresholds, Tags and Project ID used for K6 Cloud
 export let options = {
@@ -55,7 +56,7 @@ let scenarios = {
     executor: 'per-vu-iterations',
     vus: 1,
     iterations: 3,
-    maxDuration: '12m',
+    maxDuration: '15m',
     exec: 'nightly',
   },
 };
@@ -91,6 +92,7 @@ export async function nightly() {
   await subscribersListing();
   await subscribersFiltering();
   await subscribersAdding();
+  await subscribersTrashingRestoring();
   await listsViewSubscribers();
   await listsComplexSegment();
   await settingsBasic();
