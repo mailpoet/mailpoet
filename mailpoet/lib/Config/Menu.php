@@ -3,6 +3,7 @@
 namespace MailPoet\Config;
 
 use MailPoet\AdminPages\Pages\Automation;
+use MailPoet\AdminPages\Pages\AutomationAnalytics;
 use MailPoet\AdminPages\Pages\AutomationEditor;
 use MailPoet\AdminPages\Pages\AutomationTemplates;
 use MailPoet\AdminPages\Pages\ExperimentalFeatures;
@@ -49,6 +50,7 @@ class Menu {
   const LOGS_PAGE_SLUG = 'mailpoet-logs';
   const AUTOMATIONS_PAGE_SLUG = 'mailpoet-automation';
   const AUTOMATION_EDITOR_PAGE_SLUG = 'mailpoet-automation-editor';
+  const AUTOMATION_ANALYTICS_PAGE_SLUG = 'mailpoet-automation-analytics';
   const AUTOMATION_TEMPLATES_PAGE_SLUG = 'mailpoet-automation-templates';
 
   const LANDINGPAGE_PAGE_SLUG = 'mailpoet-landingpage';
@@ -507,6 +509,16 @@ class Menu {
       [$this, 'automationEditor']
     );
 
+    // Automation analytics
+    $this->wp->addSubmenuPage(
+      self::AUTOMATIONS_PAGE_SLUG,
+      $this->setPageTitle(__('Automation Analytics', 'mailpoet')),
+      esc_html__('Automation Analytics', 'mailpoet'),
+      AccessControl::PERMISSION_MANAGE_AUTOMATIONS,
+      self::AUTOMATION_ANALYTICS_PAGE_SLUG,
+      [$this, 'automationAnalytics']
+    );
+
     // Automation templates
 
     $this->wp->addSubmenuPage(
@@ -574,6 +586,10 @@ class Menu {
 
   public function automationEditor() {
     $this->container->get(AutomationEditor::class)->render();
+  }
+
+  public function automationAnalytics() {
+    $this->container->get(AutomationAnalytics::class)->render();
   }
 
   public function experimentalFeatures() {

@@ -34,6 +34,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\AdminPages\Pages\Automation::class)->setPublic(true);
     $container->autowire(\MailPoet\AdminPages\Pages\AutomationTemplates::class)->setPublic(true);
     $container->autowire(\MailPoet\AdminPages\Pages\AutomationEditor::class)->setPublic(true);
+    $container->autowire(\MailPoet\AdminPages\Pages\AutomationAnalytics::class)->setPublic(true);
     $container->autowire(\MailPoet\AdminPages\Pages\ExperimentalFeatures::class)->setPublic(true);
     $container->autowire(\MailPoet\AdminPages\Pages\FormEditor::class)->setPublic(true);
     $container->autowire(\MailPoet\AdminPages\Pages\Forms::class)->setPublic(true);
@@ -191,6 +192,10 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Automation\Integrations\WooCommerce\Subjects\CustomerSubject::class)->setPublic(true)->setShared(false);
     $container->autowire(\MailPoet\Automation\Integrations\WooCommerce\SubjectTransformers\WordPressUserSubjectToWooCommerceCustomerSubjectTransformer::class)->setPublic(true)->setShared(false);
 
+    //Automation Analytics
+    $container->autowire(\MailPoet\Automation\Integrations\MailPoet\Analytics\RegisterAnalytics::class)->setPublic(true);
+    $container->autowire(\MailPoet\Automation\Integrations\MailPoet\Analytics\Endpoints\OverviewEndpoint::class)->setPublic(true);
+    $container->autowire(\MailPoet\Automation\Integrations\MailPoet\Analytics\Controller\OverviewStatisticsController::class)->setPublic(true);
     // Config
     $container->autowire(\MailPoet\Config\AccessControl::class)->setPublic(true);
     $container->autowire(\MailPoet\Config\Activator::class)->setPublic(true);
