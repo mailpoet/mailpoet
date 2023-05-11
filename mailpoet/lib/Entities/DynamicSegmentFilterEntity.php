@@ -38,6 +38,11 @@ class DynamicSegmentFilterEntity {
     $this->filterData = $filterData;
   }
 
+  public function __clone() {
+    $this->id = null;
+    $this->segment = null;
+  }
+
   /**
    * @return SegmentEntity|null
    */
