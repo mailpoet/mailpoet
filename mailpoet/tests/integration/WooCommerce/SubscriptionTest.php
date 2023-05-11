@@ -3,7 +3,6 @@
 namespace MailPoet\WooCommerce;
 
 use MailPoet\Entities\SegmentEntity;
-use MailPoet\Entities\StatisticsUnsubscribeEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Segments\SegmentsRepository;
@@ -80,14 +79,14 @@ class SubscriptionTest extends \MailPoetTest {
     $this->originalSettings = $this->settings->get('woocommerce');
   }
 
-  public function testItDisplaysACheckedCheckboxIfCurrentUserIsSubscribed() {
+  public function testItDisplaysAnUncheckedCheckboxIfCurrentUserIsSubscribed() {
     $this->wp->synchronizeUsers();
     $wpUsers = get_users();
     wp_set_current_user($wpUsers[0]->ID);
     $subscriber = $this->subscribersRepository->getCurrentWPUser();
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
     $this->subscribeToSegment($subscriber, $this->wcSegment);
-    expect($this->getRenderedOptinField())->stringContainsString('checked');
+    expect($this->getRenderedOptinField())->isEmpty();
   }
 
   public function testItDisplaysAnUncheckedCheckboxIfCurrentUserIsNotSubscribed() {
@@ -165,7 +164,7 @@ class SubscriptionTest extends \MailPoetTest {
     expect($this->subscriber->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
   }
 
-  public function testItUnsubscribesIfCheckboxIsNotChecked() {
+  public function testItDoesNotUnsubscribesIfCheckboxIsNotChecked() {
     $this->subscribeToSegment($this->subscriber, $this->wcSegment);
     $this->entityManager->clear();
     $subscriber = $this->subscribersRepository->findOneById($this->subscriber->getId());
@@ -185,10 +184,7 @@ class SubscriptionTest extends \MailPoetTest {
     $this->entityManager->clear();
     $subscriber = $this->subscribersRepository->findOneById($this->subscriber->getId());
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
-    expect($subscriber->getStatus())->equals(SubscriberEntity::STATUS_UNSUBSCRIBED);
-    $unsubscribeLog = $this->entityManager->getRepository(StatisticsUnsubscribeEntity::class)->findOneBy(['subscriber' => $subscriber]);
-    $this->assertInstanceOf(StatisticsUnsubscribeEntity::class, $unsubscribeLog);
-    expect($unsubscribeLog->getSource())->equals(StatisticsUnsubscribeEntity::SOURCE_ORDER_CHECKOUT);
+    expect($subscriber->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
   }
 
   public function testItSubscribesIfCheckboxIsChecked() {

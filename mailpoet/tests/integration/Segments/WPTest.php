@@ -434,7 +434,7 @@ class WPTest extends \MailPoetTest {
     expect($deletedAt->timestamp)->equals(Carbon::now()->timestamp, 1);
   }
 
-  public function testItAddsNewUserWhoUncheckedOptInOnCheckoutPageAsUnsubscribed(): void {
+  public function testItAddsNewUserWhoUncheckedOptInOnCheckoutPageAsUnconfirmed(): void {
     $id = $this->insertUser();
     $wp = Stub::make(
       $this->diContainer->get(Functions::class),
@@ -447,7 +447,7 @@ class WPTest extends \MailPoetTest {
     $_POST[Subscription::CHECKOUT_OPTIN_PRESENCE_CHECK_INPUT_NAME] = 1;
     $wpSegment->synchronizeUser($id);
     $subscriber = Subscriber::where("wp_user_id", $id)->findOne();
-    expect($subscriber->status)->equals(SubscriberEntity::STATUS_UNSUBSCRIBED);
+    expect($subscriber->status)->equals(SubscriberEntity::STATUS_UNCONFIRMED);
   }
 
   public function testItDoesNotSendConfirmationEmailForNewUserWhenWPSegmentIsDisabledOnRegisterEnabled(): void {

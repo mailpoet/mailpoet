@@ -95,7 +95,7 @@ class WooCheckoutBlocksCest {
     $customerEmail = 'woo_customer_uncheck@example.com';
     $this->orderProduct($i, $customerEmail, true, false);
     $i->login();
-    $i->checkSubscriberStatusAndLists($customerEmail, SubscriberEntity::STATUS_UNSUBSCRIBED, ['WordPress Users'], ['WooCommerce Customers']);
+    $i->checkSubscriberStatusAndLists($customerEmail, SubscriberEntity::STATUS_UNCONFIRMED, ['WordPress Users'], ['WooCommerce Customers']);
     $i->seeConfirmationEmailWasNotReceived();
   }
 
@@ -137,7 +137,7 @@ class WooCheckoutBlocksCest {
     $customerEmail = 'woo_customer_uncheck@example.com';
     $this->orderProduct($i, $customerEmail, true, false);
     $i->login();
-    $i->checkSubscriberStatusAndLists($customerEmail, SubscriberEntity::STATUS_UNSUBSCRIBED, ['WordPress Users'], ['WooCommerce Customers']);
+    $i->checkSubscriberStatusAndLists($customerEmail, SubscriberEntity::STATUS_SUBSCRIBED, ['WordPress Users'], ['WooCommerce Customers']);
     $i->seeConfirmationEmailWasNotReceived();
   }
 

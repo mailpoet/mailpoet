@@ -60,7 +60,7 @@ class WooCommerceBlocksIntegrationTest extends \MailPoetTest {
     expect($subscriber->getStatus())->equals(SubscriberEntity::STATUS_UNCONFIRMED);
   }
 
-  public function testItHandlesOptOutForGuestCustomer() {
+  public function testItDoesNotChangeStatusForGuestCustomer() {
     $this->settings->set('woocommerce.optin_on_checkout.enabled', true);
     $email = 'guest@customer.com';
     $this->wcOrderMock->method('get_billing_email')
@@ -72,7 +72,7 @@ class WooCommerceBlocksIntegrationTest extends \MailPoetTest {
     $subscriber = $this->entityManager->getRepository(SubscriberEntity::class)->findOneBy(['email' => $email]);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
     $this->entityManager->refresh($subscriber);
-    expect($subscriber->getStatus())->equals(SubscriberEntity::STATUS_UNSUBSCRIBED);
+    expect($subscriber->getStatus())->equals(SubscriberEntity::STATUS_UNCONFIRMED);
   }
 
   public function testItHandlesOptinForExistingUnsubscribedCustomer() {
@@ -105,7 +105,7 @@ class WooCommerceBlocksIntegrationTest extends \MailPoetTest {
     expect($subscriber->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
   }
 
-  public function testItHandlesOptOutForExistingSubscribedCustomer() {
+  public function testItDoesNotChangeStatusForExistingSubscribedCustomer() {
     $this->settings->set('woocommerce.optin_on_checkout.enabled', true);
     $email = 'exising@customer.com';
     $this->wcOrderMock->method('get_billing_email')
@@ -117,7 +117,7 @@ class WooCommerceBlocksIntegrationTest extends \MailPoetTest {
     $subscriber = $this->entityManager->getRepository(SubscriberEntity::class)->findOneBy(['email' => $email]);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
     $this->entityManager->refresh($subscriber);
-    expect($subscriber->getStatus())->equals(SubscriberEntity::STATUS_UNSUBSCRIBED);
+    expect($subscriber->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
   }
 
   private function setupSyncGuestUserMock(string $email) {
