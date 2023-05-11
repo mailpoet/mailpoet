@@ -41,7 +41,7 @@ class AutomateWooHooksTest extends \MailPoetTest {
         }
         return false;
       },
-      'addAction' => Expected::exactly(2),
+      'addAction' => Expected::exactly(1),
     ]);
 
     $automateWooHooksPartialMock = $this->getMockBuilder(AutomateWooHooks::class)
