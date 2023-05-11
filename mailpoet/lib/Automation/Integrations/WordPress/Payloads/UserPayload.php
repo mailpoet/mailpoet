@@ -22,4 +22,17 @@ class UserPayload implements Payload {
   public function getUser(): WP_User {
     return $this->user;
   }
+
+  public function getEmail(): ?string {
+    return $this->user->user_email ?: null;
+  }
+
+  public function exists(): bool {
+    return $this->user->exists();
+  }
+
+  /** @return string[] */
+  public function getRoles(): array {
+    return $this->user->roles;
+  }
 }
