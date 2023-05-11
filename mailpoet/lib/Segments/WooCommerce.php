@@ -13,6 +13,7 @@ use MailPoet\Subscribers\SubscriberSaveController;
 use MailPoet\Subscribers\SubscriberSegmentRepository;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\WooCommerce\Helper as WCHelper;
+use MailPoet\WooCommerce\Subscription;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\DBAL\Connection;
@@ -137,7 +138,8 @@ class WooCommerce {
         $subscriber = $this->subscriberSaveController->createOrUpdate($data, $subscriber);
         // add subscriber to the WooCommerce Customers segment when relation doesn't exist
         $subscriberSegment = $this->subscriberSegmentRepository->findOneBy(['subscriber' => $subscriber, 'segment' => $wcSegment]);
-        if (!$subscriberSegment) {
+
+        if (!$subscriberSegment && $this->shouldSubscribeToWooSegment()) {
           $this->subscriberSegmentRepository->subscribeToSegments(
             $subscriber,
             [$wcSegment]
@@ -147,6 +149,17 @@ class WooCommerce {
     }
 
     return true;
+  }
+
+  /**
+   * Should subscribe to the Woo segment when creating a new woo customer and not on checkout
+   * or when on checkout and MailPoet subscribe optin is enabled and checked.
+   */
+  protected function shouldSubscribeToWooSegment(): bool {
+    $checkoutOptinEnabled = (bool)$this->settings->get(Subscription::OPTIN_ENABLED_SETTING_NAME);
+    $checkoutOptinChecked = !empty($_POST[Subscription::CHECKOUT_OPTIN_INPUT_NAME]);
+
+    return !$this->woocommerceHelper->isCheckoutRequest() || ($checkoutOptinEnabled && $checkoutOptinChecked);
   }
 
   public function synchronizeGuestCustomer(int $orderId): void {
