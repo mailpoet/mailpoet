@@ -4,6 +4,7 @@ import ReactStringReplace from 'react-string-replace';
 
 import { MailPoet } from 'mailpoet';
 import { Listing } from 'listing/listing.jsx';
+import { escapeHTML } from '@wordpress/escape-html';
 
 const columns = [
   {
@@ -88,6 +89,36 @@ const itemActions = [
       <Link to={`/edit-segment/${item.id}`}>{MailPoet.I18n.t('edit')}</Link>
     ),
     display: (item) => !item.is_plugin_missing,
+  },
+  {
+    name: 'duplicate_segment',
+    className: 'mailpoet-hide-on-mobile',
+    label: MailPoet.I18n.t('duplicate'),
+    onClick: (item, refresh) =>
+      MailPoet.Ajax.post({
+        api_version: window.mailpoet_api_version,
+        endpoint: 'dynamic_segments',
+        action: 'duplicate',
+        data: {
+          id: item.id,
+        },
+      })
+        .done((response) => {
+          MailPoet.Notice.success(
+            MailPoet.I18n.t('segmentDuplicated').replace(
+              '%1$s',
+              escapeHTML(response.data.name),
+              { scroll: true },
+            ),
+          );
+          refresh();
+        })
+        .fail((response) => {
+          MailPoet.Notice.error(
+            response.errors.map((error) => error.message),
+            { scroll: true },
+          );
+        }),
   },
   {
     name: 'edit_disabled',

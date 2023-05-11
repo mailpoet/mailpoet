@@ -112,6 +112,39 @@ class SegmentSaveControllerTest extends \MailPoetTest {
     $this->saveController->save($segmentData);
   }
 
+  public function testItCanDuplicateExistingSegment(): void {
+    $segment = $this->createSegment('original');
+    $this->addDynamicFilter($segment, ['administrator']);
+    $this->addDynamicFilter($segment, ['editor']);
+
+    $duplicate = $this->saveController->duplicate($segment);
+    expect($duplicate->getId())->notEquals($segment->getId());
+    $filters = $duplicate->getDynamicFilters();
+    expect($filters)->count(2);
+
+    $originalFilter1 = $segment->getDynamicFilters()->get(0);
+    $duplicateFilter1 = $duplicate->getDynamicFilters()->get(0);
+
+    $this->assertInstanceOf(DynamicSegmentFilterEntity::class, $originalFilter1);
+    $this->assertInstanceOf(DynamicSegmentFilterEntity::class, $duplicateFilter1);
+
+    expect($originalFilter1->getId())->notEquals($duplicateFilter1->getId());
+    expect($duplicateFilter1->getFilterData()->getAction())->equals(UserRole::TYPE);
+    expect($duplicateFilter1->getFilterData()->getParam('wordpressRole'))->equals(['administrator']);
+    expect($duplicateFilter1->getFilterData()->getParam('connect'))->equals(DynamicSegmentFilterData::CONNECT_TYPE_AND);
+
+    $originalFilter2 = $segment->getDynamicFilters()->get(1);
+    $duplicateFilter2 = $duplicate->getDynamicFilters()->get(1);
+
+    $this->assertInstanceOf(DynamicSegmentFilterEntity::class, $originalFilter2);
+    $this->assertInstanceOf(DynamicSegmentFilterEntity::class, $duplicateFilter2);
+
+    expect($originalFilter2->getId())->notEquals($duplicateFilter2->getId());
+    expect($duplicateFilter2->getFilterData()->getAction())->equals(UserRole::TYPE);
+    expect($duplicateFilter2->getFilterData()->getParam('wordpressRole'))->equals(['editor']);
+    expect($duplicateFilter2->getFilterData()->getParam('connect'))->equals(DynamicSegmentFilterData::CONNECT_TYPE_AND);
+  }
+
   private function createSegment(string $name): SegmentEntity {
     $segment = new SegmentEntity($name, SegmentEntity::TYPE_DYNAMIC, 'description');
     $this->entityManager->persist($segment);

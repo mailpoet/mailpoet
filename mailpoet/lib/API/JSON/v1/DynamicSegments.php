@@ -19,6 +19,7 @@ use MailPoet\Segments\DynamicSegments\SegmentSaveController;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Segments\SegmentSubscribersRepository;
 use MailPoet\UnexpectedValueException;
+use Throwable;
 
 class DynamicSegments extends APIEndpoint {
 
@@ -120,6 +121,29 @@ class DynamicSegments extends APIEndpoint {
     } catch (ValidationException $exception) {
       return $this->badRequest([
         Error::BAD_REQUEST => __('Please specify a name.', 'mailpoet'),
+      ]);
+    }
+  }
+
+  public function duplicate($data = []) {
+    $segment = $this->getSegment($data);
+
+    if ($segment instanceof SegmentEntity) {
+      try {
+        $duplicate = $this->saveController->duplicate($segment);
+      } catch (Throwable $e) {
+        return $this->errorResponse([
+          // translators: %s is the error message
+          Error::UNKNOWN => sprintf(__('Duplicating of segment failed: %s', 'mailpoet'), $e->getMessage()),
+        ], [], Response::STATUS_UNKNOWN);
+      }
+      return $this->successResponse(
+        $this->segmentsResponseBuilder->build($duplicate),
+        ['count' => 1]
+      );
+    } else {
+      return $this->errorResponse([
+        Error::NOT_FOUND => __('This segment does not exist.', 'mailpoet'),
       ]);
     }
   }
