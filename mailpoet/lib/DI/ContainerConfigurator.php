@@ -155,6 +155,8 @@ class ContainerConfigurator implements IContainerConfigurator {
     // Automation - core integration
     $container->autowire(\MailPoet\Automation\Integrations\Core\Actions\DelayAction::class)->setPublic(true);
     $container->autowire(\MailPoet\Automation\Integrations\Core\CoreIntegration::class)->setPublic(true);
+    // Automation - WordPress integration
+    $container->autowire(\MailPoet\Automation\Integrations\WordPress\WordPressIntegration::class)->setPublic(true);
     // Automation - MailPoet integration
     $container->autowire(\MailPoet\Automation\Integrations\MailPoet\ContextFactory::class)->setPublic(true);
     $container->autowire(\MailPoet\Automation\Integrations\MailPoet\MailPoetIntegration::class)->setPublic(true);

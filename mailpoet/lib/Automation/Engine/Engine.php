@@ -13,6 +13,7 @@ use MailPoet\Automation\Engine\Endpoints\Automations\AutomationsPutEndpoint;
 use MailPoet\Automation\Engine\Endpoints\Automations\AutomationTemplatesGetEndpoint;
 use MailPoet\Automation\Engine\Storage\AutomationStorage;
 use MailPoet\Automation\Integrations\Core\CoreIntegration;
+use MailPoet\Automation\Integrations\WordPress\WordPressIntegration;
 
 class Engine {
   const CAPABILITY_MANAGE_AUTOMATIONS = 'mailpoet_manage_automations';
@@ -22,6 +23,9 @@ class Engine {
 
   /** @var CoreIntegration */
   private $coreIntegration;
+
+  /** @var WordPressIntegration */
+  private $wordPressIntegration;
 
   /** @var Registry */
   private $registry;
@@ -41,6 +45,7 @@ class Engine {
   public function __construct(
     API $api,
     CoreIntegration $coreIntegration,
+    WordPressIntegration $wordPressIntegration,
     Registry $registry,
     StepHandler $stepHandler,
     TriggerHandler $triggerHandler,
@@ -49,6 +54,7 @@ class Engine {
   ) {
     $this->api = $api;
     $this->coreIntegration = $coreIntegration;
+    $this->wordPressIntegration = $wordPressIntegration;
     $this->registry = $registry;
     $this->stepHandler = $stepHandler;
     $this->triggerHandler = $triggerHandler;
@@ -64,6 +70,7 @@ class Engine {
     $this->triggerHandler->initialize();
 
     $this->coreIntegration->register($this->registry);
+    $this->wordPressIntegration->register($this->registry);
     $this->wordPress->doAction(Hooks::INITIALIZE, [$this->registry]);
     $this->registerActiveTriggerHooks();
   }
