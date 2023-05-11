@@ -57,13 +57,26 @@ class NewsletterStatisticsRepository extends Repository {
    * @param NewsletterEntity[] $newsletters
    * @return NewsletterStatistics[]
    */
-  public function getBatchStatistics(array $newsletters): array {
-    $totalSentCounts = $this->getTotalSentCounts($newsletters);
-    $clickCounts = $this->getStatisticCounts(StatisticsClickEntity::class, $newsletters);
-    $openCounts = $this->getStatisticCounts(StatisticsOpenEntity::class, $newsletters);
-    $unsubscribeCounts = $this->getStatisticCounts(StatisticsUnsubscribeEntity::class, $newsletters);
-    $bounceCounts = $this->getStatisticCounts(StatisticsBounceEntity::class, $newsletters);
-    $wooCommerceRevenues = $this->getWooCommerceRevenues($newsletters);
+  public function getBatchStatistics(
+    array $newsletters,
+    \DateTimeImmutable $from = null,
+    \DateTimeImmutable $to = null,
+    array $include = [
+      'totals',
+      StatisticsClickEntity::class,
+      StatisticsOpenEntity::class,
+      StatisticsUnsubscribeEntity::class,
+      StatisticsBounceEntity::class,
+      WooCommerceRevenue::class,
+    ]
+  ): array {
+
+    $totalSentCounts = in_array('totals', $include, true) ? $this->getTotalSentCounts($newsletters, $from, $to) : [];
+    $clickCounts = in_array(StatisticsClickEntity::class, $include, true) ? $this->getStatisticCounts(StatisticsClickEntity::class, $newsletters, $from, $to) : [];
+    $openCounts = in_array(StatisticsOpenEntity::class, $include, true) ? $this->getStatisticCounts(StatisticsOpenEntity::class, $newsletters, $from, $to) : [];
+    $unsubscribeCounts = in_array(StatisticsUnsubscribeEntity::class, $include, true) ? $this->getStatisticCounts(StatisticsUnsubscribeEntity::class, $newsletters, $from, $to) : [];
+    $bounceCounts = in_array(StatisticsBounceEntity::class, $include, true) ? $this->getStatisticCounts(StatisticsBounceEntity::class, $newsletters, $from, $to) : [];
+    $wooCommerceRevenues = in_array(WooCommerceRevenue::class, $include, true) ? $this->getWooCommerceRevenues($newsletters, $from, $to) : [];
 
     $statistics = [];
     foreach ($newsletters as $newsletter) {
@@ -173,8 +186,8 @@ class NewsletterStatisticsRepository extends Repository {
     }
   }
 
-  private function getTotalSentCounts(array $newsletters): array {
-    $results = $this->doctrineRepository
+  private function getTotalSentCounts(array $newsletters, \DateTimeImmutable $from = null, \DateTimeImmutable $to = null): array {
+    $query = $this->doctrineRepository
       ->createQueryBuilder('n')
       ->select('n.id, SUM(q.countProcessed) AS cnt')
       ->join('n.queues', 'q')
@@ -183,8 +196,15 @@ class NewsletterStatisticsRepository extends Repository {
       ->setParameter('status', ScheduledTaskEntity::STATUS_COMPLETED)
       ->andWhere('q.newsletter IN (:newsletters)')
       ->setParameter('newsletters', $newsletters)
-      ->groupBy('n.id')
-      ->getQuery()
+      ->groupBy('n.id');
+
+    if ($from && $to) {
+      $query->andWhere('q.createdAt BETWEEN :from AND :to')
+        ->setParameter('from', $from)
+        ->setParameter('to', $to);
+    }
+
+    $results = $query->getQuery()
       ->getResult();
 
     $counts = [];
@@ -194,11 +214,16 @@ class NewsletterStatisticsRepository extends Repository {
     return $counts;
   }
 
-  private function getStatisticCounts(string $statisticsEntityName, array $newsletters): array {
+  private function getStatisticCounts(string $statisticsEntityName, array $newsletters, \DateTimeImmutable $from = null, \DateTimeImmutable $to = null): array {
     $qb = $this->getStatisticsQuery($statisticsEntityName, $newsletters);
     if (in_array($statisticsEntityName, [StatisticsOpenEntity::class, StatisticsClickEntity::class], true)) {
       $qb->andWhere('(stats.userAgentType = :userAgentType) OR (stats.userAgentType IS NULL)')
         ->setParameter('userAgentType', UserAgentEntity::USER_AGENT_TYPE_HUMAN);
+    }
+    if ($from && $to) {
+      $qb->andWhere('stats.createdAt BETWEEN :from AND :to')
+        ->setParameter('from', $from)
+        ->setParameter('to', $to);
     }
 
     $results = $qb
@@ -221,13 +246,13 @@ class NewsletterStatisticsRepository extends Repository {
       ->setParameter('newsletters', $newsletters);
   }
 
-  private function getWooCommerceRevenues(array $newsletters) {
+  private function getWooCommerceRevenues(array $newsletters, \DateTimeImmutable $from = null, \DateTimeImmutable $to = null) {
     if (!$this->wcHelper->isWooCommerceActive()) {
       return null;
     }
 
     $currency = $this->wcHelper->getWoocommerceCurrency();
-    $results = $this->entityManager
+    $query = $this->entityManager
       ->createQueryBuilder()
       ->select('IDENTITY(stats.newsletter) AS id, SUM(stats.orderPriceTotal) AS total, COUNT(stats.id) AS cnt')
       ->from(StatisticsWooCommercePurchaseEntity::class, 'stats')
@@ -235,8 +260,15 @@ class NewsletterStatisticsRepository extends Repository {
       ->andWhere('stats.orderCurrency = :currency')
       ->setParameter('newsletters', $newsletters)
       ->setParameter('currency', $currency)
-      ->groupBy('stats.newsletter')
-      ->getQuery()
+      ->groupBy('stats.newsletter');
+
+    if ($from && $to) {
+      $query->andWhere('stats.createdAt BETWEEN :from AND :to')
+        ->setParameter('from', $from)
+        ->setParameter('to', $to);
+    }
+
+    $results = $query->getQuery()
       ->getResult();
 
     $revenues = [];
