@@ -8,4 +8,4 @@ node_modules
 npm-debug.log
 mailpoet-premium
 tsconfig.tsbuildinfo
-wordpress
+/wordpress
