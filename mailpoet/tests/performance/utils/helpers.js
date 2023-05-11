@@ -19,15 +19,14 @@ export async function authenticate(page) {
 
 // Select a segment or a list from a select2 search field
 export function selectInSelect2(page, listName) {
-  // Click and write a list name from a dropdown
+  // Type a list name from a dropdown and hit Enter
   page.locator('.select2-selection').type(listName);
   page.keyboard.press('Enter');
 }
 
 // Select a segment or a list from a react search field
 export function selectInReact(page, reactSelector, reactValue) {
-  // Click to write a list name from a dropdown
-  page.locator(reactSelector).click();
+  // Type a list name from a dropdown and hit Enter
   page.locator(reactSelector).type(reactValue);
   page.keyboard.press('Enter');
 }

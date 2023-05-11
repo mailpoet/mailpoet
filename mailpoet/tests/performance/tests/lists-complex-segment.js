@@ -66,7 +66,7 @@ export async function listsComplexSegment() {
   selectInReact(page, '#react-select-4-input', defaultListName);
   await page.waitForSelector('.mailpoet-form-notice-message');
   describe(listsPageTitle, () => {
-    describe('should be able to see calculating message', () => {
+    describe('should be able to see calculating message 1st time', () => {
       expect(
         page.locator('.mailpoet-form-notice-message').innerText(),
       ).to.contain('Calculating segment size…');
@@ -90,7 +90,7 @@ export async function listsComplexSegment() {
   selectInReact(page, '#react-select-5-input', 'subscribed date');
   await page.waitForSelector('.mailpoet-form-notice-message');
   describe(listsPageTitle, () => {
-    describe('should be able to see calculating message', () => {
+    describe('should be able to see calculating message 2nd time', () => {
       expect(
         page.locator('.mailpoet-form-notice-message').innerText(),
       ).to.contain('Calculating segment size…');
@@ -115,7 +115,7 @@ export async function listsComplexSegment() {
   await page.waitForSelector('.mailpoet-form-notice-message');
   await page.waitForLoadState('networkidle');
   describe(listsPageTitle, () => {
-    describe('should be able to see Calculating message', () => {
+    describe('should be able to see Calculating message 3rd time', () => {
       expect(
         page.locator('.mailpoet-form-notice-message').innerText(),
       ).to.contain('Calculating segment size…');
