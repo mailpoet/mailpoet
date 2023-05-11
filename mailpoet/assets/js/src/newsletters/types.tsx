@@ -103,12 +103,48 @@ function NewsletterTypesComponent({
     );
   };
 
+  const getRedirectToAutomateWooType = () => {
+    const redirectToAutomateWoo = (): void => {
+      MailPoet.trackEvent('Emails > Type selected', {
+        'Email type': 'woocommerce_automatewoo',
+      });
+      window.location.href = `edit.php?post_type=aw_workflow#presets`;
+      return null;
+    };
+    return {
+      slug: 'woocommerce_automatewoo',
+      title: __('Automations', 'mailpoet'),
+      description: __(
+        'Convert and retain customers with automated marketing that does the hard work for you. AutomateWoo has the tools you need to grow your store and make more money.',
+        'mailpoet',
+      ),
+      action: (
+        <Button
+          automationId="woocommerce_automatewoo"
+          onClick={redirectToAutomateWoo}
+          tabIndex={0}
+          onKeyDown={(event): void => {
+            if (
+              ['keydown', 'keypress'].includes(event.type) &&
+              ['Enter', ' '].includes(event.key)
+            ) {
+              event.preventDefault();
+              redirectToAutomateWoo();
+            }
+          }}
+        >
+          {__('Set up', 'mailpoet')}
+        </Button>
+      ),
+    };
+  };
+
   const getAdditionalTypes = (): Record<string, unknown>[] => {
     const show = MailPoet.isWoocommerceActive;
     if (!show) {
       return [];
     }
-    return [
+    const additionalTypes = [
       {
         slug: 'wc_transactional',
         title: __('WooCommerce Emails Customizer', 'mailpoet'),
@@ -136,6 +172,10 @@ function NewsletterTypesComponent({
         ),
       },
     ];
+    if (MailPoet.hideAutomations) {
+      additionalTypes.push(getRedirectToAutomateWooType());
+    }
+    return additionalTypes;
   };
 
   const getAutomaticEmails = (): JSX.Element[] => {
@@ -158,9 +198,9 @@ function NewsletterTypesComponent({
               <div className="mailpoet-newsletter-types-separator-line" />
             </div>
           )}
-
-          <AutomaticEmailEventsList email={email} history={history} />
-
+          {email.slug === 'woocommerce' && !MailPoet.hideAutomations && (
+            <AutomaticEmailEventsList email={email} history={history} />
+          )}
           {email.slug === 'woocommerce' &&
             getAdditionalTypes().map((type) => renderType(type), this)}
         </Fragment>
