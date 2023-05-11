@@ -302,15 +302,7 @@ class ServicesCheckerTest extends \MailPoetTest {
     expect($result)->true();
   }
 
-  public function testItReturnsTrueIfKeyActiveAndBundled() {
-    $this->settings->set(
-      Bridge::API_KEY_STATE_SETTING_NAME,
-      [
-        'state' => Bridge::KEY_VALID,
-        'data' => ['support_tier' => 'premium'],
-      ]
-    );
-
+  public function testItReturnsTrueIfSubscriptionIsBundled() {
     $this->settings->set(
       Bridge::SUBSCRIPTION_TYPE_SETTING_NAME,
       Bridge::WPCOM_BUNDLE_SUBSCRIPTION_TYPE
@@ -318,46 +310,9 @@ class ServicesCheckerTest extends \MailPoetTest {
 
     $result = $this->servicesChecker->isBundledSubscription();
     expect($result)->true();
-  }
-
-  public function testItReturnsTrueIfPremiumKeyActiveAndBundled() {
-    $this->settings->set(Bridge::PREMIUM_KEY_SETTING_NAME, 'premium_key');
-
-    $this->settings->set(
-      Bridge::PREMIUM_KEY_STATE_SETTING_NAME,
-      [
-        'state' => Bridge::KEY_VALID,
-      ]
-    );
-
-    $this->settings->set(
-      Bridge::SUBSCRIPTION_TYPE_SETTING_NAME,
-      Bridge::WPCOM_BUNDLE_SUBSCRIPTION_TYPE
-    );
-
-    $result = $this->servicesChecker->isBundledSubscription();
-    expect($result)->true();
-  }
-
-  public function testItReturnsFalseIfNoKeys() {
-    $this->settings->set(
-      Bridge::SUBSCRIPTION_TYPE_SETTING_NAME,
-      Bridge::WPCOM_BUNDLE_SUBSCRIPTION_TYPE
-    );
-
-    $result = $this->servicesChecker->isBundledSubscription();
-    expect($result)->false();
   }
 
   public function testItReturnsFalseIfNoSubscriptionTypeOrNotBundled() {
-    $this->settings->set(
-      Bridge::API_KEY_STATE_SETTING_NAME,
-      [
-        'state' => Bridge::KEY_VALID,
-        'data' => ['support_tier' => 'premium'],
-      ]
-    );
-
     $result = $this->servicesChecker->isBundledSubscription();
     expect($result)->false();
 
