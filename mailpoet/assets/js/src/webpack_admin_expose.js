@@ -33,7 +33,12 @@ export * as WordPressUrl from '@wordpress/url';
 export * as WordPressI18n from '@wordpress/i18n';
 export * as WordPressIcons from '@wordpress/icons';
 export * as WordPressDataControls from '@wordpress/data-controls';
+export * as WooCommerceDate from '@woocommerce/date';
+import { DateRangeFilterPicker } from '@woocommerce/components';
 
+export const WooCommerceComponents = {
+  DateRangeFilterPicker,
+};
 // assets
 export * as Automation from 'automation';
 export * as Common from 'common';
@@ -45,3 +50,4 @@ export * as Hooks from 'hooks.js';
 export * as Listing from 'listing';
 export * as DynamicSegments from 'segments/dynamic';
 export * as AutomationEditorComponents from 'automation/editor/components';
+export * as AutomationAnalyticsStore from 'automation/integrations/mailpoet/analytics/store';
