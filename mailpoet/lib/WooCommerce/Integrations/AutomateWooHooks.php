@@ -46,7 +46,6 @@ class AutomateWooHooks {
       return;
     }
     $this->wp->addAction(SubscriberEntity::HOOK_SUBSCRIBER_STATUS_CHANGED, [$this, 'maybeOptOutSubscriber'], 10, 1);
-    $this->wp->addAction('mailpoet_woocommerce_segment_unsubscribed', [$this, 'optOutSubscriber'], 10, 1);
   }
 
   public function optOutSubscriber($subscriber): void {
