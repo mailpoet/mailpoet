@@ -1,0 +1,14 @@
+.mailpoet-analytics-header {
+  align-items: end;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 24px;
+
+  .woocommerce-filters-filter {
+    width: 100%;
+
+    * {
+      box-sizing: border-box;
+    }
+  }
+}

@@ -1,0 +1,21 @@
+@import './colors';
+
+.mailpoet-automation-analytics-overview {
+  background: $color-white;
+  margin-bottom: 24px;
+
+  h1 {
+    border: 1px solid $color-grey;
+    border-bottom: none;
+    padding: 16px 24px;
+  }
+
+  .woocommerce-summary {
+    background: $color-white;
+    margin: 0;
+  }
+
+  .woocommerce-summary__item {
+    background: $color-white;
+  }
+}
