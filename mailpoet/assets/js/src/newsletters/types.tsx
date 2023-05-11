@@ -105,11 +105,17 @@ function NewsletterTypesComponent({
 
   const getRedirectToAutomateWooType = () => {
     const redirectToAutomateWoo = (): void => {
-      MailPoet.trackEvent('Emails > Type selected', {
-        'Email type': 'woocommerce_automatewoo',
-      });
-      window.location.href = `edit.php?post_type=aw_workflow#presets`;
-      return null;
+      MailPoet.trackEvent(
+        'Emails > Type selected',
+        {
+          'Email type': 'woocommerce_automatewoo',
+        },
+        { send_immediately: true }, // This tell Mixpanel client to send events from buffer immediately
+        () => {
+          // Anonymous callback which does the redirect
+          window.location.href = `edit.php?post_type=aw_workflow#presets`;
+        },
+      );
     };
     return {
       slug: 'woocommerce_automatewoo',
