@@ -88,6 +88,10 @@ parameters:
       message: '/^Parameter #2 \$args of static method Automattic\\WooCommerce\\Admin\\Features\\OnboardingTasks\\TaskLists::add_task\(\) expects array, MailPoet\\WooCommerce\\MailPoetTask given.$/'
       count: 1
       path: ../../lib/Config/HooksWooCommerce.php
+    -
+      message: "#^Cannot cast string|void to string\\.$#"
+      count: 2
+      path: ../../lib/Automation/Integrations/WooCommerce/Fields/CustomerOrderFieldsFactory.php
 
   reportUnmatchedIgnoredErrors: true
   dynamicConstantNames:
