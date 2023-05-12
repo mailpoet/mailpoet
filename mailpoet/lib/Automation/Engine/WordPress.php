@@ -4,7 +4,9 @@ namespace MailPoet\Automation\Engine;
 
 use DateTimeZone;
 use WP_Comment;
+use WP_Error;
 use WP_Locale;
+use WP_Term;
 use WP_User;
 use wpdb;
 
@@ -60,5 +62,14 @@ class WordPress {
    */
   public function getComments($args = '') {
     return get_comments($args);
+  }
+
+  /**
+   * @param array|string $args
+   * @param array|string $deprecated
+   * @return WP_Term[]|int[]|string[]|string|WP_Error
+   */
+  public function getTerms($args = [], $deprecated = '') {
+    return get_terms($args, $deprecated);
   }
 }
