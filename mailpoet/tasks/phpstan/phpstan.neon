@@ -92,6 +92,10 @@ parameters:
       message: "#^Cannot cast string|void to string\\.$#"
       count: 2
       path: ../../lib/Automation/Integrations/WooCommerce/Fields/CustomerOrderFieldsFactory.php
+    -
+      message: "#^Cannot cast string|void to string\\.$#"
+      count: 2
+      path: ../../lib/Automation/Integrations/WooCommerce/Fields/CustomerReviewFieldsFactory.php
 
   reportUnmatchedIgnoredErrors: true
   dynamicConstantNames:
