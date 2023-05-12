@@ -2,9 +2,11 @@
 
 namespace MailPoet\Automation\Integrations\WooCommerce\Subjects;
 
+use MailPoet\Automation\Engine\Data\Field;
 use MailPoet\Automation\Engine\Data\Subject as SubjectData;
 use MailPoet\Automation\Engine\Integration\Payload;
 use MailPoet\Automation\Engine\Integration\Subject;
+use MailPoet\Automation\Integrations\WooCommerce\Fields\CustomerFieldsFactory;
 use MailPoet\Automation\Integrations\WooCommerce\Payloads\CustomerPayload;
 use MailPoet\NotFoundException;
 use MailPoet\Validator\Builder;
@@ -14,8 +16,16 @@ use MailPoet\Validator\Schema\ObjectSchema;
  * @implements Subject<CustomerPayload>
  */
 class CustomerSubject implements Subject {
-
   const KEY = 'woocommerce:customer';
+
+  /** @var CustomerFieldsFactory */
+  private $customerFieldsFactory;
+
+  public function __construct(
+    CustomerFieldsFactory $customerFieldsFactory
+  ) {
+    $this->customerFieldsFactory = $customerFieldsFactory;
+  }
 
   public function getName(): string {
     return __('WooCommerce customer', 'mailpoet');
@@ -44,7 +54,8 @@ class CustomerSubject implements Subject {
     return new CustomerPayload($customer);
   }
 
+  /** @return Field[] */
   public function getFields(): array {
-    return [];
+    return $this->customerFieldsFactory->getFields();
   }
 }
