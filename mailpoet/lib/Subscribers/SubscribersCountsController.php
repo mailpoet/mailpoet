@@ -10,6 +10,7 @@ use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Segments\SegmentSubscribersRepository;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Tags\TagRepository;
+use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 
@@ -29,6 +30,9 @@ class SubscribersCountsController {
   /** @var TransientCache */
   private $transientCache;
 
+  /** @var SubscribersFeature */
+  private $subscribersFeature;
+
   /** @var WPFunctions */
   private $wp;
 
@@ -38,6 +42,7 @@ class SubscribersCountsController {
     SubscribersRepository $subscribersRepository,
     TagRepository $subscriberTagRepository,
     TransientCache $transientCache,
+    SubscribersFeature $subscribersFeature,
     WPFunctions $wp
   ) {
 
@@ -46,11 +51,12 @@ class SubscribersCountsController {
     $this->segmentsRepository = $segmentsRepository;
     $this->subscribersRepository = $subscribersRepository;
     $this->tagRepository = $subscriberTagRepository;
+    $this->subscribersFeature = $subscribersFeature;
     $this->wp = $wp;
   }
 
   public function getSubscribersWithoutSegmentStatisticsCount(): array {
-    $result = $this->transientCache->getItem(TransientCache::SUBSCRIBERS_STATISTICS_COUNT_KEY, 0)['item'] ?? null;
+    $result = $this->getCacheItem(TransientCache::SUBSCRIBERS_STATISTICS_COUNT_KEY, 0)['item'] ?? null;
     if (!$result) {
       $result = $this->recalculateSubscribersWithoutSegmentStatisticsCache();
     }
@@ -58,7 +64,7 @@ class SubscribersCountsController {
   }
 
   public function getSegmentStatisticsCount(SegmentEntity $segment): array {
-    $result = $this->transientCache->getItem(TransientCache::SUBSCRIBERS_STATISTICS_COUNT_KEY, (int)$segment->getId())['item'] ?? null;
+    $result = $this->getCacheItem(TransientCache::SUBSCRIBERS_STATISTICS_COUNT_KEY, (int)$segment->getId())['item'] ?? null;
     if (!$result) {
       $result = $this->recalculateSegmentStatisticsCache($segment);
     }
@@ -66,7 +72,7 @@ class SubscribersCountsController {
   }
 
   public function getSegmentGlobalStatusStatisticsCount(SegmentEntity $segment): array {
-    $result = $this->transientCache->getItem(TransientCache::SUBSCRIBERS_GLOBAL_STATUS_STATISTICS_COUNT_KEY, (int)$segment->getId())['item'] ?? null;
+    $result = $this->getCacheItem(TransientCache::SUBSCRIBERS_GLOBAL_STATUS_STATISTICS_COUNT_KEY, (int)$segment->getId())['item'] ?? null;
     if (!$result) {
       $result = $this->recalculateSegmentGlobalStatusStatisticsCache($segment);
     }
@@ -74,7 +80,7 @@ class SubscribersCountsController {
   }
 
   public function getSegmentStatisticsCountById(int $segmentId): array {
-    $result = $this->transientCache->getItem(TransientCache::SUBSCRIBERS_STATISTICS_COUNT_KEY, $segmentId)['item'] ?? null;
+    $result = $this->getCacheItem(TransientCache::SUBSCRIBERS_STATISTICS_COUNT_KEY, $segmentId)['item'] ?? null;
     if (!$result) {
       $segment = $this->segmentsRepository->findOneById($segmentId);
       if (!$segment) {
@@ -86,7 +92,7 @@ class SubscribersCountsController {
   }
 
   public function getHomepageStatistics(): array {
-    $result = $this->transientCache->getItem(TransientCache::SUBSCRIBERS_HOMEPAGE_STATISTICS_COUNT_KEY, 0) ?? [];
+    $result = $this->getCacheItem(TransientCache::SUBSCRIBERS_HOMEPAGE_STATISTICS_COUNT_KEY, 0) ?? [];
     if (!$result) {
       $result = $this->recalculateHomepageStatisticsCache();
     }
@@ -95,7 +101,7 @@ class SubscribersCountsController {
 
   public function recalculateSegmentGlobalStatusStatisticsCache(SegmentEntity $segment): array {
     $result = $this->segmentSubscribersRepository->getSubscribersGlobalStatusStatisticsCount($segment);
-    $this->transientCache->setItem(
+    $this->setCacheItem(
       TransientCache::SUBSCRIBERS_GLOBAL_STATUS_STATISTICS_COUNT_KEY,
       $result,
       (int)$segment->getId()
@@ -105,7 +111,7 @@ class SubscribersCountsController {
 
   public function recalculateSegmentStatisticsCache(SegmentEntity $segment): array {
     $result = $this->segmentSubscribersRepository->getSubscribersStatisticsCount($segment);
-    $this->transientCache->setItem(
+    $this->setCacheItem(
       TransientCache::SUBSCRIBERS_STATISTICS_COUNT_KEY,
       $result,
       (int)$segment->getId()
@@ -115,7 +121,7 @@ class SubscribersCountsController {
 
   public function recalculateSubscribersWithoutSegmentStatisticsCache(): array {
     $result = $this->segmentSubscribersRepository->getSubscribersWithoutSegmentStatisticsCount();
-    $this->transientCache->setItem(TransientCache::SUBSCRIBERS_STATISTICS_COUNT_KEY, $result, 0);
+    $this->setCacheItem(TransientCache::SUBSCRIBERS_STATISTICS_COUNT_KEY, $result, 0);
     return $result;
   }
 
@@ -127,7 +133,7 @@ class SubscribersCountsController {
     $result['subscribedCount'] = $this->subscribersRepository->getCountOfLastSubscribedAfter($thirtyDaysAgo);
     $result['unsubscribedCount'] = $this->subscribersRepository->getCountOfUnsubscribedAfter($thirtyDaysAgo);
     $result['subscribedSubscribersCount'] = $this->subscribersRepository->getCountOfSubscribersForStates([SubscriberEntity::STATUS_SUBSCRIBED]);
-    $this->transientCache->setItem(
+    $this->setCacheItem(
       TransientCache::SUBSCRIBERS_HOMEPAGE_STATISTICS_COUNT_KEY,
       $result,
       0
@@ -149,6 +155,22 @@ class SubscribersCountsController {
       if (!in_array($id, $segmentIds)) {
         $this->transientCache->invalidateItem(TransientCache::SUBSCRIBERS_GLOBAL_STATUS_STATISTICS_COUNT_KEY, $id);
       }
+    }
+  }
+
+  /**
+   * Use cache only if subscribers count is above minimum
+   */
+  private function getCacheItem(string $key, int $id): ?array {
+    if ($this->subscribersFeature->isSubscribersCountEnoughForCache()) {
+      return $this->transientCache->getItem($key, $id);
+    }
+    return [];
+  }
+
+  private function setCacheItem(string $key, array $item, int $id): void {
+    if ($this->subscribersFeature->isSubscribersCountEnoughForCache()) {
+      $this->transientCache->setItem($key, $item, $id);
     }
   }
 
