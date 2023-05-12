@@ -21,7 +21,7 @@ class Subscribers {
   const PREMIUM_SUPPORT_SETTING_KEY = 'premium.premium_key_state.data.support_tier';
   const SUBSCRIBERS_COUNT_CACHE_KEY = 'mailpoet_subscribers_count';
   const SUBSCRIBERS_COUNT_CACHE_EXPIRATION_MINUTES = 60;
-  const SUBSCRIBERS_COUNT_CACHE_MIN_VALUE = 1000;
+  const SUBSCRIBERS_COUNT_CACHE_MIN_VALUE = 2000;
 
   /** @var SettingsController */
   private $settings;
@@ -75,10 +75,17 @@ class Subscribers {
     $count = $this->subscribersRepository->getTotalSubscribers();
 
     // cache only when number of subscribers exceeds minimum value
-    if ($count > self::SUBSCRIBERS_COUNT_CACHE_MIN_VALUE) {
+    if ($this->isSubscribersCountEnoughForCache($count)) {
       $this->wp->setTransient(self::SUBSCRIBERS_COUNT_CACHE_KEY, $count, self::SUBSCRIBERS_COUNT_CACHE_EXPIRATION_MINUTES * 60);
     }
     return $count;
+  }
+
+  public function isSubscribersCountEnoughForCache(int $count = null): bool {
+    if (is_null($count)) {
+      $count = $this->getSubscribersCount();
+    }
+    return $count > self::SUBSCRIBERS_COUNT_CACHE_MIN_VALUE;
   }
 
   /**
