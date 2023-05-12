@@ -5,17 +5,25 @@ namespace MailPoet\Automation\Integrations\WooCommerce\Fields;
 use DateTimeImmutable;
 use DateTimeZone;
 use MailPoet\Automation\Engine\Data\Field;
+use MailPoet\Automation\Engine\WordPress;
 use MailPoet\Automation\Integrations\WooCommerce\Payloads\CustomerPayload;
 use MailPoet\Automation\Integrations\WooCommerce\WooCommerce;
 use WC_Customer;
+use WP_Error;
+use WP_Term;
 
 class CustomerOrderFieldsFactory {
   /** @var WooCommerce */
   private $wooCommerce;
 
+  /** @var WordPress */
+  private $wordPress;
+
   public function __construct(
+    WordPress $wordPress,
     WooCommerce $wooCommerce
   ) {
+    $this->wordPress = $wordPress;
     $this->wooCommerce = $wooCommerce;
   }
 
@@ -75,6 +83,30 @@ class CustomerOrderFieldsFactory {
           return $this->getPaidOrderDate($customer, false);
         }
       ),
+      new Field(
+        'woocommerce:customer:purchased-categories',
+        Field::TYPE_ENUM_ARRAY,
+        __('Purchased categories', 'mailpoet'),
+        function (CustomerPayload $payload) {
+          $customer = $payload->getCustomer();
+          return $customer ? $this->getOrderProductTermIds($customer, 'product_cat') : [];
+        },
+        [
+          'options' => $this->getTermsList('product_cat'),
+        ]
+      ),
+      new Field(
+        'woocommerce:customer:purchased-tags',
+        Field::TYPE_ENUM_ARRAY,
+        __('Purchased tags', 'mailpoet'),
+        function (CustomerPayload $payload) {
+          $customer = $payload->getCustomer();
+          return $customer ? $this->getOrderProductTermIds($customer, 'product_tag') : [];
+        },
+        [
+          'options' => $this->getTermsList('product_tag'),
+        ]
+      ),
     ];
   }
 
@@ -113,5 +145,73 @@ class CustomerOrderFieldsFactory {
 
     $date = $wpdb->get_var($statement);
     return $date ? new DateTimeImmutable($date, new DateTimeZone('GMT')) : null;
+  }
+
+  private function getOrderProductTermIds(WC_Customer $customer, string $taxonomy): array {
+    $wpdb = $this->wordPress->getWpdb();
+
+    $statuses = array_map(function (string $status) {
+      return "wc-$status";
+    }, $this->wooCommerce->wcGetIsPaidStatuses());
+    $statusesPlaceholder = implode(',', array_fill(0, count($statuses), '%s'));
+
+    // get all product categories that the customer has purchased
+    if ($this->wooCommerce->isWooCommerceCustomOrdersTableEnabled()) {
+      $orderIdsSubquery = "
+        SELECT o.id
+        FROM {$wpdb->prefix}wc_orders o
+        WHERE o.status IN ($statusesPlaceholder)
+        AND o.customer_id = %d
+      ";
+    } else {
+      $orderIdsSubquery = "
+        SELECT p.ID
+        FROM {$wpdb->prefix}posts p
+        LEFT JOIN {$wpdb->prefix}postmeta pm_user ON p.ID = pm_user.post_id AND pm_user.meta_key = '_customer_user'
+        WHERE p.post_type = 'shop_order'
+        AND p.post_status IN ($statusesPlaceholder)
+        AND pm_user.meta_value = %d
+      ";
+    }
+
+    $statement = (string)$wpdb->prepare("
+      SELECT DISTINCT tt.term_id
+      FROM {$wpdb->prefix}term_taxonomy tt
+      JOIN {$wpdb->prefix}woocommerce_order_items AS oi ON oi.order_id IN ($orderIdsSubquery) AND oi.order_item_type = 'line_item'
+      JOIN {$wpdb->prefix}woocommerce_order_itemmeta AS pid ON oi.order_item_id = pid.order_item_id AND pid.meta_key = '_product_id'
+      JOIN {$wpdb->prefix}term_relationships tr ON pid.meta_value = tr.object_id AND tr.term_taxonomy_id = tt.term_taxonomy_id
+      WHERE tt.taxonomy = %s
+      ORDER BY tt.term_id ASC
+    ", array_merge($statuses, [$customer->get_id(), $taxonomy]));
+
+    return array_map('intval', $wpdb->get_col($statement));
+  }
+
+  private function getTermsList(string $taxonomy): array {
+    $terms = $this->wordPress->getTerms(['taxonomy' => $taxonomy, 'hide_empty' => false]);
+    if ($terms instanceof WP_Error) {
+      return [];
+    }
+    return $this->buildTermsList((array)$terms);
+  }
+
+  private function buildTermsList(array $terms, int $parentId = 0): array {
+    $parents = array_filter($terms, function ($term) use ($parentId) {
+      return $term instanceof WP_Term && $term->parent === $parentId;
+    });
+
+    usort($parents, function (WP_Term $a, WP_Term $b) {
+      return $a->name <=> $b->name;
+    });
+
+    $list = [];
+    foreach ($parents as $term) {
+      $id = $term->term_id; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+      $list[] = ['id' => $id, 'name' => $term->name];
+      foreach ($this->buildTermsList($terms, $id) as $child) {
+        $list[] = ['id' => $child['id'], 'name' => "$term->name | {$child['name']}"];
+      }
+    }
+    return $list;
   }
 }

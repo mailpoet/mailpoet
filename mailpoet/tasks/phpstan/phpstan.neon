@@ -90,7 +90,7 @@ parameters:
       path: ../../lib/Config/HooksWooCommerce.php
     -
       message: "#^Cannot cast string|void to string\\.$#"
-      count: 2
+      count: 3
       path: ../../lib/Automation/Integrations/WooCommerce/Fields/CustomerOrderFieldsFactory.php
     -
       message: "#^Cannot cast string|void to string\\.$#"
