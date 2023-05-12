@@ -48,20 +48,12 @@ class SubscriptionTest extends \MailPoetTest {
   public function _before() {
     $this->orderId = 123; // dummy
     $this->settings = SettingsController::getInstance();
-    $wcHelper = $this->make(
-      Helper::class,
-      [
-        'woocommerceFormField' => function ($key, $args, $value) {
-          return ($args['label'] ?? '') . ($value ? 'checked' : '');
-        },
-      ]
-    );
     $this->subscribersRepository = $this->diContainer->get(SubscribersRepository::class);
     $this->segmentsRepository = $this->diContainer->get(SegmentsRepository::class);
     $this->confirmationEmailMailer = $this->createMock(ConfirmationEmailMailer::class);
     $this->subscription = $this->getServiceWithOverrides(
       Subscription::class,
-      ['wcHelper' => $wcHelper, 'confirmationEmailMailer' => $this->confirmationEmailMailer]
+      ['confirmationEmailMailer' => $this->confirmationEmailMailer]
     );
     $this->wcSegment = $this->segmentsRepository->getWooCommerceSegment();
     $this->wp = $this->diContainer->get(WP::class);
