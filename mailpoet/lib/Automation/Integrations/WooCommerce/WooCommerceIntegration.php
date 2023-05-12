@@ -7,6 +7,7 @@ use MailPoet\Automation\Integrations\WooCommerce\Subjects\AbandonedCartSubject;
 use MailPoet\Automation\Integrations\WooCommerce\Subjects\CustomerSubject;
 use MailPoet\Automation\Integrations\WooCommerce\Subjects\OrderStatusChangeSubject;
 use MailPoet\Automation\Integrations\WooCommerce\Subjects\OrderSubject;
+use MailPoet\Automation\Integrations\WooCommerce\SubjectTransformers\WordPressUserSubjectToWooCommerceCustomerSubjectTransformer;
 use MailPoet\Automation\Integrations\WooCommerce\Triggers\OrderStatusChangedTrigger;
 
 class WooCommerceIntegration {
@@ -29,13 +30,17 @@ class WooCommerceIntegration {
   /** @var ContextFactory */
   private $contextFactory;
 
+  /** @var WordPressUserSubjectToWooCommerceCustomerSubjectTransformer */
+  private $wordPressUserToWooCommerceCustomerTransformer;
+
   public function __construct(
     OrderStatusChangedTrigger $orderStatusChangedTrigger,
     AbandonedCartSubject $abandonedCartSubject,
     OrderStatusChangeSubject $orderStatusChangeSubject,
     OrderSubject $orderSubject,
     CustomerSubject $customerSubject,
-    ContextFactory $contextFactory
+    ContextFactory $contextFactory,
+    WordPressUserSubjectToWooCommerceCustomerSubjectTransformer $wordPressUserToWooCommerceCustomerTransformer
   ) {
     $this->orderStatusChangedTrigger = $orderStatusChangedTrigger;
     $this->abandonedCartSubject = $abandonedCartSubject;
@@ -43,6 +48,7 @@ class WooCommerceIntegration {
     $this->orderSubject = $orderSubject;
     $this->customerSubject = $customerSubject;
     $this->contextFactory = $contextFactory;
+    $this->wordPressUserToWooCommerceCustomerTransformer = $wordPressUserToWooCommerceCustomerTransformer;
   }
 
   public function register(Registry $registry): void {
@@ -56,5 +62,6 @@ class WooCommerceIntegration {
     $registry->addSubject($this->orderStatusChangeSubject);
     $registry->addSubject($this->customerSubject);
     $registry->addTrigger($this->orderStatusChangedTrigger);
+    $registry->addSubjectTransformer($this->wordPressUserToWooCommerceCustomerTransformer);
   }
 }
