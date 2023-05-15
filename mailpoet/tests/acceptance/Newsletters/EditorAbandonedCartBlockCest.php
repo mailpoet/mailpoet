@@ -5,6 +5,9 @@ namespace MailPoet\Test\Acceptance;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Test\DataFactories\Newsletter;
 
+/**
+ * @group woo
+ */
 class EditorAbandonedCartBlockCest {
   public function addAbandonedCart(\AcceptanceTester $i) {
     $i->wantTo('add abandoned cart block to newsletter');
@@ -15,7 +18,7 @@ class EditorAbandonedCartBlockCest {
     $abandonedCartSettingsAssertion = 'Display options';
     $footer = '[data-automation-id="footer"]';
 
-    // Create newsletter without AC block
+    // Prepare newsletter without AC block
     $newsletter = (new Newsletter())
       ->loadBodyFrom('newsletterWithText.json')
       ->withAutomaticTypeWooCommerceAbandonedCart()
