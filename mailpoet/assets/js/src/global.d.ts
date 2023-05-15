@@ -60,7 +60,6 @@ declare module '@woocommerce/settings' {
   interface MailPoetSettings {
     optinEnabled: boolean;
     defaultText: string;
-    defaultStatus: boolean;
   }
 
   function getSetting(name: 'mailpoet_data'): MailPoetSettings;
