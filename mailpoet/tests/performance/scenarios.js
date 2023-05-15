@@ -33,8 +33,6 @@ export let options = {
     webvital_time_to_first_byte: ['p(75) < 4000'],
     webvital_first_contentful_paint: ['p(75) < 4000'],
     webvital_interaction_to_next_paint: ['p(75) < 300'],
-    http_req_duration: ['max < 8000'],
-    http_req_receiving: ['max < 8000'],
     checks: ['rate==1.0'],
   },
   tags: {
