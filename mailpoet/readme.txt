@@ -3,7 +3,7 @@ Contributors: mailpoet
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 6.0
 Tested up to: 6.2
-Stable tag: 4.15.0
+Stable tag: 4.16.0
 Requires PHP: 7.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -218,6 +218,16 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 4.16.0 - 2023-05-15 =
+* Added: "Subscribed via form" segment;
+* Added: "First name", "Last name", and "Email" segments;
+* Added: "Average order value" segment;
+* Added: abandoned cart trigger in Automations;
+* Added: option to duplicate segments;
+* Improved: more explanatory and actionable notification when MailPoet plan limits are reached;
+* Fixed: display issues of checkout opt-in block in the post editor;
+* Fixed: error loading coupon block when a coupon doesn't have a discount type assigned.
 
 = 4.15.0 - 2023-05-08 =
 * Updated: minimum required WooCommerce version to 7.4.0;
