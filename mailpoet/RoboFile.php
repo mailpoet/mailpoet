@@ -564,6 +564,7 @@ class RoboFile extends \Robo\Tasks {
     $task = implode(' ', [
       'php -d memory_limit=-1',
       './tasks/code_sniffer/vendor/bin/phpcs',
+      "--parallel=" . $this->getParallelism(),
       '--extensions=php',
       $severityFlag,
       '--standard=tasks/code_sniffer/MailPoet/free-ruleset.xml',
@@ -613,6 +614,7 @@ class RoboFile extends \Robo\Tasks {
     $task = implode(' ', [
       'php -d memory_limit=-1',
       './tasks/code_sniffer/vendor/bin/phpcs',
+      '--parallel=' . $this->getParallelism(),
       '--extensions=php',
       $severityFlag,
       '--standard=tasks/code_sniffer/vendor/wporg/plugin-directory/MinimalPluginStandard',
@@ -1455,5 +1457,11 @@ class RoboFile extends \Robo\Tasks {
       (isset($opts['stop-on-fail']) && $opts['stop-on-fail'] ? '-f ' : '') .
       (isset($opts['file']) && $opts['file'] ? $opts['file'] : '')
     )->dir(__DIR__ . '/tests/docker')->run();
+  }
+
+  private function getParallelism(int $multiplier = 1, int $min = 4, int $max = 32): int {
+    $path = __DIR__ . '/../.circleci/nproc.js';
+    $nproc = (int)$this->taskExec("node $path")->printOutput(false)->run()->stopOnFail()->getMessage();
+    return max(min($nproc * $multiplier, $max), $min);
   }
 }
