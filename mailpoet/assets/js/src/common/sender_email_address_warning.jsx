@@ -77,7 +77,7 @@ function SenderEmailAddressWarning({
                 <a
                   key={match}
                   className="mailpoet-link"
-                  href="https://kb.mailpoet.com/article/295-spf-and-dkim"
+                  href="https://kb.mailpoet.com/article/369-how-to-fix-email-violates-sender-domains-dmarc-policy-error"
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={(e) => loadModal(e, 'sender_domain')}
