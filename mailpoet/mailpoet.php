@@ -189,3 +189,5 @@ function mailpoet_core_dependency_notice() {
 
 // Initialize plugin
 require_once($mailpoetPlugin['initializer']);
+
+require __DIR__ . '/sample-ported-block.php';

@@ -19,7 +19,7 @@ import { NewsletterTypes } from 'newsletters/types';
 import { GlobalContext } from 'context';
 import { ErrorBoundary, withBoundary } from '../../common';
 
-const mailpoetTrackingEnabled = MailPoet.trackingConfig.emailTrackingEnabled;
+const mailpoetTrackingEnabled = MailPoet?.trackingConfig?.emailTrackingEnabled;
 
 const messages = {
   onNoItemsFound: (group, search) =>

@@ -240,4 +240,21 @@ interface Window {
   mailpoet_brand_styles?: {
     available: boolean;
   };
+  wp: {
+    i18n: {
+      getLocaleData: (domain?: string | undefined) => Record<string, any>;
+    };
+    element: {
+      useCallback: (
+        callback: (node: HTMLElement) => void,
+        deps: unknown[],
+      ) => () => void;
+    };
+    blocks: {
+      registerBlockType: (
+        name: string,
+        options: Record<string, unknown>,
+      ) => void;
+    };
+  };
 }

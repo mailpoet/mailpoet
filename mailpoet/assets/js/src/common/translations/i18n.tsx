@@ -1,12 +1,4 @@
-import { getLocaleData, setLocaleData } from '@wordpress/i18n';
-
-declare global {
-  interface Window {
-    wp: {
-      i18n: { getLocaleData: typeof getLocaleData };
-    };
-  }
-}
+import { setLocaleData } from '@wordpress/i18n';
 
 // We are using "@wordpress/i18n" from our bundle while WordPress initializes
 // translation data on the core one — we need to pass the data to our code.

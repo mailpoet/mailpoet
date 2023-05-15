@@ -15,23 +15,20 @@ var ImageWidgetView;
 
 Module.ImageBlockModel = base.BlockModel.extend({
   defaults: function () {
-    return this._getDefaults(
-      {
-        type: 'image',
-        link: '',
-        src: '',
-        alt: 'An image of...',
-        fullWidth: true, // true | false
-        width: '64px',
-        height: '64px',
-        styles: {
-          block: {
-            textAlign: 'center',
-          },
+    return this._getDefaults({
+      type: 'image',
+      link: '',
+      src: '',
+      alt: 'An image of...',
+      fullWidth: true, // true | false
+      width: '64px',
+      height: '64px',
+      styles: {
+        block: {
+          textAlign: 'center',
         },
       },
-      App.getConfig().get('blockDefaults.image'),
-    );
+    });
   },
   _updateDefaults: function () {},
 });
@@ -39,7 +36,21 @@ Module.ImageBlockModel = base.BlockModel.extend({
 Module.ImageBlockView = base.BlockView.extend({
   className: 'mailpoet_block mailpoet_image_block mailpoet_droppable_block',
   getTemplate: function () {
-    return window.templates.imageBlock;
+    // eslint-disable-next-line no-undef
+    return Handlebars.compile(`<div class='mailpoet_tools'></div>
+<div class='mailpoet_content' style="{{#ifCond model.styles.block.textAlign '==' 'left'}}margin: 0 auto 0 0; {{/ifCond}}{{#ifCond model.styles.block.textAlign '==' 'center'}}margin: auto; {{/ifCond}}{{#ifCond model.styles.block.textAlign '==' 'right'}}margin: 0 0 0 auto; {{/ifCond}}width: {{model.width}}">
+ <div class='mailpoet_image'>
+  <a href='{{escapeURL model.link }}' onClick='return false;'>
+    <img src="{{#ifCond model.src '!=' ''}}{{ model.src }}{{ else }}{{ imageMissingSrc }}{{/ifCond}}" alt='{{ model.alt }}' onerror="if(this.src != '{{ imageMissingSrc }}') {this.src = '{{ imageMissingSrc }}';}" width='{{model.width}}' />
+  </a>
+  <div class="mailpoet_image_resize_handle_container{{#ifCond model.styles.block.textAlign '==' 'right'}} mailpoet_image_resize_handle_container_left{{/ifCond}}">
+      <div class='mailpoet_image_resize_handle'>
+          <span class='mailpoet_image_resize_handle_icon'>Handle</span>
+    </div>
+  </div>
+</div>
+</div>
+<div class='mailpoet_block_highlight'></div>`);
   },
   onDragSubstituteBy: function () {
     return Module.ImageWidgetView;
@@ -47,32 +58,33 @@ Module.ImageBlockView = base.BlockView.extend({
   templateContext: function () {
     return _.extend(
       {
-        imageMissingSrc: App.getConfig().get('urls.imageMissing'),
+        imageMissingSrc: "App.getConfig().get('urls.imageMissing'),",
       },
       base.BlockView.prototype.templateContext.apply(this),
     );
   },
-  behaviors: _.extend({}, base.BlockView.prototype.behaviors, {
-    ResizableBehavior: {
-      elementSelector: '.mailpoet_image',
-      resizeHandleSelector: '.mailpoet_image_resize_handle',
-      onResize: function (event) {
-        var alignment = this.view.model.get('styles.block.textAlign');
-        var corner = this.$('.mailpoet_image').offset();
-        var currentWidth = this.$('.mailpoet_image').width();
-        var newWidth = event.pageX - corner.left;
-        if (alignment === 'right') {
-          newWidth = currentWidth + corner.left - event.pageX;
-        }
-        this.view.model.set('width', newWidth + 'px');
-      },
-    },
-    ShowSettingsBehavior: {
-      ignoreFrom: '.mailpoet_image_resize_handle',
-    },
-  }),
+  // behaviors: _.extend({}, base.BlockView.prototype.behaviors, {
+  //   ResizableBehavior: {
+  //     elementSelector: '.mailpoet_image',
+  //     resizeHandleSelector: '.mailpoet_image_resize_handle',
+  //     onResize: function (event) {
+  //       var alignment = this.view.model.get('styles.block.textAlign');
+  //       var corner = this.$('.mailpoet_image').offset();
+  //       var currentWidth = this.$('.mailpoet_image').width();
+  //       var newWidth = event.pageX - corner.left;
+  //       if (alignment === 'right') {
+  //         newWidth = currentWidth + corner.left - event.pageX;
+  //       }
+  //       this.view.model.set('width', newWidth + 'px');
+  //     },
+  //   },
+  //   ShowSettingsBehavior: {
+  //     ignoreFrom: '.mailpoet_image_resize_handle',
+  //   },
+  // }),
   onRender: function () {
     var that = this;
+
     this.toolsView = new Module.ImageBlockToolsView({ model: this.model });
     this.showChildView('toolsRegion', this.toolsView);
     if (this.model.get('fullWidth')) {
@@ -128,7 +140,7 @@ Module.ImageBlockSettingsView = base.BlockSettingsView.extend({
     );
   },
   getTemplate: function () {
-    return window.templates.imageBlockSettings;
+    return 'window.templates.imageBlockSettings';
   },
   events: function () {
     return {
@@ -197,7 +209,7 @@ Module.ImageBlockSettingsView = base.BlockSettingsView.extend({
 ImageWidgetView = base.WidgetView.extend({
   id: 'automation_editor_block_image',
   getTemplate: function () {
-    return window.templates.imageInsertion;
+    return 'window.templates.imageInsertion';
   },
   behaviors: {
     DraggableBehavior: {

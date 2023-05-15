@@ -15,7 +15,7 @@ import {
 import { SegmentTags } from 'common/tag/tags';
 import { withBoundary } from '../../common';
 
-const mailpoetTrackingEnabled = MailPoet.trackingConfig.emailTrackingEnabled;
+const mailpoetTrackingEnabled = MailPoet?.trackingConfig?.emailTrackingEnabled;
 
 const columns = [
   {

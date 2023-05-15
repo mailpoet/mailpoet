@@ -61,34 +61,7 @@ Module.BlockView = AugmentedView.extend({
     delete: 'deleteBlock',
     duplicate: 'duplicateBlock',
   },
-  behaviors: {
-    DraggableBehavior: {
-      cloneOriginal: true,
-      hideOriginal: true,
-      onDrop: function onDrop(options) {
-        // After a clone of model has been dropped, cleanup
-        // and destroy self
-        App.getChannel().trigger('hideSettings');
-        options.dragBehavior.view.model.destroy();
-      },
-      onDragSubstituteBy: function onDragSubstituteBy(behavior) {
-        var WidgetView;
-        var node;
-        // When block is being dragged, display the widget icon instead.
-        // This will create an instance of block's widget view and
-        // use it's rendered DOM element instead of the content block
-        if (_.isFunction(behavior.view.onDragSubstituteBy)) {
-          WidgetView = new (behavior.view.onDragSubstituteBy())();
-          WidgetView.render();
-          node = WidgetView.$el.get(0).cloneNode(true);
-          WidgetView.destroy();
-          return node;
-        }
-        return undefined;
-      },
-    },
-    HighlightEditingBehavior: {},
-  },
+
   templateContext: function templateContext() {
     return {
       model: this.model.toJSON(),
@@ -179,7 +152,7 @@ Module.BlockView = AugmentedView.extend({
 
 Module.BlockToolsView = AugmentedView.extend({
   getTemplate: function getTemplate() {
-    return window.templates.genericBlockTools;
+    return '<div>window.templates.genericBlockTools</div>';
   },
   events: {
     'click .mailpoet_edit_block': 'toggleSettings',

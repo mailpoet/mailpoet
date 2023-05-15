@@ -120,7 +120,7 @@ function validateNewsletter(newsletter: NewsLetter) {
 
   if (
     newsletter.type === 're_engagement' &&
-    !MailPoet.trackingConfig.emailTrackingEnabled
+    !MailPoet?.trackingConfig.emailTrackingEnabled
   ) {
     return (
       <span style={{ pointerEvents: 'all' }}>

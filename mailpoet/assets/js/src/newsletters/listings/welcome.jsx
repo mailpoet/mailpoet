@@ -24,7 +24,7 @@ import { withBoundary } from 'common';
 
 const mailpoetRoles = window.mailpoet_roles || {};
 const mailpoetSegments = window.mailpoet_segments || {};
-const mailpoetTrackingEnabled = MailPoet.trackingConfig.emailTrackingEnabled;
+const mailpoetTrackingEnabled = MailPoet?.trackingConfig?.emailTrackingEnabled;
 
 const messages = {
   onNoItemsFound: (group, search) =>

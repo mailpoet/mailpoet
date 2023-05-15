@@ -14,7 +14,7 @@ import { SubscribersInPlan } from 'common/subscribers_in_plan';
 import { ListingsEngagementScore } from './listings_engagement_score';
 import { SubscribersHeading } from './heading';
 
-const mailpoetTrackingEnabled = MailPoet.trackingConfig.emailTrackingEnabled;
+const mailpoetTrackingEnabled = MailPoet?.trackingConfig?.emailTrackingEnabled;
 
 const columns = [
   {

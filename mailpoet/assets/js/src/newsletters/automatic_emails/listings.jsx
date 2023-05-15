@@ -17,7 +17,7 @@ import { NewsletterTypes } from 'newsletters/types';
 import { ScheduledIcon, StringTags, Toggle, withBoundary } from 'common';
 import { Statistics } from 'newsletters/listings/statistics.jsx';
 
-const mailpoetTrackingEnabled = MailPoet.trackingConfig.emailTrackingEnabled;
+const mailpoetTrackingEnabled = MailPoet?.trackingConfig?.emailTrackingEnabled;
 const automaticEmails = window.mailpoet_woocommerce_automatic_emails || {};
 
 const messages = {

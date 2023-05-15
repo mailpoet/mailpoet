@@ -61,7 +61,7 @@ function WooCommerceController({
   const submit = async (importType, allowed) => {
     setLoading(true);
     const trackingLevelForDisabledCookies =
-      MailPoet.trackingConfig.level === 'basic' ? 'basic' : 'partial';
+      MailPoet?.trackingConfig.level === 'basic' ? 'basic' : 'partial';
     const trackingData: Settings['tracking'] = {
       level: allowed ? 'full' : trackingLevelForDisabledCookies,
     };
