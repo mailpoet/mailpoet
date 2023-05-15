@@ -95,7 +95,6 @@ class WooCommerceBlocksIntegration {
       [
       'defaultText' => $this->settings->get('woocommerce.optin_on_checkout.message', ''),
       'optinEnabled' => $this->settings->get('woocommerce.optin_on_checkout.enabled', false),
-      'defaultStatus' => false,
       ],
       $this->wp
     ));

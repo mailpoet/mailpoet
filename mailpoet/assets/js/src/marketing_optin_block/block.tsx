@@ -6,8 +6,7 @@ import { CheckboxControl } from '@woocommerce/blocks-checkout';
 import { RawHTML, useEffect, useState } from '@wordpress/element';
 import { getSetting } from '@woocommerce/settings';
 
-const { optinEnabled, defaultText, defaultStatus } =
-  getSetting('mailpoet_data');
+const { optinEnabled, defaultText } = getSetting('mailpoet_data');
 
 export function FrontendBlock({
   text,
@@ -18,7 +17,7 @@ export function FrontendBlock({
     setExtensionData: (namespace: string, key: string, value: unknown) => void;
   };
 }): JSX.Element {
-  const [checked, setChecked] = useState(defaultStatus);
+  const [checked, setChecked] = useState(false);
   const { setExtensionData } = checkoutExtensionData || {};
   useEffect(() => {
     if (optinEnabled && setExtensionData) {
