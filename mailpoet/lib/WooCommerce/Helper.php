@@ -232,7 +232,7 @@ class Helper {
    * Check whether the current request is processing a WooCommerce checkout.
    * Works for both the normal checkout and the block checkout.
    *
-   * This solution is not ideal, but I cheched with a few WooCommerce developers,
+   * This solution is not ideal, but I checked with a few WooCommerce developers,
    * and it is what they suggested. There is no helper function provided by Woo
    * for this.
    *
