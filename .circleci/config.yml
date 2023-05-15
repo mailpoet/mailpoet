@@ -626,6 +626,9 @@ jobs:
       mysql_image:
         type: string
         default: ''
+      woo_core_version:
+        type: string
+        default: ''
     steps:
       - attach_workspace:
           at: /home/circleci
@@ -645,6 +648,14 @@ jobs:
           command: |
             cd tests/docker
             docker-compose run --rm -w /project -e COMPOSER_DEV_MODE=1 --entrypoint "php tools/install.php" codeception_integration
+      - when:
+          condition: << parameters.woo_core_version >>
+          steps:
+            - run:
+                name: Download WooCommerce Core
+                command: |
+                  cd tests/docker
+                  docker-compose run --rm -w /project --entrypoint "./do download:woo-commerce-zip << parameters.woo_core_version >>" --no-deps -e WP_GITHUB_USERNAME=${WP_GITHUB_USERNAME} -e WP_GITHUB_TOKEN=${WP_GITHUB_TOKEN} codeception_integration
       - run:
           name: 'PHP Integration tests'
           command: |
@@ -931,7 +942,8 @@ workflows:
       - integration_tests:
           <<: *slack-fail-post-step
           name: integration_oldest
-          codeception_image_version: 7.4-cli_20220605.0
+          woo_core_version: 7.5.0
+          codeception_image_version: 7.2-cli_20220605.0
           mysql_command: --max_allowed_packet=100M --default-storage-engine=MYISAM
           mysql_image: mysql:5.5
           requires:
