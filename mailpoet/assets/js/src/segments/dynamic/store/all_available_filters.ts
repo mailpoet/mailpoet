@@ -2,7 +2,7 @@ import { MailPoet } from 'mailpoet';
 
 import { GroupFilterValue } from '../types';
 import { EmailSegmentOptions } from '../dynamic_segments_filters/email_options';
-import { SubscriberSegmentOptions } from '../dynamic_segments_filters/subscriber_opitions';
+import { SubscriberSegmentOptions } from '../dynamic_segments_filters/subscriber_options';
 import {
   WooCommerceOptions,
   WooCommerceMembershipOptions,

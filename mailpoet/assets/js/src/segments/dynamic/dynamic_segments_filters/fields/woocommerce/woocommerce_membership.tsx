@@ -9,12 +9,13 @@ import { Grid } from 'common/grid';
 
 import {
   AnyValueTypes,
+  FilterProps,
   SelectOption,
   WindowMembershipPlans,
   WooCommerceMembershipFormItem,
-} from '../types';
-import { storeName } from '../store';
-import { WooCommerceMembershipsActionTypes } from './woocommerce_options';
+} from '../../../types';
+import { storeName } from '../../../store';
+import { WooCommerceMembershipsActionTypes } from '../../woocommerce_options';
 
 export function validateWooCommerceMembership(
   formItem: WooCommerceMembershipFormItem,
@@ -30,13 +31,9 @@ export function validateWooCommerceMembership(
   return true;
 }
 
-type Props = {
-  filterIndex: number;
-};
-
 export function WooCommerceMembershipFields({
   filterIndex,
-}: Props): JSX.Element {
+}: FilterProps): JSX.Element {
   const segment = useSelect(
     (select) =>
       select(storeName).getSegmentFilter(

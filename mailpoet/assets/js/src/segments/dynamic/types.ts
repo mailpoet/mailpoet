@@ -275,6 +275,10 @@ export interface SetErrorsActionType extends ActionType {
   errors: string[];
 }
 
+export type FilterProps = {
+  filterIndex: number;
+};
+
 export type Tag = {
   id: number;
   name: string;

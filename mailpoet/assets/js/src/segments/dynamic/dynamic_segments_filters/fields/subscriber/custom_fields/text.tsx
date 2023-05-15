@@ -6,8 +6,8 @@ import { Select } from 'common/form/select/select';
 import { Input } from 'common/form/input/input';
 import { Grid } from 'common/grid';
 
-import { WordpressRoleFormItem } from '../../types';
-import { storeName } from '../../store';
+import { FilterProps, WordpressRoleFormItem } from '../../../../types';
+import { storeName } from '../../../../store';
 
 export function validateText(item: WordpressRoleFormItem): boolean {
   return (
@@ -21,11 +21,7 @@ export function validateText(item: WordpressRoleFormItem): boolean {
   );
 }
 
-type Props = {
-  filterIndex: number;
-};
-
-export function Text({ filterIndex }: Props): JSX.Element {
+export function Text({ filterIndex }: FilterProps): JSX.Element {
   const segment: WordpressRoleFormItem = useSelect(
     (select) => select(storeName).getSegmentFilter(filterIndex),
     [filterIndex],

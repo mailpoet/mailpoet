@@ -1,30 +1,41 @@
 import { useSelect } from '@wordpress/data';
 
-import { SubscriberActionTypes, WordpressRoleFormItem } from '../types';
+import {
+  FilterProps,
+  SubscriberActionTypes,
+  WordpressRoleFormItem,
+} from '../types';
 import { storeName } from '../store';
-import { WordpressRoleFields } from './subscriber_wordpress_role';
+import { WordpressRoleFields } from './fields/subscriber/subscriber_wordpress_role';
 import {
   SubscriberScoreFields,
   validateSubscriberScore,
-} from './subscriber_score';
-import { DateFields, DateOperator, validateDateField } from './date_fields';
+} from './fields/subscriber/subscriber_score';
+import {
+  DateFields,
+  DateOperator,
+  validateDateField,
+} from './fields/date_fields';
 import {
   MailPoetCustomFields,
   validateMailPoetCustomField,
-} from './subscriber_mailpoet_custom_field';
+} from './fields/subscriber/subscriber_mailpoet_custom_field';
 import {
   SubscribedToList,
   validateSubscribedToList,
-} from './subscriber_subscribed_to_list';
-import { SubscriberTag, validateSubscriberTag } from './subscriber_tag';
+} from './fields/subscriber/subscriber_subscribed_to_list';
+import {
+  SubscriberTag,
+  validateSubscriberTag,
+} from './fields/subscriber/subscriber_tag';
 import {
   SubscriberTextField,
   validateSubscriberTextField,
-} from './subscriber_text_field';
+} from './fields/subscriber/subscriber_text_field';
 import {
   SubscribedViaForm,
   validateSubscribedViaForm,
-} from './subscribed_via_form';
+} from './fields/subscriber/subscribed_via_form';
 
 export function validateSubscriber(formItems: WordpressRoleFormItem): boolean {
   if (
@@ -84,11 +95,7 @@ const componentsMap = {
   [SubscriberActionTypes.SUBSCRIBED_VIA_FORM]: SubscribedViaForm,
 };
 
-type Props = {
-  filterIndex: number;
-};
-
-export function SubscriberFields({ filterIndex }: Props): JSX.Element {
+export function SubscriberFields({ filterIndex }: FilterProps): JSX.Element {
   const segment: WordpressRoleFormItem = useSelect(
     (select) => select(storeName).getSegmentFilter(filterIndex),
     [filterIndex],

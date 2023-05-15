@@ -9,11 +9,12 @@ import { ReactSelect } from 'common/form/react_select/react_select';
 
 import {
   AnyValueTypes,
+  FilterProps,
   SelectOption,
   StaticSegment,
   WordpressRoleFormItem,
-} from '../types';
-import { storeName } from '../store';
+} from '../../../types';
+import { storeName } from '../../../store';
 
 export function validateSubscribedToList(
   formItems: WordpressRoleFormItem,
@@ -27,11 +28,7 @@ export function validateSubscribedToList(
   );
 }
 
-type Props = {
-  filterIndex: number;
-};
-
-export function SubscribedToList({ filterIndex }: Props): JSX.Element {
+export function SubscribedToList({ filterIndex }: FilterProps): JSX.Element {
   const segment: WordpressRoleFormItem = useSelect(
     (select) => select(storeName).getSegmentFilter(filterIndex),
     [filterIndex],

@@ -13,14 +13,11 @@ import {
   WindowEditableRoles,
   AnyValueTypes,
   SubscriberActionTypes,
-} from '../types';
-import { storeName } from '../store';
+  FilterProps,
+} from '../../../types';
+import { storeName } from '../../../store';
 
-type Props = {
-  filterIndex: number;
-};
-
-export function WordpressRoleFields({ filterIndex }: Props): JSX.Element {
+export function WordpressRoleFields({ filterIndex }: FilterProps): JSX.Element {
   const segment: WordpressRoleFormItem = useSelect(
     (select) => select(storeName).getSegmentFilter(filterIndex),
     [filterIndex],

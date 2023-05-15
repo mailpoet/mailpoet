@@ -6,8 +6,8 @@ import { Select } from 'common/form/select/select';
 import { Input } from 'common/form/input/input';
 import { MailPoet } from 'mailpoet';
 
-import { EmailFormItem } from '../types';
-import { storeName } from '../store';
+import { EmailFormItem, FilterProps } from '../../../types';
+import { storeName } from '../../../store';
 
 function replaceElementsInDaysSentence(
   fn: (value) => JSX.Element,
@@ -25,13 +25,9 @@ function replaceEmailActionOpensSentence(
     .map(fn);
 }
 
-type Props = {
-  filterIndex: number;
-};
-
 export function EmailOpensAbsoluteCountFields({
   filterIndex,
-}: Props): JSX.Element {
+}: FilterProps): JSX.Element {
   const segment: EmailFormItem = useSelect(
     (select) => select(storeName).getSegmentFilter(filterIndex),
     [filterIndex],
