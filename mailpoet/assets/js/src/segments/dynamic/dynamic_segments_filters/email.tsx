@@ -3,13 +3,14 @@ import { useSelect } from '@wordpress/data';
 import {
   EmailActionTypes,
   EmailFormItem,
+  FilterProps,
   WordpressRoleFormItem,
 } from '../types';
 import { storeName } from '../store';
 
-import { EmailOpenStatisticsFields } from './email_statistics_opens';
-import { EmailClickStatisticsFields } from './email_statistics_clicks';
-import { EmailOpensAbsoluteCountFields } from './email_opens_absolute_count';
+import { EmailOpenStatisticsFields } from './fields/email/email_statistics_opens';
+import { EmailClickStatisticsFields } from './fields/email/email_statistics_clicks';
+import { EmailOpensAbsoluteCountFields } from './fields/email/email_opens_absolute_count';
 
 export function validateEmail(formItems: EmailFormItem): boolean {
   // check if the action has the right type
@@ -48,11 +49,7 @@ const componentsMap = {
   [EmailActionTypes.CLICKED_ANY]: null,
 };
 
-type Props = {
-  filterIndex: number;
-};
-
-export function EmailFields({ filterIndex }: Props): JSX.Element {
+export function EmailFields({ filterIndex }: FilterProps): JSX.Element {
   const segment: WordpressRoleFormItem = useSelect(
     (select) => select(storeName).getSegmentFilter(filterIndex),
     [filterIndex],

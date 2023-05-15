@@ -8,8 +8,9 @@ import {
   WordpressRoleFormItem,
   SelectOption,
   WindowCustomFields,
-} from '../../types';
-import { storeName } from '../../store';
+  FilterProps,
+} from '../../../../types';
+import { storeName } from '../../../../store';
 
 interface ParamsType {
   values?: {
@@ -21,11 +22,7 @@ export function validateRadioSelect(item: WordpressRoleFormItem): boolean {
   return typeof item.value === 'string' && item.value.length > 0;
 }
 
-type Props = {
-  filterIndex: number;
-};
-
-export function RadioSelect({ filterIndex }: Props): JSX.Element {
+export function RadioSelect({ filterIndex }: FilterProps): JSX.Element {
   const segment: WordpressRoleFormItem = useSelect(
     (select) => select(storeName).getSegmentFilter(filterIndex),
     [filterIndex],

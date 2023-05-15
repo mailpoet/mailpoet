@@ -3,13 +3,9 @@ import { useEffect } from 'react';
 import { Grid } from 'common/grid';
 import { Select } from 'common/form/select/select';
 import { Input } from 'common/form/input/input';
-import { MailPoet } from '../../../mailpoet';
-import { WordpressRoleFormItem } from '../types';
-import { storeName } from '../store';
-
-type Props = {
-  filterIndex: number;
-};
+import { MailPoet } from 'mailpoet';
+import { FilterProps, WordpressRoleFormItem } from '../../../types';
+import { storeName } from '../../../store';
 
 const validOperators = [
   'is',
@@ -31,7 +27,7 @@ export function validateSubscriberTextField(
   return typeof formItems.value === 'string' && formItems.value.length > 0;
 }
 
-export function SubscriberTextField({ filterIndex }: Props): JSX.Element {
+export function SubscriberTextField({ filterIndex }: FilterProps): JSX.Element {
   const segment: WordpressRoleFormItem = useSelect(
     (select) => select(storeName).getSegmentFilter(filterIndex),
     [filterIndex],

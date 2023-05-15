@@ -11,21 +11,18 @@ import { Select } from 'common/form/select/select';
 import {
   AnyValueTypes,
   EmailFormItem,
+  FilterProps,
   SelectOption,
   WindowNewslettersList,
-} from '../types';
-import { storeName } from '../store';
+} from '../../../types';
+import { storeName } from '../../../store';
 
 const shouldDisplayLinks = (itemNewsletterId?: string): boolean =>
   !!itemNewsletterId;
 
-type Props = {
-  filterIndex: number;
-};
-
 export function EmailClickStatisticsFields({
   filterIndex,
-}: Props): JSX.Element {
+}: FilterProps): JSX.Element {
   const segment: EmailFormItem = useSelect(
     (select) => select(storeName).getSegmentFilter(filterIndex),
     [filterIndex],

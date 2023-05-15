@@ -1,12 +1,12 @@
 import { useSelect } from '@wordpress/data';
 
-import { SegmentTypes, WordpressRoleFormItem } from './types';
+import { FilterProps, SegmentTypes, WordpressRoleFormItem } from './types';
 
 import { EmailFields } from './dynamic_segments_filters/email';
 import { SubscriberFields } from './dynamic_segments_filters/subscriber';
 import { WooCommerceFields } from './dynamic_segments_filters/woocommerce';
-import { WooCommerceMembershipFields } from './dynamic_segments_filters/woocommerce_membership';
-import { WooCommerceSubscriptionFields } from './dynamic_segments_filters/woocommerce_subscription';
+import { WooCommerceMembershipFields } from './dynamic_segments_filters/fields/woocommerce/woocommerce_membership';
+import { WooCommerceSubscriptionFields } from './dynamic_segments_filters/fields/woocommerce/woocommerce_subscription';
 import { storeName } from './store';
 
 const filterFieldsMap = {
@@ -17,11 +17,7 @@ const filterFieldsMap = {
   [SegmentTypes.WooCommerceSubscription]: WooCommerceSubscriptionFields,
 };
 
-type Props = {
-  filterIndex: number;
-};
-
-export function FormFilterFields({ filterIndex }: Props): JSX.Element {
+export function FormFilterFields({ filterIndex }: FilterProps): JSX.Element {
   const filter: WordpressRoleFormItem = useSelect(
     (select) => select(storeName).getSegmentFilter(filterIndex),
     [filterIndex],

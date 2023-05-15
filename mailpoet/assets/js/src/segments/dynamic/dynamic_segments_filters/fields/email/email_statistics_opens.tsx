@@ -10,16 +10,15 @@ import {
   AnyValueTypes,
   EmailActionTypes,
   EmailFormItem,
+  FilterProps,
   SelectOption,
   WindowNewslettersList,
-} from '../types';
-import { storeName } from '../store';
+} from '../../../types';
+import { storeName } from '../../../store';
 
-type Props = {
-  filterIndex: number;
-};
-
-export function EmailOpenStatisticsFields({ filterIndex }: Props): JSX.Element {
+export function EmailOpenStatisticsFields({
+  filterIndex,
+}: FilterProps): JSX.Element {
   const segment: EmailFormItem = useSelect(
     (select) => select(storeName).getSegmentFilter(filterIndex),
     [filterIndex],

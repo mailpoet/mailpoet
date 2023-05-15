@@ -8,8 +8,8 @@ import { Datepicker } from 'common/datepicker/datepicker';
 import { Grid } from 'common/grid';
 import { Input } from 'common/form/input/input';
 
-import { DateFormItem } from '../types';
-import { storeName } from '../store';
+import { DateFormItem, FilterProps } from '../../types';
+import { storeName } from '../../store';
 
 export enum DateOperator {
   BEFORE = 'before',
@@ -49,11 +49,7 @@ const parseDate = (value: string): Date | undefined => {
   return date;
 };
 
-type Props = {
-  filterIndex: number;
-};
-
-export function DateFields({ filterIndex }: Props): JSX.Element {
+export function DateFields({ filterIndex }: FilterProps): JSX.Element {
   const segment: DateFormItem = useSelect(
     (select) => select(storeName).getSegmentFilter(filterIndex),
     [filterIndex],

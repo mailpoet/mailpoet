@@ -4,18 +4,14 @@ import { useSelect, useDispatch } from '@wordpress/data';
 import { MailPoet } from 'mailpoet';
 import { Select } from 'common/form/select/select';
 
-import { WordpressRoleFormItem } from '../../types';
-import { storeName } from '../../store';
+import { FilterProps, WordpressRoleFormItem } from '../../../../types';
+import { storeName } from '../../../../store';
 
 export function validateCheckbox(item: WordpressRoleFormItem): boolean {
   return item.value === '1' || item.value === '0';
 }
 
-type Props = {
-  filterIndex: number;
-};
-
-export function Checkbox({ filterIndex }: Props): JSX.Element {
+export function Checkbox({ filterIndex }: FilterProps): JSX.Element {
   const segment: WordpressRoleFormItem = useSelect(
     (select) => select(storeName).getSegmentFilter(filterIndex),
     [filterIndex],

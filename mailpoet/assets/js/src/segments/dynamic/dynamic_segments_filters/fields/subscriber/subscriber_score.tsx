@@ -6,8 +6,8 @@ import { Select } from 'common/form/select/select';
 import { Grid } from 'common/grid';
 import { Input } from 'common/form/input/input';
 
-import { WordpressRoleFormItem } from '../types';
-import { storeName } from '../store';
+import { FilterProps, WordpressRoleFormItem } from '../../../types';
+import { storeName } from '../../../store';
 
 export enum SubscriberScoreOperator {
   HIGHER_THAN = 'higherThan',
@@ -26,10 +26,6 @@ const availableOperators = [
   SubscriberScoreOperator.UNKNOWN,
   SubscriberScoreOperator.NOT_UNKNOWN,
 ];
-
-type Props = {
-  filterIndex: number;
-};
 
 export function validateSubscriberScore(
   formItems: WordpressRoleFormItem,
@@ -66,7 +62,9 @@ function replaceSubscriberScoreSentence(
     .map(fn);
 }
 
-export function SubscriberScoreFields({ filterIndex }: Props): JSX.Element {
+export function SubscriberScoreFields({
+  filterIndex,
+}: FilterProps): JSX.Element {
   const segment: WordpressRoleFormItem = useSelect(
     (select) => select(storeName).getSegmentFilter(filterIndex),
     [filterIndex],

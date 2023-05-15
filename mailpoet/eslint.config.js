@@ -147,7 +147,7 @@ module.exports = [
       'assets/js/src/newsletters/send/standard.tsx',
       'assets/js/src/newsletters/types.tsx',
       'assets/js/src/notices/email_volume_limit_notice.tsx',
-      'assets/js/src/segments/dynamic/dynamic_segments_filters/subscriber_tag.tsx',
+      'assets/js/src/segments/dynamic/dynamic_segments_filters/fields/subscriber/subscriber_tag.tsx',
       'assets/js/src/segments/dynamic/dynamic_segments_filters/woocommerce.tsx',
       'assets/js/src/segments/dynamic/subscribers_counter.tsx',
       'assets/js/src/segments/dynamic/validator.ts',

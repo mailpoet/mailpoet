@@ -8,8 +8,8 @@ import { Select } from 'common/form/select/select';
 import { Grid } from 'common/grid';
 import { Datepicker } from 'common/datepicker/datepicker';
 
-import { WordpressRoleFormItem, OnFilterChange } from '../../types';
-import { storeName } from '../../store';
+import { WordpressRoleFormItem, OnFilterChange } from '../../../../types';
+import { storeName } from '../../../../store';
 
 interface ComponentProps {
   onChange: OnFilterChange;
