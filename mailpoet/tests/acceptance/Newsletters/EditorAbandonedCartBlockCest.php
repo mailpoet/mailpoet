@@ -26,6 +26,7 @@ class EditorAbandonedCartBlockCest {
       ->create();
 
     $i->login();
+    $i->activateWooCommerce();
     $i->amEditingNewsletter($newsletter->getId());
 
     // Move the Abandoned Cart block to the editor
@@ -37,6 +38,6 @@ class EditorAbandonedCartBlockCest {
     $i->waitForElementVisible($abandonedCartOverlayMessage);
     $i->see($overlayMessage, $abandonedCartOverlayMessage);
     $i->click($abandonedCartOverlayMessage);
-    $i->waitForText($abandonedCartSettingsAssertion);
+    $i->see($abandonedCartSettingsAssertion);
   }
 }
