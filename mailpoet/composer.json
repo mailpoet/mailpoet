@@ -1,6 +1,6 @@
 {
   "require": {
-    "php": ">=7.2",
+    "php": ">=7.3",
     "mtdowling/cron-expression": "^1.1",
     "woocommerce/action-scheduler": "^3.5"
   },
@@ -89,7 +89,7 @@
   },
   "config": {
     "platform": {
-      "php": "7.2.0"
+      "php": "7.3.0"
     },
     "sort-packages": true
   }
