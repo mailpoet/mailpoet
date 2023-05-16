@@ -287,6 +287,7 @@ class FormEditor {
       }
     }
     $data = [
+      'sub_menu' => 'mailpoet-forms',
       'templates' => $templatesData,
     ];
     $this->pageRenderer->displayPage('form/template_selection.html', $data);
