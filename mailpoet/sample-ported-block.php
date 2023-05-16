@@ -84,3 +84,11 @@ add_action('admin_footer', function (){
   $pageRenderer = \MailPoet\DI\ContainerWrapper::getInstance()->get(PageRenderer::class);
   $pageRenderer->displayPage('newsletter/editor.html');
 });
+
+add_action('enqueue_block_assets', function () {
+  wp_enqueue_style(
+    'mailpoet_sample-ported-block-editor',
+    plugin_dir_url(__FILE__) . 'assets/dist/css/mailpoet-editor.css',
+    false
+  );
+});
