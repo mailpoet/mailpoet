@@ -12,7 +12,7 @@ import 'newsletter_editor/behaviors/TextEditorBehavior'; // side effect - assign
 import 'newsletter_editor/behaviors/WooCommerceStylesBehavior.js'; // side effect - assigns to BehaviorsLookup
 
 // Register blocks
-import 'newsletter_editor/sample-ported-block/index';
+import 'newsletter_editor/ported_blocks/image/index';
 
 // Force set config to APP
 import { App } from 'newsletter_editor/App';

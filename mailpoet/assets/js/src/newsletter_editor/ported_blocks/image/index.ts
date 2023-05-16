@@ -4,13 +4,13 @@ import metadata from './block.json';
 // import { Save } from './save';
 
 registerBlockType(metadata.name, {
-  title: 'Sample Ported Block',
+  title: 'Image Ported Block',
   example: {
     attributes: {
-      message: 'Sample Ported Block',
+      message: 'Image Ported Block',
     },
   },
-  icon: 'flag',
+  icon: 'format-image',
   category: 'design',
   attributes: {
     message: {

@@ -1,6 +1,6 @@
 import { useCallback, useRef } from '@wordpress/element';
 import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
-import { ImageBlock } from '../blocks/image';
+import { ImageBlock } from 'newsletter_editor/blocks/image';
 
 export function Edit() {
   const model = useRef(new ImageBlock.ImageBlockModel());
