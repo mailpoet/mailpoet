@@ -35,6 +35,9 @@ BehaviorsLookup.TextEditorBehavior = Marionette.Behavior.extend({
   },
   initialize: function initialize() {
     this.listenTo(App.getChannel(), 'dragStart', this.hideEditor);
+    document.addEventListener('mailpoet:startEditor', () => {
+      this.onDomRefresh();
+    });
   },
   hideEditor: function hideEditor() {
     if (this.tinymceEditor) {

@@ -5,6 +5,7 @@ import { App } from 'newsletter_editor/App';
 import { BaseBlock } from 'newsletter_editor/blocks/base';
 import _ from 'underscore';
 import { __ } from '@wordpress/i18n';
+import { isGutenbergEditor } from '../../common';
 
 var Module = {};
 var base = BaseBlock;
@@ -62,6 +63,10 @@ Module.TextBlockView = base.BlockView.extend({
     return Module.TextWidgetView;
   },
   onRender: function onRender() {
+    if (isGutenbergEditor()) {
+      return;
+    }
+
     this.toolsView = new Module.TextBlockToolsView({
       model: this.model,
       tools: {
