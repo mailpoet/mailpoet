@@ -667,7 +667,7 @@ class RoboFile extends \Robo\Tasks {
         ->taskExec(
           './tasks/code_sniffer/vendor/bin/phpcbf ' .
             '--standard=./tasks/code_sniffer/MailPoet ' .
-            '--runtime-set testVersion 7.2-8.0 ' .
+            '--runtime-set testVersion 7.3-8.2 ' .
             $filePath . ' -n'
         )
         ->run();
