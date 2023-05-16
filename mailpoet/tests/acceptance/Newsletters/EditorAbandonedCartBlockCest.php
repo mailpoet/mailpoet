@@ -15,7 +15,8 @@ class EditorAbandonedCartBlockCest {
     $abandonedCartOverlayMessage = '.mailpoet_overlay_message';
     $abandonedCartOverlay = '[data-automation-id="acc_overlay"]';
     $overlayMessage = 'This is only a preview! Your customers will see the product(s) they left in their shopping cart.';
-    $abandonedCartSettingsAssertion = 'Display options';
+    $settingsPanelElement = '.mailpoet_panel_wrapper';
+    $settingsTitle = 'Display options';
     $footer = '[data-automation-id="footer"]';
 
     // Prepare newsletter without AC block
@@ -38,6 +39,7 @@ class EditorAbandonedCartBlockCest {
     $i->waitForElementVisible($abandonedCartOverlayMessage);
     $i->see($overlayMessage, $abandonedCartOverlayMessage);
     $i->click($abandonedCartOverlayMessage);
-    $i->see($abandonedCartSettingsAssertion);
+    $i->waitForElementVisible($settingsPanelElement);
+    $i->see($settingsTitle);
   }
 }
