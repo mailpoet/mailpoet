@@ -120,6 +120,16 @@ class MailpoetMenuCest {
     $i->waitForElement('[data-automation-id="basic_settings_tab"]');
     $i->seeInCurrentUrl('?page=mailpoet-settings');
     $this->assertSelectedMenuItem($i, 'Settings');
+
+    // logs
+    $i->amOnAdminPage('admin.php?page=mailpoet-logs');
+    $i->waitForElement('#adminmenu');
+    $this->assertSelectedMenuItem($i, 'Settings');
+
+    // experimental features
+    $i->amOnAdminPage('admin.php?page=mailpoet-experimental');
+    $i->waitForElement('#adminmenu');
+    $this->assertSelectedMenuItem($i, 'Settings');
   }
 
   private function checkHelp(\AcceptanceTester $i) {

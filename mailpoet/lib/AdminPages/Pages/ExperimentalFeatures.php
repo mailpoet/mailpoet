@@ -15,6 +15,8 @@ class ExperimentalFeatures {
   }
 
   public function render() {
-    $this->pageRenderer->displayPage('experimental-features.html', []);
+    $this->pageRenderer->displayPage('experimental-features.html', [
+      'sub_menu' => 'mailpoet-settings',
+    ]);
   }
 }

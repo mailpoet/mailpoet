@@ -36,7 +36,10 @@ class Logs {
       $dateTo = new Carbon($to);
     }
     $logs = $this->logRepository->getLogs($dateFrom, $dateTo, $search, $offset, $limit);
-    $data = ['logs' => []];
+    $data = [
+      'sub_menu' => 'mailpoet-settings',
+      'logs' => [],
+    ];
     foreach ($logs as $log) {
       $data['logs'][] = [
         'id' => $log->getId(),
