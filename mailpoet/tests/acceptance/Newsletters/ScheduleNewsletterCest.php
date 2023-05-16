@@ -10,7 +10,7 @@ class ScheduleNewsletterCest {
     $i->wantTo('Schedule a newsletter');
     $newsletterTitle = 'Schedule Test Newsletter';
 
-    // step 1 - Prepare post notification data
+    // step 1 - Prepare standard newsletter
     $newsletterFactory = new Newsletter();
     $newsletter = $newsletterFactory->withSubject($newsletterTitle)
       ->create();
@@ -28,8 +28,11 @@ class ScheduleNewsletterCest {
     $i->click('select[name=time]');
     $i->selectOption('form select[name=time]', '6:00');
     $i->click('Schedule');
+    $i->waitForElement('.mailpoet_modal_overlay');
+    $i->waitForElementVisible('.notice-success');
+    $i->waitForText('The newsletter has been scheduled.');
     $i->waitForElement('[data-automation-id="newsletters_listing_tabs"]');
-
+    $i->waitForText('6:00 am');
   }
 
   public function scheduleStandardNewsletterButtonCaption(\AcceptanceTester $i) {
@@ -73,5 +76,10 @@ class ScheduleNewsletterCest {
     // `Send` caption - change time to 1 hour before now
     $i->selectOption('form select[name=time]', $currentDateTime->modify("-1 hour")->format('g:00 a'));
     $i->see("Send", "button span");
+
+    $i->wantTo('Pick tomorrow‘s date');
+    $i->click('select[name=time]');
+    $i->selectOption('form select[name=time]', $currentDateTime->modify("26 hour")->format('g:00 a'));
+    $i->see("Schedule", "button span");
   }
 }
