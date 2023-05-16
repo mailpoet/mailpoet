@@ -16,20 +16,23 @@ var ImageWidgetView;
 
 Module.ImageBlockModel = base.BlockModel.extend({
   defaults: function () {
-    return this._getDefaults({
-      type: 'image',
-      link: '',
-      src: '',
-      alt: 'An image of...',
-      fullWidth: true, // true | false
-      width: '64px',
-      height: '64px',
-      styles: {
-        block: {
-          textAlign: 'center',
+    return this._getDefaults(
+      {
+        type: 'image',
+        link: '',
+        src: '',
+        alt: 'An image of...',
+        fullWidth: true, // true | false
+        width: '64px',
+        height: '64px',
+        styles: {
+          block: {
+            textAlign: 'center',
+          },
         },
       },
-    });
+      App.getConfig().get('blockDefaults.image'),
+    );
   },
   _updateDefaults: function () {},
 });
