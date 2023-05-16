@@ -263,6 +263,11 @@ Module.BlockSettingsView = Marionette.View.extend({
       }.bind(this),
     };
     this.renderOptions = params.renderOptions || {};
+    // This is needed in case we want to pass wrapper element for the settings
+    // and render default way in the element
+    if (this.renderOptions.displayFormat === 'element') {
+      return;
+    }
     if (this.renderOptions.displayFormat === 'subpanel') {
       MailPoet.Modal.subpanel(panelParams);
     } else {

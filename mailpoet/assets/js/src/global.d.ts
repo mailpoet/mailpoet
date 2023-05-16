@@ -249,12 +249,18 @@ interface Window {
         callback: (node: HTMLElement) => void,
         deps: unknown[],
       ) => () => void;
+      useRef: <T>(initialValue: T) => { current: T };
+      useEffect: (callback: () => void, deps: unknown[]) => void;
     };
     blocks: {
       registerBlockType: (
         name: string,
         options: Record<string, unknown>,
       ) => void;
+    };
+    blockEditor: {
+      InspectorControls: (props: { children: React.ReactNode }) => JSX.Element;
+      useBlockProps: () => object;
     };
   };
   pagenow?: string;
