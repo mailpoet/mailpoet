@@ -53,27 +53,25 @@ Module.ImageBlockView = base.BlockView.extend({
       base.BlockView.prototype.templateContext.apply(this),
     );
   },
-  behaviors: isGutenbergEditor()
-    ? {}
-    : _.extend({}, base.BlockView.prototype.behaviors, {
-        ResizableBehavior: {
-          elementSelector: '.mailpoet_image',
-          resizeHandleSelector: '.mailpoet_image_resize_handle',
-          onResize: function (event) {
-            var alignment = this.view.model.get('styles.block.textAlign');
-            var corner = this.$('.mailpoet_image').offset();
-            var currentWidth = this.$('.mailpoet_image').width();
-            var newWidth = event.pageX - corner.left;
-            if (alignment === 'right') {
-              newWidth = currentWidth + corner.left - event.pageX;
-            }
-            this.view.model.set('width', newWidth + 'px');
-          },
-        },
-        ShowSettingsBehavior: {
-          ignoreFrom: '.mailpoet_image_resize_handle',
-        },
-      }),
+  behaviors: _.extend({}, base.BlockView.prototype.behaviors, {
+    ResizableBehavior: {
+      elementSelector: '.mailpoet_image',
+      resizeHandleSelector: '.mailpoet_image_resize_handle',
+      onResize: function (event) {
+        var alignment = this.view.model.get('styles.block.textAlign');
+        var corner = this.$('.mailpoet_image').offset();
+        var currentWidth = this.$('.mailpoet_image').width();
+        var newWidth = event.pageX - corner.left;
+        if (alignment === 'right') {
+          newWidth = currentWidth + corner.left - event.pageX;
+        }
+        this.view.model.set('width', newWidth + 'px');
+      },
+    },
+    ShowSettingsBehavior: {
+      ignoreFrom: '.mailpoet_image_resize_handle',
+    },
+  }),
   onRender: function () {
     var that = this;
     if (isGutenbergEditor()) {

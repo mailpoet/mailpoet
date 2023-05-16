@@ -98,6 +98,9 @@ Module.BlockView = AugmentedView.extend({
     this.hideTools();
   },
   showSettings: function showSettings(options) {
+    if (!this.toolsView) {
+      return;
+    }
     this.toolsView.triggerMethod('showSettings', options);
   },
   /**
