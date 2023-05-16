@@ -27,7 +27,6 @@ export function Edit() {
       try {
         const imageSettings = new ImageBlock.ImageBlockSettingsView({
           el,
-          behaviors: {},
           model: model.current,
           renderOptions: {
             displayFormat: 'element',
