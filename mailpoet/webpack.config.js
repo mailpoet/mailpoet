@@ -431,6 +431,14 @@ const marketingOptinBlock = Object.assign({}, wpScriptConfig, {
   ],
 });
 
+const hybridEditor = {
+  name: 'hybrid_editor',
+  entry: {
+    hybrid_editor: 'newsletter_editor/hybrid_editor/index.ts',
+  },
+  plugins: [...baseConfig.plugins, new DependencyExtractionWebpackPlugin()],
+};
+
 const configs = [
   publicConfig,
   adminConfig,
@@ -438,6 +446,7 @@ const configs = [
   testConfig,
   postEditorBlock,
   marketingOptinBlock,
+  hybridEditor,
 ];
 
 module.exports = configs.map((conf) => {

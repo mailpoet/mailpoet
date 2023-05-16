@@ -71,6 +71,7 @@ function add_sample_ported_block_scripts($hook) {
   }
 
   wp_enqueue_script('mailpoet_newsletter_editor', plugin_dir_url(__FILE__) . 'assets/dist/js/newsletter_editor.js', []);
+  wp_enqueue_script('mailpoet_hybrid_editor', plugin_dir_url(__FILE__) . 'assets/dist/js/hybrid_editor.js', ['lodash', 'wp-blocks', 'wp-components', 'wp-element', 'wp-i18n', 'wp-block-editor']);
 }
 
 add_action('admin_enqueue_scripts', 'add_sample_ported_block_scripts');
