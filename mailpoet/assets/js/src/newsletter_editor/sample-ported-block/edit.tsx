@@ -52,7 +52,7 @@ export function Edit() {
           <div ref={elemSettings} />
         </div>
       </InspectorControls>
-      <div ref={elemRef} />
+      <div className="mailpoet_block mailpoet_image_block" ref={elemRef} />
     </div>
   );
 }
