@@ -152,7 +152,7 @@ Module.BlockView = AugmentedView.extend({
 
 Module.BlockToolsView = AugmentedView.extend({
   getTemplate: function getTemplate() {
-    return '<div>window.templates.genericBlockTools</div>';
+    return window.templates.genericBlockTools;
   },
   events: {
     'click .mailpoet_edit_block': 'toggleSettings',

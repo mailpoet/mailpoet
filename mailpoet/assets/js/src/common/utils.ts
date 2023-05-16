@@ -5,3 +5,6 @@ export const isTruthy = (value: string | number | boolean) =>
 export const stopLinkPropagation = (event: React.MouseEvent) => {
   event.stopPropagation();
 };
+
+export const isGutenbergEditor = () =>
+  window.pagenow && window.pagenow === 'email';

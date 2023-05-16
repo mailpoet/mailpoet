@@ -257,4 +257,6 @@ interface Window {
       ) => void;
     };
   };
+  pagenow?: string;
+  config?: Record<string, unknown>;
 }

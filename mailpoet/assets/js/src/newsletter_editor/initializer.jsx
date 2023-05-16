@@ -5,7 +5,7 @@ import ReactDOM from 'react-dom';
 import { ListingHeadingSteps } from 'newsletters/listings/heading_steps';
 import { newsletterTypesWithActivation } from 'newsletters/listings/utils';
 import { fetchAutomaticEmailShortcodes } from 'newsletters/automatic_emails/fetch_editor_shortcodes.jsx';
-import { ErrorBoundary } from 'common';
+import { ErrorBoundary, isGutenbergEditor } from 'common';
 import { initTutorial } from './tutorial';
 
 const renderHeading = (newsletterType, newsletterOptions) => {
@@ -73,7 +73,8 @@ const initializeEditor = (config) => {
   const getUrlParam = (param) =>
     (document.location.search.split(`${param}=`)[1] || '').split('&')[0];
 
-  if (!editorContainer || !window.EditorApplication) return;
+  if (!editorContainer || !window.EditorApplication || isGutenbergEditor())
+    return;
 
   MailPoet.Modal.loading(true);
 

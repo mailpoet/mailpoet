@@ -1,4 +1,6 @@
-<?php // phpcs:ignore SlevomatCodingStandard.TypeHints.DeclareStrictTypes.DeclareStrictTypesMissing
+<?php declare(strict_types = 1);
+
+use MailPoet\AdminPages\PageRenderer;
 
 /**
  * Registers the `email` post type.
@@ -69,13 +71,16 @@ function add_sample_ported_block_scripts($hook) {
   }
 
   wp_enqueue_script('mailpoet_newsletter_editor', plugin_dir_url(__FILE__) . 'assets/dist/js/newsletter_editor.js', []);
-  wp_enqueue_script('mailpoet_commons', plugin_dir_url(__FILE__) . 'assets/dist/js/commons.js', []);
-  wp_enqueue_script('mailpoet_runtime', plugin_dir_url(__FILE__) . 'assets/dist/js/runtime.js', []);
-  wp_enqueue_script('mailpoet_vendor', plugin_dir_url(__FILE__) . 'assets/dist/js/vendor.js', []);
-  wp_enqueue_script('mailpoet_mailpoet', plugin_dir_url(__FILE__) . 'assets/dist/js/mailpoet.js', []);
-  wp_enqueue_script('mailpoet_admin_vendor', plugin_dir_url(__FILE__) . 'assets/dist/js/admin_vendor.js', []);
-  wp_enqueue_script('mailpoet_analytics', plugin_dir_url(__FILE__) . 'assets/dist/js/settings.js', []);
-  wp_enqueue_script('mailpoet_admin', plugin_dir_url(__FILE__) . 'assets/dist/js/admin.js', []);
 }
 
 add_action('admin_enqueue_scripts', 'add_sample_ported_block_scripts');
+
+add_action('admin_footer', function (){
+  global $post_type;
+  if ('email' != $post_type) {
+    return;
+  }
+
+  $pageRenderer = \MailPoet\DI\ContainerWrapper::getInstance()->get(PageRenderer::class);
+  $pageRenderer->displayPage('newsletter/editor.html');
+});
