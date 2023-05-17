@@ -10,6 +10,7 @@ use MailPoet\Cron\Workers\Scheduler;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterSegmentEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
@@ -17,7 +18,6 @@ use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\ScheduledTask;
-use MailPoet\Models\ScheduledTaskSubscriber;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Scheduler\Scheduler as NewsletterScheduler;
 use MailPoet\Newsletter\Scheduler\WelcomeScheduler;
@@ -515,7 +515,7 @@ class SchedulerTest extends \MailPoetTest {
     $this->assertInstanceOf(SendingQueueEntity::class, $sendingQueue);
     $scheduledTask = $this->scheduledTasksRepository->findOneBySendingQueue($sendingQueue);
     $this->assertInstanceOf(ScheduledTaskEntity::class, $scheduledTask);
-    $updatedSubscribers = $scheduledTask->getSubscribersByProcessed(ScheduledTaskSubscriber::STATUS_UNPROCESSED);
+    $updatedSubscribers = $scheduledTask->getSubscribersByProcessed(ScheduledTaskSubscriberEntity::STATUS_UNPROCESSED);
     $updatedSubscribersIds = array_map(function(SubscriberEntity $subscriber): int {
       return (int)$subscriber->getId();
     }, $updatedSubscribers);
@@ -602,7 +602,7 @@ class SchedulerTest extends \MailPoetTest {
     $this->assertInstanceOf(SendingQueueEntity::class, $sendingQueue);
     $scheduledTask = $this->scheduledTasksRepository->findOneBySendingQueue($sendingQueue);
     $this->assertInstanceOf(ScheduledTaskEntity::class, $scheduledTask);
-    $updatedSubscribers = $scheduledTask->getSubscribersByProcessed(ScheduledTaskSubscriber::STATUS_UNPROCESSED);
+    $updatedSubscribers = $scheduledTask->getSubscribersByProcessed(ScheduledTaskSubscriberEntity::STATUS_UNPROCESSED);
     $updatedSubscribersIds = array_map(function(SubscriberEntity $subscriber): int {
       return (int)$subscriber->getId();
     }, $updatedSubscribers);
