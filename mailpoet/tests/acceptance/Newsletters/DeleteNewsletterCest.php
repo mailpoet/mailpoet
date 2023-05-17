@@ -103,18 +103,18 @@ class DeleteNewsletterCest {
     $i->waitForText($newsletterName);
     // click to select all newsletters
     $i->click('[data-automation-id="select_all"]');
-    $i->waitForText('All emails on this page are selected.');
-    $i->click('Select all emails on all pages');
-    $i->waitForText('All 22 emails are selected.');
+    $i->waitForText('All items on this page are selected.');
+    $i->click('Select all items on all pages');
+    $i->waitForText('All 22 items are selected.');
     $i->click('Move to trash');
     $i->waitForText('22 emails were moved to the trash.');
     $i->changeGroupInListingFilter('trash');
     $i->waitForText($newsletterName);
     // click to select all newsletters
     $i->click('[data-automation-id="select_all"]');
-    $i->waitForText('All emails on this page are selected.');
-    $i->click('Select all emails on all pages');
-    $i->waitForText('All 22 emails are selected.');
+    $i->waitForText('All items on this page are selected.');
+    $i->click('Select all items on all pages');
+    $i->waitForText('All 22 items are selected.');
     $i->click('Delete permanently');
     $i->waitForText('22 emails were permanently deleted.');
   }
