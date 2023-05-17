@@ -18,6 +18,7 @@ Module.CouponBlockModel = base.BlockModel.extend({
     // eslint-disable-next-line no-underscore-dangle
     return this._getDefaults(
       {
+        isStandardEmail: App.getNewsletter().isStandardEmail(),
         productIds: [], // selected product ids,
         excludedProductIds: [],
         productCategoryIds: [], // selected categories id
