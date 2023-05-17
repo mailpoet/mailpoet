@@ -8,7 +8,6 @@ use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterSegmentEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SegmentEntity;
-use MailPoet\InvalidStateException;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\ScheduledTask;
@@ -119,7 +118,7 @@ class Scheduler {
       } elseif ($newsletter->type === NewsletterEntity::TYPE_WELCOME) {
         $this->processWelcomeNewsletter($newsletterEntity, $queue);
       } elseif ($newsletter->type === NewsletterEntity::TYPE_NOTIFICATION) {
-        $this->processPostNotificationNewsletter($newsletter, $queue);
+        $this->processPostNotificationNewsletter($newsletterEntity, $queue);
       } elseif ($newsletter->type === NewsletterEntity::TYPE_STANDARD) {
         $this->processScheduledStandardNewsletter($newsletterEntity, $queue);
       } elseif ($newsletter->type === NewsletterEntity::TYPE_AUTOMATIC) {
@@ -160,28 +159,18 @@ class Scheduler {
     return true;
   }
 
-  public function processPostNotificationNewsletter($newsletter, SendingTask $queue) {
-    if ($newsletter instanceof NewsletterEntity) {
-      $newsletter = Newsletter::filter('filterWithOptions', $newsletter->getType())->findOne($newsletter->getId());
-    }
-
+  public function processPostNotificationNewsletter(NewsletterEntity $newsletter, SendingTask $queue) {
     $this->loggerFactory->getLogger(LoggerFactory::TOPIC_POST_NOTIFICATIONS)->info(
       'process post notification in scheduler',
-      ['newsletter_id' => $newsletter->id, 'task_id' => $queue->taskId]
+      ['newsletter_id' => $newsletter->getId(), 'task_id' => $queue->taskId]
     );
 
-    $newsletterEntity = $this->newslettersRepository->findOneById($newsletter->id);
-
-    if (!$newsletterEntity instanceof NewsletterEntity) {
-      throw new InvalidStateException();
-    }
-
     // ensure that segments exist
-    $segments = $newsletterEntity->getSegmentIds();
+    $segments = $newsletter->getSegmentIds();
     if (empty($segments)) {
       $this->loggerFactory->getLogger(LoggerFactory::TOPIC_POST_NOTIFICATIONS)->info(
         'post notification no segments',
-        ['newsletter_id' => $newsletter->id, 'task_id' => $queue->taskId]
+        ['newsletter_id' => $newsletter->getId(), 'task_id' => $queue->taskId]
       );
       return $this->deleteQueueOrUpdateNextRunDate($queue, $newsletter);
     }
@@ -196,18 +185,18 @@ class Scheduler {
     if (empty($subscribersCount)) {
       $this->loggerFactory->getLogger(LoggerFactory::TOPIC_POST_NOTIFICATIONS)->info(
         'post notification no subscribers',
-        ['newsletter_id' => $newsletter->id, 'task_id' => $queue->taskId, 'segment_ids' => $segments]
+        ['newsletter_id' => $newsletter->getId(), 'task_id' => $queue->taskId, 'segment_ids' => $segments]
       );
       return $this->deleteQueueOrUpdateNextRunDate($queue, $newsletter);
     }
 
     // create a duplicate newsletter that acts as a history record
     try {
-      $notificationHistory = $this->createPostNotificationHistory($newsletterEntity);
+      $notificationHistory = $this->createPostNotificationHistory($newsletter);
     } catch (\Exception $exception) {
       $this->loggerFactory->getLogger(LoggerFactory::TOPIC_POST_NOTIFICATIONS)->error(
         'creating post notification history failed',
-        ['newsletter_id' => $newsletter->id, 'task_id' => $queue->taskId, 'error' => $exception->getMessage()]
+        ['newsletter_id' => $newsletter->getId(), 'task_id' => $queue->taskId, 'error' => $exception->getMessage()]
       );
       return false;
     }
@@ -225,7 +214,7 @@ class Scheduler {
 
     $this->loggerFactory->getLogger(LoggerFactory::TOPIC_POST_NOTIFICATIONS)->info(
       'post notification set status to sending',
-      ['newsletter_id' => $newsletter->id, 'task_id' => $queue->taskId]
+      ['newsletter_id' => $newsletter->getId(), 'task_id' => $queue->taskId]
     );
     return true;
   }
