@@ -40,6 +40,11 @@ function Settings({
             if (value === SettingsTabs.createNew) {
               setValueCallback('code', codePlaceholder);
               setValueCallback('couponId', null);
+              // Make visible the coupon overlay when creating a new coupon
+              jQuery('.mailpoet_editor_coupon_overlay').css(
+                'visibility',
+                'visible',
+              );
             } else if (value === SettingsTabs.allCoupons) {
               const existingCoupon = availableCoupons.find(
                 (coupon) => coupon.id === getValueCallback('couponId'),
@@ -47,6 +52,11 @@ function Settings({
               if (existingCoupon) {
                 setValueCallback('code', existingCoupon.text);
               }
+              // Hide the coupon overlay when a specific coupon is selected
+              jQuery('.mailpoet_editor_coupon_overlay').css(
+                'visibility',
+                'hidden',
+              );
             }
           }}
         />
