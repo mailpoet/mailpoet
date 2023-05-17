@@ -24,7 +24,7 @@ class ListingItems extends Component {
               this.props.group,
               this.props.search,
             )) ||
-          __('No emails found.', 'mailpoet');
+          __('No items found.', 'mailpoet');
       }
 
       return (
@@ -81,8 +81,8 @@ class ListingItems extends Component {
               </div>
               <div className={selectAllClasses}>
                 {this.props.selection !== 'all'
-                  ? __('All emails on this page are selected.', 'mailpoet')
-                  : __('All %d emails are selected.', 'mailpoet').replace(
+                  ? __('All items on this page are selected.', 'mailpoet')
+                  : __('All %d items are selected.', 'mailpoet').replace(
                       '%d',
                       this.props.count.toLocaleString(),
                     )}
@@ -95,7 +95,7 @@ class ListingItems extends Component {
                   }}
                 >
                   {this.props.selection !== 'all'
-                    ? __('Select all emails on all pages', 'mailpoet')
+                    ? __('Select all items on all pages', 'mailpoet')
                     : __('Clear selection', 'mailpoet')}
                 </a>
                 .
