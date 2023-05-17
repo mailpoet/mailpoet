@@ -8,6 +8,7 @@ use MailPoet\Cron\CronHelper;
 use MailPoet\Cron\CronWorkerScheduler;
 use MailPoet\Cron\Workers\Scheduler;
 use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\NewsletterSegmentEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SendingQueueEntity;
@@ -15,7 +16,6 @@ use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Models\Newsletter;
-use MailPoet\Models\NewsletterSegment;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\ScheduledTaskSubscriber;
 use MailPoet\Newsletter\NewslettersRepository;
@@ -497,7 +497,7 @@ class SchedulerTest extends \MailPoetTest {
     $segment = $this->_createSegment();
     $this->_createSubscriberSegment($subscriber->getId(), $segment->getId());
     $newsletter = $this->_createNewsletter();
-    $newsletterSegment = $this->_createNewsletterSegment($newsletter->id, $segment->getId());
+    $this->_createNewsletterSegment($newsletter->id, $segment->getId());
     $newsletterEntity = $this->entityManager->getReference(NewsletterEntity::class, $newsletter->id);
     $this->assertInstanceOf(NewsletterEntity::class, $newsletterEntity);
     $this->assertIsInt($segment->getId());
@@ -548,7 +548,7 @@ class SchedulerTest extends \MailPoetTest {
     $newsletter = $this->_createNewsletter();
     $queue = $this->_createQueue($newsletter->id);
     $segment = $this->_createSegment();
-    $newsletterSegment = $this->_createNewsletterSegment($newsletter->id, $segment->getId());
+    $this->_createNewsletterSegment($newsletter->id, $segment->getId());
 
     // delete or reschedule queue when there are no subscribers in segments
     $scheduler = $this->construct(
@@ -577,7 +577,7 @@ class SchedulerTest extends \MailPoetTest {
     $newsletter = $this->_createNewsletter();
     $queue = $this->_createQueue($newsletter->id);
     $segment = $this->_createSegment();
-    $newsletterSegment = $this->_createNewsletterSegment($newsletter->id, $segment->getId());
+    $this->_createNewsletterSegment($newsletter->id, $segment->getId());
     $subscriber = $this->_createSubscriber();
     $this->_createSubscriberSegment($subscriber->getId(), $segment->getId());
     $newsletterEntity = $this->entityManager->getReference(NewsletterEntity::class, $newsletter->id);
@@ -939,11 +939,17 @@ class SchedulerTest extends \MailPoetTest {
   }
 
   public function _createNewsletterSegment($newsletterId, $segmentId) {
-    $newsletterSegment = NewsletterSegment::create();
-    $newsletterSegment->newsletterId = $newsletterId;
-    $newsletterSegment->segmentId = $segmentId;
-    $newsletterSegment->save();
-    expect($newsletterSegment->getErrors())->false();
+    $newsletter = $this->entityManager->getReference(NewsletterEntity::class, $newsletterId);
+    $segment = $this->entityManager->getReference(SegmentEntity::class, $segmentId);
+
+    $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
+    $this->assertInstanceOf(SegmentEntity::class, $segment);
+
+    $newsletterSegment = new NewsletterSegmentEntity($newsletter, $segment);
+
+    $this->newsletterSegmentRepository->persist($newsletterSegment);
+    $this->newsletterSegmentRepository->flush();
+
     return $newsletterSegment;
   }
 
