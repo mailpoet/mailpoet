@@ -18,7 +18,6 @@ class SubscribersExport {
   public function render() {
     $export = new ImportExportFactory(ImportExportFactory::EXPORT_ACTION);
     $data = $export->bootstrap();
-    $data['sub_menu'] = 'mailpoet-subscribers';
     $this->pageRenderer->displayPage('subscribers/importExport/export.html', $data);
   }
 }

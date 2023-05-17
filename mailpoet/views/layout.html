@@ -1,15 +1,3 @@
-<% if sub_menu %>
-<script type="text/javascript">
-jQuery('#adminmenu #toplevel_page_mailpoet-homepage')
-  .addClass('wp-has-current-submenu')
-  .removeClass('wp-not-current-submenu')
-  .find('a[href$="<%= sub_menu %>"]')
-  .addClass('current')
-  .parent()
-  .addClass('current');
-</script>
-<% endif %>
-
 <!-- pre connect to 3d party to speed up page loading -->
 <link rel="preconnect" href="https://beacon-v2.helpscout.net/">
 <link rel="dns-prefetch" href="https://beacon-v2.helpscout.net/">

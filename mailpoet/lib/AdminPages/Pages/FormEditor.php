@@ -254,7 +254,6 @@ class FormEditor {
       }, $dateTypes, array_keys($dateTypes)),
       'date_formats' => $this->dateBlock->getDateFormats(),
       'month_names' => $this->dateBlock->getMonthNames(),
-      'sub_menu' => 'mailpoet-forms',
       'custom_fields' => $this->customFieldsResponseBuilder->buildBatch($customFields),
       'editor_tutorial_seen' => $this->userFlags->get('form_editor_tutorial_seen'),
       'preview_page_url' => $this->getPreviewPageUrl(),
@@ -287,7 +286,6 @@ class FormEditor {
       }
     }
     $data = [
-      'sub_menu' => 'mailpoet-forms',
       'templates' => $templatesData,
     ];
     $this->pageRenderer->displayPage('form/template_selection.html', $data);

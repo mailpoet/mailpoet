@@ -3,7 +3,6 @@
 namespace MailPoet\AdminPages\Pages;
 
 use MailPoet\AdminPages\PageRenderer;
-use MailPoet\Config\Menu;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Form\AssetsController;
 use MailPoet\Form\Util\CustomFonts;
@@ -152,7 +151,6 @@ class NewsletterEditor {
       'settings' => $this->settings->getAll(),
       'editor_tutorial_seen' => $this->userFlags->get('editor_tutorial_seen'),
       'current_wp_user' => array_merge($subscriberData, $this->wp->wpGetCurrentUser()->to_array()),
-      'sub_menu' => Menu::EMAILS_PAGE_SLUG,
       'woocommerce' => $woocommerceData,
       'is_wc_transactional_email' => $newsletterId === $woocommerceTemplateId,
       'is_confirmation_email_template' => $newsletterId === $confirmationEmailTemplateId,

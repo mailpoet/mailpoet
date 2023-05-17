@@ -29,7 +29,6 @@ class SubscribersImport {
       'date_types' => $this->dateBlock->getDateTypes(),
       'date_formats' => $this->dateBlock->getDateFormats(),
       'month_names' => $this->dateBlock->getMonthNames(),
-      'sub_menu' => 'mailpoet-subscribers',
       'role_based_emails' => json_encode(Validator::ROLE_EMAILS),
     ]);
     $this->pageRenderer->displayPage('subscribers/importExport/import.html', $data);
