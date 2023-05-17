@@ -13,11 +13,8 @@ registerBlockType(metadata.name, {
   icon: 'format-image',
   category: 'design',
   attributes: {
-    message: {
-      type: 'string',
-      source: 'text',
-      selector: 'div',
-      default: 'This is the text',
+    legacyBlockData: {
+      type: 'object',
     },
   },
   edit: Edit,

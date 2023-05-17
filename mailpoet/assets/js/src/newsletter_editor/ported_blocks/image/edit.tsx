@@ -1,9 +1,16 @@
-import { useCallback, useRef } from '@wordpress/element';
+import { useCallback, useRef, useEffect } from '@wordpress/element';
 import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
 import { ImageBlock } from 'newsletter_editor/blocks/image';
 
-export function Edit() {
-  const model = useRef(new ImageBlock.ImageBlockModel());
+export function Edit({ setAttributes, attributes }) {
+  const model = useRef(
+    new ImageBlock.ImageBlockModel(attributes.legacyBlockData),
+  );
+  useEffect(() => {
+    model.current.listenTo(model.current, 'change', () => {
+      setAttributes({ legacyBlockData: model.current.attributes });
+    });
+  }, [model, setAttributes]);
 
   const elemRef = useCallback(
     (el) => {
