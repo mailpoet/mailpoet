@@ -3,6 +3,7 @@ import SuperModel from 'backbone.supermodel';
 import _ from 'underscore';
 import { MailPoet } from 'mailpoet';
 import { __ } from '@wordpress/i18n';
+import { NewsletterType } from '../../common/newsletter';
 
 var Module = {};
 
@@ -31,6 +32,9 @@ Module.NewsletterModel = SuperModel.extend({
   },
   isConfirmationEmailTemplate: function isConfirmationEmailTemplate() {
     return this.get('type') === 'confirmation_email';
+  },
+  isStandardEmail: function isStandardEmail() {
+    return this.get('type') === NewsletterType.Standard;
   },
 });
 
