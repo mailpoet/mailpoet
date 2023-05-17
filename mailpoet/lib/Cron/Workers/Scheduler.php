@@ -135,6 +135,10 @@ class Scheduler {
   }
 
   public function processWelcomeNewsletter($newsletter, $queue) {
+    if ($newsletter instanceof NewsletterEntity) {
+      $newsletter = Newsletter::filter('filterWithOptions', $newsletter->getType())->findOne($newsletter->getId());
+    }
+
     $subscribers = $queue->getSubscribers();
     if (empty($subscribers[0])) {
       $queue->delete();
@@ -160,6 +164,10 @@ class Scheduler {
   }
 
   public function processPostNotificationNewsletter($newsletter, SendingTask $queue) {
+    if ($newsletter instanceof NewsletterEntity) {
+      $newsletter = Newsletter::filter('filterWithOptions', $newsletter->getType())->findOne($newsletter->getId());
+    }
+
     $this->loggerFactory->getLogger(LoggerFactory::TOPIC_POST_NOTIFICATIONS)->info(
       'process post notification in scheduler',
       ['newsletter_id' => $newsletter->id, 'task_id' => $queue->taskId]
@@ -301,6 +309,10 @@ class Scheduler {
   }
 
   public function processScheduledStandardNewsletter($newsletter, SendingTask $task) {
+    if ($newsletter instanceof NewsletterEntity) {
+      $newsletter = Newsletter::filter('filterWithOptions', $newsletter->getType())->findOne($newsletter->getId());
+    }
+
     $newsletterEntity = $this->newslettersRepository->findOneById($newsletter->id);
 
     $taskEntity = null;
@@ -333,6 +345,10 @@ class Scheduler {
   }
 
   public function verifyMailpoetSubscriber($subscriberId, $newsletter, $queue) {
+    if ($newsletter instanceof NewsletterEntity) {
+      $newsletter = Newsletter::filter('filterWithOptions', $newsletter->getType())->findOne($newsletter->getId());
+    }
+
     $subscriber = Subscriber::findOne($subscriberId);
     // check if subscriber is in proper segment
     $subscriberInSegment =
@@ -348,6 +364,10 @@ class Scheduler {
   }
 
   public function verifyWPSubscriber($subscriberId, $newsletter, $queue) {
+    if ($newsletter instanceof NewsletterEntity) {
+      $newsletter = Newsletter::filter('filterWithOptions', $newsletter->getType())->findOne($newsletter->getId());
+    }
+
     // check if user has the proper role
     $subscriber = Subscriber::findOne($subscriberId);
     if (!$subscriber || $subscriber->isWPUser() === false) {
@@ -391,6 +411,10 @@ class Scheduler {
   }
 
   public function deleteQueueOrUpdateNextRunDate($queue, $newsletter) {
+    if ($newsletter instanceof NewsletterEntity) {
+      $newsletter = Newsletter::filter('filterWithOptions', $newsletter->getType())->findOne($newsletter->getId());
+    }
+
     if ($newsletter->intervalType === PostNotificationScheduler::INTERVAL_IMMEDIATELY) {
       $queue->delete();
       $this->updateScheduledTaskEntity($queue, true);
