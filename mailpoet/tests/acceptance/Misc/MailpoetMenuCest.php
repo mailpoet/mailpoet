@@ -19,6 +19,9 @@ class MailpoetMenuCest {
     $this->checkLists($i);
     $this->checkSettings($i);
     $this->checkHelp($i);
+    $this->checkWelcomeWizard($i);
+    $this->checkWooCommerceSetup($i);
+    $this->checkLandingPage($i);
   }
 
   private function checkHomepage(\AcceptanceTester $i) {
@@ -139,11 +142,33 @@ class MailpoetMenuCest {
     $this->assertSelectedMenuItem($i, 'Help');
   }
 
+  private function checkWelcomeWizard(\AcceptanceTester $i) {
+    $i->amOnAdminPage('admin.php?page=mailpoet-welcome-wizard');
+    $i->waitForElement('#mailpoet-wizard-container');
+    $this->assertSelectedMailPoetTopMenu($i);
+  }
+
+  private function checkWooCommerceSetup(\AcceptanceTester $i) {
+    $i->amOnAdminPage('admin.php?page=mailpoet-woocommerce-setup');
+    $i->waitForElement('#mailpoet-wizard-container');
+    $this->assertSelectedMailPoetTopMenu($i);
+  }
+
+  private function checkLandingPage(\AcceptanceTester $i) {
+    $i->amOnAdminPage('admin.php?page=mailpoet-landingpage');
+    $i->waitForElement('#mailpoet_landingpage_container');
+    $this->assertSelectedMailPoetTopMenu($i);
+  }
+
   private function clickMenuItem(\AcceptanceTester $i, string $label): void {
     $i->click($label, '#adminmenu .menu-top.toplevel_page_mailpoet-homepage');
   }
 
   private function assertSelectedMenuItem(\AcceptanceTester $i, string $label): void {
     $i->seeElement(Locator::contains('#toplevel_page_mailpoet-homepage.wp-has-current-submenu > .wp-submenu > .current', $label));
+  }
+
+  private function assertSelectedMailPoetTopMenu(\AcceptanceTester $i): void {
+    $i->seeElement(Locator::contains('#adminmenu .menu-top.current', 'MailPoet'));
   }
 }
