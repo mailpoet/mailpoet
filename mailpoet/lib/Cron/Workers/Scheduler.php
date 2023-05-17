@@ -117,7 +117,7 @@ class Scheduler {
       } elseif ($newsletter->status !== NewsletterEntity::STATUS_ACTIVE && $newsletter->status !== NewsletterEntity::STATUS_SCHEDULED) {
         continue;
       } elseif ($newsletter->type === NewsletterEntity::TYPE_WELCOME) {
-        $this->processWelcomeNewsletter($newsletter, $queue);
+        $this->processWelcomeNewsletter($newsletterEntity, $queue);
       } elseif ($newsletter->type === NewsletterEntity::TYPE_NOTIFICATION) {
         $this->processPostNotificationNewsletter($newsletter, $queue);
       } elseif ($newsletter->type === NewsletterEntity::TYPE_STANDARD) {
@@ -135,11 +135,7 @@ class Scheduler {
     }
   }
 
-  public function processWelcomeNewsletter($newsletter, $queue) {
-    if ($newsletter instanceof NewsletterEntity) {
-      $newsletter = Newsletter::filter('filterWithOptions', $newsletter->getType())->findOne($newsletter->getId());
-    }
-
+  public function processWelcomeNewsletter(NewsletterEntity $newsletter, $queue) {
     $subscribers = $queue->getSubscribers();
     if (empty($subscribers[0])) {
       $queue->delete();
@@ -147,12 +143,12 @@ class Scheduler {
       return false;
     }
     $subscriberId = (int)$subscribers[0];
-    if ($newsletter->event === 'segment') {
+    if ($newsletter->getOptionValue('event') === 'segment') {
       if ($this->verifyMailpoetSubscriber($subscriberId, $newsletter, $queue) === false) {
         return false;
       }
     } else {
-      if ($newsletter->event === 'user') {
+      if ($newsletter->getOptionValue('event') === 'user') {
         if ($this->verifyWPSubscriber($subscriberId, $newsletter, $queue) === false) {
           return false;
         }
