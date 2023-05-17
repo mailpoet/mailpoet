@@ -14,7 +14,8 @@ const isWooCommerceCustomersSegment = (segment) =>
 const isSpecialSegment = (segmt) =>
   isWPUsersSegment(segmt) || isWooCommerceCustomersSegment(segmt);
 
-const mailpoetTrackingEnabled = MailPoet?.trackingConfig?.emailTrackingEnabled ?? false;
+const mailpoetTrackingEnabled =
+  MailPoet?.trackingConfig?.emailTrackingEnabled ?? false;
 
 const columns = [
   {
