@@ -631,6 +631,12 @@ class Menu {
   public function highlightNestedMailPoetSubmenus($parentFile) {
     global $plugin_page, $submenu;
 
+    $page = $this->getPageFromContext();
+    if ($page) {
+      $plugin_page = $page;
+      return $parentFile;
+    }
+
     if ($parentFile === self::MAIN_PAGE_SLUG || !self::isOnMailPoetAdminPage()) {
       return $parentFile;
     }
@@ -727,5 +733,13 @@ class Menu {
       && stripos(sanitize_text_field(wp_unslash($_SERVER['SCRIPT_NAME'])), 'plugins.php') !== false;
     $checker = $checker ?: $this->servicesChecker;
     $this->premiumKeyValid = $checker->isPremiumKeyValid($showNotices);
+  }
+
+  public function getPageFromContext(): ?string {
+    $context = isset($_GET['context']) ? sanitize_text_field(wp_unslash($_GET['context'])) : null;
+    if ($context === 'automation') {
+      return self::AUTOMATIONS_PAGE_SLUG;
+    }
+    return null;
   }
 }
