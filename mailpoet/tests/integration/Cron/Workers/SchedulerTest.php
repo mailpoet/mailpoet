@@ -17,7 +17,6 @@ use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Models\Newsletter;
-use MailPoet\Models\ScheduledTask;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Scheduler\Scheduler as NewsletterScheduler;
 use MailPoet\Newsletter\Scheduler\WelcomeScheduler;
@@ -31,6 +30,7 @@ use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
 use MailPoet\Test\DataFactories\NewsletterOption as NewsletterOptionFactory;
+use MailPoet\Test\DataFactories\ScheduledTask as ScheduledTaskFactory;
 use MailPoet\Test\DataFactories\Segment as SegmentFactory;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 use MailPoet\Util\Security;
@@ -85,6 +85,9 @@ class SchedulerTest extends \MailPoetTest {
   /** @var SegmentFactory */
   private $segmentFactory;
 
+  /** @var ScheduledTaskFactory */
+  private $scheduledTaskFactory;
+
   public function _before() {
     parent::_before();
     $this->loggerFactory = LoggerFactory::getInstance();
@@ -103,6 +106,7 @@ class SchedulerTest extends \MailPoetTest {
     $this->subscriberFactory = new SubscriberFactory();
     $this->subscribersRepository = $this->diContainer->get(SubscribersRepository::class);
     $this->segmentFactory = new SegmentFactory();
+    $this->scheduledTaskFactory = new ScheduledTaskFactory();
   }
 
   public function testItThrowsExceptionWhenExecutionLimitIsReached() {
@@ -445,7 +449,7 @@ class SchedulerTest extends \MailPoetTest {
     $this->assertInstanceOf(SendingQueueEntity::class, $sendingQueue);
     $scheduledTask = $this->scheduledTasksRepository->findOneBySendingQueue($sendingQueue);
     $this->assertInstanceOf(ScheduledTaskEntity::class, $scheduledTask);
-    $this->tester->assertEqualDateTimes($scheduledTask->getScheduledAt(), $currentTime->addMinutes(ScheduledTask::BASIC_RESCHEDULE_TIMEOUT), 1);
+    $this->tester->assertEqualDateTimes($scheduledTask->getScheduledAt(), $currentTime->addMinutes(ScheduledTaskEntity::BASIC_RESCHEDULE_TIMEOUT), 1);
   }
 
   public function testItDoesntRunQueueDeliveryWhenMailpoetSubscriberHasUnsubscribed() {
@@ -729,19 +733,20 @@ class SchedulerTest extends \MailPoetTest {
   }
 
   public function testItDoesNotReSchedulesBounceTaskWhenSoon() {
-    $task = ScheduledTask::createOrUpdate([
-      'type' => 'bounce',
-      'status' => ScheduledTask::STATUS_SCHEDULED,
-      'scheduled_at' => Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'))->addMinutes(5),
-    ]);
+    $task = $this->scheduledTaskFactory->create(
+      'bounce',
+      ScheduledTaskEntity::STATUS_SCHEDULED,
+      Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'))->addMinutes(5)
+    );
+
     $newsletter = $this->_createNewsletter(Newsletter::TYPE_STANDARD, Newsletter::STATUS_DRAFT);
     $queue = $this->_createQueue($newsletter->id);
     $scheduler = $this->getScheduler();
 
     $scheduler->processScheduledStandardNewsletter($newsletter, $queue);
-    $refetchedTask = ScheduledTask::where('id', $task->id)->findOne();
-    $this->assertInstanceOf(ScheduledTask::class, $refetchedTask);
-    expect($refetchedTask->scheduledAt)->lessThan(Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'))->addHours(1));
+    $refetchedTask = $this->scheduledTasksRepository->findOneById($task->getId());
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $refetchedTask);
+    expect($refetchedTask->getScheduledAt())->lessThan(Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'))->addHours(1));
   }
 
   /**
@@ -933,9 +938,9 @@ class SchedulerTest extends \MailPoetTest {
     $queue->save();
     $scheduler = $this->getScheduler();
     $scheduler->process();
-    $newQueue = ScheduledTask::findOne($queue->taskId);
-    $this->assertInstanceOf(ScheduledTask::class, $newQueue);
-    expect($newQueue->updatedAt)->notEquals($originalUpdated);
+    $newQueue = $this->scheduledTasksRepository->findOneById($queue->taskId);
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $newQueue);
+    expect($newQueue->getUpdatedAt())->notEquals($originalUpdated);
   }
 
   public function _createNewsletterSegment($newsletterId, $segmentId) {
