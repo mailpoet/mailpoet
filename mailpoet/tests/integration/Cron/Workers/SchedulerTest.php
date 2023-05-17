@@ -617,6 +617,7 @@ class SchedulerTest extends \MailPoetTest {
       'processWelcomeNewsletter' => Expected::exactly(1),
       'cronHelper' => $this->cronHelper,
       'scheduledTasksRepository' => $this->scheduledTasksRepository,
+      'newslettersRepository' => $this->newslettersRepository,
     ], $this);
     $scheduler->process();
   }
@@ -630,6 +631,7 @@ class SchedulerTest extends \MailPoetTest {
       'processPostNotificationNewsletter' => Expected::exactly(1),
       'cronHelper' => $this->cronHelper,
       'scheduledTasksRepository' => $this->scheduledTasksRepository,
+      'newslettersRepository' => $this->newslettersRepository,
     ], $this);
     $scheduler->process();
   }
@@ -643,6 +645,7 @@ class SchedulerTest extends \MailPoetTest {
       'processScheduledStandardNewsletter' => Expected::exactly(1),
       'cronHelper' => $this->cronHelper,
       'scheduledTasksRepository' => $this->scheduledTasksRepository,
+      'newslettersRepository' => $this->newslettersRepository,
     ], $this);
     $scheduler->process();
   }
@@ -658,6 +661,7 @@ class SchedulerTest extends \MailPoetTest {
         'enforceExecutionLimit' => Expected::exactly(2), // call at start + during processing
       ]),
       'scheduledTasksRepository' => $this->scheduledTasksRepository,
+      'newslettersRepository' => $this->newslettersRepository,
     ], $this);
     $scheduler->process();
   }
@@ -672,6 +676,7 @@ class SchedulerTest extends \MailPoetTest {
       'processScheduledStandardNewsletter' => Expected::never(),
       'cronHelper' => $this->cronHelper,
       'scheduledTasksRepository' => $this->scheduledTasksRepository,
+      'newslettersRepository' => $this->newslettersRepository,
     ], $this);
     // scheduled job is not processed
     $scheduler->process();
@@ -687,6 +692,7 @@ class SchedulerTest extends \MailPoetTest {
       'processScheduledStandardNewsletter' => Expected::once(),
       'cronHelper' => $this->cronHelper,
       'scheduledTasksRepository' => $this->scheduledTasksRepository,
+      'newslettersRepository' => $this->newslettersRepository,
     ], $this);
     // scheduled job is processed
     $scheduler->process();
@@ -751,6 +757,7 @@ class SchedulerTest extends \MailPoetTest {
       'processScheduledStandardNewsletter' => Expected::once(),
       'cronHelper' => $this->cronHelper,
       'scheduledTasksRepository' => $this->scheduledTasksRepository,
+      'newslettersRepository' => $this->newslettersRepository,
     ], $this);
     // scheduled job is processed
     $scheduler->process();
