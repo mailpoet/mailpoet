@@ -1,9 +1,9 @@
 import { registerBlockType } from '@wordpress/blocks';
 import { Edit } from './edit';
-import { supports, name } from './block.json';
+import metadata from './block.json';
 // import { Save } from './save';
 
-registerBlockType(name, {
+registerBlockType(metadata.name, {
   title: 'Text Ported Block',
   example: {
     attributes: {
@@ -20,7 +20,7 @@ registerBlockType(name, {
       default: 'This is the text',
     },
   },
-  supports,
+  supports: metadata.supports,
   edit: Edit,
   save: () => null,
 });

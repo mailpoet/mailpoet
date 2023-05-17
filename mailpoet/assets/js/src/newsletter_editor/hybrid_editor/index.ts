@@ -13,7 +13,7 @@ import 'newsletter_editor/behaviors/WooCommerceStylesBehavior.js'; // side effec
 
 // Register blocks
 import 'newsletter_editor/ported_blocks/image/index';
-import 'newsletter_editor/ported_blocks/text';
+import 'newsletter_editor/ported_blocks/text/index';
 
 // Force set config to APP
 import { App } from 'newsletter_editor/App';
