@@ -4,7 +4,7 @@ import { TextBlock } from 'newsletter_editor/blocks/text';
 
 export function Edit() {
   const model = useRef(new TextBlock.TextBlockModel());
-
+  console.log('Text rendering');
   const elemRef = useCallback(
     (el) => {
       try {

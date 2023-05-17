@@ -5,7 +5,6 @@ import { App } from 'newsletter_editor/App';
 import { BaseBlock } from 'newsletter_editor/blocks/base';
 import _ from 'underscore';
 import { __ } from '@wordpress/i18n';
-import { isGutenbergEditor } from '../../common';
 
 var Module = {};
 var base = BaseBlock;
@@ -39,9 +38,10 @@ Module.TextBlockView = base.BlockView.extend({
       invalidElements: 'script',
       blockFormats: 'Heading 1=h1;Heading 2=h2;Heading 3=h3;Paragraph=p',
       plugins: 'link lists code mailpoet_shortcodes',
-      configurationFilter: function configurationFilter(originalSettings) {
+      configurationFilter: (originalSettings) => {
+        console.log({ DD: App.getConfig().get('shortcodes') });
         return _.extend({}, originalSettings, {
-          mailpoet_shortcodes: App.getConfig().get('shortcodes').toJSON(),
+          mailpoet_shortcodes: App.getConfig().get('shortcodes')?.toJSON(),
           mailpoet_shortcodes_window_title: __(
             'Select a shortcode',
             'mailpoet',
@@ -63,10 +63,6 @@ Module.TextBlockView = base.BlockView.extend({
     return Module.TextWidgetView;
   },
   onRender: function onRender() {
-    if (isGutenbergEditor()) {
-      return;
-    }
-
     this.toolsView = new Module.TextBlockToolsView({
       model: this.model,
       tools: {

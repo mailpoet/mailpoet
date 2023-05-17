@@ -17,6 +17,7 @@ import 'tinymce/plugins/lists';
 import 'tinymce/models/dom';
 
 import './tinymce_icons';
+import { isGutenbergEditor } from '../../common';
 
 const configurationFilter = (originalConfig: RawEditorOptions) =>
   originalConfig;
@@ -36,15 +37,27 @@ BehaviorsLookup.TextEditorBehavior = Marionette.Behavior.extend({
   initialize: function initialize() {
     this.listenTo(App.getChannel(), 'dragStart', this.hideEditor);
     document.addEventListener('mailpoet:startEditor', () => {
-      this.onDomRefresh();
+      // this.onDomRefresh();
     });
   },
+
+  onRender: function onRender() {
+    if (isGutenbergEditor()) {
+      this.onDomRefresh();
+    }
+  },
+
+  onAttach: function onAttach() {
+    console.log('attach');
+  },
+
   hideEditor: function hideEditor() {
     if (this.tinymceEditor) {
       this.tinymceEditor.fire('blur');
     }
   },
   onDomRefresh: async function onDomRefresh() {
+    console.log('onDomRefresh');
     if (this.view.disableTextEditor === true) {
       return;
     }
@@ -90,12 +103,37 @@ BehaviorsLookup.TextEditorBehavior = Marionette.Behavior.extend({
             this.view.triggerMethod('text:editor:change', editor.getContent());
           });
 
+          editor.on('init', (e) => {
+            console.log('init', e);
+          });
+
           editor.on('click', (e) => {
+            const isInIframe = document.activeElement.nodeName === 'IFRAME';
+
+            console.log(
+              'click',
+              App.getDisplayedSettingsId(),
+              App.getChannel().trigger('hideSettings'),
+            );
             if (App.getDisplayedSettingsId()) {
               App.getChannel().trigger('hideSettings');
             }
             // if caret not in editor, place it there (triggers focus on editor)
-            if (document.activeElement !== editor.targetElm) {
+            console.log({
+              bookmark: editor.selection.getBookmark(),
+              activeElement: document.activeElement,
+              targetElm: editor.targetElm,
+            });
+            if (!isInIframe && document.activeElement !== editor.targetElm) {
+              editor.selection.placeCaretAt(e.clientX, e.clientY);
+            }
+
+            if (
+              isInIframe &&
+              (document.activeElement as HTMLIFrameElement).contentDocument
+                .activeElement !== editor.targetElm &&
+              !editor.selection.getBookmark()
+            ) {
               editor.selection.placeCaretAt(e.clientX, e.clientY);
             }
           });
