@@ -165,7 +165,8 @@ class MailpoetMenuCest {
   }
 
   private function assertSelectedMenuItem(\AcceptanceTester $i, string $label): void {
-    $i->seeElement(Locator::contains('#toplevel_page_mailpoet-homepage.wp-has-current-submenu > .wp-submenu > .current', $label));
+    $i->seeElement(Locator::contains('#adminmenu .menu-top.wp-has-current-submenu', 'MailPoet'));
+    $i->seeElement(Locator::contains('#adminmenu #toplevel_page_mailpoet-homepage.wp-has-current-submenu > .wp-submenu > .current', $label));
   }
 
   private function assertSelectedMailPoetTopMenu(\AcceptanceTester $i): void {
