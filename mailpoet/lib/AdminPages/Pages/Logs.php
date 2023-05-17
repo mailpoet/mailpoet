@@ -37,7 +37,6 @@ class Logs {
     }
     $logs = $this->logRepository->getLogs($dateFrom, $dateTo, $search, $offset, $limit);
     $data = [
-      'sub_menu' => 'mailpoet-settings',
       'logs' => [],
     ];
     foreach ($logs as $log) {

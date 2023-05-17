@@ -107,6 +107,8 @@ class Menu {
         'setup',
       ]
     );
+
+    $this->wp->addFilter('parent_file', [$this, 'highlightNestedMailPoetSubmenus']);
   }
 
   public function setup() {
@@ -252,7 +254,7 @@ class Menu {
 
     // newsletter editor
     $this->wp->addSubmenuPage(
-      true,
+      self::EMAILS_PAGE_SLUG,
       $this->setPageTitle(__('Newsletter', 'mailpoet')),
       esc_html__('Newsletter Editor', 'mailpoet'),
       AccessControl::PERMISSION_MANAGE_EMAILS,
@@ -292,7 +294,7 @@ class Menu {
 
     // form editor
     $formEditorPage = $this->wp->addSubmenuPage(
-      true,
+      self::FORMS_PAGE_SLUG,
       $this->setPageTitle(__('Form Editor', 'mailpoet')),
       esc_html__('Form Editor', 'mailpoet'),
       AccessControl::PERMISSION_MANAGE_FORMS,
@@ -312,7 +314,7 @@ class Menu {
 
     // form editor templates
     $formTemplateSelectionEditorPage = $this->wp->addSubmenuPage(
-      true,
+      self::FORMS_PAGE_SLUG,
       $this->setPageTitle(__('Select Form Template', 'mailpoet')),
       esc_html__('Select Form Template', 'mailpoet'),
       AccessControl::PERMISSION_MANAGE_FORMS,
@@ -462,7 +464,7 @@ class Menu {
 
     // Experimental page
     $this->wp->addSubmenuPage(
-      true,
+      self::SETTINGS_PAGE_SLUG,
       $this->setPageTitle(__('Experimental Features', 'mailpoet')),
       '',
       AccessControl::PERMISSION_MANAGE_FEATURES,
@@ -472,7 +474,7 @@ class Menu {
 
     // display logs page
     $this->wp->addSubmenuPage(
-      true,
+      self::SETTINGS_PAGE_SLUG,
       $this->setPageTitle(__('Logs', 'mailpoet')),
       '',
       AccessControl::PERMISSION_ACCESS_PLUGIN_ADMIN,
@@ -500,7 +502,7 @@ class Menu {
 
     // Automation editor
     $automationEditorPage = $this->wp->addSubmenuPage(
-      true,
+      self::AUTOMATIONS_PAGE_SLUG,
       $this->setPageTitle(__('Automation Editor', 'mailpoet')),
       esc_html__('Automation Editor', 'mailpoet'),
       AccessControl::PERMISSION_MANAGE_AUTOMATIONS,
@@ -511,7 +513,7 @@ class Menu {
     // Automation templates
 
     $this->wp->addSubmenuPage(
-      true,
+      self::AUTOMATIONS_PAGE_SLUG,
       $this->setPageTitle(__('Automation Templates', 'mailpoet')),
       esc_html__('Automation Templates', 'mailpoet'),
       AccessControl::PERMISSION_MANAGE_AUTOMATIONS,
@@ -627,6 +629,31 @@ class Menu {
       __('MailPoet', 'mailpoet'),
       $title
     );
+  }
+
+  public function highlightNestedMailPoetSubmenus($parentFile) {
+    global $plugin_page, $submenu;
+
+    if ($parentFile === self::MAIN_PAGE_SLUG || !self::isOnMailPoetAdminPage()) {
+      return $parentFile;
+    }
+
+    // find slug of the current submenu item
+    $parentSlug = null;
+    foreach ($submenu as $groupSlug => $group) {
+      foreach ($group as $item) {
+        if (($item[2] ?? null) === $plugin_page) {
+          $parentSlug = $groupSlug;
+          break 2;
+        }
+      }
+    }
+
+    // highlight parent submenu item
+    if ($parentSlug) {
+      $plugin_page = $parentSlug;
+    }
+    return $parentFile;
   }
 
   public static function isOnMailPoetAutomationPage(): bool {
