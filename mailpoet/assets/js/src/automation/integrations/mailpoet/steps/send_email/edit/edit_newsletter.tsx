@@ -78,7 +78,7 @@ export function EditNewsletter(): JSX.Element {
   // and the automation is saved, we can safely redirect to the email design flow.
   useEffect(() => {
     if (redirectToTemplateSelection && emailId && automationSaved) {
-      window.location.href = `admin.php?page=mailpoet-newsletters#/template/${emailId}`;
+      window.location.href = `admin.php?page=mailpoet-newsletters&context=automation#/template/${emailId}`;
     }
   }, [emailId, automationSaved, redirectToTemplateSelection]);
 

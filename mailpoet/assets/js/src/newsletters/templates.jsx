@@ -13,8 +13,11 @@ import { TemplateBox } from 'newsletters/templates/template_box.jsx';
 import { ImportTemplate } from 'newsletters/templates/import_template.jsx';
 import { ErrorBoundary } from '../common';
 
-const getEditorUrl = (id) =>
-  `admin.php?page=mailpoet-newsletter-editor&id=${id}`;
+const getEditorUrl = (id) => {
+  const context = new URLSearchParams(window.location.search).get('context');
+  const url = `admin.php?page=mailpoet-newsletter-editor&id=${id}`;
+  return context ? `${url}&context=${context}` : url;
+};
 
 const templatesCategories = [];
 if (window.mailpoet_newsletters_templates_recently_sent_count) {

@@ -66,6 +66,18 @@ class MailpoetMenuCest {
     $i->waitForElement('#mailpoet_automation_editor');
     $i->seeInCurrentUrl('?page=mailpoet-automation-editor');
     $this->assertSelectedMenuItem($i, 'Automations');
+
+    // email templates
+    $i->click('Send email');
+    $i->waitForText('Design email');
+    $i->click('Design email');
+    $i->waitForElementClickable('[data-automation-id="select_template_0"]');
+    $this->assertSelectedMenuItem($i, 'Automations');
+
+    // email editor
+    $i->click('[data-automation-id="select_template_0"]');
+    $i->waitForElement('#mailpoet_editor');
+    $this->assertSelectedMenuItem($i, 'Automations');
   }
 
   private function checkForms(\AcceptanceTester $i) {
