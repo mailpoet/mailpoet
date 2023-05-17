@@ -186,7 +186,7 @@ class Menu {
 
     // Welcome wizard page
     $this->wp->addSubmenuPage(
-      true,
+      null,
       $this->setPageTitle(__('Welcome Wizard', 'mailpoet')),
       esc_html__('Welcome Wizard', 'mailpoet'),
       AccessControl::PERMISSION_ACCESS_PLUGIN_ADMIN,
@@ -199,7 +199,7 @@ class Menu {
 
     // Landingpage
     $this->wp->addSubmenuPage(
-      true,
+      null,
       $this->setPageTitle(__('MailPoet', 'mailpoet')),
       esc_html__('MailPoet', 'mailpoet'),
       AccessControl::PERMISSION_ACCESS_PLUGIN_ADMIN,
@@ -451,7 +451,7 @@ class Menu {
 
     // WooCommerce Setup
     $this->wp->addSubmenuPage(
-      true,
+      null,
       $this->setPageTitle(__('WooCommerce Setup', 'mailpoet')),
       esc_html__('WooCommerce Setup', 'mailpoet'),
       AccessControl::PERMISSION_ACCESS_PLUGIN_ADMIN,
@@ -649,9 +649,13 @@ class Menu {
       }
     }
 
-    // highlight parent submenu item
     if ($parentSlug) {
+      // highlight parent submenu item
       $plugin_page = $parentSlug;
+    } else {
+      // no parent, hide MailPoet submenu for setup, wizards, error pages, etc.
+      unset($submenu[self::MAIN_PAGE_SLUG]);
+      $plugin_page = self::MAIN_PAGE_SLUG;
     }
     return $parentFile;
   }
@@ -705,7 +709,7 @@ class Menu {
       return false;
     }
     WPFunctions::get()->addSubmenuPage(
-      true,
+      null,
       'MailPoet',
       'MailPoet',
       AccessControl::PERMISSION_ACCESS_PLUGIN_ADMIN,
