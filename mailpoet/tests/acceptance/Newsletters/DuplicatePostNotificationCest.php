@@ -13,6 +13,7 @@ class DuplicatePostNotificationCest {
     $newsletterFactory = new Newsletter();
     $newsletterFactory->withSubject($newsletterTitle)
       ->withPostNotificationsType()
+      ->withActiveStatus()
       ->create();
 
     // step 2 - Open list of post notifications
@@ -23,6 +24,8 @@ class DuplicatePostNotificationCest {
     // step 3 - Duplicate post notification
     $i->waitForText($newsletterTitle);
     $i->clickItemRowActionByItemName($newsletterTitle, 'Duplicate');
+    $i->waitForElementVisible('.notice-success');
+    $i->waitForText('Email "Copy of ' . $newsletterTitle . '" has been duplicated.', 20);
     $i->waitForText('Copy of ' . $newsletterTitle);
     $i->waitForListingItemsToLoad();
 
