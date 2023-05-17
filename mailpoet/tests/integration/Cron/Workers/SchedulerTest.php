@@ -9,8 +9,10 @@ use MailPoet\Cron\CronWorkerScheduler;
 use MailPoet\Cron\Workers\Scheduler;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterSegment;
@@ -19,7 +21,6 @@ use MailPoet\Models\ScheduledTaskSubscriber;
 use MailPoet\Models\Segment;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Subscriber;
-use MailPoet\Models\SubscriberSegment;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Scheduler\Scheduler as NewsletterScheduler;
 use MailPoet\Newsletter\Scheduler\WelcomeScheduler;
@@ -28,6 +29,7 @@ use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Segments\SubscribersFinder;
+use MailPoet\Subscribers\SubscriberSegmentRepository;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
 use MailPoet\Test\DataFactories\NewsletterOption as NewsletterOptionFactory;
@@ -72,6 +74,9 @@ class SchedulerTest extends \MailPoetTest {
   /** @var SendingQueuesRepository */
   private $sendingQueuesRepository;
 
+  /** @var SubscriberSegmentRepository */
+  private $subscriberSegmentRepository;
+
   public function _before() {
     parent::_before();
     $this->loggerFactory = LoggerFactory::getInstance();
@@ -86,6 +91,7 @@ class SchedulerTest extends \MailPoetTest {
     $this->newsletterSegmentRepository = $this->diContainer->get(NewsletterSegmentRepository::class);
     $this->security = $this->diContainer->get(Security::class);
     $this->sendingQueuesRepository = $this->diContainer->get(SendingQueuesRepository::class);
+    $this->subscriberSegmentRepository = $this->diContainer->get(SubscriberSegmentRepository::class);
   }
 
   public function testItThrowsExceptionWhenExecutionLimitIsReached() {
@@ -405,7 +411,7 @@ class SchedulerTest extends \MailPoetTest {
 
     $subscriber = $this->_createSubscriber($wpUserId = null, 'unconfirmed');
     $segment = $this->_createSegment();
-    $subscriberSegment = $this->_createSubscriberSegment($subscriber->id, $segment->id);
+    $this->_createSubscriberSegment($subscriber->id, $segment->id);
     $newsletter = $this->_createNewsletter();
 
     $newsletterEntity = $this->entityManager->getReference(NewsletterEntity::class, $newsletter->id);
@@ -434,7 +440,7 @@ class SchedulerTest extends \MailPoetTest {
     Carbon::setTestNow($currentTime); // mock carbon to return current time
     $subscriber = $this->_createSubscriber($wpUserId = null, 'unsubscribed');
     $segment = $this->_createSegment();
-    $subscriberSegment = $this->_createSubscriberSegment($subscriber->id, $segment->id);
+    $this->_createSubscriberSegment($subscriber->id, $segment->id);
     $newsletter = $this->_createNewsletter();
     $newsletterEntity = $this->entityManager->getReference(NewsletterEntity::class, $newsletter->id);
     $this->assertInstanceOf(NewsletterEntity::class, $newsletterEntity);
@@ -455,7 +461,7 @@ class SchedulerTest extends \MailPoetTest {
   public function testItCanVerifyMailpoetSubscriber() {
     $subscriber = $this->_createSubscriber();
     $segment = $this->_createSegment();
-    $subscriberSegment = $this->_createSubscriberSegment($subscriber->id, $segment->id);
+    $this->_createSubscriberSegment($subscriber->id, $segment->id);
     $newsletter = $this->_createNewsletter();
     $newsletterEntity = $this->entityManager->getReference(NewsletterEntity::class, $newsletter->id);
     $this->assertInstanceOf(NewsletterEntity::class, $newsletterEntity);
@@ -474,7 +480,7 @@ class SchedulerTest extends \MailPoetTest {
   public function testItProcessesScheduledStandardNewsletter() {
     $subscriber = $this->_createSubscriber();
     $segment = $this->_createSegment();
-    $subscriberSegment = $this->_createSubscriberSegment($subscriber->id, $segment->id);
+    $this->_createSubscriberSegment($subscriber->id, $segment->id);
     $newsletter = $this->_createNewsletter();
     $newsletterSegment = $this->_createNewsletterSegment($newsletter->id, $segment->id);
     $newsletterEntity = $this->entityManager->getReference(NewsletterEntity::class, $newsletter->id);
@@ -557,7 +563,7 @@ class SchedulerTest extends \MailPoetTest {
     $segment = $this->_createSegment();
     $newsletterSegment = $this->_createNewsletterSegment($newsletter->id, $segment->id);
     $subscriber = $this->_createSubscriber();
-    $subscriberSegment = $this->_createSubscriberSegment($subscriber->id, $segment->id);
+    $this->_createSubscriberSegment($subscriber->id, $segment->id);
     $newsletterEntity = $this->entityManager->getReference(NewsletterEntity::class, $newsletter->id);
     $this->assertInstanceOf(NewsletterEntity::class, $newsletterEntity);
     $this->newsletterOptionFactory->create($newsletterEntity, 'segment', $segment->id);
@@ -820,7 +826,7 @@ class SchedulerTest extends \MailPoetTest {
     $newsletter = $this->_createNewsletter(Newsletter::TYPE_AUTOMATIC, Newsletter::STATUS_SCHEDULED);
     $segment = $this->_createSegment();
     $subscriber = $this->_createSubscriber();
-    $segmentSubscriber = $this->_createSubscriberSegment($subscriber->id, $segment->id);
+    $this->_createSubscriberSegment($subscriber->id, $segment->id);
 
     $newsletterEntity = $this->entityManager->getReference(NewsletterEntity::class, $newsletter->id);
     $this->assertInstanceOf(NewsletterEntity::class, $newsletterEntity);
@@ -924,14 +930,14 @@ class SchedulerTest extends \MailPoetTest {
     return $newsletterSegment;
   }
 
-  public function _createSubscriberSegment($subscriberId, $segmentId, $status = 'subscribed') {
-    $subscriberSegment = SubscriberSegment::create();
-    $subscriberSegment->subscriberId = $subscriberId;
-    $subscriberSegment->segmentId = $segmentId;
-    $subscriberSegment->status = $status;
-    $subscriberSegment->save();
-    expect($subscriberSegment->getErrors())->false();
-    return $subscriberSegment;
+  public function _createSubscriberSegment($subscriberId, $segmentId, $status = 'subscribed'): SubscriberSegmentEntity {
+    $subscriber = $this->entityManager->getReference(SubscriberEntity::class, $subscriberId);
+    $segment = $this->entityManager->getReference(SegmentEntity::class, $segmentId);
+
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
+    $this->assertInstanceOf(SegmentEntity::class, $segment);
+
+    return $this->subscriberSegmentRepository->createOrUpdate($subscriber, $segment, $status);
   }
 
   public function _createSegment() {
