@@ -172,10 +172,18 @@ function Editor(): JSX.Element {
 window.addEventListener('DOMContentLoaded', () => {
   setLocaleData(window.wp.i18n.getLocaleData());
 
-  const dateSettings = window.wp as unknown as {
-    date: { getSettings: typeof getSettings };
-  };
-  setSettings(dateSettings.date.getSettings());
+  if (window.wp.date.getSettings !== undefined) {
+    const dateSettings = window.wp as unknown as {
+      date: { getSettings: typeof getSettings };
+    };
+    setSettings(dateSettings.date.getSettings());
+  } else {
+    const dateSettings = window.wp as unknown as {
+      /* eslint-disable no-underscore-dangle */
+      date: { __experimentalGetSettings: typeof getSettings };
+    };
+    setSettings(dateSettings.date.__experimentalGetSettings());
+  }
 
   createStore();
 

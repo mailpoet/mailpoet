@@ -4,6 +4,7 @@ declare global {
   interface Window {
     wp: {
       i18n: { getLocaleData: typeof getLocaleData };
+      date: Record<string, unknown>;
     };
   }
 }
