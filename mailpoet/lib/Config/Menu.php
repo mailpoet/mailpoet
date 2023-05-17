@@ -76,17 +76,13 @@ class Menu {
   /** @var CustomFonts  */
   private $customFonts;
 
-  /** @var Changelog */
-  private $changelog;
-
   public function __construct(
     AccessControl $accessControl,
     WPFunctions $wp,
     ServicesChecker $servicesChecker,
     ContainerWrapper $container,
     Router $router,
-    CustomFonts $customFonts,
-    Changelog $changelog
+    CustomFonts $customFonts
   ) {
     $this->accessControl = $accessControl;
     $this->wp = $wp;
@@ -94,7 +90,6 @@ class Menu {
     $this->container = $container;
     $this->router = $router;
     $this->customFonts = $customFonts;
-    $this->changelog = $changelog;
   }
 
   public function init() {
@@ -210,13 +205,13 @@ class Menu {
       ]
     );
 
-    $this->registerMailPoetSubMenuEntries(!$this->changelog->shouldShowWelcomeWizard());
+    $this->registerMailPoetSubMenuEntries();
   }
 
-  private function registerMailPoetSubMenuEntries(bool $showEntries) {
+  private function registerMailPoetSubMenuEntries() {
     // Homepage
     $this->wp->addSubmenuPage(
-      $showEntries ? self::MAIN_PAGE_SLUG : true,
+      self::MAIN_PAGE_SLUG,
       $this->setPageTitle(__('Home', 'mailpoet')),
       esc_html__('Home', 'mailpoet'),
       AccessControl::PERMISSION_ACCESS_PLUGIN_ADMIN,
@@ -229,7 +224,7 @@ class Menu {
 
     // Emails page
     $newslettersPage = $this->wp->addSubmenuPage(
-      $showEntries ? self::MAIN_PAGE_SLUG : true,
+      self::MAIN_PAGE_SLUG,
       $this->setPageTitle(__('Emails', 'mailpoet')),
       esc_html__('Emails', 'mailpoet'),
       AccessControl::PERMISSION_MANAGE_EMAILS,
@@ -265,11 +260,11 @@ class Menu {
       ]
     );
 
-    $this->registerAutomationMenu($showEntries);
+    $this->registerAutomationMenu();
 
     // Forms page
     $formsPage = $this->wp->addSubmenuPage(
-      $showEntries ? self::MAIN_PAGE_SLUG : true,
+      self::MAIN_PAGE_SLUG,
       $this->setPageTitle(__('Forms', 'mailpoet')),
       esc_html__('Forms', 'mailpoet'),
       AccessControl::PERMISSION_MANAGE_FORMS,
@@ -335,7 +330,7 @@ class Menu {
 
     // Subscribers page
     $subscribersPage = $this->wp->addSubmenuPage(
-      $showEntries ? self::MAIN_PAGE_SLUG : true,
+      self::MAIN_PAGE_SLUG,
       $this->setPageTitle(__('Subscribers', 'mailpoet')),
       esc_html__('Subscribers', 'mailpoet'),
       AccessControl::PERMISSION_MANAGE_SUBSCRIBERS,
@@ -386,7 +381,7 @@ class Menu {
 
     // Segments page
     $segmentsPage = $this->wp->addSubmenuPage(
-      $showEntries ? self::MAIN_PAGE_SLUG : true,
+      self::MAIN_PAGE_SLUG,
       $this->setPageTitle(__('Lists', 'mailpoet')),
       esc_html__('Lists', 'mailpoet'),
       AccessControl::PERMISSION_MANAGE_SEGMENTS,
@@ -411,7 +406,7 @@ class Menu {
 
     // Settings page
     $this->wp->addSubmenuPage(
-      $showEntries ? self::MAIN_PAGE_SLUG : true,
+      self::MAIN_PAGE_SLUG,
       $this->setPageTitle(__('Settings', 'mailpoet')),
       esc_html__('Settings', 'mailpoet'),
       AccessControl::PERMISSION_MANAGE_SETTINGS,
@@ -424,7 +419,7 @@ class Menu {
 
     // Help page
     $this->wp->addSubmenuPage(
-      $showEntries ? self::MAIN_PAGE_SLUG : true,
+      self::MAIN_PAGE_SLUG,
       $this->setPageTitle(__('Help', 'mailpoet')),
       esc_html__('Help', 'mailpoet'),
       AccessControl::PERMISSION_ACCESS_PLUGIN_ADMIN,
@@ -437,17 +432,19 @@ class Menu {
 
     // Upgrade page
     // Only show this page in menu if the Premium plugin is not activated
-    $this->wp->addSubmenuPage(
-      License::getLicense() || !$showEntries ? true : self::MAIN_PAGE_SLUG,
-      $this->setPageTitle(__('Upgrade', 'mailpoet')),
-      esc_html__('Upgrade', 'mailpoet'),
-      AccessControl::PERMISSION_ACCESS_PLUGIN_ADMIN,
-      self::UPGRADE_PAGE_SLUG,
-      [
-        $this,
-        'upgrade',
-      ]
-    );
+    if (!License::getLicense()) {
+      $this->wp->addSubmenuPage(
+        self::MAIN_PAGE_SLUG,
+        $this->setPageTitle(__('Upgrade', 'mailpoet')),
+        esc_html__('Upgrade', 'mailpoet'),
+        AccessControl::PERMISSION_ACCESS_PLUGIN_ADMIN,
+        self::UPGRADE_PAGE_SLUG,
+        [
+          $this,
+          'upgrade',
+        ]
+      );
+    }
 
     // WooCommerce Setup
     $this->wp->addSubmenuPage(
@@ -483,7 +480,7 @@ class Menu {
     );
   }
 
-  private function registerAutomationMenu(bool $showEntries) {
+  private function registerAutomationMenu() {
     $parentSlug = self::MAIN_PAGE_SLUG;
     // Automations menu is hidden when the subscription is part of a bundle and AutomateWoo is active but pages can be accessed directly
     if ($this->wp->isPluginActive('automatewoo/automatewoo.php') && $this->servicesChecker->isBundledSubscription()) {
@@ -491,7 +488,7 @@ class Menu {
     }
 
     $automationPage = $this->wp->addSubmenuPage(
-      $showEntries ? $parentSlug : true,
+      $parentSlug,
       $this->setPageTitle(__('Automations', 'mailpoet')),
       // @ToDo Remove Beta once Automation is no longer beta.
       '<span>' . esc_html__('Automations', 'mailpoet') . '</span><span class="mailpoet-beta-badge">Beta</span>',

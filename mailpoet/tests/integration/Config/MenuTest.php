@@ -4,7 +4,6 @@ namespace MailPoet\Test\Config;
 
 use Codeception\Util\Stub;
 use MailPoet\Config\AccessControl;
-use MailPoet\Config\Changelog;
 use MailPoet\Config\Menu;
 use MailPoet\Config\Router;
 use MailPoet\Config\ServicesChecker;
@@ -71,8 +70,6 @@ class MenuTest extends \MailPoetTest {
       ],
       $this
     );
-    $changelog = $this->createMock(Changelog::class);
-    $changelog->method('shouldShowWelcomeWizard')->willReturn(false);
 
     $wpMock = $this->createMock(WPFunctions::class);
     $wpMock->method('isPluginActive')->willReturn(true);
@@ -96,8 +93,7 @@ class MenuTest extends \MailPoetTest {
       $checker,
       $this->diContainer,
       $this->diContainer->get(Router::class),
-      $this->diContainer->get(CustomFonts::class),
-      $changelog
+      $this->diContainer->get(CustomFonts::class)
     );
 
     $menu->setup();
