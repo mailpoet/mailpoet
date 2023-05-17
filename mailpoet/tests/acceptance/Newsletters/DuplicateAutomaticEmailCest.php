@@ -13,12 +13,16 @@ class DuplicateAutomaticEmailCest {
     $i->activateWooCommerce();
     $emailSubject = 'Duplicate Automatic Email Test';
     $newsletterFactory = new Newsletter();
-    $newsletterFactory->withSubject($emailSubject)->withAutomaticTypeWooCommerceFirstPurchase()->create();
+    $newsletterFactory->withSubject($emailSubject)
+      ->withAutomaticTypeWooCommerceFirstPurchase()
+      ->withActiveStatus()
+      ->create();
     $i->login();
     $i->amOnMailpoetPage('Emails');
     $i->click('[data-automation-id="tab-WooCommerce"]');
     $i->waitForText($emailSubject);
     $i->clickItemRowActionByItemName($emailSubject, 'Duplicate');
+    $i->waitForElementVisible('.notice-success');
     $i->waitForText('Email "Copy of ' . $emailSubject . '" has been duplicated.', 20);
     $i->waitForListingItemsToLoad();
     $i->clickItemRowActionByItemName('Copy of ' . $emailSubject, 'Edit');
