@@ -11,7 +11,6 @@ use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Models\ScheduledTask;
-use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Scheduler\PostNotificationScheduler;
 use MailPoet\Newsletter\Scheduler\Scheduler as NewsletterScheduler;
@@ -21,6 +20,7 @@ use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Segments\SubscribersFinder;
 use MailPoet\Subscribers\SubscriberSegmentRepository;
+use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\Util\Security;
 use MailPoet\WP\Functions as WPFunctions;
@@ -66,6 +66,9 @@ class Scheduler {
   /** @var SubscriberSegmentRepository */
   private $subscriberSegmentRepository;
 
+  /** @var SubscribersRepository */
+  private $subscribersRepository;
+
   public function __construct(
     SubscribersFinder $subscribersFinder,
     LoggerFactory $loggerFactory,
@@ -78,7 +81,8 @@ class Scheduler {
     WPFunctions $wp,
     Security $security,
     NewsletterScheduler $scheduler,
-    SubscriberSegmentRepository $subscriberSegmentRepository
+    SubscriberSegmentRepository $subscriberSegmentRepository,
+    SubscribersRepository $subscribersRepository
   ) {
     $this->cronHelper = $cronHelper;
     $this->subscribersFinder = $subscribersFinder;
@@ -92,6 +96,7 @@ class Scheduler {
     $this->security = $security;
     $this->scheduler = $scheduler;
     $this->subscriberSegmentRepository = $subscriberSegmentRepository;
+    $this->subscribersRepository = $subscribersRepository;
   }
 
   public function process($timer = false) {
@@ -251,7 +256,7 @@ class Scheduler {
     } else {
       $subscribers = $queue->getSubscribers();
       $subscriber = (!empty($subscribers) && is_array($subscribers)) ?
-        Subscriber::findOne($subscribers[0]) :
+        $this->subscribersRepository->findOneById($subscribers[0]) :
         false;
       if (!$subscriber) {
         $queue->delete();
@@ -271,7 +276,7 @@ class Scheduler {
 
   public function processScheduledAutomationEmail($queue): bool {
     $subscribers = $queue->getSubscribers();
-    $subscriber = (!empty($subscribers) && is_array($subscribers)) ? Subscriber::findOne($subscribers[0]) : null;
+    $subscriber = (!empty($subscribers) && is_array($subscribers)) ? $this->subscribersRepository->findOneById($subscribers[0]) : null;
     if (!$subscriber) {
       $queue->delete();
       $this->updateScheduledTaskEntity($queue, true);
@@ -289,7 +294,7 @@ class Scheduler {
 
   public function processScheduledTransactionalEmail($queue): bool {
     $subscribers = $queue->getSubscribers();
-    $subscriber = (!empty($subscribers) && is_array($subscribers)) ? Subscriber::findOne($subscribers[0]) : null;
+    $subscriber = (!empty($subscribers) && is_array($subscribers)) ? $this->subscribersRepository->findOneById($subscribers[0]) : null;
     if (!$subscriber) {
       $queue->delete();
       $this->updateScheduledTaskEntity($queue, true);
@@ -336,7 +341,12 @@ class Scheduler {
   }
 
   public function verifyMailpoetSubscriber($subscriberId, NewsletterEntity $newsletter, $queue) {
-    $subscriber = Subscriber::findOne($subscriberId);
+    if (is_int($subscriberId)) {
+      $subscriber = $this->subscribersRepository->findOneById($subscriberId);
+    } else {
+      $subscriber = null;
+    }
+
     // check if subscriber is in proper segment
     $subscriberInSegment = $this->subscriberSegmentRepository->findOneBy(
       [
@@ -354,12 +364,12 @@ class Scheduler {
 
   public function verifyWPSubscriber($subscriberId, NewsletterEntity $newsletter, $queue) {
     // check if user has the proper role
-    $subscriber = Subscriber::findOne($subscriberId);
-    if (!$subscriber || $subscriber->isWPUser() === false) {
+    $subscriber = $this->subscribersRepository->findOneById($subscriberId);
+    if (!$subscriber || $subscriber->isWPUser() === false || is_null($subscriber->getWpUserId())) {
       $queue->delete();
       return false;
     }
-    $wpUser = get_userdata($subscriber->wpUserId);
+    $wpUser = get_userdata($subscriber->getWpUserId());
     if ($wpUser === false) {
       $queue->delete();
       return false;
@@ -374,12 +384,12 @@ class Scheduler {
     return $this->verifySubscriber($subscriber, $queue);
   }
 
-  public function verifySubscriber($subscriber, $queue) {
+  public function verifySubscriber(SubscriberEntity $subscriber, $queue) {
     $newsletter = $queue->newsletterId ? $this->newslettersRepository->findOneById($queue->newsletterId) : null;
     if ($newsletter && $newsletter->getType() === NewsletterEntity::TYPE_AUTOMATION_TRANSACTIONAL) {
-      return $subscriber->status !== Subscriber::STATUS_BOUNCED;
+      return $subscriber->getStatus() !== SubscriberEntity::STATUS_BOUNCED;
     }
-    if ($subscriber->status === Subscriber::STATUS_UNCONFIRMED) {
+    if ($subscriber->getStatus() === SubscriberEntity::STATUS_UNCONFIRMED) {
       // reschedule delivery
       $task = $this->scheduledTasksRepository->findOneById($queue->task()->id);
 
@@ -388,7 +398,7 @@ class Scheduler {
       }
 
       return false;
-    } else if ($subscriber->status === Subscriber::STATUS_UNSUBSCRIBED) {
+    } else if ($subscriber->getStatus() === SubscriberEntity::STATUS_UNSUBSCRIBED) {
       $queue->delete();
       return false;
     }

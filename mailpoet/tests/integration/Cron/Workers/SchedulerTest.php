@@ -533,6 +533,7 @@ class SchedulerTest extends \MailPoetTest {
         $this->security,
         $this->newsletterScheduler,
         $this->subscriberSegmentRepository,
+        $this->subscribersRepository,
       ], [
       'deleteQueueOrUpdateNextRunDate' => Expected::exactly(1, function() {
         return false;
@@ -797,6 +798,7 @@ class SchedulerTest extends \MailPoetTest {
     $task->setSubscribers([$subscriber->getId()]);
     $task->save();
     $this->subscribersRepository->bulkDelete([$subscriber->getId()]);
+    $this->subscribersRepository->remove($subscriber);
 
     // scheduled task should exist
     $task = SendingTask::getByNewsletterId($newsletter->getId());
@@ -882,6 +884,7 @@ class SchedulerTest extends \MailPoetTest {
     $task->setSubscribers([$subscriber->getId()]);
     $task->save();
     $this->subscribersRepository->bulkDelete([$subscriber->getId()]);
+    $this->subscribersRepository->remove($subscriber);
 
     // scheduled task should exist
     $task = SendingTask::getByNewsletterId($newsletter->getId());
