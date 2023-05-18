@@ -322,16 +322,12 @@ class Scheduler {
     return true;
   }
 
-  public function verifyMailpoetSubscriber($subscriberId, $newsletter, $queue) {
-    if ($newsletter instanceof NewsletterEntity) {
-      $newsletter = Newsletter::filter('filterWithOptions', $newsletter->getType())->findOne($newsletter->getId());
-    }
-
+  public function verifyMailpoetSubscriber($subscriberId, NewsletterEntity $newsletter, $queue) {
     $subscriber = Subscriber::findOne($subscriberId);
     // check if subscriber is in proper segment
     $subscriberInSegment =
       SubscriberSegment::where('subscriber_id', $subscriberId)
-        ->where('segment_id', $newsletter->segment)
+        ->where('segment_id', $newsletter->getOptionValue('segment'))
         ->where('status', 'subscribed')
         ->findOne();
     if (!$subscriber || !$subscriberInSegment) {
@@ -341,11 +337,7 @@ class Scheduler {
     return $this->verifySubscriber($subscriber, $queue);
   }
 
-  public function verifyWPSubscriber($subscriberId, $newsletter, $queue) {
-    if ($newsletter instanceof NewsletterEntity) {
-      $newsletter = Newsletter::filter('filterWithOptions', $newsletter->getType())->findOne($newsletter->getId());
-    }
-
+  public function verifyWPSubscriber($subscriberId, NewsletterEntity $newsletter, $queue) {
     // check if user has the proper role
     $subscriber = Subscriber::findOne($subscriberId);
     if (!$subscriber || $subscriber->isWPUser() === false) {
@@ -358,8 +350,8 @@ class Scheduler {
       return false;
     }
     if (
-      $newsletter->role !== WelcomeScheduler::WORDPRESS_ALL_ROLES
-      && !in_array($newsletter->role, ((array)$wpUser)['roles'])
+      $newsletter->getOptionValue('role') !== WelcomeScheduler::WORDPRESS_ALL_ROLES
+      && !in_array($newsletter->getOptionValue('role'), ((array)$wpUser)['roles'])
     ) {
       $queue->delete();
       return false;
