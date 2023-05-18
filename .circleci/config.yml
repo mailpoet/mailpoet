@@ -87,7 +87,7 @@ executors:
   wpcli_php_oldest:
     <<: *default_job_config
     docker:
-      - image: mailpoet/wordpress:7.3_20190705.2
+      - image: mailpoet/wordpress:7.3_20230518.1
 
   wpcli_php_max_wporg:
     <<: *default_job_config
@@ -102,7 +102,7 @@ executors:
   wpcli_php_mysql_oldest:
     <<: *default_job_config
     docker:
-      - image: mailpoet/wordpress:7.3_20190705.2
+      - image: mailpoet/wordpress:7.3_20230518.1
       - image: cimg/mysql:5.7
 
   wpcli_php_mysql_latest:
