@@ -14,6 +14,7 @@ import 'newsletter_editor/behaviors/WooCommerceStylesBehavior.js'; // side effec
 // Register blocks
 import 'newsletter_editor/ported_blocks/image/index';
 import 'newsletter_editor/ported_blocks/text/index';
+import 'newsletter_editor/ported_blocks/button/index';
 
 // Force set config to APP
 import { App } from 'newsletter_editor/App';
@@ -25,4 +26,7 @@ window.addEventListener('DOMContentLoaded', () => {
   App.getConfig = ConfigComponent.getConfig;
   App.setConfig = ConfigComponent.setConfig;
   App.setConfig(window.config);
+  App.getAvailableStyles = () =>
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+    ConfigComponent.getConfig().get('availableStyles');
 });
