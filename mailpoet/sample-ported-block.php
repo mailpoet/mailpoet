@@ -1,6 +1,7 @@
 <?php declare(strict_types = 1);
 
 use MailPoet\AdminPages\PageRenderer;
+use MailPoet\DI\ContainerWrapper;
 
 /**
  * Registers the `email` post type.
@@ -70,19 +71,25 @@ function add_sample_ported_block_scripts($hook) {
     return;
   }
 
-  wp_enqueue_script('mailpoet_newsletter_editor', plugin_dir_url(__FILE__) . 'assets/dist/js/newsletter_editor.js', []);
-  wp_enqueue_script('mailpoet_hybrid_editor', plugin_dir_url(__FILE__) . 'assets/dist/js/hybrid_editor.js', ['lodash', 'wp-blocks', 'wp-components', 'wp-element', 'wp-i18n', 'wp-block-editor']);
+  wp_enqueue_script('mailpoet_hybrid_editor', plugin_dir_url(__FILE__) . 'assets/dist/js/hybrid_editor.js', [
+    'lodash',
+    'wp-blocks',
+    'wp-components',
+    'wp-element',
+    'wp-i18n',
+    'wp-block-editor',
+  ]);
 }
 
-add_action('admin_enqueue_scripts', 'add_sample_ported_block_scripts');
+add_action('enqueue_block_assets', 'add_sample_ported_block_scripts');
 
-add_action('admin_footer', function (){
+add_action('admin_footer', function () {
   global $post_type;
   if ('email' != $post_type) {
     return;
   }
 
-  $pageRenderer = \MailPoet\DI\ContainerWrapper::getInstance()->get(PageRenderer::class);
+  $pageRenderer = ContainerWrapper::getInstance()->get(PageRenderer::class);
   $pageRenderer->displayPage('newsletter/editor.html');
 });
 
