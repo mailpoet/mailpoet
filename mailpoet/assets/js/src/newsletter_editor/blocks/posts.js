@@ -24,6 +24,7 @@ import { ButtonBlock } from 'newsletter_editor/blocks/button';
 import { DividerBlock } from 'newsletter_editor/blocks/divider';
 import 'select2';
 import { __ } from '@wordpress/i18n';
+import { isGutenbergEditor } from 'common';
 
 var Module = {};
 var base = BaseBlock;
@@ -335,6 +336,7 @@ Module.PostsBlockSettingsView = base.BlockSettingsView.extend({
       template: '',
       position: 'right',
       overlayRender: false,
+      displayFormat: isGutenbergEditor() ? 'element' : 'panel',
       width: App.getConfig().get('sidepanelWidth'),
       onCancel: function () {
         // Self destroy the block if the user closes settings modal

@@ -1,0 +1,14 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 2,
+  "name": "mailpoet/alc-ported-block",
+  "version": "0.1.0",
+  "title": "ALC Ported Block",
+  "category": "design",
+
+  "description": "A Gutenberg block to show your pride! This block enables you to type text and style it with the color font Gilbert from Type with Pride.",
+  "attributes": {},
+  "supports": {
+    "html": false
+  }
+}

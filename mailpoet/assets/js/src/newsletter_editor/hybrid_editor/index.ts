@@ -15,6 +15,14 @@ import 'newsletter_editor/behaviors/WooCommerceStylesBehavior.js'; // side effec
 import 'newsletter_editor/ported_blocks/image/index';
 import 'newsletter_editor/ported_blocks/text/index';
 import 'newsletter_editor/ported_blocks/button/index';
+import 'newsletter_editor/ported_blocks/posts/index';
+
+// Models
+import { ContainerBlock } from 'newsletter_editor/blocks/container';
+import { DividerBlock } from 'newsletter_editor/blocks/divider';
+import { ButtonBlock } from 'newsletter_editor/blocks/button';
+import { TextBlock } from 'newsletter_editor/blocks/text';
+import { Module as FallbackBlock } from 'newsletter_editor/blocks/unknownBlockFallback';
 
 // Force set config to APP
 import { App } from 'newsletter_editor/App';
@@ -29,4 +37,25 @@ window.addEventListener('DOMContentLoaded', () => {
   App.getAvailableStyles = () =>
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     ConfigComponent.getConfig().get('availableStyles');
+  // Posts block needs internally load submodels to keep data for settings of different parts of the block (butto for read more button etc.)
+  App.getBlockTypeModel = (blockType) => {
+    if (blockType === 'container') {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+      return ContainerBlock.ContainerBlockModel;
+    }
+    if (blockType === 'divider') {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+      return DividerBlock.DividerBlockModel;
+    }
+    if (blockType === 'button') {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+      return ButtonBlock.ButtonBlockModel;
+    }
+    if (blockType === 'text') {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+      return TextBlock.TextBlockModel;
+    }
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+    return FallbackBlock.BlockModel;
+  };
 });
