@@ -34,12 +34,12 @@ class MetaInfo {
     return $this->makeMetaInfo('new_subscriber_notification', 'unknown', 'administrator');
   }
 
-  public function getNewsletterMetaInfo($newsletter, SubscriberEntity $subscriber) {
-    $type = $newsletter->type ?? 'unknown';
-    switch ($newsletter->type) {
+  public function getNewsletterMetaInfo(NewsletterEntity $newsletter, SubscriberEntity $subscriber) {
+    $type = $newsletter->getType();
+    switch ($newsletter->getType()) {
       case NewsletterEntity::TYPE_AUTOMATIC:
-        $group = isset($newsletter->options['group']) ? $newsletter->options['group'] : 'unknown';
-        $event = isset($newsletter->options['event']) ? $newsletter->options['event'] : 'unknown';
+        $group = !is_null($newsletter->getOptionValue('group')) ? $newsletter->getOptionValue('group') : 'unknown';
+        $event = !is_null($newsletter->getOptionValue('event')) ? $newsletter->getOptionValue('event') : 'unknown';
         $type = sprintf('automatic_%s_%s', $group, $event);
         break;
       case NewsletterEntity::TYPE_STANDARD:

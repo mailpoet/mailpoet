@@ -5,6 +5,7 @@ namespace MailPoet\Test\Mailer;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Mailer\MetaInfo;
+use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 
 class MetaInfoTest extends \MailPoetTest {
@@ -14,6 +15,9 @@ class MetaInfoTest extends \MailPoetTest {
   /** @var SubscriberEntity */
   private $subscriber;
 
+  /** @var NewsletterFactory */
+  private $newsletterFactory;
+
   public function _before() {
     parent::_before();
     $this->meta = new MetaInfo;
@@ -21,6 +25,7 @@ class MetaInfoTest extends \MailPoetTest {
       ->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)
       ->withSource('form')
       ->create();
+    $this->newsletterFactory = new NewsletterFactory();
   }
 
   public function testItGetsMetaInfoForSendingTest() {
@@ -92,9 +97,9 @@ class MetaInfoTest extends \MailPoetTest {
       ->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)
       ->withSource('form')
       ->create();
-    $newsletter = (object)[
-      'type' => NewsletterEntity::TYPE_STANDARD,
-    ];
+    $newsletter = $this->newsletterFactory
+      ->withType(NewsletterEntity::TYPE_STANDARD)
+      ->create();
 
     expect($this->meta->getNewsletterMetaInfo($newsletter, $subscriber))->equals([
       'email_type' => 'newsletter',
@@ -104,9 +109,9 @@ class MetaInfoTest extends \MailPoetTest {
   }
 
   public function testItGetsMetaInfoForWelcomeEmail() {
-    $newsletter = (object)[
-      'type' => NewsletterEntity::TYPE_WELCOME,
-    ];
+    $newsletter = $this->newsletterFactory
+      ->withType(NewsletterEntity::TYPE_WELCOME)
+      ->create();
     expect($this->meta->getNewsletterMetaInfo($newsletter, $this->subscriber))->equals([
       'email_type' => 'welcome',
       'subscriber_status' => 'subscribed',
@@ -115,12 +120,13 @@ class MetaInfoTest extends \MailPoetTest {
   }
 
   public function testItGetsMetaInfoForPostNotification() {
-    $newsletter1 = (object)[
-      'type' => NewsletterEntity::TYPE_NOTIFICATION,
-    ];
-    $newsletter2 = (object)[
-      'type' => NewsletterEntity::TYPE_NOTIFICATION_HISTORY,
-    ];
+    $newsletter1 = $this->newsletterFactory
+      ->withType(NewsletterEntity::TYPE_NOTIFICATION)
+      ->create();
+    $newsletter2 = $this->newsletterFactory
+      ->withType(NewsletterEntity::TYPE_NOTIFICATION_HISTORY)
+      ->create();
+
     expect($this->meta->getNewsletterMetaInfo($newsletter1, $this->subscriber))->equals([
       'email_type' => 'post_notification',
       'subscriber_status' => 'subscribed',
@@ -134,39 +140,34 @@ class MetaInfoTest extends \MailPoetTest {
   }
 
   public function testItGetsMetaInfoForAutomaticEmails() {
-    $newsletter1 = (object)[
-      'type' => NewsletterEntity::TYPE_AUTOMATIC,
-      'options' => [
-        'group' => 'woocommerce',
-        'event' => 'woocommerce_first_purchase',
-      ],
-    ];
-    $newsletter2 = (object)[
-      'type' => NewsletterEntity::TYPE_AUTOMATIC,
-      'options' => [
-        'group' => 'woocommerce',
-        'event' => 'woocommerce_purchased_in_category',
-      ],
-    ];
+    $newsletter1 = $this->newsletterFactory
+      ->withType(NewsletterEntity::TYPE_AUTOMATIC)
+      ->withAutomaticTypeWooCommerceFirstPurchase()
+      ->create();
+    $newsletter2 = $this->newsletterFactory
+      ->withType(NewsletterEntity::TYPE_AUTOMATIC)
+      ->withAutomaticTypeWooCommerceProductInCategoryPurchased()
+      ->create();
+
     expect($this->meta->getNewsletterMetaInfo($newsletter1, $this->subscriber))->equals([
       'email_type' => 'automatic_woocommerce_woocommerce_first_purchase',
       'subscriber_status' => 'subscribed',
       'subscriber_source' => 'form',
     ]);
     expect($this->meta->getNewsletterMetaInfo($newsletter2, $this->subscriber))->equals([
-      'email_type' => 'automatic_woocommerce_woocommerce_purchased_in_category',
+      'email_type' => 'automatic_woocommerce_woocommerce_product_purchased_in_category',
       'subscriber_status' => 'subscribed',
       'subscriber_source' => 'form',
     ]);
   }
 
   public function testItGetsMetaInfoForReEngagement() {
-    $newsletter1 = (object)[
-      'type' => NewsletterEntity::TYPE_RE_ENGAGEMENT,
-    ];
-    $newsletter2 = (object)[
-      'type' => NewsletterEntity::TYPE_RE_ENGAGEMENT,
-    ];
+    $newsletter1 = $this->newsletterFactory
+      ->withType(NewsletterEntity::TYPE_RE_ENGAGEMENT)
+      ->create();
+    $newsletter2 = $this->newsletterFactory
+      ->withType(NewsletterEntity::TYPE_RE_ENGAGEMENT)
+      ->create();
     expect($this->meta->getNewsletterMetaInfo($newsletter1, $this->subscriber))->equals([
       'email_type' => 're_engagement',
       'subscriber_status' => 'subscribed',
@@ -180,23 +181,12 @@ class MetaInfoTest extends \MailPoetTest {
   }
 
   public function testItGetsMetaInfoForRandomType() {
-    $newsletter1 = (object)[
-      'type' => "random",
-    ];
+    $newsletter1 = $this->newsletterFactory
+      ->withType('random')
+      ->create();
 
     expect($this->meta->getNewsletterMetaInfo($newsletter1, $this->subscriber))->equals([
       'email_type' => 'random',
-      'subscriber_status' => 'subscribed',
-      'subscriber_source' => 'form',
-    ]);
-  }
-
-  public function testItGetsMetaInfoForUnknownType() {
-    $newsletter1 = (object)[
-      'type' => null,
-    ];
-    expect($this->meta->getNewsletterMetaInfo($newsletter1, $this->subscriber))->equals([
-      'email_type' => 'unknown',
       'subscriber_status' => 'subscribed',
       'subscriber_source' => 'form',
     ]);
