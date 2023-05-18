@@ -114,7 +114,7 @@ export function EditNewsletter(): JSX.Element {
         centered
         href={`?page=mailpoet-newsletter-editor&id=${
           selectedStep.args.email_id as string
-        }`}
+        }&context=automation`}
       >
         {__('Edit content', 'mailpoet')}
       </Button>
