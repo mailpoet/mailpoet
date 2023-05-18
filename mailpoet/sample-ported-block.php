@@ -90,7 +90,7 @@ add_action('admin_footer', function () {
   }
 
   $pageRenderer = ContainerWrapper::getInstance()->get(PageRenderer::class);
-  $pageRenderer->displayPage('newsletter/editor.html');
+  $pageRenderer->displayPage('newsletter/editor.html', ['isGutenberg' => true]);
 });
 
 add_action('enqueue_block_assets', function () {

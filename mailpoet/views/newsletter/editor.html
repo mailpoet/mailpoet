@@ -336,38 +336,40 @@
 <% endblock %>
 
 <% block content %>
-<!-- Hidden heading for notices to appear under -->
-<h1 style="display:none"><%= __('Newsletter Editor') %></h1>
-<div id="mailpoet_editor">
-  <div id="mailpoet_editor_steps_heading"></div>
-  <div class="clearfix"></div>
-  <div id="mailpoet_editor_heading_left">
-    <div id="mailpoet_editor_heading"></div>
-  </div>
-  <div id="mailpoet_editor_heading_right">
-    <div id="mailpoet_editor_top"></div>
-  </div>
-  <div class="clearfix"></div>
-  <div id="mailpoet_editor_main_wrapper">
-    <div id="mailpoet_editor_styles"></div>
-    <div id="mailpoet_editor_content_container">
-      <div class="mailpoet_newsletter_wrapper">
-        <div id="mailpoet_editor_content"></div>
-      </div>
+<% if not isGutenberg %>
+  <!-- Hidden heading for notices to appear under -->
+  <h1 style="display:none"><%= __('Newsletter Editor') %></h1>
+  <div id="mailpoet_editor">
+    <div id="mailpoet_editor_steps_heading"></div>
+    <div class="clearfix"></div>
+    <div id="mailpoet_editor_heading_left">
+      <div id="mailpoet_editor_heading"></div>
     </div>
-    <div id="mailpoet_editor_sidebar"></div>
-    <div class="clear"></div>
-  </div>
-  <div id="mailpoet_editor_bottom"></div>
+    <div id="mailpoet_editor_heading_right">
+      <div id="mailpoet_editor_top"></div>
+    </div>
+    <div class="clearfix"></div>
+    <div id="mailpoet_editor_main_wrapper">
+      <div id="mailpoet_editor_styles"></div>
+      <div id="mailpoet_editor_content_container">
+        <div class="mailpoet_newsletter_wrapper">
+          <div id="mailpoet_editor_content"></div>
+        </div>
+      </div>
+      <div id="mailpoet_editor_sidebar"></div>
+      <div class="clear"></div>
+    </div>
+    <div id="mailpoet_editor_bottom"></div>
 
-  <div class="mailpoet_layer_overlay" style="display:none;"></div>
-</div>
-<% if is_wc_transactional_email %>
-  <script type="text/javascript">
-    var mailpoet_beacon_articles = [
-      '5de8c5cd2c7d3a7e9ae4c15f',
-    ];
-  </script>
+    <div class="mailpoet_layer_overlay" style="display:none;"></div>
+  </div>
+  <% if is_wc_transactional_email %>
+    <script type="text/javascript">
+      var mailpoet_beacon_articles = [
+        '5de8c5cd2c7d3a7e9ae4c15f',
+      ];
+    </script>
+  <% endif %>
 <% endif %>
 
 <script type="text/javascript">

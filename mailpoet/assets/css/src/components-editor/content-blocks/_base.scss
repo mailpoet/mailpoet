@@ -18,6 +18,10 @@
     z-index: 1;
   }
 
+  .block-editor & {
+    float: none;
+  }
+
   &.mailpoet_highlight > .mailpoet_block_highlight {
     border: 2px solid $color-editor-background-content !important;
   }
