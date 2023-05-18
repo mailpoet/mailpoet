@@ -388,17 +388,13 @@ class Scheduler {
     return true;
   }
 
-  public function deleteQueueOrUpdateNextRunDate($queue, $newsletter) {
-    if ($newsletter instanceof NewsletterEntity) {
-      $newsletter = Newsletter::filter('filterWithOptions', $newsletter->getType())->findOne($newsletter->getId());
-    }
-
-    if ($newsletter->intervalType === PostNotificationScheduler::INTERVAL_IMMEDIATELY) {
+  public function deleteQueueOrUpdateNextRunDate($queue, NewsletterEntity $newsletter) {
+    if ($newsletter->getOptionValue('intervalType') === PostNotificationScheduler::INTERVAL_IMMEDIATELY) {
       $queue->delete();
       $this->updateScheduledTaskEntity($queue, true);
       return;
     } else {
-      $nextRunDate = $this->scheduler->getNextRunDate($newsletter->schedule);
+      $nextRunDate = $this->scheduler->getNextRunDate($newsletter->getOptionValue('schedule'));
       if (!$nextRunDate) {
         $queue->delete();
         $this->updateScheduledTaskEntity($queue, true);
