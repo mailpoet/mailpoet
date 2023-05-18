@@ -9,7 +9,6 @@ use MailPoet\Entities\NewsletterSegmentEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Logging\LoggerFactory;
-use MailPoet\Models\Newsletter;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
@@ -25,6 +24,7 @@ use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\Util\Security;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
+use MailPoetVendor\Doctrine\ORM\EntityNotFoundException;
 
 class Scheduler {
   const TASK_BATCH_SIZE = 5;
@@ -109,26 +109,33 @@ class Scheduler {
 
     $this->updateTasks($scheduledTasks);
     foreach ($scheduledQueues as $i => $queue) {
-      $newsletter = Newsletter::findOneWithOptions($queue->newsletterId);
-      $newsletterEntity = $this->newslettersRepository->findOneById($queue->newsletterId);
-      if (!$newsletter || $newsletter->deletedAt !== null || !$newsletterEntity instanceof NewsletterEntity) {
+      $newsletter = $this->newslettersRepository->findOneById($queue->newsletterId);
+      try {
+        if (!$newsletter instanceof NewsletterEntity || $newsletter->getDeletedAt() !== null) {
+          $queue->delete();
+        } elseif ($newsletter->getStatus() !== NewsletterEntity::STATUS_ACTIVE && $newsletter->getStatus() !== NewsletterEntity::STATUS_SCHEDULED) {
+          continue;
+        } elseif ($newsletter->getType() === NewsletterEntity::TYPE_WELCOME) {
+          $this->processWelcomeNewsletter($newsletter, $queue);
+        } elseif ($newsletter->getType() === NewsletterEntity::TYPE_NOTIFICATION) {
+          $this->processPostNotificationNewsletter($newsletter, $queue);
+        } elseif ($newsletter->getType() === NewsletterEntity::TYPE_STANDARD) {
+          $this->processScheduledStandardNewsletter($newsletter, $queue);
+        } elseif ($newsletter->getType() === NewsletterEntity::TYPE_AUTOMATIC) {
+          $this->processScheduledAutomaticEmail($newsletter, $queue);
+        } elseif ($newsletter->getType() === NewsletterEntity::TYPE_RE_ENGAGEMENT) {
+          $this->processReEngagementEmail($queue);
+        } elseif ($newsletter->getType() === NewsletterEntity::TYPE_AUTOMATION) {
+          $this->processScheduledAutomationEmail($queue);
+        } elseif ($newsletter->getType() === NewsletterEntity::TYPE_AUTOMATION_TRANSACTIONAL) {
+          $this->processScheduledTransactionalEmail($queue);
+        }
+      } catch (EntityNotFoundException $e) {
+        // Doctrine throws this exception when newsletter doesn't exist but is referenced in a scheduled task.
+        // This was added while refactoring this method to use Doctrine instead of Paris. We have to handle this case
+        // for the SchedulerTest::testItDeletesQueueDuringProcessingWhenNewsletterNotFound() test. I'm not sure
+        // if this problem could happen in production or not.
         $queue->delete();
-      } elseif ($newsletter->status !== NewsletterEntity::STATUS_ACTIVE && $newsletter->status !== NewsletterEntity::STATUS_SCHEDULED) {
-        continue;
-      } elseif ($newsletter->type === NewsletterEntity::TYPE_WELCOME) {
-        $this->processWelcomeNewsletter($newsletterEntity, $queue);
-      } elseif ($newsletter->type === NewsletterEntity::TYPE_NOTIFICATION) {
-        $this->processPostNotificationNewsletter($newsletterEntity, $queue);
-      } elseif ($newsletter->type === NewsletterEntity::TYPE_STANDARD) {
-        $this->processScheduledStandardNewsletter($newsletterEntity, $queue);
-      } elseif ($newsletter->type === NewsletterEntity::TYPE_AUTOMATIC) {
-        $this->processScheduledAutomaticEmail($newsletterEntity, $queue);
-      } elseif ($newsletter->type === NewsletterEntity::TYPE_RE_ENGAGEMENT) {
-        $this->processReEngagementEmail($queue);
-      } elseif ($newsletter->type === NewsletterEntity::TYPE_AUTOMATION) {
-        $this->processScheduledAutomationEmail($queue);
-      } elseif ($newsletter->type === NewsletterEntity::TYPE_AUTOMATION_TRANSACTIONAL) {
-        $this->processScheduledTransactionalEmail($queue);
       }
       $this->cronHelper->enforceExecutionLimit($timer);
     }
