@@ -8,10 +8,10 @@ use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterSegmentEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SegmentEntity;
+use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\Subscriber;
-use MailPoet\Models\SubscriberSegment;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Scheduler\PostNotificationScheduler;
 use MailPoet\Newsletter\Scheduler\Scheduler as NewsletterScheduler;
@@ -20,6 +20,7 @@ use MailPoet\Newsletter\Segment\NewsletterSegmentRepository;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Segments\SubscribersFinder;
+use MailPoet\Subscribers\SubscriberSegmentRepository;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\Util\Security;
 use MailPoet\WP\Functions as WPFunctions;
@@ -62,6 +63,9 @@ class Scheduler {
   /** @var NewsletterScheduler */
   private $scheduler;
 
+  /** @var SubscriberSegmentRepository */
+  private $subscriberSegmentRepository;
+
   public function __construct(
     SubscribersFinder $subscribersFinder,
     LoggerFactory $loggerFactory,
@@ -73,7 +77,8 @@ class Scheduler {
     NewsletterSegmentRepository $newsletterSegmentRepository,
     WPFunctions $wp,
     Security $security,
-    NewsletterScheduler $scheduler
+    NewsletterScheduler $scheduler,
+    SubscriberSegmentRepository $subscriberSegmentRepository
   ) {
     $this->cronHelper = $cronHelper;
     $this->subscribersFinder = $subscribersFinder;
@@ -86,6 +91,7 @@ class Scheduler {
     $this->wp = $wp;
     $this->security = $security;
     $this->scheduler = $scheduler;
+    $this->subscriberSegmentRepository = $subscriberSegmentRepository;
   }
 
   public function process($timer = false) {
@@ -332,11 +338,13 @@ class Scheduler {
   public function verifyMailpoetSubscriber($subscriberId, NewsletterEntity $newsletter, $queue) {
     $subscriber = Subscriber::findOne($subscriberId);
     // check if subscriber is in proper segment
-    $subscriberInSegment =
-      SubscriberSegment::where('subscriber_id', $subscriberId)
-        ->where('segment_id', $newsletter->getOptionValue('segment'))
-        ->where('status', 'subscribed')
-        ->findOne();
+    $subscriberInSegment = $this->subscriberSegmentRepository->findOneBy(
+      [
+        'subscriber' => $subscriberId,
+        'segment' => $newsletter->getOptionValue('segment'),
+        'status' => SubscriberEntity::STATUS_SUBSCRIBED,
+      ]
+    );
     if (!$subscriber || !$subscriberInSegment) {
       $queue->delete();
       return false;
