@@ -532,6 +532,7 @@ class SchedulerTest extends \MailPoetTest {
         WPFunctions::get(),
         $this->security,
         $this->newsletterScheduler,
+        $this->subscriberSegmentRepository,
       ], [
       'deleteQueueOrUpdateNextRunDate' => Expected::exactly(1, function() {
         return false;
