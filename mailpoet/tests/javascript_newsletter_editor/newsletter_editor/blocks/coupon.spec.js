@@ -1,5 +1,6 @@
 import Backbone from 'backbone';
 import { App } from 'newsletter_editor/App';
+import { ContentComponent } from 'newsletter_editor/components/content';
 import { CouponBlock } from 'newsletter_editor/blocks/coupon';
 
 const expect = global.expect;
@@ -17,7 +18,16 @@ describe('Coupon', function () {
       global.stubConfig(EditorApplication, {
         blockDefaults: {},
       });
+      EditorApplication.getNewsletter = function () {
+        return new ContentComponent.NewsletterModel({
+          type: 'standard',
+        });
+      };
       model = new CouponBlock.CouponBlockModel();
+      model.isConfirmationEmailTemplate = function () {
+        return false;
+      };
+
       sandbox = sinon.createSandbox();
     });
 
