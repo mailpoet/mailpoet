@@ -1,9 +1,17 @@
-import { useCallback, useRef } from '@wordpress/element';
+import { useCallback, useEffect, useRef } from '@wordpress/element';
 import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
 import { TextBlock } from 'newsletter_editor/blocks/text';
 
-export function Edit() {
-  const model = useRef(new TextBlock.TextBlockModel());
+export function Edit({ setAttributes, attributes }) {
+  const model = useRef(
+    new TextBlock.TextBlockModel(attributes.legacyBlockData),
+  );
+
+  useEffect(() => {
+    model.current.listenTo(model.current, 'change', () => {
+      setAttributes({ legacyBlockData: model.current.attributes });
+    });
+  }, [model, setAttributes]);
 
   const elemRef = useCallback(
     (el) => {
