@@ -122,7 +122,7 @@ class Scheduler {
       } elseif ($newsletter->type === NewsletterEntity::TYPE_STANDARD) {
         $this->processScheduledStandardNewsletter($newsletterEntity, $queue);
       } elseif ($newsletter->type === NewsletterEntity::TYPE_AUTOMATIC) {
-        $this->processScheduledAutomaticEmail($newsletter, $queue);
+        $this->processScheduledAutomaticEmail($newsletterEntity, $queue);
       } elseif ($newsletter->type === NewsletterEntity::TYPE_RE_ENGAGEMENT) {
         $this->processReEngagementEmail($queue);
       } elseif ($newsletter->type === NewsletterEntity::TYPE_AUTOMATION) {
@@ -219,9 +219,9 @@ class Scheduler {
     return true;
   }
 
-  public function processScheduledAutomaticEmail($newsletter, $queue) {
-    if ($newsletter->sendTo === 'segment') {
-      $segment = $this->segmentsRepository->findOneById($newsletter->segment);
+  public function processScheduledAutomaticEmail(NewsletterEntity $newsletter, $queue) {
+    if ($newsletter->getOptionValue('sendTo') === 'segment') {
+      $segment = $this->segmentsRepository->findOneById($newsletter->getOptionValue('segment'));
       if ($segment instanceof SegmentEntity) {
         $taskModel = $queue->task();
         $taskEntity = $this->scheduledTasksRepository->findOneById($taskModel->id);
