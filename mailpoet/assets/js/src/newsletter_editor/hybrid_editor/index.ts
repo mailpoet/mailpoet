@@ -58,4 +58,25 @@ window.addEventListener('DOMContentLoaded', () => {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return FallbackBlock.BlockModel;
   };
+
+  App.getBlockTypeView = (blockType) => {
+    if (blockType === 'container') {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+      return ContainerBlock.ContainerBlockView;
+    }
+    if (blockType === 'divider') {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+      return DividerBlock.DividerBlockView;
+    }
+    if (blockType === 'button') {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+      return ButtonBlock.ButtonBlockView;
+    }
+    if (blockType === 'text') {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+      return TextBlock.TextBlockView;
+    }
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+    return FallbackBlock.BlockView;
+  };
 });
