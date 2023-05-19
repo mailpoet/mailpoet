@@ -34,9 +34,7 @@ class Columns {
       $right = $params['padding']['right'] ?? 0;
       $bottom = $params['padding']['bottom'] ?? 0;
       $left = $params['padding']['left'] ?? 0;
-      $styles[] = $this->wp->escAttr(
-        "padding:{$top} {$right} {$bottom} {$left};"
-      );
+      $styles[] = "padding:{$top} {$right} {$bottom} {$left};";
     }
     if (count($styles)) {
       return ' style="' . $this->wp->escAttr(implode('', $styles)) . '"';

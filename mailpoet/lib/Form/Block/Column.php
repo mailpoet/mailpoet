@@ -24,7 +24,7 @@ class Column {
       !empty($params['width']) &&
       (strlen($params['width']) > 0 && ctype_digit(substr($params['width'], 0, 1)))
     ) {
-      $widthValue = $this->wp->escAttr($params['width']) . (is_numeric($params['width']) ? '%' : '');
+      $widthValue = $params['width'] . (is_numeric($params['width']) ? '%' : '');
       $styles[] = "flex-basis:{$widthValue}";
     }
     if (!empty($params['padding']) && is_array($params['padding'])) {
@@ -32,9 +32,7 @@ class Column {
       $right = $params['padding']['right'] ?? 0;
       $bottom = $params['padding']['bottom'] ?? 0;
       $left = $params['padding']['left'] ?? 0;
-      $styles[] = $this->wp->escAttr(
-        "padding:{$top} {$right} {$bottom} {$left};"
-      );
+      $styles[] = "padding:{$top} {$right} {$bottom} {$left};";
     }
     if (!empty($params['text_color'])) {
       $styles[] = "color:{$params['text_color']};";
@@ -48,7 +46,7 @@ class Column {
     if (!count($styles)) {
       return '';
     }
-    return ' style="' . implode(';', $styles) . ';"';
+    return ' style="' . $this->wp->escAttr(implode(';', $styles)) . ';"';
   }
 
   private function getClass(array $params): string {
