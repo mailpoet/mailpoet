@@ -20,17 +20,23 @@ class Columns {
 
   private function getStyles(array $params): string {
     $styles = [];
-    if (isset($params['text_color'])) {
+    if (!empty($params['text_color'])) {
       $styles[] = "color:{$params['text_color']};";
     }
     if (!empty($params['background_color'])) {
       $styles[] = "background-color:{$params['background_color']};";
     }
-    if (isset($params['gradient'])) {
+    if (!empty($params['gradient'])) {
       $styles[] = "background:{$params['gradient']};";
     }
     if (!empty($params['padding']) && is_array($params['padding'])) {
-      $styles[] = "padding:{$params['padding']['top']} {$params['padding']['right']} {$params['padding']['bottom']} {$params['padding']['left']};";
+      $top = $params['padding']['top'] ?? 0;
+      $right = $params['padding']['right'] ?? 0;
+      $bottom = $params['padding']['bottom'] ?? 0;
+      $left = $params['padding']['left'] ?? 0;
+      $styles[] = $this->wp->escAttr(
+        "padding:{$top} {$right} {$bottom} {$left};"
+      );
     }
     if (count($styles)) {
       return ' style="' . $this->wp->escAttr(implode('', $styles)) . '"';
