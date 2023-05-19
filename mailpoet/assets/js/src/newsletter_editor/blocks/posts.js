@@ -222,9 +222,12 @@ Module.PostsBlockModel = base.BlockModel.extend({
       });
   },
   _insertSelectedPosts: function () {
-    var data = this.toJSON();
-    var index = this.collection.indexOf(this);
-    var collection = this.collection;
+    let data = this.toJSON();
+    if (isGutenbergEditor() && !this.collection) {
+      this.collection = new Backbone.Collection();
+    }
+    let index = this.collection.indexOf(this);
+    let collection = this.collection;
 
     data.posts = this.get('_selectedPosts').pluck('ID');
 
@@ -235,7 +238,12 @@ Module.PostsBlockModel = base.BlockModel.extend({
         collection.add(JSON.parse(JSON.stringify(posts)), { at: index });
       })
       .fail(function () {
-        MailPoet.Notice.error(__('Failed to fetch rendered posts', 'mailpoet'));
+        // What should the Gutenberg editor do here?
+        if (!isGutenbergEditor()) {
+          MailPoet.Notice.error(
+            __('Failed to fetch rendered posts', 'mailpoet'),
+          );
+        }
       });
   },
 });
@@ -271,7 +279,7 @@ Module.PostsBlockView = base.BlockView.extend({
 
     ContainerView = App.getBlockTypeView('container');
     renderOptions = {
-      disableTextEditor: true,
+      disableTextEditor: !isGutenbergEditor(),
       disableDragAndDrop: true,
       emptyContainerMessage: __('There is no content to display.', 'mailpoet'),
     };
