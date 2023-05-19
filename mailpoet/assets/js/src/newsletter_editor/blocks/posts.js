@@ -331,19 +331,20 @@ Module.PostsBlockSettingsView = base.BlockSettingsView.extend({
     this.showChildView('selectionRegion', this.selectionView);
     this.showChildView('displayOptionsRegion', this.displayOptionsView);
 
-    MailPoet.Modal.panel({
-      element: this.$el,
-      template: '',
-      position: 'right',
-      overlayRender: false,
-      displayFormat: isGutenbergEditor() ? 'element' : 'panel',
-      width: App.getConfig().get('sidepanelWidth'),
-      onCancel: function () {
-        // Self destroy the block if the user closes settings modal
-        that.model.destroy();
-      },
-    });
-
+    if (!isGutenbergEditor()) {
+      MailPoet.Modal.panel({
+        element: this.$el,
+        template: '',
+        position: 'right',
+        overlayRender: false,
+        displayFormat: isGutenbergEditor() ? 'element' : 'panel',
+        width: App.getConfig().get('sidepanelWidth'),
+        onCancel: function () {
+          // Self destroy the block if the user closes settings modal
+          that.model.destroy();
+        },
+      });
+    }
     // Inform child views that they have been attached to document
     this.selectionView.triggerMethod('attach');
     this.displayOptionsView.triggerMethod('attach');

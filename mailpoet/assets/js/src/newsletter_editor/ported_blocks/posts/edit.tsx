@@ -13,12 +13,12 @@ export function Edit() {
   const elemRef = useCallback(
     (el) => {
       try {
-        const image = new PostsBlock.PostsBlockView({
+        const view = new PostsBlock.PostsBlockView({
           el,
           model: model.current,
         });
         // eslint-disable-next-line no-console
-        console.log(image.render(model.current));
+        console.log({ postsView: view.render(model.current) });
       } catch (e) {
         // eslint-disable-next-line no-console
         console.log({ e });
@@ -30,7 +30,7 @@ export function Edit() {
   const elemSettings = useCallback(
     (el) => {
       try {
-        const imageSettings = new PostsBlock.PostsBlockSettingsView({
+        const settings = new PostsBlock.PostsBlockSettingsView({
           el,
           model: model.current,
           renderOptions: {
@@ -38,7 +38,7 @@ export function Edit() {
           },
         });
         // eslint-disable-next-line no-console
-        console.log(imageSettings.render(model.current));
+        console.log({ postsSettings: settings.render(model.current) });
       } catch (e) {
         // eslint-disable-next-line no-console
         console.log({ e });
