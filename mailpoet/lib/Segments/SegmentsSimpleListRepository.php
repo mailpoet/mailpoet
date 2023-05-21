@@ -4,7 +4,6 @@ namespace MailPoet\Segments;
 
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
-use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Subscribers\SubscribersCountsController;
 use MailPoetVendor\Doctrine\DBAL\Connection;
 use MailPoetVendor\Doctrine\DBAL\Driver\Statement;
@@ -68,8 +67,6 @@ class SegmentsSimpleListRepository {
     array $segmentTypes = [],
     string $subscriberGlobalStatus = null
   ): array {
-    $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
-    $subscribersSegmentsTable = $this->entityManager->getClassMetadata(SubscriberSegmentEntity::class)->getTableName();
     $segmentsTable = $this->entityManager->getClassMetadata(SegmentEntity::class)->getTableName();
 
     $segmentsDataQuery = $this->entityManager
