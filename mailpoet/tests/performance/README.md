@@ -30,35 +30,48 @@ Automated k6 performance tests for MailPoet. To be used for benchmarking perform
 
 You don't need to install it - it's automatic!
 
-To execute the tests, use the following command:
+To execute the tests locally, check the below instructions under [Running Scenarios](#running-scenarios)
 
-`./do test:performance`
-
-There k6 installation is automatic. It will download the binary file in `/tools/vendor/` folder. Associated file for auto installing is `/tools/k6.php`.
+The k6 installation is automatic. It will download the binary file in `/tools/vendor/` folder. Associated file for auto installing is `/tools/k6.php`.
 
 ## Configuration
 
 ### Test Environment
 
-This test suite uses original MailPoet's environment with installed WordPress, MySQL and stuff like that.
+This test suite is using original MailPoet's environment with installed WordPress, MySQL and stuff like that.
 
-The local url for the performance test site is: `https://localhost:9500`
+The local env's url of the performance test site is: `https://localhost:9500`
 
-When you're done with testing, please make sure to stop the environment by the following command:
+When you're done with testing, you may want to stop the environment by the following command:
 
 `./do test:performance-clean`
 
 ### Config Variables
 
-`config.js` comes with some example values for using with the suggested local test environment. If using a different environment be sure to update the values.
+`config.js` comes with some test data and \_\_ENV values stored in your .env file. You don't need to change the values there if you want to use different test site, user and password, but just include parameters when executing the test such as:
+`./do test:performance --scenario pullrequests --url="yoururl" --pw="yourpassword"`
 
 #### Config Variables List
 
-TBD
+These are some of the very important variables:
+`baseURL` = this is the test site url
+`scenario` = this is used for performing different scenarios, currently supported `pull requests` and `nightlytests` only
+`projectName` = this is used for streaming results to Grafana Cloud k6. No need to use if testing locally, this is for CI.
+`k6CloudID` = this is used for streaming results to Grafana Cloud k6. Same as above.
+`adminPassword` = this is used for logging to a test site, locally or against online test site.
+
+### Grafana k6 Cloud
+
+We use Grafana k6 Cloud to streamline our test results. This is happening only for the CI tests. However, you can even stream the local tests in case you need it.
+
+For the Grafana k6 Cloud access, please refer to the secret store and search for MailPoet: Grafana
+
+Currently, the local test env. checks if your `.env` file contain the token for Grafana `K6_CLOUD_TOKEN=`, and if not, streaming to Grafana won't happen. In case you add it, it will automatically stream (there's cloud token in CI saved so it streams there).
+You can have `K6_CLOUD_ID=` applied in your `.env`, but keep the token var empty.
 
 ## Running Tests
 
-When refering to running k6 tests usually this means executing the test scenario. The test scenario file in turn determines which requests we run and how much load will be applied to them. It is also possible to execute individual test files containing requests and pass in scenario config as a CLI flag but scenario files allow for more configuration options.
+When refering to running k6 tests usually it means executing some of the scenarios available. The test scenario file in turn determines which requests we run and what metrics and thresholds will be applied to them. It is also possible to execute individual test files containing requests and pass in scenario config as a CLI flag but scenario files allow for more configuration options.
 
 ### Running Individual Tests
 
@@ -76,7 +89,7 @@ To execute a test scenario for pull requests, as an example:
 
 This will run scenario with associated tests and options specificed inside `scenarios.js`.
 
-Included in the `tests` folder is a single test script which includes all scenarios and that can be ran or used as a starting point to be modified to suit the context in which tests are being ran.
+Included in the `tests` folder is a set of test scripts which includes all scenarios and that can be ran or used as a starting point to be modified to suit the context in which tests are being ran.
 
 Another aspect that affects the traffic pattern of the tests is the amount of “Think Time” in between requests. In real world usage of an application users will spend some amount of time before doing some action. For some situations there will be a need to simulate this as part of the test traffic and it is common to have this as part of load tests.
 
@@ -88,7 +101,7 @@ The amount of think time can be controlled from `config.js`.
 ### Debugging Tests
 
 Browser-level tests: the easiest way is to turn off headless mode by running individual or scenario with this argument `--head` and it will execute test with browser. The example command would be:
-`./do test:performance --head`
+`./do test:performance [test script path here] --head`
 
 Protocol-level tests: to help with getting a test working, the `--http-debug="full"` flag prints to console the full log of requests and their responses. It is also useful to use `console.log()` to print messages when debugging.
 
@@ -96,7 +109,7 @@ Protocol-level tests: to help with getting a test working, the `--http-debug="fu
 
 ### Default Terminal Output
 
-When the tests are run, there is a summary report in the terminal at the end.
+When you run a single test script, there will be a default k6 output in the end, but without applied thresholds. Threshold are applied only on the `scenarios.js` script, so when running a set of test scripts.
 
 ### HTML Output with k6 Reporter
 
@@ -108,31 +121,50 @@ The k6 reporter should have already been implemented. There's generated file cal
 
 Start by adding a new file under `tests` folder and make sure it follows the name order with the other tests.
 
-Then, you can see andy copy/paste the imports from the other tests, as they might be the same... along with the comments on the top.
+Then, you can see and copy/paste the imports from the other tests, as they might be the same... along with the comments on the top.
 
 Then, begin with adding a new function called with your new test, for example:
 
-`export function yourNewTest() {`
+`export async function yourNewTest() {`
 
 and make sure to add browser and page constants.
 
-Then you're ready to start your first group. Check below [Groups](#groups) to see what it is about.
+Then you're ready to start your first test.
 
-You will need to add `goto()` and `then()` in your group/s and eding it with `finally()`. You can see how other tests look like.
+The very first step is to add the method `goto()`, here's an example:
+`await page.goto(${baseURL}/wp-admin...` as you can see, we have `baseURL` here for the domain name and the rest is the page url where you want to land.
 
-You might want to add some waits in between steps like I did with `Promise` and inside `.waitForNavigation`, that's helpful to avoid flakiness. Also, feel free to use or make helpers, like I added `login()`.
+The second step is to add authenticating method, currently we use `authenticate(page)`.
 
-To make assertions, feel free to use [Checks](#checks).
+The third step is to tak a screenshot (you can later add more in the test), we want to have screenshots for easier debugging especially in CI.
+When adding screenshot name, please stay in line with other screenshots as they are stored altogether in a single folder `_screenshots`.
+The screenshot name should consist of the test name, example: `Subscribers_Filtering_01.png`. Please add one in the beginning and at least one in the end, but also in between if the test is longer.
+
+The rest of the test should contain a very simple E2E steps using k6 browser module, here are some links for the commands:
+[Selecting elements](https://k6.io/docs/using-k6-browser/selecting-elements/), or checking [the full list](https://k6.io/docs/javascript-api/k6-experimental/browser/) of k6 browser possibilities.
+Note: Because k6 does not run in NodeJS, the browser module APIs will slightly differ from their Playwright counterparts.
+
+To make assertions, we are using `k6chai.js` library, here is an example how you should assert things:
+
+```js
+describe(subscribersPageTitle, () => {
+    describe('should be able to see Lists Filter', () => {
+      expect(page.locator('[data-automation-id="listing_filter_segment"]')).to
+        .exist;
+    });
+```
+
+In order to keep the output results in a clear view, we use `describe` to group them.
 
 There's required `sleep` at the end, above is explanation in [Running Scenarios](#running-scenarios) section.
 
-To complete and export the test to `scenarios.js`, you need to end it with `export function yourNewTest() {`.
+To complete and export the test to `scenarios.js`, you need to end it with `export default async function yourNewTestTest() {`.
 
 After doing that, make sure to add the test in `scenarios.js` in appropriate section by pasting `yourNewTest()` function.
 
-Finally, you need to check if your new test require any change to the existing options, tresholds, tags or maxDuration in `scenarios.js`.
+Finally, you need to check if your new test require any change to the existing options, thresholds, tags or maxDuration in `scenarios.js`.
 
-That's it, running the tests now through scenarios will include also your test.
+That's it. Running the scenarios will include also your test. In `nightly()` scenario, you can include test that relies on premium, or even sending. These tests are executing against `mpperftesting.mystagingwebsite.com` website hosted on Pressable.com and have a premium key applied.
 
 ### Capturing Requests
 
@@ -149,11 +181,11 @@ In `headers.js` the common headers are grouped by type and then can be imported 
 
 If you don't see `headers.js` inside `performance` folder, that means we don't have yet protocol-level tests included. Feel free to ignore this section then.
 
-### Groups
+### Groups (deprecated in our tests)
 
 Groups are used to organize common logic in the test scripts and can help with the test result analysis. For example the `group` `"Proceed through the newsletter creation flow until Send step"` groups together multiple requests triggered by this action.
 
-### Checks
+### Checks (deprecated in our tests)
 
 Checks are like asserts but they don’t stop the tests if they record a failure (for example in a load test with 1000s of iterations of a request this allows for an isolated flakey iteration to not stop test execution).
 
@@ -162,4 +194,4 @@ All requests have had checks for at least a `200` http status repsonse added and
 ## Other Resources
 
 [k6 documention](https://k6.io/docs/) is a very useful resource for test creation and execution.
-[xk6-browser documentation](https://k6.io/docs/javascript-api/xk6-browser/) is a very useful resource for test creation and execution.
+[using k6 browser doc](https://k6.io/docs/using-k6-browser/overview/) is a very useful resource for test creation and execution.
