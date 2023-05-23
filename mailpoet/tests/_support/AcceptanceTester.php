@@ -58,6 +58,14 @@ class AcceptanceTester extends \Codeception\Actor {
   /**
    * Define custom actions here
    */
+  public function getBackToSite() {
+    $i = $this;
+    $i->amOnUrl(self::WP_URL);
+  }
+
+  /**
+   * Define custom actions here
+   */
   public function login() {
     $i = $this;
     $i->amOnPage('/wp-login.php');
@@ -116,6 +124,18 @@ class AcceptanceTester extends \Codeception\Actor {
     $i->amOnUrl(self::MAIL_URL);
     // ensure that angular is loaded by checking angular specific class
     $i->waitForElement('.messages.ng-scope');
+  }
+
+  /**
+   * Navigate to Mailhog page and empty the mailbox
+   */
+  public function emptyMailbox() {
+    $i = $this;
+    $i->amOnMailboxAppPage();
+    // click to empty the mailbox
+    $i->click('.glyphicon-remove-circle');
+    $i->waitForElementVisible('.btn-danger');
+    $i->click('.btn-danger');
   }
 
   public function clickItemRowActionByItemName($itemName, $link) {
@@ -648,6 +668,19 @@ class AcceptanceTester extends \Codeception\Actor {
       $i->amOnMailboxAppPage();
       $i->waitForText($subject, 60);
     }
+  }
+
+  /**
+   * Checks that email was not received by looking for a subject in inbox.
+   * @param string $subject
+   */
+  public function checkEmailWasNotReceived($subject) {
+    $i = $this;
+    $i->amOnMailboxAppPage();
+    $i->dontSee($subject);
+    // click refresh button to seek for new emails once again
+    $i->click('.glyphicon-refresh');
+    $i->dontSee($subject);
   }
 
   /**

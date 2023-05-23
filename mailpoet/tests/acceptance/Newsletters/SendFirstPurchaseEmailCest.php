@@ -27,8 +27,10 @@ class SendFirstPurchaseEmailCest {
     $i->wantTo('Send a "First purchase email"');
 
     $productName = 'First Purchase Product';
+    $productName = 'Second Purchase Product';
     $productFactory = new WooCommerceProduct($i);
-    $product = $productFactory->withName($productName)->create();
+    $product1 = $productFactory->withName($productName)->create();
+    $product2 = $productFactory->withName($productName)->create();
 
     $emailSubject = 'First Purchase Test';
     $newsletterFactory = new Newsletter();
@@ -39,14 +41,20 @@ class SendFirstPurchaseEmailCest {
       ->create();
 
     $userEmail = 'user@email.test';
-    $i->orderProduct($product, $userEmail);
-
+    $i->orderProduct($product1, $userEmail);
     $i->triggerMailPoetActionScheduler();
-
     $i->checkEmailWasReceived($emailSubject);
 
     $i->click(Locator::contains('span.subject', $emailSubject));
     $i->waitForText($userEmail, 20);
+
+    $i->wantTo('Purchase second product and check if I didn\'t get "First purchase email"');
+
+    $i->emptyMailbox();
+    $i->getBackToSite();
+    $i->orderProductWithoutRegistration($product2, $userEmail);
+    $i->triggerMailPoetActionScheduler();
+    $i->checkEmailWasNotReceived($emailSubject);
   }
 
   public function doNotSendFirstPurchaseEmailIfUserHasNotOptedIn(\AcceptanceTester $i) {
