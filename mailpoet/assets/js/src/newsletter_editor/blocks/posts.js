@@ -388,6 +388,10 @@ Module.PostsBlockSettingsView = base.BlockSettingsView.extend({
     );
   },
   insertPosts: function () {
+    if (isGutenbergEditor()) {
+      this.options.insertCallback();
+      return;
+    }
     this.model.trigger('insertSelectedPosts');
     this.model.destroy();
     this.close();

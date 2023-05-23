@@ -1,21 +1,21 @@
-import { useCallback, useRef, useEffect } from '@wordpress/element';
-import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
+import { dispatch } from '@wordpress/data';
+import { useCallback, useRef } from '@wordpress/element';
+import {
+  useBlockProps,
+  InspectorControls,
+  store as blockEditorStore,
+} from '@wordpress/block-editor';
 import { PostsBlock } from 'newsletter_editor/blocks/posts';
 
-export function Edit() {
+export function Edit({ clientId }) {
   const model = useRef(new PostsBlock.PostsBlockModel());
-  useEffect(() => {
-    model.current.listenTo(model.current, 'change', () => {
-      // console.log(model.current);
-    });
-  }, [model]);
-
   const elemRef = useCallback(
     (el) => {
       try {
         const view = new PostsBlock.PostsBlockView({
           el,
           model: model.current,
+          insertCallback: () => {},
         });
         // eslint-disable-next-line no-console
         console.log({ postsView: view.render(model.current) });
@@ -36,6 +36,28 @@ export function Edit() {
           renderOptions: {
             displayFormat: 'element',
           },
+          insertCallback: () => {
+            const oldBlocks =
+              // eslint-disable-next-line no-underscore-dangle
+              model.current.attributes._transformedPosts.toJSON().blocks[0]
+                .blocks[0].blocks;
+
+            const mappedBLocks = oldBlocks.map((block, index) => ({
+              // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+              name: `mailpoet/${block.type}-ported-block`,
+              clientId: `${clientId as string} ${index as string}`,
+              attributes: {
+                legacyBlockData: block,
+              },
+              innerBlocks: [],
+              isValid: true,
+            }));
+            dispatch(blockEditorStore).replaceBlocks(
+              clientId as string,
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+              mappedBLocks,
+            );
+          },
         });
         // eslint-disable-next-line no-console
         console.log({ postsSettings: settings.render(model.current) });
@@ -44,7 +66,7 @@ export function Edit() {
         console.log({ e });
       }
     },
-    [model],
+    [model, clientId],
   );
 
   return (
