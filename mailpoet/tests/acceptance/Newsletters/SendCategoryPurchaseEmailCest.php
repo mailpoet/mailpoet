@@ -29,27 +29,41 @@ class SendCategoryPurchaseEmailCest {
     $productFactory = new WooCommerceProduct($i);
 
     $categoryId = $productFactory->createCategory('Category 1');
-    $product = $productFactory
+    $product1 = $productFactory
       ->withName($productName)
       ->withCategoryIds([$categoryId])
       ->create();
+    $product2 = $productFactory->withName($productName)->create();
 
     $emailSubject = 'Product In Category Purchase Test';
     $newsletterFactory = new Newsletter();
     $newsletterFactory
       ->withSubject($emailSubject)
-      ->withAutomaticTypeWooCommerceProductInCategoryPurchased([$product])
+      ->withAutomaticTypeWooCommerceProductInCategoryPurchased([$product1])
       ->withActiveStatus()
       ->create();
 
     $userEmail = Security::generateRandomString() . '-user@email.example';
-    $i->orderProduct($product, $userEmail);
+    $i->orderProduct($product1, $userEmail);
 
     $i->triggerMailPoetActionScheduler();
 
     $i->checkEmailWasReceived($emailSubject);
     $i->click(Locator::contains('span.subject', $emailSubject));
     $i->waitForText($userEmail, 20);
+
+    $i->wantTo('Buy in the same category once again and don\'t receive the newsletter');
+
+    $i->emptyMailbox();
+    $i->getBackToSite();
+
+    // Add additional random product to cart to buy 2 products
+    $i->addProductToCart($product2);
+
+    // Order 2 products with 1 attached to WC Automatic email
+    $i->orderProductWithoutRegistration($product1, $userEmail);
+    $i->triggerMailPoetActionScheduler();
+    $i->checkEmailWasNotReceived($emailSubject);
   }
 
   public function doNotSendCategoryPurchaseEmail(\AcceptanceTester $i) {

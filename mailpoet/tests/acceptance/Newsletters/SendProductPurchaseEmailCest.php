@@ -28,24 +28,39 @@ class SendProductPurchaseEmailCest {
 
     $productName = 'Product Purchase Test Product';
     $productFactory = new WooCommerceProduct($i);
-    $product = $productFactory->withName($productName)->create();
+    $product1 = $productFactory->withName($productName)->create();
+    $product2 = $productFactory->withName($productName)->create();
 
     $emailSubject = 'Product Purchase Test';
     $newsletterFactory = new Newsletter();
     $newsletterFactory
       ->withSubject($emailSubject)
-      ->withAutomaticTypeWooCommerceProductPurchased([$product])
+      ->withAutomaticTypeWooCommerceProductPurchased([$product1])
       ->withActiveStatus()
       ->create();
 
     $userEmail = 'user2@email.test';
-    $i->orderProduct($product, $userEmail);
+    $i->orderProduct($product1, $userEmail);
 
     $i->triggerMailPoetActionScheduler();
 
     $i->checkEmailWasReceived($emailSubject);
     $i->click(Locator::contains('span.subject', $emailSubject));
     $i->waitForText($userEmail, 20);
+
+    $i->wantTo('Buy the same product once again and don\'t receive the newsletter');
+
+    $i->emptyMailbox();
+
+    $i->getBackToSite();
+
+    // Add additional random product to cart to buy 2 products
+    $i->addProductToCart($product2);
+
+    // Order 2 products with 1 attached to WC Automatic email
+    $i->orderProductWithoutRegistration($product1, $userEmail);
+    $i->triggerMailPoetActionScheduler();
+    $i->checkEmailWasNotReceived($emailSubject);
   }
 
   public function doNotSendProductPurchaseEmailIfUserHasNotOptedIn(\AcceptanceTester $i) {
