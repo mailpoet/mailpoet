@@ -27,7 +27,10 @@ class WooSystemInfo {
   }
 
   public function transactionalEmails(): string {
-    return $this->settings->get('send_transactional_emails') ? 'Current sending method' : 'Default WordPress sending method';
+    return $this->settings->get('send_transactional_emails') ?
+      __('Current sending method', 'mailpoet') :
+      __('Default WordPress sending method', 'mailpoet');
+
   }
 
   public function taskSchedulerMethod(): string {
