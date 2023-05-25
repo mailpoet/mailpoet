@@ -94,7 +94,7 @@
             "blocks": [
               {
                 "type": "text",
-                "text": "<h1 style=\"text-align: center;\">Heading 1</h1>\n<h2 style=\"text-align: center;\">Heading 2</h2>\n<h3 style=\"text-align: center;\">Heading 3</h3>\n<p style=\"text-align: center;\">Paragraph.</p>"
+                "text": "<h1 style=\"text-align: left;\">H1 Left</h1>\n<h2 style=\"text-align: center;\"><strong><span style=\"color: rgb(253, 0, 0);\">H2 Center</span></strong></h2>\n<h3 style=\"text-align: right;\"><em>H3 Right</em></h3>"
               },
               {
                 "type": "footer",
@@ -116,37 +116,6 @@
                 }
               }
             ]
-          }
-        ]
-      },
-      {
-        "type": "container",
-        "columnLayout": false,
-        "orientation": "horizontal",
-        "image": {
-          "src": null,
-          "display": "scale"
-        },
-        "styles": {
-          "block": {
-            "backgroundColor": "transparent"
-          }
-        },
-        "blocks": [
-          {
-            "type": "container",
-            "columnLayout": false,
-            "orientation": "vertical",
-            "image": {
-              "src": null,
-              "display": "scale"
-            },
-            "styles": {
-              "block": {
-                "backgroundColor": "transparent"
-              }
-            },
-            "blocks": []
           }
         ]
       }
