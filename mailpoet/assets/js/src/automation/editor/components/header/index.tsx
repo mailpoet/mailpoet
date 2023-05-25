@@ -19,6 +19,7 @@ import {
   DeactivateImmediatelyModal,
   DeactivateModal,
 } from '../modals/deactivate-modal';
+import { AI } from './ai';
 
 // See:
 //   https://github.com/WordPress/gutenberg/blob/9601a33e30ba41bac98579c8d822af63dd961488/packages/edit-post/src/components/header/index.js
@@ -221,8 +222,12 @@ export function Header({ showInserterToggle }: Props): JSX.Element {
         </NavigableMenu>
       </div>
 
-      <div className="edit-site-header-edit-mode_center">
+      <div
+        className="edit-site-header-edit-mode_center"
+        style={{ display: 'grid', gridAutoFlow: 'column' }}
+      >
         <ErrorBoundary>
+          <AI />
           <DocumentActions>
             {() => (
               <div className="mailpoet-automation-editor-dropdown-name-edit">

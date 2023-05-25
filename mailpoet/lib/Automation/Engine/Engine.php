@@ -5,6 +5,7 @@ namespace MailPoet\Automation\Engine;
 use MailPoet\Automation\Engine\API\API;
 use MailPoet\Automation\Engine\Control\StepHandler;
 use MailPoet\Automation\Engine\Control\TriggerHandler;
+use MailPoet\Automation\Engine\Endpoints\Automations\AutomationsAIGetEndpoint;
 use MailPoet\Automation\Engine\Endpoints\Automations\AutomationsCreateFromTemplateEndpoint;
 use MailPoet\Automation\Engine\Endpoints\Automations\AutomationsDeleteEndpoint;
 use MailPoet\Automation\Engine\Endpoints\Automations\AutomationsDuplicateEndpoint;
@@ -76,6 +77,7 @@ class Engine {
       $api->registerPostRoute('automations/(?P<id>\d+)/duplicate', AutomationsDuplicateEndpoint::class);
       $api->registerPostRoute('automations/create-from-template', AutomationsCreateFromTemplateEndpoint::class);
       $api->registerGetRoute('automation-templates', AutomationTemplatesGetEndpoint::class);
+      $api->registerGetRoute('automations/ai', AutomationsAIGetEndpoint::class);
     });
   }
 

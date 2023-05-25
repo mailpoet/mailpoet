@@ -3,6 +3,7 @@
 namespace MailPoet\AdminPages\Pages;
 
 use MailPoet\AdminPages\PageRenderer;
+use MailPoet\Automation\Engine\AI\AIController;
 use MailPoet\Automation\Engine\Control\SubjectTransformerHandler;
 use MailPoet\Automation\Engine\Data\Automation;
 use MailPoet\Automation\Engine\Hooks;
@@ -36,6 +37,9 @@ class AutomationEditor {
   /** @var SubjectTransformerHandler */
   private $subjectTransformerHandler;
 
+  /** @var AIController */
+  private $aiController;
+
   public function __construct(
     AssetsController $assetsController,
     AutomationMapper $automationMapper,
@@ -43,7 +47,8 @@ class AutomationEditor {
     PageRenderer $pageRenderer,
     Registry $registry,
     WPFunctions $wp,
-    SubjectTransformerHandler $subjectTransformerHandler
+    SubjectTransformerHandler $subjectTransformerHandler,
+    AIController $aiController
   ) {
     $this->assetsController = $assetsController;
     $this->automationMapper = $automationMapper;
@@ -52,9 +57,11 @@ class AutomationEditor {
     $this->registry = $registry;
     $this->wp = $wp;
     $this->subjectTransformerHandler = $subjectTransformerHandler;
+    $this->aiController = $aiController;
   }
 
   public function render() {
+    //$this->aiController->generateAutomation('test');die;
     $this->assetsController->setupAutomationEditorDependencies();
 
     $id = isset($_GET['id']) ? (int)$_GET['id'] : null;

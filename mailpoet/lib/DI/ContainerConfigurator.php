@@ -114,6 +114,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\AutomaticEmails\WooCommerce\Events\PurchasedInCategory::class)->setPublic(true);
     $container->autowire(\MailPoet\AutomaticEmails\WooCommerce\Events\PurchasedProduct::class)->setPublic(true);
     // Automation
+    $container->autowire(\MailPoet\Automation\Engine\AI\AIController::class)->setPublic(true);
     $container->autowire(\MailPoet\Automation\Engine\API\API::class)->setPublic(true);
     $container->autowire(\MailPoet\Automation\Engine\Builder\CreateAutomationFromTemplateController::class)->setPublic(true);
     $container->autowire(\MailPoet\Automation\Engine\Builder\DeleteAutomationController::class)->setPublic(true);
@@ -146,6 +147,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Automation\Engine\Validation\AutomationValidator::class)->setPublic(true);
     $container->autowire(\MailPoet\Automation\Engine\WordPress::class)->setPublic(true);
     // Automation - API endpoints
+    $container->autowire(\MailPoet\Automation\Engine\Endpoints\Automations\AutomationsAIGetEndpoint::class)->setPublic(true);
     $container->autowire(\MailPoet\Automation\Engine\Endpoints\Automations\AutomationsGetEndpoint::class)->setPublic(true);
     $container->autowire(\MailPoet\Automation\Engine\Endpoints\Automations\AutomationTemplatesGetEndpoint::class)->setPublic(true);
     $container->autowire(\MailPoet\Automation\Engine\Endpoints\Automations\AutomationsPutEndpoint::class)->setPublic(true);

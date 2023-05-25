@@ -252,3 +252,34 @@ export function setErrors(errors) {
     errors,
   };
 }
+
+export function* aiGenerate(prompt: string) {
+  const automation = select(storeName).getAutomationData();
+  const data = yield apiFetch({
+    path: `/automations/ai?prompt=${prompt}`,
+    method: 'GET',
+  });
+
+  /*const { createNotice } = dispatch(noticesStore);
+  if (data?.data.status === AutomationStatus.ACTIVE) {
+    void createNotice(
+      'success',
+      __('Well done! Automation is now activated!', 'mailpoet'),
+      {
+        type: 'snackbar',
+      },
+    );
+    MailPoet.trackEvent('Automations > Automation activated');
+  }*/
+
+  return {
+    type: 'AI_GENERATE',
+    automation: data?.data ?? automation,
+  } as const;
+}
+
+export function aiDiscard() {
+  return {
+    type: 'AI_DISCARD',
+  } as const;
+}

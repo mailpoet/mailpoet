@@ -126,6 +126,23 @@ export function reducer(state: State, action): State {
         ...state,
         errors: action.errors,
       };
+    case 'AI_GENERATE':
+      return {
+        ...state,
+        automationData: {
+          ...state.automationData,
+          steps: action.automation.steps,
+        },
+        automationDataBackup: state.automationData,
+        automationSaved: false,
+      };
+    case 'AI_DISCARD':
+      return {
+        ...state,
+        automationData: state.automationDataBackup,
+        automationDataBackup: undefined,
+        automationSaved: false,
+      };
     default:
       return state;
   }

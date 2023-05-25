@@ -96,6 +96,7 @@ export type State = {
   context: Context;
   stepTypes: Record<string, StepType>;
   automationData: Automation;
+  automationDataBackup?: Automation;
   automationSaved: boolean;
   selectedStep: Step | undefined;
   inserterSidebar: {

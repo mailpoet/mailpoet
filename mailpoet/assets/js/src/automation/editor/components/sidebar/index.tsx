@@ -11,7 +11,13 @@ import { store as keyboardShortcutsStore } from '@wordpress/keyboard-shortcuts';
 import { Header } from './header';
 import { StepSidebar } from './step';
 import { AutomationSidebar } from './automation';
-import { stepSidebarKey, storeName, automationSidebarKey } from '../../store';
+import { AiSidebar } from './ai';
+import {
+  stepSidebarKey,
+  storeName,
+  automationSidebarKey,
+  aiSidebarKey,
+} from '../../store';
 
 // See:
 //   https://github.com/WordPress/gutenberg/blob/5caeae34b3fb303761e3b9432311b26f4e5ea3a6/packages/edit-post/src/components/sidebar/plugin-sidebar/index.js
@@ -62,6 +68,7 @@ export function Sidebar(props: Props): JSX.Element {
     >
       {sidebarKey === automationSidebarKey && <AutomationSidebar />}
       {sidebarKey === stepSidebarKey && <StepSidebar />}
+      {sidebarKey === aiSidebarKey && <AiSidebar />}
     </ComplementaryArea>
   );
 }
