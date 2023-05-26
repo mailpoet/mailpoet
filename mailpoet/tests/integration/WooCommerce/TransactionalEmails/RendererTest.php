@@ -6,7 +6,6 @@ use Codeception\Stub;
 use MailPoet\Config\ServicesChecker;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Logging\LoggerFactory;
-use MailPoet\Models\Newsletter;
 use MailPoet\Newsletter\Editor\LayoutHelper as L;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Renderer\Preprocessor;
@@ -31,7 +30,7 @@ class RendererTest extends \MailPoetTest {
     $this->newsletter = new NewsletterEntity();
     $this->newslettersRepository = $this->diContainer->get(NewslettersRepository::class);
     $this->newsletter->setSubject('WooCommerce Transactional Email');
-    $this->newsletter->setType(Newsletter::TYPE_WC_TRANSACTIONAL_EMAIL);
+    $this->newsletter->setType(NewsletterEntity::TYPE_WC_TRANSACTIONAL_EMAIL);
     $this->newsletter->setPreheader('');
     $this->newsletter->setBody([
       'content' => L::col([
