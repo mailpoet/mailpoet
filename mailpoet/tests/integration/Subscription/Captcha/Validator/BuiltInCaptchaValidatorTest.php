@@ -2,12 +2,11 @@
 
 namespace Mailpoet\Test\Subscription\Captcha\Validator;
 
-use Codeception\Util\Fixtures;
 use MailPoet\Entities\SubscriberIPEntity;
-use MailPoet\Models\Subscriber;
 use MailPoet\Subscription\Captcha\CaptchaSession;
 use MailPoet\Subscription\Captcha\Validator\BuiltInCaptchaValidator;
 use MailPoet\Subscription\Captcha\Validator\ValidationError;
+use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 
@@ -93,11 +92,12 @@ class BuiltInCaptchaValidatorTest extends \MailPoetTest {
     $result = $this->testee->isRequired();
     expect($result)->equals(false);
 
-    $subscriber = Subscriber::create();
-    $subscriber->hydrate(Fixtures::get('subscriber_template'));
-    $subscriber->countConfirmations = 1;
-    $subscriber->save();
-    $result = $this->testee->isRequired($subscriber->email);
+    $subscriberFactory = new SubscriberFactory();
+    $subscriber = $subscriberFactory
+      ->withCountConfirmations(1)
+      ->create();
+
+    $result = $this->testee->isRequired($subscriber->getEmail());
     expect($result)->equals(true);
 
     $ip = new SubscriberIPEntity('127.0.0.1');
