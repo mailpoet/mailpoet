@@ -33,12 +33,15 @@ class EditorUpdateNewFormCest {
 
     $newConfMessage = 'Hey, this is the updated conf message.';
     $subscriberEmail = 'test-form@example.com';
+    $invalidEmail = 'invalid@';
     $segmentFactory = new Segment();
     $segmentName = 'Fancy List';
     $segmentFactory->withName($segmentName)->create();
 
     $i->login();
+
     $i->amOnMailPoetPage('Forms');
+
     // Create a new form
     $formName = 'My awesome form';
     $updatedFormName = 'My updated awesome form';
@@ -48,37 +51,60 @@ class EditorUpdateNewFormCest {
     $i->waitForElement('[data-automation-id="form_title_input"]');
     $i->clearField('[data-automation-id="form_title_input"]'); // Clear field due to flakiness
     $i->fillField('[data-automation-id="form_title_input"]', $formName);
+
     // Try saving form without selected list
     $i->click('[data-automation-id="form_save_button"]');
     $i->waitForText('Please select a list', 10, '.automation-dismissible-notices');
     $i->seeNoJSErrors();
+
     // Select list and save form
     $i->selectOptionInSelect2($segmentName);
     $i->saveFormInEditor();
+
     // Reload page and check data were saved
     $i->reloadPage();
     $i->waitForElement('[data-automation-id="form_title_input"]');
     $i->seeInField('[data-automation-id="form_title_input"]', $formName);
     $i->seeSelectedInSelect2($segmentName);
     $i->seeNoJSErrors();
+
     // Update form name and confirmation message
     $i->fillField('[data-automation-id="form_title_input"]', $updatedFormName);
     $i->fillField('.components-textarea-control__input', $newConfMessage);
+
+    // Update success and error message colors
+    $i->click('[data-automation-id="mailpoet_form_settings_tab"]');
+    $i->click('Styles');
+    $i->click('Success');
+    $i->click('.components-color-palette__custom-color');
+    $i->click('(//div[@class="components-circular-option-picker__option-wrapper"])[10]'); // Select Cyan blue
+    $i->click('[data-automation-id="mailpoet_form_settings_tab"]');
+    $i->click('Error');
+    $i->click('(//div[@class="components-circular-option-picker__option-wrapper"])[12]'); // Select Vivid purple
+    $i->click('[data-automation-id="mailpoet_form_settings_tab"]');
+    
     $i->saveFormInEditor();
+
     // Reload page and check data were saved
     $i->reloadPage();
     $i->waitForElement('[data-automation-id="form_title_input"]');
     $i->seeInField('[data-automation-id="form_title_input"]', $updatedFormName);
     $i->seeInField('.components-textarea-control__input', $newConfMessage);
     $i->seeNoJSErrors();
-    // Verify new form name in Forms list page and also new conf message on the front end
+
+    // Verify new form name in Forms list page and also new conf message and colors on the front end
     $i->amOnMailpoetPage('Forms');
     $i->waitForText('Forms');
     $i->waitForText($updatedFormName);
     $i->amOnPage('/form-test');
+    $i->waitForElement('.mailpoet_submit');
+    $i->fillField('[data-automation-id="form_email"]', $invalidEmail);
+    $i->click('.mailpoet_submit');
+    $i->assertCssProperty('.parsley-type', 'color', 'rgba(155, 81, 224, 1)');
     $i->fillField('[data-automation-id="form_email"]', $subscriberEmail);
     $i->click('.mailpoet_submit');
     $i->waitForText($newConfMessage, self::CONFIRMATION_MESSAGE_TIMEOUT, '.mailpoet_validate_success');
+    $i->assertCssProperty('.mailpoet_validate_success', 'color', 'rgba(142, 209, 252, 1)');
     $i->seeNoJSErrors();
   }
 }
