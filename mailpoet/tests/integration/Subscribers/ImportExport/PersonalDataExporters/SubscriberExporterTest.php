@@ -3,9 +3,10 @@
 namespace MailPoet\Subscribers\ImportExport\PersonalDataExporters;
 
 use MailPoet\CustomFields\CustomFieldsRepository;
-use MailPoet\Models\CustomField;
+use MailPoet\Entities\CustomFieldEntity;
 use MailPoet\Models\Subscriber;
 use MailPoet\Subscribers\SubscribersRepository;
+use MailPoet\Test\DataFactories\CustomField as CustomFieldFactory;
 
 class SubscriberExporterTest extends \MailPoetTest {
 
@@ -94,15 +95,17 @@ class SubscriberExporterTest extends \MailPoetTest {
     $subscriber = Subscriber::createOrUpdate([
       'email' => 'email.that@has.custom.fields',
     ]);
-    $customField1 = CustomField::createOrUpdate([
-      'name' => 'Custom field1',
-      'type' => 'input',
-    ]);
-    CustomField::createOrUpdate([
-      'name' => 'Custom field2',
-      'type' => 'input',
-    ]);
-    $subscriber->setCustomField($customField1->id(), 'Value');
+    $customFieldFactory = new CustomFieldFactory();
+    $customField1 = $customFieldFactory
+      ->withName('Custom field1')
+      ->withType(CustomFieldEntity::TYPE_TEXT)
+      ->create();
+    $customField2 = $customFieldFactory
+      ->withName('Custom field2')
+      ->withType(CustomFieldEntity::TYPE_TEXT)
+      ->create();
+
+    $subscriber->setCustomField($customField1->getId(), 'Value');
     $subscriber->setCustomField('123545657', 'Value');
     $result = $this->exporter->export('email.that@has.custom.fields');
     expect($result['data'][0]['data'])->contains(['name' => 'Custom field1', 'value' => 'Value']);
