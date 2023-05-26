@@ -4,7 +4,6 @@ namespace MailPoet\WooCommerce;
 
 use Codeception\Stub;
 use MailPoet\Entities\NewsletterEntity;
-use MailPoet\Models\Newsletter;
 use MailPoet\Newsletter\Editor\LayoutHelper as L;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Settings\SettingsController;
@@ -46,7 +45,7 @@ class TransactionalEmailHooksTest extends \MailPoetTest {
 
   public function testItCanReplaceWoocommerceEmailStyles() {
     $newsletter = new NewsletterEntity;
-    $newsletter->setType(Newsletter::TYPE_WC_TRANSACTIONAL_EMAIL);
+    $newsletter->setType(NewsletterEntity::TYPE_WC_TRANSACTIONAL_EMAIL);
     $newsletter->setSubject('WooCommerce Transactional Email');
     $newsletter->setBody([
       'globalStyles' => [
@@ -144,7 +143,7 @@ class TransactionalEmailHooksTest extends \MailPoetTest {
     $removedActions = [];
 
     $newsletter = new NewsletterEntityWithoutClone;
-    $newsletter->setType(Newsletter::TYPE_WC_TRANSACTIONAL_EMAIL);
+    $newsletter->setType(NewsletterEntity::TYPE_WC_TRANSACTIONAL_EMAIL);
     $newsletter->setSubject('WooCommerce Transactional Email');
     $newsletter->setBody([
       'content' => L::col([
