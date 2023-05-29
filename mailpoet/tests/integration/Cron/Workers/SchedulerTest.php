@@ -227,7 +227,7 @@ class SchedulerTest extends \MailPoetTest {
     $scheduler = $this->getScheduler();
 
     // return false and delete queue when subscriber is not a WP user
-    $result = $scheduler->verifyWPSubscriber($subscriber->getId(), $newsletter, $queue);
+    $result = $scheduler->verifyWPSubscriber((int)$subscriber->getId(), $newsletter, $queue);
     expect($result)->false();
     expect($this->sendingQueuesRepository->findAll())->count(0);
   }
@@ -244,7 +244,7 @@ class SchedulerTest extends \MailPoetTest {
 
     // return false and delete queue when subscriber role is different from the one
     // specified for the welcome email
-    $result = $scheduler->verifyWPSubscriber($subscriber->getId(), $newsletter, $queue);
+    $result = $scheduler->verifyWPSubscriber((int)$subscriber->getId(), $newsletter, $queue);
     expect($result)->false();
     expect($this->sendingQueuesRepository->findAll())->count(0);
   }
@@ -260,7 +260,7 @@ class SchedulerTest extends \MailPoetTest {
     $scheduler = $this->getScheduler();
 
     // return true when user exists and WP role matches the one specified for the welcome email
-    $result = $scheduler->verifyWPSubscriber($subscriber->getId(), $newsletter, $queue);
+    $result = $scheduler->verifyWPSubscriber((int)$subscriber->getId(), $newsletter, $queue);
     expect($result)->true();
     expect(count($this->sendingQueuesRepository->findAll()))->greaterOrEquals(1);
   }
@@ -276,7 +276,7 @@ class SchedulerTest extends \MailPoetTest {
     $scheduler = $this->getScheduler();
 
     // true when user exists and has any role
-    $result = $scheduler->verifyWPSubscriber($subscriber->getId(), $newsletter, $queue);
+    $result = $scheduler->verifyWPSubscriber((int)$subscriber->getId(), $newsletter, $queue);
     expect($result)->true();
     expect(count($this->sendingQueuesRepository->findAll()))->greaterOrEquals(1);
   }
@@ -352,7 +352,7 @@ class SchedulerTest extends \MailPoetTest {
     $queue = $this->_createQueue($newsletter->getId());
     $queue->setSubscribers([1]);
     $scheduler = Stub::make(Scheduler::class, [
-      'verifyWPSubscriber' => Expected::exactly(1),
+      'verifyWPSubscriber' => Expected::exactly(1, true),
       'scheduledTasksRepository' => $this->diContainer->get(ScheduledTasksRepository::class),
     ], $this);
     expect($queue->status)->notNull();
