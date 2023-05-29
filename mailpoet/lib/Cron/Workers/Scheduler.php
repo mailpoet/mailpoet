@@ -358,7 +358,7 @@ class Scheduler {
     return $this->verifySubscriber($subscriber, $queue);
   }
 
-  public function verifyWPSubscriber($subscriberId, NewsletterEntity $newsletter, $queue) {
+  public function verifyWPSubscriber(int $subscriberId, NewsletterEntity $newsletter, $queue): bool {
     // check if user has the proper role
     $subscriber = $this->subscribersRepository->findOneById($subscriberId);
     if (!$subscriber || $subscriber->isWPUser() === false || is_null($subscriber->getWpUserId())) {
