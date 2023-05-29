@@ -380,7 +380,7 @@ class Scheduler {
     return $this->verifySubscriber($subscriber, $queue);
   }
 
-  public function verifySubscriber(SubscriberEntity $subscriber, $queue) {
+  public function verifySubscriber(SubscriberEntity $subscriber, $queue): bool {
     $newsletter = $queue->newsletterId ? $this->newslettersRepository->findOneById($queue->newsletterId) : null;
     if ($newsletter && $newsletter->getType() === NewsletterEntity::TYPE_AUTOMATION_TRANSACTIONAL) {
       return $subscriber->getStatus() !== SubscriberEntity::STATUS_BOUNCED;
