@@ -4,14 +4,20 @@ namespace MailPoet\Subscribers\ImportExport\PersonalDataExporters;
 
 use MailPoet\CustomFields\CustomFieldsRepository;
 use MailPoet\Entities\CustomFieldEntity;
-use MailPoet\Models\Subscriber;
+use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Subscribers\Source;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Test\DataFactories\CustomField as CustomFieldFactory;
+use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
+use MailPoetVendor\Carbon\Carbon;
 
 class SubscriberExporterTest extends \MailPoetTest {
 
   /** @var SubscriberExporter */
   private $exporter;
+
+  /** @var SubscriberFactory */
+  private $subscriberFactory;
 
   public function _before() {
     parent::_before();
@@ -19,6 +25,7 @@ class SubscriberExporterTest extends \MailPoetTest {
       $this->diContainer->get(SubscribersRepository::class),
       $this->diContainer->get(CustomFieldsRepository::class)
     );
+    $this->subscriberFactory = new SubscriberFactory();
   }
 
   public function testExportWorksWhenSubscriberNotFound() {
@@ -31,14 +38,16 @@ class SubscriberExporterTest extends \MailPoetTest {
   }
 
   public function testExportSubscriberWithoutCustomFields() {
-    Subscriber::createOrUpdate([
-      'email' => 'email.that@has.no.custom.fields',
-      'first_name' => 'John',
-      'last_name' => 'Doe',
-      'status' => 'unconfirmed',
-      'created_at' => '2018-05-03 10:30:08',
-    ]);
-    $result = $this->exporter->export('email.that@has.no.custom.fields');
+    $email = 'email.that@has.no.custom.fields';
+    $this->subscriberFactory
+      ->withFirstName('John')
+      ->withLastName('Doe')
+      ->withEmail($email)
+      ->withStatus(SubscriberEntity::STATUS_UNCONFIRMED)
+      ->withCreatedAt(new Carbon('2018-05-03 10:30:08'))
+      ->create();
+
+    $result = $this->exporter->export($email);
     expect($result)->array();
     expect($result)->hasKey('data');
     expect($result)->hasKey('done');
@@ -61,15 +70,17 @@ class SubscriberExporterTest extends \MailPoetTest {
   }
 
   public function testExportSubscriberWithSource() {
-    Subscriber::createOrUpdate([
-      'email' => 'email.with@source.com',
-      'first_name' => 'John',
-      'last_name' => 'Doe',
-      'status' => 'unconfirmed',
-      'created_at' => '2018-05-03 10:30:08',
-      'source' => 'form',
-    ]);
-    $result = $this->exporter->export('email.with@source.com');
+    $email = 'email.with@source.com';
+    $this->subscriberFactory
+      ->withFirstName('John')
+      ->withLastName('Doe')
+      ->withEmail($email)
+      ->withStatus(SubscriberEntity::STATUS_UNCONFIRMED)
+      ->withCreatedAt(new Carbon('2018-05-03 10:30:08'))
+      ->withSource(Source::FORM)
+      ->create();
+
+    $result = $this->exporter->export($email);
     expect($result['data'][0]['data'])->contains([
       'name' => "Subscriber's subscription source",
       'value' => 'Subscription via a MailPoet subscription form',
@@ -77,37 +88,36 @@ class SubscriberExporterTest extends \MailPoetTest {
   }
 
   public function testExportSubscriberWithIPs() {
-    Subscriber::createOrUpdate([
-      'email' => 'email.that@has.ip.addresses',
-      'first_name' => 'John',
-      'last_name' => 'Doe',
-      'status' => 'unconfirmed',
-      'created_at' => '2018-05-03 10:30:08',
-      'subscribed_ip' => 'IP1',
-      'confirmed_ip' => 'IP2',
-    ]);
-    $result = $this->exporter->export('email.that@has.ip.addresses');
+    $email = 'email.that@has.ip.addresses';
+    $this->subscriberFactory
+      ->withFirstName('John')
+      ->withLastName('Doe')
+      ->withEmail($email)
+      ->withStatus(SubscriberEntity::STATUS_UNCONFIRMED)
+      ->withCreatedAt(new Carbon('2018-05-03 10:30:08'))
+      ->withSubscribedIp('IP1')
+      ->withConfirmedIp('IP2')
+      ->create();
+
+    $result = $this->exporter->export($email);
     expect($result['data'][0]['data'])->contains(['name' => 'Subscribed IP', 'value' => 'IP1']);
     expect($result['data'][0]['data'])->contains(['name' => 'Confirmed IP', 'value' => 'IP2']);
   }
 
   public function testExportSubscriberWithCustomField() {
-    $subscriber = Subscriber::createOrUpdate([
-      'email' => 'email.that@has.custom.fields',
-    ]);
+    $email = 'email.that@has.custom.fields';
+    $subscriber = $this->subscriberFactory
+      ->withEmail($email)
+      ->create();
+
     $customFieldFactory = new CustomFieldFactory();
     $customField1 = $customFieldFactory
       ->withName('Custom field1')
       ->withType(CustomFieldEntity::TYPE_TEXT)
-      ->create();
-    $customField2 = $customFieldFactory
-      ->withName('Custom field2')
-      ->withType(CustomFieldEntity::TYPE_TEXT)
+      ->withSubscriber($subscriber->getId(), 'Value')
       ->create();
 
-    $subscriber->setCustomField($customField1->getId(), 'Value');
-    $subscriber->setCustomField('123545657', 'Value');
-    $result = $this->exporter->export('email.that@has.custom.fields');
+    $result = $this->exporter->export($email);
     expect($result['data'][0]['data'])->contains(['name' => 'Custom field1', 'value' => 'Value']);
   }
 }
