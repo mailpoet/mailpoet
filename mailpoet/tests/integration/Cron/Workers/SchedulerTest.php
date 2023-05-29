@@ -332,7 +332,7 @@ class SchedulerTest extends \MailPoetTest {
     $queue = $this->_createQueue($newsletter->getId());
     $queue->setSubscribers([1]);
     $scheduler = Stub::make(Scheduler::class, [
-      'verifyMailpoetSubscriber' => Expected::exactly(1),
+      'verifyMailpoetSubscriber' => Expected::exactly(1, true),
       'scheduledTasksRepository' => $this->diContainer->get(ScheduledTasksRepository::class),
     ], $this);
     expect($queue->status)->notNull();
@@ -371,7 +371,7 @@ class SchedulerTest extends \MailPoetTest {
     $queue = $this->_createQueue($newsletter->getId());
 
     // return false
-    $result = $scheduler->verifyMailpoetSubscriber(null, $newsletter, $queue);
+    $result = $scheduler->verifyMailpoetSubscriber(PHP_INT_MAX, $newsletter, $queue);
     expect($result)->false();
     // delete queue when subscriber can't be found
     expect($this->sendingQueuesRepository->findAll())->count(0);
@@ -389,7 +389,7 @@ class SchedulerTest extends \MailPoetTest {
     $scheduler = $this->getScheduler();
 
     // return false
-    $result = $scheduler->verifyMailpoetSubscriber($subscriber->getId(), $newsletter, $queue);
+    $result = $scheduler->verifyMailpoetSubscriber((int)$subscriber->getId(), $newsletter, $queue);
     expect($result)->false();
     // delete queue when subscriber is not in segment specified for the newsletter
     expect($this->sendingQueuesRepository->findAll())->count(0);
@@ -416,7 +416,7 @@ class SchedulerTest extends \MailPoetTest {
     $scheduler = $this->getScheduler();
 
     // return false
-    $result = $scheduler->verifyMailpoetSubscriber($subscriber->getId(), $newsletter, $queue);
+    $result = $scheduler->verifyMailpoetSubscriber((int)$subscriber->getId(), $newsletter, $queue);
     expect($result)->false();
     // update the time queue is scheduled to run at
     $sendingQueue = $this->sendingQueuesRepository->findOneById($queue->id);
@@ -441,7 +441,7 @@ class SchedulerTest extends \MailPoetTest {
     $scheduler = $this->getScheduler();
 
     // return false
-    $result = $scheduler->verifyMailpoetSubscriber($subscriber->getId(), $newsletter, $queue);
+    $result = $scheduler->verifyMailpoetSubscriber((int)$subscriber->getId(), $newsletter, $queue);
     expect($result)->false();
     // update the time queue is scheduled to run at
     expect($this->sendingQueuesRepository->findOneById($queue->id))->null();
@@ -460,7 +460,7 @@ class SchedulerTest extends \MailPoetTest {
     $scheduler = $this->getScheduler();
 
     // return true after successful verification
-    $result = $scheduler->verifyMailpoetSubscriber($subscriber->getId(), $newsletter, $queue);
+    $result = $scheduler->verifyMailpoetSubscriber((int)$subscriber->getId(), $newsletter, $queue);
     expect($result)->true();
   }
 
