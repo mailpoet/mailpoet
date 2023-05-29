@@ -340,12 +340,8 @@ class Scheduler {
     return true;
   }
 
-  public function verifyMailpoetSubscriber($subscriberId, NewsletterEntity $newsletter, $queue) {
-    if (is_int($subscriberId)) {
-      $subscriber = $this->subscribersRepository->findOneById($subscriberId);
-    } else {
-      $subscriber = null;
-    }
+  public function verifyMailpoetSubscriber(int $subscriberId, NewsletterEntity $newsletter, $queue): bool {
+    $subscriber = $this->subscribersRepository->findOneById($subscriberId);
 
     // check if subscriber is in proper segment
     $subscriberInSegment = $this->subscriberSegmentRepository->findOneBy(
