@@ -3,7 +3,7 @@ Contributors: mailpoet
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 6.0
 Tested up to: 6.2
-Stable tag: 4.16.0
+Stable tag: 4.17.0
 Requires PHP: 7.3
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -218,6 +218,16 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 4.17.0 - 2023-05-29 =
+* Added: subscriber counts caching to improve performance on websites with 2,000+ subscribers;
+* Added: "Used payment method" segment;
+* Added: MailPoet info to WooCommerce System Status Report;
+* Updated: minimum required WooCommerce version to 7.5.0;
+* Improved: "Order status change" trigger works with guest orders;
+* Improved: dropped support for PHP 7.2, MailPoet now requires at least PHP 7.3;
+* Fixed: Automation editor broken on WordPress 6.0;
+* Fixed: MailPoet is not active in WordPress menu when in email/form/automation editor.
 
 = 4.16.0 - 2023-05-15 =
 * Added: "Subscribed via form" segment;
