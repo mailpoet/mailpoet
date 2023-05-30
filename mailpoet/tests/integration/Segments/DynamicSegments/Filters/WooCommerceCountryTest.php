@@ -24,11 +24,11 @@ class WooCommerceCountryTest extends \MailPoetTest {
     $userId3 = $this->tester->createWordPressUser('customer3@example.com', 'customer');
     $userId4 = $this->tester->createWordPressUser('customer4@example.com', 'customer');
 
-    $this->createCustomerLookupData(['user_id' => $userId1, 'email' => 'customer1@example.com', 'country' => 'CZ']);
-    $this->createCustomerLookupData(['user_id' => $userId2, 'email' => 'customer2@example.com', 'country' => 'US']);
-    $this->createCustomerLookupData(['user_id' => $userId3, 'email' => 'customer3@example.com', 'country' => 'US']);
-    $this->createCustomerLookupData(['user_id' => $userId4, 'email' => 'customer4@example.com', 'country' => 'ES']);
-
+    $this->createOrderAndCustomerLookupData(['user_id' => $userId1, 'email' => 'customer1@example.com', 'country' => 'CZ']);
+    $this->createOrderAndCustomerLookupData(['user_id' => $userId2, 'email' => 'customer2@example.com', 'country' => 'US']);
+    $this->createOrderAndCustomerLookupData(['user_id' => $userId3, 'email' => 'customer3@example.com', 'country' => 'US']);
+    $this->createOrderAndCustomerLookupData(['user_id' => $userId4, 'email' => 'customer4@example.com', 'country' => 'ES']);
+    $this->createCustomerLookupData(['email' => 'customer5@example.com', 'country' => 'NG']);
   }
 
   public function testItAppliesFilter(): void {
@@ -46,7 +46,13 @@ class WooCommerceCountryTest extends \MailPoetTest {
   public function testItAppliesFilterNone(): void {
     $segmentFilterData = $this->getSegmentFilterData(['CZ','US'], DynamicSegmentFilterData::OPERATOR_NONE);
     $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->wooCommerceCountryFilter);
-    $this->assertEqualsCanonicalizing(['customer4@example.com'], $emails);
+    $this->assertEqualsCanonicalizing(['customer4@example.com', 'customer5@example.com'], $emails);
+  }
+
+  public function testItIncludesCustomersWithoutOrders(): void {
+    $segmentFilterData = $this->getSegmentFilterData(['NG', 'CZ']);
+    $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->wooCommerceCountryFilter);
+    $this->assertEqualsCanonicalizing(['customer1@example.com', 'customer5@example.com'], $emails);
   }
 
   /**
@@ -68,7 +74,7 @@ class WooCommerceCountryTest extends \MailPoetTest {
     );
   }
 
-  private function createCustomerLookupData(array $data): void {
+  private function createOrderAndCustomerLookupData(array $data): void {
     $order = $this->tester->createWooCommerceOrder();
     $order->set_customer_id($data['user_id']);
     $order->set_billing_email($data['email']);
@@ -77,6 +83,14 @@ class WooCommerceCountryTest extends \MailPoetTest {
     // Force sync to lookup table
     OrdersStatsDataStore::sync_order($order->get_id());
     CustomersStatsDataStore::sync_order_customer($order->get_id());
+  }
+
+  private function createCustomerLookupData(array $data): void {
+    $customerId = $this->tester->createCustomer($data['email']);
+    $customer = new \WC_Customer($customerId);
+    $customer->set_billing_country($data['country']);
+    $customer->save();
+    CustomersStatsDataStore::update_registered_customer($customerId);
   }
 
   private function cleanUpLookUpTables(): void {
