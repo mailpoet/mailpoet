@@ -53,13 +53,7 @@ class WooCommerceCountry implements Filter {
       $wpdb->prefix . 'wc_customer_lookup',
       'customer',
       "$subscribersTable.email = customer.email $collation"
-    )->innerJoin(
-      'customer',
-      $wpdb->prefix . 'wc_order_stats',
-      'orderStats',
-      'customer.customer_id = orderStats.customer_id'
-    )->where($condition)
-      ->andWhere('orderStats.status NOT IN ("wc-cancelled", "wc-failed")');
+    )->where($condition);
 
     foreach ($countryCode as $key => $userCountryCode) {
       $qb->setParameter(':countryCode' . $key . $countryFilterParam, '%' . $userCountryCode . '%');
