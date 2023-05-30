@@ -107,7 +107,7 @@ class EmailOpensAbsoluteCountActionTest extends \MailPoetTest {
   public function testGetOpenedLess(): void {
     $segmentFilterData = $this->getSegmentFilterData(3, 'less', 3);
     $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->action);
-    $this->assertEqualsCanonicalizing(['opened-less-opens@example.com', 'opened-old-opens@example.com'], $emails);
+    $this->assertEqualsCanonicalizing(['opened-less-opens@example.com', 'opened-no-opens@example.com', 'opened-old-opens@example.com'], $emails);
   }
 
   public function testGetOpenedEquals(): void {
@@ -119,7 +119,19 @@ class EmailOpensAbsoluteCountActionTest extends \MailPoetTest {
   public function testGetOpenedNotEquals(): void {
     $segmentFilterData = $this->getSegmentFilterData(2, 'not_equals', 3);
     $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->action);
-    $this->assertEqualsCanonicalizing(['opened-3-newsletters@example.com', 'opened-old-opens@example.com'], $emails);
+    $this->assertEqualsCanonicalizing(['opened-3-newsletters@example.com', 'opened-no-opens@example.com', 'opened-old-opens@example.com'], $emails);
+  }
+
+  public function testGetOpenedEqualsZero(): void {
+    $segmentFilterData = $this->getSegmentFilterData(0, 'equals', 2);
+    $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->action);
+    $this->assertEqualsCanonicalizing(['opened-old-opens@example.com', 'opened-no-opens@example.com'], $emails);
+  }
+
+  public function testGetOpenedLessThanOne(): void {
+    $segmentFilterData = $this->getSegmentFilterData(1, 'less', 2);
+    $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->action);
+    $this->assertEqualsCanonicalizing(['opened-old-opens@example.com', 'opened-no-opens@example.com'], $emails);
   }
 
   private function getSegmentFilterData(int $opens, string $operator, int $days, string $action = EmailOpensAbsoluteCountAction::TYPE): DynamicSegmentFilterData {
