@@ -36,7 +36,7 @@ class EmailOpensAbsoluteCountAction implements Filter {
       $subscribersTable,
       $statsTable,
       'opens',
-      "$subscribersTable.id = opens.subscriber_id AND opens.created_at > :newer" . $parameterSuffix
+      "{$subscribersTable}.id = opens.subscriber_id AND opens.created_at > :newer{$parameterSuffix} AND opens.user_agent_type = :userAgentType{$parameterSuffix}"
     );
     $queryBuilder->setParameter('newer' . $parameterSuffix, CarbonImmutable::now()->subDays($days)->startOfDay());
     $queryBuilder->groupBy("$subscribersTable.id");
@@ -50,13 +50,13 @@ class EmailOpensAbsoluteCountAction implements Filter {
       $queryBuilder->having("count(opens.id) > :opens" . $parameterSuffix);
     }
     $queryBuilder->setParameter('opens' . $parameterSuffix, $filterData->getParam('opens'));
+
     if ($action === EmailOpensAbsoluteCountAction::TYPE) {
-      $queryBuilder->andWhere('opens.user_agent_type = :userAgentType')
-        ->setParameter('userAgentType', UserAgentEntity::USER_AGENT_TYPE_HUMAN);
+      $queryBuilder->setParameter('userAgentType' . $parameterSuffix, UserAgentEntity::USER_AGENT_TYPE_HUMAN);
     } else {
-      $queryBuilder->andWhere('opens.user_agent_type = :userAgentType')
-        ->setParameter('userAgentType', UserAgentEntity::USER_AGENT_TYPE_MACHINE);
+      $queryBuilder->setParameter('userAgentType' . $parameterSuffix, UserAgentEntity::USER_AGENT_TYPE_MACHINE);
     }
+
     return $queryBuilder;
   }
 }
