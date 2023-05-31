@@ -35,6 +35,10 @@ import {
   UsedPaymentMethodFields,
   validateUsedPaymentMethod,
 } from './fields/woocommerce/used_payment_method';
+import {
+  UsedShippingMethodFields,
+  validateUsedShippingMethod,
+} from './fields/woocommerce/used_shipping_method';
 import { TextField, validateTextField } from './fields/text_field';
 
 export function validateWooCommerce(formItems: WooCommerceFormItem): boolean {
@@ -67,6 +71,9 @@ export function validateWooCommerce(formItems: WooCommerceFormItem): boolean {
   if (formItems.action === WooCommerceActionTypes.USED_PAYMENT_METHOD) {
     return validateUsedPaymentMethod(formItems);
   }
+  if (formItems.action === WooCommerceActionTypes.USED_SHIPPING_METHOD) {
+    return validateUsedShippingMethod(formItems);
+  }
   if (formItems.action === WooCommerceActionTypes.PURCHASE_DATE) {
     return validateDateField(formItems);
   }
@@ -93,6 +100,7 @@ const componentsMap = {
   [WooCommerceActionTypes.TOTAL_SPENT]: TotalSpentFields,
   [WooCommerceActionTypes.AVERAGE_SPENT]: AverageSpentFields,
   [WooCommerceActionTypes.USED_PAYMENT_METHOD]: UsedPaymentMethodFields,
+  [WooCommerceActionTypes.USED_SHIPPING_METHOD]: UsedShippingMethodFields,
 };
 
 export function WooCommerceFields({ filterIndex }: FilterProps): JSX.Element {

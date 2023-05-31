@@ -22,6 +22,7 @@ export const getInitialState = (): StateType => ({
   wooCurrencySymbol: window.mailpoet_woocommerce_currency_symbol,
   wooCountries: window.mailpoet_woocommerce_countries,
   wooPaymentMethods: window.mailpoet_woocommerce_payment_methods,
+  wooShippingMethods: window.mailpoet_woocommerce_shipping_methods,
   customFieldsList: window.mailpoet_custom_fields,
   tags: window.mailpoet_tags,
   signupForms: window.mailpoet_signup_forms,

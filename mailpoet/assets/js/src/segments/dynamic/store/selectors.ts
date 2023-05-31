@@ -18,6 +18,7 @@ import {
   WindowSubscriptionProducts,
   WindowWooCommerceCountries,
   WooPaymentMethod,
+  WooShippingMethod,
 } from '../types';
 
 export const getProducts = (state: StateType): WindowProducts => state.products;
@@ -52,6 +53,8 @@ export const getSignupForms = (state: StateType): SignupForm[] =>
   state.signupForms;
 export const getPaymentMethods = (state: StateType): WooPaymentMethod[] =>
   state.wooPaymentMethods;
+export const getShippingMethods = (state: StateType): WooShippingMethod[] =>
+  state.wooShippingMethods;
 export const getSegmentFilter = (
   state: StateType,
   index: number,

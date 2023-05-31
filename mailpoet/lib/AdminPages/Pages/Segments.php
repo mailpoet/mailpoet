@@ -136,7 +136,10 @@ class Segments {
         'name' => $form->getName(),
       ];
     }, $this->formsRepository->findAll());
+
     $data['woocommerce_payment_methods'] = [];
+    $data['woocommerce_shipping_methods'] = [];
+
     if ($this->woocommerceHelper->isWooCommerceActive()) {
       $allGateways = $this->woocommerceHelper->getPaymentGateways()->payment_gateways();
       $paymentMethods = [];
@@ -147,7 +150,16 @@ class Segments {
         ];
       }
       $data['woocommerce_payment_methods'] = $paymentMethods;
+
+      $shippingMethods = [];
+      foreach ($this->woocommerceHelper->getShippingMethods() as $shippingMethod) {
+        $shippingMethods[] = [
+          'name' => $shippingMethod->get_method_title(),
+        ];
+      }
+      $data['woocommerce_shipping_methods'] = $shippingMethods;
     }
+
     $this->pageRenderer->displayPage('segments.html', $data);
   }
 

@@ -245,6 +245,13 @@ class Helper {
   }
 
   /**
+   * @return \WC_Shipping_Method[]
+   */
+  public function getShippingMethods(): array {
+    return $this->WC()->shipping()->get_shipping_methods();
+  }
+
+  /**
    * Check whether the current request is processing a WooCommerce checkout.
    * Works for both the normal checkout and the block checkout.
    *
