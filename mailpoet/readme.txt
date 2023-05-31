@@ -3,7 +3,7 @@ Contributors: mailpoet
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 6.0
 Tested up to: 6.2
-Stable tag: 4.17.0
+Stable tag: 4.17.1
 Requires PHP: 7.3
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -218,6 +218,9 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 4.17.1 - 2023-05-31 =
+* Fix: Stop adding indexes to first name and name field, when they already have been created.
 
 = 4.17.0 - 2023-05-29 =
 * Added: subscriber counts caching to improve performance on websites with 2,000+ subscribers;
