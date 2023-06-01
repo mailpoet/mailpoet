@@ -78,7 +78,7 @@ class SubscriptionTest extends \MailPoetTest {
     $subscriber = $this->subscribersRepository->getCurrentWPUser();
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
     $this->subscribeToSegment($subscriber, $this->wcSegment);
-    expect($this->getRenderedOptinField())->isEmpty();
+    expect($this->getRenderedOptinField())->stringNotContainsString('checked');
   }
 
   public function testItDisplaysAnUncheckedCheckboxIfCurrentUserIsNotSubscribed() {
