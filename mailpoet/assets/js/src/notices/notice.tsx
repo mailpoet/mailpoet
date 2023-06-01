@@ -63,7 +63,7 @@ function Notice({
   const content = (
     <div
       ref={elementRef}
-      className={`notice inline ${type} notice-${type} ${
+      className={`mailpoet_notice notice inline ${type} notice-${type} ${
         closable ? 'is-dismissible' : ''
       }`}
     >
