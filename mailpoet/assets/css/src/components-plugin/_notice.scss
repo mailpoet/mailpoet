@@ -3,6 +3,10 @@
   position: relative;
 
   p:empty { display: none; }
+
+  .button {
+    overflow: initial;
+  }
 }
 
 .mailpoet_notice_server {
