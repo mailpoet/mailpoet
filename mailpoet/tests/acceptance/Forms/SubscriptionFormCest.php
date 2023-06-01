@@ -10,6 +10,7 @@ use MailPoet\Test\DataFactories\Settings;
 class SubscriptionFormCest {
 
   const CONFIRMATION_MESSAGE_TIMEOUT = 20;
+  const FORM_NAME = 'Subscription Acceptance Test Form';
 
   /** @var string */
   private $subscriberEmail;
@@ -29,7 +30,7 @@ class SubscriptionFormCest {
       ->withConfirmationEmailEnabled()
       ->withCaptchaType(CaptchaConstants::TYPE_DISABLED);
 
-    $formName = 'Subscription Acceptance Test Form';
+    $formName = self::FORM_NAME;
     $formFactory = new Form();
     $this->formId = $formFactory->withName($formName)->create()->getId();
 
@@ -46,6 +47,25 @@ class SubscriptionFormCest {
       ',
       'post_status' => 'publish',
     ]);
+  }
+
+  public function subscriptionNewPageConfirmation(\AcceptanceTester $i) {
+    $i->wantTo('Subscribe to a form and to see new page confirmation');
+    $formName = self::FORM_NAME;
+    $i->login();
+    $i->amOnMailpoetPage('Forms');
+    $i->clickItemRowActionByItemName($formName, 'Edit');
+    $i->waitForElement('[data-automation-id="form_title_input"]');
+    $i->click('(//div[@class="components-radio-control__option"])[2]'); // Click Go to Page option
+    $i->selectOption('.components-select-control__input', 'Sample Page');
+    $i->saveFormInEditor();
+    $i->amOnPage('/form-test');
+    $i->executeJS('window.scrollTo(0, document.body.scrollHeight);');
+    $i->switchToIframe('#mailpoet_form_iframe');
+    $i->fillField('[data-automation-id="form_email"]', $this->subscriberEmail);
+    $i->scrollTo('.mailpoet_submit');
+    $i->click('.mailpoet_submit');
+    $i->waitForText('Sample Page');
   }
 
   public function subscriptionFormWidget(\AcceptanceTester $i) {
