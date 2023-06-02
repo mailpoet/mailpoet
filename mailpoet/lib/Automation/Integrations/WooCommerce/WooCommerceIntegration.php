@@ -33,6 +33,9 @@ class WooCommerceIntegration {
   /** @var WordPressUserSubjectToWooCommerceCustomerSubjectTransformer */
   private $wordPressUserToWooCommerceCustomerTransformer;
 
+  /** @var WooCommerce */
+  private $wooCommerce;
+
   public function __construct(
     OrderStatusChangedTrigger $orderStatusChangedTrigger,
     AbandonedCartSubject $abandonedCartSubject,
@@ -40,7 +43,8 @@ class WooCommerceIntegration {
     OrderSubject $orderSubject,
     CustomerSubject $customerSubject,
     ContextFactory $contextFactory,
-    WordPressUserSubjectToWooCommerceCustomerSubjectTransformer $wordPressUserToWooCommerceCustomerTransformer
+    WordPressUserSubjectToWooCommerceCustomerSubjectTransformer $wordPressUserToWooCommerceCustomerTransformer,
+    WooCommerce $wooCommerce
   ) {
     $this->orderStatusChangedTrigger = $orderStatusChangedTrigger;
     $this->abandonedCartSubject = $abandonedCartSubject;
@@ -49,9 +53,13 @@ class WooCommerceIntegration {
     $this->customerSubject = $customerSubject;
     $this->contextFactory = $contextFactory;
     $this->wordPressUserToWooCommerceCustomerTransformer = $wordPressUserToWooCommerceCustomerTransformer;
+    $this->wooCommerce = $wooCommerce;
   }
 
   public function register(Registry $registry): void {
+    if (!$this->wooCommerce->isWooCommerceActive()) {
+      return;
+    }
 
     $registry->addContextFactory('woocommerce', function () {
       return $this->contextFactory->getContextData();
