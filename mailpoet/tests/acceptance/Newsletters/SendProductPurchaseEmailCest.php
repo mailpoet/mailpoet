@@ -52,7 +52,7 @@ class SendProductPurchaseEmailCest {
 
     $i->emptyMailbox();
 
-    $i->getBackToSite();
+    $i->amOnSiteHomepage();
 
     // Add additional random product to cart to buy 2 products
     $i->addProductToCart($product2);
