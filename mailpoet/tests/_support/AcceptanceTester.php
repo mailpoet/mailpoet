@@ -54,6 +54,7 @@ class AcceptanceTester extends \Codeception\Actor {
   const WOO_COMMERCE_MEMBERSHIPS_PLUGIN = 'woocommerce-memberships';
   const WOO_COMMERCE_SUBSCRIPTIONS_PLUGIN = 'woocommerce-subscriptions';
   const AUTOMATE_WOO_PLUGIN = 'automatewoo';
+  const MAILHOG_DATA_PATH = '/mailhog-data';
 
   /**
    * Define custom actions here
@@ -127,15 +128,10 @@ class AcceptanceTester extends \Codeception\Actor {
   }
 
   /**
-   * Navigate to Mailhog page and empty the mailbox
+   * Clear the Mailbox so it's empty
    */
   public function emptyMailbox() {
-    $i = $this;
-    $i->amOnMailboxAppPage();
-    // click to empty the mailbox
-    $i->click('.glyphicon-remove-circle');
-    $i->waitForElementVisible('.btn-danger');
-    $i->click('.btn-danger');
+    exec('rm -rf ' . self::MAILHOG_DATA_PATH . '/*', $output);
   }
 
   public function clickItemRowActionByItemName($itemName, $link) {
@@ -676,6 +672,7 @@ class AcceptanceTester extends \Codeception\Actor {
    */
   public function checkEmailWasNotReceived($subject) {
     $i = $this;
+    $i->triggerMailPoetActionScheduler();
     $i->amOnMailboxAppPage();
     $i->dontSee($subject);
     // click refresh button to seek for new emails once again
