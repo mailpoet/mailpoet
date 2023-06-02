@@ -58,14 +58,6 @@ class AcceptanceTester extends \Codeception\Actor {
   /**
    * Define custom actions here
    */
-  public function getBackToSite() {
-    $i = $this;
-    $i->amOnUrl(self::WP_URL);
-  }
-
-  /**
-   * Define custom actions here
-   */
   public function login() {
     $i = $this;
     $i->amOnPage('/wp-login.php');
@@ -124,6 +116,14 @@ class AcceptanceTester extends \Codeception\Actor {
     $i->amOnUrl(self::MAIL_URL);
     // ensure that angular is loaded by checking angular specific class
     $i->waitForElement('.messages.ng-scope');
+  }
+
+  /**
+   * Define custom actions here
+   */
+  public function amOnSiteHomepage() {
+    $i = $this;
+    $i->amOnUrl(self::WP_URL);
   }
 
   /**

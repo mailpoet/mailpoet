@@ -55,7 +55,7 @@ class SendCategoryPurchaseEmailCest {
     $i->wantTo('Buy in the same category once again and don\'t receive the newsletter');
 
     $i->emptyMailbox();
-    $i->getBackToSite();
+    $i->amOnSiteHomepage();
 
     // Add additional random product to cart to buy 2 products
     $i->addProductToCart($product2);

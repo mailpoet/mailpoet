@@ -51,7 +51,7 @@ class SendFirstPurchaseEmailCest {
     $i->wantTo('Purchase second product and check if I didn\'t get "First purchase email"');
 
     $i->emptyMailbox();
-    $i->getBackToSite();
+    $i->amOnSiteHomepage();
     $i->orderProductWithoutRegistration($product2, $userEmail);
     $i->triggerMailPoetActionScheduler();
     $i->checkEmailWasNotReceived($emailSubject);
