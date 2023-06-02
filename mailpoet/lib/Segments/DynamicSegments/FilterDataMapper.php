@@ -27,6 +27,7 @@ use MailPoet\Segments\DynamicSegments\Filters\WooCommerceSingleOrderValue;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceSubscription;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceTotalSpent;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceUsedPaymentMethod;
+use MailPoet\Segments\DynamicSegments\Filters\WooCommerceUsedShippingMethod;
 use MailPoet\WP\Functions as WPFunctions;
 
 class FilterDataMapper {
@@ -374,6 +375,19 @@ class FilterDataMapper {
       $filterData['operator'] = $data['operator'];
       $filterData['payment_methods'] = $data['payment_methods'];
       $filterData['used_payment_method_days'] = intval($data['used_payment_method_days']);
+    } elseif ($data['action'] === WooCommerceUsedShippingMethod::ACTION) {
+      if (!isset($data['operator']) || !in_array($data['operator'], WooCommerceUsedShippingMethod::VALID_OPERATORS, true)) {
+        throw new InvalidFilterException('Missing operator', InvalidFilterException::MISSING_OPERATOR);
+      }
+      if (!isset($data['shipping_methods']) || !is_array($data['shipping_methods']) || empty($data['shipping_methods'])) {
+        throw new InvalidFilterException('Missing shipping methods', InvalidFilterException::MISSING_VALUE);
+      }
+      if (!isset($data['used_shipping_method_days']) || intval($data['used_shipping_method_days']) < 1) {
+        throw new InvalidFilterException('Missing days', InvalidFilterException::MISSING_VALUE);
+      }
+      $filterData['operator'] = $data['operator'];
+      $filterData['shipping_methods'] = $data['shipping_methods'];
+      $filterData['used_shipping_method_days'] = intval($data['used_shipping_method_days']);
     } elseif (in_array($data['action'], WooCommerceCustomerTextField::ACTIONS)) {
       if (empty($data['value'])) {
         throw new InvalidFilterException('Missing value', InvalidFilterException::MISSING_VALUE);
