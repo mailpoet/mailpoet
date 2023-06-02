@@ -4,12 +4,17 @@ namespace MailPoet\Test\Acceptance;
 
 use MailPoet\Test\DataFactories\Form;
 use MailPoet\Test\DataFactories\Segment;
+use MailPoet\Test\DataFactories\Settings;
 
 class EditorAddListSelectionCest {
 
   const CONFIRMATION_MESSAGE_TIMEOUT = 20;
 
   public function createCustomSelect(\AcceptanceTester $i) {
+
+    $settings = new Settings();
+    $settings->withConfirmationEmailEnabled();
+
     $i->wantTo('Add list selection block to the editor');
 
     $segmentFactory = new Segment();
