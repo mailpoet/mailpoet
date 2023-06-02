@@ -69,7 +69,7 @@ export async function subscribersTrashingRestoring() {
   describe(subscribersPageTitle, () => {
     describe('should be able to see the message', () => {
       expect(page.locator('.colspanchange').innerText()).to.contain(
-        'No emails found.',
+        'No items found.',
       );
     });
   });
