@@ -106,6 +106,8 @@ class SubscriberActivityTrackerTest extends \MailPoetTest {
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
     expect($subscriber->getLastEngagementAt())->greaterThan(Carbon::now()->subMinute());
     expect($subscriber->getLastEngagementAt())->lessThan(Carbon::now()->addMinute());
+    expect($subscriber->getLastPageViewAt())->greaterThan(Carbon::now()->subMinute());
+    expect($subscriber->getLastPageViewAt())->lessThan(Carbon::now()->addMinute());
   }
 
   /**

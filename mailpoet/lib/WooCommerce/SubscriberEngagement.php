@@ -35,4 +35,18 @@ class SubscriberEngagement {
 
     $this->subscribersRepository->maybeUpdateLastEngagement($subscriber);
   }
+
+  public function updateSubscriberLastPurchase($orderId): void {
+    $order = $this->woocommerceHelper->wcGetOrder($orderId);
+    if (!$order instanceof WC_Order) {
+      return;
+    }
+
+    $subscriber = $this->subscribersRepository->findOneBy(['email' => $order->get_billing_email()]);
+    if (!$subscriber instanceof SubscriberEntity) {
+      return;
+    }
+
+    $this->subscribersRepository->maybeUpdateLastPurchaseAt($subscriber);
+  }
 }

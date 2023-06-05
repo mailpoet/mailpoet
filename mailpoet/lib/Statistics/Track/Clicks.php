@@ -117,7 +117,7 @@ class Clicks {
       // track open event
       $this->opens->track($data, $displayImage = false);
       // Update engagement date
-      $this->subscribersRepository->maybeUpdateLastEngagement($subscriber);
+      $this->subscribersRepository->maybeUpdateLastClickAt($subscriber);
     }
     $url = $this->processUrl($link->getUrl(), $newsletter, $subscriber, $queue, $wpUserPreview);
     $this->redirectToUrl($url);

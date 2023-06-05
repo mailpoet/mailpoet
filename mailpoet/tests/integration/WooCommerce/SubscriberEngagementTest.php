@@ -2,6 +2,7 @@
 
 namespace MailPoet\WooCommerce;
 
+use DateTimeInterface;
 use MailPoet\Config\SubscriberChangesNotifier;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Subscribers\SubscribersRepository;
@@ -49,7 +50,7 @@ class SubscriberEngagementTest extends \MailPoetTest {
     expect($subscriber->getLastEngagementAt())->equals($now);
   }
 
-  public function testItDoesntUpdateAnythingForNonExistingOder() {
+  public function testItDoesntUpdateAnythingForNonExistingOrder() {
     $subscriber = $this->createSubscriber();
     $this->wooCommerceHelperMock
       ->expects($this->once())
@@ -58,6 +59,21 @@ class SubscriberEngagementTest extends \MailPoetTest {
     $this->subscriberEngagement->updateSubscriberEngagement(1);
     $this->entityManager->refresh($subscriber);
     expect($subscriber->getLastEngagementAt())->null();
+  }
+
+  public function testItUpdatesTimestampsWhenOrderChangesToPaidStatus(): void {
+    $subscriber = $this->createSubscriber();
+    expect($subscriber->getLastEngagementAt())->null();
+    expect($subscriber->getLastPurchaseAt())->null();
+    $order = $this->tester->createWooCommerceOrder(['status' => 'pending', 'billing_email' => $subscriber->getEmail()]);
+    $order->set_status('processing');
+    $order->save();
+    $engagementTime = $subscriber->getLastEngagementAt();
+    $purchaseTime = $subscriber->getLastPurchaseAt();
+    $this->assertInstanceOf(DateTimeInterface::class, $engagementTime);
+    $this->assertInstanceOf(DateTimeInterface::class, $purchaseTime);
+    expect($engagementTime)->equals($purchaseTime);
+    expect($engagementTime)->greaterThan(Carbon::now()->subMinute());
   }
 
   public function testItDoesntThrowAnErrorForNonExistingSubscriber() {
@@ -83,7 +99,7 @@ class SubscriberEngagementTest extends \MailPoetTest {
 
   private function createSubscriber(): SubscriberEntity {
     $subscriber = new SubscriberEntity();
-    $subscriber->setEmail('subscriber@egagement.com');
+    $subscriber->setEmail('subscriber@engagement.com');
     $this->entityManager->persist($subscriber);
     $this->entityManager->flush();
     return $subscriber;

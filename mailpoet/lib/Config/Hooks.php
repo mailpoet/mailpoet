@@ -432,6 +432,12 @@ class Hooks {
       [$this->hooksWooCommerce, 'updateSubscriberEngagement'],
       7
     );
+    // See class-wc-order.php, which says this about this action
+    // "Fires when the order progresses from a pending payment status to a paid one"
+    $this->wp->addAction(
+      'woocommerce_order_payment_status_changed',
+      [$this->hooksWooCommerce, 'updateSubscriberLastPurchase']
+    );
   }
 
   public function setupWooCommerceTracking() {

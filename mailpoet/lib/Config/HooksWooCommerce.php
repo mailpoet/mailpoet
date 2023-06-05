@@ -142,6 +142,14 @@ class HooksWooCommerce {
     }
   }
 
+  public function updateSubscriberLastPurchase($orderId) {
+    try {
+      $this->subscriberEngagement->updateSubscriberLastPurchase($orderId);
+    } catch (\Throwable $e) {
+      $this->logError($e, 'WooCommerce Update Subscriber Last Purchase');
+    }
+  }
+
   public function declareHposCompatibility() {
     try {
       if (class_exists('\Automattic\WooCommerce\Utilities\FeaturesUtil')) {
