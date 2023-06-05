@@ -374,8 +374,11 @@ class OpensTest extends \MailPoetTest {
 
     $opens->track($this->trackData);
     $savedEngagementTime = $this->subscriber->getLastEngagementAt();
+    $savedOpenTime = $this->subscriber->getLastOpenAt();
     $this->assertInstanceOf(\DateTimeInterface::class, $savedEngagementTime);
+    $this->assertInstanceOf(\DateTimeInterface::class, $savedOpenTime);
     expect($savedEngagementTime->getTimestamp())->equals($now->getTimestamp());
+    expect($savedOpenTime->getTimestamp())->equals($now->getTimestamp());
   }
 
   public function testItUpdatesSubscriberEngagementForUnknownAgent() {
@@ -395,11 +398,14 @@ class OpensTest extends \MailPoetTest {
 
     $opens->track($this->trackData);
     $savedEngagementTime = $this->subscriber->getLastEngagementAt();
+    $savedOpenTime = $this->subscriber->getLastOpenAt();
     $this->assertInstanceOf(\DateTimeInterface::class, $savedEngagementTime);
+    $this->assertInstanceOf(\DateTimeInterface::class, $savedOpenTime);
     expect($savedEngagementTime->getTimestamp())->equals($now->getTimestamp());
+    expect($savedOpenTime->getTimestamp())->equals($now->getTimestamp());
   }
 
-  public function testItUpdatesSubscriberEngagementForMachineAgent() {
+  public function testItUpdatesSubscriberTimestampsForMachineAgent() {
     $now = Carbon::now();
     $wpMock = $this->createMock(WPFunctions::class);
     $wpMock->expects($this->once())
@@ -416,7 +422,10 @@ class OpensTest extends \MailPoetTest {
 
     $opens->track($this->trackData);
     $savedEngagementTime = $this->subscriber->getLastEngagementAt();
+    $savedOpenTime = $this->subscriber->getLastOpenAt();
     $this->assertInstanceOf(\DateTimeInterface::class, $savedEngagementTime);
+    $this->assertInstanceOf(\DateTimeInterface::class, $savedOpenTime);
     expect($savedEngagementTime->getTimestamp())->equals($now->getTimestamp());
+    expect($savedOpenTime->getTimestamp())->equals($now->getTimestamp());
   }
 }

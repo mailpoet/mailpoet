@@ -499,7 +499,7 @@ class ClicksTest extends \MailPoetTest {
     expect($link)->equals('http://example.com/?email=test@example.com&newsletter_subject=Subject');
   }
 
-  public function testItUpdatesSubscriberEngagementForHumanAgent() {
+  public function testItUpdatesSubscriberTimestampsForHumanAgent() {
     $now = Carbon::now();
     $wpMock = $this->createMock(WPFunctions::class);
     $wpMock->expects($this->any())
@@ -531,8 +531,11 @@ class ClicksTest extends \MailPoetTest {
     ], $this);
     $clicks->track($data);
     $savedEngagementTime = $this->subscriber->getLastEngagementAt();
+    $savedClickTime = $this->subscriber->getLastClickAt();
     $this->assertInstanceOf(\DateTimeInterface::class, $savedEngagementTime);
+    $this->assertInstanceOf(\DateTimeInterface::class, $savedClickTime);
     expect($savedEngagementTime->getTimestamp())->equals($now->getTimestamp());
+    expect($savedClickTime->getTimestamp())->equals($now->getTimestamp());
   }
 
   public function testItUpdatesSubscriberEngagementForUnknownAgent() {
@@ -566,8 +569,11 @@ class ClicksTest extends \MailPoetTest {
     ], $this);
     $clicks->track($data);
     $savedEngagementTime = $this->subscriber->getLastEngagementAt();
+    $savedClickTime = $this->subscriber->getLastClickAt();
     $this->assertInstanceOf(\DateTimeInterface::class, $savedEngagementTime);
+    $this->assertInstanceOf(\DateTimeInterface::class, $savedClickTime);
     expect($savedEngagementTime->getTimestamp())->equals($now->getTimestamp());
+    expect($savedClickTime->getTimestamp())->equals($now->getTimestamp());
   }
 
   public function testItUpdatesSubscriberEngagementForMachineAgent() {
@@ -601,14 +607,17 @@ class ClicksTest extends \MailPoetTest {
     ], $this);
     $clicks->track($data);
     $savedEngagementTime = $this->subscriber->getLastEngagementAt();
+    $savedClickTime = $this->subscriber->getLastClickAt();
     $this->assertInstanceOf(\DateTimeInterface::class, $savedEngagementTime);
+    $this->assertInstanceOf(\DateTimeInterface::class, $savedClickTime);
     expect($savedEngagementTime->getTimestamp())->equals($now->getTimestamp());
+    expect($savedClickTime->getTimestamp())->equals($now->getTimestamp());
   }
 
   public function testItWontUpdateSubscriberThatWasRecentlyUpdated() {
-    $lastEngagement = Carbon::now()->subSeconds(10);
+    $lastClickTime = Carbon::now()->subSeconds(10);
     $clicksRepository = $this->diContainer->get(StatisticsClicksRepository::class);
-    $this->subscriber->setLastEngagementAt($lastEngagement);
+    $this->subscriber->setLastClickAt($lastClickTime);
     $data = $this->trackData;
     $data->userAgent = UserAgentEntity::MACHINE_USER_AGENTS[0];
     $clicks = Stub::construct($this->clicks, [
@@ -625,6 +634,6 @@ class ClicksTest extends \MailPoetTest {
       'redirectToUrl' => null,
     ], $this);
     $clicks->track($data);
-    expect($this->subscriber->getLastEngagementAt())->equals($lastEngagement);
+    expect($this->subscriber->getLastClickAt())->equals($lastClickTime);
   }
 }

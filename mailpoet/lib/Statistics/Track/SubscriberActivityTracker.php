@@ -92,7 +92,7 @@ class SubscriberActivityTracker {
   }
 
   private function processTracking(SubscriberEntity $subscriber): void {
-    $this->subscribersRepository->maybeUpdateLastEngagement($subscriber);
+    $this->subscribersRepository->maybeUpdateLastPageViewAt($subscriber);
     $this->pageViewCookie->setPageViewTimestamp($this->wp->currentTime('timestamp'));
     foreach ($this->callbacks as $callback) {
       $callback($subscriber);
