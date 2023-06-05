@@ -79,7 +79,7 @@ class ScheduleNewsletterCest {
 
     $i->wantTo('Pick tomorrow‘s date');
     $i->click('select[name=time]');
-    $i->selectOption('form select[name=time]', $currentDateTime->modify("26 hour")->format('g:00 a'));
+    $i->selectOption('form select[name=time]', $currentDateTime->modify("25 hour")->format('g:00 a'));
     $i->see("Schedule", "button span");
   }
 }
