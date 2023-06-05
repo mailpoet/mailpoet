@@ -2,6 +2,7 @@
 
 namespace MailPoet\Subscribers;
 
+use DateTimeInterface;
 use MailPoet\Config\SubscriberChangesNotifier;
 use MailPoet\Doctrine\Repository;
 use MailPoet\Entities\SegmentEntity;
@@ -284,6 +285,21 @@ class SubscribersRepository extends Repository {
 
     $this->changesNotifier->subscribersUpdated($ids);
     $this->invalidateTotalSubscribersCache();
+    return count($ids);
+  }
+
+  public function bulkUpdateLastSendingAt(array $ids, DateTimeInterface $dateTime): int {
+    if (empty($ids)) {
+      return 0;
+    }
+    $this->entityManager->createQueryBuilder()
+      ->update(SubscriberEntity::class, 's')
+      ->set('s.lastSendingAt', ':lastSendingAt')
+      ->where('s.id IN (:ids)')
+      ->setParameter('lastSendingAt', $dateTime)
+      ->setParameter('ids', $ids)
+      ->getQuery()
+      ->execute();
     return count($ids);
   }
 

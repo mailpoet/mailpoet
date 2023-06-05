@@ -3,6 +3,7 @@
 namespace MailPoet\Subscribers;
 
 use DateTimeImmutable;
+use DateTimeInterface;
 use MailPoet\Entities\CustomFieldEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberCustomFieldEntity;
@@ -78,6 +79,30 @@ class SubscribersRepositoryTest extends \MailPoetTest {
     $subscriberTwo = $this->repository->findOneById($subscriberTwoId);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriberTwo);
     expect($subscriberTwo->getDeletedAt())->notNull();
+  }
+
+  public function testItBulkUpdatesLastSendingAt(): void {
+    $subscriberOne = $this->createSubscriber('one@e.com');
+    $subscriberTwo = $this->createSubscriber('two@e.com');
+    $subscriberThree = $this->createSubscriber('three@e.com');
+
+    expect($subscriberOne->getLastSendingAt())->null();
+    expect($subscriberTwo->getLastSendingAt())->null();
+    expect($subscriberThree->getLastSendingAt())->null();
+    $idsToUpdate = [
+      $subscriberOne->getId(),
+      $subscriberThree->getId(),
+    ];
+    $now = new DateTimeImmutable();
+    $this->repository->bulkUpdateLastSendingAt($idsToUpdate, $now);
+    $this->repository->refresh($subscriberOne);
+    $this->repository->refresh($subscriberTwo);
+    $this->repository->refresh($subscriberThree);
+    $this->assertInstanceOf(DateTimeInterface::class, $subscriberOne->getLastSendingAt());
+    expect($subscriberOne->getLastSendingAt()->getTimestamp())->equals($now->getTimestamp());
+    expect($subscriberTwo->getLastSendingAt())->null();
+    $this->assertInstanceOf(DateTimeInterface::class, $subscriberThree->getLastSendingAt());
+    expect($subscriberThree->getLastSendingAt()->getTimestamp())->equals($now->getTimestamp());
   }
 
   public function testItBulkDeleteSubscribers(): void {
