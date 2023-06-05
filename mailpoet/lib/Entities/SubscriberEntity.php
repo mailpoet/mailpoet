@@ -159,6 +159,36 @@ class SubscriberEntity {
    * @ORM\Column(type="datetimetz", nullable=true)
    * @var DateTimeInterface|null
    */
+  private $lastSendingAt;
+
+  /**
+   * @ORM\Column(type="datetimetz", nullable=true)
+   * @var DateTimeInterface|null
+   */
+  private $lastOpenAt;
+
+  /**
+   * @ORM\Column(type="datetimetz", nullable=true)
+   * @var DateTimeInterface|null
+   */
+  private $lastClickAt;
+
+  /**
+   * @ORM\Column(type="datetimetz", nullable=true)
+   * @var DateTimeInterface|null
+   */
+  private $lastPurchaseAt;
+
+  /**
+   * @ORM\Column(type="datetimetz", nullable=true)
+   * @var DateTimeInterface|null
+   */
+  private $lastPageViewAt;
+
+  /**
+   * @ORM\Column(type="datetimetz", nullable=true)
+   * @var DateTimeInterface|null
+   */
   private $woocommerceSyncedAt;
 
   /**
@@ -528,6 +558,46 @@ class SubscriberEntity {
 
   public function setLastEngagementAt(DateTimeInterface $lastEngagementAt): void {
     $this->lastEngagementAt = $lastEngagementAt;
+  }
+
+  public function getLastSendingAt(): ?DateTimeInterface {
+    return $this->lastSendingAt;
+  }
+
+  public function setLastSendingAt(?DateTimeInterface $dateTime): void {
+    $this->lastSendingAt = $dateTime;
+  }
+
+  public function getLastOpenAt(): ?DateTimeInterface {
+    return $this->lastOpenAt;
+  }
+
+  public function setLastOpenAt(?DateTimeInterface $dateTime): void {
+    $this->lastOpenAt = $dateTime;
+  }
+
+  public function getLastClickAt(): ?DateTimeInterface {
+    return $this->lastClickAt;
+  }
+
+  public function setLastClickAt(?DateTimeInterface $dateTime): void {
+    $this->lastClickAt = $dateTime;
+  }
+
+  public function getLastPurchaseAt(): ?DateTimeInterface {
+    return $this->lastPurchaseAt;
+  }
+
+  public function setLastPurchaseAt(?DateTimeInterface $dateTime): void {
+    $this->lastPurchaseAt = $dateTime;
+  }
+
+  public function getLastPageViewAt(): ?DateTimeInterface {
+    return $this->lastPageViewAt;
+  }
+
+  public function setLastPageViewAt(?DateTimeInterface $dateTime): void {
+    $this->lastPageViewAt = $dateTime;
   }
 
   public function setWoocommerceSyncedAt(?DateTimeInterface $woocommerceSyncedAt): void {
