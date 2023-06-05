@@ -413,7 +413,10 @@ class SendingQueueTest extends \MailPoetTest {
         ]
       )
     );
+    expect($this->subscriber->getLastSendingAt())->null();
     $sendingQueueWorker->process();
+    $this->subscribersRepository->refresh($this->subscriber);
+    expect($this->subscriber->getLastSendingAt())->notNull();
 
     // newsletter status is set to sent
     $updatedNewsletter = Newsletter::findOne($this->newsletter->id);
@@ -538,7 +541,10 @@ class SendingQueueTest extends \MailPoetTest {
         ]
       )
     );
+    expect($this->subscriber->getLastSendingAt())->null();
     $sendingQueueWorker->process();
+    $this->subscribersRepository->refresh($this->subscriber);
+    expect($this->subscriber->getLastSendingAt())->notNull();
 
     // newsletter status is set to sent
     $updatedNewsletter = Newsletter::findOne($this->newsletter->id);
@@ -1000,6 +1006,9 @@ class SendingQueueTest extends \MailPoetTest {
     $this->assertInstanceOf(SendingQueueEntity::class, $sendingQueue);
     $this->sendingQueuesRepository->refresh($sendingQueue);
     expect($sendingQueue->getCountTotal())->equals($expectSending ? 1 : 0);
+    // Transactional emails shouldn't update last sending at
+    $this->subscribersRepository->refresh($subscriber);
+    expect($subscriber->getLastSendingAt())->null();
   }
 
   public function dataForTestItSendsTransactionalEmails(): array {

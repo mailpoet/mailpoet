@@ -179,6 +179,11 @@ class SendingQueue {
       return;
     }
 
+    $isTransactional = in_array($newsletter->type, [
+      NewsletterEntity::TYPE_AUTOMATION_TRANSACTIONAL,
+      NewsletterEntity::TYPE_WC_TRANSACTIONAL_EMAIL,
+    ]);
+
     // clone the original object to be used for processing
     $_newsletter = (object)$newsletter->asArray();
     $_newsletter->options = $newsletterEntity->getOptionsAsArray();
@@ -266,6 +271,10 @@ class SendingQueue {
           $foundSubscribers,
           $timer
         );
+        if (!$isTransactional) {
+          $now = Carbon::createFromTimestamp((int)current_time('timestamp'));
+          $this->subscribersRepository->bulkUpdateLastSendingAt($foundSubscribersIds, $now);
+        }
         $this->loggerFactory->getLogger(LoggerFactory::TOPIC_NEWSLETTERS)->info(
           'after queue chunk processing',
           ['newsletter_id' => $newsletter->id, 'task_id' => $queue->taskId]
