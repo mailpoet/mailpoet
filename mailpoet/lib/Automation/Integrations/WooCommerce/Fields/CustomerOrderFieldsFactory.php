@@ -9,8 +9,6 @@ use MailPoet\Automation\Engine\WordPress;
 use MailPoet\Automation\Integrations\WooCommerce\Payloads\CustomerPayload;
 use MailPoet\Automation\Integrations\WooCommerce\WooCommerce;
 use WC_Customer;
-use WP_Error;
-use WP_Term;
 
 class CustomerOrderFieldsFactory {
   /** @var WooCommerce */
@@ -19,12 +17,17 @@ class CustomerOrderFieldsFactory {
   /** @var WordPress */
   private $wordPress;
 
+  /** @var TermOptionsBuilder */
+  private $termOptionsBuilder;
+
   public function __construct(
     WordPress $wordPress,
-    WooCommerce $wooCommerce
+    WooCommerce $wooCommerce,
+    TermOptionsBuilder $termOptionsBuilder
   ) {
     $this->wordPress = $wordPress;
     $this->wooCommerce = $wooCommerce;
+    $this->termOptionsBuilder = $termOptionsBuilder;
   }
 
   /** @return Field[] */
@@ -92,7 +95,7 @@ class CustomerOrderFieldsFactory {
           return $customer ? $this->getOrderProductTermIds($customer, 'product_cat') : [];
         },
         [
-          'options' => $this->getTermsList('product_cat'),
+          'options' => $this->termOptionsBuilder->getCategoryOptions(),
         ]
       ),
       new Field(
@@ -104,7 +107,7 @@ class CustomerOrderFieldsFactory {
           return $customer ? $this->getOrderProductTermIds($customer, 'product_tag') : [];
         },
         [
-          'options' => $this->getTermsList('product_tag'),
+          'options' => $this->termOptionsBuilder->getTagOptions(),
         ]
       ),
     ];
@@ -186,33 +189,5 @@ class CustomerOrderFieldsFactory {
     ", array_merge($statuses, [$customer->get_id(), $taxonomy]));
 
     return array_map('intval', $wpdb->get_col($statement));
-  }
-
-  private function getTermsList(string $taxonomy): array {
-    $terms = $this->wordPress->getTerms(['taxonomy' => $taxonomy, 'hide_empty' => false]);
-    if ($terms instanceof WP_Error) {
-      return [];
-    }
-    return $this->buildTermsList((array)$terms);
-  }
-
-  private function buildTermsList(array $terms, int $parentId = 0): array {
-    $parents = array_filter($terms, function ($term) use ($parentId) {
-      return $term instanceof WP_Term && $term->parent === $parentId;
-    });
-
-    usort($parents, function (WP_Term $a, WP_Term $b) {
-      return $a->name <=> $b->name;
-    });
-
-    $list = [];
-    foreach ($parents as $term) {
-      $id = $term->term_id; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-      $list[] = ['id' => $id, 'name' => $term->name];
-      foreach ($this->buildTermsList($terms, $id) as $child) {
-        $list[] = ['id' => $child['id'], 'name' => "$term->name | {$child['name']}"];
-      }
-    }
-    return $list;
   }
 }
