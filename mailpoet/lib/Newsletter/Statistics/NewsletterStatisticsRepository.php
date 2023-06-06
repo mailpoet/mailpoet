@@ -202,6 +202,12 @@ class NewsletterStatisticsRepository extends Repository {
       $query->andWhere('q.createdAt BETWEEN :from AND :to')
         ->setParameter('from', $from)
         ->setParameter('to', $to);
+    } elseif ($from && $to === null) {
+      $query->andWhere('q.createdAt >= :from')
+        ->setParameter('from', $from);
+    } elseif ($from === null && $to) {
+      $query->andWhere('q.createdAt <= :to')
+        ->setParameter('to', $to);
     }
 
     $results = $query->getQuery()
@@ -223,6 +229,12 @@ class NewsletterStatisticsRepository extends Repository {
     if ($from && $to) {
       $qb->andWhere('stats.createdAt BETWEEN :from AND :to')
         ->setParameter('from', $from)
+        ->setParameter('to', $to);
+    } elseif ($from && $to === null) {
+      $qb->andWhere('stats.createdAt >= :from')
+        ->setParameter('from', $from);
+    } elseif ($from === null && $to) {
+      $qb->andWhere('stats.createdAt <= :to')
         ->setParameter('to', $to);
     }
 
@@ -265,6 +277,12 @@ class NewsletterStatisticsRepository extends Repository {
     if ($from && $to) {
       $query->andWhere('stats.createdAt BETWEEN :from AND :to')
         ->setParameter('from', $from)
+        ->setParameter('to', $to);
+    } elseif ($from && $to === null) {
+      $query->andWhere('stats.createdAt >= :from')
+        ->setParameter('from', $from);
+    } elseif ($from === null && $to) {
+      $query->andWhere('stats.createdAt <= :to')
         ->setParameter('to', $to);
     }
 
