@@ -19,7 +19,7 @@ export function Header(): JSX.Element {
         })}
         isPrimary
       >
-        {__('Edit Automation', 'mailpoet')}
+        {__('Edit automation', 'mailpoet')}
       </Button>
     </header>
   );
