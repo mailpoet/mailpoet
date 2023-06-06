@@ -1,5 +1,5 @@
 import ReactDOM from 'react-dom';
-import { HashRouter } from 'react-router-dom';
+import { BrowserRouter } from 'react-router-dom';
 import { TopBarWithBeamer } from '../../../../common/top_bar/top_bar';
 import { Notices } from '../../../listing/components/notices';
 import { Header } from './components/header';
@@ -14,18 +14,18 @@ function Analytics(): JSX.Element {
     <div className="mailpoet-automation-analytics">
       <Header />
       <Overview />
+      <Tabs />
     </div>
   );
 }
 
 function App(): JSX.Element {
   return (
-    <HashRouter>
+    <BrowserRouter>
       <TopBarWithBeamer />
       <Notices />
       <Analytics />
-      <Tabs />
-    </HashRouter>
+    </BrowserRouter>
   );
 }
 
