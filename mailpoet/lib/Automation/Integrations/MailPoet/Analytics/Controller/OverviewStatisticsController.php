@@ -14,62 +14,61 @@ use MailPoet\Newsletter\Statistics\WooCommerceRevenue;
 use MailPoet\WooCommerce\Helper;
 
 class OverviewStatisticsController {
+  /** @var NewslettersRepository */
+  private $newslettersRepository;
 
-    /** @var NewslettersRepository */
-    private $newslettersRepository;
+  /** @var NewsletterStatisticsRepository */
+  private $newsletterStatisticsRepository;
 
-    /** @var NewsletterStatisticsRepository */
-    private $newsletterStatisticsRepository;
-
-    /** @var Helper */
-    private $wooCommerceHelper;
+  /** @var Helper */
+  private $wooCommerceHelper;
 
   public function __construct(
     NewslettersRepository $newslettersRepository,
     NewsletterStatisticsRepository $newsletterStatisticsRepository,
     Helper $wooCommerceHelper
   ) {
-      $this->newslettersRepository = $newslettersRepository;
-      $this->newsletterStatisticsRepository = $newsletterStatisticsRepository;
-      $this->wooCommerceHelper = $wooCommerceHelper;
+    $this->newslettersRepository = $newslettersRepository;
+    $this->newsletterStatisticsRepository = $newsletterStatisticsRepository;
+    $this->wooCommerceHelper = $wooCommerceHelper;
   }
 
   public function getStatisticsForAutomation(Automation $automation, Query $query): array {
-      $emails = $this->getEmailsFromAutomation($automation);
-      $formattedEmptyRevenue = $this->wooCommerceHelper->getRawPrice(
-        0,
-        [
-          'currency' => $this->wooCommerceHelper->getWoocommerceCurrency(),
-        ]
-      );
-      $data = [
-        'total' => ['current' => 0, 'previous' => 0],
-        'opened' => ['current' => 0, 'previous' => 0],
-        'clicked' => ['current' => 0, 'previous' => 0],
-        'orders' => ['current' => 0, 'previous' => 0],
-        'revenue' => ['current' => 0, 'previous' => 0],
-        'revenue_formatted' => [
-          'current' => $formattedEmptyRevenue,
-          'previous' => $formattedEmptyRevenue,
-        ],
-      ];
-      if (!$emails) {
-        return $data;
-      }
+    $emails = $this->getEmailsFromAutomation($automation);
+    $formattedEmptyRevenue = $this->wooCommerceHelper->getRawPrice(
+      0,
+      [
+        'currency' => $this->wooCommerceHelper->getWoocommerceCurrency(),
+      ]
+    );
+    $data = [
+      'total' => ['current' => 0, 'previous' => 0],
+      'opened' => ['current' => 0, 'previous' => 0],
+      'clicked' => ['current' => 0, 'previous' => 0],
+      'orders' => ['current' => 0, 'previous' => 0],
+      'revenue' => ['current' => 0, 'previous' => 0],
+      'revenue_formatted' => [
+        'current' => $formattedEmptyRevenue,
+        'previous' => $formattedEmptyRevenue,
+      ],
+    ];
+    if (!$emails) {
+      return $data;
+    }
 
-      $requiredData = [
-        'totals',
-        StatisticsClickEntity::class,
-        StatisticsOpenEntity::class,
-        WooCommerceRevenue::class,
-      ];
+    $requiredData = [
+      'totals',
+      StatisticsClickEntity::class,
+      StatisticsOpenEntity::class,
+      WooCommerceRevenue::class,
+    ];
 
-      $currentStatistics = $this->newsletterStatisticsRepository->getBatchStatistics(
-        $emails,
-        $query->getPrimaryAfter(),
-        $query->getPrimaryBefore(),
-        $requiredData
-      );
+    $currentStatistics = $this->newsletterStatisticsRepository->getBatchStatistics(
+      $emails,
+      $query->getPrimaryAfter(),
+      $query->getPrimaryBefore(),
+      $requiredData
+    );
     foreach ($currentStatistics as $statistic) {
       $data['total']['current'] += $statistic->getTotalSentCount();
       $data['opened']['current'] += $statistic->getOpenCount();
@@ -78,12 +77,12 @@ class OverviewStatisticsController {
       $data['revenue']['current'] += $statistic->getWooCommerceRevenue() ? $statistic->getWooCommerceRevenue()->getValue() : 0;
     }
 
-      $previousStatistics = $this->newsletterStatisticsRepository->getBatchStatistics(
-        $emails,
-        $query->getSecondaryAfter(),
-        $query->getSecondaryBefore(),
-        $requiredData
-      );
+    $previousStatistics = $this->newsletterStatisticsRepository->getBatchStatistics(
+      $emails,
+      $query->getSecondaryAfter(),
+      $query->getSecondaryBefore(),
+      $requiredData
+    );
 
     foreach ($previousStatistics as $statistic) {
       $data['total']['previous'] += $statistic->getTotalSentCount();
@@ -108,30 +107,29 @@ class OverviewStatisticsController {
     );
 
     return $data;
-
   }
 
   private function getEmailsFromAutomation(Automation $automation): array {
     return array_filter(array_map(
-      function(Step $step) {
-          $emailId = $step->getArgs()['email_id'] ?? null;
+      function (Step $step) {
+        $emailId = $step->getArgs()['email_id'] ?? null;
         if (!$emailId) {
           return null;
         }
-          return $this->newslettersRepository->findOneById((int)$emailId);
+        return $this->newslettersRepository->findOneById((int)$emailId);
       },
-     array_filter(
-      array_values($automation->getSteps()),
-      function ($step) {
-        return in_array(
-         $step->getKey(),
-         [
-            SendEmailAction::KEY,
-         ],
-         true
-        );
-      }
+      array_filter(
+        array_values($automation->getSteps()),
+        function ($step) {
+          return in_array(
+            $step->getKey(),
+            [
+              SendEmailAction::KEY,
+            ],
+            true
+          );
+        }
       )
-      ));
+    ));
   }
 }
