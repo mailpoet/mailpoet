@@ -4,24 +4,11 @@
   background: $color-white;
   border: 1px solid $color-grey;
 
-  .mailpoet-tabs-wrapper {
+  .components-tab-panel__tabs {
     border-bottom: 1px solid $color-grey;
   }
 
-  .mailpoet-tab {
-    border: none;
-    font-size: 13px;
-    font-weight: bold;
-    padding: 16px 24px;
-
-    &.mailpoet-tab-active {
-      border-bottom: 5px solid $color-primary;
-      color: $color-black;
-    }
-  }
-
-  .mailpoet-tab-content {
-    border: none;
+  .components-tab-panel__tab-content {
     padding: 16px 24px;
   }
 }
