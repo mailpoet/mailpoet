@@ -1,16 +1,20 @@
 import { useCallback, useMemo } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import { TabPanel } from '@wordpress/components';
+import { useSelect } from '@wordpress/data';
 import { __, _x } from '@wordpress/i18n';
 import { AutomationFlow } from './automation_flow';
 import { Emails } from './emails';
 import { Orders } from './orders';
 import { Subscribers } from './subscribers';
-import { automationHasEmails } from '../../helpers/automation';
+import { storeName } from '../../store';
 
 export function Tabs(): JSX.Element {
   const history = useHistory();
   const location = useLocation();
+  const { hasEmails } = useSelect((s) => ({
+    hasEmails: s(storeName).automationHasEmails(),
+  }));
   const pageParams = useMemo(
     () => new URLSearchParams(location.search),
     [location],
@@ -22,7 +26,7 @@ export function Tabs(): JSX.Element {
       title: __('Automation flow', 'mailpoet'),
     },
   ];
-  if (automationHasEmails()) {
+  if (hasEmails) {
     tabs.push({
       name: 'automation-emails',
       title: __('Emails', 'mailpoet'),

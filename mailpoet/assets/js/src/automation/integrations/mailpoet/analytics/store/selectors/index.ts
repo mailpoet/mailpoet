@@ -15,3 +15,10 @@ export function getSection(state: State, id: string): Section | undefined {
 export function getAutomation(state: State) {
   return state.automation;
 }
+
+export function automationHasEmails(state: State): boolean {
+  const emailSteps = Object.values(state.automation.steps).filter(
+    (step) => step.key === 'mailpoet:send-email',
+  );
+  return emailSteps.length > 0;
+}
