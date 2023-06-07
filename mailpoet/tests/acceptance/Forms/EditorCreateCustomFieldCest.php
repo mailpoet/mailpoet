@@ -165,7 +165,7 @@ class EditorCreateCustomFieldCest {
     $i->assertAttributeContains('[data-automation-id="form_custom_text_area"]', 'placeholder', $customFieldName . ' updated *');
     $i->click('.mailpoet_submit');
     $i->waitForText('This value should be alphanumeric.');
-    $i->fillField('[data-automation-id="form_custom_text_area"]', 'Lorem ipsum dolor 12345');
+    $i->fillField('[data-automation-id="form_custom_text_area"]', 'Loremipsumdolor12345');
     $i->click('.mailpoet_submit');
     $i->waitForText('Check your inbox or spam folder to confirm your subscription.');
   }
