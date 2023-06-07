@@ -37,16 +37,22 @@ class EditorCreateCustomFieldCest {
   public function createCustomSelect(\AcceptanceTester $i) {
     $i->wantTo('Create custom field: select');
     $i->wantTo('Configure, check and save the custom field block');
+    $customFieldName = 'My custom select';
     $i->waitForElement('[data-automation-id="create_custom_field_form"]');
     $i->selectOption('[data-automation-id="create_custom_field_type_select"]', 'Select');
-    $i->fillField('[data-automation-id="create_custom_field_name_input"]', 'My custom select');
+    $i->fillField('[data-automation-id="create_custom_field_name_input"]', $customFieldName);
+    $i->fillField('[data-automation-id="settings_custom_text_label_input"]', 'Custom label');
+    $i->click('.components-form-toggle__input'); // Toggle as mandatory field
     $i->waitForElement('[data-automation-id="custom_field_value_settings"]');
     $i->fillField('[data-automation-id="custom_field_value_settings_value"]', 'First option'); // Configure first option
     $i->click('[data-automation-id="custom_field_values_add_item"]'); // Add second option
     $this->saveCustomFieldBlock($i);
     $this->checkCustomSelectInForm($i);
 
-    $i->wantTo('Save, reload and check data were saved');
+    $i->wantTo('Add third option, save, reload and check data were saved');
+    $i->click('[data-automation-id="custom_field_values_add_item"]'); // Add third option
+    $i->click('[data-automation-id="custom_field_save"]');
+    $i->waitForText('Custom field saved.');
     $i->saveFormInEditor();
     $i->reloadPage();
     $this->checkCustomSelectInForm($i);
@@ -54,18 +60,30 @@ class EditorCreateCustomFieldCest {
     $i->wantTo('Check custom select on frontend page');
     $postUrl = $i->createPost('Title', 'Content');
     $i->amOnUrl($postUrl);
-    $i->see('My custom select');
+    $i->waitForElementVisible('[data-automation-id="form_email"]');
+    $i->see($customFieldName);
     $i->see('First option');
     $i->see('Option 2');
+    $i->see('Option 3');
+    $i->fillField('[data-automation-id="form_email"]', 'test@fake.fake');
+    $i->click('.mailpoet_submit');
+    $i->waitForText('Missing value for custom field "' . $customFieldName . '"');
+    $i->selectOption('.mailpoet_select', 'Option 3');
+    $i->click('.mailpoet_submit');
+    $i->waitForText('Check your inbox or spam folder to confirm your subscription.');
   }
 
   public function createCustomTextInput(\AcceptanceTester $i) {
     $i->wantTo('Create custom field: text input');
     $i->wantTo('Configure, check and save the custom field block');
+    $customFieldName = 'My custom text input';
     $i->waitForElement('[data-automation-id="create_custom_field_form"]');
     $i->selectOption('[data-automation-id="create_custom_field_type_select"]', 'Text Input');
-    $i->fillField('[data-automation-id="create_custom_field_name_input"]', 'My custom text input');
-    $i->selectOption('[data-automation-id="settings_custom_text_input_validation_type"]', 'Numbers only');
+    $i->fillField('[data-automation-id="create_custom_field_name_input"]', $customFieldName);
+    $i->fillField('[data-automation-id="settings_custom_text_label_input"]', 'Custom label');
+    $i->click('.components-form-toggle__input'); // Toggle as mandatory field
+    $i->fillField('[data-automation-id="create_custom_field_name_input"]', $customFieldName);
+    $i->selectOption('[data-automation-id="settings_custom_text_input_validation_type"]', 'Alphanumerical');
     $this->saveCustomFieldBlock($i);
 
     $i->wantTo('Save, reload and check data were saved');
@@ -74,10 +92,10 @@ class EditorCreateCustomFieldCest {
     $this->checkCustomTextInputInForm($i);
 
     $i->wantTo('Change text input validation');
-    $i->selectOption('[data-automation-id="settings_custom_text_input_validation_type"]', 'Alphanumerical');
+    $i->selectOption('[data-automation-id="settings_custom_text_input_validation_type"]', 'Numbers only');
 
     $i->wantTo('Update label and save the form');
-    $i->fillField('[data-automation-id="settings_custom_text_label_input"]', 'My updated custom text input');
+    $i->fillField('[data-automation-id="settings_custom_text_label_input"]', $customFieldName . ' updated');
     $i->click('[data-automation-id="custom_field_save"]');
     $i->waitForText('Custom field saved.');
     $i->waitForText('Form saved', 10, '.automation-dismissible-notices');
@@ -85,21 +103,33 @@ class EditorCreateCustomFieldCest {
     $i->wantTo('Reload page and check data were saved');
     $i->reloadPage();
     $i->waitForElement('[data-automation-id="editor_custom_text_input"]');
-    $i->assertAttributeContains('[data-automation-id="editor_custom_text_input"]', 'placeholder', 'My updated custom text input');
+    $i->assertAttributeContains('[data-automation-id="editor_custom_text_input"]', 'placeholder', $customFieldName . ' updated');
 
     $i->wantTo('Check custom text input on frontend page');
     $postUrl = $i->createPost('Title', 'Content');
     $i->amOnUrl($postUrl);
-    $i->seeElement(Locator::find('input', ['placeholder' => 'My updated custom text input']));
-    $i->fillField(Locator::find('input', ['placeholder' => 'My updated custom text input']), 'Lorem ipsum dolor');
+    $i->waitForElementVisible('[data-automation-id="form_email"]');
+    $i->seeElement(Locator::find('input', ['placeholder' => $customFieldName . ' updated *']));
+    $i->fillField('[data-automation-id="form_email"]', 'test@fake.fake');
+    $i->click('.mailpoet_submit');
+    $i->waitForText('This value should be a valid number.');
+    $i->fillField(Locator::find('input', ['placeholder' => $customFieldName . ' updated *']), 'Lorem ipsum dolor');
+    $i->click('.mailpoet_submit');
+    $i->waitForText('This value should be a valid number.');
+    $i->fillField(Locator::find('input', ['placeholder' => $customFieldName . ' updated *']), '12345');
+    $i->click('.mailpoet_submit');
+    $i->waitForText('Check your inbox or spam folder to confirm your subscription.');
   }
 
   public function createCustomTextArea(\AcceptanceTester $i) {
     $i->wantTo('Create custom field: text area');
     $i->wantTo('Configure, check and save the custom field block');
+    $customFieldName = 'My custom text area';
     $i->waitForElement('[data-automation-id="create_custom_field_form"]');
     $i->selectOption('[data-automation-id="create_custom_field_type_select"]', 'Text Area');
-    $i->fillField('[data-automation-id="create_custom_field_name_input"]', 'My custom text area');
+    $i->fillField('[data-automation-id="create_custom_field_name_input"]', $customFieldName);
+    $i->fillField('[data-automation-id="settings_custom_text_label_input"]', 'Custom label');
+    $i->click('.components-form-toggle__input'); // Toggle as mandatory field
     $i->selectOption('[data-automation-id="settings_custom_text_input_validation_type"]', 'Numbers only');
     $this->saveCustomFieldBlock($i);
 
@@ -111,7 +141,7 @@ class EditorCreateCustomFieldCest {
     $i->wantTo('Change text input validation');
     $i->selectOption('[data-automation-id="settings_custom_text_input_validation_type"]', 'Alphanumerical');
     $i->wantTo('Update label and save the form');
-    $i->fillField('[data-automation-id="settings_custom_text_label_input"]', 'My updated custom text area');
+    $i->fillField('[data-automation-id="settings_custom_text_label_input"]', $customFieldName . ' updated');
     $i->click('[data-automation-id="custom_field_save"]');
     $i->waitForText('Custom field saved.');
 
@@ -123,23 +153,32 @@ class EditorCreateCustomFieldCest {
     $i->wantTo('Reload page and check data were saved');
     $i->reloadPage();
     $i->waitForElement('[data-automation-id="editor_custom_textarea_input"]');
-    $i->assertAttributeContains('[data-automation-id="editor_custom_textarea_input"]', 'placeholder', 'My updated custom text area');
+    $i->assertAttributeContains('[data-automation-id="editor_custom_textarea_input"]', 'placeholder', $customFieldName . ' updated');
     $i->click('[data-automation-id="editor_custom_textarea_input"]');
     $i->seeOptionIsSelected('[data-automation-id="settings_custom_text_area_number_of_lines"]', '3 lines');
 
     $i->wantTo('Check custom text area on frontend page');
     $postUrl = $i->createPost('Title', 'Content');
     $i->amOnUrl($postUrl);
-    $i->assertAttributeContains('[data-automation-id="form_custom_text_area"]', 'placeholder', 'My updated custom text area');
-    $i->fillField('[data-automation-id="form_custom_text_area"]', 'Lorem ipsum dolor sit amet');
+    $i->waitForElementVisible('[data-automation-id="form_email"]');
+    $i->fillField('[data-automation-id="form_email"]', 'test@fake.fake');
+    $i->assertAttributeContains('[data-automation-id="form_custom_text_area"]', 'placeholder', $customFieldName . ' updated *');
+    $i->click('.mailpoet_submit');
+    $i->waitForText('This value should be alphanumeric.');
+    $i->fillField('[data-automation-id="form_custom_text_area"]', 'Lorem ipsum dolor 12345');
+    $i->click('.mailpoet_submit');
+    $i->waitForText('Check your inbox or spam folder to confirm your subscription.');
   }
 
   public function createCustomRadioButtons(\AcceptanceTester $i) {
     $i->wantTo('Create custom field: radio buttons');
     $i->wantTo('Configure, check and save the custom field block');
+    $customFieldName = 'My custom radio buttons';
     $i->waitForElement('[data-automation-id="create_custom_field_form"]');
     $i->selectOption('[data-automation-id="create_custom_field_type_select"]', 'Radio buttons');
-    $i->fillField('[data-automation-id="create_custom_field_name_input"]', 'My custom radio buttons');
+    $i->fillField('[data-automation-id="create_custom_field_name_input"]', $customFieldName);
+    $i->fillField('[data-automation-id="settings_custom_text_label_input"]', 'Custom label');
+    $i->click('.components-form-toggle__input'); // Toggle as mandatory field
     $i->fillField('[data-automation-id="custom_field_value_settings_value"]', 'Option 1');
     $i->click('[data-automation-id="custom_field_values_add_item"]');
     $this->saveCustomFieldBlock($i);
@@ -153,7 +192,7 @@ class EditorCreateCustomFieldCest {
     $i->fillField('[data-automation-id="custom_field_value_settings_value"][value="Option 1"]', 'New option');
 
     $i->wantTo('Update label and save the form');
-    $i->fillField('[data-automation-id="settings_custom_text_label_input"]', 'My updated custom radio buttons');
+    $i->fillField('[data-automation-id="settings_custom_text_label_input"]', $customFieldName . ' updated');
     $i->click('[data-automation-id="custom_field_save"]');
     $i->waitForText('Custom field saved.');
     $i->waitForText('Form saved', 10, '.automation-dismissible-notices');
@@ -165,7 +204,7 @@ class EditorCreateCustomFieldCest {
     $i->wantTo('Check radio buttons on frontend page');
     $postUrl = $i->createPost('Title', 'Content');
     $i->amOnUrl($postUrl);
-    $i->waitForText('My updated custom radio buttons');
+    $i->waitForText($customFieldName . ' updated *');
     $i->waitForText('New option');
     $i->waitForText('Option 2');
   }
@@ -275,7 +314,7 @@ class EditorCreateCustomFieldCest {
     $i->waitForElement('[data-automation-id="editor_custom_text_input"]');
     $i->assertAttributeContains('[data-automation-id="editor_custom_text_input"]', 'placeholder', 'My custom text input');
     $i->click('[data-automation-id="editor_custom_text_input"]');
-    $i->seeOptionIsSelected('[data-automation-id="settings_custom_text_input_validation_type"]', 'Numbers only');
+    $i->seeOptionIsSelected('[data-automation-id="settings_custom_text_input_validation_type"]', 'Alphanumerical');
   }
 
   private function checkCustomSelectInForm(\AcceptanceTester $i) {
