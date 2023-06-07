@@ -88,8 +88,6 @@ export function Overview(): JSX.Element | null {
   const items: JSX.Element[] = [];
   if (overview.data !== undefined) {
     items.push(
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
       <SummaryNumber
         key="overview-opened"
         label={__('Opened', 'mailpoet')}
@@ -98,8 +96,6 @@ export function Overview(): JSX.Element | null {
       />,
     );
     items.push(
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
       <SummaryNumber
         key="overview-clicked"
         label={__('Clicked', 'mailpoet')}
@@ -110,8 +106,6 @@ export function Overview(): JSX.Element | null {
   }
   if (overview.data !== undefined && MailPoet.isWoocommerceActive) {
     items.push(
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
       <SummaryNumber
         key="overview-orders"
         label={_x('Orders', 'WooCommerce orders', 'mailpoet')}
@@ -120,8 +114,6 @@ export function Overview(): JSX.Element | null {
       />,
     );
     items.push(
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
       <SummaryNumber
         key="overview-revenue"
         label={__('Revenue', 'mailpoet')}
