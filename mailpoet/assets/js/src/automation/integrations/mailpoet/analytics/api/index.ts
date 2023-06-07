@@ -1,7 +1,7 @@
 import apiFetch from '@wordpress/api-fetch';
 import { dispatch, select } from '@wordpress/data';
 import { getCurrentDates } from '@woocommerce/date';
-import {addQueryArgs} from "@wordpress/url";
+import { addQueryArgs } from '@wordpress/url';
 import { api } from '../config';
 import { storeName } from '../store/constants';
 import { Query, Section, SectionData } from '../store/types';
@@ -53,7 +53,7 @@ export async function updateSection(
     data: undefined,
   });
 
-  const path = addQueryArgs(section.endpoint, {id, query: dates})
+  const path = addQueryArgs(section.endpoint, { id, query: dates });
   const method = 'GET';
   const response: {
     data: SectionData;
