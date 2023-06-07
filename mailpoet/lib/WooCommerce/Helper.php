@@ -245,10 +245,41 @@ class Helper {
   }
 
   /**
-   * @return \WC_Shipping_Method[]
+   * Returns a list of all available shipping methods formatted
+   * in a way to be used in the 'used shipping method' segment.
    */
-  public function getShippingMethods(): array {
-    return $this->WC()->shipping()->get_shipping_methods();
+  public function getShippingMethodInstancesData(): array {
+    $shippingZones = \WC_Shipping_Zones::get_zones();
+    $formattedShippingMethodData = [];
+
+    foreach ($shippingZones as $shippingZone) {
+      $formattedShippingMethodData = array_merge(
+        $formattedShippingMethodData,
+        $this->formatShippingMethods($shippingZone['shipping_methods'], $shippingZone['zone_name'])
+      );
+    }
+
+    // special shipping zone that includes locations not covered by the configured shipping zones
+    $outOfCoverageShippingZone = new \WC_Shipping_Zone(0);
+    $formattedShippingMethodData = array_merge(
+      $formattedShippingMethodData,
+      $this->formatShippingMethods($outOfCoverageShippingZone->get_shipping_methods(), $outOfCoverageShippingZone->get_zone_name())
+    );
+
+    return $formattedShippingMethodData;
+  }
+
+  protected function formatShippingMethods(array $shippingMethods, string $shippingZoneName): array {
+    $formattedShippingMethods = [];
+
+    foreach ($shippingMethods as $shippingMethod) {
+      $formattedShippingMethods[] = [
+        'id' => "{$shippingMethod->id}:{$shippingMethod->instance_id}", // combines the method id with the instance id - phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+        'name' => "{$shippingMethod->title} ({$shippingZoneName})",
+      ];
+    }
+
+    return $formattedShippingMethods;
   }
 
   /**

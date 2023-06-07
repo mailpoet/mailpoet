@@ -151,13 +151,7 @@ class Segments {
       }
       $data['woocommerce_payment_methods'] = $paymentMethods;
 
-      $shippingMethods = [];
-      foreach ($this->woocommerceHelper->getShippingMethods() as $shippingMethod) {
-        $shippingMethods[] = [
-          'name' => $shippingMethod->get_method_title(),
-        ];
-      }
-      $data['woocommerce_shipping_methods'] = $shippingMethods;
+      $data['woocommerce_shipping_methods'] = $this->woocommerceHelper->getShippingMethodInstancesData();
     }
 
     $this->pageRenderer->displayPage('segments.html', $data);

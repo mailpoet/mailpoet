@@ -39,7 +39,7 @@ export function UsedShippingMethodFields({ filterIndex }: FilterProps): JSX.Elem
     [],
   );
   const shippingMethodOptions = shippingMethods.map((method) => ({
-    value: method.name,
+    value: method.id,
     label: method.name,
   }));
 
