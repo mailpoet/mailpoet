@@ -11,6 +11,8 @@ use WC_Customer;
 use WC_Order;
 use WC_Product;
 use WC_Product_Simple;
+use WC_Product_Variable;
+use WC_Product_Variation;
 use WP_Error;
 use WP_Term;
 
@@ -219,6 +221,47 @@ class CustomerOrderFieldsFactoryTest extends \MailPoetTest {
     $this->assertContains($tag1Id, $value);
     $this->assertContains($tag2Id, $value);
     $this->assertNotContains($tag3Id, $value);
+  }
+
+  public function testPurchasedCategoriesAndTagsForProductVariations(): void {
+    // tags & categories
+    $tagId = $this->createTerm('Test tag', 'product_tag', ['slug' => 'tag']);
+    $categoryId = $this->createTerm('Test category', 'product_cat', ['slug' => 'category']);
+    $subCategoryId = $this->createTerm('Test subcategory', 'product_cat', ['slug' => 'subcategory', 'parent' => $categoryId]);
+
+    // product & variation
+    $product = new WC_Product_Variable();
+    $product->set_name('Test product');
+    $product->set_category_ids([$subCategoryId]);
+    $product->set_tag_ids([$tagId]);
+    $product->save();
+
+    $variation = new WC_Product_Variation();
+    $variation->set_name('Variation 1');
+    $variation->set_parent_id($product->get_id());
+    $variation->save();
+
+    // check values
+    $id = $this->tester->createCustomer('customer@example.com');
+    $order = $this->createOrder($id, 123);
+    $order->add_product($variation);
+
+    $customerPayload = new CustomerPayload(new WC_Customer($id));
+    $fields = $this->getFieldsMap();
+
+    // tags
+    $purchasedTags = $fields['woocommerce:customer:purchased-tags'];
+    $value = $purchasedTags->getValue($customerPayload);
+    $this->assertIsArray($value);
+    $this->assertCount(1, $value);
+    $this->assertContains($tagId, $value);
+
+    // categories
+    $purchasedCategories = $fields['woocommerce:customer:purchased-categories'];
+    $value = $purchasedCategories->getValue($customerPayload);
+    $this->assertIsArray($value);
+    $this->assertCount(1, $value);
+    $this->assertContains($subCategoryId, $value);
   }
 
   private function createTerm(string $term, string $taxonomy, array $args = []): int {
