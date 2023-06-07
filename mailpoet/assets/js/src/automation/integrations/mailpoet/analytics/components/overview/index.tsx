@@ -7,7 +7,6 @@ import {
 import { select, useSelect } from '@wordpress/data';
 import { MailPoet } from '../../../../../../mailpoet';
 import { OverviewSection, storeName } from '../../store';
-import { automationHasEmails } from '../../helpers/automation';
 import { locale } from '../../../../../config';
 
 function getEmailPercentage(
@@ -76,9 +75,10 @@ function getWooCommerceDelta(type: 'revenue' | 'orders'): number | undefined {
 }
 
 export function Overview(): JSX.Element | null {
-  const { overview } = useSelect((s) => ({
+  const { overview, hasEmails } = useSelect((s) => ({
     overview: s(storeName).getSection('overview'),
-  })) as { overview: OverviewSection };
+    hasEmails: s(storeName).automationHasEmails(),
+  })) as { overview: OverviewSection; hasEmails: boolean };
 
   const percentageFormatter = new Intl.NumberFormat(locale.toString(), {
     style: 'percent',
@@ -131,7 +131,7 @@ export function Overview(): JSX.Element | null {
     );
   }
 
-  if (!automationHasEmails()) {
+  if (!hasEmails) {
     return null;
   }
   return (
