@@ -179,7 +179,8 @@ class CustomerOrderFieldsFactory {
       FROM {$wpdb->prefix}term_taxonomy tt
       JOIN {$wpdb->prefix}woocommerce_order_items AS oi ON oi.order_id IN ($orderIdsSubquery) AND oi.order_item_type = 'line_item'
       JOIN {$wpdb->prefix}woocommerce_order_itemmeta AS pid ON oi.order_item_id = pid.order_item_id AND pid.meta_key = '_product_id'
-      JOIN {$wpdb->prefix}term_relationships tr ON pid.meta_value = tr.object_id AND tr.term_taxonomy_id = tt.term_taxonomy_id
+      JOIN {$wpdb->prefix}posts p ON pid.meta_value = p.ID
+      JOIN {$wpdb->prefix}term_relationships tr ON IF(p.post_type = 'product_variation', p.post_parent, p.ID) = tr.object_id AND tr.term_taxonomy_id = tt.term_taxonomy_id
       WHERE tt.taxonomy = %s
       ORDER BY tt.term_id ASC
     ", array_merge($statuses, [$customer->get_id(), $taxonomy]));
