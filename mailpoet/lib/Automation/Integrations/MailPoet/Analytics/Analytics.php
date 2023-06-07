@@ -20,7 +20,7 @@ class Analytics {
 
   public function register(): void {
     $this->wordPress->addAction(Hooks::API_INITIALIZE, function (API $api) {
-      $api->registerPostRoute('automation/analytics/overview', OverviewEndpoint::class);
+      $api->registerGetRoute('automation/analytics/overview', OverviewEndpoint::class);
     });
   }
 }

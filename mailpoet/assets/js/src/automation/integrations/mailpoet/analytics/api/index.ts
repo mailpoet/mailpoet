@@ -1,6 +1,7 @@
 import apiFetch from '@wordpress/api-fetch';
 import { dispatch, select } from '@wordpress/data';
 import { getCurrentDates } from '@woocommerce/date';
+import {addQueryArgs} from "@wordpress/url";
 import { api } from '../config';
 import { storeName } from '../store/constants';
 import { Query, Section, SectionData } from '../store/types';
@@ -37,12 +38,12 @@ export async function updateSection(
 
   const dates = {
     primary: {
-      after: primaryDate.after.toDate(),
-      before: primaryDate.before.toDate(),
+      after: primaryDate.after.toDate().toISOString(),
+      before: primaryDate.before.toDate().toISOString(),
     },
     secondary: {
-      after: secondaryDate.after.toDate(),
-      before: secondaryDate.before.toDate(),
+      after: secondaryDate.after.toDate().toISOString(),
+      before: secondaryDate.before.toDate().toISOString(),
     },
   };
 
@@ -51,15 +52,14 @@ export async function updateSection(
     ...section,
     data: undefined,
   });
+
+  const path = addQueryArgs(section.endpoint, {id, query: dates})
+  const method = 'GET';
   const response: {
     data: SectionData;
   } = await apiFetch({
-    path: section.endpoint,
-    method: 'POST',
-    data: {
-      query: dates,
-      id,
-    },
+    path,
+    method,
   });
 
   dispatch(storeName).setSectionData({
