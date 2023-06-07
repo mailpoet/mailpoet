@@ -10,6 +10,7 @@ import {
 declare let window: SegmentFormDataWindow;
 
 export const getInitialState = (): StateType => ({
+  automations: window.mailpoet_automations,
   products: window.mailpoet_products,
   staticSegmentsList: window.mailpoet_static_segments_list,
   membershipPlans: window.mailpoet_membership_plans,

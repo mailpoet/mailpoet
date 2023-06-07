@@ -4,6 +4,8 @@ namespace MailPoet\AdminPages\Pages;
 
 use MailPoet\AdminPages\PageRenderer;
 use MailPoet\API\JSON\ResponseBuilders\CustomFieldsResponseBuilder;
+use MailPoet\Automation\Engine\Data\Automation;
+use MailPoet\Automation\Engine\Storage\AutomationStorage;
 use MailPoet\CustomFields\CustomFieldsRepository;
 use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Entities\FormEntity;
@@ -52,6 +54,9 @@ class Segments {
   /** @var FormsRepository */
   private $formsRepository;
 
+  /** @var AutomationStorage */
+  private $automationStorage;
+
   public function __construct(
     PageRenderer $pageRenderer,
     PageLimit $listingPageLimit,
@@ -63,7 +68,8 @@ class Segments {
     SegmentDependencyValidator $segmentDependencyValidator,
     SegmentsRepository $segmentsRepository,
     NewslettersRepository $newslettersRepository,
-    FormsRepository $formsRepository
+    FormsRepository $formsRepository,
+    AutomationStorage $automationStorage
   ) {
     $this->pageRenderer = $pageRenderer;
     $this->listingPageLimit = $listingPageLimit;
@@ -76,6 +82,7 @@ class Segments {
     $this->segmentsRepository = $segmentsRepository;
     $this->newslettersRepository = $newslettersRepository;
     $this->formsRepository = $formsRepository;
+    $this->automationStorage = $automationStorage;
   }
 
   public function render() {
@@ -153,7 +160,12 @@ class Segments {
 
       $data['woocommerce_shipping_methods'] = $this->woocommerceHelper->getShippingMethodInstancesData();
     }
-
+    $data['automations'] = array_map(function(Automation $automation) {
+      return [
+        'id' => $automation->getId(),
+        'name' => $automation->getName(),
+      ];
+    }, $this->automationStorage->getAutomations());
     $this->pageRenderer->displayPage('segments.html', $data);
   }
 

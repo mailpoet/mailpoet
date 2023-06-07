@@ -1,6 +1,7 @@
 import { MailPoet } from 'mailpoet';
 
 import { GroupFilterValue } from '../types';
+import { AutomationsOptions } from '../dynamic_segments_filters/automation_options';
 import { EmailSegmentOptions } from '../dynamic_segments_filters/email_options';
 import { SubscriberSegmentOptions } from '../dynamic_segments_filters/subscriber_options';
 import {
@@ -14,6 +15,10 @@ export function getAvailableFilters(
   canUseWooMembership: boolean,
 ): GroupFilterValue[] {
   const filters: GroupFilterValue[] = [
+    {
+      label: MailPoet.I18n.t('automations'),
+      options: AutomationsOptions,
+    },
     {
       label: MailPoet.I18n.t('email'),
       options: EmailSegmentOptions,

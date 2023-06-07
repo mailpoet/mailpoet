@@ -1,4 +1,5 @@
 export enum SegmentTypes {
+  Automations = 'automations',
   Email = 'email',
   WordPressRole = 'userRole',
   SubscribedDate = 'subscribedDate',
@@ -111,6 +112,11 @@ export interface WooCommerceFormItem extends FormItem {
   used_shipping_method_days?: string;
 }
 
+export interface AutomationsFormItem extends FormItem {
+  operator?: string;
+  automation_ids?: string[];
+}
+
 export interface WooCommerceMembershipFormItem extends FormItem {
   plan_ids?: string[];
   operator?: AnyValueTypes;
@@ -139,6 +145,7 @@ export type Segment = {
 };
 
 export type AnyFormItem =
+  | AutomationsFormItem
   | DateFormItem
   | WordpressRoleFormItem
   | WooCommerceFormItem
@@ -223,6 +230,7 @@ export interface SegmentFormDataWindow extends Window {
   mailpoet_static_segments_list: StaticSegment[];
   mailpoet_tags: Tag[];
   mailpoet_signup_forms: SignupForm[];
+  mailpoet_automations: Automation[];
 }
 
 export interface StateType {
@@ -246,6 +254,7 @@ export interface StateType {
   staticSegmentsList: StaticSegment[];
   tags: Tag[];
   signupForms: SignupForm[];
+  automations: Automation[];
 }
 
 export enum Actions {
@@ -299,6 +308,11 @@ export type SignupForm = {
 };
 
 export type WooPaymentMethod = {
+  id: string;
+  name: string;
+};
+
+export type Automation = {
   id: string;
   name: string;
 };

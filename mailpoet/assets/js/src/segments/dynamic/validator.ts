@@ -1,4 +1,5 @@
 import { AnyFormItem, SegmentTypes } from './types';
+import { validateAutomations } from './dynamic_segments_filters/automations';
 import { validateEmail } from './dynamic_segments_filters/email';
 import { validateWooCommerce } from './dynamic_segments_filters/woocommerce';
 import { validateSubscriber } from './dynamic_segments_filters/subscriber';
@@ -6,6 +7,7 @@ import { validateWooCommerceMembership } from './dynamic_segments_filters/fields
 import { validateWooCommerceSubscription } from './dynamic_segments_filters/fields/woocommerce/woocommerce_subscription';
 
 const validationMap = {
+  [SegmentTypes.Automations]: validateAutomations,
   [SegmentTypes.Email]: validateEmail,
   [SegmentTypes.WooCommerce]: validateWooCommerce,
   [SegmentTypes.WordPressRole]: validateSubscriber,

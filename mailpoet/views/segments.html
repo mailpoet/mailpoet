@@ -30,6 +30,7 @@
     var mailpoet_woocommerce_payment_methods = <%= json_encode(woocommerce_payment_methods)  %>;
     var mailpoet_woocommerce_shipping_methods = <%= json_encode(woocommerce_shipping_methods)  %>;
     var mailpoet_signup_forms = <%= json_encode(signup_forms) %>;
+    var mailpoet_automations = <%= json_encode(automations) %>;
   </script>
 <% endblock %>
 
@@ -215,6 +216,11 @@
     'multipleDynamicSegmentsRestored': __('%1$d segments have been restored from the Trash.'),
     'multipleDynamicSegmentsDeleted': __('%1$d segments were permanently deleted.'),
     'oneDynamicSegmentDeleted': __('1 segment was permanently deleted.'),
+
+    'automations': __('Automations'),
+    'automationsEnteredAutomation': __('entered automation'),
+    'automationsExitedAutomation': __('exited automation'),
+    'searchAutomations': __('Search automations'),
 
     'wooNumberOfOrders': __('number of orders'),
     'moreThan': __('more than'),

@@ -5,11 +5,13 @@ import { FilterProps, SegmentTypes, WordpressRoleFormItem } from './types';
 import { EmailFields } from './dynamic_segments_filters/email';
 import { SubscriberFields } from './dynamic_segments_filters/subscriber';
 import { WooCommerceFields } from './dynamic_segments_filters/woocommerce';
+import { AutomationsFields } from './dynamic_segments_filters/automations';
 import { WooCommerceMembershipFields } from './dynamic_segments_filters/fields/woocommerce/woocommerce_membership';
 import { WooCommerceSubscriptionFields } from './dynamic_segments_filters/fields/woocommerce/woocommerce_subscription';
 import { storeName } from './store';
 
 const filterFieldsMap = {
+  [SegmentTypes.Automations]: AutomationsFields,
   [SegmentTypes.Email]: EmailFields,
   [SegmentTypes.WooCommerce]: WooCommerceFields,
   [SegmentTypes.WordPressRole]: SubscriberFields,
