@@ -191,8 +191,9 @@ class EditorCreateCustomFieldCest {
     $i->wantTo('Change text input validation');
     $i->fillField('[data-automation-id="custom_field_value_settings_value"][value="Option 1"]', 'New option');
 
-    $i->wantTo('Update label and save the form');
+    $i->wantTo('Update label, add third option and save the form');
     $i->fillField('[data-automation-id="settings_custom_text_label_input"]', $customFieldName . ' updated');
+    $i->click('[data-automation-id="custom_field_values_add_item"]'); // Add third option
     $i->click('[data-automation-id="custom_field_save"]');
     $i->waitForText('Custom field saved.');
     $i->waitForText('Form saved', 10, '.automation-dismissible-notices');
@@ -204,17 +205,28 @@ class EditorCreateCustomFieldCest {
     $i->wantTo('Check radio buttons on frontend page');
     $postUrl = $i->createPost('Title', 'Content');
     $i->amOnUrl($postUrl);
+    $i->waitForElementVisible('[data-automation-id="form_email"]');
+    $i->fillField('[data-automation-id="form_email"]', 'test@fake.fake');
     $i->waitForText($customFieldName . ' updated *');
     $i->waitForText('New option');
     $i->waitForText('Option 2');
+    $i->waitForText('Option 3');
+    $i->click('.mailpoet_submit');
+    $i->waitForText('Please select at least one option.');
+    $i->click('(//input[@class="mailpoet_radio"])[1]'); // Select the first radio button
+    $i->click('.mailpoet_submit');
+    $i->waitForText('Check your inbox or spam folder to confirm your subscription.');
   }
 
   public function createCustomCheckbox(\AcceptanceTester $i) {
     $i->wantTo('Create custom field: checkbox');
     $i->wantTo('Configure, check and save the custom field block');
+    $customFieldName = 'My custom checkbox';
     $i->waitForElement('[data-automation-id="create_custom_field_form"]');
     $i->selectOption('[data-automation-id="create_custom_field_type_select"]', 'Checkbox');
-    $i->fillField('[data-automation-id="create_custom_field_name_input"]', 'My custom checkbox');
+    $i->fillField('[data-automation-id="create_custom_field_name_input"]', $customFieldName);
+    $i->fillField('[data-automation-id="settings_custom_text_label_input"]', 'Custom label');
+    $i->click('.components-form-toggle__input'); // Toggle as mandatory field
     $i->fillField('[data-automation-id="settings_custom_checkbox_value"]', 'Option 1');
     $this->saveCustomFieldBlock($i);
 
@@ -227,7 +239,7 @@ class EditorCreateCustomFieldCest {
     $i->fillField('[data-automation-id="settings_custom_checkbox_value"][value="Option 1"]', 'New option');
 
     $i->wantTo('Update label and save the form');
-    $i->fillField('[data-automation-id="settings_custom_text_label_input"]', 'My updated custom checkbox');
+    $i->fillField('[data-automation-id="settings_custom_text_label_input"]', $customFieldName . ' updated');
     $i->click('[data-automation-id="custom_field_save"]');
     $i->waitForText('Custom field saved.');
     $i->waitForText('Form saved', 10, '.automation-dismissible-notices');
@@ -239,16 +251,28 @@ class EditorCreateCustomFieldCest {
     $i->wantTo('Check checkbox on frontend page');
     $postUrl = $i->createPost('Title', 'Content');
     $i->amOnUrl($postUrl);
-    $i->waitForText('My updated custom checkbox');
+    $i->waitForElementVisible('[data-automation-id="form_email"]');
+    $i->fillField('[data-automation-id="form_email"]', 'test@fake.fake');
+    $i->waitForText($customFieldName . ' updated *');
     $i->waitForText('New option');
+    $i->click('.mailpoet_submit');
+    $i->waitForText('Please select at least one option.');
+    $i->click('.mailpoet_checkbox'); // Select the checkbox
+    $i->click('.mailpoet_submit');
+    $i->waitForText('Check your inbox or spam folder to confirm your subscription.');
   }
 
   public function createCustomDate(\AcceptanceTester $i) {
     $i->wantTo('Create custom field: date');
     $i->wantTo('Configure, check and save the custom field block');
+    $customFieldName = 'My custom date';
     $i->waitForElement('[data-automation-id="create_custom_field_form"]');
     $i->selectOption('[data-automation-id="create_custom_field_type_select"]', 'Date');
-    $i->fillField('[data-automation-id="create_custom_field_name_input"]', 'My custom date');
+    $i->fillField('[data-automation-id="create_custom_field_name_input"]', $customFieldName);
+    $i->fillField('[data-automation-id="settings_custom_date_label_input"]', 'Custom label');
+    $i->click('(//input[@class="components-form-toggle__input"])[1]'); // Toggle as mandatory field
+    $i->click('(//input[@class="components-form-toggle__input"])[2]'); // Toggle preselect today's date
+    $i->fillField('[data-automation-id="create_custom_field_name_input"]', $customFieldName);
     $i->selectOption('[data-automation-id="settings_custom_date_type"]', 'Year, month');
     $i->selectOption('[data-automation-id="settings_custom_date_format"]', 'YYYY/MM');
     $this->saveCustomFieldBlock($i);
@@ -264,7 +288,7 @@ class EditorCreateCustomFieldCest {
 
     $i->wantTo('Update label and save the form');
     $i->selectOption('[data-automation-id="settings_custom_date_type"]', 'Year, month');
-    $i->fillField('[data-automation-id="settings_custom_date_label_input"]', 'My updated custom date');
+    $i->fillField('[data-automation-id="settings_custom_date_label_input"]', $customFieldName . ' updated');
     $i->click('[data-automation-id="custom_field_save"]');
     $i->waitForText('Form saved', 10, '.automation-dismissible-notices');
 
@@ -272,19 +296,29 @@ class EditorCreateCustomFieldCest {
     $i->reloadPage();
     $i->waitForElement('[data-automation-id="editor_custom_date_label"]');
     $i->click('[data-automation-id="editor_custom_date_label"]');
-    $i->seeInField('[data-automation-id="settings_custom_date_label_input"]', 'My updated custom date');
+    $i->seeInField('[data-automation-id="settings_custom_date_label_input"]', $customFieldName . ' updated');
 
     $i->wantTo('Check custom date on frontend page');
     $postUrl = $i->createPost('Title', 'Content');
     $i->amOnUrl($postUrl);
-    $i->waitForText('My updated custom date');
+    $i->waitForElementVisible('[data-automation-id="form_email"]');
+    $i->fillField('[data-automation-id="form_email"]', 'test@fake.fake');
+    $i->waitForText($customFieldName . ' updated *');
     $i->assertAttributeContains('[data-automation-id="form_date_year"]', 'placeholder', 'Year');
     $i->assertAttributeContains('[data-automation-id="form_date_month"]', 'placeholder', 'Month');
+    $i->click('.mailpoet_submit');
+    $i->waitForText('Please select a year');
+    $i->waitForText('Please select a month');
+    $i->selectOption('[data-automation-id="form_date_year"]', '2000');
+    $i->selectOption('[data-automation-id="form_date_month"]', 'January');
+    $i->click('.mailpoet_submit');
+    $i->waitForText('Check your inbox or spam folder to confirm your subscription.');
   }
 
   private function checkCustomDateInForm(\AcceptanceTester $i) {
     $i->waitForElement('[data-automation-id="editor_custom_date_label"]');
     $i->click('[data-automation-id="editor_custom_date_label"]');
+    $i->seeCheckboxIsChecked('(//input[@class="components-form-toggle__input"])[1]');
     $i->seeOptionIsSelected('[data-automation-id="settings_custom_date_type"]', 'Year, month');
     $i->seeOptionIsSelected('[data-automation-id="settings_custom_date_format"]', 'YYYY/MM');
   }
@@ -293,12 +327,14 @@ class EditorCreateCustomFieldCest {
     $i->waitForElement('[data-automation-id="editor_custom_field_checkbox_block"]');
     $i->click('[data-automation-id="editor_custom_field_checkbox_block"]');
     $i->waitForElement('[data-automation-id="settings_custom_checkbox_value"][value="' . $name . '"]');
+    $i->seeCheckboxIsChecked('(//input[@class="components-form-toggle__input"])[1]');
   }
 
   private function checkCustomRadioButtonsInForm(\AcceptanceTester $i, $name) {
     $i->waitForElement('[data-automation-id="editor_custom_field_radio_buttons_block"]');
     $i->click('[data-automation-id="editor_custom_field_radio_buttons_block"]');
     $i->waitForElement('[data-automation-id="custom_field_settings"]');
+    $i->seeCheckboxIsChecked('(//input[@class="components-form-toggle__input"])[1]');
     $i->waitForElement('[data-automation-id="custom_field_value_settings_value"][value="' . $name . '"]');
     $i->waitForElement('[data-automation-id="custom_field_value_settings_value"][value="Option 2"]');
   }
@@ -307,6 +343,7 @@ class EditorCreateCustomFieldCest {
     $i->waitForElement('[data-automation-id="editor_custom_textarea_input"]');
     $i->assertAttributeContains('[data-automation-id="editor_custom_textarea_input"]', 'placeholder', 'My custom text area');
     $i->click('[data-automation-id="editor_custom_textarea_input"]');
+    $i->seeCheckboxIsChecked('(//input[@class="components-form-toggle__input"])[1]');
     $i->seeOptionIsSelected('[data-automation-id="settings_custom_text_input_validation_type"]', 'Numbers only');
   }
 
@@ -314,6 +351,7 @@ class EditorCreateCustomFieldCest {
     $i->waitForElement('[data-automation-id="editor_custom_text_input"]');
     $i->assertAttributeContains('[data-automation-id="editor_custom_text_input"]', 'placeholder', 'My custom text input');
     $i->click('[data-automation-id="editor_custom_text_input"]');
+    $i->seeCheckboxIsChecked('(//input[@class="components-form-toggle__input"])[1]');
     $i->seeOptionIsSelected('[data-automation-id="settings_custom_text_input_validation_type"]', 'Alphanumerical');
   }
 
@@ -321,6 +359,7 @@ class EditorCreateCustomFieldCest {
     $i->waitForElement('[data-automation-id="custom_select_block"]');
     $i->click('[data-automation-id="custom_select_block"]');
     $i->waitForElement('[data-automation-id="custom_field_settings"]');
+    $i->seeCheckboxIsChecked('(//input[@class="components-form-toggle__input"])[1]');
     $i->waitForElement('[data-automation-id="custom_field_value_settings_value"][value="First option"]');
     $i->waitForElement('[data-automation-id="custom_field_value_settings_value"][value="Option 2"]');
   }
