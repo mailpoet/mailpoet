@@ -8,6 +8,10 @@ parameters:
 		-
 			message: "#^Cannot cast mixed to int\\.$#"
 			count: 1
+			path: ../../lib/Automation/Integrations/MailPoet/Analytics/Endpoints/OverviewEndpoint.php
+		-
+			message: "#^Cannot cast mixed to int\\.$#"
+			count: 1
 			path: ../../lib/Automation/Engine/Endpoints/Automations/AutomationTemplatesGetEndpoint.php
 
 		-

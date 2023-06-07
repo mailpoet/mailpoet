@@ -6,7 +6,6 @@ use MailPoet\API\REST\Request;
 use MailPoet\API\REST\Response;
 use MailPoet\Automation\Engine\API\Endpoint;
 use MailPoet\Automation\Engine\Exceptions\NotFoundException;
-use MailPoet\Automation\Engine\Exceptions\RuntimeException;
 use MailPoet\Automation\Engine\Storage\AutomationStorage;
 use MailPoet\Automation\Integrations\MailPoet\Analytics\Controller\OverviewStatisticsController;
 use MailPoet\Automation\Integrations\MailPoet\Analytics\Entities\Query;
@@ -29,11 +28,7 @@ class OverviewEndpoint extends Endpoint {
   }
 
   public function handle(Request $request): Response {
-    $automationid = $request->getParam('id');
-    if (!is_int($automationid)) {
-      throw new RuntimeException('Invalid automation id');
-    }
-    $automation = $this->automationStorage->getAutomation($automationid);
+    $automation = $this->automationStorage->getAutomation((int)$request->getParam('id'));
     if (!$automation) {
       throw new NotFoundException(__('Automation not found', 'mailpoet'));
     }
