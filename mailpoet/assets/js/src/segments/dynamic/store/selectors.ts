@@ -1,5 +1,6 @@
 import {
   AnyFormItem,
+  Automation,
   FilterRow,
   FilterValue,
   GroupFilterValue,
@@ -55,6 +56,8 @@ export const getPaymentMethods = (state: StateType): WooPaymentMethod[] =>
   state.wooPaymentMethods;
 export const getShippingMethods = (state: StateType): WooShippingMethod[] =>
   state.wooShippingMethods;
+export const getAutomations = (state: StateType): Automation[] =>
+  state.automations;
 export const getSegmentFilter = (
   state: StateType,
   index: number,
