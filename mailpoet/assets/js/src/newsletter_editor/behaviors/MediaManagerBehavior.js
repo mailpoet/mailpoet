@@ -63,6 +63,7 @@ BL.MediaManagerBehavior = Marionette.Behavior.extend({
 
     MediaManager = window.wp.media.view.MediaFrame.Select.extend({
       initialize: function () {
+        window._ = _; // make sure underscore is available on window – it's required by media manager
         window.wp.media.view.MediaFrame.prototype.initialize.apply(
           this,
           arguments,
