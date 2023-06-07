@@ -3,6 +3,7 @@
 namespace MailPoet\Automation\Integrations\MailPoet\Analytics\Entities;
 
 use MailPoet\API\REST\Request;
+use MailPoet\Automation\Engine\Exceptions\UnexpectedValueException;
 
 class Query {
 
@@ -50,12 +51,12 @@ class Query {
 
     $query = $request->getParam('query');
     if (!is_array($query)) {
-      throw new \InvalidArgumentException('Invalid query parameters');
+      throw new UnexpectedValueException('Invalid query parameters');
     }
     $primary = $query['primary'] ?? null;
     $secondary = $query['secondary'] ?? null;
     if (!is_array($primary) || !is_array($secondary)) {
-      throw new \InvalidArgumentException('Invalid query parameters');
+      throw new UnexpectedValueException('Invalid query parameters');
     }
     $primaryAfter = $primary['after'] ?? null;
     $primaryBefore = $primary['before'] ?? null;
@@ -67,7 +68,7 @@ class Query {
       !is_string($secondaryAfter) ||
       !is_string($secondaryBefore)
     ) {
-      throw new \InvalidArgumentException('Invalid query parameters');
+      throw new UnexpectedValueException('Invalid query parameters');
     }
     return new self(
       new \DateTimeImmutable($primaryAfter),
