@@ -37,9 +37,9 @@ export const fromUrl = (url) =>
     iframe.style.opacity = '0';
     iframe.scrolling = 'no';
     iframe.onload = async () => {
-      const container = iframe.contentDocument.documentElement;
-      container.style.padding = '10px 20px';
       try {
+        const container = iframe.contentDocument.documentElement;
+        container.style.padding = '10px 20px';
         const image = await fromDom(container);
         document.body.removeChild(iframe);
         resolve(image);
