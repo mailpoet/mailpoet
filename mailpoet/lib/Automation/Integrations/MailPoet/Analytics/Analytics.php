@@ -7,7 +7,7 @@ use MailPoet\Automation\Engine\Hooks;
 use MailPoet\Automation\Engine\WordPress;
 use MailPoet\Automation\Integrations\MailPoet\Analytics\Endpoints\OverviewEndpoint;
 
-class RegisterAnalytics {
+class Analytics {
 
   /** @var WordPress */
   private $wordPress;

@@ -193,7 +193,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Automation\Integrations\WooCommerce\SubjectTransformers\WordPressUserSubjectToWooCommerceCustomerSubjectTransformer::class)->setPublic(true)->setShared(false);
 
     //Automation Analytics
-    $container->autowire(\MailPoet\Automation\Integrations\MailPoet\Analytics\RegisterAnalytics::class)->setPublic(true);
+    $container->autowire(\MailPoet\Automation\Integrations\MailPoet\Analytics\Analytics::class)->setPublic(true);
     $container->autowire(\MailPoet\Automation\Integrations\MailPoet\Analytics\Endpoints\OverviewEndpoint::class)->setPublic(true);
     $container->autowire(\MailPoet\Automation\Integrations\MailPoet\Analytics\Controller\OverviewStatisticsController::class)->setPublic(true);
     // Config
