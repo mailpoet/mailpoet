@@ -8,7 +8,9 @@ use MailPoet\Automation\Engine\WordPress;
 use MailPoet\Automation\Integrations\WooCommerce\Payloads\OrderPayload;
 use MailPoet\Automation\Integrations\WooCommerce\WooCommerce;
 use WC_Order;
+use WC_Order_Item_Product;
 use WC_Payment_Gateway;
+use WC_Product;
 use WP_Post;
 
 class OrderFieldsFactory {
@@ -239,6 +241,20 @@ class OrderFieldsFactory {
             'options' => $this->termOptionsBuilder->getTagOptions(),
           ]
         ),
+        new Field(
+          'woocommerce:order:products',
+          Field::TYPE_ENUM_ARRAY,
+          __('Products', 'mailpoet'),
+          function (OrderPayload $payload) {
+            $products = $this->getProducts($payload->getOrder());
+            return array_map(function (WC_Product $product) {
+              return $product->get_id();
+            }, $products);
+          },
+          [
+            'options' => $this->getProductOptions(),
+          ]
+        ),
       ]
     );
   }
@@ -291,5 +307,41 @@ class OrderFieldsFactory {
       'return' => 'ids',
     ]);
     return count($orderIds) > 1 && min($orderIds) < $order->get_id();
+  }
+
+  /** @return WC_Product[] */
+  private function getProducts(WC_Order $order): array {
+    $products = [];
+    foreach ($order->get_items() as $item) {
+      if (!$item instanceof WC_Order_Item_Product) {
+        continue;
+      }
+
+      $product = $item->get_product();
+      if ($product instanceof WC_Product) {
+        $products[] = $product;
+      }
+    }
+    return array_unique($products);
+  }
+
+  private function getProductOptions(): array {
+    $wpdb = $this->wordPress->getWpdb();
+    $products = $wpdb->get_results(
+      "
+        SELECT ID, post_title
+        FROM {$wpdb->posts}
+        WHERE post_type = 'product'
+        AND post_status = 'publish'
+        ORDER BY post_title ASC
+      ",
+      ARRAY_A
+    );
+
+    return array_map(function ($product) {
+      $id = $product['ID'];
+      $title = $product['post_title'];
+      return ['id' => (int)$id, 'name' => "$title (#$id)"];
+    }, (array)$products);
   }
 }
