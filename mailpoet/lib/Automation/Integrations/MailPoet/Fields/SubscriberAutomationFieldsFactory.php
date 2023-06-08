@@ -29,7 +29,7 @@ class SubscriberAutomationFieldsFactory {
       'options' => array_map(function (Automation $automation) {
         return [
           'id' => $automation->getId(),
-          'name' => $automation->getName() . " [{$automation->getId()}]",
+          'name' => $automation->getName() . " (#{$automation->getId()})",
         ];
       }, $automations),
     ];

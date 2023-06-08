@@ -35,9 +35,9 @@ class SubscriberAutomationFieldsFactoryTest extends MailPoetTest {
       $this->assertSame($name, $field->getName());
       $this->assertSame('enum_array', $field->getType());
       $this->assertSame(['options' => [
-        ['id' => $deactivating->getId(), 'name' => "Deactivating [{$deactivating->getId()}]"],
-        ['id' => $active->getId(), 'name' => "Active [{$active->getId()}]"],
-        ['id' => $draft->getId(), 'name' => "Draft [{$draft->getId()}]"],
+        ['id' => $deactivating->getId(), 'name' => "Deactivating (#{$deactivating->getId()})"],
+        ['id' => $active->getId(), 'name' => "Active (#{$active->getId()})"],
+        ['id' => $draft->getId(), 'name' => "Draft (#{$draft->getId()})"],
       ]], $field->getArgs());
     }
 
