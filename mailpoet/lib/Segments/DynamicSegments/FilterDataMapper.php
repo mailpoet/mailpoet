@@ -4,6 +4,7 @@ namespace MailPoet\Segments\DynamicSegments;
 
 use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Segments\DynamicSegments\Exceptions\InvalidFilterException;
+use MailPoet\Segments\DynamicSegments\Filters\AutomationsEvents;
 use MailPoet\Segments\DynamicSegments\Filters\DateFilterHelper;
 use MailPoet\Segments\DynamicSegments\Filters\EmailAction;
 use MailPoet\Segments\DynamicSegments\Filters\EmailActionClickAny;
@@ -66,6 +67,8 @@ class FilterDataMapper {
 
   private function createFilter(array $filterData): DynamicSegmentFilterData {
     switch ($this->getSegmentType($filterData)) {
+      case DynamicSegmentFilterData::TYPE_AUTOMATIONS:
+        return $this->createAutomations($filterData);
       case DynamicSegmentFilterData::TYPE_USER_ROLE:
         return $this->createSubscriber($filterData);
       case DynamicSegmentFilterData::TYPE_EMAIL:
@@ -89,6 +92,39 @@ class FilterDataMapper {
       throw new InvalidFilterException('Segment type is not set', InvalidFilterException::MISSING_TYPE);
     }
     return $data['segmentType'];
+  }
+
+  private function createAutomations(array $data): DynamicSegmentFilterData {
+    if (empty($data['action'])) {
+      throw new InvalidFilterException('Missing automations filter action', InvalidFilterException::MISSING_ACTION);
+    }
+
+    if (in_array($data['action'], AutomationsEvents::SUPPORTED_ACTIONS)) {
+      if (
+        !isset($data['operator']) || !in_array($data['operator'], [
+          DynamicSegmentFilterData::OPERATOR_ANY,
+          DynamicSegmentFilterData::OPERATOR_ALL,
+          DynamicSegmentFilterData::OPERATOR_NONE,
+        ])
+      ) {
+        throw new InvalidFilterException('Missing operator', InvalidFilterException::MISSING_OPERATOR);
+      }
+      if (
+        !isset($data['automation_ids'])
+        || !is_array($data['automation_ids'])
+        || count($data['automation_ids']) < 1
+      ) {
+        throw new InvalidFilterException('Missing automation IDs', InvalidFilterException::MISSING_VALUE);
+      }
+      return new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_AUTOMATIONS, $data['action'], [
+        'action' => $data['action'],
+        'automation_ids' => $data['automation_ids'],
+        'operator' => $data['operator'],
+        'connect' => $data['connect'],
+      ]);
+    }
+
+    throw new InvalidFilterException('Unknown automations action', InvalidFilterException::MISSING_ACTION);
   }
 
   private function createSubscriber(array $data): DynamicSegmentFilterData {

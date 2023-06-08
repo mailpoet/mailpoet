@@ -10,6 +10,7 @@ use MailPoetVendor\Doctrine\ORM\Mapping as ORM;
  * @ORM\Embeddable()
  */
 class DynamicSegmentFilterData {
+  const TYPE_AUTOMATIONS = 'automations';
   const TYPE_USER_ROLE = 'userRole';
   const TYPE_EMAIL = 'email';
   const TYPE_WOOCOMMERCE = 'woocommerce';
