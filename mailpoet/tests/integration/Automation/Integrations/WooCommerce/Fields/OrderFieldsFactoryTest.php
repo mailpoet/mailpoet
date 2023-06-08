@@ -2,6 +2,7 @@
 
 namespace integration\Automation\Integrations\WooCommerce\Fields;
 
+use DateTimeImmutable;
 use MailPoet\Automation\Engine\Data\Field;
 use MailPoet\Automation\Integrations\WooCommerce\Payloads\OrderPayload;
 use MailPoet\Automation\Integrations\WooCommerce\Subjects\OrderSubject;
@@ -113,6 +114,23 @@ class OrderFieldsFactoryTest extends \MailPoetTest {
     $this->assertSame('12345', $postcodeField->getValue($payload));
     $this->assertSame('Test shipping state', $stateField->getValue($payload));
     $this->assertSame('Test shipping country', $countryField->getValue($payload));
+  }
+
+  public function testCreatedDateField(): void {
+    $fields = $this->getFieldsMap();
+
+    // check definitions
+    $createdDateField = $fields['woocommerce:order:created-date'];
+    $this->assertSame('Created date', $createdDateField->getName());
+    $this->assertSame('datetime', $createdDateField->getType());
+    $this->assertSame([], $createdDateField->getArgs());
+
+    // check values
+    $order = new WC_Order();
+    $order->set_date_created('2020-01-01 00:00:00');
+
+    $payload = new OrderPayload($order);
+    $this->assertEquals(new DateTimeImmutable('2020-01-01 00:00:00'), $createdDateField->getValue($payload));
   }
 
   /** @return array<string, Field> */

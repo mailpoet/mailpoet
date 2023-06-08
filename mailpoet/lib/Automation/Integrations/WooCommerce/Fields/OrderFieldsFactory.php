@@ -106,6 +106,14 @@ class OrderFieldsFactory {
             return $payload->getOrder()->get_shipping_country();
           }
         ),
+        new Field(
+          'woocommerce:order:created-date',
+          Field::TYPE_DATETIME,
+          __('Created date', 'mailpoet'),
+          function (OrderPayload $payload) {
+            return $payload->getOrder()->get_date_created();
+          }
+        ),
       ]
     );
   }
