@@ -2,10 +2,12 @@
 
 namespace MailPoet\Automation\Integrations\WooCommerce\Fields;
 
+use DateTimeImmutable;
 use MailPoet\Automation\Engine\Data\Field;
 use MailPoet\Automation\Engine\WordPress;
 use MailPoet\Automation\Integrations\WooCommerce\Payloads\OrderPayload;
 use MailPoet\Automation\Integrations\WooCommerce\WooCommerce;
+use WC_Order;
 use WC_Payment_Gateway;
 use WP_Post;
 
@@ -189,6 +191,15 @@ class OrderFieldsFactory {
             'options' => $this->getCouponOptions(),
           ]
         ),
+        new Field(
+          'woocommerce:order:is-first-order',
+          Field::TYPE_BOOLEAN,
+          __('Is first order', 'mailpoet'),
+          function (OrderPayload $payload) {
+            $order = $payload->getOrder();
+            return !$this->previousOrderExists($order);
+          }
+        ),
       ]
     );
   }
@@ -230,5 +241,16 @@ class OrderFieldsFactory {
       }
     }
     return $options;
+  }
+
+  private function previousOrderExists(WC_Order $order): bool {
+    $dateCreated = $order->get_date_created() ?? new DateTimeImmutable('now', $this->wordPress->wpTimezone());
+    $orderIds = (array)$this->wooCommerce->wcGetOrders([
+      'customer_id' => $order->get_customer_id(),
+      'date_created' => '<=' . $dateCreated->getTimestamp(),
+      'limit' => 2,
+      'return' => 'ids',
+    ]);
+    return count($orderIds) > 1 && min($orderIds) < $order->get_id();
   }
 }
