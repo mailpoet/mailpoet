@@ -276,6 +276,25 @@ class OrderFieldsFactoryTest extends \MailPoetTest {
     $this->assertSame(['coupon-1', 'coupon-2'], $couponsField->getValue($payload));
   }
 
+  public function testIsFirstOrderField(): void {
+    $fields = $this->getFieldsMap();
+
+    // check definitions
+    $isFirstOrderField = $fields['woocommerce:order:is-first-order'];
+    $this->assertSame('Is first order', $isFirstOrderField->getName());
+    $this->assertSame('boolean', $isFirstOrderField->getType());
+    $this->assertSame([], $isFirstOrderField->getArgs());
+
+    // check values
+    $order1 = $this->tester->createWooCommerceOrder(['customer_id' => 123]);
+    $payload = new OrderPayload($order1);
+    $this->assertTrue($isFirstOrderField->getValue($payload));
+
+    $order2 = $this->tester->createWooCommerceOrder(['customer_id' => 123]);
+    $payload = new OrderPayload($order2);
+    $this->assertFalse($isFirstOrderField->getValue($payload));
+  }
+
   /** @return array<string, Field> */
   private function getFieldsMap(): array {
     $factory = $this->diContainer->get(OrderSubject::class);
