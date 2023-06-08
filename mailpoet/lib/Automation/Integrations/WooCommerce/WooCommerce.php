@@ -18,4 +18,8 @@ class WooCommerce {
       && method_exists(OrderUtil::class, 'custom_orders_table_usage_is_enabled')
       && OrderUtil::custom_orders_table_usage_is_enabled();
   }
+
+  public function wcGetOrderStatuses(): array {
+    return wc_get_order_statuses();
+  }
 }

@@ -194,6 +194,34 @@ class OrderFieldsFactoryTest extends \MailPoetTest {
     $this->assertSame('Test payment method', $paymentMethodField->getValue($payload));
   }
 
+  public function testStatusField(): void {
+    $fields = $this->getFieldsMap();
+
+    // check definitions
+    $statusField = $fields['woocommerce:order:status'];
+    $this->assertSame('Status', $statusField->getName());
+    $this->assertSame('enum', $statusField->getType());
+    $this->assertSame([
+      'options' => [
+        ['id' => 'wc-pending', 'name' => 'Pending payment'],
+        ['id' => 'wc-processing', 'name' => 'Processing'],
+        ['id' => 'wc-on-hold', 'name' => 'On hold'],
+        ['id' => 'wc-completed', 'name' => 'Completed'],
+        ['id' => 'wc-cancelled', 'name' => 'Cancelled'],
+        ['id' => 'wc-refunded', 'name' => 'Refunded'],
+        ['id' => 'wc-failed', 'name' => 'Failed'],
+        ['id' => 'wc-checkout-draft', 'name' => 'Draft'],
+      ],
+    ], $statusField->getArgs());
+
+    // check values
+    $order = new WC_Order();
+    $order->set_status('wc-processing');
+
+    $payload = new OrderPayload($order);
+    $this->assertSame('processing', $statusField->getValue($payload));
+  }
+
   /** @return array<string, Field> */
   private function getFieldsMap(): array {
     $factory = $this->diContainer->get(OrderSubject::class);

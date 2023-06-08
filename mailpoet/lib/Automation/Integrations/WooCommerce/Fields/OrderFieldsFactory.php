@@ -4,9 +4,19 @@ namespace MailPoet\Automation\Integrations\WooCommerce\Fields;
 
 use MailPoet\Automation\Engine\Data\Field;
 use MailPoet\Automation\Integrations\WooCommerce\Payloads\OrderPayload;
+use MailPoet\Automation\Integrations\WooCommerce\WooCommerce;
 use WC_Payment_Gateway;
 
 class OrderFieldsFactory {
+  /** @var WooCommerce */
+  private $wooCommerce;
+
+  public function __construct(
+    WooCommerce $wooCommerce
+  ) {
+    $this->wooCommerce = $wooCommerce;
+  }
+
   /** @return Field[] */
   public function getFields(): array {
     return array_merge(
@@ -142,6 +152,17 @@ class OrderFieldsFactory {
             'options' => $this->getOrderPaymentOptions(),
           ]
         ),
+        new Field(
+          'woocommerce:order:status',
+          Field::TYPE_ENUM,
+          __('Status', 'mailpoet'),
+          function (OrderPayload $payload) {
+            return $payload->getOrder()->get_status();
+          },
+          [
+            'options' => $this->getOrderStatusOptions(),
+          ]
+        ),
       ]
     );
   }
@@ -153,6 +174,15 @@ class OrderFieldsFactory {
       if ($gateway instanceof WC_Payment_Gateway && $gateway->enabled === 'yes') {
         $options[] = ['id' => $gateway->id, 'name' => $gateway->title];
       }
+    }
+    return $options;
+  }
+
+  private function getOrderStatusOptions(): array {
+    $statuses = $this->wooCommerce->wcGetOrderStatuses();
+    $options = [];
+    foreach ($statuses as $id => $name) {
+      $options[] = ['id' => $id, 'name' => $name];
     }
     return $options;
   }
