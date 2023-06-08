@@ -253,7 +253,7 @@ class ImportExportRepository {
     $customFields = $customFields->fetchAll();
 
     foreach ($customFields as $customField) {
-      $customFieldId = "customFieldId{$customField['id']}";
+      $customFieldId = "customFieldId{$customField['id']}export";
       $qb->addSelect("MAX(CASE WHEN {$customFieldsTable}.id = :{$customFieldId} THEN {$subscriberCustomFieldTable}.value END) AS :{$customFieldId}")
         ->setParameter($customFieldId, $customField['id']);
     }
