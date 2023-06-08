@@ -150,6 +150,23 @@ class OrderFieldsFactoryTest extends \MailPoetTest {
     $this->assertEquals(new DateTimeImmutable('2020-01-01 00:00:00'), $paidDateField->getValue($payload));
   }
 
+  public function testCustomerNoteField(): void {
+    $fields = $this->getFieldsMap();
+
+    // check definitions
+    $customerNoteField = $fields['woocommerce:order:customer-note'];
+    $this->assertSame('Customer provided note', $customerNoteField->getName());
+    $this->assertSame('string', $customerNoteField->getType());
+    $this->assertSame([], $customerNoteField->getArgs());
+
+    // check values
+    $order = new WC_Order();
+    $order->set_customer_note('Test customer note');
+
+    $payload = new OrderPayload($order);
+    $this->assertSame('Test customer note', $customerNoteField->getValue($payload));
+  }
+
   /** @return array<string, Field> */
   private function getFieldsMap(): array {
     $factory = $this->diContainer->get(OrderSubject::class);
