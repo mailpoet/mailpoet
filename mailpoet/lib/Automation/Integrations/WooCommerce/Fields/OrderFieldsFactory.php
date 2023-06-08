@@ -12,6 +12,9 @@ use WC_Payment_Gateway;
 use WP_Post;
 
 class OrderFieldsFactory {
+  /** @var TermOptionsBuilder */
+  private $termOptionsBuilder;
+
   /** @var WordPress */
   private $wordPress;
 
@@ -19,9 +22,11 @@ class OrderFieldsFactory {
   private $wooCommerce;
 
   public function __construct(
+    TermOptionsBuilder $termOptionsBuilder,
     WordPress $wordPress,
     WooCommerce $wooCommerce
   ) {
+    $this->termOptionsBuilder = $termOptionsBuilder;
     $this->wordPress = $wordPress;
     $this->wooCommerce = $wooCommerce;
   }
@@ -199,6 +204,23 @@ class OrderFieldsFactory {
             $order = $payload->getOrder();
             return !$this->previousOrderExists($order);
           }
+        ),
+        new Field(
+          'woocommerce:order:categories',
+          Field::TYPE_ENUM_ARRAY,
+          __('Categories', 'mailpoet'),
+          function (OrderPayload $payload) {
+            $products = $this->getProducts($payload->getOrder());
+            $categoryIds = [];
+            foreach ($products as $product) {
+              $categoryIds = array_merge($categoryIds, $product->get_category_ids());
+            }
+            sort($categoryIds);
+            return array_unique($categoryIds);
+          },
+          [
+            'options' => $this->termOptionsBuilder->getCategoryOptions(),
+          ]
         ),
       ]
     );
