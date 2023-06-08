@@ -6,6 +6,7 @@ use DateTimeZone;
 use WP_Comment;
 use WP_Error;
 use WP_Locale;
+use WP_Post;
 use WP_Term;
 use WP_User;
 use wpdb;
@@ -54,6 +55,11 @@ class WordPress {
   public function getWpLocale(): WP_Locale {
     global $wp_locale;
     return $wp_locale;
+  }
+
+  /** @return WP_Post[]|int[] */
+  public function getPosts(array $args = null): array {
+    return get_posts($args);
   }
 
   /**

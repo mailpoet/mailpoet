@@ -3,17 +3,24 @@
 namespace MailPoet\Automation\Integrations\WooCommerce\Fields;
 
 use MailPoet\Automation\Engine\Data\Field;
+use MailPoet\Automation\Engine\WordPress;
 use MailPoet\Automation\Integrations\WooCommerce\Payloads\OrderPayload;
 use MailPoet\Automation\Integrations\WooCommerce\WooCommerce;
 use WC_Payment_Gateway;
+use WP_Post;
 
 class OrderFieldsFactory {
+  /** @var WordPress */
+  private $wordPress;
+
   /** @var WooCommerce */
   private $wooCommerce;
 
   public function __construct(
+    WordPress $wordPress,
     WooCommerce $wooCommerce
   ) {
+    $this->wordPress = $wordPress;
     $this->wooCommerce = $wooCommerce;
   }
 
@@ -171,6 +178,17 @@ class OrderFieldsFactory {
             return (float)$payload->getOrder()->get_total();
           }
         ),
+        new Field(
+          'woocommerce:order:coupons',
+          Field::TYPE_ENUM_ARRAY,
+          __('Used coupons', 'mailpoet'),
+          function (OrderPayload $payload) {
+            return $payload->getOrder()->get_coupon_codes();
+          },
+          [
+            'options' => $this->getCouponOptions(),
+          ]
+        ),
       ]
     );
   }
@@ -191,6 +209,25 @@ class OrderFieldsFactory {
     $options = [];
     foreach ($statuses as $id => $name) {
       $options[] = ['id' => $id, 'name' => $name];
+    }
+    return $options;
+  }
+
+  private function getCouponOptions(): array {
+    $coupons = $this->wordPress->getPosts([
+      'post_type' => 'shop_coupon',
+      'post_status' => 'publish',
+      'posts_per_page' => -1,
+      'orderby' => 'name',
+      'order' => 'asc',
+    ]);
+
+    $options = [];
+    foreach ($coupons as $coupon) {
+      if ($coupon instanceof WP_Post) {
+        // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+        $options[] = ['id' => $coupon->post_title, 'name' => $coupon->post_name];
+      }
     }
     return $options;
   }

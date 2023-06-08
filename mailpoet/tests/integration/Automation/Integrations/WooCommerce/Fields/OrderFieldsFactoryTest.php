@@ -7,6 +7,7 @@ use MailPoet\Automation\Engine\Data\Field;
 use MailPoet\Automation\Integrations\WooCommerce\Payloads\OrderPayload;
 use MailPoet\Automation\Integrations\WooCommerce\Subjects\OrderSubject;
 use MailPoet\WP\Functions as WPFunctions;
+use WC_Coupon;
 use WC_Order;
 
 /**
@@ -237,6 +238,42 @@ class OrderFieldsFactoryTest extends \MailPoetTest {
 
     $payload = new OrderPayload($order);
     $this->assertSame(123.45, $totalField->getValue($payload));
+  }
+
+  public function testCouponsField(): void {
+    $coupon1 = new WC_Coupon();
+    $coupon1->set_code('coupon-1');
+    $coupon1->save();
+
+    $coupon2 = new WC_Coupon();
+    $coupon2->set_code('coupon-2');
+    $coupon2->save();
+
+    $coupon3 = new WC_Coupon();
+    $coupon3->set_code('coupon-3');
+    $coupon3->save();
+
+    $fields = $this->getFieldsMap();
+
+    // check definitions
+    $couponsField = $fields['woocommerce:order:coupons'];
+    $this->assertSame('Used coupons', $couponsField->getName());
+    $this->assertSame('enum_array', $couponsField->getType());
+    $this->assertSame([
+      'options' => [
+        ['id' => 'coupon-1', 'name' => 'coupon-1'],
+        ['id' => 'coupon-2', 'name' => 'coupon-2'],
+        ['id' => 'coupon-3', 'name' => 'coupon-3'],
+      ],
+    ], $couponsField->getArgs());
+
+    // check values
+    $order = new WC_Order();
+    $order->apply_coupon('coupon-1');
+    $order->apply_coupon('coupon-2');
+
+    $payload = new OrderPayload($order);
+    $this->assertSame(['coupon-1', 'coupon-2'], $couponsField->getValue($payload));
   }
 
   /** @return array<string, Field> */
