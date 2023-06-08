@@ -58,6 +58,54 @@ class OrderFieldsFactory {
             return $payload->getOrder()->get_billing_country();
           }
         ),
+        new Field(
+          'woocommerce:order:shipping-company',
+          Field::TYPE_STRING,
+          __('Shipping company', 'mailpoet'),
+          function (OrderPayload $payload) {
+            return $payload->getOrder()->get_shipping_company();
+          }
+        ),
+        new Field(
+          'woocommerce:order:shipping-phone',
+          Field::TYPE_STRING,
+          __('Shipping phone', 'mailpoet'),
+          function (OrderPayload $payload) {
+            return $payload->getOrder()->get_shipping_phone();
+          }
+        ),
+        new Field(
+          'woocommerce:order:shipping-city',
+          Field::TYPE_STRING,
+          __('Shipping city', 'mailpoet'),
+          function (OrderPayload $payload) {
+            return $payload->getOrder()->get_shipping_city();
+          }
+        ),
+        new Field(
+          'woocommerce:order:shipping-postcode',
+          Field::TYPE_STRING,
+          __('Shipping postcode', 'mailpoet'),
+          function (OrderPayload $payload) {
+            return $payload->getOrder()->get_shipping_postcode();
+          }
+        ),
+        new Field(
+          'woocommerce:order:shipping-state',
+          Field::TYPE_STRING,
+          __('Shipping state/county', 'mailpoet'),
+          function (OrderPayload $payload) {
+            return $payload->getOrder()->get_shipping_state();
+          }
+        ),
+        new Field(
+          'woocommerce:order:shipping-country',
+          Field::TYPE_STRING,
+          __('Shipping country', 'mailpoet'),
+          function (OrderPayload $payload) {
+            return $payload->getOrder()->get_shipping_country();
+          }
+        ),
       ]
     );
   }

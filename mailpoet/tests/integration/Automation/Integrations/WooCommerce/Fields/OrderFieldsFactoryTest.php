@@ -63,6 +63,58 @@ class OrderFieldsFactoryTest extends \MailPoetTest {
     $this->assertSame('Test billing country', $countryField->getValue($payload));
   }
 
+  public function testShippingInfo(): void {
+    $fields = $this->getFieldsMap();
+
+    // check definitions
+    $companyField = $fields['woocommerce:order:shipping-company'];
+    $this->assertSame('Shipping company', $companyField->getName());
+    $this->assertSame('string', $companyField->getType());
+    $this->assertSame([], $companyField->getArgs());
+
+    $phoneField = $fields['woocommerce:order:shipping-phone'];
+    $this->assertSame('Shipping phone', $phoneField->getName());
+    $this->assertSame('string', $phoneField->getType());
+    $this->assertSame([], $phoneField->getArgs());
+
+    $cityField = $fields['woocommerce:order:shipping-city'];
+    $this->assertSame('Shipping city', $cityField->getName());
+    $this->assertSame('string', $cityField->getType());
+    $this->assertSame([], $cityField->getArgs());
+
+    $postcodeField = $fields['woocommerce:order:shipping-postcode'];
+    $this->assertSame('Shipping postcode', $postcodeField->getName());
+    $this->assertSame('string', $postcodeField->getType());
+    $this->assertSame([], $postcodeField->getArgs());
+
+    $stateField = $fields['woocommerce:order:shipping-state'];
+    $this->assertSame('Shipping state/county', $stateField->getName());
+    $this->assertSame('string', $stateField->getType());
+    $this->assertSame([], $stateField->getArgs());
+
+    $countryField = $fields['woocommerce:order:shipping-country'];
+    $this->assertSame('Shipping country', $countryField->getName());
+    $this->assertSame('string', $countryField->getType());
+    $this->assertSame([], $countryField->getArgs());
+
+    // check values
+    $order = new WC_Order();
+    $order->set_shipping_company('Test shipping company');
+    $order->set_shipping_phone('123456789');
+    $order->set_shipping_city('Test shipping city');
+    $order->set_shipping_postcode('12345');
+    $order->set_shipping_state('Test shipping state');
+    $order->set_shipping_country('Test shipping country');
+
+    $payload = new OrderPayload($order);
+    $this->assertSame('Test shipping company', $companyField->getValue($payload));
+    $this->assertSame('123456789', $phoneField->getValue($payload));
+    $this->assertSame('Test shipping city', $cityField->getValue($payload));
+    $this->assertSame('12345', $postcodeField->getValue($payload));
+    $this->assertSame('Test shipping state', $stateField->getValue($payload));
+    $this->assertSame('Test shipping country', $countryField->getValue($payload));
+  }
+
   /** @return array<string, Field> */
   private function getFieldsMap(): array {
     $factory = $this->diContainer->get(OrderSubject::class);
