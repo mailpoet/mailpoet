@@ -54,6 +54,7 @@ class SubjectTransformerHandler {
         }
       }
     }
+    sort($all);
     return $all;
   }
 
