@@ -163,6 +163,14 @@ class OrderFieldsFactory {
             'options' => $this->getOrderStatusOptions(),
           ]
         ),
+        new Field(
+          'woocommerce:order:total',
+          Field::TYPE_NUMBER,
+          __('Total', 'mailpoet'),
+          function (OrderPayload $payload) {
+            return (float)$payload->getOrder()->get_total();
+          }
+        ),
       ]
     );
   }
