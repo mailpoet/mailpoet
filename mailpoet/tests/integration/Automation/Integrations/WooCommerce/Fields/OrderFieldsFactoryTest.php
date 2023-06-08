@@ -6,9 +6,14 @@ use DateTimeImmutable;
 use MailPoet\Automation\Engine\Data\Field;
 use MailPoet\Automation\Integrations\WooCommerce\Payloads\OrderPayload;
 use MailPoet\Automation\Integrations\WooCommerce\Subjects\OrderSubject;
+use MailPoet\InvalidStateException;
 use MailPoet\WP\Functions as WPFunctions;
 use WC_Coupon;
 use WC_Order;
+use WC_Product;
+use WC_Product_Simple;
+use WP_Error;
+use WP_Term;
 
 /**
  * @group woo
@@ -295,6 +300,50 @@ class OrderFieldsFactoryTest extends \MailPoetTest {
     $this->assertFalse($isFirstOrderField->getValue($payload));
   }
 
+  public function testCategoriesField(): void {
+    // categories
+    $uncategorized = get_term_by('slug', 'uncategorized', 'product_cat');
+    $uncategorizedId = $uncategorized instanceof WP_Term ? $uncategorized->term_id : null; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    $cat1Id = $this->createTerm('Cat 1', 'product_cat', ['slug' => 'cat-1']);
+    $cat2Id = $this->createTerm('Cat 2', 'product_cat', ['slug' => 'cat-2']);
+    $cat3Id = $this->createTerm('Cat 3', 'product_cat', ['slug' => 'cat-3']);
+    $subCat1 = $this->createTerm('Subcat 1', 'product_cat', ['slug' => 'subcat-1', 'parent' => $cat1Id]);
+    $subCat2 = $this->createTerm('Subcat 2', 'product_cat', ['slug' => 'subcat-2', 'parent' => $cat1Id]);
+
+    // check definitions
+    $fields = $this->getFieldsMap();
+    $purchasedCategories = $fields['woocommerce:order:categories'];
+    $this->assertSame('Categories', $purchasedCategories->getName());
+    $this->assertSame('enum_array', $purchasedCategories->getType());
+    $this->assertSame([
+      'options' => [
+        ['id' => $cat1Id, 'name' => 'Cat 1'],
+        ['id' => $subCat1, 'name' => 'Cat 1 | Subcat 1'],
+        ['id' => $subCat2, 'name' => 'Cat 1 | Subcat 2'],
+        ['id' => $cat2Id, 'name' => 'Cat 2'],
+        ['id' => $cat3Id, 'name' => 'Cat 3'],
+        ['id' => $uncategorizedId, 'name' => 'Uncategorized'],
+      ],
+    ], $purchasedCategories->getArgs());
+
+    // check values
+    $product = $this->createProduct('Test product', [$cat1Id, $cat2Id, $subCat1]);
+    $order = $this->tester->createWooCommerceOrder();
+    $order->add_product($product);
+
+    $orderPayload = new OrderPayload($order);
+    $value = $purchasedCategories->getValue($orderPayload);
+
+    $this->assertIsArray($value);
+    $this->assertCount(3, $value);
+    $this->assertContains($cat1Id, $value);
+    $this->assertContains($cat2Id, $value);
+    $this->assertContains($subCat1, $value);
+    $this->assertNotContains($uncategorizedId, $value);
+    $this->assertNotContains($cat3Id, $value);
+    $this->assertNotContains($subCat2, $value);
+  }
+
   /** @return array<string, Field> */
   private function getFieldsMap(): array {
     $factory = $this->diContainer->get(OrderSubject::class);
@@ -303,5 +352,22 @@ class OrderFieldsFactoryTest extends \MailPoetTest {
       $fields[$field->getKey()] = $field;
     }
     return $fields;
+  }
+
+  private function createTerm(string $term, string $taxonomy, array $args = []): int {
+    $term = wp_insert_term($term, $taxonomy, $args);
+    if ($term instanceof WP_Error) {
+      throw new InvalidStateException('Failed to create term');
+    }
+    return $term['term_id'];
+  }
+
+  private function createProduct(string $name, array $categoryIds = [], array $tagIds = []): WC_Product {
+    $product = new WC_Product_Simple();
+    $product->set_name($name);
+    $product->set_category_ids($categoryIds);
+    $product->set_tag_ids($tagIds);
+    $product->save();
+    return $product;
   }
 }
