@@ -181,7 +181,7 @@ class Menu {
 
     // Welcome wizard page
     $this->wp->addSubmenuPage(
-      null,
+      '',
       $this->setPageTitle(__('Welcome Wizard', 'mailpoet')),
       esc_html__('Welcome Wizard', 'mailpoet'),
       AccessControl::PERMISSION_ACCESS_PLUGIN_ADMIN,
@@ -194,7 +194,7 @@ class Menu {
 
     // Landingpage
     $this->wp->addSubmenuPage(
-      null,
+      '',
       $this->setPageTitle(__('MailPoet', 'mailpoet')),
       esc_html__('MailPoet', 'mailpoet'),
       AccessControl::PERMISSION_ACCESS_PLUGIN_ADMIN,
@@ -448,7 +448,7 @@ class Menu {
 
     // WooCommerce Setup
     $this->wp->addSubmenuPage(
-      null,
+      '',
       $this->setPageTitle(__('WooCommerce Setup', 'mailpoet')),
       esc_html__('WooCommerce Setup', 'mailpoet'),
       AccessControl::PERMISSION_ACCESS_PLUGIN_ADMIN,
@@ -712,7 +712,7 @@ class Menu {
       return false;
     }
     WPFunctions::get()->addSubmenuPage(
-      null,
+      '',
       'MailPoet',
       'MailPoet',
       AccessControl::PERMISSION_ACCESS_PLUGIN_ADMIN,
