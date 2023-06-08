@@ -6,11 +6,9 @@ use DateTimeImmutable;
 use MailPoet\Automation\Engine\Data\Field;
 use MailPoet\Automation\Integrations\WooCommerce\Payloads\OrderPayload;
 use MailPoet\Automation\Integrations\WooCommerce\Subjects\OrderSubject;
-use MailPoet\InvalidStateException;
 use MailPoet\WP\Functions as WPFunctions;
 use WC_Coupon;
 use WC_Order;
-use WP_Error;
 use WP_Term;
 
 /**
@@ -302,11 +300,11 @@ class OrderFieldsFactoryTest extends \MailPoetTest {
     // categories
     $uncategorized = get_term_by('slug', 'uncategorized', 'product_cat');
     $uncategorizedId = $uncategorized instanceof WP_Term ? $uncategorized->term_id : null; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-    $cat1Id = $this->createTerm('Cat 1', 'product_cat', ['slug' => 'cat-1']);
-    $cat2Id = $this->createTerm('Cat 2', 'product_cat', ['slug' => 'cat-2']);
-    $cat3Id = $this->createTerm('Cat 3', 'product_cat', ['slug' => 'cat-3']);
-    $subCat1 = $this->createTerm('Subcat 1', 'product_cat', ['slug' => 'subcat-1', 'parent' => $cat1Id]);
-    $subCat2 = $this->createTerm('Subcat 2', 'product_cat', ['slug' => 'subcat-2', 'parent' => $cat1Id]);
+    $cat1Id = $this->tester->createWordPressTerm('Cat 1', 'product_cat', ['slug' => 'cat-1']);
+    $cat2Id = $this->tester->createWordPressTerm('Cat 2', 'product_cat', ['slug' => 'cat-2']);
+    $cat3Id = $this->tester->createWordPressTerm('Cat 3', 'product_cat', ['slug' => 'cat-3']);
+    $subCat1 = $this->tester->createWordPressTerm('Subcat 1', 'product_cat', ['slug' => 'subcat-1', 'parent' => $cat1Id]);
+    $subCat2 = $this->tester->createWordPressTerm('Subcat 2', 'product_cat', ['slug' => 'subcat-2', 'parent' => $cat1Id]);
 
     // check definitions
     $fields = $this->getFieldsMap();
@@ -344,9 +342,9 @@ class OrderFieldsFactoryTest extends \MailPoetTest {
 
   public function testTagsField(): void {
     // tags
-    $tag1Id = $this->createTerm('Tag 1', 'product_tag', ['slug' => 'tag-1']);
-    $tag2Id = $this->createTerm('Tag 2', 'product_tag', ['slug' => 'tag-2']);
-    $tag3Id = $this->createTerm('Tag 3', 'product_tag', ['slug' => 'tag-3']);
+    $tag1Id = $this->tester->createWordPressTerm('Tag 1', 'product_tag', ['slug' => 'tag-1']);
+    $tag2Id = $this->tester->createWordPressTerm('Tag 2', 'product_tag', ['slug' => 'tag-2']);
+    $tag3Id = $this->tester->createWordPressTerm('Tag 3', 'product_tag', ['slug' => 'tag-3']);
 
     // check definitions
     $fields = $this->getFieldsMap();
@@ -418,13 +416,5 @@ class OrderFieldsFactoryTest extends \MailPoetTest {
       $fields[$field->getKey()] = $field;
     }
     return $fields;
-  }
-
-  private function createTerm(string $term, string $taxonomy, array $args = []): int {
-    $term = wp_insert_term($term, $taxonomy, $args);
-    if ($term instanceof WP_Error) {
-      throw new InvalidStateException('Failed to create term');
-    }
-    return $term['term_id'];
   }
 }
