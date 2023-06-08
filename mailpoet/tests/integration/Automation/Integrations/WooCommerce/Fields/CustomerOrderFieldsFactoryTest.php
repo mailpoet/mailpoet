@@ -6,12 +6,9 @@ use DateTimeImmutable;
 use MailPoet\Automation\Engine\Data\Field;
 use MailPoet\Automation\Integrations\WooCommerce\Payloads\CustomerPayload;
 use MailPoet\Automation\Integrations\WooCommerce\Subjects\CustomerSubject;
-use MailPoet\InvalidStateException;
 use WC_Customer;
 use WC_Order;
-use WC_Product_Variable;
 use WC_Product_Variation;
-use WP_Error;
 use WP_Term;
 
 /**
@@ -96,11 +93,11 @@ class CustomerOrderFieldsFactoryTest extends \MailPoetTest {
     // categories
     $uncategorized = get_term_by('slug', 'uncategorized', 'product_cat');
     $uncategorizedId = $uncategorized instanceof WP_Term ? $uncategorized->term_id : null; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-    $cat1Id = $this->createTerm('Cat 1', 'product_cat', ['slug' => 'cat-1']);
-    $cat2Id = $this->createTerm('Cat 2', 'product_cat', ['slug' => 'cat-2']);
-    $cat3Id = $this->createTerm('Cat 3', 'product_cat', ['slug' => 'cat-3']);
-    $subCat1 = $this->createTerm('Subcat 1', 'product_cat', ['slug' => 'subcat-1', 'parent' => $cat1Id]);
-    $subCat2 = $this->createTerm('Subcat 2', 'product_cat', ['slug' => 'subcat-2', 'parent' => $cat1Id]);
+    $cat1Id = $this->tester->createWordPressTerm('Cat 1', 'product_cat', ['slug' => 'cat-1']);
+    $cat2Id = $this->tester->createWordPressTerm('Cat 2', 'product_cat', ['slug' => 'cat-2']);
+    $cat3Id = $this->tester->createWordPressTerm('Cat 3', 'product_cat', ['slug' => 'cat-3']);
+    $subCat1 = $this->tester->createWordPressTerm('Subcat 1', 'product_cat', ['slug' => 'subcat-1', 'parent' => $cat1Id]);
+    $subCat2 = $this->tester->createWordPressTerm('Subcat 2', 'product_cat', ['slug' => 'subcat-2', 'parent' => $cat1Id]);
 
     // check definitions
     $fields = $this->getFieldsMap();
@@ -165,9 +162,9 @@ class CustomerOrderFieldsFactoryTest extends \MailPoetTest {
 
   public function testPurchasedTags(): void {
     // tags
-    $tag1Id = $this->createTerm('Tag 1', 'product_tag', ['slug' => 'tag-1']);
-    $tag2Id = $this->createTerm('Tag 2', 'product_tag', ['slug' => 'tag-2']);
-    $tag3Id = $this->createTerm('Tag 3', 'product_tag', ['slug' => 'tag-3']);
+    $tag1Id = $this->tester->createWordPressTerm('Tag 1', 'product_tag', ['slug' => 'tag-1']);
+    $tag2Id = $this->tester->createWordPressTerm('Tag 2', 'product_tag', ['slug' => 'tag-2']);
+    $tag3Id = $this->tester->createWordPressTerm('Tag 3', 'product_tag', ['slug' => 'tag-3']);
 
     // check definitions
     $fields = $this->getFieldsMap();
@@ -223,16 +220,12 @@ class CustomerOrderFieldsFactoryTest extends \MailPoetTest {
 
   public function testPurchasedCategoriesAndTagsForProductVariations(): void {
     // tags & categories
-    $tagId = $this->createTerm('Test tag', 'product_tag', ['slug' => 'tag']);
-    $categoryId = $this->createTerm('Test category', 'product_cat', ['slug' => 'category']);
-    $subCategoryId = $this->createTerm('Test subcategory', 'product_cat', ['slug' => 'subcategory', 'parent' => $categoryId]);
+    $tagId = $this->tester->createWordPressTerm('Test tag', 'product_tag', ['slug' => 'tag']);
+    $categoryId = $this->tester->createWordPressTerm('Test category', 'product_cat', ['slug' => 'category']);
+    $subCategoryId = $this->tester->createWordPressTerm('Test subcategory', 'product_cat', ['slug' => 'subcategory', 'parent' => $categoryId]);
 
     // product & variation
-    $product = new WC_Product_Variable();
-    $product->set_name('Test product');
-    $product->set_category_ids([$subCategoryId]);
-    $product->set_tag_ids([$tagId]);
-    $product->save();
+    $product = $this->tester->createWooCommerceProduct(['name' => 'Test product', 'category_ids' => [$subCategoryId], 'tag_ids' => [$tagId]]);
 
     $variation = new WC_Product_Variation();
     $variation->set_name('Variation 1');
@@ -260,14 +253,6 @@ class CustomerOrderFieldsFactoryTest extends \MailPoetTest {
     $this->assertIsArray($value);
     $this->assertCount(1, $value);
     $this->assertContains($subCategoryId, $value);
-  }
-
-  private function createTerm(string $term, string $taxonomy, array $args = []): int {
-    $term = wp_insert_term($term, $taxonomy, $args);
-    if ($term instanceof WP_Error) {
-      throw new InvalidStateException('Failed to create term');
-    }
-    return $term['term_id'];
   }
 
   private function createOrder(int $customerId, float $total, string $date = '2023-06-01 14:03:27'): WC_Order {

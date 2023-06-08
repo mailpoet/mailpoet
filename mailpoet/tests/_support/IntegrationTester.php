@@ -14,6 +14,7 @@ use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Entities\DynamicSegmentFilterEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\InvalidStateException;
 use MailPoet\Segments\DynamicSegments\Filters\Filter;
 use MailPoet\Util\Security;
 use MailPoet\WooCommerce\Helper;
@@ -46,6 +47,8 @@ class IntegrationTester extends \Codeception\Actor {
   /** @var EntityManager */
   private $entityManager;
 
+  private $wpTermIds = [];
+
   private $wooProductIds = [];
 
   private $wooOrderIds = [];
@@ -74,6 +77,17 @@ class IntegrationTester extends \Codeception\Actor {
     $this->createdUsers[] = $email;
 
     return $userId;
+  }
+
+  public function createWordPressTerm(string $term, string $taxonomy, array $args = []): int {
+    $term = wp_insert_term($term, $taxonomy, $args);
+    if ($term instanceof WP_Error) {
+      throw new InvalidStateException('Failed to create term');
+    }
+
+    $this->wpTermIds[$taxonomy] = $this->wpTermIds[$taxonomy] ?? [];
+    $this->wpTermIds[$taxonomy][] = $term['term_id'];
+    return $term['term_id'];
   }
 
   public function createCustomer(string $email, string $role = 'customer'): int {
@@ -160,6 +174,15 @@ class IntegrationTester extends \Codeception\Actor {
       return;
     }
     DataStore::sync_order($orderId);
+  }
+
+  public function deleteWordPressTerms(): void {
+    foreach ($this->wpTermIds as $taxonomy => $termIds) {
+      foreach ($termIds as $termId) {
+        wp_delete_term($termId, $taxonomy);
+      }
+    }
+    $this->wpTermIds = [];
   }
 
   public function deleteTestWooOrder(int $wooOrderId) {
@@ -294,6 +317,7 @@ class IntegrationTester extends \Codeception\Actor {
   }
 
   public function cleanup() {
+    $this->deleteWordPressTerms();
     $this->deleteCreatedUsers();
     $this->deleteTestWooProducts();
     $this->deleteTestWooOrders();
