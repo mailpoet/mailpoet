@@ -53,6 +53,8 @@ class IntegrationTester extends \Codeception\Actor {
 
   private $wooOrderIds = [];
 
+  private $wooCouponIds = [];
+
   private $createdUsers = [];
 
   public function __construct(
@@ -169,6 +171,17 @@ class IntegrationTester extends \Codeception\Actor {
     return $order;
   }
 
+  public function createWooCommerceCoupon(array $data): void {
+    $coupon1 = new WC_Coupon();
+
+    if (isset($data['code'])) {
+      $coupon1->set_code($data['code']);
+    }
+
+    $coupon1->save();
+    $this->wooCouponIds[] = $coupon1->get_id();
+  }
+
   public function updateWooOrderStats(int $orderId): void {
     if (!class_exists('Automattic\WooCommerce\Admin\API\Reports\Orders\Stats\DataStore')) {
       return;
@@ -213,6 +226,16 @@ class IntegrationTester extends \Codeception\Actor {
       }
     }
     $this->wooOrderIds = [];
+  }
+
+  public function deleteTestWooCoupons(): void {
+    foreach ($this->wooCouponIds as $couponId) {
+      $coupon = new WC_Coupon($couponId);
+      if (!$coupon->get_id() > 0) {
+        $coupon->delete(true);
+      }
+    }
+    $this->wooCouponIds = [];
   }
 
   public function uniqueId($length = 10): string {
@@ -321,5 +344,6 @@ class IntegrationTester extends \Codeception\Actor {
     $this->deleteCreatedUsers();
     $this->deleteTestWooProducts();
     $this->deleteTestWooOrders();
+    $this->deleteTestWooCoupons();
   }
 }

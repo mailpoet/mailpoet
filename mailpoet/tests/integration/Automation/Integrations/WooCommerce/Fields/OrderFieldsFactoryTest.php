@@ -7,7 +7,6 @@ use MailPoet\Automation\Engine\Data\Field;
 use MailPoet\Automation\Integrations\WooCommerce\Payloads\OrderPayload;
 use MailPoet\Automation\Integrations\WooCommerce\Subjects\OrderSubject;
 use MailPoet\WP\Functions as WPFunctions;
-use WC_Coupon;
 use WC_Order;
 use WP_Term;
 
@@ -242,17 +241,9 @@ class OrderFieldsFactoryTest extends \MailPoetTest {
   }
 
   public function testCouponsField(): void {
-    $coupon1 = new WC_Coupon();
-    $coupon1->set_code('coupon-1');
-    $coupon1->save();
-
-    $coupon2 = new WC_Coupon();
-    $coupon2->set_code('coupon-2');
-    $coupon2->save();
-
-    $coupon3 = new WC_Coupon();
-    $coupon3->set_code('coupon-3');
-    $coupon3->save();
+    $this->tester->createWooCommerceCoupon(['code' => 'coupon-1']);
+    $this->tester->createWooCommerceCoupon(['code' => 'coupon-2']);
+    $this->tester->createWooCommerceCoupon(['code' => 'coupon-3']);
 
     $fields = $this->getFieldsMap();
 
