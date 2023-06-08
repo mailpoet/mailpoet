@@ -133,6 +133,23 @@ class OrderFieldsFactoryTest extends \MailPoetTest {
     $this->assertEquals(new DateTimeImmutable('2020-01-01 00:00:00'), $createdDateField->getValue($payload));
   }
 
+  public function testPaidDateField(): void {
+    $fields = $this->getFieldsMap();
+
+    // check definitions
+    $paidDateField = $fields['woocommerce:order:paid-date'];
+    $this->assertSame('Paid date', $paidDateField->getName());
+    $this->assertSame('datetime', $paidDateField->getType());
+    $this->assertSame([], $paidDateField->getArgs());
+
+    // check values
+    $order = new WC_Order();
+    $order->set_date_paid('2020-01-01 00:00:00');
+
+    $payload = new OrderPayload($order);
+    $this->assertEquals(new DateTimeImmutable('2020-01-01 00:00:00'), $paidDateField->getValue($payload));
+  }
+
   /** @return array<string, Field> */
   private function getFieldsMap(): array {
     $factory = $this->diContainer->get(OrderSubject::class);

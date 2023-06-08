@@ -114,6 +114,14 @@ class OrderFieldsFactory {
             return $payload->getOrder()->get_date_created();
           }
         ),
+        new Field(
+          'woocommerce:order:paid-date',
+          Field::TYPE_DATETIME,
+          __('Paid date', 'mailpoet'),
+          function (OrderPayload $payload) {
+            return $payload->getOrder()->get_date_paid();
+          }
+        ),
       ]
     );
   }
