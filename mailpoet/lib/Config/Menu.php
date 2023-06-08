@@ -486,7 +486,7 @@ class Menu {
     $parentSlug = self::MAIN_PAGE_SLUG;
     // Automations menu is hidden when the subscription is part of a bundle and AutomateWoo is active but pages can be accessed directly
     if ($this->wp->isPluginActive('automatewoo/automatewoo.php') && $this->servicesChecker->isBundledSubscription()) {
-      $parentSlug = null;
+      $parentSlug = '';
     }
 
     $automationPage = $this->wp->addSubmenuPage(
