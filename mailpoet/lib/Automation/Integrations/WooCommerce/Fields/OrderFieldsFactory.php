@@ -4,6 +4,7 @@ namespace MailPoet\Automation\Integrations\WooCommerce\Fields;
 
 use MailPoet\Automation\Engine\Data\Field;
 use MailPoet\Automation\Integrations\WooCommerce\Payloads\OrderPayload;
+use WC_Payment_Gateway;
 
 class OrderFieldsFactory {
   /** @return Field[] */
@@ -130,7 +131,29 @@ class OrderFieldsFactory {
             return $payload->getOrder()->get_customer_note();
           }
         ),
+        new Field(
+          'woocommerce:order:payment-method',
+          Field::TYPE_ENUM,
+          __('Payment method', 'mailpoet'),
+          function (OrderPayload $payload) {
+            return $payload->getOrder()->get_payment_method();
+          },
+          [
+            'options' => $this->getOrderPaymentOptions(),
+          ]
+        ),
       ]
     );
+  }
+
+  private function getOrderPaymentOptions(): array {
+    $gateways = WC()->payment_gateways()->get_available_payment_gateways();
+    $options = [];
+    foreach ($gateways as $gateway) {
+      if ($gateway instanceof WC_Payment_Gateway && $gateway->enabled === 'yes') {
+        $options[] = ['id' => $gateway->id, 'name' => $gateway->title];
+      }
+    }
+    return $options;
   }
 }

@@ -6,6 +6,7 @@ use DateTimeImmutable;
 use MailPoet\Automation\Engine\Data\Field;
 use MailPoet\Automation\Integrations\WooCommerce\Payloads\OrderPayload;
 use MailPoet\Automation\Integrations\WooCommerce\Subjects\OrderSubject;
+use MailPoet\WP\Functions as WPFunctions;
 use WC_Order;
 
 /**
@@ -165,6 +166,32 @@ class OrderFieldsFactoryTest extends \MailPoetTest {
 
     $payload = new OrderPayload($order);
     $this->assertSame('Test customer note', $customerNoteField->getValue($payload));
+  }
+
+  public function testPaymentMethodField(): void {
+    WPFunctions::get()->updateOption('woocommerce_cod_settings', ['enabled' => 'yes']);
+    WPFunctions::get()->updateOption('woocommerce_paypal_settings', ['enabled' => 'yes']);
+    WC()->payment_gateways()->init();
+
+    $fields = $this->getFieldsMap();
+
+    // check definitions
+    $paymentMethodField = $fields['woocommerce:order:payment-method'];
+    $this->assertSame('Payment method', $paymentMethodField->getName());
+    $this->assertSame('enum', $paymentMethodField->getType());
+    $this->assertSame([
+      'options' => [
+        ['id' => 'cod', 'name' => 'Cash on delivery'],
+        ['id' => 'paypal', 'name' => 'PayPal'],
+      ],
+    ], $paymentMethodField->getArgs());
+
+    // check values
+    $order = new WC_Order();
+    $order->set_payment_method('Test payment method');
+
+    $payload = new OrderPayload($order);
+    $this->assertSame('Test payment method', $paymentMethodField->getValue($payload));
   }
 
   /** @return array<string, Field> */
