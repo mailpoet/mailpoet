@@ -222,6 +222,23 @@ class OrderFieldsFactoryTest extends \MailPoetTest {
     $this->assertSame('processing', $statusField->getValue($payload));
   }
 
+  public function testTotalField(): void {
+    $fields = $this->getFieldsMap();
+
+    // check definitions
+    $totalField = $fields['woocommerce:order:total'];
+    $this->assertSame('Total', $totalField->getName());
+    $this->assertSame('number', $totalField->getType());
+    $this->assertSame([], $totalField->getArgs());
+
+    // check values
+    $order = new WC_Order();
+    $order->set_total('123.45');
+
+    $payload = new OrderPayload($order);
+    $this->assertSame(123.45, $totalField->getValue($payload));
+  }
+
   /** @return array<string, Field> */
   private function getFieldsMap(): array {
     $factory = $this->diContainer->get(OrderSubject::class);
