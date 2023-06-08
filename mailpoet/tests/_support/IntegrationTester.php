@@ -46,6 +46,8 @@ class IntegrationTester extends \Codeception\Actor {
   /** @var EntityManager */
   private $entityManager;
 
+  private $wooProductIds = [];
+
   private $wooOrderIds = [];
 
   private $createdUsers = [];
@@ -97,6 +99,26 @@ class IntegrationTester extends \Codeception\Actor {
     }
   }
 
+  public function createWooCommerceProduct(array $data): WC_Product {
+    $product = new WC_Product_Simple();
+
+    if (isset($data['name'])) {
+      $product->set_name($data['name']);
+    }
+
+    if (isset($data['category_ids'])) {
+      $product->set_category_ids($data['category_ids']);
+    }
+
+    if (isset($data['tag_ids'])) {
+      $product->set_tag_ids($data['tag_ids']);
+    }
+
+    $product->save();
+    $this->wooProductIds[] = $product->get_id();
+    return $product;
+  }
+
   /**
    * @param array $data - includes default args for wc_create_order plus some extras.
    * The defaults are currently:
@@ -146,6 +168,17 @@ class IntegrationTester extends \Codeception\Actor {
     if ($order instanceof \WC_Order) {
       $order->delete(true);
     }
+  }
+
+  public function deleteTestWooProducts(): void {
+    $helper = ContainerWrapper::getInstance()->get(Helper::class);
+    foreach ($this->wooProductIds as $wooProductId) {
+      $product = $helper->wcGetProduct($wooProductId);
+      if ($product instanceof WC_Product) {
+        $product->delete(true);
+      }
+    }
+    $this->wooProductIds = [];
   }
 
   public function deleteTestWooOrders() {
@@ -262,6 +295,7 @@ class IntegrationTester extends \Codeception\Actor {
 
   public function cleanup() {
     $this->deleteCreatedUsers();
+    $this->deleteTestWooProducts();
     $this->deleteTestWooOrders();
   }
 }

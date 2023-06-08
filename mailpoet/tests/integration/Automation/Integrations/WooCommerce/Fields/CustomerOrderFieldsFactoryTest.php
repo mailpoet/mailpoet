@@ -9,8 +9,6 @@ use MailPoet\Automation\Integrations\WooCommerce\Subjects\CustomerSubject;
 use MailPoet\InvalidStateException;
 use WC_Customer;
 use WC_Order;
-use WC_Product;
-use WC_Product_Simple;
 use WC_Product_Variable;
 use WC_Product_Variation;
 use WP_Error;
@@ -121,11 +119,11 @@ class CustomerOrderFieldsFactoryTest extends \MailPoetTest {
     ], $purchasedCategories->getArgs());
 
     // create products
-    $p1 = $this->createProduct('Product 1'); // uncategorized
-    $p2 = $this->createProduct('Product 2', [$cat1Id]);
-    $p3 = $this->createProduct('Product 3', [$cat1Id, $cat2Id]);
-    $p4 = $this->createProduct('Product 4', [$subCat1]);
-    $p5 = $this->createProduct('Product 5', [$cat3Id, $subCat2]);
+    $p1 = $this->tester->createWooCommerceProduct(['name' => 'Product 1']); // uncategorized
+    $p2 = $this->tester->createWooCommerceProduct(['name' => 'Product 2', 'category_ids' => [$cat1Id]]);
+    $p3 = $this->tester->createWooCommerceProduct(['name' => 'Product 3', 'category_ids' => [$cat1Id, $cat2Id]]);
+    $p4 = $this->tester->createWooCommerceProduct(['name' => 'Product 4', 'category_ids' => [$subCat1]]);
+    $p5 = $this->tester->createWooCommerceProduct(['name' => 'Product 5', 'category_ids' => [$cat3Id, $subCat2]]);
 
     // check values (guest)
     $o1 = $this->createOrder(0, 123);
@@ -185,10 +183,10 @@ class CustomerOrderFieldsFactoryTest extends \MailPoetTest {
     ], $purchasedTags->getArgs());
 
     // create products
-    $p1 = $this->createProduct('Product 1'); // no tags
-    $p2 = $this->createProduct('Product 2', [], [$tag1Id, $tag2Id]);
-    $p3 = $this->createProduct('Product 3', [], [$tag2Id]);
-    $p4 = $this->createProduct('Product 4', [], [$tag3Id]);
+    $p1 = $this->tester->createWooCommerceProduct(['name' => 'Product 1']); // no tags
+    $p2 = $this->tester->createWooCommerceProduct(['name' => 'Product 2', 'tag_ids' => [$tag1Id, $tag2Id]]);
+    $p3 = $this->tester->createWooCommerceProduct(['name' => 'Product 3', 'tag_ids' => [$tag2Id]]);
+    $p4 = $this->tester->createWooCommerceProduct(['name' => 'Product 4', 'tag_ids' => [$tag3Id]]);
 
     // check values (guest)
     $o1 = $this->createOrder(0, 123);
@@ -270,15 +268,6 @@ class CustomerOrderFieldsFactoryTest extends \MailPoetTest {
       throw new InvalidStateException('Failed to create term');
     }
     return $term['term_id'];
-  }
-
-  private function createProduct(string $name, array $categoryIds = [], array $tagIds = []): WC_Product {
-    $product = new WC_Product_Simple();
-    $product->set_name($name);
-    $product->set_category_ids($categoryIds);
-    $product->set_tag_ids($tagIds);
-    $product->save();
-    return $product;
   }
 
   private function createOrder(int $customerId, float $total, string $date = '2023-06-01 14:03:27'): WC_Order {

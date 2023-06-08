@@ -10,8 +10,6 @@ use MailPoet\InvalidStateException;
 use MailPoet\WP\Functions as WPFunctions;
 use WC_Coupon;
 use WC_Order;
-use WC_Product;
-use WC_Product_Simple;
 use WP_Error;
 use WP_Term;
 
@@ -327,7 +325,7 @@ class OrderFieldsFactoryTest extends \MailPoetTest {
     ], $purchasedCategories->getArgs());
 
     // check values
-    $product = $this->createProduct('Test product', [$cat1Id, $cat2Id, $subCat1]);
+    $product = $this->tester->createWooCommerceProduct(['name' => 'Test product', 'category_ids' => [$cat1Id, $cat2Id, $subCat1]]);
     $order = $this->tester->createWooCommerceOrder();
     $order->add_product($product);
 
@@ -364,7 +362,7 @@ class OrderFieldsFactoryTest extends \MailPoetTest {
     ], $purchasedTags->getArgs());
 
     // check values
-    $product = $this->createProduct('Test product', [], [$tag1Id, $tag2Id]);
+    $product = $this->tester->createWooCommerceProduct(['name' => 'Test product', 'tag_ids' => [$tag1Id, $tag2Id]]);
     $order = $this->tester->createWooCommerceOrder();
     $order->add_product($product);
 
@@ -380,9 +378,9 @@ class OrderFieldsFactoryTest extends \MailPoetTest {
 
   public function testProductsField(): void {
     // products
-    $product1 = $this->createProduct('Product 1');
-    $product2 = $this->createProduct('Product 2');
-    $product3 = $this->createProduct('Product 3');
+    $product1 = $this->tester->createWooCommerceProduct(['name' => 'Product 1']);
+    $product2 = $this->tester->createWooCommerceProduct(['name' => 'Product 2']);
+    $product3 = $this->tester->createWooCommerceProduct(['name' => 'Product 3']);
 
     // check definitions
     $fields = $this->getFieldsMap();
@@ -428,14 +426,5 @@ class OrderFieldsFactoryTest extends \MailPoetTest {
       throw new InvalidStateException('Failed to create term');
     }
     return $term['term_id'];
-  }
-
-  private function createProduct(string $name, array $categoryIds = [], array $tagIds = []): WC_Product {
-    $product = new WC_Product_Simple();
-    $product->set_name($name);
-    $product->set_category_ids($categoryIds);
-    $product->set_tag_ids($tagIds);
-    $product->save();
-    return $product;
   }
 }
