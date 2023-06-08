@@ -5,6 +5,7 @@ namespace MailPoet\Segments\DynamicSegments;
 use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Entities\DynamicSegmentFilterEntity;
 use MailPoet\Segments\DynamicSegments\Exceptions\InvalidFilterException;
+use MailPoet\Segments\DynamicSegments\Filters\AutomationsEvents;
 use MailPoet\Segments\DynamicSegments\Filters\EmailAction;
 use MailPoet\Segments\DynamicSegments\Filters\EmailActionClickAny;
 use MailPoet\Segments\DynamicSegments\Filters\EmailOpensAbsoluteCountAction;
@@ -104,6 +105,9 @@ class FilterFactory {
   /** @var WooCommerceCustomerTextField */
   private $wooCommerceCustomerTextField;
 
+  /** @var AutomationsEvents */
+  private $automationsEvents;
+
   public function __construct(
     EmailAction $emailAction,
     EmailActionClickAny $emailActionClickAny,
@@ -128,7 +132,8 @@ class FilterFactory {
     WooCommerceAverageSpent $wooCommerceAverageSpent,
     WooCommerceUsedPaymentMethod $wooCommerceUsedPaymentMethod,
     WooCommerceUsedShippingMethod $wooCommerceUsedShippingMethod,
-    SubscriberTextField $subscriberTextField
+    SubscriberTextField $subscriberTextField,
+    AutomationsEvents $automationsEvents
   ) {
     $this->emailAction = $emailAction;
     $this->userRole = $userRole;
@@ -154,6 +159,7 @@ class FilterFactory {
     $this->wooCommerceUsedPaymentMethod = $wooCommerceUsedPaymentMethod;
     $this->wooCommerceUsedShippingMethod = $wooCommerceUsedShippingMethod;
     $this->wooCommerceCustomerTextField = $wooCommerceCustomerTextField;
+    $this->automationsEvents = $automationsEvents;
   }
 
   public function getFilterForFilterEntity(DynamicSegmentFilterEntity $filter): Filter {
@@ -161,6 +167,8 @@ class FilterFactory {
     $filterType = $filterData->getFilterType();
     $action = $filterData->getAction();
     switch ($filterType) {
+      case DynamicSegmentFilterData::TYPE_AUTOMATIONS:
+        return $this->automationsEvents;
       case DynamicSegmentFilterData::TYPE_USER_ROLE:
         return $this->userRole($action);
       case DynamicSegmentFilterData::TYPE_EMAIL:
