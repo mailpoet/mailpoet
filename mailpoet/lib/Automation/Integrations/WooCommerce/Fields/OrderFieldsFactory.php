@@ -222,6 +222,23 @@ class OrderFieldsFactory {
             'options' => $this->termOptionsBuilder->getCategoryOptions(),
           ]
         ),
+        new Field(
+          'woocommerce:order:tags',
+          Field::TYPE_ENUM_ARRAY,
+          __('Tags', 'mailpoet'),
+          function (OrderPayload $payload) {
+            $products = $this->getProducts($payload->getOrder());
+            $tagIds = [];
+            foreach ($products as $product) {
+              $tagIds = array_merge($tagIds, $product->get_tag_ids());
+            }
+            sort($tagIds);
+            return array_unique($tagIds);
+          },
+          [
+            'options' => $this->termOptionsBuilder->getTagOptions(),
+          ]
+        ),
       ]
     );
   }

@@ -344,6 +344,40 @@ class OrderFieldsFactoryTest extends \MailPoetTest {
     $this->assertNotContains($subCat2, $value);
   }
 
+  public function testTagsField(): void {
+    // tags
+    $tag1Id = $this->createTerm('Tag 1', 'product_tag', ['slug' => 'tag-1']);
+    $tag2Id = $this->createTerm('Tag 2', 'product_tag', ['slug' => 'tag-2']);
+    $tag3Id = $this->createTerm('Tag 3', 'product_tag', ['slug' => 'tag-3']);
+
+    // check definitions
+    $fields = $this->getFieldsMap();
+    $purchasedTags = $fields['woocommerce:order:tags'];
+    $this->assertSame('Tags', $purchasedTags->getName());
+    $this->assertSame('enum_array', $purchasedTags->getType());
+    $this->assertSame([
+      'options' => [
+        ['id' => $tag1Id, 'name' => 'Tag 1'],
+        ['id' => $tag2Id, 'name' => 'Tag 2'],
+        ['id' => $tag3Id, 'name' => 'Tag 3'],
+      ],
+    ], $purchasedTags->getArgs());
+
+    // check values
+    $product = $this->createProduct('Test product', [], [$tag1Id, $tag2Id]);
+    $order = $this->tester->createWooCommerceOrder();
+    $order->add_product($product);
+
+    $orderPayload = new OrderPayload($order);
+    $value = $purchasedTags->getValue($orderPayload);
+
+    $this->assertIsArray($value);
+    $this->assertCount(2, $value);
+    $this->assertContains($tag1Id, $value);
+    $this->assertContains($tag2Id, $value);
+    $this->assertNotContains($tag3Id, $value);
+  }
+
   /** @return array<string, Field> */
   private function getFieldsMap(): array {
     $factory = $this->diContainer->get(OrderSubject::class);
