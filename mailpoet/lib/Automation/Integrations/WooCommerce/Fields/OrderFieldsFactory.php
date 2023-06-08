@@ -122,6 +122,14 @@ class OrderFieldsFactory {
             return $payload->getOrder()->get_date_paid();
           }
         ),
+        new Field(
+          'woocommerce:order:customer-note',
+          Field::TYPE_STRING,
+          __('Customer provided note', 'mailpoet'),
+          function (OrderPayload $payload) {
+            return $payload->getOrder()->get_customer_note();
+          }
+        ),
       ]
     );
   }
