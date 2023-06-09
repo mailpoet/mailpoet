@@ -650,6 +650,18 @@ class AcceptanceTester extends \Codeception\Actor {
   }
 
   /**
+   * Select the panel color in the form editor
+   * Selectable colors are: Black [1], Gray [2], White [3], Pink [4], Red [5], Orange [6],
+   * Yellow [7], Turquoise [8], Green [9], Cyan [10], Blue [11] and Purple [12].
+   * Please select colors by providing [number] as string.
+   * @param string $colorOrder
+   */
+  public function selectPanelColor($colorOrder) {
+    $i = $this;
+    $i->click('(//div[@class="components-circular-option-picker__option-wrapper"])' . $colorOrder);
+  }
+
+  /**
    * Checks that email was received by looking for a subject in inbox.
    * In case it was not found reloads the inbox and check once more.
    * Emails are sent via cron and might not be sent immediately.
