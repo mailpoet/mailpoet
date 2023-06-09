@@ -131,6 +131,7 @@ function InputStylesSettings({ styles, onChange }: InputStylesSettingsProps) {
                 max={40}
                 allowReset
                 onChange={partial(updateStyles, 'borderRadius')}
+                className="mailpoet-automation-styles-border-radius-size"
               />
             </>
           ) : null}
