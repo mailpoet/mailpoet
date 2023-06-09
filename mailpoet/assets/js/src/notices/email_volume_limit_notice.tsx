@@ -14,11 +14,11 @@ function EmailVolumeLimitNotice(): JSX.Element {
   if (MailPoet.emailVolumeLimit) {
     title = MailPoet.I18n.t('emailVolumeLimitNoticeTitle').replace(
       '[emailVolumeLimit]',
-      MailPoet.emailVolumeLimit,
+      MailPoet.emailVolumeLimit.toLocaleString(),
     );
     youReachedEmailVolumeLimit = MailPoet.I18n.t(
       'youReachedEmailVolumeLimit',
-    ).replace('[emailVolumeLimit]', MailPoet.emailVolumeLimit);
+    ).replace('[emailVolumeLimit]', MailPoet.emailVolumeLimit.toLocaleString());
   }
 
   const upgradeLink = MailPoet.MailPoetComUrlFactory.getUpgradeUrl(

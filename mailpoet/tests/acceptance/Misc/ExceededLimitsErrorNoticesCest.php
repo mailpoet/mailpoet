@@ -23,7 +23,8 @@ class ExceededLimitsErrorNoticesCest {
     $settings->withSendingMethodMailpoetWithRestrictedAccess(Bridge::KEY_ACCESS_EMAIL_VOLUME_LIMIT, 5000);
 
     $i->amOnMailpoetPage('Homepage');
-    $i->waitForText('Congratulations, you sent more than 5000 emails this month!');
+    $i->waitForText('Congratulations, you sent more than 5,000 emails this month!');
+    $i->waitForText('your MailPoet plan includes (5,000)');
     $i->dontSee($mailerErrorMessage);
 
     $i->wantTo('Check the alternative message without limit info is displayed when the limit info is not available');
