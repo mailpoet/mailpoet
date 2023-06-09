@@ -80,10 +80,10 @@ class EditorTextInputStylesCest {
     $i->assertCssProperty('[data-automation-id="editor_first_name_label"]', 'font-weight', '700');
     $i->assertCssProperty('[data-automation-id="editor_email_input"]', 'border-width', '10px');
     $i->assertCssProperty('[data-automation-id="editor_email_input"]', 'border-radius', '40px');
-    $i->assertAttributeContains('[data-automation-id="editor_first_name_input"]', 'style', 'border-color: rgb(252, 185, 0);');
-    $i->assertAttributeContains('[data-automation-id="editor_first_name_input"]', 'style', 'background-color: rgb(142, 209, 252);');
-    $i->assertAttributeContains('[data-automation-id="editor_email_input"]', 'style', 'border-color: rgb(252, 185, 0);');
-    $i->assertAttributeContains('[data-automation-id="editor_email_input"]', 'style', 'background-color: rgb(142, 209, 252);');
+    $i->assertCssProperty('[data-automation-id="editor_first_name_input"]', 'border-color', 'rgb(252, 185, 0)');
+    $i->assertCssProperty('[data-automation-id="editor_first_name_input"]', 'background-color', 'rgba(142, 209, 252, 1)');
+    $i->assertCssProperty('[data-automation-id="editor_email_input"]', 'border-color', 'rgb(252, 185, 0)');
+    $i->assertCssProperty('[data-automation-id="editor_email_input"]', 'background-color', 'rgba(142, 209, 252, 1)');
     $i->see('Heading Lorem');
     $i->see('Paragraph ipsum dolor');
 

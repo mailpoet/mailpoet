@@ -41,8 +41,8 @@ class EditorButtonStylesCest {
     $i->fillField('.mailpoet-automation-styles-border-size input[type="number"]', 10); // Set border size
 
     $i->wantTo('Check element has styles');
-    $i->assertAttributeContains('[data-automation-id="editor_submit_input"]', 'style', 'border-width: 10px;');
-    $i->assertAttributeContains('[data-automation-id="editor_submit_input"]', 'style', 'font-weight: bold;');
+    $i->assertCssProperty('[data-automation-id="editor_submit_input"]', 'border-width', '10px');
+    $i->assertCssProperty('[data-automation-id="editor_submit_input"]', 'font-weight', '700');
 
     $i->wantTo('Save form');
     $i->saveFormInEditor();
@@ -50,20 +50,20 @@ class EditorButtonStylesCest {
     $i->wantTo('Reload page and check data were saved');
     $i->reloadPage();
     $i->waitForElement('[data-automation-id="form_title_input"]');
-    $i->assertAttributeContains('[data-automation-id="editor_submit_input"]', 'style', 'border-width: 10px;');
-    $i->assertAttributeContains('[data-automation-id="editor_submit_input"]', 'style', 'font-weight: bold;');
-    $i->assertAttributeContains('[data-automation-id="editor_submit_input"]', 'style', 'color: rgb(255, 105, 0);');
-    $i->assertAttributeContains('[data-automation-id="editor_submit_input"]', 'style', 'border-color: rgb(252, 185, 0);');
-    $i->assertAttributeContains('[data-automation-id="editor_submit_input"]', 'style', 'background-color: rgb(142, 209, 252);');
+    $i->assertCssProperty('[data-automation-id="editor_submit_input"]', 'border-width', '10px');
+    $i->assertCssProperty('[data-automation-id="editor_submit_input"]', 'font-weight', '700');
+    $i->assertCssProperty('[data-automation-id="editor_submit_input"]', 'color', 'rgba(142, 209, 252, 1)');
+    $i->assertCssProperty('[data-automation-id="editor_submit_input"]', 'border-color', 'rgb(252, 185, 0)');
+    $i->assertCssProperty('[data-automation-id="editor_submit_input"]', 'background-color', 'rgba(255, 105, 0, 1)');
 
     $i->wantTo('Check styles are applied on frontend page');
     $postUrl = $i->createPost('Title', 'Content');
     $i->amOnUrl($postUrl);
     $i->assertCssProperty('[data-automation-id="subscribe-submit-button"]', 'border-width', '10px');
     $i->assertCssProperty('[data-automation-id="subscribe-submit-button"]', 'font-weight', '700');
-    $i->assertCssProperty('[data-automation-id="subscribe-submit-button"]', 'color', 'rgba(255, 105, 0, 1)');
+    $i->assertCssProperty('[data-automation-id="subscribe-submit-button"]', 'color', 'rgba(142, 209, 252, 1)');
     $i->assertCssProperty('[data-automation-id="subscribe-submit-button"]', 'border-color', 'rgb(252, 185, 0)');
-    $i->assertCssProperty('[data-automation-id="subscribe-submit-button"]', 'background-color', 'rgba(142, 209, 252, 1)');
+    $i->assertCssProperty('[data-automation-id="subscribe-submit-button"]', 'background-color', 'rgba(255, 105, 0, 1)');
     $i->seeInField('[data-automation-id="subscribe-submit-button"]', 'Join Now');
   }
 }
