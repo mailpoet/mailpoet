@@ -5,7 +5,7 @@ import { Notice } from 'notices/notice';
 function SubscribersLimitNotice(): JSX.Element {
   if (!MailPoet.subscribersLimitReached) return null;
   const hasValidApiKey = MailPoet.hasValidApiKey;
-  const subscribersLimit = MailPoet.subscribersLimit.toString();
+  const subscribersLimit = MailPoet.subscribersLimit.toLocaleString();
   let title = MailPoet.I18n.t('subscribersLimitNoticeTitleUnknownLimit');
   let youReachedTheLimit = '';
   if (MailPoet.subscribersLimit) {
