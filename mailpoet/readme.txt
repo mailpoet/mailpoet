@@ -18,7 +18,7 @@ Our newsletter builder integrates perfectly with WordPress so any website owner 
 
 Schedule your newsletters, send them right away, or set up new blog post notifications to send automatically, in just a few clicks.
 
-Trusted by 500,000 WordPress websites since 2011.
+Trusted by 600,000 WordPress websites since 2011.
 
 **With a free plan for up to 1,000 subscribers, and scaling paid plans with enhanced functionality available, MailPoet is an email marketing solution suitable for both beginners and proficient email marketers.**
 
