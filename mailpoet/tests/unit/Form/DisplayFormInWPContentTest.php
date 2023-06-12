@@ -522,6 +522,198 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     expect($result)->endsWith($formHtml);
   }
 
+  public function testDisplayFormOnAllTagArchives(): void {
+    $formHtml = '<form id="test-form"></form>';
+    $this->wp->expects($this->any())->method('isTag')->willReturn(true);
+    $this->wp->expects($this->any())->method('isArchive')->willReturn(true);
+    $this->assetsController->expects($this->once())->method('setupFrontEndDependencies');
+    $this->templateRenderer->expects($this->once())->method('render')->willReturn($formHtml);
+    $form = new FormEntity('My Form');
+    $form->setSettings([
+      'segments' => ['3'],
+      'form_placement' => [
+        'popup' => ['enabled' => '1', '', 'tagArchives' => ['all' => '1']],
+      ],
+      'success_message' => 'Hello',
+    ]);
+    $form->setBody([['type' => 'submit', 'params' => ['label' => 'Subscribe!'], 'id' => 'submit', 'name' => 'Submit']]);
+    $this->repository->expects($this->once())->method('findBy')->willReturn([$form]);
+
+    ob_start();
+    $this->hook->maybeRenderFormsInFooter();
+    $renderedFormHtml = ob_get_clean();
+    expect($renderedFormHtml)->equals($formHtml);
+  }
+
+  public function testItRendersOnlyForSpecificTagArchive(): void {
+    $formHtml = '<form id="test-form"></form>';
+    $this->wp->expects($this->any())->method('isArchive')->willReturn(true);
+    $this->wp->expects($this->any())->method('isTag')->willReturn(true);
+    $this->wp->expects($this->any())->method('hasTag')->willReturnCallback(function(array $tags) {
+      if (in_array('10', $tags)) {
+        return true;
+      }
+
+      return false;
+    });
+    $this->assetsController->expects($this->once())->method('setupFrontEndDependencies');
+    $this->templateRenderer->expects($this->once())->method('render')->willReturn($formHtml);
+    $form = new FormEntity('My Form');
+    $form->setSettings([
+      'segments' => ['3'],
+      'form_placement' => [
+        'popup' => ['enabled' => '1', '', 'tagArchives' => ['all' => '', 'selected' => ['10']]],
+      ],
+      'success_message' => 'Hello',
+    ]);
+    $form->setBody([['type' => 'submit', 'params' => ['label' => 'Subscribe!'], 'id' => 'submit', 'name' => 'Submit']]);
+    $this->repository->expects($this->any())->method('findBy')->willReturn([$form]);
+
+    ob_start();
+    $this->hook->maybeRenderFormsInFooter();
+    $renderedFormHtml = ob_get_clean();
+    expect($renderedFormHtml)->equals($formHtml);
+
+    $form->setSettings([
+      'segments' => ['3'],
+      'form_placement' => [
+        'popup' => ['enabled' => '1', '', 'categoryArchives' => ['all' => '', 'selected' => ['15']]],
+      ],
+      'success_message' => 'Hello',
+    ]);
+
+    ob_start();
+    $this->hook->maybeRenderFormsInFooter();
+    $renderedFormHtml = ob_get_clean();
+    expect($renderedFormHtml)->equals('');
+  }
+
+  public function testItDoesNotDisplayOnTagListingIfNotEnabled(): void {
+    $this->wp->expects($this->any())->method('isTag')->willReturn(true);
+    $this->wp->expects($this->any())->method('isArchive')->willReturn(true);
+    $this->assetsController->expects($this->never())->method('setupFrontEndDependencies');
+    $form = new FormEntity('My Form');
+    $form->setSettings([
+      'segments' => ['3'],
+      'form_placement' => [
+        'popup' => ['enabled' => '1', '', 'tagArchives' => ['all' => '']],
+      ],
+      'success_message' => 'Hello',
+    ]);
+    $form->setBody([['type' => 'submit', 'params' => ['label' => 'Subscribe!'], 'id' => 'submit', 'name' => 'Submit']]);
+    $this->repository->expects($this->once())->method('findBy')->willReturn([$form]);
+
+    ob_start();
+    $this->hook->maybeRenderFormsInFooter();
+    $renderedFormHtml = ob_get_clean();
+    expect($renderedFormHtml)->equals('');
+  }
+
+  public function testDisplayFormOnAllCategoryArchives(): void {
+    $formHtml = '<form id="test-form"></form>';
+    $this->wp->expects($this->any())->method('isArchive')->willReturn(true);
+    $this->wp->expects($this->any())->method('isCategory')->willReturn(true);
+    $this->assetsController->expects($this->once())->method('setupFrontEndDependencies');
+    $this->templateRenderer->expects($this->once())->method('render')->willReturn($formHtml);
+    $form = new FormEntity('My Form');
+    $form->setSettings([
+      'segments' => ['3'],
+      'form_placement' => [
+        'popup' => ['enabled' => '1', '', 'categoryArchives' => ['all' => '1']],
+      ],
+      'success_message' => 'Hello',
+    ]);
+    $form->setBody([['type' => 'submit', 'params' => ['label' => 'Subscribe!'], 'id' => 'submit', 'name' => 'Submit']]);
+    $this->repository->expects($this->once())->method('findBy')->willReturn([$form]);
+
+    ob_start();
+    $this->hook->maybeRenderFormsInFooter();
+    $renderedFormHtml = ob_get_clean();
+    expect($renderedFormHtml)->equals($formHtml);
+  }
+
+  public function testItRendersOnlyForSpecificCategoryArchive(): void {
+    $formHtml = '<form id="test-form"></form>';
+    $this->wp->expects($this->any())->method('isArchive')->willReturn(true);
+    $this->wp->expects($this->any())->method('isCategory')->willReturn(true);
+    $this->wp->expects($this->any())->method('hasCategory')->willReturnCallback(function(array $categories) {
+      return in_array('10', $categories);
+    });
+    $this->assetsController->expects($this->once())->method('setupFrontEndDependencies');
+    $this->templateRenderer->expects($this->once())->method('render')->willReturn($formHtml);
+    $form = new FormEntity('My Form');
+    $form->setSettings([
+      'segments' => ['3'],
+      'form_placement' => [
+        'popup' => ['enabled' => '1', '', 'categoryArchives' => ['all' => '', 'selected' => ['10']]],
+      ],
+      'success_message' => 'Hello',
+    ]);
+    $form->setBody([['type' => 'submit', 'params' => ['label' => 'Subscribe!'], 'id' => 'submit', 'name' => 'Submit']]);
+    $this->repository->expects($this->any())->method('findBy')->willReturn([$form]);
+
+    ob_start();
+    $this->hook->maybeRenderFormsInFooter();
+    $renderedFormHtml = ob_get_clean();
+    expect($renderedFormHtml)->equals($formHtml);
+
+    $form->setSettings([
+      'segments' => ['3'],
+      'form_placement' => [
+        'popup' => ['enabled' => '1', '', 'categoryArchives' => ['all' => '', 'selected' => ['15']]],
+      ],
+      'success_message' => 'Hello',
+    ]);
+
+    ob_start();
+    $this->hook->maybeRenderFormsInFooter();
+    $renderedFormHtml = ob_get_clean();
+    expect($renderedFormHtml)->equals('');
+  }
+
+  public function testItDoesNotDisplayOnCategoryListingIfNotEnabled(): void {
+    $this->wp->expects($this->any())->method('isArchive')->willReturn(true);
+    $this->wp->expects($this->any())->method('isCategory')->willReturn(true);
+    $this->assetsController->expects($this->never())->method('setupFrontEndDependencies');
+    $form = new FormEntity('My Form');
+    $form->setSettings([
+      'segments' => ['3'],
+      'form_placement' => [
+        'popup' => ['enabled' => '1', '', 'categoryArchives' => ['all' => '']],
+      ],
+      'success_message' => 'Hello',
+    ]);
+    $form->setBody([['type' => 'submit', 'params' => ['label' => 'Subscribe!'], 'id' => 'submit', 'name' => 'Submit']]);
+    $this->repository->expects($this->once())->method('findBy')->willReturn([$form]);
+
+    ob_start();
+    $this->hook->maybeRenderFormsInFooter();
+    $renderedFormHtml = ob_get_clean();
+    expect($renderedFormHtml)->equals('');
+  }
+
+  public function testItDisplaysOnHomepage(): void {
+    $formHtml = '<form id="test-form"></form>';
+    $this->wp->expects($this->any())->method('isFrontPage')->willReturn(true);
+    $this->assetsController->expects($this->once())->method('setupFrontEndDependencies');
+    $this->templateRenderer->expects($this->once())->method('render')->willReturn($formHtml);
+    $form = new FormEntity('My Form');
+    $form->setSettings([
+      'segments' => ['3'],
+      'form_placement' => [
+        'popup' => ['enabled' => '1', 'homepage' => '1'],
+      ],
+      'success_message' => 'Hello',
+    ]);
+    $form->setBody([['type' => 'submit', 'params' => ['label' => 'Subscribe!'], 'id' => 'submit', 'name' => 'Submit']]);
+    $this->repository->expects($this->once())->method('findBy')->willReturn([$form]);
+
+    ob_start();
+    $this->hook->maybeRenderFormsInFooter();
+    $renderedFormHtml = ob_get_clean();
+    expect($renderedFormHtml)->equals($formHtml);
+  }
+
   public function testDoesNotAppendPopupFormIfLoggedInAndSubscribed() {
     $formHtml = '<form id="test-form"></form>';
     $subscriber = new SubscriberEntity();
@@ -532,16 +724,16 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     $this->assetsController->expects($this->never())->method('setupFrontEndDependencies');
     $this->templateRenderer->expects($this->never())->method('render')->willReturn($formHtml);
     $this->wp
-      ->expects($this->never())
-      ->method('setTransient');
+    ->expects($this->never())
+    ->method('setTransient');
     $form = new FormEntity('My Form');
     $form->setSettings([
-      'segments' => ['3'],
-      'form_placement' => [
-        'below_posts' => ['enabled' => '', 'pages' => ['all' => ''], 'posts' => ['all' => '']],
-        'popup' => ['enabled' => '1', 'pages' => ['all' => '1'], 'posts' => ['all' => '']],
-      ],
-      'success_message' => 'Hello',
+    'segments' => ['3'],
+    'form_placement' => [
+      'below_posts' => ['enabled' => '', 'pages' => ['all' => ''], 'posts' => ['all' => '']],
+      'popup' => ['enabled' => '1', 'pages' => ['all' => '1'], 'posts' => ['all' => '']],
+    ],
+    'success_message' => 'Hello',
     ]);
     $form->setBody([['type' => 'submit', 'params' => ['label' => 'Subscribe!'], 'id' => 'submit', 'name' => 'Submit']]);
     $this->repository->expects($this->once())->method('findBy')->willReturn([$form]);

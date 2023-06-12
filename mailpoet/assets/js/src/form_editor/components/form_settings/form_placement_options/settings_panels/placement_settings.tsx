@@ -57,8 +57,25 @@ function PlacementSettings({ settingsPlacementKey }: Props): JSX.Element {
     prefix = 'preview';
   }
 
+  const placementSupportsArchives = settingsPlacementKey !== 'belowPosts';
+
   return (
     <>
+      {placementSupportsArchives && (
+        <ToggleControl
+          label={MailPoet.I18n.t('placeFormOnHomepage')}
+          checked={formSettings.formPlacement[settingsPlacementKey].homepage}
+          onChange={(newValue): void => {
+            compose([
+              changeFormSettings,
+              assocPath(
+                `formPlacement.${settingsPlacementKey}.homepage`,
+                newValue,
+              ),
+            ])(formSettings);
+          }}
+        />
+      )}
       <ToggleControl
         label={MailPoet.I18n.t('placeFormOnAllPages')}
         checked={formSettings.formPlacement[settingsPlacementKey].pages.all}
@@ -332,6 +349,171 @@ function PlacementSettings({ settingsPlacementKey }: Props): JSX.Element {
           />
         </div>
       </div>
+      {placementSupportsArchives && (
+        <>
+          <ToggleControl
+            label={MailPoet.I18n.t('displayOnAllTagArchives')}
+            checked={
+              formSettings.formPlacement[settingsPlacementKey].tagArchives.all
+            }
+            onChange={(newValue): void => {
+              compose([
+                changeFormSettings,
+                assocPath(
+                  `formPlacement.${settingsPlacementKey}.tagArchives.all`,
+                  newValue,
+                ),
+                cond([
+                  [
+                    // condition, if the predicate function is true the next compose is run
+                    (): boolean => newValue,
+                    compose([
+                      assocPath(
+                        `formPlacement.${settingsPlacementKey}.tagArchives.selected`,
+                        [],
+                      ), // if enabled clear selected tags
+                    ]),
+                  ],
+                  [(): boolean => !newValue, identity], // if disabled do nothing
+                ]),
+              ])(formSettings);
+            }}
+          />
+          <div data-automation-id="form-placement-select-archive-tags">
+            <div className="form-editor-placement-selection">
+              <Selection
+                dropDownParent={
+                  isPreviewShown ? '.mailpoet-modal-content' : undefined
+                }
+                item={{
+                  id: `${prefix}${formSettings.formPlacement[
+                    settingsPlacementKey
+                  ].tagArchives.selected.join()}`,
+                }}
+                onValueChange={(e): void => {
+                  const selected =
+                    formSettings.formPlacement[settingsPlacementKey].tagArchives
+                      .selected;
+                  if (isEqual(selected, e.target.value)) {
+                    return;
+                  }
+                  compose([
+                    changeFormSettings,
+                    assocPath(
+                      `formPlacement.${settingsPlacementKey}.tagArchives.selected`,
+                      e.target.value,
+                    ),
+                    cond([
+                      [
+                        // only disable "All pages" toggle if not empty
+                        (): boolean => !!e.target.value.length,
+                        assocPath(
+                          `formPlacement.${settingsPlacementKey}.tagArchives.all`,
+                          false,
+                        ), // disable all if some pages are selected
+                      ],
+                      [(): boolean => !e.target.value.length, identity],
+                    ]),
+                  ])(formSettings);
+                }}
+                field={{
+                  id: `${prefix}tagArchives`,
+                  name: 'tagArchives',
+                  values: tags,
+                  multiple: true,
+                  placeholder: MailPoet.I18n.t('selectSpecificArchiveTags'),
+                  getLabel: (tag): void => tag.name,
+                  selected: (): void =>
+                    formSettings.formPlacement[settingsPlacementKey].tagArchives
+                      .selected,
+                }}
+              />
+            </div>
+          </div>
+          <ToggleControl
+            label={MailPoet.I18n.t('displayOnAllCategoryArchives')}
+            checked={
+              formSettings.formPlacement[settingsPlacementKey].categoryArchives
+                .all
+            }
+            onChange={(newValue): void => {
+              compose([
+                changeFormSettings,
+                assocPath(
+                  `formPlacement.${settingsPlacementKey}.categoryArchives.all`,
+                  newValue,
+                ),
+                cond([
+                  [
+                    // condition, if the predicate function is true the next compose is run
+                    (): boolean => newValue,
+                    compose([
+                      assocPath(
+                        `formPlacement.${settingsPlacementKey}.categoryArchives.selected`,
+                        [],
+                      ), // if enabled clear selected categories
+                    ]),
+                  ],
+                  [(): boolean => !newValue, identity], // if disabled do nothing
+                ]),
+              ])(formSettings);
+            }}
+          />
+          <div data-automation-id="form-placement-select-archive-categories">
+            <div className="form-editor-placement-selection">
+              <Selection
+                dropDownParent={
+                  isPreviewShown ? '.mailpoet-modal-content' : undefined
+                }
+                item={{
+                  id: `${prefix}${formSettings.formPlacement[
+                    settingsPlacementKey
+                  ].categoryArchives.selected.join()}`,
+                }}
+                onValueChange={(e): void => {
+                  const selected =
+                    formSettings.formPlacement[settingsPlacementKey]
+                      .categoryArchives.selected;
+                  if (isEqual(selected, e.target.value)) {
+                    return;
+                  }
+                  compose([
+                    changeFormSettings,
+                    assocPath(
+                      `formPlacement.${settingsPlacementKey}.categoryArchives.selected`,
+                      e.target.value,
+                    ),
+                    cond([
+                      [
+                        // only disable "All pages" toggle if not empty
+                        (): boolean => !!e.target.value.length,
+                        assocPath(
+                          `formPlacement.${settingsPlacementKey}.categoryArchives.all`,
+                          false,
+                        ), // disable all if some pages are selected
+                      ],
+                      [(): boolean => !e.target.value.length, identity],
+                    ]),
+                  ])(formSettings);
+                }}
+                field={{
+                  id: `${prefix}categoryArchives`,
+                  name: 'categoryArchives',
+                  values: categories,
+                  multiple: true,
+                  placeholder: MailPoet.I18n.t(
+                    'selectSpecificArchiveCategories',
+                  ),
+                  getLabel: (tag): void => tag.name,
+                  selected: (): void =>
+                    formSettings.formPlacement[settingsPlacementKey]
+                      .categoryArchives.selected,
+                }}
+              />
+            </div>
+          </div>
+        </>
+      )}
     </>
   );
 }
