@@ -11,6 +11,9 @@ type FormPlacementBase = {
   tags: string[] | number[];
   posts: { all: boolean | '' | '1'; selected: string[] };
   pages: { all: boolean | '' | '1'; selected: string[] };
+  homepage: boolean | '' | '1';
+  tagArchives: { all: boolean | '' | '1'; selected: string[] };
+  categoryArchives: { all: boolean | '' | '1'; selected: string[] };
 };
 
 export type FormSettingsType = {

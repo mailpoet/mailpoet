@@ -234,6 +234,10 @@ class Hooks {
       'woocommerce_product_loop_end',
       [$this->displayFormInWPContent, 'wooProductListDisplay']
     );
+    $this->wp->addAction(
+      'wp_footer',
+      [$this->displayFormInWPContent, 'maybeRenderFormsInFooter']
+    );
   }
 
   public function setupMailer() {

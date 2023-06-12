@@ -61,6 +61,8 @@ class DisplayFormInWPContent {
 
   private $inWooProductLoop = false;
 
+  private $renderedDisplayTypes = [];
+
   public function __construct(
     WPFunctions $wp,
     FormsRepository $formsRepository,
@@ -81,43 +83,69 @@ class DisplayFormInWPContent {
     $this->woocommerceHelper = $woocommerceHelper;
   }
 
-  /**
-   * This takes input from an action and any plugin or theme can pass anything.
-   * We return string for regular content otherwise we just pass thru what comes.
-   * @param mixed $content
-   * @return string|mixed
-   */
-  private function display($content = null) {
-    if (!is_string($content) || !$this->shouldDisplay()) return $content;
-
+  private function getFormMarkup(): string {
+    $formMarkup = '';
     $forms = $this->getForms();
     if (count($forms) === 0) {
-      return $content;
+      return $formMarkup;
+    }
+    foreach ($forms as $displayType => $form) {
+      $formMarkup .= $this->getContentBellow($form, $displayType);
     }
 
-    $this->assetsController->setupFrontEndDependencies();
-    $result = $content;
-    foreach ($forms as $displayType => $form) {
-      $result .= $this->getContentBellow($form, $displayType);
-    }
-    return $result;
+    return $formMarkup;
   }
 
+  /**
+   * Hooked to the_content filter
+   */
   public function contentDisplay($content = null) {
     $this->inWooProductLoop = false;
-    return $this->display($content);
+    return $this->getContentWithFormMarkup($content);
   }
 
+  /**
+   * Hooked to woocommerce_product_loop_end filter
+   */
   public function wooProductListDisplay($content = null) {
     $this->inWooProductLoop = true;
-    return $this->display($content);
+    return $this->getContentWithFormMarkup($content);
+  }
+
+  private function getContentWithFormMarkup($content = null) {
+    if (!is_string($content) || !$this->shouldDisplay()) {
+      return $content;
+    }
+    $formsMarkup = $this->getFormMarkup();
+    if ($formsMarkup === '') {
+      return $content;
+    }
+    $this->assetsController->setupFrontEndDependencies();
+    return $content . $formsMarkup;
+  }
+
+  /**
+   * Hooked to wp_footer action.
+   *
+   * @return void
+   */
+  public function maybeRenderFormsInFooter(): void {
+    if ($this->wp->isArchive() || $this->wp->isFrontPage()) {
+      $formMarkup = $this->getFormMarkup();
+      if (!empty($formMarkup)) {
+        $this->assetsController->setupFrontEndDependencies();
+        // We are in control of the template and the data can be considered safe at this point
+        // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped, WordPressDotOrg.sniffs.OutputEscaping.UnescapedOutputParameter
+        echo $formMarkup;
+      }
+    }
   }
 
   private function shouldDisplay(): bool {
     $result = true;
     // This is a fix Yoast plugin and Shapely theme compatibility
     // This is to make sure we only display once for each page
-    // Yast plugin calls `get_the_excerpt` which also triggers hook `the_content` we don't want to include our form in that
+    // Yoast plugin calls `get_the_excerpt` which also triggers hook `the_content` we don't want to include our form in that
     // Shapely calls the hook `the_content` multiple times on the page as well and we would display popup multiple times - not ideal
     if (!$this->wp->inTheLoop() || !$this->wp->isMainQuery()) {
       $result = $this->wp->applyFilters('mailpoet_display_form_is_main_loop', false);
@@ -228,6 +256,7 @@ class DisplayFormInWPContent {
 
     // add API version
     $templateData['api_version'] = API::CURRENT_VERSION;
+    $this->renderedDisplayTypes[] = $displayType;
     return $this->templateRenderer->render('form/front_end_form.html', $templateData);
   }
 
@@ -251,6 +280,9 @@ class DisplayFormInWPContent {
   }
 
   private function shouldDisplayFormType(FormEntity $form, string $formType): bool {
+    if ($this->wasDisplayTypeAlreadyRendered($formType)) {
+      return false;
+    }
     $settings = $form->getSettings();
     // check the structure just to be sure
 
@@ -267,6 +299,10 @@ class DisplayFormInWPContent {
 
     if (!$this->shouldDisplayFormForWPUser($form, $formType)) return false;
 
+    if ($this->wp->isFrontPage() && $this->shouldDisplayFormOnFrontPage($setup)) {
+      return true;
+    }
+
     if ($this->wp->isSingular($this->wp->applyFilters('mailpoet_display_form_supported_post_types', self::SUPPORTED_POST_TYPES))) {
       if ($this->shouldDisplayFormOnPost($setup, 'posts')) return true;
       if ($this->shouldDisplayFormOnCategory($setup)) return true;
@@ -275,6 +311,14 @@ class DisplayFormInWPContent {
     }
     if ($this->wp->isPage() && $this->shouldDisplayFormOnPost($setup, 'pages')) {
       return true;
+    }
+
+    if ($this->wp->isTag() || $this->wp->isTax('product_tag')) {
+      if ($this->shouldDisplayFormOnTagArchive($setup)) return true;
+    }
+
+    if ($this->wp->isCategory() || $this->wp->isTax('product_cat')) {
+      if ($this->shouldDisplayFormOnCategoryArchive($setup)) return true;
     }
 
     if ($this->displayFormInProductListPage()) {
@@ -312,5 +356,29 @@ class DisplayFormInWPContent {
     if ($this->wp->hasTag($setup['tags'])) return true;
     if ($this->wp->hasTerm($setup['tags'], 'product_tag')) return true;
     return false;
+  }
+
+  private function shouldDisplayFormOnFrontPage(array $setup): bool {
+    return ($setup['homepage'] ?? false) === '1';
+  }
+
+  private function shouldDisplayFormOnCategoryArchive($setup): bool {
+    if (!isset($setup['categoryArchives'])) return false;
+    if (($setup['categoryArchives']['all'] ?? false) === '1') return true;
+    $selectedCategories = $setup['categoryArchives']['selected'] ?? [];
+    if ($selectedCategories === []) return false;
+    return $this->wp->hasCategory($selectedCategories) || $this->wp->hasTerm($selectedCategories, 'product_cat');
+  }
+
+  private function shouldDisplayFormOnTagArchive($setup): bool {
+    if (!isset($setup['tagArchives'])) return false;
+    if (($setup['tagArchives']['all'] ?? false) === '1') return true;
+    $selectedTags = $setup['tagArchives']['selected'] ?? [];
+    if ($selectedTags === []) return false;
+    return $this->wp->hasTag($selectedTags) || $this->wp->hasTerm($selectedTags, 'product_tag');
+  }
+
+  private function wasDisplayTypeAlreadyRendered(string $displayType): bool {
+    return in_array($displayType, $this->renderedDisplayTypes);
   }
 }

@@ -32,6 +32,23 @@ export function mapFormDataBeforeSaving(data) {
                 : '',
             selected: data.settings.formPlacement?.popup?.pages?.selected,
           },
+          homepage:
+            data.settings.formPlacement?.popup?.homepage === true ? '1' : '',
+          tagArchives: {
+            all:
+              data.settings.formPlacement?.popup?.tagArchives?.all === true
+                ? '1'
+                : '',
+            selected: data.settings.formPlacement?.popup?.tagArchives?.selected,
+          },
+          categoryArchives: {
+            all:
+              data.settings.formPlacement?.popup?.categoryArchives?.all === true
+                ? '1'
+                : '',
+            selected:
+              data.settings.formPlacement?.popup?.categoryArchives?.selected,
+          },
         },
         fixed_bar: {
           enabled:
@@ -57,6 +74,25 @@ export function mapFormDataBeforeSaving(data) {
                 ? '1'
                 : '',
             selected: data.settings.formPlacement?.fixedBar?.pages?.selected,
+          },
+          homepage:
+            data.settings.formPlacement?.fixedBar?.homepage === true ? '1' : '',
+          tagArchives: {
+            all:
+              data.settings.formPlacement?.fixedBar?.tagArchives?.all === true
+                ? '1'
+                : '',
+            selected:
+              data.settings.formPlacement?.fixedBar?.tagArchives?.selected,
+          },
+          categoryArchives: {
+            all:
+              data.settings.formPlacement?.fixedBar?.categoryArchives?.all ===
+              true
+                ? '1'
+                : '',
+            selected:
+              data.settings.formPlacement?.fixedBar?.categoryArchives?.selected,
           },
         },
         below_posts: {
@@ -106,6 +142,25 @@ export function mapFormDataBeforeSaving(data) {
                 ? '1'
                 : '',
             selected: data.settings.formPlacement?.slideIn?.pages?.selected,
+          },
+          homepage:
+            data.settings.formPlacement?.slideIn?.homepage === true ? '1' : '',
+          tagArchives: {
+            all:
+              data.settings.formPlacement?.slideIn?.tagArchives?.all === true
+                ? '1'
+                : '',
+            selected:
+              data.settings.formPlacement?.slideIn?.tagArchives?.selected,
+          },
+          categoryArchives: {
+            all:
+              data.settings.formPlacement?.slideIn?.categoryArchives?.all ===
+              true
+                ? '1'
+                : '',
+            selected:
+              data.settings.formPlacement?.slideIn?.categoryArchives?.selected,
           },
         },
         others: {
