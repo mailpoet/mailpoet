@@ -3,7 +3,7 @@ Contributors: mailpoet, woocommerce, automattic
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 6.0
 Tested up to: 6.2
-Stable tag: 4.18.0
+Stable tag: 4.18.1
 Requires PHP: 7.3
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -226,6 +226,10 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 4.18.1 - 2023-06-12 =
+* Fixed: rarely the last page before sending the email can fail to load;
+* Fixed: can't attach image in the email when using betheme theme (error: this.activateMode is not a function).
 
 = 4.18.0 - 2023-06-05 =
 * Improved: "is in country" segment no longer requires completed WooCommerce order. If the user has country assigned, it will be used for segmenting;
