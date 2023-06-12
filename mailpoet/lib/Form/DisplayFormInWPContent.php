@@ -130,7 +130,7 @@ class DisplayFormInWPContent {
    * @return void
    */
   public function maybeRenderFormsInFooter(): void {
-    if ($this->wp->isArchive() || $this->wp->isFrontPage()) {
+    if ($this->wp->isArchive() || $this->wp->isFrontPage() || $this->wp->isHome()) {
       $formMarkup = $this->getFormMarkup();
       if (!empty($formMarkup)) {
         $this->assetsController->setupFrontEndDependencies();
@@ -303,6 +303,14 @@ class DisplayFormInWPContent {
       return true;
     }
 
+    /**
+     * This is a special case when a site is configured with a specific "Posts page" in the Settings > Reading
+     * WordPress settings. In that case, the only conditional function that returns true is is_home.
+     */
+    if ((!$this->wp->isFrontPage() && $this->wp->isHome()) && $this->shouldDisplayFormOnHome($setup)) {
+      return true;
+    }
+
     if ($this->wp->isSingular($this->wp->applyFilters('mailpoet_display_form_supported_post_types', self::SUPPORTED_POST_TYPES))) {
       if ($this->shouldDisplayFormOnPost($setup, 'posts')) return true;
       if ($this->shouldDisplayFormOnCategory($setup)) return true;
@@ -359,7 +367,24 @@ class DisplayFormInWPContent {
   }
 
   private function shouldDisplayFormOnFrontPage(array $setup): bool {
-    return ($setup['homepage'] ?? false) === '1';
+    if (($setup['homepage'] ?? false) === '1') {
+      return true;
+    }
+    if (($setup['pages']['all'] ?? false) === '1') {
+      return true;
+    }
+    return false;
+  }
+
+  private function shouldDisplayFormOnHome($setup) {
+    if (($setup['pages']['all'] ?? false) === '1') {
+      return true;
+    }
+    $selectedPages = $setup['pages']['selected'] ?? [];
+    if (in_array((string)$this->wp->getQueriedObjectId(), $selectedPages)) {
+      return true;
+    }
+    return false;
   }
 
   private function shouldDisplayFormOnCategoryArchive($setup): bool {

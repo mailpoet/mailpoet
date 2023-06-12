@@ -917,4 +917,12 @@ class Functions {
   public function getShortcodeRegex($tagnames = null): string {
     return get_shortcode_regex($tagnames);
   }
+
+  public function isHome() {
+    return is_home();
+  }
+
+  public function getQueriedObjectId() {
+    return get_queried_object_id();
+  }
 }

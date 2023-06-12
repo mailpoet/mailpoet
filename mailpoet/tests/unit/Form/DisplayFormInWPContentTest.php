@@ -714,6 +714,56 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     expect($renderedFormHtml)->equals($formHtml);
   }
 
+  public function testItDisplaysOnSpecificPostsPageWhenAllPagesSelected(): void {
+    $formHtml = '<form id="test-form"></form>';
+    $this->wp->expects($this->any())->method('isFrontPage')->willReturn(false);
+    $this->wp->expects($this->any())->method('isHome')->willReturn(true);
+    $this->assetsController->expects($this->once())->method('setupFrontEndDependencies');
+    $this->templateRenderer->expects($this->once())->method('render')->willReturn($formHtml);
+    $form = new FormEntity('My Form');
+    $form->setSettings([
+      'form_placement' => [
+        'popup' => ['enabled' => '1', 'pages' => [
+          'all' => '1',
+        ]],
+      ],
+      'success_message' => 'Hello',
+    ]);
+    $form->setBody([['type' => 'submit', 'params' => ['label' => 'Subscribe!'], 'id' => 'submit', 'name' => 'Submit']]);
+    $this->repository->expects($this->once())->method('findBy')->willReturn([$form]);
+
+    ob_start();
+    $this->hook->maybeRenderFormsInFooter();
+    $renderedFormHtml = ob_get_clean();
+    expect($renderedFormHtml)->equals($formHtml);
+  }
+
+  public function testItDisplaysOnSpecificPostsPageWhenConfiguredToMatchThatPage(): void {
+    $formHtml = '<form id="test-form"></form>';
+    $this->wp->expects($this->any())->method('isFrontPage')->willReturn(false);
+    $this->wp->expects($this->any())->method('isHome')->willReturn(true);
+    $this->wp->expects($this->any())->method('getQueriedObjectId')->willReturn(50);
+    $this->assetsController->expects($this->once())->method('setupFrontEndDependencies');
+    $this->templateRenderer->expects($this->once())->method('render')->willReturn($formHtml);
+    $form = new FormEntity('My Form');
+    $form->setSettings([
+      'form_placement' => [
+        'popup' => ['enabled' => '1', 'pages' => [
+          'all' => '0',
+          'selected' => ['50'],
+        ]],
+      ],
+      'success_message' => 'Hello',
+    ]);
+    $form->setBody([['type' => 'submit', 'params' => ['label' => 'Subscribe!'], 'id' => 'submit', 'name' => 'Submit']]);
+    $this->repository->expects($this->once())->method('findBy')->willReturn([$form]);
+
+    ob_start();
+    $this->hook->maybeRenderFormsInFooter();
+    $renderedFormHtml = ob_get_clean();
+    expect($renderedFormHtml)->equals($formHtml);
+  }
+
   public function testDoesNotAppendPopupFormIfLoggedInAndSubscribed() {
     $formHtml = '<form id="test-form"></form>';
     $subscriber = new SubscriberEntity();
