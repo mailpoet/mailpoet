@@ -94,6 +94,28 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     expect($result)->endsWith($renderedForm);
   }
 
+  public function testItOnlyDisplaysOncePerRequest(): void {
+    $renderedForm = '<form class="form"></form>';
+    $this->wp->expects($this->any())->method('isSingle')->willReturn(true);
+    $this->wp->expects($this->any())->method('isSingular')->willReturn(true);
+    $this->assetsController->expects($this->once())->method('setupFrontEndDependencies');
+    $this->templateRenderer->expects($this->once())->method('render')->willReturn($renderedForm);
+    $form = new FormEntity('My Form');
+    $form->setSettings([
+      'segments' => ['3'],
+      'form_placement' => ['below_posts' => ['enabled' => '1', 'pages' => ['all' => ''], 'posts' => ['all' => '1']],],
+      'success_message' => 'Hello',
+    ]);
+    $form->setBody([['type' => 'submit', 'params' => ['label' => 'Subscribe!'], 'id' => 'submit', 'name' => 'Submit']]);
+    $this->repository->expects($this->any())->method('findBy')->willReturn([$form]);
+    $result = $this->hook->contentDisplay('content');
+    expect($result)->notEquals('content');
+    expect($result)->endsWith($renderedForm);
+
+    $result2 = $this->hook->contentDisplay('content');
+    expect($result2)->equals('content');
+  }
+
   public function testAppendsRenderedFormAfterOnASpecificPost() {
     $renderedForm = '<form class="form"></form>';
     $this->wp->expects($this->once())->method('isSingle')->willReturn(true);
