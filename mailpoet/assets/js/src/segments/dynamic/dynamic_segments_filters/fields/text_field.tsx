@@ -4,8 +4,8 @@ import { Grid } from 'common/grid';
 import { Select } from 'common/form/select/select';
 import { Input } from 'common/form/input/input';
 import { MailPoet } from 'mailpoet';
-import { FilterProps, WordpressRoleFormItem } from '../../../types';
-import { storeName } from '../../../store';
+import { FilterProps, TextFormItem } from '../../types';
+import { storeName } from '../../store';
 
 const validOperators = [
   'is',
@@ -18,17 +18,15 @@ const validOperators = [
   'notEndsWith',
 ];
 
-export function validateSubscriberTextField(
-  formItems: WordpressRoleFormItem,
-): boolean {
+export function validateTextField(formItems: TextFormItem): boolean {
   if (!validOperators.includes(formItems.operator)) {
     return false;
   }
   return typeof formItems.value === 'string' && formItems.value.length > 0;
 }
 
-export function SubscriberTextField({ filterIndex }: FilterProps): JSX.Element {
-  const segment: WordpressRoleFormItem = useSelect(
+export function TextField({ filterIndex }: FilterProps): JSX.Element {
+  const segment: TextFormItem = useSelect(
     (select) => select(storeName).getSegmentFilter(filterIndex),
     [filterIndex],
   );
