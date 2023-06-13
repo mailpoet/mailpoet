@@ -260,7 +260,7 @@ class OrderFieldsFactoryTest extends \MailPoetTest {
     ], $couponsField->getArgs());
 
     // check values
-    $order = new WC_Order();
+    $order = $this->tester->createWooCommerceOrder();
     $order->apply_coupon('coupon-1');
     $order->apply_coupon('coupon-2');
 

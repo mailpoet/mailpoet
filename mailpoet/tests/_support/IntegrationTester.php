@@ -150,12 +150,10 @@ class IntegrationTester extends \Codeception\Actor {
     $helper = ContainerWrapper::getInstance()->get(Helper::class);
     $order = $helper->wcCreateOrder($data);
 
+    $order->set_billing_email($data['billing_email'] ?? md5($this->uniqueId()) . '@example.com');
+
     if (isset($data['date_created'])) {
       $order->set_date_created($data['date_created']);
-    }
-
-    if (isset($data['billing_email'])) {
-      $order->set_billing_email($data['billing_email']);
     }
 
     if (isset($data['total'])) {
