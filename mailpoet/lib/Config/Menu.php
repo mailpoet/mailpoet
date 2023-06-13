@@ -174,7 +174,7 @@ class Menu {
       'MailPoet',
       AccessControl::PERMISSION_ACCESS_PLUGIN_ADMIN,
       self::MAIN_PAGE_SLUG,
-      null,
+      '',
       self::ICON_BASE64_SVG,
       30
     );
