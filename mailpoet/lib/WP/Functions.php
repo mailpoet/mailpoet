@@ -77,17 +77,12 @@ class Functions {
    * @param string $menuTitle
    * @param string $capability
    * @param string $menuSlug
-   * @param callable $callback|null
+   * @param callable|'' $callback
    * @param string $iconUrl
    * @param int $position
-   * @return string The resulting page's hook_suffix.
    * @return string
    */
-  public function addMenuPage($pageTitle, $menuTitle, $capability, $menuSlug, callable $callback = null, $iconUrl = '', $position = null) {
-    if (is_null($callback)) {
-      $callback = function () {
-      };
-    }
+  public function addMenuPage($pageTitle, $menuTitle, $capability, $menuSlug, $callback = '', $iconUrl = '', $position = null) {
     return add_menu_page($pageTitle, $menuTitle, $capability, $menuSlug, $callback, $iconUrl, $position);
   }
 
@@ -109,12 +104,12 @@ class Functions {
    * @param string $menuTitle
    * @param string $capability
    * @param string $menuSlug
-   * @param callable $function
+   * @param callable|'' $callback
    * @param int $position
    * @return string|false
    */
-  public function addSubmenuPage($parentSlug, $pageTitle, $menuTitle, $capability, $menuSlug, callable $function, $position = null) {
-    return add_submenu_page($parentSlug, $pageTitle, $menuTitle, $capability, $menuSlug, $function, $position);
+  public function addSubmenuPage($parentSlug, $pageTitle, $menuTitle, $capability, $menuSlug, $callback = '', $position = null) {
+    return add_submenu_page($parentSlug, $pageTitle, $menuTitle, $capability, $menuSlug, $callback, $position);
   }
 
   public function adminUrl($path = '', $scheme = 'admin') {
