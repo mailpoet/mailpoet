@@ -76,13 +76,12 @@ class OrderSubjectToSubscriberSubjectTransformerTest extends \MailPoetTest {
     $orderChangeTrigger->registerHooks();
 
     $this->assertEmpty($this->automationRunStorage->getAutomationRunsForAutomation($automation));
-    $order = new \WC_Order();
-
     $billingAddress = md5(uniqid()) . '@example.com';
-    $order->set_billing_email($billingAddress);
-    $order->set_customer_id(1);
-    $order->set_status('pending');
-    $order->save();
+    $order = $this->tester->createWooCommerceOrder([
+      'customer_id' => 1,
+      'status' => 'pending',
+      'billing_email' => $billingAddress,
+    ]);
 
     // Lets make a status change.
     $order->set_status('completed');
