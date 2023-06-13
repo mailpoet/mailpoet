@@ -10,6 +10,8 @@ export enum WooCommerceActionTypes {
   TOTAL_SPENT = 'totalSpent',
   AVERAGE_SPENT = 'averageSpent',
   CUSTOMER_IN_COUNTRY = 'customerInCountry',
+  CUSTOMER_IN_CITY = 'customerInCity',
+  CUSTOMER_IN_POSTAL_CODE = 'customerInPostalCode',
   SINGLE_ORDER_VALUE = 'singleOrderValue',
   USED_PAYMENT_METHOD = 'usedPaymentMethod',
 }
@@ -21,6 +23,11 @@ export const WooCommerceOptions = [
     group: SegmentTypes.WooCommerce,
   },
   {
+    value: WooCommerceActionTypes.CUSTOMER_IN_CITY,
+    label: MailPoet.I18n.t('wooCustomerInCity'),
+    group: SegmentTypes.WooCommerce,
+  },
+  {
     value: WooCommerceActionTypes.CUSTOMER_IN_COUNTRY,
     label: MailPoet.I18n.t('wooCustomerInCountry'),
     group: SegmentTypes.WooCommerce,
@@ -28,6 +35,11 @@ export const WooCommerceOptions = [
   {
     value: WooCommerceActionTypes.NUMBER_OF_ORDERS,
     label: MailPoet.I18n.t('wooNumberOfOrders'),
+    group: SegmentTypes.WooCommerce,
+  },
+  {
+    value: WooCommerceActionTypes.CUSTOMER_IN_POSTAL_CODE,
+    label: MailPoet.I18n.t('wooCustomerInPostalCode'),
     group: SegmentTypes.WooCommerce,
   },
   {
