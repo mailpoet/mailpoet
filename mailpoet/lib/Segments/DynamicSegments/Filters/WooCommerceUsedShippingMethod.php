@@ -49,7 +49,7 @@ class WooCommerceUsedShippingMethod implements Filter {
     }
 
     if (!is_array($shippingMethods) || count($shippingMethods) < 1) {
-      throw new InvalidFilterException('Missing payment methods', InvalidFilterException::MISSING_VALUE);
+      throw new InvalidFilterException('Missing shipping methods', InvalidFilterException::MISSING_VALUE);
     }
 
     if (!is_int($days) || $days < 1) {
