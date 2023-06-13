@@ -1,5 +1,5 @@
 import { useSelect } from '@wordpress/data';
-import { WooCommerceFormItem, FilterProps } from '../types';
+import { FilterProps, WooCommerceFormItem } from '../types';
 import { DateFields, validateDateField } from './fields/date_fields';
 import { storeName } from '../store';
 import { WooCommerceActionTypes } from './woocommerce_options';
@@ -35,6 +35,7 @@ import {
   UsedPaymentMethodFields,
   validateUsedPaymentMethod,
 } from './fields/woocommerce/used_payment_method';
+import { TextField, validateTextField } from './fields/text_field';
 
 export function validateWooCommerce(formItems: WooCommerceFormItem): boolean {
   if (
@@ -69,11 +70,21 @@ export function validateWooCommerce(formItems: WooCommerceFormItem): boolean {
   if (formItems.action === WooCommerceActionTypes.PURCHASE_DATE) {
     return validateDateField(formItems);
   }
+  if (
+    [
+      WooCommerceActionTypes.CUSTOMER_IN_POSTAL_CODE,
+      WooCommerceActionTypes.CUSTOMER_IN_CITY,
+    ].includes(formItems.action as WooCommerceActionTypes)
+  ) {
+    return validateTextField(formItems);
+  }
   return true;
 }
 
 const componentsMap = {
   [WooCommerceActionTypes.CUSTOMER_IN_COUNTRY]: CustomerInCountryFields,
+  [WooCommerceActionTypes.CUSTOMER_IN_CITY]: TextField,
+  [WooCommerceActionTypes.CUSTOMER_IN_POSTAL_CODE]: TextField,
   [WooCommerceActionTypes.NUMBER_OF_ORDERS]: NumberOfOrdersFields,
   [WooCommerceActionTypes.PURCHASE_DATE]: DateFields,
   [WooCommerceActionTypes.PURCHASED_PRODUCT]: PurchasedProductFields,
