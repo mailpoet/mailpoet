@@ -1,12 +1,14 @@
-import { select } from '@wordpress/data';
-import { Query, Section } from '../types';
+import { dispatch, select } from '@wordpress/data';
+import { getCurrentDates } from '@woocommerce/date';
+import { addQueryArgs } from '@wordpress/url';
+import { apiFetch } from '@wordpress/data-controls';
+import { Query, Section, SectionData } from '../types';
 import { storeName } from '../constants';
-import { updateSection } from '../../api';
 
 export function setQuery(query: Query) {
   const sections = select(storeName).getSections();
   sections.forEach((section: Section) => {
-    void updateSection(section, query);
+    void dispatch(storeName).updateSection(section, query);
   });
   return {
     type: 'SET_QUERY',
@@ -15,6 +17,50 @@ export function setQuery(query: Query) {
 }
 
 export function setSectionData(payload: Section) {
+  return {
+    type: 'SET_SECTION_DATA',
+    payload,
+  };
+}
+
+export function* updateSection(
+  section: Section,
+  queryParam: Query | undefined = undefined,
+) {
+  const query = queryParam ?? select(storeName).getCurrentQuery();
+  const defaultDateRange = 'period=month&compare=previous_year';
+
+  const { primary: primaryDate, secondary: secondaryDate } = getCurrentDates(
+    query,
+    defaultDateRange,
+  );
+
+  const dates = {
+    primary: {
+      after: primaryDate.after.toDate().toISOString(),
+      before: primaryDate.before.toDate().toISOString(),
+    },
+    secondary: {
+      after: secondaryDate.after.toDate().toISOString(),
+      before: secondaryDate.before.toDate().toISOString(),
+    },
+  };
+
+  const id = select(storeName).getAutomation().id;
+
+  const path = addQueryArgs(section.endpoint, { id, query: dates });
+  const method = 'GET';
+  const response: {
+    data: SectionData;
+  } = yield apiFetch({
+    path,
+    method,
+  });
+
+  const payload = {
+    ...section,
+    data: response?.data || undefined,
+  };
   return {
     type: 'SET_SECTION_DATA',
     payload,
