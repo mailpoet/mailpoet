@@ -41,14 +41,15 @@ class WooCommerceUsedShippingMethod implements Filter {
   public function apply(QueryBuilder $queryBuilder, DynamicSegmentFilterEntity $filter): QueryBuilder {
     $filterData = $filter->getFilterData();
     $operator = $filterData->getParam('operator');
-    $shippingMethods = $filterData->getParam('shipping_methods');
+    list($shippingMethodIds, $instanceIds) = $this->extractShippingMethodIdsAndInstanceIds((array)$filterData->getParam('shipping_methods'));
+
     $days = $filterData->getParam('used_shipping_method_days');
 
     if (!is_string($operator) || !in_array($operator, self::VALID_OPERATORS, true)) {
       throw new InvalidFilterException('Invalid operator', InvalidFilterException::MISSING_OPERATOR);
     }
 
-    if (!is_array($shippingMethods) || count($shippingMethods) < 1) {
+    if (!is_array($shippingMethodIds) || empty($shippingMethodIds) || !is_array($instanceIds) || empty($instanceIds)) {
       throw new InvalidFilterException('Missing shipping methods', InvalidFilterException::MISSING_VALUE);
     }
 
@@ -65,58 +66,106 @@ class WooCommerceUsedShippingMethod implements Filter {
 
     switch ($operator) {
       case DynamicSegmentFilterData::OPERATOR_ANY:
-        $this->applyForAnyOperator($queryBuilder, $includedStatuses, $shippingMethods, $date);
+        $this->applyForAnyOperator($queryBuilder, $includedStatuses, $shippingMethodIds, $instanceIds, $date);
         break;
       case DynamicSegmentFilterData::OPERATOR_ALL:
-        $this->applyForAllOperator($queryBuilder, $includedStatuses, $shippingMethods, $date);
+        $this->applyForAllOperator($queryBuilder, $includedStatuses, $shippingMethodIds, $instanceIds, $date);
         break;
       case DynamicSegmentFilterData::OPERATOR_NONE:
-        $this->applyForNoneOperator($queryBuilder, $includedStatuses, $shippingMethods, $date);
+        $this->applyForNoneOperator($queryBuilder, $includedStatuses, $shippingMethodIds, $instanceIds, $date);
         break;
     }
 
     return $queryBuilder;
   }
 
-  private function applyForAnyOperator(QueryBuilder $queryBuilder, array $includedStatuses, array $shippingMethods, Carbon $date): void {
+  private function applyForAnyOperator(QueryBuilder $queryBuilder, array $includedStatuses, array $shippingMethodIds, array $instanceIds, Carbon $date): void {
     $dateParam = $this->filterHelper->getUniqueParameterName('date');
-    $shippingMethodParam = $this->filterHelper->getUniqueParameterName('shippingMethod');
+    $shippingMethodsParam = $this->filterHelper->getUniqueParameterName('shippingMethods');
+    $instanceIdsParam = $this->filterHelper->getUniqueParameterName('instanceIds');
 
     $orderItemsTable = $this->filterHelper->getPrefixedTable('woocommerce_order_items');
     $orderItemsTableAlias = 'orderItems';
+    $orderItemMetaTable = $this->filterHelper->getPrefixedTable('woocommerce_order_itemmeta');
+    $orderItemMetaTableAlias1 = 'orderItemMeta1';
+    $orderItemMetaTableAlias2 = 'orderItemMeta2';
     $orderStatsAlias = $this->wooFilterHelper->applyOrderStatusFilter($queryBuilder, $includedStatuses);
     $queryBuilder
       ->innerJoin($orderStatsAlias, $orderItemsTable, $orderItemsTableAlias, "$orderStatsAlias.order_id = $orderItemsTableAlias.order_id")
+      ->innerJoin($orderItemsTableAlias, $orderItemMetaTable, $orderItemMetaTableAlias1, "$orderItemsTableAlias.order_item_id = $orderItemMetaTableAlias1.order_item_id")
+      ->innerJoin($orderItemsTableAlias, $orderItemMetaTable, $orderItemMetaTableAlias2, "$orderItemsTableAlias.order_item_id = $orderItemMetaTableAlias2.order_item_id")
       ->andWhere("$orderStatsAlias.date_created >= :$dateParam")
-      ->andWhere("$orderItemsTableAlias.order_item_name IN (:$shippingMethodParam)")
       ->andWhere("$orderItemsTableAlias.order_item_type = 'shipping'")
+      ->andWhere("$orderItemMetaTableAlias1.meta_key = 'method_id'")
+      ->andWhere("$orderItemMetaTableAlias1.meta_value IN (:$shippingMethodsParam)")
+      ->andWhere("$orderItemMetaTableAlias2.meta_key = 'instance_id'")
+      ->andWhere("$orderItemMetaTableAlias2.meta_value IN (:$instanceIdsParam)")
       ->setParameter($dateParam, $date->toDateTimeString())
-      ->setParameter($shippingMethodParam, $shippingMethods, Connection::PARAM_STR_ARRAY);
+      ->setParameter($shippingMethodsParam, $shippingMethodIds, Connection::PARAM_STR_ARRAY)
+      ->setParameter($instanceIdsParam, $instanceIds, Connection::PARAM_STR_ARRAY);
   }
 
-  private function applyForAllOperator(QueryBuilder $queryBuilder, array $includedStatuses, array $shippingMethods, Carbon $date): void {
+  private function applyForAllOperator(QueryBuilder $queryBuilder, array $includedStatuses, array $shippingMethodIds, array $instanceIds, Carbon $date): void {
     $dateParam = $this->filterHelper->getUniqueParameterName('date');
     $orderItemTypeParam = $this->filterHelper->getUniqueParameterName('orderItemType');
-    $shippingMethodsParam = $this->filterHelper->getUniqueParameterName('shippingMethod');
+    $shippingMethodsParam = $this->filterHelper->getUniqueParameterName('shippingMethods');
+    $instanceIdsParam = $this->filterHelper->getUniqueParameterName('instanceIds');
 
     $orderItemsTable = $this->filterHelper->getPrefixedTable('woocommerce_order_items');
-    $orderItemsAlias = 'orderItems';
+    $orderItemsTableAlias = 'orderItems';
+    $orderItemMetaTable = $this->filterHelper->getPrefixedTable('woocommerce_order_itemmeta');
+    $orderItemMetaTableAlias1 = 'orderItemMeta1';
+    $orderItemMetaTableAlias2 = 'orderItemMeta2';
     $orderStatsAlias = $this->wooFilterHelper->applyOrderStatusFilter($queryBuilder, $includedStatuses);
+
     $queryBuilder
-      ->innerJoin($orderStatsAlias, $orderItemsTable, $orderItemsAlias, "$orderStatsAlias.order_id = $orderItemsAlias.order_id")
+      ->innerJoin($orderStatsAlias, $orderItemsTable, $orderItemsTableAlias, "$orderStatsAlias.order_id = $orderItemsTableAlias.order_id")
+      ->innerJoin($orderItemsTableAlias, $orderItemMetaTable, $orderItemMetaTableAlias1, "$orderItemsTableAlias.order_item_id = $orderItemMetaTableAlias1.order_item_id")
+      ->innerJoin($orderItemsTableAlias, $orderItemMetaTable, $orderItemMetaTableAlias2, "$orderItemsTableAlias.order_item_id = $orderItemMetaTableAlias2.order_item_id")
       ->andWhere("$orderStatsAlias.date_created >= :$dateParam")
-      ->andWhere("$orderItemsAlias.order_item_type = :$orderItemTypeParam")
-      ->andWhere("$orderItemsAlias.order_item_name IN (:$shippingMethodsParam)")
+      ->andWhere("$orderItemsTableAlias.order_item_type = :$orderItemTypeParam")
+      ->andWhere("$orderItemMetaTableAlias1.meta_key = 'method_id'")
+      ->andWhere("$orderItemMetaTableAlias1.meta_value IN (:$shippingMethodsParam)")
+      ->andWhere("$orderItemMetaTableAlias2.meta_key = 'instance_id'")
+      ->andWhere("$orderItemMetaTableAlias2.meta_value IN (:$instanceIdsParam)")
       ->setParameter($dateParam, $date->toDateTimeString())
       ->setParameter($orderItemTypeParam, 'shipping')
-      ->setParameter($shippingMethodsParam, $shippingMethods, Connection::PARAM_STR_ARRAY)
-      ->groupBy('inner_subscriber_id')->having("COUNT(DISTINCT $orderItemsAlias.order_item_name) = " . count($shippingMethods));
+      ->setParameter($shippingMethodsParam, $shippingMethodIds, Connection::PARAM_STR_ARRAY)
+      ->setParameter($instanceIdsParam, $instanceIds, Connection::PARAM_STR_ARRAY)
+      ->groupBy('inner_subscriber_id')
+      ->having("COUNT(DISTINCT(CONCAT($orderItemMetaTableAlias1.meta_value, $orderItemMetaTableAlias2.meta_value))) = " . count($shippingMethodIds));
   }
 
-  private function applyForNoneOperator(QueryBuilder $queryBuilder, array $includedStatuses, array $shippingMethods, Carbon $date): void {
+  private function applyForNoneOperator(QueryBuilder $queryBuilder, array $includedStatuses, array $shippingMethodIds, array $instanceIds, Carbon $date): void {
     $subQuery = $this->filterHelper->getNewSubscribersQueryBuilder();
-    $this->applyForAnyOperator($subQuery, $includedStatuses, $shippingMethods, $date);
+    $this->applyForAnyOperator($subQuery, $includedStatuses, $shippingMethodIds, $instanceIds, $date);
     $subscribersTable = $this->filterHelper->getSubscribersTable();
     $queryBuilder->andWhere($queryBuilder->expr()->notIn("$subscribersTable.id", $this->filterHelper->getInterpolatedSQL($subQuery)));
+  }
+
+  /**
+   * Extracts shipping method ids and instance ids from the given array of strings.
+   * The format of each shipping method string is "shippingMethod:instanceId". For example,
+   * "flat_rate:1" or "local_pickup:2".
+   *
+   * @param array $shippingMethodStrings
+   * @return array[]
+   */
+  private function extractShippingMethodIdsAndInstanceIds(array $shippingMethodStrings): array {
+    $shippingMethodIds = [];
+    $instanceIds = [];
+
+    foreach ($shippingMethodStrings as $shippingMethodString) {
+      if (preg_match('/^\w+:\d+$/', $shippingMethodString)) {
+        $parts = preg_split('/:/', $shippingMethodString);
+
+        if (is_array($parts) && is_string($parts[0]) && is_string($parts[1])) {
+          $shippingMethodIds[] = $parts[0];
+          $instanceIds[] = $parts[1];
+        }
+      }
+    }
+
+    return [$shippingMethodIds, $instanceIds];
   }
 }
