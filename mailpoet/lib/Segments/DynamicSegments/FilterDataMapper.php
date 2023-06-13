@@ -161,7 +161,7 @@ class FilterDataMapper {
     if (in_array($data['action'], SubscriberTextField::TYPES)) {
       if (empty($data['value'])) throw new InvalidFilterException('Missing value', InvalidFilterException::MISSING_VALUE);
       if (empty($data['operator'])) throw new InvalidFilterException('Missing operator', InvalidFilterException::MISSING_VALUE);
-      if (!in_array($data['operator'], SubscriberTextField::OPERATORS)) {
+      if (!in_array($data['operator'], DynamicSegmentFilterData::TEXT_FIELD_OPERATORS)) {
         throw new InvalidFilterException('Invalid operator', InvalidFilterException::MISSING_VALUE);
       }
       return new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_USER_ROLE, $data['action'], [
