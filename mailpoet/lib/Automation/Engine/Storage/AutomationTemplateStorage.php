@@ -137,9 +137,38 @@ class AutomationTemplateStorage {
       ),
       $this->builder->createFromSequence(
         __('Celebrate first-time buyers', 'mailpoet'),
-        []
+        [
+          [
+            'key' => 'woocommerce:order-status-changed',
+            'args' => [
+              'from' => 'any',
+              'to' => 'wc-completed',
+            ],
+            'filters' => [
+              'operator' => 'and',
+              'groups' => [
+                [
+                  'operator' => 'and',
+                  'filters' => [
+                    ['field' => 'woocommerce:order:is-first-order', 'condition' => 'is', 'value' => true],
+                  ],
+                ],
+              ],
+            ],
+          ],
+          [
+            'key' => 'mailpoet:send-email',
+            'args' => [
+              'name' => __('Thank you', 'mailpoet'),
+              'subject' => __('Thank You for Choosing Us!', 'mailpoet'),
+            ],
+          ],
+        ],
+        [
+          'mailpoet:run-once-per-subscriber' => true,
+        ]
       ),
-      AutomationTemplate::TYPE_COMING_SOON
+      AutomationTemplate::TYPE_DEFAULT
     );
 
     $loyalCustomers = new AutomationTemplate(
