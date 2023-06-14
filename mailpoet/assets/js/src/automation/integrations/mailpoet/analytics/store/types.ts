@@ -8,18 +8,31 @@ type Automation = {
   steps: Record<string, Step>;
 };
 
-type CurrentAndPrevious = {
+export type CurrentAndPrevious = {
   current: number;
   previous: number;
 };
+
+export type EmailStats = {
+  id: number;
+  name: string;
+  sent: CurrentAndPrevious;
+  opened: CurrentAndPrevious;
+  clicked: CurrentAndPrevious;
+  orders: CurrentAndPrevious;
+  revenue: CurrentAndPrevious;
+  unsubscribed: CurrentAndPrevious;
+}
 
 type OverviewSectionData = SectionData & {
   opened: CurrentAndPrevious;
   clicked: CurrentAndPrevious;
   orders: CurrentAndPrevious;
+  unsubscribed: CurrentAndPrevious;
   revenue: CurrentAndPrevious;
   revenue_formatted: CurrentAndPrevious;
-  total: CurrentAndPrevious;
+  sent: CurrentAndPrevious;
+  emails: Record<string, EmailStats>
 };
 
 export type SectionData = Record<string, unknown>;

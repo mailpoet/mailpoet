@@ -1,0 +1,52 @@
+@import '../colors';
+
+.mailpoet-analytics-main-value {
+  font-size: 13px;
+  line-height: 18px;
+  margin: 0 0 4px;
+  font-weight: 400;
+}
+.mailpoet-analytics-badge {
+  font-weight: 400;
+}
+
+.mailpoet-automation-analytics-email-name {
+  max-width: 300px;
+}
+
+.mailpoet-automation-analytics-email-clicked {
+  font-weight: 600;
+}
+
+.mailpoet-analytics-badge {
+  background: $color-grey;
+  border-radius: 2px;
+  font-size: 11px;
+  line-height: 16px;
+  margin-right: 4px;
+  padding: 4px 8px;
+}
+
+.mailpoet-analytics-badge-success {
+  color: $color-gutenberg-alert-green;
+
+  .mailpoet-analytics-badge {
+    background: $color-wp-green-0;
+    color: $color-wp-green-60;
+  }
+}
+
+.mailpoet-analytics-badge-warning {
+
+  color: $color-wp-yellow-50;
+  .mailpoet-analytics-badge {
+    background: $color-wp-yellow-0;
+    color: $color-wp-yellow-60;
+  }
+}
+
+.mailpoet-automation-analytics-table-subvalue {
+  color: $color-gutenberg-grey-600;
+  font-size: 12px;
+  margin: 0;
+}

@@ -19,12 +19,12 @@ function getEmailPercentage(
   }
 
   const data = overview.data[type] ?? null;
-  const total = overview.data?.total ?? null;
-  if (!data || !total || !data[period] || !total[period]) {
+  const sent = overview.data?.sent ?? null;
+  if (!data || !sent || !data[period] || !sent[period]) {
     return 0;
   }
 
-  const percentage = (data[period] * 100) / total[period] / 100;
+  const percentage = (data[period] * 100) / sent[period] / 100;
   return percentage;
 }
 
