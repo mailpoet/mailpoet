@@ -1,5 +1,4 @@
 import { Link } from 'react-router-dom';
-import PropTypes from 'prop-types';
 import { Background } from 'common/background/background';
 import { Form } from 'form/form.jsx';
 import { Heading } from 'common/typography/heading/heading';
@@ -42,7 +41,15 @@ const messages = {
   },
 };
 
-function SegmentForm(props) {
+type SegmentFormPropType = {
+  match: {
+    params: {
+      id: string;
+    };
+  };
+};
+
+function SegmentForm({ match }: SegmentFormPropType) {
   return (
     <div>
       <Background color="#fff" />
@@ -63,20 +70,12 @@ function SegmentForm(props) {
       <Form
         endpoint="segments"
         fields={fields}
-        params={props.match.params}
+        params={match.params}
         messages={messages}
       />
     </div>
   );
 }
-
-SegmentForm.propTypes = {
-  match: PropTypes.shape({
-    params: PropTypes.shape({
-      id: PropTypes.string,
-    }).isRequired,
-  }).isRequired,
-};
 
 SegmentForm.displayName = 'SegmentForm';
 
