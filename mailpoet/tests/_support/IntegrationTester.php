@@ -156,6 +156,14 @@ class IntegrationTester extends \Codeception\Actor {
       $order->set_date_created($data['date_created']);
     }
 
+    if (isset($data['billing_postcode'])) {
+      $order->set_billing_postcode($data['billing_postcode']);
+    }
+
+    if (isset($data['billing_city'])) {
+      $order->set_billing_city($data['billing_city']);
+    }
+
     if (isset($data['total'])) {
       $order->set_total($data['total']);
     }
