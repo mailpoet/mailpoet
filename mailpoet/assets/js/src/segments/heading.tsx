@@ -6,7 +6,7 @@ import { SubscribersInPlan } from 'common/subscribers_in_plan';
 import { MssAccessNotices } from 'notices/mss_access_notices';
 import { SubscribersCacheMessage } from 'common/subscribers_cache_message';
 
-function ListHeading() {
+function ListHeading(): JSX.Element {
   return (
     <>
       <TopBarWithBeamer>
