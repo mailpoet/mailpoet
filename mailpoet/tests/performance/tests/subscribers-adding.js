@@ -72,9 +72,11 @@ export async function subscribersAdding() {
   await page.waitForSelector('div.notice-success');
   describe(subscribersPageTitle, () => {
     describe('should be able to see Subscriber Added message', () => {
-      expect(page.locator('div.notice-success').innerText()).to.contain(
-        'Subscriber was added successfully!',
-      );
+      expect(
+        page.locator(
+          "//p[starts-with(text(),'Subscriber was added successfully!')]",
+        ),
+      ).to.exist;
     });
   });
   await page.waitForSelector('.mailpoet-listing-no-items');
