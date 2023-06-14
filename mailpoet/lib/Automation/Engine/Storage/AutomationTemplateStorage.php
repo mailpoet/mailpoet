@@ -189,17 +189,24 @@ class AutomationTemplateStorage {
       'abandoned-cart',
       AutomationTemplate::CATEGORY_ABANDONED_CART,
       __(
-        "Nudge your shoppers to complete the purchase after they added a product to the cart but haven't completed the order. Offer a coupon code as a last resort to convert them to customers.",
+        "Nudge your shoppers to complete the purchase after they have added a product to the cart but haven't completed the order.",
         'mailpoet'
       ),
       $this->builder->createFromSequence(
         __('Abandoned cart reminder', 'mailpoet'),
-        []
+        [
+          ['key' => 'woocommerce:abandoned-cart'],
+          [
+            'key' => 'mailpoet:send-email',
+            'args' => [
+              'name' => 'Abandoned cart',
+              'subject' => 'Looks like you forgot something',
+            ],
+          ],
+        ]
       ),
-      AutomationTemplate::TYPE_COMING_SOON
+      AutomationTemplate::TYPE_DEFAULT
     );
-
-
 
     $templates = $this->wp->applyFilters(Hooks::AUTOMATION_TEMPLATES, [
       $subscriberWelcomeEmail,
