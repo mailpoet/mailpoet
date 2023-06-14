@@ -18,6 +18,7 @@ use MailPoet\Segments\DynamicSegments\Filters\SubscriberTextField;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceAverageSpent;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceCategory;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceCountry;
+use MailPoet\Segments\DynamicSegments\Filters\WooCommerceCustomerTextField;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceMembership;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceNumberOfOrders;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceProduct;
@@ -323,6 +324,15 @@ class FilterDataMapper {
       $filterData['operator'] = $data['operator'];
       $filterData['payment_methods'] = $data['payment_methods'];
       $filterData['used_payment_method_days'] = intval($data['used_payment_method_days']);
+    } elseif (in_array($data['action'], WooCommerceCustomerTextField::ACTIONS)) {
+      if (empty($data['value'])) throw new InvalidFilterException('Missing value', InvalidFilterException::MISSING_VALUE);
+      if (empty($data['operator'])) throw new InvalidFilterException('Missing operator', InvalidFilterException::MISSING_VALUE);
+      if (!in_array($data['operator'], DynamicSegmentFilterData::TEXT_FIELD_OPERATORS)) {
+        throw new InvalidFilterException('Invalid operator', InvalidFilterException::MISSING_VALUE);
+      }
+      $filterData['value'] = $data['value'];
+      $filterData['operator'] = $data['operator'];
+      $filterData['action'] = $data['action'];
     } else {
       throw new InvalidFilterException("Unknown action " . $data['action'], InvalidFilterException::MISSING_ACTION);
     }
