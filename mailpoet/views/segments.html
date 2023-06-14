@@ -1,7 +1,11 @@
 <% extends 'layout.html' %>
 
 <% block content %>
-  <div id="segments_container"></div>
+  <% if segments_type == 'static' %>
+    <div id="static_segments_container"></div>
+  <% else %>
+    <div id="dynamic_segments_container"></div>
+  <% endif %>
 
   <script type="text/javascript">
     var mailpoet_listing_per_page = <%= items_per_page %>;
