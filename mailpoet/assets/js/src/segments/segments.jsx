@@ -6,12 +6,12 @@ import { RoutedTabs } from 'common/tabs/routed_tabs';
 import { Tab } from 'common/tabs/tab';
 import { SegmentList } from 'segments/list.jsx';
 import { SegmentForm } from 'segments/form.tsx';
+import { ListHeading } from 'segments/heading.tsx';
 import { GlobalContext, useGlobalContextValue } from 'context';
 import { Notices } from 'notices/notices.jsx';
 import { registerTranslations, withBoundary } from 'common';
 import { Editor } from './dynamic/editor';
 import { DynamicSegmentList } from './dynamic/list.jsx';
-import { ListHeading } from './heading';
 
 const container = document.getElementById('segments_container');
 
