@@ -68,17 +68,9 @@ class AutomationTemplateStorage {
       $this->builder->createFromSequence(
         __('Welcome new subscribers', 'mailpoet'),
         [
-          'mailpoet:someone-subscribes',
-          'core:delay',
-          'mailpoet:send-email',
-        ],
-        [
-          [],
-          [
-            'delay' => 1,
-            'delay_type' => 'MINUTES',
-          ],
-          [],
+          ['key' => 'mailpoet:someone-subscribes'],
+          ['key' => 'core:delay', 'args' => ['delay' => 1, 'delay_type' => 'MINUTES']],
+          ['key' => 'mailpoet:send-email'],
         ],
         [
           'mailpoet:run-once-per-subscriber' => true,
@@ -97,17 +89,9 @@ class AutomationTemplateStorage {
       $this->builder->createFromSequence(
         __('Welcome new WordPress users', 'mailpoet'),
         [
-          'mailpoet:wp-user-registered',
-          'core:delay',
-          'mailpoet:send-email',
-        ],
-        [
-          [],
-          [
-            'delay' => 1,
-            'delay_type' => 'MINUTES',
-          ],
-          [],
+          ['key' => 'mailpoet:wp-user-registered'],
+          ['key' => 'core:delay', 'args' => ['delay' => 1, 'delay_type' => 'MINUTES']],
+          ['key' => 'mailpoet:send-email'],
         ],
         [
           'mailpoet:run-once-per-subscriber' => true,
