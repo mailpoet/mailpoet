@@ -21,15 +21,27 @@ class AutomationBuilder {
     $this->registry = $registry;
   }
 
-  public function createFromSequence(string $name, array $sequence, array $sequenceArgs = [], array $meta = []): Automation {
+  /**
+   * @param string $name
+   * @param array<
+   *   array{
+   *     key: string,
+   *     args?: array<string, mixed>,
+   *   }
+   * > $sequence
+   * @param array<string, mixed> $meta
+   * @return Automation
+   */
+  public function createFromSequence(string $name, array $sequence, array $meta = []): Automation {
     $steps = [];
     $nextSteps = [];
-    foreach (array_reverse($sequence) as $index => $stepKey) {
+    foreach (array_reverse($sequence) as $data) {
+      $stepKey = $data['key'];
       $automationStep = $this->registry->getStep($stepKey);
       if (!$automationStep) {
         continue;
       }
-      $args = array_merge($this->getDefaultArgs($automationStep->getArgsSchema()), array_reverse($sequenceArgs)[$index] ?? []);
+      $args = array_merge($this->getDefaultArgs($automationStep->getArgsSchema()), $data['args'] ?? []);
       $step = new Step(
         $this->uniqueId(),
         in_array(Trigger::class, (array)class_implements($automationStep)) ? Step::TYPE_TRIGGER : Step::TYPE_ACTION,
