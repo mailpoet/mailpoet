@@ -24,7 +24,8 @@ function getEmailPercentage(
     return 0;
   }
 
-  return (data[period] * 100) / total[period];
+  const percentage = (data[period] * 100) / total[period] / 100;
+  return percentage;
 }
 
 function getEmailDelta(type: 'opened' | 'clicked'): number | undefined {
@@ -91,7 +92,7 @@ export function Overview(): JSX.Element | null {
       <SummaryNumber
         key="overview-opened"
         label={__('Opened', 'mailpoet')}
-        value={`${percentageFormatter.format(getEmailPercentage('opened'))}`}
+        value={percentageFormatter.format(getEmailPercentage('opened'))}
         delta={getEmailDelta('opened').toFixed(2) as unknown as number}
       />,
     );
