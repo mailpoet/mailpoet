@@ -85,8 +85,13 @@ class Segments {
     $this->automationStorage = $automationStorage;
   }
 
-  public function render() {
+  /**
+   * @param string $type 'static' or 'dynamic'
+   * @return void
+   */
+  public function render(string $type) {
     $data = [];
+    $data['segments_type'] = $type;
     $data['items_per_page'] = $this->listingPageLimit->getLimitPerPage('segments');
 
     $customFields = $this->customFieldsRepository->findBy([], ['name' => 'asc']);

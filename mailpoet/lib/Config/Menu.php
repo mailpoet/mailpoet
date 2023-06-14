@@ -40,6 +40,7 @@ class Menu {
   const SUBSCRIBERS_PAGE_SLUG = 'mailpoet-subscribers';
   const IMPORT_PAGE_SLUG = 'mailpoet-import';
   const EXPORT_PAGE_SLUG = 'mailpoet-export';
+  const LISTS_PAGE_SLUG = 'mailpoet-lists';
   const SEGMENTS_PAGE_SLUG = 'mailpoet-segments';
   const SETTINGS_PAGE_SLUG = 'mailpoet-settings';
   const HELP_PAGE_SLUG = 'mailpoet-help';
@@ -381,11 +382,36 @@ class Menu {
       ]
     );
 
-    // Segments page
-    $segmentsPage = $this->wp->addSubmenuPage(
+    // Lists page
+    $listsPage = $this->wp->addSubmenuPage(
       self::MAIN_PAGE_SLUG,
       $this->setPageTitle(__('Lists', 'mailpoet')),
       esc_html__('Lists', 'mailpoet'),
+      AccessControl::PERMISSION_MANAGE_SEGMENTS,
+      self::LISTS_PAGE_SLUG,
+      [
+        $this,
+        'lists',
+      ]
+    );
+
+    // add limit per page to screen options
+    $this->wp->addAction('load-' . $listsPage, function() {
+      $this->wp->addScreenOption('per_page', [
+        'label' => _x(
+          'Number of lists per page',
+          'lists per page (screen options)',
+          'mailpoet'
+        ),
+        'option' => 'mailpoet_lists_per_page',
+      ]);
+    });
+
+    // Segments page
+    $segmentsPage = $this->wp->addSubmenuPage(
+      self::MAIN_PAGE_SLUG,
+      $this->setPageTitle(__('Segments', 'mailpoet')),
+      esc_html__('Segments', 'mailpoet'),
       AccessControl::PERMISSION_MANAGE_SEGMENTS,
       self::SEGMENTS_PAGE_SLUG,
       [
@@ -604,8 +630,12 @@ class Menu {
     $this->container->get(Subscribers::class)->render();
   }
 
+  public function lists() {
+    $this->container->get(Segments::class)->render('static');
+  }
+
   public function segments() {
-    $this->container->get(Segments::class)->render();
+    $this->container->get(Segments::class)->render('dynamic');
   }
 
   public function forms() {
