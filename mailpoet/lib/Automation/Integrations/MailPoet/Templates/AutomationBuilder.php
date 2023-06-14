@@ -3,8 +3,12 @@
 namespace MailPoet\Automation\Integrations\MailPoet\Templates;
 
 use MailPoet\Automation\Engine\Data\Automation;
+use MailPoet\Automation\Engine\Data\Filter;
+use MailPoet\Automation\Engine\Data\FilterGroup;
+use MailPoet\Automation\Engine\Data\Filters;
 use MailPoet\Automation\Engine\Data\NextStep;
 use MailPoet\Automation\Engine\Data\Step;
+use MailPoet\Automation\Engine\Exceptions\InvalidStateException;
 use MailPoet\Automation\Engine\Integration\Trigger;
 use MailPoet\Automation\Engine\Registry;
 use MailPoet\Util\Security;
@@ -27,6 +31,17 @@ class AutomationBuilder {
    *   array{
    *     key: string,
    *     args?: array<string, mixed>,
+   *     filters?: array{
+   *       operator: 'and' | 'or',
+   *       groups: array{
+   *         operator: 'and' | 'or',
+   *         filters: array{
+   *           field: string,
+   *           condition: string,
+   *           value: mixed,
+   *         }[],
+   *       }[],
+   *     },
    *   }
    * > $sequence
    * @param array<string, mixed> $meta
@@ -42,12 +57,14 @@ class AutomationBuilder {
         continue;
       }
       $args = array_merge($this->getDefaultArgs($automationStep->getArgsSchema()), $data['args'] ?? []);
+      $filters = isset($data['filters']) ? $this->getFilters($data['filters']) : null;
       $step = new Step(
         $this->uniqueId(),
         in_array(Trigger::class, (array)class_implements($automationStep)) ? Step::TYPE_TRIGGER : Step::TYPE_ACTION,
         $stepKey,
         $args,
-        $nextSteps
+        $nextSteps,
+        $filters
       );
       $nextSteps = [new NextStep($step->getId())];
       $steps[$step->getId()] = $step;
@@ -77,5 +94,46 @@ class AutomationBuilder {
       }
     }
     return $args;
+  }
+
+  /**
+   * @param array{
+   *   operator: 'and' | 'or',
+   *   groups: array{
+   *     operator: 'and' | 'or',
+   *     filters: array{
+   *       field: string,
+   *       condition: string,
+   *       value: mixed,
+   *     }[],
+   *   }[],
+   * } $filters
+   * @return Filters
+   */
+  private function getFilters(array $filters): Filters {
+    $groups = [];
+    foreach ($filters['groups'] as $group) {
+      $groups[] = new FilterGroup(
+        $this->uniqueId(),
+        $group['operator'],
+        array_map(
+          function (array $filter): Filter {
+            $field = $this->registry->getField($filter['field']);
+            if (!$field) {
+              throw new InvalidStateException(sprintf("Field with key '%s' not found", $filter['field']));
+            }
+            return new Filter(
+              $this->uniqueId(),
+              $field->getType(),
+              $filter['field'],
+              $filter['condition'],
+              ['value' => $filter['value']]
+            );
+          },
+          $group['filters']
+        )
+      );
+    }
+    return new Filters($filters['operator'], $groups);
   }
 }
