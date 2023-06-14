@@ -27,7 +27,9 @@ export function validateUsedShippingMethod(
   return !usedShippingMethodIsInvalid;
 }
 
-export function UsedShippingMethodFields({ filterIndex }: FilterProps): JSX.Element {
+export function UsedShippingMethodFields({
+  filterIndex,
+}: FilterProps): JSX.Element {
   const segment: WooCommerceFormItem = useSelect(
     (select) => select(storeName).getSegmentFilter(filterIndex),
     [filterIndex],
