@@ -224,14 +224,14 @@ class OrderFieldsFactoryTest extends \MailPoetTest {
     $this->assertSame('enum', $statusField->getType());
     $this->assertSame([
       'options' => [
-        ['id' => 'wc-pending', 'name' => 'Pending payment'],
-        ['id' => 'wc-processing', 'name' => 'Processing'],
-        ['id' => 'wc-on-hold', 'name' => 'On hold'],
-        ['id' => 'wc-completed', 'name' => 'Completed'],
-        ['id' => 'wc-cancelled', 'name' => 'Cancelled'],
-        ['id' => 'wc-refunded', 'name' => 'Refunded'],
-        ['id' => 'wc-failed', 'name' => 'Failed'],
-        ['id' => 'wc-checkout-draft', 'name' => 'Draft'],
+        ['id' => 'pending', 'name' => 'Pending payment'],
+        ['id' => 'processing', 'name' => 'Processing'],
+        ['id' => 'on-hold', 'name' => 'On hold'],
+        ['id' => 'completed', 'name' => 'Completed'],
+        ['id' => 'cancelled', 'name' => 'Cancelled'],
+        ['id' => 'refunded', 'name' => 'Refunded'],
+        ['id' => 'failed', 'name' => 'Failed'],
+        ['id' => 'checkout-draft', 'name' => 'Draft'],
       ],
     ], $statusField->getArgs());
 
