@@ -170,14 +170,14 @@ class IntegrationTester extends \Codeception\Actor {
   }
 
   public function createWooCommerceCoupon(array $data): void {
-    $coupon1 = new WC_Coupon();
+    $coupon = new WC_Coupon();
 
     if (isset($data['code'])) {
-      $coupon1->set_code($data['code']);
+      $coupon->set_code($data['code']);
     }
 
-    $coupon1->save();
-    $this->wooCouponIds[] = $coupon1->get_id();
+    $coupon->save();
+    $this->wooCouponIds[] = $coupon->get_id();
   }
 
   public function updateWooOrderStats(int $orderId): void {
@@ -229,7 +229,7 @@ class IntegrationTester extends \Codeception\Actor {
   public function deleteTestWooCoupons(): void {
     foreach ($this->wooCouponIds as $couponId) {
       $coupon = new WC_Coupon($couponId);
-      if (!$coupon->get_id() > 0) {
+      if ($coupon->get_id() > 0) {
         $coupon->delete(true);
       }
     }
