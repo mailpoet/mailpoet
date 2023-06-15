@@ -69,7 +69,9 @@ export async function subscribersAdding() {
   await page.locator('button[type="submit"]').click();
 
   // Verify you see the success message and the filter is visible
-  await page.waitForSelector('div.notice-success');
+  await page.waitForSelector(
+    "//div[@class='notice-success'].//p[starts-with(text(),'Subscriber was added successfully!')]",
+  );
   describe(subscribersPageTitle, () => {
     describe('should be able to see Subscriber Added message', () => {
       expect(
