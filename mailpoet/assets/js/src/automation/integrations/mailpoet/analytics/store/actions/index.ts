@@ -23,10 +23,22 @@ export function setSectionData(payload: Section) {
   };
 }
 
+export function resetSectionData(section: Section) {
+  const payload = {
+    ...section,
+    data: undefined,
+  };
+  return {
+    type: 'SET_SECTION_DATA',
+    payload,
+  };
+}
+
 export function* updateSection(
   section: Section,
   queryParam: Query | undefined = undefined,
 ) {
+  dispatch(storeName).resetSectionData(section);
   const query = queryParam ?? select(storeName).getCurrentQuery();
   const defaultDateRange = 'period=month&compare=previous_year';
 
