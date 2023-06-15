@@ -125,7 +125,11 @@ class PageRenderer {
     $wpSegmentState = ($wpSegment instanceof SegmentEntity) && $wpSegment->getDeletedAt() === null ?
       SegmentEntity::SEGMENT_ENABLED : SegmentEntity::SEGMENT_DISABLED;
     $installedAtDiff = (new \DateTime($this->settings->get('installed_at')))->diff(new \DateTime());
-    $subscribersCacheCreatedAt = $this->transientCache->getOldestCreatedAt(TransientCache::SUBSCRIBERS_STATISTICS_COUNT_KEY) ?: Carbon::now();
+    $subscriberCount = $this->subscribersFeature->getSubscribersCount();
+    $subscribersCacheCreatedAt = Carbon::now();
+    if ($this->subscribersFeature->isSubscribersCountEnoughForCache($subscriberCount)) {
+      $subscribersCacheCreatedAt = $this->transientCache->getOldestCreatedAt(TransientCache::SUBSCRIBERS_STATISTICS_COUNT_KEY) ?: Carbon::now();
+    }
 
     $defaults = [
       'current_page' => sanitize_text_field(wp_unslash($_GET['page'] ?? '')),
@@ -167,7 +171,7 @@ class PageRenderer {
       'mss_active' => $this->bridge->isMailpoetSendingServiceEnabled(),
       'plugin_partial_key' => $this->servicesChecker->generatePartialApiKey(),
       'mailpoet_hide_automations' => $this->servicesChecker->isBundledSubscription() && $this->wp->isPluginActive('automatewoo/automatewoo.php'),
-      'subscriber_count' => $this->subscribersFeature->getSubscribersCount(),
+      'subscriber_count' => $subscriberCount,
       'subscribers_counts_cache_created_at' => $subscribersCacheCreatedAt->format('Y-m-d\TH:i:sO'),
       'subscribers_limit' => $this->subscribersFeature->getSubscribersLimit(),
       'subscribers_limit_reached' => $this->subscribersFeature->check(),
