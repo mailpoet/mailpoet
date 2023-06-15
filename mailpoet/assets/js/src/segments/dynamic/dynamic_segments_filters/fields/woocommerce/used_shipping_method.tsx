@@ -41,7 +41,7 @@ export function UsedShippingMethodFields({
     [],
   );
   const shippingMethodOptions = shippingMethods.map((method) => ({
-    value: method.id,
+    value: method.instanceId,
     label: method.name,
   }));
 
