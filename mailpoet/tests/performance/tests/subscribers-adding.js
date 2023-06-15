@@ -69,16 +69,12 @@ export async function subscribersAdding() {
   await page.locator('button[type="submit"]').click();
 
   // Verify you see the success message and the filter is visible
-  await page.waitForSelector(
-    "//div[@class='notice-success'].//p[starts-with(text(),'Subscriber was added successfully!')]",
-  );
+  const locator =
+    "//div[@class='notice-success'].//p[starts-with(text(),'Subscriber was added successfully!')]";
+  await page.waitForSelector(locator);
   describe(subscribersPageTitle, () => {
     describe('should be able to see Subscriber Added message', () => {
-      expect(
-        page.locator(
-          "//p[starts-with(text(),'Subscriber was added successfully!')]",
-        ),
-      ).to.exist;
+      expect(page.locator(locator)).to.exist;
     });
   });
   await page.waitForSelector('.mailpoet-listing-no-items');
