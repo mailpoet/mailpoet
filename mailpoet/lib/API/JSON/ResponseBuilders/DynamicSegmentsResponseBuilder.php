@@ -82,13 +82,19 @@ class DynamicSegmentsResponseBuilder {
     if ($missingPlugins) {
       $missingPlugin = reset($missingPlugins);
       $data['is_plugin_missing'] = true;
-      $data['missing_plugin_message'] = $this->segmentDependencyValidator->getCustomErrorMessage($missingPlugin)
-        ?:
-        sprintf(
-          // translators: %s is the name of the missing plugin.
-          __('Activate the %s plugin to see the number of subscribers and enable the editing of this segment.', 'mailpoet'),
-          $missingPlugin
-        );
+
+      $missingPluginMessage = $this->segmentDependencyValidator->getCustomErrorMessage($missingPlugin);
+
+      if ($missingPluginMessage) {
+        $data['missing_plugin_message'] = $missingPluginMessage;
+      } else {
+        $data['missing_plugin_message']['message'] =
+          sprintf(
+            // translators: %s is the name of the missing plugin.
+            __('Activate the %s plugin to see the number of subscribers and enable the editing of this segment.', 'mailpoet'),
+            $missingPlugin
+          );
+      }
     } else {
       $data['is_plugin_missing'] = false;
       $data['missing_plugin_message'] = null;

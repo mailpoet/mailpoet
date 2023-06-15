@@ -1,12 +1,42 @@
 import { Link, withRouter } from 'react-router-dom';
-import PropTypes from 'prop-types';
 import ReactStringReplace from 'react-string-replace';
 
 import { MailPoet } from 'mailpoet';
 import { Listing } from 'listing/listing.jsx';
 import { escapeHTML } from '@wordpress/escape-html';
+import { SegmentResponse } from 'segments/types';
 
-const columns = [
+type ColumnType = {
+  name: string;
+  label: string;
+  sortable: boolean;
+};
+
+type DynamicSegmentItem = {
+  id: number;
+  name: string;
+  description: string;
+  count_all: string;
+  count_subscribed: string;
+  created_at: string;
+  is_plugin_missing: boolean;
+  subscribers_url: string;
+  missing_plugin_message?: {
+    message: string;
+    link?: string;
+  };
+};
+
+type DynamicSegmentListComponentProps = {
+  location: {
+    pathname: string;
+  };
+  match: {
+    params;
+  };
+};
+
+const columns: ColumnType[] = [
   {
     name: 'name',
     label: MailPoet.I18n.t('nameColumn'),
@@ -85,10 +115,10 @@ const itemActions = [
   {
     name: 'edit',
     className: 'mailpoet-hide-on-mobile',
-    link: (item) => (
+    link: (item: DynamicSegmentItem) => (
       <Link to={`/edit-segment/${item.id}`}>{MailPoet.I18n.t('edit')}</Link>
     ),
-    display: (item) => !item.is_plugin_missing,
+    display: (item: DynamicSegmentItem) => !item.is_plugin_missing,
   },
   {
     name: 'duplicate_segment',
@@ -103,13 +133,13 @@ const itemActions = [
           id: item.id,
         },
       })
-        .done((response) => {
+        .done((response: SegmentResponse) => {
           MailPoet.Notice.success(
             MailPoet.I18n.t('segmentDuplicated').replace(
               '%1$s',
               escapeHTML(response.data.name),
-              { scroll: true },
             ),
+            { scroll: true },
           );
           refresh();
         })
@@ -123,10 +153,10 @@ const itemActions = [
   {
     name: 'edit_disabled',
     className: 'mailpoet-hide-on-mobile mailpoet-disabled',
-    link: (item) => (
+    link: (item: DynamicSegmentItem) => (
       <Link to={`/edit-segment/${item.id}`}>{MailPoet.I18n.t('edit')}</Link>
     ),
-    display: (item) => item.is_plugin_missing,
+    display: (item: DynamicSegmentItem) => item.is_plugin_missing,
   },
   {
     name: 'view_subscribers',
@@ -148,7 +178,7 @@ const bulkActions = [
   },
 ];
 
-function renderItem(item, actions) {
+function renderItem(item: DynamicSegmentItem, actions) {
   return (
     <>
       <td
@@ -163,7 +193,7 @@ function renderItem(item, actions) {
       </td>
       {item.is_plugin_missing ? (
         <td
-          colSpan="2"
+          colSpan={2}
           className="column mailpoet-hide-on-mobile"
           data-colname={MailPoet.I18n.t('missingPluginMessageColumn')}
         >
@@ -185,7 +215,7 @@ function renderItem(item, actions) {
                   </a>
                 ),
               )
-            : item.missing_plugin_message}
+            : item.missing_plugin_message.message}
         </td>
       ) : (
         <>
@@ -215,7 +245,9 @@ function renderItem(item, actions) {
   );
 }
 
-function DynamicSegmentListComponent(props) {
+function DynamicSegmentListComponent(
+  props: DynamicSegmentListComponentProps,
+): JSX.Element {
   return (
     <>
       <Listing
@@ -248,14 +280,5 @@ function DynamicSegmentListComponent(props) {
     </>
   );
 }
-
-DynamicSegmentListComponent.propTypes = {
-  location: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
-  match: PropTypes.shape({
-    params: PropTypes.object, // eslint-disable-line react/forbid-prop-types
-  }).isRequired,
-};
-
-DynamicSegmentListComponent.displayName = 'DynamicSegmentList';
 
 export const DynamicSegmentList = withRouter(DynamicSegmentListComponent);
