@@ -15,14 +15,16 @@ export type CurrentAndPrevious = {
 
 export type EmailStats = {
   id: number;
+  order: number;
   name: string;
   sent: CurrentAndPrevious;
   opened: CurrentAndPrevious;
   clicked: CurrentAndPrevious;
   orders: CurrentAndPrevious;
   revenue: CurrentAndPrevious;
+  revenue_formatted: CurrentAndPrevious;
   unsubscribed: CurrentAndPrevious;
-}
+};
 
 type OverviewSectionData = SectionData & {
   opened: CurrentAndPrevious;
@@ -32,7 +34,7 @@ type OverviewSectionData = SectionData & {
   revenue: CurrentAndPrevious;
   revenue_formatted: CurrentAndPrevious;
   sent: CurrentAndPrevious;
-  emails: Record<string, EmailStats>
+  emails: Record<string, EmailStats>;
 };
 
 export type SectionData = Record<string, unknown>;
