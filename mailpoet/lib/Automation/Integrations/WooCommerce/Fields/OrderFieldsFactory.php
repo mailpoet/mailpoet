@@ -314,7 +314,7 @@ class OrderFieldsFactory {
     foreach ($coupons as $coupon) {
       if ($coupon instanceof WP_Post) {
         // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-        $options[] = ['id' => $coupon->post_title, 'name' => $coupon->post_name];
+        $options[] = ['id' => $coupon->post_title, 'name' => $coupon->post_title];
       }
     }
     return $options;
