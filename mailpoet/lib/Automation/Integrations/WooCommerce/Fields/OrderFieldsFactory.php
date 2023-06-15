@@ -79,11 +79,14 @@ class OrderFieldsFactory {
         ),
         new Field(
           'woocommerce:order:billing-country',
-          Field::TYPE_STRING,
+          Field::TYPE_ENUM,
           __('Billing country', 'mailpoet'),
           function (OrderPayload $payload) {
             return $payload->getOrder()->get_billing_country();
-          }
+          },
+          [
+            'options' => $this->getBillingCountryOptions(),
+          ]
         ),
         new Field(
           'woocommerce:order:shipping-company',
@@ -127,11 +130,14 @@ class OrderFieldsFactory {
         ),
         new Field(
           'woocommerce:order:shipping-country',
-          Field::TYPE_STRING,
+          Field::TYPE_ENUM,
           __('Shipping country', 'mailpoet'),
           function (OrderPayload $payload) {
             return $payload->getOrder()->get_shipping_country();
-          }
+          },
+          [
+            'options' => $this->getShippingCountryOptions(),
+          ]
         ),
         new Field(
           'woocommerce:order:created-date',
@@ -257,6 +263,22 @@ class OrderFieldsFactory {
         ),
       ]
     );
+  }
+
+  private function getBillingCountryOptions(): array {
+    $options = [];
+    foreach (WC()->countries->get_allowed_countries() as $code => $name) {
+      $options[] = ['id' => $code, 'name' => $name];
+    }
+    return $options;
+  }
+
+  private function getShippingCountryOptions(): array {
+    $options = [];
+    foreach (WC()->countries->get_shipping_countries() as $code => $name) {
+      $options[] = ['id' => $code, 'name' => $name];
+    }
+    return $options;
   }
 
   private function getOrderPaymentOptions(): array {
