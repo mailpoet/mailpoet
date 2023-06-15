@@ -161,9 +161,9 @@ class FilterDataMapper {
     }
     if (in_array($data['action'], SubscriberTextField::TYPES)) {
       if (empty($data['value'])) throw new InvalidFilterException('Missing value', InvalidFilterException::MISSING_VALUE);
-      if (empty($data['operator'])) throw new InvalidFilterException('Missing operator', InvalidFilterException::MISSING_VALUE);
+      if (empty($data['operator'])) throw new InvalidFilterException('Missing operator', InvalidFilterException::MISSING_OPERATOR);
       if (!in_array($data['operator'], DynamicSegmentFilterData::TEXT_FIELD_OPERATORS)) {
-        throw new InvalidFilterException('Invalid operator', InvalidFilterException::MISSING_VALUE);
+        throw new InvalidFilterException('Invalid operator', InvalidFilterException::MISSING_OPERATOR);
       }
       return new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_USER_ROLE, $data['action'], [
         'value' => $data['value'],
@@ -326,9 +326,9 @@ class FilterDataMapper {
       $filterData['used_payment_method_days'] = intval($data['used_payment_method_days']);
     } elseif (in_array($data['action'], WooCommerceCustomerTextField::ACTIONS)) {
       if (empty($data['value'])) throw new InvalidFilterException('Missing value', InvalidFilterException::MISSING_VALUE);
-      if (empty($data['operator'])) throw new InvalidFilterException('Missing operator', InvalidFilterException::MISSING_VALUE);
+      if (empty($data['operator'])) throw new InvalidFilterException('Missing operator', InvalidFilterException::MISSING_OPERATOR);
       if (!in_array($data['operator'], DynamicSegmentFilterData::TEXT_FIELD_OPERATORS)) {
-        throw new InvalidFilterException('Invalid operator', InvalidFilterException::MISSING_VALUE);
+        throw new InvalidFilterException('Invalid operator', InvalidFilterException::MISSING_OPERATOR);
       }
       $filterData['value'] = $data['value'];
       $filterData['operator'] = $data['operator'];

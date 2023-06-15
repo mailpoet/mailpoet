@@ -35,7 +35,7 @@ class WooCommerceCustomerTextField implements Filter {
     $operator = $filterData->getParam('operator');
 
     if (!is_string($action)) {
-      throw new InvalidFilterException('Missing action', InvalidFilterException::MISSING_VALUE);
+      throw new InvalidFilterException('Missing action', InvalidFilterException::MISSING_ACTION);
     }
 
     if (!is_string($value)) {
@@ -43,7 +43,7 @@ class WooCommerceCustomerTextField implements Filter {
     }
 
     if (!is_string($operator)) {
-      throw new InvalidFilterException('Missing operator', InvalidFilterException::MISSING_VALUE);
+      throw new InvalidFilterException('Missing operator', InvalidFilterException::MISSING_OPERATOR);
     }
 
     $customerLookupAlias = $this->wooFilterHelper->applyCustomerLookupJoin($queryBuilder);

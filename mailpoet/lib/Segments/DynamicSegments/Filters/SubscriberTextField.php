@@ -31,7 +31,7 @@ class SubscriberTextField implements Filter {
     $operator = $filterData->getParam('operator');
 
     if (!is_string($action)) {
-      throw new InvalidFilterException('Missing action', InvalidFilterException::MISSING_VALUE);
+      throw new InvalidFilterException('Missing action', InvalidFilterException::MISSING_ACTION);
     }
 
     if (!is_string($value)) {
@@ -39,7 +39,7 @@ class SubscriberTextField implements Filter {
     }
 
     if (!is_string($operator)) {
-      throw new InvalidFilterException('Missing operator', InvalidFilterException::MISSING_VALUE);
+      throw new InvalidFilterException('Missing operator', InvalidFilterException::MISSING_OPERATOR);
     }
 
     $columnName = $this->getColumnNameForAction($action);
