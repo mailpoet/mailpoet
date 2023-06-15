@@ -5,6 +5,7 @@ namespace integration\Automation\Integrations\WooCommerce\Fields;
 use MailPoet\Automation\Engine\Data\Field;
 use MailPoet\Automation\Integrations\WooCommerce\Payloads\CustomerPayload;
 use MailPoet\Automation\Integrations\WooCommerce\Subjects\CustomerSubject;
+use MailPoet\WP\Functions as WPFunctions;
 use WC_Customer;
 
 /**
@@ -12,6 +13,11 @@ use WC_Customer;
  */
 class CustomerFieldsFactoryTest extends \MailPoetTest {
   public function testBillingInfo(): void {
+    // set specific countries
+    $wp = $this->diContainer->get(WPFunctions::class);
+    $wp->updateOption('woocommerce_allowed_countries', 'specific');
+    $wp->updateOption('woocommerce_specific_allowed_countries', ['CZ', 'DE']);
+
     $fields = $this->getFieldsMap();
 
     // check definitions
@@ -42,8 +48,13 @@ class CustomerFieldsFactoryTest extends \MailPoetTest {
 
     $countryField = $fields['woocommerce:customer:billing-country'];
     $this->assertSame('Billing country', $countryField->getName());
-    $this->assertSame('string', $countryField->getType());
-    $this->assertSame([], $countryField->getArgs());
+    $this->assertSame('enum', $countryField->getType());
+    $this->assertSame([
+      'options' => [
+        ['id' => 'CZ', 'name' => 'Czech Republic'],
+        ['id' => 'DE', 'name' => 'Germany'],
+      ],
+    ], $countryField->getArgs());
 
     // check values (guest)
     $payload = new CustomerPayload();
@@ -61,7 +72,7 @@ class CustomerFieldsFactoryTest extends \MailPoetTest {
     $customer->set_billing_city('Test billing city');
     $customer->set_billing_postcode('12345');
     $customer->set_billing_state('Test billing state');
-    $customer->set_billing_country('Test billing country');
+    $customer->set_billing_country('DE');
 
     $payload = new CustomerPayload($customer);
     $this->assertSame('Test billing company', $companyField->getValue($payload));
@@ -69,10 +80,15 @@ class CustomerFieldsFactoryTest extends \MailPoetTest {
     $this->assertSame('Test billing city', $cityField->getValue($payload));
     $this->assertSame('12345', $postcodeField->getValue($payload));
     $this->assertSame('Test billing state', $stateField->getValue($payload));
-    $this->assertSame('Test billing country', $countryField->getValue($payload));
+    $this->assertSame('DE', $countryField->getValue($payload));
   }
 
   public function testShippingInfo(): void {
+    // set specific countries
+    $wp = $this->diContainer->get(WPFunctions::class);
+    $wp->updateOption('woocommerce_ship_to_countries', 'specific');
+    $wp->updateOption('woocommerce_specific_ship_to_countries', ['GR', 'SK']);
+
     $fields = $this->getFieldsMap();
 
     // check definitions
@@ -103,8 +119,13 @@ class CustomerFieldsFactoryTest extends \MailPoetTest {
 
     $countryField = $fields['woocommerce:customer:shipping-country'];
     $this->assertSame('Shipping country', $countryField->getName());
-    $this->assertSame('string', $countryField->getType());
-    $this->assertSame([], $countryField->getArgs());
+    $this->assertSame('enum', $countryField->getType());
+    $this->assertSame([
+      'options' => [
+        ['id' => 'GR', 'name' => 'Greece'],
+        ['id' => 'SK', 'name' => 'Slovakia'],
+      ],
+    ], $countryField->getArgs());
 
     // check values (guest)
     $payload = new CustomerPayload();
@@ -122,7 +143,7 @@ class CustomerFieldsFactoryTest extends \MailPoetTest {
     $customer->set_shipping_city('Test shipping city');
     $customer->set_shipping_postcode('12345');
     $customer->set_shipping_state('Test shipping state');
-    $customer->set_shipping_country('Test shipping country');
+    $customer->set_shipping_country('SK');
 
     $payload = new CustomerPayload($customer);
     $this->assertSame('Test shipping company', $companyField->getValue($payload));
@@ -130,7 +151,7 @@ class CustomerFieldsFactoryTest extends \MailPoetTest {
     $this->assertSame('Test shipping city', $cityField->getValue($payload));
     $this->assertSame('12345', $postcodeField->getValue($payload));
     $this->assertSame('Test shipping state', $stateField->getValue($payload));
-    $this->assertSame('Test shipping country', $countryField->getValue($payload));
+    $this->assertSame('SK', $countryField->getValue($payload));
   }
 
   /** @return array<string, Field> */
