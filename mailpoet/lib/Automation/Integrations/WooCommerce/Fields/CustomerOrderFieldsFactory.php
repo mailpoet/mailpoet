@@ -95,7 +95,7 @@ class CustomerOrderFieldsFactory {
           return $customer ? $this->getOrderProductTermIds($customer, 'product_cat') : [];
         },
         [
-          'options' => $this->termOptionsBuilder->getCategoryOptions(),
+          'options' => $this->termOptionsBuilder->getTermOptions('product_cat'),
         ]
       ),
       new Field(
@@ -107,7 +107,7 @@ class CustomerOrderFieldsFactory {
           return $customer ? $this->getOrderProductTermIds($customer, 'product_tag') : [];
         },
         [
-          'options' => $this->termOptionsBuilder->getTagOptions(),
+          'options' => $this->termOptionsBuilder->getTermOptions('product_tag'),
         ]
       ),
     ];

@@ -17,17 +17,7 @@ class TermOptionsBuilder {
   }
 
   /** @return array<array{id: int, name: string}> */
-  public function getCategoryOptions(): array {
-    return $this->getTermOptions('product_cat');
-  }
-
-  /** @return array<array{id: int, name: string}> */
-  public function getTagOptions(): array {
-    return $this->getTermOptions('product_tag');
-  }
-
-  /** @return array<array{id: int, name: string}> */
-  private function getTermOptions(string $taxonomy): array {
+  public function getTermOptions(string $taxonomy): array {
     $terms = $this->wordPress->getTerms(['taxonomy' => $taxonomy, 'hide_empty' => false]);
     if ($terms instanceof WP_Error) {
       return [];

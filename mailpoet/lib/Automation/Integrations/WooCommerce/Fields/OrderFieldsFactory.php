@@ -227,7 +227,7 @@ class OrderFieldsFactory {
             return array_unique($categoryIds);
           },
           [
-            'options' => $this->termOptionsBuilder->getCategoryOptions(),
+            'options' => $this->termOptionsBuilder->getTermOptions('product_cat'),
           ]
         ),
         new Field(
@@ -244,7 +244,7 @@ class OrderFieldsFactory {
             return array_unique($tagIds);
           },
           [
-            'options' => $this->termOptionsBuilder->getTagOptions(),
+            'options' => $this->termOptionsBuilder->getTermOptions('product_tag'),
           ]
         ),
         new Field(
