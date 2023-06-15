@@ -11,7 +11,7 @@ import { GlobalContext, useGlobalContextValue } from 'context';
 import { Notices } from 'notices/notices.jsx';
 import { registerTranslations, withBoundary } from 'common';
 import { Editor } from './dynamic/editor';
-import { DynamicSegmentList } from './dynamic/list.jsx';
+import { DynamicSegmentList } from './dynamic/list.tsx';
 
 const container = document.getElementById('segments_container');
 
