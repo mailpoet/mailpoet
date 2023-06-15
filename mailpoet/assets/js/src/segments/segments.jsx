@@ -4,7 +4,7 @@ import { HashRouter, Redirect, Route, Switch } from 'react-router-dom';
 import { MailPoet } from 'mailpoet';
 import { RoutedTabs } from 'common/tabs/routed_tabs';
 import { Tab } from 'common/tabs/tab';
-import { SegmentList } from 'segments/list.jsx';
+import { SegmentList } from 'segments/list.tsx';
 import { SegmentForm } from 'segments/form.tsx';
 import { ListHeading } from 'segments/heading.tsx';
 import { GlobalContext, useGlobalContextValue } from 'context';

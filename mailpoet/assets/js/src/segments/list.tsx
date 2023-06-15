@@ -1,18 +1,46 @@
-import { Component } from 'react';
-import { Link, withRouter } from 'react-router-dom';
+import { Component, ReactNode } from 'react';
+import { Link, withRouter, RouteComponentProps } from 'react-router-dom';
 import { MailPoet } from 'mailpoet';
 import classnames from 'classnames';
-import PropTypes from 'prop-types';
 import { escapeHTML, escapeAttribute } from '@wordpress/escape-html';
 
 import { Listing } from 'listing/listing.jsx';
 import { ListingsEngagementScore } from '../subscribers/listings_engagement_score';
 
-const isWPUsersSegment = (segment) => segment.type === 'wp_users';
-const isWooCommerceCustomersSegment = (segment) =>
+type Segment = {
+  type: string;
+  id: number;
+  name: string;
+  description: string;
+  average_engagement_score: number;
+  subscribers_count: {
+    subscribed?: number;
+    unconfirmed?: number;
+    unsubscribed?: number;
+    inactive?: number;
+    bounced?: number;
+  };
+  created_at: string;
+  subscribers_url: string;
+};
+
+type SegmentResponse = {
+  meta: {
+    count: string;
+  };
+  data: {
+    name: string;
+  };
+  errors: {
+    message: string;
+  }[];
+};
+
+const isWPUsersSegment = (segment: Segment) => segment.type === 'wp_users';
+const isWooCommerceCustomersSegment = (segment: Segment) =>
   segment.type === 'woocommerce_users';
-const isSpecialSegment = (segmt) =>
-  isWPUsersSegment(segmt) || isWooCommerceCustomersSegment(segmt);
+const isSpecialSegment = (segment: Segment) =>
+  isWPUsersSegment(segment) || isWooCommerceCustomersSegment(segment);
 const mailpoetTrackingEnabled = MailPoet.trackingConfig.emailTrackingEnabled;
 
 const columns = [
@@ -115,7 +143,7 @@ const bulkActions = [
   },
 ];
 
-const isItemDeletable = (segment) => {
+const isItemDeletable = (segment: Segment) => {
   const isDeletable = !isSpecialSegment(segment);
   return isDeletable;
 };
@@ -124,10 +152,10 @@ const itemActions = [
   {
     name: 'edit',
     className: 'mailpoet-hide-on-mobile',
-    link: function link(item) {
+    link: function link(item: Segment) {
       return <Link to={`/edit/${item.id}`}>{MailPoet.I18n.t('edit')}</Link>;
     },
-    display: function display(segment) {
+    display: function display(segment: Segment) {
       return !isSpecialSegment(segment);
     },
   },
@@ -144,7 +172,7 @@ const itemActions = [
           id: item.id,
         },
       })
-        .done((response) => {
+        .done((response: SegmentResponse) => {
           MailPoet.Notice.success(
             MailPoet.I18n.t('listDuplicated').replace(
               '%1$s',
@@ -159,7 +187,7 @@ const itemActions = [
             { scroll: true },
           );
         }),
-    display: function display(segment) {
+    display: function display(segment: Segment) {
       return !isSpecialSegment(segment);
     },
   },
@@ -177,16 +205,16 @@ const itemActions = [
         </a>
       );
     },
-    display: function display(segment) {
+    display: function display(segment: Segment) {
       return isWPUsersSegment(segment);
     },
   },
   {
     name: 'synchronize_segment',
     label: MailPoet.I18n.t('forceSync'),
-    onClick: function onClick(item, refresh) {
+    onClick: async function onClick(item: Segment, refresh) {
       MailPoet.Modal.loading(true);
-      MailPoet.Ajax.post({
+      await MailPoet.Ajax.post({
         api_version: window.mailpoet_api_version,
         endpoint: 'segments',
         action: 'synchronize',
@@ -218,7 +246,7 @@ const itemActions = [
           }
         });
     },
-    display: function display(segment) {
+    display: function display(segment: Segment) {
       return (
         isWPUsersSegment(segment) || isWooCommerceCustomersSegment(segment)
       );
@@ -226,7 +254,7 @@ const itemActions = [
   },
   {
     name: 'view_subscribers',
-    link: function link(item) {
+    link: function link(item: Segment) {
       return (
         <a
           href={item.subscribers_url}
@@ -240,14 +268,14 @@ const itemActions = [
   {
     name: 'trash',
     className: 'mailpoet-hide-on-mobile',
-    display: function display(segmt) {
-      return !isWooCommerceCustomersSegment(segmt);
+    display: function display(segment: Segment) {
+      return !isWooCommerceCustomersSegment(segment);
     },
   },
 ];
 
-class SegmentListComponent extends Component {
-  renderItem = (segment, actions) => {
+class SegmentListComponent extends Component<RouteComponentProps> {
+  renderItem = (segment: Segment, actions: ReactNode) => {
     const rowClasses = classnames(
       'manage-column',
       'column-primary',
@@ -369,14 +397,5 @@ class SegmentListComponent extends Component {
     );
   }
 }
-
-SegmentListComponent.propTypes = {
-  location: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
-  match: PropTypes.shape({
-    params: PropTypes.object, // eslint-disable-line react/forbid-prop-types
-  }).isRequired,
-};
-
-SegmentListComponent.displayName = 'SegmentList';
 
 export const SegmentList = withRouter(SegmentListComponent);
