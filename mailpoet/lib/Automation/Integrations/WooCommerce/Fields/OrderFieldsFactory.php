@@ -296,7 +296,10 @@ class OrderFieldsFactory {
     $statuses = $this->wooCommerce->wcGetOrderStatuses();
     $options = [];
     foreach ($statuses as $id => $name) {
-      $options[] = ['id' => $id, 'name' => $name];
+      $options[] = [
+        'id' => substr($id, 0, 3) === 'wc-' ? substr($id, 3) : $id,
+        'name' => $name,
+      ];
     }
     return $options;
   }
