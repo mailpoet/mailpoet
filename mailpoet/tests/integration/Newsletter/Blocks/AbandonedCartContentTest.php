@@ -79,8 +79,6 @@ class AbandonedCartContentTest extends \MailPoetTest {
       $this->wp->wpDeletePost((int)$product->ID);
     }
 
-    register_post_type("product", ['public' => true]);
-
     $this->productIds = [];
     $this->productIds[] = $this->createPost('Product 1', '2020-05-01 01:01:01', 'product');
     $this->productIds[] = $this->createPost('Product 2', '2020-06-01 01:01:01', 'product');
