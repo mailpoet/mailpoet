@@ -82,7 +82,7 @@ class Subscribers {
   }
 
   public function isSubscribersCountEnoughForCache(int $count = null): bool {
-    if (is_null($count)) {
+    if (is_null($count) && func_num_args() === 0) {
       $count = $this->getSubscribersCount();
     }
     return $count > self::SUBSCRIBERS_COUNT_CACHE_MIN_VALUE;
