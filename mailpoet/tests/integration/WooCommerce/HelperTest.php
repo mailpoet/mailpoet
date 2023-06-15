@@ -56,19 +56,19 @@ class HelperTest extends \MailPoetTest {
 
     $expectedResult = [
       [
-        'id' => 'flat_rate:2',
+        'instanceId' => '2',
         'name' => 'Flat rate custom name (Argentina)',
       ],
       [
-        'id' => 'local_pickup:3',
+        'instanceId' => '3',
         'name' => 'Local pickup custom name (Argentina)',
       ],
       [
-        'id' => 'free_shipping:4',
+        'instanceId' => '4',
         'name' => 'Free shipping custom name (Brazil)',
       ],
       [
-        'id' => 'flat_rate:1',
+        'instanceId' => '1',
         'name' => 'Flat rate custom name (Locations not covered by your other zones)',
       ],
     ];

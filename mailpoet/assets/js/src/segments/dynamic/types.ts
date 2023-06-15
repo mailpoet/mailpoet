@@ -304,6 +304,6 @@ export type WooPaymentMethod = {
 };
 
 export type WooShippingMethod = {
-  id: string;
+  instanceId: string;
   name: string;
 };
