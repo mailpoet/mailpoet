@@ -4,18 +4,18 @@ import { HashRouter, Redirect, Route, Switch } from 'react-router-dom';
 import { MailPoet } from 'mailpoet';
 import { RoutedTabs } from 'common/tabs/routed_tabs';
 import { Tab } from 'common/tabs/tab';
-import { SegmentList } from 'segments/list.tsx';
-import { SegmentForm } from 'segments/form.tsx';
-import { ListHeading } from 'segments/heading.tsx';
+import { SegmentList } from 'segments/list';
+import { SegmentForm } from 'segments/form';
+import { ListHeading } from 'segments/heading';
 import { GlobalContext, useGlobalContextValue } from 'context';
 import { Notices } from 'notices/notices.jsx';
 import { registerTranslations, withBoundary } from 'common';
 import { Editor } from './dynamic/editor';
-import { DynamicSegmentList } from './dynamic/list.tsx';
+import { DynamicSegmentList } from './dynamic/list';
 
 const container = document.getElementById('segments_container');
 
-function Tabs() {
+function Tabs(): JSX.Element {
   return (
     <>
       <ListHeading />
@@ -42,19 +42,19 @@ function Tabs() {
 
 Tabs.displayName = 'SegmentTabs';
 
-function App() {
+function App(): JSX.Element {
   return (
     <GlobalContext.Provider value={useGlobalContextValue(window)}>
       <HashRouter>
         <Notices />
         <Switch>
           <Route exact path="/" render={() => <Redirect to="/lists" />} />
-          <Route path="/new" render={withBoundary(SegmentForm)} />
-          <Route path="/edit/:id" render={withBoundary(SegmentForm)} />
-          <Route path="/new-segment" render={withBoundary(Editor)} />
-          <Route path="/edit-segment/:id" render={withBoundary(Editor)} />
-          <Route path="/segments/(.*)?" render={withBoundary(Tabs)} />
-          <Route path="/lists/(.*)?" render={withBoundary(Tabs)} />
+          <Route path="/new" component={withBoundary(SegmentForm)} />
+          <Route path="/edit/:id" component={withBoundary(SegmentForm)} />
+          <Route path="/new-segment" component={withBoundary(Editor)} />
+          <Route path="/edit-segment/:id" component={withBoundary(Editor)} />
+          <Route path="/segments/(.*)?" component={withBoundary(Tabs)} />
+          <Route path="/lists/(.*)?" component={withBoundary(Tabs)} />
         </Switch>
       </HashRouter>
     </GlobalContext.Provider>
