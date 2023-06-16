@@ -4,6 +4,7 @@ import classNames from 'classnames';
 type Props = {
   variant?: 'default' | 'danger';
   size?: 'small' | 'medium' | 'large';
+  ariaExpanded?: boolean;
   onClick?: (
     event: MouseEvent<HTMLDivElement> | KeyboardEvent<HTMLDivElement>,
   ) => void;
@@ -13,6 +14,7 @@ type Props = {
 export function Chip({
   variant = 'default',
   size = 'medium',
+  ariaExpanded = false,
   onClick,
   children,
 }: Props): JSX.Element {
@@ -41,6 +43,7 @@ export function Chip({
         'chip-default': variant === 'default',
         'chip-danger': variant === 'danger',
       })}
+      aria-expanded={ariaExpanded}
       {...interactivityProps}
     >
       {children}
