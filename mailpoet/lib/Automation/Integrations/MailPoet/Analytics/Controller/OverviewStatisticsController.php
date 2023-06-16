@@ -77,7 +77,7 @@ class OverviewStatisticsController {
       $data['emails'][$newsletterId]['unsubscribed']['current'] = $statistic->getUnsubscribeCount();
       $data['emails'][$newsletterId]['orders']['current'] = $statistic->getWooCommerceRevenue() ? $statistic->getWooCommerceRevenue()->getOrdersCount() : 0;
       $data['emails'][$newsletterId]['revenue']['current'] = $statistic->getWooCommerceRevenue() ? $statistic->getWooCommerceRevenue()->getValue() : 0;
-      $data['emails'][$newsletterId]['previewUrl'] = $this->newsletterUrl->getViewInBrowserUrl($newsletter);
+      $data['emails'][$newsletterId]['previewUrl'] = $newsletter ? $this->newsletterUrl->getViewInBrowserUrl($newsletter) : '';
       $data['emails'][$newsletterId]['order'] = count($data['emails']);
     }
 
