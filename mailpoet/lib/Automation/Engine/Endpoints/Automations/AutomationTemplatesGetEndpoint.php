@@ -20,7 +20,8 @@ class AutomationTemplatesGetEndpoint extends Endpoint {
   }
 
   public function handle(Request $request): Response {
-    $templates = array_values($this->registry->getTemplates((int)$request->getParam('category')));
+    $category = $request->getParam('category');
+    $templates = array_values($this->registry->getTemplates($category ? strval($category) : null));
     return new Response(array_map(function (AutomationTemplate $automation) {
       return $automation->toArray();
     }, $templates));
@@ -28,7 +29,7 @@ class AutomationTemplatesGetEndpoint extends Endpoint {
 
   public static function getRequestSchema(): array {
     return [
-      'category' => Builder::integer()->nullable(),
+      'category' => Builder::string(),
     ];
   }
 }
