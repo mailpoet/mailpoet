@@ -61,7 +61,7 @@ class Registry {
   }
 
   /** @return array<string, AutomationTemplate> */
-  public function getTemplates(int $category = null): array {
+  public function getTemplates(string $category = null): array {
     $templates = (array)$this->wordPress->applyFilters(Hooks::AUTOMATION_TEMPLATES, $this->templates);
     foreach ($templates as $template) {
       if (!$template instanceof AutomationTemplate) {
