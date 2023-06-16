@@ -29,19 +29,24 @@ class AutomationTemplate {
   private $category;
 
   /** @var string */
-  private $type;
+  private $name;
 
   /** @var string */
   private $description;
 
-  /** @var Automation */
-  private $automation;
+  /** @var callable(): Automation */
+  private $automationFactory;
 
+  /** @var string */
+  private $type;
+
+  /** @param callable(): Automation $automationFactory */
   public function __construct(
     string $slug,
     int $category,
+    string $name,
     string $description,
-    Automation $automation,
+    callable $automationFactory,
     string $type = self::TYPE_DEFAULT
   ) {
     if (!in_array($category, self::ALL_CATEGORIES)) {
@@ -49,8 +54,9 @@ class AutomationTemplate {
     }
     $this->slug = $slug;
     $this->category = $category;
+    $this->name = $name;
     $this->description = $description;
-    $this->automation = $automation;
+    $this->automationFactory = $automationFactory;
     $this->type = $type;
   }
 
@@ -59,7 +65,7 @@ class AutomationTemplate {
   }
 
   public function getName(): string {
-    return $this->automation->getName();
+    return $this->name;
   }
 
   public function getCategory(): int {
@@ -74,8 +80,8 @@ class AutomationTemplate {
     return $this->description;
   }
 
-  public function getAutomation(): Automation {
-    return $this->automation;
+  public function createAutomation(): Automation {
+    return ($this->automationFactory)();
   }
 
   public function toArray(): array {
@@ -85,7 +91,7 @@ class AutomationTemplate {
       'category' => $this->getCategory(),
       'type' => $this->getType(),
       'description' => $this->getDescription(),
-      'automation' => $this->getAutomation()->toArray(),
+      'automation' => $this->createAutomation()->toArray(),
     ];
   }
 }
