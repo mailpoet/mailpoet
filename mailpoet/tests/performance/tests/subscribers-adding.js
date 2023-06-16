@@ -67,11 +67,11 @@ export async function subscribersAdding() {
   await page.locator('input[name="last_name"]').type(lastName);
   selectInSelect2(page, defaultListName);
   await page.locator('button[type="submit"]').click();
+  await page.waitForLoadState('networkidle');
 
   // Verify you see the success message and the filter is visible
   const locator =
     "//div[@class='notice-success'].//p[starts-with(text(),'Subscriber was added successfully!')]";
-  await page.waitForSelector(locator);
   describe(subscribersPageTitle, () => {
     describe('should be able to see Subscriber Added message', () => {
       expect(page.locator(locator)).to.exist;

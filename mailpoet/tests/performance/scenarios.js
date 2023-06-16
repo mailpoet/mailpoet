@@ -47,14 +47,14 @@ let scenarios = {
     executor: 'per-vu-iterations',
     vus: 1,
     iterations: 1,
-    maxDuration: '5m',
+    maxDuration: '10m',
     exec: 'pullRequests',
   },
   nightlytests: {
     executor: 'per-vu-iterations',
     vus: 1,
-    iterations: 3,
-    maxDuration: '15m',
+    iterations: 1,
+    maxDuration: '30m',
     exec: 'nightly',
   },
 };

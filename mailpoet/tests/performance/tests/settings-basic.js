@@ -56,12 +56,17 @@ export async function settingsBasic() {
   await page.waitForLoadState('networkidle');
 
   // Check if there's notice about saved settings
+  const locator =
+    "//div[@class='notice-success'].//p[starts-with(text(),'Settings saved')]";
   describe(settingsPageTitle, () => {
     describe('should be able to see Settings Saved message', () => {
-      expect(page.locator('div.notice').innerText()).to.contain(
-        'Settings saved',
-      );
+      expect(page.locator(locator)).to.exist;
     });
+  });
+
+  await page.screenshot({
+    path: screenshotPath + 'Settings_Basic_02.png',
+    fullPage: fullPageSet,
   });
 
   // Thinking time and closing

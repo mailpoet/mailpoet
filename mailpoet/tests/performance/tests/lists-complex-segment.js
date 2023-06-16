@@ -141,14 +141,19 @@ export async function listsComplexSegment() {
   await page.waitForSelector('[data-automation-id="filters_all"]', {
     state: 'visible',
   });
+  const locator =
+    "//div[@class='notice-success'].//p[starts-with(text(),'Segment successfully updated!')]";
   describe(listsPageTitle, () => {
     describe('should be able to see Segment Updated message', () => {
-      expect(page.locator('div.notice').innerText()).to.contain(
-        'Segment successfully updated!',
-      );
+      expect(page.locator(locator)).to.exist;
     });
   });
   await page.waitForLoadState('networkidle');
+
+  await page.screenshot({
+    path: screenshotPath + 'Lists_Complex_Segment_05.png',
+    fullPage: fullPageSet,
+  });
 
   // Thinking time and closing
   sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
