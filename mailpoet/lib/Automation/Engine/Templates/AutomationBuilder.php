@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace MailPoet\Automation\Integrations\MailPoet\Templates;
+namespace MailPoet\Automation\Engine\Templates;
 
 use MailPoet\Automation\Engine\Data\Automation;
 use MailPoet\Automation\Engine\Data\Filter;
@@ -15,7 +15,6 @@ use MailPoet\Util\Security;
 use MailPoet\Validator\Schema\ObjectSchema;
 
 class AutomationBuilder {
-
   /** @var Registry */
   private $registry;
 
