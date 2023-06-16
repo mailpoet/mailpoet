@@ -3,6 +3,7 @@
 namespace MailPoet\Automation\Engine;
 
 use MailPoet\Automation\Engine\Control\RootStep;
+use MailPoet\Automation\Engine\Data\AutomationTemplate;
 use MailPoet\Automation\Engine\Data\Field;
 use MailPoet\Automation\Engine\Integration\Action;
 use MailPoet\Automation\Engine\Integration\Filter;
@@ -13,6 +14,9 @@ use MailPoet\Automation\Engine\Integration\SubjectTransformer;
 use MailPoet\Automation\Engine\Integration\Trigger;
 
 class Registry {
+  /** @var array<string, AutomationTemplate> */
+  private $templates;
+
   /** @var array<string, Step> */
   private $steps = [];
 
@@ -46,6 +50,26 @@ class Registry {
   ) {
     $this->wordPress = $wordPress;
     $this->steps[$rootStep->getKey()] = $rootStep;
+  }
+
+  public function addTemplate(AutomationTemplate $template): void {
+    $this->templates[$template->getSlug()] = $template;
+  }
+
+  public function getTemplate(string $slug): ?AutomationTemplate {
+    return $this->templates[$slug] ?? null;
+  }
+
+  /** @return array<string, AutomationTemplate> */
+  public function getTemplates(int $category = null): array {
+    return $category
+      ? array_filter(
+          $this->templates,
+          function(AutomationTemplate $template) use ($category): bool {
+            return $template->getCategory() === $category;
+          }
+        )
+      : $this->templates;
   }
 
   /** @param Subject<Payload> $subject */
