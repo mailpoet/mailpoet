@@ -13,7 +13,7 @@ class AutomationTemplatesGetEndpointTest extends AutomationTest {
 
   public function testGetAllTemplates() {
     $result = $this->get(self::ENDPOINT_PATH, []);
-    $this->assertCount(7, $result['data']);
+    $this->assertCount(8, $result['data']);
     $this->assertEquals('subscriber-welcome-email', $result['data'][0]['slug']);
   }
 
@@ -21,7 +21,7 @@ class AutomationTemplatesGetEndpointTest extends AutomationTest {
     wp_set_current_user($this->editorUserId);
     $data = $this->get(self::ENDPOINT_PATH, []);
 
-    $this->assertCount(7, $data['data']);
+    $this->assertCount(8, $data['data']);
   }
 
   public function testGuestNotAllowed(): void {
@@ -42,13 +42,14 @@ class AutomationTemplatesGetEndpointTest extends AutomationTest {
         'category' => AutomationTemplate::CATEGORY_WELCOME,
       ],
     ]);
+
     $this->assertCount(4, $result['data']);
     $result = $this->get(self::ENDPOINT_PATH, [
       'json' => [
         'category' => AutomationTemplate::CATEGORY_ABANDONED_CART,
       ],
     ]);
-    $this->assertCount(1, $result['data']);
+    $this->assertCount(2, $result['data']);
     $result = $this->get(self::ENDPOINT_PATH, [
       'json' => [
         'category' => AutomationTemplate::CATEGORY_WOOCOMMERCE,
