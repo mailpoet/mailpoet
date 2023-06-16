@@ -182,6 +182,7 @@ class PageRenderer {
         'automationEditor' => admin_url('admin.php?page=mailpoet-automation-editor'),
         'automationTemplates' => admin_url('admin.php?page=mailpoet-automation-templates'),
       ],
+      'woocommerce_store_config' => $this->woocommerceStoreConfig(),
       'tags' => array_map(function (TagEntity $tag): array {
         return [
         'id' => $tag->getId(),
@@ -213,5 +214,19 @@ class PageRenderer {
       $notice = new WPNotice(WPNotice::TYPE_ERROR, $e->getMessage());
       $notice->displayWPNotice();
     }
+  }
+
+  private function woocommerceStoreConfig() {
+
+    return [
+      'precision' => wc_get_price_decimals(),
+      'decimalSeparator' => wc_get_price_decimal_separator(),
+      'thousandSeparator' => wc_get_price_thousand_separator(),
+      'code' => get_woocommerce_currency(),
+      'symbol' => html_entity_decode(get_woocommerce_currency_symbol()),
+      'symbolPosition' => get_option('woocommerce_currency_pos'),
+      'priceFormat' => get_woocommerce_price_format(),
+
+    ];
   }
 }
