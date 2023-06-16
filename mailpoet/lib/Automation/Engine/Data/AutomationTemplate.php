@@ -91,7 +91,6 @@ class AutomationTemplate {
       'category' => $this->getCategory(),
       'type' => $this->getType(),
       'description' => $this->getDescription(),
-      'automation' => $this->createAutomation()->toArray(),
     ];
   }
 }
