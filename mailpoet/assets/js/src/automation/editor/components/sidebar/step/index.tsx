@@ -3,7 +3,6 @@ import { useSelect } from '@wordpress/data';
 import { storeName } from '../../../store';
 import { FiltersPanel } from '../../filters';
 import { StepCard } from '../../step-card';
-import { MailPoet } from '../../../../../mailpoet';
 
 function StepSidebarGeneralError(): JSX.Element {
   const { errors } = useSelect(
@@ -64,8 +63,7 @@ export function StepSidebar(): JSX.Element {
         key={selectedStep.id}
       />
 
-      {MailPoet.FeaturesController.isSupported('automation_filters') &&
-        selectedStep.type === 'trigger' && <FiltersPanel />}
+      {selectedStep.type === 'trigger' && <FiltersPanel />}
     </div>
   );
 }
