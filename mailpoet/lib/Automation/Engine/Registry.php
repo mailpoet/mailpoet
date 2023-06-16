@@ -57,19 +57,27 @@ class Registry {
   }
 
   public function getTemplate(string $slug): ?AutomationTemplate {
-    return $this->templates[$slug] ?? null;
+    return $this->getTemplates()[$slug] ?? null;
   }
 
   /** @return array<string, AutomationTemplate> */
   public function getTemplates(int $category = null): array {
+    $templates = (array)$this->wordPress->applyFilters(Hooks::AUTOMATION_TEMPLATES, $this->templates);
+    foreach ($templates as $template) {
+      if (!$template instanceof AutomationTemplate) {
+        throw new \Exception(); // TODO
+      }
+    }
+
+    /** @var AutomationTemplate[] $templates -- the array was checked at this point, let PHPStan know */
     return $category
       ? array_filter(
-          $this->templates,
+          $templates,
           function(AutomationTemplate $template) use ($category): bool {
             return $template->getCategory() === $category;
           }
         )
-      : $this->templates;
+      : $templates;
   }
 
   /** @param Subject<Payload> $subject */
