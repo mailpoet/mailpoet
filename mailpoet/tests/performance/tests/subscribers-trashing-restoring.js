@@ -74,6 +74,11 @@ export async function subscribersTrashingRestoring() {
     });
   });
 
+  await page.screenshot({
+    path: screenshotPath + 'Subscribers_Trashing_Restoring_02.png',
+    fullPage: fullPageSet,
+  });
+
   // Restore from trash all the trashed subscribers
   await page.locator('[data-automation-id="filters_trash"]').click();
   await page.waitForSelector('[data-automation-id="empty_trash"]');
@@ -86,6 +91,11 @@ export async function subscribersTrashingRestoring() {
   await page.waitForSelector('.notice-success');
   waitForSelectorToBeVisible(page, '.colspanchange');
   waitForSelectorToBeVisible(page, '[data-automation-id="filters_subscribed"]');
+
+  await page.screenshot({
+    path: screenshotPath + 'Subscribers_Trashing_Restoring_03.png',
+    fullPage: fullPageSet,
+  });
 
   // Thinking time and closing
   sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));

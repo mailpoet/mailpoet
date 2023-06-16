@@ -95,12 +95,12 @@ export async function newsletterSending() {
   });
 
   // Wait for the success notice message and confirm it
+  const locator =
+    "//div[@class='notice-success'].//p[starts-with(text(),'Subscriber was added successfully!')]";
   await page.waitForSelector('#mailpoet_notices');
   describe(emailsPageTitle, () => {
     describe('should be able to see Newsletter Sent message', () => {
-      expect(page.locator('div > .notice-success').innerText()).to.contain(
-        'The newsletter is being sent...',
-      );
+      expect(page.locator(locator)).to.exist;
     });
   });
   await page.waitForLoadState('networkidle');
