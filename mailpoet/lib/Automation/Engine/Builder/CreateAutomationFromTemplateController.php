@@ -35,7 +35,7 @@ class CreateAutomationFromTemplateController {
       throw Exceptions::automationTemplateNotFound($slug);
     }
 
-    $automation = $template->getAutomation();
+    $automation = $template->createAutomation();
     $this->automationValidator->validate($automation);
     $automationId = $this->storage->createAutomation($automation);
     $savedAutomation = $this->storage->getAutomation($automationId);
