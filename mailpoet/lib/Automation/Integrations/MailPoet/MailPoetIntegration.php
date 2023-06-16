@@ -13,6 +13,7 @@ use MailPoet\Automation\Integrations\MailPoet\Subjects\SubscriberSubject;
 use MailPoet\Automation\Integrations\MailPoet\SubjectTransformers\OrderSubjectToSegmentSubjectTransformer;
 use MailPoet\Automation\Integrations\MailPoet\SubjectTransformers\OrderSubjectToSubscriberSubjectTransformer;
 use MailPoet\Automation\Integrations\MailPoet\SubjectTransformers\SubscriberSubjectToWordPressUserSubjectTransformer;
+use MailPoet\Automation\Integrations\MailPoet\Templates\TemplatesFactory;
 use MailPoet\Automation\Integrations\MailPoet\Triggers\SomeoneSubscribesTrigger;
 use MailPoet\Automation\Integrations\MailPoet\Triggers\UserRegistrationTrigger;
 
@@ -50,6 +51,9 @@ class MailPoetIntegration implements Integration {
   /** @var SubscriberSubjectToWordPressUserSubjectTransformer */
   private $subscriberToWordPressUserTransformer;
 
+  /** @var TemplatesFactory */
+  private $templatesFactory;
+
   /** @var Analytics */
   private $registerAnalytics;
 
@@ -65,6 +69,7 @@ class MailPoetIntegration implements Integration {
     SendEmailAction $sendEmailAction,
     AutomationEditorLoadingHooks $automationEditorLoadingHooks,
     CreateAutomationRunHook $createAutomationRunHook,
+    TemplatesFactory $templatesFactory,
     Analytics $registerAnalytics
   ) {
     $this->contextFactory = $contextFactory;
@@ -78,6 +83,7 @@ class MailPoetIntegration implements Integration {
     $this->sendEmailAction = $sendEmailAction;
     $this->automationEditorLoadingHooks = $automationEditorLoadingHooks;
     $this->createAutomationRunHook = $createAutomationRunHook;
+    $this->templatesFactory = $templatesFactory;
     $this->registerAnalytics = $registerAnalytics;
   }
 
@@ -94,6 +100,10 @@ class MailPoetIntegration implements Integration {
     $registry->addSubjectTransformer($this->orderToSubscriberTransformer);
     $registry->addSubjectTransformer($this->orderToSegmentTransformer);
     $registry->addSubjectTransformer($this->subscriberToWordPressUserTransformer);
+
+    foreach ($this->templatesFactory->createTemplates() as $template) {
+      $registry->addTemplate($template);
+    }
 
     // sync step args (subject, preheader, etc.) to email settings
     $registry->onBeforeAutomationStepSave(

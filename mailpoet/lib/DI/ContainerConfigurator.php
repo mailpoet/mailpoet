@@ -135,7 +135,6 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Automation\Engine\Registry::class)->setPublic(true);
     $container->autowire(\MailPoet\Automation\Engine\Storage\AutomationRunStorage::class)->setPublic(true);
     $container->autowire(\MailPoet\Automation\Engine\Storage\AutomationRunLogStorage::class)->setPublic(true);
-    $container->autowire(\MailPoet\Automation\Engine\Storage\AutomationTemplateStorage::class)->setPublic(true);
     $container->autowire(\MailPoet\Automation\Engine\Storage\AutomationStorage::class)->setPublic(true);
     $container->autowire(\MailPoet\Automation\Engine\Storage\AutomationStatisticsStorage::class)->setPublic(true);
     $container->autowire(\MailPoet\Automation\Engine\Templates\AutomationBuilder::class)->setPublic(true)->setShared(false);
@@ -178,6 +177,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Automation\Integrations\MailPoet\SubjectTransformers\OrderSubjectToSubscriberSubjectTransformer::class)->setPublic(true)->setShared(false);
     $container->autowire(\MailPoet\Automation\Integrations\MailPoet\SubjectTransformers\OrderSubjectToSegmentSubjectTransformer::class)->setPublic(true)->setShared(false);
     $container->autowire(\MailPoet\Automation\Integrations\MailPoet\SubjectTransformers\SubscriberSubjectToWordPressUserSubjectTransformer::class)->setPublic(true)->setShared(false);
+    $container->autowire(\MailPoet\Automation\Integrations\MailPoet\Templates\TemplatesFactory::class)->setPublic(true)->setShared(false);
 
     // Automation - WooCommerce integration
     $container->autowire(\MailPoet\Automation\Integrations\WooCommerce\WooCommerce::class)->setPublic(true);
