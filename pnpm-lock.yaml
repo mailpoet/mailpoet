@@ -64,6 +64,9 @@ importers:
       '@woocommerce/components':
         specifier: ^10.0.0
         version: 10.0.0(patch_hash=prtmohnt73dk73q3vnzuiaioji)(@babel/core@7.17.8)(@types/react@18.0.28)(@wordpress/core-data@6.5.0)(@wordpress/data@8.5.0)(lodash@4.17.21)(react-dom@18.2.0)(react@18.2.0)
+      '@woocommerce/currency':
+        specifier: ^4.2.0
+        version: 4.2.0
       '@woocommerce/date':
         specifier: ^4.2.0
         version: 4.2.0(lodash@4.17.21)
@@ -9791,6 +9794,16 @@ packages:
       '@wordpress/i18n': 3.20.0
     dev: false
 
+  /@woocommerce/currency@4.2.0:
+    resolution: {integrity: sha512-ZbYWKl6fbSU5hCYDFZ1WrONeDlTbDixELkyWgnmv6bAHANiOH5T4lhFcDHs+s8gA80FzxS01YpHZRbJhLrMcaA==}
+    dependencies:
+      '@woocommerce/number': 2.4.0
+      '@wordpress/deprecated': 2.12.3
+      '@wordpress/element': 4.20.0
+      '@wordpress/html-entities': 3.28.0
+      '@wordpress/i18n': 3.20.0
+    dev: false
+
   /@woocommerce/data@3.1.0(@babel/core@7.17.8)(@types/react@18.0.28)(@wordpress/core-data@6.5.0)(lodash@4.17.21)(moment@2.29.4)(react-dom@18.2.0)(react@18.2.0):
     resolution: {integrity: sha512-YIf04NhbMWp+ySkH6NSNASPJWXIZi0LeU5aVvYl6wCOQQp3RP/mgzNINBdxemcsm/QI2Y7zWGeHTREZlOr2kuw==}
     peerDependencies:
@@ -9874,6 +9887,12 @@ packages:
 
   /@woocommerce/number@2.2.1:
     resolution: {integrity: sha512-C3Ym4h0R9dzj5HtgVPAIMDvXTpJ5qzCEiRVw/9ixLNK2Bro/ZxQY+EceQQFWmBWv87JKkmR4i7utvCp14nVcQA==}
+    dependencies:
+      locutus: 2.0.16
+    dev: false
+
+  /@woocommerce/number@2.4.0:
+    resolution: {integrity: sha512-SmEgad2zZ9fGZtpujrdk0/toSXjNuDOUxDKQutJ++ASID17bGKZtLxXcu/E7mvF1tTgszpiToPvqZlyC+vjOlg==}
     dependencies:
       locutus: 2.0.16
     dev: false
