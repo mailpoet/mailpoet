@@ -1,61 +1,28 @@
 <?php declare(strict_types = 1);
 
-namespace MailPoet\Automation\Engine\Storage;
+namespace MailPoet\Automation\Integrations\MailPoet\Templates;
 
 use MailPoet\Automation\Engine\Data\AutomationTemplate;
 use MailPoet\Automation\Engine\Hooks;
 use MailPoet\Automation\Engine\Templates\AutomationBuilder;
-use MailPoet\WP\Functions as WPFunctions;
+use MailPoet\Automation\Engine\WordPress;
 
-class AutomationTemplateStorage {
-  /** @var AutomationTemplate[]  */
-  private $templates = [];
-
-  /** @var AutomationBuilder  */
+class TemplatesFactory {
+  /** @var AutomationBuilder */
   private $builder;
 
-  /** @var WPFunctions  */
+  /** @var WordPress */
   private $wp;
 
   public function __construct(
     AutomationBuilder $builder,
-    WPFunctions $wp
+    WordPress $wp
   ) {
     $this->builder = $builder;
     $this->wp = $wp;
   }
 
-  public function getTemplateBySlug(string $slug): ?AutomationTemplate {
-    if (!$this->templates) {
-      $this->templates = $this->createTemplates();
-    }
-    foreach ($this->templates as $template) {
-      if ($template->getSlug() === $slug) {
-        return $template;
-      }
-    }
-    return null;
-  }
-
-  /** @return AutomationTemplate[] */
-  public function getTemplates(int $category = null): array {
-    if (!$this->templates) {
-      $this->templates = $this->createTemplates();
-    }
-    if (!$category) {
-      return $this->templates;
-    }
-    return array_values(
-      array_filter(
-        $this->templates,
-        function(AutomationTemplate $template) use ($category): bool {
-            return $template->getCategory() === $category;
-        }
-    )
-    );
-  }
-
-  private function createTemplates(): array {
+  public function createTemplates(): array {
     $subscriberWelcomeEmail = new AutomationTemplate(
       'subscriber-welcome-email',
       AutomationTemplate::CATEGORY_WELCOME,
