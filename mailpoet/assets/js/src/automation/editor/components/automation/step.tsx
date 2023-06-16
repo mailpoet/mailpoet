@@ -5,6 +5,7 @@ import { useDispatch, useRegistry, useSelect } from '@wordpress/data';
 import { blockMeta } from '@wordpress/icons';
 import { __, _x } from '@wordpress/i18n';
 import { AutomationCompositeContext } from './context';
+import { StepFilters } from './step-filters';
 import { StepMoreMenu } from './step-more-menu';
 import { Step as StepData } from './types';
 import { Chip } from '../chip';
@@ -56,6 +57,12 @@ export function Step({ step, isSelected }: Props): JSX.Element {
 
   const compositeItemId = `step-${step.id}`;
   const stepTypeData = stepType ?? getUnknownStepType(step);
+  const filterCount =
+    step.filters?.groups.reduce(
+      (sum, group) => sum + group.filters.length,
+      0,
+    ) ?? 0;
+
   return (
     <div className="mailpoet-automation-editor-step-wrapper">
       <StepMoreMenu step={step} />
@@ -101,13 +108,16 @@ export function Step({ step, isSelected }: Props): JSX.Element {
               : stepTypeData.title(step, 'automation')}
           </div>
         </div>
-        {error && (
-          <div className="mailpoet-automation-editor-step-footer">
+        <div className="mailpoet-automation-editor-step-footer">
+          {filterCount > 0 && <StepFilters filterCount={filterCount} />}
+          {error && (
             <div className="mailpoet-automation-editor-step-error">
-              <Chip size="small">{__('Not set', 'mailpoet')}</Chip>
+              <Chip variant="danger" size="small">
+                {__('Not set', 'mailpoet')}
+              </Chip>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </CompositeItem>
     </div>
   );

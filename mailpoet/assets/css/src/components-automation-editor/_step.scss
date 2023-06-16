@@ -66,12 +66,10 @@
 }
 
 .mailpoet-automation-editor-step-footer {
+  column-gap: 4px;
   display: flex;
   grid-column: 1 / -1;
-}
-
-.mailpoet-automation-editor-step-error {
-  margin-left: auto;
+  justify-content: flex-end;
 }
 
 .mailpoet-automation-colored-icon {

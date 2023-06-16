@@ -1,4 +1,5 @@
 button.components-button.mailpoet-automation-filters-panel-add-filter {
+  margin-top: 16px;
   padding-right: 12px;
 
   &.has-icon > svg {
@@ -9,7 +10,6 @@ button.components-button.mailpoet-automation-filters-panel-add-filter {
 .mailpoet-automation-filters-list {
   display: grid;
   gap: 12px;
-  margin-bottom: 16px;
 }
 
 .mailpoet-automation-filters-list-group-operator {
