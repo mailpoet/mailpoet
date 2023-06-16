@@ -82,6 +82,16 @@ declare module '@woocommerce/blocks-checkout' {
   function registerCheckoutBlock(options: CheckoutBlockOptions): void;
 }
 
+type WooCommerceStoreConfig = {
+  precision: number | string | null;
+  decimalSeparator: string;
+  thousandSeparator: string;
+  code: string;
+  symbol: string;
+  symbolPosition: 'left' | 'right' | 'left_space' | 'right_space';
+  priceFormat?: string;
+} | undefined
+
 interface Window {
   ajaxurl: string;
   mailpoet_token: string;
@@ -91,6 +101,7 @@ interface Window {
   mailpoet_premium_version: string;
   mailpoet_premium_link: string;
   mailpoet_woocommerce_active: boolean;
+  mailpoet_woocommerce_store_config: WooCommerceStoreConfig;
   mailpoet_woocommerce_version: string;
   mailpoet_track_wizard_loaded_via_woocommerce: boolean;
   mailpoet_premium_active: boolean;

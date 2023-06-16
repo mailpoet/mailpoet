@@ -22,6 +22,7 @@ export const MailPoet = {
   premiumVersion: window.mailpoet_premium_version,
   premiumLink: window.mailpoet_premium_link,
   isWoocommerceActive: window.mailpoet_woocommerce_active,
+  WooCommerceStoreConfig: window.mailpoet_woocommerce_store_config,
   premiumActive: window.mailpoet_premium_active,
   subscribersLimit: window.mailpoet_subscribers_limit,
   subscribersLimitReached: window.mailpoet_subscribers_limit_reached,
