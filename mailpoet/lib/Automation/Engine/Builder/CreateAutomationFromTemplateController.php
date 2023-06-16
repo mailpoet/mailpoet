@@ -5,32 +5,32 @@ namespace MailPoet\Automation\Engine\Builder;
 use MailPoet\Automation\Engine\Data\Automation;
 use MailPoet\Automation\Engine\Exceptions;
 use MailPoet\Automation\Engine\Exceptions\InvalidStateException;
+use MailPoet\Automation\Engine\Registry;
 use MailPoet\Automation\Engine\Storage\AutomationStorage;
-use MailPoet\Automation\Engine\Storage\AutomationTemplateStorage;
 use MailPoet\Automation\Engine\Validation\AutomationValidator;
 
 class CreateAutomationFromTemplateController {
   /** @var AutomationStorage */
   private $storage;
 
-  /** @var AutomationTemplateStorage  */
-  private $templateStorage;
-
   /** @var AutomationValidator */
   private $automationValidator;
 
+  /** @var Registry */
+  private $registry;
+
   public function __construct(
     AutomationStorage $storage,
-    AutomationTemplateStorage $templateStorage,
-    AutomationValidator $automationValidator
+    AutomationValidator $automationValidator,
+    Registry $registry
   ) {
     $this->storage = $storage;
-    $this->templateStorage = $templateStorage;
     $this->automationValidator = $automationValidator;
+    $this->registry = $registry;
   }
 
   public function createAutomation(string $slug): Automation {
-    $template = $this->templateStorage->getTemplateBySlug($slug);
+    $template = $this->registry->getTemplate($slug);
     if (!$template) {
       throw Exceptions::automationTemplateNotFound($slug);
     }

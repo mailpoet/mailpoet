@@ -4,7 +4,7 @@ namespace MailPoet\AdminPages\Pages;
 
 use MailPoet\AdminPages\PageRenderer;
 use MailPoet\Automation\Engine\Data\AutomationTemplate;
-use MailPoet\Automation\Engine\Storage\AutomationTemplateStorage;
+use MailPoet\Automation\Engine\Registry;
 use MailPoet\Form\AssetsController;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -15,8 +15,8 @@ class AutomationTemplates {
   /** @var PageRenderer */
   private $pageRenderer;
 
-  /** @var AutomationTemplateStorage  */
-  private $templateStorage;
+  /** @var Registry  */
+  private $registry;
 
   /** @var WPFunctions */
   private $wp;
@@ -24,12 +24,12 @@ class AutomationTemplates {
   public function __construct(
     AssetsController $assetsController,
     PageRenderer $pageRenderer,
-    AutomationTemplateStorage $templateStorage,
+    Registry $registry,
     WPFunctions $wp
   ) {
     $this->assetsController = $assetsController;
     $this->pageRenderer = $pageRenderer;
-    $this->templateStorage = $templateStorage;
+    $this->registry = $registry;
     $this->wp = $wp;
   }
 
@@ -48,7 +48,7 @@ class AutomationTemplates {
           function(AutomationTemplate $template): array {
             return $template->toArray();
           },
-          $this->templateStorage->getTemplates()
+          array_values($this->registry->getTemplates())
         ),
       ]
     );
