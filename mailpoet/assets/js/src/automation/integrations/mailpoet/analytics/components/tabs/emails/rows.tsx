@@ -1,12 +1,13 @@
-import {EmailStats} from "../../../store";
 import {__, sprintf} from "@wordpress/i18n";
+import {EmailStats} from "../../../store";
 import {Actions} from "./actions";
 import {locale} from "../../../../../../config";
 import {Cell} from "./cell";
+import {formattedPrice} from "../../../formatter";
 
 const percentageFormatter = Intl.NumberFormat(locale.toString(), { style: 'percent', maximumFractionDigits: 2 });
 
-function calculatePercentage(value: number, base: number, canBeNegative: boolean = false) : number {
+function calculatePercentage(value: number, base: number, canBeNegative = false) : number {
   if (base === 0) {
     return 0;
   }
@@ -17,7 +18,9 @@ function calculatePercentage(value: number, base: number, canBeNegative: boolean
 function percentageBadgeCalculation(percentage:number) : {badge: string, badgeType: string} {
   if (percentage > 3) {
     return {badge: __('Excellent', 'mailpoet'), badgeType: 'mailpoet-analytics-badge-success'}
-  } else if (percentage > 1) {
+  }
+
+  if (percentage > 1) {
     return {badge: __('Good', 'mailpoet'), badgeType: 'mailpoet-analytics-badge-success'}
   }
   return {badge: __('Average', 'mailpoet'), badgeType: 'mailpoet-analytics-badge-warning'}
@@ -78,7 +81,7 @@ export function transformEmailsToRows(emails: EmailStats[]) {
       },
       {
         display: <Cell
-          value={email.revenue_formatted.current}
+          value={formattedPrice(email.revenue.current)}
         />,
         value: email.revenue.current
       },
