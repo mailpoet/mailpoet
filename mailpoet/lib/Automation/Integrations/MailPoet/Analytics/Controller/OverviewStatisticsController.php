@@ -11,7 +11,6 @@ use MailPoet\Entities\StatisticsOpenEntity;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Statistics\NewsletterStatisticsRepository;
 use MailPoet\Newsletter\Statistics\WooCommerceRevenue;
-use MailPoet\WooCommerce\Helper;
 
 class OverviewStatisticsController {
   /** @var NewslettersRepository */
@@ -20,27 +19,16 @@ class OverviewStatisticsController {
   /** @var NewsletterStatisticsRepository */
   private $newsletterStatisticsRepository;
 
-  /** @var Helper */
-  private $wooCommerceHelper;
-
   public function __construct(
     NewslettersRepository $newslettersRepository,
-    NewsletterStatisticsRepository $newsletterStatisticsRepository,
-    Helper $wooCommerceHelper
+    NewsletterStatisticsRepository $newsletterStatisticsRepository
   ) {
     $this->newslettersRepository = $newslettersRepository;
     $this->newsletterStatisticsRepository = $newsletterStatisticsRepository;
-    $this->wooCommerceHelper = $wooCommerceHelper;
   }
 
   public function getStatisticsForAutomation(Automation $automation, Query $query): array {
     $emails = $this->getEmailsFromAutomation($automation);
-    $formattedEmptyRevenue = $this->wooCommerceHelper->getRawPrice(
-      0,
-      [
-        'currency' => $this->wooCommerceHelper->getWoocommerceCurrency(),
-      ]
-    );
     $data = [
       'sent' => ['current' => 0, 'previous' => 0],
       'opened' => ['current' => 0, 'previous' => 0],
@@ -48,10 +36,6 @@ class OverviewStatisticsController {
       'orders' => ['current' => 0, 'previous' => 0],
       'unsubscribed' => ['current' => 0, 'previous' => 0],
       'revenue' => ['current' => 0, 'previous' => 0],
-      'revenue_formatted' => [
-        'current' => $formattedEmptyRevenue,
-        'previous' => $formattedEmptyRevenue,
-      ],
       'emails' => [],
     ];
     if (!$emails) {
@@ -87,12 +71,6 @@ class OverviewStatisticsController {
       $data['emails'][$newsletterId]['unsubscribed']['current'] = $statistic->getUnsubscribeCount();
       $data['emails'][$newsletterId]['orders']['current'] = $statistic->getWooCommerceRevenue() ? $statistic->getWooCommerceRevenue()->getOrdersCount() : 0;
       $data['emails'][$newsletterId]['revenue']['current'] = $statistic->getWooCommerceRevenue() ? $statistic->getWooCommerceRevenue()->getValue() : 0;
-      $data['emails'][$newsletterId]['revenue_formatted']['current'] = $this->wooCommerceHelper->getRawPrice(
-        $data['emails'][$newsletterId]['revenue']['current'],
-        [
-          'currency' => $this->wooCommerceHelper->getWoocommerceCurrency(),
-        ]
-      );
       $data['emails'][$newsletterId]['order'] = count($data['emails']);
     }
 
@@ -116,27 +94,7 @@ class OverviewStatisticsController {
       $data['emails'][$newsletterId]['unsubscribed']['previous'] = $statistic->getUnsubscribeCount();
       $data['emails'][$newsletterId]['orders']['previous'] = $statistic->getWooCommerceRevenue() ? $statistic->getWooCommerceRevenue()->getOrdersCount() : 0;
       $data['emails'][$newsletterId]['revenue']['previous'] = $statistic->getWooCommerceRevenue() ? $statistic->getWooCommerceRevenue()->getValue() : 0;
-      $data['emails'][$newsletterId]['revenue_formatted']['current'] = $this->wooCommerceHelper->getRawPrice(
-        $data['emails'][$newsletterId]['revenue']['current'],
-        [
-          'currency' => $this->wooCommerceHelper->getWoocommerceCurrency(),
-        ]
-      );
     }
-
-    $data['revenue_formatted']['current'] = $this->wooCommerceHelper->getRawPrice(
-      $data['revenue']['current'],
-      [
-        'currency' => $this->wooCommerceHelper->getWoocommerceCurrency(),
-      ]
-    );
-
-    $data['revenue_formatted']['previous'] = $this->wooCommerceHelper->getRawPrice(
-      $data['revenue']['previous'],
-      [
-        'currency' => $this->wooCommerceHelper->getWoocommerceCurrency(),
-      ]
-    );
 
     return $data;
   }

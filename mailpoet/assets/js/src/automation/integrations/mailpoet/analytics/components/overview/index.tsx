@@ -8,6 +8,7 @@ import { select, useSelect } from '@wordpress/data';
 import { MailPoet } from '../../../../../../mailpoet';
 import { OverviewSection, storeName } from '../../store';
 import { locale } from '../../../../../config';
+import {formattedPrice} from "../../formatter";
 
 function getEmailPercentage(
   type: 'opened' | 'clicked',
@@ -119,7 +120,7 @@ export function Overview(): JSX.Element | null {
         key="overview-revenue"
         label={__('Revenue', 'mailpoet')}
         delta={getWooCommerceDelta('revenue').toFixed(2) as unknown as number}
-        value={overview.data?.revenue_formatted?.current}
+        value={formattedPrice(overview.data !== undefined ? overview.data.revenue.current : 0)}
       />,
     );
   }

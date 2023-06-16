@@ -22,7 +22,6 @@ export type EmailStats = {
   clicked: CurrentAndPrevious;
   orders: CurrentAndPrevious;
   revenue: CurrentAndPrevious;
-  revenue_formatted: CurrentAndPrevious;
   unsubscribed: CurrentAndPrevious;
 };
 
@@ -32,7 +31,6 @@ type OverviewSectionData = SectionData & {
   orders: CurrentAndPrevious;
   unsubscribed: CurrentAndPrevious;
   revenue: CurrentAndPrevious;
-  revenue_formatted: CurrentAndPrevious;
   sent: CurrentAndPrevious;
   emails: Record<string, EmailStats>;
 };
