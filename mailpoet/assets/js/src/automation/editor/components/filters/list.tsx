@@ -13,7 +13,11 @@ import {
   FilterGroupOperatorChangeType,
 } from '../../../types/filters';
 
-export function FiltersList(): JSX.Element | null {
+type Props = {
+  allowDelete?: boolean;
+};
+
+export function FiltersList({ allowDelete = true }: Props): JSX.Element | null {
   const [showPremiumModal, setShowPremiumModal] = useState(false);
 
   const { step, fields, filters } = useSelect(
@@ -103,13 +107,15 @@ export function FiltersList(): JSX.Element | null {
                   </span>{' '}
                   <Value filter={filter} />
                 </div>
-                <Button
-                  className="mailpoet-automation-filters-list-item-remove"
-                  isSmall
-                  onClick={() => onDelete(step.id, filter)}
-                >
-                  <Icon icon={closeSmall} />
-                </Button>
+                {allowDelete && (
+                  <Button
+                    className="mailpoet-automation-filters-list-item-remove"
+                    isSmall
+                    onClick={() => onDelete(step.id, filter)}
+                  >
+                    <Icon icon={closeSmall} />
+                  </Button>
+                )}
               </div>
             ))}
           </div>
