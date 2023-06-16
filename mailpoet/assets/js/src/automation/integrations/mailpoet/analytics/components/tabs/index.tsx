@@ -23,20 +23,24 @@ export function Tabs(): JSX.Element {
   const tabs = [
     {
       name: 'automation-flow',
+      className: 'mailpoet-analytics-tab-flow',
       title: __('Automation flow', 'mailpoet'),
     },
   ];
   if (hasEmails) {
     tabs.push({
       name: 'automation-emails',
+      className: 'mailpoet-analytics-tab-emails',
       title: __('Emails', 'mailpoet'),
     });
     tabs.push({
       name: 'automation-orders',
+      className: 'mailpoet-analytics-tab-orders',
       title: _x('Orders', 'WooCommerce orders', 'mailpoet'),
     });
     tabs.push({
       name: 'automation-subscribers',
+      className: 'mailpoet-analytics-tab-subscribers',
       title: __('Subscribers', 'mailpoet'),
     });
   }

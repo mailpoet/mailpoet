@@ -1,3 +1,4 @@
+import {Tooltip} from "@wordpress/components";
 import {__, sprintf} from "@wordpress/i18n";
 import {EmailStats} from "../../../store";
 import {Actions} from "./actions";
@@ -27,6 +28,12 @@ function percentageBadgeCalculation(percentage:number) : {badge: string, badgeTy
 }
 
 export function transformEmailsToRows(emails: EmailStats[]) {
+
+  const openOrders = () => {
+    const tab: HTMLButtonElement | null = document.querySelector('.mailpoet-analytics-tab-orders');
+    tab?.click();
+  }
+
   return emails.map((email) => {
 
     // Shows the percentage of clicked emails compared to the number of sent emails
@@ -45,7 +52,7 @@ export function transformEmailsToRows(emails: EmailStats[]) {
       },
       {
         display: <Cell
-          value={email.sent.current}
+          value={<Tooltip text={__('View sending status', 'mailpoet')}><a href={`?page=mailpoet-newsletters#/sending-status/${email.id}`}>{email.sent.current}</a></Tooltip>}
           subValue={
             // Shows the percentage of sent emails compared to the previous email
             percentageFormatter.format(calculatePercentage(email.sent.current, email.sent.previous, true)/100)
@@ -75,7 +82,18 @@ export function transformEmailsToRows(emails: EmailStats[]) {
       },
       {
         display: <Cell
-          value={email.orders.current}
+          value={
+          <Tooltip text={__('View orders', 'mailpoet')}>
+            <a href="#" onClick={
+              (e) => {
+                e.preventDefault();
+                openOrders()
+              }
+            }>{
+              email.orders.current
+            }
+            </a>
+          </Tooltip>}
         />,
         value: email.orders.current
       },
@@ -92,7 +110,7 @@ export function transformEmailsToRows(emails: EmailStats[]) {
         value: email.unsubscribed.current
       },
       {
-        display: <Actions id={email.id} />,
+        display: <Actions id={email.id} previewUrl={email.previewUrl} />,
         value: null
       },
     ]
