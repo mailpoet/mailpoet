@@ -208,6 +208,20 @@ class AutomationTemplateStorage {
       AutomationTemplate::TYPE_DEFAULT
     );
 
+    $abandonedCartCampaign = new AutomationTemplate(
+      'abandoned-cart',
+      AutomationTemplate::CATEGORY_ABANDONED_CART,
+      __(
+        "Encourage your potential customers to finalize their purchase when they have added items to their cart but haven't finished the order yet. Offer a coupon code as a last resort to convert them to customers.",
+        'mailpoet'
+      ),
+      $this->builder->createFromSequence(
+        __('Abandoned cart campaign', 'mailpoet'),
+        []
+      ),
+      AutomationTemplate::TYPE_COMING_SOON
+    );
+
     $templates = $this->wp->applyFilters(Hooks::AUTOMATION_TEMPLATES, [
       $subscriberWelcomeEmail,
       $userWelcomeEmail,
@@ -216,6 +230,7 @@ class AutomationTemplateStorage {
       $firstPurchase,
       $loyalCustomers,
       $abandonedCart,
+      $abandonedCartCampaign,
     ]);
     return is_array($templates) ? $templates : [];
   }
