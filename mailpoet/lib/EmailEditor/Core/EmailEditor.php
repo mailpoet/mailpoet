@@ -7,8 +7,11 @@ namespace MailPoet\EmailEditor\Core;
  * See register_post_type for details about EmailPostType args.
  */
 class EmailEditor {
+  private const ALLOWED_BLOCK_TYPES = ['core/paragraph', 'core/heading', 'core/column', 'core/columns'];
+
   public function initialize(): void {
     $this->registerEmailPostTypes();
+    add_filter('allowed_block_types_all', [$this, 'setAllowedBlocksInEmails'], 100, 2);
   }
 
   private function registerEmailPostTypes() {
@@ -39,5 +42,18 @@ class EmailEditor {
       'has_archive' => true,
       'show_in_rest' => true, // Important to enable Gutenberg editor
     ];
+  }
+
+  /**
+   * @param string[]|bool $allowedBlockTypes
+   * @param \WP_Block_Editor_Context $blockEditorContext
+   * @return array|bool
+   */
+  public function setAllowedBlocksInEmails($allowedBlockTypes, \WP_Block_Editor_Context $blockEditorContext) {
+    $emailPostTypes = array_column($this->getPostTypes(), 'name');
+    if (!$blockEditorContext->post || !in_array($blockEditorContext->post->post_type, $emailPostTypes, true)) {
+      return $allowedBlockTypes;
+    }
+    return self::ALLOWED_BLOCK_TYPES;
   }
 }
