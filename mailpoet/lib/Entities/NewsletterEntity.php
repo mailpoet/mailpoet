@@ -114,6 +114,12 @@ class NewsletterEntity {
   private $preheader = '';
 
   /**
+   * @ORM\Column(type="integer", nullable=true)
+   * @var int|null
+   */
+  private $wpPostId;
+
+  /**
    * @ORM\Column(type="json", nullable=true)
    * @var array|null
    */
@@ -270,6 +276,10 @@ class NewsletterEntity {
    */
   public function getStatus() {
     return $this->status;
+  }
+
+  public function getWpPostId(): ?int {
+    return $this->wpPostId;
   }
 
   /**
