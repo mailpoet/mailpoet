@@ -11,6 +11,7 @@ use MailPoet\Entities\StatisticsOpenEntity;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Statistics\NewsletterStatisticsRepository;
 use MailPoet\Newsletter\Statistics\WooCommerceRevenue;
+use MailPoet\Newsletter\Url as NewsletterUrl;
 
 class OverviewStatisticsController {
   /** @var NewslettersRepository */
@@ -19,12 +20,17 @@ class OverviewStatisticsController {
   /** @var NewsletterStatisticsRepository */
   private $newsletterStatisticsRepository;
 
+  /** @var NewsletterUrl */
+  private $newsletterUrl;
+
   public function __construct(
     NewslettersRepository $newslettersRepository,
-    NewsletterStatisticsRepository $newsletterStatisticsRepository
+    NewsletterStatisticsRepository $newsletterStatisticsRepository,
+    NewsletterUrl $newsletterUrl
   ) {
     $this->newslettersRepository = $newslettersRepository;
     $this->newsletterStatisticsRepository = $newsletterStatisticsRepository;
+    $this->newsletterUrl = $newsletterUrl;
   }
 
   public function getStatisticsForAutomation(Automation $automation, Query $query): array {
@@ -71,6 +77,7 @@ class OverviewStatisticsController {
       $data['emails'][$newsletterId]['unsubscribed']['current'] = $statistic->getUnsubscribeCount();
       $data['emails'][$newsletterId]['orders']['current'] = $statistic->getWooCommerceRevenue() ? $statistic->getWooCommerceRevenue()->getOrdersCount() : 0;
       $data['emails'][$newsletterId]['revenue']['current'] = $statistic->getWooCommerceRevenue() ? $statistic->getWooCommerceRevenue()->getValue() : 0;
+      $data['emails'][$newsletterId]['previewUrl'] = $this->newsletterUrl->getViewInBrowserUrl($newsletter);
       $data['emails'][$newsletterId]['order'] = count($data['emails']);
     }
 

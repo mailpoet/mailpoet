@@ -17,6 +17,7 @@ export type EmailStats = {
   id: number;
   order: number;
   name: string;
+  previewUrl: string;
   sent: CurrentAndPrevious;
   opened: CurrentAndPrevious;
   clicked: CurrentAndPrevious;
