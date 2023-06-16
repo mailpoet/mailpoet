@@ -1,8 +1,8 @@
 .mailpoet-automation-chip {
   align-items: center;
-  background: #fcf0f1;
+  background: #f0f0f1;
   border-radius: 9999px;
-  color: #8a2424;
+  color: #2c3338;
   cursor: pointer;
   display: flex;
   font-size: 13px;
@@ -23,5 +23,10 @@
     font-size: 14px;
     height: 32px;
     padding: 0 12px;
+  }
+
+  &.chip-danger {
+    background: #fcf0f1;
+    color: #8a2424;
   }
 }
