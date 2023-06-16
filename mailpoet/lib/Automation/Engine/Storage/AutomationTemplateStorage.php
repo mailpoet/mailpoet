@@ -4,12 +4,10 @@ namespace MailPoet\Automation\Engine\Storage;
 
 use MailPoet\Automation\Engine\Data\AutomationTemplate;
 use MailPoet\Automation\Engine\Hooks;
-use MailPoet\Automation\Integrations\MailPoet\Templates\AutomationBuilder;
+use MailPoet\Automation\Engine\Templates\AutomationBuilder;
 use MailPoet\WP\Functions as WPFunctions;
 
 class AutomationTemplateStorage {
-
-
   /** @var AutomationTemplate[]  */
   private $templates = [];
 
