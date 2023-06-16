@@ -282,6 +282,10 @@ class NewsletterEntity {
     return $this->wpPostId;
   }
 
+  public function setWpPostId(?int $wpPostId): void {
+    $this->wpPostId = $wpPostId;
+  }
+
   /**
    * @param string $status
    */

@@ -1,11 +1,14 @@
 <?php declare(strict_types = 1);
 
-namespace MailPoet\Migrations;
+namespace MailPoet\Migrations\Db;
 
 use MailPoet\Entities\NewsletterEntity;
-use MailPoet\Migrator\Migration;
+use MailPoet\Migrator\DbMigration;
 
-class Migration_20230616_130221 extends Migration {
+/**
+ * This migration was created on 2023/06/16 but needs to be renamed to precede 20230419 which fails when the column is missing.
+ */
+class Migration_20230716_130221_Db extends DbMigration {
   public function run(): void {
     $tableName = $this->getTableName(NewsletterEntity::class);
     if (!$this->columnExists($tableName, 'wp_post_id')) {
