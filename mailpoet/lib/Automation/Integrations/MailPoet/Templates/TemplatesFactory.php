@@ -23,7 +23,21 @@ class TemplatesFactory {
   }
 
   public function createTemplates(): array {
-    $subscriberWelcomeEmail = new AutomationTemplate(
+    $templates = $this->wp->applyFilters(Hooks::AUTOMATION_TEMPLATES, [
+      $this->createSubscriberWelcomeEmailTemplate(),
+      $this->createUserWelcomeEmailTemplate(),
+      $this->createSubscriberWelcomeSeriesTemplate(),
+      $this->createUserWelcomeSeriesTemplate(),
+      $this->createFirstPurchaseTemplate(),
+      $this->createLoyalCustomersTemplate(),
+      $this->createAbandonedCartTemplate(),
+      $this->createAbandonedCartCampaignTemplate(),
+    ]);
+    return is_array($templates) ? $templates : [];
+  }
+
+  private function createSubscriberWelcomeEmailTemplate(): AutomationTemplate {
+    return new AutomationTemplate(
       'subscriber-welcome-email',
       AutomationTemplate::CATEGORY_WELCOME,
       __(
@@ -43,8 +57,10 @@ class TemplatesFactory {
       ),
       AutomationTemplate::TYPE_FREE_ONLY
     );
+  }
 
-    $userWelcomeEmail = new AutomationTemplate(
+  private function createUserWelcomeEmailTemplate(): AutomationTemplate {
+    return new AutomationTemplate(
       'user-welcome-email',
       AutomationTemplate::CATEGORY_WELCOME,
       __(
@@ -64,8 +80,10 @@ class TemplatesFactory {
       ),
       AutomationTemplate::TYPE_FREE_ONLY
     );
+  }
 
-    $subscriberWelcomeSeries = new AutomationTemplate(
+  private function createSubscriberWelcomeSeriesTemplate(): AutomationTemplate {
+    return new AutomationTemplate(
       'subscriber-welcome-series',
       AutomationTemplate::CATEGORY_WELCOME,
       __(
@@ -78,8 +96,10 @@ class TemplatesFactory {
       ),
       AutomationTemplate::TYPE_PREMIUM
     );
+  }
 
-    $userWelcomeSeries = new AutomationTemplate(
+  private function createUserWelcomeSeriesTemplate(): AutomationTemplate {
+    return new AutomationTemplate(
       'user-welcome-series',
       AutomationTemplate::CATEGORY_WELCOME,
       __(
@@ -92,8 +112,10 @@ class TemplatesFactory {
       ),
       AutomationTemplate::TYPE_PREMIUM
     );
+  }
 
-    $firstPurchase = new AutomationTemplate(
+  private function createFirstPurchaseTemplate(): AutomationTemplate {
+    return new AutomationTemplate(
       'first-purchase',
       AutomationTemplate::CATEGORY_WOOCOMMERCE,
       __(
@@ -135,8 +157,10 @@ class TemplatesFactory {
       ),
       AutomationTemplate::TYPE_DEFAULT
     );
+  }
 
-    $loyalCustomers = new AutomationTemplate(
+  private function createLoyalCustomersTemplate(): AutomationTemplate {
+    return new AutomationTemplate(
       'loyal-customers',
       AutomationTemplate::CATEGORY_WOOCOMMERCE,
       __(
@@ -149,8 +173,10 @@ class TemplatesFactory {
       ),
       AutomationTemplate::TYPE_COMING_SOON
     );
+  }
 
-    $abandonedCart = new AutomationTemplate(
+  private function createAbandonedCartTemplate(): AutomationTemplate {
+    return new AutomationTemplate(
       'abandoned-cart',
       AutomationTemplate::CATEGORY_ABANDONED_CART,
       __(
@@ -172,9 +198,11 @@ class TemplatesFactory {
       ),
       AutomationTemplate::TYPE_DEFAULT
     );
+  }
 
-    $abandonedCartCampaign = new AutomationTemplate(
-      'abandoned-cart',
+  private function createAbandonedCartCampaignTemplate(): AutomationTemplate {
+    return new AutomationTemplate(
+      'abandoned-cart-campaign',
       AutomationTemplate::CATEGORY_ABANDONED_CART,
       __(
         "Encourage your potential customers to finalize their purchase when they have added items to their cart but haven't finished the order yet. Offer a coupon code as a last resort to convert them to customers.",
@@ -186,17 +214,5 @@ class TemplatesFactory {
       ),
       AutomationTemplate::TYPE_COMING_SOON
     );
-
-    $templates = $this->wp->applyFilters(Hooks::AUTOMATION_TEMPLATES, [
-      $subscriberWelcomeEmail,
-      $userWelcomeEmail,
-      $subscriberWelcomeSeries,
-      $userWelcomeSeries,
-      $firstPurchase,
-      $loyalCustomers,
-      $abandonedCart,
-      $abandonedCartCampaign,
-    ]);
-    return is_array($templates) ? $templates : [];
   }
 }
