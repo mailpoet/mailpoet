@@ -31,8 +31,6 @@ class Hooks {
 
   public const AUTOMATION_RUN_CREATE = 'mailpoet/automation/run/create';
 
-  public const AUTOMATION_TEMPLATES = 'mailpoet/automation/templates';
-
   public function doAutomationBeforeSave(Automation $automation): void {
     $this->wordPress->doAction(self::AUTOMATION_BEFORE_SAVE, $automation);
   }
