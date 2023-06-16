@@ -4,27 +4,20 @@ namespace MailPoet\Automation\Integrations\MailPoet\Templates;
 
 use MailPoet\Automation\Engine\Data\Automation;
 use MailPoet\Automation\Engine\Data\AutomationTemplate;
-use MailPoet\Automation\Engine\Hooks;
 use MailPoet\Automation\Engine\Templates\AutomationBuilder;
-use MailPoet\Automation\Engine\WordPress;
 
 class TemplatesFactory {
   /** @var AutomationBuilder */
   private $builder;
 
-  /** @var WordPress */
-  private $wp;
-
   public function __construct(
-    AutomationBuilder $builder,
-    WordPress $wp
+    AutomationBuilder $builder
   ) {
     $this->builder = $builder;
-    $this->wp = $wp;
   }
 
   public function createTemplates(): array {
-    $templates = $this->wp->applyFilters(Hooks::AUTOMATION_TEMPLATES, [
+    return [
       $this->createSubscriberWelcomeEmailTemplate(),
       $this->createUserWelcomeEmailTemplate(),
       $this->createSubscriberWelcomeSeriesTemplate(),
@@ -33,8 +26,7 @@ class TemplatesFactory {
       $this->createLoyalCustomersTemplate(),
       $this->createAbandonedCartTemplate(),
       $this->createAbandonedCartCampaignTemplate(),
-    ]);
-    return is_array($templates) ? $templates : [];
+    ];
   }
 
   private function createSubscriberWelcomeEmailTemplate(): AutomationTemplate {
