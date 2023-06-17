@@ -42,8 +42,17 @@ class PrivacyPolicy {
     if ($helper->isWooCommerceActive()) {
       $content .= (
         '<p> ' .
-          __('MailPoet creates and stores two cookies if you are using WooCommerce and MailPoet together. Those cookies are:', 'mailpoet') .
+          __('MailPoet creates and stores three cookies if you are using WooCommerce and MailPoet together. Those cookies are:', 'mailpoet') .
         '</p>' .
+        '<p>' .
+          // translators: %s is the name of the cookie.
+          sprintf(__('Cookie name: %s', 'mailpoet'), 'mailpoet_page_view' ) .
+          '<br>' .
+          // translators: %s is the number of days.
+          sprintf(__('Cookie expiry: %s days.', 'mailpoet'), WPFunctions::get()->numberFormatI18n(3650) ) .
+          '<br>' .
+          __('Cookie description: The purpose of this cookie is to track the last time a subscriber viewed any page on the site.', 'mailpoet') .
+        '</p> ' .
         '<p>' .
           // translators: %s is the name of the cookie.
           sprintf(__('Cookie name: %s', 'mailpoet'), 'mailpoet_revenue_tracking' ) .
@@ -55,12 +64,12 @@ class PrivacyPolicy {
         '</p> ' .
         '<p>' .
           // translators: %s is the name of the cookie.
-          sprintf(__('Cookie name: %s', 'mailpoet'), 'mailpoet_abandoned_cart_tracking' ) .
+          sprintf(__('Cookie name: %s', 'mailpoet'), 'mailpoet_subscriber' ) .
           '<br>' .
           // translators: %s is the number of days.
           sprintf(__('Cookie expiry: %s days.', 'mailpoet'), WPFunctions::get()->numberFormatI18n(3650) ) .
           '<br>' .
-          __('Cookie description: The purpose of this cookie is to track a user that has abandoned their cart in your WooCommerce store to then be able to send them an abandoned cart newsletter from MailPoet.', 'mailpoet') .
+          __('Cookie description: The purpose of this cookie is to track subscriber engagement. It is used when the user logs in, signs up in a form, confirms subscription to a newsletter, or places an order through WooCommerce.', 'mailpoet') .
           '<br>' .
           '<br>' .
           __('Note: User must be opted-in and a confirmed subscriber.', 'mailpoet') .
