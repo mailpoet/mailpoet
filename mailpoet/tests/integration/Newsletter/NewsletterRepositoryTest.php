@@ -21,6 +21,7 @@ use MailPoet\Entities\StatsNotificationEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Newsletter\Sending\ScheduledTaskSubscribersRepository;
 use MailPoet\Tasks\Sending as SendingTask;
+use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 
 class NewsletterRepositoryTest extends \MailPoetTest {
@@ -30,10 +31,14 @@ class NewsletterRepositoryTest extends \MailPoetTest {
   /** @var ScheduledTaskSubscribersRepository */
   private $taskSubscribersRepository;
 
+  /** @var WPFunctions */
+  private $wp;
+
   public function _before() {
     parent::_before();
     $this->repository = $this->diContainer->get(NewslettersRepository::class);
     $this->taskSubscribersRepository = $this->diContainer->get(ScheduledTaskSubscribersRepository::class);
+    $this->wp = $this->diContainer->get(WPFunctions::class);
   }
 
   public function testItBulkTrashNewslettersAndChildren() {
@@ -211,6 +216,26 @@ class NewsletterRepositoryTest extends \MailPoetTest {
     $statisticsPurchase = $this->entityManager->find(StatisticsWooCommercePurchaseEntity::class, $statisticsPurchase->getId());
     $this->assertNotNull($statisticsPurchase);
     expect($statisticsPurchase->getNewsletter())->null();
+  }
+
+  public function testItDeletesWpPostsBulkDelete() {
+    $newsletter1 = $this->createNewsletter(NewsletterEntity::TYPE_STANDARD, NewsletterEntity::STATUS_SENDING);
+    $post1Id = $this->wp->wpInsertPost(['post_title' => 'Post 1']);
+    $newsletter1->setWpPostId($post1Id);
+    $newsletter2 = $this->createNewsletter(NewsletterEntity::TYPE_WELCOME, NewsletterEntity::STATUS_SENDING);
+    $post2Id = $this->wp->wpInsertPost(['post_title' => 'Post 2']);
+    $newsletter2->setWpPostId($post2Id);
+    $newsletter3 = $this->createNewsletter(NewsletterEntity::TYPE_STANDARD, NewsletterEntity::STATUS_SENDING);
+
+    expect($this->wp->getPost($post1Id))->isInstanceOf(\WP_Post::class);
+    expect($this->wp->getPost($post2Id))->isInstanceOf(\WP_Post::class);
+
+    $this->entityManager->flush();
+    $this->entityManager->clear();
+
+    $this->repository->bulkDelete([$newsletter1->getId(), $newsletter2->getId(), $newsletter3->getId()]);
+    expect($this->wp->getPost($post1Id))->null();
+    expect($this->wp->getPost($post2Id))->null();
   }
 
   public function testItGetsArchiveNewslettersForSegments() {

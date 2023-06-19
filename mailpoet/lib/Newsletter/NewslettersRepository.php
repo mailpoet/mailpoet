@@ -23,6 +23,7 @@ use MailPoet\Entities\StatisticsOpenEntity;
 use MailPoet\Entities\StatisticsWooCommercePurchaseEntity;
 use MailPoet\Entities\StatsNotificationEntity;
 use MailPoet\Logging\LoggerFactory;
+use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\DBAL\Connection;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
@@ -35,11 +36,16 @@ class NewslettersRepository extends Repository {
   /** @var LoggerFactory */
   private $loggerFactory;
 
+  /** @var WPFunctions */
+  private $wp;
+
   public function __construct(
-    EntityManager $entityManager
+    EntityManager $entityManager,
+    WPFunctions $wp
   ) {
     parent::__construct($entityManager);
     $this->loggerFactory = LoggerFactory::getInstance();
+    $this->wp = $wp;
   }
 
   protected function getEntityClassName() {
@@ -432,6 +438,18 @@ class NewslettersRepository extends Repository {
          WHERE ns.`newsletter_id` IN (:ids)
       ", ['ids' => $ids], ['ids' => Connection::PARAM_INT_ARRAY]);
 
+      // Fetch WP Posts IDs and delete them
+      $wpPostsIds = $entityManager->createQueryBuilder()->select('n.wpPostId')
+        ->from(NewsletterEntity::class, 'n')
+        ->where('n.id IN (:ids)')
+        ->andWhere('n.wpPostId IS NOT NULL')
+        ->setParameter('ids', $ids)
+        ->getQuery()->getSingleColumnResult();
+      foreach ($wpPostsIds as $wpPostId) {
+        $this->wp->wpDeletePost(intval($wpPostId), true);
+      }
+
+      // Delete newsletter entities
       $queryBuilder = $entityManager->createQueryBuilder();
       $queryBuilder->delete(NewsletterEntity::class, 'n')
         ->where('n.id IN (:ids)')
