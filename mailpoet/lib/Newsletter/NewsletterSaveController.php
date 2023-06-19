@@ -76,7 +76,7 @@ class NewsletterSaveController {
 
   /*** @var NewsletterCoupon */
   private $newsletterCoupon;
-  
+
   public function __construct(
     AuthorizedEmailsController $authorizedEmailsController,
     Emoji $emoji,
@@ -193,6 +193,16 @@ class NewsletterSaveController {
     }
     $this->newslettersRepository->persist($duplicate);
     $this->newslettersRepository->flush();
+
+    // duplicate wp post data
+    $post = $this->wp->getPost($newsletter->getWpPostId());
+    if ($post instanceof \WP_Post) {
+      $newPostId = $this->wp->wpInsertPost([
+        'post_content' => $post->post_content, // @phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+        'post_type' => $post->post_type, // @phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+      ]);
+      $duplicate->setWpPostId($newPostId);
+    }
 
     // create relationships between duplicate and segments
     foreach ($newsletter->getNewsletterSegments() as $newsletterSegment) {
