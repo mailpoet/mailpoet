@@ -82,15 +82,17 @@ declare module '@woocommerce/blocks-checkout' {
   function registerCheckoutBlock(options: CheckoutBlockOptions): void;
 }
 
-type WooCommerceStoreConfig = {
-  precision: number | string | null;
-  decimalSeparator: string;
-  thousandSeparator: string;
-  code: string;
-  symbol: string;
-  symbolPosition: 'left' | 'right' | 'left_space' | 'right_space';
-  priceFormat?: string;
-} | undefined
+type WooCommerceStoreConfig =
+  | {
+      precision: number | string | null;
+      decimalSeparator: string;
+      thousandSeparator: string;
+      code: string;
+      symbol: string;
+      symbolPosition: 'left' | 'right' | 'left_space' | 'right_space';
+      priceFormat?: string;
+    }
+  | undefined;
 
 interface Window {
   ajaxurl: string;
