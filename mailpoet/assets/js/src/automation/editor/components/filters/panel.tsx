@@ -55,12 +55,6 @@ export function FiltersPanel(): JSX.Element {
 
   return (
     <PanelBody initialOpen title={__('Trigger filters', 'mailpoet')}>
-      <div className="mailpoet-automation-panel-description">
-        {__(
-          'The automation would only be started if the following trigger conditions are met:',
-          'mailpoet',
-        )}
-      </div>
       <FiltersList />
       {content(selectedStep)}
     </PanelBody>
