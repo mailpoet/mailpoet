@@ -42,7 +42,7 @@ class SendGridTest extends \MailPoetTest {
       $this->replyTo,
       new SendGridMapper()
     );
-    $this->subscriber = 'Recipient <blackhole@mailpoet.com>';
+    $this->subscriber = 'Recipient <mailpoet@sink.sendgrid.net>';
     $this->newsletter = [
       'subject' => 'testing SendGrid … © & ěščřžýáíéůėę€żąß∂ 😊👨‍👩‍👧‍👧', // try some special chars
       'body' => [
