@@ -82,7 +82,7 @@ export function transformEmailsToRows(emails: EmailStats[]) {
                 <a
                   href={`?page=mailpoet-newsletters#/sending-status/${email.id}`}
                 >
-                  {email.sent.current}
+                  {`${email.sent.current}`}
                 </a>
               </Tooltip>
             }
@@ -145,7 +145,7 @@ export function transformEmailsToRows(emails: EmailStats[]) {
                     openOrders();
                   }}
                 >
-                  {email.orders.current}
+                  {`${email.orders.current}`}
                 </a>
               </Tooltip>
             }
