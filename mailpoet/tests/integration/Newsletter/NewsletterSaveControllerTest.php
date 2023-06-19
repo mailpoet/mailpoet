@@ -15,6 +15,7 @@ use MailPoet\Newsletter\Scheduler\Scheduler;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Tasks\Sending as SendingTask;
+use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 
 class NewsletterSaveControllerTest extends \MailPoetTest {
@@ -312,6 +313,18 @@ class NewsletterSaveControllerTest extends \MailPoetTest {
     expect($duplicate->getHash())->notEquals($newsletter->getHash());
     expect($duplicate->getBody())->equals($newsletter->getBody());
     expect($duplicate->getStatus())->equals(NewsletterEntity::STATUS_DRAFT);
+  }
+
+  public function testItDuplicatesNewsletterWithAssociatedPost() {
+    $newsletter = $this->createNewsletter(NewsletterEntity::TYPE_STANDARD, NewsletterEntity::STATUS_SENT);
+    $wp = $this->diContainer->get(WPFunctions::class);
+    $postId = $wp->wpInsertPost(['post_content' => 'newsletter content']);
+    $newsletter->setWpPostId($postId);
+    $this->entityManager->flush();
+    $duplicate = $this->saveController->duplicate($newsletter);
+    expect($duplicate->getWpPostId())->notEquals($postId);
+    $post = $wp->getPost($duplicate->getWpPostId());
+    expect($post->post_content)->equals('newsletter content'); // @phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
   }
 
   public function testItCreatesNewNewsletter() {
