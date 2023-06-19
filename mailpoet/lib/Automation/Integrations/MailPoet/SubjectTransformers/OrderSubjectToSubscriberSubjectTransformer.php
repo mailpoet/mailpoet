@@ -6,10 +6,10 @@ use MailPoet\Automation\Engine\Data\Subject;
 use MailPoet\Automation\Engine\Integration\SubjectTransformer;
 use MailPoet\Automation\Integrations\MailPoet\Subjects\SubscriberSubject;
 use MailPoet\Automation\Integrations\WooCommerce\Subjects\OrderSubject;
+use MailPoet\Automation\Integrations\WooCommerce\WooCommerce;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Segments;
 use MailPoet\Subscribers\SubscribersRepository;
-use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 
 class OrderSubjectToSubscriberSubjectTransformer implements SubjectTransformer {
 
@@ -19,13 +19,13 @@ class OrderSubjectToSubscriberSubjectTransformer implements SubjectTransformer {
   /** @var Segments\WooCommerce  */
   private $woocommerce;
 
-  /** @var WooCommerceHelper  */
+  /** @var WooCommerce  */
   private $woocommerceHelper;
 
   public function __construct(
     SubscribersRepository $subscribersRepository,
     Segments\WooCommerce $woocommerce,
-    WooCommerceHelper $woocommerceHelper
+    WooCommerce $woocommerceHelper
   ) {
     $this->subscribersRepository = $subscribersRepository;
     $this->woocommerce = $woocommerce;
@@ -74,6 +74,9 @@ class OrderSubjectToSubscriberSubjectTransformer implements SubjectTransformer {
       return null;
     }
     $wcOrder = $this->woocommerceHelper->wcGetOrder($orderId);
+    if (!$wcOrder instanceof \WC_Order) {
+      return null;
+    }
     $billingEmail = $wcOrder->get_billing_email();
     return $billingEmail ?
       $this->subscribersRepository->findOneBy(['email' => $billingEmail]) :

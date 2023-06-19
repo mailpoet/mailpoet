@@ -11,9 +11,9 @@ use MailPoet\Automation\Integrations\WooCommerce\Payloads\OrderStatusChangePaylo
 use MailPoet\Automation\Integrations\WooCommerce\Subjects\CustomerSubject;
 use MailPoet\Automation\Integrations\WooCommerce\Subjects\OrderStatusChangeSubject;
 use MailPoet\Automation\Integrations\WooCommerce\Subjects\OrderSubject;
+use MailPoet\Automation\Integrations\WooCommerce\WooCommerce;
 use MailPoet\Validator\Builder;
 use MailPoet\Validator\Schema\ObjectSchema;
-use MailPoet\WooCommerce;
 use MailPoet\WP\Functions;
 
 class OrderStatusChangedTrigger implements Trigger {
@@ -21,15 +21,15 @@ class OrderStatusChangedTrigger implements Trigger {
   /** @var Functions */
   private $wp;
 
-  /** @var WooCommerce\Helper */
-  private $woocommerceHelper;
+  /** @var WooCommerce */
+  private $woocommerce;
 
   public function __construct(
     Functions $wp,
-    WooCommerce\Helper $woocommerceHelper
+    WooCommerce $woocommerceHelper
   ) {
     $this->wp = $wp;
-    $this->woocommerceHelper = $woocommerceHelper;
+    $this->woocommerce = $woocommerceHelper;
   }
 
   public function getKey(): string {
@@ -71,7 +71,7 @@ class OrderStatusChangedTrigger implements Trigger {
   }
 
   public function handle(int $orderId, string $oldStatus, string $newStatus): void {
-    $order = $this->woocommerceHelper->wcGetOrder($orderId);
+    $order = $this->woocommerce->wcGetOrder($orderId);
     if (!$order instanceof \WC_Order) {
       return;
     }

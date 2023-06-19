@@ -2,28 +2,26 @@
 
 namespace MailPoet\Automation\Integrations\WooCommerce;
 
-use MailPoet\WooCommerce\Helper as WooCommerceHelper;
-
 class ContextFactory {
 
-  /** @var WooCommerceHelper */
-  private $woocommerceHelper;
+  /** @var WooCommerce */
+  private $woocommerce;
 
   public function __construct(
-    WooCommerceHelper $woocommerceHelper
+    WooCommerce $woocommerce
   ) {
-    $this->woocommerceHelper = $woocommerceHelper;
+    $this->woocommerce = $woocommerce;
   }
 
   /** @return mixed[] */
   public function getContextData(): array {
 
-    if (!$this->woocommerceHelper->isWooCommerceActive()) {
+    if (!$this->woocommerce->isWooCommerceActive()) {
       return [];
     }
 
     $context = [
-      'order_statuses' => $this->woocommerceHelper->getOrderStatuses(),
+      'order_statuses' => $this->woocommerce->wcGetOrderStatuses(),
     ];
     return $context;
   }
