@@ -1,9 +1,10 @@
 import { useCallback, useState } from 'react';
 import { Hooks } from 'wp-js-hooks';
-import { Button, RadioControl } from '@wordpress/components';
+import { Button } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 import { __, sprintf } from '@wordpress/i18n';
 import { Icon, closeSmall } from '@wordpress/icons';
+import { ListGroupHeader } from './list-group-header';
 import { Value } from './value';
 import { Filter } from '../automation/types';
 import { storeName } from '../../store';
@@ -14,10 +15,10 @@ import {
 } from '../../../types/filters';
 
 type Props = {
-  allowDelete?: boolean;
+  editable?: boolean;
 };
 
-export function FiltersList({ allowDelete = true }: Props): JSX.Element | null {
+export function FiltersList({ editable = true }: Props): JSX.Element | null {
   const [showPremiumModal, setShowPremiumModal] = useState(false);
 
   const { step, fields, filters } = useSelect(
@@ -72,19 +73,11 @@ export function FiltersList({ allowDelete = true }: Props): JSX.Element | null {
 
       {groups.map((group) => (
         <div key={group.id}>
-          {group.filters.length > 1 && (
-            <RadioControl
-              className="mailpoet-automation-filters-list-group-operator"
-              selected={group.operator}
-              onChange={(value) =>
-                onOperatorChange(step.id, group.id, value as 'and' | 'or')
-              }
-              options={[
-                { label: __('All conditions', 'mailpoet'), value: 'and' },
-                { label: __('Any condition', 'mailpoet'), value: 'or' },
-              ]}
-            />
-          )}
+          <ListGroupHeader
+            editable={editable}
+            group={group}
+            onOperatorChange={onOperatorChange}
+          />
 
           <div className="mailpoet-automation-filters-list">
             {group.filters.map((filter) => (
@@ -107,7 +100,7 @@ export function FiltersList({ allowDelete = true }: Props): JSX.Element | null {
                   </span>{' '}
                   <Value filter={filter} />
                 </div>
-                {allowDelete && (
+                {editable && (
                   <Button
                     className="mailpoet-automation-filters-list-item-remove"
                     isSmall

@@ -12,6 +12,16 @@ button.components-button.mailpoet-automation-filters-panel-add-filter {
   gap: 12px;
 }
 
+.mailpoet-automation-filters-list-group-description {
+  color: #646970;
+  font-size: 13px;
+  margin-bottom: 16px;
+}
+
+.mailpoet-automation-filters-list-group-description-operator {
+  font-weight: 600;
+}
+
 .mailpoet-automation-filters-list-group-operator {
   .components-base-control__field > div {
     display: flex;

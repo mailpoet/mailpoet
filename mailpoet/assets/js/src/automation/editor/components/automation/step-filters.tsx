@@ -21,13 +21,7 @@ export function StepFilters({ filterCount }: Props): JSX.Element {
           <span className="mailpoet-automation-editor-step-filters-title">
             {__('Filters', 'mailpoet')}
           </span>
-          <div className="mailpoet-automation-editor-step-filters-description">
-            {__(
-              'The automation would only be started if the following trigger conditions are met:',
-              'mailpoet',
-            )}
-          </div>
-          <FiltersList allowDelete={false} />
+          <FiltersList editable={false} />
         </div>
       )}
     />
