@@ -82,6 +82,22 @@ class Helper {
     return null;
   }
 
+  public function wcGetPriceDecimals(): int {
+    return wc_get_price_decimals();
+  }
+
+  public function wcGetPriceDecimalSeperator(): string {
+    return wc_get_price_decimal_separator();
+  }
+
+  public function wcGetPriceThousandSeparator(): string {
+    return wc_get_price_thousand_separator();
+  }
+
+  public function getWoocommercePriceFormat(): string {
+    return get_woocommerce_price_format();
+  }
+
   public function getWoocommerceCurrency() {
     return get_woocommerce_currency();
   }
