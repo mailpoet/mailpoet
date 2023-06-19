@@ -6,7 +6,8 @@ import { escapeHTML, escapeAttribute } from '@wordpress/escape-html';
 
 import { Listing } from 'listing/listing.jsx';
 import { SegmentResponse } from 'segments/types';
-import { ListingsEngagementScore } from '../subscribers/listings_engagement_score';
+import { ListingsEngagementScore } from 'subscribers/listings_engagement_score';
+import { ListHeading } from 'segments/heading';
 
 type Segment = {
   type: string;
@@ -364,25 +365,28 @@ class SegmentListComponent extends Component<RouteComponentProps> {
 
   render() {
     return (
-      <div className="mailpoet-segments-listing">
-        <Listing
-          limit={window.mailpoet_listing_per_page}
-          location={this.props.location}
-          params={this.props.match.params}
-          messages={messages}
-          search={false}
-          endpoint="segments"
-          base_url="lists"
-          onRenderItem={this.renderItem}
-          columns={columns}
-          bulk_actions={bulkActions}
-          item_actions={itemActions}
-          sort_by="name"
-          sort_order="asc"
-          isItemDeletable={isItemDeletable}
-          isItemToggleable={isWPUsersSegment}
-        />
-      </div>
+      <>
+        <ListHeading segmentType="static" />
+        <div className="mailpoet-segments-listing">
+          <Listing
+            limit={window.mailpoet_listing_per_page}
+            location={this.props.location}
+            params={this.props.match.params}
+            messages={messages}
+            search={false}
+            endpoint="segments"
+            base_url="lists"
+            onRenderItem={this.renderItem}
+            columns={columns}
+            bulk_actions={bulkActions}
+            item_actions={itemActions}
+            sort_by="name"
+            sort_order="asc"
+            isItemDeletable={isItemDeletable}
+            isItemToggleable={isWPUsersSegment}
+          />
+        </div>
+      </>
     );
   }
 }

@@ -5,6 +5,7 @@ import { MailPoet } from 'mailpoet';
 import { Listing } from 'listing/listing.jsx';
 import { escapeHTML } from '@wordpress/escape-html';
 import { SegmentResponse } from 'segments/types';
+import { ListHeading } from 'segments/heading';
 
 type ColumnType = {
   name: string;
@@ -250,6 +251,7 @@ function DynamicSegmentListComponent(
 ): JSX.Element {
   return (
     <>
+      <ListHeading segmentType="dynamic" />
       <Listing
         limit={window.mailpoet_listing_per_page}
         location={props.location}
