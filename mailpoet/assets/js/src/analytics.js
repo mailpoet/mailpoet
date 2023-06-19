@@ -21,11 +21,11 @@ export function mapFilterType(filter) {
   if (filterType === 'email') {
     switch (action) {
       case 'machineOpensAbsoluteCount':
-        return '# of machine-opens';
+        return 'number of machine-opens';
       case 'opensAbsoluteCount':
-        return '# of opens';
+        return 'number of opens';
       case 'numberOfOrders':
-        return '# of orders';
+        return 'number of orders';
       case 'clicked':
         return 'clicked';
       case 'clickedAny':

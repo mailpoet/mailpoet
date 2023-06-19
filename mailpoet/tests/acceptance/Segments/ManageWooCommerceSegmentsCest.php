@@ -162,7 +162,7 @@ class ManageWooCommerceSegmentsCest {
     $i->click('[data-automation-id="new-segment"]');
     $i->fillField($segmentNameField, $segmentTitle);
     $i->fillField($segmentDescriptionField, $segmentDesc);
-    $i->selectOptionInReactSelect('# of orders', $actionSelectElement);
+    $i->selectOptionInReactSelect('number of orders', $actionSelectElement);
     $i->waitForElement($numberOfOrdersTypeElement);
     $i->selectOption($numberOfOrdersTypeElement, '>');
     $i->fillField($numberOfOrdersCountElement, 2);
@@ -178,7 +178,7 @@ class ManageWooCommerceSegmentsCest {
     $i->waitForElement($numberOfOrdersTypeElement);
     $i->seeInField($segmentNameField, $segmentTitle);
     $i->seeInField($segmentDescriptionField, $segmentDesc);
-    $i->see('# of orders', $actionSelectElement);
+    $i->see('number of orders', $actionSelectElement);
     $i->see('more than', $numberOfOrdersTypeElement);
     $i->seeInField($numberOfOrdersCountElement, '2');
     $i->seeInField($numberOfOrdersDaysElement, '10');
@@ -209,7 +209,7 @@ class ManageWooCommerceSegmentsCest {
     $i->waitForElement($numberOfOrdersTypeElement);
     $i->seeInField($segmentNameField, $editedTitle);
     $i->seeInField($segmentDescriptionField, $editedDesc);
-    $i->see('# of orders', $actionSelectElement);
+    $i->see('number of orders', $actionSelectElement);
     $i->see('equals', $numberOfOrdersTypeElement);
     $i->seeInField($numberOfOrdersCountElement, '4');
     $i->seeInField($numberOfOrdersDaysElement, '20');

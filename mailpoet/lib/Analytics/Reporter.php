@@ -188,9 +188,9 @@ class Reporter {
       'Plugin > Multi Currency for WooCommerce' => $this->wp->isPluginActive('woo-multi-currency/woo-multi-currency.php'),
       'Web host' => $this->settings->get('mta_group') == 'website' ? $this->settings->get('web_host') : null,
       // Dynamic segment filters tracking -- start. If you extend segments tracking, please extend mapping in analytics.js
-      'Segment > # of machine-opens' => $this->isFilterTypeActive(DynamicSegmentFilterData::TYPE_EMAIL, EmailOpensAbsoluteCountAction::MACHINE_TYPE),
-      'Segment > # of opens' => $this->isFilterTypeActive(DynamicSegmentFilterData::TYPE_EMAIL, EmailOpensAbsoluteCountAction::TYPE),
-      'Segment > # of orders' => $this->isFilterTypeActive(DynamicSegmentFilterData::TYPE_WOOCOMMERCE, WooCommerceNumberOfOrders::ACTION_NUMBER_OF_ORDERS),
+      'Segment > number of machine-opens' => $this->isFilterTypeActive(DynamicSegmentFilterData::TYPE_EMAIL, EmailOpensAbsoluteCountAction::MACHINE_TYPE),
+      'Segment > number of opens' => $this->isFilterTypeActive(DynamicSegmentFilterData::TYPE_EMAIL, EmailOpensAbsoluteCountAction::TYPE),
+      'Segment > number of orders' => $this->isFilterTypeActive(DynamicSegmentFilterData::TYPE_WOOCOMMERCE, WooCommerceNumberOfOrders::ACTION_NUMBER_OF_ORDERS),
       'Segment > clicked' => $this->isFilterTypeActive(DynamicSegmentFilterData::TYPE_EMAIL, EmailAction::ACTION_CLICKED),
       'Segment > clicked any email' => $this->isFilterTypeActive(DynamicSegmentFilterData::TYPE_EMAIL, EmailActionClickAny::TYPE),
       'Segment > score' => $this->isFilterTypeActive(DynamicSegmentFilterData::TYPE_USER_ROLE, SubscriberScore::TYPE),
