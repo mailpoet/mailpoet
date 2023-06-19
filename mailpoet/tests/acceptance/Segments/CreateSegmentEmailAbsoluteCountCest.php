@@ -9,11 +9,11 @@ use MailPoet\Test\DataFactories\Subscriber;
 class CreateSegmentEmailAbsoluteCountCest {
   public function _before() {
     $newsletter1 = (new Newsletter())
-      ->withSendingQueue()->withSubject('Segment # of opens Test1')->withSentStatus()->create();
+      ->withSendingQueue()->withSubject('Segment number of opens Test1')->withSentStatus()->create();
     $newsletter2 = (new Newsletter())
-      ->withSendingQueue()->withSubject('Segment # of opens Test2')->withSentStatus()->create();
+      ->withSendingQueue()->withSubject('Segment number of opens Test2')->withSentStatus()->create();
     $newsletter3 = (new Newsletter())
-      ->withSendingQueue()->withSubject('Segment # of opens Test3')->withSentStatus()->create();
+      ->withSendingQueue()->withSubject('Segment number of opens Test3')->withSentStatus()->create();
 
     $subscriber1 = (new Subscriber())
       ->withEmail('stats_test1@example.com')
@@ -37,14 +37,14 @@ class CreateSegmentEmailAbsoluteCountCest {
   }
 
   public function sendConfirmationEmail(\AcceptanceTester $i) {
-    $i->wantTo('Create a new segment # of opens');
+    $i->wantTo('Create a new segment number of opens');
     $i->login();
     $i->amOnMailpoetPage('Lists');
     $i->click('[data-automation-id="new-segment"]');
     $segmentTitle = 'Number of opens segment';
     $i->fillField(['name' => 'name'], $segmentTitle);
     $i->fillField(['name' => 'description'], 'description');
-    $i->selectOptionInReactSelect('# of opens', '[data-automation-id="select-segment-action"]');
+    $i->selectOptionInReactSelect('number of opens', '[data-automation-id="select-segment-action"]');
     $i->waitForElementVisible('[data-automation-id="segment-number-of-opens"]');
     $i->fillField('[data-automation-id="segment-number-of-opens"]', 2);
     $i->fillField('[data-automation-id="segment-number-of-days"]', 3);
