@@ -7,10 +7,10 @@ use MailPoet\Automation\Engine\Integration\Payload;
 use MailPoet\Automation\Engine\Integration\Subject;
 use MailPoet\Automation\Integrations\WooCommerce\Fields\OrderFieldsFactory;
 use MailPoet\Automation\Integrations\WooCommerce\Payloads\OrderPayload;
+use MailPoet\Automation\Integrations\WooCommerce\WooCommerce;
 use MailPoet\NotFoundException;
 use MailPoet\Validator\Builder;
 use MailPoet\Validator\Schema\ObjectSchema;
-use MailPoet\WooCommerce\Helper;
 
 /**
  * @implements Subject<OrderPayload>
@@ -19,14 +19,15 @@ class OrderSubject implements Subject {
 
   const KEY = 'woocommerce:order';
 
+  /** @var WooCommerce */
   private $woocommerce;
 
   /** @var OrderFieldsFactory */
   private $orderFieldsFactory;
 
   public function __construct(
-    Helper $woocommerce,
-    OrderFieldsFactory $orderFieldsFactory
+    OrderFieldsFactory $orderFieldsFactory,
+    WooCommerce $woocommerce
   ) {
     $this->woocommerce = $woocommerce;
     $this->orderFieldsFactory = $orderFieldsFactory;

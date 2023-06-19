@@ -15,6 +15,13 @@ class WooCommerce {
     return wc_get_is_paid_statuses();
   }
 
+  /**
+   * @return array<string, string>
+   */
+  public function wcGetOrderStatuses(): array {
+    return wc_get_order_statuses();
+  }
+
   public function isWooCommerceCustomOrdersTableEnabled(): bool {
     return $this->isWooCommerceActive()
       && method_exists(OrderUtil::class, 'custom_orders_table_usage_is_enabled')
@@ -26,7 +33,11 @@ class WooCommerce {
     return wc_get_orders($args);
   }
 
-  public function wcGetOrderStatuses(): array {
-    return wc_get_order_statuses();
+  /**
+   * @param int|bool $order
+   * @return bool|\WC_Order|\WC_Order_Refund
+   */
+  public function wcGetOrder($order = false) {
+    return wc_get_order($order);
   }
 }
