@@ -3,6 +3,7 @@ import { useHistory, useLocation } from 'react-router-dom';
 import { TabPanel } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 import { __, _x } from '@wordpress/i18n';
+import { Icon, lockSmall } from '@wordpress/icons';
 import { AutomationFlow } from './automation_flow';
 import { Emails } from './emails';
 import { Orders } from './orders';
@@ -36,7 +37,13 @@ export function Tabs(): JSX.Element {
     tabs.push({
       name: 'automation-orders',
       className: 'mailpoet-analytics-tab-orders',
-      title: _x('Orders', 'WooCommerce orders', 'mailpoet'),
+      // title is defined as string but allows for JSX.Element
+      title: (
+        <>
+          {_x('Orders', 'WooCommerce orders', 'mailpoet')}{' '}
+          <Icon icon={lockSmall} />
+        </>
+      ) as unknown as string,
     });
     tabs.push({
       name: 'automation-subscribers',
