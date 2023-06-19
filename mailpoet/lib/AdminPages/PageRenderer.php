@@ -24,6 +24,7 @@ use MailPoet\Tracy\DIPanel\DIPanel;
 use MailPoet\Util\Installation;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 use MailPoet\Util\License\License;
+use MailPoet\WooCommerce;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoet\WP\Notice as WPNotice;
 use MailPoetVendor\Carbon\Carbon;
@@ -74,6 +75,9 @@ class PageRenderer {
   /*** @var AssetsController */
   private $assetsController;
 
+  /** @var WooCommerce\Helper */
+  private $wooCommerceHelper;
+
   public function __construct(
     Bridge $bridge,
     Renderer $renderer,
@@ -89,7 +93,8 @@ class PageRenderer {
     TrackingConfig $trackingConfig,
     TransientCache $transientCache,
     WPFunctions $wp,
-    AssetsController $assetsController
+    AssetsController $assetsController,
+    WooCommerce\Helper $wooCommerceHelper
   ) {
     $this->bridge = $bridge;
     $this->renderer = $renderer;
@@ -106,6 +111,7 @@ class PageRenderer {
     $this->transientCache = $transientCache;
     $this->wp = $wp;
     $this->assetsController = $assetsController;
+    $this->wooCommerceHelper = $wooCommerceHelper;
   }
 
   /**
@@ -182,7 +188,7 @@ class PageRenderer {
         'automationEditor' => admin_url('admin.php?page=mailpoet-automation-editor'),
         'automationTemplates' => admin_url('admin.php?page=mailpoet-automation-templates'),
       ],
-      'woocommerce_store_config' => $this->woocommerceStoreConfig(),
+      'woocommerce_store_config' => $this->wooCommerceHelper->isWooCommerceActive() ? $this->woocommerceStoreConfig() : null,
       'tags' => array_map(function (TagEntity $tag): array {
         return [
         'id' => $tag->getId(),
@@ -219,13 +225,13 @@ class PageRenderer {
   private function woocommerceStoreConfig() {
 
     return [
-      'precision' => wc_get_price_decimals(),
-      'decimalSeparator' => wc_get_price_decimal_separator(),
-      'thousandSeparator' => wc_get_price_thousand_separator(),
-      'code' => get_woocommerce_currency(),
-      'symbol' => html_entity_decode(get_woocommerce_currency_symbol()),
-      'symbolPosition' => get_option('woocommerce_currency_pos'),
-      'priceFormat' => get_woocommerce_price_format(),
+      'precision' => $this->wooCommerceHelper->wcGetPriceDecimals(),
+      'decimalSeparator' => $this->wooCommerceHelper->wcGetPriceDecimalSeperator(),
+      'thousandSeparator' => $this->wooCommerceHelper->wcGetPriceThousandSeparator(),
+      'code' => $this->wooCommerceHelper->getWoocommerceCurrency(),
+      'symbol' => html_entity_decode($this->wooCommerceHelper->getWoocommerceCurrencySymbol()),
+      'symbolPosition' => $this->wp->getOption('woocommerce_currency_pos'),
+      'priceFormat' => $this->wooCommerceHelper->getWoocommercePriceFormat(),
 
     ];
   }
