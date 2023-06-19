@@ -7,7 +7,8 @@
 import 'homepage/homepage'; // side effect - renders ReactDOM to document
 import 'subscribers/subscribers.jsx'; // side effect - renders ReactDOM to document
 import 'newsletters/newsletters.jsx'; // side effect - renders ReactDOM to window
-import 'segments/segments'; // side effect - renders ReactDOM to document
+import 'segments/static/app';
+import 'segments/dynamic/app'; // side effect - renders ReactDOM to document
 import 'forms/forms.jsx'; // side effect - renders ReactDOM to document
 import 'help/help.jsx'; // side effect - renders ReactDOM to document
 import 'subscribers/importExport/import.jsx'; // side effect - executes on doc ready, adds events
