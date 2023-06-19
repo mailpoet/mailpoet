@@ -56,7 +56,9 @@ export function FiltersPanel(): JSX.Element {
   return (
     <PanelBody initialOpen title={__('Trigger filters', 'mailpoet')}>
       <FiltersList />
-      {content(selectedStep)}
+      <div className="mailpoet-automation-filters-panel-content">
+        {content(selectedStep)}
+      </div>
     </PanelBody>
   );
 }
