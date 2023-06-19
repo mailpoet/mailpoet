@@ -78,4 +78,22 @@ class WordPress {
   public function getTerms($args = [], $deprecated = '') {
     return get_terms($args, $deprecated);
   }
+
+  /**
+   * @param string|int $idOrEmail
+   * @param array $args
+   * @return false|string
+   */
+  public function getAvatarUrl($idOrEmail, $args = null) {
+    return get_avatar_url($idOrEmail, $args);
+  }
+
+  /**
+   * @param string $optionName
+   * @param mixed $default
+   * @return false|mixed|void
+   */
+  public function getOption(string $optionName, $default = false) {
+    return get_option($optionName, $default);
+  }
 }
