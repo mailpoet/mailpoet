@@ -441,9 +441,22 @@ const marketingOptinBlock = Object.assign({}, wpScriptConfig, {
   ],
 });
 
+const emailEditor = {
+  name: 'email_editor',
+  entry: {
+    email_editor: 'email_editor/email_editor.ts',
+  },
+  plugins: [...baseConfig.plugins, new DependencyExtractionWebpackPlugin()],
+  output: {
+    filename: '[name].js',
+    path: path.join(__dirname, 'assets/dist/js/email_editor'),
+  },
+};
+
 const configs = [
   publicConfig,
   adminConfig,
+  emailEditor,
   formPreviewConfig,
   testConfig,
   postEditorBlock,
@@ -455,7 +468,7 @@ module.exports = configs.map((conf) => {
   if (config.name === 'marketing_optin_block') {
     return config;
   }
-  if (config.name !== 'test') {
+  if (config.name !== 'test' && config.name !== 'email_editor') {
     config.plugins = config.plugins || [];
     config.plugins.push(
       new WebpackManifestPlugin({
