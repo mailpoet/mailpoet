@@ -444,7 +444,7 @@ const marketingOptinBlock = Object.assign({}, wpScriptConfig, {
 const emailEditor = {
   name: 'email_editor',
   entry: {
-    email_editor: 'email_editor/email_editor.ts',
+    email_editor: 'email_editor/index.ts',
   },
   plugins: [...baseConfig.plugins, new DependencyExtractionWebpackPlugin()],
   output: {

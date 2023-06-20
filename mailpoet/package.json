@@ -62,6 +62,7 @@
     "@wordpress/keycodes": "^3.28.0",
     "@wordpress/media-utils": "^4.19.0",
     "@wordpress/notices": "^3.28.0",
+    "@wordpress/plugins": "6.7.0",
     "@wordpress/preferences": "^3.5.0",
     "@wordpress/rich-text": "^6.5.0",
     "@wordpress/url": "^3.29.0",
