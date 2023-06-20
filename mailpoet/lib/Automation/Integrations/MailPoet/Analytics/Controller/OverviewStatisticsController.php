@@ -5,7 +5,7 @@ namespace MailPoet\Automation\Integrations\MailPoet\Analytics\Controller;
 use MailPoet\Automation\Engine\Data\Automation;
 use MailPoet\Automation\Engine\Data\Step;
 use MailPoet\Automation\Integrations\MailPoet\Actions\SendEmailAction;
-use MailPoet\Automation\Integrations\MailPoet\Analytics\Entities\Query;
+use MailPoet\Automation\Integrations\MailPoet\Analytics\Entities\QueryWithCompare;
 use MailPoet\Entities\StatisticsClickEntity;
 use MailPoet\Entities\StatisticsOpenEntity;
 use MailPoet\Newsletter\NewslettersRepository;
@@ -33,7 +33,7 @@ class OverviewStatisticsController {
     $this->newsletterUrl = $newsletterUrl;
   }
 
-  public function getStatisticsForAutomation(Automation $automation, Query $query): array {
+  public function getStatisticsForAutomation(Automation $automation, QueryWithCompare $query): array {
     $emails = $this->getEmailsFromAutomation($automation);
     $data = [
       'sent' => ['current' => 0, 'previous' => 0],
@@ -57,8 +57,8 @@ class OverviewStatisticsController {
 
     $currentStatistics = $this->newsletterStatisticsRepository->getBatchStatistics(
       $emails,
-      $query->getPrimaryAfter(),
-      $query->getPrimaryBefore(),
+      $query->getAfter(),
+      $query->getBefore(),
       $requiredData
     );
     foreach ($currentStatistics as $newsletterId => $statistic) {
@@ -83,8 +83,8 @@ class OverviewStatisticsController {
 
     $previousStatistics = $this->newsletterStatisticsRepository->getBatchStatistics(
       $emails,
-      $query->getSecondaryAfter(),
-      $query->getSecondaryBefore(),
+      $query->getCompareWithAfter(),
+      $query->getCompareWithBefore(),
       $requiredData
     );
 
