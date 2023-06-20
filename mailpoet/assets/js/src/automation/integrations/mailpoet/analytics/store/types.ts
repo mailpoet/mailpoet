@@ -56,6 +56,45 @@ export type Query = {
   after: string | undefined;
   before: string | undefined;
 };
+
+export type CustomerData = {
+  id: number;
+  email: string;
+  first_name: string;
+  last_name: string;
+  avatar: string;
+};
+type LineItemData = {
+  id: number;
+  name: string;
+  quantity: number;
+};
+
+export type OrderDetails = {
+  id: number;
+  status: {
+    id: string;
+    name: string;
+  };
+  total: number;
+  products: LineItemData[];
+};
+
+export type OrderData = {
+  date: string;
+  customer: CustomerData;
+  details: OrderDetails;
+  email: {
+    id: number;
+    subject: string;
+  };
+};
+
+type OrderSectionData = SectionData & OrderData[];
+
+export type OrderSection = Section & {
+  data: undefined | OrderSectionData;
+};
 export type State = {
   automation: Automation;
   sections: Record<string, Section>;
