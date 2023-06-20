@@ -2,6 +2,7 @@
 
 namespace MailPoet\EmailEditor\Integration;
 
+use MailPoet\Config\Env;
 use MailPoet\EmailEditor\Core\EmailEditor as CoreEmailEditor;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Features\FeaturesController;
@@ -41,6 +42,7 @@ class EmailEditor {
     }
     $this->wp->addFilter('mailpoet_email_editor_post_types', [$this, 'addEmailPostType']);
     $this->wp->addFilter('save_post', [$this, 'onEmailSave'], 10, 2);
+    $this->wp->addAction('enqueue_block_editor_assets', [$this, 'enqueueAssets']);
     $this->coreEmailEditor->initialize();
   }
 
@@ -76,5 +78,20 @@ class EmailEditor {
     $newsletter->setType(NewsletterEntity::TYPE_STANDARD); // We allow only standard emails in the new editor for now
     $this->newsletterRepository->persist($newsletter);
     $this->newsletterRepository->flush();
+  }
+
+  public function enqueueAssets(): void {
+    $screen = $this->wp->getCurrentScreen();
+    if (!$screen || self::MAILPOET_EMAIL_POST_TYPE !== $screen->post_type) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+      return;
+    }
+    $jsAssetsParams = require_once Env::$assetsPath . '/dist/js/email_editor/email_editor.asset.php';
+    $this->wp->wpEnqueueScript(
+      'mailpoet_email_editor',
+      Env::$assetsUrl . '/dist/js/email_editor/email_editor.js',
+      $jsAssetsParams['dependencies'],
+      $jsAssetsParams['version'],
+      true
+    );
   }
 }
