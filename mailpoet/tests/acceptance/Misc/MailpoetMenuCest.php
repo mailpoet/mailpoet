@@ -17,6 +17,7 @@ class MailpoetMenuCest {
     $this->checkForms($i);
     $this->checkSubscribers($i);
     $this->checkLists($i);
+    $this->checkSegments($i);
     $this->checkSettings($i);
     $this->checkHelp($i);
     $this->checkWelcomeWizard($i);
@@ -125,9 +126,16 @@ class MailpoetMenuCest {
 
   private function checkLists(\AcceptanceTester $i) {
     $this->clickMenuItem($i, 'Lists');
+    $i->waitForElement('[data-automation-id="new-list"]');
+    $i->seeInCurrentUrl('?page=mailpoet-lists');
+    $this->assertSelectedMenuItem($i, 'Lists');
+  }
+
+  private function checkSegments(\AcceptanceTester $i) {
+    $this->clickMenuItem($i, 'Segments');
     $i->waitForElement('[data-automation-id="new-segment"]');
     $i->seeInCurrentUrl('?page=mailpoet-segments');
-    $this->assertSelectedMenuItem($i, 'Lists');
+    $this->assertSelectedMenuItem($i, 'Segments');
   }
 
   private function checkSettings(\AcceptanceTester $i) {

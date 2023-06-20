@@ -59,7 +59,6 @@ class ManageListsCest {
 
     $i->wantTo('Edit existing list');
     $i->waitForText('Lists');
-    $i->scrollTo('[data-automation-id="dynamic-segments-tab"]');
     $i->clickItemRowActionByItemName($newListTitle, 'Edit');
     $i->waitForText($newListTitle);
     $i->clearFormField('#field_name');
@@ -72,7 +71,6 @@ class ManageListsCest {
     $i->seeNoJSErrors();
 
     $i->wantTo('Trash existing list');
-    $i->scrollTo('[data-automation-id="dynamic-segments-tab"]');
     $i->clickItemRowActionByItemName($editedListTitle, 'Move to trash');
     $i->waitForNoticeAndClose('1 list was moved to the trash. Note that deleting a list does not delete its subscribers.');
     $i->changeGroupInListingFilter('trash');
@@ -80,7 +78,6 @@ class ManageListsCest {
     $i->seeNoJSErrors();
 
     $i->wantTo('Restore trashed list');
-    $i->scrollTo('[data-automation-id="dynamic-segments-tab"]');
     $i->clickItemRowActionByItemName($editedListTitle, 'Restore');
     $i->waitForNoticeAndClose('1 list has been restored from the Trash.');
     $i->waitForElementNotVisible('[data-automation-id="filters_trash"]');
@@ -94,7 +91,6 @@ class ManageListsCest {
       ->withName($newListTitle . '2')
       ->withDescription($newListDesc)
       ->create();
-    $i->scrollTo('[data-automation-id="dynamic-segments-tab"]');
     $i->clickItemRowActionByItemName($editedListTitle, 'Move to trash');
     $i->waitForNoticeAndClose('1 list was moved to the trash. Note that deleting a list does not delete its subscribers.');
     $i->reloadPage(); // just to clear all notifications from the above

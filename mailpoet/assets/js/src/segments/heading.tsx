@@ -11,7 +11,11 @@ function ListHeading({ segmentType }): JSX.Element {
     <>
       <TopBarWithBeamer>
         {segmentType === 'static' && (
-          <Link className="mailpoet-button button-secondary" to="/new">
+          <Link
+            className="mailpoet-button button-secondary"
+            to="/new"
+            data-automation-id="new-list"
+          >
             {plusIcon}
             <span>{MailPoet.I18n.t('new')}</span>
           </Link>

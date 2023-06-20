@@ -33,7 +33,7 @@ class ManageWooCommerceSegmentsCest {
     $segmentTitle = 'Segment Woo Category Test';
     $segmentDesc = 'Segment description';
     $i->login();
-    $i->amOnMailpoetPage('Lists');
+    $i->amOnMailpoetPage('Segments');
     $i->click('[data-automation-id="new-segment"]');
     $i->fillField(['name' => 'name'], $segmentTitle);
     $i->fillField(['name' => 'description'], $segmentDesc);
@@ -42,7 +42,6 @@ class ManageWooCommerceSegmentsCest {
     $i->selectOptionInReactSelect('Category 2', $categorySelectElement);
     $i->waitForElementClickable('button[type="submit"]');
     $i->click('Save');
-    $i->waitForElement('[data-automation-id="dynamic-segments-tab"]');
     $i->waitForText($segmentTitle);
 
     $i->wantTo('Open edit form and check that all values were saved correctly');
@@ -64,7 +63,6 @@ class ManageWooCommerceSegmentsCest {
     $i->selectOption($operatorSelectElement, 'none of');
     $i->waitForElementClickable('button[type="submit"]');
     $i->click('Save');
-    $i->waitForElement('[data-automation-id="dynamic-segments-tab"]');
     $i->waitForText($segmentTitle);
 
     $i->wantTo('Open edit form and check that all values were saved correctly');
@@ -93,7 +91,7 @@ class ManageWooCommerceSegmentsCest {
     $segmentTitle = 'Segment Woo Product Test';
     $segmentDesc = 'Segment description';
     $i->login();
-    $i->amOnMailpoetPage('Lists');
+    $i->amOnMailpoetPage('Segments');
     $i->click('[data-automation-id="new-segment"]');
     $i->fillField($segmentNameField, $segmentTitle);
     $i->fillField($segmentDescriptionField, $segmentDesc);
@@ -104,7 +102,6 @@ class ManageWooCommerceSegmentsCest {
     $i->selectOptionInReactSelect('Product 3', $productSelectElement);
     $i->waitForElementClickable('button[type="submit"]');
     $i->click('Save');
-    $i->waitForElement('[data-automation-id="dynamic-segments-tab"]');
     $i->waitForText($segmentTitle);
 
     $i->wantTo('Open edit form and check that all values were saved correctly');
@@ -131,7 +128,6 @@ class ManageWooCommerceSegmentsCest {
     $i->click('[aria-label="Remove Product 3"]');
     $i->waitForElementClickable('button[type="submit"]');
     $i->click('Save');
-    $i->waitForElement('[data-automation-id="dynamic-segments-tab"]');
     $i->waitForText($segmentTitle);
 
     $i->wantTo('Open edit form and check that all values were saved correctly');
@@ -158,7 +154,7 @@ class ManageWooCommerceSegmentsCest {
     $segmentTitle = 'Segment Woo Number of Orders Test';
     $segmentDesc = 'Segment description';
     $i->login();
-    $i->amOnMailpoetPage('Lists');
+    $i->amOnMailpoetPage('Segments');
     $i->click('[data-automation-id="new-segment"]');
     $i->fillField($segmentNameField, $segmentTitle);
     $i->fillField($segmentDescriptionField, $segmentDesc);
@@ -170,7 +166,6 @@ class ManageWooCommerceSegmentsCest {
 
     $i->waitForElementClickable('button[type="submit"]');
     $i->click('Save');
-    $i->waitForElement('[data-automation-id="dynamic-segments-tab"]');
     $i->waitForText($segmentTitle);
 
     $i->wantTo('Open edit form and check that all values were saved correctly');
@@ -201,7 +196,6 @@ class ManageWooCommerceSegmentsCest {
     $i->fillField($numberOfOrdersDaysElement, 20);
     $i->waitForElementClickable('button[type="submit"]');
     $i->click('Save');
-    $i->waitForElement('[data-automation-id="dynamic-segments-tab"]');
     $i->waitForText($segmentTitle);
 
     $i->wantTo('Open edit form and check that all values were saved correctly');
@@ -227,7 +221,7 @@ class ManageWooCommerceSegmentsCest {
     $segmentTitle = 'Segment Woo Total Spent Test';
     $segmentDesc = 'Segment description';
     $i->login();
-    $i->amOnMailpoetPage('Lists');
+    $i->amOnMailpoetPage('Segments');
     $i->click('[data-automation-id="new-segment"]');
     $i->fillField($segmentNameField, $segmentTitle);
     $i->fillField(['name' => 'description'], $segmentDesc);
@@ -239,7 +233,6 @@ class ManageWooCommerceSegmentsCest {
 
     $i->waitForElementClickable('button[type="submit"]');
     $i->click('Save');
-    $i->waitForElement('[data-automation-id="dynamic-segments-tab"]');
     $i->waitForText($segmentTitle);
     $i->seeNoJSErrors();
 
@@ -271,7 +264,6 @@ class ManageWooCommerceSegmentsCest {
     $i->fillField($totalSpentDaysElement, 20);
     $i->waitForElementClickable('button[type="submit"]');
     $i->click('Save');
-    $i->waitForElement('[data-automation-id="dynamic-segments-tab"]');
     $i->waitForText($segmentTitle);
     $i->seeNoJSErrors();
 
@@ -298,7 +290,7 @@ class ManageWooCommerceSegmentsCest {
     $segmentTitle = 'Segment Single Order Value Test';
     $segmentDesc = 'Segment description';
     $i->login();
-    $i->amOnMailpoetPage('Lists');
+    $i->amOnMailpoetPage('Segments');
     $i->click('[data-automation-id="new-segment"]');
     $i->fillField($segmentNameField, $segmentTitle);
     $i->fillField(['name' => 'description'], $segmentDesc);
@@ -310,7 +302,6 @@ class ManageWooCommerceSegmentsCest {
 
     $i->waitForElementClickable('button[type="submit"]');
     $i->click('Save');
-    $i->waitForElement('[data-automation-id="dynamic-segments-tab"]');
     $i->waitForText($segmentTitle);
     $i->seeNoJSErrors();
 
@@ -342,7 +333,6 @@ class ManageWooCommerceSegmentsCest {
     $i->fillField($singleOrderValueDaysElement, 20);
     $i->waitForElementClickable('button[type="submit"]');
     $i->click('Save');
-    $i->waitForElement('[data-automation-id="dynamic-segments-tab"]');
     $i->waitForText($editedTitle);
     $i->seeNoJSErrors();
 

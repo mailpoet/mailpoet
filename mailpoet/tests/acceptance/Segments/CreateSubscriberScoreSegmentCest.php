@@ -24,7 +24,7 @@ class CreateSubscriberScoreSegmentCest {
   public function testSubscriberScoreSegment(\AcceptanceTester $i) {
     $i->wantTo('Create a new score segment');
     $i->login();
-    $i->amOnMailpoetPage('Lists');
+    $i->amOnMailpoetPage('Segments');
     $i->click('[data-automation-id="new-segment"]');
     $segmentTitle = 'Subscriber score segment';
     $i->fillField(['name' => 'name'], $segmentTitle);
@@ -37,9 +37,7 @@ class CreateSubscriberScoreSegmentCest {
     $i->click('Save');
 
     $i->wantTo('Edit the segment');
-    $i->amOnMailpoetPage('Lists');
-    $i->waitForElement('[data-automation-id="dynamic-segments-tab"]');
-    $i->click('[data-automation-id="dynamic-segments-tab"]');
+    $i->amOnMailpoetPage('Segments');
     $i->waitForText($segmentTitle);
     $i->clickItemRowActionByItemName($segmentTitle, 'Edit');
     $i->waitForElementVisible('[data-automation-id="segment-subscriber-score-operator"]');
@@ -49,9 +47,7 @@ class CreateSubscriberScoreSegmentCest {
     $i->seeNoJSErrors();
 
     $i->wantTo('Check subscribers of the segment');
-    $i->amOnMailpoetPage('Lists');
-    $i->waitForElement('[data-automation-id="dynamic-segments-tab"]');
-    $i->click('[data-automation-id="dynamic-segments-tab"]');
+    $i->amOnMailpoetPage('Segments');
     $i->waitForText($segmentTitle);
     $i->clickItemRowActionByItemName($segmentTitle, 'View Subscribers');
     $i->seeInCurrentUrl('mailpoet-subscribers#');
@@ -64,7 +60,7 @@ class CreateSubscriberScoreSegmentCest {
   public function testSubscriberUnknownScoreSegment(\AcceptanceTester $i) {
     $i->wantTo('Create a new unknown score segment');
     $i->login();
-    $i->amOnMailpoetPage('Lists');
+    $i->amOnMailpoetPage('Segments');
     $i->click('[data-automation-id="new-segment"]');
     $segmentTitle = 'Subscriber unknown score segment';
     $i->fillField(['name' => 'name'], $segmentTitle);
@@ -77,9 +73,7 @@ class CreateSubscriberScoreSegmentCest {
     $i->click('Save');
 
     $i->wantTo('Edit the segment');
-    $i->amOnMailpoetPage('Lists');
-    $i->waitForElement('[data-automation-id="dynamic-segments-tab"]');
-    $i->click('[data-automation-id="dynamic-segments-tab"]');
+    $i->amOnMailpoetPage('Segments');
     $i->waitForText($segmentTitle);
     $i->clickItemRowActionByItemName($segmentTitle, 'Edit');
     $i->waitForElementVisible('[data-automation-id="segment-subscriber-score-operator"]');
@@ -89,9 +83,7 @@ class CreateSubscriberScoreSegmentCest {
     $i->seeNoJSErrors();
 
     $i->wantTo('Check subscribers of the segment');
-    $i->amOnMailpoetPage('Lists');
-    $i->waitForElement('[data-automation-id="dynamic-segments-tab"]');
-    $i->click('[data-automation-id="dynamic-segments-tab"]');
+    $i->amOnMailpoetPage('Segments');
     $i->waitForText($segmentTitle);
     $i->clickItemRowActionByItemName($segmentTitle, 'View Subscribers');
     $i->seeInCurrentUrl('mailpoet-subscribers#');

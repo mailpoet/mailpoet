@@ -44,7 +44,7 @@ class WooCommerceMembershipsSegmentCest {
     $segmentTitle = 'Woo Membership';
     $i->wantTo('Create dynamic segment for memberships');
     $i->login();
-    $i->amOnMailpoetPage('Lists');
+    $i->amOnMailpoetPage('Segments');
     $i->click('[data-automation-id="new-segment"]');
     $i->fillField(['name' => 'name'], $segmentTitle);
     $i->fillField(['name' => 'description'], 'Desc ' . $segmentTitle);
@@ -74,9 +74,7 @@ class WooCommerceMembershipsSegmentCest {
 
     $i->wantTo('Check that MailPoet plugin works when admin disables WooCommerce Memberships');
     $i->deactivateWooCommerceMemberships();
-    $i->amOnMailpoetPage('Lists');
-    $i->waitForElement('[data-automation-id="dynamic-segments-tab"]');
-    $i->click('[data-automation-id="dynamic-segments-tab"]');
+    $i->amOnMailpoetPage('Segments');
     $i->waitForText($segmentTitle);
     $i->canSee('Activate the WooCommerce Memberships plugin to see the number of subscribers and enable the editing of this segment.');
 

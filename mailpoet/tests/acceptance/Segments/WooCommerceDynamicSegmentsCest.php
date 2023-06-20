@@ -101,8 +101,7 @@ class WooCommerceDynamicSegmentsCest {
     $i->cli(['action-scheduler', 'run', '--hooks=wc-admin_import_orders,wc-admin_import_customers --force']);
 
     $i->wantTo('Check subscriber is in category segment');
-    $i->amOnMailpoetPage('Lists');
-    $i->click('[data-automation-id="dynamic-segments-tab"]');
+    $i->amOnMailpoetPage('Segments');
     $i->waitForText(self::CATEGORY_SEGMENT);
     $categorySegmentRow = "[data-automation-id='listing_item_{$this->categorySegment->getId()}']";
     $i->see('2', $categorySegmentRow . " [data-colname='Number of subscribers']");
@@ -110,8 +109,7 @@ class WooCommerceDynamicSegmentsCest {
     $i->waitForText($customerEmail);
 
     $i->wantTo('Check subscriber is in product segment');
-    $i->amOnMailpoetPage('Lists');
-    $i->click('[data-automation-id="dynamic-segments-tab"]');
+    $i->amOnMailpoetPage('Segments');
     $i->waitForText(self::PRODUCT_SEGMENT);
     $productSegmentRow = "[data-automation-id='listing_item_{$this->productSegment->getId()}']";
     $i->see('2', $productSegmentRow . " [data-colname='Number of subscribers']");
@@ -136,8 +134,7 @@ class WooCommerceDynamicSegmentsCest {
     $i->cli(['action-scheduler', 'run', '--hooks=wc-admin_import_orders,wc-admin_import_customers --force']);
 
     $i->wantTo('Check subscriber is in category segment');
-    $i->amOnMailpoetPage('Lists');
-    $i->click('[data-automation-id="dynamic-segments-tab"]');
+    $i->amOnMailpoetPage('Segments');
     $i->waitForText(self::CATEGORY_SEGMENT);
     $categorySegmentRow = "[data-automation-id='listing_item_{$this->categorySegment->getId()}']";
     $i->see('2', $categorySegmentRow . " [data-colname='Number of subscribers']");
@@ -146,8 +143,7 @@ class WooCommerceDynamicSegmentsCest {
     $i->waitForText($guestEmail);
 
     $i->wantTo('Check subscriber is in product segment');
-    $i->amOnMailpoetPage('Lists');
-    $i->click('[data-automation-id="dynamic-segments-tab"]');
+    $i->amOnMailpoetPage('Segments');
     $i->waitForText(self::PRODUCT_SEGMENT);
     $productSegmentRow = "[data-automation-id='listing_item_{$this->productSegment->getId()}']";
     $i->see('0', $productSegmentRow . " [data-colname='Number of subscribers']");
@@ -166,8 +162,7 @@ class WooCommerceDynamicSegmentsCest {
     $i->cli(['action-scheduler', 'run', '--hooks=wc-admin_import_orders,wc-admin_import_customers --force']);
 
     $i->wantTo('Check there is one subscriber in the number of orders segments (the segment was configured to match customers that placed one order in the last day)');
-    $i->amOnMailpoetPage('Lists');
-    $i->click('[data-automation-id="dynamic-segments-tab"]');
+    $i->amOnMailpoetPage('Segments');
     $i->waitForText(self::NUMBER_OF_ORDERS_SEGMENT);
     $numberOfOrdersSegmentRow = "[data-automation-id='listing_item_{$this->numberOfOrdersSegment->getId()}']";
     $i->see('1', $numberOfOrdersSegmentRow . " [data-colname='Number of subscribers']");
@@ -192,8 +187,7 @@ class WooCommerceDynamicSegmentsCest {
     $i->cli(['action-scheduler', 'run', '--hooks=wc-admin_import_orders,wc-admin_import_customers --force']);
 
     $i->wantTo('Check that there is one subscriber in the single order value segment');
-    $i->amOnMailpoetPage('Lists');
-    $i->click('[data-automation-id="dynamic-segments-tab"]');
+    $i->amOnMailpoetPage('Segments');
     $i->waitForText(self::SINGLE_ORDER_VALUE_SEGMENT);
     $singleOrderValueSegmentRow = "[data-automation-id='listing_item_{$this->singleOrderValueSegment->getId()}']";
     $i->see('1', $singleOrderValueSegmentRow . " [data-colname='Number of subscribers']");
@@ -215,8 +209,7 @@ class WooCommerceDynamicSegmentsCest {
     $i->cli(['action-scheduler', 'run', '--hooks=wc-admin_import_orders,wc-admin_import_customers --force']);
 
     $i->wantTo('Check that there is one subscriber in the total spent segment');
-    $i->amOnMailpoetPage('Lists');
-    $i->click('[data-automation-id="dynamic-segments-tab"]');
+    $i->amOnMailpoetPage('Segments');
     $i->waitForText(self::TOTAL_SPENT_SEGMENT);
     $totalSpentSegmentRow = "[data-automation-id='listing_item_{$this->totalSpentSegment->getId()}']";
     $i->see('1', $totalSpentSegmentRow . " [data-colname='Number of subscribers']");
@@ -239,8 +232,7 @@ class WooCommerceDynamicSegmentsCest {
     $i->cli(['action-scheduler', 'run', '--hooks=wc-admin_import_orders,wc-admin_import_customers --force']);
 
     $i->wantTo('Check that there is one subscriber in customer country segment');
-    $i->amOnMailpoetPage('Lists');
-    $i->click('[data-automation-id="dynamic-segments-tab"]');
+    $i->amOnMailpoetPage('Segments');
     $i->waitForText(self::CUSTOMER_IN_COUNTRY);
     $totalSpentSegmentRow = "[data-automation-id='listing_item_{$this->customerCountrySegment->getId()}']";
     $i->see('2', $totalSpentSegmentRow . " [data-colname='Number of subscribers']");
@@ -254,8 +246,7 @@ class WooCommerceDynamicSegmentsCest {
     $i->deactivateWooCommerce();
     $i->login();
     $i->wantTo('Check messages in list when WooCommerce is deactivated');
-    $i->amOnMailpoetPage('Lists');
-    $i->click('[data-automation-id="dynamic-segments-tab"]');
+    $i->amOnMailpoetPage('Segments');
 
     $i->wantTo('Check that message is visible instead of count of subscribers');
     $i->waitForText(self::CATEGORY_SEGMENT);

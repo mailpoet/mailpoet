@@ -26,7 +26,7 @@ class MailPoetCustomFieldSegmentCest {
   public function createSegment(\AcceptanceTester $i) {
     $i->wantTo('Create a new MailPoet custom fields segment');
     $i->login();
-    $i->amOnMailpoetPage('Lists');
+    $i->amOnMailpoetPage('Segments');
     $i->click('[data-automation-id="new-segment"]');
     $segmentTitle = 'MailPoet custom fields segment';
     $i->fillField(['name' => 'name'], $segmentTitle);
@@ -41,9 +41,7 @@ class MailPoetCustomFieldSegmentCest {
     $i->click('Save');
 
     $i->wantTo('Edit the segment');
-    $i->amOnMailpoetPage('Lists');
-    $i->waitForElement('[data-automation-id="dynamic-segments-tab"]');
-    $i->click('[data-automation-id="dynamic-segments-tab"]');
+    $i->amOnMailpoetPage('Segments');
     $i->waitForText($segmentTitle);
     $i->clickItemRowActionByItemName($segmentTitle, 'Edit');
     $i->waitForElementVisible('[data-automation-id="text-custom-field-operator"]');
@@ -53,9 +51,7 @@ class MailPoetCustomFieldSegmentCest {
     $i->seeNoJSErrors();
 
     $i->wantTo('Check subscribers of the segment');
-    $i->amOnMailpoetPage('Lists');
-    $i->waitForElement('[data-automation-id="dynamic-segments-tab"]');
-    $i->click('[data-automation-id="dynamic-segments-tab"]');
+    $i->amOnMailpoetPage('Segments');
     $i->waitForText($segmentTitle);
     $i->clickItemRowActionByItemName($segmentTitle, 'View Subscribers');
     $i->seeInCurrentUrl('mailpoet-subscribers#');
