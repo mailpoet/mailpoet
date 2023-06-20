@@ -42,6 +42,7 @@ export type Section = {
   id: string;
   name: string;
   endpoint: string;
+  withPreviousData: boolean;
   data: undefined | SectionData;
 };
 
