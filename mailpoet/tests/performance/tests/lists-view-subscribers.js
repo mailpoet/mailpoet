@@ -38,12 +38,9 @@ export async function listsViewSubscribers() {
     await login(page);
 
     // Go to the Lists page
-    await page.goto(
-      `${baseURL}/wp-admin/admin.php?page=mailpoet-segments#/lists`,
-      {
-        waitUntil: 'networkidle',
-      },
-    );
+    await page.goto(`${baseURL}/wp-admin/admin.php?page=mailpoet-lists`, {
+      waitUntil: 'networkidle',
+    });
 
     await page.waitForLoadState('networkidle');
     await page.screenshot({
@@ -52,13 +49,9 @@ export async function listsViewSubscribers() {
     });
 
     // Click to view subscribers of the default list "Newsletter mailing list"
-    await page.waitForSelector('[data-automation-id="dynamic-segments-tab"]');
-    describe(listsPageTitle, () => {
-      describe('should be able to see Segments tab', () => {
-        expect(page.locator('[data-automation-id="dynamic-segments-tab"]')).to
-          .exist;
-      });
-    });
+    await page.waitForSelector(
+      '[data-automation-id="segment_name_' + defaultListName + '"]',
+    );
     await page
       .locator('[data-automation-id="segment_name_' + defaultListName + '"]')
       .hover();
