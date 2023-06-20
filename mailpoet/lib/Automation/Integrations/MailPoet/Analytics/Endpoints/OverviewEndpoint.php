@@ -8,7 +8,7 @@ use MailPoet\Automation\Engine\API\Endpoint;
 use MailPoet\Automation\Engine\Exceptions\NotFoundException;
 use MailPoet\Automation\Engine\Storage\AutomationStorage;
 use MailPoet\Automation\Integrations\MailPoet\Analytics\Controller\OverviewStatisticsController;
-use MailPoet\Automation\Integrations\MailPoet\Analytics\Entities\Query;
+use MailPoet\Automation\Integrations\MailPoet\Analytics\Entities\QueryWithCompare;
 use MailPoet\Validator\Builder;
 
 class OverviewEndpoint extends Endpoint {
@@ -32,7 +32,7 @@ class OverviewEndpoint extends Endpoint {
     if (!$automation) {
       throw new NotFoundException(__('Automation not found', 'mailpoet'));
     }
-    $query = Query::fromRequest($request);
+    $query = QueryWithCompare::fromRequest($request);
 
     $result = $this->overviewStatisticsController->getStatisticsForAutomation($automation, $query);
     return new Response($result);
@@ -41,22 +41,7 @@ class OverviewEndpoint extends Endpoint {
   public static function getRequestSchema(): array {
     return [
       'id' => Builder::integer()->required(),
-      'query' => Builder::object(
-        [
-          'primary' => Builder::object(
-            [
-              'after' => Builder::string()->formatDateTime()->required(),
-              'before' => Builder::string()->formatDateTime()->required(),
-            ]
-          ),
-          'secondary' => Builder::object(
-            [
-              'after' => Builder::string()->formatDateTime()->required(),
-              'before' => Builder::string()->formatDateTime()->required(),
-            ]
-          ),
-        ]
-      ),
+      'query' => QueryWithCompare::getRequestSchema(),
     ];
   }
 }
