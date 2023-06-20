@@ -71,7 +71,6 @@ class PrivacyPolicy {
           '<br>' .
           __('Cookie description: The purpose of this cookie is to track subscriber engagement. It is used when the user logs in, signs up in a form, confirms subscription to a newsletter, or places an order through WooCommerce.', 'mailpoet') .
           '<br>' .
-          '<br>' .
           __('Note: User must be opted-in and a confirmed subscriber.', 'mailpoet') .
         '</p>'
       );
