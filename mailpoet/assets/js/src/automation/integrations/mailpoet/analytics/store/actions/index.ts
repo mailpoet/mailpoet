@@ -47,17 +47,23 @@ export function* updateSection(
     defaultDateRange,
   );
 
-  const dates = {
-    primary: {
-      after: primaryDate.after.toDate().toISOString(),
-      before: primaryDate.before.toDate().toISOString(),
-    },
-    secondary: {
-      after: secondaryDate.after.toDate().toISOString(),
-      before: secondaryDate.before.toDate().toISOString(),
-    },
-  };
-
+  const dates = section.withPreviousData
+    ? {
+        primary: {
+          after: primaryDate.after.toDate().toISOString(),
+          before: primaryDate.before.toDate().toISOString(),
+        },
+        secondary: {
+          after: secondaryDate.after.toDate().toISOString(),
+          before: secondaryDate.before.toDate().toISOString(),
+        },
+      }
+    : {
+        primary: {
+          after: primaryDate.after.toDate().toISOString(),
+          before: primaryDate.before.toDate().toISOString(),
+        },
+      };
   const id = select(storeName).getAutomation().id;
 
   const path = addQueryArgs(section.endpoint, { id, query: dates });
