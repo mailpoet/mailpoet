@@ -13,6 +13,13 @@ export const getInitialState = (): State => ({
       withPreviousData: true,
       endpoint: '/automation/analytics/overview',
     },
+    orders: {
+      id: 'orders',
+      name: __('Orders', 'mailpoet'),
+      data: undefined,
+      withPreviousData: false,
+      endpoint: '/automation/analytics/orders',
+    },
   },
   query: {
     compare: 'previous_period',
