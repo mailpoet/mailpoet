@@ -101,8 +101,6 @@ class AcceptanceTester extends \Codeception\Actor {
     $i = $this;
     if ($page === 'Emails') {
       $path = 'newsletters';
-    } elseif ($page === 'Lists') {
-      $path = 'segments';
     } else {
       $path = strtolower($page);
     }

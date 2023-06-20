@@ -51,7 +51,7 @@ class CreateSegmentEmailAbsoluteCountCest {
 
     $i->login();
 
-    $i->amOnMailpoetPage('Lists');
+    $i->amOnMailpoetPage('Segments');
     $i->click('[data-automation-id="new-segment"]');
     $segmentTitle = 'Number of opens segment';
     $i->fillField(['name' => 'name'], $segmentTitle);
@@ -65,9 +65,7 @@ class CreateSegmentEmailAbsoluteCountCest {
     $i->waitForNoticeAndClose('Segment successfully updated!');
 
     $i->wantTo('Edit the segment');
-    $i->amOnMailpoetPage('Lists');
-    $i->waitForElement('[data-automation-id="dynamic-segments-tab"]');
-    $i->click('[data-automation-id="dynamic-segments-tab"]');
+    $i->amOnMailpoetPage('Segments');
     $i->waitForText($segmentTitle);
     $i->clickItemRowActionByItemName($segmentTitle, 'Edit');
     $i->waitForElementVisible('[data-automation-id="segment-number-of-opens"]');
@@ -101,9 +99,7 @@ class CreateSegmentEmailAbsoluteCountCest {
     $i->waitForText('stats_test5@example.com');
 
     $i->wantTo('Edit the segment again');
-    $i->amOnMailpoetPage('Lists');
-    $i->waitForElement('[data-automation-id="dynamic-segments-tab"]');
-    $i->click('[data-automation-id="dynamic-segments-tab"]');
+    $i->amOnMailpoetPage('Segments');
     $i->waitForText($segmentTitle);
     $i->clickItemRowActionByItemName($segmentTitle, 'Edit');
     $i->waitForElementVisible('[data-automation-id="segment-email"]');
@@ -119,9 +115,7 @@ class CreateSegmentEmailAbsoluteCountCest {
     $i->waitForNoticeAndClose('Segment successfully updated!');
 
     $i->wantTo('Check subscribers of the segment');
-    $i->amOnMailpoetPage('Lists');
-    $i->waitForElement('[data-automation-id="dynamic-segments-tab"]');
-    $i->click('[data-automation-id="dynamic-segments-tab"]');
+    $i->amOnMailpoetPage('Segments');
     $i->waitForText($segmentTitle);
     $i->clickItemRowActionByItemName($segmentTitle, 'View Subscribers');
     $i->seeInCurrentUrl('mailpoet-subscribers#');

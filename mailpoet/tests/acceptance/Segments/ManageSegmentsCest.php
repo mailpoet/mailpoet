@@ -34,9 +34,7 @@ class ManageSegmentsCest {
       ->create();
 
     $i->login();
-    $i->amOnMailpoetPage('Lists');
-    $i->waitForElement('[data-automation-id="dynamic-segments-tab"]');
-    $i->click('[data-automation-id="dynamic-segments-tab"]');
+    $i->amOnMailpoetPage('Segments');
     $listingAutomationSelector = '[data-automation-id="listing_item_' . $segment->getId() . '"]';
     $i->waitForText($segmentTitle, 10, $listingAutomationSelector);
     $i->clickItemRowActionByItemName($segmentTitle, 'View Subscribers');
@@ -83,9 +81,7 @@ class ManageSegmentsCest {
 
     $i->wantTo('Create a new segment');
     $i->login();
-    $i->amOnMailpoetPage('Lists');
-    $i->waitForElement('[data-automation-id="dynamic-segments-tab"]');
-    $i->click('[data-automation-id="dynamic-segments-tab"]');
+    $i->amOnMailpoetPage('Segments');
     $i->click('[data-automation-id="new-segment"]');
     $i->fillField($nameElement, $segmentTitle);
     $i->fillField($descriptionElement, $segmentDesc);
@@ -95,8 +91,6 @@ class ManageSegmentsCest {
     $i->waitForElementClickable('button[type="submit"]');
     $i->click('Save');
     $i->waitForNoticeAndClose('Segment successfully updated!');
-    $i->waitForElement('[data-automation-id="dynamic-segments-tab"]');
-    $i->click('[data-automation-id="dynamic-segments-tab"]');
     $i->waitForText($segmentTitle);
 
     $i->wantTo('Edit existing segment');
@@ -114,8 +108,6 @@ class ManageSegmentsCest {
     $i->waitForElementClickable('button[type="submit"]');
     $i->click('Save');
     $i->waitForNoticeAndClose('Segment successfully updated!');
-    $i->waitForElement('[data-automation-id="dynamic-segments-tab"]');
-    $i->click('[data-automation-id="dynamic-segments-tab"]');
     $i->waitForText($segmentEditedTitle);
     $i->seeNoJSErrors();
   }
@@ -133,9 +125,7 @@ class ManageSegmentsCest {
       ->create();
 
     $i->login();
-    $i->amOnMailpoetPage('Lists');
-    $i->waitForElement('[data-automation-id="dynamic-segments-tab"]');
-    $i->click('[data-automation-id="dynamic-segments-tab"]');
+    $i->amOnMailpoetPage('Segments');
 
     $i->wantTo('Trash existing segment');
     $i->clickItemRowActionByItemName($segment->getName(), 'Move to trash');
@@ -168,9 +158,7 @@ class ManageSegmentsCest {
       ->create();
 
     $i->login();
-    $i->amOnMailpoetPage('Lists');
-    $i->waitForElement('[data-automation-id="dynamic-segments-tab"]');
-    $i->click('[data-automation-id="dynamic-segments-tab"]');
+    $i->amOnMailpoetPage('Segments');
 
     $i->wantTo('Trash and delete existing segment');
     $i->clickItemRowActionByItemName($segment1->getName(), 'Move to trash');
@@ -214,7 +202,7 @@ class ManageSegmentsCest {
     (new StatisticsOpens($newsletter, $subscriber2))->create();
 
     $i->login();
-    $i->amOnMailpoetPage('Lists');
+    $i->amOnMailpoetPage('Segments');
     $i->click('[data-automation-id="new-segment"]');
     $i->fillField(['name' => 'name'], $segmentTitle);
     $i->fillField(['name' => 'description'], $segmentDesc);
@@ -228,9 +216,7 @@ class ManageSegmentsCest {
     $i->waitForText('This segment has 2 subscribers');
     $i->waitForElementClickable('button[type="submit"]');
     $i->click('Save');
-    $i->amOnMailpoetPage('Lists');
-    $i->waitForElement('[data-automation-id="dynamic-segments-tab"]');
-    $i->click('[data-automation-id="dynamic-segments-tab"]');
+    $i->amOnMailpoetPage('Segments');
     $i->waitForText($segmentTitle, 20);
   }
 
@@ -246,7 +232,7 @@ class ManageSegmentsCest {
     $this->createClickInNewsletter($newsletter);
 
     $i->login();
-    $i->amOnMailpoetPage('Lists');
+    $i->amOnMailpoetPage('Segments');
     $i->click('[data-automation-id="new-segment"]');
     $i->fillField(['name' => 'name'], $segmentTitle);
     $i->fillField(['name' => 'description'], $segmentDesc);
@@ -258,9 +244,7 @@ class ManageSegmentsCest {
     $i->waitForText('This segment has 1 subscribers');
     $i->waitForElementClickable('button[type="submit"]');
     $i->click('Save');
-    $i->amOnMailpoetPage('Lists');
-    $i->waitForElement('[data-automation-id="dynamic-segments-tab"]');
-    $i->click('[data-automation-id="dynamic-segments-tab"]');
+    $i->amOnMailpoetPage('Segments');
     $i->waitForText($segmentTitle, 20);
   }
 
@@ -286,9 +270,7 @@ class ManageSegmentsCest {
     $bulkActionsContainer = '[data-automation-id="listing-bulk-actions"]';
 
     $i->wantTo('Select trashed segments one by one and bulk restore them');
-    $i->amOnMailpoetPage('Lists');
-    $i->waitForElement('[data-automation-id="dynamic-segments-tab"]');
-    $i->click('[data-automation-id="dynamic-segments-tab"]');
+    $i->amOnMailpoetPage('Segments');
     $i->changeGroupInListingFilter('trash');
     $i->waitForText($segment1Name);
     $i->checkOption('[data-automation-id="listing-row-checkbox-' . $segment1->getId() . '"]');
@@ -333,9 +315,7 @@ class ManageSegmentsCest {
 
     $i->wantTo('Check that user can’t delete actively used list');
     $i->login();
-    $i->amOnMailpoetPage('Lists');
-    $i->waitForElement('[data-automation-id="dynamic-segments-tab"]');
-    $i->click('[data-automation-id="dynamic-segments-tab"]');
+    $i->amOnMailpoetPage('Segments');
     $i->waitForElement('[data-automation-id="filters_all"]');
     $i->waitForText($segmentTitle, 5, '[data-automation-id="listing_item_' . $segment->getId() . '"]');
     $i->clickItemRowActionByItemName($segmentTitle, 'Move to trash');
@@ -357,7 +337,7 @@ class ManageSegmentsCest {
     $segmentDesc = 'Lorem ipsum dolor sit amet';
 
     $i->login();
-    $i->amOnMailpoetPage('Lists');
+    $i->amOnMailpoetPage('Segments');
     $i->click('[data-automation-id="new-segment"]');
     $i->fillField(['name' => 'name'], $segmentTitle);
     $i->fillField(['name' => 'description'], $segmentDesc);
@@ -366,9 +346,7 @@ class ManageSegmentsCest {
     $i->waitForText('This segment has 2 subscribers.');
     $i->seeNoJSErrors();
     $i->click('Save');
-    $i->amOnMailpoetPage('Lists');
-    $i->waitForElement('[data-automation-id="dynamic-segments-tab"]');
-    $i->click('[data-automation-id="dynamic-segments-tab"]');
+    $i->amOnMailpoetPage('Segments');
     $i->waitForText($segmentTitle, 20);
   }
 
@@ -389,9 +367,7 @@ class ManageSegmentsCest {
       ->create();
 
     $i->login();
-    $i->amOnMailpoetPage('Lists');
-    $i->waitForElement('[data-automation-id="dynamic-segments-tab"]');
-    $i->click('[data-automation-id="dynamic-segments-tab"]');
+    $i->amOnMailpoetPage('Segments');
     $listingAutomationSelector = '[data-automation-id="listing_item_' . $segment->getId() . '"]';
     $i->waitForText($segmentTitle, 10, $listingAutomationSelector);
     $i->clickItemRowActionByItemName($segmentTitle, 'Edit');
@@ -402,9 +378,7 @@ class ManageSegmentsCest {
     $i->waitForText('This segment has 1 subscribers.');
     $i->seeNoJSErrors();
     $i->click('Save');
-    $i->amOnMailpoetPage('Lists');
-    $i->waitForElement('[data-automation-id="dynamic-segments-tab"]');
-    $i->click('[data-automation-id="dynamic-segments-tab"]');
+    $i->amOnMailpoetPage('Segments');
     $i->waitForText($segmentTitle, 20);
   }
 
@@ -418,7 +392,7 @@ class ManageSegmentsCest {
     $segmentDesc = 'Segment description';
 
     $i->login();
-    $i->amOnMailpoetPage('Lists');
+    $i->amOnMailpoetPage('Segments');
     $i->click('[data-automation-id="new-segment"]');
     $i->fillField(['name' => 'name'], $segmentTitle);
     $i->fillField(['name' => 'description'], $segmentDesc);
