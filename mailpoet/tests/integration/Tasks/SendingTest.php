@@ -3,10 +3,11 @@
 namespace MailPoet\Test\Tasks;
 
 use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Models\ScheduledTask;
-use MailPoet\Models\ScheduledTaskSubscriber;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
+use MailPoet\Newsletter\Sending\ScheduledTaskSubscribersRepository;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\Tasks\Subscribers;
 use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
@@ -25,6 +26,9 @@ class SendingTest extends \MailPoetTest {
   /** @var NewsletterFactory */
   private $newsletterFactory;
 
+  /** @var ScheduledTaskSubscribersRepository */
+  private $scheduledTaskSubscribersRepository;
+
   public function _before() {
     parent::_before();
     $this->newsletterFactory = new NewsletterFactory();
@@ -40,6 +44,7 @@ class SendingTest extends \MailPoetTest {
       'queue' => $this->queue,
     ]);
     $this->scheduledTaskRepository = $this->diContainer->get(ScheduledTasksRepository::class);
+    $this->scheduledTaskSubscribersRepository = $this->diContainer->get(ScheduledTaskSubscribersRepository::class);
   }
 
   public function testItCanBeConstructed() {
@@ -119,7 +124,7 @@ class SendingTest extends \MailPoetTest {
     $this->sending->delete();
     expect(ScheduledTask::findOne($this->task->id))->equals(false);
     expect(SendingQueue::findOne($this->queue->id))->equals(false);
-    expect(ScheduledTaskSubscriber::where('task_id', $this->task->id)->findMany())->isEmpty();
+    expect($this->scheduledTaskSubscribersRepository->findBy(['task' => $this->task->id]))->isEmpty();
   }
 
   public function testItGetsSubscribers() {
@@ -149,7 +154,7 @@ class SendingTest extends \MailPoetTest {
   public function testItUpdatesProcessedSubscribers() {
     $subscriberId = 456;
     $taskSubscriber = $this->getTaskSubscriber($this->task->id, $subscriberId);
-    expect($taskSubscriber->processed)->equals(ScheduledTaskSubscriber::STATUS_UNPROCESSED);
+    expect($taskSubscriber->getProcessed())->equals(ScheduledTaskSubscriberEntity::STATUS_UNPROCESSED);
 
     expect($this->sending->count_to_process)->equals(2);
     expect($this->sending->count_processed)->equals(0);
@@ -159,7 +164,7 @@ class SendingTest extends \MailPoetTest {
     expect($this->sending->count_processed)->equals(1);
 
     $taskSubscriber = $this->getTaskSubscriber($this->task->id, $subscriberId);
-    expect($taskSubscriber->processed)->equals(ScheduledTaskSubscriber::STATUS_PROCESSED);
+    expect($taskSubscriber->getProcessed())->equals(ScheduledTaskSubscriberEntity::STATUS_PROCESSED);
   }
 
   public function testItGetsScheduledQueues() {
@@ -277,7 +282,11 @@ class SendingTest extends \MailPoetTest {
     return $sending->save();
   }
 
-  private function getTaskSubscriber($taskId, $subscriberId) {
-    return ScheduledTaskSubscriber::where(['task_id' => $taskId, 'subscriber_id' => $subscriberId])->findOne();
+  private function getTaskSubscriber($taskId, $subscriberId): ScheduledTaskSubscriberEntity {
+    $scheduledTaskSubscriber = $this->scheduledTaskSubscribersRepository->findOneBy(['task' => $taskId, 'subscriber' => $subscriberId]);
+    $this->assertInstanceOf(ScheduledTaskSubscriberEntity::class, $scheduledTaskSubscriber);
+    $this->scheduledTaskSubscribersRepository->refresh($scheduledTaskSubscriber);
+
+    return $scheduledTaskSubscriber;
   }
 }
