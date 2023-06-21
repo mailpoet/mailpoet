@@ -3,13 +3,13 @@
 namespace MailPoet\Test\Tasks;
 
 use MailPoet\Entities\ScheduledTaskEntity;
-use MailPoet\Models\Newsletter;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\ScheduledTaskSubscriber;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\Tasks\Subscribers;
+use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 
@@ -22,9 +22,13 @@ class SendingTest extends \MailPoetTest {
   /** @var ScheduledTasksRepository */
   private $scheduledTaskRepository;
 
+  /** @var NewsletterFactory */
+  private $newsletterFactory;
+
   public function _before() {
     parent::_before();
-    $this->newsletter = $this->createNewNewsletter();
+    $this->newsletterFactory = new NewsletterFactory();
+    $this->newsletter = $this->newsletterFactory->create();
     $this->task = $this->createNewScheduledTask();
     $this->queue = $this->createNewSendingQueue([
       'newsletter' => $this->newsletter,
@@ -85,7 +89,7 @@ class SendingTest extends \MailPoetTest {
   }
 
   public function testItCanBeInitializedByNewsletterId() {
-    $sending = SendingTask::getByNewsletterId($this->newsletter->id);
+    $sending = SendingTask::getByNewsletterId($this->newsletter->getId());
     $queue = $sending->queue();
     $task = $sending->task();
     expect($task->id)->equals($queue->taskId);
@@ -245,12 +249,6 @@ class SendingTest extends \MailPoetTest {
     expect($tasks[2]->getId())->equals($sending2->taskId);
   }
 
-  public function createNewNewsletter() {
-    $newsletter = Newsletter::create();
-    $newsletter->type = Newsletter::TYPE_STANDARD;
-    return $newsletter->save();
-  }
-
   public function createNewScheduledTask() {
     $task = ScheduledTask::create();
     $task->type = SendingTask::TASK_TYPE;
@@ -258,11 +256,11 @@ class SendingTest extends \MailPoetTest {
   }
 
   public function createNewSendingQueue($args = []) {
-    $newsletter = isset($args['newsletter']) ? $args['newsletter'] : $this->createNewNewsletter();
+    $newsletter = isset($args['newsletter']) ? $args['newsletter'] : $this->newsletterFactory->create();
     $task = isset($args['task']) ? $args['task'] : $this->createNewScheduledTask();
 
     $queue = SendingQueue::create();
-    $queue->newsletterId = $newsletter->id;
+    $queue->newsletterId = $newsletter->getId();
     $queue->taskId = $task->id;
     return $queue->save();
   }
