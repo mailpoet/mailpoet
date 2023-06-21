@@ -6,6 +6,8 @@ import { store as editorStore } from '@wordpress/editor';
 import { SendButtonSlot } from './components/send_button_slot';
 import { MailPoetEmailData } from './types';
 
+import './email_editor.scss';
+
 function Editor() {
   const { mailpoetData } = useSelect((select) => ({
     mailpoetData:

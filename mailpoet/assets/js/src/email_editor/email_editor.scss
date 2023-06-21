@@ -1,0 +1,6 @@
+.post-type-mailpoet_email {
+  // We want to hide the "Publish" button in the header since we use a custom "Send" button
+  .editor-post-publish-button__button {
+    display: none !important;
+  }
+}
