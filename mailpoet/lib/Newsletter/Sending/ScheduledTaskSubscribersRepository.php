@@ -78,15 +78,6 @@ class ScheduledTaskSubscribersRepository extends Repository {
     return $subscribersIds;
   }
 
-  public function deleteByTask(ScheduledTaskEntity $scheduledTask): void {
-    $this->entityManager->createQueryBuilder()
-      ->delete(ScheduledTaskSubscriberEntity::class, 'sts')
-      ->where('sts.task = :task')
-      ->setParameter('task', $scheduledTask)
-      ->getQuery()
-      ->execute();
-  }
-
   /**
    * @param int[] $subscriberIds
    */
