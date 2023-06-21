@@ -80,6 +80,7 @@ class NewslettersResponseBuilder {
       'parent_id' => ($parent = $newsletter->getParent()) ? $parent->getId() : null,
       'unsubscribe_token' => $newsletter->getUnsubscribeToken(),
       'ga_campaign' => $newsletter->getGaCampaign(),
+      'wp_post_id' => $newsletter->getWpPostId(),
     ];
 
     foreach ($relations as $relation) {
@@ -134,7 +135,7 @@ class NewslettersResponseBuilder {
     $couponBlockLogs = array_map(function ($item) {
       return "Coupon block: $item";
     }, $this->logRepository->getRawMessagesForNewsletter($newsletter, LoggerFactory::TOPIC_COUPONS));
-    
+
     $data = [
       'id' => (string)$newsletter->getId(), // (string) for BC
       'hash' => $newsletter->getHash(),
@@ -146,6 +147,7 @@ class NewslettersResponseBuilder {
       'deleted_at' => ($deletedAt = $newsletter->getDeletedAt()) ? $deletedAt->format(self::DATE_FORMAT) : null,
       'segments' => [],
       'queue' => false,
+      'wp_post_id' => $newsletter->getWpPostId(),
       'statistics' => ($statistics && $newsletter->getType() !== NewsletterEntity::TYPE_NOTIFICATION)
         ? $statistics->asArray()
         : false,

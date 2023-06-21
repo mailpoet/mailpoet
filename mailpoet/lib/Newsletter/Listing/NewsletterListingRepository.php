@@ -179,7 +179,7 @@ class NewsletterListingRepository extends ListingRepository {
   }
 
   protected function applySelectClause(QueryBuilder $queryBuilder) {
-    $queryBuilder->select("PARTIAL n.{id,subject,hash,type,status,sentAt,updatedAt,deletedAt}");
+    $queryBuilder->select("PARTIAL n.{id,subject,hash,type,status,sentAt,updatedAt,deletedAt,wpPostId}");
   }
 
   protected function applyFromClause(QueryBuilder $queryBuilder) {
