@@ -91,13 +91,20 @@ class EmailEditor {
     if (!$screen || self::MAILPOET_EMAIL_POST_TYPE !== $screen->post_type) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
       return;
     }
-    $jsAssetsParams = require_once Env::$assetsPath . '/dist/js/email_editor/email_editor.asset.php';
+    $assetsParams = require_once Env::$assetsPath . '/dist/js/email_editor/email_editor.asset.php';
     $this->wp->wpEnqueueScript(
       'mailpoet_email_editor',
       Env::$assetsUrl . '/dist/js/email_editor/email_editor.js',
-      $jsAssetsParams['dependencies'],
-      $jsAssetsParams['version'],
+      $assetsParams['dependencies'],
+      $assetsParams['version'],
       true
+    );
+
+    $this->wp->wpEnqueueStyle(
+      'mailpoet_email_editor',
+      Env::$assetsUrl . '/dist/js/email_editor/email_editor.css',
+      [],
+      $assetsParams['version']
     );
   }
 
