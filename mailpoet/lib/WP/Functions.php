@@ -830,6 +830,10 @@ class Functions {
     return register_rest_route($namespace, $route, $args, $override);
   }
 
+  public function registerRestField($object_type, string $attribute, array $args = []) {
+    return register_rest_field($object_type, $attribute, $args);
+  }
+
   /**
    * @param mixed $value
    * @return true|WP_Error

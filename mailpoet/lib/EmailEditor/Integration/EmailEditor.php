@@ -24,16 +24,21 @@ class EmailEditor {
   /** @var NewslettersRepository */
   private $newsletterRepository;
 
+  /** @var EmailApiController */
+  private $emailApiController;
+
   public function __construct(
     CoreEmailEditor $coreEmailEditor,
     WPFunctions $wp,
     FeaturesController $featuresController,
-    NewslettersRepository $newsletterRepository
+    NewslettersRepository $newsletterRepository,
+    EmailApiController $emailApiController
   ) {
     $this->coreEmailEditor = $coreEmailEditor;
     $this->wp = $wp;
     $this->featuresController = $featuresController;
     $this->newsletterRepository = $newsletterRepository;
+    $this->emailApiController = $emailApiController;
   }
 
   public function initialize(): void {
@@ -43,6 +48,7 @@ class EmailEditor {
     $this->wp->addFilter('mailpoet_email_editor_post_types', [$this, 'addEmailPostType']);
     $this->wp->addFilter('save_post', [$this, 'onEmailSave'], 10, 2);
     $this->wp->addAction('enqueue_block_editor_assets', [$this, 'enqueueAssets']);
+    $this->extendEmailPostApi();
     $this->coreEmailEditor->initialize();
   }
 
@@ -93,5 +99,13 @@ class EmailEditor {
       $jsAssetsParams['version'],
       true
     );
+  }
+
+  public function extendEmailPostApi() {
+    $this->wp->registerRestField(self::MAILPOET_EMAIL_POST_TYPE, 'mailpoet_data', [
+      'get_callback' => [$this->emailApiController, 'getEmailData'],
+      'update_callback' => [$this->emailApiController, 'saveEmailData'],
+      'schema' => $this->emailApiController->getEmailDataSchema(),
+    ]);
   }
 }
