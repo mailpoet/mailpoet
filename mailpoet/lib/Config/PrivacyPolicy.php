@@ -79,7 +79,7 @@ class PrivacyPolicy {
           '<br>' .
           __('Cookie expiry: the expiration date varies and can be set per form.', 'mailpoet') .
           '<br>' .
-          __('Cookie description: This cookie is used to track whether the user has already subscribed to a specific form. It is applicable for popup, slide-in, or fixed bar forms.', 'mailpoet') .
+          __("Cookie description: This cookie is used to track if a user has previously dismissed a specific form, preventing the re-display of the form until the cookie's expiration date. It is applicable for popup, slide-in, or fixed bar forms.", 'mailpoet') .
         '</p>'
       );
     }
