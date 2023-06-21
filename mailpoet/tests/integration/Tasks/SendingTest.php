@@ -128,7 +128,19 @@ class SendingTest extends \MailPoetTest {
   }
 
   public function testItGetsSubscribers() {
-    verify($this->sending->getSubscribers())->equals([123, 456]);
+    verify($this->sending->getSubscribers())->same(['1', '2']);
+  }
+
+  public function testItGetsOnlyProcessedSubscribers() {
+    $this->sending->updateProcessedSubscribers([1]);
+
+    verify($this->sending->getSubscribers(true))->same(['1']);
+  }
+
+  public function testItGetsOnlyUnprocessedSubscribers() {
+    $this->sending->updateProcessedSubscribers([1]);
+
+    verify($this->sending->getSubscribers(false))->same(['2']);
   }
 
   public function testItSetsSubscribers() {
@@ -139,9 +151,9 @@ class SendingTest extends \MailPoetTest {
   }
 
   public function testItRemovesSubscribers() {
-    $subscriberIds = [456];
+    $subscriberIds = [2];
     $this->sending->removeSubscribers($subscriberIds);
-    verify($this->sending->getSubscribers())->equals([123]);
+    verify($this->sending->getSubscribers())->equals([1]);
     verify($this->sending->count_total)->equals(1);
   }
 
@@ -152,7 +164,7 @@ class SendingTest extends \MailPoetTest {
   }
 
   public function testItUpdatesProcessedSubscribers() {
-    $subscriberId = 456;
+    $subscriberId = 2;
     $taskSubscriber = $this->getTaskSubscriber($this->task->id, $subscriberId);
     verify($taskSubscriber->getProcessed())->equals(ScheduledTaskSubscriberEntity::STATUS_UNPROCESSED);
 
@@ -276,7 +288,7 @@ class SendingTest extends \MailPoetTest {
     $status = isset($args['status']) ? $args['status'] : null;
 
     $sending = SendingTask::create($task, $queue);
-    $sending->setSubscribers([123, 456]); // random IDs
+    $sending->setSubscribers([1, 2]); // random IDs
     $sending->status = $status;
     $sending->scheduledAt = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'))->subHours(1);
     return $sending->save();
