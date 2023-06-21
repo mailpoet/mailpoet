@@ -108,7 +108,13 @@ const bulkActions = [
 ];
 
 const confirmEdit = (newsletter) => {
-  const editorHref = `?page=mailpoet-newsletter-editor&id=${newsletter.id}`;
+  let editorHref = `?page=mailpoet-newsletter-editor&id=${newsletter.id}`;
+  if (
+    MailPoet.FeaturesController.isSupported('gutenberg_email_editor') &&
+    newsletter.wp_post_id
+  ) {
+    editorHref = `post.php?post=${newsletter.wp_post_id}&action=edit`;
+  }
 
   if (
     !newsletter.queue ||
