@@ -120,6 +120,21 @@ class ScheduledTaskSubscriberEntity {
     return $this->subscriber;
   }
 
+  /**
+   * Get the ID of the subscriber without querying wp_mailpoet_subscribers.
+   * $this->getSubscriber->getId() queries wp_mailpoet_subscribers because of
+   * the way the SafeToOneAssociationLoadTrait works.
+   *
+   * @return int|null
+   */
+  public function getSubscriberId() {
+    if ($this->subscriber instanceof SubscriberEntity) {
+      return $this->subscriber->getId();
+    }
+
+    return null;
+  }
+
   public function setSubscriber(SubscriberEntity $subscriber) {
     $this->subscriber = $subscriber;
   }

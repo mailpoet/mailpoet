@@ -4,12 +4,14 @@ namespace MailPoet\Tasks;
 
 use MailPoet\Cron\Workers\SendingQueue\SendingQueue as SendingQueueAlias;
 use MailPoet\DI\ContainerWrapper;
+use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\InvalidStateException;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\ScheduledTaskSubscriber;
 use MailPoet\Models\SendingQueue;
+use MailPoet\Newsletter\Sending\ScheduledTaskSubscribersRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Util\Helpers;
 
@@ -212,13 +214,26 @@ class Sending {
   }
 
   public function getSubscribers($processed = null) {
-    $subscribers = $this->taskSubscribers->getSubscribers();
-    if (!is_null($processed)) {
-      $status = ($processed) ? ScheduledTaskSubscriber::STATUS_PROCESSED : ScheduledTaskSubscriber::STATUS_UNPROCESSED;
-      $subscribers->where('processed', $status);
+    $scheduledTaskSubscribersRepository = ContainerWrapper::getInstance()->get(ScheduledTaskSubscribersRepository::class);
+
+    if (is_null($processed)) {
+      $subscribers = $scheduledTaskSubscribersRepository->findBy(['task' => $this->task->id]);
+    } else if ($processed) {
+      $subscribers = $scheduledTaskSubscribersRepository->findBy(
+        ['task' => $this->task->id, 'processed' => ScheduledTaskSubscriberEntity::STATUS_PROCESSED]
+      );
+    } else {
+      $subscribers = $scheduledTaskSubscribersRepository->findBy(
+        ['task' => $this->task->id, 'processed' => ScheduledTaskSubscriberEntity::STATUS_UNPROCESSED]
+      );
     }
-    $subscribers = $subscribers->findArray();
-    return array_column($subscribers, 'subscriber_id');
+
+    return array_map(
+      function(ScheduledTaskSubscriberEntity $scheduledTaskSubscriber) {
+        return (string)$scheduledTaskSubscriber->getSubscriberId();
+      },
+      $subscribers
+    );
   }
 
   public function setSubscribers(array $subscriberIds) {

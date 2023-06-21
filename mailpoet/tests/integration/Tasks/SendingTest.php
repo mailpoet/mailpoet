@@ -4,6 +4,7 @@ namespace MailPoet\Test\Tasks;
 
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\ScheduledTaskSubscriberEntity;
+use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
@@ -11,6 +12,7 @@ use MailPoet\Newsletter\Sending\ScheduledTaskSubscribersRepository;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\Tasks\Subscribers;
 use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
+use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 
@@ -29,10 +31,19 @@ class SendingTest extends \MailPoetTest {
   /** @var ScheduledTaskSubscribersRepository */
   private $scheduledTaskSubscribersRepository;
 
+  /** @var SubscriberEntity */
+  private $subscriber1;
+
+  /** SubscriberEntity */
+  private $subscriber2;
+
   public function _before() {
     parent::_before();
     $this->newsletterFactory = new NewsletterFactory();
     $this->newsletter = $this->newsletterFactory->create();
+    $subscriberFactory = new SubscriberFactory();
+    $this->subscriber1 = $subscriberFactory->withEmail('subscriber1@test.com')->create();
+    $this->subscriber2 = $subscriberFactory->withEmail('subscriber2@test.com')->create();
     $this->task = $this->createNewScheduledTask();
     $this->queue = $this->createNewSendingQueue([
       'newsletter' => $this->newsletter,
@@ -128,32 +139,32 @@ class SendingTest extends \MailPoetTest {
   }
 
   public function testItGetsSubscribers() {
-    verify($this->sending->getSubscribers())->same(['1', '2']);
+    verify($this->sending->getSubscribers())->same([(string)$this->subscriber1->getId(), (string)$this->subscriber2->getId()]);
   }
 
   public function testItGetsOnlyProcessedSubscribers() {
-    $this->sending->updateProcessedSubscribers([1]);
+    $this->sending->updateProcessedSubscribers([$this->subscriber1->getId()]);
 
-    verify($this->sending->getSubscribers(true))->same(['1']);
+    verify($this->sending->getSubscribers(true))->same([(string)$this->subscriber1->getId()]);
   }
 
   public function testItGetsOnlyUnprocessedSubscribers() {
-    $this->sending->updateProcessedSubscribers([1]);
+    $this->sending->updateProcessedSubscribers([$this->subscriber1->getId()]);
 
-    verify($this->sending->getSubscribers(false))->same(['2']);
+    verify($this->sending->getSubscribers(false))->same([(string)$this->subscriber2->getId()]);
   }
 
   public function testItSetsSubscribers() {
-    $subscriberIds = [1, 2, 3];
+    $subscriberIds = [$this->subscriber1->getId(), $this->subscriber2->getId()];
     $this->sending->setSubscribers($subscriberIds);
     verify($this->sending->getSubscribers())->equals($subscriberIds);
     verify($this->sending->count_total)->equals(count($subscriberIds));
   }
 
   public function testItRemovesSubscribers() {
-    $subscriberIds = [2];
+    $subscriberIds = [$this->subscriber2->getId()];
     $this->sending->removeSubscribers($subscriberIds);
-    verify($this->sending->getSubscribers())->equals([1]);
+    verify($this->sending->getSubscribers())->equals([$this->subscriber1->getId()]);
     verify($this->sending->count_total)->equals(1);
   }
 
@@ -164,7 +175,7 @@ class SendingTest extends \MailPoetTest {
   }
 
   public function testItUpdatesProcessedSubscribers() {
-    $subscriberId = 2;
+    $subscriberId = $this->subscriber2->getId();
     $taskSubscriber = $this->getTaskSubscriber($this->task->id, $subscriberId);
     verify($taskSubscriber->getProcessed())->equals(ScheduledTaskSubscriberEntity::STATUS_UNPROCESSED);
 
@@ -288,7 +299,7 @@ class SendingTest extends \MailPoetTest {
     $status = isset($args['status']) ? $args['status'] : null;
 
     $sending = SendingTask::create($task, $queue);
-    $sending->setSubscribers([1, 2]); // random IDs
+    $sending->setSubscribers([$this->subscriber1->getId(), $this->subscriber2->getId()]);
     $sending->status = $status;
     $sending->scheduledAt = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'))->subHours(1);
     return $sending->save();
