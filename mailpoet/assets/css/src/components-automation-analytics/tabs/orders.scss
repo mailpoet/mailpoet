@@ -1,5 +1,70 @@
 @import '../colors';
+@import 'mixins';
 
 .mailpoet-analytics-tab-orders {
   color: $color-gutenberg-grey-600;
+}
+
+.woocommerce-table__item {
+  a.mailpoet-analytics-orders__customer {
+    align-items: flex-start;
+    display: flex;
+    flex: 1 0 0;
+    gap: 8px;
+
+    img {
+      border-radius: 50%;
+    }
+  }
+
+  .mailpoet-automations-analytics-order-products {
+    align-items: center;
+    display: flex;
+
+    .quantity {
+      color: $color-gutenberg-grey-700;
+    }
+
+    .woocommerce-view-more-list {
+      button {
+        background: transparent;
+        border-radius: 0;
+        text-decoration: underline dotted;
+      }
+    }
+  }
+}
+
+.mailpoet-analytics-order-status {
+  @include badge;
+}
+
+.mailpoet-analytics-order-status-completed,
+.mailpoet-analytics-order-status-processing, {
+  background: $color-wp-green-0;
+  color: $color-wp-green-60;
+}
+
+.mailpoet-analytics-order-status-failed {
+  background: $color-wp-red-0;
+  color: $color-wp-red-60;
+}
+
+.mailpoet-analytics-order-status-on-hold {
+  background: $color-wp-yellow-0;
+  color: $color-wp-yellow-60;
+}
+
+.mailpoet-analytics-upgrade-banner {
+  margin: 24px;
+
+  .components-notice__content {
+    margin: 0;
+  }
+
+  .mailpoet-analytics-upgrade-banner__inner {
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+  }
 }
