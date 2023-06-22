@@ -71,4 +71,5 @@ export type NewsLetter = {
   unsubscribe_token: string;
   updated_at: string;
   logs: string[];
+  wp_post_id: null | number;
 };
