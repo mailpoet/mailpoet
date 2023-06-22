@@ -139,7 +139,6 @@ class AutomationEditor {
       $filters[$fieldType] = [
         'field_type' => $filter->getFieldType(),
         'conditions' => $conditions,
-        'args_schema' => $filter->getArgsSchema()->toArray(),
       ];
     }
 

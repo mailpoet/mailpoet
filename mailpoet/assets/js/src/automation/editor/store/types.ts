@@ -53,7 +53,6 @@ export type Registry = {
     {
       field_type: string;
       conditions: { key: string; label: string }[];
-      args_schema: Record<string, unknown>;
     }
   >;
 };
