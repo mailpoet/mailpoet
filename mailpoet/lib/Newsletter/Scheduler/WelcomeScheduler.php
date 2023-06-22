@@ -4,6 +4,7 @@ namespace MailPoet\Newsletter\Scheduler;
 
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterOptionFieldEntity;
+use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
@@ -126,6 +127,19 @@ class WelcomeScheduler {
       $newsletter->getOptionValue(NewsletterOptionFieldEntity::NAME_AFTER_TIME_TYPE),
       $newsletter->getOptionValue(NewsletterOptionFieldEntity::NAME_AFTER_TIME_NUMBER)
     );
-    return $sendingTask->save();
+
+    $savedSendingTask = $sendingTask->save();
+
+    // Refreshing this entity here is needed while we are still using Paris to create the scheduled tasks and queues
+    // in the code above using \MailPoet\Tasks\Sending class. Doing this should avoid bugs where the loaded entity contain
+    // stale data after the corresponding entry in the database is updated using Paris. This code can be removed once
+    // https://mailpoet.atlassian.net/browse/MAILPOET-4375 is finished. Currently, if this code is removed a few integration
+    // tests fail (see https://app.circleci.com/pipelines/github/mailpoet/mailpoet/14806/workflows/0d441848-16db-461a-88ec-87bed101fe36/jobs/251385/tests#failed-test-0).
+    $scheduledTaskEntity = $this->scheduledTasksRepository->findOneScheduledByNewsletterAndSubscriber($newsletter, $subscriber);
+    if ($scheduledTaskEntity instanceof ScheduledTaskEntity) {
+      $this->scheduledTasksRepository->refresh($scheduledTaskEntity);
+    }
+
+    return $savedSendingTask;
   }
 }

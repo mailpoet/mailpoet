@@ -37,13 +37,16 @@ class SendingTest extends \MailPoetTest {
   /** SubscriberEntity */
   private $subscriber2;
 
+  /** @var SubscriberFactory */
+  private $subscriberFactory;
+
   public function _before() {
     parent::_before();
     $this->newsletterFactory = new NewsletterFactory();
     $this->newsletter = $this->newsletterFactory->create();
-    $subscriberFactory = new SubscriberFactory();
-    $this->subscriber1 = $subscriberFactory->withEmail('subscriber1@test.com')->create();
-    $this->subscriber2 = $subscriberFactory->withEmail('subscriber2@test.com')->create();
+    $this->subscriberFactory = new SubscriberFactory();
+    $this->subscriber1 = $this->subscriberFactory->withEmail('subscriber1@test.com')->create();
+    $this->subscriber2 = $this->subscriberFactory->withEmail('subscriber2@test.com')->create();
     $this->task = $this->createNewScheduledTask();
     $this->queue = $this->createNewSendingQueue([
       'newsletter' => $this->newsletter,
@@ -155,10 +158,17 @@ class SendingTest extends \MailPoetTest {
   }
 
   public function testItSetsSubscribers() {
-    $subscriberIds = [$this->subscriber1->getId(), $this->subscriber2->getId()];
+    $subscriber3 = $this->subscriberFactory->withEmail('subscriber3@test.com')->create();
+    $subscriber4 = $this->subscriberFactory->withEmail('subscriber4@test.com')->create();
+    $subscriber5 = $this->subscriberFactory->withEmail('subscriber5@test.com')->create();
+
+    $subscriberIds = [$subscriber3->getId(), $subscriber4->getId(), $subscriber5->getId()];
     $this->sending->setSubscribers($subscriberIds);
+
     verify($this->sending->getSubscribers())->equals($subscriberIds);
     verify($this->sending->count_total)->equals(count($subscriberIds));
+    verify($this->sending->count_processed)->equals(0);
+    verify($this->sending->count_to_process)->equals(3);
   }
 
   public function testItRemovesSubscribers() {
