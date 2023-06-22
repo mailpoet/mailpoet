@@ -14,10 +14,6 @@ class Subscribers {
     $this->task = $task;
   }
 
-  public function setSubscribers(array $subscriberIds) {
-    ScheduledTaskSubscriber::setSubscribers($this->task->id, $subscriberIds);
-  }
-
   public function getSubscribers() {
     return ScheduledTaskSubscriber::where('task_id', $this->task->id);
   }

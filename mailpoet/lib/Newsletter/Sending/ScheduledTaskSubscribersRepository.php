@@ -125,6 +125,17 @@ class ScheduledTaskSubscribersRepository extends Repository {
       ->execute();
   }
 
+  public function setSubscribers(ScheduledTaskEntity $task, array $subscriberIds): void {
+    $this->deleteByScheduledTask($task);
+
+    foreach ($subscriberIds as $subscriberId) {
+      $this->createOrUpdate([
+        'task_id' => $task->getId(),
+        'subscriber_id' => $subscriberId,
+      ]);
+    }
+  }
+
   private function checkCompleted(ScheduledTaskEntity $task): void {
     $count = $this->countBy(['task' => $task, 'processed' => ScheduledTaskSubscriberEntity::STATUS_UNPROCESSED]);
     if ($count === 0) {

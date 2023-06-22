@@ -4,11 +4,13 @@ namespace MailPoet\Newsletter\ViewInBrowser;
 
 use Codeception\Stub\Expected;
 use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Newsletter\Links\Links;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Renderer\Renderer;
+use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Newsletter\Shortcodes\Shortcodes;
 use MailPoet\Router\Router;
@@ -127,6 +129,10 @@ class ViewInBrowserRendererTest extends \MailPoetTest {
     $queue->setSubscribers([$subscriber->getId()]);
     $this->sendingTask = $queue->save();
     $this->newsletterRepository->refresh($newsletter);
+    $scheduledTasksRepository = $this->diContainer->get(ScheduledTasksRepository::class);
+    $scheduledTask = $scheduledTasksRepository->findOneById($this->sendingTask->task()->id);
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $scheduledTask);
+    $scheduledTasksRepository->refresh($scheduledTask);
     $this->newsletter = $newsletter;
 
     // create newsletter link associations
