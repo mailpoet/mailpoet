@@ -18,7 +18,7 @@ class EnumArrayFilterTest extends MailPoetUnitTest {
       'matches-none-of' => 'matches none of',
     ], $filter->getConditions());
 
-    $this->assertSame([
+    $argsSchema = [
       'type' => 'object',
       'properties' => [
         'value' => [
@@ -29,7 +29,11 @@ class EnumArrayFilterTest extends MailPoetUnitTest {
           'required' => true,
         ],
       ],
-    ], $filter->getArgsSchema()->toArray());
+    ];
+
+    $this->assertSame($argsSchema, $filter->getArgsSchema('matches-any-of')->toArray());
+    $this->assertSame($argsSchema, $filter->getArgsSchema('matches-all-of')->toArray());
+    $this->assertSame($argsSchema, $filter->getArgsSchema('matches-none-of')->toArray());
   }
 
   public function testInvalidValues(): void {

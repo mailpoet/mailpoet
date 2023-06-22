@@ -21,7 +21,7 @@ class BooleanFilter implements Filter {
     ];
   }
 
-  public function getArgsSchema(): ObjectSchema {
+  public function getArgsSchema(string $condition): ObjectSchema {
     return Builder::object([
       'value' => Builder::boolean()->required(),
     ]);

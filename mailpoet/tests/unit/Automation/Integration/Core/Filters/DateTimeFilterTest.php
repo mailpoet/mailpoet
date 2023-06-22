@@ -34,47 +34,61 @@ class DateTimeFilterTest extends MailPoetUnitTest {
       'on-the-days-of-the-week' => 'on the day(s) of the week',
     ], $filter->getConditions());
 
-    $this->assertSame([
+    $datetimeValueSchema = [
+      'type' => 'string',
+      'pattern' => '^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$',
+      'required' => true,
+    ];
+
+    $dateValueSchema = [
+      'type' => 'string',
+      'pattern' => '^\d{4}-\d{2}-\d{2}$',
+      'required' => true,
+    ];
+
+    $relativeValueSchema = [
       'type' => 'object',
       'properties' => [
-        'value' => [
-          'oneOf' => [
-            [
-              'type' => 'string',
-              'pattern' => '^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$',
-            ],
-            [
-              'type' => 'string',
-              'pattern' => '^\d{4}-\d{2}-\d{2}$',
-            ],
-            [
-              'type' => 'array',
-              'items' => [
-                'type' => 'integer',
-                'minimum' => 0,
-                'maximum' => 6,
-              ],
-              'minItems' => 1,
-            ],
-            [
-              'type' => 'object',
-              'properties' => [
-                'number' => [
-                  'type' => 'integer',
-                  'minimum' => 1,
-                  'required' => true,
-                ],
-                'unit' => [
-                  'type' => 'string',
-                  'pattern' => '^days|weeks|months$',
-                  'required' => true,
-                ],
-              ],
-            ],
-          ],
+        'number' => [
+          'type' => 'integer',
+          'minimum' => 1,
+          'required' => true,
+        ],
+        'unit' => [
+          'type' => 'string',
+          'pattern' => '^days|weeks|months$',
+          'required' => true,
         ],
       ],
-    ], $filter->getArgsSchema()->toArray());
+      'required' => true,
+    ];
+
+    $daysOfWeekSchema = [
+      'type' => 'array',
+      'items' => [
+        'type' => 'integer',
+        'minimum' => 0,
+        'maximum' => 6,
+      ],
+      'minItems' => 1,
+      'required' => true,
+    ];
+
+    $dateTimeArgsSchema = ['type' => 'object', 'properties' => ['value' => $datetimeValueSchema]];
+    $dateArgsSchema = ['type' => 'object', 'properties' => ['value' => $dateValueSchema]];
+    $relativeArgsSchema = ['type' => 'object', 'properties' => ['value' => $relativeValueSchema]];
+    $daysOfWeekArgsSchema = ['type' => 'object', 'properties' => ['value' => $daysOfWeekSchema]];
+    $emptyArgsSchema = ['type' => 'object', 'properties' => []];
+
+    $this->assertSame($dateTimeArgsSchema, $filter->getArgsSchema('before')->toArray());
+    $this->assertSame($dateTimeArgsSchema, $filter->getArgsSchema('after')->toArray());
+    $this->assertSame($dateArgsSchema, $filter->getArgsSchema('on')->toArray());
+    $this->assertSame($dateArgsSchema, $filter->getArgsSchema('not-on')->toArray());
+    $this->assertSame($relativeArgsSchema, $filter->getArgsSchema('in-the-last')->toArray());
+    $this->assertSame($relativeArgsSchema, $filter->getArgsSchema('not-in-the-last')->toArray());
+    $this->assertSame($daysOfWeekArgsSchema, $filter->getArgsSchema('on-the-days-of-the-week')->toArray());
+    $this->assertSame($emptyArgsSchema, $filter->getArgsSchema('is-set')->toArray());
+    $this->assertSame($emptyArgsSchema, $filter->getArgsSchema('is-not-set')->toArray());
   }
 
   public function testInvalidValues(): void {

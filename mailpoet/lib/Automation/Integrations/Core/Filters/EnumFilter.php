@@ -23,7 +23,7 @@ class EnumFilter implements Filter {
     ];
   }
 
-  public function getArgsSchema(): ObjectSchema {
+  public function getArgsSchema(string $condition): ObjectSchema {
     return Builder::object([
       'value' => Builder::oneOf([
         Builder::array(Builder::string())->minItems(1),

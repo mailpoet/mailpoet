@@ -38,10 +38,14 @@ class StringFilter implements Filter {
     ];
   }
 
-  public function getArgsSchema(): ObjectSchema {
-    return Builder::object([
-      'value' => Builder::string()->required(),
-    ]);
+  public function getArgsSchema(string $condition): ObjectSchema {
+    switch ($condition) {
+      case self::CONDITION_IS_BLANK:
+      case self::CONDITION_IS_NOT_BLANK:
+        return Builder::object([]);
+      default:
+        return Builder::object(['value' => Builder::string()->required()]);
+    }
   }
 
   public function matches(FilterData $data, $value): bool {
