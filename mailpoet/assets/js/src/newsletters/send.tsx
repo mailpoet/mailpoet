@@ -733,7 +733,7 @@ class NewsletterSendComponent extends Component<
   render() {
     const {
       showPremiumModal,
-      item: { status, queue, type, options },
+      item: { status, queue, type, options, wp_post_id: wpPostId },
       mssKeyPendingApproval,
     } = this.state;
     const isPaused = status === 'sending' && queue && queue.status === 'paused';
@@ -810,7 +810,13 @@ class NewsletterSendComponent extends Component<
               &nbsp;
               <a
                 className="mailpoet-link"
-                href={`?page=mailpoet-newsletter-editor&id=${this.props.match.params.id}`}
+                href={
+                  MailPoet.FeaturesController.isSupported(
+                    'gutenberg_email_editor',
+                  ) && wpPostId
+                    ? `post.php?post=${wpPostId}&action=edit`
+                    : `?page=mailpoet-newsletter-editor&id=${this.props.match.params.id}`
+                }
                 onClick={this.handleRedirectToDesign}
               >
                 {__('go back to the Design page', 'mailpoet')}
