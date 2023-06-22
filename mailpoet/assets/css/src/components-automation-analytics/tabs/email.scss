@@ -1,4 +1,5 @@
 @import '../colors';
+@import 'mixins';
 
 .mailpoet-analytics-main-value {
   font-size: 13px;
@@ -8,13 +9,7 @@
 }
 
 .mailpoet-analytics-badge {
-  background: $color-grey;
-  border-radius: 2px;
-  font-size: 11px;
-  font-weight: 400;
-  line-height: 16px;
-  margin-right: 4px;
-  padding: 4px 8px;
+  @include badge;
 }
 
 .mailpoet-automation-analytics-email-name {
