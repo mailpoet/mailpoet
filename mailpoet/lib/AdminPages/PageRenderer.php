@@ -188,7 +188,7 @@ class PageRenderer {
         'automationEditor' => admin_url('admin.php?page=mailpoet-automation-editor'),
         'automationTemplates' => admin_url('admin.php?page=mailpoet-automation-templates'),
       ],
-      'woocommerce_store_config' => $this->wooCommerceHelper->isWooCommerceActive() ? $this->woocommerceStoreConfig() : null,
+      'woocommerce_store_config' => $this->wooCommerceHelper->isWooCommerceActive() ? $this->getWoocommerceStoreConfig() : null,
       'tags' => array_map(function (TagEntity $tag): array {
         return [
         'id' => $tag->getId(),
@@ -222,7 +222,7 @@ class PageRenderer {
     }
   }
 
-  private function woocommerceStoreConfig() {
+  private function getWoocommerceStoreConfig() {
 
     return [
       'precision' => $this->wooCommerceHelper->wcGetPriceDecimals(),
