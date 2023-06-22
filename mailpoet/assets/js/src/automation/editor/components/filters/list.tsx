@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { ComponentProps, useCallback, useMemo, useState } from 'react';
 import { Hooks } from 'wp-js-hooks';
 import { Button } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
@@ -6,12 +6,11 @@ import { __, sprintf } from '@wordpress/i18n';
 import { Icon, closeSmall } from '@wordpress/icons';
 import { ListGroupHeader } from './list-group-header';
 import { Value } from './value';
-import { Filter } from '../automation/types';
 import { storeName } from '../../store';
 import { PremiumModal } from '../../../../common/premium_modal';
 import {
-  DeleteStepFilterType,
   FilterGroupOperatorChangeType,
+  FilterWrapperType,
 } from '../../../types/filters';
 
 type Props = {
@@ -42,12 +41,35 @@ export function FiltersList({ editable = true }: Props): JSX.Element | null {
     [],
   );
 
-  const onDelete = useCallback((stepId: string, filter: Filter) => {
-    const deleteFilterCallback: DeleteStepFilterType = Hooks.applyFilters(
-      'mailpoet.automation.filters.delete_step_filter_callback',
-      () => setShowPremiumModal(true),
+  const FilterWrapper = useMemo(() => {
+    const wrapper: FilterWrapperType = Hooks.applyFilters(
+      'mailpoet.automation.filters.filter_wrapper',
+      ({
+        editable: isEditable,
+        children,
+      }: ComponentProps<FilterWrapperType>) => (
+        <>
+          <Button
+            className="mailpoet-automation-filters-list-item-content"
+            disabled={!isEditable}
+            onClick={() => setShowPremiumModal(true)}
+          >
+            {children}
+          </Button>
+
+          {isEditable && (
+            <Button
+              className="mailpoet-automation-filters-list-item-remove"
+              isSmall
+              onClick={() => setShowPremiumModal(true)}
+            >
+              <Icon icon={closeSmall} />
+            </Button>
+          )}
+        </>
+      ),
     );
-    deleteFilterCallback(stepId, filter);
+    return wrapper;
   }, []);
 
   const groups = step.filters?.groups ?? [];
@@ -85,7 +107,7 @@ export function FiltersList({ editable = true }: Props): JSX.Element | null {
                 key={filter.id}
                 className="mailpoet-automation-filters-list-item"
               >
-                <div className="mailpoet-automation-filters-list-item-content">
+                <FilterWrapper step={step} filter={filter} editable={editable}>
                   <span className="mailpoet-automation-filters-list-item-field">
                     {fields[filter.field_key]?.name ??
                       sprintf(
@@ -99,16 +121,7 @@ export function FiltersList({ editable = true }: Props): JSX.Element | null {
                     )?.label ?? __('unknown condition', 'mailpoet')}
                   </span>{' '}
                   <Value filter={filter} />
-                </div>
-                {editable && (
-                  <Button
-                    className="mailpoet-automation-filters-list-item-remove"
-                    isSmall
-                    onClick={() => onDelete(step.id, filter)}
-                  >
-                    <Icon icon={closeSmall} />
-                  </Button>
-                )}
+                </FilterWrapper>
               </div>
             ))}
           </div>

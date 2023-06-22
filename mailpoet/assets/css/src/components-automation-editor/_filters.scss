@@ -42,7 +42,15 @@ button.components-button.mailpoet-automation-filters-panel-add-filter {
   grid-template-columns: 1fr auto;
 
   .mailpoet-automation-filters-list-item-content {
+    display: block;
+    height: auto;
+    line-height: inherit;
     padding: 8px 12px;
+    text-align: left;
+
+    &:disabled {
+      opacity: 1;
+    }
   }
 
   .mailpoet-automation-filters-list-item-remove {
