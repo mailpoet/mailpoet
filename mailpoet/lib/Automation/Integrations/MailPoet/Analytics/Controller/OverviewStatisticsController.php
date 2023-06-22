@@ -103,6 +103,10 @@ class OverviewStatisticsController {
       $data['emails'][$newsletterId]['revenue']['previous'] = $statistic->getWooCommerceRevenue() ? $statistic->getWooCommerceRevenue()->getValue() : 0;
     }
 
+    usort($data['emails'], function ($a, $b) {
+      return $a['order'] <=> $b['order'];
+    });
+
     return $data;
   }
 
