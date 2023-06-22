@@ -73,11 +73,11 @@ export async function pullRequests() {
   await onboardingWizard();
   await newsletterListing();
   await newsletterSearching();
-  await formsAdding();
+  await listsViewSubscribers();
   await subscribersListing();
   await subscribersFiltering();
   await subscribersAdding();
-  await listsViewSubscribers();
+  await formsAdding();
 }
 
 // Run those tests against trunk in a nightly build
@@ -86,7 +86,6 @@ export async function nightly() {
   await newsletterStatistics();
   await newsletterSearching();
   await newsletterSending();
-  await formsAdding();
   await subscribersListing();
   await subscribersFiltering();
   await subscribersAdding();
@@ -94,6 +93,7 @@ export async function nightly() {
   await listsViewSubscribers();
   await listsComplexSegment();
   await settingsBasic();
+  await formsAdding();
 }
 
 // HTML report data saved in performance folder

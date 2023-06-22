@@ -22,7 +22,7 @@ if (!file_exists($vendorDir)) {
 }
 
 // paths
-$version = 'v0.44.1';
+$version = 'v0.45.0';
 $extension = $os === 'macos' || $os === 'windows' ? 'zip' : 'tar.gz';
 $name = "k6-$version-$os-$arch";
 $url = "https://github.com/grafana/k6/releases/download/$version/$name.$extension";
