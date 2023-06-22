@@ -63,6 +63,16 @@ function validateNewsletter(newsletter: NewsLetter) {
   let body;
   let content;
 
+  // Don't validate emails created in the new editor.
+  // The editor uses a different data format and will have own validation and also own send panel.
+  // We are using the send page for the new editor only temporarily.
+  if (
+    MailPoet.FeaturesController.isSupported('gutenberg_email_editor') &&
+    newsletter.wp_post_id !== null
+  ) {
+    return undefined;
+  }
+
   if (newsletter && newsletter.body && newsletter.body.content) {
     content = newsletter.body.content;
     body = JSON.stringify(newsletter.body.content);
