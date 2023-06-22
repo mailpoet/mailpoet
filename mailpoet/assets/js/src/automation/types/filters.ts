@@ -3,7 +3,7 @@
  * filters.
  */
 
-import { Dispatch, SetStateAction } from 'react';
+import { ComponentType, Dispatch, ReactNode, SetStateAction } from 'react';
 import { DropdownMenu } from '@wordpress/components';
 import { Item } from '../editor/components/inserter/item';
 import { Filter, Step } from '../editor/components/automation/types';
@@ -57,12 +57,17 @@ export type OrderStatusOptions = Map<
 // mailpoet.automation.filters.panel.content
 export type FiltersPanelContentType = (step: Step) => JSX.Element;
 
-// mailpoet.automation.filters.delete_step_filter_callback
-export type DeleteStepFilterType = (stepId: string, filter: Filter) => void;
-
 // mailpoet.automation.filters.group_operator_change_callback
 export type FilterGroupOperatorChangeType = (
   stepId: string,
   groupId: string,
   operator: 'and' | 'or',
 ) => void;
+
+// mailpoet.automation.filters.filter_wrapper
+export type FilterWrapperType = ComponentType<{
+  step: Step;
+  filter: Filter;
+  editable: boolean;
+  children: ReactNode;
+}>;
