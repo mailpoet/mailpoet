@@ -1,7 +1,7 @@
 import { AutomationStatus } from '../../../../listing/automation';
 import { Step } from '../../../../editor/components/automation/types';
 
-type Automation = {
+export type Automation = {
   id: number;
   name: string;
   status: AutomationStatus;
@@ -38,10 +38,18 @@ type OverviewSectionData = SectionData & {
 
 export type SectionData = Record<string, unknown>;
 
+type CustomQuery = {
+  order: 'desc' | 'asc';
+  order_by: string;
+  limit: number;
+  page: number;
+};
+
 export type Section = {
   id: string;
   name: string;
   endpoint: string;
+  customQuery: CustomQuery | undefined;
   withPreviousData: boolean;
   data: undefined | SectionData;
 };
@@ -90,7 +98,10 @@ export type OrderData = {
   };
 };
 
-type OrderSectionData = SectionData & OrderData[];
+type OrderSectionData = SectionData & {
+  results: number;
+  items: OrderData[];
+};
 
 export type OrderSection = Section & {
   data: undefined | OrderSectionData;
