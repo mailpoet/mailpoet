@@ -66,7 +66,10 @@ export function* updateSection(
       };
   const id = select(storeName).getAutomation().id;
 
-  const path = addQueryArgs(section.endpoint, { id, query: dates });
+  const customQuery = section.customQuery ?? {};
+
+  const args = { id, query: { ...dates, ...customQuery } };
+  const path = addQueryArgs(section.endpoint, args);
   const method = 'GET';
   const response: {
     data: SectionData;
