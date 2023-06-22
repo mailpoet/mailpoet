@@ -56,18 +56,36 @@ class DateTimeFilter implements Filter {
     ];
   }
 
-  public function getArgsSchema(): ObjectSchema {
-    return Builder::object([
-      'value' => Builder::oneOf([
-        Builder::string()->pattern(self::REGEX_DATETIME),
-        Builder::string()->pattern(self::REGEX_DATE),
-        Builder::array(Builder::integer()->minimum(0)->maximum(6))->minItems(1),
-        Builder::object([
-          'number' => Builder::integer()->minimum(1)->required(),
-          'unit' => Builder::string()->pattern('^days|weeks|months$')->required(),
-        ]),
-      ]),
-    ]);
+  public function getArgsSchema(string $condition): ObjectSchema {
+    switch ($condition) {
+      case self::CONDITION_BEFORE:
+      case self::CONDITION_AFTER:
+        return Builder::object([
+          'value' => Builder::string()->pattern(self::REGEX_DATETIME)->required(),
+        ]);
+      case self::CONDITION_ON:
+      case self::CONDITION_NOT_ON:
+        return Builder::object([
+          'value' => Builder::string()->pattern(self::REGEX_DATE)->required(),
+        ]);
+      case self::CONDITION_IN_THE_LAST:
+      case self::CONDITION_NOT_IN_THE_LAST:
+        return Builder::object([
+          'value' => Builder::object([
+            'number' => Builder::integer()->minimum(1)->required(),
+            'unit' => Builder::string()->pattern('^days|weeks|months$')->required(),
+          ])->required(),
+        ]);
+      case self::CONDITION_IS_SET:
+      case self::CONDITION_IS_NOT_SET:
+        return Builder::object([]);
+      case self::CONDITION_ON_THE_DAYS_OF_THE_WEEK:
+        return Builder::object([
+          'value' => Builder::array(Builder::integer()->minimum(0)->maximum(6))->minItems(1)->required(),
+        ]);
+      default:
+        throw new InvalidStateException();
+    }
   }
 
   public function matches(FilterData $data, $value): bool {

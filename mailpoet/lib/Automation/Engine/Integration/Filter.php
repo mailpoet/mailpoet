@@ -11,7 +11,7 @@ interface Filter {
   /** @return array<string, string> */
   public function getConditions(): array;
 
-  public function getArgsSchema(): ObjectSchema;
+  public function getArgsSchema(string $condition): ObjectSchema;
 
   /** @param mixed $value */
   public function matches(FilterData $data, $value): bool;

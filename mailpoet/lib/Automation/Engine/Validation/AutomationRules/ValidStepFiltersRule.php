@@ -35,7 +35,7 @@ class ValidStepFiltersRule implements AutomationNodeVisitor {
         if (!$registryFilter) {
           continue;
         }
-        $this->validator->validate($registryFilter->getArgsSchema(), $filter->getArgs());
+        $this->validator->validate($registryFilter->getArgsSchema($filter->getCondition()), $filter->getArgs());
       }
     }
   }

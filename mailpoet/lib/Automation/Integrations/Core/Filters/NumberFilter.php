@@ -39,13 +39,19 @@ class NumberFilter implements Filter {
     ];
   }
 
-  public function getArgsSchema(): ObjectSchema {
-    return Builder::object([
-      'value' => Builder::oneOf([
-        Builder::number()->required(),
-        Builder::array(Builder::number())->minItems(2)->maxItems(2)->required(),
-      ]),
-    ]);
+  public function getArgsSchema(string $condition): ObjectSchema {
+    switch ($condition) {
+      case self::CONDITION_BETWEEN:
+      case self::CONDITION_NOT_BETWEEN:
+        return Builder::object([
+          'value' => Builder::array(Builder::number())->minItems(2)->maxItems(2)->required(),
+        ]);
+      case self::CONDITION_IS_SET:
+      case self::CONDITION_IS_NOT_SET:
+        return Builder::object([]);
+      default:
+        return Builder::object(['value' => Builder::number()->required()]);
+    }
   }
 
   public function matches(FilterData $data, $value): bool {

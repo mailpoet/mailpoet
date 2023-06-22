@@ -24,7 +24,7 @@ class StringFilterTest extends MailPoetUnitTest {
       'matches-regex' => 'matches regex',
     ], $filter->getConditions());
 
-    $this->assertSame([
+    $stringValueArgsSchema = [
       'type' => 'object',
       'properties' => [
         'value' => [
@@ -32,7 +32,19 @@ class StringFilterTest extends MailPoetUnitTest {
           'required' => true,
         ],
       ],
-    ], $filter->getArgsSchema()->toArray());
+    ];
+
+    $emptyArgsSchema = ['type' => 'object', 'properties' => []];
+
+    $this->assertSame($stringValueArgsSchema, $filter->getArgsSchema('is')->toArray());
+    $this->assertSame($stringValueArgsSchema, $filter->getArgsSchema('is-not')->toArray());
+    $this->assertSame($stringValueArgsSchema, $filter->getArgsSchema('contains')->toArray());
+    $this->assertSame($stringValueArgsSchema, $filter->getArgsSchema('does-not-contain')->toArray());
+    $this->assertSame($stringValueArgsSchema, $filter->getArgsSchema('starts-with')->toArray());
+    $this->assertSame($stringValueArgsSchema, $filter->getArgsSchema('ends-with')->toArray());
+    $this->assertSame($stringValueArgsSchema, $filter->getArgsSchema('matches-regex')->toArray());
+    $this->assertSame($emptyArgsSchema, $filter->getArgsSchema('is-blank')->toArray());
+    $this->assertSame($emptyArgsSchema, $filter->getArgsSchema('is-not-blank')->toArray());
   }
 
   public function testInvalidValues(): void {

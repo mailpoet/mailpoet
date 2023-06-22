@@ -279,7 +279,7 @@ class FilterHandlerTest extends MailPoetUnitTest {
         return [];
       }
 
-      public function getArgsSchema(): ObjectSchema {
+      public function getArgsSchema(string $condition): ObjectSchema {
         return Builder::object();
       }
 

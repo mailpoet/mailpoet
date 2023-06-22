@@ -21,7 +21,7 @@ class BooleanFilterTest extends MailPoetUnitTest {
           'required' => true,
         ],
       ],
-    ], $filter->getArgsSchema()->toArray());
+    ], $filter->getArgsSchema('is')->toArray());
   }
 
   public function testInvalidValues(): void {

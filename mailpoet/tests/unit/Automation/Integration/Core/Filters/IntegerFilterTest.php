@@ -24,28 +24,41 @@ class IntegerFilterTest extends MailPoetUnitTest {
       'is-not-set' => 'is not set',
     ], $filter->getConditions());
 
-    $this->assertSame([
+    $singleValueArgsSchema = [
       'type' => 'object',
       'properties' => [
         'value' => [
-          'oneOf' => [
-            [
-              'type' => 'integer',
-              'required' => true,
-            ],
-            [
-              'type' => 'array',
-              'items' => [
-                'type' => 'integer',
-              ],
-              'minItems' => 2,
-              'maxItems' => 2,
-              'required' => true,
-            ],
-          ],
+          'type' => 'integer',
+          'required' => true,
         ],
       ],
-    ], $filter->getArgsSchema()->toArray());
+    ];
+
+    $rangeValueArgsSchema = [
+      'type' => 'object',
+      'properties' => [
+        'value' => [
+          'type' => 'array',
+          'items' => ['type' => 'integer'],
+          'minItems' => 2,
+          'maxItems' => 2,
+          'required' => true,
+        ],
+      ],
+    ];
+
+    $emptyArgsSchema = ['type' => 'object', 'properties' => []];
+
+    $this->assertSame($singleValueArgsSchema, $filter->getArgsSchema('equals')->toArray());
+    $this->assertSame($singleValueArgsSchema, $filter->getArgsSchema('not-equals')->toArray());
+    $this->assertSame($singleValueArgsSchema, $filter->getArgsSchema('greater-than')->toArray());
+    $this->assertSame($singleValueArgsSchema, $filter->getArgsSchema('less-than')->toArray());
+    $this->assertSame($rangeValueArgsSchema, $filter->getArgsSchema('between')->toArray());
+    $this->assertSame($rangeValueArgsSchema, $filter->getArgsSchema('not-between')->toArray());
+    $this->assertSame($singleValueArgsSchema, $filter->getArgsSchema('is-multiple-of')->toArray());
+    $this->assertSame($singleValueArgsSchema, $filter->getArgsSchema('is-not-multiple-of')->toArray());
+    $this->assertSame($emptyArgsSchema, $filter->getArgsSchema('is-set')->toArray());
+    $this->assertSame($emptyArgsSchema, $filter->getArgsSchema('is-not-set')->toArray());
   }
 
   public function testInvalidValues(): void {
