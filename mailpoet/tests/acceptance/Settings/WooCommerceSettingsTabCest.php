@@ -20,6 +20,8 @@ class WooCommerceSettingsTabCest {
 
   /** @var array WooCommerce Product data*/
   private $product;
+  
+  /** @var string */
   private $segmentName;
 
   public function _before(\AcceptanceTester $i) {
