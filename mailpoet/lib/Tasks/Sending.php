@@ -4,6 +4,7 @@ namespace MailPoet\Tasks;
 
 use MailPoet\Cron\Workers\SendingQueue\SendingQueue as SendingQueueAlias;
 use MailPoet\DI\ContainerWrapper;
+use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\InvalidStateException;
@@ -11,6 +12,7 @@ use MailPoet\Logging\LoggerFactory;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\ScheduledTaskSubscriber;
 use MailPoet\Models\SendingQueue;
+use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Newsletter\Sending\ScheduledTaskSubscribersRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Util\Helpers;
@@ -58,6 +60,12 @@ class Sending {
     'deleted_at',
   ];
 
+  /** @var ScheduledTaskSubscribersRepository */
+  private $scheduledTaskSubscribersRepository;
+
+  /** @var ScheduledTasksRepository */
+  private $scheduledTasksRepository;
+
   private function __construct(
     ScheduledTask $task = null,
     SendingQueue $queue = null
@@ -81,6 +89,8 @@ class Sending {
     $this->task = $task;
     $this->queue = $queue;
     $this->taskSubscribers = new Subscribers($task);
+    $this->scheduledTaskSubscribersRepository = ContainerWrapper::getInstance()->get(ScheduledTaskSubscribersRepository::class);
+    $this->scheduledTasksRepository = ContainerWrapper::getInstance()->get(ScheduledTasksRepository::class);
   }
 
   public static function create(ScheduledTask $task = null, SendingQueue $queue = null) {
@@ -214,16 +224,14 @@ class Sending {
   }
 
   public function getSubscribers($processed = null) {
-    $scheduledTaskSubscribersRepository = ContainerWrapper::getInstance()->get(ScheduledTaskSubscribersRepository::class);
-
     if (is_null($processed)) {
-      $subscribers = $scheduledTaskSubscribersRepository->findBy(['task' => $this->task->id]);
+      $subscribers = $this->scheduledTaskSubscribersRepository->findBy(['task' => $this->task->id]);
     } else if ($processed) {
-      $subscribers = $scheduledTaskSubscribersRepository->findBy(
+      $subscribers = $this->scheduledTaskSubscribersRepository->findBy(
         ['task' => $this->task->id, 'processed' => ScheduledTaskSubscriberEntity::STATUS_PROCESSED]
       );
     } else {
-      $subscribers = $scheduledTaskSubscribersRepository->findBy(
+      $subscribers = $this->scheduledTaskSubscribersRepository->findBy(
         ['task' => $this->task->id, 'processed' => ScheduledTaskSubscriberEntity::STATUS_UNPROCESSED]
       );
     }
@@ -237,8 +245,12 @@ class Sending {
   }
 
   public function setSubscribers(array $subscriberIds) {
-    $this->taskSubscribers->setSubscribers($subscriberIds);
-    $this->updateCount();
+    $scheduledTaskEntity = $this->scheduledTasksRepository->findOneById($this->task->id);
+
+    if ($scheduledTaskEntity instanceof ScheduledTaskEntity) {
+      $this->scheduledTaskSubscribersRepository->setSubscribers($scheduledTaskEntity, $subscriberIds);
+      $this->updateCount();
+    }
   }
 
   public function removeSubscribers(array $subscriberIds) {

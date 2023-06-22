@@ -2,8 +2,10 @@
 
 namespace MailPoet\Test\Statistics\Track;
 
+use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\StatisticsUnsubscribeEntity;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Statistics\StatisticsUnsubscribesRepository;
 use MailPoet\Statistics\Track\Unsubscribes;
 use MailPoet\Tasks\Sending as SendingTask;
@@ -43,6 +45,11 @@ class UnsubscribesTest extends \MailPoetTest {
     $queue->setSubscribers([$this->subscriber->getId()]);
     $queue->updateProcessedSubscribers([$this->subscriber->getId()]);
     $this->queue = $queue->save();
+    $scheduledTasksRepository = $this->diContainer->get(ScheduledTasksRepository::class);
+    $scheduledTask = $scheduledTasksRepository->findOneById($this->queue->task()->id);
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $scheduledTask);
+    $scheduledTasksRepository->refresh($scheduledTask);
+
     // instantiate class
     $this->unsubscribes = $this->diContainer->get(Unsubscribes::class);
     $this->statisticsUnsubscribesRepository = $this->diContainer->get(StatisticsUnsubscribesRepository::class);
