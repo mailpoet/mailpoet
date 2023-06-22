@@ -51,22 +51,36 @@ class SettingsArchivePageCest {
     $i->waitForText('SentNewsletter');
     $i->dontSee('DraftNewsletter');
     $i->dontSee('ScheduledNewsletter');
+
+    // Create 2 additional sent newsletters
     $newsletterFactory = new Newsletter();
-    $newsletterFactory->withSubject('SentNewsletter2')->withDraftStatus()->withSendingQueue()->withSegments([$segment3])->create();
+    $newsletterFactory->withSubject('SentNewsletter2')->withSentStatus()->withSendingQueue()->withSegments([$segment3])->create();
     $newsletterFactory = new Newsletter();
-    $newsletterFactory->withSubject('SentNewsletter3')->withDraftStatus()->withSendingQueue()->withSegments([$segment3])->create();
+    $newsletterFactory->withSubject('SentNewsletter3')->withSentStatus()->withSendingQueue()->withSegments([$segment3])->create();
+
+    $i->wantTo('See the newly created sent newsletters are present on the page');
     $i->reloadPage();
     $i->waitForText('SentNewsletter');
     $i->waitForText('SentNewsletter2');
     $i->waitForText('SentNewsletter3');
+
+    $i->wantTo('Move both sent newsletters to the trash and delete only one');
     $i->amOnMailpoetPage('Emails');
-    $i->waitForText('SentNewsletter3');
+    $i->waitForText('SentNewsletter2');
+    $i->clickItemRowActionByItemName('SentNewsletter2', 'Move to trash');
+    $i->waitForNoticeAndClose('1 email was moved to the trash.');
     $i->clickItemRowActionByItemName('SentNewsletter3', 'Move to trash');
-    $i->waitForText('1 email was moved to the trash.');
+    $i->waitForNoticeAndClose('1 email was moved to the trash.');
+    $i->click('[data-automation-id="filters_trash"]');
+    $i->waitForElement('[data-automation-id="empty_trash"]');
+    $i->waitForText('SentNewsletter3');
+    $i->clickItemRowActionByItemName('SentNewsletter3', 'Delete permanently');
+    $i->waitForText('1 email was permanently deleted.');
+
     $i->amOnUrl($postUrl);
     $i->waitForText($pageTitle3);
     $i->waitForText('SentNewsletter');
-    $i->waitForText('SentNewsletter2');
+    $i->dontSee('SentNewsletter2');
     $i->dontSee('SentNewsletter3');
   }
 }
