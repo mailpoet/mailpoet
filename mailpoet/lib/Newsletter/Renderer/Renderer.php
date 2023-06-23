@@ -19,11 +19,8 @@ class Renderer {
   const NEWSLETTER_TEMPLATE = 'Template.html';
   const FILTER_POST_PROCESS = 'mailpoet_rendering_post_process';
 
-  /** @var Blocks\Renderer */
-  private $blocksRenderer;
-
-  /** @var Columns\Renderer */
-  private $columnsRenderer;
+  /** @var BodyRenderer */
+  private $bodyRenderer;
 
   /** @var Preprocessor */
   private $preprocessor;
@@ -47,8 +44,7 @@ class Renderer {
   private $sendingQueuesRepository;
 
   public function __construct(
-    Blocks\Renderer $blocksRenderer,
-    Columns\Renderer $columnsRenderer,
+    BodyRenderer $bodyRenderer,
     Preprocessor $preprocessor,
     \MailPoetVendor\CSS $cSSInliner,
     ServicesChecker $servicesChecker,
@@ -57,8 +53,7 @@ class Renderer {
     NewslettersRepository $newslettersRepository,
     SendingQueuesRepository $sendingQueuesRepository
   ) {
-    $this->blocksRenderer = $blocksRenderer;
-    $this->columnsRenderer = $columnsRenderer;
+    $this->bodyRenderer = $bodyRenderer;
     $this->preprocessor = $preprocessor;
     $this->cSSInliner = $cSSInliner;
     $this->servicesChecker = $servicesChecker;
@@ -98,7 +93,7 @@ class Renderer {
     $renderedBody = "";
     try {
       $content = $this->preprocessor->process($newsletter, $content, $preview, $sendingTask);
-      $renderedBody = $this->renderBody($newsletter, $content);
+      $renderedBody = $this->bodyRenderer->renderBody($newsletter, $content);
     } catch (NewsletterProcessingException $e) {
       $this->loggerFactory->getLogger(LoggerFactory::TOPIC_COUPONS)->error(
         $e->getMessage(),
@@ -138,28 +133,6 @@ class Renderer {
     return ($type && !empty($renderedNewsletter[$type])) ?
       $renderedNewsletter[$type] :
       $renderedNewsletter;
-  }
-
-  /**
-   * @param NewsletterEntity $newsletter
-   * @param array $content
-   * @return string
-   */
-  private function renderBody(NewsletterEntity $newsletter, array $content) {
-    $blocks = (array_key_exists('blocks', $content))
-      ? $content['blocks']
-      : [];
-
-    $renderedContent = [];
-    foreach ($blocks as $contentBlock) {
-      $columnsData = $this->blocksRenderer->render($newsletter, $contentBlock);
-
-      $renderedContent[] = $this->columnsRenderer->render(
-        $contentBlock,
-        $columnsData
-      );
-    }
-    return implode('', $renderedContent);
   }
 
   /**
