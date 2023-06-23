@@ -93,5 +93,17 @@ class SettingsArchivePageCest {
     $i->dontSee('SentNewsletter2');
     $i->dontSee('SentNewsletter3');
     $i->dontSee('SentNewsletter4');
+    
+    $pageTitle4 = 'SentNewsletterArchive';
+    $pageContent4 = "[mailpoet_archive segments=\"{$segment3->getId()},{$segment4->getId()}\"]";
+    $postUrl2 = $i->createPost($pageTitle4, $pageContent4);
+
+    $i->wantTo('Create another page containing archive shortcode with multiple lists');
+    $i->amOnUrl($postUrl2);
+    $i->waitForText($pageTitle4);
+    $i->waitForText('SentNewsletter');
+    $i->dontSee('SentNewsletter2');
+    $i->dontSee('SentNewsletter3');
+    $i->waitForText('SentNewsletter4');
   }
 }
