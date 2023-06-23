@@ -7,7 +7,7 @@ import {
   PlainBodyTitle,
   FormTokenField,
 } from '../../../../../editor/components';
-import { userRoles } from './role';
+import { getContext } from '../../../context';
 
 function SettingsInfoText(): JSX.Element {
   return (
@@ -39,7 +39,7 @@ export function RolePanel(): JSX.Element {
     }),
     [],
   );
-
+  const userRoles = getContext().userRoles;
   const rawSelected = selectedStep.args?.roles
     ? (selectedStep.args.roles as string[])
     : [];
