@@ -8,6 +8,7 @@ type Segment = FormTokenItem & {
 
 export type Context = {
   segments?: Segment[];
+  userRoles?: FormTokenItem[];
 };
 
 export const getContext = (): Context =>
