@@ -57,11 +57,6 @@ export function Step({ step, isSelected }: Props): JSX.Element {
 
   const compositeItemId = `step-${step.id}`;
   const stepTypeData = stepType ?? getUnknownStepType(step);
-  const filterCount =
-    step.filters?.groups.reduce(
-      (sum, group) => sum + group.filters.length,
-      0,
-    ) ?? 0;
 
   return (
     <div className="mailpoet-automation-editor-step-wrapper">
@@ -109,7 +104,7 @@ export function Step({ step, isSelected }: Props): JSX.Element {
           </div>
         </div>
         <div className="mailpoet-automation-editor-step-footer">
-          {filterCount > 0 && <StepFilters filterCount={filterCount} />}
+          <StepFilters step={step} />
           {error && (
             <div className="mailpoet-automation-editor-step-error">
               <Chip variant="danger" size="small">
