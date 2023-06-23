@@ -26,8 +26,8 @@ class Registry {
   /** @var SubjectTransformer[] */
   private $subjectTransformers = [];
 
-  /** @var array<string, Field> */
-  private $fields = [];
+  /** @var array<string, Field>|null */
+  private $fields = null;
 
   /** @var array<string, Filter> */
   private $filters = [];
@@ -83,9 +83,9 @@ class Registry {
       throw new \Exception(); // TODO
     }
     $this->subjects[$key] = $subject;
-    foreach ($subject->getFields() as $field) {
-      $this->addField($field);
-    }
+
+    // reset fields cache
+    $this->fields = null;
   }
 
   /** @return Subject<Payload>|null */
@@ -106,21 +106,22 @@ class Registry {
     return $this->subjectTransformers;
   }
 
-  public function addField(Field $field): void {
-    $key = $field->getKey();
-    if (isset($this->fields[$key])) {
-      throw new \Exception(); // TODO
-    }
-    $this->fields[$key] = $field;
-  }
-
   public function getField(string $key): ?Field {
-    return $this->fields[$key] ?? null;
+    return $this->getFields()[$key] ?? null;
   }
 
   /** @return array<string, Field> */
   public function getFields(): array {
-    return $this->fields;
+    // add fields lazily (on the first call)
+    if ($this->fields === null) {
+      $this->fields = [];
+      foreach ($this->subjects as $subject) {
+        foreach ($subject->getFields() as $field) {
+          $this->addField($field);
+        }
+      }
+    }
+    return $this->fields ?? [];
   }
 
   public function addFilter(Filter $filter): void {
@@ -211,5 +212,16 @@ class Registry {
   public function onBeforeAutomationStepSave(callable $callback, string $key = null, int $priority = 10): void {
     $keyPart = $key ? "/key=$key" : '';
     $this->wordPress->addAction(Hooks::AUTOMATION_STEP_BEFORE_SAVE . $keyPart, $callback, $priority, 2);
+  }
+
+  /**
+   * This is used only internally. Fields are added lazily from subjects.
+   */
+  private function addField(Field $field): void {
+    $key = $field->getKey();
+    if (isset($this->fields[$key])) {
+      throw new \Exception(); // TODO
+    }
+    $this->fields[$key] = $field;
   }
 }
