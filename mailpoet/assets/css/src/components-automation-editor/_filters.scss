@@ -41,7 +41,13 @@ button.components-button.mailpoet-automation-filters-panel-add-filter {
   display: grid;
   grid-template-columns: 1fr auto;
 
+  &.mailpoet-automation-filters-list-item-has-error {
+    background: #fcf0f1;
+    color: #8a2424;
+  }
+
   .mailpoet-automation-filters-list-item-content {
+    color: inherit;
     display: block;
     height: auto;
     line-height: inherit;
@@ -58,6 +64,12 @@ button.components-button.mailpoet-automation-filters-panel-add-filter {
     margin: 4px;
     padding: 0;
   }
+}
+
+.mailpoet-automation-filters-list-item-error {
+  color: #8a2424;
+  font-size: 12px;
+  margin-top: 4px;
 }
 
 .mailpoet-automation-filters-list-item-field,
