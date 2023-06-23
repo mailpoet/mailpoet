@@ -1,3 +1,4 @@
+import classNames from 'classnames';
 import { ComponentProps, useCallback, useMemo, useState } from 'react';
 import { Hooks } from 'wp-js-hooks';
 import { Button } from '@wordpress/components';
@@ -20,11 +21,14 @@ type Props = {
 export function FiltersList({ editable = true }: Props): JSX.Element | null {
   const [showPremiumModal, setShowPremiumModal] = useState(false);
 
-  const { step, fields, filters } = useSelect(
+  const { step, fields, filters, errors } = useSelect(
     (select) => ({
       step: select(storeName).getSelectedStep(),
       fields: select(storeName).getRegistry().fields,
       filters: select(storeName).getRegistry().filters,
+      errors: select(storeName).getStepError(
+        select(storeName).getSelectedStep().id,
+      ),
     }),
     [],
   );
@@ -77,6 +81,8 @@ export function FiltersList({ editable = true }: Props): JSX.Element | null {
     return null;
   }
 
+  const filterErrors = errors?.filters ?? {};
+
   return (
     <>
       {showPremiumModal && (
@@ -103,25 +109,41 @@ export function FiltersList({ editable = true }: Props): JSX.Element | null {
 
           <div className="mailpoet-automation-filters-list">
             {group.filters.map((filter) => (
-              <div
-                key={filter.id}
-                className="mailpoet-automation-filters-list-item"
-              >
-                <FilterWrapper step={step} filter={filter} editable={editable}>
-                  <span className="mailpoet-automation-filters-list-item-field">
-                    {fields[filter.field_key]?.name ??
-                      sprintf(
-                        __('Unknown field "%s"', 'mailpoet'),
-                        filter.field_key,
-                      )}
-                  </span>{' '}
-                  <span className="mailpoet-automation-filters-list-item-condition">
-                    {filters[filter.field_type]?.conditions.find(
-                      ({ key }) => key === filter.condition,
-                    )?.label ?? __('unknown condition', 'mailpoet')}
-                  </span>{' '}
-                  <Value filter={filter} />
-                </FilterWrapper>
+              <div key={filter.id}>
+                <div
+                  className={classNames(
+                    'mailpoet-automation-filters-list-item',
+                    {
+                      'mailpoet-automation-filters-list-item-has-error':
+                        !!filterErrors[filter.id],
+                    },
+                  )}
+                >
+                  <FilterWrapper
+                    step={step}
+                    filter={filter}
+                    editable={editable}
+                  >
+                    <span className="mailpoet-automation-filters-list-item-field">
+                      {fields[filter.field_key]?.name ??
+                        sprintf(
+                          __('Unknown field "%s"', 'mailpoet'),
+                          filter.field_key,
+                        )}
+                    </span>{' '}
+                    <span className="mailpoet-automation-filters-list-item-condition">
+                      {filters[filter.field_type]?.conditions.find(
+                        ({ key }) => key === filter.condition,
+                      )?.label ?? __('unknown condition', 'mailpoet')}
+                    </span>{' '}
+                    <Value filter={filter} />
+                  </FilterWrapper>
+                </div>
+                {filterErrors[filter.id] && (
+                  <div className="mailpoet-automation-filters-list-item-error">
+                    {filterErrors[filter.id]}
+                  </div>
+                )}
               </div>
             ))}
           </div>
