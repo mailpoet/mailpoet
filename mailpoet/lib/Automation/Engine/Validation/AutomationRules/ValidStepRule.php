@@ -45,7 +45,7 @@ class ValidStepRule implements AutomationNodeVisitor {
         $rule->visitNode($automation, $node);
       } catch (UnexpectedValueException $e) {
         if (!isset($this->errors[$stepId])) {
-          $this->errors[$stepId] = ['step_id' => $stepId, 'message' => $e->getMessage(), 'fields' => []];
+          $this->errors[$stepId] = ['step_id' => $stepId, 'message' => $e->getMessage(), 'fields' => [], 'filters' => []];
         }
         $this->errors[$stepId]['fields'] = array_merge(
           $this->mapErrorCodesToErrorMessages($e->getErrors()),
@@ -53,15 +53,17 @@ class ValidStepRule implements AutomationNodeVisitor {
         );
       } catch (ValidationException $e) {
         if (!isset($this->errors[$stepId])) {
-          $this->errors[$stepId] = ['step_id' => $stepId, 'message' => $e->getMessage(), 'fields' => []];
+          $this->errors[$stepId] = ['step_id' => $stepId, 'message' => $e->getMessage(), 'fields' => [], 'filters' => []];
         }
-        $this->errors[$stepId]['fields'] = array_merge(
+
+        $key = $rule instanceof ValidStepFiltersRule ? 'filters' : 'fields';
+        $this->errors[$stepId][$key] = array_merge(
           $this->mapErrorCodesToErrorMessages($e->getErrors()),
-          $this->errors[$stepId]['fields']
+          $this->errors[$stepId][$key]
         );
       } catch (Throwable $e) {
         if (!isset($this->errors[$stepId])) {
-          $this->errors[$stepId] = ['step_id' => $stepId, 'message' => __('Unknown error.', 'mailpoet'), 'fields' => []];
+          $this->errors[$stepId] = ['step_id' => $stepId, 'message' => __('Unknown error.', 'mailpoet'), 'fields' => [], 'filters' => []];
         }
       }
     }
