@@ -84,6 +84,7 @@ export type StepErrors = {
   step_id: string;
   message: string;
   fields: Record<string, string>;
+  filters: Record<string, string>;
 };
 
 export type Errors = {

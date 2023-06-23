@@ -49,6 +49,7 @@ class ValidStepRuleTest extends AutomationRuleTest {
             'step_id' => 'root',
             'message' => 'Test error',
             'fields' => [],
+            'filters' => [],
           ],
         ],
         $e->getErrors()
@@ -79,6 +80,7 @@ class ValidStepRuleTest extends AutomationRuleTest {
             'step_id' => 'root',
             'message' => 'Unknown error.',
             'fields' => [],
+            'filters' => [],
           ],
         ],
         $e->getErrors()
