@@ -309,6 +309,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\CustomFields\CustomFieldsRepository::class)->setPublic(true);
     // Email Editor
     $container->autowire(\MailPoet\EmailEditor\Core\EmailEditor::class)->setPublic(true);
+    $container->autowire(\MailPoet\EmailEditor\Core\Renderer\BodyRenderer::class)->setPublic(true);
     $container->autowire(\MailPoet\EmailEditor\Integration\EmailEditor::class)->setPublic(true);
     $container->autowire(\MailPoet\EmailEditor\Integration\EmailApiController::class)->setPublic(true);
     // Features
