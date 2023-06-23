@@ -558,4 +558,16 @@ class NewsletterEntity {
   public function canBeSetSent(): bool {
     return in_array($this->getType(), [self::TYPE_NOTIFICATION_HISTORY, self::TYPE_STANDARD], true);
   }
+
+  /**
+   * We don't use typehint for now because doctrine cache generator would fail as it doesn't know the class.
+   * @return \WP_Post|null
+   */
+  public function getWpPost() {
+    if ($this->wpPostId === null) {
+      return null;
+    }
+    $post = \WP_Post::get_instance($this->wpPostId);
+    return $post ?: null;
+  }
 }

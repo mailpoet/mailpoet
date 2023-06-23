@@ -5,6 +5,7 @@ namespace MailPoet\Test\Newsletter;
 use Codeception\Util\Fixtures;
 use MailPoet\Config\ServicesChecker;
 use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Features\FeaturesController;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Renderer\Blocks\Button;
@@ -54,13 +55,15 @@ class RendererTest extends \MailPoetTest {
     $this->servicesChecker = $this->createMock(ServicesChecker::class);
     $this->renderer = new Renderer(
       $this->diContainer->get(BodyRenderer::class),
+      $this->diContainer->get(\MailPoet\EmailEditor\Core\Renderer\BodyRenderer::class),
       $this->diContainer->get(Preprocessor::class),
       $this->diContainer->get(\MailPoetVendor\CSS::class),
       $this->servicesChecker,
       $this->diContainer->get(WPFunctions::class),
       $this->diContainer->get(LoggerFactory::class),
       $this->diContainer->get(NewslettersRepository::class),
-      $this->diContainer->get(SendingQueuesRepository::class)
+      $this->diContainer->get(SendingQueuesRepository::class),
+      $this->diContainer->get(FeaturesController::class)
     );
     $this->columnRenderer = new ColumnRenderer();
     $this->dOMParser = new pQuery();
