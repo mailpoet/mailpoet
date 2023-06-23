@@ -76,3 +76,13 @@ button.components-button.mailpoet-automation-filters-panel-add-filter {
 .mailpoet-automation-filters-list-item-value {
   font-weight: 600;
 }
+
+.mailpoet-automation-filters-list-item-value-missing {
+  color: #757575;
+  display: inline-block;
+  vertical-align: middle;
+
+  svg {
+    margin: -2px 0;
+  }
+}
