@@ -8,11 +8,13 @@ use MailPoet\Test\DataFactories\Segment;
 class SettingsArchivePageCest {
   public function createArchivePageNoSentNewsletters(\AcceptanceTester $i) {
     $i->wantTo('Create page with MP archive shortcode, showing no sent newsletters');
+
     $segmentFactory = new Segment();
     $segment = $segmentFactory->withName('Empty Send')->create();
     $pageTitle = 'EmptyNewsletterArchive';
     $pageContent = "[mailpoet_archive segments=\"{$segment->getId()}\"]";
     $postUrl = $i->createPost($pageTitle, $pageContent);
+
     $i->login();
     $i->amOnUrl($postUrl);
     $i->waitForText($pageTitle);
@@ -21,6 +23,7 @@ class SettingsArchivePageCest {
 
   public function createArchivePageWithSentNewsletters(\AcceptanceTester $i) {
     $i->wantTo('Create page with MP archive shortcode, showing sent newsletters');
+
     $segmentFactory = new Segment();
     $segment2 = $segmentFactory->withName('SentNewsletters')->create();
     $newsletterFactory = new Newsletter();
@@ -28,6 +31,7 @@ class SettingsArchivePageCest {
     $pageTitle2 = 'SentNewsletterArchive';
     $pageContent2 = "[mailpoet_archive segments=\"{$segment2->getId()}\"]";
     $postUrl = $i->createPost($pageTitle2, $pageContent2);
+
     $i->login();
     $i->amOnUrl($postUrl);
     $i->waitForText($pageTitle2);
@@ -36,8 +40,11 @@ class SettingsArchivePageCest {
 
   public function createArchivePageWithVariousStatusNewsletters(\AcceptanceTester $i) {
     $i->wantTo('Create page with MP archive shortcode, showing only sent newsletters but having various in database');
+
     $segmentFactory = new Segment();
     $segment3 = $segmentFactory->withName('SentNewsletters')->create();
+    $segmentFactory = new Segment();
+    $segment4 = $segmentFactory->withName('SentNewsletters2')->create();
     $newsletterFactory = new Newsletter();
     $newsletterFactory->withSubject('SentNewsletter')->withSentStatus()->withSendingQueue()->withSegments([$segment3])->create();
     $newsletterFactory->withSubject('DraftNewsletter')->withDraftStatus()->withScheduledQueue()->withSegments([$segment3])->create();
@@ -45,6 +52,7 @@ class SettingsArchivePageCest {
     $pageTitle3 = 'SentNewsletterArchive';
     $pageContent3 = "[mailpoet_archive segments=\"{$segment3->getId()}\"]";
     $postUrl = $i->createPost($pageTitle3, $pageContent3);
+
     $i->login();
     $i->amOnUrl($postUrl);
     $i->waitForText($pageTitle3);
@@ -57,6 +65,8 @@ class SettingsArchivePageCest {
     $newsletterFactory->withSubject('SentNewsletter2')->withSentStatus()->withSendingQueue()->withSegments([$segment3])->create();
     $newsletterFactory = new Newsletter();
     $newsletterFactory->withSubject('SentNewsletter3')->withSentStatus()->withSendingQueue()->withSegments([$segment3])->create();
+    $newsletterFactory = new Newsletter();
+    $newsletterFactory->withSubject('SentNewsletter4')->withSentStatus()->withSendingQueue()->withSegments([$segment4])->create();
 
     $i->wantTo('See the newly created sent newsletters are present on the page');
     $i->reloadPage();
@@ -82,5 +92,6 @@ class SettingsArchivePageCest {
     $i->waitForText('SentNewsletter');
     $i->dontSee('SentNewsletter2');
     $i->dontSee('SentNewsletter3');
+    $i->dontSee('SentNewsletter4');
   }
 }
