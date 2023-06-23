@@ -1,33 +1,30 @@
-import { __ } from '@wordpress/i18n';
-import { select } from '@wordpress/data';
+import { useSelect } from '@wordpress/data';
 import { getSettings, dateI18n } from '@wordpress/date';
+import { Icon, helpFilled } from '@wordpress/icons';
+import { __ } from '@wordpress/i18n';
 import { Filter } from '../automation/types';
-import { storeName } from '../../store';
+import { Registry, storeName } from '../../store';
 
-const getValue = ({
-  field_key,
-  args,
-  condition,
-}: Filter): string | undefined => {
-  const field = select(storeName).getRegistry().fields[field_key];
+type Field = Registry['fields'][number];
+
+const getValue = (field: Field, filter: Filter): string | undefined => {
+  const { condition, args } = filter;
+
+  if (args.value === undefined) {
+    return undefined;
+  }
+
   switch (field?.type) {
     case 'boolean':
       return args.value ? __('Yes', 'mailpoet') : __('No', 'mailpoet');
     case 'number':
     case 'integer':
-      if (args.value === undefined) {
-        return undefined;
-      }
       return Array.isArray(args.value)
         ? args.value.join(' and ')
         : args.value.toString();
     case 'string':
-      return args.value as string;
+      return args.value.toString();
     case 'datetime': {
-      if (args.value === undefined) {
-        return undefined;
-      }
-
       const settings = getSettings();
 
       // in-the-last/not-in-the-last
@@ -96,9 +93,29 @@ type Props = {
 };
 
 export function Value({ filter }: Props): JSX.Element | null {
-  const value = getValue(filter);
+  const field = useSelect(
+    (select) => select(storeName).getRegistry().fields[filter.field_key],
+    [],
+  );
+
+  const expectsValue = ![
+    'is-set',
+    'is-not-set',
+    'is-blank',
+    'is-not-blank',
+  ].includes(filter.condition);
+
+  if (!field || !expectsValue) {
+    return undefined;
+  }
+
+  const value = getValue(field, filter);
   if (value === undefined) {
-    return null;
+    return expectsValue ? (
+      <span className="mailpoet-automation-filters-list-item-value-missing">
+        <Icon icon={helpFilled} size={16} />
+      </span>
+    ) : null;
   }
   return (
     <span className="mailpoet-automation-filters-list-item-value">{value}</span>
