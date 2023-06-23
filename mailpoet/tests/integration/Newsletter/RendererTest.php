@@ -15,6 +15,7 @@ use MailPoet\Newsletter\Renderer\Blocks\Image;
 use MailPoet\Newsletter\Renderer\Blocks\Social;
 use MailPoet\Newsletter\Renderer\Blocks\Spacer;
 use MailPoet\Newsletter\Renderer\Blocks\Text;
+use MailPoet\Newsletter\Renderer\BodyRenderer;
 use MailPoet\Newsletter\Renderer\Columns\Renderer as ColumnRenderer;
 use MailPoet\Newsletter\Renderer\Preprocessor;
 use MailPoet\Newsletter\Renderer\Renderer;
@@ -52,8 +53,7 @@ class RendererTest extends \MailPoetTest {
     $this->newsletter->setStatus('active');
     $this->servicesChecker = $this->createMock(ServicesChecker::class);
     $this->renderer = new Renderer(
-      $this->diContainer->get(\MailPoet\Newsletter\Renderer\Blocks\Renderer::class),
-      $this->diContainer->get(ColumnRenderer::class),
+      $this->diContainer->get(BodyRenderer::class),
       $this->diContainer->get(Preprocessor::class),
       $this->diContainer->get(\MailPoetVendor\CSS::class),
       $this->servicesChecker,
