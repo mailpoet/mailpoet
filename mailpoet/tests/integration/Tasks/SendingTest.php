@@ -176,6 +176,19 @@ class SendingTest extends \MailPoetTest {
     $this->sending->removeSubscribers($subscriberIds);
     expect($this->sending->getSubscribers())->equals([$this->subscriber1->getId()]);
     expect($this->sending->count_total)->equals(1);
+    expect($this->sending->status)->null();
+  }
+
+  public function testItRemovesSubscribersShouldMarkTaskAsComplete() {
+    $subscriberIds = [$this->subscriber1->getId(), $this->subscriber2->getId()];
+    $originalProcessedAt = $this->sending->processed_at;
+
+    $this->sending->removeSubscribers($subscriberIds);
+
+    expect($this->sending->getSubscribers())->isEmpty();
+    expect($this->sending->count_total)->equals(0);
+    expect($this->sending->status)->same(ScheduledTaskEntity::STATUS_COMPLETED);
+    expect($this->sending->processed_at)->notSame($originalProcessedAt);
   }
 
   public function testItRemovesAllSubscribers() {
