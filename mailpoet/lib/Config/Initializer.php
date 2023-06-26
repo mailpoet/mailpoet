@@ -360,10 +360,10 @@ class Initializer {
     $activatedByWpAdmin = !empty(strpos($currentUrl, 'plugins.php')) && isset($_GET['activate']) && (bool)$_GET['activate'];
     if (!$activatedByWpAdmin) return; // not activated by wp. Do not redirect e.g WooCommerce NUX
 
-    $this->changelog->redirectToLandingPage();
-
-    // done with afterPluginActivation actions
+    // done with afterPluginActivation actions. Delete before redirect
     $this->wpFunctions->deleteOption(self::PLUGIN_ACTIVATED);
+
+    $this->changelog->redirectToLandingPage();
   }
 
   public function maybeDbUpdate() {
