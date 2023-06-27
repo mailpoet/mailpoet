@@ -129,7 +129,12 @@ class AutomationStorage {
     $automationsTable = esc_sql($this->automationsTable);
     $versionsTable = esc_sql($this->versionsTable);
 
-    $query = !$versionId ? (string)$this->wpdb->prepare(
+    if ($versionId) {
+      $automations = $this->getAutomationWithDifferentVersions([$versionId]);
+      return $automations ? $automations[0] : null;
+    }
+
+    $query = (string)$this->wpdb->prepare(
       "
         SELECT a.*, v.id AS version_id, v.steps
         FROM $automationsTable as a, $versionsTable as v
@@ -138,13 +143,6 @@ class AutomationStorage {
         LIMIT 1
       ",
       $automationId
-    ) : (string)$this->wpdb->prepare(
-      "
-        SELECT a.*, v.id AS version_id, v.steps
-        FROM $automationsTable as a, $versionsTable as v
-        WHERE v.automation_id = a.id AND v.id = %d
-      ",
-      $versionId
     );
     $data = $this->wpdb->get_row($query, ARRAY_A);
     return $data ? Automation::fromArray((array)$data) : null;
