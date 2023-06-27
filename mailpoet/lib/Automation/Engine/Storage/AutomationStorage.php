@@ -96,6 +96,35 @@ class AutomationStorage {
     ) : [];
   }
 
+  /**
+   * @param int[] $versionIds
+   * @return Automation[]
+   */
+  public function getAutomationWithDifferentVersions(array $versionIds): array {
+    $versionIds = array_map('intval', $versionIds);
+    if (!$versionIds) {
+      return [];
+    }
+    $automationsTable = esc_sql($this->automationsTable);
+    $versionsTable = esc_sql($this->versionsTable);
+    $query = (string)$this->wpdb->prepare(
+      "
+        SELECT a.*, v.id AS version_id, v.steps
+        FROM $automationsTable as a, $versionsTable as v
+        WHERE v.automation_id = a.id AND v.id IN (" . implode(',', array_fill(0, count($versionIds), '%d')) . ")
+        ORDER BY v.id DESC
+      ",
+      ...$versionIds
+    );
+    $data = $this->wpdb->get_results($query, ARRAY_A);
+    return is_array($data) ? array_map(
+      function($row): Automation {
+        return Automation::fromArray((array)$row);
+      },
+      $data
+    ) : [];
+  }
+
   public function getAutomation(int $automationId, int $versionId = null): ?Automation {
     $automationsTable = esc_sql($this->automationsTable);
     $versionsTable = esc_sql($this->versionsTable);
