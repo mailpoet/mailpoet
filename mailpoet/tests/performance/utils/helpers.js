@@ -8,7 +8,7 @@ import { baseURL, adminUsername, adminPassword } from '../config.js';
 export async function login(page) {
   // Go to WP Admin login page
   Promise.all([
-    page.goto(`${baseURL}/wp-admin/`, { waitUntil: 'networkidle' }),
+    page.goto(`${baseURL}/wp-login.php`, { waitUntil: 'networkidle' }),
     page.waitForSelector('#user_login'),
   ]);
   // Enter login credentials and login
