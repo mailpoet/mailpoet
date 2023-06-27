@@ -48,7 +48,7 @@ parameters:
       path: ../../lib/Automation/Engine/Storage/AutomationRunStorage.php
     -
       message: "#^Cannot cast string|void to string\\.$#"
-      count: 11
+      count: 12
       path: ../../lib/Automation/Engine/Storage/AutomationStorage.php
     -
       message: '/^Call to static method get_orders_table_name\(\) on an unknown class Automattic\\WooCommerce\\Internal\\DataStores\\Orders\\OrdersTableDataStore\.$/'
