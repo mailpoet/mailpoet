@@ -370,9 +370,6 @@ class DisplayFormInWPContent {
     if (($setup['homepage'] ?? false) === '1') {
       return true;
     }
-    if (($setup['pages']['all'] ?? false) === '1') {
-      return true;
-    }
     return false;
   }
 
