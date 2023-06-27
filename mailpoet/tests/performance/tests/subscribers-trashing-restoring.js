@@ -22,7 +22,7 @@ import {
   fullPageSet,
   screenshotPath,
 } from '../config.js';
-import { authenticate, waitForSelectorToBeVisible } from '../utils/helpers.js';
+import { login, waitForSelectorToBeVisible } from '../utils/helpers.js';
 
 export async function subscribersTrashingRestoring() {
   const browser = chromium.launch({
