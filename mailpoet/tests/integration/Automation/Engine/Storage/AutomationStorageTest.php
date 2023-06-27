@@ -43,6 +43,39 @@ class AutomationStorageTest extends \MailPoetTest {
     $this->assertEquals(2, count($latestAutomation->getSteps()));
   }
 
+  public function testItLoadsVersionDates() {
+    $automation1 = $this->createEmptyAutomation('automation-1');
+
+    $step1 = new Step('id', Step::TYPE_ACTION, 'key', [], []);
+    $automation1->setSteps(['id' => $step1]);
+    $this->testee->updateAutomation($automation1);
+
+    $automation2 = $this->createEmptyAutomation('automation-2');
+    $step2 = new Step('id-2', Step::TYPE_ACTION, 'key', [], []);
+    $automation2->setSteps(['id' => $step2]);
+    $this->testee->updateAutomation($automation2);
+
+    $versionDates1 = $this->testee->getAutomationVersionDates($automation1->getId());
+    $this->assertCount(2, $versionDates1);
+    foreach ($versionDates1 as $versionDate) {
+      $this->assertInstanceOf(\DateTimeImmutable::class, $versionDate['created_at']);
+      $versionedAutomation = $this->testee->getAutomation($automation1->getId(), $versionDate['id']);
+      $this->assertInstanceOf(Automation::class, $versionedAutomation);
+      $this->assertEquals($versionDate['id'], $versionedAutomation->getVersionId());
+      $this->assertEquals($automation1->getId(), $versionedAutomation->getId());
+    }
+
+    $versionDates2 = $this->testee->getAutomationVersionDates($automation2->getId());
+    $this->assertCount(2, $versionDates2);
+    foreach ($versionDates2 as $versionDate) {
+      $this->assertInstanceOf(\DateTimeImmutable::class, $versionDate['created_at']);
+      $versionedAutomation = $this->testee->getAutomation($automation2->getId(), $versionDate['id']);
+      $this->assertInstanceOf(Automation::class, $versionedAutomation);
+      $this->assertEquals($versionDate['id'], $versionedAutomation->getVersionId());
+      $this->assertEquals($automation2->getId(), $versionedAutomation->getId());
+    }
+  }
+
   public function testItLoadsCorrectVersion() {
     $automation = $this->createEmptyAutomation();
 
@@ -79,7 +112,7 @@ class AutomationStorageTest extends \MailPoetTest {
     $this->assertEmpty($this->testee->getActiveAutomationsByTrigger($subscriberTrigger));
   }
 
-  public function testItCanDeleteAAutomation() {
+  public function testItCanDeleteAnAutomation() {
     $automationToDelete = $this->createEmptyAutomation();
     $automationToKeep = $this->createEmptyAutomation();
     expect($this->testee->getAutomations())->count(2);
