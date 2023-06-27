@@ -43,6 +43,41 @@ class AutomationStorageTest extends \MailPoetTest {
     $this->assertEquals(2, count($latestAutomation->getSteps()));
   }
 
+  public function testItLoadsCorrectVersions() {
+
+    $automation1 = $this->createEmptyAutomation('automation-1');
+    $step1 = new Step('id', Step::TYPE_ACTION, 'key', [], []);
+    $automation1->setSteps(['id' => $step1]);
+    $this->testee->updateAutomation($automation1);
+    $step2 = new Step('step-2', Step::TYPE_ACTION, 'key', [], []);
+    $automation1->setSteps(['step-2' => $step2]);
+    $this->testee->updateAutomation($automation1);
+
+    $automation2 = $this->createEmptyAutomation('automation-2');
+    $step4 = new Step('step-3', Step::TYPE_ACTION, 'key', [], []);
+    $automation2->setSteps(['step-3' => $step4]);
+    $this->testee->updateAutomation($automation2);
+
+    $versions = $this->testee->getAutomationVersionDates($automation1->getId());
+    $this->assertCount(3, $versions);
+    $versionIds = array_map(function($version) {
+      return $version['id'];
+    }, $versions);
+    // remove first version id
+    array_shift($versionIds);
+    $automations1 = $this->testee->getAutomationWithDifferentVersions($versionIds);
+    $this->assertCount(count($versionIds), $automations1);
+    foreach ($automations1 as $automation) {
+      $this->assertInstanceOf(Automation::class, $automation);
+      $this->assertEquals($automation1->getId(), $automation->getId());
+    }
+    $loadedVersionIds = array_map(function($automation) {
+      return $automation->getVersionId();
+    }, $automations1);
+
+    $this->assertEquals($versionIds, $loadedVersionIds);
+  }
+
   public function testItLoadsVersionDates() {
     $automation1 = $this->createEmptyAutomation('automation-1');
 
