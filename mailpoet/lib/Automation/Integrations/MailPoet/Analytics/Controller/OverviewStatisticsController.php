@@ -3,10 +3,7 @@
 namespace MailPoet\Automation\Integrations\MailPoet\Analytics\Controller;
 
 use MailPoet\Automation\Engine\Data\Automation;
-use MailPoet\Automation\Engine\Storage\AutomationStorage;
-use MailPoet\Automation\Integrations\MailPoet\Actions\SendEmailAction;
 use MailPoet\Automation\Integrations\MailPoet\Analytics\Entities\QueryWithCompare;
-use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\StatisticsClickEntity;
 use MailPoet\Entities\StatisticsOpenEntity;
 use MailPoet\Newsletter\NewslettersRepository;
@@ -24,24 +21,24 @@ class OverviewStatisticsController {
   /** @var NewsletterUrl */
   private $newsletterUrl;
 
-  /** @var AutomationStorage */
-  private $automationStorage;
+  /** @var AutomationEmailController */
+  private $automationEmailController;
 
   public function __construct(
     NewslettersRepository $newslettersRepository,
     NewsletterStatisticsRepository $newsletterStatisticsRepository,
     NewsletterUrl $newsletterUrl,
-    AutomationStorage $automationStorage
+    AutomationEmailController $automationEmailController
   ) {
     $this->newslettersRepository = $newslettersRepository;
     $this->newsletterStatisticsRepository = $newsletterStatisticsRepository;
     $this->newsletterUrl = $newsletterUrl;
-    $this->automationStorage = $automationStorage;
+    $this->automationEmailController = $automationEmailController;
   }
 
   public function getStatisticsForAutomation(Automation $automation, QueryWithCompare $query): array {
-    $currentEmails = $this->getAutomationEmailsInTimeSpan($automation, $query->getAfter(), $query->getBefore());
-    $previousEmails = $this->getAutomationEmailsInTimeSpan($automation, $query->getCompareWithAfter(), $query->getCompareWithBefore());
+    $currentEmails = $this->automationEmailController->getAutomationEmailsInTimeSpan($automation, $query->getAfter(), $query->getBefore());
+    $previousEmails = $this->automationEmailController->getAutomationEmailsInTimeSpan($automation, $query->getCompareWithAfter(), $query->getCompareWithBefore());
     $data = [
       'sent' => ['current' => 0, 'previous' => 0],
       'opened' => ['current' => 0, 'previous' => 0],
@@ -109,65 +106,5 @@ class OverviewStatisticsController {
     });
 
     return $data;
-  }
-
-  private function getAutomationEmailsInTimeSpan(Automation $automation, \DateTimeImmutable $after, \DateTimeImmutable $before): array {
-    $automationVersions = $this->automationStorage->getAutomationVersionDates($automation->getId());
-    usort(
-      $automationVersions,
-      function (array $a, array $b) {
-        return $a['created_at'] <=> $b['created_at'];
-      }
-    );
-
-    // filter automations that were created before the after date
-    $versionIds = [];
-    foreach ($automationVersions as $automationVersion) {
-      if ($automationVersion['created_at'] > $before) {
-        break;
-      }
-      if (!$versionIds || $automationVersion['created_at'] < $after) {
-        $versionIds = [(int)$automationVersion['id']];
-        continue;
-      }
-      $versionIds[] = (int)$automationVersion['id'];
-    }
-
-    $automations = $this->automationStorage->getAutomationWithDifferentVersions($versionIds);
-    return $this->getEmailsFromAutomations($automations);
-
-  }
-
-  /**
-   * @param Automation[] $automations
-   * @return NewsletterEntity[]
-   */
-  private function getEmailsFromAutomations(array $automations): array {
-    $emailSteps = [];
-    foreach ($automations as $automation) {
-      $emailSteps = array_merge(
-        $emailSteps,
-        array_values(
-          array_filter(
-            $automation->getSteps(),
-            function($step) {
-              return $step->getKey() === SendEmailAction::KEY;
-            }
-          )
-        )
-      );
-    }
-    $emailIds = array_unique(
-      array_filter(
-        array_map(
-          function($step) {
-            return $step->getArgs()['email_id'];
-          },
-          $emailSteps
-        )
-      )
-    );
-
-    return $this->newslettersRepository->findBy(['id' => $emailIds]);
   }
 }
