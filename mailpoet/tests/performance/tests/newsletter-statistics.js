@@ -23,7 +23,7 @@ import {
   fullPageSet,
   screenshotPath,
 } from '../config.js';
-import { authenticate, waitForSelectorToBeVisible } from '../utils/helpers.js';
+import { login, waitForSelectorToBeVisible } from '../utils/helpers.js';
 
 export async function newsletterStatistics() {
   const browser = chromium.launch({
@@ -32,16 +32,10 @@ export async function newsletterStatistics() {
   });
   const page = browser.newPage();
 
-  // Go to the page
-  await page.goto(`${baseURL}/wp-admin/admin.php?page=mailpoet-newsletters`, {
-    waitUntil: 'networkidle',
-  });
-
   // Log in to WP Admin
-  authenticate(page);
+  await login(page);
 
-  // Wait for async actions and open newsletter statistics
-  await Promise.all([page.waitForNavigation({ waitUntil: 'networkidle' })]);
+  // Go to the Newsletter Statistics page
   await page.goto(
     `${baseURL}/wp-admin/admin.php?page=mailpoet-newsletters#/stats/2`,
     {
@@ -49,6 +43,7 @@ export async function newsletterStatistics() {
     },
   );
 
+  await page.waitForLoadState('networkidle');
   await page.screenshot({
     path: screenshotPath + 'Newsletter_Statistics_01.png',
     fullPage: fullPageSet,

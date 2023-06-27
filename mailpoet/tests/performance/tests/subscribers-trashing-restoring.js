@@ -31,17 +31,15 @@ export async function subscribersTrashingRestoring() {
   });
   const page = browser.newPage();
 
-  // Go to the page
+  // Log in to WP Admin
+  await login(page);
+
+  // Go to the Subscribers page
   await page.goto(`${baseURL}/wp-admin/admin.php?page=mailpoet-subscribers`, {
     waitUntil: 'networkidle',
   });
 
-  // Log in to WP Admin
-  authenticate(page);
-
-  // Wait for async actions
-  await page.waitForNavigation({ waitUntil: 'networkidle' });
-
+  await page.waitForLoadState('networkidle');
   await page.screenshot({
     path: screenshotPath + 'Subscribers_Trashing_Restoring_01.png',
     fullPage: fullPageSet,

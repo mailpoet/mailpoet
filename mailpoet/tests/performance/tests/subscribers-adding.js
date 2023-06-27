@@ -26,7 +26,7 @@ import {
   fullPageSet,
   screenshotPath,
 } from '../config.js';
-import { authenticate, selectInSelect2 } from '../utils/helpers.js';
+import { login, selectInSelect2 } from '../utils/helpers.js';
 
 export async function subscribersAdding() {
   const browser = chromium.launch({
@@ -40,17 +40,15 @@ export async function subscribersAdding() {
     Math.floor(Math.random() * 9999 + 1) +
     '@mailpoet.com';
 
-  // Go to the page
+  // Log in to WP Admin
+  await login(page);
+
+  // Go to the Subscribers page
   await page.goto(`${baseURL}/wp-admin/admin.php?page=mailpoet-subscribers`, {
     waitUntil: 'networkidle',
   });
 
-  // Log in to WP Admin
-  authenticate(page);
-
-  // Wait for async actions
-  await page.waitForNavigation({ waitUntil: 'networkidle' });
-
+  await page.waitForLoadState('networkidle');
   await page.screenshot({
     path: screenshotPath + 'Subscribers_Adding_01.png',
     fullPage: fullPageSet,
