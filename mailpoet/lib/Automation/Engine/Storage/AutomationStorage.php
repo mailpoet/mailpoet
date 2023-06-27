@@ -10,6 +10,9 @@ use MailPoet\Automation\Engine\Exceptions;
 use MailPoet\Automation\Engine\Integration\Trigger;
 use wpdb;
 
+/**
+ * @phpstan-type VersionDate array{id: int, created_at: \DateTimeImmutable}
+ */
 class AutomationStorage {
   /** @var string */
   private $automationsTable;
@@ -63,6 +66,34 @@ class AutomationStorage {
     }
     $this->insertAutomationVersion($automation->getId(), $automation);
     $this->insertAutomationTriggers($automation->getId(), $automation);
+  }
+
+  /**
+   * @param int $automationId
+   * @return VersionDate[]
+   * @throws \Exception
+   */
+  public function getAutomationVersionDates(int $automationId): array {
+    $versionsTable = esc_sql($this->versionsTable);
+    $query = (string)$this->wpdb->prepare(
+      "
+        SELECT id, created_at
+        FROM $versionsTable
+        WHERE automation_id = %d
+        ORDER BY id DESC
+      ",
+      $automationId
+    );
+    $data = $this->wpdb->get_results($query, ARRAY_A);
+    return is_array($data) ? array_map(
+      function($row): array {
+        return [
+          'id' => absint($row['id']),
+          'created_at' => new \DateTimeImmutable($row['created_at']),
+        ];
+      },
+      $data
+    ) : [];
   }
 
   public function getAutomation(int $automationId, int $versionId = null): ?Automation {
