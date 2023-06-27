@@ -18,12 +18,12 @@ export type EmailStats = {
   order: number;
   name: string;
   previewUrl: string;
-  sent: CurrentAndPrevious;
-  opened: CurrentAndPrevious;
-  clicked: CurrentAndPrevious;
-  orders: CurrentAndPrevious;
-  revenue: CurrentAndPrevious;
-  unsubscribed: CurrentAndPrevious;
+  sent: number;
+  opened: number;
+  clicked: number;
+  orders: number;
+  revenue: number;
+  unsubscribed: number;
 };
 
 type OverviewSectionData = SectionData & {

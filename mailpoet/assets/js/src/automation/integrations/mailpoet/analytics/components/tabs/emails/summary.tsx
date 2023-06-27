@@ -9,12 +9,12 @@ export function calculateSummary(rows: EmailStats[]) {
   }
   const data = rows.reduce(
     (acc, row) => {
-      acc.sent += row.sent.current;
-      acc.opened += row.opened.current;
-      acc.clicked += row.clicked.current;
-      acc.orders += row.orders.current;
-      acc.unsubscribed += row.unsubscribed.current;
-      acc.revenue += row.revenue.current;
+      acc.sent += row.sent;
+      acc.opened += row.opened;
+      acc.clicked += row.clicked;
+      acc.orders += row.orders;
+      acc.unsubscribed += row.unsubscribed;
+      acc.revenue += row.revenue;
       return acc;
     },
     {
