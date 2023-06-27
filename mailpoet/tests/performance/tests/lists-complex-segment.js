@@ -23,7 +23,7 @@ import {
   fullPageSet,
   screenshotPath,
 } from '../config.js';
-import { authenticate, selectInReact } from '../utils/helpers.js';
+import { login, selectInReact } from '../utils/helpers.js';
 
 export async function listsComplexSegment() {
   const browser = chromium.launch({
@@ -35,7 +35,10 @@ export async function listsComplexSegment() {
   const complexSegmentName =
     'Complex Segment ' + Math.floor(Math.random() * 9999 + 1);
 
-  // Go to the page
+  // Log in to WP Admin
+  await login(page);
+
+  // Go to the Lists page
   await page.goto(
     `${baseURL}/wp-admin/admin.php?page=mailpoet-segments#/lists`,
     {
@@ -43,12 +46,7 @@ export async function listsComplexSegment() {
     },
   );
 
-  // Log in to WP Admin
-  authenticate(page);
-
-  // Wait for async actions
-  await Promise.all([page.waitForNavigation({ waitUntil: 'networkidle' })]);
-
+  await page.waitForLoadState('networkidle');
   await page.screenshot({
     path: screenshotPath + 'Lists_Complex_Segment_01.png',
     fullPage: fullPageSet,

@@ -23,7 +23,7 @@ import {
   fullPageSet,
   screenshotPath,
 } from '../config.js';
-import { authenticate } from '../utils/helpers.js';
+import { login } from '../utils/helpers.js';
 
 export async function subscribersFiltering() {
   const browser = chromium.launch({
@@ -32,17 +32,15 @@ export async function subscribersFiltering() {
   });
   const page = browser.newPage();
 
-  // Go to the page
+  // Log in to WP Admin
+  await login(page);
+
+  // Go to the Subscribers page
   await page.goto(`${baseURL}/wp-admin/admin.php?page=mailpoet-subscribers`, {
     waitUntil: 'networkidle',
   });
 
-  // Log in to WP Admin
-  authenticate(page);
-
-  // Wait for async actions
-  await page.waitForNavigation({ waitUntil: 'networkidle' });
-
+  await page.waitForLoadState('networkidle');
   await page.screenshot({
     path: screenshotPath + 'Subscribers_Filtering_01.png',
     fullPage: fullPageSet,
@@ -58,6 +56,7 @@ export async function subscribersFiltering() {
     });
   });
 
+  await page.waitForLoadState('networkidle');
   await page.screenshot({
     path: screenshotPath + 'Subscribers_Filtering_02.png',
     fullPage: fullPageSet,
@@ -76,6 +75,7 @@ export async function subscribersFiltering() {
     });
   });
 
+  await page.waitForLoadState('networkidle');
   await page.screenshot({
     path: screenshotPath + 'Subscribers_Filtering_03.png',
     fullPage: fullPageSet,

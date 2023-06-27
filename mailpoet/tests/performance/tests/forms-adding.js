@@ -23,11 +23,7 @@ import {
   fullPageSet,
   screenshotPath,
 } from '../config.js';
-import {
-  authenticate,
-  selectInSelect2,
-  waitAndClick,
-} from '../utils/helpers.js';
+import { login, selectInSelect2, waitAndClick } from '../utils/helpers.js';
 
 export async function formsAdding() {
   const browser = chromium.launch({
@@ -36,17 +32,15 @@ export async function formsAdding() {
   });
   const page = browser.newPage();
 
-  // Go to the page
+  // Log in to WP Admin
+  await login(page);
+
+  // Go to the Forms page
   await page.goto(`${baseURL}/wp-admin/admin.php?page=mailpoet-forms`, {
     waitUntil: 'networkidle',
   });
 
-  // Log in to WP Admin
-  authenticate(page);
-
-  // Wait for async actions
-  await page.waitForNavigation({ waitUntil: 'networkidle' });
-
+  await page.waitForLoadState('networkidle');
   await page.screenshot({
     path: screenshotPath + 'Forms_Adding_01.png',
     fullPage: fullPageSet,

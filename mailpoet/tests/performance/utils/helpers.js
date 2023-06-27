@@ -1,11 +1,16 @@
 /**
  * Internal dependencies
  */
-import { adminUsername, adminPassword } from '../config.js';
+import { baseURL, adminUsername, adminPassword } from '../config.js';
 /* global Promise */
 
 // WordPress login authorization
-export async function authenticate(page) {
+export async function login(page) {
+  // Go to WP Admin login page
+  Promise.all([
+    page.goto(`${baseURL}/wp-admin/`, { waitUntil: 'networkidle' }),
+    page.waitForSelector('#user_login'),
+  ]);
   // Enter login credentials and login
   await page.waitForLoadState('networkidle');
   await page.locator('input[name="log"]').type(`${adminUsername}`);

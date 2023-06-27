@@ -24,7 +24,7 @@ import {
   fullPageSet,
   screenshotPath,
 } from '../config.js';
-import { authenticate } from '../utils/helpers.js';
+import { login } from '../utils/helpers.js';
 
 export async function listsViewSubscribers() {
   const browser = chromium.launch({
@@ -33,7 +33,10 @@ export async function listsViewSubscribers() {
   });
   const page = browser.newPage();
 
-  // Go to the page
+  // Log in to WP Admin
+  await login(page);
+
+  // Go to the Lists page
   await page.goto(
     `${baseURL}/wp-admin/admin.php?page=mailpoet-segments#/lists`,
     {
@@ -41,12 +44,7 @@ export async function listsViewSubscribers() {
     },
   );
 
-  // Log in to WP Admin
-  authenticate(page);
-
-  // Wait for async actions
-  await page.waitForNavigation({ waitUntil: 'networkidle' });
-
+  await page.waitForLoadState('networkidle');
   await page.screenshot({
     path: screenshotPath + 'Lists_View_Subscribers_01.png',
     fullPage: fullPageSet,
