@@ -3,9 +3,10 @@
 namespace MailPoet\Automation\Integrations\MailPoet\Analytics\Controller;
 
 use MailPoet\Automation\Engine\Data\Automation;
-use MailPoet\Automation\Engine\Data\Step;
+use MailPoet\Automation\Engine\Storage\AutomationStorage;
 use MailPoet\Automation\Integrations\MailPoet\Actions\SendEmailAction;
 use MailPoet\Automation\Integrations\MailPoet\Analytics\Entities\QueryWithCompare;
+use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\StatisticsClickEntity;
 use MailPoet\Entities\StatisticsOpenEntity;
 use MailPoet\Newsletter\NewslettersRepository;
@@ -23,18 +24,24 @@ class OverviewStatisticsController {
   /** @var NewsletterUrl */
   private $newsletterUrl;
 
+  /** @var AutomationStorage */
+  private $automationStorage;
+
   public function __construct(
     NewslettersRepository $newslettersRepository,
     NewsletterStatisticsRepository $newsletterStatisticsRepository,
-    NewsletterUrl $newsletterUrl
+    NewsletterUrl $newsletterUrl,
+    AutomationStorage $automationStorage
   ) {
     $this->newslettersRepository = $newslettersRepository;
     $this->newsletterStatisticsRepository = $newsletterStatisticsRepository;
     $this->newsletterUrl = $newsletterUrl;
+    $this->automationStorage = $automationStorage;
   }
 
   public function getStatisticsForAutomation(Automation $automation, QueryWithCompare $query): array {
-    $emails = $this->getEmailsFromAutomation($automation);
+    $currentEmails = $this->getAutomationEmailsInTimeSpan($automation, $query->getAfter(), $query->getBefore());
+    $previousEmails = $this->getAutomationEmailsInTimeSpan($automation, $query->getCompareWithAfter(), $query->getCompareWithBefore());
     $data = [
       'sent' => ['current' => 0, 'previous' => 0],
       'opened' => ['current' => 0, 'previous' => 0],
@@ -44,7 +51,7 @@ class OverviewStatisticsController {
       'revenue' => ['current' => 0, 'previous' => 0],
       'emails' => [],
     ];
-    if (!$emails) {
+    if (!$currentEmails) {
       return $data;
     }
 
@@ -56,7 +63,7 @@ class OverviewStatisticsController {
     ];
 
     $currentStatistics = $this->newsletterStatisticsRepository->getBatchStatistics(
-      $emails,
+      $currentEmails,
       $query->getAfter(),
       $query->getBefore(),
       $requiredData
@@ -82,13 +89,13 @@ class OverviewStatisticsController {
     }
 
     $previousStatistics = $this->newsletterStatisticsRepository->getBatchStatistics(
-      $emails,
+      $previousEmails,
       $query->getCompareWithAfter(),
       $query->getCompareWithBefore(),
       $requiredData
     );
 
-    foreach ($previousStatistics as $newsletterId => $statistic) {
+    foreach ($previousStatistics as $statistic) {
       $data['sent']['previous'] += $statistic->getTotalSentCount();
       $data['opened']['previous'] += $statistic->getOpenCount();
       $data['clicked']['previous'] += $statistic->getClickCount();
@@ -104,27 +111,63 @@ class OverviewStatisticsController {
     return $data;
   }
 
-  private function getEmailsFromAutomation(Automation $automation): array {
-    return array_filter(array_map(
-      function (Step $step) {
-        $emailId = $step->getArgs()['email_id'] ?? null;
-        if (!$emailId) {
-          return null;
-        }
-        return $this->newslettersRepository->findOneById((int)$emailId);
-      },
+  private function getAutomationEmailsInTimeSpan(Automation $automation, \DateTimeImmutable $after, \DateTimeImmutable $before): array {
+    $automationVersions = $this->automationStorage->getAutomationVersionDates($automation->getId());
+    usort(
+      $automationVersions,
+      function (array $a, array $b) {
+        return $a['created_at'] <=> $b['created_at'];
+      }
+    );
+
+    // filter automations that were created before the after date
+    $versionIds = [];
+    foreach ($automationVersions as $automationVersion) {
+      if ($automationVersion['created_at'] > $before) {
+        break;
+      }
+      if (!$versionIds || $automationVersion['created_at'] < $after) {
+        $versionIds = [(int)$automationVersion['id']];
+        continue;
+      }
+      $versionIds[] = (int)$automationVersion['id'];
+    }
+
+    $automations = $this->automationStorage->getAutomationWithDifferentVersions($versionIds);
+    return $this->getEmailsFromAutomations($automations);
+
+  }
+
+  /**
+   * @param Automation[] $automations
+   * @return NewsletterEntity[]
+   */
+  private function getEmailsFromAutomations(array $automations): array {
+    $emailSteps = [];
+    foreach ($automations as $automation) {
+      $emailSteps = array_merge(
+        $emailSteps,
+        array_values(
+          array_filter(
+            $automation->getSteps(),
+            function($step) {
+              return $step->getKey() === SendEmailAction::KEY;
+            }
+          )
+        )
+      );
+    }
+    $emailIds = array_unique(
       array_filter(
-        array_values($automation->getSteps()),
-        function ($step) {
-          return in_array(
-            $step->getKey(),
-            [
-              SendEmailAction::KEY,
-            ],
-            true
-          );
-        }
+        array_map(
+          function($step) {
+            return $step->getArgs()['email_id'];
+          },
+          $emailSteps
+        )
       )
-    ));
+    );
+
+    return $this->newslettersRepository->findBy(['id' => $emailIds]);
   }
 }
