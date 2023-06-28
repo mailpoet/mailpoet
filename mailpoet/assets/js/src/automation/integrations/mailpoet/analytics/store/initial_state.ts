@@ -1,10 +1,7 @@
 import { __ } from '@wordpress/i18n';
-import { AutomationAnalyticsWindow, State } from './types';
-
-declare let window: AutomationAnalyticsWindow;
+import { State } from './types';
 
 export const getInitialState = (): State => ({
-  automation: window.mailpoet_automation,
   sections: {
     overview: {
       id: 'overview',

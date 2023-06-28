@@ -8,13 +8,13 @@ import { AutomationFlow } from './automation_flow';
 import { Emails } from './emails';
 import { Orders } from './orders';
 import { Subscribers } from './subscribers';
-import { storeName } from '../../store';
+import { storeName as editorStoreName } from '../../../../../editor/store/constants';
 
 export function Tabs(): JSX.Element {
   const history = useHistory();
   const location = useLocation();
   const { hasEmails } = useSelect((s) => ({
-    hasEmails: s(storeName).automationHasEmails(),
+    hasEmails: s(editorStoreName).automationHasStep('mailpoet:send-email'),
   }));
   const pageParams = useMemo(
     () => new URLSearchParams(location.search),

@@ -4,6 +4,7 @@ import { addQueryArgs } from '@wordpress/url';
 import { apiFetch } from '@wordpress/data-controls';
 import { Query, Section, SectionData } from '../types';
 import { storeName } from '../constants';
+import { storeName as editorStoreName } from '../../../../../editor/store/constants';
 
 export function setQuery(query: Query) {
   const sections = select(storeName).getSections();
@@ -74,7 +75,7 @@ export function* updateSection(
           before: formatDate(primaryDate.before.toDate(), true),
         },
       };
-  const id = select(storeName).getAutomation().id;
+  const id = select(editorStoreName).getAutomationData().id;
 
   const customQuery = section.customQuery ?? {};
 

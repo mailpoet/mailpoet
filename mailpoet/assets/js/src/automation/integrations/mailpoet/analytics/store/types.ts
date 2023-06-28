@@ -107,11 +107,6 @@ export type OrderSection = Section & {
   data: undefined | OrderSectionData;
 };
 export type State = {
-  automation: Automation;
   sections: Record<string, Section>;
   query: Query;
-};
-
-export type AutomationAnalyticsWindow = {
-  mailpoet_automation: Automation;
 };
