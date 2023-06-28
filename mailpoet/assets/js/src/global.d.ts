@@ -6,6 +6,7 @@ declare module 'wp-js-hooks' {
       name: string,
       namespace: string,
       callback: (...args: any[]) => any,
+      priority?: number,
     ) => void;
     applyFilters: (name: string, ...args: any[]) => any;
   };
