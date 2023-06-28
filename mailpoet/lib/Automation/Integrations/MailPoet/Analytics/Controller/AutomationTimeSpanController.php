@@ -8,8 +8,7 @@ use MailPoet\Automation\Integrations\MailPoet\Actions\SendEmailAction;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Newsletter\NewslettersRepository;
 
-class AutomationEmailController {
-
+class AutomationTimeSpanController {
 
   /** @var AutomationStorage */
   private $automationStorage;
@@ -25,13 +24,7 @@ class AutomationEmailController {
     $this->newslettersRepository = $newslettersRepository;
   }
 
-  /**
-   * @param Automation $automation
-   * @param \DateTimeImmutable $after
-   * @param \DateTimeImmutable $before
-   * @return NewsletterEntity[]
-   */
-  public function getAutomationEmailsInTimeSpan(Automation $automation, \DateTimeImmutable $after, \DateTimeImmutable $before): array {
+  public function getAutomationsInTimespan(Automation $automation, \DateTimeImmutable $after, \DateTimeImmutable $before): array {
     $automationVersions = $this->automationStorage->getAutomationVersionDates($automation->getId());
     usort(
       $automationVersions,
@@ -55,8 +48,18 @@ class AutomationEmailController {
       $versionIds[] = (int)$automationVersion['id'];
     }
 
-    $automations = $this->automationStorage->getAutomationWithDifferentVersions($versionIds);
-    return $this->getEmailsFromAutomations($automations);
+    return count($versionIds) > 0 ? $this->automationStorage->getAutomationWithDifferentVersions($versionIds) : [];
+  }
+
+  /**
+   * @param Automation $automation
+   * @param \DateTimeImmutable $after
+   * @param \DateTimeImmutable $before
+   * @return NewsletterEntity[]
+   */
+  public function getAutomationEmailsInTimeSpan(Automation $automation, \DateTimeImmutable $after, \DateTimeImmutable $before): array {
+    $automations = $this->getAutomationsInTimespan($automation, $after, $before);
+    return count($automations) > 0 ? $this->getEmailsFromAutomations($automations) : [];
   }
 
   /**

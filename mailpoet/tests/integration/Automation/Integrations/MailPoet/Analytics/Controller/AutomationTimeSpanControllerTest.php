@@ -7,13 +7,13 @@ use MailPoet\Automation\Engine\Data\NextStep;
 use MailPoet\Automation\Engine\Data\Step;
 use MailPoet\Automation\Engine\Storage\AutomationStorage;
 use MailPoet\Automation\Integrations\MailPoet\Actions\SendEmailAction;
-use MailPoet\Automation\Integrations\MailPoet\Analytics\Controller\AutomationEmailController;
+use MailPoet\Automation\Integrations\MailPoet\Analytics\Controller\AutomationTimeSpanController;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Newsletter\NewslettersRepository;
 
-class AutomationEmailControllerTest extends \MailPoetTest {
+class AutomationTimeSpanControllerTest extends \MailPoetTest {
 
-  /** @var AutomationEmailController */
+  /** @var AutomationTimeSpanController */
   private $testee;
 
   /** @var NewslettersRepository */
@@ -23,7 +23,7 @@ class AutomationEmailControllerTest extends \MailPoetTest {
   private $automationStorage;
 
   public function _before() {
-    $this->testee = $this->diContainer->get(AutomationEmailController::class);
+    $this->testee = $this->diContainer->get(AutomationTimeSpanController::class);
     $this->newsletterRepository = $this->diContainer->get(NewslettersRepository::class);
     $this->automationStorage = $this->diContainer->get(AutomationStorage::class);
   }
