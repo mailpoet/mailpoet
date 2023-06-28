@@ -92,7 +92,7 @@ class SubscribersCountsController {
   }
 
   public function getHomepageStatistics(): array {
-    $result = $this->getCacheItem(TransientCache::SUBSCRIBERS_HOMEPAGE_STATISTICS_COUNT_KEY, 0) ?? [];
+    $result = $this->getCacheItem(TransientCache::SUBSCRIBERS_HOMEPAGE_STATISTICS_COUNT_KEY, 0)['item'] ?? [];
     if (!$result) {
       $result = $this->recalculateHomepageStatisticsCache();
     }
