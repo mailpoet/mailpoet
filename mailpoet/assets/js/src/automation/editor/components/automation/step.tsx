@@ -41,9 +41,10 @@ const getUnknownStepType = (step: StepData): StepType => {
 type Props = {
   step: StepData;
   isSelected: boolean;
+  context: 'edit' | 'view';
 };
 
-export function Step({ step, isSelected }: Props): JSX.Element {
+export function Step({ step, isSelected, context }: Props): JSX.Element {
   const { stepType, error } = useSelect(
     (select) => ({
       stepType: select(storeName).getStepType(step.key),
@@ -60,7 +61,7 @@ export function Step({ step, isSelected }: Props): JSX.Element {
 
   return (
     <div className="mailpoet-automation-editor-step-wrapper">
-      <StepMoreMenu step={step} />
+      <StepMoreMenu step={step} context={context} />
       <CompositeItem
         state={compositeState}
         role="treeitem"
@@ -72,11 +73,14 @@ export function Step({ step, isSelected }: Props): JSX.Element {
         id={compositeItemId}
         key={step.id}
         focusable
-        onClick={() =>
-          batch(() => {
-            openSidebar(stepSidebarKey);
-            selectStep(step);
-          })
+        onClick={
+          context === 'edit'
+            ? () =>
+                batch(() => {
+                  openSidebar(stepSidebarKey);
+                  selectStep(step);
+                })
+            : undefined
         }
       >
         <div className="mailpoet-automation-editor-step-icon">
