@@ -23,24 +23,24 @@ export async function login(page) {
 }
 
 // Select a segment or a list from a select2 search field
-export function selectInSelect2(page, listName) {
+export async function selectInSelect2(page, listName) {
   // Type a list name from a dropdown and hit Enter
-  page.locator('.select2-selection').type(listName);
-  page.keyboard.press('Enter');
+  await page.locator('.select2-selection').type(listName);
+  await page.keyboard.press('Enter');
 }
 
 // Select a segment or a list from a react search field
-export function selectInReact(page, reactSelector, reactValue) {
+export async function selectInReact(page, reactSelector, reactValue) {
   // Type a list name from a dropdown and hit Enter
-  page.locator(reactSelector).type(reactValue);
-  page.keyboard.press('Enter');
+  await page.locator(reactSelector).type(reactValue);
+  await page.keyboard.press('Enter');
 }
 
 // Wait and click the element with waiting for navigation
-export function waitAndClick(page, elementName) {
-  page.waitForSelector(elementName);
-  page.locator(elementName).click();
-  page.waitForNavigation({ waitUntil: 'networkidle' });
+export async function waitAndClick(page, elementName) {
+  await page.waitForSelector(elementName);
+  await page.locator(elementName).click();
+  await page.waitForNavigation();
 }
 
 // Wait for selector to be visible
