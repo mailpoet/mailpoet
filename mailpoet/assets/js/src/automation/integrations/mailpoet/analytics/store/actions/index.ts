@@ -93,6 +93,9 @@ export function* updateSection(
     ...section,
     data: response?.data || undefined,
   };
+  if (section?.updateCallback) {
+    section.updateCallback(response?.data);
+  }
   return {
     type: 'SET_SECTION_DATA',
     payload,
