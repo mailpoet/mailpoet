@@ -8,6 +8,7 @@ use MailPoet\Automation\Engine\API\Endpoint;
 use MailPoet\Automation\Engine\Exceptions\NotFoundException;
 use MailPoet\Automation\Engine\Mappers\AutomationMapper;
 use MailPoet\Automation\Engine\Storage\AutomationStorage;
+use MailPoet\Automation\Integrations\MailPoet\Analytics\Controller\AutomationTimeSpanController;
 use MailPoet\Automation\Integrations\MailPoet\Analytics\Entities\Query;
 use MailPoet\Validator\Builder;
 
@@ -19,21 +20,32 @@ class AutomationFlowEndpoint extends Endpoint {
   /** @var AutomationMapper */
   private $automationMapper;
 
+  /** @var AutomationTimeSpanController */
+  private $automationTimeSpanController;
+
   public function __construct(
     AutomationStorage $automationStorage,
-    AutomationMapper $automationMapper
+    AutomationMapper $automationMapper,
+    AutomationTimeSpanController $automationTimeSpanController
   ) {
     $this->automationStorage = $automationStorage;
     $this->automationMapper = $automationMapper;
+    $this->automationTimeSpanController = $automationTimeSpanController;
   }
 
   public function handle(Request $request): Response {
-    //@ToDo Get the correct automation version
     //@ToDo Get the automation flow data
     $automation = $this->automationStorage->getAutomation(absint($request->getParam('id')));
     if (!$automation) {
       throw new NotFoundException(__('Automation not found', 'mailpoet'));
     }
+    $query = Query::fromRequest($request);
+    $automations = $this->automationTimeSpanController->getAutomationsInTimespan($automation, $query->getAfter(), $query->getBefore());
+    if (!count($automations)) {
+      throw new NotFoundException(__('The automation did not exist in the selected time span', 'mailpoet'));
+    }
+    $automation = end($automations);
+
     $data = [
       'automation' => $this->automationMapper->buildAutomation($automation),
     ];
