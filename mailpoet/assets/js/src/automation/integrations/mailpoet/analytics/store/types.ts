@@ -49,9 +49,10 @@ export type Section = {
   id: string;
   name: string;
   endpoint: string;
-  customQuery: CustomQuery | undefined;
+  customQuery?: CustomQuery;
   withPreviousData: boolean;
   data: undefined | SectionData;
+  updateCallback?: (data: SectionData | undefined) => void;
 };
 
 export type OverviewSection = Section & {

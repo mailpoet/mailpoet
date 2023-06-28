@@ -5,6 +5,7 @@ namespace MailPoet\Automation\Integrations\MailPoet\Analytics;
 use MailPoet\API\REST\API;
 use MailPoet\Automation\Engine\Hooks;
 use MailPoet\Automation\Engine\WordPress;
+use MailPoet\Automation\Integrations\MailPoet\Analytics\Endpoints\AutomationFlowEndpoint;
 use MailPoet\Automation\Integrations\MailPoet\Analytics\Endpoints\OrderEndpoint;
 use MailPoet\Automation\Integrations\MailPoet\Analytics\Endpoints\OverviewEndpoint;
 
@@ -21,6 +22,7 @@ class Analytics {
 
   public function register(): void {
     $this->wordPress->addAction(Hooks::API_INITIALIZE, function (API $api) {
+      $api->registerGetRoute('automation/analytics/automation_flow', AutomationFlowEndpoint::class);
       $api->registerGetRoute('automation/analytics/overview', OverviewEndpoint::class);
       $api->registerGetRoute('automation/analytics/orders', OrderEndpoint::class);
     });
