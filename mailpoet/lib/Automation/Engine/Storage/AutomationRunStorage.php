@@ -176,6 +176,32 @@ class AutomationRunStorage {
     }
   }
 
+  public function getAutomationStepStatisticForTimeFrame(int $automationId, string $status, \DateTimeImmutable $after, \DateTimeImmutable $before, int $versionId = null): array {
+    $table = esc_sql($this->table);
+
+    $where = "automation_id = %d
+    AND `status` = %s
+    AND created_at BETWEEN %s AND %s";
+    if ($versionId) {
+      $where .= " AND version_id = %d";
+    }
+    $sql = "
+      SELECT
+        COUNT(id) AS `count`,
+        next_step_id
+      FROM $table as log
+      WHERE $where
+      GROUP BY next_step_id
+    ";
+
+    $sql = $versionId ?
+      $this->wpdb->prepare($sql, $automationId, $status, $after->format('Y-m-d H:i:s'), $before->format('Y-m-d H:i:s'), $versionId) :
+      $this->wpdb->prepare($sql, $automationId, $status, $after->format('Y-m-d H:i:s'), $before->format('Y-m-d H:i:s'));
+    $sql = is_string($sql) ? $sql : '';
+    $result = $this->wpdb->get_results($sql, ARRAY_A);
+    return is_array($result) ? $result : [];
+  }
+
   public function truncate(): void {
     $table = esc_sql($this->table);
     $this->wpdb->query("TRUNCATE $table");
