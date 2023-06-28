@@ -10,6 +10,7 @@ Hooks.addFilter(
     function statisticSeperatorWrapper(previousStepData: StepData) {
       return <StatisticSeparator previousStepId={previousStepData.id} />;
     },
+  20,
 );
 
 export function AutomationFlow(): JSX.Element {
