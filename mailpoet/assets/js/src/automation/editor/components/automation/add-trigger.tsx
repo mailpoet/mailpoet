@@ -9,9 +9,10 @@ import { storeName } from '../../store';
 
 type Props = {
   step: Step;
+  context: 'edit' | 'view';
 };
 
-export function AddTrigger({ step }: Props): JSX.Element {
+export function AddTrigger({ step, context }: Props): JSX.Element {
   const compositeState = useContext(AutomationCompositeContext);
   const { setInserterPopover } = useDispatch(storeName);
 
@@ -22,13 +23,17 @@ export function AddTrigger({ step }: Props): JSX.Element {
       className="mailpoet-automation-add-trigger"
       data-previous-step-id={step.id}
       focusable
-      onClick={(event) => {
-        event.stopPropagation();
-        setInserterPopover({
-          anchor: (event.target as HTMLElement).closest('button'),
-          type: 'triggers',
-        });
-      }}
+      onClick={
+        context === 'edit'
+          ? (event) => {
+              event.stopPropagation();
+              setInserterPopover({
+                anchor: (event.target as HTMLElement).closest('button'),
+                type: 'triggers',
+              });
+            }
+          : undefined
+      }
     >
       <Icon icon={plus} size={16} />
       {__('Add trigger', 'mailpoet')}

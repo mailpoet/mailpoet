@@ -21,7 +21,10 @@ import {
   RenderStepType,
 } from '../../../types/filters';
 
-export function Automation(): JSX.Element {
+type AutomationProps = {
+  context: 'edit' | 'view';
+};
+export function Automation({ context }: AutomationProps): JSX.Element {
   const { automationData, selectedStep } = useSelect(
     (select) => ({
       automationData: select(storeName).getAutomationData(),
@@ -59,15 +62,16 @@ export function Automation(): JSX.Element {
         'mailpoet.automation.render_step',
         (stepData: StepData) =>
           stepData.type === 'root' ? (
-            <AddTrigger step={stepData} />
+            <AddTrigger step={stepData} context={context} />
           ) : (
             <Step
               step={stepData}
               isSelected={selectedStep && stepData.id === selectedStep.id}
+              context={context}
             />
           ),
       ),
-    [selectedStep],
+    [selectedStep, context],
   );
 
   const renderSeparator = useMemo(

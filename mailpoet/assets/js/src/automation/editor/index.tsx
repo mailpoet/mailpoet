@@ -154,7 +154,7 @@ function Editor(): JSX.Element {
           content={
             <>
               <EditorNotices />
-              <Automation />
+              <Automation context="edit" />
             </>
           }
           sidebar={<ComplementaryArea.Slot scope={storeName} />}
