@@ -32,56 +32,59 @@ export async function newsletterSearching() {
   });
   const page = browser.newPage();
 
-  // Log in to WP Admin
-  await login(page);
+  try {
+    // Log in to WP Admin
+    await login(page);
 
-  // Go to the Newsletters page
-  await page.goto(`${baseURL}/wp-admin/admin.php?page=mailpoet-newsletters`, {
-    waitUntil: 'networkidle',
-  });
-
-  await page.waitForLoadState('networkidle');
-  await page.screenshot({
-    path: screenshotPath + 'Newsletter_Searching_01.png',
-    fullPage: fullPageSet,
-  });
-
-  // Search for a newsletter
-  await page.locator('#search_input').type('Newsletter 1st', { delay: 50 });
-  await page.waitForSelector('.mailpoet-listing-no-items');
-  await page.waitForSelector('[data-automation-id="listing_filter_segment"]');
-  await page.waitForLoadState('networkidle');
-  describe(emailsPageTitle, () => {
-    describe('should be able to search for Newsletter 1st', () => {
-      expect(page.locator('.mailpoet-listing-title').innerText()).to.contain(
-        'Newsletter 1st',
-      );
+    // Go to the Newsletters page
+    await page.goto(`${baseURL}/wp-admin/admin.php?page=mailpoet-newsletters`, {
+      waitUntil: 'networkidle',
     });
-  });
 
-  // Filter newsletter results by a default list "Newsletter mailing list"
-  await page
-    .locator('[data-automation-id="listing_filter_segment"]')
-    .selectOption('3');
-  await page.waitForSelector('.mailpoet-listing-no-items');
-  await page.waitForSelector('[data-automation-id="listing_filter_segment"]');
-  await page.waitForLoadState('networkidle');
-  describe(emailsPageTitle, () => {
-    describe('should be able to see Lists Filter', () => {
-      expect(page.locator('[data-automation-id="listing_filter_segment"]')).to
-        .exist;
+    await page.waitForLoadState('networkidle');
+    await page.screenshot({
+      path: screenshotPath + 'Newsletter_Searching_01.png',
+      fullPage: fullPageSet,
     });
-  });
 
-  await page.screenshot({
-    path: screenshotPath + 'Newsletter_Searching_02.png',
-    fullPage: fullPageSet,
-  });
+    // Search for a newsletter
+    await page.locator('#search_input').type('Newsletter 1st', { delay: 50 });
+    await page.waitForSelector('.mailpoet-listing-no-items');
+    await page.waitForSelector('[data-automation-id="listing_filter_segment"]');
+    await page.waitForLoadState('networkidle');
+    describe(emailsPageTitle, () => {
+      describe('should be able to search for Newsletter 1st', () => {
+        expect(page.locator('.mailpoet-listing-title').innerText()).to.contain(
+          'Newsletter 1st',
+        );
+      });
+    });
 
-  // Thinking time and closing
-  sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
-  page.close();
-  browser.close();
+    // Filter newsletter results by a default list "Newsletter mailing list"
+    await page
+      .locator('[data-automation-id="listing_filter_segment"]')
+      .selectOption('3');
+    await page.waitForSelector('.mailpoet-listing-no-items');
+    await page.waitForSelector('[data-automation-id="listing_filter_segment"]');
+    await page.waitForLoadState('networkidle');
+    describe(emailsPageTitle, () => {
+      describe('should be able to see Lists Filter', () => {
+        expect(page.locator('[data-automation-id="listing_filter_segment"]')).to
+          .exist;
+      });
+    });
+
+    await page.screenshot({
+      path: screenshotPath + 'Newsletter_Searching_02.png',
+      fullPage: fullPageSet,
+    });
+
+    // Thinking time and closing
+    sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
+  } finally {
+    page.close();
+    browser.close();
+  }
 }
 
 export default async function newsletterSearchingTest() {

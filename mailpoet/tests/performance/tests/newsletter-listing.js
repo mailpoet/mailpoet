@@ -32,38 +32,41 @@ export async function newsletterListing() {
   });
   const page = browser.newPage();
 
-  // Log in to WP Admin
-  await login(page);
+  try {
+    // Log in to WP Admin
+    await login(page);
 
-  // Go to the Emails page
-  await page.goto(`${baseURL}/wp-admin/admin.php?page=mailpoet-newsletters`, {
-    waitUntil: 'networkidle',
-  });
-
-  await page.waitForLoadState('networkidle');
-  await page.screenshot({
-    path: screenshotPath + 'Newsletter_Listing_01.png',
-    fullPage: fullPageSet,
-  });
-
-  // Check if there is element present and visible
-  await page.waitForSelector('[data-automation-id="filters_all"]');
-  await page.waitForLoadState('networkidle');
-  describe(emailsPageTitle, () => {
-    describe('should be able to see All Filter', () => {
-      expect(page.locator('[data-automation-id="filters_all"]')).to.exist;
+    // Go to the Emails page
+    await page.goto(`${baseURL}/wp-admin/admin.php?page=mailpoet-newsletters`, {
+      waitUntil: 'networkidle',
     });
-  });
 
-  await page.screenshot({
-    path: screenshotPath + 'Newsletter_Listing_02.png',
-    fullPage: fullPageSet,
-  });
+    await page.waitForLoadState('networkidle');
+    await page.screenshot({
+      path: screenshotPath + 'Newsletter_Listing_01.png',
+      fullPage: fullPageSet,
+    });
 
-  // Thinking time and closing
-  sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
-  page.close();
-  browser.close();
+    // Check if there is element present and visible
+    await page.waitForSelector('[data-automation-id="filters_all"]');
+    await page.waitForLoadState('networkidle');
+    describe(emailsPageTitle, () => {
+      describe('should be able to see All Filter', () => {
+        expect(page.locator('[data-automation-id="filters_all"]')).to.exist;
+      });
+    });
+
+    await page.screenshot({
+      path: screenshotPath + 'Newsletter_Listing_02.png',
+      fullPage: fullPageSet,
+    });
+
+    // Thinking time and closing
+    sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
+  } finally {
+    page.close();
+    browser.close();
+  }
 }
 
 export default async function newsletterListingTest() {

@@ -32,33 +32,36 @@ export async function subscribersListing() {
   });
   const page = browser.newPage();
 
-  // Log in to WP Admin
-  await login(page);
+  try {
+    // Log in to WP Admin
+    await login(page);
 
-  // Go to the Subscribers page
-  await page.goto(`${baseURL}/wp-admin/admin.php?page=mailpoet-subscribers`, {
-    waitUntil: 'networkidle',
-  });
-
-  await page.waitForLoadState('networkidle');
-  await page.screenshot({
-    path: screenshotPath + 'Subscribers_Listing_01.png',
-    fullPage: fullPageSet,
-  });
-
-  // Verify filter, tag and listing are loaded and visible
-  await page.waitForLoadState('networkidle');
-  describe(subscribersPageTitle, () => {
-    describe('should be able to see Tags Filter', () => {
-      expect(page.locator('[data-automation-id="listing_filter_tag"]')).to
-        .exist;
+    // Go to the Subscribers page
+    await page.goto(`${baseURL}/wp-admin/admin.php?page=mailpoet-subscribers`, {
+      waitUntil: 'networkidle',
     });
-  });
 
-  // Thinking time and closing
-  sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
-  page.close();
-  browser.close();
+    await page.waitForLoadState('networkidle');
+    await page.screenshot({
+      path: screenshotPath + 'Subscribers_Listing_01.png',
+      fullPage: fullPageSet,
+    });
+
+    // Verify filter, tag and listing are loaded and visible
+    await page.waitForLoadState('networkidle');
+    describe(subscribersPageTitle, () => {
+      describe('should be able to see Tags Filter', () => {
+        expect(page.locator('[data-automation-id="listing_filter_tag"]')).to
+          .exist;
+      });
+    });
+
+    // Thinking time and closing
+    sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
+  } finally {
+    page.close();
+    browser.close();
+  }
 }
 
 export default async function subscribersListingTest() {

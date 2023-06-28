@@ -35,78 +35,81 @@ export async function subscribersAdding() {
   });
   const page = browser.newPage();
 
-  let subscriberEmail =
-    'blackhole+automation' +
-    Math.floor(Math.random() * 9999 + 1) +
-    '@mailpoet.com';
+  try {
+    let subscriberEmail =
+      'blackhole+automation' +
+      Math.floor(Math.random() * 9999 + 1) +
+      '@mailpoet.com';
 
-  // Log in to WP Admin
-  await login(page);
+    // Log in to WP Admin
+    await login(page);
 
-  // Go to the Subscribers page
-  await page.goto(`${baseURL}/wp-admin/admin.php?page=mailpoet-subscribers`, {
-    waitUntil: 'networkidle',
-  });
-
-  await page.waitForLoadState('networkidle');
-  await page.screenshot({
-    path: screenshotPath + 'Subscribers_Adding_01.png',
-    fullPage: fullPageSet,
-  });
-
-  // Add a new subscriber
-  await page
-    .locator('[data-automation-id="add-new-subscribers-button"]')
-    .click();
-  await page
-    .locator('input[name="email"]')
-    .type(subscriberEmail, { delay: 25 });
-  await page.locator('input[name="first_name"]').type(firstName);
-  await page.locator('input[name="last_name"]').type(lastName);
-  selectInSelect2(page, defaultListName);
-  await page.locator('button[type="submit"]').click();
-  await page.waitForLoadState('networkidle');
-
-  // Verify you see the success message and the filter is visible
-  const locator =
-    "//div[@class='notice-success'].//p[starts-with(text(),'Subscriber was added successfully!')]";
-  describe(subscribersPageTitle, () => {
-    describe('should be able to see Subscriber Added message', () => {
-      expect(page.locator(locator)).to.exist;
+    // Go to the Subscribers page
+    await page.goto(`${baseURL}/wp-admin/admin.php?page=mailpoet-subscribers`, {
+      waitUntil: 'networkidle',
     });
-  });
-  await page.waitForSelector('.mailpoet-listing-no-items');
-  await page.waitForSelector('[data-automation-id="filters_subscribed"]');
-  describe(subscribersPageTitle, () => {
-    describe('should be able to see Lists Filter', () => {
-      expect(page.locator('[data-automation-id="listing_filter_segment"]')).to
-        .exist;
+
+    await page.waitForLoadState('networkidle');
+    await page.screenshot({
+      path: screenshotPath + 'Subscribers_Adding_01.png',
+      fullPage: fullPageSet,
     });
-  });
-  await page.waitForLoadState('networkidle');
 
-  await page.screenshot({
-    path: screenshotPath + 'Subscribers_Adding_02.png',
-    fullPage: fullPageSet,
-  });
+    // Add a new subscriber
+    await page
+      .locator('[data-automation-id="add-new-subscribers-button"]')
+      .click();
+    await page
+      .locator('input[name="email"]')
+      .type(subscriberEmail, { delay: 25 });
+    await page.locator('input[name="first_name"]').type(firstName);
+    await page.locator('input[name="last_name"]').type(lastName);
+    selectInSelect2(page, defaultListName);
+    await page.locator('button[type="submit"]').click();
+    await page.waitForLoadState('networkidle');
 
-  // Search for a newly added subscriber and verify
-  await page.locator('#search_input').type(subscriberEmail, { delay: 25 });
-  await page.waitForSelector('.mailpoet-listing-no-items');
-  await page.waitForSelector('[data-automation-id="filters_subscribed"]');
-  await page.waitForLoadState('networkidle');
-  describe(subscribersPageTitle, () => {
-    describe('should be able to search for Newly Added Subscriber', () => {
-      expect(page.locator('.mailpoet-listing-title').innerText()).to.contain(
-        subscriberEmail,
-      );
+    // Verify you see the success message and the filter is visible
+    const locator =
+      "//div[@class='notice-success'].//p[starts-with(text(),'Subscriber was added successfully!')]";
+    describe(subscribersPageTitle, () => {
+      describe('should be able to see Subscriber Added message', () => {
+        expect(page.locator(locator)).to.exist;
+      });
     });
-  });
+    await page.waitForSelector('.mailpoet-listing-no-items');
+    await page.waitForSelector('[data-automation-id="filters_subscribed"]');
+    describe(subscribersPageTitle, () => {
+      describe('should be able to see Lists Filter', () => {
+        expect(page.locator('[data-automation-id="listing_filter_segment"]')).to
+          .exist;
+      });
+    });
+    await page.waitForLoadState('networkidle');
 
-  // Thinking time and closing
-  sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
-  page.close();
-  browser.close();
+    await page.screenshot({
+      path: screenshotPath + 'Subscribers_Adding_02.png',
+      fullPage: fullPageSet,
+    });
+
+    // Search for a newly added subscriber and verify
+    await page.locator('#search_input').type(subscriberEmail, { delay: 25 });
+    await page.waitForSelector('.mailpoet-listing-no-items');
+    await page.waitForSelector('[data-automation-id="filters_subscribed"]');
+    await page.waitForLoadState('networkidle');
+    describe(subscribersPageTitle, () => {
+      describe('should be able to search for Newly Added Subscriber', () => {
+        expect(page.locator('.mailpoet-listing-title').innerText()).to.contain(
+          subscriberEmail,
+        );
+      });
+    });
+
+    // Thinking time and closing
+    sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
+  } finally {
+    page.close();
+    browser.close();
+  }
 }
 
 export default async function subscribersAddingTest() {

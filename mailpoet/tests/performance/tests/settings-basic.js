@@ -31,46 +31,49 @@ export async function settingsBasic() {
   });
   const page = browser.newPage();
 
-  // Log in to WP Admin
-  await login(page);
+  try {
+    // Log in to WP Admin
+    await login(page);
 
-  // Go to the Settings page
-  await page.goto(
-    `${baseURL}/wp-admin/admin.php?page=mailpoet-settings#/basics`,
-    {
-      waitUntil: 'networkidle',
-    },
-  );
+    // Go to the Settings page
+    await page.goto(
+      `${baseURL}/wp-admin/admin.php?page=mailpoet-settings#/basics`,
+      {
+        waitUntil: 'networkidle',
+      },
+    );
 
-  await page.waitForLoadState('networkidle');
-  await page.screenshot({
-    path: screenshotPath + 'Settings_Basic_01.png',
-    fullPage: fullPageSet,
-  });
-
-  // Click to save the settings
-  await page.locator('[data-automation-id="settings-submit-button"]').click();
-  await page.waitForSelector('div.notice');
-  await page.waitForLoadState('networkidle');
-
-  // Check if there's notice about saved settings
-  const locator =
-    "//div[@class='notice-success'].//p[starts-with(text(),'Settings saved')]";
-  describe(settingsPageTitle, () => {
-    describe('should be able to see Settings Saved message', () => {
-      expect(page.locator(locator)).to.exist;
+    await page.waitForLoadState('networkidle');
+    await page.screenshot({
+      path: screenshotPath + 'Settings_Basic_01.png',
+      fullPage: fullPageSet,
     });
-  });
 
-  await page.screenshot({
-    path: screenshotPath + 'Settings_Basic_02.png',
-    fullPage: fullPageSet,
-  });
+    // Click to save the settings
+    await page.locator('[data-automation-id="settings-submit-button"]').click();
+    await page.waitForSelector('div.notice');
+    await page.waitForLoadState('networkidle');
 
-  // Thinking time and closing
-  sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
-  page.close();
-  browser.close();
+    // Check if there's notice about saved settings
+    const locator =
+      "//div[@class='notice-success'].//p[starts-with(text(),'Settings saved')]";
+    describe(settingsPageTitle, () => {
+      describe('should be able to see Settings Saved message', () => {
+        expect(page.locator(locator)).to.exist;
+      });
+    });
+
+    await page.screenshot({
+      path: screenshotPath + 'Settings_Basic_02.png',
+      fullPage: fullPageSet,
+    });
+
+    // Thinking time and closing
+    sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
+  } finally {
+    page.close();
+    browser.close();
+  }
 }
 
 export default async function settingsBasicTest() {

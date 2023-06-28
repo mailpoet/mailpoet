@@ -31,80 +31,83 @@ export async function onboardingWizard() {
   });
   const page = browser.newPage();
 
-  // Log in to WP Admin
-  await login(page);
+  try {
+    // Log in to WP Admin
+    await login(page);
 
-  // Go to the MailPoet Welcome Wizard page
-  await page.goto(
-    `${baseURL}/wp-admin/admin.php?page=mailpoet-welcome-wizard#/steps/1`,
-    {
-      waitUntil: 'networkidle',
-    },
-  );
+    // Go to the MailPoet Welcome Wizard page
+    await page.goto(
+      `${baseURL}/wp-admin/admin.php?page=mailpoet-welcome-wizard#/steps/1`,
+      {
+        waitUntil: 'networkidle',
+      },
+    );
 
-  await page.click('#mailpoet_sender_form > a');
-  await page.waitForLoadState('networkidle');
+    await page.click('#mailpoet_sender_form > a');
+    await page.waitForLoadState('networkidle');
 
-  await page.screenshot({
-    path: screenshotPath + 'Onboarding_Wizard_01.png',
-    fullPage: fullPageSet,
-  });
-
-  await page
-    .locator(
-      '#mailpoet-wizard-3rd-party-libs > div > div > label:nth-child(1) > span',
-    )
-    .click();
-  await page
-    .locator(
-      '#mailpoet-wizard-tracking > div.mailpoet-wizard-woocommerce-toggle > div > label:nth-child(1) > span',
-    )
-    .click();
-  await page
-    .locator(
-      '#mailpoet-wizard-container > div.mailpoet-steps-content > div > div.mailpoet-wizard-step-content > form > button > span',
-    )
-    .click();
-  await page.waitForLoadState('networkidle');
-  await page.locator('.mailpoet-wizard-step-content > p > a').click();
-  sleep(2);
-  await page.screenshot({
-    path: screenshotPath + 'Onboarding_Wizard_02.png',
-    fullPage: fullPageSet,
-  });
-  await page.keyboard.press('Tab');
-  await page.keyboard.press('Tab');
-  await page.keyboard.press('Tab');
-  await page.keyboard.press('Enter');
-  await page.waitForNavigation('networkidle');
-  await page.waitForLoadState('networkidle');
-  await page.waitForSelector('[data-automation-id="send_with_settings_tab"]');
-
-  await page.screenshot({
-    path: screenshotPath + 'Onboarding_Wizard_03.png',
-    fullPage: fullPageSet,
-  });
-
-  // Check if you see Send With tab at the end
-  describe(settingsPageTitle, () => {
-    describe('should be able to see Send With tab present', () => {
-      expect(
-        page
-          .locator('[data-automation-id="send_with_settings_tab"]')
-          .innerText(),
-      ).to.contain('Send With...');
+    await page.screenshot({
+      path: screenshotPath + 'Onboarding_Wizard_01.png',
+      fullPage: fullPageSet,
     });
-  });
 
-  await page.screenshot({
-    path: screenshotPath + 'Onboarding_Wizard_04.png',
-    fullPage: fullPageSet,
-  });
+    await page
+      .locator(
+        '#mailpoet-wizard-3rd-party-libs > div > div > label:nth-child(1) > span',
+      )
+      .click();
+    await page
+      .locator(
+        '#mailpoet-wizard-tracking > div.mailpoet-wizard-woocommerce-toggle > div > label:nth-child(1) > span',
+      )
+      .click();
+    await page
+      .locator(
+        '#mailpoet-wizard-container > div.mailpoet-steps-content > div > div.mailpoet-wizard-step-content > form > button > span',
+      )
+      .click();
+    await page.waitForLoadState('networkidle');
+    await page.locator('.mailpoet-wizard-step-content > p > a').click();
+    sleep(2);
+    await page.screenshot({
+      path: screenshotPath + 'Onboarding_Wizard_02.png',
+      fullPage: fullPageSet,
+    });
+    await page.keyboard.press('Tab');
+    await page.keyboard.press('Tab');
+    await page.keyboard.press('Tab');
+    await page.keyboard.press('Enter');
+    await page.waitForNavigation('networkidle');
+    await page.waitForLoadState('networkidle');
+    await page.waitForSelector('[data-automation-id="send_with_settings_tab"]');
 
-  // Thinking time and closing
-  sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
-  page.close();
-  browser.close();
+    await page.screenshot({
+      path: screenshotPath + 'Onboarding_Wizard_03.png',
+      fullPage: fullPageSet,
+    });
+
+    // Check if you see Send With tab at the end
+    describe(settingsPageTitle, () => {
+      describe('should be able to see Send With tab present', () => {
+        expect(
+          page
+            .locator('[data-automation-id="send_with_settings_tab"]')
+            .innerText(),
+        ).to.contain('Send With...');
+      });
+    });
+
+    await page.screenshot({
+      path: screenshotPath + 'Onboarding_Wizard_04.png',
+      fullPage: fullPageSet,
+    });
+
+    // Thinking time and closing
+    sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
+  } finally {
+    page.close();
+    browser.close();
+  }
 }
 
 export default async function onboardingWizardTest() {
