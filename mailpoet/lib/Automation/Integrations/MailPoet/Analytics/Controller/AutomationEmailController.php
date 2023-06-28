@@ -80,7 +80,8 @@ class AutomationEmailController {
       array_filter(
         array_map(
           function($step) {
-            return $step->getArgs()['email_id'];
+            $args = $step->getArgs();
+            return isset($args['email_id']) ? absint($args['email_id']) : null;
           },
           $emailSteps
         )
