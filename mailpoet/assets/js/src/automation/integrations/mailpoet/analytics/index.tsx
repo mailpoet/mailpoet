@@ -7,8 +7,12 @@ import { Header } from './components/header';
 import { Overview } from './components/overview';
 import { Tabs } from './components/tabs';
 import { createStore, Section, storeName } from './store';
+import { createStore as editorStoreCreate } from '../../../editor/store';
 import { registerApiErrorHandler } from '../../../listing/api-error-handler';
 import { initializeApi } from './api';
+import { initialize as initializeCoreIntegration } from '../../core';
+import { initialize as initializeMailPoetIntegration } from '../index';
+import { initialize as initializeWooCommerceIntegration } from '../../woocommerce';
 
 function Analytics(): JSX.Element {
   return (
@@ -45,6 +49,10 @@ window.addEventListener('DOMContentLoaded', () => {
     return;
   }
   createStore();
+  editorStoreCreate();
+  initializeCoreIntegration();
+  initializeMailPoetIntegration();
+  initializeWooCommerceIntegration();
   registerApiErrorHandler();
   boot();
   ReactDOM.render(<App />, root);
