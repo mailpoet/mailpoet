@@ -21,24 +21,24 @@ class OverviewStatisticsController {
   /** @var NewsletterUrl */
   private $newsletterUrl;
 
-  /** @var AutomationEmailController */
-  private $automationEmailController;
+  /** @var AutomationTimeSpanController */
+  private $automationTimeSpanController;
 
   public function __construct(
     NewslettersRepository $newslettersRepository,
     NewsletterStatisticsRepository $newsletterStatisticsRepository,
     NewsletterUrl $newsletterUrl,
-    AutomationEmailController $automationEmailController
+    AutomationTimeSpanController $automationTimeSpanController
   ) {
     $this->newslettersRepository = $newslettersRepository;
     $this->newsletterStatisticsRepository = $newsletterStatisticsRepository;
     $this->newsletterUrl = $newsletterUrl;
-    $this->automationEmailController = $automationEmailController;
+    $this->automationTimeSpanController = $automationTimeSpanController;
   }
 
   public function getStatisticsForAutomation(Automation $automation, QueryWithCompare $query): array {
-    $currentEmails = $this->automationEmailController->getAutomationEmailsInTimeSpan($automation, $query->getAfter(), $query->getBefore());
-    $previousEmails = $this->automationEmailController->getAutomationEmailsInTimeSpan($automation, $query->getCompareWithAfter(), $query->getCompareWithBefore());
+    $currentEmails = $this->automationTimeSpanController->getAutomationEmailsInTimeSpan($automation, $query->getAfter(), $query->getBefore());
+    $previousEmails = $this->automationTimeSpanController->getAutomationEmailsInTimeSpan($automation, $query->getCompareWithAfter(), $query->getCompareWithBefore());
     $data = [
       'sent' => ['current' => 0, 'previous' => 0],
       'opened' => ['current' => 0, 'previous' => 0],
