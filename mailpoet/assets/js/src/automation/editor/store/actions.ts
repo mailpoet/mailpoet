@@ -221,6 +221,13 @@ export function* trash(onTrashed: () => void = undefined) {
   } as const;
 }
 
+export function updateAutomation(automation) {
+  return {
+    type: 'UPDATE_AUTOMATION',
+    automation,
+  } as const;
+}
+
 export function registerStepType(stepType) {
   return {
     type: 'REGISTER_STEP_TYPE',
