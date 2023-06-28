@@ -1,5 +1,5 @@
 import { useSelect } from '@wordpress/data';
-import { storeName } from '../../../store';
+import { storeName as editorStoreName } from '../../../../../../editor/store/constants';
 
 type Props = {
   previousStepId: string;
@@ -9,7 +9,7 @@ export function StatisticSeparator({
 }: Props): JSX.Element | null {
   const { automation } = useSelect(
     (s) => ({
-      automation: s(storeName).getAutomation(),
+      automation: s(editorStoreName).getAutomationData(),
     }),
     [],
   );

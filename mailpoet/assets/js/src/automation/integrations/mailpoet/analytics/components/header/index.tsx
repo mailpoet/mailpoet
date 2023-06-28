@@ -4,11 +4,11 @@ import { addQueryArgs } from '@wordpress/url';
 import { useSelect } from '@wordpress/data';
 import { Filter } from './filter';
 import { MailPoet } from '../../../../../../mailpoet';
-import { storeName } from '../../store';
+import { storeName as editorStoreName } from '../../../../../editor/store/constants';
 
 export function Header(): JSX.Element {
   const { automation } = useSelect((s) => ({
-    automation: s(storeName).getAutomation(),
+    automation: s(editorStoreName).getAutomationData(),
   }));
   return (
     <header className="mailpoet-analytics-header">

@@ -7,6 +7,7 @@ import {
 import { select, useSelect } from '@wordpress/data';
 import { MailPoet } from '../../../../../../mailpoet';
 import { OverviewSection, storeName } from '../../store';
+import { storeName as editorStoreName } from '../../../../../editor/store';
 import { locale } from '../../../../../config';
 import { formattedPrice } from '../../formatter';
 
@@ -79,7 +80,7 @@ function getWooCommerceDelta(type: 'revenue' | 'orders'): number | undefined {
 export function Overview(): JSX.Element | null {
   const { overview, hasEmails } = useSelect((s) => ({
     overview: s(storeName).getSection('overview'),
-    hasEmails: s(storeName).automationHasEmails(),
+    hasEmails: s(editorStoreName).automationHasStep('mailpoet:send-email'),
   })) as { overview: OverviewSection; hasEmails: boolean };
 
   const percentageFormatter = new Intl.NumberFormat(locale.toString(), {

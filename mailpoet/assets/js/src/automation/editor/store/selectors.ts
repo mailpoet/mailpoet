@@ -9,6 +9,7 @@ import {
   State,
   StepErrors,
   StepType,
+  State as EditorState,
 } from './types';
 import { Item } from '../components/inserter/item';
 import { Step, Automation } from '../components/automation/types';
@@ -109,3 +110,10 @@ export const getStepSubjectKeys = (state: State, key: string): string[] => {
   if (!step) return [];
   return step.subject_keys;
 };
+
+export function automationHasStep(state: EditorState, key: string): boolean {
+  const steps = Object.values(state.automationData.steps).filter(
+    (step) => step.key === key,
+  );
+  return steps.length > 0;
+}
