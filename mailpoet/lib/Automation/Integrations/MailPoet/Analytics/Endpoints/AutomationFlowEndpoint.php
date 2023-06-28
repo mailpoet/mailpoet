@@ -10,6 +10,7 @@ use MailPoet\Automation\Engine\Mappers\AutomationMapper;
 use MailPoet\Automation\Engine\Storage\AutomationStatisticsStorage;
 use MailPoet\Automation\Engine\Storage\AutomationStorage;
 use MailPoet\Automation\Integrations\MailPoet\Analytics\Controller\AutomationTimeSpanController;
+use MailPoet\Automation\Integrations\MailPoet\Analytics\Controller\StepStatisticController;
 use MailPoet\Automation\Integrations\MailPoet\Analytics\Entities\Query;
 use MailPoet\Validator\Builder;
 
@@ -27,20 +28,24 @@ class AutomationFlowEndpoint extends Endpoint {
   /** @var AutomationTimeSpanController */
   private $automationTimeSpanController;
 
+  /** @var StepStatisticController */
+  private $stepStatisticController;
+
   public function __construct(
     AutomationStorage $automationStorage,
     AutomationStatisticsStorage $automationStatisticsStorage,
     AutomationMapper $automationMapper,
-    AutomationTimeSpanController $automationTimeSpanController
+    AutomationTimeSpanController $automationTimeSpanController,
+    StepStatisticController $stepStatisticController
   ) {
     $this->automationStorage = $automationStorage;
     $this->automationStatisticsStorage = $automationStatisticsStorage;
     $this->automationMapper = $automationMapper;
     $this->automationTimeSpanController = $automationTimeSpanController;
+    $this->stepStatisticController = $stepStatisticController;
   }
 
   public function handle(Request $request): Response {
-    //@ToDo Get the automation flow data
     $automation = $this->automationStorage->getAutomation(absint($request->getParam('id')));
     if (!$automation) {
       throw new NotFoundException(__('Automation not found', 'mailpoet'));
@@ -50,7 +55,7 @@ class AutomationFlowEndpoint extends Endpoint {
     if (!count($automations)) {
       throw new NotFoundException(__('The automation did not exist in the selected time span', 'mailpoet'));
     }
-    $automation = end($automations);
+    $automation = current($automations);
     $shortStatistics = $this->automationStatisticsStorage->getAutomationStats(
       $automation->getId(),
       null,
@@ -58,8 +63,18 @@ class AutomationFlowEndpoint extends Endpoint {
       $query->getBefore()
     );
 
+    $waitingData = $this->stepStatisticController->getWaitingStatistics($automation, $query);
+
+    $stepData = [
+      'total' => $shortStatistics->getEntered(),
+    ];
+    if ($waitingData) {
+      $stepData['waiting'] = $waitingData;
+    }
+
     $data = [
       'automation' => $this->automationMapper->buildAutomation($automation, $shortStatistics),
+      'step_data' => $stepData,
     ];
     return new Response($data);
   }
