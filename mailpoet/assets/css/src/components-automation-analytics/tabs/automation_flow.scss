@@ -1,0 +1,39 @@
+@import '../colors';
+
+.mailpoet-automation-editor-stats-placeholder {
+  .mailpoet-automation-stats-label {
+    background: $color-gutenberg-grey-100;
+    color: $color-gutenberg-grey-100;
+    margin-bottom: 3px;
+  }
+
+  .mailpoet-automation-stats-value {
+    background: $color-gutenberg-grey-100;
+    color: $color-gutenberg-grey-100;
+    display: block;
+    margin: auto;
+    width: 10px;
+  }
+}
+
+.mailpoet-automation-editor-step-wrapper-placeholder {
+  .mailpoet-automation-editor-step-icon {
+    background: $color-gutenberg-grey-100;
+    border-radius: 50%;
+    height: 49px;
+    width: 49px;
+  }
+
+  .mailpoet-automation-editor-step-title {
+    background: $color-gutenberg-grey-100;
+    height: 20px;
+    margin-bottom: 3px;
+    width: 50%;
+  }
+
+  .mailpoet-automation-editor-step-subtitle {
+    background: $color-gutenberg-grey-100;
+    height: 20px;
+    width: 90%;
+  }
+}
