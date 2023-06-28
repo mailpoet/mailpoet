@@ -19,7 +19,7 @@ class AutomationMapper {
     $this->statisticsStorage = $statisticsStorage;
   }
 
-  public function buildAutomation(Automation $automation): array {
+  public function buildAutomation(Automation $automation, AutomationStatistics $statistics = null): array {
 
     return [
       'id' => $automation->getId(),
@@ -32,7 +32,7 @@ class AutomationMapper {
         'id' => $automation->getAuthor()->ID,
         'name' => $automation->getAuthor()->display_name,
       ],
-      'stats' => $this->statisticsStorage->getAutomationStats($automation->getId())->toArray(),
+      'stats' => $statistics ? $statistics->toArray() : $this->statisticsStorage->getAutomationStats($automation->getId())->toArray(),
       'steps' => array_map(function (Step $step) {
         return [
           'id' => $step->getId(),
