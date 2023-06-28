@@ -47,8 +47,8 @@ class AutomationStatisticsStorage {
     return $statistics;
   }
 
-  public function getAutomationStats(int $automationId, int $versionId = null): AutomationStatistics {
-    $data = $this->getStatistics([$automationId], $versionId);
+  public function getAutomationStats(int $automationId, int $versionId = null, \DateTimeImmutable $after = null, \DateTimeImmutable $before = null): AutomationStatistics {
+    $data = $this->getStatistics([$automationId], $versionId, $after, $before);
     return new AutomationStatistics(
       $automationId,
       (int)($data[$automationId]['total'] ?? 0),
@@ -61,9 +61,9 @@ class AutomationStatisticsStorage {
    * @param int[] $automationIds
    * @return array<int, array{id: int, total: int, running: int}>
    */
-  private function getStatistics(array $automationIds, int $versionId = null): array {
-    $totalSubquery = $this->getStatsQuery($automationIds, $versionId);
-    $runningSubquery = $this->getStatsQuery($automationIds, $versionId, AutomationRun::STATUS_RUNNING);
+  private function getStatistics(array $automationIds, int $versionId = null, \DateTimeImmutable $after = null, \DateTimeImmutable $before = null): array {
+    $totalSubquery = $this->getStatsQuery($automationIds, $versionId, $after, $before);
+    $runningSubquery = $this->getStatsQuery($automationIds, $versionId, $after, $before, AutomationRun::STATUS_RUNNING);
 
     // The subqueries are created using $wpdb->prepare().
     // phpcs:ignore WordPressDotOrg.sniffs.DirectDB.UnescapedDBParameter
@@ -76,17 +76,19 @@ class AutomationStatisticsStorage {
     return array_combine(array_column($results, 'id'), $results) ?: [];
   }
 
-  private function getStatsQuery(array $automationIds, int $versionId = null, string $status = null): string {
+  private function getStatsQuery(array $automationIds, int $versionId = null, \DateTimeImmutable $after = null, \DateTimeImmutable $before = null, string $status = null): string {
     $table = esc_sql($this->table);
     $placeholders = implode(',', array_fill(0, count($automationIds), '%d'));
     $versionCondition = strval($versionId ? $this->wpdb->prepare('AND version_id = %d', $versionId) : '');
     $statusCondition = strval($status ? $this->wpdb->prepare('AND status = %s', $status) : '');
+    $dateCondition = $after !== null && $before !== null ? strval($this->wpdb->prepare('AND created_at BETWEEN %s AND %s', $after->format('Y-m-d H:i:s'), $before->format('Y-m-d H:i:s'))) : '';
     $query = $this->wpdb->prepare("
       SELECT automation_id AS id, COUNT(*) AS count
       FROM $table
       WHERE automation_id IN ($placeholders)
       $versionCondition
       $statusCondition
+      $dateCondition
       GROUP BY automation_id
     ", $automationIds);
     return strval($query);
