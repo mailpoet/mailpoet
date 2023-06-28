@@ -32,62 +32,68 @@ export async function formsAdding() {
   });
   const page = browser.newPage();
 
-  // Log in to WP Admin
-  await login(page);
-
-  // Go to the Forms page
-  await page.goto(`${baseURL}/wp-admin/admin.php?page=mailpoet-forms`, {
-    waitUntil: 'networkidle',
-  });
-
-  await page.waitForLoadState('networkidle');
-  await page.screenshot({
-    path: screenshotPath + 'Forms_Adding_01.png',
-    fullPage: fullPageSet,
-  });
-
-  // Wait and click the Add New Form button
-  waitAndClick(page, '[data-automation-id="create_new_form"]');
-  sleep(1);
-  await page.waitForLoadState('networkidle');
-
-  // Choose the form template
-  waitAndClick(page, '[data-automation-id="select_template_template_1_popup"]');
-  sleep(1);
-
-  // Try to close the tutorial video popup
   try {
-    await page.waitForSelector('[data-automation-id="mailpoet-modal-close"]');
-    await page.locator('[data-automation-id="mailpoet-modal-close"]').click();
-  } catch (error) {
-    console.log("Tutorial video wasn't present, skipping action.");
-  }
+    // Log in to WP Admin
+    await login(page);
 
-  // Select the list and save the form
-  await page.waitForSelector('[data-automation-id="form_title_input"]');
-  selectInSelect2(page, defaultListName);
-  await page.waitForSelector('[data-automation-id="form_save_button"]');
-  await page.locator('[data-automation-id="form_save_button"]').click();
-  await page.waitForSelector('.components-notice');
-  describe(formsPageTitle, () => {
-    describe('should be able to see Forms Saved message', () => {
-      expect(
-        page.locator('.components-notice__content').innerText(),
-      ).to.contain(
-        'Form saved. Cookies reset — you will see all your dismissed popup forms again.',
-      );
+    // Go to the Forms page
+    await page.goto(`${baseURL}/wp-admin/admin.php?page=mailpoet-forms`, {
+      waitUntil: 'networkidle',
     });
-  });
 
-  await page.screenshot({
-    path: screenshotPath + 'Forms_Adding_02.png',
-    fullPage: fullPageSet,
-  });
+    await page.waitForLoadState('networkidle');
+    await page.screenshot({
+      path: screenshotPath + 'Forms_Adding_01.png',
+      fullPage: fullPageSet,
+    });
 
-  // Thinking time and closing
-  sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
-  page.close();
-  browser.close();
+    // Wait and click the Add New Form button
+    waitAndClick(page, '[data-automation-id="create_new_form"]');
+    sleep(1);
+    await page.waitForLoadState('networkidle');
+
+    // Choose the form template
+    waitAndClick(
+      page,
+      '[data-automation-id="select_template_template_1_popup"]',
+    );
+    sleep(1);
+
+    // Try to close the tutorial video popup
+    try {
+      await page.waitForSelector('[data-automation-id="mailpoet-modal-close"]');
+      await page.locator('[data-automation-id="mailpoet-modal-close"]').click();
+    } catch (error) {
+      console.log("Tutorial video wasn't present, skipping action.");
+    }
+
+    // Select the list and save the form
+    await page.waitForSelector('[data-automation-id="form_title_input"]');
+    selectInSelect2(page, defaultListName);
+    await page.waitForSelector('[data-automation-id="form_save_button"]');
+    await page.locator('[data-automation-id="form_save_button"]').click();
+    await page.waitForSelector('.components-notice');
+    describe(formsPageTitle, () => {
+      describe('should be able to see Forms Saved message', () => {
+        expect(
+          page.locator('.components-notice__content').innerText(),
+        ).to.contain(
+          'Form saved. Cookies reset — you will see all your dismissed popup forms again.',
+        );
+      });
+    });
+
+    await page.screenshot({
+      path: screenshotPath + 'Forms_Adding_02.png',
+      fullPage: fullPageSet,
+    });
+
+    // Thinking time and closing
+    sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
+  } finally {
+    page.close();
+    browser.close();
+  }
 }
 
 export default function formsAddingTest() {

@@ -33,58 +33,63 @@ export async function listsViewSubscribers() {
   });
   const page = browser.newPage();
 
-  // Log in to WP Admin
-  await login(page);
+  try {
+    // Log in to WP Admin
+    await login(page);
 
-  // Go to the Lists page
-  await page.goto(
-    `${baseURL}/wp-admin/admin.php?page=mailpoet-segments#/lists`,
-    {
-      waitUntil: 'networkidle',
-    },
-  );
+    // Go to the Lists page
+    await page.goto(
+      `${baseURL}/wp-admin/admin.php?page=mailpoet-segments#/lists`,
+      {
+        waitUntil: 'networkidle',
+      },
+    );
 
-  await page.waitForLoadState('networkidle');
-  await page.screenshot({
-    path: screenshotPath + 'Lists_View_Subscribers_01.png',
-    fullPage: fullPageSet,
-  });
-
-  // Click to view subscribers of the default list "Newsletter mailing list"
-  await page.waitForSelector('[data-automation-id="dynamic-segments-tab"]');
-  describe(listsPageTitle, () => {
-    describe('should be able to see Segments tab', () => {
-      expect(page.locator('[data-automation-id="dynamic-segments-tab"]')).to
-        .exist;
+    await page.waitForLoadState('networkidle');
+    await page.screenshot({
+      path: screenshotPath + 'Lists_View_Subscribers_01.png',
+      fullPage: fullPageSet,
     });
-  });
-  await page
-    .locator('[data-automation-id="segment_name_' + defaultListName + '"]')
-    .hover();
-  await page
-    .locator('[data-automation-id="view_subscribers_' + defaultListName + '"]')
-    .click();
 
-  // Wait for the page to load
-  await page.waitForSelector('.mailpoet-listing-no-items');
-  await page.waitForSelector('[data-automation-id="filters_subscribed"]');
-  describe(listsPageTitle, () => {
-    describe('should be able to see Lists Filter', () => {
-      expect(page.locator('[data-automation-id="listing_filter_segment"]')).to
-        .exist;
+    // Click to view subscribers of the default list "Newsletter mailing list"
+    await page.waitForSelector('[data-automation-id="dynamic-segments-tab"]');
+    describe(listsPageTitle, () => {
+      describe('should be able to see Segments tab', () => {
+        expect(page.locator('[data-automation-id="dynamic-segments-tab"]')).to
+          .exist;
+      });
     });
-  });
-  await page.waitForLoadState('networkidle');
+    await page
+      .locator('[data-automation-id="segment_name_' + defaultListName + '"]')
+      .hover();
+    await page
+      .locator(
+        '[data-automation-id="view_subscribers_' + defaultListName + '"]',
+      )
+      .click();
 
-  await page.screenshot({
-    path: screenshotPath + 'Lists_View_Subscribers_02.png',
-    fullPage: fullPageSet,
-  });
+    // Wait for the page to load
+    await page.waitForSelector('.mailpoet-listing-no-items');
+    await page.waitForSelector('[data-automation-id="filters_subscribed"]');
+    describe(listsPageTitle, () => {
+      describe('should be able to see Lists Filter', () => {
+        expect(page.locator('[data-automation-id="listing_filter_segment"]')).to
+          .exist;
+      });
+    });
+    await page.waitForLoadState('networkidle');
 
-  // Thinking time and closing
-  sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
-  page.close();
-  browser.close();
+    await page.screenshot({
+      path: screenshotPath + 'Lists_View_Subscribers_02.png',
+      fullPage: fullPageSet,
+    });
+
+    // Thinking time and closing
+    sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
+  } finally {
+    page.close();
+    browser.close();
+  }
 }
 
 export default async function listsViewSubscribersTest() {

@@ -7,7 +7,7 @@ import { baseURL, adminUsername, adminPassword } from '../config.js';
 // WordPress login authorization
 export async function login(page) {
   // Go to WP Admin login page
-  Promise.all([
+  await Promise.all([
     page.goto(`${baseURL}/wp-login.php`, { waitUntil: 'networkidle' }),
     page.waitForSelector('#user_login'),
   ]);
@@ -16,7 +16,7 @@ export async function login(page) {
   await page.locator('input[name="log"]').type(`${adminUsername}`);
   await page.locator('input[name="pwd"]').type(`${adminPassword}`);
   // Wait for asynchronous operations to complete
-  return Promise.all([
+  await Promise.all([
     page.waitForNavigation(),
     page.locator('input[name="wp-submit"]').click(),
   ]);
