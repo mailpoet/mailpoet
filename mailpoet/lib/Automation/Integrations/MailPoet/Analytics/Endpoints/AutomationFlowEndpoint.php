@@ -7,6 +7,7 @@ use MailPoet\API\REST\Response;
 use MailPoet\Automation\Engine\API\Endpoint;
 use MailPoet\Automation\Engine\Exceptions\NotFoundException;
 use MailPoet\Automation\Engine\Mappers\AutomationMapper;
+use MailPoet\Automation\Engine\Storage\AutomationStatisticsStorage;
 use MailPoet\Automation\Engine\Storage\AutomationStorage;
 use MailPoet\Automation\Integrations\MailPoet\Analytics\Controller\AutomationTimeSpanController;
 use MailPoet\Automation\Integrations\MailPoet\Analytics\Entities\Query;
@@ -17,6 +18,9 @@ class AutomationFlowEndpoint extends Endpoint {
   /** @var AutomationStorage */
   private $automationStorage;
 
+  /** @var AutomationStatisticsStorage */
+  private $automationStatisticsStorage;
+
   /** @var AutomationMapper */
   private $automationMapper;
 
@@ -25,10 +29,12 @@ class AutomationFlowEndpoint extends Endpoint {
 
   public function __construct(
     AutomationStorage $automationStorage,
+    AutomationStatisticsStorage $automationStatisticsStorage,
     AutomationMapper $automationMapper,
     AutomationTimeSpanController $automationTimeSpanController
   ) {
     $this->automationStorage = $automationStorage;
+    $this->automationStatisticsStorage = $automationStatisticsStorage;
     $this->automationMapper = $automationMapper;
     $this->automationTimeSpanController = $automationTimeSpanController;
   }
@@ -45,9 +51,15 @@ class AutomationFlowEndpoint extends Endpoint {
       throw new NotFoundException(__('The automation did not exist in the selected time span', 'mailpoet'));
     }
     $automation = end($automations);
+    $shortStatistics = $this->automationStatisticsStorage->getAutomationStats(
+      $automation->getId(),
+      null,
+      $query->getAfter(),
+      $query->getBefore()
+    );
 
     $data = [
-      'automation' => $this->automationMapper->buildAutomation($automation),
+      'automation' => $this->automationMapper->buildAutomation($automation, $shortStatistics),
     ];
     return new Response($data);
   }
