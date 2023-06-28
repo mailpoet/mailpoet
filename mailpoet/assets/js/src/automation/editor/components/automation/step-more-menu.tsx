@@ -9,9 +9,10 @@ import { StepMoreControlsType } from '../../../types/filters';
 
 type Props = {
   step: StepData;
+  context: 'edit' | 'view';
 };
 
-export function StepMoreMenu({ step }: Props): JSX.Element {
+export function StepMoreMenu({ step, context }: Props): JSX.Element {
   const [showModal, setShowModal] = useState(false);
 
   const moreControls: StepMoreControlsType = Hooks.applyFilters(
@@ -45,6 +46,7 @@ export function StepMoreMenu({ step }: Props): JSX.Element {
       },
     },
     step,
+    context,
   );
 
   const slots = Object.values(moreControls).filter(
