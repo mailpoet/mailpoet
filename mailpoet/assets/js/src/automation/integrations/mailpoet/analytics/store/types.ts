@@ -1,12 +1,4 @@
-import { AutomationStatus } from '../../../../listing/automation';
-import { Step } from '../../../../editor/components/automation/types';
-
-export type Automation = {
-  id: number;
-  name: string;
-  status: AutomationStatus;
-  steps: Record<string, Step>;
-};
+import { Automation } from '../../../../editor/components/automation/types';
 
 export type CurrentAndPrevious = {
   current: number;
@@ -106,6 +98,20 @@ type OrderSectionData = SectionData & {
 
 export type OrderSection = Section & {
   data: undefined | OrderSectionData;
+};
+
+export type StepFlowData = {
+  total: number;
+  waiting: Record<string, number> | undefined;
+  flow: Record<string, number> | undefined;
+};
+export type AutomationFlowSectionData = SectionData & {
+  automation: Automation;
+  step_data: StepFlowData;
+};
+
+export type AutomationFlowSection = Section & {
+  data: undefined | AutomationFlowSectionData;
 };
 export type State = {
   sections: Record<string, Section>;
