@@ -13,7 +13,7 @@ import { Chip } from '../chip';
 import { ColoredIcon } from '../icons';
 import { stepSidebarKey, storeName } from '../../store';
 import { StepType } from '../../store/types';
-import { RenderStepFooterType } from '../../../types/filters';
+import { RenderStepFooterType, StepMoreType } from '../../../types/filters';
 
 const getUnknownStepType = (step: StepData): StepType => {
   const isTrigger = step.type === 'trigger';
@@ -126,6 +126,15 @@ export function Step({ step, isSelected, context }: Props): JSX.Element {
               : stepTypeData.title(step, 'automation')}
           </div>
         </div>
+        {
+          Hooks.applyFilters(
+            'mailpoet.automation.step.more',
+            null,
+            step,
+            context,
+            isSelected,
+          ) as StepMoreType
+        }
         {footer}
       </CompositeItem>
     </div>
