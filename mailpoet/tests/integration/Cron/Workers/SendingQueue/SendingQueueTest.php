@@ -856,7 +856,7 @@ class SendingQueueTest extends \MailPoetTest {
     $queue = $this->queue;
     $queue->setSubscribers([
       $this->subscriber->getId(),
-      12345645454,
+      1234564545,
     ]);
     $queue->countTotal = 2;
     $queue->save();
