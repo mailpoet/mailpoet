@@ -28,6 +28,29 @@ class AutomationRunLogStorage {
     return $this->wpdb->insert_id;
   }
 
+  public function getAutomationRunStatisticsForAutomationInTimeFrame(int $automationId, string $status, \DateTimeImmutable $after, \DateTimeImmutable $before, int $versionId = null): array {
+    $logTable = esc_sql($this->table);
+    $runTable = esc_sql($this->wpdb->prefix . 'mailpoet_automation_runs');
+
+    $whereCondition = 'run.automation_id = %d
+      AND log.status = %s
+      AND run.created_at BETWEEN %s AND %s';
+    if ($versionId !== null) {
+      $whereCondition .= ' AND run.version_id = %d';
+    }
+    $sql = "SELECT count(log.id) as `count`, log.step_id FROM $logTable AS log
+      JOIN $runTable AS run ON log.automation_run_id = run.id
+      WHERE $whereCondition
+      GROUP BY log.step_id";
+
+    $sql = $versionId ? $this->wpdb->prepare($sql, $automationId, $status, $after->format('Y-m-d H:i:s'), $before->format('Y-m-d H:i:s'), $versionId)
+      : $this->wpdb->prepare($sql, $automationId, $status, $after->format('Y-m-d H:i:s'), $before->format('Y-m-d H:i:s'));
+
+    $sql = is_string($sql) ? $sql : "";
+    $results = $this->wpdb->get_results($sql, ARRAY_A);
+    return is_array($results) ? $results : [];
+  }
+
   public function getAutomationRunLog(int $id): ?AutomationRunLog {
     $table = esc_sql($this->table);
     $query = $this->wpdb->prepare("SELECT * FROM $table WHERE id = %d", $id);
