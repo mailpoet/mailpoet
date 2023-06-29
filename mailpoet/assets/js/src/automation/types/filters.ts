@@ -32,6 +32,9 @@ export type AddStepCallbackType = (item?: Item) => void;
 // mailpoet.automation.render_step
 export type RenderStepType = (step: Step) => JSX.Element;
 
+// mailpoet.automation.step.footer
+export type RenderStepFooterType = JSX.Element | null;
+
 // mailpoet.automation.render_step_separator
 export type RenderStepSeparatorType = (step: Step) => JSX.Element;
 
