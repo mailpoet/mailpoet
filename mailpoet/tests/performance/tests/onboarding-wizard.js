@@ -44,13 +44,14 @@ export async function onboardingWizard() {
     );
 
     await page.waitForLoadState('networkidle');
-    await page.click('#mailpoet_sender_form > a');
-    await page.waitForLoadState('networkidle');
-
     await page.screenshot({
       path: screenshotPath + 'Onboarding_Wizard_01.png',
       fullPage: fullPageSet,
     });
+
+    await page.waitForSelector('#mailpoet_sender_form');
+    await page.click('#mailpoet_sender_form > a');
+    await page.waitForLoadState('networkidle');
 
     await page
       .locator(
