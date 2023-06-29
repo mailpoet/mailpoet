@@ -70,6 +70,7 @@ export function Automation({ context }: AutomationProps): JSX.Element {
               context={context}
             />
           ),
+        context,
       ),
     [selectedStep, context],
   );
@@ -81,8 +82,9 @@ export function Automation({ context }: AutomationProps): JSX.Element {
         (previousStepData: StepData) => (
           <Separator previousStepId={previousStepData.id} />
         ),
+        context,
       ),
-    [],
+    [context],
   );
 
   if (!automationData) {
