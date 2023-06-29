@@ -58,3 +58,18 @@
     color: $color-gutenberg-grey-600;
   }
 }
+
+.mailpoet-automation-analytics-separator {
+  p {
+    background: $color-wp-gray-0;
+    text-align: center;
+  }
+
+  span {
+    display: block;
+  }
+
+  .mailpoet-automation-analytics-separator-text {
+    color: $color-gutenberg-grey-600;
+  }
+}
