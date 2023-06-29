@@ -5,6 +5,20 @@ import { storeName as editorStoreName } from '../../../../editor/store';
 
 export const getInitialState = (): State => ({
   sections: {
+    automation_flow: {
+      id: 'automation_flow',
+      name: __('Automation flow', 'mailpoet'),
+      data: undefined,
+      withPreviousData: false,
+      endpoint: '/automation/analytics/automation_flow',
+      updateCallback: (data): void => {
+        if (!data || !data?.automation) {
+          return;
+        }
+        const { automation } = data;
+        dispatch(editorStoreName).updateAutomation(automation);
+      },
+    },
     overview: {
       id: 'overview',
       name: __('Overview', 'mailpoet'),
@@ -24,20 +38,6 @@ export const getInitialState = (): State => ({
       },
       withPreviousData: false,
       endpoint: '/automation/analytics/orders',
-    },
-    automation_flow: {
-      id: 'automation_flow',
-      name: __('Automation flow', 'mailpoet'),
-      data: undefined,
-      withPreviousData: false,
-      endpoint: '/automation/analytics/automation_flow',
-      updateCallback: (data): void => {
-        if (!data || !data?.automation) {
-          return;
-        }
-        const { automation } = data;
-        dispatch(editorStoreName).updateAutomation(automation);
-      },
     },
   },
   query: {
