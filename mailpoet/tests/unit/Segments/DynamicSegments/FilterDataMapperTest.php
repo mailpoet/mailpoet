@@ -807,4 +807,95 @@ class FilterDataMapperTest extends \MailPoetUnitTest {
       'operator' => 'not a valid operator',
     ]]]);
   }
+
+  public function testItMapsEnteredAutomation() {
+    $data = ['filters' => [[
+      'segmentType' => DynamicSegmentFilterData::TYPE_AUTOMATIONS,
+      'action' => 'enteredAutomation',
+      'operator' => 'any',
+      'automation_ids' => ['1', '2'],
+    ]]];
+    $filters = $this->mapper->map($data);
+    expect($filters)->array();
+    expect($filters)->count(1);
+    $filter = reset($filters);
+    $this->assertInstanceOf(DynamicSegmentFilterData::class, $filter);
+    expect($filter)->isInstanceOf(DynamicSegmentFilterData::class);
+    expect($filter->getFilterType())->equals(DynamicSegmentFilterData::TYPE_AUTOMATIONS);
+    expect($filter->getAction())->equals('enteredAutomation');
+    expect($filter->getData())->equals([
+      'action' => 'enteredAutomation',
+      'operator' => 'any',
+      'automation_ids' => ['1', '2'],
+      'connect' => DynamicSegmentFilterData::CONNECT_TYPE_AND,
+    ]);
+  }
+
+  public function testItMapsExitedAutomation() {
+    $data = ['filters' => [[
+      'segmentType' => DynamicSegmentFilterData::TYPE_AUTOMATIONS,
+      'action' => 'exitedAutomation',
+      'operator' => 'all',
+      'automation_ids' => ['1', '2'],
+    ]]];
+    $filters = $this->mapper->map($data);
+    expect($filters)->array();
+    expect($filters)->count(1);
+    $filter = reset($filters);
+    $this->assertInstanceOf(DynamicSegmentFilterData::class, $filter);
+    expect($filter)->isInstanceOf(DynamicSegmentFilterData::class);
+    expect($filter->getFilterType())->equals(DynamicSegmentFilterData::TYPE_AUTOMATIONS);
+    expect($filter->getAction())->equals('exitedAutomation');
+    expect($filter->getData())->equals([
+      'action' => 'exitedAutomation',
+      'operator' => 'all',
+      'automation_ids' => ['1', '2'],
+      'connect' => DynamicSegmentFilterData::CONNECT_TYPE_AND,
+    ]);
+  }
+
+  public function testItThrowsExceptionIfAutomationIdsMissing() {
+    $this->expectException(InvalidFilterException::class);
+    $this->expectExceptionCode(InvalidFilterException::MISSING_VALUE);
+    $this->expectExceptionMessage('Missing automation IDs');
+    $this->mapper->map(['filters' => [[
+      'segmentType' => DynamicSegmentFilterData::TYPE_AUTOMATIONS,
+      'action' => 'enteredAutomation',
+      'operator' => 'none',
+    ]]]);
+  }
+
+  public function testItThrowsExceptionIfAutomationsOperatorIsInvalid(): void {
+    $this->expectException(InvalidFilterException::class);
+    $this->expectExceptionCode(InvalidFilterException::MISSING_OPERATOR);
+    $this->expectExceptionMessage('Missing operator');
+    $this->mapper->map(['filters' => [[
+      'segmentType' => DynamicSegmentFilterData::TYPE_AUTOMATIONS,
+      'action' => 'enteredAutomation',
+      'operator' => 'not a valid operator',
+    ]]]);
+  }
+
+  public function testItThrowsExceptionIfInvalidAutomationsAction(): void {
+    $this->expectException(InvalidFilterException::class);
+    $this->expectExceptionCode(InvalidFilterException::MISSING_ACTION);
+    $this->expectExceptionMessage('Unknown automations action');
+    $this->mapper->map(['filters' => [[
+      'segmentType' => DynamicSegmentFilterData::TYPE_AUTOMATIONS,
+      'action' => 'didSomethingUnsupportedWithAutomation',
+      'operator' => 'any',
+      'automation_ids' => ['1', '2'],
+    ]]]);
+  }
+
+  public function testItThrowsExceptionIfAutomationActionIsMissing(): void {
+    $this->expectException(InvalidFilterException::class);
+    $this->expectExceptionCode(InvalidFilterException::MISSING_ACTION);
+    $this->expectExceptionMessage('Missing automations filter action');
+    $this->mapper->map(['filters' => [[
+      'segmentType' => DynamicSegmentFilterData::TYPE_AUTOMATIONS,
+      'operator' => 'any',
+      'automation_ids' => ['1', '2'],
+    ]]]);
+  }
 }
