@@ -143,12 +143,19 @@ class SendingTest extends \MailPoetTest {
   }
 
   public function testItUpdatesProcessedSubscribers() {
+    $subscriberId = 456;
+    $taskSubscriber = $this->getTaskSubscriber($this->task->id, $subscriberId);
+    expect($taskSubscriber->processed)->equals(ScheduledTaskSubscriber::STATUS_UNPROCESSED);
+
     expect($this->sending->count_to_process)->equals(2);
     expect($this->sending->count_processed)->equals(0);
-    $subscriberIds = [456];
+    $subscriberIds = [$subscriberId];
     $this->sending->updateProcessedSubscribers($subscriberIds);
     expect($this->sending->count_to_process)->equals(1);
     expect($this->sending->count_processed)->equals(1);
+
+    $taskSubscriber = $this->getTaskSubscriber($this->task->id, $subscriberId);
+    expect($taskSubscriber->processed)->equals(ScheduledTaskSubscriber::STATUS_PROCESSED);
   }
 
   public function testItGetsScheduledQueues() {
@@ -270,5 +277,9 @@ class SendingTest extends \MailPoetTest {
     $sending->status = $status;
     $sending->scheduledAt = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'))->subHours(1);
     return $sending->save();
+  }
+
+  private function getTaskSubscriber($taskId, $subscriberId) {
+    return ScheduledTaskSubscriber::where(['task_id' => $taskId, 'subscriber_id' => $subscriberId])->findOne();
   }
 }
