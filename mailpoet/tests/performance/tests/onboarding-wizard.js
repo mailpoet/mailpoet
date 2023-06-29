@@ -43,6 +43,7 @@ export async function onboardingWizard() {
       },
     );
 
+    await page.waitForLoadState('networkidle');
     await page.click('#mailpoet_sender_form > a');
     await page.waitForLoadState('networkidle');
 
