@@ -37,3 +37,24 @@
     width: 90%;
   }
 }
+
+.mailpoet-automation-analytics-step-footer {
+  background: $color-wp-gray-0;
+  border-top: 1px solid $color-poet-gray-dividers;
+  display: flex;
+  grid-column: 1 / -1;
+  justify-content: center;
+  margin-bottom: -12px;
+  margin-left: -12px;
+  width: calc(100% + 24px);
+
+  p {
+    color: $color-gutenberg-grey-800;
+    margin: 0;
+    padding: 6px 0;
+  }
+
+  span {
+    color: $color-gutenberg-grey-600;
+  }
+}

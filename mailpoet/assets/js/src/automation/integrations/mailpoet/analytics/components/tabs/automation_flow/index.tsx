@@ -5,6 +5,18 @@ import { StatisticSeparator } from './statistic_separator';
 import { Step as StepData } from '../../../../../../editor/components/automation/types';
 import { storeName } from '../../../store';
 import { AutomationPlaceholder } from './automation_placeholder';
+import { StepFooter } from './step_footer';
+
+Hooks.addFilter(
+  'mailpoet.automation.step.footer',
+  'mailpoet',
+  (element: JSX.Element | null, step: StepData, context: string) => {
+    if (context !== 'view') {
+      return element;
+    }
+    return <StepFooter step={step} />;
+  },
+);
 
 Hooks.addFilter(
   'mailpoet.automation.render_step_separator',
