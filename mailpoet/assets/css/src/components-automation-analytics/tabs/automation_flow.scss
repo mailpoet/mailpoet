@@ -73,3 +73,27 @@
     color: $color-gutenberg-grey-600;
   }
 }
+
+// Send Email Panel
+.mailpoet-automation-analytics-send-email-panel {
+  grid-column: 1 / -1;
+}
+
+.mailpoet-automation-analytics-send-email-panel-section {
+  display: flex;
+  justify-content: space-between;
+  margin: 1em 0;
+
+  &.is-loading {
+    background: $color-gutenberg-grey-100;
+    height: 20px;
+  }
+}
+
+.mailpoet-automation-analytics-send-email-panel-label {
+  color: $color-gutenberg-grey-700;
+}
+
+.mailpoet-automation-analytics-send-email-panel-value {
+  text-align: end;
+}
