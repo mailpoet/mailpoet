@@ -6,6 +6,7 @@ import { Step as StepData } from '../../../../../../editor/components/automation
 import { storeName } from '../../../store';
 import { AutomationPlaceholder } from './automation_placeholder';
 import { StepFooter } from './step_footer';
+import { SendEmailPanel } from './steps/send_email';
 
 Hooks.addFilter(
   'mailpoet.automation.step.footer',
@@ -15,6 +16,22 @@ Hooks.addFilter(
       return element;
     }
     return <StepFooter step={step} />;
+  },
+);
+
+Hooks.addFilter(
+  'mailpoet.automation.step.more',
+  'mailpoet',
+  (element: JSX.Element | null, step: StepData, context: string) => {
+    if (context !== 'view') {
+      return element;
+    }
+
+    if (step.key === 'mailpoet:send-email') {
+      return <SendEmailPanel step={step} />;
+    }
+
+    return element;
   },
 );
 
