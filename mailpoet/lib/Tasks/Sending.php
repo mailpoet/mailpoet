@@ -234,7 +234,7 @@ class Sending {
 
   public function updateProcessedSubscribers(array $processedSubscribers) {
     $this->taskSubscribers->updateProcessedSubscribers($processedSubscribers);
-    return $this->updateCount()->getErrors() === false;
+    return $this->updateCount(count($processedSubscribers))->getErrors() === false;
   }
 
   public function saveSubscriberError($subcriberId, $errorMessage) {
@@ -242,10 +242,17 @@ class Sending {
     return $this->updateCount()->getErrors() === false;
   }
 
-  public function updateCount() {
-    $this->queue->countProcessed = ScheduledTaskSubscriber::getProcessedCount($this->task->id);
-    $this->queue->countToProcess = ScheduledTaskSubscriber::getUnprocessedCount($this->task->id);
-    $this->queue->countTotal = $this->queue->countProcessed + $this->queue->countToProcess;
+  public function updateCount(?int $count = null) {
+    if ($count) {
+      // increment/decrement counts based on known subscriber count, don't exceed the bounds
+      $this->queue->countProcessed = min($this->queue->countProcessed + $count, $this->queue->countTotal);
+      $this->queue->countToProcess = max($this->queue->countToProcess - $count, 0);
+    } else {
+      // query DB to update counts, slower but more accurate, to be used if count isn't known
+      $this->queue->countProcessed = ScheduledTaskSubscriber::getProcessedCount($this->task->id);
+      $this->queue->countToProcess = ScheduledTaskSubscriber::getUnprocessedCount($this->task->id);
+      $this->queue->countTotal = $this->queue->countProcessed + $this->queue->countToProcess;
+    }
     return $this->queue->save();
   }
 
