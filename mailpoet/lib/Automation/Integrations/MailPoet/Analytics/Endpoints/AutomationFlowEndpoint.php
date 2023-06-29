@@ -64,12 +64,19 @@ class AutomationFlowEndpoint extends Endpoint {
     );
 
     $waitingData = $this->stepStatisticController->getWaitingStatistics($automation, $query);
-
+    try {
+      $flowData = $this->stepStatisticController->getFlowStatistics($automation, $query);
+    } catch (\Throwable $e) {
+      return new Response([$e->getMessage()], 500);
+    }
     $stepData = [
       'total' => $shortStatistics->getEntered(),
     ];
     if ($waitingData) {
       $stepData['waiting'] = $waitingData;
+    }
+    if ($flowData) {
+      $stepData['flow'] = $flowData;
     }
 
     $data = [
