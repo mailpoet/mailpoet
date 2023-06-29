@@ -9,10 +9,14 @@ import { AutomationPlaceholder } from './automation_placeholder';
 Hooks.addFilter(
   'mailpoet.automation.render_step_separator',
   'mailpoet',
-  () =>
-    function statisticSeperatorWrapper(previousStepData: StepData) {
+  (filterValue: () => JSX.Element, context) => {
+    if (context !== 'view') {
+      return filterValue;
+    }
+    return function statisticSeperatorWrapper(previousStepData: StepData) {
       return <StatisticSeparator previousStepId={previousStepData.id} />;
-    },
+    };
+  },
   20,
 );
 
