@@ -5,9 +5,7 @@ import { Automation } from '../../../../../../editor/components/automation';
 import { storeName } from '../../../store';
 import { AutomationPlaceholder } from './automation_placeholder';
 import { initHooks } from './hooks';
-
 initHooks();
-
 export function AutomationFlow(): JSX.Element {
   const { section } = useSelect(
     (s) => ({
