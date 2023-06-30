@@ -1,4 +1,6 @@
+import { Notice } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
+import { __ } from '@wordpress/i18n';
 import { Hooks } from 'wp-js-hooks';
 import { Automation } from '../../../../../../editor/components/automation';
 import { StatisticSeparator } from './statistic_separator';
@@ -59,5 +61,29 @@ export function AutomationFlow(): JSX.Element {
 
   const isLoading = section.data === undefined;
 
-  return !isLoading ? <Automation context="view" /> : <AutomationPlaceholder />;
+  if (isLoading) {
+    return <AutomationPlaceholder />;
+  }
+
+  return (
+    <>
+      {section.data.tree_is_inconsistent && (
+        <div className="mailpoet-automation-editor-automation-notices">
+          <Notice
+            status="warning"
+            isDismissible={false}
+            className="mailpoet-automation-flow-notice"
+          >
+            <p>
+              {__(
+                'In this time period, the automation structure did change and therefore some numbers in the flow chart might not be accurate.',
+                'mailpoet',
+              )}
+            </p>
+          </Notice>
+        </div>
+      )}
+      <Automation context="view" />
+    </>
+  );
 }
