@@ -27,12 +27,13 @@ class WooCheckoutAutomateWooSubscriptionsCest {
   public function _before(\AcceptanceTester $i) {
     $i->activateWooCommerce();
     $i->activateAutomateWoo();
+    $i->login();
+    $i->amOnPage('/wp-admin/');
     $this->product = (new WooCommerceProduct($i))->create();
     $this->settingsFactory = new Settings();
     $this->settingsFactory->withWooCommerceListImportPageDisplayed(true);
     $this->settingsFactory->withCookieRevenueTrackingDisabled();
     // Let AutomateWoo settings to be applied
-    $i->login();
     $i->amOnPage('/wp-admin/admin.php?page=automatewoo-settings');
     $i->seeCheckboxIsChecked('#automatewoo_enable_checkout_optin');
     $i->logout();
