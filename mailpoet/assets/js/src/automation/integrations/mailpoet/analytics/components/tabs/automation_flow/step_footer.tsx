@@ -1,8 +1,11 @@
+import { Tooltip } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
+import { addQueryArgs } from '@wordpress/url';
 import { AutomationFlowSection, storeName } from '../../../store';
 import { locale } from '../../../config';
 import { Step } from '../../../../../../editor/components/automation/types';
+import { openTab } from '../../../navigation/open_tab';
 
 export function StepFooter({ step }: { step: Step }): JSX.Element | null {
   const { section } = useSelect(
@@ -30,16 +33,28 @@ export function StepFooter({ step }: { step: Step }): JSX.Element | null {
     style: 'percent',
   }).format(percent / 100);
   return (
-    <div className="mailpoet-automation-analytics-step-footer">
-      <p>
-        {formattedPercent} ({formattedValue}){' '}
-        <span>
-          {
-            // translators: "waiting" as in "100 people are waiting for this step".
-            __('waiting', 'mailpoet')
-          }
-        </span>
-      </p>
-    </div>
+    <Tooltip text={__('View subscribers', 'mailpoet')}>
+      <div className="mailpoet-automation-analytics-step-footer">
+        <p>
+          <a
+            href={addQueryArgs(window.location.href, {
+              tab: 'automation-subscribers',
+            })}
+            onClick={(e) => {
+              e.preventDefault();
+              openTab('subscribers');
+            }}
+          >
+            {formattedPercent} ({formattedValue}){' '}
+            <span>
+              {
+                // translators: "waiting" as in "100 people are waiting for this step".
+                __('waiting', 'mailpoet')
+              }
+            </span>
+          </a>
+        </p>
+      </div>
+    </Tooltip>
   );
 }
