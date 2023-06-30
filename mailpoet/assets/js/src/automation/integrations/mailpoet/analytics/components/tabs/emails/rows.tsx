@@ -1,10 +1,12 @@
 import { Tooltip } from '@wordpress/components';
 import { __, sprintf } from '@wordpress/i18n';
+import { addQueryArgs } from '@wordpress/url';
 import { EmailStats } from '../../../store';
 import { Actions } from './actions';
 import { locale } from '../../../../../../config';
 import { Cell } from './cell';
 import { formattedPrice } from '../../../formatter';
+import { openTab } from '../../../navigation/open_tab';
 
 const percentageFormatter = Intl.NumberFormat(locale.toString(), {
   style: 'percent',
@@ -47,13 +49,6 @@ function percentageBadgeCalculation(percentage: number): {
 }
 
 export function transformEmailsToRows(emails: EmailStats[]) {
-  const openOrders = () => {
-    const tab: HTMLButtonElement | null = document.querySelector(
-      '.mailpoet-analytics-tab-orders',
-    );
-    tab?.click();
-  };
-
   return emails.map((email) => {
     // Shows the percentage of clicked emails compared to the number of sent emails
     const clickedPercentage = calculatePercentage(
@@ -138,10 +133,12 @@ export function transformEmailsToRows(emails: EmailStats[]) {
             value={
               <Tooltip text={__('View orders', 'mailpoet')}>
                 <a
-                  href="#"
+                  href={addQueryArgs(window.location.href, {
+                    tab: 'automation-orders',
+                  })}
                   onClick={(e) => {
                     e.preventDefault();
-                    openOrders();
+                    openTab('orders');
                   }}
                 >
                   {`${email.orders}`}
