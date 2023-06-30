@@ -5,6 +5,7 @@ namespace MailPoet\Test\Acceptance;
 use Codeception\Util\Locator;
 use MailPoet\Test\DataFactories\Form;
 use MailPoet\Test\DataFactories\Segment;
+use MailPoet\Test\DataFactories\Settings;
 
 class EditorCreateCustomFieldCest {
   private function prepareTheForm(\AcceptanceTester $i) {
@@ -32,6 +33,8 @@ class EditorCreateCustomFieldCest {
     $this->openFormInEditor($i);
     // Insert create custom field block
     $i->addFromBlockInEditor('Create Custom Field');
+    $settings = new Settings();
+    $settings->withConfirmationEmailEnabled();
   }
 
   public function createCustomSelect(\AcceptanceTester $i) {
