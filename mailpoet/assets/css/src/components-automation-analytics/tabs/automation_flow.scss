@@ -49,13 +49,25 @@
   width: calc(100% + 24px);
 
   p {
-    color: $color-gutenberg-grey-800;
     margin: 0;
     padding: 6px 0;
+
+    a {
+      color: $color-gutenberg-grey-800;
+      text-decoration: none;
+
+      &:hover {
+        color: $color-gutenberg-blue;
+      }
+    }
   }
 
   span {
     color: $color-gutenberg-grey-600;
+  }
+
+  a:hover span {
+    color: $color-gutenberg-blue;
   }
 }
 
