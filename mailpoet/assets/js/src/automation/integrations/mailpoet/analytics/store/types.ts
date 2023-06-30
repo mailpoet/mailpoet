@@ -108,6 +108,7 @@ export type StepFlowData = {
 export type AutomationFlowSectionData = SectionData & {
   automation: Automation;
   step_data: StepFlowData;
+  tree_is_inconsistent: boolean;
 };
 
 export type AutomationFlowSection = Section & {

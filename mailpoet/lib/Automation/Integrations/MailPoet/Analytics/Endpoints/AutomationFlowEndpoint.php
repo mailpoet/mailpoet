@@ -5,6 +5,7 @@ namespace MailPoet\Automation\Integrations\MailPoet\Analytics\Endpoints;
 use MailPoet\API\REST\Request;
 use MailPoet\API\REST\Response;
 use MailPoet\Automation\Engine\API\Endpoint;
+use MailPoet\Automation\Engine\Data\Automation;
 use MailPoet\Automation\Engine\Exceptions\NotFoundException;
 use MailPoet\Automation\Engine\Mappers\AutomationMapper;
 use MailPoet\Automation\Engine\Storage\AutomationStatisticsStorage;
@@ -82,8 +83,28 @@ class AutomationFlowEndpoint extends Endpoint {
     $data = [
       'automation' => $this->automationMapper->buildAutomation($automation, $shortStatistics),
       'step_data' => $stepData,
+      'tree_is_inconsistent' => !$this->isTreeConsistent(...$automations),
     ];
     return new Response($data);
+  }
+
+  private function isTreeConsistent(Automation ...$automations): bool {
+    if (count($automations) === 1) {
+      return true;
+    }
+    $stepIds = array_map(function (Automation $automation) {
+      return array_keys($automation->getSteps());
+    }, $automations);
+    $compareTo = array_shift($stepIds);
+    if (!$compareTo) {
+      return true;
+    }
+    foreach ($stepIds as $stepId) {
+      if (count(array_diff($stepId, $compareTo)) !== 0) {
+        return false;
+      }
+    }
+    return true;
   }
 
   public static function getRequestSchema(): array {
