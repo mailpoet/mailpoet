@@ -3,6 +3,7 @@ import { Step as StepData } from '../../../../../../../editor/components/automat
 import { StepFooter } from '../step_footer';
 import { SendEmailPanel } from '../steps/send_email';
 import { StatisticSeparator } from '../statistic_separator';
+import { moreControls } from './more_controls';
 
 export function initHooks() {
   Hooks.addFilter(
@@ -30,6 +31,13 @@ export function initHooks() {
 
       return element;
     },
+  );
+
+  Hooks.addFilter(
+    'mailpoet.automation.step.more-controls',
+    'mailpoet',
+    moreControls,
+    20,
   );
 
   Hooks.addFilter(
