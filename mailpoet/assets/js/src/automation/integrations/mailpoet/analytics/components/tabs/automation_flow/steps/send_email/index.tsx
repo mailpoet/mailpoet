@@ -7,6 +7,7 @@ import { EmailStats, OverviewSection, storeName } from '../../../../../store';
 import { locale } from '../../../../../config';
 import { formattedPrice } from '../../../../../formatter';
 import { openTab } from '../../../../../navigation/open_tab';
+import { Badge } from '../../../../email_click_badge';
 
 type SendEmailPanelSectionProps = {
   label: string;
@@ -85,9 +86,7 @@ export function SendEmailPanel({ step }: SendEmailPanelProps): JSX.Element {
       />
       <SendEmailPanelSection
         label={__('Clicked', 'mailpoet')}
-        value={Intl.NumberFormat(locale.toString(), {
-          notation: 'compact',
-        }).format(email?.clicked ?? 0)}
+        value={<Badge email={email} property="clicked" />}
         isLoading={isLoading}
       />
       <hr />
