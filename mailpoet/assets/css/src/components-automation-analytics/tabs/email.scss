@@ -9,6 +9,10 @@
 }
 
 .mailpoet-analytics-badge {
+  font-weight: 600;
+}
+
+.mailpoet-analytics-badge-text {
   @include badge;
 }
 
@@ -23,7 +27,7 @@
 .mailpoet-analytics-badge-success {
   color: $color-gutenberg-alert-green;
 
-  .mailpoet-analytics-badge {
+  .mailpoet-analytics-badge-text {
     background: $color-wp-green-0;
     color: $color-wp-green-60;
   }
@@ -32,7 +36,7 @@
 .mailpoet-analytics-badge-warning {
   color: $color-wp-yellow-50;
 
-  .mailpoet-analytics-badge {
+  .mailpoet-analytics-badge-text {
     background: $color-wp-yellow-0;
     color: $color-wp-yellow-60;
   }
