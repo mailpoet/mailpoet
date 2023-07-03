@@ -48,11 +48,11 @@ export async function formsAdding() {
     });
 
     // Wait and click the Add New Form button
-    waitAndClick(page, '[data-automation-id="create_new_form"]');
+    await waitAndClick(page, '[data-automation-id="create_new_form"]');
 
     // Choose the form template
     await page.waitForNavigation();
-    waitAndClick(
+    await waitAndClick(
       page,
       '[data-automation-id="select_template_template_1_popup"]',
     );
@@ -61,14 +61,16 @@ export async function formsAdding() {
 
     // Try to close the tutorial video popup
     try {
-      await page.locator('[data-automation-id="mailpoet-modal-close"]').click();
+      await page
+        .locator('[data-automation-id="mailpoet-modal-close"]')
+        .click({ timeout: 5000 });
     } catch (error) {
       console.log("Tutorial video wasn't present, skipping action.");
     }
 
     // Select the list and save the form
     await page.waitForSelector('[data-automation-id="form_title_input"]');
-    selectInSelect2(page, defaultListName);
+    await selectInSelect2(page, defaultListName);
     await page.waitForSelector('[data-automation-id="form_save_button"]');
     await page.locator('[data-automation-id="form_save_button"]').click();
     await page.waitForSelector('.components-notice');

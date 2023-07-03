@@ -61,8 +61,8 @@ export async function listsComplexSegment() {
       .type(complexSegmentName, { delay: 25 });
 
     // Select "Subscribed to a list" action
-    selectInReact(page, '#react-select-2-input', 'subscribed to list');
-    selectInReact(page, '#react-select-4-input', defaultListName);
+    await selectInReact(page, '#react-select-2-input', 'subscribed to list');
+    await selectInReact(page, '#react-select-4-input', defaultListName);
     await page.waitForSelector('.mailpoet-form-notice-message');
     describe(listsPageTitle, () => {
       describe('should be able to see calculating message 1st time', () => {
@@ -86,7 +86,7 @@ export async function listsComplexSegment() {
       .click();
 
     // Select "Subscribed date" action
-    selectInReact(page, '#react-select-5-input', 'subscribed date');
+    await selectInReact(page, '#react-select-5-input', 'subscribed date');
     await page.waitForSelector('.mailpoet-form-notice-message');
     describe(listsPageTitle, () => {
       describe('should be able to see calculating message 2nd time', () => {
@@ -110,7 +110,7 @@ export async function listsComplexSegment() {
 
     // WordPress user role action has been automatically added
     // Select a WP user role
-    selectInReact(page, '#react-select-8-input', 'Administrator');
+    await selectInReact(page, '#react-select-8-input', 'Administrator');
     await page.waitForSelector('.mailpoet-form-notice-message');
     await page.waitForLoadState('networkidle');
     describe(listsPageTitle, () => {
