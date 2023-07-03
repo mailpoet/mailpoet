@@ -8,34 +8,12 @@ import { Cell } from './cell';
 import { formattedPrice } from '../../../formatter';
 import { openTab } from '../../../navigation/open_tab';
 import { calculatePercentage } from '../../../formatter/calculate_percentage';
+import { Badge } from '../../email_click_badge';
 
 const percentageFormatter = Intl.NumberFormat(locale.toString(), {
   style: 'percent',
   maximumFractionDigits: 2,
 });
-
-function percentageBadgeCalculation(percentage: number): {
-  badge: string;
-  badgeType: string;
-} {
-  if (percentage > 3) {
-    return {
-      badge: __('Excellent', 'mailpoet'),
-      badgeType: 'mailpoet-analytics-badge-success',
-    };
-  }
-
-  if (percentage > 1) {
-    return {
-      badge: __('Good', 'mailpoet'),
-      badgeType: 'mailpoet-analytics-badge-success',
-    };
-  }
-  return {
-    badge: __('Average', 'mailpoet'),
-    badgeType: 'mailpoet-analytics-badge-warning',
-  };
-}
 
 export function transformEmailsToRows(emails: EmailStats[]) {
   return emails.map((email) => {
@@ -44,7 +22,6 @@ export function transformEmailsToRows(emails: EmailStats[]) {
       email.clicked,
       email.sent.current,
     );
-    const clickedBadge = percentageBadgeCalculation(clickedPercentage);
 
     return [
       {
@@ -101,17 +78,13 @@ export function transformEmailsToRows(emails: EmailStats[]) {
       {
         display: (
           <Cell
-            value={email.clicked}
+            value={<Badge email={email} property="clicked" />}
             className={
               email.sent.current > 0
                 ? 'mailpoet-automation-analytics-email-clicked'
                 : ''
             }
             subValue={percentageFormatter.format(clickedPercentage / 100)}
-            badge={email.sent.current > 0 ? clickedBadge.badge : undefined}
-            badgeType={
-              email.sent.current > 0 ? clickedBadge.badgeType : undefined
-            }
           />
         ),
         value: email.clicked,
