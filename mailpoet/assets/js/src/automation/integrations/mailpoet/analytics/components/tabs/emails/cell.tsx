@@ -1,27 +1,11 @@
 type CellProps = {
   value: number | string | JSX.Element;
   subValue?: number | string;
-  badge?: string;
-  badgeType?: string;
   className?: string;
 };
-export function Cell({
-  value,
-  subValue,
-  badge,
-  badgeType,
-  className,
-}: CellProps): JSX.Element {
-  const badgeElement = badge ? (
-    <span className="mailpoet-analytics-badge">{badge}</span>
-  ) : null;
+export function Cell({ value, subValue, className }: CellProps): JSX.Element {
   const mainElement = (
-    <div
-      className={`mailpoet-analytics-main-value ${className ?? ''} ${
-        badgeType ?? ''
-      }`}
-    >
-      {badgeElement}
+    <div className={`mailpoet-analytics-main-value ${className ?? ''}`}>
       {value}
     </div>
   );
