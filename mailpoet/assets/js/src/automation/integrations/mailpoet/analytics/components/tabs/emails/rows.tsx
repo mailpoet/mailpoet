@@ -7,23 +7,12 @@ import { locale } from '../../../../../../config';
 import { Cell } from './cell';
 import { formattedPrice } from '../../../formatter';
 import { openTab } from '../../../navigation/open_tab';
+import { calculatePercentage } from '../../../formatter/calculate_percentage';
 
 const percentageFormatter = Intl.NumberFormat(locale.toString(), {
   style: 'percent',
   maximumFractionDigits: 2,
 });
-
-function calculatePercentage(
-  value: number,
-  base: number,
-  canBeNegative = false,
-): number {
-  if (base === 0) {
-    return 0;
-  }
-  const percentage = (value * 100) / base;
-  return canBeNegative ? percentage - 100 : percentage;
-}
 
 function percentageBadgeCalculation(percentage: number): {
   badge: string;
