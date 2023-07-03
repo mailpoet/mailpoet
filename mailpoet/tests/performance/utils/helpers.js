@@ -40,7 +40,6 @@ export async function selectInReact(page, reactSelector, reactValue) {
 export async function waitAndClick(page, elementName) {
   await page.waitForSelector(elementName);
   await page.locator(elementName).click();
-  await page.waitForNavigation();
 }
 
 // Wait for selector to be visible

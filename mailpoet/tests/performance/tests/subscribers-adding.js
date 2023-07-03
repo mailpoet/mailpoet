@@ -64,7 +64,7 @@ export async function subscribersAdding() {
       .type(subscriberEmail, { delay: 25 });
     await page.locator('input[name="first_name"]').type(firstName);
     await page.locator('input[name="last_name"]').type(lastName);
-    selectInSelect2(page, defaultListName);
+    await selectInSelect2(page, defaultListName);
     await page.locator('button[type="submit"]').click();
     await page.waitForLoadState('networkidle');
 

@@ -83,7 +83,7 @@ export async function newsletterSending() {
     await page.waitForLoadState('networkidle');
 
     // Select the default list and send the newsletter
-    selectInSelect2(page, defaultListName);
+    await selectInSelect2(page, defaultListName);
     await Promise.all([
       page.waitForNavigation(),
       page.locator('[data-automation-id="email-submit"]').click(),

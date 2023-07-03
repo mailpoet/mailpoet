@@ -88,8 +88,8 @@ export async function subscribersTrashingRestoring() {
     await page.waitForSelector('[data-automation-id="action-restore"]');
     await page.locator('[data-automation-id="action-restore"]').click();
     await page.waitForSelector('.notice-success');
-    waitForSelectorToBeVisible(page, '.colspanchange');
-    waitForSelectorToBeVisible(
+    await waitForSelectorToBeVisible(page, '.colspanchange');
+    await waitForSelectorToBeVisible(
       page,
       '[data-automation-id="filters_subscribed"]',
     );
