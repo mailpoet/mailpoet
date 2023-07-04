@@ -36,7 +36,7 @@ class ScheduledTaskSubscribersRepositoryTest extends \MailPoetTest {
     $this->subscriberFactory = new SubscriberFactory();
     $taskSubscriberFactory = new TaskSubscriberFactory();
 
-    $this->subscriberUnprocessed = $this->subscriberFactory->withEmail('subscriberUprocessed@email.com')->create();
+    $this->subscriberUnprocessed = $this->subscriberFactory->withEmail('subscriberUnprocessed@email.com')->create();
     $this->subscriberProcessed = $this->subscriberFactory->withEmail('subscriberProcessed@email.com')->create();
     $subscriberFailed = $this->subscriberFactory->withEmail('subscriberFailed@email.com')->create();
     $this->subscriberFactory->withEmail('subscriberNotIncluded@email.com')->create();
