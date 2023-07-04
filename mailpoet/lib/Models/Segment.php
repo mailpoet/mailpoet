@@ -83,54 +83,6 @@ class Segment extends Model {
       ->delete();
   }
 
-  /**
-   * @deprecated Use the version in \MailPoet\Segments\SegmentSubscribersRepository::getSubscribersStatisticsCount
-   * @return $this
-   */
-  public function withSubscribersCount() {
-    trigger_error('Calling Segment::withSubscribersCount() is deprecated and will be removed. Use MailPoet\Segments\SegmentSubscribersRepository::getSubscribersStatisticsCount. ', E_USER_DEPRECATED);
-    $query = SubscriberSegment::tableAlias('relation')
-      ->where('relation.segment_id', $this->id)
-      ->join(
-        MP_SUBSCRIBERS_TABLE,
-        'subscribers.id = relation.subscriber_id',
-        'subscribers'
-      )
-      ->select_expr(
-        'SUM(CASE WHEN subscribers.status = "' . Subscriber::STATUS_SUBSCRIBED . '"
-        AND relation.status = "' . Subscriber::STATUS_SUBSCRIBED . '" THEN 1 ELSE 0 END)',
-        Subscriber::STATUS_SUBSCRIBED
-      )
-      ->select_expr(
-        'SUM(CASE WHEN subscribers.status = "' . Subscriber::STATUS_UNSUBSCRIBED . '"
-        OR relation.status = "' . Subscriber::STATUS_UNSUBSCRIBED . '" THEN 1 ELSE 0 END)',
-        Subscriber::STATUS_UNSUBSCRIBED
-      )
-      ->select_expr(
-        'SUM(CASE WHEN subscribers.status = "' . Subscriber::STATUS_INACTIVE . '"
-        AND relation.status != "' . Subscriber::STATUS_UNSUBSCRIBED . '" THEN 1 ELSE 0 END)',
-        Subscriber::STATUS_INACTIVE
-      )
-      ->select_expr(
-        'SUM(CASE WHEN subscribers.status = "' . Subscriber::STATUS_UNCONFIRMED . '"
-        AND relation.status != "' . Subscriber::STATUS_UNSUBSCRIBED . '" THEN 1 ELSE 0 END)',
-        Subscriber::STATUS_UNCONFIRMED
-      )
-      ->select_expr(
-        'SUM(CASE WHEN subscribers.status = "' . Subscriber::STATUS_BOUNCED . '"
-        AND relation.status != "' . Subscriber::STATUS_UNSUBSCRIBED . '" THEN 1 ELSE 0 END)',
-        Subscriber::STATUS_BOUNCED
-      )
-      ->whereNull('subscribers.deleted_at')
-      ->findOne();
-
-    if ($query instanceof SubscriberSegment) {
-      $this->subscribersCount = $query->asArray();
-    }
-
-    return $this;
-  }
-
   public static function getWPSegment() {
     $wpSegment = self::where('type', self::TYPE_WP_USERS)->findOne();
 
