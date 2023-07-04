@@ -233,38 +233,4 @@ class SegmentTest extends \MailPoetTest {
     expect($subscribersCount[Subscriber::STATUS_UNCONFIRMED])->equals(0);
     expect($subscribersCount[Subscriber::STATUS_BOUNCED])->equals(0);
   }
-
-  public function testItCanGetSegmentsWithSubscriberCount() {
-    foreach ($this->subscribersData as $subscriberData) {
-      $subscriber = Subscriber::create();
-      $subscriber->hydrate($subscriberData);
-      $subscriber->save();
-      $association = SubscriberSegment::create();
-      $association->subscriberId = $subscriber->id;
-      $association->segmentId = $this->segment->id;
-      $association->save();
-    }
-    $segments = Segment::getSegmentsWithSubscriberCount();
-    expect($segments[0]['subscribers'])->equals(1);
-  }
-
-  public function testItCanGetSegmentsForExport() {
-    foreach ($this->subscribersData as $index => $subscriberData) {
-      $subscriber = Subscriber::create();
-      $subscriber->hydrate($subscriberData);
-      $subscriber->save();
-      if (!$index) {
-        $association = SubscriberSegment::create();
-        $association->subscriberId = $subscriber->id;
-        $association->segmentId = $this->segment->id;
-        $association->status = Subscriber::STATUS_SUBSCRIBED;
-        $association->save();
-      }
-    }
-    $segments = Segment::getSegmentsForExport();
-    expect($segments[1]['name'])->equals('Subscribers without a list');
-    expect($segments[1]['subscribers'])->equals(3);
-    expect($segments[0]['name'])->equals($this->segmentData['name']);
-    expect($segments[0]['subscribers'])->equals(1);
-  }
 }
