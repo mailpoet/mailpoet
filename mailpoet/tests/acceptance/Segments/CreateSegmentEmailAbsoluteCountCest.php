@@ -3,6 +3,7 @@
 namespace MailPoet\Test\Acceptance;
 
 use MailPoet\Test\DataFactories\Newsletter;
+use MailPoet\Test\DataFactories\StatisticsBounces;
 use MailPoet\Test\DataFactories\StatisticsOpens;
 use MailPoet\Test\DataFactories\Subscriber;
 
@@ -24,6 +25,12 @@ class CreateSegmentEmailAbsoluteCountCest {
     $subscriber3 = (new Subscriber())
       ->withEmail('stats_test3@example.com')
       ->create();
+    $subscriber4 = (new Subscriber())
+      ->withEmail('stats_test4@example.com')
+      ->create();
+    $subscriber5 = (new Subscriber())
+      ->withEmail('stats_test5@example.com')
+      ->create();
 
     (new StatisticsOpens($newsletter1, $subscriber1))->create();
     (new StatisticsOpens($newsletter2, $subscriber1))->create();
@@ -34,11 +41,16 @@ class CreateSegmentEmailAbsoluteCountCest {
     (new StatisticsOpens($newsletter3, $subscriber2))->create();
 
     (new StatisticsOpens($newsletter2, $subscriber3))->create();
+    (new StatisticsOpens($newsletter1, $subscriber5))->withMachineUserAgentType()->create();
+
+    (new StatisticsBounces($newsletter1, $subscriber4))->create();
   }
 
-  public function sendConfirmationEmail(\AcceptanceTester $i) {
+  public function segmentWithNewsletterStats(\AcceptanceTester $i) {
     $i->wantTo('Create a new segment number of opens');
+
     $i->login();
+
     $i->amOnMailpoetPage('Lists');
     $i->click('[data-automation-id="new-segment"]');
     $segmentTitle = 'Number of opens segment';
@@ -50,6 +62,7 @@ class CreateSegmentEmailAbsoluteCountCest {
     $i->fillField('[data-automation-id="segment-number-of-days"]', 3);
     $i->waitForText('This segment has 2 subscribers');
     $i->click('Save');
+    $i->waitForNoticeAndClose('Segment successfully updated!');
 
     $i->wantTo('Edit the segment');
     $i->amOnMailpoetPage('Lists');
@@ -62,6 +75,48 @@ class CreateSegmentEmailAbsoluteCountCest {
     $i->seeInField('[data-automation-id="segment-number-of-days"]', 3);
     $i->waitForText('This segment has 2 subscribers.');
     $i->seeNoJSErrors();
+
+    $i->fillField('[data-automation-id="segment-number-of-opens"]', 10);
+    $i->fillField('[data-automation-id="segment-number-of-days"]', 1);
+    $i->waitForText('This segment has 0 subscribers');
+    $i->seeNoJSErrors();
+
+    $i->selectOptionInReactSelect('number of machine-opens', '[data-automation-id="select-segment-action"]');
+    $i->waitForText('This segment has 0 subscribers');
+    $i->fillField('[data-automation-id="segment-number-of-opens"]', 0);
+    $i->waitForText('This segment has 1 subscribers');
+    $i->seeNoJSErrors();
+
+    $i->selectOptionInReactSelect('machine-opened', '[data-automation-id="select-segment-action"]');
+    $i->waitForElementVisible('[data-automation-id="segment-email"]');
+    $i->selectOptionInReactSelect('Segment number of opens Test1', '[data-automation-id="segment-email"]');
+    $i->waitForText('This segment has 1 subscribers');
+    $i->seeNoJSErrors();
+
+    $i->click('Save');
+    $i->waitForNoticeAndClose('Segment successfully updated!');
+
+    $i->wantTo('Check there is one subscriber on the segment');
+    $i->clickItemRowActionByItemName($segmentTitle, 'View Subscribers');
+    $i->waitForText('stats_test5@example.com');
+
+    $i->wantTo('Edit the segment again');
+    $i->amOnMailpoetPage('Lists');
+    $i->waitForElement('[data-automation-id="dynamic-segments-tab"]');
+    $i->click('[data-automation-id="dynamic-segments-tab"]');
+    $i->waitForText($segmentTitle);
+    $i->clickItemRowActionByItemName($segmentTitle, 'Edit');
+    $i->waitForElementVisible('[data-automation-id="segment-email"]');
+    $i->waitForText('This segment has 1 subscribers');
+    $i->selectOptionInReactSelect('number of opens', '[data-automation-id="select-segment-action"]');
+    $i->waitForElementVisible('[data-automation-id="segment-number-of-opens"]');
+    $i->fillField('[data-automation-id="segment-number-of-opens"]', 1);
+    $i->fillField('[data-automation-id="segment-number-of-days"]', 7);
+    $i->waitForText('This segment has 2 subscribers.');
+    $i->seeNoJSErrors();
+
+    $i->click('Save');
+    $i->waitForNoticeAndClose('Segment successfully updated!');
 
     $i->wantTo('Check subscribers of the segment');
     $i->amOnMailpoetPage('Lists');
