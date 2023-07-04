@@ -3,9 +3,9 @@
 namespace MailPoet\Migrations;
 
 use MailPoet\Entities\SubscriberEntity;
-use MailPoet\Migrator\Migration;
+use MailPoet\Migrator\DbMigration;
 
-class Migration_20230605_174836 extends Migration {
+class Migration_20230605_174836 extends DbMigration {
   public function run(): void {
     $subscribersTable = $this->getTableName(SubscriberEntity::class);
     $newColumns = [

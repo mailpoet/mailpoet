@@ -7,7 +7,7 @@ use MailPoet\DI\ContainerWrapper;
 use MailPoetVendor\Doctrine\DBAL\Connection;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 
-abstract class Migration {
+abstract class DbMigration {
   /** @var ContainerWrapper */
   protected $container;
 

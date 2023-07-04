@@ -2,9 +2,9 @@
 
 namespace MailPoet\Migrations;
 
-use MailPoet\Migrator\Migration;
+use MailPoet\Migrator\DbMigration;
 
-class MigrationTemplate extends Migration {
+class DbMigrationTemplate extends DbMigration {
   public function run(): void {
     /*
      * TODO: Implement the migration logic here and remove this comment.

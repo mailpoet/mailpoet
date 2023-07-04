@@ -3,11 +3,11 @@
 namespace MailPoet\Migrations;
 
 use MailPoet\Entities\NewsletterEntity;
-use MailPoet\Migrator\Migration;
+use MailPoet\Migrator\DbMigration;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Scheduler\PostNotificationScheduler;
 
-class Migration_20230419_080000 extends Migration {
+class Migration_20230419_080000 extends DbMigration {
   /** @var NewslettersRepository */
   private $newslettersRepository;
 

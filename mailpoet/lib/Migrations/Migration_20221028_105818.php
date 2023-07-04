@@ -14,7 +14,7 @@ use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Form\FormsRepository;
-use MailPoet\Migrator\Migration;
+use MailPoet\Migrator\DbMigration;
 use MailPoet\Segments\DynamicSegments\Filters\EmailAction;
 use MailPoet\Segments\DynamicSegments\Filters\UserRole;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceCategory;
@@ -34,7 +34,7 @@ use MailPoet\WP\Functions as WPFunctions;
  * TIMESTAMP column with CURRENT_TIMESTAMP" error on MySQL version < 5.6.5 that occurs
  * even when other timestamp is simply "NOT NULL".
  */
-class Migration_20221028_105818 extends Migration {
+class Migration_20221028_105818 extends DbMigration {
   /** @var string */
   private $prefix;
 

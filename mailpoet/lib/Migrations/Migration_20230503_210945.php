@@ -3,9 +3,9 @@
 namespace MailPoet\Migrations;
 
 use MailPoet\Entities\SubscriberEntity;
-use MailPoet\Migrator\Migration;
+use MailPoet\Migrator\DbMigration;
 
-class Migration_20230503_210945 extends Migration {
+class Migration_20230503_210945 extends DbMigration {
   public function run(): void {
     $subscribersTable = $this->getTableName(SubscriberEntity::class);
     if (!$this->indexExists($subscribersTable, 'first_name')) {

@@ -3,9 +3,9 @@
 namespace MailPoet\Migrations;
 
 use MailPoet\Entities\StatisticsUnsubscribeEntity;
-use MailPoet\Migrator\Migration;
+use MailPoet\Migrator\DbMigration;
 
-class Migration_20230111_130000 extends Migration {
+class Migration_20230111_130000 extends DbMigration {
   public function run(): void {
     $tableName = $this->getTableName(StatisticsUnsubscribeEntity::class);
     if (!$this->columnExists($tableName, 'method')) {

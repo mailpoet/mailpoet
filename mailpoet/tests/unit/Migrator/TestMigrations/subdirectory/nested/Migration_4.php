@@ -2,10 +2,10 @@
 
 namespace MailPoet\Migrations;
 
-use MailPoet\Migrator\Migration;
+use MailPoet\Migrator\DbMigration;
 
 //phpcs:disable Squiz.Classes.ValidClassName.NotCamelCaps
-class Migration_4 extends Migration {
+class Migration_4 extends DbMigration {
   public function run(): void {
   }
 }

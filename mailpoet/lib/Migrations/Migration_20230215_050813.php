@@ -2,9 +2,9 @@
 
 namespace MailPoet\Migrations;
 
-use MailPoet\Migrator\Migration;
+use MailPoet\Migrator\DbMigration;
 
-class Migration_20230215_050813 extends Migration {
+class Migration_20230215_050813 extends DbMigration {
   public function run(): void {
     $this->subjectsMigration();
     $this->addMetaColumnToAutomations();

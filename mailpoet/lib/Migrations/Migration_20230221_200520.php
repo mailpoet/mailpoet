@@ -3,9 +3,9 @@
 namespace MailPoet\Migrations;
 
 use MailPoet\Entities\LogEntity;
-use MailPoet\Migrator\Migration;
+use MailPoet\Migrator\DbMigration;
 
-class Migration_20230221_200520 extends Migration {
+class Migration_20230221_200520 extends DbMigration {
   public function run(): void {
     $this->addRawMessagesToLogs();
     $this->addContextToLogs();

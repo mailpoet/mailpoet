@@ -3,9 +3,9 @@
 namespace MailPoet\Migrations;
 
 use MailPoet\Mailer\MailerLog;
-use MailPoet\Migrator\Migration;
+use MailPoet\Migrator\DbMigration;
 
-class Migration_20230109_144830 extends Migration {
+class Migration_20230109_144830 extends DbMigration {
   /**
    * Due to a bug https://mailpoet.atlassian.net/browse/MAILPOET-4940 some users may have
    * paused sending without having the error message and they have no way to resume sending.

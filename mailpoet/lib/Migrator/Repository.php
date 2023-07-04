@@ -15,7 +15,7 @@ class Repository {
 
   public function __construct() {
     $this->migrationsDir = __DIR__ . '/../Migrations';
-    $this->templateFile = __DIR__ . '/MigrationTemplate.php';
+    $this->templateFile = __DIR__ . '/DbMigrationTemplate.php';
   }
 
   public function getMigrationsDir(): string {
@@ -30,7 +30,7 @@ class Repository {
     }
 
     $name = $this->generateName();
-    $migration = str_replace('class MigrationTemplate ', "class $name ", $template);
+    $migration = str_replace('class DbMigrationTemplate ', "class $name ", $template);
     $path = $this->migrationsDir . "/$name.php";
     $result = @file_put_contents($path, $migration);
     if (!$result) {

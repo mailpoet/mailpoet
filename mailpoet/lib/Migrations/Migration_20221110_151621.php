@@ -2,7 +2,7 @@
 
 namespace MailPoet\Migrations;
 
-use MailPoet\Migrator\Migration;
+use MailPoet\Migrator\DbMigration;
 
 /**
  * The "created_at" column must be NULL in some tables to avoid "there can be only one
@@ -13,7 +13,7 @@ use MailPoet\Migrator\Migration;
  * following error in some SQL modes:
  *   SQLSTATE[42000]: Syntax error or access violation: 1067 Invalid default value for 'updated_at'"
  */
-class Migration_20221110_151621 extends Migration {
+class Migration_20221110_151621 extends DbMigration {
   public function run(): void {
     $this->createTable('automations', [
       'id int(11) unsigned NOT NULL AUTO_INCREMENT',

@@ -3,11 +3,11 @@
 namespace MailPoet\Migrations;
 
 use MailPoet\Homepage\HomepageDataController;
-use MailPoet\Migrator\Migration;
+use MailPoet\Migrator\DbMigration;
 use MailPoet\Settings\SettingsController;
 use MailPoet\WooCommerce\Helper;
 
-class Migration_20230131_121621 extends Migration {
+class Migration_20230131_121621 extends DbMigration {
   /**
    * This migration detect whether we should display Task List and Product Discovery sections
    * on the homepage for the old users.
