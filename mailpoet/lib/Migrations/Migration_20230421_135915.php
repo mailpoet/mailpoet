@@ -3,9 +3,9 @@
 namespace MailPoet\Migrations;
 
 use MailPoet\Entities\NewsletterEntity;
-use MailPoet\Migrator\Migration;
+use MailPoet\Migrator\DbMigration;
 
-class Migration_20230421_135915 extends Migration {
+class Migration_20230421_135915 extends DbMigration {
   public function run(): void {
     $newslettersTable = $this->getTableName(NewsletterEntity::class);
     $this->connection->executeQuery("

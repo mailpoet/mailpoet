@@ -3,7 +3,7 @@
 namespace MailPoet\Migrator;
 
 use MailPoet\DI\ContainerWrapper;
-use MailPoet\Migrations\MigrationTemplate;
+use MailPoet\Migrations\DbMigrationTemplate;
 use Throwable;
 
 class Runner {
@@ -31,8 +31,8 @@ class Runner {
       throw MigratorException::migrationClassNotFound($className);
     }
 
-    if (!is_subclass_of($className, Migration::class)) {
-      throw MigratorException::migrationClassIsNotASubclassOf($className, Migration::class);
+    if (!is_subclass_of($className, DbMigration::class)) {
+      throw MigratorException::migrationClassIsNotASubclassOf($className, DbMigration::class);
     }
 
     try {
@@ -47,7 +47,7 @@ class Runner {
   }
 
   private function getMigrationsNamespace(): string {
-    $parts = explode('\\', MigrationTemplate::class);
+    $parts = explode('\\', DbMigrationTemplate::class);
     return implode('\\', array_slice($parts, 0, -1));
   }
 }

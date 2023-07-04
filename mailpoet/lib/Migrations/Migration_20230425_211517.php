@@ -2,10 +2,10 @@
 
 namespace MailPoet\Migrations;
 
-use MailPoet\Migrator\Migration;
+use MailPoet\Migrator\DbMigration;
 use MailPoet\Settings\SettingsController;
 
-class Migration_20230425_211517 extends Migration {
+class Migration_20230425_211517 extends DbMigration {
   public function run(): void {
     $settingsController = $this->container->get(SettingsController::class);
     $possibleKeys = [

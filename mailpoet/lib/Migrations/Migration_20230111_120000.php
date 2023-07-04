@@ -3,11 +3,11 @@
 namespace MailPoet\Migrations;
 
 use MailPoet\Entities\SegmentEntity;
-use MailPoet\Migrator\Migration;
+use MailPoet\Migrator\DbMigration;
 use MailPoet\Settings\SettingsController;
 use MailPoetVendor\Doctrine\DBAL\Connection;
 
-class Migration_20230111_120000 extends Migration {
+class Migration_20230111_120000 extends DbMigration {
   public function run(): void {
     $segmentsTable = $this->getTableName(SegmentEntity::class);
     $columnName = 'display_in_manage_subscription_page';

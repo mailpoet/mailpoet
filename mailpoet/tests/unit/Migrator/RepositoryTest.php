@@ -6,7 +6,7 @@ use MailPoetUnitTest;
 
 class RepositoryTest extends MailPoetUnitTest {
   private const MIGRATIONS_OUTPUT_DIR = __DIR__ . '/../../_output/migrations-tests';
-  private const TEMPLATE_FILE = __DIR__ . '/../../../lib/Migrator/MigrationTemplate.php';
+  private const TEMPLATE_FILE = __DIR__ . '/../../../lib/Migrator/DbMigrationTemplate.php';
 
   protected function _before() {
     parent::_before();
@@ -27,7 +27,7 @@ class RepositoryTest extends MailPoetUnitTest {
 
     $migration = pathinfo($files[0], PATHINFO_FILENAME);
     $this->assertSame(
-      str_replace("class MigrationTemplate", "class $migration", file_get_contents(self::TEMPLATE_FILE) ?: ''),
+      str_replace("class DbMigrationTemplate", "class $migration", file_get_contents(self::TEMPLATE_FILE) ?: ''),
       file_get_contents($files[0])
     );
   }
