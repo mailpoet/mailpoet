@@ -100,6 +100,34 @@ export type OrderSection = Section & {
   data: undefined | OrderSectionData;
 };
 
+export type SubscriberData = {
+  date: string;
+  subscriber: {
+    id: number;
+    email: string;
+    first_name: string;
+    last_name: string;
+    avatar: string;
+  };
+  run: {
+    id: number;
+    status: string;
+    step: {
+      id: string;
+      name: string;
+    };
+  };
+};
+
+type SubscriberSectionData = SectionData & {
+  results: number;
+  items: SubscriberData[];
+};
+
+export type SubscriberSection = Section & {
+  data: undefined | SubscriberSectionData;
+};
+
 export type StepFlowData = {
   total: number;
   waiting: Record<string, number> | undefined;
