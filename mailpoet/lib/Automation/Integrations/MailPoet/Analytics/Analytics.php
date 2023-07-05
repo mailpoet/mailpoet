@@ -8,6 +8,7 @@ use MailPoet\Automation\Engine\WordPress;
 use MailPoet\Automation\Integrations\MailPoet\Analytics\Endpoints\AutomationFlowEndpoint;
 use MailPoet\Automation\Integrations\MailPoet\Analytics\Endpoints\OrderEndpoint;
 use MailPoet\Automation\Integrations\MailPoet\Analytics\Endpoints\OverviewEndpoint;
+use MailPoet\Automation\Integrations\MailPoet\Analytics\Endpoints\SubscriberEndpoint;
 
 class Analytics {
 
@@ -25,6 +26,7 @@ class Analytics {
       $api->registerGetRoute('automation/analytics/automation_flow', AutomationFlowEndpoint::class);
       $api->registerGetRoute('automation/analytics/overview', OverviewEndpoint::class);
       $api->registerGetRoute('automation/analytics/orders', OrderEndpoint::class);
+      $api->registerGetRoute('automation/analytics/subscribers', SubscriberEndpoint::class);
     });
   }
 }
