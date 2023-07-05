@@ -39,6 +39,19 @@ export const getInitialState = (): State => ({
       withPreviousData: false,
       endpoint: '/automation/analytics/orders',
     },
+    subscribers: {
+      id: 'subscribers',
+      name: __('Subscribers', 'mailpoet'),
+      data: undefined,
+      customQuery: {
+        order: 'asc',
+        order_by: 'updated_at',
+        limit: 25,
+        page: 1,
+      },
+      withPreviousData: false,
+      endpoint: '/automation/analytics/subscribers',
+    },
   },
   query: {
     compare: 'previous_period',
