@@ -52,6 +52,7 @@ export function WordpressRoleFields({ filterIndex }: FilterProps): JSX.Element {
         <Select
           key="select"
           isFullWidth
+          automationId="segment-wordpress-role-condition"
           value={segment.operator}
           onChange={(e) => {
             void updateSegmentFilterFromEvent('operator', filterIndex, e);
