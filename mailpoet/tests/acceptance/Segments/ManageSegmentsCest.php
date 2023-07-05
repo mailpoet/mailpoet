@@ -61,17 +61,17 @@ class ManageSegmentsCest {
 
   public function createAndEditSegment(\AcceptanceTester $i) {
     $i->wantTo('Create, edit, trash, restore and delete existing segment');
+
     $segmentTitle = 'User Segment';
     $segmentEditedTitle = 'Edited Segment';
     $segmentDesc = 'Lorem ipsum dolor sit amet';
     $segmentEditedDesc = 'Edited description';
-
-    $i->wantTo('Create a new segment');
-
     $nameElement = '[name="name"]';
     $descriptionElement = '[name="description"]';
 
+    $i->wantTo('Create a new segment');
     $i->login();
+    $i->cli(['user', 'import-csv', '/wp-core/wp-content/plugins/mailpoet/tests/_data/users.csv']);
     $i->amOnMailpoetPage('Lists');
     $i->waitForElement('[data-automation-id="dynamic-segments-tab"]');
     $i->click('[data-automation-id="dynamic-segments-tab"]');
@@ -80,6 +80,7 @@ class ManageSegmentsCest {
     $i->fillField($descriptionElement, $segmentDesc);
     $i->selectOptionInReactSelect('WordPress user role', '[data-automation-id="select-segment-action"]');
     $i->selectOptionInReactSelect('Subscriber', '[data-automation-id="segment-wordpress-role"]');
+    $i->waitForText('This segment has 15 subscribers');
     $i->waitForElementClickable('button[type="submit"]');
     $i->click('Save');
     $i->waitForNoticeAndClose('Segment successfully updated!');
@@ -89,14 +90,16 @@ class ManageSegmentsCest {
 
     $i->wantTo('Edit existing segment');
     $i->clickItemRowActionByItemName($segmentTitle, 'Edit');
-    $i->waitForText('This segment has 0 subscribers.');
+    $i->waitForText('This segment has 15 subscribers');
     $i->clearFormField($nameElement);
     $i->clearField($descriptionElement, '');
     $i->waitForElement('[value=""]' . $nameElement);
     $i->fillField($nameElement, $segmentEditedTitle);
     $i->fillField($descriptionElement, $segmentEditedDesc);
     $i->selectOptionInReactSelect('WordPress user role', '[data-automation-id="select-segment-action"]');
+    $i->selectOption('[data-automation-id="segment-wordpress-role-condition"]', 'none of');
     $i->selectOptionInReactSelect('Editor', '[data-automation-id="segment-wordpress-role"]');
+    $i->waitForText('This segment has 29 subscribers');
     $i->waitForElementClickable('button[type="submit"]');
     $i->click('Save');
     $i->waitForNoticeAndClose('Segment successfully updated!');
@@ -182,11 +185,13 @@ class ManageSegmentsCest {
 
   public function createEmailSegment(\AcceptanceTester $i) {
     $i->wantTo('Create a new email segment');
+
     $emailSubject = 'Segment Email Test';
     $newsletterFactory = new Newsletter();
     $newsletterFactory->withSubject($emailSubject)->create();
     $segmentTitle = 'Create Email Segment Test';
     $segmentDesc = 'Lorem ipsum dolor sit amet';
+
     $i->login();
     $i->amOnMailpoetPage('Lists');
     $i->click('[data-automation-id="new-segment"]');
@@ -204,6 +209,7 @@ class ManageSegmentsCest {
 
   public function bulkTrashRestoreAndDeleteSegments(\AcceptanceTester $i) {
     $i->wantTo('Create bulk trash restore and delete segments');
+
     $segmentFactory = new DynamicSegment();
     $segment1Name = 'Segment 1';
     $segment2Name = 'Segment 2';
@@ -221,6 +227,7 @@ class ManageSegmentsCest {
     $i->login();
 
     $bulkActionsContainer = '[data-automation-id="listing-bulk-actions"]';
+
     $i->wantTo('Select trashed segments one by one and bulk restore them');
     $i->amOnMailpoetPage('Lists');
     $i->waitForElement('[data-automation-id="dynamic-segments-tab"]');
@@ -254,6 +261,7 @@ class ManageSegmentsCest {
   }
 
   public function cantTrashOrBulkTrashActivelyUsedSegment(\AcceptanceTester $i) {
+
     $segmentTitle = 'Active Segment';
     $subject = 'Post notification';
     $segmentFactory = new DynamicSegment();
@@ -283,12 +291,14 @@ class ManageSegmentsCest {
   }
 
   public function createUserSegmentAndCheckCount(\AcceptanceTester $i) {
+    $i->wantTo('Create a new user segment');
+
     $userFactory = new User();
     $userFactory->createUser('Test User 1', 'editor', 'test-editor' . rand(1, 100000) . '@example.com');
     $userFactory->createUser('Test User 2', 'editor', 'test-editor' . rand(1, 100000) . '@example.com');
-    $i->wantTo('Create a new user segment');
     $segmentTitle = 'Create Editors Dynamic Segment Test';
     $segmentDesc = 'Lorem ipsum dolor sit amet';
+
     $i->login();
     $i->amOnMailpoetPage('Lists');
     $i->click('[data-automation-id="new-segment"]');
@@ -306,6 +316,8 @@ class ManageSegmentsCest {
   }
 
   public function updateUserSegmentAndCheckCount(\AcceptanceTester $i) {
+    $i->wantTo('Update a user segment');
+
     $segmentTitle = 'Update Authors Dynamic Segment Test';
 
     $userFactory = new User();
@@ -319,7 +331,6 @@ class ManageSegmentsCest {
       ->withUserRoleFilter('Author')
       ->create();
 
-    $i->wantTo('Update a user segment');
     $i->login();
     $i->amOnMailpoetPage('Lists');
     $i->waitForElement('[data-automation-id="dynamic-segments-tab"]');
@@ -341,13 +352,14 @@ class ManageSegmentsCest {
   }
 
   public function tryCreatingDynamicSegmentWithMoreFilters(\AcceptanceTester $i) {
+    $i->wantTo('Create a new Dynamic Segment with 2 Filters');
+
     $filterRowOne = '[data-automation-id="filter-row-0"]';
     $actionSelectElement = '[data-automation-id="select-segment-action"]';
     $roleSelectElement = '[data-automation-id="segment-wordpress-role"]';
-
-    $i->wantTo('Create a new Dynamic Segment with 2 Filters');
     $segmentTitle = 'Segment Two Filters';
     $segmentDesc = 'Segment description';
+
     $i->login();
     $i->amOnMailpoetPage('Lists');
     $i->click('[data-automation-id="new-segment"]');
