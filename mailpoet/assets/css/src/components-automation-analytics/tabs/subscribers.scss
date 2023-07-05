@@ -1,0 +1,34 @@
+@import '../colors';
+
+.mailpoet-analytics-filter {
+  align-items: end;
+  display: flex;
+  justify-content: space-between;
+  padding: 16px;
+}
+
+.mailpoet-analytics-filter-controls {
+  display: flex;
+  gap: 8px;
+}
+
+.mailpoet-analytics-subscribers-step-cell {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: 24px 1fr;
+  grid-template-rows: auto 1fr;
+
+  .mailpoet-automation-colored-icon {
+    padding: 5px;
+  }
+
+  p {
+    margin: 0;
+  }
+
+  span {
+    color: $color-gutenberg-grey-600;
+    font-size: 11px;
+    grid-column-start: 2;
+  }
+}
