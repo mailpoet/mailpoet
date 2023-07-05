@@ -1,7 +1,8 @@
 @import '../colors';
 @import 'mixins';
 
-.mailpoet-analytics-tab-orders {
+.mailpoet-analytics-tab-orders,
+.mailpoet-analytics-tab-subscribers {
   color: $color-gutenberg-grey-600;
 }
 

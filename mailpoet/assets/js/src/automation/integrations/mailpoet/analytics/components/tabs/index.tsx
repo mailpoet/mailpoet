@@ -48,7 +48,11 @@ export function Tabs(): JSX.Element {
     tabs.push({
       name: 'automation-subscribers',
       className: 'mailpoet-analytics-tab-subscribers',
-      title: __('Subscribers', 'mailpoet'),
+      title: (
+        <>
+          {__('Subscribers', 'mailpoet')} <Icon icon={lockSmall} />
+        </>
+      ) as unknown as string,
     });
   }
 
