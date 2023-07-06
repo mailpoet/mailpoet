@@ -35,6 +35,8 @@ type CustomQuery = {
   order_by: string;
   limit: number;
   page: number;
+  filter: Record<string, unknown> | undefined;
+  search: string | undefined;
 };
 
 export type Section = {
