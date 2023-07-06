@@ -66,6 +66,7 @@ export function EmailOpenStatisticsFields({
         <Select
           key="select"
           isFullWidth
+          automationId="segment-email-opens-condition"
           value={segment.operator}
           onChange={(e) => {
             void updateSegmentFilterFromEvent('operator', filterIndex, e);
