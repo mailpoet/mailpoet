@@ -9,7 +9,7 @@ export function calculateSummary(rows: EmailStats[]) {
   }
   const data = rows.reduce(
     (acc, row) => {
-      acc.sent += row.sent;
+      acc.sent += row.sent.current;
       acc.opened += row.opened;
       acc.clicked += row.clicked;
       acc.orders += row.orders;
