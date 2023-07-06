@@ -23,9 +23,11 @@ class QueryWithCompare extends Query {
     int $limit = 25,
     string $orderBy = '',
     string $orderDirection = 'asc',
-    int $page = 0
+    int $page = 0,
+    array $filter = [],
+    string $search = null
   ) {
-    parent::__construct($primaryAfter, $primaryBefore, $limit, $orderBy, $orderDirection, $page);
+    parent::__construct($primaryAfter, $primaryBefore, $limit, $orderBy, $orderDirection, $page, $filter, $search);
     $this->secondaryAfter = $secondaryAfter;
     $this->secondaryBefore = $secondaryBefore;
   }
@@ -103,6 +105,8 @@ class QueryWithCompare extends Query {
         'orderBy' => Builder::string(),
         'orderDirection' => Builder::string(),
         'page' => Builder::integer()->minimum(1),
+        'filter' => Builder::object(),
+        'search' => Builder::string()->nullable(),
       ]
     );
   }
