@@ -4,6 +4,10 @@ namespace MailPoet\Test\Acceptance;
 
 use MailPoet\Test\DataFactories\DynamicSegment;
 use MailPoet\Test\DataFactories\Newsletter;
+use MailPoet\Test\DataFactories\NewsletterLink;
+use MailPoet\Test\DataFactories\StatisticsClicks;
+use MailPoet\Test\DataFactories\StatisticsOpens;
+use MailPoet\Test\DataFactories\Subscriber;
 use MailPoet\Test\DataFactories\User;
 
 class ManageSegmentsCest {
@@ -69,9 +73,16 @@ class ManageSegmentsCest {
     $nameElement = '[name="name"]';
     $descriptionElement = '[name="description"]';
 
+    $userFactory = new User();
+    $userFactory->createUser('Test Subscriber 1', 'subscriber', 'test-subscriber' . rand(1, 100000) . '@example.com');
+    $userFactory->createUser('Test Subscriber 2', 'subscriber', 'test-subscriber' . rand(1, 100000) . '@example.com');
+    $userFactory->createUser('Test Subscriber 3', 'subscriber', 'test-subscriber' . rand(1, 100000) . '@example.com');
+    $userFactory->createUser('Test Editor 1', 'editor', 'test-editor' . rand(1, 100000) . '@example.com');
+    $userFactory->createUser('Test Editor 2', 'editor', 'test-editor' . rand(1, 100000) . '@example.com');
+    $userFactory->createUser('Test Author 1', 'author', 'test-author' . rand(1, 100000) . '@example.com');
+
     $i->wantTo('Create a new segment');
     $i->login();
-    $i->cli(['user', 'import-csv', '/wp-core/wp-content/plugins/mailpoet/tests/_data/users.csv']);
     $i->amOnMailpoetPage('Lists');
     $i->waitForElement('[data-automation-id="dynamic-segments-tab"]');
     $i->click('[data-automation-id="dynamic-segments-tab"]');
@@ -80,7 +91,7 @@ class ManageSegmentsCest {
     $i->fillField($descriptionElement, $segmentDesc);
     $i->selectOptionInReactSelect('WordPress user role', '[data-automation-id="select-segment-action"]');
     $i->selectOptionInReactSelect('Subscriber', '[data-automation-id="segment-wordpress-role"]');
-    $i->waitForText('This segment has 15 subscribers');
+    $i->waitForText('This segment has 3 subscribers');
     $i->waitForElementClickable('button[type="submit"]');
     $i->click('Save');
     $i->waitForNoticeAndClose('Segment successfully updated!');
@@ -90,7 +101,7 @@ class ManageSegmentsCest {
 
     $i->wantTo('Edit existing segment');
     $i->clickItemRowActionByItemName($segmentTitle, 'Edit');
-    $i->waitForText('This segment has 15 subscribers');
+    $i->waitForText('This segment has 3 subscribers');
     $i->clearFormField($nameElement);
     $i->clearField($descriptionElement, '');
     $i->waitForElement('[value=""]' . $nameElement);
@@ -99,7 +110,7 @@ class ManageSegmentsCest {
     $i->selectOptionInReactSelect('WordPress user role', '[data-automation-id="select-segment-action"]');
     $i->selectOption('[data-automation-id="segment-wordpress-role-condition"]', 'none of');
     $i->selectOptionInReactSelect('Editor', '[data-automation-id="segment-wordpress-role"]');
-    $i->waitForText('This segment has 29 subscribers');
+    $i->waitForText('This segment has 2 subscribers');
     $i->waitForElementClickable('button[type="submit"]');
     $i->click('Save');
     $i->waitForNoticeAndClose('Segment successfully updated!');
@@ -176,21 +187,31 @@ class ManageSegmentsCest {
     $i->waitForElementClickable('[data-automation-id="empty_trash"]');
     $i->click('[data-automation-id="empty_trash"]');
     $i->waitForNoticeAndClose('1 segment was permanently deleted.');
-    $i->wait(2); // wait a moment for redirect loading
+    $i->waitForListingItemsToLoad();
     $listingAutomationSelector = '[data-automation-id="listing_item_' . $segment1->getId() . '"]';
     $i->dontSeeElement($listingAutomationSelector);
     $i->seeInCurrentURL(urlencode('group[all]'));
     $i->seeNoJSErrors();
   }
 
-  public function createEmailSegment(\AcceptanceTester $i) {
-    $i->wantTo('Create a new email segment');
+  public function createEmailOpenedSegment(\AcceptanceTester $i) {
+    $i->wantTo('Create a new email opened segment');
 
-    $emailSubject = 'Segment Email Test';
-    $newsletterFactory = new Newsletter();
-    $newsletterFactory->withSubject($emailSubject)->create();
-    $segmentTitle = 'Create Email Segment Test';
+    $emailSubject = 'Segment Email Opened Test';
+    $newsletter = (new Newsletter())
+      ->withSendingQueue()->withSubject($emailSubject)->withSentStatus()->create();
+
+    $segmentTitle = 'Email Segment Opened Test';
     $segmentDesc = 'Lorem ipsum dolor sit amet';
+
+    $subscriber1 = (new Subscriber())
+      ->withEmail('stats_test1@example.com')
+      ->create();
+    $subscriber2 = (new Subscriber())
+      ->withEmail('stats_test2@example.com')
+      ->create();
+    (new StatisticsOpens($newsletter, $subscriber1))->create();
+    (new StatisticsOpens($newsletter, $subscriber2))->create();
 
     $i->login();
     $i->amOnMailpoetPage('Lists');
@@ -199,6 +220,42 @@ class ManageSegmentsCest {
     $i->fillField(['name' => 'description'], $segmentDesc);
     $i->selectOptionInReactSelect('opened', '[data-automation-id="select-segment-action"]');
     $i->selectOptionInReactSelect($emailSubject, '[data-automation-id="segment-email"]');
+    $i->selectOption('[data-automation-id="segment-email-opens-condition"]', 'none of');
+    $i->waitForText('This segment has 0 subscribers');
+    $i->selectOption('[data-automation-id="segment-email-opens-condition"]', 'any of');
+    $i->waitForText('This segment has 2 subscribers');
+    $i->selectOption('[data-automation-id="segment-email-opens-condition"]', 'all of');
+    $i->waitForText('This segment has 2 subscribers');
+    $i->waitForElementClickable('button[type="submit"]');
+    $i->click('Save');
+    $i->amOnMailpoetPage('Lists');
+    $i->waitForElement('[data-automation-id="dynamic-segments-tab"]');
+    $i->click('[data-automation-id="dynamic-segments-tab"]');
+    $i->waitForText($segmentTitle, 20);
+  }
+
+  public function createEmailClickedSegment(\AcceptanceTester $i) {
+    $i->wantTo('Create a new email clicked segment');
+
+    $segmentTitle = 'Email Clicked Segment Test';
+    $segmentDesc = 'Lorem ipsum dolor sit amet';
+
+    $emailSubject = 'Segment Email Clicked Test';
+    $newsletter = (new Newsletter())
+      ->withSendingQueue()->withSubject($emailSubject)->withSentStatus()->create();
+    $this->createClickInNewsletter($newsletter);
+
+    $i->login();
+    $i->amOnMailpoetPage('Lists');
+    $i->click('[data-automation-id="new-segment"]');
+    $i->fillField(['name' => 'name'], $segmentTitle);
+    $i->fillField(['name' => 'description'], $segmentDesc);
+    $i->selectOptionInReactSelect('clicked', '[data-automation-id="select-segment-action"]');
+    $i->selectOptionInReactSelect($emailSubject, '[data-automation-id="segment-email"]');
+    $i->selectOption('[data-automation-id="select-operator"]', 'none of');
+    $i->waitForText('This segment has 0 subscribers');
+    $i->selectOption('[data-automation-id="select-operator"]', 'any of');
+    $i->waitForText('This segment has 1 subscribers');
     $i->waitForElementClickable('button[type="submit"]');
     $i->click('Save');
     $i->amOnMailpoetPage('Lists');
@@ -370,5 +427,11 @@ class ManageSegmentsCest {
     $i->click('Add a condition');
     $i->see('This is a Premium feature');
     $i->seeNoJSErrors();
+  }
+
+  private function createClickInNewsletter($newsletter) {
+    $subscriber = (new Subscriber())->create();
+    $newsletterLink = (new NewsletterLink($newsletter))->create();
+    return (new StatisticsClicks($newsletterLink, $subscriber))->create();
   }
 }
