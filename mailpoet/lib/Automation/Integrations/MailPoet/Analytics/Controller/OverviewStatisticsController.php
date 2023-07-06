@@ -75,7 +75,8 @@ class OverviewStatisticsController {
       $newsletter = $this->newslettersRepository->findOneById($newsletterId);
       $data['emails'][$newsletterId]['id'] = $newsletterId;
       $data['emails'][$newsletterId]['name'] = $newsletter ? $newsletter->getSubject() : '';
-      $data['emails'][$newsletterId]['sent'] = $statistic->getTotalSentCount();
+      $data['emails'][$newsletterId]['sent']['current'] = $statistic->getTotalSentCount();
+      $data['emails'][$newsletterId]['sent']['previous'] = 0;
       $data['emails'][$newsletterId]['opened'] = $statistic->getOpenCount();
       $data['emails'][$newsletterId]['clicked'] = $statistic->getClickCount();
       $data['emails'][$newsletterId]['unsubscribed'] = $statistic->getUnsubscribeCount();
@@ -92,13 +93,16 @@ class OverviewStatisticsController {
       $requiredData
     );
 
-    foreach ($previousStatistics as $statistic) {
+    foreach ($previousStatistics as $newsletterId => $statistic) {
       $data['sent']['previous'] += $statistic->getTotalSentCount();
       $data['opened']['previous'] += $statistic->getOpenCount();
       $data['clicked']['previous'] += $statistic->getClickCount();
       $data['unsubscribed']['previous'] += $statistic->getUnsubscribeCount();
       $data['orders']['previous'] += $statistic->getWooCommerceRevenue() ? $statistic->getWooCommerceRevenue()->getOrdersCount() : 0;
       $data['revenue']['previous'] += $statistic->getWooCommerceRevenue() ? $statistic->getWooCommerceRevenue()->getValue() : 0;
+      if (isset($data['emails'][$newsletterId])) {
+        $data['emails'][$newsletterId]['sent']['previous'] = $statistic->getTotalSentCount();
+      }
     }
 
     usort($data['emails'], function ($a, $b) {

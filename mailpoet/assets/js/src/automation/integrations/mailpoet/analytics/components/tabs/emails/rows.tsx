@@ -56,7 +56,10 @@ export function transformEmailsToRows(emails: EmailStats[]) {
 
   return emails.map((email) => {
     // Shows the percentage of clicked emails compared to the number of sent emails
-    const clickedPercentage = calculatePercentage(email.clicked, email.sent);
+    const clickedPercentage = calculatePercentage(
+      email.clicked,
+      email.sent.current,
+    );
     const clickedBadge = percentageBadgeCalculation(clickedPercentage);
 
     return [
@@ -79,19 +82,23 @@ export function transformEmailsToRows(emails: EmailStats[]) {
                 <a
                   href={`?page=mailpoet-newsletters#/sending-status/${email.id}`}
                 >
-                  {`${email.sent}`}
+                  {`${email.sent.current}`}
                 </a>
               </Tooltip>
             }
             subValue={
               // Shows the percentage of sent emails compared to the previous email
               percentageFormatter.format(
-                calculatePercentage(email.sent, email.sent, true) / 100,
+                calculatePercentage(
+                  email.sent.current,
+                  email.sent.previous,
+                  true,
+                ) / 100,
               )
             }
           />
         ),
-        value: email.sent,
+        value: email.sent.current,
       },
       {
         display: (
@@ -100,7 +107,7 @@ export function transformEmailsToRows(emails: EmailStats[]) {
             subValue={
               // Shows the percentage of opened emails compared to the number of sent emails
               percentageFormatter.format(
-                calculatePercentage(email.opened, email.sent) / 100,
+                calculatePercentage(email.opened, email.sent.current) / 100,
               )
             }
           />
@@ -112,13 +119,15 @@ export function transformEmailsToRows(emails: EmailStats[]) {
           <Cell
             value={email.clicked}
             className={
-              email.sent > 0
+              email.sent.current > 0
                 ? 'mailpoet-automation-analytics-email-clicked'
                 : ''
             }
             subValue={percentageFormatter.format(clickedPercentage / 100)}
-            badge={email.sent > 0 ? clickedBadge.badge : undefined}
-            badgeType={email.sent > 0 ? clickedBadge.badgeType : undefined}
+            badge={email.sent.current > 0 ? clickedBadge.badge : undefined}
+            badgeType={
+              email.sent.current > 0 ? clickedBadge.badgeType : undefined
+            }
           />
         ),
         value: email.clicked,
