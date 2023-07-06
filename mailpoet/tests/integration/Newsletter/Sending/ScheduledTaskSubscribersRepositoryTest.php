@@ -3,6 +3,7 @@
 namespace integration\Newsletter\Sending;
 
 use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Newsletter\Sending\ScheduledTaskSubscribersRepository;
 use MailPoet\Test\DataFactories\ScheduledTask as ScheduledTaskFactory;
@@ -29,6 +30,21 @@ class ScheduledTaskSubscribersRepositoryTest extends \MailPoetTest {
   /** @var SubscriberEntity */
   private $subscriberProcessed;
 
+  /** @var ScheduledTaskSubscriberEntity */
+  private $taskSubscriber1;
+
+  /** @var ScheduledTaskSubscriberEntity */
+  private $taskSubscriber2;
+
+  /** @var ScheduledTaskSubscriberEntity */
+  private $taskSubscriber3;
+
+  /** @var ScheduledTaskSubscriberEntity */
+  private $taskSubscriber4;
+
+  /** @var ScheduledTaskSubscriberEntity */
+  private $taskSubscriber5;
+
   public function _before() {
     parent::_before();
     $this->repository = $this->diContainer->get(ScheduledTaskSubscribersRepository::class);
@@ -44,12 +60,12 @@ class ScheduledTaskSubscribersRepositoryTest extends \MailPoetTest {
     $this->scheduledTask1 = $scheduledTaskFactory->create('sending', ScheduledTaskEntity::STATUS_COMPLETED, Carbon::now()->subDay());
     $this->scheduledTask2 = $scheduledTaskFactory->create('sending', ScheduledTaskEntity::STATUS_COMPLETED, Carbon::now()->subDay());
 
-    $taskSubscriberFactory->createUnprocessed($this->scheduledTask1, $this->subscriberUnprocessed);
-    $taskSubscriberFactory->createProcessed($this->scheduledTask1, $this->subscriberProcessed);
-    $taskSubscriberFactory->createFailed($this->scheduledTask1, $subscriberFailed, 'Error Message');
+    $this->taskSubscriber1 = $taskSubscriberFactory->createUnprocessed($this->scheduledTask1, $this->subscriberUnprocessed);
+    $this->taskSubscriber2 = $taskSubscriberFactory->createProcessed($this->scheduledTask1, $this->subscriberProcessed);
+    $this->taskSubscriber3 = $taskSubscriberFactory->createFailed($this->scheduledTask1, $subscriberFailed, 'Error Message');
 
-    $taskSubscriberFactory->createUnprocessed($this->scheduledTask2, $this->subscriberUnprocessed);
-    $taskSubscriberFactory->createProcessed($this->scheduledTask2, $this->subscriberProcessed);
+    $this->taskSubscriber4 = $taskSubscriberFactory->createUnprocessed($this->scheduledTask2, $this->subscriberUnprocessed);
+    $this->taskSubscriber5 = $taskSubscriberFactory->createProcessed($this->scheduledTask2, $this->subscriberProcessed);
   }
 
   public function testItSetsSubscribers() {
@@ -69,5 +85,15 @@ class ScheduledTaskSubscribersRepositoryTest extends \MailPoetTest {
     $this->assertInstanceOf(SubscriberEntity::class, $task2Subscribers[1]->getSubscriber());
     $this->assertEquals($this->subscriberUnprocessed->getId(), $task2Subscribers[0]->getSubscriber()->getId());
     $this->assertEquals($this->subscriberProcessed->getId(), $task2Subscribers[1]->getSubscriber()->getId());
+  }
+
+  public function testItDeleteByScheduledTaskAndSubscriberIds() {
+    $this->repository->deleteByScheduledTaskAndSubscriberIds($this->scheduledTask1, [$this->taskSubscriber1->getSubscriberId()]);
+    $this->assertSame([$this->taskSubscriber2, $this->taskSubscriber3], $this->repository->findBy(['task' => $this->scheduledTask1]));
+    $this->assertSame([$this->taskSubscriber4, $this->taskSubscriber5], $this->repository->findBy(['task' => $this->scheduledTask2]));
+
+    $this->repository->deleteByScheduledTaskAndSubscriberIds($this->scheduledTask2, [$this->taskSubscriber4->getSubscriberId(), $this->taskSubscriber5->getSubscriberId()]);
+    $this->assertSame([$this->taskSubscriber2, $this->taskSubscriber3], $this->repository->findBy(['task' => $this->scheduledTask1]));
+    $this->assertSame([], $this->repository->findBy(['task' => $this->scheduledTask2]));
   }
 }
