@@ -56,27 +56,29 @@ export function Filter(): JSX.Element | null {
 
   return (
     <div className="mailpoet-analytics-filter">
-      <TextControl
-        label={__('Search subscriber', 'mailpoet')}
-        value={search}
-        onChange={(value) => setSearch(value)}
-      />
-      <SelectControl
-        label={__('Select step', 'mailpoet')}
-        options={getStepOptions(automation)}
-        selected={step}
-        onChange={(value) => {
-          setStep(value);
-        }}
-      />
-      <SelectControl
-        label={__('Status', 'mailpoet')}
-        options={getStatusOptions()}
-        selected={status}
-        onChange={(value) => {
-          setStatus(value);
-        }}
-      />
+      <div className="mailpoet-analytics-filter-controls">
+        <TextControl
+          label={__('Search subscriber', 'mailpoet')}
+          value={search as string}
+          onChange={(value) => setSearch(value)}
+        />
+        <SelectControl
+          label={__('Select step', 'mailpoet')}
+          options={getStepOptions(automation)}
+          value={step as string}
+          onChange={(value) => {
+            setStep(value);
+          }}
+        />
+        <SelectControl
+          label={__('Status', 'mailpoet')}
+          options={getStatusOptions()}
+          value={status as string}
+          onChange={(value) => {
+            setStatus(value);
+          }}
+        />
+      </div>
       <Button
         isPrimary
         onClick={() => {

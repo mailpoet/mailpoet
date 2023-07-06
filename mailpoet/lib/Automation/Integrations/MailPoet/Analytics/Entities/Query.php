@@ -27,13 +27,21 @@ class Query {
   /** @var int */
   private $page;
 
+  /** @var array */
+  private $filter;
+
+  /** @var string | null */
+  private $search;
+
   public function __construct(
     \DateTimeImmutable $primaryAfter,
     \DateTimeImmutable $primaryBefore,
     int $limit = 25,
     string $orderBy = '',
     string $orderDirection = 'asc',
-    int $page = 1
+    int $page = 1,
+    array $filter = [],
+    string $search = null
   ) {
     $this->primaryAfter = $primaryAfter;
     $this->primaryBefore = $primaryBefore;
@@ -41,6 +49,8 @@ class Query {
     $this->orderBy = $orderBy;
     $this->orderDirection = $orderDirection;
     $this->page = $page;
+    $this->filter = $filter;
+    $this->search = $search;
   }
 
   public function getAfter(): \DateTimeImmutable {
@@ -65,6 +75,14 @@ class Query {
 
   public function getPage(): int {
     return $this->page;
+  }
+
+  public function getFilter(): array {
+    return $this->filter;
+  }
+
+  public function getSearch(): ?string {
+    return $this->search;
   }
 
   /**
@@ -94,6 +112,8 @@ class Query {
     $orderBy = $query['order_by'] ?? '';
     $orderDirection = isset($query['order']) && strtolower($query['order']) === 'asc' ? 'asc' : 'desc';
     $page = $query['page'] ?? 1;
+    $filter = $query['filter'] ?? [];
+    $search = $query['search'] ?? null;
 
     return new self(
       new \DateTimeImmutable($primaryAfter),
@@ -101,7 +121,9 @@ class Query {
       $limit,
       $orderBy,
       $orderDirection,
-      $page
+      $page,
+      $filter,
+      $search
     );
   }
 
@@ -118,6 +140,8 @@ class Query {
         'order_by' => Builder::string(),
         'order' => Builder::string(),
         'page' => Builder::integer()->minimum(1),
+        'filter' => Builder::object([]),
+        'search' => Builder::string()->nullable(),
       ]
     );
   }
