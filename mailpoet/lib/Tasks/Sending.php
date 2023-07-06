@@ -254,8 +254,20 @@ class Sending {
   }
 
   public function removeSubscribers(array $subscriberIds) {
-    $this->taskSubscribers->removeSubscribers($subscriberIds);
-    $this->updateCount();
+    $scheduledTaskEntity = $this->scheduledTasksRepository->findOneById($this->task->id);
+
+    if ($scheduledTaskEntity instanceof ScheduledTaskEntity) {
+      $this->scheduledTaskSubscribersRepository->deleteByScheduledTaskAndSubscriberIds($scheduledTaskEntity, $subscriberIds);
+
+      // we need to update those fields here as the Sending class is in a mixed state using Paris and Doctrine at the same time
+      // this probably won't be necessary anymore once https://mailpoet.atlassian.net/browse/MAILPOET-4375 is finished
+      $this->task->status = $scheduledTaskEntity->getStatus();
+      if (!is_null($scheduledTaskEntity->getProcessedAt())) {
+        $this->task->processedAt = $scheduledTaskEntity->getProcessedAt()->format('Y-m-d H:i:s');
+      }
+
+      $this->updateCount();
+    }
   }
 
   public function removeAllSubscribers() {
