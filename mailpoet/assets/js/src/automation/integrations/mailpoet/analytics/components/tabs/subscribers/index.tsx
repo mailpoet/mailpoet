@@ -5,6 +5,7 @@ import { MailPoet } from '../../../../../../../mailpoet';
 import { storeName, SubscriberSection } from '../../../store';
 import { transformSubscribersToRows } from './rows';
 import { Upgrade } from '../orders/upgrade';
+import { Filter } from './filter';
 
 const headers = [
   {
@@ -58,6 +59,8 @@ export function Subscribers(): JSX.Element {
           }
         />
       )}
+
+      {MailPoet.premiumActive && <Filter />}
 
       <TableCard
         title=""
