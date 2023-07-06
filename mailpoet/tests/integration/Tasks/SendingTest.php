@@ -191,12 +191,6 @@ class SendingTest extends \MailPoetTest {
     verify($this->sending->processed_at)->notSame($originalProcessedAt);
   }
 
-  public function testItRemovesAllSubscribers() {
-    $this->sending->removeAllSubscribers();
-    verify($this->sending->getSubscribers())->equals([]);
-    verify($this->sending->count_total)->equals(0);
-  }
-
   public function testItUpdatesProcessedSubscribers() {
     $subscriberId = $this->subscriber2->getId();
     $taskSubscriber = $this->getTaskSubscriber($this->task->id, $subscriberId);

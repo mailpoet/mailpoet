@@ -270,11 +270,6 @@ class Sending {
     }
   }
 
-  public function removeAllSubscribers() {
-    $this->taskSubscribers->removeAllSubscribers();
-    $this->updateCount();
-  }
-
   public function updateProcessedSubscribers(array $processedSubscribers) {
     $this->taskSubscribers->updateProcessedSubscribers($processedSubscribers);
     return $this->updateCount(count($processedSubscribers))->getErrors() === false;
