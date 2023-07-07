@@ -6,11 +6,11 @@ use MailPoet\Config\Env;
 use MailPoetTest;
 
 // testing migration files
-require_once __DIR__ . '/TestMigrations/Migration_20221024_080348.php';
-require_once __DIR__ . '/TestMigrations/Migration_20221025_120345.php';
-require_once __DIR__ . '/TestMigrations/Migration_20221026_160151.php';
-require_once __DIR__ . '/TestMigrations/Migration_20221027_180501.php';
-require_once __DIR__ . '/TestMigrationsFail/Migration_20221023_040819.php';
+require_once __DIR__ . '/TestMigrations/Db/Migration_20221024_080348.php';
+require_once __DIR__ . '/TestMigrations/Db/Migration_20221025_120345.php';
+require_once __DIR__ . '/TestMigrations/Db/Migration_20221026_160151.php';
+require_once __DIR__ . '/TestMigrations/Db/Migration_20221027_180501.php';
+require_once __DIR__ . '/TestMigrationsFail/Db/Migration_20221023_040819.php';
 
 class MigratorTest extends MailPoetTest {
   private const DATE_TIME_FORMAT = '%d%d-%d%d-%d%d %d%d:%d%d:%d%d';
@@ -259,7 +259,7 @@ class MigratorTest extends MailPoetTest {
 
   public function testItFailsBrokenMigration(): void {
     $this->expectException(MigratorException::class);
-    $this->expectExceptionMessage('Migration "MailPoet\Migrations\Migration_20221023_040819" failed. Details: Testing failing migration.');
+    $this->expectExceptionMessage('Migration "MailPoet\Migrations\Db\Migration_20221023_040819" failed. Details: Testing failing migration.');
     $migrator = $this->createMigrator(__DIR__ . '/TestMigrationsFail');
     $migrator->run();
 

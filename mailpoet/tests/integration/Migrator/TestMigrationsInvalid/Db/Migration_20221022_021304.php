@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace MailPoet\Migrations;
+namespace MailPoet\Migrations\Db;
 
 //phpcs:disable Squiz.Classes.ValidClassName.NotCamelCaps
 // This class doesn't extend "MailPoet\Migrator\Migration", migration run should fail.

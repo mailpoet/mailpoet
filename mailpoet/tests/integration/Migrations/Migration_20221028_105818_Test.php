@@ -7,6 +7,7 @@ use MailPoet\Cron\Workers\InactiveSubscribers;
 use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Entities\DynamicSegmentFilterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Migrations\Db\Migration_20221028_105818;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Segments\DynamicSegments\Filters\EmailAction;
 use MailPoet\Settings\SettingsController;
