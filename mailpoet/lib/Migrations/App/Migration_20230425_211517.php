@@ -1,11 +1,11 @@
 <?php declare(strict_types = 1);
 
-namespace MailPoet\Migrations\Db;
+namespace MailPoet\Migrations\App;
 
-use MailPoet\Migrator\DbMigration;
+use MailPoet\Migrator\AppMigration;
 use MailPoet\Settings\SettingsController;
 
-class Migration_20230425_211517 extends DbMigration {
+class Migration_20230425_211517 extends AppMigration {
   public function run(): void {
     $settingsController = $this->container->get(SettingsController::class);
     $possibleKeys = [
