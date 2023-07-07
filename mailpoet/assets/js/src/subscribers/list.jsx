@@ -275,6 +275,36 @@ const bulkActions = [
       );
     },
   },
+  {
+    name: 'addTag',
+    label: MailPoet.I18n.t('addTag'),
+    onSelect: function onSelect(submitModal, closeModal) {
+      const field = {
+        id: 'add_tag',
+        name: 'add_tag',
+        endpoint: 'tags',
+      };
+
+      return createModal(
+        submitModal,
+        closeModal,
+        field,
+        MailPoet.I18n.t('addTag'),
+      );
+    },
+    getData: function getData() {
+      return {
+        tag_id: Number(jQuery('#add_tag').val()),
+      };
+    },
+    onSuccess: function onSuccess(response) {
+      MailPoet.Notice.success(
+        MailPoet.I18n.t('tagAddedToMultipleSubscribers')
+          .replace('%1$s', response.meta.tag)
+          .replace('%2$d', Number(response.meta.count).toLocaleString()),
+      );
+    },
+  },
 ];
 
 const itemActions = [

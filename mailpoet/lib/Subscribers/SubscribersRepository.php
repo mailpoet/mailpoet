@@ -11,6 +11,7 @@ use MailPoet\Entities\SubscriberCustomFieldEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Entities\SubscriberTagEntity;
+use MailPoet\Entities\TagEntity;
 use MailPoet\Util\License\Features\Subscribers;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
@@ -513,6 +514,15 @@ class SubscribersRepository extends Repository {
   /**
    * @return int - number of processed ids
    */
+  public function bulkAddTag(TagEntity $tag, array $ids): int {
+    $count = $this->addTagToSubscribers($tag, $ids);
+    $this->changesNotifier->subscribersUpdated($ids);
+    return $count;
+  }
+
+  /**
+   * @return int - number of processed ids
+   */
   private function removeSubscribersFromAllSegments(array $ids): int {
     if (empty($ids)) {
       return 0;
@@ -557,6 +567,37 @@ class SubscribersRepository extends Repository {
         $this->entityManager->persist($subscriberSegment);
       }
       $this->entityManager->flush();
+    });
+
+    return count($subscribers);
+  }
+
+  /**
+   * @return int - number of processed ids
+   */
+  private function addTagToSubscribers(TagEntity $tag, array $ids): int {
+    if (empty($ids)) {
+      return 0;
+    }
+
+    /** @var SubscriberEntity[] $subscribers */
+    $subscribers = $this->entityManager
+      ->createQueryBuilder()
+      ->select('s')
+      ->from(SubscriberEntity::class, 's')
+      ->leftJoin('s.subscriberTags', 'st', Join::WITH, 'st.tag = :tag')
+      ->where('s.id IN (:ids)')
+      ->andWhere('st.tag IS NULL')
+      ->setParameter('ids', $ids)
+      ->setParameter('tag', $tag)
+      ->getQuery()->execute();
+
+    $this->entityManager->wrapInTransaction(function (EntityManager $entityManager) use ($subscribers, $tag) {
+      foreach ($subscribers as $subscriber) {
+        $subscriberTag = new SubscriberTagEntity($tag, $subscriber);
+        $entityManager->persist($subscriberTag);
+      }
+      $entityManager->flush();
     });
 
     return count($subscribers);

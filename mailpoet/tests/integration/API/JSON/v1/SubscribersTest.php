@@ -15,6 +15,7 @@ use MailPoet\Entities\FormEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
+use MailPoet\Entities\SubscriberTagEntity;
 use MailPoet\Form\Util\FieldNameObfuscator;
 use MailPoet\Listing\Handler;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
@@ -26,13 +27,16 @@ use MailPoet\Subscribers\SubscriberListingRepository;
 use MailPoet\Subscribers\SubscriberSaveController;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Subscribers\SubscriberSubscribeController;
+use MailPoet\Subscribers\SubscriberTagRepository;
 use MailPoet\Subscription\Captcha\CaptchaConstants;
 use MailPoet\Subscription\Captcha\CaptchaSession;
+use MailPoet\Tags\TagRepository;
 use MailPoet\Test\DataFactories\CustomField as CustomFieldFactory;
 use MailPoet\Test\DataFactories\DynamicSegment;
 use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
 use MailPoet\Test\DataFactories\Segment as SegmentFactory;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
+use MailPoet\Test\DataFactories\Tag as TagFactory;
 use MailPoet\UnexpectedValueException;
 use MailPoet\WP\Functions;
 use MailPoetVendor\Carbon\Carbon;
@@ -89,6 +93,7 @@ class SubscribersTest extends \MailPoetTest {
       $this->responseBuilder,
       $container->get(SubscriberListingRepository::class),
       $container->get(SegmentsRepository::class),
+      $container->get(TagRepository::class),
       $container->get(SubscriberSaveController::class),
       $container->get(SubscriberSubscribeController::class),
       $container->get(SettingsController::class)
@@ -1012,6 +1017,39 @@ class SubscribersTest extends \MailPoetTest {
     $segments = $subscriber->getSegments();
     expect($segments->get(0)->getId())->equals($this->segment1->getId());
     expect($segments->get(1)->getId())->equals($wcSegment->getId());
+  }
+
+  public function testItCanBulkAddTagToSubscribers(): void {
+    $selectionIds = [
+      $this->subscriber1->getId(),
+      $this->subscriber2->getId(),
+    ];
+
+    $tag = (new TagFactory())->withName('Tag 1')->create();
+
+    $bulkActionData = [
+      'action' => 'addTag',
+      'listing' => [
+        'selection' => $selectionIds,
+      ],
+      'tag_id' => $tag->getId(),
+    ];
+
+    $response = $this->endpoint->bulkAction($bulkActionData);
+
+    $subscriberTagRepository = $this->diContainer->get(SubscriberTagRepository::class);
+    $subscriberTag1 = $subscriberTagRepository->findOneBy(['subscriber' => $this->subscriber1, 'tag' => $tag]);
+    $subscriberTag2 = $subscriberTagRepository->findOneBy(['subscriber' => $this->subscriber2, 'tag' => $tag]);
+
+    expect($response->status)->equals(APIResponse::STATUS_OK);
+    expect($response->meta['count'])->equals(2);
+    expect($subscriberTag1)->isInstanceOf(SubscriberTagEntity::class);
+    expect($subscriberTag2)->isInstanceOf(SubscriberTagEntity::class);
+
+    // Testing that adding the same tag again does not return an error
+    $response = $this->endpoint->bulkAction($bulkActionData);
+    expect($response->status)->equals(APIResponse::STATUS_OK);
+    expect($response->meta['count'])->equals(0);
   }
 
   private function _createWelcomeNewsletter(): void {
