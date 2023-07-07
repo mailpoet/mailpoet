@@ -17,21 +17,4 @@ class Subscribers {
   public function getSubscribers() {
     return ScheduledTaskSubscriber::where('task_id', $this->task->id);
   }
-
-  public function saveSubscriberError($subcriberId, $errorMessage) {
-    $this->getSubscribers()
-      ->where('subscriber_id', $subcriberId)
-      ->findResultSet()
-      ->set('failed', ScheduledTaskSubscriber::FAIL_STATUS_FAILED)
-      ->set('processed', ScheduledTaskSubscriber::STATUS_PROCESSED)
-      ->set('error', $errorMessage)
-      ->save();
-    $this->checkCompleted();
-  }
-
-  private function checkCompleted($count = null) {
-    if (!$count && !ScheduledTaskSubscriber::getUnprocessedCount($this->task->id)) {
-      $this->task->complete();
-    }
-  }
 }
