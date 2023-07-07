@@ -2,6 +2,7 @@
 
 namespace MailPoet\Migrations\App;
 
+use MailPoet\Cron\CronTrigger;
 use MailPoet\Cron\Workers\StatsNotifications\Worker;
 use MailPoet\Entities\FormEntity;
 use MailPoet\Form\FormsRepository;
@@ -36,6 +37,7 @@ class Migration_20221028_105818_App extends AppMigration {
 
     $this->updateDefaultInactiveSubscriberTimeRange();
     $this->setDefaultValueForLoadingThirdPartyLibrariesForExistingInstalls();
+    $this->disableMailPoetCronTrigger();
 
     // POPULATOR
     $this->enableStatsNotificationsForAutomatedEmails();
@@ -232,5 +234,13 @@ class Migration_20221028_105818_App extends AppMigration {
       $trackingLevel = $emailTracking ? TrackingConfig::LEVEL_PARTIAL : TrackingConfig::LEVEL_BASIC;
     }
     $this->settings->set('tracking.level', $trackingLevel);
+  }
+
+  private function disableMailPoetCronTrigger() {
+    $method = $this->settings->get(CronTrigger::SETTING_NAME . '.method');
+    if ($method !== 'MailPoet') {
+      return;
+    }
+    $this->settings->set(CronTrigger::SETTING_NAME . '.method', CronTrigger::METHOD_WORDPRESS);
   }
 }
