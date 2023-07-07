@@ -192,19 +192,25 @@ class SendingTest extends \MailPoetTest {
   }
 
   public function testItUpdatesProcessedSubscribers() {
-    $subscriberId = $this->subscriber2->getId();
-    $taskSubscriber = $this->getTaskSubscriber($this->task->id, $subscriberId);
-    verify($taskSubscriber->getProcessed())->equals(ScheduledTaskSubscriberEntity::STATUS_UNPROCESSED);
+    $taskSubscriber1 = $this->getTaskSubscriber($this->task->id, $this->subscriber1->getId());
+    $subscriberId2 = $this->subscriber2->getId();
+    $taskSubscriber2 = $this->getTaskSubscriber($this->task->id, $subscriberId2);
+    verify($taskSubscriber2->getProcessed())->equals(ScheduledTaskSubscriberEntity::STATUS_UNPROCESSED);
 
     verify($this->sending->count_to_process)->equals(2);
     verify($this->sending->count_processed)->equals(0);
-    $subscriberIds = [$subscriberId];
-    $this->sending->updateProcessedSubscribers($subscriberIds);
+    $return = $this->sending->updateProcessedSubscribers([$subscriberId2]);
+    verify($return)->true();
     verify($this->sending->count_to_process)->equals(1);
     verify($this->sending->count_processed)->equals(1);
+    verify($this->sending->status)->equals(null);
 
-    $taskSubscriber = $this->getTaskSubscriber($this->task->id, $subscriberId);
-    verify($taskSubscriber->getProcessed())->equals(ScheduledTaskSubscriberEntity::STATUS_PROCESSED);
+    $taskSubscriber2 = $this->getTaskSubscriber($this->task->id, $subscriberId2);
+    verify($taskSubscriber2->getProcessed())->equals(ScheduledTaskSubscriberEntity::STATUS_PROCESSED);
+    verify($taskSubscriber1->getProcessed())->equals(ScheduledTaskSubscriberEntity::STATUS_UNPROCESSED);
+
+    $this->sending->updateProcessedSubscribers([$this->subscriber1->getId()]);
+    verify($this->sending->status)->equals(ScheduledTaskEntity::STATUS_COMPLETED);
   }
 
   public function testItGetsScheduledQueues() {
