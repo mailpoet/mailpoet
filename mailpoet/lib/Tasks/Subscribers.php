@@ -18,12 +18,6 @@ class Subscribers {
     return ScheduledTaskSubscriber::where('task_id', $this->task->id);
   }
 
-  public function removeAllSubscribers() {
-    $this->getSubscribers()
-      ->deleteMany();
-    $this->checkCompleted();
-  }
-
   public function saveSubscriberError($subcriberId, $errorMessage) {
     $this->getSubscribers()
       ->where('subscriber_id', $subcriberId)
