@@ -580,7 +580,7 @@ class AcceptanceTester extends \Codeception\Actor {
     $i = $this;
     $i->waitForText('Place order');
     $i->click('Place order');
-    $i->waitForText('Your order has been received');
+    $i->waitForText('Order received');
   }
 
   /**
