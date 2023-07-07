@@ -6,30 +6,22 @@ use MailPoetUnitTest;
 
 class RepositoryTest extends MailPoetUnitTest {
   private const MIGRATIONS_OUTPUT_DIR = __DIR__ . '/../../_output/migrations-tests';
-  private const TEMPLATE_FILE = __DIR__ . '/../../../lib/Migrator/DbMigrationTemplate.php';
+  private const TEMPLATE_FILE = __DIR__ . '/../../../lib/Migrator/{level}MigrationTemplate.php';
 
   protected function _before() {
     parent::_before();
     $this->removeDir(self::MIGRATIONS_OUTPUT_DIR);
     mkdir(self::MIGRATIONS_OUTPUT_DIR, 0777, true);
+    mkdir(self::MIGRATIONS_OUTPUT_DIR . '/' . Repository::MIGRATIONS_LEVEL_DB, 0777, true);
+    mkdir(self::MIGRATIONS_OUTPUT_DIR . '/' . Repository::MIGRATIONS_LEVEL_APP, 0777, true);
   }
 
-  public function testItCreatesMigrationFile(): void {
-    $migrations = $this->make(Repository::class, [
-      'migrationsDir' => self::MIGRATIONS_OUTPUT_DIR,
-      'templateFile' => self::TEMPLATE_FILE,
-    ]);
+  public function testItCreatesDbLevelMigrationFiles(): void {
+    $this->checkItCreatesMigrationFiles(Repository::MIGRATIONS_LEVEL_DB);
+  }
 
-    $migrations->create();
-
-    $files = glob(self::MIGRATIONS_OUTPUT_DIR . '/*.php') ?: [];
-    $this->assertCount(1, $files);
-
-    $migration = pathinfo($files[0], PATHINFO_FILENAME);
-    $this->assertSame(
-      str_replace("class DbMigrationTemplate", "class $migration", file_get_contents(self::TEMPLATE_FILE) ?: ''),
-      file_get_contents($files[0])
-    );
+  public function testItCreatesAppLevelMigrationFiles(): void {
+    $this->checkItCreatesMigrationFiles(Repository::MIGRATIONS_LEVEL_APP);
   }
 
   public function testItFailsCreatingWithInvalidTemplateFile(): void {
@@ -40,7 +32,7 @@ class RepositoryTest extends MailPoetUnitTest {
 
     $this->expectException(MigratorException::class);
     $this->expectExceptionMessage(sprintf('Could not read migration template file "%s"', $templateFile));
-    $repository->create();
+    $repository->create(Repository::MIGRATIONS_LEVEL_DB);
   }
 
   public function testItFailsCreatingWhenCantSave(): void {
@@ -51,8 +43,8 @@ class RepositoryTest extends MailPoetUnitTest {
     ]);
 
     $this->expectException(MigratorException::class);
-    $this->expectExceptionMessageMatches('~^Could not write migration file "' . preg_quote($migrationsDir, '~') . '/Migration_\d{8}_\d{6}.php"\.$~');
-    $repository->create();
+    $this->expectExceptionMessageMatches('~^Could not write migration file "' . preg_quote($migrationsDir . '/' . Repository::MIGRATIONS_LEVEL_DB, '~') . '/Migration_\d{8}_\d{6}_Db.php"\.$~');
+    $repository->create(Repository::MIGRATIONS_LEVEL_DB);
   }
 
   public function testItLoadsMigrationFiles(): void {
@@ -71,6 +63,25 @@ class RepositoryTest extends MailPoetUnitTest {
   public function _after() {
     parent::_after();
     $this->removeDir(self::MIGRATIONS_OUTPUT_DIR);
+  }
+
+  private function checkItCreatesMigrationFiles(string $level): void {
+    $migrations = $this->make(Repository::class, [
+      'migrationsDir' => self::MIGRATIONS_OUTPUT_DIR,
+      'templateFile' => self::TEMPLATE_FILE,
+    ]);
+
+    $migrations->create($level);
+
+    $files = glob(self::MIGRATIONS_OUTPUT_DIR . '/' . $level . '/*.php') ?: [];
+    $this->assertCount(1, $files);
+
+    $templateFile = str_replace('{level}', $level, self::TEMPLATE_FILE);
+    $migration = pathinfo($files[0], PATHINFO_FILENAME);
+    $this->assertSame(
+      str_replace("class {$level}MigrationTemplate", "class $migration", file_get_contents($templateFile) ?: ''),
+      file_get_contents($files[0])
+    );
   }
 
   private function removeDir(string $path): void {

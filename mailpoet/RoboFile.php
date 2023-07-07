@@ -447,9 +447,13 @@ class RoboFile extends \Robo\Tasks {
     $this->say("Validator metadata generated to: $validatorMetadataDir");
   }
 
-  public function migrationsNew() {
+  /**
+   * Creates a new migration file. Creates Db level migration. Use --level=App to create an application level migration.
+   * @param $opts array{level: string}
+   */
+  public function migrationsNew($opts = ['level' => \MailPoet\Migrator\Repository::MIGRATIONS_LEVEL_DB]) {
     $generator = new \MailPoet\Migrator\Repository();
-    $result = $generator->create();
+    $result = $generator->create($opts['level']);
     $path = realpath($result['path']);
     $this->output->writeln('MAILPOET DATABASE MIGRATIONS');
     $this->output->writeln("============================\n");
