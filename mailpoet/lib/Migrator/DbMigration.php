@@ -8,19 +8,15 @@ use MailPoetVendor\Doctrine\DBAL\Connection;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 
 abstract class DbMigration {
-  /** @var ContainerWrapper */
-  protected $container;
-
   /** @var Connection */
   protected $connection;
 
   /** @var EntityManager */
-  protected $entityManager;
+  private $entityManager;
 
   public function __construct(
     ContainerWrapper $container
   ) {
-    $this->container = $container;
     $this->connection = $container->get(Connection::class);
     $this->entityManager = $container->get(EntityManager::class);
   }

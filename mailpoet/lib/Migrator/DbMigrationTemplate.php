@@ -14,8 +14,7 @@ class DbMigrationTemplate extends DbMigration {
      *
      * You can use:
      *   $this->connection      For SQL queries using Doctrine DBAL.
-     *   $this->entityManager   For operations using Doctrine Entity Manager.
-     *   $this->container       For accessing any needed service.
+     *   global $wpdb           For SQL queries using WordPress $wpdb.
      */
   }
 }
