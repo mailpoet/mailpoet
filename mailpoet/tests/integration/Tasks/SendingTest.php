@@ -300,6 +300,22 @@ class SendingTest extends \MailPoetTest {
     expect($tasks[2]->getId())->equals($sending2->taskId);
   }
 
+  public function testItSavesSubscriberError() {
+    $error = 'Error message';
+    $this->sending->saveSubscriberError($this->subscriber1->getId(), $error);
+    $taskSubscriber = $this->getTaskSubscriber($this->task->id, $this->subscriber1->getId());
+
+    expect($taskSubscriber->getError())->equals($error);
+    expect($taskSubscriber->getFailed())->equals(ScheduledTaskSubscriberEntity::FAIL_STATUS_FAILED);
+    expect($taskSubscriber->getProcessed())->equals(ScheduledTaskSubscriberEntity::STATUS_PROCESSED);
+    expect($this->sending->count_total)->equals(2);
+    expect($this->sending->count_processed)->equals(1);
+    expect($this->sending->count_to_process)->equals(1);
+
+    $this->sending->saveSubscriberError($this->subscriber2->getId(), $error);
+    expect($this->sending->status)->same(ScheduledTaskEntity::STATUS_COMPLETED);
+  }
+
   public function createNewScheduledTask() {
     $task = ScheduledTask::create();
     $task->type = SendingTask::TASK_TYPE;
