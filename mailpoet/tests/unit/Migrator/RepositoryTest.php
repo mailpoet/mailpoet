@@ -64,6 +64,7 @@ class RepositoryTest extends MailPoetUnitTest {
       'Migration_2',
       'Migration_3',
       'Migration_4',
+      'Migration_5',
     ], $repository->loadAll());
   }
 
