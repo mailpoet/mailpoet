@@ -523,6 +523,25 @@ class SubscribersRepository extends Repository {
   /**
    * @return int - number of processed ids
    */
+  public function bulkRemoveTag(TagEntity $tag, array $ids): int {
+    if (empty($ids)) {
+      return 0;
+    }
+
+    $subscriberTagsTable = $this->entityManager->getClassMetadata(SubscriberTagEntity::class)->getTableName();
+    $count = (int)$this->entityManager->getConnection()->executeStatement("
+       DELETE st FROM $subscriberTagsTable st
+       WHERE st.`subscriber_id` IN (:ids)
+       AND st.`tag_id` = :tag_id
+    ", ['ids' => $ids, 'tag_id' => $tag->getId()], ['ids' => Connection::PARAM_INT_ARRAY]);
+
+    $this->changesNotifier->subscribersUpdated($ids);
+    return $count;
+  }
+
+  /**
+   * @return int - number of processed ids
+   */
   private function removeSubscribersFromAllSegments(array $ids): int {
     if (empty($ids)) {
       return 0;

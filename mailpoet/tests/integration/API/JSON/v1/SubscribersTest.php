@@ -1052,6 +1052,46 @@ class SubscribersTest extends \MailPoetTest {
     expect($response->meta['count'])->equals(0);
   }
 
+  public function testItCanBulkRemoveTagFromSubscribers(): void {
+    $tag = (new TagFactory())->withName('Tag 1')->create();
+    $subscriber1 = (new SubscriberFactory())
+      ->withEmail('withTag1@test.com')
+      ->withTags([$tag])
+      ->create();
+    $subscriber2 = (new SubscriberFactory())
+      ->withEmail('withTag2@test.com')
+      ->withTags([$tag])
+      ->create();
+
+
+    $bulkActionData = [
+      'action' => 'removeTag',
+      'listing' => [
+        'selection' => [
+          $subscriber1->getId(),
+          $subscriber2->getId(),
+        ],
+      ],
+      'tag_id' => $tag->getId(),
+    ];
+
+    $response = $this->endpoint->bulkAction($bulkActionData);
+
+    $subscriberTagRepository = $this->diContainer->get(SubscriberTagRepository::class);
+    $subscriberTag1 = $subscriberTagRepository->findOneBy(['subscriber' => $subscriber1, 'tag' => $tag]);
+    $subscriberTag2 = $subscriberTagRepository->findOneBy(['subscriber' => $subscriber2, 'tag' => $tag]);
+
+    expect($response->status)->equals(APIResponse::STATUS_OK);
+    expect($response->meta['count'])->equals(2);
+    expect($subscriberTag1)->null();
+    expect($subscriberTag2)->null();
+
+    // Testing that removing the same tag again does not return an error
+    $response = $this->endpoint->bulkAction($bulkActionData);
+    expect($response->status)->equals(APIResponse::STATUS_OK);
+    expect($response->meta['count'])->equals(0);
+  }
+
   private function _createWelcomeNewsletter(): void {
     $newsletterFactory = new NewsletterFactory();
     $newsletterFactory

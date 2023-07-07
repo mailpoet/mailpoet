@@ -293,6 +293,8 @@ class Subscribers extends APIEndpoint {
       $count = $this->subscribersRepository->bulkUnsubscribe($ids);
     } elseif ($data['action'] === 'addTag' && $tag instanceof TagEntity) {
       $count = $this->subscribersRepository->bulkAddTag($tag, $ids);
+    } elseif ($data['action'] === 'removeTag' && $tag instanceof TagEntity) {
+      $count = $this->subscribersRepository->bulkRemoveTag($tag, $ids);
     } else {
       throw UnexpectedValueException::create()
         ->withErrors([APIError::BAD_REQUEST => "Invalid bulk action '{$data['action']}' provided."]);
