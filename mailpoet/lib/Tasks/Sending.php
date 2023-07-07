@@ -276,8 +276,10 @@ class Sending {
     $this->updateCount();
   }
 
-  public function updateProcessedSubscribers(array $processedSubscribers) {
-    $this->taskSubscribers->updateProcessedSubscribers($processedSubscribers);
+  public function updateProcessedSubscribers(array $processedSubscribers): bool {
+    $this->scheduledTaskSubscribersRepository->updateProcessedSubscribers($this->scheduledTaskEntity, $processedSubscribers);
+    $this->scheduledTasksRepository->refresh($this->scheduledTaskEntity); // needed while Sending still uses Paris
+    $this->status = $this->scheduledTaskEntity->getStatus();
     return $this->updateCount(count($processedSubscribers))->getErrors() === false;
   }
 
