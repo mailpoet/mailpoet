@@ -267,13 +267,7 @@ class Sending {
   public function removeSubscribers(array $subscriberIds) {
     $this->scheduledTaskSubscribersRepository->deleteByScheduledTaskAndSubscriberIds($this->scheduledTaskEntity, $subscriberIds);
 
-    // we need to update those fields here as the Sending class is in a mixed state using Paris and Doctrine at the same time
-    // this probably won't be necessary anymore once https://mailpoet.atlassian.net/browse/MAILPOET-4375 is finished
-    $this->task->status = $this->scheduledTaskEntity->getStatus();
-    if (!is_null($this->scheduledTaskEntity->getProcessedAt())) {
-      $this->task->processedAt = $this->scheduledTaskEntity->getProcessedAt()->format('Y-m-d H:i:s');
-    }
-
+    $this->updateTaskStatus();
     $this->updateCount();
   }
 
@@ -285,8 +279,20 @@ class Sending {
   }
 
   public function saveSubscriberError($subcriberId, $errorMessage) {
-    $this->taskSubscribers->saveSubscriberError($subcriberId, $errorMessage);
+    $this->scheduledTaskSubscribersRepository->saveError($this->scheduledTaskEntity, $subcriberId, $errorMessage);
+
+    $this->updateTaskStatus();
+
     return $this->updateCount()->getErrors() === false;
+  }
+
+  private function updateTaskStatus() {
+    // we need to update those fields here as the Sending class is in a mixed state using Paris and Doctrine at the same time
+    // this probably won't be necessary anymore once https://mailpoet.atlassian.net/browse/MAILPOET-4375 is finished
+    $this->task->status = $this->scheduledTaskEntity->getStatus();
+    if (!is_null($this->scheduledTaskEntity->getProcessedAt())) {
+      $this->task->processedAt = $this->scheduledTaskEntity->getProcessedAt()->format('Y-m-d H:i:s');
+    }
   }
 
   public function updateCount(?int $count = null) {
