@@ -164,8 +164,16 @@ class ScheduledTaskSubscribersRepository extends Repository {
     }
   }
 
+  public function countProcessed(ScheduledTaskEntity $scheduledTaskEntity): int {
+    return $this->countBy(['task' => $scheduledTaskEntity, 'processed' => ScheduledTaskSubscriberEntity::STATUS_PROCESSED]);
+  }
+
+  public function countUnprocessed(ScheduledTaskEntity $scheduledTaskEntity): int {
+    return $this->countBy(['task' => $scheduledTaskEntity, 'processed' => ScheduledTaskSubscriberEntity::STATUS_UNPROCESSED]);
+  }
+
   private function checkCompleted(ScheduledTaskEntity $task): void {
-    $count = $this->countBy(['task' => $task, 'processed' => ScheduledTaskSubscriberEntity::STATUS_UNPROCESSED]);
+    $count = $this->countUnprocessed($task);
     if ($count === 0) {
       $task->setStatus(ScheduledTaskEntity::STATUS_COMPLETED);
       $task->setProcessedAt(new Carbon());

@@ -10,7 +10,6 @@ use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\InvalidStateException;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Models\ScheduledTask;
-use MailPoet\Models\ScheduledTaskSubscriber;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Newsletter\Sending\ScheduledTaskSubscribersRepository;
@@ -305,8 +304,8 @@ class Sending {
       $this->queue->countToProcess = max($this->queue->countToProcess - $count, 0);
     } else {
       // query DB to update counts, slower but more accurate, to be used if count isn't known
-      $this->queue->countProcessed = ScheduledTaskSubscriber::getProcessedCount($this->task->id);
-      $this->queue->countToProcess = ScheduledTaskSubscriber::getUnprocessedCount($this->task->id);
+      $this->queue->countProcessed = $this->scheduledTaskSubscribersRepository->countProcessed($this->scheduledTaskEntity);
+      $this->queue->countToProcess = $this->scheduledTaskSubscribersRepository->countUnprocessed($this->scheduledTaskEntity);
       $this->queue->countTotal = $this->queue->countProcessed + $this->queue->countToProcess;
     }
     return $this->queue->save();

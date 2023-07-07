@@ -96,4 +96,24 @@ class ScheduledTaskSubscribersRepositoryTest extends \MailPoetTest {
     $this->assertSame([$this->taskSubscriber2, $this->taskSubscriber3], $this->repository->findBy(['task' => $this->scheduledTask1]));
     $this->assertSame([], $this->repository->findBy(['task' => $this->scheduledTask2]));
   }
+
+  public function testCountProcessed() {
+    $this->assertSame(2, $this->repository->countProcessed($this->scheduledTask1));
+    $this->assertSame(1, $this->repository->countProcessed($this->scheduledTask2));
+
+    $subscriberId = $this->subscriberUnprocessed->getId();
+    $this->assertIsInt($subscriberId);
+    $this->repository->updateProcessedSubscribers($this->scheduledTask2, [$subscriberId]);
+    $this->assertSame(2, $this->repository->countProcessed($this->scheduledTask2));
+  }
+
+  public function testCountUnprocessed() {
+    $this->assertSame(1, $this->repository->countUnprocessed($this->scheduledTask1));
+    $this->assertSame(1, $this->repository->countUnprocessed($this->scheduledTask2));
+
+    $subscriberId = $this->subscriberUnprocessed->getId();
+    $this->assertIsInt($subscriberId);
+    $this->repository->updateProcessedSubscribers($this->scheduledTask2, [$subscriberId]);
+    $this->assertSame(0, $this->repository->countUnprocessed($this->scheduledTask2));
+  }
 }
