@@ -305,6 +305,36 @@ const bulkActions = [
       );
     },
   },
+  {
+    name: 'removeTag',
+    label: MailPoet.I18n.t('removeTag'),
+    onSelect: function onSelect(submitModal, closeModal) {
+      const field = {
+        id: 'remove_tag',
+        name: 'remove_tag',
+        endpoint: 'tags',
+      };
+
+      return createModal(
+        submitModal,
+        closeModal,
+        field,
+        MailPoet.I18n.t('removeTag'),
+      );
+    },
+    getData: function getData() {
+      return {
+        tag_id: Number(jQuery('#remove_tag').val()),
+      };
+    },
+    onSuccess: function onSuccess(response) {
+      MailPoet.Notice.success(
+        MailPoet.I18n.t('tagRemovedFromMultipleSubscribers')
+          .replace('%1$s', response.meta.tag)
+          .replace('%2$d', Number(response.meta.count).toLocaleString()),
+      );
+    },
+  },
 ];
 
 const itemActions = [
