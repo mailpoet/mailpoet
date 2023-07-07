@@ -185,10 +185,13 @@ class Selection extends Component {
       this.props.field.getCount !== undefined ||
       this.props.field.getTag !== undefined
     ) {
-      const items = this.getItems(this.props.field);
+      let items = this.getItems(this.props.field) ?? [];
       let selectedValues = this.getSelectedValues() || [];
       if (!Array.isArray(selectedValues)) {
         selectedValues = [selectedValues];
+      }
+      if (!Array.isArray(items)) {
+        items = [items];
       }
       const data = items.map((item) => {
         const id = this.getValue(item);
@@ -312,7 +315,10 @@ class Selection extends Component {
   };
 
   render() {
-    const items = this.getItems(this.props.field);
+    let items = this.getItems(this.props.field) ?? [];
+    if (!Array.isArray(items)) {
+      items = [items];
+    }
     const selectedValues = this.getSelectedValues();
     const options = items.map((item) => {
       const label = this.getLabel(item);
