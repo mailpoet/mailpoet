@@ -24,19 +24,6 @@ class Subscribers {
     $this->checkCompleted();
   }
 
-  public function updateProcessedSubscribers(array $processedSubscribers) {
-    if (!empty($processedSubscribers)) {
-      ScheduledTaskSubscriber::rawExecute(sprintf(
-        'UPDATE %1$s SET processed = %2$s WHERE task_id = %3$s AND subscriber_id IN (%4$s)',
-        ScheduledTaskSubscriber::$_table,
-        ScheduledTaskSubscriber::STATUS_PROCESSED,
-        $this->task->id,
-        join(', ', array_map('intval', $processedSubscribers))
-      ));
-    }
-    $this->checkCompleted();
-  }
-
   public function saveSubscriberError($subcriberId, $errorMessage) {
     $this->getSubscribers()
       ->where('subscriber_id', $subcriberId)

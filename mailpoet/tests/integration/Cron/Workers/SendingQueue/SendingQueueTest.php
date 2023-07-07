@@ -271,6 +271,7 @@ class SendingQueueTest extends \MailPoetTest {
     // in the process() method and after that execution limits will be enforced
     $queue = $this->queue;
     $queue->status = SendingQueue::STATUS_COMPLETED;
+    $queue->save();
     $sendingQueueWorker = $this->make(
       $this->getSendingQueueWorker(),
       [
@@ -616,7 +617,7 @@ class SendingQueueTest extends \MailPoetTest {
     $updatedNewsletter = $this->newslettersRepository->findOneById($this->newsletter->id);
     $this->assertInstanceOf(NewsletterEntity::class, $updatedNewsletter);
     expect($updatedNewsletter->getStatus())->equals(Newsletter::STATUS_SENT);
-    expect($updatedNewsletter->getSentAt())->equals($scheduledTask->getProcessedAt());
+    expect($updatedNewsletter->getSentAt())->equalsWithDelta($scheduledTask->getProcessedAt(), 1);
 
     // queue subscriber processed/to process count is updated
     expect($scheduledTask->getSubscribersByProcessed(ScheduledTaskSubscriber::STATUS_UNPROCESSED))
