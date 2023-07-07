@@ -66,6 +66,9 @@ class Sending {
   /** @var ScheduledTasksRepository */
   private $scheduledTasksRepository;
 
+  /** @var ScheduledTaskEntity */
+  private $scheduledTaskEntity;
+
   private function __construct(
     ScheduledTask $task = null,
     SendingQueue $queue = null
@@ -91,6 +94,17 @@ class Sending {
     $this->taskSubscribers = new Subscribers($task);
     $this->scheduledTaskSubscribersRepository = ContainerWrapper::getInstance()->get(ScheduledTaskSubscribersRepository::class);
     $this->scheduledTasksRepository = ContainerWrapper::getInstance()->get(ScheduledTasksRepository::class);
+
+    // needed to make sure that the task has an ID so taht we can retrieve the ScheduledTaskEntity while this class stil uses Paris
+    $this->save();
+
+    $scheduledTaskEntity = $this->scheduledTasksRepository->findOneById($this->task->id);
+
+    if (!$scheduledTaskEntity instanceof ScheduledTaskEntity) {
+      throw new InvalidStateException('Scheduled task entity not found');
+    }
+
+    $this->scheduledTaskEntity = $scheduledTaskEntity;
   }
 
   public static function create(ScheduledTask $task = null, SendingQueue $queue = null) {
@@ -245,29 +259,21 @@ class Sending {
   }
 
   public function setSubscribers(array $subscriberIds) {
-    $scheduledTaskEntity = $this->scheduledTasksRepository->findOneById($this->task->id);
-
-    if ($scheduledTaskEntity instanceof ScheduledTaskEntity) {
-      $this->scheduledTaskSubscribersRepository->setSubscribers($scheduledTaskEntity, $subscriberIds);
-      $this->updateCount();
-    }
+    $this->scheduledTaskSubscribersRepository->setSubscribers($this->scheduledTaskEntity, $subscriberIds);
+    $this->updateCount();
   }
 
   public function removeSubscribers(array $subscriberIds) {
-    $scheduledTaskEntity = $this->scheduledTasksRepository->findOneById($this->task->id);
+    $this->scheduledTaskSubscribersRepository->deleteByScheduledTaskAndSubscriberIds($this->scheduledTaskEntity, $subscriberIds);
 
-    if ($scheduledTaskEntity instanceof ScheduledTaskEntity) {
-      $this->scheduledTaskSubscribersRepository->deleteByScheduledTaskAndSubscriberIds($scheduledTaskEntity, $subscriberIds);
-
-      // we need to update those fields here as the Sending class is in a mixed state using Paris and Doctrine at the same time
-      // this probably won't be necessary anymore once https://mailpoet.atlassian.net/browse/MAILPOET-4375 is finished
-      $this->task->status = $scheduledTaskEntity->getStatus();
-      if (!is_null($scheduledTaskEntity->getProcessedAt())) {
-        $this->task->processedAt = $scheduledTaskEntity->getProcessedAt()->format('Y-m-d H:i:s');
-      }
-
-      $this->updateCount();
+    // we need to update those fields here as the Sending class is in a mixed state using Paris and Doctrine at the same time
+    // this probably won't be necessary anymore once https://mailpoet.atlassian.net/browse/MAILPOET-4375 is finished
+    $this->task->status = $this->scheduledTaskEntity->getStatus();
+    if (!is_null($this->scheduledTaskEntity->getProcessedAt())) {
+      $this->task->processedAt = $this->scheduledTaskEntity->getProcessedAt()->format('Y-m-d H:i:s');
     }
+
+    $this->updateCount();
   }
 
   public function updateProcessedSubscribers(array $processedSubscribers) {
