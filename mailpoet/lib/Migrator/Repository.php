@@ -7,6 +7,8 @@ use RecursiveIteratorIterator;
 use SplFileInfo;
 
 class Repository {
+  const MIGRATIONS_LEVEL_DB = 'Db';
+
   /** @var string */
   private $migrationsDir;
 
@@ -44,7 +46,7 @@ class Repository {
 
   public function loadAll(): array {
     $files = new RecursiveIteratorIterator(
-      new RecursiveDirectoryIterator($this->migrationsDir, RecursiveDirectoryIterator::SKIP_DOTS)
+      new RecursiveDirectoryIterator($this->migrationsDir . '/' . self::MIGRATIONS_LEVEL_DB, RecursiveDirectoryIterator::SKIP_DOTS)
     );
 
     $migrations = [];

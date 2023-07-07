@@ -6,9 +6,9 @@ use MailPoet\Config\Env;
 use MailPoetTest;
 
 // testing migration files
-require_once __DIR__ . '/TestMigrations/Migration_20221024_080348.php';
-require_once __DIR__ . '/TestMigrationsFail/Migration_20221023_040819.php';
-require_once __DIR__ . '/TestMigrationsInvalid/Migration_20221022_021304.php';
+require_once __DIR__ . '/TestMigrations/Db/Migration_20221024_080348.php';
+require_once __DIR__ . '/TestMigrationsFail/Db/Migration_20221023_040819.php';
+require_once __DIR__ . '/TestMigrationsInvalid/Db/Migration_20221022_021304.php';
 
 class RunnerTest extends MailPoetTest {
   private const DATE_TIME_FORMAT = '%d%d-%d%d-%d%d %d%d:%d%d:%d%d';
@@ -53,21 +53,21 @@ class RunnerTest extends MailPoetTest {
 
   public function testItFailsWithNonExistentMigration(): void {
     $this->expectException(MigratorException::class);
-    $this->expectExceptionMessage('MailPoet\Migrations\MigrationThatDoesntExist" not found.');
+    $this->expectExceptionMessage('MailPoet\Migrations\Db\MigrationThatDoesntExist" not found.');
     $this->runner->runMigration('MigrationThatDoesntExist');
     $this->assertEmpty($this->store->getAll());
   }
 
   public function testItFailsWithInvalidMigrationClass(): void {
     $this->expectException(MigratorException::class);
-    $this->expectExceptionMessage('Migration class "MailPoet\Migrations\Migration_20221022_021304" is not a subclass of "MailPoet\Migrator\Migration".');
+    $this->expectExceptionMessage('Migration class "MailPoet\Migrations\Db\Migration_20221022_021304" is not a subclass of "MailPoet\Migrator\DbMigration".');
     $this->runner->runMigration('Migration_20221022_021304');
     $this->assertEmpty($this->store->getAll());
   }
 
   public function testItFailsWithBrokenMigration(): void {
     $this->expectException(MigratorException::class);
-    $this->expectExceptionMessage('Migration "MailPoet\Migrations\Migration_20221023_040819" failed. Details: Testing failing migration.');
+    $this->expectExceptionMessage('Migration "MailPoet\Migrations\Db\Migration_20221023_040819" failed. Details: Testing failing migration.');
     $this->runner->runMigration('Migration_20221023_040819');
 
     $processed = $this->store->getAll();

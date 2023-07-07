@@ -26,7 +26,7 @@ class Runner {
   }
 
   public function runMigration(string $name): void {
-    $className = $this->namespace . '\\' . $name;
+    $className = $this->namespace . '\\' . Repository::MIGRATIONS_LEVEL_DB . '\\' . $name;
     if (!class_exists($className)) {
       throw MigratorException::migrationClassNotFound($className);
     }
