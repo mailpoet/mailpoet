@@ -10,7 +10,6 @@ use MailPoet\Models\SendingQueue;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Newsletter\Sending\ScheduledTaskSubscribersRepository;
 use MailPoet\Tasks\Sending as SendingTask;
-use MailPoet\Tasks\Subscribers;
 use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 use MailPoet\WP\Functions as WPFunctions;
@@ -66,7 +65,6 @@ class SendingTest extends \MailPoetTest {
     expect_that($sending instanceof SendingTask);
     expect_that($sending->queue() instanceof SendingQueue);
     expect_that($sending->task() instanceof ScheduledTask);
-    expect_that($sending->taskSubscribers() instanceof Subscribers);
   }
 
   public function testItCanBeConstructedOnlyWithAProperTaskType() {

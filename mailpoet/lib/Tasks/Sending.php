@@ -39,9 +39,6 @@ class Sending {
   /** @var SendingQueue */
   private $queue;
 
-  /** @var Subscribers */
-  private $taskSubscribers;
-
   private $queueFields = [
     'id',
     'task_id',
@@ -91,7 +88,6 @@ class Sending {
 
     $this->task = $task;
     $this->queue = $queue;
-    $this->taskSubscribers = new Subscribers($task);
     $this->scheduledTaskSubscribersRepository = ContainerWrapper::getInstance()->get(ScheduledTaskSubscribersRepository::class);
     $this->scheduledTasksRepository = ContainerWrapper::getInstance()->get(ScheduledTasksRepository::class);
 
@@ -232,10 +228,6 @@ class Sending {
 
   public function task() {
     return $this->task;
-  }
-
-  public function taskSubscribers() {
-    return $this->taskSubscribers;
   }
 
   public function getSubscribers($processed = null) {
