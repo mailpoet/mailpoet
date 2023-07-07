@@ -6,13 +6,51 @@ import PropTypes from 'prop-types';
 import { Button, SegmentTags, SubscriberTags } from 'common';
 import { Listing } from 'listing/listing.jsx';
 import { MailPoet } from 'mailpoet';
-import { Modal } from 'common/modal/modal.tsx';
+import { Modal } from 'common/modal/modal';
 import { Selection } from 'form/fields/selection.jsx';
 import { MssAccessNotices } from 'notices/mss_access_notices';
 import { SubscribersCacheMessage } from 'common/subscribers_cache_message';
 import { SubscribersInPlan } from 'common/subscribers_in_plan';
 import { ListingsEngagementScore } from './listings_engagement_score';
 import { SubscribersHeading } from './heading';
+
+type Segment = {
+  id: string;
+  name: string;
+  subscribers: string;
+  type: 'default' | 'wp_users' | 'woocommerce_users' | 'dynamic';
+};
+
+type Subscriber = {
+  id: number;
+  wp_user_id: number;
+  count_confirmations: number;
+  status: string;
+  email: string;
+  first_name: string;
+  last_name: string;
+  engagement_score: number;
+  created_at: string;
+  subscriptions: Array<{
+    id: number;
+    status: string;
+    segment_id: number;
+  }>;
+  tags: Array<{
+    id: string;
+    tag_id: string;
+    subscriber_id: string;
+    name: string;
+  }>;
+};
+
+type Response = {
+  meta: {
+    count: number;
+    segment: string;
+    tag: string;
+  };
+};
 
 const mailpoetTrackingEnabled = MailPoet.trackingConfig.emailTrackingEnabled;
 
@@ -48,7 +86,7 @@ const columns = [
 ];
 
 const messages = {
-  onTrash: (response) => {
+  onTrash: (response: Response) => {
     const count = Number(response.meta.count);
     let message = null;
 
@@ -62,7 +100,7 @@ const messages = {
     }
     MailPoet.Notice.success(message);
   },
-  onDelete: (response) => {
+  onDelete: (response: Response) => {
     const count = Number(response.meta.count);
     let message = null;
 
@@ -76,7 +114,7 @@ const messages = {
     }
     MailPoet.Notice.success(message);
   },
-  onRestore: (response) => {
+  onRestore: (response: Response) => {
     const count = Number(response.meta.count);
     let message = null;
 
@@ -151,7 +189,7 @@ const bulkActions = [
         segment_id: Number(jQuery('#move_to_segment').val()),
       };
     },
-    onSuccess: function onSuccess(response) {
+    onSuccess: function onSuccess(response: Response) {
       MailPoet.Notice.success(
         MailPoet.I18n.t('multipleSubscribersMovedToList')
           .replace('%1$d', Number(response.meta.count).toLocaleString())
@@ -184,7 +222,7 @@ const bulkActions = [
         segment_id: Number(jQuery('#add_to_segment').val()),
       };
     },
-    onSuccess: function onSuccess(response) {
+    onSuccess: function onSuccess(response: Response) {
       MailPoet.Notice.success(
         MailPoet.I18n.t('multipleSubscribersAddedToList')
           .replace('%1$d', Number(response.meta.count).toLocaleString())
@@ -217,7 +255,7 @@ const bulkActions = [
         segment_id: Number(jQuery('#remove_from_segment').val()),
       };
     },
-    onSuccess: function onSuccess(response) {
+    onSuccess: function onSuccess(response: Response) {
       MailPoet.Notice.success(
         MailPoet.I18n.t('multipleSubscribersRemovedFromList')
           .replace('%1$d', Number(response.meta.count).toLocaleString())
@@ -228,7 +266,7 @@ const bulkActions = [
   {
     name: 'removeFromAllLists',
     label: MailPoet.I18n.t('removeFromAllLists'),
-    onSuccess: function onSuccess(response) {
+    onSuccess: function onSuccess(response: Response) {
       MailPoet.Notice.success(
         MailPoet.I18n.t('multipleSubscribersRemovedFromAllLists').replace(
           '%1$d',
@@ -259,7 +297,7 @@ const bulkActions = [
           <p>
             {MailPoet.I18n.t('unsubscribeConfirm').replace(
               '%s',
-              count.toLocaleString(),
+              Number(count).toLocaleString(),
             )}
           </p>
           <span className="mailpoet-gap-half" />
@@ -297,7 +335,7 @@ const bulkActions = [
         tag_id: Number(jQuery('#add_tag').val()),
       };
     },
-    onSuccess: function onSuccess(response) {
+    onSuccess: function onSuccess(response: Response) {
       MailPoet.Notice.success(
         MailPoet.I18n.t('tagAddedToMultipleSubscribers')
           .replace('%1$s', response.meta.tag)
@@ -327,7 +365,7 @@ const bulkActions = [
         tag_id: Number(jQuery('#remove_tag').val()),
       };
     },
-    onSuccess: function onSuccess(response) {
+    onSuccess: function onSuccess(response: Response) {
       MailPoet.Notice.success(
         MailPoet.I18n.t('tagRemovedFromMultipleSubscribers')
           .replace('%1$s', response.meta.tag)
@@ -341,7 +379,7 @@ const itemActions = [
   {
     name: 'statistics',
     label: MailPoet.I18n.t('statsListingActionTitle'),
-    link: function link(subscriber, location) {
+    link: function link(subscriber: Subscriber, location) {
       return (
         <Link
           to={{
@@ -359,7 +397,7 @@ const itemActions = [
   {
     name: 'edit',
     label: MailPoet.I18n.t('edit'),
-    link: function link(subscriber, location) {
+    link: function link(subscriber: Subscriber, location) {
       return (
         <Link
           to={{
@@ -378,7 +416,7 @@ const itemActions = [
     name: 'sendConfirmationEmail',
     className: 'mailpoet-hide-on-mobile',
     label: MailPoet.I18n.t('resendConfirmationEmail'),
-    display: function display(subscriber) {
+    display: function display(subscriber: Subscriber) {
       return (
         subscriber.status === 'unconfirmed' &&
         subscriber.count_confirmations < window.mailpoet_max_confirmation_emails
@@ -412,9 +450,9 @@ const isItemDeletable = (subscriber) => {
   return isDeletable;
 };
 
-const getSegmentFromId = (segmentId) => {
-  let result = false;
-  window.mailpoet_segments.forEach((segment) => {
+const getSegmentFromId = (segmentId): Segment => {
+  let result: Segment | null = null;
+  window.mailpoet_segments.forEach((segment: Segment) => {
     if (segment.id === segmentId) {
       result = segment;
     }
@@ -425,7 +463,7 @@ const getSegmentFromId = (segmentId) => {
 function SubscriberList({ match }) {
   const location = useLocation();
 
-  const renderItem = (subscriber, actions) => {
+  const renderItem = (subscriber: Subscriber, actions) => {
     const rowClasses = classnames(
       'manage-column',
       'column-primary',
@@ -467,7 +505,7 @@ function SubscriberList({ match }) {
     if (subscriber.subscriptions.length > 0) {
       subscriber.subscriptions.forEach((subscription) => {
         const segment = getSegmentFromId(subscription.segment_id);
-        if (segment === false) return;
+        if (segment === null) return;
         if (subscription.status === 'subscribed') {
           subscribedSegments.push(segment);
         }
