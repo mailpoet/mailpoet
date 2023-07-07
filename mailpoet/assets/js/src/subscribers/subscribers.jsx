@@ -1,7 +1,7 @@
 import ReactDOM from 'react-dom';
 import { HashRouter, Route, Switch } from 'react-router-dom';
 
-import { SubscriberList } from 'subscribers/list.jsx';
+import { SubscriberList } from 'subscribers/list.tsx';
 import { SubscriberForm } from 'subscribers/form.jsx';
 import { SubscriberStats } from 'subscribers/stats';
 import { GlobalContext, useGlobalContextValue } from 'context';
