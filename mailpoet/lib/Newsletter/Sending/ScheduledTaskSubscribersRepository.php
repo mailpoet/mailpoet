@@ -150,6 +150,20 @@ class ScheduledTaskSubscribersRepository extends Repository {
     }
   }
 
+  public function saveError(ScheduledTaskEntity $scheduledTask, int $subscriberId, string $errorMessage): void {
+    $scheduledTaskSubscriber = $this->findOneBy(['task' => $scheduledTask, 'subscriber' => $subscriberId]);
+
+    if ($scheduledTaskSubscriber instanceof ScheduledTaskSubscriberEntity) {
+      $scheduledTaskSubscriber->setFailed(ScheduledTaskSubscriberEntity::FAIL_STATUS_FAILED);
+      $scheduledTaskSubscriber->setProcessed(ScheduledTaskSubscriberEntity::STATUS_PROCESSED);
+      $scheduledTaskSubscriber->setError($errorMessage);
+      $this->persist($scheduledTaskSubscriber);
+      $this->flush();
+
+      $this->checkCompleted($scheduledTask);
+    }
+  }
+
   private function checkCompleted(ScheduledTaskEntity $task): void {
     $count = $this->countBy(['task' => $task, 'processed' => ScheduledTaskSubscriberEntity::STATUS_UNPROCESSED]);
     if ($count === 0) {
