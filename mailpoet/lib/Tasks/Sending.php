@@ -69,6 +69,9 @@ class Sending {
   /** @var ScheduledTaskEntity */
   private $scheduledTaskEntity;
 
+  /** @var SendingQueuesRepository */
+  private $sendingQueuesRepository;
+
   private function __construct(
     ScheduledTask $task = null,
     SendingQueue $queue = null
@@ -94,6 +97,7 @@ class Sending {
     $this->taskSubscribers = new Subscribers($task);
     $this->scheduledTaskSubscribersRepository = ContainerWrapper::getInstance()->get(ScheduledTaskSubscribersRepository::class);
     $this->scheduledTasksRepository = ContainerWrapper::getInstance()->get(ScheduledTasksRepository::class);
+    $this->sendingQueuesRepository = ContainerWrapper::getInstance()->get(SendingQueuesRepository::class);
 
     // needed to make sure that the task has an ID so that we can retrieve the ScheduledTaskEntity while this class still uses Paris
     $this->save();
@@ -209,9 +213,18 @@ class Sending {
   }
 
   public function delete() {
-    $this->taskSubscribers->removeAllSubscribers();
-    $this->task->delete();
-    $this->queue->delete();
+    $this->scheduledTaskSubscribersRepository->deleteByScheduledTask($this->scheduledTaskEntity);
+    $this->scheduledTasksRepository->remove($this->scheduledTaskEntity);
+
+    $sendingQueueEntity = $this->sendingQueuesRepository->findOneById($this->queue->id);
+
+    if (!$sendingQueueEntity) {
+      throw new InvalidStateException();
+    }
+
+    $this->sendingQueuesRepository->remove($sendingQueueEntity);
+
+    $this->scheduledTasksRepository->flush();
   }
 
   public function queue() {
@@ -219,12 +232,11 @@ class Sending {
   }
 
   public function getSendingQueueEntity(): SendingQueueEntity {
-    $sendingQueuesRepository = ContainerWrapper::getInstance()->get(SendingQueuesRepository::class);
-    $sendingQueueEntity = $sendingQueuesRepository->findOneById($this->queue->id);
+    $sendingQueueEntity = $this->sendingQueuesRepository->findOneById($this->queue->id);
     if (!$sendingQueueEntity) {
       throw new InvalidStateException();
     }
-    $sendingQueuesRepository->refresh($sendingQueueEntity);
+    $this->sendingQueuesRepository->refresh($sendingQueueEntity);
 
     return $sendingQueueEntity;
   }
