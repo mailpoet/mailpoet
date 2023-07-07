@@ -6,6 +6,8 @@ use MailPoet\Config\Env;
 use MailPoetTest;
 
 // testing migration files
+require_once __DIR__ . '/TestMigrations/App/Migration_20221023_080348.php';
+require_once __DIR__ . '/TestMigrations/App/Migration_20221025_120346.php';
 require_once __DIR__ . '/TestMigrations/Db/Migration_20221024_080348.php';
 require_once __DIR__ . '/TestMigrations/Db/Migration_20221025_120345.php';
 require_once __DIR__ . '/TestMigrations/Db/Migration_20221026_160151.php';
@@ -38,6 +40,9 @@ class MigratorTest extends MailPoetTest {
     $this->store->failMigration('Migration_20221025_120345', 'test-error');
     $this->store->startMigration('Migration_20221026_160151');
 
+    $this->store->startMigration('Migration_20221023_080348');
+    $this->store->completeMigration('Migration_20221023_080348');
+
     $this->store->startMigration('Migration_20221028_200226');
     $this->store->completeMigration('Migration_20221028_200226');
     $this->store->startMigration('Migration_20221029_212308');
@@ -47,7 +52,7 @@ class MigratorTest extends MailPoetTest {
     $migrator = $this->createMigrator();
     $status = $migrator->getStatus();
 
-    // completed
+    // completed Db
     $data = $status[0];
     $this->assertSame('Migration_20221024_080348', $data['name']);
     $this->assertSame('completed', $data['status']);
@@ -57,7 +62,7 @@ class MigratorTest extends MailPoetTest {
     $this->assertNull($data['error']);
     $this->assertFalse($data['unknown']);
 
-    // failed
+    // failed Db
     $data = $status[1];
     $this->assertSame('Migration_20221025_120345', $data['name']);
     $this->assertSame('failed', $data['status']);
@@ -67,7 +72,7 @@ class MigratorTest extends MailPoetTest {
     $this->assertSame($data['error'], 'test-error');
     $this->assertFalse($data['unknown']);
 
-    // started
+    // started Db
     $data = $status[2];
     $this->assertSame('Migration_20221026_160151', $data['name']);
     $this->assertSame('started', $data['status']);
@@ -77,7 +82,7 @@ class MigratorTest extends MailPoetTest {
     $this->assertNull($data['error']);
     $this->assertFalse($data['unknown']);
 
-    // new
+    // new Db
     $data = $status[3];
     $this->assertSame('Migration_20221027_180501', $data['name']);
     $this->assertSame('new', $data['status']);
@@ -87,8 +92,28 @@ class MigratorTest extends MailPoetTest {
     $this->assertNull($data['error']);
     $this->assertFalse($data['unknown']);
 
-    // unknown completed (unknown = stored in DB but missing in the file system)
+    // completed App
     $data = $status[4];
+    $this->assertSame('Migration_20221023_080348', $data['name']);
+    $this->assertSame('completed', $data['status']);
+    $this->assertStringMatchesFormat(self::DATE_TIME_FORMAT, (string)$data['started_at']);
+    $this->assertStringMatchesFormat(self::DATE_TIME_FORMAT, (string)$data['completed_at']);
+    $this->assertSame(0, (int)$data['retries']);
+    $this->assertNull($data['error']);
+    $this->assertFalse($data['unknown']);
+
+    // new App
+    $data = $status[5];
+    $this->assertSame('Migration_20221025_120346', $data['name']);
+    $this->assertSame('new', $data['status']);
+    $this->assertNull($data['started_at']);
+    $this->assertNull($data['completed_at']);
+    $this->assertNull($data['retries']);
+    $this->assertNull($data['error']);
+    $this->assertFalse($data['unknown']);
+
+    // unknown completed (unknown = stored in DB but missing in the file system)
+    $data = $status[6];
     $this->assertSame('Migration_20221028_200226', $data['name']);
     $this->assertSame('completed', $data['status']);
     $this->assertStringMatchesFormat(self::DATE_TIME_FORMAT, (string)$data['started_at']);
@@ -98,7 +123,7 @@ class MigratorTest extends MailPoetTest {
     $this->assertTrue($data['unknown']);
 
     // unknown failed (unknown = stored in DB but missing in the file system)
-    $data = $status[5];
+    $data = $status[7];
     $this->assertSame('Migration_20221029_212308', $data['name']);
     $this->assertSame('failed', $data['status']);
     $this->assertStringMatchesFormat(self::DATE_TIME_FORMAT, (string)$data['started_at']);
@@ -108,7 +133,7 @@ class MigratorTest extends MailPoetTest {
     $this->assertTrue($data['unknown']);
 
     // unknown started (unknown = stored in DB but missing in the file system)
-    $data = $status[6];
+    $data = $status[8];
     $this->assertSame('Migration_20221030_223752', $data['name']);
     $this->assertSame('started', $data['status']);
     $this->assertStringMatchesFormat(self::DATE_TIME_FORMAT, (string)$data['started_at']);
@@ -135,10 +160,12 @@ class MigratorTest extends MailPoetTest {
 
     $migrator = $this->createMigrator();
     $this->assertSame([
-      ['name' => 'Migration_20221024_080348'] + $newMigrationFields,
-      ['name' => 'Migration_20221025_120345'] + $newMigrationFields,
-      ['name' => 'Migration_20221026_160151'] + $newMigrationFields,
-      ['name' => 'Migration_20221027_180501'] + $newMigrationFields,
+      ['name' => 'Migration_20221024_080348'] + $newMigrationFields, // Db
+      ['name' => 'Migration_20221025_120345'] + $newMigrationFields, // Db
+      ['name' => 'Migration_20221026_160151'] + $newMigrationFields, // Db
+      ['name' => 'Migration_20221027_180501'] + $newMigrationFields, // Db
+      ['name' => 'Migration_20221023_080348'] + $newMigrationFields, // App
+      ['name' => 'Migration_20221025_120346'] + $newMigrationFields, // App
     ], $migrator->getStatus());
   }
 
@@ -148,13 +175,15 @@ class MigratorTest extends MailPoetTest {
     $migrator->run();
 
     $processed = $this->store->getAll();
-    $this->assertCount(4, $processed);
+    $this->assertCount(6, $processed);
 
     $migrations = [
-      'Migration_20221024_080348',
-      'Migration_20221025_120345',
-      'Migration_20221026_160151',
-      'Migration_20221027_180501',
+      'Migration_20221024_080348', // Db
+      'Migration_20221025_120345', // Db
+      'Migration_20221026_160151', // Db
+      'Migration_20221027_180501', // Db
+      'Migration_20221023_080348', // App
+      'Migration_20221025_120346', // App
     ];
 
     foreach ($processed as $i => $data) {
@@ -178,13 +207,15 @@ class MigratorTest extends MailPoetTest {
     $migrator->run();
 
     $processed = $this->store->getAll();
-    $this->assertCount(4, $processed);
+    $this->assertCount(6, $processed);
 
     $migrations = [
-      'Migration_20221024_080348',
-      'Migration_20221026_160151',
-      'Migration_20221025_120345',
-      'Migration_20221027_180501',
+      'Migration_20221024_080348', // Db
+      'Migration_20221026_160151', // Db
+      'Migration_20221025_120345', // Db
+      'Migration_20221027_180501', // Db
+      'Migration_20221023_080348', // App
+      'Migration_20221025_120346', // App
     ];
 
     foreach ($processed as $i => $data) {
@@ -219,7 +250,7 @@ class MigratorTest extends MailPoetTest {
     ]));
 
     $processed = $this->store->getAll();
-    $this->assertCount(4, $processed);
+    $this->assertCount(6, $processed);
   }
 
   public function testItRetriesWhenRunningMigrationExists(): void {
@@ -229,7 +260,7 @@ class MigratorTest extends MailPoetTest {
     $migrator->run();
 
     $processed = $this->store->getAll();
-    $this->assertCount(4, $processed);
+    $this->assertCount(6, $processed);
 
     $data = $processed[0];
     $this->assertSame('Migration_20221025_120345', $data['name']);
@@ -247,7 +278,7 @@ class MigratorTest extends MailPoetTest {
     $migrator->run();
 
     $processed = $this->store->getAll();
-    $this->assertCount(4, $processed);
+    $this->assertCount(6, $processed);
 
     $data = $processed[0];
     $this->assertSame('Migration_20221026_160151', $data['name']);

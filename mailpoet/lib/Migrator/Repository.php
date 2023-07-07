@@ -7,6 +7,7 @@ use RecursiveIteratorIterator;
 use SplFileInfo;
 
 class Repository {
+  const MIGRATIONS_LEVEL_APP = 'App';
   const MIGRATIONS_LEVEL_DB = 'Db';
 
   /** @var string */
@@ -44,9 +45,21 @@ class Repository {
     ];
   }
 
+  /**
+   * Array of filenames.
+   * Db migrations are loaded first, then app migrations. This ensures that Db migrator is run before app migrations
+   * @return array<string>
+   */
   public function loadAll(): array {
+    return array_merge(
+      $this->loadForLevel(self::MIGRATIONS_LEVEL_DB),
+      $this->loadForLevel(self::MIGRATIONS_LEVEL_APP)
+    );
+  }
+
+  private function loadForLevel(string $level) {
     $files = new RecursiveIteratorIterator(
-      new RecursiveDirectoryIterator($this->migrationsDir . '/' . self::MIGRATIONS_LEVEL_DB, RecursiveDirectoryIterator::SKIP_DOTS)
+      new RecursiveDirectoryIterator($this->migrationsDir . '/' . $level, RecursiveDirectoryIterator::SKIP_DOTS)
     );
 
     $migrations = [];

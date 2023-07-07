@@ -7,6 +7,7 @@ use MailPoetTest;
 
 // testing migration files
 require_once __DIR__ . '/TestMigrations/Db/Migration_20221024_080348.php';
+require_once __DIR__ . '/TestMigrations/App/Migration_20221023_080348.php';
 require_once __DIR__ . '/TestMigrationsFail/Db/Migration_20221023_040819.php';
 require_once __DIR__ . '/TestMigrationsInvalid/Db/Migration_20221022_021304.php';
 
@@ -35,7 +36,7 @@ class RunnerTest extends MailPoetTest {
     $this->store->ensureMigrationsTable();
   }
 
-  public function testItRunsMigration(): void {
+  public function testItRunsDbMigration(): void {
     ob_start();
     $this->runner->runMigration('Migration_20221024_080348');
     $output = ob_get_clean();
@@ -51,9 +52,25 @@ class RunnerTest extends MailPoetTest {
     $this->assertNull($data['error']);
   }
 
+  public function testItRunsAppMigration(): void {
+    ob_start();
+    $this->runner->runMigration('Migration_20221023_080348');
+    $output = ob_get_clean();
+    $this->assertSame('Migration run called!', $output);
+
+    $processed = $this->store->getAll();
+    $this->assertCount(1, $processed);
+
+    $data = $processed[0];
+    $this->assertSame('Migration_20221023_080348', $data['name']);
+    $this->assertStringMatchesFormat(self::DATE_TIME_FORMAT, $data['started_at']);
+    $this->assertStringMatchesFormat(self::DATE_TIME_FORMAT, $data['completed_at']);
+    $this->assertNull($data['error']);
+  }
+
   public function testItFailsWithNonExistentMigration(): void {
     $this->expectException(MigratorException::class);
-    $this->expectExceptionMessage('MailPoet\Migrations\Db\MigrationThatDoesntExist" not found.');
+    $this->expectExceptionMessage('MailPoet\Migrations\App\MigrationThatDoesntExist" not found.');
     $this->runner->runMigration('MigrationThatDoesntExist');
     $this->assertEmpty($this->store->getAll());
   }

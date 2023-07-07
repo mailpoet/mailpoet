@@ -56,13 +56,19 @@ class Migrator {
     }
   }
 
-  /** @return array{name: string, status: string, started_at: string|null, completed_at: string|null, retries: int|null, error: string|null, unknown: bool}[] */
+  /**
+   * Array with of migration status data.
+   * Ordering:
+   * 1. Db migrations ordered by filename
+   * 2. App migrations ordered by filename
+   * 3. Unknown migrations (saved in store but not in repository e.g., renamed or deleted)
+   * @return array{name: string, status: string, started_at: string|null, completed_at: string|null, retries: int|null, error: string|null, unknown: bool}[]
+   */
   public function getStatus(): array {
     $defined = $this->repository->loadAll();
     $processed = $this->store->getAll();
     $processedMap = array_combine(array_column($processed, 'name'), $processed) ?: [];
     $all = array_unique(array_merge($defined, array_keys($processedMap)));
-    sort($all);
 
     $status = [];
     foreach ($all as $name) {
