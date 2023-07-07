@@ -979,8 +979,8 @@ class Migration_20221028_105818 extends DbMigration {
     if (version_compare((string)$this->settings->get('db_version', '3.26.1'), '3.26.0', '>')) {
       return false;
     }
-    $scheduledTaskTable = $this->entityManager->getClassMetadata(ScheduledTaskEntity::class)->getTableName();
-    $sendingQueueTable = $this->entityManager->getClassMetadata(SendingQueueEntity::class)->getTableName();
+    $scheduledTaskTable = $this->getTableName(ScheduledTaskEntity::class);
+    $sendingQueueTable = $this->getTableName(SendingQueueEntity::class);
     $tables = [$scheduledTaskTable, $sendingQueueTable];
     foreach ($tables as $table) {
       $wpdb->query("UPDATE `" . esc_sql($table) . "` SET meta = NULL WHERE meta = 'null'");
@@ -993,7 +993,7 @@ class Migration_20221028_105818 extends DbMigration {
       return;
     }
     global $wpdb;
-    $table = esc_sql($this->entityManager->getClassMetadata(NewsletterLinkEntity::class)->getTableName());
+    $table = esc_sql($this->getTableName(NewsletterLinkEntity::class));
     $wpdb->query($wpdb->prepare(
       "UPDATE `$table` SET `url` = %s WHERE `url` = %s;",
       NewsletterLinkEntity::INSTANT_UNSUBSCRIBE_LINK_SHORT_CODE,
@@ -1006,9 +1006,9 @@ class Migration_20221028_105818 extends DbMigration {
       return;
     }
 
-    $scheduledTaskTable = $this->entityManager->getClassMetadata(ScheduledTaskEntity::class)->getTableName();
-    $sendingQueueTable = $this->entityManager->getClassMetadata(SendingQueueEntity::class)->getTableName();
-    $newsletterTable = $this->entityManager->getClassMetadata(NewsletterEntity::class)->getTableName();
+    $scheduledTaskTable = $this->getTableName(ScheduledTaskEntity::class);
+    $sendingQueueTable = $this->getTableName(SendingQueueEntity::class);
+    $newsletterTable = $this->getTableName(NewsletterEntity::class);
 
     $query = "
       UPDATE $scheduledTaskTable as t
@@ -1019,7 +1019,7 @@ class Migration_20221028_105818 extends DbMigration {
           t.status = :tStatusScheduled
           AND n.status = :nStatusDraft
     ";
-    $this->entityManager->getConnection()->executeStatement(
+    $this->connection->executeStatement(
       $query,
       [
         'tStatusPaused' => ScheduledTaskEntity::STATUS_PAUSED,
@@ -1043,7 +1043,7 @@ class Migration_20221028_105818 extends DbMigration {
       )
     );
     if ($premiumTableExists) {
-      $table = esc_sql($this->entityManager->getClassMetadata(NewsletterEntity::class)->getTableName());
+      $table = esc_sql($this->getTableName(NewsletterEntity::class));
       $query = "
         UPDATE
           `{$table}` as n
@@ -1061,7 +1061,7 @@ class Migration_20221028_105818 extends DbMigration {
     if (version_compare((string)$this->settings->get('db_version', '3.42.1'), '3.42.0', '>')) {
       return false;
     }
-    $table = esc_sql($this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName());
+    $table = esc_sql($this->getTableName(SubscriberEntity::class));
     $query = $wpdb->prepare(
       "UPDATE `{$table}` SET last_subscribed_at = GREATEST(COALESCE(confirmed_at, 0), COALESCE(created_at, 0)) WHERE status != %s AND last_subscribed_at IS NULL;",
       SubscriberEntity::STATUS_UNCONFIRMED
@@ -1074,8 +1074,8 @@ class Migration_20221028_105818 extends DbMigration {
     if (version_compare((string)$this->settings->get('db_version', '3.73.3'), '3.73.2', '>')) {
       return;
     }
-    $newsletterTemplatesTable = $this->entityManager->getClassMetadata(NewsletterTemplateEntity::class)->getTableName();
-    $this->entityManager->getConnection()->executeQuery("
+    $newsletterTemplatesTable = $this->getTableName(NewsletterTemplateEntity::class);
+    $this->connection->executeQuery("
       UPDATE " . $newsletterTemplatesTable . "
       SET thumbnail_data = thumbnail, thumbnail = NULL
       WHERE thumbnail LIKE 'data:image%';"
@@ -1088,11 +1088,11 @@ class Migration_20221028_105818 extends DbMigration {
       return false;
     }
 
-    $newsletters = $this->entityManager->getClassMetadata(NewsletterEntity::class)->getTableName();
-    $queues = $this->entityManager->getClassMetadata(SendingQueueEntity::class)->getTableName();
-    $tasks = $this->entityManager->getClassMetadata(ScheduledTaskEntity::class)->getTableName();
+    $newsletters = $this->getTableName(NewsletterEntity::class);
+    $queues = $this->getTableName(SendingQueueEntity::class);
+    $tasks = $this->getTableName(ScheduledTaskEntity::class);
 
-    $this->entityManager->getConnection()->executeStatement("
+    $this->connection->executeStatement("
       UPDATE {$newsletters} n
       JOIN {$queues} q ON n.id = q.newsletter_id
       JOIN {$tasks} t ON q.task_id = t.id
