@@ -18,7 +18,7 @@ class Repository {
 
   public function __construct() {
     $this->migrationsDir = __DIR__ . '/../Migrations';
-    $this->templateFile = __DIR__ . '/DbMigrationTemplate.php';
+    $this->templateFile = __DIR__ . '/{level}MigrationTemplate.php';
   }
 
   public function getMigrationsDir(): string {
@@ -26,15 +26,16 @@ class Repository {
   }
 
   /** @return array{name: string, path: string} */
-  public function create(): array {
-    $template = @file_get_contents($this->templateFile);
+  public function create(string $level): array {
+    $templateFile = str_replace('{level}', $level, $this->templateFile);
+    $template = @file_get_contents($templateFile);
     if (!$template) {
-      throw MigratorException::templateFileReadFailed($this->templateFile);
+      throw MigratorException::templateFileReadFailed($templateFile);
     }
-
-    $name = $this->generateName();
-    $migration = str_replace('class DbMigrationTemplate ', "class $name ", $template);
-    $path = $this->migrationsDir . "/$name.php";
+    $name = $this->generateName($level);
+    $classDeclaration = str_replace('{level}', $level, 'class {level}MigrationTemplate ');
+    $migration = str_replace($classDeclaration, "class $name ", $template);
+    $path = $this->migrationsDir . "/$level" . "/$name.php";
     $result = @file_put_contents($path, $migration);
     if (!$result) {
       throw MigratorException::migrationFileWriteFailed($path);
@@ -78,7 +79,7 @@ class Repository {
     return $migrations;
   }
 
-  private function generateName(): string {
-    return 'Migration_' . gmdate('Ymd_His');
+  private function generateName(string $level): string {
+    return 'Migration_' . gmdate('Ymd_His') . '_' . $level;
   }
 }
