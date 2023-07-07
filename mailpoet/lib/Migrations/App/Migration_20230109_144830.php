@@ -1,11 +1,11 @@
 <?php declare(strict_types = 1);
 
-namespace MailPoet\Migrations\Db;
+namespace MailPoet\Migrations\App;
 
 use MailPoet\Mailer\MailerLog;
-use MailPoet\Migrator\DbMigration;
+use MailPoet\Migrator\AppMigration;
 
-class Migration_20230109_144830 extends DbMigration {
+class Migration_20230109_144830 extends AppMigration {
   /**
    * Due to a bug https://mailpoet.atlassian.net/browse/MAILPOET-4940 some users may have
    * paused sending without having the error message and they have no way to resume sending.

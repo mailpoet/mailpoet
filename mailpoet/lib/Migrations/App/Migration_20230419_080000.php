@@ -1,13 +1,13 @@
 <?php declare(strict_types = 1);
 
-namespace MailPoet\Migrations\Db;
+namespace MailPoet\Migrations\App;
 
 use MailPoet\Entities\NewsletterEntity;
-use MailPoet\Migrator\DbMigration;
+use MailPoet\Migrator\AppMigration;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Scheduler\PostNotificationScheduler;
 
-class Migration_20230419_080000 extends DbMigration {
+class Migration_20230419_080000 extends AppMigration {
   /** @var NewslettersRepository */
   private $newslettersRepository;
 
