@@ -27,7 +27,7 @@ class WooCommerceAverageSpent implements Filter {
     $filterData = $filter->getFilterData();
     $operator = $filterData->getParam('average_spent_type');
     $amount = $filterData->getParam('average_spent_amount');
-    $days = intval($filterData->getParam('average_spent_days'));
+    $days = intval($filterData->getParam('days'));
 
     $date = Carbon::now()->subDays($days);
     $dateParam = $this->filterHelper->getUniqueParameterName('date');

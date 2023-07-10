@@ -411,7 +411,7 @@ class FilterDataMapperTest extends \MailPoetUnitTest {
       'action' => WooCommerceNumberOfOrders::ACTION_NUMBER_OF_ORDERS,
       'number_of_orders_type' => '=',
       'number_of_orders_count' => 2,
-      'number_of_orders_days' => 1,
+      'days' => 1,
       'some_mess' => 'mess',
     ]]];
 

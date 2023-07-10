@@ -355,13 +355,13 @@ class FilterDataMapper {
       if (
         !isset($data['number_of_orders_type'])
         || !isset($data['number_of_orders_count']) || $data['number_of_orders_count'] < 0
-        || !isset($data['number_of_orders_days']) || $data['number_of_orders_days'] < 1
+        || !isset($data['days']) || $data['days'] < 1
       ) {
         throw new InvalidFilterException('Missing required fields', InvalidFilterException::MISSING_NUMBER_OF_ORDERS_FIELDS);
       }
       $filterData['number_of_orders_type'] = $data['number_of_orders_type'];
       $filterData['number_of_orders_count'] = $data['number_of_orders_count'];
-      $filterData['number_of_orders_days'] = $data['number_of_orders_days'];
+      $filterData['days'] = $data['days'];
     } elseif ($data['action'] === WooCommerceTotalSpent::ACTION_TOTAL_SPENT) {
       if (
         !isset($data['total_spent_type'])
@@ -391,11 +391,11 @@ class FilterDataMapper {
       if (
         !isset($data['average_spent_type'])
         || !isset($data['average_spent_amount']) || $data['average_spent_amount'] < 0
-        || !isset($data['average_spent_days']) || $data['average_spent_days'] < 1
+        || !isset($data['days']) || $data['days'] < 1
       ) {
         throw new InvalidFilterException('Missing required fields', InvalidFilterException::MISSING_AVERAGE_SPENT_FIELDS);
       }
-      $filterData['average_spent_days'] = $data['average_spent_days'];
+      $filterData['days'] = $data['days'];
       $filterData['average_spent_amount'] = $data['average_spent_amount'];
       $filterData['average_spent_type'] = $data['average_spent_type'];
     } elseif ($data['action'] === WooCommerceUsedPaymentMethod::ACTION) {

@@ -99,7 +99,6 @@ export interface WooCommerceFormItem extends FormItem {
   operator?: string;
   number_of_orders_type?: string;
   number_of_orders_count?: number;
-  number_of_orders_days?: number;
   total_spent_type?: string;
   total_spent_amount?: number;
   total_spent_days?: number;
@@ -109,7 +108,6 @@ export interface WooCommerceFormItem extends FormItem {
   single_order_value_days?: number;
   average_spent_type?: string;
   average_spent_amount?: string;
-  average_spent_days?: string;
   payment_methods?: string[];
   used_payment_method_days?: string;
   shipping_methods?: string[];

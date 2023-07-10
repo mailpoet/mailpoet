@@ -48,7 +48,7 @@ class DynamicSegment extends Segment {
     $this->filterData['action'] = 'numberOfOrders';
     $this->filterData['number_of_orders_type'] = '=';
     $this->filterData['number_of_orders_count'] = '1';
-    $this->filterData['number_of_orders_days'] = '1';
+    $this->filterData['days'] = '1';
     return $this;
   }
 

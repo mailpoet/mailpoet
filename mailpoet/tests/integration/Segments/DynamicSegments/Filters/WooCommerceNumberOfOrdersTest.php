@@ -72,7 +72,7 @@ class WooCommerceNumberOfOrdersTest extends \MailPoetTest {
     return new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_WOOCOMMERCE, WooCommerceNumberOfOrders::ACTION_NUMBER_OF_ORDERS, [
       'number_of_orders_type' => $comparisonType,
       'number_of_orders_count' => $ordersCount,
-      'number_of_orders_days' => $days,
+      'days' => $days,
     ]);
   }
 
