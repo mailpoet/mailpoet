@@ -40,13 +40,15 @@ class AutomationEmailController {
       }
     );
 
-    // filter automations that were created before the after date
+    // Find all versions, which could have been active in the given time span
     $versionIds = [];
     foreach ($automationVersions as $automationVersion) {
       if ($automationVersion['created_at'] > $before) {
+        // We are past the time span
         break;
       }
-      if (!$versionIds || $automationVersion['created_at'] < $after) {
+      if (!$versionIds || $automationVersion['created_at'] <= $after) {
+        // This is the first version in the time span
         $versionIds = [(int)$automationVersion['id']];
         continue;
       }
