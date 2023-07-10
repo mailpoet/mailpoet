@@ -135,7 +135,7 @@ class WooCommerceAverageSpentTest extends \MailPoetTest {
     $filterData = new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_WOOCOMMERCE, WooCommerceAverageSpent::ACTION, [
       'average_spent_type' => $operator,
       'average_spent_amount' => $amount,
-      'average_spent_days' => $days,
+      'days' => $days,
     ]);
 
     return $this->tester->getSubscriberEmailsMatchingDynamicFilter($filterData, $this->averageSpentFilter);

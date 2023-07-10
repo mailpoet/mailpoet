@@ -5,12 +5,13 @@ import { Input, Select } from 'common';
 import { MailPoet } from 'mailpoet';
 import { storeName } from '../../../store';
 import { WooCommerceFormItem, FilterProps } from '../../../types';
+import { DaysPeriodField, validateDaysPeriod } from '../days_period_field';
 
 export function validateAverageSpent(formItems: WooCommerceFormItem): boolean {
   const averageSpentIsInvalid =
     !formItems.average_spent_amount ||
     !formItems.average_spent_type ||
-    !formItems.average_spent_days;
+    !validateDaysPeriod(formItems);
 
   return !averageSpentIsInvalid;
 }
@@ -72,23 +73,7 @@ export function AverageSpentFields({ filterIndex }: FilterProps): JSX.Element {
         <div>{wooCurrencySymbol}</div>
       </Grid.CenteredRow>
       <Grid.CenteredRow>
-        <div>{MailPoet.I18n.t('inTheLast')}</div>
-        <Input
-          data-automation-id="input-average-spent-days"
-          type="number"
-          min={1}
-          step={1}
-          value={segment.average_spent_days || ''}
-          placeholder={MailPoet.I18n.t('daysPlaceholder')}
-          onChange={(e): void => {
-            void updateSegmentFilterFromEvent(
-              'average_spent_days',
-              filterIndex,
-              e,
-            );
-          }}
-        />
-        <div>{MailPoet.I18n.t('days')}</div>
+        <DaysPeriodField filterIndex={filterIndex} />
       </Grid.CenteredRow>
     </>
   );

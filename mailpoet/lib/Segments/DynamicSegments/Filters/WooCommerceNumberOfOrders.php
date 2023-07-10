@@ -39,7 +39,7 @@ class WooCommerceNumberOfOrders implements Filter {
     $filterData = $filter->getFilterData();
     $type = strval($filterData->getParam('number_of_orders_type'));
     $count = intval($filterData->getParam('number_of_orders_count'));
-    $days = $filterData->getParam('number_of_orders_days');
+    $days = $filterData->getParam('days');
     $parameterSuffix = $filter->getId() ?? Security::generateRandomString();
     $collation = $this->collationChecker->getCollateIfNeeded(
       $subscribersTable,

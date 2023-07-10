@@ -5,13 +5,14 @@ import { Input, Select } from 'common';
 import { MailPoet } from 'mailpoet';
 import { storeName } from '../../../store';
 import { WooCommerceFormItem, FilterProps } from '../../../types';
+import { DaysPeriodField, validateDaysPeriod } from '../days_period_field';
 
 export function validateNumberOfOrders(
   formItems: WooCommerceFormItem,
 ): boolean {
   const numberOfOrdersIsInvalid =
     !formItems.number_of_orders_count ||
-    !formItems.number_of_orders_days ||
+    !validateDaysPeriod(formItems) ||
     !formItems.number_of_orders_type;
 
   return !numberOfOrdersIsInvalid;
@@ -70,22 +71,7 @@ export function NumberOfOrdersFields({
         <div>{MailPoet.I18n.t('wooNumberOfOrdersOrders')}</div>
       </Grid.CenteredRow>
       <Grid.CenteredRow>
-        <div>{MailPoet.I18n.t('inTheLast')}</div>
-        <Input
-          data-automation-id="input-number-of-orders-days"
-          type="number"
-          min={1}
-          value={segment.number_of_orders_days || ''}
-          placeholder={MailPoet.I18n.t('daysPlaceholder')}
-          onChange={(e): void => {
-            void updateSegmentFilterFromEvent(
-              'number_of_orders_days',
-              filterIndex,
-              e,
-            );
-          }}
-        />
-        <div>{MailPoet.I18n.t('days')}</div>
+        <DaysPeriodField filterIndex={filterIndex} />
       </Grid.CenteredRow>
     </>
   );
