@@ -11,6 +11,7 @@ import { storeName } from '../store';
 import { EmailOpenStatisticsFields } from './fields/email/email_statistics_opens';
 import { EmailClickStatisticsFields } from './fields/email/email_statistics_clicks';
 import { EmailOpensAbsoluteCountFields } from './fields/email/email_opens_absolute_count';
+import { validateDaysPeriod } from './fields/days_period_field';
 
 export function validateEmail(formItems: EmailFormItem): boolean {
   // check if the action has the right type
@@ -35,7 +36,9 @@ export function validateEmail(formItems: EmailFormItem): boolean {
     );
   }
 
-  return !!formItems.days && !!formItems.opens && !!formItems.operator;
+  return (
+    validateDaysPeriod(formItems) && !!formItems.opens && !!formItems.operator
+  );
 }
 
 const componentsMap = {
