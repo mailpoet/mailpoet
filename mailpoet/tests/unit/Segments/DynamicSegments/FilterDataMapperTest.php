@@ -448,7 +448,7 @@ class FilterDataMapperTest extends \MailPoetUnitTest {
       'action' => WooCommerceSingleOrderValue::ACTION_SINGLE_ORDER_VALUE,
       'single_order_value_type' => '=',
       'single_order_value_amount' => 20,
-      'single_order_value_days' => 7,
+      'days' => 7,
       'some_mess' => 'mess',
     ]]];
 

@@ -5,13 +5,14 @@ import { Input, Select } from 'common';
 import { MailPoet } from 'mailpoet';
 import { WooCommerceFormItem, FilterProps } from '../../../types';
 import { storeName } from '../../../store';
+import { DaysPeriodField, validateDaysPeriod } from '../days_period_field';
 
 export function validateSingleOrderValue(
   formItems: WooCommerceFormItem,
 ): boolean {
   const singleOrderValueIsInvalid =
     !formItems.single_order_value_amount ||
-    !formItems.single_order_value_days ||
+    !validateDaysPeriod(formItems) ||
     !formItems.single_order_value_type;
 
   return !singleOrderValueIsInvalid;
@@ -75,22 +76,7 @@ export function SingleOrderValueFields({
         <div>{wooCurrencySymbol}</div>
       </Grid.CenteredRow>
       <Grid.CenteredRow>
-        <div>{MailPoet.I18n.t('inTheLast')}</div>
-        <Input
-          data-automation-id="input-single-order-value-days"
-          type="number"
-          min={1}
-          value={segment.single_order_value_days || ''}
-          placeholder={MailPoet.I18n.t('daysPlaceholder')}
-          onChange={(e): void => {
-            void updateSegmentFilterFromEvent(
-              'single_order_value_days',
-              filterIndex,
-              e,
-            );
-          }}
-        />
-        <div>{MailPoet.I18n.t('days')}</div>
+        <DaysPeriodField filterIndex={filterIndex} />
       </Grid.CenteredRow>
     </>
   );

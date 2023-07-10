@@ -23,7 +23,7 @@ class WooCommerceTotalSpent implements Filter {
     $filterData = $filter->getFilterData();
     $type = $filterData->getParam('total_spent_type');
     $amount = $filterData->getParam('total_spent_amount');
-    $days = $filterData->getParam('total_spent_days');
+    $days = $filterData->getParam('days');
 
     $date = Carbon::now()->subDays($days);
     $parameterSuffix = $filter->getId() ?? Security::generateRandomString();

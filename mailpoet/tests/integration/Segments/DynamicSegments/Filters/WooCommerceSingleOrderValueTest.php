@@ -67,7 +67,7 @@ class WooCommerceSingleOrderValueTest extends \MailPoetTest {
     return new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_WOOCOMMERCE, WooCommerceSingleOrderValue::ACTION_SINGLE_ORDER_VALUE, [
       'single_order_value_type' => $type,
       'single_order_value_amount' => $amount,
-      'single_order_value_days' => $days,
+      'days' => $days,
     ]);
   }
 

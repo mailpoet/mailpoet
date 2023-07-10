@@ -366,24 +366,24 @@ class FilterDataMapper {
       if (
         !isset($data['total_spent_type'])
         || !isset($data['total_spent_amount']) || $data['total_spent_amount'] < 0
-        || !isset($data['total_spent_days']) || $data['total_spent_days'] < 1
+        || !isset($data['days']) || $data['days'] < 1
       ) {
         throw new InvalidFilterException('Missing required fields', InvalidFilterException::MISSING_TOTAL_SPENT_FIELDS);
       }
       $filterData['total_spent_type'] = $data['total_spent_type'];
       $filterData['total_spent_amount'] = $data['total_spent_amount'];
-      $filterData['total_spent_days'] = $data['total_spent_days'];
+      $filterData['days'] = $data['days'];
     } elseif ($data['action'] === WooCommerceSingleOrderValue::ACTION_SINGLE_ORDER_VALUE) {
       if (
         !isset($data['single_order_value_type'])
         || !isset($data['single_order_value_amount']) || $data['single_order_value_amount'] < 0
-        || !isset($data['single_order_value_days']) || $data['single_order_value_days'] < 1
+        || !isset($data['days']) || $data['days'] < 1
       ) {
         throw new InvalidFilterException('Missing required fields', InvalidFilterException::MISSING_SINGLE_ORDER_VALUE_FIELDS);
       }
       $filterData['single_order_value_type'] = $data['single_order_value_type'];
       $filterData['single_order_value_amount'] = $data['single_order_value_amount'];
-      $filterData['single_order_value_days'] = $data['single_order_value_days'];
+      $filterData['days'] = $data['days'];
     } elseif ($data['action'] === WooCommercePurchaseDate::ACTION) {
       $filterData['operator'] = $data['operator'];
       $filterData['value'] = $data['value'];

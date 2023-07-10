@@ -23,7 +23,7 @@ class WooCommerceSingleOrderValue implements Filter {
     $filterData = $filter->getFilterData();
     $type = $filterData->getParam('single_order_value_type');
     $amount = $filterData->getParam('single_order_value_amount');
-    $days = $filterData->getParam('single_order_value_days');
+    $days = $filterData->getParam('days');
 
     if (!is_string($days)) {
       $days = '1'; // Default to last day

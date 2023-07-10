@@ -57,7 +57,7 @@ class DynamicSegment extends Segment {
     $this->filterData['action'] = 'totalSpent';
     $this->filterData['total_spent_type'] = '>';
     $this->filterData['total_spent_amount'] = $amount;
-    $this->filterData['total_spent_days'] = $days;
+    $this->filterData['days'] = $days;
     return $this;
   }
 
@@ -66,7 +66,7 @@ class DynamicSegment extends Segment {
     $this->filterData['action'] = 'singleOrderValue';
     $this->filterData['single_order_value_type'] = '>';
     $this->filterData['single_order_value_amount'] = $amount;
-    $this->filterData['single_order_value_days'] = $days;
+    $this->filterData['days'] = $days;
     return $this;
   }
 
