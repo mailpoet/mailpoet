@@ -8,14 +8,7 @@ import { MailPoet } from 'mailpoet';
 
 import { EmailFormItem, FilterProps } from '../../../types';
 import { storeName } from '../../../store';
-
-function replaceElementsInDaysSentence(
-  fn: (value) => JSX.Element,
-): JSX.Element[] {
-  return MailPoet.I18n.t('emailActionOpensDaysSentence')
-    .split(/({days})/gim)
-    .map(fn);
-}
+import { DaysPeriodField } from '../days_period_field';
 
 function replaceEmailActionOpensSentence(
   fn: (value) => JSX.Element,
@@ -85,27 +78,7 @@ export function EmailOpensAbsoluteCountFields({
         })}
       </Grid.CenteredRow>
       <Grid.CenteredRow>
-        {replaceElementsInDaysSentence((match) => {
-          if (match === '{days}') {
-            return (
-              <Input
-                key="input"
-                type="number"
-                value={segment.days || ''}
-                data-automation-id="segment-number-of-days"
-                onChange={(e) => {
-                  void updateSegmentFilterFromEvent('days', filterIndex, e);
-                }}
-                min="0"
-                placeholder={MailPoet.I18n.t('emailActionDays')}
-              />
-            );
-          }
-          if (typeof match === 'string' && match.trim().length > 1) {
-            return <div key={match}>{match}</div>;
-          }
-          return null;
-        })}
+        <DaysPeriodField filterIndex={filterIndex} />
       </Grid.CenteredRow>
     </>
   );

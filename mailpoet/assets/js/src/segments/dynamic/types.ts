@@ -72,6 +72,10 @@ export interface DateFormItem extends FormItem {
   value?: string;
 }
 
+export interface DaysPeriodItem extends FormItem {
+  days?: string;
+}
+
 export interface TextFormItem extends FormItem {
   operator?: string;
   value?: string;
@@ -133,7 +137,6 @@ export interface EmailFormItem extends FormItem {
   link_ids?: string[];
   operator?: string;
   opens?: string;
-  days?: string;
 }
 
 export type Segment = {
