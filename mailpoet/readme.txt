@@ -3,7 +3,7 @@ Contributors: mailpoet, woocommerce, automattic
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 6.0
 Tested up to: 6.2
-Stable tag: 4.20.1
+Stable tag: 4.20.2
 Requires PHP: 7.3
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -218,6 +218,10 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 4.20.2 - 2023-07-10 =
+* Added: "Used shipping method" segment;
+* Fixed: outdated subscriber stats on home page.
 
 = 4.20.1 - 2023-07-03 =
 * Added: "is in city" and "postal code" segments;
