@@ -215,7 +215,7 @@ class ManageWooCommerceSegmentsCest {
     $actionSelectElement = '[data-automation-id="select-segment-action"]';
     $totalSpentTypeElement = '[data-automation-id="select-total-spent-type"]';
     $totalSpentAmountElement = '[data-automation-id="input-total-spent-amount"]';
-    $totalSpentDaysElement = '[data-automation-id="input-total-spent-days"]';
+    $totalSpentDaysElement = '[data-automation-id="segment-number-of-days"]';
 
     $i->wantTo('Create a new WooCommerce Total Spent segment');
     $segmentTitle = 'Segment Woo Total Spent Test';
@@ -284,7 +284,7 @@ class ManageWooCommerceSegmentsCest {
     $actionSelectElement = '[data-automation-id="select-segment-action"]';
     $singleOrderValueTypeElement = '[data-automation-id="select-single-order-value-type"]';
     $singleOrderValueAmountElement = '[data-automation-id="input-single-order-value-amount"]';
-    $singleOrderValueDaysElement = '[data-automation-id="input-single-order-value-days"]';
+    $singleOrderValueDaysElement = '[data-automation-id="segment-number-of-days"]';
 
     $i->wantTo('Create a new WooCommerce Single Order Value segment');
     $segmentTitle = 'Segment Single Order Value Test';

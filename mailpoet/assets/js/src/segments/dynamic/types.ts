@@ -101,11 +101,9 @@ export interface WooCommerceFormItem extends FormItem {
   number_of_orders_count?: number;
   total_spent_type?: string;
   total_spent_amount?: number;
-  total_spent_days?: number;
   country_code?: string[];
   single_order_value_type?: string;
   single_order_value_amount?: number;
-  single_order_value_days?: number;
   average_spent_type?: string;
   average_spent_amount?: string;
   payment_methods?: string[];

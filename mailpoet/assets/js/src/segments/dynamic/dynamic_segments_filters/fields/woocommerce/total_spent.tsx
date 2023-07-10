@@ -5,11 +5,12 @@ import { Input, Select } from 'common';
 import { MailPoet } from 'mailpoet';
 import { WooCommerceFormItem, FilterProps } from '../../../types';
 import { storeName } from '../../../store';
+import { DaysPeriodField, validateDaysPeriod } from '../days_period_field';
 
 export function validateTotalSpent(formItems: WooCommerceFormItem): boolean {
   const totalSpentIsInvalid =
     !formItems.total_spent_amount ||
-    !formItems.total_spent_days ||
+    !validateDaysPeriod(formItems) ||
     !formItems.total_spent_type;
 
   return !totalSpentIsInvalid;
@@ -69,22 +70,7 @@ export function TotalSpentFields({ filterIndex }: FilterProps): JSX.Element {
         <div>{wooCurrencySymbol}</div>
       </Grid.CenteredRow>
       <Grid.CenteredRow>
-        <div>{MailPoet.I18n.t('inTheLast')}</div>
-        <Input
-          data-automation-id="input-total-spent-days"
-          type="number"
-          min={1}
-          value={segment.total_spent_days || ''}
-          placeholder={MailPoet.I18n.t('daysPlaceholder')}
-          onChange={(e): void => {
-            void updateSegmentFilterFromEvent(
-              'total_spent_days',
-              filterIndex,
-              e,
-            );
-          }}
-        />
-        <div>{MailPoet.I18n.t('days')}</div>
+        <DaysPeriodField filterIndex={filterIndex} />
       </Grid.CenteredRow>
     </>
   );
