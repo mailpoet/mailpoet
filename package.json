@@ -20,7 +20,7 @@
   },
   "pnpm": {
     "patchedDependencies": {
-      "@woocommerce/settings@1.0.0": "patches/@woocommerce_settings@1.0.0.patch",
+      "@woocommerce/settings@1.0.0": "patches/@woocommerce__settings@1.0.0.patch",
       "@woocommerce/components@12.0.0": "patches/@woocommerce__components@12.0.0.patch",
       "backbone.supermodel@1.2.0": "patches/backbone.supermodel@1.2.0.patch",
       "parsleyjs@2.9.2": "patches/parsleyjs@2.9.2.patch",
