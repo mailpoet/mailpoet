@@ -30,7 +30,7 @@ class SubscriberCountShortcodeCest {
     $segment = $segmentFactory->withName(self::SUBSCRIBER_LIST_NAME)->create();
     $subscriberFactory = new Subscriber();
     $subscriberFactory->withSegments([$segment])->create();
-    $pageContent = self::PAGE_TEXT . " [mailpoet_subscribers_count segments=\"{$segment->getId()}\"]";
+    $pageContent = self::PAGE_TEXT . " [mailpoet_subscribers_count segments={$segment->getId()}]";
     $postUrl = $i->createPost(self::PAGE_TITLE, $pageContent);
 
     $i->login();
@@ -46,7 +46,7 @@ class SubscriberCountShortcodeCest {
     $segmentFactory = new Segment();
     $this->segment1 = $segmentFactory->withName(self::SUBSCRIBERS_LIST_NAME_ONE)->create();
     $this->segment2 = $segmentFactory->withName(self::SUBSCRIBERS_LIST_NAME_TWO)->create();
-    $pageContent = self::PAGE_TEXT . " [mailpoet_subscribers_count] segments=\"{$this->segment1->getId()},{$this->segment2->getId()}\"]";
+    $pageContent = self::PAGE_TEXT . " [mailpoet_subscribers_count] segments={$this->segment1->getId()},{$this->segment2->getId()}]";
     $postUrl = $i->createPost(self::PAGE_TITLE, $pageContent);
 
     $this->prepareSubscribersData($this->segment1, $this->segment2);
