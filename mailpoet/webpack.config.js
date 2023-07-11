@@ -112,6 +112,18 @@ const baseConfig = {
         },
       },
       {
+        test: /\.svg$/,
+        use: ['@svgr/webpack'],
+      },
+      {
+        test: /\.css$/,
+        use: ['css-loader'],
+      },
+      {
+        test: /\.scss$/,
+        use: ['css-loader', 'sass-loader'],
+      },
+      {
         include: path.resolve(
           __dirname,
           'assets/js/src/webpack_admin_expose.js',
