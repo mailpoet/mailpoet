@@ -50,6 +50,7 @@ class EngagementDataBackfiller {
       ->select('PARTIAL s.{id, email, lastPurchaseAt, lastClickAt, lastOpenAt, lastSendingAt}')
       ->from(SubscriberEntity::class, 's')
       ->where('s.id > :lastProcessedId')
+      ->orderBy('s.id', 'ASC')
       ->setMaxResults($batchSize)
       ->setParameter('lastProcessedId', $lastProcessedId)
       ->getQuery()
