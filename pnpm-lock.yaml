@@ -8,6 +8,9 @@ overrides:
   typescript: ^5.0.2
 
 patchedDependencies:
+  '@woocommerce/settings@1.0.0':
+    hash: hw3agxequ53nvhzd2oqoscmhre
+    path: patches/@woocommerce_settings@1.0.0.patch
   backbone.supermodel@1.2.0:
     hash: hhsvgimsfhfs4itf7ipk47fane
     path: patches/backbone.supermodel@1.2.0.patch
@@ -70,6 +73,9 @@ importers:
       '@woocommerce/date':
         specifier: ^4.2.0
         version: 4.2.0(lodash@4.17.21)
+      '@woocommerce/settings':
+        specifier: ^1.0.0
+        version: 1.0.0(patch_hash=hw3agxequ53nvhzd2oqoscmhre)
       '@wordpress/a11y':
         specifier: ^3.28.0
         version: 3.28.0
@@ -5016,6 +5022,13 @@ packages:
   /@babel/regjsgen@0.8.0:
     resolution: {integrity: sha512-x/rqGMdzj+fWZvCOYForTghzbtqPDZ5gPwaoNGHdgDfF2QA/XZbCBp4Moo5scrkAMPhB7z26XM/AaHuIJdgauA==}
 
+  /@babel/runtime-corejs2@7.5.5:
+    resolution: {integrity: sha512-FYATQVR00NSNi7mUfpPDp7E8RYMXDuO8gaix7u/w3GekfUinKgX1AcTxs7SoiEmoEW9mbpjrwqWSW6zCmw5h8A==}
+    dependencies:
+      core-js: 2.6.12
+      regenerator-runtime: 0.13.11
+    dev: false
+
   /@babel/runtime-corejs3@7.17.8:
     resolution: {integrity: sha512-ZbYSUvoSF6dXZmMl/CYTMOvzIFnbGfv4W3SEHYgMvNsFTeLaF2gkGAF4K2ddmtSK4Emej+0aYcnSC6N5dPCXUQ==}
     engines: {node: '>=6.9.0'}
@@ -6513,7 +6526,7 @@ packages:
       babel-plugin-macros: 2.8.0
       babel-plugin-polyfill-corejs3: 0.1.7(@babel/core@7.21.3)
       case-sensitive-paths-webpack-plugin: 2.4.0
-      core-js: 3.21.1
+      core-js: 3.29.1
       css-loader: 3.6.0(webpack@4.46.0)
       file-loader: 6.2.0(webpack@4.46.0)
       find-up: 5.0.0
@@ -6650,7 +6663,7 @@ packages:
     dependencies:
       '@storybook/channels': 6.4.19
       '@storybook/client-logger': 6.4.19
-      core-js: 3.21.1
+      core-js: 3.29.1
       global: 4.4.0
       telejson: 5.3.3
     dev: true
@@ -6759,13 +6772,13 @@ packages:
       '@storybook/ui': 6.4.19(@types/react@18.0.28)(react-dom@18.2.0)(react@18.2.0)
       airbnb-js-shims: 2.2.1
       ansi-to-html: 0.6.15
-      core-js: 3.21.1
+      core-js: 3.29.1
       global: 4.4.0
       lodash: 4.17.21
       qs: 6.10.3
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
-      regenerator-runtime: 0.13.7
+      regenerator-runtime: 0.13.11
       ts-dedent: 2.2.0
       typescript: 5.0.2
       unfetch: 4.2.0
@@ -6798,13 +6811,13 @@ packages:
       '@storybook/ui': 6.4.19(@types/react@18.0.28)(react-dom@18.2.0)(react@18.2.0)
       airbnb-js-shims: 2.2.1
       ansi-to-html: 0.6.15
-      core-js: 3.21.1
+      core-js: 3.29.1
       global: 4.4.0
       lodash: 4.17.21
       qs: 6.10.3
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
-      regenerator-runtime: 0.13.7
+      regenerator-runtime: 0.13.11
       ts-dedent: 2.2.0
       typescript: 5.0.2
       unfetch: 4.2.0
@@ -6929,7 +6942,7 @@ packages:
       cli-table3: 0.6.1
       commander: 6.2.1
       compression: 1.7.4
-      core-js: 3.21.1
+      core-js: 3.29.1
       cpy: 8.1.2
       detect-port: 1.3.0
       express: 4.17.1
@@ -7013,7 +7026,7 @@ packages:
       '@babel/types': 7.22.5
       '@mdx-js/mdx': 1.6.22
       '@storybook/csf': 0.0.2--canary.87bc651.0
-      core-js: 3.21.1
+      core-js: 3.29.1
       fs-extra: 9.1.0
       global: 4.4.0
       js-string-escape: 1.0.1
@@ -7055,7 +7068,7 @@ packages:
       babel-loader: 8.2.4(@babel/core@7.21.3)(webpack@4.46.0)
       case-sensitive-paths-webpack-plugin: 2.4.0
       chalk: 4.1.2
-      core-js: 3.21.1
+      core-js: 3.29.1
       css-loader: 3.6.0(webpack@4.46.0)
       express: 4.17.1
       file-loader: 6.2.0(webpack@4.46.0)
@@ -7383,7 +7396,7 @@ packages:
       '@storybook/semver': 7.3.2
       '@storybook/theming': 6.4.19(react-dom@18.2.0)(react@18.2.0)
       copy-to-clipboard: 3.3.1
-      core-js: 3.21.1
+      core-js: 3.29.1
       core-js-pure: 3.21.0
       downshift: 6.1.12(react@18.2.0)
       emotion-theming: 10.0.27(@emotion/core@10.1.1)(react@18.2.0)
@@ -7399,7 +7412,7 @@ packages:
       react-draggable: 4.4.4(react-dom@18.2.0)(react@18.2.0)
       react-helmet-async: 1.2.3(react-dom@18.2.0)(react@18.2.0)
       react-sizeme: 3.0.2
-      regenerator-runtime: 0.13.7
+      regenerator-runtime: 0.13.11
       resolve-from: 5.0.0
       store2: 2.12.0
     transitivePeerDependencies:
@@ -9023,6 +9036,13 @@ packages:
     dependencies:
       locutus: 2.0.16
     dev: false
+
+  /@woocommerce/settings@1.0.0(patch_hash=hw3agxequ53nvhzd2oqoscmhre):
+    resolution: {integrity: sha512-BjrT56Cz8XTRHw2JNPmANRkYh2rzdF33wOa56lah1qb/MjHUKuVJ0PTSZ19S5Trb92IkxfcIVB26CSdxXnf5Og==}
+    dependencies:
+      '@babel/runtime-corejs2': 7.5.5
+    dev: false
+    patched: true
 
   /@wordpress/a11y@3.28.0:
     resolution: {integrity: sha512-nXreWPc1vSBP0ak5cx8ZTZDmVj0DCqC32cCK/RP2J2ANpIQJ6PILO199CodicQhM6dXBAkXk0H7IBCgsqLG+Ng==}
@@ -13708,7 +13728,6 @@ packages:
     resolution: {integrity: sha512-Kb2wC0fvsWfQrgk8HU5lW6U/Lcs8+9aaYcy4ZFc6DDlo4nZ7n70dEgE5rtR0oG6ufKDUnrwfWL1mXR5ljDatrQ==}
     deprecated: core-js@<3.23.3 is no longer maintained and not recommended for usage due to the number of issues. Because of the V8 engine whims, feature detection in old core-js versions could cause a slowdown up to 100x even if nothing is polyfilled. Some versions have web compatibility issues. Please, upgrade your dependencies to the actual version of core-js.
     requiresBuild: true
-    dev: true
 
   /core-js@3.21.1:
     resolution: {integrity: sha512-FRq5b/VMrWlrmCzwRrpDYNxyHP9BcAZC+xHJaqTgIE5091ZV1NTmyh0sGOg5XqpnHvR0svdy0sv1gWA1zmhxig==}
@@ -19088,7 +19107,7 @@ packages:
     dependencies:
       '@babel/runtime': 7.21.0
       app-root-dir: 1.0.2
-      core-js: 3.21.1
+      core-js: 3.29.1
       dotenv: 8.6.0
       dotenv-expand: 5.1.0
     dev: true
