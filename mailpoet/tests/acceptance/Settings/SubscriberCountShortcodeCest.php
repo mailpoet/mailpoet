@@ -49,7 +49,7 @@ class SubscriberCountShortcodeCest {
     $pageContent = self::PAGE_TEXT . " [mailpoet_subscribers_count] segments=\"{$this->segment1->getId()},{$this->segment2->getId()}\"]";
     $postUrl = $i->createPost(self::PAGE_TITLE, $pageContent);
 
-    $this->prepareSubscribersData();
+    $this->prepareSubscribersData($this->segment1, $this->segment2);
 
     $i->login();
 
@@ -76,27 +76,27 @@ class SubscriberCountShortcodeCest {
     $i->waitForText(self::PAGE_TEXT . " 5");
   }
 
-  private function prepareSubscribersData() {
+  private function prepareSubscribersData(SegmentEntity $segment1, SegmentEntity $segment2) {
     for ($i = 0; $i < self::ACTIVE_SUBSCRIBERS_COUNT; $i++) {
-      (new Subscriber())->withSegments([$this->segment1])->create();
+      (new Subscriber())->withSegments([$segment1])->create();
     }
     for ($i = 0; $i < self::INACTIVE_SUBSCRIBERS_COUNT; $i++) {
-      (new Subscriber())->withStatus('inactive')->withSegments([$this->segment1])->create();
+      (new Subscriber())->withStatus('inactive')->withSegments([$segment1])->create();
     }
     for ($i = 0; $i < self::UNCONFIRMED_SUBSCRIBERS_COUNT; $i++) {
-      (new Subscriber())->withStatus('unconfirmed')->withSegments([$this->segment1])->create();
+      (new Subscriber())->withStatus('unconfirmed')->withSegments([$segment1])->create();
     }
     for ($i = 0; $i < self::UNSUBSCRIBED_SUBSCRIBERS_COUNT; $i++) {
-      (new Subscriber())->withStatus('unsubscribed')->withSegments([$this->segment1])->create();
+      (new Subscriber())->withStatus('unsubscribed')->withSegments([$segment1])->create();
     }
     for ($i = 0; $i < self::BOUNCED_SUBSCRIBERS_COUNT; $i++) {
-      (new Subscriber())->withStatus('bounced')->withSegments([$this->segment1])->create();
+      (new Subscriber())->withStatus('bounced')->withSegments([$segment1])->create();
     }
     for ($i = 0; $i < self::ACTIVE_SUBSCRIBERS_COUNT; $i++) {
-      (new Subscriber())->withSegments([$this->segment2])->create();
+      (new Subscriber())->withSegments([$segment2])->create();
     }
     for ($i = 0; $i < self::UNSUBSCRIBED_SUBSCRIBERS_COUNT; $i++) {
-      (new Subscriber())->withStatus('unsubscribed')->withSegments([$this->segment2])->create();
+      (new Subscriber())->withStatus('unsubscribed')->withSegments([$segment2])->create();
     }
   }
 }
