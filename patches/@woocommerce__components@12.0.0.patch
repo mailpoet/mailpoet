@@ -1,3 +1,19 @@
+diff --git a/build-module/experimental.js b/build-module/experimental.js
+index 7b6ec5b..a49e4c3 100644
+--- a/build-module/experimental.js
++++ b/build-module/experimental.js
+@@ -1,9 +1,9 @@
+ /**
+  * External dependencies
+  */
+-import { __experimentalText, Text as TextComponent, } from '@wordpress/components';
++import { __experimentalText, } from '@wordpress/components';
+ /**
+  * Export experimental components within the components package to prevent a circular
+  * dependency with woocommerce/experimental. Only for internal use.
+  */
+-export const Text = TextComponent || __experimentalText;
++export const Text = __experimentalText;
 diff --git a/build-style/style.css b/build-style/style.css
 index fee165e..347dda2 100644
 --- a/build-style/style.css

@@ -1,9 +1,9 @@
-import { __, _x } from '@wordpress/i18n';
+import { __ } from '@wordpress/i18n';
 import {
   SummaryList,
   SummaryListPlaceholder,
   SummaryNumber,
-} from '@woocommerce/components/build';
+} from '@woocommerce/components';
 import { select, useSelect } from '@wordpress/data';
 import { MailPoet } from '../../../../../../mailpoet';
 import { OverviewSection, storeName } from '../../store';
@@ -76,6 +76,23 @@ function getWooCommerceDelta(type: 'revenue' | 'orders'): number | undefined {
   return (newValue / previous) * 100;
 }
 
+const defaultSummaryArgs = {
+  children: null,
+  hrefType: null,
+  isOpen: null,
+  labelTooltipText: null,
+  label: null,
+  value: null,
+  delta: null,
+  onToggle: null,
+  prevLabel: null,
+  prevValue: null,
+  reverseTrend: null,
+  selected: null,
+  onLinkClickCallback: null,
+  href: null,
+};
+
 export function Overview(): JSX.Element | null {
   const { overview, hasEmails } = useSelect((s) => ({
     overview: s(storeName).getSection('overview'),
@@ -87,43 +104,43 @@ export function Overview(): JSX.Element | null {
     maximumFractionDigits: 2,
   });
   const numberFormatter = new Intl.NumberFormat(locale.toString());
-  const items: JSX.Element[] = [];
+  const items: object[] = [];
   if (overview.data !== undefined) {
     items.push(
-      <SummaryNumber
-        key="overview-opened"
-        label={__('Opened', 'mailpoet')}
-        value={percentageFormatter.format(getEmailPercentage('opened'))}
-        delta={getEmailDelta('opened').toFixed(2) as unknown as number}
-      />,
+      SummaryNumber({
+        ...defaultSummaryArgs,
+        label: __('Sent', 'mailpoet'),
+        value: percentageFormatter.format(getEmailPercentage('opened')),
+        delta: getEmailDelta('opened').toFixed(2) as unknown as number,
+      }),
     );
     items.push(
-      <SummaryNumber
-        key="overview-clicked"
-        label={__('Clicked', 'mailpoet')}
-        value={percentageFormatter.format(getEmailPercentage('clicked'))}
-        delta={getEmailDelta('clicked').toFixed(2) as unknown as number}
-      />,
+      SummaryNumber({
+        ...defaultSummaryArgs,
+        label: __('Clicked', 'mailpoet'),
+        value: percentageFormatter.format(getEmailPercentage('clicked')),
+        delta: getEmailDelta('clicked').toFixed(2) as unknown as number,
+      }),
     );
   }
   if (overview.data !== undefined && MailPoet.isWoocommerceActive) {
     items.push(
-      <SummaryNumber
-        key="overview-orders"
-        label={_x('Orders', 'WooCommerce orders', 'mailpoet')}
-        delta={getWooCommerceDelta('orders').toFixed(2) as unknown as number}
-        value={numberFormatter.format(getWooCommerceTotal('orders'))}
-      />,
+      SummaryNumber({
+        ...defaultSummaryArgs,
+        label: __('Orders', 'mailpoet'),
+        value: numberFormatter.format(getWooCommerceTotal('orders')),
+        delta: getWooCommerceDelta('orders').toFixed(2) as unknown as number,
+      }),
     );
     items.push(
-      <SummaryNumber
-        key="overview-revenue"
-        label={__('Revenue', 'mailpoet')}
-        delta={getWooCommerceDelta('revenue').toFixed(2) as unknown as number}
-        value={formattedPrice(
+      SummaryNumber({
+        ...defaultSummaryArgs,
+        label: __('Revenue', 'mailpoet'),
+        delta: getWooCommerceDelta('revenue').toFixed(2) as unknown as number,
+        value: formattedPrice(
           overview.data !== undefined ? overview.data.revenue.current : 0,
-        )}
-      />,
+        ),
+      }),
     );
   }
 
