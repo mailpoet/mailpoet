@@ -1,0 +1,94 @@
+diff --git a/build-style/style.css b/build-style/style.css
+index fee165e..347dda2 100644
+--- a/build-style/style.css
++++ b/build-style/style.css
+@@ -157,7 +157,7 @@
+ }
+ .SingleDatePicker_closeButton:focus,
+ .SingleDatePicker_closeButton:hover {
+-  color: darken(#cacccd,10%);
++  color: #b0b3b4;
+   text-decoration: none
+ }
+ .SingleDatePicker_closeButton_svg {
+@@ -884,7 +884,7 @@
+ }
+ .DateRangePicker_closeButton:focus,
+ .DateRangePicker_closeButton:hover {
+-  color: darken(#cacccd,10%);
++  color: #b0b3b4;
+   text-decoration: none
+ }
+ .DateRangePicker_closeButton_svg {
+@@ -4127,7 +4127,7 @@ a.woocommerce-list__item {
+   grid-template-columns: 1fr;
+ }
+ .woocommerce-summary.has-2-items {
+-  -ms-grid-columns: (1fr)[2];
++  -ms-grid-columns: 1fr [2];
+   grid-template-columns: repeat(2, 1fr);
+ }
+ .woocommerce-summary.has-2-items .woocommerce-summary__item-container:nth-of-type(2n) .woocommerce-summary__item {
+@@ -4139,7 +4139,7 @@ a.woocommerce-list__item {
+   border-bottom-color: #e0e0e0;
+ }
+ .woocommerce-summary.has-3-items {
+-  -ms-grid-columns: (1fr)[3];
++  -ms-grid-columns: 1fr [3];
+   grid-template-columns: repeat(3, 1fr);
+ }
+ .woocommerce-summary.has-3-items .woocommerce-summary__item-container:nth-of-type(3n) .woocommerce-summary__item {
+@@ -4151,7 +4151,7 @@ a.woocommerce-list__item {
+   border-bottom-color: #e0e0e0;
+ }
+ .woocommerce-summary.has-4-items, .woocommerce-summary.has-7-items, .woocommerce-summary.has-8-items {
+-  -ms-grid-columns: (1fr)[4];
++  -ms-grid-columns: 1fr [4];
+   grid-template-columns: repeat(4, 1fr);
+ }
+ .woocommerce-summary.has-4-items .woocommerce-summary__item-container:nth-of-type(4n) .woocommerce-summary__item, .woocommerce-summary.has-7-items .woocommerce-summary__item-container:nth-of-type(4n) .woocommerce-summary__item, .woocommerce-summary.has-8-items .woocommerce-summary__item-container:nth-of-type(4n) .woocommerce-summary__item {
+@@ -4167,7 +4167,7 @@ a.woocommerce-list__item {
+   border-bottom-color: #e0e0e0;
+ }
+ .woocommerce-summary.has-5-items {
+-  -ms-grid-columns: (1fr)[5];
++  -ms-grid-columns: 1fr [5];
+   grid-template-columns: repeat(5, 1fr);
+ }
+ .woocommerce-summary.has-5-items .woocommerce-summary__item-container:nth-of-type(5n) .woocommerce-summary__item {
+@@ -4183,7 +4183,7 @@ a.woocommerce-list__item {
+ }
+ @media (min-width: 1441px) {
+   .woocommerce-summary.has-6-items {
+-    -ms-grid-columns: (1fr)[6];
++    -ms-grid-columns: 1fr [6];
+     grid-template-columns: repeat(6, 1fr);
+   }
+   .woocommerce-summary.has-6-items .woocommerce-summary__item-container:nth-of-type(6n) .woocommerce-summary__item {
+@@ -4198,7 +4198,7 @@ a.woocommerce-list__item {
+     margin-right: calc(100% - 80px);
+   }
+   .woocommerce-summary.has-9-items, .woocommerce-summary.has-10-items {
+-    -ms-grid-columns: (1fr)[5];
++    -ms-grid-columns: 1fr [5];
+     grid-template-columns: repeat(5, 1fr);
+   }
+   .woocommerce-summary.has-9-items .woocommerce-summary__item-container:nth-of-type(5n) .woocommerce-summary__item, .woocommerce-summary.has-10-items .woocommerce-summary__item-container:nth-of-type(5n) .woocommerce-summary__item {
+@@ -4220,7 +4220,7 @@ a.woocommerce-list__item {
+     margin-right: calc(100% - 80px);
+   }
+   .woocommerce-summary.has-6-items, .woocommerce-summary.has-9-items {
+-    -ms-grid-columns: (1fr)[3];
++    -ms-grid-columns: 1fr [3];
+     grid-template-columns: repeat(3, 1fr);
+   }
+   .woocommerce-summary.has-6-items .woocommerce-summary__item-container:nth-of-type(3n) .woocommerce-summary__item, .woocommerce-summary.has-9-items .woocommerce-summary__item-container:nth-of-type(3n) .woocommerce-summary__item {
+@@ -4234,7 +4234,7 @@ a.woocommerce-list__item {
+     border-bottom-color: #e0e0e0;
+   }
+   .woocommerce-summary.has-10-items {
+-    -ms-grid-columns: (1fr)[4];
++    -ms-grid-columns: 1fr [4];
+     grid-template-columns: repeat(4, 1fr);
+   }
+   .woocommerce-summary.has-10-items .woocommerce-summary__item-container:nth-of-type(4n) .woocommerce-summary__item {
