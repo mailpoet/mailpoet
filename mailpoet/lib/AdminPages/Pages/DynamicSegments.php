@@ -20,7 +20,7 @@ use MailPoet\WP\AutocompletePostListLoader as WPPostListLoader;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Doctrine\Common\Collections\Criteria;
 
-class Segments {
+class DynamicSegments {
   /** @var PageRenderer */
   private $pageRenderer;
 
@@ -86,12 +86,10 @@ class Segments {
   }
 
   /**
-   * @param string $type 'static' or 'dynamic'
    * @return void
    */
-  public function render(string $type) {
+  public function render() {
     $data = [];
-    $data['segments_type'] = $type;
     $data['items_per_page'] = $this->listingPageLimit->getLimitPerPage('segments');
 
     $customFields = $this->customFieldsRepository->findBy([], ['name' => 'asc']);
@@ -171,7 +169,8 @@ class Segments {
         'name' => $automation->getName(),
       ];
     }, $this->automationStorage->getAutomations());
-    $this->pageRenderer->displayPage('segments.html', $data);
+
+    $this->pageRenderer->displayPage('segments/dynamic.html', $data);
   }
 
   private function getNewslettersList(): array {

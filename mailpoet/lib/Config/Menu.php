@@ -6,6 +6,7 @@ use MailPoet\AdminPages\Pages\Automation;
 use MailPoet\AdminPages\Pages\AutomationAnalytics;
 use MailPoet\AdminPages\Pages\AutomationEditor;
 use MailPoet\AdminPages\Pages\AutomationTemplates;
+use MailPoet\AdminPages\Pages\DynamicSegments;
 use MailPoet\AdminPages\Pages\ExperimentalFeatures;
 use MailPoet\AdminPages\Pages\FormEditor;
 use MailPoet\AdminPages\Pages\Forms;
@@ -15,8 +16,8 @@ use MailPoet\AdminPages\Pages\Landingpage;
 use MailPoet\AdminPages\Pages\Logs;
 use MailPoet\AdminPages\Pages\NewsletterEditor;
 use MailPoet\AdminPages\Pages\Newsletters;
-use MailPoet\AdminPages\Pages\Segments;
 use MailPoet\AdminPages\Pages\Settings;
+use MailPoet\AdminPages\Pages\StaticSegments;
 use MailPoet\AdminPages\Pages\Subscribers;
 use MailPoet\AdminPages\Pages\SubscribersExport;
 use MailPoet\AdminPages\Pages\SubscribersImport;
@@ -631,11 +632,11 @@ class Menu {
   }
 
   public function lists() {
-    $this->container->get(Segments::class)->render('static');
+    $this->container->get(StaticSegments::class)->render();
   }
 
   public function segments() {
-    $this->container->get(Segments::class)->render('dynamic');
+    $this->container->get(DynamicSegments::class)->render();
   }
 
   public function forms() {

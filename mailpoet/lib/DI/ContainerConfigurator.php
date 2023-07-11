@@ -35,6 +35,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\AdminPages\Pages\AutomationTemplates::class)->setPublic(true);
     $container->autowire(\MailPoet\AdminPages\Pages\AutomationEditor::class)->setPublic(true);
     $container->autowire(\MailPoet\AdminPages\Pages\AutomationAnalytics::class)->setPublic(true);
+    $container->autowire(\MailPoet\AdminPages\Pages\DynamicSegments::class)->setPublic(true);
     $container->autowire(\MailPoet\AdminPages\Pages\ExperimentalFeatures::class)->setPublic(true);
     $container->autowire(\MailPoet\AdminPages\Pages\FormEditor::class)->setPublic(true);
     $container->autowire(\MailPoet\AdminPages\Pages\Forms::class)->setPublic(true);
@@ -44,8 +45,8 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\AdminPages\Pages\NewsletterEditor::class)->setPublic(true);
     $container->autowire(\MailPoet\AdminPages\Pages\Newsletters::class)->setPublic(true);
     $container->autowire(\MailPoet\AdminPages\Pages\Upgrade::class)->setPublic(true);
-    $container->autowire(\MailPoet\AdminPages\Pages\Segments::class)->setPublic(true);
     $container->autowire(\MailPoet\AdminPages\Pages\Settings::class)->setPublic(true);
+    $container->autowire(\MailPoet\AdminPages\Pages\StaticSegments::class)->setPublic(true);
     $container->autowire(\MailPoet\AdminPages\Pages\Subscribers::class)->setPublic(true);
     $container->autowire(\MailPoet\AdminPages\Pages\SubscribersExport::class)->setPublic(true);
     $container->autowire(\MailPoet\AdminPages\Pages\SubscribersImport::class)->setPublic(true);

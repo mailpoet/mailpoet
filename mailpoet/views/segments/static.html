@@ -1,0 +1,21 @@
+<% extends 'layout.html' %>
+
+<% block content %>
+  <div id="static_segments_container"></div>
+
+  <script type="text/javascript">
+    var mailpoet_listing_per_page = <%= items_per_page %>;
+    var mailpoet_beacon_articles = [
+      '5a574bd92c7d3a194368233e', // https://kb.mailpoet.com/article/237-guide-to-subscriber-segmentation
+      '59a89621042863033a1c82e6' // https://kb.mailpoet.com/article/205-roles-and-permissions
+    ];
+  </script>
+<% endblock %>
+
+<% block translations %>
+  <% include 'segments/translations.html' %>
+<% endblock %>
+
+<% block after_translations %>
+  <%= do_action('mailpoet_segments_translations_after') %>
+<% endblock %>
