@@ -162,7 +162,7 @@ class Segments {
     }
     $data['automations'] = array_map(function(Automation $automation) {
       return [
-        'id' => $automation->getId(),
+        'id' => (string)$automation->getId(),
         'name' => $automation->getName(),
       ];
     }, $this->automationStorage->getAutomations());
