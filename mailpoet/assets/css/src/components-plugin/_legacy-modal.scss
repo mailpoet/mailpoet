@@ -257,3 +257,42 @@ body.mailpoet_modal_opened {
   90% { background-color: $color-secondary-light; }
   50% { background-color: $color-secondary; }
 }
+
+.mailpoet_modal_progress {
+  background-color: $color-secondary-light;
+  border-radius: 21px;
+  display: flex;
+  flex-direction: row;
+  height: 32px;
+  overflow: hidden;
+  position: relative;
+  width: 200px;
+}
+
+.mailpoet_modal_progress_bar {
+  animation-direction: linear;
+  animation-duration: 3s;
+  animation-iteration-count: infinite;
+  animation-name: bounce_mailpoet_modal_progress;
+  background-color: $color-secondary;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, .5) inset;
+  height: 100%;
+  line-height: inherit;
+  position: absolute;
+  transition: width .4s ease-in-out;
+}
+
+@keyframes bounce_mailpoet_modal_progress {
+  50% { background-color: $color-secondary-middle; }
+  100% { background-color: $color-secondary; }
+}
+
+.mailpoet_modal_progress_text {
+  color: $color-black;
+  display: inline-block;
+  margin: 5px 0 0;
+  position: absolute;
+  text-align: center;
+  text-shadow: $color-secondary-light 1px 0 1px;
+  width: 100%;
+}
