@@ -198,4 +198,8 @@ class EngagementDataBackfiller {
   public function getLastProcessedSubscriberId(): int {
     return $this->lastProcessedSubscriberId;
   }
+
+  public function setLastProcessedSubscriberId(int $id): void {
+    $this->lastProcessedSubscriberId = $id;
+  }
 }
