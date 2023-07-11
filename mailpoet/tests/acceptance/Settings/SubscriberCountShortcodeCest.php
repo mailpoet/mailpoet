@@ -19,10 +19,6 @@ class SubscriberCountShortcodeCest {
   const PAGE_TITLE = 'Subscribers Shortcode Page';
   const PAGE_TEXT = 'Your subscriber count is';
 
-  /** @var SegmentEntity */
-  private $segment1;
-  private $segment2;
-
   public function verifySubscribersShortcodeWithSegments(\AcceptanceTester $i) {
     $i->wantTo('Create page with shortcode of one subscriber and segment');
 
@@ -44,12 +40,12 @@ class SubscriberCountShortcodeCest {
     $i->wantTo('Create page with shortcode of all subscribers but different statuses');
 
     $segmentFactory = new Segment();
-    $this->segment1 = $segmentFactory->withName(self::SUBSCRIBERS_LIST_NAME_ONE)->create();
-    $this->segment2 = $segmentFactory->withName(self::SUBSCRIBERS_LIST_NAME_TWO)->create();
-    $pageContent = self::PAGE_TEXT . " [mailpoet_subscribers_count] segments={$this->segment1->getId()},{$this->segment2->getId()}]";
+    $segment1 = $segmentFactory->withName(self::SUBSCRIBERS_LIST_NAME_ONE)->create();
+    $segment2 = $segmentFactory->withName(self::SUBSCRIBERS_LIST_NAME_TWO)->create();
+    $pageContent = self::PAGE_TEXT . " [mailpoet_subscribers_count segments={$segment1->getId()},{$segment2->getId()}]";
     $postUrl = $i->createPost(self::PAGE_TITLE, $pageContent);
 
-    $this->prepareSubscribersData($this->segment1, $this->segment2);
+    $this->prepareSubscribersData($segment1, $segment2);
 
     $i->login();
 
