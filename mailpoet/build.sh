@@ -14,7 +14,7 @@ mkdir $plugin_name
 # Production assets.
 echo '[BUILD] Generating production CSS and JS assets'
 rm -rf node_modules
-pnpm install --frozen-lockfile --prefer-offline
+pnpm install --frozen-lockfile --prefer-offline -f
 ./do compile:all --env production
 
 # Extract translations.
