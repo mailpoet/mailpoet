@@ -32,6 +32,7 @@ class BackfillEngagementData extends SimpleWorker {
       $this->cronHelper->enforceExecutionLimit($timer);
       $batch = $this->engagementDataBackfiller->getBatch($lastSubscriberId);
       if (empty($batch)) {
+        $this->engagementDataBackfiller->setLastProcessedSubscriberId($lastSubscriberId);
         break;
       }
       $this->engagementDataBackfiller->updateBatch($batch);
