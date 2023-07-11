@@ -4,6 +4,7 @@ namespace MailPoet\Config;
 
 use MailPoet\Cron\CronTrigger;
 use MailPoet\Cron\Workers\AuthorizedSendingEmailsCheck;
+use MailPoet\Cron\Workers\BackfillEngagementData;
 use MailPoet\Cron\Workers\Beamer;
 use MailPoet\Cron\Workers\InactiveSubscribers;
 use MailPoet\Cron\Workers\NewsletterTemplateThumbnails;
@@ -180,6 +181,7 @@ class Populator {
     $this->detectReferral();
     $this->scheduleSubscriberLastEngagementDetection();
     $this->scheduleNewsletterTemplateThumbnails();
+    $this->scheduleBackfillEngagementData();
   }
 
   private function createMailPoetPage() {
@@ -708,6 +710,13 @@ class Populator {
       NewsletterTemplateThumbnails::TASK_TYPE,
       Carbon::createFromTimestamp($this->wp->currentTime('timestamp')),
       ScheduledTaskEntity::PRIORITY_LOW
+    );
+  }
+
+  private function scheduleBackfillEngagementData(): void {
+    $this->scheduleTask(
+      BackfillEngagementData::TASK_TYPE,
+      Carbon::createFromTimestamp($this->wp->currentTime('timestamp'))
     );
   }
 }
