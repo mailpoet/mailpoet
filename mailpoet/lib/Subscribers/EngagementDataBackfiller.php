@@ -134,6 +134,7 @@ class EngagementDataBackfiller {
       ->entityManager
       ->getConnection()
       ->createQueryBuilder()
+      // The orderStats alias comes from wooFilterHelper->applyOrderStatusFilter, which calls wooFilterHelper->applyCustomerOrderJoin
       ->select("$subscribersTable.id, MAX(orderStats.date_created) as last_purchase_at")
       ->from($subscribersTable)
       ->andWhere("$subscribersTable.id IN (:subscriberIds)")
