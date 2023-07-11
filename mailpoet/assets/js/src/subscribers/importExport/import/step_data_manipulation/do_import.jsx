@@ -25,7 +25,10 @@ export const doImport = (
     tags: [],
   };
 
-  MailPoet.Modal.loading(true);
+  const calcProgress = (result, subs) =>
+    Math.floor(((result.created + result.updated) / subs.length) * 100);
+
+  MailPoet.Modal.progress(true);
   const splitSubscribers = (localSubscribers, size) =>
     localSubscribers.reduce((res, item, index) => {
       if (index % size === 0) {
@@ -72,10 +75,13 @@ export const doImport = (
           importResult.updated += response.data.updated;
           importResult.segments = response.data.segments;
           importResult.added_to_segment_with_welcome_notification = added;
+          MailPoet.Modal.setProgress(
+            calcProgress(importResult, subscribersToImport),
+          );
           addQueue.run();
         })
         .fail((response) => {
-          MailPoet.Modal.loading(false);
+          MailPoet.Modal.progress(false);
           if (response.errors.length > 0) {
             MailPoet.Notice.error(
               response.errors.map((error) => error.message),
@@ -90,7 +96,7 @@ export const doImport = (
   queue.run();
 
   queue.onComplete(() => {
-    MailPoet.Modal.loading(false);
+    MailPoet.Modal.progress(false);
     if (
       importResult.errors.length > 0 &&
       !importResult.updated &&
