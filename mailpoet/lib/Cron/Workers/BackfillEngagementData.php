@@ -32,17 +32,15 @@ class BackfillEngagementData extends SimpleWorker {
       $this->cronHelper->enforceExecutionLimit($timer);
       $batch = $this->engagementDataBackfiller->getBatch($lastSubscriberId);
       if (empty($batch)) {
-        $this->engagementDataBackfiller->setLastProcessedSubscriberId($lastSubscriberId);
         break;
       }
       $this->engagementDataBackfiller->updateBatch($batch);
       $lastSubscriberId = $this->engagementDataBackfiller->getLastProcessedSubscriberId();
+      $meta['last_subscriber_id'] = $lastSubscriberId;
+      $task->setMeta($meta);
+      $this->scheduledTasksRepository->persist($task);
+      $this->scheduledTasksRepository->flush();
     } while (count($batch) === self::BATCH_SIZE);
-
-    $meta['last_subscriber_id'] = $this->engagementDataBackfiller->getLastProcessedSubscriberId();
-    $task->setMeta($meta);
-    $this->scheduledTasksRepository->persist($task);
-    $this->scheduledTasksRepository->flush();
 
     return true;
   }
