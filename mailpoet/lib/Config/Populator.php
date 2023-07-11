@@ -714,6 +714,14 @@ class Populator {
   }
 
   private function scheduleBackfillEngagementData(): void {
+    $existingTask = $this->scheduledTasksRepository->findOneBy(
+      [
+        'type' => BackfillEngagementData::TASK_TYPE,
+      ]
+    );
+    if ($existingTask) {
+      return;
+    }
     $this->scheduleTask(
       BackfillEngagementData::TASK_TYPE,
       Carbon::createFromTimestamp($this->wp->currentTime('timestamp'))
