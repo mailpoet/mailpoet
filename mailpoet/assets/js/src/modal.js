@@ -100,6 +100,11 @@ export const MailPoetModal = {
       '<div id="mailpoet_modal_loading_2" class="mailpoet_modal_loading mailpoet_modal_loading_2"></div>' +
       '<div id="mailpoet_modal_loading_3" class="mailpoet_modal_loading mailpoet_modal_loading_3"></div>' +
       '</div>',
+    progress:
+      '<div id="mailpoet_modal_progress" class="mailpoet_modal_progress" style="display:none;">' +
+      '<div class="mailpoet_modal_progress_bar" style="width: 0%"></div>' +
+      '<div class="mailpoet_modal_progress_text">0%</div>' +
+      '</div>',
     panel:
       '<div id="mailpoet_panel" class="mailpoet_panel">' +
       '<a href="javascript:;" id="mailpoet_modal_close" class="mailpoet_modal_close">' +
@@ -198,6 +203,8 @@ export const MailPoetModal = {
       jQuery('body').append(this.templates.overlay);
       // insert loading indicator into overlay
       jQuery('#mailpoet_modal_overlay').append(this.templates.loading);
+      // insert progress indicator into overlay
+      jQuery('#mailpoet_modal_overlay').append(this.templates.progress);
     }
     return this;
   },
@@ -574,6 +581,43 @@ export const MailPoetModal = {
 
     // remove loading class from overlay
     jQuery('#mailpoet_modal_overlay').removeClass('mailpoet_overlay_loading');
+
+    return this;
+  },
+  progress: function (toggle) {
+    // make sure the overlay is initialized and that it's visible
+    this.initOverlay(true);
+
+    if (toggle === true) {
+      this.showProgress();
+    } else {
+      this.hideProgress();
+    }
+
+    return this;
+  },
+  showProgress: function () {
+    this.setProgress(0);
+    jQuery('#mailpoet_modal_progress').show();
+
+    // add loading class to overlay
+    jQuery('#mailpoet_modal_overlay').addClass('mailpoet_overlay_loading');
+
+    return this;
+  },
+  hideProgress: function () {
+    jQuery('#mailpoet_modal_progress').hide();
+
+    // remove loading class from overlay
+    jQuery('#mailpoet_modal_overlay').removeClass('mailpoet_overlay_loading');
+
+    return this;
+  },
+  setProgress: function (percent) {
+    var value = Math.max(0, Math.min(percent, 100));
+    var $progress = jQuery('#mailpoet_modal_progress');
+    $progress.find('.mailpoet_modal_progress_bar').css({ width: value + '%' });
+    $progress.find('.mailpoet_modal_progress_text').text(value + '%');
 
     return this;
   },
