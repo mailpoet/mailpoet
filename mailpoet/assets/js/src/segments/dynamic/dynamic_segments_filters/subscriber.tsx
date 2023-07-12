@@ -12,7 +12,8 @@ import {
   validateSubscriberScore,
 } from './fields/subscriber/subscriber_score';
 import {
-  DateFields,
+  DateFieldsDefaultBefore,
+  DateFieldsDefaultInTheLast,
   DateOperator,
   validateDateField,
 } from './fields/date_fields';
@@ -95,7 +96,7 @@ export function validateSubscriber(formItems: WordpressRoleFormItem): boolean {
 const componentsMap = {
   [SubscriberActionTypes.WORDPRESS_ROLE]: WordpressRoleFields,
   [SubscriberActionTypes.SUBSCRIBER_SCORE]: SubscriberScoreFields,
-  [SubscriberActionTypes.SUBSCRIBED_DATE]: DateFields,
+  [SubscriberActionTypes.SUBSCRIBED_DATE]: DateFieldsDefaultBefore,
   [SubscriberActionTypes.MAILPOET_CUSTOM_FIELD]: MailPoetCustomFields,
   [SubscriberActionTypes.SUBSCRIBED_TO_LIST]: SubscribedToList,
   [SubscriberActionTypes.SUBSCRIBER_TAG]: SubscriberTag,
@@ -103,12 +104,17 @@ const componentsMap = {
   [SubscriberActionTypes.SUBSCRIBER_LAST_NAME]: TextField,
   [SubscriberActionTypes.SUBSCRIBER_EMAIL]: TextField,
   [SubscriberActionTypes.SUBSCRIBED_VIA_FORM]: SubscribedViaForm,
-  [SubscriberActionTypes.SUBSCRIBER_LAST_ENGAGEMENT_DATE]: DateFields,
-  [SubscriberActionTypes.SUBSCRIBER_LAST_PURCHASE_DATE]: DateFields,
-  [SubscriberActionTypes.SUBSCRIBER_LAST_OPEN_DATE]: DateFields,
-  [SubscriberActionTypes.SUBSCRIBER_LAST_CLICK_DATE]: DateFields,
-  [SubscriberActionTypes.SUBSCRIBER_LAST_PAGE_VIEW_DATE]: DateFields,
-  [SubscriberActionTypes.SUBSCRIBER_LAST_SENDING_DATE]: DateFields,
+  [SubscriberActionTypes.SUBSCRIBER_LAST_ENGAGEMENT_DATE]:
+    DateFieldsDefaultInTheLast,
+  [SubscriberActionTypes.SUBSCRIBER_LAST_PURCHASE_DATE]:
+    DateFieldsDefaultInTheLast,
+  [SubscriberActionTypes.SUBSCRIBER_LAST_OPEN_DATE]: DateFieldsDefaultInTheLast,
+  [SubscriberActionTypes.SUBSCRIBER_LAST_CLICK_DATE]:
+    DateFieldsDefaultInTheLast,
+  [SubscriberActionTypes.SUBSCRIBER_LAST_PAGE_VIEW_DATE]:
+    DateFieldsDefaultInTheLast,
+  [SubscriberActionTypes.SUBSCRIBER_LAST_SENDING_DATE]:
+    DateFieldsDefaultInTheLast,
 };
 
 export function SubscriberFields({ filterIndex }: FilterProps): JSX.Element {
