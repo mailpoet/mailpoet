@@ -34,10 +34,6 @@ class SubscriberEndpoint extends Endpoint {
     ];
   }
 
-  public function checkPermissions(): bool {
-    return true;
-  }
-
   public function handle(Request $request): Response {
     $automation = $this->automationStorage->getAutomation(absint($request->getParam('id')));
     if (!$automation) {
