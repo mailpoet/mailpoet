@@ -12,6 +12,7 @@ class SubscriberDateField implements Filter {
   const LAST_PURCHASE_DATE = 'lastPurchaseDate';
   const LAST_OPEN_DATE = 'lastOpenDate';
   const LAST_PAGE_VIEW_DATE = 'lastPageViewDate';
+  const LAST_SENDING_DATE = 'lastSendingDate';
   const SUBSCRIBED_DATE = 'subscribedDate';
 
   const TYPES = [
@@ -20,6 +21,7 @@ class SubscriberDateField implements Filter {
     self::LAST_PURCHASE_DATE,
     self::LAST_OPEN_DATE,
     self::LAST_PAGE_VIEW_DATE,
+    self::LAST_SENDING_DATE,
     self::SUBSCRIBED_DATE,
   ];
 
@@ -93,6 +95,8 @@ class SubscriberDateField implements Filter {
         return 'last_page_view_at';
       case self::SUBSCRIBED_DATE:
         return 'last_subscribed_at';
+      case self::LAST_SENDING_DATE:
+        return 'last_sending_at';
       default:
         throw new InvalidFilterException('Invalid action', InvalidFilterException::MISSING_ACTION);
     }

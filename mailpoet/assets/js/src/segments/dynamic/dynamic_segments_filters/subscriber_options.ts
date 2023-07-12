@@ -48,6 +48,11 @@ export const SubscriberSegmentOptions = [
     group: SegmentTypes.WordPressRole,
   },
   {
+    value: SubscriberActionTypes.SUBSCRIBER_LAST_SENDING_DATE,
+    label: MailPoet.I18n.t('lastSendingDate').toLowerCase(),
+    group: SegmentTypes.WordPressRole,
+  },
+  {
     value: SubscriberActionTypes.MAILPOET_CUSTOM_FIELD,
     label: MailPoet.I18n.t('mailpoetCustomField'),
     group: SegmentTypes.WordPressRole,
