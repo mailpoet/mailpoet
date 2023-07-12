@@ -27,6 +27,11 @@ export enum SubscriberActionTypes {
   SUBSCRIBER_FIRST_NAME = 'subscriberFirstName',
   SUBSCRIBER_LAST_NAME = 'subscriberLastName',
   SUBSCRIBER_EMAIL = 'subscriberEmail',
+  SUBSCRIBER_LAST_CLICK_DATE = 'lastClickDate',
+  SUBSCRIBER_LAST_ENGAGEMENT_DATE = 'lastEngagementDate',
+  SUBSCRIBER_LAST_PURCHASE_DATE = 'lastPurchaseDate',
+  SUBSCRIBER_LAST_OPEN_DATE = 'lastOpenDate',
+  SUBSCRIBER_LAST_PAGE_VIEW_DATE = 'lastPageViewDate',
   SUBSCRIBER_TAG = 'subscriberTag',
   SUBSCRIBED_VIA_FORM = 'subscribedViaForm',
 }
