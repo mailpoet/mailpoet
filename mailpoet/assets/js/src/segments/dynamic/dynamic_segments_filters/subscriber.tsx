@@ -65,6 +65,18 @@ export function validateSubscriber(formItems: WordpressRoleFormItem): boolean {
   ) {
     return validateTextField(formItems);
   }
+  if (
+    [
+      SubscriberActionTypes.SUBSCRIBER_LAST_ENGAGEMENT_DATE,
+      SubscriberActionTypes.SUBSCRIBER_LAST_PURCHASE_DATE,
+      SubscriberActionTypes.SUBSCRIBER_LAST_OPEN_DATE,
+      SubscriberActionTypes.SUBSCRIBER_LAST_CLICK_DATE,
+      SubscriberActionTypes.SUBSCRIBER_LAST_PAGE_VIEW_DATE,
+    ].includes(formItems.action as SubscriberActionTypes)
+  ) {
+    return validateDateField(formItems);
+  }
+
   if (formItems.action === SubscriberActionTypes.SUBSCRIBED_VIA_FORM) {
     return validateSubscribedViaForm(formItems);
   }
@@ -90,6 +102,11 @@ const componentsMap = {
   [SubscriberActionTypes.SUBSCRIBER_LAST_NAME]: TextField,
   [SubscriberActionTypes.SUBSCRIBER_EMAIL]: TextField,
   [SubscriberActionTypes.SUBSCRIBED_VIA_FORM]: SubscribedViaForm,
+  [SubscriberActionTypes.SUBSCRIBER_LAST_ENGAGEMENT_DATE]: DateFields,
+  [SubscriberActionTypes.SUBSCRIBER_LAST_PURCHASE_DATE]: DateFields,
+  [SubscriberActionTypes.SUBSCRIBER_LAST_OPEN_DATE]: DateFields,
+  [SubscriberActionTypes.SUBSCRIBER_LAST_CLICK_DATE]: DateFields,
+  [SubscriberActionTypes.SUBSCRIBER_LAST_PAGE_VIEW_DATE]: DateFields,
 };
 
 export function SubscriberFields({ filterIndex }: FilterProps): JSX.Element {

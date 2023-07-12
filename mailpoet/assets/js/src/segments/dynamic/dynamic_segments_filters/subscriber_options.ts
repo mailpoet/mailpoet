@@ -23,6 +23,31 @@ export const SubscriberSegmentOptions = [
     group: SegmentTypes.WordPressRole,
   },
   {
+    value: SubscriberActionTypes.SUBSCRIBER_LAST_CLICK_DATE,
+    label: MailPoet.I18n.t('lastClickDate').toLowerCase(),
+    group: SegmentTypes.WordPressRole,
+  },
+  {
+    value: SubscriberActionTypes.SUBSCRIBER_LAST_ENGAGEMENT_DATE,
+    label: MailPoet.I18n.t('lastEngagementDate').toLowerCase(),
+    group: SegmentTypes.WordPressRole,
+  },
+  {
+    value: SubscriberActionTypes.SUBSCRIBER_LAST_OPEN_DATE,
+    label: MailPoet.I18n.t('lastOpenDate').toLowerCase(),
+    group: SegmentTypes.WordPressRole,
+  },
+  {
+    value: SubscriberActionTypes.SUBSCRIBER_LAST_PAGE_VIEW_DATE,
+    label: MailPoet.I18n.t('lastPageViewDate').toLowerCase(),
+    group: SegmentTypes.WordPressRole,
+  },
+  {
+    value: SubscriberActionTypes.SUBSCRIBER_LAST_PURCHASE_DATE,
+    label: MailPoet.I18n.t('lastPurchaseDate').toLowerCase(),
+    group: SegmentTypes.WordPressRole,
+  },
+  {
     value: SubscriberActionTypes.MAILPOET_CUSTOM_FIELD,
     label: MailPoet.I18n.t('mailpoetCustomField'),
     group: SegmentTypes.WordPressRole,
