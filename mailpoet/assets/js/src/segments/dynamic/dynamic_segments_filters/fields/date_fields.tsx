@@ -15,6 +15,8 @@ export enum DateOperator {
   BEFORE = 'before',
   AFTER = 'after',
   ON = 'on',
+  ON_OR_BEFORE = 'onOrBefore',
+  ON_OR_AFTER = 'onOrAfter',
   NOT_ON = 'notOn',
   IN_THE_LAST = 'inTheLast',
   NOT_IN_THE_LAST = 'notInTheLast',
@@ -24,6 +26,8 @@ const availableOperators = [
   DateOperator.BEFORE,
   DateOperator.AFTER,
   DateOperator.ON,
+  DateOperator.ON_OR_AFTER,
+  DateOperator.ON_OR_BEFORE,
   DateOperator.NOT_ON,
   DateOperator.IN_THE_LAST,
   DateOperator.NOT_IN_THE_LAST,
@@ -66,6 +70,8 @@ export function DateFields({ filterIndex }: FilterProps): JSX.Element {
       (segment.operator === DateOperator.BEFORE ||
         segment.operator === DateOperator.AFTER ||
         segment.operator === DateOperator.ON ||
+        segment.operator === DateOperator.ON_OR_AFTER ||
+        segment.operator === DateOperator.ON_OR_BEFORE ||
         segment.operator === DateOperator.NOT_ON) &&
       (parseDate(segment.value) === undefined ||
         !/^\d+-\d+-\d+$/.test(segment.value))
@@ -95,9 +101,15 @@ export function DateFields({ filterIndex }: FilterProps): JSX.Element {
         }}
       >
         <option value={DateOperator.BEFORE}>{MailPoet.I18n.t('before')}</option>
-        <option value={DateOperator.AFTER}>{MailPoet.I18n.t('after')}</option>
+        <option value={DateOperator.ON_OR_BEFORE}>
+          {MailPoet.I18n.t('onOrBefore')}
+        </option>
         <option value={DateOperator.ON}>{MailPoet.I18n.t('on')}</option>
         <option value={DateOperator.NOT_ON}>{MailPoet.I18n.t('notOn')}</option>
+        <option value={DateOperator.ON_OR_AFTER}>
+          {MailPoet.I18n.t('onOrAfter')}
+        </option>
+        <option value={DateOperator.AFTER}>{MailPoet.I18n.t('after')}</option>
         <option value={DateOperator.IN_THE_LAST}>
           {MailPoet.I18n.t('inTheLast')}
         </option>
@@ -108,6 +120,8 @@ export function DateFields({ filterIndex }: FilterProps): JSX.Element {
       {(segment.operator === DateOperator.BEFORE ||
         segment.operator === DateOperator.AFTER ||
         segment.operator === DateOperator.ON ||
+        segment.operator === DateOperator.ON_OR_AFTER ||
+        segment.operator === DateOperator.ON_OR_BEFORE ||
         segment.operator === DateOperator.NOT_ON) && (
         <Datepicker
           dateFormat="MMM d, yyyy"
@@ -151,6 +165,8 @@ export function validateDateField(formItems: DateFormItem): boolean {
       DateOperator.AFTER,
       DateOperator.ON,
       DateOperator.NOT_ON,
+      DateOperator.ON_OR_BEFORE,
+      DateOperator.ON_OR_AFTER,
     ].includes(formItems.operator as DateOperator)
   ) {
     const re = /^\d+-\d+-\d+$/;
