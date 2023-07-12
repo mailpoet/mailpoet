@@ -11,6 +11,7 @@ use MailPoet\Segments\DynamicSegments\Filters\EmailActionClickAny;
 use MailPoet\Segments\DynamicSegments\Filters\EmailOpensAbsoluteCountAction;
 use MailPoet\Segments\DynamicSegments\Filters\Filter;
 use MailPoet\Segments\DynamicSegments\Filters\MailPoetCustomFields;
+use MailPoet\Segments\DynamicSegments\Filters\SubscriberDateField;
 use MailPoet\Segments\DynamicSegments\Filters\SubscriberScore;
 use MailPoet\Segments\DynamicSegments\Filters\SubscriberSegment;
 use MailPoet\Segments\DynamicSegments\Filters\SubscriberSubscribedDate;
@@ -105,6 +106,9 @@ class FilterFactory {
   /** @var WooCommerceCustomerTextField */
   private $wooCommerceCustomerTextField;
 
+  /** @var SubscriberDateField */
+  private $subscriberDateField;
+
   /** @var AutomationsEvents */
   private $automationsEvents;
 
@@ -133,6 +137,7 @@ class FilterFactory {
     WooCommerceUsedPaymentMethod $wooCommerceUsedPaymentMethod,
     WooCommerceUsedShippingMethod $wooCommerceUsedShippingMethod,
     SubscriberTextField $subscriberTextField,
+    SubscriberDateField $subscriberDateField,
     AutomationsEvents $automationsEvents
   ) {
     $this->emailAction = $emailAction;
@@ -160,6 +165,7 @@ class FilterFactory {
     $this->wooCommerceUsedShippingMethod = $wooCommerceUsedShippingMethod;
     $this->wooCommerceCustomerTextField = $wooCommerceCustomerTextField;
     $this->automationsEvents = $automationsEvents;
+    $this->subscriberDateField = $subscriberDateField;
   }
 
   public function getFilterForFilterEntity(DynamicSegmentFilterEntity $filter): Filter {
@@ -187,7 +193,7 @@ class FilterFactory {
   /**
    * @param ?string $action
    *
-   * @return MailPoetCustomFields|SubscriberScore|SubscriberSegment|SubscriberSubscribedDate|UserRole|SubscriberTag|SubscriberTextField|SubscriberSubscribedViaForm
+   * @return MailPoetCustomFields|SubscriberScore|SubscriberSegment|SubscriberSubscribedDate|UserRole|SubscriberTag|SubscriberTextField|SubscriberSubscribedViaForm|SubscriberDateField
    */
   private function userRole(?string $action) {
     if ($action === SubscriberSubscribedDate::TYPE) {
@@ -204,6 +210,8 @@ class FilterFactory {
       return $this->subscribedViaForm;
     } elseif (in_array($action, SubscriberTextField::TYPES)) {
       return $this->subscriberTextField;
+    } elseif (in_array($action, SubscriberDateField::TYPES)) {
+      return $this->subscriberDateField;
     }
     return $this->userRole;
   }

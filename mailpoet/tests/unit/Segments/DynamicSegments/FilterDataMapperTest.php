@@ -9,6 +9,7 @@ use MailPoet\Segments\DynamicSegments\Filters\EmailAction;
 use MailPoet\Segments\DynamicSegments\Filters\EmailActionClickAny;
 use MailPoet\Segments\DynamicSegments\Filters\EmailOpensAbsoluteCountAction;
 use MailPoet\Segments\DynamicSegments\Filters\MailPoetCustomFields;
+use MailPoet\Segments\DynamicSegments\Filters\SubscriberDateField;
 use MailPoet\Segments\DynamicSegments\Filters\SubscriberScore;
 use MailPoet\Segments\DynamicSegments\Filters\SubscriberSegment;
 use MailPoet\Segments\DynamicSegments\Filters\SubscriberSubscribedDate;
@@ -896,6 +897,65 @@ class FilterDataMapperTest extends \MailPoetUnitTest {
       'segmentType' => DynamicSegmentFilterData::TYPE_AUTOMATIONS,
       'operator' => 'any',
       'automation_ids' => ['1', '2'],
+    ]]]);
+  }
+
+  /**
+   * @dataProvider dateFieldActions
+   */
+  public function testItMapsSubscriberDateField(string $action): void {
+    $data = ['filters' => [[
+      'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
+      'action' => $action,
+      'operator' => 'on',
+      'value' => '2023-07-01',
+    ]]];
+    $filters = $this->mapper->map($data);
+    expect($filters)->array();
+    expect($filters)->count(1);
+    $filter = reset($filters);
+    $this->assertInstanceOf(DynamicSegmentFilterData::class, $filter);
+    expect($filter)->isInstanceOf(DynamicSegmentFilterData::class);
+    expect($filter->getFilterType())->equals(DynamicSegmentFilterData::TYPE_USER_ROLE);
+    expect($filter->getAction())->equals($action);
+    expect($filter->getData())->equals([
+      'value' => '2023-07-01',
+      'operator' => 'on',
+      'action' => $action,
+      'connect' => DynamicSegmentFilterData::CONNECT_TYPE_AND,
+    ]);
+  }
+
+  public function dateFieldActions(): array {
+    return [
+      [SubscriberDateField::LAST_CLICK_DATE],
+      [SubscriberDateField::LAST_ENGAGEMENT_DATE],
+      [SubscriberDateField::LAST_PURCHASE_DATE],
+      [SubscriberDateField::LAST_OPEN_DATE],
+      [SubscriberDateField::LAST_PAGE_VIEW_DATE],
+    ];
+  }
+
+  public function testItThrowsExceptionForSubscriberDateFieldInvalidOperator(): void {
+    $this->expectException(InvalidFilterException::class);
+    $this->expectExceptionCode(InvalidFilterException::MISSING_OPERATOR);
+    $this->expectExceptionMessage('Invalid operator');
+    $this->mapper->map(['filters' => [[
+      'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
+      'action' => 'lastClickDate',
+      'operator' => 'notAValidOperator',
+      'value' => '2023-07-01',
+    ]]]);
+  }
+
+  public function testItThrowsExceptionForSubscriberDateFieldMissingValue(): void {
+    $this->expectException(InvalidFilterException::class);
+    $this->expectExceptionCode(InvalidFilterException::MISSING_VALUE);
+    $this->expectExceptionMessage('Missing date value');
+    $this->mapper->map(['filters' => [[
+      'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
+      'action' => 'lastClickDate',
+      'operator' => 'on',
     ]]]);
   }
 }

@@ -10,6 +10,7 @@ use MailPoet\Segments\DynamicSegments\Filters\EmailAction;
 use MailPoet\Segments\DynamicSegments\Filters\EmailActionClickAny;
 use MailPoet\Segments\DynamicSegments\Filters\EmailOpensAbsoluteCountAction;
 use MailPoet\Segments\DynamicSegments\Filters\MailPoetCustomFields;
+use MailPoet\Segments\DynamicSegments\Filters\SubscriberDateField;
 use MailPoet\Segments\DynamicSegments\Filters\SubscriberScore;
 use MailPoet\Segments\DynamicSegments\Filters\SubscriberSegment;
 use MailPoet\Segments\DynamicSegments\Filters\SubscriberSubscribedDate;
@@ -222,6 +223,23 @@ class FilterDataMapper {
         throw new InvalidFilterException('Missing operator', InvalidFilterException::MISSING_OPERATOR);
       }
       if (!in_array($data['operator'], DynamicSegmentFilterData::TEXT_FIELD_OPERATORS)) {
+        throw new InvalidFilterException('Invalid operator', InvalidFilterException::MISSING_OPERATOR);
+      }
+      return new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_USER_ROLE, $data['action'], [
+        'value' => $data['value'],
+        'operator' => $data['operator'],
+        'action' => $data['action'],
+        'connect' => $data['connect'],
+      ]);
+    }
+    if (in_array($data['action'], SubscriberDateField::TYPES)) {
+      if (empty($data['value'])) {
+        throw new InvalidFilterException('Missing date value', InvalidFilterException::MISSING_VALUE);
+      }
+      if (empty($data['operator'])) {
+        throw new InvalidFilterException('Missing operator', InvalidFilterException::MISSING_OPERATOR);
+      }
+      if (!in_array($data['operator'], DateFilterHelper::getValidOperators())) {
         throw new InvalidFilterException('Invalid operator', InvalidFilterException::MISSING_OPERATOR);
       }
       return new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_USER_ROLE, $data['action'], [
