@@ -201,6 +201,14 @@ class Subscriber {
   /**
    * @return $this
    */
+  public function withLastSendingAt(DateTimeInterface $date) {
+    $this->data['lastSendingAt'] = $date;
+    return $this;
+  }
+
+  /**
+   * @return $this
+   */
   public function withSubscribedIp(string $subscribedIp) {
     $this->data['subscribedIp'] = $subscribedIp;
     return $this;
@@ -287,6 +295,10 @@ class Subscriber {
 
     if (isset($this->data['lastPageViewAt'])) {
       $subscriber->setLastPageViewAt($this->data['lastPageViewAt']);
+    }
+
+    if (isset($this->data['lastSendingAt'])) {
+      $subscriber->setLastSendingAt($this->data['lastSendingAt']);
     }
 
     $entityManager->persist($subscriber);
