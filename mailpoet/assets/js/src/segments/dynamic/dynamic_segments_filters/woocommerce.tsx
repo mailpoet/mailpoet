@@ -1,6 +1,9 @@
 import { useSelect } from '@wordpress/data';
 import { FilterProps, WooCommerceFormItem } from '../types';
-import { DateFields, validateDateField } from './fields/date_fields';
+import {
+  DateFieldsDefaultBefore,
+  validateDateField,
+} from './fields/date_fields';
 import { storeName } from '../store';
 import { WooCommerceActionTypes } from './woocommerce_options';
 import {
@@ -93,7 +96,7 @@ const componentsMap = {
   [WooCommerceActionTypes.CUSTOMER_IN_CITY]: TextField,
   [WooCommerceActionTypes.CUSTOMER_IN_POSTAL_CODE]: TextField,
   [WooCommerceActionTypes.NUMBER_OF_ORDERS]: NumberOfOrdersFields,
-  [WooCommerceActionTypes.PURCHASE_DATE]: DateFields,
+  [WooCommerceActionTypes.PURCHASE_DATE]: DateFieldsDefaultBefore,
   [WooCommerceActionTypes.PURCHASED_PRODUCT]: PurchasedProductFields,
   [WooCommerceActionTypes.PURCHASED_CATEGORY]: PurchasedCategoryFields,
   [WooCommerceActionTypes.SINGLE_ORDER_VALUE]: SingleOrderValueFields,

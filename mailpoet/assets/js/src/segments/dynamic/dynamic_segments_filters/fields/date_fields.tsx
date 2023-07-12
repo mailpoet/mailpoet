@@ -22,6 +22,10 @@ export enum DateOperator {
   NOT_IN_THE_LAST = 'notInTheLast',
 }
 
+export type DateFilterProps = FilterProps & {
+  defaultOperator: DateOperator;
+};
+
 const availableOperators = [
   DateOperator.BEFORE,
   DateOperator.AFTER,
@@ -53,7 +57,10 @@ const parseDate = (value: string): Date | undefined => {
   return date;
 };
 
-export function DateFields({ filterIndex }: FilterProps): JSX.Element {
+function DateFields({
+  filterIndex,
+  defaultOperator,
+}: DateFilterProps): JSX.Element {
   const segment: DateFormItem = useSelect(
     (select) => select(storeName).getSegmentFilter(filterIndex),
     [filterIndex],
@@ -64,7 +71,7 @@ export function DateFields({ filterIndex }: FilterProps): JSX.Element {
 
   useEffect(() => {
     if (!availableOperators.includes(segment.operator as DateOperator)) {
-      void updateSegmentFilter({ operator: DateOperator.BEFORE }, filterIndex);
+      void updateSegmentFilter({ operator: defaultOperator }, filterIndex);
     }
     if (
       (segment.operator === DateOperator.BEFORE ||
@@ -89,7 +96,7 @@ export function DateFields({ filterIndex }: FilterProps): JSX.Element {
     ) {
       void updateSegmentFilter({ value: '' }, filterIndex);
     }
-  }, [updateSegmentFilter, segment, filterIndex]);
+  }, [updateSegmentFilter, segment, filterIndex, defaultOperator]);
 
   return (
     <Grid.CenteredRow>
@@ -184,3 +191,14 @@ export function validateDateField(formItems: DateFormItem): boolean {
 
   return false;
 }
+
+function withDefaults(defaultOperator: DateOperator) {
+  return function dateFieldWithDefaults(props: FilterProps): JSX.Element {
+    return <DateFields {...props} defaultOperator={defaultOperator} />;
+  };
+}
+
+export const DateFieldsDefaultBefore = withDefaults(DateOperator.BEFORE);
+export const DateFieldsDefaultInTheLast = withDefaults(
+  DateOperator.IN_THE_LAST,
+);
