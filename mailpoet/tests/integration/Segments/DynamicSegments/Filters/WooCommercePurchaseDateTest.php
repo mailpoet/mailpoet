@@ -86,6 +86,30 @@ class WooCommercePurchaseDateTest extends \MailPoetTest {
     expect($emails)->equals(['c2@example.com']);
   }
 
+  public function testOnOrAfterDate(): void {
+    $customerId1 = $this->tester->createCustomer('c1@example.com');
+    $customerId2 = $this->tester->createCustomer('c2@example.com');
+    $customerId3 = $this->tester->createCustomer('c3@example.com');
+    $this->createOrder($customerId1, new Carbon('2023-01-01'));
+    $this->createOrder($customerId2, new Carbon('2023-01-02'));
+    $this->createOrder($customerId3, new Carbon('2023-01-03'));
+    $emails = $this->getSubscriberEmailsMatchingFilter('onOrAfter', '2023-01-02');
+    expect(count($emails))->equals(2);
+    expect($emails)->equals(['c2@example.com', 'c3@example.com']);
+  }
+
+  public function testOnOrBeforeDate(): void {
+    $customerId1 = $this->tester->createCustomer('c1@example.com');
+    $customerId2 = $this->tester->createCustomer('c2@example.com');
+    $customerId3 = $this->tester->createCustomer('c3@example.com');
+    $this->createOrder($customerId1, new Carbon('2023-01-01'));
+    $this->createOrder($customerId2, new Carbon('2023-01-02'));
+    $this->createOrder($customerId3, new Carbon('2023-01-03'));
+    $emails = $this->getSubscriberEmailsMatchingFilter('onOrBefore', '2023-01-02');
+    expect(count($emails))->equals(2);
+    expect($emails)->equals(['c1@example.com', 'c2@example.com']);
+  }
+
   public function testNotOn(): void {
     $customerId1 = $this->tester->createCustomer('c1@example.com');
     $customerId2 = $this->tester->createCustomer('c2@example.com');

@@ -58,11 +58,15 @@ class WooCommercePurchaseDate implements Filter {
         break;
       case DateFilterHelper::IN_THE_LAST:
       case DateFilterHelper::NOT_IN_THE_LAST:
+      case DateFilterHelper::ON_OR_AFTER:
         $queryBuilder->andWhere("DATE($orderStatsAlias.date_created) >= :$dateParam");
         break;
       case DateFilterHelper::ON:
       case DateFilterHelper::NOT_ON:
         $queryBuilder->andWhere("DATE($orderStatsAlias.date_created) = :$dateParam");
+        break;
+      case DateFilterHelper::ON_OR_BEFORE:
+        $queryBuilder->andWhere("DATE($orderStatsAlias.date_created) <= :$dateParam");
         break;
       default:
         throw new InvalidFilterException('Incorrect value for operator', InvalidFilterException::MISSING_VALUE);
