@@ -172,25 +172,25 @@ class SubscriberDateFieldTest extends \MailPoetTest {
   public function testItWorksForNotInTheLast() {
     (new Subscriber())
       ->withEmail('1@example.com')
-      ->withLastEngagementAt((new CarbonImmutable())->subDays(4))
+      ->withLastSubscribedAt((new CarbonImmutable())->subDays(4))
       ->create();
     (new Subscriber())
       ->withEmail('2@example.com')
-      ->withLastEngagementAt((new CarbonImmutable())->subDays(3))
+      ->withLastSubscribedAt((new CarbonImmutable())->subDays(3))
       ->create();
     (new Subscriber())
       ->withEmail('3@example.com')
-      ->withLastEngagementAt((new CarbonImmutable())->subDays(2))
+      ->withLastSubscribedAt((new CarbonImmutable())->subDays(2))
       ->create();
     (new Subscriber())
       ->withEmail('4@example.com')
-      ->withLastEngagementAt((new CarbonImmutable())->subDay())
+      ->withLastSubscribedAt((new CarbonImmutable())->subDay())
       ->create();
     (new Subscriber())
       ->withEmail('5@example.com')
-      ->withLastEngagementAt((new CarbonImmutable()))
+      ->withLastSubscribedAt((new CarbonImmutable()))
       ->create();
-    $this->assertFilterReturnsEmails('lastEngagementDate', 'notInTheLast', '3', ['1@example.com', '2@example.com']);
+    $this->assertFilterReturnsEmails('subscribedDate', 'notInTheLast', '3', ['1@example.com', '2@example.com']);
   }
 
   private function assertFilterReturnsEmails(string $action, string $operator, string $value, array $expectedEmails): void {

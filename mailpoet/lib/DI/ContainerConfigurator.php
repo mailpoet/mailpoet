@@ -443,7 +443,6 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Segments\DynamicSegments\Filters\MailPoetCustomFields::class)->setPublic(true);
     $container->autowire(\MailPoet\Segments\DynamicSegments\Filters\SubscriberDateField::class)->setPublic(true);
     $container->autowire(\MailPoet\Segments\DynamicSegments\Filters\SubscriberScore::class)->setPublic(true);
-    $container->autowire(\MailPoet\Segments\DynamicSegments\Filters\SubscriberSubscribedDate::class)->setPublic(true);
     $container->autowire(\MailPoet\Segments\DynamicSegments\Filters\SubscriberSubscribedViaForm::class)->setPublic(true);
     $container->autowire(\MailPoet\Segments\DynamicSegments\Filters\SubscriberSegment::class)->setPublic(true);
     $container->autowire(\MailPoet\Segments\DynamicSegments\Filters\SubscriberTag::class)->setPublic(true);

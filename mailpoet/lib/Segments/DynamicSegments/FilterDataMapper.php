@@ -13,7 +13,6 @@ use MailPoet\Segments\DynamicSegments\Filters\MailPoetCustomFields;
 use MailPoet\Segments\DynamicSegments\Filters\SubscriberDateField;
 use MailPoet\Segments\DynamicSegments\Filters\SubscriberScore;
 use MailPoet\Segments\DynamicSegments\Filters\SubscriberSegment;
-use MailPoet\Segments\DynamicSegments\Filters\SubscriberSubscribedDate;
 use MailPoet\Segments\DynamicSegments\Filters\SubscriberSubscribedViaForm;
 use MailPoet\Segments\DynamicSegments\Filters\SubscriberTag;
 use MailPoet\Segments\DynamicSegments\Filters\SubscriberTextField;
@@ -131,16 +130,6 @@ class FilterDataMapper {
   private function createSubscriber(array $data): DynamicSegmentFilterData {
     if (empty($data['action'])) {
       $data['action'] = DynamicSegmentFilterData::TYPE_USER_ROLE;
-    }
-    if ($data['action'] === SubscriberSubscribedDate::TYPE) {
-      if (empty($data['value'])) {
-        throw new InvalidFilterException('Missing number of days', InvalidFilterException::MISSING_VALUE);
-      }
-      return new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_USER_ROLE, $data['action'], [
-        'value' => $data['value'],
-        'operator' => $data['operator'] ?? DateFilterHelper::BEFORE,
-        'connect' => $data['connect'],
-      ]);
     }
     if ($data['action'] === SubscriberScore::TYPE) {
       if (!isset($data['value'])) {

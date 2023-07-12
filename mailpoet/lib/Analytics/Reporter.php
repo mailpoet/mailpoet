@@ -15,9 +15,9 @@ use MailPoet\Segments\DynamicSegments\Filters\EmailAction;
 use MailPoet\Segments\DynamicSegments\Filters\EmailActionClickAny;
 use MailPoet\Segments\DynamicSegments\Filters\EmailOpensAbsoluteCountAction;
 use MailPoet\Segments\DynamicSegments\Filters\MailPoetCustomFields;
+use MailPoet\Segments\DynamicSegments\Filters\SubscriberDateField;
 use MailPoet\Segments\DynamicSegments\Filters\SubscriberScore;
 use MailPoet\Segments\DynamicSegments\Filters\SubscriberSegment;
-use MailPoet\Segments\DynamicSegments\Filters\SubscriberSubscribedDate;
 use MailPoet\Segments\DynamicSegments\Filters\SubscriberTag;
 use MailPoet\Segments\DynamicSegments\Filters\UserRole;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceCategory;
@@ -203,7 +203,7 @@ class Reporter {
       'Segment > MailPoet custom field' => $this->isFilterTypeActive(DynamicSegmentFilterData::TYPE_USER_ROLE, MailPoetCustomFields::TYPE),
       'Segment > purchased in category' => $this->isFilterTypeActive(DynamicSegmentFilterData::TYPE_WOOCOMMERCE, WooCommerceCategory::ACTION_CATEGORY),
       'Segment > purchased product' => $this->isFilterTypeActive(DynamicSegmentFilterData::TYPE_WOOCOMMERCE, WooCommerceCategory::ACTION_PRODUCT),
-      'Segment > subscribed date' => $this->isFilterTypeActive(DynamicSegmentFilterData::TYPE_USER_ROLE, SubscriberSubscribedDate::TYPE),
+      'Segment > subscribed date' => $this->isFilterTypeActive(DynamicSegmentFilterData::TYPE_USER_ROLE, SubscriberDateField::SUBSCRIBED_DATE),
       'Segment > total spent' => $this->isFilterTypeActive(DynamicSegmentFilterData::TYPE_WOOCOMMERCE, WooCommerceTotalSpent::ACTION_TOTAL_SPENT),
       'Segment > WordPress user role' => $this->isFilterTypeActive(DynamicSegmentFilterData::TYPE_USER_ROLE, UserRole::TYPE),
       'Segment > subscriber tags' => $this->isFilterTypeActive(DynamicSegmentFilterData::TYPE_USER_ROLE, SubscriberTag::TYPE),
