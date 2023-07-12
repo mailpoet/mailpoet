@@ -10,6 +10,8 @@ class DateFilterHelper {
   const BEFORE = 'before';
   const AFTER = 'after';
   const ON = 'on';
+  const ON_OR_BEFORE = 'onOrBefore';
+  const ON_OR_AFTER = 'onOrAfter';
   const NOT_ON = 'notOn';
   const IN_THE_LAST = 'inTheLast';
   const NOT_IN_THE_LAST = 'notInTheLast';
@@ -26,6 +28,8 @@ class DateFilterHelper {
       self::BEFORE,
       self::AFTER,
       self::ON,
+      self::ON_OR_BEFORE,
+      self::ON_OR_AFTER,
       self::NOT_ON,
     ];
   }

@@ -26,20 +26,29 @@ class SubscriberSubscribedDate implements Filter {
     $parameter = 'date' . $parameterSuffix;
     $date = $this->dateFilterHelper->getDateStringForOperator($operator, $value);
 
-    if ($operator === DateFilterHelper::BEFORE) {
-      $queryBuilder->andWhere("DATE(last_subscribed_at) < :$parameter");
-    } elseif ($operator === DateFilterHelper::AFTER) {
-      $queryBuilder->andWhere("DATE(last_subscribed_at) > :$parameter");
-    } elseif ($operator === DateFilterHelper::ON) {
-      $queryBuilder->andWhere("DATE(last_subscribed_at) = :$parameter");
-    } elseif ($operator === DateFilterHelper::NOT_ON) {
-      $queryBuilder->andWhere("DATE(last_subscribed_at) != :$parameter");
-    } elseif ($operator === DateFilterHelper::IN_THE_LAST) {
-      $queryBuilder->andWhere("DATE(last_subscribed_at) >= :$parameter");
-    } elseif ($operator === DateFilterHelper::NOT_IN_THE_LAST) {
-      $queryBuilder->andWhere("DATE(last_subscribed_at) < :$parameter");
-    } else {
-      throw new InvalidFilterException('Incorrect value for operator', InvalidFilterException::MISSING_VALUE);
+    switch ($operator) {
+      case DateFilterHelper::BEFORE:
+      case DateFilterHelper::NOT_IN_THE_LAST:
+        $queryBuilder->andWhere("DATE(last_subscribed_at) < :$parameter");
+        break;
+      case DateFilterHelper::AFTER:
+        $queryBuilder->andWhere("DATE(last_subscribed_at) > :$parameter");
+        break;
+      case DateFilterHelper::ON:
+        $queryBuilder->andWhere("DATE(last_subscribed_at) = :$parameter");
+        break;
+      case DateFilterHelper::ON_OR_BEFORE:
+        $queryBuilder->andWhere("DATE(last_subscribed_at) <= :$parameter");
+        break;
+      case DateFilterHelper::NOT_ON:
+        $queryBuilder->andWhere("DATE(last_subscribed_at) != :$parameter");
+        break;
+      case DateFilterHelper::IN_THE_LAST:
+      case DateFilterHelper::ON_OR_AFTER:
+        $queryBuilder->andWhere("DATE(last_subscribed_at) >= :$parameter");
+        break;
+      default:
+        throw new InvalidFilterException('Incorrect value for operator', InvalidFilterException::MISSING_VALUE);
     }
     $queryBuilder->setParameter($parameter, $date);
 

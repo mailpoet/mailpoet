@@ -59,6 +59,18 @@ class SubscriberSubscribedDateTest extends \MailPoetTest {
     $this->assertEqualsCanonicalizing(['e123@example.com'], $emails);
   }
 
+  public function testGetOnOrBefore(): void {
+    $segmentFilterData = $this->getSegmentFilterData('onOrBefore', CarbonImmutable::now()->subDays(2)->format('Y-m-d'));
+    $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->filter);
+    $this->assertEqualsCanonicalizing(['e123@example.com', 'e1234@example.com', 'e12345@example.com'], $emails);
+  }
+
+  public function testGetOnOrAfter(): void {
+    $segmentFilterData = $this->getSegmentFilterData('onOrAfter', CarbonImmutable::now()->subDays(2)->format('Y-m-d'));
+    $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->filter);
+    $this->assertEqualsCanonicalizing(['e1@example.com', 'e12@example.com', 'e123@example.com'], $emails);
+  }
+
   public function testGetNotOn(): void {
     $segmentFilterData = $this->getSegmentFilterData('notOn', CarbonImmutable::now()->subDays(2)->format('Y-m-d'));
     $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->filter);
