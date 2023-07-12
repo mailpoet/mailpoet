@@ -47,21 +47,31 @@ export function* updateSection(
     defaultDateRange,
   );
 
+  const formatDate = (date: Date, endOfDay = false): string => {
+    const dateString = `${date.getFullYear()}-${
+      date.getMonth() < 9 ? '0' : ''
+    }${date.getMonth() + 1}-${date.getDate() < 10 ? '0' : ''}${date.getDate()}`;
+    const newDate = new Date(
+      `${dateString}T${endOfDay ? '23:59:59.999' : '00:00:00.000'}Z`,
+    );
+    return newDate.toISOString();
+  };
+
   const dates = section.withPreviousData
     ? {
         primary: {
-          after: primaryDate.after.toDate().toISOString(),
-          before: primaryDate.before.toDate().toISOString(),
+          after: formatDate(primaryDate.after.toDate()),
+          before: formatDate(primaryDate.before.toDate(), true),
         },
         secondary: {
-          after: secondaryDate.after.toDate().toISOString(),
-          before: secondaryDate.before.toDate().toISOString(),
+          after: formatDate(secondaryDate.after.toDate()),
+          before: formatDate(secondaryDate.before.toDate(), true),
         },
       }
     : {
         primary: {
-          after: primaryDate.after.toDate().toISOString(),
-          before: primaryDate.before.toDate().toISOString(),
+          after: formatDate(primaryDate.after.toDate()),
+          before: formatDate(primaryDate.before.toDate(), true),
         },
       };
   const id = select(storeName).getAutomation().id;
