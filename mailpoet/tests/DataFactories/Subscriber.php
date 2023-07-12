@@ -161,6 +161,46 @@ class Subscriber {
   /**
    * @return $this
    */
+  public function withLastClickAt(DateTimeInterface $date) {
+    $this->data['lastClickAt'] = $date;
+    return $this;
+  }
+
+  /**
+   * @return $this
+   */
+  public function withLastEngagementAt(DateTimeInterface $date) {
+    $this->data['lastEngagementAt'] = $date;
+    return $this;
+  }
+
+  /**
+   * @return $this
+   */
+  public function withLastPurchaseAt(DateTimeInterface $date) {
+    $this->data['lastPurchaseAt'] = $date;
+    return $this;
+  }
+
+  /**
+   * @return $this
+   */
+  public function withLastOpenAt(DateTimeInterface $date) {
+    $this->data['lastOpenAt'] = $date;
+    return $this;
+  }
+
+  /**
+   * @return $this
+   */
+  public function withLastPageViewAt(DateTimeInterface $date) {
+    $this->data['lastPageViewAt'] = $date;
+    return $this;
+  }
+
+  /**
+   * @return $this
+   */
   public function withSubscribedIp(string $subscribedIp) {
     $this->data['subscribedIp'] = $subscribedIp;
     return $this;
@@ -227,6 +267,26 @@ class Subscriber {
 
     if (isset($this->data['deletedAt'])) {
       $subscriber->setDeletedAt($this->data['deletedAt']);
+    }
+
+    if (isset($this->data['lastClickAt'])) {
+      $subscriber->setLastClickAt($this->data['lastClickAt']);
+    }
+
+    if (isset($this->data['lastEngagementAt'])) {
+      $subscriber->setLastEngagementAt($this->data['lastEngagementAt']);
+    }
+
+    if (isset($this->data['lastPurchaseAt'])) {
+      $subscriber->setLastPurchaseAt($this->data['lastPurchaseAt']);
+    }
+
+    if (isset($this->data['lastOpenAt'])) {
+      $subscriber->setLastOpenAt($this->data['lastOpenAt']);
+    }
+
+    if (isset($this->data['lastPageViewAt'])) {
+      $subscriber->setLastPageViewAt($this->data['lastPageViewAt']);
     }
 
     $entityManager->persist($subscriber);

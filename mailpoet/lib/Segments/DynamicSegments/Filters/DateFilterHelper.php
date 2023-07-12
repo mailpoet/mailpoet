@@ -16,14 +16,14 @@ class DateFilterHelper {
   const IN_THE_LAST = 'inTheLast';
   const NOT_IN_THE_LAST = 'notInTheLast';
 
-  public function getValidOperators(): array {
+  public static function getValidOperators(): array {
     return array_merge(
-      $this->getAbsoluteDateOperators(),
-      $this->getRelativeDateOperators()
+      self::getAbsoluteDateOperators(),
+      self::getRelativeDateOperators()
     );
   }
 
-  public function getAbsoluteDateOperators(): array {
+  public static function getAbsoluteDateOperators(): array {
     return [
       self::BEFORE,
       self::AFTER,
@@ -34,7 +34,7 @@ class DateFilterHelper {
     ];
   }
 
-  public function getRelativeDateOperators(): array {
+  public static function getRelativeDateOperators(): array {
     return [
       self::IN_THE_LAST,
       self::NOT_IN_THE_LAST,
@@ -42,12 +42,12 @@ class DateFilterHelper {
   }
 
   public function getDateStringForOperator(string $operator, string $value): string {
-    if (in_array($operator, $this->getAbsoluteDateOperators())) {
+    if (in_array($operator, self::getAbsoluteDateOperators())) {
       $carbon = CarbonImmutable::createFromFormat('Y-m-d', $value);
       if (!$carbon instanceof CarbonImmutable) {
         throw new InvalidFilterException('Invalid date value', InvalidFilterException::INVALID_DATE_VALUE);
       }
-    } else if (in_array($operator, $this->getRelativeDateOperators())) {
+    } else if (in_array($operator, self::getRelativeDateOperators())) {
       $carbon = CarbonImmutable::now()->subDays(intval($value) - 1);
     } else {
       throw new InvalidFilterException('Incorrect value for operator', InvalidFilterException::MISSING_VALUE);
@@ -68,7 +68,7 @@ class DateFilterHelper {
   public function getOperatorFromFilter(DynamicSegmentFilterEntity $filter): string {
     $filterData = $filter->getFilterData();
     $operator = $filterData->getParam('operator');
-    if (!is_string($operator) || !in_array($operator, $this->getValidOperators())) {
+    if (!is_string($operator) || !in_array($operator, self::getValidOperators())) {
       throw new InvalidFilterException('Incorrect value for operator', InvalidFilterException::MISSING_VALUE);
     }
     return $operator;
