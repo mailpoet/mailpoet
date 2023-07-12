@@ -14,7 +14,6 @@ use MailPoet\Segments\DynamicSegments\Filters\MailPoetCustomFields;
 use MailPoet\Segments\DynamicSegments\Filters\SubscriberDateField;
 use MailPoet\Segments\DynamicSegments\Filters\SubscriberScore;
 use MailPoet\Segments\DynamicSegments\Filters\SubscriberSegment;
-use MailPoet\Segments\DynamicSegments\Filters\SubscriberSubscribedDate;
 use MailPoet\Segments\DynamicSegments\Filters\SubscriberSubscribedViaForm;
 use MailPoet\Segments\DynamicSegments\Filters\SubscriberTag;
 use MailPoet\Segments\DynamicSegments\Filters\SubscriberTextField;
@@ -73,9 +72,6 @@ class FilterFactory {
   /** @var EmailOpensAbsoluteCountAction */
   private $emailOpensAbsoluteCount;
 
-  /** @var SubscriberSubscribedDate */
-  private $subscriberSubscribedDate;
-
   /** @var SubscriberScore */
   private $subscriberScore;
 
@@ -127,7 +123,6 @@ class FilterFactory {
     WooCommerceMembership $wooCommerceMembership,
     WooCommercePurchaseDate $wooCommercePurchaseDate,
     WooCommerceSubscription $wooCommerceSubscription,
-    SubscriberSubscribedDate $subscriberSubscribedDate,
     SubscriberScore $subscriberScore,
     SubscriberTag $subscriberTag,
     SubscriberSegment $subscriberSegment,
@@ -151,7 +146,6 @@ class FilterFactory {
     $this->wooCommerceSubscription = $wooCommerceSubscription;
     $this->emailOpensAbsoluteCount = $emailOpensAbsoluteCount;
     $this->wooCommerceTotalSpent = $wooCommerceTotalSpent;
-    $this->subscriberSubscribedDate = $subscriberSubscribedDate;
     $this->subscriberScore = $subscriberScore;
     $this->subscriberTag = $subscriberTag;
     $this->mailPoetCustomFields = $mailPoetCustomFields;
@@ -193,12 +187,10 @@ class FilterFactory {
   /**
    * @param ?string $action
    *
-   * @return MailPoetCustomFields|SubscriberScore|SubscriberSegment|SubscriberSubscribedDate|UserRole|SubscriberTag|SubscriberTextField|SubscriberSubscribedViaForm|SubscriberDateField
+   * @return MailPoetCustomFields|SubscriberScore|SubscriberSegment|UserRole|SubscriberTag|SubscriberTextField|SubscriberSubscribedViaForm|SubscriberDateField
    */
   private function userRole(?string $action) {
-    if ($action === SubscriberSubscribedDate::TYPE) {
-      return $this->subscriberSubscribedDate;
-    } elseif ($action === SubscriberScore::TYPE) {
+    if ($action === SubscriberScore::TYPE) {
       return $this->subscriberScore;
     } elseif ($action === MailPoetCustomFields::TYPE) {
       return $this->mailPoetCustomFields;

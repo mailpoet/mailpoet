@@ -12,7 +12,6 @@ use MailPoet\Segments\DynamicSegments\Filters\MailPoetCustomFields;
 use MailPoet\Segments\DynamicSegments\Filters\SubscriberDateField;
 use MailPoet\Segments\DynamicSegments\Filters\SubscriberScore;
 use MailPoet\Segments\DynamicSegments\Filters\SubscriberSegment;
-use MailPoet\Segments\DynamicSegments\Filters\SubscriberSubscribedDate;
 use MailPoet\Segments\DynamicSegments\Filters\SubscriberSubscribedViaForm;
 use MailPoet\Segments\DynamicSegments\Filters\SubscriberTag;
 use MailPoet\Segments\DynamicSegments\Filters\SubscriberTextField;
@@ -200,35 +199,6 @@ class FilterDataMapperTest extends \MailPoetUnitTest {
     $this->mapper->map(['filters' => [[
       'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
     ]]]);
-  }
-
-  public function testItChecksSubscribedDateValue(): void {
-    $this->expectException(InvalidFilterException::class);
-    $this->mapper->map(['filters' => [[
-      'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
-      'action' => SubscriberSubscribedDate::TYPE,
-    ]]]);
-  }
-
-  public function testItCreatesSubscribedDate(): void {
-    $filters = $this->mapper->map(['filters' => [[
-      'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
-      'action' => SubscriberSubscribedDate::TYPE,
-      'value' => 2,
-      'operator' => 'after',
-    ]]]);
-    expect($filters)->array();
-    expect($filters)->count(1);
-    $filter = reset($filters);
-    $this->assertInstanceOf(DynamicSegmentFilterData::class, $filter);
-    expect($filter)->isInstanceOf(DynamicSegmentFilterData::class);
-    expect($filter->getFilterType())->equals(DynamicSegmentFilterData::TYPE_USER_ROLE);
-    expect($filter->getAction())->equals(SubscriberSubscribedDate::TYPE);
-    expect($filter->getData())->equals([
-      'value' => 2,
-      'operator' => 'after',
-      'connect' => DynamicSegmentFilterData::CONNECT_TYPE_AND,
-    ]);
   }
 
   public function testItMapsWooCommerceCategory(): void {
@@ -933,6 +903,7 @@ class FilterDataMapperTest extends \MailPoetUnitTest {
       [SubscriberDateField::LAST_PURCHASE_DATE],
       [SubscriberDateField::LAST_OPEN_DATE],
       [SubscriberDateField::LAST_PAGE_VIEW_DATE],
+      [SubscriberDateField::SUBSCRIBED_DATE],
     ];
   }
 
