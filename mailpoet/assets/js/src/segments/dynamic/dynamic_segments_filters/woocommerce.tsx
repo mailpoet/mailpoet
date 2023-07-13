@@ -43,6 +43,10 @@ import {
   validateUsedShippingMethod,
 } from './fields/woocommerce/used_shipping_method';
 import { TextField, validateTextField } from './fields/text_field';
+import {
+  NumberOfReviewsFields,
+  validateNumberOfReviews,
+} from './fields/woocommerce/number_of_reviews';
 
 export function validateWooCommerce(formItems: WooCommerceFormItem): boolean {
   if (
@@ -80,6 +84,9 @@ export function validateWooCommerce(formItems: WooCommerceFormItem): boolean {
   if (formItems.action === WooCommerceActionTypes.PURCHASE_DATE) {
     return validateDateField(formItems);
   }
+  if (formItems.action === WooCommerceActionTypes.NUMBER_OF_REVIEWS) {
+    return validateNumberOfReviews(formItems);
+  }
   if (
     [
       WooCommerceActionTypes.CUSTOMER_IN_POSTAL_CODE,
@@ -96,6 +103,7 @@ const componentsMap = {
   [WooCommerceActionTypes.CUSTOMER_IN_CITY]: TextField,
   [WooCommerceActionTypes.CUSTOMER_IN_POSTAL_CODE]: TextField,
   [WooCommerceActionTypes.NUMBER_OF_ORDERS]: NumberOfOrdersFields,
+  [WooCommerceActionTypes.NUMBER_OF_REVIEWS]: NumberOfReviewsFields,
   [WooCommerceActionTypes.PURCHASE_DATE]: DateFieldsDefaultBefore,
   [WooCommerceActionTypes.PURCHASED_PRODUCT]: PurchasedProductFields,
   [WooCommerceActionTypes.PURCHASED_CATEGORY]: PurchasedCategoryFields,

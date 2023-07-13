@@ -122,6 +122,10 @@ export interface WooCommerceFormItem extends FormItem {
   used_payment_method_days?: string;
   shipping_methods?: string[];
   used_shipping_method_days?: string;
+  rating?: string;
+  count_type?: string;
+  count?: string;
+  days?: string;
 }
 
 export interface AutomationsFormItem extends FormItem {
