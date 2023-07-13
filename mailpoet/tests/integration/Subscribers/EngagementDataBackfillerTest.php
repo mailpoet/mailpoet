@@ -34,15 +34,15 @@ class EngagementDataBackfillerTest extends \MailPoetTest {
     $sub1 = $this->subscribersRepository->findOneBy(['email' => '1@e.com']);
     $older = Carbon::now()->subDays(200);
     $newer = Carbon::now()->subDays(100);
-    $this->createOrder($customerId, $older);
-    $this->createOrder($customerId, $newer);
+    $this->createOrder($customerId, '1@e.com', $older);
+    $this->createOrder($customerId, '1@e.com', $newer);
 
     $customerId2 = $this->tester->createCustomer('2@e.com');
     $sub2 = $this->subscribersRepository->findOneBy(['email' => '2@e.com']);
     $older2 = Carbon::now()->subDays(150);
     $newer2 = Carbon::now()->subDays(50);
-    $this->createOrder($customerId2, $newer2);
-    $this->createOrder($customerId2, $older2);
+    $this->createOrder($customerId2, '2@e.com', $newer2);
+    $this->createOrder($customerId2, '2@e.com', $older2);
 
     $customerId3 = $this->tester->createCustomer('3@e.com');
 
@@ -64,18 +64,23 @@ class EngagementDataBackfillerTest extends \MailPoetTest {
     $sub1 = $this->subscribersRepository->findOneBy(['email' => '1@e.com']);
     $older = Carbon::now()->subDays(200);
     $newer = Carbon::now()->subDays(100);
-    $this->createOrder($customerId, $older);
-    $this->createOrder($customerId, $newer);
+    $this->createOrder($customerId, '1@e.com', $older);
+    $this->createOrder($customerId, '1@e.com', $newer);
 
     $customerId2 = $this->tester->createCustomer('2@e.com');
     $sub2 = $this->subscribersRepository->findOneBy(['email' => '2@e.com']);
     $older2 = Carbon::now()->subDays(150);
     $newer2 = Carbon::now()->subDays(50);
-    $this->createOrder($customerId2, $newer2);
-    $this->createOrder($customerId2, $older2);
+    $this->createOrder($customerId2, '2@e.com', $newer2);
+    $this->createOrder($customerId2, '2@e.com', $older2);
 
     $this->assertInstanceOf(SubscriberEntity::class, $sub1);
     $this->assertInstanceOf(SubscriberEntity::class, $sub2);
+
+    // These need to be manually cleared because creating orders triggers an update via our hooks
+    $sub1->setLastPurchaseAt(null);
+    $sub2->setLastPurchaseAt(null);
+    $this->entityManager->flush();
     expect($sub2->getLastPurchaseAt())->null();
     expect($sub1->getLastPurchaseAt())->null();
 
@@ -370,8 +375,8 @@ class EngagementDataBackfillerTest extends \MailPoetTest {
     expect($batch2)->count(5);
   }
 
-  private function createOrder(int $customerId, Carbon $createdAt, $status = 'wc-completed'): int {
-    $order = $this->tester->createWooCommerceOrder();
+  private function createOrder(int $customerId, string $email, Carbon $createdAt, $status = 'wc-completed'): int {
+    $order = $this->tester->createWooCommerceOrder(['billing_email' => $email]);
     $order->set_customer_id($customerId);
     $order->set_date_created($createdAt->toDateTimeString());
     $order->set_status($status);
@@ -379,5 +384,13 @@ class EngagementDataBackfillerTest extends \MailPoetTest {
     $this->tester->updateWooOrderStats($order->get_id());
 
     return $order->get_id();
+  }
+
+  public function _after() {
+    parent::_after();
+    global $wpdb;
+    $this->connection->executeQuery("TRUNCATE TABLE {$wpdb->prefix}wc_customer_lookup");
+    $this->connection->executeQuery("TRUNCATE TABLE {$wpdb->prefix}wc_order_stats");
+    $this->connection->executeQuery("TRUNCATE TABLE {$wpdb->prefix}wc_order_product_lookup");
   }
 }
