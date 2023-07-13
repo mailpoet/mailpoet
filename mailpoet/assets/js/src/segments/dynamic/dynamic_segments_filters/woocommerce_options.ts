@@ -4,6 +4,7 @@ import { SegmentTypes } from '../types';
 // WooCommerce
 export enum WooCommerceActionTypes {
   NUMBER_OF_ORDERS = 'numberOfOrders',
+  NUMBER_OF_REVIEWS = 'numberOfReviews',
   PURCHASED_CATEGORY = 'purchasedCategory',
   PURCHASE_DATE = 'purchaseDate',
   PURCHASED_PRODUCT = 'purchasedProduct',
@@ -36,6 +37,11 @@ export const WooCommerceOptions = [
   {
     value: WooCommerceActionTypes.NUMBER_OF_ORDERS,
     label: MailPoet.I18n.t('wooNumberOfOrders'),
+    group: SegmentTypes.WooCommerce,
+  },
+  {
+    value: WooCommerceActionTypes.NUMBER_OF_REVIEWS,
+    label: MailPoet.I18n.t('wooNumberOfReviews'),
     group: SegmentTypes.WooCommerce,
   },
   {
