@@ -258,7 +258,11 @@ class ShortcodesTest extends \MailPoetTest {
     $result = $shortcodesObject->process(
       ['[subscriber:cf_' . $customField->getId() . ']']
     );
-    expect($result[0])->null();
+    expect($result[0])->equals('');
+    $result = $shortcodesObject->process(
+      ['[subscriber:cf_' . $customField->getId() . ' | default:custom field value]']
+    );
+    expect($result[0])->equals('custom field value');
     $subscriberCustomField = new SubscriberCustomFieldEntity($subscriber, $customField, 'custom_field_value');
     $this->entityManager->persist($subscriberCustomField);
     $this->entityManager->flush();

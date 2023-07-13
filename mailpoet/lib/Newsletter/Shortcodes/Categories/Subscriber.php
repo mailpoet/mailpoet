@@ -64,7 +64,9 @@ class Subscriber implements CategoryInterface {
             'subscriber' => $subscriber,
             'customField' => $customField[1],
           ]);
-          return ($customField instanceof SubscriberCustomFieldEntity) ? $customField->getValue() : null;
+          return ($customField instanceof SubscriberCustomFieldEntity && !empty($customField->getValue()))
+            ? htmlspecialchars($customField->getValue())
+            : $defaultValue;
         }
         return null;
     }
