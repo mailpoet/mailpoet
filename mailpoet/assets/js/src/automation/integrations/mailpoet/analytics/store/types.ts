@@ -35,7 +35,7 @@ type CustomQuery = {
   order_by: string;
   limit: number;
   page: number;
-  filter: Record<string, unknown> | undefined;
+  filter: Record<string, string[]> | undefined;
   search: string | undefined;
 };
 
