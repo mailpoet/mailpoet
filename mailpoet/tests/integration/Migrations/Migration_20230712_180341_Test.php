@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace integration\Migrations;
+namespace MailPoet\Migrations;
 
 use MailPoet\Entities\DynamicSegmentFilterEntity;
 use MailPoet\Migrations\Migration_20230712_180341;
