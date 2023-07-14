@@ -24,6 +24,7 @@ use MailPoet\Segments\DynamicSegments\Filters\WooCommerceCountry;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceCustomerTextField;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceMembership;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceNumberOfOrders;
+use MailPoet\Segments\DynamicSegments\Filters\WooCommerceNumberOfReviews;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceProduct;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommercePurchaseDate;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceSingleOrderValue;
@@ -108,6 +109,9 @@ class FilterFactory {
   /** @var AutomationsEvents */
   private $automationsEvents;
 
+  /** @var WooCommerceNumberOfReviews */
+  private $wooCommerceNumberOfReviews;
+
   public function __construct(
     EmailAction $emailAction,
     EmailActionClickAny $emailActionClickAny,
@@ -119,6 +123,7 @@ class FilterFactory {
     WooCommerceCustomerTextField $wooCommerceCustomerTextField,
     EmailOpensAbsoluteCountAction $emailOpensAbsoluteCount,
     WooCommerceNumberOfOrders $wooCommerceNumberOfOrders,
+    WooCommerceNumberOfReviews $wooCommerceNumberOfReviews,
     WooCommerceTotalSpent $wooCommerceTotalSpent,
     WooCommerceMembership $wooCommerceMembership,
     WooCommercePurchaseDate $wooCommercePurchaseDate,
@@ -141,6 +146,7 @@ class FilterFactory {
     $this->wooCommerceCategory = $wooCommerceCategory;
     $this->wooCommerceCountry = $wooCommerceCountry;
     $this->wooCommerceNumberOfOrders = $wooCommerceNumberOfOrders;
+    $this->wooCommerceNumberOfReviews = $wooCommerceNumberOfReviews;
     $this->wooCommerceMembership = $wooCommerceMembership;
     $this->wooCommercePurchaseDate = $wooCommercePurchaseDate;
     $this->wooCommerceSubscription = $wooCommerceSubscription;
@@ -253,6 +259,8 @@ class FilterFactory {
       return $this->wooCommerceUsedPaymentMethod;
     } elseif ($action === WooCommerceUsedShippingMethod::ACTION) {
       return $this->wooCommerceUsedShippingMethod;
+    } elseif ($action === WooCommerceNumberOfReviews::ACTION) {
+      return $this->wooCommerceNumberOfReviews;
     } elseif (in_array($action, WooCommerceCustomerTextField::ACTIONS)) {
       return $this->wooCommerceCustomerTextField;
     }

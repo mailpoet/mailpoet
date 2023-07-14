@@ -9,6 +9,7 @@ use MailPoet\Segments\DynamicSegments\Filters\DateFilterHelper;
 use MailPoet\Segments\DynamicSegments\Filters\EmailAction;
 use MailPoet\Segments\DynamicSegments\Filters\EmailActionClickAny;
 use MailPoet\Segments\DynamicSegments\Filters\EmailOpensAbsoluteCountAction;
+use MailPoet\Segments\DynamicSegments\Filters\FilterHelper;
 use MailPoet\Segments\DynamicSegments\Filters\MailPoetCustomFields;
 use MailPoet\Segments\DynamicSegments\Filters\SubscriberDateField;
 use MailPoet\Segments\DynamicSegments\Filters\SubscriberScore;
@@ -19,6 +20,7 @@ use MailPoet\Segments\DynamicSegments\Filters\SubscriberTextField;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceCategory;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceCountry;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceNumberOfOrders;
+use MailPoet\Segments\DynamicSegments\Filters\WooCommerceNumberOfReviews;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceProduct;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceSingleOrderValue;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceSubscription;
@@ -33,12 +35,12 @@ class FilterDataMapperTest extends \MailPoetUnitTest {
     $wp = $this->makeEmpty(WPFunctions::class, [
       'hasFilter' => false,
     ]);
-
-    $filterHelper = $this->getMockBuilder(DateFilterHelper::class)
+    $wcNumberOfReviews = $this->makeEmpty(WooCommerceNumberOfReviews::class);
+    $dateFilterHelper = $this->getMockBuilder(DateFilterHelper::class)
       ->setMethodsExcept(['getAbsoluteDateOperators', 'getRelativeDateOperators', 'getValidOperators'])
       ->getMock();
-
-    $this->mapper = new FilterDataMapper($wp, $filterHelper);
+    $filterHelper = $this->makeEmptyExcept(FilterHelper::class, 'validateDaysPeriodData');
+    $this->mapper = new FilterDataMapper($wp, $dateFilterHelper, $filterHelper, $wcNumberOfReviews);
   }
 
   public function testItChecksFiltersArePresent(): void {
@@ -883,6 +885,35 @@ class FilterDataMapperTest extends \MailPoetUnitTest {
       'operator' => 'any',
       'automation_ids' => ['1', '2'],
     ]]]);
+  }
+
+  public function testItMapsWooNumberOfReviews(): void {
+    $data = ['filters' => [[
+      'segmentType' => DynamicSegmentFilterData::TYPE_WOOCOMMERCE,
+      'action' => 'numberOfReviews',
+      'operator' => 'all',
+      'count_type' => '!=',
+      'rating' => '3',
+      'days' => '10',
+      'count' => '3',
+      'timeframe' => 'inTheLast',
+    ]]];
+    $filters = $this->mapper->map($data);
+    expect($filters)->array();
+    expect($filters)->count(1);
+    $filter = reset($filters);
+    $this->assertInstanceOf(DynamicSegmentFilterData::class, $filter);
+    expect($filter)->isInstanceOf(DynamicSegmentFilterData::class);
+    expect($filter->getFilterType())->equals(DynamicSegmentFilterData::TYPE_WOOCOMMERCE);
+    expect($filter->getAction())->equals('numberOfReviews');
+    expect($filter->getData())->equals([
+      'connect' => 'and',
+      'days' => '10',
+      'count_type' => '!=',
+      'count' => '3',
+      'rating' => '3',
+      'timeframe' => 'inTheLast',
+    ]);
   }
 
   /**

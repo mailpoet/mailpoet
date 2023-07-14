@@ -18,6 +18,7 @@ use MailPoet\InvalidStateException;
 use MailPoet\Segments\DynamicSegments\Filters\Filter;
 use MailPoet\Util\Security;
 use MailPoet\WooCommerce\Helper;
+use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\DBAL\Driver\Statement;
 use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
@@ -56,6 +57,8 @@ class IntegrationTester extends \Codeception\Actor {
   private $wooCouponIds = [];
 
   private $createdUsers = [];
+
+  private $createdCommentIds = [];
 
   public function __construct(
     Scenario $scenario
@@ -175,6 +178,28 @@ class IntegrationTester extends \Codeception\Actor {
     $this->updateWooOrderStats($orderId);
 
     return $order;
+  }
+
+  public function createWooProductReview(int $customerId, string $customerEmail, int $productId, int $rating, Carbon $date = null): int {
+    if ($date === null) {
+      $date = Carbon::now()->subDay();
+    }
+    $commentId = wp_insert_comment([
+      'comment_type' => 'review',
+      'user_id' => $customerId,
+      'comment_author_email' => $customerEmail,
+      'comment_post_ID' => $productId,
+      'comment_parent' => 0,
+      'comment_date' => $date->toDateTimeString(),
+      'comment_approved' => 1,
+      'comment_content' => "This is a $rating star review",
+    ]);
+    if (!is_int($commentId)) {
+      throw new \Exception('Failed to insert review comment');
+    }
+    add_comment_meta($commentId, 'rating', $rating, true);
+    $this->createdCommentIds[] = $commentId;
+    return $commentId;
   }
 
   public function createWooCommerceCoupon(array $data): void {
@@ -348,8 +373,16 @@ class IntegrationTester extends \Codeception\Actor {
   public function cleanup() {
     $this->deleteWordPressTerms();
     $this->deleteCreatedUsers();
+    $this->deleteCreatedComments();
     $this->deleteTestWooProducts();
     $this->deleteTestWooOrders();
     $this->deleteTestWooCoupons();
+  }
+
+  private function deleteCreatedComments() {
+    foreach ($this->createdCommentIds as $commentId) {
+      wp_delete_comment($commentId, true);
+    }
+    $this->createdCommentIds = [];
   }
 }

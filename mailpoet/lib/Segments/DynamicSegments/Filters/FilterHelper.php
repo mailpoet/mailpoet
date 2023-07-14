@@ -2,13 +2,15 @@
 
 namespace MailPoet\Segments\DynamicSegments\Filters;
 
+use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Segments\DynamicSegments\Exceptions\InvalidFilterException;
 use MailPoet\Util\Security;
 use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 
 class FilterHelper {
-    /** @var EntityManager */
+  /** @var EntityManager */
   private $entityManager;
 
   public function __construct(
@@ -59,5 +61,21 @@ class FilterHelper {
   public function getUniqueParameterName(string $parameter): string {
     $suffix = Security::generateRandomString();
     return sprintf("%s_%s", $parameter, $suffix);
+  }
+
+  public function validateDaysPeriodData(array $data): void {
+    if (!isset($data['timeframe']) || !in_array($data['timeframe'], [DynamicSegmentFilterData::TIMEFRAME_ALL_TIME, DynamicSegmentFilterData::TIMEFRAME_IN_THE_LAST], true)) {
+      throw new InvalidFilterException('Missing timeframe type', InvalidFilterException::MISSING_VALUE);
+    }
+
+    if ($data['timeframe'] === DynamicSegmentFilterData::TIMEFRAME_ALL_TIME) {
+      return;
+    }
+
+    $days = intval($data['days'] ?? null);
+
+    if ($days < 1) {
+      throw new InvalidFilterException('Missing number of days', InvalidFilterException::MISSING_VALUE);
+    }
   }
 }
