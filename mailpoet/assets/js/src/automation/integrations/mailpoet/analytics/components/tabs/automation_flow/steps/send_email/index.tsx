@@ -100,7 +100,7 @@ export function SendEmailPanel({ step }: SendEmailPanelProps): JSX.Element {
               })}
               onClick={(e) => {
                 e.preventDefault();
-                openTab('orders');
+                openTab('orders', { filters: { emails: [`${email.id}`] } });
               }}
             >
               {Intl.NumberFormat(locale.toString(), {
