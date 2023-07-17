@@ -23,16 +23,20 @@ class WooCommerceTotalSpent implements Filter {
     $filterData = $filter->getFilterData();
     $type = $filterData->getParam('total_spent_type');
     $amount = $filterData->getParam('total_spent_amount');
-    $days = $filterData->getParam('days');
+    $isAllTime = $filterData->getParam('timeframe') === 'allTime';
 
-    $date = Carbon::now()->subDays($days);
     $parameterSuffix = $filter->getId() ?? Security::generateRandomString();
     $orderStatsAlias = $this->wooFilterHelper->applyOrderStatusFilter($queryBuilder);
-    $dateParam = "date_$parameterSuffix";
 
-    $queryBuilder->andWhere("$orderStatsAlias.date_created >= :$dateParam")
-      ->setParameter($dateParam, $date->toDateTimeString())
-      ->groupBy('inner_subscriber_id');
+    if (!$isAllTime) {
+      $days = $filterData->getParam('days');
+      $date = Carbon::now()->subDays($days);
+      $dateParam = "date_$parameterSuffix";
+      $queryBuilder->andWhere("$orderStatsAlias.date_created >= :$dateParam")
+        ->setParameter($dateParam, $date->toDateTimeString());
+    }
+
+    $queryBuilder->groupBy('inner_subscriber_id');
 
     if ($type === '=') {
       $queryBuilder->having("SUM($orderStatsAlias.total_sales) = :amount" . $parameterSuffix);
