@@ -131,11 +131,21 @@ class WooCommerceAverageSpentTest extends \MailPoetTest {
     $this->assertEqualsCanonicalizing(['1@e.com', '2@e.com', '3@e.com'], $matchingEmails);
   }
 
-  private function getMatchingEmails(string $operator, float $amount, int $days = 365): array {
+  public function testItWorksWithAllTimeOption(): void {
+    $id1 = $this->tester->createCustomer('1@e.com');
+    $this->createOrder($id1, 100, 3);
+    $id1 = $this->tester->createCustomer('2@e.com');
+    $this->createOrder($id1, 100, 30000);
+    $matchingEmails = $this->getMatchingEmails('>=', 50, 0, 'allTime');
+    $this->assertEqualsCanonicalizing(['1@e.com', '2@e.com'], $matchingEmails);
+  }
+
+  private function getMatchingEmails(string $operator, float $amount, int $days = 365, string $timeframe = 'inTheLast'): array {
     $filterData = new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_WOOCOMMERCE, WooCommerceAverageSpent::ACTION, [
       'average_spent_type' => $operator,
       'average_spent_amount' => $amount,
       'days' => $days,
+      'timeframe' => $timeframe,
     ]);
 
     return $this->tester->getSubscriberEmailsMatchingDynamicFilter($filterData, $this->averageSpentFilter);
