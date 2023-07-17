@@ -66,7 +66,9 @@ export function moreControls(
         title: __('View subscribers', 'mailpoet'),
         isDisabled: false,
         onClick: () => {
-          openTab('subscribers');
+          openTab('subscribers', {
+            filters: { status: [], step: [step.id] },
+          });
         },
       },
       slot: () => null,
