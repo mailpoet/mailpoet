@@ -27,15 +27,20 @@ class WooCommerceAverageSpent implements Filter {
     $filterData = $filter->getFilterData();
     $operator = $filterData->getParam('average_spent_type');
     $amount = $filterData->getParam('average_spent_amount');
-    $days = intval($filterData->getParam('days'));
+    $timeframe = $filterData->getParam('timeframe');
 
-    $date = Carbon::now()->subDays($days);
-    $dateParam = $this->filterHelper->getUniqueParameterName('date');
     $orderStatsAlias = $this->wooFilterHelper->applyOrderStatusFilter($queryBuilder);
 
-    $queryBuilder->andWhere("$orderStatsAlias.date_created >= :$dateParam")
-      ->setParameter($dateParam, $date->toDateTimeString())
-      ->groupBy('inner_subscriber_id');
+    if ($timeframe !== 'allTime') {
+      $days = intval($filterData->getParam('days'));
+      $date = Carbon::now()->subDays($days);
+      $dateParam = $this->filterHelper->getUniqueParameterName('date');
+      $queryBuilder
+        ->andWhere("$orderStatsAlias.date_created >= :$dateParam")
+        ->setParameter($dateParam, $date->toDateTimeString());
+    }
+
+    $queryBuilder->groupBy('inner_subscriber_id');
 
     $amountParam = $this->filterHelper->getUniqueParameterName('amount');
     if ($operator === '=') {
