@@ -1,5 +1,23 @@
+import { dispatch, select } from '@wordpress/data';
+import { CurrentView, storeName } from '../store';
+
 type ValidTabs = 'automation-flow' | 'emails' | 'orders' | 'subscribers';
-export function openTab(tab: ValidTabs): void {
+export function openTab(tab: ValidTabs, currentView?: CurrentView): void {
+  if (currentView) {
+    const section = select(storeName).getSection(tab);
+    const payload = {
+      ...section,
+      customQuery: {
+        ...section.customQuery,
+        filter: {
+          ...currentView.filters,
+        },
+      },
+      currentView,
+    };
+    dispatch(storeName).updateSection(payload);
+  }
+
   const classMap: Record<ValidTabs, string> = {
     'automation-flow': 'mailpoet-analytics-tab-flow',
     emails: 'mailpoet-analytics-tab-emails',
