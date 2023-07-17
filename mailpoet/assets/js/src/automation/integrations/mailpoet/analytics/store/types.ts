@@ -96,6 +96,10 @@ export type OrderData = {
 type OrderSectionData = SectionData & {
   results: number;
   items: OrderData[];
+  emails: {
+    id: string;
+    name: string;
+  }[];
 };
 
 export type OrderSection = Section & {
