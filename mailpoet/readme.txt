@@ -3,7 +3,7 @@ Contributors: mailpoet, woocommerce, automattic
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 6.0
 Tested up to: 6.2
-Stable tag: 4.20.2
+Stable tag: 4.21.0
 Requires PHP: 7.3
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -218,6 +218,17 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 4.21.0 - 2023-07-17 =
+* Added: bulk add or remove tag on Subscribers listing page;
+* Added: saving last purchase, sending, open, and click dates for each subscriber;
+* Added: progress bar when importing subscribers;
+* Added: "entered automation" and "exited automation" segments;
+* Added: MailPoet forms can now be shown on the homepage and category and tag pages;
+* Improved: supporting default value for subscriber's custom fields shortcode;
+* Changed: Segments now have a separate page in the menu;
+* Fixed: can't send email because of websites custom date format;
+* Fixed: in email statistics, sometimes opened + unopened is larger than the total sent.
 
 = 4.20.2 - 2023-07-10 =
 * Added: "Used shipping method" segment;
