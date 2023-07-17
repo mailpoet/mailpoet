@@ -156,6 +156,7 @@ export type SubscriberSection = Section & {
 export type StepFlowData = {
   total: number;
   waiting: Record<string, number> | undefined;
+  failed: Record<string, number> | undefined;
   flow: Record<string, number> | undefined;
 };
 export type AutomationFlowSectionData = SectionData & {

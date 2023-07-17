@@ -38,6 +38,39 @@
   }
 }
 
+.mailpoet-automation-analytics-step-failed {
+  bottom: 0;
+  display: none;
+  grid-column: 1 / -1;
+  justify-content: center;
+  left: -100px;
+  position: absolute;
+
+  &:after {
+    border-top: 1px dashed $color-gutenberg-grey-600;
+    content: '';
+    height: 0;
+    left: 100%;
+    position: absolute;
+    top: 15px;
+    width: 100px;
+  }
+
+  span {
+    display: block;
+  }
+
+  p {
+    padding: 0 8px;
+  }
+}
+
+@media screen and (min-width: 600px) {
+  .mailpoet-automation-analytics-step-failed {
+    display: block;
+  }
+}
+
 .mailpoet-automation-analytics-step-footer {
   background: $color-wp-gray-0;
   border-top: 1px solid $color-poet-gray-dividers;
@@ -47,10 +80,17 @@
   margin-bottom: -12px;
   margin-left: -12px;
   width: calc(100% + 24px);
+  z-index: 1;
 
   p {
-    margin: 0;
     padding: 6px 0;
+  }
+}
+
+.mailpoet-automation-analytics-step-footer,
+.mailpoet-automation-analytics-step-failed {
+  p {
+    margin: 0;
 
     a {
       color: $color-gutenberg-grey-800;
