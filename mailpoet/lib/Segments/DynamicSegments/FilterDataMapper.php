@@ -316,7 +316,7 @@ class FilterDataMapper {
     $this->validateDaysPeriodData($data);
     $filterData = [
       'opens' => $data['opens'],
-      'days' => $data['days'],
+      'days' => $data['days'] ?? 0,
       'operator' => $data['operator'] ?? 'more',
       'timeframe' => $data['timeframe'] ?? 'inTheLast', // backwards compatibility
       'connect' => $data['connect'],
@@ -372,7 +372,7 @@ class FilterDataMapper {
       }
       $filterData['number_of_orders_type'] = $data['number_of_orders_type'];
       $filterData['number_of_orders_count'] = $data['number_of_orders_count'];
-      $filterData['days'] = $data['days'];
+      $filterData['days'] = $data['days'] ?? 0;
       $filterData['timeframe'] = $data['timeframe'];
     } elseif ($data['action'] === WooCommerceTotalSpent::ACTION_TOTAL_SPENT) {
       $this->validateDaysPeriodData($data);
@@ -384,7 +384,7 @@ class FilterDataMapper {
       }
       $filterData['total_spent_type'] = $data['total_spent_type'];
       $filterData['total_spent_amount'] = $data['total_spent_amount'];
-      $filterData['days'] = $data['days'];
+      $filterData['days'] = $data['days'] ?? 0;
       $filterData['timeframe'] = $data['timeframe'];
     } elseif ($data['action'] === WooCommerceSingleOrderValue::ACTION_SINGLE_ORDER_VALUE) {
       $this->validateDaysPeriodData($data);
@@ -396,7 +396,7 @@ class FilterDataMapper {
       }
       $filterData['single_order_value_type'] = $data['single_order_value_type'];
       $filterData['single_order_value_amount'] = $data['single_order_value_amount'];
-      $filterData['days'] = $data['days'];
+      $filterData['days'] = $data['days'] ?? 0;
       $filterData['timeframe'] = $data['timeframe'];
     } elseif ($data['action'] === WooCommercePurchaseDate::ACTION) {
       $filterData['operator'] = $data['operator'];
@@ -409,7 +409,7 @@ class FilterDataMapper {
       ) {
         throw new InvalidFilterException('Missing required fields', InvalidFilterException::MISSING_AVERAGE_SPENT_FIELDS);
       }
-      $filterData['days'] = $data['days'];
+      $filterData['days'] = $data['days'] ?? 0;
       $filterData['timeframe'] = $data['timeframe'];
       $filterData['average_spent_amount'] = $data['average_spent_amount'];
       $filterData['average_spent_type'] = $data['average_spent_type'];
