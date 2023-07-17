@@ -30,6 +30,11 @@ export const getInitialState = (): State => ({
       id: 'orders',
       name: __('Orders', 'mailpoet'),
       data: undefined,
+      currentView: {
+        filters: {
+          emails: [],
+        },
+      },
       customQuery: {
         order: 'asc',
         order_by: 'created_at',
@@ -45,6 +50,13 @@ export const getInitialState = (): State => ({
       id: 'subscribers',
       name: __('Subscribers', 'mailpoet'),
       data: undefined,
+      currentView: {
+        search: '',
+        filters: {
+          step: [],
+          status: [],
+        },
+      },
       customQuery: {
         order: 'asc',
         order_by: 'updated_at',

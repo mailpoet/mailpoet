@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { Button } from '@wordpress/components';
 import { dispatch, useSelect } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
@@ -11,8 +10,6 @@ export function Filter(): JSX.Element {
     section: s(storeName).getSection('orders') as OrderSection,
   }));
 
-  const [selectedEmails, setSelectedEmails] = useState<string[]>([]);
-
   return (
     <form
       className="mailpoet-analytics-filter"
@@ -24,7 +21,7 @@ export function Filter(): JSX.Element {
           customQuery: {
             ...section.customQuery,
             filter: {
-              emails: selectedEmails,
+              emails: section.currentView.filters.emails,
             },
           },
         });
@@ -32,12 +29,14 @@ export function Filter(): JSX.Element {
     >
       <div className="mailpoet-analytics-filter-controls">
         <MultiSelect
-          selected={selectedEmails}
+          selected={section.currentView.filters.emails}
           label={__('Select Email', 'mailpoet')}
           allOption={__('All emails', 'mailpoet')}
           options={section.data?.emails}
-          onChange={(value) => {
-            setSelectedEmails(value);
+          onChange={(emails) => {
+            dispatch(storeName).updateCurrentView(section, {
+              filters: { emails },
+            });
           }}
         />
       </div>
@@ -45,7 +44,9 @@ export function Filter(): JSX.Element {
         <ClearAllFilters
           section={section}
           onClick={() => {
-            setSelectedEmails([]);
+            dispatch(storeName).updateCurrentView(section, {
+              filters: { emails: [] },
+            });
           }}
         />
         <Button isPrimary type="submit">

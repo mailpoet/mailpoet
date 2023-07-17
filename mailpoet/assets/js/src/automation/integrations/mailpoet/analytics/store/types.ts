@@ -39,11 +39,17 @@ type CustomQuery = {
   search: string | undefined;
 };
 
+export type CurrentView = {
+  filters: Record<string, string[]>;
+  search?: string;
+};
+
 export type Section = {
   id: string;
   name: string;
   endpoint: string;
   customQuery?: CustomQuery;
+  currentView?: CurrentView;
   withPreviousData: boolean;
   data: undefined | SectionData;
   updateCallback?: (data: SectionData | undefined) => void;
@@ -104,6 +110,12 @@ type OrderSectionData = SectionData & {
 
 export type OrderSection = Section & {
   data: undefined | OrderSectionData;
+  currentView: {
+    filters: {
+      emails: string[];
+    };
+  };
+  updateCallback: () => void;
 };
 
 export type SubscriberData = {
@@ -132,6 +144,13 @@ type SubscriberSectionData = SectionData & {
 
 export type SubscriberSection = Section & {
   data: undefined | SubscriberSectionData;
+  currentView: {
+    search: string;
+    filters: {
+      step: string[];
+      status: string[];
+    };
+  };
 };
 
 export type StepFlowData = {

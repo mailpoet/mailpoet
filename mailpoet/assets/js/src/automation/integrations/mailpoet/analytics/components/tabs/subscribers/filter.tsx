@@ -1,6 +1,5 @@
-import { useState } from 'react';
 import { Button, SelectControl, TextControl } from '@wordpress/components';
-import { dispatch, select, useDispatch, useSelect } from '@wordpress/data';
+import { dispatch, select, useSelect } from '@wordpress/data';
 import { __, sprintf } from '@wordpress/i18n';
 import { statusMap } from './cells/status';
 import { storeName as editorStoreName } from '../../../../../../editor/store';
@@ -77,26 +76,28 @@ function getStepOptions(automation: Automation) {
   });
 }
 
+async function clearFilters(section: Section, onClick?: () => void) {
+  await dispatch(storeName).updateSection({
+    ...section,
+    customQuery: {
+      ...section.customQuery,
+      filter: undefined,
+      search: '',
+    },
+  });
+  if (typeof onClick === 'undefined') {
+    return;
+  }
+  onClick();
+}
+
 export function ClearAllFilters({
   section,
   onClick,
 }: {
   section: Section;
-  onClick: () => void;
+  onClick?: () => void;
 }): null | JSX.Element {
-  const { updateSection } = useDispatch(storeName);
-  const clearFilters = () => {
-    updateSection({
-      ...section,
-      customQuery: {
-        ...section.customQuery,
-        filter: undefined,
-        search: '',
-      },
-    });
-    onClick();
-  };
-
   if (!section.customQuery.filter && !section.customQuery.search) {
     return null;
   }
@@ -104,7 +105,7 @@ export function ClearAllFilters({
     <Button
       className="mailpoet-analytics-clear-filters"
       isTertiary
-      onClick={clearFilters}
+      onClick={() => void clearFilters(section, onClick)}
     >
       {__('Clear all filters', 'mailpoet')}
     </Button>
@@ -117,10 +118,6 @@ export function Filter(): JSX.Element | null {
     section: s(storeName).getSection('subscribers') as SubscriberSection,
   }));
 
-  const [step, setStep] = useState<string[]>(section.customQuery.filter?.step);
-  const [search, setSearch] = useState(section.customQuery.search);
-  const [status, setStatus] = useState(section.customQuery.filter?.status);
-
   return (
     <form
       className="mailpoet-analytics-filter"
@@ -131,11 +128,8 @@ export function Filter(): JSX.Element | null {
           ...section,
           customQuery: {
             ...section.customQuery,
-            filter: {
-              step,
-              status,
-            },
-            search,
+            filter: section.currentView.filters,
+            search: section.currentView.search,
           },
         });
       }}
@@ -143,34 +137,53 @@ export function Filter(): JSX.Element | null {
       <div className="mailpoet-analytics-filter-controls">
         <TextControl
           label={__('Search subscriber', 'mailpoet')}
-          value={search}
-          onChange={(value) => setSearch(value)}
+          value={section.currentView.search}
+          onChange={(search) =>
+            void dispatch(storeName).updateCurrentView(section, {
+              ...section.currentView,
+              search,
+            })
+          }
         />
         <MultiSelect
-          selected={step}
+          selected={section.currentView.filters.step}
           label={__('Select step', 'mailpoet')}
           allOption={__('All steps', 'mailpoet')}
           options={getStepOptions(automation)}
-          onChange={(value) => {
-            setStep(value);
-          }}
+          onChange={(step) =>
+            void dispatch(storeName).updateCurrentView(section, {
+              ...section.currentView,
+              filters: { ...section.currentView.filters, step },
+            })
+          }
         />
         <SelectControl
           label={__('Status', 'mailpoet')}
           options={getStatusOptions()}
-          value={status && status.length > 0 ? status[0] : ''}
-          onChange={(value) => {
-            setStatus([value]);
-          }}
+          value={
+            section.currentView.filters.status.length > 0
+              ? section.currentView.filters.status[0]
+              : ''
+          }
+          onChange={(status) =>
+            void dispatch(storeName).updateCurrentView(section, {
+              ...section.currentView,
+              filters: { ...section.currentView.filters, status: [status] },
+            })
+          }
         />
       </div>
       <div>
         <ClearAllFilters
           section={section}
           onClick={() => {
-            setStep([]);
-            setSearch('');
-            setStatus([]);
+            dispatch(storeName).updateCurrentView(section, {
+              search: '',
+              filters: {
+                step: [],
+                status: [],
+              },
+            });
           }}
         />
         <Button isPrimary type="submit">
