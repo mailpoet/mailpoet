@@ -77,7 +77,7 @@ function getStepOptions(automation: Automation) {
   });
 }
 
-function ClearAllFilters({
+export function ClearAllFilters({
   section,
   onClick,
 }: {
