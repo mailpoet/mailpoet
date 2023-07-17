@@ -1,6 +1,7 @@
 import { useDispatch, useSelect } from '@wordpress/data';
 import { Input } from 'common';
 import { MailPoet } from 'mailpoet';
+import { Select } from 'common/form/select/select';
 import { DaysPeriodItem, FilterProps } from 'segments/dynamic/types';
 import { storeName } from 'segments/dynamic/store';
 
@@ -8,7 +9,7 @@ function replaceElementsInDaysSentence(
   fn: (value) => JSX.Element,
 ): JSX.Element[] {
   return MailPoet.I18n.t('emailActionOpensDaysSentence')
-    .split(/({days})/gim)
+    .split(/({days})|({timeframe})/gim)
     .map(fn);
 }
 
@@ -17,12 +18,19 @@ export function DaysPeriodField({ filterIndex }: FilterProps): JSX.Element {
     (select) => select(storeName).getSegmentFilter(filterIndex),
     [filterIndex],
   );
-  const { updateSegmentFilterFromEvent } = useDispatch(storeName);
+  const { updateSegmentFilterFromEvent, updateSegmentFilter } =
+    useDispatch(storeName);
+
+  if (!['inTheLast', 'allTime'].includes(segment.timeframe)) {
+    void updateSegmentFilter({ timeframe: 'inTheLast' }, filterIndex);
+  }
+
+  const isInTheLast = segment.timeframe === 'inTheLast';
 
   return (
     <>
       {replaceElementsInDaysSentence((match) => {
-        if (match === '{days}') {
+        if (isInTheLast && match === '{days}') {
           return (
             <Input
               key="input"
@@ -38,7 +46,25 @@ export function DaysPeriodField({ filterIndex }: FilterProps): JSX.Element {
             />
           );
         }
-        if (typeof match === 'string' && match.trim().length > 1) {
+        if (match === '{timeframe}') {
+          return (
+            <Select
+              key="timeframe-select"
+              value={segment.timeframe}
+              onChange={(e) => {
+                void updateSegmentFilterFromEvent('timeframe', filterIndex, e);
+              }}
+            >
+              <option value="inTheLast">{MailPoet.I18n.t('inTheLast')}</option>
+              <option value="allTime">{MailPoet.I18n.t('overAllTime')}</option>
+            </Select>
+          );
+        }
+        if (
+          isInTheLast &&
+          typeof match === 'string' &&
+          match.trim().length > 1
+        ) {
           return <div key={match}>{match}</div>;
         }
         return null;
@@ -48,5 +74,8 @@ export function DaysPeriodField({ filterIndex }: FilterProps): JSX.Element {
 }
 
 export function validateDaysPeriod(formItems: DaysPeriodItem): boolean {
+  if (formItems.timeframe === 'allTime') {
+    return true;
+  }
   return !!formItems.days;
 }
