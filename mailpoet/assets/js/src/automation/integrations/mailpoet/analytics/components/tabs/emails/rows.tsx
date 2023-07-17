@@ -100,7 +100,7 @@ export function transformEmailsToRows(emails: EmailStats[]) {
                   })}
                   onClick={(e) => {
                     e.preventDefault();
-                    openTab('orders');
+                    openTab('orders', { filters: { emails: [`${email.id}`] } });
                   }}
                 >
                   {`${email.orders}`}
