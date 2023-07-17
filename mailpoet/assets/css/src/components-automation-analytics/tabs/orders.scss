@@ -6,6 +6,15 @@
   color: $color-gutenberg-grey-600;
 }
 
+.mailpoet-analytics-filter {
+  .is-loading {
+    background: $color-gutenberg-grey-100;
+    height: 20px;
+    max-width: 200px;
+    width: 45%;
+  }
+}
+
 .woocommerce-table__item {
   a.mailpoet-analytics-orders__customer {
     align-items: flex-start;
