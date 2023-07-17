@@ -6,6 +6,7 @@ import { OrderSection, storeName } from '../../../store';
 import { transformOrdersToRows } from './rows';
 import { calculateSummary } from './summary';
 import { Upgrade } from './upgrade';
+import { Filter } from './filter';
 
 const headers = [
   {
@@ -69,6 +70,7 @@ export function Orders(): JSX.Element {
           }
         />
       )}
+      {MailPoet.premiumActive && <Filter />}
 
       <TableCard
         title=""
