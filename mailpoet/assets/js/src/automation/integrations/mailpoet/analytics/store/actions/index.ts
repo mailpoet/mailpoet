@@ -2,7 +2,7 @@ import { dispatch, select } from '@wordpress/data';
 import { getCurrentDates } from '@woocommerce/date';
 import { addQueryArgs } from '@wordpress/url';
 import { apiFetch } from '@wordpress/data-controls';
-import { Query, Section, SectionData } from '../types';
+import { CurrentView, Query, Section, SectionData } from '../types';
 import { storeName } from '../constants';
 import { storeName as editorStoreName } from '../../../../../editor/store/constants';
 
@@ -28,6 +28,17 @@ export function resetSectionData(section: Section) {
   const payload = {
     ...section,
     data: undefined,
+  };
+  return {
+    type: 'SET_SECTION_DATA',
+    payload,
+  };
+}
+
+export function updateCurrentView(section: Section, currentView: CurrentView) {
+  const payload = {
+    ...section,
+    currentView,
   };
   return {
     type: 'SET_SECTION_DATA',
