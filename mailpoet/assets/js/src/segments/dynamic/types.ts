@@ -80,6 +80,7 @@ export interface DateFormItem extends FormItem {
 
 export interface DaysPeriodItem extends FormItem {
   days?: string;
+  timeframe?: string;
 }
 
 export interface TextFormItem extends FormItem {
@@ -156,7 +157,8 @@ export type AnyFormItem =
   | WooCommerceFormItem
   | WooCommerceSubscriptionFormItem
   | WooCommerceMembershipFormItem
-  | EmailFormItem;
+  | EmailFormItem
+  | DaysPeriodItem;
 
 export interface SubscriberCount {
   count?: number;
