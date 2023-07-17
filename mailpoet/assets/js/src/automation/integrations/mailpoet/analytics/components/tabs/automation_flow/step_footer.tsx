@@ -45,7 +45,9 @@ export function StepFooter({ step }: { step: Step }): JSX.Element | null {
             })}
             onClick={(e) => {
               e.preventDefault();
-              openTab('subscribers');
+              openTab('subscribers', {
+                filters: { status: [], step: [step.id] },
+              });
             }}
           >
             {formattedPercent} ({formattedValue}){' '}
