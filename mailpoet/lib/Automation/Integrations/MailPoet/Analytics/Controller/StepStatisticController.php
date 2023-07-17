@@ -45,6 +45,25 @@ class StepStatisticController {
     return $data;
   }
 
+  public function getFailedStatistics(Automation $automation, Query $query): array {
+    $rawData = $this->automationRunStorage->getAutomationStepStatisticForTimeFrame(
+      $automation->getId(),
+      AutomationRun::STATUS_FAILED,
+      $query->getAfter(),
+      $query->getBefore()
+    );
+
+    $data = [];
+    foreach ($automation->getSteps() as $step) {
+      foreach ($rawData as $rawDatum) {
+        if ($rawDatum['next_step_id'] === $step->getId()) {
+          $data[$step->getId()] = (int)$rawDatum['count'];
+        }
+      }
+    }
+    return $data;
+  }
+
   public function getFlowStatistics(Automation $automation, Query $query): array {
     $statistics = $this->automationRunLogStorage->getAutomationRunStatisticsForAutomationInTimeFrame(
       $automation->getId(),

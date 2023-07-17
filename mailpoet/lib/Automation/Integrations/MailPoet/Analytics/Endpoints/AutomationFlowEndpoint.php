@@ -65,6 +65,7 @@ class AutomationFlowEndpoint extends Endpoint {
     );
 
     $waitingData = $this->stepStatisticController->getWaitingStatistics($automation, $query);
+    $failedData = $this->stepStatisticController->getFailedStatistics($automation, $query);
     try {
       $flowData = $this->stepStatisticController->getFlowStatistics($automation, $query);
     } catch (\Throwable $e) {
@@ -75,6 +76,9 @@ class AutomationFlowEndpoint extends Endpoint {
     ];
     if ($waitingData) {
       $stepData['waiting'] = $waitingData;
+    }
+    if ($failedData) {
+      $stepData['failed'] = $failedData;
     }
     if ($flowData) {
       $stepData['flow'] = $flowData;
