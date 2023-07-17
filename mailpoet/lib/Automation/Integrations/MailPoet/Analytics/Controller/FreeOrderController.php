@@ -25,19 +25,25 @@ class FreeOrderController implements OrderController {
   /** @var WordPress */
   private $wp;
 
+  /** @var AutomationTimeSpanController */
+  private $automationTimeSpanController;
+
   public function __construct(
     NewslettersRepository $newsletterRepository,
     SubscribersRepository $subscribersRepository,
     WooCommerce $woocommerce,
-    WordPress $wp
+    WordPress $wp,
+    AutomationTimeSpanController $automationTimeSpanController
   ) {
     $this->newslettersRepository = $newsletterRepository;
     $this->subscribersRepository = $subscribersRepository;
     $this->woocommerce = $woocommerce;
     $this->wp = $wp;
+    $this->automationTimeSpanController = $automationTimeSpanController;
   }
 
   public function getOrdersForAutomation(Automation $automation, Query $query): array {
+    $allEmails = $this->automationTimeSpanController->getAutomationEmailsInTimeSpan($automation, $query->getAfter(), $query->getBefore());
     $items = [
       $this->addItem($automation, $query),
       $this->addItem($automation, $query),
@@ -47,6 +53,15 @@ class FreeOrderController implements OrderController {
     return [
       'results' => count($items),
       'items' => $items,
+      'emails' => array_map(
+        function(NewsletterEntity $email): array {
+          return [
+            'id' => (string)$email->getId(),
+            'name' => $email->getSubject(),
+          ];
+        },
+        $allEmails
+      ),
     ];
   }
 
