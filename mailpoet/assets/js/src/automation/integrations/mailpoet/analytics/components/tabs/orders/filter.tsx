@@ -10,6 +10,15 @@ export function Filter(): JSX.Element {
     section: s(storeName).getSection('orders') as OrderSection,
   }));
 
+  if (section.data === undefined) {
+    return (
+      <div className="mailpoet-analytics-filter">
+        <div className="is-loading" />
+        <div className="is-loading" />
+      </div>
+    );
+  }
+
   return (
     <form
       className="mailpoet-analytics-filter"
