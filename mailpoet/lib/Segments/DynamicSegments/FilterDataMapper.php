@@ -67,6 +67,10 @@ class FilterDataMapper {
   }
 
   private function createFilter(array $filterData): DynamicSegmentFilterData {
+    if (isset($filterData['days']) && !isset($filterData['timeframe'])) {
+      // Backwards compatibility for filters created before time period component had "over all time" option
+      $filterData['timeframe'] = 'inTheLast';
+    }
     switch ($this->getSegmentType($filterData)) {
       case DynamicSegmentFilterData::TYPE_AUTOMATIONS:
         return $this->createAutomations($filterData);
@@ -309,13 +313,12 @@ class FilterDataMapper {
     if (!isset($data['opens'])) {
       throw new InvalidFilterException('Missing number of opens', InvalidFilterException::MISSING_VALUE);
     }
-    if (empty($data['days'])) {
-      throw new InvalidFilterException('Missing number of days', InvalidFilterException::MISSING_VALUE);
-    }
+    $this->validateDaysPeriodData($data);
     $filterData = [
       'opens' => $data['opens'],
       'days' => $data['days'],
       'operator' => $data['operator'] ?? 'more',
+      'timeframe' => $data['timeframe'] ?? 'inTheLast', // backwards compatibility
       'connect' => $data['connect'],
     ];
     $filterType = DynamicSegmentFilterData::TYPE_EMAIL;
@@ -360,50 +363,54 @@ class FilterDataMapper {
       $filterData['country_code'] = $data['country_code'];
       $filterData['operator'] = $data['operator'] ?? DynamicSegmentFilterData::OPERATOR_ANY;
     } elseif ($data['action'] === WooCommerceNumberOfOrders::ACTION_NUMBER_OF_ORDERS) {
+      $this->validateDaysPeriodData($data);
       if (
         !isset($data['number_of_orders_type'])
         || !isset($data['number_of_orders_count']) || $data['number_of_orders_count'] < 0
-        || !isset($data['days']) || $data['days'] < 1
       ) {
         throw new InvalidFilterException('Missing required fields', InvalidFilterException::MISSING_NUMBER_OF_ORDERS_FIELDS);
       }
       $filterData['number_of_orders_type'] = $data['number_of_orders_type'];
       $filterData['number_of_orders_count'] = $data['number_of_orders_count'];
       $filterData['days'] = $data['days'];
+      $filterData['timeframe'] = $data['timeframe'];
     } elseif ($data['action'] === WooCommerceTotalSpent::ACTION_TOTAL_SPENT) {
+      $this->validateDaysPeriodData($data);
       if (
         !isset($data['total_spent_type'])
         || !isset($data['total_spent_amount']) || $data['total_spent_amount'] < 0
-        || !isset($data['days']) || $data['days'] < 1
       ) {
         throw new InvalidFilterException('Missing required fields', InvalidFilterException::MISSING_TOTAL_SPENT_FIELDS);
       }
       $filterData['total_spent_type'] = $data['total_spent_type'];
       $filterData['total_spent_amount'] = $data['total_spent_amount'];
       $filterData['days'] = $data['days'];
+      $filterData['timeframe'] = $data['timeframe'];
     } elseif ($data['action'] === WooCommerceSingleOrderValue::ACTION_SINGLE_ORDER_VALUE) {
+      $this->validateDaysPeriodData($data);
       if (
         !isset($data['single_order_value_type'])
         || !isset($data['single_order_value_amount']) || $data['single_order_value_amount'] < 0
-        || !isset($data['days']) || $data['days'] < 1
       ) {
         throw new InvalidFilterException('Missing required fields', InvalidFilterException::MISSING_SINGLE_ORDER_VALUE_FIELDS);
       }
       $filterData['single_order_value_type'] = $data['single_order_value_type'];
       $filterData['single_order_value_amount'] = $data['single_order_value_amount'];
       $filterData['days'] = $data['days'];
+      $filterData['timeframe'] = $data['timeframe'];
     } elseif ($data['action'] === WooCommercePurchaseDate::ACTION) {
       $filterData['operator'] = $data['operator'];
       $filterData['value'] = $data['value'];
     } elseif ($data['action'] === WooCommerceAverageSpent::ACTION) {
+      $this->validateDaysPeriodData($data);
       if (
         !isset($data['average_spent_type'])
         || !isset($data['average_spent_amount']) || $data['average_spent_amount'] < 0
-        || !isset($data['days']) || $data['days'] < 1
       ) {
         throw new InvalidFilterException('Missing required fields', InvalidFilterException::MISSING_AVERAGE_SPENT_FIELDS);
       }
       $filterData['days'] = $data['days'];
+      $filterData['timeframe'] = $data['timeframe'];
       $filterData['average_spent_amount'] = $data['average_spent_amount'];
       $filterData['average_spent_type'] = $data['average_spent_type'];
     } elseif ($data['action'] === WooCommerceUsedPaymentMethod::ACTION) {
@@ -503,5 +510,21 @@ class FilterDataMapper {
       throw new InvalidFilterException("Unknown action " . $data['action'], InvalidFilterException::MISSING_ACTION);
     }
     return new DynamicSegmentFilterData($filterType, $action, $filterData);
+  }
+
+  private function validateDaysPeriodData(array $data): void {
+    if (!isset($data['timeframe']) || !in_array($data['timeframe'], ['allTime', 'inTheLast'], true)) {
+      throw new InvalidFilterException('Missing timeframe type', InvalidFilterException::MISSING_VALUE);
+    }
+
+    if ($data['timeframe'] === 'allTime') {
+      return;
+    }
+
+    $days = intval($data['days'] ?? null);
+
+    if ($days < 1) {
+      throw new InvalidFilterException('Missing number of days', InvalidFilterException::MISSING_VALUE);
+    }
   }
 }
