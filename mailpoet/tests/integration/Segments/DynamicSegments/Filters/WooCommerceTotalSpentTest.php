@@ -70,10 +70,17 @@ class WooCommerceTotalSpentTest extends \MailPoetTest {
     $this->assertEqualsCanonicalizing(['customer1@example.com', 'customer2@example.com', 'customer3@example.com'], $emails);
   }
 
-  private function getSegmentFilterData(string $type, float $amount, int $days): DynamicSegmentFilterData {
+  public function testItWorksWithAllTimeOption(): void {
+    $segmentFilterData = $this->getSegmentFilterData('<', 100000000000, 0, 'allTime');
+    $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->totalSpentFilter);
+    $this->assertEqualsCanonicalizing(['customer1@example.com', 'customer2@example.com', 'customer3@example.com'], $emails);
+  }
+
+  private function getSegmentFilterData(string $type, float $amount, int $days, $timeframe = 'inTheLast'): DynamicSegmentFilterData {
     return new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_WOOCOMMERCE, WooCommerceTotalSpent::ACTION_TOTAL_SPENT, [
       'total_spent_type' => $type,
       'total_spent_amount' => $amount,
+      'timeframe' => $timeframe,
       'days' => $days,
     ]);
   }
