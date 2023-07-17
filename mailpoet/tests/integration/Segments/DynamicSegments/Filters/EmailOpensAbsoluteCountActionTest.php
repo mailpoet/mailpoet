@@ -93,7 +93,7 @@ class EmailOpensAbsoluteCountActionTest extends \MailPoetTest {
   }
 
   public function testGetMachineOpened(): void {
-    $segmentFilterData = $this->getSegmentFilterData(1, 'more', 5, EmailOpensAbsoluteCountAction::MACHINE_TYPE);
+    $segmentFilterData = $this->getSegmentFilterData(1, 'more', 5, 'inTheLast', EmailOpensAbsoluteCountAction::MACHINE_TYPE);
     $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->action);
     $this->assertEqualsCanonicalizing(['opened-3-newsletters@example.com'], $emails);
   }
@@ -134,11 +134,23 @@ class EmailOpensAbsoluteCountActionTest extends \MailPoetTest {
     $this->assertEqualsCanonicalizing(['opened-old-opens@example.com', 'opened-no-opens@example.com'], $emails);
   }
 
-  private function getSegmentFilterData(int $opens, string $operator, int $days, string $action = EmailOpensAbsoluteCountAction::TYPE): DynamicSegmentFilterData {
+  public function testOverAllTime() {
+    $segmentFilterData = $this->getSegmentFilterData(1000000, 'less', 0, 'allTime');
+    $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->action);
+    $this->assertEqualsCanonicalizing([
+      'opened-3-newsletters@example.com',
+      'opened-less-opens@example.com',
+      'opened-no-opens@example.com',
+      'opened-old-opens@example.com',
+    ], $emails);
+  }
+
+  private function getSegmentFilterData(int $opens, string $operator, int $days, string $timeframe = 'inTheLast', string $action = EmailOpensAbsoluteCountAction::TYPE): DynamicSegmentFilterData {
     return new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_EMAIL, $action, [
       'operator' => $operator,
       'opens' => $opens,
       'days' => $days,
+      'timeframe' => $timeframe,
     ]);
   }
 
