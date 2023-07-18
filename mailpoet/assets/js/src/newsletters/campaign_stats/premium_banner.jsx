@@ -5,33 +5,69 @@ import { PremiumRequired } from 'common/premium_required/premium_required';
 import { withBoundary } from '../../common';
 
 function SkipDisplayingDetailedStats() {
-  const ctaButton = (
-    <Button
-      href={MailPoet.MailPoetComUrlFactory.getPurchasePlanUrl(
-        MailPoet.subscribersCount,
-        MailPoet.currentWpUserEmail,
-        'starter',
-        { utm_medium: 'stats', utm_campaign: 'signup' },
-      )}
-      target="_blank"
-      rel="noopener noreferrer"
-    >
-      {__('Upgrade', 'mailpoet')}
-    </Button>
-  );
+  let ctaButton;
+  let description;
 
-  const description = (
-    <p>
-      {__(
-        'Learn more about your subscribers and optimize your campaigns. See who opened your emails, which links they clicked, and then use the data to make your emails even better. And if you run a WooCommerce store, you’ll also see the revenue earned per email. All starting $10 per month.',
-        'mailpoet',
-      )}{' '}
-      <a href="admin.php?page=mailpoet-upgrade">
-        {__('Learn more', 'mailpoet')}
-      </a>
-      .
-    </p>
-  );
+  if (
+    MailPoet.hasValidPremiumKey &&
+    (!MailPoet.isPremiumPluginInstalled || !MailPoet.premiumActive)
+  ) {
+    description = (
+      <p>
+        {__(
+          'Your current MailPoet plan includes advanced features, but they require the MailPoet Premium plugin to be installed and activated.',
+          'mailpoet',
+        )}
+      </p>
+    );
+    ctaButton = (
+      <Button
+        href={MailPoet.premiumPluginActivationUrl}
+        rel="noopener noreferrer"
+      >
+        {__('Activate MailPoet Premium plugin', 'mailpoet')}
+      </Button>
+    );
+    // If the premium plugin is not installed, we need to provide a download link
+    if (!MailPoet.isPremiumPluginInstalled) {
+      ctaButton = (
+        <Button
+          href={MailPoet.premiumPluginDownloadUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {__('Download MailPoet Premium plugin', 'mailpoet')}
+        </Button>
+      );
+    }
+  } else {
+    description = (
+      <p>
+        {__(
+          'Learn more about your subscribers and optimize your campaigns. See who opened your emails, which links they clicked, and then use the data to make your emails even better. And if you run a WooCommerce store, you’ll also see the revenue earned per email. All starting $10 per month.',
+          'mailpoet',
+        )}{' '}
+        <a href="admin.php?page=mailpoet-upgrade">
+          {__('Learn more', 'mailpoet')}
+        </a>
+        .
+      </p>
+    );
+    ctaButton = (
+      <Button
+        href={MailPoet.MailPoetComUrlFactory.getPurchasePlanUrl(
+          MailPoet.subscribersCount,
+          MailPoet.currentWpUserEmail,
+          'starter',
+          { utm_medium: 'stats', utm_campaign: 'signup' },
+        )}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        {__('Upgrade', 'mailpoet')}
+      </Button>
+    );
+  }
 
   return (
     <div className="mailpoet-stats-premium-required">
