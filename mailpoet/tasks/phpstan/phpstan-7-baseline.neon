@@ -541,11 +541,6 @@ parameters:
 			path: ../../lib/Segments/DynamicSegments/Filters/EmailOpensAbsoluteCountAction.php
 
 		-
-			message: "#^Parameter \\#1 \\$search of static method MailPoet\\\\Util\\\\Helpers\\:\\:escapeSearch\\(\\) expects string, mixed given\\.$#"
-			count: 1
-			path: ../../lib/Segments/DynamicSegments/Filters/MailPoetCustomFields.php
-
-		-
 			message: "#^Parameter \\#2 \\$operator of method MailPoet\\\\Segments\\\\DynamicSegments\\\\Filters\\\\MailPoetCustomFields\\:\\:applyForDateEqual\\(\\) expects string\\|null, mixed given\\.$#"
 			count: 1
 			path: ../../lib/Segments/DynamicSegments/Filters/MailPoetCustomFields.php
