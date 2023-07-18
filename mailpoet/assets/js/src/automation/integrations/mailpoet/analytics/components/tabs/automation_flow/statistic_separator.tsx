@@ -52,7 +52,10 @@ export function StatisticSeparator({
 
   const flow = data.step_data?.flow;
   const value = flow !== undefined ? flow[previousStepId] ?? 0 : 0;
-  const percent = Math.round((value / data.step_data.total) * 100);
+  const percent =
+    data.step_data.total > 0
+      ? Math.round((value / data.step_data.total) * 100)
+      : 0;
   const formattedValue = Intl.NumberFormat(locale.toString(), {
     notation: 'compact',
   }).format(value);
