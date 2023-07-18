@@ -3,6 +3,7 @@
 namespace MailPoet\Util\Notices;
 
 use MailPoet\Config\Menu;
+use MailPoet\Config\ServicesChecker;
 use MailPoet\Mailer\MailerFactory;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\TrackingConfig;
@@ -54,12 +55,16 @@ class PermanentNotices {
   /** @var WooCommerceVersionWarning */
   private $woocommerceVersionWarning;
 
+  /** @var PremiumFeaturesAvailableNotice */
+  private $premiumFeaturesAvailableNotice;
+
   public function __construct(
     WPFunctions $wp,
     TrackingConfig $trackingConfig,
     SubscribersRepository $subscribersRepository,
     SettingsController $settings,
     SubscribersFeature $subscribersFeature,
+    ServicesChecker $serviceChecker,
     MailerFactory $mailerFactory
   ) {
     $this->wp = $wp;
@@ -76,6 +81,7 @@ class PermanentNotices {
     $this->disabledMailFunctionNotice = new DisabledMailFunctionNotice($wp, $settings, $subscribersFeature, $mailerFactory);
     $this->pendingApprovalNotice = new PendingApprovalNotice($settings);
     $this->woocommerceVersionWarning = new WooCommerceVersionWarning($wp);
+    $this->premiumFeaturesAvailableNotice = new PremiumFeaturesAvailableNotice($subscribersFeature, $serviceChecker, $wp);
   }
 
   public function init() {
@@ -129,6 +135,9 @@ class PermanentNotices {
     $this->woocommerceVersionWarning->init(
       Menu::isOnMailPoetAdminPage($excludeSetupWizard)
     );
+    $this->premiumFeaturesAvailableNotice->init(
+      Menu::isOnMailPoetAdminPage($excludeSetupWizard)
+    );
   }
 
   public function ajaxDismissNoticeHandler() {
@@ -160,6 +169,9 @@ class PermanentNotices {
         break;
       case (WooCommerceVersionWarning::OPTION_NAME):
         $this->woocommerceVersionWarning->disable();
+        break;
+      case (PremiumFeaturesAvailableNotice::OPTION_NAME):
+        $this->premiumFeaturesAvailableNotice->disable();
         break;
     }
   }
