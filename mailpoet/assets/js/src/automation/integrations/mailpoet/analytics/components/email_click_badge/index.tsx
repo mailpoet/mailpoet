@@ -26,11 +26,14 @@ function percentageBadgeCalculation(percentage: number): {
 }
 
 type BadgeProps = {
-  email: EmailStats;
+  email: EmailStats | undefined;
   property: 'clicked' | 'opened';
   className?: string;
 };
 export function Badge({ email, property, className }: BadgeProps): JSX.Element {
+  if (!email) {
+    return <>0</>;
+  }
   if (email.sent.current === 0) {
     return <>{`${email[property]}`}</>;
   }
