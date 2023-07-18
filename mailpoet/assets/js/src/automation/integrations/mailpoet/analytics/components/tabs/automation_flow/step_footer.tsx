@@ -24,7 +24,10 @@ export function StepFooter({ step }: { step: Step }): JSX.Element | null {
   }
   const waiting = data.step_data?.waiting;
   const value = waiting !== undefined ? waiting[step.id] ?? 0 : 0;
-  const percent = Math.round((value / data.step_data.total) * 100);
+  const percent =
+    data.step_data.total > 0
+      ? Math.round((value / data.step_data.total) * 100)
+      : 0;
 
   const formattedValue = Intl.NumberFormat(locale.toString(), {
     notation: 'compact',
