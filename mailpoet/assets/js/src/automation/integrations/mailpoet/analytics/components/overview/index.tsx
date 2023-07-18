@@ -2,7 +2,7 @@ import { __, _x } from '@wordpress/i18n';
 import {
   SummaryList,
   SummaryListPlaceholder,
-  SummaryNumber,
+  SummaryNumber as WooSummaryNumber,
 } from '@woocommerce/components';
 import { select, useSelect } from '@wordpress/data';
 import { MailPoet } from '../../../../../../mailpoet';
@@ -10,6 +10,11 @@ import { OverviewSection, storeName } from '../../store';
 import { storeName as editorStoreName } from '../../../../../editor/store';
 import { locale } from '../../../../../config';
 import { formattedPrice } from '../../formatter';
+
+// WooSummaryNumber has return type annotated as Object and has all props mandatory
+const SummaryNumber = WooSummaryNumber as unknown as (
+  ...props: [Partial<Parameters<typeof WooSummaryNumber>[0]>]
+) => JSX.Element;
 
 function getEmailPercentage(
   type: 'opened' | 'clicked',

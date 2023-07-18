@@ -1,6 +1,11 @@
-import { ViewMoreList } from '@woocommerce/components';
+import { ViewMoreList as WooViewMoreList } from '@woocommerce/components';
 import { Fragment } from '@wordpress/element';
 import { OrderDetails } from '../../../../store';
+
+// WooViewMoreList has return type annotated as Object
+const ViewMoreList = WooViewMoreList as unknown as (
+  ...args: Parameters<typeof WooViewMoreList>
+) => JSX.Element;
 
 export function ProductsCell({ order }: { order: OrderDetails }) {
   const items =

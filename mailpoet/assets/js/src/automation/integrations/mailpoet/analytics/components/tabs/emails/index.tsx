@@ -81,7 +81,6 @@ export function Emails(): JSX.Element {
   return (
     <TableCard
       title=""
-      caption=""
       onQueryChange={(type: string) => (param: number) => {
         if (type === 'paged') {
           setCurrentPage(param);
@@ -103,12 +102,11 @@ export function Emails(): JSX.Element {
           );
         }
       }}
-      query={{ paged: currentPage, sort: { key: 'email', direction: 'asc' } }}
+      query={{ paged: currentPage, orderby: 'email', order: 'asc' }}
       rows={rows}
       headers={headers}
       showMenu={false}
       rowsPerPage={rowsPerPage}
-      onRowClick={() => {}}
       totalRows={
         overview.data !== undefined
           ? Object.values(overview.data.emails).length

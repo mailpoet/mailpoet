@@ -72,7 +72,6 @@ export function Orders(): JSX.Element {
 
       <TableCard
         title=""
-        caption=""
         onQueryChange={(type: string) => (param: unknown) => {
           let customQuery = {};
           if (type === 'paged') {
@@ -110,7 +109,6 @@ export function Orders(): JSX.Element {
         headers={headers}
         showMenu={false}
         rowsPerPage={ordersSection.customQuery.limit}
-        onRowClick={() => {}}
         totalRows={
           ordersSection.data !== undefined ? ordersSection.data.results : 0
         }
