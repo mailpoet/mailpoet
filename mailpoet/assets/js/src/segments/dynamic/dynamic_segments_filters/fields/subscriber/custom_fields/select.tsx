@@ -3,7 +3,9 @@ import { useSelect, useDispatch } from '@wordpress/data';
 
 import { MailPoet } from 'mailpoet';
 import { ReactSelect } from 'common/form/react_select/react_select';
+import { Grid } from 'common/grid';
 
+import { Select } from 'common/form/select/select';
 import {
   WordpressRoleFormItem,
   SelectOption,
@@ -19,6 +21,9 @@ interface ParamsType {
 }
 
 export function validateRadioSelect(item: WordpressRoleFormItem): boolean {
+  if (['is_blank', 'is_not_blank'].includes(item.operator)) {
+    return true;
+  }
   return typeof item.value === 'string' && item.value.length > 0;
 }
 
@@ -28,7 +33,8 @@ export function RadioSelect({ filterIndex }: FilterProps): JSX.Element {
     [filterIndex],
   );
 
-  const { updateSegmentFilter } = useDispatch(storeName);
+  const { updateSegmentFilter, updateSegmentFilterFromEvent } =
+    useDispatch(storeName);
 
   const customFieldsList: WindowCustomFields = useSelect(
     (select) => select(storeName).getCustomFieldsList(),
@@ -47,22 +53,43 @@ export function RadioSelect({ filterIndex }: FilterProps): JSX.Element {
     label: currentValue.value,
   }));
 
+  const matchingLabel = options.find(
+    (option) => option.value === segment.value,
+  )?.label;
+  const isUsingBlankOption = ['is_blank', 'is_not_blank'].includes(
+    segment.operator,
+  );
+
   return (
-    <ReactSelect
-      dimension="small"
-      isFullWidth
-      placeholder={MailPoet.I18n.t('selectValue')}
-      options={options}
-      value={
-        segment.value ? { value: segment.value, label: segment.value } : null
-      }
-      onChange={(option: SelectOption): void => {
-        void updateSegmentFilter(
-          { value: option.value, operator: 'equals' },
-          filterIndex,
-        );
-      }}
-      automationId="segment-wordpress-role"
-    />
+    <Grid.CenteredRow>
+      <Select
+        key="select"
+        automationId="text-custom-field-operator"
+        value={segment.operator}
+        onChange={(e) => {
+          void updateSegmentFilterFromEvent('operator', filterIndex, e);
+        }}
+      >
+        <option value="equals">{MailPoet.I18n.t('is')}</option>
+        <option value="is_blank">{MailPoet.I18n.t('isBlank')}</option>
+        <option value="is_not_blank">{MailPoet.I18n.t('isNotBlank')}</option>
+      </Select>
+      {!isUsingBlankOption && (
+        <ReactSelect
+          dimension="small"
+          placeholder={MailPoet.I18n.t('selectValue')}
+          options={options}
+          value={
+            segment.value && matchingLabel
+              ? { value: segment.value, label: matchingLabel }
+              : null
+          }
+          onChange={(option: SelectOption): void => {
+            void updateSegmentFilter({ value: option.value }, filterIndex);
+          }}
+          automationId="segment-wordpress-role"
+        />
+      )}
+    </Grid.CenteredRow>
   );
 }
