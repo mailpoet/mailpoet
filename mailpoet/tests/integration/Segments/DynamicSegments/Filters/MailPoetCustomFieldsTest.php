@@ -276,6 +276,185 @@ class MailPoetCustomFieldsTest extends \MailPoetTest {
     $this->assertEqualsCanonicalizing([$this->subscribers[1]->getEmail(), $this->subscribers[2]->getEmail()], $emails);
   }
 
+  public function testTextInputWorksWithBlankOptions(): void {
+    $subscriber = $this->subscribers[1];
+    $customField = $this->createCustomField(CustomFieldEntity::TYPE_TEXT);
+    $this->entityManager->persist(new SubscriberCustomFieldEntity($subscriber, $customField, '1'));
+    $this->entityManager->persist($customField);
+    $this->entityManager->flush();
+    $blankData = new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_USER_ROLE, MailPoetCustomFields::TYPE, [
+      'custom_field_id' => $customField->getId(),
+      'custom_field_type' => CustomFieldEntity::TYPE_TEXT,
+      'operator' => 'is_blank',
+    ]);
+    $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($blankData, $this->filter);
+    $this->assertEqualsCanonicalizing([$this->subscribers[0]->getEmail(), $this->subscribers[2]->getEmail()], $emails);
+    $notBlankData = new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_USER_ROLE, MailPoetCustomFields::TYPE, [
+      'custom_field_id' => $customField->getId(),
+      'custom_field_type' => CustomFieldEntity::TYPE_TEXT,
+      'operator' => 'is_not_blank',
+    ]);
+    $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($notBlankData, $this->filter);
+    $this->assertEqualsCanonicalizing([$subscriber->getEmail()], $emails);
+  }
+
+  public function testTextAreaWorksWithBlankOptions(): void {
+    $subscriber = $this->subscribers[1];
+    $customField = $this->createCustomField(CustomFieldEntity::TYPE_TEXT);
+    $this->entityManager->persist(new SubscriberCustomFieldEntity($subscriber, $customField, '1'));
+    $this->entityManager->persist($customField);
+    $this->entityManager->flush();
+    $blankData = new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_USER_ROLE, MailPoetCustomFields::TYPE, [
+      'custom_field_id' => $customField->getId(),
+      'custom_field_type' => CustomFieldEntity::TYPE_TEXT,
+      'operator' => 'is_blank',
+    ]);
+    $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($blankData, $this->filter);
+    $this->assertEqualsCanonicalizing([$this->subscribers[0]->getEmail(), $this->subscribers[2]->getEmail()], $emails);
+    $notBlankData = new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_USER_ROLE, MailPoetCustomFields::TYPE, [
+      'custom_field_id' => $customField->getId(),
+      'custom_field_type' => CustomFieldEntity::TYPE_TEXT,
+      'operator' => 'is_not_blank',
+    ]);
+    $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($notBlankData, $this->filter);
+    $this->assertEqualsCanonicalizing([$subscriber->getEmail()], $emails);
+  }
+
+  public function testFullDateWorksWithBlankOptions(): void {
+    $customField = $this->createCustomField(CustomFieldEntity::TYPE_DATE);
+    $this->entityManager->persist($customField);
+    $this->entityManager->persist(new SubscriberCustomFieldEntity($this->subscribers[1], $customField, '2017-04-01 00:00:00'));
+    $this->entityManager->flush();
+    $blankData = new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_USER_ROLE, MailPoetCustomFields::TYPE, [
+      'custom_field_id' => $customField->getId(),
+      'custom_field_type' => CustomFieldEntity::TYPE_DATE,
+      'date_type' => 'year_month_day',
+      'operator' => 'is_blank',
+    ]);
+    $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($blankData, $this->filter);
+    $this->assertEqualsCanonicalizing([$this->subscribers[0]->getEmail(), $this->subscribers[2]->getEmail()], $emails);
+    $notBlankData = new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_USER_ROLE, MailPoetCustomFields::TYPE, [
+      'custom_field_id' => $customField->getId(),
+      'custom_field_type' => CustomFieldEntity::TYPE_DATE,
+      'date_type' => 'year_month_day',
+      'operator' => 'is_not_blank',
+    ]);
+    $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($notBlankData, $this->filter);
+    $this->assertEqualsCanonicalizing([$this->subscribers[1]->getEmail()], $emails);
+  }
+
+  public function testYearWorksWithBlankOptions(): void {
+    $customField = $this->createCustomField(CustomFieldEntity::TYPE_DATE);
+    $this->entityManager->persist($customField);
+    $this->entityManager->persist(new SubscriberCustomFieldEntity($this->subscribers[1], $customField, '2017-04-01 00:00:00'));
+    $this->entityManager->flush();
+    $blankFilterData = new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_USER_ROLE, MailPoetCustomFields::TYPE, [
+      'custom_field_id' => $customField->getId(),
+      'custom_field_type' => CustomFieldEntity::TYPE_DATE,
+      'date_type' => 'year',
+      'operator' => 'is_blank',
+    ]);
+    $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($blankFilterData, $this->filter);
+    $this->assertEqualsCanonicalizing([$this->subscribers[0]->getEmail(), $this->subscribers[2]->getEmail()], $emails);
+    $notBlankFilterData = new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_USER_ROLE, MailPoetCustomFields::TYPE, [
+      'custom_field_id' => $customField->getId(),
+      'custom_field_type' => CustomFieldEntity::TYPE_DATE,
+      'date_type' => 'year',
+      'operator' => 'is_not_blank',
+    ]);
+    $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($notBlankFilterData, $this->filter);
+    $this->assertEqualsCanonicalizing([$this->subscribers[1]->getEmail()], $emails);
+  }
+
+  public function testDateMonthWorksWithBlankOptions(): void {
+    $customField = $this->createCustomField(CustomFieldEntity::TYPE_DATE);
+    $this->entityManager->persist($customField);
+    $this->entityManager->persist(new SubscriberCustomFieldEntity($this->subscribers[1], $customField, '2017-04-01 00:00:00'));
+    $this->entityManager->flush();
+    $blankFilterData = new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_USER_ROLE, MailPoetCustomFields::TYPE, [
+      'custom_field_id' => $customField->getId(),
+      'custom_field_type' => CustomFieldEntity::TYPE_DATE,
+      'date_type' => 'month',
+      'operator' => 'is_blank',
+    ]);
+    $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($blankFilterData, $this->filter);
+    $this->assertEqualsCanonicalizing([$this->subscribers[0]->getEmail(), $this->subscribers[2]->getEmail()], $emails);
+    $notBlankFilterData = new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_USER_ROLE, MailPoetCustomFields::TYPE, [
+      'custom_field_id' => $customField->getId(),
+      'custom_field_type' => CustomFieldEntity::TYPE_DATE,
+      'date_type' => 'month',
+      'operator' => 'is_not_blank',
+    ]);
+    $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($notBlankFilterData, $this->filter);
+    $this->assertEqualsCanonicalizing([$this->subscribers[1]->getEmail()], $emails);
+  }
+
+  public function testRadioButtonsWorksWithBlankOptions(): void {
+    $subscriber = $this->subscribers[1];
+    $customField = $this->createCustomField(CustomFieldEntity::TYPE_RADIO);
+    $this->entityManager->persist(new SubscriberCustomFieldEntity($subscriber, $customField, 'Option 2'));
+    $this->entityManager->persist($customField);
+    $this->entityManager->flush();
+    $blankFilterData = new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_USER_ROLE, MailPoetCustomFields::TYPE, [
+      'custom_field_id' => $customField->getId(),
+      'custom_field_type' => CustomFieldEntity::TYPE_RADIO,
+      'operator' => 'is_blank',
+    ]);
+    $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($blankFilterData, $this->filter);
+    $this->assertEqualsCanonicalizing([$this->subscribers[0]->getEmail(), $this->subscribers[2]->getEmail()], $emails);
+    $notBlankFilterData = new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_USER_ROLE, MailPoetCustomFields::TYPE, [
+      'custom_field_id' => $customField->getId(),
+      'custom_field_type' => CustomFieldEntity::TYPE_RADIO,
+      'operator' => 'is_not_blank',
+    ]);
+    $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($notBlankFilterData, $this->filter);
+    $this->assertEqualsCanonicalizing([$subscriber->getEmail()], $emails);
+  }
+
+  public function testCheckboxWorksWithBlankOptions(): void {
+    $subscriber = $this->subscribers[1];
+    $customField = $this->createCustomField(CustomFieldEntity::TYPE_CHECKBOX);
+    $this->entityManager->persist(new SubscriberCustomFieldEntity($subscriber, $customField, '1'));
+    $this->entityManager->persist($customField);
+    $this->entityManager->flush();
+    $blankFilterData = new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_USER_ROLE, MailPoetCustomFields::TYPE, [
+      'custom_field_id' => $customField->getId(),
+      'custom_field_type' => CustomFieldEntity::TYPE_CHECKBOX,
+      'operator' => 'is_blank',
+    ]);
+    $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($blankFilterData, $this->filter);
+    $this->assertEqualsCanonicalizing([$this->subscribers[0]->getEmail(), $this->subscribers[2]->getEmail()], $emails);
+    $notBlankFilterData = new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_USER_ROLE, MailPoetCustomFields::TYPE, [
+      'custom_field_id' => $customField->getId(),
+      'custom_field_type' => CustomFieldEntity::TYPE_CHECKBOX,
+      'operator' => 'is_not_blank',
+    ]);
+    $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($notBlankFilterData, $this->filter);
+    $this->assertEqualsCanonicalizing([$subscriber->getEmail()], $emails);
+  }
+
+  public function testSelectWorksWithBlankOptions(): void {
+    $subscriber = $this->subscribers[1];
+    $customField = $this->createCustomField(CustomFieldEntity::TYPE_SELECT);
+    $this->entityManager->persist(new SubscriberCustomFieldEntity($subscriber, $customField, 'Option 2'));
+    $this->entityManager->persist($customField);
+    $this->entityManager->flush();
+    $blankFilterData = new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_USER_ROLE, MailPoetCustomFields::TYPE, [
+      'custom_field_id' => $customField->getId(),
+      'custom_field_type' => CustomFieldEntity::TYPE_SELECT,
+      'operator' => 'is_blank',
+    ]);
+    $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($blankFilterData, $this->filter);
+    $this->assertEqualsCanonicalizing([$this->subscribers[0]->getEmail(), $this->subscribers[2]->getEmail()], $emails);
+    $notBlankFilterData = new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_USER_ROLE, MailPoetCustomFields::TYPE, [
+      'custom_field_id' => $customField->getId(),
+      'custom_field_type' => CustomFieldEntity::TYPE_SELECT,
+      'operator' => 'is_not_blank',
+    ]);
+    $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($notBlankFilterData, $this->filter);
+    $this->assertEqualsCanonicalizing([$subscriber->getEmail()], $emails);
+  }
+
   private function createSubscriber(string $email): SubscriberEntity {
     $subscriber = new SubscriberEntity();
     $subscriber->setEmail($email);
