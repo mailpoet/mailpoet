@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { TableCard } from '@woocommerce/components/build';
+import { TableCard } from '@woocommerce/components';
 import { useSelect } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
 import { calculateSummary } from './summary';

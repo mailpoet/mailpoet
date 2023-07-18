@@ -1,4 +1,4 @@
-import CurrencyFactory from '@woocommerce/currency/build';
+import CurrencyFactory from '@woocommerce/currency';
 import { MailPoet } from '../../../../../mailpoet';
 
 export function formattedPrice(price: number): string {

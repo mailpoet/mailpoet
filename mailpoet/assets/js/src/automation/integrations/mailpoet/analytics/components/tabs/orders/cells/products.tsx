@@ -1,4 +1,4 @@
-import { ViewMoreList } from '@woocommerce/components/build';
+import { ViewMoreList } from '@woocommerce/components';
 import { Fragment } from '@wordpress/element';
 import { OrderDetails } from '../../../../store';
 

@@ -34,7 +34,7 @@ export * as WordPressI18n from '@wordpress/i18n';
 export * as WordPressIcons from '@wordpress/icons';
 export * as WordPressDataControls from '@wordpress/data-controls';
 export * as WooCommerceDate from '@woocommerce/date';
-import { DateRangeFilterPicker } from '@woocommerce/components/build';
+import { DateRangeFilterPicker } from '@woocommerce/components';
 
 export const WooCommerceComponents = {
   DateRangeFilterPicker,

@@ -1,6 +1,6 @@
 import { dispatch, useSelect } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
-import { TableCard } from '@woocommerce/components/build';
+import { TableCard } from '@woocommerce/components';
 import { MailPoet } from '../../../../../../../mailpoet';
 import { OrderSection, storeName } from '../../../store';
 import { transformOrdersToRows } from './rows';
