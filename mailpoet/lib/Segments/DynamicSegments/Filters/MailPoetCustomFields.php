@@ -37,9 +37,8 @@ class MailPoetCustomFields implements Filter {
       $subscribersTable,
       $subscribersCustomFieldTable,
       'subscribers_custom_field',
-      "$subscribersTable.id = subscribers_custom_field.subscriber_id"
+      "$subscribersTable.id = subscribers_custom_field.subscriber_id AND subscribers_custom_field.custom_field_id = $customFieldIdParam"
     );
-    $queryBuilder->andWhere("subscribers_custom_field.custom_field_id = $customFieldIdParam");
     $queryBuilder->setParameter($customFieldIdParam, $customFieldId);
 
     $valueParam = ':value' . $parameterSuffix;
@@ -66,7 +65,13 @@ class MailPoetCustomFields implements Filter {
     $value = $filterData->getParam('value');
     $operator = $filterData->getParam('operator');
     $queryBuilder->setParameter($valueParam, $value);
-    if ($dateType === 'month') {
+    if ($operator === 'is_blank') {
+      $queryBuilder->andWhere('subscribers_custom_field.value IS NULL');
+      return $queryBuilder;
+    } elseif ($operator === 'is_not_blank') {
+      $queryBuilder->andWhere('subscribers_custom_field.value IS NOT NULL');
+      return $queryBuilder;
+    } elseif ($dateType === 'month') {
       return $this->applyForDateMonth($queryBuilder, $valueParam);
     } elseif ($dateType === 'year') {
       return $this->applyForDateYear($queryBuilder, $operator, $valueParam);
@@ -106,10 +111,15 @@ class MailPoetCustomFields implements Filter {
   private function applyForCheckbox(QueryBuilder $queryBuilder, DynamicSegmentFilterEntity $filter): QueryBuilder {
     $filterData = $filter->getFilterData();
     $value = $filterData->getParam('value');
+    $operator = $filterData->getParam('operator');
 
-    if ($value === '1') {
+    if ($operator === 'is_blank') {
+      $queryBuilder->andWhere('subscribers_custom_field.value IS NULL');
+    } elseif ($operator === 'is_not_blank') {
+      $queryBuilder->andWhere('subscribers_custom_field.value IS NOT NULL');
+    } elseif ($value === '1') {
       $queryBuilder->andWhere('subscribers_custom_field.value = 1');
-    } else {
+    } elseif ($value === '0') {
       $queryBuilder->andWhere('subscribers_custom_field.value <> 1');
     }
     return $queryBuilder;
@@ -134,6 +144,10 @@ class MailPoetCustomFields implements Filter {
     } elseif ($operator === 'less_than') {
       $queryBuilder->andWhere("subscribers_custom_field.value < $valueParam");
       $queryBuilder->setParameter($valueParam, $value);
+    } elseif ($operator === 'is_blank') {
+      $queryBuilder->andWhere('subscribers_custom_field.value IS NULL');
+    } elseif ($operator === 'is_not_blank') {
+      $queryBuilder->andWhere('subscribers_custom_field.value IS NOT NULL');
     } else {
       $queryBuilder->andWhere("subscribers_custom_field.value LIKE $valueParam");
       $queryBuilder->setParameter($valueParam, '%' . Helpers::escapeSearch($value) . '%');
