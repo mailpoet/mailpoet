@@ -1,9 +1,9 @@
+import { __, _x } from '@wordpress/i18n';
 import { useEffect } from 'react';
 import { assign, range } from 'lodash/fp';
 import { format, getYear, isValid, parseISO } from 'date-fns';
 import { useSelect, useDispatch } from '@wordpress/data';
 
-import { MailPoet } from 'mailpoet';
 import { Select } from 'common/form/select/select';
 import { Grid } from 'common/grid';
 import { Datepicker } from 'common/datepicker/datepicker';
@@ -32,20 +32,18 @@ function DateMonth({ onChange, item, filterIndex }: ComponentProps) {
         onChange(assign(item, { value: e.target.value }), filterIndex);
       }}
     >
-      <option value="2017-01-01 00:00:00">{MailPoet.I18n.t('january')}</option>
-      <option value="2017-02-01 00:00:00">{MailPoet.I18n.t('february')}</option>
-      <option value="2017-03-01 00:00:00">{MailPoet.I18n.t('march')}</option>
-      <option value="2017-04-01 00:00:00">{MailPoet.I18n.t('april')}</option>
-      <option value="2017-05-01 00:00:00">{MailPoet.I18n.t('may')}</option>
-      <option value="2017-06-01 00:00:00">{MailPoet.I18n.t('june')}</option>
-      <option value="2017-07-01 00:00:00">{MailPoet.I18n.t('july')}</option>
-      <option value="2017-08-01 00:00:00">{MailPoet.I18n.t('august')}</option>
-      <option value="2017-09-01 00:00:00">
-        {MailPoet.I18n.t('september')}
-      </option>
-      <option value="2017-10-01 00:00:00">{MailPoet.I18n.t('october')}</option>
-      <option value="2017-11-01 00:00:00">{MailPoet.I18n.t('november')}</option>
-      <option value="2017-12-01 00:00:00">{MailPoet.I18n.t('december')}</option>
+      <option value="2017-01-01 00:00:00">{__('january', 'mailpoet')}</option>
+      <option value="2017-02-01 00:00:00">{__('february', 'mailpoet')}</option>
+      <option value="2017-03-01 00:00:00">{__('march', 'mailpoet')}</option>
+      <option value="2017-04-01 00:00:00">{__('april', 'mailpoet')}</option>
+      <option value="2017-05-01 00:00:00">{__('may', 'mailpoet')}</option>
+      <option value="2017-06-01 00:00:00">{__('june', 'mailpoet')}</option>
+      <option value="2017-07-01 00:00:00">{__('july', 'mailpoet')}</option>
+      <option value="2017-08-01 00:00:00">{__('august', 'mailpoet')}</option>
+      <option value="2017-09-01 00:00:00">{__('september', 'mailpoet')}</option>
+      <option value="2017-10-01 00:00:00">{__('october', 'mailpoet')}</option>
+      <option value="2017-11-01 00:00:00">{__('november', 'mailpoet')}</option>
+      <option value="2017-12-01 00:00:00">{__('december', 'mailpoet')}</option>
     </Select>
   );
 }
@@ -73,9 +71,21 @@ function DateYear({ onChange, item, filterIndex }: ComponentProps) {
           onChange(assign(item, { operator: e.target.value }), filterIndex);
         }}
       >
-        <option value="equals">{MailPoet.I18n.t('equals')}</option>
-        <option value="before">{MailPoet.I18n.t('before')}</option>
-        <option value="after">{MailPoet.I18n.t('after')}</option>
+        <option value="equals">{__('equals', 'mailpoet')}</option>
+        <option value="before">
+          {_x(
+            'before',
+            'Meaning: "Subscriber subscribed before April"',
+            'mailpoet',
+          )}
+        </option>
+        <option value="after">
+          {_x(
+            'after',
+            'Meaning: "Subscriber subscribed after April',
+            'mailpoet',
+          )}
+        </option>
       </Select>
       <Select
         key="select-year"
@@ -139,9 +149,21 @@ function DateFullDate({ onChange, item, filterIndex }: ComponentProps) {
           onChange(assign(item, { operator: e.target.value }), filterIndex);
         }}
       >
-        <option value="equals">{MailPoet.I18n.t('equals')}</option>
-        <option value="before">{MailPoet.I18n.t('before')}</option>
-        <option value="after">{MailPoet.I18n.t('after')}</option>
+        <option value="equals">{__('equals', 'mailpoet')}</option>
+        <option value="before">
+          {_x(
+            'before',
+            'Meaning: "Subscriber subscribed before April"',
+            'mailpoet',
+          )}
+        </option>
+        <option value="after">
+          {_x(
+            'after',
+            'Meaning: "Subscriber subscribed after April',
+            'mailpoet',
+          )}
+        </option>
       </Select>
       <Datepicker
         dateFormat="MMM d, yyyy"
@@ -179,9 +201,21 @@ function DateMonthYear({ onChange, item, filterIndex }: ComponentProps) {
           onChange(assign(item, { operator: e.target.value }), filterIndex);
         }}
       >
-        <option value="equals">{MailPoet.I18n.t('equals')}</option>
-        <option value="before">{MailPoet.I18n.t('before')}</option>
-        <option value="after">{MailPoet.I18n.t('after')}</option>
+        <option value="equals">{__('equals', 'mailpoet')}</option>
+        <option value="before">
+          {_x(
+            'before',
+            'Meaning: "Subscriber subscribed before April"',
+            'mailpoet',
+          )}
+        </option>
+        <option value="after">
+          {_x(
+            'after',
+            'Meaning: "Subscriber subscribed after April',
+            'mailpoet',
+          )}
+        </option>{' '}
       </Select>
       <Datepicker
         onChange={(value): void =>
