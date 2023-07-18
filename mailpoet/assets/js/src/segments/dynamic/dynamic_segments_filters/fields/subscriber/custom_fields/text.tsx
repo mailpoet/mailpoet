@@ -18,6 +18,7 @@ export function validateText(item: WordpressRoleFormItem): boolean {
     item.value.length > 0 &&
     (item.operator === 'equals' ||
       item.operator === 'contains' ||
+      item.operator === 'not_contains' ||
       item.operator === 'not_equals' ||
       item.operator === 'more_than' ||
       item.operator === 'less_than')
@@ -56,6 +57,7 @@ export function Text({ filterIndex }: FilterProps): JSX.Element {
         <option value="equals">{MailPoet.I18n.t('is')}</option>
         <option value="not_equals">{MailPoet.I18n.t('isNot')}</option>
         <option value="contains">{MailPoet.I18n.t('contains')}</option>
+        <option value="not_contains">{MailPoet.I18n.t('notContains')}</option>
         <option value="more_than">{MailPoet.I18n.t('moreThan')}</option>
         <option value="less_than">{MailPoet.I18n.t('lessThan')}</option>
         <option value="is_blank">{MailPoet.I18n.t('isBlank')}</option>

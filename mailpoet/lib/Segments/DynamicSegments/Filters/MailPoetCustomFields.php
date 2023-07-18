@@ -6,6 +6,7 @@ use MailPoet\Entities\CustomFieldEntity;
 use MailPoet\Entities\DynamicSegmentFilterEntity;
 use MailPoet\Entities\SubscriberCustomFieldEntity;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Segments\DynamicSegments\Exceptions\InvalidFilterException;
 use MailPoet\Util\Helpers;
 use MailPoet\Util\Security;
 use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
@@ -131,6 +132,14 @@ class MailPoetCustomFields implements Filter {
     $operator = $filterData->getParam('operator');
     $value = $filterData->getParam('value');
 
+    $requiresValue = !in_array($operator, ['is_blank', 'is_not_blank']);
+
+    if ($requiresValue && !is_string($value)) {
+      throw new InvalidFilterException('Missing required value', InvalidFilterException::MISSING_VALUE);
+    }
+
+    /** @var string $value - for PhpStan */
+
     if ($operator === 'equals') {
       $queryBuilder->andWhere("subscribers_custom_field.value = $valueParam");
       $queryBuilder->setParameter($valueParam, $value);
@@ -148,6 +157,9 @@ class MailPoetCustomFields implements Filter {
       $queryBuilder->andWhere('subscribers_custom_field.value IS NULL');
     } elseif ($operator === 'is_not_blank') {
       $queryBuilder->andWhere('subscribers_custom_field.value IS NOT NULL');
+    } elseif ($operator === 'not_contains') {
+      $queryBuilder->andWhere("subscribers_custom_field.value NOT LIKE $valueParam");
+      $queryBuilder->setParameter($valueParam, '%' . Helpers::escapeSearch($value) . '%');
     } else {
       $queryBuilder->andWhere("subscribers_custom_field.value LIKE $valueParam");
       $queryBuilder->setParameter($valueParam, '%' . Helpers::escapeSearch($value) . '%');

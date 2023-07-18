@@ -56,6 +56,22 @@ class MailPoetCustomFieldsTest extends \MailPoetTest {
     $this->assertEqualsCanonicalizing([$subscriber->getEmail()], $emails);
   }
 
+  public function testItFiltersSubscribersWithTextNotContains(): void {
+    $customField = $this->createCustomField(CustomFieldEntity::TYPE_TEXT);
+    $this->entityManager->persist(new SubscriberCustomFieldEntity($this->subscribers[0], $customField, 'some value'));
+    $this->entityManager->persist(new SubscriberCustomFieldEntity($this->subscribers[1], $customField, 'different value'));
+    $this->entityManager->persist($customField);
+    $this->entityManager->flush();
+    $segmentFilterData = new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_USER_ROLE, MailPoetCustomFields::TYPE, [
+      'custom_field_id' => $customField->getId(),
+      'custom_field_type' => CustomFieldEntity::TYPE_TEXT,
+      'operator' => 'not_contains',
+      'value' => 'me val',
+    ]);
+    $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->filter);
+    $this->assertEqualsCanonicalizing([$this->subscribers[1]->getEmail()], $emails);
+  }
+
   public function testItFiltersSubscribersTextNotEquals(): void {
     $customField = $this->createCustomField(CustomFieldEntity::TYPE_TEXT);
     $this->entityManager->persist(new SubscriberCustomFieldEntity($this->subscribers[1], $customField, 'something else'));
