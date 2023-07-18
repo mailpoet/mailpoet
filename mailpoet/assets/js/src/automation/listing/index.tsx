@@ -2,7 +2,13 @@ import { TableCard } from '@woocommerce/components';
 import { Button, Flex, TabPanel } from '@wordpress/components';
 import { useDispatch, useSelect } from '@wordpress/data';
 import { __, _x } from '@wordpress/i18n';
-import { useCallback, useEffect, useLayoutEffect, useMemo } from 'react';
+import {
+  ComponentProps,
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+} from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import { plusIcon } from 'common/button/icon/plus';
 import { getRow } from './get-row';
@@ -151,7 +157,12 @@ export function AutomationListing(): JSX.Element {
           className="mailpoet-automation-listing"
           title=""
           isLoading={!automations}
-          headers={tableHeaders}
+          headers={
+            // typed as mutable so doesn't accept our const (readonly) type
+            tableHeaders as unknown as ComponentProps<
+              typeof TableCard
+            >['headers']
+          }
           rows={rows}
           rowKey={(_, i) => filteredAutomations[i].id}
           rowsPerPage={rowsPerPage}
