@@ -17,9 +17,27 @@ interface ComponentProps {
   filterIndex: number;
 }
 
+type DateUpdateData = {
+  value: string;
+  operator?: string;
+};
+
+export function validateDate(item: WordpressRoleFormItem): boolean {
+  if (['is_blank', 'is_not_blank'].includes(item.operator)) {
+    return true;
+  }
+  if (
+    item.date_type !== 'month' &&
+    (typeof item.operator !== 'string' || item.operator.length < 1)
+  ) {
+    return false;
+  }
+  return typeof item.value === 'string' && item.value.length > 1;
+}
+
 function DateMonth({ onChange, item, filterIndex }: ComponentProps) {
   useEffect(() => {
-    if (item.value === undefined || item.value === '') {
+    if (!validateDate(item)) {
       onChange(assign(item, { value: '2017-01-01 00:00:00' }), filterIndex);
     }
   }, [onChange, item, filterIndex]);
@@ -29,7 +47,12 @@ function DateMonth({ onChange, item, filterIndex }: ComponentProps) {
       key="select"
       value={item.value}
       onChange={(e) => {
-        onChange(assign(item, { value: e.target.value }), filterIndex);
+        const newData = { value: e.target.value } as DateUpdateData;
+        // Ensure blank options come through as operator
+        if (['is_blank', 'is_not_blank'].includes(e.target.value)) {
+          newData.operator = e.target.value;
+        }
+        onChange(assign(item, newData), filterIndex);
       }}
     >
       <option value="2017-01-01 00:00:00">{__('january', 'mailpoet')}</option>
@@ -51,7 +74,7 @@ function DateMonth({ onChange, item, filterIndex }: ComponentProps) {
 function DateYear({ onChange, item, filterIndex }: ComponentProps) {
   const currentYear = getYear(new Date());
   useEffect(() => {
-    if (item.value === undefined || item.value === '') {
+    if (!validateDate(item)) {
       onChange(
         assign(item, {
           value: `${currentYear}-01-01 00:00:00`,
@@ -71,7 +94,7 @@ function DateYear({ onChange, item, filterIndex }: ComponentProps) {
           onChange(assign(item, { operator: e.target.value }), filterIndex);
         }}
       >
-        <option value="equals">{__('equals', 'mailpoet')}</option>
+        <option value="equals">{__('is', 'mailpoet')}</option>
         <option value="before">
           {_x(
             'before',
@@ -86,6 +109,8 @@ function DateYear({ onChange, item, filterIndex }: ComponentProps) {
             'mailpoet',
           )}
         </option>
+        <option value="is_blank">{__('isBlank', 'mailpoet')}</option>
+        <option value="is_not_blank">{__('isNotBlank', 'mailpoet')}</option>
       </Select>
       <Select
         key="select-year"
@@ -129,7 +154,7 @@ const parseDate = (value: string): Date | undefined => {
 
 function DateFullDate({ onChange, item, filterIndex }: ComponentProps) {
   useEffect(() => {
-    if (item.value === undefined || item.value === '') {
+    if (!validateDate(item)) {
       onChange(
         assign(item, {
           value: `${format(new Date(), 'yyyy-MM-dd')} 00:00:00`,
@@ -140,6 +165,10 @@ function DateFullDate({ onChange, item, filterIndex }: ComponentProps) {
     }
   }, [onChange, item, filterIndex]);
 
+  const isUsingBlankOperator = ['is_blank', 'is_not_blank'].includes(
+    item.operator,
+  );
+
   return (
     <Grid.CenteredRow>
       <Select
@@ -149,7 +178,7 @@ function DateFullDate({ onChange, item, filterIndex }: ComponentProps) {
           onChange(assign(item, { operator: e.target.value }), filterIndex);
         }}
       >
-        <option value="equals">{__('equals', 'mailpoet')}</option>
+        <option value="equals">{__('is', 'mailpoet')}</option>
         <option value="before">
           {_x(
             'before',
@@ -164,17 +193,21 @@ function DateFullDate({ onChange, item, filterIndex }: ComponentProps) {
             'mailpoet',
           )}
         </option>
+        <option value="is_blank">{__('isBlank', 'mailpoet')}</option>
+        <option value="is_not_blank">{__('isNotBlank', 'mailpoet')}</option>
       </Select>
-      <Datepicker
-        dateFormat="MMM d, yyyy"
-        onChange={(value): void =>
-          onChange(
-            assign(item, { value: convertDateToString(value) }),
-            filterIndex,
-          )
-        }
-        selected={item.value ? parseDate(item.value) : undefined}
-      />
+      {!isUsingBlankOperator && (
+        <Datepicker
+          dateFormat="MMM d, yyyy"
+          onChange={(value): void =>
+            onChange(
+              assign(item, { value: convertDateToString(value) }),
+              filterIndex,
+            )
+          }
+          selected={item.value ? parseDate(item.value) : undefined}
+        />
+      )}
     </Grid.CenteredRow>
   );
 }
@@ -192,6 +225,10 @@ function DateMonthYear({ onChange, item, filterIndex }: ComponentProps) {
     }
   }, [onChange, item, filterIndex]);
 
+  const isUsingBlankOperator = ['is_blank', 'is_not_blank'].includes(
+    item.operator,
+  );
+
   return (
     <Grid.CenteredRow>
       <Select
@@ -201,7 +238,7 @@ function DateMonthYear({ onChange, item, filterIndex }: ComponentProps) {
           onChange(assign(item, { operator: e.target.value }), filterIndex);
         }}
       >
-        <option value="equals">{__('equals', 'mailpoet')}</option>
+        <option value="equals">{__('is', 'mailpoet')}</option>
         <option value="before">
           {_x(
             'before',
@@ -215,31 +252,25 @@ function DateMonthYear({ onChange, item, filterIndex }: ComponentProps) {
             'Meaning: "Subscriber subscribed after April',
             'mailpoet',
           )}
-        </option>{' '}
+        </option>
+        <option value="is_blank">{__('isBlank', 'mailpoet')}</option>
+        <option value="is_not_blank">{__('isNotBlank', 'mailpoet')}</option>
       </Select>
-      <Datepicker
-        onChange={(value): void =>
-          onChange(
-            assign(item, { value: convertDateToString(value) }),
-            filterIndex,
-          )
-        }
-        selected={item.value ? parseDate(item.value) : undefined}
-        dateFormat="MM/yyyy"
-        showMonthYearPicker
-      />
+      {!isUsingBlankOperator && (
+        <Datepicker
+          onChange={(value): void =>
+            onChange(
+              assign(item, { value: convertDateToString(value) }),
+              filterIndex,
+            )
+          }
+          selected={item.value ? parseDate(item.value) : undefined}
+          dateFormat="MM/yyyy"
+          showMonthYearPicker
+        />
+      )}
     </Grid.CenteredRow>
   );
-}
-
-export function validateDate(item: WordpressRoleFormItem): boolean {
-  if (
-    item.date_type !== 'month' &&
-    (typeof item.operator !== 'string' || item.operator.length < 1)
-  ) {
-    return false;
-  }
-  return typeof item.value === 'string' && item.value.length > 1;
 }
 
 interface Props {

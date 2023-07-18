@@ -10,6 +10,9 @@ import { FilterProps, WordpressRoleFormItem } from '../../../../types';
 import { storeName } from '../../../../store';
 
 export function validateText(item: WordpressRoleFormItem): boolean {
+  if (['is_blank', 'is_not_blank'].includes(item.value)) {
+    return true;
+  }
   return (
     typeof item.value === 'string' &&
     item.value.length > 0 &&
@@ -36,6 +39,10 @@ export function Text({ filterIndex }: FilterProps): JSX.Element {
     }
   }, [updateSegmentFilter, segment, filterIndex]);
 
+  const isUsingBlankOption = ['is_blank', 'is_not_blank'].includes(
+    segment.operator,
+  );
+
   return (
     <Grid.CenteredRow>
       <Select
@@ -46,21 +53,25 @@ export function Text({ filterIndex }: FilterProps): JSX.Element {
           void updateSegmentFilterFromEvent('operator', filterIndex, e);
         }}
       >
-        <option value="equals">{MailPoet.I18n.t('equals')}</option>
-        <option value="not_equals">{MailPoet.I18n.t('notEquals')}</option>
+        <option value="equals">{MailPoet.I18n.t('is')}</option>
+        <option value="not_equals">{MailPoet.I18n.t('isNot')}</option>
         <option value="contains">{MailPoet.I18n.t('contains')}</option>
         <option value="more_than">{MailPoet.I18n.t('moreThan')}</option>
         <option value="less_than">{MailPoet.I18n.t('lessThan')}</option>
+        <option value="is_blank">{MailPoet.I18n.t('isBlank')}</option>
+        <option value="is_not_blank">{MailPoet.I18n.t('isNotBlank')}</option>
       </Select>
-      <Input
-        key="input"
-        data-automation-id="text-custom-field-value"
-        value={segment.value || ''}
-        onChange={(e) => {
-          void updateSegmentFilterFromEvent('value', filterIndex, e);
-        }}
-        placeholder={MailPoet.I18n.t('value')}
-      />
+      {!isUsingBlankOption && (
+        <Input
+          key="input"
+          data-automation-id="text-custom-field-value"
+          value={segment.value || ''}
+          onChange={(e) => {
+            void updateSegmentFilterFromEvent('value', filterIndex, e);
+          }}
+          placeholder={MailPoet.I18n.t('value')}
+        />
+      )}
     </Grid.CenteredRow>
   );
 }
