@@ -1,4 +1,4 @@
-import { TableCard } from '@woocommerce/components/build';
+import { TableCard } from '@woocommerce/components';
 import { Button, Flex, TabPanel } from '@wordpress/components';
 import { useDispatch, useSelect } from '@wordpress/data';
 import { __, _x } from '@wordpress/i18n';

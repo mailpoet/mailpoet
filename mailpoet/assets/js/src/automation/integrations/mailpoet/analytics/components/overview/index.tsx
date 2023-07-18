@@ -3,7 +3,7 @@ import {
   SummaryList,
   SummaryListPlaceholder,
   SummaryNumber,
-} from '@woocommerce/components/build';
+} from '@woocommerce/components';
 import { select, useSelect } from '@wordpress/data';
 import { MailPoet } from '../../../../../../mailpoet';
 import { OverviewSection, storeName } from '../../store';
