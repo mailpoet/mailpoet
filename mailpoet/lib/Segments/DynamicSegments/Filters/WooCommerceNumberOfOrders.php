@@ -2,6 +2,7 @@
 
 namespace MailPoet\Segments\DynamicSegments\Filters;
 
+use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Entities\DynamicSegmentFilterEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Util\DBCollationChecker;
@@ -39,7 +40,7 @@ class WooCommerceNumberOfOrders implements Filter {
     $filterData = $filter->getFilterData();
     $type = strval($filterData->getParam('number_of_orders_type'));
     $count = intval($filterData->getParam('number_of_orders_count'));
-    $isAllTime = $filterData->getParam('timeframe') === 'allTime';
+    $isAllTime = $filterData->getParam('timeframe') === DynamicSegmentFilterData::TIMEFRAME_ALL_TIME;
     $parameterSuffix = $filter->getId() ?? Security::generateRandomString();
     $collation = $this->collationChecker->getCollateIfNeeded(
       $subscribersTable,

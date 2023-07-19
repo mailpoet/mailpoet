@@ -2,6 +2,7 @@
 
 namespace MailPoet\Segments\DynamicSegments\Filters;
 
+use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Entities\DynamicSegmentFilterEntity;
 use MailPoet\Entities\StatisticsOpenEntity;
 use MailPoet\Entities\SubscriberEntity;
@@ -34,7 +35,7 @@ class EmailOpensAbsoluteCountAction implements Filter {
     $statsTable = $this->entityManager->getClassMetadata(StatisticsOpenEntity::class)->getTableName();
     $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
 
-    if ($timeframe === 'allTime') {
+    if ($timeframe === DynamicSegmentFilterData::TIMEFRAME_ALL_TIME) {
       $queryBuilder->leftJoin(
         $subscribersTable,
         $statsTable,

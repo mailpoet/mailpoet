@@ -64,12 +64,12 @@ class WooCommerceSingleOrderValueTest extends \MailPoetTest {
   }
 
   public function testItWorksWithLifetimeOption(): void {
-    $segmentFilterData = $this->getSegmentFilterData('<', 1000000000, 0, 'allTime');
+    $segmentFilterData = $this->getSegmentFilterData('<', 1000000000, 0, DynamicSegmentFilterData::TIMEFRAME_ALL_TIME);
     $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->singleOrderValue);
     $this->assertEqualsCanonicalizing(['customer1@example.com', 'customer2@example.com', 'customer3@example.com'], $emails);
   }
 
-  private function getSegmentFilterData(string $type, float $amount, int $days, $timeframe = 'inTheLast'): DynamicSegmentFilterData {
+  private function getSegmentFilterData(string $type, float $amount, int $days, $timeframe = DynamicSegmentFilterData::TIMEFRAME_IN_THE_LAST): DynamicSegmentFilterData {
     return new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_WOOCOMMERCE, WooCommerceSingleOrderValue::ACTION_SINGLE_ORDER_VALUE, [
       'single_order_value_type' => $type,
       'single_order_value_amount' => $amount,

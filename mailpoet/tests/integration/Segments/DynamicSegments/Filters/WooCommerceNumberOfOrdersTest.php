@@ -69,7 +69,7 @@ class WooCommerceNumberOfOrdersTest extends \MailPoetTest {
   }
 
   public function testItWorksWithAllTimeTimeframe(): void {
-    $segmentFilterData = $this->getSegmentFilterData('>', 0, 0, 'allTime');
+    $segmentFilterData = $this->getSegmentFilterData('>', 0, 0, DynamicSegmentFilterData::TIMEFRAME_ALL_TIME);
     $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->numberOfOrdersFilter);
     $this->assertEqualsCanonicalizing([
       'customer1@example.com',
@@ -78,7 +78,7 @@ class WooCommerceNumberOfOrdersTest extends \MailPoetTest {
     ], $emails);
   }
 
-  private function getSegmentFilterData(string $comparisonType, int $ordersCount, int $days, $timeframe = 'inTheLast'): DynamicSegmentFilterData {
+  private function getSegmentFilterData(string $comparisonType, int $ordersCount, int $days, $timeframe = DynamicSegmentFilterData::TIMEFRAME_IN_THE_LAST): DynamicSegmentFilterData {
     return new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_WOOCOMMERCE, WooCommerceNumberOfOrders::ACTION_NUMBER_OF_ORDERS, [
       'number_of_orders_type' => $comparisonType,
       'number_of_orders_count' => $ordersCount,

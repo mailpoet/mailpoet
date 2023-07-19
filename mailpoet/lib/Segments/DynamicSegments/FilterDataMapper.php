@@ -69,7 +69,7 @@ class FilterDataMapper {
   private function createFilter(array $filterData): DynamicSegmentFilterData {
     if (isset($filterData['days']) && !isset($filterData['timeframe'])) {
       // Backwards compatibility for filters created before time period component had "over all time" option
-      $filterData['timeframe'] = 'inTheLast';
+      $filterData['timeframe'] = DynamicSegmentFilterData::TIMEFRAME_IN_THE_LAST;
     }
     switch ($this->getSegmentType($filterData)) {
       case DynamicSegmentFilterData::TYPE_AUTOMATIONS:
@@ -318,7 +318,7 @@ class FilterDataMapper {
       'opens' => $data['opens'],
       'days' => $data['days'] ?? 0,
       'operator' => $data['operator'] ?? 'more',
-      'timeframe' => $data['timeframe'] ?? 'inTheLast', // backwards compatibility
+      'timeframe' => $data['timeframe'] ?? DynamicSegmentFilterData::TIMEFRAME_IN_THE_LAST, // backwards compatibility
       'connect' => $data['connect'],
     ];
     $filterType = DynamicSegmentFilterData::TYPE_EMAIL;
@@ -513,11 +513,11 @@ class FilterDataMapper {
   }
 
   private function validateDaysPeriodData(array $data): void {
-    if (!isset($data['timeframe']) || !in_array($data['timeframe'], ['allTime', 'inTheLast'], true)) {
+    if (!isset($data['timeframe']) || !in_array($data['timeframe'], [DynamicSegmentFilterData::TIMEFRAME_ALL_TIME, DynamicSegmentFilterData::TIMEFRAME_IN_THE_LAST], true)) {
       throw new InvalidFilterException('Missing timeframe type', InvalidFilterException::MISSING_VALUE);
     }
 
-    if ($data['timeframe'] === 'allTime') {
+    if ($data['timeframe'] === DynamicSegmentFilterData::TIMEFRAME_ALL_TIME) {
       return;
     }
 

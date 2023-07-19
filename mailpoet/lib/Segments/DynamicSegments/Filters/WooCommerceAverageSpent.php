@@ -2,6 +2,7 @@
 
 namespace MailPoet\Segments\DynamicSegments\Filters;
 
+use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Entities\DynamicSegmentFilterEntity;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
@@ -31,7 +32,7 @@ class WooCommerceAverageSpent implements Filter {
 
     $orderStatsAlias = $this->wooFilterHelper->applyOrderStatusFilter($queryBuilder);
 
-    if ($timeframe !== 'allTime') {
+    if ($timeframe !== DynamicSegmentFilterData::TIMEFRAME_ALL_TIME) {
       $days = intval($filterData->getParam('days'));
       $date = Carbon::now()->subDays($days);
       $dateParam = $this->filterHelper->getUniqueParameterName('date');

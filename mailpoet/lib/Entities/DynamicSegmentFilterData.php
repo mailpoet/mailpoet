@@ -43,6 +43,9 @@ class DynamicSegmentFilterData {
     DynamicSegmentFilterData::OPERATOR_NOT_ENDS_WITH,
   ];
 
+  public const TIMEFRAME_ALL_TIME = 'allTime';
+  public const TIMEFRAME_IN_THE_LAST = 'inTheLast';
+
   /**
    * @ORM\Column(type="serialized_array")
    * @var array|null
