@@ -29,7 +29,7 @@ class Newsletter {
   private $segments;
 
   /** @var array */
-  private $queueOptions;
+  private $queues = [];
 
   /** @var array */
   private $taskSubscribers;
@@ -48,7 +48,7 @@ class Newsletter {
       ];
     $this->options = [];
     $this->segments = [];
-    $this->queueOptions = [];
+    $this->queues = [];
     $this->taskSubscribers = [];
     $this->loadBodyFrom('newsletterWithALC.json');
   }
@@ -328,22 +328,26 @@ class Newsletter {
   }
 
   public function withSendingQueue(array $options = []) {
-    $this->queueOptions = [
+    $queue = [
       'status' => ScheduledTaskEntity::STATUS_COMPLETED,
       'count_processed' => 1,
       'count_total' => 1,
+      'created_at' => null,
+      'updated_at' => null,
     ];
-    $this->queueOptions = array_merge($this->queueOptions, $options);
+    $this->queues[] = array_merge($queue, $options);
     return $this;
   }
 
   public function withScheduledQueue(array $options = []) {
-    $this->queueOptions = [
+    $queue = [
       'status' => ScheduledTaskEntity::STATUS_SCHEDULED,
       'count_processed' => 0,
       'count_total' => 1,
+      'created_at' => null,
+      'updated_at' => null,
     ];
-    $this->queueOptions = array_merge($this->queueOptions, $options);
+    $this->queues[] = array_merge($queue, $options);
     return $this;
   }
 
@@ -370,8 +374,8 @@ class Newsletter {
       $entityManager->persist($newsletterSegment);
     }
 
-    if ($this->queueOptions) {
-      $this->createQueue($newsletter);
+    if ($this->queues) {
+      $this->createQueues($newsletter);
     }
 
     $entityManager->flush();
@@ -399,29 +403,37 @@ class Newsletter {
     return $newsletter;
   }
 
-  private function createQueue(NewsletterEntity $newsletter) {
+  private function createQueues(NewsletterEntity $newsletter) {
     $entityManager = ContainerWrapper::getInstance()->get(EntityManager::class);
-    $scheduledTask = new ScheduledTaskEntity();
-    $entityManager->persist($scheduledTask);
-    $sendingQueue = new SendingQueueEntity();
-    $sendingQueue->setTask($scheduledTask);
-    $entityManager->persist($sendingQueue);
-    $sendingQueue->setNewsletter($newsletter);
-    $scheduledTask->setStatus($this->queueOptions['status']);
-    $sendingQueue->setCountProcessed($this->queueOptions['count_processed']);
-    $sendingQueue->setCountTotal($this->queueOptions['count_total']);
-    $sendingQueue->setNewsletterRenderedSubject($this->queueOptions['subject'] ?? $this->data['subject']);
-    $newsletter->getQueues()->add($sendingQueue);
+    foreach ($this->queues as $queue) {
+      $scheduledTask = new ScheduledTaskEntity();
+      $entityManager->persist($scheduledTask);
+      $sendingQueue = new SendingQueueEntity();
+      $sendingQueue->setTask($scheduledTask);
+      if ($queue['created_at']) {
+        $sendingQueue->setCreatedAt($queue['created_at']);
+      }
+      if ($queue['updated_at']) {
+        $sendingQueue->setUpdatedAt($queue['updated_at']);
+      }
+      $entityManager->persist($sendingQueue);
+      $sendingQueue->setNewsletter($newsletter);
+      $scheduledTask->setStatus($queue['status']);
+      $sendingQueue->setCountProcessed($queue['count_processed']);
+      $sendingQueue->setCountTotal($queue['count_total']);
+      $sendingQueue->setNewsletterRenderedSubject($queue['subject'] ?? $this->data['subject']);
+      $newsletter->getQueues()->add($sendingQueue);
 
-    foreach ($this->taskSubscribers as $data) {
-      $taskSubscriber = new ScheduledTaskSubscriberEntity(
-        $scheduledTask,
-        $data['subscriber'],
-        $data['processed'],
-        $data['failed'],
-        $data['error']
-      );
-      $entityManager->persist($taskSubscriber);
+      foreach ($this->taskSubscribers as $data) {
+        $taskSubscriber = new ScheduledTaskSubscriberEntity(
+          $scheduledTask,
+          $data['subscriber'],
+          $data['processed'],
+          $data['failed'],
+          $data['error']
+        );
+        $entityManager->persist($taskSubscriber);
+      }
     }
   }
 }
