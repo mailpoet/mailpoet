@@ -7,6 +7,7 @@ use MailPoet\Automation\Engine\Data\NextStep;
 use MailPoet\Automation\Engine\Data\Step;
 use MailPoet\Automation\Engine\Storage\AutomationStorage;
 use MailPoet\DI\ContainerWrapper;
+use MailPoet\Entities\NewsletterEntity;
 
 class Automation {
 
@@ -41,7 +42,7 @@ class Automation {
     return $this;
   }
 
-  public function withSteps(Step ...$steps) {
+  public function withSteps(Step ...$steps): self {
     $sortedSteps = [];
     foreach ($steps as $step) {
       $sortedSteps[$step->getId()] = $step;
@@ -50,7 +51,7 @@ class Automation {
     return $this;
   }
 
-  public function addStep(Step $step) {
+  public function addStep(Step $step): self {
     $steps = $this->automation->getSteps();
     $lastStep = end($steps);
     if (!$lastStep) {
@@ -61,7 +62,7 @@ class Automation {
     return $this->withSteps(...array_values($steps));
   }
 
-  public function withDelayAction() {
+  public function withDelayAction(): self {
     $step = new Step(
       uniqid(),
       Step::TYPE_ACTION,
@@ -75,7 +76,23 @@ class Automation {
     return $this->addStep($step);
   }
 
-  public function withSomeoneSubscribesTrigger() {
+  public function withSendEmailStep(NewsletterEntity $newsletter): self {
+    $step = new Step(
+      uniqid(),
+      Step::TYPE_ACTION,
+      'mailpoet:send-email',
+      [
+        'email_id' => $newsletter->getId(),
+        'subject' => $newsletter->getSubject(),
+        'sender_name' => $newsletter->getSenderName(),
+        'sender_address' => $newsletter->getSenderAddress(),
+      ],
+      []
+    );
+    return $this->addStep($step);
+  }
+
+  public function withSomeoneSubscribesTrigger(): self {
     $step = new Step(
       uniqid(),
       Step::TYPE_TRIGGER,
@@ -86,22 +103,22 @@ class Automation {
     return $this->addStep($step);
   }
 
-  public function withMeta($key, $value) {
+  public function withMeta($key, $value): self {
     $this->automation->setMeta($key, $value);
     return $this;
   }
 
-  public function withStatus($status) {
+  public function withStatus($status): self {
     $this->automation->setStatus($status);
     return $this;
   }
 
-  public function withStatusActive() {
+  public function withStatusActive(): self {
     $this->automation->setStatus(Entity::STATUS_ACTIVE);
     return $this;
   }
 
-  public function create() {
+  public function create(): \MailPoet\Automation\Engine\Data\Automation {
     $id = $this->storage->createAutomation($this->automation);
     $automation = $this->storage->getAutomation($id);
     if (!$automation) {
