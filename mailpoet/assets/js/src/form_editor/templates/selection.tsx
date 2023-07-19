@@ -1,5 +1,4 @@
-import { __ } from '@wordpress/i18n';
-import { MailPoet } from 'mailpoet';
+import { __, _x } from '@wordpress/i18n';
 import { Button } from '@wordpress/components';
 import { useSelect, useDispatch } from '@wordpress/data';
 import { Categories } from 'common/categories/categories';
@@ -15,23 +14,43 @@ export function Selection(): JSX.Element {
   const categories = [
     {
       name: 'popup',
-      label: MailPoet.I18n.t('popupCategory'),
+      label: _x(
+        'Pop-up',
+        'This is a text on a widget that leads to settings for form placement - form type is pop-up, it will be displayed on page in a small modal window',
+        'mailpoet',
+      ),
     },
     {
       name: 'slide_in',
-      label: MailPoet.I18n.t('slideInCategory'),
+      label: _x(
+        'Slide–in',
+        'This is a text on a widget that leads to settings for form placement - form type is slide in',
+        'mailpoet',
+      ),
     },
     {
       name: 'fixed_bar',
-      label: MailPoet.I18n.t('fixedBarCategory'),
+      label: _x(
+        'Fixed bar',
+        'This is a text on a widget that leads to settings for form placement - form type is fixed bar',
+        'mailpoet',
+      ),
     },
     {
       name: 'below_posts',
-      label: MailPoet.I18n.t('belowPagesCategory'),
+      label: _x(
+        'Below pages',
+        'This is a text on a widget that leads to settings for form placement',
+        'mailpoet',
+      ),
     },
     {
       name: 'others',
-      label: MailPoet.I18n.t('othersCategory'),
+      label: _x(
+        'Others (widget)',
+        'Placement of the form using theme widget',
+        'mailpoet',
+      ),
     },
   ];
 
@@ -74,7 +93,12 @@ export function Selection(): JSX.Element {
       <TopBarWithBeamer />
       {selectTemplateFailed && (
         <Notice type="error" scroll renderInPlace>
-          <p>{MailPoet.I18n.t('createFormError')}</p>
+          <p>
+            {__(
+              'Sorry, there was an error, please try again later.',
+              'mailpoet',
+            )}
+          </p>
         </Notice>
       )}
       <div data-automation-id="template_selection_list">
