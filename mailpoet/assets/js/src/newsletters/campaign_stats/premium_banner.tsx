@@ -96,8 +96,8 @@ function PremiumBanner() {
           'Congratulations, you now have [subscribersCount] subscribers! Our free version is limited to [subscribersLimit] subscribers. You need to upgrade now to be able to continue using MailPoet.',
           'mailpoet',
         )
-          .replace('[subscribersLimit]', window.mailpoet_subscribers_limit)
-          .replace('[subscribersCount]', window.mailpoet_subscribers_count);
+          .replace('[subscribersLimit]', MailPoet.subscribersLimit.toString())
+          .replace('[subscribersCount]', MailPoet.subscribersCount.toString());
     const upgradeLink = hasValidApiKey
       ? MailPoet.MailPoetComUrlFactory.getUpgradeUrl(MailPoet.pluginPartialKey)
       : MailPoet.MailPoetComUrlFactory.getPurchasePlanUrl(
