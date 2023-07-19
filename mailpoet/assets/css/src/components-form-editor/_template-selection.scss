@@ -40,3 +40,10 @@ $mailpoet-form-template-thumbnail-height: 316px;
   grid-column: 1/-1;
   justify-content: space-between;
 }
+
+.mailpoet-form-template-selection-footer {
+  border-top: 1px solid $color-tertiary-light;
+  grid-column: 1/-1;
+  margin-top: $grid-gap-medium;
+  text-align: center;
+}
