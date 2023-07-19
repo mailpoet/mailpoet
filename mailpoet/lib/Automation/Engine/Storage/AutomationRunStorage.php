@@ -54,6 +54,15 @@ class AutomationRunStorage {
     return $automationRunId;
   }
 
+  public function deleteAutomationRun(AutomationRun $automationRun): bool {
+    $success = $this->wpdb->delete($this->table, ['id' => $automationRun->getId()]);
+    if ($success === false) {
+      return false;
+    }
+    $success = $this->wpdb->delete($this->subjectTable, ['automation_run_id' => $automationRun->getId()]);
+    return $success !== false;
+  }
+
   public function getAutomationRun(int $id): ?AutomationRun {
     $table = esc_sql($this->table);
     $subjectTable = esc_sql($this->subjectTable);
