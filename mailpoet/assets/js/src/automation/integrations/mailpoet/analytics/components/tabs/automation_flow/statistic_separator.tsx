@@ -34,7 +34,9 @@ export function StatisticSeparator({
       notation: 'compact',
     }).format(data.step_data.total);
     return (
-      <div className="mailpoet-automation-editor-separator mailpoet-automation-analytics-separator">
+      <div
+        className={`mailpoet-automation-editor-separator mailpoet-automation-analytics-separator mailpoet-automation-analytics-separator-${previousStepId}`}
+      >
         <p>
           <span className="mailpoet-automation-analytics-separator-values">
             {formattedValue}
@@ -64,7 +66,9 @@ export function StatisticSeparator({
   }).format(percent / 100);
 
   return (
-    <div className="mailpoet-automation-editor-separator mailpoet-automation-analytics-separator">
+    <div
+      className={`mailpoet-automation-editor-separator mailpoet-automation-analytics-separator  mailpoet-automation-analytics-separator-${previousStepId}`}
+    >
       <p>
         <span className="mailpoet-automation-analytics-separator-values">
           {formattedPercent} ({formattedValue})
