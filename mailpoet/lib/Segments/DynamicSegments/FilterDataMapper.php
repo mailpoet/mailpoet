@@ -2,6 +2,7 @@
 
 namespace MailPoet\Segments\DynamicSegments;
 
+use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Segments\DynamicSegments\Exceptions\InvalidFilterException;
 use MailPoet\Segments\DynamicSegments\Filters\AutomationsEvents;
@@ -35,13 +36,21 @@ class FilterDataMapper {
   /** @var WPFunctions */
   private $wp;
 
+  /** @var DateFilterHelper */
+  private $dateFilterHelper;
+
   public function __construct(
-    WPFunctions $wp = null
+    WPFunctions $wp = null,
+    DateFilterHelper $dateFilterHelper = null
   ) {
     if (!$wp) {
       $wp = WPFunctions::get();
     }
+    if (!$dateFilterHelper) {
+      $dateFilterHelper = ContainerWrapper::getInstance()->get(DateFilterHelper::class);
+    }
     $this->wp = $wp;
+    $this->dateFilterHelper = $dateFilterHelper;
   }
 
   /**
@@ -228,7 +237,7 @@ class FilterDataMapper {
       if (empty($data['operator'])) {
         throw new InvalidFilterException('Missing operator', InvalidFilterException::MISSING_OPERATOR);
       }
-      if (!in_array($data['operator'], DateFilterHelper::getValidOperators())) {
+      if (!in_array($data['operator'], $this->dateFilterHelper->getValidOperators())) {
         throw new InvalidFilterException('Invalid operator', InvalidFilterException::MISSING_OPERATOR);
       }
       return new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_USER_ROLE, $data['action'], [

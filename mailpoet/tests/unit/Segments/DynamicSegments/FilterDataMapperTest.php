@@ -5,6 +5,7 @@ namespace MailPoet\Segments\DynamicSegments;
 use MailPoet\Entities\CustomFieldEntity;
 use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Segments\DynamicSegments\Exceptions\InvalidFilterException;
+use MailPoet\Segments\DynamicSegments\Filters\DateFilterHelper;
 use MailPoet\Segments\DynamicSegments\Filters\EmailAction;
 use MailPoet\Segments\DynamicSegments\Filters\EmailActionClickAny;
 use MailPoet\Segments\DynamicSegments\Filters\EmailOpensAbsoluteCountAction;
@@ -32,7 +33,12 @@ class FilterDataMapperTest extends \MailPoetUnitTest {
     $wp = $this->makeEmpty(WPFunctions::class, [
       'hasFilter' => false,
     ]);
-    $this->mapper = new FilterDataMapper($wp);
+
+    $filterHelper = $this->getMockBuilder(DateFilterHelper::class)
+      ->setMethodsExcept(['getAbsoluteDateOperators', 'getRelativeDateOperators', 'getValidOperators'])
+      ->getMock();
+
+    $this->mapper = new FilterDataMapper($wp, $filterHelper);
   }
 
   public function testItChecksFiltersArePresent(): void {

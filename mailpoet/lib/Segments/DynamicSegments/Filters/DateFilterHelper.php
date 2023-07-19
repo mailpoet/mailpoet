@@ -16,14 +16,14 @@ class DateFilterHelper {
   const IN_THE_LAST = 'inTheLast';
   const NOT_IN_THE_LAST = 'notInTheLast';
 
-  public static function getValidOperators(): array {
+  public function getValidOperators(): array {
     return array_merge(
-      self::getAbsoluteDateOperators(),
-      self::getRelativeDateOperators()
+      $this->getAbsoluteDateOperators(),
+      $this->getRelativeDateOperators()
     );
   }
 
-  public static function getAbsoluteDateOperators(): array {
+  public function getAbsoluteDateOperators(): array {
     return [
       self::BEFORE,
       self::AFTER,
@@ -34,7 +34,7 @@ class DateFilterHelper {
     ];
   }
 
-  public static function getRelativeDateOperators(): array {
+  public function getRelativeDateOperators(): array {
     return [
       self::IN_THE_LAST,
       self::NOT_IN_THE_LAST,
@@ -68,7 +68,7 @@ class DateFilterHelper {
   public function getOperatorFromFilter(DynamicSegmentFilterEntity $filter): string {
     $filterData = $filter->getFilterData();
     $operator = $filterData->getParam('operator');
-    if (!is_string($operator) || !in_array($operator, self::getValidOperators())) {
+    if (!is_string($operator) || !in_array($operator, $this->getValidOperators())) {
       throw new InvalidFilterException('Incorrect value for operator', InvalidFilterException::MISSING_VALUE);
     }
     return $operator;
