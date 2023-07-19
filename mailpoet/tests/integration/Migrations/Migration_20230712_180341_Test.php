@@ -3,7 +3,7 @@
 namespace MailPoet\Migrations;
 
 use MailPoet\Entities\DynamicSegmentFilterEntity;
-use MailPoet\Migrations\Migration_20230712_180341;
+use MailPoet\Migrations\App\Migration_20230712_180341;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceAverageSpent;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceNumberOfOrders;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceSingleOrderValue;

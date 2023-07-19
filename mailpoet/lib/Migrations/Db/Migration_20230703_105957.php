@@ -1,10 +1,10 @@
 <?php declare(strict_types = 1);
 
-namespace MailPoet\Migrations;
+namespace MailPoet\Migrations\Db;
 
-use MailPoet\Migrator\Migration;
+use MailPoet\Migrator\DbMigration;
 
-class Migration_20230703_105957 extends Migration {
+class Migration_20230703_105957 extends DbMigration {
   public function run(): void {
     $this->migrateLogTable();
     $this->migrateRunTable();
