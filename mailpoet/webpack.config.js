@@ -97,6 +97,14 @@ const baseConfig = {
       papaparse: 'papaparse/papaparse.min.js',
       html2canvas: 'html2canvas/dist/html2canvas.js',
       asyncqueue: 'vendor/jquery.asyncqueue.js',
+      '@woocommerce/settings': path.resolve(
+        __dirname,
+        'assets/js/src/mock-empty-module.js',
+      ),
+      '@automattic/tour-kit': path.resolve(
+        __dirname,
+        'assets/js/src/mock-empty-module.js',
+      ),
     },
   },
   plugins: PRODUCTION_ENV ? [] : [new ForkTsCheckerWebpackPlugin()],
