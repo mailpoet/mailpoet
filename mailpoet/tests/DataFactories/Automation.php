@@ -118,6 +118,11 @@ class Automation {
     return $this;
   }
 
+  public function withCreatedAt(\DateTimeImmutable $createdAt): self {
+    $this->automation->setCreatedAt($createdAt);
+    return $this;
+  }
+
   public function create(): \MailPoet\Automation\Engine\Data\Automation {
     $id = $this->storage->createAutomation($this->automation);
     $automation = $this->storage->getAutomation($id);
