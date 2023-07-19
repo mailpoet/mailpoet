@@ -144,6 +144,19 @@ export function Selection(): JSX.Element {
               </div>
             </TemplateBox>
           ))}
+          <div className="mailpoet-form-template-selection-footer">
+            <p>
+              {__('Can’t find a template that suits your needs?', 'mailpoet')}
+            </p>
+            <Button
+              variant="link"
+              onClick={(): void => {
+                void selectTemplate('initial_form', 'Blank template');
+              }}
+            >
+              {__('Start with a blank form', 'mailpoet')}
+            </Button>
+          </div>
         </div>
       </div>
       {loading && <Loading />}
