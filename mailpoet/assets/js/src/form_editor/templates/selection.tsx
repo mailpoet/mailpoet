@@ -1,11 +1,12 @@
+import { __ } from '@wordpress/i18n';
 import { MailPoet } from 'mailpoet';
+import { Button } from '@wordpress/components';
 import { useSelect, useDispatch } from '@wordpress/data';
 import { Categories } from 'common/categories/categories';
 import { Background } from 'common/background/background';
 import { Loading } from 'common/loading';
 import { TemplateBox } from 'common/template_box/template_box';
-import { Heading } from 'common/typography/heading/heading';
-import { Button } from 'common';
+import { TopBarWithBeamer } from 'common/top_bar/top_bar';
 import { Notice } from 'notices/notice';
 import { TemplateData } from './store/types';
 import { storeName } from './store/constants';
@@ -70,17 +71,7 @@ export function Selection(): JSX.Element {
             ),
         ),
       )}
-      <div className="mailpoet-template-selection-header">
-        <Heading level={4}>{MailPoet.I18n.t('selectTemplate')}</Heading>
-        <Button
-          automationId="create_blank_form"
-          onClick={(): void => {
-            void selectTemplate('initial_form', 'Blank template');
-          }}
-        >
-          {MailPoet.I18n.t('createBlankTemplate')}
-        </Button>
-      </div>
+      <TopBarWithBeamer />
       {selectTemplateFailed && (
         <Notice type="error" scroll renderInPlace>
           <p>{MailPoet.I18n.t('createFormError')}</p>
@@ -88,7 +79,21 @@ export function Selection(): JSX.Element {
       )}
       <div data-automation-id="template_selection_list">
         <Background color="#fff" />
-        <div className="mailpoet-templates">
+        <div className="mailpoet-form-templates">
+          <div className="mailpoet-form-template-selection-header">
+            <h1 className="wp-heading-inline">
+              {__('Start with a template', 'mailpoet')}
+            </h1>
+            <Button
+              data-automation-id="create_blank_form"
+              variant="secondary"
+              onClick={(): void => {
+                void selectTemplate('initial_form', 'Blank template');
+              }}
+            >
+              {__('Or, start with a blank form', 'mailpoet')}
+            </Button>
+          </div>
           <Categories
             categories={categories}
             active={selectedCategory}
