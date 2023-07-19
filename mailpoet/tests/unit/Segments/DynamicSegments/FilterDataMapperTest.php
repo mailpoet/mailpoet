@@ -314,7 +314,7 @@ class FilterDataMapperTest extends \MailPoetUnitTest {
     expect($filter->getData())->equals([
       'opens' => 5,
       'days' => 3,
-      'timeframe' => 'inTheLast',
+      'timeframe' => DynamicSegmentFilterData::TIMEFRAME_IN_THE_LAST,
       'operator' => 'more',
       'connect' => DynamicSegmentFilterData::CONNECT_TYPE_AND,
     ]);
@@ -358,7 +358,7 @@ class FilterDataMapperTest extends \MailPoetUnitTest {
     expect($filter->getData())->equals([
       'opens' => 5,
       'days' => 3,
-      'timeframe' => 'inTheLast',
+      'timeframe' => DynamicSegmentFilterData::TIMEFRAME_IN_THE_LAST,
       'operator' => 'less',
       'connect' => DynamicSegmentFilterData::CONNECT_TYPE_AND,
     ]);
@@ -369,7 +369,7 @@ class FilterDataMapperTest extends \MailPoetUnitTest {
       'segmentType' => DynamicSegmentFilterData::TYPE_EMAIL,
       'action' => EmailOpensAbsoluteCountAction::TYPE,
       'days' => 3,
-      'timeframe' => 'inTheLast',
+      'timeframe' => DynamicSegmentFilterData::TIMEFRAME_IN_THE_LAST,
     ]]];
     $this->expectException(InvalidFilterException::class);
     $this->mapper->map($data);
@@ -392,7 +392,7 @@ class FilterDataMapperTest extends \MailPoetUnitTest {
       'number_of_orders_type' => '=',
       'number_of_orders_count' => 2,
       'days' => 1,
-      'timeframe' => 'inTheLast',
+      'timeframe' => DynamicSegmentFilterData::TIMEFRAME_IN_THE_LAST,
       'some_mess' => 'mess',
     ]]];
 
@@ -420,7 +420,7 @@ class FilterDataMapperTest extends \MailPoetUnitTest {
     $this->mapper->map(['filters' => [[
       'segmentType' => DynamicSegmentFilterData::TYPE_WOOCOMMERCE,
       'action' => WooCommerceNumberOfOrders::ACTION_NUMBER_OF_ORDERS,
-      'timeframe' => 'inTheLast',
+      'timeframe' => DynamicSegmentFilterData::TIMEFRAME_IN_THE_LAST,
       'days' => 2,
     ]]]);
   }
@@ -432,7 +432,7 @@ class FilterDataMapperTest extends \MailPoetUnitTest {
       'single_order_value_type' => '=',
       'single_order_value_amount' => 20,
       'days' => 7,
-      'timeframe' => 'inTheLast',
+      'timeframe' => DynamicSegmentFilterData::TIMEFRAME_IN_THE_LAST,
       'some_mess' => 'mess',
     ]]];
 
@@ -461,7 +461,7 @@ class FilterDataMapperTest extends \MailPoetUnitTest {
       'segmentType' => DynamicSegmentFilterData::TYPE_WOOCOMMERCE,
       'action' => WooCommerceSingleOrderValue::ACTION_SINGLE_ORDER_VALUE,
       'days' => 2,
-      'timeframe' => 'inTheLast',
+      'timeframe' => DynamicSegmentFilterData::TIMEFRAME_IN_THE_LAST,
     ]]]);
   }
 

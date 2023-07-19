@@ -48,7 +48,7 @@ class WooCommercePurchaseDateTest extends \MailPoetTest {
     $this->createOrder($customerId1, Carbon::now()->subDays(3));
     $this->createOrder($customerId2, Carbon::now()->subDays(4));
     $this->createOrder($customerId3, Carbon::now()->subDays(5));
-    $emails = $this->getSubscriberEmailsMatchingFilter('inTheLast', '5');
+    $emails = $this->getSubscriberEmailsMatchingFilter(DynamicSegmentFilterData::TIMEFRAME_IN_THE_LAST, '5');
     expect(count($emails))->equals(2);
     $this->assertEqualsCanonicalizing(['c1@example.com', 'c2@example.com'], $emails);
   }

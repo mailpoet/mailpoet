@@ -2,6 +2,7 @@
 
 namespace MailPoet\Segments\DynamicSegments\Filters;
 
+use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Entities\DynamicSegmentFilterEntity;
 use MailPoet\Util\Security;
 use MailPoetVendor\Carbon\Carbon;
@@ -23,7 +24,7 @@ class WooCommerceSingleOrderValue implements Filter {
     $filterData = $filter->getFilterData();
     $type = $filterData->getParam('single_order_value_type');
     $amount = $filterData->getParam('single_order_value_amount');
-    $isAllTime = $filterData->getParam('timeframe') === 'allTime';
+    $isAllTime = $filterData->getParam('timeframe') === DynamicSegmentFilterData::TIMEFRAME_ALL_TIME;
     $parameterSuffix = $filter->getId() ?? Security::generateRandomString();
 
     $orderStatsAlias = $this->wooFilterHelper->applyOrderStatusFilter($queryBuilder);
