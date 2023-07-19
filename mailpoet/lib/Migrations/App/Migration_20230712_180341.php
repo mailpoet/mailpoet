@@ -1,16 +1,16 @@
 <?php declare(strict_types = 1);
 
-namespace MailPoet\Migrations;
+namespace MailPoet\Migrations\App;
 
 use MailPoet\Entities\DynamicSegmentFilterData;
-use MailPoet\Migrator\Migration;
+use MailPoet\Migrator\AppMigration;
 use MailPoet\Segments\DynamicSegments\DynamicSegmentFilterRepository;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceAverageSpent;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceNumberOfOrders;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceSingleOrderValue;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceTotalSpent;
 
-class Migration_20230712_180341 extends Migration {
+class Migration_20230712_180341 extends AppMigration {
   public function run(): void {
     $dynamicSegmentFilterRepository = $this->container->get(DynamicSegmentFilterRepository::class);
     $filters = $dynamicSegmentFilterRepository->findBy(
