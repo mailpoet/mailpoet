@@ -14,7 +14,7 @@ import { ErrorBoundary } from 'common';
 import { NewsletterGeneralStats } from './newsletter_general_stats';
 import { NewsletterType } from './newsletter_type';
 import { NewsletterStatsInfo } from './newsletter_stats_info';
-import { PremiumBanner } from './premium_banner.jsx';
+import { PremiumBanner } from './premium_banner';
 
 type Props = {
   match: {
