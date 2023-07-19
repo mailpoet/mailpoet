@@ -9,6 +9,7 @@ import { formattedPrice } from '../../../formatter';
 import { openTab } from '../../../navigation/open_tab';
 import { calculatePercentage } from '../../../formatter/calculate_percentage';
 import { Badge } from '../../email_click_badge';
+import { MailPoet } from '../../../../../../../mailpoet';
 
 const percentageFormatter = Intl.NumberFormat(locale.toString(), {
   style: 'percent',
@@ -23,7 +24,7 @@ export function transformEmailsToRows(emails: EmailStats[]) {
       email.sent.current,
     );
 
-    return [
+    const rows = [
       {
         display: (
           <Cell
@@ -89,32 +90,42 @@ export function transformEmailsToRows(emails: EmailStats[]) {
         ),
         value: email.clicked,
       },
-      {
-        display: (
-          <Cell
-            value={
-              <Tooltip text={__('View orders', 'mailpoet')}>
-                <a
-                  href={addQueryArgs(window.location.href, {
-                    tab: 'automation-orders',
-                  })}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    openTab('orders', { filters: { emails: [`${email.id}`] } });
-                  }}
-                >
-                  {`${email.orders}`}
-                </a>
-              </Tooltip>
-            }
-          />
-        ),
-        value: email.orders,
-      },
-      {
-        display: <Cell value={formattedPrice(email.revenue)} />,
-        value: email.revenue,
-      },
+    ];
+
+    if (MailPoet.isWoocommerceActive) {
+      rows.push(
+        {
+          display: (
+            <Cell
+              value={
+                <Tooltip text={__('View orders', 'mailpoet')}>
+                  <a
+                    href={addQueryArgs(window.location.href, {
+                      tab: 'automation-orders',
+                    })}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      openTab('orders', {
+                        filters: { emails: [`${email.id}`] },
+                      });
+                    }}
+                  >
+                    {`${email.orders}`}
+                  </a>
+                </Tooltip>
+              }
+            />
+          ),
+          value: email.orders,
+        },
+        {
+          display: <Cell value={formattedPrice(email.revenue)} />,
+          value: email.revenue,
+        },
+      );
+    }
+
+    return rows.concat([
       {
         display: <Cell value={email.unsubscribed} />,
         value: email.unsubscribed,
@@ -123,6 +134,6 @@ export function transformEmailsToRows(emails: EmailStats[]) {
         display: <Actions id={email.id} previewUrl={email.previewUrl} />,
         value: null,
       },
-    ];
+    ]);
   });
 }

@@ -5,6 +5,7 @@ import { __ } from '@wordpress/i18n';
 import { calculateSummary } from './summary';
 import { transformEmailsToRows } from './rows';
 import { EmailStats, OverviewSection, storeName } from '../../../store';
+import { MailPoet } from '../../../../../../../mailpoet';
 
 const headers = [
   {
@@ -29,18 +30,26 @@ const headers = [
     isLeftAligned: false,
     isNumeric: true,
   },
-  {
-    key: 'orders',
-    label: __('Orders', 'mailpoet'),
-    isLeftAligned: false,
-    isNumeric: true,
-  },
-  {
-    key: 'revenue',
-    label: __('Revenue', 'mailpoet'),
-    isLeftAligned: false,
-    isNumeric: true,
-  },
+];
+
+if (MailPoet.isWoocommerceActive) {
+  headers.push(
+    {
+      key: 'orders',
+      label: __('Orders', 'mailpoet'),
+      isLeftAligned: false,
+      isNumeric: true,
+    },
+    {
+      key: 'revenue',
+      label: __('Revenue', 'mailpoet'),
+      isLeftAligned: false,
+      isNumeric: true,
+    },
+  );
+}
+
+headers.push(
   {
     key: 'unsubscribed',
     label: __('Unsubscribed', 'mailpoet'),
@@ -51,7 +60,7 @@ const headers = [
     key: 'actions',
     label: '',
   },
-];
+);
 
 export function Emails(): JSX.Element {
   const { overview } = useSelect((s) => ({

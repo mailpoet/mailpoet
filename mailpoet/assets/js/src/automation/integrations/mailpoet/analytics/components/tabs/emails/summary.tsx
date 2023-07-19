@@ -2,6 +2,7 @@ import { __ } from '@wordpress/i18n';
 import { locale } from '../../../../../../config';
 import { EmailStats } from '../../../store';
 import { formattedPrice } from '../../../formatter';
+import { MailPoet } from '../../../../../../../mailpoet';
 
 export function calculateSummary(rows: EmailStats[]) {
   if (rows.length === 0) {
@@ -43,16 +44,20 @@ export function calculateSummary(rows: EmailStats[]) {
       label: __('clicked', 'mailpoet'),
       value: compactFormatter.format(data.clicked),
     },
-    {
-      label: __('orders', 'mailpoet'),
-      value: compactFormatter.format(data.orders),
-    },
-    { label: __('revenue', 'mailpoet'), value: formattedPrice(data.revenue) },
-    {
-      label: __('unsubscribed', 'mailpoet'),
-      value: compactFormatter.format(data.unsubscribed),
-    },
   ];
+  if (MailPoet.isWoocommerceActive) {
+    summary.push(
+      {
+        label: __('orders', 'mailpoet'),
+        value: compactFormatter.format(data.orders),
+      },
+      { label: __('revenue', 'mailpoet'), value: formattedPrice(data.revenue) },
+    );
+  }
+  summary.push({
+    label: __('unsubscribed', 'mailpoet'),
+    value: compactFormatter.format(data.unsubscribed),
+  });
 
   return summary;
 }
