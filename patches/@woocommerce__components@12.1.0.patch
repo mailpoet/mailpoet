@@ -1,3 +1,45 @@
+diff --git a/build-module/advanced-filters/number-filter.js b/build-module/advanced-filters/number-filter.js
+index 28db4c1a0a48499fe0c7b7f2fae3678a7939a02d..620cdcec1c284835d894eec4a3b609a04d789c1a 100644
+--- a/build-module/advanced-filters/number-filter.js
++++ b/build-module/advanced-filters/number-filter.js
+@@ -6,7 +6,7 @@ import { SelectControl, TextControl } from '@wordpress/components';
+ import { get, find, isArray } from 'lodash';
+ import classnames from 'classnames';
+ import { sprintf, __, _x } from '@wordpress/i18n';
+-import { CurrencyFactory } from '@woocommerce/currency';
++import CurrencyFactory from '@woocommerce/currency';
+ /**
+  * Internal dependencies
+  */
+diff --git a/build-module/experimental.js b/build-module/experimental.js
+index 7b6ec5b389beac67ca597563037a7a8eb0850bf4..9b627a428ca39ba933c05f1955d380f78632b0ef 100644
+--- a/build-module/experimental.js
++++ b/build-module/experimental.js
+@@ -1,9 +1,9 @@
+ /**
+  * External dependencies
+  */
+-import { __experimentalText, Text as TextComponent, } from '@wordpress/components';
++import { __experimentalText } from '@wordpress/components';
+ /**
+  * Export experimental components within the components package to prevent a circular
+  * dependency with woocommerce/experimental. Only for internal use.
+  */
+-export const Text = TextComponent || __experimentalText;
++export const Text = __experimentalText;
+diff --git a/build-module/filters/index.js b/build-module/filters/index.js
+index d69a26f916b1ef064ed1141b699406c69eeec5e1..6a6f8f027b952d748ba0616417ed1be0b43d9ff0 100644
+--- a/build-module/filters/index.js
++++ b/build-module/filters/index.js
+@@ -7,7 +7,7 @@ import { find } from 'lodash';
+ import PropTypes from 'prop-types';
+ import { updateQueryString } from '@woocommerce/navigation';
+ import { getDateParamsFromQuery, getCurrentDates } from '@woocommerce/date';
+-import { CurrencyFactory } from '@woocommerce/currency';
++import CurrencyFactory from '@woocommerce/currency';
+ /**
+  * Internal dependencies
+  */
 diff --git a/build-style/style.css b/build-style/style.css
 index 1403343b9816eaabe7b9a763bb2a01107f3ad39e..442629d5805286f0563476adc40a7379386f0d6e 100644
 --- a/build-style/style.css
