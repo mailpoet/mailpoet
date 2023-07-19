@@ -39,7 +39,7 @@ function getEmailDelta(type: 'opened' | 'clicked'): number | undefined {
   const current = getEmailPercentage(type, 'current');
   const previous = getEmailPercentage(type, 'previous');
   if (current === undefined || previous === undefined) {
-    return undefined;
+    return 0;
   }
 
   if (previous === 0) {
@@ -47,7 +47,8 @@ function getEmailDelta(type: 'opened' | 'clicked'): number | undefined {
   }
 
   const newValue = current > previous ? current - previous : previous - current;
-  return (newValue / previous) * 100;
+  const delta = (newValue / previous) * 100;
+  return current > previous ? delta : delta * -1;
 }
 
 function getWooCommerceTotal(
