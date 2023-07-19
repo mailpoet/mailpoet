@@ -324,14 +324,6 @@ class Menu {
       ]
     );
 
-    // add body class for form editor page
-    $this->wp->addAction('load-' . $formTemplateSelectionEditorPage, function() {
-      $this->wp->addFilter('admin_body_class', function ($classes) {
-        return ltrim($classes . ' block-editor-page');
-      });
-    });
-
-
     // Subscribers page
     $subscribersPage = $this->wp->addSubmenuPage(
       self::MAIN_PAGE_SLUG,
