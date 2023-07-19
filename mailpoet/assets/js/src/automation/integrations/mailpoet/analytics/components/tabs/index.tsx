@@ -9,6 +9,7 @@ import { Emails } from './emails';
 import { Orders } from './orders';
 import { Subscribers } from './subscribers';
 import { storeName as editorStoreName } from '../../../../../editor/store/constants';
+import { MailPoet } from '../../../../../../mailpoet';
 
 export function Tabs(): JSX.Element {
   const history = useHistory();
@@ -34,17 +35,19 @@ export function Tabs(): JSX.Element {
       className: 'mailpoet-analytics-tab-emails',
       title: __('Emails', 'mailpoet'),
     });
-    tabs.push({
-      name: 'automation-orders',
-      className: 'mailpoet-analytics-tab-orders',
-      // title is defined as string but allows for JSX.Element
-      title: (
-        <>
-          {_x('Orders', 'WooCommerce orders', 'mailpoet')}{' '}
-          <Icon icon={lockSmall} />
-        </>
-      ) as unknown as string,
-    });
+    if (MailPoet.isWoocommerceActive) {
+      tabs.push({
+        name: 'automation-orders',
+        className: 'mailpoet-analytics-tab-orders',
+        // title is defined as string but allows for JSX.Element
+        title: (
+          <>
+            {_x('Orders', 'WooCommerce orders', 'mailpoet')}{' '}
+            <Icon icon={lockSmall} />
+          </>
+        ) as unknown as string,
+      });
+    }
     tabs.push({
       name: 'automation-subscribers',
       className: 'mailpoet-analytics-tab-subscribers',

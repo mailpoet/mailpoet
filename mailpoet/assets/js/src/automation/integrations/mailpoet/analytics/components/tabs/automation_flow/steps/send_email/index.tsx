@@ -8,6 +8,7 @@ import { locale } from '../../../../../config';
 import { formattedPrice } from '../../../../../formatter';
 import { openTab } from '../../../../../navigation/open_tab';
 import { Badge } from '../../../../email_click_badge';
+import { MailPoet } from '../../../../../../../../../mailpoet';
 
 type SendEmailPanelSectionProps = {
   label: string;
@@ -89,33 +90,37 @@ export function SendEmailPanel({ step }: SendEmailPanelProps): JSX.Element {
         value={<Badge email={email} property="clicked" />}
         isLoading={isLoading}
       />
-      <hr />
-      <SendEmailPanelSection
-        label={__('Orders', 'mailpoet')}
-        value={
-          <Tooltip text={__('View orders', 'mailpoet')}>
-            <a
-              href={addQueryArgs(window.location.href, {
-                tab: 'automation-orders',
-              })}
-              onClick={(e) => {
-                e.preventDefault();
-                openTab('orders', { filters: { emails: [`${email.id}`] } });
-              }}
-            >
-              {Intl.NumberFormat(locale.toString(), {
-                notation: 'compact',
-              }).format(email?.orders ?? 0)}
-            </a>
-          </Tooltip>
-        }
-        isLoading={isLoading}
-      />
-      <SendEmailPanelSection
-        label={__('Revenue', 'mailpoet')}
-        value={formattedPrice(email?.revenue ?? 0)}
-        isLoading={isLoading}
-      />
+      {MailPoet.isWoocommerceActive && (
+        <>
+          <hr />
+          <SendEmailPanelSection
+            label={__('Orders', 'mailpoet')}
+            value={
+              <Tooltip text={__('View orders', 'mailpoet')}>
+                <a
+                  href={addQueryArgs(window.location.href, {
+                    tab: 'automation-orders',
+                  })}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    openTab('orders', { filters: { emails: [`${email.id}`] } });
+                  }}
+                >
+                  {Intl.NumberFormat(locale.toString(), {
+                    notation: 'compact',
+                  }).format(email?.orders ?? 0)}
+                </a>
+              </Tooltip>
+            }
+            isLoading={isLoading}
+          />
+          <SendEmailPanelSection
+            label={__('Revenue', 'mailpoet')}
+            value={formattedPrice(email?.revenue ?? 0)}
+            isLoading={isLoading}
+          />
+        </>
+      )}
     </div>
   );
 }
