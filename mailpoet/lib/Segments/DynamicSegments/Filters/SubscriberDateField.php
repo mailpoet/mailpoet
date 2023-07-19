@@ -13,6 +13,8 @@ class SubscriberDateField implements Filter {
   const LAST_OPEN_DATE = 'lastOpenDate';
   const LAST_PAGE_VIEW_DATE = 'lastPageViewDate';
   const LAST_SENDING_DATE = 'lastSendingDate';
+
+  // Slightly different naming due to backwards compatibility
   const SUBSCRIBED_DATE = 'subscribedDate';
 
   const TYPES = [
