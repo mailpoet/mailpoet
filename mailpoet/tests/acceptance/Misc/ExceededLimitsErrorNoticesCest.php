@@ -50,14 +50,15 @@ class ExceededLimitsErrorNoticesCest {
     $settings->withSendingMethodMailpoetWithRestrictedAccess(Bridge::KEY_ACCESS_SUBSCRIBERS_LIMIT, 5000);
 
     $i->amOnMailpoetPage('Homepage');
-    $i->waitForText('Congratulations, you now have more than 5,000 subscribers!');
+    $i->waitForText('Action required: Upgrade your plan for more than 5,000 subscribers!');
     $i->waitForText('Your plan is limited to 5,000 subscribers');
     $i->dontSee($mailerErrorMessage);
 
     $i->wantTo('Check the alternative message without limit info is displayed when the limit info is not available');
     $settings->withSendingMethodMailpoetWithRestrictedAccess(Bridge::KEY_ACCESS_SUBSCRIBERS_LIMIT, 0);
     $i->amOnMailpoetPage('Homepage');
-    $i->waitForText('Congratulations, you now have more subscribers than the limit of your plan!');
+    $i->waitForText('Action required: Upgrade your plan!');
+    $i->waitForText('Congratulations, you now have more subscribers than your plan’s limit!');
     $i->dontSee($mailerErrorMessage);
   }
 

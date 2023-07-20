@@ -7,14 +7,20 @@ function SubscribersLimitNotice(): JSX.Element {
   const hasValidApiKey = MailPoet.hasValidApiKey;
   const subscribersLimit = MailPoet.subscribersLimit.toLocaleString();
   let title = MailPoet.I18n.t('subscribersLimitNoticeTitleUnknownLimit');
-  let youReachedTheLimit = '';
+  let subscribersLimitReached = MailPoet.I18n.t(
+    'subscribersLimitReachedUnknownLimit',
+  );
+  let planLimit = '';
   if (MailPoet.subscribersLimit) {
     title = MailPoet.I18n.t('subscribersLimitNoticeTitle').replace(
       '[subscribersLimit]',
       subscribersLimit,
     );
-    youReachedTheLimit = MailPoet.I18n.t(
+    planLimit = MailPoet.I18n.t(
       hasValidApiKey ? 'yourPlanLimit' : 'freeVersionLimit',
+    ).replace('[subscribersLimit]', subscribersLimit);
+    subscribersLimitReached = MailPoet.I18n.t(
+      'subscribersLimitReached',
     ).replace('[subscribersLimit]', subscribersLimit);
   }
   const upgradeLink = hasValidApiKey
@@ -48,13 +54,13 @@ function SubscribersLimitNotice(): JSX.Element {
     <Notice type="error" timeout={false} closable={false} renderInPlace>
       <h3>{title}</h3>
       <p>
-        {youReachedTheLimit} {MailPoet.I18n.t('youNeedToUpgrade')}
-        {MailPoet.wpSegmentState === 'active' ? (
-          <>
-            <br />
-            {youCanDisableWpSegmentMessage}
-          </>
-        ) : null}
+        {subscribersLimitReached} {planLimit}{' '}
+        {MailPoet.I18n.t('youNeedToUpgrade')}
+        <br />
+        {MailPoet.wpSegmentState === 'active'
+          ? youCanDisableWpSegmentMessage
+          : null}{' '}
+        {MailPoet.I18n.t('actToSeamlessService')}
       </p>
       <p>
         <a
