@@ -80,7 +80,8 @@ function getWooCommerceDelta(type: 'revenue' | 'orders'): number | undefined {
     return 0;
   }
 
-  return (newValue / previous) * 100;
+  const delta = (newValue / previous) * 100;
+  return current > previous ? delta : delta * -1;
 }
 
 export function Overview(): JSX.Element | null {
