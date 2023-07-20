@@ -126,7 +126,7 @@ interface Window {
   mailpoet_api_version: string;
   mailpoet_email_regex: RegExp;
   mailpoet_wp_segment_state: string;
-  mailpoet_wp_week_starts_on: number;
+  mailpoet_wp_week_starts_on: 0 | 1 | 2 | 3 | 4 | 5 | 6;
   mailpoet_subscribers_counts_cache_created_at: string;
   mailpoet_shortcode_links: string[];
   mailpoet_tracking_config: Partial<{
