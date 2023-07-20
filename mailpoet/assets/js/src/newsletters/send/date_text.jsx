@@ -101,6 +101,8 @@ class DateText extends Component {
     return convertedFormat
       .replace(/D/g, 'd')
       .replace(/Y/g, 'y')
+      .replace(/A/g, 'a')
+      .replace(/o/g, 'Y') // MailPoet.Date.convertFormat converts 'S' to 'o'
       .replace(/\[/g, '')
       .replace(/\]/g, '');
   };
