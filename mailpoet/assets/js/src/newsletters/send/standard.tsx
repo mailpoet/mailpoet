@@ -15,7 +15,7 @@ import { Field } from '../../form/types';
 const currentTime = window.mailpoet_current_time || '00:00';
 const tomorrowDateTime = `${window.mailpoet_tomorrow_date} 08:00:00`;
 const timeOfDayItems = window.mailpoet_schedule_time_of_day;
-const dateDisplayFormat = window.mailpoet_date_display_format;
+const dateDisplayFormat = window.mailpoet_date_format;
 const dateStorageFormat = window.mailpoet_date_storage_format;
 
 type StandardSchedulingProps = {
