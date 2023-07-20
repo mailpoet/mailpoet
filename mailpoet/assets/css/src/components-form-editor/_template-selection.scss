@@ -31,14 +31,8 @@ $mailpoet-form-template-thumbnail-height: 316px;
   }
 }
 
-/**
- The header uses grid to position heading in center (second column) and a new form button on right (third column)
- */
 .mailpoet-form-template-selection-header {
-  display: flex;
-  flex-direction: row;
   grid-column: 1/-1;
-  justify-content: space-between;
 }
 
 .mailpoet-form-template-selection-footer {
