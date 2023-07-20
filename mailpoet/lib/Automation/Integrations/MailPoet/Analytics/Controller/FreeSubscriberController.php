@@ -50,7 +50,6 @@ class FreeSubscriberController implements SubscriberController {
 
     $subscriber = $this->getRandomSubscriber();
 
-    $step = $this->getRandomStep($automation);
     return [
       'date' => $this->findRandomDateBetween($query->getAfter(), $query->getBefore())->format(\DateTimeImmutable::W3C),
       'subscriber' => [
