@@ -1,12 +1,12 @@
-import { Component } from 'react';
+import { Component, SyntheticEvent } from 'react';
 import { __, _x } from '@wordpress/i18n';
-import PropTypes from 'prop-types';
 import { registerLocale } from 'react-datepicker';
 import locale from 'date-fns/locale/en-US';
 import buildLocalizeFn from 'date-fns/locale/_lib/buildLocalizeFn';
 
-import { Datepicker } from 'common/datepicker/datepicker.tsx';
+import { Datepicker } from 'common/datepicker/datepicker';
 import { MailPoet } from 'mailpoet';
+import { DateOptions } from 'date';
 
 const monthValues = {
   abbreviated: [
@@ -82,9 +82,33 @@ locale.options.weekStartsOn =
 
 registerLocale('mailpoet', locale);
 
-class DateText extends Component {
-  onChange = (value, event) => {
-    const changeEvent = event;
+type DateTextEvent = SyntheticEvent<HTMLInputElement> & {
+  target: EventTarget & {
+    name?: string;
+    value?: string;
+  };
+};
+
+type DateTextProps = {
+  displayFormat: string;
+  onChange: (date: DateTextEvent) => void;
+  storageFormat: string;
+  value: string;
+  disabled: boolean;
+  validation: {
+    'data-parsley-required': boolean;
+    'data-parsley-required-message': string;
+    'data-parsley-type': string;
+    'data-parsley-errors-container': string;
+    maxLength: number;
+  };
+  maxDate: Date;
+  name?: string;
+};
+
+class DateText extends Component<DateTextProps> {
+  onChange = (value: Date, event) => {
+    const changeEvent: DateTextEvent = event;
     // Swap display format to storage format
     const storageDate = this.getStorageDate(value);
 
@@ -95,7 +119,7 @@ class DateText extends Component {
 
   getFieldName = () => this.props.name || 'date';
 
-  getDisplayDateFormat = (format) => {
+  getDisplayDateFormat = (format: string) => {
     const convertedFormat = MailPoet.Date.convertFormat(format);
     // Convert moment format to date-fns, see: https://git.io/fxCyr
     return convertedFormat
@@ -107,14 +131,14 @@ class DateText extends Component {
       .replace(/\]/g, '');
   };
 
-  getDate = (date) => {
+  getDate = (date: string) => {
     const formatting = {
       parseFormat: this.props.storageFormat,
-    };
+    } as DateOptions;
     return MailPoet.Date.toDate(date, formatting);
   };
 
-  getStorageDate = (date) => {
+  getStorageDate = (date: Date) => {
     const formatting = {
       format: this.props.storageFormat,
     };
@@ -138,26 +162,4 @@ class DateText extends Component {
   }
 }
 
-DateText.propTypes = {
-  displayFormat: PropTypes.string.isRequired,
-  onChange: PropTypes.func.isRequired,
-  name: PropTypes.string,
-  storageFormat: PropTypes.string.isRequired,
-  value: PropTypes.string.isRequired,
-  disabled: PropTypes.bool.isRequired,
-  validation: PropTypes.shape({
-    'data-parsley-required': PropTypes.bool,
-    'data-parsley-required-message': PropTypes.string,
-    'data-parsley-type': PropTypes.string,
-    'data-parsley-errors-container': PropTypes.string,
-    maxLength: PropTypes.number,
-  }).isRequired,
-  maxDate: PropTypes.instanceOf(Date),
-};
-
-DateText.defaultProps = {
-  name: 'date',
-  maxDate: null,
-};
-DateText.displayName = 'DateText';
 export { DateText };
