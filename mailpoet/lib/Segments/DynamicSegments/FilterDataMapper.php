@@ -51,7 +51,6 @@ class FilterDataMapper {
    * @return DynamicSegmentFilterData[]
    */
   public function map(array $data = []): array {
-    $filters = [];
     if (!isset($data['filters']) || count($data['filters'] ?? []) < 1) {
       throw new InvalidFilterException('Filters are missing', InvalidFilterException::MISSING_FILTER);
     }
