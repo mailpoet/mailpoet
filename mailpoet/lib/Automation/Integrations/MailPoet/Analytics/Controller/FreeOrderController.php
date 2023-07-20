@@ -44,6 +44,13 @@ class FreeOrderController implements OrderController {
 
   public function getOrdersForAutomation(Automation $automation, Query $query): array {
     $allEmails = $this->automationTimeSpanController->getAutomationEmailsInTimeSpan($automation, $query->getAfter(), $query->getBefore());
+    if (!$allEmails) {
+      return [
+        'results' => 0,
+        'items' => [],
+        'emails' => [],
+      ];
+    }
     $items = [
       $this->addItem($automation, $query),
       $this->addItem($automation, $query),
