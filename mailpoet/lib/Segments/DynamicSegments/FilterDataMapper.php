@@ -2,7 +2,6 @@
 
 namespace MailPoet\Segments\DynamicSegments;
 
-use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Segments\DynamicSegments\Exceptions\InvalidFilterException;
 use MailPoet\Segments\DynamicSegments\Filters\AutomationsEvents;
@@ -40,15 +39,9 @@ class FilterDataMapper {
   private $dateFilterHelper;
 
   public function __construct(
-    WPFunctions $wp = null,
-    DateFilterHelper $dateFilterHelper = null
+    WPFunctions $wp,
+    DateFilterHelper $dateFilterHelper
   ) {
-    if (!$wp) {
-      $wp = WPFunctions::get();
-    }
-    if (!$dateFilterHelper) {
-      $dateFilterHelper = ContainerWrapper::getInstance()->get(DateFilterHelper::class);
-    }
     $this->wp = $wp;
     $this->dateFilterHelper = $dateFilterHelper;
   }
