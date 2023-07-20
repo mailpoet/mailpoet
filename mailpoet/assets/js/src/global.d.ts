@@ -147,7 +147,6 @@ interface Window {
   mailpoet_current_date?: string;
   mailpoet_tomorrow_date?: string;
   mailpoet_schedule_time_of_day?: string;
-  mailpoet_date_display_format?: string;
   mailpoet_date_storage_format?: string;
   mailpoet_current_date_time?: string;
   mailpoet_urls: Record<string, string>;
