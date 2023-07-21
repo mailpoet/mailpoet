@@ -8,6 +8,7 @@ use MailPoet\API\JSON\SuccessResponse;
 use MailPoet\API\JSON\v1\Premium;
 use MailPoet\Config\ServicesChecker;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoet\WPCOM\DotcomHelperFunctions;
 
 class PremiumTest extends \MailPoetUnitTest {
   public function testItInstallsPlugin() {
@@ -22,7 +23,7 @@ class PremiumTest extends \MailPoetUnitTest {
       'installPlugin' => Expected::once(true),
     ]);
 
-    $premium = new Premium($servicesChecker, $wp);
+    $premium = new Premium($servicesChecker, $wp, new DotcomHelperFunctions());
     $response = $premium->installPlugin();
     expect($response)->isInstanceOf(SuccessResponse::class);
   }
@@ -37,7 +38,7 @@ class PremiumTest extends \MailPoetUnitTest {
       'installPlugin' => Expected::never(),
     ]);
 
-    $premium = new Premium($servicesChecker, $wp);
+    $premium = new Premium($servicesChecker, $wp, new DotcomHelperFunctions());
     $response = $premium->installPlugin();
     expect($response)->isInstanceOf(ErrorResponse::class);
     expect($response->getData()['errors'][0])->same([
@@ -56,7 +57,7 @@ class PremiumTest extends \MailPoetUnitTest {
       'installPlugin' => Expected::never(),
     ]);
 
-    $premium = new Premium($servicesChecker, $wp);
+    $premium = new Premium($servicesChecker, $wp, new DotcomHelperFunctions());
     $response = $premium->installPlugin();
     expect($response)->isInstanceOf(ErrorResponse::class);
     expect($response->getData()['errors'][0])->same([
@@ -77,7 +78,7 @@ class PremiumTest extends \MailPoetUnitTest {
       'installPlugin' => Expected::once(false),
     ]);
 
-    $premium = new Premium($servicesChecker, $wp);
+    $premium = new Premium($servicesChecker, $wp, new DotcomHelperFunctions());
     $response = $premium->installPlugin();
     expect($response)->isInstanceOf(ErrorResponse::class);
     expect($response->getData()['errors'][0])->same([
@@ -95,7 +96,7 @@ class PremiumTest extends \MailPoetUnitTest {
       'activatePlugin' => Expected::once(null),
     ]);
 
-    $premium = new Premium($servicesChecker, $wp);
+    $premium = new Premium($servicesChecker, $wp, new DotcomHelperFunctions());
     $response = $premium->activatePlugin();
     expect($response)->isInstanceOf(SuccessResponse::class);
   }
@@ -105,7 +106,7 @@ class PremiumTest extends \MailPoetUnitTest {
       'isPremiumKeyValid' => Expected::once(false),
     ]);
 
-    $premium = new Premium($servicesChecker, new WPFunctions());
+    $premium = new Premium($servicesChecker, new WPFunctions(), new DotcomHelperFunctions());
     $response = $premium->activatePlugin();
     expect($response)->isInstanceOf(ErrorResponse::class);
     expect($response->getData()['errors'][0])->same([
@@ -123,7 +124,7 @@ class PremiumTest extends \MailPoetUnitTest {
       'activatePlugin' => Expected::once('error'),
     ]);
 
-    $premium = new Premium($servicesChecker, $wp);
+    $premium = new Premium($servicesChecker, $wp, new DotcomHelperFunctions());
     $response = $premium->activatePlugin();
     expect($response)->isInstanceOf(ErrorResponse::class);
     expect($response->getData()['errors'][0])->same([
