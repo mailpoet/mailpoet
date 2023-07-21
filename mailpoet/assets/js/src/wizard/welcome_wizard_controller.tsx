@@ -4,7 +4,7 @@ import { Settings } from 'settings/store/types';
 import { partial } from 'underscore';
 
 import { WelcomeWizardSenderStep } from './steps/sender_step';
-import { WelcomeWizardUsageTrackingStep } from './steps/usage_tracking_step.jsx';
+import { WelcomeWizardUsageTrackingStep } from './steps/usage_tracking_step';
 import { WelcomeWizardPitchMSSStep } from './steps/pitch_mss_step';
 import { WooCommerceController } from './woocommerce_controller';
 import { WelcomeWizardStepLayout } from './layout/step_layout.jsx';
