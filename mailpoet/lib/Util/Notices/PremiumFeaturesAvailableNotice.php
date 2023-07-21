@@ -67,7 +67,7 @@ class PremiumFeaturesAvailableNotice {
     $noticeString = Helpers::replaceLinkTags($noticeString, $link, $attributes);
     $extraClasses = 'mailpoet-dismissible-notice is-dismissible';
 
-    return Notice::displayInfo($noticeString, $extraClasses, self::OPTION_NAME);
+    return Notice::displaySuccess($noticeString, $extraClasses, self::OPTION_NAME);
   }
 
   public function disable(): void {
