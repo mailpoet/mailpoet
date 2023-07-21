@@ -274,6 +274,8 @@ class SendingQueue {
         if (!$isTransactional) {
           $now = Carbon::createFromTimestamp((int)current_time('timestamp'));
           $this->subscribersRepository->bulkUpdateLastSendingAt($foundSubscribersIds, $now);
+          // We're nullifying this value so these subscribers' engagement score will be recalculated the next time the cron runs
+          $this->subscribersRepository->bulkUpdateEngagementScoreUpdatedAt($foundSubscribersIds, null);
         }
         $this->loggerFactory->getLogger(LoggerFactory::TOPIC_NEWSLETTERS)->info(
           'after queue chunk processing',
