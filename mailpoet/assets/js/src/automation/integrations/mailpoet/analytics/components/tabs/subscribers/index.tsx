@@ -1,10 +1,10 @@
 import { dispatch, useSelect } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
 import { TableCard } from '@woocommerce/components';
+import { Hooks } from 'wp-js-hooks';
 import { storeName, SubscriberSection } from '../../../store';
 import { transformSubscribersToRows } from './rows';
 import { Upgrade } from '../orders/upgrade';
-import { Filter } from './filter';
 import { canUsePremiumFeatures } from '../../../config';
 
 const headers = [
@@ -43,6 +43,11 @@ export function Subscribers(): JSX.Element {
       : undefined;
   const rows = transformSubscribersToRows(subscribers);
 
+  const beforeTable = Hooks.applyFilters(
+    'mailpoet_analytics_subscribers_before_table',
+    null,
+  ) as null | JSX.Element;
+
   return (
     <div className="mailpoet-analytics-subscribers">
       {!canUsePremiumFeatures && (
@@ -60,7 +65,7 @@ export function Subscribers(): JSX.Element {
         />
       )}
 
-      {canUsePremiumFeatures && <Filter />}
+      {beforeTable}
 
       <TableCard
         title=""

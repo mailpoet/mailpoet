@@ -26,6 +26,7 @@ export { __experimentalNumberControl as WordpressComponentsNumberControl } from 
 export { __experimentalConfirmDialog as WordpressComponentsConfirmDialog } from '@wordpress/components';
 export { MenuItem as WordpressComponentsMenuItem } from '@wordpress/components';
 export { PanelBody as WordpressComponentsPanelBody } from '@wordpress/components';
+export { TreeSelect as WordpressComponentsTreeSelect } from '@wordpress/components';
 export { Spinner as WordpressComponentsSpinner } from '@wordpress/components';
 export * as WordPressData from '@wordpress/data';
 export * as WordPressDate from '@wordpress/date';
