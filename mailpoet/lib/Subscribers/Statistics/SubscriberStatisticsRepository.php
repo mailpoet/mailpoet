@@ -101,14 +101,18 @@ class SubscriberStatisticsRepository extends Repository {
       return null;
     }
 
+    $dateTime = (new Carbon())->subYear();
+
     $currency = $this->wcHelper->getWoocommerceCurrency();
     $purchases = $this->entityManager->createQueryBuilder()
       ->select('stats.orderPriceTotal')
       ->from(StatisticsWooCommercePurchaseEntity::class, 'stats')
       ->where('stats.subscriber = :subscriber')
       ->andWhere('stats.orderCurrency = :currency')
+      ->andWhere('stats.createdAt > :dateTime')
       ->setParameter('subscriber', $subscriber)
       ->setParameter('currency', $currency)
+      ->setParameter('dateTime', $dateTime)
       ->groupBy('stats.orderId, stats.orderPriceTotal')
       ->getQuery()
       ->getResult();
