@@ -2,11 +2,15 @@ import { __ } from '@wordpress/i18n';
 import { MailPoet } from 'mailpoet';
 import { Button } from 'common/button/button';
 import { PremiumRequired } from 'common/premium_required/premium_required';
+import { useState } from 'react';
+import jQuery from 'jquery';
 import { withBoundary } from '../../common';
 
 function SkipDisplayingDetailedStats() {
   let ctaButton;
   let description;
+
+  const [loading, setLoading] = useState(false);
 
   if (
     MailPoet.hasValidPremiumKey &&
@@ -22,10 +26,28 @@ function SkipDisplayingDetailedStats() {
     );
     ctaButton = (
       <Button
+        withSpinner={loading}
         href={MailPoet.premiumPluginActivationUrl}
         rel="noopener noreferrer"
+        onClick={(e) => {
+          e.preventDefault();
+          setLoading(true);
+
+          jQuery
+            .get(MailPoet.premiumPluginActivationUrl)
+            .then((response) => {
+              if (response.includes('Plugin activated')) {
+                window.location.reload();
+              }
+            })
+            .catch(() => {
+              setLoading(false);
+            });
+        }}
       >
-        {__('Activate MailPoet Premium plugin', 'mailpoet')}
+        {loading
+          ? __('Activating MailPoet premium...', 'mailpoet')
+          : __('Activate MailPoet Premium plugin', 'mailpoet')}
       </Button>
     );
     // If the premium plugin is not installed, we need to provide a download link
