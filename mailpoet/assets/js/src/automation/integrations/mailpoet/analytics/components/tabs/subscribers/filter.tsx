@@ -7,18 +7,10 @@ import { Automation } from '../../../../../../editor/components/automation/types
 import { Section, storeName, SubscriberSection } from '../../../store';
 import { MultiSelect, MultiSelectOption } from '../../multiselect';
 
-const sortByLabelCallback = (a: { label: string }, b: { label: string }) => {
-  if (a.label > b.label) {
-    return 1;
-  }
-  return b.label > a.label ? -1 : 0;
-};
-const sortByNameCallback = (a: { name: string }, b: { name: string }) => {
-  if (a.name > b.name) {
-    return 1;
-  }
-  return b.name > a.name ? -1 : 0;
-};
+const sortByLabelCallback = (a: { label: string }, b: { label: string }) =>
+  a.label.localeCompare(b.label);
+const sortByNameCallback = (a: { name: string }, b: { name: string }) =>
+  a.name.localeCompare(b.name);
 
 function getStatusOptions() {
   const statusOptions: { label: string; value: string }[] = Object.keys(
