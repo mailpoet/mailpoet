@@ -59,7 +59,7 @@ function WelcomeWizardUsageTrackingStep({ loading, submitForm }) {
             <div>
               <p>
                 {__(
-                  'Enable better-looking Google Fonts in forms and emails and show contextual help articles in MailPoet?',
+                  'Enable modern text fonts in emails and show contextual help articles in MailPoet',
                   'mailpoet',
                 )}
               </p>
@@ -68,7 +68,7 @@ function WelcomeWizardUsageTrackingStep({ loading, submitForm }) {
 
                 {ReactStringReplace(
                   __(
-                    'If enabled, we may load the Google Fonts library and [link]other 3rd-party libraries we use[/link].',
+                    'MailPoet may load Google Fonts, HelpScout and other [link]3rd party libraries[/link].',
                     'mailpoet',
                   ),
                   /\[link\](.*?)\[\/link\]/g,
