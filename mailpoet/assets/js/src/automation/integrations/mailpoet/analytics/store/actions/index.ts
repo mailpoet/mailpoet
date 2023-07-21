@@ -35,9 +35,10 @@ export function resetSectionData(section: Section) {
   };
 }
 
-export function updateCurrentView(section: Section, currentView: CurrentView) {
+export function updateCurrentView(sectionId: string, currentView: CurrentView) {
+  const currentSection = select(storeName).getSection(sectionId);
   const payload = {
-    ...section,
+    ...currentSection,
     currentView,
   };
   return {
