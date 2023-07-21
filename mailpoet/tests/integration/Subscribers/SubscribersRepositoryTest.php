@@ -105,6 +105,66 @@ class SubscribersRepositoryTest extends \MailPoetTest {
     expect($subscriberThree->getLastSendingAt()->getTimestamp())->equals($now->getTimestamp());
   }
 
+  public function testItBulkUpdatesEngagementScoreUpdatedAt(): void {
+    $subscriberOne = $this->createSubscriber('one@e.com');
+    $subscriberTwo = $this->createSubscriber('two@e.com');
+    $subscriberThree = $this->createSubscriber('three@e.com');
+
+    expect($subscriberOne->getEngagementScoreUpdatedAt())->null();
+    expect($subscriberTwo->getEngagementScoreUpdatedAt())->null();
+    expect($subscriberThree->getEngagementScoreUpdatedAt())->null();
+    $idsToUpdate = [
+      $subscriberOne->getId(),
+      $subscriberThree->getId(),
+    ];
+    $now = new DateTimeImmutable();
+    $this->repository->bulkUpdateEngagementScoreUpdatedAt($idsToUpdate, $now);
+    $this->repository->refresh($subscriberOne);
+    $this->repository->refresh($subscriberTwo);
+    $this->repository->refresh($subscriberThree);
+    $this->assertInstanceOf(DateTimeInterface::class, $subscriberOne->getEngagementScoreUpdatedAt());
+    expect($subscriberOne->getEngagementScoreUpdatedAt()->getTimestamp())->equals($now->getTimestamp());
+    expect($subscriberTwo->getEngagementScoreUpdatedAt())->null();
+    $this->assertInstanceOf(DateTimeInterface::class, $subscriberThree->getEngagementScoreUpdatedAt());
+    expect($subscriberThree->getEngagementScoreUpdatedAt()->getTimestamp())->equals($now->getTimestamp());
+  }
+
+  public function testBulkUpdatesOfEngagementScoreCanNullifyData(): void {
+    $subscriberOne = $this->createSubscriber('one@e.com');
+    $subscriberTwo = $this->createSubscriber('two@e.com');
+    $subscriberThree = $this->createSubscriber('three@e.com');
+
+    $now = new DateTimeImmutable();
+    $subscriberOne->setEngagementScoreUpdatedAt($now);
+    $subscriberTwo->setEngagementScoreUpdatedAt($now);
+    $subscriberThree->setEngagementScoreUpdatedAt($now);
+    $this->entityManager->persist($subscriberOne);
+    $this->entityManager->persist($subscriberTwo);
+    $this->entityManager->persist($subscriberThree);
+    $this->entityManager->flush();
+
+    $this->repository->refresh($subscriberOne);
+    $this->repository->refresh($subscriberTwo);
+    $this->repository->refresh($subscriberThree);
+    $this->assertInstanceOf(DateTimeInterface::class, $subscriberOne->getEngagementScoreUpdatedAt());
+    $this->assertInstanceOf(DateTimeInterface::class, $subscriberTwo->getEngagementScoreUpdatedAt());
+    $this->assertInstanceOf(DateTimeInterface::class, $subscriberThree->getEngagementScoreUpdatedAt());
+
+    $idsToUpdate = [
+      $subscriberOne->getId(),
+      $subscriberTwo->getId(),
+    ];
+    $this->repository->bulkUpdateEngagementScoreUpdatedAt($idsToUpdate, null);
+
+    $this->repository->refresh($subscriberOne);
+    $this->repository->refresh($subscriberTwo);
+    $this->repository->refresh($subscriberThree);
+
+    expect($subscriberOne->getEngagementScoreUpdatedAt())->null();
+    $this->assertInstanceOf(DateTimeInterface::class, $subscriberTwo->getEngagementScoreUpdatedAt());
+    expect($subscriberOne->getEngagementScoreUpdatedAt())->null();
+  }
+
   public function testItBulkDeleteSubscribers(): void {
     $subscriberOne = $this->createSubscriber('one@delete.com', new DateTimeImmutable());
     $subscriberTwo = $this->createSubscriber('two@delete.com', new DateTimeImmutable());
