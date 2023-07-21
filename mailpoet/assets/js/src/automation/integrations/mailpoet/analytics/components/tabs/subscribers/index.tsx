@@ -1,6 +1,6 @@
 import { dispatch, useSelect } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
-import { TableCard } from '@woocommerce/components/build';
+import { TableCard } from '@woocommerce/components';
 import { MailPoet } from '../../../../../../../mailpoet';
 import { storeName, SubscriberSection } from '../../../store';
 import { transformSubscribersToRows } from './rows';
@@ -64,7 +64,6 @@ export function Subscribers(): JSX.Element {
 
       <TableCard
         title=""
-        caption=""
         onQueryChange={(type: string) => (param: unknown) => {
           let customQuery = {};
           if (type === 'paged') {
@@ -102,7 +101,6 @@ export function Subscribers(): JSX.Element {
         headers={headers}
         showMenu={false}
         rowsPerPage={subscriberSection.customQuery.limit}
-        onRowClick={() => {}}
         totalRows={
           subscriberSection.data !== undefined
             ? subscriberSection.data.results
