@@ -100,7 +100,7 @@ export function Overview(): JSX.Element | null {
         key="overview-opened"
         label={__('Opened', 'mailpoet')}
         value={percentageFormatter.format(getEmailPercentage('opened'))}
-        delta={getEmailDelta('opened').toFixed(2) as unknown as number}
+        delta={Number(getEmailDelta('opened').toFixed(2))}
       />,
     );
     items.push(
@@ -108,7 +108,7 @@ export function Overview(): JSX.Element | null {
         key="overview-clicked"
         label={__('Clicked', 'mailpoet')}
         value={percentageFormatter.format(getEmailPercentage('clicked'))}
-        delta={getEmailDelta('clicked').toFixed(2) as unknown as number}
+        delta={Number(getEmailDelta('clicked').toFixed(2))}
       />,
     );
   }
@@ -117,7 +117,7 @@ export function Overview(): JSX.Element | null {
       <SummaryNumber
         key="overview-orders"
         label={_x('Orders', 'WooCommerce orders', 'mailpoet')}
-        delta={getWooCommerceDelta('orders').toFixed(2) as unknown as number}
+        delta={Number(getWooCommerceDelta('orders').toFixed(2))}
         value={numberFormatter.format(getWooCommerceTotal('orders'))}
       />,
     );
@@ -125,7 +125,7 @@ export function Overview(): JSX.Element | null {
       <SummaryNumber
         key="overview-revenue"
         label={__('Revenue', 'mailpoet')}
-        delta={getWooCommerceDelta('revenue').toFixed(2) as unknown as number}
+        delta={Number(getWooCommerceDelta('revenue').toFixed(2))}
         value={formattedPrice(
           overview.data !== undefined ? overview.data.revenue.current : 0,
         )}
