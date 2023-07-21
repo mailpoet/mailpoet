@@ -3,6 +3,8 @@ import { __ } from '@wordpress/i18n';
 import { useSelector } from 'settings/store/hooks';
 import { PremiumStatus } from 'settings/store/types';
 import { Button } from 'common/button/button';
+import { PremiumModal } from 'common/premium_modal';
+import { useState } from 'react';
 
 type ActiveMessageProps = { canUseSuccessClass: boolean };
 
@@ -18,35 +20,33 @@ function ActiveMessage(props: ActiveMessageProps) {
   );
 }
 
-type PremiumNotActiveMessageProps = {
-  url?: string;
+type PremiumMessageProps = {
+  message: string;
+  buttonText: string;
 };
 
-function PremiumNotActiveMessage(props: PremiumNotActiveMessageProps) {
-  return (
-    <>
-      <div className="mailpoet_error mailpoet_install_premium_message">
-        {__('MailPoet Premium is installed but not activated.', 'mailpoet')}
-      </div>
-      {props.url && (
-        <Button href={props.url}>
-          {__('Activate MailPoet Premium plugin', 'mailpoet')}
-        </Button>
-      )}
-    </>
-  );
-}
+function PremiumMessage(props: PremiumMessageProps) {
+  const [showPremiumModal, setShowPremiumModal] = useState(false);
 
-function PremiumNotInstalledMessage(props: PremiumNotActiveMessageProps) {
   return (
     <>
       <div className="mailpoet_error mailpoet_install_premium_message">
-        {__('MailPoet Premium is not installed.', 'mailpoet')}
+        {props.message}
       </div>
-      {props.url && (
-        <Button href={props.url}>
-          {__('Download MailPoet Premium plugin', 'mailpoet')}
-        </Button>
+      <Button onClick={() => setShowPremiumModal(true)}>
+        {props.buttonText}
+      </Button>
+      {showPremiumModal && (
+        <PremiumModal
+          onRequestClose={() => {
+            setShowPremiumModal(false);
+          }}
+        >
+          {__(
+            'Your current MailPoet plan includes advanced features, but they require the MailPoet Premium plugin to be installed and activated.',
+            'mailpoet',
+          )}
+        </PremiumModal>
       )}
     </>
   );
@@ -72,19 +72,28 @@ type Props = {
 };
 
 export function PremiumMessages(props: Props) {
-  const {
-    premiumStatus: status,
-    downloadUrl,
-    activationUrl,
-  } = useSelector('getKeyActivationState')();
+  const { premiumStatus: status } = useSelector('getKeyActivationState')();
 
   switch (status) {
     case PremiumStatus.VALID_PREMIUM_PLUGIN_ACTIVE:
       return <ActiveMessage canUseSuccessClass={props.canUseSuccessClass} />;
     case PremiumStatus.VALID_PREMIUM_PLUGIN_NOT_INSTALLED:
-      return <PremiumNotInstalledMessage url={downloadUrl} />;
+      return (
+        <PremiumMessage
+          message={__('MailPoet Premium is not installed.', 'mailpoet')}
+          buttonText={__('Download MailPoet Premium plugin', 'mailpoet')}
+        />
+      );
     case PremiumStatus.VALID_PREMIUM_PLUGIN_NOT_ACTIVE:
-      return <PremiumNotActiveMessage url={activationUrl} />;
+      return (
+        <PremiumMessage
+          message={__(
+            'MailPoet Premium is installed but not activated.',
+            'mailpoet',
+          )}
+          buttonText={__('Activate MailPoet Premium plugin', 'mailpoet')}
+        />
+      );
     case PremiumStatus.INVALID:
       return <NotValidMessage message={props.keyMessage} />;
     default:
