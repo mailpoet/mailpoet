@@ -1,5 +1,5 @@
+import { __, _x } from '@wordpress/i18n';
 import { useState } from 'react';
-import { MailPoet } from 'mailpoet';
 import ReactStringReplace from 'react-string-replace';
 
 import { Button, TypographyHeading } from '../../common';
@@ -35,8 +35,12 @@ function WizardWooCommerceStep({
   };
 
   const buttonText = isWizardStep
-    ? MailPoet.I18n.t('continue')
-    : MailPoet.I18n.t('wooCommerceSetupFinishButtonTextStandalone');
+    ? _x('Continue', 'A label on a button', 'mailpoet')
+    : _x(
+        'Start using WooCommerce features',
+        'Submit button caption on the standalone WooCommerce setup page',
+        'mailpoet',
+      );
 
   let importTypeChecked;
   if (importType === 'subscribed') importTypeChecked = true;
@@ -45,11 +49,20 @@ function WizardWooCommerceStep({
   return (
     <>
       <TypographyHeading level={1}>
-        {MailPoet.I18n.t('wooCommerceSetupTitle')}
+        {_x(
+          'Power up your WooCommerce store',
+          'Title on the WooCommerce setup page',
+          'mailpoet',
+        )}
       </TypographyHeading>
 
       <div className="mailpoet-gap" />
-      <p>{MailPoet.I18n.t('wooCommerceSetupInfo')}</p>
+      <p>
+        {__(
+          'MailPoet comes with powerful features for WooCommerce. Select features that you would like to use with your store.',
+          'mailpoet',
+        )}
+      </p>
       <div className="mailpoet-gap" />
       <form onSubmit={submit}>
         <div>
@@ -69,7 +82,10 @@ function WizardWooCommerceStep({
               <div>
                 <p>
                   {ReactStringReplace(
-                    MailPoet.I18n.t('wooCommerceSetupImportInfo'),
+                    __(
+                      'Do you want to import your WooCommerce customers as subscribed? [link]Learn more[/link].',
+                      'mailpoet',
+                    ),
                     /\[link\](.*?)\[\/link\]/,
                     (match) => (
                       <a
@@ -86,7 +102,11 @@ function WizardWooCommerceStep({
                 </p>
                 <div className="mailpoet-wizard-note">
                   <span>GDPR</span>
-                  {MailPoet.I18n.t('wooCommerceSetupImportGDPRInfo')}
+                  {_x(
+                    'To be compliant with privacy regulations, your customers must have explicitly accepted to receive your marketing emails.',
+                    'GDPR compliance information',
+                    'mailpoet',
+                  )}
                 </div>
               </div>
             </div>
@@ -104,7 +124,10 @@ function WizardWooCommerceStep({
             <div>
               <p>
                 {ReactStringReplace(
-                  MailPoet.I18n.t('wooCommerceSetupTrackingInfo'),
+                  __(
+                    'Collect more precise email and site engagement, and e-commerce metrics by enabling cookie tracking. [link]Learn more[/link].',
+                    'mailpoet',
+                  ),
                   /\[link\](.*?)\[\/link\]/,
                   (match) => (
                     <a
@@ -121,7 +144,11 @@ function WizardWooCommerceStep({
               </p>
               <div className="mailpoet-wizard-note">
                 <span>GDPR</span>
-                {MailPoet.I18n.t('wooCommerceSetupTrackingGDPRInfo')}
+                {_x(
+                  'To be compliant, you should display a cookie tracking banner on your website.',
+                  'GDPR compliance information',
+                  'mailpoet',
+                )}
               </div>
             </div>
           </div>

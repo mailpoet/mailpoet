@@ -1,6 +1,6 @@
+import { __, _x } from '@wordpress/i18n';
 import PropTypes from 'prop-types';
 import { useState } from 'react';
-import { MailPoet } from 'mailpoet';
 import ReactStringReplace from 'react-string-replace';
 import { Button } from 'common/button/button';
 import { Heading } from 'common/typography/heading/heading';
@@ -32,7 +32,7 @@ function WelcomeWizardUsageTrackingStep({ loading, submitForm }) {
   return (
     <>
       <Heading level={1}>
-        {MailPoet.I18n.t('welcomeWizardUsageTrackingStepTitle')}
+        {__('Confirm privacy and data settings', 'mailpoet')}
       </Heading>
 
       <div className="mailpoet-gap" />
@@ -58,20 +58,18 @@ function WelcomeWizardUsageTrackingStep({ loading, submitForm }) {
             </div>
             <div>
               <p>
-                {MailPoet.I18n.t(
-                  'welcomeWizardUsageTrackingStepLibs3rdPartyLabel',
-                )}{' '}
+                {__(
+                  'Enable better-looking Google Fonts in forms and emails and show contextual help articles in MailPoet?',
+                  'mailpoet',
+                )}
               </p>
               <div className="mailpoet-wizard-note">
-                <span>
-                  {MailPoet.I18n.t(
-                    'welcomeWizardUsageTrackingStepLibs3rdPartyLabelNoteNote',
-                  )}
-                </span>
+                <span>{__('Note', 'mailpoet')}</span>
 
                 {ReactStringReplace(
-                  MailPoet.I18n.t(
-                    'welcomeWizardUsageTrackingStepLibs3rdPartyLabelNote',
+                  __(
+                    'If enabled, we may load the Google Fonts library and [link]other 3rd-party libraries we use[/link].',
+                    'mailpoet',
                   ),
                   /\[link\](.*?)\[\/link\]/g,
                   (match, i) => (
@@ -110,19 +108,14 @@ function WelcomeWizardUsageTrackingStep({ loading, submitForm }) {
               />
             </div>
             <div>
-              <p>
-                {MailPoet.I18n.t('welcomeWizardUsageTrackingStepTrackingLabel')}{' '}
-              </p>
+              <p>{__('Help improve MailPoet', 'mailpoet')}</p>
               <div className="mailpoet-wizard-note">
-                <span>
-                  {MailPoet.I18n.t(
-                    'welcomeWizardUsageTrackingStepTrackingLabelNoteNote',
-                  )}
-                </span>
+                <span>{__('Note', 'mailpoet')}</span>
 
                 {ReactStringReplace(
-                  MailPoet.I18n.t(
-                    'welcomeWizardUsageTrackingStepTrackingLabelNote',
+                  __(
+                    'Get improved features and fixes faster by sharing with us [link]non-sensitive data about how you use MailPoet[/link]. No personal data is tracked or stored.',
+                    'mailpoet',
                   ),
                   /\[link\](.*?)\[\/link\]/g,
                   (match, i) => (
@@ -150,7 +143,7 @@ function WelcomeWizardUsageTrackingStep({ loading, submitForm }) {
           withSpinner={loading}
           disabled={loading}
         >
-          {MailPoet.I18n.t('continue')}
+          {_x('Continue', 'A label on a button', 'mailpoet')}
         </Button>
       </form>
     </>
