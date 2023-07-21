@@ -11,6 +11,7 @@ use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\UserAgentEntity;
 use MailPoet\Newsletter\Statistics\WooCommerceRevenue;
 use MailPoet\WooCommerce\Helper as WCHelper;
+use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 use MailPoetVendor\Doctrine\ORM\QueryBuilder;
 
@@ -44,35 +45,50 @@ class SubscriberStatisticsRepository extends Repository {
     );
   }
 
-  private function getStatisticsClickCount(SubscriberEntity $subscriber): int {
+  public function getStatisticsClickCount(SubscriberEntity $subscriber): int {
+    $dateTime = (new Carbon())->subYear();
     return (int)$this->getStatisticsCountQuery(StatisticsClickEntity::class, $subscriber)
+      ->andWhere('stats.createdAt > :dateTime')
+      ->setParameter('dateTime', $dateTime)
       ->getQuery()
       ->getSingleScalarResult();
   }
 
-  private function getStatisticsOpenCount(SubscriberEntity $subscriber): int {
-    return (int)$this->getStatisticsCountQuery(StatisticsOpenEntity::class, $subscriber)
-      ->andWhere('(stats.userAgentType = :userAgentType) OR (stats.userAgentType IS NULL)')
+  public function getStatisticsOpenCountQuery(SubscriberEntity $subscriber): QueryBuilder {
+    $dateTime = (new Carbon())->subYear();
+    return $this->getStatisticsCountQuery(StatisticsOpenEntity::class, $subscriber)
+      ->join('stats.newsletter', 'newsletter')
+      ->andWhere('(newsletter.sentAt > :dateTime OR newsletter.sentAt IS NULL)')
+      ->andWhere('stats.createdAt > :dateTime')
+      ->setParameter('dateTime', $dateTime);
+  }
+
+  public function getStatisticsOpenCount(SubscriberEntity $subscriber): int {
+    return (int)$this->getStatisticsOpenCountQuery($subscriber)
+      ->andWhere('(stats.userAgentType = :userAgentType)')
       ->setParameter('userAgentType', UserAgentEntity::USER_AGENT_TYPE_HUMAN)
       ->getQuery()
       ->getSingleScalarResult();
   }
 
-  private function getStatisticsMachineOpenCount(SubscriberEntity $subscriber): int {
-    return (int)$this->getStatisticsCountQuery(StatisticsOpenEntity::class, $subscriber)
+  public function getStatisticsMachineOpenCount(SubscriberEntity $subscriber): int {
+    return (int)$this->getStatisticsOpenCountQuery($subscriber)
       ->andWhere('(stats.userAgentType = :userAgentType)')
       ->setParameter('userAgentType', UserAgentEntity::USER_AGENT_TYPE_MACHINE)
       ->getQuery()
       ->getSingleScalarResult();
   }
 
-  private function getTotalSentCount(SubscriberEntity $subscriber): int {
+  public function getTotalSentCount(SubscriberEntity $subscriber): int {
+    $dateTime = (new Carbon())->subYear();
     return $this->getStatisticsCountQuery(StatisticsNewsletterEntity::class, $subscriber)
+      ->andWhere('stats.sentAt > :dateTime')
+      ->setParameter('dateTime', $dateTime)
       ->getQuery()
       ->getSingleScalarResult();
   }
 
-  private function getStatisticsCountQuery(string $entityName, SubscriberEntity $subscriber): QueryBuilder {
+  public function getStatisticsCountQuery(string $entityName, SubscriberEntity $subscriber): QueryBuilder {
     return $this->entityManager->createQueryBuilder()
       ->select('COUNT(DISTINCT stats.newsletter) as cnt')
       ->from($entityName, 'stats')
@@ -80,7 +96,7 @@ class SubscriberStatisticsRepository extends Repository {
       ->setParameter('subscriber', $subscriber);
   }
 
-  private function getWooCommerceRevenue(SubscriberEntity $subscriber) {
+  public function getWooCommerceRevenue(SubscriberEntity $subscriber) {
     if (!$this->wcHelper->isWooCommerceActive()) {
       return null;
     }
