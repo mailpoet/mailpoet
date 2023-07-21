@@ -21,19 +21,26 @@ function ActiveMessage(props: ActiveMessageProps) {
 }
 
 type PremiumMessageProps = {
-  message: string;
+  message?: string;
   buttonText: string;
 };
 
-function PremiumMessage(props: PremiumMessageProps) {
+function PremiumMessageWithModal(props: PremiumMessageProps) {
   const [showPremiumModal, setShowPremiumModal] = useState(false);
 
   return (
     <>
-      <div className="mailpoet_error mailpoet_install_premium_message">
-        {props.message}
-      </div>
-      <Button onClick={() => setShowPremiumModal(true)}>
+      {props.message && (
+        <div className="mailpoet_error mailpoet_install_premium_message">
+          {props.message}
+        </div>
+      )}
+      <Button
+        onClick={(e) => {
+          e.preventDefault();
+          setShowPremiumModal(true);
+        }}
+      >
         {props.buttonText}
       </Button>
       {showPremiumModal && (
@@ -71,7 +78,7 @@ type Props = {
   canUseSuccessClass: boolean;
 };
 
-export function PremiumMessages(props: Props) {
+function PremiumMessages(props: Props) {
   const { premiumStatus: status } = useSelector('getKeyActivationState')();
 
   switch (status) {
@@ -79,14 +86,14 @@ export function PremiumMessages(props: Props) {
       return <ActiveMessage canUseSuccessClass={props.canUseSuccessClass} />;
     case PremiumStatus.VALID_PREMIUM_PLUGIN_NOT_INSTALLED:
       return (
-        <PremiumMessage
+        <PremiumMessageWithModal
           message={__('MailPoet Premium is not installed.', 'mailpoet')}
           buttonText={__('Download MailPoet Premium plugin', 'mailpoet')}
         />
       );
     case PremiumStatus.VALID_PREMIUM_PLUGIN_NOT_ACTIVE:
       return (
-        <PremiumMessage
+        <PremiumMessageWithModal
           message={__(
             'MailPoet Premium is installed but not activated.',
             'mailpoet',
@@ -104,3 +111,5 @@ export function PremiumMessages(props: Props) {
 PremiumMessages.defaultProps = {
   keyMessage: '',
 };
+
+export { PremiumMessages, PremiumMessageWithModal };
