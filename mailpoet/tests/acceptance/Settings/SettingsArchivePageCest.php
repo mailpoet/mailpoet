@@ -45,10 +45,9 @@ class SettingsArchivePageCest {
     $segment3 = $segmentFactory->withName('SentNewsletters')->create();
     $segmentFactory = new Segment();
     $segment4 = $segmentFactory->withName('SentNewsletters2')->create();
-    $newsletterFactory = new Newsletter();
-    $newsletterFactory->withSubject('SentNewsletter')->withSentStatus()->withSendingQueue()->withSegments([$segment3])->create();
-    $newsletterFactory->withSubject('DraftNewsletter')->withDraftStatus()->withScheduledQueue()->withSegments([$segment3])->create();
-    $newsletterFactory->withSubject('ScheduledNewsletter')->withScheduledStatus()->withScheduledQueue()->withSegments([$segment3])->create();
+    (new Newsletter())->withSubject('SentNewsletter')->withSentStatus()->withSendingQueue()->withSegments([$segment3])->create();
+    (new Newsletter())->withSubject('DraftNewsletter')->withDraftStatus()->withScheduledQueue()->withSegments([$segment3])->create();
+    (new Newsletter())->withSubject('ScheduledNewsletter')->withScheduledStatus()->withScheduledQueue()->withSegments([$segment3])->create();
     $pageTitle3 = 'SentNewsletterArchive';
     $pageContent3 = "[mailpoet_archive segments=\"{$segment3->getId()}\"]";
     $postUrl = $i->createPost($pageTitle3, $pageContent3);
@@ -93,7 +92,7 @@ class SettingsArchivePageCest {
     $i->dontSee('SentNewsletter2');
     $i->dontSee('SentNewsletter3');
     $i->dontSee('SentNewsletter4');
-    
+
     $pageTitle4 = 'SentNewsletterArchive';
     $pageContent4 = "[mailpoet_archive segments=\"{$segment3->getId()},{$segment4->getId()}\"]";
     $postUrl2 = $i->createPost($pageTitle4, $pageContent4);
