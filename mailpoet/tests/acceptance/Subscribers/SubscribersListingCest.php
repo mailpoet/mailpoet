@@ -10,20 +10,28 @@ class SubscribersListingCest {
   public function subscribersListing(\AcceptanceTester $i) {
     $i->wantTo('Open subscribers listings page');
 
-    $tag = (new Tag())
-      ->withName('My Tag')
+    $tag1 = (new Tag())
+      ->withName('My Tag 1')
+      ->create();
+    $tag2 = (new Tag())
+      ->withName('My Tag 2')
+      ->create();
+    $tag3 = (new Tag())
+      ->withName('My Tag 3')
       ->create();
 
     (new Subscriber())
       ->withEmail('wp@example.com')
-      ->withTags([$tag])
+      ->withTags([$tag1, $tag2, $tag3])
       ->create();
 
     $i->login();
     $i->amOnMailpoetPage('Subscribers');
     $i->searchFor('wp@example.com');
     $i->waitForText('wp@example.com');
-    $i->waitForText('My Tag');
+    $i->waitForText('My Tag 1');
+    $i->waitForText('My Tag 2');
+    $i->waitForText('My Tag 3');
   }
 
   public function useTagFilter(\AcceptanceTester $i) {
