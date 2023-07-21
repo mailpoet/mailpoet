@@ -1,3 +1,6 @@
+import { MailPoet } from '../../../../mailpoet';
+import { premiumFeaturesEnabled } from '../../../../common/premium_modal/upgrade_info';
+
 declare global {
   interface Window {
     mailpoet_automation_analytics_api: {
@@ -7,6 +10,9 @@ declare global {
     mailpoet_locale_full: string;
   }
 }
+
+export const canUsePremiumFeatures =
+  MailPoet.premiumActive && premiumFeaturesEnabled;
 
 export const api = window.mailpoet_automation_api;
 
