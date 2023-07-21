@@ -1,11 +1,11 @@
 import { dispatch, useSelect } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
 import { TableCard } from '@woocommerce/components';
+import { Hooks } from 'wp-js-hooks';
 import { OrderSection, storeName } from '../../../store';
 import { transformOrdersToRows } from './rows';
 import { calculateSummary } from './summary';
 import { Upgrade } from './upgrade';
-import { Filter } from './filter';
 import { canUsePremiumFeatures } from '../../../config';
 
 const headers = [
@@ -53,6 +53,10 @@ export function Orders(): JSX.Element {
     ordersSection.data !== undefined ? ordersSection.data.items : undefined;
   const rows = transformOrdersToRows(orders);
   const summary = calculateSummary(orders ?? []);
+  const beforeTable = Hooks.applyFilters(
+    'mailpoet_analytics_orders_before_table',
+    null,
+  ) as null | JSX.Element;
 
   return (
     <div className="mailpoet-analytics-orders">
@@ -70,8 +74,7 @@ export function Orders(): JSX.Element {
           }
         />
       )}
-      {canUsePremiumFeatures && <Filter />}
-
+      {beforeTable}
       <TableCard
         title=""
         onQueryChange={(type: string) => (param: unknown) => {
