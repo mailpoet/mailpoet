@@ -1,4 +1,4 @@
-import { MailPoet } from 'mailpoet';
+import { __, _x } from '@wordpress/i18n';
 import jQuery from 'jquery';
 import { Grid } from '../../common/grid';
 import { Heading } from '../../common/typography/heading/heading';
@@ -25,14 +25,17 @@ function WelcomeWizardSenderStep({
   return (
     <>
       <Heading level={1}>
-        {MailPoet.I18n.t('welcomeWizardLetsStartTitle')}
+        {__('Start by configuring your sender information', 'mailpoet')}
       </Heading>
 
       <div className="mailpoet-gap" />
       <p>
-        <b>{MailPoet.I18n.t('welcomeWizardSenderTitle')}</b>
+        <b>{__('Default sender', 'mailpoet')}</b>
         <br />
-        {MailPoet.I18n.t('welcomeWizardSenderText')}
+        {__(
+          'Enter details of the person or brand your subscribers expect to receive emails from',
+          'mailpoet',
+        )}
       </p>
       <div className="mailpoet-gap" />
 
@@ -49,7 +52,7 @@ function WelcomeWizardSenderStep({
         <Grid.TwoColumns>
           <label htmlFor="senderName">
             <span className="mailpoet-wizard-label">
-              {MailPoet.I18n.t('senderName')}
+              {_x('From Name', 'A form field label', 'mailpoet')}
             </span>
             <Input
               isFullWidth
@@ -64,7 +67,7 @@ function WelcomeWizardSenderStep({
 
           <label htmlFor="senderAddress">
             <span className="mailpoet-wizard-label">
-              {MailPoet.I18n.t('senderAddress')}
+              {_x('From Address', 'A form field label', 'mailpoet')}
             </span>
             <Input
               isFullWidth
@@ -88,7 +91,7 @@ function WelcomeWizardSenderStep({
           type="submit"
           withSpinner={loading}
         >
-          {MailPoet.I18n.t('continue')}
+          {_x('Continue', 'A label on a button', 'mailpoet')}
         </Button>
         <Button
           href="#skipStep"
@@ -97,7 +100,7 @@ function WelcomeWizardSenderStep({
           onClick={skipStep}
           variant="tertiary"
         >
-          {MailPoet.I18n.t('skipStep')}
+          {_x('Skip this step', 'A label on a skip button', 'mailpoet')}
         </Button>
       </form>
     </>
