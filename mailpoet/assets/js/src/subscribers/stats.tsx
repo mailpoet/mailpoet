@@ -4,7 +4,8 @@ import { MailPoet } from 'mailpoet';
 import { Loading } from 'common/loading';
 import { useGlobalContextValue } from 'context';
 
-import { StatsHeading as Heading } from './stats/heading';
+import { Heading } from 'common/typography/heading/heading';
+import { StatsHeading } from './stats/heading';
 import { Summary } from './stats/summary';
 import { WoocommerceRevenues } from './stats/woocommerce_revenues';
 import { OpenedEmailsStats } from './stats/opened_email_stats';
@@ -68,7 +69,8 @@ export function SubscriberStats(): JSX.Element {
 
   return (
     <div className="mailpoet-subscriber-stats">
-      <Heading email={stats.email} />
+      <StatsHeading email={stats.email} />
+      <Heading level={4}>{MailPoet.I18n.t('engagementPeriodHeading')}</Heading>
       <p>
         {MailPoet.I18n.t('lastEngagement')}
         {': '}
