@@ -78,6 +78,19 @@ class StatisticsOpensRepositoryTest extends \MailPoetTest {
     expect($averageScoreUpdatedAt->isAfter((new CarbonImmutable())->subMinutes(5)))->true();
   }
 
+  public function testItResetsSubscriberScoreIfNotEnoughNewsletters() {
+    $subscriber = $this->createSubscriber();
+    $segment = $this->createSegment();
+    $this->createSubscriberSegment($subscriber, $segment);
+    $subscriber->setEngagementScore(5);
+    $this->entityManager->flush();
+    $this->entityManager->refresh($subscriber);
+    expect($subscriber->getEngagementScore())->equals(5);
+    $this->repository->recalculateSubscriberScore($subscriber);
+    $this->entityManager->refresh($subscriber);
+    expect($subscriber->getEngagementScore())->null();
+  }
+
   public function testItUpdatesScore() {
     $subscriber = $this->createSubscriber();
     $segment = $this->createSegment();
