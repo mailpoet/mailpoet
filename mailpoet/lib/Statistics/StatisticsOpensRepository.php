@@ -33,6 +33,7 @@ class StatisticsOpensRepository extends Repository {
       ->getQuery()
       ->getSingleScalarResult();
     if ($newslettersSentCount < 3) {
+      $subscriber->setEngagementScore(null);
       $this->entityManager->flush();
       return;
     }
