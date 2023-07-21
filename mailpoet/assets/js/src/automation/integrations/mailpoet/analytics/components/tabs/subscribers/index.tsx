@@ -1,11 +1,11 @@
 import { dispatch, useSelect } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
 import { TableCard } from '@woocommerce/components';
-import { MailPoet } from '../../../../../../../mailpoet';
 import { storeName, SubscriberSection } from '../../../store';
 import { transformSubscribersToRows } from './rows';
 import { Upgrade } from '../orders/upgrade';
 import { Filter } from './filter';
+import { canUsePremiumFeatures } from '../../../config';
 
 const headers = [
   {
@@ -45,7 +45,7 @@ export function Subscribers(): JSX.Element {
 
   return (
     <div className="mailpoet-analytics-subscribers">
-      {!MailPoet.premiumActive && (
+      {!canUsePremiumFeatures && (
         <Upgrade
           text={
             <span>
@@ -60,7 +60,7 @@ export function Subscribers(): JSX.Element {
         />
       )}
 
-      {MailPoet.premiumActive && <Filter />}
+      {canUsePremiumFeatures && <Filter />}
 
       <TableCard
         title=""

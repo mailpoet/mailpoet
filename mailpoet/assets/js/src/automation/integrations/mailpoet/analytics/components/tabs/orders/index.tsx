@@ -1,12 +1,12 @@
 import { dispatch, useSelect } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
 import { TableCard } from '@woocommerce/components';
-import { MailPoet } from '../../../../../../../mailpoet';
 import { OrderSection, storeName } from '../../../store';
 import { transformOrdersToRows } from './rows';
 import { calculateSummary } from './summary';
 import { Upgrade } from './upgrade';
 import { Filter } from './filter';
+import { canUsePremiumFeatures } from '../../../config';
 
 const headers = [
   {
@@ -56,7 +56,7 @@ export function Orders(): JSX.Element {
 
   return (
     <div className="mailpoet-analytics-orders">
-      {!MailPoet.premiumActive && (
+      {!canUsePremiumFeatures && (
         <Upgrade
           text={
             <span>
@@ -70,7 +70,7 @@ export function Orders(): JSX.Element {
           }
         />
       )}
-      {MailPoet.premiumActive && <Filter />}
+      {canUsePremiumFeatures && <Filter />}
 
       <TableCard
         title=""
