@@ -29,10 +29,9 @@ class Runner {
     $className = $this->getClassName($name, $level);
 
     try {
+      /** @var DbMigration|AppMigration $migration */
       $migration = new $className($this->container);
       $this->store->startMigration($name);
-      // PHPStan does not recognize that $migration is instance of DbMigration or AppMigration
-      /** @phpstan-ignore-next-line */
       $migration->run();
       $this->store->completeMigration($name);
     } catch (Throwable $e) {
