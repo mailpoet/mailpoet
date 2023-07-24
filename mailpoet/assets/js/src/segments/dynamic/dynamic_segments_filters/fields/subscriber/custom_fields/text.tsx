@@ -14,7 +14,7 @@ import {
 import { storeName } from '../../../../store';
 
 export function validateText(item: WordpressRoleFormItem): boolean {
-  if (isBlankOption(item.value)) {
+  if (isBlankOption(item.operator)) {
     return true;
   }
   return (
