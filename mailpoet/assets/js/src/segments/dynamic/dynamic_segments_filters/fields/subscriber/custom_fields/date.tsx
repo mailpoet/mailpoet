@@ -2,13 +2,18 @@ import { __, _x } from '@wordpress/i18n';
 import { useEffect } from 'react';
 import { assign, range } from 'lodash/fp';
 import { format, getYear, isValid, parseISO } from 'date-fns';
-import { useSelect, useDispatch } from '@wordpress/data';
+import { useDispatch, useSelect } from '@wordpress/data';
 
 import { Select } from 'common/form/select/select';
 import { Grid } from 'common/grid';
 import { Datepicker } from 'common/datepicker/datepicker';
 
-import { WordpressRoleFormItem, OnFilterChange } from '../../../../types';
+import {
+  BlankOptions,
+  isBlankOption,
+  OnFilterChange,
+  WordpressRoleFormItem,
+} from '../../../../types';
 import { storeName } from '../../../../store';
 
 interface ComponentProps {
@@ -23,7 +28,7 @@ type DateUpdateData = {
 };
 
 export function validateDate(item: WordpressRoleFormItem): boolean {
-  if (['is_blank', 'is_not_blank'].includes(item.operator)) {
+  if (isBlankOption(item.operator)) {
     return true;
   }
   if (
@@ -49,7 +54,7 @@ function DateMonth({ onChange, item, filterIndex }: ComponentProps) {
       onChange={(e) => {
         const newData = { value: e.target.value } as DateUpdateData;
         // Ensure blank options come through as operator
-        if (['is_blank', 'is_not_blank'].includes(e.target.value)) {
+        if (isBlankOption(e.target.value)) {
           newData.operator = e.target.value;
         }
         onChange(assign(item, newData), filterIndex);
@@ -109,8 +114,10 @@ function DateYear({ onChange, item, filterIndex }: ComponentProps) {
             'mailpoet',
           )}
         </option>
-        <option value="is_blank">{__('isBlank', 'mailpoet')}</option>
-        <option value="is_not_blank">{__('isNotBlank', 'mailpoet')}</option>
+        <option value={BlankOptions.BLANK}>{__('isBlank', 'mailpoet')}</option>
+        <option value={BlankOptions.NOT_BLANK}>
+          {__('isNotBlank', 'mailpoet')}
+        </option>
       </Select>
       <Select
         key="select-year"
@@ -165,10 +172,6 @@ function DateFullDate({ onChange, item, filterIndex }: ComponentProps) {
     }
   }, [onChange, item, filterIndex]);
 
-  const isUsingBlankOperator = ['is_blank', 'is_not_blank'].includes(
-    item.operator,
-  );
-
   return (
     <Grid.CenteredRow>
       <Select
@@ -193,10 +196,12 @@ function DateFullDate({ onChange, item, filterIndex }: ComponentProps) {
             'mailpoet',
           )}
         </option>
-        <option value="is_blank">{__('isBlank', 'mailpoet')}</option>
-        <option value="is_not_blank">{__('isNotBlank', 'mailpoet')}</option>
+        <option value={BlankOptions.BLANK}>{__('isBlank', 'mailpoet')}</option>
+        <option value={BlankOptions.NOT_BLANK}>
+          {__('isNotBlank', 'mailpoet')}
+        </option>
       </Select>
-      {!isUsingBlankOperator && (
+      {!isBlankOption(item.operator) && (
         <Datepicker
           dateFormat="MMM d, yyyy"
           onChange={(value): void =>
@@ -225,10 +230,6 @@ function DateMonthYear({ onChange, item, filterIndex }: ComponentProps) {
     }
   }, [onChange, item, filterIndex]);
 
-  const isUsingBlankOperator = ['is_blank', 'is_not_blank'].includes(
-    item.operator,
-  );
-
   return (
     <Grid.CenteredRow>
       <Select
@@ -253,10 +254,12 @@ function DateMonthYear({ onChange, item, filterIndex }: ComponentProps) {
             'mailpoet',
           )}
         </option>
-        <option value="is_blank">{__('isBlank', 'mailpoet')}</option>
-        <option value="is_not_blank">{__('isNotBlank', 'mailpoet')}</option>
+        <option value={BlankOptions.BLANK}>{__('isBlank', 'mailpoet')}</option>
+        <option value={BlankOptions.NOT_BLANK}>
+          {__('isNotBlank', 'mailpoet')}
+        </option>
       </Select>
-      {!isUsingBlankOperator && (
+      {!isBlankOption(item.operator) && (
         <Datepicker
           onChange={(value): void =>
             onChange(
