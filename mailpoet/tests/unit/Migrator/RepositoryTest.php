@@ -47,6 +47,18 @@ class RepositoryTest extends MailPoetUnitTest {
     $repository->create(Repository::MIGRATIONS_LEVEL_DB);
   }
 
+  public function testItFailsCreatingLevelIsInvalid(): void {
+    $migrationsDir = __DIR__ . '/TestMigrations';
+    $repository = $this->make(Repository::class, [
+      'migrationsDir' => $migrationsDir,
+      'templateFile' => self::TEMPLATE_FILE,
+    ]);
+
+    $this->expectException(MigratorException::class);
+    $this->expectExceptionMessage(sprintf('Migration level "%s" is not supported! Use "App" of "Db".', 'abc'));
+    $repository->create('abc');
+  }
+
   public function testItLoadsMigrationFiles(): void {
     $repository = $this->make(Repository::class, [
       'migrationsDir' => __DIR__ . '/TestMigrations',

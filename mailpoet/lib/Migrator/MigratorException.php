@@ -12,6 +12,12 @@ class MigratorException extends InvalidStateException {
     );
   }
 
+  public static function invalidMigrationLevel(string $level): self {
+    return self::create()->withMessage(
+      sprintf('Migration level "%s" is not supported! Use "App" of "Db".', $level)
+    );
+  }
+
   public static function migrationFileWriteFailed(string $path): self {
     return self::create()->withMessage(
       sprintf('Could not write migration file "%s".', $path)
