@@ -72,14 +72,14 @@ export async function subscribersAdding() {
     const locator =
       "//div[@class='notice-success'].//p[starts-with(text(),'Subscriber was added successfully!')]";
     describe(subscribersPageTitle, () => {
-      describe('should be able to see Subscriber Added message', () => {
+      describe('subscribers-adding: should be able to see Subscriber Added message', () => {
         expect(page.locator(locator)).to.exist;
       });
     });
     await page.waitForSelector('.mailpoet-listing-no-items');
     await page.waitForSelector('[data-automation-id="filters_subscribed"]');
     describe(subscribersPageTitle, () => {
-      describe('should be able to see Lists Filter', () => {
+      describe('subscribers-adding: should be able to see Lists Filter', () => {
         expect(page.locator('[data-automation-id="listing_filter_segment"]')).to
           .exist;
       });
@@ -97,11 +97,16 @@ export async function subscribersAdding() {
     await page.waitForSelector('[data-automation-id="filters_subscribed"]');
     await page.waitForLoadState('networkidle');
     describe(subscribersPageTitle, () => {
-      describe('should be able to search for Newly Added Subscriber', () => {
+      describe('subscribers-adding: should be able to search for Newly Added Subscriber', () => {
         expect(page.locator('.mailpoet-listing-title').innerText()).to.contain(
           subscriberEmail,
         );
       });
+    });
+
+    await page.screenshot({
+      path: screenshotPath + 'Subscribers_Adding_03.png',
+      fullPage: fullPageSet,
     });
 
     // Thinking time and closing

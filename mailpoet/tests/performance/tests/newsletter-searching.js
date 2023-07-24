@@ -53,7 +53,7 @@ export async function newsletterSearching() {
     await page.waitForSelector('[data-automation-id="listing_filter_segment"]');
     await page.waitForLoadState('networkidle');
     describe(emailsPageTitle, () => {
-      describe('should be able to search for Newsletter 1st', () => {
+      describe('newsletter-searching: should be able to search for Newsletter 1st', () => {
         expect(page.locator('.mailpoet-listing-title').innerText()).to.contain(
           'Newsletter 1st',
         );
@@ -68,7 +68,7 @@ export async function newsletterSearching() {
     await page.waitForSelector('[data-automation-id="listing_filter_segment"]');
     await page.waitForLoadState('networkidle');
     describe(emailsPageTitle, () => {
-      describe('should be able to see Lists Filter', () => {
+      describe('newsletter-searching: should be able to see Lists Filter', () => {
         expect(page.locator('[data-automation-id="listing_filter_segment"]')).to
           .exist;
       });

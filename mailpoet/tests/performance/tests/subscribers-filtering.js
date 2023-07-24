@@ -51,7 +51,7 @@ export async function subscribersFiltering() {
     await page.locator('[data-automation-id="filters_subscribed"]').click();
     await page.waitForSelector('[data-automation-id="filters_subscribed"]');
     describe(subscribersPageTitle, () => {
-      describe('should be able to see Lists Filter', () => {
+      describe('subscribers-filtering: should be able to see Lists Filter 1st time', () => {
         expect(page.locator('[data-automation-id="listing_filter_segment"]')).to
           .exist;
       });
@@ -70,7 +70,7 @@ export async function subscribersFiltering() {
     await page.waitForSelector('.mailpoet-listing-no-items');
     await page.waitForSelector('[data-automation-id="filters_subscribed"]');
     describe(subscribersPageTitle, () => {
-      describe('should be able to see Lists Filter', () => {
+      describe('subscribers-filtering: should be able to see Lists Filter 2nd time', () => {
         expect(page.locator('[data-automation-id="listing_filter_segment"]')).to
           .exist;
       });
@@ -87,10 +87,16 @@ export async function subscribersFiltering() {
     await page.waitForSelector('.mailpoet-listing-no-items');
     await page.waitForSelector('[data-automation-id="filters_subscribed"]');
     describe(subscribersPageTitle, () => {
-      describe('should be able to see Lists Filter', () => {
+      describe('subscribers-filtering: should be able to see Lists Filter 3rd time', () => {
         expect(page.locator('[data-automation-id="listing_filter_segment"]')).to
           .exist;
       });
+    });
+
+    await page.waitForLoadState('networkidle');
+    await page.screenshot({
+      path: screenshotPath + 'Subscribers_Filtering_04.png',
+      fullPage: fullPageSet,
     });
 
     // Thinking time and closing

@@ -62,7 +62,7 @@ export async function listsComplexSegment() {
     await selectInReact(page, '#react-select-4-input', defaultListName);
     await page.waitForSelector('.mailpoet-form-notice-message');
     describe(listsPageTitle, () => {
-      describe('should be able to see calculating message 1st time', () => {
+      describe('lists-complex-segment: should be able to see calculating message 1st time', () => {
         expect(
           page.locator('.mailpoet-form-notice-message').innerText(),
         ).to.contain('Calculating segment size…');
@@ -77,16 +77,14 @@ export async function listsComplexSegment() {
 
     // Click to add a new segment action
     await page
-      .locator(
-        '#segments_container > form > div > div.mailpoet-segments-segments-section > button',
-      )
+      .locator('div.mailpoet-segments-segments-section > button')
       .click();
 
     // Select "Subscribed date" action
     await selectInReact(page, '#react-select-5-input', 'subscribed date');
     await page.waitForSelector('.mailpoet-form-notice-message');
     describe(listsPageTitle, () => {
-      describe('should be able to see calculating message 2nd time', () => {
+      describe('lists-complex-segment: should be able to see calculating message 2nd time', () => {
         expect(
           page.locator('.mailpoet-form-notice-message').innerText(),
         ).to.contain('Calculating segment size…');
@@ -100,9 +98,7 @@ export async function listsComplexSegment() {
 
     // Click to add a new segment action
     await page
-      .locator(
-        '#segments_container > form > div > div.mailpoet-segments-segments-section > button',
-      )
+      .locator('div.mailpoet-segments-segments-section > button')
       .click();
 
     // WordPress user role action has been automatically added
@@ -111,7 +107,7 @@ export async function listsComplexSegment() {
     await page.waitForSelector('.mailpoet-form-notice-message');
     await page.waitForLoadState('networkidle');
     describe(listsPageTitle, () => {
-      describe('should be able to see Calculating message 3rd time', () => {
+      describe('lists-complex-segment: should be able to see Calculating message 3rd time', () => {
         expect(
           page.locator('.mailpoet-form-notice-message').innerText(),
         ).to.contain('Calculating segment size…');
@@ -129,23 +125,19 @@ export async function listsComplexSegment() {
     });
 
     // Save the segment
-    await page
-      .locator(
-        '#segments_container > form > div > div.mailpoet-form-actions > button > span',
-      )
-      .click();
+    await page.locator('div.mailpoet-form-actions > button > span').click();
     await page.waitForSelector('[data-automation-id="filters_all"]', {
       state: 'visible',
     });
     const locator =
       "//div[@class='notice-success'].//p[starts-with(text(),'Segment successfully updated!')]";
     describe(listsPageTitle, () => {
-      describe('should be able to see Segment Updated message', () => {
+      describe('lists-complex-segment: should be able to see Segment Updated message', () => {
         expect(page.locator(locator)).to.exist;
       });
     });
-    await page.waitForLoadState('networkidle');
 
+    await page.waitForLoadState('networkidle');
     await page.screenshot({
       path: screenshotPath + 'Lists_Complex_Segment_05.png',
       fullPage: fullPageSet,

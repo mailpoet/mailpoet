@@ -63,7 +63,7 @@ export async function newsletterStatistics() {
       '[data-acceptance-id="purchased-product-Simple Product"]',
     );
     describe(emailsPageTitle, () => {
-      describe('should be able to see the product as sold', () => {
+      describe('newsletter-statistics: should be able to see the product as sold', () => {
         expect(
           page.locator(
             '[data-acceptance-id="purchased-product-Simple Product"]',
@@ -77,7 +77,7 @@ export async function newsletterStatistics() {
     await page.waitForSelector('[data-automation-id="filters_all_engaged"]');
     await page.waitForLoadState('networkidle');
     describe(emailsPageTitle, () => {
-      describe('should be able to see Link Clicked filter', () => {
+      describe('newsletter-statistics: should be able to see Link Clicked filter', () => {
         expect(page.locator('[data-automation-id="filters_all_engaged"]')).to
           .exist;
       });
