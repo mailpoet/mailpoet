@@ -65,7 +65,7 @@ export async function listsViewSubscribers() {
     await page.waitForSelector('.mailpoet-listing-no-items');
     await page.waitForSelector('[data-automation-id="filters_subscribed"]');
     describe(listsPageTitle, () => {
-      describe('should be able to see Lists Filter', () => {
+      describe('lists-view-subscribers: should be able to see Lists Filter', () => {
         expect(page.locator('[data-automation-id="listing_filter_segment"]')).to
           .exist;
       });

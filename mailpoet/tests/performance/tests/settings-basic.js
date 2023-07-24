@@ -58,7 +58,7 @@ export async function settingsBasic() {
     const locator =
       "//div[@class='notice-success'].//p[starts-with(text(),'Settings saved')]";
     describe(settingsPageTitle, () => {
-      describe('should be able to see Settings Saved message', () => {
+      describe('settings-basic: should be able to see Settings Saved message', () => {
         expect(page.locator(locator)).to.exist;
       });
     });

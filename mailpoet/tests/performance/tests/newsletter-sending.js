@@ -100,12 +100,12 @@ export async function newsletterSending() {
       "//div[@class='notice-success'].//p[starts-with(text(),'Subscriber was added successfully!')]";
     await page.waitForSelector('#mailpoet_notices');
     describe(emailsPageTitle, () => {
-      describe('should be able to see Newsletter Sent message', () => {
+      describe('newsletter-sending: should be able to see Newsletter Sent message', () => {
         expect(page.locator(locator)).to.exist;
       });
     });
-    await page.waitForLoadState('networkidle');
 
+    await page.waitForLoadState('networkidle');
     await page.screenshot({
       path: screenshotPath + 'Newsletter_Sending_04.png',
       fullPage: fullPageSet,

@@ -50,10 +50,15 @@ export async function subscribersListing() {
     // Verify filter, tag and listing are loaded and visible
     await page.waitForLoadState('networkidle');
     describe(subscribersPageTitle, () => {
-      describe('should be able to see Tags Filter', () => {
+      describe('subscribers-listing: should be able to see Tags Filter', () => {
         expect(page.locator('[data-automation-id="listing_filter_tag"]')).to
           .exist;
       });
+    });
+
+    await page.screenshot({
+      path: screenshotPath + 'Subscribers_Listing_02.png',
+      fullPage: fullPageSet,
     });
 
     // Thinking time and closing

@@ -49,7 +49,7 @@ export async function subscribersTrashingRestoring() {
     // Check the subscribers filter is present
     await page.waitForSelector('[data-automation-id="filters_subscribed"]');
     describe(subscribersPageTitle, () => {
-      describe('should be able to see Lists Filter', () => {
+      describe('subscribers-trashing-restoring: should be able to see Lists Filter', () => {
         expect(page.locator('[data-automation-id="listing_filter_segment"]')).to
           .exist;
       });
@@ -66,7 +66,7 @@ export async function subscribersTrashingRestoring() {
     await page.waitForSelector('.notice-success');
     await page.waitForSelector('.colspanchange');
     describe(subscribersPageTitle, () => {
-      describe('should be able to see the message', () => {
+      describe('subscribers-trashing-restoring: should be able to see the message', () => {
         expect(page.locator('.colspanchange').innerText()).to.contain(
           'No items found.',
         );

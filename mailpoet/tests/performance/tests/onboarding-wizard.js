@@ -90,7 +90,7 @@ export async function onboardingWizard() {
 
     // Check if you see Send With tab at the end
     describe(settingsPageTitle, () => {
-      describe('should be able to see Send With tab present', () => {
+      describe('onboarding-wizard: should be able to see Send With tab present', () => {
         expect(
           page
             .locator('[data-automation-id="send_with_settings_tab"]')

@@ -75,7 +75,7 @@ export async function formsAdding() {
     await page.locator('[data-automation-id="form_save_button"]').click();
     await page.waitForSelector('.components-notice');
     describe(formsPageTitle, () => {
-      describe('should be able to see Forms Saved message', () => {
+      describe('forms-adding: should be able to see Forms Saved message', () => {
         expect(
           page.locator('.components-notice__content').innerText(),
         ).to.contain(
