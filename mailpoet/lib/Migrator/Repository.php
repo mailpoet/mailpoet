@@ -33,9 +33,9 @@ class Repository {
       throw MigratorException::templateFileReadFailed($templateFile);
     }
     $name = $this->generateName($level);
-    $classDeclaration = str_replace('{level}', $level, 'class {level}MigrationTemplate ');
-    $migration = str_replace($classDeclaration, "class $name ", $template);
-    $path = $this->migrationsDir . "/$level" . "/$name.php";
+    $migration = str_replace('{level}', $level, 'class {level}MigrationTemplate ');
+    $migration = str_replace($migration, "class $name ", $template);
+    $path = "$this->migrationsDir/$level/$name.php";
     $result = @file_put_contents($path, $migration);
     if (!$result) {
       throw MigratorException::migrationFileWriteFailed($path);
