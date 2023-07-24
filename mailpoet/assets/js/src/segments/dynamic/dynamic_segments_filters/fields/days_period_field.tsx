@@ -2,8 +2,13 @@ import { useDispatch, useSelect } from '@wordpress/data';
 import { Input } from 'common';
 import { MailPoet } from 'mailpoet';
 import { Select } from 'common/form/select/select';
-import { DaysPeriodItem, FilterProps } from 'segments/dynamic/types';
+import {
+  DaysPeriodItem,
+  FilterProps,
+  Timeframes,
+} from 'segments/dynamic/types';
 import { storeName } from 'segments/dynamic/store';
+import { isInEnum } from '../../../../utils';
 
 function replaceElementsInDaysSentence(
   fn: (value) => JSX.Element,
@@ -21,11 +26,14 @@ export function DaysPeriodField({ filterIndex }: FilterProps): JSX.Element {
   const { updateSegmentFilterFromEvent, updateSegmentFilter } =
     useDispatch(storeName);
 
-  if (!['inTheLast', 'allTime'].includes(segment.timeframe)) {
-    void updateSegmentFilter({ timeframe: 'inTheLast' }, filterIndex);
+  if (!isInEnum(segment.timeframe, Timeframes)) {
+    void updateSegmentFilter(
+      { timeframe: Timeframes.IN_THE_LAST },
+      filterIndex,
+    );
   }
 
-  const isInTheLast = segment.timeframe === 'inTheLast';
+  const isInTheLast = segment.timeframe === Timeframes.IN_THE_LAST;
 
   return (
     <>
@@ -74,7 +82,7 @@ export function DaysPeriodField({ filterIndex }: FilterProps): JSX.Element {
 }
 
 export function validateDaysPeriod(formItems: DaysPeriodItem): boolean {
-  if (formItems.timeframe === 'allTime') {
+  if (isInEnum(formItems.timeframe, Timeframes)) {
     return true;
   }
   return !!formItems.days;

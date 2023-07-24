@@ -83,6 +83,11 @@ export interface DaysPeriodItem extends FormItem {
   timeframe?: string;
 }
 
+export enum Timeframes {
+  ALL_TIME = 'allTime',
+  IN_THE_LAST = 'inTheLast',
+}
+
 export interface TextFormItem extends FormItem {
   operator?: string;
   value?: string;
