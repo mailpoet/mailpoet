@@ -22,11 +22,6 @@ interface ComponentProps {
   filterIndex: number;
 }
 
-type DateUpdateData = {
-  value: string;
-  operator?: string;
-};
-
 export function validateDate(item: WordpressRoleFormItem): boolean {
   if (isBlankOption(item.operator)) {
     return true;
@@ -45,34 +40,63 @@ function DateMonth({ onChange, item, filterIndex }: ComponentProps) {
     if (!validateDate(item)) {
       onChange(assign(item, { value: '2017-01-01 00:00:00' }), filterIndex);
     }
+    if (item.operator === undefined) {
+      onChange(assign(item, { operator: 'equals' }), filterIndex);
+    }
   }, [onChange, item, filterIndex]);
 
   return (
-    <Select
-      key="select"
-      value={item.value}
-      onChange={(e) => {
-        const newData = { value: e.target.value } as DateUpdateData;
-        // Ensure blank options come through as operator
-        if (isBlankOption(e.target.value)) {
-          newData.operator = e.target.value;
-        }
-        onChange(assign(item, newData), filterIndex);
-      }}
-    >
-      <option value="2017-01-01 00:00:00">{__('january', 'mailpoet')}</option>
-      <option value="2017-02-01 00:00:00">{__('february', 'mailpoet')}</option>
-      <option value="2017-03-01 00:00:00">{__('march', 'mailpoet')}</option>
-      <option value="2017-04-01 00:00:00">{__('april', 'mailpoet')}</option>
-      <option value="2017-05-01 00:00:00">{__('may', 'mailpoet')}</option>
-      <option value="2017-06-01 00:00:00">{__('june', 'mailpoet')}</option>
-      <option value="2017-07-01 00:00:00">{__('july', 'mailpoet')}</option>
-      <option value="2017-08-01 00:00:00">{__('august', 'mailpoet')}</option>
-      <option value="2017-09-01 00:00:00">{__('september', 'mailpoet')}</option>
-      <option value="2017-10-01 00:00:00">{__('october', 'mailpoet')}</option>
-      <option value="2017-11-01 00:00:00">{__('november', 'mailpoet')}</option>
-      <option value="2017-12-01 00:00:00">{__('december', 'mailpoet')}</option>
-    </Select>
+    <Grid.CenteredRow>
+      <Select
+        key="select-operator"
+        value={item.operator}
+        onChange={(e) => {
+          onChange(assign(item, { operator: e.target.value }), filterIndex);
+        }}
+      >
+        <option value="equals">{__('is', 'mailpoet')}</option>
+        <option value={BlankOptions.BLANK}>{__('is blank', 'mailpoet')}</option>
+        <option value={BlankOptions.NOT_BLANK}>
+          {__('is not blank', 'mailpoet')}
+        </option>
+      </Select>
+      {!isBlankOption(item.operator) && (
+        <Select
+          key="select"
+          value={item.value}
+          onChange={(e) => {
+            onChange(assign(item, { value: e.target.value }), filterIndex);
+          }}
+        >
+          <option value="2017-01-01 00:00:00">
+            {__('january', 'mailpoet')}
+          </option>
+          <option value="2017-02-01 00:00:00">
+            {__('february', 'mailpoet')}
+          </option>
+          <option value="2017-03-01 00:00:00">{__('march', 'mailpoet')}</option>
+          <option value="2017-04-01 00:00:00">{__('april', 'mailpoet')}</option>
+          <option value="2017-05-01 00:00:00">{__('may', 'mailpoet')}</option>
+          <option value="2017-06-01 00:00:00">{__('june', 'mailpoet')}</option>
+          <option value="2017-07-01 00:00:00">{__('july', 'mailpoet')}</option>
+          <option value="2017-08-01 00:00:00">
+            {__('august', 'mailpoet')}
+          </option>
+          <option value="2017-09-01 00:00:00">
+            {__('september', 'mailpoet')}
+          </option>
+          <option value="2017-10-01 00:00:00">
+            {__('october', 'mailpoet')}
+          </option>
+          <option value="2017-11-01 00:00:00">
+            {__('november', 'mailpoet')}
+          </option>
+          <option value="2017-12-01 00:00:00">
+            {__('december', 'mailpoet')}
+          </option>
+        </Select>
+      )}
+    </Grid.CenteredRow>
   );
 }
 
@@ -114,9 +138,9 @@ function DateYear({ onChange, item, filterIndex }: ComponentProps) {
             'mailpoet',
           )}
         </option>
-        <option value={BlankOptions.BLANK}>{__('isBlank', 'mailpoet')}</option>
+        <option value={BlankOptions.BLANK}>{__('is blank', 'mailpoet')}</option>
         <option value={BlankOptions.NOT_BLANK}>
-          {__('isNotBlank', 'mailpoet')}
+          {__('is not blank', 'mailpoet')}
         </option>
       </Select>
       <Select
@@ -196,9 +220,9 @@ function DateFullDate({ onChange, item, filterIndex }: ComponentProps) {
             'mailpoet',
           )}
         </option>
-        <option value={BlankOptions.BLANK}>{__('isBlank', 'mailpoet')}</option>
+        <option value={BlankOptions.BLANK}>{__('is blank', 'mailpoet')}</option>
         <option value={BlankOptions.NOT_BLANK}>
-          {__('isNotBlank', 'mailpoet')}
+          {__('is not blank', 'mailpoet')}
         </option>
       </Select>
       {!isBlankOption(item.operator) && (
@@ -254,9 +278,9 @@ function DateMonthYear({ onChange, item, filterIndex }: ComponentProps) {
             'mailpoet',
           )}
         </option>
-        <option value={BlankOptions.BLANK}>{__('isBlank', 'mailpoet')}</option>
+        <option value={BlankOptions.BLANK}>{__('is blank', 'mailpoet')}</option>
         <option value={BlankOptions.NOT_BLANK}>
-          {__('isNotBlank', 'mailpoet')}
+          {__('is not blank', 'mailpoet')}
         </option>
       </Select>
       {!isBlankOption(item.operator) && (
