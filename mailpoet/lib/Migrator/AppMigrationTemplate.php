@@ -15,8 +15,8 @@ class AppMigrationTemplate extends AppMigration {
      * Do not make changes in the DB structure in App Level migrations!
      *
      * You can use:
-     *   $this->connection      For SQL queries using Doctrine DBAL.
      *   $this->entityManager   For operations using Doctrine Entity Manager.
+     *   $this->container       For accessing any needed service.
      */
   }
 }
