@@ -8,6 +8,7 @@ import {
   Timeframes,
 } from 'segments/dynamic/types';
 import { storeName } from 'segments/dynamic/store';
+import { useEffect } from 'react';
 import { isInEnum } from '../../../../utils';
 
 function replaceElementsInDaysSentence(
@@ -26,12 +27,14 @@ export function DaysPeriodField({ filterIndex }: FilterProps): JSX.Element {
   const { updateSegmentFilterFromEvent, updateSegmentFilter } =
     useDispatch(storeName);
 
-  if (!isInEnum(segment.timeframe, Timeframes)) {
-    void updateSegmentFilter(
-      { timeframe: Timeframes.IN_THE_LAST },
-      filterIndex,
-    );
-  }
+  useEffect(() => {
+    if (!isInEnum(segment.timeframe, Timeframes)) {
+      void updateSegmentFilter(
+        { timeframe: Timeframes.IN_THE_LAST },
+        filterIndex,
+      );
+    }
+  }, [segment, updateSegmentFilter, filterIndex]);
 
   const isInTheLast = segment.timeframe === Timeframes.IN_THE_LAST;
 
