@@ -6,11 +6,15 @@ import { Select } from 'common/form/select/select';
 import { Input } from 'common/form/input/input';
 import { Grid } from 'common/grid';
 
-import { FilterProps, WordpressRoleFormItem } from '../../../../types';
+import {
+  FilterProps,
+  isBlankOption,
+  WordpressRoleFormItem,
+} from '../../../../types';
 import { storeName } from '../../../../store';
 
 export function validateText(item: WordpressRoleFormItem): boolean {
-  if (['is_blank', 'is_not_blank'].includes(item.value)) {
+  if (isBlankOption(item.value)) {
     return true;
   }
   return (
@@ -40,10 +44,6 @@ export function Text({ filterIndex }: FilterProps): JSX.Element {
     }
   }, [updateSegmentFilter, segment, filterIndex]);
 
-  const isUsingBlankOption = ['is_blank', 'is_not_blank'].includes(
-    segment.operator,
-  );
-
   return (
     <Grid.CenteredRow>
       <Select
@@ -63,7 +63,7 @@ export function Text({ filterIndex }: FilterProps): JSX.Element {
         <option value="is_blank">{MailPoet.I18n.t('isBlank')}</option>
         <option value="is_not_blank">{MailPoet.I18n.t('isNotBlank')}</option>
       </Select>
-      {!isUsingBlankOption && (
+      {!isBlankOption(segment.operator) && (
         <Input
           key="input"
           data-automation-id="text-custom-field-value"

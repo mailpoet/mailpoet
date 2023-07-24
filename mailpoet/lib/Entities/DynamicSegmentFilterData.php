@@ -42,6 +42,8 @@ class DynamicSegmentFilterData {
     DynamicSegmentFilterData::OPERATOR_ENDS_WITH,
     DynamicSegmentFilterData::OPERATOR_NOT_ENDS_WITH,
   ];
+  public const IS_NOT_BLANK = 'is_not_blank';
+  public const IS_BLANK = 'is_blank';
 
   /**
    * @ORM\Column(type="serialized_array")

@@ -42,6 +42,15 @@ export enum AnyValueTypes {
   NONE = 'none',
 }
 
+export enum BlankOptions {
+  BLANK = 'is_blank',
+  NOT_BLANK = 'is_not_blank',
+}
+
+export function isBlankOption(value: unknown): value is BlankOptions {
+  return Object.values(BlankOptions).includes(value as BlankOptions);
+}
+
 export type GroupFilterValue = {
   label: string;
   options: FilterValue[];

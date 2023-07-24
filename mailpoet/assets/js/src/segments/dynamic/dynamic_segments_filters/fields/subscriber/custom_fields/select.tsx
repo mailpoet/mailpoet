@@ -11,6 +11,8 @@ import {
   SelectOption,
   WindowCustomFields,
   FilterProps,
+  isBlankOption,
+  BlankOptions,
 } from '../../../../types';
 import { storeName } from '../../../../store';
 
@@ -21,7 +23,7 @@ interface ParamsType {
 }
 
 export function validateRadioSelect(item: WordpressRoleFormItem): boolean {
-  if (['is_blank', 'is_not_blank'].includes(item.operator)) {
+  if (isBlankOption(item.operator)) {
     return true;
   }
   return typeof item.value === 'string' && item.value.length > 0;
@@ -56,9 +58,6 @@ export function RadioSelect({ filterIndex }: FilterProps): JSX.Element {
   const matchingLabel = options.find(
     (option) => option.value === segment.value,
   )?.label;
-  const isUsingBlankOption = ['is_blank', 'is_not_blank'].includes(
-    segment.operator,
-  );
 
   return (
     <Grid.CenteredRow>
@@ -71,10 +70,12 @@ export function RadioSelect({ filterIndex }: FilterProps): JSX.Element {
         }}
       >
         <option value="equals">{MailPoet.I18n.t('is')}</option>
-        <option value="is_blank">{MailPoet.I18n.t('isBlank')}</option>
-        <option value="is_not_blank">{MailPoet.I18n.t('isNotBlank')}</option>
+        <option value={BlankOptions.BLANK}>{MailPoet.I18n.t('isBlank')}</option>
+        <option value={BlankOptions.NOT_BLANK}>
+          {MailPoet.I18n.t('isNotBlank')}
+        </option>
       </Select>
-      {!isUsingBlankOption && (
+      {!isBlankOption(segment.operator) && (
         <ReactSelect
           dimension="small"
           placeholder={MailPoet.I18n.t('selectValue')}

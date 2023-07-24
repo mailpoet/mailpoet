@@ -3,6 +3,7 @@
 namespace MailPoet\Segments\DynamicSegments\Filters;
 
 use MailPoet\Entities\CustomFieldEntity;
+use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Entities\DynamicSegmentFilterEntity;
 use MailPoet\Entities\SubscriberCustomFieldEntity;
 use MailPoet\Entities\SubscriberEntity;
@@ -66,10 +67,10 @@ class MailPoetCustomFields implements Filter {
     $value = $filterData->getParam('value');
     $operator = $filterData->getParam('operator');
     $queryBuilder->setParameter($valueParam, $value);
-    if ($operator === 'is_blank') {
+    if ($operator === DynamicSegmentFilterData::IS_BLANK) {
       $queryBuilder->andWhere('subscribers_custom_field.value IS NULL');
       return $queryBuilder;
-    } elseif ($operator === 'is_not_blank') {
+    } elseif ($operator === DynamicSegmentFilterData::IS_NOT_BLANK) {
       $queryBuilder->andWhere('subscribers_custom_field.value IS NOT NULL');
       return $queryBuilder;
     } elseif ($dateType === 'month') {
@@ -114,9 +115,9 @@ class MailPoetCustomFields implements Filter {
     $value = $filterData->getParam('value');
     $operator = $filterData->getParam('operator');
 
-    if ($operator === 'is_blank') {
+    if ($operator === DynamicSegmentFilterData::IS_BLANK) {
       $queryBuilder->andWhere('subscribers_custom_field.value IS NULL');
-    } elseif ($operator === 'is_not_blank') {
+    } elseif ($operator === DynamicSegmentFilterData::IS_NOT_BLANK) {
       $queryBuilder->andWhere('subscribers_custom_field.value IS NOT NULL');
     } elseif ($value === '1') {
       $queryBuilder->andWhere('subscribers_custom_field.value = 1');
@@ -132,7 +133,7 @@ class MailPoetCustomFields implements Filter {
     $operator = $filterData->getParam('operator');
     $value = $filterData->getParam('value');
 
-    $requiresValue = !in_array($operator, ['is_blank', 'is_not_blank']);
+    $requiresValue = !in_array($operator, [DynamicSegmentFilterData::IS_BLANK, DynamicSegmentFilterData::IS_NOT_BLANK]);
 
     if ($requiresValue && !is_string($value)) {
       throw new InvalidFilterException('Missing required value', InvalidFilterException::MISSING_VALUE);
@@ -153,9 +154,9 @@ class MailPoetCustomFields implements Filter {
     } elseif ($operator === 'less_than') {
       $queryBuilder->andWhere("subscribers_custom_field.value < $valueParam");
       $queryBuilder->setParameter($valueParam, $value);
-    } elseif ($operator === 'is_blank') {
+    } elseif ($operator === DynamicSegmentFilterData::IS_BLANK) {
       $queryBuilder->andWhere('subscribers_custom_field.value IS NULL');
-    } elseif ($operator === 'is_not_blank') {
+    } elseif ($operator === DynamicSegmentFilterData::IS_NOT_BLANK) {
       $queryBuilder->andWhere('subscribers_custom_field.value IS NOT NULL');
     } elseif ($operator === 'not_contains') {
       $queryBuilder->andWhere("subscribers_custom_field.value NOT LIKE $valueParam");
