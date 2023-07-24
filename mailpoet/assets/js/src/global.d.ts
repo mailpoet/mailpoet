@@ -260,4 +260,5 @@ interface Window {
     subscribers: string;
     type: 'default' | 'wp_users' | 'woocommerce_users' | 'dynamic';
   }>;
+  mailpoet_admin_plugins_url: string;
 }

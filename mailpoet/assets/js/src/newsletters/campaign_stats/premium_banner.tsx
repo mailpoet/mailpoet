@@ -4,6 +4,7 @@ import { Button } from 'common/button/button';
 import { PremiumRequired } from 'common/premium_required/premium_required';
 import { useState } from 'react';
 import jQuery from 'jquery';
+import ReactStringReplace from 'react-string-replace';
 import { withBoundary } from '../../common';
 
 function SkipDisplayingDetailedStats() {
@@ -42,6 +43,18 @@ function SkipDisplayingDetailedStats() {
             })
             .catch(() => {
               setLoading(false);
+              MailPoet.Notice.error(
+                ReactStringReplace(
+                  __(
+                    'We were unable to activate the premium plugin, please try visiting the [link]plugin page link[/link] to activate it manually.',
+                    'mailpoet',
+                  ),
+                  /\[link\](.*?)\[\/link\]/g,
+                  (match) =>
+                    `<a rel="noreferrer" href=${MailPoet.adminPluginsUrl}>${match}</a>`,
+                ).join(''),
+                { isDismissible: false },
+              );
             });
         }}
       >

@@ -83,6 +83,7 @@ export const MailPoet = {
     window.mailpoet_transactional_emails_opt_in_notice_dismissed,
   mailFunctionEnabled: window.mailpoet_mail_function_enabled,
   corrupt_newsletters: window.corrupt_newsletters ?? [],
+  adminPluginsUrl: window.mailpoet_admin_plugins_url,
 } as const;
 
 declare global {
