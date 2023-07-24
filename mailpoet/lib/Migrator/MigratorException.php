@@ -18,6 +18,12 @@ class MigratorException extends InvalidStateException {
     );
   }
 
+  public static function duplicateMigrationNames(array $names): self {
+    return self::create()->withMessage(
+      sprintf('Duplicate migration names are not allowed. Duplicate names found: "%s".', join(', ', $names))
+    );
+  }
+
   public static function migrationFileWriteFailed(string $path): self {
     return self::create()->withMessage(
       sprintf('Could not write migration file "%s".', $path)

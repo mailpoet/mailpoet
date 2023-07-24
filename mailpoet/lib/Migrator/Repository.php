@@ -55,10 +55,15 @@ class Repository {
    * @return array<array{level: string, name: string}>
    */
   public function loadAll(): array {
-    return array_merge(
+    $migrations = array_merge(
       $this->loadForLevel(self::MIGRATIONS_LEVEL_DB),
       $this->loadForLevel(self::MIGRATIONS_LEVEL_APP)
     );
+    $duplicateNames = array_diff_assoc(array_column($migrations, 'name'), array_unique(array_column($migrations, 'name')));
+    if (!empty($duplicateNames)) {
+      throw MigratorException::duplicateMigrationNames($duplicateNames);
+    }
+    return $migrations;
   }
 
   private function loadForLevel(string $level): array {
