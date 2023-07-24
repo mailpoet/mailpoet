@@ -1,9 +1,8 @@
 <?php declare(strict_types = 1);
 
-namespace MailPoet\Migrations;
+namespace MailPoet\Migrations\Db;
 
 use MailPoet\Entities\SegmentEntity;
-use MailPoet\Migrations\Db\Migration_20230111_120000;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Test\DataFactories\Segment;
 
