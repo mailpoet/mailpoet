@@ -448,12 +448,13 @@ class RoboFile extends \Robo\Tasks {
   }
 
   /**
-   * Creates a new migration file. Creates Db level migration. Use --level=App to create an application level migration.
-   * @param $opts array{level: string}
+   * Creates a new migration file. Use `migrations:new db` for a Db level migration or `migrations:new app` for App level migration.
+   * @param $level string - db or app
    */
-  public function migrationsNew($opts = ['level' => \MailPoet\Migrator\Repository::MIGRATIONS_LEVEL_DB]) {
+  public function migrationsNew($level) {
     $generator = new \MailPoet\Migrator\Repository();
-    $result = $generator->create($opts['level']);
+    $level = ucfirst(strtolower($level));
+    $result = $generator->create($level);
     $path = realpath($result['path']);
     $this->output->writeln('MAILPOET DATABASE MIGRATIONS');
     $this->output->writeln("============================\n");

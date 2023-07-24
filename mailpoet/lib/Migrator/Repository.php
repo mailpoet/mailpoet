@@ -27,6 +27,9 @@ class Repository {
 
   /** @return array{name: string, path: string} */
   public function create(string $level): array {
+    if (!in_array($level, [self::MIGRATIONS_LEVEL_APP, self::MIGRATIONS_LEVEL_DB], true)) {
+      throw MigratorException::invalidMigrationLevel($level);
+    }
     $templateFile = str_replace('{level}', $level, $this->templateFile);
     $template = @file_get_contents($templateFile);
     if (!$template) {
