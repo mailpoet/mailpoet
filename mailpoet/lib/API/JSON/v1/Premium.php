@@ -55,11 +55,15 @@ class Premium extends APIEndpoint {
     $pluginInfo = (array)$pluginInfo;
 
     // If we are in Dotcom platform, we try to symlink the plugin instead of downloading it
-    if ($this->dotcomHelperFunctions->isDotcom()) {
-      $result = symlink(self::SIMLINK_PATH, WP_PLUGIN_DIR . '/' . self::PREMIUM_PLUGIN_SLUG);
-      if ($result === true) {
-        return $this->successResponse();
+    try {
+      if ($this->dotcomHelperFunctions->isDotcom()) {
+        $result = symlink(self::SIMLINK_PATH, WP_PLUGIN_DIR . '/' . self::PREMIUM_PLUGIN_SLUG);
+        if ($result === true) {
+          return $this->successResponse();
+        }
       }
+    } catch (\Exception $e) {
+      // Do nothing and continue with a regular installation
     }
 
     $result = $this->wp->installPlugin($pluginInfo['download_link']);
