@@ -1,11 +1,10 @@
 <?php declare(strict_types = 1);
 
-namespace MailPoet\Migrations;
+namespace MailPoet\Migrations\App;
 
 use Codeception\Stub;
 use MailPoet\Cron\Workers\InactiveSubscribers;
 use MailPoet\Entities\ScheduledTaskEntity;
-use MailPoet\Migrations\App\Migration_20221028_105818_App;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\TrackingConfig;

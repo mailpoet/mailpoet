@@ -1,10 +1,9 @@
 <?php declare(strict_types = 1);
 
-namespace MailPoet\Migrations;
+namespace MailPoet\Migrations\Db;
 
 use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Entities\DynamicSegmentFilterEntity;
-use MailPoet\Migrations\Db\Migration_20221028_105818;
 use MailPoet\Segments\DynamicSegments\Filters\EmailAction;
 use MailPoet\Settings\SettingsController;
 

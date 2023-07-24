@@ -1,9 +1,8 @@
 <?php declare(strict_types = 1);
 
-namespace MailPoet\Migrations;
+namespace MailPoet\Migrations\App;
 
 use MailPoet\Entities\DynamicSegmentFilterEntity;
-use MailPoet\Migrations\App\Migration_20230712_180341;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceAverageSpent;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceNumberOfOrders;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceSingleOrderValue;
