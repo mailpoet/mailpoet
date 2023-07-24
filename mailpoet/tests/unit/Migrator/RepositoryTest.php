@@ -52,11 +52,26 @@ class RepositoryTest extends MailPoetUnitTest {
       'migrationsDir' => __DIR__ . '/TestMigrations',
     ]);
     $this->assertSame([
-      'Migration_1',
-      'Migration_2',
-      'Migration_3',
-      'Migration_4',
-      'Migration_5',
+      [
+        'level' => Repository::MIGRATIONS_LEVEL_DB,
+        'name' => 'Migration_1',
+      ],
+      [
+        'level' => Repository::MIGRATIONS_LEVEL_DB,
+        'name' => 'Migration_2',
+      ],
+      [
+        'level' => Repository::MIGRATIONS_LEVEL_DB,
+        'name' => 'Migration_3',
+      ],
+      [
+        'level' => Repository::MIGRATIONS_LEVEL_DB,
+        'name' => 'Migration_4',
+      ],
+      [
+        'level' => Repository::MIGRATIONS_LEVEL_APP,
+        'name' => 'Migration_5',
+      ],
     ], $repository->loadAll());
   }
 
