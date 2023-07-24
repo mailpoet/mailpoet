@@ -25,8 +25,8 @@ class Runner {
     $this->namespace = $this->getMigrationsNamespace();
   }
 
-  public function runMigration(string $name): void {
-    $className = $this->getClassName($name);
+  public function runMigration(string $name, ?string $level): void {
+    $className = $this->getClassName($name, $level);
 
     try {
       $migration = new $className($this->container);
@@ -41,14 +41,8 @@ class Runner {
     }
   }
 
-  private function getClassName(string $name): string {
-    $level = Repository::MIGRATIONS_LEVEL_DB;
+  private function getClassName(string $name, ?string $level): string {
     $className = $this->namespace . '\\' . $level . '\\' . $name;
-    if (!class_exists($className)) {
-      $level = Repository::MIGRATIONS_LEVEL_APP;
-      $className = $this->namespace . '\\' . $level . '\\' . $name;
-    }
-
     if (!class_exists($className)) {
       throw MigratorException::migrationClassNotFound($className);
     }

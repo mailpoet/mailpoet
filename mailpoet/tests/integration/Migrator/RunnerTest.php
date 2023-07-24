@@ -38,7 +38,7 @@ class RunnerTest extends MailPoetTest {
 
   public function testItRunsDbMigration(): void {
     ob_start();
-    $this->runner->runMigration('Migration_20221024_080348');
+    $this->runner->runMigration('Migration_20221024_080348', Repository::MIGRATIONS_LEVEL_DB);
     $output = ob_get_clean();
     $this->assertSame('Migration run called!', $output);
 
@@ -54,7 +54,7 @@ class RunnerTest extends MailPoetTest {
 
   public function testItRunsAppMigration(): void {
     ob_start();
-    $this->runner->runMigration('Migration_20221023_080348');
+    $this->runner->runMigration('Migration_20221023_080348', Repository::MIGRATIONS_LEVEL_APP);
     $output = ob_get_clean();
     $this->assertSame('Migration run called!', $output);
 
@@ -68,24 +68,31 @@ class RunnerTest extends MailPoetTest {
     $this->assertNull($data['error']);
   }
 
-  public function testItFailsWithNonExistentMigration(): void {
+  public function testItFailsWithNonExistentDbMigration(): void {
+    $this->expectException(MigratorException::class);
+    $this->expectExceptionMessage('MailPoet\Migrations\Db\MigrationThatDoesntExist" not found.');
+    $this->runner->runMigration('MigrationThatDoesntExist', Repository::MIGRATIONS_LEVEL_DB);
+    $this->assertEmpty($this->store->getAll());
+  }
+
+  public function testItFailsWithNonExistentAppMigration(): void {
     $this->expectException(MigratorException::class);
     $this->expectExceptionMessage('MailPoet\Migrations\App\MigrationThatDoesntExist" not found.');
-    $this->runner->runMigration('MigrationThatDoesntExist');
+    $this->runner->runMigration('MigrationThatDoesntExist', Repository::MIGRATIONS_LEVEL_APP);
     $this->assertEmpty($this->store->getAll());
   }
 
   public function testItFailsWithInvalidMigrationClass(): void {
     $this->expectException(MigratorException::class);
     $this->expectExceptionMessage('Migration class "MailPoet\Migrations\Db\Migration_20221022_021304" is not a subclass of "MailPoet\Migrator\DbMigration".');
-    $this->runner->runMigration('Migration_20221022_021304');
+    $this->runner->runMigration('Migration_20221022_021304', Repository::MIGRATIONS_LEVEL_DB);
     $this->assertEmpty($this->store->getAll());
   }
 
   public function testItFailsWithBrokenMigration(): void {
     $this->expectException(MigratorException::class);
     $this->expectExceptionMessage('Migration "MailPoet\Migrations\Db\Migration_20221023_040819" failed. Details: Testing failing migration.');
-    $this->runner->runMigration('Migration_20221023_040819');
+    $this->runner->runMigration('Migration_20221023_040819', Repository::MIGRATIONS_LEVEL_DB);
 
     $processed = $this->store->getAll();
     $this->assertCount(1, $processed);

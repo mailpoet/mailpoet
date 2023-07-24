@@ -44,7 +44,7 @@ class Migrator {
         $logger->logMigrationStarted($migration);
       }
 
-      $this->runner->runMigration($migration['name']);
+      $this->runner->runMigration($migration['name'], $migration['level']);
 
       if ($logger) {
         $logger->logMigrationCompleted($migration);
