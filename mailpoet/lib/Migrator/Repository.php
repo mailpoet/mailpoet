@@ -49,7 +49,7 @@ class Repository {
   /**
    * Array of filenames.
    * Db migrations are loaded first, then app migrations. This ensures that Db migrator is run before app migrations
-   * @return array<string>
+   * @return array<array{level: string, name: string}>
    */
   public function loadAll(): array {
     return array_merge(
@@ -58,7 +58,7 @@ class Repository {
     );
   }
 
-  private function loadForLevel(string $level) {
+  private function loadForLevel(string $level): array {
     $files = new RecursiveIteratorIterator(
       new RecursiveDirectoryIterator($this->migrationsDir . '/' . $level, RecursiveDirectoryIterator::SKIP_DOTS)
     );
@@ -76,7 +76,12 @@ class Repository {
       }
     }
     sort($migrations);
-    return $migrations;
+    return array_map(function ($migration) use ($level) {
+      return [
+        'level' => $level,
+        'name' => $migration,
+      ];
+    }, $migrations) ;
   }
 
   private function generateName(string $level): string {

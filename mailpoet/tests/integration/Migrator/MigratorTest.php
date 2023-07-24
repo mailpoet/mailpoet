@@ -56,6 +56,7 @@ class MigratorTest extends MailPoetTest {
     $data = $status[0];
     $this->assertSame('Migration_20221024_080348', $data['name']);
     $this->assertSame('completed', $data['status']);
+    $this->assertSame(Repository::MIGRATIONS_LEVEL_DB, $data['level']);
     $this->assertStringMatchesFormat(self::DATE_TIME_FORMAT, (string)$data['started_at']);
     $this->assertStringMatchesFormat(self::DATE_TIME_FORMAT, (string)$data['completed_at']);
     $this->assertSame(0, (int)$data['retries']);
@@ -66,6 +67,7 @@ class MigratorTest extends MailPoetTest {
     $data = $status[1];
     $this->assertSame('Migration_20221025_120345', $data['name']);
     $this->assertSame('failed', $data['status']);
+    $this->assertSame(Repository::MIGRATIONS_LEVEL_DB, $data['level']);
     $this->assertStringMatchesFormat(self::DATE_TIME_FORMAT, (string)$data['started_at']);
     $this->assertStringMatchesFormat(self::DATE_TIME_FORMAT, (string)$data['completed_at']);
     $this->assertSame(0, (int)$data['retries']);
@@ -76,6 +78,7 @@ class MigratorTest extends MailPoetTest {
     $data = $status[2];
     $this->assertSame('Migration_20221026_160151', $data['name']);
     $this->assertSame('started', $data['status']);
+    $this->assertSame(Repository::MIGRATIONS_LEVEL_DB, $data['level']);
     $this->assertStringMatchesFormat(self::DATE_TIME_FORMAT, (string)$data['started_at']);
     $this->assertNull($data['completed_at']);
     $this->assertSame(0, (int)$data['retries']);
@@ -86,6 +89,7 @@ class MigratorTest extends MailPoetTest {
     $data = $status[3];
     $this->assertSame('Migration_20221027_180501', $data['name']);
     $this->assertSame('new', $data['status']);
+    $this->assertSame(Repository::MIGRATIONS_LEVEL_DB, $data['level']);
     $this->assertNull($data['started_at']);
     $this->assertNull($data['completed_at']);
     $this->assertNull($data['retries']);
@@ -96,6 +100,7 @@ class MigratorTest extends MailPoetTest {
     $data = $status[4];
     $this->assertSame('Migration_20221023_080348', $data['name']);
     $this->assertSame('completed', $data['status']);
+    $this->assertSame(Repository::MIGRATIONS_LEVEL_APP, $data['level']);
     $this->assertStringMatchesFormat(self::DATE_TIME_FORMAT, (string)$data['started_at']);
     $this->assertStringMatchesFormat(self::DATE_TIME_FORMAT, (string)$data['completed_at']);
     $this->assertSame(0, (int)$data['retries']);
@@ -106,6 +111,7 @@ class MigratorTest extends MailPoetTest {
     $data = $status[5];
     $this->assertSame('Migration_20221025_120346', $data['name']);
     $this->assertSame('new', $data['status']);
+    $this->assertSame(Repository::MIGRATIONS_LEVEL_APP, $data['level']);
     $this->assertNull($data['started_at']);
     $this->assertNull($data['completed_at']);
     $this->assertNull($data['retries']);
@@ -116,6 +122,7 @@ class MigratorTest extends MailPoetTest {
     $data = $status[6];
     $this->assertSame('Migration_20221028_200226', $data['name']);
     $this->assertSame('completed', $data['status']);
+    $this->assertNull($data['level']);
     $this->assertStringMatchesFormat(self::DATE_TIME_FORMAT, (string)$data['started_at']);
     $this->assertStringMatchesFormat(self::DATE_TIME_FORMAT, (string)$data['completed_at']);
     $this->assertSame(0, (int)$data['retries']);
@@ -126,6 +133,7 @@ class MigratorTest extends MailPoetTest {
     $data = $status[7];
     $this->assertSame('Migration_20221029_212308', $data['name']);
     $this->assertSame('failed', $data['status']);
+    $this->assertNull($data['level']);
     $this->assertStringMatchesFormat(self::DATE_TIME_FORMAT, (string)$data['started_at']);
     $this->assertStringMatchesFormat(self::DATE_TIME_FORMAT, (string)$data['completed_at']);
     $this->assertSame(0, (int)$data['retries']);
@@ -136,6 +144,7 @@ class MigratorTest extends MailPoetTest {
     $data = $status[8];
     $this->assertSame('Migration_20221030_223752', $data['name']);
     $this->assertSame('started', $data['status']);
+    $this->assertNull($data['level']);
     $this->assertStringMatchesFormat(self::DATE_TIME_FORMAT, (string)$data['started_at']);
     $this->assertNull($data['completed_at']);
     $this->assertSame(0, (int)$data['retries']);
@@ -149,7 +158,8 @@ class MigratorTest extends MailPoetTest {
   }
 
   public function testItReturnsStatusForUnprocessedMigrations(): void {
-    $newMigrationFields = [
+    $newMigrationFieldsDb = [
+      'level' => Repository::MIGRATIONS_LEVEL_DB,
       'status' => 'new',
       'started_at' => null,
       'completed_at' => null,
@@ -158,14 +168,18 @@ class MigratorTest extends MailPoetTest {
       'unknown' => false,
     ];
 
+    $newMigrationFieldsApp = array_merge($newMigrationFieldsDb, [
+      'level' => Repository::MIGRATIONS_LEVEL_APP,
+    ]);
+
     $migrator = $this->createMigrator();
     $this->assertSame([
-      ['name' => 'Migration_20221024_080348'] + $newMigrationFields, // Db
-      ['name' => 'Migration_20221025_120345'] + $newMigrationFields, // Db
-      ['name' => 'Migration_20221026_160151'] + $newMigrationFields, // Db
-      ['name' => 'Migration_20221027_180501'] + $newMigrationFields, // Db
-      ['name' => 'Migration_20221023_080348'] + $newMigrationFields, // App
-      ['name' => 'Migration_20221025_120346'] + $newMigrationFields, // App
+      ['name' => 'Migration_20221024_080348'] + $newMigrationFieldsDb, // Db
+      ['name' => 'Migration_20221025_120345'] + $newMigrationFieldsDb, // Db
+      ['name' => 'Migration_20221026_160151'] + $newMigrationFieldsDb, // Db
+      ['name' => 'Migration_20221027_180501'] + $newMigrationFieldsDb, // Db
+      ['name' => 'Migration_20221023_080348'] + $newMigrationFieldsApp, // App
+      ['name' => 'Migration_20221025_120346'] + $newMigrationFieldsApp, // App
     ], $migrator->getStatus());
   }
 
