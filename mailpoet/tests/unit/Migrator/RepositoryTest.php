@@ -59,6 +59,18 @@ class RepositoryTest extends MailPoetUnitTest {
     $repository->create('abc');
   }
 
+  public function testItFailsWhenThereAreMigrationsWithDuplicateNames(): void {
+    $migrationsDir = __DIR__ . '/TestMigrationsDuplicates';
+    $repository = $this->make(Repository::class, [
+      'migrationsDir' => $migrationsDir,
+      'templateFile' => self::TEMPLATE_FILE,
+    ]);
+
+    $this->expectException(MigratorException::class);
+    $this->expectExceptionMessage('Duplicate migration names are not allowed. Duplicate names found: "MigrationDuplicate".');
+    $repository->loadAll();
+  }
+
   public function testItLoadsMigrationFiles(): void {
     $repository = $this->make(Repository::class, [
       'migrationsDir' => __DIR__ . '/TestMigrations',
