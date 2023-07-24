@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { Tooltip } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
@@ -6,6 +7,7 @@ import { AutomationFlowSection, storeName } from '../../../store';
 import { locale } from '../../../config';
 import { Step } from '../../../../../../editor/components/automation/types';
 import { openTab } from '../../../navigation/open_tab';
+import { isTransactional } from '../../../../steps/send_email/helper/is_transactional';
 
 const compactFormatter = Intl.NumberFormat(locale.toString(), {
   notation: 'compact',
@@ -29,27 +31,44 @@ function FailedStep({ step }: { step: Step }): JSX.Element | null {
 
   const failed = data.step_data?.failed;
   const value = failed !== undefined ? failed[step.id] ?? 0 : 0;
-  if (!value) {
-    return null;
-  }
-  const percent =
-    data.step_data.total > 0
-      ? Math.round((value / data.step_data.total) * 100)
-      : 0;
-  const formattedValue = compactFormatter.format(value);
-  const formattedPercent = percentFormatter.format(percent / 100);
-  return (
-    <div className="mailpoet-automation-analytics-step-failed">
-      <p>
-        {formattedPercent} ({formattedValue})
-        <span>
-          {
-            // translators: "failed" as in "100 automation runs failed at this step".
-            __('failed', 'mailpoet')
-          }
-        </span>
-      </p>
-    </div>
+
+  const failedStats = useMemo(() => {
+    if (!value) {
+      return null;
+    }
+    const percent =
+      data.step_data.total > 0
+        ? Math.round((value / data.step_data.total) * 100)
+        : 0;
+    const formattedValue = compactFormatter.format(value);
+    const formattedPercent = percentFormatter.format(percent / 100);
+
+    return (
+      <div className="mailpoet-automation-analytics-step-failed">
+        <p>
+          {formattedPercent} ({formattedValue})
+          <span>
+            {
+              // translators: "failed" as in "100 automation runs failed at this step".
+              __('failed', 'mailpoet')
+            }
+          </span>
+        </p>
+      </div>
+    );
+  }, [data.step_data.total, value]);
+
+  return step.key === 'mailpoet:send-email' && !isTransactional(step) ? (
+    <Tooltip
+      text={__(
+        'Email sending could fail if the user didn’t consent to receive marketing emails.',
+        'mailpoet',
+      )}
+    >
+      {failedStats}
+    </Tooltip>
+  ) : (
+    failedStats
   );
 }
 
