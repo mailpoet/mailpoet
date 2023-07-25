@@ -36,7 +36,7 @@ class Migrator {
     }
 
     foreach ($migrations as $migration) {
-      if ($migration['unknown'] || $migration['status'] === self::MIGRATION_STATUS_COMPLETED) {
+      if (!$migration['level'] || $migration['unknown'] || $migration['status'] === self::MIGRATION_STATUS_COMPLETED) {
         continue;
       }
 

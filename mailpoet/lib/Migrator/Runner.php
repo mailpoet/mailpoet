@@ -25,7 +25,7 @@ class Runner {
     $this->namespace = $this->getMigrationsNamespace();
   }
 
-  public function runMigration(string $name, ?string $level): void {
+  public function runMigration(string $name, string $level): void {
     $className = $this->getClassName($name, $level);
 
     try {
@@ -40,7 +40,7 @@ class Runner {
     }
   }
 
-  private function getClassName(string $name, ?string $level): string {
+  private function getClassName(string $name, string $level): string {
     $className = $this->namespace . '\\' . $level . '\\' . $name;
     if (!class_exists($className)) {
       throw MigratorException::migrationClassNotFound($className);
