@@ -89,28 +89,20 @@ class AutomationRun {
   }
 
   public function create(): Entity {
+    $now = new DateTimeImmutable();
+    $automationRun = Entity::fromArray([
+      'id' => 0,
+      'automation_id' => $this->automation->getId(),
+      'version_id' => $this->automation->getVersionId(),
+      'trigger_key' => $this->triggerKey,
+      'status' => $this->status,
+      'created_at' => ($this->createdAt ?? $now)->format(DateTimeImmutable::W3C),
+      'updated_at' => ($this->updatedAt ?? $now)->format(DateTimeImmutable::W3C),
+      'subjects' => array_map(function (Subject $subject) {
+        return $subject->toArray();
+      }, $this->subjects),
+    ]);
 
-    $automationRun = new Entity(
-      $this->automation->getId(),
-      $this->automation->getVersionId(),
-      $this->triggerKey,
-      $this->subjects
-    );
-
-    $id = $this->storage->createAutomationRun($automationRun);
-    $automationRun = $this->storage->getAutomationRun($id);
-    $this->storage->deleteAutomationRun($automationRun);
-
-    $array = $automationRun->toArray();
-    $array['id'] = $automationRun->getId();
-    $array['status'] = $this->status;
-    if ($this->createdAt) {
-      $array['created_at'] = $this->createdAt->format(DateTimeImmutable::W3C);
-    }
-    if ($this->updatedAt) {
-      $array['updated_at'] = $this->updatedAt->format(DateTimeImmutable::W3C);
-    }
-    $automationRun = Entity::fromArray($array);
     $id = $this->storage->createAutomationRun($automationRun);
     $this->storage->updateNextStep($id, $this->nextStep);
     $this->automationRun = $this->storage->getAutomationRun($id);
