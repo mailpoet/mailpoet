@@ -79,7 +79,10 @@ class CleanupExtension extends Extension {
 
     // cleanup EntityManager for data factories that are using it
     ContainerWrapper::getInstance()->get(EntityManager::class)->clear();
-    
+
+    // reset settings controller cache
+    ContainerWrapper::getInstance()->get(\MailPoet\Settings\SettingsController::class)->resetCache();
+
     // Without clearing the cache WordPress will think data exist that doesn't, e.g. users created in previous tests
     global $wp_object_cache;
     if ($wp_object_cache) {
