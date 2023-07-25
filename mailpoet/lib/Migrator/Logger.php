@@ -2,14 +2,17 @@
 
 namespace MailPoet\Migrator;
 
+/**
+ * @phpstan-import-type MigrationDefinition from Migrator
+ */
 interface Logger {
-  /** @param array{name: string, status: string, started_at: string|null, completed_at: string|null, retries: int|null, error: string|null}[] $status */
+  /** @param MigrationDefinition[] $status */
   public function logBefore(array $status): void;
 
-  /** @param array{name: string, status: string, started_at: string|null, completed_at: string|null, retries: int|null, error: string|null} $migration */
+  /** @param MigrationDefinition $migration */
   public function logMigrationStarted(array $migration): void;
 
-  /** @param array{name: string, status: string, started_at: string|null, completed_at: string|null, retries: int|null, error: string|null} $migration */
+  /** @param MigrationDefinition $migration */
   public function logMigrationCompleted(array $migration): void;
 
   public function logAfter(): void;
