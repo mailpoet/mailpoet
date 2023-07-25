@@ -9,6 +9,7 @@ import { StatsHeading } from './stats/heading';
 import { Summary } from './stats/summary';
 import { WoocommerceRevenues } from './stats/woocommerce_revenues';
 import { OpenedEmailsStats } from './stats/opened_email_stats';
+import { EngagementSummary } from './stats/engagement_summary';
 
 export type StatsType = {
   email: string;
@@ -18,6 +19,11 @@ export type StatsType = {
   click: number;
   engagement_score: number;
   last_engagement?: string;
+  last_click?: string;
+  last_open?: string;
+  last_sending?: string;
+  last_page_view?: string;
+  last_purchase?: string;
   woocommerce: {
     currency: string;
     value: number;
@@ -71,13 +77,6 @@ export function SubscriberStats(): JSX.Element {
     <div className="mailpoet-subscriber-stats">
       <StatsHeading email={stats.email} />
       <Heading level={4}>{MailPoet.I18n.t('engagementPeriodHeading')}</Heading>
-      <p>
-        {MailPoet.I18n.t('lastEngagement')}
-        {': '}
-        {stats.last_engagement
-          ? MailPoet.Date.format(stats.last_engagement)
-          : MailPoet.I18n.t('never')}
-      </p>
       <div className="mailpoet-subscriber-stats-summary-grid">
         <Summary
           click={stats.click}
@@ -88,6 +87,15 @@ export function SubscriberStats(): JSX.Element {
             id: Number(match.params.id),
             engagement_score: stats.engagement_score,
           }}
+        />
+        <EngagementSummary
+          lastClick={stats.last_click}
+          lastEngagement={stats.last_engagement}
+          lastOpen={stats.last_open}
+          lastPageView={stats.last_page_view}
+          lastPurchase={stats.last_purchase}
+          lastSending={stats.last_sending}
+          wooCommerceActive={!!stats.woocommerce}
         />
         {stats.woocommerce && (
           <WoocommerceRevenues
