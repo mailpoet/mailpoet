@@ -12,8 +12,8 @@ class RepositoryTest extends MailPoetUnitTest {
     parent::_before();
     $this->removeDir(self::MIGRATIONS_OUTPUT_DIR);
     mkdir(self::MIGRATIONS_OUTPUT_DIR, 0777, true);
-    mkdir(self::MIGRATIONS_OUTPUT_DIR . '/' . Repository::MIGRATIONS_LEVEL_DB, 0777, true);
-    mkdir(self::MIGRATIONS_OUTPUT_DIR . '/' . Repository::MIGRATIONS_LEVEL_APP, 0777, true);
+    mkdir(self::MIGRATIONS_OUTPUT_DIR . '/' . ucfirst(Repository::MIGRATIONS_LEVEL_DB), 0777, true);
+    mkdir(self::MIGRATIONS_OUTPUT_DIR . '/' . ucfirst(Repository::MIGRATIONS_LEVEL_APP), 0777, true);
   }
 
   public function testItCreatesDbLevelMigrationFiles(): void {
@@ -43,7 +43,7 @@ class RepositoryTest extends MailPoetUnitTest {
     ]);
 
     $this->expectException(MigratorException::class);
-    $this->expectExceptionMessageMatches('~^Could not write migration file "' . preg_quote($migrationsDir . '/' . Repository::MIGRATIONS_LEVEL_DB, '~') . '/Migration_\d{8}_\d{6}_Db.php"\.$~');
+    $this->expectExceptionMessageMatches('~^Could not write migration file "' . preg_quote($migrationsDir . '/Db', '~') . '/Migration_\d{8}_\d{6}_Db.php"\.$~');
     $repository->create(Repository::MIGRATIONS_LEVEL_DB);
   }
 
@@ -55,7 +55,7 @@ class RepositoryTest extends MailPoetUnitTest {
     ]);
 
     $this->expectException(MigratorException::class);
-    $this->expectExceptionMessage(sprintf('Migration level "%s" is not supported! Use "App" of "Db".', 'abc'));
+    $this->expectExceptionMessage(sprintf('Migration level "%s" is not supported! Use "app" of "db".', 'abc'));
     $repository->create('abc');
   }
 
@@ -111,14 +111,16 @@ class RepositoryTest extends MailPoetUnitTest {
     ]);
 
     $migrations->create($level);
+    $ucFirstLevel = ucfirst($level);
 
-    $files = glob(self::MIGRATIONS_OUTPUT_DIR . '/' . $level . '/*.php') ?: [];
+    $files = glob(self::MIGRATIONS_OUTPUT_DIR . '/' . $ucFirstLevel . '/*.php') ?: [];
     $this->assertCount(1, $files);
 
-    $templateFile = str_replace('{level}', $level, self::TEMPLATE_FILE);
+    $templateFile = str_replace('{level}', $ucFirstLevel, self::TEMPLATE_FILE);
     $migration = pathinfo($files[0], PATHINFO_FILENAME);
+
     $this->assertSame(
-      str_replace("class {$level}MigrationTemplate", "class $migration", file_get_contents($templateFile) ?: ''),
+      str_replace("class {$ucFirstLevel}MigrationTemplate", "class $migration", file_get_contents($templateFile) ?: ''),
       file_get_contents($files[0])
     );
   }

@@ -7,8 +7,8 @@ use RecursiveIteratorIterator;
 use SplFileInfo;
 
 class Repository {
-  const MIGRATIONS_LEVEL_APP = 'App';
-  const MIGRATIONS_LEVEL_DB = 'Db';
+  const MIGRATIONS_LEVEL_APP = 'app';
+  const MIGRATIONS_LEVEL_DB = 'db';
 
   /** @var string */
   private $migrationsDir;
@@ -30,15 +30,16 @@ class Repository {
     if (!in_array($level, [self::MIGRATIONS_LEVEL_APP, self::MIGRATIONS_LEVEL_DB], true)) {
       throw MigratorException::invalidMigrationLevel($level);
     }
-    $templateFile = str_replace('{level}', $level, $this->templateFile);
+    $ucFirstLevel = ucfirst($level);
+    $templateFile = str_replace('{level}', $ucFirstLevel, $this->templateFile);
     $template = @file_get_contents($templateFile);
     if (!$template) {
       throw MigratorException::templateFileReadFailed($templateFile);
     }
     $name = $this->generateName($level);
-    $migration = str_replace('{level}', $level, 'class {level}MigrationTemplate ');
+    $migration = str_replace('{level}', $ucFirstLevel, 'class {level}MigrationTemplate ');
     $migration = str_replace($migration, "class $name ", $template);
-    $path = "$this->migrationsDir/$level/$name.php";
+    $path = "$this->migrationsDir/$ucFirstLevel/$name.php";
     $result = @file_put_contents($path, $migration);
     if (!$result) {
       throw MigratorException::migrationFileWriteFailed($path);
@@ -72,7 +73,7 @@ class Repository {
    */
   private function loadForLevel(string $level): array {
     $files = new RecursiveIteratorIterator(
-      new RecursiveDirectoryIterator($this->migrationsDir . '/' . $level, RecursiveDirectoryIterator::SKIP_DOTS)
+      new RecursiveDirectoryIterator($this->migrationsDir . '/' . ucfirst($level), RecursiveDirectoryIterator::SKIP_DOTS)
     );
 
     $migrations = [];
@@ -97,6 +98,6 @@ class Repository {
   }
 
   private function generateName(string $level): string {
-    return 'Migration_' . gmdate('Ymd_His') . '_' . $level;
+    return 'Migration_' . gmdate('Ymd_His') . '_' . ucfirst($level);
   }
 }

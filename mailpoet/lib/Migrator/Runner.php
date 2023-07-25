@@ -41,7 +41,7 @@ class Runner {
   }
 
   private function getClassName(string $name, string $level): string {
-    $className = $this->namespace . '\\' . $level . '\\' . $name;
+    $className = $this->namespace . '\\' . ucfirst($level) . '\\' . $name;
     if (!class_exists($className)) {
       throw MigratorException::migrationClassNotFound($className);
     }
