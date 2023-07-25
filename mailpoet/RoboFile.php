@@ -448,12 +448,12 @@ class RoboFile extends \Robo\Tasks {
   }
 
   /**
-   * Creates a new migration file. Use `migrations:new db` for a Db level migration or `migrations:new app` for App level migration.
+   * Creates a new migration file. Use `migrations:new db` for a bb level migration or `migrations:new app` for app level migration.
    * @param $level string - db or app
    */
   public function migrationsNew($level) {
     $generator = new \MailPoet\Migrator\Repository();
-    $level = ucfirst(strtolower($level));
+    $level = strtolower($level);
     $result = $generator->create($level);
     $path = realpath($result['path']);
     $this->output->writeln('MAILPOET DATABASE MIGRATIONS');
