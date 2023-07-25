@@ -31,8 +31,7 @@ function getEmailPercentage(
     return 0;
   }
 
-  const percentage = (data[period] * 100) / sent[period] / 100;
-  return percentage;
+  return (data[period] * 100) / sent[period] / 100;
 }
 
 function getEmailDelta(type: 'opened' | 'clicked'): number | undefined {
@@ -46,9 +45,8 @@ function getEmailDelta(type: 'opened' | 'clicked'): number | undefined {
     return 0;
   }
 
-  const newValue = current > previous ? current - previous : previous - current;
-  const delta = (newValue / previous) * 100;
-  return current > previous ? delta : delta * -1;
+  const newValue = current - previous;
+  return (newValue / previous) * 100;
 }
 
 function getWooCommerceTotal(
@@ -75,13 +73,11 @@ function getWooCommerceDelta(type: 'revenue' | 'orders'): number | undefined {
   if (current === undefined || previous === undefined) {
     return undefined;
   }
-  const newValue = current > previous ? current - previous : previous - current;
+  const newValue = current - previous;
   if (newValue === 0 || previous === 0) {
     return 0;
   }
-
-  const delta = (newValue / previous) * 100;
-  return current > previous ? delta : delta * -1;
+  return (newValue / previous) * 100;
 }
 
 export function Overview(): JSX.Element | null {
