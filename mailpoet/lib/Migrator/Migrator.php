@@ -2,6 +2,9 @@
 
 namespace MailPoet\Migrator;
 
+/**
+ * @phpstan-type MigrationDefinition array{name: string, level: string|null, status: string, started_at: string|null, completed_at: string|null, retries: int|null, error: string|null, unknown: bool}
+ */
 class Migrator {
   const MIGRATION_STATUS_NEW = 'new';
   const MIGRATION_STATUS_STARTED = 'started';
@@ -62,7 +65,7 @@ class Migrator {
    * 1. Db migrations ordered by filename
    * 2. App migrations ordered by filename
    * 3. Unknown migrations (saved in store but not in repository e.g., renamed or deleted)
-   * @return array{name: string, level: string|null, status: string, started_at: string|null, completed_at: string|null, retries: int|null, error: string|null, unknown: bool}[]
+   * @return MigrationDefinition[]
    */
   public function getStatus(): array {
     $defined = $this->repository->loadAll();
