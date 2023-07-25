@@ -27,14 +27,15 @@ class EditorCreateCustomFieldCest {
   }
 
   public function _before(\AcceptanceTester $i) {
+    // Make sure the confirmation is enabled to have correct message
+    $settings = new Settings();
+    $settings->withConfirmationEmailEnabled();
     // Prepare the form for testing
     $this->prepareTheForm($i);
     // Go and edit the form
     $this->openFormInEditor($i);
     // Insert create custom field block
     $i->addFromBlockInEditor('Create Custom Field');
-    $settings = new Settings();
-    $settings->withConfirmationEmailEnabled();
   }
 
   public function createCustomSelect(\AcceptanceTester $i) {
