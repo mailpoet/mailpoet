@@ -152,7 +152,7 @@ class SubscribersRepositoryTest extends \MailPoetTest {
 
     $idsToUpdate = [
       $subscriberOne->getId(),
-      $subscriberTwo->getId(),
+      $subscriberThree->getId(),
     ];
     $this->repository->bulkUpdateEngagementScoreUpdatedAt($idsToUpdate, null);
 

@@ -28,6 +28,16 @@ class StatisticsNewsletters {
     $this->subscriber = $subscriber;
   }
 
+  /**
+   * @param \DateTimeInterface $date
+   *
+   * @return $this
+   */
+  public function withSentAt(\DateTimeInterface $date) {
+    $this->data['sentAt'] = $date;
+    return $this;
+  }
+
   public function create(): StatisticsNewsletterEntity {
     $entityManager = ContainerWrapper::getInstance()->get(EntityManager::class);
     $queue = $this->newsletter->getLatestQueue();
@@ -37,6 +47,9 @@ class StatisticsNewsletters {
       $queue,
       $this->subscriber
     );
+    if (isset($this->data['sentAt'])) {
+      $entity->setSentAt($this->data['sentAt']);
+    }
     $entityManager->persist($entity);
     $entityManager->flush();
     return $entity;
