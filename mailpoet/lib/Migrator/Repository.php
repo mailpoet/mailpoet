@@ -50,7 +50,7 @@ class Repository {
   }
 
   /**
-   * Array of filenames.
+   * Array of migration filenames and types.
    * Db migrations are loaded first, then app migrations. This ensures that Db migrator is run before app migrations
    * @return array<array{level: string, name: string}>
    */
@@ -59,13 +59,17 @@ class Repository {
       $this->loadForLevel(self::MIGRATIONS_LEVEL_DB),
       $this->loadForLevel(self::MIGRATIONS_LEVEL_APP)
     );
-    $duplicateNames = array_diff_assoc(array_column($migrations, 'name'), array_unique(array_column($migrations, 'name')));
+    $migrationNames = array_column($migrations, 'name');
+    $duplicateNames = array_diff_assoc($migrationNames, array_unique($migrationNames));
     if (!empty($duplicateNames)) {
       throw MigratorException::duplicateMigrationNames($duplicateNames);
     }
     return $migrations;
   }
 
+  /**
+   * @return array<array{level: string, name: string}>
+   */
   private function loadForLevel(string $level): array {
     $files = new RecursiveIteratorIterator(
       new RecursiveDirectoryIterator($this->migrationsDir . '/' . $level, RecursiveDirectoryIterator::SKIP_DOTS)
