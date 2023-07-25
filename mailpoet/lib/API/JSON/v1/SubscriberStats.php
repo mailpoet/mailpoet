@@ -47,9 +47,30 @@ class SubscriberStats extends APIEndpoint {
       'click' => $statistics->getClickCount(),
       'engagement_score' => $subscriber->getEngagementScore(),
     ];
+    $dateFormat = 'Y-m-d H:i:s';
     $lastEngagement = $subscriber->getLastEngagementAt();
     if ($lastEngagement instanceof \DateTimeInterface) {
-      $response['last_engagement'] = $lastEngagement->format('Y-m-d H:i:s');
+      $response['last_engagement'] = $lastEngagement->format($dateFormat);
+    }
+    $lastClick = $subscriber->getLastClickAt();
+    if ($lastClick instanceof \DateTimeInterface) {
+      $response['last_click'] = $lastClick->format($dateFormat);
+    }
+    $lastOpen = $subscriber->getLastOpenAt();
+    if ($lastOpen instanceof \DateTimeInterface) {
+      $response['last_open'] = $lastOpen->format($dateFormat);
+    }
+    $lastPageView = $subscriber->getLastPageViewAt();
+    if ($lastPageView instanceof \DateTimeInterface) {
+      $response['last_page_view'] = $lastPageView->format($dateFormat);
+    }
+    $lastPurchase = $subscriber->getLastPurchaseAt();
+    if ($lastPurchase instanceof \DateTimeInterface) {
+      $response['last_purchase'] = $lastPurchase->format($dateFormat);
+    }
+    $lastSending = $subscriber->getLastSendingAt();
+    if ($lastSending instanceof \DateTimeInterface) {
+      $response['last_sending'] = $lastSending->format($dateFormat);
     }
     $woocommerce = $statistics->getWooCommerceRevenue();
     if ($woocommerce instanceof WooCommerceRevenue) {

@@ -7,7 +7,7 @@
 .mailpoet-subscriber-stats-summary-grid {
   display: grid;
   grid-gap: $grid-gap;
-  grid-template-columns: auto auto 1fr;
+  grid-template-columns: auto auto auto 1fr;
 
   .mailpoet-listing .mailpoet-listing-table {
     border: 0;
