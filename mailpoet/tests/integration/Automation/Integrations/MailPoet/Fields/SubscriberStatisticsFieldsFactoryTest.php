@@ -12,6 +12,7 @@ use MailPoet\Test\DataFactories\StatisticsNewsletters as StatisticsNewslettersFa
 use MailPoet\Test\DataFactories\StatisticsOpens as StatisticsOpensFacctory;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 use MailPoetTest;
+use MailPoetVendor\Carbon\Carbon;
 
 class SubscriberStatisticsFieldsFactoryTest extends MailPoetTest {
   public function testItCreatesSentCountField(): void {
@@ -22,8 +23,8 @@ class SubscriberStatisticsFieldsFactoryTest extends MailPoetTest {
     $newsletter2 = (new NewsletterFactory())->withSendingQueue()->create();
     (new NewsletterFactory())->withSendingQueue()->create();
 
-    (new StatisticsNewslettersFactory($newsletter1, $subscriber))->create();
-    (new StatisticsNewslettersFactory($newsletter2, $subscriber))->create();
+    (new StatisticsNewslettersFactory($newsletter1, $subscriber))->withSentAt(Carbon::now())->create();
+    (new StatisticsNewslettersFactory($newsletter2, $subscriber))->withSentAt(Carbon::now())->create();
 
     // check definitions
     $field = $fields['mailpoet:subscriber:email-sent-count'];
