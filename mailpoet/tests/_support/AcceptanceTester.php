@@ -387,11 +387,13 @@ class AcceptanceTester extends \Codeception\Actor {
   public function activateWooCommerce() {
     $i = $this;
     $i->cli(['plugin', 'activate', self::WOO_COMMERCE_PLUGIN]);
+    $i->activateWooCommerceBlocks();
   }
 
   public function deactivateWooCommerce() {
     $i = $this;
     $i->cli(['plugin', 'deactivate', self::WOO_COMMERCE_PLUGIN]);
+    $i->deactivateWooCommerceBlocks();
   }
 
   public function activateWooCommerceBlocks() {
