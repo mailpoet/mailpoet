@@ -14,7 +14,7 @@ class MigratorException extends InvalidStateException {
 
   public static function invalidMigrationLevel(string $level): self {
     return self::create()->withMessage(
-      sprintf('Migration level "%s" is not supported! Use "app" of "db".', $level)
+      sprintf('Migration level "%s" is not supported! Use "app" or "db".', $level)
     );
   }
 

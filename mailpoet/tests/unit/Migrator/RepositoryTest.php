@@ -55,7 +55,7 @@ class RepositoryTest extends MailPoetUnitTest {
     ]);
 
     $this->expectException(MigratorException::class);
-    $this->expectExceptionMessage(sprintf('Migration level "%s" is not supported! Use "app" of "db".', 'abc'));
+    $this->expectExceptionMessage(sprintf('Migration level "%s" is not supported! Use "app" or "db".', 'abc'));
     $repository->create('abc');
   }
 

@@ -448,7 +448,7 @@ class RoboFile extends \Robo\Tasks {
   }
 
   /**
-   * Creates a new migration file. Use `migrations:new db` for a bb level migration or `migrations:new app` for app level migration.
+   * Creates a new migration file. Use `migrations:new db` for a db level migration or `migrations:new app` for app level migration.
    * @param $level string - db or app
    */
   public function migrationsNew($level) {
