@@ -68,14 +68,6 @@ export function* updateSection(
     };
   }
 
-  const query = queryParam ?? select(storeName).getCurrentQuery();
-  const defaultDateRange = 'period=month&compare=previous_year';
-
-  const { primary: primaryDate, secondary: secondaryDate } = getCurrentDates(
-    query,
-    defaultDateRange,
-  );
-
   const formatDate = (date: Date, endOfDay = false): string => {
     const newDate = new Date(date.getTime());
     if (endOfDay) {
@@ -86,46 +78,43 @@ export function* updateSection(
     return newDate.toISOString();
   };
 
-  const dates = section.withPreviousData
-    ? {
-        primary: {
-          after: formatDate(primaryDate.after.toDate()),
-          before: formatDate(primaryDate.before.toDate(), true),
-        },
-        secondary: {
-          after: formatDate(secondaryDate.after.toDate()),
-          before: formatDate(secondaryDate.before.toDate(), true),
-        },
-      }
-    : {
-        primary: {
-          after: formatDate(primaryDate.after.toDate()),
-          before: formatDate(primaryDate.before.toDate(), true),
-        },
-      };
+  const query = queryParam ?? select(storeName).getCurrentQuery();
+  const defaultDateRange = 'period=month&compare=previous_year';
+  const { primary: primaryDate, secondary: secondaryDate } = getCurrentDates(
+    query,
+    defaultDateRange,
+  );
+
+  const dates = {
+    primary: {
+      after: formatDate(primaryDate.after.toDate()),
+      before: formatDate(primaryDate.before.toDate(), true),
+    },
+    ...(section.withPreviousData
+      ? {
+          secondary: {
+            after: formatDate(secondaryDate.after.toDate()),
+            before: formatDate(secondaryDate.before.toDate(), true),
+          },
+        }
+      : {}),
+  };
+
   const id = select(editorStoreName).getAutomationData().id;
-
   const customQuery = section.customQuery ?? {};
-
   const args = { id, query: { ...dates, ...customQuery } };
-  const path = addQueryArgs(section.endpoint, args);
-  const method = 'GET';
-  const response: {
-    data: SectionData;
-  } = yield apiFetch({
-    path,
-    method,
+
+  const response: { data: SectionData } = yield apiFetch({
+    path: addQueryArgs(section.endpoint, args),
+    method: 'GET',
   });
 
-  const payload = {
-    ...section,
-    data: response?.data || undefined,
-  };
   if (section?.updateCallback) {
     section.updateCallback(response?.data);
   }
+
   return {
     type: 'SET_SECTION_DATA',
-    payload,
+    payload: { ...section, data: response?.data },
   };
 }
