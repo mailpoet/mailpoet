@@ -28,6 +28,13 @@ class RoboFile extends \Robo\Tasks {
       ->run();
   }
 
+  public function installJs() {
+    return $this->taskExecStack()
+      ->stopOnFail()
+      ->exec('cd .. && pnpm install --frozen-lockfile --prefer-offline')
+      ->run();
+  }
+
   public function cleanupCachedFiles() {
     $this->say('Cleaning up generated folder.');
     $this->_exec('rm -rf ' . __DIR__ . '/generated/*');
