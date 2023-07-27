@@ -14,7 +14,10 @@ function ListingHeadingDisplayComponent({ children, location }) {
 }
 
 ListingHeadingDisplayComponent.propTypes = {
-  location: PropTypes.string.isRequired,
+  location: PropTypes.shape({
+    pathname: PropTypes.string,
+    hash: PropTypes.string,
+  }).isRequired,
   children: PropTypes.node.isRequired,
 };
 
