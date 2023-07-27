@@ -130,7 +130,7 @@
     "@storybook/addons": "^7.1.1",
     "@storybook/builder-webpack5": "^7.1.1",
     "@storybook/manager-webpack5": "^6.5.16",
-    "@storybook/react": "^6.5.16",
+    "@storybook/react": "^7.1.1",
     "@types/grecaptcha": "^3.0.4",
     "@types/history": "^4.7.11",
     "@types/jquery": "^3.5.16",
