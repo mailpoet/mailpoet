@@ -5,6 +5,7 @@ import { PremiumStatus } from 'settings/store/types';
 import { Button } from 'common/button/button';
 import { PremiumModal } from 'common/premium_modal';
 import { useState } from 'react';
+import { Data } from '../../premium_modal/upgrade_info';
 
 type ActiveMessageProps = { canUseSuccessClass: boolean };
 
@@ -21,6 +22,7 @@ function ActiveMessage(props: ActiveMessageProps) {
 }
 
 type PremiumMessageProps = {
+  data?: Data;
   message?: string;
   buttonText: string;
 };
@@ -45,6 +47,7 @@ function PremiumMessageWithModal(props: PremiumMessageProps) {
       </Button>
       {showPremiumModal && (
         <PremiumModal
+          data={props.data}
           onRequestClose={() => {
             setShowPremiumModal(false);
           }}
@@ -87,6 +90,12 @@ function PremiumMessages(props: Props) {
     case PremiumStatus.VALID_PREMIUM_PLUGIN_NOT_INSTALLED:
       return (
         <PremiumMessageWithModal
+          data={{
+            premiumInstalled: false,
+            premiumActive: false,
+            hasValidApiKey: true,
+            hasValidPremiumKey: true,
+          }}
           message={__('MailPoet Premium is not installed.', 'mailpoet')}
           buttonText={__('Download MailPoet Premium plugin', 'mailpoet')}
         />
@@ -94,6 +103,12 @@ function PremiumMessages(props: Props) {
     case PremiumStatus.VALID_PREMIUM_PLUGIN_NOT_ACTIVE:
       return (
         <PremiumMessageWithModal
+          data={{
+            premiumInstalled: true,
+            premiumActive: false,
+            hasValidApiKey: true,
+            hasValidPremiumKey: true,
+          }}
           message={__(
             'MailPoet Premium is installed but not activated.',
             'mailpoet',

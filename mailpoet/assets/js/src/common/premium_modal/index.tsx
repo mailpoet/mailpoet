@@ -17,6 +17,7 @@ import { dispatch } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
 import { MailPoet } from 'mailpoet';
 import {
+  Data,
   premiumFeaturesEnabled,
   UpgradeInfo,
   useUpgradeInfo,
@@ -28,11 +29,15 @@ import { withBoundary } from '../error_boundary';
 export const premiumValidAndActive =
   premiumFeaturesEnabled && MailPoet.premiumActive;
 
-type Props = Omit<ComponentProps<typeof Modal>, 'title' | 'onRequestClose'> & {
+type Props = Omit<
+  ComponentProps<typeof Modal>,
+  'data' | 'title' | 'onRequestClose'
+> & {
   // Fix type from "@types/wordpress__components" where it is defined as a union of event
   // handlers, resulting in a function requiring intersection of all of the event types.
   onRequestClose: EventHandler<KeyboardEvent | MouseEvent | FocusEvent>;
 } & {
+  data?: Data;
   tracking?: UtmParams;
 };
 
@@ -52,9 +57,14 @@ const getCta = (state: State, upgradeInfo: UpgradeInfo): string => {
   return cta;
 };
 
-function PremiumModal({ children, tracking, ...props }: Props): JSX.Element {
+function PremiumModal({
+  data = {},
+  children,
+  tracking,
+  ...props
+}: Props): JSX.Element {
   const [state, setState] = useState<State>();
-  const upgradeInfo = useUpgradeInfo(tracking);
+  const upgradeInfo = useUpgradeInfo(data, tracking);
 
   //
   useEffect(() => {
