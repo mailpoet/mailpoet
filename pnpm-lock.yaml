@@ -409,8 +409,8 @@ importers:
         specifier: ^4.14.1
         version: 4.14.1(react-dom@18.2.0)(react@18.2.0)
       '@types/wordpress__notices':
-        specifier: ^3.5.1
-        version: 3.5.1
+        specifier: ^3.27.0
+        version: 3.27.0(react@18.2.0)
       '@types/wordpress__rich-text':
         specifier: ^6.0.0
         version: 6.0.0
@@ -7011,7 +7011,7 @@ packages:
     dependencies:
       '@types/react': 18.0.28
       '@types/tinycolor2': 1.4.3
-      '@types/wordpress__notices': 3.5.1
+      '@types/wordpress__notices': 3.27.0(react@18.2.0)
       '@types/wordpress__rich-text': 6.0.0
       '@wordpress/element': 5.5.0
       downshift: 6.1.12(react@18.2.0)
@@ -7068,11 +7068,13 @@ packages:
       - react-dom
     dev: true
 
-  /@types/wordpress__notices@3.5.1:
-    resolution: {integrity: sha512-O9QwWKQrwA64rMuWHZAW6hHBb663j5NAbxhGDHSC05b/PBUxcAcT5AJwjTMC8Pz9P1PeQ0CdHnZBHEJNSSGReA==}
+  /@types/wordpress__notices@3.27.0(react@18.2.0):
+    resolution: {integrity: sha512-Da2iJ295TVYqk08EjgUuJjyxSV2DdBktrhBvNd38FH0jEFmI1Y4ollcMHvZ5EWlQk6rPeBreNke4PkuC9vL40A==}
     dependencies:
       '@types/react': 18.0.28
-      '@types/wordpress__data': 6.0.2
+      '@wordpress/data': 8.5.0(react@18.2.0)
+    transitivePeerDependencies:
+      - react
 
   /@types/wordpress__rich-text@6.0.0:
     resolution: {integrity: sha512-j1swtUrCUFVi+jpsMA1Qs8YojGewGmB3+RpJh7cX7DmCobt39HMKW53M2rib79fDZcFkhtTkyZ0F+MJAIoDq6Q==}
