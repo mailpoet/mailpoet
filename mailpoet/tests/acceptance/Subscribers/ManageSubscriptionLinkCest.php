@@ -93,6 +93,25 @@ class ManageSubscriptionLinkCest {
     $this->verifyUnsubscribeLinks($i);
   }
 
+  public function unsubscribeUrlWithoutToken(\AcceptanceTester $i) {
+    $i->wantTo('Check if as a logged in user cannot unsubscribe using url without token');
+    $i->login();
+    // Make sure the admin is subscribed
+    $i->amOnMailpoetPage('Subscribers');
+    $i->waitForText(\AcceptanceTester::ADMIN_EMAIL);
+    $i->clickItemRowActionByItemName(\AcceptanceTester::ADMIN_EMAIL, 'Edit');
+    $i->waitForText('Subscriber');
+    $i->waitForElement('[data-automation-id="subscriber_edit_form"]');
+    $i->selectOption('[data-automation-id="subscriber-status"]', 'Subscribed');
+    $i->click('Save');
+    $i->waitForText('Subscriber was updated successfully!');
+    $i->amOnUrl(\AcceptanceTester::WP_URL . '/?mailpoet_page=subscriptions&mailpoet_router&endpoint=subscription&action=unsubscribe&data=');
+    $i->waitForText("Hmmm... we don't have a record of you.");
+    $i->amOnMailpoetPage('Subscribers');
+    $i->waitForText(\AcceptanceTester::ADMIN_EMAIL);
+    $i->see('Subscribed');
+  }
+
   private function verifyUnsubscribeLinks(\AcceptanceTester $i) {
     $this->sendEmail($i);
     $formStatusElement = '[data-automation-id="form_status"]';
