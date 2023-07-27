@@ -85,7 +85,7 @@ class BasicsPageCest {
     $i->clickItemRowActionByItemName('Newsletter mailing list', 'View Subscribers');
     $i->waitForText('Subscribers');
     $i->changeGroupInListingFilter('unconfirmed');
-    $i->waitForText('test@test.com');
+    $i->waitForText(\AcceptanceTester::ADMIN_EMAIL);
     //clear checkbox to hide Select2 from next test
     $i->amOnMailPoetPage('Settings');
     $i->click('[data-automation-id="subscribe-on_comment-checkbox"]');

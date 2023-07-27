@@ -55,6 +55,7 @@ class AcceptanceTester extends \Codeception\Actor {
   const WOO_COMMERCE_SUBSCRIPTIONS_PLUGIN = 'woocommerce-subscriptions';
   const AUTOMATE_WOO_PLUGIN = 'automatewoo';
   const MAILHOG_DATA_PATH = '/mailhog-data';
+  const ADMIN_EMAIL = 'test@test.com';
 
   /**
    * Define custom actions here
