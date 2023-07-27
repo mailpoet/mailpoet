@@ -391,8 +391,8 @@ importers:
         specifier: ^2.6.1
         version: 2.6.1
       '@types/wordpress__blocks':
-        specifier: ^12.0.3
-        version: 12.0.3(react-dom@18.2.0)(react@18.2.0)
+        specifier: ^12.5.0
+        version: 12.5.0(react-dom@18.2.0)(react@18.2.0)
       '@types/wordpress__components':
         specifier: ^23.0.1
         version: 23.0.1(react-dom@18.2.0)(react@18.2.0)
@@ -6981,7 +6981,7 @@ packages:
     resolution: {integrity: sha512-uhCxvj38qvqGECU92j8vBflmAL9+P7/VUDccpILY85NL9zlQI/UntfkOsjXDsSpijteNjlhSOMxRZqVQMDrh6g==}
     dependencies:
       '@types/react': 18.0.28
-      '@types/wordpress__blocks': 12.0.3(react-dom@18.2.0)(react@18.2.0)
+      '@types/wordpress__blocks': 12.5.0(react-dom@18.2.0)(react@18.2.0)
       '@types/wordpress__components': 23.0.1(react-dom@18.2.0)(react@18.2.0)
       '@types/wordpress__keycodes': 2.3.1
       '@wordpress/data': 8.5.0(react@18.2.0)
@@ -6994,12 +6994,13 @@ packages:
   /@types/wordpress__block-library@2.6.1:
     resolution: {integrity: sha512-x+V2iqNZiCbNHwMLxszv0qHZ0ooYXZYisKxUIGTOhlrQDrYIiSIZG2+6UgS65UFnwGQve3EGP/RlMYIpQT6TyQ==}
 
-  /@types/wordpress__blocks@12.0.3(react-dom@18.2.0)(react@18.2.0):
-    resolution: {integrity: sha512-T4L2ke78Augo6Ea0dY/9nRgdnl1DwyMFRBwkH8ny8HCPRXhWdYDUcew84yG/G/edvh49wse79fJW58kJ2GaePg==}
+  /@types/wordpress__blocks@12.5.0(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-SGuNlBUYlzZTJmuc/iCfYGAj7QzLXxcJShSMPdPjay8k52Zy9PvCOcie+owpi2EHPZADAKhLrSzQFUh1F2F7PA==}
     dependencies:
       '@types/react': 18.0.28
       '@types/wordpress__components': 23.0.1(react-dom@18.2.0)(react@18.2.0)
       '@types/wordpress__shortcode': 2.3.3
+      '@wordpress/data': 8.5.0(react@18.2.0)
       '@wordpress/element': 5.5.0
     transitivePeerDependencies:
       - react
@@ -7046,7 +7047,7 @@ packages:
     dependencies:
       '@types/react': 18.0.28
       '@types/wordpress__block-editor': 11.5.1(react-dom@18.2.0)(react@18.2.0)
-      '@types/wordpress__blocks': 12.0.3(react-dom@18.2.0)(react@18.2.0)
+      '@types/wordpress__blocks': 12.5.0(react-dom@18.2.0)(react@18.2.0)
       '@types/wordpress__components': 23.0.1(react-dom@18.2.0)(react@18.2.0)
       '@types/wordpress__core-data': 2.4.5
       '@types/wordpress__data': 6.0.2
@@ -7581,7 +7582,7 @@ packages:
       '@types/react-dom': 18.0.11
       '@types/wordpress__block-editor': 11.5.1(react-dom@18.2.0)(react@18.2.0)
       '@types/wordpress__block-library': 2.6.1
-      '@types/wordpress__blocks': 12.0.3(react-dom@18.2.0)(react@18.2.0)
+      '@types/wordpress__blocks': 12.5.0(react-dom@18.2.0)(react@18.2.0)
       '@types/wordpress__components': 23.0.1(react-dom@18.2.0)(react@18.2.0)
       '@types/wordpress__rich-text': 6.0.0
       '@woocommerce/csv-export': 1.7.0
