@@ -502,8 +502,8 @@ importers:
         specifier: ^1.29.0
         version: 1.29.0
       sass:
-        specifier: ^1.49.9
-        version: 1.49.9
+        specifier: ^1.64.1
+        version: 1.64.1
       sinon:
         specifier: ^13.0.2
         version: 13.0.2
@@ -9287,8 +9287,8 @@ packages:
       react-refresh: 0.10.0
       read-pkg-up: 7.0.1
       resolve-bin: 0.4.3
-      sass: 1.60.0
-      sass-loader: 12.6.0(sass@1.60.0)(webpack@5.76.3)
+      sass: 1.64.1
+      sass-loader: 12.6.0(sass@1.64.1)(webpack@5.76.3)
       source-map-loader: 3.0.2(webpack@5.76.3)
       stylelint: 14.16.1
       terser-webpack-plugin: 5.3.9(webpack@5.76.3)
@@ -15801,10 +15801,6 @@ packages:
     resolution: {integrity: sha512-zIE9hX70qew5qTUjSS7wi1iwj/l7+m54KWU247nhM3v806UdGj1yDndXj+IOYxxtW9zyLI+xqFNZjTuDaLUqFw==}
     dev: true
 
-  /immutable@4.3.0:
-    resolution: {integrity: sha512-0AOCmOip+xgJwEVTQj1EfiDDOkPmuyllDuTuEX+DDXUgapLAsBIfkg3sxCYyCEA8mQqZrrxPUGjcOQ2JS3WLkg==}
-    dev: true
-
   /import-cwd@3.0.0:
     resolution: {integrity: sha512-4pnzH16plW+hgvRECbDWpQl3cqtvSofHWh44met7ESfZ8UZOWWddm8hEyDTqREJ9RbYHY8gi8DqmaelApoOGMg==}
     engines: {node: '>=8'}
@@ -21543,7 +21539,7 @@ packages:
   /safer-buffer@2.1.2:
     resolution: {integrity: sha512-YZo3K82SD7Riyi0E1EQPojLz7kpepnSQI9IyPbHHg1XXXevb5dJI7tpyN2ADxGcQbHG7vcyRHk0cbwqcQriUtg==}
 
-  /sass-loader@12.6.0(sass@1.60.0)(webpack@5.76.3):
+  /sass-loader@12.6.0(sass@1.64.1)(webpack@5.76.3):
     resolution: {integrity: sha512-oLTaH0YCtX4cfnJZxKSLAyglED0naiYfNG1iXfU5w1LNZ+ukoA5DtyDIN5zmKVZwYNJP4KRc5Y3hkWga+7tYfA==}
     engines: {node: '>= 12.13.0'}
     peerDependencies:
@@ -21564,27 +21560,17 @@ packages:
     dependencies:
       klona: 2.0.6
       neo-async: 2.6.2
-      sass: 1.60.0
+      sass: 1.64.1
       webpack: 5.76.3(webpack-cli@4.10.0)
     dev: true
 
-  /sass@1.49.9:
-    resolution: {integrity: sha512-YlYWkkHP9fbwaFRZQRXgDi3mXZShslVmmo+FVK3kHLUELHHEYrCmL1x6IUjC7wLS6VuJSAFXRQS/DxdsC4xL1A==}
-    engines: {node: '>=12.0.0'}
+  /sass@1.64.1:
+    resolution: {integrity: sha512-16rRACSOFEE8VN7SCgBu1MpYCyN7urj9At898tyzdXFhC+a+yOX5dXwAR7L8/IdPJ1NB8OYoXmD55DM30B2kEQ==}
+    engines: {node: '>=14.0.0'}
     hasBin: true
     dependencies:
       chokidar: 3.5.3
       immutable: 4.0.0
-      source-map-js: 1.0.2
-    dev: true
-
-  /sass@1.60.0:
-    resolution: {integrity: sha512-updbwW6fNb5gGm8qMXzVO7V4sWf7LMXnMly/JEyfbfERbVH46Fn6q02BX7/eHTdKpE7d+oTkMMQpFWNUMfFbgQ==}
-    engines: {node: '>=12.0.0'}
-    hasBin: true
-    dependencies:
-      chokidar: 3.5.3
-      immutable: 4.3.0
       source-map-js: 1.0.2
     dev: true
 
