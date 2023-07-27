@@ -4,4 +4,9 @@
   .woocommerce-table__empty-item {
     text-wrap: balance;
   }
+
+  .woocommerce-table__header,
+  .woocommerce-table__header button {
+    font-weight: bold;
+  }
 }
