@@ -2,8 +2,10 @@ import { dispatch, select } from '@wordpress/data';
 import { getCurrentDates } from '@woocommerce/date';
 import { addQueryArgs } from '@wordpress/url';
 import { apiFetch } from '@wordpress/data-controls';
+import { Hooks } from 'wp-js-hooks';
 import { CurrentView, Query, Section, SectionData } from '../types';
 import { storeName } from '../constants';
+import { getSampleData } from '../samples';
 import { storeName as editorStoreName } from '../../../../../editor/store/constants';
 
 export function setQuery(query: Query) {
@@ -52,6 +54,20 @@ export function* updateSection(
   queryParam: Query | undefined = undefined,
 ) {
   dispatch(storeName).resetSectionData(section);
+
+  const sampleData = Hooks.applyFilters(
+    'mailpoet_analytics_section_sample_data',
+    getSampleData(section.id),
+    section.id,
+  ) as SectionData;
+
+  if (sampleData) {
+    return {
+      type: 'SET_SECTION_DATA',
+      payload: { ...section, data: sampleData },
+    };
+  }
+
   const query = queryParam ?? select(storeName).getCurrentQuery();
   const defaultDateRange = 'period=month&compare=previous_year';
 
