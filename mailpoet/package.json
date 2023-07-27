@@ -186,7 +186,7 @@
     "sinon-chai": "^3.7.0",
     "storybook-addon-performance": "^0.16.1",
     "string-replace-loader": "^3.1.0",
-    "stylelint": "^14.16.1",
+    "stylelint": "^15.10.2",
     "stylelint-order": "^5.0.0",
     "stylelint-scss": "^4.7.0",
     "terser-webpack-plugin": "^5.3.9",
