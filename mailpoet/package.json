@@ -140,7 +140,7 @@
     "@types/node": "^18.17.1",
     "@types/react": "18.0.28",
     "@types/react-datepicker": "^4.15.0",
-    "@types/react-dom": "^18.0.11",
+    "@types/react-dom": "18.0.11",
     "@types/react-router-dom": "^5.3.3",
     "@types/wordpress__block-editor": "^11.0.1",
     "@types/wordpress__block-library": "^2.6.1",
