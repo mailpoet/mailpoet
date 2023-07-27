@@ -1,5 +1,4 @@
 import { ViewMoreList as WooViewMoreList } from '@woocommerce/components';
-import { Fragment } from '@wordpress/element';
 import { OrderDetails } from '../../../../store';
 
 // WooViewMoreList has return type annotated as Object
@@ -11,10 +10,10 @@ export function ProductsCell({ order }: { order: OrderDetails }) {
   const items =
     order.products.length > 0
       ? order.products.map((item) => (
-          <Fragment key={`key-${item.id}`}>
+          <span key={`key-${item.id}`}>
             {item.name}&nbsp;
             <span className="quantity">({item.quantity}&times;)</span>
-          </Fragment>
+          </span>
         ))
       : [];
 
