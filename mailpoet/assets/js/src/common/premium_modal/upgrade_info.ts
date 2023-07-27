@@ -5,21 +5,11 @@ import { useState } from 'react';
 const {
   currentWpUserEmail,
   MailPoetComUrlFactory: { getPurchasePlanUrl, getUpgradeUrl },
-  subscribersLimitReached,
-  subscribersCount,
-  premiumActive,
-  hasValidApiKey,
-  hasValidPremiumKey,
-  isPremiumPluginInstalled,
-  pluginPartialKey,
   premiumPluginActivationUrl,
 } = MailPoet;
 
-// allow updating installed state to refresh upgrade info
-let isPremiumInstalled = isPremiumPluginInstalled;
-
 export const premiumFeaturesEnabled =
-  hasValidPremiumKey && !subscribersLimitReached;
+  MailPoet.hasValidPremiumKey && !MailPoet.subscribersLimitReached;
 
 export type UpgradeInfo = {
   title: string;
@@ -36,6 +26,16 @@ export type UpgradeInfo = {
       };
 };
 
+export type Data = {
+  premiumInstalled?: boolean;
+  premiumActive?: boolean;
+  hasValidApiKey?: boolean;
+  hasValidPremiumKey?: boolean;
+  pluginPartialKey?: string;
+  subscribersCount?: number;
+  subscribersLimitReached?: boolean;
+};
+
 export type UtmParams = {
   utm_medium?: string;
   utm_campaign?: string;
@@ -50,6 +50,15 @@ const requestPremiumApi = async (action: string): Promise<unknown> =>
 
 // See: https://mailpoet.atlassian.net/browse/MAILPOET-4416
 export const getUpgradeInfo = (
+  {
+    premiumInstalled = MailPoet.isPremiumPluginInstalled,
+    premiumActive = MailPoet.premiumActive,
+    hasValidApiKey = MailPoet.hasValidApiKey,
+    hasValidPremiumKey = !!MailPoet.hasValidPremiumKey,
+    pluginPartialKey = MailPoet.pluginPartialKey,
+    subscribersCount = MailPoet.subscribersCount,
+    subscribersLimitReached = MailPoet.subscribersLimitReached,
+  }: Data = {},
   utmParams: UtmParams = undefined,
   onPremiumInstalled?: () => void,
 ): UpgradeInfo => {
@@ -94,7 +103,7 @@ export const getUpgradeInfo = (
   }
 
   // d. User is eligible for premium features but doesn't have the premium plugin downloaded.
-  if (hasValidPremiumKey && !isPremiumInstalled) {
+  if (hasValidPremiumKey && !premiumInstalled) {
     return {
       title: __('Download the MailPoet Premium plugin', 'mailpoet'),
       info: __('Please download the MailPoet Premium plugin.', 'mailpoet'),
@@ -102,7 +111,6 @@ export const getUpgradeInfo = (
       action: {
         handler: async () => {
           await requestPremiumApi('installPlugin');
-          isPremiumInstalled = true;
           onPremiumInstalled();
         },
         busy: __('Downloading…', 'mailpoet'),
@@ -143,12 +151,20 @@ export const getUpgradeInfo = (
 };
 
 export const useUpgradeInfo = (
+  data: Data = {},
   utmParams: UtmParams = undefined,
 ): UpgradeInfo => {
   // update info via "onInstalled" callback when premium plugin is installed
   const [info, setInfo] = useState(() => {
-    const onInstalled = () => setInfo(getUpgradeInfo(utmParams, onInstalled));
-    return getUpgradeInfo(utmParams, onInstalled);
+    const onInstalled = () =>
+      setInfo(
+        getUpgradeInfo(
+          { ...data, premiumInstalled: true },
+          utmParams,
+          onInstalled,
+        ),
+      );
+    return getUpgradeInfo(data, utmParams, onInstalled);
   });
   return info;
 };
