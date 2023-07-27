@@ -314,6 +314,28 @@ class MailPoetCustomFieldsTest extends \MailPoetTest {
     $this->assertEqualsCanonicalizing([$subscriber->getEmail()], $emails);
   }
 
+  public function testEmptyStringCountsAsBlank(): void {
+    $subscriber = $this->subscribers[1];
+    $customField = $this->createCustomField(CustomFieldEntity::TYPE_TEXT);
+    $this->entityManager->persist(new SubscriberCustomFieldEntity($subscriber, $customField, ''));
+    $this->entityManager->persist($customField);
+    $this->entityManager->flush();
+    $blankData = new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_USER_ROLE, MailPoetCustomFields::TYPE, [
+      'custom_field_id' => $customField->getId(),
+      'custom_field_type' => CustomFieldEntity::TYPE_TEXT,
+      'operator' => 'is_blank',
+    ]);
+    $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($blankData, $this->filter);
+    $this->assertEqualsCanonicalizing([$this->subscribers[0]->getEmail(), $this->subscribers[1]->getEmail(), $this->subscribers[2]->getEmail()], $emails);
+    $notBlankData = new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_USER_ROLE, MailPoetCustomFields::TYPE, [
+      'custom_field_id' => $customField->getId(),
+      'custom_field_type' => CustomFieldEntity::TYPE_TEXT,
+      'operator' => 'is_not_blank',
+    ]);
+    $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($notBlankData, $this->filter);
+    $this->assertEqualsCanonicalizing([], $emails);
+  }
+
   public function testTextAreaWorksWithBlankOptions(): void {
     $subscriber = $this->subscribers[1];
     $customField = $this->createCustomField(CustomFieldEntity::TYPE_TEXT);
