@@ -325,8 +325,8 @@ importers:
         specifier: ^7.22.5
         version: 7.22.5(@babel/core@7.22.9)
       '@babel/register':
-        specifier: ^7.17.7
-        version: 7.17.7(@babel/core@7.22.9)
+        specifier: ^7.22.5
+        version: 7.22.5(@babel/core@7.22.9)
       '@mailpoet/eslint-config':
         specifier: workspace:^
         version: link:../packages/js/eslint-config
@@ -3571,8 +3571,8 @@ packages:
       '@babel/plugin-transform-typescript': 7.22.9(@babel/core@7.22.9)
     dev: true
 
-  /@babel/register@7.17.7(@babel/core@7.22.9):
-    resolution: {integrity: sha512-fg56SwvXRifootQEDQAu1mKdjh5uthPzdO0N6t358FktfL4XjAVXuH58ULoiW8mesxiOgNIrxiImqEwv0+hRRA==}
+  /@babel/register@7.22.5(@babel/core@7.22.9):
+    resolution: {integrity: sha512-vV6pm/4CijSQ8Y47RH5SopXzursN35RQINfGJkmOlcpAtGuf94miFvIPhCKGQN7WGIcsgG1BHEX2KVdTYwTwUQ==}
     engines: {node: '>=6.9.0'}
     peerDependencies:
       '@babel/core': ^7.0.0-0
@@ -5246,7 +5246,7 @@ packages:
       '@babel/preset-env': 7.18.9(@babel/core@7.22.9)
       '@babel/preset-react': 7.22.5(@babel/core@7.22.9)
       '@babel/preset-typescript': 7.22.5(@babel/core@7.22.9)
-      '@babel/register': 7.17.7(@babel/core@7.22.9)
+      '@babel/register': 7.22.5(@babel/core@7.22.9)
       '@storybook/node-logger': 6.4.19
       '@storybook/semver': 7.3.2
       '@types/node': 14.14.37
