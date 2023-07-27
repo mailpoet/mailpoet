@@ -180,7 +180,7 @@
     "phplint": "^2.0.5",
     "postcss-cli": "^9.1.0",
     "postcss-scss": "^4.0.6",
-    "prismjs": "^1.28.0",
+    "prismjs": "^1.29.0",
     "sass": "^1.49.9",
     "sinon": "^13.0.2",
     "sinon-chai": "^3.7.0",
