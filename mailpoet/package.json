@@ -125,7 +125,7 @@
     "@babel/register": "^7.22.5",
     "@mailpoet/eslint-config": "workspace:^",
     "@storybook/addon-actions": "^7.1.1",
-    "@storybook/addon-links": "^6.5.16",
+    "@storybook/addon-links": "^7.1.1",
     "@storybook/addon-storysource": "^6.5.16",
     "@storybook/addons": "^6.5.16",
     "@storybook/builder-webpack5": "^6.5.16",
