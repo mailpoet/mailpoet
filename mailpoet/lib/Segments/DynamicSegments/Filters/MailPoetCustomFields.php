@@ -155,9 +155,9 @@ class MailPoetCustomFields implements Filter {
       $queryBuilder->andWhere("subscribers_custom_field.value < $valueParam");
       $queryBuilder->setParameter($valueParam, $value);
     } elseif ($operator === DynamicSegmentFilterData::IS_BLANK) {
-      $queryBuilder->andWhere('subscribers_custom_field.value IS NULL');
+      $queryBuilder->andWhere('subscribers_custom_field.value IS NULL OR subscribers_custom_field.value = ""');
     } elseif ($operator === DynamicSegmentFilterData::IS_NOT_BLANK) {
-      $queryBuilder->andWhere('subscribers_custom_field.value IS NOT NULL');
+      $queryBuilder->andWhere('subscribers_custom_field.value IS NOT NULL AND subscribers_custom_field.value != ""');
     } elseif ($operator === 'not_contains') {
       $queryBuilder->andWhere("subscribers_custom_field.value NOT LIKE $valueParam");
       $queryBuilder->setParameter($valueParam, '%' . Helpers::escapeSearch($value) . '%');
