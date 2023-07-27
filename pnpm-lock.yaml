@@ -234,8 +234,8 @@ importers:
         specifier: 18.2.0
         version: 18.2.0
       react-beautiful-dnd:
-        specifier: ^13.1.0
-        version: 13.1.0(react-dom@18.2.0)(react@18.2.0)
+        specifier: ^13.1.1
+        version: 13.1.1(react-dom@18.2.0)(react@18.2.0)
       react-datepicker:
         specifier: ^4.7.0
         version: 4.7.0(react-dom@18.2.0)(react@18.2.0)
@@ -20182,11 +20182,11 @@ packages:
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
 
-  /react-beautiful-dnd@13.1.0(react-dom@18.2.0)(react@18.2.0):
-    resolution: {integrity: sha512-aGvblPZTJowOWUNiwd6tNfEpgkX5OxmpqxHKNW/4VmvZTNTbeiq7bA3bn5T+QSF2uibXB0D1DmJsb1aC/+3cUA==}
+  /react-beautiful-dnd@13.1.1(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-0Lvs4tq2VcrEjEgDXHjT98r+63drkKEgqyxdA7qD3mvKwga6a5SscbdLPO2IExotU1jW8L0Ksdl0Cj2AF67nPQ==}
     peerDependencies:
-      react: ^16.8.5 || ^17.0.0
-      react-dom: ^16.8.5 || ^17.0.0
+      react: ^16.8.5 || ^17.0.0 || ^18.0.0
+      react-dom: ^16.8.5 || ^17.0.0 || ^18.0.0
     dependencies:
       '@babel/runtime': 7.18.6
       css-box-model: 1.2.0
