@@ -77,12 +77,12 @@ export function* updateSection(
   );
 
   const formatDate = (date: Date, endOfDay = false): string => {
-    const dateString = `${date.getFullYear()}-${
-      date.getMonth() < 9 ? '0' : ''
-    }${date.getMonth() + 1}-${date.getDate() < 10 ? '0' : ''}${date.getDate()}`;
-    const newDate = new Date(
-      `${dateString}T${endOfDay ? '23:59:59.999' : '00:00:00.000'}Z`,
-    );
+    const newDate = new Date(date.getTime());
+    if (endOfDay) {
+      newDate.setUTCHours(23, 59, 59, 999);
+    } else {
+      newDate.setUTCHours(0, 0, 0, 0);
+    }
     return newDate.toISOString();
   };
 
