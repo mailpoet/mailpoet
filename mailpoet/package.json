@@ -195,7 +195,7 @@
     "webpack": "^5.88.2",
     "webpack-cli": "^4.10.0",
     "webpack-manifest-plugin": "^5.0.0",
-    "wp-types": "^3.59.1"
+    "wp-types": "^3.62.4"
   },
   "volta": {
     "extends": "../package.json"
