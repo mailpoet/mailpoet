@@ -5,6 +5,15 @@
     text-wrap: balance;
   }
 
+  .woocommerce-table__header.is-sortable {
+    padding: 2px;
+
+    button {
+      padding: 4px 20px;
+      width: 100%;
+    }
+  }
+
   .woocommerce-table__header,
   .woocommerce-table__header button {
     font-weight: bold;
