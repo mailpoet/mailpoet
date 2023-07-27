@@ -496,8 +496,8 @@ importers:
         specifier: ^9.1.0
         version: 9.1.0(postcss@8.4.14)
       postcss-scss:
-        specifier: ^4.0.3
-        version: 4.0.3(postcss@8.4.14)
+        specifier: ^4.0.6
+        version: 4.0.6(postcss@8.4.14)
       prismjs:
         specifier: ^1.28.0
         version: 1.28.0
@@ -22220,11 +22220,11 @@ packages:
       postcss: 8.4.21
     dev: true
 
-  /postcss-scss@4.0.3(postcss@8.4.14):
-    resolution: {integrity: sha512-j4KxzWovfdHsyxwl1BxkUal/O4uirvHgdzMKS1aWJBAV0qh2qj5qAZqpeBfVUYGWv+4iK9Az7SPyZ4fyNju1uA==}
+  /postcss-scss@4.0.6(postcss@8.4.14):
+    resolution: {integrity: sha512-rLDPhJY4z/i4nVFZ27j9GqLxj1pwxE80eAzUNRMXtcpipFYIeowerzBgG3yJhMtObGEXidtIgbUpQ3eLDsf5OQ==}
     engines: {node: '>=12.0'}
     peerDependencies:
-      postcss: ^8.3.3
+      postcss: ^8.4.19
     dependencies:
       postcss: 8.4.14
     dev: true
