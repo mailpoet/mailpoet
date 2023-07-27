@@ -523,8 +523,8 @@ importers:
         specifier: ^5.0.0
         version: 5.0.0(stylelint@14.16.1)
       stylelint-scss:
-        specifier: ^4.2.0
-        version: 4.2.0(stylelint@14.16.1)
+        specifier: ^4.7.0
+        version: 4.7.0(stylelint@14.16.1)
       terser-webpack-plugin:
         specifier: ^5.3.9
         version: 5.3.9(webpack@5.74.0)
@@ -19892,14 +19892,6 @@ packages:
       postcss: 8.4.21
     dev: true
 
-  /postcss-selector-parser@6.0.10:
-    resolution: {integrity: sha512-IQ7TZdoaqbT+LCpShg46jnZVlhWD2w6iQYAcYXfHARZ7X1t/UGhhceQDs5X0cGqKvYlHNOuv7Oa1xmb0oQuA3w==}
-    engines: {node: '>=4'}
-    dependencies:
-      cssesc: 3.0.0
-      util-deprecate: 1.0.2
-    dev: true
-
   /postcss-selector-parser@6.0.13:
     resolution: {integrity: sha512-EaV1Gl4mUEV4ddhDnv/xtj7sxwrwxdetHdWUGnT4VJQf+4d05v6lHYZr8N573k5Z0BViss7BDhfWtKS3+sfAqQ==}
     engines: {node: '>=4'}
@@ -22640,7 +22632,7 @@ packages:
       postcss-scss: 4.0.6(postcss@8.4.21)
       stylelint: 14.16.1
       stylelint-config-recommended: 6.0.0(stylelint@14.16.1)
-      stylelint-scss: 4.5.0(stylelint@14.16.1)
+      stylelint-scss: 4.7.0(stylelint@14.16.1)
     transitivePeerDependencies:
       - postcss
     dev: true
@@ -22663,25 +22655,11 @@ packages:
       stylelint: 14.16.1
     dev: true
 
-  /stylelint-scss@4.2.0(stylelint@14.16.1):
-    resolution: {integrity: sha512-HHHMVKJJ5RM9pPIbgJ/XA67h9H0407G68Rm69H4fzFbFkyDMcTV1Byep3qdze5+fJ3c0U7mJrbj6S0Fg072uZA==}
-    peerDependencies:
-      stylelint: ^14.5.1
-    dependencies:
-      lodash: 4.17.21
-      postcss-media-query-parser: 0.2.3
-      postcss-resolve-nested-selector: 0.1.1
-      postcss-selector-parser: 6.0.10
-      postcss-value-parser: 4.2.0
-      stylelint: 14.16.1
-    dev: true
-
-  /stylelint-scss@4.5.0(stylelint@14.16.1):
-    resolution: {integrity: sha512-/+rQ8FePOiwT5xblOHkujYzRYfSjmE6HYhLpqJShL+9wH6/HaAVj4mWpXlpEsM3ZgIpOblG9Y+/BycSJzWgjNw==}
+  /stylelint-scss@4.7.0(stylelint@14.16.1):
+    resolution: {integrity: sha512-TSUgIeS0H3jqDZnby1UO1Qv3poi1N8wUYIJY6D1tuUq2MN3lwp/rITVo0wD+1SWTmRm0tNmGO0b7nKInnqF6Hg==}
     peerDependencies:
       stylelint: ^14.5.1 || ^15.0.0
     dependencies:
-      lodash: 4.17.21
       postcss-media-query-parser: 0.2.3
       postcss-resolve-nested-selector: 0.1.1
       postcss-selector-parser: 6.0.13
