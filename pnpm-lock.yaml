@@ -523,8 +523,8 @@ importers:
         specifier: ^6.0.3
         version: 6.0.3(stylelint@15.10.2)
       stylelint-scss:
-        specifier: ^4.7.0
-        version: 4.7.0(stylelint@15.10.2)
+        specifier: ^5.0.1
+        version: 5.0.1(stylelint@15.10.2)
       terser-webpack-plugin:
         specifier: ^5.3.9
         version: 5.3.9(webpack@5.88.2)
@@ -21628,8 +21628,8 @@ packages:
       stylelint: 14.16.1
     dev: true
 
-  /stylelint-scss@4.7.0(stylelint@15.10.2):
-    resolution: {integrity: sha512-TSUgIeS0H3jqDZnby1UO1Qv3poi1N8wUYIJY6D1tuUq2MN3lwp/rITVo0wD+1SWTmRm0tNmGO0b7nKInnqF6Hg==}
+  /stylelint-scss@5.0.1(stylelint@15.10.2):
+    resolution: {integrity: sha512-n87iCRZrr2J7//I/QFsDXxFLnHKw633U4qvWZ+mOW6KDAp/HLj06H+6+f9zOuTYy+MdGdTuCSDROCpQIhw5fvQ==}
     peerDependencies:
       stylelint: ^14.5.1 || ^15.0.0
     dependencies:
