@@ -29,16 +29,26 @@
 
   .mailpoet-automations-analytics-order-products {
     align-items: center;
+    column-gap: 8px;
     display: flex;
+    flex-wrap: wrap;
 
     .quantity {
       color: $color-gutenberg-grey-700;
     }
 
     .woocommerce-view-more-list {
+      margin: 0;
+      padding: 0;
+
       button {
         background: transparent;
         border-radius: 0;
+        height: auto;
+        line-height: inherit;
+        margin: 0;
+        overflow: visible;
+        padding: 0;
         text-decoration: underline dotted;
       }
     }
