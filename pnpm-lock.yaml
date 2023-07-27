@@ -361,8 +361,8 @@ importers:
         specifier: ^3.5.16
         version: 3.5.16
       '@types/js-cookie':
-        specifier: ^3.0.2
-        version: 3.0.2
+        specifier: ^3.0.3
+        version: 3.0.3
       '@types/lodash':
         specifier: ^4.14.180
         version: 4.14.180
@@ -9064,8 +9064,8 @@ packages:
     dependencies:
       '@types/sizzle': 2.3.3
 
-  /@types/js-cookie@3.0.2:
-    resolution: {integrity: sha512-6+0ekgfusHftJNYpihfkMu8BWdeHs9EOJuGcSofErjstGPfPGEu9yTu4t460lTzzAMl2cM5zngQJqPMHbbnvYA==}
+  /@types/js-cookie@3.0.3:
+    resolution: {integrity: sha512-Xe7IImK09HP1sv2M/aI+48a20VX+TdRJucfq4vfRVy6nWN8PYPOEnlMRSgxJAgYQIXJVL8dZ4/ilAM7dWNaOww==}
     dev: true
 
   /@types/json-schema@7.0.11:
