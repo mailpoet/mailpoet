@@ -340,8 +340,8 @@ importers:
         specifier: ^7.1.1
         version: 7.1.1(react-dom@18.2.0)(react@18.2.0)
       '@storybook/addons':
-        specifier: ^6.5.16
-        version: 6.5.16(react-dom@18.2.0)(react@18.2.0)
+        specifier: ^7.1.1
+        version: 7.1.1(react-dom@18.2.0)(react@18.2.0)
       '@storybook/builder-webpack5':
         specifier: ^6.5.16
         version: 6.5.16(react-dom@18.2.0)(react@18.2.0)(typescript@5.0.2)(webpack-cli@4.10.0)
@@ -5203,6 +5203,19 @@ packages:
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
       regenerator-runtime: 0.13.11
+    dev: true
+
+  /@storybook/addons@7.1.1(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-cIjbmMV4+C6VJ7bzfaQWRrw944FCjGidU5pPxQTP8ROqlP2Noqq1GzQ3uqjxH6uiw6Wl3c4OAVU6bUV7F5B1lA==}
+    peerDependencies:
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0
+      react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
+    dependencies:
+      '@storybook/manager-api': 7.1.1(react-dom@18.2.0)(react@18.2.0)
+      '@storybook/preview-api': 7.1.1
+      '@storybook/types': 7.1.1
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
     dev: true
 
   /@storybook/api@6.4.19(react-dom@18.2.0)(react@18.2.0):
