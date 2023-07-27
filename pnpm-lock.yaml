@@ -344,13 +344,13 @@ importers:
         version: 6.5.16(react-dom@18.2.0)(react@18.2.0)
       '@storybook/builder-webpack5':
         specifier: ^6.5.16
-        version: 6.5.16(react-dom@18.2.0)(react@18.2.0)(typescript@5.0.2)(webpack-cli@4.9.2)
+        version: 6.5.16(react-dom@18.2.0)(react@18.2.0)(typescript@5.0.2)(webpack-cli@4.10.0)
       '@storybook/manager-webpack5':
         specifier: ^6.5.16
-        version: 6.5.16(react-dom@18.2.0)(react@18.2.0)(typescript@5.0.2)(webpack-cli@4.9.2)
+        version: 6.5.16(react-dom@18.2.0)(react@18.2.0)(typescript@5.0.2)(webpack-cli@4.10.0)
       '@storybook/react':
         specifier: ^6.5.16
-        version: 6.5.16(@babel/core@7.22.9)(@storybook/builder-webpack5@6.5.16)(@storybook/manager-webpack5@6.5.16)(react-dom@18.2.0)(react@18.2.0)(typescript@5.0.2)(webpack-cli@4.9.2)
+        version: 6.5.16(@babel/core@7.22.9)(@storybook/builder-webpack5@6.5.16)(@storybook/manager-webpack5@6.5.16)(react-dom@18.2.0)(react@18.2.0)(typescript@5.0.2)(webpack-cli@4.10.0)
       '@types/grecaptcha':
         specifier: ^3.0.4
         version: 3.0.4
@@ -536,10 +536,10 @@ importers:
         version: 0.11.0
       webpack:
         specifier: ^5.88.2
-        version: 5.88.2(webpack-cli@4.9.2)
+        version: 5.88.2(webpack-cli@4.10.0)
       webpack-cli:
-        specifier: ^4.9.2
-        version: 4.9.2(webpack@5.88.2)
+        specifier: ^4.10.0
+        version: 4.10.0(webpack@5.88.2)
       webpack-manifest-plugin:
         specifier: ^5.0.0
         version: 5.0.0(webpack@5.88.2)
@@ -4960,7 +4960,7 @@ packages:
       react-refresh: 0.11.0
       schema-utils: 3.3.0
       source-map: 0.7.3
-      webpack: 5.88.2(webpack-cli@4.9.2)
+      webpack: 5.88.2(webpack-cli@4.10.0)
     dev: true
 
   /@polka/url@1.0.0-next.21:
@@ -5242,7 +5242,7 @@ packages:
       util-deprecate: 1.0.2
     dev: true
 
-  /@storybook/builder-webpack4@6.5.16(react-dom@18.2.0)(react@18.2.0)(typescript@5.0.2)(webpack-cli@4.9.2):
+  /@storybook/builder-webpack4@6.5.16(react-dom@18.2.0)(react@18.2.0)(typescript@5.0.2)(webpack-cli@4.10.0):
     resolution: {integrity: sha512-YqDIrVNsUo8r9xc6AxsYDLxVYtMgl5Bxk+8/h1adsOko+jAFhdg6hOcAVxEmoSI0TMASOOVMFlT2hr23ppN2rQ==}
     peerDependencies:
       react: ^16.8.0 || ^17.0.0 || ^18.0.0
@@ -5260,7 +5260,7 @@ packages:
       '@storybook/client-api': 6.5.16(react-dom@18.2.0)(react@18.2.0)
       '@storybook/client-logger': 6.5.16
       '@storybook/components': 6.5.16(react-dom@18.2.0)(react@18.2.0)
-      '@storybook/core-common': 6.5.16(react-dom@18.2.0)(react@18.2.0)(typescript@5.0.2)(webpack-cli@4.9.2)
+      '@storybook/core-common': 6.5.16(react-dom@18.2.0)(react@18.2.0)(typescript@5.0.2)(webpack-cli@4.10.0)
       '@storybook/core-events': 6.5.16
       '@storybook/node-logger': 6.5.16
       '@storybook/preview-web': 6.5.16(react-dom@18.2.0)(react@18.2.0)
@@ -5297,7 +5297,7 @@ packages:
       typescript: 5.0.2
       url-loader: 4.1.1(file-loader@6.2.0)(webpack@4.46.0)
       util-deprecate: 1.0.2
-      webpack: 4.46.0(webpack-cli@4.9.2)
+      webpack: 4.46.0(webpack-cli@4.10.0)
       webpack-dev-middleware: 3.7.3(webpack@4.46.0)
       webpack-filter-warnings-plugin: 1.2.1(webpack@4.46.0)
       webpack-hot-middleware: 2.25.4
@@ -5311,7 +5311,7 @@ packages:
       - webpack-command
     dev: true
 
-  /@storybook/builder-webpack5@6.5.16(react-dom@18.2.0)(react@18.2.0)(typescript@5.0.2)(webpack-cli@4.9.2):
+  /@storybook/builder-webpack5@6.5.16(react-dom@18.2.0)(react@18.2.0)(typescript@5.0.2)(webpack-cli@4.10.0):
     resolution: {integrity: sha512-kh8Sofm1sbijaHDWtm0sXabqACHVFjikU/fIkkW786kpjoPIPIec1a+hrLgDsZxMU3I7XapSOaCFzWt6FjVXjg==}
     peerDependencies:
       react: ^16.8.0 || ^17.0.0 || ^18.0.0
@@ -5329,7 +5329,7 @@ packages:
       '@storybook/client-api': 6.5.16(react-dom@18.2.0)(react@18.2.0)
       '@storybook/client-logger': 6.5.16
       '@storybook/components': 6.5.16(react-dom@18.2.0)(react@18.2.0)
-      '@storybook/core-common': 6.5.16(react-dom@18.2.0)(react@18.2.0)(typescript@5.0.2)(webpack-cli@4.9.2)
+      '@storybook/core-common': 6.5.16(react-dom@18.2.0)(react@18.2.0)(typescript@5.0.2)(webpack-cli@4.10.0)
       '@storybook/core-events': 6.5.16
       '@storybook/node-logger': 6.5.16
       '@storybook/preview-web': 6.5.16(react-dom@18.2.0)(react@18.2.0)
@@ -5358,7 +5358,7 @@ packages:
       ts-dedent: 2.2.0
       typescript: 5.0.2
       util-deprecate: 1.0.2
-      webpack: 5.88.2(webpack-cli@4.9.2)
+      webpack: 5.88.2(webpack-cli@4.10.0)
       webpack-dev-middleware: 4.3.0(webpack@5.88.2)
       webpack-hot-middleware: 2.25.1
       webpack-virtual-modules: 0.4.3
@@ -5543,7 +5543,7 @@ packages:
       typescript: 5.0.2
       unfetch: 4.2.0
       util-deprecate: 1.0.2
-      webpack: 4.46.0(webpack-cli@4.9.2)
+      webpack: 4.46.0(webpack-cli@4.10.0)
     dev: true
 
   /@storybook/core-client@6.5.16(react-dom@18.2.0)(react@18.2.0)(typescript@5.0.2)(webpack@5.88.2):
@@ -5580,10 +5580,10 @@ packages:
       typescript: 5.0.2
       unfetch: 4.2.0
       util-deprecate: 1.0.2
-      webpack: 5.88.2(webpack-cli@4.9.2)
+      webpack: 5.88.2(webpack-cli@4.10.0)
     dev: true
 
-  /@storybook/core-common@6.5.16(react-dom@18.2.0)(react@18.2.0)(typescript@5.0.2)(webpack-cli@4.9.2):
+  /@storybook/core-common@6.5.16(react-dom@18.2.0)(react@18.2.0)(typescript@5.0.2)(webpack-cli@4.10.0):
     resolution: {integrity: sha512-2qtnKP3TTOzt2cp6LXKRTh7XrI9z5VanMnMTgeoFcA5ebnndD4V6BExQUdYPClE/QooLx6blUWNgS9dFEpjSqQ==}
     peerDependencies:
       react: ^16.8.0 || ^17.0.0 || ^18.0.0
@@ -5645,7 +5645,7 @@ packages:
       ts-dedent: 2.2.0
       typescript: 5.0.2
       util-deprecate: 1.0.2
-      webpack: 4.46.0(webpack-cli@4.9.2)
+      webpack: 4.46.0(webpack-cli@4.10.0)
     transitivePeerDependencies:
       - eslint
       - supports-color
@@ -5666,7 +5666,7 @@ packages:
       core-js: 3.31.1
     dev: true
 
-  /@storybook/core-server@6.5.16(@storybook/builder-webpack5@6.5.16)(@storybook/manager-webpack5@6.5.16)(react-dom@18.2.0)(react@18.2.0)(typescript@5.0.2)(webpack-cli@4.9.2):
+  /@storybook/core-server@6.5.16(@storybook/builder-webpack5@6.5.16)(@storybook/manager-webpack5@6.5.16)(react-dom@18.2.0)(react@18.2.0)(typescript@5.0.2)(webpack-cli@4.10.0):
     resolution: {integrity: sha512-/3NPfmNyply395Dm0zaVZ8P9aruwO+tPx4D6/jpw8aqrRSwvAMndPMpoMCm0NXcpSm5rdX+Je4S3JW6JcggFkA==}
     peerDependencies:
       '@storybook/builder-webpack5': '*'
@@ -5683,19 +5683,19 @@ packages:
         optional: true
     dependencies:
       '@discoveryjs/json-ext': 0.5.7
-      '@storybook/builder-webpack4': 6.5.16(react-dom@18.2.0)(react@18.2.0)(typescript@5.0.2)(webpack-cli@4.9.2)
-      '@storybook/builder-webpack5': 6.5.16(react-dom@18.2.0)(react@18.2.0)(typescript@5.0.2)(webpack-cli@4.9.2)
+      '@storybook/builder-webpack4': 6.5.16(react-dom@18.2.0)(react@18.2.0)(typescript@5.0.2)(webpack-cli@4.10.0)
+      '@storybook/builder-webpack5': 6.5.16(react-dom@18.2.0)(react@18.2.0)(typescript@5.0.2)(webpack-cli@4.10.0)
       '@storybook/core-client': 6.5.16(react-dom@18.2.0)(react@18.2.0)(typescript@5.0.2)(webpack@4.46.0)
-      '@storybook/core-common': 6.5.16(react-dom@18.2.0)(react@18.2.0)(typescript@5.0.2)(webpack-cli@4.9.2)
+      '@storybook/core-common': 6.5.16(react-dom@18.2.0)(react@18.2.0)(typescript@5.0.2)(webpack-cli@4.10.0)
       '@storybook/core-events': 6.5.16
       '@storybook/csf': 0.0.2--canary.4566f4d.1
       '@storybook/csf-tools': 6.5.16
-      '@storybook/manager-webpack4': 6.5.16(react-dom@18.2.0)(react@18.2.0)(typescript@5.0.2)(webpack-cli@4.9.2)
-      '@storybook/manager-webpack5': 6.5.16(react-dom@18.2.0)(react@18.2.0)(typescript@5.0.2)(webpack-cli@4.9.2)
+      '@storybook/manager-webpack4': 6.5.16(react-dom@18.2.0)(react@18.2.0)(typescript@5.0.2)(webpack-cli@4.10.0)
+      '@storybook/manager-webpack5': 6.5.16(react-dom@18.2.0)(react@18.2.0)(typescript@5.0.2)(webpack-cli@4.10.0)
       '@storybook/node-logger': 6.5.16
       '@storybook/semver': 7.3.2
       '@storybook/store': 6.5.16(react-dom@18.2.0)(react@18.2.0)
-      '@storybook/telemetry': 6.5.16(react-dom@18.2.0)(react@18.2.0)(typescript@5.0.2)(webpack-cli@4.9.2)
+      '@storybook/telemetry': 6.5.16(react-dom@18.2.0)(react@18.2.0)(typescript@5.0.2)(webpack-cli@4.10.0)
       '@types/node': 16.18.39
       '@types/node-fetch': 2.6.4
       '@types/pretty-hrtime': 1.0.1
@@ -5729,7 +5729,7 @@ packages:
       typescript: 5.0.2
       util-deprecate: 1.0.2
       watchpack: 2.4.0
-      webpack: 4.46.0(webpack-cli@4.9.2)
+      webpack: 4.46.0(webpack-cli@4.10.0)
       ws: 8.13.0
       x-default-browser: 0.4.0
     transitivePeerDependencies:
@@ -5745,7 +5745,7 @@ packages:
       - webpack-command
     dev: true
 
-  /@storybook/core@6.5.16(@storybook/builder-webpack5@6.5.16)(@storybook/manager-webpack5@6.5.16)(react-dom@18.2.0)(react@18.2.0)(typescript@5.0.2)(webpack-cli@4.9.2)(webpack@5.88.2):
+  /@storybook/core@6.5.16(@storybook/builder-webpack5@6.5.16)(@storybook/manager-webpack5@6.5.16)(react-dom@18.2.0)(react@18.2.0)(typescript@5.0.2)(webpack-cli@4.10.0)(webpack@5.88.2):
     resolution: {integrity: sha512-CEF3QFTsm/VMnMKtRNr4rRdLeIkIG0g1t26WcmxTdSThNPBd8CsWzQJ7Jqu7CKiut+MU4A1LMOwbwCE5F2gmyA==}
     peerDependencies:
       '@storybook/builder-webpack5': '*'
@@ -5762,14 +5762,14 @@ packages:
       typescript:
         optional: true
     dependencies:
-      '@storybook/builder-webpack5': 6.5.16(react-dom@18.2.0)(react@18.2.0)(typescript@5.0.2)(webpack-cli@4.9.2)
+      '@storybook/builder-webpack5': 6.5.16(react-dom@18.2.0)(react@18.2.0)(typescript@5.0.2)(webpack-cli@4.10.0)
       '@storybook/core-client': 6.5.16(react-dom@18.2.0)(react@18.2.0)(typescript@5.0.2)(webpack@5.88.2)
-      '@storybook/core-server': 6.5.16(@storybook/builder-webpack5@6.5.16)(@storybook/manager-webpack5@6.5.16)(react-dom@18.2.0)(react@18.2.0)(typescript@5.0.2)(webpack-cli@4.9.2)
-      '@storybook/manager-webpack5': 6.5.16(react-dom@18.2.0)(react@18.2.0)(typescript@5.0.2)(webpack-cli@4.9.2)
+      '@storybook/core-server': 6.5.16(@storybook/builder-webpack5@6.5.16)(@storybook/manager-webpack5@6.5.16)(react-dom@18.2.0)(react@18.2.0)(typescript@5.0.2)(webpack-cli@4.10.0)
+      '@storybook/manager-webpack5': 6.5.16(react-dom@18.2.0)(react@18.2.0)(typescript@5.0.2)(webpack-cli@4.10.0)
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
       typescript: 5.0.2
-      webpack: 5.88.2(webpack-cli@4.9.2)
+      webpack: 5.88.2(webpack-cli@4.10.0)
     transitivePeerDependencies:
       - '@storybook/mdx2-csf'
       - bluebird
@@ -5837,7 +5837,7 @@ packages:
       - supports-color
     dev: true
 
-  /@storybook/manager-webpack4@6.5.16(react-dom@18.2.0)(react@18.2.0)(typescript@5.0.2)(webpack-cli@4.9.2):
+  /@storybook/manager-webpack4@6.5.16(react-dom@18.2.0)(react@18.2.0)(typescript@5.0.2)(webpack-cli@4.10.0):
     resolution: {integrity: sha512-5VJZwmQU6AgdsBPsYdu886UKBHQ9SJEnFMaeUxKEclXk+iRsmbzlL4GHKyVd6oGX/ZaecZtcHPR6xrzmA4Ziew==}
     peerDependencies:
       react: ^16.8.0 || ^17.0.0 || ^18.0.0
@@ -5852,7 +5852,7 @@ packages:
       '@babel/preset-react': 7.22.5(@babel/core@7.22.9)
       '@storybook/addons': 6.5.16(react-dom@18.2.0)(react@18.2.0)
       '@storybook/core-client': 6.5.16(react-dom@18.2.0)(react@18.2.0)(typescript@5.0.2)(webpack@4.46.0)
-      '@storybook/core-common': 6.5.16(react-dom@18.2.0)(react@18.2.0)(typescript@5.0.2)(webpack-cli@4.9.2)
+      '@storybook/core-common': 6.5.16(react-dom@18.2.0)(react@18.2.0)(typescript@5.0.2)(webpack-cli@4.10.0)
       '@storybook/node-logger': 6.5.16
       '@storybook/theming': 6.5.16(react-dom@18.2.0)(react@18.2.0)
       '@storybook/ui': 6.5.16(react-dom@18.2.0)(react@18.2.0)
@@ -5882,7 +5882,7 @@ packages:
       typescript: 5.0.2
       url-loader: 4.1.1(file-loader@6.2.0)(webpack@4.46.0)
       util-deprecate: 1.0.2
-      webpack: 4.46.0(webpack-cli@4.9.2)
+      webpack: 4.46.0(webpack-cli@4.10.0)
       webpack-dev-middleware: 3.7.3(webpack@4.46.0)
       webpack-virtual-modules: 0.2.2
     transitivePeerDependencies:
@@ -5895,7 +5895,7 @@ packages:
       - webpack-command
     dev: true
 
-  /@storybook/manager-webpack5@6.5.16(react-dom@18.2.0)(react@18.2.0)(typescript@5.0.2)(webpack-cli@4.9.2):
+  /@storybook/manager-webpack5@6.5.16(react-dom@18.2.0)(react@18.2.0)(typescript@5.0.2)(webpack-cli@4.10.0):
     resolution: {integrity: sha512-OtxXv8JCe0r/0rE5HxaFicsNsXA+fqZxzokxquFFgrYf/1Jg4d7QX6/pG5wINF+5qInJfVkRG6xhPzv1s5bk9Q==}
     peerDependencies:
       react: ^16.8.0 || ^17.0.0 || ^18.0.0
@@ -5910,7 +5910,7 @@ packages:
       '@babel/preset-react': 7.22.5(@babel/core@7.22.9)
       '@storybook/addons': 6.5.16(react-dom@18.2.0)(react@18.2.0)
       '@storybook/core-client': 6.5.16(react-dom@18.2.0)(react@18.2.0)(typescript@5.0.2)(webpack@5.88.2)
-      '@storybook/core-common': 6.5.16(react-dom@18.2.0)(react@18.2.0)(typescript@5.0.2)(webpack-cli@4.9.2)
+      '@storybook/core-common': 6.5.16(react-dom@18.2.0)(react@18.2.0)(typescript@5.0.2)(webpack-cli@4.10.0)
       '@storybook/node-logger': 6.5.16
       '@storybook/theming': 6.5.16(react-dom@18.2.0)(react@18.2.0)
       '@storybook/ui': 6.5.16(react-dom@18.2.0)(react@18.2.0)
@@ -5937,7 +5937,7 @@ packages:
       ts-dedent: 2.2.0
       typescript: 5.0.2
       util-deprecate: 1.0.2
-      webpack: 5.88.2(webpack-cli@4.9.2)
+      webpack: 5.88.2(webpack-cli@4.10.0)
       webpack-dev-middleware: 4.3.0(webpack@5.88.2)
       webpack-virtual-modules: 0.4.3
     transitivePeerDependencies:
@@ -6021,12 +6021,12 @@ packages:
       react-docgen-typescript: 2.2.2(typescript@5.0.2)
       tslib: 2.6.1
       typescript: 5.0.2
-      webpack: 5.88.2(webpack-cli@4.9.2)
+      webpack: 5.88.2(webpack-cli@4.10.0)
     transitivePeerDependencies:
       - supports-color
     dev: true
 
-  /@storybook/react@6.5.16(@babel/core@7.22.9)(@storybook/builder-webpack5@6.5.16)(@storybook/manager-webpack5@6.5.16)(react-dom@18.2.0)(react@18.2.0)(typescript@5.0.2)(webpack-cli@4.9.2):
+  /@storybook/react@6.5.16(@babel/core@7.22.9)(@storybook/builder-webpack5@6.5.16)(@storybook/manager-webpack5@6.5.16)(react-dom@18.2.0)(react@18.2.0)(typescript@5.0.2)(webpack-cli@4.10.0):
     resolution: {integrity: sha512-cBtNlOzf/MySpNLBK22lJ8wFU22HnfTB2xJyBk7W7Zi71Lm7Uxkhv1Pz8HdiQndJ0SlsAAQOWjQYsSZsGkZIaA==}
     engines: {node: '>=10.13.0'}
     hasBin: true
@@ -6059,13 +6059,13 @@ packages:
       '@babel/preset-react': 7.22.5(@babel/core@7.22.9)
       '@pmmmwh/react-refresh-webpack-plugin': 0.5.4(react-refresh@0.11.0)(webpack@5.88.2)
       '@storybook/addons': 6.5.16(react-dom@18.2.0)(react@18.2.0)
-      '@storybook/builder-webpack5': 6.5.16(react-dom@18.2.0)(react@18.2.0)(typescript@5.0.2)(webpack-cli@4.9.2)
+      '@storybook/builder-webpack5': 6.5.16(react-dom@18.2.0)(react@18.2.0)(typescript@5.0.2)(webpack-cli@4.10.0)
       '@storybook/client-logger': 6.5.16
-      '@storybook/core': 6.5.16(@storybook/builder-webpack5@6.5.16)(@storybook/manager-webpack5@6.5.16)(react-dom@18.2.0)(react@18.2.0)(typescript@5.0.2)(webpack-cli@4.9.2)(webpack@5.88.2)
-      '@storybook/core-common': 6.5.16(react-dom@18.2.0)(react@18.2.0)(typescript@5.0.2)(webpack-cli@4.9.2)
+      '@storybook/core': 6.5.16(@storybook/builder-webpack5@6.5.16)(@storybook/manager-webpack5@6.5.16)(react-dom@18.2.0)(react@18.2.0)(typescript@5.0.2)(webpack-cli@4.10.0)(webpack@5.88.2)
+      '@storybook/core-common': 6.5.16(react-dom@18.2.0)(react@18.2.0)(typescript@5.0.2)(webpack-cli@4.10.0)
       '@storybook/csf': 0.0.2--canary.4566f4d.1
       '@storybook/docs-tools': 6.5.16(react-dom@18.2.0)(react@18.2.0)
-      '@storybook/manager-webpack5': 6.5.16(react-dom@18.2.0)(react@18.2.0)(typescript@5.0.2)(webpack-cli@4.9.2)
+      '@storybook/manager-webpack5': 6.5.16(react-dom@18.2.0)(react@18.2.0)(typescript@5.0.2)(webpack-cli@4.10.0)
       '@storybook/node-logger': 6.5.16
       '@storybook/react-docgen-typescript-plugin': 1.0.2-canary.6.9d540b91e815f8fc2f8829189deb00553559ff63.0(typescript@5.0.2)(webpack@5.88.2)
       '@storybook/semver': 7.3.2
@@ -6094,7 +6094,7 @@ packages:
       ts-dedent: 2.2.0
       typescript: 5.0.2
       util-deprecate: 1.0.2
-      webpack: 5.88.2(webpack-cli@4.9.2)
+      webpack: 5.88.2(webpack-cli@4.10.0)
     transitivePeerDependencies:
       - '@storybook/mdx2-csf'
       - '@swc/core'
@@ -6207,11 +6207,11 @@ packages:
       util-deprecate: 1.0.2
     dev: true
 
-  /@storybook/telemetry@6.5.16(react-dom@18.2.0)(react@18.2.0)(typescript@5.0.2)(webpack-cli@4.9.2):
+  /@storybook/telemetry@6.5.16(react-dom@18.2.0)(react@18.2.0)(typescript@5.0.2)(webpack-cli@4.10.0):
     resolution: {integrity: sha512-CWr5Uko1l9jJW88yTXsZTj/3GTabPvw0o7pDPOXPp8JRZiJTxv1JFaFCafhK9UzYbgcRuGfCC8kEWPZims7iKA==}
     dependencies:
       '@storybook/client-logger': 6.5.16
-      '@storybook/core-common': 6.5.16(react-dom@18.2.0)(react@18.2.0)(typescript@5.0.2)(webpack-cli@4.9.2)
+      '@storybook/core-common': 6.5.16(react-dom@18.2.0)(react@18.2.0)(typescript@5.0.2)(webpack-cli@4.10.0)
       chalk: 4.1.2
       core-js: 3.31.1
       detect-package-manager: 2.0.1
@@ -7475,16 +7475,6 @@ packages:
       '@xtuc/long': 4.2.2
     dev: true
 
-  /@webpack-cli/configtest@1.1.1(webpack-cli@4.9.2)(webpack@5.88.2):
-    resolution: {integrity: sha512-1FBc1f9G4P/AxMqIgfZgeOTuRnwZMten8E7zap5zgpPInnCrP8D4Q81+4CWIch8i/Nf7nXjP0v6CjjbHOrXhKg==}
-    peerDependencies:
-      webpack: 4.x.x || 5.x.x
-      webpack-cli: 4.x.x
-    dependencies:
-      webpack: 5.88.2(webpack-cli@4.9.2)
-      webpack-cli: 4.9.2(webpack@5.88.2)
-    dev: true
-
   /@webpack-cli/configtest@1.2.0(webpack-cli@4.10.0)(webpack@5.88.2):
     resolution: {integrity: sha512-4FB8Tj6xyVkyqjj1OaTqCjXYULB9FMkqQ8yGrZjRDrYh0nOE+7Lhs45WioWQQMV+ceFlE368Ukhe6xdvJM9Egg==}
     peerDependencies:
@@ -7492,16 +7482,7 @@ packages:
       webpack-cli: 4.x.x
     dependencies:
       webpack: 5.88.2(webpack-cli@4.10.0)
-      webpack-cli: 4.10.0(webpack-bundle-analyzer@4.8.0)(webpack-dev-server@4.13.1)(webpack@5.88.2)
-    dev: true
-
-  /@webpack-cli/info@1.4.1(webpack-cli@4.9.2):
-    resolution: {integrity: sha512-PKVGmazEq3oAo46Q63tpMr4HipI3OPfP7LiNOEJg963RMgT0rqheag28NCML0o3GIzA3DmxP1ZIAv9oTX1CUIA==}
-    peerDependencies:
-      webpack-cli: 4.x.x
-    dependencies:
-      envinfo: 7.8.1
-      webpack-cli: 4.9.2(webpack@5.88.2)
+      webpack-cli: 4.10.0(webpack@5.88.2)
     dev: true
 
   /@webpack-cli/info@1.5.0(webpack-cli@4.10.0):
@@ -7509,12 +7490,12 @@ packages:
     peerDependencies:
       webpack-cli: 4.x.x
     dependencies:
-      envinfo: 7.8.1
-      webpack-cli: 4.10.0(webpack-bundle-analyzer@4.8.0)(webpack-dev-server@4.13.1)(webpack@5.88.2)
+      envinfo: 7.10.0
+      webpack-cli: 4.10.0(webpack@5.88.2)
     dev: true
 
-  /@webpack-cli/serve@1.6.1(webpack-cli@4.9.2):
-    resolution: {integrity: sha512-gNGTiTrjEVQ0OcVnzsRSqTxaBSr+dmTfm+qJsCDluky8uhdLWep7Gcr62QsAKHTMxjCS/8nEITsmFAhfIx+QSw==}
+  /@webpack-cli/serve@1.7.0(webpack-cli@4.10.0):
+    resolution: {integrity: sha512-oxnCNGj88fL+xzV+dacXs44HcDwf1ovs3AuEzvP7mqXw7fQntqIhQ1BRmynh4qEKQSSSRSWVyXRjmTbZIX9V2Q==}
     peerDependencies:
       webpack-cli: 4.x.x
       webpack-dev-server: '*'
@@ -7522,7 +7503,7 @@ packages:
       webpack-dev-server:
         optional: true
     dependencies:
-      webpack-cli: 4.9.2(webpack@5.88.2)
+      webpack-cli: 4.10.0(webpack@5.88.2)
     dev: true
 
   /@webpack-cli/serve@1.7.0(webpack-cli@4.10.0)(webpack-dev-server@4.13.1):
@@ -8399,7 +8380,7 @@ packages:
       webpack: ^4.8.3 || ^5.0.0
     dependencies:
       json2php: 0.0.7
-      webpack: 5.88.2(webpack-cli@4.9.2)
+      webpack: 5.88.2(webpack-cli@4.10.0)
       webpack-sources: 3.2.3
     dev: true
 
@@ -10251,7 +10232,7 @@ packages:
       loader-utils: 2.0.2
       make-dir: 3.1.0
       schema-utils: 2.7.1
-      webpack: 4.46.0(webpack-cli@4.9.2)
+      webpack: 4.46.0(webpack-cli@4.10.0)
     dev: true
 
   /babel-loader@8.3.0(@babel/core@7.22.9)(webpack@5.88.2):
@@ -10266,7 +10247,7 @@ packages:
       loader-utils: 2.0.2
       make-dir: 3.1.0
       schema-utils: 2.7.1
-      webpack: 5.88.2(webpack-cli@4.9.2)
+      webpack: 5.88.2(webpack-cli@4.10.0)
     dev: true
 
   /babel-messages@6.23.0:
@@ -11823,7 +11804,7 @@ packages:
       normalize-path: 3.0.0
       schema-utils: 4.0.0
       serialize-javascript: 6.0.0
-      webpack: 5.88.2(webpack-cli@4.9.2)
+      webpack: 5.88.2(webpack-cli@4.10.0)
     dev: true
 
   /core-js-compat@3.21.0:
@@ -12057,7 +12038,7 @@ packages:
       postcss-value-parser: 4.2.0
       schema-utils: 2.7.1
       semver: 6.3.1
-      webpack: 4.46.0(webpack-cli@4.9.2)
+      webpack: 4.46.0(webpack-cli@4.10.0)
     dev: true
 
   /css-loader@5.2.7(webpack@5.88.2):
@@ -12076,7 +12057,7 @@ packages:
       postcss-value-parser: 4.2.0
       schema-utils: 3.3.0
       semver: 7.5.4
-      webpack: 5.88.2(webpack-cli@4.9.2)
+      webpack: 5.88.2(webpack-cli@4.10.0)
     dev: true
 
   /css-loader@6.7.3(webpack@5.88.2):
@@ -13094,8 +13075,8 @@ packages:
     engines: {node: '>=0.12'}
     dev: true
 
-  /envinfo@7.8.1:
-    resolution: {integrity: sha512-/o+BXHmB7ocbHEAs6F2EnG0ogybVVUdkRunTT2glZU9XAaGmhqskrvKwqXuDfNjEO0LZKWdejEEpnq8aM0tOaw==}
+  /envinfo@7.10.0:
+    resolution: {integrity: sha512-ZtUjZO6l5mwTHvc1L9+1q5p/R3wTopcfqMW8r5t8SJSKqeVI/LtajORwRFEKpEFuekjD0VBjwu1HMxL4UalIRw==}
     engines: {node: '>=4'}
     hasBin: true
     dev: true
@@ -13827,7 +13808,7 @@ packages:
       webpack: ^5.0.0
     dependencies:
       source-map: 0.6.1
-      webpack: 5.88.2(webpack-cli@4.9.2)
+      webpack: 5.88.2(webpack-cli@4.10.0)
     dev: true
 
   /expose-loader@3.1.0(webpack@5.88.2):
@@ -13836,7 +13817,7 @@ packages:
     peerDependencies:
       webpack: ^5.0.0
     dependencies:
-      webpack: 5.88.2(webpack-cli@4.9.2)
+      webpack: 5.88.2(webpack-cli@4.10.0)
     dev: true
 
   /express@4.17.1:
@@ -14124,7 +14105,7 @@ packages:
     dependencies:
       loader-utils: 2.0.4
       schema-utils: 3.3.0
-      webpack: 4.46.0(webpack-cli@4.9.2)
+      webpack: 4.46.0(webpack-cli@4.10.0)
     dev: true
 
   /file-saver@2.0.5:
@@ -14405,7 +14386,7 @@ packages:
       semver: 5.7.2
       tapable: 1.1.3
       typescript: 5.0.2
-      webpack: 4.46.0(webpack-cli@4.9.2)
+      webpack: 4.46.0(webpack-cli@4.10.0)
       worker-rpc: 0.1.1
     transitivePeerDependencies:
       - supports-color
@@ -14439,7 +14420,7 @@ packages:
       semver: 7.5.4
       tapable: 1.1.3
       typescript: 5.0.2
-      webpack: 4.46.0(webpack-cli@4.9.2)
+      webpack: 4.46.0(webpack-cli@4.10.0)
     dev: true
 
   /fork-ts-checker-webpack-plugin@6.5.3(typescript@5.0.2)(webpack@5.88.2):
@@ -14470,7 +14451,7 @@ packages:
       semver: 7.5.4
       tapable: 1.1.3
       typescript: 5.0.2
-      webpack: 5.88.2(webpack-cli@4.9.2)
+      webpack: 5.88.2(webpack-cli@4.10.0)
     dev: true
 
   /fork-ts-checker-webpack-plugin@7.2.1(typescript@5.0.2):
@@ -14522,7 +14503,7 @@ packages:
       semver: 7.3.7
       tapable: 2.2.1
       typescript: 5.0.2
-      webpack: 5.88.2(webpack-cli@4.9.2)
+      webpack: 5.88.2(webpack-cli@4.10.0)
     dev: true
 
   /form-data@3.0.1:
@@ -15458,7 +15439,7 @@ packages:
       pretty-error: 2.1.2
       tapable: 1.1.3
       util.promisify: 1.0.0
-      webpack: 4.46.0(webpack-cli@4.9.2)
+      webpack: 4.46.0(webpack-cli@4.10.0)
     dev: true
 
   /html-webpack-plugin@5.3.2(webpack@5.88.2):
@@ -15472,7 +15453,7 @@ packages:
       lodash: 4.17.21
       pretty-error: 3.0.4
       tapable: 2.2.1
-      webpack: 5.88.2(webpack-cli@4.9.2)
+      webpack: 5.88.2(webpack-cli@4.10.0)
     dev: true
 
   /html2canvas@1.4.1:
@@ -15786,7 +15767,7 @@ packages:
     dependencies:
       source-map: 0.6.1
       strip-comments: 2.0.1
-      webpack: 5.88.2(webpack-cli@4.9.2)
+      webpack: 5.88.2(webpack-cli@4.10.0)
     dev: true
 
   /imurmurhash@0.1.4:
@@ -15851,7 +15832,7 @@ packages:
       webpack: ^1 || ^2 || ^3 || ^4
     dependencies:
       babel-core: 6.26.3
-      webpack: 5.88.2(webpack-cli@4.9.2)
+      webpack: 5.88.2(webpack-cli@4.10.0)
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -19465,7 +19446,7 @@ packages:
       postcss: 7.0.39
       schema-utils: 3.3.0
       semver: 7.5.4
-      webpack: 4.46.0(webpack-cli@4.9.2)
+      webpack: 4.46.0(webpack-cli@4.10.0)
     dev: true
 
   /postcss-loader@6.2.1(postcss@8.4.21)(webpack@5.88.2):
@@ -20291,7 +20272,7 @@ packages:
     dependencies:
       loader-utils: 2.0.4
       schema-utils: 3.3.0
-      webpack: 4.46.0(webpack-cli@4.9.2)
+      webpack: 4.46.0(webpack-cli@4.10.0)
     dev: true
 
   /re-resizable@6.9.9(react-dom@18.2.0)(react@18.2.0):
@@ -22313,7 +22294,7 @@ packages:
     dependencies:
       loader-utils: 2.0.2
       schema-utils: 3.1.1
-      webpack: 5.88.2(webpack-cli@4.9.2)
+      webpack: 5.88.2(webpack-cli@4.10.0)
     dev: true
 
   /string-width@3.1.0:
@@ -22505,7 +22486,7 @@ packages:
     dependencies:
       loader-utils: 2.0.4
       schema-utils: 2.7.1
-      webpack: 4.46.0(webpack-cli@4.9.2)
+      webpack: 4.46.0(webpack-cli@4.10.0)
     dev: true
 
   /style-loader@2.0.0(webpack@5.88.2):
@@ -22516,7 +22497,7 @@ packages:
     dependencies:
       loader-utils: 2.0.4
       schema-utils: 3.3.0
-      webpack: 5.88.2(webpack-cli@4.9.2)
+      webpack: 5.88.2(webpack-cli@4.10.0)
     dev: true
 
   /style-search@0.1.0:
@@ -22857,7 +22838,7 @@ packages:
       serialize-javascript: 4.0.0
       source-map: 0.6.1
       terser: 4.8.1
-      webpack: 4.46.0(webpack-cli@4.9.2)
+      webpack: 4.46.0(webpack-cli@4.10.0)
       webpack-sources: 1.4.3
       worker-farm: 1.7.0
     dev: true
@@ -22876,7 +22857,7 @@ packages:
       serialize-javascript: 5.0.1
       source-map: 0.6.1
       terser: 5.19.2
-      webpack: 4.46.0(webpack-cli@4.9.2)
+      webpack: 4.46.0(webpack-cli@4.10.0)
       webpack-sources: 1.4.3
     transitivePeerDependencies:
       - bluebird
@@ -22903,7 +22884,7 @@ packages:
       schema-utils: 3.1.1
       serialize-javascript: 6.0.1
       terser: 5.19.2
-      webpack: 5.88.2(webpack-cli@4.9.2)
+      webpack: 5.88.2(webpack-cli@4.10.0)
     dev: true
 
   /terser@4.8.1:
@@ -23157,7 +23138,7 @@ packages:
       micromatch: 4.0.5
       semver: 7.3.7
       typescript: 5.0.2
-      webpack: 5.88.2(webpack-cli@4.9.2)
+      webpack: 5.88.2(webpack-cli@4.10.0)
     dev: true
 
   /ts-pnp@1.2.0(typescript@5.0.2):
@@ -23591,7 +23572,7 @@ packages:
       loader-utils: 2.0.4
       mime-types: 2.1.35
       schema-utils: 3.3.0
-      webpack: 4.46.0(webpack-cli@4.9.2)
+      webpack: 4.46.0(webpack-cli@4.10.0)
     dev: true
 
   /url-loader@4.1.1(webpack@5.88.2):
@@ -24022,15 +24003,15 @@ packages:
       webpack-dev-server:
         optional: true
     dependencies:
-      '@discoveryjs/json-ext': 0.5.7
+      '@discoveryjs/json-ext': 0.5.3
       '@webpack-cli/configtest': 1.2.0(webpack-cli@4.10.0)(webpack@5.88.2)
       '@webpack-cli/info': 1.5.0(webpack-cli@4.10.0)
       '@webpack-cli/serve': 1.7.0(webpack-cli@4.10.0)(webpack-dev-server@4.13.1)
-      colorette: 2.0.19
+      colorette: 2.0.16
       commander: 7.2.0
       cross-spawn: 7.0.3
-      fastest-levenshtein: 1.0.16
-      import-local: 3.1.0
+      fastest-levenshtein: 1.0.12
+      import-local: 3.0.2
       interpret: 2.2.0
       rechoir: 0.7.1
       webpack: 5.88.2(webpack-cli@4.10.0)
@@ -24039,8 +24020,8 @@ packages:
       webpack-merge: 5.8.0
     dev: true
 
-  /webpack-cli@4.9.2(webpack@5.88.2):
-    resolution: {integrity: sha512-m3/AACnBBzK/kMTcxWHcZFPrw/eQuY4Df1TxvIWfWM2x7mRqBQCqKEd96oCUa9jkapLBaFfRce33eGDb4Pr7YQ==}
+  /webpack-cli@4.10.0(webpack@5.88.2):
+    resolution: {integrity: sha512-NLhDfH/h4O6UOy+0LSso42xvYypClINuMNBVVzX4vX98TmTaTUxwRbXdhucbFMd2qLaCTcLq/PdYrvi8onw90w==}
     engines: {node: '>=10.13.0'}
     hasBin: true
     peerDependencies:
@@ -24060,17 +24041,17 @@ packages:
         optional: true
     dependencies:
       '@discoveryjs/json-ext': 0.5.3
-      '@webpack-cli/configtest': 1.1.1(webpack-cli@4.9.2)(webpack@5.88.2)
-      '@webpack-cli/info': 1.4.1(webpack-cli@4.9.2)
-      '@webpack-cli/serve': 1.6.1(webpack-cli@4.9.2)
+      '@webpack-cli/configtest': 1.2.0(webpack-cli@4.10.0)(webpack@5.88.2)
+      '@webpack-cli/info': 1.5.0(webpack-cli@4.10.0)
+      '@webpack-cli/serve': 1.7.0(webpack-cli@4.10.0)
       colorette: 2.0.16
       commander: 7.2.0
-      execa: 5.1.1
+      cross-spawn: 7.0.3
       fastest-levenshtein: 1.0.12
       import-local: 3.0.2
       interpret: 2.2.0
       rechoir: 0.7.1
-      webpack: 5.88.2(webpack-cli@4.9.2)
+      webpack: 5.88.2(webpack-cli@4.10.0)
       webpack-merge: 5.8.0
     dev: true
 
@@ -24084,7 +24065,7 @@ packages:
       mime: 2.6.0
       mkdirp: 0.5.6
       range-parser: 1.2.1
-      webpack: 4.46.0(webpack-cli@4.9.2)
+      webpack: 4.46.0(webpack-cli@4.10.0)
       webpack-log: 2.0.0
     dev: true
 
@@ -24100,7 +24081,7 @@ packages:
       mime-types: 2.1.32
       range-parser: 1.2.1
       schema-utils: 3.3.0
-      webpack: 5.88.2(webpack-cli@4.9.2)
+      webpack: 5.88.2(webpack-cli@4.10.0)
     dev: true
 
   /webpack-dev-middleware@5.3.3(webpack@5.88.2):
@@ -24175,7 +24156,7 @@ packages:
     peerDependencies:
       webpack: ^2.0.0 || ^3.0.0 || ^4.0.0
     dependencies:
-      webpack: 4.46.0(webpack-cli@4.9.2)
+      webpack: 4.46.0(webpack-cli@4.10.0)
     dev: true
 
   /webpack-hot-middleware@2.25.1:
@@ -24210,7 +24191,7 @@ packages:
       webpack: ^5.47.0
     dependencies:
       tapable: 2.2.1
-      webpack: 5.88.2(webpack-cli@4.9.2)
+      webpack: 5.88.2(webpack-cli@4.10.0)
       webpack-sources: 2.3.1
     dev: true
 
@@ -24254,7 +24235,7 @@ packages:
     resolution: {integrity: sha512-5NUqC2JquIL2pBAAo/VfBP6KuGkHIZQXW/lNKupLPfhViwh8wNsu0BObtl09yuKZszeEUfbXz8xhrHvSG16Nqw==}
     dev: true
 
-  /webpack@4.46.0(webpack-cli@4.9.2):
+  /webpack@4.46.0(webpack-cli@4.10.0):
     resolution: {integrity: sha512-6jJuJjg8znb/xRItk7bkT0+Q7AHCYjjFnvKIWQPkNIOyRqoCGvkOs0ipeQzrqz4l5FtN5ZI/ukEHroeX/o1/5Q==}
     engines: {node: '>=6.11.5'}
     hasBin: true
@@ -24289,7 +24270,7 @@ packages:
       tapable: 1.1.3
       terser-webpack-plugin: 1.4.5(webpack@4.46.0)
       watchpack: 1.7.5
-      webpack-cli: 4.9.2(webpack@5.88.2)
+      webpack-cli: 4.10.0(webpack@5.88.2)
       webpack-sources: 1.4.3
     transitivePeerDependencies:
       - supports-color
@@ -24328,48 +24309,7 @@ packages:
       tapable: 2.2.1
       terser-webpack-plugin: 5.3.9(webpack@5.88.2)
       watchpack: 2.4.0
-      webpack-cli: 4.10.0(webpack-bundle-analyzer@4.8.0)(webpack-dev-server@4.13.1)(webpack@5.88.2)
-      webpack-sources: 3.2.3
-    transitivePeerDependencies:
-      - '@swc/core'
-      - esbuild
-      - uglify-js
-    dev: true
-
-  /webpack@5.88.2(webpack-cli@4.9.2):
-    resolution: {integrity: sha512-JmcgNZ1iKj+aiR0OvTYtWQqJwq37Pf683dY9bVORwVbUrDhLhdn/PlO2sHsFHPkj7sHNQF3JwaAkp49V+Sq1tQ==}
-    engines: {node: '>=10.13.0'}
-    hasBin: true
-    peerDependencies:
-      webpack-cli: '*'
-    peerDependenciesMeta:
-      webpack-cli:
-        optional: true
-    dependencies:
-      '@types/eslint-scope': 3.7.3
-      '@types/estree': 1.0.1
-      '@webassemblyjs/ast': 1.11.6
-      '@webassemblyjs/wasm-edit': 1.11.6
-      '@webassemblyjs/wasm-parser': 1.11.6
-      acorn: 8.8.2
-      acorn-import-assertions: 1.9.0(acorn@8.8.2)
-      browserslist: 4.21.9
-      chrome-trace-event: 1.0.2
-      enhanced-resolve: 5.15.0
-      es-module-lexer: 1.3.0
-      eslint-scope: 5.1.1
-      events: 3.3.0
-      glob-to-regexp: 0.4.1
-      graceful-fs: 4.2.9
-      json-parse-even-better-errors: 2.3.1
-      loader-runner: 4.2.0
-      mime-types: 2.1.32
-      neo-async: 2.6.2
-      schema-utils: 3.3.0
-      tapable: 2.2.1
-      terser-webpack-plugin: 5.3.9(webpack@5.88.2)
-      watchpack: 2.4.0
-      webpack-cli: 4.9.2(webpack@5.88.2)
+      webpack-cli: 4.10.0(webpack@5.88.2)
       webpack-sources: 3.2.3
     transitivePeerDependencies:
       - '@swc/core'
