@@ -529,8 +529,8 @@ importers:
         specifier: ^5.3.9
         version: 5.3.9(webpack@5.74.0)
       ts-loader:
-        specifier: ^9.2.8
-        version: 9.2.8(typescript@5.0.2)(webpack@5.74.0)
+        specifier: ^9.4.4
+        version: 9.4.4(typescript@5.0.2)(webpack@5.74.0)
       url:
         specifier: ^0.11.0
         version: 0.11.0
@@ -23224,8 +23224,8 @@ packages:
     resolution: {integrity: sha512-3IVX4nI6B5cc31/GFFE+i8ey/N2eA0CZDbo6n0yrz0zDX8ZJ8djmU1p+XRz7G3is0F3bB3pu2pAroFdAWQKU3w==}
     dev: true
 
-  /ts-loader@9.2.8(typescript@5.0.2)(webpack@5.74.0):
-    resolution: {integrity: sha512-gxSak7IHUuRtwKf3FIPSW1VpZcqF9+MBrHOvBp9cjHh+525SjtCIJKVGjRKIAfxBwDGDGCFF00rTfzB1quxdSw==}
+  /ts-loader@9.4.4(typescript@5.0.2)(webpack@5.74.0):
+    resolution: {integrity: sha512-MLukxDHBl8OJ5Dk3y69IsKVFRA/6MwzEqBgh+OXMPB/OD01KQuWPFd1WAQP8a5PeSCAxfnkhiuWqfmFJzJQt9w==}
     engines: {node: '>=12.0.0'}
     peerDependencies:
       typescript: '*'
