@@ -364,8 +364,8 @@ importers:
         specifier: ^3.0.3
         version: 3.0.3
       '@types/lodash':
-        specifier: ^4.14.180
-        version: 4.14.180
+        specifier: ^4.14.196
+        version: 4.14.196
       '@types/mocha':
         specifier: ^9.1.1
         version: 9.1.1
@@ -9080,8 +9080,8 @@ packages:
     resolution: {integrity: sha512-dRLjCWHYg4oaA77cxO64oO+7JwCwnIzkZPdrrC71jQmQtlhM556pwKo5bUzqvZndkVbeFLIIi+9TC40JNF5hNQ==}
     dev: true
 
-  /@types/lodash@4.14.180:
-    resolution: {integrity: sha512-XOKXa1KIxtNXgASAnwj7cnttJxS4fksBRywK/9LzRV5YxrF80BXZIGeQSuoESQ/VkUj30Ae0+YcuHc15wJCB2g==}
+  /@types/lodash@4.14.196:
+    resolution: {integrity: sha512-22y3o88f4a94mKljsZcanlNWPzO0uBsBdzLAngf2tp533LzZcQzb6+eZPJ+vCTt+bqF2XnvT9gejTLsAcJAJyQ==}
     dev: true
 
   /@types/mdast@3.0.3:
