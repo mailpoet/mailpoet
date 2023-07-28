@@ -197,6 +197,7 @@ class AnalyticsCest {
     $i->see('67% (2) completed', '.mailpoet-automation-analytics-separator-' . $secondEmailStep);
 
     $i->wantTo("See that in the free version I see the sample data text");
+    $i->scrollToTop();
     $i->click('button.mailpoet-analytics-tab-subscribers');
     $i->see("You're viewing sample data.");
   }
