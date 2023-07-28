@@ -117,7 +117,11 @@ class API {
     return ['code' => $code, 'data' => $body, 'error_message' => $errorMessage];
   }
 
-  public function logCurlInformation($headers, $info) {
+  /**
+   * This method logs data from 'requests-curl.after_request' hook.
+   * The hook is mostly called with two parameters but sometimes only with one.
+   */
+  public function logCurlInformation($headers, $info = null) {
     $this->loggerFactory->getLogger(LoggerFactory::TOPIC_MSS)->info(
       'requests-curl.after_request',
       ['headers' => $headers, 'curl_info' => $info]
