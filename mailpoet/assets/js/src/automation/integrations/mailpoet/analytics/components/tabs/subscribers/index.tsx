@@ -46,21 +46,7 @@ export function Subscribers(): JSX.Element {
 
   return (
     <div className="mailpoet-analytics-subscribers">
-      {!canUsePremiumFeatures && (
-        <Upgrade
-          text={
-            <span>
-              <strong>{__("You're viewing sample data.", 'mailpoet')}</strong>
-              &nbsp;
-              {__(
-                'To use data from your email activity, upgrade to a premium plan.',
-                'mailpoet',
-              )}
-            </span>
-          }
-        />
-      )}
-
+      {!canUsePremiumFeatures && <Upgrade />}
       {beforeTable}
 
       <TableCard
