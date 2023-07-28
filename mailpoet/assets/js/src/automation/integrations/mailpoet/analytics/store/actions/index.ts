@@ -118,3 +118,17 @@ export function* updateSection(
     payload: { ...section, data: response?.data },
   };
 }
+
+export function openPremiumModal(content: JSX.Element, utmCampaign?: string) {
+  return {
+    type: 'OPEN_PREMIUM_MODAL',
+    content,
+    utmCampaign,
+  };
+}
+
+export function closePremiumModal() {
+  return {
+    type: 'CLOSE_PREMIUM_MODAL',
+  };
+}

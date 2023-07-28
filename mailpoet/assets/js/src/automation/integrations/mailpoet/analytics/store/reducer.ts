@@ -15,6 +15,19 @@ export function reducer(state: State, action): State {
           [action.payload.id]: action.payload,
         },
       };
+    case 'OPEN_PREMIUM_MODAL':
+      return {
+        ...state,
+        premiumModal: {
+          content: action.content,
+          utmCampaign: action.utmCampaign,
+        },
+      };
+    case 'CLOSE_PREMIUM_MODAL':
+      return {
+        ...state,
+        premiumModal: undefined,
+      };
     default:
       return state;
   }

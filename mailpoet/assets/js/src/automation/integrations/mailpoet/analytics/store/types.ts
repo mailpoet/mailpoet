@@ -176,4 +176,8 @@ export type AutomationFlowSection = Section & {
 export type State = {
   sections: Record<string, Section>;
   query: Query;
+  premiumModal?: {
+    content: string | JSX.Element;
+    utmCampaign?: string;
+  };
 };

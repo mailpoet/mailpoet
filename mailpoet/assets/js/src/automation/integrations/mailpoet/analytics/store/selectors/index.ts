@@ -11,3 +11,7 @@ export function getSections(state: State): Section[] {
 export function getSection(state: State, id: string): Section | undefined {
   return state.sections[id] ?? undefined;
 }
+
+export function getPremiumModal(state: State): State['premiumModal'] {
+  return state.premiumModal;
+}
