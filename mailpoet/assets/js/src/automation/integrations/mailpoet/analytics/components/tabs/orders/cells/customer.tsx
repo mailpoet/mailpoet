@@ -16,7 +16,7 @@ export function CustomerCell({
       className="mailpoet-analytics-orders__customer"
       href={`?page=mailpoet-subscribers#/edit/${customer.id}`}
     >
-      <img src={customer.avatar} alt={label} />
+      <img src={customer.avatar} alt={label} width="20" />
       {label}
     </a>
   );
