@@ -1,11 +1,27 @@
+import { useDispatch } from '@wordpress/data';
 import { Tooltip } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
-import { OrderDetails } from '../../../../store';
+import { OrderDetails, storeName } from '../../../../store';
 
-export function OrderCell({ order }: { order: OrderDetails }): JSX.Element {
+type Props = {
+  order: OrderDetails;
+  isSample?: boolean;
+};
+
+export function OrderCell({ order, isSample = false }: Props): JSX.Element {
+  const { openPremiumModalForSampleData } = useDispatch(storeName);
+
   return (
     <Tooltip text={__('Order details', 'mailpoet')}>
-      <a href={`post.php?post=${order.id}&action=edit`}>{`${order.id}`}</a>
+      <a
+        onClick={(event) => {
+          if (isSample) {
+            event.preventDefault();
+            void openPremiumModalForSampleData();
+          }
+        }}
+        href={isSample ? '' : `post.php?post=${order.id}&action=edit`}
+      >{`${order.id}`}</a>
     </Tooltip>
   );
 }

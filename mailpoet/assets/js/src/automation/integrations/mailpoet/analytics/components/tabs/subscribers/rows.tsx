@@ -10,7 +10,12 @@ export function transformSubscribersToRows(data: SubscriberSection['data']) {
     ? []
     : subscribers.map((subscriber) => [
         {
-          display: <CustomerCell customer={subscriber.subscriber} />,
+          display: (
+            <CustomerCell
+              customer={subscriber.subscriber}
+              isSample={data.isSample}
+            />
+          ),
           value: subscriber.subscriber.last_name,
         },
         {

@@ -18,6 +18,7 @@ const subjects = {
 } as const;
 
 export const subscribers: SubscriberSection['data'] = {
+  isSample: true,
   results: 4,
   items: [
     {

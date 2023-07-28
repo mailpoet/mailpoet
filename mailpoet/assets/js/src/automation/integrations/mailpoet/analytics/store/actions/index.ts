@@ -1,5 +1,6 @@
 import { dispatch, select } from '@wordpress/data';
 import { getCurrentDates } from '@woocommerce/date';
+import { __ } from '@wordpress/i18n';
 import { addQueryArgs } from '@wordpress/url';
 import { apiFetch } from '@wordpress/data-controls';
 import { Hooks } from 'wp-js-hooks';
@@ -124,6 +125,14 @@ export function openPremiumModal(content: JSX.Element, utmCampaign?: string) {
     type: 'OPEN_PREMIUM_MODAL',
     content,
     utmCampaign,
+  };
+}
+
+export function openPremiumModalForSampleData() {
+  return {
+    type: 'OPEN_PREMIUM_MODAL',
+    content: __("You're viewing sample data.", 'mailpoet'),
+    utmCampaign: 'automation_analytics_sample_data',
   };
 }
 

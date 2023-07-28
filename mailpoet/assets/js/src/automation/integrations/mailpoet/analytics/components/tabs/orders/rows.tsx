@@ -1,4 +1,4 @@
-import { OrderData } from '../../../store';
+import { OrderSection } from '../../../store';
 import { OrderCell } from './cells/order';
 import { CustomerCell } from './cells/customer';
 import { ProductsCell } from './cells/products';
@@ -7,7 +7,8 @@ import { OrderStatusCell } from './cells/order_status';
 import { formattedPrice } from '../../../formatter';
 import { MailPoet } from '../../../../../../../mailpoet';
 
-export function transformOrdersToRows(orders: OrderData[] | undefined) {
+export function transformOrdersToRows(data: OrderSection['data'] | undefined) {
+  const orders = data?.items;
   return orders === undefined
     ? []
     : orders.map((order) => [
@@ -16,11 +17,15 @@ export function transformOrdersToRows(orders: OrderData[] | undefined) {
           value: order.date,
         },
         {
-          display: <OrderCell order={order.details} />,
+          display: (
+            <OrderCell order={order.details} isSample={data?.isSample} />
+          ),
           value: order.details.id,
         },
         {
-          display: <CustomerCell customer={order.customer} />,
+          display: (
+            <CustomerCell customer={order.customer} isSample={data?.isSample} />
+          ),
           value: order.customer.last_name,
         },
         {
@@ -28,7 +33,7 @@ export function transformOrdersToRows(orders: OrderData[] | undefined) {
           value: null,
         },
         {
-          display: <EmailCell order={order} />,
+          display: <EmailCell order={order} isSample={data?.isSample} />,
           value: order.email.subject,
         },
         {
