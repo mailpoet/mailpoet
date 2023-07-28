@@ -37,11 +37,7 @@ export function Subscribers(): JSX.Element {
     ) as SubscriberSection,
   }));
 
-  const subscribers =
-    subscriberSection.data !== undefined
-      ? subscriberSection.data.items
-      : undefined;
-  const rows = transformSubscribersToRows(subscribers);
+  const rows = transformSubscribersToRows(subscriberSection.data);
 
   const beforeTable = Hooks.applyFilters(
     'mailpoet_analytics_subscribers_before_table',
@@ -111,7 +107,7 @@ export function Subscribers(): JSX.Element {
             ? subscriberSection.data.results
             : 0
         }
-        isLoading={subscribers === undefined}
+        isLoading={subscriberSection.data?.items === undefined}
       />
     </div>
   );
