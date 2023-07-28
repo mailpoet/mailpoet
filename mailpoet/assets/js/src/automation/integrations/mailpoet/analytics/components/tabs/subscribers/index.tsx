@@ -5,7 +5,6 @@ import { Hooks } from 'wp-js-hooks';
 import { storeName, SubscriberSection } from '../../../store';
 import { transformSubscribersToRows } from './rows';
 import { Upgrade } from '../orders/upgrade';
-import { canUsePremiumFeatures } from '../../../config';
 
 const headers = [
   {
@@ -41,12 +40,11 @@ export function Subscribers(): JSX.Element {
 
   const beforeTable = Hooks.applyFilters(
     'mailpoet_analytics_subscribers_before_table',
-    null,
+    <Upgrade />,
   ) as null | JSX.Element;
 
   return (
     <div className="mailpoet-analytics-subscribers">
-      {!canUsePremiumFeatures && <Upgrade />}
       {beforeTable}
 
       <TableCard
