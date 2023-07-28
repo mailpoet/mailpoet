@@ -70,7 +70,7 @@ export function AutomationListing(): JSX.Element {
   const history = useHistory();
   const location = useLocation();
   const pageSearch = useMemo(
-    () => new URLSearchParams(location.search),
+    () => new URLSearchParams(location.search as string),
     [location],
   );
 

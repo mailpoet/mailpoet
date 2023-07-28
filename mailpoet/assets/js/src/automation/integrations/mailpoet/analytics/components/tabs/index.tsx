@@ -17,7 +17,7 @@ export function Tabs(): JSX.Element {
     hasEmails: s(editorStoreName).automationHasStep('mailpoet:send-email'),
   }));
   const pageParams = useMemo(
-    () => new URLSearchParams(location.search),
+    () => new URLSearchParams(location.search as string),
     [location],
   );
   const currentTab = pageParams.get('tab') ?? 'automation-flow';

@@ -25,8 +25,8 @@ export const mapPathToSteps = (
 
   stepsMap.forEach(([regex, step]) => {
     if (
-      new RegExp(`^#${regex}`).exec(location.hash) ||
-      new RegExp(`^${regex}`).exec(location.pathname)
+      new RegExp(`^#${regex}`).exec(location.hash as string) ||
+      new RegExp(`^${regex}`).exec(location.pathname as string)
     ) {
       stepNumber = step;
     }
