@@ -1,8 +1,10 @@
 import { MenuGroup, MenuItem } from '@wordpress/components';
+import { useSelect } from '@wordpress/data';
 import { displayShortcut } from '@wordpress/keycodes';
 import { __, _x } from '@wordpress/i18n';
 import { MoreMenuDropdown } from '@wordpress/interface';
 import { PreferenceToggleMenuItem } from '@wordpress/preferences';
+import { addQueryArgs } from '@wordpress/url';
 import { storeName } from '../../store';
 import { MailPoet } from '../../../../mailpoet';
 
@@ -11,6 +13,10 @@ import { MailPoet } from '../../../../mailpoet';
 //   https://github.com/WordPress/gutenberg/blob/0ee78b1bbe9c6f3e6df99f3b967132fa12bef77d/packages/edit-site/src/components/header/more-menu/index.js
 
 export function MoreMenu(): JSX.Element {
+  const automation = useSelect((select) =>
+    select(storeName).getAutomationData(),
+  );
+
   return (
     <MoreMenuDropdown
       className="edit-site-more-menu"
@@ -32,6 +38,18 @@ export function MoreMenu(): JSX.Element {
             />
           </MenuGroup>
           <MenuGroup>
+            <MenuItem
+              onClick={() => {
+                window.location.href = addQueryArgs(
+                  MailPoet.urls.automationAnalytics,
+                  {
+                    id: automation.id,
+                  },
+                );
+              }}
+            >
+              {__('Analytics', 'mailpoet')}
+            </MenuItem>
             <MenuItem
               onClick={() => {
                 window.location.href = MailPoet.urls.automationListing;

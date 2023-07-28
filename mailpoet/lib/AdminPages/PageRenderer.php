@@ -188,6 +188,7 @@ class PageRenderer {
         'automationListing' => admin_url('admin.php?page=mailpoet-automation'),
         'automationEditor' => admin_url('admin.php?page=mailpoet-automation-editor'),
         'automationTemplates' => admin_url('admin.php?page=mailpoet-automation-templates'),
+        'automationAnalytics' => admin_url('admin.php?page=mailpoet-automation-analytics'),
       ],
       'woocommerce_store_config' => $this->wooCommerceHelper->isWooCommerceActive() ? $this->getWoocommerceStoreConfig() : null,
       'tags' => array_map(function (TagEntity $tag): array {

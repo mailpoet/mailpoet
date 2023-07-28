@@ -5,6 +5,7 @@ import { moreVertical } from '@wordpress/icons';
 import { useDeleteButton, useRestoreButton, useTrashButton } from '../menu';
 import { Automation } from '../../automation';
 import { EditAutomation } from '../actions';
+import { Analytics } from '../actions/analytics';
 
 type Props = {
   automation: Automation;
@@ -21,6 +22,7 @@ export function Actions({ automation }: Props): JSX.Element {
 
   return (
     <div className="mailpoet-automation-listing-cell-actions">
+      <Analytics automation={automation} />
       <EditAutomation automation={automation} />
       {menuItems.map(({ control, slot }) => (
         <Fragment key={control.title}>{slot}</Fragment>
