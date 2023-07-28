@@ -161,10 +161,6 @@ EOL;
     $this->wp->wpSetScriptTranslations('automation_analytics', 'mailpoet');
 
     $this->wp->wpEnqueueStyle(
-      'automation_editor',
-      Env::$assetsUrl . '/dist/css/' . $this->renderer->getCssAsset('mailpoet-automation-editor.css')
-    );
-    $this->wp->wpEnqueueStyle(
       'automation_analytics',
       Env::$assetsUrl . '/dist/css/' . $this->renderer->getCssAsset('mailpoet-automation-analytics.css')
     );
