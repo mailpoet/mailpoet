@@ -57,7 +57,7 @@ class FreeSubscriberController implements SubscriberController {
         'email' => $subscriber->getEmail(),
         'first_name' => $subscriber->getFirstName(),
         'last_name' => $subscriber->getLastName(),
-        'avatar' => $this->wp->getAvatarUrl($subscriber->getEmail(), ['size' => 20]),
+        'avatar' => $this->wp->getAvatarUrl($subscriber->getEmail(), ['size' => 40]),
       ],
       'run' => [
         'automation_id' => $automation->getId(),
