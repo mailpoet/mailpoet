@@ -61,26 +61,24 @@ function DelayData({ stepData }: { stepData: Step }): null | JSX.Element {
 }
 
 export function StepCell({
-  step,
+  name,
+  data,
 }: {
-  step: { id: string; name: string };
+  name: string;
+  data?: Step;
 }): JSX.Element {
-  const { automation, steps } = useSelect((s) => ({
-    automation: s(editorStoreName).getAutomationData(),
-    steps: Object.values(s(editorStoreName).getSteps()),
+  const { stepType } = useSelect((s) => ({
+    stepType: data.key ? s(editorStoreName).getStepType(data.key) : undefined,
   }));
-  const stepData = Object.values(automation?.steps).find(
-    (s) => s.id === step.id,
-  );
-  if (!stepData) {
+
+  if (!stepType) {
     return (
       <div className="mailpoet-analytics-subscribers-step-cell">
         <div />
-        <p>{step.name}</p>
+        <p>{name}</p>
       </div>
     );
   }
-  const stepType = steps.find((s) => s.key === stepData.key);
 
   return (
     <div className="mailpoet-analytics-subscribers-step-cell">
@@ -91,12 +89,12 @@ export function StepCell({
         foreground={stepType.foreground}
         icon={stepType.icon}
       />
-      <p>{step.name}</p>
+      <p>{name}</p>
       <span>
-        {stepData?.key === 'mailpoet:send-email' && (
-          <SendEmailData name={step.name} stepData={stepData} />
+        {data.key === 'mailpoet:send-email' && (
+          <SendEmailData name={name} stepData={data} />
         )}
-        {stepData?.key === 'core:delay' && <DelayData stepData={stepData} />}
+        {data.key === 'core:delay' && <DelayData stepData={data} />}
       </span>
     </div>
   );

@@ -1,12 +1,11 @@
-import { SubscriberData } from '../../../store';
+import { SubscriberSection } from '../../../store';
 import { CustomerCell } from '../orders/cells/customer';
 import { MailPoet } from '../../../../../../../mailpoet';
 import { StatusCell } from './cells/status';
 import { StepCell } from './cells/step';
 
-export function transformSubscribersToRows(
-  subscribers: SubscriberData[] | undefined,
-) {
+export function transformSubscribersToRows(data: SubscriberSection['data']) {
+  const subscribers = data?.items;
   return subscribers === undefined
     ? []
     : subscribers.map((subscriber) => [
@@ -15,7 +14,12 @@ export function transformSubscribersToRows(
           value: subscriber.subscriber.last_name,
         },
         {
-          display: <StepCell step={subscriber.run.step} />,
+          display: (
+            <StepCell
+              name={subscriber.run.step.name}
+              data={data.steps[subscriber.run.step.id]}
+            />
+          ),
           value: subscriber.run.step.name,
         },
         {

@@ -1,4 +1,7 @@
-import { Automation } from '../../../../editor/components/automation/types';
+import {
+  Automation,
+  Step,
+} from '../../../../editor/components/automation/types';
 
 export type CurrentAndPrevious = {
   current: number;
@@ -140,6 +143,7 @@ export type SubscriberData = {
 type SubscriberSectionData = SectionData & {
   results: number;
   items: SubscriberData[];
+  steps: Record<string, Step>;
 };
 
 export type SubscriberSection = Section & {
@@ -159,6 +163,7 @@ export type StepFlowData = {
   failed: Record<string, number> | undefined;
   flow: Record<string, number> | undefined;
 };
+
 export type AutomationFlowSectionData = SectionData & {
   automation: Automation;
   step_data: StepFlowData;
