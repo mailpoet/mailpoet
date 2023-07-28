@@ -3,10 +3,16 @@
 @import '../../../node_modules/@woocommerce/components/build-style/style';
 @import '../../../node_modules/react-dates/lib/css/_datepicker.scss';
 
-// settings & tools
+// settings & mixins
 
 @import 'settings/breakpoints';
+@import 'settings/colors';
 @import 'mixins/breakpoints';
+
+// automation editor styles
+
+@import './components-automation/statistics';
+@import './components-automation-editor/editor';
 
 // styles
 
