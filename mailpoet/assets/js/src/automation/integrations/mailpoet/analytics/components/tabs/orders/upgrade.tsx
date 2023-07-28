@@ -1,23 +1,61 @@
+import { useCallback, useEffect, useState } from 'react';
 import { Notice } from '@wordpress/components/build';
 import { Button } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
-import { addQueryArgs } from '@wordpress/url';
-import { MailPoet } from '../../../../../../../mailpoet';
+import {
+  UpgradeInfo,
+  useUpgradeInfo,
+} from '../../../../../../../common/premium_modal/upgrade_info';
 
-function getUpgradeLink(): string {
-  const utmArgs = {
-    utm_source: 'plugin',
+// This duplicates some functionality of the PremiumModal component.
+// We could consider extracting it to a more reusable logic.
+type State = undefined | 'busy' | 'success' | 'error';
+
+const getCta = (state: State, upgradeInfo: UpgradeInfo): string => {
+  const { action, cta } = upgradeInfo;
+  if (typeof action === 'string') {
+    return cta;
+  }
+  if (state === 'busy') {
+    return action.busy;
+  }
+  if (state === 'success') {
+    return action.success;
+  }
+  return cta;
+};
+
+export function Upgrade(): JSX.Element {
+  const upgradeInfo = useUpgradeInfo({
     utm_medium: 'upsell_modal',
     utm_campaign: 'automation-analytics',
-  };
-  const url = MailPoet.hasValidApiKey
-    ? `https://account.mailpoet.com/orders/upgrade/${MailPoet.pluginPartialKey}`
-    : `https://account.mailpoet.com/?s=${MailPoet.subscribersCount}&g=business&billing=monthly&email=${MailPoet.currentWpUserEmail}`;
+  });
 
-  return addQueryArgs(url, utmArgs);
-}
+  const [state, setState] = useState<State>();
 
-export function Upgrade({ text }: { text: string | JSX.Element }): JSX.Element {
+  useEffect(() => {
+    setState(undefined);
+  }, [upgradeInfo]);
+
+  const handleClick = useCallback(async () => {
+    if (typeof upgradeInfo.action === 'string') {
+      return;
+    }
+
+    if (state === 'success') {
+      upgradeInfo.action.successHandler();
+      return;
+    }
+
+    setState('busy');
+    try {
+      await upgradeInfo.action.handler();
+      setState('success');
+    } catch (_) {
+      setState('error');
+    }
+  }, [state, upgradeInfo.action]);
+
   return (
     <Notice
       className="mailpoet-analytics-upgrade-banner"
@@ -25,11 +63,30 @@ export function Upgrade({ text }: { text: string | JSX.Element }): JSX.Element {
       isDismissible={false}
     >
       <span className="mailpoet-analytics-upgrade-banner__inner">
-        {text}
+        <span>
+          <strong>{__("You're viewing sample data.", 'mailpoet')}</strong>{' '}
+          {upgradeInfo.info}
+        </span>
 
-        <Button href={getUpgradeLink()} isPrimary>
-          {__('Upgrade', 'mailpoet')}
-        </Button>
+        {typeof upgradeInfo.action === 'string' ? (
+          <Button
+            variant="primary"
+            href={upgradeInfo.action}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {upgradeInfo.cta}
+          </Button>
+        ) : (
+          <Button
+            variant="primary"
+            onClick={handleClick}
+            isBusy={state === 'busy'}
+            disabled={state === 'busy'}
+          >
+            {getCta(state, upgradeInfo)}
+          </Button>
+        )}
       </span>
     </Notice>
   );

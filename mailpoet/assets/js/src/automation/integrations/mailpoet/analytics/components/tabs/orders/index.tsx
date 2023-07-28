@@ -51,7 +51,7 @@ export function Orders(): JSX.Element {
 
   const orders = ordersSection?.data?.items;
   const rows = transformOrdersToRows(ordersSection?.data);
-  const summary = calculateSummary(ordersSection.data.items ?? []);
+  const summary = calculateSummary(orders ?? []);
   const beforeTable = Hooks.applyFilters(
     'mailpoet_analytics_orders_before_table',
     null,
@@ -59,20 +59,7 @@ export function Orders(): JSX.Element {
 
   return (
     <div className="mailpoet-analytics-orders">
-      {!canUsePremiumFeatures && (
-        <Upgrade
-          text={
-            <span>
-              <strong>{__("You're viewing sample data.", 'mailpoet')}</strong>
-              &nbsp;
-              {__(
-                'To use data from your email activity, upgrade to a premium plan.',
-                'mailpoet',
-              )}
-            </span>
-          }
-        />
-      )}
+      {!canUsePremiumFeatures && <Upgrade />}
       {beforeTable}
       <TableCard
         title=""
