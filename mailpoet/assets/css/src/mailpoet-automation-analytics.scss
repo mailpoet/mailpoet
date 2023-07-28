@@ -1,5 +1,15 @@
+// dependencies
+
 @import '../../../node_modules/@woocommerce/components/build-style/style';
 @import '../../../node_modules/react-dates/lib/css/_datepicker.scss';
+
+// settings & tools
+
+@import 'settings/breakpoints';
+@import 'mixins/breakpoints';
+
+// styles
+
 @import './components-automation-analytics/header';
 @import './components-automation-analytics/overview';
 @import './components-automation-analytics/table';

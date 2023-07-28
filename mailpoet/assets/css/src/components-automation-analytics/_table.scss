@@ -3,6 +3,10 @@
   .woocommerce-table__item,
   .woocommerce-table__empty-item {
     text-wrap: balance;
+
+    @include respond-to(medium-screen) {
+      padding: 8px 12px;
+    }
   }
 
   .woocommerce-table__header.is-sortable {
@@ -11,6 +15,10 @@
     button {
       padding: 4px 20px;
       width: 100%;
+
+      @include respond-to(medium-screen) {
+        padding: 4px 8px;
+      }
     }
   }
 
