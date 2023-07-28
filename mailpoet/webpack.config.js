@@ -9,6 +9,7 @@ const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 
 const globalPrefix = 'MailPoetLib';
 const PRODUCTION_ENV = process.env.NODE_ENV === 'production';
+const CIRCLECI_ENV = process.env.CIRCLECI === 'true';
 const manifestSeed = {};
 
 const stats = {
@@ -107,7 +108,8 @@ const baseConfig = {
       ),
     },
   },
-  plugins: PRODUCTION_ENV ? [] : [new ForkTsCheckerWebpackPlugin()],
+  plugins:
+    PRODUCTION_ENV || CIRCLECI_ENV ? [] : [new ForkTsCheckerWebpackPlugin()],
   module: {
     noParse: /node_modules\/lodash\/lodash\.js/,
     rules: [
