@@ -6,7 +6,6 @@ import { OrderSection, storeName } from '../../../store';
 import { transformOrdersToRows } from './rows';
 import { calculateSummary } from './summary';
 import { Upgrade } from './upgrade';
-import { canUsePremiumFeatures } from '../../../config';
 
 const headers = [
   {
@@ -54,12 +53,11 @@ export function Orders(): JSX.Element {
   const summary = calculateSummary(orders ?? []);
   const beforeTable = Hooks.applyFilters(
     'mailpoet_analytics_orders_before_table',
-    null,
+    <Upgrade />,
   ) as null | JSX.Element;
 
   return (
     <div className="mailpoet-analytics-orders">
-      {!canUsePremiumFeatures && <Upgrade />}
       {beforeTable}
       <TableCard
         title=""
