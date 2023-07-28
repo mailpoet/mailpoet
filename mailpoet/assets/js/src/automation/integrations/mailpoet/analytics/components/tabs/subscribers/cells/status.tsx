@@ -9,8 +9,5 @@ export const statusMap = {
 };
 
 export function StatusCell({ status }: { status: string }): JSX.Element {
-  if (!Object.keys(statusMap).includes(status)) {
-    return <>{status}</>;
-  }
-  return <>{statusMap[status]}</>;
+  return <>{statusMap[status] ?? status}</>;
 }
