@@ -40,6 +40,7 @@ const subjects = {
 } as const;
 
 export const orders: OrderSection['data'] = {
+  isSample: true,
   results: 4,
   items: [
     {

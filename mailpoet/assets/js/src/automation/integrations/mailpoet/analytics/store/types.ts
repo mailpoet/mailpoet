@@ -109,6 +109,7 @@ type OrderSectionData = SectionData & {
     id: string;
     name: string;
   }[];
+  isSample?: boolean;
 };
 
 export type OrderSection = Section & {
@@ -144,6 +145,7 @@ type SubscriberSectionData = SectionData & {
   results: number;
   items: SubscriberData[];
   steps: Record<string, Step>;
+  isSample?: boolean;
 };
 
 export type SubscriberSection = Section & {

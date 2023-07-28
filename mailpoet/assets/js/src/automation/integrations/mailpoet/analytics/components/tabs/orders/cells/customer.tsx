@@ -1,10 +1,17 @@
-import { CustomerData } from '../../../../store';
+import { useDispatch } from '@wordpress/data';
+import { CustomerData, storeName } from '../../../../store';
+
+type Props = {
+  customer: CustomerData;
+  isSample?: boolean;
+};
 
 export function CustomerCell({
   customer,
-}: {
-  customer: CustomerData;
-}): JSX.Element {
+  isSample = false,
+}: Props): JSX.Element {
+  const { openPremiumModalForSampleData } = useDispatch(storeName);
+
   const name = [customer.first_name, customer.last_name]
     .filter(Boolean)
     .join(' ');
@@ -14,7 +21,13 @@ export function CustomerCell({
   return (
     <a
       className="mailpoet-analytics-orders__customer"
-      href={`?page=mailpoet-subscribers#/edit/${customer.id}`}
+      onClick={(event) => {
+        if (isSample) {
+          event.preventDefault();
+          void openPremiumModalForSampleData();
+        }
+      }}
+      href={isSample ? '' : `?page=mailpoet-subscribers#/edit/${customer.id}`}
     >
       <img src={customer.avatar} alt={label} width="20" />
       {label}

@@ -49,10 +49,9 @@ export function Orders(): JSX.Element {
     ordersSection: s(storeName).getSection('orders') as OrderSection,
   }));
 
-  const orders =
-    ordersSection.data !== undefined ? ordersSection.data.items : undefined;
-  const rows = transformOrdersToRows(orders);
-  const summary = calculateSummary(orders ?? []);
+  const orders = ordersSection?.data?.items;
+  const rows = transformOrdersToRows(ordersSection?.data);
+  const summary = calculateSummary(ordersSection.data.items ?? []);
   const beforeTable = Hooks.applyFilters(
     'mailpoet_analytics_orders_before_table',
     null,
