@@ -31,8 +31,8 @@ export function StepCell({
     <div className="mailpoet-analytics-subscribers-step-cell">
       {stepType ? (
         <ColoredIcon
-          width="14px"
-          height="14px"
+          width="12px"
+          height="12px"
           background={stepType.background}
           foreground={stepType.foreground}
           icon={stepType.icon}
