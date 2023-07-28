@@ -14,6 +14,10 @@
 .mailpoet-analytics-filter-controls {
   display: flex;
   gap: 8px;
+
+  .components-base-control__field {
+    margin-bottom: 0;
+  }
 }
 
 .mailpoet-analytics-subscribers-step-cell {
