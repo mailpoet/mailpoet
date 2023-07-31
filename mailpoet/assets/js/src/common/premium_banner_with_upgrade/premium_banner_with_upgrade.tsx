@@ -1,4 +1,5 @@
-import { ReactNode } from 'react';
+import jQuery from 'jquery';
+import { ReactNode, useState } from 'react';
 import { __ } from '@wordpress/i18n';
 import { MailPoet } from 'mailpoet';
 import { PremiumRequired } from 'common/premium_required/premium_required';
@@ -11,6 +12,7 @@ type Props = {
 };
 
 const {
+  adminPluginsUrl,
   subscribersLimitReached,
   subscribersLimit,
   subscribersCount,
@@ -49,7 +51,9 @@ export function PremiumBannerWithUpgrade({
   let bannerMessage: ReactNode;
   let ctaButton: ReactNode;
 
-  if (anyValidKey && !premiumActive) {
+  const [loading, setLoading] = useState(false);
+
+  if (hasValidPremiumKey && (!isPremiumPluginInstalled || !premiumActive)) {
     bannerMessage = getBannerMessage(
       __(
         'Your current MailPoet plan includes advanced features, but they require the MailPoet Premium plugin to be installed and activated.',
@@ -57,16 +61,49 @@ export function PremiumBannerWithUpgrade({
       ),
     );
 
-    ctaButton = isPremiumPluginInstalled
-      ? getCtaButton(
-          __('Activate MailPoet Premium plugin', 'mailpoet'),
-          premiumPluginActivationUrl,
-          '_self',
-        )
-      : getCtaButton(
-          __('Download MailPoet Premium plugin', 'mailpoet'),
-          premiumPluginDownloadUrl,
-        );
+    ctaButton = isPremiumPluginInstalled ? (
+      <Button
+        withSpinner={loading}
+        href={premiumPluginActivationUrl}
+        rel="noopener noreferrer"
+        onClick={(e) => {
+          e.preventDefault();
+          setLoading(true);
+
+          jQuery
+            .get(premiumPluginActivationUrl)
+            .then((response) => {
+              if (response.includes('Plugin activated')) {
+                window.location.reload();
+              }
+            })
+            .catch(() => {
+              setLoading(false);
+              MailPoet.Notice.error(
+                ReactStringReplace(
+                  __(
+                    'We were unable to activate the premium plugin, please try visiting the [link]plugin page link[/link] to activate it manually.',
+                    'mailpoet',
+                  ),
+                  /\[link\](.*?)\[\/link\]/g,
+                  (match) =>
+                    `<a rel="noreferrer" href=${adminPluginsUrl}>${match}</a>`,
+                ).join(''),
+                { isDismissible: false },
+              );
+            });
+        }}
+      >
+        {loading
+          ? __('Activating MailPoet premium...', 'mailpoet')
+          : __('Activate MailPoet Premium plugin', 'mailpoet')}
+      </Button>
+    ) : (
+      getCtaButton(
+        __('Download MailPoet Premium plugin', 'mailpoet'),
+        premiumPluginDownloadUrl,
+      )
+    );
   } else if (subscribersLimitReached) {
     bannerMessage = getBannerMessage(
       __(
