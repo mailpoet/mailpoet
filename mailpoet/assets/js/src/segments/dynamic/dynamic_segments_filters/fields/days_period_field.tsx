@@ -85,7 +85,7 @@ export function DaysPeriodField({ filterIndex }: FilterProps): JSX.Element {
 }
 
 export function validateDaysPeriod(formItems: DaysPeriodItem): boolean {
-  if (isInEnum(formItems.timeframe, Timeframes)) {
+  if (formItems.timeframe === Timeframes.ALL_TIME) {
     return true;
   }
   return !!formItems.days;
