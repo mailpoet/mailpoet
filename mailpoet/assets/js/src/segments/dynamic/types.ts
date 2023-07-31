@@ -80,7 +80,7 @@ export interface DateFormItem extends FormItem {
 
 export interface DaysPeriodItem extends FormItem {
   days?: string;
-  timeframe?: string;
+  timeframe?: Timeframes;
 }
 
 export enum Timeframes {

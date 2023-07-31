@@ -8,8 +8,10 @@ import {
   WooCommerceFormItem,
   FilterProps,
   DaysPeriodItem,
+  Timeframes,
 } from '../../../types';
 import { validateDaysPeriod, DaysPeriodField } from '../days_period_field';
+import { isInEnum } from '../../../../../utils';
 
 export function validateNumberOfReviews(
   formItems: WooCommerceFormItem,
@@ -39,8 +41,11 @@ export function NumberOfReviewsFields({
     }
   }, [updateSegmentFilter, segment, filterIndex]);
 
-  if (!['inTheLast', 'allTime'].includes(segment.timeframe)) {
-    void updateSegmentFilter({ timeframe: 'inTheLast' }, filterIndex);
+  if (!isInEnum(segment.timeframe, Timeframes)) {
+    void updateSegmentFilter(
+      { timeframe: Timeframes.IN_THE_LAST },
+      filterIndex,
+    );
   }
 
   return (
