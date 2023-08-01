@@ -3,7 +3,7 @@ import { __ } from '@wordpress/i18n';
 import { Button } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 import { store as editorStore } from '@wordpress/editor';
-import { SendButtonSlot } from './components/send_button_slot';
+import { NextButtonSlot } from './components/next_button_slot';
 import { MailPoetEmailData } from './types';
 
 import './email_editor.scss';
@@ -20,7 +20,7 @@ function Editor() {
   }));
 
   return (
-    <SendButtonSlot>
+    <NextButtonSlot>
       <Button
         variant="primary"
         disabled={!mailpoetData}
@@ -28,9 +28,9 @@ function Editor() {
           window.location.href = `admin.php?page=mailpoet-newsletters#/send/${mailpoetData.id}`;
         }}
       >
-        {__('Send', 'mailpoet')}
+        {__('Next', 'mailpoet')}
       </Button>
-    </SendButtonSlot>
+    </NextButtonSlot>
   );
 }
 
