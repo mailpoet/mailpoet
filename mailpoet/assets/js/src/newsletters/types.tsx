@@ -10,6 +10,7 @@ import { AutomaticEmailEventGroupLogos } from 'newsletters/types/automatic_email
 import { Button } from 'common/button/button';
 import { Heading } from 'common/typography/heading/heading';
 import { modalCloseIcon } from 'common/modal/close_icon';
+import { EditorSelectModal } from 'newsletters/editor_select_modal';
 import { HideScreenOptions } from 'common/hide_screen_options/hide_screen_options';
 import { APIErrorsNotice } from '../notices/api_errors_notice';
 import { isErrorResponse } from '../ajax';
@@ -28,6 +29,14 @@ function NewsletterTypesComponent({
   hideScreenOptions = true,
 }: Props): JSX.Element {
   const [isCreating, setIsCreating] = useState(false);
+
+  const [isSelectEditorModalOpen, setIsSelectEditorModalOpen] = useState(false);
+  const [selectLegacyEditorCallback, setSelectLegacyEditorCallback] = useState(
+    () => () => null,
+  );
+  const isNewEmailEditorEnabled = MailPoet.FeaturesController.isSupported(
+    'gutenberg_email_editor',
+  );
 
   const setupNewsletter = (type): void => {
     if (type !== undefined) {
@@ -240,7 +249,15 @@ function NewsletterTypesComponent({
       });
   };
 
-  const createStandardNewsletter = _.partial(createNewsletter, 'standard');
+  let createStandardNewsletter = _.partial(createNewsletter, 'standard');
+  if (isNewEmailEditorEnabled) {
+    createStandardNewsletter = () => {
+      setSelectLegacyEditorCallback(() =>
+        _.partial(createNewsletter, 'standard'),
+      );
+      setIsSelectEditorModalOpen(true);
+    };
+  }
   const createNotificationNewsletter = _.partial(
     setupNewsletter,
     'notification',
@@ -411,6 +428,11 @@ function NewsletterTypesComponent({
       </div>
 
       <link rel="prefetch" href={templatesGETUrl} as="fetch" />
+      <EditorSelectModal
+        legacyEditorCallback={selectLegacyEditorCallback}
+        onClose={() => setIsSelectEditorModalOpen(false)}
+        isModalOpen={isSelectEditorModalOpen}
+      />
     </>
   );
 }
