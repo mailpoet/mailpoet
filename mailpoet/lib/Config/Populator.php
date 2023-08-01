@@ -231,9 +231,11 @@ class Populator {
     // parse current user name if an email is used
     $senderName = explode('@', $currentUserName);
     $senderName = reset($senderName);
+    // If current user is not set, default to admin email
+    $senderAddress = $currentUser->user_email ?: $this->wp->getOption('admin_email'); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     $defaultSender = [
       'name' => $senderName,
-      'address' => $currentUser->user_email ?: '', // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+      'address' => $senderAddress ?: '',
     ];
     $savedSender = $this->settings->fetch('sender', []);
 
