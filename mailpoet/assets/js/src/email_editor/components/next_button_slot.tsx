@@ -1,10 +1,10 @@
 import { useEffect, useState, createPortal } from '@wordpress/element';
 
-type SendButtonSlotPropType = {
+type NextButtonSlotPropType = {
   children: JSX.Element;
 };
 
-export function SendButtonSlot({ children }: SendButtonSlotPropType) {
+export function NextButtonSlot({ children }: NextButtonSlotPropType) {
   const [sendButtonPortalEl] = useState(document.createElement('div'));
 
   // Place element for rendering send button next to publish button
