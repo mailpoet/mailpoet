@@ -444,12 +444,11 @@ class FilterDataMapper {
       if (!isset($data['payment_methods']) || !is_array($data['payment_methods']) || empty($data['payment_methods'])) {
         throw new InvalidFilterException('Missing payment gateways', InvalidFilterException::MISSING_VALUE);
       }
-      if (!isset($data['used_payment_method_days']) || intval($data['used_payment_method_days']) < 1) {
-        throw new InvalidFilterException('Missing days', InvalidFilterException::MISSING_VALUE);
-      }
+      $this->filterHelper->validateDaysPeriodData($data);
       $filterData['operator'] = $data['operator'];
       $filterData['payment_methods'] = $data['payment_methods'];
-      $filterData['used_payment_method_days'] = intval($data['used_payment_method_days']);
+      $filterData['days'] = intval($data['days'] ?? 0);
+      $filterData['timeframe'] = $data['timeframe'];
     } elseif ($data['action'] === WooCommerceUsedShippingMethod::ACTION) {
       if (!isset($data['operator']) || !in_array($data['operator'], WooCommerceUsedShippingMethod::VALID_OPERATORS, true)) {
         throw new InvalidFilterException('Missing operator', InvalidFilterException::MISSING_OPERATOR);
@@ -457,12 +456,11 @@ class FilterDataMapper {
       if (!isset($data['shipping_methods']) || !is_array($data['shipping_methods']) || empty($data['shipping_methods'])) {
         throw new InvalidFilterException('Missing shipping methods', InvalidFilterException::MISSING_VALUE);
       }
-      if (!isset($data['used_shipping_method_days']) || intval($data['used_shipping_method_days']) < 1) {
-        throw new InvalidFilterException('Missing days', InvalidFilterException::MISSING_VALUE);
-      }
+      $this->filterHelper->validateDaysPeriodData($data);
       $filterData['operator'] = $data['operator'];
       $filterData['shipping_methods'] = $data['shipping_methods'];
-      $filterData['used_shipping_method_days'] = intval($data['used_shipping_method_days']);
+      $filterData['days'] = intval($data['days'] ?? 0);
+      $filterData['timeframe'] = $data['timeframe'];
     } elseif (in_array($data['action'], WooCommerceCustomerTextField::ACTIONS)) {
       if (empty($data['value'])) {
         throw new InvalidFilterException('Missing value', InvalidFilterException::MISSING_VALUE);

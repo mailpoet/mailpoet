@@ -144,9 +144,7 @@ export interface WooCommerceFormItem extends FormItem {
   average_spent_type?: string;
   average_spent_amount?: string;
   payment_methods?: string[];
-  used_payment_method_days?: string;
   shipping_methods?: string[];
-  used_shipping_method_days?: string;
   rating?: ReviewRating;
   count_type?: CountType;
   count?: string;

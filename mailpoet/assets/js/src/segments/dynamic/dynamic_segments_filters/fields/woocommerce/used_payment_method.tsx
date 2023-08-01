@@ -1,7 +1,7 @@
 import { useDispatch, useSelect } from '@wordpress/data';
 import { useEffect } from 'react';
 import { Grid } from 'common/grid';
-import { Input, Select } from 'common';
+import { Select } from 'common';
 import { MailPoet } from 'mailpoet';
 import { ReactSelect } from 'common/form/react_select/react_select';
 import { filter } from 'lodash/fp';
@@ -13,6 +13,7 @@ import {
   SelectOption,
 } from '../../../types';
 import { storeName } from '../../../store';
+import { DaysPeriodField, validateDaysPeriod } from '../days_period_field';
 
 export function validateUsedPaymentMethod(
   formItems: WooCommerceFormItem,
@@ -21,8 +22,7 @@ export function validateUsedPaymentMethod(
     !formItems.payment_methods ||
     formItems.payment_methods.length < 1 ||
     !formItems.operator ||
-    !formItems.used_payment_method_days ||
-    parseInt(formItems.used_payment_method_days, 10) < 1;
+    !validateDaysPeriod(formItems);
 
   return !usedPaymentMethodIsInvalid;
 }
@@ -34,8 +34,7 @@ export function UsedPaymentMethodFields({
     (select) => select(storeName).getSegmentFilter(filterIndex),
     [filterIndex],
   );
-  const { updateSegmentFilter, updateSegmentFilterFromEvent } =
-    useDispatch(storeName);
+  const { updateSegmentFilter } = useDispatch(storeName);
   const paymentMethods: WooPaymentMethod[] = useSelect(
     (select) => select(storeName).getPaymentMethods(),
     [],
@@ -97,22 +96,7 @@ export function UsedPaymentMethodFields({
         />
       </Grid.CenteredRow>
       <Grid.CenteredRow>
-        <div>{MailPoet.I18n.t('inTheLast')}</div>
-        <Input
-          data-automation-id="input-used-payment-days"
-          type="number"
-          min={1}
-          value={segment.used_payment_method_days || ''}
-          placeholder={MailPoet.I18n.t('daysPlaceholder')}
-          onChange={(e): void => {
-            void updateSegmentFilterFromEvent(
-              'used_payment_method_days',
-              filterIndex,
-              e,
-            );
-          }}
-        />
-        <div>{MailPoet.I18n.t('days')}</div>
+        <DaysPeriodField filterIndex={filterIndex} />
       </Grid.CenteredRow>
     </>
   );
