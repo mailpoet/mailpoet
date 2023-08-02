@@ -1,14 +1,9 @@
 import { __ } from '@wordpress/i18n';
 import { MailPoet } from '../../mailpoet';
+import { StatsType } from '../types';
 
 export type PropTypes = {
-  lastClick?: string;
-  lastEngagement?: string;
-  lastOpen?: string;
-  lastPageView?: string;
-  lastPurchase?: string;
-  lastSending?: string;
-  wooCommerceActive: boolean;
+  stats: StatsType;
 };
 
 function dateOrNever(date?: string): string {
@@ -18,28 +13,38 @@ function dateOrNever(date?: string): string {
   return __('never', 'mailpoet');
 }
 
-export function EngagementSummary({
-  lastClick,
-  lastEngagement,
-  lastOpen,
-  lastPageView,
-  lastPurchase,
-  lastSending,
-  wooCommerceActive,
-}: PropTypes): JSX.Element {
-  const stats = [
-    { label: __('Last click', 'mailpoet'), date: lastClick },
-    { label: __('Last engagement', 'mailpoet'), date: lastEngagement },
-    { label: __('Last open', 'mailpoet'), date: lastOpen },
-    { label: __('Last page view', 'mailpoet'), date: lastPageView },
-    { label: __('Last sending', 'mailpoet'), date: lastSending },
+export function EngagementSummary({ stats }: PropTypes): JSX.Element {
+  const engagementData = [
+    {
+      label: __('Last click', 'mailpoet'),
+      date: stats.last_click || null,
+    },
+    {
+      label: __('Last engagement', 'mailpoet'),
+      date: stats.last_engagement || null,
+    },
+    {
+      label: __('Last open', 'mailpoet'),
+      date: stats.last_open || null,
+    },
+    {
+      label: __('Last page view', 'mailpoet'),
+      date: stats.last_page_view || null,
+    },
+    {
+      label: __('Last sending', 'mailpoet'),
+      date: stats.last_sending || null,
+    },
   ];
 
-  if (wooCommerceActive) {
-    stats.push({ label: __('Last purchase', 'mailpoet'), date: lastPurchase });
+  if (stats.woocommerce) {
+    engagementData.push({
+      label: __('Last purchase', 'mailpoet'),
+      date: stats.last_purchase || null,
+    });
   }
 
-  stats.sort((a, b) => {
+  engagementData.sort((a, b) => {
     if (a.date === b.date) {
       return 0;
     }
@@ -57,7 +62,7 @@ export function EngagementSummary({
       <div className="mailpoet-listing">
         <table className="mailpoet-listing-table">
           <tbody>
-            {stats.map(({ label, date }) => (
+            {engagementData.map(({ label, date }) => (
               <tr key={label}>
                 <td>{label}</td>
                 <td>

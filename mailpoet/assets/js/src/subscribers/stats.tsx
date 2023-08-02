@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useRouteMatch, useLocation } from 'react-router-dom';
+import { useLocation, useRouteMatch } from 'react-router-dom';
 import { MailPoet } from 'mailpoet';
 import { Loading } from 'common/loading';
 import { useGlobalContextValue } from 'context';
@@ -10,28 +10,7 @@ import { Summary } from './stats/summary';
 import { WoocommerceRevenues } from './stats/woocommerce_revenues';
 import { OpenedEmailsStats } from './stats/opened_email_stats';
 import { EngagementSummary } from './stats/engagement_summary';
-
-export type StatsType = {
-  email: string;
-  total_sent: number;
-  open: number;
-  machine_open: number;
-  click: number;
-  engagement_score: number;
-  last_engagement?: string;
-  last_click?: string;
-  last_open?: string;
-  last_sending?: string;
-  last_page_view?: string;
-  last_purchase?: string;
-  woocommerce: {
-    currency: string;
-    value: number;
-    count: number;
-    formatted: string;
-    formatted_average: string;
-  };
-};
+import { StatsType } from './types';
 
 export function SubscriberStats(): JSX.Element {
   const match = useRouteMatch<{ id: string }>();
@@ -88,15 +67,7 @@ export function SubscriberStats(): JSX.Element {
             engagement_score: stats.engagement_score,
           }}
         />
-        <EngagementSummary
-          lastClick={stats.last_click}
-          lastEngagement={stats.last_engagement}
-          lastOpen={stats.last_open}
-          lastPageView={stats.last_page_view}
-          lastPurchase={stats.last_purchase}
-          lastSending={stats.last_sending}
-          wooCommerceActive={!!stats.woocommerce}
-        />
+        <EngagementSummary stats={stats} />
         {stats.woocommerce && (
           <WoocommerceRevenues
             averageRevenueValue={stats.woocommerce.formatted_average}
