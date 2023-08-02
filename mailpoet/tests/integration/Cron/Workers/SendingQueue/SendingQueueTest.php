@@ -212,7 +212,8 @@ class SendingQueueTest extends \MailPoetTest {
       $this->scheduledTasksRepository,
       $this->diContainer->get(MailerTask::class),
       $this->subscribersRepository,
-      $this->sendingQueuesRepository
+      $this->sendingQueuesRepository,
+      $this->entityManager
     );
     try {
       $sendingQueueWorker->process();
@@ -247,7 +248,8 @@ class SendingQueueTest extends \MailPoetTest {
         ]
       ),
       $this->subscribersRepository,
-      $this->sendingQueuesRepository
+      $this->sendingQueuesRepository,
+      $this->entityManager
     );
     $sendingQueueWorker->sendNewsletters(
       $this->queue,
@@ -293,7 +295,8 @@ class SendingQueueTest extends \MailPoetTest {
         ]
       ),
       $this->subscribersRepository,
-      $this->sendingQueuesRepository
+      $this->sendingQueuesRepository,
+      $this->entityManager
     );
     $sendingQueueWorker->sendNewsletters(
       $queue,
@@ -333,7 +336,8 @@ class SendingQueueTest extends \MailPoetTest {
       $this->scheduledTasksRepository,
       $this->diContainer->get(MailerTask::class),
       $this->subscribersRepository,
-      $this->sendingQueuesRepository
+      $this->sendingQueuesRepository,
+      $this->entityManager
     );
     $sendingQueueWorker->process();
   }
@@ -413,10 +417,15 @@ class SendingQueueTest extends \MailPoetTest {
         ]
       )
     );
+    $this->subscriber->setEngagementScoreUpdatedAt(Carbon::now()->subDays(5));
+    $this->entityManager->flush();
+    $this->entityManager->refresh($this->subscriber);
     expect($this->subscriber->getLastSendingAt())->null();
+    expect($this->subscriber->getEngagementScoreUpdatedAt())->notNull();
     $sendingQueueWorker->process();
     $this->subscribersRepository->refresh($this->subscriber);
     expect($this->subscriber->getLastSendingAt())->notNull();
+    expect($this->subscriber->getEngagementScoreUpdatedAt())->null();
 
     // newsletter status is set to sent
     $updatedNewsletter = Newsletter::findOne($this->newsletter->id);
@@ -666,7 +675,8 @@ class SendingQueueTest extends \MailPoetTest {
         ]
       ),
       $this->subscribersRepository,
-      $this->sendingQueuesRepository
+      $this->sendingQueuesRepository,
+      $this->entityManager
     );
 
     $sendingQueueWorker->sendNewsletters(
@@ -1113,7 +1123,8 @@ class SendingQueueTest extends \MailPoetTest {
         ]
       ),
       $this->subscribersRepository,
-      $this->sendingQueuesRepository
+      $this->sendingQueuesRepository,
+      $this->entityManager
     );
     try {
       $sendingQueueWorker->sendNewsletters(
@@ -1421,7 +1432,8 @@ class SendingQueueTest extends \MailPoetTest {
       $this->scheduledTasksRepository,
       $mailerMock ?? $this->diContainer->get(MailerTask::class),
       $this->subscribersRepository,
-      $this->sendingQueuesRepository
+      $this->sendingQueuesRepository,
+      $this->entityManager
     );
   }
 

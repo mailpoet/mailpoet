@@ -28,6 +28,7 @@ use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\Tasks\Subscribers\BatchIterator;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
+use MailPoetVendor\Doctrine\ORM\EntityManager;
 
 class SendingQueue {
   /** @var MailerTask */
@@ -82,6 +83,9 @@ class SendingQueue {
   /*** @var SendingQueuesRepository */
   private $sendingQueuesRepository;
 
+  /** @var EntityManager */
+  private $entityManager;
+
   public function __construct(
     SendingErrorHandler $errorHandler,
     SendingThrottlingHandler $throttlingHandler,
@@ -97,6 +101,7 @@ class SendingQueue {
     MailerTask $mailerTask,
     SubscribersRepository $subscribersRepository,
     SendingQueuesRepository $sendingQueuesRepository,
+    EntityManager $entityManager,
     $newsletterTask = false
   ) {
     $this->errorHandler = $errorHandler;
@@ -115,6 +120,7 @@ class SendingQueue {
     $this->scheduledTasksRepository = $scheduledTasksRepository;
     $this->subscribersRepository = $subscribersRepository;
     $this->sendingQueuesRepository = $sendingQueuesRepository;
+    $this->entityManager = $entityManager;
   }
 
   public function process($timer = false) {
@@ -272,10 +278,12 @@ class SendingQueue {
           $timer
         );
         if (!$isTransactional) {
-          $now = Carbon::createFromTimestamp((int)current_time('timestamp'));
-          $this->subscribersRepository->bulkUpdateLastSendingAt($foundSubscribersIds, $now);
-          // We're nullifying this value so these subscribers' engagement score will be recalculated the next time the cron runs
-          $this->subscribersRepository->bulkUpdateEngagementScoreUpdatedAt($foundSubscribersIds, null);
+          $this->entityManager->wrapInTransaction(function() use ($foundSubscribersIds) {
+            $now = Carbon::createFromTimestamp((int)current_time('timestamp'));
+            $this->subscribersRepository->bulkUpdateLastSendingAt($foundSubscribersIds, $now);
+            // We're nullifying this value so these subscribers' engagement score will be recalculated the next time the cron runs
+            $this->subscribersRepository->bulkUpdateEngagementScoreUpdatedAt($foundSubscribersIds, null);
+          });
         }
         $this->loggerFactory->getLogger(LoggerFactory::TOPIC_NEWSLETTERS)->info(
           'after queue chunk processing',
