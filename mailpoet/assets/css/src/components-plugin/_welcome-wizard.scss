@@ -152,7 +152,9 @@
 }
 
 .mailpoet-wizard-woocommerce-toggle {
+  align-self: flex-start;
   margin-left: $grid-gap;
+  margin-top: $grid-gap;
 }
 
 .mailpoet-welcome-wizard-confirmation-modal {
