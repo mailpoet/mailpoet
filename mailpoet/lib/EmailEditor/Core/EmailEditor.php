@@ -13,6 +13,7 @@ class EmailEditor {
     $this->registerEmailPostTypes();
     add_filter('allowed_block_types_all', [$this, 'setAllowedBlocksInEmails'], 100, 2);
     add_filter('enqueue_block_editor_assets', [$this, 'cleanupBlockEditorAssets'], ~PHP_INT_MAX);
+    add_filter('block_editor_settings_all', [$this, 'updateBlockEditorSettings'], 100, 2);
   }
 
   private function registerEmailPostTypes() {
@@ -92,5 +93,14 @@ class EmailEditor {
         remove_action('enqueue_block_editor_assets', $action['function'], $priority);
       }
     }
+  }
+
+  public function updateBlockEditorSettings(array $settings, \WP_Block_Editor_Context $blockEditorContext): array {
+    $emailPostTypes = array_column($this->getPostTypes(), 'name');
+    if (!$blockEditorContext->post || !in_array($blockEditorContext->post->post_type, $emailPostTypes, true)) {
+      return $settings;
+    }
+    $settings['enableCustomUnits'] = ['px', '%']; // Allow only units we can support in email renderer
+    return array_merge($settings, apply_filters('mailpoet_email_editor_settings_all', []));
   }
 }
