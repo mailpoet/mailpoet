@@ -197,7 +197,6 @@ class SubscriberDateFieldTest extends \MailPoetTest {
     $filterData = new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_USER_ROLE, $action, [
       'operator' => $operator,
       'value' => $value,
-      'action' => $action,
     ]);
     $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($filterData, $this->filter);
     $this->assertEqualsCanonicalizing($expectedEmails, $emails);
