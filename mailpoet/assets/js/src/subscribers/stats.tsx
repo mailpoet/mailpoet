@@ -4,7 +4,7 @@ import { MailPoet } from 'mailpoet';
 import { Loading } from 'common/loading';
 import { useGlobalContextValue } from 'context';
 
-import { Heading } from 'common/typography/heading/heading';
+import { Heading } from 'common';
 import { StatsHeading } from './stats/heading';
 import { Summary } from './stats/summary';
 import { WoocommerceRevenues } from './stats/woocommerce_revenues';
