@@ -43,7 +43,7 @@ class SubscriberDateField implements Filter {
 
   public function apply(QueryBuilder $queryBuilder, DynamicSegmentFilterEntity $filter): QueryBuilder {
     $operator = $this->dateFilterHelper->getOperatorFromFilter($filter);
-    $action = $filter->getFilterData()->getParam('action');
+    $action = $filter->getFilterData()->getAction();
     $value = $this->dateFilterHelper->getDateValueFromFilter($filter);
     $parameter = $this->filterHelper->getUniqueParameterName('date');
     $date = $this->dateFilterHelper->getDateStringForOperator($operator, $value);

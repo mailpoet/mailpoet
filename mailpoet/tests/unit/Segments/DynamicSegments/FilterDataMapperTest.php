@@ -906,7 +906,6 @@ class FilterDataMapperTest extends \MailPoetUnitTest {
     expect($filter->getData())->equals([
       'value' => '2023-07-01',
       'operator' => 'on',
-      'action' => $action,
       'connect' => DynamicSegmentFilterData::CONNECT_TYPE_AND,
     ]);
   }
