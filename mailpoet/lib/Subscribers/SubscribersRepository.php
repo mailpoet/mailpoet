@@ -304,9 +304,9 @@ class SubscribersRepository extends Repository {
     return count($ids);
   }
 
-  public function bulkUpdateEngagementScoreUpdatedAt(array $ids, ?DateTimeInterface $dateTime): int {
+  public function bulkUpdateEngagementScoreUpdatedAt(array $ids, ?DateTimeInterface $dateTime): void {
     if (empty($ids)) {
-      return 0;
+      return;
     }
     $this->entityManager->createQueryBuilder()
       ->update(SubscriberEntity::class, 's')
@@ -316,7 +316,6 @@ class SubscribersRepository extends Repository {
       ->setParameter('ids', $ids)
       ->getQuery()
       ->execute();
-    return count($ids);
   }
 
   public function findWpUserIdAndEmailByEmails(array $emails): array {
