@@ -3,27 +3,40 @@
 namespace MailPoet\Newsletter;
 
 use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Features\FeaturesController;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\TrackingConfig;
 use MailPoet\Validator\ValidationException;
 
 class NewsletterValidator {
-  
+
   /** @var Bridge */
   private $bridge;
 
   /** @var TrackingConfig */
   private $trackingConfig;
 
+  /** @var FeaturesController */
+  private $featuresController;
+
   public function __construct(
     Bridge $bridge,
-    TrackingConfig $trackingConfig
+    TrackingConfig $trackingConfig,
+    FeaturesController $featuresController
   ) {
     $this->bridge = $bridge;
     $this->trackingConfig = $trackingConfig;
+    $this->featuresController = $featuresController;
   }
-  
+
   public function validate(NewsletterEntity $newsletterEntity): ?string {
+    if (
+      $this->featuresController->isSupported(FeaturesController::GUTENBERG_EMAIL_EDITOR)
+      && $newsletterEntity->getWpPostId() !== null
+    ) {
+      // Temporarily skip validation for emails created via Gutenberg editor
+      return null;
+    }
     try {
       $this->validateBody($newsletterEntity);
       $this->validateUnsubscribeRequirements($newsletterEntity);
@@ -82,7 +95,7 @@ class NewsletterValidator {
     }
     $content = $newsletterEntity->getContent();
     if (
-      strpos($content, '"type":"automatedLatestContent"') === false && 
+      strpos($content, '"type":"automatedLatestContent"') === false &&
       strpos($content, '"type":"automatedLatestContentLayout"') === false
     ) {
       throw new ValidationException(_x('Please add an “Automatic Latest Content” widget to the email from the right sidebar.', '(Please reuse the current translation used for the string “Automatic Latest Content”) This Error message is displayed when a user tries to send a “Post Notification” email without any “Automatic Latest Content” widget inside', 'mailpoet'));
