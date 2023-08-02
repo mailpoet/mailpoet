@@ -64,8 +64,6 @@ function WelcomeWizardUsageTrackingStep({ loading, submitForm }) {
                 )}
               </p>
               <div className="mailpoet-wizard-note">
-                <span>{__('Note', 'mailpoet')}</span>
-
                 {ReactStringReplace(
                   __(
                     'MailPoet may load Google Fonts, HelpScout and other [link]3rd party libraries[/link].',
@@ -110,8 +108,6 @@ function WelcomeWizardUsageTrackingStep({ loading, submitForm }) {
             <div>
               <p>{__('Help improve MailPoet', 'mailpoet')}</p>
               <div className="mailpoet-wizard-note">
-                <span>{__('Note', 'mailpoet')}</span>
-
                 {ReactStringReplace(
                   __(
                     'Get improved features and fixes faster by sharing with us [link]non-sensitive data about how you use MailPoet[/link]. No personal data is tracked or stored.',
