@@ -1,7 +1,12 @@
 import { registerPlugin } from '@wordpress/plugins';
 import { __ } from '@wordpress/i18n';
 import { Button } from '@wordpress/components';
-import { useSelect, select as directSelect } from '@wordpress/data';
+import {
+  useSelect,
+  subscribe,
+  select as directSelect,
+  dispatch as directDispatch,
+} from '@wordpress/data';
 import { store as coreStore } from '@wordpress/core-data';
 import { store as editorStore } from '@wordpress/editor';
 import { NextButtonSlot } from './components/next_button_slot';
@@ -30,7 +35,23 @@ function Editor() {
         variant="primary"
         disabled={!mailpoetData}
         onClick={() => {
-          window.location.href = `admin.php?page=mailpoet-newsletters#/send/${mailpoetData.id}`;
+          const isPostDirty = directSelect(editorStore).isEditedPostDirty();
+          const sendUrl = `admin.php?page=mailpoet-newsletters#/send/${mailpoetData.id}`;
+          if (!isPostDirty) {
+            window.location.href = sendUrl;
+            return;
+          }
+          directDispatch(editorStore).savePost();
+          const unsubscribe = subscribe(() => {
+            const isStillDirty = directSelect(editorStore).isEditedPostDirty();
+            const isSaving = directSelect(editorStore).isSavingPost();
+            const didSave =
+              directSelect(editorStore).didPostSaveRequestSucceed();
+            if (!isSaving && didSave && !isStillDirty) {
+              unsubscribe();
+              window.location.href = sendUrl;
+            }
+          });
         }}
       >
         {__('Next', 'mailpoet')}
