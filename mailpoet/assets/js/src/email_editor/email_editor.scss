@@ -3,4 +3,14 @@
   .editor-post-publish-button__button {
     display: none !important;
   }
+  // Hardcoded email editor area width to match email width
+  // We may want to allow set it in configuration in the future
+  .edit-post-visual-editor__content-area {
+    margin: 0 auto;
+    max-width: 660px;
+  }
+
+  .edit-post-visual-editor {
+    background: #ccc;
+  }
 }
