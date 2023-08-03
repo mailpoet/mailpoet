@@ -9,6 +9,8 @@ import {
   FilterProps,
   DaysPeriodItem,
   Timeframes,
+  ReviewRating,
+  CountType,
 } from '../../../types';
 import { validateDaysPeriod, DaysPeriodField } from '../days_period_field';
 import { isInEnum } from '../../../../../utils';
@@ -36,17 +38,19 @@ export function NumberOfReviewsFields({
     useDispatch(storeName);
 
   useEffect(() => {
-    if (segment.count_type === undefined) {
-      void updateSegmentFilter({ count_type: '=' }, filterIndex);
+    if (!isInEnum(segment.count_type, CountType)) {
+      void updateSegmentFilter({ count_type: CountType.EQUALS }, filterIndex);
+    }
+    if (!isInEnum(segment.rating, ReviewRating)) {
+      void updateSegmentFilter({ rating: ReviewRating.ANY }, filterIndex);
+    }
+    if (!isInEnum(segment.timeframe, Timeframes)) {
+      void updateSegmentFilter(
+        { timeframe: Timeframes.IN_THE_LAST },
+        filterIndex,
+      );
     }
   }, [updateSegmentFilter, segment, filterIndex]);
-
-  if (!isInEnum(segment.timeframe, Timeframes)) {
-    void updateSegmentFilter(
-      { timeframe: Timeframes.IN_THE_LAST },
-      filterIndex,
-    );
-  }
 
   return (
     <>
@@ -58,12 +62,24 @@ export function NumberOfReviewsFields({
             void updateSegmentFilterFromEvent('rating', filterIndex, e);
           }}
         >
-          <option value="any">{MailPoet.I18n.t('wooAnyStarRating')}</option>
-          <option value="1">{MailPoet.I18n.t('wooOneStarRating')}</option>
-          <option value="2">{MailPoet.I18n.t('wooTwoStarRating')}</option>
-          <option value="3">{MailPoet.I18n.t('wooThreeStarRating')}</option>
-          <option value="4">{MailPoet.I18n.t('wooFourStarRating')}</option>
-          <option value="5">{MailPoet.I18n.t('wooFiveStarRating')}</option>
+          <option value={ReviewRating.ANY}>
+            {MailPoet.I18n.t('wooAnyStarRating')}
+          </option>
+          <option value={ReviewRating.ONE}>
+            {MailPoet.I18n.t('wooOneStarRating')}
+          </option>
+          <option value={ReviewRating.TWO}>
+            {MailPoet.I18n.t('wooTwoStarRating')}
+          </option>
+          <option value={ReviewRating.THREE}>
+            {MailPoet.I18n.t('wooThreeStarRating')}
+          </option>
+          <option value={ReviewRating.FOUR}>
+            {MailPoet.I18n.t('wooFourStarRating')}
+          </option>
+          <option value={ReviewRating.FIVE}>
+            {MailPoet.I18n.t('wooFiveStarRating')}
+          </option>
         </Select>
         <Select
           key="select"
@@ -73,10 +89,16 @@ export function NumberOfReviewsFields({
           }}
           automationId="select-number-of-reviews-type"
         >
-          <option value="=">{MailPoet.I18n.t('equals')}</option>
-          <option value="!=">{MailPoet.I18n.t('notEquals')}</option>
-          <option value=">">{MailPoet.I18n.t('moreThan')}</option>
-          <option value="<">{MailPoet.I18n.t('lessThan')}</option>
+          <option value={CountType.EQUALS}>{MailPoet.I18n.t('equals')}</option>
+          <option value={CountType.NOT_EQUALS}>
+            {MailPoet.I18n.t('notEquals')}
+          </option>
+          <option value={CountType.MORE_THAN}>
+            {MailPoet.I18n.t('moreThan')}
+          </option>
+          <option value={CountType.LESS_THAN}>
+            {MailPoet.I18n.t('lessThan')}
+          </option>
         </Select>
         <Input
           data-automation-id="input-number-of-reviews-count"
