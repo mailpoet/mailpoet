@@ -105,6 +105,22 @@ export interface WordpressRoleFormItem extends FormItem {
   form_ids?: string[];
 }
 
+export enum ReviewRating {
+  ANY = 'any',
+  ONE = '1',
+  TWO = '2',
+  THREE = '3',
+  FOUR = '4',
+  FIVE = '5',
+}
+
+export enum CountType {
+  EQUALS = '=',
+  NOT_EQUALS = '!=',
+  MORE_THAN = '>',
+  LESS_THAN = '<',
+}
+
 export interface WooCommerceFormItem extends FormItem {
   category_ids?: string[];
   product_ids?: string[];
@@ -122,8 +138,8 @@ export interface WooCommerceFormItem extends FormItem {
   used_payment_method_days?: string;
   shipping_methods?: string[];
   used_shipping_method_days?: string;
-  rating?: string;
-  count_type?: string;
+  rating?: ReviewRating;
+  count_type?: CountType;
   count?: string;
   days?: string;
 }
