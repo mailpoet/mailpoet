@@ -80,10 +80,10 @@ export interface DateFormItem extends FormItem {
 
 export interface DaysPeriodItem extends FormItem {
   days?: string;
-  timeframe?: Timeframes;
+  timeframe?: Timeframe;
 }
 
-export enum Timeframes {
+export enum Timeframe {
   ALL_TIME = 'allTime',
   IN_THE_LAST = 'inTheLast',
 }

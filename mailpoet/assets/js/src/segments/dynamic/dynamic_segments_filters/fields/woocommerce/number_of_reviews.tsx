@@ -8,7 +8,7 @@ import {
   WooCommerceFormItem,
   FilterProps,
   DaysPeriodItem,
-  Timeframes,
+  Timeframe,
   ReviewRating,
   CountType,
 } from '../../../types';
@@ -44,9 +44,9 @@ export function NumberOfReviewsFields({
     if (!isInEnum(segment.rating, ReviewRating)) {
       void updateSegmentFilter({ rating: ReviewRating.ANY }, filterIndex);
     }
-    if (!isInEnum(segment.timeframe, Timeframes)) {
+    if (!isInEnum(segment.timeframe, Timeframe)) {
       void updateSegmentFilter(
-        { timeframe: Timeframes.IN_THE_LAST },
+        { timeframe: Timeframe.IN_THE_LAST },
         filterIndex,
       );
     }
