@@ -1,12 +1,17 @@
 import { registerPlugin } from '@wordpress/plugins';
 import { __ } from '@wordpress/i18n';
 import { Button } from '@wordpress/components';
-import { useSelect } from '@wordpress/data';
+import { useSelect, select as directSelect } from '@wordpress/data';
+import { store as coreStore } from '@wordpress/core-data';
 import { store as editorStore } from '@wordpress/editor';
 import { NextButtonSlot } from './components/next_button_slot';
 import { MailPoetEmailData } from './types';
 
 import './email_editor.scss';
+
+// Hack to temporarily disable block patterns
+directSelect(coreStore).getBlockPatterns = () => [];
+directSelect(coreStore).getBlockPatternCategories = () => [];
 
 function Editor() {
   const { mailpoetData } = useSelect((select) => ({
