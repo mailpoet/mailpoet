@@ -2,11 +2,7 @@ import { useDispatch, useSelect } from '@wordpress/data';
 import { Input } from 'common';
 import { MailPoet } from 'mailpoet';
 import { Select } from 'common/form/select/select';
-import {
-  DaysPeriodItem,
-  FilterProps,
-  Timeframes,
-} from 'segments/dynamic/types';
+import { DaysPeriodItem, FilterProps, Timeframe } from 'segments/dynamic/types';
 import { storeName } from 'segments/dynamic/store';
 import { useEffect } from 'react';
 import { isInEnum } from '../../../../utils';
@@ -28,15 +24,15 @@ export function DaysPeriodField({ filterIndex }: FilterProps): JSX.Element {
     useDispatch(storeName);
 
   useEffect(() => {
-    if (!isInEnum(segment.timeframe, Timeframes)) {
+    if (!isInEnum(segment.timeframe, Timeframe)) {
       void updateSegmentFilter(
-        { timeframe: Timeframes.IN_THE_LAST },
+        { timeframe: Timeframe.IN_THE_LAST },
         filterIndex,
       );
     }
   }, [segment, updateSegmentFilter, filterIndex]);
 
-  const isInTheLast = segment.timeframe === Timeframes.IN_THE_LAST;
+  const isInTheLast = segment.timeframe === Timeframe.IN_THE_LAST;
 
   return (
     <>
@@ -85,7 +81,7 @@ export function DaysPeriodField({ filterIndex }: FilterProps): JSX.Element {
 }
 
 export function validateDaysPeriod(formItems: DaysPeriodItem): boolean {
-  if (formItems.timeframe === Timeframes.ALL_TIME) {
+  if (formItems.timeframe === Timeframe.ALL_TIME) {
     return true;
   }
   return !!formItems.days;
