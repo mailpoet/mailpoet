@@ -9,7 +9,7 @@ import {
 } from '@wordpress/data';
 import { store as coreStore } from '@wordpress/core-data';
 import { store as editorStore } from '@wordpress/editor';
-import { NextButtonSlot } from './components/next_button_slot';
+import { NextButtonSlot } from './core/components/next_button_slot';
 import { MailPoetEmailData } from './types';
 
 import './email_editor.scss';
