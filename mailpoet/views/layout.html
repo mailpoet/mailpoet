@@ -1,6 +1,4 @@
 <!-- pre connect to 3d party to speed up page loading -->
-<link rel="preconnect" href="https://beacon-v2.helpscout.net/">
-<link rel="dns-prefetch" href="https://beacon-v2.helpscout.net/">
 <link rel="preconnect" href="http://cdn.mxpnl.com">
 <link rel="dns-prefetch" href="http://cdn.mxpnl.com">
 
@@ -102,6 +100,7 @@
   var mailpoet_email_volume_limit_reached = <%= json_encode(email_volume_limit_reached) %>;
   var mailpoet_cdn_url = <%= json_encode(cdn_url("")) %>;
   var mailpoet_tags = <%= json_encode(tags) %>;
+  var mailpoet_sender_email_address = '<%= sender_email_address %>';
 
   <% if not(premium_plugin_active) %>
     var mailpoet_free_premium_subscribers_limit = <%= free_premium_subscribers_limit %>;
@@ -196,40 +195,52 @@
 <%if is_loading_3rd_party_enabled() and not is_dotcom_ecommerce_plan() %>
   <%= javascript('lib/analytics.js') %>
 
-  <% set helpscout_form_id = '1c666cab-c0f6-4614-bc06-e5d0ad78db2b' %>
-  <%if mailpoet_api_key_state.data.support_tier == 'premium' or premium_key_state.data.support_tier == 'premium' %>
-    <% set helpscout_form_id = 'e93d0423-1fa6-4bbc-9df9-c174f823c35f' %>
-  <% endif %>
-
-  <script type="text/javascript">!function(e,t,n){function a(){var e=t.getElementsByTagName("script")[0],n=t.createElement("script");n.type="text/javascript",n.async=!0,n.src="https://beacon-v2.helpscout.net",e.parentNode.insertBefore(n,e)}if(e.Beacon=n=function(t,n,a){e.Beacon.readyQueue.push({method:t,options:n,data:a})},n.readyQueue=[],"complete"===t.readyState)return a();e.attachEvent?e.attachEvent("onload",a):e.addEventListener("load",a,!1)}(window,document,window.Beacon||function(){});</script>
-
-  <script type="text/javascript">
-    if(window['Beacon'] !== undefined && window.hide_mailpoet_beacon !== true) {
-      window.Beacon('init', '<%= helpscout_form_id %>');
-
-      // HelpScout Beacon: Configuration
-      window.Beacon("config", {
-        icon: 'message',
-        zIndex: 50000,
-        instructions: "<%= __('Want to give feedback to the MailPoet team? Contact us here. Please provide as much information as possible!') %>",
-        showContactFields: true
+  <script type="text/javascript">window.DocsBotAI=window.DocsBotAI||{},DocsBotAI.init=function(c){return new Promise(function(e,o){var t=document.createElement("script");t.type="text/javascript",t.async=!0,t.src="https://widget.docsbot.ai/chat.js";var n=document.getElementsByTagName("script")[0];n.parentNode.insertBefore(t,n),t.addEventListener("load",function(){window.DocsBotAI.mount({id:c.id,supportCallback:c.supportCallback,identify:c.identify,options:c.options});var t;t=function(n){return new Promise(function(e){if(document.querySelector(n))return e(document.querySelector(n));var o=new MutationObserver(function(t){document.querySelector(n)&&(e(document.querySelector(n)),o.disconnect())});o.observe(document.body,{childList:!0,subtree:!0})})},t&&t("#docsbotai-root").then(e).catch(o)}),t.addEventListener("error",function(t){o(t.message)})})};</script>
+  <% if (mailpoet_has_premium_support) %>
+    <script type="text/javascript">
+      DocsBotAI.init({
+        id: "TqTdebbGjJeUjrmBIFjh/kzFE5FBebBJiSJ2Tm0nR",
+      })
+    </script>
+  <% else %>
+    <script id="ze-snippet" src="https://static.zdassets.com/ekr/snippet.js?key=7e09bac9-4dd5-4dd2-83b3-a4fa6d2278ec"> </script>
+    <script type="text/javascript">
+      // // on page load always close widget
+      zE('messenger', 'hide');
+      // prefilling email address on open
+      zE('messenger:on', 'open', function () {
+        console.log('Open');
+        setTimeout(() => {
+          const iframe = document.querySelectorAll('iframe[name="Messaging window"]')[0];
+          let input = null;
+          if (iframe) {
+            input = iframe.contentWindow.document.querySelectorAll('input[type="email"]')[0];
+          }
+          if (input) {
+            input.value = mailpoet_sender_email_address;
+          }
+        }, 1500); // the time is maybe higher but sometimes the initialization takes longer
       });
-
-      // HelpScout Beacon: User identity information
-      window.Beacon("identify",
-        <%= json_encode(get_helpscout_user_data()) %>
-      );
-
-      // HelpScout Beacon: Custom information
-      window.Beacon("session-data",
-        <%= json_encode(get_helpscout_site_data()) %>
-    );
-
-      if (window.mailpoet_beacon_articles) {
-        window.Beacon('suggest', window.mailpoet_beacon_articles)
-      }
-    }
-  </script>
+      // when there are unread messages open widget and hide doscbot
+      zE("messenger:on", "unreadMessages", function (count) {
+        if (count > 1) {
+          DocsBotAI.unmount();
+          zE('messenger', 'show');
+          zE('messenger', 'open');
+        }
+      })
+      DocsBotAI.init({
+        id: "TqTdebbGjJeUjrmBIFjh/kzFE5FBebBJiSJ2Tm0nR",
+        supportCallback: function (event, history) {
+          event.preventDefault(); // Prevent default behavior opening the url.
+          DocsBotAI.unmount(); // Hide the DocsBot.ai widget.
+          // Show and open the Zendesk Web Widget and prefilling a sender email address.
+          zE('messenger', 'show');
+          zE('messenger', 'open');
+        },
+      })
+    </script>
+  <% endif %>
 <% endif %>
 
 <script>

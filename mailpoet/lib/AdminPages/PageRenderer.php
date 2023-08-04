@@ -197,6 +197,7 @@ class PageRenderer {
         'name' => $tag->getName(),
         ];
       }, $this->tagRepository->findAll()),
+      'sender_email_address' => $this->settings->get('sender.address'),
     ];
 
     if (!$defaults['premium_plugin_active']) {
