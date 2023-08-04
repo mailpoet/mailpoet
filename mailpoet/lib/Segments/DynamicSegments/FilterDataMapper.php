@@ -29,6 +29,7 @@ use MailPoet\Segments\DynamicSegments\Filters\WooCommercePurchaseDate;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceSingleOrderValue;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceSubscription;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceTotalSpent;
+use MailPoet\Segments\DynamicSegments\Filters\WooCommerceUsedCouponCode;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceUsedPaymentMethod;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceUsedShippingMethod;
 use MailPoet\WP\Functions as WPFunctions;
@@ -46,16 +47,21 @@ class FilterDataMapper {
   /** @var FilterHelper */
   private $filterHelper;
 
+  /** @var WooCommerceUsedCouponCode */
+  private $wooCommerceUsedCouponCode;
+
   public function __construct(
     WPFunctions $wp,
     DateFilterHelper $dateFilterHelper,
     FilterHelper $filterHelper,
-    WooCommerceNumberOfReviews $wooCommerceNumberOfReviews
+    WooCommerceNumberOfReviews $wooCommerceNumberOfReviews,
+    WooCommerceUsedCouponCode $wooCommerceUsedCouponCode
   ) {
     $this->wp = $wp;
     $this->dateFilterHelper = $dateFilterHelper;
     $this->filterHelper = $filterHelper;
     $this->wooCommerceNumberOfReviews = $wooCommerceNumberOfReviews;
+    $this->wooCommerceUsedCouponCode = $wooCommerceUsedCouponCode;
   }
 
   /**
@@ -470,6 +476,12 @@ class FilterDataMapper {
       $filterData['value'] = $data['value'];
       $filterData['operator'] = $data['operator'];
       $filterData['action'] = $data['action'];
+    } elseif ($data['action'] === WooCommerceUsedCouponCode::ACTION) {
+      $this->wooCommerceUsedCouponCode->validateFilterData($data);
+      $filterData['operator'] = $data['operator'];
+      $filterData['coupon_code_ids'] = $data['coupon_code_ids'];
+      $filterData['days'] = $data['days'];
+      $filterData['timeframe'] = $data['timeframe'];
     } else {
       throw new InvalidFilterException("Unknown action " . $data['action'], InvalidFilterException::MISSING_ACTION);
     }
