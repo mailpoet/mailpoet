@@ -2,14 +2,13 @@
 
 namespace MailPoet\Segments\DynamicSegments;
 
+use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\CustomFieldEntity;
 use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Segments\DynamicSegments\Exceptions\InvalidFilterException;
-use MailPoet\Segments\DynamicSegments\Filters\DateFilterHelper;
 use MailPoet\Segments\DynamicSegments\Filters\EmailAction;
 use MailPoet\Segments\DynamicSegments\Filters\EmailActionClickAny;
 use MailPoet\Segments\DynamicSegments\Filters\EmailOpensAbsoluteCountAction;
-use MailPoet\Segments\DynamicSegments\Filters\FilterHelper;
 use MailPoet\Segments\DynamicSegments\Filters\MailPoetCustomFields;
 use MailPoet\Segments\DynamicSegments\Filters\SubscriberDateField;
 use MailPoet\Segments\DynamicSegments\Filters\SubscriberScore;
@@ -20,29 +19,17 @@ use MailPoet\Segments\DynamicSegments\Filters\SubscriberTextField;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceCategory;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceCountry;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceNumberOfOrders;
-use MailPoet\Segments\DynamicSegments\Filters\WooCommerceNumberOfReviews;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceProduct;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceSingleOrderValue;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceSubscription;
-use MailPoet\Segments\DynamicSegments\Filters\WooCommerceUsedCouponCode;
-use MailPoet\WP\Functions as WPFunctions;
 
-class FilterDataMapperTest extends \MailPoetUnitTest {
+class FilterDataMapperTest extends \MailPoetTest {
   /** @var FilterDataMapper */
   private $mapper;
 
   public function _before(): void {
     parent::_before();
-    $wp = $this->makeEmpty(WPFunctions::class, [
-      'hasFilter' => false,
-    ]);
-    $wcNumberOfReviews = $this->makeEmpty(WooCommerceNumberOfReviews::class);
-    $wcUsedCouponCode = $this->makeEmptyExcept(WooCommerceUsedCouponCode::class, 'validateFilterData');
-    $dateFilterHelper = $this->getMockBuilder(DateFilterHelper::class)
-      ->setMethodsExcept(['getAbsoluteDateOperators', 'getRelativeDateOperators', 'getValidOperators'])
-      ->getMock();
-    $filterHelper = $this->makeEmptyExcept(FilterHelper::class, 'validateDaysPeriodData');
-    $this->mapper = new FilterDataMapper($wp, $dateFilterHelper, $filterHelper, $wcNumberOfReviews, $wcUsedCouponCode);
+    $this->mapper = ContainerWrapper::getInstance()->get(FilterDataMapper::class);
   }
 
   public function testItChecksFiltersArePresent(): void {
@@ -68,10 +55,10 @@ class FilterDataMapperTest extends \MailPoetUnitTest {
 
   public function testItMapsEmailFilter(): void {
     $data = ['filters' => [[
-        'segmentType' => DynamicSegmentFilterData::TYPE_EMAIL,
-        'action' => EmailAction::ACTION_OPENED,
-        'newsletters' => [1],
-      ]],
+      'segmentType' => DynamicSegmentFilterData::TYPE_EMAIL,
+      'action' => EmailAction::ACTION_OPENED,
+      'newsletters' => [1],
+    ]],
       'some_mess' => 'mess',
     ];
     $filters = $this->mapper->map($data);
@@ -117,7 +104,7 @@ class FilterDataMapperTest extends \MailPoetUnitTest {
       'action' => EmailAction::ACTION_CLICKED,
       'newsletter_id' => 1,
       'operator' => DynamicSegmentFilterData::OPERATOR_ANY,
-      'link_ids' => [2,3],
+      'link_ids' => [2, 3],
     ]],
     ];
     $filters = $this->mapper->map($data);
@@ -141,7 +128,7 @@ class FilterDataMapperTest extends \MailPoetUnitTest {
       'segmentType' => DynamicSegmentFilterData::TYPE_EMAIL,
       'action' => EmailAction::ACTION_CLICKED,
       'newsletter_id' => 1,
-      'link_ids' => [2,3],
+      'link_ids' => [2, 3],
     ]],
     ];
     $this->expectException(InvalidFilterException::class);
@@ -617,7 +604,7 @@ class FilterDataMapperTest extends \MailPoetUnitTest {
     expect($filter->getFilterType())->equals(DynamicSegmentFilterData::TYPE_USER_ROLE);
     expect($filter->getAction())->equals(SubscriberSegment::TYPE);
     expect($filter->getData())->equals([
-      'segments' => [1 , 5],
+      'segments' => [1, 5],
       'operator' => DynamicSegmentFilterData::OPERATOR_NONE,
       'connect' => DynamicSegmentFilterData::CONNECT_TYPE_AND,
     ]);
