@@ -132,6 +132,10 @@ class IntegrationTester extends \Codeception\Actor {
       $product->set_tag_ids($data['tag_ids']);
     }
 
+    if (isset($data['price'])) {
+      $product->set_price($data['price']);
+    }
+
     $product->save();
     $this->wooProductIds[] = $product->get_id();
     return $product;
@@ -201,15 +205,21 @@ class IntegrationTester extends \Codeception\Actor {
     return $commentId;
   }
 
-  public function createWooCommerceCoupon(array $data): void {
+  public function createWooCommerceCoupon(array $data): int {
     $coupon = new WC_Coupon();
 
     if (isset($data['code'])) {
       $coupon->set_code($data['code']);
     }
 
+    if (isset($data['amount'])) {
+      $coupon->set_amount($data['amount']);
+    }
+
     $coupon->save();
-    $this->wooCouponIds[] = $coupon->get_id();
+    $id = $coupon->get_id();
+    $this->wooCouponIds[] = $id;
+    return $id;
   }
 
   public function updateWooOrderStats(int $orderId): void {
