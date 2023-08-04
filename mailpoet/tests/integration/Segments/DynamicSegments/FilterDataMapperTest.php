@@ -905,6 +905,32 @@ class FilterDataMapperTest extends \MailPoetTest {
     ]);
   }
 
+  public function testItMapsWooUsedCouponCodes(): void {
+    $data = ['filters' => [[
+      'segmentType' => DynamicSegmentFilterData::TYPE_WOOCOMMERCE,
+      'action' => 'usedCouponCode',
+      'operator' => 'all',
+      'days' => '10',
+      'timeframe' => 'inTheLast',
+      'coupon_code_ids' => ['1', '5'],
+    ]]];
+    $filters = $this->mapper->map($data);
+    expect($filters)->array();
+    expect($filters)->count(1);
+    $filter = reset($filters);
+    $this->assertInstanceOf(DynamicSegmentFilterData::class, $filter);
+    expect($filter)->isInstanceOf(DynamicSegmentFilterData::class);
+    expect($filter->getFilterType())->equals(DynamicSegmentFilterData::TYPE_WOOCOMMERCE);
+    expect($filter->getAction())->equals('usedCouponCode');
+    expect($filter->getData())->equals([
+      'connect' => 'and',
+      'operator' => 'all',
+      'days' => '10',
+      'timeframe' => 'inTheLast',
+      'coupon_code_ids' => ['1', '5'],
+    ]);
+  }
+
   /**
    * @dataProvider dateFieldActions
    */
