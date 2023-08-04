@@ -149,6 +149,7 @@ class DynamicSegments {
 
     $data['woocommerce_payment_methods'] = [];
     $data['woocommerce_shipping_methods'] = [];
+    $data['woocommerce_coupons'] = [];
 
     if ($this->woocommerceHelper->isWooCommerceActive()) {
       $allGateways = $this->woocommerceHelper->getPaymentGateways()->payment_gateways();
@@ -162,6 +163,12 @@ class DynamicSegments {
       $data['woocommerce_payment_methods'] = $paymentMethods;
 
       $data['woocommerce_shipping_methods'] = $this->woocommerceHelper->getShippingMethodInstancesData();
+      $data['woocommerce_coupons'] = array_map(function(array $couponData) {
+        return [
+          'id' => $couponData['id'],
+          'name' => $couponData['text'],
+        ];
+      }, $this->woocommerceHelper->getCouponList());
     }
     $data['automations'] = array_map(function(Automation $automation) {
       return [
