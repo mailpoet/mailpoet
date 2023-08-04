@@ -151,6 +151,7 @@ export interface WooCommerceFormItem extends FormItem {
   count_type?: CountType;
   count?: string;
   days?: string;
+  coupon_code_ids?: string[];
 }
 
 export interface AutomationsFormItem extends FormItem {
