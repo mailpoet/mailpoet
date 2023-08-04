@@ -1,6 +1,5 @@
 <?php declare(strict_types = 1);
 
-use Automattic\WooCommerce\Admin\API\Reports\Orders\Stats\DataStore;
 use Codeception\Scenario;
 use MailPoet\Automation\Engine\Data\Automation;
 use MailPoet\Automation\Engine\Data\AutomationRun;
@@ -214,10 +213,12 @@ class IntegrationTester extends \Codeception\Actor {
   }
 
   public function updateWooOrderStats(int $orderId): void {
-    if (!class_exists('Automattic\WooCommerce\Admin\API\Reports\Orders\Stats\DataStore')) {
-      return;
+    if (class_exists('Automattic\WooCommerce\Admin\API\Reports\Orders\Stats\DataStore')) {
+      \Automattic\WooCommerce\Admin\API\Reports\Orders\Stats\DataStore::sync_order($orderId);
     }
-    DataStore::sync_order($orderId);
+    if (class_exists('Automattic\WooCommerce\Admin\API\Reports\Coupons\DataStore')) {
+      \Automattic\WooCommerce\Admin\API\Reports\Coupons\DataStore::sync_order_coupons($orderId);
+    }
   }
 
   public function deleteWordPressTerms(): void {
