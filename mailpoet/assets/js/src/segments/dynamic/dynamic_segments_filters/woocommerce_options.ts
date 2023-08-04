@@ -14,6 +14,7 @@ export enum WooCommerceActionTypes {
   CUSTOMER_IN_CITY = 'customerInCity',
   CUSTOMER_IN_POSTAL_CODE = 'customerInPostalCode',
   SINGLE_ORDER_VALUE = 'singleOrderValue',
+  USED_COUPON_CODE = 'usedCouponCode',
   USED_PAYMENT_METHOD = 'usedPaymentMethod',
   USED_SHIPPING_METHOD = 'usedShippingMethod',
 }
@@ -72,6 +73,11 @@ export const WooCommerceOptions = [
   {
     value: WooCommerceActionTypes.TOTAL_SPENT,
     label: MailPoet.I18n.t('wooTotalSpent'),
+    group: SegmentTypes.WooCommerce,
+  },
+  {
+    value: WooCommerceActionTypes.USED_COUPON_CODE,
+    label: MailPoet.I18n.t('wooUsedCouponCode'),
     group: SegmentTypes.WooCommerce,
   },
   {

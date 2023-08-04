@@ -47,6 +47,10 @@ import {
   NumberOfReviewsFields,
   validateNumberOfReviews,
 } from './fields/woocommerce/number_of_reviews';
+import {
+  UsedCouponCodeFields,
+  validateUsedCouponCode,
+} from './fields/woocommerce/used_coupon_code';
 
 export function validateWooCommerce(formItems: WooCommerceFormItem): boolean {
   if (
@@ -87,6 +91,9 @@ export function validateWooCommerce(formItems: WooCommerceFormItem): boolean {
   if (formItems.action === WooCommerceActionTypes.NUMBER_OF_REVIEWS) {
     return validateNumberOfReviews(formItems);
   }
+  if (formItems.action === WooCommerceActionTypes.USED_COUPON_CODE) {
+    return validateUsedCouponCode(formItems);
+  }
   if (
     [
       WooCommerceActionTypes.CUSTOMER_IN_POSTAL_CODE,
@@ -110,6 +117,7 @@ const componentsMap = {
   [WooCommerceActionTypes.SINGLE_ORDER_VALUE]: SingleOrderValueFields,
   [WooCommerceActionTypes.TOTAL_SPENT]: TotalSpentFields,
   [WooCommerceActionTypes.AVERAGE_SPENT]: AverageSpentFields,
+  [WooCommerceActionTypes.USED_COUPON_CODE]: UsedCouponCodeFields,
   [WooCommerceActionTypes.USED_PAYMENT_METHOD]: UsedPaymentMethodFields,
   [WooCommerceActionTypes.USED_SHIPPING_METHOD]: UsedShippingMethodFields,
 };
