@@ -454,6 +454,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Segments\DynamicSegments\Filters\WooCommerceSingleOrderValue::class)->setPublic(true);
     $container->autowire(\MailPoet\Segments\DynamicSegments\Filters\WooCommerceTotalSpent::class)->setPublic(true);
     $container->autowire(\MailPoet\Segments\DynamicSegments\Filters\WooCommerceSubscription::class)->setPublic(true);
+    $container->autowire(\MailPoet\Segments\DynamicSegments\Filters\WooCommerceUsedCouponCode::class)->setPublic(true);
     $container->autowire(\MailPoet\Segments\DynamicSegments\Filters\WooCommerceUsedPaymentMethod::class)->setPublic(true);
     $container->autowire(\MailPoet\Segments\DynamicSegments\Filters\WooCommerceUsedShippingMethod::class)->setPublic(true);
     $container->autowire(\MailPoet\Segments\DynamicSegments\Filters\WooFilterHelper::class)->setPublic(true);
