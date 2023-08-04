@@ -25,6 +25,7 @@ use MailPoet\AdminPages\Pages\Upgrade;
 use MailPoet\AdminPages\Pages\WelcomeWizard;
 use MailPoet\AdminPages\Pages\WooCommerceSetup;
 use MailPoet\DI\ContainerWrapper;
+use MailPoet\EmailEditor\Integration\EmailEditor;
 use MailPoet\Form\Util\CustomFonts;
 use MailPoet\Util\License\License;
 use MailPoet\WP\Functions as WPFunctions;
@@ -111,6 +112,8 @@ class Menu {
   }
 
   public function setup() {
+    global $parent_file;
+    $parent_file = self::EMAILS_PAGE_SLUG;
     if (!$this->accessControl->validatePermission(AccessControl::PERMISSION_ACCESS_PLUGIN_ADMIN)) return;
 
     $this->router->checkRedirects();
@@ -668,12 +671,18 @@ class Menu {
   }
 
   public function highlightNestedMailPoetSubmenus($parentFile) {
-    global $plugin_page, $submenu;
+    global $plugin_page, $submenu, $submenu_file;
 
     $page = $this->getPageFromContext();
     if ($page) {
       $plugin_page = $page;
       return $parentFile;
+    }
+
+    if ($this->checkIsGutenbergEmailEditorPage()) {
+      $plugin_page = self::EMAILS_PAGE_SLUG;
+      $submenu_file = self::EMAILS_PAGE_SLUG;
+      return self::EMAILS_PAGE_SLUG;
     }
 
     if ($parentFile === self::MAIN_PAGE_SLUG || !self::isOnMailPoetAdminPage()) {
@@ -780,5 +789,9 @@ class Menu {
       return self::AUTOMATIONS_PAGE_SLUG;
     }
     return null;
+  }
+
+  private function checkIsGutenbergEmailEditorPage(): bool {
+    return $this->wp->getPostType() === EmailEditor::MAILPOET_EMAIL_POST_TYPE;
   }
 }
