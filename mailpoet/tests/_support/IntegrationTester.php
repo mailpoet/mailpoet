@@ -347,11 +347,12 @@ class IntegrationTester extends \Codeception\Actor {
   }
 
   public function getSubscriberEmailsMatchingDynamicFilter(DynamicSegmentFilterData $data, Filter $filter): array {
-    $segment = new SegmentEntity('temporary segment', SegmentEntity::TYPE_DYNAMIC, 'description');
+    $segment = new SegmentEntity('temporary segment ' . Security::generateRandomString(10), SegmentEntity::TYPE_DYNAMIC, 'description');
     $this->entityManager->persist($segment);
     $filterEntity = new DynamicSegmentFilterEntity($segment, $data);
     $this->entityManager->persist($filterEntity);
     $segment->addDynamicFilter($filterEntity);
+    $this->entityManager->flush();
     $queryBuilder = $filter->apply($this->getSubscribersQueryBuilder(), $filterEntity);
     return $this->getSubscriberEmailsFromQueryBuilder($queryBuilder);
   }
