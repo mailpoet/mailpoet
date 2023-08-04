@@ -24,6 +24,7 @@ use MailPoet\Segments\DynamicSegments\Filters\WooCommerceNumberOfReviews;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceProduct;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceSingleOrderValue;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceSubscription;
+use MailPoet\Segments\DynamicSegments\Filters\WooCommerceUsedCouponCode;
 use MailPoet\WP\Functions as WPFunctions;
 
 class FilterDataMapperTest extends \MailPoetUnitTest {
@@ -36,11 +37,12 @@ class FilterDataMapperTest extends \MailPoetUnitTest {
       'hasFilter' => false,
     ]);
     $wcNumberOfReviews = $this->makeEmpty(WooCommerceNumberOfReviews::class);
+    $wcUsedCouponCode = $this->makeEmptyExcept(WooCommerceUsedCouponCode::class, 'validateFilterData');
     $dateFilterHelper = $this->getMockBuilder(DateFilterHelper::class)
       ->setMethodsExcept(['getAbsoluteDateOperators', 'getRelativeDateOperators', 'getValidOperators'])
       ->getMock();
     $filterHelper = $this->makeEmptyExcept(FilterHelper::class, 'validateDaysPeriodData');
-    $this->mapper = new FilterDataMapper($wp, $dateFilterHelper, $filterHelper, $wcNumberOfReviews);
+    $this->mapper = new FilterDataMapper($wp, $dateFilterHelper, $filterHelper, $wcNumberOfReviews, $wcUsedCouponCode);
   }
 
   public function testItChecksFiltersArePresent(): void {
