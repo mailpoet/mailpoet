@@ -76,7 +76,7 @@ if [[ $SKIP_PLUGINS != "1" ]]; then
     if [ ! -f "$WOOCOMMERCE_CORE_ZIP" ]; then
       echo "WooCommerce plugin zip not found. Downloading WooCommerce plugin latest zip"
       cd /project
-      ./do download:woo-commerce-zip latest
+      ./do download:woo-commerce-zip 8.0.0-rc.2
       cd /wp-core/wp-content/plugins
     fi
 
