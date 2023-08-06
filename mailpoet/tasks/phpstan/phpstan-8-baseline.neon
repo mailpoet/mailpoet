@@ -261,11 +261,6 @@ parameters:
 			path: ../../lib/Doctrine/Types/SerializedArrayType.php
 
 		-
-			message: "#^Variable \\$filterData on left side of \\?\\? is never defined\\.$#"
-			count: 1
-			path: ../../lib/Entities/DynamicSegmentFilterData.php
-
-		-
 			message: "#^Method MailPoet\\\\Entities\\\\SegmentEntity\\:\\:getFiltersConnectOperator\\(\\) should return string but returns mixed\\.$#"
 			count: 1
 			path: ../../lib/Entities/SegmentEntity.php

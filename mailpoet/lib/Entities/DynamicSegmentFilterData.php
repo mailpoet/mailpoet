@@ -92,7 +92,7 @@ class DynamicSegmentFilterData {
       return $this->filterType;
     }
     // When a new column is empty, we try to get the value from serialized data
-    return $filterData['segmentType'] ?? null;
+    return $this->filterData['segmentType'] ?? null;
   }
 
   public function getAction(): ?string {
