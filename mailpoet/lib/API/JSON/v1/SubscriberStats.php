@@ -9,6 +9,7 @@ use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Newsletter\Statistics\WooCommerceRevenue;
 use MailPoet\Subscribers\Statistics\SubscriberStatisticsRepository;
 use MailPoet\Subscribers\SubscribersRepository;
+use MailPoetVendor\Carbon\Carbon;
 
 class SubscriberStats extends APIEndpoint {
   public $permissions = [
@@ -38,7 +39,8 @@ class SubscriberStats extends APIEndpoint {
         APIError::NOT_FOUND => __('This subscriber does not exist.', 'mailpoet'),
       ]);
     }
-    $statistics = $this->subscribersStatisticsRepository->getStatistics($subscriber);
+    $oneYearAgo = (new Carbon())->subYear();
+    $statistics = $this->subscribersStatisticsRepository->getStatistics($subscriber, $oneYearAgo);
     $response = [
       'email' => $subscriber->getEmail(),
       'total_sent' => $statistics->getTotalSentCount(),

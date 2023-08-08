@@ -26,6 +26,7 @@ class StatisticsClicks {
   ) {
     $this->data = [
       'count' => 1,
+      'createdAt' => null,
     ];
     $this->newsletterLink = $newsletterLink;
     $this->subscriber = $subscriber;
@@ -33,6 +34,11 @@ class StatisticsClicks {
 
   public function withCount($count) {
     $this->data['count'] = $count;
+    return $this;
+  }
+
+  public function withCreatedAt(\DateTimeInterface $createdAt) {
+    $this->data['createdAt'] = $createdAt;
     return $this;
   }
 
@@ -49,6 +55,9 @@ class StatisticsClicks {
       $this->newsletterLink,
       $this->data['count']
     );
+    if ($this->data['createdAt'] instanceof \DateTimeInterface) {
+      $entity->setCreatedAt($this->data['createdAt']);
+    }
     $entityManager->persist($entity);
     $entityManager->flush();
     return $entity;

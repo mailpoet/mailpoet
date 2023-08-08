@@ -33,6 +33,11 @@ class StatisticsWooCommercePurchases {
     $this->click = $click;
   }
 
+  public function withCreatedAt(\DateTimeInterface $createdAt): self {
+    $this->data['createdAt'] = $createdAt;
+    return $this;
+  }
+
   public function create(): StatisticsWooCommercePurchaseEntity {
     $newsletter = $this->click->getNewsletter();
     Assert::assertInstanceOf(NewsletterEntity::class, $newsletter);
@@ -48,6 +53,9 @@ class StatisticsWooCommercePurchases {
       (float)$this->data['order_price_total']
     );
     $entity->setSubscriber($this->subscriber);
+    if (($this->data['createdAt'] ?? null) instanceof \DateTimeInterface) {
+      $entity->setCreatedAt($this->data['createdAt']);
+    }
 
     $entityManager = ContainerWrapper::getInstance()->get(EntityManager::class);
     $entityManager->persist($entity);
