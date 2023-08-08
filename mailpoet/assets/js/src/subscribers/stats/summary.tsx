@@ -3,57 +3,59 @@ import { MailPoet } from 'mailpoet';
 import { Tag } from 'common/tag/tag';
 import { Tooltip } from 'help-tooltip';
 import { ListingsEngagementScore } from '../listings_engagement_score';
+import { PeriodicStats, StatsType } from '../types';
 
 export type PropTypes = {
-  totalSent: number;
-  open: number;
-  machineOpen: number;
-  click: number;
+  stats: StatsType;
   subscriber: {
     id: number;
     engagement_score?: number;
   };
 };
 
-export function Summary({
-  totalSent,
-  open,
-  machineOpen,
-  click,
-  subscriber,
-}: PropTypes): JSX.Element {
-  let openPercent = 0;
-  let machineOpenPercent = 0;
-  let clickPercent = 0;
-  let notOpenPercent = 0;
-  const notOpen = totalSent - (open + machineOpen);
-  const displayPercentages = totalSent > 0;
-  if (displayPercentages) {
-    openPercent = Math.round((open / totalSent) * 100);
-    machineOpenPercent = Math.round((machineOpen / totalSent) * 100);
-    clickPercent = Math.round((click / totalSent) * 100);
-    notOpenPercent = Math.round((notOpen / totalSent) * 100);
-  }
+export function Summary({ stats, subscriber }: PropTypes): JSX.Element {
   return (
     <div className="mailpoet-tab-content mailpoet-subscriber-stats-summary">
       <div className="mailpoet-listing">
         <table className="mailpoet-listing-table">
           <tbody>
             <tr>
-              <td>{MailPoet.I18n.t('statsSentEmail')}</td>
-              <td>
-                <b>{totalSent.toLocaleString()}</b>
-              </td>
               <td />
+              {stats.periodic_stats.map(
+                (periodicStats: PeriodicStats): JSX.Element => (
+                  <td key={periodicStats.timeframe}>
+                    {periodicStats.timeframe}
+                  </td>
+                ),
+              )}
+            </tr>
+            <tr>
+              <td>{MailPoet.I18n.t('statsSentEmail')}</td>
+              {stats.periodic_stats.map(
+                (periodicStats: PeriodicStats): JSX.Element => (
+                  <td key={periodicStats.timeframe}>
+                    {periodicStats.total_sent}
+                  </td>
+                ),
+              )}
             </tr>
             <tr>
               <td>
                 <Tag>{MailPoet.I18n.t('statsOpened')}</Tag>
               </td>
-              <td>
-                <b>{open.toLocaleString()}</b>
-              </td>
-              <td>{displayPercentages && <>{openPercent}%</>}</td>
+              {stats.periodic_stats.map(
+                (periodicStats: PeriodicStats): JSX.Element => {
+                  const displayPercentage = periodicStats.total_sent > 0;
+                  let cell = periodicStats.open.toLocaleString();
+                  if (displayPercentage) {
+                    const percentage = Math.round(
+                      (periodicStats.open / periodicStats.total_sent) * 100,
+                    );
+                    cell += ` (${percentage}%)`;
+                  }
+                  return <td key={periodicStats.timeframe}>{cell}</td>;
+                },
+              )}
             </tr>
             <tr>
               <td>
@@ -81,26 +83,57 @@ export function Summary({
                   )}
                 />
               </td>
-              <td>
-                <b>{machineOpen.toLocaleString()}</b>
-              </td>
-              <td>{displayPercentages && <>{machineOpenPercent}%</>}</td>
+              {stats.periodic_stats.map(
+                (periodicStats: PeriodicStats): JSX.Element => {
+                  const displayPercentage = periodicStats.total_sent > 0;
+                  let cell = periodicStats.machine_open.toLocaleString();
+                  if (displayPercentage) {
+                    const percentage = Math.round(
+                      (periodicStats.machine_open / periodicStats.total_sent) *
+                        100,
+                    );
+                    cell += ` (${percentage}%)`;
+                  }
+                  return <td key={periodicStats.timeframe}>{cell}</td>;
+                },
+              )}
             </tr>
             <tr>
               <td>
                 <Tag isInverted>{MailPoet.I18n.t('statsClicked')}</Tag>
               </td>
-              <td>
-                <b>{click.toLocaleString()}</b>
-              </td>
-              <td>{displayPercentages && <>{clickPercent}%</>}</td>
+              {stats.periodic_stats.map(
+                (periodicStats: PeriodicStats): JSX.Element => {
+                  const displayPercentage = periodicStats.total_sent > 0;
+                  let cell = periodicStats.click.toLocaleString();
+                  if (displayPercentage) {
+                    const percentage = Math.round(
+                      (periodicStats.click / periodicStats.total_sent) * 100,
+                    );
+                    cell += ` (${percentage}%)`;
+                  }
+                  return <td key={periodicStats.timeframe}>{cell}</td>;
+                },
+              )}
             </tr>
             <tr>
               <td>{MailPoet.I18n.t('statsNotClicked')}</td>
-              <td>
-                <b>{notOpen.toLocaleString()}</b>
-              </td>
-              <td>{displayPercentages && <>{notOpenPercent}%</>}</td>
+              {stats.periodic_stats.map(
+                (periodicStats: PeriodicStats): JSX.Element => {
+                  const notOpen =
+                    periodicStats.total_sent -
+                    (periodicStats.open + periodicStats.machine_open);
+                  const displayPercentage = periodicStats.total_sent > 0;
+                  let cell = notOpen.toLocaleString();
+                  if (displayPercentage) {
+                    const percentage = Math.round(
+                      (notOpen / periodicStats.total_sent) * 100,
+                    );
+                    cell += ` (${percentage}%)`;
+                  }
+                  return <td key={periodicStats.timeframe}>{cell}</td>;
+                },
+              )}
             </tr>
             <tr>
               <td>{MailPoet.I18n.t('statisticsColumn')}</td>
