@@ -18,7 +18,7 @@ export function Summary({ stats, subscriber }: PropTypes): JSX.Element {
     <div className="mailpoet-tab-content mailpoet-subscriber-stats-summary">
       <div className="mailpoet-listing">
         <table className="mailpoet-listing-table">
-          <tbody>
+          <thead>
             <tr>
               <td />
               {stats.periodic_stats.map(
@@ -29,6 +29,8 @@ export function Summary({ stats, subscriber }: PropTypes): JSX.Element {
                 ),
               )}
             </tr>
+          </thead>
+          <tbody>
             <tr>
               <td>{MailPoet.I18n.t('statsSentEmail')}</td>
               {stats.periodic_stats.map(
@@ -139,7 +141,7 @@ export function Summary({ stats, subscriber }: PropTypes): JSX.Element {
             </tr>
             <tr>
               <td>{MailPoet.I18n.t('statisticsColumn')}</td>
-              <td>
+              <td colSpan={stats.periodic_stats.length}>
                 <div className="mailpoet-listing-stats">
                   <ListingsEngagementScore
                     id={subscriber.id}
@@ -147,7 +149,6 @@ export function Summary({ stats, subscriber }: PropTypes): JSX.Element {
                   />
                 </div>
               </td>
-              <td />
             </tr>
           </tbody>
         </table>
