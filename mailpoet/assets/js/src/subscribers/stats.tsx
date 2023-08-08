@@ -4,7 +4,6 @@ import { MailPoet } from 'mailpoet';
 import { Loading } from 'common/loading';
 import { useGlobalContextValue } from 'context';
 
-import { Heading } from 'common';
 import { StatsHeading } from './stats/heading';
 import { Summary } from './stats/summary';
 import { WoocommerceRevenues } from './stats/woocommerce_revenues';
@@ -55,26 +54,16 @@ export function SubscriberStats(): JSX.Element {
   return (
     <div className="mailpoet-subscriber-stats">
       <StatsHeading email={stats.email} />
-      <Heading level={4}>{MailPoet.I18n.t('engagementPeriodHeading')}</Heading>
       <div className="mailpoet-subscriber-stats-summary-grid">
         <Summary
-          click={stats.click}
-          open={stats.open}
-          machineOpen={stats.machine_open}
-          totalSent={stats.total_sent}
+          stats={stats}
           subscriber={{
             id: Number(match.params.id),
             engagement_score: stats.engagement_score,
           }}
         />
         <EngagementSummary stats={stats} />
-        {stats.woocommerce && (
-          <WoocommerceRevenues
-            averageRevenueValue={stats.woocommerce.formatted_average}
-            count={stats.woocommerce.count}
-            revenueValue={stats.woocommerce.formatted}
-          />
-        )}
+        {stats.is_woo_active && <WoocommerceRevenues stats={stats} />}
       </div>
       <OpenedEmailsStats params={match.params} location={location} />
     </div>

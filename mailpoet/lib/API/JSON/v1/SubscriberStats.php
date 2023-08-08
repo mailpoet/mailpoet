@@ -6,9 +6,10 @@ use MailPoet\API\JSON\Endpoint as APIEndpoint;
 use MailPoet\API\JSON\Error as APIError;
 use MailPoet\Config\AccessControl;
 use MailPoet\Entities\SubscriberEntity;
-use MailPoet\Newsletter\Statistics\WooCommerceRevenue;
+use MailPoet\Subscribers\Statistics\SubscriberStatistics;
 use MailPoet\Subscribers\Statistics\SubscriberStatisticsRepository;
 use MailPoet\Subscribers\SubscribersRepository;
+use MailPoet\WooCommerce\Helper;
 use MailPoetVendor\Carbon\Carbon;
 
 class SubscriberStats extends APIEndpoint {
@@ -22,12 +23,17 @@ class SubscriberStats extends APIEndpoint {
   /** @var SubscriberStatisticsRepository */
   private $subscribersStatisticsRepository;
 
+  /** @var Helper */
+  private $wooCommerceHelper;
+
   public function __construct(
     SubscribersRepository $subscribersRepository,
-    SubscriberStatisticsRepository $subscribersStatisticsRepository
+    SubscriberStatisticsRepository $subscribersStatisticsRepository,
+    Helper $wooCommerceHelper
   ) {
     $this->subscribersRepository = $subscribersRepository;
     $this->subscribersStatisticsRepository = $subscribersStatisticsRepository;
+    $this->wooCommerceHelper = $wooCommerceHelper;
   }
 
   public function get($data) {
@@ -39,16 +45,35 @@ class SubscriberStats extends APIEndpoint {
         APIError::NOT_FOUND => __('This subscriber does not exist.', 'mailpoet'),
       ]);
     }
-    $oneYearAgo = (new Carbon())->subYear();
-    $statistics = $this->subscribersStatisticsRepository->getStatistics($subscriber, $oneYearAgo);
     $response = [
       'email' => $subscriber->getEmail(),
-      'total_sent' => $statistics->getTotalSentCount(),
-      'open' => $statistics->getOpenCount(),
-      'machine_open' => $statistics->getMachineOpenCount(),
-      'click' => $statistics->getClickCount(),
       'engagement_score' => $subscriber->getEngagementScore(),
+      'is_woo_active' => $this->wooCommerceHelper->isWooCommerceActive(),
     ];
+
+    $statsMapper = function(SubscriberStatistics $statistics, string $timeframe) {
+      return [
+        'timeframe' => $timeframe,
+        'total_sent' => $statistics->getTotalSentCount(),
+        'open' => $statistics->getOpenCount(),
+        'machine_open' => $statistics->getMachineOpenCount(),
+        'click' => $statistics->getClickCount(),
+        'woocommerce' => $statistics->getWooCommerceRevenue() ? $statistics->getWooCommerceRevenue()->asArray() : null,
+      ];
+    };
+
+    $lifetimeStats = $this->subscribersStatisticsRepository->getStatistics($subscriber);
+    $oneYearStats = $this->subscribersStatisticsRepository->getStatistics($subscriber, Carbon::now()->subYear());
+    $thirtyDaysStats = $this->subscribersStatisticsRepository->getStatistics($subscriber, Carbon::now()->subDays(30));
+
+    $response['periodic_stats'] = [
+      // translators: table header meaning 30 days
+      $statsMapper($thirtyDaysStats, __('30(d)', 'mailpoet')),
+      // translators: table header meaning 12 months
+      $statsMapper($oneYearStats, __('12(m)', 'mailpoet')),
+      $statsMapper($lifetimeStats, __('Lifetime', 'mailpoet')),
+    ];
+
     $dateFormat = 'Y-m-d H:i:s';
     $lastEngagement = $subscriber->getLastEngagementAt();
     if ($lastEngagement instanceof \DateTimeInterface) {
@@ -73,10 +98,6 @@ class SubscriberStats extends APIEndpoint {
     $lastSending = $subscriber->getLastSendingAt();
     if ($lastSending instanceof \DateTimeInterface) {
       $response['last_sending'] = $lastSending->format($dateFormat);
-    }
-    $woocommerce = $statistics->getWooCommerceRevenue();
-    if ($woocommerce instanceof WooCommerceRevenue) {
-      $response['woocommerce'] = $woocommerce->asArray();
     }
     return $this->successResponse($response);
   }

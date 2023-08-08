@@ -37,7 +37,7 @@ export function EngagementSummary({ stats }: PropTypes): JSX.Element {
     },
   ];
 
-  if (stats.woocommerce) {
+  if (stats.is_woo_active) {
     engagementData.push({
       label: __('Last purchase', 'mailpoet'),
       date: stats.last_purchase || null,
