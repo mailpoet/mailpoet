@@ -77,8 +77,8 @@ export function getAutomationData(state: State): Automation {
   return state.automationData;
 }
 
-export function getAutomationSaved(state: State): boolean {
-  return state.automationSaved;
+export function getSavedState(state: State): State['savedState'] {
+  return state.savedState;
 }
 
 export function getSelectedStep(state: State): Step | undefined {

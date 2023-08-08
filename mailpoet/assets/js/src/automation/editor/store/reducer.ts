@@ -32,31 +32,31 @@ export function reducer(state: State, action): State {
       return {
         ...state,
         automationData: action.automation,
-        automationSaved: false,
+        savedState: 'unsaved',
       };
     case 'SAVE':
       return {
         ...state,
         automationData: action.automation,
-        automationSaved: true,
+        savedState: 'saved',
       };
     case 'ACTIVATE':
       return {
         ...state,
         automationData: action.automation,
-        automationSaved: true,
+        savedState: 'saved',
       };
     case 'DEACTIVATE':
       return {
         ...state,
         automationData: action.automation,
-        automationSaved: true,
+        savedState: 'saved',
       };
     case 'TRASH':
       return {
         ...state,
         automationData: action.automation,
-        automationSaved: true,
+        savedState: 'saved',
       };
     case 'REGISTER_STEP_TYPE':
       return {
@@ -96,7 +96,7 @@ export function reducer(state: State, action): State {
             [action.stepId]: step,
           },
         },
-        automationSaved: false,
+        savedState: 'unsaved',
         selectedStep: step,
         errors:
           stepErrors.length > 0
@@ -119,7 +119,7 @@ export function reducer(state: State, action): State {
             [action.key]: action.value,
           },
         },
-        automationSaved: false,
+        savedState: 'unsaved',
       };
     case 'SET_ERRORS':
       return {

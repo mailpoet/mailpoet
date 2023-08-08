@@ -31,11 +31,11 @@ export function EditNewsletter(): JSX.Element {
     useState(false);
   const [fetchingPreviewLink, setFetchingPreviewLink] = useState(false);
 
-  const { selectedStep, automationId, automationSaved, errors } = useSelect(
+  const { selectedStep, automationId, savedState, errors } = useSelect(
     (select) => ({
       selectedStep: select(storeName).getSelectedStep(),
       automationId: select(storeName).getAutomationData().id,
-      automationSaved: select(storeName).getAutomationSaved(),
+      savedState: select(storeName).getSavedState(),
       errors: select(storeName).getStepError(
         select(storeName).getSelectedStep().id,
       ),
@@ -77,10 +77,10 @@ export function EditNewsletter(): JSX.Element {
   // This component is rendered only when no email ID is set. Once we have the ID
   // and the automation is saved, we can safely redirect to the email design flow.
   useEffect(() => {
-    if (redirectToTemplateSelection && emailId && automationSaved) {
+    if (redirectToTemplateSelection && emailId && savedState === 'saved') {
       window.location.href = `admin.php?page=mailpoet-newsletters&context=automation#/template/${emailId}`;
     }
-  }, [emailId, automationSaved, redirectToTemplateSelection]);
+  }, [emailId, savedState, redirectToTemplateSelection]);
 
   if (!emailId || redirectToTemplateSelection) {
     return (
