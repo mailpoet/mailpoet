@@ -1,0 +1,22 @@
+/* See: https://github.com/WordPress/gutenberg/blob/0b4ad0072a5c3dd4832081ed00d4e27389ae88c8/packages/editor/src/components/post-saved-state/index.js */
+.mailpoet-automation-editor-saved-state {
+  align-items: center;
+  color: #757575;
+  display: flex;
+  overflow: hidden;
+  white-space: nowrap;
+
+  &.is-saving[aria-disabled='true'],
+  &.is-saving[aria-disabled='true']:hover,
+  &.is-saved[aria-disabled='true'],
+  &.is-saved[aria-disabled='true']:hover {
+    background: transparent;
+    color: #757575;
+  }
+
+  svg {
+    display: inline-block;
+    fill: currentColor;
+    flex: 0 0 auto;
+  }
+}

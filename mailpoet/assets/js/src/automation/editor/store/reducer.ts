@@ -58,6 +58,11 @@ export function reducer(state: State, action): State {
         automationData: action.automation,
         savedState: 'saved',
       };
+    case 'SAVING':
+      return {
+        ...state,
+        savedState: 'saving',
+      };
     case 'REGISTER_STEP_TYPE':
       return {
         ...state,

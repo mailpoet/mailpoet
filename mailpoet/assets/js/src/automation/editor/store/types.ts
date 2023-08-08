@@ -92,7 +92,7 @@ export type Errors = {
 };
 
 export type State = {
-  savedState: 'unsaved' | 'saved';
+  savedState: 'unsaved' | 'saving' | 'saved';
   registry: Registry;
   context: Context;
   stepTypes: Record<string, StepType>;
