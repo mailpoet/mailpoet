@@ -89,6 +89,11 @@ export function setAutomationName(name) {
 
 export function* save() {
   const automation = select(storeName).getAutomationData();
+
+  yield {
+    type: 'SAVING',
+  };
+
   const data = yield apiFetch({
     path: `/automations/${automation.id}`,
     method: 'PUT',

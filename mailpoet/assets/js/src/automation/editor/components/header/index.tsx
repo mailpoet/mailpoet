@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import {
   Button,
   NavigableMenu,
@@ -6,6 +6,7 @@ import {
   Tooltip,
 } from '@wordpress/components';
 import { dispatch, useDispatch, useSelect } from '@wordpress/data';
+import { Icon, check, cloud } from '@wordpress/icons';
 import { PinnedItems } from '@wordpress/interface';
 import { __ } from '@wordpress/i18n';
 import { ErrorBoundary } from 'common';
@@ -106,11 +107,36 @@ function UpdateButton(): JSX.Element {
 }
 
 function SaveDraftButton(): JSX.Element {
+  const savedState = useSelect(
+    (select) => select(storeName).getSavedState(),
+    [],
+  );
   const { save } = useDispatch(storeName);
 
+  const label = useMemo(() => {
+    if (savedState === 'saving') {
+      return __('Saving', 'mailpoet');
+    }
+    if (savedState === 'saved') {
+      return __('Saved', 'mailpoet');
+    }
+    return __('Save draft', 'mailpoet');
+  }, [savedState]);
+
+  const isDisabled = savedState === 'saving' || savedState === 'saved';
+
+  // use single Button instance for all states so that focus is not lost
   return (
-    <Button variant="tertiary" onClick={save}>
-      {__('Save draft', 'mailpoet')}
+    <Button
+      className={`mailpoet-automation-editor-saved-state is-${savedState}`}
+      variant="tertiary"
+      label={label}
+      disabled={isDisabled}
+      aria-disabled={isDisabled}
+      onClick={save}
+    >
+      {savedState === 'saving' && <Icon icon={cloud} />}
+      {savedState === 'saved' && <Icon icon={check} />}
     </Button>
   );
 }
