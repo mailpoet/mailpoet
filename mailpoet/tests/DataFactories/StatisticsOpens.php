@@ -33,6 +33,11 @@ class StatisticsOpens {
     return $this;
   }
 
+  public function withCreatedAt(\DateTimeInterface $createdAt): self {
+    $this->data['createdAt'] = $createdAt;
+    return $this;
+  }
+
   public function create(): StatisticsOpenEntity {
     $entityManager = ContainerWrapper::getInstance()->get(EntityManager::class);
     $queue = $this->newsletter->getLatestQueue();
@@ -43,6 +48,9 @@ class StatisticsOpens {
       $this->subscriber
     );
     $entity->setUserAgentType($this->data['userAgentType'] ?? UserAgentEntity::USER_AGENT_TYPE_HUMAN);
+    if (($this->data['createdAt'] ?? null) instanceof \DateTimeInterface) {
+      $entity->setCreatedAt($this->data['createdAt']);
+    }
     $entityManager->persist($entity);
     $entityManager->flush();
     return $entity;
