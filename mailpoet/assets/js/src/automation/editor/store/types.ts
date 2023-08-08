@@ -92,11 +92,11 @@ export type Errors = {
 };
 
 export type State = {
+  savedState: 'unsaved' | 'saved';
   registry: Registry;
   context: Context;
   stepTypes: Record<string, StepType>;
   automationData: Automation;
-  automationSaved: boolean;
   selectedStep: Step | undefined;
   inserterSidebar: {
     isOpened: boolean;

@@ -70,7 +70,7 @@ function updatingActiveAutomationNotPossible() {
 }
 
 function onUnload(event) {
-  if (!globalSelect(storeName).getAutomationSaved()) {
+  if (globalSelect(storeName).getSavedState() !== 'saved') {
     // eslint-disable-next-line no-param-reassign
     event.returnValue = __(
       'There are unsaved changes that will be lost. Do you want to continue?',
