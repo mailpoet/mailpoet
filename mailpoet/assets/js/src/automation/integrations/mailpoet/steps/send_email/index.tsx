@@ -43,8 +43,9 @@ export const step: StepType = {
           'mailpoet',
         ),
         /\[link\](.*?)\[\/link\]/g,
-        (match) => (
+        (match, i) => (
           <a
+            key={i}
             rel="noreferrer"
             href="https://kb.mailpoet.com/article/397-how-to-set-up-an-automation"
             target="_blank"
@@ -70,8 +71,9 @@ export const step: StepType = {
         'mailpoet',
       ),
       /\[link\](.*?)\[\/link\]/g,
-      (match) => (
+      (match, i) => (
         <a
+          key={i}
           rel="noreferrer"
           href="https://kb.mailpoet.com/article/397-how-to-set-up-an-automation"
           target="_blank"
