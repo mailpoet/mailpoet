@@ -9,13 +9,15 @@ export function WoocommerceRevenues({ stats }: PropTypes): JSX.Element {
     <div className="mailpoet-tab-content mailpoet-subscriber-stats-summary">
       <div className="mailpoet-listing">
         <table className="mailpoet-listing-table">
-          <tbody>
+          <thead>
             <tr>
               <td />
               {stats.periodic_stats.map((periodicStats) => (
                 <td key={periodicStats.timeframe}>{periodicStats.timeframe}</td>
               ))}
             </tr>
+          </thead>
+          <tbody>
             <tr>
               <td>Orders created</td>
               {stats.periodic_stats.map((periodicStats) => (

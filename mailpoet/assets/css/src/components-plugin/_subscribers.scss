@@ -18,6 +18,14 @@
       padding-bottom: 10px;
       padding-top: 10px;
     }
+
+    td:not(:first-child) {
+      text-align: right;
+
+      &:not(:last-child) {
+        padding-right: 25px;
+      }
+    }
   }
 }
 
@@ -37,6 +45,11 @@
 .mailpoet-subscriber-stats {
   .mailpoet-listing-table thead tr {
     box-shadow: 0 2px 4px -2px $color-tertiary-light;
+  }
+
+  thead td {
+    color: $color-wordpress-grey-dark;
+    padding-right: 8px;
   }
 
   tbody td {
