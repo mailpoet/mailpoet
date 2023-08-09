@@ -180,6 +180,21 @@ class NewsletterEntityTest extends \MailPoetTest {
     $this->assertSame($processedAt, $newsletter->getProcessedAt());
   }
 
+  public function testItCanRetrieveFilterSegmentIdOption(): void {
+    $optionField = $this->createOptionField(NewsletterOptionFieldEntity::NAME_FILTER_SEGMENT_ID);
+    $newsletter = $this->createNewsletter();
+    expect($newsletter->getFilterSegmentId())->null();
+
+    $newsletterOption = new NewsletterOptionEntity($newsletter, $optionField);
+    $newsletterOption->setValue('2');
+
+    $this->entityManager->persist($newsletterOption);
+    $this->entityManager->flush();
+
+    $this->entityManager->refresh($newsletter);
+    expect($newsletter->getFilterSegmentId())->equals(2);
+  }
+
   private function createNewsletter(): NewsletterEntity {
     $newsletter = new NewsletterEntity();
     $newsletter->setType(NewsletterEntity::TYPE_STANDARD);
