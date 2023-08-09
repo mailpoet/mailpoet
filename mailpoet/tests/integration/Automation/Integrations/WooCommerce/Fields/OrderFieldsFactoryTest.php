@@ -331,8 +331,9 @@ class OrderFieldsFactoryTest extends \MailPoetTest {
     $cat1Id = $this->tester->createWordPressTerm('Cat 1', 'product_cat', ['slug' => 'cat-1']);
     $cat2Id = $this->tester->createWordPressTerm('Cat 2', 'product_cat', ['slug' => 'cat-2']);
     $cat3Id = $this->tester->createWordPressTerm('Cat 3', 'product_cat', ['slug' => 'cat-3']);
-    $subCat1 = $this->tester->createWordPressTerm('Subcat 1', 'product_cat', ['slug' => 'subcat-1', 'parent' => $cat1Id]);
-    $subCat2 = $this->tester->createWordPressTerm('Subcat 2', 'product_cat', ['slug' => 'subcat-2', 'parent' => $cat1Id]);
+    $subCat1Id = $this->tester->createWordPressTerm('Subcat 1', 'product_cat', ['slug' => 'subcat-1', 'parent' => $cat1Id]);
+    $subCat2Id = $this->tester->createWordPressTerm('Subcat 2', 'product_cat', ['slug' => 'subcat-2', 'parent' => $cat1Id]);
+    $subSubCat1Id = $this->tester->createWordPressTerm('Subsubcat 1', 'product_cat', ['slug' => 'subsubcat-1', 'parent' => $subCat1Id]);
 
     // check definitions
     $fields = $this->getFieldsMap();
@@ -342,8 +343,9 @@ class OrderFieldsFactoryTest extends \MailPoetTest {
     $this->assertSame([
       'options' => [
         ['id' => $cat1Id, 'name' => 'Cat 1'],
-        ['id' => $subCat1, 'name' => 'Cat 1 | Subcat 1'],
-        ['id' => $subCat2, 'name' => 'Cat 1 | Subcat 2'],
+        ['id' => $subCat1Id, 'name' => 'Cat 1 | Subcat 1'],
+        ['id' => $subSubCat1Id, 'name' => 'Cat 1 | Subcat 1 | Subsubcat 1'],
+        ['id' => $subCat2Id, 'name' => 'Cat 1 | Subcat 2'],
         ['id' => $cat2Id, 'name' => 'Cat 2'],
         ['id' => $cat3Id, 'name' => 'Cat 3'],
         ['id' => $uncategorizedId, 'name' => 'Uncategorized'],
@@ -351,7 +353,7 @@ class OrderFieldsFactoryTest extends \MailPoetTest {
     ], $purchasedCategories->getArgs());
 
     // check values
-    $product = $this->tester->createWooCommerceProduct(['name' => 'Test product', 'category_ids' => [$cat1Id, $cat2Id, $subCat1]]);
+    $product = $this->tester->createWooCommerceProduct(['name' => 'Test product', 'category_ids' => [$cat2Id, $subSubCat1Id]]);
     $order = $this->tester->createWooCommerceOrder();
     $order->add_product($product);
 
@@ -359,13 +361,14 @@ class OrderFieldsFactoryTest extends \MailPoetTest {
     $value = $purchasedCategories->getValue($orderPayload);
 
     $this->assertIsArray($value);
-    $this->assertCount(3, $value);
-    $this->assertContains($cat1Id, $value);
+    $this->assertCount(4, $value);
+    $this->assertContains($cat1Id, $value); // auto-included parent
     $this->assertContains($cat2Id, $value);
-    $this->assertContains($subCat1, $value);
+    $this->assertContains($subCat1Id, $value); // auto-included parent
+    $this->assertContains($subSubCat1Id, $value);
     $this->assertNotContains($uncategorizedId, $value);
     $this->assertNotContains($cat3Id, $value);
-    $this->assertNotContains($subCat2, $value);
+    $this->assertNotContains($subCat2Id, $value);
   }
 
   public function testTagsField(): void {

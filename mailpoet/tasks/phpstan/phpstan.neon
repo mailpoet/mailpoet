@@ -97,6 +97,10 @@ parameters:
       count: 2
       path: ../../lib/Automation/Integrations/WooCommerce/Fields/CustomerReviewFieldsFactory.php
     -
+      message: "#^Cannot cast string|void to string\\.$#"
+      count: 1
+      path: ../../lib/Automation/Integrations/WooCommerce/Fields/TermParentsLoader.php
+    -
       # WP annotates parameter as callable, but passes empty string as a default.
       message: '/function add_(sub)?menu_page expects callable\(\): mixed, ''''\|\(callable\(\): mixed\) given/'
       count: 2

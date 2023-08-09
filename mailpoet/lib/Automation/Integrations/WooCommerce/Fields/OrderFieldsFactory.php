@@ -17,6 +17,9 @@ class OrderFieldsFactory {
   /** @var TermOptionsBuilder */
   private $termOptionsBuilder;
 
+  /** @var TermParentsLoader */
+  private $termParentsLoader;
+
   /** @var WordPress */
   private $wordPress;
 
@@ -25,10 +28,12 @@ class OrderFieldsFactory {
 
   public function __construct(
     TermOptionsBuilder $termOptionsBuilder,
+    TermParentsLoader $termParentsLoader,
     WordPress $wordPress,
     WooCommerce $wooCommerce
   ) {
     $this->termOptionsBuilder = $termOptionsBuilder;
+    $this->termParentsLoader = $termParentsLoader;
     $this->wordPress = $wordPress;
     $this->wooCommerce = $wooCommerce;
   }
@@ -223,6 +228,7 @@ class OrderFieldsFactory {
             foreach ($products as $product) {
               $categoryIds = array_merge($categoryIds, $product->get_category_ids());
             }
+            $categoryIds = array_merge($categoryIds, $this->termParentsLoader->getParentIds($categoryIds));
             sort($categoryIds);
             return array_unique($categoryIds);
           },
