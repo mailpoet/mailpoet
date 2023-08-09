@@ -12,12 +12,14 @@ import { stepSidebarKey, storeName, automationSidebarKey } from '../../store';
 //    https://github.com/WordPress/gutenberg/blob/0ee78b1bbe9c6f3e6df99f3b967132fa12bef77d/packages/edit-site/src/components/keyboard-shortcuts/index.js
 
 export function KeyboardShortcuts(): null {
-  const { isSidebarOpened, selectedStep } = useSelect((select) => ({
+  const { isSidebarOpened, selectedStep, savedState } = useSelect((select) => ({
     isSidebarOpened: select(storeName).isSidebarOpened,
     selectedStep: select(storeName).getSelectedStep,
+    savedState: select(storeName).getSavedState(),
   }));
 
-  const { openSidebar, closeSidebar, toggleFeature } = useDispatch(storeName);
+  const { openSidebar, closeSidebar, save, toggleFeature } =
+    useDispatch(storeName);
 
   const { registerShortcut } = useDispatch(keyboardShortcutsStore);
 
@@ -41,6 +43,16 @@ export function KeyboardShortcuts(): null {
         character: ',',
       },
     });
+
+    void registerShortcut({
+      name: 'mailpoet/automation-editor/save',
+      category: 'global',
+      description: __('Save your changes.', 'mailpoet'),
+      keyCombination: {
+        modifier: 'primary',
+        character: 's',
+      },
+    });
   }, [registerShortcut]);
 
   useShortcut('mailpoet/automation-editor/toggle-fullscreen', () => {
@@ -57,6 +69,14 @@ export function KeyboardShortcuts(): null {
         ? stepSidebarKey
         : automationSidebarKey;
       openSidebar(sidebarToOpen);
+    }
+  });
+
+  useShortcut('mailpoet/automation-editor/save', (event) => {
+    event.preventDefault();
+
+    if (savedState === 'unsaved') {
+      save();
     }
   });
 
