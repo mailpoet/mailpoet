@@ -490,6 +490,18 @@ class Populator {
         'name' => 'automationStepId',
         'newsletter_type' => NewsletterEntity::TYPE_AUTOMATION,
       ],
+      [
+        'name' => 'filterSegmentId',
+        'newsletter_type' => NewsletterEntity::TYPE_STANDARD,
+      ],
+      [
+        'name' => 'filterSegmentId',
+        'newsletter_type' => NewsletterEntity::TYPE_RE_ENGAGEMENT,
+      ],
+      [
+        'name' => 'filterSegmentId',
+        'newsletter_type' => NewsletterEntity::TYPE_NOTIFICATION,
+      ],
     ];
 
     return [

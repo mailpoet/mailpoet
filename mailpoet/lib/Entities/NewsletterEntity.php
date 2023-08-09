@@ -479,6 +479,11 @@ class NewsletterEntity {
     return $option ? $option->getValue() : null;
   }
 
+  public function getFilterSegmentId(): ?int {
+    $optionValue = $this->getOptionValue(NewsletterOptionFieldEntity::NAME_FILTER_SEGMENT_ID);
+    return $optionValue ? (int)$optionValue : null;
+  }
+
   /**
    * @return ArrayCollection<int, SendingQueueEntity>
    */
