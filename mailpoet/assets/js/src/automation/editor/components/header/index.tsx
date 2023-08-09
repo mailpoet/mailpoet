@@ -68,21 +68,33 @@ function ActivateButton({ label }): JSX.Element {
 function UpdateButton(): JSX.Element {
   const { save } = useDispatch(storeName);
 
-  const { automation } = useSelect(
+  const { automation, savedState } = useSelect(
     (select) => ({
       automation: select(storeName).getAutomationData(),
+      savedState: select(storeName).getSavedState(),
     }),
     [],
   );
+
+  const isDisabled = savedState === 'saving' || savedState === 'saved';
+
+  const label =
+    savedState === 'saving'
+      ? __('Updating…', 'mailpoet')
+      : __('Update', 'mailpoet');
 
   if (automation.stats.totals.in_progress === 0) {
     return (
       <Button
         variant="primary"
         className="editor-post-publish-button"
+        label={label}
+        isBusy={savedState === 'saving'}
+        disabled={isDisabled}
+        aria-disabled={isDisabled}
         onClick={save}
       >
-        {__('Update', 'mailpoet')}
+        {label}
       </Button>
     );
   }
