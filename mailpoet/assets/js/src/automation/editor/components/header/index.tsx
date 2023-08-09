@@ -9,6 +9,7 @@ import { dispatch, useDispatch, useSelect } from '@wordpress/data';
 import { Icon, check, cloud } from '@wordpress/icons';
 import { PinnedItems } from '@wordpress/interface';
 import { __ } from '@wordpress/i18n';
+import { displayShortcut } from '@wordpress/keycodes';
 import { ErrorBoundary } from 'common';
 import { DocumentActions } from './document_actions';
 import { Errors } from './errors';
@@ -89,6 +90,8 @@ function UpdateButton(): JSX.Element {
         variant="primary"
         className="editor-post-publish-button"
         label={label}
+        showTooltip
+        shortcut={isDisabled ? undefined : displayShortcut.primary('s')}
         isBusy={savedState === 'saving'}
         disabled={isDisabled}
         aria-disabled={isDisabled}
@@ -143,12 +146,15 @@ function SaveDraftButton(): JSX.Element {
       className={`mailpoet-automation-editor-saved-state is-${savedState}`}
       variant="tertiary"
       label={label}
+      shortcut={isDisabled ? undefined : displayShortcut.primary('s')}
+      showTooltip
       disabled={isDisabled}
       aria-disabled={isDisabled}
       onClick={save}
     >
       {savedState === 'saving' && <Icon icon={cloud} />}
       {savedState === 'saved' && <Icon icon={check} />}
+      {label}
     </Button>
   );
 }
