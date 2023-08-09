@@ -20,14 +20,19 @@ class CustomerOrderFieldsFactory {
   /** @var TermOptionsBuilder */
   private $termOptionsBuilder;
 
+  /** @var TermParentsLoader */
+  private $termParentsLoader;
+
   public function __construct(
     WordPress $wordPress,
     WooCommerce $wooCommerce,
-    TermOptionsBuilder $termOptionsBuilder
+    TermOptionsBuilder $termOptionsBuilder,
+    TermParentsLoader $termParentsLoader
   ) {
     $this->wordPress = $wordPress;
     $this->wooCommerce = $wooCommerce;
     $this->termOptionsBuilder = $termOptionsBuilder;
+    $this->termParentsLoader = $termParentsLoader;
   }
 
   /** @return Field[] */
@@ -92,7 +97,11 @@ class CustomerOrderFieldsFactory {
         __('Purchased categories', 'mailpoet'),
         function (CustomerPayload $payload) {
           $customer = $payload->getCustomer();
-          return $customer ? $this->getOrderProductTermIds($customer, 'product_cat') : [];
+          if (!$customer) {
+            return [];
+          }
+          $ids = $this->getOrderProductTermIds($customer, 'product_cat');
+          return array_merge($ids, $this->termParentsLoader->getParentIds($ids));
         },
         [
           'options' => $this->termOptionsBuilder->getTermOptions('product_cat'),

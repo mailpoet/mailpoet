@@ -96,8 +96,9 @@ class CustomerOrderFieldsFactoryTest extends \MailPoetTest {
     $cat1Id = $this->tester->createWordPressTerm('Cat 1', 'product_cat', ['slug' => 'cat-1']);
     $cat2Id = $this->tester->createWordPressTerm('Cat 2', 'product_cat', ['slug' => 'cat-2']);
     $cat3Id = $this->tester->createWordPressTerm('Cat 3', 'product_cat', ['slug' => 'cat-3']);
-    $subCat1 = $this->tester->createWordPressTerm('Subcat 1', 'product_cat', ['slug' => 'subcat-1', 'parent' => $cat1Id]);
-    $subCat2 = $this->tester->createWordPressTerm('Subcat 2', 'product_cat', ['slug' => 'subcat-2', 'parent' => $cat1Id]);
+    $subCat1Id = $this->tester->createWordPressTerm('Subcat 1', 'product_cat', ['slug' => 'subcat-1', 'parent' => $cat1Id]);
+    $subCat2Id = $this->tester->createWordPressTerm('Subcat 2', 'product_cat', ['slug' => 'subcat-2', 'parent' => $cat1Id]);
+    $subSubCat1Id = $this->tester->createWordPressTerm('Subsubcat 1', 'product_cat', ['slug' => 'subsubcat-1', 'parent' => $subCat1Id]);
 
     // check definitions
     $fields = $this->getFieldsMap();
@@ -107,8 +108,9 @@ class CustomerOrderFieldsFactoryTest extends \MailPoetTest {
     $this->assertSame([
       'options' => [
         ['id' => $cat1Id, 'name' => 'Cat 1'],
-        ['id' => $subCat1, 'name' => 'Cat 1 | Subcat 1'],
-        ['id' => $subCat2, 'name' => 'Cat 1 | Subcat 2'],
+        ['id' => $subCat1Id, 'name' => 'Cat 1 | Subcat 1'],
+        ['id' => $subSubCat1Id, 'name' => 'Cat 1 | Subcat 1 | Subsubcat 1'],
+        ['id' => $subCat2Id, 'name' => 'Cat 1 | Subcat 2'],
         ['id' => $cat2Id, 'name' => 'Cat 2'],
         ['id' => $cat3Id, 'name' => 'Cat 3'],
         ['id' => $uncategorizedId, 'name' => 'Uncategorized'],
@@ -117,10 +119,10 @@ class CustomerOrderFieldsFactoryTest extends \MailPoetTest {
 
     // create products
     $p1 = $this->tester->createWooCommerceProduct(['name' => 'Product 1']); // uncategorized
-    $p2 = $this->tester->createWooCommerceProduct(['name' => 'Product 2', 'category_ids' => [$cat1Id]]);
-    $p3 = $this->tester->createWooCommerceProduct(['name' => 'Product 3', 'category_ids' => [$cat1Id, $cat2Id]]);
-    $p4 = $this->tester->createWooCommerceProduct(['name' => 'Product 4', 'category_ids' => [$subCat1]]);
-    $p5 = $this->tester->createWooCommerceProduct(['name' => 'Product 5', 'category_ids' => [$cat3Id, $subCat2]]);
+    $p2 = $this->tester->createWooCommerceProduct(['name' => 'Product 2', 'category_ids' => [$cat2Id]]);
+    $p3 = $this->tester->createWooCommerceProduct(['name' => 'Product 3', 'category_ids' => [$subSubCat1Id]]);
+    $p4 = $this->tester->createWooCommerceProduct(['name' => 'Product 4', 'category_ids' => [$cat2Id, $subSubCat1Id]]);
+    $p5 = $this->tester->createWooCommerceProduct(['name' => 'Product 5', 'category_ids' => [$cat3Id, $subCat2Id]]);
 
     // check values (guest)
     $o1 = $this->createOrder(0, 123);
@@ -151,13 +153,14 @@ class CustomerOrderFieldsFactoryTest extends \MailPoetTest {
     $value = $purchasedCategories->getValue($customerPayload);
 
     $this->assertIsArray($value);
-    $this->assertCount(4, $value);
+    $this->assertCount(5, $value);
     $this->assertContains($uncategorizedId, $value);
-    $this->assertContains($cat1Id, $value);
+    $this->assertContains($cat1Id, $value); // auto-included parent
     $this->assertContains($cat2Id, $value);
-    $this->assertContains($subCat1, $value);
+    $this->assertContains($subCat1Id, $value); // auto-included parent
+    $this->assertContains($subSubCat1Id, $value);
     $this->assertNotContains($cat3Id, $value);
-    $this->assertNotContains($subCat2, $value);
+    $this->assertNotContains($subCat2Id, $value);
   }
 
   public function testPurchasedTags(): void {
@@ -251,7 +254,8 @@ class CustomerOrderFieldsFactoryTest extends \MailPoetTest {
     $purchasedCategories = $fields['woocommerce:customer:purchased-categories'];
     $value = $purchasedCategories->getValue($customerPayload);
     $this->assertIsArray($value);
-    $this->assertCount(1, $value);
+    $this->assertCount(2, $value);
+    $this->assertContains($categoryId, $value); // auto-included parent
     $this->assertContains($subCategoryId, $value);
   }
 
