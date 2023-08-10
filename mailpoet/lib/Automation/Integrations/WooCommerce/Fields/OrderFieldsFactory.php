@@ -325,12 +325,19 @@ class OrderFieldsFactory {
 
   private function previousOrderExists(WC_Order $order): bool {
     $dateCreated = $order->get_date_created() ?? new DateTimeImmutable('now', $this->wordPress->wpTimezone());
-    $orderIds = (array)$this->wooCommerce->wcGetOrders([
-      'customer_id' => $order->get_customer_id(),
+    $query = [
       'date_created' => '<=' . $dateCreated->getTimestamp(),
       'limit' => 2,
       'return' => 'ids',
-    ]);
+    ];
+
+    if ($order->get_customer_id() > 0) {
+      $query['customer_id'] = $order->get_customer_id();
+    } else {
+      $query['billing_email'] = $order->get_billing_email();
+    }
+
+    $orderIds = (array)$this->wooCommerce->wcGetOrders($query);
     return count($orderIds) > 1 && min($orderIds) < $order->get_id();
   }
 
