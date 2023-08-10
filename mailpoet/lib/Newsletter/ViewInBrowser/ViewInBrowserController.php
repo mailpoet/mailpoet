@@ -115,8 +115,6 @@ class ViewInBrowserController {
       return null;
     }
 
-    return !empty($data['queue_id'])
-      ? $this->sendingQueuesRepository->findOneById($data['queue_id'])
-      : $this->sendingQueuesRepository->findOneBy(['newsletter' => $newsletter->getId()]);
+    return isset($data['queue_id']) ? $this->sendingQueuesRepository->findOneById($data['queue_id']) : null;
   }
 }
