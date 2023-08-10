@@ -2,8 +2,6 @@
 
 namespace MailPoet\Newsletter\ViewInBrowser;
 
-use MailPoet\Entities\NewsletterEntity;
-use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
@@ -53,7 +51,7 @@ class ViewInBrowserController {
     $subscriber = $this->getSubscriber($data);
 
     // if queue and subscriber exist, subscriber must have received the newsletter
-    $queue = $this->getQueue($newsletter, $data);
+    $queue = isset($data['queue_id']) ? $this->sendingQueuesRepository->findOneById($data['queue_id']) : null;
     if (!$isPreview && $queue && $subscriber->getId() && !$this->sendingQueuesRepository->isSubscriberProcessed($queue, $subscriber)) {
       throw new \InvalidArgumentException("Subscriber did not receive the newsletter yet");
     }
@@ -102,19 +100,5 @@ class ViewInBrowserController {
     }
 
     return $subscriber ?? new SubscriberEntity();
-  }
-
-  private function getQueue(NewsletterEntity $newsletter, array $data): ?SendingQueueEntity {
-    // queue is optional; try to find it if it's not defined and this is not a welcome email
-    if ($newsletter->getType() === NewsletterEntity::TYPE_WELCOME) {
-      return null;
-    }
-
-    // reset queue when automatic email is being previewed
-    if ($newsletter->getType() === NewsletterEntity::TYPE_AUTOMATIC && !empty($data['preview'])) {
-      return null;
-    }
-
-    return isset($data['queue_id']) ? $this->sendingQueuesRepository->findOneById($data['queue_id']) : null;
   }
 }

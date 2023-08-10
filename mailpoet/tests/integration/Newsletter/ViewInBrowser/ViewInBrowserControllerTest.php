@@ -25,9 +25,6 @@ class ViewInBrowserControllerTest extends \MailPoetTest {
   /** @var SubscribersRepository */
   private $subscribersRepository;
 
-  /** @var NewsletterEntity */
-  private $newsletter;
-
   /** @var SubscriberEntity */
   private $subscriber;
 
@@ -59,7 +56,6 @@ class ViewInBrowserControllerTest extends \MailPoetTest {
     $newsletterFactory = new Newsletter();
     $newsletter = $newsletterFactory->create();
     $newsletter->setHash(Security::generateHash());
-    $this->newsletter = $newsletter;
 
     // create subscriber
     $subscriber = new SubscriberEntity();
@@ -199,40 +195,6 @@ class ViewInBrowserControllerTest extends \MailPoetTest {
 
     $data = $this->browserPreviewData;
     $data['queueId'] = null;
-    $viewInBrowserController->view($data);
-  }
-
-  public function testItResetsQueueForWelcomeEmails() {
-    $viewInBrowserRenderer = $this->make(ViewInBrowserRenderer::class, [
-      'render' => Expected::once(function (bool $isPreview, NewsletterEntity $newsletter, SubscriberEntity $subscriber = null, SendingQueueEntity $queue = null) {
-        expect($queue)->null();
-      }),
-    ]);
-
-    $viewInBrowserController = $this->createController($viewInBrowserRenderer);
-
-    // queue will be set to null for welcome email
-    $newsletter = $this->newsletter;
-    $newsletter->setType(NewsletterEntity::TYPE_WELCOME);
-    $this->newslettersRepository->flush();
-    $viewInBrowserController->view($this->browserPreviewData);
-  }
-
-  public function testItResetsQueueForAutomaticEmailsInPreview() {
-    $viewInBrowserRenderer = $this->make(ViewInBrowserRenderer::class, [
-      'render' => Expected::once(function (bool $isPreview, NewsletterEntity $newsletter, SubscriberEntity $subscriber = null, SendingQueueEntity $queue = null) {
-        expect($queue)->null();
-      }),
-    ]);
-
-    $viewInBrowserController = $this->createController($viewInBrowserRenderer);
-
-    // queue will be set to null for automatic email
-    $data = $this->browserPreviewData;
-    $data['preview'] = true;
-    $newsletter = $this->newsletter;
-    $newsletter->setType(NewsletterEntity::TYPE_AUTOMATIC);
-    $this->newslettersRepository->flush();
     $viewInBrowserController->view($data);
   }
 
