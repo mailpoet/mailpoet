@@ -41,3 +41,7 @@
 <% block after_translations %>
   <%= do_action('mailpoet_segments_translations_after') %>
 <% endblock %>
+
+<% block after_css %>
+  <%= stylesheet('mailpoet-templates.css') %>
+<% endblock %>

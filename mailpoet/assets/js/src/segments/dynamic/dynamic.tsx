@@ -6,6 +6,7 @@ import { Notices } from 'notices/notices.jsx';
 import { registerTranslations, withBoundary } from 'common';
 import { Editor } from 'segments/dynamic/editor';
 import { DynamicSegmentList } from 'segments/dynamic/list';
+import { SegmentTemplates } from 'segments/dynamic/templates';
 
 const container = document.getElementById('dynamic_segments_container');
 
@@ -17,6 +18,10 @@ function App(): JSX.Element {
         <Switch>
           <Route path="/new-segment" component={withBoundary(Editor)} />
           <Route path="/edit-segment/:id" component={withBoundary(Editor)} />
+          <Route
+            path="/segment-templates"
+            component={withBoundary(SegmentTemplates)}
+          />
           <Route path="*" component={withBoundary(DynamicSegmentList)} />
         </Switch>
       </HashRouter>
