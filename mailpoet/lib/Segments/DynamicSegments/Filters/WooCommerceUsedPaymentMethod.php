@@ -54,10 +54,6 @@ class WooCommerceUsedPaymentMethod implements Filter {
     }
 
     $data = $filterData->getData();
-    // Backwards compatibility for filters saved before timeframe was added
-    if (!isset($data['timeframe'])) {
-      $data['timeframe'] = DynamicSegmentFilterData::TIMEFRAME_IN_THE_LAST;
-    }
     $this->filterHelper->validateDaysPeriodData((array)$data);
 
     $includedStatuses = array_keys($this->wooHelper->getOrderStatuses());

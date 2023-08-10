@@ -37,6 +37,7 @@ class Migration_20230803_200413_App extends AppMigration {
 
       if (isset($days) && is_string($filterType) && is_string($filterAction)) {
         $data['days'] = $days;
+        $data['timeframe'] = DynamicSegmentFilterData::TIMEFRAME_IN_THE_LAST;
         $newFilterData = new DynamicSegmentFilterData($filterType, $filterAction, $data);
         $filter->setFilterData($newFilterData);
         $this->entityManager->persist($filter);
