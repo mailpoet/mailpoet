@@ -305,6 +305,23 @@ class OrderFieldsFactoryTest extends \MailPoetTest {
     $order2 = $this->tester->createWooCommerceOrder(['customer_id' => 123]);
     $payload = new OrderPayload($order2);
     $this->assertFalse($isFirstOrderField->getValue($payload));
+
+    $order3 = $this->tester->createWooCommerceOrder(['customer_id' => 999]);
+    $payload = new OrderPayload($order3);
+    $this->assertTrue($isFirstOrderField->getValue($payload));
+
+    // check values for guest
+    $order1 = $this->tester->createWooCommerceOrder(['customer_id' => 0, 'billing_email' => 'guest@example.com']);
+    $payload = new OrderPayload($order1);
+    $this->assertTrue($isFirstOrderField->getValue($payload));
+
+    $order2 = $this->tester->createWooCommerceOrder(['customer_id' => 0, 'billing_email' => 'guest@example.com']);
+    $payload = new OrderPayload($order2);
+    $this->assertFalse($isFirstOrderField->getValue($payload));
+
+    $order3 = $this->tester->createWooCommerceOrder(['customer_id' => 0, 'billing_email' => 'another-guest@example.com']);
+    $payload = new OrderPayload($order3);
+    $this->assertTrue($isFirstOrderField->getValue($payload));
   }
 
   public function testCategoriesField(): void {
