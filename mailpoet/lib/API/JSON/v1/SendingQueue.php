@@ -163,7 +163,7 @@ class SendingQueue extends APIEndpoint {
       $taskEntity = $this->scheduledTasksRepository->findOneById($taskModel->id);
 
       if ($taskEntity instanceof ScheduledTaskEntity) {
-        $subscribersCount = $this->subscribersFinder->addSubscribersToTaskFromSegments($taskEntity, $segments);
+        $subscribersCount = $this->subscribersFinder->addSubscribersToTaskFromSegments($taskEntity, $segments, $newsletterEntity->getFilterSegmentId());
       }
 
       if (!isset($subscribersCount) || !$subscribersCount) {
