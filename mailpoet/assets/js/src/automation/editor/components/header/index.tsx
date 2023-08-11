@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import classnames from 'classnames';
 import {
   Button,
   NavigableMenu,
@@ -143,7 +144,13 @@ function SaveDraftButton(): JSX.Element {
   // use single Button instance for all states so that focus is not lost
   return (
     <Button
-      className={`mailpoet-automation-editor-saved-state is-${savedState}`}
+      className={classnames([
+        'mailpoet-automation-editor-saved-state',
+        `is-${savedState}`,
+        {
+          'components-animate__loading': savedState === 'saving',
+        },
+      ])}
       variant="tertiary"
       label={label}
       shortcut={isDisabled ? undefined : displayShortcut.primary('s')}
