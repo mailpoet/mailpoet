@@ -8,9 +8,11 @@ use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Newsletter\Sending\ScheduledTaskSubscribersRepository;
 use MailPoet\Tasks\Sending as SendingTask;
+use MailPoet\Test\DataFactories\DynamicSegment;
 use MailPoet\Test\DataFactories\ScheduledTask as ScheduledTaskFactory;
 use MailPoet\Test\DataFactories\Segment as SegmentFactory;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
+use MailPoet\UnexpectedValueException;
 use MailPoetVendor\Carbon\Carbon;
 use PHPUnit\Framework\MockObject\MockObject;
 
@@ -160,6 +162,28 @@ class SubscribersFinderTest extends \MailPoetTest {
     expect($subscribersCount)->equals(1);
     $subscribersIds = $this->getScheduledTasksSubscribers($this->scheduledTask->getId());
     expect($subscribersIds)->equals([$this->subscriber2->getId()]);
+  }
+
+  public function testItCanFilterSubscribersBasedOnDynamicSegment(): void {
+    $subscriber1 = (new SubscriberFactory())->withEngagementScore(50)->withSegments([$this->segment1])->create();
+    $subscriber2 = (new SubscriberFactory())->withEngagementScore(30)->withSegments([$this->segment1])->create();
+    $subscriber3 = (new SubscriberFactory())->withEngagementScore(60)->withSegments([$this->segment2])->create();
+    $idsToCheck = array_map(function(SubscriberEntity $subscriber) {
+      return $subscriber->getId();
+    }, [$subscriber1, $subscriber2, $subscriber3]);
+    // Without filtering by dynamic segment
+    $foundSubscriberIds = $this->subscribersFinder->findSubscribersInSegments($idsToCheck, [$this->segment1->getId()]);
+    $this->assertEqualsCanonicalizing([$subscriber1->getId(), $subscriber2->getId()], $foundSubscriberIds);
+
+    // With filtering
+    $filterSegment = (new DynamicSegment())->withEngagementScoreFilter(40, 'higherThan')->create();
+    $foundIdsWithFiltering = $this->subscribersFinder->findSubscribersInSegments($idsToCheck, [$this->segment1->getId()], $filterSegment->getId());
+    $this->assertEqualsCanonicalizing([$subscriber1->getId()], $foundIdsWithFiltering);
+  }
+
+  public function testFilterSegmentMustBeDynamicSegment() {
+    $this->expectException(UnexpectedValueException::class);
+    $this->subscribersFinder->findSubscribersInSegments([$this->subscriber1->getId()], [$this->segment1->getId()], $this->segment2->getId());
   }
 
   private function getScheduledTasksSubscribers(int $taskId): array {

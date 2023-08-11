@@ -8,6 +8,7 @@ use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\InvalidStateException;
+use MailPoet\UnexpectedValueException;
 use MailPoetVendor\Doctrine\DBAL\Connection;
 use MailPoetVendor\Doctrine\DBAL\ParameterType;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
@@ -33,7 +34,7 @@ class SubscribersFinder {
     $this->entityManager = $entityManager;
   }
 
-  public function findSubscribersInSegments($subscribersToProcessIds, $newsletterSegmentsIds) {
+  public function findSubscribersInSegments($subscribersToProcessIds, $newsletterSegmentsIds, ?int $filterSegmentId = null) {
     $result = [];
     foreach ($newsletterSegmentsIds as $segmentId) {
       $segment = $this->segmentsRepository->findOneById($segmentId);
@@ -42,6 +43,18 @@ class SubscribersFinder {
       }
       $result = array_merge($result, $this->findSubscribersInSegment($segment, $subscribersToProcessIds));
     }
+
+    if (is_int($filterSegmentId)) {
+      $filterSegment = $this->segmentsRepository->findOneById($filterSegmentId);
+      if ($filterSegment instanceof SegmentEntity) {
+        if ($filterSegment->getType() !== SegmentEntity::TYPE_DYNAMIC) {
+          throw new UnexpectedValueException("Filter segment ID must be a dynamic segment. Type of filter with ID {$filterSegment->getId()} is {$filterSegment->getType()}.");
+        }
+        $idsInFilterSegment = $this->findSubscribersInSegment($filterSegment, $subscribersToProcessIds);
+        $result = array_intersect($result, $idsInFilterSegment);
+      }
+    }
+
     return $this->unique($result);
   }
 
