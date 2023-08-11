@@ -164,6 +164,38 @@ class SubscribersFinderTest extends \MailPoetTest {
     expect($subscribersIds)->equals([$this->subscriber2->getId()]);
   }
 
+  public function testItDoesNotAddSubscribersToTaskIfFilteredOutByFilterSegment(): void {
+    $staticSegment = (new SegmentFactory())->withType(SegmentEntity::TYPE_DEFAULT)->create();
+    $dynamicSegment = (new DynamicSegment())->withEngagementScoreFilter(0, 'higherThan')->create();
+    (new SubscriberFactory())->withEngagementScore(50)->withSegments([$staticSegment])->create();
+    (new SubscriberFactory())->withEngagementScore(30)->withSegments([$staticSegment])->create();
+    (new SubscriberFactory())->withEngagementScore(60)->create();
+    (new SubscriberFactory())->withEngagementScore(20)->create();
+
+    $filterSegment = (new DynamicSegment())->withEngagementScoreFilter(40, 'higherThan')->create();
+
+    $this->assertIsInt($staticSegment->getId());
+    $this->assertIsInt($dynamicSegment->getId());
+
+    // Without filtering
+    $task = (new ScheduledTaskFactory())->create(SendingTask::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED, new Carbon());
+    $staticCount = $this->subscribersFinder->addSubscribersToTaskFromSegments($task, [$staticSegment->getId()]);
+    expect($staticCount)->equals(2);
+
+    $task = (new ScheduledTaskFactory())->create(SendingTask::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED, new Carbon());
+    $dynamicCount = $this->subscribersFinder->addSubscribersToTaskFromSegments($task, [$dynamicSegment->getId()]);
+    expect($dynamicCount)->equals(4);
+
+    // With filtering
+    $task = (new ScheduledTaskFactory())->create(SendingTask::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED, new Carbon());
+    $staticCount = $this->subscribersFinder->addSubscribersToTaskFromSegments($task, [$staticSegment->getId()], $filterSegment->getId());
+    expect($staticCount)->equals(1);
+
+    $task = (new ScheduledTaskFactory())->create(SendingTask::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED, new Carbon());
+    $dynamicCount = $this->subscribersFinder->addSubscribersToTaskFromSegments($task, [$dynamicSegment->getId()], $filterSegment->getId());
+    expect($dynamicCount)->equals(2);
+  }
+
   public function testItCanFilterSubscribersBasedOnDynamicSegment(): void {
     $subscriber1 = (new SubscriberFactory())->withEngagementScore(50)->withSegments([$this->segment1])->create();
     $subscriber2 = (new SubscriberFactory())->withEngagementScore(30)->withSegments([$this->segment1])->create();
