@@ -54,7 +54,8 @@ class AnalyticsCest {
 
     $i->amOnPage("/wp-admin/admin.php?page=mailpoet-automation-analytics&id=" . $this->automation->getId() . "&tab=automation-emails");
     $i->see('Overview');
-    $i->waitForText('Opened');
+
+    $i->waitForElement('.woocommerce-summary:not(.is-placeholder)');
     $i->see('Opened', '.woocommerce-summary > .woocommerce-summary__item-container');
     $i->see('0%', '.woocommerce-summary > .woocommerce-summary__item-container');
     $i->see('Clicked', '.woocommerce-summary > .woocommerce-summary__item-container:nth-child(2n)');
@@ -96,7 +97,8 @@ class AnalyticsCest {
     $click2 = $this->createClickForNewsletter($this->newsletter1, $subscriber2);
 
     $i->amOnPage("/wp-admin/admin.php?page=mailpoet-automation-analytics&id=" . $this->automation->getId() . "&tab=automation-emails");
-    $i->waitForText('Opened');
+
+    $i->waitForElement('.woocommerce-summary:not(.is-placeholder)');
     $i->see('Opened', '.woocommerce-summary > .woocommerce-summary__item-container');
     $i->see('1.5%', '.woocommerce-summary > .woocommerce-summary__item-container');
     $i->see('Clicked', '.woocommerce-summary > .woocommerce-summary__item-container:nth-child(2n)');
@@ -126,8 +128,8 @@ class AnalyticsCest {
     $this->alterCreateDateForOpen($open2, $date);
 
     $i->amOnPage("/wp-admin/admin.php?page=mailpoet-automation-analytics&id=" . $this->automation->getId() . "&tab=automation-emails");
-    $i->waitForText('Opened');
 
+    $i->waitForElement('.woocommerce-summary:not(.is-placeholder)');
     $i->see('Opened', '.woocommerce-summary > .woocommerce-summary__item-container:first-child');
     $i->see('1%', '.woocommerce-summary > .woocommerce-summary__item-container:first-child .woocommerce-summary__item-value');
     $i->see('-80%', '.woocommerce-summary > .woocommerce-summary__item-container:first-child .woocommerce-summary__item-delta');
