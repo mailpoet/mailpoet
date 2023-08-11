@@ -197,8 +197,15 @@ class SendingQueue {
     $this->mailerTask->configureMailer($newsletter);
     // get newsletter segments
     $newsletterSegmentsIds = $newsletterEntity->getSegmentIds();
+    $segmentIdsToCheck = $newsletterSegmentsIds;
+    $filterSegmentId = $newsletterEntity->getFilterSegmentId();
+
+    if (is_int($filterSegmentId)) {
+      $segmentIdsToCheck[] = $filterSegmentId;
+    }
+
     // Pause task in case some of related segments was deleted or trashed
-    if ($newsletterSegmentsIds && !$this->checkDeletedSegments($newsletterSegmentsIds)) {
+    if ($newsletterSegmentsIds && !$this->checkDeletedSegments($segmentIdsToCheck)) {
       $this->loggerFactory->getLogger(LoggerFactory::TOPIC_NEWSLETTERS)->info(
         'pause task in sending queue due deleted or trashed segment',
         ['task_id' => $queue->taskId]
