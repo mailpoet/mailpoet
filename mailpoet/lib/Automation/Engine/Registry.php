@@ -54,6 +54,20 @@ class Registry {
 
   public function addTemplate(AutomationTemplate $template): void {
     $this->templates[$template->getSlug()] = $template;
+
+    // keep coming soon templates at the end
+    uasort(
+      $this->templates,
+      function (AutomationTemplate $a, AutomationTemplate $b): int {
+        if ($a->getType() === AutomationTemplate::TYPE_COMING_SOON) {
+          return 1;
+        }
+        if ($b->getType() === AutomationTemplate::TYPE_COMING_SOON) {
+          return -1;
+        }
+        return 0;
+      }
+    );
   }
 
   public function getTemplate(string $slug): ?AutomationTemplate {
