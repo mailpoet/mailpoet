@@ -5,28 +5,39 @@ namespace MailPoet\Automation\Integrations\MailPoet\Templates;
 use MailPoet\Automation\Engine\Data\Automation;
 use MailPoet\Automation\Engine\Data\AutomationTemplate;
 use MailPoet\Automation\Engine\Templates\AutomationBuilder;
+use MailPoet\Automation\Integrations\WooCommerce\WooCommerce;
 
 class TemplatesFactory {
   /** @var AutomationBuilder */
   private $builder;
 
+  /** @var WooCommerce */
+  private $woocommerce;
+
   public function __construct(
-    AutomationBuilder $builder
+    AutomationBuilder $builder,
+    WooCommerce $woocommerce
   ) {
     $this->builder = $builder;
+    $this->woocommerce = $woocommerce;
   }
 
   public function createTemplates(): array {
-    return [
+    $templates = [
       $this->createSubscriberWelcomeEmailTemplate(),
       $this->createUserWelcomeEmailTemplate(),
       $this->createSubscriberWelcomeSeriesTemplate(),
       $this->createUserWelcomeSeriesTemplate(),
-      $this->createFirstPurchaseTemplate(),
-      $this->createLoyalCustomersTemplate(),
-      $this->createAbandonedCartTemplate(),
-      $this->createAbandonedCartCampaignTemplate(),
     ];
+
+    if ($this->woocommerce->isWooCommerceActive()) {
+      $templates[] = $this->createFirstPurchaseTemplate();
+      $templates[] = $this->createLoyalCustomersTemplate();
+      $templates[] = $this->createAbandonedCartTemplate();
+      $templates[] = $this->createAbandonedCartCampaignTemplate();
+    }
+
+    return $templates;
   }
 
   private function createSubscriberWelcomeEmailTemplate(): AutomationTemplate {
