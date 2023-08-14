@@ -3,8 +3,10 @@
 namespace MailPoet\Newsletter\Sending;
 
 use MailPoet\Doctrine\Repository;
+use MailPoet\Entities\DynamicSegmentFilterEntity;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\WP\Functions as WPFunctions;
@@ -161,6 +163,25 @@ class SendingQueuesRepository extends Repository {
       $meta = [];
     }
     $meta['campaignId'] = $campaignId;
+    $queue->setMeta($meta);
+    $this->flush();
+  }
+
+  public function saveFilterSegmentMeta(SendingQueueEntity $queue, SegmentEntity $filterSegment): void {
+    $meta = $queue->getMeta() ?? [];
+    $meta['filterSegment'] = [
+      'id' => $filterSegment->getId(),
+      'name' => $filterSegment->getName(),
+      'updatedAt' => $filterSegment->getUpdatedAt(),
+      'filters' => array_map(function(DynamicSegmentFilterEntity $filter) {
+        $data = $filter->getFilterData();
+        return [
+          'filterType' => $data->getFilterType(),
+          'action' => $data->getAction(),
+          'data' => $filter->getFilterData()->getData(),
+        ];
+      }, $filterSegment->getDynamicFilters()->toArray()),
+    ];
     $queue->setMeta($meta);
     $this->flush();
   }
