@@ -66,7 +66,7 @@ function WelcomeWizardUsageTrackingStep({ loading, submitForm }) {
               <div className="mailpoet-wizard-note">
                 {ReactStringReplace(
                   __(
-                    'MailPoet may load Google Fonts, HelpScout and other [link]3rd party libraries[/link].',
+                    'MailPoet may load Google Fonts, DocsBot and other [link]3rd party libraries[/link].',
                     'mailpoet',
                   ),
                   /\[link\](.*?)\[\/link\]/g,

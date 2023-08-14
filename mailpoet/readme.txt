@@ -152,7 +152,7 @@ To improve user experience, MailPoet may use the following 3rd party libraries i
 
 * Google Fonts - used in Form Editor which you can use to customize your forms, and in the Email Editor to style emails. This can be individually [disabled by a filter](https://kb.mailpoet.com/article/332-how-to-disable-google-fonts)
 
-* HelpScout - used to show help tooltips throughout the plugin, easily access documentation, and contact our customer support team. This functionality may load scripts from [https://beacon-v2.helpscout.net/](https://beacon-v2.helpscout.net/)
+* DocsBot - used for searching in Knowledge Base with the help of AI. This functionality may load scripts from [https://widget.docsbot.ai/chat.js](https://widget.docsbot.ai/chat.js)
 
 * Mixpanel - used to send data about the usage of the MailPoet plugin when you [agree with sharing usage data with us](https://kb.mailpoet.com/article/130-sharing-your-data-with-us)
 
