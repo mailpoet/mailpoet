@@ -165,7 +165,7 @@ class PostNotificationTest extends \MailPoetTest {
     $this->postNotificationScheduler->schedulePostNotification(10);
     $currentTime = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
     Carbon::setTestNow($currentTime); // mock carbon to return current time
-    $nextRunDate = ($currentTime->hour < 5) ?
+    $nextRunDate = ($currentTime->hour < 5) || ($currentTime->hour === 5 && $currentTime->minute < 45) ?
       $currentTime :
       $currentTime->addDay();
     $queue = $this->sendingQueuesRepository->findOneBy(['newsletter' => $newsletter]);
