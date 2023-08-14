@@ -6,6 +6,7 @@ import { Listing } from 'listing/listing.jsx';
 import { escapeHTML } from '@wordpress/escape-html';
 import { SegmentResponse } from 'segments/types';
 import { ListHeading } from 'segments/heading';
+import * as ROUTES from 'segments/routes';
 
 type ColumnType = {
   name: string;
@@ -117,7 +118,9 @@ const itemActions = [
     name: 'edit',
     className: 'mailpoet-hide-on-mobile',
     link: (item: DynamicSegmentItem) => (
-      <Link to={`/edit-segment/${item.id}`}>{MailPoet.I18n.t('edit')}</Link>
+      <Link to={`${ROUTES.EDIT_DYNAMIC_SEGMENT}/${item.id}`}>
+        {MailPoet.I18n.t('edit')}
+      </Link>
     ),
     display: (item: DynamicSegmentItem) => !item.is_plugin_missing,
   },
@@ -155,7 +158,9 @@ const itemActions = [
     name: 'edit_disabled',
     className: 'mailpoet-hide-on-mobile mailpoet-disabled',
     link: (item: DynamicSegmentItem) => (
-      <Link to={`/edit-segment/${item.id}`}>{MailPoet.I18n.t('edit')}</Link>
+      <Link to={`${ROUTES.EDIT_DYNAMIC_SEGMENT}/${item.id}`}>
+        {MailPoet.I18n.t('edit')}
+      </Link>
     ),
     display: (item: DynamicSegmentItem) => item.is_plugin_missing,
   },

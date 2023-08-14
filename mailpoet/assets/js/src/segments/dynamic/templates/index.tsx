@@ -12,6 +12,7 @@ import { Badge } from '@woocommerce/components';
 import { HideScreenOptions } from 'common/hide_screen_options/hide_screen_options';
 import { TopBarWithBeamer } from 'common/top_bar/top_bar';
 import { TemplateListItem } from 'segments/dynamic/templates/components/template_list_item';
+import * as ROUTES from 'segments/routes';
 
 const tabConfig = [
   {
@@ -172,7 +173,7 @@ export function SegmentTemplates(): JSX.Element {
         </FlexItem>
 
         <FlexItem>
-          <Button variant="secondary" href="#/new-segment">
+          <Button variant="secondary" href={`#${ROUTES.NEW_DYNAMIC_SEGMENT}`}>
             {__('Create custom segment', 'mailpoet')}
           </Button>
         </FlexItem>
@@ -190,7 +191,7 @@ export function SegmentTemplates(): JSX.Element {
 
       <div className="mailpoet-templates-footer">
         <p>{__('Want to set your own conditions?', 'mailpoet')}</p>
-        <Button variant="link" href="#/new-segment">
+        <Button variant="link" href={`#${ROUTES.NEW_DYNAMIC_SEGMENT}`}>
           {__('Create custom segment', 'mailpoet')}
         </Button>
       </div>
