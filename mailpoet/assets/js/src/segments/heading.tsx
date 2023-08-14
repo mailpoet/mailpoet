@@ -5,6 +5,7 @@ import { plusIcon } from 'common/button/icon/plus';
 import { SubscribersInPlan } from 'common/subscribers_in_plan';
 import { MssAccessNotices } from 'notices/mss_access_notices';
 import { SubscribersCacheMessage } from 'common/subscribers_cache_message';
+import * as ROUTES from 'segments/routes';
 
 function ListHeading({ segmentType }): JSX.Element {
   return (
@@ -23,7 +24,7 @@ function ListHeading({ segmentType }): JSX.Element {
         {segmentType === 'dynamic' && (
           <Link
             className="mailpoet-button button-secondary"
-            to="/new-segment"
+            to={ROUTES.NEW_DYNAMIC_SEGMENT}
             data-automation-id="new-segment"
           >
             {plusIcon}

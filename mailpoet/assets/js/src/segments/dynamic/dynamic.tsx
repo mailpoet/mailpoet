@@ -7,6 +7,7 @@ import { registerTranslations, withBoundary } from 'common';
 import { Editor } from 'segments/dynamic/editor';
 import { DynamicSegmentList } from 'segments/dynamic/list';
 import { SegmentTemplates } from 'segments/dynamic/templates';
+import * as ROUTES from 'segments/routes';
 
 const container = document.getElementById('dynamic_segments_container');
 
@@ -16,10 +17,16 @@ function App(): JSX.Element {
       <HashRouter>
         <Notices />
         <Switch>
-          <Route path="/new-segment" component={withBoundary(Editor)} />
-          <Route path="/edit-segment/:id" component={withBoundary(Editor)} />
           <Route
-            path="/segment-templates"
+            path={ROUTES.NEW_DYNAMIC_SEGMENT}
+            component={withBoundary(Editor)}
+          />
+          <Route
+            path={`${ROUTES.EDIT_DYNAMIC_SEGMENT}/:id`}
+            component={withBoundary(Editor)}
+          />
+          <Route
+            path={ROUTES.DYNAMIC_SEGMENT_TEMPLATES}
             component={withBoundary(SegmentTemplates)}
           />
           <Route path="*" component={withBoundary(DynamicSegmentList)} />
