@@ -12,6 +12,7 @@ use MailPoet\Cron\Workers\StatsNotifications\NewsletterLinkRepository;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterLinkEntity;
+use MailPoet\Entities\NewsletterOptionFieldEntity;
 use MailPoet\Entities\NewsletterPostEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
@@ -23,6 +24,7 @@ use MailPoet\Newsletter\Renderer\Blocks\Coupon;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Router\Router;
 use MailPoet\Tasks\Sending as SendingTask;
+use MailPoet\Test\DataFactories\DynamicSegment;
 use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 use MailPoet\WooCommerce\Helper;
@@ -571,5 +573,38 @@ class NewsletterTest extends \MailPoetTest {
       'html' => '<img src="http://example.com/different-image-same-alt.jpg" alt="alt text"><p>Text</p>',
     ];
     expect($originalCampaignId)->notEquals($this->newsletterTask->calculateCampaignId($newsletter, $renderedNewslettersDifferentImageSrc));
+  }
+
+  public function testPreProcessingSavesFilterSegmentData(): void {
+    $filterSegment = (new DynamicSegment())->withEngagementScoreFilter(50, 'higherThan')->create();
+    $this->newsletter = (new NewsletterFactory())
+      ->withType(NewsletterEntity::TYPE_STANDARD)
+      ->withStatus(NewsletterEntity::STATUS_ACTIVE)
+      ->withSubject(Fixtures::get('newsletter_subject_template'))
+      ->withBody(json_decode(Fixtures::get('newsletter_body_template'), true))
+      ->withOptions([NewsletterOptionFieldEntity::NAME_FILTER_SEGMENT_ID => $filterSegment->getId()])
+      ->create();
+
+    $this->sendingTask->newsletterId = $this->newsletter->getId();
+    $this->sendingTask->save();
+
+    // properly serialized object
+    $sendingQueue = $this->sendingQueuesRepository->findOneById($this->sendingTask->id);
+    $this->assertInstanceOf(SendingQueueEntity::class, $sendingQueue);
+    $sendingQueue->setNewsletterRenderedBody(['html' => 'test', 'text' => 'test']);
+    $this->sendingQueuesRepository->persist($sendingQueue);
+    $this->sendingQueuesRepository->flush();
+    $newsletterTask = new NewsletterTask();
+    $sendingQueueMeta = $sendingQueue->getMeta();
+    expect($sendingQueueMeta)->null();
+    expect($newsletterTask->preProcessNewsletter($this->newsletter, $this->sendingTask))->equals($this->newsletter);
+    $this->entityManager->refresh($sendingQueue);
+    $updatedMeta = $sendingQueue->getMeta();
+    expect($updatedMeta)->array();
+    expect($updatedMeta)->hasKey('filterSegment');
+    $filterData = $updatedMeta['filterSegment']['filters'][0]['data'] ?? [];
+    expect($filterData['value'])->equals(50);
+    expect($filterData['operator'])->equals('higherThan');
+    expect($filterData['connect'])->equals('and');
   }
 }

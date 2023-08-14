@@ -295,7 +295,7 @@ class Newsletter {
    *
    * @return Newsletter
    */
-  private function withOptions(array $options) {
+  public function withOptions(array $options) {
     $this->options = $options;
     return $this;
   }
