@@ -3,7 +3,7 @@ Contributors: mailpoet, woocommerce, automattic
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 6.0
 Tested up to: 6.2
-Stable tag: 4.23.0
+Stable tag: 4.24.0
 Requires PHP: 7.3
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -218,6 +218,17 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 4.24.0 - 2023-08-14 =
+* Added: detailed Automation analytics;
+* Added: "used coupon code" segment;
+* Improved: visually align checkboxes in the onboarding wizard;
+* Improved: subscriber engagement score is now recalculated when the underlying data change;
+* Improved: save/update automation button unified with WordPress post editor (including keyboard shortcut);
+* Changed: 3rd-party service to contact support;
+* Changed: when filtering automation trigger by a product category, it will include children categories;
+* Fixed: automation using "is first order" filter fails to trigger for some guest customers;
+* Fixed: tutorial button overlays save button when editing order automation email.
 
 = 4.23.0 - 2023-08-08 =
 * Added: a notice when paid features are available but the premium plugin is not installed;
