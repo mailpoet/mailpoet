@@ -199,7 +199,17 @@
   <script type="text/javascript">
     DocsBotAI.init({
       id: "TqTdebbGjJeUjrmBIFjh/kzFE5FBebBJiSJ2Tm0nR",
-    })
+      // We want to redirect users to the proper page depending on their plan
+      supportCallback: function (event, history) {
+        <% if has_premium_support %>
+          const mailpoet_redirect_support_link = 'https://www.mailpoet.com/support/premium/';
+        <% else %>
+          const mailpoet_redirect_support_link = 'https://wordpress.org/support/plugin/mailpoet/';
+        <% endif %>
+        event.preventDefault(); // Prevent default behavior opening the url.
+        window.open(mailpoet_redirect_support_link, '_blank');
+      },
+    });
   </script>
 <% endif %>
 
