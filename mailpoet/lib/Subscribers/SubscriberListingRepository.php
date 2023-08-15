@@ -306,11 +306,7 @@ class SubscriberListingRepository extends ListingRepository {
     $segmentList = [];
     foreach ($queryBuilder->getQuery()->getResult() as $segment) {
       $key = $group ?: 'all';
-      if ($segment->isStatic()) {
-        $count = $this->subscribersCountsController->getSegmentGlobalStatusStatisticsCount($segment);
-      } else {
-        $count = $this->subscribersCountsController->getSegmentStatisticsCount($segment);
-      }
+      $count = $this->subscribersCountsController->getSegmentStatisticsCount($segment);
       $subscribersCount = (float)$count[$key];
       // filter segments without subscribers
       if (!$subscribersCount) {
