@@ -755,16 +755,6 @@ parameters:
 			path: ../../lib/Subscribers/SubscriberListingRepository.php
 
 		-
-			message: "#^Cannot call method isStatic\\(\\) on mixed\\.$#"
-			count: 1
-			path: ../../lib/Subscribers/SubscriberListingRepository.php
-
-		-
-			message: "#^Parameter \\#1 \\$segment of method MailPoet\\\\Subscribers\\\\SubscribersCountsController\\:\\:getSegmentGlobalStatusStatisticsCount\\(\\) expects MailPoet\\\\Entities\\\\SegmentEntity, mixed given\\.$#"
-			count: 1
-			path: ../../lib/Subscribers/SubscriberListingRepository.php
-
-		-
 			message: "#^Parameter \\#1 \\$segment of method MailPoet\\\\Subscribers\\\\SubscribersCountsController\\:\\:getSegmentStatisticsCount\\(\\) expects MailPoet\\\\Entities\\\\SegmentEntity, mixed given\\.$#"
 			count: 1
 			path: ../../lib/Subscribers/SubscriberListingRepository.php
