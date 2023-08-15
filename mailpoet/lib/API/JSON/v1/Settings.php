@@ -436,9 +436,6 @@ class Settings extends APIEndpoint {
     $segments = $this->segmentsRepository->findAll();
     foreach ($segments as $segment) {
       $this->subscribersCountsController->recalculateSegmentStatisticsCache($segment);
-      if ($segment->isStatic()) {
-        $this->subscribersCountsController->recalculateSegmentGlobalStatusStatisticsCache($segment);
-      }
     }
     $this->subscribersCountsController->recalculateSubscribersWithoutSegmentStatisticsCache();
     // remove redundancies from cache

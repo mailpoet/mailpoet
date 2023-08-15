@@ -62,9 +62,6 @@ class SubscribersCountCacheRecalculation extends SimpleWorker {
     if ($item === null || !isset($item['created_at']) || $now->diffInMinutes($item['created_at']) > self::EXPIRATION_IN_MINUTES) {
       if ($segment) {
         $this->subscribersCountsController->recalculateSegmentStatisticsCache($segment);
-        if ($segment->isStatic()) {
-          $this->subscribersCountsController->recalculateSegmentGlobalStatusStatisticsCache($segment);
-        }
       } else {
         $this->subscribersCountsController->recalculateSubscribersWithoutSegmentStatisticsCache();
       }
