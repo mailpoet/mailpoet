@@ -310,6 +310,34 @@ class SubscriberListingRepositoryTest extends \MailPoetTest {
     expect($data[1]->getEmail())->equals($subscriber3->getEmail());
   }
 
+  public function testLoadSubscribersInDefaultSegmentConsideringSubscriberStatusPerSegmentAndNotGlobally() {
+    $list = $this->segmentRepository->createOrUpdate('Segment 5');
+    $subscriberUnsubscribedFromAList = $this->createSubscriberEntity();
+    $subscriberSegment = $this->createSubscriberSegmentEntity($list, $subscriberUnsubscribedFromAList);
+    $subscriberSegment->setStatus(SubscriberEntity::STATUS_UNSUBSCRIBED);
+
+    $this->createSubscriberEntity(); // subscriber without a list
+
+    $regularSubscriber = $this->createSubscriberEntity();
+    $regularSubscriber->setStatus(SubscriberEntity::STATUS_SUBSCRIBED);
+    $this->createSubscriberSegmentEntity($list, $regularSubscriber);
+
+    $this->entityManager->flush();
+
+    $this->listingData['filter'] = ['segment' => $list->getId()];
+    $this->listingData['sort_by'] = 'id';
+    $this->listingData['group'] = SubscriberEntity::STATUS_SUBSCRIBED;
+    $data = $this->repository->getData($this->getListingDefinition());
+    expect(count($data))->equals(1);
+    expect($data[0]->getEmail())->equals($regularSubscriber->getEmail());
+    $this->listingData['group'] = SubscriberEntity::STATUS_UNSUBSCRIBED;
+    $data = $this->repository->getData($this->getListingDefinition());
+    expect(count($data))->equals(1);
+    expect($data[0]->getEmail())->equals($subscriberUnsubscribedFromAList->getEmail());
+    $this->listingData['sort_by'] = '';
+    $this->listingData['group'] = '';
+  }
+
   private function createSubscriberEntity(): SubscriberEntity {
     $subscriber = new SubscriberEntity();
     $rand = rand(0, 100000);
