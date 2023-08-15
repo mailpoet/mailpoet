@@ -13,9 +13,6 @@ use MailPoet\Automation\Engine\Storage\AutomationStorage;
 use MailPoet\Automation\Engine\WordPress;
 
 class TriggerHandler {
-  /** @var ActionScheduler */
-  private $actionScheduler;
-
   /** @var AutomationStorage */
   private $automationStorage;
 
@@ -31,24 +28,27 @@ class TriggerHandler {
   /** @var FilterHandler */
   private $filterHandler;
 
+  /** @var StepScheduler */
+  private $stepScheduler;
+
   /** @var WordPress */
   private $wordPress;
 
   public function __construct(
-    ActionScheduler $actionScheduler,
     AutomationStorage $automationStorage,
     AutomationRunStorage $automationRunStorage,
     SubjectLoader $subjectLoader,
     SubjectTransformerHandler $subjectTransformerHandler,
     FilterHandler $filterHandler,
+    StepScheduler $stepScheduler,
     WordPress $wordPress
   ) {
-    $this->actionScheduler = $actionScheduler;
     $this->automationStorage = $automationStorage;
     $this->automationRunStorage = $automationRunStorage;
     $this->subjectLoader = $subjectLoader;
     $this->subjectTransformerHandler = $subjectTransformerHandler;
     $this->filterHandler = $filterHandler;
+    $this->stepScheduler = $stepScheduler;
     $this->wordPress = $wordPress;
   }
 
@@ -91,15 +91,8 @@ class TriggerHandler {
       }
 
       $automationRunId = $this->automationRunStorage->createAutomationRun($automationRun);
-      $nextStep = $step->getNextSteps()[0] ?? null;
-      $this->actionScheduler->enqueue(Hooks::AUTOMATION_STEP, [
-        [
-          'automation_run_id' => $automationRunId,
-          'step_id' => $nextStep ? $nextStep->getId() : null,
-        ],
-      ]);
-
-      $this->automationRunStorage->updateNextStep($automationRunId, $nextStep ? $nextStep->getId() : null);
+      $automationRun->setId($automationRunId);
+      $this->stepScheduler->scheduleNextStep($stepRunArgs);
     }
   }
 }

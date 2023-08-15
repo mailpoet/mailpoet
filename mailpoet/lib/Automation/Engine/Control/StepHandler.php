@@ -25,9 +25,6 @@ use MailPoet\Automation\Engine\WordPress;
 use Throwable;
 
 class StepHandler {
-  /** @var ActionScheduler */
-  private $actionScheduler;
-
   /** @var ActionStepRunner */
   private $actionStepRunner;
 
@@ -55,8 +52,10 @@ class StepHandler {
   /** @var Registry */
   private $registry;
 
+  /** @var StepScheduler */
+  private $stepScheduler;
+
   public function __construct(
-    ActionScheduler $actionScheduler,
     ActionStepRunner $actionStepRunner,
     Hooks $hooks,
     SubjectLoader $subjectLoader,
@@ -64,9 +63,9 @@ class StepHandler {
     AutomationRunStorage $automationRunStorage,
     AutomationRunLogStorage $automationRunLogStorage,
     AutomationStorage $automationStorage,
-    Registry $registry
+    Registry $registry,
+    StepScheduler $stepScheduler
   ) {
-    $this->actionScheduler = $actionScheduler;
     $this->actionStepRunner = $actionStepRunner;
     $this->hooks = $hooks;
     $this->subjectLoader = $subjectLoader;
@@ -75,6 +74,7 @@ class StepHandler {
     $this->automationRunLogStorage = $automationRunLogStorage;
     $this->automationStorage = $automationStorage;
     $this->registry = $registry;
+    $this->stepScheduler = $stepScheduler;
   }
 
   public function initialize(): void {
@@ -181,29 +181,20 @@ class StepHandler {
       throw new InvalidStateException();
     }
 
-    $nextStep = $stepData->getNextSteps()[0] ?? null;
-    $nextStepArgs = [
-      [
-        'automation_run_id' => $automationRunId,
-        'step_id' => $nextStep ? $nextStep->getId() : null,
-      ],
-    ];
-
-    $this->automationRunStorage->updateNextStep($automationRunId, $nextStep ? $nextStep->getId() : null);
-
     // next step scheduled by action
-    if ($this->actionScheduler->hasScheduledAction(Hooks::AUTOMATION_STEP, $nextStepArgs)) {
+    if ($this->stepScheduler->hasScheduledNextStep($args)) {
       return;
     }
 
-    // no need to schedule a new step if the next step is null, complete the run
-    if (!$nextStep) {
+    // no need to schedule a new step if no next step exists
+    if (count($stepData->getNextSteps()) === 0) {
+      $this->automationRunStorage->updateNextStep($args->getAutomationRun()->getId(), null);
       $this->automationRunStorage->updateStatus($automationRunId, AutomationRun::STATUS_COMPLETE);
       return;
     }
 
     // enqueue next step
-    $this->actionScheduler->enqueue(Hooks::AUTOMATION_STEP, $nextStepArgs);
+    $this->stepScheduler->scheduleNextStep($args);
     // TODO: allow long-running steps (that are not done here yet)
   }
 
