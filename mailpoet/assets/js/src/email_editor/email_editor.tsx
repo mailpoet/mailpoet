@@ -3,6 +3,7 @@ import { useSelect, select as directSelect } from '@wordpress/data';
 import { store as coreStore } from '@wordpress/core-data';
 import { store as editorStore } from '@wordpress/editor';
 import { NextButtonSlot } from './core/components/next_button_slot';
+import { useDisableWelcomeGuide } from './core/hooks';
 import { NextButton } from './integration/components/next_button';
 import { MailPoetEmailData } from './types';
 
@@ -22,6 +23,9 @@ function Editor() {
         'mailpoet_data',
       ) as MailPoetEmailData) ?? null,
   }));
+
+  // We don't want to show the editor welcome guide as it is not relevant to emails
+  useDisableWelcomeGuide();
 
   return (
     <NextButtonSlot>
