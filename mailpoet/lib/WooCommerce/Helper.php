@@ -274,7 +274,7 @@ class Helper {
 
     foreach ($shippingMethods as $shippingMethod) {
       $formattedShippingMethods[] = [
-        'instanceId' => $shippingMethod->instance_id, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+        'instanceId' => (string)$shippingMethod->instance_id, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
         'name' => "{$shippingMethod->title} ({$shippingZoneName})",
       ];
     }
