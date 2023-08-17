@@ -42,7 +42,7 @@ class DelayActionTest extends \MailPoetTest {
       ]]
     );
     $testee = new DelayAction($actionScheduler);
-    $testee->run(new StepRunArgs($automation, $automationRun, $step, []));
+    $testee->run(new StepRunArgs($automation, $automationRun, $step, [], 1));
   }
 
   public function dataForTestItCalculatesDelayTypesCorrectly(): array {

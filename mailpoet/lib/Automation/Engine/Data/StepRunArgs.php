@@ -30,16 +30,21 @@ class StepRunArgs {
   /** @var array<string, string> */
   private $fieldToSubjectMap = [];
 
+  /** @var int */
+  private $runNumber;
+
   /** @param SubjectEntry<Subject<Payload>>[] $subjectsEntries */
   public function __construct(
     Automation $automation,
     AutomationRun $automationRun,
     Step $step,
-    array $subjectsEntries
+    array $subjectsEntries,
+    int $runNumber
   ) {
     $this->automation = $automation;
     $this->step = $step;
     $this->automationRun = $automationRun;
+    $this->runNumber = $runNumber;
 
     foreach ($subjectsEntries as $entry) {
       $subject = $entry->getSubject();
@@ -149,5 +154,13 @@ class StepRunArgs {
       throw Exceptions::fieldLoadFailed($field->getKey(), $field->getArgs());
     }
     return $value;
+  }
+
+  public function getRunNumber(): int {
+    return $this->runNumber;
+  }
+
+  public function isFirstRun(): bool {
+    return $this->runNumber === 1;
   }
 }

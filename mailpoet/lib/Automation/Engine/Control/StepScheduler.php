@@ -47,6 +47,13 @@ class StepScheduler {
       if ($hasStep) {
         return true;
       }
+
+      // BC for old steps without run number
+      unset($data[0]['run_number']);
+      $hasStep = $this->actionScheduler->hasScheduledAction(Hooks::AUTOMATION_STEP, $data);
+      if ($hasStep) {
+        return true;
+      }
     }
     return false;
   }
@@ -57,11 +64,12 @@ class StepScheduler {
       : $this->actionScheduler->schedule($timestamp, Hooks::AUTOMATION_STEP, $data);
   }
 
-  private function getActionData(int $runId, string $stepId): array {
+  private function getActionData(int $runId, string $stepId, int $runNumber = 1): array {
     return [
       [
         'automation_run_id' => $runId,
         'step_id' => $stepId,
+        'run_number' => $runNumber,
       ],
     ];
   }

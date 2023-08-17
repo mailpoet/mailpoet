@@ -111,7 +111,7 @@ class SendEmailActionTest extends \MailPoetTest {
     $scheduled = $this->scheduledTasksRepository->findByNewsletterAndSubscriberId($email, (int)$subscriber->getId());
     expect($scheduled)->count(0);
 
-    $this->action->run(new StepRunArgs($automation, $run, $step, $this->getSubjectEntries($subjects)));
+    $this->action->run(new StepRunArgs($automation, $run, $step, $this->getSubjectEntries($subjects), 1));
 
     $scheduled = $this->scheduledTasksRepository->findByNewsletterAndSubscriberId($email, (int)$subscriber->getId());
     expect($scheduled)->count(1);
@@ -137,7 +137,7 @@ class SendEmailActionTest extends \MailPoetTest {
     $action = ContainerWrapper::getInstance()->get(SendEmailAction::class);
 
     try {
-      $action->run(new StepRunArgs($automation, $run, $step, $this->getSubjectEntries($subjects)));
+      $action->run(new StepRunArgs($automation, $run, $step, $this->getSubjectEntries($subjects), 1));
     } catch (Exception $exception) {
       // The exception itself isn't as important as the outcome
     }
@@ -166,7 +166,7 @@ class SendEmailActionTest extends \MailPoetTest {
     $action = ContainerWrapper::getInstance()->get(SendEmailAction::class);
 
     try {
-      $action->run(new StepRunArgs($automation, $run, $step, $this->getSubjectEntries($subjects)));
+      $action->run(new StepRunArgs($automation, $run, $step, $this->getSubjectEntries($subjects), 1));
     } catch (Exception $exception) {
       // The exception itself isn't as important as the outcome
     }
@@ -204,7 +204,7 @@ class SendEmailActionTest extends \MailPoetTest {
       $action = ContainerWrapper::getInstance()->get(SendEmailAction::class);
 
       try {
-        $action->run(new StepRunArgs($automation, $run, $step, $this->getSubjectEntries($subjects)));
+        $action->run(new StepRunArgs($automation, $run, $step, $this->getSubjectEntries($subjects), 1));
       } catch (Exception $exception) {
         // The exception itself isn't as important as the outcome
       }
@@ -232,7 +232,7 @@ class SendEmailActionTest extends \MailPoetTest {
     $action = ContainerWrapper::getInstance()->get(SendEmailAction::class);
 
     try {
-      $action->run(new StepRunArgs($automation, $run, $step, $this->getSubjectEntries($subjects)));
+      $action->run(new StepRunArgs($automation, $run, $step, $this->getSubjectEntries($subjects), 1));
     } catch (Exception $exception) {
       // The exception itself isn't as important as the outcome
     }

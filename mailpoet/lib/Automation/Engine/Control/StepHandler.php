@@ -124,6 +124,7 @@ class StepHandler {
   private function handleStep(array $args): void {
     $automationRunId = $args['automation_run_id'];
     $stepId = $args['step_id'];
+    $stepRunNumber = $args['run_number'] ?? 1;
 
     $automationRun = $this->automationRunStorage->getAutomationRun($automationRunId);
     if (!$automationRun) {
@@ -159,7 +160,7 @@ class StepHandler {
       try {
         $requiredSubjects = $step instanceof Action ? $step->getSubjectKeys() : [];
         $subjectEntries = $this->getSubjectEntries($automationRun, $requiredSubjects);
-        $args = new StepRunArgs($automation, $automationRun, $stepData, $subjectEntries);
+        $args = new StepRunArgs($automation, $automationRun, $stepData, $subjectEntries, $stepRunNumber);
         $validationArgs = new StepValidationArgs($automation, $stepData, array_map(function (SubjectEntry $entry) {
           return $entry->getSubject();
         }, $subjectEntries));

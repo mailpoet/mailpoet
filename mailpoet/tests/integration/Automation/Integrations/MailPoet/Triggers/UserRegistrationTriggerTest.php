@@ -119,7 +119,8 @@ class UserRegistrationTriggerTest extends \MailPoetTest {
           $this->diContainer->get(SubscriberSubject::class),
           new Subject('mailpoet:subscriber', ['subscriber_id' => $subscriber->getId()])
         ),
-      ]
+      ],
+      1
     );
     $this->assertSame($expectation, $testee->isTriggeredBy($stepRunArgs));
   }
