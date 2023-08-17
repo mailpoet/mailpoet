@@ -8,6 +8,10 @@ use MailPoet\Test\DataFactories\Settings;
 
 class CreateAndSendEmailUsingGutenbergCest {
   public function createAndSendStandardNewsletter(\AcceptanceTester $i) {
+    $wordPressVersion = $i->getWordPressVersion();
+    if (version_compare($wordPressVersion, '6.2', '<')) {
+      return;
+    }
     $settings = new Settings();
     $settings->withCronTriggerMethod('Action Scheduler');
     $settings->withSender('John Doe', 'john@doe.com');
@@ -22,9 +26,18 @@ class CreateAndSendEmailUsingGutenbergCest {
     $i->click('Gutenberg Editor');
 
     $i->wantTo('Compose an email');
-    $i->waitForElement('.wp-block-post-content');
-    $i->click('.wp-block-post-content');
-    $i->type('Hello world!');
+    if (version_compare($wordPressVersion, '6.3', '<')) {
+      $i->waitForElement('.wp-block-post-content');
+      $i->click('.wp-block-post-content');
+      $i->type('Hello world!');
+    } else {
+      // Version 6.3 introduced a new Gutenberg editor with an iframe
+      $i->switchToFrame('[name="editor-canvas"]');
+      $i->waitForElement('.wp-block-post-content');
+      $i->click('.wp-block-post-content');
+      $i->type('Hello world!');
+      $i->switchToIFrame();
+    }
 
     $i->wantTo('Close fullscreen mode and verify correct WP menu item is highlighted');
     $i->click('[aria-label="Options"]');
