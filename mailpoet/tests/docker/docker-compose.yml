@@ -126,8 +126,8 @@ services:
     container_name: chrome_${CIRCLE_NODE_INDEX:-default}
     environment:
       - DBUS_SESSION_BUS_ADDRESS=/dev/null
-    volumes:
-      - /dev/shm:/dev/shm
+    tmpfs:
+      - /dev/shm
     image: selenium/standalone-chrome:107.0-20221104
     ports:
       - 4444
