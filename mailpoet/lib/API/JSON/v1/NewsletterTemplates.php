@@ -8,6 +8,7 @@ use MailPoet\API\JSON\ResponseBuilders\NewsletterTemplatesResponseBuilder;
 use MailPoet\Config\AccessControl;
 use MailPoet\Newsletter\ApiDataSanitizer;
 use MailPoet\Newsletter\NewsletterCoupon;
+use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\NewsletterTemplates\NewsletterTemplatesRepository;
 use MailPoet\NewsletterTemplates\ThumbnailSaver;
 
@@ -32,6 +33,8 @@ class NewsletterTemplates extends APIEndpoint {
   /** @var ApiDataSanitizer */
   private $apiDataSanitizer;
 
+  /** @var NewslettersRepository */
+  private $newsletterRepository;
 
   /*** @var NewsletterCoupon */
   private $newsletterCoupon;
@@ -41,12 +44,14 @@ class NewsletterTemplates extends APIEndpoint {
     NewsletterTemplatesResponseBuilder $newsletterTemplatesResponseBuilder,
     ThumbnailSaver $thumbnailImageSaver,
     ApiDataSanitizer $apiDataSanitizer,
+    NewslettersRepository $newsletterRepository,
     NewsletterCoupon $newsletterCoupon
   ) {
     $this->newsletterTemplatesRepository = $newsletterTemplatesRepository;
     $this->newsletterTemplatesResponseBuilder = $newsletterTemplatesResponseBuilder;
     $this->thumbnailImageSaver = $thumbnailImageSaver;
     $this->apiDataSanitizer = $apiDataSanitizer;
+    $this->newsletterRepository = $newsletterRepository;
     $this->newsletterCoupon = $newsletterCoupon;
   }
 
@@ -73,6 +78,14 @@ class NewsletterTemplates extends APIEndpoint {
 
   public function save($data = []) {
     ignore_user_abort(true);
+    // Do not save templates for emails created via Gutenberg editor
+    $newsletterId = isset($data['newsletter_id']) ? (int)$data['newsletter_id'] : null;
+    if ($newsletterId) {
+      $newsletter = $this->newsletterRepository->findOneById($newsletterId);
+      if ($newsletter && $newsletter->getWpPostId() !== null) {
+        return $this->successResponse($data);
+      }
+    }
     if (!empty($data['body'])) {
       $body = $this->apiDataSanitizer->sanitizeBody(json_decode($data['body'], true));
       $body = $this->newsletterCoupon->cleanupBodySensitiveData($body);
