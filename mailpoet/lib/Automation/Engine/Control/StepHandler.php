@@ -183,11 +183,9 @@ class StepHandler {
     }
 
     // schedule next step if not scheduled by action
-    if (!$this->stepScheduler->hasScheduledNextStep($args)) {
+    if (!$this->stepScheduler->hasScheduledStep($args)) {
       $this->stepScheduler->scheduleNextStep($args);
     }
-
-    // TODO: allow long-running steps (that are not done here yet)
   }
 
   /** @return SubjectEntry<Subject<Payload>>[] */

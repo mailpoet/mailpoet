@@ -22,6 +22,12 @@ class StepScheduler {
     $this->automationRunStorage = $automationRunStorage;
   }
 
+  public function scheduleProgress(StepRunArgs $args, int $timestamp = null): int {
+    $runId = $args->getAutomationRun()->getId();
+    $data = $this->getActionData($runId, $args->getStep()->getId(), $args->getRunNumber() + 1);
+    return $this->scheduleStepAction($data, $timestamp);
+  }
+
   public function scheduleNextStep(StepRunArgs $args, int $timestamp = null): int {
     $runId = $args->getAutomationRun()->getId();
 
@@ -56,6 +62,16 @@ class StepScheduler {
       }
     }
     return false;
+  }
+
+  public function hasScheduledProgress(StepRunArgs $args): bool {
+    $runId = $args->getAutomationRun()->getId();
+    $data = $this->getActionData($runId, $args->getStep()->getId(), $args->getRunNumber() + 1);
+    return $this->actionScheduler->hasScheduledAction(Hooks::AUTOMATION_STEP, $data);
+  }
+
+  public function hasScheduledStep(StepRunArgs $args): bool {
+    return $this->hasScheduledNextStep($args) || $this->hasScheduledProgress($args);
   }
 
   private function scheduleStepAction(array $data, int $timestamp = null): int {
