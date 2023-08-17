@@ -45,7 +45,8 @@ class SomeoneSubscribesTriggerTest extends \MailPoetTest {
           $this->diContainer->get(SegmentSubject::class),
           new Subject('mailpoet:segment', ['segment_id' => $currentSegmentId])
         ),
-      ]
+      ],
+      1
     );
     $this->assertSame($expectation, $testee->isTriggeredBy($stepRunArgs));
   }

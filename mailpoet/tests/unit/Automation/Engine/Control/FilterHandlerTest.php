@@ -43,7 +43,8 @@ class FilterHandlerTest extends MailPoetUnitTest {
       $this->createMock(Automation::class),
       $this->createMock(AutomationRun::class),
       $step,
-      [new SubjectEntry($subject, new SubjectData($subject->getKey(), []))]
+      [new SubjectEntry($subject, new SubjectData($subject->getKey(), []))],
+      1
     );
 
     $registry = Stub::make(Registry::class, [
@@ -73,7 +74,8 @@ class FilterHandlerTest extends MailPoetUnitTest {
       $this->createMock(Automation::class),
       $this->createMock(AutomationRun::class),
       $step,
-      [new SubjectEntry($subject, new SubjectData($subject->getKey(), []))]
+      [new SubjectEntry($subject, new SubjectData($subject->getKey(), []))],
+      1
     );
 
     $registry = Stub::make(Registry::class, [
@@ -99,7 +101,8 @@ class FilterHandlerTest extends MailPoetUnitTest {
       $this->createMock(Automation::class),
       $this->createMock(AutomationRun::class),
       $step,
-      [new SubjectEntry($subject, new SubjectData($subject->getKey(), []))]
+      [new SubjectEntry($subject, new SubjectData($subject->getKey(), []))],
+      1
     );
 
     $registry = Stub::make(Registry::class, [
