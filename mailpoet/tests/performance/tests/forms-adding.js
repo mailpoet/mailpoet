@@ -56,7 +56,6 @@ export async function formsAdding() {
       page,
       '[data-automation-id="select_template_template_1_popup"]',
     );
-    await page.waitForNavigation();
     await page.waitForLoadState('networkidle');
 
     // Try to close the tutorial video popup
