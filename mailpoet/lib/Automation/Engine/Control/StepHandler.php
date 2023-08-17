@@ -181,20 +181,11 @@ class StepHandler {
       throw new InvalidStateException();
     }
 
-    // next step scheduled by action
-    if ($this->stepScheduler->hasScheduledNextStep($args)) {
-      return;
+    // schedule next step if not scheduled by action
+    if (!$this->stepScheduler->hasScheduledNextStep($args)) {
+      $this->stepScheduler->scheduleNextStep($args);
     }
 
-    // no need to schedule a new step if no next step exists
-    if (count($stepData->getNextSteps()) === 0) {
-      $this->automationRunStorage->updateNextStep($args->getAutomationRun()->getId(), null);
-      $this->automationRunStorage->updateStatus($automationRunId, AutomationRun::STATUS_COMPLETE);
-      return;
-    }
-
-    // enqueue next step
-    $this->stepScheduler->scheduleNextStep($args);
     // TODO: allow long-running steps (that are not done here yet)
   }
 
