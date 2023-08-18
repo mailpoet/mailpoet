@@ -3,6 +3,7 @@
 namespace MailPoet\Test\Automation\Integrations\MailPoet\Actions;
 
 use MailPoet\Automation\Engine\Builder\UpdateAutomationController;
+use MailPoet\Automation\Engine\Control\StepRunControllerFactory;
 use MailPoet\Automation\Engine\Data\Automation;
 use MailPoet\Automation\Engine\Data\AutomationRun;
 use MailPoet\Automation\Engine\Data\NextStep;
@@ -111,7 +112,9 @@ class SendEmailActionTest extends \MailPoetTest {
     $scheduled = $this->scheduledTasksRepository->findByNewsletterAndSubscriberId($email, (int)$subscriber->getId());
     expect($scheduled)->count(0);
 
-    $this->action->run(new StepRunArgs($automation, $run, $step, $this->getSubjectEntries($subjects), 1));
+    $args = new StepRunArgs($automation, $run, $step, $this->getSubjectEntries($subjects), 1);
+    $controller = $this->diContainer->get(StepRunControllerFactory::class)->createController($args);
+    $this->action->run($args, $controller);
 
     $scheduled = $this->scheduledTasksRepository->findByNewsletterAndSubscriberId($email, (int)$subscriber->getId());
     expect($scheduled)->count(1);
@@ -135,9 +138,11 @@ class SendEmailActionTest extends \MailPoetTest {
 
     $this->segmentsRepository->bulkDelete([$segment->getId()]);
     $action = ContainerWrapper::getInstance()->get(SendEmailAction::class);
+    $args = new StepRunArgs($automation, $run, $step, $this->getSubjectEntries($subjects), 1);
+    $controller = $this->diContainer->get(StepRunControllerFactory::class)->createController($args);
 
     try {
-      $action->run(new StepRunArgs($automation, $run, $step, $this->getSubjectEntries($subjects), 1));
+      $action->run($args, $controller);
     } catch (Exception $exception) {
       // The exception itself isn't as important as the outcome
     }
@@ -164,9 +169,11 @@ class SendEmailActionTest extends \MailPoetTest {
 
     $this->subscribersRepository->bulkDelete([$subscriber->getId()]);
     $action = ContainerWrapper::getInstance()->get(SendEmailAction::class);
+    $args = new StepRunArgs($automation, $run, $step, $this->getSubjectEntries($subjects), 1);
+    $controller = $this->diContainer->get(StepRunControllerFactory::class)->createController($args);
 
     try {
-      $action->run(new StepRunArgs($automation, $run, $step, $this->getSubjectEntries($subjects), 1));
+      $action->run($args, $controller);
     } catch (Exception $exception) {
       // The exception itself isn't as important as the outcome
     }
@@ -202,9 +209,11 @@ class SendEmailActionTest extends \MailPoetTest {
 
       $this->subscribersRepository->bulkDelete([$subscriber->getId()]);
       $action = ContainerWrapper::getInstance()->get(SendEmailAction::class);
+      $args = new StepRunArgs($automation, $run, $step, $this->getSubjectEntries($subjects), 1);
+      $controller = $this->diContainer->get(StepRunControllerFactory::class)->createController($args);
 
       try {
-        $action->run(new StepRunArgs($automation, $run, $step, $this->getSubjectEntries($subjects), 1));
+        $action->run($args, $controller);
       } catch (Exception $exception) {
         // The exception itself isn't as important as the outcome
       }
@@ -230,9 +239,11 @@ class SendEmailActionTest extends \MailPoetTest {
     expect($scheduled)->count(0);
 
     $action = ContainerWrapper::getInstance()->get(SendEmailAction::class);
+    $args = new StepRunArgs($automation, $run, $step, $this->getSubjectEntries($subjects), 1);
+    $controller = $this->diContainer->get(StepRunControllerFactory::class)->createController($args);
 
     try {
-      $action->run(new StepRunArgs($automation, $run, $step, $this->getSubjectEntries($subjects), 1));
+      $action->run($args, $controller);
     } catch (Exception $exception) {
       // The exception itself isn't as important as the outcome
     }

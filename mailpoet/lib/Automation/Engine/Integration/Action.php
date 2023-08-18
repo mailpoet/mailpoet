@@ -2,8 +2,9 @@
 
 namespace MailPoet\Automation\Engine\Integration;
 
+use MailPoet\Automation\Engine\Control\StepRunController;
 use MailPoet\Automation\Engine\Data\StepRunArgs;
 
 interface Action extends Step {
-  public function run(StepRunArgs $args): void;
+  public function run(StepRunArgs $args, StepRunController $controller): void;
 }
