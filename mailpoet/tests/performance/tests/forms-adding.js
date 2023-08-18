@@ -51,11 +51,13 @@ export async function formsAdding() {
     await waitAndClick(page, '[data-automation-id="create_new_form"]');
 
     // Choose the form template
-    await page.waitForNavigation();
-    await waitAndClick(
-      page,
-      '[data-automation-id="select_template_template_1_popup"]',
-    );
+    await Promise.all([
+      page.waitForNavigation(),
+      page
+        .locator('[data-automation-id="select_template_template_1_popup"]')
+        .click(),
+    ]);
+
     await page.waitForLoadState('networkidle');
 
     // Try to close the tutorial video popup
