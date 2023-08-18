@@ -2,6 +2,7 @@
 
 namespace MailPoet\Automation\Engine\Control\Steps;
 
+use MailPoet\Automation\Engine\Control\StepRunControllerFactory;
 use MailPoet\Automation\Engine\Control\StepRunner;
 use MailPoet\Automation\Engine\Data\StepRunArgs;
 use MailPoet\Automation\Engine\Data\StepValidationArgs;
@@ -12,10 +13,15 @@ class ActionStepRunner implements StepRunner {
   /** @var Registry */
   private $registry;
 
+  /** @var StepRunControllerFactory */
+  private $stepRunControllerFactory;
+
   public function __construct(
-    Registry $registry
+    Registry $registry,
+    StepRunControllerFactory $stepRunControllerFactory
   ) {
     $this->registry = $registry;
+    $this->stepRunControllerFactory = $stepRunControllerFactory;
   }
 
   public function run(StepRunArgs $runArgs, StepValidationArgs $validationArgs): void {
@@ -25,6 +31,6 @@ class ActionStepRunner implements StepRunner {
     }
 
     $action->validate($validationArgs);
-    $action->run($runArgs);
+    $action->run($runArgs, $this->stepRunControllerFactory->createController($runArgs));
   }
 }

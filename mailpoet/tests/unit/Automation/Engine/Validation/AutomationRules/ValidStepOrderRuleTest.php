@@ -5,6 +5,7 @@ namespace MailPoet\Automation\Engine\Validation\AutomationRules;
 require_once __DIR__ . '/AutomationRuleTest.php';
 
 use MailPoet\Automation\Engine\Control\RootStep;
+use MailPoet\Automation\Engine\Control\StepRunController;
 use MailPoet\Automation\Engine\Control\SubjectTransformerHandler;
 use MailPoet\Automation\Engine\Data\Automation;
 use MailPoet\Automation\Engine\Data\NextStep;
@@ -208,7 +209,7 @@ class ValidStepOrderRuleTest extends AutomationRuleTest {
         $this->subjectKeys = $subjectKeys;
       }
 
-      public function run(StepRunArgs $args): void {
+      public function run(StepRunArgs $args, StepRunController $controller): void {
       }
 
       public function getKey(): string {

@@ -3,6 +3,7 @@
 namespace MailPoet\Automation\Integrations\Core\Actions;
 
 use MailPoet\Automation\Engine\Control\ActionScheduler;
+use MailPoet\Automation\Engine\Control\StepRunController;
 use MailPoet\Automation\Engine\Data\Step;
 use MailPoet\Automation\Engine\Data\StepRunArgs;
 use MailPoet\Automation\Engine\Data\StepValidationArgs;
@@ -53,7 +54,7 @@ class DelayAction implements Action {
     }
   }
 
-  public function run(StepRunArgs $args): void {
+  public function run(StepRunArgs $args, StepRunController $controller): void {
     $step = $args->getStep();
     $nextStep = $step->getNextSteps()[0] ?? null;
     $this->actionScheduler->schedule(time() + $this->calculateSeconds($step), Hooks::AUTOMATION_STEP, [

@@ -2,6 +2,7 @@
 
 namespace MailPoet\Test\Automation\Stubs;
 
+use MailPoet\Automation\Engine\Control\StepRunController;
 use MailPoet\Automation\Engine\Data\StepRunArgs;
 use MailPoet\Automation\Engine\Data\StepValidationArgs;
 use MailPoet\Automation\Engine\Integration\Action;
@@ -34,7 +35,7 @@ class TestAction implements Action {
   public function validate(StepValidationArgs $args): void {
   }
 
-  public function run(StepRunArgs $args): void {
+  public function run(StepRunArgs $args, StepRunController $controller): void {
     if ($this->callback) {
       ($this->callback)($args);
     }

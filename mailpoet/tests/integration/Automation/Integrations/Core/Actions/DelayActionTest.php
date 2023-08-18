@@ -3,6 +3,7 @@
 namespace MailPoet\Test\Automation\Integrations\Core\Actions;
 
 use MailPoet\Automation\Engine\Control\ActionScheduler;
+use MailPoet\Automation\Engine\Control\StepRunControllerFactory;
 use MailPoet\Automation\Engine\Data\Automation;
 use MailPoet\Automation\Engine\Data\AutomationRun;
 use MailPoet\Automation\Engine\Data\NextStep;
@@ -42,7 +43,9 @@ class DelayActionTest extends \MailPoetTest {
       ]]
     );
     $testee = new DelayAction($actionScheduler);
-    $testee->run(new StepRunArgs($automation, $automationRun, $step, [], 1));
+    $args = new StepRunArgs($automation, $automationRun, $step, [], 1);
+    $controller = $this->diContainer->get(StepRunControllerFactory::class)->createController($args);
+    $testee->run($args, $controller);
   }
 
   public function dataForTestItCalculatesDelayTypesCorrectly(): array {
