@@ -26,10 +26,13 @@ const getCta = (state: State, upgradeInfo: UpgradeInfo): string => {
 };
 
 export function Upgrade(): JSX.Element {
-  const upgradeInfo = useUpgradeInfo({
-    utm_medium: 'upsell_modal',
-    utm_campaign: 'automation-analytics',
-  });
+  const upgradeInfo = useUpgradeInfo(
+    {},
+    {
+      utm_medium: 'upsell_modal',
+      utm_campaign: 'automation-analytics',
+    },
+  );
 
   const [state, setState] = useState<State>();
 
