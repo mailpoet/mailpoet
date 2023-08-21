@@ -23,7 +23,7 @@ class HomepageLandingAfterActivatingMailPoetCest {
     $i->deactivatePlugin('mailpoet');
     $i->waitForNoticeAndClose('Selected plugins deactivated.');
 
-    $i->activatePlugin('mailpoet');
+    $i->click('#activate-mailpoet');
     $i->waitForText('Better email — without leaving WordPress');
     $i->seeInCurrentUrl('mailpoet-landingpage');
   }
