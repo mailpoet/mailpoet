@@ -8,7 +8,7 @@ class HomepageLandingAfterActivatingMailPoetCest {
   }
   
   public function homepageLanding(\AcceptanceTester $i) {
-    $i->wantTo('Check that Homepage is shown after activating fresh new MailPoet plugin [MAILPOET-5020]');
+    $i->wantTo('Check that Homepage is shown after activating fresh new MailPoet plugin'); // ref: [MAILPOET-5020]
 
     $i->login();
 
@@ -17,14 +17,14 @@ class HomepageLandingAfterActivatingMailPoetCest {
     $i->click('[data-automation-id="settings-advanced-tab"]');
     $i->click('Reinstall now...');
     $i->acceptPopup();
-    $i->waitForNoticeAndClose('Better email — without leaving WordPress');
+    $i->waitForText('Better email — without leaving WordPress');
 
     $i->amOnPluginsPage();
     $i->deactivatePlugin('mailpoet');
     $i->waitForNoticeAndClose('Plugin deactivated.');
 
     $i->activatePlugin('mailpoet');
-    $i->waitForNoticeAndClose('Better email — without leaving WordPress');
+    $i->waitForText('Better email — without leaving WordPress');
   }
 
   public function _after(\AcceptanceTester $i) {
