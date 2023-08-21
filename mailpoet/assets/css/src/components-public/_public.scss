@@ -355,6 +355,7 @@ div.mailpoet_form_popup {
 div.mailpoet_form_fixed_bar {
   background-color: white;
   box-shadow: 0 4px 35px 0 rgba(195, 65, 2, .2);
+  box-sizing: border-box;
   display: none;
   left: 0;
   margin: 0;
