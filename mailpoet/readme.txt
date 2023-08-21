@@ -3,7 +3,7 @@ Contributors: mailpoet, woocommerce, automattic
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 6.2
 Tested up to: 6.3
-Stable tag: 4.24.0
+Stable tag: 4.25.0
 Requires PHP: 7.3
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -218,6 +218,13 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 4.25.0 - 2023-08-21 =
+* Added: "is blank" and "is not blank" option for custom field segments;
+* Updated: minimum required WordPress version to 6.2 and WooCommerce version to 7.9;
+* Improved: add option to segment used shipping/payment method over all time, not just a specific timeframe;
+* Fixed: email previews in automations showing outdated content;
+* Fixed: filtering subscribers by list and by status doesn't work.
 
 = 4.24.0 - 2023-08-14 =
 * Added: detailed Automation analytics;
