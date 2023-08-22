@@ -2,6 +2,7 @@ import { ReactNode } from 'react';
 import { __ } from '@wordpress/i18n';
 import classnames from 'classnames';
 import { withFeatureAnnouncement } from 'announcements/with-feature-announcement';
+import { HideScreenOptions } from 'common/hide-screen-options/hide-screen-options';
 import { MailPoetLogoResponsive } from './mailpoet-logo-responsive';
 import { BeamerIcon } from './beamer-icon';
 import { ScreenOptionsFix } from './screen-options-fix';
@@ -13,6 +14,7 @@ type Props = {
   hasNews?: boolean;
   onBeamerClick?: () => void;
   logoWithLink?: boolean;
+  hideScreenOptions?: boolean;
 };
 
 export function TopBar({
@@ -20,6 +22,7 @@ export function TopBar({
   hasNews,
   onBeamerClick,
   logoWithLink = true,
+  hideScreenOptions = false,
 }: Props) {
   const buttonClasses = classnames(
     'mailpoet-top-bar-beamer',
@@ -55,6 +58,7 @@ export function TopBar({
         </div>
       )}
       <ScreenOptionsFix />
+      {hideScreenOptions && <HideScreenOptions />}
     </div>
   );
 }
