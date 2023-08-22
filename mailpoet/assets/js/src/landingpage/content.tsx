@@ -1,4 +1,4 @@
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 import { MailPoet } from 'mailpoet';
 import { Heading } from 'common/typography/heading/heading';
 import { Grid } from 'common/grid';
@@ -29,7 +29,13 @@ function Content() {
         <br />
         <br />
         <Heading level={4}>
-          {__('Powering email marketing for 600,000+ websites', 'mailpoet')}
+          {
+            // translators: %s is number of websites using MailPoet, e.g., "700,000+"
+            sprintf(
+              __('Powering email marketing for %s websites', 'mailpoet'),
+              '700,000+',
+            )
+          }
         </Heading>
         <br />
 
