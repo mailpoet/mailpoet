@@ -208,7 +208,9 @@ class NewsletterRepositoryTest extends \MailPoetTest {
     expect($this->entityManager->find(StatisticsNewsletterEntity::class, $statisticsNewsletter->getId()))->null();
     expect($this->entityManager->find(StatisticsOpenEntity::class, $statisticsOpen->getId()))->null();
     expect($this->entityManager->find(StatisticsClickEntity::class, $statisticsClick->getId()))->null();
-    expect($this->entityManager->find(StatisticsWooCommercePurchaseEntity::class, $statisticsPurchase->getId()))->null();
+    $statisticsPurchase = $this->entityManager->find(StatisticsWooCommercePurchaseEntity::class, $statisticsPurchase->getId());
+    $this->assertNotNull($statisticsPurchase);
+    expect($statisticsPurchase->getNewsletter())->null();
   }
 
   public function testItGetsArchiveNewslettersForSegments() {
