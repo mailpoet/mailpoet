@@ -6,6 +6,7 @@ use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterOptionFieldEntity;
 use MailPoet\Entities\StatisticsWooCommercePurchaseEntity;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Test\DataFactories\Newsletter;
 use MailPoet\Test\DataFactories\NewsletterLink;
 use MailPoet\Test\DataFactories\StatisticsClicks;
@@ -157,6 +158,26 @@ class TrackerTest extends \MailPoetTest {
     expect($mailPoetData['campaign_' . $newsletter2->getId() . '_orders_count'])->equals(1);
 
     expect($mailPoetData)->hasNotKey('campaign_' . $newsletter3->getId() . '_revenue');
+  }
+
+  public function testItTracksTheRevenueOfDeletedCampaigns(): void {
+
+    $newsletter1 = (new Newsletter())->withSendingQueue()->create();
+    $newsletter2 = (new Newsletter())->withSendingQueue()->create();
+    $newsletter3 = (new Newsletter())->withSendingQueue()->create();
+    $this->createRevenueRecord($newsletter1, $this->createOrderData(1, 'USD', 10));
+    $this->createRevenueRecord($newsletter2, $this->createOrderData(2, 'USD', 10));
+    $this->createRevenueRecord($newsletter3, $this->createOrderData(3, 'USD', 10));
+
+    $newsletterRepository = $this->diContainer->get(NewslettersRepository::class);
+    $newsletterRepository->bulkDelete([$newsletter1->getId(), $newsletter2->getId()]);
+
+    $tracker = $this->diContainer->get(Tracker::class);
+    $mailPoetData = $tracker->addTrackingData(['extensions' => []])['extensions']['mailpoet'];
+
+    expect($mailPoetData['campaign_0_revenue'])->equals(20);
+    expect($mailPoetData['campaign_0_type'])->equals('unknown');
+    expect($mailPoetData['campaign_0_orders_count'])->equals(2);
   }
 
   /**
