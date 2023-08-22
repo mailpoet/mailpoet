@@ -42,7 +42,8 @@ class SettingsChangeHandler {
     $task = $this->scheduledTasksRepository->findOneBy([
       'type' => WooCommerceSync::TASK_TYPE,
       'status' => ScheduledTaskEntity::STATUS_SCHEDULED,
-    ]);
+      'deletedAt' => null,
+    ], ['createdAt' => 'DESC']);
     if (!($task instanceof ScheduledTaskEntity)) {
       $task = $this->createScheduledTask(WooCommerceSync::TASK_TYPE);
     }
@@ -56,7 +57,8 @@ class SettingsChangeHandler {
     $task = $this->scheduledTasksRepository->findOneBy([
       'type' => InactiveSubscribers::TASK_TYPE,
       'status' => ScheduledTaskEntity::STATUS_SCHEDULED,
-    ]);
+      'deletedAt' => null,
+    ], ['createdAt' => 'DESC']);
     if (!($task instanceof ScheduledTaskEntity)) {
       $task = $this->createScheduledTask(InactiveSubscribers::TASK_TYPE);
     }
