@@ -7,6 +7,7 @@ import { escapeHTML } from '@wordpress/escape-html';
 import { SegmentResponse } from 'segments/types';
 import { ListHeading } from 'segments/heading';
 import * as ROUTES from 'segments/routes';
+import { __, _n, sprintf } from '@wordpress/i18n';
 
 type ColumnType = {
   name: string;
@@ -41,74 +42,74 @@ type DynamicSegmentListComponentProps = {
 const columns: ColumnType[] = [
   {
     name: 'name',
-    label: MailPoet.I18n.t('nameColumn'),
+    label: __('Name', 'mailpoet'),
     sortable: true,
   },
   {
     name: 'description',
-    label: MailPoet.I18n.t('description'),
+    label: __('Description', 'mailpoet'),
     sortable: false,
   },
   {
     name: 'count',
-    label: MailPoet.I18n.t('subscribersCountColumn'),
+    label: __('Number of subscribers', 'mailpoet'),
     sortable: false,
   },
   {
     name: 'subscribed',
-    label: MailPoet.I18n.t('subscribed'),
+    label: __('Subscribed', 'mailpoet'),
     sortable: false,
   },
   {
     name: 'updated_at',
-    label: MailPoet.I18n.t('updatedAtColumn'),
+    label: __('Modified on', 'mailpoet'),
     sortable: true,
   },
 ];
 
 const messages = {
-  onLoadingItems: () => MailPoet.I18n.t('loadingDynamicSegmentItems'),
-  onNoItemsFound: () => MailPoet.I18n.t('noDynamicSegmentItemsFound'),
+  onLoadingItems: () => __('Loading data…', 'mailpoet'),
+  onNoItemsFound: () => __('No segments found', 'mailpoet'),
   onTrash: (response) => {
     const count = Number(response.meta.count);
-    let message = null;
-
-    if (count === 1) {
-      message = MailPoet.I18n.t('oneDynamicSegmentTrashed');
-    } else {
-      message = MailPoet.I18n.t('multipleDynamicSegmentsTrashed').replace(
-        '%1$d',
-        count.toLocaleString(),
-      );
-    }
+    const message = sprintf(
+      // translators: %s is the number of segments.
+      _n(
+        '%s segment was moved to the trash.',
+        '%s segments were moved to the trash.',
+        count,
+        'mailpoet',
+      ),
+      count.toLocaleString(),
+    );
     MailPoet.Notice.success(message);
   },
   onDelete: (response) => {
     const count = Number(response.meta.count);
-    let message = null;
-
-    if (count === 1) {
-      message = MailPoet.I18n.t('oneDynamicSegmentDeleted');
-    } else {
-      message = MailPoet.I18n.t('multipleDynamicSegmentsDeleted').replace(
-        '%1$d',
-        count.toLocaleString(),
-      );
-    }
+    const message = sprintf(
+      // translators: %s is the number of segments.
+      _n(
+        '%s segment was permanently deleted.',
+        '%s segments were permanently deleted.',
+        count,
+        'mailpoet',
+      ),
+      count.toLocaleString(),
+    );
     MailPoet.Notice.success(message);
   },
   onRestore: (response) => {
     const count = Number(response.meta.count);
-    let message = null;
-
-    if (count === 1) {
-      message = MailPoet.I18n.t('oneDynamicSegmentRestored');
-    } else {
-      message = MailPoet.I18n.t('multipleDynamicSegmentsRestored').replace(
-        '%1$d',
-        count.toLocaleString(),
-      );
-    }
+    const message = sprintf(
+      // translators: %s is the number of segments.
+      _n(
+        '%s segment has been restored from the Trash.',
+        '%s segments have been restored from the Trash.',
+        count,
+        'mailpoet',
+      ),
+      count.toLocaleString(),
+    );
     MailPoet.Notice.success(message);
   },
 };
@@ -119,7 +120,7 @@ const itemActions = [
     className: 'mailpoet-hide-on-mobile',
     link: (item: DynamicSegmentItem) => (
       <Link to={`${ROUTES.EDIT_DYNAMIC_SEGMENT}/${item.id}`}>
-        {MailPoet.I18n.t('edit')}
+        {__('Edit', 'mailpoet')}
       </Link>
     ),
     display: (item: DynamicSegmentItem) => !item.is_plugin_missing,
@@ -127,7 +128,7 @@ const itemActions = [
   {
     name: 'duplicate_segment',
     className: 'mailpoet-hide-on-mobile',
-    label: MailPoet.I18n.t('duplicate'),
+    label: __('Duplicate', 'mailpoet'),
     onClick: (item, refresh) =>
       MailPoet.Ajax.post({
         api_version: window.mailpoet_api_version,
@@ -139,7 +140,8 @@ const itemActions = [
       })
         .done((response: SegmentResponse) => {
           MailPoet.Notice.success(
-            MailPoet.I18n.t('segmentDuplicated').replace(
+            // translators: %1$s is the name of the segments that was duplicated.
+            __('Segment "%1$s" has been duplicated.', 'mailpoet').replace(
               '%1$s',
               escapeHTML(response.data.name),
             ),
@@ -159,7 +161,7 @@ const itemActions = [
     className: 'mailpoet-hide-on-mobile mailpoet-disabled',
     link: (item: DynamicSegmentItem) => (
       <Link to={`${ROUTES.EDIT_DYNAMIC_SEGMENT}/${item.id}`}>
-        {MailPoet.I18n.t('edit')}
+        {__('Edit', 'mailpoet')}
       </Link>
     ),
     display: (item: DynamicSegmentItem) => item.is_plugin_missing,
@@ -167,7 +169,7 @@ const itemActions = [
   {
     name: 'view_subscribers',
     link: (item) => (
-      <a href={item.subscribers_url}>{MailPoet.I18n.t('viewSubscribers')}</a>
+      <a href={item.subscribers_url}>{__('View Subscribers', 'mailpoet')}</a>
     ),
   },
   {
@@ -179,7 +181,7 @@ const itemActions = [
 const bulkActions = [
   {
     name: 'trash',
-    label: MailPoet.I18n.t('moveToTrash'),
+    label: __('Move to trash', 'mailpoet'),
     onSuccess: messages.onTrash,
   },
 ];
@@ -187,21 +189,18 @@ const bulkActions = [
 function renderItem(item: DynamicSegmentItem, actions) {
   return (
     <>
-      <td
-        className="column-primary"
-        data-colname={MailPoet.I18n.t('nameColumn')}
-      >
+      <td className="column-primary" data-colname={__('Name', 'mailpoet')}>
         <span className="mailpoet-listing-title">{item.name}</span>
         {actions}
       </td>
-      <td data-colname={MailPoet.I18n.t('description')}>
+      <td data-colname={__('Description', 'mailpoet')}>
         <abbr>{item.description}</abbr>
       </td>
       {item.is_plugin_missing ? (
         <td
           colSpan={2}
           className="column mailpoet-hide-on-mobile"
-          data-colname={MailPoet.I18n.t('missingPluginMessageColumn')}
+          data-colname={__('Missing plugin message', 'mailpoet')}
         >
           {item.missing_plugin_message &&
           item.missing_plugin_message.message &&
@@ -227,13 +226,13 @@ function renderItem(item: DynamicSegmentItem, actions) {
         <>
           <td
             className="column mailpoet-hide-on-mobile"
-            data-colname={MailPoet.I18n.t('subscribersCountColumn')}
+            data-colname={__('Number of subscribers', 'mailpoet')}
           >
             {parseInt(item.count_all, 10).toLocaleString()}
           </td>
           <td
             className="column mailpoet-hide-on-mobile"
-            data-colname={MailPoet.I18n.t('subscribed')}
+            data-colname={__('Subscribed', 'mailpoet')}
           >
             {parseInt(item.count_subscribed, 10).toLocaleString()}
           </td>
@@ -241,7 +240,7 @@ function renderItem(item: DynamicSegmentItem, actions) {
       )}
       <td
         className="column-date mailpoet-hide-on-mobile"
-        data-colname={MailPoet.I18n.t('updatedAtColumn')}
+        data-colname={__('Modified on', 'mailpoet')}
       >
         {MailPoet.Date.short(item.created_at)}
         <br />
@@ -272,17 +271,6 @@ function DynamicSegmentListComponent(
         item_actions={itemActions}
         bulk_actions={bulkActions}
       />
-      <p className="mailpoet_sending_methods_help help">
-        <b>{MailPoet.I18n.t('segmentsTip')}:</b>{' '}
-        {MailPoet.I18n.t('segmentsTipText')}{' '}
-        <a
-          href="https://kb.mailpoet.com/article/237-guide-to-subscriber-segmentation?utm_source=plugin&utm_medium=segments&utm_campaign=helpdocs"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          {MailPoet.I18n.t('segmentsTipLink')}
-        </a>
-      </p>
     </>
   );
 }
