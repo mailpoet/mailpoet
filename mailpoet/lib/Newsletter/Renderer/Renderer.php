@@ -4,7 +4,7 @@ namespace MailPoet\Newsletter\Renderer;
 
 use MailPoet\Config\Env;
 use MailPoet\Config\ServicesChecker;
-use MailPoet\EmailEditor\Core\Renderer\BodyRenderer as GuntenbergBodyRenderer;
+use MailPoet\EmailEditor\Engine\Renderer\BodyRenderer as GuntenbergBodyRenderer;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Features\FeaturesController;
 use MailPoet\Logging\LoggerFactory;

@@ -308,11 +308,11 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\CustomFields\ApiDataSanitizer::class);
     $container->autowire(\MailPoet\CustomFields\CustomFieldsRepository::class)->setPublic(true);
     // Email Editor
-    $container->autowire(\MailPoet\EmailEditor\Core\EmailEditor::class)->setPublic(true);
-    $container->autowire(\MailPoet\EmailEditor\Core\AssetsCleaner::class)->setPublic(true);
-    $container->autowire(\MailPoet\EmailEditor\Core\Renderer\BodyRenderer::class)->setPublic(true);
-    $container->autowire(\MailPoet\EmailEditor\Integration\EmailEditor::class)->setPublic(true);
-    $container->autowire(\MailPoet\EmailEditor\Integration\EmailApiController::class)->setPublic(true);
+    $container->autowire(\MailPoet\EmailEditor\Engine\EmailEditor::class)->setPublic(true);
+    $container->autowire(\MailPoet\EmailEditor\Engine\AssetsCleaner::class)->setPublic(true);
+    $container->autowire(\MailPoet\EmailEditor\Engine\Renderer\BodyRenderer::class)->setPublic(true);
+    $container->autowire(\MailPoet\EmailEditor\Integrations\MailPoet\EmailEditor::class)->setPublic(true);
+    $container->autowire(\MailPoet\EmailEditor\Integrations\MailPoet\EmailApiController::class)->setPublic(true);
     // Features
     $container->autowire(\MailPoet\Features\FeaturesController::class)->setPublic(true);
     $container->autowire(\MailPoet\Features\FeatureFlagsController::class)->setPublic(true);
