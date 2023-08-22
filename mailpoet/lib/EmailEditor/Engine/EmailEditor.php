@@ -28,7 +28,11 @@ class EmailEditor {
     add_filter('block_editor_settings_all', [$this, 'updateBlockEditorSettings'], 100, 2);
   }
 
-  private function registerEmailPostTypes() {
+  /**
+   * Register all custom post types that should be edited via the email editor
+   * The post types are added via mailpoet_email_editor_post_types filter.
+   */
+  private function registerEmailPostTypes(): void {
     foreach ($this->getPostTypes() as $postType) {
       register_post_type(
         $postType['name'],
