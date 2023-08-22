@@ -22,10 +22,11 @@ class EmailEditor {
   }
 
   public function initialize(): void {
-    $this->registerEmailPostTypes();
     add_filter('allowed_block_types_all', [$this, 'setAllowedBlocksInEmails'], 100, 2);
     add_filter('enqueue_block_editor_assets', [$this, 'cleanupBlockEditorAssets'], ~PHP_INT_MAX);
     add_filter('block_editor_settings_all', [$this, 'updateBlockEditorSettings'], 100, 2);
+    do_action('mailpoet_email_editor_initialized');
+    $this->registerEmailPostTypes();
   }
 
   /**
