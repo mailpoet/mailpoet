@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace MailPoet\EmailEditor\Core;
+namespace MailPoet\EmailEditor\Engine;
 
 /**
  * The email editor is built on top of the WP built-in post editor.

@@ -25,7 +25,7 @@ use MailPoet\AdminPages\Pages\Upgrade;
 use MailPoet\AdminPages\Pages\WelcomeWizard;
 use MailPoet\AdminPages\Pages\WooCommerceSetup;
 use MailPoet\DI\ContainerWrapper;
-use MailPoet\EmailEditor\Integration\EmailEditor;
+use MailPoet\EmailEditor\Integrations\MailPoet\EmailEditor;
 use MailPoet\Form\Util\CustomFonts;
 use MailPoet\Util\License\License;
 use MailPoet\WP\Functions as WPFunctions;

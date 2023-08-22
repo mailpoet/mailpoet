@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace MailPoet\EmailEditor\Integration;
+namespace MailPoet\EmailEditor\Integrations\MailPoet;
 
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Validator\Builder;

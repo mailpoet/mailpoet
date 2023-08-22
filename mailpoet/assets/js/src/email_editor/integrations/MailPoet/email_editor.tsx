@@ -2,9 +2,9 @@ import { registerPlugin } from '@wordpress/plugins';
 import { useSelect, select as directSelect } from '@wordpress/data';
 import { store as coreStore } from '@wordpress/core-data';
 import { store as editorStore } from '@wordpress/editor';
-import { NextButtonSlot } from './core/components/next_button_slot';
-import { useDisableWelcomeGuide } from './core/hooks';
-import { NextButton } from './integration/components/next_button';
+import { NextButtonSlot } from 'email_editor/engine/components/next_button_slot';
+import { useDisableWelcomeGuide } from 'email_editor/engine/hooks';
+import { NextButton } from './components/next_button';
 import { MailPoetEmailData } from './types';
 
 import './email_editor.scss';

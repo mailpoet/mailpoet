@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace MailPoet\EmailEditor\Core\Renderer;
+namespace MailPoet\EmailEditor\Engine\Renderer;
 
 class BodyRenderer {
   public function renderBody(\WP_Post $emailPost): string {

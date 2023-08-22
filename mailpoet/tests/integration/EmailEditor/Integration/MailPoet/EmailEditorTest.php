@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace MailPoet\EmailEditor\Integration;
+namespace MailPoet\EmailEditor\Integrations\MailPoet;
 
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Features\FeatureFlagsController;

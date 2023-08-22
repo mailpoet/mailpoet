@@ -11,7 +11,7 @@ use MailPoet\Automation\Integrations\MailPoet\MailPoetIntegration;
 use MailPoet\Automation\Integrations\WooCommerce\WooCommerceIntegration;
 use MailPoet\Cron\CronTrigger;
 use MailPoet\Cron\DaemonActionSchedulerRunner;
-use MailPoet\EmailEditor\Integration\EmailEditor;
+use MailPoet\EmailEditor\Integrations\MailPoet\EmailEditor;
 use MailPoet\InvalidStateException;
 use MailPoet\Migrator\Cli as MigratorCli;
 use MailPoet\PostEditorBlocks\PostEditorBlock;

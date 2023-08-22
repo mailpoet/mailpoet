@@ -1,9 +1,9 @@
 <?php declare(strict_types = 1);
 
-namespace MailPoet\EmailEditor\Integration;
+namespace MailPoet\EmailEditor\Integrations\MailPoet;
 
 use MailPoet\Config\Env;
-use MailPoet\EmailEditor\Core\EmailEditor as CoreEmailEditor;
+use MailPoet\EmailEditor\Engine\EmailEditor as CoreEmailEditor;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Features\FeaturesController;
 use MailPoet\Newsletter\NewslettersRepository;
@@ -12,7 +12,7 @@ use MailPoet\WP\Functions as WPFunctions;
 class EmailEditor {
   const MAILPOET_EMAIL_POST_TYPE = 'mailpoet_email';
 
-  /** @var \MailPoet\EmailEditor\Core\EmailEditor */
+  /** @var \MailPoet\EmailEditor\Engine\EmailEditor */
   private $coreEmailEditor;
 
   /** @var WPFunctions */

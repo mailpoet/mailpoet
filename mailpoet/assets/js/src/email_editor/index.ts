@@ -1,3 +1,3 @@
-import { initializeEditor } from './email_editor';
+import { initializeEditor } from './integrations/MailPoet/email_editor';
 
 initializeEditor();
