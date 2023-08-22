@@ -3,7 +3,6 @@
 namespace MailPoet\EmailEditor\Integrations\MailPoet;
 
 use MailPoet\Config\Env;
-use MailPoet\EmailEditor\Engine\EmailEditor as CoreEmailEditor;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Features\FeaturesController;
 use MailPoet\Newsletter\NewslettersRepository;
@@ -11,9 +10,6 @@ use MailPoet\WP\Functions as WPFunctions;
 
 class EmailEditor {
   const MAILPOET_EMAIL_POST_TYPE = 'mailpoet_email';
-
-  /** @var \MailPoet\EmailEditor\Engine\EmailEditor */
-  private $coreEmailEditor;
 
   /** @var WPFunctions */
   private $wp;
@@ -28,13 +24,11 @@ class EmailEditor {
   private $emailApiController;
 
   public function __construct(
-    CoreEmailEditor $coreEmailEditor,
     WPFunctions $wp,
     FeaturesController $featuresController,
     NewslettersRepository $newsletterRepository,
     EmailApiController $emailApiController
   ) {
-    $this->coreEmailEditor = $coreEmailEditor;
     $this->wp = $wp;
     $this->featuresController = $featuresController;
     $this->newsletterRepository = $newsletterRepository;
@@ -50,7 +44,6 @@ class EmailEditor {
     $this->wp->addFilter('save_post', [$this, 'onEmailSave'], 10, 2);
     $this->wp->addAction('enqueue_block_editor_assets', [$this, 'enqueueAssets']);
     $this->extendEmailPostApi();
-    $this->coreEmailEditor->initialize();
   }
 
   public function addEmailPostType(array $postTypes): array {

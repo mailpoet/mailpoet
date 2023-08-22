@@ -11,7 +11,8 @@ use MailPoet\Automation\Integrations\MailPoet\MailPoetIntegration;
 use MailPoet\Automation\Integrations\WooCommerce\WooCommerceIntegration;
 use MailPoet\Cron\CronTrigger;
 use MailPoet\Cron\DaemonActionSchedulerRunner;
-use MailPoet\EmailEditor\Integrations\MailPoet\EmailEditor;
+use MailPoet\EmailEditor\Engine\EmailEditor;
+use MailPoet\EmailEditor\Integrations\MailPoet\EmailEditor as MailpoetEmailEditorIntegration;
 use MailPoet\InvalidStateException;
 use MailPoet\Migrator\Cli as MigratorCli;
 use MailPoet\PostEditorBlocks\PostEditorBlock;
@@ -122,6 +123,9 @@ class Initializer {
   /** @var EmailEditor */
   private $emailEditor;
 
+  /** @var MailpoetEmailEditorIntegration */
+  private $mailpoetEmailEditorIntegration;
+
   /** @var Url */
   private $urlHelper;
 
@@ -160,6 +164,7 @@ class Initializer {
     PersonalDataExporters $personalDataExporters,
     DaemonActionSchedulerRunner $actionSchedulerRunner,
     EmailEditor $emailEditor,
+    MailpoetEmailEditorIntegration $mailpoetEmailEditorIntegration,
     Url $urlHelper
   ) {
     $this->rendererFactory = $rendererFactory;
@@ -192,6 +197,7 @@ class Initializer {
     $this->personalDataExporters = $personalDataExporters;
     $this->actionSchedulerRunner = $actionSchedulerRunner;
     $this->emailEditor = $emailEditor;
+    $this->mailpoetEmailEditorIntegration = $mailpoetEmailEditorIntegration;
     $this->urlHelper = $urlHelper;
   }
 
@@ -271,6 +277,11 @@ class Initializer {
     $this->wpFunctions->addFilter('wpmu_drop_tables', [
       $this,
       'multisiteDropTables',
+    ]);
+
+    $this->wpFunctions->addFilter('mailpoet_email_editor_initialized', [
+      $this->mailpoetEmailEditorIntegration,
+      'initialize',
     ]);
 
     WPFunctions::get()->addAction(AutomationHooks::INITIALIZE, [
