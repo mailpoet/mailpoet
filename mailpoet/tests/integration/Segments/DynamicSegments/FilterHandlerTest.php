@@ -77,7 +77,8 @@ class FilterHandlerTest extends \MailPoetTest {
       ->getConnection()
       ->createQueryBuilder()
       ->select("$subscribersTable.id")
-      ->from($subscribersTable);
+      ->from($subscribersTable)
+      ->orderBy("$subscribersTable.id", 'ASC');
   }
 
   public function _after(): void {
