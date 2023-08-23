@@ -33,7 +33,11 @@ class AssetsCleaner {
     $assetsActions = $GLOBALS['wp_filter']['enqueue_block_editor_assets']->callbacks;
     foreach ($assetsActions as $priority => $actions) {
       foreach ($actions as $action) {
-        $actionName = is_array($action['function']) ? get_class($action['function'][0]) . '::' . $action['function'][1] : $action['function'];
+        if (is_array($action['function'])) {
+          $actionName = (is_object($action['function'][0]) ? get_class($action['function'][0]) : $action['function'][0]) . '::' . $action['function'][1];
+        } else {
+          $actionName = $action['function'];
+        }
         if (in_array($actionName, $allowedActions, true)) {
           continue;
         }
