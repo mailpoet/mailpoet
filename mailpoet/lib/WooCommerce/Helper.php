@@ -27,11 +27,9 @@ class Helper {
 
   public function getPurchaseStates(): array {
 
-    // use both 'processing' and 'completed' states since payment hook and 'processing' status
-    // may be skipped with some payment methods (cheque) or when state transitioned manually
     return (array)$this->wp->applyFilters(
       'mailpoet_purchase_order_states',
-      ['processing', 'completed']
+      ['completed']
     );
   }
 
