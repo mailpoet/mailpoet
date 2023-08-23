@@ -5,32 +5,19 @@ import { plusIcon } from 'common/button/icon/plus';
 import { SubscribersInPlan } from 'common/subscribers-in-plan';
 import { MssAccessNotices } from 'notices/mss-access-notices';
 import { SubscribersCacheMessage } from 'common/subscribers-cache-message';
-import * as ROUTES from 'segments/routes';
 
-function ListHeading({ segmentType }): JSX.Element {
+function ListHeading(): JSX.Element {
   return (
     <>
       <TopBarWithBeamer>
-        {segmentType === 'static' && (
-          <Link
-            className="mailpoet-button button-secondary"
-            to="/new"
-            data-automation-id="new-list"
-          >
-            {plusIcon}
-            <span>{MailPoet.I18n.t('new')}</span>
-          </Link>
-        )}
-        {segmentType === 'dynamic' && (
-          <Link
-            className="mailpoet-button button-secondary"
-            to={ROUTES.DYNAMIC_SEGMENT_TEMPLATES}
-            data-automation-id="new-segment"
-          >
-            {plusIcon}
-            <span>{MailPoet.I18n.t('newSegment')}</span>
-          </Link>
-        )}
+        <Link
+          className="mailpoet-button button-secondary"
+          to="/new"
+          data-automation-id="new-list"
+        >
+          {plusIcon}
+          <span>{MailPoet.I18n.t('new')}</span>
+        </Link>
       </TopBarWithBeamer>
 
       <SubscribersInPlan
