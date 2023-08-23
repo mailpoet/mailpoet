@@ -93,6 +93,8 @@ class CreateSegmentEmailAbsoluteCountCest {
 
     $i->click('Save');
     $i->waitForNoticeAndClose('Segment successfully updated!');
+    $i->waitForListingItemsToLoad();
+    $i->waitForText($segmentTitle);
 
     $i->wantTo('Check there is one subscriber on the segment');
     $i->clickItemRowActionByItemName($segmentTitle, 'View Subscribers');
