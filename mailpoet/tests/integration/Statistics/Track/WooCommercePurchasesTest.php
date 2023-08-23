@@ -483,17 +483,18 @@ class WooCommercePurchasesTest extends \MailPoetTest {
   private function createWooCommerceHelperMock(MockObject $orderMock) {
     $mock = $this->createMock(WooCommerceHelper::class);
     $mock->method('wcGetOrder')->willReturn($orderMock);
+    $mock->method('getPurchaseStates')->willReturn(['completed']);
     return $mock;
   }
 
-  private function createOrderMock($email, $totalPrice = 15.0, $id = 123, $dateCreated = null) {
+  private function createOrderMock($email, $totalPrice = 15.0, $id = 123, $dateCreated = null, $status = 'completed') {
     // WC_Order class needs to be mocked without default 'disallowMockingUnknownTypes'
     // since WooCommerce may not be active (would result in error mocking undefined class)
     $mock = $this->getMockBuilder(WC_Order::class)
       ->disableOriginalConstructor()
       ->disableOriginalClone()
       ->disableArgumentCloning()
-      ->setMethods(['get_id', 'get_date_created', 'get_billing_email', 'get_total', 'get_currency'])
+      ->setMethods(['get_id', 'get_date_created', 'get_billing_email', 'get_total', 'get_currency', 'get_status'])
       ->getMock();
 
     $mock->method('get_id')->willReturn($id);
@@ -501,6 +502,7 @@ class WooCommercePurchasesTest extends \MailPoetTest {
     $mock->method('get_billing_email')->willReturn($email);
     $mock->method('get_total')->willReturn((string)$totalPrice);
     $mock->method('get_currency')->willReturn('EUR');
+    $mock->method('get_status')->willReturn($status);
     return $mock;
   }
 }

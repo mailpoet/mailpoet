@@ -50,8 +50,9 @@ class WooCommercePurchases {
   }
 
   public function trackPurchase($id, $useCookies = true) {
+
     $order = $this->woocommerceHelper->wcGetOrder($id);
-    if (!$order instanceof WC_Order) {
+    if (!$order instanceof WC_Order || !in_array($order->get_status(), $this->woocommerceHelper->getPurchaseStates(), true)) {
       return;
     }
 

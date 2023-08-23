@@ -12,7 +12,6 @@ use MailPoet\Subscription\Comment;
 use MailPoet\Subscription\Form;
 use MailPoet\Subscription\Manage;
 use MailPoet\Subscription\Registration;
-use MailPoet\WooCommerce\Helper;
 use MailPoet\WooCommerce\Integrations\AutomateWooHooks;
 use MailPoet\WooCommerce\WooSystemInfoController;
 use MailPoet\WP\Functions as WPFunctions;
@@ -67,9 +66,6 @@ class Hooks {
   /** @var WooSystemInfoController */
   private $wooSystemInfoController;
 
-  /** @var Helper */
-  private $wooCommerceHelper;
-
   public function __construct(
     Form $subscriptionForm,
     Comment $subscriptionComment,
@@ -86,8 +82,7 @@ class Hooks {
     WP $wpSegment,
     DotcomLicenseProvisioner $dotcomLicenseProvisioner,
     AutomateWooHooks $automateWooHooks,
-    WooSystemInfoController $wooSystemInfoController,
-    Helper $wooCommerceHelper
+    WooSystemInfoController $wooSystemInfoController
   ) {
     $this->subscriptionForm = $subscriptionForm;
     $this->subscriptionComment = $subscriptionComment;
@@ -105,7 +100,6 @@ class Hooks {
     $this->dotcomLicenseProvisioner = $dotcomLicenseProvisioner;
     $this->automateWooHooks = $automateWooHooks;
     $this->wooSystemInfoController = $wooSystemInfoController;
-    $this->wooCommerceHelper = $wooCommerceHelper;
   }
 
   public function init() {
@@ -419,16 +413,12 @@ class Hooks {
   }
 
   public function setupWooCommercePurchases() {
-    $acceptedOrderStates = $this->wooCommerceHelper->getPurchaseStates();
-
-    foreach ($acceptedOrderStates as $status) {
-      WPFunctions::get()->addAction(
-        'woocommerce_order_status_' . $status,
-        [$this->hooksWooCommerce, 'trackPurchase'],
-        10,
-        1
-      );
-    }
+    $this->wp->addAction(
+      'woocommerce_order_status_changed',
+      [$this->hooksWooCommerce, 'trackPurchase'],
+      10,
+      1
+    );
   }
 
   public function setupWooCommerceSubscriberEngagement() {
