@@ -52,7 +52,7 @@ class WooCommercePastOrders extends SimpleWorker {
     }, 10, 2);
 
     $orderIds = $this->woocommerceHelper->wcGetOrders([
-      'status' => 'completed',
+      'status' => $this->woocommerceHelper->getPurchaseStates(),
       'date_completed' => '>=' . (($createdAt = $oldestClick->getCreatedAt()) ? $createdAt->format('Y-m-d H:i:s') : null),
       'orderby' => 'ID',
       'order' => 'ASC',
