@@ -166,12 +166,15 @@ class ManageSegmentsCest {
     $i->waitForText('No segments found');
     $i->changeGroupInListingFilter('trash');
     $i->waitForText($segment1->getName());
+    $i->waitForListingItemsToLoad();
     $i->clickItemRowActionByItemName($segment1->getName(), 'Delete permanently');
     $i->waitForNoticeAndClose('1 segment was permanently deleted.');
+    $i->waitForListingItemsToLoad();
     $i->seeNoJSErrors();
     $i->waitForText($segment2->getName());
 
     $i->wantTo('Empty trash from other segments');
+    $i->waitForElementVisible('[data-automation-id="empty_trash"]');
     $i->waitForElementClickable('[data-automation-id="empty_trash"]');
     $i->click('[data-automation-id="empty_trash"]');
     $i->waitForNoticeAndClose('1 segment was permanently deleted.');
