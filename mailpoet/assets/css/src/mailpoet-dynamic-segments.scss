@@ -1,0 +1,35 @@
+@import 'settings/colors';
+
+#dynamic_segments_container {
+  padding: 0 12px;
+}
+
+.mailpoet-segment-listing-heading {
+  padding: 12px 0 32px;
+
+  .mailpoet-segment-subscriber-count {
+    align-items: center;
+    display: flex;
+    font-size: 13px;
+    gap: 16px;
+    padding-top: 8px;
+  }
+
+  .mailpoet-segment-help-icon {
+    display: flex;
+  }
+
+  .mailpoet-segment-subscriber-count-message {
+    align-items: center;
+    display: flex;
+    font-size: 14px;
+  }
+
+  .mailpoet-segment-subscriber-cache {
+    color: $color-text-light;
+  }
+
+  .components-button.is-link {
+    text-decoration: none;
+  }
+}

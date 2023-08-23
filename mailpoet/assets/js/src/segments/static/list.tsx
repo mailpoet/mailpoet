@@ -7,7 +7,7 @@ import { escapeHTML, escapeAttribute } from '@wordpress/escape-html';
 import { Listing } from 'listing/listing.jsx';
 import { SegmentResponse } from 'segments/types';
 import { ListingsEngagementScore } from 'subscribers/listings-engagement-score';
-import { ListHeading } from 'segments/heading';
+import { ListHeading } from 'segments/static/heading';
 
 type Segment = {
   type: string;
@@ -364,7 +364,7 @@ class SegmentListComponent extends Component<RouteComponentProps> {
   render() {
     return (
       <>
-        <ListHeading segmentType="static" />
+        <ListHeading />
         <div className="mailpoet-segments-listing">
           <Listing
             limit={window.mailpoet_listing_per_page}

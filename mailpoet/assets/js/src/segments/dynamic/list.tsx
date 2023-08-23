@@ -5,9 +5,10 @@ import { MailPoet } from 'mailpoet';
 import { Listing } from 'listing/listing.jsx';
 import { escapeHTML } from '@wordpress/escape-html';
 import { SegmentResponse } from 'segments/types';
-import { ListHeading } from 'segments/heading';
 import * as ROUTES from 'segments/routes';
 import { __, _n, sprintf } from '@wordpress/i18n';
+import { TopBarWithBeamer } from 'common/top-bar/top-bar';
+import { ListingHeader } from 'segments/dynamic/list/listing-header';
 
 type ColumnType = {
   name: string;
@@ -255,7 +256,8 @@ function DynamicSegmentListComponent(
 ): JSX.Element {
   return (
     <>
-      <ListHeading segmentType="dynamic" />
+      <TopBarWithBeamer hideScreenOptions />
+      <ListingHeader />
       <Listing
         limit={window.mailpoet_listing_per_page}
         location={props.location}
