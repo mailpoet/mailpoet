@@ -13,6 +13,7 @@ use MailPoet\Cron\Workers\SubscriberLinkTokens;
 use MailPoet\Cron\Workers\SubscribersLastEngagement;
 use MailPoet\Cron\Workers\UnsubscribeTokens;
 use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\NewsletterOptionFieldEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\StatisticsFormEntity;
@@ -491,15 +492,15 @@ class Populator {
         'newsletter_type' => NewsletterEntity::TYPE_AUTOMATION,
       ],
       [
-        'name' => 'filterSegmentId',
+        'name' => NewsletterOptionFieldEntity::NAME_FILTER_SEGMENT_ID,
         'newsletter_type' => NewsletterEntity::TYPE_STANDARD,
       ],
       [
-        'name' => 'filterSegmentId',
+        'name' => NewsletterOptionFieldEntity::NAME_FILTER_SEGMENT_ID,
         'newsletter_type' => NewsletterEntity::TYPE_RE_ENGAGEMENT,
       ],
       [
-        'name' => 'filterSegmentId',
+        'name' => NewsletterOptionFieldEntity::NAME_FILTER_SEGMENT_ID,
         'newsletter_type' => NewsletterEntity::TYPE_NOTIFICATION,
       ],
     ];
