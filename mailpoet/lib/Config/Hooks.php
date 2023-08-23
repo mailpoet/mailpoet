@@ -12,6 +12,7 @@ use MailPoet\Subscription\Comment;
 use MailPoet\Subscription\Form;
 use MailPoet\Subscription\Manage;
 use MailPoet\Subscription\Registration;
+use MailPoet\WooCommerce\Helper;
 use MailPoet\WooCommerce\Integrations\AutomateWooHooks;
 use MailPoet\WooCommerce\WooSystemInfoController;
 use MailPoet\WP\Functions as WPFunctions;
@@ -66,6 +67,9 @@ class Hooks {
   /** @var WooSystemInfoController */
   private $wooSystemInfoController;
 
+  /** @var Helper */
+  private $wooCommerceHelper;
+
   public function __construct(
     Form $subscriptionForm,
     Comment $subscriptionComment,
@@ -82,7 +86,8 @@ class Hooks {
     WP $wpSegment,
     DotcomLicenseProvisioner $dotcomLicenseProvisioner,
     AutomateWooHooks $automateWooHooks,
-    WooSystemInfoController $wooSystemInfoController
+    WooSystemInfoController $wooSystemInfoController,
+    Helper $wooCommerceHelper
   ) {
     $this->subscriptionForm = $subscriptionForm;
     $this->subscriptionComment = $subscriptionComment;
@@ -100,6 +105,7 @@ class Hooks {
     $this->dotcomLicenseProvisioner = $dotcomLicenseProvisioner;
     $this->automateWooHooks = $automateWooHooks;
     $this->wooSystemInfoController = $wooSystemInfoController;
+    $this->wooCommerceHelper = $wooCommerceHelper;
   }
 
   public function init() {
@@ -413,12 +419,7 @@ class Hooks {
   }
 
   public function setupWooCommercePurchases() {
-    // use both 'processing' and 'completed' states since payment hook and 'processing' status
-    // may be skipped with some payment methods (cheque) or when state transitioned manually
-    $acceptedOrderStates = WPFunctions::get()->applyFilters(
-      'mailpoet_purchase_order_states',
-      ['processing', 'completed']
-    );
+    $acceptedOrderStates = $this->wooCommerceHelper->getPurchaseStates();
 
     foreach ($acceptedOrderStates as $status) {
       WPFunctions::get()->addAction(

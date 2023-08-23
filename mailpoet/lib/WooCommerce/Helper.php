@@ -25,6 +25,16 @@ class Helper {
     return $this->isWooCommerceActive() ? get_plugin_data(WP_PLUGIN_DIR . '/woocommerce/woocommerce.php')['Version'] : null;
   }
 
+  public function getPurchaseStates(): array {
+
+    // use both 'processing' and 'completed' states since payment hook and 'processing' status
+    // may be skipped with some payment methods (cheque) or when state transitioned manually
+    return (array)$this->wp->applyFilters(
+      'mailpoet_purchase_order_states',
+      ['processing', 'completed']
+    );
+  }
+
   public function isWooCommerceBlocksActive($min_version = '') {
     if (!class_exists('\Automattic\WooCommerce\Blocks\Package')) {
       return false;
