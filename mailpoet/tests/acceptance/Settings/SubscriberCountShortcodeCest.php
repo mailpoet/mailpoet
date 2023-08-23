@@ -61,12 +61,15 @@ class SubscriberCountShortcodeCest {
     $i->waitForElementVisible('[data-automation-id="listing_filter_segment"]');
     $i->click('[data-automation-id="select_all"]');
     $i->click('[data-automation-id="action-trash"]');
-    $i->waitForText('11 subscribers were moved to the trash.');
+    $i->waitForListingItemsToLoad();
+    $i->waitForNoticeAndClose('11 subscribers were moved to the trash.');
+    $i->waitForText('No items found.');
     $i->waitForElement('[data-automation-id="filters_trash"]');
     $i->click('[data-automation-id="filters_trash"]');
-    $i->waitForElement('[data-automation-id="empty_trash"]');
+    $i->waitForListingItemsToLoad();
+    $i->waitForElementVisible('[data-automation-id="empty_trash"]');
     $i->click('[data-automation-id="empty_trash"]');
-    $i->waitForText('11 subscribers were permanently deleted.');
+    $i->waitForNoticeAndClose('11 subscribers were permanently deleted.');
     $i->amOnUrl($postUrl);
     $i->waitForText(self::PAGE_TITLE);
     $i->waitForText(self::PAGE_TEXT . " 5");
