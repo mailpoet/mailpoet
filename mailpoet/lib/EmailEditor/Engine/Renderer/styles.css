@@ -3,6 +3,7 @@
 /* StyleLint is disabled because some rules contain properties that linter marks as unknown, but they are valid for email rendering */
 /* stylelint-disable property-no-unknown */
 body {
+  background: #ccc;
   margin: 0;
   padding: 0;
   -webkit-text-size-adjust: 100%; /* From MJMJ - Automatic test adjustment on mobile max to 100% */
@@ -43,6 +44,10 @@ p {
   opacity: 0;
   overflow: hidden;
   visibility: hidden;
+}
+
+.email_content_wrapper {
+  background: #fff;
 }
 
 @media screen and (max-width: 480px) {
