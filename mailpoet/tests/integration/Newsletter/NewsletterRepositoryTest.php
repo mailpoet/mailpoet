@@ -431,7 +431,7 @@ class NewsletterRepositoryTest extends \MailPoetTest {
     StatisticsClickEntity $click,
     SubscriberEntity $subscriber
   ): StatisticsWooCommercePurchaseEntity {
-    $statistics = new StatisticsWooCommercePurchaseEntity($newsletter, $queue, $click, 1, 'EUR', 100);
+    $statistics = new StatisticsWooCommercePurchaseEntity($newsletter, $queue, $click, 1, 'EUR', 100, 'completed');
     $statistics->setSubscriber($subscriber);
     $this->entityManager->persist($statistics);
     $this->entityManager->flush();

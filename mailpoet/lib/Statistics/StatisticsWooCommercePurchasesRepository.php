@@ -36,12 +36,14 @@ class StatisticsWooCommercePurchasesRepository extends Repository {
         $click,
         $order->get_id(),
         $order->get_currency(),
-        $order->get_total()
+        $order->get_total(),
+        $order->get_status()
       );
       $this->persist($statistics);
     } else {
       $statistics->setOrderCurrency($order->get_currency());
       $statistics->setOrderPriceTotal($order->get_total());
+      $statistics->setStatus($order->get_status());
     }
     $statistics->setSubscriber($click->getSubscriber());
     $this->flush();
