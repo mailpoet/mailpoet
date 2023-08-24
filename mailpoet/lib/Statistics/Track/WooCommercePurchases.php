@@ -56,15 +56,9 @@ class WooCommercePurchases {
       return;
     }
 
-    // limit clicks to 'USE_CLICKS_SINCE_DAYS_AGO' range before order has been created
-    $fromDate = $order->get_date_created();
-    if (is_null($fromDate)) {
-      return;
-    }
-    $from = clone $fromDate;
-    $from->modify(-self::USE_CLICKS_SINCE_DAYS_AGO . ' days');
+    $from = $this->getFromDate($order);
     $to = $order->get_date_created();
-    if (is_null($to)) {
+    if (is_null($to) || is_null($from)) {
       return;
     }
 
@@ -95,6 +89,22 @@ class WooCommercePurchases {
       }
       $this->statisticsWooCommercePurchasesRepository->createOrUpdateByClickDataAndOrder($click, $order);
     }
+  }
+
+  /**
+   * Limit clicks to 'USE_CLICKS_SINCE_DAYS_AGO' range before order has been created.
+   *
+   * @param WC_Order $order
+   * @return \WC_DateTime|null
+   */
+  private function getFromDate(\WC_Order $order) {
+    $fromDate = $order->get_date_created();
+    if (is_null($fromDate)) {
+      return null;
+    }
+    $from = clone $fromDate;
+    $from->modify(-self::USE_CLICKS_SINCE_DAYS_AGO . ' days');
+    return $from;
   }
 
   /**
