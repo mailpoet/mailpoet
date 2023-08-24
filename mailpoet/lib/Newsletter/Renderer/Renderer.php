@@ -4,7 +4,7 @@ namespace MailPoet\Newsletter\Renderer;
 
 use MailPoet\Config\Env;
 use MailPoet\Config\ServicesChecker;
-use MailPoet\EmailEditor\Engine\Renderer\BodyRenderer as GuntenbergBodyRenderer;
+use MailPoet\EmailEditor\Engine\Renderer\Renderer as GuntenbergRenderer;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Features\FeaturesController;
 use MailPoet\Logging\LoggerFactory;
@@ -24,8 +24,8 @@ class Renderer {
   /** @var BodyRenderer */
   private $bodyRenderer;
 
-  /** @var GuntenbergBodyRenderer */
-  private $guntenbergBodyRenderer;
+  /** @var GuntenbergRenderer */
+  private $guntenbergRenderer;
 
   /** @var Preprocessor */
   private $preprocessor;
@@ -53,7 +53,7 @@ class Renderer {
 
   public function __construct(
     BodyRenderer $bodyRenderer,
-    GuntenbergBodyRenderer $guntenbergBodyRenderer,
+    GuntenbergRenderer $guntenbergRenderer,
     Preprocessor $preprocessor,
     \MailPoetVendor\CSS $cSSInliner,
     ServicesChecker $servicesChecker,
@@ -64,7 +64,7 @@ class Renderer {
     FeaturesController $featuresController
   ) {
     $this->bodyRenderer = $bodyRenderer;
-    $this->guntenbergBodyRenderer = $guntenbergBodyRenderer;
+    $this->guntenbergRenderer = $guntenbergRenderer;
     $this->preprocessor = $preprocessor;
     $this->cSSInliner = $cSSInliner;
     $this->servicesChecker = $servicesChecker;
@@ -84,72 +84,69 @@ class Renderer {
   }
 
   private function _render(NewsletterEntity $newsletter, SendingTask $sendingTask = null, $type = false, $preview = false, $subject = null) {
-    $body = (is_array($newsletter->getBody()))
-      ? $newsletter->getBody()
-      : [];
-    $content = (array_key_exists('content', $body))
-      ? $body['content']
-      : [];
-    $styles = (array_key_exists('globalStyles', $body))
-      ? $body['globalStyles']
-      : [];
-
-    if (
-      !$this->servicesChecker->isUserActivelyPaying() && !$preview
-    ) {
-      $content = $this->addMailpoetLogoContentBlock($content, $styles);
-    }
-
     $language = $this->wp->getBloginfo('language');
     $metaRobots = $preview ? '<meta name="robots" content="noindex, nofollow" />' : '';
-    $renderedBody = "";
-    try {
-      $content = $this->preprocessor->process($newsletter, $content, $preview, $sendingTask);
-      if ($this->featuresController->isSupported(FeaturesController::GUTENBERG_EMAIL_EDITOR) && $newsletter->getWpPostId()) {
-        $post = $newsletter->getWpPost();
-        if (!$post instanceof \WP_Post) {
-          throw new NewsletterProcessingException('Missing email post object');
-        }
-        $renderedBody = $this->guntenbergBodyRenderer->renderBody($post);
-      } else {
+    $subject = $subject ?: $newsletter->getSubject();
+    $wpPost = $newsletter->getWpPost();
+    if ($this->featuresController->isSupported(FeaturesController::GUTENBERG_EMAIL_EDITOR) && $wpPost instanceof \WP_Post) {
+      $renderedNewsletter = $this->guntenbergRenderer->render($wpPost->post_content, $subject, $newsletter->getPreheader(), $language, $metaRobots); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    } else {
+      $body = (is_array($newsletter->getBody()))
+        ? $newsletter->getBody()
+        : [];
+      $content = (array_key_exists('content', $body))
+        ? $body['content']
+        : [];
+      $styles = (array_key_exists('globalStyles', $body))
+        ? $body['globalStyles']
+        : [];
+
+      if (
+        !$this->servicesChecker->isUserActivelyPaying() && !$preview
+      ) {
+        $content = $this->addMailpoetLogoContentBlock($content, $styles);
+      }
+
+      $renderedBody = "";
+      try {
+        $content = $this->preprocessor->process($newsletter, $content, $preview, $sendingTask);
         $renderedBody = $this->bodyRenderer->renderBody($newsletter, $content);
+      } catch (NewsletterProcessingException $e) {
+        $this->loggerFactory->getLogger(LoggerFactory::TOPIC_COUPONS)->error(
+          $e->getMessage(),
+          ['newsletter_id' => $newsletter->getId()]
+        );
+        $this->newslettersRepository->setAsCorrupt($newsletter);
+        if ($newsletter->getLatestQueue()) {
+          $this->sendingQueuesRepository->pause($newsletter->getLatestQueue());
+        }
       }
+      $renderedStyles = $this->renderStyles($styles);
+      $customFontsLinks = StylesHelper::getCustomFontsLinks($styles);
 
-    } catch (NewsletterProcessingException $e) {
-      $this->loggerFactory->getLogger(LoggerFactory::TOPIC_COUPONS)->error(
-        $e->getMessage(),
-        ['newsletter_id' => $newsletter->getId()]
+      $template = $this->injectContentIntoTemplate(
+        (string)file_get_contents(dirname(__FILE__) . '/' . self::NEWSLETTER_TEMPLATE),
+        [
+          $language,
+          $metaRobots,
+          htmlspecialchars($subject),
+          $renderedStyles,
+          $customFontsLinks,
+          EHelper::escapeHtmlText($newsletter->getPreheader()),
+          $renderedBody,
+        ]
       );
-      $this->newslettersRepository->setAsCorrupt($newsletter);
-      if ($newsletter->getLatestQueue()) {
-        $this->sendingQueuesRepository->pause($newsletter->getLatestQueue());
+      if ($template === null) {
+        $template = '';
       }
-    }
-    $renderedStyles = $this->renderStyles($styles);
-    $customFontsLinks = StylesHelper::getCustomFontsLinks($styles);
+      $templateDom = $this->inlineCSSStyles($template);
+      $template = $this->postProcessTemplate($templateDom);
 
-    $template = $this->injectContentIntoTemplate(
-      (string)file_get_contents(dirname(__FILE__) . '/' . self::NEWSLETTER_TEMPLATE),
-      [
-        $language,
-        $metaRobots,
-        htmlspecialchars($subject ?: $newsletter->getSubject()),
-        $renderedStyles,
-        $customFontsLinks,
-        EHelper::escapeHtmlText($newsletter->getPreheader()),
-        $renderedBody,
-      ]
-    );
-    if ($template === null) {
-      $template = '';
+      $renderedNewsletter = [
+        'html' => $template,
+        'text' => $this->renderTextVersion($template),
+      ];
     }
-    $templateDom = $this->inlineCSSStyles($template);
-    $template = $this->postProcessTemplate($templateDom);
-
-    $renderedNewsletter = [
-      'html' => $template,
-      'text' => $this->renderTextVersion($template),
-    ];
 
     return ($type && !empty($renderedNewsletter[$type])) ?
       $renderedNewsletter[$type] :
