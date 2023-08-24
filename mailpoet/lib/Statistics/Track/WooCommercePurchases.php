@@ -52,7 +52,16 @@ class WooCommercePurchases {
   public function trackPurchase($id, $useCookies = true) {
 
     $order = $this->woocommerceHelper->wcGetOrder($id);
-    if (!$order instanceof WC_Order || !in_array($order->get_status(), $this->woocommerceHelper->getPurchaseStates(), true)) {
+    if (!$order instanceof WC_Order) {
+      return;
+    }
+
+    $statistics = $this->statisticsWooCommercePurchasesRepository->findOneBy(['orderId' => $order->get_id()]);
+    if ($statistics && $statistics->getClick()) {
+      $this->statisticsWooCommercePurchasesRepository->createOrUpdateByClickDataAndOrder(
+        $statistics->getClick(),
+        $order
+      );
       return;
     }
 
