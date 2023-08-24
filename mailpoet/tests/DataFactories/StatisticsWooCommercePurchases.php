@@ -28,6 +28,7 @@ class StatisticsWooCommercePurchases {
       'order_id' => $order['id'],
       'order_currency' => $order['currency'],
       'order_price_total' => $order['total'],
+      'order_status' => $order['status'] ?? 'completed',
     ];
     $this->subscriber = $click->getSubscriber();
     $this->click = $click;
@@ -50,7 +51,8 @@ class StatisticsWooCommercePurchases {
       $this->click,
       $this->data['order_id'],
       $this->data['order_currency'],
-      (float)$this->data['order_price_total']
+      (float)$this->data['order_price_total'],
+      $this->data['order_status']
     );
     $entity->setSubscriber($this->subscriber);
     if (($this->data['createdAt'] ?? null) instanceof \DateTimeInterface) {

@@ -559,7 +559,7 @@ class WooCommercePastRevenues implements Generator {
     $queue = $this->entityManager->getReference(SendingQueueEntity::class, $clickData['queue_id']);
     $subscriber = $this->entityManager->getReference(SubscriberEntity::class, $subscriberId);
     $click = $this->entityManager->getReference(StatisticsClickEntity::class, $clickData['click_id']);
-    $statisticsClick = new StatisticsWooCommercePurchaseEntity($newsletter, $queue, $click, $order->get_id(), $order->get_currency(), floatval($order->get_total()));
+    $statisticsClick = new StatisticsWooCommercePurchaseEntity($newsletter, $queue, $click, $order->get_id(), $order->get_currency(), floatval($order->get_total()), $order->get_status());
     $statisticsClick->setSubscriber($subscriber);
     $statisticsClick->setCreatedAt(new Carbon($order->get_date_modified()));
     $this->entityManager->persist($statisticsClick);
