@@ -12,6 +12,7 @@ use MailPoet\Automation\Integrations\WooCommerce\WooCommerceIntegration;
 use MailPoet\Cron\CronTrigger;
 use MailPoet\Cron\DaemonActionSchedulerRunner;
 use MailPoet\EmailEditor\Engine\EmailEditor;
+use MailPoet\EmailEditor\Integrations\Core\Initializer as CoreEmailEditorIntegration;
 use MailPoet\EmailEditor\Integrations\MailPoet\EmailEditor as MailpoetEmailEditorIntegration;
 use MailPoet\InvalidStateException;
 use MailPoet\Migrator\Cli as MigratorCli;
@@ -126,6 +127,9 @@ class Initializer {
   /** @var MailpoetEmailEditorIntegration */
   private $mailpoetEmailEditorIntegration;
 
+  /** @var CoreEmailEditorIntegration */
+  private $coreEmailEditorIntegration;
+
   /** @var Url */
   private $urlHelper;
 
@@ -165,6 +169,7 @@ class Initializer {
     DaemonActionSchedulerRunner $actionSchedulerRunner,
     EmailEditor $emailEditor,
     MailpoetEmailEditorIntegration $mailpoetEmailEditorIntegration,
+    CoreEmailEditorIntegration $coreEmailEditorIntegration,
     Url $urlHelper
   ) {
     $this->rendererFactory = $rendererFactory;
@@ -198,6 +203,7 @@ class Initializer {
     $this->actionSchedulerRunner = $actionSchedulerRunner;
     $this->emailEditor = $emailEditor;
     $this->mailpoetEmailEditorIntegration = $mailpoetEmailEditorIntegration;
+    $this->coreEmailEditorIntegration = $coreEmailEditorIntegration;
     $this->urlHelper = $urlHelper;
   }
 
@@ -280,8 +286,8 @@ class Initializer {
     ]);
 
     $this->wpFunctions->addFilter('mailpoet_email_editor_initialized', [
-      $this->mailpoetEmailEditorIntegration,
-      'initialize',
+      $this,
+      'setupEmailEditorIntegrations',
     ]);
 
     WPFunctions::get()->addAction(AutomationHooks::INITIALIZE, [
@@ -528,6 +534,11 @@ class Initializer {
       )
     );
     return array_merge($tables, $mailpoetTables);
+  }
+
+  public function setupEmailEditorIntegrations() {
+    $this->mailpoetEmailEditorIntegration->initialize();
+    $this->coreEmailEditorIntegration->initialize();
   }
 
   public function runDeactivation() {
