@@ -60,6 +60,18 @@ class TrackerTest extends \MailPoetTest {
     expect($mailPoetData['campaign_' . $newsletter2->getId() . '_orders_count'])->equals(1);
   }
 
+  public function testItAddsOnlyRevenuesFromCompletedOrders(): void {
+    $newsletter1 = (new Newsletter())->withSendingQueue()->withType(NewsletterEntity::TYPE_STANDARD)->create();
+    $this->createRevenueRecord($newsletter1, $this->createOrderData(1, 'USD', 10, 'completed'));
+    $this->createRevenueRecord($newsletter1, $this->createOrderData(3, 'USD', 20, 'processing'));
+
+    $tracker = $this->diContainer->get(Tracker::class);
+    $mailPoetData = $tracker->addTrackingData(['extensions' => []])['extensions']['mailpoet'];
+
+    expect($mailPoetData['campaign_' . $newsletter1->getId() . '_revenue'])->equals(10);
+    expect($mailPoetData['campaign_' . $newsletter1->getId() . '_orders_count'])->equals(1);
+  }
+
   public function testItAddsCampaignRevenuesForAutomaticCampaigns(): void {
     $newsletter1 = (new Newsletter())->withSendingQueue()->withType(NewsletterEntity::TYPE_WELCOME)->create();
     $newsletter2 = (new Newsletter())->withSendingQueue()->withType(NewsletterEntity::TYPE_AUTOMATIC)->create();
@@ -183,11 +195,12 @@ class TrackerTest extends \MailPoetTest {
   /**
    * @return array{id: int, currency: string, total: float}
    */
-  private function createOrderData(int $id, string $currency, float $total): array {
+  private function createOrderData(int $id, string $currency, float $total, string $status = 'completed'): array {
     return [
       'id' => $id,
       'currency' => $currency,
       'total' => $total,
+      'status' => $status,
     ];
   }
 
