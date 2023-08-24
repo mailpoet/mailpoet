@@ -2,11 +2,15 @@
 
 namespace MailPoet\WooCommerce;
 
+use MailPoet\AutomaticEmails\WooCommerce\Events\FirstPurchase;
 use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\NewsletterOptionEntity;
 use MailPoet\Entities\NewsletterOptionFieldEntity;
 use MailPoet\Entities\StatisticsWooCommercePurchaseEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Newsletter\NewslettersRepository;
+use MailPoet\Newsletter\Options\NewsletterOptionFieldsRepository;
+use MailPoet\Newsletter\Options\NewsletterOptionsRepository;
 use MailPoet\Test\DataFactories\Newsletter;
 use MailPoet\Test\DataFactories\NewsletterLink;
 use MailPoet\Test\DataFactories\StatisticsClicks;
@@ -39,6 +43,26 @@ class TrackerTest extends \MailPoetTest {
     $data = $this->tracker->addTrackingData(['extensions' => []]);
     expect($data['extensions']['mailpoet'])->notEmpty();
     expect($data['extensions']['mailpoet']['campaigns_count'])->notNull();
+  }
+
+  public function testItAddsTheEventOption(): void {
+
+    $newsletter1 = (new Newsletter())->withSendingQueue()->withType(NewsletterEntity::TYPE_AUTOMATIC)->create();
+    $field = $this->diContainer->get(NewsletterOptionFieldsRepository::class)->findOneBy([
+      'name' => NewsletterOptionFieldEntity::NAME_EVENT,
+      'newsletterType' => $newsletter1->getType(),
+    ]);
+    $this->assertInstanceOf(NewsletterOptionFieldEntity::class, $field);
+    $option = new NewsletterOptionEntity($newsletter1, $field);
+    $option->setValue(FirstPurchase::SLUG);
+    $this->diContainer->get(NewsletterOptionsRepository::class)->persist($option);
+    $newsletter1->getOptions()->add($option);
+    $this->createRevenueRecord($newsletter1, $this->createOrderData(1, 'USD', 10));
+
+    $tracker = $this->diContainer->get(Tracker::class);
+    $mailPoetData = $tracker->addTrackingData(['extensions' => []])['extensions']['mailpoet'];
+
+    expect($mailPoetData['campaign_' . $newsletter1->getId() . '_event'])->equals(FirstPurchase::SLUG);
   }
 
   public function testItAddsCampaignRevenuesForStandardNewsletters(): void {
