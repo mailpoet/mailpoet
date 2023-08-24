@@ -2,6 +2,7 @@
 
 namespace MailPoet\WooCommerce;
 
+use MailPoet\Entities\NewsletterOptionFieldEntity;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Statistics\StatisticsWooCommercePurchasesRepository;
@@ -54,10 +55,12 @@ class Tracker {
    */
   private function formatCampaignsData(array $campaignsData): array {
     return array_reduce($campaignsData, function($result, array $campaign): array {
+      $newsletter = $this->newslettersRepository->findOneById((int)$campaign['campaign_id']);
       $keyPrefix = 'campaign_' . $campaign['campaign_id'];
       $result[$keyPrefix . '_revenue'] = $campaign['revenue'];
       $result[$keyPrefix . '_orders_count'] = $campaign['orders_count'];
       $result[$keyPrefix . '_type'] = $campaign['campaign_type'];
+      $result[$keyPrefix . '_event'] = $newsletter ? (string)$newsletter->getOptionValue(NewsletterOptionFieldEntity::NAME_EVENT) : '';
       return $result;
     }, []);
   }
