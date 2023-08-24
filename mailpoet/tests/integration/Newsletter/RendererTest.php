@@ -55,7 +55,7 @@ class RendererTest extends \MailPoetTest {
     $this->servicesChecker = $this->createMock(ServicesChecker::class);
     $this->renderer = new Renderer(
       $this->diContainer->get(BodyRenderer::class),
-      $this->diContainer->get(\MailPoet\EmailEditor\Engine\Renderer\BodyRenderer::class),
+      $this->diContainer->get(\MailPoet\EmailEditor\Engine\Renderer\Renderer::class),
       $this->diContainer->get(Preprocessor::class),
       $this->diContainer->get(\MailPoetVendor\CSS::class),
       $this->servicesChecker,

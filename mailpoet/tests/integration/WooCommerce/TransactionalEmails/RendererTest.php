@@ -139,7 +139,7 @@ class RendererTest extends \MailPoetTest {
     ));
     return new NewsletterRenderer(
       $this->diContainer->get(\MailPoet\Newsletter\Renderer\BodyRenderer::class),
-      $this->diContainer->get(\MailPoet\EmailEditor\Engine\Renderer\BodyRenderer::class),
+      $this->diContainer->get(\MailPoet\EmailEditor\Engine\Renderer\Renderer::class),
       new Preprocessor(
         $this->diContainer->get(\MailPoet\Newsletter\Renderer\Blocks\AbandonedCartContent::class),
         $this->diContainer->get(\MailPoet\Newsletter\Renderer\Blocks\AutomatedLatestContentBlock::class),

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html
+  lang="{{newsletter_language}}"
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:v="urn:schemas-microsoft-com:vml"
+  xmlns:o="urn:schemas-microsoft-com:office:office"
+>
+  <title>{{newsletter_subject}}</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="format-detection" content="telephone=no" />
+  {{email_meta_robots}}
+
+  <style type="text/css">
+    {{email_styles}}
+  </style>
+  <body leftmargin="0" topmargin="0" marginwidth="0" marginheight="0">
+    <table
+      class="email_template"
+      border="0"
+      width="100%"
+      cellpadding="0"
+      cellspacing="0"
+      style="border-spacing: 0; mso-table-lspace: 0; mso-table-rspace: 0"
+    >
+      <tbody>
+        <tr>
+          <td
+            class="email_preheader"
+            style="
+              -webkit-text-size-adjust: none;
+              font-size: 1px;
+              line-height: 1px;
+              color: #333333;
+            "
+            height="1"
+          >
+            {{email_preheader}}
+          </td>
+        </tr>
+        <tr>
+          <td align="center" class="email-wrapper" valign="top">
+            <!--[if mso]>
+            <table align="center" border="0" cellspacing="0" cellpadding="0"
+                   width="660">
+              <tr>
+                <td class="email-wrapper" align="center" valign="top" width="660">
+            <![endif]-->
+            <table
+              class="email_content_wrapper"
+              border="0"
+              width="660"
+              cellpadding="0"
+              cellspacing="0"
+              style="
+                border-spacing: 0;
+                mso-table-lspace: 0;
+                mso-table-rspace: 0;
+                max-width: 660px;
+                width: 100%;
+              "
+            >
+              <tbody>
+                {{email_body}}
+              </tbody>
+            </table>
+            <!--[if mso]>
+                    </td>
+                    </tr>
+                </table>
+      <![endif]-->
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </body>
+</html>
