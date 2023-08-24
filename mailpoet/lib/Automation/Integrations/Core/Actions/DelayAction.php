@@ -2,27 +2,16 @@
 
 namespace MailPoet\Automation\Integrations\Core\Actions;
 
-use MailPoet\Automation\Engine\Control\ActionScheduler;
 use MailPoet\Automation\Engine\Control\StepRunController;
 use MailPoet\Automation\Engine\Data\Step;
 use MailPoet\Automation\Engine\Data\StepRunArgs;
 use MailPoet\Automation\Engine\Data\StepValidationArgs;
-use MailPoet\Automation\Engine\Hooks;
 use MailPoet\Automation\Engine\Integration\Action;
 use MailPoet\Automation\Engine\Integration\ValidationException;
 use MailPoet\Validator\Builder;
 use MailPoet\Validator\Schema\ObjectSchema;
 
 class DelayAction implements Action {
-  /** @var ActionScheduler */
-  private $actionScheduler;
-
-  public function __construct(
-    ActionScheduler $actionScheduler
-  ) {
-    $this->actionScheduler = $actionScheduler;
-  }
-
   public function getKey(): string {
     return 'core:delay';
   }
@@ -55,16 +44,9 @@ class DelayAction implements Action {
   }
 
   public function run(StepRunArgs $args, StepRunController $controller): void {
-    $step = $args->getStep();
-    $nextStep = $step->getNextSteps()[0] ?? null;
-    $this->actionScheduler->schedule(time() + $this->calculateSeconds($step), Hooks::AUTOMATION_STEP, [
-      [
-        'automation_run_id' => $args->getAutomationRun()->getId(),
-        'step_id' => $nextStep ? $nextStep->getId() : null,
-      ],
-    ]);
-
-    // TODO: call a step complete ($id) hook instead?
+    if ($args->isFirstRun()) {
+      $controller->scheduleProgress(time() + $this->calculateSeconds($args->getStep()));
+    }
   }
 
   private function calculateSeconds(Step $step): int {
