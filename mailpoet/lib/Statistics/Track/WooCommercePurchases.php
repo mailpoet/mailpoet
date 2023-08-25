@@ -52,18 +52,10 @@ class WooCommercePurchases {
   public function trackPurchase($id, $useCookies = true) {
 
     $order = $this->woocommerceHelper->wcGetOrder($id);
-    if (!$order instanceof WC_Order) {
+    if (!$order instanceof WC_Order || $this->trackExistingStatistic($order)) {
       return;
     }
 
-    $statistics = $this->statisticsWooCommercePurchasesRepository->findOneBy(['orderId' => $order->get_id()]);
-    if ($statistics && $statistics->getClick()) {
-      $this->statisticsWooCommercePurchasesRepository->createOrUpdateByClickDataAndOrder(
-        $statistics->getClick(),
-        $order
-      );
-      return;
-    }
 
     $from = $this->getFromDate($order);
     $to = $order->get_date_created();
@@ -98,6 +90,24 @@ class WooCommercePurchases {
       }
       $this->statisticsWooCommercePurchasesRepository->createOrUpdateByClickDataAndOrder($click, $order);
     }
+  }
+
+  /**
+   * Returns true when a valid purchase statistic for an order was found.
+   *
+   * @param WC_Order $order
+   * @return bool
+   */
+  private function trackExistingStatistic(\WC_Order $order): bool {
+    $statistics = $this->statisticsWooCommercePurchasesRepository->findOneBy(['orderId' => $order->get_id()]);
+    if ($statistics && $statistics->getClick()) {
+      $this->statisticsWooCommercePurchasesRepository->createOrUpdateByClickDataAndOrder(
+        $statistics->getClick(),
+        $order
+      );
+      return true;
+    }
+    return false;
   }
 
   /**
