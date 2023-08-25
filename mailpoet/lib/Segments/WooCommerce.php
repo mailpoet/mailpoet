@@ -515,7 +515,7 @@ class WooCommerce {
 
     $this->connection->executeQuery("
       CREATE TEMPORARY TABLE {$tmpTableName}
-        (`id` int(11) unsigned NOT NULL, UNIQUE(`id`)) AS
+        (`id` int(11) unsigned NOT NULL, UNIQUE(`id`), PRIMARY KEY (`id`)) AS
       {$registeredCustomersSubQuery}
     ");
     // Registered users with a customer role
@@ -566,7 +566,7 @@ class WooCommerce {
 
     $this->connection->executeQuery("
       CREATE TEMPORARY TABLE {$tmpTableName}
-        (`email` varchar(150) NOT NULL, UNIQUE(`email`)) {$collation}
+        (`email` varchar(150) NOT NULL, UNIQUE(`email`), PRIMARY KEY (`email`)) {$collation}
       {$guestCustomersSubQuery}
     ");
 
