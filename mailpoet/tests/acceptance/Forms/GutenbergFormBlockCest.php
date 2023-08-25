@@ -119,7 +119,7 @@ class GutenbergFormBlockCest {
     $i->amEditingPostWithId($postId);
     $i->waitForText('My Gutenberg form');
     $i->pressKey('body', WebDriverKeys::ESCAPE);
-    $i->type('.block-editor-rich-text__editable', '/MailPoet Subscription Form');
+    $i->fillField('.block-editor-rich-text__editable', '/MailPoet Subscription Form');
     $i->selectOption('.mailpoet-block-create-forms-list', 'My form');
     $i->click('Update');
     $i->waitForText('Page updated.');
