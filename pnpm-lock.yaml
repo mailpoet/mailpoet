@@ -460,8 +460,8 @@ importers:
         specifier: ^4.0.0
         version: 4.0.0(webpack@5.88.2)
       expose-loader:
-        specifier: ^3.1.0
-        version: 3.1.0(webpack@5.88.2)
+        specifier: ^4.1.0
+        version: 4.1.0(webpack@5.88.2)
       fork-ts-checker-webpack-plugin:
         specifier: ^7.2.1
         version: 7.2.1(typescript@5.0.2)(webpack@5.88.2)
@@ -14296,9 +14296,9 @@ packages:
       webpack: 5.88.2(webpack-cli@4.9.2)
     dev: true
 
-  /expose-loader@3.1.0(webpack@5.88.2):
-    resolution: {integrity: sha512-2RExSo0yJiqP+xiUue13jQa2IHE8kLDzTI7b6kn+vUlBVvlzNSiLDzo4e5Pp5J039usvTUnxZ8sUOhv0Kg15NA==}
-    engines: {node: '>= 12.13.0'}
+  /expose-loader@4.1.0(webpack@5.88.2):
+    resolution: {integrity: sha512-oLAesnzerwDGGADzBMnu0LPqqnlVz6e2V9lTa+/4X6VeW9W93x/nJpw05WBrcIdbqXm/EdnEQpiVDFFiQXuNfg==}
+    engines: {node: '>= 14.15.0'}
     peerDependencies:
       webpack: ^5.0.0
     dependencies:
