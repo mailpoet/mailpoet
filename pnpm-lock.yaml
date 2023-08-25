@@ -499,8 +499,8 @@ importers:
         specifier: ^9.1.0
         version: 9.1.0(postcss@8.4.28)
       postcss-scss:
-        specifier: ^4.0.3
-        version: 4.0.3(postcss@8.4.28)
+        specifier: ^4.0.7
+        version: 4.0.7(postcss@8.4.28)
       prismjs:
         specifier: ^1.28.0
         version: 1.28.0
@@ -22604,17 +22604,8 @@ packages:
       postcss: 8.4.28
     dev: true
 
-  /postcss-scss@4.0.3(postcss@8.4.28):
-    resolution: {integrity: sha512-j4KxzWovfdHsyxwl1BxkUal/O4uirvHgdzMKS1aWJBAV0qh2qj5qAZqpeBfVUYGWv+4iK9Az7SPyZ4fyNju1uA==}
-    engines: {node: '>=12.0'}
-    peerDependencies:
-      postcss: ^8.3.3
-    dependencies:
-      postcss: 8.4.28
-    dev: true
-
-  /postcss-scss@4.0.6(postcss@8.4.28):
-    resolution: {integrity: sha512-rLDPhJY4z/i4nVFZ27j9GqLxj1pwxE80eAzUNRMXtcpipFYIeowerzBgG3yJhMtObGEXidtIgbUpQ3eLDsf5OQ==}
+  /postcss-scss@4.0.7(postcss@8.4.28):
+    resolution: {integrity: sha512-xPv2GseoyXPa58Nro7M73ZntttusuCmZdeOojUFR5PZDz2BR62vfYx1w9TyOnp1+nYFowgOMipsCBhxzVkAEPw==}
     engines: {node: '>=12.0'}
     peerDependencies:
       postcss: ^8.4.19
@@ -25425,7 +25416,7 @@ packages:
     peerDependencies:
       stylelint: ^14.0.0
     dependencies:
-      postcss-scss: 4.0.6(postcss@8.4.28)
+      postcss-scss: 4.0.7(postcss@8.4.28)
       stylelint: 14.16.1
       stylelint-config-recommended: 6.0.0(stylelint@14.16.1)
       stylelint-scss: 4.5.0(stylelint@14.16.1)
