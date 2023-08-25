@@ -188,7 +188,7 @@
     "storybook-addon-performance": "^0.16.1",
     "string-replace-loader": "^3.1.0",
     "stylelint": "^14.9.1",
-    "stylelint-order": "^5.0.0",
+    "stylelint-order": "^6.0.3",
     "stylelint-scss": "^4.2.0",
     "terser-webpack-plugin": "^5.3.9",
     "ts-loader": "^9.4.4",

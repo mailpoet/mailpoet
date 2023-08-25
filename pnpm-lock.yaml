@@ -523,8 +523,8 @@ importers:
         specifier: ^14.9.1
         version: 14.9.1
       stylelint-order:
-        specifier: ^5.0.0
-        version: 5.0.0(stylelint@14.9.1)
+        specifier: ^6.0.3
+        version: 6.0.3(stylelint@14.9.1)
       stylelint-scss:
         specifier: ^4.2.0
         version: 4.2.0(stylelint@14.9.1)
@@ -19655,10 +19655,10 @@ packages:
       util-deprecate: 1.0.2
     dev: true
 
-  /postcss-sorting@7.0.1(postcss@8.4.28):
-    resolution: {integrity: sha512-iLBFYz6VRYyLJEJsBJ8M3TCqNcckVzz4wFounSc5Oez35ogE/X+aoC5fFu103Ot7NyvjU3/xqIXn93Gp3kJk4g==}
+  /postcss-sorting@8.0.2(postcss@8.4.28):
+    resolution: {integrity: sha512-M9dkSrmU00t/jK7rF6BZSZauA5MAaBW4i5EnJXspMwt4iqTh/L9j6fgMnbElEOfyRyfLfVbIHj/R52zHzAPe1Q==}
     peerDependencies:
-      postcss: ^8.3.9
+      postcss: ^8.4.20
     dependencies:
       postcss: 8.4.28
     dev: true
@@ -22279,13 +22279,13 @@ packages:
       stylelint: 14.16.1
     dev: true
 
-  /stylelint-order@5.0.0(stylelint@14.9.1):
-    resolution: {integrity: sha512-OWQ7pmicXufDw5BlRqzdz3fkGKJPgLyDwD1rFY3AIEfIH/LQY38Vu/85v8/up0I+VPiuGRwbc2Hg3zLAsJaiyw==}
+  /stylelint-order@6.0.3(stylelint@14.9.1):
+    resolution: {integrity: sha512-1j1lOb4EU/6w49qZeT2SQVJXm0Ht+Qnq9GMfUa3pMwoyojIWfuA+JUDmoR97Bht1RLn4ei0xtLGy87M7d29B1w==}
     peerDependencies:
-      stylelint: ^14.0.0
+      stylelint: ^14.0.0 || ^15.0.0
     dependencies:
       postcss: 8.4.28
-      postcss-sorting: 7.0.1(postcss@8.4.28)
+      postcss-sorting: 8.0.2(postcss@8.4.28)
       stylelint: 14.9.1
     dev: true
 
