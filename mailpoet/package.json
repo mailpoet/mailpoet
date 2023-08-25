@@ -179,7 +179,7 @@
     "json-loader": "^0.5.7",
     "mocha": "^10.2.0",
     "phplint": "^2.0.5",
-    "postcss-cli": "^9.1.0",
+    "postcss-cli": "^10.1.0",
     "postcss-scss": "^4.0.7",
     "prismjs": "^1.29.0",
     "sass": "^1.66.1",
