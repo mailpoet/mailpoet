@@ -240,8 +240,8 @@ importers:
         specifier: ^13.1.1
         version: 13.1.1(react-dom@18.2.0)(react@18.2.0)
       react-datepicker:
-        specifier: ^4.7.0
-        version: 4.7.0(react-dom@18.2.0)(react@18.2.0)
+        specifier: ^4.16.0
+        version: 4.16.0(react-dom@18.2.0)(react@18.2.0)
       react-dates:
         specifier: ^21.8.0
         version: 21.8.0(@babel/runtime@7.22.11)(moment@2.29.4)(react-dom@18.2.0)(react@18.2.0)
@@ -821,7 +821,7 @@ packages:
       debug: 4.3.4(supports-color@9.3.1)
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
-      react-popper: 2.2.5(@popperjs/core@2.11.8)(react@18.2.0)
+      react-popper: 2.3.0(@popperjs/core@2.11.8)(react-dom@18.2.0)(react@18.2.0)
     transitivePeerDependencies:
       - '@types/react'
       - bufferutil
@@ -20801,20 +20801,20 @@ packages:
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
 
-  /react-datepicker@4.7.0(react-dom@18.2.0)(react@18.2.0):
-    resolution: {integrity: sha512-FS8KgbwqpxmJBv/bUdA42MYqYZa+fEYcpc746DZiHvVE2nhjrW/dg7c5B5fIUuI8gZET6FOzuDgezNcj568Czw==}
+  /react-datepicker@4.16.0(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-hNQ0PAg/LQoVbDUO/RWAdm/RYmPhN3cz7LuQ3hqbs24OSp69QCiKOJRrQ4jk1gv1jNR5oYu8SjjgfDh8q6Q1yw==}
     peerDependencies:
-      react: ^16.9.0 || ^17
-      react-dom: ^16.9.0 || ^17
+      react: ^16.9.0 || ^17 || ^18
+      react-dom: ^16.9.0 || ^17 || ^18
     dependencies:
-      '@popperjs/core': 2.9.2
+      '@popperjs/core': 2.11.8
       classnames: 2.3.2
       date-fns: 2.30.0
       prop-types: 15.8.1
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
-      react-onclickoutside: 6.12.0(react-dom@18.2.0)(react@18.2.0)
-      react-popper: 2.2.5(@popperjs/core@2.9.2)(react@18.2.0)
+      react-onclickoutside: 6.13.0(react-dom@18.2.0)(react@18.2.0)
+      react-popper: 2.3.0(@popperjs/core@2.11.8)(react-dom@18.2.0)(react@18.2.0)
     dev: false
 
   /react-dates@21.8.0(@babel/runtime@7.22.11)(moment@2.29.4)(react-dom@18.2.0)(react@18.2.0):
@@ -20908,6 +20908,10 @@ packages:
 
   /react-fast-compare@3.2.0:
     resolution: {integrity: sha512-rtGImPZ0YyLrscKI9xTpV8psd6I8VAtjKCzQDlzyDvqJA8XOW78TXYQwNRNd8g8JZnDu8q9Fu/1v4HPAVwVdHA==}
+    dev: true
+
+  /react-fast-compare@3.2.2:
+    resolution: {integrity: sha512-nsO+KSNgo1SbJqJEYRE9ERzo7YtYbou/OqjSQKxV7jcKox7+usiUVZOAC+XnDOABXggQTno0Y1CpVnuWEc1boQ==}
 
   /react-helmet-async@1.2.3(react-dom@18.2.0)(react@18.2.0):
     resolution: {integrity: sha512-mCk2silF53Tq/YaYdkl2sB+/tDoPnaxN7dFS/6ZLJb/rhUY2EWGI5Xj2b4jHppScMqY45MbgPSwTxDchKpZ5Kw==}
@@ -20920,7 +20924,7 @@ packages:
       prop-types: 15.8.1
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
-      react-fast-compare: 3.2.0
+      react-fast-compare: 3.2.2
       shallowequal: 1.1.0
     dev: true
 
@@ -20977,11 +20981,11 @@ packages:
       moment: 2.29.4
     dev: false
 
-  /react-onclickoutside@6.12.0(react-dom@18.2.0)(react@18.2.0):
-    resolution: {integrity: sha512-oPlOTYcISLHfpMog2lUZMFSbqOs4LFcA4+vo7fpfevB5v9Z0D5VBDBkfeO5lv+hpEcGoaGk67braLT+QT+eICA==}
+  /react-onclickoutside@6.13.0(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-ty8So6tcUpIb+ZE+1HAhbLROvAIJYyJe/1vRrrcmW+jLsaM+/powDRqxzo6hSh9CuRZGSL1Q8mvcF5WRD93a0A==}
     peerDependencies:
-      react: ^15.5.x || ^16.x || ^17.x
-      react-dom: ^15.5.x || ^16.x || ^17.x
+      react: ^15.5.x || ^16.x || ^17.x || ^18.x
+      react-dom: ^15.5.x || ^16.x || ^17.x || ^18.x
     dependencies:
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
@@ -21012,20 +21016,8 @@ packages:
       '@popperjs/core': 2.9.2
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
-      react-popper: 2.2.5(@popperjs/core@2.9.2)(react@18.2.0)
+      react-popper: 2.3.0(@popperjs/core@2.9.2)(react-dom@18.2.0)(react@18.2.0)
     dev: true
-
-  /react-popper@2.2.5(@popperjs/core@2.11.8)(react@18.2.0):
-    resolution: {integrity: sha512-kxGkS80eQGtLl18+uig1UIf9MKixFSyPxglsgLBxlYnyDf65BiY9B3nZSc6C9XUNDgStROB0fMQlTEz1KxGddw==}
-    peerDependencies:
-      '@popperjs/core': ^2.0.0
-      react: ^16.8.0 || ^17
-    dependencies:
-      '@popperjs/core': 2.11.8
-      react: 18.2.0
-      react-fast-compare: 3.2.0
-      warning: 4.0.3
-    dev: false
 
   /react-popper@2.2.5(@popperjs/core@2.9.2)(react@18.2.0):
     resolution: {integrity: sha512-kxGkS80eQGtLl18+uig1UIf9MKixFSyPxglsgLBxlYnyDf65BiY9B3nZSc6C9XUNDgStROB0fMQlTEz1KxGddw==}
@@ -21037,6 +21029,35 @@ packages:
       react: 18.2.0
       react-fast-compare: 3.2.0
       warning: 4.0.3
+    dev: true
+
+  /react-popper@2.3.0(@popperjs/core@2.11.8)(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-e1hj8lL3uM+sgSR4Lxzn5h1GxBlpa4CQz0XLF8kx4MDrDRWY0Ena4c97PUeSX9i5W3UAfDP0z0FXCTQkoXUl3Q==}
+    peerDependencies:
+      '@popperjs/core': ^2.0.0
+      react: ^16.8.0 || ^17 || ^18
+      react-dom: ^16.8.0 || ^17 || ^18
+    dependencies:
+      '@popperjs/core': 2.11.8
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
+      react-fast-compare: 3.2.2
+      warning: 4.0.3
+    dev: false
+
+  /react-popper@2.3.0(@popperjs/core@2.9.2)(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-e1hj8lL3uM+sgSR4Lxzn5h1GxBlpa4CQz0XLF8kx4MDrDRWY0Ena4c97PUeSX9i5W3UAfDP0z0FXCTQkoXUl3Q==}
+    peerDependencies:
+      '@popperjs/core': ^2.0.0
+      react: ^16.8.0 || ^17 || ^18
+      react-dom: ^16.8.0 || ^17 || ^18
+    dependencies:
+      '@popperjs/core': 2.9.2
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
+      react-fast-compare: 3.2.2
+      warning: 4.0.3
+    dev: true
 
   /react-portal@4.2.2(react-dom@18.2.0)(react@18.2.0):
     resolution: {integrity: sha512-vS18idTmevQxyQpnde0Td6ZcUlv+pD8GTyR42n3CHUQq9OHi1C4jDE4ZWEbEsrbrLRhSECYiao58cvocwMtP7Q==}
