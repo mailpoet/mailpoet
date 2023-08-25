@@ -159,7 +159,7 @@
     "autoprefixer": "^10.4.15",
     "babel-loader": "^8.2.4",
     "babel-plugin-transform-commonjs": "^1.1.6",
-    "browserslist": "^4.20.2",
+    "browserslist": "^4.21.10",
     "buffer": "^6.0.3",
     "chai": "^4.3.8",
     "chai-jq": "^0.0.9",
