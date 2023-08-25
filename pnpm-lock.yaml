@@ -328,8 +328,8 @@ importers:
         specifier: ^7.22.11
         version: 7.22.11(@babel/core@7.22.11)
       '@babel/register':
-        specifier: ^7.17.7
-        version: 7.17.7(@babel/core@7.22.11)
+        specifier: ^7.22.5
+        version: 7.22.5(@babel/core@7.22.11)
       '@mailpoet/eslint-config':
         specifier: workspace:^
         version: link:../packages/js/eslint-config
@@ -3662,8 +3662,8 @@ packages:
       '@babel/plugin-transform-typescript': 7.22.11(@babel/core@7.22.11)
     dev: true
 
-  /@babel/register@7.17.7(@babel/core@7.22.11):
-    resolution: {integrity: sha512-fg56SwvXRifootQEDQAu1mKdjh5uthPzdO0N6t358FktfL4XjAVXuH58ULoiW8mesxiOgNIrxiImqEwv0+hRRA==}
+  /@babel/register@7.22.5(@babel/core@7.22.11):
+    resolution: {integrity: sha512-vV6pm/4CijSQ8Y47RH5SopXzursN35RQINfGJkmOlcpAtGuf94miFvIPhCKGQN7WGIcsgG1BHEX2KVdTYwTwUQ==}
     engines: {node: '>=6.9.0'}
     peerDependencies:
       '@babel/core': ^7.0.0-0
@@ -3672,8 +3672,8 @@ packages:
       clone-deep: 4.0.1
       find-cache-dir: 2.1.0
       make-dir: 2.1.0
-      pirates: 4.0.5
-      source-map-support: 0.5.20
+      pirates: 4.0.6
+      source-map-support: 0.5.21
     dev: true
 
   /@babel/regjsgen@0.8.0:
@@ -4452,7 +4452,7 @@ packages:
       jest-regex-util: 27.5.1
       jest-util: 27.5.1
       micromatch: 4.0.5
-      pirates: 4.0.5
+      pirates: 4.0.6
       slash: 3.0.0
       source-map: 0.6.1
       write-file-atomic: 3.0.3
@@ -5708,7 +5708,7 @@ packages:
       '@babel/preset-env': 7.18.9(@babel/core@7.22.11)
       '@babel/preset-react': 7.22.5(@babel/core@7.22.11)
       '@babel/preset-typescript': 7.22.11(@babel/core@7.22.11)
-      '@babel/register': 7.17.7(@babel/core@7.22.11)
+      '@babel/register': 7.22.5(@babel/core@7.22.11)
       '@storybook/node-logger': 6.4.19
       '@storybook/semver': 7.3.2
       '@types/node': 14.14.37
@@ -19342,8 +19342,8 @@ packages:
     engines: {node: '>=0.10.0'}
     dev: true
 
-  /pirates@4.0.5:
-    resolution: {integrity: sha512-8V9+HQPupnaXMA23c5hvl69zXvTwTzyAYasnkb0Tts4XvO4CliqONMOnvlq26rkhLC3nWDFBJf73LU1e1VZLaQ==}
+  /pirates@4.0.6:
+    resolution: {integrity: sha512-saLsH7WeYYPiD25LDuLRRY/i+6HaPYr6G1OUlN39otzkSTxKnubR9RTxS3/Kk50s1g2JTgFwWQDQyplC5/SHZg==}
     engines: {node: '>= 6'}
     dev: true
 
@@ -22144,13 +22144,6 @@ packages:
     resolution: {integrity: sha512-try0/JqxPLF9nOjvSta7tVondkP5dwgyLDjVoyMDlmjugT2lRZ1OfsrYTkCd2hkDnJTKRbO/Rl3orm8vlsUzbA==}
     dependencies:
       source-map: 0.5.7
-    dev: true
-
-  /source-map-support@0.5.20:
-    resolution: {integrity: sha512-n1lZZ8Ve4ksRqizaBQgxXDgKwttHDhyfQjA6YZZn8+AroHbsIz+JjwxQDxbp+7y5OYCI8t1Yk7etjD9CRd2hIw==}
-    dependencies:
-      buffer-from: 1.1.2
-      source-map: 0.6.1
     dev: true
 
   /source-map-support@0.5.21:
