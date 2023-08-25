@@ -457,8 +457,8 @@ importers:
         specifier: ^7.0.3
         version: 7.0.3
       exports-loader:
-        specifier: ^3.1.0
-        version: 3.1.0(webpack@5.88.2)
+        specifier: ^4.0.0
+        version: 4.0.0(webpack@5.88.2)
       expose-loader:
         specifier: ^3.1.0
         version: 3.1.0(webpack@5.88.2)
@@ -14286,9 +14286,9 @@ packages:
       jest-message-util: 27.5.1
     dev: true
 
-  /exports-loader@3.1.0(webpack@5.88.2):
-    resolution: {integrity: sha512-zkMR5OHDn8qHq2w5BLv6SnLmUK5QAtPkjTA7CNIYBB9kIxBFIeA+TA1GcMw3p/vn5Avnmq80L7MviA4tZclRmQ==}
-    engines: {node: '>= 12.13.0'}
+  /exports-loader@4.0.0(webpack@5.88.2):
+    resolution: {integrity: sha512-4iqFFIAnlVAbkAUMHhWceyxK6N6dMDWpQFbSHLmiayGEPMXl2bgWD4D11GYi1VNuEQwJaHGdATcPYTnXpwzSmw==}
+    engines: {node: '>= 14.15.0'}
     peerDependencies:
       webpack: ^5.0.0
     dependencies:
