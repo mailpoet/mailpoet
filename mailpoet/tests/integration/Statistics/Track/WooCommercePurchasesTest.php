@@ -54,6 +54,36 @@ class WooCommercePurchasesTest extends \MailPoetTest {
     $this->cookies = new Cookies();
   }
 
+  public function testItTracksOrderRefunds() {
+
+    $click = $this->createClick($this->link, $this->subscriber);
+    $this->entityManager->flush();
+    $order = wc_create_order();
+    $this->assertInstanceOf(WC_Order::class, $order);
+    $order->set_billing_email($this->subscriber->getEmail());
+    $order->set_total('10');
+    $order->set_status('completed');
+    $order->save();
+
+    $statistic = $this->statisticsWooCommercePurchasesRepository->findOneBy(['orderId' => $order->get_id()]);
+    $this->assertInstanceOf(StatisticsWooCommercePurchaseEntity::class, $statistic);
+    $this->assertEquals("completed", $statistic->getStatus());
+    $this->assertEquals(10, $statistic->getOrderPriceTotal());
+
+    wc_create_refund([
+      'order_id' => $order->get_id(),
+      'amount' => 2.5,
+    ]);
+    $this->assertEquals("completed", $statistic->getStatus());
+    $this->assertEquals(7.5, $statistic->getOrderPriceTotal());
+    wc_create_refund([
+      'order_id' => $order->get_id(),
+      'amount' => 7.5,
+    ]);
+    $this->assertEquals("refunded", $statistic->getStatus());
+    $this->assertEquals(0, $statistic->getOrderPriceTotal());
+  }
+
   public function testItTracksOrderStatusChanges() {
 
     $click = $this->createClick($this->link, $this->subscriber);
