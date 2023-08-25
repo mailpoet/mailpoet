@@ -71,7 +71,7 @@ class InactiveSubscribersController {
     if (!$this->processedTaskIdsTableCreated) {
       $processedTaskIdsTableSql = "
         CREATE TEMPORARY TABLE IF NOT EXISTS {$processedTaskIdsTable}
-        (INDEX task_id_ids (id))
+        (INDEX task_id_ids (id), PRIMARY KEY (`id`))
         SELECT DISTINCT task_id as id FROM {$sendingQueuesTable} as sq
           JOIN {$scheduledTasksTable} as st ON sq.task_id = st.id
           WHERE st.processed_at > :thresholdDate
@@ -91,7 +91,7 @@ class InactiveSubscribersController {
     $inactiveSubscriberIdsTmpTable = 'inactive_subscriber_ids';
     $connection->executeQuery("
       CREATE TEMPORARY TABLE IF NOT EXISTS {$inactiveSubscriberIdsTmpTable}
-      (UNIQUE subscriber_id (id))
+      (UNIQUE subscriber_id (id), PRIMARY KEY (`id`))
       SELECT s.id FROM {$subscribersTable} as s
         JOIN {$scheduledTaskSubscribersTable} as sts USE INDEX (subscriber_id) ON s.id = sts.subscriber_id
         JOIN {$processedTaskIdsTable} task_ids ON task_ids.id = sts.task_id
