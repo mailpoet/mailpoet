@@ -9,6 +9,7 @@ const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 
 const globalPrefix = 'MailPoetLib';
 const PRODUCTION_ENV = process.env.NODE_ENV === 'production';
+const CI_ENV = ['true', 1].includes((process.env.CI ?? '').toLowerCase());
 const manifestSeed = {};
 
 const stats = {
@@ -107,7 +108,7 @@ const baseConfig = {
       ),
     },
   },
-  plugins: PRODUCTION_ENV ? [] : [new ForkTsCheckerWebpackPlugin()],
+  plugins: PRODUCTION_ENV || CI_ENV ? [] : [new ForkTsCheckerWebpackPlugin()],
   module: {
     noParse: /node_modules\/lodash\/lodash\.js/,
     rules: [
@@ -454,7 +455,10 @@ const emailEditor = Object.assign({}, wpScriptConfig, {
     ...wpScriptConfig.resolve,
     modules: ['node_modules', 'assets/js/src'],
   },
-  plugins: [...wpScriptConfig.plugins, ...[new ForkTsCheckerWebpackPlugin()]],
+  plugins: [
+    ...wpScriptConfig.plugins,
+    ...(PRODUCTION_ENV || CI_ENV ? [] : [new ForkTsCheckerWebpackPlugin()]),
+  ],
 });
 
 const configs = [
