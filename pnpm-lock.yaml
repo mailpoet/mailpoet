@@ -343,8 +343,8 @@ importers:
         specifier: ^7.3.2
         version: 7.3.2(@types/react-dom@18.0.11)(@types/react@18.0.28)(react-dom@18.2.0)(react@18.2.0)
       '@storybook/addons':
-        specifier: ^6.4.19
-        version: 6.4.19(react-dom@18.2.0)(react@18.2.0)
+        specifier: ^7.3.2
+        version: 7.3.2(react-dom@18.2.0)(react@18.2.0)
       '@storybook/builder-webpack5':
         specifier: ^6.4.19
         version: 6.4.19(@types/react@18.0.28)(react-dom@18.2.0)(react@18.2.0)(typescript@5.0.2)(webpack-cli@4.9.2)
@@ -5904,6 +5904,19 @@ packages:
       regenerator-runtime: 0.13.11
     dev: true
 
+  /@storybook/addons@7.3.2(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-qYwHniTJzfR7jKh5juYCjU9ukG7l1YAAt7BpnouItgRutxU/+UoC2iAFooQW+i74SxDoovqnEp9TkG7TAFOLxQ==}
+    peerDependencies:
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0
+      react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
+    dependencies:
+      '@storybook/manager-api': 7.3.2(react-dom@18.2.0)(react@18.2.0)
+      '@storybook/preview-api': 7.3.2
+      '@storybook/types': 7.3.2
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
+    dev: true
+
   /@storybook/api@6.4.19(react-dom@18.2.0)(react@18.2.0):
     resolution: {integrity: sha512-aDvea+NpQCBjpNp9YidO1Pr7fzzCp15FSdkG+2ihGQfv5raxrN+IIJnGUXecpe71nvlYiB+29UXBVK7AL0j51Q==}
     peerDependencies:
@@ -6478,7 +6491,7 @@ packages:
       chalk: 4.1.2
       core-js: 3.32.1
       express: 4.17.1
-      file-system-cache: 1.0.5
+      file-system-cache: 1.1.0
       find-up: 5.0.0
       fork-ts-checker-webpack-plugin: 6.5.0(typescript@5.0.2)(webpack@4.46.0)
       fs-extra: 9.1.0
@@ -7956,13 +7969,6 @@ packages:
     resolution: {integrity: sha512-d/Hs3nWDxNL2xAczmOVZNj92YZCS6RGxfBPjKzuu/XirCgXdpKEb88dYNbrYGint6IVWLNP+yonwVAuRC0T2Dg==}
     dependencies:
       '@types/express': 4.17.17
-    dev: true
-
-  /@types/serve-static@1.15.1:
-    resolution: {integrity: sha512-NUo5XNiAdULrJENtJXZZ3fHtfMolzZwczzBbnAeBbqBwG+LaG6YaJtuwzwGSQZ2wsCrxjEhNNjAkKigy3n8teQ==}
-    dependencies:
-      '@types/mime': 3.0.1
-      '@types/node': 20.5.6
     dev: true
 
   /@types/serve-static@1.15.2:
@@ -15303,14 +15309,6 @@ packages:
     resolution: {integrity: sha512-P9bmyZ3h/PRG+Nzga+rbdI4OEpNDzAVyy74uVO9ATgzLK6VtAsYybF/+TOCvrc0MO793d6+42lLyZTw7/ArVzA==}
     dev: false
 
-  /file-system-cache@1.0.5:
-    resolution: {integrity: sha512-w9jqeQdOeVaXBCgl4c90XJ6zI8MguJgSiC5LsLdhUu6eSCzcRHPPXUF3lkKMagpzHi+6GnDkjv9BtxMmXdvptA==}
-    dependencies:
-      bluebird: 3.7.2
-      fs-extra: 0.30.0
-      ramda: 0.21.0
-    dev: true
-
   /file-system-cache@1.1.0:
     resolution: {integrity: sha512-IzF5MBq+5CR0jXx5RxPe4BICl/oEhBSXKaL9fLhAXrIfIUS77Hr4vzrYyqYMHN6uTt+BOqi3fDCTjjEBCjERKw==}
     dependencies:
@@ -15823,16 +15821,6 @@ packages:
   /fs-exists-sync@0.1.0:
     resolution: {integrity: sha512-cR/vflFyPZtrN6b38ZyWxpWdhlXrzZEBawlpBQMq7033xVY7/kg0GDMBK5jg8lDYQckdJ5x/YC88lM3C7VMsLg==}
     engines: {node: '>=0.10.0'}
-    dev: true
-
-  /fs-extra@0.30.0:
-    resolution: {integrity: sha512-UvSPKyhMn6LEd/WpUaV9C9t3zATuqoqfWc3QdPhPLb58prN9tqYPlPWi8Krxi44loBoUzlobqZ3+8tGpxxSzwA==}
-    dependencies:
-      graceful-fs: 4.2.11
-      jsonfile: 2.4.0
-      klaw: 1.3.1
-      path-is-absolute: 1.0.1
-      rimraf: 2.7.1
     dev: true
 
   /fs-extra@10.0.0:
@@ -18392,12 +18380,6 @@ packages:
     resolution: {integrity: sha512-gfFQZrcTc8CnKXp6Y4/CBT3fTc0OVuDofpre4aEeEpSBPV5X5v4+Vmx+8snU7RLPrNHPKSgLxGo9YuQzz20o+w==}
     dev: true
 
-  /jsonfile@2.4.0:
-    resolution: {integrity: sha512-PKllAqbgLgxHaj8TElYymKCAgrASebJrWpTnEkOaTowt23VKXXN0sUeriJ+eh7y6ufb/CC5ap11pz71/cM0hUw==}
-    optionalDependencies:
-      graceful-fs: 4.2.11
-    dev: true
-
   /jsonfile@6.1.0:
     resolution: {integrity: sha512-5dgndWOriYSm5cnYaJNhalLNDKOqFwyDB/rr1E9ZsGciGvKPs8R2xYGCacuf3z6K1YKDz182fd+fY3cn3pMqXQ==}
     dependencies:
@@ -18452,12 +18434,6 @@ packages:
   /kind-of@6.0.3:
     resolution: {integrity: sha512-dcS1ul+9tmeD95T+x28/ehLgd9mENa3LsvDTtzm3vyBEO7RPptvAD+t44WVXaUjTBRcrpFeFlC8WCruUR456hw==}
     engines: {node: '>=0.10.0'}
-    dev: true
-
-  /klaw@1.3.1:
-    resolution: {integrity: sha512-TED5xi9gGQjGpNnvRWknrwAB1eL5GciPfVFOt3Vk1OJCVDQbzuSfrF3hkUQKlsgKrG1F+0t5W0m+Fje1jIt8rw==}
-    optionalDependencies:
-      graceful-fs: 4.2.11
     dev: true
 
   /kleur@3.0.3:
@@ -21376,10 +21352,6 @@ packages:
       performance-now: 2.1.0
     dev: false
 
-  /ramda@0.21.0:
-    resolution: {integrity: sha512-HGd5aczYKQXGILB+abY290V7Xz62eFajpa6AtMdwEmQSakJmgSO7ks4eI3HdR34j+X2Vz4Thp9VAJbrCAMbO2w==}
-    dev: true
-
   /ramda@0.28.0:
     resolution: {integrity: sha512-9QnLuG/kPVgWvMQ4aODhsBUFKOUmnbUnsSXACv+NCQZcHbeb+v8Lodp8OVxtRULN1/xOyYLLaL6npE6dMq5QTA==}
     dev: true
@@ -23532,7 +23504,7 @@ packages:
       react: ^16.8.0 || ^17.0.0
       react-dom: ^16.8.0 || ^17.0.0
     dependencies:
-      '@storybook/addons': 6.4.19(react-dom@18.2.0)(react@18.2.0)
+      '@storybook/addons': 6.5.16(react-dom@18.2.0)(react@18.2.0)
       '@storybook/api': 6.4.19(react-dom@18.2.0)(react@18.2.0)
       '@storybook/channels': 6.4.19
       '@storybook/components': 6.4.19(@types/react@18.0.28)(react-dom@18.2.0)(react@18.2.0)
@@ -25558,7 +25530,7 @@ packages:
       '@types/connect-history-api-fallback': 1.3.5
       '@types/express': 4.17.17
       '@types/serve-index': 1.9.1
-      '@types/serve-static': 1.15.1
+      '@types/serve-static': 1.15.2
       '@types/sockjs': 0.3.33
       '@types/ws': 8.5.4
       ansi-html-community: 0.0.8
