@@ -51,7 +51,7 @@ class WelcomeWizard {
       $this->settings->set(WelcomeWizard::TRACK_LOADDED_VIA_WOOCOMMERCE_SETTING_NAME, 1);
     }
 
-    $settings = $this->settings->getAll();
+
     $premiumKeyValid = $this->servicesChecker->isPremiumKeyValid(false);
     // force MSS key check even if the method isn't active
     $mpApiKeyValid = $this->servicesChecker->isMailPoetAPIKeyValid(false, true);
@@ -61,10 +61,21 @@ class WelcomeWizard {
       'admin_email' => $this->wp->getOption('admin_email'),
       'current_wp_user' => $this->wp->wpGetCurrentUser()->to_array(),
       'show_customers_import' => $this->wooCommerceHelper->getCustomersCount() > 0,
-      'settings' => $settings,
+      'settings' => $this->getSettings(),
       'premium_key_valid' => !empty($premiumKeyValid),
       'mss_key_valid' => !empty($mpApiKeyValid),
     ];
     $this->pageRenderer->displayPage('welcome_wizard.html', $data);
+  }
+
+  private function getSettings(): array {
+    $settings = $this->settings->getAll();
+
+    $user = $this->wp->wpGetCurrentUser();
+    $settings['sender'] = [
+      'name' => $user->display_name, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+      'address' => $user->user_email, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    ];
+    return $settings;
   }
 }
