@@ -177,8 +177,8 @@ importers:
         specifier: ^1.0.0
         version: 1.0.0
       classnames:
-        specifier: ^2.3.1
-        version: 2.3.1
+        specifier: ^2.3.2
+        version: 2.3.2
       codemirror:
         specifier: ^5.65.2
         version: 5.65.2
@@ -688,7 +688,7 @@ packages:
       '@automattic/typography': 1.0.0
       '@wordpress/base-styles': 4.20.0
       '@wordpress/data': 8.5.0(react@18.2.0)
-      classnames: 2.3.1
+      classnames: 2.3.2
       gridicons: 3.4.1(react@18.2.0)
       i18n-calypso: 6.0.1(@types/react@18.0.28)(react@18.2.0)
       lodash: 4.17.21
@@ -823,7 +823,7 @@ packages:
       '@wordpress/icons': 9.30.0
       '@wordpress/primitives': 3.37.0
       '@wordpress/react-i18n': 3.36.0
-      classnames: 2.3.1
+      classnames: 2.3.2
       debug: 4.3.4(supports-color@9.3.1)
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
@@ -10302,7 +10302,7 @@ packages:
       '@wordpress/rich-text': 6.5.0(react@18.2.0)
       '@wordpress/url': 3.29.0
       '@wordpress/viewport': 5.5.0(react@18.2.0)
-      classnames: 2.3.1
+      classnames: 2.3.2
       core-js: 3.29.1
       d3-axis: 1.0.12
       d3-format: 1.4.5
@@ -10584,7 +10584,7 @@ packages:
       '@wordpress/warning': 2.28.0
       '@wordpress/wordcount': 3.28.0
       change-case: 4.1.2
-      classnames: 2.3.1
+      classnames: 2.3.2
       colord: 2.9.2
       diff: 4.0.2
       dom-scroll-into-view: 1.2.1
@@ -10646,7 +10646,7 @@ packages:
       '@wordpress/viewport': 5.5.0(react@18.2.0)
       '@wordpress/wordcount': 3.28.0
       change-case: 4.1.2
-      classnames: 2.3.1
+      classnames: 2.3.2
       colord: 2.9.2
       escape-html: 1.0.3
       fast-average-color: 9.3.0
@@ -10751,7 +10751,7 @@ packages:
       '@wordpress/primitives': 3.37.0
       '@wordpress/rich-text': 5.20.0(react@18.2.0)
       '@wordpress/warning': 2.39.0
-      classnames: 2.3.1
+      classnames: 2.3.2
       colord: 2.9.3
       dom-scroll-into-view: 1.2.1
       downshift: 6.1.12(react@18.2.0)
@@ -10808,7 +10808,7 @@ packages:
       '@wordpress/rich-text': 6.5.0(react@18.2.0)
       '@wordpress/warning': 2.28.0
       change-case: 4.1.2
-      classnames: 2.3.1
+      classnames: 2.3.2
       colord: 2.9.2
       date-fns: 2.28.0
       deepmerge: 4.3.0
@@ -10877,7 +10877,7 @@ packages:
       '@wordpress/rich-text': 6.16.0(react@18.2.0)
       '@wordpress/warning': 2.39.0
       change-case: 4.1.2
-      classnames: 2.3.1
+      classnames: 2.3.2
       colord: 2.9.3
       date-fns: 2.29.3
       deepmerge: 4.3.1
@@ -11248,7 +11248,7 @@ packages:
       '@wordpress/viewport': 5.5.0(react@18.2.0)
       '@wordpress/warning': 2.28.0
       '@wordpress/widgets': 3.5.0(@babel/core@7.17.8)(@types/react@18.0.28)(react-dom@18.2.0)(react@18.2.0)
-      classnames: 2.3.1
+      classnames: 2.3.2
       lodash: 4.17.21
       memize: 1.1.0
       react: 18.2.0
@@ -11301,7 +11301,7 @@ packages:
       '@wordpress/url': 3.29.0
       '@wordpress/viewport': 5.5.0(react@18.2.0)
       '@wordpress/widgets': 3.5.0(@babel/core@7.17.8)(@types/react@18.0.28)(react-dom@18.2.0)(react@18.2.0)
-      classnames: 2.3.1
+      classnames: 2.3.2
       colord: 2.9.2
       downloadjs: 1.4.7
       fast-deep-equal: 3.1.3
@@ -11358,7 +11358,7 @@ packages:
       '@wordpress/server-side-render': 4.5.0(@babel/core@7.17.8)(@types/react@18.0.28)(react-dom@18.2.0)(react@18.2.0)
       '@wordpress/url': 3.29.0
       '@wordpress/wordcount': 3.28.0
-      classnames: 2.3.1
+      classnames: 2.3.2
       date-fns: 2.28.0
       escape-html: 1.0.3
       lodash: 4.17.21
@@ -11651,7 +11651,7 @@ packages:
       '@wordpress/plugins': 5.5.0(react@18.2.0)
       '@wordpress/preferences': 3.5.0(@babel/core@7.17.8)(@types/react@18.0.28)(react-dom@18.2.0)(react@18.2.0)
       '@wordpress/viewport': 5.5.0(react@18.2.0)
-      classnames: 2.3.1
+      classnames: 2.3.2
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
     transitivePeerDependencies:
@@ -11846,7 +11846,7 @@ packages:
       '@wordpress/data': 8.5.0(react@18.2.0)
       '@wordpress/i18n': 4.28.0
       '@wordpress/icons': 9.19.0
-      classnames: 2.3.1
+      classnames: 2.3.2
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
     transitivePeerDependencies:
@@ -11874,7 +11874,7 @@ packages:
     dependencies:
       '@babel/runtime': 7.21.0
       '@wordpress/element': 5.16.0
-      classnames: 2.3.1
+      classnames: 2.3.2
     dev: false
 
   /@wordpress/primitives@3.37.0:
@@ -11883,7 +11883,7 @@ packages:
     dependencies:
       '@babel/runtime': 7.21.0
       '@wordpress/element': 5.16.0
-      classnames: 2.3.1
+      classnames: 2.3.2
     dev: false
 
   /@wordpress/priority-queue@1.11.2:
@@ -12256,7 +12256,7 @@ packages:
       '@wordpress/i18n': 4.28.0
       '@wordpress/icons': 9.30.0
       '@wordpress/notices': 3.28.0(react@18.2.0)
-      classnames: 2.3.1
+      classnames: 2.3.2
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
     transitivePeerDependencies:
@@ -14362,8 +14362,8 @@ packages:
       static-extend: 0.1.2
     dev: true
 
-  /classnames@2.3.1:
-    resolution: {integrity: sha512-OlQdbZ7gLfGarSqxesMesDa5uz7KFbID8Kpq/SxIoNGDqY8lSYs0D+hhtBXhcdB3rcbXArFr7vlHheLk1voeNA==}
+  /classnames@2.3.2:
+    resolution: {integrity: sha512-CSbhY4cFEJRe6/GQzIk5qXZ4Jeg5pcsP7b5peFSDpffpe1cqjASH/n9UTjBwOp6XpMSTwQ8Za2K5V02ueA7Tmw==}
     dev: false
 
   /clean-css@4.2.3:
@@ -23204,7 +23204,7 @@ packages:
       react-dom: ^16.9.0 || ^17
     dependencies:
       '@popperjs/core': 2.9.2
-      classnames: 2.3.1
+      classnames: 2.3.2
       date-fns: 2.28.0
       prop-types: 15.8.1
       react: 18.2.0
