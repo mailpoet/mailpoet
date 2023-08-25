@@ -104,6 +104,31 @@ class GutenbergFormBlockCest {
     $i->seeNoJSErrors();
   }
 
+  public function subscriptionGutenbergBlockCSS(\AcceptanceTester $i): void {
+    $formFactory = new Form();
+    $formId = (int)$formFactory
+      ->withName('Acceptance Test Block Form')
+      ->withLastName()
+      ->withFirstName()
+      ->create()->getId();
+    $postId = $this->createEmptyPost($i);
+
+    $i->wantTo('Add Gutenberg form block to the post');
+    $i->login();
+    $i->amEditingPostWithId($postId);
+    $i->waitForText('My Gutenberg form');
+    $i->type('.block-editor-rich-text__editable', '/MailPoet Subscription Form');
+    $i->selectOption('.mailpoet-block-create-forms-list', 'My form');
+    $i->click('Update');
+    $i->waitForText('Page updated.');
+
+    $i->wantTo('Verify the added form on the front-end');
+    $i->amOnPage("/?p={$postId}");
+    $i->waitForElementVisible('[data-automation-id="form_email"]');
+    $i->waitForElementVisible('[data-automation-id="form_first_name"]');
+    $i->waitForElementVisible('[data-automation-id="form_last_name"]');
+  }
+
   private function createPost(\AcceptanceTester $i, int $formId): int {
     return $i->havePostInDatabase([
       'post_author' => 1,
@@ -113,6 +138,17 @@ class GutenbergFormBlockCest {
       'post_content' => '
         <!-- wp:mailpoet/subscription-form-block {"formId":' . $formId . '} /-->
       ',
+      'post_status' => 'publish',
+    ]);
+  }
+
+  private function createEmptyPost(\AcceptanceTester $i): int {
+    return $i->havePostInDatabase([
+      'post_author' => 1,
+      'post_type' => 'page',
+      'post_name' => 'gutenberg-form-test',
+      'post_title' => 'My Gutenberg form',
+      'post_content' => '',
       'post_status' => 'publish',
     ]);
   }
