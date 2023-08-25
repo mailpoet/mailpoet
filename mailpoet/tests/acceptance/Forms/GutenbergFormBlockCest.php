@@ -2,6 +2,7 @@
 
 namespace MailPoet\Test\Acceptance;
 
+use Facebook\WebDriver\WebDriverKeys;
 use MailPoet\Subscription\Captcha\CaptchaConstants;
 use MailPoet\Test\DataFactories\Form;
 use MailPoet\Test\DataFactories\Settings;
@@ -104,7 +105,7 @@ class GutenbergFormBlockCest {
     $i->seeNoJSErrors();
   }
 
-  public function subscriptionGutenbergBlockCSS(\AcceptanceTester $i): void {
+  public function subscriptionGutenbergBlockAddingManually(\AcceptanceTester $i): void {
     $formFactory = new Form();
     $formId = (int)$formFactory
       ->withName('Acceptance Test Block Form')
@@ -113,10 +114,11 @@ class GutenbergFormBlockCest {
       ->create()->getId();
     $postId = $this->createEmptyPost($i);
 
-    $i->wantTo('Add Gutenberg form block to the post');
+    $i->wantTo('Add Gutenberg form block to the post manually');
     $i->login();
     $i->amEditingPostWithId($postId);
     $i->waitForText('My Gutenberg form');
+    $i->pressKey('body', WebDriverKeys::ESCAPE);
     $i->type('.block-editor-rich-text__editable', '/MailPoet Subscription Form');
     $i->selectOption('.mailpoet-block-create-forms-list', 'My form');
     $i->click('Update');
