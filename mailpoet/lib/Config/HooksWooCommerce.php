@@ -115,6 +115,14 @@ class HooksWooCommerce {
     }
   }
 
+  public function trackRefund($id) {
+    try {
+      $this->woocommercePurchases->trackRefund($id);
+    } catch (\Throwable $e) {
+      $this->logError($e, 'WooCommerce Purchases Refund');
+    }
+  }
+
   public function extendForm() {
     try {
       $this->subscriberRegistration->extendForm();
