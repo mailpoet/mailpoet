@@ -183,7 +183,7 @@
     "postcss-scss": "^4.0.7",
     "prismjs": "^1.29.0",
     "sass": "^1.66.1",
-    "sinon": "^13.0.1",
+    "sinon": "^15.2.0",
     "sinon-chai": "^3.7.0",
     "storybook-addon-performance": "^0.16.1",
     "string-replace-loader": "^3.1.0",
