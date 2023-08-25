@@ -532,8 +532,8 @@ importers:
         specifier: ^5.3.9
         version: 5.3.9(webpack@5.76.0)
       ts-loader:
-        specifier: ^9.2.8
-        version: 9.2.8(typescript@5.0.2)(webpack@5.76.0)
+        specifier: ^9.4.4
+        version: 9.4.4(typescript@5.0.2)(webpack@5.76.0)
       url:
         specifier: ^0.11.0
         version: 0.11.0
@@ -13564,16 +13564,16 @@ packages:
       tapable: 1.1.3
     dev: true
 
-  /enhanced-resolve@5.10.0:
-    resolution: {integrity: sha512-T0yTFjdpldGY8PmuXXR0PyQ1ufZpEGiHVrp7zHKB7jdR4qlmZHhONVM5AQOAWXuF/w3dnHbEQVrNptJgt7F+cQ==}
+  /enhanced-resolve@5.12.0:
+    resolution: {integrity: sha512-QHTXI/sZQmko1cbDoNAa3mJ5qhWUUNAq3vR0/YiD379fWQrcfuoX1+HW2S0MTt7XmoPLapdaDKUtelUSPic7hQ==}
     engines: {node: '>=10.13.0'}
     dependencies:
       graceful-fs: 4.2.11
       tapable: 2.2.1
     dev: true
 
-  /enhanced-resolve@5.12.0:
-    resolution: {integrity: sha512-QHTXI/sZQmko1cbDoNAa3mJ5qhWUUNAq3vR0/YiD379fWQrcfuoX1+HW2S0MTt7XmoPLapdaDKUtelUSPic7hQ==}
+  /enhanced-resolve@5.15.0:
+    resolution: {integrity: sha512-LXYT42KJ7lpIKECr2mAXIaMldcNCh/7E0KBKOu4KSfkHmP+mZmSs+8V5gBAqisWBy0OO4W5Oyys0GO1Y8KtdKg==}
     engines: {node: '>=10.13.0'}
     dependencies:
       graceful-fs: 4.2.11
@@ -23807,17 +23807,17 @@ packages:
     resolution: {integrity: sha512-3IVX4nI6B5cc31/GFFE+i8ey/N2eA0CZDbo6n0yrz0zDX8ZJ8djmU1p+XRz7G3is0F3bB3pu2pAroFdAWQKU3w==}
     dev: true
 
-  /ts-loader@9.2.8(typescript@5.0.2)(webpack@5.76.0):
-    resolution: {integrity: sha512-gxSak7IHUuRtwKf3FIPSW1VpZcqF9+MBrHOvBp9cjHh+525SjtCIJKVGjRKIAfxBwDGDGCFF00rTfzB1quxdSw==}
+  /ts-loader@9.4.4(typescript@5.0.2)(webpack@5.76.0):
+    resolution: {integrity: sha512-MLukxDHBl8OJ5Dk3y69IsKVFRA/6MwzEqBgh+OXMPB/OD01KQuWPFd1WAQP8a5PeSCAxfnkhiuWqfmFJzJQt9w==}
     engines: {node: '>=12.0.0'}
     peerDependencies:
       typescript: '*'
       webpack: ^5.0.0
     dependencies:
       chalk: 4.1.2
-      enhanced-resolve: 5.10.0
+      enhanced-resolve: 5.15.0
       micromatch: 4.0.5
-      semver: 7.3.7
+      semver: 7.5.4
       typescript: 5.0.2
       webpack: 5.76.0(webpack-cli@4.9.2)
     dev: true
