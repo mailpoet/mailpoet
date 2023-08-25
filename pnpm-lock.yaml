@@ -204,8 +204,8 @@ importers:
         specifier: ~1.2.8
         version: 1.2.8
       jquery:
-        specifier: ^3.6.0
-        version: 3.6.0
+        specifier: ^3.7.0
+        version: 3.7.0
       js-cookie:
         specifier: ^3.0.5
         version: 3.0.5
@@ -17517,8 +17517,8 @@ packages:
       '@sideway/pinpoint': 2.0.0
     dev: true
 
-  /jquery@3.6.0:
-    resolution: {integrity: sha512-JVzAR/AjBvVt2BmYhxRCSYysDsPcssdmTFnzyLEts9qNwmjmu4JTAMYubEfwVOSwpQ1I1sKKFcxhZCI2buerfw==}
+  /jquery@3.7.0:
+    resolution: {integrity: sha512-umpJ0/k8X0MvD1ds0P9SfowREz2LenHsQaxSohMZ5OMNEU2r0tf8pdeEFTHMFxWVxKNyU9rTtK3CWzUCTKJUeQ==}
     dev: false
 
   /js-cookie@3.0.5:
@@ -19590,7 +19590,7 @@ packages:
   /parsleyjs@2.9.2(patch_hash=omwuxp36airmeyyvhh2whskxvm):
     resolution: {integrity: sha512-DKS2XXTjEUZ1BJWUzgXAr+550kFBZrom2WYweubqdV7WzdNC1hjOajZDfeBPoAZMkXumJPlB3v37IKatbiW8zQ==}
     dependencies:
-      jquery: 3.6.0
+      jquery: 3.7.0
     dev: false
     patched: true
 
