@@ -28,6 +28,13 @@ class RoboFile extends \Robo\Tasks {
       ->run();
   }
 
+  public function installJs() {
+    return $this->taskExecStack()
+      ->stopOnFail()
+      ->exec('cd .. && pnpm install --frozen-lockfile --prefer-offline')
+      ->run();
+  }
+
   public function cleanupCachedFiles() {
     $this->say('Cleaning up generated folder.');
     $this->_exec('rm -rf ' . __DIR__ . '/generated/*');
@@ -41,6 +48,119 @@ class RoboFile extends \Robo\Tasks {
       ->exec('./tools/vendor/composer.phar update')
       ->exec('pnpm update')
       ->run();
+  }
+
+  public function updateJsPackages($opts = ['ticket' => '', 'latest' => true, 'checks' => false, 'dedupe' => false]) {
+    $ticket = $opts['ticket'];
+    $latest = $opts['latest'];
+    $runChecks = $opts['checks'];
+    $runDedupe = $opts['dedupe'];
+
+    if (empty($ticket)) {
+      $this->say('Please specify a ticket with --ticket=<ticket>');
+      exit(1);
+    }
+
+    $outdatedPackagesOutput = $this->taskExec('pnpm outdated --no-table')
+      ->printOutput(false)
+      ->run()
+      ->getMessage();
+    $lines = explode("\n", $outdatedPackagesOutput);
+
+    // The package names themselves are every third line
+    $outdatedPackages = array_filter($lines, function($key) {
+      return $key % 3 === 0;
+    }, ARRAY_FILTER_USE_KEY);
+
+    $excludePackages = [
+      'tinymce',
+      'react-router-dom', // MAILPOET-3911
+      'react-tooltip', // MAILPOET-5482
+      'codemirror', // MAILPOET-5483
+      '@babel/preset-env', // MAILPOET-5489
+      'react-string-replace', // MAILPOET-5490
+      'babel-loader', // MAILPOET-5491
+      'stylelint', // MAILPOET-5462
+      'backbone', // Will remove with new email editor
+      'backbone.marionette', // Will remove with new email editor
+      'history',
+      'fork-ts-checker-webpack-plugin',
+    ];
+
+    $majorVersionChanges = [];
+
+    foreach ($outdatedPackages as $packageName) {
+      // @wordpress packages should be handled all together
+      if (strpos($packageName, '@wordpress') !== false) {
+        continue;
+      }
+
+      // @types should be kept in sync with the major version of the dependency and will be easiest to update after
+      if (strpos($packageName, '@types') !== false) {
+        continue;
+      }
+
+      $packageName = str_replace(' (dev)', '', $packageName);
+
+      if (in_array($packageName, $excludePackages)) {
+        $this->say("Skipping $packageName");
+        continue;
+      }
+
+      $this->say("Updating $packageName");
+
+      $oldVersion = $this->getCurrentJsPackageVersion($packageName);
+      $oldMajorVersion = explode('.', $oldVersion)[0];
+
+      if ($latest) {
+        $this->taskExec("pnpm up -L $packageName")->run();
+      } else {
+        $this->taskExec("pnpm up $packageName")->run();
+      }
+
+      if ($this->taskExec("pnpm list $packageName")->run()->wasSuccessful()) {
+        $newVersion = $this->getCurrentJsPackageVersion($packageName);
+        if ($newVersion === $oldVersion) {
+          continue;
+        }
+
+        if ($runChecks) {
+          $collection = $this->collectionBuilder();
+          $collection
+            ->addCode([$this, 'installJs'])
+            ->addCode([$this, 'compileJs'])
+            ->addCode([$this, 'compileCss'])
+            ->addCode([$this, 'qaFrontendAssets'])
+            ->run();
+        }
+
+        $newMajorVersion = explode('.', $newVersion)[0];
+
+        $this->taskExecStack()
+          ->exec("git add ./package.json")
+          ->exec('git add ../pnpm-lock.yaml')
+          ->exec("git commit --no-verify -m \"Update $packageName from $oldVersion to $newVersion\" -m \"\" -m \"$ticket\"")
+          ->run();
+        if ($oldMajorVersion !== $newMajorVersion) {
+          $majorVersionChanges[] = $packageName;
+        }
+      } else {
+        $this->say("Update of $packageName failed. Exiting.");
+        exit(1);
+      }
+    }
+
+    if ($runDedupe) {
+      $this->taskExecStack()
+        ->exec('pnpm dedupe')
+        ->exec('git add ../pnpm-lock.yaml')
+        ->exec("git commit --no-verify -m \"Update lock file after pnpm dedupe\" -m \"\" -m \"$ticket\"")
+        ->run();
+    }
+
+    if (count($majorVersionChanges) > 0) {
+      $this->say(sprintf("The following packages changed major version: %s. Check to see if any of them need to have their @types updated.", implode(', ', $majorVersionChanges)));
+    }
   }
 
   public function watchCss() {
@@ -1465,5 +1585,12 @@ class RoboFile extends \Robo\Tasks {
     $path = __DIR__ . '/../.circleci/nproc.js';
     $nproc = (int)$this->taskExec("node $path")->printOutput(false)->run()->stopOnFail()->getMessage();
     return max(min($nproc * $multiplier, $max), $min);
+  }
+
+  private function getCurrentJsPackageVersion(string $packageName) {
+    $versionInfo = $this->taskExec("pnpm list $packageName")->printOutput(false)->run()->getMessage();
+    $lines = explode("\n", $versionInfo);
+    $lastLine = end($lines);
+    return explode(' ', $lastLine)[1];
   }
 }
