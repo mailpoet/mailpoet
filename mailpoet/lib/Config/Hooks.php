@@ -419,6 +419,13 @@ class Hooks {
       10,
       1
     );
+
+    $this->wp->addAction(
+      'woocommerce_order_refunded',
+      [$this->hooksWooCommerce, 'trackRefund'],
+      10,
+      1
+    );
   }
 
   public function setupWooCommerceSubscriberEngagement() {

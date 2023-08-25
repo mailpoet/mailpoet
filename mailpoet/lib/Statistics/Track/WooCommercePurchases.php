@@ -92,6 +92,14 @@ class WooCommercePurchases {
     }
   }
 
+  public function trackRefund($id) {
+    $order = $this->woocommerceHelper->wcGetOrder($id);
+    if (!$order instanceof WC_Order) {
+      return;
+    }
+    $this->trackExistingStatistic($order);
+  }
+
   /**
    * Returns true when a valid purchase statistic for an order was found.
    *

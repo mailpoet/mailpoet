@@ -158,7 +158,7 @@ class WooCommercePurchasesTest extends \MailPoetTest {
     expect($click->getId())->equals($click->getId());
     expect($purchaseStats[0]->getOrderId())->equals($orderMock->get_id());
     expect($purchaseStats[0]->getOrderCurrency())->equals($orderMock->get_currency());
-    expect($purchaseStats[0]->getOrderPriceTotal())->equals($orderMock->get_total());
+    expect($purchaseStats[0]->getOrderPriceTotal())->equals($orderMock->get_remaining_refund_amount());
   }
 
   public function testItTracksPaymentForMultipleNewsletters() {
@@ -544,13 +544,13 @@ class WooCommercePurchasesTest extends \MailPoetTest {
       ->disableOriginalConstructor()
       ->disableOriginalClone()
       ->disableArgumentCloning()
-      ->setMethods(['get_id', 'get_date_created', 'get_billing_email', 'get_total', 'get_currency', 'get_status'])
+      ->setMethods(['get_id', 'get_date_created', 'get_billing_email', 'get_remaining_refund_amount', 'get_currency', 'get_status'])
       ->getMock();
 
     $mock->method('get_id')->willReturn($id);
     $mock->method('get_date_created')->willReturn($dateCreated ?? new DateTime());
     $mock->method('get_billing_email')->willReturn($email);
-    $mock->method('get_total')->willReturn((string)$totalPrice);
+    $mock->method('get_remaining_refund_amount')->willReturn((string)$totalPrice);
     $mock->method('get_currency')->willReturn('EUR');
     $mock->method('get_status')->willReturn($status);
     return $mock;
