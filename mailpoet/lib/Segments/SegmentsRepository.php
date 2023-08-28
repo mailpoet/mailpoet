@@ -11,6 +11,8 @@ use MailPoet\Entities\NewsletterSegmentEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Form\FormsRepository;
+use MailPoet\InvalidStateException;
+use MailPoet\Logging\LoggerFactory;
 use MailPoet\Newsletter\Segment\NewsletterSegmentRepository;
 use MailPoet\NotFoundException;
 use MailPoet\WP\Functions as WPFunctions;
@@ -33,16 +35,21 @@ class SegmentsRepository extends Repository {
   /** @var WPFunctions */
   private $wp;
 
+  /** @var LoggerFactory */
+  private $loggerFactory;
+
   public function __construct(
     EntityManager $entityManager,
     NewsletterSegmentRepository $newsletterSegmentRepository,
     FormsRepository $formsRepository,
-    WPFunctions $wp
+    WPFunctions $wp,
+    LoggerFactory $loggerFactory
   ) {
     parent::__construct($entityManager);
     $this->newsletterSegmentRepository = $newsletterSegmentRepository;
     $this->formsRepository = $formsRepository;
     $this->wp = $wp;
+    $this->loggerFactory = $loggerFactory;
   }
 
   protected function getEntityClassName() {
@@ -54,7 +61,7 @@ class SegmentsRepository extends Repository {
    * @return SegmentEntity[]
    */
   public function findByTypeNotIn(array $types): array {
-    return $this->doctrineRepository->createQueryBuilder('s')
+      return $this->doctrineRepository->createQueryBuilder('s')
       ->select('s')
       ->where('s.type NOT IN (:types)')
       ->setParameter('types', $types)
@@ -134,6 +141,28 @@ class SegmentsRepository extends Repository {
     if (!$this->isNameUnique($name, $id)) {
       throw new ConflictException("Could not create new segment with name [{$name}] because a segment with that name already exists.");
     }
+  }
+
+  /**
+   * @param int $id
+   *
+   * @return SegmentEntity
+   * @throws InvalidStateException
+   */
+  public function verifyFilterSegmentExists(int $id): SegmentEntity {
+    try {
+      $filterSegment = $this->findOneById($id);
+      if (!$filterSegment instanceof SegmentEntity) {
+        throw InvalidStateException::create()->withMessage("Filter segment with ID of $id could not be found.");
+      }
+      if ($filterSegment->getType() !== SegmentEntity::TYPE_DYNAMIC) {
+        throw InvalidStateException::create()->withMessage("Filter segment ID must be a dynamic segment. Type of filter with ID {$filterSegment->getId()} is {$filterSegment->getType()}.");
+      }
+    } catch (InvalidStateException $exception) {
+      $this->loggerFactory->getLogger(LoggerFactory::TOPIC_SEGMENTS)->error('Error verifying filter segment: ' . $exception->getMessage());
+      throw $exception;
+    }
+    return $filterSegment;
   }
 
   /**

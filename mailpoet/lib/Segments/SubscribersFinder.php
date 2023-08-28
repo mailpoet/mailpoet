@@ -8,7 +8,6 @@ use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\InvalidStateException;
-use MailPoet\UnexpectedValueException;
 use MailPoetVendor\Doctrine\DBAL\Connection;
 use MailPoetVendor\Doctrine\DBAL\ParameterType;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
@@ -34,6 +33,10 @@ class SubscribersFinder {
     $this->entityManager = $entityManager;
   }
 
+  /**
+   * @return array
+   * @throws InvalidStateException
+   */
   public function findSubscribersInSegments($subscribersToProcessIds, $newsletterSegmentsIds, ?int $filterSegmentId = null) {
     $result = [];
     foreach ($newsletterSegmentsIds as $segmentId) {
@@ -45,14 +48,9 @@ class SubscribersFinder {
     }
 
     if (is_int($filterSegmentId)) {
-      $filterSegment = $this->segmentsRepository->findOneById($filterSegmentId);
-      if ($filterSegment instanceof SegmentEntity) {
-        if ($filterSegment->getType() !== SegmentEntity::TYPE_DYNAMIC) {
-          throw new UnexpectedValueException("Filter segment ID must be a dynamic segment. Type of filter with ID {$filterSegment->getId()} is {$filterSegment->getType()}.");
-        }
-        $idsInFilterSegment = $this->findSubscribersInSegment($filterSegment, $subscribersToProcessIds);
-        $result = array_intersect($result, $idsInFilterSegment);
-      }
+      $filterSegment = $this->segmentsRepository->verifyFilterSegmentExists($filterSegmentId);
+      $idsInFilterSegment = $this->findSubscribersInSegment($filterSegment, $subscribersToProcessIds);
+      $result = array_intersect($result, $idsInFilterSegment);
     }
 
     return $this->unique($result);
@@ -74,6 +72,13 @@ class SubscribersFinder {
    */
   public function addSubscribersToTaskFromSegments(ScheduledTaskEntity $task, array $segmentIds, ?int $filterSegmentId = null) {
     // Prepare subscribers on the DB side for performance reasons
+    if (is_int($filterSegmentId)) {
+      try {
+        $this->segmentsRepository->verifyFilterSegmentExists($filterSegmentId);
+      } catch (InvalidStateException $exception) {
+        return 0;
+      }
+    }
     $staticSegmentIds = [];
     $dynamicSegmentIds = [];
     foreach ($segmentIds as $segment) {
