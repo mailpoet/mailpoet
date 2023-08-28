@@ -66,6 +66,7 @@ class SubscriberStatisticsRepositoryTest extends \MailPoetTest {
     $newsletter = (new Newsletter())->withSendingQueue()->create();
     $yearAgo = Carbon::now()->subYear();
     $open = (new StatisticsOpens($newsletter, $subscriber))->withCreatedAt($yearAgo)->create();
+    $newsletterSendStat = (new StatisticsNewsletters($newsletter, $subscriber))->withSentAt($yearAgo)->create();
 
     expect($this->repository->getStatisticsOpenCount($subscriber, null))->equals(1);
     expect($this->repository->getStatisticsOpenCount($subscriber, $yearAgo))->equals(1);
@@ -78,6 +79,7 @@ class SubscriberStatisticsRepositoryTest extends \MailPoetTest {
     $newsletter = (new Newsletter())->withSendingQueue()->create();
     $yearAgo = Carbon::now()->subYear();
     $open = (new StatisticsOpens($newsletter, $subscriber))->withMachineUserAgentType()->withCreatedAt($yearAgo)->create();
+    $newsletterSendStat = (new StatisticsNewsletters($newsletter, $subscriber))->withSentAt($yearAgo)->create();
 
     expect($this->repository->getStatisticsMachineOpenCount($subscriber, null))->equals(1);
     expect($this->repository->getStatisticsMachineOpenCount($subscriber, $yearAgo))->equals(1);

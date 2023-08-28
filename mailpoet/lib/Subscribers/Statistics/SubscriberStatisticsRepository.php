@@ -58,12 +58,9 @@ class SubscriberStatisticsRepository extends Repository {
   }
 
   public function getStatisticsOpenCountQuery(SubscriberEntity $subscriber, ?Carbon $startTime = null): QueryBuilder {
-    $queryBuilder = $this->getStatisticsCountQuery(StatisticsOpenEntity::class, $subscriber)
-      ->join('stats.newsletter', 'newsletter');
+    $queryBuilder = $this->getStatisticsCountQuery(StatisticsOpenEntity::class, $subscriber);
     if ($startTime) {
-      $queryBuilder
-        ->andWhere('(newsletter.sentAt >= :dateTime OR newsletter.sentAt IS NULL)')
-        ->andWhere('stats.createdAt >= :dateTime')
+      $queryBuilder->join(StatisticsNewsletterEntity::class, 'sent_stats', 'WITH', 'stats.newsletter = sent_stats.newsletter AND sent_stats.sentAt >= :dateTime')
         ->setParameter('dateTime', $startTime);
     }
     return $queryBuilder;
