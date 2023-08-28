@@ -2,6 +2,7 @@
 
 namespace MailPoet\Test\Acceptance;
 
+use Codeception\Util\Locator;
 use Facebook\WebDriver\WebDriverKeys;
 use MailPoet\Subscription\Captcha\CaptchaConstants;
 use MailPoet\Test\DataFactories\Form;
@@ -119,7 +120,7 @@ class GutenbergFormBlockCest {
     $i->amEditingPostWithId($postId);
     $i->waitForText('My Gutenberg form');
     $i->pressKey('body', WebDriverKeys::ESCAPE);
-    $i->fillField('.block-editor-rich-text__editable', '/MailPoet Subscription Form');
+    $i->fillField(Locator::find('p', ['aria-label' => 'Empty block']), '/MailPoet Subscription Form');
     $i->selectOption('.mailpoet-block-create-forms-list', 'My form');
     $i->click('Update');
     $i->waitForText('Page updated.');
