@@ -3,7 +3,7 @@ Contributors: mailpoet, woocommerce, automattic
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 6.2
 Tested up to: 6.3
-Stable tag: 4.25.0
+Stable tag: 4.26.0
 Requires PHP: 7.3
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -218,6 +218,11 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 4.26.0 - 2023-08-28 =
+* Fixed: error "Objects are not valid as a React child" when the premium plugin version is incompatible;
+* Fixed: edge case that could lead to inactive subscribers tasks being blocked in some circumstances;
+* Fixed: incompatibility between the button to close form pop-ups and some themes.
 
 = 4.25.0 - 2023-08-21 =
 * Added: "is blank" and "is not blank" option for custom field segments;
