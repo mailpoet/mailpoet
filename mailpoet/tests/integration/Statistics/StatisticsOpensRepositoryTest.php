@@ -137,10 +137,12 @@ class StatisticsOpensRepositoryTest extends \MailPoetTest {
     $this->createSubscriberSegment($subscriber2, $segment);
     $subscriber->setEngagementScoreUpdatedAt((new CarbonImmutable())->subDays(4));
     $sentAt = (new Carbon())->subMonths(13);
-    $this->createStatisticsNewsletter($this->createNewsletter(), $subscriber, $sentAt);
+    $this->createStatisticsNewsletter($this->createNewsletter($sentAt), $subscriber, $sentAt);
+    // The subscriber needs at least 3 sent emails in the last year to have an engagement score
     $this->createStatisticsNewsletter($this->createNewsletter(), $subscriber);
     $this->createStatisticsNewsletter($this->createNewsletter(), $subscriber);
-    $statisticsNewsletter = $this->createStatisticsNewsletter($this->createNewsletter($sentAt), $subscriber);
+    $this->createStatisticsNewsletter($this->createNewsletter(), $subscriber);
+    $statisticsNewsletter = $this->createStatisticsNewsletter($this->createNewsletter($sentAt), $subscriber, $sentAt);
     $newsletter = $statisticsNewsletter->getNewsletter();
     $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
     $queue = $newsletter->getQueues()->first();
