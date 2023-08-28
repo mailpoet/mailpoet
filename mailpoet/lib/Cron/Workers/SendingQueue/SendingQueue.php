@@ -11,6 +11,7 @@ use MailPoet\Cron\Workers\StatsNotifications\Scheduler as StatsNotificationsSche
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\InvalidStateException;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Mailer\MetaInfo;
@@ -237,7 +238,17 @@ class SendingQueue {
       );
       if (!empty($newsletterSegmentsIds[0])) {
         // Check that subscribers are in segments
-        $foundSubscribersIds = $this->subscribersFinder->findSubscribersInSegments($subscribersToProcessIds, $newsletterSegmentsIds, $filterSegmentId);
+        try {
+          $foundSubscribersIds = $this->subscribersFinder->findSubscribersInSegments($subscribersToProcessIds, $newsletterSegmentsIds, $filterSegmentId);
+        } catch (InvalidStateException $exception) {
+          $this->loggerFactory->getLogger(LoggerFactory::TOPIC_NEWSLETTERS)->info(
+            'paused task in sending queue due to problem finding subscribers: ' . $exception->getMessage(),
+            ['task_id' => $queue->taskId]
+          );
+          $queue->status = ScheduledTaskEntity::STATUS_PAUSED;
+          $queue->save();
+          return;
+        }
         $foundSubscribers = empty($foundSubscribersIds) ? [] : SubscriberModel::whereIn('id', $foundSubscribersIds)
           ->whereNull('deleted_at')
           ->findMany();

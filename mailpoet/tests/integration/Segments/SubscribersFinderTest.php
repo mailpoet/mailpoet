@@ -6,13 +6,13 @@ use Codeception\Util\Stub;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\InvalidStateException;
 use MailPoet\Newsletter\Sending\ScheduledTaskSubscribersRepository;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\Test\DataFactories\DynamicSegment;
 use MailPoet\Test\DataFactories\ScheduledTask as ScheduledTaskFactory;
 use MailPoet\Test\DataFactories\Segment as SegmentFactory;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
-use MailPoet\UnexpectedValueException;
 use MailPoetVendor\Carbon\Carbon;
 use PHPUnit\Framework\MockObject\MockObject;
 
@@ -214,7 +214,7 @@ class SubscribersFinderTest extends \MailPoetTest {
   }
 
   public function testFilterSegmentMustBeDynamicSegment() {
-    $this->expectException(UnexpectedValueException::class);
+    $this->expectException(InvalidStateException::class);
     $this->subscribersFinder->findSubscribersInSegments([$this->subscriber1->getId()], [$this->segment1->getId()], $this->segment2->getId());
   }
 
