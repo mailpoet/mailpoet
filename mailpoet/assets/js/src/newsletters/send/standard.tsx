@@ -167,13 +167,13 @@ let fields: Array<Field> = [
   },
   {
     name: 'segments',
-    label: __('Lists', 'mailpoet'),
+    label: __('Send to', 'mailpoet'),
     tip: __(
       'Subscribers in multiple lists will only receive one email.',
       'mailpoet',
     ),
     type: 'selection',
-    placeholder: __('Select a list', 'mailpoet'),
+    placeholder: __('Choose', 'mailpoet'),
     id: 'mailpoet_segments',
     api_version: window.mailpoet_api_version,
     endpoint: 'segments',
