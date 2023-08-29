@@ -9,15 +9,10 @@ import {
 import { __ } from '@wordpress/i18n';
 import { starFilled } from '@wordpress/icons';
 import { Tag } from '@woocommerce/components';
+import { SegmentTemplate } from 'segments/types';
 
 type TemplateListItemProps = {
-  template: {
-    id: number;
-    name: string;
-    description: string;
-    category: string;
-    isEssential: boolean;
-  };
+  template: SegmentTemplate;
 };
 
 export function TemplateListItem({
