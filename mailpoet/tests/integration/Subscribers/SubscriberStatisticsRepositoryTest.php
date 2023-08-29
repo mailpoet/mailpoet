@@ -27,26 +27,29 @@ class SubscriberStatisticsRepositoryTest extends \MailPoetTest {
   public function testItFetchesClickCount(): void {
     $yearAgo = Carbon::now()->subYear();
     $monthAgo = Carbon::now()->subMonth();
+    $fiveYearsAgo = Carbon::now()->subYears(5);
 
     $subscriber = (new Subscriber())->create();
 
     $newsletter = (new Newsletter())->withSendingQueue()->create();
     $link = (new NewsletterLink($newsletter))->create();
+    $sendStat = (new StatisticsNewsletters($newsletter, $subscriber))->withSentAt($monthAgo)->create();
     $click = (new StatisticsClicks($link, $subscriber))
       ->withCreatedAt($monthAgo)
       ->create();
 
     $newsletter2 = (new Newsletter())->withSendingQueue()->create();
     $link2 = (new NewsletterLink($newsletter2))->create();
+    $sendStat2 = (new StatisticsNewsletters($newsletter2, $subscriber))->withSentAt($yearAgo)->create();
     $click2 = (new StatisticsClicks($link2, $subscriber))
       ->withCreatedAt($yearAgo)
       ->create();
 
-
     $newsletter3 = (new Newsletter())->withSendingQueue()->create();
     $link3 = (new NewsletterLink($newsletter3))->create();
+    $sendStat3 = (new StatisticsNewsletters($newsletter3, $subscriber))->withSentAt($fiveYearsAgo)->create();
     $click3 = (new StatisticsClicks($link3, $subscriber))
-      ->withCreatedAt(Carbon::now()->subYears(5))
+      ->withCreatedAt($fiveYearsAgo)
       ->create();
 
     $lifetimeCount = $this->repository->getStatisticsClickCount($subscriber, null);
