@@ -28,12 +28,12 @@ export let options = {
   },
   scenarios: {},
   thresholds: {
-    webvital_largest_content_paint: ['p(75) < 8000'],
-    webvital_first_input_delay: ['p(75) < 300'],
-    webvital_cumulative_layout_shift: ['p(75) < 0.25'],
-    webvital_time_to_first_byte: ['p(75) < 4000'],
-    webvital_first_contentful_paint: ['p(75) < 4000'],
-    webvital_interaction_to_next_paint: ['p(75) < 300'],
+    browser_web_vital_lcp: ['p(75) < 8000'],
+    browser_web_vital_fid: ['p(75) < 300'],
+    browser_web_vital_cls: ['p(75) < 0.25'],
+    browser_web_vital_ttfb: ['p(75) < 4000'],
+    browser_web_vital_fcp: ['p(75) < 4000'],
+    browser_web_vital_inp: ['p(75) < 300'],
     checks: ['rate==1.0'],
   },
   tags: {
@@ -45,6 +45,11 @@ export let options = {
 let scenarios = {
   pullrequests: {
     executor: 'per-vu-iterations',
+    options: {
+      browser: {
+        type: 'chromium', // chromium is the only supported browser type
+      },
+    },
     vus: 1,
     iterations: 1,
     maxDuration: '10m',
@@ -52,6 +57,11 @@ let scenarios = {
   },
   nightlytests: {
     executor: 'per-vu-iterations',
+    options: {
+      browser: {
+        type: 'chromium',
+      },
+    },
     vus: 1,
     iterations: 3,
     maxDuration: '30m',

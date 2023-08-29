@@ -291,7 +291,7 @@ class RoboFile extends \Robo\Tasks {
       ->option('env', 'K6_BROWSER_ENABLED=1')
       ->option('env', 'URL=' . $opts['url'])
       ->option('env', 'PW=' . $opts['pw'])
-      ->option('env', 'HEADLESS=' . ($opts['head'] ? 'false' : 'true'))
+      ->option('env', 'K6_BROWSER_HEADLESS=' . ($opts['head'] ? 'false' : 'true'))
       ->option('env', 'SCENARIO=' . $opts['scenario'])
       ->arg($path ?? "$dir/tests/performance/scenarios.js")
       ->dir($dir)->run();
