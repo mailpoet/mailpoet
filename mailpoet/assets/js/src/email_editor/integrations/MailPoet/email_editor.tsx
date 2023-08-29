@@ -7,8 +7,9 @@ import { useDisableWelcomeGuide } from 'email_editor/engine/hooks';
 import { SelectTemplate } from 'email_editor/integrations/MailPoet/components/select_template';
 import { StylesSidebar } from 'email_editor/integrations/MailPoet/components/styles_sidebar';
 import { EmailSettings } from 'email_editor/integrations/MailPoet/components/email_settings';
-import { NextButton } from './components/next_button';
+import { MpPreviewOptions } from 'email_editor/integrations/MailPoet/components/preview_options';
 
+import { NextButton } from './components/next_button';
 import { MailPoetEmailData } from './types';
 import './email_editor.scss';
 
@@ -33,7 +34,10 @@ function Editor() {
   return (
     <>
       <NextButtonSlot>
-        <NextButton newsletterId={mailpoetData?.id ?? null} />
+        <>
+          <MpPreviewOptions />
+          <NextButton newsletterId={mailpoetData?.id ?? null} />
+        </>
       </NextButtonSlot>
       <SelectTemplate />
       <StylesSidebar />
