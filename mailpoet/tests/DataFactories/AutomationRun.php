@@ -13,6 +13,7 @@ use MailPoet\Automation\Engine\Storage\AutomationRunLogStorage;
 use MailPoet\Automation\Engine\Storage\AutomationRunStorage;
 use MailPoet\Automation\Engine\Storage\AutomationStorage;
 use MailPoet\DI\ContainerWrapper;
+use MailPoet\InvalidStateException;
 
 class AutomationRun {
 
@@ -106,11 +107,17 @@ class AutomationRun {
     $id = $this->storage->createAutomationRun($automationRun);
     $this->storage->updateNextStep($id, $this->nextStep);
     $this->automationRun = $this->storage->getAutomationRun($id);
+    if (!$this->automationRun) {
+      throw new InvalidStateException();
+    }
     return $this->automationRun;
   }
 
   public function generateLogs(Entity $run, string $lastStep) {
     $automation = ContainerWrapper::getInstance(WP_DEBUG)->get(AutomationStorage::class)->getAutomation($run->getAutomationId());
+    if (!$automation) {
+      throw new InvalidStateException();
+    }
     $steps = $this->findPathToStep($automation, $lastStep);
 
     $logStorage = ContainerWrapper::getInstance(WP_DEBUG)->get(AutomationRunLogStorage::class);

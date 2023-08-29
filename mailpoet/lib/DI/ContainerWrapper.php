@@ -64,7 +64,7 @@ class ContainerWrapper implements ContainerInterface {
     return $this->premiumContainer;
   }
 
-  public static function getInstance($debug = false) {
+  public static function getInstance($debug = false): ContainerWrapper {
     if (self::$instance) {
       return self::$instance;
     }

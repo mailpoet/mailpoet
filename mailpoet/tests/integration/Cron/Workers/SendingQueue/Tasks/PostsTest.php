@@ -47,8 +47,8 @@ class PostsTest extends \MailPoetTest {
     expect($this->postsTask->extractAndSave($renderedNewsletter, $newsletter))->equals(true);
     $newsletterPostRepository = ContainerWrapper::getInstance()->get(NewsletterPostsRepository::class);
     $newsletterPost = $newsletterPostRepository->findOneBy(['newsletter' => $parent]);
-    expect($newsletterPost)->isInstanceOf(NewsletterPostEntity::class);
-    expect($newsletterPost->getPostId())->equals($postId);
+    $this->assertInstanceOf(NewsletterPostEntity::class, $newsletterPost);
+    $this->assertSame($newsletterPost->getPostId(), $postId);
   }
 
   public function testItDoesNotSavePostsWhenNewsletterIsNotANotificationHistory() {

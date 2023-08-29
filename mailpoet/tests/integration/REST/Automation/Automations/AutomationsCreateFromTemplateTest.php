@@ -72,7 +72,8 @@ class AutomationsCreateFromTemplateTest extends AutomationTest {
     ]);
     $allAutomations = $storage->getAutomations();
     $createdAutomation = array_pop($allAutomations);
-    expect($createdAutomation->getStatus())->equals('draft');
+    $this->assertInstanceOf(Automation::class, $createdAutomation);
+    $this->assertSame($createdAutomation->getStatus(), 'draft');
   }
 
   public function testAutomationsCreatedFromTemplatesReturnsAutomationId(): void {
