@@ -5,9 +5,10 @@ import { store as editorStore } from '@wordpress/editor';
 import { NextButtonSlot } from 'email_editor/engine/components/next_button_slot';
 import { useDisableWelcomeGuide } from 'email_editor/engine/hooks';
 import { SelectTemplate } from 'email_editor/integrations/MailPoet/components/select_template';
+import { StylesSidebar } from 'email_editor/integrations/MailPoet/components/styles_sidebar';
 import { NextButton } from './components/next_button';
-import { MailPoetEmailData } from './types';
 
+import { MailPoetEmailData } from './types';
 import './email_editor.scss';
 
 // Hack to temporarily disable block patterns
@@ -34,6 +35,7 @@ function Editor() {
         <NextButton newsletterId={mailpoetData?.id ?? null} />
       </NextButtonSlot>
       <SelectTemplate />
+      <StylesSidebar />
     </>
   );
 }
