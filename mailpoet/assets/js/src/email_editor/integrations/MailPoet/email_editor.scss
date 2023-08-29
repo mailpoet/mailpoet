@@ -13,4 +13,9 @@
   .edit-post-visual-editor {
     background: #ccc;
   }
+
+  // Hide Post Summary panel
+  .edit-post-sidebar .components-panel .edit-post-post-status {
+    display: none;
+  }
 }

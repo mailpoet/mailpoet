@@ -1,9 +1,11 @@
 import { PluginDocumentSettingPanel } from '@wordpress/edit-post';
+import { EmailTypeInfo } from 'email_editor/integrations/MailPoet/components/email_type_info';
 
 export function EmailSettings() {
   // Render settings panels using PluginDocumentSettingPanel component
   return (
     <>
+      <EmailTypeInfo />
       <PluginDocumentSettingPanel
         className="mailpoet-email-settings"
         title="Details"
