@@ -61,8 +61,12 @@
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
-  height: 148px;
   width: 336px;
+
+  > div {
+    display: grid;
+    grid-template-rows: auto 1fr;
+  }
 }
 
 .mailpoet-templates-card-header {
@@ -96,7 +100,10 @@
 }
 
 .mailpoet-templates-card-body {
+  display: grid;
+  grid-template-rows: 1fr auto;
   padding: 0 24px 24px;
+  width: 336px;
 
   p {
     margin: 0;
@@ -104,7 +111,7 @@
 
   .woocommerce-tag {
     margin: 0;
-    padding-top: 10px;
+    padding-top: 16px;
   }
 }
 
