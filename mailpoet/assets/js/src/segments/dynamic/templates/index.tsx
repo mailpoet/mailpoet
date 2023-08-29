@@ -12,65 +12,39 @@ import { Badge } from '@woocommerce/components';
 import { HideScreenOptions } from 'common/hide_screen_options/hide_screen_options';
 import { TopBarWithBeamer } from 'common/top_bar/top_bar';
 import { TemplateListItem } from 'segments/dynamic/templates/components/template_list_item';
-import { templates } from 'segments/dynamic/templates/templates';
+import {
+  templates,
+  templateCategories,
+} from 'segments/dynamic/templates/templates';
 import * as ROUTES from 'segments/routes';
 
-const tabConfig = [
+const tabs = [
   {
     name: 'all',
     title: (
       <>
-        <span>All</span>
-        <Badge count={21} />
+        <span>{__('All', 'mailpoet')}</span>
+        <Badge count={templates.length} />
       </>
     ) as any, // eslint-disable-line @typescript-eslint/no-explicit-any -- typed as string but supports JSX
   },
-  {
-    name: 'essentials',
+];
+
+templateCategories.forEach((category) => {
+  const count = templates.filter(
+    (template) => template.category === category.slug,
+  ).length;
+
+  tabs.push({
+    name: category.slug,
     title: (
       <>
-        <span>Essentials</span>
-        <Badge count={10} />
+        <span>{category.name}</span>
+        <Badge count={count} />
       </>
     ) as any, // eslint-disable-line @typescript-eslint/no-explicit-any -- typed as string but supports JSX
-  },
-  {
-    name: 'engagement',
-    title: (
-      <>
-        <span>Engagement</span>
-        <Badge count={9} />
-      </>
-    ) as any, // eslint-disable-line @typescript-eslint/no-explicit-any -- typed as string but supports JSX
-  },
-  {
-    name: 'purchase-history',
-    title: (
-      <>
-        <span>Purchase history</span>
-        <Badge count={6} />
-      </>
-    ) as any, // eslint-disable-line @typescript-eslint/no-explicit-any -- typed as string but supports JSX
-  },
-  {
-    name: 'shopping-behavior',
-    title: (
-      <>
-        <span>Shopping behavior</span>
-        <Badge count={3} />
-      </>
-    ) as any, // eslint-disable-line @typescript-eslint/no-explicit-any -- typed as string but supports JSX
-  },
-  {
-    name: 'predictive',
-    title: (
-      <>
-        <span>Predictive</span>
-        <Badge count={3} />
-      </>
-    ) as any, // eslint-disable-line @typescript-eslint/no-explicit-any -- typed as string but supports JSX
-  },
-] as const;
+  });
+});
 
 export function SegmentTemplates(): JSX.Element {
   return (
@@ -105,12 +79,17 @@ export function SegmentTemplates(): JSX.Element {
         </FlexItem>
       </Flex>
 
-      <TabPanel tabs={tabConfig}>
-        {() => (
+      <TabPanel tabs={tabs}>
+        {(tab) => (
           <div className="mailpoet-templates-card-grid">
-            {templates.map((template) => (
-              <TemplateListItem key={template.name} template={template} />
-            ))}
+            {templates
+              .filter(
+                (template) =>
+                  tab.name === 'all' || template.category === tab.name,
+              )
+              .map((template) => (
+                <TemplateListItem key={template.name} template={template} />
+              ))}
           </div>
         )}
       </TabPanel>
