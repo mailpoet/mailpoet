@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace MailPoet\Migrations;
+namespace MailPoet\Migrations\App;
 
 use MailPoet\Migrator\AppMigration;
 
