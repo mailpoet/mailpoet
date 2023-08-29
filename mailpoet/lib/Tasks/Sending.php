@@ -5,6 +5,7 @@ namespace MailPoet\Tasks;
 use MailPoet\Cron\Workers\SendingQueue\SendingQueue as SendingQueueAlias;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\SendingQueueEntity;
+use MailPoet\InvalidStateException;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\ScheduledTaskSubscriber;
@@ -194,6 +195,9 @@ class Sending {
   public function getSendingQueueEntity(): SendingQueueEntity {
     $sendingQueuesRepository = ContainerWrapper::getInstance()->get(SendingQueuesRepository::class);
     $sendingQueueEntity = $sendingQueuesRepository->findOneById($this->queue->id);
+    if (!$sendingQueueEntity) {
+      throw new InvalidStateException();
+    }
     $sendingQueuesRepository->refresh($sendingQueueEntity);
 
     return $sendingQueueEntity;

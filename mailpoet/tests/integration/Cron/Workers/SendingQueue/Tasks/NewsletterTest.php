@@ -241,6 +241,7 @@ class NewsletterTest extends \MailPoetTest {
     $newsletterPost = $newsletterPostRepository->findOneBy(['newsletter' => $this->newsletter->getId()]);
     expect($newsletterPost)->isInstanceOf(NewsletterPostEntity::class);
     expect($result)->notEquals(false);
+    $this->assertInstanceOf(NewsletterPostEntity::class, $newsletterPost);
     expect($newsletterPost->getPostId())->equals('10');
   }
 

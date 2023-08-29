@@ -27,6 +27,8 @@ class IntegrationCleanupExtension extends Extension {
     $this->entityManager = ContainerWrapper::getInstance()->get(EntityManager::class);
 
     $mpPrefix = Env::$dbPrefix;
+
+    /** @var string[] $tables */
     $tables = $this->entityManager->getConnection()->fetchFirstColumn("
       SELECT table_name
       FROM information_schema.tables
