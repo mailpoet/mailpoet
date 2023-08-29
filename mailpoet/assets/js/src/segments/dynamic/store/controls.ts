@@ -52,6 +52,7 @@ export async function LOAD_SEGMENT(actionData): Promise<{
 export async function SAVE_SEGMENT(actionData): Promise<{
   success: boolean;
   error?: string[];
+  data?: unknown;
 }> {
   const segment: Segment = actionData.segment;
   try {
@@ -67,6 +68,7 @@ export async function SAVE_SEGMENT(actionData): Promise<{
 
     return {
       success: true,
+      data: response.data,
     };
   } catch (res) {
     const error = isErrorResponse(res)

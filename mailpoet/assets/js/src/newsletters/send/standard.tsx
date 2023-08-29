@@ -10,7 +10,8 @@ import { GATrackingField } from 'newsletters/send/ga_tracking';
 import { Toggle } from 'common/form/toggle/toggle';
 import { withBoundary } from 'common';
 import { NewsLetter, NewsletterStatus } from 'common/newsletter';
-import { Field } from '../../form/types';
+import { Field } from 'form/types';
+import { SendToField } from './send_to_field';
 
 const currentTime = window.mailpoet_current_time || '00:00';
 const tomorrowDateTime = `${window.mailpoet_tomorrow_date} 08:00:00`;
@@ -165,45 +166,7 @@ let fields: Array<Field> = [
       },
     ],
   },
-  {
-    name: 'segments',
-    label: __('Send to', 'mailpoet'),
-    tip: __(
-      'Subscribers in multiple lists will only receive one email.',
-      'mailpoet',
-    ),
-    type: 'selection',
-    placeholder: __('Choose', 'mailpoet'),
-    id: 'mailpoet_segments',
-    api_version: window.mailpoet_api_version,
-    endpoint: 'segments',
-    multiple: true,
-    filter: function filter(segment: { deleted_at: string }): boolean {
-      return !segment.deleted_at;
-    },
-    getLabel: function getLabel(segment: { name: string }): string {
-      return segment.name;
-    },
-    getCount: function getCount(segment: { subscribers: string }): string {
-      return parseInt(segment.subscribers, 10).toLocaleString();
-    },
-    transformChangedValue: function transformChangedValue(
-      segmentIds: string[],
-    ): unknown[] {
-      const allSegments = this.getItems() || [];
-      return segmentIds.map((id) =>
-        allSegments.find((segment) => segment.id === id),
-      );
-    },
-    validation: {
-      'data-parsley-required': true,
-      'data-parsley-required-message': __('Please select a list', 'mailpoet'),
-      'data-parsley-segments-with-subscribers': __(
-        'Please select a list with subscribers.',
-        'mailpoet',
-      ),
-    },
-  },
+  SendToField,
   {
     name: 'options',
     label: __('Schedule it', 'mailpoet'),

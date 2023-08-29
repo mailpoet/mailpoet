@@ -2,7 +2,6 @@ import _ from 'lodash';
 import { ChangeEvent, Component, ContextType } from 'react';
 import jQuery from 'jquery';
 import { __, _x, sprintf } from '@wordpress/i18n';
-import { History, Location } from 'history';
 import ReactStringReplace from 'react-string-replace';
 import slugify from 'slugify';
 import { match as RouterMatch, withRouter } from 'react-router-dom';
@@ -24,6 +23,7 @@ import { GlobalContext } from 'context';
 
 import { extractEmailDomain } from 'common/functions';
 import { NewsLetter, NewsletterType } from 'common/newsletter';
+import { History, Location } from 'history';
 import { mapFilterType } from '../analytics';
 import { PremiumModal } from '../common/premium_modal';
 import { PendingNewsletterMessage } from './send/pending_newsletter_message';
@@ -45,15 +45,18 @@ type NewsletterSendComponentProps = {
   history: History;
   location: Location;
 };
+
 type NewsletterSendComponentState = {
   fields: Record<string, unknown>[] | boolean;
   item: NewsLetter;
   loading: boolean;
   thumbnailPromise?: Promise<unknown>;
   showPremiumModal: boolean;
+  premiumModalMessage?: string;
   validationError?: string | JSX.Element;
   mssKeyPendingApproval: boolean;
 };
+
 const getTimingValueForTracking = (emailOpts: NewsLetter['options']) =>
   emailOpts.afterTimeType === 'immediate'
     ? 'immediate'
@@ -227,6 +230,12 @@ class NewsletterSendComponent extends Component<
 
   getThumbnailPromise = (url) => this.state?.thumbnailPromise ?? fromUrl(url);
 
+  get premiumFeaturesAvailable() {
+    return (
+      window.mailpoet_premium_active && window.mailpoet_has_valid_premium_key
+    );
+  }
+
   isValid = () => jQuery('#mailpoet_newsletter').parsley().isValid();
 
   isValidFromAddress = async () => {
@@ -243,8 +252,6 @@ class NewsletterSendComponent extends Component<
     const fromAddress = this.state.item.sender_address;
     return addresses.indexOf(fromAddress) !== -1;
   };
-
-  isGaFieldDisabled = () => !window.mailpoet_premium_active;
 
   loadItem = (id) => {
     this.setState({ loading: true });
@@ -279,12 +286,20 @@ class NewsletterSendComponent extends Component<
             },
           );
         }
-        if (!item.ga_campaign && !this.isGaFieldDisabled()) {
+        if (!item.ga_campaign && this.premiumFeaturesAvailable) {
           item.ga_campaign = generateGaTrackingCampaignName(
             item.id,
             item.subject,
           );
         }
+        const { location } = this.props;
+        const searchParams = new URLSearchParams(location.search);
+        const filterSegmentId = searchParams.get('filterSegmentId');
+
+        if (filterSegmentId) {
+          response.data.options.filterSegmentId = filterSegmentId;
+        }
+
         this.setState({
           item: response.data,
           fields: this.getFieldsByNewsletter(response.data),
@@ -659,7 +674,7 @@ class NewsletterSendComponent extends Component<
     const name = e.target.name;
     const value = e.target.value;
     this.setState((prevState: NewsletterSendComponentState) => {
-      const item = prevState.item;
+      const item = { ...prevState.item };
       const oldSubject = item.subject;
       const oldGaCampaign = item.ga_campaign;
 
@@ -698,29 +713,66 @@ class NewsletterSendComponent extends Component<
     return field;
   };
 
-  disableGAIfPremiumInactive = (disabled) => (field) => {
-    if (field.name === 'ga_campaign') {
-      let onWrapperClick = () => {};
-      if (disabled()) {
-        onWrapperClick = () => this.setState({ showPremiumModal: true });
-      }
-
-      return {
-        ...field,
-        disabled,
-        onWrapperClick,
-      };
+  disableGAIfPremiumInactive = () => (field) => {
+    if (this.premiumFeaturesAvailable || field.name !== 'ga_campaign') {
+      return field;
     }
-    return field;
+
+    const onWrapperClick = () =>
+      this.setState({
+        showPremiumModal: true,
+        premiumModalMessage: __(
+          'Google Analytics tracking is not available in the free version of the MailPoet plugin.',
+          'mailpoet',
+        ),
+      });
+
+    return {
+      ...field,
+      disabled: true,
+      onWrapperClick,
+    };
   };
 
-  getPreparedFields = (isPaused, gaFieldDisabled) => {
+  disableFilterSegmentToggleIfPremiumInactive = () => (field) => {
+    if (!Array.isArray(field.fields)) {
+      return field;
+    }
+    const newField = { ...field };
+    newField.fields = newField.fields.map((subField) => {
+      if (
+        subField.name !== 'filter-segment-toggle' ||
+        this.premiumFeaturesAvailable
+      ) {
+        return subField;
+      }
+      const onWrapperClick = (event) => {
+        event.preventDefault();
+        this.setState({
+          showPremiumModal: true,
+          premiumModalMessage: __(
+            'Filtering by segment is not available in the free version of the MailPoet plugin.',
+            'mailpoet',
+          ),
+        });
+      };
+      return {
+        ...subField,
+        disabled: true,
+        onWrapperClick,
+      };
+    });
+    return newField;
+  };
+
+  getPreparedFields = (isPaused) => {
     if (!Array.isArray(this.state.fields)) {
       return [];
     }
     return this.state.fields
       .map(this.disableSegmentsSelectorWhenPaused(isPaused))
-      .map(this.disableGAIfPremiumInactive(gaFieldDisabled));
+      .map(this.disableGAIfPremiumInactive())
+      .map(this.disableFilterSegmentToggleIfPremiumInactive());
   };
 
   closePremiumModal = () => this.setState({ showPremiumModal: false });
@@ -738,7 +790,7 @@ class NewsletterSendComponent extends Component<
     } = this.state;
     const isPaused = status === 'sending' && queue && queue.status === 'paused';
     const sendButtonOptions = this.getSendButtonOptions();
-    const fields = this.getPreparedFields(isPaused, this.isGaFieldDisabled);
+    const fields = this.getPreparedFields(isPaused);
 
     const sendingDisabled = !!(
       window.mailpoet_subscribers_limit_reached ||
@@ -833,10 +885,7 @@ class NewsletterSendComponent extends Component<
 
             {showPremiumModal && (
               <PremiumModal onRequestClose={this.closePremiumModal}>
-                {__(
-                  'Google Analytics tracking is not available in the free version of the MailPoet plugin.',
-                  'mailpoet',
-                )}
+                {this.state.premiumModalMessage}
               </PremiumModal>
             )}
           </Form>

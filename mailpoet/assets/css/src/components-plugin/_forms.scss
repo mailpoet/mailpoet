@@ -202,7 +202,8 @@ progress::-moz-progress-bar {
   }
 }
 
-.mailpoet-form-schedule-time {
+.mailpoet-form-schedule-time,
+.mailpoet-form-toggle-text {
   color: $color-text;
   margin-left: $grid-gap;
   vertical-align: middle;
@@ -221,6 +222,23 @@ progress::-moz-progress-bar {
   .parsley-errors-list {
     left: 0;
     margin-top: 2px;
+  }
+
+  .filter-segment-tooltip {
+    fill: $color-primary;
+    margin-left: 10px;
+    vertical-align: middle;
+  }
+
+  .estimated-recipient-count {
+    border-bottom: #949494 dashed 1px;
+    margin-left: 5px;
+  }
+
+  .mailpoet-recipient-count-spinner {
+    height: 18px;
+    margin-left: 5px;
+    vertical-align: middle;
   }
 }
 

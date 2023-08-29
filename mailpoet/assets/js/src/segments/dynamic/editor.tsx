@@ -1,7 +1,6 @@
 import { useEffect } from 'react';
 import { useDispatch, useSelect } from '@wordpress/data';
-import { Link, useRouteMatch } from 'react-router-dom';
-
+import { Link, useRouteMatch, useLocation } from 'react-router-dom';
 import { MailPoet } from 'mailpoet';
 import { Background } from 'common/background/background';
 import { Heading } from 'common/typography/heading/heading';
@@ -18,6 +17,10 @@ export function Editor(): JSX.Element {
     select(storeName).getPreviousPage(),
   );
   const returnPage = previousPage || '/';
+
+  const location = useLocation();
+  const params = new URLSearchParams(location.search);
+  const newsletterId = params.get('newsletterId') || null;
 
   useEffect(() => {
     void pageLoaded(match.params.id);
@@ -42,7 +45,10 @@ export function Editor(): JSX.Element {
         </Link>
       </Heading>
 
-      <Form segmentId={Number(match.params.id)} />
+      <Form
+        segmentId={Number(match.params.id)}
+        newsletterId={Number(newsletterId)}
+      />
     </>
   );
 }

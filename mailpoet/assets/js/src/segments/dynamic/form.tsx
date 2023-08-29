@@ -1,5 +1,6 @@
 import { Fragment, FunctionComponent, useState } from 'react';
 import { useDispatch, useSelect } from '@wordpress/data';
+import { __ } from '@wordpress/i18n';
 
 import { Hooks } from 'wp-js-hooks';
 import { MailPoet } from 'mailpoet';
@@ -28,6 +29,7 @@ import {
 
 interface Props {
   segmentId?: number;
+  newsletterId?: number;
 }
 
 const FiltersBefore = Hooks.applyFilters(
@@ -43,7 +45,7 @@ const FilterAfter = Hooks.applyFilters(
   (): JSX.Element => <div className="mailpoet-gap" />,
 );
 
-export function Form({ segmentId }: Props): JSX.Element {
+export function Form({ segmentId, newsletterId }: Props): JSX.Element {
   const segment: Segment = useSelect(
     (select) => select(storeName).getSegment(),
     [],
@@ -194,14 +196,14 @@ export function Form({ segmentId }: Props): JSX.Element {
             type="submit"
             onClick={(e): void => {
               e.preventDefault();
-              void handleSave(segmentId);
+              void handleSave(segmentId, newsletterId);
             }}
             isDisabled={
               !isFormValid(segment.filters) ||
               subscriberCount.count === undefined
             }
           >
-            {MailPoet.I18n.t('save')}
+            {newsletterId ? __('Save and return', 'mailpoet') : __('Save')}
           </Button>
         </div>
       </div>

@@ -1,10 +1,10 @@
-import _ from 'underscore';
 import { __ } from '@wordpress/i18n';
 import { Hooks } from 'wp-js-hooks';
 import { NotificationScheduling } from 'newsletters/types/notification/scheduling.jsx';
 import { SenderField } from 'newsletters/send/sender_address_field.jsx';
 import { GATrackingField } from 'newsletters/send/ga_tracking';
 import { withBoundary } from 'common';
+import { SendToField } from './send_to_field';
 
 let fields = [
   {
@@ -59,39 +59,7 @@ let fields = [
     type: 'reactComponent',
     component: NotificationScheduling,
   },
-  {
-    name: 'segments',
-    label: __('Lists', 'mailpoet'),
-    tip: __(
-      'Subscribers in multiple lists will only receive one email.',
-      'mailpoet',
-    ),
-    type: 'selection',
-    placeholder: __('Select a list', 'mailpoet'),
-    id: 'mailpoet_segments',
-    api_version: window.mailpoet_api_version,
-    endpoint: 'segments',
-    multiple: true,
-    filter: function filter(segment) {
-      return !segment.deleted_at;
-    },
-    getLabel: function getLabel(segment) {
-      return segment.name;
-    },
-    getCount: function getCount(segment) {
-      return parseInt(segment.subscribers, 10).toLocaleString();
-    },
-    transformChangedValue: function transformChangedValue(segmentIds) {
-      const allSegments = this.getItems();
-      return _.map(segmentIds, (id) =>
-        _.find(allSegments, (segment) => segment.id === id),
-      );
-    },
-    validation: {
-      'data-parsley-required': true,
-      'data-parsley-required-message': __('Please select a list', 'mailpoet'),
-    },
-  },
+  SendToField,
   {
     name: 'sender',
     label: __('Sender', 'mailpoet'),

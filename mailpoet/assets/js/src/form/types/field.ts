@@ -1,7 +1,15 @@
 import { ComponentType, ReactNode } from 'react';
 import { FieldType } from './fieldType';
+import { AnyFormItem } from '../../segments/dynamic';
 
-export type Segment = unknown; // @TODO: add properties
+export type Segment = {
+  id: string;
+  name: string;
+  subscribers: number | string;
+  type: string;
+  filters?: AnyFormItem[];
+  deleted_at?: string;
+};
 
 export type Field = {
   name: string;
@@ -25,6 +33,6 @@ export type Field = {
   filter?: (segment: Segment) => boolean;
   getLabel?: (segment: Segment) => string;
   getCount?: (segment: Segment) => string;
-  transformChangedValue?: (arg: unknown) => Segment;
+  transformChangedValue?: (arg: unknown) => Segment[];
   onWrapperClick?: () => void;
 };

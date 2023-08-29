@@ -154,13 +154,13 @@ class FormField extends Component {
     }
 
     const isDisabled =
-      typeof this.props.field.disabled === 'function'
-        ? this.props.field.disabled(this.props.field)
-        : this.props.field.disabled;
+      typeof dataField.disabled === 'function'
+        ? dataField.disabled(data.field)
+        : dataField.disabled;
 
     const eventListeners = {
-      ...(this.props.field.onWrapperClick
-        ? { onClick: this.props.field.onWrapperClick }
+      ...(dataField.onWrapperClick
+        ? { onClick: dataField.onWrapperClick }
         : {}),
     };
 
