@@ -9,6 +9,7 @@ import { StylesSidebar } from 'email_editor/integrations/MailPoet/components/sty
 import { EmailSettings } from 'email_editor/integrations/MailPoet/components/email_settings';
 import { MpPreviewOptions } from 'email_editor/integrations/MailPoet/components/preview_options';
 import { SendPanel } from 'email_editor/integrations/MailPoet/components/publish_panel';
+import { EmailName } from 'email_editor/integrations/MailPoet/components/email_name';
 
 import { NextButton } from './components/next_button';
 import { MailPoetEmailData } from './types';
@@ -44,6 +45,7 @@ function Editor() {
       <StylesSidebar />
       <EmailSettings />
       <SendPanel />
+      <EmailName />
     </>
   );
 }
