@@ -4,6 +4,7 @@ import { store as coreStore } from '@wordpress/core-data';
 import { store as editorStore } from '@wordpress/editor';
 import { NextButtonSlot } from 'email_editor/engine/components/next_button_slot';
 import { useDisableWelcomeGuide } from 'email_editor/engine/hooks';
+import { SelectTemplate } from 'email_editor/integrations/MailPoet/components/select_template';
 import { NextButton } from './components/next_button';
 import { MailPoetEmailData } from './types';
 
@@ -28,9 +29,12 @@ function Editor() {
   useDisableWelcomeGuide();
 
   return (
-    <NextButtonSlot>
-      <NextButton newsletterId={mailpoetData?.id ?? null} />
-    </NextButtonSlot>
+    <>
+      <NextButtonSlot>
+        <NextButton newsletterId={mailpoetData?.id ?? null} />
+      </NextButtonSlot>
+      <SelectTemplate />
+    </>
   );
 }
 
