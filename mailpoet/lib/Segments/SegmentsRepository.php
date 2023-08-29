@@ -149,20 +149,20 @@ class SegmentsRepository extends Repository {
    * @return SegmentEntity
    * @throws InvalidStateException
    */
-  public function verifyFilterSegmentExists(int $id): SegmentEntity {
+  public function verifyDynamicSegmentExists(int $id): SegmentEntity {
     try {
-      $filterSegment = $this->findOneById($id);
-      if (!$filterSegment instanceof SegmentEntity) {
-        throw InvalidStateException::create()->withMessage("Filter segment with ID of $id could not be found.");
+      $dynamicSegment = $this->findOneById($id);
+      if (!$dynamicSegment instanceof SegmentEntity) {
+        throw InvalidStateException::create()->withMessage(sprintf("Could not find segment with ID %s.", $id));
       }
-      if ($filterSegment->getType() !== SegmentEntity::TYPE_DYNAMIC) {
-        throw InvalidStateException::create()->withMessage("Filter segment ID must be a dynamic segment. Type of filter with ID {$filterSegment->getId()} is {$filterSegment->getType()}.");
+      if ($dynamicSegment->getType() !== SegmentEntity::TYPE_DYNAMIC) {
+        throw InvalidStateException::create()->withMessage(sprintf("Segment with ID %s is not a dynamic segment. Its type is %s.", $id, $dynamicSegment->getType()));
       }
     } catch (InvalidStateException $exception) {
-      $this->loggerFactory->getLogger(LoggerFactory::TOPIC_SEGMENTS)->error('Error verifying filter segment: ' . $exception->getMessage());
+      $this->loggerFactory->getLogger(LoggerFactory::TOPIC_SEGMENTS)->error(sprintf("Could not verify existence of dynamic segment: %s", $exception->getMessage()));
       throw $exception;
     }
-    return $filterSegment;
+    return $dynamicSegment;
   }
 
   /**
