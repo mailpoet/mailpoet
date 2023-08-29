@@ -165,3 +165,18 @@ export const templates: SegmentTemplate[] = [
     isEssential: false,
   },
 ];
+
+export const templateCategories = [
+  {
+    slug: SegmentTemplateCategories.ENGAGEMENT,
+    name: __('Engagement', 'mailpoet'),
+  },
+  {
+    slug: SegmentTemplateCategories.PURCHASE_HISTORY,
+    name: __('Purchase History', 'mailpoet'),
+  },
+  {
+    slug: SegmentTemplateCategories.SHOPPING_BEHAVIOR,
+    name: __('Shopping Behavior', 'mailpoet'),
+  },
+];
