@@ -48,9 +48,7 @@ class SubscriberStatisticsRepository extends Repository {
   public function getStatisticsClickCount(SubscriberEntity $subscriber, ?Carbon $startTime = null): int {
     $queryBuilder = $this->getStatisticsCountQuery(StatisticsClickEntity::class, $subscriber);
     if ($startTime) {
-      $queryBuilder
-        ->andWhere('stats.createdAt >= :dateTime')
-        ->setParameter('dateTime', $startTime);
+      $this->applyDateConstraint($queryBuilder, $startTime);
     }
     return (int)$queryBuilder
       ->getQuery()
@@ -60,8 +58,7 @@ class SubscriberStatisticsRepository extends Repository {
   public function getStatisticsOpenCountQuery(SubscriberEntity $subscriber, ?Carbon $startTime = null): QueryBuilder {
     $queryBuilder = $this->getStatisticsCountQuery(StatisticsOpenEntity::class, $subscriber);
     if ($startTime) {
-      $queryBuilder->join(StatisticsNewsletterEntity::class, 'sent_stats', 'WITH', 'stats.newsletter = sent_stats.newsletter AND sent_stats.sentAt >= :dateTime')
-        ->setParameter('dateTime', $startTime);
+      $this->applyDateConstraint($queryBuilder, $startTime);
     }
     return $queryBuilder;
   }
@@ -132,5 +129,12 @@ class SubscriberStatisticsRepository extends Repository {
       count($purchases),
       $this->wcHelper
     );
+  }
+
+  private function applyDateConstraint(QueryBuilder $queryBuilder, Carbon $startTime): QueryBuilder {
+    $queryBuilder->join(StatisticsNewsletterEntity::class, 'sent_stats', 'WITH', 'stats.newsletter = sent_stats.newsletter AND stats.subscriber = sent_stats.subscriber AND sent_stats.sentAt >= :dateTime')
+      ->setParameter('dateTime', $startTime);
+
+    return $queryBuilder;
   }
 }
