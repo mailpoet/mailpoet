@@ -48,7 +48,7 @@ class SubscribersFinder {
     }
 
     if (is_int($filterSegmentId)) {
-      $filterSegment = $this->segmentsRepository->verifyFilterSegmentExists($filterSegmentId);
+      $filterSegment = $this->segmentsRepository->verifyDynamicSegmentExists($filterSegmentId);
       $idsInFilterSegment = $this->findSubscribersInSegment($filterSegment, $subscribersToProcessIds);
       $result = array_intersect($result, $idsInFilterSegment);
     }
@@ -74,7 +74,7 @@ class SubscribersFinder {
     // Prepare subscribers on the DB side for performance reasons
     if (is_int($filterSegmentId)) {
       try {
-        $this->segmentsRepository->verifyFilterSegmentExists($filterSegmentId);
+        $this->segmentsRepository->verifyDynamicSegmentExists($filterSegmentId);
       } catch (InvalidStateException $exception) {
         return 0;
       }
