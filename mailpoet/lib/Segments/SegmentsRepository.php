@@ -61,7 +61,7 @@ class SegmentsRepository extends Repository {
    * @return SegmentEntity[]
    */
   public function findByTypeNotIn(array $types): array {
-      return $this->doctrineRepository->createQueryBuilder('s')
+    return $this->doctrineRepository->createQueryBuilder('s')
       ->select('s')
       ->where('s.type NOT IN (:types)')
       ->setParameter('types', $types)
