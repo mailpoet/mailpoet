@@ -368,3 +368,16 @@ export type Coupon = {
   id: string;
   name: string;
 };
+
+export enum SegmentTemplateCategories {
+  ENGAGEMENT = 'engagement',
+  PURCHASE_HISTORY = 'purchase-history',
+  SHOPPING_BEHAVIOR = 'shopping-behavior',
+}
+
+export type SegmentTemplate = {
+  name: string;
+  description: string;
+  category: SegmentTemplateCategories;
+  isEssential: boolean;
+};

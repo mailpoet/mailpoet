@@ -12,6 +12,7 @@ import { Badge } from '@woocommerce/components';
 import { HideScreenOptions } from 'common/hide_screen_options/hide_screen_options';
 import { TopBarWithBeamer } from 'common/top_bar/top_bar';
 import { TemplateListItem } from 'segments/dynamic/templates/components/template_list_item';
+import { templates } from 'segments/dynamic/templates/templates';
 import * as ROUTES from 'segments/routes';
 
 const tabConfig = [
@@ -71,81 +72,6 @@ const tabConfig = [
   },
 ] as const;
 
-const templates = [
-  {
-    id: 1,
-    name: 'Welcome series for new users',
-    description:
-      'Subscribers who have not engaged with your store or campaigns in the past 30 days.',
-    category: 'Disengaged',
-    isEssential: true,
-  },
-  {
-    id: 2,
-    name: 'Welcome series for new users',
-    description:
-      'Subscribers who have not engaged with your store or campaigns in the past 30 days.',
-    category: 'Disengaged',
-    isEssential: true,
-  },
-  {
-    id: 3,
-    name: 'Welcome series for new users',
-    description:
-      'Subscribers who have not engaged with your store or campaigns in the past 30 days.',
-    category: 'Disengaged',
-    isEssential: true,
-  },
-  {
-    id: 4,
-    name: 'Welcome series for new users',
-    description:
-      'Subscribers who have not engaged with your store or campaigns in the past 30 days.',
-    category: 'Disengaged',
-    isEssential: true,
-  },
-  {
-    id: 5,
-    name: 'Welcome series for new users',
-    description:
-      'Subscribers who have not engaged with your store or campaigns in the past 30 days.',
-    category: 'Disengaged',
-    isEssential: true,
-  },
-  {
-    id: 6,
-    name: 'Clickers',
-    description:
-      'Subscribers who have not engaged with your store or campaigns in the past 30 days.',
-    category: 'Engagement',
-    isEssential: false,
-  },
-  {
-    id: 7,
-    name: 'Recent clickers',
-    description:
-      'Subscribers who have not engaged with your store or campaigns in the past 30 days.',
-    category: 'Engagement',
-    isEssential: false,
-  },
-  {
-    id: 8,
-    name: 'Non-Openers',
-    description:
-      'Subscribers who have not engaged with your store or campaigns in the past 30 days.',
-    category: 'Engagement',
-    isEssential: false,
-  },
-  {
-    id: 9,
-    name: 'Recent openers',
-    description:
-      'Subscribers who have not engaged with your store or campaigns in the past 30 days.',
-    category: 'Engagement',
-    isEssential: false,
-  },
-] as const;
-
 export function SegmentTemplates(): JSX.Element {
   return (
     <div className="mailpoet-templates-container">
@@ -183,7 +109,7 @@ export function SegmentTemplates(): JSX.Element {
         {() => (
           <div className="mailpoet-templates-card-grid">
             {templates.map((template) => (
-              <TemplateListItem key={template.id} template={template} />
+              <TemplateListItem key={template.name} template={template} />
             ))}
           </div>
         )}
