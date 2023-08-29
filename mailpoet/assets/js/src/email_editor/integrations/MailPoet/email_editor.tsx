@@ -8,6 +8,7 @@ import { SelectTemplate } from 'email_editor/integrations/MailPoet/components/se
 import { StylesSidebar } from 'email_editor/integrations/MailPoet/components/styles_sidebar';
 import { EmailSettings } from 'email_editor/integrations/MailPoet/components/email_settings';
 import { MpPreviewOptions } from 'email_editor/integrations/MailPoet/components/preview_options';
+import { SendPanel } from 'email_editor/integrations/MailPoet/components/publish_panel';
 
 import { NextButton } from './components/next_button';
 import { MailPoetEmailData } from './types';
@@ -42,6 +43,7 @@ function Editor() {
       <SelectTemplate />
       <StylesSidebar />
       <EmailSettings />
+      <SendPanel />
     </>
   );
 }
