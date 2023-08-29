@@ -2,7 +2,7 @@
  * External dependencies
  */
 import { sleep } from 'k6';
-import { chromium } from 'k6/experimental/browser';
+import { browser } from 'k6/experimental/browser';
 import { randomIntBetween } from 'https://jslib.k6.io/k6-utils/1.1.0/index.js';
 import {
   expect,
@@ -25,11 +25,10 @@ import {
 import { login, waitForSelectorToBeVisible } from '../utils/helpers.js';
 
 export async function subscribersTrashingRestoring() {
-  const browser = chromium.launch({
+  const page = browser.newPage({
     headless: headlessSet,
     timeout: timeoutSet,
   });
-  const page = browser.newPage();
 
   try {
     // Log in to WP Admin
