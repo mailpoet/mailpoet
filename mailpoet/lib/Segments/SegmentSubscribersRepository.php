@@ -24,12 +24,17 @@ class SegmentSubscribersRepository {
   /** @var FilterHandler */
   private $filterHandler;
 
+  /** @var SegmentsRepository */
+  private $segmentsRepository;
+
   public function __construct(
     EntityManager $entityManager,
-    FilterHandler $filterHandler
+    FilterHandler $filterHandler,
+    SegmentsRepository $segmentsRepository
   ) {
     $this->entityManager = $entityManager;
     $this->filterHandler = $filterHandler;
+    $this->segmentsRepository = $segmentsRepository;
   }
 
   public function findSubscribersIdsInSegment(int $segmentId, array $candidateIds = null): array {
@@ -46,7 +51,7 @@ class SegmentSubscribersRepository {
     return (int)$result[$status ?: 'all'];
   }
 
-  public function getSubscribersCountBySegmentIds(array $segmentIds, string $status = null): int {
+  public function getSubscribersCountBySegmentIds(array $segmentIds, string $status = null, ?int $filterSegmentId = null): int {
     $segmentRepository = $this->entityManager->getRepository(SegmentEntity::class);
     $segments = $segmentRepository->findBy(['id' => $segmentIds]);
     $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
@@ -77,6 +82,21 @@ class SegmentSubscribersRepository {
       'inner_subscribers',
       "inner_subscribers.inner_id = {$subscribersTable}.id"
     );
+
+    try {
+      if (is_int($filterSegmentId)) {
+        $filterSegment = $this->segmentsRepository->verifyDynamicSegmentExists($filterSegmentId);
+        $filterSegmentQb = $this->createCountQueryBuilder();
+        $filterSegmentQb->select("{$subscribersTable}.id AS filter_segment_subscriber_id");
+        $filterSegmentQb = $this->filterSubscribersInDynamicSegment($filterSegmentQb, $filterSegment, $status);
+        $queryBuilder->setParameters(array_merge($filterSegmentQb->getParameters(), $queryBuilder->getParameters()));
+        $queryBuilder->innerJoin($subscribersTable, sprintf('(%s)', $filterSegmentQb->getSQL()),
+          'filter_segment',
+          "filter_segment.filter_segment_subscriber_id = {$subscribersTable}.id");
+      }
+    } catch (InvalidStateException $exception) {
+      return 0;
+    }
 
     $statement = $this->executeQuery($queryBuilder);
     $result = $statement->fetchColumn();
