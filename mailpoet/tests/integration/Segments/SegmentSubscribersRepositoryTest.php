@@ -9,6 +9,9 @@ use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Segments\DynamicSegments\Filters\UserRole;
 use MailPoet\Subscribers\Source;
+use MailPoet\Test\DataFactories\DynamicSegment;
+use MailPoet\Test\DataFactories\Segment as SegmentFactory;
+use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 
 class SegmentSubscribersRepositoryTest extends \MailPoetTest {
 
@@ -207,6 +210,23 @@ class SegmentSubscribersRepositoryTest extends \MailPoetTest {
       $dynamicSegmentTwo->getId(),
     ]);
     expect($count)->equals(6);
+  }
+
+  public function testSubscriberCountCanBeFilteredByDynamicSegment(): void {
+    $segment = (new SegmentFactory())->withType(SegmentEntity::TYPE_DEFAULT)->create();
+    (new SubscriberFactory())->withEngagementScore(50)->withSegments([$segment])->create();
+    (new SubscriberFactory())->withEngagementScore(41)->withSegments([$segment])->create();
+    (new SubscriberFactory())->withEngagementScore(30)->withSegments([$segment])->create();
+
+    $filterSegment = (new DynamicSegment())->withEngagementScoreFilter(40, 'higherThan')->create();
+
+    $this->assertIsInt($segment->getId());
+
+    $countWithoutFilter = $this->repository->getSubscribersCountBySegmentIds([$segment->getId()]);
+    expect($countWithoutFilter)->equals(3);
+
+    $countWithFilter = $this->repository->getSubscribersCountBySegmentIds([$segment->getId()], null, $filterSegment->getId());
+    expect($countWithFilter)->equals(2);
   }
 
   public function _after() {
