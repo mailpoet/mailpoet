@@ -16,8 +16,6 @@ import {
   baseURL,
   thinkTimeMin,
   thinkTimeMax,
-  headlessSet,
-  timeoutSet,
   defaultListName,
   formsPageTitle,
   fullPageSet,
@@ -26,10 +24,7 @@ import {
 import { login, selectInSelect2, waitAndClick } from '../utils/helpers.js';
 
 export async function formsAdding() {
-  const page = browser.newPage({
-    headless: headlessSet,
-    timeout: timeoutSet,
-  });
+  const page = browser.newPage();
 
   try {
     // Log in to WP Admin
@@ -91,7 +86,6 @@ export async function formsAdding() {
     sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
   } finally {
     page.close();
-    browser.close();
   }
 }
 

@@ -17,8 +17,6 @@ import {
   baseURL,
   thinkTimeMin,
   thinkTimeMax,
-  headlessSet,
-  timeoutSet,
   emailsPageTitle,
   fullPageSet,
   screenshotPath,
@@ -26,10 +24,7 @@ import {
 import { login, waitForSelectorToBeVisible } from '../utils/helpers.js';
 
 export async function newsletterStatistics() {
-  const page = browser.newPage({
-    headless: headlessSet,
-    timeout: timeoutSet,
-  });
+  const page = browser.newPage();
 
   try {
     // Log in to WP Admin
@@ -91,7 +86,6 @@ export async function newsletterStatistics() {
     sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
   } finally {
     page.close();
-    browser.close();
   }
 }
 
