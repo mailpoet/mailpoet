@@ -6,11 +6,19 @@ type Props = {
 };
 
 export function Status({ automation }: Props): JSX.Element {
+  let status = '';
+  switch (automation.status) {
+    case AutomationStatus.ACTIVE:
+      status = __('Active', 'mailpoet');
+      break;
+    case AutomationStatus.DEACTIVATING:
+      status = __('Deactivating', 'mailpoet');
+      break;
+    default:
+      status = __('Draft', 'mailpoet');
+  }
+
   return (
-    <div className="mailpoet-automation-listing-cell-status">
-      {automation.status === AutomationStatus.ACTIVE
-        ? __('Active', 'mailpoet')
-        : __('Draft', 'mailpoet')}
-    </div>
+    <div className="mailpoet-automation-listing-cell-status">{status}</div>
   );
 }
