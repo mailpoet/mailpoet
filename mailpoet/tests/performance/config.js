@@ -5,7 +5,6 @@ export const headlessSet = ['true', '1'].includes(
 export const scenario = __ENV.SCENARIO; // eslint-disable-line
 export const projectName = __ENV.K6_PROJECT_NAME; // eslint-disable-line
 export const k6CloudID = __ENV.K6_CLOUD_ID; // eslint-disable-line
-export const timeoutSet = '2m';
 export const fullPageSet = 'true';
 export const screenshotPath = 'tests/performance/_screenshots/';
 

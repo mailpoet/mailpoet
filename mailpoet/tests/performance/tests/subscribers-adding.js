@@ -17,8 +17,6 @@ import {
   baseURL,
   thinkTimeMin,
   thinkTimeMax,
-  headlessSet,
-  timeoutSet,
   firstName,
   lastName,
   defaultListName,
@@ -29,10 +27,7 @@ import {
 import { login, selectInSelect2 } from '../utils/helpers.js';
 
 export async function subscribersAdding() {
-  const page = browser.newPage({
-    headless: headlessSet,
-    timeout: timeoutSet,
-  });
+  const page = browser.newPage();
 
   try {
     let subscriberEmail =
@@ -112,7 +107,6 @@ export async function subscribersAdding() {
     sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
   } finally {
     page.close();
-    browser.close();
   }
 }
 

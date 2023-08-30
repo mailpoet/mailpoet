@@ -16,8 +16,6 @@ import {
   baseURL,
   thinkTimeMin,
   thinkTimeMax,
-  headlessSet,
-  timeoutSet,
   subscribersPageTitle,
   fullPageSet,
   screenshotPath,
@@ -25,10 +23,7 @@ import {
 import { login, waitForSelectorToBeVisible } from '../utils/helpers.js';
 
 export async function subscribersTrashingRestoring() {
-  const page = browser.newPage({
-    headless: headlessSet,
-    timeout: timeoutSet,
-  });
+  const page = browser.newPage();
 
   try {
     // Log in to WP Admin
@@ -102,7 +97,6 @@ export async function subscribersTrashingRestoring() {
     sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
   } finally {
     page.close();
-    browser.close();
   }
 }
 

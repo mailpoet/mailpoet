@@ -16,8 +16,6 @@ import {
   baseURL,
   thinkTimeMin,
   thinkTimeMax,
-  headlessSet,
-  timeoutSet,
   defaultListName,
   emailsPageTitle,
   fullPageSet,
@@ -27,10 +25,7 @@ import { login, selectInSelect2 } from '../utils/helpers.js';
 /* global Promise */
 
 export async function newsletterSending() {
-  const page = browser.newPage({
-    headless: headlessSet,
-    timeout: timeoutSet,
-  });
+  const page = browser.newPage();
 
   try {
     // Log in to WP Admin

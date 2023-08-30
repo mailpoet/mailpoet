@@ -16,8 +16,6 @@ import {
   baseURL,
   thinkTimeMin,
   thinkTimeMax,
-  headlessSet,
-  timeoutSet,
   adminEmail,
   subscribersPageTitle,
   fullPageSet,
@@ -26,10 +24,7 @@ import {
 import { login } from '../utils/helpers.js';
 
 export async function subscribersFiltering() {
-  const page = browser.newPage({
-    headless: headlessSet,
-    timeout: timeoutSet,
-  });
+  const page = browser.newPage();
 
   try {
     // Log in to WP Admin
@@ -102,7 +97,6 @@ export async function subscribersFiltering() {
     sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
   } finally {
     page.close();
-    browser.close();
   }
 }
 
