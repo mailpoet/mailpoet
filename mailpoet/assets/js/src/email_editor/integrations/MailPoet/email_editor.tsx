@@ -10,6 +10,7 @@ import { EmailSettings } from 'email_editor/integrations/MailPoet/components/ema
 import { MpPreviewOptions } from 'email_editor/integrations/MailPoet/components/preview_options';
 import { SendPanel } from 'email_editor/integrations/MailPoet/components/publish_panel';
 import { EmailName } from 'email_editor/integrations/MailPoet/components/email_name';
+import { CustomNotice } from 'email_editor/integrations/MailPoet/components/custom_notice';
 
 import { NextButton } from './components/next_button';
 import { MailPoetEmailData } from './types';
@@ -46,6 +47,7 @@ function Editor() {
       <EmailSettings />
       <SendPanel />
       <EmailName />
+      <CustomNotice />
     </>
   );
 }
