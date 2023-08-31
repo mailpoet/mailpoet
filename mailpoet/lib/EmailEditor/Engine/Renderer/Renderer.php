@@ -13,6 +13,9 @@ class Renderer {
   /** @var BodyRenderer */
   private $bodyRenderer;
 
+  /** @var Preprocessor */
+  private $preprocessor;
+
   const TEMPLATE_FILE = 'template.html';
   const STYLES_FILE = 'styles.css';
 
@@ -21,14 +24,21 @@ class Renderer {
    */
   public function __construct(
     \MailPoetVendor\CSS $cssInliner,
+    Preprocessor $preprocessor,
     BodyRenderer $bodyRenderer
   ) {
     $this->cssInliner = $cssInliner;
+    $this->preprocessor = $preprocessor;
     $this->bodyRenderer = $bodyRenderer;
   }
 
   public function render(\WP_Post $post, string $subject, string $preHeader, string $language, $metaRobots = ''): array {
-    $renderedBody = $this->bodyRenderer->renderBody($post->post_content); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    $parser = new \WP_Block_Parser();
+    $parsedBlocks = $parser->parse($post->post_content); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+
+    $parsedBlocks = $this->preprocessor->preprocess($parsedBlocks);
+    $renderedBody = $this->bodyRenderer->renderBody($parsedBlocks);
+
     $styles = (string)file_get_contents(dirname(__FILE__) . '/' . self::STYLES_FILE);
     $styles = apply_filters('mailpoet_email_renderer_styles', $styles, $post);
 
