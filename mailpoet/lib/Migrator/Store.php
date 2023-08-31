@@ -75,7 +75,7 @@ class Store {
       CREATE TABLE IF NOT EXISTS {$this->table} (
         id int(11) unsigned NOT NULL AUTO_INCREMENT,
         name varchar(191) NOT NULL,
-        started_at timestamp NOT NULL,
+        started_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
         completed_at timestamp NULL,
         retries int(11) unsigned NOT NULL DEFAULT 0,
         error text NULL,
