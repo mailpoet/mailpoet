@@ -18,7 +18,6 @@ class Hooks {
 
   public const INITIALIZE = 'mailpoet/automation/initialize';
   public const API_INITIALIZE = 'mailpoet/automation/api/initialize';
-  public const STEP_RUNNER_INITIALIZE = 'mailpoet/automation/step_runner/initialize';
   public const TRIGGER = 'mailpoet/automation/trigger';
   public const AUTOMATION_STEP = 'mailpoet/automation/step';
 

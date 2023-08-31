@@ -3,11 +3,9 @@
 namespace MailPoet\Automation\Engine\Control;
 
 use Exception;
-use MailPoet\Automation\Engine\Control\Steps\ActionStepRunner;
 use MailPoet\Automation\Engine\Data\Automation;
 use MailPoet\Automation\Engine\Data\AutomationRun;
 use MailPoet\Automation\Engine\Data\AutomationRunLog;
-use MailPoet\Automation\Engine\Data\Step;
 use MailPoet\Automation\Engine\Data\StepRunArgs;
 use MailPoet\Automation\Engine\Data\StepValidationArgs;
 use MailPoet\Automation\Engine\Data\SubjectEntry;
@@ -25,9 +23,6 @@ use MailPoet\Automation\Engine\WordPress;
 use Throwable;
 
 class StepHandler {
-  /** @var ActionStepRunner */
-  private $actionStepRunner;
-
   /** @var SubjectLoader */
   private $subjectLoader;
 
@@ -40,9 +35,6 @@ class StepHandler {
   /** @var AutomationStorage */
   private $automationStorage;
 
-  /** @var array<string, StepRunner> */
-  private $stepRunners = [];
-
   /** @var AutomationRunLogStorage */
   private $automationRunLogStorage;
 
@@ -52,11 +44,13 @@ class StepHandler {
   /** @var Registry */
   private $registry;
 
+  /** @var StepRunControllerFactory */
+  private $stepRunControllerFactory;
+
   /** @var StepScheduler */
   private $stepScheduler;
 
   public function __construct(
-    ActionStepRunner $actionStepRunner,
     Hooks $hooks,
     SubjectLoader $subjectLoader,
     WordPress $wordPress,
@@ -64,9 +58,9 @@ class StepHandler {
     AutomationRunLogStorage $automationRunLogStorage,
     AutomationStorage $automationStorage,
     Registry $registry,
+    StepRunControllerFactory $stepRunControllerFactory,
     StepScheduler $stepScheduler
   ) {
-    $this->actionStepRunner = $actionStepRunner;
     $this->hooks = $hooks;
     $this->subjectLoader = $subjectLoader;
     $this->wordPress = $wordPress;
@@ -74,28 +68,12 @@ class StepHandler {
     $this->automationRunLogStorage = $automationRunLogStorage;
     $this->automationStorage = $automationStorage;
     $this->registry = $registry;
+    $this->stepRunControllerFactory = $stepRunControllerFactory;
     $this->stepScheduler = $stepScheduler;
   }
 
   public function initialize(): void {
     $this->wordPress->addAction(Hooks::AUTOMATION_STEP, [$this, 'handle']);
-    $this->addStepRunner(Step::TYPE_ACTION, $this->actionStepRunner);
-    $this->wordPress->doAction(Hooks::STEP_RUNNER_INITIALIZE, [$this]);
-  }
-
-  public function addStepRunner(string $stepType, StepRunner $stepRunner): void {
-    $this->stepRunners[$stepType] = $stepRunner;
-  }
-
-  public function getStepRunners(): array {
-    return $this->stepRunners;
-  }
-
-  /**
-   * @param array<string, StepRunner> $stepRunners
-   */
-  public function setStepRunners(array $stepRunners): void {
-    $this->stepRunners = $stepRunners;
   }
 
   /** @param mixed $args */
@@ -153,33 +131,36 @@ class StepHandler {
     if (!$stepData) {
       throw Exceptions::automationStepNotFound($stepId);
     }
+
     $step = $this->registry->getStep($stepData->getKey());
-    $stepType = $stepData->getType();
-    if (isset($this->stepRunners[$stepType])) {
-      $log = new AutomationRunLog($automationRun->getId(), $stepData->getId());
-      try {
-        $requiredSubjects = $step instanceof Action ? $step->getSubjectKeys() : [];
-        $subjectEntries = $this->getSubjectEntries($automationRun, $requiredSubjects);
-        $args = new StepRunArgs($automation, $automationRun, $stepData, $subjectEntries, $stepRunNumber);
-        $validationArgs = new StepValidationArgs($automation, $stepData, array_map(function (SubjectEntry $entry) {
-          return $entry->getSubject();
-        }, $subjectEntries));
-        $this->stepRunners[$stepType]->run($args, $validationArgs);
-        $log->markCompletedSuccessfully();
-      } catch (Throwable $e) {
-        $log->markFailed();
-        $log->setError($e);
-        throw $e;
-      } finally {
-        try {
-          $this->hooks->doAutomationStepAfterRun($log);
-        } catch (Throwable $e) {
-          // Ignore integration errors
-        }
-        $this->automationRunLogStorage->createAutomationRunLog($log);
-      }
-    } else {
+    if (!$step instanceof Action) {
       throw new InvalidStateException();
+    }
+
+    $log = new AutomationRunLog($automationRun->getId(), $stepData->getId());
+    try {
+      $requiredSubjects = $step->getSubjectKeys();
+      $subjectEntries = $this->getSubjectEntries($automationRun, $requiredSubjects);
+      $args = new StepRunArgs($automation, $automationRun, $stepData, $subjectEntries, $stepRunNumber);
+      $validationArgs = new StepValidationArgs($automation, $stepData, array_map(function (SubjectEntry $entry) {
+        return $entry->getSubject();
+      }, $subjectEntries));
+
+      $step->validate($validationArgs);
+      $step->run($args, $this->stepRunControllerFactory->createController($args));
+
+      $log->markCompletedSuccessfully();
+    } catch (Throwable $e) {
+      $log->markFailed();
+      $log->setError($e);
+      throw $e;
+    } finally {
+      try {
+        $this->hooks->doAutomationStepAfterRun($log);
+      } catch (Throwable $e) {
+        // Ignore integration errors
+      }
+      $this->automationRunLogStorage->createAutomationRunLog($log);
     }
 
     // schedule next step if not scheduled by action
