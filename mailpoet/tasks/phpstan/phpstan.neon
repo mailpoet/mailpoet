@@ -105,6 +105,11 @@ parameters:
       message: '/function add_(sub)?menu_page expects callable\(\): mixed, ''''\|\(callable\(\): mixed\) given/'
       count: 2
       path: ../../lib/WP/Functions.php
+    -
+      # WP Stubs contain incorrect definition form apply_filters: apply_filters( string $tag, array $args )
+      message: "#^Function apply_filters invoked with 3 parameters, 2 required\\.$#"
+      count: 1
+      path: ../../lib/EmailEditor/Engine/Renderer/Renderer.php
 
   reportUnmatchedIgnoredErrors: true
   dynamicConstantNames:

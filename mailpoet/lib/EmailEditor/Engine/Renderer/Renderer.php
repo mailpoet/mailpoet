@@ -27,9 +27,10 @@ class Renderer {
     $this->bodyRenderer = $bodyRenderer;
   }
 
-  public function render(string $postContent, string $subject, string $preHeader, string $language, $metaRobots = ''): array {
-    $renderedBody = $this->bodyRenderer->renderBody($postContent);
+  public function render(\WP_Post $post, string $subject, string $preHeader, string $language, $metaRobots = ''): array {
+    $renderedBody = $this->bodyRenderer->renderBody($post->post_content); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     $styles = (string)file_get_contents(dirname(__FILE__) . '/' . self::STYLES_FILE);
+    $styles = apply_filters('mailpoet_email_renderer_styles', $styles, $post);
 
     /**
      * {{email_language}}

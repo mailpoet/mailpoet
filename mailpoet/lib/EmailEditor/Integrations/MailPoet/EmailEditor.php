@@ -49,6 +49,7 @@ class EmailEditor {
     $this->wp->addFilter('mailpoet_email_editor_post_types', [$this, 'addEmailPostType']);
     $this->wp->addFilter('mailpoet_email_editor_allowed_editor_assets_actions', [$this, 'addAllowedAssetsActions']);
     $this->wp->addFilter('mailpoet_email_editor_settings_all', [$this, 'configureEmailEditorSettings']);
+    $this->wp->addFilter('mailpoet_email_renderer_styles', [$this, 'alterRenderedEmailStyles'], 10, 2);
     $this->wp->addFilter('save_post', [$this, 'onEmailSave'], 10, 2);
     $this->wp->addAction('enqueue_block_editor_assets', [$this, 'enqueueAssets']);
     $this->extendEmailPostApi();
@@ -158,5 +159,14 @@ class EmailEditor {
       }));
     }
     return $settings;
+  }
+
+  /**
+   * Here we can append/modify styles definition that are later inlined into the email.
+   * @param string $styles
+   * @param \WP_Post $post
+   */
+  public function alterRenderedEmailStyles(string $styles, \WP_Post $post): string {
+    return $styles . ' ' . self::DEFAULT_EMAIL_STYLES;
   }
 }
