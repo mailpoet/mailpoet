@@ -13,10 +13,7 @@ class BodyRenderer {
     $this->blocksRenderer = $blocksRenderer;
   }
 
-  public function renderBody(string $postContent): string {
-    $parser = new \WP_Block_Parser();
-    $parsedBlocks = $parser->parse($postContent);
-    // @todo We need to wrap top level blocks which are not in columns into a column
+  public function renderBody(array $parsedBlocks): string {
     return $this->blocksRenderer->render($parsedBlocks);
   }
 }
