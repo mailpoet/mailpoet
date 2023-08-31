@@ -21,7 +21,7 @@ class Migration_20230825_093531_App extends AppMigration {
     global $wpdb;
 
     $revenueTable = esc_sql($this->getTableName());
-    $sql = 'update ' . $revenueTable . ' as rev, ' . $wpdb->prefix . 'wc_orders as wc set rev.status=TRIM(Leading "wc-" FROM wc.status) where wc.id = rev.order_id AND rev.status="' . self::DEFAULT_STATUS . '"';
+    $sql = "update " . $revenueTable . " as rev, " . $wpdb->prefix . "wc_orders as wc set rev.status=TRIM(Leading 'wc-' FROM wc.status) where wc.id = rev.order_id AND rev.status='" . self::DEFAULT_STATUS . "'";
     $wpdb->query($sql);
   }
 
@@ -29,7 +29,7 @@ class Migration_20230825_093531_App extends AppMigration {
     global $wpdb;
 
     $revenueTable = esc_sql($this->getTableName());
-    $sql = 'update ' . $revenueTable . ' as rev, ' . $wpdb->posts . ' as wc set rev.status=TRIM(Leading "wc-" FROM wc.post_status) where wc.id = rev.order_id AND rev.status="' . self::DEFAULT_STATUS . '"';
+    $sql = "update " . $revenueTable . " as rev, " . $wpdb->posts . " as wc set rev.status=TRIM(Leading 'wc-' FROM wc.post_status) where wc.id = rev.order_id AND rev.status='" . self::DEFAULT_STATUS . "'";
     $wpdb->query($sql);
   }
 
