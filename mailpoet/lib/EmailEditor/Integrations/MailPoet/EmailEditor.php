@@ -11,6 +11,13 @@ use MailPoet\WP\Functions as WPFunctions;
 class EmailEditor {
   const MAILPOET_EMAIL_POST_TYPE = 'mailpoet_email';
 
+  /**
+   * Default styles applied to the email. These are going to be replaced by style settings.
+   * This is currently more af a proof of concept that we can apply styles to the email.
+   * @var string
+   */
+  const DEFAULT_EMAIL_STYLES = "body { font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif; }";
+
   /** @var WPFunctions */
   private $wp;
 
@@ -41,6 +48,7 @@ class EmailEditor {
     }
     $this->wp->addFilter('mailpoet_email_editor_post_types', [$this, 'addEmailPostType']);
     $this->wp->addFilter('mailpoet_email_editor_allowed_editor_assets_actions', [$this, 'addAllowedAssetsActions']);
+    $this->wp->addFilter('mailpoet_email_editor_settings_all', [$this, 'configureEmailEditorSettings']);
     $this->wp->addFilter('save_post', [$this, 'onEmailSave'], 10, 2);
     $this->wp->addAction('enqueue_block_editor_assets', [$this, 'enqueueAssets']);
     $this->extendEmailPostApi();
@@ -117,5 +125,38 @@ class EmailEditor {
       'update_callback' => [$this->emailApiController, 'saveEmailData'],
       'schema' => $this->emailApiController->getEmailDataSchema(),
     ]);
+  }
+
+  /**
+   * Alter Email Editor settings
+   * We can't support all styles a theme might provide. We need to reset styling options and provide our own.
+   *
+   * @see https://developer.wordpress.org/block-editor/reference-guides/filters/editor-filters/#block_editor_settings_all
+   * @param array<string, mixed> $settings
+   */
+  public function configureEmailEditorSettings(array $settings) {
+    // Reset font sizes and font families
+    if (
+      is_array($settings['__experimentalFeatures']) &&
+      is_array($settings['__experimentalFeatures']['typography']) &&
+      is_array($settings['__experimentalFeatures']['typography']['fontSizes'] ?? null)
+    ) {
+      $settings['__experimentalFeatures']['typography']['fontSizes']['theme'] = null;
+    }
+    if (
+      is_array($settings['__experimentalFeatures']) &&
+      is_array($settings['__experimentalFeatures']['typography']) &&
+      is_array($settings['__experimentalFeatures']['typography']['fontFamilies'] ?? null)
+    ) {
+      $settings['__experimentalFeatures']['typography']['fontFamilies']['theme'] = null;
+    }
+    // Remove theme styles from editor
+    $settings['defaultEditorStyles'] = [[ 'css' => self::DEFAULT_EMAIL_STYLES ]];
+    if (is_array($settings['styles'])) {
+      $settings['styles'] = array_values(array_filter($settings['styles'] ?? [], function ($style) {
+        return ($style['__unstableType'] ?? '') !== 'theme';
+      }));
+    }
+    return $settings;
   }
 }

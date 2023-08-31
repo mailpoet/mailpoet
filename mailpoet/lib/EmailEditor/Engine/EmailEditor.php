@@ -92,6 +92,7 @@ class EmailEditor {
     $settings['enableCustomUnits'] = ['px', '%']; // Allow only units we can support in email renderer
     $settings['__experimentalAdditionalBlockPatterns'] = [];
     $settings['__experimentalAdditionalBlockPatternCategories'] = [];
-    return array_merge($settings, apply_filters('mailpoet_email_editor_settings_all', []));
+
+    return apply_filters('mailpoet_email_editor_settings_all', $settings);
   }
 }
