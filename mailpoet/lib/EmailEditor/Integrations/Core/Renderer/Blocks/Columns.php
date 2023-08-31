@@ -10,6 +10,43 @@ class Columns implements BlockRenderer {
     if (!isset($parsedBlock['innerBlocks']) || empty($parsedBlock['innerBlocks'])) {
       return '';
     }
-    return "<tr>{$blocksRenderer->render($parsedBlock['innerBlocks'])}</tr>";
+    return str_replace('{columns_content}', $this->renderInnerColumns($parsedBlock['innerBlocks'], $blocksRenderer), $this->getColumnsContainerTemplate());
+  }
+
+  private function renderInnerColumns($columnBlocks, BlocksRenderer $blocksRenderer): string {
+    // Dummy width just by number of columns
+    $width = floor(660 / count($columnBlocks));
+    $result = '';
+    foreach ($columnBlocks as $columnBlock) {
+      $result .= str_replace('{column_content}', $blocksRenderer->render([$columnBlock]), $this->getColumnTemplate($width, 'left'));
+    }
+    return $result;
+  }
+
+  /**
+   * Based on MJML <mj-section>
+   */
+  private function getColumnsContainerTemplate(): string {
+    return '<table><tr>
+            <td style="direction:ltr;font-size:0px;padding:0px 0;text-align:center;">
+              {columns_content}
+            </td>
+          </tr></table>';
+  }
+
+  /**
+   * Based on MJML <mj-column>
+   */
+  private function getColumnTemplate($width, $alignment): string {
+    return '
+     <!--[if mso | IE]><table role="presentation" border="0" cellpadding="0" cellspacing="0"><tr><td class="" style="vertical-align:top;width:' . $width . 'px;" ><![endif]-->
+      <div class="email_column" style="font-size:0px;text-align:' . $alignment . ';direction:ltr;display:inline-block;vertical-align:top;width:' . $width . 'px;max-width:' . $width . 'px">
+        <table border="0" cellpadding="0" cellspacing="0" role="presentation" style="vertical-align:top;" width="' . $width . '">
+          <tbody>
+            {column_content}
+          </tbody>
+        </table>
+      </div>
+       <!--[if mso | IE]></td></tr></table><![endif]-->';
   }
 }

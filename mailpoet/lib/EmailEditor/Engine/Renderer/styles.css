@@ -50,16 +50,9 @@ p {
   background: #fff;
 }
 
-@media screen and (max-width: 480px) {
-  .email_button {
-    width: 100% !important;
-  }
-}
-
 @media screen and (max-width: 599px) {
-  .email_button {
-    box-sizing: border-box !important;
-    padding: 5px 0 !important;
+  .email_column {
+    max-width: 100% !important;
     width: 100% !important;
   }
 }
