@@ -67,7 +67,7 @@ class StepStatisticController {
   public function getFlowStatistics(Automation $automation, Query $query): array {
     $statistics = $this->automationRunLogStorage->getAutomationRunStatisticsForAutomationInTimeFrame(
       $automation->getId(),
-      AutomationRunLog::STATUS_COMPLETED,
+      AutomationRunLog::STATUS_COMPLETE,
       $query->getAfter(),
       $query->getBefore()
     );

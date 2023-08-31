@@ -147,7 +147,7 @@ class AutomationRunLogTest extends \MailPoetTest {
     $automationRunLogs = $this->getLogsForAction();
     expect($automationRunLogs)->count(1);
     $log = $automationRunLogs[0];
-    expect($log->getStatus())->equals(AutomationRunLog::STATUS_COMPLETED);
+    expect($log->getStatus())->equals(AutomationRunLog::STATUS_COMPLETE);
   }
 
   public function testItStoresAutomationRunAndStepIdsCorrectly() {

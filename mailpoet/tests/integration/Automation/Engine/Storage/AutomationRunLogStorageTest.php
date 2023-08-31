@@ -64,7 +64,7 @@ class AutomationRunLogStorageTest extends \MailPoetTest {
       'after' => new \DateTimeImmutable('2020-01-01 00:00:00'),
       'before' => new \DateTimeImmutable('2020-01-02 00:00:00'),
     ];
-    $status = AutomationRunLog::STATUS_COMPLETED;
+    $status = AutomationRunLog::STATUS_COMPLETE;
     $automationId = 1;
 
     $this->storage->truncate();
