@@ -81,8 +81,34 @@ class SubscriberSegmentRepository extends Repository {
   }
 
   public function resetSubscriptions(SubscriberEntity $subscriber, array $segments): void {
-    $this->unsubscribeFromSegments($subscriber);
-    $this->subscribeToSegments($subscriber, $segments);
+    $existingSegments = array_values(array_filter(array_map(
+      function(SubscriberSegmentEntity $subscriberSegmentEntity): ?SegmentEntity { return $subscriberSegmentEntity->getSegment(); 
+      },
+      $this->findBy(['subscriber' => $subscriber, 'status' => SubscriberEntity::STATUS_SUBSCRIBED])
+    )));
+    $existingSegmentIds = array_map(function(SegmentEntity $segment): int { return $segment->getId() ?? 0;
+
+    }, $existingSegments);
+    $segmentIds = array_map(function(SegmentEntity $segment): int { return $segment->getId() ?? 0;
+
+    }, $segments);
+    $unsubscribedSegments = array_diff($existingSegmentIds, $segmentIds);
+    $newlySubscribedSegments = array_diff($segmentIds, $existingSegmentIds);
+    if (!$newlySubscribedSegments && !$unsubscribedSegments) {
+      return;
+    }
+    $unsubscribe = array_filter($existingSegments, function(SegmentEntity $segment) use ($unsubscribedSegments): bool {
+      return in_array($segment->getId(), $unsubscribedSegments);
+    });
+    $subscribe = array_filter($segments, function(SegmentEntity $segment) use ($newlySubscribedSegments): bool {
+      return in_array($segment->getId(), $newlySubscribedSegments);
+    });
+    if ($unsubscribe) {
+      $this->unsubscribeFromSegments($subscriber, $unsubscribe);
+    }
+    if ($subscribe) {
+      $this->subscribeToSegments($subscriber, $subscribe);
+    }
   }
 
   /**
