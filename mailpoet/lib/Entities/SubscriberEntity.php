@@ -478,7 +478,7 @@ class SubscriberEntity {
   public function getSubscriberSegments(?string $status = null) {
     if (!is_null($status)) {
       $criteria = Criteria::create()
-        ->where(Criteria::expr()->eq('status', SubscriberEntity::STATUS_SUBSCRIBED));
+        ->where(Criteria::expr()->eq('status', $status));
       $subscriberSegments = $this->subscriberSegments->matching($criteria);
     } else {
       $subscriberSegments = $this->subscriberSegments;
