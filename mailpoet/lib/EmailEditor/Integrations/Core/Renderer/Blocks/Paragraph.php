@@ -6,7 +6,7 @@ use MailPoet\EmailEditor\Engine\Renderer\BlockRenderer;
 use MailPoet\EmailEditor\Engine\Renderer\BlocksRenderer;
 
 class Paragraph implements BlockRenderer {
-  public function render($pasedBlock, BlocksRenderer $blocksRenderer): string {
-    return $pasedBlock['innerHTML'] ?? '';
+  public function render($parsedBlock, BlocksRenderer $blocksRenderer): string {
+    return $parsedBlock['innerHTML'] ?? '';
   }
 }

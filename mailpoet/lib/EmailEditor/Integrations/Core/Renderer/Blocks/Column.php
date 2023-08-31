@@ -10,6 +10,7 @@ class Column implements BlockRenderer {
     if (!isset($parsedBlock['innerBlocks']) || empty($parsedBlock['innerBlocks'])) {
       return '';
     }
-    return "<td>{$blocksRenderer->render($parsedBlock['innerBlocks'])}</td>";
+    // Wrapper is rendered in parent Columns block because it needs to operate with columns count etc.
+    return $blocksRenderer->render($parsedBlock['innerBlocks']);
   }
 }
