@@ -8,10 +8,9 @@ use MailPoet\Automation\Engine\Utils\Json;
 use Throwable;
 
 class AutomationRunLog {
-
-  const STATUS_RUNNING = 'running';
-  const STATUS_COMPLETED = 'completed';
-  const STATUS_FAILED = 'failed';
+  public const STATUS_RUNNING = 'running';
+  public const STATUS_COMPLETE = 'complete';
+  public const STATUS_FAILED = 'failed';
 
   /** @var int */
   private $id;
@@ -113,7 +112,7 @@ class AutomationRunLog {
   }
 
   public function markCompletedSuccessfully(): void {
-    $this->status = self::STATUS_COMPLETED;
+    $this->status = self::STATUS_COMPLETE;
     $this->completedAt = new DateTimeImmutable();
   }
 
