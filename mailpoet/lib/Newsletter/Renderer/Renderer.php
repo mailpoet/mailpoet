@@ -89,7 +89,7 @@ class Renderer {
     $subject = $subject ?: $newsletter->getSubject();
     $wpPost = $newsletter->getWpPost();
     if ($this->featuresController->isSupported(FeaturesController::GUTENBERG_EMAIL_EDITOR) && $wpPost instanceof \WP_Post) {
-      $renderedNewsletter = $this->guntenbergRenderer->render($wpPost->post_content, $subject, $newsletter->getPreheader(), $language, $metaRobots); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+      $renderedNewsletter = $this->guntenbergRenderer->render($wpPost, $subject, $newsletter->getPreheader(), $language, $metaRobots);
     } else {
       $body = (is_array($newsletter->getBody()))
         ? $newsletter->getBody()
