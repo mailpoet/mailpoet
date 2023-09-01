@@ -49,13 +49,6 @@
       var mailpoet_verified_sender_domains = <%= json_encode(verified_sender_domains) %>;
       var mailpoet_all_sender_domains = <%= json_encode(all_sender_domains) %>;
     <% endautoescape %>
-    var mailpoet_beacon_articles = [
-      '57fdc312c697911f2d324fd7',
-      '5d541f7c2c7d3a68825ea881',
-      '58a719a12c7d3a576d3548da',
-      '5a0257ac2c7d3a272c0d7ad6',
-      '58f671152c7d3a057f8858e8'
-    ];
 
     var mailpoet_newsletters_templates_recently_sent_count = <%= json_decode(newsletters_templates_recently_sent_count) %>;
     var corrupt_newsletters = <%= json_encode(corrupt_newsletters) %>;
