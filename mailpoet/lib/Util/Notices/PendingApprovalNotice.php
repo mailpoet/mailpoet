@@ -43,7 +43,6 @@ class PendingApprovalNotice {
       'https://kb.mailpoet.com/article/350-pending-approval-subscription',
       [
         'target' => '_blank',
-        'data-beacon-article' => '5fbd3942cff47e00160bd248',
       ],
       'link1'
     );
@@ -52,7 +51,6 @@ class PendingApprovalNotice {
       'https://kb.mailpoet.com/article/290-check-your-newsletter-before-sending-it',
       [
         'target' => '_blank',
-        'data-beacon-article' => '5dadd69b2c7d3a7e9ae2cef2',
       ],
       'link2'
     );
@@ -61,7 +59,6 @@ class PendingApprovalNotice {
       'https://kb.mailpoet.com/article/266-how-to-add-an-authorized-email-address-as-the-from-address#authorize',
       [
         'target' => '_blank',
-        'data-beacon-article' => '5cd2ca2f04286306738ed760',
       ],
       'link3'
     );

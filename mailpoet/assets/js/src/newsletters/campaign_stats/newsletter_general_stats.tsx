@@ -131,7 +131,6 @@ function NewsletterGeneralStats({ newsletter, isWoocommerceActive }: Props) {
                 href="https://kb.mailpoet.com/article/368-what-are-machine-opens"
                 key="kb-link"
                 target="_blank"
-                data-beacon-article="6124b7fb21ef206e5592e188"
                 rel="noopener noreferrer"
               >
                 {match}
@@ -274,7 +273,6 @@ function NewsletterGeneralStats({ newsletter, isWoocommerceActive }: Props) {
           href="https://kb.mailpoet.com/article/190-whats-a-good-email-open-rate"
           target="_blank"
           rel="noopener noreferrer"
-          data-beacon-article="58f671152c7d3a057f8858e8"
         >
           {__('Read more on stats.', 'mailpoet')}
         </a>

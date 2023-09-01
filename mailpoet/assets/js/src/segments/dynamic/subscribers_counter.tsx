@@ -96,7 +96,6 @@ function SubscribersCounter(): JSX.Element {
           {MailPoet.I18n.t('dynamicSegmentSizeCalculatingTimeout')}{' '}
           <a
             href="https://kb.mailpoet.com/article/237-guide-to-subscriber-segmentation?utm_source=plugin&utm_medium=segments"
-            data-beacon-article="5a574bd92c7d3a194368233e"
             target="_blank"
             className="mailpoet-form-error-message"
             rel="noopener noreferrer"

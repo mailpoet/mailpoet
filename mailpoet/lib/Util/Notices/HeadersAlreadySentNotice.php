@@ -76,7 +76,6 @@ class HeadersAlreadySentNotice {
     $howToResolveString = __('[link]Learn how to fix this issue and restore functionality[/link]', 'mailpoet');
     $error = $errorString . '<br><br>' . Helpers::replaceLinkTags($howToResolveString, 'https://kb.mailpoet.com/article/325-the-captcha-image-doesnt-show-up', [
       'target' => '_blank',
-      'data-beacon-article' => '5f20fb5904286306f8078acb',
       'class' => 'button-primary',
     ]);
 

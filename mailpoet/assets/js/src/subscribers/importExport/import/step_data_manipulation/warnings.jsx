@@ -62,7 +62,6 @@ function Warnings({ stepMethodSelectionData }) {
         return (
           <a
             href="https://kb.mailpoet.com/article/270-role-based-email-addresses-are-not-allowed"
-            data-beacon-article="5d0a1da404286318cac46fe5"
             target="_blank"
             rel="noopener noreferrer"
             key={match}

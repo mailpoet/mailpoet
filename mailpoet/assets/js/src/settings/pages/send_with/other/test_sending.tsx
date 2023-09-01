@@ -73,7 +73,6 @@ export function TestSending() {
                     key={i}
                     target="_blank"
                     rel="noopener noreferrer"
-                    data-beacon-article="580846f09033604df5166ed1"
                     href="https://kb.mailpoet.com/article/146-my-newsletters-are-not-being-received"
                   >
                     {match}

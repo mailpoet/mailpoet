@@ -67,7 +67,6 @@ export function Scheduling({
                 href="https://kb.mailpoet.com/article/264-inactive-subscribers"
                 target="_blank"
                 rel="noopener noreferrer"
-                data-beacon-article="5cbf19622c7d3a026fd3efe1"
               >
                 {match}
               </a>

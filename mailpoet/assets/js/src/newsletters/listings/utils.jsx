@@ -72,7 +72,6 @@ export const checkCronStatus = (state) => {
     (match) => (
       <a
         href="https://kb.mailpoet.com/article/231-sending-does-not-work"
-        data-beacon-article="5a0257ac2c7d3a272c0d7ad6"
         target="_blank"
         rel="noopener noreferrer"
         key="check-cron"

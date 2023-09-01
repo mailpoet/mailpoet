@@ -21,7 +21,6 @@ export function ManageSubscription() {
                   key={text}
                   href="https://kb.mailpoet.com/article/222-customize-your-manage-subscription-page"
                   rel="noopener noreferrer"
-                  data-beacon-article="59ddd0bb2c7d3a40f0ed5b57"
                   target="_blank"
                 >
                   {text}

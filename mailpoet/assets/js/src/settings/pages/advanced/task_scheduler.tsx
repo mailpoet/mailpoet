@@ -18,7 +18,6 @@ export function TaskScheduler() {
             <a
               className="mailpoet-link"
               href="https://kb.mailpoet.com/article/129-what-is-the-newsletter-task-scheduler"
-              data-beacon-article="57ce0a7a903360649f6e5703"
               rel="noopener noreferrer"
               target="_blank"
             >

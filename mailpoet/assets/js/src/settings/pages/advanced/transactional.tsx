@@ -26,7 +26,6 @@ export function Transactional() {
             <a
               className="mailpoet-link"
               href="https://kb.mailpoet.com/article/292-choose-how-to-send-your-wordpress-websites-emails"
-              data-beacon-article="5ddbf92504286364bc9228c5"
               rel="noopener noreferrer"
               target="_blank"
             >
@@ -56,7 +55,6 @@ export function Transactional() {
                   key={text}
                   href="https://kb.mailpoet.com/article/292-choose-how-to-send-your-wordpress-websites-emails#attachments"
                   rel="noopener noreferrer"
-                  data-beacon-article="5ddbf92504286364bc9228c5"
                   target="_blank"
                 >
                   {text}

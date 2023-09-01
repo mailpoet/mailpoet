@@ -210,7 +210,6 @@ class Initializer {
         'https://kb.mailpoet.com/article/200-solving-database-connection-issues',
         [
           'target' => '_blank',
-          'data-beacon-article' => '596de7db2c7d3a73488b2f8d',
         ]
       ));
     }

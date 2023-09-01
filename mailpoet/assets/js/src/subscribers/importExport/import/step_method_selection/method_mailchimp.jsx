@@ -107,7 +107,6 @@ function MethodMailChimp({ onFinish, onPrevious }) {
                 <a
                   className="mailpoet-link"
                   href="https://kb.mailpoet.com/article/255-migrating-from-mailchimp-to-mailpoet#api"
-                  data-beacon-article="5b16db842c7d3a0fa9a2aa15"
                   key="kb-link"
                   target="_blank"
                   rel="noopener noreferrer"

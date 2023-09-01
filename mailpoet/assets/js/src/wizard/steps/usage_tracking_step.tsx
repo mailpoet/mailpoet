@@ -74,7 +74,6 @@ function WelcomeWizardUsageTrackingStep({ loading, submitForm }) {
                     <a
                       key={i}
                       href="https://kb.mailpoet.com/article/338-what-3rd-party-libraries-we-use"
-                      data-beacon-article="5f7c7dd94cedfd0017dcece8"
                       target="_blank"
                       rel="noopener noreferrer"
                     >
@@ -118,7 +117,6 @@ function WelcomeWizardUsageTrackingStep({ loading, submitForm }) {
                     <a
                       key={i}
                       href="https://kb.mailpoet.com/article/130-sharing-your-data-with-us"
-                      data-beacon-article="57ce0aaac6979108399a0454"
                       target="_blank"
                       rel="noopener noreferrer"
                     >

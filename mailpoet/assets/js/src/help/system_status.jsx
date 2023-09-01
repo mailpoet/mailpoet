@@ -9,7 +9,6 @@ function renderStatusMessage(
   successMessage,
   errorMessage,
   link,
-  linkBeacon,
   additionalInfo,
 ) {
   const noticeType = status ? 'success' : 'error';
@@ -20,12 +19,7 @@ function renderStatusMessage(
       noticeMessage,
       /\[link\](.*?)\[\/link\]/g,
       (match) => (
-        <a
-          className="mailpoet-text-link"
-          href={link}
-          data-beacon-article={linkBeacon}
-          key="kb-link"
-        >
+        <a className="mailpoet-text-link" href={link} key="kb-link">
           {match}
         </a>
       ),
@@ -71,7 +65,6 @@ function renderCronSection(data) {
         success,
         error,
         'https://kb.mailpoet.com/article/231-sending-does-not-work',
-        '5a0257ac2c7d3a272c0d7ad6',
         additionalInfo,
       )}
     </div>
@@ -95,7 +88,6 @@ function renderMSSSection(data) {
         successMessage,
         errorMessage,
         'https://kb.mailpoet.com/article/319-known-errors-when-validating-a-mailpoet-key',
-        '5ef1da9d2c7d3a10cba966c5',
         null,
       )}
     </div>

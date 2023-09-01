@@ -97,7 +97,6 @@ function NewsletterTypesComponent({
             <a
               className={badgeClassName}
               href={type.videoGuide}
-              data-beacon-article={type.videoGuideBeacon}
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -305,7 +304,6 @@ function NewsletterTypesComponent({
       ),
       videoGuide:
         'https://kb.mailpoet.com/article/254-video-guide-to-welcome-emails',
-      videoGuideBeacon: '5b05ebf20428635ba8b2aa53',
       action: (
         <Button
           onClick={createWelcomeNewsletter}
@@ -335,7 +333,6 @@ function NewsletterTypesComponent({
       ),
       videoGuide:
         'https://kb.mailpoet.com/article/210-video-guide-to-post-notifications',
-      videoGuideBeacon: '59ba6fb3042863033a1cd5a5',
       action: (
         <Button
           automationId="create_notification"

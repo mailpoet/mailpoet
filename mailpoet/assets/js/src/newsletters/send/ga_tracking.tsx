@@ -18,7 +18,6 @@ const tip = ReactStringReplace(
       <br />
       <a
         href={tipLink}
-        data-beacon-article="58b597d12c7d3a576d359144"
         target="_blank"
         rel="noopener noreferrer"
         className="mailpoet-link"
