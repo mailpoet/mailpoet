@@ -5,7 +5,6 @@ namespace MailPoet\Automation\Engine\Control;
 use Exception;
 use MailPoet\Automation\Engine\Data\Automation;
 use MailPoet\Automation\Engine\Data\AutomationRun;
-use MailPoet\Automation\Engine\Data\AutomationRunLog;
 use MailPoet\Automation\Engine\Data\StepRunArgs;
 use MailPoet\Automation\Engine\Data\StepValidationArgs;
 use MailPoet\Automation\Engine\Data\SubjectEntry;
@@ -16,7 +15,6 @@ use MailPoet\Automation\Engine\Integration\Action;
 use MailPoet\Automation\Engine\Integration\Payload;
 use MailPoet\Automation\Engine\Integration\Subject;
 use MailPoet\Automation\Engine\Registry;
-use MailPoet\Automation\Engine\Storage\AutomationRunLogStorage;
 use MailPoet\Automation\Engine\Storage\AutomationRunStorage;
 use MailPoet\Automation\Engine\Storage\AutomationStorage;
 use MailPoet\Automation\Engine\WordPress;
@@ -35,40 +33,35 @@ class StepHandler {
   /** @var AutomationStorage */
   private $automationStorage;
 
-  /** @var AutomationRunLogStorage */
-  private $automationRunLogStorage;
-
-  /** @var Hooks */
-  private $hooks;
-
   /** @var Registry */
   private $registry;
 
   /** @var StepRunControllerFactory */
   private $stepRunControllerFactory;
 
+  /** @var StepRunLoggerFactory */
+  private $stepRunLoggerFactory;
+
   /** @var StepScheduler */
   private $stepScheduler;
 
   public function __construct(
-    Hooks $hooks,
     SubjectLoader $subjectLoader,
     WordPress $wordPress,
     AutomationRunStorage $automationRunStorage,
-    AutomationRunLogStorage $automationRunLogStorage,
     AutomationStorage $automationStorage,
     Registry $registry,
     StepRunControllerFactory $stepRunControllerFactory,
+    StepRunLoggerFactory $stepRunLoggerFactory,
     StepScheduler $stepScheduler
   ) {
-    $this->hooks = $hooks;
     $this->subjectLoader = $subjectLoader;
     $this->wordPress = $wordPress;
     $this->automationRunStorage = $automationRunStorage;
-    $this->automationRunLogStorage = $automationRunLogStorage;
     $this->automationStorage = $automationStorage;
     $this->registry = $registry;
     $this->stepRunControllerFactory = $stepRunControllerFactory;
+    $this->stepRunLoggerFactory = $stepRunLoggerFactory;
     $this->stepScheduler = $stepScheduler;
   }
 
@@ -93,18 +86,17 @@ class StepHandler {
       return;
     }
 
-    $log = new AutomationRunLog($runId, $stepId);
+    $logger = $this->stepRunLoggerFactory->createLogger($runId, $stepId);
+    $logger->logStart();
     try {
       $this->handleStep($runId, $stepId, $runNumber);
-      $log->markCompletedSuccessfully();
+      $logger->logSuccess();
     } catch (Throwable $e) {
       $status = $e instanceof InvalidStateException && $e->getErrorCode() === 'mailpoet_automation_not_active'
         ? AutomationRun::STATUS_CANCELLED
         : AutomationRun::STATUS_FAILED;
       $this->automationRunStorage->updateStatus((int)$args['automation_run_id'], $status);
-
-      $log->markFailed();
-      $log->setError($e);
+      $logger->logFailure($e);
 
       // Action Scheduler catches only Exception instances, not other errors.
       // We need to convert them to exceptions to be processed and logged.
@@ -113,12 +105,6 @@ class StepHandler {
       }
       throw $e;
     } finally {
-      try {
-        $this->hooks->doAutomationStepAfterRun($log);
-      } catch (Throwable $e) {
-        // Ignore integration errors
-      }
-      $this->automationRunLogStorage->createAutomationRunLog($log);
       $this->postProcessAutomationRun($runId);
     }
   }

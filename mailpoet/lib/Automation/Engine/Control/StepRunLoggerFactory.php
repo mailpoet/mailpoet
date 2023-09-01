@@ -1,0 +1,26 @@
+<?php declare(strict_types = 1);
+
+namespace MailPoet\Automation\Engine\Control;
+
+use MailPoet\Automation\Engine\Hooks;
+use MailPoet\Automation\Engine\Storage\AutomationRunLogStorage;
+
+class StepRunLoggerFactory {
+  /** @var AutomationRunLogStorage */
+  private $automationRunLogStorage;
+
+  /** @var Hooks */
+  private $hooks;
+
+  public function __construct(
+    AutomationRunLogStorage $automationRunLogStorage,
+    Hooks $hooks
+  ) {
+    $this->automationRunLogStorage = $automationRunLogStorage;
+    $this->hooks = $hooks;
+  }
+
+  public function createLogger(int $runId, string $stepId): StepRunLogger {
+    return new StepRunLogger($this->automationRunLogStorage, $this->hooks, $runId, $stepId);
+  }
+}
