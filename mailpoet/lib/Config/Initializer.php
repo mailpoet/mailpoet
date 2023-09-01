@@ -250,7 +250,7 @@ class Initializer {
 
     $this->wpFunctions->addAction(
       'init',
-      [$this, 'maybeDbUpdate'],
+      [$this, 'maybeRunActivator'],
       PHP_INT_MIN
     );
 
@@ -378,7 +378,14 @@ class Initializer {
     $this->changelog->redirectToLandingPage();
   }
 
-  public function maybeDbUpdate() {
+  /**
+   * Checks if the plugin was updated and runs the activator if needed. The activator
+   * will run the database migrations and update the db version among a few other things.
+   *
+   * @return void
+   * @throws InvalidStateException
+   */
+  public function maybeRunActivator() {
     try {
       $currentDbVersion = $this->settings->get('db_version');
     } catch (\Exception $e) {
