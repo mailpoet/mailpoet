@@ -12,4 +12,4 @@ if [ ! -d $scriptdirectory/$rulesdirectory ]
 fi
 
 # Run Semgrep
-docker run --rm -v "${scriptdirectory}:/src" returntocorp/semgrep semgrep --error --text --metrics=off -c "/src/${rulesdirectory}/audit" $@
+docker run --rm -v "${scriptdirectory}:/src" returntocorp/semgrep:1.37.0 semgrep --error --text --metrics=off -c "/src/${rulesdirectory}/audit" $@
