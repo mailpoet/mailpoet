@@ -1,6 +1,6 @@
 <?php // phpcs:ignore SlevomatCodingStandard.TypeHints.DeclareStrictTypes.DeclareStrictTypesMissing
 
-namespace MailPoet\Helpscout;
+namespace MailPoet\SystemReport;
 
 use MailPoet\Cron\CronHelper;
 use MailPoet\DI\ContainerWrapper;
@@ -11,7 +11,7 @@ use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 use MailPoet\WP\Functions as WPFunctions;
 
-class Beacon {
+class SystemReportCollector {
   /** @var SettingsController */
   private $settings;
 
