@@ -7,13 +7,13 @@ use MailPoet\Cron\ActionScheduler\Actions\DaemonRun;
 use MailPoet\Cron\ActionScheduler\Actions\DaemonTrigger;
 use MailPoet\Cron\CronHelper;
 use MailPoet\Entities\ScheduledTaskEntity;
-use MailPoet\Helpscout\Beacon;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Newsletter\Url as NewsletterURL;
 use MailPoet\Router\Endpoints\CronDaemon;
 use MailPoet\Services\Bridge;
+use MailPoet\SystemReport\SystemReportCollector;
 use MailPoet\Tasks\Sending;
 use MailPoet\WP\DateTime;
 
@@ -24,8 +24,8 @@ class Help {
   /** @var CronHelper */
   private $cronHelper;
 
-  /** @var Beacon */
-  private $helpscoutBeacon;
+  /** @var SystemReportCollector */
+  private $systemReportCollector;
 
   /** @var Bridge $bridge */
   private $bridge;
@@ -42,7 +42,7 @@ class Help {
   public function __construct(
     PageRenderer $pageRenderer,
     CronHelper $cronHelper,
-    Beacon $helpscoutBeacon,
+    SystemReportCollector $systemReportCollector,
     Bridge $bridge,
     ScheduledTasksRepository $scheduledTasksRepository,
     SendingQueuesRepository $sendingQueuesRepository,
@@ -50,7 +50,7 @@ class Help {
   ) {
     $this->pageRenderer = $pageRenderer;
     $this->cronHelper = $cronHelper;
-    $this->helpscoutBeacon = $helpscoutBeacon;
+    $this->systemReportCollector = $systemReportCollector;
     $this->bridge = $bridge;
     $this->scheduledTasksRepository = $scheduledTasksRepository;
     $this->sendingQueuesRepository = $sendingQueuesRepository;
@@ -58,7 +58,7 @@ class Help {
   }
 
   public function render() {
-    $systemInfoData = $this->helpscoutBeacon->getData(true);
+    $systemInfoData = $this->systemReportCollector->getData(true);
     try {
       $cronPingUrl = $this->cronHelper->getCronUrl(CronDaemon::ACTION_PING);
       $cronPingResponse = $this->cronHelper->pingDaemon();

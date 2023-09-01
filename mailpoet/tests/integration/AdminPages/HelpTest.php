@@ -8,11 +8,11 @@ use MailPoet\Cron\CronHelper;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SendingQueueEntity;
-use MailPoet\Helpscout\Beacon;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Newsletter\Url;
 use MailPoet\Services\Bridge;
+use MailPoet\SystemReport\SystemReportCollector;
 use MailPoet\Tasks\Sending;
 use MailPoet\Test\DataFactories\Newsletter;
 use MailPoet\Test\DataFactories\ScheduledTask as ScheduledTaskFactory;
@@ -39,7 +39,7 @@ class HelpTest extends \MailPoetTest {
     $this->helpPage = new Help(
       $this->diContainer->get(PageRenderer::class),
       $this->diContainer->get(CronHelper::class),
-      $this->diContainer->get(Beacon::class),
+      $this->diContainer->get(SystemReportCollector::class),
       $this->diContainer->get(Bridge::class),
       $this->diContainer->get(ScheduledTasksRepository::class),
       $this->sendingQueuesRepository,
