@@ -1,0 +1,41 @@
+<?php declare(strict_types = 1);
+
+namespace %namespace%;
+
+use MailPoet\Automation\Engine\Data\StepRunArgs;
+use MailPoet\Automation\Engine\Data\StepValidationArgs;
+use MailPoet\Automation\Engine\Integration\Trigger;
+use MailPoet\Validator\Builder;
+use MailPoet\Validator\Schema\ObjectSchema;
+
+class %classname% implements Trigger {
+  const KEY = '%key%';
+
+  public function __construct() {
+  }
+
+  public function getKey(): string {
+    return '%key%';
+  }
+
+  public function getName(): string {
+    return %name%;
+  }
+
+  public function getArgsSchema(): ObjectSchema {
+    return Builder::object();
+  }
+
+  public function getSubjectKeys(): array {
+    return [];
+  }
+
+  public function validate(StepValidationArgs $args): void {
+  }
+
+  public function registerHooks(): void {
+  }
+
+  public function isTriggeredBy(StepRunArgs $args): bool {
+  }
+}
