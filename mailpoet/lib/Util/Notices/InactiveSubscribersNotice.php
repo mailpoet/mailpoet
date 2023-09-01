@@ -64,7 +64,6 @@ class InactiveSubscribersNotice {
     );
     $notice = Helpers::replaceLinkTags($notice, 'https://kb.mailpoet.com/article/264-inactive-subscribers', [
       'target' => '_blank',
-      'data-beacon-article' => '5cbf19622c7d3a026fd3efe1',
     ]);
     $notice = "<p>$notice</p>";
     $notice .= '<p><a href="admin.php?page=mailpoet-settings#advanced" class="button button-primary">' . $goToSettingsString . '</a></p>';

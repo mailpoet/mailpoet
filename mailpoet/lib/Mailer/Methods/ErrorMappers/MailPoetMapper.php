@@ -228,7 +228,6 @@ class MailPoetMapper {
       [
         'target' => '_blank',
         'rel' => 'noopener noreferrer',
-        'data-beacon-article' => '5fbd3942cff47e00160bd248',
       ]
     );
 

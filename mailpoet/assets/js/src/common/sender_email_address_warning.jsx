@@ -152,7 +152,6 @@ function SenderEmailAddressWarning({
         <p className="sender_email_address_warning">
           <a
             href="https://kb.mailpoet.com/article/259-your-from-address-cannot-be-yahoo-com-gmail-com-outlook-com"
-            data-beacon-article="5be5911104286304a71c176e"
             target="_blank"
             rel="noopener noreferrer"
           >

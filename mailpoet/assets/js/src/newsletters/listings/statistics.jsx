@@ -150,7 +150,6 @@ function Statistics({ newsletter, isSent, currentTime }) {
       <div>
         <a
           href={improveStatsKBLink}
-          data-beacon-article="58f671152c7d3a057f8858e8"
           target="_blank"
           rel="noopener noreferrer"
           className="mailpoet_stat_link_small"

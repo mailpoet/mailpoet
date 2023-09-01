@@ -91,7 +91,6 @@ function WizardWooCommerceStep({
                       <a
                         key={match}
                         href="https://kb.mailpoet.com/article/284-import-old-customers-to-the-woocommerce-customers-list"
-                        data-beacon-article="5d722c7104286364bc8ecf19"
                         rel="noopener noreferrer"
                         target="_blank"
                       >
@@ -133,7 +132,6 @@ function WizardWooCommerceStep({
                     <a
                       key={match}
                       href="https://kb.mailpoet.com/article/280-woocommerce-cookie-tracking"
-                      data-beacon-article="5d5fa44c2c7d3a7a4d778906"
                       rel="noopener noreferrer"
                       target="_blank"
                     >

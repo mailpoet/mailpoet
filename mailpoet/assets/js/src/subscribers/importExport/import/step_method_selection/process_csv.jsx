@@ -17,7 +17,7 @@ function papaParserConfig(done) {
         let errorNotice = MailPoet.I18n.t('noValidRecords');
         errorNotice = errorNotice.replace(
           '[link]',
-          '<a href="https://kb.mailpoet.com/article/126-importing-subscribers-with-csv-files" data-beacon-article="57ce079f903360649f6e56fc">',
+          '<a href="https://kb.mailpoet.com/article/126-importing-subscribers-with-csv-files">',
         );
         errorNotice = errorNotice.replace('[/link]', '</a>');
         MailPoet.Notice.error(errorNotice);

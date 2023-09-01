@@ -36,7 +36,6 @@ class AfterMigrationNotice {
       'https://kb.mailpoet.com/article/199-checklist-after-migrating-to-mailpoet3',
       [
         'target' => '_blank',
-        'data-beacon-article' => '596352492c7d3a707d7b8994',
       ]
     );
 

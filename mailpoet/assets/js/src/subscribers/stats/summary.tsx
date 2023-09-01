@@ -75,7 +75,6 @@ export function Summary({ stats, subscriber }: PropTypes): JSX.Element {
                           href="https://kb.mailpoet.com/article/368-what-are-machine-opens"
                           key="kb-link"
                           target="_blank"
-                          data-beacon-article="6124b7fb21ef206e5592e188"
                           rel="noopener noreferrer"
                         >
                           {match}

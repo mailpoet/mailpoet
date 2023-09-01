@@ -277,7 +277,6 @@ function DynamicSegmentListComponent(
         {MailPoet.I18n.t('segmentsTipText')}{' '}
         <a
           href="https://kb.mailpoet.com/article/237-guide-to-subscriber-segmentation?utm_source=plugin&utm_medium=segments&utm_campaign=helpdocs"
-          data-beacon-article="5a574bd92c7d3a194368233e"
           target="_blank"
           rel="noopener noreferrer"
         >

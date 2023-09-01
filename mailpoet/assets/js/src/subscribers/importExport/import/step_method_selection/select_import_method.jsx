@@ -13,7 +13,6 @@ function SelectImportMethod({ activeMethod, onMethodChange }) {
         <div className="mailpoet-settings-inputs-row">
           <a
             href="https://kb.mailpoet.com/article/242-video-guide-importing-subscribers-using-a-csv-file"
-            data-beacon-article="5a8e8f0204286305fbc9be9a"
             target="_blank"
             rel="noopener noreferrer"
           >

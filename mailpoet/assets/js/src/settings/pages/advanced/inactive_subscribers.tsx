@@ -19,7 +19,6 @@ export function InactiveSubscribers() {
             <a
               className="mailpoet-link"
               href="https://kb.mailpoet.com/article/264-inactive-subscribers"
-              data-beacon-article="5cbf19622c7d3a026fd3efe1"
               rel="noopener noreferrer"
               target="_blank"
             >

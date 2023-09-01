@@ -16,7 +16,6 @@ export function BounceAddress() {
             <a
               className="mailpoet-link"
               href="https://kb.mailpoet.com/article/180-how-bounce-management-works-in-mailpoet-3"
-              data-beacon-article="58a5a7502c7d3a576d353c78"
               rel="noopener noreferrer"
               target="_blank"
             >
