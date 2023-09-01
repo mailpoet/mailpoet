@@ -1,0 +1,20 @@
+import { __ } from '@wordpress/i18n';
+%imports%
+
+const keywords = [
+  %keywords%
+];
+export const step: StepType = {
+  key: '%key%',
+  group: '%group%',
+  title: () => __('%name%', 'mailpoet'),
+  description: () =>
+    __('%description%', 'mailpoet'),
+
+  subtitle: () => %subtitle%,
+  keywords,
+  foreground: '%foreground%',
+  background: '%background%',
+  icon: () => (<></>),
+  edit: () => %edit%,
+} as const;

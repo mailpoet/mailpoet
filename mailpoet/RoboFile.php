@@ -1413,6 +1413,60 @@ class RoboFile extends \Robo\Tasks {
     $generator->run($generatorName);
   }
 
+  public function automationAddStep() {
+
+    require_once __DIR__ . '/tasks/automation/AddStep.php';
+    $yes = ['y', 'yes', 'Y', 'Yes', 'YES'];
+    $type = in_array($this->ask("Is this step a trigger? [y]"), $yes) ? 'trigger' : 'action';
+    $isPremium = in_array($this->ask("Is this $type a premium feature? [y]"), $yes);
+    $vendor = $this->ask("Who is the vendor of the $type? (default: mailpoet)") ?? 'mailpoet';
+    do {
+      $id = $this->ask("What is the id of the $type?");
+    } while (!$id);
+    do {
+      $name = $this->ask("What is the name of the $type?");
+    } while (!$name);
+    do {
+      $description = $this->ask("Describe the $type?");
+    } while (!$description);
+    do {
+      $keywords = array_map(
+        function(string $keyword): string {
+          return trim($keyword);
+        },
+        explode(',', $this->ask("Add some keywords (commaseparated)"))
+      );
+    } while (!$keywords);
+    $subtitle = 'Trigger';
+    if ($type === 'action') {
+      do {
+        $subtitle = $this->ask("What is the subtitle?");
+      } while (!$subtitle);
+    }
+    $premiumNotice = '';
+    if ($isPremium) {
+      do {
+        $premiumNotice = $this->ask("What is the text message for the premium modal?");
+      } while (!$premiumNotice);
+    }
+
+
+    $generator = new \MailPoetTasks\Automation\AddStep(
+      $type,
+      $isPremium,
+      $vendor,
+      $id,
+      $name,
+      $description,
+      $subtitle,
+      $keywords,
+      $premiumNotice
+    );
+    $generator->create();
+    $this->yell(ucfirst("$type created."));
+
+  }
+
   public function twigGenerateCache() {
 
     $templatePath = __DIR__ . '/views/'; // \MailPoet\Config\Env::$viewsPath . '/'
