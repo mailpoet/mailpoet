@@ -1,8 +1,3 @@
-// Fix preventing HelpScout beacon to overlay pagination on listing pages
-#wpbody {
-  padding-bottom: 20px;
-}
-
 // Fix for 3rd party plugins icons in menu that might display broken because we block loading 3rd party CSS on mailepoet pages
 #adminmenu :not(.toplevel_page_site-card) .wp-menu-image img {
   max-width: 20px;
