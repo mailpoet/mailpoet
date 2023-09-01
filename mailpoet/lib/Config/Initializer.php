@@ -248,6 +248,12 @@ class Initializer {
       'initialize',
     ]);
 
+    $this->wpFunctions->addAction(
+      'init',
+      [$this, 'maybeDbUpdate'],
+      PHP_INT_MIN
+    );
+
     $this->wpFunctions->addAction('admin_init', [
       $this,
       'setupPrivacyPolicy',
@@ -315,7 +321,6 @@ class Initializer {
   public function initialize() {
     try {
       $this->migratorCli->initialize();
-      $this->maybeDbUpdate();
       $this->setupInstaller();
       $this->setupUpdater();
 
