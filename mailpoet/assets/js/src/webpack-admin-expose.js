@@ -29,6 +29,7 @@ export { MenuItem as WordpressComponentsMenuItem } from '@wordpress/components';
 export { PanelBody as WordpressComponentsPanelBody } from '@wordpress/components';
 export { TreeSelect as WordpressComponentsTreeSelect } from '@wordpress/components';
 export { Spinner as WordpressComponentsSpinner } from '@wordpress/components';
+export * as WordPressAPIFetch from '@wordpress/api-fetch';
 export * as WordPressData from '@wordpress/data';
 export * as WordPressDate from '@wordpress/date';
 export * as WordPressUrl from '@wordpress/url';
@@ -37,10 +38,10 @@ export * as WordPressIcons from '@wordpress/icons';
 export * as WordPressDataControls from '@wordpress/data-controls';
 export * as WooCommerceDate from '@woocommerce/date';
 import { DateRangeFilterPicker } from '@woocommerce/components';
-
 export const WooCommerceComponents = {
   DateRangeFilterPicker,
 };
+
 // assets
 export * as Automation from 'automation';
 export * as Common from 'common';
