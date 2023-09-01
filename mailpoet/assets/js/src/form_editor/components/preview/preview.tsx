@@ -104,7 +104,6 @@ function FormPreview(): JSX.Element {
       onRequestClose={closePreview}
       fullScreen
       contentClassName="mailpoet_form_preview_modal"
-      overlayClassName="mailpoet_form_preview_modal_overlay"
     >
       {!isPreviewReady && (
         <div className="mailpoet_spinner_wrapper">
