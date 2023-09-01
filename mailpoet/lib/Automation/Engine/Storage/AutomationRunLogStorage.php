@@ -28,6 +28,13 @@ class AutomationRunLogStorage {
     return $this->wpdb->insert_id;
   }
 
+  public function updateAutomationRunLog(AutomationRunLog $automationRunLog): void {
+    $result = $this->wpdb->update($this->table, $automationRunLog->toArray(), ['id' => $automationRunLog->getId()]);
+    if ($result === false) {
+      throw Exceptions::databaseError($this->wpdb->last_error);
+    }
+  }
+
   public function getAutomationRunStatisticsForAutomationInTimeFrame(int $automationId, string $status, \DateTimeImmutable $after, \DateTimeImmutable $before, int $versionId = null): array {
     $logTable = esc_sql($this->table);
     $runTable = esc_sql($this->wpdb->prefix . 'mailpoet_automation_runs');
@@ -66,6 +73,16 @@ class AutomationRunLogStorage {
       return AutomationRunLog::fromArray($data);
     }
     return null;
+  }
+
+  public function getAutomationRunLogByRunAndStepId(int $runId, string $stepId): ?AutomationRunLog {
+    $table = esc_sql($this->table);
+    $query = $this->wpdb->prepare("SELECT * FROM $table WHERE automation_run_id = %d AND step_id = %s", $runId, $stepId);
+    if (!is_string($query)) {
+      throw InvalidStateException::create();
+    }
+    $result = $this->wpdb->get_row($query, ARRAY_A);
+    return $result ? AutomationRunLog::fromArray((array)$result) : null;
   }
 
   /**

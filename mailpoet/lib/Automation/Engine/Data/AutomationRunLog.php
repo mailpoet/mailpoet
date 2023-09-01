@@ -12,6 +12,12 @@ class AutomationRunLog {
   public const STATUS_COMPLETE = 'complete';
   public const STATUS_FAILED = 'failed';
 
+  public const STATUS_ALL = [
+    self::STATUS_RUNNING,
+    self::STATUS_COMPLETE,
+    self::STATUS_FAILED,
+  ];
+
   /** @var int */
   private $id;
 
@@ -71,6 +77,13 @@ class AutomationRunLog {
     return $this->status;
   }
 
+  public function setStatus(string $status): void {
+    if (!in_array($status, self::STATUS_ALL, true)) {
+      throw new InvalidArgumentException("Invalid status '$status'.");
+    }
+    $this->status = $status;
+  }
+
   public function getError(): array {
     return $this->error;
   }
@@ -81,6 +94,10 @@ class AutomationRunLog {
 
   public function getCompletedAt(): ?DateTimeImmutable {
     return $this->completedAt;
+  }
+
+  public function setCompletedAt(DateTimeImmutable $completedAt): void {
+    $this->completedAt = $completedAt;
   }
 
   /**
@@ -109,16 +126,6 @@ class AutomationRunLog {
       'error' => Json::encode($this->error),
       'data' => Json::encode($this->data),
     ];
-  }
-
-  public function markCompletedSuccessfully(): void {
-    $this->status = self::STATUS_COMPLETE;
-    $this->completedAt = new DateTimeImmutable();
-  }
-
-  public function markFailed(): void {
-    $this->status = self::STATUS_FAILED;
-    $this->completedAt = new DateTimeImmutable();
   }
 
   public function setError(Throwable $error): void {
