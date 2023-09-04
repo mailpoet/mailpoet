@@ -5,19 +5,12 @@ namespace MailPoet\Test\DataFactories;
 use DateTimeImmutable;
 use MailPoet\Automation\Engine\Data\Automation;
 use MailPoet\Automation\Engine\Data\AutomationRun as Entity;
-use MailPoet\Automation\Engine\Data\AutomationRunLog;
-use MailPoet\Automation\Engine\Data\NextStep;
-use MailPoet\Automation\Engine\Data\Step;
 use MailPoet\Automation\Engine\Data\Subject;
-use MailPoet\Automation\Engine\Storage\AutomationRunLogStorage;
 use MailPoet\Automation\Engine\Storage\AutomationRunStorage;
-use MailPoet\Automation\Engine\Storage\AutomationStorage;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\InvalidStateException;
 
 class AutomationRun {
-
-
   /** @var ?Entity */
   private $automationRun = null;
 
@@ -111,44 +104,5 @@ class AutomationRun {
       throw new InvalidStateException();
     }
     return $this->automationRun;
-  }
-
-  public function generateLogs(Entity $run, string $lastStep) {
-    $automation = ContainerWrapper::getInstance(WP_DEBUG)->get(AutomationStorage::class)->getAutomation($run->getAutomationId());
-    if (!$automation) {
-      throw new InvalidStateException();
-    }
-    $steps = $this->findPathToStep($automation, $lastStep);
-
-    $logStorage = ContainerWrapper::getInstance(WP_DEBUG)->get(AutomationRunLogStorage::class);
-    foreach ($steps as $step) {
-      $log = new AutomationRunLog($run->getId(), $step);
-      $log->markCompletedSuccessfully();
-      $logStorage->createAutomationRunLog($log);
-    }
-  }
-
-  private function findPathToStep(Automation $automation, $lastStep): array {
-
-    $steps = $automation->getSteps();
-    if (in_array($steps[$lastStep]->getType(), [Step::TYPE_ROOT, Step::TYPE_TRIGGER], true)) {
-      return [];
-    }
-    $steps = [];
-    foreach ($automation->getSteps() as $step) {
-      $nextStepIds = array_map(
-        function(NextStep $next): string { return $next->getId();
-        },
-        $step->getNextSteps()
-      );
-      if (!in_array($lastStep, $nextStepIds, true)) {
-        continue;
-      }
-
-      $steps = array_merge($this->findPathToStep($automation, $step->getId()), [$step->getId()]);
-    }
-
-    return array_unique(array_merge($steps, [$lastStep]));
-
   }
 }
