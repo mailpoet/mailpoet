@@ -25,16 +25,21 @@ class StepRunLogger {
   /** @var AutomationRunLog|null */
   private $log;
 
+  /** @var string */
+  private $stepType;
+
   public function __construct(
     AutomationRunLogStorage $automationRunLogStorage,
     Hooks $hooks,
     int $runId,
-    string $stepId
+    string $stepId,
+    string $stepType
   ) {
     $this->automationRunLogStorage = $automationRunLogStorage;
     $this->hooks = $hooks;
     $this->runId = $runId;
     $this->stepId = $stepId;
+    $this->stepType = $stepType;
   }
 
   public function logStart(): void {
@@ -44,7 +49,7 @@ class StepRunLogger {
   public function logSuccess(): void {
     $log = $this->getLog();
     $log->setStatus(AutomationRunLog::STATUS_COMPLETE);
-    $log->setCompletedAt(new DateTimeImmutable());
+    $log->setUpdatedAt(new DateTimeImmutable());
     $this->triggerAfterRunHook($log);
     $this->automationRunLogStorage->updateAutomationRunLog($log);
   }
@@ -53,7 +58,7 @@ class StepRunLogger {
     $log = $this->getLog();
     $log->setStatus(AutomationRunLog::STATUS_FAILED);
     $log->setError($error);
-    $log->setCompletedAt(new DateTimeImmutable());
+    $log->setUpdatedAt(new DateTimeImmutable());
     $this->triggerAfterRunHook($log);
     $this->automationRunLogStorage->updateAutomationRunLog($log);
   }
@@ -64,7 +69,7 @@ class StepRunLogger {
     }
 
     if (!$this->log) {
-      $log = new AutomationRunLog($this->runId, $this->stepId);
+      $log = new AutomationRunLog($this->runId, $this->stepId, $this->stepType);
       $id = $this->automationRunLogStorage->createAutomationRunLog($log);
       $this->log = $this->automationRunLogStorage->getAutomationRunLog($id);
     }

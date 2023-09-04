@@ -20,18 +20,18 @@ class AutomationRunLogStorageTest extends \MailPoetTest {
   }
 
   public function testItSavesAndRetrievesAsExpected() {
-    $log = new AutomationRunLog(1, 'step-id');
+    $log = new AutomationRunLog(1, 'step-id', AutomationRunLog::TYPE_ACTION);
     $log->setData('key', 'value');
     $log->setData('key2', ['arrayData']);
     $preSave = $log->toArray();
     $id = $this->storage->createAutomationRunLog($log);
     $fromDatabase = $this->storage->getAutomationRunLog($id);
     $this->assertInstanceOf(AutomationRunLog::class, $fromDatabase);
-    expect($preSave)->equals($fromDatabase->toArray());
+    expect(['id' => $fromDatabase->getId()] + $preSave)->equals($fromDatabase->toArray());
   }
 
   public function testItCanStoreAnError() {
-    $log = new AutomationRunLog(1, 'step-id');
+    $log = new AutomationRunLog(1, 'step-id', AutomationRunLog::TYPE_ACTION);
     $log->setError(new \Exception('test'));
     $id = $this->storage->createAutomationRunLog($log);
     $log = $this->storage->getAutomationRunLog($id);

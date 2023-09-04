@@ -5,6 +5,7 @@ namespace MailPoet\Automation\Engine\Control;
 use Exception;
 use MailPoet\Automation\Engine\Data\Automation;
 use MailPoet\Automation\Engine\Data\AutomationRun;
+use MailPoet\Automation\Engine\Data\AutomationRunLog;
 use MailPoet\Automation\Engine\Data\StepRunArgs;
 use MailPoet\Automation\Engine\Data\StepValidationArgs;
 use MailPoet\Automation\Engine\Data\SubjectEntry;
@@ -86,7 +87,7 @@ class StepHandler {
       return;
     }
 
-    $logger = $this->stepRunLoggerFactory->createLogger($runId, $stepId);
+    $logger = $this->stepRunLoggerFactory->createLogger($runId, $stepId, AutomationRunLog::TYPE_ACTION);
     $logger->logStart();
     try {
       $this->handleStep($runId, $stepId, $runNumber);

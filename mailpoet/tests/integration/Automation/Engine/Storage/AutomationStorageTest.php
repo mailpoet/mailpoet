@@ -180,7 +180,7 @@ class AutomationStorageTest extends \MailPoetTest {
         $runId = $automationRunStorage->createAutomationRun($automationRun);
         $runs[$type][] = $runId;
         for ($logI = 0; $logI < 2; $logI++) {
-          $log = new AutomationRunLog($runId, "step-{$logI}");
+          $log = new AutomationRunLog($runId, "step-{$logI}", AutomationRunLog::TYPE_ACTION);
           $logId = $automationRunLogStorage->createAutomationRunLog($log);
           $runLogs[$type][] = $logId;
         }
