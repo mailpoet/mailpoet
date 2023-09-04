@@ -7,7 +7,7 @@ use MailPoet\Automation\Engine\Exceptions\InvalidStateException;
 
 class Json {
   public static function encode(array $value): string {
-    $json = json_encode($value, JSON_UNESCAPED_SLASHES | JSON_PRESERVE_ZERO_FRACTION);
+    $json = json_encode((object)$value, JSON_UNESCAPED_SLASHES | JSON_PRESERVE_ZERO_FRACTION);
     $error = json_last_error();
     if ($error || $json === false) {
       throw new InvalidStateException(json_last_error_msg(), (string)$error);
