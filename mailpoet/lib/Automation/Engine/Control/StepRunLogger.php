@@ -4,6 +4,7 @@ namespace MailPoet\Automation\Engine\Control;
 
 use DateTimeImmutable;
 use MailPoet\Automation\Engine\Data\AutomationRunLog;
+use MailPoet\Automation\Engine\Data\Step;
 use MailPoet\Automation\Engine\Hooks;
 use MailPoet\Automation\Engine\Storage\AutomationRunLogStorage;
 use MailPoet\InvalidStateException;
@@ -44,6 +45,12 @@ class StepRunLogger {
 
   public function logStart(): void {
     $this->getLog();
+  }
+
+  public function logStepData(Step $step): void {
+    $log = $this->getLog();
+    $log->setStepKey($step->getKey());
+    $this->automationRunLogStorage->updateAutomationRunLog($log);
   }
 
   public function logSuccess(): void {

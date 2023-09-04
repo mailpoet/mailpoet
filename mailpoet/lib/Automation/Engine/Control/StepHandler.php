@@ -90,7 +90,7 @@ class StepHandler {
     $logger = $this->stepRunLoggerFactory->createLogger($runId, $stepId, AutomationRunLog::TYPE_ACTION);
     $logger->logStart();
     try {
-      $this->handleStep($runId, $stepId, $runNumber);
+      $this->handleStep($runId, $stepId, $runNumber, $logger);
       $logger->logSuccess();
     } catch (Throwable $e) {
       $status = $e instanceof InvalidStateException && $e->getErrorCode() === 'mailpoet_automation_not_active'
@@ -110,7 +110,7 @@ class StepHandler {
     }
   }
 
-  private function handleStep(int $runId, string $stepId, int $runNumber): void {
+  private function handleStep(int $runId, string $stepId, int $runNumber, StepRunLogger $logger): void {
     $automationRun = $this->automationRunStorage->getAutomationRun($runId);
     if (!$automationRun) {
       throw Exceptions::automationRunNotFound($runId);
@@ -133,6 +133,8 @@ class StepHandler {
     if (!$stepData) {
       throw Exceptions::automationStepNotFound($stepId);
     }
+
+    $logger->logStepData($stepData);
 
     $step = $this->registry->getStep($stepData->getKey());
     if (!$step instanceof Action) {
