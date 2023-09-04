@@ -209,7 +209,13 @@
         event.preventDefault(); // Prevent default behavior opening the url.
         window.open(mailpoet_redirect_support_link, '_blank');
       },
-    });
+    }).then(() => {
+        // stopping propagation to avoid conflicts with other keydown events form WP.com
+      function writingFixer (e) {
+        e.stopPropagation();
+      }
+      document.getElementById('docsbotai-root').addEventListener("keydown", writingFixer);
+    })
   </script>
 <% endif %>
 
