@@ -51,7 +51,7 @@ class AutomationRunLogTest extends \MailPoetTest {
   }
 
   public function testItAllowsSettingSimpleData(): void {
-    $log = new AutomationRunLog(1, 'step-id');
+    $log = new AutomationRunLog(1, 'step-id', AutomationRunLog::TYPE_ACTION);
     $this->assertSame([], $log->getData());
     $log->setData('key', 'value');
     $data = $log->getData();
@@ -60,7 +60,7 @@ class AutomationRunLogTest extends \MailPoetTest {
   }
 
   public function testItAllowsSettingArraysOfScalarValues(): void {
-    $log = new AutomationRunLog(1, 'step-id');
+    $log = new AutomationRunLog(1, 'step-id', AutomationRunLog::TYPE_ACTION);
     $data = [
       'string',
       11.1,
@@ -75,7 +75,7 @@ class AutomationRunLogTest extends \MailPoetTest {
   }
 
   public function testItAllowsSettingMultidimensionalArraysOfScalarValues(): void {
-    $log = new AutomationRunLog(1, 'step-id');
+    $log = new AutomationRunLog(1, 'step-id', AutomationRunLog::TYPE_ACTION);
     $data = [
       'values' => [
         'string',
@@ -92,7 +92,7 @@ class AutomationRunLogTest extends \MailPoetTest {
   }
 
   public function testItDoesNotAllowSettingDataThatIncludesClosures(): void {
-    $log = new AutomationRunLog(1, 'step-id');
+    $log = new AutomationRunLog(1, 'step-id', AutomationRunLog::TYPE_ACTION);
     $badData = [
       function() {
         echo 'closures cannot be serialized';
@@ -104,7 +104,7 @@ class AutomationRunLogTest extends \MailPoetTest {
   }
 
   public function testItDoesNotAllowSettingObjectsForData(): void {
-    $log = new AutomationRunLog(1, 'step-id');
+    $log = new AutomationRunLog(1, 'step-id', AutomationRunLog::TYPE_ACTION);
     $object = new stdClass();
     $object->key = 'value';
     $this->expectException(\InvalidArgumentException::class);
@@ -113,7 +113,7 @@ class AutomationRunLogTest extends \MailPoetTest {
   }
 
   public function testItDoesNotAllowSettingMultidimensionalArrayThatContainsNonScalarValue(): void {
-    $log = new AutomationRunLog(1, 'step-id');
+    $log = new AutomationRunLog(1, 'step-id', AutomationRunLog::TYPE_ACTION);
     $data = [
       'test' => [
         'multidimensional' => [
@@ -175,26 +175,26 @@ class AutomationRunLogTest extends \MailPoetTest {
     $automationRunLogs = $this->getLogsForAction();
     expect($automationRunLogs)->count(1);
     $log = $automationRunLogs[0];
-    expect($log->getStatus())->equals('completed');
+    expect($log->getStatus())->equals('complete');
   }
 
-  public function testItAddsCompletedAtTimestampAfterRunningSuccessfully(): void {
+  public function testItSetsUpdatedAtTimestampAfterRunningSuccessfully(): void {
     $this->wp->addAction(Hooks::AUTOMATION_RUN_LOG_AFTER_STEP_RUN, function(AutomationRunLog $log) {
-      expect($log->getCompletedAt())->null();
+      expect($log->getUpdatedAt())->null();
     });
     $automationRunLogs = $this->getLogsForAction();
     expect($automationRunLogs)->count(1);
     $log = $automationRunLogs[0];
-    expect($log->getCompletedAt())->isInstanceOf(\DateTimeImmutable::class);
+    expect($log->getUpdatedAt())->isInstanceOf(\DateTimeImmutable::class);
   }
 
-  public function testItAddsCompletedAtTimestampAfterFailing(): void {
+  public function testItSetsUpdatedAtTimestampAfterFailing(): void {
     $automationRunLogs = $this->getLogsForAction(function() {
       throw new \Exception('error');
     });
     expect($automationRunLogs)->count(1);
     $log = $automationRunLogs[0];
-    expect($log->getCompletedAt())->isInstanceOf(\DateTimeImmutable::class);
+    expect($log->getUpdatedAt())->isInstanceOf(\DateTimeImmutable::class);
   }
 
   public function testItLogsFailedStatusCorrectly(): void {

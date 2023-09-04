@@ -18,6 +18,11 @@ class AutomationRunLog {
     self::STATUS_FAILED,
   ];
 
+  public const TYPE_ACTION = 'action';
+  public const TYPE_TRIGGER = 'trigger';
+
+  public const KEY_UNKNOWN = 'unknown';
+
   /** @var int */
   private $id;
 
@@ -28,13 +33,19 @@ class AutomationRunLog {
   private $stepId;
 
   /** @var string */
+  private $stepType;
+
+  /** @var string */
+  private $stepKey;
+
+  /** @var string */
   private $status;
 
   /** @var DateTimeImmutable */
   private $startedAt;
 
-  /** @var DateTimeImmutable|null */
-  private $completedAt;
+  /** @var DateTimeImmutable */
+  private $updatedAt;
 
   /** @var array */
   private $data = [];
@@ -45,12 +56,18 @@ class AutomationRunLog {
   public function __construct(
     int $automationRunId,
     string $stepId,
+    string $stepType,
     int $id = null
   ) {
     $this->automationRunId = $automationRunId;
     $this->stepId = $stepId;
+    $this->stepType = $stepType;
+    $this->stepKey = self::KEY_UNKNOWN;
     $this->status = self::STATUS_RUNNING;
-    $this->startedAt = new DateTimeImmutable();
+
+    $now = new DateTimeImmutable();
+    $this->startedAt = $now;
+    $this->updatedAt = $now;
 
     if ($id) {
       $this->id = $id;
@@ -69,6 +86,19 @@ class AutomationRunLog {
     return $this->stepId;
   }
 
+  public function getStepType(): string {
+    return $this->stepType;
+  }
+
+  public function getStepKey(): string {
+    return $this->stepKey;
+  }
+
+  public function setStepKey(string $stepKey): void {
+    $this->stepKey = $stepKey;
+    $this->updatedAt = new DateTimeImmutable();
+  }
+
   public function getStatus(): string {
     return $this->status;
   }
@@ -78,18 +108,19 @@ class AutomationRunLog {
       throw new InvalidArgumentException("Invalid status '$status'.");
     }
     $this->status = $status;
+    $this->updatedAt = new DateTimeImmutable();
   }
 
   public function getStartedAt(): DateTimeImmutable {
     return $this->startedAt;
   }
 
-  public function getCompletedAt(): ?DateTimeImmutable {
-    return $this->completedAt;
+  public function getUpdatedAt(): DateTimeImmutable {
+    return $this->updatedAt;
   }
 
-  public function setCompletedAt(DateTimeImmutable $completedAt): void {
-    $this->completedAt = $completedAt;
+  public function setUpdatedAt(DateTimeImmutable $updatedAt): void {
+    $this->updatedAt = $updatedAt;
   }
 
   public function getData(): array {
@@ -102,6 +133,7 @@ class AutomationRunLog {
       throw new InvalidArgumentException("Invalid data provided for key '$key'. Only scalar values and arrays of scalar values are allowed.");
     }
     $this->data[$key] = $value;
+    $this->updatedAt = new DateTimeImmutable();
   }
 
   public function getError(): array {
@@ -110,13 +142,16 @@ class AutomationRunLog {
 
   public function toArray(): array {
     return [
+      'id' => $this->id,
       'automation_run_id' => $this->automationRunId,
       'step_id' => $this->stepId,
+      'step_type' => $this->stepType,
+      'step_key' => $this->stepKey,
       'status' => $this->status,
       'started_at' => $this->startedAt->format(DateTimeImmutable::W3C),
-      'completed_at' => $this->completedAt ? $this->completedAt->format(DateTimeImmutable::W3C) : null,
-      'error' => Json::encode($this->error),
+      'updated_at' => $this->updatedAt->format(DateTimeImmutable::W3C),
       'data' => Json::encode($this->data),
+      'error' => Json::encode($this->error),
     ];
   }
 
@@ -127,14 +162,16 @@ class AutomationRunLog {
       'code' => $error->getCode(),
       'trace' => $error->getTrace(),
     ];
+    $this->updatedAt = new DateTimeImmutable();
   }
 
   public static function fromArray(array $data): self {
-    $log = new AutomationRunLog((int)$data['automation_run_id'], $data['step_id']);
+    $log = new AutomationRunLog((int)$data['automation_run_id'], $data['step_id'], $data['step_type']);
     $log->id = (int)$data['id'];
+    $log->stepKey = $data['step_key'];
     $log->status = $data['status'];
     $log->startedAt = new DateTimeImmutable($data['started_at']);
-    $log->completedAt = $data['completed_at'] ? new DateTimeImmutable($data['completed_at']) : null;
+    $log->updatedAt = new DateTimeImmutable($data['updated_at']);
     $log->data = Json::decode($data['data']);
     $log->error = Json::decode($data['error']);
     return $log;
