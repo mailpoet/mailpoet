@@ -1,13 +1,17 @@
 import { __ } from '@wordpress/i18n';
 import { LoadingSpinner } from 'common/loader/loading_spinner';
 import { Tooltip } from 'common/tooltip/tooltip';
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { NewsLetter } from 'common/newsletter';
 import { MailPoet } from 'mailpoet';
 
 type RecipientCountProps = {
   item: NewsLetter;
 };
+
+function configString(segmentIds: string[], filterSegpmentId?: string) {
+  return `segments:${segmentIds.join(',')}|filterSegmentId:${filterSegpmentId}`;
+}
 
 export function RecipientCount(props: RecipientCountProps) {
   const [isLoading, setIsLoading] = useState(true);
@@ -22,7 +26,11 @@ export function RecipientCount(props: RecipientCountProps) {
     [props.item.options?.filterSegmentId],
   );
 
+  const configBeforeRef = useRef('');
+
   useEffect(() => {
+    configBeforeRef.current = configString(segmentIds, filterSegmentId);
+
     if (segmentIds.length < 1) {
       setRecipientCount(0);
       setIsLoading(false);
@@ -30,7 +38,6 @@ export function RecipientCount(props: RecipientCountProps) {
     }
 
     setIsLoading(true);
-
     void MailPoet.Ajax.post({
       api_version: window.mailpoet_api_version,
       endpoint: 'segments',
@@ -41,7 +48,10 @@ export function RecipientCount(props: RecipientCountProps) {
       },
     })
       .done((response) => {
-        setRecipientCount(response.data.count as number);
+        const configAfter = configString(segmentIds, filterSegmentId);
+        if (configBeforeRef.current === configAfter) {
+          setRecipientCount(response.data.count as number);
+        }
       })
       .always(() => setIsLoading(false));
   }, [segmentIds, filterSegmentId]);
