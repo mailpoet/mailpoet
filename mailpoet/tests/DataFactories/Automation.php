@@ -18,13 +18,13 @@ class Automation {
   /** @var AutomationData */
   private $automation;
 
+  /** @var array<string|int, Step> */
+  private $stepSeqeuence;
+
   public function __construct() {
     $this->storage = ContainerWrapper::getInstance(WP_DEBUG)->get(AutomationStorage::class);
-    $this->automation = new AutomationData(
-      'Test automation',
-      ['root' => new Step('root', Step::TYPE_ROOT, 'core:root', [], [])],
-      new WP_User(1)
-    );
+    $this->automation = new AutomationData('Test automation', [], new WP_User(1));
+    $this->stepSeqeuence = ['root' => new Step('root', Step::TYPE_ROOT, 'core:root', [], [])];
   }
 
   public function withName($name) {
@@ -34,23 +34,20 @@ class Automation {
 
   /** @param Step[] $steps */
   public function withSteps(array $steps): self {
-    $stepMap = [];
+    $this->stepSeqeuence = [];
     foreach ($steps as $step) {
-      $stepMap[$step->getId()] = $step;
+      $this->stepSeqeuence[$step->getId()] = $step;
     }
-    $this->automation->setSteps($stepMap);
     return $this;
   }
 
   public function withStep(Step $step): self {
-    $steps = $this->automation->getSteps();
-    $lastStep = end($steps);
-    if (!$lastStep) {
-      return $this->withSteps([$step]);
+    $lastStep = end($this->stepSeqeuence);
+    if ($lastStep) {
+      $lastStep->setNextSteps([new NextStep($step->getId())]);
     }
-    $lastStep->setNextSteps([new NextStep($step->getId())]);
-    $steps[$step->getId()] = $step;
-    return $this->withSteps(array_values($steps));
+    $this->stepSeqeuence[$step->getId()] = $step;
+    return $this;
   }
 
   public function withDelayAction(): self {
@@ -115,6 +112,7 @@ class Automation {
   }
 
   public function create(): AutomationData {
+    $this->automation->setSteps($this->stepSeqeuence);
     $id = $this->storage->createAutomation($this->automation);
     $automation = $this->storage->getAutomation($id);
     if (!$automation) {
@@ -122,5 +120,10 @@ class Automation {
     }
     $this->automation = $automation;
     return $this->automation;
+  }
+
+  /** @return array<string|int, Step> */
+  public function getStepSequence(): array {
+    return $this->stepSeqeuence;
   }
 }
