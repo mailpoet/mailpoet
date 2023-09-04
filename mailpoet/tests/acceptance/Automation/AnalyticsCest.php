@@ -4,7 +4,7 @@ namespace MailPoet\Test\Acceptance;
 
 use MailPoet\Automation\Engine\Data\Automation;
 use MailPoet\Automation\Engine\Data\AutomationRun;
-use MailPoet\Automation\Engine\Data\NextStep;
+use MailPoet\Automation\Engine\Data\Step;
 use MailPoet\Automation\Engine\Data\Subject;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\NewsletterEntity;
@@ -16,10 +16,11 @@ use MailPoet\Test\DataFactories\Newsletter;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 
 class AnalyticsCest {
-
-
   /** @var Automation */
   private $automation;
+
+  /** @var array<string|int, Step> */
+  private $automationStepSequence = [];
 
   /** @var NewsletterEntity */
   private $newsletter1;
@@ -31,17 +32,19 @@ class AnalyticsCest {
     $this->newsletter1 = $this->createNewsletter("Email 1");
     $this->newsletter2 = $this->createNewsletter("Email 2");
     $createdAt = (new \DateTimeImmutable())->modify('-2 years');
-    $this->automation = (new DataFactories\Automation())
+    $factory = (new DataFactories\Automation())
       ->withName('Someone Subscribed Automation')
       ->withSomeoneSubscribesTrigger()
       ->withSendEmailStep($this->newsletter1)
       ->withDelayAction()
       ->withSendEmailStep($this->newsletter2)
       ->withStatusActive()
-      ->withCreatedAt($createdAt)
-      ->create();
+      ->withCreatedAt($createdAt);
 
-    //We need to alter the created_at date of the versions, so we can do historical comparisons.
+    $this->automation = $factory->create();
+    $this->automationStepSequence = $factory->getStepSequence();
+
+    // We need to alter the created_at date of the versions, so we can do historical comparisons.
     global $wpdb;
     $sql = 'update ' . $wpdb->prefix . 'mailpoet_automation_versions set created_at = %s where automation_id=%d';
     $wpdb->query($wpdb->prepare($sql, $createdAt->format(\DateTimeImmutable::W3C), $this->automation->getId()));
@@ -202,18 +205,6 @@ class AnalyticsCest {
     $i->see("You're viewing sample data.");
   }
 
-  /**
-   * This method assumes the last element of the steps is the last step of the automation.
-   * This is only true, if they have been added in a serial sequence. In our case, they have
-   * been added that way.
-   */
-  private function getLastStepOfAutomation(): string {
-    $steps = $this->automation->getSteps();
-    $stepIds = array_keys($steps);
-    $lastStep = end($stepIds);
-    return (string)$lastStep;
-  }
-
   private function createSubscriber(): SubscriberEntity {
     $subscriber = (new DataFactories\Subscriber())
       ->create();
@@ -229,23 +220,11 @@ class AnalyticsCest {
       ->withSubject(new Subject('mailpoet:subscriber', ['subscriber_id' => $subscriber->getId()]))
       ->create();
 
-    if (!$nextStep) {
-      (new DataFactories\AutomationRun())
-        ->generateLogs($run, $this->getLastStepOfAutomation());
-        return;
-    }
-    $steps = $this->automation->getSteps();
-    foreach ($steps as $step) {
-      if (
-        !in_array($nextStep, array_map(function(NextStep $nextStep): string { return $nextStep->getId();
-        }, $step->getNextSteps()), true)
-      ) {
-        continue;
+    foreach ($this->automationStepSequence as $step) {
+      if ($step->getId() === $nextStep) {
+        break;
       }
-
-      (new DataFactories\AutomationRun())
-        ->generateLogs($run, $step->getId());
-      return;
+      (new DataFactories\AutomationRunLog($run->getId(), $step))->create();
     }
   }
 
