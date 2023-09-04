@@ -32,24 +32,25 @@ class Automation {
     return $this;
   }
 
-  public function withSteps(Step ...$steps): self {
-    $sortedSteps = [];
+  /** @param Step[] $steps */
+  public function withSteps(array $steps): self {
+    $stepMap = [];
     foreach ($steps as $step) {
-      $sortedSteps[$step->getId()] = $step;
+      $stepMap[$step->getId()] = $step;
     }
-    $this->automation->setSteps($sortedSteps);
+    $this->automation->setSteps($stepMap);
     return $this;
   }
 
-  public function addStep(Step $step): self {
+  public function withStep(Step $step): self {
     $steps = $this->automation->getSteps();
     $lastStep = end($steps);
     if (!$lastStep) {
-      return $this->withSteps($step);
+      return $this->withSteps([$step]);
     }
     $lastStep->setNextSteps([new NextStep($step->getId())]);
     $steps[$step->getId()] = $step;
-    return $this->withSteps(...array_values($steps));
+    return $this->withSteps(array_values($steps));
   }
 
   public function withDelayAction(): self {
@@ -63,7 +64,7 @@ class Automation {
       ],
       []
     );
-    return $this->addStep($step);
+    return $this->withStep($step);
   }
 
   public function withSendEmailStep(NewsletterEntity $newsletter): self {
@@ -79,7 +80,7 @@ class Automation {
       ],
       []
     );
-    return $this->addStep($step);
+    return $this->withStep($step);
   }
 
   public function withSomeoneSubscribesTrigger(): self {
@@ -90,7 +91,7 @@ class Automation {
       [],
       []
     );
-    return $this->addStep($step);
+    return $this->withStep($step);
   }
 
   public function withMeta($key, $value): self {
