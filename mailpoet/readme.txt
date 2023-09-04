@@ -3,7 +3,7 @@ Contributors: mailpoet, woocommerce, automattic
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 6.2
 Tested up to: 6.3
-Stable tag: 4.26.0
+Stable tag: 4.26.1
 Requires PHP: 7.3
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -218,6 +218,11 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 4.26.1 - 2023-09-04 =
+* Added: see subscriber stats in the last 30 days, 12 months, and lifetime;
+* Added: compatibility with databases with sql_require_primary_key turned on;
+* Improved: pre-fill "From name" in the onboarding wizard.
 
 = 4.26.0 - 2023-08-28 =
 * Fixed: error "Objects are not valid as a React child" when the premium plugin version is incompatible;
