@@ -142,10 +142,6 @@ class AutomationRunLog {
 
   /** @param mixed $data */
   private function isDataStorable($data): bool {
-    if (is_object($data)) {
-      return false;
-    }
-
     if (is_scalar($data)) {
       return true;
     }
@@ -159,7 +155,6 @@ class AutomationRunLog {
         return false;
       }
     }
-
     return true;
   }
 }
