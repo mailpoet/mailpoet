@@ -24,23 +24,23 @@ class AutomationRunLog {
   /** @var int */
   private $automationRunId;
 
+  /** @var string */
+  private $stepId;
+
+  /** @var string */
+  private $status;
+
   /** @var DateTimeImmutable */
   private $startedAt;
 
   /** @var DateTimeImmutable|null */
   private $completedAt;
 
-  /** @var string */
-  private $status;
+  /** @var array */
+  private $data = [];
 
   /** @var array */
-  private $error;
-
-  /** @var array */
-  private $data;
-
-  /** @var string */
-  private $stepId;
+  private $error = [];
 
   public function __construct(
     int $automationRunId,
@@ -50,15 +50,11 @@ class AutomationRunLog {
     $this->automationRunId = $automationRunId;
     $this->stepId = $stepId;
     $this->status = self::STATUS_RUNNING;
+    $this->startedAt = new DateTimeImmutable();
 
     if ($id) {
       $this->id = $id;
     }
-
-    $this->startedAt = new DateTimeImmutable();
-
-    $this->error = [];
-    $this->data = [];
   }
 
   public function getId(): int {
@@ -84,12 +80,8 @@ class AutomationRunLog {
     $this->status = $status;
   }
 
-  public function getError(): array {
-    return $this->error;
-  }
-
-  public function getData(): array {
-    return $this->data;
+  public function getStartedAt(): DateTimeImmutable {
+    return $this->startedAt;
   }
 
   public function getCompletedAt(): ?DateTimeImmutable {
@@ -100,11 +92,11 @@ class AutomationRunLog {
     $this->completedAt = $completedAt;
   }
 
-  /**
-   * @param string $key
-   * @param mixed $value
-   * @return void
-   */
+  public function getData(): array {
+    return $this->data;
+  }
+
+  /** @param mixed $value */
   public function setData(string $key, $value): void {
     if (!$this->isDataStorable($value)) {
       throw new InvalidArgumentException("Invalid data provided for key '$key'. Only scalar values and arrays of scalar values are allowed.");
@@ -112,8 +104,8 @@ class AutomationRunLog {
     $this->data[$key] = $value;
   }
 
-  public function getStartedAt(): DateTimeImmutable {
-    return $this->startedAt;
+  public function getError(): array {
+    return $this->error;
   }
 
   public function toArray(): array {
@@ -129,35 +121,26 @@ class AutomationRunLog {
   }
 
   public function setError(Throwable $error): void {
-    $error = [
+    $this->error = [
       'message' => $error->getMessage(),
       'errorClass' => get_class($error),
       'code' => $error->getCode(),
       'trace' => $error->getTrace(),
     ];
-
-    $this->error = $error;
   }
 
   public static function fromArray(array $data): self {
-    $automationRunLog = new AutomationRunLog((int)$data['automation_run_id'], $data['step_id']);
-    $automationRunLog->id = (int)$data['id'];
-    $automationRunLog->status = $data['status'];
-    $automationRunLog->error = Json::decode($data['error']);
-    $automationRunLog->data = Json::decode($data['data']);
-    $automationRunLog->startedAt = new DateTimeImmutable($data['started_at']);
-
-    if ($data['completed_at']) {
-      $automationRunLog->completedAt = new DateTimeImmutable($data['completed_at']);
-    }
-
-    return $automationRunLog;
+    $log = new AutomationRunLog((int)$data['automation_run_id'], $data['step_id']);
+    $log->id = (int)$data['id'];
+    $log->status = $data['status'];
+    $log->startedAt = new DateTimeImmutable($data['started_at']);
+    $log->completedAt = $data['completed_at'] ? new DateTimeImmutable($data['completed_at']) : null;
+    $log->data = Json::decode($data['data']);
+    $log->error = Json::decode($data['error']);
+    return $log;
   }
 
-  /**
-   * @param mixed $data
-   * @return bool
-   */
+  /** @param mixed $data */
   private function isDataStorable($data): bool {
     if (is_object($data)) {
       return false;
