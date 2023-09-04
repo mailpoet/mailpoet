@@ -10,6 +10,7 @@ import { __ } from '@wordpress/i18n';
 import { starFilled } from '@wordpress/icons';
 import { Tag } from '@woocommerce/components';
 import { SegmentTemplate } from 'segments/types';
+import { getCategoryNameBySlug } from 'segments/dynamic/templates/templates';
 
 type TemplateListItemProps = {
   template: SegmentTemplate;
@@ -34,7 +35,7 @@ export function TemplateListItem({
       </CardHeader>
       <CardBody className="mailpoet-templates-card-body">
         <p>{template.description}</p>
-        <Tag label={template.category} />
+        <Tag label={getCategoryNameBySlug(template.category)} />
       </CardBody>
     </Card>
   );

@@ -180,3 +180,10 @@ export const templateCategories = [
     name: __('Shopping Behavior', 'mailpoet'),
   },
 ];
+
+export function getCategoryNameBySlug(slug) {
+  const foundCategory = templateCategories.find(
+    (category) => category.slug === slug,
+  );
+  return foundCategory ? foundCategory.name : null;
+}
