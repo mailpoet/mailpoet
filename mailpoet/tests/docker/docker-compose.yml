@@ -110,9 +110,8 @@ services:
       MYSQL_DATABASE: wordpress
       MYSQL_USER: wordpress
       MYSQL_PASSWORD: wordpress
-    volumes:
-      - /dev/shm:/dev/shm
     tmpfs:
+      - /dev/shm
       - /var/lib/mysql:rw
     ports:
       - 4401:3306
