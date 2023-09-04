@@ -14,6 +14,7 @@ import { step as CustomActionStep } from './steps/custom-action';
 import { registerStepControls } from './step-controls';
 import { registerAutomationSidebar } from './automation-sidebar';
 import { step as TagAddedTrigger } from './steps/tag_added';
+import { step as TagRemovedTrigger } from './steps/tag_removed';
 // Insert new imports here
 
 export const initialize = (): void => {
@@ -30,6 +31,7 @@ export const initialize = (): void => {
   registerStepType(UnsubscribeStep);
   registerStepType(NotificationEmail);
   registerStepType(TagAddedTrigger);
+  registerStepType(TagRemovedTrigger);
   // Insert new steps here
   registerStepControls();
   registerAutomationSidebar();
