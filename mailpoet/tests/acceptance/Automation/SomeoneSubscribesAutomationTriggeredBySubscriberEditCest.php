@@ -45,7 +45,7 @@ class SomeoneSubscribesAutomationTriggeredBySubscriberEditCest {
     $someoneSubscribesTrigger = $this->container->get(SomeoneSubscribesTrigger::class);
     (new AutomationFactory())
       ->withName('test')
-      ->addStep(new Step('t', Step::TYPE_TRIGGER, $someoneSubscribesTrigger->getKey(), ['segment_ids' => []], []))
+      ->withStep(new Step('t', Step::TYPE_TRIGGER, $someoneSubscribesTrigger->getKey(), ['segment_ids' => []], []))
       ->withDelayAction()
       ->withStatusActive()
       ->create();

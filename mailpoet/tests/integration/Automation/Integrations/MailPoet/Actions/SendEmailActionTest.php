@@ -281,7 +281,7 @@ class SendEmailActionTest extends \MailPoetTest {
     /** @var UpdateAutomationController $controller */
     $controller = $this->diContainer->get(UpdateAutomationController::class);
 
-    $automation = (new AutomationFactory())->withSteps(...$steps)->create();
+    $automation = (new AutomationFactory())->withSteps($steps)->create();
     $data = [
       'steps' => array_map(
         function(Step $step): array {

@@ -123,7 +123,7 @@ class UserRegistrationTriggerCest {
     $userRegistrationTrigger = $this->container->get(UserRegistrationTrigger::class);
     (new AutomationFactory())
       ->withName('test')
-      ->addStep(new Step('t', Step::TYPE_TRIGGER, $userRegistrationTrigger->getKey(), ['roles' => []], []))
+      ->withStep(new Step('t', Step::TYPE_TRIGGER, $userRegistrationTrigger->getKey(), ['roles' => []], []))
       ->withDelayAction()
       ->withStatusActive()
       ->create();
