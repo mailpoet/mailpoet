@@ -307,6 +307,7 @@ class SubscriberSaveController {
       $tag = $subscriberTag->getTag();
       if (!$tag || !in_array($tag->getName(), $data['tags'], true)) {
         $subscriber->getSubscriberTags()->removeElement($subscriberTag);
+        $this->wp->doAction('mailpoet_subscriber_tag_removed', $subscriberTag);
       }
     }
 
@@ -317,6 +318,7 @@ class SubscriberSaveController {
         $subscriberTag = new SubscriberTagEntity($tag, $subscriber);
         $subscriber->getSubscriberTags()->add($subscriberTag);
         $this->subscriberTagRepository->persist($subscriberTag);
+        $this->wp->doAction('mailpoet_subscriber_tag_added', $subscriberTag);
       }
     }
     $this->subscriberTagRepository->flush();
