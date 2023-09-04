@@ -2,39 +2,29 @@
 
 namespace MailPoet\Test\DataFactories;
 
-use MailPoet\Automation\Engine\Data\Automation as Entity;
+use Exception;
+use MailPoet\Automation\Engine\Data\Automation as AutomationData;
 use MailPoet\Automation\Engine\Data\NextStep;
 use MailPoet\Automation\Engine\Data\Step;
 use MailPoet\Automation\Engine\Storage\AutomationStorage;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\NewsletterEntity;
+use WP_User;
 
 class Automation {
-
-
-  /**
-   * @var AutomationStorage
-   */
+  /** @var AutomationStorage */
   private $storage;
 
-  /**
-   * @var Entity
-   */
+  /** @var AutomationData */
   private $automation;
 
   public function __construct() {
     $this->storage = ContainerWrapper::getInstance(WP_DEBUG)->get(AutomationStorage::class);
-    $this->automation = new Entity(
-      '', [
-      'root' => new Step(
-        'root',
-
-        Step::TYPE_ROOT,
-        'core:root',
-        [],
-        []
-      ),
-      ], new \WP_User(1));
+    $this->automation = new AutomationData(
+      'Test automation',
+      ['root' => new Step('root', Step::TYPE_ROOT, 'core:root', [], [])],
+      new WP_User(1)
+    );
   }
 
   public function withName($name) {
@@ -114,7 +104,7 @@ class Automation {
   }
 
   public function withStatusActive(): self {
-    $this->automation->setStatus(Entity::STATUS_ACTIVE);
+    $this->automation->setStatus(AutomationData::STATUS_ACTIVE);
     return $this;
   }
 
@@ -123,11 +113,11 @@ class Automation {
     return $this;
   }
 
-  public function create(): \MailPoet\Automation\Engine\Data\Automation {
+  public function create(): AutomationData {
     $id = $this->storage->createAutomation($this->automation);
     $automation = $this->storage->getAutomation($id);
     if (!$automation) {
-      throw new \Exception('Automation not found.');
+      throw new Exception('Automation not found.');
     }
     $this->automation = $automation;
     return $this->automation;
