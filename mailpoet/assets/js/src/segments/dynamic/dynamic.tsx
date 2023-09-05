@@ -8,10 +8,13 @@ import { Editor } from 'segments/dynamic/editor';
 import { DynamicSegmentList } from 'segments/dynamic/list';
 import { SegmentTemplates } from 'segments/dynamic/templates';
 import * as ROUTES from 'segments/routes';
+import { createStore } from 'segments/dynamic/store';
 
 const container = document.getElementById('dynamic_segments_container');
 
 function App(): JSX.Element {
+  createStore();
+
   return (
     <GlobalContext.Provider value={useGlobalContextValue(window)}>
       <HashRouter>

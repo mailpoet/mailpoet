@@ -8,12 +8,10 @@ import { Heading } from 'common/typography/heading/heading';
 import { HideScreenOptions } from 'common/hide_screen_options/hide_screen_options';
 import { Form } from './form';
 
-import { createStore, storeName } from './store';
+import { storeName } from './store';
 
 export function Editor(): JSX.Element {
   const match = useRouteMatch<{ id: string }>();
-
-  createStore();
 
   const { pageLoaded } = useDispatch(storeName);
 
