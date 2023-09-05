@@ -1,1 +1,1 @@
-export const storeName = 'mailpoet-dynamic-segments-form';
+export const storeName = 'mailpoet-dynamic-segments';
