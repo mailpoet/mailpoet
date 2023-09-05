@@ -197,6 +197,7 @@ class PageRenderer {
         'name' => $tag->getName(),
         ];
       }, $this->tagRepository->findAll()),
+      'display_docsbot_widget' => $this->displayDocsBotWidget(),
     ];
 
     if (!$defaults['premium_plugin_active']) {
@@ -236,5 +237,10 @@ class PageRenderer {
       'priceFormat' => $this->wooCommerceHelper->getWoocommercePriceFormat(),
 
     ];
+  }
+
+  public function displayDocsBotWidget(): bool {
+    $display = $this->wp->applyFilters('mailpoet_display_docsbot_widget', $this->settings->get('3rd_party_libs.enabled') === '1');
+    return (bool)$display;
   }
 }
