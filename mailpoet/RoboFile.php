@@ -252,11 +252,7 @@ class RoboFile extends \Robo\Tasks {
       );
     }
 
-    return $this->collectionBuilder()
-      ->addCode(function () {
-        $this->compileJs();
-      })
-      ->taskExec($command)
+    return $this->taskExec($command)
       ->run();
   }
 
