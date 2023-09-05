@@ -16,6 +16,13 @@ function setSegment(state: StateType, action: SetSegmentActionType): StateType {
   };
 }
 
+function unsetSegment(state: StateType): StateType {
+  return {
+    ...state,
+    segment: { filters: [] },
+  };
+}
+
 function setErrors(state: StateType, action: SetErrorsActionType): StateType {
   return {
     ...state,
@@ -69,6 +76,8 @@ export const createReducer =
     switch (action.type) {
       case Actions.SET_SEGMENT:
         return setSegment(state, action as SetSegmentActionType);
+      case Actions.UNSET_SEGMENT:
+        return unsetSegment(state);
       case Actions.SET_ERRORS:
         return setErrors(state, action as SetErrorsActionType);
       case Actions.UPDATE_SEGMENT:

@@ -55,12 +55,13 @@ export async function SAVE_SEGMENT(actionData): Promise<{
 }> {
   const segment: AnyFormItem = actionData.segment;
   try {
-    await MailPoet.Ajax.post({
+    const response = await MailPoet.Ajax.post({
       api_version: MailPoet.apiVersion,
       endpoint: 'dynamic_segments',
       action: 'save',
       data: segment,
     });
+    segment.id = response.data.id;
     return {
       success: true,
     };
