@@ -1,5 +1,10 @@
 import { __ } from '@wordpress/i18n';
-import { SegmentTemplate, SegmentTemplateCategories } from '../types';
+import {
+  SegmentConnectTypes,
+  SegmentTemplate,
+  SegmentTemplateCategories,
+  Timeframe,
+} from '../types';
 
 export const templates: SegmentTemplate[] = [
   {
@@ -10,6 +15,14 @@ export const templates: SegmentTemplate[] = [
       'mailpoet',
     ),
     isEssential: true,
+    filters: [
+      {
+        segmentType: 'userRole',
+        action: 'subscribedDate',
+        operator: 'inTheLast',
+        value: '30',
+      },
+    ],
   },
   {
     name: __('Engaged Subscribers (30 days)', 'mailpoet'),
@@ -19,6 +32,33 @@ export const templates: SegmentTemplate[] = [
       'mailpoet',
     ),
     isEssential: true,
+    filters: [
+      {
+        segmentType: 'userRole',
+        action: 'lastClickDate',
+        operator: 'inTheLast',
+        value: '30',
+      },
+      {
+        segmentType: 'userRole',
+        action: 'lastOpenDate',
+        operator: 'inTheLast',
+        value: '30',
+      },
+      {
+        segmentType: 'userRole',
+        action: 'lastPurchaseDate',
+        operator: 'inTheLast',
+        value: '30',
+      },
+      {
+        segmentType: 'userRole',
+        action: 'lastSendingDate',
+        operator: 'inTheLast',
+        value: '30',
+      },
+    ],
+    filtersConnect: SegmentConnectTypes.OR,
   },
   {
     name: __('Engaged Subscribers (3 months)', 'mailpoet'),
@@ -28,6 +68,33 @@ export const templates: SegmentTemplate[] = [
       'mailpoet',
     ),
     isEssential: true,
+    filters: [
+      {
+        segmentType: 'userRole',
+        action: 'lastClickDate',
+        operator: 'inTheLast',
+        value: '90',
+      },
+      {
+        segmentType: 'userRole',
+        action: 'lastOpenDate',
+        operator: 'inTheLast',
+        value: '90',
+      },
+      {
+        segmentType: 'userRole',
+        action: 'lastPurchaseDate',
+        operator: 'inTheLast',
+        value: '90',
+      },
+      {
+        segmentType: 'userRole',
+        action: 'lastSendingDate',
+        operator: 'inTheLast',
+        value: '90',
+      },
+    ],
+    filtersConnect: SegmentConnectTypes.OR,
   },
   {
     name: __('Engaged Subscribers (6 months)', 'mailpoet'),
@@ -37,25 +104,52 @@ export const templates: SegmentTemplate[] = [
       'mailpoet',
     ),
     isEssential: true,
+    filters: [
+      {
+        segmentType: 'userRole',
+        action: 'lastClickDate',
+        operator: 'inTheLast',
+        value: '180',
+      },
+      {
+        segmentType: 'userRole',
+        action: 'lastOpenDate',
+        operator: 'inTheLast',
+        value: '180',
+      },
+      {
+        segmentType: 'userRole',
+        action: 'lastPurchaseDate',
+        operator: 'inTheLast',
+        value: '180',
+      },
+      {
+        segmentType: 'userRole',
+        action: 'lastSendingDate',
+        operator: 'inTheLast',
+        value: '180',
+      },
+    ],
+    filtersConnect: SegmentConnectTypes.OR,
   },
-  {
-    name: __('Unengaged Subscribers', 'mailpoet'),
-    category: SegmentTemplateCategories.ENGAGEMENT,
-    description: __(
-      'Contacts who haven’t interacted with your emails, haven’t made a purchase, or haven’t visited your page in the last 6 months.',
-      'mailpoet',
-    ),
-    isEssential: true,
-  },
-  {
-    name: __('First-Time Buyers', 'mailpoet'),
-    category: SegmentTemplateCategories.PURCHASE_HISTORY,
-    description: __(
-      'Customers who have made their first purchase in the last 30 days.',
-      'mailpoet',
-    ),
-    isEssential: true,
-  },
+  // {
+  //   name: __('Unengaged Subscribers', 'mailpoet'),
+  //   category: SegmentTemplateCategories.ENGAGEMENT,
+  //   description: __(
+  //     'Contacts who haven’t interacted with your emails, haven’t made a purchase, or haven’t visited your page in the last 6 months.',
+  //     'mailpoet',
+  //   ),
+  //   isEssential: true,
+  // },
+  // {
+  //   name: __('First-Time Buyers', 'mailpoet'),
+  //   category: SegmentTemplateCategories.PURCHASE_HISTORY,
+  //   description: __(
+  //     'Customers who have made their first purchase in the last 30 days.',
+  //     'mailpoet',
+  //   ),
+  //   isEssential: true,
+  // },
   {
     name: __('Recent Buyers', 'mailpoet'),
     category: SegmentTemplateCategories.PURCHASE_HISTORY,
@@ -64,6 +158,16 @@ export const templates: SegmentTemplate[] = [
       'mailpoet',
     ),
     isEssential: true,
+    filters: [
+      {
+        segmentType: 'woocommerce',
+        action: 'numberOfOrders',
+        timeframe: Timeframe.IN_THE_LAST,
+        number_of_orders_type: '>',
+        number_of_orders_count: 0,
+        days: '30',
+      },
+    ],
   },
   {
     name: __('Repeat Buyers', 'mailpoet'),
@@ -73,6 +177,16 @@ export const templates: SegmentTemplate[] = [
       'mailpoet',
     ),
     isEssential: true,
+    filters: [
+      {
+        segmentType: 'woocommerce',
+        action: 'numberOfOrders',
+        timeframe: Timeframe.IN_THE_LAST,
+        number_of_orders_type: '>',
+        number_of_orders_count: 1,
+        days: '180',
+      },
+    ],
   },
   {
     name: __('Loyal Buyers', 'mailpoet'),
@@ -82,6 +196,16 @@ export const templates: SegmentTemplate[] = [
       'mailpoet',
     ),
     isEssential: true,
+    filters: [
+      {
+        segmentType: 'woocommerce',
+        action: 'numberOfOrders',
+        timeframe: Timeframe.IN_THE_LAST,
+        number_of_orders_type: '>',
+        number_of_orders_count: 4,
+        days: '365',
+      },
+    ],
   },
   {
     name: __('Win-Back', 'mailpoet'),
@@ -91,6 +215,14 @@ export const templates: SegmentTemplate[] = [
       'mailpoet',
     ),
     isEssential: true,
+    filters: [
+      {
+        segmentType: 'userRole',
+        action: 'lastPurchaseDate',
+        operator: 'notInTheLast',
+        value: '180',
+      },
+    ],
   },
   {
     name: __('Lapsed Customers', 'mailpoet'),
@@ -100,34 +232,49 @@ export const templates: SegmentTemplate[] = [
       'mailpoet',
     ),
     isEssential: false,
+    filters: [
+      {
+        segmentType: 'userRole',
+        action: 'lastPurchaseDate',
+        operator: 'notInTheLast',
+        value: '270',
+      },
+    ],
   },
-  {
-    name: __('Clickers', 'mailpoet'),
-    category: SegmentTemplateCategories.ENGAGEMENT,
-    description: __(
-      'Contacts who regularly click on your emails in the last 90 days.',
-      'mailpoet',
-    ),
-    isEssential: false,
-  },
-  {
-    name: __('Non-Openers', 'mailpoet'),
-    category: SegmentTemplateCategories.ENGAGEMENT,
-    description: __(
-      'Contacts who have received but haven’t opened an email in the last 90 days.',
-      'mailpoet',
-    ),
-    isEssential: false,
-  },
-  {
-    name: __('Recent Clickers', 'mailpoet'),
-    category: SegmentTemplateCategories.ENGAGEMENT,
-    description: __(
-      'Contacts who have clicked on an email in the last 7 days.',
-      'mailpoet',
-    ),
-    isEssential: false,
-  },
+  // {
+  //   name: __('Clickers', 'mailpoet'),
+  //   category: SegmentTemplateCategories.ENGAGEMENT,
+  //   description: __(
+  //     'Contacts who regularly click on your emails in the last 90 days.',
+  //     'mailpoet',
+  //   ),
+  //   isEssential: false,
+  // },
+  // {
+  //   name: __('Non-Openers', 'mailpoet'),
+  //   category: SegmentTemplateCategories.ENGAGEMENT,
+  //   description: __('Contacts who have received but haven’t opened an email in the last 90 days.', 'mailpoet'),
+  //   isEssential: false,
+  //   filters: [
+  //     {
+  //       segmentType: 'email',
+  //       action: 'opensAbsoluteCount',
+  //       operator: 'equals',
+  //       timeframe: Timeframe.IN_THE_LAST,
+  //       opens: '0',
+  //       days: '90',
+  //     },
+  //   ],
+  // },
+  // {
+  //   name: __('Recent Clickers', 'mailpoet'),
+  //   category: SegmentTemplateCategories.ENGAGEMENT,
+  //   description: __(
+  //     'Contacts who have clicked on an email in the last 7 days.',
+  //     'mailpoet',
+  //   ),
+  //   isEssential: false,
+  // },
   {
     name: __('Recent Openers', 'mailpoet'),
     category: SegmentTemplateCategories.ENGAGEMENT,
@@ -136,6 +283,16 @@ export const templates: SegmentTemplate[] = [
       'mailpoet',
     ),
     isEssential: false,
+    filters: [
+      {
+        segmentType: 'email',
+        action: 'opensAbsoluteCount',
+        operator: 'more',
+        timeframe: Timeframe.IN_THE_LAST,
+        opens: '0',
+        days: '7',
+      },
+    ],
   },
   {
     name: __('Big Spenders', 'mailpoet'),
@@ -145,25 +302,35 @@ export const templates: SegmentTemplate[] = [
       'mailpoet',
     ),
     isEssential: false,
+    filters: [
+      {
+        segmentType: 'woocommerce',
+        action: 'totalSpent',
+        timeframe: Timeframe.IN_THE_LAST,
+        total_spent_type: '>',
+        total_spent_amount: 100,
+        days: '365',
+      },
+    ],
   },
-  {
-    name: __('Used a discount code', 'mailpoet'),
-    category: SegmentTemplateCategories.SHOPPING_BEHAVIOR,
-    description: __(
-      'Customers who made a purchase with a coupon code in the last 30 days.',
-      'mailpoet',
-    ),
-    isEssential: false,
-  },
-  {
-    name: __('Frequently uses discounts', 'mailpoet'),
-    category: SegmentTemplateCategories.SHOPPING_BEHAVIOR,
-    description: __(
-      'Customers who have regularly used coupons in the last 90 days.',
-      'mailpoet',
-    ),
-    isEssential: false,
-  },
+  // {
+  //   name: __('Used a discount code', 'mailpoet'),
+  //   category: SegmentTemplateCategories.SHOPPING_BEHAVIOR,
+  //   description: __(
+  //     'Customers who made a purchase with a coupon code in the last 30 days.',
+  //     'mailpoet',
+  //   ),
+  //   isEssential: false,
+  // },
+  // {
+  //   name: __('Frequently uses discounts', 'mailpoet'),
+  //   category: SegmentTemplateCategories.SHOPPING_BEHAVIOR,
+  //   description: __(
+  //     'Customers who have regularly used coupons in the last 90 days.',
+  //     'mailpoet',
+  //   ),
+  //   isEssential: false,
+  // },
 ];
 
 export const templateCategories = [
