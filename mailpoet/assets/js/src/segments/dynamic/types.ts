@@ -380,4 +380,6 @@ export type SegmentTemplate = {
   description: string;
   category: SegmentTemplateCategories;
   isEssential: boolean;
+  filters: AnyFormItem[];
+  filtersConnect?: SegmentConnectTypes;
 };
