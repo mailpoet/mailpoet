@@ -81,6 +81,7 @@ class SubscriberSegmentRepository extends Repository {
   }
 
   public function resetSubscriptions(SubscriberEntity $subscriber, array $segments): void {
+    // Already existing subscriptions are stored in $existingSegments. Their IDs in $existingSegmentIds.
     $existingSegments = array_values(array_filter(array_map(
       function(SubscriberSegmentEntity $subscriberSegmentEntity): ?SegmentEntity {
         return $subscriberSegmentEntity->getSegment();
@@ -93,23 +94,33 @@ class SubscriberSegmentRepository extends Repository {
       },
       $existingSegments
     );
+
+    // $segmentIds are the IDs of the segments we want the user to be subscribed to.
     $segmentIds = array_map(
       function(SegmentEntity $segment): int {
         return $segment->getId() ?? 0;
       },
       $segments
     );
+
+    // $unsubscribedSegments are the segment IDs to which we need to unsubscribe.
     $unsubscribedSegments = array_diff($existingSegmentIds, $segmentIds);
+
+    // $newlySubscribedSegments are the segment IDs to which we need to newly subscribe.
     $newlySubscribedSegments = array_diff($segmentIds, $existingSegmentIds);
     if (!$newlySubscribedSegments && !$unsubscribedSegments) {
       return;
     }
+
+    // The segments we need to unsubscribe.
     $unsubscribe = array_filter(
       $existingSegments,
       function(SegmentEntity $segment) use ($unsubscribedSegments): bool {
         return in_array($segment->getId(), $unsubscribedSegments);
       }
     );
+
+    // The segments we need to newly subscribe.
     $subscribe = array_filter(
       $segments,
       function(SegmentEntity $segment) use ($newlySubscribedSegments): bool {
