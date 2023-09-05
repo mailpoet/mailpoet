@@ -68,11 +68,15 @@ class SegmentSubscribersRepository {
         $segmentQb = $this->filterSubscribersInDynamicSegment($segmentQb, $segment, $status);
       }
 
-      // inner parameters have to be merged to outer queryBuilder
+      // inner parameters and types have to be merged to outer queryBuilder
       $queryBuilder->setParameters(array_merge(
         $segmentQb->getParameters(),
         $queryBuilder->getParameters()
-      ));
+      ), array_merge(
+          $segmentQb->getParameterTypes(),
+          $queryBuilder->getParameterTypes()
+        )
+      );
       $subQueries[] = $segmentQb->getSQL();
     }
 
@@ -89,7 +93,7 @@ class SegmentSubscribersRepository {
         $filterSegmentQb = $this->createCountQueryBuilder();
         $filterSegmentQb->select("{$subscribersTable}.id AS filter_segment_subscriber_id");
         $filterSegmentQb = $this->filterSubscribersInDynamicSegment($filterSegmentQb, $filterSegment, $status);
-        $queryBuilder->setParameters(array_merge($filterSegmentQb->getParameters(), $queryBuilder->getParameters()));
+        $queryBuilder->setParameters(array_merge($filterSegmentQb->getParameters(), $queryBuilder->getParameters()), array_merge($filterSegmentQb->getParameterTypes(), $queryBuilder->getParameterTypes()));
         $queryBuilder->innerJoin($subscribersTable, sprintf('(%s)', $filterSegmentQb->getSQL()),
           'filter_segment',
           "filter_segment.filter_segment_subscriber_id = {$subscribersTable}.id");
