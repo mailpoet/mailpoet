@@ -13,11 +13,15 @@ import { storeName } from './store';
 export function Editor(): JSX.Element {
   const match = useRouteMatch<{ id: string }>();
 
-  const { pageLoaded } = useDispatch(storeName);
+  const { pageLoaded, pageUnloaded } = useDispatch(storeName);
 
   useEffect(() => {
     void pageLoaded(match.params.id);
-  }, [match.params.id, pageLoaded]);
+
+    return () => {
+      void pageUnloaded();
+    };
+  }, [match.params.id, pageLoaded, pageUnloaded]);
 
   return (
     <>

@@ -59,14 +59,29 @@
 
 .mailpoet-templates-card {
   align-items: flex-end;
+  border: 1px solid white;
+  cursor: pointer;
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
-  width: 336px;
+  width: 334px;
 
   > div {
     display: grid;
     grid-template-rows: auto 1fr;
+  }
+
+  &:hover {
+    background: #fff;
+    border: 1px solid #dcdcde;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, .15);
+    color: inherit;
+  }
+
+  &:focus {
+    border-color: #2271b1;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, .15);
+    color: inherit;
   }
 }
 
@@ -83,7 +98,7 @@
     justify-content: center;
     position: absolute;
     right: 24px;
-    top: 0;
+    top: -1px;
     width: 24px;
 
     svg {
@@ -91,7 +106,7 @@
     }
   }
 
-  a.is-link {
+  button.is-link {
     font-size: 14px;
     font-style: normal;
     font-weight: 600;

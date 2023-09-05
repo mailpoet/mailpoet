@@ -17,6 +17,9 @@ import {
   templateCategories,
 } from 'segments/dynamic/templates/templates';
 import * as ROUTES from 'segments/routes';
+import { useSelect } from '@wordpress/data';
+import { storeName } from 'segments/dynamic/store';
+import { APIErrorsNotice } from 'notices/api_errors_notice';
 
 const tabs = [
   {
@@ -47,6 +50,11 @@ templateCategories.forEach((category) => {
 });
 
 export function SegmentTemplates(): JSX.Element {
+  const errors: string[] = useSelect(
+    (select) => select(storeName).getErrors(),
+    [],
+  );
+
   return (
     <div className="mailpoet-templates-container">
       <HideScreenOptions />
@@ -78,6 +86,10 @@ export function SegmentTemplates(): JSX.Element {
           </Button>
         </FlexItem>
       </Flex>
+
+      {errors.length > 0 && (
+        <APIErrorsNotice errors={errors.map((error) => ({ message: error }))} />
+      )}
 
       <TabPanel tabs={tabs}>
         {(tab) => (

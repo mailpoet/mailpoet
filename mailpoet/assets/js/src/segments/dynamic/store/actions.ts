@@ -2,8 +2,10 @@ import { ChangeEvent } from 'react';
 import { select } from '@wordpress/data';
 import { MailPoet } from 'mailpoet';
 
+import * as ROUTES from '../../routes';
 import {
   Actions,
+  ActionType,
   AnyFormItem,
   SetSegmentActionType,
   SetErrorsActionType,
@@ -18,6 +20,12 @@ export function setSegment(segment: AnyFormItem): SetSegmentActionType {
   return {
     type: Actions.SET_SEGMENT,
     segment,
+  };
+}
+
+function unsetSegment(): ActionType {
+  return {
+    type: Actions.UNSET_SEGMENT,
   };
 }
 
@@ -103,6 +111,10 @@ export function* pageLoaded(segmentId?: number | string): Generator<{
   MailPoet.Modal.loading(false);
 }
 
+export function* pageUnloaded() {
+  yield unsetSegment();
+}
+
 const messages = {
   onUpdate: (): void => {
     MailPoet.Notice.success(MailPoet.I18n.t('dynamicSegmentUpdated'));
@@ -140,4 +152,27 @@ export function* handleSave(segmentId?: number): Generator<{
   } else {
     yield setErrors(error as string[]);
   }
+}
+
+export function* createFromTemplate(): Generator<{
+  type: string;
+  segment?: AnyFormItem;
+}> {
+  MailPoet.Modal.loading(true);
+  const segment = select(storeName).getSegment();
+  yield setErrors([]);
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore -- I don't know how to configure typescript to understand this
+  const { error, success } = yield {
+    type: 'SAVE_SEGMENT',
+    segment,
+  };
+
+  if (success) {
+    window.location.href = `admin.php?page=mailpoet-segments#${ROUTES.EDIT_DYNAMIC_SEGMENT}/${segment.id}`;
+  } else {
+    yield setErrors(error as string[]);
+  }
+
+  MailPoet.Modal.loading(false);
 }
