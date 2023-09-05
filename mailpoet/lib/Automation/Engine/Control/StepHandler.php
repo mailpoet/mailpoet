@@ -87,11 +87,10 @@ class StepHandler {
       return;
     }
 
-    $logger = $this->stepRunLoggerFactory->createLogger($runId, $stepId, AutomationRunLog::TYPE_ACTION);
+    $logger = $this->stepRunLoggerFactory->createLogger($runId, $stepId, AutomationRunLog::TYPE_ACTION, $runNumber);
     $logger->logStart();
     try {
       $this->handleStep($runId, $stepId, $runNumber, $logger);
-      $logger->logSuccess();
     } catch (Throwable $e) {
       $status = $e instanceof InvalidStateException && $e->getErrorCode() === 'mailpoet_automation_not_active'
         ? AutomationRun::STATUS_CANCELLED
@@ -154,6 +153,13 @@ class StepHandler {
     // schedule next step if not scheduled by action
     if (!$this->stepScheduler->hasScheduledStep($args)) {
       $this->stepScheduler->scheduleNextStep($args);
+    }
+
+    // logging
+    if ($this->stepScheduler->hasScheduledProgress($args)) {
+      $logger->logProgress();
+    } else {
+      $logger->logSuccess();
     }
   }
 
