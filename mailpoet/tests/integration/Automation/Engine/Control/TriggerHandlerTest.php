@@ -9,6 +9,7 @@ use MailPoet\Automation\Engine\Data\FilterGroup;
 use MailPoet\Automation\Engine\Data\Filters;
 use MailPoet\Automation\Engine\Data\Step;
 use MailPoet\Automation\Engine\Data\Subject;
+use MailPoet\Automation\Engine\Storage\AutomationRunLogStorage;
 use MailPoet\Automation\Engine\Storage\AutomationRunStorage;
 use MailPoet\Automation\Integrations\MailPoet\Subjects\SegmentSubject;
 use MailPoet\Automation\Integrations\MailPoet\Subjects\SubscriberSubject;
@@ -28,6 +29,9 @@ class TriggerHandlerTest extends \MailPoetTest {
   /** @var AutomationRunStorage */
   private $automationRunStorage;
 
+  /** @var AutomationRunLogStorage */
+  private $automationRunLogStorage;
+
   /** @var SegmentsRepository */
   private $segmentRepository;
 
@@ -37,6 +41,7 @@ class TriggerHandlerTest extends \MailPoetTest {
   public function _before() {
     $this->testee = $this->diContainer->get(TriggerHandler::class);
     $this->automationRunStorage = $this->diContainer->get(AutomationRunStorage::class);
+    $this->automationRunLogStorage = $this->diContainer->get(AutomationRunLogStorage::class);
 
     $this->segmentRepository = $this->diContainer->get(SegmentsRepository::class);
     $this->segments = [
@@ -195,5 +200,36 @@ class TriggerHandlerTest extends \MailPoetTest {
     $this->assertCount(0, $this->automationRunStorage->getAutomationRunsForAutomation($automation));
     $this->testee->processTrigger($trigger, [$segmentSubject, $subscriberSubject]);
     $this->assertCount(1, $this->automationRunStorage->getAutomationRunsForAutomation($automation));
+  }
+
+  public function testItLogs(): void {
+    $trigger = $this->diContainer->get(SomeoneSubscribesTrigger::class);
+    $automation1 = $this->tester->createAutomation('Test 1', new Step('trigger-1', Step::TYPE_TRIGGER, $trigger->getKey(), [], []));
+    $automation2 = $this->tester->createAutomation('Test 2', new Step('trigger-2', Step::TYPE_TRIGGER, $trigger->getKey(), [], []));
+
+    $segmentSubject = new Subject(SegmentSubject::KEY, ['segment_id' => $this->segments['segment_1']->getId()]);
+    $this->testee->processTrigger($trigger, [$segmentSubject]);
+
+    $runs1 = $this->automationRunStorage->getAutomationRunsForAutomation($automation1);
+    $this->assertCount(1, $runs1);
+
+    $logs1 = $this->automationRunLogStorage->getLogsForAutomationRun($runs1[0]->getId());
+    $this->assertCount(1, $logs1);
+    $this->assertSame($runs1[0]->getId(), $logs1[0]->getAutomationRunId());
+    $this->assertSame('trigger-1', $logs1[0]->getStepId());
+    $this->assertSame($trigger->getKey(), $logs1[0]->getStepKey());
+    $this->assertSame('complete', $logs1[0]->getStatus());
+    $this->assertSame(1, $logs1[0]->getRunNumber());
+
+    $runs2 = $this->automationRunStorage->getAutomationRunsForAutomation($automation2);
+    $this->assertCount(1, $runs2);
+
+    $logs2 = $this->automationRunLogStorage->getLogsForAutomationRun($runs2[0]->getId());
+    $this->assertCount(1, $logs2);
+    $this->assertSame($runs2[0]->getId(), $logs2[0]->getAutomationRunId());
+    $this->assertSame('trigger-2', $logs2[0]->getStepId());
+    $this->assertSame($trigger->getKey(), $logs2[0]->getStepKey());
+    $this->assertSame('complete', $logs2[0]->getStatus());
+    $this->assertSame(1, $logs2[0]->getRunNumber());
   }
 }

@@ -3,6 +3,7 @@
 namespace MailPoet\Automation\Engine\Control;
 
 use MailPoet\Automation\Engine\Data\AutomationRun;
+use MailPoet\Automation\Engine\Data\AutomationRunLog;
 use MailPoet\Automation\Engine\Data\StepRunArgs;
 use MailPoet\Automation\Engine\Data\Subject;
 use MailPoet\Automation\Engine\Exceptions;
@@ -31,6 +32,9 @@ class TriggerHandler {
   /** @var StepScheduler */
   private $stepScheduler;
 
+  /** @var StepRunLoggerFactory */
+  private $stepRunLoggerFactory;
+
   /** @var WordPress */
   private $wordPress;
 
@@ -41,6 +45,7 @@ class TriggerHandler {
     SubjectTransformerHandler $subjectTransformerHandler,
     FilterHandler $filterHandler,
     StepScheduler $stepScheduler,
+    StepRunLoggerFactory $stepRunLoggerFactory,
     WordPress $wordPress
   ) {
     $this->automationStorage = $automationStorage;
@@ -49,6 +54,7 @@ class TriggerHandler {
     $this->subjectTransformerHandler = $subjectTransformerHandler;
     $this->filterHandler = $filterHandler;
     $this->stepScheduler = $stepScheduler;
+    $this->stepRunLoggerFactory = $stepRunLoggerFactory;
     $this->wordPress = $wordPress;
   }
 
@@ -90,9 +96,14 @@ class TriggerHandler {
         continue;
       }
 
+
       $automationRunId = $this->automationRunStorage->createAutomationRun($automationRun);
       $automationRun->setId($automationRunId);
       $this->stepScheduler->scheduleNextStep($stepRunArgs);
+
+      $logger = $this->stepRunLoggerFactory->createLogger($automationRunId, $step->getId(), AutomationRunLog::TYPE_TRIGGER);
+      $logger->logStepData($step);
+      $logger->logSuccess();
     }
   }
 }
