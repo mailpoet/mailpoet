@@ -29,18 +29,23 @@ class StepRunLogger {
   /** @var string */
   private $stepType;
 
+  /** @var int */
+  private $runNumber;
+
   public function __construct(
     AutomationRunLogStorage $automationRunLogStorage,
     Hooks $hooks,
     int $runId,
     string $stepId,
-    string $stepType
+    string $stepType,
+    int $runNumber
   ) {
     $this->automationRunLogStorage = $automationRunLogStorage;
     $this->hooks = $hooks;
     $this->runId = $runId;
     $this->stepId = $stepId;
     $this->stepType = $stepType;
+    $this->runNumber = $runNumber;
   }
 
   public function logStart(): void {
@@ -50,6 +55,13 @@ class StepRunLogger {
   public function logStepData(Step $step): void {
     $log = $this->getLog();
     $log->setStepKey($step->getKey());
+    $this->automationRunLogStorage->updateAutomationRunLog($log);
+  }
+
+  public function logProgress(): void {
+    $log = $this->getLog();
+    $log->setStatus(AutomationRunLog::STATUS_RUNNING);
+    $log->setUpdatedAt(new DateTimeImmutable());
     $this->automationRunLogStorage->updateAutomationRunLog($log);
   }
 
@@ -77,6 +89,7 @@ class StepRunLogger {
 
     if (!$this->log) {
       $log = new AutomationRunLog($this->runId, $this->stepId, $this->stepType);
+      $log->setRunNumber($this->runNumber);
       $id = $this->automationRunLogStorage->createAutomationRunLog($log);
       $this->log = $this->automationRunLogStorage->getAutomationRunLog($id);
     }
@@ -84,6 +97,8 @@ class StepRunLogger {
     if (!$this->log) {
       throw new InvalidStateException('Failed to create automation run log');
     }
+
+    $this->log->setRunNumber($this->runNumber);
     return $this->log;
   }
 

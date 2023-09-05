@@ -47,6 +47,9 @@ class AutomationRunLog {
   /** @var DateTimeImmutable */
   private $updatedAt;
 
+  /** @var int */
+  private $runNumber = 1;
+
   /** @var array */
   private $data = [];
 
@@ -119,6 +122,14 @@ class AutomationRunLog {
     return $this->updatedAt;
   }
 
+  public function getRunNumber(): int {
+    return $this->runNumber;
+  }
+
+  public function setRunNumber(int $runNumber): void {
+    $this->runNumber = $runNumber;
+  }
+
   public function setUpdatedAt(DateTimeImmutable $updatedAt): void {
     $this->updatedAt = $updatedAt;
   }
@@ -150,6 +161,7 @@ class AutomationRunLog {
       'status' => $this->status,
       'started_at' => $this->startedAt->format(DateTimeImmutable::W3C),
       'updated_at' => $this->updatedAt->format(DateTimeImmutable::W3C),
+      'run_number' => $this->runNumber,
       'data' => Json::encode($this->data),
       'error' => Json::encode($this->error),
     ];
@@ -172,6 +184,7 @@ class AutomationRunLog {
     $log->status = $data['status'];
     $log->startedAt = new DateTimeImmutable($data['started_at']);
     $log->updatedAt = new DateTimeImmutable($data['updated_at']);
+    $log->runNumber = (int)$data['run_number'];
     $log->data = Json::decode($data['data']);
     $log->error = Json::decode($data['error']);
     return $log;

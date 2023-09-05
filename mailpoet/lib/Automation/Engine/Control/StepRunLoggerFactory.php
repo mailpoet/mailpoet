@@ -20,7 +20,7 @@ class StepRunLoggerFactory {
     $this->hooks = $hooks;
   }
 
-  public function createLogger(int $runId, string $stepId, string $stepType): StepRunLogger {
-    return new StepRunLogger($this->automationRunLogStorage, $this->hooks, $runId, $stepId, $stepType);
+  public function createLogger(int $runId, string $stepId, string $stepType, int $runNumber): StepRunLogger {
+    return new StepRunLogger($this->automationRunLogStorage, $this->hooks, $runId, $stepId, $stepType, $runNumber);
   }
 }

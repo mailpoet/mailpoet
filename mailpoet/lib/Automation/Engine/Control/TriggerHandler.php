@@ -101,7 +101,7 @@ class TriggerHandler {
       $automationRun->setId($automationRunId);
       $this->stepScheduler->scheduleNextStep($stepRunArgs);
 
-      $logger = $this->stepRunLoggerFactory->createLogger($automationRunId, $step->getId(), AutomationRunLog::TYPE_TRIGGER);
+      $logger = $this->stepRunLoggerFactory->createLogger($automationRunId, $step->getId(), AutomationRunLog::TYPE_TRIGGER, 1);
       $logger->logStepData($step);
       $logger->logSuccess();
     }
