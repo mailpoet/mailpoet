@@ -26,12 +26,7 @@ class SubscriberSegmentRepositoryTest extends \MailPoetTest {
     $this->testee->resetSubscriptions($subscriber, [$segment1, $segment2, $segment3, $segment4]);
     $subscribedSegments = $subscriber->getSubscriberSegments(SubscriberEntity::STATUS_SUBSCRIBED);
     $unsubscribedSegments = $subscriber->getSubscriberSegments(SubscriberEntity::STATUS_UNSUBSCRIBED);
-    $subscribedSegmentIds = array_map(
-      function(SubscriberSegmentEntity $entity): ?int {
-        return $entity->getSegment() ? $entity->getSegment()->getId() : null;
-      },
-      $subscribedSegments->toArray()
-    );
+    $subscribedSegmentIds = $this->getSubscribedSegmentIds($subscribedSegments->toArray());
 
     $this->assertEquals(0, $unsubscribedSegments->count());
     $this->assertCount(4, $subscribedSegmentIds);
@@ -43,12 +38,7 @@ class SubscriberSegmentRepositoryTest extends \MailPoetTest {
     $this->testee->resetSubscriptions($subscriber, [$segment2, $segment3, $segment4]);
     $subscribedSegments = $subscriber->getSubscriberSegments(SubscriberEntity::STATUS_SUBSCRIBED);
     $unsubscribedSegments = $subscriber->getSubscriberSegments(SubscriberEntity::STATUS_UNSUBSCRIBED);
-    $subscribedSegmentIds = array_map(
-      function(SubscriberSegmentEntity $entity): ?int {
-        return $entity->getSegment() ? $entity->getSegment()->getId() : null;
-      },
-      $subscribedSegments->toArray()
-    );
+    $subscribedSegmentIds = $this->getSubscribedSegmentIds($subscribedSegments->toArray());
 
     $this->assertEquals(1, $unsubscribedSegments->count());
     $this->assertCount(3, $subscribedSegmentIds);
@@ -60,12 +50,8 @@ class SubscriberSegmentRepositoryTest extends \MailPoetTest {
     $this->testee->resetSubscriptions($subscriber, [$segment1, $segment2, $segment3, $segment4]);
     $subscribedSegments = $subscriber->getSubscriberSegments(SubscriberEntity::STATUS_SUBSCRIBED);
     $unsubscribedSegments = $subscriber->getSubscriberSegments(SubscriberEntity::STATUS_UNSUBSCRIBED);
-    $subscribedSegmentIds = array_map(
-      function(SubscriberSegmentEntity $entity): ?int {
-        return $entity->getSegment() ? $entity->getSegment()->getId() : null;
-      },
-      $subscribedSegments->toArray()
-    );
+    $subscribedSegmentIds = $this->getSubscribedSegmentIds($subscribedSegments->toArray());
+
     $this->assertEquals(0, $unsubscribedSegments->count());
     $this->assertCount(4, $subscribedSegmentIds);
     $this->assertContains($segment1->getId(), $subscribedSegmentIds);
@@ -78,5 +64,18 @@ class SubscriberSegmentRepositoryTest extends \MailPoetTest {
     $unsubscribedSegments = $subscriber->getSubscriberSegments(SubscriberEntity::STATUS_UNSUBSCRIBED);
     $this->assertEquals(4, $unsubscribedSegments->count());
     $this->assertEquals(0, $subscribedSegments->count());
+  }
+
+  /**
+   * @param SubscriberSegmentEntity[] $subscribedSegments
+   * @return int[]
+   */
+  private function getSubscribedSegmentIds(array $subscribedSegments): array {
+    return array_values(array_filter(array_map(
+      function(SubscriberSegmentEntity $entity): ?int {
+        return $entity->getSegment() ? $entity->getSegment()->getId() : null;
+      },
+      $subscribedSegments
+    )));
   }
 }
