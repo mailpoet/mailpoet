@@ -24,7 +24,7 @@ function ListHeading({ segmentType }): JSX.Element {
         {segmentType === 'dynamic' && (
           <Link
             className="mailpoet-button button-secondary"
-            to={ROUTES.NEW_DYNAMIC_SEGMENT}
+            to={ROUTES.DYNAMIC_SEGMENT_TEMPLATES}
             data-automation-id="new-segment"
           >
             {plusIcon}
