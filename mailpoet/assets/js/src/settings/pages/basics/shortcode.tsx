@@ -18,6 +18,7 @@ export function Shortcode({ name, title, description }: Props) {
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
   const [subjectContains, setSubjectContains] = useState<string>('');
+  const [limit, setLimit] = useState<string>('');
 
   let shortcode = `[${name}`;
 
@@ -43,6 +44,10 @@ export function Shortcode({ name, title, description }: Props) {
 
   if (subjectContains && subjectContains.length > 0) {
     shortcode += ` subject_contains="${subjectContains}"`;
+  }
+
+  if (limit && parseInt(limit, 10) > 0) {
+    shortcode += ` limit="${limit}"`;
   }
 
   shortcode += ']';
@@ -140,6 +145,28 @@ export function Shortcode({ name, title, description }: Props) {
               placeholder={__('Subject lines containing', 'mailpoet')}
             />
             <br />
+            <Input
+              type="number"
+              min="1"
+              max="1000"
+              dimension="small"
+              placeholder={__('Maximum number to display', 'mailpoet')}
+              onChange={(event) => {
+                const inputValue = event.target.value.trim();
+
+                if (inputValue === '') {
+                  setLimit('');
+                  return;
+                }
+
+                const newValue = Number(inputValue);
+
+                if (Number.isInteger(newValue) && newValue > 0) {
+                  setLimit(inputValue);
+                }
+              }}
+              value={limit}
+            />
           </>
         )}
       </Inputs>

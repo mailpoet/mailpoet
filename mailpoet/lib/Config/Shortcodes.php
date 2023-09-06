@@ -183,6 +183,7 @@ class Shortcodes {
       'endDate' => null,
       'segmentIds' => [],
       'subjectContains' => '',
+      'limit' => null,
     ];
 
     if (!is_array($params)) {
@@ -219,6 +220,11 @@ class Shortcodes {
 
     if ($params['subject_contains'] ?? null) {
       $parsedParams['subjectContains'] = trim($params['subject_contains']);
+    }
+
+    $limit = $params['limit'] ?? null;
+    if ($limit && intval($limit) > 0) {
+      $parsedParams['limit'] = intval($limit);
     }
 
     return $parsedParams;

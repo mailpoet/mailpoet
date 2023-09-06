@@ -195,6 +195,39 @@ class ShortcodesTest extends \MailPoetTest {
     expect($result)->stringContainsString('Newsletter 2');
   }
 
+  public function testArchiveSupportsLimit() {
+    (new NewsletterFactory())
+      ->withSendingQueue(['processed_at' => Carbon::now()->subDays(4)])
+      ->withSentStatus()
+      ->withSubject('Newsletter 1')
+      ->create();
+    (new NewsletterFactory())
+      ->withSendingQueue(['processed_at' => Carbon::now()->subDays(5)])
+      ->withSentStatus()
+      ->withSubject('Newsletter 2')
+      ->create();
+    (new NewsletterFactory())
+      ->withSendingQueue(['processed_at' => Carbon::now()->subDays(7)])
+      ->withSentStatus()
+      ->withSubject('Newsletter 3')
+      ->create();
+
+    $result = do_shortcode('[mailpoet_archive limit="3"]');
+    expect($result)->stringContainsString('Newsletter 1');
+    expect($result)->stringContainsString('Newsletter 2');
+    expect($result)->stringContainsString('Newsletter 3');
+
+    $result = do_shortcode('[mailpoet_archive limit="2"]');
+    expect($result)->stringContainsString('Newsletter 1');
+    expect($result)->stringContainsString('Newsletter 2');
+    expect($result)->stringNotContainsString('Newsletter 3');
+
+    $result = do_shortcode('[mailpoet_archive limit="1"]');
+    expect($result)->stringContainsString('Newsletter 1');
+    expect($result)->stringNotContainsString('Newsletter 2');
+    expect($result)->stringNotContainsString('Newsletter 3');
+  }
+
   public function testItRendersShortcodeDefaultsInSubject() {
     $newsletterFactory = new NewsletterFactory();
     $this->newsletter = $newsletterFactory
