@@ -197,7 +197,7 @@ class Shortcodes {
 
     if ($params['start_date'] ?? null) {
       try {
-        $parsedParams['startDate'] = new Carbon($params['start_date']);
+        $parsedParams['startDate'] = new Carbon(trim($params['start_date']));
       } catch (\Throwable $throwable) {
         // Don't error out if invalid date
       }
@@ -205,14 +205,20 @@ class Shortcodes {
 
     if ($params['end_date'] ?? null) {
       try {
-        $parsedParams['endDate'] = new Carbon($params['end_date']);
+        $parsedParams['endDate'] = new Carbon(trim($params['end_date']));
       } catch (\Throwable $throwable) {
         // Don't error out if invalid date
       }
     }
 
+    $lastDays = $params['in_the_last_days'] ?? null;
+    if ($lastDays && intval(($lastDays) > 0)) {
+      $parsedParams['endDate'] = null;
+      $parsedParams['startDate'] = Carbon::now()->subDays(intval($lastDays))->startOfDay();
+    }
+
     if ($params['subject_contains'] ?? null) {
-      $parsedParams['subjectContains'] = $params['subject_contains'];
+      $parsedParams['subjectContains'] = trim($params['subject_contains']);
     }
 
     return $parsedParams;

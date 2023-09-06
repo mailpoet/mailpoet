@@ -158,6 +158,22 @@ class ShortcodesTest extends \MailPoetTest {
     expect($result)->stringNotContainsString('Good subject');
   }
 
+  public function testArchiveAcceptsLastNDays(): void {
+    (new NewsletterFactory())
+      ->withSendingQueue(['processed_at' => Carbon::now()->subDays(4)])
+      ->withSentStatus()
+      ->withSubject('Newsletter 1')
+      ->create();
+    (new NewsletterFactory())
+      ->withSendingQueue(['processed_at' => Carbon::now()->subDays(5)])
+      ->withSentStatus()
+      ->withSubject('Newsletter 2')
+      ->create();
+    $result = do_shortcode('[mailpoet_archive in_the_last_days="4"]');
+    expect($result)->stringContainsString('Newsletter 1');
+    expect($result)->stringNotContainsString('Newsletter 2');
+  }
+
   public function testArchiveAcceptsSegments(): void {
     $segment1 = (new Segment())->create();
     $segment2 = (new Segment())->create();
