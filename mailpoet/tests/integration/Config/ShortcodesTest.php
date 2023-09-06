@@ -10,9 +10,11 @@ use MailPoet\Newsletter\Url;
 use MailPoet\Router\Router;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
+use MailPoet\Test\DataFactories\Segment;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 use MailPoet\Util\pQuery\pQuery;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoetVendor\Carbon\Carbon;
 
 //phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
 
@@ -37,19 +39,17 @@ class ShortcodesTest extends \MailPoetTest {
     $this->subscriberFactory = new SubscriberFactory();
     $this->subscribersRepository = $this->diContainer->get(SubscribersRepository::class);
     $this->newsletterUrl = $this->diContainer->get(Url::class);
-    $newsletterFactory = new NewsletterFactory();
+  }
 
+  public function testItGetsArchives() {
+    $newsletterFactory = new NewsletterFactory();
     $this->newsletter = $newsletterFactory
       ->withSubject('')
       ->withType(NewsletterEntity::TYPE_STANDARD)
       ->withSentStatus()
       ->withSendingQueue()
       ->create();
-
     $this->queue = $this->newsletter->getLatestQueue();
-  }
-
-  public function testItGetsArchives() {
     $shortcodes = ContainerWrapper::getInstance()->get(Shortcodes::class);
     WordPress::interceptFunction('apply_filters', function() use($shortcodes) {
       $args = func_get_args();
@@ -63,7 +63,7 @@ class ShortcodesTest extends \MailPoetTest {
       return '';
     });
     // result contains a link pointing to the "view in browser" router endpoint
-    $result = $shortcodes->getArchive($params = false);
+    $result = $shortcodes->getArchive();
     WordPress::releaseFunction('apply_filters');
     $dom = pQuery::parseStr($result);
     $link = $dom->query('a');
@@ -78,7 +78,93 @@ class ShortcodesTest extends \MailPoetTest {
     expect($requestData['newsletter_hash'])->equals($this->newsletter->getHash());
   }
 
+  public function testArchiveAcceptsStartDate() {
+    (new NewsletterFactory())
+      ->withSendingQueue(['processed_at' => new Carbon('2023-09-02')])
+      ->withSentStatus()
+      ->withSubject('Newsletter 1')
+      ->create();
+    (new NewsletterFactory())
+      ->withSendingQueue(['processed_at' => new Carbon('2023-09-05')])
+      ->withSentStatus()
+      ->withSubject('Newsletter 2')
+      ->create();
+
+    $result = do_shortcode('[mailpoet_archive start_date="2023-09-04"]');
+    expect($result)->stringNotContainsString('Newsletter 1');
+    expect($result)->stringContainsString('Newsletter 2');
+  }
+
+  public function testArchiveAcceptsEndDate(): void {
+    (new NewsletterFactory())
+      ->withSendingQueue(['processed_at' => new Carbon('2023-09-02')])
+      ->withSentStatus()
+      ->withSubject('Newsletter 1')
+      ->create();
+    (new NewsletterFactory())
+      ->withSendingQueue(['processed_at' => new Carbon('2023-09-05')])
+      ->withSentStatus()
+      ->withSubject('Newsletter 2')
+      ->create();
+
+    $result = do_shortcode('[mailpoet_archive end_date="2023-09-04"]');
+    expect($result)->stringContainsString('Newsletter 1');
+    expect($result)->stringNotContainsString('Newsletter 2');
+  }
+
+  public function testArchiveAcceptsStartAndEndDate(): void {
+    (new NewsletterFactory())
+      ->withSendingQueue(['processed_at' => new Carbon('2023-08-01')])
+      ->withSentStatus()
+      ->withSubject('Newsletter 1')
+      ->create();
+    (new NewsletterFactory())
+      ->withSendingQueue(['processed_at' => new Carbon('2023-08-10')])
+      ->withSentStatus()
+      ->withSubject('Newsletter 2')
+      ->create();
+    (new NewsletterFactory())
+      ->withSendingQueue(['processed_at' => new Carbon('2023-08-15')])
+      ->withSentStatus()
+      ->withSubject('Newsletter 3')
+      ->create();
+
+    $result = do_shortcode('[mailpoet_archive start_date="2023-08-02" end_date="2023-08-14"]');
+    expect($result)->stringNotContainsString('Newsletter 1');
+    expect($result)->stringContainsString('Newsletter 2');
+    expect($result)->stringNotContainsString('Newsletter 3');
+  }
+
+  public function testArchiveAcceptsSegments(): void {
+    $segment1 = (new Segment())->create();
+    $segment2 = (new Segment())->create();
+    (new NewsletterFactory())
+      ->withSegments([$segment1])
+      ->withSendingQueue()
+      ->withSentStatus()
+      ->withSubject('Newsletter 1')
+      ->create();
+    (new NewsletterFactory())
+      ->withSegments([$segment2])
+      ->withSendingQueue()
+      ->withSentStatus()
+      ->withSubject('Newsletter 2')
+      ->create();
+
+    $result = do_shortcode(sprintf("[mailpoet_archive segments=\"%s\"]", $segment2->getId()));
+    expect($result)->stringNotContainsString('Newsletter 1');
+    expect($result)->stringContainsString('Newsletter 2');
+  }
+
   public function testItRendersShortcodeDefaultsInSubject() {
+    $newsletterFactory = new NewsletterFactory();
+    $this->newsletter = $newsletterFactory
+      ->withSubject('')
+      ->withType(NewsletterEntity::TYPE_STANDARD)
+      ->withSentStatus()
+      ->withSendingQueue()
+      ->create();
+    $this->queue = $this->newsletter->getLatestQueue();
     $shortcodes = ContainerWrapper::getInstance()->get(Shortcodes::class);
     $this->queue->setNewsletterRenderedSubject('Hello [subscriber:firstname | default:reader]');
     $this->entityManager->persist($this->queue);
@@ -95,12 +181,20 @@ class ShortcodesTest extends \MailPoetTest {
       }
       return '';
     });
-    $result = $shortcodes->getArchive($params = false);
+    $result = $shortcodes->getArchive();
     WordPress::releaseFunction('apply_filters');
     expect((string)$result)->stringContainsString('Hello reader');
   }
 
   public function testItRendersSubscriberDetailsInSubject() {
+    $newsletterFactory = new NewsletterFactory();
+    $this->newsletter = $newsletterFactory
+      ->withSubject('')
+      ->withType(NewsletterEntity::TYPE_STANDARD)
+      ->withSentStatus()
+      ->withSendingQueue()
+      ->create();
+    $this->queue = $this->newsletter->getLatestQueue();
     $shortcodes = ContainerWrapper::getInstance()->get(Shortcodes::class);
     $userData = ["ID" => 1, "first_name" => "Foo", "last_name" => "Bar"];
     $currentUser = new \WP_User((object)$userData, "FooBar");
@@ -129,7 +223,7 @@ class ShortcodesTest extends \MailPoetTest {
       }
       return '';
     });
-    $result = $shortcodes->getArchive($params = false);
+    $result = $shortcodes->getArchive();
     WordPress::releaseFunction('apply_filters');
     expect((string)$result)->stringContainsString("Hello {$currentUser->first_name} {$currentUser->last_name}");
   }

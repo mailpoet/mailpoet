@@ -218,10 +218,10 @@ class NewslettersRepository extends Repository {
   }
 
   /**
-   * @param array $segmentIds
+   * @param array $params
    * @return NewsletterEntity[]
    */
-  public function getArchives(array $segmentIds = []) {
+  public function getArchives(array $params = []) {
     $types = [
       NewsletterEntity::TYPE_STANDARD,
       NewsletterEntity::TYPE_NOTIFICATION_HISTORY,
@@ -242,10 +242,25 @@ class NewslettersRepository extends Repository {
       ->setParameter('types', $types)
       ->setParameter('statusCompleted', SendingQueueEntity::STATUS_COMPLETED);
 
+    $segmentIds = $params['segmentIds'] ?? [];
     if (!empty($segmentIds)) {
       $queryBuilder->innerJoin(NewsletterSegmentEntity::class, 'ns', Join::WITH, 'ns.newsletter = n.id')
         ->andWhere('ns.segment IN (:segmentIds)')
         ->setParameter('segmentIds', $segmentIds);
+    }
+
+    $startDate = $params['startDate'] ?? null;
+    if ($startDate instanceof Carbon) {
+      $queryBuilder
+        ->andWhere('st.processedAt >= :startDate')
+        ->setParameter('startDate', $startDate);
+    }
+
+    $endDate = $params['endDate'] ?? null;
+    if ($endDate instanceof Carbon) {
+      $queryBuilder
+        ->andWhere('st.processedAt <= :endDate')
+        ->setParameter('endDate', $endDate);
     }
 
     return $queryBuilder->getQuery()->getResult();

@@ -416,6 +416,9 @@ class Newsletter {
       if ($queue['updated_at']) {
         $sendingQueue->setUpdatedAt($queue['updated_at']);
       }
+      if ($queue['processed_at'] ?? null) {
+        $scheduledTask->setProcessedAt($queue['processed_at']);
+      }
       $entityManager->persist($sendingQueue);
       $sendingQueue->setNewsletter($newsletter);
       $scheduledTask->setStatus($queue['status']);
