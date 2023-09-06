@@ -298,8 +298,6 @@ const testConfig = {
     filename: '[name].js',
   },
   plugins: [
-    ...baseConfig.plugins,
-
     // replace MailPoet definition with a smaller version for public
     new webpack.NormalModuleReplacementPlugin(
       /mailpoet\.js/,
