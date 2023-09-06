@@ -182,6 +182,7 @@ class Shortcodes {
       'startDate' => null,
       'endDate' => null,
       'segmentIds' => [],
+      'subjectContains' => '',
     ];
 
     if (!is_array($params)) {
@@ -208,6 +209,10 @@ class Shortcodes {
       } catch (\Throwable $throwable) {
         // Don't error out if invalid date
       }
+    }
+
+    if ($params['subject_contains'] ?? null) {
+      $parsedParams['subjectContains'] = $params['subject_contains'];
     }
 
     return $parsedParams;
