@@ -26,4 +26,33 @@
   .edit-post-sidebar .components-panel .edit-post-post-status {
     display: none;
   }
+
+  // Specific styles for the component EmailTypeInfo
+  // Styles are based on the Block Card component from Gutenberg block editor
+  .mailpoet-email-sidebar__email-type-info {
+    .components-panel__row {
+      align-items: flex-start;
+    }
+
+    .email-type-info__icon {
+      flex: 0 0 24px;
+      margin-left: 0;
+      margin-right: 12px;
+    }
+
+    .email-type-info__content {
+      flex-grow: 1;
+      margin-bottom: 4px;
+
+      h2 {
+        font-size: 13px;
+        line-height: 24px;
+        margin: 0 0 4px;
+      }
+
+      span {
+        font-size: 12px;
+      }
+    }
+  }
 }
