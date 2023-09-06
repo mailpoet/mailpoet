@@ -271,6 +271,11 @@ class NewslettersRepository extends Repository {
         ->setParameter('subjectContains', '%' . Helpers::escapeSearch($subjectContains) . '%');
     }
 
+    $limit = $params['limit'] ?? null;
+    if (is_int($limit) && $limit > 0) {
+      $queryBuilder->setMaxResults($limit);
+    }
+
     return $queryBuilder->getQuery()->getResult();
   }
 
