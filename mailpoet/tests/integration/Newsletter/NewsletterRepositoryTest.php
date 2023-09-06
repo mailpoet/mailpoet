@@ -256,7 +256,7 @@ class NewsletterRepositoryTest extends \MailPoetTest {
     expect($this->repository->findAll())->count(2);
 
     // return archives in a given segment
-    $results = $this->repository->getArchives([$segment->getId()]);
+    $results = $this->repository->getArchives(['segmentIds' => [$segment->getId()]]);
 
     expect($results)->count(1);
     expect($results[0]->getId())->equals($newsletters[1]->getId());
