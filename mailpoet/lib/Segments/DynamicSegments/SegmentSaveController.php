@@ -38,6 +38,11 @@ class SegmentSaveController {
   public function save(array $data = []): SegmentEntity {
     $id = isset($data['id']) ? (int)$data['id'] : null;
     $name = $data['name'] ?? '';
+
+    if (!$this->segmentsRepository->isNameUnique($name, null) && isset($data['force_creation']) && $data['force_creation'] === 'true') {
+      $name = $name . ' (' . wp_generate_password(12, false) . ')';
+    }
+
     $description = $data['description'] ?? '';
     $filtersData = $this->filterDataMapper->map($data);
 
