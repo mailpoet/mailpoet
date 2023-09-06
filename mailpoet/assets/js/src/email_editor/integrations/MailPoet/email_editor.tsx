@@ -6,6 +6,7 @@ import { NextButtonSlot } from 'email_editor/engine/components/next_button_slot'
 import { LayoutStyles } from 'email_editor/engine/components/layout_styles';
 import { useDisableWelcomeGuide } from 'email_editor/engine/hooks';
 import { NextButton } from './components/next_button';
+import { SettingsSidebar } from './components/settings_sidebar';
 import { MailPoetEmailData } from './types';
 
 import './email_editor.scss';
@@ -34,6 +35,7 @@ function Editor() {
       <NextButtonSlot>
         <NextButton newsletterId={mailpoetData?.id ?? null} />
       </NextButtonSlot>
+      <SettingsSidebar />
     </>
   );
 }
