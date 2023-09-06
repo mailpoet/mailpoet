@@ -46,6 +46,8 @@ class WooCommerceMembershipsSegmentCest {
     $i->login();
     $i->amOnMailpoetPage('Segments');
     $i->click('[data-automation-id="new-segment"]');
+    $i->waitForElement('[data-automation-id="new-custom-segment"]');
+    $i->click('[data-automation-id="new-custom-segment"]');
     $i->fillField(['name' => 'name'], $segmentTitle);
     $i->fillField(['name' => 'description'], 'Desc ' . $segmentTitle);
     $i->selectOptionInReactSelect('is member of', $segmentActionSelectElement);
@@ -80,6 +82,8 @@ class WooCommerceMembershipsSegmentCest {
 
     $i->wantTo('Check that admin can‘t add new memberships segment when WooCommerce Memberships is not active');
     $i->click('[data-automation-id="new-segment"]');
+    $i->waitForElement('[data-automation-id="new-custom-segment"]');
+    $i->click('[data-automation-id="new-custom-segment"]');
     $i->waitForElement($segmentActionSelectElement);
     $i->fillField("$segmentActionSelectElement input", 'is member of');
     $i->canSee('No options', $segmentActionSelectElement);

@@ -53,6 +53,8 @@ export async function listsComplexSegment() {
     // Click to add a new segment
     await page.waitForSelector('[data-automation-id="new-segment"]');
     await page.locator('[data-automation-id="new-segment"]').click();
+    await page.waitForSelector('[data-automation-id="new-custom-segment"]');
+    await page.locator('[data-automation-id="new-custom-segment"]').click();
     await page
       .locator('[data-automation-id="input-name"]')
       .type(complexSegmentName, { delay: 25 });

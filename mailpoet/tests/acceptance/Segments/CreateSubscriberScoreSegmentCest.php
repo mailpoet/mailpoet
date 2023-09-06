@@ -26,6 +26,8 @@ class CreateSubscriberScoreSegmentCest {
     $i->login();
     $i->amOnMailpoetPage('Segments');
     $i->click('[data-automation-id="new-segment"]');
+    $i->waitForElement('[data-automation-id="new-custom-segment"]');
+    $i->click('[data-automation-id="new-custom-segment"]');
     $segmentTitle = 'Subscriber score segment';
     $i->fillField(['name' => 'name'], $segmentTitle);
     $i->fillField(['name' => 'description'], 'description');
@@ -62,6 +64,8 @@ class CreateSubscriberScoreSegmentCest {
     $i->login();
     $i->amOnMailpoetPage('Segments');
     $i->click('[data-automation-id="new-segment"]');
+    $i->waitForElement('[data-automation-id="new-custom-segment"]');
+    $i->click('[data-automation-id="new-custom-segment"]');
     $segmentTitle = 'Subscriber unknown score segment';
     $i->fillField(['name' => 'name'], $segmentTitle);
     $i->fillField(['name' => 'description'], 'description');

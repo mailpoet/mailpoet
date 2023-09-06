@@ -69,6 +69,8 @@ class WooCommerceSubscriptionsSegmentCest {
     $i->login();
     $i->amOnMailpoetPage('Segments');
     $i->click('[data-automation-id="new-segment"]');
+    $i->waitForElement('[data-automation-id="new-custom-segment"]');
+    $i->click('[data-automation-id="new-custom-segment"]');
     $i->fillField(['name' => 'name'], $segmentTitle);
     $i->fillField(['name' => 'description'], 'Desc ' . $segmentTitle);
     $i->selectOptionInReactSelect('has active subscription', $segmentActionSelectElement);
@@ -106,6 +108,8 @@ class WooCommerceSubscriptionsSegmentCest {
 
     $i->wantTo('Check that admin can‘t add new subscriptions segment when WooCommerce Subscriptions is not active');
     $i->click('[data-automation-id="new-segment"]');
+    $i->waitForElement('[data-automation-id="new-custom-segment"]');
+    $i->click('[data-automation-id="new-custom-segment"]');
     $i->waitForElement($segmentActionSelectElement);
     $i->fillField("$segmentActionSelectElement input", 'has active subscription');
     $i->canSee('No options', $segmentActionSelectElement);

@@ -165,6 +165,10 @@ class MailpoetMenuCest {
     $i->wantTo('Check if the menu is still selected if I go to the add new segment page');
     $i->waitForElementClickable('[data-automation-id="new-segment"]');
     $i->click('[data-automation-id="new-segment"]');
+    $i->waitForElement('[data-automation-id="new-custom-segment"]');
+    $i->seeInCurrentUrl('?page=mailpoet-segments#/segment-templates');
+    $this->assertSelectedMenuItem($i, 'Segments');
+    $i->click('[data-automation-id="new-custom-segment"]');
     $i->waitForText('Segment');
     $i->waitForElement('[data-automation-id="input-name"]');
     $i->seeInCurrentUrl('?page=mailpoet-segments#/new-segment');

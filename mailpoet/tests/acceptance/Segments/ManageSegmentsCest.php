@@ -83,6 +83,8 @@ class ManageSegmentsCest {
     $i->login();
     $i->amOnMailpoetPage('Segments');
     $i->click('[data-automation-id="new-segment"]');
+    $i->waitForElement('[data-automation-id="new-custom-segment"]');
+    $i->click('[data-automation-id="new-custom-segment"]');
     $i->fillField($nameElement, $segmentTitle);
     $i->fillField($descriptionElement, $segmentDesc);
     $i->selectOptionInReactSelect('WordPress user role', '[data-automation-id="select-segment-action"]');
@@ -208,6 +210,8 @@ class ManageSegmentsCest {
     $i->login();
     $i->amOnMailpoetPage('Segments');
     $i->click('[data-automation-id="new-segment"]');
+    $i->waitForElement('[data-automation-id="new-custom-segment"]');
+    $i->click('[data-automation-id="new-custom-segment"]');
     $i->fillField(['name' => 'name'], $segmentTitle);
     $i->fillField(['name' => 'description'], $segmentDesc);
     $i->selectOptionInReactSelect('opened', '[data-automation-id="select-segment-action"]');
@@ -238,6 +242,8 @@ class ManageSegmentsCest {
     $i->login();
     $i->amOnMailpoetPage('Segments');
     $i->click('[data-automation-id="new-segment"]');
+    $i->waitForElement('[data-automation-id="new-custom-segment"]');
+    $i->click('[data-automation-id="new-custom-segment"]');
     $i->fillField(['name' => 'name'], $segmentTitle);
     $i->fillField(['name' => 'description'], $segmentDesc);
     $i->selectOptionInReactSelect('clicked', '[data-automation-id="select-segment-action"]');
@@ -343,6 +349,8 @@ class ManageSegmentsCest {
     $i->login();
     $i->amOnMailpoetPage('Segments');
     $i->click('[data-automation-id="new-segment"]');
+    $i->waitForElement('[data-automation-id="new-custom-segment"]');
+    $i->click('[data-automation-id="new-custom-segment"]');
     $i->fillField(['name' => 'name'], $segmentTitle);
     $i->fillField(['name' => 'description'], $segmentDesc);
     $i->selectOptionInReactSelect('WordPress user role', '[data-automation-id="select-segment-action"]');
@@ -398,6 +406,8 @@ class ManageSegmentsCest {
     $i->login();
     $i->amOnMailpoetPage('Segments');
     $i->click('[data-automation-id="new-segment"]');
+    $i->waitForElement('[data-automation-id="new-custom-segment"]');
+    $i->click('[data-automation-id="new-custom-segment"]');
     $i->fillField(['name' => 'name'], $segmentTitle);
     $i->fillField(['name' => 'description'], $segmentDesc);
     $i->selectOptionInReactSelect('WordPress user role', "{$filterRowOne} {$actionSelectElement}");
