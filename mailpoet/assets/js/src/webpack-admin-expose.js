@@ -10,6 +10,7 @@ export * as ReactRouter from 'react-router-dom';
 export * as ReactTooltip from 'react-tooltip';
 export * as ReactStringReplace from 'react-string-replace';
 export * as Slugify from 'slugify';
+export * as WordPressNotices from '@wordpress/notices';
 export { Button as WordpressComponentsButton } from '@wordpress/components';
 export { CheckboxControl as WordpressComponentsCheckboxControl } from '@wordpress/components';
 export { DatePicker as WordpressComponentsDatePicker } from '@wordpress/components';
