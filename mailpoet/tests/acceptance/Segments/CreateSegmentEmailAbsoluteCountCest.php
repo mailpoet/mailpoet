@@ -53,6 +53,8 @@ class CreateSegmentEmailAbsoluteCountCest {
 
     $i->amOnMailpoetPage('Segments');
     $i->click('[data-automation-id="new-segment"]');
+    $i->waitForElement('[data-automation-id="new-custom-segment"]');
+    $i->click('[data-automation-id="new-custom-segment"]');
     $segmentTitle = 'Number of opens segment';
     $i->fillField(['name' => 'name'], $segmentTitle);
     $i->fillField(['name' => 'description'], 'description');

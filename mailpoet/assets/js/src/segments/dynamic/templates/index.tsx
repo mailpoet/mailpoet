@@ -81,7 +81,11 @@ export function SegmentTemplates(): JSX.Element {
         </FlexItem>
 
         <FlexItem>
-          <Button variant="secondary" href={`#${ROUTES.NEW_DYNAMIC_SEGMENT}`}>
+          <Button
+            variant="secondary"
+            href={`#${ROUTES.NEW_DYNAMIC_SEGMENT}`}
+            data-automation-id="new-custom-segment"
+          >
             {__('Create custom segment', 'mailpoet')}
           </Button>
         </FlexItem>

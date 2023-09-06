@@ -35,6 +35,8 @@ class ManageWooCommerceSegmentsCest {
     $i->login();
     $i->amOnMailpoetPage('Segments');
     $i->click('[data-automation-id="new-segment"]');
+    $i->waitForElement('[data-automation-id="new-custom-segment"]');
+    $i->click('[data-automation-id="new-custom-segment"]');
     $i->fillField(['name' => 'name'], $segmentTitle);
     $i->fillField(['name' => 'description'], $segmentDesc);
     $i->selectOptionInReactSelect('purchased in category', $actionSelectElement);
@@ -93,6 +95,8 @@ class ManageWooCommerceSegmentsCest {
     $i->login();
     $i->amOnMailpoetPage('Segments');
     $i->click('[data-automation-id="new-segment"]');
+    $i->waitForElement('[data-automation-id="new-custom-segment"]');
+    $i->click('[data-automation-id="new-custom-segment"]');
     $i->fillField($segmentNameField, $segmentTitle);
     $i->fillField($segmentDescriptionField, $segmentDesc);
     $i->selectOptionInReactSelect('purchased product', $actionSelectElement);
@@ -156,6 +160,8 @@ class ManageWooCommerceSegmentsCest {
     $i->login();
     $i->amOnMailpoetPage('Segments');
     $i->click('[data-automation-id="new-segment"]');
+    $i->waitForElement('[data-automation-id="new-custom-segment"]');
+    $i->click('[data-automation-id="new-custom-segment"]');
     $i->fillField($segmentNameField, $segmentTitle);
     $i->fillField($segmentDescriptionField, $segmentDesc);
     $i->selectOptionInReactSelect('number of orders', $actionSelectElement);
@@ -223,6 +229,8 @@ class ManageWooCommerceSegmentsCest {
     $i->login();
     $i->amOnMailpoetPage('Segments');
     $i->click('[data-automation-id="new-segment"]');
+    $i->waitForElement('[data-automation-id="new-custom-segment"]');
+    $i->click('[data-automation-id="new-custom-segment"]');
     $i->fillField($segmentNameField, $segmentTitle);
     $i->fillField(['name' => 'description'], $segmentDesc);
     $i->selectOptionInReactSelect('total spent', $actionSelectElement);
@@ -292,6 +300,8 @@ class ManageWooCommerceSegmentsCest {
     $i->login();
     $i->amOnMailpoetPage('Segments');
     $i->click('[data-automation-id="new-segment"]');
+    $i->waitForElement('[data-automation-id="new-custom-segment"]');
+    $i->click('[data-automation-id="new-custom-segment"]');
     $i->fillField($segmentNameField, $segmentTitle);
     $i->fillField(['name' => 'description'], $segmentDesc);
     $i->selectOptionInReactSelect('single order value', $actionSelectElement);

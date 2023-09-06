@@ -28,6 +28,8 @@ class MailPoetCustomFieldSegmentCest {
     $i->login();
     $i->amOnMailpoetPage('Segments');
     $i->click('[data-automation-id="new-segment"]');
+    $i->waitForElement('[data-automation-id="new-custom-segment"]');
+    $i->click('[data-automation-id="new-custom-segment"]');
     $segmentTitle = 'MailPoet custom fields segment';
     $i->fillField(['name' => 'name'], $segmentTitle);
     $i->fillField(['name' => 'description'], 'description');
