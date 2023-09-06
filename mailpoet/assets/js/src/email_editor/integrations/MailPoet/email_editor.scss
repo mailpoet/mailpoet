@@ -21,4 +21,9 @@
   .editor-styles-wrapper {
     padding-bottom: 0;
   }
+
+  // Hide Post Summary panel in Settings sidebar
+  .edit-post-sidebar .components-panel .edit-post-post-status {
+    display: none;
+  }
 }
