@@ -135,6 +135,29 @@ class ShortcodesTest extends \MailPoetTest {
     expect($result)->stringNotContainsString('Newsletter 3');
   }
 
+  public function testArchiveAcceptsSubjectSearch(): void {
+    (new NewsletterFactory())
+      ->withSendingQueue()
+      ->withSentStatus()
+      ->withSubject('Great subject')
+      ->create();
+    (new NewsletterFactory())
+      ->withSendingQueue()
+      ->withSentStatus()
+      ->withSubject('Subject that is great')
+      ->create();
+    (new NewsletterFactory())
+      ->withSendingQueue()
+      ->withSentStatus()
+      ->withSubject('Good subject')
+      ->create();
+
+    $result = do_shortcode('[mailpoet_archive subject_contains="great"]');
+    expect($result)->stringContainsString('Great subject');
+    expect($result)->stringContainsString('Subject that is great');
+    expect($result)->stringNotContainsString('Good subject');
+  }
+
   public function testArchiveAcceptsSegments(): void {
     $segment1 = (new Segment())->create();
     $segment2 = (new Segment())->create();

@@ -23,6 +23,7 @@ use MailPoet\Entities\StatisticsOpenEntity;
 use MailPoet\Entities\StatisticsWooCommercePurchaseEntity;
 use MailPoet\Entities\StatsNotificationEntity;
 use MailPoet\Logging\LoggerFactory;
+use MailPoet\Util\Helpers;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\DBAL\Connection;
@@ -261,6 +262,13 @@ class NewslettersRepository extends Repository {
       $queryBuilder
         ->andWhere('st.processedAt <= :endDate')
         ->setParameter('endDate', $endDate);
+    }
+
+    $subjectContains = $params['subjectContains'] ?? null;
+    if (is_string($subjectContains)) {
+      $queryBuilder
+        ->andWhere($queryBuilder->expr()->like('n.subject', ':subjectContains'))
+        ->setParameter('subjectContains', '%' . Helpers::escapeSearch($subjectContains) . '%');
     }
 
     return $queryBuilder->getQuery()->getResult();
