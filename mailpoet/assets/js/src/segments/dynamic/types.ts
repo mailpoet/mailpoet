@@ -181,6 +181,7 @@ export type Segment = {
   description?: string;
   filters_connect?: SegmentConnectTypes;
   filters?: AnyFormItem[];
+  force_creation?: boolean;
 };
 
 export type AnyFormItem =

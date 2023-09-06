@@ -1,7 +1,7 @@
 import { MailPoet } from 'mailpoet';
 import { assign, has } from 'lodash/fp';
 
-import { AnyFormItem } from '../types';
+import { AnyFormItem, Segment } from '../types';
 import { isErrorResponse } from '../../../ajax';
 
 function convertSavedData(data: Record<string, string | number>): AnyFormItem {
@@ -53,7 +53,7 @@ export async function SAVE_SEGMENT(actionData): Promise<{
   success: boolean;
   error?: string[];
 }> {
-  const segment: AnyFormItem = actionData.segment;
+  const segment: Segment = actionData.segment;
   try {
     const response = await MailPoet.Ajax.post({
       api_version: MailPoet.apiVersion,
@@ -61,7 +61,10 @@ export async function SAVE_SEGMENT(actionData): Promise<{
       action: 'save',
       data: segment,
     });
+
     segment.id = response.data.id;
+    segment.name = response.data.name;
+
     return {
       success: true,
     };

@@ -13,6 +13,7 @@ import {
   SubscriberCount,
   SetSubscriberCountActionType,
   UpdateSegmentActionData,
+  Segment,
 } from '../types';
 import { storeName } from './constants';
 
@@ -156,10 +157,11 @@ export function* handleSave(segmentId?: number): Generator<{
 
 export function* createFromTemplate(): Generator<{
   type: string;
-  segment?: AnyFormItem;
+  segment?: Segment;
 }> {
   MailPoet.Modal.loading(true);
   const segment = select(storeName).getSegment();
+  segment.force_creation = true; // create segment with a random name if one with the same name already exists
   yield setErrors([]);
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore -- I don't know how to configure typescript to understand this
