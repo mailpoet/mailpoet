@@ -417,6 +417,19 @@ class ManageSegmentsCest {
     $i->seeNoJSErrors();
   }
 
+  public function createSegmentFromTemplate(\AcceptanceTester $i) {
+    $i->wantTo('Create a segment from a template');
+    $i->login();
+    $i->amOnMailpoetPage('Segments');
+    $i->click('[data-automation-id="new-segment"]');
+    $i->waitForElement('.mailpoet-templates-card-grid div:first-child');
+    $i->click('.mailpoet-templates-card-grid div:first-child');
+    $i->waitForText('Recently Subscribed');
+    $i->click('Back');
+    $i->waitForText('Recently Subscribed');
+    $i->seeNoJSErrors();
+  }
+
   private function createClickInNewsletter($newsletter) {
     $subscriber = (new Subscriber())->create();
     $newsletterLink = (new NewsletterLink($newsletter))->create();
