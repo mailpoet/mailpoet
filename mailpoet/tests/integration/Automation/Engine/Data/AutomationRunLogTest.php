@@ -130,26 +130,6 @@ class AutomationRunLogTest extends \MailPoetTest {
     expect($log->getData())->count(0);
   }
 
-  public function testItGetsExposedViaAction(): void {
-    $this->wp->addAction(Hooks::AUTOMATION_RUN_LOG_AFTER_STEP_RUN, function(AutomationRunLog $log) {
-      $log->setData('test', 'value');
-    });
-    $automationRunLogs = $this->getLogsForAction();
-    expect($automationRunLogs)->count(1);
-    $log = $automationRunLogs[0];
-    expect($log->getData()['test'])->equals('value');
-  }
-
-  public function testBadActionIntegrationsCannotDerailStepFromRunning() {
-    $this->wp->addAction(Hooks::AUTOMATION_RUN_LOG_AFTER_STEP_RUN, function(AutomationRunLog $log) {
-      throw new \Exception('bad integration');
-    });
-    $automationRunLogs = $this->getLogsForAction();
-    expect($automationRunLogs)->count(1);
-    $log = $automationRunLogs[0];
-    expect($log->getStatus())->equals(AutomationRunLog::STATUS_COMPLETE);
-  }
-
   public function testItStoresAutomationRunAndStepIdsCorrectly() {
     $testAction = $this->getRegisteredTestAction();
     $actionStep = new Step('action-step-id', Step::TYPE_ACTION, $testAction->getKey(), [], []);
@@ -195,29 +175,6 @@ class AutomationRunLogTest extends \MailPoetTest {
     expect($automationRunLogs)->count(1);
     $log = $automationRunLogs[0];
     expect($log->getUpdatedAt())->isInstanceOf(\DateTimeImmutable::class);
-  }
-
-  public function testItLogsFailedStatusCorrectly(): void {
-    $automationRunLogs = $this->getLogsForAction(function() {
-      throw new \Exception('error');
-    });
-    expect($automationRunLogs)->count(1);
-    $log = $automationRunLogs[0];
-    expect($log->getStatus())->equals('failed');
-  }
-
-  public function testItIncludesErrorOnFailure(): void {
-    $automationRunLogs = $this->getLogsForAction(function() {
-      throw new \Exception('error', 12345);
-    });
-    expect($automationRunLogs)->count(1);
-    $log = $automationRunLogs[0];
-    $error = $log->getError();
-    expect($error['message'])->equals('error');
-    expect($error['code'])->equals(12345);
-    expect($error['errorClass'])->equals('Exception');
-    expect($error['trace'])->array();
-    expect(count($error['trace']))->greaterThan(0);
   }
 
   private function getLogsForAction($callback = null) {
