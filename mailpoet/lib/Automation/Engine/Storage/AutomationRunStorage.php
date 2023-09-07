@@ -134,11 +134,18 @@ class AutomationRunStorage {
   }
 
   public function getCountForAutomation(Automation $automation, string ...$status): int {
+    $table = esc_sql($this->table);
+
     if (!count($status)) {
-      return 0;
+      $query = (string)$this->wpdb->prepare("
+      SELECT COUNT(id) as count
+      FROM $table
+      WHERE automation_id = %d
+    ", $automation->getId());
+      $result = $this->wpdb->get_col($query);
+      return $result ? (int)current($result) : 0;
     }
 
-    $table = esc_sql($this->table);
     $statusSql = (string)$this->wpdb->prepare(implode(',', array_fill(0, count($status), '%s')), ...$status);
     $query = (string)$this->wpdb->prepare("
       SELECT COUNT(id) as count
