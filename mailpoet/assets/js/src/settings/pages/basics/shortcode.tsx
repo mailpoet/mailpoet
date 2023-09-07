@@ -94,6 +94,10 @@ export function Shortcode({ name, title, description }: Props) {
               min="1"
               max="365000"
               dimension="small"
+              tooltip={__(
+                'Include newsletters sent no more than this many days ago. This overrides start and end dates.',
+                'mailpoet',
+              )}
               placeholder={__('In the last days', 'mailpoet')}
               onChange={(event) => {
                 const inputValue = event.target.value.trim();
