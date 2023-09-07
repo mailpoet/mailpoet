@@ -2,18 +2,22 @@
 
 namespace MailPoet\Test\Automation\Engine\Control;
 
+use DateTimeImmutable;
+use Exception;
 use MailPoet\Automation\Engine\Control\StepHandler;
+use MailPoet\Automation\Engine\Control\StepRunController;
 use MailPoet\Automation\Engine\Data\Automation;
 use MailPoet\Automation\Engine\Data\AutomationRun;
+use MailPoet\Automation\Engine\Data\AutomationRunLog;
 use MailPoet\Automation\Engine\Data\NextStep;
 use MailPoet\Automation\Engine\Data\Step;
+use MailPoet\Automation\Engine\Data\StepRunArgs;
 use MailPoet\Automation\Engine\Exceptions\InvalidStateException;
 use MailPoet\Automation\Engine\Integration\Action;
 use MailPoet\Automation\Engine\Registry;
+use MailPoet\Automation\Engine\Storage\AutomationRunLogStorage;
 use MailPoet\Automation\Engine\Storage\AutomationRunStorage;
 use MailPoet\Automation\Engine\Storage\AutomationStorage;
-use MailPoet\Automation\Integrations\Core\Actions\DelayAction;
-use MailPoet\Automation\Integrations\MailPoet\Triggers\SomeoneSubscribesTrigger;
 
 class StepHandlerTest extends \MailPoetTest {
   /** @var AutomationStorage */
@@ -22,9 +26,105 @@ class StepHandlerTest extends \MailPoetTest {
   /** @var AutomationRunStorage */
   private $automationRunStorage;
 
+  /** @var AutomationRunLogStorage */
+  private $automationRunLogStorage;
+
   public function _before() {
     $this->automationStorage = $this->diContainer->get(AutomationStorage::class);
     $this->automationRunStorage = $this->diContainer->get(AutomationRunStorage::class);
+    $this->automationRunLogStorage = $this->diContainer->get(AutomationRunLogStorage::class);
+  }
+
+  public function testItLogsStartAndStepData(): void {
+    $step = $this->createMock(Action::class);
+    $step->expects(self::once())->method('run')->willReturnCallback(
+      function (StepRunArgs $args, StepRunController $controller) {
+        $runId = $args->getAutomationRun()->getId();
+        $logs = $this->automationRunLogStorage->getLogsForAutomationRun($runId);
+        $this->assertCount(1, $logs);
+        $this->assertSame($runId, $logs[0]->getAutomationRunId());
+        $this->assertSame('a1', $logs[0]->getStepId());
+        $this->assertSame(AutomationRunLog::STATUS_RUNNING, $logs[0]->getStatus());
+        $this->assertSame('test:action', $logs[0]->getStepKey());
+      }
+    );
+
+    $registry = $this->createMock(Registry::class);
+    $registry->expects(self::once())->method('getStep')->willReturn($step);
+
+    // run step
+    $stepHandler = $this->getServiceWithOverrides(StepHandler::class, ['registry' => $registry]);
+    $automation = $this->createAutomation();
+    $run = $this->tester->createAutomationRun($automation);
+    $stepHandler->handle(['automation_run_id' => $run->getId(), 'step_id' => 'a1', 'run_number' => 1]);
+  }
+
+  public function testItLogsSuccess(): void {
+    $step = $this->createMock(Action::class);
+    $step->expects(self::once())->method('run');
+
+    $registry = $this->createMock(Registry::class);
+    $registry->expects(self::once())->method('getStep')->willReturn($step);
+
+    $stepHandler = $this->getServiceWithOverrides(StepHandler::class, ['registry' => $registry]);
+    $automation = $this->createAutomation();
+    $run = $this->tester->createAutomationRun($automation);
+
+    // create start log and modify "updated_at" to an older date
+    $oldDate = new DateTimeImmutable('2000-01-01 00:00:00');
+    $log = new AutomationRunLog($run->getId(), 'a1', AutomationRunLog::TYPE_ACTION);
+    $log->setUpdatedAt($oldDate);
+    $logId = $this->automationRunLogStorage->createAutomationRunLog($log);
+    $log = $this->automationRunLogStorage->getAutomationRunLog($logId);
+    $this->assertInstanceOf(AutomationRunLog::class, $log);
+    $this->assertEquals($oldDate, $log->getUpdatedAt());
+
+    // run step
+    $stepHandler->handle(['automation_run_id' => $run->getId(), 'step_id' => 'a1', 'run_number' => 1]);
+    $logs = $this->automationRunLogStorage->getLogsForAutomationRun($run->getId());
+    $this->assertCount(1, $logs);
+    $this->assertSame(AutomationRunLog::STATUS_COMPLETE, $logs[0]->getStatus());
+    $this->assertGreaterThan($oldDate, $logs[0]->getUpdatedAt());
+  }
+
+  public function testItLogsFailure(): void {
+    $step = $this->createMock(Action::class);
+    $step->expects(self::once())->method('run')->willReturnCallback(
+      function () {
+        throw new Exception('test error');
+      }
+    );
+
+    $registry = $this->createMock(Registry::class);
+    $registry->expects(self::once())->method('getStep')->willReturn($step);
+
+    $stepHandler = $this->getServiceWithOverrides(StepHandler::class, ['registry' => $registry]);
+    $automation = $this->createAutomation();
+    $run = $this->tester->createAutomationRun($automation);
+
+    // create start log and modify "updated_at" to an older date
+    $oldDate = new DateTimeImmutable('2000-01-01 00:00:00');
+    $log = new AutomationRunLog($run->getId(), 'a1', AutomationRunLog::TYPE_ACTION);
+    $log->setUpdatedAt($oldDate);
+    $logId = $this->automationRunLogStorage->createAutomationRunLog($log);
+    $log = $this->automationRunLogStorage->getAutomationRunLog($logId);
+    $this->assertInstanceOf(AutomationRunLog::class, $log);
+    $this->assertEquals($oldDate, $log->getUpdatedAt());
+
+    // run step
+    $exception = null;
+    try {
+      $stepHandler->handle(['automation_run_id' => $run->getId(), 'step_id' => 'a1', 'run_number' => 1]);
+    } catch (Exception $e) {
+      $exception = $e;
+    }
+    $this->assertInstanceOf(Exception::class, $exception);
+    $this->assertSame('test error', $exception->getMessage());
+
+    $logs = $this->automationRunLogStorage->getLogsForAutomationRun($run->getId());
+    $this->assertCount(1, $logs);
+    $this->assertSame(AutomationRunLog::STATUS_FAILED, $logs[0]->getStatus());
+    $this->assertGreaterThan($oldDate, $logs[0]->getUpdatedAt());
   }
 
   public function testItDoesOnlyProcessActiveAndDeactivatingAutomations() {
@@ -128,12 +228,11 @@ class StepHandlerTest extends \MailPoetTest {
   }
 
   private function createAutomation(): ?Automation {
-    $trigger = $this->diContainer->get(SomeoneSubscribesTrigger::class);
-    $delay = $this->diContainer->get(DelayAction::class);
     return $this->tester->createAutomation(
-      'test',
-      new Step('someone-subscribes', Step::TYPE_TRIGGER, $trigger->getKey(), [], [new NextStep('a')]),
-      new Step('delay', Step::TYPE_ACTION, $delay->getKey(), [], [])
+      'Test automation',
+      new Step('t', Step::TYPE_TRIGGER, 'test:trigger', [], [new NextStep('a1')]),
+      new Step('a1', Step::TYPE_ACTION, 'test:action', [], [new NextStep('a2')]),
+      new Step('a2', Step::TYPE_ACTION, 'test:action', [], [])
     );
   }
 }
