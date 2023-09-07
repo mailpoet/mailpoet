@@ -5,12 +5,25 @@
   }
   // Hardcoded email editor area width to match email width
   // We may want to allow set it in configuration in the future
+  // Adjust visual editor height to match email height - disable full page height
   .edit-post-visual-editor__content-area {
+    flex-grow: 0;
+    height: auto;
     margin: 0 auto;
     max-width: 660px;
   }
 
   .edit-post-visual-editor {
     background: #ccc;
+  }
+
+  // We don't use the huge title input in the email editor
+  .edit-post-visual-editor__post-title-wrapper {
+    display: none;
+  }
+
+  // Adjust visual editor height to match email height - disable default 40vh bottom padding
+  .editor-styles-wrapper {
+    padding-bottom: 0;
   }
 }
