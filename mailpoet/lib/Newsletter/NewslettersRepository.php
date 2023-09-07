@@ -251,14 +251,14 @@ class NewslettersRepository extends Repository {
     }
 
     $startDate = $params['startDate'] ?? null;
-    if ($startDate instanceof Carbon) {
+    if ($startDate instanceof DateTimeInterface) {
       $queryBuilder
         ->andWhere('st.processedAt >= :startDate')
         ->setParameter('startDate', $startDate);
     }
 
     $endDate = $params['endDate'] ?? null;
-    if ($endDate instanceof Carbon) {
+    if ($endDate instanceof DateTimeInterface) {
       $queryBuilder
         ->andWhere('st.processedAt <= :endDate')
         ->setParameter('endDate', $endDate);
