@@ -5,6 +5,7 @@ import { Label, Inputs, SegmentsSelect } from 'settings/components';
 import { Datepicker } from 'common/datepicker/datepicker';
 import { MailPoet } from 'mailpoet';
 import { __ } from '@wordpress/i18n';
+import { CopyToClipboardButton } from 'common/button/copy_to_clipboard_button';
 
 type Props = {
   name: 'mailpoet_archive' | 'mailpoet_subscribers_count';
@@ -71,6 +72,11 @@ export function Shortcode({ name, title, description }: Props) {
           value={shortcode}
           onClick={selectText}
           id={`${name}-shortcode`}
+        />
+        <CopyToClipboardButton
+          variant="secondary"
+          targetId={`${name}-shortcode`}
+          alwaysSelectText
         />
         <br />
         <SegmentsSelect
