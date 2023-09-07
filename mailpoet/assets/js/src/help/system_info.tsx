@@ -3,6 +3,7 @@ import { MailPoet } from 'mailpoet';
 import _ from 'underscore';
 import { Notice } from '../notices/notice';
 import { Button } from '../common';
+import { copyToClipboard } from '../utils';
 
 function handleFocus(event) {
   event.target.select();
@@ -28,32 +29,6 @@ function printData(data: Record<string, string> | undefined, id: string) {
     );
   }
   return <p>{MailPoet.I18n.t('systemInfoDataError')}</p>;
-}
-
-async function copyToClipboard(
-  id: string,
-  resultCallback: (success: boolean) => void,
-) {
-  const element: HTMLTextAreaElement | null = document.querySelector(`#${id}`);
-  if (!element) {
-    resultCallback(false);
-    return;
-  }
-  if (navigator.clipboard) {
-    const text = element.value;
-    await navigator.clipboard.writeText(text);
-    resultCallback(true);
-    return;
-  }
-
-  // Fallback if navigator.clipboard does not work.
-  element.focus();
-  element.select();
-  if (document.execCommand('copy')) {
-    resultCallback(true);
-    return;
-  }
-  resultCallback(false);
 }
 
 export function SystemInfo() {
