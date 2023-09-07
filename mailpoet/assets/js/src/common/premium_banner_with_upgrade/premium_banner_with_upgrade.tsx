@@ -95,7 +95,7 @@ export function PremiumBannerWithUpgrade({
         }}
       >
         {loading
-          ? __('Activating MailPoet premium...', 'mailpoet')
+          ? __('Activating MailPoet Premium...', 'mailpoet')
           : __('Activate MailPoet Premium plugin', 'mailpoet')}
       </Button>
     ) : (
