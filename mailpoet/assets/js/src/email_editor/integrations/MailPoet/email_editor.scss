@@ -55,4 +55,22 @@
       }
     }
   }
+
+  .mailpoet-email-editor__settings-panel {
+    .settings-panel__subject .components-base-control__label {
+      width: 100%;
+
+      .components-external-link {
+        float: right;
+      }
+    }
+
+    .settings-panel__subject-help {
+      margin-bottom: 20px;
+
+      .components-text {
+        color: #757575;
+      }
+    }
+  }
 }
