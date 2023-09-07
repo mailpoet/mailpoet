@@ -18,7 +18,7 @@ use MailPoet\Segments\SegmentSubscribersRepository;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Subscription\Pages;
 use MailPoet\WP\Functions as WPFunctions;
-use MailPoetVendor\Carbon\Carbon;
+use MailPoetVendor\Carbon\CarbonImmutable;
 
 class Shortcodes {
   /** @var Pages */
@@ -198,7 +198,7 @@ class Shortcodes {
 
     if ($params['start_date'] ?? null) {
       try {
-        $parsedParams['startDate'] = new Carbon(trim($params['start_date']));
+        $parsedParams['startDate'] = new CarbonImmutable(trim($params['start_date']));
       } catch (\Throwable $throwable) {
         // Don't error out if invalid date
       }
@@ -206,7 +206,7 @@ class Shortcodes {
 
     if ($params['end_date'] ?? null) {
       try {
-        $parsedParams['endDate'] = new Carbon(trim($params['end_date']));
+        $parsedParams['endDate'] = new CarbonImmutable(trim($params['end_date']));
       } catch (\Throwable $throwable) {
         // Don't error out if invalid date
       }
@@ -215,7 +215,7 @@ class Shortcodes {
     $lastDays = $params['in_the_last_days'] ?? null;
     if ($lastDays && intval(($lastDays) > 0)) {
       $parsedParams['endDate'] = null;
-      $parsedParams['startDate'] = Carbon::now()->subDays(intval($lastDays))->startOfDay();
+      $parsedParams['startDate'] = CarbonImmutable::now()->subDays(intval($lastDays))->startOfDay();
     }
 
     if ($params['subject_contains'] ?? null) {
