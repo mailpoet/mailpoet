@@ -2,14 +2,17 @@ import {
   __experimentalText as Text,
   ExternalLink,
   TextareaControl,
+  Tooltip,
 } from '@wordpress/components';
 import { PluginDocumentSettingPanel } from '@wordpress/edit-post';
 import { __ } from '@wordpress/i18n';
 import { useState } from '@wordpress/element';
+import { Icon, help } from '@wordpress/icons';
 import ReactStringReplace from 'react-string-replace';
 
 export function DetailsPanel() {
   const [subject, setSubject] = useState('');
+  const [previewText, setPreviewText] = useState('');
 
   let subjectHelp = ReactStringReplace(
     __(
@@ -52,6 +55,22 @@ export function DetailsPanel() {
     </>
   );
 
+  const previewTextLabel = (
+    <>
+      <span>{__('Preview text (recommended)', 'mailpoet')}</span>
+      <Tooltip
+        text={__(
+          'This text will appear in the inbox, underneath the subject line. Max length is 250 characters, but we recommend 80 characters.',
+          'mailpoet',
+        )}
+      >
+        <span className="preview-text__help-icon">
+          <Icon icon={help} size={20} />
+        </span>
+      </Tooltip>
+    </>
+  );
+
   // Render email details panel using PluginDocumentSettingPanel component
   return (
     <PluginDocumentSettingPanel
@@ -69,6 +88,17 @@ export function DetailsPanel() {
       <div className="settings-panel__subject-help">
         <Text>{subjectHelp}</Text>
       </div>
+
+      <TextareaControl
+        className="settings-panel__preview-text"
+        label={previewTextLabel}
+        placeholder={__(
+          "Add a preview text to capture subscribers' attention and increase open rates.",
+          'mailpoet',
+        )}
+        value={previewText}
+        onChange={(value) => setPreviewText(value)}
+      />
     </PluginDocumentSettingPanel>
   );
 }
