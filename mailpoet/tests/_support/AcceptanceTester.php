@@ -94,7 +94,7 @@ class AcceptanceTester extends \Codeception\Actor {
   }
 
   /**
-   * Navigate to the specified Mailpoet page in the admin.
+   * Navigate to the specified MailPoet page in the admin.
    *
    * @param string $page The page to visit e.g. Inbox or Status
    */
