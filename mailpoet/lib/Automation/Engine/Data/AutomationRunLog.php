@@ -168,11 +168,14 @@ class AutomationRunLog {
   }
 
   public function setError(Throwable $error): void {
+    // Normalize all nested objects in error trace to associative arrays.
+    // Empty objects would then get decoded to "[]" instead of "{}".
+    $trace = Json::decode(Json::encode($error->getTrace()));
     $this->error = [
       'message' => $error->getMessage(),
       'errorClass' => get_class($error),
       'code' => $error->getCode(),
-      'trace' => $error->getTrace(),
+      'trace' => $trace,
     ];
     $this->updatedAt = new DateTimeImmutable();
   }
