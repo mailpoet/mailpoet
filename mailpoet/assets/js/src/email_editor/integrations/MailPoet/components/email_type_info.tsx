@@ -18,6 +18,12 @@ export function EmailTypeInfo() {
     if (activeSidebar !== 'edit-post/document') return;
     // Locate DOM element for placing the portal for email info and place portal element there
     setTimeout(() => {
+      // Check if email info is already rendered because it can cause errors in console
+      const emailTypeInfo = document.querySelector(
+        '.edit-post-sidebar .components-panel.mailpoet-email-sidebar__email-type-info',
+      );
+      if (emailTypeInfo) return;
+
       const panelsWrap = document.querySelector('.edit-post-sidebar');
       const editPostStatus = document.querySelector(
         '.edit-post-sidebar .components-panel',
