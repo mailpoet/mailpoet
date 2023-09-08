@@ -361,6 +361,22 @@ class Newsletter {
     return $this;
   }
 
+  /**
+   * @return Newsletter
+   */
+  public function withPreheader(string $preheader) {
+    $this->data['preheader'] = $preheader;
+    return $this;
+  }
+
+  /**
+   * @return Newsletter
+   */
+  public function withWpPostId(int $wpPostId) {
+    $this->data['wp_post_id'] = $wpPostId;
+    return $this;
+  }
+
   public function create(): NewsletterEntity {
     $entityManager = ContainerWrapper::getInstance()->get(EntityManager::class);
     $newsletter = $this->createNewsletter();
@@ -399,6 +415,7 @@ class Newsletter {
     if (isset($this->data['parent'])) $newsletter->setParent($this->data['parent']);
     if (isset($this->data['deleted_at'])) $newsletter->setDeletedAt($this->data['deleted_at']);
     if (isset($this->data['ga_campaign'])) $newsletter->setGaCampaign($this->data['ga_campaign']);
+    if (isset($this->data['wp_post_id'])) $newsletter->setWpPostId($this->data['wp_post_id']);
 
     return $newsletter;
   }

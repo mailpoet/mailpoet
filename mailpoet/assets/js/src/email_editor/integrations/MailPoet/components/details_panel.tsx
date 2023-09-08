@@ -4,15 +4,36 @@ import {
   TextareaControl,
   Tooltip,
 } from '@wordpress/components';
+import { useSelect, useDispatch } from '@wordpress/data';
 import { PluginDocumentSettingPanel } from '@wordpress/edit-post';
+import { store as editorStore } from '@wordpress/editor';
 import { __ } from '@wordpress/i18n';
-import { useState } from '@wordpress/element';
 import { Icon, help } from '@wordpress/icons';
 import ReactStringReplace from 'react-string-replace';
+import { MailPoetEmailData } from '../types';
 
 export function DetailsPanel() {
-  const [subject, setSubject] = useState('');
-  const [previewText, setPreviewText] = useState('');
+  const mailpoetData = useSelect(
+    (select) =>
+      (select(editorStore).getEditedPostAttribute(
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        // The getEditedPostAttribute accepts an attribute but typescript thinks it doesn't
+        'mailpoet_data',
+      ) as MailPoetEmailData) ?? null,
+  );
+
+  const { editPost } = useDispatch(editorStore);
+
+  const handleChange = (name, value) => {
+    const mailpoetDataUpdated = {
+      mailpoet_data: {
+        ...mailpoetData,
+        [name]: value,
+      },
+    };
+    editPost(mailpoetDataUpdated);
+  };
 
   let subjectHelp = ReactStringReplace(
     __(
@@ -82,8 +103,8 @@ export function DetailsPanel() {
         className="settings-panel__subject"
         label={subjectLabel}
         placeholder={__('Eg. The summer sale is here!', 'mailpoet')}
-        value={subject}
-        onChange={(value) => setSubject(value)}
+        value={mailpoetData.subject ?? ''}
+        onChange={(value) => handleChange('subject', value)}
       />
       <div className="settings-panel__subject-help">
         <Text>{subjectHelp}</Text>
@@ -96,8 +117,8 @@ export function DetailsPanel() {
           "Add a preview text to capture subscribers' attention and increase open rates.",
           'mailpoet',
         )}
-        value={previewText}
-        onChange={(value) => setPreviewText(value)}
+        value={mailpoetData.preheader ?? ''}
+        onChange={(value) => handleChange('preheader', value)}
       />
     </PluginDocumentSettingPanel>
   );
