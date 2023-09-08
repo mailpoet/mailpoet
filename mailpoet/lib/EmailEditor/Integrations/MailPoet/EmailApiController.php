@@ -3,6 +3,8 @@
 namespace MailPoet\EmailEditor\Integrations\MailPoet;
 
 use MailPoet\Newsletter\NewslettersRepository;
+use MailPoet\NotFoundException;
+use MailPoet\UnexpectedValueException;
 use MailPoet\Validator\Builder;
 
 class EmailApiController {
@@ -23,6 +25,8 @@ class EmailApiController {
     $newsletter = $this->newsletterRepository->findOneBy(['wpPostId' => $postEmailData['id']]);
     return [
       'id' => $newsletter ? $newsletter->getId() : null,
+      'subject' => $newsletter ? $newsletter->getSubject() : '',
+      'preheader' => $newsletter ? $newsletter->getPreheader() : '',
     ];
   }
 
@@ -30,12 +34,24 @@ class EmailApiController {
    * Update MailPoet specific data we store with Emails.
    */
   public function saveEmailData(array $data, \WP_Post $emailPost): void {
-    // Here comes code saving of MailPoet specific data that will be passed on 'mailpoet_data' attribute
+    $newsletter = $this->newsletterRepository->findOneById($data['id']);
+    if (!$newsletter) {
+      throw new NotFoundException('Newsletter was not found');
+    }
+    if ($newsletter->getWpPostId() !== $emailPost->ID) {
+      throw new UnexpectedValueException('Newsletter ID does not match the post ID');
+    }
+
+    $newsletter->setSubject($data['subject']);
+    $newsletter->setPreheader($data['preheader']);
+    $this->newsletterRepository->flush();
   }
 
   public function getEmailDataSchema(): array {
     return Builder::object([
       'id' => Builder::integer()->nullable(),
+      'subject' => Builder::string(),
+      'preheader' => Builder::string(),
     ])->toArray();
   }
 }
