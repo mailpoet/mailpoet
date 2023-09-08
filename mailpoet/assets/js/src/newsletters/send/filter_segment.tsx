@@ -1,12 +1,20 @@
 import { NewsLetter } from 'common/newsletter';
 import { Field } from 'form/types';
-import { ChangeEvent, useCallback, useEffect, useMemo, useState } from 'react';
+import {
+  ChangeEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  useContext,
+} from 'react';
 import { __ } from '@wordpress/i18n';
 import { Selection } from 'form/fields/selection';
 import { Toggle } from 'common';
 import { Tooltip } from 'common/tooltip/tooltip';
 import { Icon, help } from '@wordpress/icons';
 import ReactStringReplace from 'react-string-replace';
+import { SendContext } from '../send_context';
 
 type FilterSegmentProps = {
   item?: NewsLetter;
@@ -48,6 +56,8 @@ export function FilterSegment({
     },
     [item, onValueChange],
   );
+
+  const context = useContext(SendContext);
 
   useEffect(() => {
     if (!premiumFeaturesAvailable) {
@@ -155,6 +165,12 @@ export function FilterSegment({
               className="mailpoet-link"
               key={i}
               rel="noopener noreferrer"
+              onClick={(event) => {
+                event.preventDefault();
+                context.saveDraftNewsletter(() => {
+                  window.location.href = `admin.php?page=mailpoet-segments#/new-segment?newsletterId=${item.id}`;
+                });
+              }}
               href={`admin.php?page=mailpoet-segments#/new-segment?newsletterId=${item.id}`}
             >
               {match}
