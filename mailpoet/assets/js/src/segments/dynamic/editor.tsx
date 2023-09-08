@@ -38,6 +38,12 @@ export function Editor(): JSX.Element {
       <Heading level={1} className="mailpoet-title">
         <span>{MailPoet.I18n.t('formPageTitle')}</span>
         <Link
+          onClick={(event) => {
+            if (newsletterId) {
+              event.preventDefault();
+              window.location.href = `admin.php?page=mailpoet-newsletters#/send/${newsletterId}`;
+            }
+          }}
           className="mailpoet-button button button-secondary button-small"
           to={returnPage}
         >
