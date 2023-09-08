@@ -1,7 +1,7 @@
-import { __ } from '@wordpress/i18n';
+import { __, _x } from '@wordpress/i18n';
+import { Edit } from './edit';
 import { Icon } from './icon';
 import { StepType } from '../../../../editor/store';
-import { LockedBadge } from '../../../../../common/premium_modal/locked_badge';
 
 const keywords = [
   'cart',
@@ -20,10 +20,11 @@ export const step: StepType = {
       'Start the automation when a subscriber who has items in the shopping cart leaves your website without checking out.',
       'mailpoet-premium',
     ),
-  subtitle: () => <LockedBadge text={__('Premium', 'mailpoet')} />,
+  subtitle: (): JSX.Element | string =>
+    _x('Trigger', 'noun', 'mailpoet-premium'),
   keywords,
   icon: () => <Icon />,
-  edit: () => null,
+  edit: () => <Edit />,
   foreground: '#2271b1',
   background: '#f0f6fc',
   createStep: (stepData) => stepData,

@@ -8,12 +8,16 @@ use MailPoet\Automation\Integrations\WooCommerce\Subjects\CustomerSubject;
 use MailPoet\Automation\Integrations\WooCommerce\Subjects\OrderStatusChangeSubject;
 use MailPoet\Automation\Integrations\WooCommerce\Subjects\OrderSubject;
 use MailPoet\Automation\Integrations\WooCommerce\SubjectTransformers\WordPressUserSubjectToWooCommerceCustomerSubjectTransformer;
+use MailPoet\Automation\Integrations\WooCommerce\Triggers\AbandonedCart\AbandonedCartTrigger;
 use MailPoet\Automation\Integrations\WooCommerce\Triggers\OrderStatusChangedTrigger;
 
 class WooCommerceIntegration {
 
   /** @var OrderStatusChangedTrigger */
   private $orderStatusChangedTrigger;
+
+  /** @var AbandonedCartTrigger  */
+  private $abandonedCartTrigger;
 
   /** @var AbandonedCartSubject */
   private $abandonedCartSubject;
@@ -38,6 +42,7 @@ class WooCommerceIntegration {
 
   public function __construct(
     OrderStatusChangedTrigger $orderStatusChangedTrigger,
+    AbandonedCartTrigger $abandonedCartTrigger,
     AbandonedCartSubject $abandonedCartSubject,
     OrderStatusChangeSubject $orderStatusChangeSubject,
     OrderSubject $orderSubject,
@@ -47,6 +52,7 @@ class WooCommerceIntegration {
     WooCommerce $wooCommerce
   ) {
     $this->orderStatusChangedTrigger = $orderStatusChangedTrigger;
+    $this->abandonedCartTrigger = $abandonedCartTrigger;
     $this->abandonedCartSubject = $abandonedCartSubject;
     $this->orderStatusChangeSubject = $orderStatusChangeSubject;
     $this->orderSubject = $orderSubject;
@@ -70,6 +76,7 @@ class WooCommerceIntegration {
     $registry->addSubject($this->orderStatusChangeSubject);
     $registry->addSubject($this->customerSubject);
     $registry->addTrigger($this->orderStatusChangedTrigger);
+    $registry->addTrigger($this->abandonedCartTrigger);
     $registry->addSubjectTransformer($this->wordPressUserToWooCommerceCustomerTransformer);
   }
 }

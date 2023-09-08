@@ -1,6 +1,6 @@
 import { registerStepType } from '../../editor/store';
 import { step as OrderStatusChanged } from './steps/order_status_changed';
-import { step as AbandonedCartTrigger } from './steps/abandoned-cart';
+import { step as AbandonedCartTrigger } from './steps/abandoned_cart';
 import { MailPoet } from '../../../mailpoet';
 
 export const initialize = (): void => {
