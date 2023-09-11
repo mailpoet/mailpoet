@@ -13,8 +13,6 @@ import { createStore } from 'segments/dynamic/store';
 const container = document.getElementById('dynamic_segments_container');
 
 function App(): JSX.Element {
-  createStore();
-
   return (
     <GlobalContext.Provider value={useGlobalContextValue(window)}>
       <HashRouter>
@@ -41,5 +39,6 @@ function App(): JSX.Element {
 
 if (container) {
   registerTranslations();
+  createStore();
   ReactDOM.render(<App />, container);
 }
