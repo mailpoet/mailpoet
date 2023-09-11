@@ -1,5 +1,5 @@
 import ReactDOM from 'react-dom';
-import { HashRouter, Route, Switch } from 'react-router-dom';
+import { HashRouter, Route, Switch, useHistory } from 'react-router-dom';
 
 import { GlobalContext, useGlobalContextValue } from 'context';
 import { Notices } from 'notices/notices.jsx';
@@ -8,14 +8,36 @@ import { Editor } from 'segments/dynamic/editor';
 import { DynamicSegmentList } from 'segments/dynamic/list';
 import { SegmentTemplates } from 'segments/dynamic/templates';
 import * as ROUTES from 'segments/routes';
-import { createStore } from 'segments/dynamic/store';
+import { createStore, storeName } from 'segments/dynamic/store';
+import { useEffect, useRef } from 'react';
+import { useDispatch } from '@wordpress/data';
 
 const container = document.getElementById('dynamic_segments_container');
+
+function HistoryListener() {
+  const { setPreviousPage } = useDispatch(storeName);
+  const history = useHistory();
+
+  const previousPageRef = useRef(history.location.pathname);
+
+  useEffect(
+    () =>
+      history.listen((location) => {
+        setPreviousPage(previousPageRef.current);
+
+        previousPageRef.current = location.pathname;
+      }),
+    [history, setPreviousPage],
+  );
+
+  return null;
+}
 
 function App(): JSX.Element {
   return (
     <GlobalContext.Provider value={useGlobalContextValue(window)}>
       <HashRouter>
+        <HistoryListener />
         <Notices />
         <Switch>
           <Route
