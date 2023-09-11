@@ -59,12 +59,11 @@
 
 .mailpoet-templates-card {
   align-items: flex-end;
-  border: 1px solid white;
   cursor: pointer;
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
-  width: 334px;
+  width: 336px;
 
   > div {
     display: grid;
@@ -73,8 +72,7 @@
 
   &:hover {
     background: #fff;
-    border: 1px solid #dcdcde;
-    box-shadow: 0 3px 6px rgba(0, 0, 0, .15);
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, .1), 0 3px 6px rgba(0, 0, 0, .15);
     color: inherit;
   }
 
