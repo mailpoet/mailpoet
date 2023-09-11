@@ -3,7 +3,7 @@ Contributors: mailpoet, woocommerce, automattic
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 6.2
 Tested up to: 6.3
-Stable tag: 4.26.1
+Stable tag: 4.27.0
 Requires PHP: 7.3
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -218,6 +218,12 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 4.27.0 - 2023-09-11 =
+* Improved: [mailpoet_archive] is now filterable (start_date, end_date, in_the_last_days, subject_contains, limit);
+* Improved: run migrations with lower priority to minimize conflitcs with 3rd-party plugins;
+* Changed: "Someone subscribes" automation is no longer triggered by editing a subscriber;
+* Fixed: can't type letter 'n' in chat bot on WordPress.com.
 
 = 4.26.1 - 2023-09-04 =
 * Added: see subscriber stats in the last 30 days, 12 months, and lifetime;
