@@ -98,3 +98,4 @@ export const findFiltersValueForSegment = (
   });
   return found;
 };
+export const getPreviousPage = (state: StateType): string => state.previousPage;

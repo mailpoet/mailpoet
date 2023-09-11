@@ -298,11 +298,13 @@ export interface StateType {
   signupForms: SignupForm[];
   automations: Automation[];
   coupons: Coupon[];
+  previousPage: string;
 }
 
 export enum Actions {
   SET_SEGMENT = 'SET_SEGMENT',
   SET_ERRORS = 'SET_ERRORS',
+  SET_PREVIOUS_PAGE = 'SET_PREVIOUS_PAGE',
   UNSET_SEGMENT = 'UNSET_SEGMENT',
   UPDATE_SEGMENT = 'UPDATE_SEGMENT',
   UPDATE_SEGMENT_FILTER = 'UPDATE_SEGMENT_FILTER',
@@ -335,6 +337,10 @@ export interface SetSubscriberCountActionType extends ActionType {
 
 export interface SetErrorsActionType extends ActionType {
   errors: string[];
+}
+
+export interface SetPreviousPageActionType extends ActionType {
+  previousPage: string;
 }
 
 export type FilterProps = {

@@ -45,4 +45,5 @@ export const getInitialState = (): StateType => ({
     window.mailpoet_can_use_woocommerce_memberships,
   ),
   coupons: window.mailpoet_woocommerce_coupons,
+  previousPage: '',
 });

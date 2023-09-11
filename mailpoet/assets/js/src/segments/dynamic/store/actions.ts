@@ -15,6 +15,7 @@ import {
   UpdateSegmentActionData,
   Segment,
   SegmentTemplate,
+  SetPreviousPageActionType,
 } from '../types';
 import { storeName } from './constants';
 
@@ -194,4 +195,11 @@ export function* createFromTemplate(
   }
 
   MailPoet.Modal.loading(false);
+}
+
+export function setPreviousPage(data: string): SetPreviousPageActionType {
+  return {
+    type: Actions.SET_PREVIOUS_PAGE,
+    previousPage: data,
+  };
 }

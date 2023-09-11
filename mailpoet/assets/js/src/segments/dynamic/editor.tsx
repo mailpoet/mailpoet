@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useDispatch } from '@wordpress/data';
+import { useDispatch, useSelect } from '@wordpress/data';
 import { Link, useRouteMatch } from 'react-router-dom';
 
 import { MailPoet } from 'mailpoet';
@@ -14,6 +14,10 @@ export function Editor(): JSX.Element {
   const match = useRouteMatch<{ id: string }>();
 
   const { pageLoaded, pageUnloaded } = useDispatch(storeName);
+  const previousPage = useSelect((select) =>
+    select(storeName).getPreviousPage(),
+  );
+  const returnPage = previousPage || '/';
 
   useEffect(() => {
     void pageLoaded(match.params.id);
@@ -32,7 +36,7 @@ export function Editor(): JSX.Element {
         <span>{MailPoet.I18n.t('formPageTitle')}</span>
         <Link
           className="mailpoet-button button button-secondary button-small"
-          to="/segments"
+          to={returnPage}
         >
           {MailPoet.I18n.t('backToList')}
         </Link>

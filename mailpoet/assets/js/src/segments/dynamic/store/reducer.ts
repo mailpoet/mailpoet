@@ -7,6 +7,7 @@ import {
   SetSegmentFilerActionType,
   SetSubscriberCountActionType,
   StateType,
+  SetPreviousPageActionType,
 } from '../types';
 
 function setSegment(state: StateType, action: SetSegmentActionType): StateType {
@@ -67,6 +68,16 @@ function updateSubscriberCount(
   };
 }
 
+function setPreviousPage(
+  state: StateType,
+  action: SetPreviousPageActionType,
+): StateType {
+  return {
+    ...state,
+    previousPage: action.previousPage,
+  };
+}
+
 export const createReducer =
   (defaultState: StateType) =>
   (
@@ -89,6 +100,8 @@ export const createReducer =
           state,
           action as SetSubscriberCountActionType,
         );
+      case Actions.SET_PREVIOUS_PAGE:
+        return setPreviousPage(state, action as SetPreviousPageActionType);
       default:
         return state;
     }
