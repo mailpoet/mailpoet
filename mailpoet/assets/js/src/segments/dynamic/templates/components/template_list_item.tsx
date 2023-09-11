@@ -9,9 +9,9 @@ import {
 import { __ } from '@wordpress/i18n';
 import { starFilled } from '@wordpress/icons';
 import { Tag } from '@woocommerce/components';
-import { Segment, SegmentTemplate } from 'segments/types';
+import { SegmentTemplate } from 'segments/types';
 import { getCategoryNameBySlug } from 'segments/dynamic/templates/templates';
-import { useDispatch, useSelect } from '@wordpress/data';
+import { useDispatch } from '@wordpress/data';
 import { storeName } from 'segments/dynamic/store';
 
 type TemplateListItemProps = {
@@ -21,34 +21,14 @@ type TemplateListItemProps = {
 export function TemplateListItem({
   template,
 }: TemplateListItemProps): JSX.Element {
-  const segment: Segment = useSelect(
-    (select) => select(storeName).getSegment(),
-    [],
-  );
-
-  const { updateSegment, createFromTemplate } = useDispatch(storeName);
-
-  function handleSelectTemplate(segmentTemplate: SegmentTemplate): void {
-    segment.name = segmentTemplate.name;
-    segment.description = segmentTemplate.description;
-    segment.filters = segmentTemplate.filters;
-
-    if (segmentTemplate.filtersConnect) {
-      segment.filters_connect = segmentTemplate.filtersConnect;
-    }
-
-    updateSegment({
-      ...segment,
-    });
-    createFromTemplate();
-  }
+  const { createFromTemplate } = useDispatch(storeName);
 
   return (
     <Card
       className="mailpoet-templates-card"
       onClick={(e): void => {
         e.preventDefault();
-        handleSelectTemplate(template);
+        createFromTemplate(template);
       }}
     >
       <CardHeader className="mailpoet-templates-card-header">
