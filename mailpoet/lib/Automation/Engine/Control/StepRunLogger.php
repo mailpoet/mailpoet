@@ -32,13 +32,17 @@ class StepRunLogger {
   /** @var int */
   private $runNumber;
 
+  /** @var bool */
+  private $isWpDebug;
+
   public function __construct(
     AutomationRunLogStorage $automationRunLogStorage,
     Hooks $hooks,
     int $runId,
     string $stepId,
     string $stepType,
-    int $runNumber
+    int $runNumber,
+    bool $isWpDebug = WP_DEBUG
   ) {
     $this->automationRunLogStorage = $automationRunLogStorage;
     $this->hooks = $hooks;
@@ -46,6 +50,7 @@ class StepRunLogger {
     $this->stepId = $stepId;
     $this->stepType = $stepType;
     $this->runNumber = $runNumber;
+    $this->isWpDebug = $isWpDebug;
   }
 
   public function logStart(): void {
@@ -106,7 +111,10 @@ class StepRunLogger {
     try {
       $this->hooks->doAutomationStepAfterRun($log);
     } catch (Throwable $e) {
-      // ignore integration errors
+      if ($this->isWpDebug) {
+        throw $e;
+      }
+      // ignore integration logging errors
     }
   }
 }
