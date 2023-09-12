@@ -14,7 +14,7 @@ export function DeactivateImmediatelyModal({
   const [isBusy, setIsBusy] = useState<boolean>(false);
   return (
     <Modal
-      className="mailpoet-automatoin-deactivate-modal"
+      className="mailpoet-automation-deactivate-modal"
       title={__('Stop automation for all subscribers?', 'mailpoet')}
       onRequestClose={onClose}
     >
@@ -67,7 +67,7 @@ export function DeactivateModal({
 
   return (
     <Modal
-      className="mailpoet-automatoin-deactivate-modal"
+      className="mailpoet-automation-deactivate-modal"
       title={title}
       onRequestClose={onClose}
     >
