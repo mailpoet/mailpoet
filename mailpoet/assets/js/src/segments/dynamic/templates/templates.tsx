@@ -9,6 +9,7 @@ import {
 export const templates: SegmentTemplate[] = [
   {
     name: __('Recently Subscribed', 'mailpoet'),
+    slug: 'recently-subscribed',
     category: SegmentTemplateCategories.ENGAGEMENT,
     description: __(
       'Contacts who have subscribed to your emails within the last 30 days.',
@@ -26,6 +27,7 @@ export const templates: SegmentTemplate[] = [
   },
   {
     name: __('Engaged Subscribers (30 days)', 'mailpoet'),
+    slug: 'engaged-subscribers-30-days',
     category: SegmentTemplateCategories.ENGAGEMENT,
     description: __(
       'Contacts who have interacted with your emails or made at least one purchase, and received emails from you in the last 30 days.',
@@ -62,6 +64,7 @@ export const templates: SegmentTemplate[] = [
   },
   {
     name: __('Engaged Subscribers (3 months)', 'mailpoet'),
+    slug: 'engaged-subscribers-3-months',
     category: SegmentTemplateCategories.ENGAGEMENT,
     description: __(
       'Contacts who have interacted with your emails or made at least one purchase, and received emails from you in the last 3 months.',
@@ -98,6 +101,7 @@ export const templates: SegmentTemplate[] = [
   },
   {
     name: __('Engaged Subscribers (6 months)', 'mailpoet'),
+    slug: 'engaged-subscribers-6-months',
     category: SegmentTemplateCategories.ENGAGEMENT,
     description: __(
       'Contacts who have interacted with your emails or made at least one purchase, and received emails from you in the last 6 months.',
@@ -134,6 +138,7 @@ export const templates: SegmentTemplate[] = [
   },
   // {
   //   name: __('Unengaged Subscribers', 'mailpoet'),
+  //   slug: 'unengaged-subscribers',
   //   category: SegmentTemplateCategories.ENGAGEMENT,
   //   description: __(
   //     'Contacts who haven’t interacted with your emails, haven’t made a purchase, or haven’t visited your page in the last 6 months.',
@@ -143,6 +148,7 @@ export const templates: SegmentTemplate[] = [
   // },
   // {
   //   name: __('First-Time Buyers', 'mailpoet'),
+  //   slug: 'first-time-buyers',
   //   category: SegmentTemplateCategories.PURCHASE_HISTORY,
   //   description: __(
   //     'Customers who have made their first purchase in the last 30 days.',
@@ -152,6 +158,7 @@ export const templates: SegmentTemplate[] = [
   // },
   {
     name: __('Recent Buyers', 'mailpoet'),
+    slug: 'recent-buyers',
     category: SegmentTemplateCategories.PURCHASE_HISTORY,
     description: __(
       'Customers who have made a purchase within the last 30 days. ',
@@ -171,6 +178,7 @@ export const templates: SegmentTemplate[] = [
   },
   {
     name: __('Repeat Buyers', 'mailpoet'),
+    slug: 'repeat-buyers',
     category: SegmentTemplateCategories.PURCHASE_HISTORY,
     description: __(
       'Customers who have made at least two purchases in the last 6 months.',
@@ -190,6 +198,7 @@ export const templates: SegmentTemplate[] = [
   },
   {
     name: __('Loyal Buyers', 'mailpoet'),
+    slug: 'loyal-buyers',
     category: SegmentTemplateCategories.PURCHASE_HISTORY,
     description: __(
       'Customers who have made at least five purchases in the last 12 months.',
@@ -209,6 +218,7 @@ export const templates: SegmentTemplate[] = [
   },
   {
     name: __('Win-Back', 'mailpoet'),
+    slug: 'win-back',
     category: SegmentTemplateCategories.PURCHASE_HISTORY,
     description: __(
       'Customers who have previously purchased, but haven’t made a purchase in the last 6 months.',
@@ -226,6 +236,7 @@ export const templates: SegmentTemplate[] = [
   },
   {
     name: __('Lapsed Customers', 'mailpoet'),
+    slug: 'lapsed-customers',
     category: SegmentTemplateCategories.PURCHASE_HISTORY,
     description: __(
       'Customers who haven’t made a purchase in the last 9 months.',
@@ -243,6 +254,7 @@ export const templates: SegmentTemplate[] = [
   },
   // {
   //   name: __('Clickers', 'mailpoet'),
+  //   slug: 'clickers',
   //   category: SegmentTemplateCategories.ENGAGEMENT,
   //   description: __(
   //     'Contacts who regularly click on your emails in the last 90 days.',
@@ -252,6 +264,7 @@ export const templates: SegmentTemplate[] = [
   // },
   // {
   //   name: __('Non-Openers', 'mailpoet'),
+  //   slug: 'non-openers',
   //   category: SegmentTemplateCategories.ENGAGEMENT,
   //   description: __('Contacts who have received but haven’t opened an email in the last 90 days.', 'mailpoet'),
   //   isEssential: false,
@@ -268,6 +281,7 @@ export const templates: SegmentTemplate[] = [
   // },
   // {
   //   name: __('Recent Clickers', 'mailpoet'),
+  //   slug: 'recent-clickers',
   //   category: SegmentTemplateCategories.ENGAGEMENT,
   //   description: __(
   //     'Contacts who have clicked on an email in the last 7 days.',
@@ -277,6 +291,7 @@ export const templates: SegmentTemplate[] = [
   // },
   {
     name: __('Recent Openers', 'mailpoet'),
+    slug: 'recent-openers',
     category: SegmentTemplateCategories.ENGAGEMENT,
     description: __(
       'Contacts who have opened an email in the last 7 days.',
@@ -296,6 +311,7 @@ export const templates: SegmentTemplate[] = [
   },
   {
     name: __('Big Spenders', 'mailpoet'),
+    slug: 'big-spenders',
     category: SegmentTemplateCategories.SHOPPING_BEHAVIOR,
     description: __(
       'Customers who have completed $100 or more worth of orders in the last 12 months.',
@@ -315,6 +331,7 @@ export const templates: SegmentTemplate[] = [
   },
   // {
   //   name: __('Used a discount code', 'mailpoet'),
+  //   slug: 'used-a-discount-code',
   //   category: SegmentTemplateCategories.SHOPPING_BEHAVIOR,
   //   description: __(
   //     'Customers who made a purchase with a coupon code in the last 30 days.',
@@ -324,6 +341,7 @@ export const templates: SegmentTemplate[] = [
   // },
   // {
   //   name: __('Frequently uses discounts', 'mailpoet'),
+  //   slug: 'frequently-uses-discounts',
   //   category: SegmentTemplateCategories.SHOPPING_BEHAVIOR,
   //   description: __(
   //     'Customers who have regularly used coupons in the last 90 days.',
