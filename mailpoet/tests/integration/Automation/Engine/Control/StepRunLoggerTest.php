@@ -141,7 +141,7 @@ class StepRunLoggerTest extends MailPoetTest {
   }
 
   public function testItCatchesAfterRunHookErrors(): void {
-    $logger = new StepRunLogger($this->storage, $this->hooks, 1, 'step-id', AutomationRunLog::TYPE_ACTION, 1);
+    $logger = new StepRunLogger($this->storage, $this->hooks, 1, 'step-id', AutomationRunLog::TYPE_ACTION, 1, false);
     $logs = $this->storage->getLogsForAutomationRun(1);
     $this->assertCount(0, $logs);
 
@@ -165,6 +165,28 @@ class StepRunLoggerTest extends MailPoetTest {
     $logs = $this->storage->getLogsForAutomationRun(1);
     $this->assertCount(1, $logs);
     $this->assertLogData($logs[0], ['step_key' => 'step-key', 'status' => 'complete']);
+  }
+
+  public function testItRethrowsAfterRunHookErrorsInDebugMode(): void {
+    $logger = new StepRunLogger($this->storage, $this->hooks, 1, 'step-id', AutomationRunLog::TYPE_ACTION, 1, true);
+    $logs = $this->storage->getLogsForAutomationRun(1);
+    $this->assertCount(0, $logs);
+
+    $runs = 0;
+    $wp = $this->diContainer->get(WordPress::class);
+    $wp->addAction(Hooks::AUTOMATION_RUN_LOG_AFTER_STEP_RUN, function (AutomationRunLog $log) use (&$runs) {
+      $runs += 1;
+      throw new Exception('test error');
+    });
+
+    $logger->logStart();
+    $logger->logStepData(new Step('step-id', 'action', 'step-key', [], []));
+    $logger->logProgress();
+    $this->assertSame(0, $runs);
+
+    $this->expectException(Exception::class);
+    $this->expectExceptionMessage('test error');
+    $logger->logSuccess();
   }
 
   private function assertLogData(AutomationRunLog $log, array $data = []): void {
