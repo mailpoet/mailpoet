@@ -385,6 +385,7 @@ export enum SegmentTemplateCategories {
 
 export type SegmentTemplate = {
   name: string;
+  slug: string;
   description: string;
   category: SegmentTemplateCategories;
   isEssential: boolean;
