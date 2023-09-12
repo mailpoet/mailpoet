@@ -26,7 +26,7 @@ class Hooks {
   public const AUTOMATION_BEFORE_SAVE = 'mailpoet/automation/before_save';
   public const AUTOMATION_STEP_BEFORE_SAVE = 'mailpoet/automation/step/before_save';
 
-  public const AUTOMATION_RUN_LOG_AFTER_STEP_RUN = 'mailpoet/automation/step/after_run';
+  public const AUTOMATION_STEP_LOG_AFTER_RUN = 'mailpoet/automation/step/log_after_run';
 
   public const AUTOMATION_RUN_CREATE = 'mailpoet/automation/run/create';
 
@@ -43,6 +43,6 @@ class Hooks {
   }
 
   public function doAutomationStepAfterRun(AutomationRunLog $automationRunLog): void {
-    $this->wordPress->doAction(self::AUTOMATION_RUN_LOG_AFTER_STEP_RUN, $automationRunLog);
+    $this->wordPress->doAction(self::AUTOMATION_STEP_LOG_AFTER_RUN, $automationRunLog);
   }
 }
