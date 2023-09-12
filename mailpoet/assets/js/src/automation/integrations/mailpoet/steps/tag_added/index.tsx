@@ -3,7 +3,14 @@ import { StepType } from '../../../../editor/store';
 import { LockedBadge } from '../../../../../common/premium_modal/locked_badge';
 import { PremiumModalForStepEdit } from '../../../../../common/premium_modal';
 
-const keywords = ['tag', 'tags', 'tag added', 'tags added'];
+const keywords = [
+  __('tag', 'mailpoet'),
+  __('tags', 'mailpoet'),
+  __('label', 'mailpoet'),
+  __('labels', 'mailpoet'),
+  __('add tag', 'mailpoet'),
+  __('add tags', 'mailpoet'),
+];
 export const step: StepType = {
   key: 'mailpoet:tag-added',
   group: 'triggers',

@@ -6,6 +6,9 @@ import { PremiumModalForStepEdit } from '../../../../../common/premium-modal';
 
 const keywords = [
   __('tag', 'mailpoet'),
+  __('tags', 'mailpoet'),
+  __('label', 'mailpoet'),
+  __('labels', 'mailpoet'),
   __('remove tag', 'mailpoet'),
   __('remove tags', 'mailpoet'),
 ];

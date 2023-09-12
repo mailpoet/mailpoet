@@ -3,7 +3,14 @@ import { StepType } from '../../../../editor/store';
 import { LockedBadge } from '../../../../../common/premium_modal/locked_badge';
 import { PremiumModalForStepEdit } from '../../../../../common/premium_modal';
 
-const keywords = ['tag', 'tags', 'tag removed', 'tags removed'];
+const keywords = [
+  __('tag', 'mailpoet'),
+  __('tags', 'mailpoet'),
+  __('label', 'mailpoet'),
+  __('labels', 'mailpoet'),
+  __('remove tag', 'mailpoet'),
+  __('remove tags', 'mailpoet'),
+];
 export const step: StepType = {
   key: 'mailpoet:tag-removed',
   group: 'triggers',
