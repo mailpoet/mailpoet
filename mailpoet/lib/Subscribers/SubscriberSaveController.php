@@ -311,6 +311,7 @@ class SubscriberSaveController {
       }
     }
 
+    $newlyAddedTags = [];
     foreach ($data['tags'] as $tagName) {
       $tag = $this->tagRepository->createOrUpdate(['name' => $tagName]);
       $subscriberTag = $subscriber->getSubscriberTag($tag);
@@ -318,9 +319,12 @@ class SubscriberSaveController {
         $subscriberTag = new SubscriberTagEntity($tag, $subscriber);
         $subscriber->getSubscriberTags()->add($subscriberTag);
         $this->subscriberTagRepository->persist($subscriberTag);
-        $this->wp->doAction('mailpoet_subscriber_tag_added', $subscriberTag);
+        $newlyAddedTags[] = $subscriberTag;
       }
     }
     $this->subscriberTagRepository->flush();
+    foreach ($newlyAddedTags as $subscriberTag) {
+      $this->wp->doAction('mailpoet_subscriber_tag_added', $subscriberTag);
+    }
   }
 }
