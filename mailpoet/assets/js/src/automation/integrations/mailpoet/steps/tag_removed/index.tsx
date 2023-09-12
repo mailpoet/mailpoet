@@ -24,7 +24,7 @@ export const step: StepType = {
       }}
     >
       {__(
-        'Starting an automatoin when a tag has been removed from a subscriber is a premium feature.',
+        'Starting an automation when a tag has been removed from a subscriber is a premium feature.',
         'mailpoet',
       )}
     </PremiumModalForStepEdit>
