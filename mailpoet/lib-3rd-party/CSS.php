@@ -264,10 +264,11 @@ class CSS {
     if (trim($str) === '') return $array;
 
     foreach (explode(';', $str) as $kv) {
-      if ($kv === '') {
+      $line = trim($kv);
+      if ($line === '') {
         continue;
       }
-      list($selector, $rule) = explode(':', $kv, 2);
+      list($selector, $rule) = explode(':', $line, 2);
       $array[trim($selector)] = trim($rule);
     }
 
