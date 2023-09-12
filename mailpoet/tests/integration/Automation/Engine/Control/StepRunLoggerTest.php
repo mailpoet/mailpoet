@@ -113,7 +113,7 @@ class StepRunLoggerTest extends MailPoetTest {
     $lastLog = null;
 
     $wp = $this->diContainer->get(WordPress::class);
-    $wp->addAction(Hooks::AUTOMATION_RUN_LOG_AFTER_STEP_RUN, function (AutomationRunLog $log) use (&$runs, &$lastLog) {
+    $wp->addAction(Hooks::AUTOMATION_STEP_LOG_AFTER_RUN, function (AutomationRunLog $log) use (&$runs, &$lastLog) {
       $log->setData('test', 'value');
       $runs += 1;
       $lastLog = $log;
@@ -147,7 +147,7 @@ class StepRunLoggerTest extends MailPoetTest {
 
     $runs = 0;
     $wp = $this->diContainer->get(WordPress::class);
-    $wp->addAction(Hooks::AUTOMATION_RUN_LOG_AFTER_STEP_RUN, function (AutomationRunLog $log) use (&$runs) {
+    $wp->addAction(Hooks::AUTOMATION_STEP_LOG_AFTER_RUN, function (AutomationRunLog $log) use (&$runs) {
       $runs += 1;
       throw new Exception('test error');
     });
@@ -174,7 +174,7 @@ class StepRunLoggerTest extends MailPoetTest {
 
     $runs = 0;
     $wp = $this->diContainer->get(WordPress::class);
-    $wp->addAction(Hooks::AUTOMATION_RUN_LOG_AFTER_STEP_RUN, function (AutomationRunLog $log) use (&$runs) {
+    $wp->addAction(Hooks::AUTOMATION_STEP_LOG_AFTER_RUN, function (AutomationRunLog $log) use (&$runs) {
       $runs += 1;
       throw new Exception('test error');
     });
