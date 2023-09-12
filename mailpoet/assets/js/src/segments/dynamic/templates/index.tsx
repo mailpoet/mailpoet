@@ -20,6 +20,7 @@ import * as ROUTES from 'segments/routes';
 import { useSelect } from '@wordpress/data';
 import { storeName } from 'segments/dynamic/store';
 import { APIErrorsNotice } from 'notices/api_errors_notice';
+import { MailPoet } from 'mailpoet';
 
 const tabs = [
   {
@@ -55,6 +56,10 @@ export function SegmentTemplates(): JSX.Element {
     [],
   );
 
+  const trackNewCustomSegment = (): void => {
+    MailPoet.trackEvent('Segments > New empty segment');
+  };
+
   return (
     <div className="mailpoet-templates-container">
       <HideScreenOptions />
@@ -85,6 +90,9 @@ export function SegmentTemplates(): JSX.Element {
             variant="secondary"
             href={`#${ROUTES.NEW_DYNAMIC_SEGMENT}`}
             data-automation-id="new-custom-segment"
+            onClick={(): void => {
+              trackNewCustomSegment();
+            }}
           >
             {__('Create custom segment', 'mailpoet')}
           </Button>
@@ -112,7 +120,13 @@ export function SegmentTemplates(): JSX.Element {
 
       <div className="mailpoet-templates-footer">
         <p>{__('Want to set your own conditions?', 'mailpoet')}</p>
-        <Button variant="link" href={`#${ROUTES.NEW_DYNAMIC_SEGMENT}`}>
+        <Button
+          variant="link"
+          href={`#${ROUTES.NEW_DYNAMIC_SEGMENT}`}
+          onClick={(): void => {
+            trackNewCustomSegment();
+          }}
+        >
           {__('Create custom segment', 'mailpoet')}
         </Button>
       </div>
