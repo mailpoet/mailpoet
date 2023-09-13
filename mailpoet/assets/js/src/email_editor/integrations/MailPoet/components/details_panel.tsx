@@ -105,6 +105,7 @@ export function DetailsPanel() {
         placeholder={__('Eg. The summer sale is here!', 'mailpoet')}
         value={mailpoetData.subject ?? ''}
         onChange={(value) => handleChange('subject', value)}
+        data-automation-id="email_subject"
       />
       <div className="mailpoet-settings-panel__subject-help">
         <Text>{subjectHelp}</Text>
@@ -119,6 +120,7 @@ export function DetailsPanel() {
         )}
         value={mailpoetData.preheader ?? ''}
         onChange={(value) => handleChange('preheader', value)}
+        data-automation-id="email_preview_text"
       />
     </PluginDocumentSettingPanel>
   );

@@ -44,9 +44,19 @@ class CreateAndSendEmailUsingGutenbergCest {
     $i->waitForText('Fullscreen mode');
     $i->click('Fullscreen mode');
     $i->waitForText('Emails', 10, '#toplevel_page_mailpoet-homepage .current');
+    $i->wantTo('Close options dropdown');
+    $i->click('[aria-label="Options"]');
+
+    $i->wantTo('Change subject and preheader');
+    $i->click('button[data-label="Email"]');
+    $i->click('//button[text()="Details"]');
+    $i->fillField('[data-automation-id="email_subject"]', 'My New Subject');
+    $i->fillField('[data-automation-id="email_preview_text"]', 'My New Preview Text');
 
     $i->wantTo('Send an email and verify it was delivered');
     $i->click('Next');
+    $i->waitForText('My New Subject');
+    $i->waitForText('My New Preview Text');
     $i->waitForElement('[name="subject"]');
     $i->fillField('subject', 'Test Subject');
     $i->fillField('sender_name', 'John Doe');
