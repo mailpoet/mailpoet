@@ -6,6 +6,7 @@ use Codeception\Stub;
 use Codeception\Stub\Expected;
 use Codeception\Util\Fixtures;
 use Helper\WordPressHooks as WPHooksHelper;
+use MailPoet\Cron\Workers\SendingQueue\SendingQueue;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Newsletter as NewsletterTask;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Posts as PostsTask;
 use MailPoet\Cron\Workers\StatsNotifications\NewsletterLinkRepository;
@@ -14,6 +15,7 @@ use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterLinkEntity;
 use MailPoet\Entities\NewsletterOptionFieldEntity;
 use MailPoet\Entities\NewsletterPostEntity;
+use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Logging\LoggerFactory;
@@ -21,11 +23,14 @@ use MailPoet\Mailer\MailerLog;
 use MailPoet\Newsletter\NewsletterPostsRepository;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Renderer\Blocks\Coupon;
+use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Router\Router;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\Test\DataFactories\DynamicSegment;
 use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
+use MailPoet\Test\DataFactories\ScheduledTask as ScheduledTaskFactory;
+use MailPoet\Test\DataFactories\SendingQueue as SendingQueueFactory;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 use MailPoet\WooCommerce\Helper;
 use MailPoet\WP\Emoji;
@@ -60,6 +65,9 @@ class NewsletterTest extends \MailPoetTest {
   /** @var SendingQueuesRepository */
   private $sendingQueuesRepository;
 
+  /** @var ScheduledTasksRepository */
+  private $scheduledTasksRepository;
+
   public function _before() {
     parent::_before();
     $this->newsletterTask = new NewsletterTask();
@@ -84,6 +92,7 @@ class NewsletterTest extends \MailPoetTest {
     $this->newslettersRepository = $this->diContainer->get(NewslettersRepository::class);
     $this->newsletterLinkRepository = $this->diContainer->get(NewsletterLinkRepository::class);
     $this->sendingQueuesRepository = $this->diContainer->get(SendingQueuesRepository::class);
+    $this->scheduledTasksRepository = $this->diContainer->get(ScheduledTasksRepository::class);
   }
 
   public function testItConstructs() {
@@ -606,5 +615,56 @@ class NewsletterTest extends \MailPoetTest {
     expect($filterData['value'])->equals(50);
     expect($filterData['operator'])->equals('higherThan');
     expect($filterData['connect'])->equals('and');
+  }
+
+  public function testItRecoverNewsletterFromInvalidSendingState(): void {
+    // testing recovering newsletter when the welcome newsletter is draft
+    $invalidNewsletter = (new NewsletterFactory())
+      ->withType(NewsletterEntity::TYPE_WELCOME)
+      ->withStatus(NewsletterEntity::STATUS_DRAFT)
+      ->withSubject(Fixtures::get('newsletter_subject_template'))
+      ->withBody(json_decode(Fixtures::get('newsletter_body_template'), true))
+      ->withSendingQueue(['status' => null])
+      ->create();
+
+    $invalidTask = SendingTask::getByNewsletterId($invalidNewsletter->getId());
+    $scheduledTask = $this->scheduledTasksRepository->findOneById($invalidTask->taskId);
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $scheduledTask);
+    $this->assertNull($scheduledTask->getStatus());
+    $this->assertNull($this->newsletterTask->getNewsletterFromQueue($invalidTask));
+    $this->entityManager->refresh($scheduledTask);
+    $this->assertSame($scheduledTask->getStatus(), ScheduledTaskEntity::STATUS_PAUSED);
+
+    // testing recovering newsletter when the standard newsletter is deleted
+    $deletedNewsletter = (new NewsletterFactory())
+      ->withType(NewsletterEntity::TYPE_STANDARD)
+      ->withStatus(NewsletterEntity::STATUS_SENDING)
+      ->withDeleted()
+      ->withSubject(Fixtures::get('newsletter_subject_template'))
+      ->withBody(json_decode(Fixtures::get('newsletter_body_template'), true))
+      ->withSendingQueue(['status' => null])
+      ->create();
+
+    $deletedTask = SendingTask::getByNewsletterId($deletedNewsletter->getId());
+    $scheduledTask = $this->scheduledTasksRepository->findOneById($deletedTask->taskId);
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $scheduledTask);
+    $this->assertNull($scheduledTask->getStatus());
+    $this->assertNull($this->newsletterTask->getNewsletterFromQueue($deletedTask));
+    $this->entityManager->refresh($scheduledTask);
+    $this->assertSame($scheduledTask->getStatus(), ScheduledTaskEntity::STATUS_PAUSED);
+
+    // testing recovering when a newsletter is deleted
+    $scheduledTask = (new ScheduledTaskFactory())
+      ->create(SendingQueue::TASK_TYPE, null);
+    $sendingQueue = (new SendingQueueFactory())
+      ->create($scheduledTask, $this->entityManager->getReference(NewsletterEntity::class, 999));
+
+    $scheduledTaskId = $scheduledTask->getId();
+    $sendingQueueId = $sendingQueue->getId();
+    $sendingTaskWithoutNewsletter = SendingTask::getByNewsletterId(999);
+    $this->assertNull($this->newsletterTask->getNewsletterFromQueue($sendingTaskWithoutNewsletter));
+    $this->entityManager->clear();
+    $this->assertNull($this->scheduledTasksRepository->findOneById($scheduledTaskId));
+    $this->assertNull($this->sendingQueuesRepository->findOneById($sendingQueueId));
   }
 }
