@@ -40,7 +40,7 @@ class SegmentSaveController {
     $name = $data['name'] ?? '';
 
     if (!$this->segmentsRepository->isNameUnique($name, null) && isset($data['force_creation']) && $data['force_creation'] === 'true') {
-      $name = $name . ' (' . wp_generate_password(12, false) . ')';
+      $name = $name . ' (' . wp_generate_password(5, false) . ')';
     }
 
     $description = $data['description'] ?? '';
