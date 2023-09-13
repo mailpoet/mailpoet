@@ -12,7 +12,7 @@ const keywords = [
   __('add tags', 'mailpoet'),
 ];
 export const step: StepType = {
-  key: 'mailpoet:tag-added',
+  key: 'mailpoet:subscriber-tag-added',
   group: 'triggers',
   title: () => __('Tag added', 'mailpoet'),
   description: () =>

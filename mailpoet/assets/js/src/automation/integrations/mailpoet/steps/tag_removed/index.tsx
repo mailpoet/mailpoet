@@ -12,7 +12,7 @@ const keywords = [
   __('remove tags', 'mailpoet'),
 ];
 export const step: StepType = {
-  key: 'mailpoet:tag-removed',
+  key: 'mailpoet:subscriber-tag-removed',
   group: 'triggers',
   title: () => __('Tag removed', 'mailpoet'),
   description: () =>
