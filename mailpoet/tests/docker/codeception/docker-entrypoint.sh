@@ -213,6 +213,11 @@ if [[ $CIRCLE_JOB == *"_with_premium_"* ]]; then
 fi
 
 # WP installs translations into the `lang` folder, and it should be writable, this change has been added in WP 6.2
+# make sure folders exist
+[[ -d wp-content/plugins/mailpoet/lang ]] || mkdir -p wp-content/plugins/mailpoet/lang
+[[ -d wp-content/plugins/mailpoet-premium/lang ]] || mkdir -p wp-content/plugins/mailpoet-premium/lang
+[[ -d wp-content/languages ]] || mkdir wp-content/languages
+[[ -d wp-content/upgrade ]] || mkdir wp-content/upgrade
 chmod -R 755 wp-content/plugins/mailpoet/lang
 chmod -R 755 wp-content/plugins/mailpoet-premium/lang
 chmod -R 755 wp-content/languages
