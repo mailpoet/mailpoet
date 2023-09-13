@@ -2,6 +2,7 @@ import { __ } from '@wordpress/i18n';
 import { StepType } from '../../../../editor/store';
 import { LockedBadge } from '../../../../../common/premium_modal/locked_badge';
 import { PremiumModalForStepEdit } from '../../../../../common/premium_modal';
+import { Icon } from './icon';
 
 const keywords = [
   __('tag', 'mailpoet'),
@@ -22,7 +23,7 @@ export const step: StepType = {
   keywords,
   foreground: '#2271b1',
   background: '#f0f6fc',
-  icon: () => null,
+  icon: () => <Icon />,
   edit: () => (
     <PremiumModalForStepEdit
       tracking={{
