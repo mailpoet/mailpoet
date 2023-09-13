@@ -422,6 +422,7 @@ class Newsletter {
       $entityManager->persist($sendingQueue);
       $sendingQueue->setNewsletter($newsletter);
       $scheduledTask->setStatus($queue['status']);
+      $scheduledTask->setType(\MailPoet\Cron\Workers\SendingQueue\SendingQueue::TASK_TYPE);
       $sendingQueue->setCountProcessed($queue['count_processed']);
       $sendingQueue->setCountTotal($queue['count_total']);
       $sendingQueue->setNewsletterRenderedSubject($queue['subject'] ?? $this->data['subject']);
