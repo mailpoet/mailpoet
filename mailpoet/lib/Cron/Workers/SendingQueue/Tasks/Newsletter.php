@@ -7,7 +7,9 @@ use MailPoet\Cron\Workers\SendingQueue\Tasks\Posts as PostsTask;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Shortcodes as ShortcodesTask;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SegmentEntity;
+use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Mailer\MailerLog;
@@ -16,6 +18,7 @@ use MailPoet\Newsletter\Links\Links as NewsletterLinks;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Renderer\PostProcess\OpenTracking;
 use MailPoet\Newsletter\Renderer\Renderer;
+use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Settings\TrackingConfig;
@@ -65,6 +68,9 @@ class Newsletter {
   /** @var SegmentsRepository */
   private $segmentsRepository;
 
+  /** @var ScheduledTasksRepository */
+  private $scheduledTasksRepository;
+
   public function __construct(
     WPFunctions $wp = null,
     PostsTask $postsTask = null,
@@ -96,6 +102,7 @@ class Newsletter {
     $this->newsletterLinks = ContainerWrapper::getInstance()->get(NewsletterLinks::class);
     $this->sendingQueuesRepository = ContainerWrapper::getInstance()->get(SendingQueuesRepository::class);
     $this->segmentsRepository = ContainerWrapper::getInstance()->get(SegmentsRepository::class);
+    $this->scheduledTasksRepository = ContainerWrapper::getInstance()->get(ScheduledTasksRepository::class);
   }
 
   public function getNewsletterFromQueue(Sending $sendingTask): ?NewsletterEntity {
@@ -109,6 +116,7 @@ class Newsletter {
       || !in_array($newsletter->getStatus(), [NewsletterEntity::STATUS_ACTIVE, NewsletterEntity::STATUS_SENDING])
       || $newsletter->getStatus() === NewsletterEntity::STATUS_CORRUPT
     ) {
+      $this->recoverFromInvalidState($newsletter, $sendingQueue);
       return null;
     }
 
@@ -331,5 +339,32 @@ class Newsletter {
       }
     }
     return substr(md5(implode('|', $relevantContent)), 0, 16);
+  }
+
+  /**
+   * This method recovers the scheduled task and newsletter from a state when sending cannot proceed.
+   * @param NewsletterEntity|null $newsletter
+   * @param SendingQueueEntity $sendingQueue
+   * @return void
+   */
+  private function recoverFromInvalidState(?NewsletterEntity $newsletter, SendingQueueEntity $sendingQueue): void {
+    // When newsletter does not exist, we need to remove the scheduled task and sending queue.
+    $scheduledTask = $sendingQueue->getTask();
+    if (!$newsletter) {
+      if ($scheduledTask) {
+        $this->scheduledTasksRepository->remove($scheduledTask);
+      }
+      $this->sendingQueuesRepository->remove($sendingQueue);
+      $this->sendingQueuesRepository->flush();
+
+      return;
+    }
+
+    // Only deleted newsletter or newsletter with unexpected state should pass here.
+    // Because this state cannot proceed with sending, we need to pause the scheduled task.
+    if ($scheduledTask) {
+      $scheduledTask->setStatus(ScheduledTaskEntity::STATUS_PAUSED);
+      $this->scheduledTasksRepository->flush();
+    }
   }
 }
