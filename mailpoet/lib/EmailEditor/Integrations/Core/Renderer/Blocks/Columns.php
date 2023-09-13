@@ -14,8 +14,8 @@ class Columns implements BlockRenderer {
   }
 
   private function renderInnerColumns($columnBlocks, BlocksRenderer $blocksRenderer): string {
-    // Dummy width just by number of columns
-    $width = floor(660 / count($columnBlocks));
+    // Dummy width just by number of columns and 16px padding
+    $width = floor((660 - 16) / count($columnBlocks));
     $result = '';
     foreach ($columnBlocks as $columnBlock) {
       $result .= str_replace('{column_content}', $blocksRenderer->render([$columnBlock]), $this->getColumnTemplate($width, 'left'));
@@ -27,11 +27,13 @@ class Columns implements BlockRenderer {
    * Based on MJML <mj-section>
    */
   private function getColumnsContainerTemplate(): string {
-    return '<table><tr>
+    return '<tr>
             <td style="direction:ltr;font-size:0px;padding:0px 0;text-align:center;">
+            <!--[if mso | IE]><table role="presentation" border="0" cellpadding="0" cellspacing="0"><tr><![endif]-->
               {columns_content}
+            <!--[if mso | IE]></tr></table><![endif]-->
             </td>
-          </tr></table>';
+          </tr>';
   }
 
   /**
@@ -39,7 +41,7 @@ class Columns implements BlockRenderer {
    */
   private function getColumnTemplate($width, $alignment): string {
     return '
-     <!--[if mso | IE]><table role="presentation" border="0" cellpadding="0" cellspacing="0"><tr><td class="" style="vertical-align:top;width:' . $width . 'px;" ><![endif]-->
+     <!--[if mso | IE]><td class="" style="vertical-align:top;width:' . $width . 'px;" ><![endif]-->
       <div class="email_column" style="font-size:0px;text-align:' . $alignment . ';direction:ltr;display:inline-block;vertical-align:top;width:' . $width . 'px;max-width:' . $width . 'px">
         <table border="0" cellpadding="0" cellspacing="0" role="presentation" style="vertical-align:top;" width="' . $width . '">
           <tbody>
@@ -47,6 +49,6 @@ class Columns implements BlockRenderer {
           </tbody>
         </table>
       </div>
-       <!--[if mso | IE]></td></tr></table><![endif]-->';
+       <!--[if mso | IE]></td><![endif]-->';
   }
 }
