@@ -303,11 +303,12 @@ class SubscriberSaveController {
   }
 
   private function updateTags(array $data, SubscriberEntity $subscriber): void {
+    $removedTags = [];
     foreach ($subscriber->getSubscriberTags() as $subscriberTag) {
       $tag = $subscriberTag->getTag();
       if (!$tag || !in_array($tag->getName(), $data['tags'], true)) {
         $subscriber->getSubscriberTags()->removeElement($subscriberTag);
-        $this->wp->doAction('mailpoet_subscriber_tag_removed', $subscriberTag);
+        $removedTags[] = $subscriberTag;
       }
     }
 
@@ -325,6 +326,9 @@ class SubscriberSaveController {
     $this->subscriberTagRepository->flush();
     foreach ($newlyAddedTags as $subscriberTag) {
       $this->wp->doAction('mailpoet_subscriber_tag_added', $subscriberTag);
+    }
+    foreach ($removedTags as $subscriberTag) {
+      $this->wp->doAction('mailpoet_subscriber_tag_removed', $subscriberTag);
     }
   }
 }
