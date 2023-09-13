@@ -10,6 +10,13 @@ body {
   -ms-text-size-adjust: 100%; /* From MJMJ - Automatic test adjustment on mobile max to 100% */
 }
 
+.email_layout_wrapper {
+  background: #ccc;
+  margin: 0 auto;
+  padding: 20px 0;
+  width: 100%;
+}
+
 table,
 td {
   border-collapse: collapse;
