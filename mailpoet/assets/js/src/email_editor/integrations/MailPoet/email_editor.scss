@@ -34,13 +34,13 @@
       align-items: flex-start;
     }
 
-    .email-type-info__icon {
+    .mailpoet-email-type-info__icon {
       flex: 0 0 24px;
       margin-left: 0;
       margin-right: 12px;
     }
 
-    .email-type-info__content {
+    .mailpoet-email-type-info__content {
       flex-grow: 1;
       margin-bottom: 4px;
 
@@ -57,7 +57,7 @@
   }
 
   .mailpoet-email-editor__settings-panel {
-    .settings-panel__subject .components-base-control__label {
+    .mailpoet-settings-panel__subject .components-base-control__label {
       width: 100%;
 
       .components-external-link {
@@ -65,7 +65,7 @@
       }
     }
 
-    .settings-panel__subject-help {
+    .mailpoet-settings-panel__subject-help {
       margin-bottom: 20px;
 
       .components-text {
@@ -73,7 +73,7 @@
       }
     }
 
-    .settings-panel__preview-text .components-base-control__label .preview-text__help-icon {
+    .mailpoet-settings-panel__preview-text .components-base-control__label .mailpoet-preview-text__help-icon {
       position: relative;
       top: 6px;
     }
