@@ -14,9 +14,12 @@ const keywords = [
 export const step: StepType = {
   key: 'mailpoet:subscriber-tag-removed',
   group: 'triggers',
-  title: () => __('Tag removed', 'mailpoet'),
+  title: () => __('Tag removed from subscriber', 'mailpoet'),
   description: () =>
-    __('Triggers when a tag has been removed from a subscriber.', 'mailpoet'),
+    __(
+      'Start the automation when a tag is removed from a subscriber.',
+      'mailpoet',
+    ),
 
   subtitle: () => <LockedBadge text={__('Premium', 'mailpoet')} />,
   keywords,
