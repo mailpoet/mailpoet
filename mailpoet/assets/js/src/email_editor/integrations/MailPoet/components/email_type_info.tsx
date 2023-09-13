@@ -41,10 +41,10 @@ export function EmailTypeInfo() {
     <Panel className="mailpoet-email-sidebar__email-type-info">
       <PanelBody>
         <PanelRow>
-          <span className="email-type-info__icon">
+          <span className="mailpoet-email-type-info__icon">
             <Icon icon={megaphone} />
           </span>
-          <div className="email-type-info__content">
+          <div className="mailpoet-email-type-info__content">
             <h2>{__('Newsletter', 'mailpoet')}</h2>
             <span>
               {__(

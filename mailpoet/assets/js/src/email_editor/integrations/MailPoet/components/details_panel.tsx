@@ -85,7 +85,7 @@ export function DetailsPanel() {
           'mailpoet',
         )}
       >
-        <span className="preview-text__help-icon">
+        <span className="mailpoet-preview-text__help-icon">
           <Icon icon={help} size={20} />
         </span>
       </Tooltip>
@@ -100,18 +100,18 @@ export function DetailsPanel() {
       name="mailpoet-email-editor-setting-panel"
     >
       <TextareaControl
-        className="settings-panel__subject"
+        className="mailpoet-settings-panel__subject"
         label={subjectLabel}
         placeholder={__('Eg. The summer sale is here!', 'mailpoet')}
         value={mailpoetData.subject ?? ''}
         onChange={(value) => handleChange('subject', value)}
       />
-      <div className="settings-panel__subject-help">
+      <div className="mailpoet-settings-panel__subject-help">
         <Text>{subjectHelp}</Text>
       </div>
 
       <TextareaControl
-        className="settings-panel__preview-text"
+        className="mailpoet-settings-panel__preview-text"
         label={previewTextLabel}
         placeholder={__(
           "Add a preview text to capture subscribers' attention and increase open rates.",
