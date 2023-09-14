@@ -1,4 +1,4 @@
-import { __, _x } from '@wordpress/i18n';
+import { __ } from '@wordpress/i18n';
 import { Edit } from './edit';
 import { Icon } from './icon';
 import { StepType } from '../../../../editor/store';
@@ -14,14 +14,13 @@ const keywords = [
 export const step: StepType = {
   key: 'woocommerce:abandoned-cart',
   group: 'triggers',
-  title: () => __('Subscriber abandons cart', 'mailpoet-premium'),
+  title: () => __('Subscriber abandons cart', 'mailpoet'),
   description: () =>
     __(
       'Start the automation when a subscriber who has items in the shopping cart leaves your website without checking out.',
-      'mailpoet-premium',
+      'mailpoet',
     ),
-  subtitle: (): JSX.Element | string =>
-    _x('Trigger', 'noun', 'mailpoet-premium'),
+  subtitle: (): JSX.Element | string => __('Trigger', 'mailpoet'),
   keywords,
   icon: () => <Icon />,
   edit: () => <Edit />,
