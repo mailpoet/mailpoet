@@ -6,6 +6,7 @@ use MailPoet\Automation\Engine\Integration;
 use MailPoet\Automation\Engine\Registry;
 use MailPoet\Automation\Engine\WordPress;
 use MailPoet\Automation\Integrations\Core\Actions\DelayAction;
+use MailPoet\Automation\Integrations\Core\Actions\IfElseAction;
 
 class CoreIntegration implements Integration {
   /** @var DelayAction */
@@ -14,16 +15,22 @@ class CoreIntegration implements Integration {
   /** @var WordPress */
   private $wordPress;
 
+  /** @var IfElseAction */
+  private $ifElseAction;
+
   public function __construct(
     DelayAction $delayAction,
+    IfElseAction $ifElseAction,
     WordPress $wordPress
   ) {
     $this->delayAction = $delayAction;
+    $this->ifElseAction = $ifElseAction;
     $this->wordPress = $wordPress;
   }
 
   public function register(Registry $registry): void {
     $registry->addAction($this->delayAction);
+    $registry->addAction($this->ifElseAction);
 
     $registry->addFilter(new Filters\BooleanFilter());
     $registry->addFilter(new Filters\NumberFilter());
