@@ -11,21 +11,22 @@ use MailPoet\Automation\Engine\Validation\AutomationGraph\AutomationNodeVisitor;
 class NoJoinRule implements AutomationNodeVisitor {
   public const RULE_ID = 'no-join';
 
-  /** @var array<string, Step> */
-  private $visitedSteps = [];
+  /** @var array<string|int, Step[]> */
+  private $directParentMap = [];
 
   public function initialize(Automation $automation): void {
-    $this->visitedSteps = [];
+    $this->directParentMap = [];
   }
 
   public function visitNode(Automation $automation, AutomationNode $node): void {
     $step = $node->getStep();
-    $this->visitedSteps[$step->getId()] = $step;
     foreach ($step->getNextSteps() as $nextStep) {
       $nextStepId = $nextStep->getId();
-      if (isset($this->visitedSteps[$nextStepId])) {
-        throw Exceptions::automationStructureNotValid(__('Path join found in automation graph', 'mailpoet'), self::RULE_ID);
-      }
+      $this->directParentMap[$nextStepId] = array_merge($this->directParentMap[$nextStepId] ?? [], [$step]);
+    }
+
+    if (count($this->directParentMap[$step->getId()] ?? []) > 1) {
+      throw Exceptions::automationStructureNotValid(__('Path join found in automation graph', 'mailpoet'), self::RULE_ID);
     }
   }
 

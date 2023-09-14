@@ -38,6 +38,19 @@ class NoJoinRuleTest extends AutomationRuleTest {
     (new AutomationWalker())->walk($automation, [new NoJoinRule()]);
   }
 
+  public function testItDetectsTransitiveJoinedPath(): void {
+    $automation = $this->createAutomation([
+      'root' => ['a'],
+      'a' => ['b', 'c'],
+      'b' => ['c'],
+      'c' => [],
+    ]);
+
+    $this->expectException(UnexpectedValueException::class);
+    $this->expectExceptionMessage('Invalid automation structure: Path join found in automation graph');
+    (new AutomationWalker())->walk($automation, [new NoJoinRule()]);
+  }
+
   public function testItDetectsJoinedPathToSelf(): void {
     $automation = $this->createAutomation([
       'root' => ['root', 'root'],
@@ -62,9 +75,29 @@ class NoJoinRuleTest extends AutomationRuleTest {
 
   public function testItPassesWithPathSplit(): void {
     $automation = $this->createAutomation([
-      'root' => ['a1', 'a1'],
+      'root' => ['a1', 'a2'],
       'a1' => [],
       'a2' => [],
+    ]);
+
+    (new AutomationWalker())->walk($automation, [new NoJoinRule()]);
+    // no exception thrown
+  }
+
+  public function testItPassesWithCycle(): void {
+    $automation = $this->createAutomation([
+      'root' => ['a1'],
+      'a1' => ['a2'],
+      'a2' => ['root'],
+    ]);
+
+    (new AutomationWalker())->walk($automation, [new NoJoinRule()]);
+    // no exception thrown
+  }
+
+  public function testItPassesWithSelfCycle(): void {
+    $automation = $this->createAutomation([
+      'root' => ['root'],
     ]);
 
     (new AutomationWalker())->walk($automation, [new NoJoinRule()]);
