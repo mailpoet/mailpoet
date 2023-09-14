@@ -30,13 +30,19 @@ class StepScheduler {
   }
 
   public function scheduleNextStep(StepRunArgs $args, int $timestamp = null): int {
-    $nextSteps = $args->getStep()->getNextSteps();
+    $step = $args->getStep();
+    $nextSteps = $step->getNextSteps();
 
     // complete the automation run if there are no more steps
     if (count($nextSteps) === 0) {
       $this->completeAutomationRun($args);
       return 0;
     }
+
+    if (count($nextSteps) > 1) {
+      throw Exceptions::nextStepNotScheduled($step->getId());
+    }
+
     return $this->scheduleNextStepByIndex($args, 0, $timestamp);
   }
 
