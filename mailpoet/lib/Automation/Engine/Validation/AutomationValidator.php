@@ -9,7 +9,6 @@ use MailPoet\Automation\Engine\Validation\AutomationRules\ConsistentStepMapRule;
 use MailPoet\Automation\Engine\Validation\AutomationRules\NoCycleRule;
 use MailPoet\Automation\Engine\Validation\AutomationRules\NoDuplicateEdgesRule;
 use MailPoet\Automation\Engine\Validation\AutomationRules\NoJoinRule;
-use MailPoet\Automation\Engine\Validation\AutomationRules\NoSplitRule;
 use MailPoet\Automation\Engine\Validation\AutomationRules\NoUnreachableStepsRule;
 use MailPoet\Automation\Engine\Validation\AutomationRules\TriggerNeedsToBeFollowedByActionRule;
 use MailPoet\Automation\Engine\Validation\AutomationRules\TriggersUnderRootRule;
@@ -63,7 +62,6 @@ class AutomationValidator {
       new TriggersUnderRootRule(),
       new NoCycleRule(),
       new NoJoinRule(),
-      new NoSplitRule(),
       $this->unknownStepRule,
       new AtLeastOneTriggerRule(),
       new TriggerNeedsToBeFollowedByActionRule(),
