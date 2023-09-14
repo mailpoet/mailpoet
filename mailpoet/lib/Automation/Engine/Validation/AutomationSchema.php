@@ -48,7 +48,7 @@ class AutomationSchema {
       Builder::object([
         'id' => Builder::string()->required(),
       ])
-    )->maxItems(1);
+    );
   }
 
   public static function getFiltersSchema(): ObjectSchema {
