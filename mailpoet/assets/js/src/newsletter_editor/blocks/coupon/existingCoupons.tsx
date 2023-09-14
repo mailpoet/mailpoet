@@ -1,13 +1,19 @@
 import {
+  Button,
   Panel,
   PanelBody,
   PanelRow,
   SearchControl,
   SelectControl,
+  Spinner,
 } from '@wordpress/components';
 import { Component } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
+import { uniqBy } from 'lodash';
+import { MailPoet } from '../../../mailpoet';
 import { GetValueCallback, SetValueCallback } from './types';
+
+const COUPONS_PER_PAGE = 20;
 
 export type Coupon = {
   id: number;
@@ -18,7 +24,6 @@ export type Coupon = {
 
 type Props = {
   availableDiscountTypes: SelectControl.Option[];
-  availableCoupons: Coupon[];
   getValueCallback: GetValueCallback;
   setValueCallback: SetValueCallback;
 };
@@ -27,12 +32,15 @@ type State = {
   couponSearch: string;
   couponFilterDiscountType: string;
   couponId: number;
+  availableCoupons: Coupon[];
+  loadingInitial: boolean;
+  loadingMore: boolean;
+  pageNumber: number;
+  moreCouponsAvailable: boolean;
 };
 
 class ExistingCoupons extends Component<Props, State> {
   private readonly availableDiscountTypes: SelectControl.Option[];
-
-  private readonly availableCoupons: Coupon[];
 
   private readonly getValueCallback: GetValueCallback;
 
@@ -40,7 +48,6 @@ class ExistingCoupons extends Component<Props, State> {
 
   constructor(props: Props) {
     super(props);
-    this.availableCoupons = props.availableCoupons;
     this.getValueCallback = props.getValueCallback;
     this.setValueCallback = props.setValueCallback;
     this.availableDiscountTypes = [
@@ -54,35 +61,96 @@ class ExistingCoupons extends Component<Props, State> {
       couponSearch: '',
       couponFilterDiscountType: '',
       couponId: this.getValueCallback('couponId') as number,
+      availableCoupons: [],
+      loadingInitial: false,
+      loadingMore: false,
+      pageNumber: 1,
+      moreCouponsAvailable: true,
     };
   }
 
-  private filterCoupons = (): Coupon[] => {
-    let coupons: Coupon[] = [];
-    coupons = this.state.couponFilterDiscountType
-      ? this.availableCoupons.filter(
-          (coupon) =>
-            coupon.discountType === this.state.couponFilterDiscountType,
-        )
-      : this.availableCoupons;
-    if (this.state.couponSearch) {
-      coupons = coupons.filter((coupon) =>
-        coupon.text
-          .toLowerCase()
-          .includes(this.state.couponSearch.toLowerCase()),
-      );
-    }
-    const allDiscountTypes = this.availableDiscountTypes
-      .map((type) => type.value)
-      .filter((type) => type !== '');
-    // Ensure we only include coupons with a known discount type
-    coupons = coupons.filter((coupon) =>
-      allDiscountTypes.includes(coupon.discountType),
+  componentDidMount() {
+    this.loadCoupons();
+  }
+
+  private fetchCoupons(resetCoupons: boolean) {
+    const loadingKey = resetCoupons ? 'loadingInitial' : 'loadingMore';
+    MailPoet.Ajax.post({
+      api_version: MailPoet.apiVersion,
+      endpoint: 'coupons',
+      action: 'getCoupons',
+      data: {
+        page_size: COUPONS_PER_PAGE,
+        page_number: this.state.pageNumber,
+        discount_type: this.state.couponFilterDiscountType,
+        search: this.state.couponSearch,
+        include_coupon_id: this.state.couponId,
+      },
+    })
+      .then((response) => {
+        const newCoupons = response.data || [];
+        let newAvailableCoupons = [];
+        if (!resetCoupons) {
+          const { availableCoupons } = this.state;
+          newAvailableCoupons = uniqBy(
+            [...availableCoupons, ...newCoupons],
+            'id',
+          );
+        } else {
+          newAvailableCoupons = newCoupons;
+        }
+
+        this.setState((prevState) => ({
+          ...prevState,
+          availableCoupons: newAvailableCoupons,
+          moreCouponsAvailable: newCoupons.length > 0,
+          [loadingKey]: false,
+        }));
+      })
+      .catch(() => {
+        MailPoet.Notice.error(
+          __('Loading coupons was not successful', 'mailpoet'),
+          {
+            scroll: true,
+          },
+        );
+        this.setState((prevState) => ({
+          ...prevState,
+          [loadingKey]: false,
+        }));
+      });
+  }
+
+  private loadCoupons() {
+    this.setState(
+      {
+        pageNumber: 1,
+        loadingInitial: true,
+      },
+      () => this.fetchCoupons(true),
     );
-    return coupons;
-  };
+  }
+
+  private loadMoreCoupons() {
+    const { pageNumber } = this.state;
+    const newPageNumber = pageNumber + 1;
+    this.setState(
+      {
+        pageNumber: newPageNumber,
+        loadingMore: true,
+      },
+      () => this.fetchCoupons(false),
+    );
+  }
 
   render() {
+    const {
+      loadingInitial,
+      loadingMore,
+      moreCouponsAvailable,
+      availableCoupons,
+    } = this.state;
+
     return (
       <>
         <Panel>
@@ -91,16 +159,18 @@ class ExistingCoupons extends Component<Props, State> {
               <SearchControl
                 value={this.state.couponSearch}
                 onChange={(couponSearch): void => {
-                  this.setState({ couponSearch });
+                  this.setState({ couponSearch }, () => this.loadCoupons());
                 }}
               />
             </PanelRow>
             <PanelRow>
               <SelectControl
                 label={__('Discount type', 'mailpoet')}
-                onChange={(couponFilterDiscountType) =>
-                  this.setState({ couponFilterDiscountType })
-                }
+                onChange={(couponFilterDiscountType) => {
+                  this.setState({ couponFilterDiscountType }, () =>
+                    this.loadCoupons(),
+                  );
+                }}
                 options={this.availableDiscountTypes}
                 value={this.state.couponFilterDiscountType}
               />
@@ -110,10 +180,13 @@ class ExistingCoupons extends Component<Props, State> {
         <Panel>
           <PanelBody className="mailpoet-coupon-block-existing-coupons">
             <PanelRow>
-              {this.filterCoupons().length > 0 ? (
-                this.filterCoupons()
-                  .slice(0, 10)
-                  .map((coupon) => {
+              {loadingInitial ? (
+                <div className="mailpoet_coupon_block_coupon">
+                  <Spinner />
+                </div>
+              ) : null}
+              {!loadingInitial && availableCoupons.length > 0
+                ? availableCoupons.map((coupon) => {
                     const discountType = this.availableDiscountTypes.find(
                       (option) => option.value === coupon.discountType,
                     );
@@ -146,11 +219,21 @@ class ExistingCoupons extends Component<Props, State> {
                       </div>
                     );
                   })
-              ) : (
+                : null}
+              {!loadingInitial && availableCoupons.length === 0 ? (
                 <div className="mailpoet_coupon_block_coupon">
                   {__('No coupons found', 'mailpoet')}
                 </div>
-              )}
+              ) : null}
+              {!loadingMore && moreCouponsAvailable ? (
+                <Button
+                  variant="secondary"
+                  onClick={() => this.loadMoreCoupons()}
+                >
+                  {__('Load more', 'mailpoet')}
+                </Button>
+              ) : null}
+              {loadingMore ? <Spinner /> : null}
             </PanelRow>
           </PanelBody>
         </Panel>
