@@ -28,6 +28,7 @@ class Exceptions {
   private const FIELD_LOAD_FAILED = 'mailpoet_automation_field_load_failed';
   private const FILTER_NOT_FOUND = 'mailpoet_automation_filter_not_found';
   private const NEXT_STEP_NOT_FOUND = 'mailpoet_next_step_not_found';
+  private const NEXT_STEP_NOT_SCHEDULED = 'mailpoet_next_step_not_scheduled';
   private const AUTOMATION_STRUCTURE_MODIFICATION_NOT_SUPPORTED = 'mailpoet_automation_structure_modification_not_supported';
   private const AUTOMATION_STRUCTURE_NOT_VALID = 'mailpoet_automation_structure_not_valid';
   private const AUTOMATION_STEP_MODIFIED_WHEN_UNKNOWN = 'mailpoet_automation_step_modified_when_unknown';
@@ -189,6 +190,13 @@ class Exceptions {
       ->withErrorCode(self::NEXT_STEP_NOT_FOUND)
       // translators: %1$d is the ID of the automation step, %2$s is the ID of the next step.
       ->withMessage(sprintf(__("Automation step with ID '%1\$s' doesn't have a next step with index '%2\$d'.", 'mailpoet'), $stepId, $nextStepId));
+  }
+
+  public static function nextStepNotScheduled(string $stepId): InvalidStateException {
+    return InvalidStateException::create()
+      ->withErrorCode(self::NEXT_STEP_NOT_SCHEDULED)
+      // translators: %1$d is the ID of the automation step, %2$s is the ID of the next step.
+      ->withMessage(sprintf(__("Automation step with ID '%s' did not schedule a specific next step, even though multiple next steps are possible.", 'mailpoet'), $stepId));
   }
 
   public static function automationStructureModificationNotSupported(): UnexpectedValueException {
