@@ -129,7 +129,6 @@ class NewsletterEditor {
             'discount_types' => array_map(function($label, $value): array {
               return ['label' => $label, 'value' => $value];
             }, $discountTypes, array_keys($discountTypes)),
-            'available_coupons' => $this->woocommerceHelper->getCouponList(),
             'code_placeholder' => Coupon::CODE_PLACEHOLDER,
             'price_decimal_separator' => $this->woocommerceHelper->wcGetPriceDecimalSeparator(),
           ],
