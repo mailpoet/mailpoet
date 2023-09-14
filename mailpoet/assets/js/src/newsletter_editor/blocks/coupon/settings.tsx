@@ -2,7 +2,7 @@ import { SelectControl } from '@wordpress/components';
 import { ErrorBoundary } from 'common';
 import { GlobalContext, useGlobalContextValue } from 'context';
 import { useState } from 'react';
-import { ExistingCoupons, Coupon } from './existingCoupons';
+import { ExistingCoupons } from './existingCoupons';
 import { General } from './general';
 import { SettingsHeader, SettingsTabs } from './settings_header';
 import { GetValueCallback, SetValueCallback } from './types';
@@ -11,7 +11,6 @@ import { UsageLimits } from './usage_limits';
 
 type Props = {
   availableDiscountTypes: SelectControl.Option[];
-  availableCoupons: Coupon[];
   getValueCallback: GetValueCallback;
   setValueCallback: SetValueCallback;
   priceDecimalSeparator: string;
@@ -20,7 +19,6 @@ type Props = {
 
 function Settings({
   availableDiscountTypes,
-  availableCoupons,
   getValueCallback,
   setValueCallback,
   priceDecimalSeparator,
@@ -39,19 +37,13 @@ function Settings({
             // reset code placeholder and restoring existing coupon code
             if (value === SettingsTabs.createNew) {
               setValueCallback('code', codePlaceholder);
-              setValueCallback('couponId', null);
+              setValueCallback('couponId', '');
               // Make visible the coupon overlay when creating a new coupon
               jQuery('.mailpoet_editor_coupon_overlay').css(
                 'visibility',
                 'visible',
               );
             } else if (value === SettingsTabs.allCoupons) {
-              const existingCoupon = availableCoupons.find(
-                (coupon) => coupon.id === getValueCallback('couponId'),
-              );
-              if (existingCoupon) {
-                setValueCallback('code', existingCoupon.text);
-              }
               // Hide the coupon overlay when a specific coupon is selected
               jQuery('.mailpoet_editor_coupon_overlay').css(
                 'visibility',
@@ -80,7 +72,6 @@ function Settings({
         ) : (
           <ExistingCoupons
             availableDiscountTypes={availableDiscountTypes}
-            availableCoupons={availableCoupons}
             getValueCallback={getValueCallback}
             setValueCallback={setValueCallback}
           />
