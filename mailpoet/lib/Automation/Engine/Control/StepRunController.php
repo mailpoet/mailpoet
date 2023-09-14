@@ -27,6 +27,10 @@ class StepRunController {
     return $this->stepScheduler->scheduleNextStep($this->stepRunArgs, $timestamp);
   }
 
+  public function scheduleNextStepByIndex(int $nextStepIndex, int $timestamp = null): int {
+    return $this->stepScheduler->scheduleNextStepByIndex($this->stepRunArgs, $nextStepIndex, $timestamp);
+  }
+
   public function hasScheduledNextStep(): bool {
     return $this->stepScheduler->hasScheduledNextStep($this->stepRunArgs);
   }
