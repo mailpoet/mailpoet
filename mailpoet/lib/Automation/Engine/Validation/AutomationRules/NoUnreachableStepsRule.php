@@ -18,7 +18,7 @@ class NoUnreachableStepsRule implements AutomationNodeVisitor {
   }
 
   public function visitNode(Automation $automation, AutomationNode $node): void {
-    $this->visitedNodes[] = $node;
+    $this->visitedNodes[$node->getStep()->getId()] = $node;
   }
 
   public function complete(Automation $automation): void {

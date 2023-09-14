@@ -45,4 +45,16 @@ class NoUnreachableStepsRuleTest extends AutomationRuleTest {
     (new AutomationWalker())->walk($automation, [new NoUnreachableStepsRule()]);
     // no exception thrown
   }
+
+  public function testItPassesWithComplexPath(): void {
+    $automation = $this->createAutomation([
+      'root' => ['a'],
+      'a' => ['b', 'c'],
+      'b' => ['c'],
+      'c' => [],
+    ]);
+
+    (new AutomationWalker())->walk($automation, [new NoUnreachableStepsRule()]);
+    // no exception thrown
+  }
 }
