@@ -68,8 +68,8 @@ class StepScheduler {
 
   public function hasScheduledNextStep(StepRunArgs $args): bool {
     $runId = $args->getAutomationRun()->getId();
-    foreach ($args->getStep()->getNextSteps() as $nextStep) {
-      $data = $this->getActionData($runId, $nextStep->getId());
+    foreach ($args->getStep()->getNextStepIds() as $nextStepId) {
+      $data = $this->getActionData($runId, $nextStepId);
       $hasStep = $this->actionScheduler->hasScheduledAction(Hooks::AUTOMATION_STEP, $data);
       if ($hasStep) {
         return true;

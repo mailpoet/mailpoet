@@ -5,7 +5,6 @@ namespace MailPoet\Automation\Integrations\MailPoet\Actions;
 use MailPoet\AutomaticEmails\WooCommerce\Events\AbandonedCart;
 use MailPoet\Automation\Engine\Control\StepRunController;
 use MailPoet\Automation\Engine\Data\Automation;
-use MailPoet\Automation\Engine\Data\NextStep;
 use MailPoet\Automation\Engine\Data\Step;
 use MailPoet\Automation\Engine\Data\StepRunArgs;
 use MailPoet\Automation\Engine\Data\StepValidationArgs;
@@ -267,13 +266,7 @@ class SendEmailAction implements Action {
     }
 
     foreach ($transactionalTriggers as $trigger) {
-      $nextSteps = array_map(
-        function(NextStep $nextStep): string {
-          return $nextStep->getId();
-        },
-        $trigger->getNextSteps()
-      );
-      if (!in_array($step->getId(), $nextSteps, true)) {
+      if (!in_array($step->getId(), $trigger->getNextStepIds(), true)) {
         return false;
       }
     }

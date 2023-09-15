@@ -29,8 +29,7 @@ class TriggersUnderRootRule implements AutomationNodeVisitor {
       return;
     }
 
-    foreach ($step->getNextSteps() as $nextStep) {
-      $nextStepId = $nextStep->getId();
+    foreach ($step->getNextStepIds() as $nextStepId) {
       if (isset($this->triggersMap[$nextStepId])) {
         throw Exceptions::automationStructureNotValid(__('Trigger must be a direct descendant of automation root', 'mailpoet'), self::RULE_ID);
       }

@@ -62,6 +62,17 @@ class Step {
     return $this->nextSteps;
   }
 
+  public function getNextStepIds(): array {
+    $ids = [];
+    foreach ($this->nextSteps as $nextStep) {
+      $nextStepId = $nextStep->getId();
+      if ($nextStepId) {
+        $ids[] = $nextStep->getId();
+      }
+    }
+    return $ids;
+  }
+
   /** @param NextStep[] $nextSteps */
   public function setNextSteps(array $nextSteps): void {
     $this->nextSteps = $nextSteps;

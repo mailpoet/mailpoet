@@ -24,8 +24,7 @@ class NoCycleRule implements AutomationNodeVisitor {
       $parents
     ) ?: [];
 
-    foreach ($step->getNextSteps() as $nextStep) {
-      $nextStepId = $nextStep->getId();
+    foreach ($step->getNextStepIds() as $nextStepId) {
       if ($nextStepId === $step->getId() || isset($parentIdsMap[$nextStepId])) {
         throw Exceptions::automationStructureNotValid(__('Cycle found in automation graph', 'mailpoet'), self::RULE_ID);
       }

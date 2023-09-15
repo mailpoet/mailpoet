@@ -15,11 +15,11 @@ class NoDuplicateEdgesRule implements AutomationNodeVisitor {
 
   public function visitNode(Automation $automation, AutomationNode $node): void {
     $visitedNextStepIdsMap = [];
-    foreach ($node->getStep()->getNextSteps() as $nextStep) {
-      if (isset($visitedNextStepIdsMap[$nextStep->getId()])) {
+    foreach ($node->getStep()->getNextStepIds() as $nextStepId) {
+      if (isset($visitedNextStepIdsMap[$nextStepId])) {
         throw Exceptions::automationStructureNotValid(__('Duplicate next step definition found', 'mailpoet'), self::RULE_ID);
       }
-      $visitedNextStepIdsMap[$nextStep->getId()] = true;
+      $visitedNextStepIdsMap[$nextStepId] = true;
     }
   }
 

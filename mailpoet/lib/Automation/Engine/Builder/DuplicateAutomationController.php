@@ -78,7 +78,8 @@ class DuplicateAutomationController {
         $step->getKey(),
         $step->getArgs(),
         array_map(function (NextStep $nextStep) use ($newIds): NextStep {
-          return new NextStep($newIds[$nextStep->getId()]);
+          $nextStepId = $nextStep->getId();
+          return new NextStep($nextStepId ? $newIds[$nextStepId] : null);
         }, $step->getNextSteps())
       );
     }

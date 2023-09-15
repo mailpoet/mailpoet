@@ -46,7 +46,7 @@ class AutomationSchema {
   public static function getNextStepsSchema(): ArraySchema {
     return Builder::array(
       Builder::object([
-        'id' => Builder::string()->required(),
+        'id' => Builder::string()->required()->nullable(),
       ])
     );
   }

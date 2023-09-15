@@ -23,12 +23,14 @@ class TriggerNeedsToBeFollowedByActionRule implements AutomationNodeVisitor {
     if ($step->getType() !== Step::TYPE_TRIGGER) {
       return;
     }
-    $nextSteps = $step->getNextSteps();
-    if (!count($nextSteps)) {
+
+    $nextStepIds = $step->getNextStepIds();
+    if (!count($nextStepIds)) {
       throw Exceptions::automationStructureNotValid(__('A trigger needs to be followed by an action.', 'mailpoet'), self::RULE_ID);
     }
-    foreach ($nextSteps as $step) {
-      $step = $automation->getStep($step->getId());
+
+    foreach ($nextStepIds as $nextStepsId) {
+      $step = $automation->getStep($nextStepsId);
       if ($step && $step->getType() === Step::TYPE_ACTION) {
         continue;
       }
