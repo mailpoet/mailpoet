@@ -1,0 +1,26 @@
+<?php declare(strict_types = 1);
+
+namespace MailPoet\EmailEditor\Engine;
+
+class StylesController {
+  /**
+   * Default styles applied to the email. These are going to be replaced by style settings.
+   * This is currently more af a proof of concept that we can apply styles to the email.
+   * We will gradually replace these hardcoded values with styles saved as global styles or styles saved with the email.
+   * @var string
+   */
+  const DEFAULT_EMAIL_STYLES = "
+      body { font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif; }
+      p { font-size: 16px; }
+      h1 { font-size: 32px; }
+      h2 { font-size: 24px; }
+      h3 { font-size: 18px; }
+      h4 { font-size: 16px; }
+      h5 { font-size: 14px; }
+      h6 { font-size: 12px; }
+  ";
+
+  public function getEmailStyles(): string {
+    return self::DEFAULT_EMAIL_STYLES;
+  }
+}
