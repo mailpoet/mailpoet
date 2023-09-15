@@ -15,15 +15,20 @@ class EmailEditor {
   /** @var StylesController */
   private $stylesController;
 
+  /** @var EmailApiController */
+  private $emailApiController;
+
   /**
    * @param AssetsCleaner $assetsCleaner
    */
   public function __construct(
     AssetsCleaner $assetsCleaner,
-    StylesController $stylesController
+    StylesController $stylesController,
+    EmailApiController $emailApiController
   ) {
     $this->assetsCleaner = $assetsCleaner;
     $this->stylesController = $stylesController;
+    $this->emailApiController = $emailApiController;
   }
 
   public function initialize(): void {
@@ -32,6 +37,7 @@ class EmailEditor {
     add_filter('block_editor_settings_all', [$this, 'updateBlockEditorSettings'], 100, 2);
     do_action('mailpoet_email_editor_initialized');
     $this->registerEmailPostTypes();
+    $this->extendEmailPostApi();
   }
 
   /**
@@ -87,6 +93,15 @@ class EmailEditor {
       return;
     }
     $this->assetsCleaner->cleanupBlockEditorAssets();
+  }
+
+  public function extendEmailPostApi() {
+    $emailPostTypes = array_column($this->getPostTypes(), 'name');
+    register_rest_field($emailPostTypes, 'email_data', [
+      'get_callback' => [$this->emailApiController, 'getEmailData'],
+      'update_callback' => [$this->emailApiController, 'saveEmailData'],
+      'schema' => $this->emailApiController->getEmailDataSchema(),
+    ]);
   }
 
   public function updateBlockEditorSettings(array $settings, \WP_Block_Editor_Context $blockEditorContext): array {

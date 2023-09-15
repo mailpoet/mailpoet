@@ -3,6 +3,7 @@ import { useSelect, select as directSelect } from '@wordpress/data';
 import { store as coreStore } from '@wordpress/core-data';
 import { store as editorStore } from '@wordpress/editor';
 import { NextButtonSlot } from 'email_editor/engine/components/next_button_slot';
+import { LayoutStyles } from 'email_editor/engine/components/layout_styles';
 import { useDisableWelcomeGuide } from 'email_editor/engine/hooks';
 import { NextButton } from './components/next_button';
 import { MailPoetEmailData } from './types';
@@ -28,9 +29,12 @@ function Editor() {
   useDisableWelcomeGuide();
 
   return (
-    <NextButtonSlot>
-      <NextButton newsletterId={mailpoetData?.id ?? null} />
-    </NextButtonSlot>
+    <>
+      <LayoutStyles />
+      <NextButtonSlot>
+        <NextButton newsletterId={mailpoetData?.id ?? null} />
+      </NextButtonSlot>
+    </>
   );
 }
 

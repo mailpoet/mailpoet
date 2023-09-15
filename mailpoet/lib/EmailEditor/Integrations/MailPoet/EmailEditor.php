@@ -11,24 +11,6 @@ use MailPoet\WP\Functions as WPFunctions;
 class EmailEditor {
   const MAILPOET_EMAIL_POST_TYPE = 'mailpoet_email';
 
-  /**
-   * Default styles applied to the email. These are going to be replaced by style settings.
-   * This is currently more af a proof of concept that we can apply styles to the email.
-   * In the future we will probably add some sort of StylesController that will fetch/build styles for specific email.
-   * @var string
-   */
-  const DEFAULT_EMAIL_STYLES = "
-      body { font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif; }
-      p { font-size: 16px; }
-      h1 { font-size: 32px; }
-      h2 { font-size: 24px; }
-      h3 { font-size: 18px; }
-      h4 { font-size: 16px; }
-      h5 { font-size: 14px; }
-      h6 { font-size: 12px; }
-  ";
-
-
   /** @var WPFunctions */
   private $wp;
 
