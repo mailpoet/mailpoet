@@ -38,7 +38,7 @@ class FilterHandler {
     return $operator === Filters::OPERATOR_AND;
   }
 
-  private function matchesGroup(FilterGroup $group, StepRunArgs $args): bool {
+  public function matchesGroup(FilterGroup $group, StepRunArgs $args): bool {
     $operator = $group->getOperator();
     foreach ($group->getFilters() as $filter) {
       $value = $args->getFieldValue($filter->getFieldKey());
