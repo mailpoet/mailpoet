@@ -13,12 +13,12 @@
   {{email_meta_robots}}
 
   <style type="text/css">
-    {{email_styles}}
+    {{email_template_styles}}
   </style>
-  <body style="word-spacing: normal">
-    <div class="email_layout_wrapper">
-      <!--[if mso | IE]><table align="center" border="0" cellpadding="0" cellspacing="0" class="" style="width:660px;" width="660" ><tr><td style="line-height:0px;font-size:0px;mso-line-height-rule:exactly;"><![endif]-->
-      <div style="margin: 0px auto; max-width: 660px">
+  <body style="word-spacing:normal;background:{{background}};">
+    <div class="email_layout_wrapper" style="background:{{background}}">
+      <!--[if mso | IE]><table align="center" border="0" cellpadding="0" cellspacing="0" class="" style="width:{{width}}px;" width="{{width}}" ><tr><td style="line-height:0px;font-size:0px;mso-line-height-rule:exactly;"><![endif]-->
+      <div style="margin: 0px auto; max-width: {{width}}px">
         <table
           align="center"
           border="0"
