@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { SelectControl } from '@wordpress/components';
-import { dispatch, useSelect } from '@wordpress/data';
+import { useSelect } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
 import { PlainBodyTitle } from '../../../../../editor/components';
 import { PanelBody } from '../../../../../editor/components/panel/panel-body';
@@ -9,7 +9,22 @@ import { PremiumModal } from '../../../../../../common/premium_modal';
 import { getOrderStatusOptions, COMPLETED_ORDER_STATUS } from './order_status';
 import { OrderStatusOptions } from '../../../../../types/filters';
 
-export function OrderStatusPanel(): JSX.Element {
+type OrderStatusPanelProps = {
+  label: string;
+  showFrom: boolean;
+  showTo: boolean;
+  toLabel?: string;
+  fromLabel?: string;
+  onChange: (value: string, type: 'from' | 'to') => void;
+};
+export function OrderStatusPanel({
+  label,
+  showFrom,
+  showTo,
+  toLabel,
+  fromLabel,
+  onChange,
+}: OrderStatusPanelProps): JSX.Element {
   const [showPremiumModal, setShowPremiumModal] = useState(false);
   const { selectedStep } = useSelect(
     (select) => ({
@@ -31,28 +46,32 @@ export function OrderStatusPanel(): JSX.Element {
   const toSelected =
     (selectedStep.args?.to as string) ?? COMPLETED_ORDER_STATUS;
 
-  const update = (value: string, property: string) => {
+  const update = (value: string, property: 'from' | 'to') => {
     const status = options.get(value).isDisabled
       ? COMPLETED_ORDER_STATUS
       : value;
-    dispatch(storeName).updateStepArgs(selectedStep.id, property, status);
+    onChange(status, property);
     setShowPremiumModal(options.get(value).isDisabled);
   };
   return (
     <PanelBody opened>
-      <PlainBodyTitle title={__('Trigger settings', 'mailpoet')} />
-      <SelectControl
-        value={fromSelected}
-        label={__('Status changes from:', 'mailpoet')}
-        options={[...options.values()]}
-        onChange={(value) => update(value, 'from')}
-      />
-      <SelectControl
-        value={toSelected}
-        label={__('Status changes to:', 'mailpoet')}
-        options={[...options.values()]}
-        onChange={(value) => update(value, 'to')}
-      />
+      <PlainBodyTitle title={label} />
+      {showFrom && (
+        <SelectControl
+          value={fromSelected}
+          label={fromLabel}
+          options={[...options.values()]}
+          onChange={(value) => update(value, 'from')}
+        />
+      )}
+      {showTo && (
+        <SelectControl
+          value={toSelected}
+          label={toLabel}
+          options={[...options.values()]}
+          onChange={(value) => update(value, 'to')}
+        />
+      )}
       {showPremiumModal && (
         <PremiumModal
           onRequestClose={() => setShowPremiumModal(false)}
