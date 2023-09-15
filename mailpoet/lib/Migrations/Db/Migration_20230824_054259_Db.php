@@ -22,7 +22,7 @@ class Migration_20230824_054259_Db extends DbMigration {
 
   private function createStatusColumn(): void {
     $revenueTable = $this->getTableName(StatisticsWooCommercePurchaseEntity::class);
-    if ($this->columnExists($revenueTable, 'status')) {
+    if (!$this->tableExists($revenueTable) || $this->columnExists($revenueTable, 'status')) {
       return;
     }
     $this->connection->executeQuery(
