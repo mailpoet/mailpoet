@@ -20,8 +20,7 @@ class NoJoinRule implements AutomationNodeVisitor {
 
   public function visitNode(Automation $automation, AutomationNode $node): void {
     $step = $node->getStep();
-    foreach ($step->getNextSteps() as $nextStep) {
-      $nextStepId = $nextStep->getId();
+    foreach ($step->getNextStepIds() as $nextStepId) {
       $this->directParentMap[$nextStepId] = array_merge($this->directParentMap[$nextStepId] ?? [], [$step]);
     }
 

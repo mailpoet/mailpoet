@@ -54,6 +54,9 @@ class AutomationWalker {
 
       foreach (array_reverse($step->getNextSteps()) as $nextStepData) {
         $nextStepId = $nextStepData->getId();
+        if (!$nextStepId) {
+          continue; // empty edge
+        }
         $nextStep = $steps[$nextStepId] ?? null;
         if (!$nextStep) {
           throw $this->createStepNotFoundException($nextStepId, $step->getId());

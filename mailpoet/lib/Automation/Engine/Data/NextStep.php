@@ -3,16 +3,16 @@
 namespace MailPoet\Automation\Engine\Data;
 
 class NextStep {
-  /** @var string */
+  /** @var string|null */
   protected $id;
 
   public function __construct(
-    string $id
+    ?string $id
   ) {
     $this->id = $id;
   }
 
-  public function getId(): string {
+  public function getId(): ?string {
     return $this->id;
   }
 
