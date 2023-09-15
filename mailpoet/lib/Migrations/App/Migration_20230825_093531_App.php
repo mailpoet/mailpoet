@@ -13,6 +13,12 @@ class Migration_20230825_093531_App extends AppMigration {
   public function run(): void {
 
     $wooCommerceHelper = $this->container->get(Helper::class);
+
+    // If Woo is not active and the table doesn't exist, we can skip this migration
+    if (!$wooCommerceHelper->isWooCommerceActive() && !$this->tableExists()) {
+      return;
+    }
+
     $wooCommerceHelper->isWooCommerceCustomOrdersTableEnabled() ?
       $this->populateStatusColumnUsingHpos() : $this->populateStatusColumnUsingPost();
   }
@@ -35,5 +41,14 @@ class Migration_20230825_093531_App extends AppMigration {
 
   private function getTableName(): string {
     return $this->entityManager->getClassMetadata(StatisticsWooCommercePurchaseEntity::class)->getTableName();
+  }
+
+  private function tableExists(): bool {
+    global $wpdb;
+
+    $revenueTable = $this->getTableName();
+    $query = $wpdb->prepare('SHOW TABLES LIKE %s', $wpdb->esc_like($revenueTable));
+
+    return $wpdb->get_var($query) === $revenueTable;
   }
 }

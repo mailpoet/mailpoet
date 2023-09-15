@@ -50,6 +50,15 @@ abstract class DbMigration {
     ", [Env::$dbName, $tableName, $columnName])->fetchOne() !== false;
   }
 
+  protected function tableExists(string $tableName): bool {
+    return $this->connection->executeQuery("
+        SELECT 1
+        FROM information_schema.columns
+        WHERE table_schema = COALESCE(DATABASE(), ?)
+        AND table_name = ?
+      ", [Env::$dbName, $tableName])->fetchOne() !== false;
+  }
+
   protected function indexExists(string $tableName, string $indexName): bool {
     // We had a problem with the dbName value in ENV for some customers, because it doesn't match DB name in information schema.
     // So we decided to use the DATABASE() value instead.
