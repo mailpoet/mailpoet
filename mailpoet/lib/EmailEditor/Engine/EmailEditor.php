@@ -12,13 +12,18 @@ class EmailEditor {
   /** @var AssetsCleaner */
   private $assetsCleaner;
 
+  /** @var StylesController */
+  private $stylesController;
+
   /**
    * @param AssetsCleaner $assetsCleaner
    */
   public function __construct(
-    AssetsCleaner $assetsCleaner
+    AssetsCleaner $assetsCleaner,
+    StylesController $stylesController
   ) {
     $this->assetsCleaner = $assetsCleaner;
+    $this->stylesController = $stylesController;
   }
 
   public function initialize(): void {
@@ -92,6 +97,9 @@ class EmailEditor {
     $settings['enableCustomUnits'] = ['px', '%']; // Allow only units we can support in email renderer
     $settings['__experimentalAdditionalBlockPatterns'] = [];
     $settings['__experimentalAdditionalBlockPatternCategories'] = [];
+
+    // Reset editor styles f
+    $settings['defaultEditorStyles'] = [[ 'css' => $this->stylesController->getEmailStyles() ]];
 
     return apply_filters('mailpoet_email_editor_settings_all', $settings);
   }
