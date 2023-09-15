@@ -99,7 +99,7 @@ class EmailEditor {
     $settings['__experimentalAdditionalBlockPatternCategories'] = [];
 
     // Reset editor styles f
-    $settings['defaultEditorStyles'] = [[ 'css' => $this->stylesController->getEmailStyles() ]];
+    $settings['defaultEditorStyles'] = [[ 'css' => $this->stylesController->getEmailContentStyles() ]];
 
     return apply_filters('mailpoet_email_editor_settings_all', $settings);
   }

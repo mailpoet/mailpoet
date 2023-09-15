@@ -2,6 +2,8 @@
 
 namespace MailPoet\EmailEditor\Engine\Renderer;
 
+use MailPoet\EmailEditor\Engine\StylesController;
+
 require_once __DIR__ . '/DummyBlockRenderer.php';
 
 class RendererTest extends \MailPoetTest {
@@ -69,5 +71,38 @@ class RendererTest extends \MailPoetTest {
     $this->assertInstanceOf(\DOMElement::class, $body);
     $style = $body->getAttribute('style');
     expect($style)->stringContainsString('font-family:Arial,\'Helvetica Neue\',Helvetica,sans-serif;');
+  }
+
+  public function testItAppliesLayoutStyles() {
+    $stylesControllerMock = $this->createMock(StylesController::class);
+    $stylesControllerMock->method('getEmailLayoutStyles')->willReturn([
+      'width' => 123,
+      'background' => '#123456',
+    ]);
+    $renderer = $this->getServiceWithOverrides(Renderer::class, [
+      'stylesController' => $stylesControllerMock,
+    ]);
+    $rendered = $renderer->render($this->emailPost, 'Subject', '', 'en');
+    $doc = new \DOMDocument();
+    $doc->loadHTML($rendered['html']);
+    $xpath = new \DOMXPath($doc);
+    $nodes = $xpath->query('//body');
+    $body = null;
+    if (($nodes instanceof \DOMNodeList) && $nodes->length > 0) {
+      $body = $nodes->item(0);
+    }
+    $this->assertInstanceOf(\DOMElement::class, $body);
+    $style = $body->getAttribute('style');
+    expect($style)->stringContainsString('background:#123456');
+
+    $xpath = new \DOMXPath($doc);
+    $wrapper = null;
+    $nodes = $xpath->query('//div[contains(@class, "email_layout_wrapper")]//div');
+    if (($nodes instanceof \DOMNodeList) && $nodes->length > 0) {
+      $wrapper = $nodes->item(0);
+    }
+    $this->assertInstanceOf(\DOMElement::class, $wrapper);
+    $style = $wrapper->getAttribute('style');
+    expect($style)->stringContainsString('max-width: 123px');
   }
 }

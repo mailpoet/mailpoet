@@ -46,19 +46,30 @@ class Renderer {
     $renderedBody = $this->blocksRenderer->render($parsedBlocks);
 
     $styles = (string)file_get_contents(dirname(__FILE__) . '/' . self::TEMPLATE_STYLES_FILE);
-    $styles .= $this->stylesController->getEmailStyles();
+    $styles .= $this->stylesController->getEmailContentStyles();
     $styles = apply_filters('mailpoet_email_renderer_styles', $styles, $post);
 
+    $template = (string)file_get_contents(dirname(__FILE__) . '/' . self::TEMPLATE_FILE);
+
+    // Apply layout styles
+    $layoutStyles = $this->stylesController->getEmailLayoutStyles();
+    $template = str_replace(
+      ['{{width}}', '{{background}}'],
+      [$layoutStyles['width'], $layoutStyles['background']],
+      $template
+    );
+
     /**
+     * Replace template variables
      * {{email_language}}
      * {{email_subject}}
      * {{email_meta_robots}}
-     * {{email_styles}}
+     * {{email_template_styles}}
      * {{email_preheader}}
      * {{email_body}}
      */
     $templateWithContents = $this->injectContentIntoTemplate(
-      (string)file_get_contents(dirname(__FILE__) . '/' . self::TEMPLATE_FILE),
+      $template,
       [
         $language,
         esc_html($subject),
