@@ -15,6 +15,12 @@ export type ApiError = {
 };
 
 export const initializeApi = () => {
-  apiFetch.use(apiFetch.createRootURLMiddleware(apiUrl));
+  apiFetch.use((options, next) => {
+    if (options.path.startsWith('/wc-analytics/')) {
+      return apiFetch.createRootURLMiddleware(`${api.root}/`)(options, next);
+    }
+    return apiFetch.createRootURLMiddleware(apiUrl)(options, next);
+  });
+
   apiFetch.use(apiFetch.createNonceMiddleware(api.nonce));
 };
