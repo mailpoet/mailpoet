@@ -13,7 +13,6 @@ import { SegmentTemplate } from 'segments/types';
 import { getCategoryNameBySlug } from 'segments/dynamic/templates/templates';
 import { useDispatch } from '@wordpress/data';
 import { storeName } from 'segments/dynamic/store';
-import { MailPoet } from 'mailpoet';
 
 type TemplateListItemProps = {
   template: SegmentTemplate;
@@ -27,11 +26,6 @@ export function TemplateListItem({
   const handleSelectingTemplate = (event): void => {
     event.preventDefault();
     createFromTemplate(template);
-    MailPoet.trackEvent('Segments > Template selected', {
-      'Segment name': template.name,
-      'Segment slug': template.slug,
-      'Segment category': template.category,
-    });
   };
 
   return (

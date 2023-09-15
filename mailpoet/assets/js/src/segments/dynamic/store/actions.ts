@@ -189,7 +189,18 @@ export function* createFromTemplate(
   };
 
   if (success) {
-    window.location.href = `admin.php?page=mailpoet-segments#${ROUTES.EDIT_DYNAMIC_SEGMENT}/${segment.id}`;
+    MailPoet.trackEvent(
+      'Segments > Template selected',
+      {
+        'Segment name': segmentTemplate.name,
+        'Segment slug': segmentTemplate.slug,
+        'Segment category': segmentTemplate.category,
+      },
+      { send_immediately: true },
+      () => {
+        window.location.href = `admin.php?page=mailpoet-segments#${ROUTES.EDIT_DYNAMIC_SEGMENT}/${segment.id}`;
+      },
+    );
   } else {
     yield setErrors(error as string[]);
   }
