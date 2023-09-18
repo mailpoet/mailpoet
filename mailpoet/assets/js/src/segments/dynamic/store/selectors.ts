@@ -1,7 +1,6 @@
 import {
   AnyFormItem,
   Automation,
-  Coupon,
   FilterRow,
   FilterValue,
   GroupFilterValue,
@@ -71,7 +70,6 @@ export const getSegmentFilter = (
   found = { ...state.segment.filters[index] };
   return found;
 };
-export const getCoupons = (state: StateType): Coupon[] => state.coupons;
 export const getErrors = (state: StateType): string[] => state.errors;
 export const getAvailableFilters = (state: StateType): GroupFilterValue[] =>
   state.allAvailableFilters;
