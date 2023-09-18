@@ -4,9 +4,10 @@ namespace MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks;
 
 use MailPoet\EmailEditor\Engine\Renderer\BlockRenderer;
 use MailPoet\EmailEditor\Engine\Renderer\BlocksRenderer;
+use MailPoet\EmailEditor\Engine\StylesController;
 
 class Column implements BlockRenderer {
-  public function render($parsedBlock, BlocksRenderer $blocksRenderer): string {
+  public function render($parsedBlock, BlocksRenderer $blocksRenderer, StylesController $stylesController): string {
     if (!isset($parsedBlock['innerBlocks']) || empty($parsedBlock['innerBlocks'])) {
       return '';
     }

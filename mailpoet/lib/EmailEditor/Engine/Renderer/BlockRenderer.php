@@ -2,6 +2,8 @@
 
 namespace MailPoet\EmailEditor\Engine\Renderer;
 
+use MailPoet\EmailEditor\Engine\StylesController;
+
 interface BlockRenderer {
-  public function render(array $parsedBlock, BlocksRenderer $blocksRenderer): string;
+  public function render(array $parsedBlock, BlocksRenderer $blocksRenderer, StylesController $stylesController): string;
 }
