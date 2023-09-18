@@ -369,12 +369,15 @@ class Initializer {
 
     // wp automatically redirect to `wp-admin/plugins.php?activate=true&...` after plugin activation
     $activatedByWpAdmin = !empty(strpos($currentUrl, 'plugins.php')) && isset($_GET['activate']) && (bool)$_GET['activate'];
-    if (!$activatedByWpAdmin) return; // not activated by wp. Do not redirect e.g WooCommerce NUX
 
-    // done with afterPluginActivation actions. Delete before redirect
+    // We want to run this only once immediately after activation.
+    // Delete the flag to prevent triggering on subsequent page loads.
     $this->wpFunctions->deleteOption(self::PLUGIN_ACTIVATED);
 
-    $this->changelog->redirectToLandingPage();
+    // If not activated by wp. Do not redirect e.g WooCommerce NUX
+    if ($activatedByWpAdmin) {
+      $this->changelog->redirectToLandingPage();
+    }
   }
 
   /**
