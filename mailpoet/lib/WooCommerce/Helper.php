@@ -219,7 +219,7 @@ class Helper {
     int $pageNumber = 1,
     ?string $discountType = null,
     ?string $search = null,
-    ?int $includeCouponId = null
+    array $includeCouponIds = []
   ): array {
     $args = [
       'posts_per_page' => $pageSize,
@@ -241,9 +241,9 @@ class Helper {
 
     $includeCoupons = [];
     // We need to include the coupon with the given ID in the first page
-    if ($includeCouponId && $pageNumber === 1) {
+    if ($includeCouponIds && $pageNumber === 1) {
       $includeArgs = $args;
-      $includeArgs['include'] = [$includeCouponId];
+      $includeArgs['include'] = $includeCouponIds;
       $includeCoupons = $this->wp->getPosts($includeArgs);
     }
 
