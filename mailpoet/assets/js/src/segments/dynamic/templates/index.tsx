@@ -61,11 +61,11 @@ export function SegmentTemplates(): JSX.Element {
   };
 
   return (
-    <div className="mailpoet-templates-container">
+    <div className="mailpoet-main-container">
       <HideScreenOptions />
       <TopBarWithBeamer />
       <Flex
-        className="mailpoet-templates-heading"
+        className="mailpoet-heading"
         direction={['column', 'row'] as any} // eslint-disable-line @typescript-eslint/no-explicit-any -- typed as string but supports string[] and this is needed to make the component responsive
         gap="16px"
       >

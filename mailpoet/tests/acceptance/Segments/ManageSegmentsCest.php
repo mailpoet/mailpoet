@@ -425,7 +425,7 @@ class ManageSegmentsCest {
     $i->waitForElement('.mailpoet-templates-card-grid div:first-child');
     $i->click('.mailpoet-templates-card-grid div:first-child');
     $i->waitForText('Recently Subscribed');
-    $i->click('Back');
+    $i->click('#mailpoet-segments-back-button');
     $i->waitForText('Recently Subscribed');
     $i->seeNoJSErrors();
   }
