@@ -1,10 +1,12 @@
 import { useDispatch, useSelect } from '@wordpress/data';
-import { useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import { __ } from '@wordpress/i18n';
 import { Grid } from 'common/grid';
 import { Select } from 'common';
 import { ReactSelect } from 'common/form/react_select/react_select';
 import { MailPoet } from 'mailpoet';
-import { filter } from 'lodash/fp';
+import { filter, uniqBy } from 'lodash/fp';
+import { APIErrorsNotice } from '../../../../../notices/api_errors_notice';
 import {
   WooCommerceFormItem,
   FilterProps,
@@ -36,6 +38,106 @@ export function UsedCouponCodeFields({
     [filterIndex],
   );
   const { updateSegmentFilter } = useDispatch(storeName);
+  // isInitialized is used for displaying loading message before loading coupons
+  const [isInitialized, setIsInitialized] = useState<boolean>(false);
+  const [coupons, setCoupons] = useState<SelectOption[]>([]);
+  // additionalLoading state is used for displaying loading message when loading more coupons
+  const [additionalLoading, setAdditionalLoading] = useState<boolean>(false);
+  const [page, setPage] = useState<number>(1);
+  // hasMore state is used to prevent loading more coupons when there are no more coupons to load
+  const [hasMore, setHasMore] = useState<boolean>(true);
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [errors, setErrors] = useState([]);
+
+  const loadCoupons = useCallback(
+    (
+      isInitialLoading: boolean,
+      newPage: number,
+      newSearchQuery: string,
+      newHasMore: boolean,
+    ) => {
+      if (!newHasMore) {
+        return;
+      }
+
+      if (!isInitialLoading) {
+        setAdditionalLoading(true);
+      }
+
+      void MailPoet.Ajax.post({
+        api_version: MailPoet.apiVersion,
+        endpoint: 'coupons',
+        action: 'getCoupons',
+        data: {
+          page_number: newPage,
+          page_size: 1000,
+          include_coupon_ids: segment.coupon_code_ids,
+          search: newSearchQuery,
+        },
+      })
+        .then((response) => {
+          const { data } = response;
+          const loadedCoupons: SelectOption[] = data.map((coupon: Coupon) => ({
+            value: coupon.id.toString(),
+            label: coupon.text,
+          }));
+          const nextPage = newPage + 1;
+          if (loadedCoupons.length === 0) {
+            setHasMore(false);
+          } else {
+            setCoupons((prevOptions: SelectOption[]) =>
+              uniqBy(
+                (coupon) => coupon.value,
+                [...prevOptions, ...loadedCoupons],
+              ),
+            );
+            setPage(nextPage);
+          }
+          if (!isInitialLoading) {
+            setAdditionalLoading(false);
+          }
+        })
+        .fail((response: ErrorResponse) => {
+          setErrors(response.errors as { message: string }[]);
+        });
+    },
+    [segment.coupon_code_ids],
+  );
+
+  /**
+   * This function is called when user scrolls to the bottom of the select and should load more coupons.
+   * Loading coupons should not be called when there are no more coupons to load.
+   */
+  const handleMenuScrollToBottom = () => {
+    if (!additionalLoading && hasMore) {
+      loadCoupons(false, page, searchQuery, hasMore);
+    }
+  };
+
+  /**
+   * Function for handling search input change that can filter coupons by search query when
+   * there is more coupons than one page.
+   * @param inputValue
+   */
+  const handleInputChange = (inputValue: string): void => {
+    const oldSearchQuery = searchQuery; // OldSearchQuery is used to prevent loading coupons when search query is deleted
+    setSearchQuery(inputValue);
+    if (
+      !additionalLoading &&
+      ((hasMore && inputValue) || (oldSearchQuery && !inputValue))
+    ) {
+      setPage(1);
+      // Passing new values to loadCoupons to avoid using old values
+      loadCoupons(false, 1, inputValue, hasMore);
+    }
+  };
+
+  useEffect(() => {
+    if (!isInitialized) {
+      loadCoupons(true, page, searchQuery, hasMore);
+      setIsInitialized(true);
+    }
+  }, [isInitialized, page, searchQuery, loadCoupons, hasMore]);
 
   useEffect(() => {
     if (!Array.isArray(segment.coupon_code_ids)) {
@@ -46,59 +148,69 @@ export function UsedCouponCodeFields({
     }
   }, [updateSegmentFilter, segment, filterIndex]);
 
-  const coupons: Coupon[] = useSelect(
-    (select) => select(storeName).getCoupons(),
-    [],
-  );
-  const couponOptions = coupons.map((coupon) => ({
-    value: coupon.id,
-    label: coupon.name,
-  }));
-
   return (
     <>
-      <Grid.CenteredRow>
-        <Select
-          isMaxContentWidth
-          key="select-operator-used-coupon-codes"
-          value={segment.operator}
-          onChange={(e): void => {
-            void updateSegmentFilter({ operator: e.target.value }, filterIndex);
-          }}
-          automationId="select-operator-used-coupon-code"
-        >
-          <option value={AnyValueTypes.ANY}>{MailPoet.I18n.t('anyOf')}</option>
-          <option value={AnyValueTypes.ALL}>{MailPoet.I18n.t('allOf')}</option>
-          <option value={AnyValueTypes.NONE}>
-            {MailPoet.I18n.t('noneOf')}
-          </option>
-        </Select>
-        <ReactSelect
-          key="select-coupon-codes"
-          isFullWidth
-          isMulti
-          placeholder={MailPoet.I18n.t('selectWooCouponCodes')}
-          options={couponOptions}
-          value={filter((option) => {
-            if (!segment.coupon_code_ids) return undefined;
-            return segment.coupon_code_ids.indexOf(option.value) !== -1;
-          }, couponOptions)}
-          onChange={(options: SelectOption[]): void => {
-            void updateSegmentFilter(
-              {
-                coupon_code_ids: (options || []).map(
-                  (x: SelectOption) => x.value,
-                ),
-              },
-              filterIndex,
-            );
-          }}
-          automationId="select-shipping-methods"
-        />
-      </Grid.CenteredRow>
-      <Grid.CenteredRow>
-        <DaysPeriodField filterIndex={filterIndex} />
-      </Grid.CenteredRow>
+      {errors.length > 0 && <APIErrorsNotice errors={errors} />}
+      {isInitialized ? (
+        <>
+          <Grid.CenteredRow>
+            <Select
+              isMaxContentWidth
+              key="select-operator-used-coupon-codes"
+              value={segment.operator}
+              onChange={(e): void => {
+                void updateSegmentFilter(
+                  { operator: e.target.value },
+                  filterIndex,
+                );
+              }}
+              automationId="select-operator-used-coupon-code"
+            >
+              <option value={AnyValueTypes.ANY}>
+                {MailPoet.I18n.t('anyOf')}
+              </option>
+              <option value={AnyValueTypes.ALL}>
+                {MailPoet.I18n.t('allOf')}
+              </option>
+              <option value={AnyValueTypes.NONE}>
+                {MailPoet.I18n.t('noneOf')}
+              </option>
+            </Select>
+            <ReactSelect
+              key="select-coupon-codes"
+              isFullWidth
+              isMulti
+              placeholder={MailPoet.I18n.t('selectWooCouponCodes')}
+              options={coupons}
+              value={filter((option) => {
+                if (!segment.coupon_code_ids) return undefined;
+                return segment.coupon_code_ids.indexOf(option.value) !== -1;
+              }, coupons)}
+              onInputChange={handleInputChange}
+              onChange={(options: SelectOption[]): void => {
+                void updateSegmentFilter(
+                  {
+                    coupon_code_ids: (options || []).map(
+                      (x: SelectOption) => x.value,
+                    ),
+                  },
+                  filterIndex,
+                );
+              }}
+              isLoading={additionalLoading}
+              automationId="select-shipping-methods"
+              onMenuScrollToBottom={handleMenuScrollToBottom}
+            />
+          </Grid.CenteredRow>
+          <Grid.CenteredRow>
+            <DaysPeriodField filterIndex={filterIndex} />
+          </Grid.CenteredRow>
+        </>
+      ) : (
+        <Grid.CenteredRow>
+          {__('Loading coupon codes...', 'mailpoet')}
+        </Grid.CenteredRow>
+      )}
     </>
   );
 }
