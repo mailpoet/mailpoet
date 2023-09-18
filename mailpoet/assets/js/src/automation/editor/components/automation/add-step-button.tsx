@@ -6,9 +6,14 @@ import { AutomationCompositeContext } from './context';
 type Props = {
   onClick?: (element: HTMLButtonElement) => void;
   previousStepId: string;
+  index: number;
 };
 
-export function AddStepButton({ onClick, previousStepId }: Props): JSX.Element {
+export function AddStepButton({
+  onClick,
+  previousStepId,
+  index,
+}: Props): JSX.Element {
   const compositeState = useContext(AutomationCompositeContext);
   return (
     <CompositeItem
@@ -17,6 +22,7 @@ export function AddStepButton({ onClick, previousStepId }: Props): JSX.Element {
       className="mailpoet-automation-editor-add-step-button"
       focusable
       data-previous-step-id={previousStepId}
+      data-index={index}
       onClick={(event) => {
         event.stopPropagation();
         const button = (event.target as HTMLElement).closest('button');

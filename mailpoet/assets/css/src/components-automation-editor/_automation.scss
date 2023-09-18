@@ -5,12 +5,25 @@
 
 .mailpoet-automation-editor-automation-wrapper {
   display: grid;
+  justify-content: center;
+  overflow: hidden;
   padding: 50px 20px;
+}
+
+.mailpoet-automation-editor-automation-flow {
+  margin: auto;
+  width: max-content;
+}
+
+.mailpoet-automation-editor-automation-row {
+  display: grid;
+  grid-auto-flow: column;
 }
 
 .mailpoet-automation-editor-automation-end {
   background: #8c8f94;
   border-radius: 999999px;
+  display: block;
   fill: white;
   height: 18px;
   margin: 4px auto;

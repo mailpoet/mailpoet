@@ -30,7 +30,7 @@ export type StepMoreControlsType = Record<string, MoreControlType>;
 export type AddStepCallbackType = (item?: Item) => void;
 
 // mailpoet.automation.render_step
-export type RenderStepType = (step: Step) => JSX.Element;
+export type RenderStepType = (step: Step, index: number) => JSX.Element;
 
 // mailpoet.automation.step.more
 export type StepMoreType = JSX.Element | null;
@@ -39,7 +39,10 @@ export type StepMoreType = JSX.Element | null;
 export type RenderStepFooterType = JSX.Element | null;
 
 // mailpoet.automation.render_step_separator
-export type RenderStepSeparatorType = (step: Step) => JSX.Element;
+export type RenderStepSeparatorType = (
+  step: Step,
+  index: number,
+) => JSX.Element;
 
 // mailpoet.automation.editor.create_store
 export type EditorStoreConfigType = EditorStoreConfig;
