@@ -372,7 +372,7 @@ export type WooShippingMethod = {
 
 export type Coupon = {
   id: string;
-  name: string;
+  text: string;
 };
 
 export enum SegmentTemplateCategories {
