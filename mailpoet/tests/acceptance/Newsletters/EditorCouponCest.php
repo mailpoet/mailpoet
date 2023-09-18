@@ -104,6 +104,7 @@ class EditorCouponCest {
     $i->waitForElement($couponSettingsHeading);
     $i->wantTo('Select predefined coupon');
     $i->click(Locator::contains('button', 'All coupons'));
+    $i->waitForElementClickable(Locator::contains('label', $couponCode));
     $i->click(Locator::contains('label', $couponCode));
     // because click on close button doesn't work sometimes and causes flakiness we try to click it 3 times
     for ($j = 0; $j < 3; $j++) {
