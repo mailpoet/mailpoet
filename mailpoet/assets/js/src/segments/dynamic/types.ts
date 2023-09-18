@@ -261,7 +261,6 @@ export interface SegmentFormDataWindow extends Window {
   mailpoet_subscription_products: WindowSubscriptionProducts;
   mailpoet_product_categories: WindowProductCategories;
   mailpoet_woocommerce_countries: WindowWooCommerceCountries;
-  mailpoet_woocommerce_coupons: Coupon[];
   mailpoet_woocommerce_payment_methods: WooPaymentMethod[];
   mailpoet_woocommerce_shipping_methods: WooShippingMethod[];
   mailpoet_newsletters_list: WindowNewslettersList;
@@ -297,7 +296,6 @@ export interface StateType {
   tags: Tag[];
   signupForms: SignupForm[];
   automations: Automation[];
-  coupons: Coupon[];
   previousPage: string;
 }
 
