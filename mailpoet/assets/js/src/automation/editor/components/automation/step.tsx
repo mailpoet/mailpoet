@@ -5,7 +5,7 @@ import { useDispatch, useRegistry, useSelect } from '@wordpress/data';
 import { blockMeta } from '@wordpress/icons';
 import { __, _x } from '@wordpress/i18n';
 import { Hooks } from 'wp-js-hooks';
-import { AutomationCompositeContext } from './context';
+import { AutomationContext, AutomationCompositeContext } from './context';
 import { StepFilters } from './step-filters';
 import { StepMoreMenu } from './step-more-menu';
 import { Step as StepData } from './types';
@@ -43,10 +43,9 @@ const getUnknownStepType = (step: StepData): StepType => {
 type Props = {
   step: StepData;
   isSelected: boolean;
-  context: 'edit' | 'view';
 };
 
-export function Step({ step, isSelected, context }: Props): JSX.Element {
+export function Step({ step, isSelected }: Props): JSX.Element {
   const { stepType, error } = useSelect(
     (select) => ({
       stepType: select(storeName).getStepType(step.key),
@@ -55,6 +54,7 @@ export function Step({ step, isSelected, context }: Props): JSX.Element {
     [step],
   );
   const { openSidebar, selectStep } = useDispatch(storeName);
+  const { context } = useContext(AutomationContext);
   const compositeState = useContext(AutomationCompositeContext);
   const { batch } = useRegistry();
 
@@ -80,7 +80,7 @@ export function Step({ step, isSelected, context }: Props): JSX.Element {
 
   return (
     <div className="mailpoet-automation-editor-step-wrapper">
-      <StepMoreMenu step={step} context={context} />
+      <StepMoreMenu step={step} />
       <CompositeItem
         state={compositeState}
         role="treeitem"

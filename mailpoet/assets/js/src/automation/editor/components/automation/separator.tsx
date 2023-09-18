@@ -4,9 +4,10 @@ import { storeName } from '../../store';
 
 type Props = {
   previousStepId: string;
+  index: number;
 };
 
-export function Separator({ previousStepId }: Props): JSX.Element {
+export function Separator({ previousStepId, index }: Props): JSX.Element {
   const { setInserterPopover } = dispatch(storeName);
 
   return (
@@ -16,6 +17,7 @@ export function Separator({ previousStepId }: Props): JSX.Element {
           setInserterPopover({ anchor: button, type: 'steps' })
         }
         previousStepId={previousStepId}
+        index={index}
       />
     </div>
   );

@@ -1,7 +1,8 @@
 .mailpoet-automation-stats {
   display: grid;
+  gap: 8px;
   grid-auto-flow: column;
-  justify-content: space-between;
+  justify-content: center;
 }
 
 .mailpoet-automation-stats-item {

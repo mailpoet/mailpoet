@@ -3,16 +3,17 @@ import { __unstableCompositeItem as CompositeItem } from '@wordpress/components'
 import { Icon, plus } from '@wordpress/icons';
 import { __ } from '@wordpress/i18n';
 import { useDispatch } from '@wordpress/data';
-import { AutomationCompositeContext } from './context';
+import { AutomationContext, AutomationCompositeContext } from './context';
 import { Step } from './types';
 import { storeName } from '../../store';
 
 type Props = {
   step: Step;
-  context: 'edit' | 'view';
+  index: number;
 };
 
-export function AddTrigger({ step, context }: Props): JSX.Element {
+export function AddTrigger({ step, index }: Props): JSX.Element {
+  const { context } = useContext(AutomationContext);
   const compositeState = useContext(AutomationCompositeContext);
   const { setInserterPopover } = useDispatch(storeName);
 
@@ -22,6 +23,7 @@ export function AddTrigger({ step, context }: Props): JSX.Element {
       role="treeitem"
       className="mailpoet-automation-add-trigger"
       data-previous-step-id={step.id}
+      data-index={index}
       focusable
       onClick={
         context === 'edit'

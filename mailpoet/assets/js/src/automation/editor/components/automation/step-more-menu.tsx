@@ -1,18 +1,19 @@
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { DropdownMenu } from '@wordpress/components';
 import { moreVertical, trash } from '@wordpress/icons';
 import { __ } from '@wordpress/i18n';
 import { Hooks } from 'wp-js-hooks';
 import { PremiumModal } from 'common/premium-modal';
+import { AutomationContext } from './context';
 import { Step as StepData } from './types';
 import { StepMoreControlsType } from '../../../types/filters';
 
 type Props = {
   step: StepData;
-  context: 'edit' | 'view';
 };
 
-export function StepMoreMenu({ step, context }: Props): JSX.Element {
+export function StepMoreMenu({ step }: Props): JSX.Element {
+  const { context } = useContext(AutomationContext);
   const [showModal, setShowModal] = useState(false);
 
   const moreControls: StepMoreControlsType = Hooks.applyFilters(

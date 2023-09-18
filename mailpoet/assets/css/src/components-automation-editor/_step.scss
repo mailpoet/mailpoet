@@ -1,5 +1,5 @@
 .mailpoet-automation-editor-step-wrapper {
-  margin: auto;
+  margin: 0 auto;
   position: relative;
   width: 280px;
 }
@@ -27,10 +27,10 @@
   grid-gap: 12px;
   grid-template-columns: auto 1fr;
   line-height: 1.4;
-  margin: 4px auto;
+  margin: 4px;
   padding: 12px;
   text-align: left;
-  width: 100%;
+  width: calc(100% - 8px);
 
   &.is-unknown-step {
     background: #f0f0f1;
