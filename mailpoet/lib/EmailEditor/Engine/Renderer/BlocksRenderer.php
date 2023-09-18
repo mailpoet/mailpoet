@@ -2,18 +2,25 @@
 
 namespace MailPoet\EmailEditor\Engine\Renderer;
 
+use MailPoet\EmailEditor\Engine\StylesController;
+
 class BlocksRenderer {
 
   /** @var BlocksRegistry */
   private $blockRenderersRegistry;
 
+  /** @var StylesController */
+  private $stylesController;
+
   /** @var bool */
   private $blocksInitialized = false;
 
   public function __construct(
-    BlocksRegistry $blockRenderersRegistry
+    BlocksRegistry $blockRenderersRegistry,
+    StylesController $stylesController
   ) {
     $this->blockRenderersRegistry = $blockRenderersRegistry;
+    $this->stylesController = $stylesController;
   }
 
   public function render(array $parsedBlocks): string {
@@ -28,7 +35,7 @@ class BlocksRenderer {
       if (!$blockRenderer) {
         continue;
       }
-      $content .= $blockRenderer->render($parsedBlock, $this);
+      $content .= $blockRenderer->render($parsedBlock, $this, $this->stylesController);
     }
     return $content;
   }
