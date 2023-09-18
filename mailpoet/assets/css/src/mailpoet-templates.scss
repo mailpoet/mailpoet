@@ -1,43 +1,6 @@
 @import '../../../node_modules/@woocommerce/components/build-style/style';
 @import 'settings/colors';
 
-.mailpoet-templates-container {
-  display: flex;
-  flex-direction: column;
-  gap: 26px;
-  margin: auto;
-  max-width: 1072px;
-}
-
-.mailpoet-templates-heading {
-  align-items: center;
-  align-self: stretch;
-  display: flex;
-  justify-content: space-between;
-  padding: 16px 0;
-
-  h1.wp-heading-inline {
-    align-items: center;
-    display: flex;
-    padding: 4px 0;
-  }
-
-  .components-search-control {
-    display: none;
-    width: 180px;
-  }
-
-  .components-base-control__field {
-    margin: 0;
-  }
-
-  .components-search-control
-    input[type='search'].components-search-control__input {
-    background: $color-white;
-    height: 36px;
-  }
-}
-
 .components-tab-panel__tabs {
   border-bottom: 1px solid $color-poet-gray-dividers;
 
@@ -132,4 +95,21 @@
 
 .mailpoet-templates-footer {
   text-align: center;
+}
+
+.mailpoet-heading {
+  .components-search-control {
+    display: none;
+    width: 180px;
+  }
+
+  .components-base-control__field {
+    margin: 0;
+  }
+
+  .components-search-control
+    input[type='search'].components-search-control__input {
+    background: $color-white;
+    height: 36px;
+  }
 }

@@ -1,13 +1,14 @@
 import { useEffect } from 'react';
+import { Button, Flex, FlexBlock } from '@wordpress/components';
 import { useDispatch, useSelect } from '@wordpress/data';
-import { Link, useRouteMatch } from 'react-router-dom';
+import { __ } from '@wordpress/i18n';
+import { chevronLeft } from '@wordpress/icons';
 
-import { MailPoet } from 'mailpoet';
-import { Background } from 'common/background/background';
-import { Heading } from 'common/typography/heading/heading';
+import { useRouteMatch } from 'react-router-dom';
+
 import { HideScreenOptions } from 'common/hide-screen-options/hide-screen-options';
+import { TopBarWithBeamer } from 'common/top-bar/top-bar';
 import { Form } from './form';
-
 import { storeName } from './store';
 
 export function Editor(): JSX.Element {
@@ -31,22 +32,32 @@ export function Editor(): JSX.Element {
     match.params.id === undefined || Number.isNaN(Number(match.params.id));
 
   return (
-    <>
-      <Background color="#fff" />
+    <div className="mailpoet-main-container">
+      <TopBarWithBeamer />
       <HideScreenOptions />
 
-      <Heading level={1} className="mailpoet-title">
-        <span>{MailPoet.I18n.t('formPageTitle')}</span>
-        <Link
-          className="mailpoet-button button button-secondary button-small"
-          to={returnPage}
-        >
-          {MailPoet.I18n.t('backToList')}
-        </Link>
-      </Heading>
+      <Flex
+        className="mailpoet-heading"
+        direction={['column', 'row'] as any} // eslint-disable-line @typescript-eslint/no-explicit-any -- typed as string but supports string[] and this is needed to make the component responsive
+        gap="16px"
+      >
+        <FlexBlock>
+          <h1 className="wp-heading-inline">
+            <Button
+              id="mailpoet-segments-back-button"
+              icon={chevronLeft}
+              href={`#${returnPage}`}
+              label={__('Return to previous page', 'mailpoet')}
+            />
+            {match.params.id
+              ? __('Edit segment', 'mailpoet')
+              : __('New segment', 'mailpoet')}
+          </h1>
+        </FlexBlock>
+      </Flex>
 
       <Form isNewSegment={isNewSegment} />
-    </>
+    </div>
   );
 }
 Editor.displayName = 'SegmentEditor';
