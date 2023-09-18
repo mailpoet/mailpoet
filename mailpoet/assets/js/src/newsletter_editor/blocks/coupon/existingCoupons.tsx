@@ -13,7 +13,7 @@ import { uniqBy } from 'lodash';
 import { MailPoet } from '../../../mailpoet';
 import { GetValueCallback, SetValueCallback } from './types';
 
-const COUPONS_PER_PAGE = 20;
+const COUPONS_PER_PAGE = 1000;
 
 export type Coupon = {
   id: number;
@@ -84,7 +84,7 @@ class ExistingCoupons extends Component<Props, State> {
         page_number: this.state.pageNumber,
         discount_type: this.state.couponFilterDiscountType,
         search: this.state.couponSearch,
-        include_coupon_id: this.state.couponId,
+        include_coupon_ids: [this.state.couponId],
       },
     })
       .then((response) => {

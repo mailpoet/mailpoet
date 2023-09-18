@@ -9,7 +9,7 @@ use MailPoet\WooCommerce\Helper;
 use MailPoet\WP\Functions as WPFunctions;
 
 class Coupons extends APIEndpoint {
-  public const DEFAULT_PAGE_SIZE = 10;
+  public const DEFAULT_PAGE_SIZE = 100;
 
   /** @var Helper  */
   public $helper;
@@ -31,18 +31,17 @@ class Coupons extends APIEndpoint {
 
   public function getCoupons(array $data = []): SuccessResponse {
     $pageSize = $data['page_size'] ?? self::DEFAULT_PAGE_SIZE;
-    $pageNumber = $data['page_number'] ?? 0;
+    $pageNumber = $data['page_number'] ?? 1;
     $discountType = $data['discount_type'] ?? null;
     $search = $data['search'] ?? null;
-    $includeCouponId = $data['include_coupon_id'] ?? null;
-
+    $includeCouponIds = $data['include_coupon_ids'] ?? [];
     return $this->successResponse(
       $this->formatCoupons($this->helper->getCouponList(
         (int)$pageSize,
         (int)$pageNumber,
         $discountType,
         $search,
-        (int)$includeCouponId
+        $includeCouponIds
       ))
     );
   }
