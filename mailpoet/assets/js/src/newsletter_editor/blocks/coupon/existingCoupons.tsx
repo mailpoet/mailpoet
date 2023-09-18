@@ -9,7 +9,7 @@ import {
 } from '@wordpress/components';
 import { Component } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
-import { uniqBy } from 'lodash';
+import { uniqBy, debounce } from 'lodash';
 import { MailPoet } from '../../../mailpoet';
 import { GetValueCallback, SetValueCallback } from './types';
 
@@ -46,6 +46,10 @@ class ExistingCoupons extends Component<Props, State> {
 
   private readonly setValueCallback: SetValueCallback;
 
+  loadCouponsDebounced = debounce(() => {
+    this.loadCoupons();
+  }, 300);
+
   constructor(props: Props) {
     super(props);
     this.getValueCallback = props.getValueCallback;
@@ -72,6 +76,10 @@ class ExistingCoupons extends Component<Props, State> {
   componentDidMount() {
     this.loadCoupons();
   }
+
+  handleSearchInputChange = (couponSearch: string) => {
+    this.setState({ couponSearch }, () => this.loadCouponsDebounced());
+  };
 
   private fetchCoupons(resetCoupons: boolean) {
     const loadingKey = resetCoupons ? 'loadingInitial' : 'loadingMore';
@@ -158,9 +166,7 @@ class ExistingCoupons extends Component<Props, State> {
             <PanelRow>
               <SearchControl
                 value={this.state.couponSearch}
-                onChange={(couponSearch): void => {
-                  this.setState({ couponSearch }, () => this.loadCoupons());
-                }}
+                onChange={this.handleSearchInputChange}
               />
             </PanelRow>
             <PanelRow>

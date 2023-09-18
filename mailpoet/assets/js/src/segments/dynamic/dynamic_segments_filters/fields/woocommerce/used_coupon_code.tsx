@@ -5,7 +5,7 @@ import { Grid } from 'common/grid';
 import { Select } from 'common';
 import { ReactSelect } from 'common/form/react_select/react_select';
 import { MailPoet } from 'mailpoet';
-import { filter, uniqBy } from 'lodash/fp';
+import { filter, uniqBy, debounce } from 'lodash/fp';
 import { APIErrorsNotice } from '../../../../../notices/api_errors_notice';
 import {
   WooCommerceFormItem,
@@ -114,12 +114,8 @@ export function UsedCouponCodeFields({
     }
   };
 
-  /**
-   * Function for handling search input change that can filter coupons by search query when
-   * there is more coupons than one page.
-   * @param inputValue
-   */
-  const handleInputChange = (inputValue: string): void => {
+  // Define a debounced version of handleInputChange using lodash/fp
+  const debouncedHandleInputChange = debounce(300, (inputValue: string) => {
     const oldSearchQuery = searchQuery; // OldSearchQuery is used to prevent loading coupons when search query is deleted
     setSearchQuery(inputValue);
     if (
@@ -130,6 +126,15 @@ export function UsedCouponCodeFields({
       // Passing new values to loadCoupons to avoid using old values
       loadCoupons(false, 1, inputValue, hasMore);
     }
+  });
+
+  /**
+   * Function for handling search input change that can filter coupons by search query when
+   * there is more coupons than one page.
+   * @param inputValue
+   */
+  const handleInputChange = (inputValue: string): void => {
+    debouncedHandleInputChange(inputValue);
   };
 
   useEffect(() => {
