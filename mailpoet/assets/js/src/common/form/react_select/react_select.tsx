@@ -1,6 +1,11 @@
+import { Spinner } from '@wordpress/components';
 import { CSSProperties, ReactNode } from 'react';
 import classnames from 'classnames';
-import Select, { OptionProps, Props as ReactSelectProps } from 'react-select';
+import Select, {
+  OptionProps,
+  Props as ReactSelectProps,
+  components,
+} from 'react-select';
 
 export type Props = ReactSelectProps & {
   dimension?: 'small';
@@ -8,6 +13,7 @@ export type Props = ReactSelectProps & {
   isFullWidth?: boolean;
   iconStart?: JSX.Element;
   automationId?: string;
+  isLoadingMore?: boolean;
 };
 
 type LabelRendererProps = {
@@ -97,11 +103,20 @@ function MultiValueLabel(props: MultiValueLabelProps) {
   );
 }
 
+function LoadingIndicator() {
+  return (
+    <div className="mailpoet-form-react-select__option mailpoet_centered">
+      <Spinner />
+    </div>
+  );
+}
+
 export function ReactSelect({
   dimension,
   isFullWidth,
   iconStart,
   automationId,
+  isLoadingMore,
   ...props
 }: Props) {
   return (
@@ -117,7 +132,17 @@ export function ReactSelect({
       <Select
         className="mailpoet-form-react-select"
         classNamePrefix="mailpoet-form-react-select"
-        components={{ Option, SingleValue, MultiValueLabel }}
+        components={{
+          Option,
+          SingleValue,
+          MultiValueLabel,
+          MenuList: (menuProps) => (
+            <components.MenuList {...menuProps}>
+              {menuProps.children}
+              {isLoadingMore && <LoadingIndicator />}
+            </components.MenuList>
+          ),
+        }}
         {...props}
       />
     </div>

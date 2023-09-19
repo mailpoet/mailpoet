@@ -185,6 +185,7 @@ export function UsedCouponCodeFields({
               key="select-coupon-codes"
               isFullWidth
               isMulti
+              isLoadingMore={additionalLoading}
               placeholder={MailPoet.I18n.t('selectWooCouponCodes')}
               options={coupons}
               value={filter((option) => {
@@ -202,7 +203,6 @@ export function UsedCouponCodeFields({
                   filterIndex,
                 );
               }}
-              isLoading={additionalLoading}
               automationId="select-shipping-methods"
               onMenuScrollToBottom={handleMenuScrollToBottom}
             />
