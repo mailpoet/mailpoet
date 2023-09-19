@@ -10,7 +10,7 @@ import { store as editorStore } from '@wordpress/editor';
 import { __ } from '@wordpress/i18n';
 import { Icon, help } from '@wordpress/icons';
 import ReactStringReplace from 'react-string-replace';
-import { MailPoetEmailData } from '../types';
+import { MailPoetEmailData } from '../../types';
 
 export function DetailsPanel() {
   const mailpoetData = useSelect(
