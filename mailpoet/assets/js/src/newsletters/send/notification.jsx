@@ -4,7 +4,7 @@ import { NotificationScheduling } from 'newsletters/types/notification/schedulin
 import { SenderField } from 'newsletters/send/sender_address_field.jsx';
 import { GATrackingField } from 'newsletters/send/ga_tracking';
 import { withBoundary } from 'common';
-import { SendToField } from './send_to_field';
+import { SendToFieldWithCount } from './send_to_field';
 
 let fields = [
   {
@@ -59,7 +59,7 @@ let fields = [
     type: 'reactComponent',
     component: NotificationScheduling,
   },
-  SendToField,
+  SendToFieldWithCount,
   {
     name: 'sender',
     label: __('Sender', 'mailpoet'),
