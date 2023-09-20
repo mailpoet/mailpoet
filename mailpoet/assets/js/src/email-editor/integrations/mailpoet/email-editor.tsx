@@ -2,7 +2,7 @@ import { registerPlugin } from '@wordpress/plugins';
 import { useSelect, select as directSelect } from '@wordpress/data';
 import { store as coreStore } from '@wordpress/core-data';
 import { store as editorStore } from '@wordpress/editor';
-import { NextButtonSlot } from 'email-editor/engine/components/next-button-slot';
+import { HeaderButtonSlot } from 'email-editor/engine/components/header-button-slot';
 import { LayoutStyles } from 'email-editor/engine/components/layout-styles';
 import { useDisableWelcomeGuide } from 'email-editor/engine/hooks';
 import { NextButton } from './components/next-button';
@@ -32,9 +32,9 @@ function Editor() {
   return (
     <>
       <LayoutStyles />
-      <NextButtonSlot>
+      <HeaderButtonSlot>
         <NextButton newsletterId={mailpoetData?.id ?? null} />
-      </NextButtonSlot>
+      </HeaderButtonSlot>
       <SettingsSidebar />
     </>
   );
