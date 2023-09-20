@@ -1,14 +1,11 @@
 import { Fragment, FunctionComponent, useState } from 'react';
+import { Button } from '@wordpress/components';
 import { useDispatch, useSelect } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
 
 import { Hooks } from 'wp-js-hooks';
-import { Button } from 'common/button/button';
-import { plusIcon } from 'common/button/icon/plus';
-import { Heading } from 'common/typography/heading/heading';
 import { Input } from 'common/form/input/input';
 import { ReactSelect } from 'common/form/react-select/react-select';
-import { Textarea } from 'common/form/textarea/textarea';
 import { Grid } from 'common/grid';
 import { APIErrorsNotice } from 'notices/api-errors-notice';
 import { SubscribersCounter } from './subscribers-counter';
@@ -25,6 +22,8 @@ import {
   Segment,
   SubscriberCount,
 } from './types';
+import { FieldsSection } from '../../common/fields_section/fields_section';
+import { FieldWrapper } from '../../common/fields_section/field_wrapper';
 
 interface Props {
   isNewSegment: boolean;
@@ -82,130 +81,136 @@ export function Form({ isNewSegment }: Props): JSX.Element {
   );
 
   return (
-    <form className="mailpoet_form">
-      {errors.length > 0 && (
-        <APIErrorsNotice errors={errors.map((error) => ({ message: error }))} />
-      )}
-      <div className="mailpoet-form-grid">
-        <div className="mailpoet-form-field-name form-field-row-name mailpoet-segments-name-section">
-          <Heading level={4}>
-            <label htmlFor="field_name">{__('Name', 'mailpoet')}</label>
-          </Heading>
-          <div className="mailpoet-form-field">
+    <div className="mailpoet-form-container">
+      <form>
+        {errors.length > 0 && (
+          <APIErrorsNotice
+            errors={errors.map((error) => ({ message: error }))}
+          />
+        )}
+        <FieldsSection
+          title={__('Details', 'mailpoet')}
+          description={__('What do you want to call this segment?', 'mailpoet')}
+        >
+          <FieldWrapper slug="name" title={__('Name', 'mailpoet')}>
             <Input
               isFullWidth
               type="text"
               name="name"
               id="field_name"
-              defaultValue={segment.name}
+              value={segment.name || ''}
               data-automation-id="input-name"
               onChange={(e): void => {
                 void updateSegment({ name: e.target.value });
               }}
+              placeholder={__('Enter name', 'mailpoet')}
             />
-          </div>
-        </div>
-        <div className="mailpoet-form-field-description form-field-row-description mailpoet-segments-description-section">
-          <Heading level={4}>
-            <label htmlFor="field_description">
-              {__('Description', 'mailpoet')}
-            </label>
-          </Heading>
-          <p className="mailpoet-form-description">
-            {__(
+          </FieldWrapper>
+          <FieldWrapper
+            slug="description"
+            title={__('Description', 'mailpoet')}
+            description={__(
               'This text box is for your own use and is never shown to your subscribers.',
               'mailpoet',
             )}
-          </p>
-          <div className="mailpoet-form-field">
-            <Textarea
+          >
+            <Input
               isFullWidth
               name="description"
               id="field_description"
-              value={segment.description}
+              value={segment.description || ''}
               data-automation-id="input-description"
               onChange={(e): void => {
                 void updateSegment({ description: e.target.value });
               }}
+              placeholder={__('Enter description', 'mailpoet')}
             />
-          </div>
-        </div>
-        <div className="mailpoet-segments-segments-section">
-          <Heading level={4}>
-            <label htmlFor="field_filters">{__('Segment', 'mailpoet')}</label>
-          </Heading>
-          <FiltersBefore />
-          {Array.isArray(filterRows) &&
-            filterRows.map((filterRow, index) => (
-              <Fragment key={filterRow.index}>
-                <Grid.ThreeColumns
-                  className="mailpoet-segments-grid"
-                  automationId={`filter-row-${index}`}
-                >
-                  <FilterBefore filterRows={filterRows} index={index} />
-                  <Grid.CenteredRow>
-                    <ReactSelect
-                      dimension="small"
-                      placeholder={__('Select action', 'mailpoet')}
-                      options={segmentFilters}
-                      value={filterRow.filterValue}
-                      onChange={(newValue: FilterValue): void => {
-                        void updateSegmentFilter(
-                          {
-                            segmentType: newValue.group,
-                            action: newValue.value,
-                          },
-                          index,
-                        );
-                      }}
-                      automationId="select-segment-action"
-                      isFullWidth
-                    />
-                  </Grid.CenteredRow>
-                  {filterRow.index !== undefined && (
-                    <FormFilterFields filterIndex={filterRow.index} />
-                  )}
-                </Grid.ThreeColumns>
-                <FilterAfter index={index} />
-              </Fragment>
-            ))}
-          <Button
-            type="button"
-            variant="tertiary"
-            iconStart={plusIcon}
-            onClick={(e): void => {
-              e.preventDefault();
-              addConditionAction(segment, updateSegment);
-            }}
-          >
-            {__('Add a condition', 'mailpoet')}
-          </Button>
-        </div>
+          </FieldWrapper>
+        </FieldsSection>
+
+        <FieldsSection
+          title={__('Conditions', 'mailpoet')}
+          description={__('Set your segment constraints', 'mailpoet')}
+        >
+          <FieldWrapper slug="conditions">
+            <div className="mailpoet-segments-segments-section">
+              <FiltersBefore />
+              {Array.isArray(filterRows) &&
+                filterRows.map((filterRow, index) => (
+                  <Fragment key={filterRow.index}>
+                    <Grid.ThreeColumns
+                      className="mailpoet-segments-grid"
+                      automationId={`filter-row-${index}`}
+                    >
+                      <FilterBefore filterRows={filterRows} index={index} />
+                      <Grid.CenteredRow>
+                        <ReactSelect
+                          dimension="small"
+                          placeholder={__('Select action', 'mailpoet')}
+                          options={segmentFilters}
+                          value={filterRow.filterValue}
+                          onChange={(newValue: FilterValue): void => {
+                            void updateSegmentFilter(
+                              {
+                                segmentType: newValue.group,
+                                action: newValue.value,
+                              },
+                              index,
+                            );
+                          }}
+                          automationId="select-segment-action"
+                          isFullWidth
+                        />
+                      </Grid.CenteredRow>
+                      {filterRow.index !== undefined && (
+                        <FormFilterFields filterIndex={filterRow.index} />
+                      )}
+                    </Grid.ThreeColumns>
+                    <FilterAfter index={index} />
+                  </Fragment>
+                ))}
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={(e): void => {
+                  e.preventDefault();
+                  addConditionAction(segment, updateSegment);
+                }}
+              >
+                {__('Add a condition', 'mailpoet')}
+              </Button>
+            </div>
+          </FieldWrapper>
+        </FieldsSection>
+
         {premiumBannerVisible && (
           <div className="mailpoet-grid-span-two-columns">
             <DynamicSegmentsPremiumBanner />
           </div>
         )}
-        <div className="mailpoet-segments-counter-section">
-          <SubscribersCounter />
-          <PrivacyProtectionNotice />
+        <div className="mailpoet-admin-fields-bottom">
+          <div className="mailpoet-segments-counter-section">
+            <SubscribersCounter />
+            <PrivacyProtectionNotice />
+          </div>
+          <div className="mailpoet-form-actions">
+            <Button
+              variant="primary"
+              type="submit"
+              onClick={(e): void => {
+                e.preventDefault();
+                void handleSave(isNewSegment);
+              }}
+              disabled={
+                !isFormValid(segment.filters) ||
+                subscriberCount.count === undefined
+              }
+            >
+              {__('Save', 'mailpoet')}
+            </Button>
+          </div>
         </div>
-        <div className="mailpoet-form-actions">
-          <Button
-            type="submit"
-            onClick={(e): void => {
-              e.preventDefault();
-              void handleSave(isNewSegment);
-            }}
-            isDisabled={
-              !isFormValid(segment.filters) ||
-              subscriberCount.count === undefined
-            }
-          >
-            {__('Save', 'mailpoet')}
-          </Button>
-        </div>
-      </div>
-    </form>
+      </form>
+    </div>
   );
 }

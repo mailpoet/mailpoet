@@ -145,7 +145,7 @@ body .components-modal__screen-overlay {
 .mailpoet-main-container {
   display: flex;
   flex-direction: column;
-  gap: 26px;
+  gap: 24px;
   margin: auto;
   max-width: 1072px;
 }
@@ -155,11 +155,71 @@ body .components-modal__screen-overlay {
   align-self: stretch;
   display: flex;
   justify-content: space-between;
-  padding: 16px 0;
+  padding-top: 16px;
 
   h1.wp-heading-inline {
     align-items: center !important;
     display: flex !important;
     padding: 4px 0;
+
+    .components-button.has-icon {
+      min-width: auto;
+      padding: 6px 6px 6px 0;
+    }
   }
+}
+
+.mailpoet-admin-fields {
+  column-gap: 24px;
+  display: grid;
+  grid-template-columns: 328px auto;
+
+  @include respond-to(small-screen) {
+    grid-template-columns: 1fr;
+  }
+
+  .components-card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    padding: 40px;
+  }
+}
+
+.mailpoet-admin-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.mailpoet-admin-field-description {
+  color: $color-wordpress-grey-dark;
+  font-size: 12px;
+}
+
+.mailpoet-form-container {
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+
+    .mailpoet-form-input input {
+      font-size: 13px;
+    }
+
+    p {
+      margin: 0;
+    }
+  }
+}
+
+.mailpoet-admin-fields-title p {
+  color: $color-wordpress-grey-dark
+}
+
+.mailpoet-admin-fields-bottom {
+  align-items: center;
+  display: flex;
+  gap: 16px;
+  justify-content: flex-end;
 }
