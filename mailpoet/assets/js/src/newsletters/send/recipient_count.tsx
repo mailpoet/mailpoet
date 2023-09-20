@@ -28,11 +28,22 @@ export function RecipientCount(props: RecipientCountProps) {
 
   const configBeforeRef = useRef('');
 
+  const apiResponseCache = useRef({});
+
   useEffect(() => {
-    configBeforeRef.current = configString(segmentIds, filterSegmentId);
+    const currentConfigString = configString(segmentIds, filterSegmentId);
+    configBeforeRef.current = currentConfigString;
 
     if (segmentIds.length < 1) {
       setRecipientCount(0);
+      setIsLoading(false);
+      return;
+    }
+
+    if (currentConfigString in apiResponseCache.current) {
+      setRecipientCount(
+        apiResponseCache.current[currentConfigString] as number,
+      );
       setIsLoading(false);
       return;
     }
@@ -48,9 +59,12 @@ export function RecipientCount(props: RecipientCountProps) {
       },
     })
       .done((response) => {
+        const calculatedCount = response.data.count;
+        apiResponseCache.current[currentConfigString] =
+          calculatedCount as number;
         const configAfter = configString(segmentIds, filterSegmentId);
         if (configBeforeRef.current === configAfter) {
-          setRecipientCount(response.data.count as number);
+          setRecipientCount(calculatedCount as number);
         }
       })
       .always(() => setIsLoading(false));
