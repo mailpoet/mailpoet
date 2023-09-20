@@ -97,6 +97,7 @@ export async function subscribersTrashingRestoring() {
     sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
   } finally {
     page.close();
+    browser.context().close();
   }
 }
 

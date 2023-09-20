@@ -59,6 +59,7 @@ export async function newsletterListing() {
     sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
   } finally {
     page.close();
+    browser.context().close();
   }
 }
 

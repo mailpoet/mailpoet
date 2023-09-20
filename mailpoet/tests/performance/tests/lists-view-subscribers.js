@@ -75,6 +75,7 @@ export async function listsViewSubscribers() {
     sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
   } finally {
     page.close();
+    browser.context().close();
   }
 }
 

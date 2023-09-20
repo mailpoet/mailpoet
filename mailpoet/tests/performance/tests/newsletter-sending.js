@@ -109,7 +109,7 @@ export async function newsletterSending() {
     sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
   } finally {
     page.close();
-    browser.close();
+    browser.context().close();
   }
 }
 

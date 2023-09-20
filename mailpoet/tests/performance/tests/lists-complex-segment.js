@@ -143,6 +143,7 @@ export async function listsComplexSegment() {
     sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
   } finally {
     page.close();
+    browser.context().close();
   }
 }
 
