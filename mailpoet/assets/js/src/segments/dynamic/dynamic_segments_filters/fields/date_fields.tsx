@@ -147,7 +147,7 @@ function DateFields({
           <Input
             key="input"
             type="number"
-            value={segment.value}
+            value={segment.value || ''}
             onChange={(e) => {
               void updateSegmentFilterFromEvent('value', filterIndex, e);
             }}
