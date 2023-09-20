@@ -86,6 +86,7 @@ export async function newsletterStatistics() {
     sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
   } finally {
     page.close();
+    browser.context().close();
   }
 }
 

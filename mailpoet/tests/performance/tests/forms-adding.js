@@ -86,6 +86,7 @@ export async function formsAdding() {
     sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
   } finally {
     page.close();
+    browser.context().close();
   }
 }
 

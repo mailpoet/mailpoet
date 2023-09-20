@@ -66,6 +66,7 @@ export async function settingsBasic() {
     sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
   } finally {
     page.close();
+    browser.context().close();
   }
 }
 

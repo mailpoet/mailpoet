@@ -63,7 +63,7 @@ let scenarios = {
       },
     },
     vus: 1,
-    iterations: 3,
+    iterations: 1,
     maxDuration: '30m',
     exec: 'nightly',
   },
