@@ -60,10 +60,10 @@ export function FilterSegment({
   const context = useContext(SendContext);
 
   useEffect(() => {
-    if (!premiumFeaturesAvailable) {
+    if (!premiumFeaturesAvailable && currentFilterSegmentId !== '') {
       updateFilterSegmentId('');
     }
-  }, [premiumFeaturesAvailable, updateFilterSegmentId]);
+  }, [premiumFeaturesAvailable, updateFilterSegmentId, currentFilterSegmentId]);
 
   const handleToggle = useCallback(
     (checked: boolean) => {
