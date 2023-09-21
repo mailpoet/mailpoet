@@ -71,8 +71,8 @@ class CreateSegmentEmailAbsoluteCountCest {
     $i->waitForText($segmentTitle);
     $i->clickItemRowActionByItemName($segmentTitle, 'Edit');
     $i->waitForElementVisible('[data-automation-id="segment-number-of-opens"]');
-    $i->seeInField('[data-automation-id="segment-number-of-opens"]', 2);
-    $i->seeInField('[data-automation-id="segment-number-of-days"]', 3);
+    $i->seeInField('[data-automation-id="segment-number-of-opens"]', '2');
+    $i->seeInField('[data-automation-id="segment-number-of-days"]', '3');
     $i->waitForText('This segment has 2 subscribers.');
     $i->seeNoJSErrors();
 
