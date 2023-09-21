@@ -1,9 +1,11 @@
 import { MailPoet } from 'mailpoet';
 import { Button } from 'common/button/button';
+import { AutomationsInfoNotice } from 'notices/automations_info_notice';
 
 export function KnowledgeBase() {
   return (
     <>
+      <AutomationsInfoNotice />
       <p>{MailPoet.I18n.t('knowledgeBaseIntro')}</p>
       <ul className="mailpoet-text-links">
         <li>
