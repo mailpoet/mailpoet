@@ -46,3 +46,10 @@
   background: $color-input-error;
   color: $color-white;
 }
+
+.mailpoet-segments-conditions-bottom {
+  align-items: center;
+  display: flex;
+  gap: 16px;
+  padding-top: 24px;
+}

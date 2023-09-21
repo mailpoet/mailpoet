@@ -12,7 +12,6 @@ import { SubscribersCounter } from './subscribers-counter';
 import { FormFilterFields } from './form-filter-fields';
 import { isFormValid } from './validator';
 import { PrivacyProtectionNotice } from './privacy-protection-notice';
-import { DynamicSegmentsPremiumBanner } from './premium-banner';
 import { storeName } from './store';
 
 import {
@@ -24,6 +23,9 @@ import {
 } from './types';
 import { FieldsSection } from '../../common/fields_section/fields_section';
 import { FieldWrapper } from '../../common/fields_section/field_wrapper';
+import { MailPoet } from '../../mailpoet';
+import { LockedBadge } from '../../common/premium-modal/locked-badge';
+import { PremiumModal } from '../../common/premium-modal';
 
 interface Props {
   isNewSegment: boolean;
@@ -71,13 +73,18 @@ export function Form({ isNewSegment }: Props): JSX.Element {
   const { updateSegment, updateSegmentFilter, handleSave } =
     useDispatch(storeName);
 
-  const [premiumBannerVisible, setPremiumBannerVisible] = useState(false);
-  const showPremiumBanner = (): void => {
-    setPremiumBannerVisible(true);
+  const [showPremiumModal, setShowPremiumModal] = useState(false);
+  const showPremiumModalOnClick = (): void => {
+    setShowPremiumModal(true);
   };
+
+  const closePremiumModal = (): void => {
+    setShowPremiumModal(false);
+  };
+
   const addConditionAction = Hooks.applyFilters(
     'mailpoet_dynamic_segments_form_add_condition_action',
-    showPremiumBanner,
+    showPremiumModalOnClick,
   );
 
   return (
@@ -169,25 +176,37 @@ export function Form({ isNewSegment }: Props): JSX.Element {
                     <FilterAfter index={index} />
                   </Fragment>
                 ))}
-              <Button
-                type="button"
-                variant="secondary"
-                onClick={(e): void => {
-                  e.preventDefault();
-                  addConditionAction(segment, updateSegment);
-                }}
-              >
-                {__('Add a condition', 'mailpoet')}
-              </Button>
+              <div className="mailpoet-segments-conditions-bottom">
+                <Button
+                  type="button"
+                  variant="secondary"
+                  onClick={(e): void => {
+                    e.preventDefault();
+                    addConditionAction(segment, updateSegment);
+                  }}
+                >
+                  {__('Add a condition', 'mailpoet')}
+                </Button>
+
+                {(!MailPoet.premiumActive ||
+                  !MailPoet.hasValidPremiumKey ||
+                  MailPoet.subscribersLimitReached) && (
+                  <LockedBadge text={__('UPGRADE', 'mailpoet')} />
+                )}
+
+                {showPremiumModal && (
+                  <PremiumModal onRequestClose={closePremiumModal}>
+                    {__(
+                      'Multiple filters per segment are not available in the free version of the MailPoet plugin.',
+                      'mailpoet',
+                    )}
+                  </PremiumModal>
+                )}
+              </div>
             </div>
           </FieldWrapper>
         </FieldsSection>
 
-        {premiumBannerVisible && (
-          <div className="mailpoet-grid-span-two-columns">
-            <DynamicSegmentsPremiumBanner />
-          </div>
-        )}
         <div className="mailpoet-admin-fields-bottom">
           <div className="mailpoet-segments-counter-section">
             <SubscribersCounter />
