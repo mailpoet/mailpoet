@@ -195,18 +195,42 @@ class NewsletterEntityTest extends \MailPoetTest {
     expect($newsletter->getFilterSegmentId())->equals(2);
   }
 
-  private function createNewsletter(): NewsletterEntity {
+  public function testItInheritsFilterSegmentIdFromParent(): void {
+    $optionField = $this->createOptionField(NewsletterOptionFieldEntity::NAME_FILTER_SEGMENT_ID, NewsletterEntity::TYPE_NOTIFICATION);
+    $notificationNewsletter = $this->createNewsletter(NewsletterEntity::TYPE_NOTIFICATION);
+    expect($notificationNewsletter->getFilterSegmentId())->null();
+
+    $newsletterOption = new NewsletterOptionEntity($notificationNewsletter, $optionField);
+    $newsletterOption->setValue('2');
+
+    $this->entityManager->persist($newsletterOption);
+    $this->entityManager->flush();
+
+    $this->entityManager->refresh($notificationNewsletter);
+    expect($notificationNewsletter->getFilterSegmentId())->equals(2);
+
+    $notificationHistoryNewsletter = $this->createNewsletter(NewsletterEntity::TYPE_NOTIFICATION_HISTORY);
+    expect($notificationHistoryNewsletter->getFilterSegmentId())->null();
+
+    $notificationHistoryNewsletter->setParent($notificationNewsletter);
+    $this->entityManager->persist($notificationHistoryNewsletter);
+    $this->entityManager->flush();
+    $this->entityManager->refresh($notificationHistoryNewsletter);
+    expect($notificationHistoryNewsletter->getFilterSegmentId())->equals(2);
+  }
+
+  private function createNewsletter(string $type = NewsletterEntity::TYPE_STANDARD): NewsletterEntity {
     $newsletter = new NewsletterEntity();
-    $newsletter->setType(NewsletterEntity::TYPE_STANDARD);
+    $newsletter->setType($type);
     $newsletter->setSubject('Subject');
     $this->entityManager->persist($newsletter);
     return $newsletter;
   }
 
-  private function createOptionField(string $name): NewsletterOptionFieldEntity {
+  private function createOptionField(string $name, string $type = NewsletterEntity::TYPE_STANDARD): NewsletterOptionFieldEntity {
     $newsletterOptionField = new NewsletterOptionFieldEntity();
     $newsletterOptionField->setName($name);
-    $newsletterOptionField->setNewsletterType(NewsletterEntity::TYPE_STANDARD);
+    $newsletterOptionField->setNewsletterType($type);
     $this->entityManager->persist($newsletterOptionField);
     return $newsletterOptionField;
   }
