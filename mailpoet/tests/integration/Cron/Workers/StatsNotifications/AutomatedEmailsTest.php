@@ -118,15 +118,13 @@ class AutomatedEmailsTest extends \MailPoetTest {
 
   public function testItRenders() {
     $this->createNewsletterClicksAndOpens();
-    $this->renderer->expects($this->exactly(2))
-      ->method('render');
-    $this->renderer->expects($this->at(0))
-      ->method('render')
-      ->with($this->equalTo('emails/statsNotificationAutomatedEmails.html'));
 
-    $this->renderer->expects($this->at(1))
+    $this->renderer->expects($this->exactly(2))
       ->method('render')
-      ->with($this->equalTo('emails/statsNotificationAutomatedEmails.txt'));
+      ->withConsecutive(
+        ['emails/statsNotificationAutomatedEmails.html'],
+        ['emails/statsNotificationAutomatedEmails.txt']
+      );
 
     $this->mailer->expects($this->once())
       ->method('send');

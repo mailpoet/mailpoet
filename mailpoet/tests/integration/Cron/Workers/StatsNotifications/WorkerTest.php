@@ -158,16 +158,13 @@ class WorkerTest extends \MailPoetTest {
   }
 
   public function testRendersTemplate() {
-    $this->renderer->expects($this->exactly(2))
-       ->method('render');
-    $this->renderer->expects($this->at(0))
+    $matcher = $this->exactly(2);
+    $this->renderer->expects($matcher)
       ->method('render')
-      ->with($this->equalTo('emails/statsNotification.html'));
-
-    $this->renderer->expects($this->at(1))
-      ->method('render')
-      ->with($this->equalTo('emails/statsNotification.txt'));
-
+      ->withConsecutive(
+        ['emails/statsNotification.html'],
+        ['emails/statsNotification.txt']
+      );
     $this->statsNotifications->process();
   }
 

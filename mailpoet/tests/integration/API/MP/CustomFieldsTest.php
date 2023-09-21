@@ -67,8 +67,8 @@ class CustomFieldsTest extends \MailPoetTest {
       'type' => 'text',
       'params' => [
         'required' => '1',
-        'label' => 'text custom field',
         'date_type' => 'year_month_day',
+        'label' => 'text custom field',
       ],
     ]);
     expect($response)->contains([

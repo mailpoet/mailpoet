@@ -73,19 +73,18 @@ class MenuTest extends \MailPoetTest {
 
     $wpMock = $this->createMock(WPFunctions::class);
     $wpMock->method('isPluginActive')->willReturn(true);
-    $wpMock->method('addSubmenuPage')->willReturn(true);
 
     $accessControlMock = $this->createMock(AccessControl::class);
     $accessControlMock->method('validatePermission')->willReturn(true);
 
-    $wpMock->expects($this->at(8))->method('addSubmenuPage')->with(
-      null,
-      $this->anything(),
-      $this->anything(),
-      $this->anything(),
-      Menu::AUTOMATIONS_PAGE_SLUG,
-      $this->anything()
-    );
+    $wpMock->expects($this->any())->method('addSubmenuPage')->withConsecutive(
+      [$this->anything(), $this->anything(), $this->anything(), $this->anything(), $this->anything(), $this->anything()],
+      [$this->anything(), $this->anything(), $this->anything(), $this->anything(), $this->anything(), $this->anything()],
+      [$this->anything(), $this->anything(), $this->anything(), $this->anything(), $this->anything(), $this->anything()],
+      [$this->anything(), $this->anything(), $this->anything(), $this->anything(), $this->anything(), $this->anything()],
+      [$this->anything(), $this->anything(), $this->anything(), $this->anything(), $this->anything(), $this->anything()],
+      [null, $this->anything(), $this->anything(), $this->anything(), Menu::AUTOMATIONS_PAGE_SLUG, $this->anything()]
+    )->willReturn(true);
 
     $menu = new Menu(
       $accessControlMock,
