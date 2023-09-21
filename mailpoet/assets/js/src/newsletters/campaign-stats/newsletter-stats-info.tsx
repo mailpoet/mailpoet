@@ -2,7 +2,7 @@ import { __ } from '@wordpress/i18n';
 import { MailPoet } from 'mailpoet';
 import { Heading } from 'common/typography/heading/heading';
 import { Grid } from 'common/grid';
-import { Button, SegmentTags } from 'common';
+import { Button, FilterSegmentTag, SegmentTags } from 'common';
 import { NewsletterType } from './newsletter-type';
 
 type Props = {
@@ -30,6 +30,7 @@ function NewsletterStatsInfo({ newsletter }: Props) {
             </span>
             {': '}
             <SegmentTags dimension="large" segments={newsletter.segments} />
+            <FilterSegmentTag newsletter={newsletter} dimension="large" />
           </div>
         )}
       </div>

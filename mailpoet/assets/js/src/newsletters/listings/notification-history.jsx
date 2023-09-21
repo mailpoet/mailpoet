@@ -12,7 +12,7 @@ import {
   checkCronStatus,
   checkMailerStatus,
 } from 'newsletters/listings/utils.jsx';
-import { SegmentTags } from 'common/tag/tags';
+import { FilterSegmentTag, SegmentTags } from 'common/tag/tags';
 import { withBoundary } from '../../common';
 
 const mailpoetTrackingEnabled = MailPoet.trackingConfig.emailTrackingEnabled;
@@ -155,6 +155,7 @@ const renderItem = (newsletter, actions, meta) => {
         data-colname={__('Lists', 'mailpoet')}
       >
         <SegmentTags segments={newsletter.segments} dimension="large" />
+        <FilterSegmentTag newsletter={newsletter} dimension="large" />
       </td>
       {mailpoetTrackingEnabled === true ? (
         <td

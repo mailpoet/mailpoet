@@ -1,7 +1,9 @@
-import { ReactNode } from 'react';
+import React, { ReactNode } from 'react';
 import { __ } from '@wordpress/i18n';
 import { Tag, TagVariant } from './tag';
 import { Tooltip } from '../tooltip/tooltip';
+import { NewsLetter } from '../newsletter';
+import { NewsletterType } from '../../newsletters/campaign_stats/newsletter_type';
 
 type SharedTagProps = {
   children?: ReactNode;
@@ -33,6 +35,10 @@ type SegmentTagsProps = SharedTagProps & {
   segments: Segment[];
 };
 
+type FilterSegmentTagProps = SharedTagProps & {
+  newsletter: NewsLetter | NewsletterType;
+};
+
 type SubscriberTag = {
   id: string;
   name: string;
@@ -60,16 +66,34 @@ function Tags({ children, tags, dimension, variant, isInverted }: TagProps) {
           </Tag>
         );
         if (!item.target) {
-          return tag;
+          if (!item.tooltip) {
+            return tag;
+          }
+          const randomId = Math.random().toString(36).substring(2, 15);
+          const tooltipId = `tag-tooltip-${randomId}`;
+          const tagWithTooltip = React.cloneElement(tag, {
+            'data-tip': true,
+            'data-for': tooltipId,
+          });
+
+          return (
+            <div key={randomId}>
+              <Tooltip id={tooltipId} place="top">
+                {item.tooltip}
+              </Tooltip>
+              {tagWithTooltip}
+            </div>
+          );
         }
 
         const randomId = Math.random().toString(36).substring(2, 15);
-        const tooltipId = `segment-tooltip-${randomId}`;
+        const tooltipId = `tag-tooltip-${randomId}`;
+
         return (
           <div key={randomId}>
             {item.tooltip && (
               <Tooltip id={tooltipId} place="top">
-                {__('View subscribers', 'mailpoet')}
+                {item.tooltip}
               </Tooltip>
             )}
             <a data-tip="" data-for={tooltipId} href={item.target}>
@@ -131,5 +155,46 @@ function SubscriberTags({
   );
 }
 
+function FilterSegmentTag({
+  children,
+  newsletter,
+  variant, // destructuring this out to ensure we use the filter segment variant
+  ...props
+}: FilterSegmentTagProps) {
+  if (newsletter.queue?.meta?.filterSegment?.name) {
+    const tagData = {
+      name: newsletter.queue?.meta?.filterSegment?.name,
+      tooltip: __('Segment filter', 'mailpoet'),
+    };
+    return (
+      <Tags tags={[tagData]} {...props} variant="filter_segment">
+        {children}
+      </Tags>
+    );
+  }
+
+  // options aren't available in the NewsletterType (premium stats), but that's ok because sent
+  // newsletters have a queue
+  if ('options' in newsletter && newsletter.options?.filterSegmentId) {
+    const segment = window.mailpoet_segments.find(
+      (windowSegment) =>
+        windowSegment.id === newsletter.options?.filterSegmentId,
+    );
+    if (segment) {
+      const tagData = {
+        name: segment.name,
+        tooltip: __('Segment filter', 'mailpoet'),
+      };
+      return (
+        <Tags tags={[tagData]} {...props} variant="filter_segment">
+          {children}
+        </Tags>
+      );
+    }
+  }
+
+  return null;
+}
+
 SubscriberTags.displayName = 'SubscriberTags';
-export { SegmentTags, StringTags, SubscriberTags };
+export { SegmentTags, StringTags, SubscriberTags, FilterSegmentTag };

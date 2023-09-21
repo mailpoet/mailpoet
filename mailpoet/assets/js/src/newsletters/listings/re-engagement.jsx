@@ -1,12 +1,12 @@
 import classnames from 'classnames';
 import { __, _x } from '@wordpress/i18n';
-import { Component } from 'react';
+import { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { Link, withRouter } from 'react-router-dom';
 import ReactStringReplace from 'react-string-replace';
 
 import { Toggle } from 'common/form/toggle/toggle';
-import { SegmentTags } from 'common/tag/tags';
+import { FilterSegmentTag, SegmentTags } from 'common/tag/tags';
 import { ScheduledIcon } from 'common/listings/newsletter-status';
 import { Listing } from 'listing/listing.jsx';
 import { MailPoet } from 'mailpoet';
@@ -246,7 +246,15 @@ class NewsletterListReEngagementComponent extends Component {
     const sendingToSegments = ReactStringReplace(
       __('Send to %1$s', 'mailpoet'),
       '%1$s',
-      (match, i) => <SegmentTags segments={newsletter.segments} key={i} />,
+      (match, i) => (
+        <Fragment key={i}>
+          <SegmentTags segments={newsletter.segments} key={`segment-${i}`} />
+          <FilterSegmentTag
+            key={`filter-segment-${i}`}
+            newsletter={newsletter}
+          />
+        </Fragment>
+      ),
     );
 
     let frequency = _x(
