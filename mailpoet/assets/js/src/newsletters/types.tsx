@@ -104,6 +104,11 @@ function NewsletterTypesComponent({
               {__('See video guide', 'mailpoet')}
             </a>
           )}
+          {type.kbLink && (
+            <a href={type.kbLink} target="_blank" rel="noopener noreferrer">
+              {__('Read more.', 'mailpoet')}
+            </a>
+          )}
           <div className="mailpoet-flex-grow" />
           <div className="mailpoet-newsletter-type-action">{type.action}</div>
         </div>
@@ -132,6 +137,8 @@ function NewsletterTypesComponent({
         'Convert and retain customers with automated marketing that does the hard work for you. AutomateWoo has the tools you need to grow your store and make more money.',
         'mailpoet',
       ),
+      kbLink:
+        'https://kb.mailpoet.com/article/408-integration-with-automatewoo',
       action: (
         <Button
           automationId="woocommerce_automatewoo"
