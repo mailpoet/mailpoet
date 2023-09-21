@@ -153,31 +153,33 @@ export function FilterSegment({
       </Tooltip>
       <div className="mailpoet-gap" />
       {filterSegmentSelect}
-      <p>
-        {ReactStringReplace(
-          __(
-            "Can't find the segment you're looking for? [link]Create new[/link]",
-            'mailpoet',
-          ),
-          /\[link\](.*?)\[\/link\]/g,
-          (match, i) => (
-            <a
-              className="mailpoet-link"
-              key={i}
-              rel="noopener noreferrer"
-              onClick={(event) => {
-                event.preventDefault();
-                context.saveDraftNewsletter(() => {
-                  window.location.href = `admin.php?page=mailpoet-segments#/new-segment?newsletterId=${item.id}`;
-                });
-              }}
-              href={`admin.php?page=mailpoet-segments#/new-segment?newsletterId=${item.id}`}
-            >
-              {match}
-            </a>
-          ),
-        )}
-      </p>
+      {isFilterSegmentEnabled && (
+        <p>
+          {ReactStringReplace(
+            __(
+              "Can't find the segment you're looking for? [link]Create new[/link]",
+              'mailpoet',
+            ),
+            /\[link\](.*?)\[\/link\]/g,
+            (match, i) => (
+              <a
+                className="mailpoet-link"
+                key={i}
+                rel="noopener noreferrer"
+                onClick={(event) => {
+                  event.preventDefault();
+                  context.saveDraftNewsletter(() => {
+                    window.location.href = `admin.php?page=mailpoet-segments#/new-segment?newsletterId=${item.id}`;
+                  });
+                }}
+                href={`admin.php?page=mailpoet-segments#/new-segment?newsletterId=${item.id}`}
+              >
+                {match}
+              </a>
+            ),
+          )}
+        </p>
+      )}
     </>
   );
 }
