@@ -26,7 +26,6 @@ use MailPoet\Newsletter\Url as NewsletterUrl;
 use MailPoet\Settings\SettingsController;
 use MailPoet\UnexpectedValueException;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
-use MailPoet\Util\Security;
 use MailPoet\WP\Emoji;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
@@ -347,7 +346,6 @@ class Newsletters extends APIEndpoint {
     $filters = $this->newsletterListingRepository->getFilters($definition);
     $groups = $this->newsletterListingRepository->getGroups($definition);
 
-    $this->fixMissingHash($items); // Fix for MAILPOET-3275. Remove after May 2021
     $data = [];
     foreach ($this->newslettersResponseBuilder->buildForListing($items) as $newsletterData) {
       $data[] = $this->wp->applyFilters('mailpoet_api_newsletters_listing_item', $newsletterData);
@@ -400,24 +398,8 @@ class Newsletters extends APIEndpoint {
   }
 
   private function getViewInBrowserUrl(NewsletterEntity $newsletter): string {
-    $this->fixMissingHash([$newsletter]); // Fix for MAILPOET-3275. Remove after May 2021
     $url = $this->newsletterUrl->getViewInBrowserUrl($newsletter);
     // strip protocol to avoid mix content error
     return preg_replace('/^https?:/i', '', $url);
-  }
-
-  /**
-   * Some Newsletters were created without a hash due to a bug MAILPOET-3275
-   * We can remove this fix after May 2021 since by then most users should have their data fixed
-   * @param NewsletterEntity[] $newsletters
-   */
-  private function fixMissingHash(array $newsletters) {
-    foreach ($newsletters as $newsletter) {
-      if (!$newsletter instanceof NewsletterEntity || $newsletter->getHash() !== null) {
-        continue;
-      }
-      $newsletter->setHash(Security::generateHash());
-      $this->newslettersRepository->flush();
-    }
   }
 }
