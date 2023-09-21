@@ -59,20 +59,14 @@ class SchedulerTest extends \MailPoetUnitTest {
 
     $this->entityManager
       ->expects($this->exactly(2))
-      ->method('persist');
-    $this->entityManager
-      ->expects($this->at(0))
       ->method('persist')
-      ->with($this->isInstanceOf(ScheduledTaskEntity::class));
+      ->withConsecutive(
+        [$this->isInstanceOf(ScheduledTaskEntity::class)],
+        [$this->isInstanceOf(StatsNotificationEntity::class)]
+      );
+
     $this->entityManager
-      ->expects($this->at(1))
-      ->method('flush');
-    $this->entityManager
-      ->expects($this->at(2))
-      ->method('persist')
-      ->with($this->isInstanceOf(StatsNotificationEntity::class));
-    $this->entityManager
-      ->expects($this->at(3))
+      ->expects($this->exactly(2))
       ->method('flush');
 
     $this->repository
@@ -101,20 +95,14 @@ class SchedulerTest extends \MailPoetUnitTest {
 
     $this->entityManager
       ->expects($this->exactly(2))
-      ->method('persist');
-    $this->entityManager
-      ->expects($this->at(0))
       ->method('persist')
-      ->with($this->isInstanceOf(ScheduledTaskEntity::class));
+      ->withConsecutive(
+        [$this->isInstanceOf(ScheduledTaskEntity::class)],
+        [$this->isInstanceOf(StatsNotificationEntity::class)]
+      );
+
     $this->entityManager
-      ->expects($this->at(1))
-      ->method('flush');
-    $this->entityManager
-      ->expects($this->at(2))
-      ->method('persist')
-      ->with($this->isInstanceOf(StatsNotificationEntity::class));
-    $this->entityManager
-      ->expects($this->at(3))
+      ->expects($this->exactly(2))
       ->method('flush');
 
     $this->repository

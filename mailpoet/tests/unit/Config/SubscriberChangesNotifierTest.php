@@ -19,7 +19,7 @@ class SubscriberChangesNotifierTest extends \MailPoetUnitTest {
   public function testItNotifyCreatedSubscriberId(): void {
     $this->wpFunctions->method('currentTime')
       ->willReturn(1234);
-    $this->wpFunctions->expects($this->at(1))
+    $this->wpFunctions->expects($this->once())
       ->method('doAction')
       ->with(SubscriberEntity::HOOK_SUBSCRIBER_CREATED, 6)
       ->willReturn(true);
@@ -30,13 +30,10 @@ class SubscriberChangesNotifierTest extends \MailPoetUnitTest {
   }
 
   public function testItNotifyMultipleSubscribersCreated(): void {
-    $this->wpFunctions->expects($this->at(0))
+    $this->wpFunctions->expects($this->any())
       ->method('currentTime')
-      ->willReturn(1234);
-    $this->wpFunctions->expects($this->at(1))
-      ->method('currentTime')
-      ->willReturn(3456);
-    $this->wpFunctions->expects($this->at(2))
+      ->willReturnOnConsecutiveCalls(1234, 3456);
+    $this->wpFunctions->expects($this->once())
       ->method('doAction')
       ->with(SubscriberEntity::HOOK_MULTIPLE_SUBSCRIBERS_CREATED, 1234)
       ->willReturn(true);
@@ -50,7 +47,7 @@ class SubscriberChangesNotifierTest extends \MailPoetUnitTest {
   public function testItNotifyUpdatedSubscriberId(): void {
     $this->wpFunctions->method('currentTime')
       ->willReturn(4567);
-    $this->wpFunctions->expects($this->at(1))
+    $this->wpFunctions->expects($this->once())
       ->method('doAction')
       ->with(SubscriberEntity::HOOK_SUBSCRIBER_UPDATED, 2)
       ->willReturn(true);
@@ -63,7 +60,7 @@ class SubscriberChangesNotifierTest extends \MailPoetUnitTest {
   public function testItNotifiesUpdatedSubscriberIdWithStatusChange(): void {
     $this->wpFunctions->method('currentTime')
       ->willReturn(4567);
-    $this->wpFunctions->expects($this->at(1))
+    $this->wpFunctions->expects($this->once())
       ->method('doAction')
       ->with(SubscriberEntity::HOOK_SUBSCRIBER_STATUS_CHANGED, 2)
       ->willReturn(true);
@@ -74,13 +71,10 @@ class SubscriberChangesNotifierTest extends \MailPoetUnitTest {
   }
 
   public function testItNotifyMultipleSubscribersUpdated(): void {
-    $this->wpFunctions->expects($this->at(0))
+    $this->wpFunctions->expects($this->any())
       ->method('currentTime')
-      ->willReturn(12345);
-    $this->wpFunctions->expects($this->at(1))
-      ->method('currentTime')
-      ->willReturn(1234);
-    $this->wpFunctions->expects($this->at(2))
+      ->willReturnOnConsecutiveCalls(12345, 1234);
+    $this->wpFunctions->expects($this->once())
       ->method('doAction')
       ->with(SubscriberEntity::HOOK_MULTIPLE_SUBSCRIBERS_UPDATED, 1234)
       ->willReturn(true);
@@ -94,7 +88,7 @@ class SubscriberChangesNotifierTest extends \MailPoetUnitTest {
   public function testItNotifyDeletedSubscriberId(): void {
     $this->wpFunctions->method('currentTime')
       ->willReturn(3456);
-    $this->wpFunctions->expects($this->at(1))
+    $this->wpFunctions->expects($this->once())
       ->method('doAction')
       ->with(SubscriberEntity::HOOK_SUBSCRIBER_DELETED, 1)
       ->willReturn(true);
@@ -105,13 +99,10 @@ class SubscriberChangesNotifierTest extends \MailPoetUnitTest {
   }
 
   public function testItNotifyMultipleSubscribersDeleted(): void {
-    $this->wpFunctions->expects($this->at(0))
+    $this->wpFunctions->expects($this->any())
       ->method('currentTime')
-      ->willReturn(3456);
-    $this->wpFunctions->expects($this->at(1))
-      ->method('currentTime')
-      ->willReturn(98712);
-    $this->wpFunctions->expects($this->at(2))
+      ->willReturnOnConsecutiveCalls(3456, 98712);
+    $this->wpFunctions->expects($this->once())
       ->method('doAction')
       ->with(SubscriberEntity::HOOK_MULTIPLE_SUBSCRIBERS_DELETED, [1, 12])
       ->willReturn(true);
@@ -125,20 +116,15 @@ class SubscriberChangesNotifierTest extends \MailPoetUnitTest {
   public function testItNotifyDifferentSubscriberChanges(): void {
     $this->wpFunctions->method('currentTime')
       ->willReturn(12345);
-    $this->wpFunctions->expects($this->at(3))
-      ->method('doAction')
-      ->with(SubscriberEntity::HOOK_SUBSCRIBER_CREATED, 1)
-      ->willReturn(true);
 
-    $this->wpFunctions->expects($this->at(4))
+    $this->wpFunctions->expects($this->any())
       ->method('doAction')
-      ->with(SubscriberEntity::HOOK_SUBSCRIBER_UPDATED, 3)
-      ->willReturn(true);
-
-    $this->wpFunctions->expects($this->at(5))
-      ->method('doAction')
-      ->with(SubscriberEntity::HOOK_SUBSCRIBER_DELETED, 5)
-      ->willReturn(true);
+      ->withConsecutive(
+        [SubscriberEntity::HOOK_SUBSCRIBER_CREATED, 1],
+        [SubscriberEntity::HOOK_SUBSCRIBER_UPDATED, 3],
+        [SubscriberEntity::HOOK_SUBSCRIBER_DELETED, 5]
+      )
+      ->willReturnOnConsecutiveCalls(true, true, true);
 
     $notifier = new SubscriberChangesNotifier($this->wpFunctions);
     $notifier->subscriberDeleted(5);
@@ -150,7 +136,7 @@ class SubscriberChangesNotifierTest extends \MailPoetUnitTest {
   public function testItNotifyUpdateForCreatedSubscriber(): void {
     $this->wpFunctions->method('currentTime')
       ->willReturn(1235);
-    $this->wpFunctions->expects($this->at(2))
+    $this->wpFunctions->expects($this->once())
       ->method('doAction')
       ->with(SubscriberEntity::HOOK_SUBSCRIBER_CREATED, 11)
       ->willReturn(true);
@@ -162,13 +148,10 @@ class SubscriberChangesNotifierTest extends \MailPoetUnitTest {
   }
 
   public function testItNotifySubscribersBatchCreate(): void {
-    $this->wpFunctions->expects($this->at(0))
+    $this->wpFunctions->expects($this->any())
       ->method('currentTime')
-      ->willReturn(3456);
-    $this->wpFunctions->expects($this->at(1))
-      ->method('currentTime')
-      ->willReturn(98712);
-    $this->wpFunctions->expects($this->at(2))
+      ->willReturnOnConsecutiveCalls(3456, 98712);
+    $this->wpFunctions->expects($this->once())
       ->method('doAction')
       ->with(SubscriberEntity::HOOK_MULTIPLE_SUBSCRIBERS_CREATED, 3456)
       ->willReturn(true);
@@ -180,13 +163,10 @@ class SubscriberChangesNotifierTest extends \MailPoetUnitTest {
   }
 
   public function testItNotifySubscribersBatchUpdate(): void {
-    $this->wpFunctions->expects($this->at(0))
+    $this->wpFunctions->expects($this->any())
       ->method('currentTime')
-      ->willReturn(1234);
-    $this->wpFunctions->expects($this->at(1))
-      ->method('currentTime')
-      ->willReturn(123);
-    $this->wpFunctions->expects($this->at(2))
+      ->willReturnOnConsecutiveCalls(1234, 123);
+    $this->wpFunctions->expects($this->once())
       ->method('doAction')
       ->with(SubscriberEntity::HOOK_MULTIPLE_SUBSCRIBERS_UPDATED, 123)
       ->willReturn(true);
