@@ -8,7 +8,8 @@ export type TagVariant =
   | 'critical'
   | 'list'
   | 'unknown'
-  | 'wordpress';
+  | 'wordpress'
+  | 'filter_segment';
 
 type Props = {
   children?: ReactNode;

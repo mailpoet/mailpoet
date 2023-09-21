@@ -1,5 +1,5 @@
 import classnames from 'classnames';
-import { Component } from 'react';
+import { Component, Fragment } from 'react';
 import { __ } from '@wordpress/i18n';
 import { Link, withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
@@ -16,7 +16,7 @@ import {
   timeOfDayValues,
   weekDayValues,
 } from 'newsletters/scheduling/common.jsx';
-import { SegmentTags } from 'common/tag/tags';
+import { FilterSegmentTag, SegmentTags } from 'common/tag/tags';
 import { Toggle } from 'common/form/toggle/toggle';
 
 import {
@@ -236,7 +236,15 @@ class NewsletterListNotificationComponent extends Component {
     const sendingToSegments = ReactStringReplace(
       __('Send to %1$s', 'mailpoet'),
       '%1$s',
-      (match, i) => <SegmentTags segments={newsletter.segments} key={i} />,
+      (match, i) => (
+        <Fragment key={i}>
+          <SegmentTags segments={newsletter.segments} key={`segment-${i}`} />
+          <FilterSegmentTag
+            key={`filter-segment-${i}`}
+            newsletter={newsletter}
+          />
+        </Fragment>
+      ),
     );
 
     // set sending frequency

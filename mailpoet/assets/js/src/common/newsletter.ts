@@ -51,6 +51,7 @@ export type NewsLetter = {
     automationId?: string;
     afterTimeNumber: number | string;
     afterTimeType: string;
+    filterSegmentId?: string;
   };
   parent_id: null | string;
   preheader: string;
@@ -58,6 +59,11 @@ export type NewsLetter = {
     scheduled_at: string;
     count_processed: string;
     count_total: string;
+    meta: Record<string, unknown> & {
+      filterSegment?: {
+        name?: string;
+      };
+    };
   };
   reply_to_address: string;
   reply_to_name: string;

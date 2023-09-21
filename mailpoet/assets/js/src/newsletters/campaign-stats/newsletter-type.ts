@@ -6,6 +6,11 @@ export type NewsletterType = {
   queue: {
     scheduled_at: string;
     created_at: string;
+    meta: Record<string, unknown> & {
+      filterSegment?: {
+        name?: string;
+      };
+    };
   };
   sender_address?: string;
   reply_to_address?: string;

@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
 
 import { confirmAlert } from 'common/confirm-alert.jsx';
-import { SegmentTags } from 'common/tag/tags';
+import { FilterSegmentTag, SegmentTags } from 'common/tag/tags';
 import { Listing } from 'listing/listing.jsx';
 import { QueueStatus } from 'newsletters/listings/queue-status';
 import { Statistics } from 'newsletters/listings/statistics.jsx';
@@ -237,6 +237,7 @@ class NewsletterListStandardComponent extends Component {
         >
           <ErrorBoundary>
             <SegmentTags segments={newsletter.segments} dimension="large" />
+            <FilterSegmentTag newsletter={newsletter} dimension="large" />
           </ErrorBoundary>
         </td>
         {mailpoetTrackingEnabled === true ? (

@@ -77,6 +77,12 @@
   }
 }
 
+.mailpoet-tag-filter_segment {
+  background-color: $color-white;
+  border-color: $color-black;
+  border-style: dashed;
+}
+
 .mailpoet-tag-wordpress {
   background: $color-wordpress-button-background;
   border-color: $color-wordpress-button-border;
