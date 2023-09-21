@@ -3,6 +3,7 @@
 namespace MailPoet\EmailEditor\Integrations\MailPoet;
 
 use MailPoet\Newsletter\NewslettersRepository;
+use MailPoet\Newsletter\Url as NewsletterUrl;
 use MailPoet\NotFoundException;
 use MailPoet\UnexpectedValueException;
 use MailPoet\Validator\Builder;
@@ -11,10 +12,15 @@ class EmailApiController {
   /** @var NewslettersRepository */
   private $newsletterRepository;
 
+  /** @var NewsletterUrl */
+  private $newsletterUrl;
+
   public function __construct(
-    NewslettersRepository $newsletterRepository
+    NewslettersRepository $newsletterRepository,
+    NewsletterUrl $newsletterUrl
   ) {
     $this->newsletterRepository = $newsletterRepository;
+    $this->newsletterUrl = $newsletterUrl;
   }
 
   /**
@@ -27,6 +33,7 @@ class EmailApiController {
       'id' => $newsletter ? $newsletter->getId() : null,
       'subject' => $newsletter ? $newsletter->getSubject() : '',
       'preheader' => $newsletter ? $newsletter->getPreheader() : '',
+      'preview_url' => $this->newsletterUrl->getViewInBrowserUrl($newsletter),
     ];
   }
 
@@ -52,6 +59,7 @@ class EmailApiController {
       'id' => Builder::integer()->nullable(),
       'subject' => Builder::string(),
       'preheader' => Builder::string(),
+      'preview_url' => Builder::string()->nullable(),
     ])->toArray();
   }
 }
