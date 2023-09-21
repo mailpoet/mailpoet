@@ -495,7 +495,14 @@ class NewsletterEntity {
 
   public function getFilterSegmentId(): ?int {
     $optionValue = $this->getOptionValue(NewsletterOptionFieldEntity::NAME_FILTER_SEGMENT_ID);
-    return $optionValue ? (int)$optionValue : null;
+    if ($optionValue) {
+      return (int)$optionValue;
+    }
+    $parentNewsletter = $this->getParent();
+    if ($parentNewsletter instanceof NewsletterEntity && $this->getId() !== $parentNewsletter->getId()) {
+      return $parentNewsletter->getFilterSegmentId();
+    }
+    return null;
   }
 
   /**
