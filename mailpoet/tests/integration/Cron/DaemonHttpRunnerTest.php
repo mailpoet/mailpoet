@@ -69,15 +69,18 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
       'token' => 123,
     ];
 
+    $matcher = $this->any();
     $cronWorkerRunnerMock = $this->createMock(CronWorkerRunner::class);
     $cronWorkerRunnerMock
-      ->expects($this->at(0))
+      ->expects($matcher)
       ->method('run')
-      ->willThrowException(new \Exception('Message'));
-    $cronWorkerRunnerMock
-      ->expects($this->at(1))
-      ->method('run')
-      ->willThrowException(new \Exception());
+      ->willReturnCallback(function () use ($matcher) {
+        if ($matcher->getInvocationCount() === 1) {
+          throw new \Exception('Message');
+        } else if ($matcher->getInvocationCount() === 2) {
+          throw new \Exception();
+        }
+      });
 
     $daemon = new Daemon($this->cronHelper, $cronWorkerRunnerMock, $this->createWorkersFactoryMock(), $this->diContainer->get(LoggerFactory::class));
     $daemonHttpRunner = $this->make(DaemonHttpRunner::class, [
@@ -213,18 +216,18 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
   }
 
   public function testItUpdatesTimestampsDuringExecution() {
+    $matcher = $this->any();
     $cronWorkerRunnerMock = $this->createMock(CronWorkerRunner::class);
     $cronWorkerRunnerMock
-      ->expects($this->at(0))
+      ->expects($matcher)
       ->method('run')
-      ->willReturnCallback(function () {
-        sleep(2);
+      ->willReturnCallback(function () use ($matcher) {
+        if ($matcher->getInvocationCount() === 1) {
+          sleep(2);
+        } else if ($matcher->getInvocationCount() === 2) {
+          throw new \Exception();
+        }
       });
-    $cronWorkerRunnerMock
-      ->expects($this->at(1))
-      ->method('run')
-      ->willThrowException(new \Exception());
-
     $daemon = new Daemon($this->cronHelper, $cronWorkerRunnerMock, $this->createWorkersFactoryMock(), $this->diContainer->get(LoggerFactory::class));
     $daemonHttpRunner = $this->make(DaemonHttpRunner::class, [
       'pauseExecution' => null,

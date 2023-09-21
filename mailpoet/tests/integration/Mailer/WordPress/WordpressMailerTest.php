@@ -301,15 +301,13 @@ class WordpressMailerTest extends \MailPoetTest {
    */
   public function testItChangesReplyToEmailOnDifferentCalls() {
     $mailerFactory = $this->getMailerFactoryInstanceForReplyToTests();
-    $mailerFactory->expects($this->at(0))
+
+    $mailerFactory->expects($this->exactly(2))
       ->method('buildMailer')
-      ->with($this->isNull(), $this->isNull(), $this->equalTo([
-        'address' => 'reply-to@example.com',
-        'name' => 'Reply To',
-      ]));
-    $mailerFactory->expects($this->at(1))
-      ->method('buildMailer')
-      ->with($this->isNull(), $this->isNull(), $this->isNull());
+      ->withConsecutive(
+        [null, null, ['address' => 'reply-to@example.com', 'name' => 'Reply To',]],
+        [null, null, null]
+      );
 
     $wpMailer = new WordPressMailer($mailerFactory, new MetaInfo, $this->subscribersRepository);
     $wpMailer->addAddress('email@example.com', 'Full Name');

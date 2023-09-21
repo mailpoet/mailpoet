@@ -401,7 +401,7 @@ class SubscribersTest extends \MailPoetTest {
         'segment' => $dynamicSegment->getId(),
       ],
     ]);
-    expect($response->meta['filters']['segment'])->contains(['value' => $dynamicSegment->getId(), 'label' => 'Dynamic (1)']);
+    expect($response->meta['filters']['segment'])->contains(['label' => 'Dynamic (1)', 'value' => $dynamicSegment->getId()]);
     $this->tester->deleteWordPressUser($wpUserEmail);
   }
 

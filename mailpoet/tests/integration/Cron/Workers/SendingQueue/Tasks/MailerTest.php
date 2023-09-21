@@ -41,18 +41,13 @@ class MailerTest extends \MailPoetTest {
 
     $mailerFactoryMock = $this->createMock(MailerFactory::class);
     // First call in constructor
-    $mailerFactoryMock->expects($this->at(0))
+    $mailerFactoryMock->expects($this->exactly(2))
       ->method('buildMailer')
-      ->willReturn($this->createMock(Mailer::class));
-    // Second call in custom mailer configuration should be called with sender and reply to from newsletter
-    $mailerFactoryMock->expects($this->at(1))
-      ->method('buildMailer')
-      ->with(
-        null,
-        ['name' => 'Sender', 'address' => 'from@example.com'],
-        ['name' => 'Reply-to', 'address' => 'reply-to@example.com']
-      )
-      ->willReturn($this->createMock(Mailer::class));
+      ->withConsecutive(
+        [$this->anything(), $this->anything(), $this->anything()],
+        // Second call in custom mailer configuration should be called with sender and reply to from newsletter
+        [null, ['name' => 'Sender', 'address' => 'from@example.com'], ['name' => 'Reply-to', 'address' => 'reply-to@example.com']]
+      )->willReturn($this->createMock(Mailer::class));
     $mailerTask = new MailerTask($mailerFactoryMock);
     $mailerTask->configureMailer($newsletter);
   }
