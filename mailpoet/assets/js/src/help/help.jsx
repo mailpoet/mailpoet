@@ -1,6 +1,6 @@
 import ReactDOM from 'react-dom';
 import { MailPoet } from 'mailpoet';
-import { KnowledgeBase } from 'help/knowledge_base.jsx';
+import { KnowledgeBase } from 'help/knowledge_base.tsx';
 import { SystemInfo } from 'help/system_info.tsx';
 import { SystemStatus } from 'help/system_status.jsx';
 import { YourPrivacy } from 'help/your_privacy.jsx';
