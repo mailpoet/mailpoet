@@ -21,4 +21,17 @@
   .editor-styles-wrapper {
     padding-bottom: 0;
   }
+
+  // Hiding the original "Preview" button in the header
+  .edit-post-header__settings .block-editor-post-preview__dropdown {
+    display: none;
+  }
+  // Keep the MailPoet "Preview" button in the header
+  .edit-post-header__settings .mailpoet-header-button-preview .block-editor-post-preview__dropdown {
+    display: block;
+  }
+  // Hide the "Preview" button in the dropdown
+  .mailpoet-preview-dropdown .components-menu-item__button:nth-child(2) {
+    display: none;
+  }
 }

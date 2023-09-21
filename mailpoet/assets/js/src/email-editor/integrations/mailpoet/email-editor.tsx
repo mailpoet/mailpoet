@@ -7,6 +7,7 @@ import { LayoutStyles } from 'email-editor/engine/components/layout-styles';
 import { useDisableWelcomeGuide } from 'email-editor/engine/hooks';
 import { NextButton } from './components/next-button';
 import { SettingsSidebar } from './components/settings-panel';
+import { PreviewDropdown } from './components/preview-dropdown';
 import { MailPoetEmailData } from './types';
 
 import './email_editor.scss';
@@ -32,6 +33,11 @@ function Editor() {
   return (
     <>
       <LayoutStyles />
+      <HeaderButtonSlot className="mailpoet-header-button-preview">
+        <PreviewDropdown
+          newsletterPreviewUrl={mailpoetData?.preview_url ?? null}
+        />
+      </HeaderButtonSlot>
       <HeaderButtonSlot>
         <NextButton newsletterId={mailpoetData?.id ?? null} />
       </HeaderButtonSlot>
