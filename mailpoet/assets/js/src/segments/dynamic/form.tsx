@@ -6,7 +6,6 @@ import { __ } from '@wordpress/i18n';
 import { Hooks } from 'wp-js-hooks';
 import { Input } from 'common/form/input/input';
 import { ReactSelect } from 'common/form/react-select/react-select';
-import { Grid } from 'common/grid';
 import { APIErrorsNotice } from 'notices/api-errors-notice';
 import { SubscribersCounter } from './subscribers-counter';
 import { FormFilterFields } from './form-filter-fields';
@@ -145,12 +144,12 @@ export function Form({ isNewSegment }: Props): JSX.Element {
               {Array.isArray(filterRows) &&
                 filterRows.map((filterRow, index) => (
                   <Fragment key={filterRow.index}>
-                    <Grid.ThreeColumns
+                    <div
                       className="mailpoet-segments-grid"
-                      automationId={`filter-row-${index}`}
+                      data-automation-id={`filter-row-${index}`}
                     >
                       <FilterBefore filterRows={filterRows} index={index} />
-                      <Grid.CenteredRow>
+                      <div className="mailpoet-segments-filter-selector">
                         <ReactSelect
                           dimension="small"
                           placeholder={__('Select action', 'mailpoet')}
@@ -168,11 +167,11 @@ export function Form({ isNewSegment }: Props): JSX.Element {
                           automationId="select-segment-action"
                           isFullWidth
                         />
-                      </Grid.CenteredRow>
+                      </div>
                       {filterRow.index !== undefined && (
                         <FormFilterFields filterIndex={filterRow.index} />
                       )}
-                    </Grid.ThreeColumns>
+                    </div>
                     <FilterAfter index={index} />
                   </Fragment>
                 ))}
