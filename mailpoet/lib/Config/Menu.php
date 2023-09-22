@@ -507,7 +507,11 @@ class Menu {
   private function registerAutomationMenu() {
     $parentSlug = self::MAIN_PAGE_SLUG;
     // Automations menu is hidden when the subscription is part of a bundle and AutomateWoo is active but pages can be accessed directly
-    if ($this->wp->isPluginActive('automatewoo/automatewoo.php') && $this->servicesChecker->isBundledSubscription()) {
+    $showAutomations = !($this->wp->isPluginActive('automatewoo/automatewoo.php') &&
+      $this->servicesChecker->isBundledSubscription());
+    if (
+      !$this->wp->applyFilters('mailpoet_show_automations', $showAutomations)
+    ) {
       $parentSlug = '';
     }
 
