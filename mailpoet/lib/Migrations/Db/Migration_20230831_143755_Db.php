@@ -40,8 +40,9 @@ class Migration_20230831_143755_Db extends DbMigration {
     $this->connection->executeStatement("UPDATE $logsTable SET status = 'complete' WHERE status = 'completed'");
 
     // fix empty values for errors and data
+    $this->connection->executeStatement("ALTER TABLE $logsTable CHANGE `data` `data` longtext NOT NULL AFTER run_number");
     $this->connection->executeStatement("UPDATE $logsTable SET data = '{}' WHERE data = '[]' OR data IS NULL");
-    $this->connection->executeStatement("UPDATE $logsTable SET error = '{}' WHERE error = '[]' OR error IS NULL");
+    $this->connection->executeStatement("UPDATE $logsTable SET error = NULL WHERE error = '[]' OR error IS NULL");
 
     // remove "completed_at" column (with "updated_at" it's no longer needed), backfill "updated_at"
     if ($this->columnExists($logsTable, 'completed_at')) {
@@ -98,8 +99,8 @@ class Migration_20230831_143755_Db extends DbMigration {
           $startedAt = strval($item['started_at']);
           $date = "DATE_SUB('$startedAt', INTERVAL 1 SECOND)";
           $queries[] = "
-            INSERT INTO {$logsTable} (automation_run_id, step_id, step_type, step_key, status, started_at, updated_at, run_number)
-            VALUES ($runId, '$triggerId', 'trigger', '$triggerKey', 'complete', $date, $date, 1)
+            INSERT INTO {$logsTable} (automation_run_id, step_id, step_type, step_key, status, started_at, updated_at, run_number, data)
+            VALUES ($runId, '$triggerId', 'trigger', '$triggerKey', 'complete', $date, $date, 1, '{}')
           ";
           $triggerAddedMap[$runId] = true;
         }

@@ -195,7 +195,7 @@ class StepRunLoggerTest extends MailPoetTest {
       'errorClass' => get_class($data['error']),
       'code' => $data['error']->getCode(),
       'trace' => Json::decode(Json::encode($data['error']->getTrace())), // normalize objects to arrays
-    ] : [];
+    ] : null;
 
     $expected = [
       'id' => $data['id'] ?? $log->getId(),
@@ -208,7 +208,7 @@ class StepRunLoggerTest extends MailPoetTest {
       'updated_at' => $data['updated_at'] ?? $log->getUpdatedAt()->format(DateTimeImmutable::W3C),
       'run_number' => $data['row_number'] ?? 1,
       'data' => $data['data'] ?? '{}',
-      'error' => Json::encode($error),
+      'error' => $error ? Json::encode($error) : null,
     ];
     $this->assertSame($expected, $log->toArray());
   }

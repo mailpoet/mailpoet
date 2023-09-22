@@ -53,8 +53,8 @@ class AutomationRunLog {
   /** @var array */
   private $data = [];
 
-  /** @var array */
-  private $error = [];
+  /** @var array|null */
+  private $error;
 
   public function __construct(
     int $automationRunId,
@@ -147,7 +147,7 @@ class AutomationRunLog {
     $this->updatedAt = new DateTimeImmutable();
   }
 
-  public function getError(): array {
+  public function getError(): ?array {
     return $this->error;
   }
 
@@ -163,7 +163,7 @@ class AutomationRunLog {
       'updated_at' => $this->updatedAt->format(DateTimeImmutable::W3C),
       'run_number' => $this->runNumber,
       'data' => Json::encode($this->data),
-      'error' => Json::encode($this->error),
+      'error' => $this->error ? Json::encode($this->error) : null,
     ];
   }
 
@@ -189,7 +189,7 @@ class AutomationRunLog {
     $log->updatedAt = new DateTimeImmutable($data['updated_at']);
     $log->runNumber = (int)$data['run_number'];
     $log->data = Json::decode($data['data']);
-    $log->error = Json::decode($data['error']);
+    $log->error = isset($data['error']) ? Json::decode($data['error']) : null;
     return $log;
   }
 
