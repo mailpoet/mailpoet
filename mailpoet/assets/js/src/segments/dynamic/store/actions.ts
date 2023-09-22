@@ -131,7 +131,10 @@ const messages = {
   },
 };
 
-export function* handleSave(isNewSegment: boolean): Generator<{
+export function* handleSave(
+  isNewSegment: boolean,
+  newsletterId?: string,
+): Generator<{
   type: string;
   segment?: AnyFormItem;
 }> {
@@ -139,18 +142,23 @@ export function* handleSave(isNewSegment: boolean): Generator<{
   yield setErrors([]);
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore -- I don't know how to configure typescript to understand this
-  const { error, success } = yield {
+  const { error, success, data } = yield {
     type: 'SAVE_SEGMENT',
     segment,
   };
 
   if (success) {
-    window.location.href = 'admin.php?page=mailpoet-segments#/segments';
-
-    if (isNewSegment) {
-      messages.onCreate(segment);
+    const savedSegmentId = data?.id as string;
+    if (newsletterId && savedSegmentId) {
+      window.location.href = `admin.php?page=mailpoet-newsletters#/send/${newsletterId}?filterSegmentId=${savedSegmentId}`;
     } else {
-      messages.onUpdate();
+      window.location.href = 'admin.php?page=mailpoet-segments#/segments';
+
+      if (isNewSegment) {
+        messages.onCreate(segment);
+      } else {
+        messages.onUpdate();
+      }
     }
   } else {
     yield setErrors(error as string[]);

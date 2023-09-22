@@ -28,6 +28,7 @@ import {
 
 interface Props {
   isNewSegment: boolean;
+  newsletterId?: string;
 }
 
 const FiltersBefore = Hooks.applyFilters(
@@ -43,7 +44,7 @@ const FilterAfter = Hooks.applyFilters(
   (): JSX.Element => <div className="mailpoet-gap" />,
 );
 
-export function Form({ isNewSegment }: Props): JSX.Element {
+export function Form({ isNewSegment, newsletterId }: Props): JSX.Element {
   const segment: Segment = useSelect(
     (select) => select(storeName).getSegment(),
     [],
@@ -217,14 +218,16 @@ export function Form({ isNewSegment }: Props): JSX.Element {
               type="submit"
               onClick={(e): void => {
                 e.preventDefault();
-                void handleSave(isNewSegment);
+                void handleSave(isNewSegment, newsletterId);
               }}
               disabled={
                 !isFormValid(segment.filters) ||
                 subscriberCount.count === undefined
               }
             >
-              {__('Save', 'mailpoet')}
+              {newsletterId
+                ? __('Save and return', 'mailpoet')
+                : __('Save', 'mailpoet')}
             </Button>
           </div>
         </div>
