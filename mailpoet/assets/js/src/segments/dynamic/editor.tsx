@@ -4,7 +4,7 @@ import { useDispatch, useSelect } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
 import { chevronLeft } from '@wordpress/icons';
 
-import { useRouteMatch } from 'react-router-dom';
+import { useRouteMatch, useLocation } from 'react-router-dom';
 
 import { HideScreenOptions } from 'common/hide-screen-options/hide-screen-options';
 import { TopBarWithBeamer } from 'common/top-bar/top-bar';
@@ -19,6 +19,10 @@ export function Editor(): JSX.Element {
     select(storeName).getPreviousPage(),
   );
   const returnPage: string = previousPage || '/';
+
+  const location = useLocation();
+  const params = new URLSearchParams(location.search);
+  const newsletterId = params.get('newsletterId') || null;
 
   useEffect(() => {
     void pageLoaded(match.params.id);
@@ -48,6 +52,12 @@ export function Editor(): JSX.Element {
               icon={chevronLeft}
               href={`#${returnPage}`}
               label={__('Return to previous page', 'mailpoet')}
+              onClick={(event) => {
+                if (newsletterId) {
+                  event.preventDefault();
+                  window.location.href = `admin.php?page=mailpoet-newsletters#/send/${newsletterId}`;
+                }
+              }}
             />
             {match.params.id
               ? __('Edit segment', 'mailpoet')
@@ -56,7 +66,7 @@ export function Editor(): JSX.Element {
         </FlexBlock>
       </Flex>
 
-      <Form isNewSegment={isNewSegment} />
+      <Form isNewSegment={isNewSegment} newsletterId={newsletterId} />
     </div>
   );
 }
