@@ -27,6 +27,7 @@ import { NewsLetter, NewsletterType } from 'common/newsletter';
 import { mapFilterType } from '../analytics';
 import { PremiumModal, premiumValidAndActive } from '../common/premium-modal';
 import { PendingNewsletterMessage } from './send/pending-newsletter-message';
+import { SendContext } from './send_context';
 
 const automaticEmails = window.mailpoet_woocommerce_automatic_emails || {};
 
@@ -45,6 +46,7 @@ type NewsletterSendComponentProps = {
   history: History;
   location: Location;
 };
+
 type NewsletterSendComponentState = {
   fields: Record<string, unknown>[] | boolean;
   item: NewsLetter;
@@ -55,6 +57,7 @@ type NewsletterSendComponentState = {
   validationError?: string | JSX.Element;
   mssKeyPendingApproval: boolean;
 };
+
 const getTimingValueForTracking = (emailOpts: NewsLetter['options']) =>
   emailOpts.afterTimeType === 'immediate'
     ? 'immediate'
@@ -284,6 +287,13 @@ class NewsletterSendComponent extends Component<
             item.subject,
           );
         }
+        const searchParams = new URLSearchParams(this.props.location.search);
+        const filterSegmentId = searchParams.get('filterSegmentId');
+
+        if (filterSegmentId) {
+          response.data.options.filterSegmentId = filterSegmentId;
+        }
+
         this.setState({
           item: response.data,
           fields: this.getFieldsByNewsletter(response.data),
@@ -764,6 +774,13 @@ class NewsletterSendComponent extends Component<
   updatePendingApprovalState = (mssKeyPendingApproval: boolean): void =>
     this.setState({ mssKeyPendingApproval });
 
+  saveDraftNewsletter = (afterSaveCallback: () => void) => {
+    this.handleSaveDraft();
+    void this.saveNewsletter().done(() => {
+      afterSaveCallback();
+    });
+  };
+
   render() {
     const {
       showPremiumModal,
@@ -793,84 +810,92 @@ class NewsletterSendComponent extends Component<
           automationId="newsletter_send_heading"
         />
         <ErrorBoundary>
-          <Form
-            id="mailpoet_newsletter"
-            fields={fields}
-            automationId="newsletter_send_form"
-            item={this.state.item}
-            loading={this.state.loading}
-            onChange={this.handleFormChange}
-            onSubmit={this.handleSave}
+          <SendContext.Provider
+            /* not sure how to resolve this in a class component, the suggestion is to use useMemo */
+            /* eslint-disable-next-line react/jsx-no-constructed-context-values */
+            value={{
+              saveDraftNewsletter: this.saveDraftNewsletter,
+            }}
           >
-            <Grid.CenteredRow className="send-newsletter-buttons">
-              <Button
-                variant="secondary"
-                type="submit"
-                automationId="email-save-draft"
-                onClick={this.handleSaveDraft}
-                isDisabled={this.state.loading}
-              >
-                {__('Save as draft and close', 'mailpoet')}
-              </Button>
-              {isPaused ? (
+            <Form
+              id="mailpoet_newsletter"
+              fields={fields}
+              automationId="newsletter_send_form"
+              item={this.state.item}
+              loading={this.state.loading}
+              onChange={this.handleFormChange}
+              onSubmit={this.handleSave}
+            >
+              <Grid.CenteredRow className="send-newsletter-buttons">
                 <Button
-                  type="button"
-                  onClick={this.handleResume}
-                  isDisabled={sendingDisabled || this.state.loading}
-                  automationId="email-resume"
+                  variant="secondary"
+                  type="submit"
+                  automationId="email-save-draft"
+                  onClick={this.handleSaveDraft}
+                  isDisabled={this.state.loading}
                 >
-                  {__('Resume', 'mailpoet')}
+                  {__('Save as draft and close', 'mailpoet')}
                 </Button>
-              ) : (
-                <Button
-                  type="button"
-                  onClick={this.handleSend}
-                  {...sendButtonOptions}
-                  isDisabled={sendingDisabled || this.state.loading}
-                  automationId="email-submit"
+                {isPaused ? (
+                  <Button
+                    type="button"
+                    onClick={this.handleResume}
+                    isDisabled={sendingDisabled || this.state.loading}
+                    automationId="email-resume"
+                  >
+                    {__('Resume', 'mailpoet')}
+                  </Button>
+                ) : (
+                  <Button
+                    type="button"
+                    onClick={this.handleSend}
+                    {...sendButtonOptions}
+                    isDisabled={sendingDisabled || this.state.loading}
+                    automationId="email-submit"
+                  >
+                    {sendButtonOptions.value || __('Send', 'mailpoet')}
+                  </Button>
+                )}
+                {this.state.validationError !== undefined && (
+                  <Tooltip
+                    tooltip={<div>{this.state.validationError}</div>}
+                    tooltipId="helpTooltipSendEmail"
+                  />
+                )}
+              </Grid.CenteredRow>
+              <p>
+                {__('or simply', 'mailpoet')}
+                &nbsp;
+                <a
+                  className="mailpoet-link"
+                  href={
+                    MailPoet.FeaturesController.isSupported(
+                      'gutenberg_email_editor',
+                    ) && wpPostId
+                      ? `post.php?post=${wpPostId}&action=edit`
+                      : `?page=mailpoet-newsletter-editor&id=${this.props.match.params.id}`
+                  }
+                  onClick={this.handleRedirectToDesign}
                 >
-                  {sendButtonOptions.value || __('Send', 'mailpoet')}
-                </Button>
-              )}
-              {this.state.validationError !== undefined && (
-                <Tooltip
-                  tooltip={<div>{this.state.validationError}</div>}
-                  tooltipId="helpTooltipSendEmail"
+                  {__('go back to the Design page', 'mailpoet')}
+                </a>
+                .
+              </p>
+
+              {mssKeyPendingApproval && (
+                <PendingNewsletterMessage
+                  toggleLoadingState={this.toggleLoadingState}
+                  updatePendingState={this.updatePendingApprovalState}
                 />
               )}
-            </Grid.CenteredRow>
-            <p>
-              {__('or simply', 'mailpoet')}
-              &nbsp;
-              <a
-                className="mailpoet-link"
-                href={
-                  MailPoet.FeaturesController.isSupported(
-                    'gutenberg_email_editor',
-                  ) && wpPostId
-                    ? `post.php?post=${wpPostId}&action=edit`
-                    : `?page=mailpoet-newsletter-editor&id=${this.props.match.params.id}`
-                }
-                onClick={this.handleRedirectToDesign}
-              >
-                {__('go back to the Design page', 'mailpoet')}
-              </a>
-              .
-            </p>
 
-            {mssKeyPendingApproval && (
-              <PendingNewsletterMessage
-                toggleLoadingState={this.toggleLoadingState}
-                updatePendingState={this.updatePendingApprovalState}
-              />
-            )}
-
-            {showPremiumModal && (
-              <PremiumModal onRequestClose={this.closePremiumModal}>
-                {this.state.premiumModalMessage}
-              </PremiumModal>
-            )}
-          </Form>
+              {showPremiumModal && (
+                <PremiumModal onRequestClose={this.closePremiumModal}>
+                  {this.state.premiumModalMessage}
+                </PremiumModal>
+              )}
+            </Form>
+          </SendContext.Provider>
         </ErrorBoundary>
       </div>
     );
