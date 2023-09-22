@@ -5,13 +5,20 @@
   grid-column: span 2;
 }
 
-.mailpoet-segments-grid {
-  grid-template-columns: 200px 1fr 1fr;
-  padding-right: $grid-gap-large;
-  position: relative;
+.mailpoet-segments-counter-section {
+  text-align: right;
+}
 
-  @include respond-to(small-screen) {
-    grid-template-columns: 1fr;
+.mailpoet-segments-grid {
+  align-content: flex-start;
+  align-items: center;
+  display: flex;
+  flex: 1 0 0;
+  flex-wrap: wrap;
+  gap: 16px;
+
+  .mailpoet-centered-row {
+    max-width: 300px;
   }
 }
 
@@ -28,10 +35,8 @@
   display: flex;
   height: 20px;
   justify-content: center;
-  margin-top: -11px;
   position: absolute;
-  right: 0;
-  top: 50%;
+  right: 40px;
   width: 20px;
 }
 
@@ -52,4 +57,12 @@
   display: flex;
   gap: 16px;
   padding-top: 24px;
+}
+
+.mailpoet-segments-segments-section p {
+  padding: 11px 0;
+}
+
+.mailpoet-segments-filter-selector {
+  width: 210px;
 }
