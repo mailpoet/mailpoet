@@ -113,7 +113,7 @@ interface Window {
   mailpoet_subscribers_count: number;
   mailpoet_has_premium_support: boolean;
   mailpoet_has_valid_api_key: boolean;
-  mailpoet_has_valid_premium_key: string;
+  mailpoet_has_valid_premium_key: boolean;
   mailpoet_mss_key_invalid: boolean;
   mailpoet_mss_key_valid: boolean;
   mailpoet_mta_method: string;

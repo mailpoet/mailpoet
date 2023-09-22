@@ -1,3 +1,5 @@
+import { Segment } from '../form/types';
+
 export enum NewsletterType {
   Standard = 'standard',
   Automatic = 'automatic',
@@ -67,7 +69,7 @@ export type NewsLetter = {
   };
   reply_to_address: string;
   reply_to_name: string;
-  segments: Array<{ filters: unknown[] }>;
+  segments: Segment[];
   sender_address: string;
   sender_name: string;
   sent_at: null | string;
