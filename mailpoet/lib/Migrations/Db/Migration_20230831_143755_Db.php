@@ -98,8 +98,8 @@ class Migration_20230831_143755_Db extends DbMigration {
           $startedAt = strval($item['started_at']);
           $date = "DATE_SUB('$startedAt', INTERVAL 1 SECOND)";
           $queries[] = "
-            INSERT INTO {$logsTable} (automation_run_id, step_id, step_type, step_key, status, started_at, updated_at)
-            VALUES ($runId, '$triggerId', 'trigger', '$triggerKey', 'complete', $date, $date)
+            INSERT INTO {$logsTable} (automation_run_id, step_id, step_type, step_key, status, started_at, updated_at, run_number)
+            VALUES ($runId, '$triggerId', 'trigger', '$triggerKey', 'complete', $date, $date, 1)
           ";
           $triggerAddedMap[$runId] = true;
         }
