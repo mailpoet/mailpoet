@@ -34,4 +34,15 @@
   .mailpoet-preview-dropdown .components-menu-item__button:nth-child(2) {
     display: none;
   }
+
+  .mailpoet-send-preview-email {
+    max-width: 456px;
+  }
+
+  .mailpoet-send-preview-modal-footer {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+    padding-top: 16px;
+  }
 }

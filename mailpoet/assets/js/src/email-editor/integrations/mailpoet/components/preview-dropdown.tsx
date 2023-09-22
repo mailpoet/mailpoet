@@ -11,6 +11,7 @@ import { __ } from '@wordpress/i18n';
 import { useDispatch } from '@wordpress/data';
 import { store as editPostStore } from '@wordpress/edit-post';
 import { Icon, external, check, mobile, desktop } from '@wordpress/icons';
+import { SendPreviewEmail } from './send-preview-email';
 
 type PreviewDropdownProps = {
   newsletterPreviewUrl: string | null;
@@ -26,6 +27,7 @@ export function PreviewDropdown({
   const { __experimentalSetPreviewDeviceType: setPreviewDeviceType } =
     useDispatch(editPostStore);
 
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [deviceType, setDeviceType] = useState<string>('Desktop');
 
   const changeDeviceType = (newDeviceType: string) => {
@@ -44,54 +46,61 @@ export function PreviewDropdown({
   };
 
   return (
-    <DropdownMenu
-      className="mailpoet-preview-dropdown"
-      label={__('Preview', 'mailpoet')}
-      icon={deviceIcons[deviceType.toLowerCase()]}
-    >
-      {({ onClose }) => (
-        <>
-          <MenuGroup>
-            <MenuItem
-              className="block-editor-post-preview__button-resize"
-              onClick={() => changeDeviceType('Desktop')}
-              icon={deviceType === 'Desktop' && check}
-            >
-              {__('Desktop')}
-            </MenuItem>
-            <MenuItem
-              className="block-editor-post-preview__button-resize"
-              onClick={() => changeDeviceType('Mobile')}
-              icon={deviceType === 'Mobile' && check}
-            >
-              {__('Mobile')}
-            </MenuItem>
-          </MenuGroup>
-          <MenuGroup>
-            <MenuItem
-              className="block-editor-post-preview__button-resize"
-              onClick={() => {
-                onClose();
-              }}
-            >
-              {__('Send a test email', 'mailpoet')}
-            </MenuItem>
-          </MenuGroup>
-          <MenuGroup>
-            <div className="edit-post-header-preview__grouping-external">
-              <Button
-                className="edit-post-header-preview__button-external"
+    <>
+      <DropdownMenu
+        className="mailpoet-preview-dropdown"
+        label={__('Preview', 'mailpoet')}
+        icon={deviceIcons[deviceType.toLowerCase()]}
+      >
+        {({ onClose }) => (
+          <>
+            <MenuGroup>
+              <MenuItem
+                className="block-editor-post-preview__button-resize"
+                onClick={() => changeDeviceType('Desktop')}
+                icon={deviceType === 'Desktop' && check}
+              >
+                {__('Desktop')}
+              </MenuItem>
+              <MenuItem
+                className="block-editor-post-preview__button-resize"
+                onClick={() => changeDeviceType('Mobile')}
+                icon={deviceType === 'Mobile' && check}
+              >
+                {__('Mobile')}
+              </MenuItem>
+            </MenuGroup>
+            <MenuGroup>
+              <MenuItem
+                className="block-editor-post-preview__button-resize"
                 onClick={() => {
-                  openInNewTab(newsletterPreviewUrl);
+                  setIsModalOpen(true);
+                  onClose();
                 }}
               >
-                {__('Preview in new tab')}
-                <Icon icon={external} />
-              </Button>
-            </div>
-          </MenuGroup>
-        </>
-      )}
-    </DropdownMenu>
+                {__('Send a test email', 'mailpoet')}
+              </MenuItem>
+            </MenuGroup>
+            <MenuGroup>
+              <div className="edit-post-header-preview__grouping-external">
+                <Button
+                  className="edit-post-header-preview__button-external"
+                  onClick={() => {
+                    openInNewTab(newsletterPreviewUrl);
+                  }}
+                >
+                  {__('Preview in new tab')}
+                  <Icon icon={external} />
+                </Button>
+              </div>
+            </MenuGroup>
+          </>
+        )}
+      </DropdownMenu>
+      <SendPreviewEmail
+        isOpen={isModalOpen}
+        closeCallback={() => setIsModalOpen(false)}
+      />
+    </>
   );
 }
