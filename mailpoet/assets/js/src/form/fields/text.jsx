@@ -30,14 +30,19 @@ class FormFieldText extends Component {
       className = 'regular-text';
     }
 
+    let disabled;
+    if (typeof this.props.field.disabled === 'function') {
+      disabled = this.props.field.disabled(this.props.item);
+    } else if (typeof this.props.field.disabled === 'boolean') {
+      disabled = this.props.field.disabled;
+    } else {
+      disabled = false;
+    }
+
     return (
       <Input
         type="text"
-        disabled={
-          this.props.field.disabled !== undefined
-            ? this.props.field.disabled(this.props.item)
-            : false
-        }
+        disabled={disabled}
         className={className}
         size={
           this.props.field.size !== 'auto' && this.props.field.size > 0
@@ -68,7 +73,7 @@ FormFieldText.propTypes = {
     id: PropTypes.string,
     className: PropTypes.string,
     size: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-    disabled: PropTypes.func,
+    disabled: PropTypes.oneOfType([PropTypes.bool, PropTypes.func]),
     placeholder: PropTypes.string,
     validation: PropTypes.shape({
       'data-parsley-required': PropTypes.bool,
