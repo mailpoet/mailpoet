@@ -37,7 +37,7 @@ class AutomationRunLogStorageTest extends \MailPoetTest {
     $log = $this->storage->getAutomationRunLog($id);
     $this->assertInstanceOf(AutomationRunLog::class, $log);
     $errors = $log->getError();
-    expect($errors)->array();
+    $this->assertIsArray($errors);
     expect(array_keys($errors))->equals([
       'message',
       'errorClass',
