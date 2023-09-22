@@ -6,6 +6,7 @@ use MailPoet\Config\Env;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Features\FeaturesController;
 use MailPoet\Newsletter\NewslettersRepository;
+use MailPoet\Util\Security;
 use MailPoet\WP\Functions as WPFunctions;
 
 class EmailEditor {
@@ -77,6 +78,7 @@ class EmailEditor {
     $newsletter->setWpPostId($postId);
     $newsletter->setSubject('New Editor Email ' . $postId);
     $newsletter->setType(NewsletterEntity::TYPE_STANDARD); // We allow only standard emails in the new editor for now
+    $newsletter->setHash(Security::generateHash());
     $this->newsletterRepository->persist($newsletter);
     $this->newsletterRepository->flush();
   }
