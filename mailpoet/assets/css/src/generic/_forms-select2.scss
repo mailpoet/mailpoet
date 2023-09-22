@@ -227,3 +227,14 @@
   margin-left: 6px;
   padding: 1px 5px;
 }
+
+#mailpoetFilterSegment ~ .select2-container .select2-selection__rendered {
+  .mailpoet-form-select2-text span {
+    display: inline-block;
+    vertical-align: middle;
+  }
+
+  .mailpoet-form-select2-count {
+    vertical-align: middle;
+  }
+}
