@@ -1,36 +1,30 @@
-import ReactStringReplace from 'react-string-replace';
+import { createInterpolateElement } from '@wordpress/element';
 import { MailPoet } from 'mailpoet';
 import { Notice } from 'notices/notice';
 
 function AutomationsInfoNotice() {
   if (!MailPoet.hideAutomations) return null;
-  let automationsInfo = ReactStringReplace(
+
+  const automationsInfo = createInterpolateElement(
     MailPoet.I18n.t('automationsInfoNotice'),
-    /\[link1\](.*?)\[\/link1\]/g,
-    (match) => (
-      <a
-        key={match}
-        rel="noreferrer"
-        href="https://kb.mailpoet.com/article/397-how-to-set-up-an-automation"
-        target="_blank"
-      >
-        {match}
-      </a>
-    ),
-  );
-  automationsInfo = ReactStringReplace(
-    automationsInfo,
-    /\[link2\](.*?)\[\/link2\]/g,
-    (match) => (
-      <a
-        key={match}
-        rel="noreferrer"
-        href="https://href.li/?https://kb.mailpoet.com/article/408-integration-with-automatewoo"
-        target="_blank"
-      >
-        {match}
-      </a>
-    ),
+    {
+      link1: (
+        // eslint-disable-next-line jsx-a11y/anchor-has-content, jsx-a11y/control-has-associated-label
+        <a
+          rel="noreferrer"
+          href="https://kb.mailpoet.com/article/397-how-to-set-up-an-automation"
+          target="_blank"
+        />
+      ),
+      link2: (
+        // eslint-disable-next-line jsx-a11y/anchor-has-content, jsx-a11y/control-has-associated-label
+        <a
+          rel="noreferrer"
+          href="https://kb.mailpoet.com/article/408-integration-with-automatewoo"
+          target="_blank"
+        />
+      ),
+    },
   );
   return (
     <Notice type="warning" scroll renderInPlace timeout={false}>
