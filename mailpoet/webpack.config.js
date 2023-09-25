@@ -455,10 +455,27 @@ const emailEditor = Object.assign({}, wpScriptConfig, {
   plugins: [...wpScriptConfig.plugins, ...[new ForkTsCheckerWebpackPlugin()]],
 });
 
+const emailEditorCustom = Object.assign({}, wpScriptConfig, {
+  name: 'email_editor_custom',
+  entry: {
+    email_editor: 'email_editor_custom/index.ts',
+  },
+  output: {
+    filename: '[name].js',
+    path: path.join(__dirname, 'assets/dist/js/email_editor_custom'),
+  },
+  resolve: {
+    ...wpScriptConfig.resolve,
+    modules: ['node_modules', 'assets/js/src'],
+  },
+  plugins: [...wpScriptConfig.plugins, ...[new ForkTsCheckerWebpackPlugin()]],
+});
+
 const configs = [
   publicConfig,
   adminConfig,
   emailEditor,
+  emailEditorCustom,
   formPreviewConfig,
   testConfig,
   postEditorBlock,
@@ -469,7 +486,8 @@ module.exports = configs.map((conf) => {
   const config = Object.assign({}, conf);
   if (
     config.name === 'marketing_optin_block' ||
-    config.name === 'email_editor'
+    config.name === 'email_editor' ||
+    config.name === 'email_editor_custom'
   ) {
     return config;
   }
