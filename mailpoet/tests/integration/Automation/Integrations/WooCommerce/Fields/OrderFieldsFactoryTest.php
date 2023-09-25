@@ -439,6 +439,71 @@ class OrderFieldsFactoryTest extends \MailPoetTest {
     $this->assertNotContains($product3->get_id(), $value);
   }
 
+  public function testProductsFieldWithVariableProduct(): void {
+    $product1 = new \WC_Product_Variable();
+    $product1->set_name('Product 1');
+    $product1->save();
+    $variableProduct = new \WC_Product_Variation();
+    $variableProduct->set_parent_id($product1->get_id());
+    $variableProduct->set_name('Product 1 Variation 1');
+    $variableProduct->save();
+
+    $order = $this->tester->createWooCommerceOrder();
+    $order->add_product($variableProduct);
+
+    $orderPayload = new OrderPayload($order);
+    $fields = $this->getFieldsMap();
+    $purchasedProducts = $fields['woocommerce:order:products'];
+    $value = $purchasedProducts->getValue($orderPayload);
+    $this->assertIsArray($value);
+    $this->assertContains($product1->get_id(), $value);
+    $this->assertNotContains($variableProduct->get_id(), $value);
+  }
+
+  public function testProductCategoriesFieldWithVariableProduct(): void {
+    $catId = $this->tester->createWordPressTerm('Cat 1', 'product_cat', ['slug' => 'cat-1']);
+    $product1 = new \WC_Product_Variable();
+    $product1->set_name('Product 1');
+    $product1->set_category_ids([$catId]);
+    $product1->save();
+    $variableProduct = new \WC_Product_Variation();
+    $variableProduct->set_parent_id($product1->get_id());
+    $variableProduct->set_name('Product 1 Variation 1');
+    $variableProduct->save();
+
+    $order = $this->tester->createWooCommerceOrder();
+    $order->add_product($variableProduct);
+
+    $orderPayload = new OrderPayload($order);
+    $fields = $this->getFieldsMap();
+    $purchasedCategories = $fields['woocommerce:order:categories'];
+    $value = $purchasedCategories->getValue($orderPayload);
+    $this->assertIsArray($value);
+    $this->assertContains($catId, $value);
+  }
+
+  public function testProductTagssFieldWithVariableProduct(): void {
+    $tagId = $this->tester->createWordPressTerm('Tag 1', 'product_tag', ['slug' => 'tag-1']);
+    $product1 = new \WC_Product_Variable();
+    $product1->set_name('Product 1');
+    $product1->set_tag_ids([$tagId]);
+    $product1->save();
+    $variableProduct = new \WC_Product_Variation();
+    $variableProduct->set_parent_id($product1->get_id());
+    $variableProduct->set_name('Product 1 Variation 1');
+    $variableProduct->save();
+
+    $order = $this->tester->createWooCommerceOrder();
+    $order->add_product($variableProduct);
+
+    $orderPayload = new OrderPayload($order);
+    $fields = $this->getFieldsMap();
+    $purchasedCategories = $fields['woocommerce:order:tags'];
+    $value = $purchasedCategories->getValue($orderPayload);
+    $this->assertIsArray($value);
+    $this->assertContains($tagId, $value);
+  }
+
   /** @return array<string, Field> */
   private function getFieldsMap(): array {
     $factory = $this->diContainer->get(OrderSubject::class);
