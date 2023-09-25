@@ -34,6 +34,14 @@ class WooCommerce {
   }
 
   /**
+   * @param mixed $product
+   * @return \WC_Product|null|false
+   */
+  public function wcGetProduct($product) {
+    return wc_get_product($product);
+  }
+
+  /**
    * @param int|bool $order
    * @return bool|\WC_Order|\WC_Order_Refund
    */
