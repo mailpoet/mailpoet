@@ -196,7 +196,7 @@ export function Form({ isNewSegment }: Props): JSX.Element {
                 {showPremiumModal && (
                   <PremiumModal onRequestClose={closePremiumModal}>
                     {__(
-                      'Multiple filters per segment are not available in the free version of the MailPoet plugin.',
+                      'Multiple conditions per segment are not available in the free version of the MailPoet plugin.',
                       'mailpoet',
                     )}
                   </PremiumModal>
@@ -206,7 +206,7 @@ export function Form({ isNewSegment }: Props): JSX.Element {
           </FieldWrapper>
         </FieldsSection>
 
-        <div className="mailpoet-admin-fields-bottom">
+        <div className="mailpoet-admin-fields-footer">
           <div className="mailpoet-segments-counter-section">
             <SubscribersCounter />
             <PrivacyProtectionNotice />

@@ -413,7 +413,7 @@ class ManageSegmentsCest {
     $i->selectOptionInReactSelect('WordPress user role', "{$filterRowOne} {$actionSelectElement}");
     $i->selectOptionInReactSelect('Admin', "{$filterRowOne} {$roleSelectElement}");
     $i->click('Add a condition');
-    $i->see('Multiple filters per segment are not available in the free version of the MailPoet plugin');
+    $i->see('Multiple conditions per segment are not available in the free version of the MailPoet plugin');
     $i->seeNoJSErrors();
   }
 
