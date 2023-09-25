@@ -16,7 +16,7 @@ export const step: StepType = {
   title: () => __('Custom trigger', 'mailpoet'),
   description: () =>
     __(
-      'Starts an automation when a certain action is fired. This action needs to hand over the email address of the subscriber.',
+      "This is an advanced feature for developers. Triggers an automation when a certain action is fired. The action's first argument must be the email address of a subscriber.",
       'mailpoet',
     ),
   subtitle: () => <LockedBadge text={__('Premium', 'mailpoet')} />,
