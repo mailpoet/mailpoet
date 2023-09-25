@@ -7,6 +7,11 @@ import { Hooks } from 'wp-js-hooks';
 import { Input } from 'common/form/input/input';
 import { ReactSelect } from 'common/form/react-select/react-select';
 import { APIErrorsNotice } from 'notices/api-errors-notice';
+import { FieldsSection } from 'common/fields_section/fields_section';
+import { FieldWrapper } from 'common/fields_section/field_wrapper';
+import { MailPoet } from 'mailpoet';
+import { LockedBadge } from 'common/premium-modal/locked-badge';
+import { PremiumModal } from 'common/premium-modal';
 import { SubscribersCounter } from './subscribers-counter';
 import { FormFilterFields } from './form-filter-fields';
 import { isFormValid } from './validator';
@@ -20,11 +25,6 @@ import {
   Segment,
   SubscriberCount,
 } from './types';
-import { FieldsSection } from '../../common/fields_section/fields_section';
-import { FieldWrapper } from '../../common/fields_section/field_wrapper';
-import { MailPoet } from '../../mailpoet';
-import { LockedBadge } from '../../common/premium-modal/locked-badge';
-import { PremiumModal } from '../../common/premium-modal';
 
 interface Props {
   isNewSegment: boolean;
