@@ -100,8 +100,8 @@ class BuysAProductTriggerTest extends \MailPoetTest {
     );
     return (new AutomationFactory())
       ->withStatusActive()
-      ->addStep($trigger)
-      ->addStep($action)
+      ->withStep($trigger)
+      ->withStep($action)
       ->create();
   }
 
