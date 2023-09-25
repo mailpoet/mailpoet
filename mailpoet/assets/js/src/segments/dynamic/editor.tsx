@@ -15,10 +15,10 @@ export function Editor(): JSX.Element {
   const match = useRouteMatch<{ id: string }>();
 
   const { pageLoaded, pageUnloaded } = useDispatch(storeName);
-  const previousPage = useSelect((select) =>
+  const previousPage: string = useSelect((select) =>
     select(storeName).getPreviousPage(),
   );
-  const returnPage = previousPage || '/';
+  const returnPage: string = previousPage || '/';
 
   useEffect(() => {
     void pageLoaded(match.params.id);
