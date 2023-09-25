@@ -303,14 +303,14 @@ class Reporter {
     }
     $averageSteps = $activeAutomationCount > 0 ? $totalSteps / $activeAutomationCount : 0;
 
-    $customTriggerHooks = array_values(array_map(
+    $customTriggerHooks = array_unique(array_values(array_map(
       function(Automation $automation): string {
         $trigger = $automation->getTrigger('mailpoet:custom-trigger');
         return $trigger ? (string)$trigger->getArgs()['hook'] : '';
       },
       $automationsWithCustomTrigger
-    ));
-    $customActionHooks = array_values(array_map(
+    )));
+    $customActionHooks = array_unique(array_values(array_map(
       function(Automation $automation): array {
         $customActionSteps = array_filter(
           $automation->getSteps(),
@@ -331,7 +331,7 @@ class Reporter {
 
       },
       $activeAutomations
-    ));
+    )));
     $customActionHooks = array_values(array_filter(array_merge(...$customActionHooks)));
     return [
       'Automation > Number of active automations' => $activeAutomationCount,
