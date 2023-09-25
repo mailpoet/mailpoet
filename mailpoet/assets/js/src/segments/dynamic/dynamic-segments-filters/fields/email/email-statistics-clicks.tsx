@@ -6,7 +6,6 @@ import { useSelect, useDispatch } from '@wordpress/data';
 
 import { APIErrorsNotice } from 'notices/api-errors-notice';
 import { ReactSelect } from 'common/form/react-select/react-select';
-import { Grid } from 'common/grid';
 import { Select } from 'common/form/select/select';
 import {
   AnyValueTypes,
@@ -97,72 +96,62 @@ export function EmailClickStatisticsFields({
   return (
     <>
       {errors.length > 0 && <APIErrorsNotice errors={errors} />}
-      <Grid.CenteredRow>
+      <ReactSelect
+        placeholder={MailPoet.I18n.t('selectNewsletterPlaceholder')}
+        options={newsletterOptions}
+        value={find(['value', segment.newsletter_id], newsletterOptions)}
+        onChange={(option: SelectOption): void => {
+          void updateSegmentFilter(
+            { newsletter_id: option.value, link_ids: [] },
+            filterIndex,
+          );
+        }}
+        automationId="segment-email"
+      />
+      <Select
+        isMinWidth
+        key="select-operator"
+        value={segment.operator}
+        onChange={(e) =>
+          updateSegmentFilterFromEvent('operator', filterIndex, e)
+        }
+        automationId="select-operator"
+      >
+        <option value={AnyValueTypes.ANY}>{MailPoet.I18n.t('anyOf')}</option>
+        <option value={AnyValueTypes.ALL}>{MailPoet.I18n.t('allOf')}</option>
+        <option value={AnyValueTypes.NONE}>{MailPoet.I18n.t('noneOf')}</option>
+      </Select>
+      {loadingLinks && (
+        <span>{MailPoet.I18n.t('loadingDynamicSegmentItems')}</span>
+      )}
+      {!loadingLinks && shouldDisplayLinks(segment.newsletter_id) && (
         <ReactSelect
-          dimension="small"
-          isFullWidth
-          placeholder={MailPoet.I18n.t('selectNewsletterPlaceholder')}
-          options={newsletterOptions}
-          value={find(['value', segment.newsletter_id], newsletterOptions)}
-          onChange={(option: SelectOption): void => {
+          isMulti
+          automationId="segment-link-select"
+          placeholder={MailPoet.I18n.t('allLinksPlaceholder')}
+          options={
+            links.length
+              ? links
+              : [
+                  {
+                    value: 0,
+                    label: MailPoet.I18n.t('noLinksHint'),
+                    isDisabled: true,
+                  },
+                ]
+          }
+          value={filter((option) => {
+            if (!segment.link_ids) return false;
+            return segment.link_ids.indexOf(option.value) !== -1;
+          }, links)}
+          onChange={(options: SelectOption[]): void => {
             void updateSegmentFilter(
-              { newsletter_id: option.value, link_ids: [] },
+              { link_ids: (options || []).map((x) => x.value) },
               filterIndex,
             );
           }}
-          automationId="segment-email"
         />
-      </Grid.CenteredRow>
-      <Grid.CenteredRow>
-        <Select
-          isMinWidth
-          key="select-operator"
-          value={segment.operator}
-          onChange={(e) =>
-            updateSegmentFilterFromEvent('operator', filterIndex, e)
-          }
-          automationId="select-operator"
-        >
-          <option value={AnyValueTypes.ANY}>{MailPoet.I18n.t('anyOf')}</option>
-          <option value={AnyValueTypes.ALL}>{MailPoet.I18n.t('allOf')}</option>
-          <option value={AnyValueTypes.NONE}>
-            {MailPoet.I18n.t('noneOf')}
-          </option>
-        </Select>
-        {loadingLinks && (
-          <span>{MailPoet.I18n.t('loadingDynamicSegmentItems')}</span>
-        )}
-        {!loadingLinks && shouldDisplayLinks(segment.newsletter_id) && (
-          <ReactSelect
-            isMulti
-            dimension="small"
-            isFullWidth
-            automationId="segment-link-select"
-            placeholder={MailPoet.I18n.t('allLinksPlaceholder')}
-            options={
-              links.length
-                ? links
-                : [
-                    {
-                      value: 0,
-                      label: MailPoet.I18n.t('noLinksHint'),
-                      isDisabled: true,
-                    },
-                  ]
-            }
-            value={filter((option) => {
-              if (!segment.link_ids) return false;
-              return segment.link_ids.indexOf(option.value) !== -1;
-            }, links)}
-            onChange={(options: SelectOption[]): void => {
-              void updateSegmentFilter(
-                { link_ids: (options || []).map((x) => x.value) },
-                filterIndex,
-              );
-            }}
-          />
-        )}
-      </Grid.CenteredRow>
+      )}
     </>
   );
 }
