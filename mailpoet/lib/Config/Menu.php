@@ -7,6 +7,7 @@ use MailPoet\AdminPages\Pages\AutomationAnalytics;
 use MailPoet\AdminPages\Pages\AutomationEditor;
 use MailPoet\AdminPages\Pages\AutomationTemplates;
 use MailPoet\AdminPages\Pages\DynamicSegments;
+use MailPoet\AdminPages\Pages\EmailEditor as EmailEditorPage;
 use MailPoet\AdminPages\Pages\ExperimentalFeatures;
 use MailPoet\AdminPages\Pages\FormEditor;
 use MailPoet\AdminPages\Pages\Forms;
@@ -36,6 +37,7 @@ class Menu {
   const EMAILS_PAGE_SLUG = 'mailpoet-newsletters';
   const FORMS_PAGE_SLUG = 'mailpoet-forms';
   const EMAIL_EDITOR_PAGE_SLUG = 'mailpoet-newsletter-editor';
+  const EMAIL_EDITOR_V2_PAGE_SLUG = 'mailpoet-email-editor';
   const FORM_EDITOR_PAGE_SLUG = 'mailpoet-form-editor';
   const HOMEPAGE_PAGE_SLUG = 'mailpoet-homepage';
   const FORM_TEMPLATES_PAGE_SLUG = 'mailpoet-form-editor-template-selection';
@@ -264,6 +266,19 @@ class Menu {
       [
         $this,
         'newletterEditor',
+      ]
+    );
+
+    // newsletter editor
+    $this->wp->addSubmenuPage(
+      self::EMAILS_PAGE_SLUG,
+      $this->setPageTitle(__('Email', 'mailpoet')),
+      esc_html__('Email Editor', 'mailpoet'),
+      AccessControl::PERMISSION_MANAGE_EMAILS,
+      self::EMAIL_EDITOR_V2_PAGE_SLUG,
+      [
+        $this,
+        'emailEditor',
       ]
     );
 
@@ -648,6 +663,10 @@ class Menu {
 
   public function newletterEditor() {
     $this->container->get(NewsletterEditor::class)->render();
+  }
+
+  public function emailEditor() {
+    $this->container->get(EmailEditorPage::class)->render();
   }
 
   public function import() {
