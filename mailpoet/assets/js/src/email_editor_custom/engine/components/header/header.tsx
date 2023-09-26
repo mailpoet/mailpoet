@@ -4,16 +4,19 @@ import { Button, ToolbarItem } from '@wordpress/components';
 import { NavigableToolbar } from '@wordpress/block-editor';
 import { useSelect, useDispatch } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
-import { plus } from '@wordpress/icons';
+import { plus, listView } from '@wordpress/icons';
 import { storeName } from '../../store';
 
 export function Header() {
   const inserterButton = useRef();
+  const listviewButton = useRef();
 
-  const { toggleInserterSidebar } = useDispatch(storeName);
-  const { isInserterSidebarOpened } = useSelect(
+  const { toggleInserterSidebar, toggleListviewSidebar } =
+    useDispatch(storeName);
+  const { isInserterSidebarOpened, isListviewSidebarOpened } = useSelect(
     (select) => ({
       isInserterSidebarOpened: select(storeName).isInserterSidebarOpened(),
+      isListviewSidebarOpened: select(storeName).isListviewSidebarOpened(),
     }),
     [],
   );
@@ -22,7 +25,7 @@ export function Header() {
     event.preventDefault();
   };
 
-  const shortLabel = !isInserterSidebarOpened ? __('Add') : __('Close');
+  const shortLabelInserter = !isInserterSidebarOpened ? __('Add') : __('Close');
 
   return (
     <div className="edit-post-header">
@@ -42,7 +45,21 @@ export function Header() {
               onClick={toggleInserterSidebar}
               disabled={false}
               icon={plus}
-              label={shortLabel}
+              label={shortLabelInserter}
+              showTooltip
+              aria-expanded={isInserterSidebarOpened}
+            />
+            <ToolbarItem
+              ref={listviewButton}
+              as={Button}
+              className="edit-post-header-toolbar__document-overview-toggle"
+              variant="secondary"
+              isPressed={isListviewSidebarOpened}
+              onMouseDown={preventDefault}
+              onClick={toggleListviewSidebar}
+              disabled={false}
+              icon={listView}
+              label={__('List view', 'mailpoet')}
               showTooltip
               aria-expanded={isInserterSidebarOpened}
             />

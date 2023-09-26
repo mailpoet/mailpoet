@@ -165,6 +165,7 @@ declare module '@wordpress/data' {
 
 declare module '@wordpress/block-editor' {
   export const __experimentalLibrary: any;
+  export const __experimentalListView: any;
 
   // types for 'useSetting' are missing in @types/wordpress__block-editor
   export function useSetting(path: string): unknown;

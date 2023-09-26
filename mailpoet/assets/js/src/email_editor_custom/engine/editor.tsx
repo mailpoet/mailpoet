@@ -9,16 +9,19 @@ import { Header } from './components/header';
 import { BlockEditor } from './components/block-editor';
 import { Sidebar } from './components/sidebar/sidebar';
 import { InserterSidebar } from './components/inserter-sidebar/inserter-sidebar';
+import { ListviewSidebar } from './components/listview-sidebar/listview-sidebar';
 import { createStore, storeName } from './store';
 
 function Editor() {
-  const { isSidebarOpened, isInserterSidebarOpened } = useSelect(
-    (select) => ({
-      isSidebarOpened: select(storeName).isSidebarOpened(),
-      isInserterSidebarOpened: select(storeName).isInserterSidebarOpened(),
-    }),
-    [],
-  );
+  const { isSidebarOpened, isInserterSidebarOpened, isListviewSidebarOpened } =
+    useSelect(
+      (select) => ({
+        isSidebarOpened: select(storeName).isSidebarOpened(),
+        isInserterSidebarOpened: select(storeName).isInserterSidebarOpened(),
+        isListviewSidebarOpened: select(storeName).isListviewSidebarOpened(),
+      }),
+      [],
+    );
 
   const className = classnames('interface-interface-skeleton', {
     'is-sidebar-opened': isSidebarOpened,
@@ -34,7 +37,10 @@ function Editor() {
             header={<Header />}
             content={<BlockEditor />}
             sidebar={<ComplementaryArea.Slot scope={storeName} />}
-            secondarySidebar={isInserterSidebarOpened && <InserterSidebar />}
+            secondarySidebar={
+              (isInserterSidebarOpened && <InserterSidebar />) ||
+              (isListviewSidebarOpened && <ListviewSidebar />)
+            }
           />
           <Popover.Slot />
         </SlotFillProvider>
