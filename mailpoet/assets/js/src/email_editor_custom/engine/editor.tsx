@@ -8,12 +8,14 @@ import { ShortcutProvider } from '@wordpress/keyboard-shortcuts';
 import { Header } from './components/header';
 import { BlockEditor } from './components/block-editor';
 import { Sidebar } from './components/sidebar/sidebar';
+import { InserterSidebar } from './components/inserter-sidebar/inserter-sidebar';
 import { createStore, storeName } from './store';
 
 function Editor() {
-  const { isSidebarOpened } = useSelect(
+  const { isSidebarOpened, isInserterSidebarOpened } = useSelect(
     (select) => ({
       isSidebarOpened: select(storeName).isSidebarOpened(),
+      isInserterSidebarOpened: select(storeName).isInserterSidebarOpened(),
     }),
     [],
   );
@@ -32,6 +34,7 @@ function Editor() {
             header={<Header />}
             content={<BlockEditor />}
             sidebar={<ComplementaryArea.Slot scope={storeName} />}
+            secondarySidebar={isInserterSidebarOpened && <InserterSidebar />}
           />
           <Popover.Slot />
         </SlotFillProvider>
