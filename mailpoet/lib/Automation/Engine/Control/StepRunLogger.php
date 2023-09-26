@@ -42,7 +42,7 @@ class StepRunLogger {
     string $stepId,
     string $stepType,
     int $runNumber,
-    bool $isWpDebug = WP_DEBUG
+    bool $isWpDebug = null
   ) {
     $this->automationRunLogStorage = $automationRunLogStorage;
     $this->hooks = $hooks;
@@ -50,7 +50,17 @@ class StepRunLogger {
     $this->stepId = $stepId;
     $this->stepType = $stepType;
     $this->runNumber = $runNumber;
-    $this->isWpDebug = $isWpDebug;
+    $this->isWpDebug = $isWpDebug !== null ? $isWpDebug : $this->getWpDebug();
+  }
+
+  private function getWpDebug(): bool {
+    if (!defined('WP_DEBUG')) {
+      return false;
+    }
+    if (!is_bool(WP_DEBUG)) {
+      return in_array(strtolower((string)WP_DEBUG), ['true', '1'], true);
+    }
+    return WP_DEBUG;
   }
 
   public function logStart(): void {
