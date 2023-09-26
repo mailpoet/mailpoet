@@ -392,7 +392,7 @@ class NewslettersRepository extends Repository {
       $statisticsPurchasesTable = $entityManager->getClassMetadata(StatisticsWooCommercePurchaseEntity::class)->getTableName();
       $entityManager->getConnection()->executeStatement("
          UPDATE $statisticsPurchasesTable s
-         SET s.`newsletter_id` = 0, s.`click_id`=0 WHERE s.`newsletter_id` IN (:ids)
+         SET s.`newsletter_id` = 0 WHERE s.`newsletter_id` IN (:ids)
       ", ['ids' => $ids], ['ids' => Connection::PARAM_INT_ARRAY]);
 
       // Delete newsletter posts
