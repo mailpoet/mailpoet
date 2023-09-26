@@ -35,7 +35,7 @@ describe('Automated Latest Content Layout Supervisor', function () {
       .returns(jQuery.Deferred());
 
     module = AutomatedLatestContentInjector({
-      'newsletter_editor/components/communication': {
+      'newsletter-editor/components/communication': {
         CommunicationComponent: {
           getBulkTransformedPosts: mock,
         },
@@ -410,7 +410,7 @@ describe('Automated latest content layout', function () {
 
     before(function () {
       module = AutomatedLatestContentInjector({
-        'newsletter_editor/components/communication': {
+        'newsletter-editor/components/communication': {
           CommunicationComponent: {
             getPostTypes: function () {
               return jQuery.Deferred();

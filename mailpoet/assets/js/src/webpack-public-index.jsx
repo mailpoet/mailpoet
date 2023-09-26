@@ -5,5 +5,5 @@
 // Code can be gradually refactored to avoid side effects completely.
 
 import 'mailpoet'; // side effect - assigns MailPoet to window
-import 'jquery.serialize_object'; // side effect - extends jQuery
+import 'jquery.serialize-object'; // side effect - extends jQuery
 import 'public.tsx'; // side effect - assigns to window, sets up form validation, etc.

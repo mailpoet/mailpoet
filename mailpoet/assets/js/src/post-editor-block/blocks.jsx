@@ -1,1 +1,1 @@
-import './subscription_form/form_block.jsx';
+import './subscription-form/form-block.jsx';

@@ -4,7 +4,7 @@
     "assets/js/src/**/*",
     "assets/js/src/**/*.json",
     "tests/javascript/**/*.ts",
-    "tests/javascript_newsletter_editor/**/*.ts"
+    "tests/javascript-newsletter-editor/**/*.ts"
   ],
   "compilerOptions": {
     "baseUrl": "./assets/js/src",

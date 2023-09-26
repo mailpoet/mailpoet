@@ -77,7 +77,7 @@ class WooCommerceBlocksIntegration {
       '__experimental_woocommerce_blocks_add_data_attributes_to_block',
       [$this, 'addDataAttributesToBlock']
     );
-    $block = $this->wp->registerBlockTypeFromMetadata(Env::$assetsPath . '/dist/js/marketing_optin_block');
+    $block = $this->wp->registerBlockTypeFromMetadata(Env::$assetsPath . '/dist/js/marketing-optin-block');
     // We need to force the script to load in the footer. register_block_type always adds the script to the header.
     if ($block instanceof \WP_Block_Type && $block->editor_script) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
       $wpScripts = $this->wp->getWpScripts();

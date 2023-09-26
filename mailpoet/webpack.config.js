@@ -122,7 +122,7 @@ const baseConfig = {
       {
         include: path.resolve(
           __dirname,
-          'assets/js/src/webpack_admin_expose.js',
+          'assets/js/src/webpack-admin-expose.js',
         ),
         loader: 'expose-loader',
         options: { exposes: globalPrefix },
@@ -195,17 +195,17 @@ const baseConfig = {
 const adminConfig = {
   name: 'admin',
   entry: {
-    vendor: 'webpack_vendor_index.jsx',
-    mailpoet: 'webpack_mailpoet_index.jsx',
-    admin_vendor: ['prop-types', 'lodash', 'webpack_admin_expose.js'], // libraries shared between free and premium plugin
-    admin: 'webpack_admin_index.tsx',
+    vendor: 'webpack-vendor-index.jsx',
+    mailpoet: 'webpack-mailpoet-index.jsx',
+    admin_vendor: ['prop-types', 'lodash', 'webpack-admin-expose.js'], // libraries shared between free and premium plugin
+    admin: 'webpack-admin-index.tsx',
     automation: 'automation/automation.tsx',
     automation_editor: 'automation/editor/index.tsx',
     automation_analytics:
       'automation/integrations/mailpoet/analytics/index.tsx',
     automation_templates: 'automation/templates/index.tsx',
-    newsletter_editor: 'newsletter_editor/webpack_index.jsx',
-    form_editor: 'form_editor/form_editor.jsx',
+    newsletter_editor: 'newsletter-editor/webpack-index.jsx',
+    form_editor: 'form-editor/form-editor.jsx',
     settings: 'settings/index.tsx',
   },
   plugins: [
@@ -241,7 +241,7 @@ const adminConfig = {
 const publicConfig = {
   name: 'public',
   entry: {
-    public: 'webpack_public_index.jsx',
+    public: 'webpack-public-index.jsx',
   },
   plugins: [
     ...baseConfig.plugins,
@@ -249,7 +249,7 @@ const publicConfig = {
     // replace MailPoet definition with a smaller version for public
     new webpack.NormalModuleReplacementPlugin(
       /mailpoet\.ts/,
-      './mailpoet_public.ts',
+      './mailpoet-public.ts',
     ),
   ],
   externals: {
@@ -261,10 +261,10 @@ const publicConfig = {
 const testConfig = {
   name: 'test',
   entry: {
-    vendor: 'webpack_vendor_index.jsx',
+    vendor: 'webpack-vendor-index.jsx',
     testNewsletterEditor: [
-      'webpack_mailpoet_index.jsx',
-      'newsletter_editor/webpack_index.jsx',
+      'webpack-mailpoet-index.jsx',
+      'newsletter-editor/webpack-index.jsx',
 
       'components/config.spec.js',
       'components/content.spec.js',
@@ -275,7 +275,7 @@ const testConfig = {
       'components/styles.spec.js',
       'components/communication.spec.js',
 
-      'blocks/automatedLatestContentLayout.spec.js',
+      'blocks/automated-latest-content-layout.spec.js',
       'blocks/button.spec.js',
       'blocks/container.spec.js',
       'blocks/coupon.spec.js',
@@ -293,7 +293,7 @@ const testConfig = {
   output: {
     path: path.join(
       __dirname,
-      'tests/javascript_newsletter_editor/testBundles',
+      'tests/javascript-newsletter-editor/testBundles',
     ),
     filename: '[name].js',
   },
@@ -301,14 +301,14 @@ const testConfig = {
     // replace MailPoet definition with a smaller version for public
     new webpack.NormalModuleReplacementPlugin(
       /mailpoet\.js/,
-      './mailpoet_tests.js',
+      './mailpoet-tests.js',
     ),
   ],
   resolve: {
     modules: [
       'node_modules',
       'assets/js/src',
-      'tests/javascript_newsletter_editor/newsletter_editor',
+      'tests/javascript-newsletter-editor/newsletter-editor',
     ],
     extensions: ['.js', '.jsx', '.ts', '.tsx'],
     alias: {
@@ -335,7 +335,7 @@ const testConfig = {
 const formPreviewConfig = {
   name: 'form_preview',
   entry: {
-    form_preview: 'form_editor/form_preview.ts',
+    form_preview: 'form-editor/form-preview.ts',
   },
   externals: {
     jquery: 'jQuery',
@@ -346,7 +346,7 @@ const formPreviewConfig = {
 const postEditorBlock = {
   name: 'post_editor_block',
   entry: {
-    post_editor_block: 'post_editor_block/blocks.jsx',
+    post_editor_block: 'post-editor-block/blocks.jsx',
   },
 };
 
@@ -384,13 +384,13 @@ const marketingOptinBlock = Object.assign({}, wpScriptConfig, {
   stats,
   name: 'marketing_optin_block',
   entry: {
-    'marketing-optin-block': '/assets/js/src/marketing_optin_block/index.tsx',
+    'marketing-optin-block': '/assets/js/src/marketing-optin-block/index.tsx',
     'marketing-optin-block-frontend':
-      '/assets/js/src/marketing_optin_block/frontend.ts',
+      '/assets/js/src/marketing-optin-block/frontend.ts',
   },
   output: {
     filename: '[name].js',
-    path: path.join(__dirname, 'assets/dist/js/marketing_optin_block'),
+    path: path.join(__dirname, 'assets/dist/js/marketing-optin-block'),
   },
   module: Object.assign({}, wpScriptConfig.module, {
     rules: [
@@ -431,7 +431,7 @@ const marketingOptinBlock = Object.assign({}, wpScriptConfig, {
     new WebpackCopyPlugin({
       patterns: [
         {
-          from: 'assets/js/src/marketing_optin_block/block.json',
+          from: 'assets/js/src/marketing-optin-block/block.json',
           to: 'block.json',
         },
       ],
@@ -442,11 +442,11 @@ const marketingOptinBlock = Object.assign({}, wpScriptConfig, {
 const emailEditor = Object.assign({}, wpScriptConfig, {
   name: 'email_editor',
   entry: {
-    email_editor: 'email_editor/index.ts',
+    email_editor: 'email-editor/index.ts',
   },
   output: {
     filename: '[name].js',
-    path: path.join(__dirname, 'assets/dist/js/email_editor'),
+    path: path.join(__dirname, 'assets/dist/js/email-editor'),
   },
   resolve: {
     ...wpScriptConfig.resolve,

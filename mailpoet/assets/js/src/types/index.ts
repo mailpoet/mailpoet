@@ -27,7 +27,7 @@ import {
   useCompositeState,
 } from 'reakit/Composite';
 
-import './wordpress_modules';
+import './wordpress-modules';
 
 /* eslint-disable @typescript-eslint/no-explicit-any -- some general types in this file need to use "any"  */
 /* eslint-disable @typescript-eslint/naming-convention -- we have no control over 3rd-party naming conventions */
