@@ -11,7 +11,7 @@ tests/plugins
 /views/cache/**
 temp
 mailpoet.zip
-tests/javascript_newsletter_editor/testBundles
+tests/javascript-newsletter-editor/testBundles
 assets/dist
 .vagrant
 lang
@@ -27,4 +27,4 @@ tasks/phpstan/vendor
 tasks/phpstan/_phpstan-wp-source.neon
 /tools/vendor
 /storybook-static
-assets/js/src/newsletter_editor/behaviors/tinymce_icons.js
+assets/js/src/newsletter-editor/behaviors/tinymce-icons.js

@@ -4,12 +4,12 @@
     "extends @wordpress/browserslist-config"
   ],
   "scripts": {
-    "lint": "NODE_OPTIONS=--max_old_space_size=2048 eslint --max-warnings 0 'assets/js/src/**/*.{js,jsx,ts,tsx}' 'tests/javascript_newsletter_editor/**/*.js'",
+    "lint": "NODE_OPTIONS=--max_old_space_size=2048 eslint --max-warnings 0 'assets/js/src/**/*.{js,jsx,ts,tsx}' 'tests/javascript-newsletter-editor/**/*.js'",
     "autoprefixer": "postcss assets/dist/css/*.css --use autoprefixer --no-map --replace",
     "scss": "sass assets/css/src/:assets/dist/css/ --style compressed",
     "stylelint": "stylelint --fix",
     "stylelint-check": "stylelint",
-    "test": "env NODE_PATH=$NODE_PATH:./assets/js/src mocha --recursive --require tests/javascript/babel_register.js  tests/javascript --extension spec.js --extension spec.ts",
+    "test": "env NODE_PATH=$NODE_PATH:./assets/js/src mocha --recursive --require tests/javascript/babel-register.js  tests/javascript --extension spec.js --extension spec.ts",
     "check-types": "tsc --noEmit",
     "storybook": "start-storybook -s ./ -p 8083",
     "build-storybook": "build-storybook",

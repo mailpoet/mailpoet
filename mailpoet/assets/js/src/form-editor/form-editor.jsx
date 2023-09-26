@@ -9,7 +9,7 @@ import { initBlocks } from './blocks/blocks.jsx';
 import { initHooks } from './hooks';
 import { initTranslations } from './translations';
 import { initRichText } from './rich-text/init.ts';
-import './template_selection';
+import './template-selection';
 import { registerTranslations } from '../common';
 
 function App() {

@@ -43,7 +43,7 @@ global.window.wp = global.window.wp || {
 };
 
 testHelpers.loadScript(
-  'tests/javascript_newsletter_editor/testBundles/vendor.js',
+  'tests/javascript-newsletter-editor/testBundles/vendor.js',
   global.window,
 );
 const Handlebars = global.window.Handlebars;

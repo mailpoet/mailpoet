@@ -16,7 +16,7 @@ import 'tinymce/plugins/link';
 import 'tinymce/plugins/lists';
 import 'tinymce/models/dom';
 
-import './tinymce_icons';
+import './tinymce-icons';
 
 const configurationFilter = (originalConfig: RawEditorOptions) =>
   originalConfig;

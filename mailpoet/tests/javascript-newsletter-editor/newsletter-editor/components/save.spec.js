@@ -15,7 +15,7 @@ describe('Save', function () {
     var module;
     before(function () {
       module = SaveInjector({
-        'newsletter_editor/components/communication': {
+        'newsletter-editor/components/communication': {
           CommunicationComponent: {
             saveNewsletter: function () {
               return jQuery.Deferred();
@@ -53,7 +53,7 @@ describe('Save', function () {
         },
       });
       innerModule = SaveInjector({
-        'newsletter_editor/components/communication': {
+        'newsletter-editor/components/communication': {
           CommunicationComponent: {
             saveNewsletter: sinon.stub().returns(promise),
           },
@@ -67,7 +67,7 @@ describe('Save', function () {
     it('sends newsletter json to server for saving', function () {
       var mock = sinon.mock().once().returns(jQuery.Deferred());
       var innerModule = SaveInjector({
-        'newsletter_editor/components/communication': {
+        'newsletter-editor/components/communication': {
           CommunicationComponent: {
             saveNewsletter: mock,
           },
@@ -97,7 +97,7 @@ describe('Save', function () {
         body: body,
       });
       innerModule = SaveInjector({
-        'newsletter_editor/components/communication': {
+        'newsletter-editor/components/communication': {
           CommunicationComponent: {
             saveNewsletter: mock,
           },
@@ -277,7 +277,7 @@ describe('Save', function () {
               trackEvent: function () {},
             },
           },
-          'newsletter_editor/App': { App },
+          'newsletter-editor/app': { App },
           common: {
             fromNewsletter: function () {
               return promiseMock;
@@ -309,7 +309,7 @@ describe('Save', function () {
       it('saves newsletter when clicked on "next" button', function () {
         var spy = sinon.spy();
         var module = SaveInjector({
-          'newsletter_editor/components/communication': {
+          'newsletter-editor/components/communication': {
             CommunicationComponent: {
               saveNewsletter: function () {
                 return jQuery.Deferred();

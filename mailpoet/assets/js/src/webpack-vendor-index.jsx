@@ -5,5 +5,5 @@
 // Code can be gradually refactored to avoid side effects completely.
 
 import 'handlebars'; // no side effect - this just explicitly requires Handlebars
-import 'handlebars_helpers'; // side effect - extends Handlebars, assigns to window
+import 'handlebars-helpers'; // side effect - extends Handlebars, assigns to window
 import 'wp-js-hooks'; // side effect - assigns to window

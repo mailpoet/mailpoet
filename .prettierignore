@@ -12,14 +12,14 @@ vendor-prefixed
 /dev/data
 /mailpoet/assets/dist
 /mailpoet/assets/js/lib
-/mailpoet/assets/js/src/newsletter_editor/behaviors/tinymce_icons.js
+/mailpoet/assets/js/src/newsletter-editor/behaviors/tinymce-icons.js
 /mailpoet/generated
 /mailpoet/lang
 /mailpoet/lib/Newsletter/Renderer/Template.html
 /mailpoet/lib-3rd-party
 /mailpoet/plugin_repository
 /mailpoet/temp
-/mailpoet/tests/javascript_newsletter_editor/testBundles
+/mailpoet/tests/javascript-newsletter-editor/testBundles
 /mailpoet/tests/plugins
 /mailpoet/tools/wpscan-semgrep-rules
 /mailpoet/views

@@ -360,8 +360,8 @@ class RoboFile extends \Robo\Tasks {
   public function testNewsletterEditor($xmlOutputFile = null) {
     $command = join(' ', [
       './node_modules/.bin/mocha',
-      '-r tests/javascript_newsletter_editor/mochaTestHelper.js',
-      'tests/javascript_newsletter_editor/testBundles/**/*.js',
+      '-r tests/javascript-newsletter-editor/mocha-test-helper.js',
+      'tests/javascript-newsletter-editor/testBundles/**/*.js',
       '--exit',
     ]);
 
@@ -377,7 +377,7 @@ class RoboFile extends \Robo\Tasks {
   }
 
   public function testJavascript($xmlOutputFile = null) {
-    $command = './node_modules/.bin/mocha --recursive --require tests/javascript/babel_register.js tests/javascript --extension spec.js --extension spec.ts';
+    $command = './node_modules/.bin/mocha --recursive --require tests/javascript/babel-register.js tests/javascript --extension spec.js --extension spec.ts';
 
     if (!empty($xmlOutputFile)) {
       $command .= sprintf(
