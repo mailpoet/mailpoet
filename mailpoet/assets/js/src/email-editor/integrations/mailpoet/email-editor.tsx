@@ -1,3 +1,4 @@
+import { useEffect } from '@wordpress/element';
 import { registerPlugin } from '@wordpress/plugins';
 import { useSelect, select as directSelect } from '@wordpress/data';
 import { store as coreStore } from '@wordpress/core-data';
@@ -8,6 +9,7 @@ import { useDisableWelcomeGuide } from 'email-editor/engine/hooks';
 import { NextButton } from './components/next-button';
 import { SettingsSidebar } from './components/settings-panel';
 import { PreviewDropdown } from './components/preview-dropdown';
+import { createStore } from './store';
 import { MailPoetEmailData } from './types';
 
 import './email_editor.scss';
@@ -26,6 +28,11 @@ function Editor() {
         'mailpoet_data',
       ) as MailPoetEmailData) ?? null,
   }));
+
+  // Initialize the store
+  useEffect(() => {
+    createStore();
+  }, []);
 
   // We don't want to show the editor welcome guide as it is not relevant to emails
   useDisableWelcomeGuide();
