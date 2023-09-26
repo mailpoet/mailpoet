@@ -11,3 +11,7 @@ export const isSidebarOpened = createRegistrySelector(
 export function isInserterSidebarOpened(state: State): boolean {
   return state.inserterSidebar.isOpened;
 }
+
+export function isListviewSidebarOpened(state: State): boolean {
+  return state.listviewSidebar.isOpened;
+}

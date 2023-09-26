@@ -8,6 +8,12 @@ export function toggleInserterSidebar() {
   } as const;
 }
 
+export function toggleListviewSidebar() {
+  return {
+    type: 'TOGGLE_LISTVIEW_SIDEBAR',
+  } as const;
+}
+
 export const openSidebar = () => {
   dispatch(interfaceStore).enableComplementaryArea(storeName);
 };

@@ -5,5 +5,8 @@ export function getInitialState(): State {
     inserterSidebar: {
       isOpened: false,
     },
+    listviewSidebar: {
+      isOpened: false,
+    },
   };
 }
