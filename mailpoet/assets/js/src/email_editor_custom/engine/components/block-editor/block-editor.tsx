@@ -1,6 +1,7 @@
 import {
   BlockEditorKeyboardShortcuts,
   BlockEditorProvider,
+  BlockInspector,
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore No types for this exist yet.
   BlockTools,
@@ -9,6 +10,8 @@ import {
   WritingFlow,
 } from '@wordpress/block-editor';
 import { useState } from '@wordpress/element';
+
+import { Sidebar } from '../sidebar/sidebar';
 
 export function BlockEditor() {
   const [documentBlocks, updateBlocks] = useState([]);
@@ -33,6 +36,9 @@ export function BlockEditor() {
             onChange={(blocks) => updateBlocks(blocks)}
             settings={{}}
           >
+            <Sidebar.InspectorFill>
+              <BlockInspector />
+            </Sidebar.InspectorFill>
             <div className="editor-styles-wrapper">
               {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
               {/* @ts-ignore BlockEditorKeyboardShortcuts.Register has no types */}
