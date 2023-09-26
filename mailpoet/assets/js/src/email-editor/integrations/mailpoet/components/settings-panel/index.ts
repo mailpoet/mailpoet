@@ -1,6 +1,6 @@
-import { DetailsPanel } from './details_panel';
-import { EmailTypeInfo } from './email_type_info';
-import { SettingsSidebar } from './settings_sidebar';
+import { DetailsPanel } from './details-panel';
+import { EmailTypeInfo } from './email-type-info';
+import { SettingsSidebar } from './settings-sidebar';
 
 import './index.scss';
 

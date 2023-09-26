@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types';
 
 import { MailPoet } from 'mailpoet';
-import { KeyValueTable } from 'common/key_value_table.jsx';
-import { PrintBoolean } from 'common/print_boolean.jsx';
+import { KeyValueTable } from 'common/key-value-table.jsx';
+import { PrintBoolean } from 'common/print-boolean.jsx';
 
 function CronStatus(props) {
   const status = props.status_data;

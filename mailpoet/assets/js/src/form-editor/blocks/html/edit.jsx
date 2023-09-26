@@ -12,8 +12,8 @@ import { debounce } from 'lodash';
 import { useSelect } from '@wordpress/data';
 
 import { MailPoet } from 'mailpoet';
-import { mapColorSlugToValue } from 'form_editor/store/mapping/from_blocks/styles_mapper';
-import { ParagraphEdit } from '../paragraph_edit.jsx';
+import { mapColorSlugToValue } from 'form-editor/store/mapping/from-blocks/styles-mapper';
+import { ParagraphEdit } from '../paragraph-edit.jsx';
 import { storeName } from '../../store/constants';
 
 function CustomHtmlEdit({ attributes, setAttributes, clientId }) {

@@ -8,7 +8,7 @@ import { MailPoet } from 'mailpoet';
 
 import { EmailFormItem, FilterProps } from '../../../types';
 import { storeName } from '../../../store';
-import { DaysPeriodField } from '../days_period_field';
+import { DaysPeriodField } from '../days-period-field';
 
 function replaceEmailActionOpensSentence(
   fn: (value) => JSX.Element,

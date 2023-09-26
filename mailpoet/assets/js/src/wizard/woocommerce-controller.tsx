@@ -2,9 +2,9 @@ import { useState } from 'react';
 import { MailPoet } from 'mailpoet';
 import { useSetting } from 'settings/store/hooks';
 import { Settings } from 'settings/store/types';
-import { StepsContent } from 'common/steps/steps_content';
-import { WizardWooCommerceStep } from './steps/woocommerce_step';
-import { WelcomeWizardStepLayout } from './layout/step_layout.jsx';
+import { StepsContent } from 'common/steps/steps-content';
+import { WizardWooCommerceStep } from './steps/woocommerce-step';
+import { WelcomeWizardStepLayout } from './layout/step-layout.jsx';
 import { ErrorBoundary } from '../common';
 
 type WooCommerceControllerPropType = {

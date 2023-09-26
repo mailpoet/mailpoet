@@ -1,8 +1,8 @@
 import { MailPoet } from 'mailpoet';
 import { useDispatch, useSelect } from '@wordpress/data';
 
-import { FormPlacementOption } from './form_placement_option';
-import { PopupIcon } from './icons/popup_icon';
+import { FormPlacementOption } from './form-placement-option';
+import { PopupIcon } from './icons/popup-icon';
 import { storeName } from '../../../store';
 
 export function Popup(): JSX.Element {

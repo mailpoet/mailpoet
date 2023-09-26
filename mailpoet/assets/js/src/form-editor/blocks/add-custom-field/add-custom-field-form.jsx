@@ -5,11 +5,11 @@ import { Button, SelectControl, TextControl } from '@wordpress/components';
 import { isEmpty } from 'lodash';
 
 import { MailPoet } from 'mailpoet';
-import { CustomFieldSettings as TextFieldSettings } from '../custom_text/custom_field_settings.jsx';
-import { CustomFieldSettings as CheckboxFieldSettings } from '../custom_checkbox/custom_field_settings.jsx';
-import { CustomFieldSettings as DateFieldSettings } from '../custom_date/custom_field_settings.jsx';
-import { CustomFieldSettings as RadioAndSelectFieldSettings } from '../custom_radio/custom_field_settings.jsx';
-import { mapCustomFieldFormData } from '../map_custom_field_form_data.jsx';
+import { CustomFieldSettings as TextFieldSettings } from '../custom-text/custom-field-settings.jsx';
+import { CustomFieldSettings as CheckboxFieldSettings } from '../custom-checkbox/custom-field-settings.jsx';
+import { CustomFieldSettings as DateFieldSettings } from '../custom-date/custom-field-settings.jsx';
+import { CustomFieldSettings as RadioAndSelectFieldSettings } from '../custom-radio/custom-field-settings.jsx';
+import { mapCustomFieldFormData } from '../map-custom-field-form-data.jsx';
 
 export const customFieldTypes = [
   {

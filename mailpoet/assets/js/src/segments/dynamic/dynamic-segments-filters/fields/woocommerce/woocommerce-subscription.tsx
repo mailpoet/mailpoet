@@ -3,7 +3,7 @@ import { MailPoet } from 'mailpoet';
 import { filter } from 'lodash/fp';
 import { useSelect, useDispatch } from '@wordpress/data';
 
-import { ReactSelect } from 'common/form/react_select/react_select';
+import { ReactSelect } from 'common/form/react-select/react-select';
 import { Select } from 'common/form/select/select';
 import { Grid } from 'common/grid';
 
@@ -15,7 +15,7 @@ import {
   WooCommerceSubscriptionFormItem,
 } from '../../../types';
 import { storeName } from '../../../store';
-import { WooCommerceSubscriptionsActionTypes } from '../../woocommerce_options';
+import { WooCommerceSubscriptionsActionTypes } from '../../woocommerce-options';
 
 export function validateWooCommerceSubscription(
   formItem: WooCommerceSubscriptionFormItem,

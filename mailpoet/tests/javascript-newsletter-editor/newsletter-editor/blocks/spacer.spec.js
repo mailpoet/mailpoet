@@ -1,5 +1,5 @@
-import { App } from 'newsletter_editor/App';
-import { SpacerBlock } from 'newsletter_editor/blocks/spacer';
+import { App } from 'newsletter-editor/app';
+import { SpacerBlock } from 'newsletter-editor/blocks/spacer';
 
 const expect = global.expect;
 const sinon = global.sinon;

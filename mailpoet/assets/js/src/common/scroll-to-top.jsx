@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import { useEffect } from 'react';
 import { withRouter } from 'react-router-dom';
-import { withBoundary } from './error_boundary';
+import { withBoundary } from './error-boundary';
 
 function ScrollToTopComponent({ children, location: { pathname } }) {
   useEffect(() => {

@@ -6,9 +6,9 @@ import ReactStringReplace from 'react-string-replace';
 import { Background } from 'common/background/background';
 import { Form } from 'form/form.jsx';
 import { Heading } from 'common/typography/heading/heading';
-import { HideScreenOptions } from 'common/hide_screen_options/hide_screen_options';
+import { HideScreenOptions } from 'common/hide-screen-options/hide-screen-options';
 import { MailPoet } from 'mailpoet';
-import { SubscribersLimitNotice } from 'notices/subscribers_limit_notice';
+import { SubscribersLimitNotice } from 'notices/subscribers-limit-notice';
 
 const fields = [
   {

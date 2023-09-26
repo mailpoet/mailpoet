@@ -22,9 +22,9 @@ import {
   UpgradeInfo,
   useUpgradeInfo,
   UtmParams,
-} from './upgrade_info';
+} from './upgrade-info';
 import { storeName } from '../../automation/editor/store';
-import { withBoundary } from '../error_boundary';
+import { withBoundary } from '../error-boundary';
 
 export const premiumValidAndActive =
   premiumFeaturesEnabled && MailPoet.premiumActive;

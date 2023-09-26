@@ -10,7 +10,7 @@ import {
 import { useDispatch } from '@wordpress/data';
 import { partial } from 'lodash';
 import PropTypes from 'prop-types';
-import { ColorGradientSettings } from '../components/color_gradient_settings';
+import { ColorGradientSettings } from '../components/color-gradient-settings';
 import { storeName } from '../store/constants';
 
 type InputStyles = {

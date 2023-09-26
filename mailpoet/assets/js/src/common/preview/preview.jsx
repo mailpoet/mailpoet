@@ -2,8 +2,8 @@ import { useState } from 'react';
 import { __, _x } from '@wordpress/i18n';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
-import { MobileIcon } from './mobile_icon';
-import { DesktopIcon } from './desktop_icon';
+import { MobileIcon } from './mobile-icon';
+import { DesktopIcon } from './desktop-icon';
 
 function Preview({ children, onDisplayTypeChange, selectedDisplayType }) {
   const [displayType, setDisplayType] = useState(selectedDisplayType);

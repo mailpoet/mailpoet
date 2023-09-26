@@ -1,3 +1,3 @@
-export * from './useActions';
-export * from './useSetting';
-export * from './useSelector';
+export * from './use-actions';
+export * from './use-setting';
+export * from './use-selector';

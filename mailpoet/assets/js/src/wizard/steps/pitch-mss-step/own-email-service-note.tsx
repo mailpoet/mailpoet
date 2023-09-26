@@ -3,7 +3,7 @@ import { Modal } from '@wordpress/components';
 import ReactStringReplace from 'react-string-replace';
 import { MailPoet } from 'mailpoet';
 import { Button } from 'common';
-import { finishWizard } from 'wizard/finishWizard';
+import { finishWizard } from 'wizard/finish-wizard';
 
 function OwnEmailServiceNote(): JSX.Element {
   const [confirmationModalIsOpen, setConfirmationModalOpen] = useState(false);

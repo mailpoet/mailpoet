@@ -1,7 +1,7 @@
 import { useHistory } from 'react-router-dom';
 import { __ } from '@wordpress/i18n';
-import { MailPoetLogo } from './mailpoet_logo';
-import { MailPoetLogoMobile } from './mailpoet_logo_mobile';
+import { MailPoetLogo } from './mailpoet-logo';
+import { MailPoetLogoMobile } from './mailpoet-logo-mobile';
 
 type Props = {
   onClick?: () => void;

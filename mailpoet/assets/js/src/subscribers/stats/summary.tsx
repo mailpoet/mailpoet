@@ -2,7 +2,7 @@ import ReactStringReplace from 'react-string-replace';
 import { MailPoet } from 'mailpoet';
 import { Tag } from 'common/tag/tag';
 import { Tooltip } from 'help-tooltip';
-import { ListingsEngagementScore } from '../listings_engagement_score';
+import { ListingsEngagementScore } from '../listings-engagement-score';
 import { PeriodicStats, StatsType } from '../types';
 
 export type PropTypes = {

@@ -7,15 +7,15 @@ import { Button } from 'common/button/button';
 import { plusIcon } from 'common/button/icon/plus';
 import { Heading } from 'common/typography/heading/heading';
 import { Input } from 'common/form/input/input';
-import { ReactSelect } from 'common/form/react_select/react_select';
+import { ReactSelect } from 'common/form/react-select/react-select';
 import { Textarea } from 'common/form/textarea/textarea';
 import { Grid } from 'common/grid';
-import { APIErrorsNotice } from 'notices/api_errors_notice';
-import { SubscribersCounter } from './subscribers_counter';
-import { FormFilterFields } from './form_filter_fields';
+import { APIErrorsNotice } from 'notices/api-errors-notice';
+import { SubscribersCounter } from './subscribers-counter';
+import { FormFilterFields } from './form-filter-fields';
 import { isFormValid } from './validator';
-import { PrivacyProtectionNotice } from './privacy_protection_notice';
-import { DynamicSegmentsPremiumBanner } from './premium_banner';
+import { PrivacyProtectionNotice } from './privacy-protection-notice';
+import { DynamicSegmentsPremiumBanner } from './premium-banner';
 import { storeName } from './store';
 
 import {

@@ -3,7 +3,7 @@ import { Hooks } from 'hooks';
 import { Location } from 'history';
 import { MailPoet } from 'mailpoet';
 import { Heading } from 'common/typography/heading/heading';
-import { NoAccessInfo } from './no_access_info';
+import { NoAccessInfo } from './no-access-info';
 
 type Props = {
   params: {

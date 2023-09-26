@@ -2,7 +2,7 @@ import { __, _x } from '@wordpress/i18n';
 import { useState } from 'react';
 import ReactStringReplace from 'react-string-replace';
 
-import { WelcomeWizardStepLayoutBody } from 'wizard/layout/step_layout_body.jsx';
+import { WelcomeWizardStepLayoutBody } from 'wizard/layout/step-layout-body.jsx';
 import { Button, Heading, List } from 'common';
 
 function FreeBenefitsList(): JSX.Element {

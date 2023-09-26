@@ -1,5 +1,5 @@
-import { App } from 'newsletter_editor/App';
-import { StylesComponent } from 'newsletter_editor/components/styles';
+import { App } from 'newsletter-editor/app';
+import { StylesComponent } from 'newsletter-editor/components/styles';
 
 const expect = global.expect;
 const sinon = global.sinon;

@@ -1,9 +1,9 @@
 import { ErrorBoundary } from 'common';
-import { BelowPostsSettings } from './settings_panels/below_posts_settings';
-import { PopUpSettings } from './settings_panels/popup_settings';
-import { OtherSettings } from './settings_panels/other_settings';
-import { FixedBarSettings } from './settings_panels/fixed_bar_settings';
-import { SlideInSettings } from './settings_panels/slide_in_settings';
+import { BelowPostsSettings } from './settings-panels/below-posts-settings';
+import { PopUpSettings } from './settings-panels/popup-settings';
+import { OtherSettings } from './settings-panels/other-settings';
+import { FixedBarSettings } from './settings-panels/fixed-bar-settings';
+import { SlideInSettings } from './settings-panels/slide-in-settings';
 
 type Props = {
   activePanel: string;

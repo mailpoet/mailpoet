@@ -1,8 +1,8 @@
 import { MailPoet } from 'mailpoet';
 import { Notices } from 'notices/notices';
-import { TransactionalEmailsProposeOptInNotice } from 'notices/transactional_emails_propose_opt_in_notice';
-import { MailerError } from 'notices/mailer_error';
-import { MssAccessNotices } from 'notices/mss_access_notices';
+import { TransactionalEmailsProposeOptInNotice } from 'notices/transactional-emails-propose-opt-in-notice';
+import { MailerError } from 'notices/mailer-error';
+import { MssAccessNotices } from 'notices/mss-access-notices';
 
 export function HomepageNotices(): JSX.Element {
   return (

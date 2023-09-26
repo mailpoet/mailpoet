@@ -2,8 +2,8 @@ import { Link } from 'react-router-dom';
 import { Background } from 'common/background/background';
 import { Form } from 'form/form.jsx';
 import { Heading } from 'common/typography/heading/heading';
-import { HideScreenOptions } from 'common/hide_screen_options/hide_screen_options';
-import { SubscribersLimitNotice } from 'notices/subscribers_limit_notice';
+import { HideScreenOptions } from 'common/hide-screen-options/hide-screen-options';
+import { SubscribersLimitNotice } from 'notices/subscribers-limit-notice';
 import { MailPoet } from 'mailpoet';
 
 const fields = [

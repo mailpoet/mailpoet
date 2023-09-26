@@ -6,9 +6,9 @@ import _ from 'underscore';
 import jQuery from 'jquery';
 import { createRoot } from 'react-dom/client';
 
-import { App } from 'newsletter_editor/App';
+import { App } from 'newsletter-editor/app';
 import { MailPoet } from 'mailpoet';
-import { BrandStyles } from '../blocks/sidebar/brandStyles';
+import { BrandStyles } from '../blocks/sidebar/brand-styles';
 import { getBrandStylesSettings } from '../utils';
 
 type ModuleType = Record<string, (...args: unknown[]) => void> & {

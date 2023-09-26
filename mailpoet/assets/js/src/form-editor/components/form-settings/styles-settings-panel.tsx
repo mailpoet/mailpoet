@@ -10,12 +10,12 @@ import { useDispatch, useSelect } from '@wordpress/data';
 import { partial } from 'lodash';
 import { HorizontalAlignment } from 'common/styles';
 
-import { ColorGradientSettings } from 'form_editor/components/color_gradient_settings';
-import { FontSizeSettings } from 'form_editor/components/font_size_settings';
-import { ImageSettings } from 'form_editor/components/image_settings';
-import { CloseButtonsSettings } from 'form_editor/components/close_button_settings';
-import { formStyles as defaultFormStyles } from 'form_editor/store/defaults';
-import { FontFamilySettings } from '../font_family_settings';
+import { ColorGradientSettings } from 'form-editor/components/color-gradient-settings';
+import { FontSizeSettings } from 'form-editor/components/font-size-settings';
+import { ImageSettings } from 'form-editor/components/image-settings';
+import { CloseButtonsSettings } from 'form-editor/components/close-button-settings';
+import { formStyles as defaultFormStyles } from 'form-editor/store/defaults';
+import { FontFamilySettings } from '../font-family-settings';
 import { storeName } from '../../store';
 
 type StylesSettingsPanelProps = {

@@ -1,6 +1,6 @@
 import { trim } from 'lodash';
-import { State } from '../state_types';
-import { CustomFieldStartedAction } from '../actions_types';
+import { State } from '../state-types';
+import { CustomFieldStartedAction } from '../actions-types';
 
 export const createCustomFieldStartedFactory =
   (MailPoet) =>

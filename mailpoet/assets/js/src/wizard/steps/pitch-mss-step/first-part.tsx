@@ -4,7 +4,7 @@ import { external, Icon } from '@wordpress/icons';
 import { Heading } from 'common/typography/heading/heading';
 import { MailPoet } from 'mailpoet';
 import { Button, List } from 'common';
-import { OwnEmailServiceNote } from './own_email_service_note';
+import { OwnEmailServiceNote } from './own-email-service-note';
 import { useSelector } from '../../../settings/store/hooks';
 
 const mailpoetAccountUrl =

@@ -3,18 +3,18 @@ import { __, _x } from '@wordpress/i18n';
 import { Hooks } from 'wp-js-hooks';
 import { MailPoet } from 'mailpoet';
 import { withRouter } from 'react-router-dom';
-import { MssAccessNotices } from 'notices/mss_access_notices';
-import { TopBarWithBeamer } from 'common/top_bar/top_bar';
-import { HideScreenOptions } from 'common/hide_screen_options/hide_screen_options';
-import { RemoveWrapMargin } from 'common/remove_wrap_margin/remove_wrap_margin';
+import { MssAccessNotices } from 'notices/mss-access-notices';
+import { TopBarWithBeamer } from 'common/top-bar/top-bar';
+import { HideScreenOptions } from 'common/hide-screen-options/hide-screen-options';
+import { RemoveWrapMargin } from 'common/remove-wrap-margin/remove-wrap-margin';
 import { Tabs } from 'common/tabs/tabs';
 import { Tab } from 'common/tabs/tab';
 import { Heading } from 'common/typography/heading/heading';
 import { ErrorBoundary } from 'common';
-import { NewsletterGeneralStats } from './newsletter_general_stats';
-import { NewsletterType } from './newsletter_type';
-import { NewsletterStatsInfo } from './newsletter_stats_info';
-import { PremiumBanner } from './premium_banner';
+import { NewsletterGeneralStats } from './newsletter-general-stats';
+import { NewsletterType } from './newsletter-type';
+import { NewsletterStatsInfo } from './newsletter-stats-info';
+import { PremiumBanner } from './premium-banner';
 
 type Props = {
   match: {

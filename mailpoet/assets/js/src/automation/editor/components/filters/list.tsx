@@ -8,7 +8,7 @@ import { Icon, closeSmall } from '@wordpress/icons';
 import { ListGroupHeader } from './list-group-header';
 import { Value } from './value';
 import { storeName } from '../../store';
-import { PremiumModal } from '../../../../common/premium_modal';
+import { PremiumModal } from '../../../../common/premium-modal';
 import {
   FilterGroupOperatorChangeType,
   FilterWrapperType,

@@ -1,7 +1,7 @@
 import { Component } from 'react';
 import PropTypes from 'prop-types';
 
-import { ListingHeadingStepsRoute } from 'newsletters/listings/heading_steps_route';
+import { ListingHeadingStepsRoute } from 'newsletters/listings/heading-steps-route';
 import { MailPoet } from 'mailpoet';
 import { withRouter } from 'react-router-dom';
 import { GlobalContext } from 'context';

@@ -1,17 +1,17 @@
 import { registerBlockType, setCategories } from '@wordpress/blocks';
 import { select } from '@wordpress/data';
 import { MailPoet } from 'mailpoet';
-import { formatCustomFieldBlockName } from './format_custom_field_block_name.jsx';
-import { getCustomFieldBlockSettings } from './custom_fields_blocks.jsx';
+import { formatCustomFieldBlockName } from './format-custom-field-block-name.jsx';
+import { getCustomFieldBlockSettings } from './custom-fields-blocks.jsx';
 
 import * as divider from './divider/divider';
 import * as email from './email/email.jsx';
 import * as submit from './submit/submit.jsx';
-import * as firstName from './first_name/first_name.jsx';
-import * as lastName from './last_name/last_name.jsx';
-import * as segmentSelect from './segment_select/segment_select.jsx';
+import * as firstName from './first-name/first-name.jsx';
+import * as lastName from './last-name/last-name.jsx';
+import * as segmentSelect from './segment-select/segment-select.jsx';
 import * as html from './html/html.jsx';
-import * as addCustomField from './add_custom_field/add_custom_field.jsx';
+import * as addCustomField from './add-custom-field/add-custom-field.jsx';
 import * as columns from './columns/columns.jsx';
 import * as column from './columns/column.jsx';
 import * as heading from './heading/heading.jsx';

@@ -5,7 +5,7 @@ import { useDispatch, useSelect } from '@wordpress/data';
 import { curry } from 'lodash';
 import { assocPath } from 'lodash/fp';
 import { TextareaControl } from '@wordpress/components';
-import { SizeSettings } from 'form_editor/components/size_settings';
+import { SizeSettings } from 'form-editor/components/size-settings';
 import { storeName } from '../../../../store';
 
 function OtherSettings(): JSX.Element {

@@ -8,10 +8,10 @@ import {
 } from '@wordpress/components';
 import { partial } from 'lodash';
 
-import { ColorGradientSettings } from 'form_editor/components/color_gradient_settings';
-import { FontSizeSettings } from 'form_editor/components/font_size_settings';
-import { InputBlockStyles } from 'form_editor/store/form_data_types';
-import { FontFamilySettings } from '../../components/font_family_settings';
+import { ColorGradientSettings } from 'form-editor/components/color-gradient-settings';
+import { FontSizeSettings } from 'form-editor/components/font-size-settings';
+import { InputBlockStyles } from 'form-editor/store/form-data-types';
+import { FontFamilySettings } from '../../components/font-family-settings';
 
 type Props = {
   styles: InputBlockStyles;

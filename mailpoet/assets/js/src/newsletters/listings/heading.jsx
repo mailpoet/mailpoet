@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { __ } from '@wordpress/i18n';
 import { MailPoet } from 'mailpoet';
-import { TopBarWithBeamer } from 'common/top_bar/top_bar';
+import { TopBarWithBeamer } from 'common/top-bar/top-bar';
 import { plusIcon } from 'common/button/icon/plus';
 
 export function ListingHeading() {

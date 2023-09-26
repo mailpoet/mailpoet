@@ -1,8 +1,8 @@
 import { useCallback } from 'react';
 import { Settings } from '../types';
-import { useSelector } from './useSelector';
+import { useSelector } from './use-selector';
 import { ValueAndSetter } from './types';
-import { useAction } from './useActions';
+import { useAction } from './use-actions';
 /**
  * Takes the path of a setting (ie. key1, key2, key3,...) and returns an array with two items:
  * the first is the setting value and the second is a setter for that setting.

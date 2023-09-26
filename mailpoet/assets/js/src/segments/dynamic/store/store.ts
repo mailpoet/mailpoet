@@ -7,7 +7,7 @@ import * as selectors from './selectors';
 import { createReducer } from './reducer';
 import * as actions from './actions';
 import * as controls from './controls';
-import { getInitialState } from './initial_state';
+import { getInitialState } from './initial-state';
 import { storeName } from './constants';
 
 export const createStore = () => {

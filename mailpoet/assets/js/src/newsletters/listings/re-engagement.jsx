@@ -7,7 +7,7 @@ import ReactStringReplace from 'react-string-replace';
 
 import { Toggle } from 'common/form/toggle/toggle';
 import { SegmentTags } from 'common/tag/tags';
-import { ScheduledIcon } from 'common/listings/newsletter_status';
+import { ScheduledIcon } from 'common/listings/newsletter-status';
 import { Listing } from 'listing/listing.jsx';
 import { MailPoet } from 'mailpoet';
 import { Statistics } from 'newsletters/listings/statistics.jsx';

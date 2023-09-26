@@ -1,13 +1,13 @@
 import { MailPoet } from 'mailpoet';
-import { createCustomFieldDone } from './reducers/create_custom_field_done.jsx';
-import { createCustomFieldFailed } from './reducers/create_custom_field_failed.jsx';
-import { customFieldEdited } from './reducers/custom_field_edited.jsx';
-import { createCustomFieldStartedFactory } from './reducers/create_custom_field_started.ts';
-import { changeFormName } from './reducers/change_form_name.jsx';
-import { changeFormSettings } from './reducers/change_form_settings.jsx';
-import { changeFormStyles } from './reducers/change_form_styles.jsx';
-import { removeNotice } from './reducers/remove_notice.jsx';
-import { tutorialDismiss } from './reducers/tutorial_dismiss';
+import { createCustomFieldDone } from './reducers/create-custom-field-done.jsx';
+import { createCustomFieldFailed } from './reducers/create-custom-field-failed.jsx';
+import { customFieldEdited } from './reducers/custom-field-edited.jsx';
+import { createCustomFieldStartedFactory } from './reducers/create-custom-field-started.ts';
+import { changeFormName } from './reducers/change-form-name.jsx';
+import { changeFormSettings } from './reducers/change-form-settings.jsx';
+import { changeFormStyles } from './reducers/change-form-styles.jsx';
+import { removeNotice } from './reducers/remove-notice.jsx';
+import { tutorialDismiss } from './reducers/tutorial-dismiss';
 import {
   changePreviewSettings,
   hidePreview,
@@ -15,32 +15,32 @@ import {
   previewDataSaved,
   showPreview,
 } from './reducers/preview.jsx';
-import { saveFormDone } from './reducers/save_form_done.jsx';
-import { saveFormFailed } from './reducers/save_form_failed.jsx';
-import { saveFormStartedFactory } from './reducers/save_form_started';
-import { switchDefaultSidebarTab } from './reducers/switch_sidebar_tab.jsx';
+import { saveFormDone } from './reducers/save-form-done.jsx';
+import { saveFormFailed } from './reducers/save-form-failed.jsx';
+import { saveFormStartedFactory } from './reducers/save-form-started';
+import { switchDefaultSidebarTab } from './reducers/switch-sidebar-tab.jsx';
 import {
   toggleInserterSidebar,
   toggleSidebar,
-} from './reducers/toggle_sidebar.ts';
-import { toggleSidebarPanel } from './reducers/toggle_sidebar_panel.ts';
-import { changeFormBlocks } from './reducers/change_form_blocks.jsx';
-import { saveCustomFieldDone } from './reducers/save_custom_field_done.jsx';
-import { saveCustomFieldFailed } from './reducers/save_custom_field_failed.jsx';
-import { saveCustomFieldStarted } from './reducers/save_custom_field_started.jsx';
+} from './reducers/toggle-sidebar.ts';
+import { toggleSidebarPanel } from './reducers/toggle-sidebar-panel.ts';
+import { changeFormBlocks } from './reducers/change-form-blocks.jsx';
+import { saveCustomFieldDone } from './reducers/save-custom-field-done.jsx';
+import { saveCustomFieldFailed } from './reducers/save-custom-field-failed.jsx';
+import { saveCustomFieldStarted } from './reducers/save-custom-field-started.jsx';
 import {
   customFieldDeleteDone,
   customFieldDeleteFailed,
   customFieldDeleteStart,
-} from './reducers/custom_field_delete.jsx';
-import { changeActiveSidebar } from './reducers/change_active_sidebar';
-import { disableForm, enableForm } from './reducers/toggle_form';
-import { toggleFullscreen } from './reducers/toggle_fullscreen';
+} from './reducers/custom-field-delete.jsx';
+import { changeActiveSidebar } from './reducers/change-active-sidebar';
+import { disableForm, enableForm } from './reducers/toggle-form';
+import { toggleFullscreen } from './reducers/toggle-fullscreen';
 import {
   createHistoryRecord,
   historyRedo,
   historyUndo,
-} from './reducers/history_record';
+} from './reducers/history-record';
 
 const createCustomFieldStarted = createCustomFieldStartedFactory(MailPoet);
 const saveFormStarted = saveFormStartedFactory(MailPoet);

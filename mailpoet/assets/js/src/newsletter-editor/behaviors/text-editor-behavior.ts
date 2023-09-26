@@ -5,9 +5,9 @@
  */
 import Marionette from 'backbone.marionette';
 import tinymce, { RawEditorOptions } from 'tinymce/tinymce';
-import { BehaviorsLookup } from 'newsletter_editor/behaviors/BehaviorsLookup';
-import { App } from 'newsletter_editor/App';
-import { tinyMceAdd } from 'newsletter_editor/tinymce/mailpoet_shortcodes.js';
+import { BehaviorsLookup } from 'newsletter-editor/behaviors/behaviors-lookup';
+import { App } from 'newsletter-editor/app';
+import { tinyMceAdd } from 'newsletter-editor/tinymce/mailpoet-shortcodes.js';
 
 // TinyMCE additions
 import 'tinymce/themes/silver';

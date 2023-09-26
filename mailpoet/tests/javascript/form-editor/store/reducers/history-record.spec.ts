@@ -3,13 +3,13 @@ import {
   createHistoryRecord,
   historyRedo,
   historyUndo,
-} from '../../../../../assets/js/src/form_editor/store/reducers/history_record';
+} from '../../../../../assets/js/src/form-editor/store/reducers/history-record';
 import {
   createBlocksMock,
   createFormDataMock,
   createFormSettingsMock,
   createStateMock,
-} from '../mocks/partialMocks';
+} from '../mocks/partial-mocks';
 
 describe('History Record Reducer', () => {
   let initialState = createStateMock(null);

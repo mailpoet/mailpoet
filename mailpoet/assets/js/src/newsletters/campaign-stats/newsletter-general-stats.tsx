@@ -6,10 +6,10 @@ import { Grid } from 'common/grid';
 import {
   getBadgeType,
   StatsBadge,
-} from 'common/listings/newsletter_stats/stats';
+} from 'common/listings/newsletter-stats/stats';
 import { Tooltip } from 'help-tooltip';
 
-import { NewsletterType } from './newsletter_type';
+import { NewsletterType } from './newsletter-type';
 
 type Props = {
   newsletter: NewsletterType;

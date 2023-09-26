@@ -1,4 +1,4 @@
-import { Badge } from '../common/listings/newsletter_stats/badge';
+import { Badge } from '../common/listings/newsletter-stats/badge';
 import { MailPoet } from '../mailpoet';
 
 interface Props {

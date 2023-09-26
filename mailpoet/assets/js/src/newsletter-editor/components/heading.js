@@ -1,4 +1,4 @@
-import { App } from 'newsletter_editor/App';
+import { App } from 'newsletter-editor/app';
 import Marionette from 'backbone.marionette';
 import _ from 'underscore';
 import jQuery from 'jquery';

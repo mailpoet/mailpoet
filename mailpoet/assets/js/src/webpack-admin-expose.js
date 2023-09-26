@@ -43,7 +43,7 @@ export const WooCommerceComponents = {
 // assets
 export * as Automation from 'automation';
 export * as Common from 'common';
-export * as CommonFormReactSelect from 'common/form/react_select/react_select';
+export * as CommonFormReactSelect from 'common/form/react-select/react-select';
 export * as CommonFormSelect from 'common/form/select/select';
 export * as CommonGrid from 'common/grid';
 export * as HelpTooltip from 'help-tooltip';

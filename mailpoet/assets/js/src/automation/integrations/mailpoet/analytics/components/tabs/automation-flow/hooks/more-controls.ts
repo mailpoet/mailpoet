@@ -3,7 +3,7 @@ import { __ } from '@wordpress/i18n';
 import { StepMoreControlsType } from '../../../../../../../types/filters';
 import { Step as StepData } from '../../../../../../../editor/components/automation/types';
 import { OverviewSection, storeName } from '../../../../store';
-import { openTab } from '../../../../navigation/open_tab';
+import { openTab } from '../../../../navigation/open-tab';
 
 export function moreControls(
   element: StepMoreControlsType | null,

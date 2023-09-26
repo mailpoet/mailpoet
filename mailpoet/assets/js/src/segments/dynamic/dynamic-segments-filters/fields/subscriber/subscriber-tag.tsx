@@ -1,7 +1,7 @@
 import { Hooks } from 'wp-js-hooks';
 
 import { WordpressRoleFormItem } from '../../../types';
-import { DynamicSegmentsPremiumBanner } from '../../../premium_banner';
+import { DynamicSegmentsPremiumBanner } from '../../../premium-banner';
 
 export function validateSubscriberTag(
   formItems: WordpressRoleFormItem,

@@ -10,7 +10,7 @@ import {
 import { useSelect } from '@wordpress/data';
 
 import { MailPoet } from 'mailpoet';
-import { Preview } from './settings_preview.jsx';
+import { Preview } from './settings-preview.jsx';
 import { storeName } from '../../store/constants';
 
 const findSegment = (segments, segmentId) =>

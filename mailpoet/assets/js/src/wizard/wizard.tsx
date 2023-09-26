@@ -3,9 +3,9 @@ import { HashRouter, Redirect, Route, Switch } from 'react-router-dom';
 import { GlobalContext, useGlobalContextValue } from 'context';
 import { Notices } from 'notices/notices.jsx';
 import { initStore as initSettingsStore } from 'settings/store';
-import { WooCommerceController } from './woocommerce_controller';
+import { WooCommerceController } from './woocommerce-controller';
 import { registerTranslations, withBoundary } from '../common';
-import { WelcomeWizardStepsController } from './welcome_wizard_controller';
+import { WelcomeWizardStepsController } from './welcome-wizard-controller';
 
 function App(): JSX.Element {
   let basePath = '/steps/1';

@@ -2,8 +2,8 @@ import { MailPoet } from 'mailpoet';
 import { useDispatch, useSelect } from '@wordpress/data';
 import { ToggleControl } from '@wordpress/components';
 import { __, assocPath, compose } from 'lodash/fp';
-import { SizeSettings } from 'form_editor/components/size_settings';
-import { PlacementSettings } from './placement_settings';
+import { SizeSettings } from 'form-editor/components/size-settings';
+import { PlacementSettings } from './placement-settings';
 import { storeName } from '../../../../store';
 
 export function BelowPostsSettings(): JSX.Element {

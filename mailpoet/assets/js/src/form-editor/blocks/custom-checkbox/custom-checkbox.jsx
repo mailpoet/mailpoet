@@ -1,6 +1,6 @@
-import { Icon } from '../custom_text/icon.jsx';
+import { Icon } from '../custom-text/icon.jsx';
 import { CustomCheckboxEdit } from './edit.jsx';
-import { customFieldValuesToBlockValues } from '../../store/form_body_to_blocks.jsx';
+import { customFieldValuesToBlockValues } from '../../store/form-body-to-blocks.jsx';
 
 export const name = 'mailpoet-form/custom-checkbox';
 

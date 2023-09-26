@@ -1,5 +1,5 @@
 import { __ } from '@wordpress/i18n';
-import { calculatePercentage } from '../../formatter/calculate_percentage';
+import { calculatePercentage } from '../../formatter/calculate-percentage';
 import { EmailStats } from '../../store';
 
 function percentageBadgeCalculation(percentage: number): {

@@ -4,13 +4,13 @@ import PropTypes from 'prop-types';
 import { MailPoet } from 'mailpoet';
 import { useDispatch, useSelect } from '@wordpress/data';
 
-import { CustomFieldSettings } from './custom_field_settings.jsx';
-import { mapCustomFieldFormData } from '../map_custom_field_form_data.jsx';
+import { CustomFieldSettings } from './custom-field-settings.jsx';
+import { mapCustomFieldFormData } from '../map-custom-field-form-data.jsx';
 import {
   InputStylesSettings,
   inputStylesPropTypes,
-} from '../input_styles_settings';
-import { TextInputEdit } from '../text_input_edit.jsx';
+} from '../input-styles-settings';
+import { TextInputEdit } from '../text-input-edit.jsx';
 import { storeName } from '../../store/constants';
 
 function CustomTextEdit({ attributes, setAttributes, clientId }) {

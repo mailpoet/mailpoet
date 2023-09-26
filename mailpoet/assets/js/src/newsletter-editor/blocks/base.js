@@ -4,7 +4,7 @@
  * a BlockModel and a BlockView.
  * BlockToolsView, BlockSettingsView and BlockWidgetView are optional.
  */
-import { App } from 'newsletter_editor/App';
+import { App } from 'newsletter-editor/app';
 import Marionette from 'backbone.marionette';
 import SuperModel from 'backbone.supermodel';
 import _ from 'underscore';

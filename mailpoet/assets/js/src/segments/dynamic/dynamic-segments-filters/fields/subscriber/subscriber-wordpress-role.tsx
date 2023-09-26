@@ -3,7 +3,7 @@ import { filter, map } from 'lodash/fp';
 import { MailPoet } from 'mailpoet';
 import { useSelect, useDispatch } from '@wordpress/data';
 
-import { ReactSelect } from 'common/form/react_select/react_select';
+import { ReactSelect } from 'common/form/react-select/react-select';
 import { Select } from 'common/form/select/select';
 import { Grid } from 'common/grid';
 

@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
-import { mapPathToSteps } from './heading_steps.tsx';
+import { mapPathToSteps } from './heading-steps.tsx';
 
 const isHeaderHidden = (location) =>
   location.hash.match(/^#\/new/) || location.pathname.match(/^\/new/);

@@ -1,11 +1,11 @@
 import { useSelect } from '@wordpress/data';
 import { FilterProps, AutomationsFormItem } from '../types';
 import { storeName } from '../store';
-import { AutomationsActionTypes } from './automation_options';
+import { AutomationsActionTypes } from './automation-options';
 import {
   GeneralAutomationsFields,
   validateAutomationsFields,
-} from './fields/automations/general_automations_fields';
+} from './fields/automations/general-automations-fields';
 
 export function validateAutomations(formItems: AutomationsFormItem): boolean {
   if (

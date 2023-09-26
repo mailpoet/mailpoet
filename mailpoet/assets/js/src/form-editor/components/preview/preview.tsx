@@ -5,7 +5,7 @@ import { useDispatch, useSelect } from '@wordpress/data';
 
 import { Modal } from 'common/modal/modal';
 import { Preview } from 'common/preview/preview.jsx';
-import { SettingsPanel } from 'form_editor/components/form_settings/form_placement_options/settings_panel';
+import { SettingsPanel } from 'form-editor/components/form-settings/form-placement-options/settings-panel';
 import { ErrorBoundary } from 'common';
 import { storeName } from '../../store';
 

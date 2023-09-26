@@ -5,9 +5,9 @@ import { InspectorControls } from '@wordpress/block-editor';
 import { useSelect } from '@wordpress/data';
 
 import { MailPoet } from 'mailpoet';
-import { ParagraphEdit } from '../paragraph_edit.jsx';
-import { StylesSettings } from './styles_settings';
-import { InputBlockStyles } from '../../store/form_data_types';
+import { ParagraphEdit } from '../paragraph-edit.jsx';
+import { StylesSettings } from './styles-settings';
+import { InputBlockStyles } from '../../store/form-data-types';
 import { storeName } from '../../store/constants';
 
 type Props = {

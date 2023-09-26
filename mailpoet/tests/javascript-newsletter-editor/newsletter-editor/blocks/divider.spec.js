@@ -1,5 +1,5 @@
-import { App } from 'newsletter_editor/App';
-import { DividerBlock } from 'newsletter_editor/blocks/divider';
+import { App } from 'newsletter-editor/app';
+import { DividerBlock } from 'newsletter-editor/blocks/divider';
 
 const expect = global.expect;
 const sinon = global.sinon;

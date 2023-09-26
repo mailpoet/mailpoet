@@ -1,7 +1,7 @@
 import jQuery from 'jquery';
 import { useState } from 'react';
 import ReactDOM from 'react-dom';
-import { SetFromAddressModal } from 'common/set_from_address_modal';
+import { SetFromAddressModal } from 'common/set-from-address-modal';
 import { GlobalContext, useGlobalContextValue } from 'context';
 import { Notices } from 'notices/notices.jsx';
 import { noop } from 'lodash';

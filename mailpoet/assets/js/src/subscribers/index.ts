@@ -1,1 +1,1 @@
-export * from './location_state';
+export * from './location-state';

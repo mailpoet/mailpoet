@@ -8,8 +8,8 @@ import { Button } from 'common/button/button';
 import {
   createSelection,
   destroySelection,
-} from './generate_segment_selection.jsx';
-import { createNewSegment } from './create_new_segment.jsx';
+} from './generate-segment-selection.jsx';
+import { createNewSegment } from './create-new-segment.jsx';
 
 function SelectSegment({ setSelectedSegments }) {
   const { segments: segmentsContext } = useContext(GlobalContext);

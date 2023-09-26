@@ -1,5 +1,5 @@
-import { ToggleAction, ToggleBlockInserterAction } from '../actions_types';
-import { BlockInsertionPoint } from '../state_types';
+import { ToggleAction, ToggleBlockInserterAction } from '../actions-types';
+import { BlockInsertionPoint } from '../state-types';
 
 export const toggleSidebar = (state, action: ToggleAction) => ({
   ...state,

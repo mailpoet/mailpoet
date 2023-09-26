@@ -6,13 +6,13 @@ import {
   GradientDefinition,
   CustomField,
   InputBlockStyles,
-} from 'form_editor/store/form_data_types';
+} from 'form-editor/store/form-data-types';
 import {
   mapInputBlockStyles,
   mapColorSlugToValue,
   mapFontSizeSlugToValue,
   mapGradientSlugToValue,
-} from './mapping/from_blocks/styles_mapper';
+} from './mapping/from-blocks/styles-mapper';
 
 const mapCustomField = (
   block: BlockInstance,

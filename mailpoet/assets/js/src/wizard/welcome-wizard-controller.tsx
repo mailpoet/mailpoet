@@ -3,25 +3,25 @@ import { useSetting } from 'settings/store/hooks';
 import { Settings } from 'settings/store/types';
 import { partial } from 'underscore';
 
-import { WelcomeWizardSenderStep } from './steps/sender_step';
-import { WelcomeWizardUsageTrackingStep } from './steps/usage_tracking_step';
-import { WelcomeWizardPitchMSSStep } from './steps/pitch_mss_step';
-import { WooCommerceController } from './woocommerce_controller';
-import { WelcomeWizardStepLayout } from './layout/step_layout.jsx';
+import { WelcomeWizardSenderStep } from './steps/sender-step';
+import { WelcomeWizardUsageTrackingStep } from './steps/usage-tracking-step';
+import { WelcomeWizardPitchMSSStep } from './steps/pitch-mss-step';
+import { WooCommerceController } from './woocommerce-controller';
+import { WelcomeWizardStepLayout } from './layout/step-layout.jsx';
 
-import { createSenderSettings } from './create_sender_settings.jsx';
+import { createSenderSettings } from './create-sender-settings.jsx';
 import {
   getStepsCount,
   mapStepNumberToStepName,
   redirectToNextStep,
-} from './steps_numbers.jsx';
+} from './steps-numbers.jsx';
 import { Steps } from '../common/steps/steps';
-import { StepsContent } from '../common/steps/steps_content';
-import { TopBar } from '../common/top_bar/top_bar';
+import { StepsContent } from '../common/steps/steps-content';
+import { TopBar } from '../common/top-bar/top-bar';
 import { ErrorBoundary } from '../common';
-import { HideScreenOptions } from '../common/hide_screen_options/hide_screen_options';
-import { finishWizard } from './finishWizard';
-import { updateSettings } from './updateSettings';
+import { HideScreenOptions } from '../common/hide-screen-options/hide-screen-options';
+import { finishWizard } from './finish-wizard';
+import { updateSettings } from './update-settings';
 
 type WelcomeWizardStepsControllerPropType = {
   match: { params: { step: string } };

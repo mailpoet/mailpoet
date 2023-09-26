@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { MailPoet } from 'mailpoet';
-import { TopBarWithBeamer } from 'common/top_bar/top_bar';
+import { TopBarWithBeamer } from 'common/top-bar/top-bar';
 import { Button } from 'common/button/button';
 import { plusIcon } from 'common/button/icon/plus';
 

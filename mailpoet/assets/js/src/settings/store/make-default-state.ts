@@ -6,7 +6,7 @@ import {
   TestEmailState,
   SettingsWindow,
 } from './types';
-import { normalizeSettings } from './normalize_settings';
+import { normalizeSettings } from './normalize-settings';
 
 declare let window: SettingsWindow;
 

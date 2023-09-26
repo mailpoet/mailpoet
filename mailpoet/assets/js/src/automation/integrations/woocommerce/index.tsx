@@ -1,9 +1,9 @@
 import { registerStepType } from '../../editor/store';
-import { step as OrderStatusChanged } from './steps/order_status_changed';
-import { step as AbandonedCartTrigger } from './steps/abandoned_cart';
+import { step as OrderStatusChanged } from './steps/order-status-changed';
+import { step as AbandonedCartTrigger } from './steps/abandoned-cart';
 import { MailPoet } from '../../../mailpoet';
-import { step as BuysAProductTrigger } from './steps/buys_a_product';
-import { step as BuysFromACategory } from './steps/buys_from_a_category';
+import { step as BuysAProductTrigger } from './steps/buys-a-product';
+import { step as BuysFromACategory } from './steps/buys-from-a-category';
 // Insert new imports here
 
 export const initialize = (): void => {

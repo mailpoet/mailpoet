@@ -6,8 +6,8 @@ import { __, _x } from '@wordpress/i18n';
 import { blockDefault, Icon } from '@wordpress/icons';
 import { Group } from './group';
 import { Item } from './item';
-import { StepInfoPanel } from './step_info_panel';
-import { StepList } from './step_list';
+import { StepInfoPanel } from './step-info-panel';
+import { StepList } from './step-list';
 import { InserterListbox } from '../inserter-listbox';
 import { storeName } from '../../store';
 

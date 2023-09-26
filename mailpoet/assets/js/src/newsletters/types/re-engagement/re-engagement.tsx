@@ -7,10 +7,10 @@ import { MailPoet } from 'mailpoet';
 import { Background } from 'common/background/background';
 import { Grid } from 'common/grid';
 import { Button } from 'common/button/button';
-import { APIErrorsNotice } from 'notices/api_errors_notice';
+import { APIErrorsNotice } from 'notices/api-errors-notice';
 
 import { Scheduling } from './scheduling';
-import { ListingHeadingStepsRoute } from '../../listings/heading_steps_route';
+import { ListingHeadingStepsRoute } from '../../listings/heading-steps-route';
 
 export function NewsletterTypeReEngagement(): JSX.Element {
   let defaultAfterTime = '';

@@ -1,6 +1,6 @@
 import { useDispatch } from '@wordpress/data';
 import * as actions from '../actions';
-import { STORE_NAME } from '../store_name';
+import { STORE_NAME } from '../store-name';
 
 type Actions = typeof actions;
 

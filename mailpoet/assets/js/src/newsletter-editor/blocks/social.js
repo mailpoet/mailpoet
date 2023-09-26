@@ -2,8 +2,8 @@
 /**
  * Social icons content block
  */
-import { App } from 'newsletter_editor/App';
-import { BaseBlock } from 'newsletter_editor/blocks/base';
+import { App } from 'newsletter-editor/app';
+import { BaseBlock } from 'newsletter-editor/blocks/base';
 import Backbone from 'backbone';
 import Marionette from 'backbone.marionette';
 import SuperModel from 'backbone.supermodel';

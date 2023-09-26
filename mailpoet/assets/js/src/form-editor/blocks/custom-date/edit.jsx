@@ -5,11 +5,11 @@ import PropTypes from 'prop-types';
 import { useDispatch, useSelect } from '@wordpress/data';
 
 import { MailPoet } from 'mailpoet';
-import { CustomFieldSettings } from './custom_field_settings.jsx';
-import { formatLabel } from '../label_formatter.jsx';
+import { CustomFieldSettings } from './custom-field-settings.jsx';
+import { formatLabel } from '../label-formatter.jsx';
 import { FormFieldDate } from './date.jsx';
-import { ParagraphEdit } from '../paragraph_edit.jsx';
-import { mapCustomFieldFormData } from '../map_custom_field_form_data.jsx';
+import { ParagraphEdit } from '../paragraph-edit.jsx';
+import { mapCustomFieldFormData } from '../map-custom-field-form-data.jsx';
 import { storeName } from '../../store/constants';
 
 function CustomDateEdit({ attributes, setAttributes, clientId }) {

@@ -2,9 +2,9 @@ import { assoc, find, map } from 'lodash/fp';
 
 import { __ } from '@wordpress/i18n';
 import { MailPoet } from 'mailpoet';
-import { Scheduling } from '../types/re_engagement/scheduling';
-import { GATrackingField } from './ga_tracking';
-import { SenderField } from './sender_address_field';
+import { Scheduling } from '../types/re-engagement/scheduling';
+import { GATrackingField } from './ga-tracking';
+import { SenderField } from './sender-address-field';
 
 interface OnValueChangeParam {
   target: {

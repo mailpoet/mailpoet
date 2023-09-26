@@ -6,7 +6,7 @@ import { escapeHTML, escapeAttribute } from '@wordpress/escape-html';
 
 import { Listing } from 'listing/listing.jsx';
 import { SegmentResponse } from 'segments/types';
-import { ListingsEngagementScore } from 'subscribers/listings_engagement_score';
+import { ListingsEngagementScore } from 'subscribers/listings-engagement-score';
 import { ListHeading } from 'segments/heading';
 
 type Segment = {

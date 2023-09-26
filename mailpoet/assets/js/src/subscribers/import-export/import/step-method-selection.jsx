@@ -3,12 +3,12 @@ import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { MailPoet } from 'mailpoet';
 import { ErrorBoundary } from 'common';
-import { SelectImportMethod } from './step_method_selection/select_import_method.jsx';
-import { MethodPaste } from './step_method_selection/method_paste.jsx';
-import { MethodUpload } from './step_method_selection/method_upload.jsx';
-import { MethodMailChimp } from './step_method_selection/method_mailchimp.jsx';
-import { processCsv } from './step_method_selection/process_csv.jsx';
-import { PreviousNextStepButtons } from './previous_next_step_buttons';
+import { SelectImportMethod } from './step-method-selection/select-import-method.jsx';
+import { MethodPaste } from './step-method-selection/method-paste.jsx';
+import { MethodUpload } from './step-method-selection/method-upload.jsx';
+import { MethodMailChimp } from './step-method-selection/method-mailchimp.jsx';
+import { processCsv } from './step-method-selection/process-csv.jsx';
+import { PreviousNextStepButtons } from './previous-next-step-buttons';
 
 const getNextStepLink = (importData, subscribersLimitForValidation, method) => {
   if (importData === undefined) {

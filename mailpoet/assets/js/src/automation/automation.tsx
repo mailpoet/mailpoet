@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
 import { BrowserRouter } from 'react-router-dom';
-import { TopBarWithBeamer } from 'common/top_bar/top_bar';
+import { TopBarWithBeamer } from 'common/top-bar/top-bar';
 import { Popover, SlotFillProvider } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 import { registerTranslations } from 'common';

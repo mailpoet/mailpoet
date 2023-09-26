@@ -1,12 +1,12 @@
 import { useSetting } from 'settings/store/hooks';
-import { SendingMethod } from './sending_method';
+import { SendingMethod } from './sending-method';
 import { SPF } from './spf';
-import { TestSending } from './test_sending';
-import { ActivateOrCancel } from './activate_or_cancel';
-import { PHPMailFields } from './php_mail_fields';
-import { SmtpFields } from './smtp_fields';
-import { AmazonSesFields } from './amazon_ses_fields';
-import { SendGridFields } from './sendgrid_fields';
+import { TestSending } from './test-sending';
+import { ActivateOrCancel } from './activate-or-cancel';
+import { PHPMailFields } from './php-mail-fields';
+import { SmtpFields } from './smtp-fields';
+import { AmazonSesFields } from './amazon-ses-fields';
+import { SendGridFields } from './sendgrid-fields';
 
 export function OtherSendingMethods() {
   const [method] = useSetting('mta', 'method');

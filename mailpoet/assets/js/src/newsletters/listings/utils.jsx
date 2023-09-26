@@ -5,7 +5,7 @@ import ReactStringReplace from 'react-string-replace';
 import { Hooks } from 'wp-js-hooks';
 import { MailPoet } from 'mailpoet';
 import jQuery from 'jquery';
-import { confirmAlert } from 'common/confirm_alert.jsx';
+import { confirmAlert } from 'common/confirm-alert.jsx';
 
 export const trackStatsCTAClicked = () => {
   MailPoet.trackEvent('User has clicked a CTA to view detailed stats');

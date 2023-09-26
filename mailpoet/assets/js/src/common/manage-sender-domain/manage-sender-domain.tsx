@@ -2,9 +2,9 @@ import ReactStringReplace from 'react-string-replace';
 import { Button, Loader, TypographyHeading as Heading } from 'common';
 import { __ } from '@wordpress/i18n';
 import { Grid } from 'common/grid';
-import { SenderDomainEntity } from './manage_sender_domain_types';
-import { DomainKeyComponent } from './domain_key_component';
-import { DomainStatusComponent } from './domain_status_component';
+import { SenderDomainEntity } from './manage-sender-domain-types';
+import { DomainKeyComponent } from './domain-key-component';
+import { DomainStatusComponent } from './domain-status-component';
 
 type Props = {
   rows: Array<SenderDomainEntity>;

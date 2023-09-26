@@ -3,7 +3,7 @@ import { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
 
-import { AutomaticEmailEvent } from 'newsletters/types/automatic_emails/event.jsx';
+import { AutomaticEmailEvent } from 'newsletters/types/automatic-emails/event.jsx';
 import { MailPoet } from 'mailpoet';
 
 class AutomaticEmailEventsListComponent extends Component {

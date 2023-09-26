@@ -10,7 +10,7 @@ import {
 import PropTypes from 'prop-types';
 import { __ } from '@wordpress/i18n';
 
-import { Listings } from 'newsletters/automatic_emails/listings.jsx';
+import { Listings } from 'newsletters/automatic-emails/listings.jsx';
 import { MailPoet } from 'mailpoet';
 import { NewsletterTypes } from 'newsletters/types';
 import { NewsletterTemplates } from 'newsletters/templates.jsx';
@@ -19,26 +19,26 @@ import { Congratulate } from 'newsletters/send/congratulate/congratulate.jsx';
 import { NewsletterTypeStandard } from 'newsletters/types/standard.jsx';
 import { NewsletterNotification } from 'newsletters/types/notification/notification.jsx';
 import { NewsletterWelcome } from 'newsletters/types/welcome/welcome.jsx';
-import { NewsletterTypeReEngagement } from 'newsletters/types/re_engagement/re_engagement';
-import { AutomaticEmailEventsList } from 'newsletters/types/automatic_emails/events_list.jsx';
-import { EventsConditions } from 'newsletters/automatic_emails/events_conditions.jsx';
+import { NewsletterTypeReEngagement } from 'newsletters/types/re-engagement/re-engagement';
+import { AutomaticEmailEventsList } from 'newsletters/types/automatic-emails/events-list.jsx';
+import { EventsConditions } from 'newsletters/automatic-emails/events-conditions.jsx';
 import { NewsletterListStandard } from 'newsletters/listings/standard.jsx';
 import { NewsletterListWelcome } from 'newsletters/listings/welcome.jsx';
 import { NewsletterListNotification } from 'newsletters/listings/notification.jsx';
-import { NewsletterListReEngagement } from 'newsletters/listings/re_engagement.jsx';
-import { NewsletterListNotificationHistory } from 'newsletters/listings/notification_history.jsx';
-import { SendingStatus } from 'newsletters/sending_status.jsx';
+import { NewsletterListReEngagement } from 'newsletters/listings/re-engagement.jsx';
+import { NewsletterListNotificationHistory } from 'newsletters/listings/notification-history.jsx';
+import { SendingStatus } from 'newsletters/sending-status.jsx';
 import { GlobalContext, useGlobalContextValue } from 'context';
 import { Notices } from 'notices/notices.jsx';
-import { RoutedTabs } from 'common/tabs/routed_tabs';
+import { RoutedTabs } from 'common/tabs/routed-tabs';
 import { ErrorBoundary, registerTranslations, Tab, withBoundary } from 'common';
-import { withNpsPoll } from 'nps_poll.jsx';
+import { withNpsPoll } from 'nps-poll.jsx';
 import { ListingHeading } from 'newsletters/listings/heading.jsx';
-import { ListingHeadingDisplay } from 'newsletters/listings/heading_display.jsx';
-import { TransactionalEmailsProposeOptInNotice } from 'notices/transactional_emails_propose_opt_in_notice';
-import { MssAccessNotices } from 'notices/mss_access_notices';
-import { CampaignStatsPage } from './campaign_stats/page';
-import { CorruptEmailNotice } from '../notices/corrupt_email_notice';
+import { ListingHeadingDisplay } from 'newsletters/listings/heading-display.jsx';
+import { TransactionalEmailsProposeOptInNotice } from 'notices/transactional-emails-propose-opt-in-notice';
+import { MssAccessNotices } from 'notices/mss-access-notices';
+import { CampaignStatsPage } from './campaign-stats/page';
+import { CorruptEmailNotice } from '../notices/corrupt-email-notice';
 
 const automaticEmails = window.mailpoet_woocommerce_automatic_emails || [];
 

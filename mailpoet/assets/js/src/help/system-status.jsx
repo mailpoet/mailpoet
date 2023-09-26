@@ -1,8 +1,8 @@
 import { MailPoet } from 'mailpoet';
 import ReactStringReplace from 'react-string-replace';
-import { CronStatus } from './cron_status.jsx';
-import { QueueStatus } from './queue_status';
-import { ActionSchedulerStatus } from './action_scheduler_status';
+import { CronStatus } from './cron-status.jsx';
+import { QueueStatus } from './queue-status';
+import { ActionSchedulerStatus } from './action-scheduler-status';
 
 function renderStatusMessage(
   status,

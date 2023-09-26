@@ -1,6 +1,6 @@
 import { MailPoet } from 'mailpoet';
 import { useCallback } from 'react';
-import { TokenField } from '../../../../common/form/tokenField/tokenField';
+import { TokenField } from '../../../../common/form/token-field/token-field';
 
 interface Props {
   selectedTags: string[];

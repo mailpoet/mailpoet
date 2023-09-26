@@ -1,4 +1,4 @@
-import { App } from 'newsletter_editor/App';
+import { App } from 'newsletter-editor/app';
 import SuperModel from 'backbone.supermodel';
 import _ from 'underscore'; // eslint-disable-line func-names
 

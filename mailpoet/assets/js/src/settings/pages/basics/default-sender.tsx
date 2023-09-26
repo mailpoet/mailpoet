@@ -10,8 +10,8 @@ import {
 } from 'common/functions';
 import { Input } from 'common/form/input/input';
 import { useSetting, useSelector, useAction } from 'settings/store/hooks';
-import { SenderEmailAddressWarning } from 'common/sender_email_address_warning.jsx';
-import { checkSenderEmailDomainDmarcPolicy } from 'common/check_sender_domain_dmarc_policy';
+import { SenderEmailAddressWarning } from 'common/sender-email-address-warning.jsx';
+import { checkSenderEmailDomainDmarcPolicy } from 'common/check-sender-domain-dmarc-policy';
 
 export function DefaultSender() {
   const isMssActive = useSelector('isMssActive')();

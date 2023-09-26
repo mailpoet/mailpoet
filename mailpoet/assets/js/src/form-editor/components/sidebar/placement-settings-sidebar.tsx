@@ -2,8 +2,8 @@ import { Panel, PanelBody } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 
 import { MailPoet } from 'mailpoet';
-import { SettingsPanel } from 'form_editor/components/form_settings/form_placement_options/settings_panel';
-import { SidebarHeader } from './sidebar_header';
+import { SettingsPanel } from 'form-editor/components/form-settings/form-placement-options/settings-panel';
+import { SidebarHeader } from './sidebar-header';
 import { storeName } from '../../store';
 
 type Props = {

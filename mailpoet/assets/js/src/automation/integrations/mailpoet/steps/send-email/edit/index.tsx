@@ -1,6 +1,6 @@
-import { EmailPanel } from './email_panel';
-import { GoogleAnalyticsPanel } from './google_analytics_panel';
-import { ReplyToPanel } from './reply_to_panel';
+import { EmailPanel } from './email-panel';
+import { GoogleAnalyticsPanel } from './google-analytics-panel';
+import { ReplyToPanel } from './reply-to-panel';
 
 export function Edit(): JSX.Element {
   return (

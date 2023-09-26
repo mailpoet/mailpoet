@@ -1,2 +1,2 @@
-export * from './manage_sender_domain_types';
-export * from './manage_sender_domain';
+export * from './manage-sender-domain-types';
+export * from './manage-sender-domain';

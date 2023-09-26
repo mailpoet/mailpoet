@@ -1,14 +1,14 @@
 import { registerStepType } from '../../editor/store';
-import { step as SendEmailStep } from './steps/send_email';
+import { step as SendEmailStep } from './steps/send-email';
 import { step as SomeoneSubscribesTrigger } from './steps/someone-subscribes';
 import { step as WpUserRegisteredTrigger } from './steps/wp-user-registered';
-import { step as AddTagsAction } from './steps/add_tags';
-import { step as RemoveTagsAction } from './steps/remove_tags';
-import { step as AddToListStep } from './steps/add_to_list';
-import { step as RemoveFromListStep } from './steps/remove_from_list';
+import { step as AddTagsAction } from './steps/add-tags';
+import { step as RemoveTagsAction } from './steps/remove-tags';
+import { step as AddToListStep } from './steps/add-to-list';
+import { step as RemoveFromListStep } from './steps/remove-from-list';
 import { step as UpdateSubscriberStep } from './steps/update-subscriber';
 import { step as UnsubscribeStep } from './steps/unsubscribe';
-import { step as NotificationEmail } from './steps/notification_email';
+import { step as NotificationEmail } from './steps/notification-email';
 import { registerStepControls } from './step-controls';
 import { registerAutomationSidebar } from './automation-sidebar';
 

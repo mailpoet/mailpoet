@@ -1,7 +1,7 @@
 import { MailPoet } from 'mailpoet';
 import { Link, useLocation } from 'react-router-dom';
 import { Heading } from 'common/typography/heading/heading';
-import { LocationState } from 'subscribers/location_state';
+import { LocationState } from 'subscribers/location-state';
 
 export type PropTypes = {
   email: string;

@@ -5,7 +5,7 @@ import {
   ManageSenderDomain,
   SenderDomainDnsItem,
   SenderDomainEntity,
-} from 'common/manage_sender_domain';
+} from 'common/manage-sender-domain';
 import { isErrorResponse, Response, ErrorResponse } from 'ajax';
 
 interface SenderDomainApiResponseType extends Response {

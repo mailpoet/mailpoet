@@ -2,9 +2,9 @@ import { Hooks } from 'wp-js-hooks';
 import { MailPoet } from 'mailpoet';
 import { __ } from '@wordpress/i18n';
 import ReactDOM from 'react-dom';
-import { ListingHeadingSteps } from 'newsletters/listings/heading_steps';
+import { ListingHeadingSteps } from 'newsletters/listings/heading-steps';
 import { newsletterTypesWithActivation } from 'newsletters/listings/utils';
-import { fetchAutomaticEmailShortcodes } from 'newsletters/automatic_emails/fetch_editor_shortcodes.jsx';
+import { fetchAutomaticEmailShortcodes } from 'newsletters/automatic-emails/fetch-editor-shortcodes.jsx';
 import { ErrorBoundary } from 'common';
 import { initTutorial } from './tutorial';
 

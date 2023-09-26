@@ -1,6 +1,6 @@
 import { addHours, subHours } from 'date-fns';
 import { NewsletterStatus as NewsletterStatusEnum } from 'common/newsletter';
-import { NewsletterStatus } from '../newsletter_status';
+import { NewsletterStatus } from '../newsletter-status';
 import { Heading } from '../../typography';
 
 export default {

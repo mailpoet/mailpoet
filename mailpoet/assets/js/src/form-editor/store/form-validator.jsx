@@ -1,4 +1,4 @@
-import { findBlock } from './find_block';
+import { findBlock } from './find-block';
 
 export const validateForm = (formData, formBlocks) => {
   if (

@@ -1,2 +1,2 @@
-export * from './call_api';
-export * from './track_event';
+export * from './call-api';
+export * from './track-event';

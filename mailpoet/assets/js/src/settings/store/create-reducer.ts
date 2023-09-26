@@ -7,7 +7,7 @@ import {
   PremiumStatus,
   TestEmailState,
 } from './types';
-import { normalizeSettings } from './normalize_settings';
+import { normalizeSettings } from './normalize-settings';
 
 export function createReducer(defaultValue: State) {
   let keyActivation: KeyActivationState;

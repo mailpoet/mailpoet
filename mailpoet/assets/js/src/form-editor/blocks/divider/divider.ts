@@ -1,7 +1,7 @@
 import { MailPoet } from 'mailpoet';
 import { Icon } from './icon.jsx';
 import { DividerEdit } from './edit';
-import { defaultAttributes } from './divider_types';
+import { defaultAttributes } from './divider-types';
 
 export const name = 'mailpoet-form/divider';
 

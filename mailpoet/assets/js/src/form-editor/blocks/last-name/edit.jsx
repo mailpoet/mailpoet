@@ -8,11 +8,11 @@ import { InspectorControls } from '@wordpress/block-editor';
 import PropTypes from 'prop-types';
 
 import { MailPoet } from 'mailpoet';
-import { TextInputEdit } from '../text_input_edit.jsx';
+import { TextInputEdit } from '../text-input-edit.jsx';
 import {
   inputStylesPropTypes,
   InputStylesSettings,
-} from '../input_styles_settings';
+} from '../input-styles-settings';
 
 function LastNameEdit({ attributes, setAttributes }) {
   const inspectorControls = (

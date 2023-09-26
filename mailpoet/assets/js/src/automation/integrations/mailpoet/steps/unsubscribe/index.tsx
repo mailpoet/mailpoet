@@ -1,7 +1,7 @@
 import { __ } from '@wordpress/i18n';
 import { StepType } from '../../../../editor/store';
-import { LockedBadge } from '../../../../../common/premium_modal/locked_badge';
-import { PremiumModalForStepEdit } from '../../../../../common/premium_modal';
+import { LockedBadge } from '../../../../../common/premium-modal/locked-badge';
+import { PremiumModalForStepEdit } from '../../../../../common/premium-modal';
 import { Icon } from './icon';
 
 const keywords = [__('unsubscribe', 'mailpoet')];

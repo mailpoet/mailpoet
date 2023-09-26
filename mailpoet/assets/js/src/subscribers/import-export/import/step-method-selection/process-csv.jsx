@@ -1,6 +1,6 @@
 import Papa from 'papaparse';
 import { MailPoet } from 'mailpoet';
-import { sanitizeCSVData } from '../sanitize_csv_data.jsx';
+import { sanitizeCSVData } from '../sanitize-csv-data.jsx';
 
 function papaParserConfig(done) {
   return {

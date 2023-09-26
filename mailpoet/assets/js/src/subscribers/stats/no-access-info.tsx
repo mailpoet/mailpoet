@@ -1,6 +1,6 @@
 import { FunctionComponent } from 'react';
 import { MailPoet } from 'mailpoet';
-import { PremiumRequired } from 'common/premium_required/premium_required';
+import { PremiumRequired } from 'common/premium-required/premium-required';
 import { Button } from 'common/button/button';
 import ReactStringReplace from 'react-string-replace';
 

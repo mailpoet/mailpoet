@@ -9,7 +9,7 @@ import { Notice } from '../../../notices/notice';
 import {
   PremiumModal,
   premiumValidAndActive,
-} from '../../../common/premium_modal';
+} from '../../../common/premium-modal';
 
 type TemplateListItemProps = {
   template: AutomationTemplate;

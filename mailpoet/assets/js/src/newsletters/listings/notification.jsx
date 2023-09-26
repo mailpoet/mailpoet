@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 import ReactStringReplace from 'react-string-replace';
 
 import { Button } from 'common/button/button';
-import { ScheduledIcon } from 'common/listings/newsletter_status';
+import { ScheduledIcon } from 'common/listings/newsletter-status';
 import { Listing } from 'listing/listing.jsx';
 import { MailPoet } from 'mailpoet';
 import { NewsletterTypes } from 'newsletters/types';

@@ -8,18 +8,18 @@ import {
   unregisterBlockType,
   getBlockType,
 } from '@wordpress/blocks';
-import { callApi as CALL_API } from 'common/controls/call_api';
+import { callApi as CALL_API } from 'common/controls/call-api';
 import {
   SETTINGS_DEFAULTS,
   store as blockEditorStore,
 } from '@wordpress/block-editor';
 
-import { blocksToFormBodyFactory } from './blocks_to_form_body';
+import { blocksToFormBodyFactory } from './blocks-to-form-body';
 import { registerCustomFieldBlock } from '../blocks/blocks.jsx';
-import { mapFormDataBeforeSaving } from './map_form_data_before_saving.jsx';
-import { findBlock } from './find_block';
-import { formatCustomFieldBlockName } from '../blocks/format_custom_field_block_name';
-import { getCustomFieldBlockSettings } from '../blocks/custom_fields_blocks';
+import { mapFormDataBeforeSaving } from './map-form-data-before-saving.jsx';
+import { findBlock } from './find-block';
+import { formatCustomFieldBlockName } from '../blocks/format-custom-field-block-name';
+import { getCustomFieldBlockSettings } from '../blocks/custom-fields-blocks';
 import { FONT_SIZES, storeName } from './constants';
 
 const formatApiErrorMessage = (response) => {

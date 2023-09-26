@@ -6,7 +6,7 @@ import classnames from 'classnames';
 import { MailPoet } from 'mailpoet';
 import { storeName } from 'homepage/store/store';
 import { trackCtaAndRedirect } from 'homepage/tracking';
-import { ListingsEngagementScore } from 'subscribers/listings_engagement_score';
+import { ListingsEngagementScore } from 'subscribers/listings-engagement-score';
 import { ContentSection } from './content-section';
 
 const handleCtaClick = (event: MouseEvent, cta: string, link: string) => {

@@ -3,9 +3,9 @@ import { useDispatch, useSelect } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
 import classnames from 'classnames';
 import { MailPoet } from 'mailpoet';
-import { FormSettings } from 'form_editor/components/form_settings/form_settings';
-import { BlockSettings } from './block_settings.jsx';
-import { SidebarHeader } from './sidebar_header';
+import { FormSettings } from 'form-editor/components/form-settings/form-settings';
+import { BlockSettings } from './block-settings.jsx';
+import { SidebarHeader } from './sidebar-header';
 import { storeName } from '../../store';
 
 type Props = {

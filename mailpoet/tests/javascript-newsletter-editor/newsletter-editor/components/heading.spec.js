@@ -1,4 +1,4 @@
-import { HeadingComponent } from 'newsletter_editor/components/heading';
+import { HeadingComponent } from 'newsletter-editor/components/heading';
 
 const expect = global.expect;
 const Backbone = global.Backbone;

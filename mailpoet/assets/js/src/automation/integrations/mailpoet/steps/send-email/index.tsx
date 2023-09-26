@@ -4,8 +4,8 @@ import ReactStringReplace from 'react-string-replace';
 import { Edit } from './edit';
 import { State, StepType } from '../../../../editor/store';
 import { Step } from '../../../../editor/components/automation/types';
-import { isTransactional } from './helper/is_transactional';
-import { SendMailIcon } from './icons/send_mail';
+import { isTransactional } from './helper/is-transactional';
+import { SendMailIcon } from './icons/send-mail';
 import { TransactionalIcon } from './icons/transactional';
 import { MarketingIcon } from './icons/marketing';
 

@@ -6,7 +6,7 @@ import { plus } from '@wordpress/icons';
 import { __ } from '@wordpress/i18n';
 import { storeName } from '../../store';
 import { FiltersPanelContentType } from '../../../types/filters';
-import { PremiumModal } from '../../../../common/premium_modal';
+import { PremiumModal } from '../../../../common/premium-modal';
 import { FiltersList } from './list';
 
 function FiltersPanelContent(): JSX.Element {

@@ -1,7 +1,7 @@
 import range from 'lodash/range';
 import classnames from 'classnames';
 import { withBoundary } from 'common';
-import { ContentWrapperFix } from './content_wrapper_fix';
+import { ContentWrapperFix } from './content-wrapper-fix';
 
 type Props = {
   count: number;

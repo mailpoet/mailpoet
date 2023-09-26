@@ -3,7 +3,7 @@ import { __ } from '@wordpress/i18n';
 import _ from 'underscore';
 import PropTypes from 'prop-types';
 import { Input } from 'common/form/input/input.tsx';
-import { Icon } from './assets/search_icon.tsx';
+import { Icon } from './assets/search-icon.tsx';
 
 /**
  * this components has to be setup with router

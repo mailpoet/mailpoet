@@ -1,5 +1,5 @@
-import { App } from 'newsletter_editor/App';
-import { FooterBlock } from 'newsletter_editor/blocks/footer';
+import { App } from 'newsletter-editor/app';
+import { FooterBlock } from 'newsletter-editor/blocks/footer';
 
 const expect = global.expect;
 const sinon = global.sinon;

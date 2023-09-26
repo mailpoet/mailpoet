@@ -5,7 +5,7 @@ import { __ } from '@wordpress/i18n';
 import {
   UpgradeInfo,
   useUpgradeInfo,
-} from '../../../../../../../common/premium_modal/upgrade_info';
+} from '../../../../../../../common/premium-modal/upgrade-info';
 
 // This duplicates some functionality of the PremiumModal component.
 // We could consider extracting it to a more reusable logic.

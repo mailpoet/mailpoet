@@ -8,7 +8,7 @@ import { Link, withRouter } from 'react-router-dom';
 import ReactStringReplace from 'react-string-replace';
 import { Toggle } from 'common/form/toggle/toggle';
 import { Tag } from 'common/tag/tag';
-import { ScheduledIcon } from 'common/listings/newsletter_status';
+import { ScheduledIcon } from 'common/listings/newsletter-status';
 import { Listing } from 'listing/listing.jsx';
 import { Statistics } from 'newsletters/listings/statistics.jsx';
 import {

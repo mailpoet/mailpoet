@@ -3,7 +3,7 @@ import { MailPoet } from 'mailpoet';
 import { useSelect, useDispatch } from '@wordpress/data';
 import { debounce } from 'lodash';
 import { isFormValid } from './validator';
-import { loadCount } from './subscribers_calculator';
+import { loadCount } from './subscribers-calculator';
 
 import { Segment, SubscriberCount } from './types';
 import { storeName } from './store';

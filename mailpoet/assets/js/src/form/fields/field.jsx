@@ -11,7 +11,7 @@ import { FormFieldCheckbox } from 'form/fields/checkbox.jsx';
 import { Selection } from 'form/fields/selection.jsx';
 import { FormFieldDate } from 'form/fields/date.jsx';
 import { Heading } from 'common/typography/heading/heading';
-import { FormFieldTokenField } from 'form/fields/tokenField';
+import { FormFieldTokenField } from 'form/fields/token-field';
 
 class FormField extends Component {
   renderField = (data) => {

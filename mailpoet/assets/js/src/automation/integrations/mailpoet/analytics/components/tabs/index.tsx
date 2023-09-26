@@ -4,7 +4,7 @@ import { TabPanel } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 import { __, _x } from '@wordpress/i18n';
 import { Icon, lockSmall } from '@wordpress/icons';
-import { AutomationFlow } from './automation_flow';
+import { AutomationFlow } from './automation-flow';
 import { Emails } from './emails';
 import { Orders } from './orders';
 import { Subscribers } from './subscribers';

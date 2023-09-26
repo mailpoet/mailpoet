@@ -2,11 +2,11 @@ import { ComponentProps } from 'react';
 import { PanelBody, TextareaControl, TextControl } from '@wordpress/components';
 import { dispatch, useSelect } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
-import { ShortcodeHelpText } from './shortcode_help_text';
+import { ShortcodeHelpText } from './shortcode-help-text';
 import { PlainBodyTitle } from '../../../../../editor/components';
 import { storeName } from '../../../../../editor/store';
 import { StepName } from '../../../../../editor/components/panel/step-name';
-import { EditNewsletter } from './edit_newsletter';
+import { EditNewsletter } from './edit-newsletter';
 
 function SingleLineTextareaControl(
   props: ComponentProps<typeof TextareaControl>,

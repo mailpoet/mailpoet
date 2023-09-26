@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import { Tag, withBoundary } from 'common';
 import { trackStatsCTAClicked } from 'newsletters/listings/utils.jsx';
-import { NewsletterStats } from 'common/listings/newsletter_stats';
+import { NewsletterStats } from 'common/listings/newsletter-stats';
 
 const wrapInLink = (content, params, id, totalSent) => {
   if (totalSent <= 0 || !params.link) {

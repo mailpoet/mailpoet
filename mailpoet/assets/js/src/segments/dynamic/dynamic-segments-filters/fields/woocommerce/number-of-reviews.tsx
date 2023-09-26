@@ -12,7 +12,7 @@ import {
   ReviewRating,
   CountType,
 } from '../../../types';
-import { validateDaysPeriod, DaysPeriodField } from '../days_period_field';
+import { validateDaysPeriod, DaysPeriodField } from '../days-period-field';
 import { isInEnum } from '../../../../../utils';
 
 export function validateNumberOfReviews(

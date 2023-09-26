@@ -9,7 +9,7 @@ import { dispatch, useSelect } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
 import { PlainBodyTitle } from '../../../../editor/components/panel';
 import { storeName } from '../../../../editor/store';
-import { DelayTypeOptions } from './types/delayTypes';
+import { DelayTypeOptions } from './types/delay-types';
 
 export function Edit(): JSX.Element {
   const { selectedStep, errors } = useSelect(

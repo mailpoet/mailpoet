@@ -1,14 +1,14 @@
 import { MailPoet } from 'mailpoet';
 
 import { GroupFilterValue } from '../types';
-import { AutomationsOptions } from '../dynamic_segments_filters/automation_options';
-import { EmailSegmentOptions } from '../dynamic_segments_filters/email_options';
-import { SubscriberSegmentOptions } from '../dynamic_segments_filters/subscriber_options';
+import { AutomationsOptions } from '../dynamic-segments-filters/automation-options';
+import { EmailSegmentOptions } from '../dynamic-segments-filters/email-options';
+import { SubscriberSegmentOptions } from '../dynamic-segments-filters/subscriber-options';
 import {
   WooCommerceOptions,
   WooCommerceMembershipOptions,
   WooCommerceSubscriptionOptions,
-} from '../dynamic_segments_filters/woocommerce_options';
+} from '../dynamic-segments-filters/woocommerce-options';
 
 export function getAvailableFilters(
   canUseWooSubscriptions: boolean,

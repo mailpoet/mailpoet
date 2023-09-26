@@ -1,4 +1,4 @@
-import { ConfigComponent } from 'newsletter_editor/components/config';
+import { ConfigComponent } from 'newsletter-editor/components/config';
 
 const expect = global.expect;
 

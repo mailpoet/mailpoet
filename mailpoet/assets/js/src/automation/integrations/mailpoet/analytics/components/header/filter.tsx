@@ -4,7 +4,7 @@ import { getCurrentDates } from '@woocommerce/date';
 import { useSelect } from '@wordpress/data';
 import { __, sprintf } from '@wordpress/i18n';
 import { Query, storeName } from '../../store';
-import { PremiumModal } from '../../../../../../common/premium_modal';
+import { PremiumModal } from '../../../../../../common/premium-modal';
 
 type DummyFilterTypes = {
   onClick: () => void;

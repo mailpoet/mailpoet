@@ -1,10 +1,10 @@
 import { AnyFormItem, SegmentTypes } from './types';
-import { validateAutomations } from './dynamic_segments_filters/automations';
-import { validateEmail } from './dynamic_segments_filters/email';
-import { validateWooCommerce } from './dynamic_segments_filters/woocommerce';
-import { validateSubscriber } from './dynamic_segments_filters/subscriber';
-import { validateWooCommerceMembership } from './dynamic_segments_filters/fields/woocommerce/woocommerce_membership';
-import { validateWooCommerceSubscription } from './dynamic_segments_filters/fields/woocommerce/woocommerce_subscription';
+import { validateAutomations } from './dynamic-segments-filters/automations';
+import { validateEmail } from './dynamic-segments-filters/email';
+import { validateWooCommerce } from './dynamic-segments-filters/woocommerce';
+import { validateSubscriber } from './dynamic-segments-filters/subscriber';
+import { validateWooCommerceMembership } from './dynamic-segments-filters/fields/woocommerce/woocommerce-membership';
+import { validateWooCommerceSubscription } from './dynamic-segments-filters/fields/woocommerce/woocommerce-subscription';
 
 const validationMap = {
   [SegmentTypes.Automations]: validateAutomations,

@@ -3,15 +3,15 @@ import { select } from '@wordpress/data';
 
 import { MailPoet } from 'mailpoet';
 
-import { STORE_NAME } from 'settings/store/store_name';
+import { STORE_NAME } from 'settings/store/store-name';
 import {
   KeyActivationState,
   MssStatus,
   PremiumStatus,
 } from 'settings/store/types';
-import { updateKeyActivationState } from './key_activation';
+import { updateKeyActivationState } from './key-activation';
 import { setSetting, setSettings } from './settings';
-import { getMssStatus } from '../make_default_state';
+import { getMssStatus } from '../make-default-state';
 
 export function* verifyMssKey(key: string) {
   const { success, error, res } = yield {

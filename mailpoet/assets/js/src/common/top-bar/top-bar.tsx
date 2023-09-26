@@ -1,11 +1,11 @@
 import { ReactNode } from 'react';
 import { __ } from '@wordpress/i18n';
 import classnames from 'classnames';
-import { withFeatureAnnouncement } from 'announcements/with_feature_announcement';
-import { MailPoetLogoResponsive } from './mailpoet_logo_responsive';
-import { BeamerIcon } from './beamer_icon';
-import { ScreenOptionsFix } from './screen_options_fix';
-import { withBoundary } from '../error_boundary';
+import { withFeatureAnnouncement } from 'announcements/with-feature-announcement';
+import { MailPoetLogoResponsive } from './mailpoet-logo-responsive';
+import { BeamerIcon } from './beamer-icon';
+import { ScreenOptionsFix } from './screen-options-fix';
+import { withBoundary } from '../error-boundary';
 
 type Props = {
   children?: ReactNode;

@@ -3,9 +3,9 @@ import { __ } from '@wordpress/i18n';
 import { useSelector } from 'settings/store/hooks';
 import { PremiumStatus } from 'settings/store/types';
 import { Button } from 'common/button/button';
-import { PremiumModal } from 'common/premium_modal';
+import { PremiumModal } from 'common/premium-modal';
 import { useState } from 'react';
-import { Data } from '../../premium_modal/upgrade_info';
+import { Data } from '../../premium-modal/upgrade-info';
 
 type ActiveMessageProps = { canUseSuccessClass: boolean };
 

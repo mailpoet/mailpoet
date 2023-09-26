@@ -5,7 +5,7 @@ import {
   FontSizeDefinition,
   ColorDefinition,
   GradientDefinition,
-} from 'form_editor/store/form_data_types';
+} from 'form-editor/store/form-data-types';
 
 export const mapInputBlockStyles = (styles: InputBlockStyles) => {
   const mappedStyles: InputBlockStylesServerData = {

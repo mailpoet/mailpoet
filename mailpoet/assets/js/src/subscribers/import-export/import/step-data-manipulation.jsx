@@ -1,15 +1,15 @@
 import { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
-import { PreviousNextStepButtons } from './previous_next_step_buttons.jsx';
-import { Warnings } from './step_data_manipulation/warnings.jsx';
-import { MatchTable } from './step_data_manipulation/match_table.jsx';
-import { SelectSegment } from './step_data_manipulation/select_segment.jsx';
-import { NewSubscribersStatus } from './step_data_manipulation/new_subscribers_status';
-import { ExistingSubscribersStatus } from './step_data_manipulation/existing_subscribers_status';
-import { UpdateExistingSubscribers } from './step_data_manipulation/update_existing_subscribers.jsx';
-import { doImport } from './step_data_manipulation/do_import.jsx';
-import { AssignTags } from './step_data_manipulation/assign_tags';
+import { PreviousNextStepButtons } from './previous-next-step-buttons.jsx';
+import { Warnings } from './step-data-manipulation/warnings.jsx';
+import { MatchTable } from './step-data-manipulation/match-table.jsx';
+import { SelectSegment } from './step-data-manipulation/select-segment.jsx';
+import { NewSubscribersStatus } from './step-data-manipulation/new-subscribers-status';
+import { ExistingSubscribersStatus } from './step-data-manipulation/existing-subscribers-status';
+import { UpdateExistingSubscribers } from './step-data-manipulation/update-existing-subscribers.jsx';
+import { doImport } from './step-data-manipulation/do-import.jsx';
+import { AssignTags } from './step-data-manipulation/assign-tags';
 
 function getPreviousStepLink(importData, subscribersLimitForValidation) {
   if (importData === undefined) {

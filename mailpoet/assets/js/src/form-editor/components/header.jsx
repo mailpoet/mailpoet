@@ -9,9 +9,9 @@ import { moreVertical, plus } from '@wordpress/icons';
 import { __, _x } from '@wordpress/i18n';
 import PropTypes from 'prop-types';
 import { MailPoet } from 'mailpoet';
-import { FeatureToggle } from './feature_toggle';
-import { HistoryUndo } from './history_undo';
-import { HistoryRedo } from './history_redo';
+import { FeatureToggle } from './feature-toggle';
+import { HistoryUndo } from './history-undo';
+import { HistoryRedo } from './history-redo';
 import { storeName } from '../store';
 
 function Header({ isInserterOpened, setIsInserterOpened }) {

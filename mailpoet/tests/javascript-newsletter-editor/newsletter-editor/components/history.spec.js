@@ -1,4 +1,4 @@
-import { HistoryComponent } from 'newsletter_editor/components/history';
+import { HistoryComponent } from 'newsletter-editor/components/history';
 
 const expect = global.expect;
 

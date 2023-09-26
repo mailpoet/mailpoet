@@ -3,7 +3,7 @@ import { __ } from '@wordpress/i18n';
 import { MailPoet } from 'mailpoet';
 import { Link } from 'react-router-dom';
 import parseDate from 'date-fns/parse';
-import { APIErrorsNotice } from 'notices/api_errors_notice';
+import { APIErrorsNotice } from 'notices/api-errors-notice';
 import { Button } from 'common/button/button';
 import { NewsletterStatus } from 'common/listings';
 import { confirmAlert, withBoundary } from 'common';

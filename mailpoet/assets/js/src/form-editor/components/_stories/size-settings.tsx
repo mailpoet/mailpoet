@@ -1,5 +1,5 @@
 import { action } from '_storybook/action';
-import { SizeSettings } from '../size_settings';
+import { SizeSettings } from '../size-settings';
 
 export default {
   title: 'FormEditor/Size Settings',

@@ -1,5 +1,5 @@
-import { defaultBlockStyles } from 'form_editor/store/mapping/to_blocks/styles_mapper';
-import { Icon } from '../custom_text/icon.jsx';
+import { defaultBlockStyles } from 'form-editor/store/mapping/to-blocks/styles-mapper';
+import { Icon } from '../custom-text/icon.jsx';
 import { CustomTextAreaEdit } from './edit.jsx';
 
 export const name = 'mailpoet-form/custom-textarea';

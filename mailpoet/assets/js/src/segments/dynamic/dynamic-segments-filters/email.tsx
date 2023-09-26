@@ -8,10 +8,10 @@ import {
 } from '../types';
 import { storeName } from '../store';
 
-import { EmailOpenStatisticsFields } from './fields/email/email_statistics_opens';
-import { EmailClickStatisticsFields } from './fields/email/email_statistics_clicks';
-import { EmailOpensAbsoluteCountFields } from './fields/email/email_opens_absolute_count';
-import { validateDaysPeriod } from './fields/days_period_field';
+import { EmailOpenStatisticsFields } from './fields/email/email-statistics-opens';
+import { EmailClickStatisticsFields } from './fields/email/email-statistics-clicks';
+import { EmailOpensAbsoluteCountFields } from './fields/email/email-opens-absolute-count';
+import { validateDaysPeriod } from './fields/days-period-field';
 
 export function validateEmail(formItems: EmailFormItem): boolean {
   // check if the action has the right type

@@ -2,12 +2,12 @@ import { find } from 'lodash/fp';
 import { useSelect, useDispatch } from '@wordpress/data';
 
 import { MailPoet } from 'mailpoet';
-import { ReactSelect } from 'common/form/react_select/react_select';
+import { ReactSelect } from 'common/form/react-select/react-select';
 
-import { Text, validateText } from './custom_fields/text';
-import { RadioSelect, validateRadioSelect } from './custom_fields/select';
-import { Checkbox, validateCheckbox } from './custom_fields/checkbox';
-import { CustomFieldDate, validateDate } from './custom_fields/date';
+import { Text, validateText } from './custom-fields/text';
+import { RadioSelect, validateRadioSelect } from './custom-fields/select';
+import { Checkbox, validateCheckbox } from './custom-fields/checkbox';
+import { CustomFieldDate, validateDate } from './custom-fields/date';
 
 import {
   WordpressRoleFormItem,

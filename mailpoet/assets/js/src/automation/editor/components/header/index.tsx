@@ -12,10 +12,10 @@ import { PinnedItems } from '@wordpress/interface';
 import { __ } from '@wordpress/i18n';
 import { displayShortcut } from '@wordpress/keycodes';
 import { ErrorBoundary } from 'common';
-import { DocumentActions } from './document_actions';
+import { DocumentActions } from './document-actions';
 import { Errors } from './errors';
-import { InserterToggle } from './inserter_toggle';
-import { MoreMenu } from './more_menu';
+import { InserterToggle } from './inserter-toggle';
+import { MoreMenu } from './more-menu';
 import { storeName } from '../../store';
 import { AutomationStatus } from '../../../listing/automation';
 import {

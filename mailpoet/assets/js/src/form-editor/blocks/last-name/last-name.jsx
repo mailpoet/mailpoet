@@ -1,5 +1,5 @@
 import { MailPoet } from 'mailpoet';
-import { defaultBlockStyles } from 'form_editor/store/mapping/to_blocks/styles_mapper';
+import { defaultBlockStyles } from 'form-editor/store/mapping/to-blocks/styles-mapper';
 import { Icon } from './icon.jsx';
 import { LastNameEdit } from './edit.jsx';
 
