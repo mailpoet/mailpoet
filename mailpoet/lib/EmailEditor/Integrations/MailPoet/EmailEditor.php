@@ -118,10 +118,12 @@ class EmailEditor {
     $jsonAPIRoot = rtrim($this->wp->escUrlRaw(admin_url('admin-ajax.php')), '/');
     $token = $this->wp->wpCreateNonce('mailpoet_token');
     $apiVersion = API::CURRENT_VERSION;
+    $currentUserEmail = $this->wp->wpGetCurrentUser()->user_email;
     $inlineScript = <<<EOL
 var mailpoet_json_api_root = '%s';
 var mailpoet_token = '%s';
 var mailpoet_api_version = '%s';
+var mailpoet_current_wp_user_email = '%s';
 EOL;
     $this->wp->wpAddInlineScript(
       'mailpoet_email_editor',
@@ -129,7 +131,8 @@ EOL;
         $inlineScript,
         esc_js($jsonAPIRoot),
         esc_js($token),
-        esc_js($apiVersion)
+        esc_js($apiVersion),
+        esc_js($currentUserEmail)
       )
     );
   }

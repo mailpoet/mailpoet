@@ -9,6 +9,7 @@ import { useDisableWelcomeGuide } from 'email-editor/engine/hooks';
 import { NextButton } from './components/next-button';
 import { SettingsSidebar } from './components/settings-panel';
 import { PreviewDropdown } from './components/preview-dropdown';
+import { useState } from 'react';
 import { createStore } from './store';
 import { MailPoetEmailData } from './types';
 
@@ -19,6 +20,8 @@ directSelect(coreStore).getBlockPatterns = () => [];
 directSelect(coreStore).getBlockPatternCategories = () => [];
 
 function Editor() {
+  const [isStoreInitialized, setIsStoreInitialized] = useState(false);
+
   const { mailpoetData } = useSelect((select) => ({
     mailpoetData:
       (select(editorStore).getEditedPostAttribute(
@@ -32,6 +35,7 @@ function Editor() {
   // Initialize the store
   useEffect(() => {
     createStore();
+    setIsStoreInitialized(true);
   }, []);
 
   // We don't want to show the editor welcome guide as it is not relevant to emails
@@ -40,15 +44,20 @@ function Editor() {
   return (
     <>
       <LayoutStyles />
-      <HeaderButtonSlot className="mailpoet-header-button-preview">
-        <PreviewDropdown
-          newsletterPreviewUrl={mailpoetData?.preview_url ?? null}
-        />
-      </HeaderButtonSlot>
-      <HeaderButtonSlot>
-        <NextButton newsletterId={mailpoetData?.id ?? null} />
-      </HeaderButtonSlot>
-      <SettingsSidebar />
+      {isStoreInitialized ? (
+        <>
+          <HeaderButtonSlot className="mailpoet-header-button-preview">
+            <PreviewDropdown
+              newsletterId={mailpoetData?.id ?? null}
+              newsletterPreviewUrl={mailpoetData?.preview_url ?? null}
+            />
+          </HeaderButtonSlot>
+          <HeaderButtonSlot>
+            <NextButton newsletterId={mailpoetData?.id ?? null} />
+          </HeaderButtonSlot>
+          <SettingsSidebar />
+        </>
+      ) : null}
     </>
   );
 }

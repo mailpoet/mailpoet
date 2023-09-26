@@ -1,16 +1,27 @@
 import { Button, Modal, TextControl } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import ReactStringReplace from 'react-string-replace';
+import { dispatch, useSelect } from '@wordpress/data';
+import { storeName } from '../store';
 
 type SendPreviewEmailProps = {
   isOpen: boolean;
   closeCallback: () => void;
+  newsletterId: number | null;
 };
 
 export function SendPreviewEmail({
   isOpen,
   closeCallback,
+  newsletterId,
 }: SendPreviewEmailProps) {
+  const { previewToEmail } = useSelect(
+    (select) => ({
+      previewToEmail: select(storeName).getPreviewToEmail(),
+    }),
+    [],
+  );
+
   let description = ReactStringReplace(
     __(
       'Send yourself a test email to test how your email would look like in different email apps. You could also enter your [link1]Mail Tester[/link1] email below to test your spam score. [link2]Learn more[/link2].',
@@ -43,6 +54,13 @@ export function SendPreviewEmail({
     ),
   );
 
+  const handleSendPreviewEmail = () => {
+    dispatch(storeName).requestSendingNewsletterPreview(
+      newsletterId,
+      previewToEmail,
+    );
+  };
+
   return (
     <>
       {isOpen ? (
@@ -54,14 +72,16 @@ export function SendPreviewEmail({
           <p>{description}</p>
           <TextControl
             label={__('Send to', 'mailpoet')}
-            onChange={() => {}}
-            value=""
+            onChange={(email) => {
+              dispatch(storeName).updatePreviewToEmail(email);
+            }}
+            value={previewToEmail}
           />
           <div className="mailpoet-send-preview-modal-footer">
             <Button variant="tertiary" onClick={closeCallback}>
               {__('Close', 'mailpoet')}
             </Button>
-            <Button variant="primary" onClick={() => {}}>
+            <Button variant="primary" onClick={handleSendPreviewEmail}>
               {__('Send test email', 'mailpoet')}
             </Button>
           </div>
