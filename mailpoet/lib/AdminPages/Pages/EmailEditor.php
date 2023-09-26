@@ -30,6 +30,15 @@ class EmailEditor {
       $assetsParams['version'],
       true
     );
+    $this->wp->wpEnqueueStyle('wp-components');
+    $this->wp->wpEnqueueStyle('wp-block-editor');
+    $this->wp->wpEnqueueStyle('wp-block-editor-content');
+    $this->wp->wpEnqueueStyle('wp-edit-post');
+    $this->wp->wpEnqueueStyle('wp-editor');
+    $this->wp->wpEnqueueStyle('wp-block-library');
+    $this->wp->wpEnqueueStyle('wp-format-library');
+    $this->wp->wpEnqueueStyle('wp-interface');
+
     $this->pageRenderer->displayPage('email_editor.html', []);
   }
 }
