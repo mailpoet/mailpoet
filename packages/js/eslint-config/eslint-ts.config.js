@@ -5,6 +5,7 @@ const airbnbConfig = require('eslint-config-airbnb');
 const airbnbTsConfig = require('eslint-config-airbnb-typescript');
 const prettierConfig = require('eslint-config-prettier');
 const webpackResolver = require('eslint-import-resolver-webpack');
+const checkFilePlugin = require('eslint-plugin-check-file');
 const noOnlyTestsPlugin = require('eslint-plugin-no-only-tests');
 const reactJsxRuntimeConfig = require('eslint-plugin-react/configs/jsx-runtime');
 const reactHooksPlugin = require('eslint-plugin-react-hooks');
@@ -38,6 +39,8 @@ const prettierCompatConfig = compat.config(prettierConfig);
 //   TypeError: Key "plugins": Cannot redefine plugin "react"
 delete reactJsxRuntimeConfig.plugins.react;
 
+const KEBAB_CASE_PATTERN = '+([a-z])*([a-z0-9])*(-+([a-z0-9]))';
+
 module.exports = [
   ...tsRecommendedCompatConfig,
   ...tsRequiringTypeCheckingCompatConfig,
@@ -69,6 +72,7 @@ module.exports = [
     },
     plugins: {
       'react-hooks': reactHooksPlugin,
+      'check-file': checkFilePlugin,
       'no-only-tests': noOnlyTestsPlugin,
     },
     rules: {
@@ -113,6 +117,15 @@ module.exports = [
             attributes: false, // it is OK to pass an async function to JSX attributes
           },
         },
+      ],
+      'check-file/filename-naming-convention': [
+        'error',
+        { '**/*.*': 'KEBAB_CASE' },
+        { ignoreMiddleExtensions: true },
+      ],
+      'check-file/folder-naming-convention': [
+        'error',
+        { '**/': `@(${KEBAB_CASE_PATTERN}|_stories|_storybook)` },
       ],
     },
   },
