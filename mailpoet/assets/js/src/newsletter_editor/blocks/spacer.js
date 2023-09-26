@@ -15,7 +15,7 @@ Module.SpacerBlockModel = base.BlockModel.extend({
         type: 'spacer',
         styles: {
           block: {
-            backgroundColor: 'transparent',
+            backgroundColor: 'rgba(0, 0, 0, 0)',
             height: '40px',
           },
         },

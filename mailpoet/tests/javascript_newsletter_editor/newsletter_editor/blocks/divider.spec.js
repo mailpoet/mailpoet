@@ -255,7 +255,7 @@ describe('Divider', function () {
           .trigger('change');
         expect(view.$('.mailpoet_field_divider_style div')).to.have.$css(
           'border-top-color',
-          newColor,
+          'rgb(136, 153, 18)',
         );
       });
 
